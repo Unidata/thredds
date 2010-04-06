@@ -374,9 +374,9 @@ public abstract class Aggregation {
   protected void persistRead() {
   }
 
-
+  // close any open datasets
   protected void closeDatasets() throws IOException {
-    datasets = null;
+   // datasets = null;
   }
 
   public void getDetailInfo(Formatter f) {

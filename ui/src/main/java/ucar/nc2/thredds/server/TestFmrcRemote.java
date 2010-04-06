@@ -201,11 +201,13 @@ public class TestFmrcRemote extends TimerTask {
 
     // http://motherlode.ucar.edu:9080/thredds/catalog/model/NCEP/RUC2/CONUS_20km/pressure/latest.xml
 
-    TestFmrcRemote test1 = new TestFmrcRemote("NCEP/GFS/Global_0p5deg/", What.BEST);
-    // timer.schedule(test1, 0, 1000 * 60 * 2); // 2 mins   */
+    TestFmrcRemote test1 = new TestFmrcRemote("NCEP/GFS/Hawaii_160km", What.BEST);
 
     // test1.doOne("NCEP/GFS/Global_0p5deg/");
     test1.doAll();
+
+    timer.schedule(test1, 0, 1000 * 60 * 2); // 2 mins   */
+
   }
 
 }

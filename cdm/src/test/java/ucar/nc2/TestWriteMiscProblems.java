@@ -42,6 +42,7 @@ import java.util.List;
 
 import ucar.ma2.*;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.util.IO;
 
 /**
  * Class Description.
@@ -215,6 +216,41 @@ public class TestWriteMiscProblems extends TestCase {
 
     } catch (IOException e) {
       e.printStackTrace();
+    }
+
+  }
+
+
+  public void testRedefine() throws IOException, InvalidRangeException {
+    String org = TestLocal.cdmTestDataDir + "testWriteRecord.nc";
+    String path = TestLocal.temporaryDataDir + "testWriteRecordRedefine.nc";
+    File orgFile = new File(org);
+    File newFile = new File(path);
+    if (newFile.exists()) newFile.delete();
+    IO.copyFile(orgFile, newFile);
+
+    NetcdfFileWriteable ncfile = null;
+    try {
+      ncfile = NetcdfFileWriteable.openExisting(path, false);
+      System.out.println(ncfile);
+      
+      ncfile.setRedefineMode(true);
+
+      Variable tvar = ncfile.findVariable("T");
+      ncfile.setExtraHeaderBytes(1024);
+      ncfile.addVariable("header_data", DataType.FLOAT, tvar.getDimensions());
+      System.out.println(ncfile);
+
+    } finally {
+      try {
+        if (ncfile != null) {
+          ncfile.setRedefineMode(false);
+          ncfile.flush();
+          ncfile.close();
+        }
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
     }
 
   }

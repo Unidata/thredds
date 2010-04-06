@@ -52,7 +52,6 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
-import thredds.inventory.DateExtractor;
 import thredds.inventory.MFile;
 import thredds.inventory.CollectionManager;
 
@@ -76,13 +75,13 @@ import thredds.inventory.CollectionManager;
  */
 public class GridDatasetInv {
   static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GridDatasetInv.class);
-  private static final boolean debugCache = false;
+  private static final boolean debugCache = true, debugCacheDetail = false;
 
   public static GridDatasetInv open(CollectionManager cm, MFile mfile) throws IOException {
     // do we already have it ?
     byte[] xmlBytes = cm.getMetadata(mfile, "fmrInv.xml");
     if (xmlBytes != null) {
-      if (debugCache) System.out.printf(" got xmlFile %s in cache %n", mfile.getPath());
+      if (debugCacheDetail) System.out.printf(" got xmlFile %s in cache %n", mfile.getPath());
       GridDatasetInv inv = readXML(xmlBytes);
       if (inv.getLastModified() >= mfile.getLastModified()) { // LOOK if fileDate is -1, will always succeed
         return inv;

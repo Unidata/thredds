@@ -65,6 +65,7 @@ public class TestNcML {
     suite.addTest(new TestSuite(TestAggSynthetic.class)); //
 
     suite.addTest(new TestSuite(TestAggExistingPromote.class));
+    suite.addTest(new TestSuite(TestAggMisc.class));
 
     // requires remote (network) access
     // suite.addTest(new TestSuite(TestRemoteCrawlableDataset.class));

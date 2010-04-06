@@ -44,6 +44,7 @@ import java.io.File;
 import java.io.StringReader;
 
 import junit.framework.TestCase;
+import ucar.nc2.dataset.NetcdfDataset;
 
 /**
  * Describe
@@ -58,8 +59,6 @@ public class TestAggMisc extends TestCase {
   }
   
    public void testNestedValues() throws IOException, InvalidRangeException, InterruptedException {
-
-
     String ncml =
        "<?xml version='1.0' encoding='UTF-8'?>\n"+
           "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2' >\n"+
@@ -87,9 +86,26 @@ public class TestAggMisc extends TestCase {
 
      Variable v = ncfile.findVariable("time");
      Array data = v.read();
+     assert data.getSize() == 20;
      NCdumpW.printArray(data);
 
     ncfile.close();    
   }
+
+  public void testNestedAgg() throws IOException, InvalidRangeException, InterruptedException {
+    String filename = "file:./" + TestAll.cdmLocalTestDataDir+ "testNested.ncml";
+
+   NetcdfFile ncfile = NetcdfDataset.openFile(filename, null);
+
+   TestAll.readAll(ncfile);
+
+    Variable v = ncfile.findVariable("time");
+    Array data = v.read();
+    assert data.getSize() == 59;
+    NCdumpW.printArray(data);
+
+   ncfile.close();
+ }
+
 
 }

@@ -736,7 +736,7 @@ public class FmrcInv {
 
   //////////////////////////////////////
 
-  private Date addHour(Date d, double hour) {
+  public static Date addHour(Date d, double hour) {
     long msecs = d.getTime();
     msecs += hour * 3600 * 1000;
     return new Date(msecs);

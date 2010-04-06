@@ -427,19 +427,23 @@ class FmrcDataset {
       this.baseDate = baseDate;
 
       int[] shape = timeCoordVals.getShape();
+      int nruns = shape[0]; // this will always equal the complete set of runs
+      int ntimes = shape[1];
+
       this.location = (ArrayObject.D2) Array.factory(DataType.STRING, shape);
       this.invIndex = (ArrayInt.D2) Array.factory(DataType.INT, shape);
 
-      int nruns = shape[0];
-      int ntimes = shape[1];
-      int runCount = -1;
-      List<FmrInv.GridVariable> runs = ugrid.getRuns();
-
       // loop over runDates
+      int gridIdx = 0;
+      List<FmrInv.GridVariable> grids = ugrid.getRuns(); // must be sorted by rundate
+
       for (int runIdx=0; runIdx<nruns; runIdx++ ) {
-        runCount++;
-        FmrInv.GridVariable grid = runs.get(runCount);
-        if (!grid.getRunDate().equals(runDates.get(runIdx))) continue;
+        Date runDate =  runDates.get(runIdx);
+
+        // do we have a grid for this runDate?
+        FmrInv.GridVariable grid = grids.get(gridIdx);
+        if (!grid.getRunDate().equals(runDate)) continue;
+        gridIdx++; // for next loop
 
         // loop over actual inventory
         for (GridDatasetInv.Grid inv : grid.getInventory()) {

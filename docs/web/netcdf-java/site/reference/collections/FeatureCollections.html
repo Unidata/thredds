@@ -14,11 +14,11 @@ dl {margin: 10px 5px 5px 15px;)
 <body>
 <h1>Feature Collections</h1>
 <p><em>Experimental design doc</em></p>
-<p><em>last updated: 3/30/2010</em></p>
+<p><em>last updated: 4/05/2010</em></p>
 <p>Feature Collections are introduced in CDM version 4.2, as a way to specify collections of <a href="../FeatureDatasets/Overview.html">Feature Datasets</a>. Currently this can be used in PointFeature Collections and <a href="Fmrc.html">FMRC</a> (Forecast Model Run Collections). </p>
-<p>Management of the set of datasets in any Feature Collection has been factored out into a CollectionManager class.</p>
+<p>Management of the set of datasets in a Feature Collection has been factored out into the CollectionManager class.</p>
 <h2>CollectionManager</h2>
-<h3>From a collection specification</h3>
+<h3>Create from a collection specification</h3>
 <p>A<a href="CollectionSpecification.html"> <em><strong>collection specification</strong></em></a><em><strong> string</strong></em> is a simple way to create a collection. </p>
 <pre>
 /data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km/**/GFS_Alaska_191km_#yyyyMMdd_HHmm#\.grib1$</pre>
@@ -29,39 +29,52 @@ dl {margin: 10px 5px 5px 15px;)
   <li>onName= yes</li>
   <li>regexp= GFS_Alaska_191km.........\.grib1$</li>
 </ul>
-<h3>From a catalog</h3>
+<h3>Create from a catalog</h3>
 <p>You can use a <em><strong>catalog:catalogURL</strong></em>. All the datasets in the catalog are used, using best remote access capabilty, currently OPeNDAP. See <strong>DatasetCollectionFromCatalog</strong> class.</p>
-<h3>From NcML</h3>
+<h3>Create from NcML</h3>
 <p>If you pass an ncml file (must end in <strong>.ncml</strong>) the NcML is parsed, and the scan or scanFmrc is extracted. A <strong>DatasetCollectionFromNcml </strong>is returned, along with inner and outer JDOM NcML elements.</p>
 <h2>PointFeature Collection in CDM 4.1 library</h2>
 <p><strong>FeatureDatasetFactoryManager.open(location, wantFeatureType)</strong> looks for <em><strong>collection:spec</strong></em> prefix for the location, and calls <strong>CompositeDatasetFactory.factory(wantFeatureType, spec)</strong> if found, which returns a FeatureDataset. Currently only a limited number of Point Feature tyeps are supported. This is an experimental feature</p>
-<h2>Proposed elements in TDS Configuration catalogs</h2>
+<h2>Proposed elements in TDS Configuration catalogs<a name="TDS" id="TDS"></a></h2>
 <h3>collection element</h3>
-<p>Defines the collection of datasets and provides control over dynamically changing datasets. Takes the place of NcML aggregation element (scan and scanFmrc). Eventually replace datasetScan (?).</p>
+<p>Defines the collection of datasets and provides some control over dynamically changing datasets. Takes the place of NcML aggregation element (scan and scanFmrc). Eventually this will also replace datasetScan (?).</p>
 <pre>&lt;<strong>collection</strong> <strong>spec</strong>=&quot;/data/ldm/pub/native/satellite/3.9/WEST-CONUS_4km/WEST-CONUS_4km_3.9_#yyyyMMdd_HHmm#.gini&quot;
-            <strong>olderThan</strong>=&quot;1 min&quot; <strong>changes</strong>=&quot;appendOnly&quot; <strong>recheckEvery</strong>=&quot;15 min&quot; /&gt;
+            <strong>olderThan</strong>=&quot;1 min&quot; <strong></strong><strong>recheckAfter</strong>=&quot;15 min&quot; /&gt;
 </pre>
 <blockquote>
   <p>where</p>
   <ol>
-    <li><strong>spec</strong>: <a href="CollectionSpecification.html">collection specification</a> string</li>
+    <li><strong>spec</strong>: <a href="CollectionSpecification.html">collection specification</a> string. In this case, all files in the directory <em>/data/ldm/pub/native/satellite/3.9/WEST-CONUS_4km/ </em>whose filename matches the reqular expression WEST-CONUS_4km_3.9_........_....\.gini$&quot;. The  time coordinate (runtime if its an FMRC) of the file will be found by matching <em>yyyyMMdd_HHmm</em> to that portion of the filename.</li>
     <li><strong>olderThan</strong>: only files whose lastModified date is older than this are included. This excludes files that are in the process of being written.</li>
-    <li><strong>changes</strong>: 
-      <ul>
-        <li><em>false</em> : collection does not change (default)</li>
-        <li><em>trigger</em>: application will manually trigger a rescan of the collection when needed</li>
-        <li><em>appendOnly</em> : collection may be appended to, but datasets are not deleted</li>
-        <li><em>true</em>: datasets may be added and removed from collection</li>
-        <li><em>rolling</em> : datasets may be appended, and removed from the beginning of a list sorted by filename / date</li>
-      </ul>
-    </li>
-    <li><strong>recheckEvery</strong>: applies if <strong>changes</strong> is not set to <em>false </em>or<em> trigger</em>.This will cause a directory scan whenever a request comes in and this much time has elapsed since the last scan. Effectively, it indicates that the collection may be out-of-date by this much time. <br />
-        </li>
+    <li><strong>recheckAfter</strong>: This will cause a directory scan whenever a request comes in and this much time has elapsed since the last scan. The request will wait until the rescan is finished and a new collection is built (if needed). This minimizes unneeded processing for lightly used collections.</li>
+  </ol>
+</blockquote>
+<h3>update element</h3>
+<p>For collections that change, provides options to update the collection in a background task. New collections are built in the background, so that requests do not wait.</p>
+<pre>&lt;update startup=&quot;true&quot; <strong>rescan</strong>=&quot;cron expr&quot;<strong> </strong>trigger=&quot;allow&quot; <strong></strong>/&gt;
+</pre>
+<blockquote>
+  <p> where: </p>
+  <ol>
+    <li><strong>startup</strong>= if true, when the server starts up, scan the collection and cache the results.</li>
+    <li><strong>rescan</strong>= &quot;cron expr&quot; uses a <a href="http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html">cron expression</a> to specify when the collection should be rescanned in a background task.</li>
+    <li><strong>trigger</strong>: if &quot;allow&quot;, then external triggering will be allowed. This allows collections to be updated only when needed, at the cost of an external program (or person) having responsibility for sending the trigger.</li>
+  </ol>
+</blockquote>
+<h3>manage element</h3>
+<p>This instructs the TDS to manage your collection by deleting files that are older than a certain time.</p>
+<pre>&lt;manage deleteAfter<strong></strong>=&quot;30 days&quot;<strong> </strong><strong>check</strong>=&quot;cron expr&quot; /&gt;
+</pre>
+<blockquote>
+  <p> where: </p>
+  <ol>
+    <li><strong>deleteAfter</strong>= delete files older than this amount</li>
+    <li><strong>check</strong>= &quot;cron expr&quot; uses a <a href="http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html">cron expression</a> to specify when the collection should be checked for old files.</li>
   </ol>
 </blockquote>
 <h3>protoDataset element</h3>
 <p>Provides control over the choice of the prototype dataset for the collection.</p>
-<pre>&lt;protoDataset <strong>choice</strong>=&quot;First | Random | Penultimate | Latest&quot; <strong>change</strong>=&quot;cron expr&quot; /&gt;
+<pre>&lt;protoDataset <strong>choice</strong>=&quot;First | Random | Penultimate | Latest&quot; <strong>change</strong>=&quot;expr&quot; /&gt;
 
 
 &lt;protoDataset&gt;filename&lt;/protoDataset&gt;</pre>
@@ -69,22 +82,24 @@ dl {margin: 10px 5px 5px 15px;)
   <p>  where:  </p>
   <ol>
     <li><strong>choice</strong>=&quot;First | Random | Penultimate | Latest&quot; : select prototype from a time ordered list</li>
-    <li> <strong>change</strong> = &quot;cron expr&quot; uses a <a href="http://en.wikipedia.org/wiki/Cron">cron expression</a></li>
+    <li> <strong>change</strong> = &quot;cron expr&quot; uses a <a href="http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html">cron expression</a></li>
     <ul>
-      <li><em>change = &quot;2 3 * * ?&quot;</em> means every day at 3.02 am.</li>
-      <li>if not specified, the prototype dataset is not changed</li>
+      <li><em>change = &quot;0 2 3 * * ? *&quot;</em> means every day at 3.02 am.</li>
+      <li>if not specified, the prototype dataset is not changed, except on a reboot</li>
     </ul>
     <li>&lt;protoDataset&gt;filename&lt;/protoDataset&gt;allows you to specify a specific file as the prototype.</li>
   </ol>
-  <p> If not set, use a default. Default can be set by ??</p>
 </blockquote>
+<p>On rolling datsets, you will want to change the prototype, otherwise it will get deleted eventually</p>
 <h3> Example catalog elements:</h3>
 <p><strong>model data:</strong></p>
 <pre>&lt;<strong>featureCollection</strong> <strong>name</strong>=&quot;NCEP-GFS-Alaska_191km&quot; <strong>featureType</strong>=&quot;FMRC&quot; <strong>path</strong>=&quot;fmrc/NCEP/GFS/Alaska_191km&quot;&gt;<br />
 
    &lt;collection spec=&quot;/data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km/**/GFS_Alaska_191km_#yyyyMMdd_HHmm#.grib1&quot; 
-       recheckEvery=&quot;15 min&quot; olderThan=&quot;5 min&quot; check=&quot;startup&quot;/&gt;
-   &lt;protoDataset choice=&quot;Penultimate&quot; change = &quot;2 3 * * ?&quot; /&gt;
+       recheckEvery=&quot;15 min&quot; olderThan=&quot;5 min&quot; /&gt;
+   &lt;update startup=&quot;true&quot; /&gt;
+   &lt;manage deleteAfter=&quot;45 days&quot; check = &quot;<em>0 0 3 * * ? *</em>&quot; /&gt;
+   &lt;protoDataset choice=&quot;Penultimate&quot; change = &quot;<em>0 2 3 * * ? *</em>&quot; /&gt;
    &lt;fmrcConfig regularize=&quot;true&quot; datasetTypes=&quot;TwoD Best Files Runs&quot; /&gt;
 &lt;/featureCollection&gt;
 have</pre>
@@ -116,7 +131,7 @@ have</pre>
 </blockquote>
 <h3>Other possible features:</h3>
 <ul>
-  <li>Allow explicit trigger. Sending a GET to a protected URL forces an update on a <strong>featureCollection</strong>.</li>
+  <li>Allow explicit trigger. Sending a POST to a protected URL forces an update on a <strong>featureCollection</strong>.</li>
   <li>Default services depend on featureType, may be configured by user or overridden in catalog.</li>
   <li>Automatic metadata extraction (time/space BB and variable names)</li>
   <li>Default publisher/author etc added to each catalog.</li>
@@ -156,7 +171,7 @@ have</pre>
 <p>&nbsp;</p>
 <hr width="100%" />
 <address>
-<img src="../../nc.gif" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated  Feb 2010
+<img src="../../nc.gif" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated  April 6, 2010
 </address>
 <p>&nbsp; </p>
 </body>

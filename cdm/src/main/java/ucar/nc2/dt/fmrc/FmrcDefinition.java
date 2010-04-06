@@ -48,69 +48,68 @@ import ucar.unidata.util.StringUtil;
 
 /**
  * Defines the expected inventory of a Forecast Model Run Collection.
- *
+ * <p/>
  * <pre>
  * Data Structures
- *
+ * <p/>
  *  List VertTimeCoord
  *    double[] values
- *
+ * <p/>
  *  List TimeCoord
  *    double[] offsetHour
- *
+ * <p/>
  *  List RunSeq
  *    List Run - runHour dependent TimeCoord
  *      double hour
  *      TimeCoord
- *
+ * <p/>
  *    List Grid
  *     String name
  *     VertTimeCoord - time dependent vertical coordinate
  *       VertCoord
  *       TimeCoord (optional)
- *
- *
+ * <p/>
+ * <p/>
  * Abstractly, the data is a table:
  *   Run  Grid  TimeCoord  VertCoord
  *   Run  Grid  TimeCoord  VertCoord
  *   Run  Grid  TimeCoord  VertCoord
  *   ...
- *
+ * <p/>
  * We will use the notation ({} means list)
  *  {Run, Grid, TimeCoord, VertCoord}
- *
+ * <p/>
  * The simplest case would be if all runs have the same grids, which all use the same time coord, and each grid always
  *  uses the same vert coord :
  * (1) {runTime} X {Grid, VertCoord} X TimeCoord      (X means product)
- *
+ * <p/>
  * The usual case is that there are multiple TimeCoords, but a grid always uses the same one:
  * (2) {runTime} X {Grid, VertCoord, TimeCoord}
- *
+ * <p/>
  * Since all runTimes are the same, the definition only need be:
  * (2d) {Grid, VertCoord, TimeCoord}
-
+ * <p/>
  * Another case is that different run hours use different TimeCoords. We will call this a RunSeq, and we associate with each
  * RunSeq the list of grids that use it:
  *   Run = runHour, TimeCoord
  *   RunSeq = {runHour, TimeCoord} X {Grid, VertCoord}
- *
+ * <p/>
  * Different grids use different RunSeqs, so we have a list of RunSeq:
  * (3d) {{runHour, TimeCoord} X {Grid, VertCoord}}
- *
+ * <p/>
  * We can recast (2d), when all runHours are the same,  as:
  * (2d') {TimeCoord X {Grid, VertCoord}}
  * which means that we are grouping grids by unique TimeCoord. (1d) would be the case where there is only one in the list.
- *
+ * <p/>
  * Another case is when the VertCoord depends on the TimeCoord, but all run hours are the same:
  * (4d) {TimeCoord X {Grid, VertCoord(TimeCoord)}}
- *
+ * <p/>
  * Which lead us to generalize a VertCoord to a time-dependent one, called VertTimeCoord.
- *
+ * <p/>
  * The most general case is then
  *   {{runHour, TimeCoord} X {Grid, VertTimeCoord}}
- *
+ * <p/>
  * </pre>
- *
  *
  * @author caron
  */
@@ -128,19 +127,23 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
   private String suffixFilter;
 
   public FmrcDefinition() {
-    cal.setTimeZone( TimeZone.getTimeZone("UTC"));
+    cal.setTimeZone(TimeZone.getTimeZone("UTC"));
   }
 
-  public String getSuffixFilter() { return suffixFilter; }
+  public String getSuffixFilter() {
+    return suffixFilter;
+  }
 
-  public List<RunSeq> getRunSequences() { return runSequences; }
+  public List<RunSeq> getRunSequences() {
+    return runSequences;
+  }
 
   public boolean hasVariable(String searchName) {
-    return findGridByName( searchName) != null;
+    return findGridByName(searchName) != null;
   }
 
   public ucar.nc2.dt.fmr.FmrcCoordSys.VertCoord findVertCoordForVariable(String searchName) {
-    Grid grid = findGridByName( searchName);
+    Grid grid = findGridByName(searchName);
     return (grid.vtc == null) ? null : grid.vtc.vc;
   }
 
@@ -156,7 +159,7 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
     return null;
   }
 
-  private ForecastModelRunInventory.TimeCoord findTimeCoord( String id) {
+  private ForecastModelRunInventory.TimeCoord findTimeCoord(String id) {
     for (ForecastModelRunInventory.TimeCoord tc : timeCoords) {
       if (tc.getId().equals(id))
         return tc;
@@ -167,23 +170,29 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
   ///////////////////////////////////////////////////////////////////////////////////////////////
 
   // encapsolates a Grid and its vertical coordinate, which may be time-dependent
+
   public static class Grid implements Comparable {
     private String name; // , searchName;
     private VertTimeCoord vtc = null;
     private ForecastModelRunInventory.EnsCoord ec = null;
 
-    Grid (String name) {
+    Grid(String name) {
       this.name = name;
     }
 
-    public EnsCoord getEnsTimeCoord() { return ec; }
+    public EnsCoord getEnsTimeCoord() {
+      return ec;
+    }
 
     //public String getName() { return name; }
     //public void setName(String name) { this.name = name; }
-    public VertTimeCoord getVertTimeCoord() { return vtc; }
 
-    public int countVertCoords( double offsetHour) {
-      return (vtc == null) ? 1 : vtc.countVertCoords( offsetHour);
+    public VertTimeCoord getVertTimeCoord() {
+      return vtc;
+    }
+
+    public int countVertCoords(double offsetHour) {
+      return (vtc == null) ? 1 : vtc.countVertCoords(offsetHour);
     }
 
     /**
@@ -232,7 +241,7 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
 
     RunSeq(String id) {
       this.isAll = true;
-      this.allUseOffset = findTimeCoord( id);
+      this.allUseOffset = findTimeCoord(id);
       num = runseq_num++;
     }
 
@@ -242,47 +251,51 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
 
       // complete a 24 hour cycle
       int matchIndex = 0;
-      Run last = runs.get(runs.size()-1);
+      Run last = runs.get(runs.size() - 1);
       double runHour = last.runHour;
       while (runHour < 24.0) {
         Run match = runs.get(matchIndex);
-        Run next = runs.get(matchIndex+1);
+        Run next = runs.get(matchIndex + 1);
         double incr = next.runHour - match.runHour;
         if (incr <= 0)
           break;
         runHour += incr;
-        runs.add( new Run(next.tc, runHour));
+        runs.add(new Run(next.tc, runHour));
         matchIndex++;
       }
     }
 
-    public String getName() { return (num == 0) ? "time" : "time"+num; }
+    public String getName() {
+      return (num == 0) ? "time" : "time" + num;
+    }
 
     /**
      * Find the TimeCoord the should be used for this runTime
-     * @param runTime  run date
+     *
+     * @param runTime run date
      * @return TimeCoord, or null if no match.
      */
-    public ForecastModelRunInventory.TimeCoord findTimeCoordByRuntime( Date runTime) {
+    public ForecastModelRunInventory.TimeCoord findTimeCoordByRuntime(Date runTime) {
       if (isAll)
         return allUseOffset;
-      double hour = getHour( runTime);
-      Run run = findRun( hour);
+      double hour = getHour(runTime);
+      Run run = findRun(hour);
       if (run == null) return null;
       return run.tc;
     }
 
-    /** @return the Run that matches the run hour
+    /**
      * @param hour run hour
+     * @return the Run that matches the run hour
      */
-    Run findRun( double hour) {
+    Run findRun(double hour) {
       for (Run run : runs) {
         if (run.runHour == hour) return run;
       }
       return null;
     }
 
-    public Grid findGrid( String name) {
+    public Grid findGrid(String name) {
       if (name == null) return null;
 
       for (Grid grid : vars) {
@@ -295,7 +308,7 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
 
   } // RunSeq
 
-  public RunSeq findSeqForVariable( String name) {
+  public RunSeq findSeqForVariable(String name) {
     for (RunSeq runSeq : runSequences) {
       if (runSeq.findGrid(name) != null)
         return runSeq;
@@ -303,7 +316,7 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
     return null;
   }
 
-  Grid findGridByName( String name) {
+  Grid findGridByName(String name) {
     for (RunSeq runSeq : runSequences) {
       Grid grid = runSeq.findGrid(name);
       if (null != grid)
@@ -312,26 +325,26 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
     return null;
   }
 
-  VertTimeCoord findVertCoord( String id) {
-     if (id == null)
-       return null;
+  VertTimeCoord findVertCoord(String id) {
+    if (id == null)
+      return null;
 
     for (VertTimeCoord vc : vertTimeCoords) {
       if (vc.getId().equals(id))
         return vc;
     }
     return null;
-   }
+  }
 
-  VertTimeCoord findVertCoordByName( String name) {
+  VertTimeCoord findVertCoordByName(String name) {
     for (VertTimeCoord vc : vertTimeCoords) {
       if (vc.getName().equals(name))
         return vc;
     }
     return null;
-   }
+  }
 
-  boolean replaceVertCoord( ForecastModelRunInventory.VertCoord vc) {
+  boolean replaceVertCoord(ForecastModelRunInventory.VertCoord vc) {
     for (VertTimeCoord vtc : vertTimeCoords) {
       if (vtc.getName().equals(vc.getName())) {
         vtc.vc.values1 = vc.values1;
@@ -343,14 +356,15 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
     }
 
     // make a new one
-     vertTimeCoords.add( new VertTimeCoord(vc));
-     return false;
-   }
+    vertTimeCoords.add(new VertTimeCoord(vc));
+    return false;
+  }
 
 
   ///////////////////////////////////////////////////////////////////////////////////////////////
 
   /* vertical coordinates that depend on the offset hour */
+
   class VertTimeCoord implements Comparable {
     ForecastModelRunInventory.VertCoord vc;
     ForecastModelRunInventory.TimeCoord tc; // optional
@@ -373,15 +387,15 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
         for (Run run : runSeq.runs) {
           addValues(valueSet, run.tc.getOffsetHours());
         }
-        List<Double> valueList = Arrays.asList( (Double[]) valueSet.toArray( new Double[valueSet.size()]));
-        Collections.sort( valueList);
+        List<Double> valueList = Arrays.asList((Double[]) valueSet.toArray(new Double[valueSet.size()]));
+        Collections.sort(valueList);
         double[] values = new double[valueList.size()];
         for (int i = 0; i < valueList.size(); i++) {
           values[i] = valueList.get(i);
         }
         this.tc = new ForecastModelRunInventory.TimeCoord();
-        this.tc.setOffsetHours( values);
-        this.tc.setId( "union");
+        this.tc.setOffsetHours(values);
+        this.tc.setId("union");
       }
 
       this.vc = vc;
@@ -394,12 +408,17 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
       for (double value : values) valueSet.add(value);
     }
 
-    String getId() { return vc.getId(); }
-    String getName() { return vc.getName(); }
+    String getId() {
+      return vc.getId();
+    }
+
+    String getName() {
+      return vc.getName();
+    }
     //double[] getValues() { return vc.getValues(); }
 
     void addRestriction(String vertCoordsString, String timeCoords) {
-      StringTokenizer stoker = new StringTokenizer( vertCoordsString, " ,");
+      StringTokenizer stoker = new StringTokenizer(vertCoordsString, " ,");
       int n = stoker.countTokens();
       double[] vertCoords = new double[n];
       int count = 0;
@@ -416,20 +435,20 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
       }
 
       // save these in case we have to write them back out
-      restrictList.add( vertCoordsString);
-      restrictList.add( timeCoords);
+      restrictList.add(vertCoordsString);
+      restrictList.add(timeCoords);
 
       stoker = new StringTokenizer(timeCoords, " ,");
       while (stoker.hasMoreTokens()) {
         double hour = Double.parseDouble(stoker.nextToken());
         int index = tc.findIndex(hour);
         if (index < 0)
-          log.error("hour Offset"+hour+" not found in TimeCoord "+tc.getId());
+          log.error("hour Offset" + hour + " not found in TimeCoord " + tc.getId());
         vcForTimeIndex[index] = vertCoords;
       }
     }
 
-    double[] getVertCoords( double offsetHour) {
+    double[] getVertCoords(double offsetHour) {
       if ((tc == null) || (null == vcForTimeIndex))
         return vc.getValues1(); // LOOK WRONG
 
@@ -440,7 +459,7 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
       return vcForTimeIndex[index];
     }
 
-    int countVertCoords( double offsetHour) {
+    int countVertCoords(double offsetHour) {
       if ((tc == null) || (null == vcForTimeIndex))
         return vc.getValues1().length;
 
@@ -453,20 +472,20 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
 
     public int compareTo(Object o) {
       VertTimeCoord other = (VertTimeCoord) o;
-      return getName().compareTo( other.getName());
+      return getName().compareTo(other.getName());
     }
   }
 
-  private ForecastModelRunInventory.EnsCoord findEnsCoord( String id) {
-     if (id == null)
-       return null;
+  private ForecastModelRunInventory.EnsCoord findEnsCoord(String id) {
+    if (id == null)
+      return null;
 
     for (ForecastModelRunInventory.EnsCoord ec : ensCoords) {
       if (ec.getId().equals(id))
         return ec;
     }
     return null;
-   }
+  }
 
   //////////////////////////////////////////////////////////////////////////////////
 
@@ -482,6 +501,7 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
 
   /**
    * Create an XML document for the entire collection
+   *
    * @return an XML document for the entire collection
    */
   public Document makeDefinitionXML() {
@@ -505,7 +525,7 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
       int[] ensTypes = ec.getEnsTypes(); //new int[ ec.getNEnsembles() ];
       for (int j = 0; j < ensTypes.length; j++) {
         if (j > 0) sbuff.append(" ");
-        sbuff.append(Integer.toString( ensTypes[j]));
+        sbuff.append(Integer.toString(ensTypes[j]));
 
       }
       ecElem.addContent(sbuff.toString());
@@ -601,7 +621,7 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
     File xml = new File(xmlLocation);
     if (!xml.exists()) return false;
 
-    InputStream is = new BufferedInputStream( new FileInputStream( xmlLocation));
+    InputStream is = new BufferedInputStream(new FileInputStream(xmlLocation));
     org.jdom.Document doc;
     try {
       SAXBuilder builder = new SAXBuilder();
@@ -620,14 +640,14 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
       ForecastModelRunInventory.EnsCoord ec = new ForecastModelRunInventory.EnsCoord();
       ec.setId(ecElem.getAttributeValue("id"));
       ec.setName(ecElem.getAttributeValue("name"));
-      ec.setPDN(Integer.parseInt( ecElem.getAttributeValue("product_definition")));
+      ec.setPDN(Integer.parseInt(ecElem.getAttributeValue("product_definition")));
 
       // parse the values
       String values = ecElem.getText();
       StringTokenizer stoke = new StringTokenizer(values);
       int n = stoke.countTokens();
-      ec.setNEnsembles( n );
-      int[] ensType = new int[ n ] ;
+      ec.setNEnsembles(n);
+      int[] ensType = new int[n];
       int count = 0;
       while (stoke.hasMoreTokens()) {
         String toke = stoke.nextToken();
@@ -636,8 +656,8 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
           ensType[count] = Integer.parseInt(toke);
         count++;
       }
-      ec.setEnsTypes( ensType ) ;
-      ensCoords.add( ec );
+      ec.setEnsTypes(ensType);
+      ensCoords.add(ec);
     }
 
 
@@ -739,7 +759,7 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
         String name = varElem.getAttributeValue("name");
         Grid grid = new Grid(name);
         rseq.vars.add(grid);
-        grid.ec =  findEnsCoord( varElem.getAttributeValue("ensCoord"));
+        grid.ec = findEnsCoord(varElem.getAttributeValue("ensCoord"));
         //grid.ec = ForecastModelRunInventory.findEnsCoord(ensCoords, varElem.getAttributeValue("ensCoord"));
         grid.vtc = findVertCoord(varElem.getAttributeValue("vertCoord"));
 
@@ -774,7 +794,7 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
     this.vertTimeCoords = new ArrayList<VertTimeCoord>();
     for (int i = 0; i < fmrc.getVertCoords().size(); i++) {
       ForecastModelRunInventory.VertCoord vc = fmrc.getVertCoords().get(i);
-      vertTimeCoords.add( new VertTimeCoord(vc));
+      vertTimeCoords.add(new VertTimeCoord(vc));
     }
 
     this.runSequences = new ArrayList<RunSeq>();
@@ -816,7 +836,7 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
         if (uv.vertCoordUnion != null)
           grid.vtc = new VertTimeCoord(uv.vertCoordUnion);
         if (uv.ensCoordUnion != null)
-          grid.ec =  uv.ensCoordUnion;
+          grid.ec = uv.ensCoordUnion;
       }
     }
 
@@ -825,14 +845,16 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
 
   }
 
-  /** Add just the vertical coord info to the definition
+  /**
+   * Add just the vertical coord info to the definition
+   *
    * @param fmrc the collection inventory
    */
   public void addVertCoordsFromCollectionInventory(FmrcInventory fmrc) {
     this.vertTimeCoords = new ArrayList<VertTimeCoord>();
     for (int i = 0; i < fmrc.getVertCoords().size(); i++) {
       ForecastModelRunInventory.VertCoord vc = fmrc.getVertCoords().get(i);
-      vertTimeCoords.add( new VertTimeCoord(vc));
+      vertTimeCoords.add(new VertTimeCoord(vc));
     }
 
     // Convert the run sequences, containing variables
@@ -850,20 +872,21 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
     }
   }
 
-    //  utilities - move to fmrc ?
+  //  utilities - move to fmrc ?
   private Calendar cal = new GregorianCalendar(); // for date computations
 
-  private double getHour( Date d) {
-    cal.setTime( d);
+  private double getHour(Date d) {
+    cal.setTime(d);
     int hour = cal.get(Calendar.HOUR_OF_DAY);
     double min = (double) cal.get(Calendar.MINUTE);
-    return hour + min/60;
+    return hour + min / 60;
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
   // ad-hoc manipulations of the definitions
 
   // replace ids
+
   static void convertIds(String datasetName, String defName) throws IOException {
     System.out.println(datasetName);
     ForecastModelRunInventory fmrInv = ForecastModelRunInventory.open(null, datasetName, ForecastModelRunInventory.OPEN_FORCE_NEW, true);
@@ -874,7 +897,7 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
     boolean changed = false;
 
     // make hashmap
-    Map<String,Grid> hash = new HashMap<String,Grid>();
+    Map<String, Grid> hash = new HashMap<String, Grid>();
     for (RunSeq runSeq : fmrDef.runSequences) {
       for (Grid gridDef : runSeq.vars) {
         String munged = StringUtil.replace(gridDef.name, '_', "");
@@ -905,13 +928,14 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
 
     if (changed) {
       int pos = defName.lastIndexOf("/");
-      String newDef = defName.substring(0,pos) + "/new/" + defName.substring(pos);
-      FileOutputStream fout = new FileOutputStream( newDef);
-      fmrDef.writeDefinitionXML( fout);
+      String newDef = defName.substring(0, pos) + "/new/" + defName.substring(pos);
+      FileOutputStream fout = new FileOutputStream(newDef);
+      fmrDef.writeDefinitionXML(fout);
     }
   }
 
   static boolean showState = false;
+
   static void convert(String datasetName, String defName) throws IOException {
     System.out.println(datasetName);
     ForecastModelRunInventory fmrInv = ForecastModelRunInventory.open(null, datasetName, ForecastModelRunInventory.OPEN_FORCE_NEW, true);
@@ -936,7 +960,7 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
         //}
       }
     }
-    Collections.sort( fmrDef.vertTimeCoords);
+    Collections.sort(fmrDef.vertTimeCoords);
 
     // reset vert id on grids
     for (RunSeq runSeq : fmrDef.runSequences) {
@@ -959,11 +983,11 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
     }
 
     int pos = defName.lastIndexOf("/");
-    String newDef = defName.substring(0,pos) + "/new/" + defName.substring(pos);
-    FileOutputStream fout = new FileOutputStream( newDef);
-    fmrDef.writeDefinitionXML( fout);
+    String newDef = defName.substring(0, pos) + "/new/" + defName.substring(pos);
+    FileOutputStream fout = new FileOutputStream(newDef);
+    fmrDef.writeDefinitionXML(fout);
 
-            // make sure each grid in fmrInv is also in fmrDef
+    // make sure each grid in fmrInv is also in fmrDef
     List<ForecastModelRunInventory.TimeCoord> fmrInvTimeCoords = fmrInv.getTimeCoords();
     for (ForecastModelRunInventory.TimeCoord tc : fmrInvTimeCoords) {
       List<ForecastModelRunInventory.Grid> fmrInvGrids = tc.getGrids();
@@ -996,7 +1020,7 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
     }
   }
 
-  static void showVertCoords(String datasetName, String defName ) throws IOException {
+  static void showVertCoords(String datasetName, String defName) throws IOException {
     System.out.println("--------------------------------------");
     System.out.println(defName);
     FmrcDefinition fmrDef = new FmrcDefinition();
@@ -1041,47 +1065,60 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
   }
 
   public static String[] fmrcDatasets = {
-    "NCEP/GFS/Alaska_191km",
-    "NCEP/GFS/CONUS_80km",
-    "NCEP/GFS/CONUS_95km",
-    "NCEP/GFS/CONUS_191km",
-    "NCEP/GFS/Global_0p5deg",
-    "NCEP/GFS/Global_onedeg",
-    "NCEP/GFS/Global_2p5deg",
-    "NCEP/GFS/Hawaii_160km",
-    "NCEP/GFS/N_Hemisphere_381km",
-    "NCEP/GFS/Puerto_Rico_191km",
-    "NCEP/GFS/Global_1p0deg_Ensemble",
+          "NCEP/GFS/Alaska_191km",
+          "NCEP/GFS/CONUS_80km",
+          "NCEP/GFS/CONUS_95km",
+          "NCEP/GFS/CONUS_191km",
+          "NCEP/GFS/Global_0p5deg",
+          "NCEP/GFS/Global_onedeg",
+          "NCEP/GFS/Global_2p5deg",
+          "NCEP/GFS/Hawaii_160km",
+          "NCEP/GFS/N_Hemisphere_381km",
+          "NCEP/GFS/Puerto_Rico_191km",
 
-    "NCEP/NAM/Alaska_11km",
-    "NCEP/NAM/Alaska_22km",
-    "NCEP/NAM/Alaska_45km/noaaport",
-    "NCEP/NAM/Alaska_45km/conduit",
-    "NCEP/NAM/Alaska_95km",
-    "NCEP/NAM/CONUS_12km",
-    "NCEP/NAM/CONUS_12km/conduit",
-    "NCEP/NAM/CONUS_20km/surface",
-    "NCEP/NAM/CONUS_20km/selectsurface",
-    "NCEP/NAM/CONUS_20km/noaaport",
-    "NCEP/NAM/CONUS_40km/conduit",
-    "NCEP/NAM/CONUS_80km",
-    "NCEP/NAM/Polar_90km",
+          "NCEP/NAM/Alaska_11km",
+          "NCEP/NAM/Alaska_22km",
+          "NCEP/NAM/Alaska_45km/noaaport",
+          "NCEP/NAM/Alaska_45km/conduit",
+          "NCEP/NAM/Alaska_95km",
+          "NCEP/NAM/CONUS_12km/conduit",
+          "NCEP/NAM/CONUS_20km/surface",
+          "NCEP/NAM/CONUS_20km/selectsurface",
+          "NCEP/NAM/CONUS_20km/noaaport",
+          "NCEP/NAM/CONUS_40km/conduit",
+          "NCEP/NAM/CONUS_80km",
+          "NCEP/NAM/Polar_90km",
 
-    "NCEP/RUC2/CONUS_20km/surface",
-    "NCEP/RUC2/CONUS_20km/pressure",
-    "NCEP/RUC2/CONUS_20km/hybrid",
-    "NCEP/RUC2/CONUS_40km",
-    "NCEP/RUC/CONUS_80km",
+          "NCEP/RUC2/CONUS_20km/surface",
+          "NCEP/RUC2/CONUS_20km/pressure",
+          "NCEP/RUC2/CONUS_20km/hybrid",
+          "NCEP/RUC2/CONUS_40km",
+          "NCEP/RUC/CONUS_80km",
 
-    "NCEP/DGEX/CONUS_12km",
-    "NCEP/DGEX/Alaska_12km",
+          "NCEP/DGEX/CONUS_12km",
+          "NCEP/DGEX/Alaska_12km",
 
-    "NCEP/SREF/CONUS_40km/ensprod",
-    "NCEP/SREF/CONUS_40km/ensprod_biasc",
-    "NCEP/SREF/Alaska_45km/ensprod",
-    "NCEP/SREF/PacificNE_0p4/ensprod",
+          /*
+          "NCEP/GEFS/Global_1p0deg_Ensemble/derived",
+          "NCEP/GEFS/Global_1p0deg_Ensemble/member",
+          */
 
-    "NCEP/NDFD/CONUS_5km",
+          "NCEP/SREF/CONUS_40km/ensprod",
+          "NCEP/SREF/CONUS_40km/ensprod_biasc",
+          /* "NCEP/SREF/CONUS_40km/pgrb_biasc", */
+          "NCEP/SREF/Alaska_45km/ensprod",
+          "NCEP/SREF/PacificNE_0p4/ensprod",
+
+          "NCEP/NDFD/CONUS_5km",
+
+          "NCEP/WW3/Alaskan_4minute",
+          "NCEP/WW3/Alaskan_10minute",
+          "NCEP/WW3/Atlantic_4minute",
+          "NCEP/WW3/Atlantic_10minute",
+          "NCEP/WW3/EasternPacific_10minute",
+          "NCEP/WW3/Global_30minute",
+          "NCEP/WW3/WestCoast_4minute",
+          "NCEP/WW3/WestCoast_10minute",
   };
 
 
@@ -1089,13 +1126,13 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
   private static String[] fmrcDefinitionFiles;
 
   public static String[] getDefinitionFiles() {
-   if (fmrcDefinitionFiles == null) {
-     fmrcDefinitionFiles = new String[ fmrcDatasets.length];
-     int count = 0;
-     for (String ds : fmrcDatasets) {
-       fmrcDefinitionFiles[count++] = fmrcDefinitionDir + StringUtil.replace(ds, '/', "-") + ".fmrcDefinition.xml";
-     }
-   }
+    if (fmrcDefinitionFiles == null) {
+      fmrcDefinitionFiles = new String[fmrcDatasets.length];
+      int count = 0;
+      for (String ds : fmrcDatasets) {
+        fmrcDefinitionFiles[count++] = fmrcDefinitionDir + StringUtil.replace(ds, '/', "-") + ".fmrcDefinition.xml";
+      }
+    }
     return fmrcDefinitionFiles;
   }
 
@@ -1103,48 +1140,48 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   private static String[] exampleFiles = {
-    /* "R:/testdata/motherlode/grid/GFS_Alaska_191km_20060802_1200.grib1", "R:/testdata/motherlode/grid/modelDefs/NCEP-GFS-Alaska_191km.fmrcDefinition.xml",
-    "R:/testdata/motherlode/grid/GFS_CONUS_80km_20060802_0600.grib1", "R:/testdata/motherlode/grid/modelDefs/NCEP-GFS-CONUS_80km.fmrcDefinition.xml",
-    "R:/testdata/motherlode/grid/GFS_CONUS_191km_20060802_0000.grib1", "R:/testdata/motherlode/grid/modelDefs/NCEP-GFS-CONUS_191km.fmrcDefinition.xml",
-    "R:/testdata/motherlode/grid/GFS_CONUS_95km_20060802_0000.grib1", "R:/testdata/motherlode/grid/modelDefs/NCEP-GFS-CONUS_95km.fmrcDefinition.xml",
-    "R:/testdata/motherlode/grid/GFS_Global_2p5deg_20060801_1200.grib1", "R:/testdata/motherlode/grid/modelDefs/NCEP-GFS-Global_2p5deg.fmrcDefinition.xml",
-    "R:/testdata/motherlode/grid/GFS_Global_onedeg_20060802_0600.grib1", "R:/testdata/motherlode/grid/modelDefs/NCEP-GFS-Global_onedeg.fmrcDefinition.xml",
-    "R:/testdata/motherlode/grid/GFS_Hawaii_160km_20060730_0000.grib1", "R:/testdata/motherlode/grid/modelDefs/NCEP-GFS-Hawaii_160km.fmrcDefinition.xml",
-    "R:/testdata/motherlode/grid/GFS_N_Hemisphere_381km_20060801_0000.grib1", "R:/testdata/motherlode/grid/modelDefs/NCEP-GFS-N_Hemisphere_381km.fmrcDefinition.xml",
-    "R:/testdata/motherlode/grid/GFS_Puerto_Rico_191km_20060731_0000.grib1", "R:/testdata/motherlode/grid/modelDefs/NCEP-GFS-Puerto_Rico_191km.fmrcDefinition.xml",
+          /* "R:/testdata/motherlode/grid/GFS_Alaska_191km_20060802_1200.grib1", "R:/testdata/motherlode/grid/modelDefs/NCEP-GFS-Alaska_191km.fmrcDefinition.xml",
+      "R:/testdata/motherlode/grid/GFS_CONUS_80km_20060802_0600.grib1", "R:/testdata/motherlode/grid/modelDefs/NCEP-GFS-CONUS_80km.fmrcDefinition.xml",
+      "R:/testdata/motherlode/grid/GFS_CONUS_191km_20060802_0000.grib1", "R:/testdata/motherlode/grid/modelDefs/NCEP-GFS-CONUS_191km.fmrcDefinition.xml",
+      "R:/testdata/motherlode/grid/GFS_CONUS_95km_20060802_0000.grib1", "R:/testdata/motherlode/grid/modelDefs/NCEP-GFS-CONUS_95km.fmrcDefinition.xml",
+      "R:/testdata/motherlode/grid/GFS_Global_2p5deg_20060801_1200.grib1", "R:/testdata/motherlode/grid/modelDefs/NCEP-GFS-Global_2p5deg.fmrcDefinition.xml",
+      "R:/testdata/motherlode/grid/GFS_Global_onedeg_20060802_0600.grib1", "R:/testdata/motherlode/grid/modelDefs/NCEP-GFS-Global_onedeg.fmrcDefinition.xml",
+      "R:/testdata/motherlode/grid/GFS_Hawaii_160km_20060730_0000.grib1", "R:/testdata/motherlode/grid/modelDefs/NCEP-GFS-Hawaii_160km.fmrcDefinition.xml",
+      "R:/testdata/motherlode/grid/GFS_N_Hemisphere_381km_20060801_0000.grib1", "R:/testdata/motherlode/grid/modelDefs/NCEP-GFS-N_Hemisphere_381km.fmrcDefinition.xml",
+      "R:/testdata/motherlode/grid/GFS_Puerto_Rico_191km_20060731_0000.grib1", "R:/testdata/motherlode/grid/modelDefs/NCEP-GFS-Puerto_Rico_191km.fmrcDefinition.xml",
 
-    "R:/testdata/motherlode/grid/NAM_Alaska_22km_20060731_1200.grib1", "R:/testdata/motherlode/grid/modelDefs/NCEP-NAM-Alaska_22km.fmrcDefinition.xml",
-    "R:/testdata/motherlode/grid/NAM_Alaska_45km_conduit_20060801_0000.grib1", "R:/testdata/motherlode/grid/modelDefs/NCEP-NAM-Alaska_45km-conduit.fmrcDefinition.xml",
-    "R:/testdata/motherlode/grid/NAM_Alaska_45km_noaaport_20060730_0000.grib1", "R:/testdata/motherlode/grid/modelDefs/NCEP-NAM-Alaska_45km-noaaport.fmrcDefinition.xml",
-    "R:/testdata/motherlode/grid/NAM_Alaska_95km_20060801_0000.grib1", "R:/testdata/motherlode/grid/modelDefs/NCEP-NAM-Alaska_95km.fmrcDefinition.xml",
-    "R:/testdata/motherlode/grid/NAM_CONUS_20km_noaaport_20060731_0600.grib1", "R:/testdata/motherlode/grid/modelDefs/NCEP-NAM-CONUS_20km-noaaport.fmrcDefinition.xml",
-    "R:/testdata/motherlode/grid/NAM_CONUS_20km_selectsurface_20060801_0600.grib1", "R:/testdata/motherlode/grid/modelDefs/NCEP-NAM-CONUS_20km-selectsurface.fmrcDefinition.xml",
-    "R:/testdata/motherlode/grid/NAM_CONUS_20km_surface_20060801_0000.grib1", "R:/testdata/motherlode/grid/modelDefs/NCEP-NAM-CONUS_20km-surface.fmrcDefinition.xml",
-    "R:/testdata/motherlode/grid/NAM_CONUS_40km_conduit_20060801_0600.grib1", "R:/testdata/motherlode/grid/modelDefs/NCEP-NAM-CONUS_40km-conduit.fmrcDefinition.xml",
-    "R:/testdata/motherlode/grid/NAM_CONUS_40km_noaaport_20060731_1800.grib1", "R:/testdata/motherlode/grid/modelDefs/NCEP-NAM-CONUS_40km-noaaport.fmrcDefinition.xml",
-    "R:/testdata/motherlode/grid/NAM_CONUS_80km_20060728_1200.grib1", "R:/testdata/motherlode/grid/modelDefs/NCEP-NAM-CONUS_80km.fmrcDefinition.xml",
-    "R:/testdata/motherlode/grid/NAM_Polar_90km_20060730_0000.grib1", "R:/testdata/motherlode/grid/modelDefs/NCEP-NAM-Polar_90km.fmrcDefinition.xml",
+      "R:/testdata/motherlode/grid/NAM_Alaska_22km_20060731_1200.grib1", "R:/testdata/motherlode/grid/modelDefs/NCEP-NAM-Alaska_22km.fmrcDefinition.xml",
+      "R:/testdata/motherlode/grid/NAM_Alaska_45km_conduit_20060801_0000.grib1", "R:/testdata/motherlode/grid/modelDefs/NCEP-NAM-Alaska_45km-conduit.fmrcDefinition.xml",
+      "R:/testdata/motherlode/grid/NAM_Alaska_45km_noaaport_20060730_0000.grib1", "R:/testdata/motherlode/grid/modelDefs/NCEP-NAM-Alaska_45km-noaaport.fmrcDefinition.xml",
+      "R:/testdata/motherlode/grid/NAM_Alaska_95km_20060801_0000.grib1", "R:/testdata/motherlode/grid/modelDefs/NCEP-NAM-Alaska_95km.fmrcDefinition.xml",
+      "R:/testdata/motherlode/grid/NAM_CONUS_20km_noaaport_20060731_0600.grib1", "R:/testdata/motherlode/grid/modelDefs/NCEP-NAM-CONUS_20km-noaaport.fmrcDefinition.xml",
+      "R:/testdata/motherlode/grid/NAM_CONUS_20km_selectsurface_20060801_0600.grib1", "R:/testdata/motherlode/grid/modelDefs/NCEP-NAM-CONUS_20km-selectsurface.fmrcDefinition.xml",
+      "R:/testdata/motherlode/grid/NAM_CONUS_20km_surface_20060801_0000.grib1", "R:/testdata/motherlode/grid/modelDefs/NCEP-NAM-CONUS_20km-surface.fmrcDefinition.xml",
+      "R:/testdata/motherlode/grid/NAM_CONUS_40km_conduit_20060801_0600.grib1", "R:/testdata/motherlode/grid/modelDefs/NCEP-NAM-CONUS_40km-conduit.fmrcDefinition.xml",
+      "R:/testdata/motherlode/grid/NAM_CONUS_40km_noaaport_20060731_1800.grib1", "R:/testdata/motherlode/grid/modelDefs/NCEP-NAM-CONUS_40km-noaaport.fmrcDefinition.xml",
+      "R:/testdata/motherlode/grid/NAM_CONUS_80km_20060728_1200.grib1", "R:/testdata/motherlode/grid/modelDefs/NCEP-NAM-CONUS_80km.fmrcDefinition.xml",
+      "R:/testdata/motherlode/grid/NAM_Polar_90km_20060730_0000.grib1", "R:/testdata/motherlode/grid/modelDefs/NCEP-NAM-Polar_90km.fmrcDefinition.xml",
 
-    "R:/testdata/motherlode/grid/RUC2_CONUS_20km_hybrid_20060802_2100.grib1", "R:/testdata/motherlode/grid/modelDefs/NCEP-RUC2-CONUS_20km-hybrid.fmrcDefinition.xml",
-    "R:/testdata/motherlode/grid/RUC2_CONUS_20km_pressure_20060802_2000.grib1", "R:/testdata/motherlode/grid/modelDefs/NCEP-RUC2-CONUS_20km-pressure.fmrcDefinition.xml",
-    "R:/testdata/motherlode/grid/RUC2_CONUS_20km_surface_20060802_1700.grib1", "R:/testdata/motherlode/grid/modelDefs/NCEP-RUC2-CONUS_20km-surface.fmrcDefinition.xml",
-    "R:/testdata/motherlode/grid/RUC_CONUS_40km_20060802_2000.grib1", "R:/testdata/motherlode/grid/modelDefs/NCEP-RUC-CONUS_40km.fmrcDefinition.xml", //
-    "R:/testdata/motherlode/grid/RUC_CONUS_80km_20060802_2000.grib1", "R:/testdata/motherlode/grid/modelDefs/NCEP-RUC-CONUS_80km.fmrcDefinition.xml",
+      "R:/testdata/motherlode/grid/RUC2_CONUS_20km_hybrid_20060802_2100.grib1", "R:/testdata/motherlode/grid/modelDefs/NCEP-RUC2-CONUS_20km-hybrid.fmrcDefinition.xml",
+      "R:/testdata/motherlode/grid/RUC2_CONUS_20km_pressure_20060802_2000.grib1", "R:/testdata/motherlode/grid/modelDefs/NCEP-RUC2-CONUS_20km-pressure.fmrcDefinition.xml",
+      "R:/testdata/motherlode/grid/RUC2_CONUS_20km_surface_20060802_1700.grib1", "R:/testdata/motherlode/grid/modelDefs/NCEP-RUC2-CONUS_20km-surface.fmrcDefinition.xml",
+      "R:/testdata/motherlode/grid/RUC_CONUS_40km_20060802_2000.grib1", "R:/testdata/motherlode/grid/modelDefs/NCEP-RUC-CONUS_40km.fmrcDefinition.xml", //
+      "R:/testdata/motherlode/grid/RUC_CONUS_80km_20060802_2000.grib1", "R:/testdata/motherlode/grid/modelDefs/NCEP-RUC-CONUS_80km.fmrcDefinition.xml",
 
-    "R:/testdata/motherlode/grid/DGEX_Alaska_12km_20060731_0000.grib2", "R:/testdata/motherlode/grid/modelDefs/NCEP-DGEX-Alaska_12km.fmrcDefinition.xml",
-    "R:/testdata/motherlode/grid/DGEX_CONUS_12km_20060730_1800.grib2", "R:/testdata/motherlode/grid/modelDefs/NCEP-DGEX-CONUS_12km.fmrcDefinition.xml",
-    "R:/testdata/motherlode/grid/GFS_Global_0p5deg_20060726_0600.grib2", "R:/testdata/motherlode/grid/modelDefs/NCEP-GFS-Global_0p5deg.fmrcDefinition.xml",
-    "R:/testdata/motherlode/grid/NAM_Alaska_11km_20060802_1200.grib2", "R:/testdata/motherlode/grid/modelDefs/NCEP-NAM-Alaska_11km.fmrcDefinition.xml",
-    "R:/testdata/motherlode/grid/NAM_CONUS_12km_20060801_1200.grib2", "R:/testdata/motherlode/grid/modelDefs/NCEP-NAM-CONUS_12km.fmrcDefinition.xml",
-    "R:/testdata/motherlode/grid/NDFD_CONUS_5km_20060731_1200.grib2", "R:/testdata/motherlode/grid/modelDefs/NCEP-NDFD-CONUS_5km.fmrcDefinition.xml",  // */
+      "R:/testdata/motherlode/grid/DGEX_Alaska_12km_20060731_0000.grib2", "R:/testdata/motherlode/grid/modelDefs/NCEP-DGEX-Alaska_12km.fmrcDefinition.xml",
+      "R:/testdata/motherlode/grid/DGEX_CONUS_12km_20060730_1800.grib2", "R:/testdata/motherlode/grid/modelDefs/NCEP-DGEX-CONUS_12km.fmrcDefinition.xml",
+      "R:/testdata/motherlode/grid/GFS_Global_0p5deg_20060726_0600.grib2", "R:/testdata/motherlode/grid/modelDefs/NCEP-GFS-Global_0p5deg.fmrcDefinition.xml",
+      "R:/testdata/motherlode/grid/NAM_Alaska_11km_20060802_1200.grib2", "R:/testdata/motherlode/grid/modelDefs/NCEP-NAM-Alaska_11km.fmrcDefinition.xml",
+      "R:/testdata/motherlode/grid/NAM_CONUS_12km_20060801_1200.grib2", "R:/testdata/motherlode/grid/modelDefs/NCEP-NAM-CONUS_12km.fmrcDefinition.xml",
+      "R:/testdata/motherlode/grid/NDFD_CONUS_5km_20060731_1200.grib2", "R:/testdata/motherlode/grid/modelDefs/NCEP-NDFD-CONUS_5km.fmrcDefinition.xml",  // */
 
-     "R:/testdata/motherlode/grid/RUC2_CONUS_20km_surface_20060825_1400.grib2", "R:/testdata/motherlode/grid/modelDefs/NCEP-RUC2-CONUS_20km-surface.fmrcDefinition.xml",
+          "R:/testdata/motherlode/grid/RUC2_CONUS_20km_surface_20060825_1400.grib2", "R:/testdata/motherlode/grid/modelDefs/NCEP-RUC2-CONUS_20km-surface.fmrcDefinition.xml",
 
   };
 
   public static void main(String args[]) throws IOException {
-    for (int i = 0; i < exampleFiles.length; i+=2)
-      convertIds(exampleFiles[i], exampleFiles[i+1]);
+    for (int i = 0; i < exampleFiles.length; i += 2)
+      convertIds(exampleFiles[i], exampleFiles[i + 1]);
 
     //for (int i = 0; i < defs.length; i+=2)
     //  showVertCoords(defs[i], defs[i+1]);

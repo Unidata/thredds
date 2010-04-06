@@ -300,7 +300,6 @@ public class DatasetCollectionManager implements CollectionManager {
       if (newDataset == null) {
         ndelete++;
         if (logger.isDebugEnabled()) logger.debug(collectionName+": rescan found deleted Dataset= " + path);
-        break;
       }
     }
 

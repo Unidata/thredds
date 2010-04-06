@@ -4,12 +4,15 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.2:
  2:
+  robert.bridle improvements on FileWriter
+  NetcdfFileWritable: check for record variable on rewrite, unlimited dimension must be first
+  Aggregation.closeDataset() : dont null out the dataset list.
   StringUtil.split()
   refactor Fmrc implementation to eliminate retained fmrcInv, orgVar..
   ucar.nc2.util.NamedAnything
   CoordinateAxis1D: defer constructing edge, bounds arrays.
   GridCoordSys: defer constructing times, levels arrays.
- 1:
+ 1: (2010-03-29)
   try to get IndexConstant right
   Section.reduce()
   EnumTypedef is immutable

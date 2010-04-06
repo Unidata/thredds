@@ -263,7 +263,7 @@ public class TimeCoord implements Comparable {
 
     int counto = 0;
     double[] offs = new double[offsetList.size()];
-    for (double off : offsets) offs[counto++] = off;
+    for (double off : offsetList) offs[counto++] = off;
 
     // make the resulting time coord
     TimeCoord result = new TimeCoord(baseDate);

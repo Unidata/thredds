@@ -252,11 +252,43 @@ public class FileWriter {
       long size = oldVar.getSize() * oldVar.getElementSize();
       total += size;
 
+      // robert.bridle@csiro.au<mailto:robert.bridle@csiro.au> | www.csiro.au
+      // 03/29/2010
+///////////// ORIGINAL CODE //////////////////////
       int nelems = (int) (size / maxSize);
       if (nelems <= 1)
         copyAll(ncfile, oldVar);
       else
         copySome(ncfile, oldVar, nelems);
+////////////////////////////////////////////////////
+
+////////////// PROPOSED CODE //////////////////////
+/*      if(size > maxSize)
+      {
+        int[] shape = oldVar.getShape();
+
+        // determine the size of all the dimensions, other than the first.
+        long sizeOfOtherDimensions = 1;
+        for (int i = 1; i < shape.length; i++) {
+          if (shape[i] >= 0)
+            sizeOfOtherDimensions *= shape[i];
+        }
+
+        // determine number of bytes in all the dimensions, other than the first.
+        long bytesInOtherDimensions = sizeOfOtherDimensions * oldVar.getElementSize();
+
+        // first dimension chunk-size that will fit within maxSize of memory.
+        int firstDimensionChunkSize = (int) (maxSize/bytesInOtherDimensions);
+        //System.out.println("We can fit: " + firstDimensionChunkSize + " chunks in: " + maxSize + " bytes of memory.");
+
+        copySome(ncfile, oldVar, firstDimensionChunkSize);
+      }
+      else
+      {
+        copyAll(ncfile, oldVar);
+      }    */
+////////////////////////////////////////////////////
+
     }
 
     // write record data

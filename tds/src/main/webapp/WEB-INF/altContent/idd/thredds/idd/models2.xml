@@ -80,8 +80,10 @@
         <collection spec="/data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km/GFS_Alaska_191km_#yyyyMMdd_HHmm#.grib1"
                     recheckEvery="15 min"
                     olderThan="5 min"/>
-        <protoDataset choice="Penultimate" change="2 3 * * ?"/>
-        <fmrcConfig regularize="true"/>
+        <manage deleteAfter="45 days" check="0 0 3 * * ? *" />
+        <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
+        <update startup="true" change="0 5 3 * * ? *" />
+        <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs" />
       </featureCollection>
 
       <featureCollection name="NCEP-GFS-CONUS_80km" featureType="FMRC" harvest="true" path="ft/NCEP/GFS/CONUS_80km">

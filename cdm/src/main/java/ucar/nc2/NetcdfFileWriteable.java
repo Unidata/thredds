@@ -413,6 +413,15 @@ public class NetcdfFileWriteable extends NetcdfFile {
     if (!valid.contains(dataType))
       throw new IllegalArgumentException("illegal dataType for netcdf-3 format: "+dataType);
 
+    // check unlimited
+    int count = 0;
+    for (Dimension d : dims) {
+      if (d.isUnlimited())
+        if (count != 0)
+          throw new IllegalArgumentException("Unlimited dimension "+d+" must be first instead its  ="+count);
+      count++;
+    }
+
     Variable v = new Variable(this, rootGroup, null, varName);
     v.setDataType(dataType);
     v.setDimensions(dims);
@@ -649,12 +658,24 @@ public class NetcdfFileWriteable extends NetcdfFile {
     if (oldFile.hasUnlimitedDimension()) {
       oldFile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
       recordVar = (Structure) oldFile.findVariable("record");
+      /* if (recordVar != null) {
+        Boolean result = (Boolean) spiw.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
+        if (!result)
+          recordVar = null;
+      } */
     }
 
     // create new file with current set of objects
     spiw.create(location, this, extraHeader, preallocateSize, isLargeFile);
     spiw.setFill( fill);
     //isClosed = false;
+
+    // wait till header is written before adding the record variable to the file
+    if (recordVar != null) {
+      Boolean result = (Boolean) spiw.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
+      if (!result)
+        recordVar = null;
+    }
 
     // copy old file to new
     List<Variable> oldList = new ArrayList<Variable>(getVariables().size());

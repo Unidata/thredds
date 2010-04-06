@@ -209,7 +209,6 @@ public class Fmrc {
       try {
         FmrcInv fmrc = makeFmrcInv(null);
         fmrcDataset.make(fmrc, forceProto, result);
-        System.out.printf("YOW%n");
       } catch (Throwable t) {
         t.printStackTrace();
         throw new RuntimeException(t);  
