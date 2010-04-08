@@ -23,7 +23,7 @@
     </orderEntry>
     <orderEntry type="module" module-name="common" exported="" />
     <orderEntry type="module" module-name="unidataCommon" exported="" />
-    <orderEntry type="module" module-name="grib" />
+    <orderEntry type="module" module-name="grib" exported="" />
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>

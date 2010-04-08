@@ -37,8 +37,8 @@
   </appender>
 
   <!-- keep track of Cache messages in a seperate file. -->
-  <appender name="ftScan" class="org.apache.log4j.RollingFileAppender">
-    <param name="File" value="${tds.log.dir}/ftScan.log"/>
+  <appender name="fcScan" class="org.apache.log4j.RollingFileAppender">
+    <param name="File" value="${tds.log.dir}/featureCollectionScan.log"/>
     <param name="MaxFileSize" value="1MB"/>
     <param name="MaxBackupIndex" value="2"/>
     <param name="Append" value="false"/>
@@ -142,7 +142,17 @@
 
   <logger name="thredds.inventory.DatasetCollectionManager" additivity="false">
     <level value="INFO"/>
-    <appender-ref ref="ftScan"/>
+    <appender-ref ref="fcScan"/>
+  </logger>
+
+  <logger name="ucar.nc2.ft.fmrc.GridDatasetInv" additivity="false">
+    <level value="INFO"/>
+    <appender-ref ref="fcScan"/>
+  </logger>
+
+  <logger name="featureCollectionScan" additivity="false">
+    <level value="INFO"/>
+    <appender-ref ref="fcScan"/>
   </logger>
 
   <!-- end fmrc debuggimg -->

@@ -32,6 +32,8 @@
             <element id="dir-copy" path="$PROJECT_DIR$/../../cdm/src/main/resources" />
             <element id="module-output" name="common" />
             <element id="module-output" name="unidataCommon" />
+            <element id="module-output" name="grib" />
+            <element id="dir-copy" path="$PROJECT_DIR$/../../../grib/resources" />
           </element>
           <element id="directory" name="lib">
             <element id="file-copy" path="$PROJECT_DIR$/../../lib/release/bufrTables-2.0.jar" />
@@ -78,6 +80,9 @@
             <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/protobuf-java-2.1.0.jar" />
             <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/easymock-2.5.2.jar" />
             <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/je-4.0.71.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/jpeg-1.0.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/jpeg2000.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/quartz-1.7.3.jar" />
           </element>
         </element>
       </root>

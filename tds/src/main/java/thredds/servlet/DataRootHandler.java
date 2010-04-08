@@ -32,11 +32,13 @@
  */
 package thredds.servlet;
 
+import org.quartz.*;
 import thredds.catalog.*;
 import thredds.crawlabledataset.CrawlableDataset;
 import thredds.crawlabledataset.CrawlableDatasetFile;
 import thredds.crawlabledataset.CrawlableDatasetDods;
 import thredds.cataloggen.ProxyDatasetHandler;
+import thredds.inventory.FeatureCollection;
 import thredds.server.config.TdsContext;
 import thredds.util.PathAliasReplacement;
 import thredds.util.StartsWithPathAliasReplacement;
@@ -50,6 +52,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.ServletException;
+import java.text.ParseException;
 import java.util.*;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -73,6 +76,7 @@ import org.springframework.util.StringUtils;
 public class DataRootHandler {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DataRootHandler.class);
   static private org.slf4j.Logger logCatalogInit = org.slf4j.LoggerFactory.getLogger(DataRootHandler.class.getName() + ".catalogInit");
+  static private org.slf4j.Logger logScan = org.slf4j.LoggerFactory.getLogger("featureCollectionScan");
 
   // dont need to Guard/synchronize singleton, since creation and publication is only done by a servlet init() and therefore only in one thread (per ClassLoader).
   static private DataRootHandler singleton = null;
@@ -130,6 +134,7 @@ public class DataRootHandler {
   public DataRootHandler(TdsContext tdsContext) {
     this.tdsContext = tdsContext;
     this.staticCatalogHash = new HashMap<String, InvCatalogImpl>();
+    initScheduler();
   }
 
   private PathAliasReplacement contentPathAliasReplacement = null;
@@ -146,6 +151,124 @@ public class DataRootHandler {
   public List<PathAliasReplacement> getDataRootLocationAliasExpanders() {
     return Collections.unmodifiableList(this.dataRootLocAliasExpanders);
   }
+
+  /////////////////////
+  // could use Spring DI
+  private org.quartz.Scheduler scheduler = null;
+  public void initScheduler() {
+    SchedulerFactory schedFact = new org.quartz.impl.StdSchedulerFactory();
+    try {
+      scheduler = schedFact.getScheduler();
+      scheduler.start();
+      logScan.info(scheduler.getMetaData().toString());
+      
+    } catch (SchedulerException e) {
+      logCatalogInit.error("cronExecutor failed to initialize", e);
+      scheduler = null;
+    }
+  }
+
+  private static final String FC_NAME= "fc";
+  private void scheduleTasks(InvDatasetFeatureCollection invFeatCollection) {
+    if (scheduler == null) return;
+    FeatureCollection.Config config = invFeatCollection.getConfig();
+
+    JobDetail updateJob = new JobDetail(config.spec, "FMRC", ScanFmrcJob.class);
+    org.quartz.JobDataMap map = new org.quartz.JobDataMap();
+    map.put(FC_NAME, invFeatCollection);
+    updateJob.setJobDataMap(map);
+
+    FeatureCollection.UpdateConfig update = config.updateConfig;
+    if (update.startup) {
+      // wait 30 secs to trigger
+      Date runTime = new Date(new Date().getTime() + 30 * 1000);
+      Trigger trigger0 = new SimpleTrigger(config.spec, "startup", runTime);
+      try {
+        scheduler.scheduleJob(updateJob, trigger0);
+        logScan.info("Schedule startup scan for "+config.spec+" at "+ runTime);
+      } catch (SchedulerException e) {
+        logCatalogInit.error("cronExecutor failed to schedule startup Job", e);
+        e.printStackTrace();
+      }
+    }
+
+    if (update.rescan != null) {
+      try {
+        Trigger trigger1 = new CronTrigger(config.spec, "rescan", update.rescan);
+        if (update.startup) {
+          trigger1.setJobName(updateJob.getName());
+          trigger1.setJobGroup(updateJob.getGroup());
+          scheduler.scheduleJob(trigger1);
+        } else {
+          scheduler.scheduleJob(updateJob, trigger1);
+        }
+        logScan.info("Schedule recurring scan for "+config.spec+" cronExpr="+ update.rescan);
+      } catch (ParseException e) {
+        logCatalogInit.error("cronExecutor failed: bad cron expression= "+ update.rescan, e);
+      } catch (SchedulerException e) {
+        logCatalogInit.error("cronExecutor failed to schedule cron Job", e);
+        e.printStackTrace();
+      }
+    }
+
+   FeatureCollection.ProtoConfig pconfig = config.protoConfig;
+    if (pconfig.change != null) {
+      JobDetail protoJob = new JobDetail(config.spec, "FMRCproto", RereadProtoJob.class);
+      org.quartz.JobDataMap pmap = new org.quartz.JobDataMap();
+      pmap.put(FC_NAME, invFeatCollection);
+      protoJob.setJobDataMap(pmap);
+
+      try {
+        Trigger trigger2 = new CronTrigger(config.spec, "rereadProto", pconfig.change);
+        scheduler.scheduleJob(protoJob, trigger2);
+        logScan.info("Schedule Reread Proto for "+config.spec);
+      } catch (ParseException e) {
+        logCatalogInit.error("cronExecutor failed: RereadProto has bad cron expression= "+ pconfig.change, e);
+      } catch (SchedulerException e) {
+        logCatalogInit.error("cronExecutor failed to schedule RereadProtoJob", e);
+        e.printStackTrace();
+      }
+    }
+
+  }
+
+  public void shutdown() {
+    try {
+      scheduler.shutdown( false);
+    } catch (SchedulerException e) {
+      log.error("Scheduler failed to shutdown", e);
+      scheduler = null;
+      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+    }
+  }
+
+  public static class ScanFmrcJob implements org.quartz.Job {
+    public ScanFmrcJob() {}
+    public void execute(JobExecutionContext context) throws JobExecutionException {
+      try {
+        InvDatasetFeatureCollection fc = (InvDatasetFeatureCollection) context.getJobDetail().getJobDataMap().get(FC_NAME);
+        logScan.info("Trigger scan for "+fc.getName());
+        fc.triggerRescan();
+      } catch (Throwable e) {
+        logScan.error("InitFmrcJob failed", e);
+      }
+    }
+  }
+
+  public static class RereadProtoJob implements org.quartz.Job {
+    public RereadProtoJob() {}
+    public void execute(JobExecutionContext context) throws JobExecutionException {
+      try {
+        InvDatasetFeatureCollection fc = (InvDatasetFeatureCollection) context.getJobDetail().getJobDataMap().get(FC_NAME);
+        logScan.info("Trigger rereadProto for "+fc.getName());
+        fc.triggerProto();
+      } catch (Throwable e) {
+        logScan.error("RereadProtoJob failed", e);
+      }
+    }
+  }
+
+  //////////////////////////////////////////////
 
   public void init() {
     // Initialize any given DataRootLocationAliasExpanders that are TdsConfiguredPathAliasReplacement
@@ -455,6 +578,7 @@ public class DataRootHandler {
       } else if (invDataset instanceof InvDatasetFeatureCollection) {
         InvDatasetFeatureCollection fmrc = (InvDatasetFeatureCollection) invDataset;
         addRoot(fmrc);
+        scheduleTasks(fmrc);
 
         // not a DatasetScan or InvDatasetFmrc
       } else if (invDataset.getNcmlElement() != null) {
@@ -1717,6 +1841,41 @@ public class DataRootHandler {
         } catch (Exception e1) {
           e.pw.println("Error on reinit " + e1.getMessage());
           log.error("Error on reinit " + e1.getMessage());
+        }
+      }
+    };
+    debugHandler.addAction(act);
+
+    act = new DebugHandler.Action("sched", "Show scheduler") {
+      public void doAction(DebugHandler.Event e) {
+        try {
+           e.pw.println(scheduler.getMetaData());
+          String[] groups = scheduler.getJobGroupNames();
+          for (String groupName : groups) {
+            e.pw.println("Group "+groupName);
+            String[] names = scheduler.getJobNames(groupName);
+            for (String name : names) {
+              e.pw.println("  Job "+name);
+              e.pw.println("    "+ scheduler.getJobDetail(name, groupName));
+
+              Trigger[] triggers =  scheduler.getTriggersOfJob(name, groupName);
+              for (Trigger t : triggers)
+                e.pw.println("  Trigger "+t);
+            }
+          }
+
+          String[] triggerGroups = scheduler.getTriggerGroupNames();
+          for (String groupName : triggerGroups) {
+              e.pw.println("Group: " + groupName + " contains the following triggers");
+              String[]  triggersInGroup = scheduler.getTriggerNames(groupName);
+             for (String name : triggersInGroup) {
+                 e.pw.println("- " + name);
+             }
+          }
+
+        } catch (Exception e1) {
+          e.pw.println("Error on scheduler " + e1.getMessage());
+          log.error("Error on scheduler " + e1.getMessage());
         }
       }
     };

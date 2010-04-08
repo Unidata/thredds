@@ -95,6 +95,8 @@ public class TdsConfigContextListener
   public void contextDestroyed( ServletContextEvent event )
   {
     logServerStartup.info( "TdsConfigContextListener.contextDestroyed(): start." + UsageLog.setupNonRequestContext() );
+    DataRootHandler.getInstance().shutdown();
+
     ServletContext servletContext = event.getServletContext();
     WebApplicationContext wac = WebApplicationContextUtils.getRequiredWebApplicationContext( servletContext );
     TdsContext tdsContext = (TdsContext) wac.getBean( "tdsContext", TdsContext.class );
