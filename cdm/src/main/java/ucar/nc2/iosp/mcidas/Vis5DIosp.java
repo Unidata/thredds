@@ -912,12 +912,53 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
             return gds.getParam(gds.PROJ);
         }
 
+        // CF Conventions Global Attributes
+
+        /**
+         * gets the CF title.
+         *
+         * @return title
+         */
+        public final String getTitle() {
+          return "GRID data";
+        }
+
+        /**
+         * Institution for CF conventions
+         *
+         * @return Institution
+         */
+        public String getInstitution() {
+          return null;
+
+        }
+
+        /**
+         * gets the Source, Generating Process or Model.
+         *
+         * @return source
+         */
+        public final String getSource() {
+          return null;
+
+        }
+
+        /**
+         * comment for CF conventions.
+         *
+         * @return comment
+         */
+        public final String getComment() {
+          return null;
+        }
+
         /**
          * Get the grid type for labelling
+         *
          * @return the grid type
          */
         public String getGridType() {
-            return "Vis5D";
+          return "Vis5D";
         }
 
     }
