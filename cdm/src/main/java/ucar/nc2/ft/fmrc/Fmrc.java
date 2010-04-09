@@ -57,7 +57,7 @@ import java.io.IOException;
  */
 @ThreadSafe
 public class Fmrc {
-  public static final String CAT = "catalog:";
+  static private org.slf4j.Logger logScan = org.slf4j.LoggerFactory.getLogger("featureCollectionScan");
 
   /**
    * Factory method
@@ -76,8 +76,8 @@ public class Fmrc {
    * @see "http://www.unidata.ucar.edu/software/netcdf-java/reference/collections/CollectionSpecification.html"
    */
   public static Fmrc open(String collection, Formatter errlog) throws IOException {
-    if (collection.startsWith(CAT)) {
-      String catUrl = collection.substring(CAT.length());
+    if (collection.startsWith(DatasetCollectionManager.CATALOG)) {
+      String catUrl = collection.substring(DatasetCollectionManager.CATALOG.length());
       DatasetCollectionFromCatalog manager = new DatasetCollectionFromCatalog(catUrl, null);
       return new Fmrc(manager, null);
 
@@ -94,8 +94,8 @@ public class Fmrc {
   }
 
   public static Fmrc open(FeatureCollection.Config config, Formatter errlog) throws IOException {
-    if (config.spec.startsWith(CAT)) {
-      String catUrl = config.spec.substring(CAT.length());
+    if (config.spec.startsWith(DatasetCollectionManager.CATALOG)) {
+      String catUrl = config.spec.substring(DatasetCollectionManager.CATALOG.length());
       DatasetCollectionFromCatalog manager = new DatasetCollectionFromCatalog(catUrl, null);
       return new Fmrc(manager, null);
     }
@@ -128,7 +128,7 @@ public class Fmrc {
 
   private Fmrc(FeatureCollection.Config config, Formatter errlog) {
     DatasetCollectionManager dcm = new DatasetCollectionManager(config, errlog);
-    dcm.setRecheck(config.recheckEvery);
+    dcm.setRecheck(config.recheckAfter);
  
     this.manager = dcm;
     this.config = config;
@@ -180,40 +180,51 @@ public class Fmrc {
   }
 
   /////////////////////////////////////////////////////////////////////////////////////////
-  private boolean forceProto = false; // LOOK when does this change?
+  private boolean forceProto = false;
+
+  public void triggerProto() {
+    forceProto = true;
+  }
+
+  public void triggerRescan() throws IOException {
+    checkNeeded( true, null);
+  }
 
   public GridDataset getDataset2D(NetcdfDataset result) throws IOException {
-    checkNeeded( result);
+    checkNeeded( false, result);
     return fmrcDataset.getNetcdfDataset2D();
   }
 
   public GridDataset getDatasetBest() throws IOException {
-    checkNeeded( null);
+    checkNeeded( false, null);
     return fmrcDataset.getBest();
   }
 
-  private void checkNeeded(NetcdfDataset result) throws IOException {
+  private void checkNeeded(boolean force, NetcdfDataset result) throws IOException {
     synchronized (lock) {
+      boolean forceProtoLocal = forceProto;
+
       if (fmrcDataset == null) {
         fmrcDataset = new FmrcDataset(config);
         manager.scan(null);
         FmrcInv fmrc = makeFmrcInv(null);
-        fmrcDataset.make(fmrc, forceProto, result);
+        fmrcDataset.make(fmrc, forceProtoLocal, result);
+        if (forceProtoLocal) forceProto = false;
         return;
       }
 
-      if (!manager.isRescanNeeded()) return;
+      if (!force && !manager.isRescanNeeded()) return;
       
       if (!manager.rescan()) return;
 
       try {
         FmrcInv fmrc = makeFmrcInv(null);
-        fmrcDataset.make(fmrc, forceProto, result);
+        fmrcDataset.make(fmrc, forceProtoLocal, result);
+        if (logScan.isInfoEnabled()) logScan.info(config.spec+": make new Dataset, new proto = "+forceProtoLocal);
+        if (forceProtoLocal) forceProto = false;
       } catch (Throwable t) {
         t.printStackTrace();
         throw new RuntimeException(t);  
-      } finally {
-        System.out.printf("YOW%n");
       }
     }
   }

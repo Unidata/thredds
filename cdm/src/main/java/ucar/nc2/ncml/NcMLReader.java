@@ -1329,6 +1329,11 @@ public class NcMLReader {
       if (debugAggDetail) System.out.println(" debugAgg: nested dirLocation = " + dirLocation);
     }
 
+    // experimental
+    Element collElem = aggElem.getChild("collection", ncNS);
+    if (collElem != null)
+      agg.addCollection(collElem.getAttributeValue("spec"), collElem.getAttributeValue("olderThan"));
+
     /* <!-- experimental - modify each dataset in aggregation  -->
         <xsd:choice minOccurs="0" maxOccurs="unbounded">
           <xsd:element ref="group"/>

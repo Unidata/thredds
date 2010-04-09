@@ -45,43 +45,63 @@ import java.util.Set;
  * @since Mar 30, 2010
  */
 public class FeatureCollection {
-  static public enum CollectionChange {
+  /* static public enum CollectionChange {
     True, False, Trigger, AppendOnly, Rolling
-  }
+  } */
 
   static public enum ProtoChoice {
     First, Random, Latest, Penultimate
   }
 
   static public enum FmrcDatasetType {
-    TwoD, Best, Files, Runs
+    TwoD, Best, Files, Runs, ConstantForecasts, ConstantOffsets
   }
 
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FeatureCollection.class);
 
   static public class Config {
-    public String spec, olderThan, recheckEvery;
-    public CollectionChange changes = CollectionChange.False;
+    public String spec, olderThan, recheckAfter;
+    //public CollectionChange changes = CollectionChange.False;
+    public UpdateConfig updateConfig = new UpdateConfig();
     public ProtoConfig protoConfig = new ProtoConfig();
     public FmrcConfig fmrcConfig = new FmrcConfig();
 
     public Config() {
     }
 
-    public Config(String spec, String olderThan, String changes, String recheckEvery) {
+    public Config(String spec, String olderThan, String recheckAfter) {
       this.spec = spec;
       this.olderThan = olderThan;
-      this.recheckEvery = recheckEvery;
+      this.recheckAfter = recheckAfter;
 
-      if (changes != null) {
+      /* if (changes != null) {
         try {
           this.changes = CollectionChange.valueOf(changes);
         } catch (Exception e) {
           log.warn("Dont recognize CollectionChange " + changes);
         }
-      }
+      } */
     }
   }
+
+  static public class UpdateConfig {
+    public boolean startup;
+    public String rescan = null;
+    public boolean triggerOk;
+
+    public UpdateConfig() { // defaults
+    }
+
+    public UpdateConfig(String startup, String rescan, String trigger) {
+      if (startup != null)
+        this.startup = startup.equalsIgnoreCase("true");
+      if (trigger != null)
+        this.triggerOk = trigger.equalsIgnoreCase("allow");
+      this.rescan = rescan;
+    }
+  }
+
+
 
   static public class ProtoConfig {
     public ProtoChoice choice = ProtoChoice.Penultimate;

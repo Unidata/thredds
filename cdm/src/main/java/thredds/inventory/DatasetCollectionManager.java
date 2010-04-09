@@ -58,6 +58,8 @@ import thredds.inventory.bdb.MetadataManager;
  */
 @ThreadSafe
 public class DatasetCollectionManager implements CollectionManager {
+  public static final String CATALOG = "catalog:";
+
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(DatasetCollectionManager.class);
   static private final boolean debugSyncDetail = false;
   static private MController controller;
@@ -70,15 +72,25 @@ public class DatasetCollectionManager implements CollectionManager {
     controller = _controller;
   }
 
+  public static DatasetCollectionManager open(String collection, String olderThan, Formatter errlog) throws IOException {
+    if (collection.startsWith(CATALOG)) {
+      String catUrl = collection.substring(CATALOG.length());
+      return new DatasetCollectionFromCatalog(catUrl, null);
+    }  
+
+    return new DatasetCollectionManager(collection, errlog);
+  }
+
+
   ////////////////////////////////////////////////////////////////////
 
   protected String collectionName;
   private CollectionSpecParser sp;
   private DateExtractor dateExtractor;
-  public FeatureCollection.CollectionChange changes = FeatureCollection.CollectionChange.False;
+  // public FeatureCollection.CollectionChange changes = FeatureCollection.CollectionChange.False;
 
   private final List<MCollection> scanList = new ArrayList<MCollection>();
-  protected TimeUnit recheck; // how often to recheck LOOK what should default be ?
+  protected TimeUnit recheck = null; // how often to recheck
   private double olderThanFilterInSecs = -1;
 
   private Map<String, MFile> map; // current map of MFile
@@ -102,7 +114,7 @@ public class DatasetCollectionManager implements CollectionManager {
   }
 
   public DatasetCollectionManager(FeatureCollection.Config config, Formatter errlog) {
-    this.changes = config.changes;
+    //this.changes = config.changes;
     this.sp = new CollectionSpecParser(config.spec, errlog);
     this.collectionName = sp.getSpec();
     this.dateExtractor = (sp.getDateFormatMark() == null) ? new DateExtractorNone() : new DateExtractorFromName(sp.getDateFormatMark(), true);
@@ -142,7 +154,7 @@ public class DatasetCollectionManager implements CollectionManager {
     if (recheckS != null) {
       try {
         this.recheck = new TimeUnit(recheckS);
-        this.changes = FeatureCollection.CollectionChange.True;
+        //this.changes = FeatureCollection.CollectionChange.True;
 
       } catch (Exception e) {
         logger.error(collectionName+": Invalid time unit for recheckEvery = {}", recheckS);
@@ -245,8 +257,8 @@ public class DatasetCollectionManager implements CollectionManager {
     }
 
     // see if we need to recheck
-    if (changes == FeatureCollection.CollectionChange.False || changes == FeatureCollection.CollectionChange.Trigger) {
-      if (debugSyncDetail && logger.isDebugEnabled()) logger.debug(collectionName+": rescan not needed, changes == "+changes);
+    if (recheck == null) {
+      if (debugSyncDetail && logger.isDebugEnabled()) logger.debug(collectionName+": rescan not needed, recheck null");
       return false;
     }
 

@@ -615,7 +615,7 @@ class FmrcDataset {
 
         aggVar.setDimensions(dimList);
         aggVar.setProxyReader(proxyReader1D);
-        aggVar.setSPobject(new Vstate1D(ugrid, timeCoordVals, fmrcInv.getBaseDate(), bestInv));
+        aggVar.setSPobject(new Vstate1D(ugrid, bestInv));
         nonAggVars.remove(aggVar);
 
         // we need to explicitly list the coordinate axes
@@ -692,14 +692,10 @@ class FmrcDataset {
 
   private class Vstate1D {
     String varName;
-   // ArrayDouble.D1 timeCoordVals;
     BestInventory bestInv;
-    //Date baseDate;
 
-    private Vstate1D(FmrcInv.UberGrid ugrid, ArrayDouble.D1 timeCoordVals, Date baseDate, BestInventory bestInv) {
+    private Vstate1D(FmrcInv.UberGrid ugrid, BestInventory bestInv) {
       this.varName = ugrid.getName();
-      //this.timeCoordVals = timeCoordVals;
-      //this.baseDate = baseDate;
       this.bestInv = bestInv;
     }
   }
@@ -826,33 +822,6 @@ class FmrcDataset {
       return -1;
     }
 
-    /* void finish() {
-      int count = 0;
-      for (int idx = 0; idx < offsets.length; idx++) {
-        if (location[idx] != null)
-          count++;
-      }
-      ntimes = count;
-
-      // pack um in
-      String[] locDense = new String[ntimes];
-      double[] offsetsDense = new double[ntimes];
-      int[] indexDense = new int[ntimes];
-
-      count = 0;
-      for (int idx = 0; idx < offsets.length; idx++) {
-        if (location[idx] != null) {
-          offsetsDense[count] = offsets[idx];
-          locDense[count] = location[idx];
-          indexDense[count] = invIndex[idx];
-          count++;
-        }
-      }
-
-      offsets = offsetsDense;
-      location = locDense;
-      invIndex = indexDense;
-    }  */
   }
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////

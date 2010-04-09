@@ -824,6 +824,11 @@
 
   <!-- release library -->
   <target name="release" description="Release library and source jar files to release directory: do 'ant dist' first">
+    <copy todir="${release.html.dir}" overwrite="true">
+      <fileset file="${build.dir}/README"/>
+      <fileset file="${build.dir}/CHANGES"/>
+    </copy>
+
     <copy todir="${release.library.dir}" overwrite="true">
       <fileset dir="${build.dir}" includes="${jarCore}"/>
       <fileset dir="${build.dir}" includes="${jarMain}"/>
@@ -855,11 +860,6 @@
     <copy todir="${release.javadocAll.dir}" overwrite="true">
       <fileset dir="${javadocAll.dir}"/>
     </copy>
-    <copy todir="${release.html.dir}" overwrite="true">
-      <fileset file="${build.dir}/README"/>
-      <fileset file="${build.dir}/CHANGES"/>
-    </copy>
-
 
   </target>
 

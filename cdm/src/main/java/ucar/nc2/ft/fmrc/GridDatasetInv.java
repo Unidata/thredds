@@ -75,18 +75,18 @@ import thredds.inventory.CollectionManager;
  */
 public class GridDatasetInv {
   static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GridDatasetInv.class);
-  private static final boolean debugCache = true, debugCacheDetail = false;
+  //private static final boolean debugCache = true, debugCacheDetail = false;
 
   public static GridDatasetInv open(CollectionManager cm, MFile mfile) throws IOException {
     // do we already have it ?
     byte[] xmlBytes = cm.getMetadata(mfile, "fmrInv.xml");
     if (xmlBytes != null) {
-      if (debugCacheDetail) System.out.printf(" got xmlFile %s in cache %n", mfile.getPath());
+      if (log.isDebugEnabled()) log.info(" got xmlFile %s in cache "+ mfile.getPath());
       GridDatasetInv inv = readXML(xmlBytes);
       if (inv.getLastModified() >= mfile.getLastModified()) { // LOOK if fileDate is -1, will always succeed
         return inv;
       } else {
-        if (debugCache) System.out.printf(" cache out of date %s > %s %n", new Date(inv.getLastModified()), new Date(mfile.getLastModified()));
+        if (log.isInfoEnabled()) log.info(" cache out of date "+new Date(inv.getLastModified())+" > "+new Date(mfile.getLastModified()));
       }
     }
 
@@ -97,7 +97,7 @@ public class GridDatasetInv {
       GridDatasetInv inv = new GridDatasetInv(gds, cm.extractRunDate(mfile));
       String xmlString = inv.writeXML( new Date(mfile.getLastModified()));
       cm.putMetadata(mfile, "fmrInv.xml", xmlString.getBytes("UTF-8"));
-      if (debugCache) System.out.printf(" added xmlFile %s to cache %n", mfile.getPath()+".fmrInv.xml");
+      if (log.isInfoEnabled()) log.info(" added xmlFile "+ mfile.getPath()+".fmrInv.xml to cache");
       return inv;
     } finally {
       if (gds != null) gds.close();

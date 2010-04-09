@@ -163,7 +163,7 @@ public class DatasetCollectionFromCatalog extends DatasetCollectionManager imple
     man.debug = true;
     man.scan(null);
     Formatter errlog = new Formatter();
-    Fmrc fmrc = Fmrc.open(Fmrc.CAT+catUrl, errlog);
+    Fmrc fmrc = Fmrc.open(DatasetCollectionManager.CATALOG+catUrl, errlog);
     System.out.printf("errlog = %s %n", errlog);
 
   }
