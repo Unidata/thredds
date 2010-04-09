@@ -226,6 +226,10 @@ public abstract class Aggregation {
     datasetManager.addDirectoryScan(dirName, suffix, regexpPatternString, subdirs, olderThan, dateFormatMark, enhanceMode);
  }
 
+  public void addCollection(String spec, String olderThan) throws IOException {
+    datasetManager = DatasetCollectionManager.open(spec, olderThan, null);
+ }
+
   public void setModifications(Element ncmlMods) {
     this.mergeNcml = ncmlMods;
   }
