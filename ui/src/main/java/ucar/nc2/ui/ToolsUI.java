@@ -674,7 +674,7 @@ public class ToolsUI extends JPanel {
       }
     });
 
-    // this deletes all the flags, then they start accululating again
+    // this deletes all the flags, then they start accumulating again
     AbstractAction clearDebugFlagsAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         ucar.util.prefs.ui.Debug.removeAll();
@@ -682,31 +682,6 @@ public class ToolsUI extends JPanel {
     };
     BAMutil.setActionProperties(clearDebugFlagsAction, null, "Delete All Debug Flags", false, 'C', -1);
     BAMutil.addActionToMenu(debugMenu, clearDebugFlagsAction);
-
-    /* send output to the debug message window
-    useDebugWindowAction = new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        Boolean state = (Boolean) getValue(BAMutil.STATE);
-        setDebugOutputStream(state.booleanValue());
-      }
-    };
-    BAMutil.setActionProperties(useDebugWindowAction, null, "Use Debug Window", true, 'C', -1);
-    BAMutil.addActionToMenu(debugMenu, useDebugWindowAction); */
-    /* if (mainPrefs.getBoolean("useDebugWindow", false)) {
-      useDebugWindowAction.putValue(BAMutil.STATE, Boolean.TRUE);
-      setDebugFlags();
-      setDebugOutputStream(true);
-    }
-
-    // show the debug window
-    AbstractAction showDebugAction = new AbstractAction() {
-      public void actionPerformed(ActionEvent evt) {
-        // System.out.println("debugWindow.show() "+debugWindow.getBounds());
-        debugWindow.show();
-      }
-    };
-    BAMutil.setActionProperties(showDebugAction, null, "Show Debug Window", false, 'D', 0);
-    BAMutil.addActionToMenu(debugMenu, showDebugAction);  */
 
     JMenu helpMenu = new JMenu("Help");
     helpMenu.setMnemonic('H');

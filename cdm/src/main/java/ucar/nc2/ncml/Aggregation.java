@@ -137,7 +137,7 @@ public abstract class Aggregation {
   }
 
   static protected boolean debug = false, debugOpenFile = false, debugSyncDetail = false, debugProxy = false,
-      debugRead = true, debugDateParse = false, debugConvert = false;
+      debugRead = false, debugDateParse = false, debugConvert = false;
 
   //////////////////////////////////////////////////////////////////////////////////////////
 

@@ -54,7 +54,7 @@ public class MetadataManager {
   private static Environment myEnv = null;
   private static List<Database> openDatabases = new ArrayList<Database>();
   private static boolean readOnly;
-  private static boolean debug = true;
+  private static boolean debug = false;
 
   static public void setCacheDirectory( String dir ) {
     root = dir;

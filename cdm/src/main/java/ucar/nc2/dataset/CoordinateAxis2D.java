@@ -49,7 +49,7 @@ import java.util.List;
 
 public class CoordinateAxis2D extends CoordinateAxis {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordinateAxis2D.class);
-  static private final boolean debug = true;
+  static private final boolean debug = false;
   
   /**
    * Create a 2D coordinate axis from an existing VariableDS
