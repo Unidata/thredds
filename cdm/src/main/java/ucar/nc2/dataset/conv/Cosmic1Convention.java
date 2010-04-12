@@ -447,7 +447,7 @@ public class Cosmic1Convention extends CoordSysBuilder {
 
 
     /**
-     *    @call gast.f
+     *    gast.f
      *     Compute hour angle dtheta
      *
      *     ! iyr, mon, iday, ihr, min and sec form a base (epoch) time,
@@ -459,7 +459,7 @@ public class Cosmic1Convention extends CoordSysBuilder {
      * ! glon -- East longitude in degrees, -180 to 180
      *
      *
-     *      @call vprod.f   spin.f   rnorm.f
+     *      call vprod.f   spin.f   rnorm.f
      * Calculation of the unit vector normal to the occultation plane
      * (clockwise rotated from GPS to LEO)
      *
@@ -503,23 +503,23 @@ public class Cosmic1Convention extends CoordSysBuilder {
 
     /**
      * ----------------------------------------------------------------------
-     * @file       gast.f
+     *  gast.f
      *
      * This subroutine computes the Greenwich Apparent Siderial
      * Time angle given a UTC date and time.
      *
-     * @sub        gast
-     * @parameter  Input parameters:
-     * @ Inputs:
-     * @  iyr, integer, 1995
-     * @  imon, integer, 5
-     * @  iday, integer, 5
-     * @  ihr, integer, 5
-     * @  imin, integer, 5
-     * @  sec, double, 31.0
-     * @  dsec, double, 0.0
-     * @ Outputs:
-     * @  theta, GAST angle in radians
+     *       gast
+     * parameter  Input parameters:
+     * Inputs:
+     * @param  iyr, integer, 1995
+     * @param  imon, integer, 5
+     * @param  iday, integer, 5
+     * @param  ihr, integer, 5
+     * @param  imin, integer, 5
+     * @param  sec, double, 31.0
+     * @param  dsec, double, 0.0
+     * Outputs:
+     * theta, GAST angle in radians
      *
      * @author     Bill Schreiner
      * @since      May 1995
@@ -618,26 +618,26 @@ public class Cosmic1Convention extends CoordSysBuilder {
 
     /**
      * ----------------------------------------------------------------------
-     * @file       spin.f
+     * file       spin.f
      *
      * This subroutine rotates vector V1 around vector VS
      * at angle A. V2 is the vector after the rotation.
      *
-     * @sub        spin
-     * @parameter  Input parameters:
-     * @ v1   - Vector to be rotated
-     * @ vs   - Vector around which to rotate v1
-     * @ a    - angle of rotation
-     * @ Output parameters:
-     * @ v2   - output vector
+     *
+     * parameter  Input parameters:
+     *  v1   - Vector to be rotated
+     *  vs   - Vector around which to rotate v1
+     *  a    - angle of rotation
+     *  Output parameters:
+     *  v2   - output vector
      *
      * @author     S.V.Sokolovskiy
      * @version    $URL: svn://ursa.cosmic.ucar.edu/trunk/src/roam/spin.f $ $Id: spin.f 10129 2008-07-30 17:10:52Z dhunt $
      * -----------------------------------------------------------------------
      *
-     * @param v1 _more_
-     * @param vs _more_
-     * @param a _more_
+     * @param v1 - Vector to be rotated
+     * @param vs - Vector around which to rotate v1
+     * @param a - angle of rotation
      *
      * @return _more_
      */
