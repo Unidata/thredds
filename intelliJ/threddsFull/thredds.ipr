@@ -557,6 +557,33 @@
   <component name="SvnBranchConfigurationManager">
     <option name="myConfigurationMap">
       <map>
+        <entry key="$PROJECT_DIR$/../../../grib">
+          <value>
+            <SvnBranchConfiguration>
+              <option name="branchMap">
+                <map>
+                  <entry key="http://sub.unidata.ucar.edu/grib/branch">
+                    <value>
+                      <list />
+                    </value>
+                  </entry>
+                  <entry key="http://sub.unidata.ucar.edu/grib/tag">
+                    <value>
+                      <list />
+                    </value>
+                  </entry>
+                </map>
+              </option>
+              <option name="branchUrls">
+                <list>
+                  <option value="http://sub.unidata.ucar.edu/grib/branch" />
+                  <option value="http://sub.unidata.ucar.edu/grib/tag" />
+                </list>
+              </option>
+              <option name="trunkUrl" value="http://sub.unidata.ucar.edu/grib/trunk" />
+            </SvnBranchConfiguration>
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/../../bufrTables">
           <value>
             <SvnBranchConfiguration>
