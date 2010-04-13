@@ -221,7 +221,7 @@ public class GridIndexToNC {
     }
 
     // global CF Conventions
-    ncfile.addAttribute(null, new Attribute("Conventions", "CF-1"));
+    ncfile.addAttribute(null, new Attribute("Conventions", "CF-1.4"));
 
     String center = null;
     String subcenter = null;
