@@ -206,7 +206,7 @@ public class TestAll {
     };
   }
 
-  static private void checkLeaks() {
+  static public void checkLeaks() {
     if (RandomAccessFile.getOpenFiles().size() > 0) {
       System.out.println("RandomAccessFile still open:");
       for (String filename : RandomAccessFile.getOpenFiles()) {

@@ -77,7 +77,7 @@
         </metadata>
 
         <collection spec="/data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km/GFS_Alaska_191km_#yyyyMMdd_HHmm#.grib1"
-                    recheckEvery="15 min"
+                    recheckAfter="15 min"
                     olderThan="5 min"/>
         <manage deleteAfter="45 days" check="0 0 3 * * ? *" />
         <update startup="true" rescan="0 5 3 * * ? *" />
@@ -95,7 +95,7 @@
         </metadata>
 
         <collection spec="/data/ldm/pub/native/grid/NCEP/GFS/CONUS_80km/GFS_CONUS_80km_#yyyyMMdd_HHmm#.grib1"
-                    recheckEvery="15 min"
+                    recheckAfter="15 min"
                     olderThan="5 min"/>
         <update startup="true" rescan="0 5 3 * * ? *" />
         <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
@@ -113,7 +113,7 @@
         </metadata>
 
         <collection spec="/data/ldm/pub/native/grid/NCEP/GFS/CONUS_95km/GFS_CONUS_95km_#yyyyMMdd_HHmm#.grib1"
-                    recheckEvery="15 min"
+                    recheckAfter="15 min"
                     olderThan="5 min"/>
         <update startup="true" rescan="0 5 3 * * ? *" />
         <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
@@ -131,7 +131,7 @@
         </metadata>
 
         <collection spec="/data/ldm/pub/native/grid/NCEP/GFS/CONUS_191km/GFS_CONUS_191km_#yyyyMMdd_HHmm#.grib1"
-                    recheckEvery="15 min"
+                    recheckAfter="15 min"
                     olderThan="5 min"/>
         <update startup="true" rescan="0 5 3 * * ? *" />
         <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
@@ -151,7 +151,7 @@
         </metadata>
 
         <collection spec="/data/ldm/pub/native/grid/NCEP/GFS/Global_0p5deg/GFS_Global_0p5deg_#yyyyMMdd_HHmm#.grib2"
-                    recheckEvery="15 min"
+                    recheckAfter="15 min"
                     olderThan="5 min"/>
         <update startup="true" rescan="0 5 3 * * ? *" />
         <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
@@ -171,7 +171,7 @@
         </metadata>
 
         <collection spec="/data/ldm/pub/native/grid/NCEP/GFS/Global_onedeg/GFS_Global_onedeg_#yyyyMMdd_HHmm#.grib2"
-                    recheckEvery="15 min"
+                    recheckAfter="15 min"
                     olderThan="5 min"/>
         <update startup="true" rescan="0 5 3 * * ? *" />
         <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
@@ -191,7 +191,7 @@
         </metadata>
 
         <collection spec="/data/ldm/pub/native/grid/NCEP/GFS/Global_2p5deg/GFS_Global_2p5deg_#yyyyMMdd_HHmm#.grib2"
-                    recheckEvery="15 min"
+                    recheckAfter="15 min"
                     olderThan="5 min"/>
         <update startup="true" rescan="0 5 3 * * ? *" />
         <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
@@ -209,7 +209,7 @@
         </metadata>
 
         <collection spec="/data/ldm/pub/native/grid/NCEP/GFS/Hawaii_160km/GFS_Hawaii_160km_#yyyyMMdd_HHmm#.grib1"
-                    recheckEvery="15 min"
+                    recheckAfter="15 min"
                     olderThan="5 min"/>
         <update startup="true" rescan="0 5 3 * * ? *" />
         <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
@@ -228,7 +228,7 @@
 
         <collection
             spec="/data/ldm/pub/native/grid/NCEP/GFS/N_Hemisphere_381km/GFS_N_Hemisphere_381km_#yyyyMMdd_HHmm#.grib1"
-            recheckEvery="15 min"
+            recheckAfter="15 min"
             olderThan="5 min"/>
         <update startup="true" rescan="0 5 3 * * ? *" />
         <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
@@ -247,7 +247,7 @@
 
         <collection
             spec="/data/ldm/pub/native/grid/NCEP/GFS/Puerto_Rico_191km/GFS_Puerto_Rico_191km_#yyyyMMdd_HHmm#.grib1"
-            recheckEvery="15 min"
+            recheckAfter="15 min"
             olderThan="5 min"/>
         <update startup="true" rescan="0 5 3 * * ? *" />
         <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />

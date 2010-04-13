@@ -80,12 +80,18 @@ public class GridDatasetInv {
     // do we already have it ?
     byte[] xmlBytes = cm.getMetadata(mfile, "fmrInv.xml");
     if (xmlBytes != null) {
-      if (log.isDebugEnabled()) log.info(" got xmlFile %s in cache "+ mfile.getPath());
-      GridDatasetInv inv = readXML(xmlBytes);
-      if (inv.getLastModified() >= mfile.getLastModified()) { // LOOK if fileDate is -1, will always succeed
-        return inv;
+      if (log.isDebugEnabled()) log.debug(" got xmlFile in cache ="+ mfile.getPath()+ " size = "+xmlBytes.length);
+      if (xmlBytes.length < 300) {
+        log.warn(" xmlFile in cache only has nbytes ="+ xmlBytes.length+"; will reread");
+        // drop through and regenerate
       } else {
-        if (log.isInfoEnabled()) log.info(" cache out of date "+new Date(inv.getLastModified())+" > "+new Date(mfile.getLastModified()));
+        GridDatasetInv inv = readXML(xmlBytes);
+        if (inv.getLastModified() >= mfile.getLastModified()) { // LOOK if fileDate is -1, will always succeed
+          // System.out.println("xmlBytes= "+ new String(xmlBytes));
+          return inv;
+        } else {
+          if (log.isInfoEnabled()) log.info(" cache out of date "+new Date(inv.getLastModified())+" > "+new Date(mfile.getLastModified()));
+        }
       }
     }
 
@@ -93,10 +99,13 @@ public class GridDatasetInv {
     GridDataset gds = null;
     try {
       gds = GridDataset.open( mfile.getPath());
+      System.out.println("gds dataset= "+ gds.getNetcdfDataset());
+
       GridDatasetInv inv = new GridDatasetInv(gds, cm.extractRunDate(mfile));
       String xmlString = inv.writeXML( new Date(mfile.getLastModified()));
       cm.putMetadata(mfile, "fmrInv.xml", xmlString.getBytes("UTF-8"));
       if (log.isInfoEnabled()) log.info(" added xmlFile "+ mfile.getPath()+".fmrInv.xml to cache");
+      //System.out.println("new xmlBytes= "+ xmlString);
       return inv;
     } finally {
       if (gds != null) gds.close();

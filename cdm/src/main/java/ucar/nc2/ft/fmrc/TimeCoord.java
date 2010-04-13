@@ -248,27 +248,43 @@ public class TimeCoord implements Comparable {
    * @param baseDate resulting union timeCoord uses this as a base date
    * @return union TimeCoord
    */
-  static public TimeCoord makeUnionConvert(List<TimeCoord> timeCoords, Date baseDate) {
-    // put into a set for uniqueness
-    Set<Double> offsets = new HashSet<Double>();
+  static public TimeResult makeUnionConvert(List<TimeCoord> timeCoords, Date baseDate) {
+
+    Map<Double, Double> offsetMap = new HashMap<Double, Double>(256);
     for (TimeCoord tc : timeCoords) {
-      double tcOffset = FmrcInv.getOffsetInHours(baseDate, tc.getRunDate());
+      double run_offset = FmrcInv.getOffsetInHours(baseDate, tc.getRunDate());
       for (double offset : tc.getOffsetHours()) {
-        offsets.add(tcOffset + offset); // track all offset hours, calculated from baseDate
+        offsetMap.put(run_offset + offset, run_offset); // later ones override
       }
     }
 
-    List<Double> offsetList = Arrays.asList((Double[]) offsets.toArray(new Double[offsets.size()]));
+    Set<Double> keys = offsetMap.keySet();
+    int n = keys.size();
+    List<Double> offsetList = Arrays.asList((Double[]) keys.toArray(new Double[n]));
     Collections.sort(offsetList);
 
     int counto = 0;
-    double[] offs = new double[offsetList.size()];
-    for (double off : offsetList) offs[counto++] = off;
+    double[] offs = new double[n];
+    double[] runoffs = new double[n];
+    for (Double key : offsetList) {
+      offs[counto] = key;
+      runoffs[counto] = offsetMap.get(key);
+      counto++;
+    }
 
-    // make the resulting time coord
-    TimeCoord result = new TimeCoord(baseDate);
-    result.setOffsetHours(offs);
-    return result;
+    return new TimeResult( baseDate, offs, runoffs);
+  }
+
+  static class TimeResult {
+    double[] offsets;
+    double[] runOffsets;
+    Date base;
+
+    TimeResult(Date base, double[] offsets, double[] runOffsets) {
+      this.base = base;
+      this.offsets = offsets;
+      this.runOffsets = runOffsets;
+    }
   }
 
 

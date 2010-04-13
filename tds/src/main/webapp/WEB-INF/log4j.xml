@@ -141,6 +141,16 @@
   <!-- fmrc debugging -->
 
   <logger name="thredds.inventory.DatasetCollectionManager" additivity="false">
+    <level value="DEBUG"/>
+    <appender-ref ref="fcScan"/>
+  </logger>
+
+  <logger name="ucar.nc2.ft.fmrc.FmrcDataset" additivity="false">
+    <level value="INFO"/>
+    <appender-ref ref="fcScan"/>
+  </logger>
+
+  <logger name="ucar.nc2.ft.fmrc.Fmrc" additivity="false">
     <level value="INFO"/>
     <appender-ref ref="fcScan"/>
   </logger>
@@ -155,7 +165,7 @@
     <appender-ref ref="fcScan"/>
   </logger>
 
-  <!-- end fmrc debuggimg -->
+  <!-- end fmrc debugging -->
 
   <!-- All normal logging messages go to threddsServlet.log -->
   <logger name="opendap" additivity="false">

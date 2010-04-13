@@ -57,7 +57,7 @@ import java.io.IOException;
  */
 @ThreadSafe
 public class Fmrc {
-  static private org.slf4j.Logger logScan = org.slf4j.LoggerFactory.getLogger("featureCollectionScan");
+  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Fmrc.class);
 
   /**
    * Factory method
@@ -220,7 +220,7 @@ public class Fmrc {
       try {
         FmrcInv fmrc = makeFmrcInv(null);
         fmrcDataset.make(fmrc, forceProtoLocal, result);
-        if (logScan.isInfoEnabled()) logScan.info(config.spec+": make new Dataset, new proto = "+forceProtoLocal);
+        if (logger.isInfoEnabled()) logger.info(config.spec+": make new Dataset, new proto = "+forceProtoLocal);
         if (forceProtoLocal) forceProto = false;
       } catch (Throwable t) {
         t.printStackTrace();
@@ -231,12 +231,16 @@ public class Fmrc {
 
   // scan has been done, create FmrcInv
   private FmrcInv makeFmrcInv(Formatter debug) throws IOException {
+    try {
     Map<Date, FmrInv> fmrMap = new HashMap<Date, FmrInv>(); // all files are grouped by run date in an FmrInv
     List<FmrInv> fmrList = new ArrayList<FmrInv>(); // an fmrc is a collection of fmr
 
     // get the inventory, sorted by path
     List<MFile> fileList = manager.getFiles();
     for (MFile f : fileList) {
+      if (logger.isDebugEnabled())
+        logger.debug("Fmrc: "+config.spec+": file="+f.getPath());
+
       GridDatasetInv inv = GridDatasetInv.open(manager, f); // inventory is discovered for each GDS
       Date runDate = inv.getRunDate();
       if (debug != null) debug.format("  opened %s rundate = %s%n", f.getPath(), inv.getRunDateString());
@@ -256,9 +260,15 @@ public class Fmrc {
     Collections.sort(fmrList);
     for (FmrInv fmr : fmrList) {
       fmr.finish();
+      if (logger.isDebugEnabled())
+        logger.debug("Fmrc: "+config.spec+": fmr "+fmr.getRunDate()+" nfiles= "+fmr.getFiles().size());
     }
 
-    return new FmrcInv(manager.getCollectionName(), fmrList, config.fmrcConfig.regularize);
+      return new FmrcInv(manager.getCollectionName(), fmrList, config.fmrcConfig.regularize);
+    } catch (Throwable t) {
+      logger.error("makeFmrcInv", t);
+      throw new RuntimeException(t);
+    }
   }
 
   public static void main(String[] args) throws IOException {

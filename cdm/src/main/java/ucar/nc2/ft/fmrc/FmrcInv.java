@@ -377,13 +377,12 @@ public class FmrcInv {
           List<TimeCoord> timeListExp = new ArrayList<TimeCoord>();
           for (FmrInv.GridVariable run : hg.runs)
             timeListExp.add(run.timeCoordUnion);
-          // note that in this case, the baseDates of the TiemCoords in timeListExp are not the same
+          // note that in this case, the baseDates of the TimeCoords in timeListExp are not the same
           // we are just using this routine to get the union of offset hours.
           // we discard the resulting TimeCoord and just use the offset array of doubles.
           hg.expected = TimeCoord.makeUnion(timeListExp, baseDate); // add the other coords
-          for (FmrInv.GridVariable run : hg.runs) {
-            run.timeExpected = new TimeCoord(run.getRunDate(), hg.expected.getOffsetHours());
-          }
+          for (FmrInv.GridVariable grid : hg.runs)
+            grid.timeExpected = new TimeCoord(grid.getRunDate(), hg.expected.getOffsetHours());
         }
 
         // now find the RunSeq, based on the timeExpected
@@ -500,10 +499,10 @@ public class FmrcInv {
     }
 
     /**
-     * Decide if this RunSeq is equivilent to the list of Runs.
+     * Decide if this RunSeq is equivalent to the list of Runs.
      *
      * @param oruns list of FmrInv.GridVariable, use their expected times to match
-     * @return true if it has an equivilent set of runs.
+     * @return true if it has an equivalent set of runs.
      */
     boolean equalsData(List<FmrInv.GridVariable> oruns) {
       List<FmrInv.GridVariable> okAdd = null; // may need to fill in the gaps
