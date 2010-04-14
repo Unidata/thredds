@@ -57,7 +57,7 @@ public class Ray {
     int             offset1;
     private float   range, step, az, elev;
     private short   time;
-    private float[] val;
+  //  private float[] val;
     String          varName;
     int             nsweep;
     short           datatype;
@@ -65,9 +65,9 @@ public class Ray {
 
     public Ray(float range, float step, float az, float elev, short bins, short time, int offset, int dataRead,
                int offset1, int nsweep, String name,
-               short datatype, float[] val) {
+               short datatype) {
 
-        this.val = new float[bins];
+      //  this.val = new float[bins];
         setRange(range);
         setStep(step);
         setAz(az);
@@ -77,7 +77,7 @@ public class Ray {
         setOffset(offset);
         setDataRead(dataRead);
         setOffset1(offset1);
-        setVal(val);
+       // setVal(val);
         setName(name);
         setNsweep(nsweep);
         setDataType(datatype);
@@ -174,14 +174,14 @@ public class Ray {
         this.offset1 = offset1;
     }
 
-    public float[] getVal() {
+ /*   public float[] getVal() {
         return val;
     }
 
     public void setVal(float[] val) {
         System.arraycopy(val, 0, this.val, 0, bins);
     }
-
+  */
     public void setName(String name) {
         this.varName = name;
     }

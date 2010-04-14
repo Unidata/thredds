@@ -110,7 +110,7 @@ public class SigmetVolumeScan {
                   elev          = 0.0f,
                   d             = 0.0f,
                   step          = 0.0f;
-        byte      data          = 0;
+   //     byte      data          = 0;
         boolean   beg_rec       = true,
                   end_rec       = true,
                   read_ray_hdr  = true,
@@ -158,7 +158,7 @@ public class SigmetVolumeScan {
         short[] angl_swp     = new short[nparams];
         short[] bin_len      = new short[nparams];
         short[] data_type    = new short[nparams];
-        float[] dd           = new float[bins];
+       // float[] dd           = new float[bins];
         num_gates=new int[number_sweeps];
         end_sweep = (int) number_sweeps;
         end_ray   = (int) num_rays;
@@ -409,8 +409,8 @@ public class SigmetVolumeScan {
                 datalen   = data_read;
 
                 for (int i = 0; i < data_read; i++) {
-                    data   = raf.readByte();
-                    dd[nb] = SigmetIOServiceProvider.calcData(recHdr, dty, data);
+                  //  data   = raf.readByte();
+                  //  dd[nb] = SigmetIOServiceProvider.calcData(recHdr, dty, data);
                     cur_len++;
                     nb++;
 
@@ -419,11 +419,11 @@ public class SigmetVolumeScan {
                         beg_rec      = true;
                         read_ray_hdr = false;
                         len          = cur_len;
-
+                        raf.seek(cur_len);
                         break;
                     }
                 }
-
+                raf.seek(cur_len);
                 if (pos > 0) {
                     continue;
                 }
@@ -448,11 +448,11 @@ public class SigmetVolumeScan {
 
                 // --- Check if the code=1 ("1" means an end of a ray)
                 if (a00 == (short) 1) {
-                    for (int uk = 0; uk < (int) num_bins; uk++) {
-                        dd[uk] = -999.99f;
-                    }
+                   // for (int uk = 0; uk < (int) num_bins; uk++) {
+                      //  dd[uk] = -999.99f;
+                  //  }
                     ray       = new Ray(-999.99f, -999.99f, -999.99f, -999.99f, num_bins, (short) (-99), -999, 0, -999,
-                                        nsweep, var_name, dty, dd);
+                                        nsweep, var_name, dty);
                     rays_count++;
                     beg_rec = false;
                     end_rec = true;
@@ -477,8 +477,8 @@ public class SigmetVolumeScan {
                     raf.seek(cur_len);
 
                     for (int ii = 0; ii < data_read; ii++) {
-                        data    = raf.readByte();
-                        dd[nb]  = SigmetIOServiceProvider.calcData(recHdr, dty, data);
+                     //   data    = raf.readByte();
+                    //    dd[nb]  = SigmetIOServiceProvider.calcData(recHdr, dty, data);
                         cur_len = cur_len + 1;
                         nb      = nb + 1;
 
@@ -488,20 +488,20 @@ public class SigmetVolumeScan {
                             end_rec      = false;
                             len          = cur_len;
                             read_ray_hdr = false;
-
+                            raf.seek(cur_len);
                             break;
                         }
                     }
-
+                    raf.seek(cur_len);
                     if (pos > 0) {
                         break;
                     }
                 } else if (a00 > 0 & a00 != 1) {
                     num_zero = a00 * 2;
 
-                    for (int k = 0; k < num_zero; k++) {
-                        dd[nb + k] = SigmetIOServiceProvider.calcData(recHdr, dty, (byte) 0);
-                    }
+                   // for (int k = 0; k < num_zero; k++) {
+                     //   dd[nb + k] = SigmetIOServiceProvider.calcData(recHdr, dty, (byte) 0);
+                   // }
 
                     nb = nb + num_zero;
 
@@ -531,7 +531,7 @@ public class SigmetVolumeScan {
                 cur_len = cur_len + 2;
                 end_rec = true;
                 ray     = new Ray(range_first, step, az, elev, num_bins, time_start_sw, rayoffset, datalen, rayoffset1,
-                                   nsweep, var_name, dty, dd);
+                                   nsweep, var_name, dty);
                 rays_count++;
                 two++;
                 if ((nsweep == number_sweeps) & (rays_count % beg == 0)) {
