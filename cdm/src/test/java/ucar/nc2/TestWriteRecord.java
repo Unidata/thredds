@@ -330,9 +330,9 @@ public class TestWriteRecord extends TestCase  {
 
   }
 
-  // make an example  writing records
+  // make an example writing records
   public void testNC3WriteWithRecord() throws IOException {
-    NetcdfFileWriteable ncfile = new NetcdfFileWriteable("C:/temp/writeRecordExample.nc", false);
+    NetcdfFileWriteable ncfile = new NetcdfFileWriteable(TestAll.temporaryLocalDataDir + "writeRecordExample.nc", false);
 
     // define dimensions, including unlimited
     Dimension latDim = ncfile.addDimension("lat", 64);
