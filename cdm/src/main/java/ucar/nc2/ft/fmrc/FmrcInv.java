@@ -214,6 +214,12 @@ public class FmrcInv {
     return uberGridList;
   }
 
+  public UberGrid findUberGrid(String name) {
+    for (UberGrid grid : uberGridList)
+      if (grid.getName().equals(name)) return grid;
+    return null;
+  }
+
   public List<Date> getRunTimes() {
     return runTimeList;
   }

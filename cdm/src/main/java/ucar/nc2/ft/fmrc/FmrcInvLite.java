@@ -32,6 +32,7 @@
 
 package ucar.nc2.ft.fmrc;
 
+import ucar.nc2.units.DateFormatter;
 import ucar.nc2.util.Misc;
 
 import java.util.*;
@@ -47,6 +48,9 @@ public class FmrcInvLite implements java.io.Serializable {
   Date base;
   int nruns;
   double[] runOffset; // run time in offset hours since base
+  double[] forecastOffset; // all forecast times in offset hours since base, for "constant forecast" datasets
+  double[] offsets; // all the offset values, for "constant offset" datasets
+
   List<String> locationList = new ArrayList<String>();
   List<Gridset> gridSets = new ArrayList<Gridset>();
   List<GridInventory> invList = new ArrayList<GridInventory>(); // share these, they are expensive!
@@ -55,6 +59,15 @@ public class FmrcInvLite implements java.io.Serializable {
     this.name = fmrcInv.getName();
     this.base = fmrcInv.getBaseDate();
 
+    // store forecasts as offsets instead of Dates
+    List<Date> forecasts = fmrcInv.getForecastTimes();
+    this.forecastOffset = new double[forecasts.size()];
+    for (int i = 0; i < forecasts.size(); i++) {
+      Date f = forecasts.get(i);
+      this.forecastOffset[i] = FmrcInv.getOffsetInHours(base, f);
+    }
+
+    // for each run
     List<FmrInv> fmrList = fmrcInv.getFmrInv();
     nruns = fmrList.size();
     runOffset = new double[nruns];
@@ -68,20 +81,58 @@ public class FmrcInvLite implements java.io.Serializable {
       }
     }
 
+    // for each RunSeq
     for (FmrcInv.RunSeq runseq : fmrcInv.getRunSeqs()) {
       gridSets.add(new Gridset(runseq));
     }
 
   }
 
+  List<Date> getRunDates() {
+    List<Date> result = new ArrayList<Date>(runOffset.length);
+    for (double off : runOffset)
+      result.add(FmrcInv.makeOffsetDate(base, off));
+    return result;
+  }
+
+  List<Date> getForecastDates() {
+    List<Date> result = new ArrayList<Date>(forecastOffset.length);
+    for (double f : forecastOffset)
+      result.add(FmrcInv.makeOffsetDate(base, f));
+    return result;
+  }
+
+  double[] getForecastOffsets() {
+    if (offsets == null) {
+      TreeSet<Double> tree = new TreeSet<Double>();
+      for (Gridset gridset : gridSets) {
+        for (int run = 0; run < nruns; run++) {
+          double baseOffset = gridset.timeOffset[run * gridset.noffsets];
+          for (int time = 0; time < gridset.noffsets; time++) {
+            double offset = gridset.timeOffset[run * gridset.noffsets + time];
+            if (!Double.isNaN(offset))
+              tree.add(offset - baseOffset);
+          }
+        }
+      }
+      offsets = new double[tree.size()];
+      Iterator<Double> iter = tree.iterator();
+      for (int i = 0; i < tree.size(); i++) {
+        offsets[i] = iter.next();
+      }
+    }
+    return offsets;
+  }
+
   // group of Grids with the same time coordinate
+
   class Gridset implements java.io.Serializable {
     String name;
     List<Grid> grids = new ArrayList<Grid>();
     int noffsets;
     double[] timeOffset;  // timeOffset(nruns,noffsets) in offset hours since base. this is the twoD time coordinate for this Gridset
 
-    Map<String, List<Blob>> timeCoordMap = new HashMap<String, List<Blob>>();
+    Map<String, List<TimeInv>> timeCoordMap = new HashMap<String, List<TimeInv>>();
 
     Gridset(FmrcInv.RunSeq runseq) {
       this.name = runseq.getName();
@@ -92,20 +143,20 @@ public class FmrcInvLite implements java.io.Serializable {
 
       // this is the twoD time coordinate for this Gridset
       timeOffset = new double[nruns * noffsets];
-      for (int i=0; i<timeOffset.length; i++) timeOffset[i] = Double.NaN;
+      for (int i = 0; i < timeOffset.length; i++) timeOffset[i] = Double.NaN;
 
       // fill twoD time coordinate from the sequence of time coordinates
-      for (int run=0; run<nruns; run++) {
+      for (int run = 0; run < nruns; run++) {
         TimeCoord tc = timeList.get(run);
         double run_offset = FmrcInv.getOffsetInHours(base, tc.getRunDate());
         double[] offsets = tc.getOffsetHours();
         int ntimes = offsets.length;
-        for (int time=0; time<ntimes; time++)
-          timeOffset[run*noffsets + time] = run_offset + offsets[time];
+        for (int time = 0; time < ntimes; time++)
+          timeOffset[run * noffsets + time] = run_offset + offsets[time];
       }
 
       for (FmrcInv.UberGrid ugrid : runseq.getUberGrids()) {
-        grids.add( new Grid(ugrid.getName(), getInventory(ugrid))); // LOOK could we defer making the Inventory ??
+        grids.add(new Grid(ugrid.getName(), getInventory(ugrid))); // LOOK could we defer making the Inventory ??
       }
     }
 
@@ -128,124 +179,65 @@ public class FmrcInvLite implements java.io.Serializable {
       return result;
     }
 
-    ////////////////////////////////////////////
-    // create time coordinate variants
-
-    double[] getBestTimeOffsets() {
-      List<Blob> best = timeCoordMap.get("best");
-      if (best == null) best = makeBest();
-
-      double[] result = new double[ best.size()];
-      for (int i=0; i< best.size(); i++) {
-        Blob b = best.get(i);
-        result[i] =  b.offset;
-      }
-      return result;
+    double getTimeCoord(int run, int time) {
+      return timeOffset[run * noffsets + time];
     }
 
-    double[] getBestRunOffsets() {
-      List<Blob> best = timeCoordMap.get("best");
-      if (best == null)
-        best = makeBest();
-      double[] result = new double[ best.size()];
-      for (int i=0; i<best.size(); i++) {
-        Blob b = best.get(i);
-        result[i] =  timeOffset[b.runIdx * noffsets];  // the first one for the run given by runIdx
-      }
-      return result;
-    }
-
-    private List<Blob> makeBest() {
-      Map<Double, Blob> map = new HashMap<Double, Blob>();
-      for (int run=0; run<nruns; run++) {
-        for (int time=0; time<noffsets; time++) {
-          double baseOffset = timeOffset[run*noffsets + time];
-          map.put(baseOffset, new Blob(run, time, baseOffset)); // later ones override
+    private List<TimeInv> makeBest() {
+      Map<Double, TimeInv> map = new HashMap<Double, TimeInv>();
+      for (int run = 0; run < nruns; run++) {
+        for (int time = 0; time < noffsets; time++) {
+          double baseOffset = timeOffset[run * noffsets + time];
+          map.put(baseOffset, new TimeInv(run, time, baseOffset)); // later ones override
         }
       }
 
-      Collection<Blob> values = map.values();
+      Collection<TimeInv> values = map.values();
       int n = values.size();
-      List<Blob> best = Arrays.asList((Blob[]) values.toArray(new Blob[n]));
+      List<TimeInv> best = Arrays.asList((TimeInv[]) values.toArray(new TimeInv[n]));
       Collections.sort(best);
       timeCoordMap.put("best", best);
       return best;
     }
 
-    double[] getConstantOffsets(int col) {
-      List<Blob> coords = timeCoordMap.get("offset"+col);
-      if (coords == null)
-        coords = makeConstantOffset(col);
-
-      double[] result = new double[ coords.size()];
-      for (int i=0; i< coords.size(); i++) {
-        Blob b = coords.get(i);
-        result[i] = b.offset;
+    private List<TimeInv> makeRun(int runIdx) {
+      List<TimeInv> result = new ArrayList<TimeInv>(noffsets);
+      for (int time = 0; time < noffsets; time++) {
+        double offset = timeOffset[runIdx * noffsets + time];
+        if (!Double.isNaN(offset))
+          result.add(new TimeInv(runIdx, time, offset));
       }
+      timeCoordMap.put("run" + runIdx, result);
       return result;
     }
 
-    private List<Blob> makeConstantOffset(int col) {
-      List<Blob> result = new ArrayList<Blob>(nruns);
-      for (int run=0; run< nruns; run++) {
-        double offset = timeOffset[run*noffsets + col];
-         if (!Double.isNaN(offset))
-           result.add( new Blob(run, col, offset));
-      }
-      timeCoordMap.put("offset"+col, result);
-      return result;
-    }
-
-    double[] getConstantForecast(double offset) {
-      List<Blob> coords = timeCoordMap.get("forecast"+offset);
-      if (coords == null)
-        coords = makeConstantForecast(offset);
-
-      double[] result = new double[ coords.size()];
-      for (int i=0; i< coords.size(); i++) {
-        Blob b = coords.get(i);
-        result[i] = b.offset;
-      }
-      return result;
-    }
-
-    private List<Blob> makeConstantForecast(double offset) {
-      List<Blob> result = new ArrayList<Blob>(noffsets);
-      for (int run=0; run< nruns; run++) {
-        for (int time=0; time< noffsets; time++) {
-          if (Misc.closeEnough(timeOffset[run*noffsets + time], offset))
-            result.add( new Blob(run, time, offset - timeOffset[run*noffsets])); // use offset from start of run
+    private List<TimeInv> makeConstantForecast(double offset) {
+      List<TimeInv> result = new ArrayList<TimeInv>(noffsets);
+      for (int run = 0; run < nruns; run++) {
+        for (int time = 0; time < noffsets; time++) { // search for all offsets that match - presumably 0 or 1 per run
+          if (Misc.closeEnough(timeOffset[run * noffsets + time], offset))
+            result.add(new TimeInv(run, time, offset - timeOffset[run * noffsets])); // use offset from start of run
         }
       }
-      timeCoordMap.put("forecast"+offset, result);
+      timeCoordMap.put("forecast" + offset, result);
       return result;
     }
 
-    double[] getRun(int runIdx) {
-      List<Blob> coords = timeCoordMap.get("run"+runIdx);
-      if (coords == null)
-        coords = makeRun(runIdx);
-
-      double[] result = new double[ coords.size()];
-      for (int i=0; i< coords.size(); i++) {
-        Blob b = coords.get(i);
-        result[i] = b.offset;
+    private List<TimeInv> makeConstantOffset(double offset) {
+      List<TimeInv> result = new ArrayList<TimeInv>(nruns);
+      for (int run = 0; run < nruns; run++) {
+        for (int time = 0; time < noffsets; time++) { // search for all offsets that match - presumably 0 or 1 per run
+          double baseOffset = getTimeCoord(run, time);
+          double runOffset = baseOffset - getTimeCoord(run, 0);
+          if (!Double.isNaN(baseOffset) && Misc.closeEnough(runOffset, offset))
+            result.add(new TimeInv(run, time, baseOffset));
+        }
       }
+      timeCoordMap.put("offset" + offset, result);
       return result;
     }
 
-    private List<Blob> makeRun(int runIdx) {
-      List<Blob> result = new ArrayList<Blob>(noffsets);
-      for (int time=0; time< noffsets; time++) {
-        double offset = timeOffset[runIdx*noffsets + time];
-         if (!Double.isNaN(offset))
-           result.add( new Blob(runIdx, time, offset));
-      }
-      timeCoordMap.put("run"+runIdx, result);
-      return result;
-    }
-
-     class Grid implements java.io.Serializable {
+    class Grid implements java.io.Serializable {
       String name;
       GridInventory inv;
 
@@ -254,43 +246,33 @@ public class FmrcInvLite implements java.io.Serializable {
         this.inv = inv;
       }
 
-      FmrcDataset.TimeInstance findInventory(int runIdx, int timeIdx) {
-        int locIdx = inv.location[runIdx * inv.noffsets + timeIdx];
-        if (locIdx == 0) return null;
-
-        int invIndex = inv.invIndex[runIdx * inv.noffsets + timeIdx];
-        return new FmrcDataset.TimeInstance(locationList.get(locIdx-1), invIndex);
+      Gridset getGridset() {
+        return Gridset.this;
       }
 
-      FmrcDataset.TimeInstance findInventoryBest(int bestIdx) {
-        List<Blob> best = timeCoordMap.get("best");
-        if (best == null)
-          best = makeBest();
-
-        Blob b = best.get(bestIdx);
-        int locIdx = inv.location[b.runIdx * inv.noffsets + b.timeIdx];
+      TimeInventory.Instance getInstance(int runIdx, int timeIdx) {
+        int locIdx = inv.getLocation(runIdx, timeIdx);
         if (locIdx == 0) return null;
 
-        int invIndex = inv.invIndex[b.runIdx * inv.noffsets + b.timeIdx];
-        return new FmrcDataset.TimeInstance(locationList.get(locIdx-1), invIndex);
+        int invIndex = inv.getInvIndex(runIdx, timeIdx);
+        return new TimeInstance(locationList.get(locIdx - 1), invIndex);
       }
-
     }
   }
 
-  // represents 1 element in the 2d time matrix
-  private class Blob implements Comparable<Blob> {
+  // represents 1 element in a 2d time matrix
+  private class TimeInv implements Comparable<TimeInv> {
     int runIdx, timeIdx;
-    double offset;
+    double offset; // hours since base or hours since run time
 
-    Blob(int runIdx, int timeIdx, double offset) {
+    TimeInv(int runIdx, int timeIdx, double offset) {
       this.runIdx = runIdx;
       this.timeIdx = timeIdx;
       this.offset = offset;
     }
 
     @Override
-    public int compareTo(Blob o) {
+    public int compareTo(TimeInv o) {
       return (int) (offset - o.offset);
     }
   }
@@ -309,8 +291,8 @@ public class FmrcInvLite implements java.io.Serializable {
       int gridIdx = 0;
       List<FmrInv.GridVariable> grids = ugrid.getRuns(); // must be sorted by rundate
 
-      for (int runIdx=0; runIdx<nruns; runIdx++ ) {
-        Date runDate =  FmrcInv.makeOffsetDate(base, runOffset[runIdx]);
+      for (int runIdx = 0; runIdx < nruns; runIdx++) {
+        Date runDate = FmrcInv.makeOffsetDate(base, runOffset[runIdx]);
 
         // do we have a grid for this runDate?
         FmrInv.GridVariable grid = grids.get(gridIdx);
@@ -324,29 +306,29 @@ public class FmrcInvLite implements java.io.Serializable {
           for (int i = 0; i < offsets.length; i++) {
             int timeIdx = findIndex(timeOffset, runIdx, invOffset + offsets[i]);
             if (timeIdx >= 0) {
-              location[runIdx*noffsets + timeIdx] = findLocation(inv.getLocation()) + 1;
-              invIndex[runIdx*noffsets + timeIdx] = i;
+              location[runIdx * noffsets + timeIdx] = findLocation(inv.getLocation()) + 1;
+              invIndex[runIdx * noffsets + timeIdx] = i;
             }
           }
         }
       }
     }
 
-    boolean equalData(Object oo) {
+    private boolean equalData(Object oo) {
       GridInventory o = (GridInventory) oo;
       if (o.location.length != location.length) return false;
       if (o.invIndex.length != invIndex.length) return false;
-      for (int i=0; i<location.length; i++)
+      for (int i = 0; i < location.length; i++)
         if (location[i] != o.location[i]) return false;
-      for (int i=0; i<invIndex.length; i++)
+      for (int i = 0; i < invIndex.length; i++)
         if (invIndex[i] != o.invIndex[i]) return false;
       return true;
     }
 
     // LOOK linear search!
     private int findIndex(double[] coords, int runIdx, double want) {
-      for (int j=0; j<noffsets; j++)
-        if (Misc.closeEnough(coords[runIdx*noffsets + j], want)) return j;
+      for (int j = 0; j < noffsets; j++)
+        if (Misc.closeEnough(coords[runIdx * noffsets + j], want)) return j;
       return -1;
     }
 
@@ -355,7 +337,331 @@ public class FmrcInvLite implements java.io.Serializable {
       return locationList.indexOf(location);
     }
 
+    int getLocation(int run, int time) {
+      return location[run * noffsets + time];
+    }
+
+    int getInvIndex(int run, int time) {
+      return invIndex[run * noffsets + time];
+    }
+
   }
 
+  static class TimeInstance implements TimeInventory.Instance {
+    String location;
+    int index; // time index in the file named by inv
 
+    TimeInstance(String location, int index) {
+      this.location = location;
+      this.index = index;
+    }
+
+    @Override
+    public String getDatasetLocation() {
+      return location;
+    }
+
+    @Override
+    public int getDatasetIndex() {
+      return index;
+    }
+  }
+
+  TimeInventory makeBestDatasetInventory() {
+    return new BestDatasetInventory();
+  }
+
+  TimeInventory makeRunTimeDatasetInventory(Date run) {
+    return new RunTimeDatasetInventory(run);
+  }
+
+  TimeInventory getConstantForecastDataset(Date time) {
+    return new ConstantForecastDataset(time);
+  }
+
+  TimeInventory getConstantOffsetDataset(double hour) {
+    return new ConstantOffsetDataset(hour);
+  }
+
+  class BestDatasetInventory implements TimeInventory {
+    // this could be parameterized for offsets > p
+ 
+    @Override
+    public String getName() {
+      return "Best";
+    }
+
+    @Override
+    public int getTimeLength(Gridset gridset) {
+      List<TimeInv> best = gridset.timeCoordMap.get("best");
+      if (best == null) best = gridset.makeBest();
+      return best.size();
+    }
+
+    @Override
+    public double[] getTimeCoords(Gridset gridset) {
+      List<TimeInv> best = gridset.timeCoordMap.get("best");
+      if (best == null) best = gridset.makeBest();
+
+      double[] result = new double[best.size()];
+      for (int i = 0; i < best.size(); i++) {
+        TimeInv b = best.get(i);
+        result[i] = b.offset;
+      }
+      return result;
+    }
+
+    @Override
+    public double[] getRunTimeCoords(Gridset gridset) {
+      List<TimeInv> best = gridset.timeCoordMap.get("best");
+      if (best == null)
+        best = gridset.makeBest();
+      double[] result = new double[best.size()];
+      for (int i = 0; i < best.size(); i++) {
+        TimeInv b = best.get(i);
+        result[i] = gridset.getTimeCoord(b.runIdx, 0);  // the first one for the run given by runIdx
+      }
+      return result;
+    }
+
+    @Override
+    public double[] getOffsetCoords(Gridset gridset) {
+      List<TimeInv> best = gridset.timeCoordMap.get("best");
+      if (best == null)
+        best = gridset.makeBest();
+
+      double[] result = new double[best.size()];
+      for (int i = 0; i < best.size(); i++) {
+        TimeInv b = best.get(i);
+        result[i] = b.offset - gridset.getTimeCoord(b.runIdx, 0);  // offset from run start
+      }
+      return result;
+    }
+
+    @Override
+    public Instance getInstance(Gridset.Grid grid, int timeIdx) {
+      Gridset gridset = grid.getGridset();
+      List<TimeInv> best = gridset.timeCoordMap.get("best");
+      if (best == null)
+        best = gridset.makeBest();
+
+      TimeInv b = best.get(timeIdx);
+      int locIdx = grid.inv.getLocation(b.runIdx, b.timeIdx);
+      if (locIdx == 0) return null;
+
+      int invIndex = grid.inv.getInvIndex(b.runIdx, b.timeIdx);
+      return new TimeInstance(locationList.get(locIdx - 1), invIndex);
+    }
+  }
+
+  class RunTimeDatasetInventory implements TimeInventory {
+    int runIdx = -1;
+
+    RunTimeDatasetInventory(Date run) {
+      double offset = FmrcInv.getOffsetInHours(base, run);
+      for (int i = 0; i < runOffset.length; i++) {
+        if (Misc.closeEnough(runOffset[i], offset)) {
+          runIdx = i;
+          break;
+        }
+      }
+      if (runIdx < 0) throw new IllegalArgumentException("No run date of " + run);
+    }
+
+    @Override
+    public String getName() {
+      DateFormatter df = new DateFormatter();
+      return "Run " + df.toDateTimeStringISO(FmrcInv.makeOffsetDate(base, runOffset[runIdx]));
+    }
+
+    @Override
+    public int getTimeLength(Gridset gridset) {
+      List<TimeInv> coords = gridset.timeCoordMap.get("run" + runIdx);
+      if (coords == null)
+        coords = gridset.makeRun(runIdx);
+      return coords.size();
+    }
+
+    @Override
+    public double[] getTimeCoords(Gridset gridset) {
+      List<TimeInv> coords = gridset.timeCoordMap.get("run" + runIdx);
+      if (coords == null)
+        coords = gridset.makeRun(runIdx);
+
+      double[] result = new double[coords.size()];
+      for (int i = 0; i < coords.size(); i++) {
+        TimeInv b = coords.get(i);
+        result[i] = b.offset;
+      }
+      return result;
+    }
+
+    @Override
+    public double[] getRunTimeCoords(Gridset gridset) {
+      return null;
+    }
+
+    @Override
+    public double[] getOffsetCoords(Gridset gridset) {
+      List<TimeInv> coords = gridset.timeCoordMap.get("run" + runIdx);
+      if (coords == null)
+        coords = gridset.makeRun(runIdx);
+
+      double startRun = gridset.getTimeCoord(runIdx, 0);
+      double[] result = new double[coords.size()];
+      for (int i = 0; i < coords.size(); i++) {
+        TimeInv b = coords.get(i);
+        result[i] = b.offset - startRun;
+      }
+      return result;
+    }
+
+    @Override
+    public Instance getInstance(Gridset.Grid grid, int timeIdx) {
+      Gridset gridset = grid.getGridset();
+      List<TimeInv> coords = gridset.timeCoordMap.get("run" + runIdx);
+      if (coords == null)
+        coords = gridset.makeRun(runIdx);
+
+      TimeInv b = coords.get(timeIdx);
+      return grid.getInstance(b.runIdx, b.timeIdx);
+    }
+  }
+
+  class ConstantForecastDataset implements TimeInventory {
+    double offset;
+
+    ConstantForecastDataset(Date time) {
+      this.offset = FmrcInv.getOffsetInHours(base, time);
+    }
+
+    @Override
+    public String getName() {
+      DateFormatter df = new DateFormatter();
+      return "Constant Forecast " + df.toDateTimeStringISO(FmrcInv.makeOffsetDate(base, offset));
+    }
+
+    @Override
+    public int getTimeLength(Gridset gridset) {
+      List<TimeInv> coords = gridset.timeCoordMap.get("forecast" + offset);
+      if (coords == null)
+        coords = gridset.makeConstantForecast(offset);
+      return coords.size();
+    }
+
+    @Override
+    public double[] getTimeCoords(Gridset gridset) {
+      return null;
+    }
+
+    @Override
+    public double[] getRunTimeCoords(Gridset gridset) {
+      List<TimeInv> coords = gridset.timeCoordMap.get("forecast" + offset);
+      if (coords == null)
+        coords = gridset.makeConstantForecast(offset);
+
+      double[] result = new double[coords.size()];
+      for (int i = 0; i < coords.size(); i++) {
+        TimeInv b = coords.get(i);
+        result[i] = gridset.getTimeCoord(b.runIdx, 0);
+      }
+      return result;
+    }
+
+    @Override
+    public double[] getOffsetCoords(Gridset gridset) {
+      List<TimeInv> coords = gridset.timeCoordMap.get("forecast" + offset);
+      if (coords == null)
+        coords = gridset.makeConstantForecast(offset);
+
+      double[] result = new double[coords.size()];
+      for (int i = 0; i < coords.size(); i++) {
+        TimeInv b = coords.get(i);
+        result[i] = b.offset;
+      }
+      return result;
+    }
+
+    @Override
+    public Instance getInstance(Gridset.Grid grid, int timeIdx) {
+      Gridset gridset = grid.getGridset();
+      List<TimeInv> coords = gridset.timeCoordMap.get("forecast" + offset);
+      if (coords == null)
+        coords = gridset.makeConstantForecast(offset);
+
+      TimeInv b = coords.get(timeIdx);
+      return grid.getInstance(b.runIdx, b.timeIdx);
+    }
+  }
+
+  class ConstantOffsetDataset implements TimeInventory {
+    double offset;
+
+    ConstantOffsetDataset(double offset) {
+      this.offset = offset;
+      boolean ok = false;
+      double[] offsets = getForecastOffsets();
+      for (int i=0; i<offsets.length; i++)
+        if (Misc.closeEnough(offsets[i], offset)) ok = true;
+
+      if (ok) throw new IllegalArgumentException("No constant offset dataset date = " + offset);
+    }
+
+    @Override
+    public String getName() {
+      return "Constant Offset " + offset + " hours";
+    }
+
+    @Override
+    public int getTimeLength(Gridset gridset) {
+      List<TimeInv> coords = gridset.timeCoordMap.get("offset" + offset);
+      if (coords == null)
+        coords = gridset.makeConstantOffset(offset);
+      return coords.size();
+    }
+
+    @Override
+    public double[] getTimeCoords(Gridset gridset) {
+      List<TimeInv> coords = gridset.timeCoordMap.get("offset" + offset);
+      if (coords == null)
+        coords = gridset.makeConstantOffset(offset);
+
+      double[] result = new double[coords.size()];
+      for (int i = 0; i < coords.size(); i++) {
+        TimeInv b = coords.get(i);
+        result[i] = b.offset;
+      }
+      return result;
+    }
+
+    @Override
+    public double[] getRunTimeCoords(Gridset gridset) {
+      List<TimeInv> coords = gridset.timeCoordMap.get("offset" + offset);
+      if (coords == null)
+        coords = gridset.makeConstantOffset(offset);
+
+      double[] result = new double[coords.size()];
+      for (int i = 0; i < coords.size(); i++) {
+        TimeInv b = coords.get(i);
+        result[i] = gridset.getTimeCoord(b.runIdx, 0);
+      }
+      return result;
+    }
+
+    @Override
+    public double[] getOffsetCoords(Gridset gridset) {
+      return null;
+    }
+
+    @Override
+    public Instance getInstance(Gridset.Grid grid, int timeIdx) {
+      Gridset gridset = grid.getGridset();
+      List<TimeInv> coords = gridset.timeCoordMap.get("offset" + offset);
+      if (coords == null)
+        coords = gridset.makeConstantOffset(offset);
+
+      TimeInv b = coords.get(timeIdx);
+      return grid.getInstance(b.runIdx, b.timeIdx);
+    }
+  }
 }

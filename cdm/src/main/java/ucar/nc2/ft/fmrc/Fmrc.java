@@ -162,28 +162,64 @@ public class Fmrc {
   }
 
   public void triggerRescan() throws IOException {
-    checkNeeded( true, null);
+    checkNeeded( true);
   }
 
+  public List<Date> getRunDates() throws IOException {
+    checkNeeded( false); // ??
+    return fmrcDataset.getRunDates();
+  }
+
+  public List<Date> getForecastDates() throws IOException {
+    checkNeeded( false); // ??
+    return fmrcDataset.getForecastDates();
+  }
+
+  public double[] getForecastOffsets() throws IOException {
+    checkNeeded( false); // ??
+    return fmrcDataset.getForecastOffsets();
+  }
+
+  // LOOK : all of these guys could use ehcache
   public GridDataset getDataset2D(NetcdfDataset result) throws IOException {
-    checkNeeded( false, result);
-    return fmrcDataset.getNetcdfDataset2D();
+    checkNeeded( false);
+    GridDataset gds = fmrcDataset.getNetcdfDataset2D(result);
+    return gds;
   }
 
   public GridDataset getDatasetBest() throws IOException {
-    checkNeeded( false, null);
-    return fmrcDataset.getBest();
+    checkNeeded( false);
+    GridDataset gds =  fmrcDataset.getBest();
+    return gds;
   }
 
-  private void checkNeeded(boolean force, NetcdfDataset result) throws IOException {
+  public GridDataset getRunTimeDataset(Date run) throws IOException {
+    checkNeeded( false);
+    GridDataset gds =  fmrcDataset.getRunTimeDataset(run);
+    return gds;
+  }
+
+  public GridDataset getConstantForecastDataset(Date time) throws IOException {
+    checkNeeded( false);
+    GridDataset gds =  fmrcDataset.getConstantForecastDataset(time);
+    return gds;
+  }
+
+  public GridDataset getConstantOffsetDataset(double hour) throws IOException {
+    checkNeeded( false);
+    GridDataset gds =  fmrcDataset.getConstantOffsetDataset(hour);
+    return gds;
+  }
+
+  private void checkNeeded(boolean force) throws IOException {
     synchronized (lock) {
       boolean forceProtoLocal = forceProto;
 
       if (fmrcDataset == null) {
         fmrcDataset = new FmrcDataset(config);
         manager.scan(null);
-        FmrcInv fmrc = makeFmrcInv(null);
-        fmrcDataset.make(fmrc, forceProtoLocal, result);
+        FmrcInv fmrcInv = makeFmrcInv(null);
+        fmrcDataset.setInventory(fmrcInv, forceProtoLocal);
         if (forceProtoLocal) forceProto = false;
         return;
       }
@@ -193,8 +229,8 @@ public class Fmrc {
       if (!manager.rescan()) return;
 
       try {
-        FmrcInv fmrc = makeFmrcInv(null);
-        fmrcDataset.make(fmrc, forceProtoLocal, result);
+        FmrcInv fmrcInv = makeFmrcInv(null);
+        fmrcDataset.setInventory(fmrcInv, forceProtoLocal);
         if (logger.isInfoEnabled()) logger.info(config.spec+": make new Dataset, new proto = "+forceProtoLocal);
         if (forceProtoLocal) forceProto = false;
 
