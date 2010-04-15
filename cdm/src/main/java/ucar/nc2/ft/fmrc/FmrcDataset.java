@@ -672,11 +672,11 @@ class FmrcDataset {
 
       Group newGroup = result.getRootGroup(); // can it be different ??
       String timeDimeName = gridset.name;
-      VariableDS timeCoord = makeTimeCoordinate(result, newGroup, timeDimeName, lite.base, gridset.makeBestTimeOffsets());
+      VariableDS timeCoord = makeTimeCoordinate(result, newGroup, timeDimeName, lite.base, gridset.getBestTimeOffsets());
       newGroup.removeVariable(timeCoord.getShortName());
       newGroup.addVariable(timeCoord);
 
-      VariableDS runtimeCoord = makeRunTimeCoordinate(result, newGroup, timeDimeName, lite.base, gridset.makeBestRunOffsets());
+      VariableDS runtimeCoord = makeRunTimeCoordinate(result, newGroup, timeDimeName, lite.base, gridset.getBestRunOffsets());
       newGroup.removeVariable(runtimeCoord.getShortName());
       newGroup.addVariable(runtimeCoord);
 

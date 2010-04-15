@@ -352,6 +352,8 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     String spec = collElem.getAttributeValue("spec");
     String olderThan = collElem.getAttributeValue("olderThan");
     String recheckAfter = collElem.getAttributeValue("recheckAfter");
+    if (recheckAfter == null)
+       recheckAfter = collElem.getAttributeValue("recheckEvery"); // old name
     if (spec == null) {
       logger.error( "featureCollection "+name+" must have a spec attribute." );
       return null;
@@ -367,7 +369,6 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
       config.updateConfig = new FeatureCollection.UpdateConfig(startup, rescan, trigger);
     }
 
-
     Element protoElem = dsElem.getChild( "protoDataset", defNS );
     if (protoElem != null) {
       String choice = protoElem.getAttributeValue("choice");
@@ -378,10 +379,10 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
 
     Element fmrcElem = dsElem.getChild( "fmrcConfig", defNS );
     if (fmrcElem != null) {
-      String regularize = protoElem.getAttributeValue("regularize");
+      String regularize = fmrcElem.getAttributeValue("regularize");
       config.fmrcConfig = new FeatureCollection.FmrcConfig(regularize);
 
-      String datasetTypes = protoElem.getAttributeValue("datasetTypes");
+      String datasetTypes = fmrcElem.getAttributeValue("datasetTypes");
       if (null != datasetTypes)
         config.fmrcConfig.addDatasetType(datasetTypes);
     }

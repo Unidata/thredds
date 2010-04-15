@@ -4,6 +4,8 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.2:
  2:
+  FmrcInvLite, time coord variants
+  monotonize Lon coordinate axis
   Christian Ward-Garrison improvements on FileWriter
   NetcdfFileWritable: check for record variable on rewrite, unlimited dimension must be first
   Aggregation.closeDataset() : dont   null out the dataset list.

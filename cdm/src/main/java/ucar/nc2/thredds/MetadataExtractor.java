@@ -126,7 +126,8 @@ public class MetadataExtractor {
         vaxis = vaxis2;
     }
 
-    gc.setBoundingBox(llbb);
+    if (llbb != null)
+      gc.setBoundingBox(llbb);
     if (vaxis != null)
       gc.setVertical(vaxis);
     return gc;

@@ -36,8 +36,6 @@ import thredds.inventory.bdb.MetadataManager;
 import ucar.unidata.util.StringUtil;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
-import ucar.nc2.ft.fmrc.*;
-import ucar.nc2.units.DateFormatter;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionListener;
@@ -62,13 +60,10 @@ public class CollectionTable extends JPanel {
   private PreferencesExt prefs;
 
   private BeanTableSorted collectionNameTable, dataTable;
-  private JSplitPane split, split2, splitV;
+  private JSplitPane split;
 
   private TextHistoryPane infoTA;
   private IndependentWindow infoWindow;
-
-  private Formatter debug;
-  private DateFormatter df = new DateFormatter();
 
   public CollectionTable(PreferencesExt prefs) {
     this.prefs = prefs;
@@ -124,13 +119,6 @@ public class CollectionTable extends JPanel {
     split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, collectionNameTable, dataTable);
     split.setDividerLocation(prefs.getInt("splitPos", 500));
 
-    /* split2 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, split, gridTable);
-    split2.setDividerLocation(prefs.getInt("splitPos2", 500));
-
-    splitV = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, false, collectionNameTable, dataTable);
-    splitV.setDividerLocation(prefs.getInt("splitPosV", 500));   */
-
-
     setLayout(new BorderLayout());
     add(split, BorderLayout.CENTER);
     refresh();
@@ -146,12 +134,8 @@ public class CollectionTable extends JPanel {
   public void save() {
     collectionNameTable.saveState(false);
     dataTable.saveState(false);
-    // coordTable.saveState(false);
-    // gridTable.saveState(false);
     prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());
     prefs.putInt("splitPos", split.getDividerLocation());
-    //prefs.putInt("splitPos2", split2.getDividerLocation());
-    //prefs.putInt("splitPosV", splitV.getDividerLocation());
   }
 
   public void refresh() {
@@ -173,7 +157,7 @@ public class CollectionTable extends JPanel {
       }
       dataTable.setBeans(beans);
     } catch (IOException e) {
-      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+      e.printStackTrace();
     } finally {
       if (mm != null) mm.close();
     }
@@ -238,6 +222,9 @@ public class CollectionTable extends JPanel {
     }
     public String getValue() {
       return data.value;
+    }
+    public int getSize() {
+      return data.value.length();
     }
   }
 

@@ -677,6 +677,32 @@ public class CoordinateAxis1D extends CoordinateAxis {
         isAscending = true;
       else
         isAscending = getCoordValue(0) < getCoordValue(1);
+      
+      if (axisType == AxisType.Lon) {
+        boolean monotonic = true;
+        for (int i=0; i<midpoint.length-1; i++)
+          monotonic &= isAscending ? midpoint[i] < midpoint[i+1] : midpoint[i] > midpoint[i+1];
+
+        if (!monotonic) {
+          boolean cross = false;
+          if (isAscending) {
+            for (int i=0; i<midpoint.length; i++) {
+              if (cross) midpoint[i] += 360;
+              if (!cross && midpoint[i] > midpoint[i+1])
+                cross = true;
+
+            }
+          } else {
+             for (int i=0; i<midpoint.length; i++) {
+               if (cross) midpoint[i] -= 360;
+               if (!cross && midpoint[i] < midpoint[i+1]) cross = true;
+            }
+          }
+          Array cachedData = Array.factory(getDataType(), getShape(), midpoint);
+          setCachedData(cachedData);
+        }
+      }
+      
 
       //  calcIsRegular();
     } else if (getDataType() == DataType.STRING) {

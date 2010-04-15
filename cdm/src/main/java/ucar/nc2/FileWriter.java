@@ -58,12 +58,14 @@ import java.util.*;
 public class FileWriter {
   /**
    * Set debugging flags
+   *
    * @param debugFlags debug flags
    */
   public static void setDebugFlags(ucar.nc2.util.DebugFlags debugFlags) {
     debug = debugFlags.isSet("ncfileWriter/debug");
     debugExtend = debugFlags.isSet("ncfileWriter/debugExtend");
   }
+
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FileWriter.class);
 
   static private boolean debug = false, debugWrite = false, debugExtend;
@@ -98,7 +100,7 @@ public class FileWriter {
 
 
   public static NetcdfFile writeToFile(NetcdfFile fileIn, String fileOutName, boolean fill, int delay) throws IOException {
-    return writeToFile(fileIn, fileOutName, fill, delay, false); 
+    return writeToFile(fileIn, fileOutName, fill, delay, false);
   }
 
   /**
@@ -108,7 +110,7 @@ public class FileWriter {
    * @param fileOutName write to this local file
    * @param fill        use fill mode
    * @param delay       if > 0, delay this many millisecs between record writing (debugging - do not use)
-   * @param isLargeFile  if true, make large file format (> 2Gb offsets)
+   * @param isLargeFile if true, make large file format (> 2Gb offsets)
    * @return NetcdfFile that was written. It remains open for reading or writing.
    * @throws IOException on read or write error
    */
@@ -124,7 +126,7 @@ public class FileWriter {
     // global attributes
     List<Attribute> glist = fileIn.getGlobalAttributes();
     for (Attribute att : glist) {
-      String useName = N3iosp.makeValidNetcdfObjectName( att.getName());
+      String useName = N3iosp.makeValidNetcdfObjectName(att.getName());
       Attribute useAtt;
       if (att.isArray())
         useAtt = ncfile.addGlobalAttribute(useName, att.getValues());
@@ -138,9 +140,9 @@ public class FileWriter {
     // copy dimensions LOOK anon dimensions
     Map<String, Dimension> dimHash = new HashMap<String, Dimension>();
     for (Dimension oldD : fileIn.getDimensions()) {
-      String useName = N3iosp.makeValidNetcdfObjectName( oldD.getName());
+      String useName = N3iosp.makeValidNetcdfObjectName(oldD.getName());
       Dimension newD = ncfile.addDimension(useName, oldD.isUnlimited() ? 0 : oldD.getLength(),
-          oldD.isShared(), oldD.isUnlimited(), oldD.isVariableLength());
+              oldD.isShared(), oldD.isUnlimited(), oldD.isVariableLength());
       dimHash.put(newD.getName(), newD);
       if (debug) System.out.println("add dim= " + newD);
     }
@@ -152,12 +154,12 @@ public class FileWriter {
       List<Dimension> dims = new ArrayList<Dimension>();
       List<Dimension> dimvList = oldVar.getDimensions();
       for (Dimension oldD : dimvList) {
-        String useName = N3iosp.makeValidNetcdfObjectName( oldD.getName());
+        String useName = N3iosp.makeValidNetcdfObjectName(oldD.getName());
         Dimension dim = dimHash.get(useName);
         if (dim != null)
           dims.add(dim);
         else
-          throw new IllegalStateException("Unknown dimension= "+oldD.getName());
+          throw new IllegalStateException("Unknown dimension= " + oldD.getName());
       }
 
       DataType newType = oldVar.getDataType();
@@ -173,7 +175,7 @@ public class FileWriter {
         }
 
         // add last dimension
-        String useName = N3iosp.makeValidNetcdfObjectName( oldVar.getName()+ "_strlen");
+        String useName = N3iosp.makeValidNetcdfObjectName(oldVar.getName() + "_strlen");
         Dimension newD = ncfile.addDimension(useName, max_len);
         dims.add(newD);
 
@@ -181,13 +183,13 @@ public class FileWriter {
       }
 
       String varName = N3iosp.makeValidNetcdfObjectName(oldVar.getShortName());
-      Variable v = ncfile.addVariable( varName, newType, dims);
+      Variable v = ncfile.addVariable(varName, newType, dims);
       if (debug) System.out.println("add var= " + v);
 
       // attributes
       List<Attribute> attList = oldVar.getAttributes();
       for (Attribute att : attList) {
-        String useName = N3iosp.makeValidNetcdfObjectName( att.getName());
+        String useName = N3iosp.makeValidNetcdfObjectName(att.getName());
         if (att.isArray())
           ncfile.addVariableAttribute(varName, useName, att.getValues());
         else if (att.isString())
@@ -204,14 +206,14 @@ public class FileWriter {
       System.out.println("File Out= " + ncfile.toString());
 
     // see if it has a record dimension we can use
-   if (fileIn.hasUnlimitedDimension()) {
+    if (fileIn.hasUnlimitedDimension()) {
       fileIn.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
       ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
     }
     boolean useRecordDimension = hasRecordStructure(fileIn) && hasRecordStructure(ncfile);
     Structure recordVar = useRecordDimension ? (Structure) fileIn.findVariable("record") : null;
 
-    double total = copyVarData( ncfile, varlist, recordVar, delay);
+    double total = copyVarData(ncfile, varlist, recordVar, delay);
     ncfile.flush();
     if (debug) System.out.println("FileWriter done total bytes = " + total);
 
@@ -219,7 +221,7 @@ public class FileWriter {
     return ncfile;
   }
 
-   private static boolean hasRecordStructure(NetcdfFile file) {
+  private static boolean hasRecordStructure(NetcdfFile file) {
     Variable v = file.findVariable("record");
     return (v != null) && (v.getDataType() == DataType.STRUCTURE);
   }
@@ -228,10 +230,10 @@ public class FileWriter {
    * Write data from varList into new file. Read/Write a maximum of  maxSize bytes at a time.
    * When theres a record variable, its much more efficient to use it.
    *
-   * @param ncfile write tot this file
-   * @param varlist list of varibles from the original file, with data in them
+   * @param ncfile    write tot this file
+   * @param varlist   list of varibles from the original file, with data in them
    * @param recordVar the record variable from the original file, or null means dont use record variables
-   * @param delay delay between writing records, for testing
+   * @param delay     delay between writing records, for testing
    * @return total number of bytes written
    * @throws IOException if I/O error
    */
@@ -252,43 +254,11 @@ public class FileWriter {
       long size = oldVar.getSize() * oldVar.getElementSize();
       total += size;
 
-      // robert.bridle@csiro.au<mailto:robert.bridle@csiro.au> | www.csiro.au
-      // 03/29/2010
-///////////// ORIGINAL CODE //////////////////////
-      int nelems = (int) (size / maxSize);
-      if (nelems <= 1)
+      if (size <= maxSize) {
         copyAll(ncfile, oldVar);
-      else
-        copySome(ncfile, oldVar, nelems);
-////////////////////////////////////////////////////
-
-////////////// PROPOSED CODE //////////////////////
-/*      if(size > maxSize)
-      {
-        int[] shape = oldVar.getShape();
-
-        // determine the size of all the dimensions, other than the first.
-        long sizeOfOtherDimensions = 1;
-        for (int i = 1; i < shape.length; i++) {
-          if (shape[i] >= 0)
-            sizeOfOtherDimensions *= shape[i];
-        }
-
-        // determine number of bytes in all the dimensions, other than the first.
-        long bytesInOtherDimensions = sizeOfOtherDimensions * oldVar.getElementSize();
-
-        // first dimension chunk-size that will fit within maxSize of memory.
-        int firstDimensionChunkSize = (int) (maxSize/bytesInOtherDimensions);
-        //System.out.println("We can fit: " + firstDimensionChunkSize + " chunks in: " + maxSize + " bytes of memory.");
-
-        copySome(ncfile, oldVar, firstDimensionChunkSize);
+      } else {
+        copySome(ncfile, oldVar, maxSize);
       }
-      else
-      {
-        copyAll(ncfile, oldVar);
-      }    */
-////////////////////////////////////////////////////
-
     }
 
     // write record data
@@ -328,7 +298,7 @@ public class FileWriter {
   }
 
   private static void copyAll(NetcdfFileWriteable ncfile, Variable oldVar) throws IOException {
-    String newName = N3iosp.makeValidNetcdfObjectName( oldVar.getName());
+    String newName = N3iosp.makeValidNetcdfObjectName(oldVar.getName());
 
     Array data = oldVar.read();
     try {
@@ -340,33 +310,77 @@ public class FileWriter {
 
     } catch (InvalidRangeException e) {
       e.printStackTrace();
-      throw new IOException(e.getMessage()+" for Variable "+oldVar.getName());
+      throw new IOException(e.getMessage() + " for Variable " + oldVar.getName());
     }
   }
 
-  private static void copySome(NetcdfFileWriteable ncfile, Variable oldVar, int nelems) throws IOException {
-    String newName = N3iosp.makeValidNetcdfObjectName( oldVar.getName());
+  /////////////////////////////////////////////
+  // contributed by  cwardgar@usgs.gov 4/12/2010
 
-    int[] shape = oldVar.getShape();
-    int[] origin = new int[oldVar.getRank()];
-    int size = shape[0];
+  /**
+   * An index that computes chunk shapes. It is intended to be used to compute the origins and shapes for a series
+   * of contiguous writes to a multidimensional array.
+   */
+  public static class ChunkingIndex extends Index {
+    public ChunkingIndex(int[] shape) {
+      super(shape);
+    }
 
-    for (int i = 0; i < size; i += nelems) {
-      origin[0] = i;
-      int left = size - i;
-      shape[0] = Math.min(nelems, left);
+    /**
+     * Computes the shape of the largest possible <b>contiguous</b> chunk, starting at {@link #getCurrentCounter()}
+     * and with {@code numElems <= maxChunkElems}.
+     *
+     * @param maxChunkElems the maximum number of elements in the chunk shape. The actual element count of the shape
+     *                      returned is likely to be different, and can be found with {@link Index#computeSize}.
+     * @return the shape of the largest possible contiguous chunk.
+     */
+    public int[] computeChunkShape(long maxChunkElems) {
+      int[] chunkShape = new int[rank];
 
-      Array data;
+      for (int iDim = 0; iDim < rank; ++iDim) {
+        chunkShape[iDim] = (int) (maxChunkElems / stride[iDim]);
+        chunkShape[iDim] = (chunkShape[iDim] == 0) ? 1 : chunkShape[iDim];
+        chunkShape[iDim] = Math.min(chunkShape[iDim], shape[iDim] - current[iDim]);
+      }
+
+      return chunkShape;
+    }
+  }
+
+  /**
+   * Copies data from {@code oldVar} to {@code ncfile}. The writes are done in a series of chunks no larger than
+   * {@code maxChunkSize} bytes.
+   *
+   *
+   * @param ncfile       the NetCDF file to write to.
+   * @param oldVar       a variable from the original file to copy data from.
+   * @param maxChunkSize the size, <b>in bytes</b>, of the largest chunk to write.
+   * @throws IOException if an I/O error occurs.
+   */
+  private static void copySome(NetcdfFileWriteable ncfile, Variable oldVar, long maxChunkSize) throws IOException {
+    String newName = N3iosp.makeValidNetcdfObjectName(oldVar.getName());
+    long maxChunkElems = maxChunkSize / oldVar.getElementSize();
+
+    ChunkingIndex index = new ChunkingIndex(oldVar.getShape());
+    while (index.currentElement() < index.getSize()) {
       try {
-        data = oldVar.read(origin, shape);
+        int[] chunkOrigin = index.getCurrentCounter();
+        int[] chunkShape = index.computeChunkShape(maxChunkElems);
+
+        Array data = oldVar.read(chunkOrigin, chunkShape);
+
         if (oldVar.getDataType() == DataType.STRING) {
           data = convertToChar(ncfile.findVariable(newName), data);
         }
-        if (data.getSize() > 0)  {// zero when record dimension = 0
-          ncfile.write(newName, origin, data);
-          if (debugWrite) System.out.println("write "+data.getSize()+" bytes");
+
+        if (data.getSize() > 0) {// zero when record dimension = 0
+          ncfile.write(newName, chunkOrigin, data);
+          if (debugWrite) {
+            System.out.println("write " + data.getSize() + " bytes");
+          }
         }
 
+        index.setCurrentCounter(index.currentElement() + (int) Index.computeSize(chunkShape));
       } catch (InvalidRangeException e) {
         e.printStackTrace();
         throw new IOException(e.getMessage());
@@ -407,9 +421,12 @@ public class FileWriter {
 
   /**
    * Get underlying NetcdfFileWriteable
+   *
    * @return underlying NetcdfFileWriteable
    */
-  public NetcdfFileWriteable getNetcdf() { return ncfile; }
+  public NetcdfFileWriteable getNetcdf() {
+    return ncfile;
+  }
 
   /**
    * Write a global attribute to the file.
@@ -417,7 +434,7 @@ public class FileWriter {
    * @param att take attribute name, value, from here
    */
   public void writeGlobalAttribute(Attribute att) {
-    String useName = N3iosp.makeValidNetcdfObjectName( att.getName());
+    String useName = N3iosp.makeValidNetcdfObjectName(att.getName());
     if (att.isArray()) // why rewrite them ??
       ncfile.addGlobalAttribute(useName, att.getValues());
     else if (att.isString())
@@ -433,8 +450,8 @@ public class FileWriter {
    * @param att     take attribute name, value, from here
    */
   public void writeAttribute(String varName, Attribute att) {
-    String attName = N3iosp.makeValidNetcdfObjectName( att.getName());
-    varName = N3iosp.makeValidNetcdfObjectName( varName);
+    String attName = N3iosp.makeValidNetcdfObjectName(att.getName());
+    varName = N3iosp.makeValidNetcdfObjectName(varName);
     if (att.isArray())
       ncfile.addVariableAttribute(varName, attName, att.getValues());
     else if (att.isString())
@@ -450,7 +467,7 @@ public class FileWriter {
    * @return the new Dimension
    */
   public Dimension writeDimension(Dimension dim) {
-    String useName = N3iosp.makeValidNetcdfObjectName( dim.getName());
+    String useName = N3iosp.makeValidNetcdfObjectName(dim.getName());
     Dimension newDim = ncfile.addDimension(useName, dim.isUnlimited() ? 0 : dim.getLength(),
             dim.isShared(), dim.isUnlimited(), dim.isVariableLength());
     dimHash.put(useName, newDim);
@@ -462,6 +479,7 @@ public class FileWriter {
   /**
    * Add a Variable to the file. The data is copied when finish() is called.
    * The variable's Dimensions are added for you, if not already been added.
+   *
    * @param oldVar copy this Variable to new file.
    */
   public void writeVariable(Variable oldVar) {
@@ -470,7 +488,7 @@ public class FileWriter {
     List<Dimension> dimvList = oldVar.getDimensions();
     for (int j = 0; j < dimvList.size(); j++) {
       Dimension oldD = dimvList.get(j);
-      Dimension newD = dimHash.get( N3iosp.makeValidNetcdfObjectName(oldD.getName()));
+      Dimension newD = dimHash.get(N3iosp.makeValidNetcdfObjectName(oldD.getName()));
       if (null == newD) {
         newD = writeDimension(oldD);
         dimHash.put(newD.getName(), newD);
@@ -478,7 +496,7 @@ public class FileWriter {
       dims[j] = newD;
     }
 
-    String useName = N3iosp.makeValidNetcdfObjectName( oldVar.getShortName());
+    String useName = N3iosp.makeValidNetcdfObjectName(oldVar.getShortName());
     if (oldVar.getDataType() == DataType.STRING) {
       try {
         // need to get the maximum string length
@@ -492,7 +510,7 @@ public class FileWriter {
 
         ncfile.addStringVariable(useName, Arrays.asList(dims), max_strlen);
       } catch (IOException ioe) {
-        log.error("Error reading String variable "+oldVar, ioe);
+        log.error("Error reading String variable " + oldVar, ioe);
         return;
       }
     } else
@@ -510,6 +528,7 @@ public class FileWriter {
   /**
    * Add a list of Variables to the file. The data is copied when finish() is called.
    * The Variables' Dimensions are added for you, if not already been added.
+   *
    * @param varList list of Variable
    */
   public void writeVariables(List<Variable> varList) {
@@ -523,6 +542,7 @@ public class FileWriter {
   /**
    * Read record data from here (when finish is called). Typically much more efficient.
    * LOOK: Not sure if this allows subsetting, use with caution!!
+   *
    * @param recordVar the record Variable.
    */
   public void setRecordVariable(Structure recordVar) {
@@ -539,7 +559,7 @@ public class FileWriter {
   public void finish() throws IOException {
     ncfile.create();
 
-    double total = copyVarData( ncfile, varList, recordVar, 0);
+    double total = copyVarData(ncfile, varList, recordVar, 0);
     ncfile.close();
     if (debug) System.out.println("FileWriter finish total bytes = " + total);
   }

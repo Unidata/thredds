@@ -50,6 +50,7 @@ import ucar.nc2.units.DateFormatter;
 public class MetadataManager {
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(MetadataManager.class);
   private static final String UTF8 = "UTF-8";
+
   private static String root = "/machine/temp/bdb/";
   private static Environment myEnv = null;
   private static List<Database> openDatabases = new ArrayList<Database>();

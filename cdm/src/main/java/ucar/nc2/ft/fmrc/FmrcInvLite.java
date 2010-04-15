@@ -81,7 +81,7 @@ public class FmrcInvLite implements java.io.Serializable {
     int noffsets;
     double[] timeOffset;  // timeOffset(nruns,noffsets) in offset hours since base. this is the twoD time coordinate for this Gridset
 
-    List<Blob> best;
+    Map<String, List<Blob>> timeCoordMap = new HashMap<String, List<Blob>>();
 
     Gridset(FmrcInv.RunSeq runseq) {
       this.name = runseq.getName();
@@ -128,8 +128,13 @@ public class FmrcInvLite implements java.io.Serializable {
       return result;
     }
 
-    double[] makeBestTimeOffsets() {
-      if (best == null) makeBest();
+    ////////////////////////////////////////////
+    // create time coordinate variants
+
+    double[] getBestTimeOffsets() {
+      List<Blob> best = timeCoordMap.get("best");
+      if (best == null) best = makeBest();
+
       double[] result = new double[ best.size()];
       for (int i=0; i< best.size(); i++) {
         Blob b = best.get(i);
@@ -138,8 +143,10 @@ public class FmrcInvLite implements java.io.Serializable {
       return result;
     }
 
-    double[] makeBestRunOffsets() {
-      if (best == null) makeBest();
+    double[] getBestRunOffsets() {
+      List<Blob> best = timeCoordMap.get("best");
+      if (best == null)
+        best = makeBest();
       double[] result = new double[ best.size()];
       for (int i=0; i<best.size(); i++) {
         Blob b = best.get(i);
@@ -148,7 +155,7 @@ public class FmrcInvLite implements java.io.Serializable {
       return result;
     }
 
-    private void makeBest() {
+    private List<Blob> makeBest() {
       Map<Double, Blob> map = new HashMap<Double, Blob>();
       for (int run=0; run<nruns; run++) {
         for (int time=0; time<noffsets; time++) {
@@ -159,11 +166,86 @@ public class FmrcInvLite implements java.io.Serializable {
 
       Collection<Blob> values = map.values();
       int n = values.size();
-      best = Arrays.asList((Blob[]) values.toArray(new Blob[n]));
+      List<Blob> best = Arrays.asList((Blob[]) values.toArray(new Blob[n]));
       Collections.sort(best);
+      timeCoordMap.put("best", best);
+      return best;
     }
 
-    class Grid implements java.io.Serializable {
+    double[] getConstantOffsets(int col) {
+      List<Blob> coords = timeCoordMap.get("offset"+col);
+      if (coords == null)
+        coords = makeConstantOffset(col);
+
+      double[] result = new double[ coords.size()];
+      for (int i=0; i< coords.size(); i++) {
+        Blob b = coords.get(i);
+        result[i] = b.offset;
+      }
+      return result;
+    }
+
+    private List<Blob> makeConstantOffset(int col) {
+      List<Blob> result = new ArrayList<Blob>(nruns);
+      for (int run=0; run< nruns; run++) {
+        double offset = timeOffset[run*noffsets + col];
+         if (!Double.isNaN(offset))
+           result.add( new Blob(run, col, offset));
+      }
+      timeCoordMap.put("offset"+col, result);
+      return result;
+    }
+
+    double[] getConstantForecast(double offset) {
+      List<Blob> coords = timeCoordMap.get("forecast"+offset);
+      if (coords == null)
+        coords = makeConstantForecast(offset);
+
+      double[] result = new double[ coords.size()];
+      for (int i=0; i< coords.size(); i++) {
+        Blob b = coords.get(i);
+        result[i] = b.offset;
+      }
+      return result;
+    }
+
+    private List<Blob> makeConstantForecast(double offset) {
+      List<Blob> result = new ArrayList<Blob>(noffsets);
+      for (int run=0; run< nruns; run++) {
+        for (int time=0; time< noffsets; time++) {
+          if (Misc.closeEnough(timeOffset[run*noffsets + time], offset))
+            result.add( new Blob(run, time, offset - timeOffset[run*noffsets])); // use offset from start of run
+        }
+      }
+      timeCoordMap.put("forecast"+offset, result);
+      return result;
+    }
+
+    double[] getRun(int runIdx) {
+      List<Blob> coords = timeCoordMap.get("run"+runIdx);
+      if (coords == null)
+        coords = makeRun(runIdx);
+
+      double[] result = new double[ coords.size()];
+      for (int i=0; i< coords.size(); i++) {
+        Blob b = coords.get(i);
+        result[i] = b.offset;
+      }
+      return result;
+    }
+
+    private List<Blob> makeRun(int runIdx) {
+      List<Blob> result = new ArrayList<Blob>(noffsets);
+      for (int time=0; time< noffsets; time++) {
+        double offset = timeOffset[runIdx*noffsets + time];
+         if (!Double.isNaN(offset))
+           result.add( new Blob(runIdx, time, offset));
+      }
+      timeCoordMap.put("run"+runIdx, result);
+      return result;
+    }
+
+     class Grid implements java.io.Serializable {
       String name;
       GridInventory inv;
 
@@ -181,7 +263,9 @@ public class FmrcInvLite implements java.io.Serializable {
       }
 
       FmrcDataset.TimeInstance findInventoryBest(int bestIdx) {
-        if (best == null) makeBest();
+        List<Blob> best = timeCoordMap.get("best");
+        if (best == null)
+          best = makeBest();
 
         Blob b = best.get(bestIdx);
         int locIdx = inv.location[b.runIdx * inv.noffsets + b.timeIdx];
@@ -194,8 +278,8 @@ public class FmrcInvLite implements java.io.Serializable {
     }
   }
 
-
-  class Blob implements Comparable<Blob> {
+  // represents 1 element in the 2d time matrix
+  private class Blob implements Comparable<Blob> {
     int runIdx, timeIdx;
     double offset;
 
