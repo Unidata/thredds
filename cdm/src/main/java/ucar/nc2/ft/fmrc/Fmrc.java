@@ -63,13 +63,13 @@ public class Fmrc {
    * Factory method
    *
    * @param collection describes the collection. May be one of:
-   *                   <ol>
-   *                   <li>collection specification string
-   *                   <li>catalog:catalogURL
-   *                   <li>filename.ncml
-   *                   <li>
-   *                   </ol>
-   *                   collectionSpec date extraction is used to get rundates
+   *  <ol>
+   *  <li>collection specification string
+   *  <li>catalog:catalogURL
+   *  <li>filename.ncml
+   *  <li>
+   *  </ol>
+   *  collectionSpec date extraction is used to get rundates
    * @param errlog     place error messages here
    * @return Fmrc or null on error
    * @throws IOException on read error
@@ -105,9 +105,7 @@ public class Fmrc {
 
   ////////////////////////////////////////////////////////////////////////
   private final CollectionManager manager;
-  //private final DateExtractor dateExtractor1;
   private final FeatureCollection.Config config;
-  //private final CollectionSpecParser sp;
 
   // should be final
   private Element ncmlOuter, ncmlInner;
@@ -115,14 +113,10 @@ public class Fmrc {
   // the current state - changing must be thread safe
   private Object lock = new Object();
   private FmrcDataset fmrcDataset;
+  private volatile boolean forceProto = false;
 
   private Fmrc(String collectionSpec, Formatter errlog) {
-    //sp = new CollectionSpecParser(collectionSpec, errlog);
     manager = new DatasetCollectionManager(collectionSpec, errlog);
-
-    // optional date extraction is used to get rundates when not embedded in the file
-    //dateExtractor = (sp.getDateFormatMark() == null) ? new DateExtractorNone() : new DateExtractorFromName(sp.getDateFormatMark(), true);
-
     config = new FeatureCollection.Config();
   }
 
@@ -137,30 +131,13 @@ public class Fmrc {
   // from AggregationFmrc
   public Fmrc(CollectionManager manager, DateExtractor dateExtractor) {
     this.manager = manager;
-    //this.dateExtractor = dateExtractor == null ? new DateExtractorNone() : dateExtractor;
     this.config = new FeatureCollection.Config();
-    //this.sp = null;
   }
 
   public void setNcml(Element ncmlOuter, Element ncmlInner) {
     this.ncmlOuter = ncmlOuter;
     this.ncmlInner = ncmlInner;
   }
-
-  // InvDatasetFeatureCollection needs these 3 - may be able to remove in the future\
-
- /* public String getTopDirLocation() {
-    return sp.getTopDir();
-  }
-
-  public Pattern getFilter() {
-    return sp.getFilter();
-  }
-
-
-  public CollectionSpecParser getCollectionSpecParser() {
-    return sp;
-  }  */
 
   public double getOlderThanFilterInSecs() {
     if (manager instanceof DatasetCollectionManager)
@@ -174,13 +151,11 @@ public class Fmrc {
     return manager;
   }
 
-
   public FmrcInv getFmrcInv(Formatter debug) throws IOException {
     return makeFmrcInv( debug);
   }
 
   /////////////////////////////////////////////////////////////////////////////////////////
-  private boolean forceProto = false;
 
   public void triggerProto() {
     forceProto = true;
@@ -222,6 +197,7 @@ public class Fmrc {
         fmrcDataset.make(fmrc, forceProtoLocal, result);
         if (logger.isInfoEnabled()) logger.info(config.spec+": make new Dataset, new proto = "+forceProtoLocal);
         if (forceProtoLocal) forceProto = false;
+
       } catch (Throwable t) {
         t.printStackTrace();
         throw new RuntimeException(t);  

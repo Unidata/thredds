@@ -51,7 +51,6 @@ import ucar.nc2.util.IO;
  * @since Jun 16, 2008
  */
 public class TestWriteMiscProblems extends TestCase {
-  private boolean show = false;
 
   public TestWriteMiscProblems(String name) {
     super(name);

@@ -93,6 +93,13 @@ public interface CollectionManager {
   public long getLastScanned();
 
   /**
+   * Get common root of all MFiles in the collection - may be null
+   *
+   * @return msecs since 1970
+   */
+  public String getRoot();
+
+  /**
    * Get the current collection of MFile, since last scan or rescan.
    *
    * @return current list of MFile, sorted by name

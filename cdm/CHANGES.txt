@@ -4,9 +4,9 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.2:
  2:
-  robert.bridle improvements on FileWriter
+  Christian Ward-Garrison improvements on FileWriter
   NetcdfFileWritable: check for record variable on rewrite, unlimited dimension must be first
-  Aggregation.closeDataset() : dont null out the dataset list.
+  Aggregation.closeDataset() : dont   null out the dataset list.
   StringUtil.split()
   refactor Fmrc implementation to eliminate retained fmrcInv, orgVar..
   ucar.nc2.util.NamedAnything

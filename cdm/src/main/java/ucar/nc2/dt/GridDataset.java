@@ -59,7 +59,6 @@ public interface GridDataset extends ucar.nc2.dt.TypedDataset {
    */
   public List<Gridset> getGridsets();
 
-
   /**
    * A set of GridDatatype objects with the same Coordinate System.
    */

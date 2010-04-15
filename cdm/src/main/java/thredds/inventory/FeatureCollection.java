@@ -57,6 +57,11 @@ public class FeatureCollection {
     TwoD, Best, Files, Runs, ConstantForecasts, ConstantOffsets
   }
 
+  public static void setRegularizeDefault(boolean t) {
+    regularizeDefault = t;
+  }
+
+  static private boolean regularizeDefault = false;
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FeatureCollection.class);
 
   static public class Config {
@@ -82,6 +87,18 @@ public class FeatureCollection {
         }
       } */
     }
+
+    @Override
+    public String toString() {
+      return "Config{" +
+              "spec='" + spec + '\'' +
+              ", olderThan='" + olderThan + '\'' +
+              ", recheckAfter='" + recheckAfter + '\'' +
+              "\n " + updateConfig +
+              "\n " + protoConfig +
+              "\n " + fmrcConfig +
+              '}';
+    }
   }
 
   static public class UpdateConfig {
@@ -98,6 +115,15 @@ public class FeatureCollection {
       if (trigger != null)
         this.triggerOk = trigger.equalsIgnoreCase("allow");
       this.rescan = rescan;
+    }
+
+    @Override
+    public String toString() {
+      return "UpdateConfig{" +
+              "startup=" + startup +
+              ", rescan='" + rescan + '\'' +
+              ", triggerOk=" + triggerOk +
+              '}';
     }
   }
 
@@ -125,13 +151,23 @@ public class FeatureCollection {
       this.change = change;
       this.filename = filename;
     }
+
+    @Override
+    public String toString() {
+      return "ProtoConfig{" +
+              "choice=" + choice +
+              ", change='" + change + '\'' +
+              ", filename='" + filename + '\'' +
+              ", cacheAll=" + cacheAll +
+              '}';
+    }
   }
 
   static private Set<FmrcDatasetType> defaultDatasetTypes =
           Collections.unmodifiableSet(EnumSet.of(FmrcDatasetType.TwoD, FmrcDatasetType.Best, FmrcDatasetType.Files, FmrcDatasetType.Runs));
 
   static public class FmrcConfig {
-    public boolean regularize = false;
+    public boolean regularize = regularizeDefault;
     public Set<FmrcDatasetType> datasets = defaultDatasetTypes;
     private boolean explicit = false;
 
@@ -156,6 +192,14 @@ public class FeatureCollection {
           log.warn("Dont recognize FmrcDatasetType " + type);
         }
       }
+    }
+
+    @Override
+    public String toString() {
+      return "FmrcConfig{" +
+              "regularize=" + regularize +
+              ", datasets=" + datasets +
+              '}';
     }
   }
 

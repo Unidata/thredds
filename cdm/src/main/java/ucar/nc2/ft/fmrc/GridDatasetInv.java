@@ -150,7 +150,7 @@ public class GridDatasetInv {
       this.runTime = df.toDateTimeStringISO(runDate);
     }
 
-    // add each variable
+    // add each variable, collect unique time and vertical axes
     for (GridDatatype gg : gds.getGrids()) {
       GridCoordSystem gcs = gg.getCoordinateSystem();
       Grid grid = new Grid(gg.getName());
@@ -167,6 +167,13 @@ public class GridDatasetInv {
       if (vaxis != null) {
         grid.vc = getVertCoordinate(vaxis);
       }
+
+     /* not yet
+     CoordinateAxis1D eaxis = gcs.getEnsembleAxis();
+     if (eaxis != null) {
+       grid.ec = getEnsCoordinate(eaxis);
+     } */
+
     }
 
     // assign sequence number
@@ -264,10 +271,7 @@ public class GridDatasetInv {
   //////////////////////////////////////////////////////
 
   /**
-   * A Grid variable has a name, timeCoord and optionally a Vertical Coordinate, and list of Missing.
-   * The inventory is represented as:
-   * 1) if 2D, the timeCoord represents the inventory
-   * 2) if 3D, inventory = timeCoord * vertCoord - Missing
+   * A Grid variable has a name, timeCoord and optionally a Vertical and Ensemble Coordinate
    */
   public class Grid implements Comparable {
     final String name;
@@ -393,12 +397,12 @@ public class GridDatasetInv {
     return null;
   }
 
-  private EnsCoord getEnsCoordinate(CoordinateAxis1D axis, int[] einfo) {
+  private EnsCoord getEnsCoordinate(CoordinateAxis1D axis) {
     for (EnsCoord ec : eaxes) {
       if (ec.getName().equals(axis.getName())) return ec;
     }
 
-    EnsCoord want = new EnsCoord(axis, einfo);
+    EnsCoord want = new EnsCoord(axis, null); // NOT YET
     for (EnsCoord ec : eaxes) {
       if ((ec.equalsData(want))) return ec;
     }
@@ -451,7 +455,7 @@ public class GridDatasetInv {
   }
 
   /**
-   * Create the XML representation
+   * Create the XML representation of the GridDatasetInv
    *
    * @return the XML representation as a Document
    */
@@ -524,7 +528,7 @@ public class GridDatasetInv {
   }
 
   /**
-   * Construct a ForecastModelRun from its XML representation
+   * Construct a GridDatasetInv from its XML representation
    *
    * @param xmlString the xml string
    * @return ForecastModelRun

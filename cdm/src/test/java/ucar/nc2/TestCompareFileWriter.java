@@ -41,7 +41,6 @@ import ucar.nc2.util.CompareNetcdf;
 /** test FileWriting, then reading back and comparing to original. */
 
 public class TestCompareFileWriter extends TestCase {
-  static boolean showCompare = true, showEach = false;
 
   public TestCompareFileWriter( String name) {
     super(name);

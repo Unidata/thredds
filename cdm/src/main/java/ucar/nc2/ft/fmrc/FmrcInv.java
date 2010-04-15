@@ -97,6 +97,7 @@ public class FmrcInv {
    *
    * @param name name of collection
    * @param fmrList the component runs FmrInv
+   * @param regularize regularize time coords based on offset from 0Z
    */
   FmrcInv(String name, List<FmrInv> fmrList, boolean regularize) {
     this.name = name;
@@ -242,6 +243,11 @@ public class FmrcInv {
   public static double getOffsetInHours(Date base, Date forecast) {
     double diff = forecast.getTime() - base.getTime();
     return diff / 1000.0 / 60.0 / 60.0;
+  }
+
+  public static Date makeOffsetDate(Date base, double offset) {
+    long time = base.getTime() + (long) (offset * 60 * 60 * 1000);
+    return new Date(time);
   }
 
   ////////////////////////////////////////////////////////////////////
@@ -442,8 +448,8 @@ public class FmrcInv {
     private final HashMap<Date, TimeCoord> coordMap;
     private final List<UberGrid> vars = new ArrayList<UberGrid>(); // list of UberGrid that use this
     private int id;
-    private List<TimeCoord> timeList = null;
-    private TimeCoord timeCoordUnion = null;
+    private List<TimeCoord> timeList = null; // timeList has differing runDates
+    private TimeCoord timeCoordUnion = null; // union of all offset hours
 
     RunSeq(List<FmrInv.GridVariable> runs) {
       this.coordMap = new HashMap<Date, TimeCoord>(2 * runs.size());
@@ -474,7 +480,8 @@ public class FmrcInv {
       return n;
     }
 
-    // appears to be the union of all offset hours, ignoring rundate
+    // appears to be the union of all offset hours, ignoring rundate, so its the rectangularization of the
+    // offsets for each run
     // has the side effect of constructing timeList, the list of expected TimeCoords, one for each run
     public double[] getUnionOffsetHours() {
       if (timeCoordUnion == null) { // defer creation

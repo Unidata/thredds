@@ -61,7 +61,7 @@ public class DatasetCollectionManager implements CollectionManager {
   public static final String CATALOG = "catalog:";
 
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(DatasetCollectionManager.class);
-  static private final boolean debugSyncDetail = false;
+  //static private final boolean debugSyncDetail = false;
   static private MController controller;
 
   /**
@@ -136,6 +136,11 @@ public class DatasetCollectionManager implements CollectionManager {
     MFileFilter mfilter = (filters.size() == 0) ? null : ((filters.size() == 1) ? filters.get(0) : new Composite(filters));
     dateExtractor = (sp.getDateFormatMark() == null) ? null : new DateExtractorFromName(sp.getDateFormatMark(), true);
     scanList.add(new MCollection(sp.getTopDir(), sp.getTopDir(), sp.wantSubdirs(), mfilter, dateExtractor, null));
+
+    if (logger.isDebugEnabled()) {
+      logger.debug(collectionName+" init, config= "+config);
+    }
+
   }
 
   // for subclasses
@@ -218,6 +223,11 @@ public class DatasetCollectionManager implements CollectionManager {
     return "fmrc:" + collectionName;
   }
 
+  @Override
+  public String getRoot() {
+    return (sp == null) ? null : sp.getTopDir();
+  } 
+
   public CollectionSpecParser getCollectionSpecParser() {
     return sp;
   }
@@ -252,13 +262,13 @@ public class DatasetCollectionManager implements CollectionManager {
   @Override
   public boolean isRescanNeeded() {
     if (scanList.isEmpty()) {
-      if (debugSyncDetail && logger.isDebugEnabled()) logger.debug(collectionName+": rescan not needed, no scanners");
+      if (logger.isDebugEnabled()) logger.debug(collectionName+": rescan not needed, no scanners");
       return false;
     }
 
     // see if we need to recheck
     if (recheck == null) {
-      if (debugSyncDetail && logger.isDebugEnabled()) logger.debug(collectionName+": rescan not needed, recheck null");
+      if (logger.isDebugEnabled()) logger.debug(collectionName+": rescan not needed, recheck null");
       return false;
     }
 
@@ -266,7 +276,7 @@ public class DatasetCollectionManager implements CollectionManager {
     Date lastCheckedDate = new Date(lastScanned);
     Date need = recheck.add(lastCheckedDate);
     if (now.before(need)) {
-      if (debugSyncDetail && logger.isDebugEnabled()) logger.debug(collectionName+": rescan not needed, last= " + lastCheckedDate + " now = " + now);
+      if (logger.isDebugEnabled()) logger.debug(collectionName+": rescan not needed, last= " + lastCheckedDate + " now = " + now);
       return false;
     }
 
@@ -297,10 +307,10 @@ public class DatasetCollectionManager implements CollectionManager {
       MFile oldDataset = oldMap.get(path);
       if (oldDataset != null) {
         newMap.put(path, oldDataset);
-        if (debugSyncDetail && logger.isDebugEnabled()) logger.debug(collectionName+": rescan retains old Dataset= " + path);
+        if (logger.isDebugEnabled()) logger.debug(collectionName+": rescan retains old Dataset= " + path);
       } else {
         nnew++;
-        if (debugSyncDetail && logger.isDebugEnabled()) logger.debug(collectionName+": rescan found new Dataset= " + path);
+        if (logger.isDebugEnabled()) logger.debug(collectionName+": rescan found new Dataset= " + path);
       }
     }
 

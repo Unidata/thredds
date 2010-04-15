@@ -33,8 +33,10 @@
 
 package ucar.nc2.ui;
 
+import thredds.inventory.FeatureCollection;
 import ucar.nc2.*;
 import ucar.nc2.FileWriter;
+import ucar.nc2.ft.fmrc.Fmrc;
 import ucar.nc2.stream.CdmRemote;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
@@ -792,9 +794,21 @@ public class ToolsUI extends JPanel {
         NetcdfDataset.setMissingDataIsMissing(state.booleanValue());
       }
     };
-    BAMutil.setActionPropertiesToggle(a, null, "use mssing_value attribute for missing values",
+    BAMutil.setActionPropertiesToggle(a, null, "use missing_value attribute for missing values",
         NetcdfDataset.getMissingDataIsMissing(), 'M', -1);
     BAMutil.addActionToMenu(dsMenu, a);
+
+    ncMenu = new JMenu("FMRC");
+    modeMenu.add(ncMenu);
+
+    a = new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        Boolean state = (Boolean) getValue(BAMutil.STATE);
+        FeatureCollection.setRegularizeDefault(state);
+      }
+    };
+    BAMutil.setActionPropertiesToggle(a, null, "regularize", false, 'R', -1);
+    BAMutil.addActionToMenu(ncMenu, a);
   }
 
   public void save() {
