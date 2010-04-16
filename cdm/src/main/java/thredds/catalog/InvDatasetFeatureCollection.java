@@ -57,7 +57,10 @@ import java.util.regex.Pattern;
 /**
  * Feature Collection (experimental).
  * Like InvDatasetFmrc, this is a InvCatalogRef subclass. So the reference is placed in the parent, but
- * the catalog itself isnt constructed until it is dereferenced by DataRootHandler.makeDynamicCatalog().
+ * the catalog itself isnt constructed until it is the following is called from DataRootHandler.makeDynamicCatalog():
+ *       match.dataRoot.featCollection.makeCatalog(match.remaining, path, baseURI);
+ *
+ * Generate anew each call; use object caching if needed to improve efficiency
  *
  * @author caron
  * @since Mar 3, 2010
@@ -82,6 +85,8 @@ public class InvDatasetFeatureCollection extends InvCatalogRef {
   static private final String OFFSET_NAME = "Offset_";
   static private final String OFFSET_TITLE = "Constant Forecast Offset";
 
+  static private final String Virtual_Services = "VirtualServices";
+
   /////////////////////////////////////////////////////////////////////////////
 
   private final String path;
@@ -92,20 +97,44 @@ public class InvDatasetFeatureCollection extends InvCatalogRef {
   private final Set<FeatureCollection.FmrcDatasetType> wantDatasets;
   private final String topDirectory;
   private final Pattern filter;
+  private InvService orgService, virtualService;
 
+  @GuardedBy("lock")
+  private State state;
   private Object lock = new Object();
 
-  @GuardedBy("lock")
-  private volatile InvDatasetScan scan; // never changes, once made
+  private class State {
+    ThreddsMetadata.Variables vars;
+    ThreddsMetadata.GeospatialCoverage gc;
+    DateRange dateRange;
+    Date lastProtoChange;
 
-  @GuardedBy("lock")
+    InvDatasetScan scan;
+    List<InvDataset> datasets;
+    Date lastInvChange;
+
+    State(State from) {
+      if (from != null) {
+        this.vars = from.vars;
+        this.gc = from.gc;
+        this.dateRange = from.dateRange;
+        this.lastProtoChange = from.lastProtoChange;
+
+        this.scan = from.scan;
+        this.datasets = from.datasets;
+        this.lastInvChange = from.lastInvChange;
+      }
+    }
+  }
+
+  /* @GuardedBy("lock")
   private volatile InvCatalogImpl topCatalog; // needs to be changed when proto changes, in case metadata has changed
 
   @GuardedBy("lock")
   private volatile InvCatalogImpl catalogRuns, catalogOffsets, catalogForecasts; // these change when FmrcInv changes
 
   @GuardedBy("lock")
-  private volatile boolean madeDatasets = false;
+  private volatile boolean madeDatasets = false; */
 
   public InvDatasetFeatureCollection(InvDatasetImpl parent, String name, String path, String featureType, FeatureCollection.Config config) {
     super(parent, name, "/thredds/catalog/" + path + "/catalog.xml");
@@ -133,10 +162,21 @@ public class InvDatasetFeatureCollection extends InvCatalogRef {
     }
   }
 
+  private InvService makeVirtualService(InvService org) {
+    if (org.getServiceType() != ServiceType.COMPOUND) return org;
+
+    InvService result = new InvService(Virtual_Services, ServiceType.COMPOUND.toString(), null, null, null);
+    for (InvService service : org.getServices()) {
+       if (service.getServiceType() != ServiceType.HTTPServer) {
+         result.addService(service);
+       }
+     }
+    return result;
+   }
+
   public String getPath() {
     return path;
   }
-
 
   public String getTopDirectoryLocation() {
     return topDirectory;
@@ -146,24 +186,54 @@ public class InvDatasetFeatureCollection extends InvCatalogRef {
     return config;
   }
 
+  @Override
+  public java.util.List<InvDataset> getDatasets() {
+    try {
+      checkState();
+    } catch (IOException e) {
+      logger.error("Error in checkState", e);
+    }
+    return state.datasets;
+  }
+
+  // called by scheduler
+  public void triggerRescan() throws IOException {
+    fmrc.triggerRescan();
+  }
+
+  public void triggerProto() throws IOException {
+    fmrc.triggerProto();
+  }
+
   ///////////////////////////////////////////////////////////////////////////////////////////////////
 
   // called by DataRootHandler.makeDynamicCatalog() when the catref is requested
 
   public InvCatalogImpl makeCatalog(String match, String orgPath, URI baseURI) {
     logger.debug("FMRC make catalog for " + match + " " + baseURI);
+    State localState = null;
+    try {
+      localState = checkState();
+    } catch (IOException e) {
+      logger.error("Error in checkState", e);
+      return null;
+    }
+    
     try {
       if ((match == null) || (match.length() == 0))
-        return makeTopCatalog(baseURI);
+        return makeCatalogTop(baseURI, localState);
+
       else if (match.equals(RUNS) && wantDatasets.contains(FeatureCollection.FmrcDatasetType.Runs))
-        return makeCatalogRuns(baseURI);
+        return makeCatalogRuns(baseURI, localState);
+
       else if (match.equals(OFFSET) && wantDatasets.contains(FeatureCollection.FmrcDatasetType.ConstantOffsets))
-        return makeCatalogOffsets(baseURI);
+        return makeCatalogOffsets(baseURI, localState);
+
       else if (match.equals(FORECAST) && wantDatasets.contains(FeatureCollection.FmrcDatasetType.ConstantForecasts))
-        return makeCatalogForecasts(baseURI);
+        return makeCatalogForecasts(baseURI, localState);
+
       else if (match.startsWith(SCAN) && wantDatasets.contains(FeatureCollection.FmrcDatasetType.Files)) {
-        getDatasets(); // ensures scan has been created
-        return scan.makeCatalogForDirectory(orgPath, baseURI);
+        return localState.scan.makeCatalogForDirectory(orgPath, baseURI);
       }
 
     } catch (Exception e) {
@@ -181,166 +251,128 @@ public class InvDatasetFeatureCollection extends InvCatalogRef {
    * @throws java.io.IOException         on I/O error
    * @throws java.net.URISyntaxException if path is misformed
    */
-  private InvCatalogImpl makeTopCatalog(URI baseURI) throws IOException, URISyntaxException {
+  private InvCatalogImpl makeCatalogTop(URI baseURI, State localState) throws IOException, URISyntaxException {
+    InvCatalogImpl parentCatalog = (InvCatalogImpl) getParentCatalog();
+    URI myURI = baseURI.resolve(getXlinkHref());
+    InvCatalogImpl mainCatalog = new InvCatalogImpl(getName(), parentCatalog.getVersion(), myURI);
 
-    // LOOK when does the topcatalog need to be recreated ??  Perhaps when proto changes ?? Also could affect LastModified
+    InvDatasetImpl top = new InvDatasetImpl(this);
+    top.setParent(null);
+    InvDatasetImpl parent = (InvDatasetImpl) this.getParent();
+    if (parent != null)
+      top.transferMetadata(parent); // make all inherited metadata local
 
-    if (topCatalog == null) {
-      synchronized (lock) {
-        if (topCatalog == null) {
-          InvCatalogImpl parentCatalog = (InvCatalogImpl) getParentCatalog();
-          URI myURI = baseURI.resolve(getXlinkHref());
-          InvCatalogImpl mainCatalog = new InvCatalogImpl(getName(), parentCatalog.getVersion(), myURI);
+    String id = getID();
+    if (id == null)
+      id = getPath();
+    top.setID(id);
 
-          InvDatasetImpl top = new InvDatasetImpl(this); // LOOK clone correct ??
-          top.setParent(null);
-          InvDatasetImpl parent = (InvDatasetImpl) this.getParent();
-          if (parent != null)
-            top.transferMetadata(parent); // make all inherited metadata local
+    // add Variables, GeospatialCoverage, TimeCoverage
+    ThreddsMetadata tmi = top.getLocalMetadataInheritable();
+    if (localState.vars != null) tmi.addVariables(localState.vars);
+    if (localState.gc != null) tmi.setGeospatialCoverage(localState.gc);
+    if (localState.dateRange != null) tmi.setTimeCoverage(localState.dateRange);
 
-          String id = getID();
-          if (id == null)
-            id = getPath();
-          top.setID(id);
+    mainCatalog.addDataset(top);
 
-          // add Variables, GeospatialCoverage, TimeCoverage
-          GridDataset gds = getGridDataset(FMRC); // LOOK may take a long time here. one could cache this info
+    // any referenced services need to be local
+    // remove http service for virtual datasets
+    mainCatalog.addService(virtualService);
+    top.getLocalMetadataInheritable().setServiceName(virtualService.getName());
 
-          ThreddsMetadata tmi = top.getLocalMetadataInheritable();
-          if (tmi.getVariables().size() == 0) {
-            ThreddsMetadata.Variables vars = MetadataExtractor.extractVariables(this, gds);
-            if (vars != null)
-              tmi.addVariables(vars);
-          }
-          if (tmi.getGeospatialCoverage() == null) {
-            ThreddsMetadata.GeospatialCoverage gc = MetadataExtractor.extractGeospatial(gds);
-            if (gc != null)
-              tmi.setGeospatialCoverage(gc);
-          }
-          if (tmi.getTimeCoverage() == null) {
-            DateRange dateRange = MetadataExtractor.extractDateRange(gds);
-            if (dateRange != null)
-              tmi.setTimeCoverage(dateRange);
-          }
+    for (InvDataset ds : getDatasets())
+      top.addDataset((InvDatasetImpl) ds);
 
-          mainCatalog.addDataset(top);
+    mainCatalog.finish();
 
-          // any referenced services need to be local
-          List serviceLocal = getServicesLocal();
-          for (InvService service : parentCatalog.getServices()) {
-            if (!serviceLocal.contains(service))
-              mainCatalog.addService(service);
-          }
-          findDODSService(parentCatalog.getServices()); // LOOK kludge
-
-          for (InvDataset ds : getDatasets()) {
-            top.addDataset((InvDatasetImpl) ds);
-          }
-          mainCatalog.finish();
-
-          // wait till completely constructed before switching pointer, for concurrency
-          topCatalog = mainCatalog;
-        }
-      }
-    }
-
-    return topCatalog;
+    return mainCatalog;
   }
 
-  private String dodsService; // LOOK why ??
+   private InvCatalogImpl makeCatalogRuns(URI baseURI, State localState) throws IOException {
 
-  private void findDODSService(List<InvService> services) {
-    for (InvService service : services) {
-      if ((dodsService == null) && (service.getServiceType() == ServiceType.OPENDAP)) {
-        dodsService = service.getName();
-        return;
-      }
-      if (service.getServiceType() == ServiceType.COMPOUND)
-        findDODSService(service.getServices());
-    }
+    InvCatalogImpl parent = (InvCatalogImpl) getParentCatalog();
+    URI myURI = baseURI.resolve(getCatalogHref(RUNS));
+    InvCatalogImpl runCatalog = new InvCatalogImpl(getFullName(), parent.getVersion(), myURI);
+    InvDatasetImpl top = new InvDatasetImpl(this);
+    top.setParent(null);
+    top.transferMetadata((InvDatasetImpl) this.getParent()); // make all inherited metadata local
+    top.setName(RUN_TITLE);
+    // add Variables, GeospatialCoverage, TimeCoverage
+    ThreddsMetadata tmi = top.getLocalMetadataInheritable();
+    if (localState.vars != null) tmi.addVariables(localState.vars);
+    if (localState.gc != null) tmi.setGeospatialCoverage(localState.gc);
+    if (localState.dateRange != null) tmi.setTimeCoverage(localState.dateRange);
+
+     runCatalog.addDataset(top);
+
+    // services need to be local
+    runCatalog.addService(virtualService);
+    top.getLocalMetadataInheritable().setServiceName(virtualService.getName());
+
+    for (InvDatasetImpl ds : makeRunDatasets())
+      top.addDataset(ds);
+
+    runCatalog.finish();
+
+    return runCatalog;
   }
 
-  private InvCatalogImpl makeCatalogRuns(URI baseURI) throws IOException {
+  private InvCatalogImpl makeCatalogOffsets(URI baseURI, State localState) throws IOException {
 
-    if ((catalogRuns == null) || checkIfChanged()) {
-      InvCatalogImpl parent = (InvCatalogImpl) getParentCatalog();
-      URI myURI = baseURI.resolve(getCatalogHref(RUNS));
-      InvCatalogImpl runCatalog = new InvCatalogImpl(getFullName(), parent.getVersion(), myURI);
-      InvDatasetImpl top = new InvDatasetImpl(this);
-      top.setParent(null);
-      top.transferMetadata((InvDatasetImpl) this.getParent()); // make all inherited metadata local
-      top.setName(RUN_TITLE);
-      runCatalog.addDataset(top);
+    InvCatalogImpl parent = (InvCatalogImpl) getParentCatalog();
+    URI myURI = baseURI.resolve(getCatalogHref(OFFSET));
+    InvCatalogImpl offCatalog = new InvCatalogImpl(getFullName(), parent.getVersion(), myURI);
+    InvDatasetImpl top = new InvDatasetImpl(this);
+    top.setParent(null);
+    top.transferMetadata((InvDatasetImpl) this.getParent()); // make all inherited metadata local
+    // add Variables, GeospatialCoverage, TimeCoverage
+    ThreddsMetadata tmi = top.getLocalMetadataInheritable();
+    if (localState.vars != null) tmi.addVariables(localState.vars);
+    if (localState.gc != null) tmi.setGeospatialCoverage(localState.gc);
+    if (localState.dateRange != null) tmi.setTimeCoverage(localState.dateRange);
 
-      // any referenced services need to be local
-      List<InvService> services = new ArrayList<InvService>(getServicesLocal());
-      InvService service = getServiceDefault();
-      if ((service != null) && !services.contains(service))
-        runCatalog.addService(service);
+    top.setName(OFFSET_TITLE);
+    offCatalog.addDataset(top);
 
-      for (InvDatasetImpl ds : makeRunDatasets()) {
-        top.addDataset(ds);
-      }
-      runCatalog.finish();
-      this.catalogRuns = runCatalog;
-    }
+    // services need to be local
+    offCatalog.addService(virtualService);
+    top.getLocalMetadataInheritable().setServiceName(virtualService.getName());
 
-    return catalogRuns;
+    for (InvDatasetImpl ds : makeOffsetDatasets())
+      top.addDataset(ds);
+
+    offCatalog.finish();
+
+    return offCatalog;
   }
 
-  private InvCatalogImpl makeCatalogOffsets(URI baseURI) throws IOException {
+  private InvCatalogImpl makeCatalogForecasts(URI baseURI, State localState) throws IOException {
 
-    if ((catalogOffsets == null) || checkIfChanged()) {
-      InvCatalogImpl parent = (InvCatalogImpl) getParentCatalog();
-      URI myURI = baseURI.resolve(getCatalogHref(OFFSET));
-      InvCatalogImpl offCatalog = new InvCatalogImpl(getFullName(), parent.getVersion(), myURI);
-      InvDatasetImpl top = new InvDatasetImpl(this);
-      top.setParent(null);
-      top.transferMetadata((InvDatasetImpl) this.getParent()); // make all inherited metadata local
+    InvCatalogImpl parent = (InvCatalogImpl) getParentCatalog();
+    URI myURI = baseURI.resolve(getCatalogHref(FORECAST));
+    InvCatalogImpl foreCatalog = new InvCatalogImpl(getFullName(), parent.getVersion(), myURI);
+    InvDatasetImpl top = new InvDatasetImpl(this);
+    top.setParent(null);
+    top.transferMetadata((InvDatasetImpl) this.getParent()); // make all inherited metadata local
+    top.setName(FORECAST_TITLE);
+    // add Variables, GeospatialCoverage, TimeCoverage
+    ThreddsMetadata tmi = top.getLocalMetadataInheritable();
+    if (localState.vars != null) tmi.addVariables(localState.vars);
+    if (localState.gc != null) tmi.setGeospatialCoverage(localState.gc);
+    if (localState.dateRange != null) tmi.setTimeCoverage(localState.dateRange);
 
-      top.setName(OFFSET_TITLE);
-      offCatalog.addDataset(top);
+    foreCatalog.addDataset(top);
 
-      // any referenced services need to be local
-      List<InvService> services = getServicesLocal();
-      InvService service = getServiceDefault();
-      if ((service != null) && !services.contains(service))
-        offCatalog.addService(service);
+    // services need to be local
+    foreCatalog.addService(virtualService);
+    top.getLocalMetadataInheritable().setServiceName(virtualService.getName());
 
-      for (InvDatasetImpl ds : makeOffsetDatasets()) {
-        top.addDataset(ds);
-      }
-      offCatalog.finish();
-      this.catalogOffsets = offCatalog;
-    }
-    return catalogOffsets;
-  }
+    for (InvDatasetImpl ds : makeForecastDatasets())
+      top.addDataset(ds);
 
-  private InvCatalogImpl makeCatalogForecasts(URI baseURI) throws IOException {
+    foreCatalog.finish();
 
-    if ((catalogForecasts == null) || checkIfChanged()) {
-      InvCatalogImpl parent = (InvCatalogImpl) getParentCatalog();
-      URI myURI = baseURI.resolve(getCatalogHref(FORECAST));
-      InvCatalogImpl foreCatalog = new InvCatalogImpl(getFullName(), parent.getVersion(), myURI);
-      InvDatasetImpl top = new InvDatasetImpl(this);
-      top.setParent(null);
-      top.transferMetadata((InvDatasetImpl) this.getParent()); // make all inherited metadata local
-      top.setName(FORECAST_TITLE);
-      foreCatalog.addDataset(top);
-
-      // any referenced services need to be local
-      List<InvService> services = getServicesLocal();
-      InvService service = getServiceDefault();
-      if ((service != null) && !services.contains(service))
-        foreCatalog.addService(service);
-
-      for (InvDatasetImpl ds : makeForecastDatasets()) {
-        top.addDataset(ds);
-      }
-      foreCatalog.finish();
-      this.catalogForecasts = foreCatalog;
-    }
-    return catalogForecasts;
+    return foreCatalog;
   }
 
 
@@ -416,116 +448,129 @@ public class InvDatasetFeatureCollection extends InvCatalogRef {
 
   /////////////////////////////////////////////////////////////////////////
 
-  private boolean checkIfChanged() {  // LOOK probably when FmrcInv changes
-    return false;
+  private State checkState() throws IOException {
+
+    synchronized (lock) {
+      boolean checkInv = true;
+      boolean checkProto = true;
+
+      if (state == null) {
+        orgService = getServiceDefault();
+        virtualService = makeVirtualService(orgService);
+      } else {
+        checkInv = fmrc.checkInvState(state.lastInvChange);
+        checkProto = fmrc.checkProtoState(state.lastProtoChange);
+        if (!checkInv && !checkProto) return state;
+      }
+
+      // copy on write
+      State localState = new State(state);
+
+      if (checkProto) {
+         // add Variables, GeospatialCoverage, TimeCoverage
+        GridDataset gds = getGridDataset(FMRC);
+        localState.vars = MetadataExtractor.extractVariables(this, gds);
+        localState.gc = MetadataExtractor.extractGeospatial(gds);
+        localState.dateRange = MetadataExtractor.extractDateRange(gds);
+        localState.lastProtoChange = new Date();
+      }
+
+      if (checkInv) {
+        makeDatasets(localState);
+        localState.lastInvChange = new Date();
+      }
+
+      state = localState;
+      return state;
+    }
   }
+
+  private void makeDatasets(State localState) {
+     List<InvDataset> datasets = new ArrayList<InvDataset>();
+
+     String id = getID();
+     if (id == null) id = getPath();
+
+     if (wantDatasets.contains(FeatureCollection.FmrcDatasetType.TwoD)) {
+
+       InvDatasetImpl ds = new InvDatasetImpl(this, "Forecast Model Run Collection (2D time coordinates)");
+       String name = getName() + "_" + FMRC;
+       name = StringUtil.replace(name, ' ', "_");
+       ds.setUrlPath(this.path + "/" + name);
+       ds.setID(id + "/" + name);
+       ThreddsMetadata tm = ds.getLocalMetadata();
+       tm.addDocumentation("summary", "Forecast Model Run Collection (2D time coordinates).");
+       ds.getLocalMetadataInheritable().setServiceName(virtualService.getName());
+       ds.finish();
+       datasets.add(ds);
+     }
+
+     if (wantDatasets.contains(FeatureCollection.FmrcDatasetType.Best)) {
+
+       InvDatasetImpl ds = new InvDatasetImpl(this, "Best Time Series");
+       String name = getName() + "_" + BEST;
+       name = StringUtil.replace(name, ' ', "_");
+       ds.setUrlPath(this.path + "/" + name);
+       ds.setID(id + "/" + name);
+       ThreddsMetadata tm = ds.getLocalMetadata();
+       tm.addDocumentation("summary", "Best time series, taking the data from the most recent run available.");
+       ds.getLocalMetadataInheritable().setServiceName(virtualService.getName());
+       ds.finish();
+       datasets.add(ds);
+     }
+
+     if (wantDatasets.contains(FeatureCollection.FmrcDatasetType.Runs)) {
+       InvDatasetImpl ds = new InvCatalogRef(this, RUN_TITLE, getCatalogHref(RUNS));
+       ds.finish();
+       datasets.add(ds);
+     }
+
+     if (wantDatasets.contains(FeatureCollection.FmrcDatasetType.ConstantForecasts)) {
+       InvDatasetImpl ds = new InvCatalogRef(this, FORECAST_TITLE, getCatalogHref(FORECAST));
+       ds.finish();
+       datasets.add(ds);
+     }
+
+     if (wantDatasets.contains(FeatureCollection.FmrcDatasetType.ConstantOffsets)) {
+       InvDatasetImpl ds = new InvCatalogRef(this, OFFSET_TITLE, getCatalogHref(OFFSET));
+       ds.finish();
+       datasets.add(ds);
+     }
+
+     if (wantDatasets.contains(FeatureCollection.FmrcDatasetType.Files) && (topDirectory != null)) {
+
+       // LOOK - replace this with InvDatasetScan( collectionManager) or something
+       long olderThan = (long) (1000 * fmrc.getOlderThanFilterInSecs());
+       ScanFilter scanFilter = new ScanFilter(filter, olderThan);
+       InvDatasetScan scanDataset = new InvDatasetScan((InvCatalogImpl) this.getParentCatalog(), this, "File_Access", path + "/" + SCAN,
+               topDirectory, scanFilter, true, "true", false, null, null, null);
+
+       scanDataset.addService(orgService);
+
+       ThreddsMetadata tmi = scanDataset.getLocalMetadataInheritable();
+       tmi.setServiceName(orgService.getName());
+       tmi.addDocumentation("summary", "Individual data file, which comprise the Forecast Model Run Collection.");
+       tmi.setGeospatialCoverage(null);
+       tmi.setTimeCoverage(null);
+       scanDataset.setServiceName(orgService.getName());
+       scanDataset.finish();
+       datasets.add(scanDataset);
+
+       // replace all at once
+       localState.scan = scanDataset;
+     }
+
+     localState.datasets = datasets;
+     this.datasets = datasets;
+     finish();
+   }
+
 
   private String getCatalogHref(String what) {
     return "/thredds/catalog/" + path + "/" + what + "/catalog.xml";
   }
 
-
-  /////////////////////////////////////////////////////////////////////
-
-  // these are the child datasets of this catalog
-  // the names here are passed back into getNetcdfDataset(), getGridDataset()
-
-  @Override
-  public java.util.List<InvDataset> getDatasets() {
-    // LOOK do we need to make sure topcatalog has been constructed ??
-    if (!madeDatasets) {
-      synchronized (lock) {
-        if (!madeDatasets) {
-
-          List<InvDataset> datasets = new ArrayList<InvDataset>();
-
-          String id = getID();
-          if (id == null) id = getPath();
-
-          if (wantDatasets.contains(FeatureCollection.FmrcDatasetType.TwoD)) {
-
-            InvDatasetImpl ds = new InvDatasetImpl(this, "Forecast Model Run Collection (2D time coordinates)");
-            String name = getName() + "_" + FMRC;
-            name = StringUtil.replace(name, ' ', "_");
-            ds.setUrlPath(this.path + "/" + name);
-            ds.setID(id + "/" + name);
-            ThreddsMetadata tm = ds.getLocalMetadata();
-            tm.addDocumentation("summary", "Forecast Model Run Collection (2D time coordinates).");
-            //ds.getLocalMetadataInheritable().setServiceName(this.dodsService); // LOOK why ??
-            ds.finish();
-            datasets.add(ds);
-          }
-
-          if (wantDatasets.contains(FeatureCollection.FmrcDatasetType.Best)) {
-
-            InvDatasetImpl ds = new InvDatasetImpl(this, "Best Time Series");
-            String name = getName() + "_" + BEST;
-            name = StringUtil.replace(name, ' ', "_");
-            ds.setUrlPath(this.path + "/" + name);
-            ds.setID(id + "/" + name);
-            ThreddsMetadata tm = ds.getLocalMetadata();
-            tm.addDocumentation("summary", "Best time series, taking the data from the most recent run available.");
-            //ds.getLocalMetadataInheritable().setServiceName(this.dodsService); // LOOK why ??
-            ds.finish();
-            datasets.add(ds);
-          }
-
-          if (wantDatasets.contains(FeatureCollection.FmrcDatasetType.Runs)) {
-            InvDatasetImpl ds = new InvCatalogRef(this, RUN_TITLE, getCatalogHref(RUNS));
-            ds.finish();
-            datasets.add(ds);
-          }
-
-          if (wantDatasets.contains(FeatureCollection.FmrcDatasetType.ConstantForecasts)) {
-            InvDatasetImpl ds = new InvCatalogRef(this, FORECAST_TITLE, getCatalogHref(FORECAST));
-            ds.finish();
-            datasets.add(ds);
-          }
-
-          if (wantDatasets.contains(FeatureCollection.FmrcDatasetType.ConstantOffsets)) {
-            InvDatasetImpl ds = new InvCatalogRef(this, OFFSET_TITLE, getCatalogHref(OFFSET));
-            ds.finish();
-            datasets.add(ds);
-          }
-
-          if (wantDatasets.contains(FeatureCollection.FmrcDatasetType.Files) && (topDirectory != null)) {
-
-            // LOOK - replace this with InvDatasetScan( collectionManager) or something
-            long olderThan = (long) (1000 * fmrc.getOlderThanFilterInSecs());
-            ScanFilter scanFilter = new ScanFilter(filter, olderThan);
-            InvDatasetScan scanDataset = new InvDatasetScan((InvCatalogImpl) this.getParentCatalog(), this, "File_Access", path + "/" + SCAN,
-                    topDirectory, scanFilter, true, "true", false, null, null, null);
-
-            ThreddsMetadata tmi = scanDataset.getLocalMetadataInheritable();
-            tmi.setServiceName("all");
-            tmi.addDocumentation("summary", "Individual data file, which comprise the Forecast Model Run Collection.");
-            tmi.setGeospatialCoverage(null);
-            tmi.setTimeCoverage(null);
-
-            scanDataset.finish();
-            datasets.add(scanDataset);
-
-            //List<InvService> services = scanDataset.getParentCatalog().getServices();
-            //for (InvService s : services)
-            //        System.out.printf("%s%n", s);
-
-            // replace all at once
-            this.scan = scanDataset;
-          }
-
-          // replace all at once
-          this.datasets = datasets;
-          finish();
-          madeDatasets = true;
-        }
-      }
-    }
-
-    return datasets;
-  }
-
   // specialized filter handles olderThan and/or filename pattern matching
-
   public static class ScanFilter implements CrawlableDatasetFilter {
     private Pattern p;
     private long olderThan;
@@ -588,65 +633,9 @@ public class InvDatasetFeatureCollection extends InvCatalogRef {
 
     GridDataset gds = getGridDataset(matchPath);
     return (gds == null) ? null : (NetcdfDataset) gds.getNetcdfFile();
-
-   /*  NetcdfDataset result = null;
-    String location = path;
-
-    if (path.endsWith(FMRC) && wantDatasets.contains(FeatureCollection.FmrcDatasetType.TwoD)) {
-      GridDataset gds = getGridDataset(FMRC);
-      result = (NetcdfDataset) gds.getNetcdfFile();
-
-    } else if (path.endsWith(BEST) && wantDatasets.contains(FeatureCollection.FmrcDatasetType.Best)) {
-      GridDataset gds = getGridDataset(BEST);
-      result = (NetcdfDataset) gds.getNetcdfFile();
-
-    } else {
-      location = name;
-
-      if (type.equals(OFFSET) && wantDatasets.contains(FeatureCollection.FmrcDatasetType.ConstantOffsets)) {
-        int pos1 = name.indexOf(OFFSET_NAME);
-        int pos2 = name.indexOf("hr");
-        if ((pos1<0) || (pos2<0)) return null;
-        String id = name.substring(pos1+OFFSET_NAME.length(), pos2);
-        double hour = Double.parseDouble(id);
-        result = fmrc.getForecastOffsetDataset( hour);
-
-      } else if (type.equals(RUNS) && wantDatasets.contains(FeatureCollection.FmrcDatasetType.Runs)) {
-        int pos1 = name.indexOf(RUN_NAME);
-        if (pos1<0) return null;
-        String id = name.substring(pos1+RUN_NAME.length());
-
-        DateFormatter formatter = new DateFormatter();
-        Date date = formatter.getISODate(id);
-        result = fmrc.getRunTimeDataset(date);
-
-      } else if (type.equals(FORECAST) && wantDatasets.contains(FeatureCollection.FmrcDatasetType.ConstantForecasts)) {
-        int pos1 = name.indexOf(FORECAST_NAME);
-        if (pos1<0) return null;
-        String id = name.substring(pos1+FORECAST_NAME.length());
-
-        DateFormatter formatter = new DateFormatter();
-        Date date = formatter.getISODate(id);
-        result = fmrc.getForecastTimeDataset(date);
-      }
-    }
-
-    if (null != result) result.setLocation( location); // LOOK seems fishy, probably not thread-safe ??
-    return result;  */
-  }
-
-  // called by scheduler
-
-  public void triggerRescan() throws IOException {
-    fmrc.triggerRescan();
-  }
-
-  public void triggerProto() throws IOException {
-    fmrc.triggerProto();
   }
 
   // called by DatasetHandler.openGridDataset()
-
   public GridDataset getGridDataset(String matchPath) throws IOException {
     int pos = matchPath.indexOf("/");
     String type = (pos > -1) ? matchPath.substring(0, pos) : matchPath;
@@ -689,7 +678,6 @@ public class InvDatasetFeatureCollection extends InvCatalogRef {
 
   // called by DataRootHandler.getCrawlableDatasetAsFile()
   // have to remove the extra "files" from the path
-
   public File getFile(String remaining) {
     if (null == topDirectory) return null;
     int pos = remaining.indexOf(SCAN);

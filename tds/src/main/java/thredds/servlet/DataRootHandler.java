@@ -76,7 +76,7 @@ import org.springframework.util.StringUtils;
 public class DataRootHandler {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DataRootHandler.class);
   static private org.slf4j.Logger logCatalogInit = org.slf4j.LoggerFactory.getLogger(DataRootHandler.class.getName() + ".catalogInit");
-  static private org.slf4j.Logger logScan = org.slf4j.LoggerFactory.getLogger("featureCollectionScan");
+  static private org.slf4j.Logger logScan = org.slf4j.LoggerFactory.getLogger(DataRootHandler.class.getName() + ".fcScan");
 
   // dont need to Guard/synchronize singleton, since creation and publication is only done by a servlet init() and therefore only in one thread (per ClassLoader).
   static private DataRootHandler singleton = null;

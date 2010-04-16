@@ -36,14 +36,14 @@
     </layout>
   </appender>
 
-  <!-- keep track of Cache messages in a seperate file. -->
+  <!-- keep track of FMRC messages in a seperate file. -->
   <appender name="fcScan" class="org.apache.log4j.RollingFileAppender">
     <param name="File" value="${tds.log.dir}/featureCollectionScan.log"/>
     <param name="MaxFileSize" value="1MB"/>
-    <param name="MaxBackupIndex" value="2"/>
+    <param name="MaxBackupIndex" value="5"/>
     <param name="Append" value="false"/>
     <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="[%d{dd/MMM/yyyy:HH:mm:ss}] %m%n"/>
+      <param name="ConversionPattern" value="[%d{dd/MMM/yyyy:HH:mm:ss}] %-5p %c: %m%n"/>
     </layout>
   </appender>
 
@@ -52,7 +52,7 @@
     <param name="File" value="${tds.log.dir}/serverStartup.log"/>
     <param name="Append" value="false"/>
     <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d{yyyy-MM-dd'T'HH:mm:ss.SSS Z} [%10r][%8X{ID}] %-5p - %m%n"/>
+      <param name="ConversionPattern" value="%d{yyyy-MM-dd'T'HH:mm:ss.SSS Z} [%10r][%8X{ID}] %c: %m%n"/>
       <!--param name="ConversionPattern" value="%d{ISO8601} [%10r - %10X{ID}] %-5p - %c - %m%n"/-->
     </layout>
   </appender>
@@ -141,16 +141,27 @@
   <!-- fmrc debugging -->
 
   <logger name="thredds.inventory.DatasetCollectionManager" additivity="false">
-    <level value="DEBUG"/>
-    <appender-ref ref="fcScan"/>
-  </logger>
-
-  <logger name="ucar.nc2.ft.fmrc.FmrcDataset" additivity="false">
     <level value="INFO"/>
     <appender-ref ref="fcScan"/>
   </logger>
 
+
   <logger name="ucar.nc2.ft.fmrc.Fmrc" additivity="false">
+    <level value="INFO"/>
+    <appender-ref ref="fcScan"/>
+  </logger>
+
+  <logger name="ucar.nc2.ft.fmrc.FmrcInv" additivity="false">
+    <level value="INFO"/>
+    <appender-ref ref="fcScan"/>
+  </logger>
+
+  <logger name="ucar.nc2.ft.fmrc.FmrcInvLite" additivity="false">
+    <level value="INFO"/>
+    <appender-ref ref="fcScan"/>
+  </logger>
+
+  <logger name="ucar.nc2.ft.fmrc.FmrcDataset" additivity="false">
     <level value="INFO"/>
     <appender-ref ref="fcScan"/>
   </logger>
@@ -160,7 +171,7 @@
     <appender-ref ref="fcScan"/>
   </logger>
 
-  <logger name="featureCollectionScan" additivity="false">
+  <logger name="thredds.servlet.DataRootHandler.fcScan" additivity="false">
     <level value="INFO"/>
     <appender-ref ref="fcScan"/>
   </logger>

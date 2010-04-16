@@ -4,17 +4,9 @@
 
   <service name="latest" serviceType="Resolver" base=""/>
 
-  <service name="fileServices" serviceType="Compound" base="">
-    <service name="ncdods" serviceType="OPENDAP" base="/thredds/dodsC/"/>
-    <service name="HTTPServer" serviceType="HTTPServer" base="/thredds/fileServer/"/>
-    <service name="wcs" serviceType="WCS" base="/thredds/wcs/"/>
-    <service name="wms" serviceType="WMS" base="/thredds/wms/"/>
-    <service name="ncss" serviceType="NetcdfSubset" base="/thredds/ncss/grid/"/>
-    <service name="cdmremote" serviceType="CdmRemote" base="/thredds/cdmremote/"/>
-  </service>
-
   <service name="fmrcServices" serviceType="Compound" base="">
     <service name="ncdods" serviceType="OPENDAP" base="/thredds/dodsC/"/>
+    <service name="HTTPServer" serviceType="HTTPServer" base="/thredds/fileServer/"/>
     <service name="wcs" serviceType="WCS" base="/thredds/wcs/"/>
     <service name="wms" serviceType="WMS" base="/thredds/wms/"/>
     <service name="ncss" serviceType="NetcdfSubset" base="/thredds/ncss/grid/"/>
@@ -82,7 +74,7 @@
         <manage deleteAfter="45 days" check="0 0 3 * * ? *" />
         <update startup="true" rescan="0 5 3 * * ? *" />
         <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
-        <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs" />
+        <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
       </featureCollection>
 
       <featureCollection name="NCEP-GFS-CONUS_80km" featureType="FMRC" harvest="true" path="fmrc/NCEP/GFS/CONUS_80km">

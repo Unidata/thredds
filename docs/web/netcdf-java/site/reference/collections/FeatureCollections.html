@@ -104,7 +104,7 @@ dl {margin: 10px 5px 5px 15px;)
   <p>where:</p>
   <ol>
     <li>
-      <strong>regularize</strong>: If true, then all runs for a given offset hour (from 0Z) are assumed to have the same forecast time coordinates. This &quot;regularizes&quot;  time coordinates, and is used when there may be missing forecast times, instead of creating a new time coordinate. This obviates the need for the FMRC definition files which previously were used on motherlode  for models in the IDD feed. </li>
+      <strong>regularize</strong>: If true, then the runs for a given  hour from( 0Z) are assumed to have the same forecast time coordinates. For example, if you have 4 model runs per day (eg 0, 6, 12, 18Z) and many days of model runs, then all the 6Z runs for all days will have the same time coordiantes, etc. This &quot;regularizes&quot;  time coordinates, and is useful when there may be missing forecast times, instead of creating a new time coordinate. This obviates the need for the FMRC definition files which previously were used on motherlode  for models in the IDD feed. </li>
     <li><strong>datasetTypes</strong>: list the <a href="http://www.unidata.ucar.edu/software/netcdf/ncml/v2.2/FmrcAggregation.html">dataset types</a> that are  exposed in the TDS catalog. The possible values are:
       <ul>
         <li><em>TwoD</em>: dataset with two time dimensions (run time and forecast time), which contains all the data in the collection.</li>
@@ -124,19 +124,25 @@ all the data that have the same forecast time. This kind of dataset has successi
       </ul>
     </li>
   </ol>
+  <p>If there is a serviceType=&quot;HTTPServer&quot; for the Feature Collection, it is removed from the virtual datasets (all except the <em>Files</em> datasets).</p>
   <p>&nbsp;</p>
 </blockquote>
+<h3>FMRC Homogeneity Requirements</h3>
+<ul>
+  <li>horizontal coordinates must not change</li>
+  <li>vertical coordinates must not change.</li>
+</ul>
 <h3>Example catalog element:</h3>
 <pre>&lt;<strong>featureCollection</strong> <strong>name</strong>=&quot;NCEP-GFS-Alaska_191km&quot; <strong>featureType</strong>=&quot;FMRC&quot; <strong>path</strong>=&quot;fmrc/NCEP/GFS/Alaska_191km&quot;&gt;<br />
 
    &lt;collection spec=&quot;/data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km/**/GFS_Alaska_191km_#yyyyMMdd_HHmm#.grib1&quot; 
        recheckEvery=&quot;15 min&quot; olderThan=&quot;5 min&quot; /&gt;
    &lt;update startup=&quot;true&quot; /&gt;
-   <strong>&lt;fmrcConfig regularize=&quot;true&quot; datasetTypes=&quot;TwoD Best Files Runs ConstantForecasts ConstantOffsets&quot; /&gt;</strong>
-&lt;/featureCollection&gt;
+<strong>  </strong>&lt;/featureCollection&gt;
 have</pre>
 <p>If an fmrcConfig element is not present, the default is regularize= <em>false</em>, and  datasetTypes= &quot;<em>TwoD Best Files Run</em>s&quot;. Specifying your own fmrcConfig completely overrides the datasetTypes default.</p>
 <p>Note that for the case when a model run dataset is in a single file, it<em> </em> may be different than the same file as seen through the corresponding <em>Files</em> dataset, if <strong>regularize</strong> is on. In that case, the time coordinates will be regularized across all model run datasets in the collection.</p>
+<p>If an <em>ID</em> attribute is not specified on the <strong>featureCollection</strong>, the <em>path</em> attribute is used as the ID. This is a preferred idiom.</p>
 <h2>Proposed elements for Point Feature Collections</h2>
 <p>NOT DONE YET</p>
 <p><strong>point data:</strong></p>
@@ -207,7 +213,7 @@ have</pre>
 <p>&nbsp;</p>
 <hr width="100%" />
 <address>
-<img src="../../nc.gif" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated  April 6, 2010
+<img src="../../nc.gif" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated  April 16, 2010
 </address>
 <p>&nbsp; </p>
 </body>

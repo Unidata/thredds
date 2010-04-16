@@ -114,6 +114,8 @@ public class Fmrc {
   private Object lock = new Object();
   private FmrcDataset fmrcDataset;
   private volatile boolean forceProto = false;
+  private volatile Date lastInvChanged;
+  private volatile Date lastProtoChanged;
 
   private Fmrc(String collectionSpec, Formatter errlog) {
     manager = new DatasetCollectionManager(collectionSpec, errlog);
@@ -211,6 +213,17 @@ public class Fmrc {
     return gds;
   }
 
+  // true if things have changed since given time
+  public boolean checkInvState(Date lastInvChange) throws IOException {
+    checkNeeded(false);
+    return !this.lastInvChanged.before(lastInvChange);
+  }
+  // true if things have changed since given time
+  public boolean checkProtoState(Date lastProtoChanged) throws IOException {
+    checkNeeded(false);
+    return !this.lastProtoChanged.before(lastProtoChanged);
+  }
+
   private void checkNeeded(boolean force) throws IOException {
     synchronized (lock) {
       boolean forceProtoLocal = forceProto;
@@ -221,6 +234,8 @@ public class Fmrc {
         FmrcInv fmrcInv = makeFmrcInv(null);
         fmrcDataset.setInventory(fmrcInv, forceProtoLocal);
         if (forceProtoLocal) forceProto = false;
+        this.lastInvChanged = new Date();
+        this.lastProtoChanged = new Date();
         return;
       }
 
@@ -233,6 +248,8 @@ public class Fmrc {
         fmrcDataset.setInventory(fmrcInv, forceProtoLocal);
         if (logger.isInfoEnabled()) logger.info(config.spec+": make new Dataset, new proto = "+forceProtoLocal);
         if (forceProtoLocal) forceProto = false;
+        this.lastInvChanged = new Date();
+        if (forceProtoLocal) this.lastProtoChanged = new Date();
 
       } catch (Throwable t) {
         t.printStackTrace();
