@@ -44,7 +44,9 @@ import java.util.*;
  * @since Apr 14, 2010
  */
 public class FmrcInvLite implements java.io.Serializable {
-  String name;
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FmrcInvLite.class);
+
+  String collectionName;
   Date base;
   int nruns;
   double[] runOffset; // run time in offset hours since base
@@ -56,7 +58,7 @@ public class FmrcInvLite implements java.io.Serializable {
   List<GridInventory> invList = new ArrayList<GridInventory>(); // share these, they are expensive!
 
   public FmrcInvLite(FmrcInv fmrcInv) {
-    this.name = fmrcInv.getName();
+    this.collectionName = fmrcInv.getName();
     this.base = fmrcInv.getBaseDate();
 
     // store forecasts as offsets instead of Dates
@@ -127,7 +129,7 @@ public class FmrcInvLite implements java.io.Serializable {
   // group of Grids with the same time coordinate
 
   class Gridset implements java.io.Serializable {
-    String name;
+    String gridsetName;
     List<Grid> grids = new ArrayList<Grid>();
     int noffsets;
     double[] timeOffset;  // timeOffset(nruns,noffsets) in offset hours since base. this is the twoD time coordinate for this Gridset
@@ -135,9 +137,9 @@ public class FmrcInvLite implements java.io.Serializable {
     Map<String, List<TimeInv>> timeCoordMap = new HashMap<String, List<TimeInv>>();
 
     Gridset(FmrcInv.RunSeq runseq) {
-      this.name = runseq.getName();
+      this.gridsetName = runseq.getName();
       List<TimeCoord> timeList = runseq.getTimes();
-      assert nruns == timeList.size();
+      boolean hasMissingTimes = (nruns != timeList.size()); // missing one or more variables in one or more runs
       double[] unionOffsetHours = runseq.getUnionOffsetHours();
       noffsets = unionOffsetHours.length;
 
@@ -146,17 +148,39 @@ public class FmrcInvLite implements java.io.Serializable {
       for (int i = 0; i < timeOffset.length; i++) timeOffset[i] = Double.NaN;
 
       // fill twoD time coordinate from the sequence of time coordinates
-      for (int run = 0; run < nruns; run++) {
-        TimeCoord tc = timeList.get(run);
+      int runIdx = 0;
+      for (int seqIdx = 0; seqIdx < timeList.size(); seqIdx++) {
+        TimeCoord tc = null;
+        if (hasMissingTimes) {
+          tc = timeList.get(seqIdx);
+          double tc_offset = FmrcInv.getOffsetInHours(base, tc.getRunDate());
+
+          while (true) { // incr run till we find it
+            double run_offset = runOffset[runIdx];
+            if (Misc.closeEnough(run_offset, tc_offset))
+              break;
+            DateFormatter df = new DateFormatter();
+            String missingDate = df.toDateTimeStringISO(FmrcInv.makeOffsetDate(base, run_offset));
+            String wantDate = df.toDateTimeStringISO(tc.getRunDate());
+            log.warn(collectionName +": runseq missing time "+missingDate+" looking for "+ wantDate+" for var = "+ runseq.getUberGrids().get(0).getName());
+            runIdx++;
+          }
+
+        } else {  // common case
+          tc = timeList.get(runIdx);
+        }
+
         double run_offset = FmrcInv.getOffsetInHours(base, tc.getRunDate());
         double[] offsets = tc.getOffsetHours();
         int ntimes = offsets.length;
         for (int time = 0; time < ntimes; time++)
-          timeOffset[run * noffsets + time] = run_offset + offsets[time];
+          timeOffset[runIdx * noffsets + time] = run_offset + offsets[time];
+
+        runIdx++;
       }
 
       for (FmrcInv.UberGrid ugrid : runseq.getUberGrids()) {
-        grids.add(new Grid(ugrid.getName(), getInventory(ugrid))); // LOOK could we defer making the Inventory ??
+        grids.add(new Grid(ugrid.getName(), getInventory(ugrid)));
       }
     }
 
@@ -465,7 +489,8 @@ public class FmrcInvLite implements java.io.Serializable {
           break;
         }
       }
-      if (runIdx < 0) throw new IllegalArgumentException("No run date of " + run);
+      if (runIdx < 0)
+        throw new IllegalArgumentException("No run date of " + run);
     }
 
     @Override
@@ -604,7 +629,8 @@ public class FmrcInvLite implements java.io.Serializable {
       for (int i=0; i<offsets.length; i++)
         if (Misc.closeEnough(offsets[i], offset)) ok = true;
 
-      if (ok) throw new IllegalArgumentException("No constant offset dataset date = " + offset);
+      if (!ok)
+        throw new IllegalArgumentException("No constant offset dataset for = " + offset);
     }
 
     @Override

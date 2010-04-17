@@ -82,16 +82,19 @@ public class Fmrc2Dialog extends JDialog {
 
   private void initComponents() {
     // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
-    // Generated using JFormDesigner Evaluation license - John Caron
+    // Generated using JFormDesigner non-commercial license
     dialogPane = new JPanel();
     contentPanel = new JPanel();
     label1 = new JLabel();
     comboBox1 = new JComboBox();
     label2 = new JLabel();
     list1 = new JList();
+    comboBox2 = new JComboBox();
+    label3 = new JLabel();
     buttonBar = new JPanel();
     okButton = new JButton();
     cancelButton = new JButton();
+    datasetCB = new datasetCBaction();
 
     //======== this ========
     setTitle("Show Dataset in another Tab");
@@ -101,14 +104,6 @@ public class Fmrc2Dialog extends JDialog {
     //======== dialogPane ========
     {
       dialogPane.setBorder(new EmptyBorder(12, 12, 12, 12));
-
-      // JFormDesigner evaluation mark
-      dialogPane.setBorder(new javax.swing.border.CompoundBorder(
-        new javax.swing.border.TitledBorder(new javax.swing.border.EmptyBorder(0, 0, 0, 0),
-          "JFormDesigner Evaluation", javax.swing.border.TitledBorder.CENTER,
-          javax.swing.border.TitledBorder.BOTTOM, new java.awt.Font("Dialog", java.awt.Font.BOLD, 12),
-          java.awt.Color.red), dialogPane.getBorder())); dialogPane.addPropertyChangeListener(new java.beans.PropertyChangeListener(){public void propertyChange(java.beans.PropertyChangeEvent e){if("border".equals(e.getPropertyName()))throw new RuntimeException();}});
-
       dialogPane.setLayout(new BorderLayout());
 
       //======== contentPanel ========
@@ -121,8 +116,12 @@ public class Fmrc2Dialog extends JDialog {
         //---- comboBox1 ----
         comboBox1.setModel(new DefaultComboBoxModel(new String[] {
           "Dataset2D",
-          "Best"
+          "Best",
+          "Run",
+          "ConstantForecast",
+          "ConstantOffset"
         }));
+        comboBox1.setAction(datasetCB);
 
         //---- label2 ----
         label2.setText("SendTo:");
@@ -139,6 +138,16 @@ public class Fmrc2Dialog extends JDialog {
           public int getSize() { return values.length; }
           public Object getElementAt(int i) { return values[i]; }
         });
+        list1.setVisibleRowCount(7);
+
+        //---- comboBox2 ----
+        comboBox2.setModel(new DefaultComboBoxModel(new String[] {
+          "N/A"
+        }));
+
+        //---- label3 ----
+        label3.setText("Param:");
+        label3.setFont(label3.getFont().deriveFont(label3.getFont().getStyle() | Font.BOLD));
 
         GroupLayout contentPanelLayout = new GroupLayout(contentPanel);
         contentPanel.setLayout(contentPanelLayout);
@@ -146,16 +155,17 @@ public class Fmrc2Dialog extends JDialog {
           contentPanelLayout.createParallelGroup()
             .addGroup(contentPanelLayout.createSequentialGroup()
               .addContainerGap()
-              .addGroup(contentPanelLayout.createParallelGroup()
-                .addGroup(contentPanelLayout.createSequentialGroup()
+              .addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
+                .addGroup(contentPanelLayout.createParallelGroup()
                   .addComponent(label1)
-                  .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                  .addComponent(comboBox1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-                .addGroup(contentPanelLayout.createSequentialGroup()
-                  .addComponent(label2)
-                  .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                  .addComponent(list1)))
-              .addContainerGap(146, Short.MAX_VALUE))
+                  .addComponent(label2))
+                .addComponent(label3))
+              .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+              .addGroup(contentPanelLayout.createParallelGroup()
+                .addComponent(comboBox2, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                .addComponent(list1)
+                .addComponent(comboBox1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+              .addContainerGap(133, Short.MAX_VALUE))
         );
         contentPanelLayout.setVerticalGroup(
           contentPanelLayout.createParallelGroup()
@@ -164,11 +174,15 @@ public class Fmrc2Dialog extends JDialog {
               .addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                 .addComponent(label1)
                 .addComponent(comboBox1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-              .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
+              .addGap(18, 18, 18)
               .addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                .addComponent(label2)
-                .addComponent(list1))
-              .addContainerGap(15, Short.MAX_VALUE))
+                .addComponent(comboBox2, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                .addComponent(label3))
+              .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 34, Short.MAX_VALUE)
+              .addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                .addComponent(list1, GroupLayout.PREFERRED_SIZE, 66, GroupLayout.PREFERRED_SIZE)
+                .addComponent(label2))
+              .addContainerGap())
         );
       }
       dialogPane.add(contentPanel, BorderLayout.CENTER);
@@ -211,15 +225,35 @@ public class Fmrc2Dialog extends JDialog {
   }
 
   // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables
-  // Generated using JFormDesigner Evaluation license - John Caron
+  // Generated using JFormDesigner non-commercial license
   private JPanel dialogPane;
   private JPanel contentPanel;
   private JLabel label1;
   private JComboBox comboBox1;
   private JLabel label2;
   private JList list1;
+  private JComboBox comboBox2;
+  private JLabel label3;
   private JPanel buttonBar;
   private JButton okButton;
   private JButton cancelButton;
+  private datasetCBaction datasetCB;
   // JFormDesigner - End of variables declaration  //GEN-END:variables
+
+  private class datasetCBaction extends AbstractAction {
+    private datasetCBaction() {
+      // JFormDesigner - Action initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
+      // Generated using JFormDesigner non-commercial license
+      putValue(NAME, "test");
+      // JFormDesigner - End of action initialization  //GEN-END:initComponents
+    }
+
+    public void actionPerformed(ActionEvent e) {
+      System.out.printf("datasetCBaction=%s%n", e);
+      DefaultComboBoxModel m = new DefaultComboBoxModel();
+      m.addElement("test");
+      m.addElement("it");
+      comboBox2.setModel(m);
+    }
+  }
 }

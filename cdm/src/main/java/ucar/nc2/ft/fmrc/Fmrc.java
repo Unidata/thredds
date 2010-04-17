@@ -229,14 +229,19 @@ public class Fmrc {
       boolean forceProtoLocal = forceProto;
 
       if (fmrcDataset == null) {
-        fmrcDataset = new FmrcDataset(config);
-        manager.scan(null);
-        FmrcInv fmrcInv = makeFmrcInv(null);
-        fmrcDataset.setInventory(fmrcInv, forceProtoLocal);
-        if (forceProtoLocal) forceProto = false;
-        this.lastInvChanged = new Date();
-        this.lastProtoChanged = new Date();
-        return;
+        try {
+          fmrcDataset = new FmrcDataset(config);
+          manager.scan(null);
+          FmrcInv fmrcInv = makeFmrcInv(null);
+          fmrcDataset.setInventory(fmrcInv, forceProtoLocal);
+          if (forceProtoLocal) forceProto = false;
+          this.lastInvChanged = new Date();
+          this.lastProtoChanged = new Date();
+          return;
+        } catch (Throwable t) {
+          logger.error(config.spec+": initial fmrcDataset creation failed", t);
+          throw new RuntimeException(t);
+        }
       }
 
       if (!force && !manager.isRescanNeeded()) return;
@@ -252,8 +257,8 @@ public class Fmrc {
         if (forceProtoLocal) this.lastProtoChanged = new Date();
 
       } catch (Throwable t) {
-        t.printStackTrace();
-        throw new RuntimeException(t);  
+        logger.error(config.spec+": rescan failed");
+        throw new RuntimeException(t);
       }
     }
   }

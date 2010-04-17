@@ -99,12 +99,12 @@ public class GridDatasetInv {
     GridDataset gds = null;
     try {
       gds = GridDataset.open( mfile.getPath());
-      System.out.println("gds dataset= "+ gds.getNetcdfDataset());
+      // System.out.println("gds dataset= "+ gds.getNetcdfDataset());
 
       GridDatasetInv inv = new GridDatasetInv(gds, cm.extractRunDate(mfile));
       String xmlString = inv.writeXML( new Date(mfile.getLastModified()));
       cm.putMetadata(mfile, "fmrInv.xml", xmlString.getBytes("UTF-8"));
-      if (log.isInfoEnabled()) log.info(" added xmlFile "+ mfile.getPath()+".fmrInv.xml to cache");
+      if (log.isDebugEnabled()) log.debug(" added xmlFile "+ mfile.getPath()+".fmrInv.xml to cache");
       //System.out.println("new xmlBytes= "+ xmlString);
       return inv;
     } finally {

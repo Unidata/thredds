@@ -230,7 +230,8 @@ class FmrcDataset {
 
     // protoList = new ArrayList<String>();
     // these are the non-agg variables - store data or ProxyReader in proto
-    for (Variable v : root.getVariables()) {
+    List<Variable> copyList = new ArrayList<Variable>(root.getVariables()); // use copy since we may be removing some variables
+    for (Variable v : copyList) {
       // see if its a non-agg variable
       FmrcInv.UberGrid grid = fmrcInv.findUberGrid(v.getName());
       if (grid == null) { // only non-agg vars need to be cached
@@ -360,7 +361,7 @@ class FmrcDataset {
   private GridDataset buildDataset2D(NetcdfDataset result, NetcdfDataset proto, FmrcInvLite lite) throws IOException {
     // make a copy, so that this object can coexist with previous incarnations
     if (result == null) result = new NetcdfDataset();
-    result.setLocation(lite.name);
+    result.setLocation(lite.collectionName);
     transferGroup(proto.getRootGroup(), result.getRootGroup(), result);
     result.finish();
     addAttributeInfo(result, "history", "FMRC 2D Dataset");
@@ -403,13 +404,13 @@ class FmrcDataset {
       Group newGroup = result.getRootGroup(); // can it be different ??
 
       //int noffsets = runSeq.getNTimeOffsets();
-      Dimension timeDim = new Dimension(gridset.name, gridset.noffsets);
-      result.removeDimension(null, gridset.name); // remove previous declaration, if any
+      Dimension timeDim = new Dimension(gridset.gridsetName, gridset.noffsets);
+      result.removeDimension(null, gridset.gridsetName); // remove previous declaration, if any
       result.addDimension(null, timeDim);
 
       DataType dtype = DataType.DOUBLE;
-      String dims = getRunDimensionName() + " " + gridset.name;
-      VariableDS timeVar = new VariableDS(result, newGroup, null, "forecast_" + gridset.name, dtype, dims, null, null); // LOOK could just make a CoordinateAxis1D
+      String dims = getRunDimensionName() + " " + gridset.gridsetName;
+      VariableDS timeVar = new VariableDS(result, newGroup, null, "forecast_" + gridset.gridsetName, dtype, dims, null, null); // LOOK could just make a CoordinateAxis1D
       timeVar.addAttribute(new Attribute("long_name", "Forecast time for ForecastModelRunCollection"));
       timeVar.addAttribute(new ucar.nc2.Attribute("standard_name", "time"));
       timeVar.addAttribute(new ucar.nc2.Attribute("units", "hours since " + dateFormatter.toDateTimeStringISO(lite.base)));
@@ -417,7 +418,7 @@ class FmrcDataset {
       timeVar.addAttribute(new ucar.nc2.Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
 
       // remove the old one if any
-      newGroup.removeVariable(gridset.name);
+      newGroup.removeVariable(gridset.gridsetName);
       newGroup.addVariable(timeVar);
 
       Array timeCoordVals = Array.factory(DataType.DOUBLE, timeVar.getShape(), gridset.timeOffset);
@@ -447,7 +448,7 @@ class FmrcDataset {
         nonAggVars.remove(aggVar);
 
         // we need to explicitly list the coordinate axes, because time coord is now 2D
-        String coords = getCoordinateList(aggVar, gridset.name);
+        String coords = getCoordinateList(aggVar, gridset.gridsetName);
         aggVar.removeAttribute(_Coordinate.Axes);
         aggVar.addAttribute(new Attribute(CF.COORDINATES, coords)); // CF
       }
@@ -634,7 +635,7 @@ class FmrcDataset {
    */
   private GridDataset buildDataset1D(NetcdfDataset proto, FmrcInvLite lite, TimeInventory timeInv) throws IOException {
     NetcdfDataset result = new NetcdfDataset(); // make a copy, so that this object can coexist with previous incarnations
-    result.setLocation(lite.name);
+    result.setLocation(lite.collectionName);
     transferGroup(proto.getRootGroup(), result.getRootGroup(), result);
     result.finish();
     addAttributeInfo(result, "history", "FMRC "+timeInv.getName()+" Dataset");
@@ -647,10 +648,17 @@ class FmrcDataset {
     for (FmrcInvLite.Gridset gridset : lite.gridSets) {
 
       Group group = result.getRootGroup(); // can it be different ??
-      String timeDimName = gridset.name;
+      String timeDimName = gridset.gridsetName;
 
       // construct the dimension
       int ntimes = timeInv.getTimeLength(gridset);
+      if (ntimes == 0) {   // eg a constant offset dataset for variables that dont ahve that offset
+        // remove all variables that are in this gridsset
+        for (FmrcInvLite.Gridset.Grid ugrid : gridset.grids)
+         result.removeVariable(group, ugrid.name);
+        continue; // skip the rest
+      }
+
       Dimension timeDim = new Dimension(timeDimName, ntimes);
       result.removeDimension(group, timeDimName); // remove previous declaration, if any
       result.addDimension(group, timeDim);

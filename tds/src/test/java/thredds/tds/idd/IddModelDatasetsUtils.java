@@ -65,4 +65,25 @@ public class IddModelDatasetsUtils
   {
     return modelIds;
   }
+
+  private static final String[][] gfsIds =
+          {
+                  { "NCEP/GFS/Alaska_191km"},                     // idd and/or idv ?
+                  { "NCEP/GFS/CONUS_80km"},                       // idd and/or idv ?
+                  { "NCEP/GFS/CONUS_95km"},                       // idd and/or idv ?
+                  { "NCEP/GFS/CONUS_191km"},                      // idd and/or idv ?
+                  { "NCEP/GFS/Global_0p5deg"},                    // idd and/or idv ?
+                  { "NCEP/GFS/Global_onedeg"},                    // idd and/or idv ?
+                  { "NCEP/GFS/Global_2p5deg"},                    // idd and/or idv ?
+                  { "NCEP/GFS/Hawaii_160km"},                     // idd and/or idv ?
+                  { "NCEP/GFS/N_Hemisphere_381km"},               // idd and/or idv ?
+                  { "NCEP/GFS/Puerto_Rico_191km"},                // idd and/or idv ?
+
+          };
+
+  public static Object[][] getGfsModelIds()    {
+    return gfsIds;
+  }
+
+
 }

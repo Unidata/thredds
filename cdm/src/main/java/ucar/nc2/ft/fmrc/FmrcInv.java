@@ -180,7 +180,7 @@ public class FmrcInv {
 
   private UberGrid findVar(String varName) {
     for (UberGrid uv : uberGridList) {
-      if (uv.name.equals(varName))
+      if (uv.gridName.equals(varName))
         return uv;
     }
     return null;
@@ -261,7 +261,7 @@ public class FmrcInv {
   // The collection of GridVariable for one variable, across all runs in the collection
   // immutable after finish() is called.
   public class UberGrid implements Comparable<UberGrid> {
-    private final String name;
+    private final String gridName;
     private final List<FmrInv.GridVariable> runs = new ArrayList<FmrInv.GridVariable>();
 
     private VertCoord vertCoordUnion = null;
@@ -269,7 +269,7 @@ public class FmrcInv {
     private RunSeq runSeq = null;
 
     UberGrid(String name) {
-      this.name = name;
+      this.gridName = name;
     }
 
     void addGridVariable(FmrInv.GridVariable grid, int hour) {
@@ -277,7 +277,7 @@ public class FmrcInv {
     }
 
     public String getName() {
-      return name;
+      return gridName;
     }
 
     // the union of all offset hours, ignoring rundate
@@ -298,7 +298,7 @@ public class FmrcInv {
     }
 
     public int compareTo(UberGrid o) {
-      return name.compareTo(o.name);
+      return gridName.compareTo(o.gridName);
     }
 
     public int countTotal() {
@@ -359,7 +359,7 @@ public class FmrcInv {
         if (vc_union == null)
           vc_union = new VertCoord(vc);
         else if (!vc_union.equalsData(vc)) {
-          System.out.printf("UberGrid %s has different vert coords in run %s %n", name, grid.getRunDate());
+          log.warn(name+" Grid "+ gridName +" has different vert coords in run " + grid.getRunDate());
           vertList.add(vc);
         }
       }
