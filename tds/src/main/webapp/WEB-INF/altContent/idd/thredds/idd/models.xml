@@ -91,7 +91,7 @@
                     olderThan="5 min"/>
         <update startup="true" rescan="0 5 3 * * ? *" />
         <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
-        <fmrcConfig regularize="true"/>
+        <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
       </featureCollection>
 
       <featureCollection name="NCEP-GFS-CONUS_95km" featureType="FMRC" harvest="true" path="fmrc/NCEP/GFS/CONUS_95km">
@@ -109,7 +109,7 @@
                     olderThan="5 min"/>
         <update startup="true" rescan="0 5 3 * * ? *" />
         <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
-        <fmrcConfig regularize="true"/>
+        <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
       </featureCollection>
 
       <featureCollection name="NCEP-GFS-CONUS_191km" featureType="FMRC" harvest="true" path="fmrc/NCEP/GFS/CONUS_191km">
@@ -127,7 +127,7 @@
                     olderThan="5 min"/>
         <update startup="true" rescan="0 5 3 * * ? *" />
         <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
-        <fmrcConfig regularize="true"/>
+        <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
       </featureCollection>
 
       <featureCollection name="NCEP-GFS-Global_0p5deg" featureType="FMRC" harvest="true"
@@ -147,7 +147,7 @@
                     olderThan="5 min"/>
         <update startup="true" rescan="0 5 3 * * ? *" />
         <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
-        <fmrcConfig regularize="true"/>
+        <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
       </featureCollection>
 
       <featureCollection name="NCEP-GFS-Global_onedeg" featureType="FMRC" harvest="true"
@@ -167,7 +167,7 @@
                     olderThan="5 min"/>
         <update startup="true" rescan="0 5 3 * * ? *" />
         <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
-        <fmrcConfig regularize="true"/>
+        <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
       </featureCollection>
 
       <featureCollection name="NCEP-GFS-Global_2p5deg" featureType="FMRC" harvest="true"
@@ -187,7 +187,7 @@
                     olderThan="5 min"/>
         <update startup="true" rescan="0 5 3 * * ? *" />
         <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
-        <fmrcConfig regularize="true"/>
+        <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
       </featureCollection>
 
       <featureCollection name="NCEP-GFS-Hawaii_160km" featureType="FMRC" harvest="true" path="fmrc/NCEP/GFS/Hawaii_160km">
@@ -205,7 +205,7 @@
                     olderThan="5 min"/>
         <update startup="true" rescan="0 5 3 * * ? *" />
         <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
-        <fmrcConfig regularize="true"/>
+        <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
       </featureCollection>
 
       <featureCollection name="NCEP-GFS-N_Hemisphere_381km" featureType="FMRC" harvest="true"
@@ -224,7 +224,7 @@
             olderThan="5 min"/>
         <update startup="true" rescan="0 5 3 * * ? *" />
         <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
-        <fmrcConfig regularize="true"/>
+        <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
       </featureCollection>
 
       <featureCollection name="NCEP-GFS-Puerto_Rico_191km" featureType="FMRC" harvest="true"
@@ -243,12 +243,13 @@
             olderThan="5 min"/>
         <update startup="true" rescan="0 5 3 * * ? *" />
         <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
-        <fmrcConfig regularize="true"/>
+        <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
       </featureCollection>
 
     </dataset>
 
     <dataset ID="FMRC/NCEP/NAM" name="North American Model (NAM) ">
+
       <metadata inherited="true">
         <documentation type="summary">NCEP Nonhydrostatic Mesoscale Model (NMM) and Gridpoint Statistical Interpolation
           (GSI) analysis, running in the Weather Research and Forecasting (WRF) infrastructure.
@@ -257,183 +258,143 @@
                        xlink:title="COMET MetEd (Meteorology Education and Training) documentation"/>
       </metadata>
 
-      <datasetFmrc name="NCEP-NAM-Alaska_11km" collectionType="ForecastModelRuns" harvest="true"
-                   path="fmrc/NCEP/NAM/Alaska_11km">
-        <metadata inherited="true">
-          <dataFormat>GRIB-2</dataFormat>
-          <documentation type="summary">NCEP North American Model: AWIPS 242 (S) Grid over Alaska.
-            Model runs are made at 0, 6, 12, 18Z with analysis and forecasts every 3 hours out to 84 hours (3.5 days).
-            Horizontal = 553 by 425 points, resolution 11.25 km, Polar Stereographic projection.
-            Vertical = 1000 to 100 hPa pressure levels.
-          </documentation>
-        </metadata>
+      <featureCollection name="NCEP-NAM-Alaska_11km" featureType="FMRC" harvest="true" path="fmrc/NCEP/NAM/Alaska_11km">
+         <metadata inherited="true">
+           <dataFormat>GRIB-2</dataFormat>
+           <documentation type="summary">NCEP North American Model: AWIPS 242 (S) Grid over Alaska.
+             Model runs are made at 0, 6, 12, 18Z with analysis and forecasts every 3 hours out to 84 hours (3.5 days).
+             Horizontal = 553 by 425 points, resolution 11.25 km, Polar Stereographic projection.
+             Vertical = 1000 to 100 hPa pressure levels.
+           </documentation>
+         </metadata>
 
-        <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" enhance="true">
-          <aggregation dimName="run" type="forecastModelRunCollection"
-                       fmrcDefinition="NCEP-NAM-Alaska_11km.fmrcDefinition.xml" recheckEvery="15 min">
-            <scan location="/data/ldm/pub/native/grid/NCEP/NAM/Alaska_11km/" suffix=".grib2"
-                  dateFormatMark="NAM_Alaska_11km_#yyyyMMdd_HHmm" subdirs="true" olderThan="5 min"/>
-          </aggregation>
-        </netcdf>
-        <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/NAM/Alaska_11km/" suffix=".grib2"
-                       fmrcDefinition="NCEP-NAM-Alaska_11km.fmrcDefinition.xml"/>
-        <addTimeCoverage datasetNameMatchPattern="NAM_Alaska_11km_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2}).*\.grib2$"
-                         startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="84 hours"/>
-      </datasetFmrc>
+         <collection
+             spec="/data/ldm/pub/native/grid/NCEP/NAM/Alaska_11km/NAM_Alaska_11km_#yyyyMMdd_HHmm#.grib2"
+             recheckAfter="15 min"
+             olderThan="5 min"/>
+         <update startup="true" rescan="0 5 3 * * ? *" />
+         <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
+         <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
+       </featureCollection>
 
-      <datasetFmrc name="NCEP-NAM-Alaska_22km" collectionType="ForecastModelRuns" harvest="true"
-                   path="fmrc/NCEP/NAM/Alaska_22km">
-        <metadata inherited="true">
+      <featureCollection name="NCEP-NAM-Alaska_22km" featureType="FMRC" harvest="true" path="fmrc/NCEP/NAM/Alaska_22km">
+         <metadata inherited="true">
           <documentation type="summary">NCEP North American Model: AWIPS 217 (Y) Grid over Alaska - Double Resolution.
             Model runs are made at 0 and 12Z, with analysis and forecasts every 3 hours out to 60 hours.
             Horizontal = 277 by 213 points, resolution 22.5 km, Polar Stereographic projection.
             Vertical = surface, height above ground, pressure layer (2D levels only)
           </documentation>
+         </metadata>
 
-        </metadata>
-
-        <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" enhance="true">
-          <aggregation dimName="run" type="forecastModelRunCollection"
-                       fmrcDefinition="NCEP-NAM-Alaska_22km.fmrcDefinition.xml" recheckEvery="15 min">
-            <scan location="/data/ldm/pub/native/grid/NCEP/NAM/Alaska_22km/" suffix=".grib1"
-                  dateFormatMark="NAM_Alaska_22km_#yyyyMMdd_HHmm" subdirs="true" olderThan="5 min"/>
-          </aggregation>
-        </netcdf>
-        <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/NAM/Alaska_22km/" suffix=".grib1"
-                       fmrcDefinition="NCEP-NAM-Alaska_22km.fmrcDefinition.xml"/>
-        <addTimeCoverage datasetNameMatchPattern="NAM_Alaska_22km_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2}).*\.grib1$"
-                         startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="60 hours"/>
-      </datasetFmrc>
+         <collection
+             spec="/data/ldm/pub/native/grid/NCEP/NAM/Alaska_22km/NAM_Alaska_22km_#yyyyMMdd_HHmm#.grib1"
+             recheckAfter="15 min"
+             olderThan="5 min"/>
+         <update startup="true" rescan="0 5 3 * * ? *" />
+         <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
+         <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
+       </featureCollection>
 
       <dataset ID="FMRC/NCEP/NAM/Alaska_45km" name="NCEP-NAM-Alaska_45km">
 
-        <datasetFmrc name="NCEP-NAM-Alaska_45km-noaaport" collectionType="ForecastModelRuns" harvest="true"
-                     path="fmrc/NCEP/NAM/Alaska_45km/noaaport">
-          <metadata inherited="true">
-            <documentation type="summary">NCEP North American Model : AWIPS 216 (V) grid over Alaska.
+       <featureCollection name="NCEP-NAM-Alaska_45km-noaaport" featureType="FMRC" harvest="true" path="fmrc/NCEP/NAM/Alaska_45km/noaaport">
+         <metadata inherited="true">
+             <documentation type="summary">NCEP North American Model : AWIPS 216 (V) grid over Alaska.
               Model runs are made at 0 and 12Z, with analysis and forecasts every 3 hours out to 60 hours.
               Horizontal = 139 by 107 points, resolution 45.0 km, Polar Stereographic projection.
               Vertical = 1000 to 50 hPa pressure levels.
             </documentation>
-          </metadata>
+         </metadata>
 
-          <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" enhance="true">
-            <aggregation dimName="run" type="forecastModelRunCollection"
-                         fmrcDefinition="NCEP-NAM-Alaska_45km-noaaport.fmrcDefinition.xml" recheckEvery="15 min">
-              <scan location="/data/ldm/pub/native/grid/NCEP/NAM/Alaska_45km/noaaport/" suffix=".grib1"
-                    dateFormatMark="NAM_Alaska_45km_noaaport_#yyyyMMdd_HHmm" subdirs="true" olderThan="5 min"/>
-            </aggregation>
-          </netcdf>
-          <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/NAM/Alaska_45km/noaaport/" suffix=".grib1"
-                         fmrcDefinition="NCEP-NAM-Alaska_45km-noaaport.fmrcDefinition.xml"/>
-          <addTimeCoverage
-              datasetNameMatchPattern="NAM_Alaska_45km.*([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2}).*\.grib1$"
-              startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="60 hours"/>
-        </datasetFmrc>
+         <collection
+             spec="/data/ldm/pub/native/grid/NCEP/NAM/Alaska_45km/noaaport/NAM_Alaska_45km_noaaport_#yyyyMMdd_HHmm#.grib1"
+             recheckAfter="15 min"
+             olderThan="5 min"/>
+         <update startup="true" rescan="0 5 3 * * ? *" />
+         <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
+         <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
+       </featureCollection>
 
-        <datasetFmrc name="NCEP-NAM-Alaska_45km-conduit" collectionType="ForecastModelRuns" harvest="true"
-                     path="fmrc/NCEP/NAM/Alaska_45km/conduit">
-          <metadata inherited="true">
+       <featureCollection name="NCEP-NAM-Alaska_45km-conduit" featureType="FMRC" harvest="true" path="fmrc/NCEP/NAM/Alaska_45km/conduit">
+         <metadata inherited="true">
+           <dataFormat>GRIB-2</dataFormat>
             <documentation type="summary">NCEP North American Model : AWIPS 216 (V) grid over Alaska.
               Model runs are made at 00Z, 06Z, 12Z, and 18Z with analysis and forecasts every 3 hours out to 84 hours
               (3.5 days).
               Horizontal = 139 by 107 points, resolution 45.0 km, Polar Stereographic projection.
               Vertical = 1000 to 50 hPa pressure levels.
             </documentation>
-          </metadata>
+         </metadata>
 
-          <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" enhance="true">
-            <aggregation dimName="run" type="forecastModelRunCollection"
-                         fmrcDefinition="NCEP-NAM-Alaska_45km-conduit.fmrcDefinition.xml" recheckEvery="15 min">
-              <scan location="/data/ldm/pub/native/grid/NCEP/NAM/Alaska_45km/conduit/" suffix=".grib2"
-                    dateFormatMark="NAM_Alaska_45km_conduit_#yyyyMMdd_HHmm" subdirs="true" olderThan="5 min"/>
-            </aggregation>
-          </netcdf>
-          <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/NAM/Alaska_45km/conduit/" suffix=".grib2"
-                         fmrcDefinition="NCEP-NAM-Alaska_45km-conduit.fmrcDefinition.xml"/>
-          <addTimeCoverage
-              datasetNameMatchPattern="NAM_Alaska_45km.*([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2}).*\.grib2$"
-              startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="84 hours"/>
-        </datasetFmrc>
+         <collection
+             spec="/data/ldm/pub/native/grid/NCEP/NAM/Alaska_45km/conduit/NAM_Alaska_45km_conduit_#yyyyMMdd_HHmm#.grib2"
+             recheckAfter="15 min"
+             olderThan="5 min"/>
+         <update startup="true" rescan="0 5 3 * * ? *" />
+         <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
+         <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
+       </featureCollection>
+
       </dataset>
 
-      <datasetFmrc name="NCEP-NAM-Alaska_95km" collectionType="ForecastModelRuns" harvest="true"
-                   path="fmrc/NCEP/NAM/Alaska_95km">
+      <featureCollection name="NCEP-NAM-Alaska_95km" featureType="FMRC" harvest="true" path="fmrc/NCEP/NAM/Alaska_95km">
         <metadata inherited="true">
-          <documentation type="summary">NCEP North American Model : AWIPS 207 (N) Regional - Alaska.
+          <dataFormat>GRIB-1</dataFormat>
+            <documentation type="summary">NCEP North American Model : AWIPS 207 (N) Regional - Alaska.
             Model runs are made at 0 and 12Z, with analysis and forecasts every 6 hours out to 60 hours.
             Horizontal = 49 by 35 points, resolution 95.25 km, Stereographic projection.
             Vertical = 1000 to 100 hPa pressure levels.
           </documentation>
         </metadata>
 
-        <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" enhance="true">
-          <aggregation dimName="run" type="forecastModelRunCollection"
-                       fmrcDefinition="NCEP-NAM-Alaska_95km.fmrcDefinition.xml" recheckEvery="15 min">
-            <scan location="/data/ldm/pub/native/grid/NCEP/NAM/Alaska_95km/" suffix=".grib1"
-                  dateFormatMark="NAM_Alaska_95km_#yyyyMMdd_HHmm" subdirs="true" olderThan="5 min"/>
-          </aggregation>
-        </netcdf>
-        <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/NAM/Alaska_95km/" suffix=".grib1"
-                       fmrcDefinition="NCEP-NAM-Alaska_95km.fmrcDefinition.xml"/>
-        <addTimeCoverage datasetNameMatchPattern="NAM_Alaska_95km_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2}).*\.grib1$"
-                         startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="60 hours"/>
-      </datasetFmrc>
+        <collection
+            spec="/data/ldm/pub/native/grid/NCEP/NAM/Alaska_95km/NAM_Alaska_95km_#yyyyMMdd_HHmm#.grib1"
+            recheckAfter="15 min"
+            olderThan="5 min"/>
+        <update startup="true" rescan="0 5 3 * * ? *" />
+        <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
+        <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
+      </featureCollection>
 
       <dataset ID="FMRC/NCEP/NAM/CONUS_12km" name="NCEP-NAM-CONUS_12km">
 
-        <datasetFmrc name="NCEP-NAM-CONUS_12km-noaaport" collectionType="ForecastModelRuns" harvest="true"
-                     path="fmrc/NCEP/NAM/CONUS_12km">
+        <featureCollection name="NCEP-NAM-CONUS_12km-noaaport" featureType="FMRC" harvest="true" path="fmrc/NCEP/NAM/CONUS_12km/noaaport">
           <metadata inherited="true">
-            <dataFormat>GRIB-2</dataFormat>
-            <documentation type="summary">NCEP North American Model : AWIPS 218 (B) grid over the continental United
-              States.
-              Model runs are made at 06Z, 12Z, 18Z and 00Z, with analysis and forecasts every 3 hours out to 84 hours
-              (3.5 days).
-              Horizontal = 614 by 428 points, resolution 12.19 km, LambertConformal projection.
-              Vertical = 1000 to 100 hPa pressure levels (29).
-            </documentation>
+              <dataFormat>GRIB-2</dataFormat>
+              <documentation type="summary">NCEP North American Model : AWIPS 218 (B) grid over the continental United States.
+                Model runs are made at 06Z, 12Z, 18Z and 00Z, with analysis and forecasts every 3 hours out to 84 hours (3.5 days).
+                Horizontal = 614 by 428 points, resolution 12.19 km, LambertConformal projection.
+                Vertical = 1000 to 100 hPa pressure levels (29).
+              </documentation>
           </metadata>
 
-          <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" enhance="true">
-            <aggregation dimName="run" type="forecastModelRunCollection"
-                         fmrcDefinition="NCEP-NAM-CONUS_12km-noaaport.fmrcDefinition.xml" recheckEvery="15 min">
-              <scan location="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_12km/" suffix=".grib2"
-                    dateFormatMark="NAM_CONUS_12km_#yyyyMMdd_HHmm" subdirs="false" olderThan="5 min"/>
-            </aggregation>
-          </netcdf>
-          <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_12km/" suffix=".grib2"
-                         fmrcDefinition="NCEP-NAM-CONUS_12km-noaaport.fmrcDefinition.xml"/>
-          <addTimeCoverage datasetNameMatchPattern="NAM_CONUS_12km_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2}).*\.grib2$"
-                           startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="84 hours"/>
-        </datasetFmrc>
+          <collection
+              spec="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_12km/NAM_CONUS_12km_#yyyyMMdd_HHmm#.grib2"
+              recheckAfter="15 min"
+              olderThan="5 min"/>
+          <update startup="true" rescan="0 5 3 * * ? *" />
+          <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
+          <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
+        </featureCollection>
 
-        <datasetFmrc name="NCEP-NAM-CONUS_12km-conduit" collectionType="ForecastModelRuns" harvest="true"
-                     path="fmrc/NCEP/NAM/CONUS_12km/conduit">
+        <featureCollection name="NCEP-NAM-CONUS_12km-conduit" featureType="FMRC" harvest="true" path="fmrc/NCEP/NAM/CONUS_12km/conduit">
           <metadata inherited="true">
             <dataFormat>GRIB-2</dataFormat>
-            <documentation type="summary">NCEP North American Model : AWIPS 218 (B) grid over the continental United
-              States.
-              Model runs are made at 06Z, 12Z, 18Z and 00Z, with analysis and forecasts every 3 hours out to 84 hours
-              (3.5 days).
+            <documentation type="summary">NCEP North American Model : AWIPS 218 (B) grid over the continental United States.
+              Model runs are made at 06Z, 12Z, 18Z and 00Z, with analysis and forecasts every 3 hours out to 84 hours (3.5 days).
               Horizontal = 614 by 428 points, resolution 12.19 km, LambertConformal projection.
               Vertical = small number of mandatory pressure levels, lots of surface fields.
             </documentation>
           </metadata>
 
-          <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" enhance="true">
-            <aggregation dimName="run" type="forecastModelRunCollection"
-                         fmrcDefinition="NCEP-NAM-CONUS_12km-conduit.fmrcDefinition.xml" recheckEvery="15 min">
-              <scan location="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_12km_conduit/" suffix=".grib2"
-                    dateFormatMark="NAM_CONUS_12km_#yyyyMMdd_HHmm" subdirs="false" olderThan="5 min"/>
-            </aggregation>
-          </netcdf>
-          <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_12km_conduit/" suffix=".grib2"
-                         fmrcDefinition="NCEP-NAM-CONUS_12km-conduit.fmrcDefinition.xml"/>
-          <addTimeCoverage
-              datasetNameMatchPattern="NAM_CONUS_20km_.*_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2}).*\.grib2$"
-              startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="72 hours"/>
-        </datasetFmrc>
+          <collection
+              spec="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_12km_conduit/NAM_CONUS_12km_#yyyyMMdd_HHmm#.grib2"
+              recheckAfter="15 min"
+              olderThan="5 min"/>
+          <update startup="true" rescan="0 5 3 * * ? *" />
+          <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
+          <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
+        </featureCollection>
 
       </dataset>
 
@@ -443,8 +404,7 @@
           Horizontal = 369 by 257 points, resolution 20.31 km, LambertConformal projection.
         </documentation>
 
-        <datasetFmrc name="NCEP-NAM-CONUS_20km-surface" collectionType="ForecastModelRuns" harvest="true"
-                     path="fmrc/NCEP/NAM/CONUS_20km/surface">
+         <featureCollection name="NCEP-NAM-CONUS_20km-surface" featureType="FMRC" harvest="true" path="fmrc/NCEP/NAM/CONUS_20km/surface">
           <metadata inherited="true">
             <dataFormat>GRIB-2</dataFormat>
             <documentation type="summary">
@@ -452,66 +412,54 @@
               Vertical = surface, height above ground, layers, and 1000 to 150 hPa pressure levels.
             </documentation>
           </metadata>
-          <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" enhance="true">
-            <aggregation dimName="run" type="forecastModelRunCollection"
-                         fmrcDefinition="NCEP-NAM-CONUS_20km-surface.fmrcDefinition.xml" recheckEvery="15 min">
-              <scan location="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_20km/surface/" suffix=".grib2"
-                    dateFormatMark="NAM_CONUS_20km_surface_#yyyyMMdd_HHmm" subdirs="true" olderThan="5 min"/>
-            </aggregation>
-          </netcdf>
-          <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_20km/surface/" suffix=".grib2"
-                         fmrcDefinition="NCEP-NAM-CONUS_20km-surface.fmrcDefinition.xml"/>
-          <addTimeCoverage
-              datasetNameMatchPattern="NAM_CONUS_20km_.*_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2}).*\.grib2$"
-              startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="72 hours"/>
-        </datasetFmrc>
 
-        <datasetFmrc name="NCEP-NAM-CONUS_20km-selectsurface" collectionType="ForecastModelRuns" harvest="true"
-                     path="fmrc/NCEP/NAM/CONUS_20km/selectsurface">
+          <collection
+              spec="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_20km/surface/NAM_CONUS_20km_surface_#yyyyMMdd_HHmm#.grib2"
+              recheckAfter="15 min"
+              olderThan="5 min"/>
+          <update startup="true" rescan="0 5 3 * * ? *" />
+          <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
+          <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
+        </featureCollection>
+
+         <featureCollection name="NCEP-NAM-CONUS_20km-selectsurface" featureType="FMRC" harvest="true" path="fmrc/NCEP/NAM/CONUS_20km/selectsurface">
           <metadata inherited="true">
             <dataFormat>GRIB-2</dataFormat>
-            <documentation type="summary">
+             <documentation type="summary">
               Model runs are made at 00Z, and 12Z with analysis and forecasts every 3 hours out to 84 hours; and at 06Z,
               and 18Z with analysis and forecasts every 3 hours out to 48 hours.
               Vertical = surface, 2m, and 10m, 2D fields only.
             </documentation>
           </metadata>
-          <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" enhance="true">
-            <aggregation dimName="run" type="forecastModelRunCollection"
-                         fmrcDefinition="NCEP-NAM-CONUS_20km-selectsurface.fmrcDefinition.xml" recheckEvery="15 min">
-              <scan location="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_20km/selectsurface/" suffix=".grib2"
-                    dateFormatMark="NAM_CONUS_20km_selectsurface_#yyyyMMdd_HHmm" subdirs="true" olderThan="5 min"/>
-            </aggregation>
-          </netcdf>
-          <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_20km/selectsurface/" suffix=".grib2"
-                         fmrcDefinition="NCEP-NAM-CONUS_20km-selectsurface.fmrcDefinition.xml"/>
-          <addTimeCoverage
-              datasetNameMatchPattern="NAM_CONUS_20km_.*_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2}).*\.grib2$"
-              startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="48 hours"/>
-        </datasetFmrc>
 
-        <datasetFmrc name="NCEP-NAM-CONUS_20km-noaaport" collectionType="ForecastModelRuns" harvest="true"
-                     path="fmrc/NCEP/NAM/CONUS_20km/noaaport">
+          <collection
+              spec="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_20km/selectsurface/NAM_CONUS_20km_selectsurface_#yyyyMMdd_HHmm#.grib2"
+              recheckAfter="15 min"
+              olderThan="5 min"/>
+          <update startup="true" rescan="0 5 3 * * ? *" />
+          <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
+          <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
+        </featureCollection>
+
+          <featureCollection name="NCEP-NAM-CONUS_20km-noaaport" featureType="FMRC" harvest="true" path="fmrc/NCEP/NAM/CONUS_20km/noaaport">
           <metadata inherited="true">
-            <documentation type="summary">
+            <dataFormat>GRIB-1</dataFormat>
+              <documentation type="summary">
               Model runs are made at 00Z, and 12Z with analysis and forecasts every 3 hours out to 60 hours; and at 06Z,
               and 18Z with analysis and forecasts every 3 hours out to 48 hours.
               Vertical = surface, height above ground, and 1000 to 30 hPa pressure levels.
             </documentation>
           </metadata>
-          <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" enhance="true">
-            <aggregation dimName="run" type="forecastModelRunCollection" timeUnitsChange="true"
-                         fmrcDefinition="NCEP-NAM-CONUS_20km-noaaport.fmrcDefinition.xml" recheckEvery="15 min">
-              <scan location="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_20km/noaaport/" suffix=".grib1"
-                    dateFormatMark="NAM_CONUS_20km_noaaport_#yyyyMMdd_HHmm" subdirs="true" olderThan="5 min"/>
-            </aggregation>
-          </netcdf>
-          <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_20km/noaaport/" suffix=".grib1"
-                         fmrcDefinition="NCEP-NAM-CONUS_20km-noaaport.fmrcDefinition.xml"/>
-          <addTimeCoverage
-              datasetNameMatchPattern="NAM_CONUS_20km_.*_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2}).*\.grib1$"
-              startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="48 hours"/>
-        </datasetFmrc>
+
+          <collection
+              spec="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_20km/noaaport/NAM_CONUS_20km_noaaport_#yyyyMMdd_HHmm#.grib1"
+              recheckAfter="15 min"
+              olderThan="5 min"/>
+          <update startup="true" rescan="0 5 3 * * ? *" />
+          <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
+          <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
+        </featureCollection>
+        
       </dataset>
 
       <dataset ID="FMRC/NCEP/NAM/CONUS_40km" name="NCEP-NAM-CONUS_40km">
@@ -522,33 +470,28 @@
           </documentation>
         </metadata>
 
-
-        <datasetFmrc name="NCEP-NAM-CONUS_40km-conduit" collectionType="ForecastModelRuns" harvest="true"
-                     path="fmrc/NCEP/NAM/CONUS_40km/conduit">
+        <featureCollection name="NCEP-NAM-CONUS_40km-conduit" featureType="FMRC" harvest="true" path="fmrc/NCEP/NAM/CONUS_40km/conduit">
           <metadata inherited="true">
+            <dataFormat>GRIB-2</dataFormat>
             <documentation type="summary">
-              Model runs are made at 00Z, 06Z, 12Z, and 18Z and have analysis and forecasts every 3 hours out to 84
-              hours.
+              Model runs are made at 00Z, 06Z, 12Z, and 18Z and have analysis and forecasts every 3 hours out to 84 hours.
             </documentation>
           </metadata>
-          <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" enhance="true">
-            <aggregation dimName="run" type="forecastModelRunCollection"
-                         fmrcDefinition="NCEP-NAM-CONUS_40km-conduit.fmrcDefinition.xml" recheckEvery="15 min">
-              <scan location="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_40km/conduit/" suffix=".grib2"
-                    dateFormatMark="NAM_CONUS_40km_conduit_#yyyyMMdd_HHmm" subdirs="true" olderThan="5 min"/>
-            </aggregation>
-          </netcdf>
-          <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_40km/conduit/" suffix=".grib2"
-                         fmrcDefinition="NCEP-NAM-CONUS_40km-conduit.fmrcDefinition.xml"/>
-          <addTimeCoverage datasetNameMatchPattern="NAM_CONUS_40km.*([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2}).*grib2$"
-                           startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="84 hours"/>
-        </datasetFmrc>
+
+          <collection
+              spec="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_40km/conduit/NAM_CONUS_40km_conduit_#yyyyMMdd_HHmm#.grib2"
+              recheckAfter="15 min"
+              olderThan="5 min"/>
+          <update startup="true" rescan="0 5 3 * * ? *" />
+          <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
+          <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
+        </featureCollection>
 
       </dataset>
 
-      <datasetFmrc name="NCEP-NAM-CONUS_80km" path="fmrc/NCEP/NAM/CONUS_80km" collectionType="ForecastModelRuns"
-                   harvest="true">
+      <featureCollection name="NCEP-NAM-CONUS_80km" featureType="FMRC" harvest="true" path="fmrc/NCEP/NAM/CONUS_80km">
         <metadata inherited="true">
+          <dataFormat>GRIB-1</dataFormat>
           <documentation type="summary">NCEP North American Model : AWIPS 211 (Q) Regional - CONUS (Lambert Conformal).
             Model runs are made at 12Z and 00Z, with analysis and forecasts every 6 hours out to 60 hours.
             Horizontal = 93 by 65 points, resolution 81.27 km, LambertConformal projection.
@@ -556,22 +499,18 @@
           </documentation>
         </metadata>
 
-        <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" enhance="true">
-          <aggregation dimName="run" type="forecastModelRunCollection"
-                       fmrcDefinition="NCEP-NAM-CONUS_80km.fmrcDefinition.xml" recheckEvery="15 min">
-            <scan location="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_80km/" suffix=".grib1"
-                  dateFormatMark="NAM_CONUS_80km_#yyyyMMdd_HHmm" subdirs="true" olderThan="5 min"/>
-          </aggregation>
-        </netcdf>
-        <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_80km/" suffix=".grib1"
-                       fmrcDefinition="NCEP-NAM-CONUS_80km.fmrcDefinition.xml"/>
-        <addTimeCoverage datasetNameMatchPattern="NAM_CONUS_80km_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2}).*grib1$"
-                         startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="60 hours"/>
-      </datasetFmrc>
+        <collection
+            spec="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_80km/NAM_CONUS_80km_#yyyyMMdd_HHmm#.grib1"
+            recheckAfter="15 min"
+            olderThan="5 min"/>
+        <update startup="true" rescan="0 5 3 * * ? *" />
+        <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
+        <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
+      </featureCollection>
 
-      <datasetFmrc name="NCEP-NAM-Polar_90km" collectionType="ForecastModelRuns" harvest="true"
-                   path="fmrc/NCEP/NAM/Polar_90km">
+      <featureCollection name="NCEP-NAM-Polar_90km" featureType="FMRC" harvest="true" path="fmrc/NCEP/NAM/Polar_90km">
         <metadata inherited="true">
+          <dataFormat>GRIB-2</dataFormat>
           <documentation type="summary">NCEP North American Model : AWIPS 105 Grid.
             Model runs are made at 0, 6, 12, and 18Z, with analysis and forecasts every 3 hours out to 84 hours.
             Horizontal = 147 by 110 points, resolution 90.75 km, Polar Stereographic projection.
@@ -579,18 +518,14 @@
           </documentation>
         </metadata>
 
-        <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" enhance="true">
-          <aggregation dimName="run" type="forecastModelRunCollection"
-                       fmrcDefinition="NCEP-NAM-Polar_90km.fmrcDefinition.xml" recheckEvery="15 min">
-            <scan location="/data/ldm/pub/native/grid/NCEP/NAM/Polar_90km/" suffix=".grib2"
-                  dateFormatMark="NAM_Polar_90km_#yyyyMMdd_HHmm" subdirs="true" olderThan="5 min"/>
-          </aggregation>
-        </netcdf>
-        <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/NAM/Polar_90km/" suffix=".grib2"
-                       fmrcDefinition="NCEP-NAM-Polar_90km.fmrcDefinition.xml"/>
-        <addTimeCoverage datasetNameMatchPattern="NAM_Polar_90km_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2}).*grib2$"
-                         startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="48 hours"/>
-      </datasetFmrc>
+        <collection
+            spec="/data/ldm/pub/native/grid/NCEP/NAM/Polar_90km/NAM_Polar_90km_#yyyyMMdd_HHmm#.grib2"
+            recheckAfter="15 min"
+            olderThan="5 min"/>
+        <update startup="true" rescan="0 5 3 * * ? *" />
+        <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
+        <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
+      </featureCollection>
     </dataset>
 
     <dataset ID="FMRC/NCEP/RUC" name="Rapid Update Cycle (RUC) Model">
@@ -610,103 +545,84 @@
           </documentation>
         </metadata>
 
-        <datasetFmrc name="NCEP-RUC2-CONUS_20km-surface" collectionType="ForecastModelRuns" harvest="true"
-                     path="fmrc/NCEP/RUC2/CONUS_20km/surface">
+        <featureCollection name="NCEP-RUC2-CONUS_20km-surface" featureType="FMRC" harvest="true" path="fmrc/NCEP/RUC2/CONUS_20km/surface">
           <metadata inherited="true">
-            <documentation type="summary">
-              Surface parameters.
-              Model runs are made hourly, with analysis and hourly forecasts out to 3 hours; on the 0, 3, 6, 9, 12, 15,
-              18, and 21Z runs, also 5, 6, 8, 9, 11, 12 hour forecasts.
-            </documentation>
+            <dataFormat>GRIB-2</dataFormat>
+              <documentation type="summary">
+                Surface parameters.
+                Model runs are made hourly, with analysis and hourly forecasts out to 3 hours; on the 0, 3, 6, 9, 12, 15,
+                18, and 21Z runs, also 5, 6, 8, 9, 11, 12 hour forecasts.
+              </documentation>
           </metadata>
-          <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" enhance="true">
-            <aggregation dimName="run" type="forecastModelRunCollection"
-                         fmrcDefinition="NCEP-RUC2-CONUS_20km-surface.fmrcDefinition.xml" recheckEvery="10 min">
-              <scan location="/data/ldm/pub/native/grid/NCEP/RUC2/CONUS_20km/surface/" suffix=".grib2"
-                    dateFormatMark="RUC2_CONUS_20km_surface_#yyyyMMdd_HHmm" subdirs="true" olderThan="5 min"/>
-            </aggregation>
-          </netcdf>
-          <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/RUC2/CONUS_20km/surface/" suffix=".grib2"
-                         fmrcDefinition="NCEP-RUC2-CONUS_20km-surface.fmrcDefinition.xml"/>
-          <addTimeCoverage
-              datasetNameMatchPattern="RUC2_CONUS_20km_surface_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2}).*grib2$"
-              startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="12 hours"/>
-        </datasetFmrc>
 
-        <datasetFmrc name="NCEP-RUC2-CONUS_20km-pressure" collectionType="ForecastModelRuns" harvest="true"
-                     path="fmrc/NCEP/RUC2/CONUS_20km/pressure">
+          <collection
+              spec="/data/ldm/pub/native/grid/NCEP/RUC2/CONUS_20km/surface/RUC2_CONUS_20km_surface_#yyyyMMdd_HHmm#.grib2"
+              recheckAfter="15 min"
+              olderThan="5 min"/>
+          <update startup="true" rescan="0 5 3 * * ? *" />
+          <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
+          <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
+        </featureCollection>
+
+        <featureCollection name="NCEP-RUC2-CONUS_20km-pressure" featureType="FMRC" harvest="true" path="fmrc/NCEP/RUC2/CONUS_20km/pressure">
           <metadata inherited="true">
+            <dataFormat>GRIB-2</dataFormat>
             <documentation type="summary">
               Parameters on pressure levels.
               Model runs are made hourly, with analysis and hourly forecasts out to 9 hours; on the 0, 3, 6, 9, 12, 15,
               18, and 21Z runs, hourly out to 12 hours.
             </documentation>
           </metadata>
-          <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" enhance="true">
-            <aggregation dimName="run" type="forecastModelRunCollection"
-                         fmrcDefinition="NCEP-RUC2-CONUS_20km-pressure.fmrcDefinition.xml" recheckEvery="10 min">
-              <scan location="/data/ldm/pub/native/grid/NCEP/RUC2/CONUS_20km/pressure/" suffix=".grib2"
-                    dateFormatMark="RUC2_CONUS_20km_pressure_#yyyyMMdd_HHmm" subdirs="true" olderThan="5 min"/>
-            </aggregation>
-          </netcdf>
-          <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/RUC2/CONUS_20km/pressure/" suffix=".grib2"
-                         fmrcDefinition="NCEP-RUC2-CONUS_20km-pressure.fmrcDefinition.xml"/>
-          <addTimeCoverage
-              datasetNameMatchPattern="RUC2_CONUS_20km_pressure_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2}).*grib2$"
-              startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="12 hours"/>
-        </datasetFmrc>
 
-        <datasetFmrc name="NCEP-RUC2-CONUS_20km-hybrid" collectionType="ForecastModelRuns" harvest="true"
-                     path="fmrc/NCEP/RUC2/CONUS_20km/hybrid">
+          <collection
+              spec="/data/ldm/pub/native/grid/NCEP/RUC2/CONUS_20km/pressure/RUC2_CONUS_20km_pressure_#yyyyMMdd_HHmm#.grib2"
+              recheckAfter="15 min"
+              olderThan="5 min"/>
+          <update startup="true" rescan="0 5 3 * * ? *" />
+          <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
+          <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
+        </featureCollection>
+
+        <featureCollection name="NCEP-RUC2-CONUS_20km-hybrid" featureType="FMRC" harvest="true" path="fmrc/NCEP/RUC2/CONUS_20km/hybrid">
           <metadata inherited="true">
+            <dataFormat>GRIB-2</dataFormat>
             <documentation type="summary">
               Parameters on hybrid levels.
               Model runs are made hourly, with analysis and hourly forecasts out to 3 hours; on the 0, 3, 6, 9, 12, 15,
               18, and 21Z runs, also 6, 9, and 12 hour forecasts.
             </documentation>
           </metadata>
-          <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" enhance="true">
-            <aggregation dimName="run" type="forecastModelRunCollection"
-                         fmrcDefinition="NCEP-RUC2-CONUS_20km-hybrid.fmrcDefinition.xml" recheckEvery="10 min">
-              <scan location="/data/ldm/pub/native/grid/NCEP/RUC2/CONUS_20km/hybrid/" suffix=".grib2"
-                    dateFormatMark="RUC2_CONUS_20km_hybrid_#yyyyMMdd_HHmm" subdirs="true" olderThan="5 min"/>
-            </aggregation>
-          </netcdf>
-          <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/RUC2/CONUS_20km/hybrid/" suffix=".grib2"
-                         fmrcDefinition="NCEP-RUC2-CONUS_20km-hybrid.fmrcDefinition.xml"/>
-          <addTimeCoverage
-              datasetNameMatchPattern="RUC2_CONUS_20km_hybrid_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2}).*grib2$"
-              startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="12 hours"/>
-        </datasetFmrc>
+
+          <collection
+              spec="/data/ldm/pub/native/grid/NCEP/RUC2/CONUS_20km/hybrid/RUC2_CONUS_20km_hybrid_#yyyyMMdd_HHmm#.grib2"
+              recheckAfter="15 min"
+              olderThan="5 min"/>
+          <update startup="true" rescan="0 5 3 * * ? *" />
+          <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
+          <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
+        </featureCollection>
       </dataset>
 
-      <datasetFmrc name="NCEP-RUC2-CONUS_40km" harvest="true" collectionType="ForecastModelRuns"
-                   path="fmrc/NCEP/RUC2/CONUS_40km">
+      <featureCollection name="NCEP-RUC2-CONUS_40km" featureType="FMRC" harvest="true" path="fmrc/NCEP/RUC2/CONUS_40km">
         <metadata inherited="true">
+          <dataFormat>GRIB-1</dataFormat>
           <documentation type="summary">NCEP Model output Rapid Update Cycle (RUC2).
             Model runs are made hourly, with analysis and hourly forecasts out to 3 hours; on the 0, 3, 6, 9, 12, 15,
             18, and 21Z runs, there are also 4, 5, 6, 7, 8, 9, and 12 hour forecasts.
             Horizontal = 151 by 113 points, resolution 40.63 km, LambertConformal projection.
           </documentation>
-          <dataFormat>GRIB-1</dataFormat>
         </metadata>
 
-        <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" enhance="true">
-          <aggregation dimName="run" type="forecastModelRunCollection"
-                       fmrcDefinition="NCEP-RUC2-CONUS_40km.fmrcDefinition.xml" recheckEvery="10 min">
-            <scan location="/data/ldm/pub/native/grid/NCEP/RUC2/CONUS_40km/" suffix=".grib1"
-                  dateFormatMark="RUC2_CONUS_40km_#yyyyMMdd_HHmm" subdirs="true" olderThan="5 min"/>
-          </aggregation>
-        </netcdf>
-        <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/RUC2/CONUS_40km/" suffix=".grib1"
-                       fmrcDefinition="NCEP-RUC2-CONUS_40km.fmrcDefinition.xml"/>
-        <addTimeCoverage
-            datasetNameMatchPattern="RUC2_CONUS_40km_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2}).*grib1$"
-            startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="12 hours"/>
-      </datasetFmrc>
+        <collection
+            spec="/data/ldm/pub/native/grid/NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_#yyyyMMdd_HHmm#.grib1"
+            recheckAfter="15 min"
+            olderThan="5 min"/>
+        <update startup="true" rescan="0 5 3 * * ? *" />
+        <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
+        <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
+      </featureCollection>
 
-      <datasetFmrc name="NCEP-RUC-CONUS_80km" collectionType="ForecastModelRuns" harvest="true"
-                   path="fmrc/NCEP/RUC/CONUS_80km">
+      <featureCollection name="NCEP-RUC-CONUS_80km" featureType="FMRC" harvest="true" path="fmrc/NCEP/RUC/CONUS_80km">
         <metadata inherited="true">
           <dataFormat>GRIB-1</dataFormat>
           <documentation type="summary">NCEP Model output Rapid Update Cycle (RUC).
@@ -716,19 +632,15 @@
           </documentation>
         </metadata>
 
-        <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" enhance="true">
-          <aggregation dimName="run" type="forecastModelRunCollection"
-                       fmrcDefinition="NCEP-RUC-CONUS_80km.fmrcDefinition.xml" recheckEvery="10 min">
-            <scan location="/data/ldm/pub/native/grid/NCEP/RUC/CONUS_80km/" suffix=".grib1"
-                  dateFormatMark="RUC_CONUS_80km_#yyyyMMdd_HHmm" subdirs="true" olderThan="5 min"/>
-          </aggregation>
-        </netcdf>
-        <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/RUC/CONUS_80km/" suffix=".grib1"
-                       fmrcDefinition="NCEP-RUC-CONUS_80km.fmrcDefinition.xml"/>
-        <addTimeCoverage
-            datasetNameMatchPattern="RUC_CONUS_80km_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2}).*grib1$"
-            startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="12 hours"/>
-      </datasetFmrc>
+        <collection
+            spec="/data/ldm/pub/native/grid/NCEP/RUC/CONUS_80km/RUC_CONUS_80km_#yyyyMMdd_HHmm#.grib1"
+            recheckAfter="15 min"
+            olderThan="5 min"/>
+        <update startup="true" rescan="0 5 3 * * ? *" />
+        <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
+        <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
+      </featureCollection>
+
     </dataset>
 
     <dataset ID="FMRC/NCEP/DGEX" name="Downscaled GFS with Eta Extension (DGEX)">
@@ -743,55 +655,41 @@
                        xlink:title="NCEP presentation (ppt)"/>
       </metadata>
 
-      <datasetFmrc name="NCEP-DGEX-CONUS_12km" harvest="true" path="fmrc/NCEP/DGEX/CONUS_12km"
-                   collectionType="ForecastModelRuns">
+      <featureCollection name="NCEP-DGEX-CONUS_12km" featureType="FMRC" harvest="true" path="fmrc/NCEP/DGEX/CONUS_12km">
         <metadata inherited="true">
-          <documentation type="summary">
-            NCEP Model output Grid 185 (C) horizontal = 491 by 303 points, resolution 12 km, LambertConformal
-            projection.
+          <dataFormat>GRIB-2</dataFormat>
+           <documentation type="summary">
+            NCEP Model output Grid 185 (C) horizontal = 491 by 303 points, resolution 12 km, LambertConformal projection.
             Model runs are made at 6 and 18Z, with forecasts starting at 84 hours, every 6 hours out to 192 hours
           </documentation>
-          <dataFormat>GRIB-2</dataFormat>
         </metadata>
 
-        <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
-          <aggregation dimName="run" type="forecastModelRunCollection"
-                       fmrcDefinition="NCEP-DGEX-CONUS_12km.fmrcDefinition.xml" recheckEvery="15 min">
-            <scan location="/data/ldm/pub/native/grid/NCEP/DGEX/CONUS_12km/" suffix=".grib2"
-                  dateFormatMark="DGEX_CONUS_12km_#yyyyMMdd_HHmm" subdirs="true" olderThan="5 min"/>
-          </aggregation>
-        </netcdf>
-        <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/DGEX/CONUS_12km/" suffix=".grib2"
-                       fmrcDefinition="NCEP-DGEX-CONUS_12km.fmrcDefinition.xml"/>
-        <addTimeCoverage
-            datasetNameMatchPattern="DGEX_CONUS_12km_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2}).*grib2$"
-            startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="192 hours"/>
-      </datasetFmrc>
+        <collection
+            spec="/data/ldm/pub/native/grid/NCEP/DGEX/CONUS_12km/DGEX_CONUS_12km_#yyyyMMdd_HHmm#.grib2"
+            recheckAfter="15 min"
+            olderThan="5 min"/>
+        <update startup="true" rescan="0 5 3 * * ? *" />
+        <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
+        <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
+      </featureCollection>
 
-      <datasetFmrc name="NCEP-DGEX-Alaska_12km" harvest="true" path="fmrc/NCEP/DGEX/Alaska_12km"
-                   collectionType="ForecastModelRuns">
+      <featureCollection name="NCEP-DGEX-Alaska_12km" featureType="FMRC" harvest="true" path="fmrc/NCEP/DGEX/Alaska_12km">
         <metadata inherited="true">
+          <dataFormat>GRIB-2</dataFormat>
           <documentation type="summary">
-            NCEP Model output AWIPS Grid 186 (C) horizontal = 377 by 237 points, resolution 12 km, Polar Stereographic
-            projection.
+            NCEP Model output AWIPS Grid 186 (C) horizontal = 377 by 237 points, resolution 12 km, Polar Stereographic projection.
             Model runs are made at 0 and 12Z, with forecasts starting at 84 hours, every 6 hours out to 192 hours
           </documentation>
-          <dataFormat>GRIB-2</dataFormat>
         </metadata>
 
-        <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" enhance="true">
-          <aggregation dimName="run" type="forecastModelRunCollection"
-                       fmrcDefinition="NCEP-DGEX-Alaska_12km.fmrcDefinition.xml" recheckEvery="15 min">
-            <scan location="/data/ldm/pub/native/grid/NCEP/DGEX/Alaska_12km/" suffix=".grib2"
-                  dateFormatMark="DGEX_Alaska_12km_#yyyyMMdd_HHmm" subdirs="true" olderThan="5 min"/>
-          </aggregation>
-        </netcdf>
-        <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/DGEX/Alaska_12km/" suffix=".grib2"
-                       fmrcDefinition="NCEP-DGEX-Alaska_12km.fmrcDefinition.xml"/>
-        <addTimeCoverage
-            datasetNameMatchPattern="DGEX_Alaska_12km_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2}).*grib2$"
-            startTimeSubstitutionPattern="$1-$2-$3T$4:00:00" duration="192 hours"/>
-      </datasetFmrc>
+        <collection
+            spec="/data/ldm/pub/native/grid/NCEP/DGEX/Alaska_12km/DGEX_Alaska_12km_#yyyyMMdd_HHmm#.grib2"
+            recheckAfter="15 min"
+            olderThan="5 min"/>
+        <update startup="true" rescan="0 5 3 * * ? *" />
+        <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
+        <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
+      </featureCollection>
 
     </dataset>
 
@@ -812,38 +710,24 @@
           </documentation>
           <dataFormat>GRIB-2</dataFormat>
         </metadata>
-        <datasetFmrc name="NCEP-GEFS-Global_Global_1p0deg_Ensemble_derived Mean and spread"
-                     collectionType="ForecastModelRuns" harvest="true"
-                     path="fmrc/NCEP/GEFS/Global_1p0deg_Ensemble/derived">
-          <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" enhance="true">
-            <aggregation dimName="run" type="forecastModelRunCollection"
-                         fmrcDefinition="NCEP-GEFS-Global_1p0deg_Ensemble_derived.fmrcDefinition.xml"
-                         recheckEvery="15 min">
-              <scan location="/data/ldm/pub/native/grid/NCEP/GEFS/Global_1p0deg_Ensemble/derived/" suffix=".grib2"
-                    dateFormatMark="GEFS_Global_1p0deg_Ensemble_derived_#yyyyMMdd_HHmm" subdirs="true"
-                    olderThan="5 min"/>
-            </aggregation>
-          </netcdf>
-          <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/GEFS/Global_1p0deg_Ensemble/derived/" suffix=".grib2"
-                         fmrcDefinition="NCEP-GEFS-Global_1p0deg_Ensemble_derived.fmrcDefinition.xml"/>
-          <addTimeCoverage
-              datasetNameMatchPattern="GEFS_Global_1p0deg_Ensemble_derived_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})00.grib2$"
-              startTimeSubstitutionPattern="$1-$2-$3T$4:00:00"
-              duration="120 hours"/>
-        </datasetFmrc>
-        <!--
-                <datasetFmrc name="NCEP-GEFS-Global_1p0deg_Ensemble with Ensemble Dimensions" collectionType="ForecastModelRuns" harvest="true" path="fmrc/NCEP/GEFS/Global_1p0deg_Ensemble/member">
-                  <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" enhance="true">
-                    <aggregation dimName="run" type="forecastModelRunCollection" fmrcDefinition="NCEP-GEFS-Global_1p0deg_Ensemble_member.fmrcDefinition.xml" recheckEvery="15 min">
-                      <scan  location="/data/ldm/pub/native/grid/NCEP/GEFS/Global_1p0deg_Ensemble/member/" suffix=".grib2" dateFormatMark="GEFS_Global_1p0deg_Ensemble_#yyyyMMdd_HHmm" subdirs="true" olderThan="5 min"/>
-                    </aggregation>
-                  </netcdf>
-                  <fmrcInventory location="/data/ldm/pub/native/grid/NCEP/GEFS/Global_1p0deg_Ensemble/member/" suffix=".grib2" fmrcDefinition="NCEP-GEFS-Global_1p0deg_Ensemble_member.fmrcDefinition.xml" />
-                  <addTimeCoverage datasetNameMatchPattern="GEFS_Global_1p0deg_Ensemble_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})00.grib2$"
-                                   startTimeSubstitutionPattern="$1-$2-$3T$4:00:00"
-                                   duration="120 hours"/>
-                </datasetFmrc>
-        //-->
+
+        <featureCollection name="NCEP-GEFS-Global_1p0deg_Ensemble-derived" featureType="FMRC" harvest="true" path="fmrc/NCEP/GEFS/Global_1p0deg_Ensemble/derived">
+          <metadata inherited="true">
+            <dataFormat>GRIB-2</dataFormat>
+            <documentation type="summary">
+              NCEP Model output AWIPS Grid 186 (C) horizontal = 377 by 237 points, resolution 12 km, Polar Stereographic projection.
+              Model runs are made at 0 and 12Z, with forecasts starting at 84 hours, every 6 hours out to 192 hours
+            </documentation>
+          </metadata>
+
+          <collection
+              spec="/data/ldm/pub/native/grid/NCEP/GEFS/Global_1p0deg_Ensemble/derived/GEFS_Global_1p0deg_Ensemble_derived_#yyyyMMdd_HHmm#.grib2"
+              recheckAfter="15 min"
+              olderThan="5 min"/>
+          <update startup="true" rescan="0 5 3 * * ? *" />
+          <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
+          <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
+        </featureCollection>
 
         <datasetScan ID="FMRC/NCEP/GEFS/Global_1p0deg_Ensemble/member"
                      name="NCEP-GEFS-Global_1p0deg_Ensemble with Ensemble Dimensions"
