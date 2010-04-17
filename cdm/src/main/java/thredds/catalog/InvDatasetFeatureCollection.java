@@ -91,10 +91,10 @@ public class InvDatasetFeatureCollection extends InvCatalogRef {
 
   private final String path;
   private final FeatureType featureType;
-  private final FeatureCollection.Config config;
+  private final FeatureCollectionConfig.Config config;
 
   private final Fmrc fmrc;
-  private final Set<FeatureCollection.FmrcDatasetType> wantDatasets;
+  private final Set<FeatureCollectionConfig.FmrcDatasetType> wantDatasets;
   private final String topDirectory;
   private final Pattern filter;
   private InvService orgService, virtualService;
@@ -136,7 +136,7 @@ public class InvDatasetFeatureCollection extends InvCatalogRef {
   @GuardedBy("lock")
   private volatile boolean madeDatasets = false; */
 
-  public InvDatasetFeatureCollection(InvDatasetImpl parent, String name, String path, String featureType, FeatureCollection.Config config) {
+  public InvDatasetFeatureCollection(InvDatasetImpl parent, String name, String path, String featureType, FeatureCollectionConfig.Config config) {
     super(parent, name, "/thredds/catalog/" + path + "/catalog.xml");
     this.path = path;
     this.featureType = FeatureType.getType(featureType);
@@ -182,7 +182,7 @@ public class InvDatasetFeatureCollection extends InvCatalogRef {
     return topDirectory;
   }
 
-  public FeatureCollection.Config getConfig() {
+  public FeatureCollectionConfig.Config getConfig() {
     return config;
   }
 
@@ -223,16 +223,16 @@ public class InvDatasetFeatureCollection extends InvCatalogRef {
       if ((match == null) || (match.length() == 0))
         return makeCatalogTop(baseURI, localState);
 
-      else if (match.equals(RUNS) && wantDatasets.contains(FeatureCollection.FmrcDatasetType.Runs))
+      else if (match.equals(RUNS) && wantDatasets.contains(FeatureCollectionConfig.FmrcDatasetType.Runs))
         return makeCatalogRuns(baseURI, localState);
 
-      else if (match.equals(OFFSET) && wantDatasets.contains(FeatureCollection.FmrcDatasetType.ConstantOffsets))
+      else if (match.equals(OFFSET) && wantDatasets.contains(FeatureCollectionConfig.FmrcDatasetType.ConstantOffsets))
         return makeCatalogOffsets(baseURI, localState);
 
-      else if (match.equals(FORECAST) && wantDatasets.contains(FeatureCollection.FmrcDatasetType.ConstantForecasts))
+      else if (match.equals(FORECAST) && wantDatasets.contains(FeatureCollectionConfig.FmrcDatasetType.ConstantForecasts))
         return makeCatalogForecasts(baseURI, localState);
 
-      else if (match.startsWith(SCAN) && wantDatasets.contains(FeatureCollection.FmrcDatasetType.Files)) {
+      else if (match.startsWith(SCAN) && wantDatasets.contains(FeatureCollectionConfig.FmrcDatasetType.Files)) {
         return localState.scan.makeCatalogForDirectory(orgPath, baseURI);
       }
 
@@ -491,7 +491,7 @@ public class InvDatasetFeatureCollection extends InvCatalogRef {
      String id = getID();
      if (id == null) id = getPath();
 
-     if (wantDatasets.contains(FeatureCollection.FmrcDatasetType.TwoD)) {
+     if (wantDatasets.contains(FeatureCollectionConfig.FmrcDatasetType.TwoD)) {
 
        InvDatasetImpl ds = new InvDatasetImpl(this, "Forecast Model Run Collection (2D time coordinates)");
        String name = getName() + "_" + FMRC;
@@ -505,7 +505,7 @@ public class InvDatasetFeatureCollection extends InvCatalogRef {
        datasets.add(ds);
      }
 
-     if (wantDatasets.contains(FeatureCollection.FmrcDatasetType.Best)) {
+     if (wantDatasets.contains(FeatureCollectionConfig.FmrcDatasetType.Best)) {
 
        InvDatasetImpl ds = new InvDatasetImpl(this, "Best Time Series");
        String name = getName() + "_" + BEST;
@@ -519,25 +519,25 @@ public class InvDatasetFeatureCollection extends InvCatalogRef {
        datasets.add(ds);
      }
 
-     if (wantDatasets.contains(FeatureCollection.FmrcDatasetType.Runs)) {
+     if (wantDatasets.contains(FeatureCollectionConfig.FmrcDatasetType.Runs)) {
        InvDatasetImpl ds = new InvCatalogRef(this, RUN_TITLE, getCatalogHref(RUNS));
        ds.finish();
        datasets.add(ds);
      }
 
-     if (wantDatasets.contains(FeatureCollection.FmrcDatasetType.ConstantForecasts)) {
+     if (wantDatasets.contains(FeatureCollectionConfig.FmrcDatasetType.ConstantForecasts)) {
        InvDatasetImpl ds = new InvCatalogRef(this, FORECAST_TITLE, getCatalogHref(FORECAST));
        ds.finish();
        datasets.add(ds);
      }
 
-     if (wantDatasets.contains(FeatureCollection.FmrcDatasetType.ConstantOffsets)) {
+     if (wantDatasets.contains(FeatureCollectionConfig.FmrcDatasetType.ConstantOffsets)) {
        InvDatasetImpl ds = new InvCatalogRef(this, OFFSET_TITLE, getCatalogHref(OFFSET));
        ds.finish();
        datasets.add(ds);
      }
 
-     if (wantDatasets.contains(FeatureCollection.FmrcDatasetType.Files) && (topDirectory != null)) {
+     if (wantDatasets.contains(FeatureCollectionConfig.FmrcDatasetType.Files) && (topDirectory != null)) {
 
        // LOOK - replace this with InvDatasetScan( collectionManager) or something
        long olderThan = (long) (1000 * fmrc.getOlderThanFilterInSecs());
@@ -641,13 +641,13 @@ public class InvDatasetFeatureCollection extends InvCatalogRef {
     String type = (pos > -1) ? matchPath.substring(0, pos) : matchPath;
     String name = (pos > -1) ? matchPath.substring(pos + 1) : matchPath;
 
-    if (name.endsWith(FMRC) && wantDatasets.contains(FeatureCollection.FmrcDatasetType.TwoD)) {
+    if (name.endsWith(FMRC) && wantDatasets.contains(FeatureCollectionConfig.FmrcDatasetType.TwoD)) {
       return fmrc.getDataset2D(null);
 
-    } else if (name.endsWith(BEST) && wantDatasets.contains(FeatureCollection.FmrcDatasetType.Best)) {
+    } else if (name.endsWith(BEST) && wantDatasets.contains(FeatureCollectionConfig.FmrcDatasetType.Best)) {
       return fmrc.getDatasetBest();
 
-    } else if (type.equals(OFFSET) && wantDatasets.contains(FeatureCollection.FmrcDatasetType.ConstantOffsets)) {
+    } else if (type.equals(OFFSET) && wantDatasets.contains(FeatureCollectionConfig.FmrcDatasetType.ConstantOffsets)) {
       int pos1 = name.indexOf(OFFSET_NAME);
       int pos2 = name.indexOf("hr");
       if ((pos1<0) || (pos2<0)) return null;
@@ -655,7 +655,7 @@ public class InvDatasetFeatureCollection extends InvCatalogRef {
       double hour = Double.parseDouble(id);
       return fmrc.getConstantOffsetDataset( hour);
 
-    } else if (type.equals(RUNS) && wantDatasets.contains(FeatureCollection.FmrcDatasetType.Runs)) {
+    } else if (type.equals(RUNS) && wantDatasets.contains(FeatureCollectionConfig.FmrcDatasetType.Runs)) {
       int pos1 = name.indexOf(RUN_NAME);
       if (pos1<0) return null;
       String id = name.substring(pos1+RUN_NAME.length());
@@ -664,7 +664,7 @@ public class InvDatasetFeatureCollection extends InvCatalogRef {
       Date date = formatter.getISODate(id);
       return fmrc.getRunTimeDataset(date);
 
-    } else if (type.equals(FORECAST) && wantDatasets.contains(FeatureCollection.FmrcDatasetType.ConstantForecasts)) {
+    } else if (type.equals(FORECAST) && wantDatasets.contains(FeatureCollectionConfig.FmrcDatasetType.ConstantForecasts)) {
       int pos1 = name.indexOf(FORECAST_NAME);
       if (pos1<0) return null;
       String id = name.substring(pos1+FORECAST_NAME.length());

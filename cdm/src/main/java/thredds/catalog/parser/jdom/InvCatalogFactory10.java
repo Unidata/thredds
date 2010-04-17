@@ -33,7 +33,7 @@
 
 package thredds.catalog.parser.jdom;
 
-import thredds.inventory.FeatureCollection;
+import thredds.inventory.FeatureCollectionConfig;
 import thredds.util.PathAliasReplacement;
 import thredds.catalog.*;
 import thredds.crawlabledataset.*;
@@ -359,14 +359,14 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
       return null;
     }
 
-    FeatureCollection.Config config = new FeatureCollection.Config(spec, olderThan, recheckAfter);
+    FeatureCollectionConfig.Config config = new FeatureCollectionConfig.Config(spec, olderThan, recheckAfter);
 
     Element updateElem = dsElem.getChild( "update", defNS );
     if (updateElem != null) {
       String startup = updateElem.getAttributeValue("startup");
       String rescan = updateElem.getAttributeValue("rescan");
       String trigger = updateElem.getAttributeValue("trigger");
-      config.updateConfig = new FeatureCollection.UpdateConfig(startup, rescan, trigger);
+      config.updateConfig = new FeatureCollectionConfig.UpdateConfig(startup, rescan, trigger);
     }
 
     Element protoElem = dsElem.getChild( "protoDataset", defNS );
@@ -374,13 +374,13 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
       String choice = protoElem.getAttributeValue("choice");
       String change = protoElem.getAttributeValue("change");
       String content = protoElem.getTextNormalize();
-      config.protoConfig = new FeatureCollection.ProtoConfig(choice, change, content);
+      config.protoConfig = new FeatureCollectionConfig.ProtoConfig(choice, change, content);
     }
 
     Element fmrcElem = dsElem.getChild( "fmrcConfig", defNS );
     if (fmrcElem != null) {
       String regularize = fmrcElem.getAttributeValue("regularize");
-      config.fmrcConfig = new FeatureCollection.FmrcConfig(regularize);
+      config.fmrcConfig = new FeatureCollectionConfig.FmrcConfig(regularize);
 
       String datasetTypes = fmrcElem.getAttributeValue("datasetTypes");
       if (null != datasetTypes)

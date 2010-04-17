@@ -38,7 +38,7 @@ import thredds.crawlabledataset.CrawlableDataset;
 import thredds.crawlabledataset.CrawlableDatasetFile;
 import thredds.crawlabledataset.CrawlableDatasetDods;
 import thredds.cataloggen.ProxyDatasetHandler;
-import thredds.inventory.FeatureCollection;
+import thredds.inventory.FeatureCollectionConfig;
 import thredds.server.config.TdsContext;
 import thredds.util.PathAliasReplacement;
 import thredds.util.StartsWithPathAliasReplacement;
@@ -171,14 +171,14 @@ public class DataRootHandler {
   private static final String FC_NAME= "fc";
   private void scheduleTasks(InvDatasetFeatureCollection invFeatCollection) {
     if (scheduler == null) return;
-    FeatureCollection.Config config = invFeatCollection.getConfig();
+    FeatureCollectionConfig.Config config = invFeatCollection.getConfig();
 
     JobDetail updateJob = new JobDetail(config.spec, "FMRC", ScanFmrcJob.class);
     org.quartz.JobDataMap map = new org.quartz.JobDataMap();
     map.put(FC_NAME, invFeatCollection);
     updateJob.setJobDataMap(map);
 
-    FeatureCollection.UpdateConfig update = config.updateConfig;
+    FeatureCollectionConfig.UpdateConfig update = config.updateConfig;
     if (update.startup) {
       // wait 30 secs to trigger
       Date runTime = new Date(new Date().getTime() + 30 * 1000);
@@ -211,7 +211,7 @@ public class DataRootHandler {
       }
     }
 
-   FeatureCollection.ProtoConfig pconfig = config.protoConfig;
+   FeatureCollectionConfig.ProtoConfig pconfig = config.protoConfig;
     if (pconfig.change != null) {
       JobDetail protoJob = new JobDetail(config.spec, "FMRCproto", RereadProtoJob.class);
       org.quartz.JobDataMap pmap = new org.quartz.JobDataMap();

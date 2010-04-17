@@ -44,7 +44,7 @@ import java.util.Set;
  * @author caron
  * @since Mar 30, 2010
  */
-public class FeatureCollection {
+public class FeatureCollectionConfig {
   /* static public enum CollectionChange {
     True, False, Trigger, AppendOnly, Rolling
   } */
@@ -62,7 +62,7 @@ public class FeatureCollection {
   }
 
   static private boolean regularizeDefault = false;
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FeatureCollection.class);
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FeatureCollectionConfig.class);
 
   static public class Config {
     public String spec, olderThan, recheckAfter;

@@ -33,7 +33,7 @@
 package ucar.nc2.ft.fmrc;
 
 import net.jcip.annotations.ThreadSafe;
-import thredds.inventory.FeatureCollection;
+import thredds.inventory.FeatureCollectionConfig;
 import ucar.nc2.*;
 import ucar.nc2.constants.CF;
 import ucar.nc2.dt.GridDataset;
@@ -68,7 +68,7 @@ class FmrcDataset {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(FmrcDataset.class);
   static private final boolean debugEnhance = false, debugRead = false;
 
-  private final FeatureCollection.Config config;
+  private final FeatureCollectionConfig.Config config;
   //private List<String> protoList; // the list of datasets in the proto that have proxy reader, so these need to exist. not implemented yet
 
   // allow to build a new state while old state can still be safely used
@@ -84,7 +84,7 @@ class FmrcDataset {
   private State state;
   private Object lock= new Object();
 
-  FmrcDataset(FeatureCollection.Config config) {
+  FmrcDataset(FeatureCollectionConfig.Config config) {
     this.config = config;
   }
 
@@ -183,7 +183,7 @@ class FmrcDataset {
    /////////////////////////////////////////////////////////////////////////////
   // the prototypical dataset
 
-  private NetcdfDataset buildProto(FmrcInv fmrcInv, FeatureCollection.ProtoConfig protoConfig) throws IOException {
+  private NetcdfDataset buildProto(FmrcInv fmrcInv, FeatureCollectionConfig.ProtoConfig protoConfig) throws IOException {
     NetcdfDataset result = new NetcdfDataset(); // empty
 
     // choose some run in the list

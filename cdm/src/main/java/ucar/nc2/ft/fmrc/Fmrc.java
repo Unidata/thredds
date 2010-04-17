@@ -93,7 +93,7 @@ public class Fmrc {
     return new Fmrc(collection, errlog);
   }
 
-  public static Fmrc open(FeatureCollection.Config config, Formatter errlog) throws IOException {
+  public static Fmrc open(FeatureCollectionConfig.Config config, Formatter errlog) throws IOException {
     if (config.spec.startsWith(DatasetCollectionManager.CATALOG)) {
       String catUrl = config.spec.substring(DatasetCollectionManager.CATALOG.length());
       DatasetCollectionFromCatalog manager = new DatasetCollectionFromCatalog(catUrl, null);
@@ -105,7 +105,7 @@ public class Fmrc {
 
   ////////////////////////////////////////////////////////////////////////
   private final CollectionManager manager;
-  private final FeatureCollection.Config config;
+  private final FeatureCollectionConfig.Config config;
 
   // should be final
   private Element ncmlOuter, ncmlInner;
@@ -119,10 +119,10 @@ public class Fmrc {
 
   private Fmrc(String collectionSpec, Formatter errlog) {
     manager = new DatasetCollectionManager(collectionSpec, errlog);
-    config = new FeatureCollection.Config();
+    config = new FeatureCollectionConfig.Config();
   }
 
-  private Fmrc(FeatureCollection.Config config, Formatter errlog) {
+  private Fmrc(FeatureCollectionConfig.Config config, Formatter errlog) {
     DatasetCollectionManager dcm = new DatasetCollectionManager(config, errlog);
     dcm.setRecheck(config.recheckAfter);
  
@@ -133,7 +133,7 @@ public class Fmrc {
   // from AggregationFmrc
   public Fmrc(CollectionManager manager, DateExtractor dateExtractor) {
     this.manager = manager;
-    this.config = new FeatureCollection.Config();
+    this.config = new FeatureCollectionConfig.Config();
   }
 
   public void setNcml(Element ncmlOuter, Element ncmlInner) {

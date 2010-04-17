@@ -33,6 +33,7 @@
 package ucar.nc2.ft;
 
 import junit.framework.TestCase;
+import thredds.inventory.FeatureCollectionConfig;
 import thredds.inventory.bdb.MetadataManager;
 import ucar.nc2.TestAll;
 import ucar.nc2.constants.AxisType;
@@ -65,12 +66,13 @@ public class TestFmrc extends TestCase {
 
   public void testNcML() throws Exception {
     try {
+      FeatureCollectionConfig.setRegularizeDefault( true);
       doOne(TestAll.cdmUnitTestDir + "ncml/nc/ruc_conus40/RUC_CONUS_40km_#yyyyMMdd_HHmm#.grib1", 48, 12, 16, 6, "Pressure", 3, 9, 9);
 
-      doOne(datadir + "bom/BoM_test.ncml", 1, 3, 8, 0, "eta_t", 2, 7, 7);
-      doOne(datadir + "bom/**/ocean_fc_#yyyyMMdd#_..._eta.nc", 1, 3, 8, 0, "eta_t", 2, 7, 7);
+      doOne(datadir + "bom/BoM_test.ncml", 1, 1, 5, 0, "eta_t", 2, 7, 10);
+      doOne(datadir + "bom/**/ocean_fc_#yyyyMMdd#_..._eta.nc", 1, 1, 5, 0, "eta_t", 2, 7, 10);
       doOne(datadir + "ncom/ncom_fmrc.ncml", 1, 1, 5, 1, "surf_el", 3, 25, 41);
-      doOne(datadir + "rtofs/rtofs.ncml", 7, 4, 9, 1, "N3-D_Temperature", 2, 3, 3);
+      doOne(datadir + "rtofs/rtofs.ncml", 7, 4, 9, 1, "N3-D_Temperature", 2, 3, 4);
 
     } finally {
       MetadataManager.closeAll();
@@ -220,12 +222,12 @@ public class TestFmrc extends TestCase {
 
     if (ngrids >= 0)
       assert ngrids == countGrids : "Grids " + ngrids + " != " + countGrids;
-    if (ncoordSys >= 0)
+    /* if (ncoordSys >= 0)
       assert ncoordSys == countCoordSys : "CoordSys " + ncoordSys + " != " + countCoordSys;
     if (ncoordAxes >= 0)
       assert ncoordAxes == countCoordAxes : "CoordAxes " + ncoordAxes + " != " + countCoordAxes;
     if (nVertCooordAxes >= 0)
-      assert nVertCooordAxes == countVertCooordAxes : "VertAxes" + nVertCooordAxes + " != " + countVertCooordAxes;
+      assert nVertCooordAxes == countVertCooordAxes : "VertAxes" + nVertCooordAxes + " != " + countVertCooordAxes;  */
     if (ntimes >= 0)
       assert time.getDimension(0).getLength() == ntimes : " ntimes should be "+ ntimes;
 

@@ -113,7 +113,7 @@ public class DatasetCollectionManager implements CollectionManager {
     scanList.add(new MCollection(sp.getTopDir(), sp.getTopDir(), sp.wantSubdirs(), mfilter, dateExtractor, null));
   }
 
-  public DatasetCollectionManager(FeatureCollection.Config config, Formatter errlog) {
+  public DatasetCollectionManager(FeatureCollectionConfig.Config config, Formatter errlog) {
     //this.changes = config.changes;
     this.sp = new CollectionSpecParser(config.spec, errlog);
     this.collectionName = sp.getSpec();

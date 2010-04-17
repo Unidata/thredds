@@ -33,10 +33,9 @@
 
 package ucar.nc2.ui;
 
-import thredds.inventory.FeatureCollection;
+import thredds.inventory.FeatureCollectionConfig;
 import ucar.nc2.*;
 import ucar.nc2.FileWriter;
-import ucar.nc2.ft.fmrc.Fmrc;
 import ucar.nc2.stream.CdmRemote;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
@@ -804,7 +803,7 @@ public class ToolsUI extends JPanel {
     a = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Boolean state = (Boolean) getValue(BAMutil.STATE);
-        FeatureCollection.setRegularizeDefault(state);
+        FeatureCollectionConfig.setRegularizeDefault(state);
       }
     };
     BAMutil.setActionPropertiesToggle(a, null, "regularize", false, 'R', -1);
