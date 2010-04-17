@@ -310,7 +310,7 @@ public class Fmrc2Panel extends JPanel {
   public void showDataset() throws IOException {
     if (fmrcInv == null) return;
     if (dialog == null) {
-      dialog = new Fmrc2Dialog(null);
+      dialog = new Fmrc2Dialog(null, fmrc);
       dialog.pack();
       dialog.addPropertyChangeListener("OK", new PropertyChangeListener() {
         public void propertyChange(PropertyChangeEvent evt) {
@@ -329,9 +329,22 @@ public class Fmrc2Panel extends JPanel {
     try {
       if (data.type.equals("Dataset2D"))
         gds = fmrc.getDataset2D( null);
-      else
+
+      else if (data.type.equals("Best"))
         gds = fmrc.getDatasetBest();
-      
+
+      else if (data.type.equals("Run")) {
+        DateFormatter df = new DateFormatter();
+        gds = fmrc.getRunTimeDataset(df.getISODate((String)data.param));
+
+      } else if (data.type.equals("ConstantForecast")) {
+        DateFormatter df = new DateFormatter();
+        gds = fmrc.getConstantForecastDataset(df.getISODate((String)data.param));
+
+      } else if (data.type.equals("ConstantOffset")) {
+        gds = fmrc.getConstantOffsetDataset( (Double) data.param);
+      }
+
     } catch (IOException e) {
       e.printStackTrace();
     }
@@ -343,7 +356,6 @@ public class Fmrc2Panel extends JPanel {
     else if (data.where.startsWith("Grid"))
       firePropertyChange("openGridDataset", null, gds);
   }
-
 
   private void setFmr(FmrInv fmr) {
     if (fmr == null) return;

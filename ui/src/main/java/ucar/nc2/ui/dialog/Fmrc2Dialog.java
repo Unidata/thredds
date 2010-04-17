@@ -36,8 +36,13 @@
 
 package ucar.nc2.ui.dialog;
 
+import ucar.nc2.ft.fmrc.Fmrc;
+import ucar.nc2.units.DateFormatter;
+
 import java.awt.*;
 import java.awt.event.*;
+import java.io.IOException;
+import java.util.Date;
 import javax.swing.*;
 import javax.swing.border.*;
 
@@ -48,10 +53,12 @@ public class Fmrc2Dialog extends JDialog {
 
   public class Data {
     public String type;
+    public Object param;
     public String where;
 
-    private Data(String type, String where) {
+    private Data(String type, Object param, String where) {
       this.type = type;
+      this.param = param;
       this.where = where;
     }
 
@@ -59,19 +66,21 @@ public class Fmrc2Dialog extends JDialog {
     public String toString() {
       return "Data{" +
               "type='" + type + '\'' +
+              "param='" + param + '\'' +
               ", where='" + where + '\'' +
               '}';
     }
   }
 
-
-  public Fmrc2Dialog(Frame owner) {
+  private Fmrc fmrc;
+  public Fmrc2Dialog(Frame owner, Fmrc fmrc) {
     super(owner);
+    this.fmrc = fmrc;
     initComponents();
   }
 
   private void okButtonActionPerformed(ActionEvent e) {
-    Data data =  new Data((String) comboBox1.getSelectedItem(), (String) list1.getSelectedValue());
+    Data data =  new Data((String) comboBox1.getSelectedItem(), comboBox2.getSelectedItem(), (String) list1.getSelectedValue());
     firePropertyChange("OK", null, data);
     setVisible(false);
   }
@@ -249,10 +258,44 @@ public class Fmrc2Dialog extends JDialog {
     }
 
     public void actionPerformed(ActionEvent e) {
-      System.out.printf("datasetCBaction=%s%n", e);
       DefaultComboBoxModel m = new DefaultComboBoxModel();
-      m.addElement("test");
-      m.addElement("it");
+      String type = (String) comboBox1.getSelectedItem();
+      if (type.equals("Run")) {
+        java.util.List<Date> dates = null;
+        try {
+          dates = fmrc.getRunDates();
+        } catch (IOException e1) {
+          return;
+        }
+        DateFormatter df = new DateFormatter();
+        for (Date d : dates)
+          m.addElement(df.toDateTimeStringISO(d));
+
+      } else if (type.equals("ConstantForecast")) {
+          java.util.List<Date> dates = null;
+          try {
+            dates = fmrc.getForecastDates();
+          } catch (IOException e1) {
+            return;
+          }
+          DateFormatter df = new DateFormatter();
+          for (Date d : dates)
+            m.addElement(df.toDateTimeStringISO(d));
+
+      } else if (type.equals("ConstantOffset")) {
+          double [] offs  = null;
+          try {
+            offs = fmrc.getForecastOffsets();
+          } catch (IOException e1) {
+            return;
+          }
+          for (double d : offs)
+            m.addElement(d);
+
+      } else {
+        m.addElement("N/A");
+      }
+
       comboBox2.setModel(m);
     }
   }
