@@ -361,7 +361,7 @@
 
       <dataset ID="FMRC/NCEP/NAM/CONUS_12km" name="NCEP-NAM-CONUS_12km">
 
-        <featureCollection name="NCEP-NAM-CONUS_12km-noaaport" featureType="FMRC" harvest="true" path="fmrc/NCEP/NAM/CONUS_12km/noaaport">
+        <featureCollection name="NCEP-NAM-CONUS_12km-noaaport" featureType="FMRC" harvest="true" path="fmrc/NCEP/NAM/CONUS_12km">
           <metadata inherited="true">
               <dataFormat>GRIB-2</dataFormat>
               <documentation type="summary">NCEP North American Model : AWIPS 218 (B) grid over the continental United States.

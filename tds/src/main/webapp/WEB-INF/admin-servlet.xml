@@ -15,16 +15,21 @@
         <property name="supportedMethods" value="GET"/>
     </bean>
 
-    <bean id="logController" class="thredds.server.root.LogController">
-        <property name="tdsContext" ref="tdsContext"/>
-        <property name="supportedMethods" value="GET"/>
-    </bean>
+  <bean id="logController" class="thredds.server.root.LogController">
+      <property name="tdsContext" ref="tdsContext"/>
+      <property name="supportedMethods" value="GET"/>
+  </bean>
+
+  <bean id="fmrcController" class="thredds.server.root.FmrcCacheController">
+      <constructor-arg ref="tdsContext"/>
+  </bean>
 
     <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
         <property name="mappings">
             <value>
                 /debug=debugController
                 /debug/*=debugController
+                /fmrcCache=fmrcController
                 /log/**=logController
                 /*=dirDisplayController
             </value>
@@ -44,6 +49,6 @@
     </bean>
 
     <!-- A Singleton class to populate the Debug methods in DebugHandler -->
-    <bean class="thredds.servlet.DebugCommands"/>
+    <bean class="thredds.servlet.DebugCommands" />
 
 </beans>

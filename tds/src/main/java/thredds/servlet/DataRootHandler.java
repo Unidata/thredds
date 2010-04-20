@@ -39,6 +39,7 @@ import thredds.crawlabledataset.CrawlableDatasetFile;
 import thredds.crawlabledataset.CrawlableDatasetDods;
 import thredds.cataloggen.ProxyDatasetHandler;
 import thredds.inventory.FeatureCollectionConfig;
+import thredds.monitor.FmrcCacheMonitorImpl;
 import thredds.server.config.TdsContext;
 import thredds.util.PathAliasReplacement;
 import thredds.util.StartsWithPathAliasReplacement;
@@ -1737,7 +1738,6 @@ public class DataRootHandler {
   public void makeDebugActions() {
     DebugHandler debugHandler = DebugHandler.get("catalogs");
     DebugHandler.Action act;
-
     /* act = new DebugHandler.Action("showError", "Show catalog error logs") {
      public void doAction(DebugHandler.Event e) {
        synchronized ( DataRootHandler.this )

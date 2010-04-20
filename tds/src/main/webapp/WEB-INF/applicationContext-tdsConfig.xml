@@ -60,6 +60,7 @@
     <!-- JMX -->
   <bean id="openRAFMonitor" class="thredds.monitor.OpenRAFMonitorImpl"/>
   <bean id="netcdfFileCacheMonitor" class="thredds.monitor.NetcdfFileCacheMonitorImpl"/>
+  <bean id="fmrcCacheMonitor" class="thredds.monitor.FmrcCacheMonitorImpl"/>
 
 	<!-- Configuration for JMX exposure in the application
 	<bean id="mbeanExporter" class="org.springframework.jmx.export.MBeanExporter" lazy-init="false">
