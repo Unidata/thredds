@@ -4,6 +4,8 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.2:
  2:
+  Fmrc: parameterized best dataset
+  DatasetCollectionManager delete old metadata entries
   FmrcInvLite, time coord variants
   monotonize Lon coordinate axis
   Christian Ward-Garrison improvements on FileWriter

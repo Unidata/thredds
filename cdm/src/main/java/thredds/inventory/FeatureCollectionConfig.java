@@ -34,9 +34,7 @@ package thredds.inventory;
 
 import ucar.unidata.util.StringUtil;
 
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Beans for FeatureCollection configuration
@@ -170,6 +168,7 @@ public class FeatureCollectionConfig {
     public boolean regularize = regularizeDefault;
     public Set<FmrcDatasetType> datasets = defaultDatasetTypes;
     private boolean explicit = false;
+    private List<BestDataset> bestDatasets = null;
 
     public FmrcConfig() { // defaults
     }
@@ -194,14 +193,36 @@ public class FeatureCollectionConfig {
       }
     }
 
+    public void addBestDataset(String name, double greaterEqual) {
+      if (bestDatasets == null) bestDatasets = new ArrayList<BestDataset>(2);
+      bestDatasets.add(new BestDataset(name, greaterEqual));
+    }
+
+    public List<BestDataset> getBestDatasets() {
+      return bestDatasets;
+    }
+
+
     @Override
     public String toString() {
-      return "FmrcConfig{" +
-              "regularize=" + regularize +
-              ", datasets=" + datasets +
-              '}';
+      Formatter f = new Formatter();
+      f.format("FmrcConfig: regularize=%s datasetTypes=%s", regularize, datasets);
+      if (bestDatasets != null)
+      for (BestDataset bd : bestDatasets)
+        f.format("best = (%s, %f) ", bd.name, bd.greaterThan);
+      return f.toString();
     }
   }
 
+  static public class BestDataset {
+    public String name;
+    public double greaterThan;
+
+    public BestDataset(String name, double greaterThan) {
+      this.name = name;
+      this.greaterThan = greaterThan;
+    }
+
+  }
 
 }

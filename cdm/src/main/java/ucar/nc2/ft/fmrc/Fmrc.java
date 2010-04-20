@@ -195,6 +195,12 @@ public class Fmrc {
     return gds;
   }
 
+  public GridDataset getDatasetBest(FeatureCollectionConfig.BestDataset bd) throws IOException {
+    checkNeeded( false);
+    GridDataset gds =  fmrcDataset.getBest(bd);
+    return gds;
+  }
+
   public GridDataset getRunTimeDataset(Date run) throws IOException {
     checkNeeded( false);
     GridDataset gds =  fmrcDataset.getRunTimeDataset(run);
@@ -266,39 +272,40 @@ public class Fmrc {
   // scan has been done, create FmrcInv
   private FmrcInv makeFmrcInv(Formatter debug) throws IOException {
     try {
-    Map<Date, FmrInv> fmrMap = new HashMap<Date, FmrInv>(); // all files are grouped by run date in an FmrInv
-    List<FmrInv> fmrList = new ArrayList<FmrInv>(); // an fmrc is a collection of fmr
+      Map<Date, FmrInv> fmrMap = new HashMap<Date, FmrInv>(); // all files are grouped by run date in an FmrInv
+      List<FmrInv> fmrList = new ArrayList<FmrInv>(); // an fmrc is a collection of fmr
 
-    // get the inventory, sorted by path
-    List<MFile> fileList = manager.getFiles();
-    for (MFile f : fileList) {
-      if (logger.isDebugEnabled())
-        logger.debug("Fmrc: "+config.spec+": file="+f.getPath());
+      // get the inventory, sorted by path
+      List<MFile> fileList = manager.getFiles();
+      for (MFile f : fileList) {
+        if (logger.isDebugEnabled())
+          logger.debug("Fmrc: "+config.spec+": file="+f.getPath());
 
-      GridDatasetInv inv = GridDatasetInv.open(manager, f); // inventory is discovered for each GDS
-      Date runDate = inv.getRunDate();
-      if (debug != null) debug.format("  opened %s rundate = %s%n", f.getPath(), inv.getRunDateString());
+        GridDatasetInv inv = GridDatasetInv.open(manager, f); // inventory is discovered for each GDS
+        Date runDate = inv.getRunDate();
+        if (debug != null) debug.format("  opened %s rundate = %s%n", f.getPath(), inv.getRunDateString());
 
-      // add to fmr for that rundate
-      FmrInv fmr = fmrMap.get(runDate);
-      if (fmr == null) {
-        fmr = new FmrInv(runDate);
-        fmrMap.put(runDate, fmr);
-        fmrList.add(fmr);
+        // add to fmr for that rundate
+        FmrInv fmr = fmrMap.get(runDate);
+        if (fmr == null) {
+          fmr = new FmrInv(runDate);
+          fmrMap.put(runDate, fmr);
+          fmrList.add(fmr);
+        }
+        fmr.addDataset(inv, debug);
       }
-      fmr.addDataset(inv, debug);
-    }
-    if (debug != null) debug.format("%n");
+      if (debug != null) debug.format("%n");
 
-    // finish the FmrInv
-    Collections.sort(fmrList);
-    for (FmrInv fmr : fmrList) {
-      fmr.finish();
-      if (logger.isDebugEnabled())
-        logger.debug("Fmrc: "+config.spec+": fmr "+fmr.getRunDate()+" nfiles= "+fmr.getFiles().size());
-    }
+      // finish the FmrInv
+      Collections.sort(fmrList);
+      for (FmrInv fmr : fmrList) {
+        fmr.finish();
+        if (logger.isDebugEnabled())
+          logger.debug("Fmrc: "+config.spec+": fmr "+fmr.getRunDate()+" nfiles= "+fmr.getFiles().size());
+      }
 
       return new FmrcInv(manager.getCollectionName(), fmrList, config.fmrcConfig.regularize);
+
     } catch (Throwable t) {
       logger.error("makeFmrcInv", t);
       throw new RuntimeException(t);

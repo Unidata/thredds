@@ -134,6 +134,14 @@ class FmrcDataset {
     return buildDataset1D( localState.proto, localState.lite, localState.lite.makeBestDatasetInventory());
   }
 
+  GridDataset getBest(FeatureCollectionConfig.BestDataset bd) throws IOException {
+    State localState;
+    synchronized (lock) {
+      localState = state;
+    }
+    return buildDataset1D( localState.proto, localState.lite, localState.lite.makeBestDatasetInventory(bd));
+  }
+
   GridDataset getRunTimeDataset(Date run) throws IOException {
     State localState;
     synchronized (lock) {

@@ -505,19 +505,34 @@ public class InvDatasetFeatureCollection extends InvCatalogRef {
        datasets.add(ds);
      }
 
-     if (wantDatasets.contains(FeatureCollectionConfig.FmrcDatasetType.Best)) {
+    if (wantDatasets.contains(FeatureCollectionConfig.FmrcDatasetType.Best)) {
 
-       InvDatasetImpl ds = new InvDatasetImpl(this, "Best Time Series");
-       String name = getName() + "_" + BEST;
-       name = StringUtil.replace(name, ' ', "_");
-       ds.setUrlPath(this.path + "/" + name);
-       ds.setID(id + "/" + name);
-       ThreddsMetadata tm = ds.getLocalMetadata();
-       tm.addDocumentation("summary", "Best time series, taking the data from the most recent run available.");
-       ds.getLocalMetadataInheritable().setServiceName(virtualService.getName());
-       ds.finish();
-       datasets.add(ds);
-     }
+      InvDatasetImpl ds = new InvDatasetImpl(this, "Best Time Series");
+      String name = getName() + "_" + BEST;
+      name = StringUtil.replace(name, ' ', "_");
+      ds.setUrlPath(this.path + "/" + name);
+      ds.setID(id + "/" + name);
+      ThreddsMetadata tm = ds.getLocalMetadata();
+      tm.addDocumentation("summary", "Best time series, taking the data from the most recent run available.");
+      ds.getLocalMetadataInheritable().setServiceName(virtualService.getName());
+      ds.finish();
+      datasets.add(ds);
+    }
+
+    if (config.fmrcConfig.getBestDatasets() != null) {
+      for (FeatureCollectionConfig.BestDataset bd : config.fmrcConfig.getBestDatasets()) {
+        InvDatasetImpl ds = new InvDatasetImpl(this, bd.name);
+        String name = getName() + "_" + bd.name;
+        name = StringUtil.replace(name, ' ', "_");
+        ds.setUrlPath(this.path + "/" + name);
+        ds.setID(id + "/" + name);
+        ThreddsMetadata tm = ds.getLocalMetadata();
+        tm.addDocumentation("summary", "Best time series, excluding offset hours less than "+bd.greaterThan);
+        ds.getLocalMetadataInheritable().setServiceName(virtualService.getName());
+        ds.finish();
+        datasets.add(ds);
+      }
+    }
 
      if (wantDatasets.contains(FeatureCollectionConfig.FmrcDatasetType.Runs)) {
        InvDatasetImpl ds = new InvCatalogRef(this, RUN_TITLE, getCatalogHref(RUNS));
@@ -672,7 +687,16 @@ public class InvDatasetFeatureCollection extends InvCatalogRef {
       DateFormatter formatter = new DateFormatter();
       Date date = formatter.getISODate(id);
       return fmrc.getConstantForecastDataset(date);
+
+    } else if (config.fmrcConfig.getBestDatasets() != null) {
+      for (FeatureCollectionConfig.BestDataset bd : config.fmrcConfig.getBestDatasets()) {
+        if (name.endsWith(bd.name)) {
+          return fmrc.getDatasetBest(bd);          
+        }
+      }
     }
+
+
     return null;
   }
 

@@ -385,6 +385,15 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
       String datasetTypes = fmrcElem.getAttributeValue("datasetTypes");
       if (null != datasetTypes)
         config.fmrcConfig.addDatasetType(datasetTypes);
+
+      List<Element> bestElems = fmrcElem.getChildren( "dataset", defNS );
+      for (Element best : bestElems) {
+        String bestName = best.getAttributeValue("name");
+        String offs = best.getAttributeValue("offsetsGreaterEqual");
+        double off = Double.parseDouble(offs);
+        config.fmrcConfig.addBestDataset(bestName, off);
+      }
+
     }
 
     InvDatasetFeatureCollection ds = new InvDatasetFeatureCollection( parent, name, path, featureType, config);

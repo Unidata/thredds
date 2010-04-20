@@ -32,6 +32,7 @@
 
 package ucar.nc2.ft.fmrc;
 
+import thredds.inventory.FeatureCollectionConfig;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.util.Misc;
 
@@ -207,11 +208,13 @@ public class FmrcInvLite implements java.io.Serializable {
       return timeOffset[run * noffsets + time];
     }
 
-    private List<TimeInv> makeBest() {
+    // time coord in hours since base
+    private List<TimeInv> makeBest(FeatureCollectionConfig.BestDataset bd) {
       Map<Double, TimeInv> map = new HashMap<Double, TimeInv>();
       for (int run = 0; run < nruns; run++) {
         for (int time = 0; time < noffsets; time++) {
           double baseOffset = timeOffset[run * noffsets + time];
+          if (bd != null && baseOffset < bd.greaterThan) continue; // skip it
           map.put(baseOffset, new TimeInv(run, time, baseOffset)); // later ones override
         }
       }
@@ -392,7 +395,11 @@ public class FmrcInvLite implements java.io.Serializable {
   }
 
   TimeInventory makeBestDatasetInventory() {
-    return new BestDatasetInventory();
+    return new BestDatasetInventory(null);
+  }
+
+  TimeInventory makeBestDatasetInventory(FeatureCollectionConfig.BestDataset bd) {
+    return new BestDatasetInventory(bd);
   }
 
   TimeInventory makeRunTimeDatasetInventory(Date run) {
@@ -408,24 +415,28 @@ public class FmrcInvLite implements java.io.Serializable {
   }
 
   class BestDatasetInventory implements TimeInventory {
-    // this could be parameterized for offsets > p
+    FeatureCollectionConfig.BestDataset bd; // parameterized for offsets >= p. null means want all offsets
+
+    BestDatasetInventory( FeatureCollectionConfig.BestDataset bd) {
+      this.bd = bd;
+    }
  
     @Override
     public String getName() {
-      return "Best";
+      return (bd == null) ? "Best" : bd.name;
     }
 
     @Override
     public int getTimeLength(Gridset gridset) {
-      List<TimeInv> best = gridset.timeCoordMap.get("best");
-      if (best == null) best = gridset.makeBest();
+      List<TimeInv> best = gridset.timeCoordMap.get(getName());
+      if (best == null) best = gridset.makeBest(bd);
       return best.size();
     }
 
     @Override
     public double[] getTimeCoords(Gridset gridset) {
-      List<TimeInv> best = gridset.timeCoordMap.get("best");
-      if (best == null) best = gridset.makeBest();
+      List<TimeInv> best = gridset.timeCoordMap.get(getName());
+      if (best == null) best = gridset.makeBest(bd);
 
       double[] result = new double[best.size()];
       for (int i = 0; i < best.size(); i++) {
@@ -437,9 +448,9 @@ public class FmrcInvLite implements java.io.Serializable {
 
     @Override
     public double[] getRunTimeCoords(Gridset gridset) {
-      List<TimeInv> best = gridset.timeCoordMap.get("best");
+      List<TimeInv> best = gridset.timeCoordMap.get(getName());
       if (best == null)
-        best = gridset.makeBest();
+        best = gridset.makeBest(bd);
       double[] result = new double[best.size()];
       for (int i = 0; i < best.size(); i++) {
         TimeInv b = best.get(i);
@@ -450,9 +461,9 @@ public class FmrcInvLite implements java.io.Serializable {
 
     @Override
     public double[] getOffsetCoords(Gridset gridset) {
-      List<TimeInv> best = gridset.timeCoordMap.get("best");
+      List<TimeInv> best = gridset.timeCoordMap.get(getName());
       if (best == null)
-        best = gridset.makeBest();
+        best = gridset.makeBest(bd);
 
       double[] result = new double[best.size()];
       for (int i = 0; i < best.size(); i++) {
@@ -465,9 +476,9 @@ public class FmrcInvLite implements java.io.Serializable {
     @Override
     public Instance getInstance(Gridset.Grid grid, int timeIdx) {
       Gridset gridset = grid.getGridset();
-      List<TimeInv> best = gridset.timeCoordMap.get("best");
+      List<TimeInv> best = gridset.timeCoordMap.get(getName());
       if (best == null)
-        best = gridset.makeBest();
+        best = gridset.makeBest(bd);
 
       TimeInv b = best.get(timeIdx);
       int locIdx = grid.inv.getLocation(b.runIdx, b.timeIdx);
