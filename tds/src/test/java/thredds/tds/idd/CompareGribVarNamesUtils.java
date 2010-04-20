@@ -109,7 +109,7 @@ public class CompareGribVarNamesUtils
 
         // Read the "FMRC Run" catalog
         InvCatalogImpl cat = InvCatalogFactory.getDefaultFactory( false ).readXML( fmrcRunCatUrl );
-        assertFalse( "\"FMRC Run\" catalog [" + fmrcRunCatUrl + "] had a fatal error.",
+        assertFalse( "\"FMRC Run\" catalog [" + fmrcRunCatUrl + "] had a fatal error= "  + " " +cat.getLog(),
                      cat.hasFatalError() );
 
         // Make sure the "FMRC Run" catalog has a top dataset and get its children.

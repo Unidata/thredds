@@ -26,8 +26,8 @@ public class CompareGribVarNamesOnMotherlodeTds
   @Parameterized.Parameters
   public static Collection<Object[]> getModelIds()
   {
-    //return Arrays.asList( IddModelDatasetsUtils.getModelIds());
-    return Arrays.asList( IddModelDatasetsUtils.getGfsModelIds());
+    return Arrays.asList( IddModelDatasetsUtils.getModelIds());
+    // return Arrays.asList( IddModelDatasetsUtils.getGfsModelIds());
   }
 
 

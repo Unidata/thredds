@@ -246,6 +246,12 @@ public class DatasetCollectionManager implements CollectionManager {
   public void scan(CancelTask cancelTask) throws IOException {
     Map<String, MFile> newMap = new HashMap<String, MFile>();
     scan(newMap, cancelTask);
+
+    // LOOK how often ??
+    // clean up deleted files in metadata manager
+    initMM();
+    mm.delete(newMap);
+
     synchronized(this) {
       map = newMap;
       this.lastScanned = System.currentTimeMillis();
@@ -400,6 +406,7 @@ public class DatasetCollectionManager implements CollectionManager {
       if ((cancelTask != null) && cancelTask.isCancel())
         return;
     }
+
   }
 
   @Override

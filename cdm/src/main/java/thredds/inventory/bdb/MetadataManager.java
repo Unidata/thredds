@@ -39,10 +39,13 @@ import com.sleepycat.persist.StoreConfig;
 import java.io.*;
 import java.util.*;
 
+import thredds.inventory.MFile;
 import ucar.nc2.units.DateFormatter;
 
 /**
  * MetadataManager using Berkeley DB Java Edition.
+ * Single environment. Each collection is a "database".
+ * Each database has a set of key/value pairs.
  *
  * @author caron
  * @since Aug 20, 2008
@@ -261,6 +264,48 @@ public class MetadataManager {
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
+  }
+
+  public void delete(Map<String, MFile> current) {
+    List<DatabaseEntry> result = new ArrayList<DatabaseEntry>();
+    Cursor myCursor = null;
+    try {
+      myCursor = database.openCursor(null, null);
+      DatabaseEntry foundKey = new DatabaseEntry();
+      DatabaseEntry foundData = new DatabaseEntry();
+
+      int count = 0;
+      while (myCursor.getNext(foundKey, foundData, LockMode.DEFAULT) == OperationStatus.SUCCESS) {
+        String key = new String(foundKey.getData(), UTF8);
+        int pos = key.indexOf("#");
+        if (pos > 0) {
+          String filename = key.substring(0, pos);
+          if (null == current.get(filename)) {
+            //System.out.printf("%s not current %n", filename);
+            result.add(new DatabaseEntry(foundKey.getData()));
+            count++;
+          } else {
+            //System.out.printf("%s is current%n", filename);
+          }
+        }
+      }
+
+      //System.out.printf("total found to delete = %d%n", count);
+
+      for (DatabaseEntry entry : result) {
+        OperationStatus status = database.delete(null, entry);
+        String key = new String(entry.getData(), UTF8);
+        //System.out.printf("%s deleted %s%n", status, key);
+      }
+
+    } catch (UnsupportedEncodingException e) {
+      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+
+    } finally {
+      if (null != myCursor)
+        myCursor.close();
+    }
+
   }
 
   public void close() {
