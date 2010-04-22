@@ -33,6 +33,10 @@
 
 package thredds.logs;
 
+import ucar.nc2.units.DateFormatter;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.regex.*;
 import java.util.Formatter;
 import java.io.BufferedReader;
@@ -81,7 +85,7 @@ public class ServletLogParser implements LogReader.LogParser {
 
     public String toString() {
       Formatter f = new Formatter();
-      f.format("%s [%d] [%d] %s %s: ", date, reqTime, reqSeq, level, where);
+      f.format("%s [%d] [%d] %s %s: ", getDate(), reqTime, reqSeq, level, where);
 
       if (isStart)
         f.format(" (%s) %s %n", ip, getPath());
@@ -158,11 +162,11 @@ public class ServletLogParser implements LogReader.LogParser {
           }
           haveLog = true; // next match will return the current log
 
-          log.date = m.group(1);
+          log.date = convertDate( m.group(1));
           log.reqTime = parseLong(m.group(2));
           log.reqSeq = parseLong(m.group(3));
-          log.level = m.group(4);
-          log.where = m.group(5);
+          log.level = m.group(4).intern();
+          log.where = m.group(5).intern();
 
           String rest = m.group(6);
           if (rest.indexOf("Request Completed") >= 0) {
@@ -184,10 +188,10 @@ public class ServletLogParser implements LogReader.LogParser {
             int pos = rest.indexOf("Remote host");
             Matcher m2 = startPattern.matcher(rest.substring(pos));
             if (m2.matches()) {
-              log.ip = m2.group(1);
-              log.verb = m2.group(2);
-              log.path = URLDecoder.decode(m2.group(3));
-              log.http = m2.group(4);
+              log.ip = m2.group(1).intern();
+              log.verb = m2.group(2).intern();
+              log.path = URLDecoder.decode(m2.group(3)).intern();
+              log.http = m2.group(4).intern();
               log.isStart = true;
 
             } else {
@@ -213,6 +217,20 @@ public class ServletLogParser implements LogReader.LogParser {
     }
 
   }
+
+  // 2010-04-21T13:05:22.006 -0600
+  private DateFormatter df = new DateFormatter();
+  private long convertDate(String accessDateFormat) {
+    // 30/Sep/2009:23:50:47 -0600
+    try {
+      Date d = df.getISODate(accessDateFormat);
+      return d.getTime(); // formatTo.toDateTimeStringISO(d);
+    } catch (Throwable t) {
+      System.out.printf("Bad date format = %s err = %s%n", accessDateFormat, t.getMessage());
+    }
+    return -1;
+  }
+
 
   private int parse(String s) {
     if (s.equals("-")) return 0;

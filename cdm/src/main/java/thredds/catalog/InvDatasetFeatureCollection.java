@@ -48,6 +48,7 @@ import ucar.nc2.units.DateRange;
 import ucar.unidata.util.StringUtil;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -656,46 +657,50 @@ public class InvDatasetFeatureCollection extends InvCatalogRef {
     String type = (pos > -1) ? matchPath.substring(0, pos) : matchPath;
     String name = (pos > -1) ? matchPath.substring(pos + 1) : matchPath;
 
-    if (name.endsWith(FMRC) && wantDatasets.contains(FeatureCollectionConfig.FmrcDatasetType.TwoD)) {
-      return fmrc.getDataset2D(null);
+    try {
+      if (name.endsWith(FMRC) && wantDatasets.contains(FeatureCollectionConfig.FmrcDatasetType.TwoD)) {
+        return fmrc.getDataset2D(null);
 
-    } else if (name.endsWith(BEST) && wantDatasets.contains(FeatureCollectionConfig.FmrcDatasetType.Best)) {
-      return fmrc.getDatasetBest();
+      } else if (name.endsWith(BEST) && wantDatasets.contains(FeatureCollectionConfig.FmrcDatasetType.Best)) {
+        return fmrc.getDatasetBest();
 
-    } else if (type.equals(OFFSET) && wantDatasets.contains(FeatureCollectionConfig.FmrcDatasetType.ConstantOffsets)) {
-      int pos1 = name.indexOf(OFFSET_NAME);
-      int pos2 = name.indexOf("hr");
-      if ((pos1<0) || (pos2<0)) return null;
-      String id = name.substring(pos1+OFFSET_NAME.length(), pos2);
-      double hour = Double.parseDouble(id);
-      return fmrc.getConstantOffsetDataset( hour);
+      } else if (type.equals(OFFSET) && wantDatasets.contains(FeatureCollectionConfig.FmrcDatasetType.ConstantOffsets)) {
+        int pos1 = name.indexOf(OFFSET_NAME);
+        int pos2 = name.indexOf("hr");
+        if ((pos1<0) || (pos2<0)) return null;
+        String id = name.substring(pos1+OFFSET_NAME.length(), pos2);
+        double hour = Double.parseDouble(id);
+        return fmrc.getConstantOffsetDataset( hour);
 
-    } else if (type.equals(RUNS) && wantDatasets.contains(FeatureCollectionConfig.FmrcDatasetType.Runs)) {
-      int pos1 = name.indexOf(RUN_NAME);
-      if (pos1<0) return null;
-      String id = name.substring(pos1+RUN_NAME.length());
+      } else if (type.equals(RUNS) && wantDatasets.contains(FeatureCollectionConfig.FmrcDatasetType.Runs)) {
+        int pos1 = name.indexOf(RUN_NAME);
+        if (pos1<0) return null;
+        String id = name.substring(pos1+RUN_NAME.length());
 
-      DateFormatter formatter = new DateFormatter();
-      Date date = formatter.getISODate(id);
-      return fmrc.getRunTimeDataset(date);
+        DateFormatter formatter = new DateFormatter();
+        Date date = formatter.getISODate(id);
+        return fmrc.getRunTimeDataset(date);
 
-    } else if (type.equals(FORECAST) && wantDatasets.contains(FeatureCollectionConfig.FmrcDatasetType.ConstantForecasts)) {
-      int pos1 = name.indexOf(FORECAST_NAME);
-      if (pos1<0) return null;
-      String id = name.substring(pos1+FORECAST_NAME.length());
+      } else if (type.equals(FORECAST) && wantDatasets.contains(FeatureCollectionConfig.FmrcDatasetType.ConstantForecasts)) {
+        int pos1 = name.indexOf(FORECAST_NAME);
+        if (pos1<0) return null;
+        String id = name.substring(pos1+FORECAST_NAME.length());
 
-      DateFormatter formatter = new DateFormatter();
-      Date date = formatter.getISODate(id);
-      return fmrc.getConstantForecastDataset(date);
+        DateFormatter formatter = new DateFormatter();
+        Date date = formatter.getISODate(id);
+        return fmrc.getConstantForecastDataset(date);
 
-    } else if (config.fmrcConfig.getBestDatasets() != null) {
-      for (FeatureCollectionConfig.BestDataset bd : config.fmrcConfig.getBestDatasets()) {
-        if (name.endsWith(bd.name)) {
-          return fmrc.getDatasetBest(bd);          
+      } else if (config.fmrcConfig.getBestDatasets() != null) {
+        for (FeatureCollectionConfig.BestDataset bd : config.fmrcConfig.getBestDatasets()) {
+          if (name.endsWith(bd.name)) {
+            return fmrc.getDatasetBest(bd);
+          }
         }
       }
-    }
 
+    } catch (FileNotFoundException e) {
+      return null;
+    }
 
     return null;
   }

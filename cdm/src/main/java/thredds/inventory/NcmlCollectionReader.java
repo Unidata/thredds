@@ -122,7 +122,6 @@ public class NcmlCollectionReader {
 
   //////////////////////////////////////////////////////////////////
   private DatasetCollectionManager datasetManager;
-  private DateExtractor dateExtractor;
   private boolean hasInner, hasOuter;
   private Element netcdfElem, aggElem;
 
@@ -142,11 +141,12 @@ public class NcmlCollectionReader {
     String suffix = scanElem.getAttributeValue("suffix");
     String subdirs = scanElem.getAttributeValue("subdirs");
     String olderThan = scanElem.getAttributeValue("olderThan");
-    String dateFormatMark = scanElem.getAttributeValue("dateFormatMark");
 
     datasetManager = new DatasetCollectionManager(recheck);
-    datasetManager.addDirectoryScan(dirLocation, suffix, regexpPatternString, subdirs, olderThan, dateFormatMark, null);
+    datasetManager.addDirectoryScan(dirLocation, suffix, regexpPatternString, subdirs, olderThan, null);
 
+    String dateFormatMark = scanElem.getAttributeValue("dateFormatMark");
+    DateExtractor dateExtractor = null;
     if (dateFormatMark != null)
       dateExtractor = new DateExtractorFromName(dateFormatMark, true);
     else {
@@ -154,6 +154,7 @@ public class NcmlCollectionReader {
       if (runDateMatcher != null)
         dateExtractor = new DateExtractorFromName(runDateMatcher, false);
     }
+    datasetManager.setDateExtractor(dateExtractor);
 
     hasOuter = hasMods(netcdfElem);
     hasInner = hasMods(aggElem);
@@ -185,7 +186,7 @@ public class NcmlCollectionReader {
     return datasetManager;
   }
 
-  public DateExtractor getDateExtractor() {
+  /* public DateExtractor getDateExtractor() {
     return dateExtractor;
-  }
+  } */
 }

@@ -59,7 +59,6 @@ public class AccessLogParser implements LogReader.LogParser {
 
   // 30/Sep/2009:23:50:47 -0600
   private SimpleDateFormat formatFrom = new SimpleDateFormat("dd/MMM/yyyy:HH:mm:ss Z");
-  private DateFormatter formatTo = new DateFormatter();
 
   private static Pattern regPattern =
           Pattern.compile("^(\\d+\\.\\d+\\.\\d+\\.\\d+) - (.*) \\[(.*)\\] \"(.*)\" (\\d+) ([\\-\\d]+) \"(.*)\" \"(.*)\" (\\d+)");
@@ -73,9 +72,9 @@ public class AccessLogParser implements LogReader.LogParser {
       Matcher m = regPattern.matcher(line);
       if (m.matches()) {
         LogReader.Log log = new LogReader.Log();
-        log.ip = m.group(1);
+        log.ip = m.group(1).intern();
         log.date = convertDate( m.group(3));
-        String request = m.group(4);
+        String request = m.group(4).intern();
         log.returnCode = parse(m.group(5));
         log.sizeBytes = parseLong(m.group(6));
         log.referrer = m.group(7);
@@ -84,9 +83,9 @@ public class AccessLogParser implements LogReader.LogParser {
 
         String[] reqss = request.split(" ");
         if (reqss.length == 3) {
-          log.verb = reqss[0];
-          log.path = reqss[1];
-          log.http = reqss[2];
+          log.verb = reqss[0].intern();
+          log.path = reqss[1].intern();
+          log.http = reqss[2].intern();
         }
 
         return log;
@@ -98,15 +97,15 @@ public class AccessLogParser implements LogReader.LogParser {
     return null;
   }
 
-  private String convertDate(String accessDateFormat) {
+  private long convertDate(String accessDateFormat) {
     // 30/Sep/2009:23:50:47 -0600
     try {
       Date d = formatFrom.parse(accessDateFormat);
-      return formatTo.toDateTimeStringISO(d);
+      return d.getTime(); // formatTo.toDateTimeStringISO(d);
     } catch (Throwable t) {
       System.out.printf("Bad date format = %s err = %s%n", accessDateFormat, t.getMessage());
     }
-    return accessDateFormat;
+    return -1;
   }
 
   private int parse(String s) {

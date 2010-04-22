@@ -102,7 +102,7 @@ public class DatasetCollectionManager implements CollectionManager {
 
     MFileFilter mfilter = (null == sp.getFilter()) ? null : new WildcardMatchOnName(sp.getFilter());
     dateExtractor = (sp.getDateFormatMark() == null) ? null : new DateExtractorFromName(sp.getDateFormatMark(), true);
-    scanList.add(new MCollection(sp.getTopDir(), sp.getTopDir(), sp.wantSubdirs(), mfilter, dateExtractor, null));
+    scanList.add(new MCollection(sp.getTopDir(), sp.getTopDir(), sp.wantSubdirs(), mfilter, null));
   }
 
   public DatasetCollectionManager(CollectionSpecParser sp, Formatter errlog) {
@@ -110,7 +110,7 @@ public class DatasetCollectionManager implements CollectionManager {
     this.sp = sp;
     MFileFilter mfilter = (null == sp.getFilter()) ? null : new WildcardMatchOnName(sp.getFilter());
     this.dateExtractor = (sp.getDateFormatMark() == null) ? null : new DateExtractorFromName(sp.getDateFormatMark(), true);
-    scanList.add(new MCollection(sp.getTopDir(), sp.getTopDir(), sp.wantSubdirs(), mfilter, dateExtractor, null));
+    scanList.add(new MCollection(sp.getTopDir(), sp.getTopDir(), sp.wantSubdirs(), mfilter, null));
   }
 
   public DatasetCollectionManager(FeatureCollectionConfig.Config config, Formatter errlog) {
@@ -135,7 +135,7 @@ public class DatasetCollectionManager implements CollectionManager {
 
     MFileFilter mfilter = (filters.size() == 0) ? null : ((filters.size() == 1) ? filters.get(0) : new Composite(filters));
     dateExtractor = (sp.getDateFormatMark() == null) ? null : new DateExtractorFromName(sp.getDateFormatMark(), true);
-    scanList.add(new MCollection(sp.getTopDir(), sp.getTopDir(), sp.wantSubdirs(), mfilter, dateExtractor, null));
+    scanList.add(new MCollection(sp.getTopDir(), sp.getTopDir(), sp.wantSubdirs(), mfilter, null));
 
     if (logger.isDebugEnabled()) {
       logger.debug(collectionName+" init, config= "+config);
@@ -167,6 +167,10 @@ public class DatasetCollectionManager implements CollectionManager {
     }
   }
 
+  public void setDateExtractor( DateExtractor dateExtractor) {
+    this.dateExtractor = dateExtractor;
+  }
+
   /**
    * Add a directory scan to the collection
    * @param dirName scan this directory
@@ -174,11 +178,10 @@ public class DatasetCollectionManager implements CollectionManager {
    * @param regexpPatternString if present, use this reqular expression to filter files , may be null
    * @param subdirsS if "true", descend into subdirectories, may be null
    * @param olderS udunit time unit - files must be older than this amount of time (now - lastModified > olderTime), may be null
-   * @param dateFormatString dateFormatMark string, may be null
+   // * @param dateFormatString dateFormatMark string, may be null
    * @param auxInfo attach this object to any MFile found by this scan
    */
-  public void addDirectoryScan(String dirName, String suffix, String regexpPatternString, String subdirsS, String olderS,
-                               String dateFormatString, Object auxInfo) {
+  public void addDirectoryScan(String dirName, String suffix, String regexpPatternString, String subdirsS, String olderS, Object auxInfo) {
     List<MFileFilter> filters = new ArrayList<MFileFilter>(3);
     if (null != regexpPatternString)
       filters.add(new RegExpMatchOnName(regexpPatternString));
@@ -194,14 +197,12 @@ public class DatasetCollectionManager implements CollectionManager {
       }
     }
 
-    DateExtractor dateExtractor = (dateFormatString == null) ? null : new DateExtractorFromName(dateFormatString, true);
-
     boolean wantSubdirs = true;
     if ((subdirsS != null) && subdirsS.equalsIgnoreCase("false"))
       wantSubdirs = false;
 
     MFileFilter filter = (filters.size() == 0) ? null : ((filters.size() == 1) ? filters.get(0) : new Composite(filters));
-    MCollection mc = new thredds.inventory.MCollection(dirName, dirName, wantSubdirs, filter, dateExtractor, auxInfo);
+    MCollection mc = new thredds.inventory.MCollection(dirName, dirName, wantSubdirs, filter, auxInfo);
 
     // create name
     StringBuilder sb = new StringBuilder(dirName);
@@ -247,11 +248,9 @@ public class DatasetCollectionManager implements CollectionManager {
     Map<String, MFile> newMap = new HashMap<String, MFile>();
     scan(newMap, cancelTask);
 
-    // LOOK how often ??
-    // clean up deleted files in metadata manager
-    initMM();
-    mm.delete(newMap);
+    deleteOld(newMap);
 
+    // LOOK how often ??
     synchronized(this) {
       map = newMap;
       this.lastScanned = System.currentTimeMillis();
@@ -424,6 +423,7 @@ public class DatasetCollectionManager implements CollectionManager {
   private MetadataManager mm;
 
   private void initMM() {
+    if (collectionName == null) return; // eg no scan in ncml
     try {
       mm = new MetadataManager(collectionName);
     } catch (IOException e) {
@@ -431,16 +431,22 @@ public class DatasetCollectionManager implements CollectionManager {
     }
   }
 
+  // clean up deleted files in metadata manager
+  private void deleteOld(Map<String, MFile> newMap) {
+    if (mm == null) initMM();
+    if (mm != null) mm.delete(newMap);
+  }
+
   @Override
   public void putMetadata(MFile file, String key, byte[] value) {
     if (mm == null) initMM();
-    mm.put(file.getPath()+"#"+key, value);
+    if (mm != null) mm.put(file.getPath()+"#"+key, value);
   }
 
   @Override
   public byte[] getMetadata(MFile file, String key) {
     if (mm == null) initMM();
-    return mm.getBytes(file.getPath()+"#"+key);
+    return (mm == null) ? null : mm.getBytes(file.getPath()+"#"+key);
   }
 
 

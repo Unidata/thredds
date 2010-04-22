@@ -46,6 +46,7 @@ import ucar.nc2.units.DateFormatter;
  * MetadataManager using Berkeley DB Java Edition.
  * Single environment. Each collection is a "database".
  * Each database has a set of key/value pairs.
+ * default root dir is ${user.home}/.unidata/bdb
  *
  * @author caron
  * @since Aug 20, 2008
@@ -54,11 +55,24 @@ public class MetadataManager {
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(MetadataManager.class);
   private static final String UTF8 = "UTF-8";
 
-  private static String root = "/machine/temp/bdb/";
+  private static String root = null;
   private static Environment myEnv = null;
   private static List<Database> openDatabases = new ArrayList<Database>();
   private static boolean readOnly;
   private static boolean debug = false;
+
+  static {
+    String home = System.getProperty("user.home");
+
+    if (home == null)
+      home = System.getProperty("user.dir");
+
+    if (home == null)
+      home = ".";
+
+    root = home + "/.unidata/bdb/";
+  }
+
 
   static public void setCacheDirectory( String dir ) {
     root = dir;
@@ -83,6 +97,8 @@ public class MetadataManager {
 
     try {
       myEnv = new Environment(dir, myEnvConfig); // LOOK may want to try multiple Environments
+      logger.info("MetadataManager opened bdb in directory=" + dir);
+
     } catch (com.sleepycat.je.EnvironmentLockedException e) {
       // try read-only
       readOnly = true;
@@ -138,7 +154,7 @@ public class MetadataManager {
         // Finally, close the store and environment.
         myEnv.close();
       } catch (DatabaseException dbe) {
-        System.err.println("Error closing MyDbEnv: " + dbe.toString());
+        logger.error("Error closing MyDbEnv: " + dbe.toString());
         System.exit(-1);
       }
     }

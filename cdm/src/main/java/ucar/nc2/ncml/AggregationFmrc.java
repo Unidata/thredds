@@ -57,7 +57,7 @@ public class AggregationFmrc extends AggregationOuterDimension {
 
   private boolean debug = false;
   private Fmrc fmrc;
-  private String runMatcher, forecastMatcher, offsetMatcher; // scanFmrc
+  private String runMatcher; // , forecastMatcher, offsetMatcher; // scanFmrc
 
   public AggregationFmrc(NetcdfDataset ncd, String dimName, String recheckS) {
     super(ncd, dimName, Type.forecastModelRunCollection, recheckS);
@@ -68,15 +68,19 @@ public class AggregationFmrc extends AggregationOuterDimension {
 
     // only one
     this.runMatcher = runMatcher;
-    this.forecastMatcher = forecastMatcher;
-    this.offsetMatcher = offsetMatcher;
+    //this.forecastMatcher = forecastMatcher;
+    //this.offsetMatcher = offsetMatcher;
 
     // this.enhance = NetcdfDataset.getDefaultEnhanceMode();
     isDate = true;
 
     //DatasetScanner d = new DatasetScanner(null, dirName, suffix, regexpPatternString, subdirs, olderThan);
     //datasetManager.addDirectoryScan(d);
-    datasetManager.addDirectoryScan(dirName, suffix, regexpPatternString, subdirs, olderThan, null, null);
+    datasetManager.addDirectoryScan(dirName, suffix, regexpPatternString, subdirs, olderThan, null);
+    if (runMatcher != null) {
+      DateExtractor dateExtractor = new DateExtractorFromName(runMatcher, false);
+      datasetManager.setDateExtractor(dateExtractor);
+    }
   }
 
   @Override
@@ -92,10 +96,10 @@ public class AggregationFmrc extends AggregationOuterDimension {
 
     if (runMatcher != null)
       f.format("  runMatcher=%s%n", runMatcher);
-    if (forecastMatcher != null)
+   /*  if (forecastMatcher != null)
       f.format("  forecastMatcher=%s%n", forecastMatcher);
     if (offsetMatcher != null)
-      f.format("  offsetMatcher=%s%n", offsetMatcher);
+      f.format("  offsetMatcher=%s%n", offsetMatcher); */
   }
 
   @Override
@@ -105,7 +109,7 @@ public class AggregationFmrc extends AggregationOuterDimension {
       dateExtractor = new DateExtractorFromName(runMatcher, false); // uses path
     if (dateExtractor == null && dateFormatMark != null)
       dateExtractor = new DateExtractorFromName(dateFormatMark, true);
-    fmrc = new Fmrc(datasetManager, dateExtractor);
+    fmrc = new Fmrc(datasetManager);
 
     // fill in the ncDataset
     fmrc.getDataset2D( ncDataset);

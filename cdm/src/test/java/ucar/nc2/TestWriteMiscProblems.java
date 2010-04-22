@@ -254,7 +254,7 @@ public class TestWriteMiscProblems extends TestCase {
 
   }
 
-  public void testWarning() throws IOException {
+  public void utestWarning() throws IOException {
     String org = "C:/tmp/example.nc";
     NetcdfDataset dds = NetcdfDataset.openDataset(org);
     FileWriter.writeToFile(dds, "C:/tmp/testOut.nc", true);

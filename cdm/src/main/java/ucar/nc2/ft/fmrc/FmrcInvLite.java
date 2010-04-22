@@ -36,6 +36,7 @@ import thredds.inventory.FeatureCollectionConfig;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.util.Misc;
 
+import java.io.FileNotFoundException;
 import java.util.*;
 
 /**
@@ -47,16 +48,17 @@ import java.util.*;
 public class FmrcInvLite implements java.io.Serializable {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FmrcInvLite.class);
 
-  String collectionName;
-  Date base;
-  int nruns;
-  double[] runOffset; // run time in offset hours since base
-  double[] forecastOffset; // all forecast times in offset hours since base, for "constant forecast" datasets
-  double[] offsets; // all the offset values, for "constant offset" datasets
+  // public for debugging
+  public String collectionName;
+  public Date base;
+  public int nruns;
+  public double[] runOffset; // run time in offset hours since base
+  public double[] forecastOffset; // all forecast times in offset hours since base, for "constant forecast" datasets
+  public double[] offsets; // all the offset values, for "constant offset" datasets
 
-  List<String> locationList = new ArrayList<String>();
-  List<Gridset> gridSets = new ArrayList<Gridset>();
-  List<GridInventory> invList = new ArrayList<GridInventory>(); // share these, they are expensive!
+  public List<String> locationList = new ArrayList<String>();
+  public List<Gridset> gridSets = new ArrayList<Gridset>();
+  public List<GridInventory> invList = new ArrayList<GridInventory>(); // share these, they are expensive!
 
   public FmrcInvLite(FmrcInv fmrcInv) {
     this.collectionName = fmrcInv.getName();
@@ -91,21 +93,21 @@ public class FmrcInvLite implements java.io.Serializable {
 
   }
 
-  List<Date> getRunDates() {
+  public List<Date> getRunDates() {
     List<Date> result = new ArrayList<Date>(runOffset.length);
     for (double off : runOffset)
       result.add(FmrcInv.makeOffsetDate(base, off));
     return result;
   }
 
-  List<Date> getForecastDates() {
+  public List<Date> getForecastDates() {
     List<Date> result = new ArrayList<Date>(forecastOffset.length);
     for (double f : forecastOffset)
       result.add(FmrcInv.makeOffsetDate(base, f));
     return result;
   }
 
-  double[] getForecastOffsets() {
+  public double[] getForecastOffsets() {
     if (offsets == null) {
       TreeSet<Double> tree = new TreeSet<Double>();
       for (Gridset gridset : gridSets) {
@@ -127,9 +129,65 @@ public class FmrcInvLite implements java.io.Serializable {
     return offsets;
   }
 
+  public Gridset.Grid findGrid(String gridName) {
+    for (Gridset gridset : gridSets) {
+      for (Gridset.Grid grid : gridset.grids) {
+        if (gridName.equals(grid.name)) return grid;
+      }
+    }
+    return null;
+  }
+
+  public void showGridInfo(String gridName, Formatter out) {
+    Gridset.Grid grid = findGrid(gridName);
+    if (grid == null ) {
+      out.format("Cant find grid = %s%n", gridName);
+      return;
+    }
+    BestDatasetInventory best = new BestDatasetInventory( null);
+
+    Gridset gridset = grid.getGridset();
+    out.format("%n=======================================%nFmrcLite%n");
+
+    // show the 2D    
+    out.format("run   %n");
+    for (int i=0; i< gridset.noffsets; i++)
+      out.format(" %6d", i);
+    out.format("%n");
+    for (int run = 0; run < nruns; run++) {
+      out.format("%6d", run);
+      for (int time = 0; time < gridset.noffsets; time++) {
+        out.format(" %6.0f", gridset.getTimeCoord(run, time));
+      }
+      out.format("%n");
+    }
+    out.format("%n");
+
+
+    List<TimeInv> bestInv = gridset.timeCoordMap.get("Best");
+    if (bestInv == null) bestInv = gridset.makeBest(null);
+    double[] coords = best.getTimeCoords( gridset);
+
+    // show the best
+    out.format("            ");
+    for (int i=0; i< coords.length; i++)
+      out.format(" %6d", i);
+    out.format("%n");
+
+    out.format("best coords=");
+    for (TimeInv inv : bestInv)
+      out.format(" %6.0f", inv.offset);
+    out.format("%n");
+
+    out.format("best run   =");
+    for (TimeInv inv : bestInv)
+      out.format(" %6d", inv.runIdx);
+    out.format("%n");
+  }
+
   // group of Grids with the same time coordinate
 
-  class Gridset implements java.io.Serializable {
+  public class Gridset implements java.io.Serializable {
     String gridsetName;
     List<Grid> grids = new ArrayList<Grid>();
     int noffsets;
@@ -214,6 +272,7 @@ public class FmrcInvLite implements java.io.Serializable {
       for (int run = 0; run < nruns; run++) {
         for (int time = 0; time < noffsets; time++) {
           double baseOffset = timeOffset[run * noffsets + time];
+          if (Double.isNaN(baseOffset)) continue;
           if (bd != null && baseOffset < bd.greaterThan) continue; // skip it
           map.put(baseOffset, new TimeInv(run, time, baseOffset)); // later ones override
         }
@@ -242,7 +301,9 @@ public class FmrcInvLite implements java.io.Serializable {
       List<TimeInv> result = new ArrayList<TimeInv>(noffsets);
       for (int run = 0; run < nruns; run++) {
         for (int time = 0; time < noffsets; time++) { // search for all offsets that match - presumably 0 or 1 per run
-          if (Misc.closeEnough(timeOffset[run * noffsets + time], offset))
+          double baseOffset = timeOffset[run * noffsets + time];
+          if (Double.isNaN(baseOffset)) continue;
+          if (Misc.closeEnough(baseOffset, offset))
             result.add(new TimeInv(run, time, offset - timeOffset[run * noffsets])); // use offset from start of run
         }
       }
@@ -255,6 +316,7 @@ public class FmrcInvLite implements java.io.Serializable {
       for (int run = 0; run < nruns; run++) {
         for (int time = 0; time < noffsets; time++) { // search for all offsets that match - presumably 0 or 1 per run
           double baseOffset = getTimeCoord(run, time);
+          if (Double.isNaN(baseOffset)) continue;
           double runOffset = baseOffset - getTimeCoord(run, 0);
           if (!Double.isNaN(baseOffset) && Misc.closeEnough(runOffset, offset))
             result.add(new TimeInv(run, time, baseOffset));
@@ -304,7 +366,7 @@ public class FmrcInvLite implements java.io.Serializable {
     }
   }
 
-  class GridInventory implements java.io.Serializable {
+  public class GridInventory implements java.io.Serializable {
     int noffsets;
     int[] location;  // (run,time) file location (index+1 into locationList, 0 = missing)
     int[] invIndex;  // (run,time) time index in file
@@ -402,15 +464,15 @@ public class FmrcInvLite implements java.io.Serializable {
     return new BestDatasetInventory(bd);
   }
 
-  TimeInventory makeRunTimeDatasetInventory(Date run) {
+  TimeInventory makeRunTimeDatasetInventory(Date run) throws FileNotFoundException {
     return new RunTimeDatasetInventory(run);
   }
 
-  TimeInventory getConstantForecastDataset(Date time) {
+  TimeInventory getConstantForecastDataset(Date time) throws FileNotFoundException {
     return new ConstantForecastDataset(time);
   }
 
-  TimeInventory getConstantOffsetDataset(double hour) {
+  TimeInventory getConstantOffsetDataset(double hour) throws FileNotFoundException {
     return new ConstantOffsetDataset(hour);
   }
 
@@ -492,7 +554,7 @@ public class FmrcInvLite implements java.io.Serializable {
   class RunTimeDatasetInventory implements TimeInventory {
     int runIdx = -1;
 
-    RunTimeDatasetInventory(Date run) {
+    RunTimeDatasetInventory(Date run) throws FileNotFoundException {
       double offset = FmrcInv.getOffsetInHours(base, run);
       for (int i = 0; i < runOffset.length; i++) {
         if (Misc.closeEnough(runOffset[i], offset)) {
@@ -501,7 +563,7 @@ public class FmrcInvLite implements java.io.Serializable {
         }
       }
       if (runIdx < 0)
-        throw new IllegalArgumentException("No run date of " + run);
+        throw new FileNotFoundException("No run date of " + run);
     }
 
     @Override
@@ -567,8 +629,13 @@ public class FmrcInvLite implements java.io.Serializable {
   class ConstantForecastDataset implements TimeInventory {
     double offset;
 
-    ConstantForecastDataset(Date time) {
+    ConstantForecastDataset(Date time) throws FileNotFoundException {
       this.offset = FmrcInv.getOffsetInHours(base, time);
+      for (Date d : getForecastDates())
+        if (d.equals(time))
+          return; // ok
+
+      throw new FileNotFoundException("No forecast date of " + time);  // we dont got it
     }
 
     @Override
@@ -633,7 +700,7 @@ public class FmrcInvLite implements java.io.Serializable {
   class ConstantOffsetDataset implements TimeInventory {
     double offset;
 
-    ConstantOffsetDataset(double offset) {
+    ConstantOffsetDataset(double offset) throws FileNotFoundException {
       this.offset = offset;
       boolean ok = false;
       double[] offsets = getForecastOffsets();
@@ -641,7 +708,7 @@ public class FmrcInvLite implements java.io.Serializable {
         if (Misc.closeEnough(offsets[i], offset)) ok = true;
 
       if (!ok)
-        throw new IllegalArgumentException("No constant offset dataset for = " + offset);
+        throw new FileNotFoundException("No constant offset dataset for = " + offset);
     }
 
     @Override

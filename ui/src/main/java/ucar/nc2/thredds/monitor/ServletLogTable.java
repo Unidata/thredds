@@ -421,13 +421,13 @@ public class ServletLogTable extends JPanel {
       if (current == null) {
         current = new Uptime(log);
         uptimeList.add(current);
-
-      } else if (log.getReqTime() < last.getReqTime()) {
+      }
+     /* } else if (log.getReqTime() < last.getReqTime()) {      // no longer sorted by reqTime 4/22/10
         current.finish(last, undoneList);
         completeMerge.addAll(current.mergeList);
         current = new Uptime(log);
         uptimeList.add(current);
-      }
+      }  */
 
       last = log;
       current.add(log, miscList);

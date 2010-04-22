@@ -80,6 +80,7 @@ public class Fmrc2Panel extends JPanel {
   // private String collectionSpec;
   private Fmrc fmrc;
   private FmrcInv fmrcInv;
+  private FmrcInvLite lite;
 
   private Formatter errlog, debug;
   private DateFormatter df = new DateFormatter();
@@ -225,6 +226,7 @@ public class Fmrc2Panel extends JPanel {
 
     debug = new Formatter();
     fmrcInv = fmrc.getFmrcInv( debug);
+    lite = new FmrcInvLite(fmrcInv);
 
     java.util.List<FmrBean> beanList = new ArrayList<FmrBean>();
     for (FmrInv fmr : fmrcInv.getFmrList()) {
@@ -496,6 +498,8 @@ public class Fmrc2Panel extends JPanel {
     out.format("%n%3d counted inventory%n", count);
 
     fmrcInv.showBest(ugrid, out);
+
+    lite.showGridInfo(ugrid.getName(), out);
 
     infoTA.setText(out.toString());
     infoWindow.showIfNotIconified();

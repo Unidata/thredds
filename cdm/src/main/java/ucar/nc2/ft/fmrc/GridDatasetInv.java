@@ -134,7 +134,7 @@ public class GridDatasetInv {
       if (runTime == null)
         runTime = ncfile.findAttValueIgnoreCase(null, _Coordinate.ModelRunDate, null);
       if (runTime == null) {
-        log.error("GridDatasetInv missing rundate file=%s", location);
+        log.error("GridDatasetInv missing rundate in file=" + location);
         throw new IllegalArgumentException("File must have " + _Coordinate.ModelBaseDate + " or " + _Coordinate.ModelRunDate + " attribute ");
       }
       this.runDate = DateUnit.getStandardOrISO(runTime);

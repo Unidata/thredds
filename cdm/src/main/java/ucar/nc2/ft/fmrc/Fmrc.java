@@ -79,13 +79,12 @@ public class Fmrc {
     if (collection.startsWith(DatasetCollectionManager.CATALOG)) {
       String catUrl = collection.substring(DatasetCollectionManager.CATALOG.length());
       DatasetCollectionFromCatalog manager = new DatasetCollectionFromCatalog(catUrl, null);
-      return new Fmrc(manager, null);
+      return new Fmrc(manager);
 
     } else if (collection.endsWith(".ncml")) {
       NcmlCollectionReader ncmlCollection = NcmlCollectionReader.open(collection, errlog);
       if (ncmlCollection == null) return null;
-      DateExtractor de = ncmlCollection.getDateExtractor();
-      Fmrc fmrc = new Fmrc(ncmlCollection.getDatasetManager(), de);
+      Fmrc fmrc = new Fmrc(ncmlCollection.getDatasetManager());
       fmrc.setNcml(ncmlCollection.getNcmlOuter(), ncmlCollection.getNcmlInner());
       return fmrc;
     }
@@ -97,7 +96,7 @@ public class Fmrc {
     if (config.spec.startsWith(DatasetCollectionManager.CATALOG)) {
       String catUrl = config.spec.substring(DatasetCollectionManager.CATALOG.length());
       DatasetCollectionFromCatalog manager = new DatasetCollectionFromCatalog(catUrl, null);
-      return new Fmrc(manager, null);
+      return new Fmrc(manager);
     }
 
     return new Fmrc(config, errlog);
@@ -131,7 +130,7 @@ public class Fmrc {
   }
 
   // from AggregationFmrc
-  public Fmrc(CollectionManager manager, DateExtractor dateExtractor) {
+  public Fmrc(CollectionManager manager) {
     this.manager = manager;
     this.config = new FeatureCollectionConfig.Config();
   }

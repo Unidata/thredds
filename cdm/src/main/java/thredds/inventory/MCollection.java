@@ -45,7 +45,7 @@ public class MCollection {
   private final String dirName;
   private final boolean wantSubdirs;
   private final MFileFilter ff;
-  private final DateExtractor dateExtractor;
+  //private final DateExtractor dateExtractor;
   private final Object auxInfo;
 
   /**
@@ -54,20 +54,20 @@ public class MCollection {
    * @param dirName top directory name
    * @param wantSubdirs if want subdirectories
    * @param ff optional FilenameFilter (may be null) - applies only to non-directories
-   * @param dateExtractor optional DateExtractor (may be null) - applies only to non-directories
+   // * @param dateExtractor optional DateExtractor (may be null) - applies only to non-directories
    * @param auxInfo optional info added to each MFile
    */
-  public MCollection(String name, String dirName, boolean wantSubdirs, MFileFilter ff, DateExtractor dateExtractor, Object auxInfo) {
+  public MCollection(String name, String dirName, boolean wantSubdirs, MFileFilter ff, Object auxInfo) {
     this.name = name;
     this.dirName = dirName;
     this.wantSubdirs = wantSubdirs;
     this.ff = ff;
-    this.dateExtractor = dateExtractor;
+    //this.dateExtractor = dateExtractor;
     this.auxInfo = auxInfo;
   }
 
   public thredds.inventory.MCollection subdir(MFile child) {
-    return new MCollection( name+"/"+child.getName(), dirName+"/"+child.getName(), wantSubdirs, ff, dateExtractor, child.getAuxInfo());
+    return new MCollection( name+"/"+child.getName(), dirName+"/"+child.getName(), wantSubdirs, ff, child.getAuxInfo());
   }
 
   public String getName() {
@@ -86,9 +86,9 @@ public class MCollection {
     return ff;
   }
 
-  public DateExtractor getDateExtractor() {
+  /* public DateExtractor getDateExtractor() {
     return dateExtractor;
-  }
+  } */
 
   public boolean accept(MFile file) {
     return ((ff == null) || ff.accept(file));
@@ -102,7 +102,7 @@ public class MCollection {
         ", dirName='" + dirName + '\'' +
         ", wantSubdirs=" + wantSubdirs +
         ", ff=" + ff +
-        ", dateExtractor=" + dateExtractor +
+        // ", dateExtractor=" + dateExtractor +
         '}';
   }
 

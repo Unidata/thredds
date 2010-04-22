@@ -132,16 +132,17 @@ all the data that have the same forecast time. This kind of dataset has successi
 <ul>
   <li>horizontal coordinates must not change</li>
   <li>vertical coordinates must not change</li>
-  <li>times and variables can be spread out amongst files, although things are more efficient when all variable are together, and all forecasst hours arre together.</li>
+  <li>times and variables can be spread out among files, although things are more efficient when all variable are together, and all forecasst hours arre together.</li>
 </ul>
 <h3>Example catalog element:</h3>
-<pre>&lt;<strong>featureCollection</strong> <strong>name</strong>=&quot;NCEP-GFS-Alaska_191km&quot; <strong>featureType</strong>=&quot;FMRC&quot; <strong>path</strong>=&quot;fmrc/NCEP/GFS/Alaska_191km&quot;&gt;<br />
-
-   &lt;collection spec=&quot;/data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km/**/GFS_Alaska_191km_#yyyyMMdd_HHmm#.grib1&quot; 
-       recheckEvery=&quot;15 min&quot; olderThan=&quot;5 min&quot; /&gt;
-   &lt;update startup=&quot;true&quot; /&gt;
-<strong>  </strong>&lt;/featureCollection&gt;
-have</pre>
+<pre>&lt;featureCollection name=&quot;NCEP-NAM-Polar_90km&quot; featureType=&quot;FMRC&quot; harvest=&quot;true&quot; path=&quot;fmrc/NCEP/NAM/Polar_90km&quot;&gt;
+  &lt;collection spec=&quot;/data/ldm/pub/native/grid/NCEP/NAM/Polar_90km/NAM_Polar_90km_#yyyyMMdd_HHmm#.grib2&quot;
+          recheckAfter=&quot;15 min&quot;  olderThan=&quot;5 min&quot;/&gt;
+   &lt;update startup=&quot;true&quot; rescan=&quot;0 5 3 * * ? *&quot; /&gt;
+   &lt;protoDataset choice=&quot;Penultimate&quot; change=&quot;0 2 3 * * ? *&quot; /&gt;
+   &lt;fmrcConfig regularize=&quot;true&quot; datasetTypes=&quot;TwoD Best Files Runs ConstantForecasts ConstantOffsets&quot; /&gt;
+&lt;/featureCollection&gt;
+</pre>
 <p>If an fmrcConfig element is not present, the default is regularize= <em>false</em>, and  datasetTypes= &quot;<em>TwoD Best Files Run</em>s&quot;. Specifying your own fmrcConfig completely overrides the datasetTypes default.</p>
 <p>Note that for the case when a model run dataset is in a single file, it<em> </em> may be different than the same file as seen through the corresponding <em>Files</em> dataset, if <strong>regularize</strong> is on. In that case, the time coordinates will be regularized across all model run datasets in the collection.</p>
 <p>If an <em>ID</em> attribute is not specified on the <strong>featureCollection</strong>, the <em>path</em> attribute is used as the ID. This is a preferred idiom.</p>
@@ -215,7 +216,7 @@ have</pre>
 <p>&nbsp;</p>
 <hr width="100%" />
 <address>
-<img src="../../nc.gif" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated  April 16, 2010
+<img src="../../nc.gif" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated  April 20, 2010
 </address>
 <p>&nbsp; </p>
 </body>

@@ -48,7 +48,7 @@ import thredds.catalog.*;
 import javax.swing.*;
 
 /**
- * Run through the named catalogs, readd a random dataset from each collection
+ * Run through the named catalogs, read a random dataset from each collection
  * default is to run over the idd/models.xml catalog.
  */
 public class TestMotherlodeModels implements CatalogCrawler.Listener {
@@ -128,13 +128,15 @@ public class TestMotherlodeModels implements CatalogCrawler.Listener {
       Formatter log = new Formatter();
       ncd = tdataFactory.openDataset( ds,  false, null, log);
 
-      if (ncd == null)
+      if (ncd == null) {
         out.println("**** failed= "+ds.getName()+" err="+log);
-      else if (verbose)
+        countNoAccess++;
+      }  else if (verbose)
         out.println("   "+ds.getName()+" ok");
 
     } catch (IOException e) {
       out.println("**** failed= "+ds.getName()+" err= "+e.getMessage());
+      countNoOpen++;
     } finally {
       if (ncd != null) try {
         ncd.close();
@@ -148,8 +150,6 @@ public class TestMotherlodeModels implements CatalogCrawler.Listener {
   public static JPanel main;
   public static void main(String args[]) throws IOException {
     String server = "http://motherlode.ucar.edu:9080/thredds";
-    if (args.length > 0)
-      server = args[0];
 
     String catalog = "/idd/models.xml";
     String problemCat = // "/catalog/fmrc/NCEP/RUC2/CONUS_20km/surface/catalog.xml";

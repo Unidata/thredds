@@ -33,6 +33,7 @@
 
 package thredds.logs;
 
+import ucar.nc2.units.DateFormatter;
 import ucar.unidata.util.StringUtil;
 
 import java.io.BufferedReader;
@@ -57,7 +58,8 @@ public class LogReader {
     }
 
     public String getDate() {
-      return date;
+      DateFormatter formatTo = new DateFormatter();
+      return formatTo.toDateTimeStringISO(new Date(date));
     }
 
     public String getReferrer() {
@@ -84,18 +86,18 @@ public class LogReader {
       return (path == null) ? null : StringUtil.unescape(path);
     }
 
-    String ip, date, referrer, client;
+    String verb, referrer, client;
     int returnCode;
-    long msecs, sizeBytes;
-    String verb, path, http;
+    long date, msecs, sizeBytes;
+    String ip, path, http;
 
     public String toCSV() {
       //return ip + "," + date + ",\"" + verb + "\","+ path + "\"," + returnCode + "," + sizeBytes + ",\"" + referrer + "\",\"" + client + "\"," + msecs;
-      return ip + "," + date + "," + verb + ",\"" + getPath() + "\"," + returnCode + "," + sizeBytes + ",\"" + referrer + "\",\"" + client + "\"," + msecs;
+      return ip + "," + getDate() + "," + verb + ",\"" + getPath() + "\"," + returnCode + "," + sizeBytes + ",\"" + referrer + "\",\"" + client + "\"," + msecs;
     }
 
     public String toString() {
-      return ip + " [" + date + "] " + verb + " " + getPath() + " " + http + " " + returnCode + " " + sizeBytes + " " + referrer + " " + client + " " + msecs;
+      return ip + " [" + getDate() + "] " + verb + " " + getPath() + " " + http + " " + returnCode + " " + sizeBytes + " " + referrer + " " + client + " " + msecs;
     }
 
   }

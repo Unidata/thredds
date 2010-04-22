@@ -32,6 +32,8 @@
  */
 package ucar.nc2.ncml;
 
+import thredds.inventory.DateExtractor;
+import thredds.inventory.DateExtractorFromName;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.units.DateFormatter;
@@ -215,15 +217,15 @@ public abstract class Aggregation {
           String regexpPatternString, String dateFormatMark, Set<NetcdfDataset.Enhance> enhanceMode, String subdirs, String olderThan) {
     this.dateFormatMark = dateFormatMark;
 
+    datasetManager.addDirectoryScan(dirName, suffix, regexpPatternString, subdirs, olderThan, enhanceMode);
+
     if (dateFormatMark != null) {
       isDate = true;
       if (type == Type.joinExisting) type = Type.joinExistingOne; // tricky
+      DateExtractor dateExtractor = (dateFormatMark == null) ? null : new DateExtractorFromName(dateFormatMark, true);
+      datasetManager.setDateExtractor(dateExtractor);
     }
 
-    //DatasetScanner2  d = new DatasetScanner(crawlableDatasetElement, dirName, suffix, regexpPatternString, subdirs, olderThan);
-    //datasetManager.addDirectoryScan(d);
-    // String dirName, String suffix, String regexpPatternString, String subdirsS, String olderS, String dateFormatString)
-    datasetManager.addDirectoryScan(dirName, suffix, regexpPatternString, subdirs, olderThan, dateFormatMark, enhanceMode);
  }
 
   public void addCollection(String spec, String olderThan) throws IOException {

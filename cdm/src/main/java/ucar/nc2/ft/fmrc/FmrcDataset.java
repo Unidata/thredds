@@ -216,68 +216,71 @@ class FmrcDataset {
 
     HashMap<String, NetcdfDataset> openFilesProto = new HashMap<String, NetcdfDataset>();
 
-    // create the union of all objects in that run
-    // this covers the case where the variables are split across files
-    Set<GridDatasetInv> files = proto.getFiles();
-    if (logger.isDebugEnabled()) logger.debug("FmrcDataset: proto= " + proto.getName()+" "+ proto.getRunDate()+" collection= "+config.spec);
-    for (GridDatasetInv file : files) {
-      NetcdfDataset ncfile = open(file.getLocation(), openFilesProto);
-      transferGroup(ncfile.getRootGroup(), result.getRootGroup(), result);
-      if (logger.isDebugEnabled()) logger.debug("FmrcDataset: proto dataset= " + file.getLocation());
-    }
-
-    // some additional global attributes
-    Group root = result.getRootGroup();
-    root.addAttribute(new Attribute("Conventions", "CF-1.4, " + _Coordinate.Convention));
-    root.addAttribute(new Attribute("cdm_data_type", FeatureType.GRID.toString()));
-    root.addAttribute(new Attribute("CF:feature_type", FeatureType.GRID.toString()));
-
-    // remove some attributes that can cause trouble
-    root.remove(root.findAttribute(_Coordinate.ModelRunDate));
-    root.remove(root.findAttribute("location"));
-
-    // protoList = new ArrayList<String>();
-    // these are the non-agg variables - store data or ProxyReader in proto
-    List<Variable> copyList = new ArrayList<Variable>(root.getVariables()); // use copy since we may be removing some variables
-    for (Variable v : copyList) {
-      // see if its a non-agg variable
-      FmrcInv.UberGrid grid = fmrcInv.findUberGrid(v.getName());
-      if (grid == null) { // only non-agg vars need to be cached
-        Variable orgV = (Variable) v.getSPobject();
-
-        // see if its a time coordinate
-        if (orgV instanceof CoordinateAxis) {
-          CoordinateAxis axis = (CoordinateAxis) orgV;
-          AxisType type = axis.getAxisType();
-          if (type != null && (type == AxisType.Time || type == AxisType.RunTime)) {
-            root.removeVariable(v.getShortName());
-            v.setSPobject(null); // clear the reference to orgV
-            continue;
-          }
-        }
-        
-        v.setCachedData(orgV.read()); // read from original - store in proto
-
-        // not implemented yet
-        /* if (config.protoConfig.cacheAll || v.isCaching() || v.isCoordinateVariable()) { // want to cache
-          v.setCachedData(orgV.read()); // read from original - store in proto
-        } else {
-          String location = orgV.getParentGroup().getNetcdfFile().getLocation(); // hmmmmm
-          v.setProxyReader(new DatasetProxyReader(location));  // keep track of original file
-          protoList.add(location);
-        } */
+    try {
+      // create the union of all objects in that run
+      // this covers the case where the variables are split across files
+      Set<GridDatasetInv> files = proto.getFiles();
+      if (logger.isDebugEnabled())
+        logger.debug("FmrcDataset: proto= " + proto.getName() + " " + proto.getRunDate() + " collection= " + config.spec);
+      for (GridDatasetInv file : files) {
+        NetcdfDataset ncfile = open(file.getLocation(), openFilesProto);
+        transferGroup(ncfile.getRootGroup(), result.getRootGroup(), result);
+        if (logger.isDebugEnabled()) logger.debug("FmrcDataset: proto dataset= " + file.getLocation());
       }
 
-      v.setSPobject(null); // clear the reference to orgV for all of proto
-      v.removeAttribute(_Coordinate.Axes); // remove more troublesome attributes
+      // some additional global attributes
+      Group root = result.getRootGroup();
+      root.addAttribute(new Attribute("Conventions", "CF-1.4, " + _Coordinate.Convention));
+      root.addAttribute(new Attribute("cdm_data_type", FeatureType.GRID.toString()));
+      root.addAttribute(new Attribute("CF:feature_type", FeatureType.GRID.toString()));
+
+      // remove some attributes that can cause trouble
+      root.remove(root.findAttribute(_Coordinate.ModelRunDate));
+      root.remove(root.findAttribute("location"));
+
+      // protoList = new ArrayList<String>();
+      // these are the non-agg variables - store data or ProxyReader in proto
+      List<Variable> copyList = new ArrayList<Variable>(root.getVariables()); // use copy since we may be removing some variables
+      for (Variable v : copyList) {
+        // see if its a non-agg variable
+        FmrcInv.UberGrid grid = fmrcInv.findUberGrid(v.getName());
+        if (grid == null) { // only non-agg vars need to be cached
+          Variable orgV = (Variable) v.getSPobject();
+
+          // see if its a time coordinate
+          if (orgV instanceof CoordinateAxis) {
+            CoordinateAxis axis = (CoordinateAxis) orgV;
+            AxisType type = axis.getAxisType();
+            if (type != null && (type == AxisType.Time || type == AxisType.RunTime)) {
+              root.removeVariable(v.getShortName());
+              v.setSPobject(null); // clear the reference to orgV
+              continue;
+            }
+          }
+
+          v.setCachedData(orgV.read()); // read from original - store in proto
+
+          // not implemented yet
+          /* if (config.protoConfig.cacheAll || v.isCaching() || v.isCoordinateVariable()) { // want to cache
+           v.setCachedData(orgV.read()); // read from original - store in proto
+         } else {
+           String location = orgV.getParentGroup().getNetcdfFile().getLocation(); // hmmmmm
+           v.setProxyReader(new DatasetProxyReader(location));  // keep track of original file
+           protoList.add(location);
+         } */
+        }
+
+        v.setSPobject(null); // clear the reference to orgV for all of proto
+        v.removeAttribute(_Coordinate.Axes); // remove more troublesome attributes
+      }
+
+      result.finish();
+      return result;
+
+    } finally {
+      // data is read and cached, can close fiels now
+      closeAll(openFilesProto);
     }
-
-    result.finish();
-
-    // data is read and cached, can close fiels now
-    closeAll(openFilesProto);
-
-    return result;
   }
 
   // transfer the objects in src group to the target group, unless that name already exists
@@ -586,45 +589,48 @@ class FmrcDataset {
 
       // keep track of open file - must be local variable for thread safety
       HashMap<String, NetcdfDataset> openFilesRead = new HashMap<String, NetcdfDataset>();
+      try {
 
-      // iterate over the desired runs
-      Range.Iterator runIter = runRange.getIterator();
-      while (runIter.hasNext()) {
-        int runIdx = runIter.next();
-        //Date runDate = vstate.runTimes.get(runIdx);
+        // iterate over the desired runs
+        Range.Iterator runIter = runRange.getIterator();
+        while (runIter.hasNext()) {
+          int runIdx = runIter.next();
+          //Date runDate = vstate.runTimes.get(runIdx);
 
-        // iterate over the desired forecast times
-        Range.Iterator timeIter = timeRange.getIterator();
-        while (timeIter.hasNext()) {
-          int timeIdx = timeIter.next();
-          Array result = null;
+          // iterate over the desired forecast times
+          Range.Iterator timeIter = timeRange.getIterator();
+          while (timeIter.hasNext()) {
+            int timeIdx = timeIter.next();
+            Array result = null;
 
-          // find the inventory for this grid, runtime, and hour
-          TimeInventory.Instance timeInv =  gridLite.getInstance(runIdx, timeIdx);
-          if (timeInv != null) {
-            if (debugRead) System.out.printf("HIT %d %d ", runIdx, timeIdx);
-            result = read(timeInv, gridLite.name, innerSection, openFilesRead); // may return null
-            result = MAMath.convert(result, dtype); // just in case it need to be converted
+            // find the inventory for this grid, runtime, and hour
+            TimeInventory.Instance timeInv = gridLite.getInstance(runIdx, timeIdx);
+            if (timeInv != null) {
+              if (debugRead) System.out.printf("HIT %d %d ", runIdx, timeIdx);
+              result = read(timeInv, gridLite.name, innerSection, openFilesRead); // may return null
+              result = MAMath.convert(result, dtype); // just in case it need to be converted
+            }
+
+            // missing data
+            if (result == null) {
+              int[] shape = new Section(innerSection).getShape();
+              result = ((VariableDS) mainv).getMissingDataArray(shape); // fill with missing values
+              if (debugRead) System.out.printf("MISS %d %d ", runIdx, timeIdx);
+            }
+
+            if (debugRead)
+              System.out.printf("%d %d reallyRead %s %d bytes start at %d total size is %d%n", runIdx, timeIdx, mainv.getName(), result.getSize(), destPos, allData.getSize());
+
+            Array.arraycopy(result, 0, allData, destPos, (int) result.getSize());
+            destPos += result.getSize();
           }
-
-          // missing data
-          if (result == null) {
-            int[] shape = new Section(innerSection).getShape();
-            result = ((VariableDS) mainv).getMissingDataArray(shape); // fill with missing values
-            if (debugRead) System.out.printf("MISS %d %d ", runIdx, timeIdx);
-          }
-
-          if (debugRead)
-            System.out.printf("%d %d reallyRead %s %d bytes start at %d total size is %d%n", runIdx, timeIdx, mainv.getName(), result.getSize(), destPos, allData.getSize());
-
-          Array.arraycopy(result, 0, allData, destPos, (int) result.getSize());
-          destPos += result.getSize();
         }
-      }
+        return allData;
 
-      // close any files used during this operation
-      closeAll(openFilesRead);
-      return allData;
+      } finally {
+        // close any files used during this operation
+        closeAll(openFilesRead);
+      }
     }
 
   }
@@ -819,51 +825,57 @@ class FmrcDataset {
     public Array reallyRead(Variable mainv, Section section, CancelTask cancelTask) throws IOException, InvalidRangeException {
       Vstate1D vstate = (Vstate1D) mainv.getSPobject();
 
-      // read the original type - if its been promoted to a new type, the conversion happens after this read
-      DataType dtype = (mainv instanceof VariableDS) ? ((VariableDS) mainv).getOriginalDataType() : mainv.getDataType();
+     // read the original type - if its been promoted to a new type, the conversion happens after this read
+     DataType dtype = (mainv instanceof VariableDS) ? ((VariableDS) mainv).getOriginalDataType() : mainv.getDataType();
 
-      Array allData = Array.factory(dtype, section.getShape());
-      int destPos = 0;
+     Array allData = Array.factory(dtype, section.getShape());
+     int destPos = 0;
 
-      // assumes the first dimension is time: LOOK: what about ensemble ??
-      List<Range> ranges = section.getRanges();
-      Range timeRange = ranges.get(0);
-      List<Range> innerSection = ranges.subList(1, ranges.size());
+     // assumes the first dimension is time: LOOK: what about ensemble ??
+     List<Range> ranges = section.getRanges();
+     Range timeRange = ranges.get(0);
+     List<Range> innerSection = ranges.subList(1, ranges.size());
 
-      // keep track of open files - must be local variable for thread safety
+       // keep track of open files - must be local variable for thread safety
       HashMap<String, NetcdfDataset> openFilesRead = new HashMap<String, NetcdfDataset>();
 
-      // iterate over the desired forecast times
-      Range.Iterator timeIter = timeRange.getIterator();
-      while (timeIter.hasNext()) {
-        int timeIdx = timeIter.next();
-        Array result = null;
+      try {
 
-        // find the inventory for this grid, runtime, and hour
-        TimeInventory.Instance timeInv =  vstate.timeInv.getInstance(vstate.gridLite, timeIdx);
-        if (timeInv.getDatasetLocation() != null) {
-          if (debugRead) System.out.printf("HIT %d ", timeIdx);
-          result = read(timeInv, mainv.getName(), innerSection, openFilesRead); // may return null
-          result = MAMath.convert(result, dtype); // just in case it need to be converted
+        // iterate over the desired forecast times
+        Range.Iterator timeIter = timeRange.getIterator();
+        while (timeIter.hasNext()) {
+          int timeIdx = timeIter.next();
+          Array result = null;
+
+          // find the inventory for this grid, runtime, and hour
+          TimeInventory.Instance timeInv =  vstate.timeInv.getInstance(vstate.gridLite, timeIdx);
+          if (timeInv == null)
+            logger.error("Missing Inventory timeInx="+timeIdx+ " for "+ mainv.getName()+" in "+state.lite.collectionName);
+          if (timeInv.getDatasetLocation() != null) {
+            if (debugRead) System.out.printf("HIT %d ", timeIdx);
+            result = read(timeInv, mainv.getName(), innerSection, openFilesRead); // may return null
+            result = MAMath.convert(result, dtype); // just in case it need to be converted
+          }
+
+          // may have missing data
+          if (result == null) {
+            int[] shape = new Section(innerSection).getShape();
+            result = ((VariableDS) mainv).getMissingDataArray(shape); // fill with missing values
+            if (debugRead) System.out.printf("MISS %d ", timeIdx);
+          }
+
+          if (debugRead)
+            System.out.printf("%d reallyRead %s %d bytes start at %d total size is %d%n", timeIdx, mainv.getName(), result.getSize(), destPos, allData.getSize());
+
+          Array.arraycopy(result, 0, allData, destPos, (int) result.getSize());
+          destPos += result.getSize();
         }
+        return allData;
 
-        // may have missing data
-        if (result == null) {
-          int[] shape = new Section(innerSection).getShape();
-          result = ((VariableDS) mainv).getMissingDataArray(shape); // fill with missing values
-          if (debugRead) System.out.printf("MISS %d ", timeIdx);                                                   
-        }
-
-        if (debugRead)
-          System.out.printf("%d reallyRead %s %d bytes start at %d total size is %d%n", timeIdx, mainv.getName(), result.getSize(), destPos, allData.getSize());
-
-        Array.arraycopy(result, 0, allData, destPos, (int) result.getSize());
-        destPos += result.getSize();
+      } finally {
+        // close any files used during this operation
+        closeAll(openFilesRead);
       }
-
-      // close any files used during this operation
-      closeAll(openFilesRead);
-      return allData;
     }
 
   }
@@ -928,10 +940,10 @@ class FmrcDataset {
 
   private Array read(TimeInventory.Instance timeInstance, String varName, List<Range> innerSection, HashMap<String, NetcdfDataset> openFilesRead) throws IOException, InvalidRangeException {
     NetcdfFile ncfile = open(timeInstance.getDatasetLocation(), openFilesRead);
-    Variable v = ncfile.findVariable(varName);
+    if (ncfile == null) return null; // file might be deleted ??
 
-    // v could be missing, return missing data i think
-    if (v == null) return null;
+    Variable v = ncfile.findVariable(varName);
+    if (v == null) return null; // v could be missing, return missing data i think
 
     // assume time is first dimension LOOK: out of-order; ensemble; section different ??
     Range timeRange = new Range(timeInstance.getDatasetIndex(), timeInstance.getDatasetIndex());
@@ -940,10 +952,14 @@ class FmrcDataset {
     return v.read(s);
   }
 
-  // this is mutable
-  // private HashMap<String, NetcdfDataset> openFilesRead = new HashMap<String, NetcdfDataset>();
 
-  private NetcdfDataset open(String location, HashMap<String, NetcdfDataset> openFiles) throws IOException {
+  /**
+   * Open a file, keep track of open files
+   * @param location open this location
+   * @param openFiles keep track of open files
+   * @return file or null if not found
+   */
+  private NetcdfDataset open(String location, HashMap<String, NetcdfDataset> openFiles) { // } throws IOException {
     NetcdfDataset ncfile = null;
 
     if (openFiles != null) {
@@ -951,8 +967,14 @@ class FmrcDataset {
       if (ncfile != null) return ncfile;
     }
 
-    ncfile = NetcdfDataset.acquireDataset(location, null);  // default enhance
-    if (openFiles != null) {
+    try {
+      ncfile = NetcdfDataset.acquireDataset(location, null);  // default enhance
+    } catch (IOException ioe) {
+      logger.error("Cant open file ", ioe);  // file was deleted ??
+      return null;
+    }
+
+    if (openFiles != null && ncfile != null) {
       openFiles.put(location, ncfile);
     }
     return ncfile;
