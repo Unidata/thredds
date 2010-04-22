@@ -1044,7 +1044,7 @@
         <dataFormat>GRIB-2</dataFormat>
       </metadata>
 
-      <featureCollection name="NCEP-WW3-Global_30minute" featureType="FMRC" harvest="true" path="fmrc/NCEP/WW3/Global_30minute">
+      <featureCollection name="NCEP-WW3-Global" featureType="FMRC" harvest="true" path="fmrc/NCEP/WW3/Global">
          <metadata inherited="true">
            <dataFormat>GRIB-2</dataFormat>
            <documentation type="summary">
@@ -1054,7 +1054,7 @@
          </metadata>
 
          <collection
-             spec="/data/ldm/pub/native/grid/NCEP/WW3/Global_30minute/WW3_Global_30minute_#yyyyMMdd_HHmm#.grib2"
+             spec="/data/ldm/pub/native/grid/NCEP/WW3/Global/WW3_Global_#yyyyMMdd_HHmm#.grib2"
              recheckAfter="15 min"
              olderThan="5 min"/>
          <update startup="true" rescan="0 5 3 * * ? *" />
@@ -1062,7 +1062,7 @@
          <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
        </featureCollection>
 
-      <featureCollection name="NCEP-WW3-Alaskan_10minute" featureType="FMRC" harvest="true" path="fmrc/NCEP/WW3/Alaskan_10minute">
+      <featureCollection name="NCEP-WW3-Regional_Alaska" featureType="FMRC" harvest="true" path="fmrc/NCEP/WW3/Regional_Alaska">
          <metadata inherited="true">
            <dataFormat>GRIB-2</dataFormat>
            <documentation type="summary">
@@ -1072,7 +1072,7 @@
          </metadata>
 
          <collection
-             spec="/data/ldm/pub/native/grid/NCEP/WW3/Alaskan_10minute/WW3_Alaskan_10minute_#yyyyMMdd_HHmm#.grib2"
+             spec="/data/ldm/pub/native/grid/NCEP/WW3/Regional_Alaska/WW3_Regional_Alaska_#yyyyMMdd_HHmm#.grib2"
              recheckAfter="15 min"
              olderThan="5 min"/>
          <update startup="true" rescan="0 5 3 * * ? *" />
@@ -1080,7 +1080,7 @@
          <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
        </featureCollection>
 
-      <featureCollection name="NCEP-WW3-EasternPacific_10minute" featureType="FMRC" harvest="true" path="fmrc/NCEP/WW3/EasternPacific_10minute">
+      <featureCollection name="NCEP-WW3-Regional_Eastern_Pacific" featureType="FMRC" harvest="true" path="fmrc/NCEP/WW3/Regional_Eastern_Pacific">
          <metadata inherited="true">
            <dataFormat>GRIB-2</dataFormat>
            <documentation type="summary">
@@ -1090,7 +1090,7 @@
          </metadata>
 
          <collection
-             spec="/data/ldm/pub/native/grid/NCEP/WW3/EasternPacific_10minute/WW3_EasternPacific_10minute_#yyyyMMdd_HHmm#.grib2"
+             spec="/data/ldm/pub/native/grid/NCEP/WW3/Regional_Eastern_Pacific/WW3_Regional_Eastern_Pacific_#yyyyMMdd_HHmm#.grib2"
              recheckAfter="15 min"
              olderThan="5 min"/>
          <update startup="true" rescan="0 5 3 * * ? *" />
@@ -1098,7 +1098,7 @@
          <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
        </featureCollection>
 
-      <featureCollection name="NCEP-WW3-Atlantic_10minute" featureType="FMRC" harvest="true" path="fmrc/NCEP/WW3/Atlantic_10minute">
+      <featureCollection name="NCEP-WW3-Regional_US_East_Coast" featureType="FMRC" harvest="true" path="fmrc/NCEP/WW3/Regional_US_East_Coast">
          <metadata inherited="true">
            <dataFormat>GRIB-2</dataFormat>
            <documentation type="summary">
@@ -1108,7 +1108,7 @@
          </metadata>
 
          <collection
-             spec="/data/ldm/pub/native/grid/NCEP/WW3/Atlantic_10minute/WW3_Atlantic_10minute_#yyyyMMdd_HHmm#.grib2"
+             spec="/data/ldm/pub/native/grid/NCEP/WW3/Regional_US_East_Coast/WW3_Regional_US_East_Coast_#yyyyMMdd_HHmm#.grib2"
              recheckAfter="15 min"
              olderThan="5 min"/>
          <update startup="true" rescan="0 5 3 * * ? *" />
@@ -1116,7 +1116,7 @@
          <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
        </featureCollection>
 
-      <featureCollection name="NCEP-WW3-WestCoast_10minute" featureType="FMRC" harvest="true" path="fmrc/NCEP/WW3/WestCoast_10minute">
+      <featureCollection name="NCEP-WW3-Regional_US_West_Coast" featureType="FMRC" harvest="true" path="fmrc/NCEP/WW3/Regional_US_West_Coast">
          <metadata inherited="true">
            <dataFormat>GRIB-2</dataFormat>
            <documentation type="summary">
@@ -1126,7 +1126,7 @@
          </metadata>
 
          <collection
-             spec="/data/ldm/pub/native/grid/NCEP/WW3/WestCoast_10minute/WW3_WestCoast_10minute_#yyyyMMdd_HHmm#.grib2"
+             spec="/data/ldm/pub/native/grid/NCEP/WW3/Regional_US_West_Coast/WW3_Regional_US_West_Coast_#yyyyMMdd_HHmm#.grib2"
              recheckAfter="15 min"
              olderThan="5 min"/>
          <update startup="true" rescan="0 5 3 * * ? *" />
@@ -1134,7 +1134,7 @@
          <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
        </featureCollection>
 
-      <featureCollection name="NCEP-WW3-Atlantic_4minute" featureType="FMRC" harvest="true" path="fmrc/NCEP/WW3/Atlantic_4minute">
+      <featureCollection name="NCEP-WW3-Coastal_US_East_Coast" featureType="FMRC" harvest="true" path="fmrc/NCEP/WW3/Coastal_US_East_Coast">
          <metadata inherited="true">
            <dataFormat>GRIB-2</dataFormat>
            <documentation type="summary">
@@ -1144,7 +1144,7 @@
          </metadata>
 
          <collection
-             spec="/data/ldm/pub/native/grid/NCEP/WW3/Atlantic_4minute/WW3_Atlantic_4minute_#yyyyMMdd_HHmm#.grib2"
+             spec="/data/ldm/pub/native/grid/NCEP/WW3/Coastal_US_East_Coast/WW3_Coastal_US_East_Coast_#yyyyMMdd_HHmm#.grib2"
              recheckAfter="15 min"
              olderThan="5 min"/>
          <update startup="true" rescan="0 5 3 * * ? *" />
@@ -1152,7 +1152,7 @@
          <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
        </featureCollection>
 
-      <featureCollection name="NCEP-WW3-WestCoast_4minute" featureType="FMRC" harvest="true" path="fmrc/NCEP/WW3/WestCoast_4minute">
+      <featureCollection name="NCEP-WW3-Coastal_US_West_Coast" featureType="FMRC" harvest="true" path="fmrc/NCEP/WW3/Coastal_US_West_Coast">
          <metadata inherited="true">
            <dataFormat>GRIB-2</dataFormat>
            <documentation type="summary">
@@ -1162,7 +1162,7 @@
          </metadata>
 
          <collection
-             spec="/data/ldm/pub/native/grid/NCEP/WW3/WestCoast_4minute/WW3_WestCoast_4minute_#yyyyMMdd_HHmm#.grib2"
+             spec="/data/ldm/pub/native/grid/NCEP/WW3/Coastal_US_West_Coast/WW3_Coastal_US_West_Coast_#yyyyMMdd_HHmm#.grib2"
              recheckAfter="15 min"
              olderThan="5 min"/>
          <update startup="true" rescan="0 5 3 * * ? *" />
@@ -1170,7 +1170,7 @@
          <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
        </featureCollection>
 
-      <featureCollection name="NCEP-WW3-Alaskan_4minute" featureType="FMRC" harvest="true" path="fmrc/NCEP/WW3/Alaskan_4minute">
+      <featureCollection name="NCEP-WW3-Coastal_Alaska" featureType="FMRC" harvest="true" path="fmrc/NCEP/WW3/Coastal_Alaska">
         <metadata inherited="true">
           <dataFormat>GRIB-2</dataFormat>
           <documentation type="summary">
@@ -1180,7 +1180,7 @@
         </metadata>
 
         <collection
-            spec="/data/ldm/pub/native/grid/NCEP/WW3/Alaskan_4minute/WW3_Alaskan_4minute_#yyyyMMdd_HHmm#.grib2"
+            spec="/data/ldm/pub/native/grid/NCEP/WW3/Coastal_Alaska/WW3_Coastal_Alaska_#yyyyMMdd_HHmm#.grib2"
             recheckAfter="15 min"
             olderThan="5 min"/>
         <update startup="true" rescan="0 5 3 * * ? *" />
