@@ -18,71 +18,204 @@
       <maximumStackSize value="32" />
       <properties />
     </buildFile>
+    <buildFile url="file://$PROJECT_DIR$/../../../unidataCommon/build.xml">
+      <additionalClassPath />
+      <antReference projectDefault="true" />
+      <customJdkName value="" />
+      <maximumHeapSize value="128" />
+      <maximumStackSize value="32" />
+      <properties />
+    </buildFile>
+    <buildFile url="file://$PROJECT_DIR$/../../../grib/build.xml">
+      <additionalClassPath />
+      <antReference projectDefault="true" />
+      <customJdkName value="" />
+      <maximumHeapSize value="128" />
+      <maximumStackSize value="2" />
+      <properties />
+    </buildFile>
   </component>
   <component name="ArtifactManager">
+    <artifact type="exploded-war" name="opendap:opendap exploded">
+      <root id="root">
+        <element id="javaee-facet-resources" facet="opendap/web/opendap" />
+        <element id="directory" name="WEB-INF">
+          <element id="directory" name="classes">
+            <element id="module-output" name="opendap" />
+          </element>
+        </element>
+      </root>
+    </artifact>
+    <artifact type="exploded-war" name="tds:dqcServletRedirect exploded">
+      <root id="root">
+        <element id="javaee-facet-resources" facet="tds/web/dqcServletRedirect" />
+        <element id="directory" name="META-INF">
+          <element id="file-copy" path="$PROJECT_DIR$/../../tds/src/main/webapp-dqcServletRedirect/META-INF/context.xml" />
+        </element>
+        <element id="directory" name="WEB-INF">
+          <element id="directory" name="classes">
+            <element id="module-output" name="tds" />
+            <element id="dir-copy" path="$PROJECT_DIR$/../../cdm/src/main/resources" />
+          </element>
+          <element id="directory" name="lib">
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/commons-logging-1.1.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/jdom.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/release/prefsAll.jar" />
+          </element>
+        </element>
+      </root>
+    </artifact>
+    <artifact type="exploded-war" name="tds:expThredds exploded">
+      <root id="root">
+        <element id="javaee-facet-resources" facet="tds/web/expThredds" />
+        <element id="directory" name="META-INF">
+          <element id="file-copy" path="$PROJECT_DIR$/../../tds/src/main/webapp-expThredds/META-INF/context.xml" />
+        </element>
+        <element id="directory" name="WEB-INF">
+          <element id="directory" name="classes">
+            <element id="module-output" name="cdm" />
+            <element id="module-output" name="tds" />
+            <element id="dir-copy" path="$PROJECT_DIR$/../../cdm/src/main/resources" />
+          </element>
+          <element id="directory" name="lib">
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/casclient-2.1.1.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/commons-codec-1.3.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/commons-logging-1.1.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/gnu-getopt-1.0.6.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/gnu-regexp-1.1.4.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/jdom.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/jpeg2000.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/release/prefsAll.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/release/visadNoDods.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/commons-fileupload-1.1.1.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/commons-httpclient-3.0.1.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/commons-io-1.2.jar" />
+          </element>
+        </element>
+      </root>
+    </artifact>
+    <artifact type="exploded-war" name="bufrTables:bufrTables exploded">
+      <output-path>$PROJECT_DIR$/../../bufrTables/target</output-path>
+      <root id="root">
+        <element id="javaee-facet-resources" facet="bufrTables/web/bufrTables" />
+        <element id="directory" name="WEB-INF">
+          <element id="directory" name="classes">
+            <element id="javaee-facet-classes" facet="bufrTables/web/bufrTables" />
+            <element id="module-output" name="cdm" />
+            <element id="module-output" name="common" />
+            <element id="dir-copy" path="$PROJECT_DIR$/../../cdm/src/main/resources" />
+          </element>
+          <element id="directory" name="lib">
+            <element id="library" level="project" name="Spring" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/commons-codec-1.3.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/commons-logging-1.1.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/jdom.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/commons-fileupload-1.2.1.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/commons-io-1.4.jar" />
+            <element id="library" level="project" name="Logging" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/commons-httpclient-3.1.jar" />
+          </element>
+        </element>
+      </root>
+    </artifact>
+    <artifact type="exploded-war" name="tds:CdmValidator exploded">
+      <output-path>$PROJECT_DIR$/../../tds/target/cdmvalidator</output-path>
+      <root id="root">
+        <element id="javaee-facet-resources" facet="tds/web/CdmValidator" />
+        <element id="directory" name="WEB-INF">
+          <element id="directory" name="classes">
+            <element id="module-output" name="cdm" />
+            <element id="module-output" name="common" />
+            <element id="module-output" name="tds" />
+            <element id="dir-copy" path="$PROJECT_DIR$/../../tds/src/main/webapp-cdmValidator/WEB-INF/classes" />
+            <element id="dir-copy" path="$PROJECT_DIR$/../../../grib/resources" />
+            <element id="dir-copy" path="$PROJECT_DIR$/../../cdm/src/main/resources" />
+          </element>
+          <element id="directory" name="lib">
+            <element id="library" level="module" name="JSTL" module-name="tds" />
+            <element id="library" level="module" name="Logging" module-name="tds" />
+            <element id="library" level="module" name="Spring" module-name="tds" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/release/bufrTables-1.5.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/commons-codec-1.3.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/commons-fileupload-1.2.1.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/commons-httpclient-3.1.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/commons-io-1.4.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/commons-logging-1.1.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/jdom.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/jpeg2000.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/release/prefsAll.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/release/visadNoDods.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/commons-lang-2.4.jar" />
+          </element>
+        </element>
+      </root>
+    </artifact>
     <artifact type="exploded-war" name="tds:tds exploded">
       <output-path>$PROJECT_DIR$/../../tds/runenv</output-path>
       <root id="root">
         <element id="javaee-facet-resources" facet="tds/web/tds" />
         <element id="directory" name="WEB-INF">
+          <element id="file-copy" path="$PROJECT_DIR$/../../tds/src/main/webapp/WEB-INF/log4j.xml" />
           <element id="directory" name="classes">
-            <element id="module-output" name="tds" />
             <element id="module-output" name="cdm" />
-            <element id="dir-copy" path="$PROJECT_DIR$/../../tds/src/main/webapp/WEB-INF/classes" />
-            <element id="dir-copy" path="$PROJECT_DIR$/../../cdm/src/main/resources" />
             <element id="module-output" name="common" />
-            <element id="module-output" name="unidataCommon" />
-            <element id="module-output" name="grib" />
+            <element id="module-output" name="tds" />
+            <element id="dir-copy" path="$PROJECT_DIR$/../../tds/src/main/webapp/WEB-INF/classes" />
             <element id="dir-copy" path="$PROJECT_DIR$/../../../grib/resources" />
+            <element id="dir-copy" path="$PROJECT_DIR$/../../cdm/src/main/resources" />
+            <element id="module-output" name="grib" />
+            <element id="module-output" name="unidataCommon" />
+            <element id="module-output" name="ncwms" />
           </element>
           <element id="directory" name="lib">
-            <element id="file-copy" path="$PROJECT_DIR$/../../lib/release/bufrTables-2.0.jar" />
-            <element id="file-copy" path="$PROJECT_DIR$/../../lib/release/prefsAll.jar" />
-            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/casclient-2.1.1.jar" />
-            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/commons-fileupload-1.2.1.jar" />
-            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/commons-io-1.4.jar" />
-            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/joda-time-1.6.jar" />
-            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/httpunit.jar" />
-            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/junit-4.5.jar" />
-            <element id="library" level="module" name="Logging" module-name="tds" />
-            <element id="library" level="module" name="Spring" module-name="tds" />
-            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/spring-test-2.5.jar" />
-            <element id="library" level="module" name="JSTL" module-name="tds" />
-            <element id="file-copy" path="$PROJECT_DIR$/../../lib/ncWMS/jcommon-1.0.8.jar" />
-            <element id="file-copy" path="$PROJECT_DIR$/../../lib/ncWMS/gt2-metadata-2.4.0.jar" />
-            <element id="file-copy" path="$PROJECT_DIR$/../../lib/ncWMS/standard.jar" />
-            <element id="file-copy" path="$PROJECT_DIR$/../../lib/ncWMS/jfreechart-1.0.4.jar" />
-            <element id="file-copy" path="$PROJECT_DIR$/../../lib/ncWMS/gt2-epsg-wkt-2.4.0.jar" />
-            <element id="file-copy" path="$PROJECT_DIR$/../../lib/ncWMS/jakarta-oro-2.0.8.jar" />
-            <element id="file-copy" path="$PROJECT_DIR$/../../lib/ncWMS/collections-generic-4.01.jar" />
-            <element id="file-copy" path="$PROJECT_DIR$/../../lib/ncWMS/geoapi-nogenerics-2.1.0.jar" />
-            <element id="file-copy" path="$PROJECT_DIR$/../../lib/ncWMS/jsr108-0.01.jar" />
-            <element id="file-copy" path="$PROJECT_DIR$/../../lib/ncWMS/h2.jar" />
-            <element id="file-copy" path="$PROJECT_DIR$/../../lib/ncWMS/backport-util-concurrent-3.0.jar" />
-            <element id="file-copy" path="$PROJECT_DIR$/../../lib/ncWMS/simple-xml-1.4.2.jar" />
-            <element id="file-copy" path="$PROJECT_DIR$/../../lib/ncWMS/json-taglib-0.4.1.jar" />
-            <element id="file-copy" path="$PROJECT_DIR$/../../lib/ncWMS/vecmath-1.3.1.jar" />
             <element id="file-copy" path="$PROJECT_DIR$/../../lib/ncWMS/acegi-security-1.0.4.jar" />
-            <element id="file-copy" path="$PROJECT_DIR$/../../lib/ncWMS/gt2-referencing-2.4.0.jar" />
-            <element id="library" level="project" name="catalina" />
-            <element id="file-copy" path="$PROJECT_DIR$/../../lib/release/grib-8.0.jar" />
-            <element id="file-copy" path="$PROJECT_DIR$/../../lib/release/opendap-2.1.jar" />
-            <element id="file-copy" path="$PROJECT_DIR$/../../lib/release/visadNoDods.jar" />
-            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/jdom.jar" />
-            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/commons-httpclient-3.1.jar" />
-            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/commons-logging-1.1.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/casclient-2.1.1.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/ncWMS/collections-generic-4.01.jar" />
             <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/commons-codec-1.3.jar" />
-            <element id="library" level="module" name="stax" module-name="cdm" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/commons-fileupload-1.2.1.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/commons-httpclient-3.1.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/commons-io-1.4.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/commons-logging-1.1.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/ncWMS/geoapi-nogenerics-2.1.0.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/gnu-getopt-1.0.6.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/gnu-regexp-1.1.4.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/ncWMS/gt2-epsg-wkt-2.4.0.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/ncWMS/gt2-metadata-2.4.0.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/ncWMS/gt2-referencing-2.4.0.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/ncWMS/h2.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/httpunit.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/ncWMS/jakarta-oro-2.0.8.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/ncWMS/jcommon-1.0.8.jar" />
             <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/jna.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/jpeg2000.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/ncWMS/json-taglib-0.4.1.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/ncWMS/jsr108-0.01.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/release/prefsAll.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/ncWMS/simple-xml-1.4.2.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/ncWMS/standard.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/ncWMS/vecmath-1.3.1.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/release/visadNoDods.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/joda-time-1.6.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/jdom.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/protobuf-java-2.1.0.jar" />
+            <element id="library" level="project" name="ehcache" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/release/bufrTables-2.0.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/junit-4.5.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/spring-test-2.5.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/ncWMS/jfreechart-1.0.4.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/ncWMS/backport-util-concurrent-3.0.jar" />
             <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/slf4j-api-1.5.6.jar" />
             <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/slf4j-jdk14-1.5.6.jar" />
-            <element id="library" level="project" name="ehcache" />
-            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/protobuf-java-2.1.0.jar" />
-            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/easymock-2.5.2.jar" />
-            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/je-4.0.71.jar" />
             <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/jpeg-1.0.jar" />
-            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/jpeg2000.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../../ncwms/web/WEB-INF/lib/epsg-wkt.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../../ncwms/web/WEB-INF/lib/geotk-bundle-referencing-3.04.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../../ncwms/web/WEB-INF/lib/json-taglib-0.4.1.jar" />
+            <element id="library" level="project" name="Logging" />
+            <element id="library" level="project" name="JSTL" />
             <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/quartz-1.7.3.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/je-4.0.71.jar" />
+            <element id="library" level="project" name="Spring" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/release/opendap-2.1.jar" />
           </element>
         </element>
       </root>
@@ -165,7 +298,7 @@
     </wildcardResourcePatterns>
     <annotationProcessing enabled="false" useClasspath="true" />
   </component>
-  <component name="CopyrightManager" default="default">
+  <component name="CopyrightManager" default="">
     <copyright>
       <option name="notice" value="Copyright (c) 1998 - &amp;#36;today.year. University Corporation for Atmospheric Research/Unidata&#10;Portions of this software were developed by the Unidata Program at the&#10;University Corporation for Atmospheric Research.&#10;&#10;Access and use of this software shall impose the following obligations&#10;and understandings on the user. The user is granted the right, without&#10;any fee or cost, to use, copy, modify, alter, enhance and distribute&#10;this software, and any derivative works thereof, and its supporting&#10;documentation for any purpose whatsoever, provided that this entire&#10;notice appears in all copies of the software, derivative works and&#10;supporting documentation.  Further, UCAR requests that the user credit&#10;UCAR/Unidata in any publications that result from the use of this&#10;software or in any product that includes this software. The names UCAR&#10;and/or Unidata, however, may not be used in any advertising or publicity&#10;to endorse or promote any products or commercial entity unless specific&#10;written permission is obtained from UCAR/Unidata. The user also&#10;understands that UCAR/Unidata is not obligated to provide the user with&#10;any support, consulting, training or assistance of any kind with regard&#10;to the use, operation and performance of this software nor to provide&#10;the user with any updates, revisions, new versions or &quot;bug fixes.&quot;&#10;&#10;THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA &quot;AS IS&quot; AND ANY EXPRESS OR&#10;IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED&#10;WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE&#10;DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,&#10;INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING&#10;FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,&#10;NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION&#10;WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE." />
       <option name="keyword" value="Copyright" />
@@ -173,9 +306,7 @@
       <option name="myName" value="default" />
       <option name="myLocal" value="true" />
     </copyright>
-    <module2copyright>
-      <element module="All" copyright="default" />
-    </module2copyright>
+    <module2copyright />
     <LanguageOptions name="XML">
       <option name="fileTypeOverride" value="1" />
       <option name="relativeBefore" value="true" />
@@ -229,6 +360,11 @@
             <files>
               <file url="file://$PROJECT_DIR$/../../bufrTables/src/main/webapp/WEB-INF/web.xml" />
               <file url="file://$PROJECT_DIR$/../../bufrTables/target/WEB-INF/web.xml" />
+            </files>
+          </module>
+          <module name="opendap">
+            <files>
+              <file url="file://$PROJECT_DIR$/../../../Java-OPeNDAP/resources/WEB-INF/web.xml" />
             </files>
           </module>
         </modules>
@@ -368,6 +504,16 @@
       <item index="3" class="java.lang.String" itemvalue="WARNING" />
       <item index="4" class="java.lang.String" itemvalue="ERROR" />
     </list>
+  </component>
+  <component name="IssueNavigationConfiguration">
+    <option name="links">
+      <list>
+        <IssueNavigationLink>
+          <option name="issueRegexp" value="[A-Z]+\-\d+" />
+          <option name="linkRegexp" value="http://www.unidata.ucar.edu/jira/browse/$0" />
+        </IssueNavigationLink>
+      </list>
+    </option>
   </component>
   <component name="JavacSettings">
     <option name="GENERATE_NO_WARNINGS" value="true" />
@@ -523,7 +669,16 @@
     <option name="projectName" value="thredds" />
   </component>
   <component name="ProjectDictionaryState">
-    <dictionary name="caron" />
+    <dictionary name="edavis">
+      <words>
+        <w>dataset</w>
+        <w>datasets</w>
+        <w>fmrc</w>
+        <w>ncml</w>
+        <w>netcdf</w>
+        <w>thredds</w>
+      </words>
+    </dictionary>
   </component>
   <component name="ProjectKey">
     <option name="state" value="svn://zero/thredds/trunk/intelliJ/threddsFull/thredds.ipr" />
@@ -538,7 +693,7 @@
       <module fileurl="file://$PROJECT_DIR$/intelliJ.iml" filepath="$PROJECT_DIR$/intelliJ.iml" />
       <module fileurl="file://$PROJECT_DIR$/ldm.iml" filepath="$PROJECT_DIR$/ldm.iml" />
       <module fileurl="file://$PROJECT_DIR$/lib.iml" filepath="$PROJECT_DIR$/lib.iml" />
-      <module fileurl="file://$PROJECT_DIR$/opendap.iml" filepath="$PROJECT_DIR$/opendap.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../../ncwms.iml" filepath="$PROJECT_DIR$/../../../ncwms.iml" />
       <module fileurl="file://$PROJECT_DIR$/tds.iml" filepath="$PROJECT_DIR$/tds.iml" />
       <module fileurl="file://$PROJECT_DIR$/ui.iml" filepath="$PROJECT_DIR$/ui.iml" />
       <module fileurl="file://$PROJECT_DIR$/unidataCommon.iml" filepath="$PROJECT_DIR$/unidataCommon.iml" />
@@ -557,17 +712,17 @@
   <component name="SvnBranchConfigurationManager">
     <option name="myConfigurationMap">
       <map>
-        <entry key="$PROJECT_DIR$/../../../grib">
+        <entry key="$PROJECT_DIR$/../../../Java-OPeNDAP">
           <value>
             <SvnBranchConfiguration>
               <option name="branchMap">
                 <map>
-                  <entry key="http://sub.unidata.ucar.edu/grib/branch">
+                  <entry key="http://scm.opendap.org/svn/branch">
                     <value>
                       <list />
                     </value>
                   </entry>
-                  <entry key="http://sub.unidata.ucar.edu/grib/tag">
+                  <entry key="http://scm.opendap.org/svn/tags">
                     <value>
                       <list />
                     </value>
@@ -576,11 +731,65 @@
               </option>
               <option name="branchUrls">
                 <list>
-                  <option value="http://sub.unidata.ucar.edu/grib/branch" />
-                  <option value="http://sub.unidata.ucar.edu/grib/tag" />
+                  <option value="http://scm.opendap.org/svn/branch" />
+                  <option value="http://scm.opendap.org/svn/tags" />
                 </list>
               </option>
-              <option name="trunkUrl" value="http://sub.unidata.ucar.edu/grib/trunk" />
+              <option name="trunkUrl" value="http://scm.opendap.org/svn/trunk" />
+            </SvnBranchConfiguration>
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../../../grib">
+          <value>
+            <SvnBranchConfiguration>
+              <option name="branchMap">
+                <map>
+                  <entry key="svn://zero/grib/branch">
+                    <value>
+                      <list />
+                    </value>
+                  </entry>
+                  <entry key="svn://zero/grib/tag">
+                    <value>
+                      <list />
+                    </value>
+                  </entry>
+                </map>
+              </option>
+              <option name="branchUrls">
+                <list>
+                  <option value="svn://zero/grib/branch" />
+                  <option value="svn://zero/grib/tag" />
+                </list>
+              </option>
+              <option name="trunkUrl" value="svn://zero/grib/trunk" />
+            </SvnBranchConfiguration>
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../../../ncwms">
+          <value>
+            <SvnBranchConfiguration>
+              <option name="branchMap">
+                <map>
+                  <entry key="https://ncwms.svn.sourceforge.net/svnroot/ncwms/branches">
+                    <value>
+                      <list />
+                    </value>
+                  </entry>
+                  <entry key="https://ncwms.svn.sourceforge.net/svnroot/ncwms/tags">
+                    <value>
+                      <list />
+                    </value>
+                  </entry>
+                </map>
+              </option>
+              <option name="branchUrls">
+                <list>
+                  <option value="https://ncwms.svn.sourceforge.net/svnroot/ncwms/branches" />
+                  <option value="https://ncwms.svn.sourceforge.net/svnroot/ncwms/tags" />
+                </list>
+              </option>
+              <option name="trunkUrl" value="https://ncwms.svn.sourceforge.net/svnroot/ncwms/trunk" />
             </SvnBranchConfiguration>
           </value>
         </entry>
@@ -854,6 +1063,33 @@
             </SvnBranchConfiguration>
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/../../../unidataCommon">
+          <value>
+            <SvnBranchConfiguration>
+              <option name="branchMap">
+                <map>
+                  <entry key="svn://zero/common/java/branch">
+                    <value>
+                      <list />
+                    </value>
+                  </entry>
+                  <entry key="svn://zero/common/java/tag">
+                    <value>
+                      <list />
+                    </value>
+                  </entry>
+                </map>
+              </option>
+              <option name="branchUrls">
+                <list>
+                  <option value="svn://zero/common/java/branch" />
+                  <option value="svn://zero/common/java/tag" />
+                </list>
+              </option>
+              <option name="trunkUrl" value="svn://zero/common/java/trunk" />
+            </SvnBranchConfiguration>
+          </value>
+        </entry>
       </map>
     </option>
     <option name="myVersion" value="124" />
@@ -863,6 +1099,7 @@
     <mapping directory="" vcs="svn" />
     <mapping directory="$PROJECT_DIR$/../../../Java-OPeNDAP" vcs="svn" />
     <mapping directory="$PROJECT_DIR$/../../../grib" vcs="svn" />
+    <mapping directory="$PROJECT_DIR$/../../../ncwms" vcs="svn" />
     <mapping directory="$PROJECT_DIR$/../../../unidataCommon" vcs="svn" />
   </component>
   <component name="WebServicesPlugin" addRequiredLibraries="true" />
@@ -915,11 +1152,26 @@
     </library>
     <library name="catalina">
       <CLASSES>
-        <root url="jar://$PROJECT_DIR$/../../lib/external/catalina.jar!/" />
+        <root url="jar://C:/Program Files/Apache Software Foundation/apache-tomcat-6.0.26/lib/servlet-api.jar!/" />
+        <root url="jar://C:/Program Files/Apache Software Foundation/apache-tomcat-6.0.26/lib/catalina-ha.jar!/" />
+        <root url="jar://C:/Program Files/Apache Software Foundation/apache-tomcat-6.0.26/lib/jasper-el.jar!/" />
+        <root url="jar://C:/Program Files/Apache Software Foundation/apache-tomcat-6.0.26/lib/el-api.jar!/" />
+        <root url="jar://C:/Program Files/Apache Software Foundation/apache-tomcat-6.0.26/lib/tomcat-dbcp.jar!/" />
+        <root url="jar://C:/Program Files/Apache Software Foundation/apache-tomcat-6.0.26/lib/jsp-api.jar!/" />
+        <root url="jar://C:/Program Files/Apache Software Foundation/apache-tomcat-6.0.26/lib/catalina.jar!/" />
+        <root url="jar://C:/Program Files/Apache Software Foundation/apache-tomcat-6.0.26/lib/tomcat-i18n-fr.jar!/" />
+        <root url="jar://C:/Program Files/Apache Software Foundation/apache-tomcat-6.0.26/lib/jasper.jar!/" />
+        <root url="jar://C:/Program Files/Apache Software Foundation/apache-tomcat-6.0.26/lib/tomcat-i18n-es.jar!/" />
+        <root url="jar://C:/Program Files/Apache Software Foundation/apache-tomcat-6.0.26/lib/annotations-api.jar!/" />
+        <root url="jar://C:/Program Files/Apache Software Foundation/apache-tomcat-6.0.26/lib/tomcat-i18n-ja.jar!/" />
+        <root url="jar://C:/Program Files/Apache Software Foundation/apache-tomcat-6.0.26/lib/jasper-jdt.jar!/" />
+        <root url="jar://C:/Program Files/Apache Software Foundation/apache-tomcat-6.0.26/lib/catalina-tribes.jar!/" />
+        <root url="jar://C:/Program Files/Apache Software Foundation/apache-tomcat-6.0.26/lib/tomcat-coyote.jar!/" />
+        <root url="jar://C:/Program Files/Apache Software Foundation/apache-tomcat-6.0.26/lib/catalina-ant.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
-        <root url="file://$PROJECT_DIR$/../../../../tomcat/apache-tomcat-6.0.18-src/java" />
+        <root url="file://C:/Program Files/Apache Software Foundation/apache-tomcat-6.0.26/src/java" />
       </SOURCES>
     </library>
     <library name="Logging">

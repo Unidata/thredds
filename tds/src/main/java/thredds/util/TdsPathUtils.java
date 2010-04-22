@@ -49,8 +49,12 @@ public class TdsPathUtils
     // For "/<servletPath>/*" style servlet mappings.
     String catPath = req.getPathInfo();
     if ( catPath == null )
+    {
       // For "*.xml" style servlet mappings.
       catPath = req.getServletPath();
+      if ( ! catPath.contains( "." ))
+        return null;
+    }
     if ( catPath.equals( "" ) )
       return null;
 

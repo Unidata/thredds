@@ -1,6 +1,6 @@
-<%@page contentType="text/xml"%><%@page pageEncoding="UTF-8"%><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<%@page contentType="text/xml"%><%--@page contentType="application/vnd.ogc.wms_xml"--%><%@page pageEncoding="UTF-8"%><?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@taglib uri="/WEB-INF/tld/wms/wmsUtils" prefix="utils"%> <%-- tag library for useful utility functions --%>
+<%@taglib uri="/WEB-INF/taglib/wms/wmsUtils" prefix="utils"%> <%-- tag library for useful utility functions --%>
 <%
 response.setHeader("Cache-Control","no-cache"); //HTTP 1.1
 response.setHeader("Pragma","no-cache"); //HTTP 1.0
@@ -23,32 +23,31 @@ response.setDateHeader ("Expires", 0); //prevents caching at the proxy server
         version="1.1.1"
         updateSequence="${utils:dateTimeToISO8601(lastUpdate)}"
         xmlns:xlink="http://www.w3.org/1999/xlink">
-        xmlns:xlink="http://www.w3.org/1999/xlink">
     <!-- Service Metadata -->
     <Service>
         <!-- The WMT-defined name for this type of service -->
         <Name>OGC:WMS</Name>
         <!-- Human-readable title for pick lists -->
-        <Title><c:out value="${config.server.title}"/></Title>
+        <Title><c:out value="${config.title}"/></Title>
         <!-- Narrative description providing additional information -->
-        <Abstract><c:out value="${config.server.abstract}"/></Abstract>
+        <Abstract><c:out value="${config.abstract}"/></Abstract>
         <KeywordList>
             <%-- forEach recognizes that keywords is a comma-delimited String --%>
-            <c:forEach var="keyword" items="${config.server.keywords}">
+            <c:forEach var="keyword" items="${config.keywords}">
             <Keyword>${keyword}</Keyword>
             </c:forEach>
         </KeywordList>
         <!-- Top-level web address of service or service provider. See also OnlineResource
         elements under <DCPType>. -->
-        <OnlineResource xlink:type="simple" xlink:href="<c:out value="${config.server.url}"/>"/>
+        <OnlineResource xlink:type="simple" xlink:href="<c:out value="${config.serviceProviderUrl}"/>"/>
         <!-- Contact information -->
         <ContactInformation>
             <ContactPersonPrimary>
-                <ContactPerson><c:out value="${config.contact.name}"/></ContactPerson>
-                <ContactOrganization><c:out value="${config.contact.org}"/></ContactOrganization>
+                <ContactPerson><c:out value="${config.contactName}"/></ContactPerson>
+                <ContactOrganization><c:out value="${config.contactOrganization}"/></ContactOrganization>
             </ContactPersonPrimary>
-            <ContactVoiceTelephone>${config.contact.tel}</ContactVoiceTelephone>
-            <ContactElectronicMailAddress><c:out value="${config.contact.email}"/></ContactElectronicMailAddress>
+            <ContactVoiceTelephone><c:out value="${config.contactTelephone}"/></ContactVoiceTelephone>
+            <ContactElectronicMailAddress><c:out value="${config.contactEmail}"/></ContactElectronicMailAddress>
         </ContactInformation>
         <!-- Fees or access constraints imposed. -->
         <Fees>none</Fees>
@@ -98,38 +97,44 @@ response.setDateHeader ("Expires", 0); //prevents caching at the proxy server
         </Exception>
         
         <Layer>
-            <Title><c:out value="${config.server.title}"/></Title><%-- Use of c:out escapes XML --%>
+            <Title><c:out value="${config.title}"/></Title><%-- Use of c:out escapes XML --%>
             <c:forEach var="crsCode" items="${supportedCrsCodes}">
             <SRS>${crsCode}</SRS>
             </c:forEach>
+            <c:forEach var="dataset" items="${datasets}">
+            <c:if test="${dataset.ready}">
             <Layer>
-                <Title>${datasetTitle}</Title>
-                <c:forEach var="layer" items="${layers}">
+                <Title><c:out value="${dataset.title}"/></Title>
+                <c:forEach var="layer" items="${dataset.layers}">
                 <Layer<c:if test="${config.server.allowFeatureInfo and layer.queryable}"> queryable="1"</c:if>>
-                    <Name>${layer.layerName}</Name>
+                    <Name>${layer.name}</Name>
                     <Title><c:out value="${layer.title}"/></Title>
                     <Abstract><c:out value="${layer.abstract}"/></Abstract>
-                    <c:set var="bbox" value="${layer.bbox}"/>
-                    <LatLonBoundingBox minx="${bbox[0]}" maxx="${bbox[2]}" miny="${bbox[1]}" maxy="${bbox[3]}"/>
-                    <BoundingBox SRS="EPSG:4326" minx="${bbox[0]}" maxx="${bbox[2]}" miny="${bbox[1]}" maxy="${bbox[3]}"/>
-                    <c:if test="${layer.zaxisPresent}"><Dimension name="elevation" units="${layer.zunits}"/><!-- TODO: units correct? --></c:if>
-                    <c:if test="${layer.taxisPresent}"><Dimension name="time" units="ISO8601"/></c:if>
-                    <c:if test="${layer.zaxisPresent}">
-                    <Extent name="elevation" default="${layer.defaultZValue}">
+                    <c:set var="bbox" value="${layer.geographicBoundingBox}"/>
+                    <LatLonBoundingBox minx="${bbox.westBoundLongitude}" maxx="${bbox.eastBoundLongitude}" miny="${bbox.southBoundLatitude}" maxy="${bbox.northBoundLatitude}"/>
+                    <BoundingBox SRS="EPSG:4326" minx="${bbox.westBoundLongitude}" maxx="${bbox.eastBoundLongitude}" miny="${bbox.southBoundLatitude}" maxy="${bbox.northBoundLatitude}"/>
+                    <c:if test="${not empty layer.elevationValues}"><Dimension name="elevation" units="${layer.elevationUnits}"/><!-- TODO: units correct? --></c:if>
+                    <c:if test="${not empty layer.timeValues}"><Dimension name="time" units="${utils:getTimeAxisUnits(layer.chronology)}"/></c:if>
+                    <c:if test="${not empty layer.elevationValues}">
+                    <Extent name="elevation" default="${layer.defaultElevationValue}">
                         <%-- Print out the dimension values, comma separated, making sure
                              that there is no comma at the start or end of the list.  Note that
                              we can't use ${fn:join} because the z values are an array of doubles,
                              not strings. --%>
-                        <c:forEach var="zval" items="${layer.zvalues}" varStatus="status"><c:if test="${status.index > 0}">,</c:if>${zval}</c:forEach>
+                        <c:forEach var="zval" items="${layer.elevationValues}" varStatus="status"><c:if test="${status.index > 0}">,</c:if>${zval}</c:forEach>
                     </Extent>
                     </c:if>
-                    <c:set var="tvalues" value="${layer.tvalues}"/>
-                    <c:if test="${layer.taxisPresent}">
-                    <Extent name="time" multipleValues="1" current="1" default="${utils:dateTimeToISO8601(layer.defaultTValue)}">
-                        <c:forEach var="tval" items="${tvalues}" varStatus="status"><c:if test="${status.index > 0}">,</c:if>${utils:dateTimeToISO8601(tval)}</c:forEach> 
+                    <c:set var="tvalues" value="${layer.timeValues}"/>
+                    <c:if test="${not empty tvalues}">
+                    <Extent name="time" multipleValues="1" current="1" default="${utils:dateTimeToISO8601(layer.defaultTimeValue)}">
+                        <c:forEach var="tval" items="${tvalues}" varStatus="status"><c:if test="${status.index > 0}">,</c:if>${utils:dateTimeToISO8601(tval)}</c:forEach>
                     </Extent>
                     </c:if>
-                    <c:forEach var="style" items="${layer.supportedStyles}">
+                    <c:set var="styles" value="boxfill"/>
+                    <c:if test="${utils:isVectorLayer(layer)}">
+                        <c:set var="styles" value="vector,boxfill"/>
+                    </c:if>
+                    <c:forEach var="style" items="${styles}">
                     <c:forEach var="paletteName" items="${paletteNames}">
                     <Style>
                         <Name>${style}/${paletteName}</Name>
@@ -137,7 +142,7 @@ response.setDateHeader ("Expires", 0); //prevents caching at the proxy server
                         <Abstract>${style} style, using the ${paletteName} palette</Abstract>
                         <LegendURL width="${legendWidth}" height="${legendHeight}">
                             <Format>image/png</Format>
-                            <OnlineResource xlink:type="simple" xlink:href="${wmsBaseUrl}?REQUEST=GetLegendGraphic&amp;LAYER=${layer.layerName}&amp;PALETTE=${paletteName}"/>
+                            <OnlineResource xlink:type="simple" xlink:href="${wmsBaseUrl}?REQUEST=GetLegendGraphic&amp;LAYER=${layer.name}&amp;PALETTE=${paletteName}"/>
                         </LegendURL>
                     </Style>
                     </c:forEach>
@@ -145,6 +150,8 @@ response.setDateHeader ("Expires", 0); //prevents caching at the proxy server
                 </Layer>
                 </c:forEach> <%-- End loop through variables --%>
             </Layer>
+            </c:if>
+            </c:forEach>
         </Layer>
     </Capability>
 </WMT_MS_Capabilities>

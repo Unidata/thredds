@@ -598,36 +598,6 @@
      <url-pattern>/tester/*</url-pattern>
    </servlet-mapping>
 
-   <!--
-
- <servlet-mapping>
-   <servlet-name>CatalogAnnotate</servlet-name>
-    <url-pattern>/annotate</url-pattern>
-  </servlet-mapping>
-  -->
-  <jsp-config>
-    <taglib>
-      <taglib-uri>http://java.sun.com/jsp/jstl/core</taglib-uri>
-      <taglib-location>/WEB-INF/tld/c.tld</taglib-location>
-    </taglib>
-    <taglib>
-      <taglib-uri>http://java.sun.com/jsp/jstl/fmt</taglib-uri>
-      <taglib-location>/WEB-INF/tld/fmt.tld</taglib-location>
-    </taglib>
-     <taglib>
-      <taglib-uri>/WEB-INF/tld/wms/wms2kml</taglib-uri>
-      <taglib-location>/WEB-INF/tld/wms/wms2kml.tld</taglib-location>
-    </taglib>
-    <taglib>
-      <taglib-uri>/WEB-INF/tld/wms/wmsUtils</taglib-uri>
-      <taglib-location>/WEB-INF/tld/wms/wmsUtils.tld</taglib-location>
-    </taglib>
-    <taglib>
-      <taglib-uri>/WEB-INF/tld/wms/MenuMaker</taglib-uri>
-      <taglib-location>/WEB-INF/tld/wms/MenuMaker.tld</taglib-location>
-    </taglib>
-  </jsp-config>
-
   <error-page>
     <error-code>404</error-code>
     <location>/WEB-INF/jsp/errorpages/404.jsp</location>

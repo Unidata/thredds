@@ -264,6 +264,24 @@
 
   </target>
 
+  <property name="ncwms.class.dir" value="${root.dir}/../../ncwms/target/classes"/>
+  <property  name="ncwms.jar" value="${lib.dir}/ncWMS/ncwms.jar" />
+
+  <target  name="ncwms-setup" description="Create ncwms.jar (assumes already compiled).">
+    <jar destfile="${ncwms.jar}">
+      <fileset dir="${ncwms.class.dir}"/>
+
+      <manifest>
+        <attribute name="Built-By" value="Unidata - ${user.name}"/>
+        <attribute name="Built-On" value="${build.time}"/>
+        <attribute name="Implementation-Title" value="ncWMS for TDS"/>
+        <attribute name="Implementation-Version" value="1.0.rc2"/>
+        <attribute name="Implementation-Vendor" value="University of Reading"/>
+      </manifest>
+    </jar>
+
+  </target>
+
   <!-- build war directory -->
   <target name="war-setup" depends="compile, compile-war-extra" description="create a distribution">
 

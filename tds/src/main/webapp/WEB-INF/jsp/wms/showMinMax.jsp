@@ -9,8 +9,8 @@ response.setDateHeader ("Expires", 0); //prevents caching at the proxy server
 <%-- Displays the min and max values of data on a certain image
      
      Data (models) passed in to this page:
-          minMax = Array of 2 floats with min and max values --%>
+          valueRange = Range of floating-point values --%>
 <json:object>
-    <json:property name="min" value="${minMax[0]}"/>
-    <json:property name="max" value="${minMax[1]}"/>
+    <json:property name="min" value="${valueRange.minimum}"/>
+    <json:property name="max" value="${valueRange.maximum}"/>
 </json:object>

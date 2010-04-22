@@ -1,5 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <threddsConfig>
+  
+  <serverInformation>
+    <name>Motherlode TDS</name>
+    <logoUrl>threddsIcon.gif</logoUrl>
+    <logoAltText>Motherlode TDS</logoAltText>
+
+    <abstract>Scientific Data</abstract>
+    <keywords>ocean, climate, meteorology, atmosphere, earth science</keywords>
+    
+    <contact>
+      <name>Support</name>
+      <organization>Unidata</organization>
+      <email>support-thredds@unidata.ucar.edu</email>
+    </contact>
+    <hostInstitution>
+      <name>Unidata</name>
+      <webSite>http://www.unidata.ucar.edu/</webSite>
+      <logoUrl>unidataIcon.gif</logoUrl>
+      <logoAltText>Unidata</logoAltText>
+    </hostInstitution>
+  </serverInformation>
 
   <contentRoots>
     <contentRoot>motherlode</contentRoot>
@@ -55,24 +76,6 @@
     <folderIconAlt>Folder</folderIconAlt>
     <datasetIconUrl>dataset.gif</datasetIconUrl>
     <datasetIconAlt>Dataset</datasetIconAlt>
-
-    <!--
-     * The URL and alternate text for this TDS installations logo.
-     * -->
-    <installName>Motherlode TDS</installName>
-    <installLogoUrl>threddsIcon.gif</installLogoUrl>
-    <installLogoAlt>Motherlode TDS</installLogoAlt>
-
-    <!--
-     * Information for the institution hosting this TDS installation:
-     * - a URL for the institution;
-     * - a URL to the institution logo; and
-     * - alternate text for the institution logo.
-     * -->
-    <hostInstName>Unidata</hostInstName>
-    <hostInstUrl>http://www.unidata.ucar.edu/</hostInstUrl>
-    <hostInstLogoUrl>unidataIcon.gif</hostInstLogoUrl>
-    <hostInstLogoAlt>Unidata</hostInstLogoAlt>
   </htmlSetup>
 
   <!--
@@ -110,6 +113,15 @@
     <scour>15 min</scour>
     <maxAge>30 min</maxAge>
   </WCS>
+
+  <WMS>
+    <allow>true</allow>
+    <allowRemote>false</allowRemote>
+    <title>TDS/ncWMS</title>
+    <allowFeatureInfo>true</allowFeatureInfo>
+    <maxImageWidth>1024</maxImageWidth>
+    <maxImageHeight>1024</maxImageHeight>
+  </WMS>
 
   <!-- Enable CatalogGen service.
    -->

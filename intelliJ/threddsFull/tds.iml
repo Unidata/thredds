@@ -26,6 +26,7 @@
         <webroots>
           <root url="file://$MODULE_DIR$/../../tds/src/main/webapp-dqcServletRedirect/resources" relative="/" />
         </webroots>
+        <context-artifact name="tds:dqcServletRedirect exploded" />
       </configuration>
     </facet>
     <facet type="web" name="expThredds">
@@ -36,6 +37,7 @@
         <webroots>
           <root url="file://$MODULE_DIR$/../../tds/src/main/webapp-expThredds/resources" relative="/" />
         </webroots>
+        <context-artifact name="tds:expThredds exploded" />
       </configuration>
     </facet>
     <facet type="web" name="CdmValidator">
@@ -46,6 +48,7 @@
         <webroots>
           <root url="file://$MODULE_DIR$/../../tds/src/main/webapp-cdmValidator" relative="/" />
         </webroots>
+        <context-artifact name="tds:CdmValidator exploded" />
       </configuration>
     </facet>
   </component>
@@ -58,12 +61,14 @@
       <sourceFolder url="file://$MODULE_DIR$/../../tds/src/test/java" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/../../tds/content" />
       <excludeFolder url="file://$MODULE_DIR$/../../tds/doc" />
-      <excludeFolder url="file://$MODULE_DIR$/../../tds/src/main/java/thredds/servlet/idd" />
+      <excludeFolder url="file://$MODULE_DIR$/../../tds/src/main/java/thredds/server/wms/responses" />
+      <excludeFolder url="file://$MODULE_DIR$/../../tds/src/main/java/thredds/server/wms/util" />
       <excludeFolder url="file://$MODULE_DIR$/../../tds/target" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="cdm" exported="" />
+    <orderEntry type="module" module-name="ncwms" exported="" />
     <orderEntry type="module-library">
       <library>
         <CLASSES>
@@ -363,6 +368,15 @@
       <library>
         <CLASSES>
           <root url="jar://$MODULE_DIR$/../../lib/external/servlet-api.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../lib/external/je-4.0.71.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

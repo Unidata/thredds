@@ -34,10 +34,6 @@ package thredds.util.filesource;
 
 import junit.framework.*;
 import thredds.TestAll;
-import thredds.util.filesource.BasicDescendantFileSource;
-import thredds.util.filesource.BasicWithExclusionsDescendantFileSource;
-import thredds.util.filesource.ChainedFileSource;
-import thredds.util.filesource.DescendantFileSource;
 
 import java.io.File;
 import java.util.Collections;

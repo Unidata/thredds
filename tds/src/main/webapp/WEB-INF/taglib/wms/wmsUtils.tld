@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Wraps the functions in WmsUtils as functions that can be used in JSPs -->
+<taglib version="2.0" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee web-jsptaglibrary_2_0.xsd">
+  <tlib-version>1.0</tlib-version>
+  <short-name>wmsutils</short-name>
+  <uri>/WEB-INF/taglib/wms/wmsUtils</uri>
+  <function>
+    <description>Converts a joda-time DateTime object to an ISO8601-formatted String</description>
+    <name>dateTimeToISO8601</name>
+    <function-class>uk.ac.rdg.resc.ncwms.util.WmsUtils</function-class>
+    <function-signature>java.lang.String dateTimeToISO8601(org.joda.time.DateTime)</function-signature>
+  </function>
+  <function>
+    <description>Calculates the absolute value of a number</description>
+    <name>abs</name>
+    <function-class>java.lang.Math</function-class>
+    <function-signature>double abs(double)</function-signature>
+  </function>
+  <function>
+    <description>Formats a joda-time DateTime object as the time only
+      in the format "HH:mm:ss", e.g. "14:53:03".  Time zone offset is zero (UTC).</description>
+    <name>formatUTCTimeOnly</name>
+    <function-class>uk.ac.rdg.resc.ncwms.util.WmsUtils</function-class>
+    <function-signature>java.lang.String formatUTCTimeOnly(org.joda.time.DateTime)</function-signature>
+  </function>
+  <function>
+    <description>Returns true if the given layer is a vector layer</description>
+    <name>isVectorLayer</name>
+    <function-class>uk.ac.rdg.resc.ncwms.util.WmsUtils</function-class>
+    <function-signature>boolean isVectorLayer(uk.ac.rdg.resc.ncwms.wms.Layer)</function-signature>
+  </function>
+  <function>
+    <description>Returns the units for the time dimension for Capabilities documents</description>
+    <name>getTimeAxisUnits</name>
+    <function-class>uk.ac.rdg.resc.ncwms.util.WmsUtils</function-class>
+    <function-signature>java.lang.String getTimeAxisUnits(org.joda.time.Chronology)</function-signature>
+  </function>
+</taglib>

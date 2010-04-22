@@ -35,8 +35,6 @@ package thredds.util.filesource;
 import junit.framework.*;
 import org.springframework.util.StringUtils;
 import thredds.TestAll;
-import thredds.util.filesource.BasicDescendantFileSource;
-import thredds.util.filesource.DescendantFileSource;
 
 import java.io.File;
 import java.io.IOException;
@@ -65,10 +63,10 @@ public class TestBasicDescendantFileSource extends TestCase
 
     File dir1 = TestFileDirUtils.addDirectory( tmpDir, "dir1" );
     TestFileDirUtils.addFile( dir1, "file1_1" );
-    File dir1_1 = TestFileDirUtils.addDirectory( dir1, "dir1_1" );
+    TestFileDirUtils.addDirectory( dir1, "dir1_1" );
     File dir1_2 = TestFileDirUtils.addDirectory( dir1, "dir1_2" );
     File dir2 = TestFileDirUtils.addDirectory( tmpDir, "dir2" );
-    File dir2_1 = TestFileDirUtils.addDirectory( dir2, "dir2_1" );
+    TestFileDirUtils.addDirectory( dir2, "dir2_1" );
     File dir2_2 = TestFileDirUtils.addDirectory( dir2, "dir2_2" );
     TestFileDirUtils.addFile( dir2_2, "file2_2_1" );
     TestFileDirUtils.addDirectory( dir1_2, "dir1_2_1" );

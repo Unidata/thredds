@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Contains tags that are useful for creating custom menus for the Godiva2
+     web interface (see *Menu.jsp) -->
+<taglib version="2.0" xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee web-jsptaglibrary_2_0.xsd">
+  <tlib-version>1.0</tlib-version>
+  <short-name>menumaker</short-name>
+  <uri>/WEB-INF/taglib/wms/MenuMaker</uri>
+  <tag-file>
+    <name>layer</name>
+    <path>/WEB-INF/tags/wms/Layer.tag</path>
+  </tag-file>
+  <tag-file>
+    <name>remoteLayer</name>
+    <path>/WEB-INF/tags/wms/RemoteLayer.tag</path>
+  </tag-file>
+  <tag-file>
+    <name>folder</name>
+    <path>/WEB-INF/tags/wms/Folder.tag</path>
+  </tag-file>
+  <tag-file>
+    <name>dataset</name>
+    <path>/WEB-INF/tags/wms/Dataset.tag</path>
+  </tag-file>
+</taglib>
