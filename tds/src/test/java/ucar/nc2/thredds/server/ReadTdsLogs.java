@@ -403,10 +403,10 @@ public class ReadTdsLogs {
         continue;
       }
 
-      /* if (!(log.path.indexOf("dodsC") > 0))  {    // opendap only
+     if (!(log.path.indexOf("fmrc") > 0))  {    // fmrc only
        skip++;
        continue;
-     } */
+     }
 
       if (log.path.indexOf("fileServer") > 0) {
         // System.out.println(" *** skip fmrc " + log);
@@ -666,7 +666,7 @@ public class ReadTdsLogs {
     out2 = new Formatter(System.out);
 
     /* why ?
-    HttpClient client = HttpClientManager.init(null, "ReadTdsLogs");
+    HttpClient client = HttpClientManager.init(null, "ReadTdsLogs");       
     DConnect2.setHttpClient(client);
     HTTPRandomAccessFile.setHttpClient(client);
     NcStreamRemote.setHttpClient(client);
