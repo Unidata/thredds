@@ -126,7 +126,7 @@
         <variable name="NET/Echo Tops" vocabulary_name="EARTH SCIENCE &gt; Atmosphere &gt; Clouds &gt; Cloud Optical Depth/Thickness" units="1000 feet" />
         <variable name="NVL/Vertical Liquid H2O" vocabulary_name="EARTH SCIENCE &gt; Atmosphere &gt; Precipitation &gt; Liquid Water Equivalent" units="kg/m2" />
         <variable name="NVW/Velocity Azimuth Display Wind Profile" vocabulary_name="EARTH SCIENCE &gt; Atmosphere &gt; Atmospheric Winds &gt; Wind Profiles" units="knots" />
-        <variable name="DPA/Precipitation Array" vocabulary_name="EARTH SCIENCE &gt; Atmosphere &gt; Precipitation &gt; Precipitation Amount" units="dBA" />
+        <variable name="DPA/Digital Precipitation Array" vocabulary_name="EARTH SCIENCE &gt; Atmosphere &gt; Precipitation &gt; Precipitation Amount" units="dBA" />
         <variable name="DHR/Digital Hybrid Scan Reflectivity" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; " units="dbZ" />
         <variable name="DSP/Storm Total Precipitation" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; " units="in" />
         <variable name="NMD/Mesocyclone" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; " units="" />
@@ -240,7 +240,7 @@
         <variable name="NVL/Vertical Integrated Liquid" vocabulary_name="EARTH SCIENCE &gt; Atmosphere &gt; Precipitation &gt; Liquid Water Equivalent" units="kg/m2" />
         <variable name="N1P/Surface Rainfall 1-hour" vocabulary_name="EARTH SCIENCE &gt; Atmosphere &gt; Precipitation &gt; Rain" units="in" />
         <variable name="NTP/Storm Total Rainfall" vocabulary_name="EARTH SCIENCE &gt; Atmosphere &gt; Precipitation &gt; Rain" units="in" />
-        <variable name="DPA/Precipitation Array" vocabulary_name="EARTH SCIENCE &gt; Atmosphere &gt; Precipitation &gt; Precipitation Amount" units="dBA" />
+        <variable name="DPA/Digital Precipitation Array" vocabulary_name="EARTH SCIENCE &gt; Atmosphere &gt; Precipitation &gt; Precipitation Amount" units="dBA" />
         <variable name="DSP/Storm Total Precipitation" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; " units="in" />
         <variable name="NMD/Mesocyclone" vocabulary_name="EARTH SCIENCE &gt; Spectral/Engineering &gt; Radar &gt; " units="" />
       </variables>
