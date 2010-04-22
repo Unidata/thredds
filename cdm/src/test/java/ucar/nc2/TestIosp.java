@@ -52,27 +52,27 @@ public class TestIosp {
     TestSuite suite= new TestSuite();
     suite.addTest( new TestSuite(ucar.nc2.iosp.grib.TestHybridData.class));
     suite.addTest( new TestSuite(ucar.nc2.iosp.grib.TestOfsData.class));
-    suite.addTest( new TestSuite( ucar.nc2.iosp.grib.TestIndexUpdating.class));
+    //suite.addTest( new TestSuite( ucar.nc2.iosp.grib.TestIndexUpdating.class));
 
-    suite.addTest( new TestSuite( ucar.nc2.iosp.dmsp.TestDmspIosp.class));
-    suite.addTest( new TestSuite( ucar.nc2.iosp.gini.TestGini.class));
-    suite.addTest( new TestSuite( ucar.nc2.iosp.nexrad2.TestNexrad2.class));
-    suite.addTest( new TestSuite( ucar.nc2.iosp.nexrad2.TestNexrad2HiResolution.class));
-    suite.addTest( new TestSuite( ucar.nc2.iosp.nids.TestNids.class));
-    suite.addTest( new TestSuite( ucar.nc2.iosp.dorade.TestDorade.class));
+    //suite.addTest( new TestSuite( ucar.nc2.iosp.dmsp.TestDmspIosp.class));
+    //suite.addTest( new TestSuite( ucar.nc2.iosp.gini.TestGini.class));
+    //suite.addTest( new TestSuite( ucar.nc2.iosp.nexrad2.TestNexrad2.class));
+    //suite.addTest( new TestSuite( ucar.nc2.iosp.nexrad2.TestNexrad2HiResolution.class));
+    //suite.addTest( new TestSuite( ucar.nc2.iosp.nids.TestNids.class));
+    //suite.addTest( new TestSuite( ucar.nc2.iosp.dorade.TestDorade.class));
     suite.addTest( new TestSuite( ucar.nc2.iosp.grib.TestGridGribIosp.class));
     suite.addTest( new TestSuite( ucar.nc2.iosp.grib.TestBinaryTextIndexes.class));
     suite.addTest( new TestSuite( ucar.nc2.iosp.gempak.TestReadingGempak.class));
     suite.addTest( new TestSuite( ucar.nc2.iosp.TestMiscIosp.class));
-    suite.addTest( new TestSuite( ucar.nc2.iosp.bufr.TestBufrRead.class));
+    //suite.addTest( new TestSuite( ucar.nc2.iosp.bufr.TestBufrRead.class));
 
     // slow !!
-    suite.addTest( ucar.nc2.iosp.hdf5.TestH5.suite());
-    suite.addTest( ucar.nc2.iosp.hdf4.TestH4.suite());
+    //suite.addTest( ucar.nc2.iosp.hdf5.TestH5.suite());
+    //suite.addTest( ucar.nc2.iosp.hdf4.TestH4.suite());
 
     // slow - comment out if needed
-    suite.addTest(new TestSuite(ucar.nc2.iosp.hdf4.TestH4subset.class)); //
-    suite.addTest(new TestSuite(ucar.nc2.iosp.hdf5.TestH5subset.class)); //
+    //suite.addTest(new TestSuite(ucar.nc2.iosp.hdf4.TestH4subset.class)); //
+    //suite.addTest(new TestSuite(ucar.nc2.iosp.hdf5.TestH5subset.class)); //
     return suite;
   }
 
