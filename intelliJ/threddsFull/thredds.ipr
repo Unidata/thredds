@@ -136,7 +136,6 @@
             <element id="dir-copy" path="$PROJECT_DIR$/../../cdm/src/main/resources" />
             <element id="module-output" name="grib" />
             <element id="module-output" name="unidataCommon" />
-            <element id="module-output" name="ncwms" />
             <element id="module-output" name="opendap" />
           </element>
           <element id="directory" name="lib">
@@ -163,9 +162,6 @@
             <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/slf4j-api-1.5.6.jar" />
             <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/slf4j-jdk14-1.5.6.jar" />
             <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/jpeg-1.0.jar" />
-            <element id="file-copy" path="$PROJECT_DIR$/../../../ncwms/web/WEB-INF/lib/epsg-wkt.jar" />
-            <element id="file-copy" path="$PROJECT_DIR$/../../../ncwms/web/WEB-INF/lib/geotk-bundle-referencing-3.04.jar" />
-            <element id="file-copy" path="$PROJECT_DIR$/../../../ncwms/web/WEB-INF/lib/json-taglib-0.4.1.jar" />
             <element id="library" level="project" name="Logging" />
             <element id="library" level="project" name="JSTL" />
             <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/quartz-1.7.3.jar" />
@@ -175,6 +171,10 @@
             <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/httpclient-4.0.1.jar" />
             <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/jcommon-1.0.15.jar" />
             <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/jfreechart-1.0.12.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/epsg-wkt.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/json-taglib-0.4.1.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/geotk-bundle-referencing-3.04.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/release/ncwms.jar" />
           </element>
         </element>
       </root>

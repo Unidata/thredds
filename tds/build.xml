@@ -265,7 +265,7 @@
   </target>
 
   <property name="ncwms.class.dir" value="${root.dir}/../../ncwms/target/classes"/>
-  <property  name="ncwms.jar" value="${lib.dir}/ncWMS/ncwms.jar" />
+  <property  name="ncwms.jar" value="${lib.dir}/release/ncwms.jar" />
 
   <target  name="ncwms-setup" description="Create ncwms.jar (assumes already compiled).">
     <jar destfile="${ncwms.jar}">
