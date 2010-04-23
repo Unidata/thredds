@@ -122,7 +122,7 @@
       </root>
     </artifact>
     <artifact type="exploded-war" name="tds:tds exploded">
-      <output-path>$PROJECT_DIR$/../../tds/runenv</output-path>
+      <output-path>$PROJECT_DIR$/../../tds/target/war</output-path>
       <root id="root">
         <element id="javaee-facet-resources" facet="tds/web/tds" />
         <element id="directory" name="WEB-INF">
@@ -137,6 +137,7 @@
             <element id="module-output" name="grib" />
             <element id="module-output" name="unidataCommon" />
             <element id="module-output" name="ncwms" />
+            <element id="module-output" name="opendap" />
           </element>
           <element id="directory" name="lib">
             <element id="file-copy" path="$PROJECT_DIR$/../../lib/ncWMS/acegi-security-1.0.4.jar" />
@@ -186,7 +187,8 @@
             <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/quartz-1.7.3.jar" />
             <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/je-4.0.71.jar" />
             <element id="library" level="project" name="Spring" />
-            <element id="file-copy" path="$PROJECT_DIR$/../../lib/release/opendap-2.1.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/httpcore-4.0.1.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/httpclient-4.0.1.jar" />
           </element>
         </element>
       </root>
@@ -665,6 +667,7 @@
       <module fileurl="file://$PROJECT_DIR$/ldm.iml" filepath="$PROJECT_DIR$/ldm.iml" />
       <module fileurl="file://$PROJECT_DIR$/lib.iml" filepath="$PROJECT_DIR$/lib.iml" />
       <module fileurl="file://$PROJECT_DIR$/../../../ncwms.iml" filepath="$PROJECT_DIR$/../../../ncwms.iml" />
+      <module fileurl="file://$PROJECT_DIR$/opendap.iml" filepath="$PROJECT_DIR$/opendap.iml" />
       <module fileurl="file://$PROJECT_DIR$/tds.iml" filepath="$PROJECT_DIR$/tds.iml" />
       <module fileurl="file://$PROJECT_DIR$/ui.iml" filepath="$PROJECT_DIR$/ui.iml" />
       <module fileurl="file://$PROJECT_DIR$/unidataCommon.iml" filepath="$PROJECT_DIR$/unidataCommon.iml" />
