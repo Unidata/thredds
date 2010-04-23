@@ -84,9 +84,10 @@ public class TdsConfigContextListener
     CdmInit cdmInit = (CdmInit) wac.getBean( "cdmInit", CdmInit.class );
     cdmInit.init(tdsContext);
 
-    // Initialize HtmlWriter
+    // YUCK! This is so not-yet-Spring-ified servlets can access the singleton HtmlWriter.
     // LOOK! ToDo This should be removed once the catalog service controllers uses JSP.
-    HtmlWriter.init( tdsContext );
+    HtmlWriter htmlWriter = (HtmlWriter) wac.getBean( "htmlWriter", HtmlWriter.class );
+    htmlWriter.setSingleton( htmlWriter );
 
     logServerStartup.info( "TdsConfigContextListener.contextInitialized(): done - " + UsageLog.closingMessageNonRequestContext() );
 

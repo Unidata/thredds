@@ -9,6 +9,7 @@
 
   <bean id="anyXmlController" class="thredds.server.catalogservice.LocalCatalogServiceController">
     <property name="tdsContext" ref="tdsContext"/>
+    <property name="htmlWriter" ref="htmlWriter"/>
     <property name="catalogSupportOnly" value="false"/>
     <property name="htmlView" value="false"/>
 
@@ -17,6 +18,7 @@
 
   <bean id="anyHtmlController" class="thredds.server.catalogservice.LocalCatalogServiceController">
     <property name="tdsContext" ref="tdsContext"/>
+    <property name="htmlWriter" ref="htmlWriter"/>
     <property name="catalogSupportOnly" value="false"/>
     <property name="htmlView" value="true"/>
 
@@ -25,6 +27,7 @@
 
   <bean id="catalogXmlController" class="thredds.server.catalogservice.LocalCatalogServiceController">
     <property name="tdsContext" ref="tdsContext"/>
+    <property name="htmlWriter" ref="htmlWriter"/>
     <property name="catalogSupportOnly" value="true"/>
     <property name="htmlView" value="false"/>
 
@@ -33,6 +36,7 @@
 
   <bean id="catalogHtmlController" class="thredds.server.catalogservice.LocalCatalogServiceController">
     <property name="tdsContext" ref="tdsContext"/>
+    <property name="htmlWriter" ref="htmlWriter"/>
     <property name="catalogSupportOnly" value="true"/>
     <property name="htmlView" value="true"/>
 
@@ -41,6 +45,7 @@
 
   <bean id="remoteCatalogController" class="thredds.server.catalogservice.RemoteCatalogServiceController">
     <property name="tdsContext" ref="tdsContext"/>
+    <property name="htmlWriter" ref="htmlWriter"/>
 
     <property name="supportedMethods" value="GET"/>
   </bean>

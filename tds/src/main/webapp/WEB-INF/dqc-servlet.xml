@@ -10,6 +10,7 @@
   <bean id="dqcController" class="thredds.dqc.server.DqcServiceController"
         init-method="init" destroy-method="destroy" >
     <property name="tdsContext" ref="tdsContext"/>
+    <property name="htmlWriter" ref="htmlWriter"/>
     <property name="dqcConfigDirName" value="dqcService/config" />
     <property name="dqcConfigFileName" value="config.xml" />
 

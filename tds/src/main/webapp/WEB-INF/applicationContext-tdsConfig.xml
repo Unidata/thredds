@@ -43,6 +43,11 @@
     <property name="installUrl" value="${tds.install.url}" />
   </bean>
 
+  <bean id="htmlWriter" class="thredds.servlet.HtmlWriter">
+    <property name="tdsContext" ref="tdsContext" />
+    <property name="htmlConfig" ref="htmlConfig" />
+  </bean>
+
   <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
     <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE"/>
     <property name="locations">

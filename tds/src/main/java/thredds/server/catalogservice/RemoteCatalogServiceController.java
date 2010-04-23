@@ -112,12 +112,17 @@ public class RemoteCatalogServiceController extends AbstractController
 
   private TdsContext tdsContext;
   private HtmlConfig htmlConfig;
+  private HtmlWriter htmlWriter;
 
   public void setTdsContext( TdsContext tdsContext )
   {
     this.tdsContext = tdsContext;
     if ( this.tdsContext != null )
       this.htmlConfig = this.tdsContext.getHtmlConfig();
+  }
+
+  public void setHtmlWriter( HtmlWriter htmlWriter) {
+    this.htmlWriter = htmlWriter;
   }
 
   protected ModelAndView handleRequestInternal( HttpServletRequest request,
@@ -216,7 +221,7 @@ public class RemoteCatalogServiceController extends AbstractController
       // Otherwise, handle catalog as indicated by "command".
       if ( catalogServiceRequest.getCommand().equals( Command.SHOW))
       {
-        int i = HtmlWriter.getInstance().writeCatalog( response, (InvCatalogImpl) catalog, false );
+        int i = this.htmlWriter.writeCatalog( response, (InvCatalogImpl) catalog, false );
         log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, i ) );
         return null;
       }
@@ -235,7 +240,7 @@ public class RemoteCatalogServiceController extends AbstractController
 
         if ( catalogServiceRequest.isHtmlView() )
         {
-          int i = HtmlWriter.getInstance().showDataset( uri.toString(), (InvDatasetImpl) dataset, request, response, false );
+          int i = this.htmlWriter.showDataset( uri.toString(), (InvDatasetImpl) dataset, request, response, false );
           log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, i ) );
           return null;
         }

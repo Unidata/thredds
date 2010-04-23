@@ -12,6 +12,7 @@
 
     <bean id="dirDisplayController" class="thredds.server.root.DirDisplayController">
         <property name="tdsContext" ref="tdsContext"/>
+        <property name="htmlWriter" ref="htmlWriter"/>
         <property name="supportedMethods" value="GET"/>
     </bean>
 

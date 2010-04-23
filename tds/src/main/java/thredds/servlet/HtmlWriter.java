@@ -73,37 +73,22 @@ public class HtmlWriter {
 
   private ucar.nc2.units.DateFormatter formatter = new ucar.nc2.units.DateFormatter();
 
-  public static void init( TdsContext tdsContext )
-  {
-    if ( singleton != null )
-    {
-      log.warn( "init(): this method has already been called; it should only be called once." );
-      return;
-      //throw new IllegalStateException( "HtmlWriter.init() has already been called.");
-    }
-    singleton = new HtmlWriter( tdsContext);
+  private HtmlWriter() {}
+
+  public void setTdsContext( TdsContext tdsContext ) {
+    this.tdsContext = tdsContext;
+  }
+
+  public void setHtmlConfig( HtmlConfig htmlConfig ) {
+    this.htmlConfig = htmlConfig;
+  }
+
+  public void setSingleton( HtmlWriter self) {
+    this.singleton = self;
   }
 
   public static HtmlWriter getInstance() {
-    if (singleton == null) {
-      log.warn("getInstance(): init() has not been called.");
-      return null;
-      //throw new IllegalStateException( "HtmlWriter.init() has not been called." );
-    }
     return singleton;
-  }
-
-  @SuppressWarnings({"UnusedDeclaration"})
-  private HtmlWriter() {
-  }
-
-  private HtmlWriter( TdsContext tdsContext )
-  {
-    if ( tdsContext == null )
-      throw new IllegalArgumentException( "Null value not allowed for TdsContext or HtmlConfig.");
-
-    this.tdsContext = tdsContext;
-    this.htmlConfig = this.tdsContext.getHtmlConfig();
   }
 
   public String getHtmlDoctypeAndOpenTag() {

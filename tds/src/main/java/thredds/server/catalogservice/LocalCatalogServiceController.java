@@ -120,12 +120,17 @@ public class LocalCatalogServiceController extends AbstractController
   private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
 
   private TdsContext tdsContext;
+  private HtmlWriter htmlWriter;
+
   private boolean catalogSupportOnly;
   private boolean htmlView;
 
-  public void setTdsContext( TdsContext tdsContext )
-  {
+  public void setTdsContext( TdsContext tdsContext ) {
     this.tdsContext = tdsContext;
+  }
+
+  public void setHtmlWriter( HtmlWriter htmlWriter ) {
+    this.htmlWriter = htmlWriter;
   }
 
   public boolean isCatalogSupportOnly()
@@ -207,7 +212,7 @@ public class LocalCatalogServiceController extends AbstractController
       {
         if ( this.htmlView )
         {
-          int i = HtmlWriter.getInstance().writeCatalog( response, (InvCatalogImpl) catalog, true );
+          int i = this.htmlWriter.writeCatalog( response, (InvCatalogImpl) catalog, true );
           log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, i ) );
           return null;
           // return constructModelForCatalogView( catalog, this.htmlView );
@@ -230,7 +235,7 @@ public class LocalCatalogServiceController extends AbstractController
 
         if ( this.htmlView)
         {
-          int i = HtmlWriter.getInstance().showDataset( baseUriString, (InvDatasetImpl) dataset, request, response, true );
+          int i = this.htmlWriter.showDataset( baseUriString, (InvDatasetImpl) dataset, request, response, true );
           log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, i ) );
           return null;
         }

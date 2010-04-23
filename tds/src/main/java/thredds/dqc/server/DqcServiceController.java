@@ -31,6 +31,7 @@ public class DqcServiceController extends AbstractController
   private org.slf4j.Logger logServerStartup = org.slf4j.LoggerFactory.getLogger( "serverStartup" );
 
   private TdsContext tdsContext;
+  private HtmlWriter htmlWriter;
 
   private boolean allow = false;
 
@@ -41,9 +42,12 @@ public class DqcServiceController extends AbstractController
 
   private DqcServletConfig dqcConfig;
 
-  public void setTdsContext( TdsContext tdsContext )
-  {
+  public void setTdsContext( TdsContext tdsContext ) {
     this.tdsContext = tdsContext;
+  }
+
+  public void setHtmlWriter( HtmlWriter htmlWriter) {
+    this.htmlWriter = htmlWriter;
   }
 
   public void setDqcConfigDirName( String dqcConfigDirName )
@@ -178,7 +182,7 @@ public class DqcServiceController extends AbstractController
     else if ( reqPath.equals( "/catalog.html" ) )
     {
       InvCatalog catalog = this.createCatalogRepresentation( request.getContextPath(), request.getServletPath() );
-      int i = HtmlWriter.getInstance().writeCatalog( response, (InvCatalogImpl) catalog, true );
+      int i = this.htmlWriter.writeCatalog( response, (InvCatalogImpl) catalog, true );
       log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, i ) );
 
       return null;

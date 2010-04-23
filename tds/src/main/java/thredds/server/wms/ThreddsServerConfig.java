@@ -48,6 +48,7 @@ import uk.ac.rdg.resc.ncwms.wms.Layer;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
@@ -169,55 +170,62 @@ public class ThreddsServerConfig extends AbstractServerConfig
 
     @Override
     public String getTitle() {
-//      this.tdsContext.getHtmlConfig();
-//      this.folderIconUrl = ThreddsConfig.get( "htmlSetup.folderIconUrl", "" );
-
-      throw new UnsupportedOperationException("Implement me!");
+      // ToDo Fully implement with ThreddsConfig info.
+      return "Still need to get threddsConfig.xml info.";
     }
 
     @Override
     public int getMaxImageWidth() {
-        throw new UnsupportedOperationException("Implement me!");
+      // ToDo Fully implement with ThreddsConfig info.
+      return 2048;
     }
 
     @Override
     public int getMaxImageHeight() {
-        throw new UnsupportedOperationException("Implement me!");
+      // ToDo Fully implement with ThreddsConfig info.
+      return 2048;
     }
 
     @Override
     public String getAbstract() {
-        throw new UnsupportedOperationException("Implement me!");
+      // ToDo Fully implement with ThreddsConfig info.
+      return "Still need to get threddsConfig.xml info.";
     }
 
     @Override
     public Set<String> getKeywords() {
-        throw new UnsupportedOperationException("Implement me!");
+      // ToDo Fully implement with ThreddsConfig info.
+      return Collections.emptySet();
     }
 
     @Override
     public String getServiceProviderUrl() {
-        throw new UnsupportedOperationException("Implement me!");
+      // ToDo Fully implement with ThreddsConfig info.
+      return "Still need to get threddsConfig.xml info.";
     }
 
     @Override
     public String getContactName() {
-        throw new UnsupportedOperationException("Implement me!");
+      // ToDo Fully implement with ThreddsConfig info.
+      return "Still need to get threddsConfig.xml info.";
     }
 
     @Override
     public String getContactOrganization() {
-        throw new UnsupportedOperationException("Implement me!");
+      // ToDo Fully implement with ThreddsConfig info.
+      return "Still need to get threddsConfig.xml info.";
     }
 
     @Override
     public String getContactTelephone() {
-        throw new UnsupportedOperationException("Implement me!");
+      // ToDo Fully implement with ThreddsConfig info.
+      return "Still need to get threddsConfig.xml info.";
     }
 
     @Override
     public String getContactEmail() {
-        throw new UnsupportedOperationException("Implement me!");
+      // ToDo Fully implement with ThreddsConfig info.
+      return "Still need to get threddsConfig.xml info.";
     }
 
 }

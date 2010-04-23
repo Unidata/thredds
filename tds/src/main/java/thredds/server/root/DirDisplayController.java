@@ -61,9 +61,14 @@ public class DirDisplayController extends AbstractController {
 
 
   private TdsContext tdsContext;
+  private HtmlWriter htmlWriter;
 
   public void setTdsContext(TdsContext tdsContext) {
     this.tdsContext = tdsContext;
+  }
+
+  public void setHtmlWriter( HtmlWriter htmlWriter ) {
+    this.htmlWriter = htmlWriter;
   }
 
   protected ModelAndView handleRequestInternal(HttpServletRequest req, HttpServletResponse res) throws Exception {
@@ -104,7 +109,7 @@ public class DirDisplayController extends AbstractController {
     }
 
     if (file.isDirectory()) {
-      int i = HtmlWriter.getInstance().writeDirectory(res, file, path);
+      int i = this.htmlWriter.writeDirectory(res, file, path);
       int status = i == 0 ? HttpServletResponse.SC_NOT_FOUND : HttpServletResponse.SC_OK;
       log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext( status, i ) );
       return null;
