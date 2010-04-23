@@ -40,6 +40,7 @@ import ucar.nc2.TestAll;
 import ucar.unidata.util.TestFileDirUtils;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -80,7 +81,7 @@ public class DatasetScanExpandSubdirsTest
   }
 
   @Test
-  public void checkExpandSubdirs() throws URISyntaxException
+  public void checkExpandSubdirs() throws URISyntaxException, IOException
   {
     InvCatalogImpl configCat = new InvCatalogImpl( "configCat", "1.0.2", new URI( "http://server/thredds/catalog.xml"));
     configCat.addService( new InvService( "odap", "OPENDAP", "/thredds/dodsC/", null, null ) );
@@ -112,7 +113,8 @@ public class DatasetScanExpandSubdirsTest
     assertFalse( dsList.isEmpty());
     assertEquals( 5, dsList.size());
 
-    assertEquals( "file1.nc", dsList.get( 0).getName());
+    assertEquals( "","file1.nc", dsList.get( 0).getName());
+    String msg = "expected:<file[2].nc> but was:<"+dsList.get(1).getName() +"> --\n\n" + InvCatalogFactory.getDefaultFactory( false ).writeXML( cat );
     assertEquals( "file2.nc", dsList.get( 1).getName());
     assertEquals( "file3.nc", dsList.get( 2).getName());
 
