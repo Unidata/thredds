@@ -74,15 +74,6 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../lib/ncWMS/jakarta-oro-2.0.8.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
           <root url="jar://$MODULE_DIR$/../../lib/external/jfreechart-1.0.12.jar!/" />
           <root url="jar://$MODULE_DIR$/../../lib/external/jcommon-1.0.15.jar!/" />
         </CLASSES>
@@ -118,6 +109,15 @@
       <library>
         <CLASSES>
           <root url="jar://$MODULE_DIR$/../../lib/external/httpclient-4.0.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../lib/external/jakarta-oro-2.0.8.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
