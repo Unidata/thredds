@@ -205,7 +205,6 @@
         </SOURCES>
       </library>
     </orderEntry>
-    <orderEntry type="library" name="catalina" level="project" />
     <orderEntry type="module-library">
       <library>
         <CLASSES>

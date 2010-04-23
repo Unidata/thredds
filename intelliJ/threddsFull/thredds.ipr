@@ -239,6 +239,7 @@
       <file url="file://$PROJECT_DIR$/../../ldm/src/main/thredds/db/TestBabu.java" />
       <file url="file://$PROJECT_DIR$/../../cdm/src/test/java/ucar/nc2/jni/netcdf/TestJni.java" />
       <file url="file://$PROJECT_DIR$/../../ldm/src/main/thredds/ldm/BerkeleyDBIndexer.java" />
+      <file url="file://$PROJECT_DIR$/../../tds/src/main/java/thredds/servlet/MyWebDavServlet.java" />
     </excludeFromCompile>
     <resourceExtensions>
       <entry name=".+\.(properties|xml|html|dtd|tld)" />
@@ -338,6 +339,16 @@
           </module>
           <module name="tds">
             <files>
+              <file url="file://$PROJECT_DIR$/../../tds/runenv/WEB-INF/admin-servlet.xml" />
+              <file url="file://$PROJECT_DIR$/../../tds/runenv/WEB-INF/applicationContext-tdsConfig.xml" />
+              <file url="file://$PROJECT_DIR$/../../tds/runenv/WEB-INF/catalogGen-servlet.xml" />
+              <file url="file://$PROJECT_DIR$/../../tds/runenv/WEB-INF/catalogService-servlet.xml" />
+              <file url="file://$PROJECT_DIR$/../../tds/runenv/WEB-INF/cdmRemote-servlet.xml" />
+              <file url="file://$PROJECT_DIR$/../../tds/runenv/WEB-INF/dqc-servlet.xml" />
+              <file url="file://$PROJECT_DIR$/../../tds/runenv/WEB-INF/ncOpendap-servlet.xml" />
+              <file url="file://$PROJECT_DIR$/../../tds/runenv/WEB-INF/root-servlet.xml" />
+              <file url="file://$PROJECT_DIR$/../../tds/runenv/WEB-INF/view.xml" />
+              <file url="file://$PROJECT_DIR$/../../tds/runenv/WEB-INF/wms-servlet.xml" />
               <file url="file://$PROJECT_DIR$/../../tds/src/main/webapp-cdmValidator/WEB-INF/applicationContext-cdmValidatorConfig.xml" />
               <file url="file://$PROJECT_DIR$/../../tds/src/main/webapp-cdmValidator/WEB-INF/cdmvalidator-servlet.xml" />
               <file url="file://$PROJECT_DIR$/../../tds/src/main/webapp-expThredds/WEB-INF/applicationContext-tdsConfig.xml" />
@@ -723,33 +734,6 @@
                 </list>
               </option>
               <option name="trunkUrl" value="svn://zero/grib/trunk" />
-            </SvnBranchConfiguration>
-          </value>
-        </entry>
-        <entry key="$PROJECT_DIR$/../../../ncwms">
-          <value>
-            <SvnBranchConfiguration>
-              <option name="branchMap">
-                <map>
-                  <entry key="https://ncwms.svn.sourceforge.net/svnroot/ncwms/branches">
-                    <value>
-                      <list />
-                    </value>
-                  </entry>
-                  <entry key="https://ncwms.svn.sourceforge.net/svnroot/ncwms/tags">
-                    <value>
-                      <list />
-                    </value>
-                  </entry>
-                </map>
-              </option>
-              <option name="branchUrls">
-                <list>
-                  <option value="https://ncwms.svn.sourceforge.net/svnroot/ncwms/branches" />
-                  <option value="https://ncwms.svn.sourceforge.net/svnroot/ncwms/tags" />
-                </list>
-              </option>
-              <option name="trunkUrl" value="https://ncwms.svn.sourceforge.net/svnroot/ncwms/trunk" />
             </SvnBranchConfiguration>
           </value>
         </entry>
