@@ -138,9 +138,24 @@ all the data that have the same forecast time. This kind of dataset has successi
 <pre>&lt;featureCollection name=&quot;NCEP-NAM-Polar_90km&quot; featureType=&quot;FMRC&quot; harvest=&quot;true&quot; path=&quot;fmrc/NCEP/NAM/Polar_90km&quot;&gt;
   &lt;collection spec=&quot;/data/ldm/pub/native/grid/NCEP/NAM/Polar_90km/NAM_Polar_90km_#yyyyMMdd_HHmm#.grib2&quot;
           recheckAfter=&quot;15 min&quot;  olderThan=&quot;5 min&quot;/&gt;
-   &lt;update startup=&quot;true&quot; rescan=&quot;0 5 3 * * ? *&quot; /&gt;
-   &lt;protoDataset choice=&quot;Penultimate&quot; change=&quot;0 2 3 * * ? *&quot; /&gt;
-   &lt;fmrcConfig regularize=&quot;true&quot; datasetTypes=&quot;TwoD Best Files Runs ConstantForecasts ConstantOffsets&quot; /&gt;
+  &lt;update startup=&quot;true&quot; rescan=&quot;0 5 3 * * ? *&quot; /&gt;
+  &lt;protoDataset choice=&quot;Penultimate&quot; change=&quot;0 2 3 * * ? *&quot; /&gt;
+  &lt;fmrcConfig regularize=&quot;true&quot; datasetTypes=&quot;TwoD Best Files Runs ConstantForecasts ConstantOffsets&quot; /&gt;
+&lt;/featureCollection&gt;
+</pre>
+<pre>&lt;featureCollection name=&quot;NCEP-NAM-Polar_90km&quot; featureType=&quot;FMRC&quot; harvest=&quot;true&quot; path=&quot;fmrc/NCEP/NAM/Polar_90km&quot;&gt;
+  &lt;collection spec=&quot;/data/ldm/pub/native/grid/NCEP/NAM/Polar_90km/NAM_Polar_90km_#yyyyMMdd_HHmm#.grib2&quot;
+          recheckAfter=&quot;15 min&quot;  olderThan=&quot;5 min&quot;/&gt;
+  &lt;update startup=&quot;true&quot; rescan=&quot;0 5 3 * * ? *&quot; /&gt;
+  &lt;fmrcConfig regularize=&quot;true&quot; datasetTypes=&quot;TwoD Best Files Runs ConstantForecasts ConstantOffsets&quot; /&gt;
+
+  &lt;protoDataset choice=&quot;Penultimate&quot; change=&quot;0 2 3 * * ? *&quot; &gt;
+    &lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;<br />      &lt;attribute name=&quot;CF:FeatureType&quot; value=&quot;station&quot;/&gt;<br />
+    &lt;/netcdf&gt;
+  &lt;/protoDataset&gt;
+
+  &lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;<br />    &lt;attribute name=&quot;CF:FeatureType&quot; value=&quot;station&quot;/&gt;<br />  &lt;/netcdf&gt;
+
 &lt;/featureCollection&gt;
 </pre>
 <p>If an fmrcConfig element is not present, the default is regularize= <em>false</em>, and  datasetTypes= &quot;<em>TwoD Best Files Run</em>s&quot;. Specifying your own fmrcConfig completely overrides the datasetTypes default.</p>

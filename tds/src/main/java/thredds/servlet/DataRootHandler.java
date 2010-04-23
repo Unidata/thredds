@@ -913,6 +913,8 @@ public class DataRootHandler {
   }
 
   public DataRootMatch findDataRootMatch(String spath) {
+    if (spath.startsWith("/"))
+      spath = spath.substring(1);
     DataRoot dataRoot = findDataRoot(spath);
     if (dataRoot == null)
       return null;

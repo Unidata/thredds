@@ -101,10 +101,11 @@ public class CoordSysTable extends JPanel {
     varPopup.addAction("Show Declaration", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         VariableBean vb = (VariableBean) varTable.getSelectedBean();
-        Variable v = ds.findVariable( vb.getName());
+        VariableDS v = (VariableDS)  ds.findVariable( vb.getName());
         if (v == null) return;
         infoTA.clear();
         infoTA.appendLine(v.toString());
+        infoTA.appendLine(showMissing(v));
         infoTA.gotoTop();
         infoWindow.showIfNotIconified();
       }
@@ -367,6 +368,15 @@ public class CoordSysTable extends JPanel {
         buff.format(" NOT GRID");
       }
     }
+    return buff.toString();
+  }
+
+  private String showMissing(VariableDS v) {
+    Formatter buff = new Formatter();
+    buff.format("%s:", v.getName());
+    EnumSet<NetcdfDataset.Enhance> enhanceMode = v.getEnhanceMode();
+    buff.format("enhanceMode= %s%n", enhanceMode);
+    v.showScaleMissingProxy(buff);
     return buff.toString();
   }
 

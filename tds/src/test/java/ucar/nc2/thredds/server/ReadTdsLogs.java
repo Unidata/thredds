@@ -403,10 +403,10 @@ public class ReadTdsLogs {
         continue;
       }
 
-     if (!(log.path.indexOf("fmrc") > 0))  {    // fmrc only
+     /* if (!(log.path.indexOf("wcs") > 0) && !(log.path.indexOf("wms") > 0))  {    // wcs/wms only
        skip++;
        continue;
-     }
+     }   */
 
       if (log.path.indexOf("fileServer") > 0) {
         // System.out.println(" *** skip fmrc " + log);
@@ -435,11 +435,11 @@ public class ReadTdsLogs {
         continue;
       } */
 
-      /* if (log.returnCode != 200) {
+      if (log.returnCode != 200) {
         skip++;
         // System.out.println(" *** skip failure " + log);
         continue;
-      } */
+      }
 
       completionService.submit(new SendRequestTask(log));
       submit++;

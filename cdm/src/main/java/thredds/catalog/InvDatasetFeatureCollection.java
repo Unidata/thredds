@@ -658,7 +658,11 @@ public class InvDatasetFeatureCollection extends InvCatalogRef {
     String name = (pos > -1) ? matchPath.substring(pos + 1) : matchPath;
 
     try {
-      if (name.endsWith(FMRC) && wantDatasets.contains(FeatureCollectionConfig.FmrcDatasetType.TwoD)) {
+      if (type.equals(SCAN)) {
+        NetcdfDataset ncd = getNetcdfDataset(matchPath);
+        return ncd == null ? null : new ucar.nc2.dt.grid.GridDataset(ncd);
+
+      } else if (name.endsWith(FMRC) && wantDatasets.contains(FeatureCollectionConfig.FmrcDatasetType.TwoD)) {
         return fmrc.getDataset2D(null);
 
       } else if (name.endsWith(BEST) && wantDatasets.contains(FeatureCollectionConfig.FmrcDatasetType.Best)) {

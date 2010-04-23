@@ -38,7 +38,9 @@ import ucar.nc2.*;
 import ucar.nc2.util.CancelTask;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.EnumSet;
+import java.util.Formatter;
 import java.util.Set;
 
 /**
@@ -63,7 +65,7 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
   private boolean needEnumConversion = false;
 
   protected Variable orgVar; // wrap this Variable : use it for the I/O
-  protected DataType orgDataType; // keep seperate for the case where there is no ioVar.
+  protected DataType orgDataType; // keep separate for the case where there is no orgVar.
   protected String orgName; // in case Variable was renamed, and we need to keep track of the original name
 
   /**
@@ -515,6 +517,33 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
   public Array getMissingDataArray(int[] shape) {
     Object data = scaleMissingProxy.getFillValue( getDataType());
     return Array.factoryConstant( dataType.getPrimitiveClassType(), shape, data);
+  }
+
+  /**
+   * public for debugging
+   * @param f put info here
+   */
+  public void showScaleMissingProxy(Formatter f) {
+    f.format("use NaNs = %s%n", scaleMissingProxy.getUseNaNs());
+    f.format("has missing = %s%n", scaleMissingProxy.hasMissing());
+    if (scaleMissingProxy.hasMissing()) {
+      Object mv = scaleMissingProxy.getFillValue( getDataType());
+      String mvs = (mv instanceof String) ? (String) mv : java.lang.reflect.Array.get(mv, 0).toString();
+      f.format(" missing data value = %s%n", mvs);
+      f.format(" has missing value = %s%n", scaleMissingProxy.hasMissingValue());
+      f.format(" has fill value = %s%n", scaleMissingProxy.hasFillValue());
+      f.format(" has invalid value = %s%n", scaleMissingProxy.hasInvalidData());
+      if (scaleMissingProxy.hasInvalidData())
+        f.format("   valid min/max = [%f,%f]%n", scaleMissingProxy.getValidMin(), scaleMissingProxy.getValidMax());
+    }
+    f.format("%nhas scale/offset = %s%n", scaleMissingProxy.hasScaleOffset());
+    if (scaleMissingProxy.hasScaleOffset()) {
+      double offset = scaleMissingProxy.convertScaleOffsetMissing(0.0);
+      double scale = scaleMissingProxy.convertScaleOffsetMissing(1.0) - offset;
+      f.format("   scale_factor = %f add_offset = %f%n", scale, offset);
+    }
+    f.format("original data type = %s%n", getDataType());
+    f.format("converted data type = %s%n", scaleMissingProxy.getConvertedDataType());
   }
 
   protected Array convertEnums(Array values) {

@@ -73,7 +73,7 @@ public class TestOffAggForecastModel extends TestCase {
     ncfile.close();
   }
 
-  public void testForecastModelExtend() throws IOException, InvalidRangeException {
+  public void utestForecastModelExtend() throws IOException, InvalidRangeException {
     String filename = "file:./"+TestNcML.topDir + "offsite/aggForecastModel.xml";
     String newModel = dataDir + "NAM_CONUS_80km_20051212_1200.nc";
     String newModelsave = dataDir + "NAM_CONUS_80km_20051212_1200.nc.save";

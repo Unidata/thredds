@@ -599,8 +599,8 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
       }
     }
 
-    makeLevels();
-    makeTimes();
+    //makeLevels();  do this lazy
+    //makeTimes();
   }
 
   private CoordinateAxis convertUnits(CoordinateAxis axis) {
@@ -784,14 +784,15 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
     return isLatLon;
   }
 
-  /**
+  /*
    * is there a time coordinate, and can it be expressed as a Date?
    *
    * @return true if theres a time coordinate that can be expressed as a Date
    */
-  public boolean isDate() {
-    return isDate;
-  }
+ public boolean isDate() {
+   if (timeDates == null) makeTimes();
+   return isDate;
+ }
 
   /**
    * true if increasing z coordinate values means "up" in altitude
@@ -934,9 +935,9 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
     return findXYindexFromCoord(x_coord, y_coord, result);
   }
 
-  /**
+  /*
    * Given a Date, find the corresponding time index on the time coordinate axis.
-   * Can only call this is hasDate() is true.
+   * Can only call this if isDate() is true.
    * This will return
    * <ul>
    * <li> i, if time(i) <= d < time(i+1).
@@ -949,9 +950,9 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
    * @throws UnsupportedOperationException is no time axis or isDate() false
    */
   public int findTimeIndexFromDate(java.util.Date d) {
-    if (timeTaxis == null || !isDate())
-      throw new UnsupportedOperationException("GridCoordSys: ti");
     if (timeDates == null) makeTimes();
+    if (!isDate)
+      throw new UnsupportedOperationException("GridCoordSys: no time index");
 
     int n = (int) timeTaxis.getSize();
     long m = d.getTime();
@@ -1029,8 +1030,8 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
   }
 
   public DateRange getDateRange() {
-    if (isDate()) {
-      if (timeDates == null) makeTimes();
+    if (timeDates == null) makeTimes();
+    if (isDate) {
       Date[] dates = getTimeDates();
       return new DateRange(dates[0], dates[dates.length - 1]);
     }
