@@ -115,7 +115,7 @@ public class DatasetScanExpandSubdirsTest
 
     assertEquals( "","file1.nc", dsList.get( 0).getName());
     String msg = "expected:<file[2].nc> but was:<"+dsList.get(1).getName() +"> --\n\n" + InvCatalogFactory.getDefaultFactory( false ).writeXML( cat );
-    assertEquals( "file2.nc", dsList.get( 1).getName());
+    assertEquals( msg, "file2.nc", dsList.get( 1).getName());
     assertEquals( "file3.nc", dsList.get( 2).getName());
 
     InvDataset invDsSubdir1 = dsList.get( 3 );
