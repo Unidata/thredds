@@ -61,8 +61,6 @@
       <sourceFolder url="file://$MODULE_DIR$/../../tds/src/test/java" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/../../tds/content" />
       <excludeFolder url="file://$MODULE_DIR$/../../tds/doc" />
-      <excludeFolder url="file://$MODULE_DIR$/../../tds/src/main/java/thredds/server/wms/responses" />
-      <excludeFolder url="file://$MODULE_DIR$/../../tds/src/main/java/thredds/server/wms/util" />
       <excludeFolder url="file://$MODULE_DIR$/../../tds/target" />
     </content>
     <orderEntry type="inheritedJdk" />
