@@ -65,35 +65,6 @@
         </element>
       </root>
     </artifact>
-    <artifact type="exploded-war" name="tds:expThredds exploded">
-      <root id="root">
-        <element id="javaee-facet-resources" facet="tds/web/expThredds" />
-        <element id="directory" name="META-INF">
-          <element id="file-copy" path="$PROJECT_DIR$/../../tds/src/main/webapp-expThredds/META-INF/context.xml" />
-        </element>
-        <element id="directory" name="WEB-INF">
-          <element id="directory" name="classes">
-            <element id="module-output" name="cdm" />
-            <element id="module-output" name="tds" />
-            <element id="dir-copy" path="$PROJECT_DIR$/../../cdm/src/main/resources" />
-          </element>
-          <element id="directory" name="lib">
-            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/casclient-2.1.1.jar" />
-            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/commons-codec-1.3.jar" />
-            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/commons-logging-1.1.jar" />
-            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/gnu-getopt-1.0.6.jar" />
-            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/gnu-regexp-1.1.4.jar" />
-            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/jdom.jar" />
-            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/jpeg2000.jar" />
-            <element id="file-copy" path="$PROJECT_DIR$/../../lib/release/prefsAll.jar" />
-            <element id="file-copy" path="$PROJECT_DIR$/../../lib/release/visadNoDods.jar" />
-            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/commons-fileupload-1.1.1.jar" />
-            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/commons-httpclient-3.0.1.jar" />
-            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/commons-io-1.2.jar" />
-          </element>
-        </element>
-      </root>
-    </artifact>
     <artifact type="exploded-war" name="bufrTables:bufrTables exploded">
       <output-path>$PROJECT_DIR$/../../bufrTables/target</output-path>
       <root id="root">

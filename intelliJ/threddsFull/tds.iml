@@ -29,17 +29,6 @@
         <context-artifact name="tds:dqcServletRedirect exploded" />
       </configuration>
     </facet>
-    <facet type="web" name="expThredds">
-      <configuration>
-        <descriptors>
-          <deploymentDescriptor name="web.xml" url="file://$MODULE_DIR$/../../tds/src/main/webapp-expThredds/WEB-INF/web.xml" />
-        </descriptors>
-        <webroots>
-          <root url="file://$MODULE_DIR$/../../tds/src/main/webapp-expThredds/resources" relative="/" />
-        </webroots>
-        <context-artifact name="tds:expThredds exploded" />
-      </configuration>
-    </facet>
     <facet type="web" name="CdmValidator">
       <configuration>
         <descriptors>
