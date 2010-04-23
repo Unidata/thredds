@@ -36,6 +36,7 @@ import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
+import thredds.crawlabledataset.sorter.LexigraphicByNameSorter;
 import ucar.nc2.TestAll;
 import ucar.unidata.util.TestFileDirUtils;
 
@@ -88,8 +89,11 @@ public class DatasetScanExpandSubdirsTest
     InvDatasetImpl configRootDs = new InvDatasetImpl( null, "root ds" );
     configCat.addDataset( configRootDs );
     InvDatasetScan scan = new InvDatasetScan( configRootDs, "test", this.scanPath, this.scanLocation,
-                                              null, null, null, null, null, true, null, null, null,
+                                              null, null, null, null, null, true,
+                                              new LexigraphicByNameSorter( true),
+                                              null, null,
                                               new BooleanCatalogRefExpander( true) );
+
     scan.setServiceName( "odap" );
     configRootDs.addDataset( scan );
     assertTrue( configCat.finish());
