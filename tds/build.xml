@@ -20,7 +20,7 @@
   <property name="src.dir" location="${root.dir}/src/main/java"/>
   <property name="resources.dir" value="${root.dir}/src/main/resources"/>
   <property name="lib.dir" location="${root.dir}/../lib"/>
-  <property name="doc.dir" location="${root.dir}/doc"/>
+  <property name="docs.dir" location="${root.dir}/docs"/>
   <property name="webapp.dir" location="${root.dir}/src/main/webapp"/>
 
   <!-- target dirs -->
@@ -77,10 +77,11 @@
 
   <!-- Project libraries needed for compile. -->
   <property name="bufrTables.jar" value="release/bufrTables-2.0.jar"/>
-  <property name="netcdf.jar" value="release/netcdf-4.2.jar"/>
   <property name="grib.jar" value="release/grib-8.0.jar"/>
-  <property name="prefs.jar" value="release/prefsAll.jar"/>
+  <property name="ncwms.jar" value="release/ncwms.jar" />
+  <property name="netcdf.jar" value="release/netcdf-4.2.jar"/>
   <property name="opendap.jar" value="release/opendap-2.1.jar"/>
+  <property name="prefs.jar" value="release/prefsAll.jar"/>
   <property name="unidatacommon.jar" value="release/unidatacommon.jar"/>
   <property name="visadNoDods.jar" value="release/visadNoDods.jar"/>
 
@@ -106,10 +107,13 @@
 
   <!-- Third-party libraries needed for runtime. -->
   <property name="commons-io.jar" value="external/commons-io-1.4.jar"/>
+  <property name="epsg-wkt.jar" value="external/epsg-wkt.jar"/>
+  <property name="geotk-bundle-referencing.jar" value="external/geotk-bundle-referencing-3.04.jar"/>
   <!-- property name="gnu-regexp.jar" value="external/gnu-regexp-1.1.4.jar"/ -->
   <property name="http-codec.jar" value="external/commons-codec-1.3.jar"/>
   <property name="http-logging.jar" value="external/commons-logging-1.1.jar"/>
   <property name="jpeg2000.jar" value="external/jpeg2000.jar"/>
+  <property name="json-taglib.jar" value="external/json-taglib-0.4.1.jar"/>
 
   <!-- The servlet jar file is needed to compile the servlet but is not needed
     by the servlet engine, therefore, it is not needed in the war file. -->
@@ -130,15 +134,18 @@
       <include name="${bufrTables.jar}"/>
       <include name="${grib.jar}"/>
       <include name="${opendap.jar}"/>
+      <include name="${ncwms.jar}"/>
       <include name="${prefs.jar}"/>
       <include name="${unidatacommon.jar}"/>
       <include name="${visadNoDods.jar}"/>
 
       <include name="${bdb.jar}"/>
       <include name="${cas.jar}"/>
-      <include name="${fileupload.jar}"/>
       <include name="${commons-lang.jar}"/>
       <include name="${commons-io.jar}"/>
+      <include name="${fileupload.jar}"/>
+      <!-- ToDo Get rid of Geotk dependence in ThreddsLayer and move this to runtime list. -->
+      <include name="${geotk-bundle-referencing.jar}" />
       <include name="${httpclient.jar}"/>
       <include name="${jdom.jar}"/>
       <include name="${joda.jar}"/>
@@ -152,11 +159,13 @@
 
   <fileset id="runtime.libraries" dir="${lib.dir}">
     <patternset id="runtime.libs">
+      <include name="${epsg-wkt.jar}" />
       <include name="${http-codec.jar}"/>
       <include name="${http-logging.jar}"/>
       <include name="${slf4jImpl.jar}"/>
       <include name="${log4j.jar}"/>
       <include name="${jpeg2000.jar}"/>
+      <include name="${json-taglib.jar}"/>
       <include name="${jstl.jar}"/>
       <include name="${jstl-standard.jar}"/>
     </patternset>
@@ -170,7 +179,6 @@
   <path id="compile.classpath">
     <fileset refid="compile.libraries" />
     <fileset refid="servlet.compile.libraries" />
-    <fileset refid="ncWMS.libraries" />
   </path>
 
   <!-- targets -->
@@ -265,10 +273,9 @@
   </target>
 
   <property name="ncwms.class.dir" value="${root.dir}/../../ncwms/target/classes"/>
-  <property  name="ncwms.jar" value="${lib.dir}/release/ncwms.jar" />
 
   <target  name="ncwms-setup" description="Create ncwms.jar (assumes already compiled).">
-    <jar destfile="${ncwms.jar}">
+    <jar destfile="${lib.dir}/${ncwms.jar}">
       <fileset dir="${ncwms.class.dir}"/>
 
       <manifest>
@@ -314,7 +321,6 @@
     <copy todir="${war.dir}/WEB-INF/lib" flatten="true" overwrite="true" preservelastmodified="true">
       <fileset refid="compile.libraries"/>
       <fileset refid="runtime.libraries"/>
-      <fileset refid="ncWMS.libraries" />   
     </copy>
 
    <!-- Copy webapps dir  -->
