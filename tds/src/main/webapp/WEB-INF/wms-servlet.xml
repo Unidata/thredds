@@ -7,6 +7,7 @@
   <!-- Configuration of this ncWMS server. -->
   <bean id="config" class="thredds.server.wms.ThreddsServerConfig">
     <property name="tdsContext" ref="tdsContext"/>
+    <property name="defaultPaletteLocation" value="/WEB-INF/palettes/"/>
   </bean>
   <!-- This Controller will handle all the requests to the WMS -->
   <bean id="wmsController" class="uk.ac.rdg.resc.ncwms.controller.WmsController"

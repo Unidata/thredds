@@ -125,59 +125,24 @@ public class HtmlConfig
     if ( this.hostInstLogoAlt == null ) this.hostInstLogoAlt = ThreddsConfig.get( "htmlSetup.hostInstLogoAlt", "" );
   }
 
-  /**
-   * Return the name of this webapp. The name is that given by display-name in web.xml.
-   *
-   * @return the name of this webapp.
-   */
-  public String getWebappName()
-  {
+  public String getWebappName() {
     return this.webappName;
   }
 
-  public void setWebappName( String webappName)
-  {
-    this.webappName = webappName;
-  }
-
-  public String getWebappVersion()
-  {
+  public String getWebappVersion() {
     return webappVersion;
   }
 
-  public void setWebappVersion( String webappVersion )
-  {
-    this.webappVersion = webappVersion;
-  }
-
-  public String getWebappVersionBrief()
-  {
+  public String getWebappVersionBrief() {
     return webappVersionBrief;
   }
 
-  public void setWebappVersionBrief( String webappVersionBrief )
-  {
-    this.webappVersionBrief = webappVersionBrief;
-  }
-
-  public String getWebappVersionBuildDate()
-  {
+  public String getWebappVersionBuildDate() {
     return webappVersionBuildDate;
   }
 
-  public void setWebappVersionBuildDate( String webappVersionBuildDate )
-  {
-    this.webappVersionBuildDate = webappVersionBuildDate;
-  }
-
-  public String getWebappContextPath()
-  {
+  public String getWebappContextPath() {
     return webappContextPath;
-  }
-
-  public void setWebappContextPath( String webappContextPath )
-  {
-    this.webappContextPath = webappContextPath;
   }
 
   /**
@@ -188,13 +153,11 @@ public class HtmlConfig
    *
    * @return the URL to the main web page for the webapp.
    */
-  public String getWebappUrl()
-  {
+  public String getWebappUrl() {
     return webappUrl;
   }
 
-  public void setWebappUrl( String webappUrl)
-  {
+  public void setWebappUrl( String webappUrl) {
     this.webappUrl = webappUrl;
   }
 
@@ -206,13 +169,11 @@ public class HtmlConfig
    *
    * @return the URL to the webapp documentation page.
    */
-  public String getWebappDocsUrl()
-  {
+  public String getWebappDocsUrl() {
     return webappDocsUrl;
   }
 
-  public void setWebappDocsUrl( String webappDocsUrl )
-  {
+  public void setWebappDocsUrl( String webappDocsUrl ) {
     this.webappDocsUrl = webappDocsUrl;
   }
 
@@ -224,13 +185,11 @@ public class HtmlConfig
    *
    * @return the path to the logo file for the webapp.
    */
-  public String getWebappLogoUrl()
-  {
+  public String getWebappLogoUrl() {
     return webappLogoUrl;
   }
 
-  public void setWebappLogoUrl( String webappLogoUrl )
-  {
+  public void setWebappLogoUrl( String webappLogoUrl ) {
     this.webappLogoUrl = webappLogoUrl;
   }
 
@@ -239,13 +198,11 @@ public class HtmlConfig
    *
    * @return the alternate text for the webapp logo.
    */
-  public String getWebappLogoAlt()
-  {
+  public String getWebappLogoAlt() {
     return webappLogoAlt;
   }
 
-  public void setWebappLogoAlt( String webappLogoAlt )
-  {
+  public void setWebappLogoAlt( String webappLogoAlt ) {
     this.webappLogoAlt = webappLogoAlt;
   }
 
@@ -257,9 +214,12 @@ public class HtmlConfig
    *
    * @return the Url to the CSS file used for all non-catalog HTML pages.
    */
-  public String getPageCssUrl()
-  {
+  public String getPageCssUrl() {
     return pageCssUrl;
+  }
+
+  public void setPageCssUrl( String pageCssUrl ) {
+    this.pageCssUrl = pageCssUrl;
   }
 
   /**
@@ -270,9 +230,12 @@ public class HtmlConfig
    *
    * @return the URL to the CSS file used for catalog HTML pages.
    */
-  public String getCatalogCssUrl()
-  {
+  public String getCatalogCssUrl() {
     return catalogCssUrl;
+  }
+
+  public void setCatalogCssUrl( String catalogCssUrl ) {
+    this.catalogCssUrl = catalogCssUrl;
   }
 
   /**
@@ -283,14 +246,20 @@ public class HtmlConfig
    *
    * @return the URL to the icon document used for folders in HTML catalog views.
    */
-  public String getFolderIconUrl()
-  {
+  public String getFolderIconUrl() {
     return folderIconUrl;
   }
 
-  public String getFolderIconAlt()
-  {
+  public void setFolderIconUrl( String folderIconUrl ) {
+    this.folderIconUrl = folderIconUrl;
+  }
+
+  public String getFolderIconAlt() {
     return folderIconAlt;
+  }
+
+  public void setFolderIconAlt( String folderIconAlt ) {
+    this.folderIconAlt = folderIconAlt;
   }
 
   /**
@@ -301,14 +270,20 @@ public class HtmlConfig
    *
    * @return the URL to the icon document used for datasets in HTML catalog views.
    */
-  public String getDatasetIconUrl()
-  {
+  public String getDatasetIconUrl() {
     return datasetIconUrl;
   }
 
-  public String getDatasetIconAlt()
-  {
+  public void setDatasetIconUrl( String datasetIconUrl ) {
+    this.datasetIconUrl = datasetIconUrl;
+  }
+
+  public String getDatasetIconAlt() {
     return datasetIconAlt;
+  }
+
+  public void setDatasetIconAlt( String datasetIconAlt ) {
+    this.datasetIconAlt = datasetIconAlt;
   }
 
   /**
@@ -316,9 +291,12 @@ public class HtmlConfig
    *
    * @return the name of this TDS installation.
    */
-  public String getInstallName()
-  {
+  public String getInstallName() {
     return installName;
+  }
+
+  public void setInstallName( String installName ) {
+    this.installName = installName;
   }
 
   /**
@@ -329,13 +307,11 @@ public class HtmlConfig
    *
    * @return the URL to the top level of this installation.
    */
-  public String getInstallUrl()
-  {
+  public String getInstallUrl() {
     return installUrl;
   }
 
-  public void setInstallUrl( String installUrl )
-  {
+  public void setInstallUrl( String installUrl ) {
     this.installUrl = installUrl;
   }
 
@@ -347,9 +323,12 @@ public class HtmlConfig
    *
    * @return the path to the logo file for this installation of the webapp.
    */
-  public String getInstallLogoUrl()
-  {
+  public String getInstallLogoUrl() {
     return installLogoUrl;
+  }
+
+  public void setInstallLogoUrl( String installLogoUrl ) {
+    this.installLogoUrl = installLogoUrl;
   }
 
   /**
@@ -357,9 +336,12 @@ public class HtmlConfig
    *
    * @return the alternate text for the logo for this installation.
    */
-  public String getInstallLogoAlt()
-  {
+  public String getInstallLogoAlt() {
     return installLogoAlt;
+  }
+
+  public void setInstallLogoAlt( String installLogoAlt ) {
+    this.installLogoAlt = installLogoAlt;
   }
 
   /**
@@ -367,9 +349,12 @@ public class HtmlConfig
    *
    * @return the name of the institution hosting this TDS installation.
    */
-  public String getHostInstName()
-  {
+  public String getHostInstName() {
     return hostInstName;
+  }
+
+  public void setHostInstName( String hostInstName ) {
+    this.hostInstName = hostInstName;
   }
 
   /**
@@ -380,9 +365,12 @@ public class HtmlConfig
    *
    * @return the URL to a web page for the institution hosting this installation.
    */
-  public String getHostInstUrl()
-  {
+  public String getHostInstUrl() {
     return hostInstUrl;
+  }
+
+  public void setHostInstUrl( String hostInstUrl ) {
+    this.hostInstUrl = hostInstUrl;
   }
 
   /**
@@ -393,9 +381,12 @@ public class HtmlConfig
    *
    * @return the path to the logo file for the institution hosting this installation.
    */
-  public String getHostInstLogoUrl()
-  {
+  public String getHostInstLogoUrl() {
     return hostInstLogoUrl;
+  }
+
+  public void setHostInstLogoUrl( String hostInstLogoUrl ) {
+    this.hostInstLogoUrl = hostInstLogoUrl;
   }
 
   /**
@@ -403,9 +394,12 @@ public class HtmlConfig
    *
    * @return the alternate text for the logo for the institution hosting this installation.
    */
-  public String getHostInstLogoAlt()
-  {
+  public String getHostInstLogoAlt() {
     return hostInstLogoAlt;
+  }
+
+  public void setHostInstLogoAlt( String hostInstLogoAlt ) {
+    this.hostInstLogoAlt = hostInstLogoAlt;
   }
 
   /**

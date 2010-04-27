@@ -39,10 +39,7 @@ import javax.servlet.ServletContextListener;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.util.Log4jWebConfigurer;
-import thredds.servlet.DataRootHandler;
-import thredds.servlet.RestrictedAccessConfigListener;
-import thredds.servlet.HtmlWriter;
-import thredds.servlet.UsageLog;
+import thredds.servlet.*;
 
 /**
  * _more_
@@ -84,7 +81,7 @@ public class TdsConfigContextListener
     CdmInit cdmInit = (CdmInit) wac.getBean( "cdmInit", CdmInit.class );
     cdmInit.init(tdsContext);
 
-    // YUCK! This is so not-yet-Spring-ified servlets can access the singleton HtmlWriter.
+    // YUCK! This is done so that not-yet-Spring-ified servlets can access the singleton HtmlWriter.
     // LOOK! ToDo This should be removed once the catalog service controllers uses JSP.
     HtmlWriter htmlWriter = (HtmlWriter) wac.getBean( "htmlWriter", HtmlWriter.class );
     htmlWriter.setSingleton( htmlWriter );

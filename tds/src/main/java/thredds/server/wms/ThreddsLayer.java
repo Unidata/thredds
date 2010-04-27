@@ -71,7 +71,13 @@ class ThreddsLayer extends AbstractScalarLayer
         super(id);
     }
 
-    @Override
+  @Override
+  public String getName()
+  {
+    return this.getId();
+  }
+
+  @Override
     public Dataset getDataset() { return this.dataset; }
     public void setDataset( ThreddsDataset dataset) { this.dataset = dataset; }
 

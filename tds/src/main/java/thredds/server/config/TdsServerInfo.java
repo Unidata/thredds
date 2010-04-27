@@ -144,27 +144,4 @@ public class TdsServerInfo
   public void setHostInstitutionLogoAltText( String hostInstitutionLogoAltText ) {
     this.hostInstitutionLogoAltText = hostInstitutionLogoAltText;
   }
-/*
-    <serverInformation>
-    <name>Motherlode TDS</name>
-    <logoUrl>threddsIcon.gif</logoUrl>
-    <logoAltText>Motherlode TDS</logoAltText>
-
-    <abstract>Scientific Data</abstract>
-    <keywords>ocean, climate, meteorology, atmosphere, earth science</keywords>
-
-    <contact>
-      <name>Support</name>
-      <organization>Unidata</organization>
-      <email>support-thredds@unidata.ucar.edu</email>
-    </contact>
-    <hostInstitution>
-      <name>Unidata</name>
-      <webSite>http://www.unidata.ucar.edu/</webSite>
-      <logoUrl>unidataIcon.gif</logoUrl>
-      <logoAltText>Unidata</logoAltText>
-    </hostInstitution>
-  </serverInformation>
-
-   */
 }

@@ -34,13 +34,10 @@ package thredds.server.wms;
 
 import org.joda.time.DateTime;
 import thredds.server.config.TdsContext;
-import thredds.servlet.DataRootHandler;
-import thredds.servlet.DatasetHandler;
-import thredds.servlet.ServletUtil;
+import thredds.servlet.*;
 import thredds.util.TdsPathUtils;
 import ucar.nc2.dt.GridDataset;
 import uk.ac.rdg.resc.ncwms.controller.AbstractServerConfig;
-import uk.ac.rdg.resc.ncwms.exceptions.LayerNotDefinedException;
 import uk.ac.rdg.resc.ncwms.exceptions.WmsException;
 import uk.ac.rdg.resc.ncwms.wms.Dataset;
 import uk.ac.rdg.resc.ncwms.wms.Layer;
@@ -68,9 +65,16 @@ import java.util.Set;
 public class ThreddsServerConfig extends AbstractServerConfig
 {
   private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
+  private org.slf4j.Logger logServerStartup = org.slf4j.LoggerFactory.getLogger( "serverStartup" );
 
   private TdsContext tdsContext;
   private DataRootHandler dataRootHandler;
+
+  private boolean allow;
+  private boolean allowRemote;
+
+  private String defaultPaletteLocation;
+  private String paletteLocation;
 
   private ThreddsServerConfig() {}
 
@@ -78,11 +82,111 @@ public class ThreddsServerConfig extends AbstractServerConfig
     this.tdsContext = tdsContext;
   }
 
-  public void init()
-  {
-
+  public String getDefaultPaletteLocation() {
+    return this.defaultPaletteLocation;
   }
-  
+
+  public void setDefaultPaletteLocation( String defaultPaletteDirectory) {
+    this.defaultPaletteLocation = defaultPaletteDirectory;
+  }
+
+  public String getPaletteLocation() {
+    return this.paletteLocation;
+  }
+
+  public void setPaletteLocation( String paletteLocation ) {
+    this.paletteLocation = paletteLocation;
+  }
+
+
+///*
+//  public void init()
+//  {
+//    allow = ThreddsConfig.getBoolean( "WMS.allow", false );
+//    allowRemote = ThreddsConfig.getBoolean( "WMS.allowRemote", false );
+//
+//    if ( allow )
+//    {
+//
+//    }
+//    // Configure color palette directory.
+//    String wmsPaletteDirectory = ThreddsConfig.get( "WMS.paletteLocationDir", null );
+//    if ( wmsPaletteDirectory != null )
+//      this.setPaletteLocation( wmsPaletteDirectory );
+//
+//      String paletteLocation = ThreddsConfig.get( "WMS.paletteLocationDir",
+//                                                this.getServletContext().getRealPath( "/WEB-INF/palettes" ) );
+//
+//    if ( paletteLocation == null )
+//    {
+//      // Default palette directory not found!!!
+//      allow = allowRemote = false;
+//      logServerStartup.error( "Palette location not configured and default location not found." +
+//                              "\n**** Disabling WMS - check palette configuration: "
+//                              + UsageLog.closingMessageNonRequestContext() );
+//      return;
+//    }
+//    File paletteLocationDir = new File( paletteLocation );
+//    if ( !paletteLocationDir.isAbsolute() )
+//    {
+//      paletteLocationDir = tdsContext.getConfigFileSource().getFile( paletteLocation );
+//      if ( paletteLocationDir == null )
+//      {
+//        // User configured palette directory not found!!!
+//        allow = allowRemote = false;
+//        logServerStartup.error( "Palette location [" + paletteLocation + "] not found." +
+//                                "\n**** Disabling WMS - check palette configuration: "
+//                                + UsageLog.closingMessageNonRequestContext() );
+//        return;
+//      }
+//    }
+//
+//    if ( paletteLocationDir.exists() && paletteLocationDir.isDirectory() )
+//    {
+//      ColorPalette.loadPalettes( paletteLocationDir );
+//      logServerStartup.debug( "Loaded palettes from " + paletteLocation );
+//    }
+//    else
+//    {
+//      // Palette directory doesn't exist or isn't directory!!!
+//      allow = allowRemote = false;
+//      logServerStartup.error( "Palette location directory [" + paletteLocation + "] doesn't exist or isn't a directory." +
+//                              "\n**** Disabling WMS - check palette configuration: "
+//                              + UsageLog.closingMessageNonRequestContext() );
+//      return;
+////        logServerStartup.warn( "Directory of palette files does not exist or is not a directory.  paletteLocation=" + paletteLocation );
+////        ColorPalette.loadPalettes( paletteLocationDir );
+//    }
+//
+//    colorRange = new HashMap<String, ColorScaleRange>();
+//
+//
+//
+//
+//
+//
+//    // We initialize the ColorPalettes.  We need to do this from here
+//    // because we need a way to find out the real path of the
+//    // directory containing the palettes.  Therefore we need a way of
+//    // getting at the ServletContext object, which isn't available from
+//    // the ColorPalette class.
+//    tdsContext.getRootDirectory();
+//
+//    String paletteLocation = this.getWebApplicationContext()
+//            .getServletContext().getRealPath( "/WEB-INF/conf/palettes" );
+//    File paletteLocationDir = new File( paletteLocation );
+//    if ( paletteLocationDir.exists() && paletteLocationDir.isDirectory() )
+//    {
+//      ColorPalette.loadPalettes( paletteLocationDir );
+//    }
+//    else
+//    {
+//      log.info( "Directory of palette files does not exist or is not a directory" );
+//    }
+//
+//  }
+//
+//*/
     /**
      * Returns false: THREDDS servers can't produce a capabilities document
      * containing all datasets.
