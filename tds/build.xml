@@ -94,6 +94,7 @@
   <property name="fileupload.jar" value="external/commons-fileupload-1.2.1.jar"/>
   <property name="httpclient.jar" value="external/commons-httpclient-3.1.jar"/>
   <property name="jdom.jar" value="external/jdom.jar"/>
+  <property name="jcommon.jar" value="external/jcommon-1.0.15.jar"/>
   <property name="jfreechart.jar" value="external/jfreechart-1.0.12.jar"/>
   <property name="joda.jar" value="external/joda-time-1.6.jar"/>
   <property name="protobuf.jar" value="external/protobuf-java-2.1.0.jar"/>
@@ -165,6 +166,7 @@
       <include name="${epsg-wkt.jar}" />
       <include name="${http-codec.jar}"/>
       <include name="${http-logging.jar}"/>
+      <include name="${jcommon.jar}"/>
       <include name="${jfreechart.jar}"/>
       <include name="${jpeg2000.jar}"/>
       <include name="${json-taglib.jar}"/>
