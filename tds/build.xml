@@ -90,9 +90,11 @@
   <property name="catalina.jar" value="external/catalina.jar"/>
   <property name="commons-lang.jar" value="external/commons-lang-2.4.jar"/>
   <property name="cas.jar" value="external/casclient-2.1.1.jar"/>
+  <property name="ehcache.jar" value="external/ehcache-1.6.0.jar"/>
   <property name="fileupload.jar" value="external/commons-fileupload-1.2.1.jar"/>
   <property name="httpclient.jar" value="external/commons-httpclient-3.1.jar"/>
   <property name="jdom.jar" value="external/jdom.jar"/>
+  <property name="jfreechart.jar" value="external/jfreechart-1.0.12.jar"/>
   <property name="joda.jar" value="external/joda-time-1.6.jar"/>
   <property name="protobuf.jar" value="external/protobuf-java-2.1.0.jar"/>
   <property name="slf4jAPI.jar" value="external/slf4j-api-1.5.6.jar"/>
@@ -159,15 +161,17 @@
 
   <fileset id="runtime.libraries" dir="${lib.dir}">
     <patternset id="runtime.libs">
+      <include name="${ehcache.jar}" />
       <include name="${epsg-wkt.jar}" />
       <include name="${http-codec.jar}"/>
       <include name="${http-logging.jar}"/>
-      <include name="${slf4jImpl.jar}"/>
-      <include name="${log4j.jar}"/>
+      <include name="${jfreechart.jar}"/>
       <include name="${jpeg2000.jar}"/>
       <include name="${json-taglib.jar}"/>
       <include name="${jstl.jar}"/>
       <include name="${jstl-standard.jar}"/>
+      <include name="${log4j.jar}"/>
+      <include name="${slf4jImpl.jar}"/>
     </patternset>
   </fileset>
 
