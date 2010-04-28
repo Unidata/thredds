@@ -35,6 +35,8 @@ package ucar.nc2.iosp.hdf5;
 import junit.framework.*;
 import ucar.nc2.*;
 import ucar.ma2.Array;
+import ucar.nc2.dt.GridDatatype;
+import ucar.nc2.dt.grid.GridDataset;
 
 import java.io.*;
 import java.util.Collections;
@@ -48,6 +50,28 @@ public class TestN4 extends TestCase {
   String testDir = TestAll.testdataDir + "netcdf4/";
   public TestN4(String name) {
     super(name);
+  }
+
+  public void testGlobalHeapOverun() throws IOException {
+    // Global Heap 1t 13059 runs out with no heap id = 0
+    String filename = testDir+"globalHeapOverrun.nc4";
+    NetcdfFile ncfile = TestNC2.open(filename);
+    System.out.println("\n**** testGlobalHeapOverun done\n\n" + ncfile);
+    List<Variable> vars = ncfile.getVariables();
+    Collections.sort(vars);
+    for (Variable v : vars) System.out.println(" "+v.getName());
+    System.out.println("nvars = "+ncfile.getVariables().size());
+    ncfile.close();
+  }
+
+  public void testTiling() throws IOException {
+    // Global Heap 1t 13059 runs out with no heap id = 0
+    String filename = "E:/work/margolis/gtgGrib.nc"; // testDir+"tiling.nc4";
+    GridDataset gridDataset = GridDataset.open(filename);
+    GridDatatype grid = gridDataset.findGridByName("Turbulence_SIGMET_AIRMET" );
+    System.out.printf("grid=%s%n", grid);
+    grid.readDataSlice( 4, 13, 176, 216 ); // FAILS
+    gridDataset.close();
   }
 
   public void testOpen() throws IOException {

@@ -309,11 +309,27 @@ public class CatalogChooser extends JPanel {
 
     // button panel
     buttPanel = new JPanel();
-    JButton openfileButton = new JButton("Open file");
+    JButton openfileButton = new JButton("Open File");
     buttPanel.add(openfileButton, null);
     openfileButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent evt) {
         eventType = "File";
+        try {
+          tree.acceptSelected();
+        } catch (Throwable t) {
+          t.printStackTrace();
+          JOptionPane.showMessageDialog(CatalogChooser.this, "ERROR "+t.getMessage());
+        } finally {
+          eventType = null;
+        }
+      }
+    });
+
+    JButton openCoordButton = new JButton("Open CoordSys");
+    buttPanel.add(openCoordButton, null);
+    openCoordButton.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent evt) {
+        eventType = "CoordSys";
         try {
           tree.acceptSelected();
         } catch (Throwable t) {

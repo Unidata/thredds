@@ -320,9 +320,12 @@ public class CatalogTreeView extends JPanel implements CatalogSetCallback {
     node.makeChildren( includeCatref);
     tree.expandPath(makeTreePath(node));
 
+    //System.out.printf("open %s%n", node);
     Enumeration e = node.children();
     while (e.hasMoreElements()) {
-      open( (InvCatalogTreeNode) e.nextElement(), includeCatref);
+      InvCatalogTreeNode child = (InvCatalogTreeNode) e.nextElement();
+      //System.out.printf(" child %s%n", child);
+      open( (InvCatalogTreeNode) child, includeCatref);
     }
   }
 

@@ -176,7 +176,7 @@ public class ThreddsUI extends JPanel {
           return;
         }
 
-        if (e.getPropertyName().equals("Dataset") || e.getPropertyName().equals("File")) {
+        if (e.getPropertyName().equals("Dataset") || e.getPropertyName().equals("CoordSys") || e.getPropertyName().equals("File")) {
           // intercept XML, ASCII return types
           InvDataset ds = (InvDataset) e.getNewValue();
           InvAccess access = ds.getAccess( ServiceType.HTTPServer);

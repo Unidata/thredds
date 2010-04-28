@@ -75,6 +75,8 @@ public class DODSAttribute extends ucar.nc2.Attribute {
     int count = 0;
     while(iter.hasNext()) {
       String val = (String) iter.next();
+      if (val.length() == 0)
+        System.out.println("HEY");
       if (val.charAt(0) == '"')
         val = val.substring(1);
       int n = val.length();

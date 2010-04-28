@@ -37,6 +37,7 @@ import junit.framework.*;
 /** Count geogrid objects - sanity check when anything changes. */
 
 public class TestReadAndCountDods extends TestCase {
+  static String base = "thredds:resolve:http://motherlode.ucar.edu:8080/thredds/";
 
   public TestReadAndCountDods( String name) {
     super(name);
@@ -47,19 +48,18 @@ public class TestReadAndCountDods extends TestCase {
     // this has a Grid that returns a structure
     try {
       doOne("dods://iridl.ldeo.columbia.edu/SOURCES/.CAYAN/dods", "", 5, 1, 3, 0);
-    } catch (Exception e) {
+    } catch (Throwable e) {
       System.out.println(" -- barf");
     }  // */
 
     // this has a Grid that returns a bare array
     try {
       doOne("dods://usgodae2.usgodae.org:80/dods/GDS/coamps_cent_am/COAMPS_cent_am_0001_000000-000000ltnt_heat_flux", "", 1, 1, 3, 0);
-    } catch (Exception e) {
+    } catch (Throwable e) {
       System.out.println(" -- barf");
     }  // */
 
     // IDV netcdf files, one from each model
-    String base = "thredds:resolve:http://motherlode.ucar.edu:8080/thredds/";
     TestReadandCount.doOne(base,"dqc/latestModel-InvCat1.0?nam_211", 41, 7, 9, 5);
     TestReadandCount.doOne(base,"dqc/latestModel-InvCat1.0?gfs_211", 31, 6, 8, 4);
     TestReadandCount.doOne(base,"dqc/latestModel-InvCat1.0?gfs_37-44", 31, 4, 8, 4);
@@ -107,6 +107,10 @@ public class TestReadAndCountDods extends TestCase {
     TestReadandCount.doOne(base,"idd/model/RUC/CONUS_80km/latest.xml", 31, 8, 10, 5);  // */
 
     //NetcdfFileCache.clearCache( true);
+  }
+
+  static void testProblem() throws Exception {
+    TestReadandCount.doOne(base,"dqc/latestModel-InvCat1.0?gfs_37-44", 31, 4, 8, 4);    
   }
 
   static void doOne(String dir, String filename, int ngrids, int ncoordSys, int ncoordAxes, int nVertCooordAxes) throws Exception {

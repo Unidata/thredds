@@ -155,7 +155,7 @@ public class ThreddsDatasetChooser extends JPanel {
         }
 
         // see if this dataset is really a qc
-        if (e.getPropertyName().equals("Dataset") || e.getPropertyName().equals("File")) {
+        if (e.getPropertyName().equals("Dataset") || e.getPropertyName().equals("CoordSys") || e.getPropertyName().equals("File")) {
           InvDataset ds = (thredds.catalog.InvDataset) e.getNewValue();
           InvAccess qcAccess = ds.getAccess( ServiceType.QC);
           if (queryChooser != null && (qcAccess != null)) { // LOOK && (ds.getDataType() != DataType.STATION)) {

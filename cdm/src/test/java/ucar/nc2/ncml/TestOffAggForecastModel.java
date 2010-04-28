@@ -44,7 +44,7 @@ import ucar.nc2.*;
 import ucar.nc2.units.DateFormatter;
 
 public class TestOffAggForecastModel extends TestCase {
-  private int nruns = 14;
+  private int nruns = 15;
   private int nfore = 11;
   public TestOffAggForecastModel( String name) {
     super(name);

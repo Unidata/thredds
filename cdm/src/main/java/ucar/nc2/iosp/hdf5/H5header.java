@@ -4582,7 +4582,8 @@ There is _no_ datatype information stored for these sort of selections currently
       raf.skipBytes(4); // pad to 8
 
       int count = 0;
-      while (count < size) {
+      while (count + 16 < size) {  // guess that there must be room for a global heap object and some data.
+                                  // see globalHeapOverrun in netcdf4 test directory
         long startPos = raf.getFilePointer();
         HeapObject o = new HeapObject();
         o.id = raf.readShort();

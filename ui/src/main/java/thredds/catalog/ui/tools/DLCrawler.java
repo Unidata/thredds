@@ -1,4 +1,3 @@
-// $Id: DLCrawler.java 50 2006-07-12 16:30:06Z caron $
 /*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
@@ -44,7 +43,6 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.net.URI;
 import java.net.URL;
 import java.net.MalformedURLException;
@@ -58,12 +56,10 @@ import thredds.catalog.dl.DIFWriter;
 import thredds.catalog.dl.ADNWriter;
 import thredds.ui.*;
 
-
 /**
- * Experimental widget for extracting and modifying catalogs. Do not use yet.
+ * Experimental widget for crawling catalogs and checking for complete metadata.
  *
  * @author John Caron
- * @version $Id: DLCrawler.java 50 2006-07-12 16:30:06Z caron $
  */
 
 public class DLCrawler extends JPanel {
@@ -79,16 +75,13 @@ public class DLCrawler extends JPanel {
   private BeanTableSorted dsTable, daTable;
   private JTabbedPane tabbedPane;
   private JSplitPane splitV;
-  private ArrayList tables = new ArrayList();
   private IndependentWindow sourceWindow = null, statusWindow = null;
   private TextGetPutPane sourcePane;
   private TextHistoryPane statusPane;
 
   // data
-  private ArrayList daList = new ArrayList();
-  private ArrayList dsList = new ArrayList();
-  //private InvCatalogImpl currentCatalog = null;
-  //private DatasetBean currentBean = null;
+  private java.util.List<AccessBean> daList = new ArrayList<AccessBean>();
+  private java.util.List<DatasetBean> dsList = new ArrayList<DatasetBean>();
 
   private DIFWriter difWriter = new DIFWriter();
   private ADNWriter adnWriter = new ADNWriter();
@@ -142,8 +135,8 @@ public class DLCrawler extends JPanel {
         if (debugEvents) System.out.println("CatalogEnhancer tree propertyChange= "+e.getPropertyName());
          // see if a new catalog is set
         if (e.getPropertyName().equals("Catalog")) {
-          daList = new ArrayList();
-          dsList = new ArrayList();
+          daList = new ArrayList<AccessBean>();
+          dsList = new ArrayList<DatasetBean>();
           dsTable.setBeans( dsList);
           daTable.setBeans( daList);
 
@@ -171,7 +164,7 @@ public class DLCrawler extends JPanel {
     });
 
     // access bean table
-    daTable = new BeanTableSorted(AccessBean.class, (PreferencesExt) prefs.node("dsBeans"), false);
+    daTable = new BeanTableSorted(AccessBean.class, (PreferencesExt) prefs.node("daBeans"), false);
     daTable.addListSelectionListener( new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         AccessBean bean = (AccessBean) daTable.getSelectedBean();
@@ -317,20 +310,18 @@ public class DLCrawler extends JPanel {
     int count = 0;
 
     public void run() {
-      Iterator iter = getDatasetAccessBeans().iterator();
-      while (iter.hasNext()) {
-        AccessBean bean = (AccessBean) iter.next();
+      for (AccessBean bean : getDatasetAccessBeans()) {
         String urlOK = bean.getUrlOk();
         if (urlOK.length() > 0) continue; // already been checked
         if (cancel) break;
 
         InvAccess access = bean.access();
-        if (debugCheckUrl) System.out.print("Try to open "+access.getStandardUrlName());
-        String status = checkURL( makeURL(access));
-        if (debugCheckUrl) System.out.println(" "+status);
+        if (debugCheckUrl) System.out.print("Try to open " + access.getStandardUrlName());
+        String status = checkURL(makeURL(access));
+        if (debugCheckUrl) System.out.println(" " + status);
         count++;
 
-        bean.setUrlOk( status);
+        bean.setUrlOk(status);
       }
      success = !cancel && !isError();
      done = true;    // do last!
@@ -341,9 +332,7 @@ public class DLCrawler extends JPanel {
 
     public int getTaskLength() {
       taskLength = 0;
-      Iterator iter = getDatasetAccessBeans().iterator();
-      while (iter.hasNext()) {
-        AccessBean bean = (AccessBean) iter.next();
+      for (AccessBean bean : getDatasetAccessBeans()) {
         if (bean.getUrlOk().length() > 0) continue; // already been checked
         taskLength += bean.dataset().getAccess().size();
       }
@@ -378,15 +367,13 @@ public class DLCrawler extends JPanel {
   }
 
     public void clear() {
-      daList = new ArrayList();
-      dsList = new ArrayList();
+      daList = new ArrayList<AccessBean>();
+      dsList = new ArrayList<DatasetBean>();
     }
 
-    /** list of CatalogBean.DatasetAccessBean */
-    public ArrayList getDatasetAccessBeans() { return daList; }
+    public java.util.List<AccessBean> getDatasetAccessBeans() { return daList; }
 
-    /** list of CatalogBean.DatasetBean */
-    public ArrayList getDatasetBeans() { return dsList; }
+    public java.util.List<DatasetBean> getDatasetBeans() { return dsList; }
 
     private void addDatasets(InvDatasetImpl ds) {
       addDataset( ds);
@@ -398,9 +385,8 @@ public class DLCrawler extends JPanel {
       }
 
       if (ds.hasAccess()) {
-        Iterator iter = ds.getAccess().iterator();
-        while (iter.hasNext())
-          daList.add( new AccessBean( (InvAccess) iter.next()));
+        for (InvAccess invAccess : ds.getAccess())
+          daList.add(new AccessBean(invAccess));
       }
 
       // recurse
@@ -417,26 +403,20 @@ public class DLCrawler extends JPanel {
     }
 
     public void addDatasetAccess(InvDatasetImpl ds) {
-      Iterator iter = ds.getAccess().iterator();
-      while (iter.hasNext()) {
-        AccessBean beana = new AccessBean( (InvAccess) iter.next());
-        daTable.addBean( beana);
+      for (InvAccess bean : ds.getAccess()) {
+        daTable.addBean(bean);
       }
     }
 
     public DatasetBean findDatasetBean( InvDataset ds) {
-      Iterator iter = dsList.iterator();
-      while (iter.hasNext()) {
-        DatasetBean item = (DatasetBean) iter.next();
+      for (DatasetBean item : dsList) {
         if (item.dataset() == ds) return item;
       }
       return null;
     }
 
     public AccessBean findAccessBean( InvDataset ds) {
-      Iterator iter = daList.iterator();
-      while (iter.hasNext()) {
-        AccessBean item = (AccessBean) iter.next();
+      for (AccessBean item : daList) {
         if (item.dataset() == ds) return item;
       }
       return null;
@@ -444,9 +424,7 @@ public class DLCrawler extends JPanel {
 
 
     public AccessBean findOrAddBean( InvAccess access) {
-      Iterator iter = daList.iterator();
-      while (iter.hasNext()) {
-        AccessBean item = (AccessBean) iter.next();
+      for (AccessBean item : daList) {
         if (item.access == access) return item;
       }
       AccessBean newBean = new AccessBean( access);
@@ -561,9 +539,7 @@ public class DLCrawler extends JPanel {
       public String getUrl() { return url; }
       public void setUrl(String url) { this.url = url; }
 
-      /** Get URLok */
       public String getUrlOk() { return URLok; }
-      /** Set URLok */
       public void setUrlOk( String URLok) { this.URLok = URLok; }
     }
 

@@ -81,6 +81,9 @@ public class Tiling {
 //    assert pt.length == rank;
     int[] tile = new int[rank];
     for (int i = 0; i < rank; i++) {
+      if (shape[i] < pt[i])
+        System.out.println("HEY");
+
       assert shape[i] >= pt[i];
       tile[i] = pt[i] / tileSize[i];
     }

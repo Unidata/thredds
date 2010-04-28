@@ -472,9 +472,9 @@ public class ToolsUI extends JPanel {
             thredds.catalog.InvAccess access = (thredds.catalog.InvAccess) e.getNewValue();
             setThreddsDatatype(access);
           }
-          if (e.getPropertyName().equals("Dataset") || e.getPropertyName().equals("File")) {
+          if (e.getPropertyName().equals("Dataset") || e.getPropertyName().equals("CoordSys") || e.getPropertyName().equals("File")) {
             thredds.catalog.InvDataset ds = (thredds.catalog.InvDataset) e.getNewValue();
-            setThreddsDatatype(ds, e.getPropertyName().equals("File"));
+            setThreddsDatatype(ds, e.getPropertyName());
           }
         }
       });
@@ -861,6 +861,13 @@ public class ToolsUI extends JPanel {
     tabbedPane.setSelectedComponent(viewerPanel);
   }
 
+
+  /* private void showInViewer(NetcdfDataset ds) {
+    makeComponent(tabbedPane, "Viewer");
+    viewerPanel.setDataset(ds);
+    tabbedPane.setSelectedComponent(viewerPanel);
+  } */
+
   private void openCoordSystems(String datasetName) {
     makeComponent(tabbedPane, "CoordSys");
     coordSysPanel.doit(datasetName);
@@ -924,13 +931,21 @@ public class ToolsUI extends JPanel {
 
   // jump to the appropriate tab based on datatype of InvDataset
 
-  private void setThreddsDatatype(thredds.catalog.InvDataset invDataset, boolean wantsViewer) {
+  private void setThreddsDatatype(thredds.catalog.InvDataset invDataset, String wants) {
     if (invDataset == null) return;
+
+    boolean wantsViewer = wants.equals("File");
+    boolean wantsCoordSys = wants.equals("CoordSys");
 
     try {
       // just open as a NetcdfDataset
       if (wantsViewer) {
-        showInViewer(threddsDataFactory.openDataset(invDataset, true, null, null));
+        openNetcdfFile(threddsDataFactory.openDataset(invDataset, true, null, null));
+        return;
+      }
+
+      if (wantsCoordSys) {
+        openCoordSystems(threddsDataFactory.openDataset(invDataset, true, null, null));
         return;
       }
 
@@ -967,7 +982,7 @@ public class ToolsUI extends JPanel {
     if (ds.getDataType() == null) {
       // if no feature type, just open as a NetcdfDataset
       try {
-        showInViewer(threddsDataFactory.openDataset(invAccess, true, null, null));
+        openNetcdfFile(threddsDataFactory.openDataset(invAccess, true, null, null));
       } catch (IOException ioe) {
         JOptionPane.showMessageDialog(null, "Error on setThreddsDatatype = " + ioe.getMessage());
       }
@@ -1064,12 +1079,6 @@ public class ToolsUI extends JPanel {
       return;
     }
   } */
-
-  private void showInViewer(NetcdfDataset ds) {
-    makeComponent(tabbedPane, "Viewer");
-    viewerPanel.setDataset(ds);
-    tabbedPane.setSelectedComponent(viewerPanel);
-  }
 
   // LOOK put in background task ??
   private NetcdfDataset openDataset(String location, boolean addCoords, CancelTask task) {
