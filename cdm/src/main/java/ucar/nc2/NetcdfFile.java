@@ -756,7 +756,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
 
     if (spi == null) {
       raf.close();
-      throw new IOException("Cant read " + location + ": not a valid NetCDF file.");
+      throw new IOException("Cant read " + location + ": not a valid CDM file.");
     }
 
     // send before iosp is opened

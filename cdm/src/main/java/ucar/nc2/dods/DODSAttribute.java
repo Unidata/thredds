@@ -54,7 +54,7 @@ public class DODSAttribute extends ucar.nc2.Attribute {
   /** constructor: adapter around dods.dap.Attribute
    *
    * @param dodsName the attribute name
-   * @param att the dods ayytibute
+   * @param att the dods attribute
    */
   public DODSAttribute( String dodsName, opendap.dap.Attribute att) {
     super( DODSNetcdfFile.makeNetcdfName( dodsName));
@@ -69,7 +69,8 @@ public class DODSAttribute extends ucar.nc2.Attribute {
       nvals++;
     }
 
-    // need String[]
+    // DAS parser is now assumed to handle escaping and remove  "" from strings
+    /*
     String[] vals = new String[nvals];
     iter = att.getValuesIterator();
     int count = 0;
@@ -84,6 +85,14 @@ public class DODSAttribute extends ucar.nc2.Attribute {
         val = val.substring(0, n-1);
 
       vals[count++] = unescapeAttributeStringValues( val);
+    } */
+
+    // need String[]
+    String[] vals = new String[nvals];
+    iter = att.getValuesIterator();
+    int count = 0;
+    while(iter.hasNext()) {
+      vals[count++] = (String) iter.next();
     }
 
     Array data = null;

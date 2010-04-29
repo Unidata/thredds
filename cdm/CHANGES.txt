@@ -4,6 +4,7 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.2:
  2:
+  DAS parser is now assumed to handle escaping and remove "" from strings
   Fmrc: parameterized best dataset
   DatasetCollectionManager delete old metadata entries
   FmrcInvLite, time coord variants

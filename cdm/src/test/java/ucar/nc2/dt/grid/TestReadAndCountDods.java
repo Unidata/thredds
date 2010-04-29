@@ -109,8 +109,8 @@ public class TestReadAndCountDods extends TestCase {
     //NetcdfFileCache.clearCache( true);
   }
 
-  static void testProblem() throws Exception {
-    TestReadandCount.doOne(base,"dqc/latestModel-InvCat1.0?gfs_37-44", 31, 4, 8, 4);    
+  public void utestProblem() throws Exception {
+    TestReadandCount.doOne("","http://motherlode.ucar.edu:8080/thredds/dodsC/modelsNc/NCEP/GFS/Global_5x2p5deg/GFS_Global_5x2p5deg_20100428_1200.nc", 31, 4, 8, 4);
   }
 
   static void doOne(String dir, String filename, int ngrids, int ncoordSys, int ncoordAxes, int nVertCooordAxes) throws Exception {
