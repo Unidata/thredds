@@ -49,10 +49,10 @@
   <property name="webstart_dir" value="${uni.www.dir}/content/software/netcdf-java/v${release.version}/webstart"/>
 
   <property name="bdb.jar" value="je-4.0.71.jar"/>
-  <!-- property name="gnu-regexp.jar" value="gnu-regexp-1.1.4.jar"/ -->
   <property name="bounce.jar" value="bounce-0.14.jar"/>
   <property name="bufrTables.jar" value="bufrTables-2.0.jar"/>
   <property name="ehcache.jar" value="ehcache-1.6.0.jar"/>
+  <property name="gnu-regexp.jar" value="gnu-regexp-1.1.4.jar" />
   <property name="grib.jar" value="grib-8.0.jar"/>
   <property name="httpclient3.jar" value="commons-httpclient-3.1.jar"/>
   <property name="httpclient4.jar" value="httpclient-4.0.1.jar"/>
@@ -70,7 +70,7 @@
   <property name="logging-maximal.jar" value="slf4j-log4j12-1.5.6.jar"/>
   <property name="log4j.jar" value="log4j-1.2.15.jar"/>
   <property name="lucene.jar" value="lucene.jar"/>
-  <property name="opendap.jar" value="opendap-2.1.jar"/>
+  <property name="opendap.jar" value="opendap-2.2.jar"/>
   <property name="protobuf.jar" value="protobuf-java-2.1.0.jar"/>
   <property name="resourcesOptional.jar" value="resourcesOptional.jar"/>
   <property name="spring.jar" value="spring-2.5.jar"/>
@@ -89,6 +89,7 @@
     <include name="external/${bdb.jar}"/>
     <include name="external/${ehcache.jar}"/>
     <include name="release/${grib.jar}"/>
+    <include name="external/${gnu-regexp.jar}"/>
     <include name="release/${opendap.jar}"/>
     <include name="external/${httpclient3.jar}"/>
     <include name="external/${jdom.jar}"/>
@@ -104,6 +105,7 @@
     <include name="lib/${bdb.jar}"/>
     <include name="lib/${ehcache.jar}"/>
     <include name="lib/${grib.jar}"/>
+    <include name="lib/${gnu-regexp.jar}"/>
     <include name="lib/${opendap.jar}"/>
     <include name="lib/${httpclient3.jar}"/>
     <include name="lib/${jdom.jar}"/>
@@ -130,7 +132,6 @@
     <include name="external/${http-codec.jar}"/>
     <include name="external/${http-logging.jar}"/>
     <include name="external/${logging-minimal.jar}"/>
-    <include name="external/${jpeg2000.jar}"/>
   </fileset>
 
   <path id="runtime.classpath">
@@ -140,9 +141,9 @@
 
   <!-- LOOK can we generate with pathconvert? -->
   <property name="Class-Path"
-            value="${jgoodies.jar} ${guiBuilder.jar} ${grib.jar} ${jdom.jar} ${opendap.jar} ${http-codec.jar} ${httpclient3.jar} ${http-logging.jar} ${loggingAPI.jar} ${logging-minimal.jar} ${jpeg2000.jar} ${protobuf.jar} ${resourcesOptional.jar} ${spring.jar} ${visadNoDods.jar}"/>
+            value="${jgoodies.jar} ${guiBuilder.jar} ${grib.jar} ${jdom.jar} ${opendap.jar} ${http-codec.jar} ${httpclient3.jar} ${http-logging.jar} ${loggingAPI.jar} ${logging-minimal.jar} ${protobuf.jar} ${resourcesOptional.jar} ${spring.jar} ${visadNoDods.jar}"/>
   <property name="ClassPath-CommandLine"
-            value="lib/${grib.jar}:lib/${jdom.jar}:lib/${httpclient3.jar}:lib/${http-codec.jar}:lib/${http-logging.jar}:lib/${jpeg2000.jar}:lib/${loggingAPI.jar}:lib/${logging-minimal.jar}:lib/${jgoodies.jar}:lib/${spring.jar}:lib/${unidatacommon.jar}:lib/${visadNoDods.jar}"/>
+            value="lib/${grib.jar}:lib/${jdom.jar}:lib/${httpclient3.jar}:lib/${http-codec.jar}:lib/${http-logging.jar}:lib/${loggingAPI.jar}:lib/${logging-minimal.jar}:lib/${jgoodies.jar}:lib/${spring.jar}:lib/${unidatacommon.jar}:lib/${visadNoDods.jar}"/>
 
   <target name="test-pathconvert">
     <echo>Class-Path=${Class-Path}</echo>
@@ -249,7 +250,7 @@
     <include name="thredds/filesystem/**/*.java"/>
     <include name="thredds/util/**/*.java"/>
     <!-- The following includes, to ***, are needed by TDS. -->
-    <include name="thredds/cataloggen/**/*.java"/>
+    <exclude name="thredds/cataloggen/**/*.java"/>
     <include name="thredds/crawlabledataset/**/*.java"/>
     <include name="thredds/wcs/**/*.java"/>
     <!-- *** -->
@@ -336,12 +337,12 @@
         <include name="release/${unidatacommon.jar}"/>
         <include name="release/${grib.jar}"/>
         <include name="external/${jdom.jar}"/>
-        <include name="external/${jpeg2000.jar}"/>
         <include name="external/${httpclient3.jar}"/>
         <include name="external/${http-codec.jar}"/>
         <include name="external/${http-logging.jar}"/>
         <include name="external/${loggingAPI.jar}"/>
         <include name="external/${logging-minimal.jar}"/>
+        <include name="external/${gnu-regexp.jar}"/>
         <include name="release/${opendap.jar}"/>
         <include name="release/${protobuf.jar}"/>
         <include name="release/${visadNoDods.jar}"/>
@@ -409,7 +410,7 @@
     <unzip dest="${idv.dir}">
       <fileset dir="${lib.dir}">
         <include name="release/${bufrTables.jar}"/>
-        <include name="release/${unidatacommon.jar}"/>
+        <!-- include name="release/${unidatacommon.jar}"/ -->
         <include name="release/${grib.jar}"/>
         <include name="external/${jdom.jar}"/>
         <include name="external/${httpclient3.jar}"/>
@@ -417,6 +418,7 @@
         <include name="external/${http-logging.jar}"/>
         <include name="external/${loggingAPI.jar}"/>
         <include name="external/${logging-minimal.jar}"/>
+        <include name="external/${gnu-regexp.jar}"/>
         <include name="release/${opendap.jar}"/>
         <include name="external/${protobuf.jar}"/>
       </fileset>
@@ -501,9 +503,9 @@
   <!-- $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$  -->
   <!-- get rid of dods stuff in visad.jar -->
 
-  <property name="visad.jar" value="/machine/temp/visad.jar"/>
+  <property name="visad.jar" value="${lib.dir}/external/visad.jar"/>
   <!-- checkout visad.jar from cvs -->
-  <property name="visadNoDods.tempdir" value="/machine/temp/visad/"/>
+  <property name="visadNoDods.tempdir" value="${build.dir}/visad/"/>
   <target name="makeVisadNoDods" description="remove dods from visad">
     <delete dir="${visadNoDods.tempdir}" failonerror="false"/>
     <mkdir dir="${visadNoDods.tempdir}"/>
@@ -512,13 +514,14 @@
     </unzip>
 
     <delete dir="${visadNoDods.tempdir}/dods" failonerror="true"/>
-    <delete dir="${visadNoDods.tempdir}/gnu/regexp" failonerror="true"/>
+    <delete dir="${visadNoDods.tempdir}/gnu" failonerror="true"/>
     <delete dir="${visadNoDods.tempdir}/HTTPClient" failonerror="true"/>
     <delete dir="${visadNoDods.tempdir}/ucar" failonerror="true"/>
 
     <jar jarfile="${lib.dir}/release/${visadNoDods.jar}" index="true" duplicate="preserve">
       <fileset dir="${visadNoDods.tempdir}"/>
     </jar>
+    <delete dir="${visadNoDods.tempdir}" failonerror="false"/>
   </target>
 
   <!-- temp
@@ -883,14 +886,14 @@
              signedjar="${webstart_dir}/unidatacommon.jar" storepass="${keystore.password}"/>
     <signjar alias="idv" jar="${lib.dir}/external/${ehcache.jar}" keystore="${keystore}"
              signedjar="${webstart_dir}/ehcache.jar" storepass="${keystore.password}"/>
-     <signjar alias="idv" jar="${lib.dir}/release/${grib.jar}" keystore="${keystore}"
+    <signjar alias="idv" jar="${lib.dir}/external/${gnu-regexp.jar}" keystore="${keystore}"
+             signedjar="${webstart_dir}/gnu-regexp.jar" storepass="${keystore.password}"/>
+    <signjar alias="idv" jar="${lib.dir}/release/${grib.jar}" keystore="${keystore}"
              signedjar="${webstart_dir}/grib.jar" storepass="${keystore.password}"/>
     <signjar alias="idv" jar="${lib.dir}/external/${jdom.jar}" keystore="${keystore}"
              signedjar="${webstart_dir}/jdom.jar" storepass="${keystore.password}"/>
     <signjar alias="idv" jar="${lib.dir}/external/${jgoodies.jar}" keystore="${keystore}"
              signedjar="${webstart_dir}/jgoodies.jar" storepass="${keystore.password}"/>
-    <signjar alias="idv" jar="${lib.dir}/external/${jpeg2000.jar}" keystore="${keystore}"
-             signedjar="${webstart_dir}/jpeg2000.jar" storepass="${keystore.password}"/>
     <signjar alias="idv" jar="${lib.dir}/external/${httpclient3.jar}" keystore="${keystore}"
              signedjar="${webstart_dir}/httpclient.jar" storepass="${keystore.password}"/>
     <signjar alias="idv" jar="${lib.dir}/external/${httpclient4.jar}" keystore="${keystore}"
