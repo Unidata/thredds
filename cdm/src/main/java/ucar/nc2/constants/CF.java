@@ -48,8 +48,12 @@ public class CF {
   public static final String featureTypeAtt3 = "CFfeatureType";
 
   // CF standard names
+  public static final String GRID_MAPPING = "grid_mapping";
+  public static final String GRID_MAPPING_NAME = "grid_mapping_name";
   public static final String STANDARD_NAME = "standard_name";
   public static final String UNITS = "units";
+
+  // proposed
   public static final String RAGGED_ROWSIZE = "ragged_row_size";
   public static final String RAGGED_PARENTINDEX = "ragged_parent_index";
   public static final String STATION_ID = "station_id";

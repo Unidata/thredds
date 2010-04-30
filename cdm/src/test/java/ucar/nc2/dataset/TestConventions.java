@@ -1,4 +1,3 @@
-// $Id: $
 /*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
@@ -36,27 +35,40 @@ package ucar.nc2.dataset;
 
 import junit.framework.TestCase;
 import ucar.nc2.TestAll;
+import ucar.nc2.dt.GridCoordSystem;
+import ucar.nc2.dt.grid.GeoGrid;
+import ucar.nc2.dt.grid.GridDataset;
 
 import java.io.IOException;
 
 /**
- * Class Description.
+ * Test CoordSys COnventions
  *
  * @author caron
- * @version $Revision$ $Date$
  */
-public class TestConventions  extends TestCase {
+public class TestConventions extends TestCase {
 
-  public TestConventions( String name) {
+  public TestConventions(String name) {
     super(name);
   }
 
   public void testWRF() throws IOException {
-     testWRF(TestAll.testdataDir + "grid/netcdf/wrf/wrf2.nc");
+    testWRF(TestAll.cdmUnitTestDir + "conventions/wrf/wrf2.nc");
   }
 
   private void testWRF(String location) throws IOException {
-    NetcdfDataset ds =  NetcdfDataset.openDataset(location);
-    
+    NetcdfDataset ds = NetcdfDataset.openDataset(location);
+  }
+
+  public void testCF() throws IOException {
+    GridDataset ds = GridDataset.open(TestAll.cdmUnitTestDir + "conventions/cf/twoGridMaps.nc");
+    GeoGrid grid = ds.findGridByName("altitude");
+    GridCoordSystem gcs = grid.getCoordinateSystem();
+    assert 1 == gcs.getCoordinateTransforms().size();
+    CoordinateTransform ct = gcs.getCoordinateTransforms().get(0);
+    assert ct.getTransformType() == TransformType.Projection;
+    assert ct.getName().equals("projection_stere");
+    ds.close();
+
   }
 }

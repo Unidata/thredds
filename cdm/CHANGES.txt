@@ -3,8 +3,11 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Changes in version 4.2:
- 2:
+ 2: (2010-04-30)
+  use opendap-2.2.jar (new parser)
   DAS parser is now assumed to handle escaping and remove "" from strings
+  Length check is now zero based for Grib(1|2)PDSVariables
+  Grib now uses CF-1.4, other CF global attributes were modified
   Fmrc: parameterized best dataset
   DatasetCollectionManager delete old metadata entries
   FmrcInvLite, time coord variants

@@ -102,12 +102,13 @@ public class CF1Convention extends CSMConvention {
   }
 
   public void augmentDataset(NetcdfDataset ds, CancelTask cancelTask) throws IOException {
+    boolean got_grid_mapping = false;
 
     // look for transforms
     List<Variable> vars = ds.getVariables();
     for (Variable v : vars) {
       // look for special standard_names
-      String sname = ds.findAttValueIgnoreCase(v, "standard_name", null);
+      String sname = ds.findAttValueIgnoreCase(v, CF.STANDARD_NAME, null);
       if (sname != null) {
         sname = sname.trim();
 
@@ -134,14 +135,31 @@ public class CF1Convention extends CSMConvention {
           }
       }
 
-      // look for horiz transforms
-      String grid_mapping_name = ds.findAttValueIgnoreCase(v, "grid_mapping_name", null);
-      if (grid_mapping_name != null) {
-        //grid_mapping_name = grid_mapping_name.trim();
-        v.addAttribute(new Attribute(_Coordinate.TransformType, TransformType.Projection.toString()));
-        v.addAttribute(new Attribute(_Coordinate.AxisTypes, "GeoX GeoY"));
+      // look for horiz transforms. only ones that are referenced by another variable.
+      String grid_mapping = ds.findAttValueIgnoreCase(v, CF.GRID_MAPPING, null);
+      if (grid_mapping != null) {
+        Variable gridMap = ds.findVariable(grid_mapping);
+        if (gridMap == null) {
+          Group g = v.getParentGroup(); // might be group reletive - CF does not specify
+          gridMap = g.findVariable(grid_mapping);
+        }
+        if (gridMap != null) {
+          gridMap.addAttribute(new Attribute(_Coordinate.TransformType, TransformType.Projection.toString()));
+          gridMap.addAttribute(new Attribute(_Coordinate.AxisTypes, "GeoX GeoY"));
+          got_grid_mapping = true;
+        }
       }
 
+    }
+
+    if (!got_grid_mapping) { // see if there are any grid mappings anyway
+      for (Variable v : ds.getVariables()) {
+        String grid_mapping_name = ds.findAttValueIgnoreCase(v, CF.GRID_MAPPING_NAME, null);
+        if (grid_mapping_name != null) {
+          v.addAttribute(new Attribute(_Coordinate.TransformType, TransformType.Projection.toString()));
+          v.addAttribute(new Attribute(_Coordinate.AxisTypes, "GeoX GeoY"));
+        }
+      }
     }
 
     ds.finish();
@@ -228,7 +246,7 @@ public class CF1Convention extends CSMConvention {
    */
   protected AxisType getAxisType(NetcdfDataset ncDataset, VariableEnhanced v) {
 
-    String sname = ncDataset.findAttValueIgnoreCase((Variable) v, "standard_name", null);
+    String sname = ncDataset.findAttValueIgnoreCase((Variable) v, CF.STANDARD_NAME, null);
     if (sname != null) {
       sname = sname.trim();
 

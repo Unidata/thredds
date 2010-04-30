@@ -35,6 +35,7 @@ package ucar.nc2.dataset;
 
 import ucar.nc2.Variable;
 import ucar.nc2.Attribute;
+import ucar.nc2.constants.CF;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.transform.*;
 import ucar.unidata.util.Parameter;
@@ -168,9 +169,9 @@ public class CoordTransBuilder {
 
     // these names are from CF - dont want to have to duplicate
     if (null == transform_name)
-      transform_name = ds.findAttValueIgnoreCase(ctv, "grid_mapping_name", null);
+      transform_name = ds.findAttValueIgnoreCase(ctv, CF.GRID_MAPPING_NAME, null);
     if (null == transform_name)
-      transform_name = ds.findAttValueIgnoreCase(ctv, "standard_name", null);
+      transform_name = ds.findAttValueIgnoreCase(ctv, CF.STANDARD_NAME, null);
 
     if (null == transform_name) {
       parseInfo.format("**Failed to find Coordinate Transform name from Variable= %s\n", ctv);
