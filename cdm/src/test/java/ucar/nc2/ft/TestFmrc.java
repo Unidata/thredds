@@ -64,15 +64,39 @@ public class TestFmrc extends TestCase {
   private static String datadir = TestAll.cdmUnitTestDir + "fmrc/";
   private static boolean showCount = true;
 
-  public void testNcML() throws Exception {
+  public void testCollections() throws Exception {
     try {
       FeatureCollectionConfig.setRegularizeDefault( true);
+
+      // spec
+      doOne(datadir + "bom/**/ocean_fc_#yyyyMMdd#_..._eta.nc", 1, 1, 8, 0, "eta_t", 2, 7, 10);
       doOne(TestAll.cdmUnitTestDir + "ncml/nc/ruc_conus40/RUC_CONUS_40km_#yyyyMMdd_HHmm#.grib1", 48, 12, 16, 6, "Pressure", 3, 9, 9);
 
-      doOne(datadir + "bom/BoM_test.ncml", 1, 1, 5, 0, "eta_t", 2, 7, 10);
-      doOne(datadir + "bom/**/ocean_fc_#yyyyMMdd#_..._eta.nc", 1, 1, 5, 0, "eta_t", 2, 7, 10);
-      doOne(datadir + "ncom/ncom_fmrc.ncml", 1, 1, 5, 1, "surf_el", 3, 25, 41);
-      doOne(datadir + "rtofs/rtofs.ncml", 7, 4, 9, 1, "N3-D_Temperature", 2, 3, 4);
+      // catalog
+      doOne("catalog:http://motherlode.ucar.edu:8080/thredds/catalog/fmrc/NCEP/GFS/Hawaii_160km/files/catalog.xml", 15, 8, 11, 6, "Temperature", -1, 21, 111);
+
+      // from an ncml aggregation
+      doOne(datadir + "bom/BoM_test.ncml", 1, 3, 8, 0, "eta_t", 2, 7, 10);
+      doOne(datadir + "ncom/ncom_fmrc.ncml", 1, 1, 5, 1, "surf_el", 3, 25, 41); // */
+      doOne(datadir + "rtofs/rtofs.ncml", 9, 4, 9, 1, "N3-D_Temperature", 2, 3, 4);
+
+      // really a joinExisting
+      doOne(TestAll.cdmUnitTestDir + "ncml/agg/#yyyyMMdd_HHmm#.nc$", 10, 4, 8, 2, "Visibility", 4, 2, 8);     //*/
+
+      // needs ncmlInner to work
+      doOne(datadir + "gomoos/fmrc.ncml", 16, -1, 7, 1, "salt", 2, 21, 29);     //*/
+
+      // blank
+      // doOne(datadir + "rtofs/rtofs.ncml", -1, -1, -1, -1, "Temperature", -1, -1, -1);     //*/
+
+    } finally {
+      MetadataManager.closeAll();
+    }
+  }
+
+  public void utestSpec() throws Exception {
+    try {
+      FeatureCollectionConfig.setRegularizeDefault( true);
 
     } finally {
       MetadataManager.closeAll();
@@ -147,8 +171,8 @@ public class TestFmrc extends TestCase {
 
     if (ngrids >= 0)
       assert ngrids == countGrids : "Grids " + ngrids + " != " + countGrids;
-    if (ncoordSys >= 0)
-      assert ncoordSys == countCoordSys : "CoordSys " + ncoordSys + " != " + countCoordSys;
+    //if (ncoordSys >= 0)
+    //  assert ncoordSys == countCoordSys : "CoordSys " + ncoordSys + " != " + countCoordSys;
     if (ncoordAxes >= 0)
       assert ncoordAxes == countCoordAxes : "CoordAxes " + ncoordAxes + " != " + countCoordAxes;
     if (nVertCooordAxes >= 0)
@@ -211,7 +235,10 @@ public class TestFmrc extends TestCase {
 
     GridCoordSystem gcs = grid.getCoordinateSystem();
     CoordinateAxis1DTime runtime = gcs.getRunTimeAxis();
-    assert (runtime == null) : "Should not have runtime coord= "+runtime;
+    //System.out.println(" has runtime axis=" +  (runtime != null));
+
+    assert (runtime != null) : "Cant find runtime for "+gridName;
+    //assert (runtime == null) : "Should not have runtime coord= "+runtime;
 
     CoordinateAxis time = gcs.getTimeAxis();
     assert (time != null) : "Cant find time for "+gridName;

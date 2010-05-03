@@ -2807,7 +2807,7 @@ public class ToolsUI extends JPanel {
 
   }
 
-  // the old inventory studd
+  // the old inventory stuff
   private class FmrcInvPanel extends OpPanel {
     private boolean useDefinition = false;
     private JComboBox defComboBox, catComboBox, dirComboBox, suffixCB;

@@ -305,6 +305,7 @@ public class Fmrc2Panel extends JPanel {
       fmrcInv.showRuntimeOffsetMatrix(result);
       fmrcInv.showBest(result);
       fmrcInv.showBest2(result);
+      fmrc.showDetails(result);
     }
   }
 
@@ -357,7 +358,16 @@ public class Fmrc2Panel extends JPanel {
       firePropertyChange("openCoordSys", null, gds.getNetcdfFile());
     else if (data.where.startsWith("Grid"))
       firePropertyChange("openGridDataset", null, gds);
+    else
+      showDetails(gds);
   }
+
+  public void showDetails(GridDataset gds) {
+    infoTA.setText(gds.getDetailInfo());
+    infoWindow.showIfNotIconified();
+  }
+
+
 
   private void setFmr(FmrInv fmr) {
     if (fmr == null) return;

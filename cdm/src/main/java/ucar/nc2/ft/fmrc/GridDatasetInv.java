@@ -33,10 +33,12 @@
 package ucar.nc2.ft.fmrc;
 
 import ucar.nc2.dataset.CoordinateAxis1DTime;
+import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.util.Misc;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.units.DateUnit;
@@ -76,7 +78,7 @@ import thredds.inventory.CollectionManager;
 public class GridDatasetInv {
   static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GridDatasetInv.class);
 
-  public static GridDatasetInv open(CollectionManager cm, MFile mfile) throws IOException {
+  public static GridDatasetInv open(CollectionManager cm, MFile mfile, Element ncml) throws IOException {
     // do we already have it ?
     byte[] xmlBytes = cm.getMetadata(mfile, "fmrInv.xml");
     if (xmlBytes != null) {
@@ -98,7 +100,16 @@ public class GridDatasetInv {
     // generate it and save it
     GridDataset gds = null;
     try {
-      gds = GridDataset.open( mfile.getPath());
+      if (ncml == null) {
+        gds = GridDataset.open( mfile.getPath());
+
+      } else {
+        NetcdfFile nc = NetcdfDataset.acquireFile(mfile.getPath(), null);
+        NetcdfDataset ncd = NcMLReader.mergeNcML(nc, ncml); // create new dataset
+        ncd.enhance(); // now that the ncml is added, enhance "in place", ie modify the NetcdfDataset
+        gds = new GridDataset(ncd);
+      }
+
       // System.out.println("gds dataset= "+ gds.getNetcdfDataset());
 
       GridDatasetInv inv = new GridDatasetInv(gds, cm.extractRunDate(mfile));

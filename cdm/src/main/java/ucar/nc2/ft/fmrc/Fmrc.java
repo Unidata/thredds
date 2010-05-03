@@ -235,7 +235,7 @@ public class Fmrc {
 
       if (fmrcDataset == null) {
         try {
-          fmrcDataset = new FmrcDataset(config);
+          fmrcDataset = new FmrcDataset(config, ncmlInner, ncmlOuter);
           manager.scan(null);
           FmrcInv fmrcInv = makeFmrcInv(null);
           fmrcDataset.setInventory(fmrcInv, forceProtoLocal);
@@ -280,7 +280,7 @@ public class Fmrc {
         if (logger.isDebugEnabled())
           logger.debug("Fmrc: "+config.spec+": file="+f.getPath());
 
-        GridDatasetInv inv = GridDatasetInv.open(manager, f); // inventory is discovered for each GDS
+        GridDatasetInv inv = GridDatasetInv.open(manager, f, ncmlInner); // inventory is discovered for each GDS
         Date runDate = inv.getRunDate();
         if (debug != null) debug.format("  opened %s rundate = %s%n", f.getPath(), inv.getRunDateString());
 
@@ -309,6 +309,11 @@ public class Fmrc {
       logger.error("makeFmrcInv", t);
       throw new RuntimeException(t);
     }
+  }
+
+  public void showDetails(Formatter out) throws IOException {
+    checkNeeded(false);
+    fmrcDataset.showDetails(out);
   }
 
   public static void main(String[] args) throws IOException {

@@ -171,6 +171,23 @@ public class NcMLReader {
     return targetDS;
   }
 
+  /**
+   * Use NCML to directly modify the dataset
+   *
+   * @param targetDS          referenced dataset
+   * @param parentElem   parent element - usually the aggregation element of the ncml
+   * @return new dataset with the merged info
+   * @throws IOException on read error
+   */
+  static public NetcdfDataset mergeNcMLdirect(NetcdfDataset targetDS, Element parentElem) throws IOException { 
+
+    NcMLReader reader = new NcMLReader();
+    reader.readGroup(targetDS, targetDS, null, null, parentElem);
+    targetDS.finish();
+
+    return targetDS;
+  }
+
   //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   /**

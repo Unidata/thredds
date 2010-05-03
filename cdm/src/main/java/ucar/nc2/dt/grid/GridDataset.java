@@ -316,44 +316,15 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, ucar.nc2.ft.Feature
   }
 
   /**
-   * Show Grids and coordinate systems.
-   * @param buf put info here
-   */
-  private void getInfo(Formatter buf) {
-    int countGridset = 0;
-
-    for (Gridset gs : gridsetHash.values()) {
-      GridCoordSystem gcs = gs.getGeoCoordSystem();
-      buf.format("%nGridset %d  coordSys=%s", countGridset,  gcs);
-      buf.format(" LLbb=%s ", gcs.getLatLonBoundingBox());
-      if ((gcs.getProjection() != null)  && !gcs.getProjection().isLatLon())
-        buf.format(" bb= %s", gcs.getBoundingBox());
-      buf.format("%n");
-      buf.format("Name__________________________Unit__________________________hasMissing_Description%n");
-      for (GeoGrid grid : grids) {
-        buf.format("%s", grid.getInfo());
-        buf.format("%n");
-      }
-      countGridset++;
-      buf.format("%n");
-    }
-
-    buf.format("\nGeoReferencing Coordinate Axes\n");
-    buf.format("Name__________________________Units_______________Type______Description\n");
-    for (CoordinateAxis axis : ds.getCoordinateAxes()) {
-      if (axis.getAxisType() == null) continue;
-      axis.getInfo(buf);
-      buf.format("\n");
-    }
-  }
-
-  // private Form parseInfo = new StringBuilder(); // debugging
-
-  /**
    * Get Details about the dataset.
    */
   public String getDetailInfo() {
     Formatter buff = new Formatter();
+    getDetailInfo(buff);
+    return buff.toString();
+  }
+
+  public void getDetailInfo(Formatter buff) {
     getInfo(buff);
     buff.format("\n\n----------------------------------------------------\n");
     NetcdfDatasetInfo info = null;
@@ -368,8 +339,37 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, ucar.nc2.ft.Feature
     buff.format("\n\n----------------------------------------------------\n");
     buff.format("%s", ds.toString());
     buff.format("\n\n----------------------------------------------------\n");
+  }
 
-    return buff.toString();
+  /**
+   * Show Grids and coordinate systems.
+   * @param buf put info here
+   */
+  private void getInfo(Formatter buf) {
+    int countGridset = 0;
+
+    for (Gridset gs : gridsetHash.values()) {
+      GridCoordSystem gcs = gs.getGeoCoordSystem();
+      buf.format("%nGridset %d  coordSys=%s", countGridset,  gcs);
+      buf.format(" LLbb=%s ", gcs.getLatLonBoundingBox());
+      if ((gcs.getProjection() != null)  && !gcs.getProjection().isLatLon())
+        buf.format(" bb= %s", gcs.getBoundingBox());
+      buf.format("%n");
+      buf.format("Name__________________________Unit__________________________hasMissing_Description%n");
+      for (GridDatatype grid : gs.getGrids()) {
+        buf.format("%s%n", grid.getInfo());
+      }
+      countGridset++;
+      buf.format("%n");
+    }
+
+    buf.format("\nGeoReferencing Coordinate Axes\n");
+    buf.format("Name__________________________Units_______________Type______Description\n");
+    for (CoordinateAxis axis : ds.getCoordinateAxes()) {
+      if (axis.getAxisType() == null) continue;
+      axis.getInfo(buf);
+      buf.format("\n");
+    }
   }
 
   /**
@@ -423,10 +423,6 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, ucar.nc2.ft.Feature
   public DateRange getDateRange() {
     if (dateRangeMax == null) makeRanges();
     return dateRangeMax;
-  }
-
-  public void getDetailInfo(Formatter sf) {
-    sf.format("%s", getDetailInfo());
   }
 
   public String getImplementationName() {

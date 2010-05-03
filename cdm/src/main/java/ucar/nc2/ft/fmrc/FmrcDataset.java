@@ -33,10 +33,14 @@
 package ucar.nc2.ft.fmrc;
 
 import net.jcip.annotations.ThreadSafe;
+import org.jdom.Element;
 import thredds.inventory.FeatureCollectionConfig;
 import ucar.nc2.*;
 import ucar.nc2.constants.CF;
+import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDataset;
+import ucar.nc2.dt.GridDatatype;
+import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.constants._Coordinate;
@@ -69,6 +73,8 @@ class FmrcDataset {
   static private final boolean debugEnhance = false, debugRead = false;
 
   private final FeatureCollectionConfig.Config config;
+  private final Element ncmlOuter, ncmlInner;
+
   //private List<String> protoList; // the list of datasets in the proto that have proxy reader, so these need to exist. not implemented yet
 
   // allow to build a new state while old state can still be safely used
@@ -84,8 +90,10 @@ class FmrcDataset {
   private State state;
   private Object lock= new Object();
 
-  FmrcDataset(FeatureCollectionConfig.Config config) {
+  FmrcDataset(FeatureCollectionConfig.Config config, Element ncmlInner, Element ncmlOuter) {
     this.config = config;
+    this.ncmlInner = ncmlInner;
+    this.ncmlOuter = ncmlOuter;
   }
 
   List<Date> getRunDates() {
@@ -176,12 +184,17 @@ class FmrcDataset {
   void setInventory(FmrcInv fmrcInv, boolean forceProto) throws IOException {
     NetcdfDataset protoLocal = null;
 
+    // make new proto if needed
     if (state == null || forceProto) {
       protoLocal = buildProto(fmrcInv, config.protoConfig);
+
+      if (ncmlOuter != null) {
+        protoLocal = NcMLReader.mergeNcMLdirect(protoLocal, ncmlOuter);
+      }
     }
 
+    // switch to new FmrcInvLite
     FmrcInvLite liteLocal = new FmrcInvLite(fmrcInv);
-
     synchronized (lock) {
       if (protoLocal == null) protoLocal = state.proto;
       state = new State(protoLocal, liteLocal);
@@ -246,39 +259,91 @@ class FmrcDataset {
         FmrcInv.UberGrid grid = fmrcInv.findUberGrid(v.getName());
         if (grid == null) { // only non-agg vars need to be cached
           Variable orgV = (Variable) v.getSPobject();
-
-          // see if its a time coordinate
-          if (orgV instanceof CoordinateAxis) {
-            CoordinateAxis axis = (CoordinateAxis) orgV;
-            AxisType type = axis.getAxisType();
-            if (type != null && (type == AxisType.Time || type == AxisType.RunTime)) {
-              root.removeVariable(v.getShortName());
-              v.setSPobject(null); // clear the reference to orgV
-              continue;
-            }
-          }
-
+          if (orgV.getSize() > 10 * 1000 * 1000)
+            System.out.println("FMRCDataset build Proto cache >10M var= "+orgV.getName());
           v.setCachedData(orgV.read()); // read from original - store in proto
-
-          // not implemented yet
-          /* if (config.protoConfig.cacheAll || v.isCaching() || v.isCoordinateVariable()) { // want to cache
-           v.setCachedData(orgV.read()); // read from original - store in proto
-         } else {
-           String location = orgV.getParentGroup().getNetcdfFile().getLocation(); // hmmmmm
-           v.setProxyReader(new DatasetProxyReader(location));  // keep track of original file
-           protoList.add(location);
-         } */
         }
 
         v.setSPobject(null); // clear the reference to orgV for all of proto
-        v.removeAttribute(_Coordinate.Axes); // remove more troublesome attributes
       }
 
       result.finish();
+      
+      // enhance the proto. becomes the template for coordSystems in the derived datasets
+      CoordSysBuilderIF builder = result.enhance();
+      if (debugEnhance) System.out.printf("proto.enhance() parseInfo = %s%n", builder.getParseInfo());
+
+      // turn it into a GridDataset, so we can add standard metadata to result, not dependent on CoordSysBuilder
+      // also see  ucar.nc2.dt.grid.NetcdfCFWriter - common code could be extracted
+      Formatter parseInfo = new Formatter();
+      GridDataset gds = new ucar.nc2.dt.grid.GridDataset(result, parseInfo); // LOOK not sure coord axes will read ??
+      if (debugEnhance) System.out.printf("proto GridDataset parseInfo = %s%n", parseInfo);
+
+      // now make standard CF metadata for gridded data
+      for (GridDatatype grid : gds.getGrids()) {
+        Variable newV = result.findVariable(grid.getName());
+        if (newV == null) {
+          logger.warn("FmrcDataset cant find "+grid.getName()+" in proto gds ");
+          continue;
+        }
+
+        // annotate Variable for CF
+        StringBuilder sbuff = new StringBuilder();
+        GridCoordSystem gcs = grid.getCoordinateSystem();
+        for (CoordinateAxis axis : gcs.getCoordinateAxes()) {
+          if ((axis.getAxisType() != AxisType.Time) && (axis.getAxisType() != AxisType.RunTime)) // these are added later
+            sbuff.append(axis.getName()).append(" ");
+        }
+        newV.addAttribute(new Attribute("coordinates", sbuff.toString())); // LOOK what about adding lat/lon variable
+
+        // looking for coordinate transform variables
+        for (CoordinateTransform ct : gcs.getCoordinateTransforms()) {
+          Variable ctv = result.findVariable(ct.getName());
+          if ((ctv != null) && (ct.getTransformType() == TransformType.Projection))
+            newV.addAttribute(new Attribute("grid_mapping", ctv.getName()));
+        }
+
+        // LOOK is this needed ?
+        for (CoordinateAxis axis : gcs.getCoordinateAxes()) {
+          Variable coordV = result.findVariable(axis.getName());
+          if ((axis.getAxisType() == AxisType.Height) || (axis.getAxisType() == AxisType.Pressure) || (axis.getAxisType() == AxisType.GeoZ)) {
+            if (null != axis.getPositive())
+              coordV.addAttribute(new Attribute("positive", axis.getPositive()));
+          }
+          if (axis.getAxisType() == AxisType.Lat) {
+            coordV.addAttribute(new Attribute("units", "degrees_north"));
+            coordV.addAttribute(new Attribute("standard_name", "latitude"));
+          }
+          if (axis.getAxisType() == AxisType.Lon) {
+            coordV.addAttribute(new Attribute("units", "degrees_east"));
+            coordV.addAttribute(new Attribute("standard_name", "longitude"));
+          }
+          if (axis.getAxisType() == AxisType.GeoX) {
+            coordV.addAttribute(new Attribute("standard_name", "projection_x_coordinate"));
+          }
+          if (axis.getAxisType() == AxisType.GeoY) {
+            coordV.addAttribute(new Attribute("standard_name", "projection_y_coordinate"));
+          }
+        }
+      }
+
+      // more troublesome attributes, use pure CF
+      for (Variable v : result.getVariables()) {
+        Attribute att = null;
+        if (null != (att = v.findAttribute(_Coordinate.Axes.toString())))
+           v.remove(att);
+        if (null != (att = v.findAttribute(_Coordinate.Systems.toString())))
+           v.remove(att);
+        if (null != (att = v.findAttribute(_Coordinate.SystemFor.toString())))
+          v.remove(att);
+        if (null != (att = v.findAttribute(_Coordinate.Transforms.toString())))
+          v.remove(att);
+      }
+
       return result;
 
     } finally {
-      // data is read and cached, can close fiels now
+      // data is read and cached, can close files now
       closeAll(openFilesProto);
     }
   }
@@ -337,17 +402,24 @@ class FmrcDataset {
   /////////////////////////////////////////////////////////
   // constructing the dataset
 
+  // private static final String FTIME_PREFIX = "";
+
   private String getRunDimensionName() {
     return "run";
   }
 
-  private String getCoordinateList(VariableDS aggVar, String timeCoordName) {
+  private String makeCoordinateList(VariableDS aggVar, String timeCoordName, boolean is2D) {
     String coords = "";
     Attribute att = aggVar.findAttribute(CF.COORDINATES);
+    if (att == null)
+      att = aggVar.findAttribute(_Coordinate.Axes);    
     if (att != null)
       coords = att.getStringValue();
 
-    return getRunDimensionName() + " " + "forecast_" + timeCoordName + " " + coords;
+    if (is2D)
+      return getRunDimensionName() + " " + timeCoordName + " " + coords;
+    else
+      return getRunDimensionName() + "_" + timeCoordName + " " + timeCoordName + " " + coords;
   }
 
   private void addAttributeInfo(NetcdfDataset result, String attName, String info) {
@@ -375,6 +447,9 @@ class FmrcDataset {
     result.setLocation(lite.collectionName);
     transferGroup(proto.getRootGroup(), result.getRootGroup(), result);
     result.finish();
+    //CoordSysBuilderIF builder = result.enhance();
+    //if (debugEnhance) System.out.printf("buildDataset2D.enhance() parseInfo = %s%n", builder.getParseInfo());
+
     addAttributeInfo(result, "history", "FMRC 2D Dataset");
 
     // create runtime aggregation dimension
@@ -421,7 +496,7 @@ class FmrcDataset {
 
       DataType dtype = DataType.DOUBLE;
       String dims = getRunDimensionName() + " " + gridset.gridsetName;
-      VariableDS timeVar = new VariableDS(result, newGroup, null, "forecast_" + gridset.gridsetName, dtype, dims, null, null); // LOOK could just make a CoordinateAxis1D
+      VariableDS timeVar = new VariableDS(result, newGroup, null, gridset.gridsetName, dtype, dims, null, null); // LOOK could just make a CoordinateAxis1D
       timeVar.addAttribute(new Attribute("long_name", "Forecast time for ForecastModelRunCollection"));
       timeVar.addAttribute(new ucar.nc2.Attribute("standard_name", "time"));
       timeVar.addAttribute(new ucar.nc2.Attribute("units", "hours since " + dateFormatter.toDateTimeStringISO(lite.base)));
@@ -459,18 +534,57 @@ class FmrcDataset {
         nonAggVars.remove(aggVar);
 
         // we need to explicitly list the coordinate axes, because time coord is now 2D
-        String coords = getCoordinateList(aggVar, gridset.gridsetName);
+        String coords = makeCoordinateList(aggVar, gridset.gridsetName, true);
         aggVar.removeAttribute(_Coordinate.Axes);
-        aggVar.addAttribute(new Attribute(CF.COORDINATES, coords)); // CF
+        aggVar.addAttribute(new Attribute(CF.COORDINATES, coords));
+
+        /* transfer Coordinate Systems
+        VariableDS protoV = (VariableDS) proto.findVariable(aggVar.getName());
+        for (CoordinateSystem protoCs : protoV.getCoordinateSystems()) {
+          CoordinateSystem cs = findReplacementCs(protoCs, gridset.gridsetName, result);
+          aggVar.addCoordinateSystem(cs);
+        } */
       }
     }
 
     result.finish();  // this puts the new dimensions into the global structures
 
-    CoordSysBuilderIF builder = result.enhance();
-    if (debugEnhance) System.out.printf("parseInfo = %s%n", builder.getParseInfo());
+    //CoordSysBuilderIF builder = result.enhance();
+    //if (debugEnhance) System.out.printf("parseInfo = %s%n", builder.getParseInfo());
 
-    return new ucar.nc2.dt.grid.GridDataset(result);
+    // LOOK better not to do this when you only want the NetcdfDataset
+    Formatter parseInfo = new Formatter();
+    GridDataset gds = new ucar.nc2.dt.grid.GridDataset(result, parseInfo);
+    if (debugEnhance) System.out.printf("GridDataset2D parseInfo = %s%n", parseInfo);
+    return gds;
+  }
+
+  private CoordinateSystem findReplacementCs(CoordinateSystem protoCs, String timeDim, NetcdfDataset result) {
+    CoordinateSystem replace = result.findCoordinateSystem(protoCs.getName());
+    if (replace != null) return replace;
+
+    List<CoordinateAxis> axes = new ArrayList<CoordinateAxis>();
+    for (CoordinateAxis axis : protoCs.getCoordinateAxes()) {
+      Variable v = result.findCoordinateAxis(axis.getName());
+      CoordinateAxis ra;
+      if (v instanceof CoordinateAxis)
+        ra = (CoordinateAxis) v;
+      else {
+        // if not a CoordinateAxis, will turn into one
+        ra = result.addCoordinateAxis((VariableDS) v);
+
+        if (axis.getAxisType() != null) {
+          ra.setAxisType(axis.getAxisType());
+          ra.addAttribute(new Attribute(_Coordinate.AxisType, axis.getAxisType().toString()));
+        }
+      }
+      axes.add(ra);
+    }
+
+    // coord transforms are immutable and can be shared
+    CoordinateSystem cs = new CoordinateSystem(result, axes, protoCs.getCoordinateTransforms());
+    result.addCoordinateSystem(cs);
+    return cs;
   }
 
   /*
@@ -722,7 +836,7 @@ class FmrcDataset {
         nonAggVars.remove(aggVar);
 
         // we need to explicitly list the coordinate axes
-        String coords = getCoordinateList(aggVar, timeDimName);
+        String coords = makeCoordinateList(aggVar, timeDimName, false);
         aggVar.removeAttribute(_Coordinate.Axes);
         aggVar.addAttribute(new Attribute(CF.COORDINATES, coords)); // CF
 
@@ -743,14 +857,14 @@ class FmrcDataset {
     }
 
     CoordSysBuilderIF builder = result.enhance();
-    if (debugEnhance) System.out.printf("parseInfo = %s%n", builder.getParseInfo());
+    if (debugEnhance) System.out.printf("GridDataset1D parseInfo = %s%n", builder.getParseInfo());
 
     return new ucar.nc2.dt.grid.GridDataset(result);
   }
 
   private VariableDS makeTimeCoordinate(NetcdfDataset result, Group group, String dimName, Date base, double[] values, DateFormatter dateFormatter) {
     DataType dtype = DataType.DOUBLE;
-    VariableDS timeVar = new VariableDS(result, group, null, "forecast_" + dimName, dtype, dimName, null, null); // LOOK could just make a CoordinateAxis1D
+    VariableDS timeVar = new VariableDS(result, group, null, dimName, dtype, dimName, null, null); // LOOK could just make a CoordinateAxis1D
     timeVar.addAttribute(new Attribute("long_name", "Forecast time for ForecastModelRunCollection"));
     timeVar.addAttribute(new ucar.nc2.Attribute("standard_name", "time"));
     timeVar.addAttribute(new ucar.nc2.Attribute("units", "hours since " + dateFormatter.toDateTimeStringISO( base)));
@@ -768,7 +882,7 @@ class FmrcDataset {
   private VariableDS makeRunTimeCoordinate(NetcdfDataset result, Group group, String dimName, Date base, double[] values, DateFormatter dateFormatter) {
     DataType dtype = DataType.DOUBLE;
     VariableDS timeVar = new VariableDS(result, group, null, "run_" + dimName, dtype, dimName, null, null); // LOOK could just make a CoordinateAxis1D
-    timeVar.addAttribute(new Attribute("long_name", "run times for coordinate = forecast_" + dimName));
+    timeVar.addAttribute(new Attribute("long_name", "run times for coordinate = " + dimName));
     timeVar.addAttribute(new ucar.nc2.Attribute("standard_name", "forecast_reference_time"));
     timeVar.addAttribute(new ucar.nc2.Attribute("units", "hours since " + dateFormatter.toDateTimeStringISO( base)));
     timeVar.addAttribute(new ucar.nc2.Attribute("missing_value", Double.NaN));
@@ -785,7 +899,7 @@ class FmrcDataset {
   private VariableDS makeOffsetCoordinate(NetcdfDataset result, Group group, String dimName, Date base, double[] values, DateFormatter dateFormatter) {
     DataType dtype = DataType.DOUBLE;
     VariableDS timeVar = new VariableDS(result, group, null, "offset_" + dimName, dtype, dimName, null, null); // LOOK could just make a CoordinateAxis1D
-    timeVar.addAttribute(new Attribute("long_name", "offset hour from start of run for coordinate = forecast_" + dimName));
+    timeVar.addAttribute(new Attribute("long_name", "offset hour from start of run for coordinate = " + dimName));
     timeVar.addAttribute(new ucar.nc2.Attribute("standard_name", "forecast_period"));
     timeVar.addAttribute(new ucar.nc2.Attribute("units", "hours since " + dateFormatter.toDateTimeStringISO( base)));
     timeVar.addAttribute(new ucar.nc2.Attribute("missing_value", Double.NaN));
@@ -960,25 +1074,61 @@ class FmrcDataset {
    * @return file or null if not found
    */
   private NetcdfDataset open(String location, HashMap<String, NetcdfDataset> openFiles) { // } throws IOException {
-    NetcdfDataset ncfile = null;
+    NetcdfDataset ncd = null;
 
     if (openFiles != null) {
-      ncfile = openFiles.get(location);
-      if (ncfile != null) return ncfile;
+      ncd = openFiles.get(location);
+      if (ncd != null) return ncd;
     }
 
     try {
-      ncfile = NetcdfDataset.acquireDataset(location, null);  // default enhance
+      if (ncmlInner == null) {
+        ncd = NetcdfDataset.acquireDataset(location, null);  // default enhance
+
+      } else {
+        NetcdfFile nc = NetcdfDataset.acquireFile(location, null);
+        ncd = NcMLReader.mergeNcML(nc, ncmlInner); // create new dataset
+        ncd.enhance(); // now that the ncml is added, enhance "in place", ie modify the NetcdfDataset
+      }
     } catch (IOException ioe) {
       logger.error("Cant open file ", ioe);  // file was deleted ??
       return null;
     }
 
-    if (openFiles != null && ncfile != null) {
-      openFiles.put(location, ncfile);
+    if (openFiles != null && ncd != null) {
+      openFiles.put(location, ncd);
     }
-    return ncfile;
+
+    return ncd;
   }
+
+  /*  from Aggregation.Dataset
+  public NetcdfFile acquireFile(CancelTask cancelTask) throws IOException {
+    if (debugOpenFile) System.out.println(" try to acquire " + cacheLocation);
+    long start = System.currentTimeMillis();
+
+    NetcdfFile ncfile = NetcdfDataset.acquireFile(reader, null, cacheLocation, -1, cancelTask, spiObject);
+
+    // must merge NcML before enhancing
+    if (mergeNcml != null)
+      ncfile = NcMLReader.mergeNcML(ncfile, mergeNcml); // create new dataset
+    if (enhance == null || enhance.isEmpty()) {
+      if (debugOpenFile) System.out.println(" acquire (no enhance) " + cacheLocation + " took " + (System.currentTimeMillis() - start));
+      return ncfile;
+    }
+
+    // must enhance
+    NetcdfDataset ds;
+    if (ncfile instanceof NetcdfDataset) {
+      ds = (NetcdfDataset) ncfile;
+      ds.enhance(enhance); // enhance "in place", ie modify the NetcdfDataset
+    } else {
+      ds = new NetcdfDataset(ncfile, enhance); // enhance when wrapping
+    }
+
+    if (debugOpenFile) System.out.println(" acquire (enhance) " + cacheLocation + " took " + (System.currentTimeMillis() - start));
+    return ds;
+  } */
 
   private void closeAll(HashMap<String, NetcdfDataset> openFiles) throws IOException {
     for (NetcdfDataset ncfile : openFiles.values()) {
@@ -1030,6 +1180,10 @@ class FmrcDataset {
       v = ncfile.findVariable(ve.getOriginalName());
     }
     return v;
+  }
+
+  public void showDetails(Formatter out) {
+    out.format("==========================%nproto=%n%s%n", state.proto); 
   }
 
 }
