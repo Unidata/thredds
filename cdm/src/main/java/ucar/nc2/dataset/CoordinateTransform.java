@@ -35,6 +35,7 @@ package ucar.nc2.dataset;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.jcip.annotations.ThreadSafe;
 import ucar.unidata.util.Parameter;
 
 /**
@@ -44,13 +45,14 @@ import ucar.unidata.util.Parameter;
  * @author caron
  */
 
+@ThreadSafe
 public class CoordinateTransform implements Comparable {
 
-  protected String name, authority;
-  protected TransformType transformType = null;
+  protected final String name, authority;
+  protected final TransformType transformType;
 
+  // immutable once these are done adding
   protected List<Parameter> params;
-  protected String id;
 
   /**
    * Create a Coordinate Transform.
@@ -105,7 +107,6 @@ public class CoordinateTransform implements Comparable {
   public List<Parameter> getParameters() {
     return params;
   }
-
 
   /**
    * Convenience function; look up Parameter by name, ignoring case.

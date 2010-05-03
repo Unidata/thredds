@@ -48,7 +48,6 @@ import net.jcip.annotations.Immutable;
  */
 @Immutable
 public class VerticalCT extends CoordinateTransform {
-   //private VerticalTransform vt;
    private final VerticalCT.Type type;
    private final CoordTransBuilderIF builder;
 
@@ -73,7 +72,6 @@ public class VerticalCT extends CoordinateTransform {
     super( from.getName(), from.getAuthority(), from.getTransformType());
     this.type = from.getVerticalTransformType();
     this.builder = from.getBuilder();
-    //this.vt = from.getVerticalTransform();
   }
 
   /**
@@ -81,17 +79,6 @@ public class VerticalCT extends CoordinateTransform {
    * @return the Vertical Transform Type
     */
   public VerticalCT.Type getVerticalTransformType() { return type; }
-
-  /**
-   * get the Vertical Transform function - actually does the calculations.
-   * @return the Vertical Transform function
-   *
-  public VerticalTransform getVerticalTransform() { return vt; }  */
-
- /** set the Vertical Transform function
-  * @param vt the VerticalTransform
-  */
-  // public void setVerticalTransform(VerticalTransform vt ) { this.vt = vt; }
 
   /**
    * Use the builder to make the Vertical Transform function
@@ -144,7 +131,7 @@ public class VerticalCT extends CoordinateTransform {
     public final static Type OceanSG1 = new Type("ocean_s_g1");
     public final static Type OceanSG2 = new Type("ocean_s_g2"); 
 
-    private String name;
+    private final String name;
 
     /** Constructor
      * @param s name of Type

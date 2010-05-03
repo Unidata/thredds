@@ -686,10 +686,9 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
 
       // look for vars with those dimensions
       for (VarProcess vp : varList) {
-        if (!vp.hasCoordinateSystem() && vp.isData()) {
+        if (!vp.hasCoordinateSystem() && vp.isData() && (csVar.cs != null)) {
           VariableEnhanced ve = (VariableEnhanced) vp.v;
-          if (CoordinateSystem.isSubset(dimList, vp.v.getDimensionsAll()) &&
-                  CoordinateSystem.isSubset(vp.v.getDimensionsAll(), dimList))
+          if (CoordinateSystem.isSubset(dimList, vp.v.getDimensionsAll()) && CoordinateSystem.isSubset(vp.v.getDimensionsAll(), dimList))
             ve.addCoordinateSystem(csVar.cs);
         }
       }

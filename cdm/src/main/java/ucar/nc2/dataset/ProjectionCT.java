@@ -33,6 +33,7 @@
 
 package ucar.nc2.dataset;
 
+import net.jcip.annotations.Immutable;
 import ucar.unidata.geoloc.*;
 import ucar.unidata.util.Parameter;
 
@@ -44,8 +45,9 @@ import java.util.*;
  * @author caron
  */
 
+@Immutable
 public class ProjectionCT extends CoordinateTransform {
-   private ProjectionImpl proj;
+   private final ProjectionImpl proj;
 
   /**
    * Create a Projection Coordinate Transform.
