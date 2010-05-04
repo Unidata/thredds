@@ -37,18 +37,28 @@ import junit.framework.TestCase;
 import java.io.IOException;
 
 import ucar.nc2.*;
+import ucar.nc2.dataset.NetcdfDataset;
 
-public class TestRemoteCrawlableDataset extends TestCase {
+public class TestRemoteAggregation extends TestCase {
 
-  public TestRemoteCrawlableDataset( String name) {
+  public TestRemoteAggregation( String name) {
     super(name);
   }
 
-  public void testNcmlDirect() throws IOException {
-    String filename = "file:./"+TestNcML.topDir + "remote/aggCrawlableDataset.ncml";
+  public void testAggExisting() throws IOException {
+    String filename = "file:"+TestAll.cdmUnitTestDir + "fmrc/remote.ncml";
 
-    NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
-    System.out.println(" TestRemoteCrawlableDataset.open "+ ncfile);
+    NetcdfDataset ncd = NetcdfDataset.openDataset(filename);
+    System.out.println(" testAggExisting.open "+ ncd);
+
+    Variable sst_time = ncd.findVariable("sst_time");
+    assert sst_time != null;
+    assert sst_time.getRank() == 2;
+    int[] shape =  sst_time.getShape();
+    assert shape[0] == 6;
+    assert shape[1] == 1;
+
+    ncd.close();
   }
 }
 

@@ -193,6 +193,9 @@ public class DateFromString
       SimpleDateFormat dateFormat = new SimpleDateFormat( dateFormatString, Locale.US );
       dateFormat.setTimeZone( TimeZone.getTimeZone( "GMT" ) );
 
+      if (dateString.length() < startIndex + dateFormatString.length())
+        System.out.println("HEY");
+
       // We have to cut off the dateString, so that it doesnt grab extra characters.
       // ie  new SimpleDateFormat("yyyyMMdd_HH").parse("20061129_06") -> 2006-12-24T00:00:00Z (WRONG!)
       String s = dateString.substring( startIndex, startIndex + dateFormatString.length());

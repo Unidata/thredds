@@ -234,7 +234,7 @@ class FmrcDataset {
       // this covers the case where the variables are split across files
       Set<GridDatasetInv> files = proto.getFiles();
       if (logger.isDebugEnabled())
-        logger.debug("FmrcDataset: proto= " + proto.getName() + " " + proto.getRunDate() + " collection= " + config.spec);
+        logger.debug("FmrcDataset: proto= " + proto.getName() + " " + proto.getRunDate() + " collection= " + fmrcInv.getName());
       for (GridDatasetInv file : files) {
         NetcdfDataset ncfile = open(file.getLocation(), openFilesProto);
         transferGroup(ncfile.getRootGroup(), result.getRootGroup(), result);
@@ -246,10 +246,10 @@ class FmrcDataset {
       root.addAttribute(new Attribute("Conventions", "CF-1.4, " + _Coordinate.Convention));
       root.addAttribute(new Attribute("cdm_data_type", FeatureType.GRID.toString()));
       root.addAttribute(new Attribute("CF:feature_type", FeatureType.GRID.toString()));
+      root.addAttribute(new Attribute("location", "Proto "+fmrcInv.getName()));
 
       // remove some attributes that can cause trouble
       root.remove(root.findAttribute(_Coordinate.ModelRunDate));
-      root.remove(root.findAttribute("location"));
 
       // protoList = new ArrayList<String>();
       // these are the non-agg variables - store data or ProxyReader in proto
@@ -514,11 +514,7 @@ class FmrcDataset {
       for (FmrcInvLite.Gridset.Grid ugrid : gridset.grids) {
         VariableDS aggVar = (VariableDS) result.findVariable(ugrid.name);
         if (aggVar == null) {
-          logger.error("cant find ugrid variable "+ugrid.name+" in collection "+config.spec);
-          if (config.spec.contains("Alaska"))
-            for (Variable v : result.getVariables())
-              logger.debug(" proto variable = "+v.getName());
-
+          logger.error("cant find ugrid variable "+ugrid.name+" in collection "+lite.collectionName);
           continue; // skip
         }
 
@@ -821,7 +817,7 @@ class FmrcDataset {
 
         VariableDS aggVar = (VariableDS) result.findVariable(ugrid.name);
         if (aggVar == null) {
-          logger.error("cant find ugrid variable "+ugrid.name+" in collection "+config.spec);
+          logger.error("cant find ugrid variable "+ugrid.name+" in collection "+lite.collectionName);
           continue; // skip
         }
 

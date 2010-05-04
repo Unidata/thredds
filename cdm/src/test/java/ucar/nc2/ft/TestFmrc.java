@@ -45,6 +45,7 @@ import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.ft.fmrc.Fmrc;
 
+import java.io.File;
 import java.util.Formatter;
 import java.util.Iterator;
 import java.util.List;
@@ -69,8 +70,12 @@ public class TestFmrc extends TestCase {
       FeatureCollectionConfig.setRegularizeDefault( true);
 
       // spec
+      doOne(datadir + "toms/**/hiig_#yyyyMMdd#.nc", 25, 11, 13, 2, "u", 4, 25, 58);
       doOne(datadir + "bom/**/ocean_fc_#yyyyMMdd#_..._eta.nc", 1, 1, 8, 0, "eta_t", 2, 7, 10);
       doOne(TestAll.cdmUnitTestDir + "ncml/nc/ruc_conus40/RUC_CONUS_40km_#yyyyMMdd_HHmm#.grib1", 48, 12, 16, 6, "Pressure", 3, 9, 9);
+
+      // really a joinExisting
+      doOne(TestAll.cdmUnitTestDir + "ncml/agg/#yyyyMMdd_HHmm#.nc$", 10, 4, 8, 2, "Visibility", 4, 2, 8);     //*/
 
       // catalog
       doOne("catalog:http://motherlode.ucar.edu:8080/thredds/catalog/fmrc/NCEP/GFS/Hawaii_160km/files/catalog.xml", 15, 8, 11, 6, "Temperature", -1, 21, 111);
@@ -80,23 +85,23 @@ public class TestFmrc extends TestCase {
       doOne(datadir + "ncom/ncom_fmrc.ncml", 1, 1, 5, 1, "surf_el", 3, 25, 41); // */
       doOne(datadir + "rtofs/rtofs.ncml", 9, 4, 9, 1, "N3-D_Temperature", 2, 3, 4);
 
-      // really a joinExisting
-      doOne(TestAll.cdmUnitTestDir + "ncml/agg/#yyyyMMdd_HHmm#.nc$", 10, 4, 8, 2, "Visibility", 4, 2, 8);     //*/
+      doOne(TestAll.cdmLocalTestDataDir + "ncml/offsite/AggFmrcGribRunseq.ncml", 13,3,6,2, "Temperature", 4, 29, 35);
+      doOne(TestAll.cdmLocalTestDataDir + "ncml/offsite/AggFmrcGrib.ncml", 54, 13, 16, 12, "Temperature", 8, 29, 72);
+      doOne(TestAll.cdmLocalTestDataDir + "ncml/offsite/AggFmrcNomads.ncml", 117, 17, 19, 14, "Temperature", 1, 3, 3);
+      doOne(TestAll.cdmLocalTestDataDir + "ncml/offsite/AggFmrcNonuniform.ncml", 48, 12, 16, 6, "Temperature", 3, 11, 11);
+      doOne(TestAll.cdmLocalTestDataDir + "ncml/offsite/aggForecastModel.ncml", 41, 6, 10, 4, "u", 14, 11, 37);
+
+      // fmrcSingle
+      doOne(TestAll.cdmLocalTestDataDir + "ncml/offsite/aggFmrcScan2.ncml", 148, 24, 27, 23, "Temperature", 2, 3,  6);
+      doOne(datadir + "nomads/nomads.ncml", 117, 17, 19, 14, "Temperature", 1, 3, 2);
 
       // needs ncmlInner to work
       doOne(datadir + "gomoos/fmrc.ncml", 16, -1, 7, 1, "salt", 2, 21, 29);     //*/
 
+      // ncml with remote scan (collection)
+
       // blank
       // doOne(datadir + "rtofs/rtofs.ncml", -1, -1, -1, -1, "Temperature", -1, -1, -1);     //*/
-
-    } finally {
-      MetadataManager.closeAll();
-    }
-  }
-
-  public void utestSpec() throws Exception {
-    try {
-      FeatureCollectionConfig.setRegularizeDefault( true);
 
     } finally {
       MetadataManager.closeAll();

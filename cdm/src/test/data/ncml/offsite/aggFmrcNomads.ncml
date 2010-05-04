@@ -3,7 +3,7 @@
 
   <aggregation dimName="run" type="forecastModelRunSingleCollection" timeUnitsChange="true" >
 
-    <scanFmrc location="Q:/cdmUnitTest/nomads/new" suffix=".grb"
+    <scanFmrc location="Q:/cdmUnitTest/fmrc/nomads/" suffix=".grb"
            runDateMatcher="#gfs_3_#yyyyMMdd_HH"
            forecastOffsetMatcher="HHH#.grb#"/>
 

@@ -3,7 +3,7 @@
 
   <aggregation dimName="run" type="forecastModelRunSingleCollection" timeUnitsChange="true" >
 
-    <scanFmrc location="C:/data/grib/rtmodels/" regExp=".*_nmm\.GrbF[0-9]{5}$"
+    <scanFmrc location="Q:/cdmUnitTest/rtmodels/" regExp=".*_nmm\.GrbF[0-9]{5}$"
            runDateMatcher="yyMMddHH#_nmm.GrbF#"
            forecastOffsetMatcher="#_nmm.GrbF#HHH"/>
 

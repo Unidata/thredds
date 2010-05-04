@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
+  <aggregation dimName="run" type="forecastModelRunCollection" timeUnitsChange="true">
+    <scan location="Q:/cdmUnitTest/ncml/nc/ruc_conus40/" suffix=".grib1" enhance="true" dateFormatMark="RUC_CONUS_40km_#yyyyMMdd_HHmm"/>
+  </aggregation>
+</netcdf>

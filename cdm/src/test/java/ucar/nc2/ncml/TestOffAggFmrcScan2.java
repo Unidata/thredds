@@ -77,7 +77,7 @@ public class TestOffAggFmrcScan2 extends TestCase {
   }
 
   public void testOpenNomads() throws Exception {
-    String dataDir = TestAll.cdmUnitTestDir + "nomads/new/";
+    String dataDir = TestAll.cdmUnitTestDir + "fmrc/nomads/";
     String ncml =
       "<?xml version='1.0' encoding='UTF-8'?>\n" +
       "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n" +

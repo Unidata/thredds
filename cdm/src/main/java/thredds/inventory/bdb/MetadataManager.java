@@ -153,6 +153,8 @@ public class MetadataManager {
       try {
         // Finally, close the store and environment.
         myEnv.close();
+        myEnv = null;
+        
       } catch (DatabaseException dbe) {
         logger.error("Error closing MyDbEnv: " + dbe.toString());
         System.exit(-1);
