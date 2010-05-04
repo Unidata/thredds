@@ -3,7 +3,7 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Changes in version 4.2:
- 2: (2010-05-03)
+ 2: (2010-05-04)
   ThreddsDataFactory does not open NetcdfDataset in enhance mode.
   use opendap-2.2.jar (new parser)
   DAS parser is now assumed to handle escaping and remove "" from strings

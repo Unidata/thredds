@@ -90,7 +90,7 @@ public class PointFeatureDatasetViewer extends JPanel {
   private DateFormatter df = new DateFormatter();
 
   private boolean eventsOK = true;
-  private boolean debugStationRegionSelect = false, debugQuery = true;
+  private boolean debugStationRegionSelect = false, debugQuery = false;
 
   private int maxCount = Integer.MAX_VALUE;
 

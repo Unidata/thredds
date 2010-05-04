@@ -156,7 +156,7 @@ public class DatasetViewer extends JPanel {
         public void propertyChange(PropertyChangeEvent evt) {
           String name = evt.getPropertyName();
           CompareDialog.Data data = (CompareDialog.Data) evt.getNewValue();
-          System.out.printf("name=%s %s%n", name, data);
+          //System.out.printf("name=%s %s%n", name, data);
           compareDataset(data);
         }
       });

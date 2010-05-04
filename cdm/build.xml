@@ -140,19 +140,11 @@
   </path>
 
   <!-- LOOK can we generate with pathconvert? -->
-  <property name="Class-Path"
-            value="${jgoodies.jar} ${guiBuilder.jar} ${grib.jar} ${jdom.jar} ${opendap.jar} ${http-codec.jar} ${httpclient3.jar} ${http-logging.jar} ${loggingAPI.jar} ${logging-minimal.jar} ${protobuf.jar} ${resourcesOptional.jar} ${spring.jar} ${visadNoDods.jar}"/>
+  <!-- property name="Class-Path"
+            value="${jgoodies.jar} ${grib.jar} ${jdom.jar} ${opendap.jar} ${http-codec.jar} ${httpclient3.jar} ${http-logging.jar} ${loggingAPI.jar}
+            ${logging-minimal.jar} ${protobuf.jar} ${resourcesOptional.jar} ${spring.jar} ${visadNoDods.jar}"/ -->
   <property name="ClassPath-CommandLine"
             value="lib/${grib.jar}:lib/${jdom.jar}:lib/${httpclient3.jar}:lib/${http-codec.jar}:lib/${http-logging.jar}:lib/${loggingAPI.jar}:lib/${logging-minimal.jar}:lib/${jgoodies.jar}:lib/${spring.jar}:lib/${unidatacommon.jar}:lib/${visadNoDods.jar}"/>
-
-  <target name="test-pathconvert">
-    <echo>Class-Path=${Class-Path}</echo>
-
-    <pathconvert property="runtime.classpath.prop" refid="runtime.classpath" pathsep=" ">
-      <mapper type="flatten"/>
-    </pathconvert>
-    <echo>runtime.classpath.prop=${runtime.classpath.prop}</echo>
-  </target>
 
   <!-- targets -->
   <target name="init">
@@ -643,6 +635,12 @@
     <fileset refid="compileUI.libraries"/>
   </path>
 
+  <path id="runtimeUI.classpath">
+    <fileset refid="compile.libraries"/>
+    <fileset refid="compileUI.libraries"/>
+    <fileset refid="runtime.libraries"/>
+  </path>
+
   <path id="sourcepathUI">
     <pathelement location="${src.dir}"/>
     <pathelement location="${srcUI.dir}"/>
@@ -710,6 +708,11 @@
       </filterset>
     </copy>
 
+    <pathconvert property="ClassPath" refid="runtimeUI.classpath" pathsep=" ">
+      <mapper type="flatten"/>
+    </pathconvert>
+    <echo>ClassPath=${ClassPath}</echo>
+
     <!-- Ant jar task with index="true" will create JARs hiding any Class-Path: ... entries ! -->
     <jar jarfile="${build.dir}/${jarUI}" duplicate="preserve">
       <fileset dir="${build.dir}" includes="README"/>
@@ -720,7 +723,7 @@
 
       <manifest>
         <attribute name="Main-Class" value="ucar.nc2.ui.ToolsUI"/>
-        <attribute name="Class-Path" value="${Class-Path}"/>
+        <attribute name="Class-Path" value="${ClassPath}"/>
         <attribute name="Built-By" value="${user.name}"/>
         <attribute name="Built-On" value="${build.time}"/>
         <attribute name="Implementation-Title" value="NetCDF-Java-UITools"/>
@@ -908,16 +911,16 @@
              signedjar="${webstart_dir}/loggingAPI.jar" storepass="${keystore.password}"/>
     <signjar alias="idv" jar="${lib.dir}/external/${logging-minimal.jar}" keystore="${keystore}"
              signedjar="${webstart_dir}/logging.jar" storepass="${keystore.password}"/>
-    <signjar alias="idv" jar="${lib.dir}/external/${lucene.jar}" keystore="${keystore}"
-             signedjar="${webstart_dir}/lucene.jar" storepass="${keystore.password}"/>
+    <signjar alias="idv" jar="${lib.dir}/external/${bdb.jar}" keystore="${keystore}"
+             signedjar="${webstart_dir}/bdb.jar" storepass="${keystore.password}"/>
     <signjar alias="idv" jar="${lib.dir}/external/${spring.jar}" keystore="${keystore}"
              signedjar="${webstart_dir}/spring.jar" storepass="${keystore.password}"/>
     <signjar alias="idv" jar="${lib.dir}/release/${opendap.jar}" keystore="${keystore}"
              signedjar="${webstart_dir}/opendap.jar" storepass="${keystore.password}"/>
+    <signjar alias="idv" jar="${lib.dir}/external/${protobuf.jar}" keystore="${keystore}"
+             signedjar="${webstart_dir}/protobuf.jar" storepass="${keystore.password}"/>
     <signjar alias="idv" jar="${lib.dir}/release/${resourcesOptional.jar}" keystore="${keystore}"
              signedjar="${webstart_dir}/resourcesOptional.jar" storepass="${keystore.password}"/>
-    <signjar alias="idv" jar="${lib.dir}/external/${stax.jar}" keystore="${keystore}"
-             signedjar="${webstart_dir}/stax.jar" storepass="${keystore.password}"/>
     <signjar alias="idv" jar="${lib.dir}/release/${visadNoDods.jar}" keystore="${keystore}"
              signedjar="${webstart_dir}/visadNoDods.jar" storepass="${keystore.password}"/>
   </target>
