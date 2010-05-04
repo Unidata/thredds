@@ -58,7 +58,7 @@ dl {margin: 10px 5px 5px 15px;)
   <ol>
     <li><strong>startup</strong>= if true, when the server starts up, scan the collection and cache the results.</li>
     <li><strong>rescan</strong>= &quot;cron expr&quot; uses a <a href="http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html">cron expression</a> to specify when the collection should be rescanned in a background task.</li>
-    <li><strong>trigger</strong>: if &quot;allow&quot;, then external triggering will be allowed. This allows collections to be updated only when needed, at the cost of an external program (or person) having responsibility for sending the trigger. (NOT IMPLEMENTED YET)</li>
+    <li><strong>trigger</strong>: if &quot;allow&quot;, then external triggering will be allowed. This allows collections to be updated only when needed, at the cost of an external program (or person) having responsibility for sending the trigger. URL is   &quot;https://server:port/thredds/admin/trigger?collection=&lt;name&gt;&quot;. You must enable remote access.</li>
   </ol>
 </blockquote>
 <h3>manage element (NOT IMPLEMENTED YET)</h3>

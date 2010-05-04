@@ -37,14 +37,12 @@ import org.springframework.web.servlet.mvc.AbstractController;
 import thredds.monitor.FmrcCacheMonitorImpl;
 import thredds.server.config.TdsContext;
 import thredds.servlet.DebugHandler;
-import thredds.servlet.URLEncoder;
 import thredds.servlet.UsageLog;
 import ucar.unidata.util.StringUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
-import java.net.URLDecoder;
 
 /**
  * Show Fmrc Collection cache
@@ -59,13 +57,11 @@ public class FmrcCacheController extends AbstractController {
   private static final String FILE = "file";
   private final TdsContext tdsContext;
   private final FmrcCacheMonitorImpl monitor = new FmrcCacheMonitorImpl();
-  private final URLEncoder encoder = new URLEncoder();
-  private final URLDecoder decoder = new URLDecoder();
 
   FmrcCacheController( TdsContext _tdsContext) {
     this.tdsContext = _tdsContext;
 
-    DebugHandler debugHandler = DebugHandler.get("FmrcCache");
+    DebugHandler debugHandler = DebugHandler.get("Collections");
     DebugHandler.Action act;
 
     act = new DebugHandler.Action("showFmrcCache", "Show FMRC Cache") {
@@ -118,7 +114,7 @@ public class FmrcCacheController extends AbstractController {
      pw.println("</ol>");
     }
 
-    return null; // ToDo
+    return null;
   }
 
 }

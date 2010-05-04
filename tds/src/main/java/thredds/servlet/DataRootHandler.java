@@ -39,7 +39,6 @@ import thredds.crawlabledataset.CrawlableDatasetFile;
 import thredds.crawlabledataset.CrawlableDatasetDods;
 import thredds.cataloggen.ProxyDatasetHandler;
 import thredds.inventory.FeatureCollectionConfig;
-import thredds.monitor.FmrcCacheMonitorImpl;
 import thredds.server.config.TdsContext;
 import thredds.util.PathAliasReplacement;
 import thredds.util.StartsWithPathAliasReplacement;
@@ -705,6 +704,27 @@ public class DataRootHandler {
 
     logCatalogInit.debug(" added rootPath=<" + path + ">  for fmrc= <" + fmrc.getFullName() + ">");
     return true;
+  }
+
+  public List<InvDatasetFeatureCollection> getFmrc() {
+    List<InvDatasetFeatureCollection> result = new ArrayList<InvDatasetFeatureCollection>();
+    Iterator iter =  pathMatcher.iterator();
+    while (iter.hasNext()) {
+      DataRoot droot = (DataRoot) iter.next();
+      if (droot.featCollection != null)
+        result.add(droot.featCollection);
+    }
+    return result;
+  }
+
+  public InvDatasetFeatureCollection getFmrc(String want) {
+    Iterator iter =  pathMatcher.iterator();
+    while (iter.hasNext()) {
+      DataRoot droot = (DataRoot) iter.next();
+      if ((droot.featCollection != null) && droot.featCollection.getName().equals(want))
+        return droot.featCollection;
+    }
+    return null;
   }
 
 
