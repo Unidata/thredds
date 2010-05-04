@@ -500,6 +500,10 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     return acquireDataset(null, location, defaultEnhanceMode, -1, cancelTask, null);
   }
 
+  static public NetcdfDataset acquireDataset(String location, boolean enhance, ucar.nc2.util.CancelTask cancelTask) throws IOException {
+    return acquireDataset(null, location, enhance ? defaultEnhanceMode : null, -1, cancelTask, null);
+  }
+
   /**
    * Same as openDataset, but file is acquired through the File Cache.
    * You must first call initNetcdfFileCache() for caching to actually take place.

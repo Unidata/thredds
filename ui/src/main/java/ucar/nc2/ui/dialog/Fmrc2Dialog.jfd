@@ -43,11 +43,11 @@
            <class>org.jdesktop.layout.GroupLayout</class> 
            <void method="setProperty"> 
             <string>$horizontalGroup</string> 
-            <string>par l {seq l {space :::p, par t {par l {comp label1:::p::p, comp label2::l:p::p}, comp label3::t:p::p}, space :::p, par l {comp comboBox2::l:p::p, comp list1::l:p::p, comp comboBox1::l:p::p}, space ::133:x}}</string> 
+            <string>par l {seq l {space :::p, par t {par l {comp label1:::p::p, comp label2::l:p::p}, comp label3::t:p::p}, space :::p, par l {comp comboBox2::l:p::p, comp comboBox1::l:p::p, comp list1:::p::p}, space ::133:x}}</string> 
            </void> 
            <void method="setProperty"> 
             <string>$verticalGroup</string> 
-            <string>par l {seq l {space :::p, par b {comp label1::b:p::p, comp comboBox1::b:p::p}, space s:::p, par b {comp comboBox2::b:p::p, comp label3::b:p::p}, space ::34:x, par b {comp list1::b:p:66:p, comp label2::b:p::p}, space :::p}}</string> 
+            <string>par l {seq l {space :::p, par b {comp label1::b:p::p, comp comboBox1::b:p::p}, space s:::p, par b {comp comboBox2::b:p::p, comp label3::b:p::p}, space ::28:x, par b {comp list1::b:p:72:p, comp label2::b:p::p}, space :::p}}</string> 
            </void> 
           </object> 
           <void property="name"> 
@@ -148,6 +148,9 @@
               </void> 
               <void method="addElement"> 
                <string>Grid FeatureType</string> 
+              </void> 
+              <void method="addElement"> 
+               <string>Detail Info</string> 
               </void> 
              </object> 
             </void> 

@@ -434,6 +434,8 @@ public class ThreddsDataFactory {
     return (result.fatalError) ? null : ncd;
   }
 
+  private static boolean enhanceMode = false;
+
   private NetcdfDataset openDataset(InvAccess access, boolean acquire, ucar.nc2.util.CancelTask task, Result result) throws java.io.IOException {
     InvDataset invDataset = access.getDataset();
     String datasetId = invDataset.getID();
@@ -456,13 +458,13 @@ public class ThreddsDataFactory {
     // open DODS type
     if ((serviceType == ServiceType.OPENDAP) || (serviceType == ServiceType.DODS)) {
       String curl = DODSNetcdfFile.canonicalURL(datasetLocation);
-      ds = acquire ? NetcdfDataset.acquireDataset(curl, task) : NetcdfDataset.openDataset(curl, true, task);
+      ds = acquire ? NetcdfDataset.acquireDataset(curl, enhanceMode, task) : NetcdfDataset.openDataset(curl, enhanceMode, task);
     }
 
     // open CdmRemote
     else if (serviceType == ServiceType.CdmRemote) {
       String curl = CdmRemote.canonicalURL(datasetLocation);
-      ds = acquire ? NetcdfDataset.acquireDataset(curl, task) : NetcdfDataset.openDataset(curl, true, task);
+      ds = acquire ? NetcdfDataset.acquireDataset(curl, enhanceMode, task) : NetcdfDataset.openDataset(curl, enhanceMode, task);
     }
 
     /* open ADDE type
@@ -479,7 +481,7 @@ public class ThreddsDataFactory {
 
     else {
       // open through NetcdfDataset API
-      ds = acquire ? NetcdfDataset.acquireDataset(datasetLocation, task) : NetcdfDataset.openDataset(datasetLocation, true, task);
+      ds = acquire ? NetcdfDataset.acquireDataset(datasetLocation, enhanceMode, task) : NetcdfDataset.openDataset(datasetLocation, enhanceMode, task);
     }
 
     if (ds != null) {

@@ -61,7 +61,7 @@ public class TestOffAggFmrcNonuniform extends TestCase {
     testDimensions(ncfile, 3, 113, 151);
     testCoordVar(ncfile, 113);
     testAggCoordVar(ncfile, 3);
-    testTimeCoordVar(ncfile, "forecast_time5", 3, 11);
+    testTimeCoordVar(ncfile, "time5", 3, 11);
 
     ncfile.close();
   }

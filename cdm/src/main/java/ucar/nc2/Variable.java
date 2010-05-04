@@ -1491,8 +1491,8 @@ public class Variable implements VariableIF, ProxyReader {
     if ((cacheData != null) && (cacheData.getElementType() != getDataType().getPrimitiveClassType()))
       throw new IllegalArgumentException("setCachedData type="+cacheData.getElementType()+" incompatible with variable type="+getDataType());
 
-    if (cacheData.getSize() > 10 * 1000 * 1000)
-       System.out.println("HEY");   
+    //if (cacheData.getSize() > 10 * 1000 * 1000)
+    //   System.out.println("HEY");   
 
     this.cache.data = cacheData;
     this.isMetadata = isMetadata;

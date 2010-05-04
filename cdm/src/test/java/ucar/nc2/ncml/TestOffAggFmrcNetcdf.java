@@ -156,9 +156,9 @@ public class TestOffAggFmrcNetcdf extends TestCase {
   }
 
   private void testTimeCoordVar(NetcdfFile ncfile, int nagg, int noff) throws IOException {
-    Variable time = ncfile.findVariable("forecast_time");
+    Variable time = ncfile.findVariable("time");
     assert null != time;
-    assert time.getName().equals("forecast_time");
+    assert time.getName().equals("time");
     assert time.getRank() == 2;
     assert time.getSize() == nagg * noff;
     assert time.getShape()[0] == nagg;

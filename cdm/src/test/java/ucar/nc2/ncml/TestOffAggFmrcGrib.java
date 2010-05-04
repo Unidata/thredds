@@ -82,7 +82,7 @@ public class TestOffAggFmrcGrib extends TestCase {
   };
 
     testAggCoordVar(ncfile, naggs, new DateUnit("hours since 2006-03-15T18:00:00Z"), runhours);
-    testTimeCoordVar(ncfile, naggs, 29, "forecast_time", timevals);
+    testTimeCoordVar(ncfile, naggs, 29, "time", timevals);
 
     System.out.println("TestAggForecastModel.testReadData ");    
     testReadData(ncfile, naggs);
@@ -112,7 +112,7 @@ public class TestOffAggFmrcGrib extends TestCase {
 
     NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(xml), "aggFmrcGribRunseq", null);
     int naggs = 4;
-    String timeVarName = "forecast_time";
+    String timeVarName = "time";
     String timeDimName = "time";
     testDimensions(ncfile, naggs, timeDimName);
     testCoordVar(ncfile, 257);
