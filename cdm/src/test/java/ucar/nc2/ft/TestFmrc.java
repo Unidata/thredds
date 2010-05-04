@@ -93,7 +93,7 @@ public class TestFmrc extends TestCase {
 
       // fmrcSingle
       doOne(TestAll.cdmLocalTestDataDir + "ncml/offsite/aggFmrcScan2.ncml", 148, 24, 27, 23, "Temperature", 2, 3,  6);
-      doOne(datadir + "nomads/nomads.ncml", 117, 17, 19, 14, "Temperature", 1, 3, 2);
+      doOne(datadir + "nomads/nomads.ncml", 117, 17, 19, 14, "Temperature", 1, 3, 3);
 
       // needs ncmlInner to work
       doOne(datadir + "gomoos/fmrc.ncml", 16, -1, 7, 1, "salt", 2, 21, 29);     //*/
