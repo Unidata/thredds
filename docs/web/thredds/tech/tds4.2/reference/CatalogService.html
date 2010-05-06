@@ -54,7 +54,7 @@ catalog services. It does not matter if the catalog is the served
 version of a TDS catalog configuration file or produced from a <code>datasetScan</code> element.</p><p>The
 path of the request URL identifies the target catalog. The extension on
 the filename determines whether an XML or HTML view is returned, ".xml"
-or ".html" resectively.</p><p>Subsetting of the catalog is performed if
+or ".html" respectively.</p><p>Subsetting of the catalog is performed if
 a "dataset" parameter is included in the request. The value of the
 "dataset" parameter must match the ID of a dataset in the target
 catalog.</p><h3>Examples</h3><p>The following returns an HTML view of the main TDS catalog on motherlode:</p><pre style="margin-left: 40px;"><a href="http://motherlode.ucar.edu:8080/thredds/catalog.html">http://motherlode.ucar.edu:8080/thredds/catalog.html</a></pre>The following returns an HTML view of one of the datasets from the same catalog:<br><pre style="margin-left: 40px;"><a href="http://motherlode.ucar.edu:8080/thredds/catalog.html?dataset=IDD">http://motherlode.ucar.edu:8080/thredds/catalog.html?dataset=IDD</a></pre><br><hr>

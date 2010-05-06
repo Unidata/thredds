@@ -4,7 +4,7 @@
   
   <meta content="Ethan Davis" name="author"></head>
 <body>
-<h1><img src="../images/unidataLogo.png" height="75" width="73">Configuring TDS with DatasetScan</h1>
+<h1><img src="../../images/unidataLogo.png" height="75" width="73">Configuring TDS with DatasetScan</h1>
 <hr>
 <p>The <b>datasetScan</b> element specifies the data locations that the
 TDS will scan for datasets when generating catalogs. It also specifies
@@ -252,7 +252,7 @@ So, when cataloged, this dataset would end up as something like this:<br>
 
 <p>Without a sort element, datasets at each collection level are listed
 in their "natural" order. With a sort element you can specify that they
-are to be sorted by lexigraphic order by name either in increasing or
+are to be sorted by lexicographic order by name either in increasing or
 decreasing order. For example:</p>
 
 
@@ -280,12 +280,12 @@ the naming discussed above does not affect the sort order.</li>
 The <strong>addProxies</strong> element provides a place for
 describing proxy datasets you want to add to the collection. Currently,
 two types of&nbsp; "latest" proxy datasets are all that is supported. The <strong>simpleLatest</strong> element adds the described dataset
-which proxies the existing dataset whose name is lexigraphically
+which proxies the existing dataset whose name is lexicographically
 greatest (which finds the latest dataset assuming a timestamp is part
 of the dataset name). The <strong>latestComplete</strong> element behaves similarly to <strong>simpleLatest</strong>
 except that the proxied dataset does not include any datasets that have
 been modified more recently than a given limit, e.g., you could specify
-you want the most recent (lexigraphically) dataset that hasn't been
+you want the most recent (lexicographically) dataset that hasn't been
 modified for 60 minutes. Both the simpleLatest and latestComplete
 elements must point to an existing service.<br>
 
@@ -422,10 +422,10 @@ determine the time coverage: </p>
 <pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;catalog name="Unidata Workshop 2006 - NCEP Model Data" version="1.0.1" <br>    xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"<br>    xmlns:xlink="http://www.w3.org/1999/xlink"&gt;<br><br>  &lt;service name="myserver" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;<br>  &lt;datasetScan name="NCEP Data" path="ncep" location="/data/ldm/pub/native/grid/NCEP/" &gt;<br>    &lt;serviceName&gt;myserver&lt;/serviceName&gt;<br>    &lt;filter&gt;<br>      &lt;include wildcard="*.grib1"/&gt;<br>      &lt;include wildcard="*.grib2"/&gt;<br>      &lt;exclude wildcard="*.gbx"/&gt;<br>    &lt;/filter&gt;<br>&nbsp; &lt;/datasetScan&gt;<br>&lt;/catalog&gt;<br></pre>
 <p><a name="sample3"></a>Catalog with dataset size added:<br>
 </p>
-<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;catalog name="Unidata Workshop 2006 - NCEP Model Data" version="1.0.1" <br>    xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"<br>    xmlns:xlink="http://www.w3.org/1999/xlink"&gt;<br><br>  &lt;service name="myserver" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;<br>  &lt;datasetScan name="NCEP Data" path="ncep" location="/data/ldm/pub/native/grid/NCEP/" &gt;<br>    &lt;serviceName&gt;myserver&lt;/serviceName&gt;<br>    &lt;filter&gt;<br>      &lt;include wildcard="*.grib1"/&gt;<br>      &lt;include wildcard="*.grib2"/&gt;<br>      &lt;exclude wildcard="*.gbx"/&gt;<br>    &lt;/filter&gt;<br>    &lt;sort&gt;<br>      &lt;lexigraphicByName increasing="false" /&gt;<br>    &lt;/sort&gt;<br>    &lt;addDatasetSize/&gt;<br>&nbsp; &lt;/datasetScan&gt;<br>&lt;/catalog&gt;</pre>
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;catalog name="Unidata Workshop 2006 - NCEP Model Data" version="1.0.1" <br>    xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"<br>    xmlns:xlink="http://www.w3.org/1999/xlink"&gt;<br><br>  &lt;service name="myserver" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;<br>  &lt;datasetScan name="NCEP Data" path="ncep" location="/data/ldm/pub/native/grid/NCEP/" &gt;<br>    &lt;serviceName&gt;myserver&lt;/serviceName&gt;<br>    &lt;filter&gt;<br>      &lt;include wildcard="*.grib1"/&gt;<br>      &lt;include wildcard="*.grib2"/&gt;<br>      &lt;exclude wildcard="*.gbx"/&gt;<br>    &lt;/filter&gt;<br>    &lt;sort&gt;<br>      &lt;lexicographicByName increasing="false" /&gt;<br>    &lt;/sort&gt;<br>    &lt;addDatasetSize/&gt;<br>&nbsp; &lt;/datasetScan&gt;<br>&lt;/catalog&gt;</pre>
 <hr width="100%">
 <address>
-<img src="../images/thread.png" height="108" width="110">This document is maintained by <a href="mailto:edavis@unidata.ucar.edu">Ethan Davis</a> and was last updated on July 25, 2007
+<img src="../../images/thread.png" height="108" width="110">This document is maintained by <a href="mailto:edavis@unidata.ucar.edu">Ethan Davis</a> and was last updated on July 25, 2007
 </address>
 <p></p>
 </body></html>
