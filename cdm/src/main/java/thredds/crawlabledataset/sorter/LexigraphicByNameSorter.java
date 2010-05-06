@@ -30,7 +30,6 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-// $Id: LexigraphicByNameSorter.java 63 2006-07-12 21:50:51Z edavis $
 package thredds.crawlabledataset.sorter;
 
 import thredds.crawlabledataset.CrawlableDatasetSorter;
@@ -40,8 +39,9 @@ import java.util.List;
 import java.util.Collections;
 import java.util.Comparator;
 
+// ToDo Spell class name correctly (also in datasetScan/sort/lexigraphicByName) - LexicographicByNameSorter.
 /**
- * Sort CrawlableDataset lists lexigraphically on the dataset name.
+ * Sort CrawlableDataset lists lexicographically on the dataset name.
  *
  * @author edavis
  * @since Nov 18, 2005 4:26:38 PM
