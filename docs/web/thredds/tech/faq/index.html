@@ -11,8 +11,19 @@
 
 <h2>TDS FAQ</h2>
 <p>
-  <strong>Q: What do the non-HTTP status codes in the <code>threddsServlet.log</code> files mean?</strong></p>
+  <strong>Q: How do I keep client requests from overwhelming my server?</strong></p>
 
+<blockquote>
+  <p>There is currently no per-client resource throttle, unfortunately, but  we are aware of the eventual need for that. Any given request is  single-threaded, so cant hog too many resources. One can limit the size  of opendap responses, which tends to be the main problem on our server  anyway. See </p>
+</blockquote>
+<p><strong>Q: Can aggregations of many files cause &quot;too many files open&quot; problems</strong>?</p>
+<blockquote>
+  <p>Aggregations only open one file at a time, and then close it., so this wont cause "too many file" problems. <br>
+      <br>
+    If you have "too many open files" errors, then either theres a file  leak (which we would like to know about), or you have your file cache  limit set too high relative to your OS file handle limit.<br>
+  </p>
+</blockquote>
+<p><strong>Q: What do the non-HTTP status codes in the <code>threddsServlet.log</code> files mean?</strong></p>
 <blockquote>
   <p> The "Request Completed" messages in the <code>threddsServlet.log</code> files contain
     several fields including a status code.
@@ -22,14 +33,16 @@
 2009-06-17T13:25:54.451 -0600 [     28949][      11] INFO
   - thredds.server.catalogservice.LocalCatalogServiceController
   - handlePublicDocumentRequest(): Request Completed - 1001 - -1 - 32
-  </pre>
+</pre>
 </blockquote>
 
 <p><strong>Q: I'm seeing the error &quot;Inconsistent array length read: 538976288 !=  1668244581' when I open the dataset in the IDV. Why?</strong></p>
 <blockquote>
-  <p>The error &quot;Inconsistent array length read&quot; only tells you that  there was an error on the server in the middle of responding to an OPeNDAP request. You then must look in the   <strong>threddsServlet.log</strong> and find the error to know why. <br>
-  </p>
+  <p>The error &quot;Inconsistent array length read&quot; only tells you that  there was an error on the server in the middle of responding to an OPeNDAP request. You then must look in the   <strong>threddsServlet.log</strong> and find the error to know why. </p>
 </blockquote>
+<p><br>
+</p>
+<blockquote>&nbsp;</blockquote>
 <hr width="100%">
 <h2>Tomcat<a name="tomcat"></a> FAQ </h2>
 <p><strong>Q: Im getting the error &quot;java.lang.OutOfMemoryError: PermGen<a name="PermGen"></a> space&quot;. Whats up?</strong></p>
@@ -91,7 +104,7 @@
   <hr>
 <address>
 <img src="../images/thread.png" alt="THREDDS" height="108" width="110">
-  This document is maintained by Unidata and was last updated Oct 2009.
+  This document is maintained by Unidata and was last updated May 2010.
   Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.
 </address>
 
