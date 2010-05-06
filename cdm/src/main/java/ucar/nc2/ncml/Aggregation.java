@@ -422,7 +422,7 @@ public abstract class Aggregation {
   protected void makeDatasets(CancelTask cancelTask) throws IOException {
 
     // heres where the results will go
-    datasets = new ArrayList<Dataset>();
+      datasets = new ArrayList<Dataset>();
 
     for (MFile cd : datasetManager.getFiles()) {
       datasets.add( makeDataset(cd));

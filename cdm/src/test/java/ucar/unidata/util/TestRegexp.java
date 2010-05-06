@@ -60,14 +60,6 @@ public class TestRegexp extends TestCase {
     testOne(".*/AG.*\\.nc$", "C:/data/roy/caron/PS2006001_2006003_ssta.nc", false);
   }
 
-
-  private void testOne(String ps, String match, boolean expect) {
-    Pattern pattern = Pattern.compile(ps);
-    Matcher matcher = pattern.matcher(match);
-    System.out.printf(" match %s against %s = %s %n", ps, match, matcher.matches());
-    assert matcher.matches() == expect;
-  }
-
   public void test3() {
     testOne(".*JU[CM]E00 EGRR.*", "JUCE00 EGRR", true);
     testOne(".*JU[^CM]E00 EGRR.*", "JUCE00 EGRR", false);
@@ -82,18 +74,34 @@ public class TestRegexp extends TestCase {
     testMatch("(.*)\\(see Note.*", "Software identification (see Note 2)", true);
   }
 
+  public void testSplit() {
+    String[] split = "what is  it".split("[ ]+");
+    for (String s : split)
+      System.out.println("("+s+")");
+  }
+
+  public void testEnd() {
+    testMatch(".*\\.nc", "yomama.nc", true);
+    testMatch(".*\\.nc", "yomamanc", false);
+    testMatch(".*\\.nc", "yomama.nc.stuff", false);
+    testMatch(".*\\.nc$", "yomama.nc.stuff", false);
+  }
+
+  // test pattern ps against match, test expected result
+  private void testOne(String ps, String match, boolean expect) {
+    Pattern pattern = Pattern.compile(ps);
+    Matcher matcher = pattern.matcher(match);
+    System.out.printf(" match %s against %s = %s %n", ps, match, matcher.matches());
+    assert matcher.matches() == expect;
+  }
+
+  // test pattern ps against match, show result
   private void testMatch(String ps, String match, boolean expect) {
     Pattern pattern = Pattern.compile(ps);
     Matcher matcher = pattern.matcher(match);
     System.out.printf(" match %s against %s = %s %n", ps, match, matcher.matches());
     for (int i=1; i<=matcher.groupCount(); i++)
       System.out.println(" "+i+ " "+matcher.group(i));
-  }
-
-  public void testSplit() {
-    String[] split = "what is  it".split("[ ]+");
-    for (String s : split)
-      System.out.println("("+s+")");
   }
 
 }

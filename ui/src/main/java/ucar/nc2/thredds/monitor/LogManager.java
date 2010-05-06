@@ -35,10 +35,14 @@ package ucar.nc2.thredds.monitor;
 
 import ucar.nc2.util.net.HttpClientManager;
 
+import java.awt.*;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import org.apache.commons.httpclient.auth.CredentialsProvider;
+
+import javax.swing.*;
 
 /**
  * Class Description.
@@ -65,48 +69,61 @@ public class LogManager {
     System.out.printf("logs stored at= %s%n", topDir);
   }
 
-  String server, type;
-  List<RemoteLog> logs;
-  private File localDir;
+  String makePath( String path) {
+    return "http://" + server + path;
+  }
 
-  LogManager(String server, boolean isAccess) throws IOException {
+  String server, type;
+  // List<RemoteLog> logs;
+  private File localDir;
+  private JTextArea ta;
+
+  LogManager(JTextArea ta, String server, boolean isAccess) throws IOException {
+    this.ta = ta;
     this.server = server;
     this.type = isAccess ? "access" : "thredds";
 
     String cleanServer = java.net.URLEncoder.encode(server, "UTF8");            
     localDir = new File(topDir, cleanServer+"/"+type);
-    localDir.mkdirs();
-
-    logs = getRemoteFiles();
+    if (!localDir.exists() && !localDir.mkdirs()) {
+      ta.setText(String.format("Failed to create local directory in = %s%n%n", localDir));
+      return;
+    }
   }
 
-  String makePath( String path) {
-    return "http://" + server + path;
-  }
-
-  List<RemoteLog> getRemoteFiles() throws IOException {
-    List<RemoteLog> result = new ArrayList<RemoteLog>(50);
+  public void getRemoteFiles() throws IOException {
+    // List<RemoteLog> result = new ArrayList<RemoteLog>(50);
 
     String urls = "http://" + server + "/thredds/admin/log/"+type+"/";
-    String contents = HttpClientManager.getUrlContents(urls, 50);
-    if (contents == null) return null;
-
-    String[] lines = contents.split("\n");
-    for (String line : lines) {
-      RemoteLog remoteLog = new RemoteLog(line.trim());
-      //System.out.printf(" %s == %s %n", line, remoteLog);
-      result.add(remoteLog);
+    final String contents = HttpClientManager.getUrlContents(urls, 50);
+    if (contents == null) {
+      ta.append(String.format("Failed to access logs at URL = %s%n%n", urls));
+      return;
     }
 
-    return result;
-  }
+    // update text area in background  http://technobuz.com/2009/05/update-jtextarea-dynamically/
+    SwingWorker worker = new SwingWorker<String, Void>() {
 
-  List<File> getLocalFiles() throws IOException {
-    if (logs == null) return new ArrayList<File>();
-    List<File> result = new ArrayList<File>(logs.size());
-    for (RemoteLog rlog : logs)
-      result.add(rlog.localFile);
-    return result;
+      @Override
+      protected String doInBackground() throws Exception {
+        ta.append(String.format("Local log files stored in = %s%n%n", localDir));
+        String[] lines = contents.split("\n");
+        for (String line : lines) {
+          new RemoteLog(line.trim());
+          //System.out.printf(" %s == %s %n", line, remoteLog);
+          //result.add(remoteLog);
+        }
+
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+      }
+
+      public void done() {
+        ta.append(String.format("Download complete for %s%n", type));
+      }
+    };
+
+    // do in background
+    worker.execute();
   }
 
   private class RemoteLog {
@@ -121,20 +138,22 @@ public class LogManager {
 
       localFile = new File(localDir, name);
       if (!localFile.exists() || (localFile.length() > size) || name.equals(latestServletLog)) {
-        System.out.printf("Read RemoteLog length=%d local=%d for %s%n", size, localFile.length(), name);
+        ta.append(String.format("Read RemoteLog length=%d local=%d for %s%n", size, localFile.length(), name));
         read();
       } else if (localFile.length() < size) {
-        System.out.printf("Append RemoteLog length=%d local=%d for %s%n", size, localFile.length(), name);
+        ta.append(String.format("Append RemoteLog length=%d local=%d for %s%n", size, localFile.length(), name));
         append();
       } else {
-        System.out.printf("Ok RemoteLog length=%d local=%d for %s%n", size, localFile.length(), name);
+        ta.append(String.format("Ok RemoteLog length=%d local=%d for %s%n", size, localFile.length(), name));
       }
+      ta.setCaretPosition(ta.getText().length());   // needed to get the text to update ?
+
     }
 
     void read() {
       String urls = "http://" + server + "/thredds/admin/log/"+type+"/" + name;
       HttpClientManager.copyUrlContentsToFile(urls, localFile);
-      System.out.printf(" read %s to %s %n", urls, localFile.getPath());
+      ta.append(String.format(" read %s to %s %n", urls, localFile.getPath()));
     }
 
     void append() {
@@ -143,9 +162,9 @@ public class LogManager {
       long want = size - start;
       long got = HttpClientManager.appendUrlContentsToFile(urls, localFile, start, size);
       if (want == got)
-        System.out.printf(" append %d bytes to %s %n", got, localFile.getPath());
+        ta.append(String.format(" append %d bytes to %s %n", got, localFile.getPath()));
       else
-        System.out.printf(" append got=%d want=%d bytes to %s %n", got, want, localFile.getPath());
+        ta.append(String.format(" append got=%d want=%d bytes to %s %n", got, want, localFile.getPath()));
     }
 
     @Override
@@ -155,6 +174,14 @@ public class LogManager {
               ", size=" + size +
               '}';
     }
+  }
+
+  public List<File> getLocalFiles(Date start, Date end) throws IOException {
+    List<File> result = new ArrayList<File>();
+    for (File f : localDir.listFiles()) {
+      result.add(f); // no filtering yet
+    }
+    return result;
   }
 
 }

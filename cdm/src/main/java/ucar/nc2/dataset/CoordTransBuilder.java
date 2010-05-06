@@ -153,7 +153,7 @@ public class CoordTransBuilder {
   }
 
   /**
-   * Make a CoordinateTransform object from the paramaters in a Coordinate Transform Variable, using an intrinsic or
+   * Make a CoordinateTransform object from the parameters in a Coordinate Transform Variable, using an intrinsic or
    * registered CoordTransBuilder.
    * @param ds enclosing dataset
    * @param ctv the Coordinate Transform Variable - container for the transform parameters

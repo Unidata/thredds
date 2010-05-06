@@ -41,14 +41,12 @@ import ucar.util.prefs.XMLStore;
 
 import org.apache.oro.io.GlobFilenameFilter;
 
+import java.awt.event.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 import java.awt.*;
 import java.util.*;
-import java.lang.reflect.Array;
 
 import thredds.ui.*;
 
@@ -73,12 +71,14 @@ public class TdsMonitor extends JPanel {
 
   private ucar.util.prefs.PreferencesExt mainPrefs;
   private JTabbedPane tabbedPane;
+  private ManagePanel managePanel;
   private AccessLogPanel accessLogPanel;
   private ServletLogPanel servletLogPanel;
   private URLDumpPane urlDump;
 
   private JFrame parentFrame;
   private FileManager fileChooser;
+  private ManageForm manage;
 
   public TdsMonitor(ucar.util.prefs.PreferencesExt prefs, JFrame parentFrame) {
     this.mainPrefs = prefs;
@@ -90,10 +90,12 @@ public class TdsMonitor extends JPanel {
 
     // the top UI
     tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+    managePanel = new ManagePanel((PreferencesExt) mainPrefs.node("ManageLogs"));
     accessLogPanel = new AccessLogPanel((PreferencesExt) mainPrefs.node("LogTable"));
     servletLogPanel = new ServletLogPanel((PreferencesExt) mainPrefs.node("ServletLogPanel"));
     urlDump = new URLDumpPane((PreferencesExt) mainPrefs.node("urlDump"));
 
+    tabbedPane.addTab("ManageLogs", managePanel);
     tabbedPane.addTab("AccessLogs", accessLogPanel);
     tabbedPane.addTab("ServletLogs", servletLogPanel);
     tabbedPane.addTab("UrlDump", urlDump);
@@ -114,6 +116,7 @@ public class TdsMonitor extends JPanel {
 
     cacheManager.shutdown();
     fileChooser.save();
+    managePanel.save();
     accessLogPanel.save();
     servletLogPanel.save();
     urlDump.save();
@@ -179,12 +182,49 @@ public class TdsMonitor extends JPanel {
     dnsCache = cacheManager.getCache("dns");
   }
 
+  /////////////////////////
+
+  private class ManagePanel extends JPanel {
+     ManagePanel(PreferencesExt p) {
+       manage = new ManageForm();
+       setLayout(new BorderLayout());
+       add(manage, BorderLayout.CENTER);
+
+        manage.addPropertyChangeListener( new PropertyChangeListener() {
+          public void propertyChange(PropertyChangeEvent evt) {
+            if (!evt.getPropertyName().equals("Download")) return;
+            ManageForm.Data data = (ManageForm.Data) evt.getNewValue();
+            try {
+              manage.getTextArea().setText(""); // clear the text area
+              
+              if (data.wantAccess) {
+                LogManager logManager = new LogManager(manage.getTextArea(), data.server, true);
+                logManager.getRemoteFiles();
+              }
+              if (data.wantServlet) {
+                LogManager logManager = new LogManager(manage.getTextArea(), data.server, false);
+                logManager.getRemoteFiles();
+              }
+            } catch (Throwable t) {
+              t.printStackTrace();
+            }
+          }
+        });
+     }
+
+    void save() {
+      
+    }
+  }
+
+
   ///////////////////////////
 
   private abstract class OpPanel extends JPanel {
     PreferencesExt prefs;
     TextHistoryPane ta;
-    ComboBox serverCB, fileCB;
+    JComboBox serverCB;
+    ComboBox fileCB;
     JPanel buttPanel;
     AbstractButton coordButt = null;
     StopButton stopButton;
@@ -200,7 +240,8 @@ public class TdsMonitor extends JPanel {
       this.prefs = prefs;
       ta = new TextHistoryPane(true);
 
-      serverCB = new ComboBox((PreferencesExt)prefs.node("servers"));
+      serverCB = new JComboBox();
+      serverCB.setModel(manage.getServers().getModel());
       serverCB.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           if ((e.getWhen() != lastEvent) && eventOK) {// eliminate multiple events from same selection
@@ -228,6 +269,9 @@ public class TdsMonitor extends JPanel {
       });
 
       buttPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
+      buttPanel.add(new JLabel("file:"));
+      buttPanel.add(fileCB);
+
       AbstractAction fileAction = new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
           File[] files = fileChooser.chooseFiles();
@@ -241,14 +285,9 @@ public class TdsMonitor extends JPanel {
       BAMutil.setActionProperties(fileAction, "FileChooser", "open Local dataset...", false, 'L', -1);
       BAMutil.addActionToContainer(buttPanel, fileAction);
 
-      JPanel flowPanel = new JPanel(new FlowLayout());
-      flowPanel.add(new JLabel("server:"));
-      flowPanel.add(serverCB);
-      flowPanel.add(new JLabel("file:"));
-      flowPanel.add(fileCB);
-
       JPanel topPanel = new JPanel(new BorderLayout());
-      topPanel.add(flowPanel, BorderLayout.CENTER);
+      topPanel.add(new JLabel("server:"), BorderLayout.WEST);
+      topPanel.add(serverCB, BorderLayout.CENTER);
       topPanel.add(buttPanel, BorderLayout.EAST);
 
       setLayout(new BorderLayout());
@@ -281,7 +320,7 @@ public class TdsMonitor extends JPanel {
 
     void save() {
       fileCB.save();
-      serverCB.save();
+      //serverCB.save();
 
       //if (v3Butt != null) prefs.putBoolean("nc3useRecords", v3Butt.getModel().isSelected());
       if (coordButt != null) prefs.putBoolean("coordState", coordButt.getModel().isSelected());
@@ -302,7 +341,7 @@ public class TdsMonitor extends JPanel {
 
     AccessLogPanel(PreferencesExt p) {
       super(p);
-      logTable = new AccessLogTable((PreferencesExt) mainPrefs.node("LogTable"), dnsCache);
+      logTable = new AccessLogTable(manage, (PreferencesExt) mainPrefs.node("LogTable"), dnsCache);
       logTable.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
          public void propertyChange(java.beans.PropertyChangeEvent e) {
            if (e.getPropertyName().equals("UrlDump")) {
@@ -318,7 +357,7 @@ public class TdsMonitor extends JPanel {
     }
 
     boolean setLogFiles(String server) throws IOException {
-      logManager = new LogManager(server, true);
+      logManager = new LogManager(manage.getTextArea(), server, true);
       logTable.setLogFiles(logManager.getLocalFiles());
       return true;
     }
@@ -368,7 +407,7 @@ public class TdsMonitor extends JPanel {
     }
 
     boolean setLogFiles(String server) throws IOException {
-      logManager = new LogManager(server, false);
+      logManager = new LogManager(manage.getTextArea(), server, false);
       logTable.setLogFiles(logManager.getLocalFiles());
       return true;
     }

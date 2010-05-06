@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<java version="1.6.0_17" class="java.beans.XMLDecoder"> 
+ <object class="com.jformdesigner.model.FormModel"> 
+  <void property="contentType"> 
+   <string>form/swing</string> 
+  </void> 
+  <void property="root"> 
+   <object class="com.jformdesigner.model.FormRoot"> 
+    <void method="add"> 
+     <object class="com.jformdesigner.model.FormContainer"> 
+      <string>javax.swing.JPanel</string> 
+      <object class="com.jformdesigner.model.FormLayoutManager"> 
+       <class>org.jdesktop.layout.GroupLayout</class> 
+       <void method="setProperty"> 
+        <string>$horizontalGroup</string> 
+        <string>par l {seq {par l {seq {space :p:39:p, par l {comp acceptButton::l:p::p, comp label2::l:p::p, seq l {comp label1:::p:55:p, space :::p, par l {comp server::l:p:294:p, comp wantAccess::l:p::p, comp wantServlet::l:p::p}}}}, seq l {space :p:15:p, comp scrollPane1::::649:x}}, space :::p}}</string> 
+       </void> 
+       <void method="setProperty"> 
+        <string>$verticalGroup</string> 
+        <string>par l {seq l {space :p:21:p, comp label2:::p::p, space :::p, par b {comp server::b:p::p, comp label1::b:p::p}, space :::p, comp wantAccess:::p::p, space :::p, comp wantServlet:::p::p, space s:::p, comp acceptButton:::p::p, space s:::p, comp scrollPane1::::442:x, space :::p}}</string> 
+       </void> 
+      </object> 
+      <void property="name"> 
+       <string>this</string> 
+      </void> 
+      <void method="add"> 
+       <object class="com.jformdesigner.model.FormComponent"> 
+        <string>javax.swing.JLabel</string> 
+        <void method="setProperty"> 
+         <string>text</string> 
+         <string>server:</string> 
+        </void> 
+        <void method="setProperty"> 
+         <string>font</string> 
+         <object class="com.jformdesigner.model.SwingDerivedFont"> 
+          <null/> 
+          <int>3</int> 
+          <int>0</int> 
+          <boolean>false</boolean> 
+         </object> 
+        </void> 
+        <void property="name"> 
+         <string>label1</string> 
+        </void> 
+       </object> 
+      </void> 
+      <void method="add"> 
+       <object class="com.jformdesigner.model.FormComponent"> 
+        <string>javax.swing.JComboBox</string> 
+        <void method="setProperty"> 
+         <string>model</string> 
+         <object class="javax.swing.DefaultComboBoxModel"> 
+          <void property="selectedItem"> 
+           <string>motherlode.ucar.edu:8080</string> 
+          </void> 
+          <void method="addElement"> 
+           <string>motherlode.ucar.edu:8080</string> 
+          </void> 
+          <void method="addElement"> 
+           <string>motherlode.ucar.edu:8081</string> 
+          </void> 
+          <void method="addElement"> 
+           <string>motherlode.ucar.edu:9080</string> 
+          </void> 
+         </object> 
+        </void> 
+        <void property="name"> 
+         <string>server</string> 
+        </void> 
+       </object> 
+      </void> 
+      <void method="add"> 
+       <object class="com.jformdesigner.model.FormComponent"> 
+        <string>javax.swing.JRadioButton</string> 
+        <void method="setProperty"> 
+         <string>text</string> 
+         <string>access logs</string> 
+        </void> 
+        <void method="setProperty"> 
+         <string>font</string> 
+         <object class="com.jformdesigner.model.SwingDerivedFont"> 
+          <null/> 
+          <int>1</int> 
+          <int>0</int> 
+          <boolean>false</boolean> 
+         </object> 
+        </void> 
+        <void property="name"> 
+         <string>wantAccess</string> 
+        </void> 
+       </object> 
+      </void> 
+      <void method="add"> 
+       <object class="com.jformdesigner.model.FormComponent"> 
+        <string>javax.swing.JRadioButton</string> 
+        <void method="setProperty"> 
+         <string>text</string> 
+         <string>servlet logs</string> 
+        </void> 
+        <void method="setProperty"> 
+         <string>font</string> 
+         <object class="com.jformdesigner.model.SwingDerivedFont"> 
+          <null/> 
+          <int>1</int> 
+          <int>0</int> 
+          <boolean>false</boolean> 
+         </object> 
+        </void> 
+        <void property="name"> 
+         <string>wantServlet</string> 
+        </void> 
+       </object> 
+      </void> 
+      <void method="add"> 
+       <object class="com.jformdesigner.model.FormComponent"> 
+        <string>javax.swing.JButton</string> 
+        <void method="setProperty"> 
+         <string>action</string> 
+         <object class="com.jformdesigner.model.FormReference"> 
+          <string>downloadAction</string> 
+         </object> 
+        </void> 
+        <void property="name"> 
+         <string>acceptButton</string> 
+        </void> 
+       </object> 
+      </void> 
+      <void method="add"> 
+       <object class="com.jformdesigner.model.FormComponent"> 
+        <string>javax.swing.JLabel</string> 
+        <void method="setProperty"> 
+         <string>text</string> 
+         <string>Download log files:</string> 
+        </void> 
+        <void method="setProperty"> 
+         <string>font</string> 
+         <object class="com.jformdesigner.model.SwingDerivedFont"> 
+          <null/> 
+          <int>1</int> 
+          <int>2</int> 
+          <boolean>false</boolean> 
+         </object> 
+        </void> 
+        <void property="name"> 
+         <string>label2</string> 
+        </void> 
+       </object> 
+      </void> 
+      <void method="add"> 
+       <object class="com.jformdesigner.model.FormContainer"> 
+        <string>javax.swing.JScrollPane</string> 
+        <object class="com.jformdesigner.model.FormLayoutManager"> 
+         <class>javax.swing.JScrollPane</class> 
+        </object> 
+        <void property="name"> 
+         <string>scrollPane1</string> 
+        </void> 
+        <void method="add"> 
+         <object class="com.jformdesigner.model.FormComponent"> 
+          <string>javax.swing.JTextArea</string> 
+          <void method="setProperty"> 
+           <string>font</string> 
+           <object class="java.awt.Font"> 
+            <string>Courier New</string> 
+            <int>0</int> 
+            <int>12</int> 
+           </object> 
+          </void> 
+          <void property="name"> 
+           <string>textArea1</string> 
+          </void> 
+         </object> 
+        </void> 
+       </object> 
+      </void> 
+     </object> 
+     <object class="com.jformdesigner.model.FormLayoutConstraints"> 
+      <null/> 
+      <void method="setProperty"> 
+       <string>location</string> 
+       <object class="java.awt.Point"> 
+        <int>0</int> 
+        <int>0</int> 
+       </object> 
+      </void> 
+      <void method="setProperty"> 
+       <string>size</string> 
+       <object class="java.awt.Dimension"> 
+        <int>670</int> 
+        <int>630</int> 
+       </object> 
+      </void> 
+     </object> 
+    </void> 
+    <void method="add"> 
+     <object class="com.jformdesigner.model.FormNonVisual"> 
+      <string>javax.swing.AbstractAction</string> 
+      <void method="setProperty"> 
+       <string>$action.Name</string> 
+       <string>Download</string> 
+      </void> 
+      <void method="auxiliary"> 
+       <void method="setProperty"> 
+        <string>JavaCodeGenerator.className</string> 
+        <string>DownloadAction</string> 
+       </void> 
+      </void> 
+      <void property="name"> 
+       <string>downloadAction</string> 
+      </void> 
+     </object> 
+     <object class="com.jformdesigner.model.FormLayoutConstraints"> 
+      <null/> 
+      <void method="setProperty"> 
+       <string>location</string> 
+       <object class="java.awt.Point"> 
+        <int>0</int> 
+        <int>640</int> 
+       </object> 
+      </void> 
+     </object> 
+    </void> 
+   </object> 
+  </void> 
+ </object> 
+</java> 

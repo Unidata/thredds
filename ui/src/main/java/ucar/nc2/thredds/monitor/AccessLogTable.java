@@ -98,7 +98,7 @@ public class AccessLogTable extends JPanel {
 
   private JTextArea interval, startDate, endDate;
 
-  public AccessLogTable(PreferencesExt prefs, Cache dnsCache) {
+  public AccessLogTable(ManageForm manage, PreferencesExt prefs, Cache dnsCache) {
     this.prefs = prefs;
     this.dnsCache = dnsCache;
 
@@ -199,12 +199,27 @@ public class AccessLogTable extends JPanel {
     infoWindow = new IndependentWindow("Extra Information", BAMutil.getImage("netcdfUI"), infoTA);
     infoWindow.setBounds((Rectangle) prefs.getBean("InfoWindowBounds", new Rectangle(300, 300, 800, 100)));
 
+    JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
+
+    AbstractAction showAction = new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        showLogs();
+      }
+    };
+    BAMutil.setActionProperties(showAction, "Import", "get logs", false, 'D', -1);
+    BAMutil.addActionToContainer(topPanel, showAction);
+
+    // which server
+    JComboBox serverCB = new JComboBox();
+    serverCB.setModel(manage.getServers().getModel());
+    topPanel.add(new JLabel("server:"));
+    topPanel.add(serverCB);
+
     // the date selectors
     startDate = new JTextArea("                    ");
     endDate = new JTextArea("                    ");
     interval = new JTextArea("                    ");
 
-    JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
     topPanel.add(new JLabel("Start Date:"));
     topPanel.add(startDate);
     topPanel.add(new JLabel("End Date:"));
@@ -305,7 +320,9 @@ public class AccessLogTable extends JPanel {
     }
   }
 
-  public void setLogFiles(java.util.List<File> accessLogFiles) {
+  public void showLogs() {
+    java.util.List<File> accessLogFiles;
+
     LogReader reader = new LogReader(new AccessLogParser());
     completeLogs = new ArrayList<LogReader.Log>(30000);
 

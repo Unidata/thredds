@@ -235,7 +235,7 @@ public class AggregationExisting extends AggregationOuterDimension {
   }
 
   /**
-   * Persist info (nccords, coorValues) from joinExisting, since that can be expensive to recreate.
+   * Persist info (ncoords, coordValues) from joinExisting, since that can be expensive to recreate.
    *
    * @throws IOException
    */
