@@ -14,7 +14,7 @@ dl {margin: 10px 5px 5px 15px;)
 <body>
 <h1>FMRC Collections</h1>
 <p>The file collections are managed with a <a href="FeatureCollections.html">CollectionManager</a>. Datasets are opened as GridDatasets, so that the coordinate system information is available.</p>
-<p>Generally, datasets can be broken up by forecast time and/or variable, and the code automatically figures out what everything is. However, one cannot put output from multiple runs in the same file.</p>
+<p>Generally, datasets can be broken up by forecast time and/or variable, and the code automatically figures out what everything is. However, one cannot put output from multiple runs in the same file; that is, all the variables in a file are assumed to have a single run time.  </p>
 <p>The ToolsUI FMRC tab (4.2) allows you to view internal strurctures of an FMRC.</p>
 <h3>Opening an FMRC </h3>
 <p>Use static method on ucar.nc2.ft.fmrc.Fmrc: </p>
@@ -22,15 +22,13 @@ dl {margin: 10px 5px 5px 15px;)
 </p>
 <p>
    The collection may be one of:
- <ol>
+<ol>
    <li><a href="CollectionSpecification.html">collection specification</a> string
-    <li>catalog:catalogURL
-   
-    <li>filename.ncml
- </ol>
- </p>
-<h3>Run Date</h3>
-<p>If a dateFormatMark is given, a DateExtractor extracts the rundate from the filename or URL. Otherwise there must be  global attributes <strong>_CoordinateModelBaseDate</strong> or <strong>_CoordinateModelRunDate</strong> inside each dataset.</p>
+  <li><em>catalog</em>:catalogURL
+  <li>filename.ncml
+</ol>
+ <h3>Run Date</h3>
+<p>If a dateFormatMark is given, a DateExtractor extracts the rundate from the filename or URL. Otherwise there must be  global attributes <strong>_CoordinateModelBaseDate</strong> or <strong>_CoordinateModelRunDate</strong> inside each dataset. The GRIB IOSP reader automatically adds this global attribute.</p>
 <h3>Forecast Date</h3>
 <p>Each file is opened as a  GridDataset:</p>
 <pre>gds = GridDataset.open( mfile.getPath());
@@ -38,11 +36,9 @@ dl {margin: 10px 5px 5px 15px;)
 <p>and the forecast time coordinates are extracted from the grid coordinate system.</p>
 <p>There is no need to specify <strong>forecastModelRunCollection</strong> vs <strong>forecastModelRunSingleCollectionc</strong>, nor <strong>timeUnitsChange</strong>. This is detected automatically.</p>
 <h3>Regulate</h3>
-<p>If true, then all runs for a given offset hour (from 0Z) are assumed to have the same forecast time coordinates. This obviates the need for the FMRC definition files which previously were used on motherlode. This evens out time coordinates, and allows for missing forecast times in the IDD feed.</p>
+<p>If true, then all runs for a given offset hour (from 0Z) are assumed to have the same forecast time coordinates. This obviates the need for the FMRC definition files which previously were used on motherlode. This evens out time coordinates, and compensates for missing forecast times in the IDD feed.</p>
 <h3>Persistent Caching</h3>
-<p>An fmrInv.xml file is made the first time the file is seen. It is cached in bdb (MetadataManager). each collection string = bdb database. Each MFile in the collection:</p>
-<pre> mm.put(file.getPath()+key, value);
-</pre>
+<p>An <em>fmrInv.xml</em> file is made which records the essential grid information from each file. It is cached in a persistent Berkeley Database (bdb) key/value store, so that it only has to be done the first time the file is accessed in an FMRC. Each collection becomes a seperate bdb database, and each file in the collection is an element in the database, with the filename as the key and the <em>fmrInv.xml </em>as the value. When a collection is scanned, any filenames already in the database are reused. Any new ones are read and added to the database. Any entries in the database that no longer have a filename associated with them are deleted.</p>
 <p>ToolsUI collections tab allows you to delete database or individual elements.</p>
 <h2>Conversion of &lt;datasetFmrc&gt; to &lt;featureCollection&gt;</h2>
 <p>Old way:</p>
@@ -102,5 +98,62 @@ dl {margin: 10px 5px 5px 15px;)
   <li><strong>protoDataset</strong> (optional) allows control over  the selection of the &quot;prototypical&quot; dataset</li>
   <li><strong>fmrcConfig</strong> (optional) allows control over which FMRC virtual datasets are made available</li>
 </ol>
+<h2>NcML Modifications </h2>
+<p>NcML is no longer used to define the collection, but it may still be used to modify the FMRC dataset. </p>
+<p>Old way:</p>
+<pre>&lt;datasetFmrc name=&quot;RTOFS Forecast Model Run Collection&quot; path=&quot;fmrc/rtofs&quot;&gt;
+  &lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;
+
+ 1) &lt;<strong>variable</strong> name=&quot;mixed_layer_depth&quot;&gt;
+     &lt;attribute name=&quot;long_name&quot; value=&quot;mixed_layer_depth @ surface&quot;/&gt;
+     &lt;attribute name=&quot;units&quot; value=&quot;m&quot;/&gt;
+    &lt;/variable&gt;
+
+   &lt;aggregation dimName=&quot;runtime&quot; type=&quot;forecastModelRunSingleCollection&quot; timeUnitsChange=&quot;true&quot; recheckEvery=&quot;10 min&quot;&gt;
+ 
+ 2)  &lt;<strong>variable</strong> name=&quot;time&quot;&gt;
+      &lt;attribute name=&quot;units&quot; value=&quot;hours since &quot;/&gt;
+     &lt;/variable&gt;
+   
+ 3)  &lt;<strong>scanFmrc</strong> location=&quot;c:/rps/cf/rtofs&quot; regExp=&quot;.*ofs_atl.*\.grib2$&quot; 
+       runDateMatcher=&quot;#ofs.#yyyyMMdd&quot; forecastOffsetMatcher=&quot;HHH#.grb.grib2#&quot; subdirs=&quot;true&quot;
+       olderThan=&quot;10 min&quot;/&gt; 
+   &lt;/aggregation&gt;
+  &lt;/netcdf&gt;
+ &lt;/datasetFmrc&gt;</pre>
+<p>where:</p>
+<ol>
+  <li>on the outside of the aggregation, attributes are being added/modified for the existing variable &quot;mixed_layer_depth&quot; <em>in the resulting FMRC dataset</em>.</li>
+  <li>on the inside of the aggregation, an attribute is being added/modified for the existing variable &quot;time&quot;<em>  for each dataset in the collection</em>. Typically you need to do this in order to make the component files into a gridded dataset.</li>
+  <li>the collection is defined by a <em>scanFmrc</em> element, creating a <em>forecastModelRunSingleCollection</em> with one forecast time per file</li>
+</ol>
+<p>New way:</p>
+<pre>&lt;<strong>featureCollection </strong>name=&quot;RTOFS Forecast Model Run Collection&quot; path=&quot;fmrc/rtofs&quot;&gt;
+1) &lt;collection spec=&quot;c:/rps/cf/rtofs/.*ofs_atl.*\.grib2$&quot; <strong>recheckAfter</strong>=&quot;10 min&quot; <strong>olderThan</strong>=&quot;5 min&quot;/&gt;
+
+2) &lt;<strong>netcdf</strong> xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;
+    &lt;variable name=&quot;time&quot;&gt;
+      &lt;attribute name=&quot;units&quot; value=&quot;hours since &quot;/&gt;
+     &lt;/variable&gt;
+   &lt;/netcdf&gt;
+
+   &lt;protoDataset&gt;
+3)  &lt;<strong>netcdf</strong> xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;
+      &lt;variable name=&quot;mixed_layer_depth&quot;&gt;
+       &lt;attribute name=&quot;long_name&quot; value=&quot;mixed_layer_depth @ surface&quot;/&gt;
+       &lt;attribute name=&quot;units&quot; value=&quot;m&quot;/&gt;
+      &lt;/variable&gt;
+     &lt;/netcdf&gt;
+   &lt;/protoDataset&gt;
+   
+&lt;/featureCollection&gt;
+</pre>
+<p>where:</p>
+<ol>
+  <li>the collection is now defined by a <em>collection</em> element, allowing any number of forecast times per file</li>
+  <li>when you want <em>to modify the component files of the collection</em>, you put an NcML element inside the <em>featureCollection</em> element. This modifies the component files before they are turned into a gridded dataset.</li>
+  <li>when you want <em>to modify the resulting FMRC dataset,</em> you put an NcML element inside the <em>protoDataset</em> element. This defines the &quot;prototypical&quot; dataset used as the template for the resulting FMRC datasets.</li>
+</ol>
+<p>&nbsp;</p>
 </body>
 </html>

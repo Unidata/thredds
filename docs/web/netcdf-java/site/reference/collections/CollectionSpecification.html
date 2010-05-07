@@ -18,7 +18,8 @@ dl {margin: 10px 5px 5px 15px;)
 <pre> /data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km/.*nc$</pre>
 <p>All files ending with &quot;nc&quot; in the directory<em> /data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km</em>. The &quot;.*nc$&quot; is a regular expression which tries to match the path name after the top directory<em> /data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km/</em>. The &quot;.*&quot; means &quot;any number of any charactor&quot; and the &quot;nc$&quot; means &quot;ending with <em>nc&quot;</em>. If you want to make sure it ends with &quot;.nc&quot;, you need:</p>
 <pre> /data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km/.*\.nc$</pre>
-<p>Its generally important to use the '$' to indicate the end of string, since a common convention is to write auxilary files by naming them &lt;org file&gt;.&lt;ext&gt;, and you need to elimintae the auxilary files from the collection.</p>
+<p>Since &quot;.&quot; is a special character in regular expressions, one needs to escape it to match a literal &quot;.&quot;, so &quot;\.nc$&quot; means match the characters &quot;.&quot; &quot;n&quot; &quot;c&quot; at the end of the string.</p>
+<p>Its generally important to use the '$' to indicate the end of string, since a common convention is to write auxilary files by naming them &lt;org file&gt;.&lt;ext&gt;, and you need to eliminate the auxilary files from the collection.</p>
 <h3>Example 2</h3>
 <pre> /data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km/**/.*\.nc$</pre>
 All files ending with &quot;.nc&quot; in the directory<em> /data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km</em> and its subdirectories.
@@ -28,15 +29,17 @@ All files ending with &quot;.nc&quot; in the directory<em> /data/ldm/pub/native/
 </pre>
 <p>Search the directory<em> /data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km</em> and its subdirectories for files that match the regular expression:</p>
 <blockquote>
-  <pre> GFS_Alaska_191km.........\.nc$</pre> 
-  From the filename, extract the run date by applying the template <em>yyyyMMdd_HHmm</em> to the portion of the filename after 
-  <pre>GFS_Alaska_191km_</pre>
+  <pre> GFS_Alaska_191km.........\.nc$</pre>
 </blockquote>
-  
-  <h3>Method for constructing collection specification Strings</h3>
+  <p>Remember that an unescaped &quot;.&quot; matches any character. An escaped &quot;\.&quot; matches the literal &quot;.&quot; character.</p>
+  <p>From the filename, extract the run date by applying the template <em>yyyyMMdd_HHmm</em> to the portion of the filename after </p>
+  <blockquote>
+    <pre>GFS_Alaska_191km_</pre>
+  </blockquote>
+<h3>Method for constructing collection specification Strings</h3>
   <p>The idea is that one copies an example file path, and then modifies it: For example, copy an example filename:</p>
 <pre>/data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km/20090301/GFS_Alaska_191km_20090301_0600.grib1</pre>
-  Modify to do subdirectories:
+  Modify it to include subdirectories:
   <pre>/data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km/**/GFS_Alaska_191km_20090301_0600.grib1</pre>
   Demarcate the part of the filename where the run date is encoded, using '#' chars:
   <pre>/data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km/**/GFS_Alaska_191km_#20090301_0600#.grib1</pre>
@@ -61,7 +64,7 @@ Make sure that the name ends with &quot;grib1&quot;:
 <p>&nbsp;</p>
 <hr WIDTH="100%">
 <address>
-<img src="../../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated  Mar 2010
+<img src="../../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated  May 2010
 </address>
 </body>
 </html>
