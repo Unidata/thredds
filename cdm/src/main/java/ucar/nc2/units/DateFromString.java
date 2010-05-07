@@ -205,9 +205,9 @@ public class DateFromString
       return result;
 
     } catch (ParseException e) {
-      throw new RuntimeException("SimpleDateFormat bad = "+dateFormatString+" "+e.getMessage());
+      throw new RuntimeException("SimpleDateFormat = "+dateFormatString+" fails on "+ dateString+ " ParseException:"+e.getMessage());
     } catch (IllegalArgumentException e) {
-      throw new RuntimeException("SimpleDateFormat bad = "+dateFormatString+" "+e.getMessage());
+      throw new RuntimeException("SimpleDateFormat = "+dateFormatString+" fails on "+ dateString+ " IllegalArgumentException:"+e.getMessage());
     }
   }
 

@@ -97,6 +97,7 @@ public class FmrcCacheController extends AbstractController {
         pw.println(contents);
       }
       
+      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, 0) );
       return null;
     }
 
@@ -114,6 +115,7 @@ public class FmrcCacheController extends AbstractController {
      pw.println("</ol>");
     }
 
+    log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, 0) );
     return null;
   }
 

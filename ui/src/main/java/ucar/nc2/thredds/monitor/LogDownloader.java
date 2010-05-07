@@ -41,22 +41,13 @@ import org.apache.commons.httpclient.auth.CredentialsProvider;
 import javax.swing.*;
 
 /**
- * Class Description.
+ * Manage remote log files.
  *
  * @author caron
  * @since Apr 24, 2009
  */
 public class LogDownloader {
   static private final String latestServletLog = "threddsServlet.log";
-
-  static {
-    CredentialsProvider provider = new thredds.ui.UrlAuthenticatorDialog(null);
-    HttpClientManager.init(provider, "TdsMonitor");
-  }
-
-  static String makePath( String server, String path) {
-    return "http://" + server + path;
-  }
 
   private String server, type;
   private File localDir;

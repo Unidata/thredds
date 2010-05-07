@@ -33,7 +33,10 @@
 
 package ucar.nc2.thredds.monitor;
 
+import org.apache.commons.httpclient.auth.CredentialsProvider;
 import ucar.nc2.ui.StopButton;
+import ucar.nc2.units.DateFormatter;
+import ucar.nc2.util.net.HttpClientManager;
 import ucar.util.prefs.ui.Debug;
 import ucar.util.prefs.ui.ComboBox;
 import ucar.util.prefs.PreferencesExt;
@@ -136,7 +139,7 @@ public class TdsMonitor extends JPanel {
 
   private void gotoUrlDump(String urlString) {
     urlDump.setURL(urlString);
-    tabbedPane.setSelectedIndex(2);
+    tabbedPane.setSelectedIndex(3);
   }
 
 
@@ -198,11 +201,11 @@ public class TdsMonitor extends JPanel {
               manage.getTextArea().setText(""); // clear the text area
               
               if (data.wantAccess) {
-                LogManager logManager = new LogManager(manage.getTextArea(), data.server, true);
+                LogDownloader logManager = new LogDownloader(manage.getTextArea(), data.server, true);
                 logManager.getRemoteFiles();
               }
               if (data.wantServlet) {
-                LogManager logManager = new LogManager(manage.getTextArea(), data.server, false);
+                LogDownloader logManager = new LogDownloader(manage.getTextArea(), data.server, false);
                 logManager.getRemoteFiles();
               }
             } catch (Throwable t) {
@@ -217,231 +220,156 @@ public class TdsMonitor extends JPanel {
     }
   }
 
-
   ///////////////////////////
 
   private abstract class OpPanel extends JPanel {
     PreferencesExt prefs;
     TextHistoryPane ta;
     JComboBox serverCB;
-    ComboBox fileCB;
-    JPanel buttPanel;
-    AbstractButton coordButt = null;
-    StopButton stopButton;
+    JTextArea startDateField, endDateField;
+    JPanel topPanel;
+    boolean isAccess;
 
-    boolean addCoords, defer, busy;
-    long lastEvent = -1;
-    boolean eventOK = true;
-
-    IndependentWindow detailWindow;
-    TextHistoryPane detailTA;
-
-    OpPanel(PreferencesExt prefs) {
+    OpPanel(PreferencesExt prefs, boolean isAccess) {
       this.prefs = prefs;
+      this.isAccess = isAccess;
       ta = new TextHistoryPane(true);
 
+      topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
+
+      AbstractAction showAction = new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+          showLogs();
+        }
+      };
+      BAMutil.setActionProperties(showAction, "Import", "get logs", false, 'D', -1);
+      BAMutil.addActionToContainer(topPanel, showAction);
+
+      // which server
       serverCB = new JComboBox();
       serverCB.setModel(manage.getServers().getModel());
       serverCB.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          if ((e.getWhen() != lastEvent) && eventOK) {// eliminate multiple events from same selection
-            String server = (String) serverCB.getSelectedItem();
-            serverCB.addItem(server);
-            try {
-              if (setLogFiles(server))
-                serverCB.addItem(server);
-            } catch (IOException e1) {
-              e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-            }
-            lastEvent = e.getWhen();
-          }
-        }
-      });
+         public void actionPerformed(ActionEvent e) {
+           String server = (String) serverCB.getSelectedItem();
+           setServer(server);
+         }
+       });
 
-      fileCB = new ComboBox((PreferencesExt)prefs.node("files"));
-      fileCB.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          if ((e.getWhen() != lastEvent) && eventOK) {// eliminate multiple events from same selection
-            doit(fileCB.getSelectedItem());
-            lastEvent = e.getWhen();
-          }
-        }
-      });
+      // serverCB.setModel(manage.getServers().getModel());
+      topPanel.add(new JLabel("server:"));
+      topPanel.add(serverCB);
 
-      buttPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
-      buttPanel.add(new JLabel("file:"));
-      buttPanel.add(fileCB);
+      // the date selectors
+      startDateField = new JTextArea("                    ");
+      endDateField = new JTextArea("                    ");
 
-      AbstractAction fileAction = new AbstractAction() {
-        public void actionPerformed(ActionEvent e) {
-          File[] files = fileChooser.chooseFiles();
-          if ((files == null) || (files.length == 0)) return;
-          if (files.length == 1)
-            fileCB.setSelectedItem(files[0].getPath());
-          else
-            setLogFiles(files);
-        }
-      };
-      BAMutil.setActionProperties(fileAction, "FileChooser", "open Local dataset...", false, 'L', -1);
-      BAMutil.addActionToContainer(buttPanel, fileAction);
+      topPanel.add(new JLabel("Start Date:"));
+      topPanel.add(startDateField);
+      topPanel.add(new JLabel("End Date:"));
+      topPanel.add(endDateField);
 
-      JPanel topPanel = new JPanel(new BorderLayout());
-      topPanel.add(new JLabel("server:"), BorderLayout.WEST);
-      topPanel.add(serverCB, BorderLayout.CENTER);
-      topPanel.add(buttPanel, BorderLayout.EAST);
-
-      setLayout(new BorderLayout());
+      setLayout( new BorderLayout());
       add(topPanel, BorderLayout.NORTH);
-      add(ta, BorderLayout.CENTER);
-
-      detailTA = new TextHistoryPane();
-      detailTA.setFont(new Font("Monospaced", Font.PLAIN, 12));
-      detailWindow = new IndependentWindow("Details", BAMutil.getImage("netcdfUI"), new JScrollPane(detailTA));
-      Rectangle bounds = (Rectangle) prefs.getBean(FRAME_SIZE, new Rectangle(200, 50, 500, 700));
-      detailWindow.setBounds(bounds);
     }
 
-    void doit(Object command) {
-      if (busy) return;
-      if (command == null) return;
-      if (command instanceof String)
-        command = ((String) command).trim();
-
-      busy = true;
-      if (process(command)) {
-        if (!defer) fileCB.addItem(command);
-      }
-      busy = false;
+    private DateFormatter df = new DateFormatter();
+    private LogLocalManager manager;
+    public void setServer(String server) {
+      manager = new LogLocalManager(server, isAccess);
+      manager.getLocalFiles(null, null);
+      Date startDate = manager.getStartDate();
+      Date endDate = manager.getEndDate();
+      startDateField.setText(df.toDateTimeStringISO(startDate));
+      endDateField.setText(df.toDateTimeStringISO(endDate));
+      setLocalManager(manager);
     }
 
-    abstract boolean process(Object command);
-    abstract boolean setLogFiles(String command)  throws IOException ;
-    abstract void setLogFiles(File[] files) ;
-
-    void save() {
-      fileCB.save();
-      //serverCB.save();
-
-      //if (v3Butt != null) prefs.putBoolean("nc3useRecords", v3Butt.getModel().isSelected());
-      if (coordButt != null) prefs.putBoolean("coordState", coordButt.getModel().isSelected());
-      if (detailWindow != null) prefs.putBeanObject(FRAME_SIZE, detailWindow.getBounds());
-    }
-
-    void setSelectedItem(Object item) {
-      eventOK = false;
-      fileCB.setSelectedItem(item);
-      eventOK = true;
-    }
+    abstract void setLocalManager( LogLocalManager manager);
+    abstract void showLogs();
   }
 
   /////////////////////////////////////////////////////////////////////
   private class AccessLogPanel extends OpPanel {
     AccessLogTable logTable;
-    LogManager logManager = null;
 
     AccessLogPanel(PreferencesExt p) {
-      super(p);
-      logTable = new AccessLogTable(manage, (PreferencesExt) mainPrefs.node("LogTable"), dnsCache);
+      super(p, true);
+      logTable = new AccessLogTable(startDateField, endDateField, p, dnsCache);
       logTable.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
          public void propertyChange(java.beans.PropertyChangeEvent e) {
            if (e.getPropertyName().equals("UrlDump")) {
              String path = (String) e.getNewValue();
-             if (logManager != null)
-               path = logManager.makePath(path);
              gotoUrlDump(path);
            }
          }
        });
 
+      AbstractAction allAction = new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+          resetLogs();
+        }
+      };
+      BAMutil.setActionProperties(allAction, "Refresh", "show All Logs", false, 'A', -1);
+      BAMutil.addActionToContainer(topPanel, allAction);
+
+      AbstractAction dnsAction = new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+          showDNS();
+        }
+      };
+      BAMutil.setActionProperties(dnsAction, "Dataset", "lookup DNS", false, 'D', -1);
+      BAMutil.addActionToContainer(topPanel, dnsAction);
+
       add(logTable, BorderLayout.CENTER);
     }
 
-    boolean setLogFiles(String server) throws IOException {
-      logManager = new LogManager(manage.getTextArea(), server, true);
-      logTable.setLogFiles(logManager.getLocalFiles());
-      return true;
+    @Override
+    void setLocalManager( LogLocalManager manager) {
+      logTable.setLocalManager( manager);
     }
 
-    void setLogFiles(File[] files) {
-      logTable.setLogFiles(Arrays.asList(files));
+    @Override
+    void showLogs() {
+      logTable.showLogs();
     }
 
-    boolean process(Object o) {
-      String command = (String) o;
-      boolean err = false;
+    void resetLogs() {
+      logTable.resetLogs();
+    }
 
-      try {
-        logTable.setLogFiles(globFiles(command));
-
-      } catch (FileNotFoundException ioe) {
-        JOptionPane.showMessageDialog(null, "logTable.setLogFiles failed " + command + "\n" + ioe.getMessage());
-        ta.setText("Failed to open <" + command + ">\n" + ioe.getMessage());
-        err = true;
-
-      } catch (Exception e) {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream(5000);
-        e.printStackTrace();
-        e.printStackTrace(new PrintStream(bos));
-        ta.setText(bos.toString());
-        err = true;
-      }
-
-      return !err;
+    void showDNS() {
+      logTable.showDNS();
     }
 
     void save() {
       logTable.exit();
-      super.save();
+      //super.save();
     }
   }
 
   /////////////////////////////////////////////////////////////////////
   private class ServletLogPanel extends OpPanel {
     ServletLogTable logTable;
-    LogManager logManager = null;
 
     ServletLogPanel(PreferencesExt p) {
-      super(p);
-      logTable = new ServletLogTable((PreferencesExt) mainPrefs.node("ServletLogTable"), buttPanel, dnsCache);
+      super(p, false);
+      logTable = new ServletLogTable( startDateField, endDateField, p, dnsCache);
       add(logTable, BorderLayout.CENTER);
     }
 
-    boolean setLogFiles(String server) throws IOException {
-      logManager = new LogManager(manage.getTextArea(), server, false);
-      logTable.setLogFiles(logManager.getLocalFiles());
-      return true;
+    @Override
+    void setLocalManager( LogLocalManager manager) {
+      logTable.setLocalManager( manager);
     }
 
-    void setLogFiles(File[] files) {
-      logTable.setLogFiles(Arrays.asList(files));
-    }
-
-    boolean process(Object o) {
-      String command = (String) o;
-      boolean err = false;
-
-      try {
-        logTable.setLogFiles(globFiles(command));
-
-      } catch (FileNotFoundException ioe) {
-        JOptionPane.showMessageDialog(null, "NetcdfDataset cant open " + command + "\n" + ioe.getMessage());
-        ta.setText("Failed to open <" + command + ">\n" + ioe.getMessage());
-        err = true;
-
-      } catch (Exception e) {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream(5000);
-        e.printStackTrace();
-        e.printStackTrace(new PrintStream(bos));
-        ta.setText(bos.toString());
-        err = true;
-      }
-
-      return !err;
+    @Override
+    void showLogs() {
+      logTable.showLogs();
     }
 
     void save() {
       logTable.exit();
-      super.save();
+      //super.save();
     }
   }
 
@@ -456,7 +384,7 @@ public class TdsMonitor extends JPanel {
      * path
      * @author Mike Grant, Plymouth Marine Labs; Jon Blower
      */
-    public static java.util.List<File> globFiles(String globExpression) throws Exception {
+    java.util.List<File> globFiles(String globExpression) throws Exception {
         // Check that the glob expression is an absolute path.  Relative paths
         // would cause unpredictable and platform-dependent behaviour so
         // we disallow them.
@@ -546,6 +474,9 @@ public class TdsMonitor extends JPanel {
 
     // initializations
     BAMutil.setResourcePath("/resources/nj22/ui/icons/");
+
+    CredentialsProvider provider = new thredds.ui.UrlAuthenticatorDialog(null);
+    HttpClientManager.init(provider, "TdsMonitor");
 
      // put UI in a JFrame
     frame = new JFrame("TDS Monitor");

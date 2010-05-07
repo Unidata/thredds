@@ -33,6 +33,7 @@
 
 package ucar.nc2.thredds.monitor;
 
+import ucar.nc2.units.DateFormatter;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
 
@@ -86,8 +87,11 @@ public class ServletLogTable extends JPanel {
 
   private JComboBox rootSelector, serviceSelector;
   private JLabel sizeLable;
+  private JTextArea startDateField, endDateField;
 
-  public ServletLogTable(PreferencesExt prefs, JPanel buttPanel, Cache dnsCache) {
+  public ServletLogTable(JTextArea startDateField, JTextArea endDateField, PreferencesExt prefs, Cache dnsCache) {
+    this.startDateField = startDateField;
+    this.endDateField = endDateField;
     this.prefs = prefs;
     this.dnsCache = dnsCache;
 
@@ -205,7 +209,7 @@ public class ServletLogTable extends JPanel {
     split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, uptimeTable, mergeTable);
     split.setDividerLocation(prefs.getInt("splitPos", 500));
 
-    // the top UI
+    // the tabbed panes
     tabbedPanel = new JTabbedPane(JTabbedPane.TOP);
     tabbedPanel.addTab("LogTable", logTable);
     tabbedPanel.addTab("Merge", split);
@@ -233,7 +237,7 @@ public class ServletLogTable extends JPanel {
       }
     };
     BAMutil.setActionProperties(allAction, "Refresh", "show All Logs", false, 'A', -1);
-    BAMutil.addActionToContainer(buttPanel, allAction);
+    BAMutil.addActionToContainer(topPanel, allAction);
 
     setLayout(new BorderLayout());
     add(topPanel, BorderLayout.NORTH);
@@ -248,6 +252,68 @@ public class ServletLogTable extends JPanel {
     prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());
     prefs.putInt("splitPos", split.getDividerLocation());
   }
+
+  private DateFormatter df = new DateFormatter();
+  private LogLocalManager manager;
+  public void setLocalManager( LogLocalManager manager) {
+    this.manager = manager;
+  }
+
+  public void showLogs() {
+     java.util.List<File> logFiles = null;
+
+     try {
+       Date start = df.getISODate(startDateField.getText());
+       Date end = df.getISODate(endDateField.getText());
+       logFiles = manager.getLocalFiles(start, end);
+     } catch (Exception e) {
+        e.printStackTrace();
+       return;
+     }
+
+    LogReader reader = new LogReader(new ServletLogParser());
+
+    long startElapsed = System.nanoTime();
+    LogReader.Stats stats = new LogReader.Stats();
+
+    //  sort on name
+    Collections.sort(logFiles, new Comparator<File>() {
+      public int compare(File o1, File o2) {
+        if (o1.getName().equals("threddsServlet.log")) return 1;
+        if (o2.getName().equals("threddsServlet.log")) return -1;
+        return o1.getName().compareTo(o2.getName());
+      }
+
+      private int getSeq(File f) {
+        String name = f.getName();
+        int pos = name.indexOf(".log") + 5;
+        if (name.length() <= pos) return 0;
+        return Integer.parseInt(name.substring(pos));
+      }
+    });
+
+    try {
+      completeLogs = new ArrayList<ServletLogParser.ServletLog>(30000);
+      for (File f : logFiles)
+        reader.scanLogFile(f, new MyClosure(completeLogs), new MyLogFilter(), stats);
+      logTable.setBeans(completeLogs);
+
+    } catch (IOException ioe) {
+      ioe.printStackTrace();
+      return;
+    }
+
+    long elapsedTime = System.nanoTime() - startElapsed;
+    System.out.printf(" setLogFile total= %d passed=%d%n", stats.total, stats.passed);
+    System.out.printf(" elapsed=%f msecs %n", elapsedTime / (1000 * 1000.0));
+
+    mergeTable.setBeans(new ArrayList());
+    undoneTable.setBeans(new ArrayList());
+
+    calcMerge = true;
+  }
+
+
 
   ////////////////////////////////////////////////////////
   class MyLogFilter implements LogReader.LogFilter {

@@ -50,6 +50,7 @@ public interface MFile extends Comparable<MFile> {
 
   public boolean isDirectory();
 
+  // replace \\ with /
   public String getPath();
 
   public String getName();

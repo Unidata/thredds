@@ -31,6 +31,8 @@
  */
 package thredds.filesystem;
 
+import ucar.unidata.util.StringUtil;
+
 import java.io.File;
 import java.io.Serializable;
 import java.util.Formatter;
@@ -46,7 +48,7 @@ public class CacheDirectory extends CacheFile implements Serializable {
 
   public CacheDirectory(File dir) {
     super(dir);
-    this.parentDirName = dir.getParent();
+    this.parentDirName =  StringUtil.replace(dir.getParent(), '\\', "/");
 
     File[] subs = dir.listFiles();
     if (subs == null) subs = new File[0];
