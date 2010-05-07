@@ -35,11 +35,7 @@ package ucar.nc2.thredds.monitor;
 
 import ucar.nc2.util.net.HttpClientManager;
 
-import java.awt.*;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 import org.apache.commons.httpclient.auth.CredentialsProvider;
 
 import javax.swing.*;
@@ -50,41 +46,28 @@ import javax.swing.*;
  * @author caron
  * @since Apr 24, 2009
  */
-public class LogManager {
-  static private File topDir;
+public class LogDownloader {
   static private final String latestServletLog = "threddsServlet.log";
 
   static {
     CredentialsProvider provider = new thredds.ui.UrlAuthenticatorDialog(null);
     HttpClientManager.init(provider, "TdsMonitor");
-
-    // decide where to put the logs locally
-    String dataDir = System.getProperty( "tdsMonitor.dataDir" );
-    if (dataDir != null) {
-      topDir = new File(dataDir);
-    } else {
-      String homeDir = System.getProperty( "user.home" );
-      topDir = new File(homeDir, "tdsMonitor");
-    }
-    System.out.printf("logs stored at= %s%n", topDir);
   }
 
-  String makePath( String path) {
+  static String makePath( String server, String path) {
     return "http://" + server + path;
   }
 
-  String server, type;
-  // List<RemoteLog> logs;
+  private String server, type;
   private File localDir;
   private JTextArea ta;
 
-  LogManager(JTextArea ta, String server, boolean isAccess) throws IOException {
+  LogDownloader(JTextArea ta, String server, boolean isAccess) throws IOException {
     this.ta = ta;
     this.server = server;
     this.type = isAccess ? "access" : "thredds";
 
-    String cleanServer = java.net.URLEncoder.encode(server, "UTF8");            
-    localDir = new File(topDir, cleanServer+"/"+type);
+    localDir = LogLocalManager.getDirectory(server, isAccess);
     if (!localDir.exists() && !localDir.mkdirs()) {
       ta.setText(String.format("Failed to create local directory in = %s%n%n", localDir));
       return;
@@ -92,7 +75,6 @@ public class LogManager {
   }
 
   public void getRemoteFiles() throws IOException {
-    // List<RemoteLog> result = new ArrayList<RemoteLog>(50);
 
     String urls = "http://" + server + "/thredds/admin/log/"+type+"/";
     final String contents = HttpClientManager.getUrlContents(urls, 50);
@@ -174,14 +156,6 @@ public class LogManager {
               ", size=" + size +
               '}';
     }
-  }
-
-  public List<File> getLocalFiles(Date start, Date end) throws IOException {
-    List<File> result = new ArrayList<File>();
-    for (File f : localDir.listFiles()) {
-      result.add(f); // no filtering yet
-    }
-    return result;
   }
 
 }

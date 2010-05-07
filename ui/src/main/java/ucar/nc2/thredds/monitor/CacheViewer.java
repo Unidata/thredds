@@ -207,7 +207,7 @@ public class CacheViewer extends JPanel {
   /////////////////////////////////////////////////////////////////////
   private class CachePanel extends OpPanel {
     CacheTable cacheTable;
-    LogManager logManager = null;
+    LogDownloader logManager = null;
 
     CachePanel(PreferencesExt p) {
       super(p);
@@ -216,8 +216,8 @@ public class CacheViewer extends JPanel {
         public void propertyChange(java.beans.PropertyChangeEvent e) {
           if (e.getPropertyName().equals("UrlDump")) {
             String path = (String) e.getNewValue();
-            if (logManager != null)
-              path = logManager.makePath(path);
+            //if (logManager != null)
+            //logManager.makePath(path);
             //gotoUrlDump(path);
           }
         }
