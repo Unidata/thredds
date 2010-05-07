@@ -242,7 +242,7 @@
     <include name="thredds/filesystem/**/*.java"/>
     <include name="thredds/util/**/*.java"/>
     <!-- The following includes, to ***, are needed by TDS. -->
-    <exclude name="thredds/cataloggen/**/*.java"/>
+    <include name="thredds/cataloggen/**/*.java"/>
     <include name="thredds/crawlabledataset/**/*.java"/>
     <include name="thredds/wcs/**/*.java"/>
     <!-- *** -->
