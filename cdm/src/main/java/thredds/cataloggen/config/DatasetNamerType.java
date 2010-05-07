@@ -30,49 +30,39 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-// $Id: DatasetNamerType.java 63 2006-07-12 21:50:51Z edavis $
 
 package thredds.cataloggen.config;
 
 /**
- * Type-safe enumeration of CatalogGen DatasetNamer types.
+ * Enumeration of CatalogGen DatasetNamer types.
  *
- * @author Ethan Davis (from John Caron's thredds.catalog.ServiceType)
- * @version $Revision: 63 $
+ * @author Ethan Davis
  */
-public final class DatasetNamerType
+enum DatasetNamerType
 {
-  private static java.util.HashMap hash = new java.util.HashMap(20);
+  REGULAR_EXPRESSION( "RegExp" ),
+  DODS_ATTRIBUTE( "DodsAttrib" );
 
-  public final static DatasetNamerType REGULAR_EXPRESSION =
-    new DatasetNamerType( "RegExp");
-  public final static DatasetNamerType DODS_ATTRIBUTE =
-    new DatasetNamerType( "DodsAttrib");
+  private String altId;
 
-  private String DatasetNamerType;
-  private DatasetNamerType( String name)
-  {
-    this.DatasetNamerType = name;
-    hash.put(name, this);
+  private DatasetNamerType( String altId ) {
+    this.altId = altId;
   }
 
-  /**
-   * Find the DatasetNamerType that matches this name.
-   * @param name
-   * @return DatasetNamerType or null if no match.
-   */
-  public static DatasetNamerType getType( String name)
-  {
-    if ( name == null) return null;
-    return (DatasetNamerType) hash.get( name);
+  public String toString() {
+    return this.altId;
   }
 
-  /**
-   * Return the string name.
-   */
-  public String toString()
+  public static DatasetNamerType getType( String altId )
   {
-    return DatasetNamerType;
-  }
+    if ( altId == null )
+      return null;
 
+    for ( DatasetNamerType curType : DatasetNamerType.values() )
+    {
+      if ( curType.altId.equals( altId ) )
+        return curType;
+    }
+    return null;
+  }
 }

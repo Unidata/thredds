@@ -30,7 +30,6 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-// $Id: TestDatasetFilter.java 61 2006-07-12 21:36:00Z edavis $
 
 package thredds.cataloggen.config;
 
@@ -114,101 +113,62 @@ public class TestDatasetFilter extends TestCase
 //  {
 //  }
 
-  public void testParentDataset()
+  public void testGetters()
   {
-    // Test DatasetFilter.getParentDataset()
-    assertTrue( me.getParentDatasetSource().getName().equals( "dsSource"));
-
-  }
-
-  public void testName()
-  {
-    // Test DatasetFilter.getName()
-    assertTrue( me.getName().equals( name1));
-
-    // Test DatasetFilter.setName( String)
-    me.setName( name2);
-    assertTrue( me.getName().equals( name2));
-  }
-
-  public void testType()
-  {
-    // Test DatasetFilter.getType()
+    assertTrue( me.getParentDatasetSource() == dsSource );
+    assertTrue( me.getName().equals( name1 ) );
     assertTrue( me.getType().equals( type1) );
-
-    // Test DatasetFilter.setType( DatasetFilter.Type)
-    me.setType( null);
-    assertTrue( me.getType()  == null );
-  }
-
-  public void testMatchPattern()
-  {
-    // Test DatasetFilter.getMatchPattern()
-    assertTrue( me.getMatchPattern().equals( matchPattern1));
-
-    // Test DatasetFilter.setMatchPattern( String)
-    me.setMatchPattern( matchPattern2);
-    assertTrue( me.getMatchPattern().equals( matchPattern2));
+    assertTrue( me.getMatchPattern().equals( matchPattern1 ) );
   }
 
   public void testValid()
   {
+    StringBuilder stringBuilder = new StringBuilder();
+
     // Test DatasetFilter.validate() on valid DatasetFilter
-    boolean bool;
-    bool = me.validate( out);
-    assertTrue( out.toString(), bool );
+    DatasetFilter dsFilter = new DatasetFilter( dsSource, name1, type1, matchPattern1 );
+    boolean isValid = dsFilter.validate( stringBuilder);
+    assertTrue( stringBuilder.toString(), isValid );
 
     // Test DatasetFilter.validate() when name is null
-    out = new StringBuilder();
-    me.setName( null);
-    bool = me.validate( out);
-    assertFalse( out.toString(), bool );
-    me.setName( name1);
+    stringBuilder = new StringBuilder();
+    dsFilter = new DatasetFilter( dsSource, null, type1, matchPattern1 );
+    isValid = dsFilter.validate( stringBuilder);
+    assertFalse( stringBuilder.toString(), isValid );
 
     // Test DatasetFilter.validate() when name is ""
-    out = new StringBuilder();
-    me.setName( "");
-    bool = me.validate( out);
-    assertTrue( out.toString(), bool );
-    me.setName( name1);
+    stringBuilder = new StringBuilder();
+    dsFilter = new DatasetFilter( dsSource, "", type1, matchPattern1 );
+    isValid = dsFilter.validate( stringBuilder);
+    assertTrue( stringBuilder.toString(), isValid );
 
     // Test DatasetFilter.validate() when type is null
-    out = new StringBuilder();
-    me.setType( null);
-    bool = me.validate( out);
-    assertFalse( out.toString(), bool );
-    me.setType( type1);
+    stringBuilder = new StringBuilder();
+    dsFilter = new DatasetFilter( dsSource, name1, null, matchPattern1 );
+    isValid = dsFilter.validate( stringBuilder);
+    assertFalse( stringBuilder.toString(), isValid );
 
     // Test DatasetFilter.validate():
     //   if type is RegEx, matchPattern can't be null
-    out = new StringBuilder();
-    me.setType( type1);
-    me.setMatchPattern( null);
-    bool = me.validate( out);
-    assertFalse( out.toString(), bool );
-    me.setMatchPattern( matchPattern1);
-
-//    // Test DatasetFilter.validate():
-//    //   if type is not RegEx, matchPattern must be null
-//    out = new StringBuffer();
-//    me.setType( type2);
-//    bool = me.validate( out);
-//    assertFalse( out.toString(), bool );
-//    me.setType( type1);
+    stringBuilder = new StringBuilder();
+    dsFilter = new DatasetFilter( dsSource, name1, type1, null );
+    isValid = dsFilter.validate( stringBuilder);
+    assertFalse( stringBuilder.toString(), isValid );
 
   }
 
   public void testAccept()
   {
     String dssName = "ds source";
-    String dssAccessPoint = "./test/data/thredds/cataloggen/testData/modelNotFlat";
-    String dssAccessPointHeader = "./test/data/thredds/cataloggen/testData";
-    String dsLoc = "./test/data/thredds/cataloggen/testData/modelNotFlat/eta_211/2004050300_eta_211.nc";
+    String dssAccessPoint = "./src/test/data/thredds/cataloggen/testData/modelNotFlat";
+    String dssAccessPointHeader = "./src/test/data/thredds/cataloggen/testData";
+    String dsLoc = "./src/test/data/thredds/cataloggen/testData/modelNotFlat/eta_211/2004050300_eta_211.nc";
+
     InvDataset ds = null;
     ResultService rs = new ResultService( "srv", ServiceType.DODS, "", null,
                                           dssAccessPointHeader ); 
     DatasetSource dsSource = DatasetSource.newDatasetSource( dssName, DatasetSourceType.LOCAL, DatasetSourceStructure.FLAT, dssAccessPoint, rs );
-    DatasetFilter me2 = new DatasetFilter( dsSource, "dsF", DatasetFilter.Type.REGULAR_EXPRESSION, "*.nc");
+    DatasetFilter dsFilter = new DatasetFilter( dsSource, "dsF", DatasetFilter.Type.REGULAR_EXPRESSION, "nc$");
     try
     {
       ds = dsSource.createDataset( dsLoc, null );
@@ -218,54 +178,23 @@ public class TestDatasetFilter extends TestCase
       assertTrue( "IOException creating dataset <" + dsLoc + ">: " + e.getMessage(),
                   false);
     }
-    me2.accept( ds);
+    dsFilter.accept( ds);
+
+
+    rs = new ResultService( "srv", ServiceType.DODS, "", null, dssAccessPointHeader );
+    dsSource = DatasetSource.newDatasetSource( dssName, DatasetSourceType.LOCAL, DatasetSourceStructure.FLAT, dssAccessPoint, rs );
+    dsFilter = new DatasetFilter( dsSource, "dsF", DatasetFilter.Type.REGULAR_EXPRESSION, ".*\\.nc");
+    try
+    {
+      ds = dsSource.createDataset( dsLoc, null );
+    }
+    catch ( IOException e )
+    {
+      assertTrue( "IOException creating dataset <" + dsLoc + ">: " + e.getMessage(),
+                  false );
+    }
+    dsFilter.accept( ds );
+
   }
 
 }
-/*
- * $Log: TestDatasetFilter.java,v $
- * Revision 1.6  2006/01/20 02:08:25  caron
- * switch to using slf4j for logging facade
- *
- * Revision 1.5  2005/11/18 23:51:05  edavis
- * More work on CrawlableDataset refactor of CatGen.
- *
- * Revision 1.4  2005/07/20 22:44:55  edavis
- * Allow InvDatasetScan to work with a service that is not catalog relative.
- * (DatasetSource can now add a prefix path name to resulting urlPaths.)
- *
- * Revision 1.3  2005/07/14 20:01:26  edavis
- * Make ID generation mandatory for datasetScan generated catalogs.
- * Also, remove log4j from some tests.
- *
- * Revision 1.2  2005/03/31 23:12:20  edavis
- * Some fixes for CatalogGen tests.
- *
- * Revision 1.1  2005/03/30 05:41:18  edavis
- * Simplify build process: 1) combine all build scripts into one,
- * thredds/build.xml; 2) combine contents of all resources/ directories into
- * one, thredds/resources; 3) move all test source code and test data into
- * thredds/test/src and thredds/test/data; and 3) move all schemas (.xsd and .dtd)
- * into thredds/resources/resources/thredds/schemas.
- *
- * Revision 1.4  2004/12/29 21:53:20  edavis
- * Added catalogRef generation capability to DatasetSource: 1) a catalogRef
- * is generated for all accepted collection datasets; 2) once a DatasetSource
- * is expanded, information about each catalogRef is available. Added tests
- * for new catalogRef generation capability.
- *
- * Revision 1.3  2004/11/30 22:19:25  edavis
- * Clean up some CatalogGen tests and add testing for DatasetSource (without and with filtering on collection datasets).
- *
- * Revision 1.2  2004/05/11 16:29:07  edavis
- * Updated to work with new thredds.catalog 0.6 stuff and the THREDDS
- * servlet framework.
- *
- * Revision 1.1  2003/08/20 17:23:42  edavis
- * Initial version.
- *
- * Revision 1.1  2002/12/23 19:32:28  edavis
- * Added first unit tests.
- *
- *
- */

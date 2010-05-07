@@ -30,7 +30,6 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-// $Id: DatasetNamer.java 63 2006-07-12 21:50:51Z edavis $
 
 package thredds.cataloggen.config;
 
@@ -40,7 +39,9 @@ import thredds.catalog.InvDatasetImpl;
 import thredds.catalog.ServiceType;
 import thredds.catalog.InvDataset;
 
-import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 
 /**
@@ -63,6 +64,8 @@ public class DatasetNamer {
   private boolean addLevel = false;
   private DatasetNamerType type = null;
   private String matchPattern = null;
+  protected Pattern regExpPattern;
+
   private String substitutePattern = null;
   private String attribContainer = null;
   private String attribName = null;
@@ -83,19 +86,15 @@ public class DatasetNamer {
    * @param attribContainer
    * @param attribName
    */
-  public DatasetNamer(InvDataset parentDs,
-          String name, String addLevelBoolean, String typeName,
-          String matchPattern, String substitutePattern,
-          String attribContainer, String attribName) {
-    this(parentDs, name,
-            (new Boolean(addLevelBoolean)).booleanValue(),
-            DatasetNamerType.getType(typeName),
-            matchPattern, substitutePattern,
-            attribContainer, attribName);
+  public DatasetNamer( InvDataset parentDs, String name, String addLevelBoolean, String typeName,
+                       String matchPattern, String substitutePattern, String attribContainer, String attribName)
+  {
+    this( parentDs, name, ( new Boolean(addLevelBoolean)).booleanValue(), DatasetNamerType.getType(typeName),
+          matchPattern, substitutePattern, attribContainer, attribName);
     // Check that type is not null.
-    if (this.getType() == null) {
+    if ( this.getType() == null ) {
       this.isValid = false;
-      msgLog.append(" ** DatasetNamer (1): invalid type =(" + typeName + ") for datasetNamer (" + name + ")");
+      msgLog.append( " ** DatasetNamer (1): invalid type [" + typeName + "] for datasetNamer [" + name + "]." );
     }
   }
 
@@ -111,15 +110,35 @@ public class DatasetNamer {
    * @param attribContainer
    * @param attribName
    */
-  public DatasetNamer(InvDataset parentDs,
-          String name, boolean addLevel, DatasetNamerType type,
-          String matchPattern, String substitutePattern,
-          String attribContainer, String attribName) {
+  public DatasetNamer( InvDataset parentDs, String name, boolean addLevel, DatasetNamerType type,
+                       String matchPattern, String substitutePattern, String attribContainer, String attribName)
+  {
     this.parentDataset = parentDs;
     this.name = name;
     this.addLevel = addLevel;
+    if ( type == null ) {
+      this.isValid = false;
+      msgLog.append( " ** DatasetNamer (1): null type for datasetNamer [" + name + "]." );
+    }
     this.type = type;
-    this.matchPattern = matchPattern;
+
+    if ( matchPattern != null )
+    {
+      this.matchPattern = matchPattern;
+      if ( DatasetNamerType.REGULAR_EXPRESSION.equals( this.type ))
+      {
+        try
+        {
+          this.regExpPattern = java.util.regex.Pattern.compile( this.matchPattern );
+        }
+        catch ( PatternSyntaxException e )
+        {
+          isValid = false;
+          msgLog.append( " ** DatasetNamer (3): invalid matchPattern [" + this.matchPattern + "]." );
+        }
+      }
+    }
+
     this.substitutePattern = substitutePattern;
     this.attribContainer = attribContainer;
     this.attribName = attribName;
@@ -133,28 +152,12 @@ public class DatasetNamer {
   }
 
   /**
-   * Set the type of this DatasetNamer
-   */
-  public void setParentDataset(InvDataset parentDataset) {
-    this.parentDataset = parentDataset;
-  }
-
-  /**
    * Return the name of this DatasetNamer.
    *
    * @return String name of this DatasetNamer
    */
   public String getName() {
     return (this.name);
-  }
-
-  /**
-   * Set name attribute for this DatasetNamer
-   *
-   * @param name
-   */
-  public void setName(String name) {
-    this.name = name;
   }
 
   /**
@@ -167,44 +170,12 @@ public class DatasetNamer {
   }
 
   /**
-   * Set the value of the addLevel attribute
-   *
-   * @param addLevel
-   */
-  public void setAddLevel(boolean addLevel) {
-    this.addLevel = addLevel;
-  }
-
-  /**
    * Return the type attribute of this DatasetNamer.
    *
    * @return DatasetNamerType type value for this DatasetNamer
    */
   public DatasetNamerType getType() {
     return (this.type);
-  }
-
-  /**
-   * Set the value of the type attribute
-   *
-   * @param typeName String
-   */
-  public void setType(String typeName) {
-    this.type = DatasetNamerType.getType(typeName);
-    // Check that type is not null.
-    if (this.getType() == null) {
-      this.isValid = false;
-      msgLog.append(" ** DatasetNamer (2): invalid type =(" + typeName + ") for datasetNamer (" + name + ")");
-    }
-  }
-
-  /**
-   * Set the value of the type attribute
-   *
-   * @param type DatasetNamerType
-   */
-  public void setType(DatasetNamerType type) {
-    this.type = type;
   }
 
   /**
@@ -217,30 +188,12 @@ public class DatasetNamer {
   }
 
   /**
-   * Set the value of the matchPattern attribute
-   *
-   * @param mPat
-   */
-  public void setMatchPattern(String mPat) {
-    this.matchPattern = mPat;
-  }
-
-  /**
    * Return the value of the substitutePattern attribute of this DatasetNamer.
    *
    * @return String - value of substitutePattern
    */
   public String getSubstitutePattern() {
     return (this.substitutePattern);
-  }
-
-  /**
-   * Set the value of the substututePattern attribute
-   *
-   * @param sPat
-   */
-  public void setSubstitutePattern(String sPat) {
-    this.substitutePattern = sPat;
   }
 
   /**
@@ -253,30 +206,12 @@ public class DatasetNamer {
   }
 
   /**
-   * Set the value of the attribContainer attribute
-   *
-   * @param attContainer
-   */
-  public void setAttribContainer(String attContainer) {
-    this.attribContainer = attContainer;
-  }
-
-  /**
    * Return the value of the attribName attribute of this DatasetNamer.
    *
    * @return String - value of attribName
    */
   public String getAttribName() {
     return (this.attribName);
-  }
-
-  /**
-   * Set the value of the attribute Name attribute
-   *
-   * @param attName
-   */
-  public void setAttribName(String attName) {
-    this.attribName = attName;
   }
 
   /**
@@ -313,22 +248,21 @@ public class DatasetNamer {
       out.append(" ** DatasetNamer (3): null value for type is not valid (set with bad string?).");
     }
 
-    if (this.getType() == DatasetNamerType.REGULAR_EXPRESSION
-            && (this.getMatchPattern() == null || this.getSubstitutePattern() == null
-            || this.getAttribContainer() != null || this.getAttribName() != null)) {
+    if ( this.getType() == DatasetNamerType.REGULAR_EXPRESSION
+         && ( this.getMatchPattern() == null || this.getSubstitutePattern() == null ))
+    {
       this.isValid = false;
       out.append(" ** DatasetNamer (4): invalid datasetNamer <" + this.getName() + ">;" +
               " type is " + this.getType().toString() + ": matchPattern(" + this.getMatchPattern() + ") and substitutionPattern(" + this.getSubstitutePattern() + ") " +
-              "must not be null and attriuteContainer(" + this.getAttribContainer() + ") and attributeName(" + this.getAttribName() + ") must be null.");
+              "must not be null.");
     }
 
-    if (this.getType() == DatasetNamerType.DODS_ATTRIBUTE
-            && (this.getMatchPattern() != null || this.getSubstitutePattern() != null
-            || this.getAttribContainer() == null || this.getAttribName() == null)) {
+    if ( this.getType() == DatasetNamerType.DODS_ATTRIBUTE
+            && ( this.getAttribContainer() == null || this.getAttribName() == null ) )
+    {
       this.isValid = false;
       out.append(" ** DatasetNamer (5): invalid datasetNamer <" + this.getName() + ">;" +
-              " type is " + this.getType().toString() + ": matchPattern(" + this.getMatchPattern() + ") and substitutionPattern(" + this.getSubstitutePattern() + ") " +
-              "must be null and attriuteContainer(" + this.getAttribContainer() + ") and attributeName(" + this.getAttribName() + ") must not be null.");
+              " type is " + this.getType().toString() + ": attriuteContainer(" + this.getAttribContainer() + ") and attributeName(" + this.getAttribName() + ") must not be null.");
     }
 
     return (this.isValid);
@@ -380,44 +314,40 @@ public class DatasetNamer {
   }
 
   /**  */
-  private boolean nameDatasetRegExp(InvDatasetImpl dataset) {
-    // @todo Replace gnu.regexp with java.util.regexp???
-    gnu.regexp.RE regExp = null;
-    gnu.regexp.REMatch regExpMatch = null;
-
-    // Setup the regular expression.
-    try {
-      regExp = new gnu.regexp.RE(this.matchPattern);
-    }
-    catch (gnu.regexp.REException e) {
-      logger.debug("nameDatasetRegExp(): regular expression failed: {}", e.getMessage());
-      return (false);
-    }
+  private boolean nameDatasetRegExp(InvDatasetImpl dataset)
+  {
+    boolean isMatch;
+    Matcher matcher;
 
     // Test for a match on the urlPath
     if (dataset.getUrlPath() != null) {
       logger.debug("nameDatasetRegExp(): try naming on urlPath <{}>", dataset.getUrlPath());
-      regExpMatch = regExp.getMatch(dataset.getUrlPath());
+      matcher = this.regExpPattern.matcher( dataset.getUrlPath() );
+      isMatch = matcher.find();
     } else {
-      regExpMatch = regExp.getMatch(dataset.getName());
+      matcher = this.regExpPattern.matcher( dataset.getName() );
+      isMatch = matcher.find();
     }
 
-    if (regExpMatch != null) {
+    if ( isMatch) {
       // Test for substitution.
-      String name = regExpMatch.substituteInto(substitutePattern);
-      if (name != null) {
-        logger.debug("nameDatasetRegExp(): Setting name to \"" + name + "\".");
-        dataset.setName(name);
-        return (true);
+      StringBuffer resultingName = new StringBuffer();
+      matcher.appendReplacement( resultingName, this.substitutePattern );
+      resultingName.delete( 0, matcher.start() );
+
+      if ( resultingName.length() != 0) {
+        logger.debug( "nameDatasetRegExp(): Setting name to \"" + resultingName + "\".");
+        dataset.setName( resultingName.toString());
+        return true;
       } else {
-        logger.debug("nameDatasetRegExp(): No name for regEx substitution.");
-        return (false);
+        logger.debug( "nameDatasetRegExp(): No name for regEx substitution.");
+        return false;
       }
     }
     if (logger.isDebugEnabled())
       logger.debug("nameDatasetRegExp(): Neither URL <" + dataset.getUrlPath() + "> or name <" +
               dataset.getName() + "> matched pattern <" + this.matchPattern + "> .");
-    return (false);
+    return false;
   }
 
   /**  */

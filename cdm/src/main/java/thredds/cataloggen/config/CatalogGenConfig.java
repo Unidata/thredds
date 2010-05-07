@@ -30,14 +30,10 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-// $Id: CatalogGenConfig.java 63 2006-07-12 21:50:51Z edavis $
 
 package thredds.cataloggen.config;
 
 import thredds.catalog.InvDataset;
-
-import java.util.ArrayList;
-
 
 /**
  * <p>Title: Catalog Generator</p>
@@ -142,96 +138,32 @@ public class CatalogGenConfig
     return( tmp.toString());
   }
 
-  // @todo Convert this main stuff into a test.
-//  public static void main(String[] args)
-//  {
-//    InvDatasetImpl ds = new InvDatasetImpl(
-//      null, "my name", "Unknown", null, "myid", null,
-//      "http://motherlode.ucar.edu/dods/");
-//
-//    CatalogGenConfig cgc = new CatalogGenConfig( ds, "Catalog");
-//    DatasetNamer dsNamer = new DatasetNamer(
-//      ds, "this dsNamer", "false", "RegExp",
-//      "match pattern", "sub pattern", null, null);
-//
-//    cgc.addDatasetNamer( dsNamer);
-//
-//    System.out.println( "CatalogGenConfig 1:");
-//    System.out.println( "  " + cgc.toString());
-//
-//    StringBuffer myOut = new StringBuffer();
-//    if ( cgc.validate( myOut))
-//    {
-//      System.out.println( "  Valid :" + myOut + ":");
-//    } else
-//    {
-//      System.out.println( "  Invalid :" + myOut + ":");
-//    }
-//
-//    dsNamer.setAttribName( "junk");
-//
-//    System.out.println( "CatalogGenConfig 1 (modified):");
-//    System.out.println( "  " + cgc.toString());
-//
-//    myOut = new StringBuffer();
-//    if ( cgc.validate( myOut))
-//    {
-//      System.out.println( "  Valid :" + myOut + ":");
-//    } else
-//    {
-//      System.out.println( "  Invalid :" + myOut + ":");
-//    }
-//
-//    dsNamer.setAttribName( null);
-//    cgc.setType( "junk");
-//    System.out.println( "CatalogGenConfig 1 (modified2):");
-//    System.out.println( "  " + cgc.toString());
-//    myOut = new StringBuffer();
-//    if ( cgc.validate( myOut))
-//    {
-//      System.out.println( "  Valid :" + myOut + ":");
-//    } else
-//    {
-//      System.out.println( "  Invalid :" + myOut + ":");
-//    }
-//  }
-
-  /**
-   * Type-safe enumeration of the types of CatalogGenConfig.
-   *
-   * @author Ethan Davis (from John Caron's thredds.catalog.ServiceType)
-   */
-  public static class Type
+  enum Type
   {
-    private static java.util.HashMap hash = new java.util.HashMap(20);
+    CATALOG( "Catalog" ),
+    AGGREGATION( "Aggregation" );
 
-    public final static Type CATALOG = new Type( "Catalog");
-    public final static Type AGGREGATION = new Type( "Aggregation");
+    private String altId;
 
-    private String type;
-    private Type( String name)
-    {
-      this.type = name;
-      hash.put(name, this);
+    Type( String altId ) {
+      this.altId = altId;
     }
 
-    /**
-     * Find the Type that matches this name.
-     * @param name
-     * @return Type or null if no match.
-     */
-    public static Type getType( String name)
-    {
-      if ( name == null) return null;
-      return (Type) hash.get( name);
+    public String toString() {
+      return this.altId;
     }
 
-    /**
-     * Return the string name.
-     */
-    public String toString()
+    public static Type getType( String altId )
     {
-      return type;
+      if ( altId == null )
+        return null;
+
+      for ( Type curType : Type.values() ) {
+        if ( curType.altId.equals( altId ) )
+          return curType;
+      }
+      return null;
     }
   }
+
 }

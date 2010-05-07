@@ -30,7 +30,6 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-// $Id: DatasetFilter.java 63 2006-07-12 21:50:51Z edavis $
 
 package thredds.cataloggen.config;
 
@@ -39,6 +38,8 @@ import thredds.catalog.InvDataset;
 
 import java.util.List;
 import java.util.Iterator;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 /**
  * Provides filtering capabilities for InvDatasets.
@@ -69,6 +70,7 @@ public class DatasetFilter
   private String name = null;
   private DatasetFilter.Type type = null;
   private String matchPattern = null;
+  protected Pattern regExpPattern;
 
   /** Specifies the target of the matchPattern. */
   private String matchPatternTarget = null;
@@ -108,7 +110,25 @@ public class DatasetFilter
     this.parentDatasetSource = parentDsSource;
     this.name = name;
     this.type = type;
-    this.matchPattern = matchPattern;
+
+    if ( matchPattern == null )
+    {
+      isValid = false;
+      log.append( " ** DatasetFilter (2): null matchPattern not allowed." );
+    }
+    else
+    {
+      this.matchPattern = matchPattern;
+      try
+      {
+        this.regExpPattern = java.util.regex.Pattern.compile( this.matchPattern );
+      }
+      catch ( PatternSyntaxException e )
+      {
+        isValid = false;
+        log.append( " ** DatasetFilter (3): invalid matchPattern [" + this.matchPattern + "]." );
+      }
+    }
   }
   
   public DatasetFilter( DatasetSource parentDsSource, String name, DatasetFilter.Type type,
@@ -122,98 +142,61 @@ public class DatasetFilter
   }
 
   /** Return the parent DatasetSource of this DatasetFilter */
-  public DatasetSource getParentDatasetSource()
-  { return( this.parentDatasetSource); }
-  /** Set the parent DatasetSource of this DatasetFilter */
-  public void setParentDatasetSource( DatasetSource parentDatasetSource)
-  { this.parentDatasetSource = parentDatasetSource; }
+  public DatasetSource getParentDatasetSource() {
+    return( this.parentDatasetSource);
+  }
 
   /**
    * Return the name of this DatasetFilter
    * @return String the name of this.
    */
-  public String getName() { return( this.name); }
-
-  /**
-   * Set the value of the name for this DatasetFilters.
-   * @param name
-   */
-  public void setName( String name) { this.name = name; }
+  public String getName() {
+    return( this.name);
+  }
 
   /**
    * Return the type of this DatasetFilter
    * @return DatasetFilter.Type the type of this.
    */
-  public DatasetFilter.Type getType() { return( this.type); }
-
-  /**
-   * Set the value of the type for this DatasetFilter
-   * @param type
-   */
-  public void setType( DatasetFilter.Type type)
-  {
-    this.type = type;
-
-    if (this.getType() == null)
-    {
-      isValid = false;
-      log.append(" ** DatasetFilter (2): null value for type is not valid.");
-    }
+  public DatasetFilter.Type getType() {
+    return( this.type);
   }
 
   /**
    * Return the matchPattern of this DatasetFilter
    * @return String the matchPattern of this.
    */
-  public String getMatchPattern() { return( this.matchPattern); }
-
-  /**
-   * Set the value of the matchPattern for this DatasetFilter
-   * @param newMatchPattern
-   *
-   */
-  // @todo should check that type is "RegExp" before setting matchPattern.
-  public void setMatchPattern( String newMatchPattern)
-  {
-    this.matchPattern = newMatchPattern;
+  public String getMatchPattern() {
+    return( this.matchPattern);
   }
 
-  public String getMatchPatternTarget()
-  {
+  public String getMatchPatternTarget() {
     return matchPatternTarget;
   }
 
-  public void setMatchPatternTarget( String matchPatternTarget)
-  {
+  public void setMatchPatternTarget( String matchPatternTarget) {
     this.matchPatternTarget = matchPatternTarget;
   }
 
-  public boolean isApplyToCollectionDatasets()
-  {
+  public boolean isApplyToCollectionDatasets() {
     return( this.applyToCollectionDatasets);
   }
-  public void setApplyToCollectionDatasets( boolean applyToCollectionDatasets)
-  {
+  public void setApplyToCollectionDatasets( boolean applyToCollectionDatasets) {
     this.applyToCollectionDatasets = applyToCollectionDatasets;
   }
-  public boolean isApplyToAtomicDatasets()
-  {
+  public boolean isApplyToAtomicDatasets() {
     return( this.applyToAtomicDatasets);
   }
-  public void setApplyToAtomicDatasets( boolean applyToAtomicDatasets)
-  {
+  public void setApplyToAtomicDatasets( boolean applyToAtomicDatasets) {
     this.applyToAtomicDatasets = applyToAtomicDatasets;
   }
-  public boolean isRejectMatchingDatasets()
-  {
+  public boolean isRejectMatchingDatasets() {
     return( this.rejectMatchingDatasets);
   }
-  public boolean isAcceptMatchingDatasets()
-  {
+  public boolean isAcceptMatchingDatasets() {
     return( ! this.rejectMatchingDatasets);
   }
-  public void setRejectMatchingDatasets( boolean rejectMatchingDatasets)
-  {
+  public void setRejectMatchingDatasets( boolean rejectMatchingDatasets) {
     this.rejectMatchingDatasets = rejectMatchingDatasets;
   }
 
@@ -238,14 +221,14 @@ public class DatasetFilter
     if (this.getName() == null)
     {
       isValid = false;
-      out.append(" ** DatasetFilter (3): null value for name is not valid.");
+      out.append(" ** DatasetFilter (4): null value for name is not valid.");
     }
 
     // Check that type is not null.
     if ( this.getType() == null)
     {
       isValid = false;
-      out.append( " ** DatasetFilter (4): null value for type is not valid (set with bad string?).");
+      out.append( " ** DatasetFilter (5): null value for type is not valid (set with bad string?).");
     }
 
     // Validity check: 'matchPattern' must be null if 'type' value
@@ -254,14 +237,14 @@ public class DatasetFilter
          this.matchPattern == null)
     {
       isValid = false;
-      out.append(" ** DatasetFilter (5): null value for matchPattern not valid when type is 'RegExp'.");
+      out.append(" ** DatasetFilter (6): null value for matchPattern not valid when type is 'RegExp'.");
     }
     if ( this.type != DatasetFilter.Type.REGULAR_EXPRESSION &&
          this.type != null &&
          this.matchPattern != null)
     {
       isValid = false;
-      out.append( " ** DatasetFilter (6): matchPattern value (" + this.matchPattern +
+      out.append( " ** DatasetFilter (7): matchPattern value (" + this.matchPattern +
                   ") must be null if type is not 'RegExp'.");
     }
 
@@ -347,38 +330,22 @@ public class DatasetFilter
 
     if ( this.type == DatasetFilter.Type.REGULAR_EXPRESSION)
     {
-      // @todo Replace gnu.regexp with java.util.regexp???
-      gnu.regexp.RE regExp = null;
-
-      // Setup the regular expression.
-      try
-      {
-        regExp = new gnu.regexp.RE( this.matchPattern);
-      }
-      catch( gnu.regexp.REException e)
-      {
-        System.err.println("Error: exception on reg exp");
-        System.err.println( e.getMessage());
-        e.printStackTrace();
-        return( false); //System.exit( 1);
-        // Or just do a
-        // return( null);
-      }
-
-      gnu.regexp.REMatch regExpMatch = null;
+      boolean isMatch;
       if ( this.getMatchPatternTarget().equals( "name"))
       {
-        regExpMatch = regExp.getMatch( dataset.getName());
+        java.util.regex.Matcher matcher = this.regExpPattern.matcher( dataset.getName() );
+        isMatch = matcher.matches();
       }
       else if ( this.getMatchPatternTarget().equals( "urlPath"))
       {
-        // @todo Should use isMatch() instead?
-        regExpMatch = regExp.getMatch( ((InvDatasetImpl) dataset).getUrlPath());
+
+        java.util.regex.Matcher matcher = this.regExpPattern.matcher( ( (InvDatasetImpl) dataset ).getUrlPath() );
+        isMatch = matcher.matches();
       }
       else
       {
-        // @todo deal with any matchPatternTarget (XPath-ish)
-        return( false);
+        // ToDo deal with any matchPatternTarget (XPath-ish)
+        isMatch = false;
       }
 
 //      // Invert the meaning of a match (accept things that don't match).
@@ -391,7 +358,7 @@ public class DatasetFilter
 //      else
 //      {
         // If match, return true.
-        return( regExpMatch != null );
+        return( isMatch );
 //      }
     }
     else
@@ -480,42 +447,29 @@ public class DatasetFilter
     return( false);
   }
 
-  /**
-   * Type-safe enumeration of the types of DatasetFilter.
-   *
-   * @author Ethan Davis (from John Caron's thredds.catalog.ServiceType)
-   */
-  public static class Type
+  enum Type
   {
-    private static java.util.HashMap hash = new java.util.HashMap(20);
+    REGULAR_EXPRESSION( "RegExp");
 
-    public final static Type REGULAR_EXPRESSION = new Type( "RegExp");
-
-    private String name;
-    private Type( String name)
-    {
-      this.name = name;
-      hash.put( name, this);
+    private String altId;
+    Type( String altId) {
+      this.altId = altId;
     }
 
-    /**
-     * Find the Type that matches this name.
-     * @param name
-     * @return Type or null if no match.
-     */
-    public static Type getType( String name)
-    {
-      if ( name == null) return null;
-      return (Type) hash.get( name);
+    public String toString() {
+      return this.altId;
     }
 
-    /**
-     * Return the string name.
-     */
-    public String toString()
+    public static Type getType( String altId )
     {
-      return name;
-    }
+      if ( altId == null )
+        return null;
 
+      for ( Type curType : Type.values() ) {
+        if ( curType.altId.equals( altId ) )
+          return curType;
+      }
+      return null;
+    }
   }
 }
