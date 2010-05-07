@@ -15,7 +15,7 @@ import java.util.*;
 public class CompareGribVarNamesOnMotherlodeTds
 {
   private String modelId;
-  private String tdsUrl = "http://motherlode.ucar.edu:9080/thredds/";
+  private String tdsUrl = "http://motherlode.ucar.edu:8080/thredds/";
 
   public CompareGribVarNamesOnMotherlodeTds( String modelId )
   {
