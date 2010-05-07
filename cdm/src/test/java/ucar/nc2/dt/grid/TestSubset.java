@@ -36,6 +36,7 @@ import junit.framework.TestCase;
 import ucar.ma2.*;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateAxis1D;
+import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.NCdump;
@@ -46,6 +47,8 @@ import ucar.unidata.geoloc.projection.LatLonProjection;
 import ucar.unidata.geoloc.vertical.VerticalTransform;
 
 import ucar.nc2.constants.FeatureType;
+
+import java.util.Arrays;
 
 public class TestSubset extends TestCase {
 
@@ -163,10 +166,10 @@ public class TestSubset extends TestCase {
     ProjectionImpl p = gcs.getProjection();
     ProjectionRect prect = p.latLonToProjBB(bbox); // must override default implementation
     System.out.printf("%s -> %s %n", bbox, prect);
-    assert TestAll.closeEnough( prect.getMinX(), -2120.3375);
-    assert TestAll.closeEnough( prect.getWidth(), 4279.2196);
-    assert TestAll.closeEnough( prect.getMinY(), -1809.0359);
-    assert TestAll.closeEnough( prect.getHeight(), 3338.2484);
+    assert TestAll.closeEnough(prect.getMinX(), -2120.3375);
+    assert TestAll.closeEnough(prect.getWidth(), 4279.2196);
+    assert TestAll.closeEnough(prect.getMinY(), -1809.0359);
+    assert TestAll.closeEnough(prect.getHeight(), 3338.2484);
 
     LatLonRect bb2 = p.projToLatLonBB(prect);
     System.out.printf("%s -> %s %n", prect, bb2);
@@ -385,7 +388,7 @@ public class TestSubset extends TestCase {
   }
 
   // longitude subsetting (CoordAxis1D regular)
-   public void testLatLonSubset2() throws Exception {
+  public void testLatLonSubset2() throws Exception {
     GridDataset dataset = GridDataset.open(TestAll.testdataDir + "/grid/grib/grib2/data/GFS_Global_onedeg_20090105_0600.grib2");
     GeoGrid grid = dataset.findGridByName("Pressure_surface");
     assert null != grid;
@@ -502,7 +505,7 @@ public class TestSubset extends TestCase {
     System.out.println("lat/lon bbox= " + gcs.getLatLonBoundingBox());
 
     ucar.unidata.geoloc.LatLonRect llbb = gcs.getLatLonBoundingBox();
-    ucar.unidata.geoloc.LatLonRect llbb_subset = new LatLonRect(new LatLonPointImpl(-15,-140), new LatLonPointImpl(55,30));
+    ucar.unidata.geoloc.LatLonRect llbb_subset = new LatLonRect(new LatLonPointImpl(-15, -140), new LatLonPointImpl(55, 30));
     System.out.println("subset lat/lon bbox= " + llbb_subset);
 
     GeoGrid grid_section = grid.subset(null, null, llbb_subset, 1, 1, 1);
@@ -556,7 +559,7 @@ public class TestSubset extends TestCase {
     assert gcs.hasVerticalAxis();          // returns true.
 
     // subset geogrid
-    GeoGrid subg = grid.subset(null,null,null,1,1,1);
+    GeoGrid subg = grid.subset(null, null, null, 1, 1, 1);
     assert null != subg;
 
     GridCoordSystem gcsi2 = subg.getCoordinateSystem();
@@ -600,7 +603,7 @@ public class TestSubset extends TestCase {
 
   // x,y in meters
   public void testBBSubsetUnits() throws Exception {
-    GridDataset dataset = GridDataset.open(TestAll.cdmUnitTestDir +"ncml/testBBSubsetUnits.ncml");
+    GridDataset dataset = GridDataset.open(TestAll.cdmUnitTestDir + "ncml/testBBSubsetUnits.ncml");
     System.out.println("file= " + dataset.getLocation());
 
     GeoGrid grid = dataset.findGridByName("pr");
@@ -633,7 +636,7 @@ public class TestSubset extends TestCase {
   }
 
   public void testAggByteGiniSubsetStride() throws Exception {
-    GridDataset dataset = GridDataset.open(TestAll.testdataDir +"satellite/gini/giniAggByte.ncml"); // R:\testdata\satellite\gini
+    GridDataset dataset = GridDataset.open(TestAll.testdataDir + "satellite/gini/giniAggByte.ncml"); // R:\testdata\satellite\gini
     GeoGrid grid = dataset.findGridByName("IR");
     assert null != grid;
     GridCoordSystem gcs = grid.getCoordinateSystem();
@@ -680,7 +683,7 @@ public class TestSubset extends TestCase {
     dataset.close();
   }
 
-   public void utestBBSubsetVP2() throws Exception {
+  public void utestBBSubsetVP2() throws Exception {
     String filename = "C:/Documents and Settings/caron/My Documents/downloads/MSG2-SEVI-MSGCLAI-0000-0000-20070522114500.000000000Z-582760.grb";
     GridDataset dataset = GridDataset.open(filename);
     GeoGrid grid = dataset.findGridByName("Pixel_scene_type");
@@ -723,7 +726,7 @@ public class TestSubset extends TestCase {
      zRange: 0:0
     yRange: 1:559
     zRange: 1:399 */
-    GridDatatype subset = grid.makeSubset(null, null, new Range(31, 31), new Range(0,0), new Range(1,559), new Range(1,399));
+    GridDatatype subset = grid.makeSubset(null, null, new Range(31, 31), new Range(0, 0), new Range(1, 559), new Range(1, 399));
     assert subset != null;
     GridCoordSystem gcs2 = subset.getCoordinateSystem();
     assert null != gcs2;
@@ -751,10 +754,80 @@ public class TestSubset extends TestCase {
     GridCoordSystem gcs = grid.getCoordinateSystem();
     CoordinateAxis1D zaxis = gcs.getVerticalAxis();
     float zCoord = 10000;
-    int zidx = zaxis.findCoordElement( zCoord);
+    int zidx = zaxis.findCoordElement(zCoord);
     assert zidx == 28 : zidx;
 
     dataset.close();
+  }
+
+  public void testSubsetCoordEdges() throws Exception {
+    NetcdfDataset fooDataset = NetcdfDataset.openDataset(TestAll.cdmLocalTestDataDir + "dataset/subsetCoordEdges.ncml");
+
+    try {
+      GridDataset fooGridDataset = new GridDataset(fooDataset);
+      GridDatatype fooGrid = fooGridDataset.findGridDatatype("foo");
+
+      CoordinateAxis1D fooTimeAxis = fooGrid.getCoordinateSystem().getTimeAxis1D();
+      CoordinateAxis1D fooLatAxis = (CoordinateAxis1D) fooGrid.getCoordinateSystem().getYHorizAxis();
+      CoordinateAxis1D fooLonAxis = (CoordinateAxis1D) fooGrid.getCoordinateSystem().getXHorizAxis();
+
+      // Expected: [0.0, 31.0, 59.0, 90.0, 120.0]
+      // Actual:   [0.0, 31.0, 59.0, 90.0, 120.0]
+      System.out.println("mid time= " + Arrays.toString(fooTimeAxis.getCoordValues()));
+      System.out.println("edge time= " + Arrays.toString(fooTimeAxis.getCoordEdges()));
+      System.out.println();
+
+      // Expected: [-90.0, -18.0, 36.0, 72.0, 90.0]
+      // Actual:   [-90.0, -18.0, 36.0, 72.0, 90.0]
+      System.out.println("mid lat= " + Arrays.toString(fooLatAxis.getCoordValues()));
+      System.out.println("edge lat= " + Arrays.toString(fooLatAxis.getCoordEdges()));
+      System.out.println();
+
+      // Expected: [0.0, 36.0, 108.0, 216.0, 360.0]
+      // Actual:   [0.0, 36.0, 108.0, 216.0, 360.0]
+      System.out.println("mid lon= " + Arrays.toString(fooLonAxis.getCoordValues()));
+      System.out.println("edge lon= " + Arrays.toString(fooLonAxis.getCoordEdges()));
+      System.out.println();
+
+
+      Range middleRange = new Range(1, 2);
+      GridDatatype fooSubGrid = fooGrid.makeSubset(null, null, middleRange, null, middleRange, middleRange);
+
+      CoordinateAxis1D fooSubTimeAxis = fooSubGrid.getCoordinateSystem().getTimeAxis1D();
+      CoordinateAxis1D fooSubLatAxis = (CoordinateAxis1D) fooSubGrid.getCoordinateSystem().getYHorizAxis();
+      CoordinateAxis1D fooSubLonAxis = (CoordinateAxis1D) fooSubGrid.getCoordinateSystem().getXHorizAxis();
+
+      // Expected: [31.0, 59.0, 90.0]
+      // Actual:   [30.25, 59.75, 89.25]
+      System.out.println("mid time= " + Arrays.toString(fooSubTimeAxis.getCoordValues()));
+      System.out.println("edge time= " + Arrays.toString(fooSubTimeAxis.getCoordEdges()));
+      compare(fooSubTimeAxis.getCoordEdges(), new double[] {31.0, 59.0, 90.0} );
+      System.out.println();
+
+      // Expected: [-18.0, 36.0, 72.0]
+      // Actual:   [-13.5, 31.5, 76.5]
+      System.out.println("mid lat= " + Arrays.toString(fooSubLatAxis.getCoordValues()));
+      System.out.println("edge lat= " + Arrays.toString(fooSubLatAxis.getCoordEdges()));
+      compare(fooSubLatAxis.getCoordEdges(), new double[] {-18.0, 36.0, 72.0} );
+      System.out.println();
+
+      // Expected: [36.0, 108.0, 216.0]
+      // Actual:   [27.0, 117.0, 207.0]
+      System.out.println("mid lon= " + Arrays.toString(fooSubLonAxis.getCoordValues()));
+      System.out.println("edge lon= " + Arrays.toString(fooSubLonAxis.getCoordEdges()));
+      compare(fooSubLonAxis.getCoordEdges(), new double[] {36.0, 108.0, 216.0} );
+      System.out.println();
+
+    } finally {
+      fooDataset.close();
+    }
+  }
+
+  private void compare(double[] d1, double[] d2) {
+    System.out.println(" should be= " + Arrays.toString(d2));
+    assert d1.length == d2.length;
+    for (int i=0; i<d1.length; i++)
+      assert d1[i] == d2[i];
   }
 }
 
