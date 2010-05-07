@@ -1,0 +1,49 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Untitled Document</title>
+</head>
+
+<body>
+<h1><img src="../../../images/unidataLogo.png" alt="" width="73" height="75" align="absbottom" /> Point Feature Collections</h1>
+<hr />
+<h2>Proposed elements for Point Feature Collections</h2>
+<p>NOT DONE YET</p>
+<p><strong>point data:</strong></p>
+<pre>&lt;<strong>featureCollection </strong><strong>name</strong>=&quot;6 minute&quot; <strong>featureType</strong>=&quot;STATION_PROFILE&quot; harvest=&quot;true&quot; <strong>path</strong>=&quot;station/profiler/wind/06min&quot;&gt;<br />  &lt;documentation type=&quot;summary&quot;&gt;Six minute average data.&lt;/documentation&gt;<br />  &lt;collection spec=&quot;/data/ldm/pub/native/profiler/wind/06min/**/PROFILER_wind_06min_#yyyyMMdd#.nc&quot; 
+     recheckEvery=&quot;15 min&quot; olderThan=&quot;5 min&quot; /&gt;
+&lt;/featureCollection&gt;
+</pre>
+<p><strong>satellite data:</strong><br />
+</p>
+<pre>
+&lt;<strong>featureCollection name</strong>=&quot;WEST-CONUS_4km&quot; <strong>featureType</strong>=&quot;Grid&quot; <strong>harvest</strong>=&quot;true&quot; <strong>path</strong>=&quot;satellite/3.9/WEST-CONUS_4km&quot;&gt;<br />  &lt;collection spec=&quot;/data/ldm/pub/native/satellite/3.9/WEST-CONUS_4km/WEST-CONUS_4km_3.9_#yyyyMMdd_HHmm#.gini&quot; 
+     recheckEvery=&quot;15 min&quot; olderThan=&quot;1 min&quot; /&gt;<br />&lt;/featureCollection&gt;<br />
+</pre>
+<blockquote>
+  <p> where:</p>
+  <ol>
+    <li><strong>name</strong>: logical name of dataset. Auto generate this and ID if not present ??</li>
+    <li><strong>featureType</strong>: required. processing is different for each type</li>
+    <li><strong>path</strong>: logical URL of datset, as before</li>
+    <li><strong>check</strong>=&quot;demand | startup | background&quot;.
+      <ul>
+          <li>demand = only scan when a request is made. best for reasonably small datasets only occasionally used.</li>
+        <li>startup = on server startup, create collection and cache results. best for static datasets.</li>
+        <li>background = rescan collection in a background task <em>recheckEvery</em> amount of time</li>
+      </ul>
+    </li>
+  </ol>
+</blockquote>
+<h3>Other possible features:</h3>
+<ul>
+  <li>Allow explicit trigger. Sending a POST to a protected URL forces an update on a <strong>featureCollection</strong>.</li>
+  <li>Default services depend on featureType, may be configured by user or overridden in catalog.</li>
+  <li>Automatic metadata extraction (time/space BB and variable names)</li>
+  <li>Default publisher/author etc added to each catalog.</li>
+  <li>Allow references to template metadata</li>
+</ul>
+<p>&nbsp;</p>
+</body>
+</html>

@@ -61,27 +61,10 @@ Make sure that the name ends with &quot;grib1&quot;:
   <li><a href="http://en.wikipedia.org/wiki/Regular_expression">Wikipedia</a></li>
   <li><a href="http://www.araxis.com/merge/topic_regexpreference.html">Reference</a></li>
 </ul>
-<hr WIDTH="100%">
-<h2>CollectionManager</h2>
-<h3>Create from a collection specification</h3>
-<p>A<a href="CollectionSpecification.html"> <em><strong>collection specification</strong></em></a><em><strong> string</strong></em> is a simple way to create a collection. </p>
-<pre>
-/data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km/**/GFS_Alaska_191km_#yyyyMMdd_HHmm#\.grib1$</pre>
-<ul>
-  <li>rootDir= <em>/data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km</em></li>
-  <li>subdirs= yes </li>
-  <li>dateFormatMark= <em>GFS_Alaska_191km_#yyyyMMdd_HHmm</em></li>
-  <li>onName= yes</li>
-  <li>regexp= <em>GFS_Alaska_191km.........\.grib1$</em></li>
-</ul>
-<h3>Create from a catalog</h3>
-<p>You can use a <em><strong>catalog:catalogURL</strong></em>. All the datasets in the catalog are used, using best remote access capabilty, currently OPeNDAP. See <strong>DatasetCollectionFromCatalog</strong> class.</p>
-<h3>Create from NcML</h3>
-<p>If you pass an NcML file (which must end in <strong>.ncml</strong>) the NcML is parsed, and the scan or scanFmrc is extracted. A <strong>DatasetCollectionFromNcml </strong>is returned, along with inner and outer JDOM NcML elements.</p>
 <p>&nbsp;</p>
 <hr WIDTH="100%">
 <address>
-<img src="../../../images/thread.png" alt="" width="76" height="67" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated  May 2010
+<img src="../../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated  May 2010
 </address>
 </body>
 </html>
