@@ -679,7 +679,7 @@ public class ReadTdsLogs {
 
     //String accessLogs = "D:\\logs\\motherlode\\live\\access";
     //String accessLogs = "C:\\Documents and Settings\\caron.UNIDATA_DOMAIN\\tdsMonitor\\motherlode.ucar.edu%3A8080\\access";
-    String accessLogs = "C:/Users/caron/tdsMonitor/motherlode.ucar.edu%3A8080/access/access.2010-04-26.log"; // "/home/caron/tdsMonitor/motherlode%3A8080/access/";
+    String accessLogs = "C:/Users/caron/tdsMonitor/motherlode.ucar.edu%3A8080/access/"; // "/home/caron/tdsMonitor/motherlode%3A8080/access/";
 
     read(accessLogs, new MClosure() {
       public void run(String filename) throws IOException {
