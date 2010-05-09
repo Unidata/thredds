@@ -32,7 +32,9 @@
  */
 package ucar.nc2.thredds.monitor;
 
+import ucar.nc2.units.DateFormatter;
 import ucar.nc2.units.DateFromString;
+import ucar.nc2.units.DateRange;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
@@ -75,53 +77,81 @@ public class LogLocalManager {
   private static final String specialLog = "threddsServlet.log";
   private String server;
   private boolean isAccess;
-  private List<File> localFiles;
+  private List<FileDateRange> localFiles;
 
   LogLocalManager(String server, boolean isAccess) {
     this.server = server;
     this.isAccess = isAccess;
   }
 
-  public List<File> getLocalFiles(Date start, Date end) {
+  public List<FileDateRange> getLocalFiles(Date start, Date end) {
     File localDir = getDirectory(server, isAccess);
 
-    localFiles = new ArrayList<File>();
+    List<FileDateRange> list = new ArrayList<FileDateRange>();
     for (File f : localDir.listFiles()) {
-      Date d = extractDate(f.getName());
-      // System.out.printf(" %s == %s%n", f.getName(), df.toDateTimeStringISO(d));
-      if (start != null && d.before(start)) continue;
-      if (end != null && d.after(end)) continue;
-      localFiles.add(f);
+      if (f.getName().endsWith(".zip")) continue;
+      list.add(new FileDateRange(f));
     }
-    Collections.sort(localFiles, new ServletFileCompare());
+    Collections.sort(list, new ServletFileCompare());
+
+    // assign time range
+    FileDateRange prev = null;
+    for (FileDateRange fdr : list) {
+      if (prev != null)
+        prev.end = new Date(fdr.start.getTime()-1);
+      prev = fdr;
+    }
+    // deal with last one
+    if (list.size() > 1) {
+      FileDateRange first = list.get(0);
+      long interval = first.end.getTime() - first.start.getTime();
+      if (isAccess) {
+        FileDateRange last = list.get(list.size()-1);
+        last.end = new Date(last.start.getTime()+interval);
+      } else {
+        FileDateRange nextLast = list.get(list.size()-2);
+        nextLast.end = new Date(nextLast.start.getTime()+interval);
+        FileDateRange last = list.get(list.size()-1);
+        last.start = nextLast.end;
+        last.end = new Date(last.start.getTime()+interval);
+      }
+    }
+
+    // filter by time range
+    localFiles = new ArrayList<FileDateRange>();
+    for (FileDateRange have : list) {
+      if (start != null && start.after(have.end)) continue;
+      if (end != null && have.start.after(end)) continue;
+      localFiles.add(have);
+    }
     return localFiles;
   }
 
-  private class ServletFileCompare implements Comparator<File> {
-    public int compare(File o1, File o2) {
-      if (o1.getName().equals(specialLog)) return 1;
-      if (o2.getName().equals(specialLog)) return -1;
-      return o1.getName().compareTo(o2.getName());
+  private class ServletFileCompare implements Comparator<FileDateRange> {
+    public int compare(FileDateRange o1, FileDateRange o2) {
+      if (o1.f.getName().equals(specialLog)) return 1;
+      if (o2.f.getName().equals(specialLog)) return -1;
+      return o1.f.getName().compareTo(o2.f.getName());
     }
   }
 
   Date getStartDate() {
     if (localFiles == null) return null;
     if (localFiles.size() == 0) return null;
-    File f = localFiles.get(0);
-    return extractDate(f.getName());
+    FileDateRange f = localFiles.get(0);
+    return f.start;
   }
 
   Date getEndDate() {
     if (localFiles == null) return null;
     if (localFiles.size() == 0) return null;
-    File f = localFiles.get(localFiles.size()-1);
-    return extractDate(f.getName());
+    FileDateRange f = localFiles.get(localFiles.size()-1);
+    return f.end;
   }
 
   Date extractDate(String name) {
     if (!isAccess && name.equals(specialLog))
-      return new Date();
+      return new Date(); // LOOK LAME
     else {
       String demark = isAccess ? "access.#yyyy-MM-dd" : "threddsServlet.log.#yyyy-MM-dd-HH";
       return DateFromString.getDateUsingDemarkatedCount(name, demark, '#');
@@ -130,6 +160,19 @@ public class LogLocalManager {
 
   public String getServer() {
     return server;
+  }
+
+  private DateFormatter df = new DateFormatter();
+
+  public class FileDateRange {
+    File f;
+    Date start, end;
+
+    FileDateRange(File f) {
+      this.f = f;
+      this.start = extractDate(f.getName());
+      System.out.printf(" %s == %s%n", f.getName(), df.toDateTimeStringISO(start));
+    }
   }
 
 }

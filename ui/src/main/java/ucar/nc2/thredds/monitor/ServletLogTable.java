@@ -260,7 +260,7 @@ public class ServletLogTable extends JPanel {
   }
 
   public void showLogs() {
-     java.util.List<File> logFiles = null;
+     java.util.List<LogLocalManager.FileDateRange> logFiles = null;
 
      try {
        Date start = df.getISODate(startDateField.getText());
@@ -277,11 +277,11 @@ public class ServletLogTable extends JPanel {
     LogReader.Stats stats = new LogReader.Stats();
 
     //  sort on name
-    Collections.sort(logFiles, new Comparator<File>() {
-      public int compare(File o1, File o2) {
-        if (o1.getName().equals("threddsServlet.log")) return 1;
-        if (o2.getName().equals("threddsServlet.log")) return -1;
-        return o1.getName().compareTo(o2.getName());
+    Collections.sort(logFiles, new Comparator<LogLocalManager.FileDateRange>() {
+      public int compare(LogLocalManager.FileDateRange o1, LogLocalManager.FileDateRange o2) {
+        if (o1.f.getName().equals("threddsServlet.log")) return 1;
+        if (o2.f.getName().equals("threddsServlet.log")) return -1;
+        return o1.f.getName().compareTo(o2.f.getName());
       }
 
       private int getSeq(File f) {
@@ -294,8 +294,8 @@ public class ServletLogTable extends JPanel {
 
     try {
       completeLogs = new ArrayList<ServletLogParser.ServletLog>(30000);
-      for (File f : logFiles)
-        reader.scanLogFile(f, new MyClosure(completeLogs), new MyLogFilter(), stats);
+      for (LogLocalManager.FileDateRange fdr : logFiles)
+        reader.scanLogFile(fdr.f, new MyClosure(completeLogs), new MyLogFilter(), stats);
       logTable.setBeans(completeLogs);
 
     } catch (IOException ioe) {

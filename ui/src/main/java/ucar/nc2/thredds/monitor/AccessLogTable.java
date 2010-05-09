@@ -317,8 +317,8 @@ public class AccessLogTable extends JPanel {
     this.manager = manager;
   }
 
-  void showLogs() {
-    java.util.List<File> accessLogFiles = null;
+  void showLogs(String filterS) {
+    java.util.List<LogLocalManager.FileDateRange> accessLogFiles = null;
 
     try {
       Date start = df.getISODate(startDateField.getText());
@@ -332,12 +332,18 @@ public class AccessLogTable extends JPanel {
     LogReader reader = new LogReader(new AccessLogParser());
     completeLogs = new ArrayList<LogReader.Log>(30000);
 
+    LogReader.LogFilter filter;
+    if (filterS != null)
+      filter = new MyLogFilter(filterS.split(","));
+    else
+      filter = new MyLogFilterNoop();
+
     try {
       long startElapsed = System.nanoTime();
       LogReader.Stats stats = new LogReader.Stats();
 
-      for (File f : accessLogFiles)
-        reader.scanLogFile(f, new MyClosure(completeLogs), new MyLogFilter(), stats);
+      for (LogLocalManager.FileDateRange fdr : accessLogFiles)
+        reader.scanLogFile(fdr.f, new MyClosure(completeLogs), filter, stats);
 
       long elapsedTime = System.nanoTime() - startElapsed;
        System.out.printf(" setLogFile total= %d passed=%d%n", stats.total, stats.passed);
@@ -369,13 +375,13 @@ public class AccessLogTable extends JPanel {
     }
   }
 
-  private void restrictLogs(String start, String end) {
+  void restrictLogs(String restrict) {
 
     restrictLogs = new ArrayList<LogReader.Log>(1000);
     for (LogReader.Log log : completeLogs) {
-      String date = log.getDate();
-      if ((date.compareTo(start) >= 0) && (date.compareTo(end) <= 0))
-        restrictLogs.add(log);
+      String ip = log.getIp();
+      if (ip.startsWith(restrict)) continue;
+      restrictLogs.add(log);
     }
 
     logTable.setBeans(restrictLogs);
@@ -390,8 +396,21 @@ public class AccessLogTable extends JPanel {
 
 
   ////////////////////////////////////////////////////////
-  class MyLogFilter implements LogReader.LogFilter {
+  class MyLogFilterNoop implements LogReader.LogFilter {
     public boolean pass(LogReader.Log log) {
+      return true;
+    }
+  }
+
+  class MyLogFilter implements LogReader.LogFilter {
+    String[] match;
+    MyLogFilter(String[] match) {
+      this.match = match;
+    }
+    public boolean pass(LogReader.Log log) {
+      for (String s: match)
+        if (log.getIp().startsWith(s))
+          return false;
       return true;
     }
   }

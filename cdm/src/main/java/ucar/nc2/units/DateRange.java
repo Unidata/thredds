@@ -225,7 +225,7 @@ public class DateRange {
   /**
    * Intersect with another date range
    *
-   * @param clip interset with this date range
+   * @param clip intersect with this date range
    * @return new date range that is the intersection
    */
   public DateRange intersect(DateRange clip) {

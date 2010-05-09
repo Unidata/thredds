@@ -229,6 +229,7 @@ public class TdsMonitor extends JPanel {
     JTextArea startDateField, endDateField;
     JPanel topPanel;
     boolean isAccess;
+    boolean isFilter;
 
     OpPanel(PreferencesExt prefs, boolean isAccess) {
       this.prefs = prefs;
@@ -236,14 +237,6 @@ public class TdsMonitor extends JPanel {
       ta = new TextHistoryPane(true);
 
       topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
-
-      AbstractAction showAction = new AbstractAction() {
-        public void actionPerformed(ActionEvent e) {
-          showLogs();
-        }
-      };
-      BAMutil.setActionProperties(showAction, "Import", "get logs", false, 'D', -1);
-      BAMutil.addActionToContainer(topPanel, showAction);
 
       // which server
       serverCB = new JComboBox();
@@ -268,6 +261,23 @@ public class TdsMonitor extends JPanel {
       topPanel.add(new JLabel("End Date:"));
       topPanel.add(endDateField);
 
+      AbstractAction showAction = new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+          showLogs();
+        }
+      };
+      BAMutil.setActionProperties(showAction, "Import", "get logs", false, 'G', -1);
+      BAMutil.addActionToContainer(topPanel, showAction);
+
+      AbstractAction filterAction = new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+          Boolean state = (Boolean) getValue(BAMutil.STATE);
+          isFilter = state.booleanValue();
+        }
+      };
+      BAMutil.setActionProperties(filterAction, "time", "filter", true, 'F', -1);
+      BAMutil.addActionToContainer(topPanel, filterAction);
+
       setLayout( new BorderLayout());
       add(topPanel, BorderLayout.NORTH);
     }
@@ -286,9 +296,12 @@ public class TdsMonitor extends JPanel {
 
     abstract void setLocalManager( LogLocalManager manager);
     abstract void showLogs();
+    abstract void resetLogs();
   }
 
   /////////////////////////////////////////////////////////////////////
+  String filterIP = "128.117.156,128.117.140,128.117.149";
+
   private class AccessLogPanel extends OpPanel {
     AccessLogTable logTable;
 
@@ -330,7 +343,7 @@ public class TdsMonitor extends JPanel {
 
     @Override
     void showLogs() {
-      logTable.showLogs();
+      logTable.showLogs(isFilter ? filterIP : null);
     }
 
     void resetLogs() {
@@ -367,9 +380,14 @@ public class TdsMonitor extends JPanel {
       logTable.showLogs();
     }
 
+    void resetLogs() {
+    }
+
+    void restrictLogs(String restrict) {
+    }
+
     void save() {
       logTable.exit();
-      //super.save();
     }
   }
 
