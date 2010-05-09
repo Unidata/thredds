@@ -180,7 +180,7 @@ public class DateFromString
   /**
    * Parse the given date string (starting at the given startIndex)  using the
    * given date format string (as described in java.text.SimpleDateFormat) and
-   * return a Date.
+   * return a Date. Assumes TimeZone is GMT.
    *
    * @param dateString the String to be parsed
    * @param dateFormatString the date format String
@@ -192,9 +192,6 @@ public class DateFromString
     try {
       SimpleDateFormat dateFormat = new SimpleDateFormat( dateFormatString, Locale.US );
       dateFormat.setTimeZone( TimeZone.getTimeZone( "GMT" ) );
-
-      if (dateString.length() < startIndex + dateFormatString.length())
-        System.out.println("HEY");
 
       // We have to cut off the dateString, so that it doesnt grab extra characters.
       // ie  new SimpleDateFormat("yyyyMMdd_HH").parse("20061129_06") -> 2006-12-24T00:00:00Z (WRONG!)

@@ -36,7 +36,6 @@ package ucar.nc2.thredds.monitor;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
 import ucar.nc2.units.TimeUnit;
-import ucar.nc2.units.DateFormatter;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionListener;
@@ -51,8 +50,8 @@ import thredds.logs.AccessLogParser;
 import thredds.logs.TestFileSystem;
 import thredds.logs.LogReader;
 
-import java.awt.event.ActionListener;
 import java.util.*;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ExecutorService;
 import java.awt.*;
@@ -311,18 +310,25 @@ public class AccessLogTable extends JPanel {
     prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());
   }
 
-  private DateFormatter df = new DateFormatter();
+
+  private SimpleDateFormat df = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
   private LogLocalManager manager;
   public void setLocalManager( LogLocalManager manager) {
     this.manager = manager;
+
+    Date startDate = manager.getStartDate();
+    Date endDate = manager.getEndDate();
+    startDateField.setText(df.format(startDate));
+    endDateField.setText(df.format(endDate));
   }
 
   void showLogs(String filterS) {
     java.util.List<LogLocalManager.FileDateRange> accessLogFiles = null;
 
+    Date start, end;
     try {
-      Date start = df.getISODate(startDateField.getText());
-      Date end = df.getISODate(endDateField.getText());
+      start = df.parse(startDateField.getText());
+      end = df.parse(endDateField.getText());
       accessLogFiles = manager.getLocalFiles(start, end);
     } catch (Exception e) {
        e.printStackTrace();
@@ -334,9 +340,9 @@ public class AccessLogTable extends JPanel {
 
     LogReader.LogFilter filter;
     if (filterS != null)
-      filter = new MyLogFilter(filterS.split(","));
+      filter = new IpFilter(filterS.split(","), start.getTime(), end.getTime());
     else
-      filter = new MyLogFilterNoop();
+      filter = new DateFilter(start.getTime(), end.getTime());
 
     try {
       long startElapsed = System.nanoTime();
@@ -357,6 +363,22 @@ public class AccessLogTable extends JPanel {
     resetLogs();
   }
 
+  void showInfo(Formatter f) {
+    f.format(" Current time =   %s%n%n", new Date().toString());
+
+    int n = 0;
+    if (completeLogs != null) {
+      n = completeLogs.size();
+      f.format("Complete logs n=%d%n", n);
+      f.format("  first log date= %s%n", completeLogs.get(0).getDate());
+      f.format("   last log date= %s%n", completeLogs.get(n-1).getDate());
+    }
+    List restrict = logTable.getBeans();
+    if (restrict != null && (restrict.size() != n)) {
+      f.format("%nRestricted logs n=%d%n", restrict.size());
+    }
+  }
+
   void resetLogs() {
     logTable.setBeans(completeLogs);
     tabbedPanel.setSelectedIndex(0);
@@ -368,11 +390,11 @@ public class AccessLogTable extends JPanel {
     calcService = true;
     restrictLogs = completeLogs;
 
-    int n = completeLogs.size();
+    /* int n = completeLogs.size();
     if (n > 0) {
       startDateField.setText(completeLogs.get(0).getDate());
       endDateField.setText(completeLogs.get(n-1).getDate());
-    }
+    } */
   }
 
   void restrictLogs(String restrict) {
@@ -394,23 +416,37 @@ public class AccessLogTable extends JPanel {
     calcService = true;
   }
 
-
   ////////////////////////////////////////////////////////
-  class MyLogFilterNoop implements LogReader.LogFilter {
-    public boolean pass(LogReader.Log log) {
-      return true;
-    }
-  }
+  class DateFilter implements LogReader.LogFilter {
+     long start, end;
+     DateFilter(long start, long end) {
+       this.start = start;
+       this.end = end;
+     }
+     public boolean pass(LogReader.Log log) {
+       if ((log.date < start) || (log.date > end))
+         return false;
 
-  class MyLogFilter implements LogReader.LogFilter {
+       return true;
+     }
+   }
+
+  class IpFilter implements LogReader.LogFilter {
     String[] match;
-    MyLogFilter(String[] match) {
+    long start, end;
+    IpFilter(String[] match, long start, long end) {
       this.match = match;
+      this.start = start;
+      this.end = end;
     }
     public boolean pass(LogReader.Log log) {
+      if ((log.date < start) || (log.date > end))
+        return false;
+
       for (String s: match)
         if (log.getIp().startsWith(s))
           return false;
+
       return true;
     }
   }
@@ -676,12 +712,9 @@ public class AccessLogTable extends JPanel {
     timeSeriesPanel.add(c3);
 
   }
-  
+
+  // construct the TImeSeries plot for the list of logs passed in
   private void showTimeSeriesAll(java.util.List<LogReader.Log> logs) {
-    // 09/Apr/2009:16:38:28 -0600
-    //SimpleDateFormat df = new SimpleDateFormat("dd/MMM/yyyy:HH:mm:ss Z");
-    //SimpleDateFormat df = new SimpleDateFormat("yyyy-MMM-dd'T'HH:mm:ss");
-    DateFormatter df = new DateFormatter();
     TimeSeries bytesSentData = new TimeSeries("Bytes Sent", Minute.class);
     TimeSeries timeTookData = new TimeSeries("Average Latency", Minute.class);
     TimeSeries nreqData = new TimeSeries("Number of Requests", Minute.class);
@@ -699,16 +732,13 @@ public class AccessLogTable extends JPanel {
     long current = 0;
     long bytes = 0;
     long timeTook = 0;
+    long total_count = 0;
     long count = 0;
     for (LogReader.Log log : logs) {
-      Date d = df.getISODate(log.getDate());
-      if (d == null) {
-        System.out.printf("Cant parsse date=%s%n", log.getDate());
-        continue;
-      }
-      long msecs = d.getTime();
+      long msecs = log.date;
       if (msecs - current > period) {
         if (current > 0) {
+          total_count += count;
           addPoint(bytesSentData, timeTookData, nreqData, new Date(current), bytes, count, timeTook);
         }
         bytes = 0;
@@ -721,7 +751,8 @@ public class AccessLogTable extends JPanel {
       count++;
     }
     addPoint(bytesSentData, timeTookData, nreqData, new Date(current), bytes, count, timeTook);
-
+    total_count += count;
+    System.out.printf("showTimeSeriesAll: total_count = %d logs = %d%n", total_count, logs.size());
 
     MultipleAxisChart mc = new MultipleAxisChart("Access Logs", intervalS + " average", "Mbytes Sent", bytesSentData);
     mc.addSeries("Number of Requests", nreqData);
@@ -741,12 +772,9 @@ public class AccessLogTable extends JPanel {
 
     bytesSentData.add(new Minute(date), bytes / 1000. / 1000.);
     double latency = (double) timeTook / count / 1000.;
-    timeTookData.add(new Minute(date), (latency > 10*1000) ? 0 : latency);
+    //timeTookData.add(new Minute(date), (latency > 10*1000) ? 0 : latency); // note latency limited to 10 secs.
+    timeTookData.add(new Minute(date), latency); 
     nreqData.add(new Minute(date), (double) count);
-  }
-
-  void sendURL(LogReader.Log log) {
-
   }
 
 }

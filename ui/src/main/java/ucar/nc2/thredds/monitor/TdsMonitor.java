@@ -49,6 +49,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.*;
 import java.awt.*;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import thredds.ui.*;
@@ -225,6 +226,7 @@ public class TdsMonitor extends JPanel {
   private abstract class OpPanel extends JPanel {
     PreferencesExt prefs;
     TextHistoryPane ta;
+    IndependentWindow infoWindow;
     JComboBox serverCB;
     JTextArea startDateField, endDateField;
     JPanel topPanel;
@@ -235,6 +237,9 @@ public class TdsMonitor extends JPanel {
       this.prefs = prefs;
       this.isAccess = isAccess;
       ta = new TextHistoryPane(true);
+      infoWindow = new IndependentWindow("Details", BAMutil.getImage("netcdfUI"), new JScrollPane(ta));
+      Rectangle bounds = (Rectangle) prefs.getBean(FRAME_SIZE, new Rectangle(200, 50, 500, 700));
+      infoWindow.setBounds(bounds);
 
       topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
 
@@ -282,21 +287,20 @@ public class TdsMonitor extends JPanel {
       add(topPanel, BorderLayout.NORTH);
     }
 
-    private DateFormatter df = new DateFormatter();
     private LogLocalManager manager;
     public void setServer(String server) {
       manager = new LogLocalManager(server, isAccess);
       manager.getLocalFiles(null, null);
-      Date startDate = manager.getStartDate();
-      Date endDate = manager.getEndDate();
-      startDateField.setText(df.toDateTimeStringISO(startDate));
-      endDateField.setText(df.toDateTimeStringISO(endDate));
       setLocalManager(manager);
     }
 
     abstract void setLocalManager( LogLocalManager manager);
     abstract void showLogs();
     abstract void resetLogs();
+
+    void save() {
+      if (infoWindow != null) prefs.putBeanObject(FRAME_SIZE, infoWindow.getBounds());
+    }
   }
 
   /////////////////////////////////////////////////////////////////////
@@ -333,6 +337,17 @@ public class TdsMonitor extends JPanel {
       BAMutil.setActionProperties(dnsAction, "Dataset", "lookup DNS", false, 'D', -1);
       BAMutil.addActionToContainer(topPanel, dnsAction);
 
+      AbstractAction infoAction = new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+          Formatter f = new Formatter();
+          logTable.showInfo(f);
+          ta.setText(f.toString());
+          infoWindow.show();
+        }
+      };
+      BAMutil.setActionProperties(infoAction, "Information", "info on selected logs", false, 'I', -1);
+      BAMutil.addActionToContainer(topPanel, infoAction);
+
       add(logTable, BorderLayout.CENTER);
     }
 
@@ -356,7 +371,7 @@ public class TdsMonitor extends JPanel {
 
     void save() {
       logTable.exit();
-      //super.save();
+      super.save();
     }
   }
 
@@ -388,6 +403,7 @@ public class TdsMonitor extends JPanel {
 
     void save() {
       logTable.exit();
+      super.save();
     }
   }
 

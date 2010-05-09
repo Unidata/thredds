@@ -38,6 +38,8 @@ import ucar.nc2.units.DateRange;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;/*
 
 /**
@@ -78,10 +80,17 @@ public class LogLocalManager {
   private String server;
   private boolean isAccess;
   private List<FileDateRange> localFiles;
+  private SimpleDateFormat localFormat;
+  private int filenameDatePos; // where the date starts in the filename
 
   LogLocalManager(String server, boolean isAccess) {
     this.server = server;
     this.isAccess = isAccess;
+
+    // default is local time zone
+    filenameDatePos = isAccess ? "access.".length() : "threddsServlet.log.".length();
+    String format = isAccess ? "yyyy-MM-dd" : "yyyy-MM-dd-HH";
+    localFormat = new SimpleDateFormat(format, Locale.US );
   }
 
   public List<FileDateRange> getLocalFiles(Date start, Date end) {
@@ -153,8 +162,13 @@ public class LogLocalManager {
     if (!isAccess && name.equals(specialLog))
       return new Date(); // LOOK LAME
     else {
-      String demark = isAccess ? "access.#yyyy-MM-dd" : "threddsServlet.log.#yyyy-MM-dd-HH";
-      return DateFromString.getDateUsingDemarkatedCount(name, demark, '#');
+      String filenameDate = name.substring( filenameDatePos);
+      try {
+        return localFormat.parse( filenameDate );
+      } catch (ParseException e) {
+        e.printStackTrace();
+        return null;
+      }
     }
   }
 

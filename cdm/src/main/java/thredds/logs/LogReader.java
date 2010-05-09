@@ -38,6 +38,7 @@ import ucar.unidata.util.StringUtil;
 
 import java.io.BufferedReader;
 import java.io.*;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -47,6 +48,8 @@ import java.util.*;
  * @since Apr 10, 2008
  */
 public class LogReader {
+  private static SimpleDateFormat df = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+
 
   public interface LogParser {
     public Log nextLog(BufferedReader reader) throws IOException;
@@ -58,8 +61,9 @@ public class LogReader {
     }
 
     public String getDate() {
-      DateFormatter formatTo = new DateFormatter();
-      return formatTo.toDateTimeStringISO(new Date(date));
+      //DateFormatter formatTo = new DateFormatter();
+      //return formatTo.toDateTimeStringISO(new Date(date));
+      return df.format(new Date(date));
     }
 
     public String getReferrer() {
@@ -86,9 +90,10 @@ public class LogReader {
       return (path == null) ? null : StringUtil.unescape(path);
     }
 
+    public long date;
     String verb, referrer, client;
     int returnCode;
-    long date, msecs, sizeBytes;
+    long msecs, sizeBytes;
     String ip, path, http;
 
     public String toCSV() {
