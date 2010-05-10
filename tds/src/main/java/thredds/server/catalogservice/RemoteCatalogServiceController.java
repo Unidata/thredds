@@ -40,6 +40,7 @@ import org.springframework.validation.ObjectError;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.web.util.HtmlUtils;
 import thredds.servlet.HtmlWriter;
 import thredds.servlet.ThreddsConfig;
 import thredds.servlet.UsageLog;
@@ -231,8 +232,8 @@ public class RemoteCatalogServiceController extends AbstractController
         InvDataset dataset = catalog.findDatasetByID( datasetId );
         if ( dataset == null )
         {
-          String msg = "Did not find dataset [" + datasetId + "] in catalog [" + uri + "].";
-          log.error( "handleRequestInternal(): " + msg );
+          String msg = "Did not find dataset [" + HtmlUtils.htmlEscape( datasetId) + "] in catalog [" + uri + "].";
+          log.info( "handleRequestInternal(): " + msg );
           log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, msg.length() ));
           response.sendError( HttpServletResponse.SC_BAD_REQUEST, msg.toString() );
           return null;
