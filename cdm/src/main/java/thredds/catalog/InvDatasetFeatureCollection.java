@@ -187,6 +187,15 @@ public class InvDatasetFeatureCollection extends InvCatalogRef {
     return config;
   }
 
+  public InvDatasetScan getRawFileScan() {
+     try {
+      checkState();
+    } catch (IOException e) {
+      logger.error("Error in checkState", e);
+    }
+    return state.scan;
+  }
+
   @Override
   public java.util.List<InvDataset> getDatasets() {
     try {
