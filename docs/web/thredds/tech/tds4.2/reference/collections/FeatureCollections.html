@@ -24,14 +24,14 @@ dl {margin: 10px 5px 5px 15px;)
 <h3><a name="example" id="example"></a>Example catalog element:</h3>
 <p>Simple case using defaults:</p>
 <pre>&lt;featureCollection name=&quot;NCEP-NAM-Polar_90km&quot; featureType=&quot;FMRC&quot; path=&quot;fmrc/NCEP/NAM/Polar_90km&quot;&gt;
-  &lt;collection spec=&quot;/data/ldm/pub/native/grid/NCEP/NAM/Polar_90km/NAM_Polar_90km_#yyyyMMdd_HHmm#.grib2&quot;
+  &lt;collection spec=&quot;/data/ldm/pub/native/grid/NCEP/NAM/Polar_90km/NAM_Polar_90km_#yyyyMMdd_HHmm#.grib2$&quot;
           recheckAfter=&quot;15 min&quot; olderThan=&quot;5 min&quot;/&gt;
 
 &lt;/featureCollection&gt;
 </pre>
 <p>Fully specify the options:</p>
 <pre>&lt;featureCollection name=&quot;NCEP-NAM-Polar_90km&quot; featureType=&quot;FMRC&quot; harvest=&quot;true&quot; path=&quot;fmrc/NCEP/NAM/Polar_90km&quot;&gt;
-  &lt;collection spec=&quot;/data/ldm/pub/native/grid/NCEP/NAM/Polar_90km/NAM_Polar_90km_#yyyyMMdd_HHmm#.grib2&quot;
+  &lt;collection spec=&quot;/data/ldm/pub/native/grid/NCEP/NAM/Polar_90km/NAM_Polar_90km_#yyyyMMdd_HHmm#.grib2$&quot;
           recheckAfter=&quot;15 min&quot;  olderThan=&quot;5 min&quot;/&gt;
   &lt;update startup=&quot;true&quot; rescan=&quot;0 5 3 * * ? *&quot; /&gt;
   &lt;protoDataset choice=&quot;Penultimate&quot; change=&quot;0 2 3 * * ? *&quot; /&gt;
@@ -40,7 +40,7 @@ dl {margin: 10px 5px 5px 15px;)
 </pre>
 <p>  With NcML elements:</p>
 <pre>&lt;featureCollection name=&quot;NCEP-NAM-Polar_90km&quot; featureType=&quot;FMRC&quot; harvest=&quot;true&quot; path=&quot;fmrc/NCEP/NAM/Polar_90km&quot;&gt;
-  &lt;collection spec=&quot;/data/ldm/pub/native/grid/NCEP/NAM/Polar_90km/NAM_Polar_90km_#yyyyMMdd_HHmm#.grib2&quot;
+  &lt;collection spec=&quot;/data/ldm/pub/native/grid/NCEP/NAM/Polar_90km/NAM_Polar_90km_#yyyyMMdd_HHmm#.grib2$&quot;
           recheckAfter=&quot;15 min&quot;  olderThan=&quot;5 min&quot;/&gt;
   &lt;update startup=&quot;true&quot; rescan=&quot;0 5 3 * * ? *&quot; /&gt;
   &lt;fmrcConfig regularize=&quot;true&quot; datasetTypes=&quot;TwoD Best Files Runs ConstantForecasts ConstantOffsets&quot; /&gt;
@@ -58,15 +58,15 @@ dl {margin: 10px 5px 5px 15px;)
 <h2><a name="elements" id="elements"></a>Description of elements in TDS Configuration catalogs</h2>
 <h3>collection element</h3>
 <p>Defines the collection of datasets and provides some control over dynamically changing datasets. Takes the place of NcML aggregation element (scan and scanFmrc). </p>
-<pre>&lt;<strong>collection</strong> <strong>spec</strong>=&quot;/data/ldm/pub/native/satellite/3.9/WEST-CONUS_4km/WEST-CONUS_4km_3.9_#yyyyMMdd_HHmm#.gini&quot;
+<pre>&lt;<strong>collection</strong> <strong>spec</strong>=&quot;/data/ldm/pub/native/satellite/3.9/WEST-CONUS_4km/WEST-CONUS_4km_3.9_#yyyyMMdd_HHmm#.gini$&quot;
             <strong>olderThan</strong>=&quot;1 min&quot; <strong></strong><strong>recheckAfter</strong>=&quot;15 min&quot; /&gt;
 </pre>
 <blockquote>
   <p>where</p>
   <ol>
-    <li><strong>spec</strong>: <a href="CollectionSpecification.html">collection specification</a> string. In this case, all files in the directory <em>/data/ldm/pub/native/satellite/3.9/WEST-CONUS_4km/ </em>whose filename matches the reqular expression WEST-CONUS_4km_3.9_........_....\.gini$&quot;. The  time coordinate (runtime if its an FMRC) of the file will be found by matching <em>yyyyMMdd_HHmm</em> to that portion of the filename.</li>
-    <li><strong>olderThan</strong>: only files whose lastModified date is older than this are included. This excludes files that are in the process of being written.</li>
-    <li><strong>recheckAfter</strong>: This will cause a directory scan whenever a request comes in and this much time has elapsed since the last scan. The request will wait until the rescan is finished and a new collection is built (if needed). This minimizes unneeded processing for lightly used collections.</li>
+    <li><strong>spec</strong>: <a href="CollectionSpecification.html">collection specification</a> string (required). In this case, all files in the directory <em>/data/ldm/pub/native/satellite/3.9/WEST-CONUS_4km/ </em>whose filename matches the reqular expression WEST-CONUS_4km_3.9_........_....\.gini$&quot;. The  time coordinate (runtime if its an FMRC) of the file will be found by matching <em>yyyyMMdd_HHmm</em> to that portion of the filename.</li>
+    <li><strong>olderThan</strong>: (optional) Only files whose lastModified date is older than this are included. This excludes files that are in the process of being written.</li>
+    <li><strong>recheckAfter</strong>: (optional) This will cause a directory scan whenever a request comes in and this much time has elapsed since the last scan. The request will wait until the rescan is finished and a new collection is built (if needed). This minimizes unneeded processing for lightly used collections. Also see the <em>update</em> element for alternate ways to specify rescanning strategies.</li>
   </ol>
 </blockquote>
 <h3>protoDataset element</h3>
@@ -77,16 +77,16 @@ dl {margin: 10px 5px 5px 15px;)
 <blockquote>
   <p> where: </p>
   <ol>
-    <li><strong>choice</strong>=&quot;First | Random | Penultimate | Latest&quot; : select prototype from a time ordered list</li>
-    <li> <strong>change</strong> = &quot;cron expr&quot; uses a <a href="http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html">cron expression</a></li>
+    <li><strong>choice</strong>= &quot;First | Random | Penultimate | Latest&quot; : select prototype from a time ordered list, using the first, a randomly selected one, the next to last, or the last dataset in the list. default is &quot;Penultimate&quot;.</li>
+    <li> <strong>change</strong>= &quot;cron expr&quot; (optional). This specifies when the protoDataset should be reselected, using a <a href="http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html">cron expression</a>. </li>
     <ul>
       <li><em>change = &quot;0 2 3 * * ? *&quot;</em> means every day at 3.02 am.</li>
-      <li>if not specified, the prototype dataset is not changed, except on a reboot</li>
+      <li>if not specified, the prototype dataset is not changed, except when restarting the TDS.</li>
     </ul>
     <li>&lt;protoDataset&gt;filename&lt;/protoDataset&gt;allows you to specify a specific file as the prototype. (NOT IMPLEMENTED YET)</li>
   </ol>
 </blockquote>
-<p>On rolling datsets, you will want to change the prototype, otherwise it will get deleted eventually</p>
+<p>On rolling datsets, you will want to change the prototype, otherwise it will get deleted eventually.</p>
 <h3>update element</h3>
 <p>For collections that change, provides options to update the collection in a background task. New collections are built in the background, so that requests do not wait.</p>
 <pre>&lt;update startup=&quot;true&quot; <strong>rescan</strong>=&quot;cron expr&quot;<strong> </strong>trigger=&quot;allow&quot; <strong></strong>/&gt;
@@ -96,7 +96,14 @@ dl {margin: 10px 5px 5px 15px;)
   <ol>
     <li><strong>startup</strong>= if true, when the server starts up, scan the collection and cache the results.</li>
     <li><strong>rescan</strong>= &quot;cron expr&quot; uses a <a href="http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html">cron expression</a> to specify when the collection should be rescanned in a background task.</li>
-    <li><strong>trigger</strong>: if &quot;allow&quot;, then external triggering will be allowed. This allows collections to be updated only when needed, at the cost of an external program (or person) having responsibility for sending the trigger. URL is   &quot;https://server:port/thredds/admin/trigger?collection=&lt;name&gt;&quot;. You must enable remote access.</li>
+    <li><strong>trigger</strong>: if &quot;allow&quot;, then external triggering will be allowed. This allows collections to be updated only when needed, by an external program (or person) sending an explicit &quot;trigger&quot; URL access. 
+      This is protected by HTTPS, so you must enable remote access for this to work.
+      <ol>
+        <li>The URL is &quot;<strong>https://server:port/thredds/admin/trigger?collection=&lt;name&gt;</strong>&quot;. </li>
+        <li>You can see a list of the FMRC datasets (and manually trigger a rescan) on the page &quot;<strong>https://server:port/thredds/admin/debug?Collections/triggerRescan</strong>&quot;.</li>
+        <li> You can see what datasets are currently cached in each collection on the page &quot;<strong>https://server:port/thredds/admin/debug?Collections/showFmrcCache&quot;.</strong></li>
+      </ol>
+    </li>
   </ol>
 </blockquote>
 <h3>manage element (NOT IMPLEMENTED YET)</h3>
@@ -131,7 +138,7 @@ dl {margin: 10px 5px 5px 15px;)
         <li><em>Runs</em>:  A<em><strong> model run dataset</strong></em> contains all the data for one run time.</li>
         <li><em>ConstantForecast</em>s:     A <strong><em>constant forecast dataset</em></strong> is created from 
 all the data that have the same forecast time. This kind of dataset has successively shorter forecasts of the same endpoint. </li>
-        <li><em>ConstantOffsets: </em>A constant offset dataset is created from 
+        <li><em>ConstantOffsets: </em>A <em><strong>constant offset dataset</strong></em> is created from 
   all the data that have the same offset from the beginning of the run.</li>
       </ul>
     </li>

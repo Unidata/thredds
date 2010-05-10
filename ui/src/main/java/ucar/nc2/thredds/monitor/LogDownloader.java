@@ -126,7 +126,7 @@ public class LogDownloader {
     void read() {
       String urls = "http://" + server + "/thredds/admin/log/"+type+"/" + name;
       HttpClientManager.copyUrlContentsToFile(urls, localFile);
-      ta.append(String.format(" read %s to %s %n", urls, localFile.getPath()));
+      ta.append(String.format(" read %s to %s size=%d%n", urls, localFile.getPath(), localFile.length()));
     }
 
     void append() {

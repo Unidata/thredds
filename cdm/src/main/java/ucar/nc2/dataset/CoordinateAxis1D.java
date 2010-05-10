@@ -698,7 +698,9 @@ public class CoordinateAxis1D extends CoordinateAxis {
                if (!cross && midpoint[i] < midpoint[i+1]) cross = true;
             }
           }
-          Array cachedData = Array.factory(getDataType(), getShape(), midpoint);
+          Array cachedData = Array.factory(DataType.DOUBLE, getShape(), midpoint);
+          if (getDataType() != DataType.DOUBLE)
+            cachedData = MAMath.convert(cachedData, getDataType());
           setCachedData(cachedData);
         }
       }

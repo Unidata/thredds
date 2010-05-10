@@ -313,6 +313,8 @@ public class AccessLogTable extends JPanel {
 
   private SimpleDateFormat df = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
   private LogLocalManager manager;
+  private java.util.List<LogLocalManager.FileDateRange> accessLogFiles = null;
+
   public void setLocalManager( LogLocalManager manager) {
     this.manager = manager;
 
@@ -323,8 +325,6 @@ public class AccessLogTable extends JPanel {
   }
 
   void showLogs(String filterS) {
-    java.util.List<LogLocalManager.FileDateRange> accessLogFiles = null;
-
     Date start, end;
     try {
       start = df.parse(startDateField.getText());
@@ -377,6 +377,11 @@ public class AccessLogTable extends JPanel {
     if (restrict != null && (restrict.size() != n)) {
       f.format("%nRestricted logs n=%d%n", restrict.size());
     }
+    if (accessLogFiles != null)
+      f.format("%nFiles used%n");
+      for (LogLocalManager.FileDateRange fdr : accessLogFiles) {
+        f.format(" %s [%s,%s]%n", fdr.f.getName(), fdr.start, fdr.end);
+      }
   }
 
   void resetLogs() {

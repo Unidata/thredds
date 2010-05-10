@@ -3,6 +3,7 @@
   <table type="Structure" subtype="Structure" structName="record">
     <coordinate type="Lat">Lat</coordinate>
     <coordinate type="Lon">Lon</coordinate>
+    <coordinate type="Elev">elev</coordinate>
     <coordinate type="Time">time_obs</coordinate>
     <coordinate type="TimeNominal">time_nominal</coordinate>
   </table>

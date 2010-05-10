@@ -283,6 +283,17 @@ public class TdsMonitor extends JPanel {
       BAMutil.setActionProperties(filterAction, "time", "filter", true, 'F', -1);
       BAMutil.addActionToContainer(topPanel, filterAction);
 
+      AbstractAction infoAction = new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+          Formatter f = new Formatter();
+          showInfo(f);
+          ta.setText(f.toString());
+          infoWindow.show();
+        }
+      };
+      BAMutil.setActionProperties(infoAction, "Information", "info on selected logs", false, 'I', -1);
+      BAMutil.addActionToContainer(topPanel, infoAction);
+
       setLayout( new BorderLayout());
       add(topPanel, BorderLayout.NORTH);
     }
@@ -296,6 +307,7 @@ public class TdsMonitor extends JPanel {
 
     abstract void setLocalManager( LogLocalManager manager);
     abstract void showLogs();
+    abstract void showInfo(Formatter f);
     abstract void resetLogs();
 
     void save() {
@@ -337,17 +349,6 @@ public class TdsMonitor extends JPanel {
       BAMutil.setActionProperties(dnsAction, "Dataset", "lookup DNS", false, 'D', -1);
       BAMutil.addActionToContainer(topPanel, dnsAction);
 
-      AbstractAction infoAction = new AbstractAction() {
-        public void actionPerformed(ActionEvent e) {
-          Formatter f = new Formatter();
-          logTable.showInfo(f);
-          ta.setText(f.toString());
-          infoWindow.show();
-        }
-      };
-      BAMutil.setActionProperties(infoAction, "Information", "info on selected logs", false, 'I', -1);
-      BAMutil.addActionToContainer(topPanel, infoAction);
-
       add(logTable, BorderLayout.CENTER);
     }
 
@@ -359,6 +360,10 @@ public class TdsMonitor extends JPanel {
     @Override
     void showLogs() {
       logTable.showLogs(isFilter ? filterIP : null);
+    }
+
+    void showInfo(Formatter f) {
+      logTable.showInfo(f);
     }
 
     void resetLogs() {
@@ -392,13 +397,15 @@ public class TdsMonitor extends JPanel {
 
     @Override
     void showLogs() {
-      logTable.showLogs();
+      logTable.showLogs(isFilter ? filterIP : null);
     }
 
     void resetLogs() {
     }
 
-    void restrictLogs(String restrict) {
+
+    void showInfo(Formatter f) {
+      logTable.showInfo(f);
     }
 
     void save() {
