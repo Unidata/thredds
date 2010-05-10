@@ -50,6 +50,7 @@ import thredds.logs.LogReader;
 import thredds.logs.ServletLogParser;
 import thredds.logs.TestFileSystem;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
 import java.awt.*;
@@ -124,7 +125,7 @@ public class ServletLogTable extends JPanel {
       public void valueChanged(ListSelectionEvent e) {
         Uptime uptime = (Uptime) uptimeTable.getSelectedBean();
         if (uptime == null) return;
-        mergeTable.setBeans(uptime.mergeList);
+        mergeTable.setBeans( filter(uptime.mergeList));
       }
     });
 
@@ -253,18 +254,27 @@ public class ServletLogTable extends JPanel {
     prefs.putInt("splitPos", split.getDividerLocation());
   }
 
-  private DateFormatter df = new DateFormatter();
+  private SimpleDateFormat df = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
   private LogLocalManager manager;
+  private java.util.List<LogLocalManager.FileDateRange> logFiles = null;;
+  private String filterIP;
+
   public void setLocalManager( LogLocalManager manager) {
     this.manager = manager;
+
+    Date startDate = manager.getStartDate();
+    Date endDate = manager.getEndDate();
+    startDateField.setText(df.format(startDate));
+    endDateField.setText(df.format(endDate));
   }
 
-  public void showLogs() {
-     java.util.List<LogLocalManager.FileDateRange> logFiles = null;
+  public void showLogs(String filterIP) {
+    this.filterIP = filterIP;
 
+    Date start, end;
      try {
-       Date start = df.getISODate(startDateField.getText());
-       Date end = df.getISODate(endDateField.getText());
+       start = df.parse(startDateField.getText());
+       end = df.parse(endDateField.getText());
        logFiles = manager.getLocalFiles(start, end);
      } catch (Exception e) {
         e.printStackTrace();
@@ -295,7 +305,7 @@ public class ServletLogTable extends JPanel {
     try {
       completeLogs = new ArrayList<ServletLogParser.ServletLog>(30000);
       for (LogLocalManager.FileDateRange fdr : logFiles)
-        reader.scanLogFile(fdr.f, new MyClosure(completeLogs), new MyLogFilter(), stats);
+        reader.scanLogFile(fdr.f, new MyClosure(completeLogs), new FilterNoop(), stats);
       logTable.setBeans(completeLogs);
 
     } catch (IOException ioe) {
@@ -309,15 +319,98 @@ public class ServletLogTable extends JPanel {
 
     mergeTable.setBeans(new ArrayList());
     undoneTable.setBeans(new ArrayList());
+    tabbedPanel.setSelectedIndex(0);
 
     calcMerge = true;
   }
 
+  public List<Merge> filter(List<Merge> allMerge) {
 
+    Date start, end;
+     try {
+       start = df.parse(startDateField.getText());
+       end = df.parse(endDateField.getText());
+     } catch (Exception e) {
+        e.printStackTrace();
+       return allMerge;
+     }
+
+    MergeFilter filter;
+    if (filterIP != null)
+      filter = new IpFilter(filterIP.split(","), start.getTime(), end.getTime());
+    else
+      filter = new DateFilter(start.getTime(), end.getTime());
+
+    List<Merge> result = new ArrayList<Merge>(allMerge.size());
+    for (Merge m : allMerge) {
+      if (filter.pass(m)) result.add(m);
+    }
+    return result;
+  }
+
+  void showInfo(Formatter f) {
+    f.format(" Current time =   %s%n%n", new Date().toString());
+
+    int n = 0;
+    if (completeLogs != null) {
+      n = completeLogs.size();
+      f.format("Complete logs n=%d%n", n);
+      f.format("  first log date= %s%n", completeLogs.get(0).getDate());
+      f.format("   last log date= %s%n", completeLogs.get(n-1).getDate());
+    }
+    List restrict = mergeTable.getBeans();
+    if (restrict != null && (restrict.size() != n)) {
+      f.format("%nRestricted, merged logs n=%d%n", restrict.size());
+    }
+
+    if (logFiles != null)
+      f.format("%nFiles used%n");
+      for (LogLocalManager.FileDateRange fdr : logFiles) {
+        f.format(" %s [%s,%s]%n", fdr.f.getName(), fdr.start, fdr.end);
+      }
+  }
 
   ////////////////////////////////////////////////////////
-  class MyLogFilter implements LogReader.LogFilter {
+  class FilterNoop implements LogReader.LogFilter {
     public boolean pass(LogReader.Log log) {
+      return true;
+    }
+  }
+
+  interface MergeFilter  {
+    public boolean pass(Merge log);
+  }
+  class DateFilter implements MergeFilter {
+     long start, end;
+     DateFilter(long start, long end) {
+       this.start = start;
+       this.end = end;
+     }
+
+     public boolean pass(Merge log) {
+       if ((log.start.date < start) || (log.start.date > end))
+         return false;
+
+       return true;
+     }
+   }
+
+  class IpFilter implements MergeFilter {
+    String[] match;
+    long start, end;
+    IpFilter(String[] match, long start, long end) {
+      this.match = match;
+      this.start = start;
+      this.end = end;
+    }
+    public boolean pass(Merge log) {
+      if ((log.start.date < start) || (log.start.date > end))
+        return false;
+
+      for (String s: match)
+        if (log.getIp().startsWith(s))
+          return false;
+
       return true;
     }
   }
@@ -344,7 +437,7 @@ public class ServletLogTable extends JPanel {
     }
   }
 
-  public void setLogFiles(List<File> logFiles) {
+ /*  public void setLogFiles(List<File> logFiles) {
     LogReader reader = new LogReader(new ServletLogParser());
 
     long startElapsed = System.nanoTime();
@@ -385,7 +478,7 @@ public class ServletLogTable extends JPanel {
     undoneTable.setBeans(new ArrayList());
 
     calcMerge = true;
-  }
+  }   */
 
   ////////////////////////////////////////////////
 
@@ -476,7 +569,7 @@ public class ServletLogTable extends JPanel {
       }
     });
 
-    completeMerge = new ArrayList<Merge>(logs.size() / 2);
+    completeMerge = new ArrayList<Merge>(logs.size() / 2 + 100);
     ArrayList<ServletLogParser.ServletLog> miscList = new ArrayList<ServletLogParser.ServletLog>(1000);
     ArrayList<Uptime> uptimeList = new ArrayList<Uptime>(10);
     ArrayList<Merge> undoneList = new ArrayList<Merge>(1000);
@@ -487,13 +580,13 @@ public class ServletLogTable extends JPanel {
       if (current == null) {
         current = new Uptime(log);
         uptimeList.add(current);
-      }
-     /* } else if (log.getReqTime() < last.getReqTime()) {      // no longer sorted by reqTime 4/22/10
+        
+     } else if ((log.getReqSeq() < 50) && (last.getReqSeq() > 100)) {      // no longer sorted by reqTime 4/22/10
         current.finish(last, undoneList);
         completeMerge.addAll(current.mergeList);
         current = new Uptime(log);
         uptimeList.add(current);
-      }  */
+      }
 
       last = log;
       current.add(log, miscList);

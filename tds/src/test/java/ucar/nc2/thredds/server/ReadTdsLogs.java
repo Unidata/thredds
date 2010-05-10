@@ -659,7 +659,7 @@ public class ReadTdsLogs {
   }
 
   static String serverLive = null; // "http://motherlode.ucar.edu:8080";
-  static String serverTest = "http://motherlode.ucar.edu:8081";
+  static String serverTest = "http://motherlode.ucar.edu:9080";
 
   public static void main(String args[]) throws IOException {
     out = null; // new Formatter(new FileOutputStream("C:/TEMP/readTdsLogs.txt"));
@@ -674,12 +674,13 @@ public class ReadTdsLogs {
 
     // sendRequests
     final ReadTdsLogs reader = new ReadTdsLogs(serverTest);
-
     long startElapsed = System.nanoTime();
 
     //String accessLogs = "D:\\logs\\motherlode\\live\\access";
     //String accessLogs = "C:\\Documents and Settings\\caron.UNIDATA_DOMAIN\\tdsMonitor\\motherlode.ucar.edu%3A8080\\access";
     String accessLogs = "C:/Users/caron/tdsMonitor/motherlode.ucar.edu%3A8080/access/"; // "/home/caron/tdsMonitor/motherlode%3A8080/access/";
+
+    System.out.printf("server=%s send files from %s %n", serverTest, accessLogs);
 
     read(accessLogs, new MClosure() {
       public void run(String filename) throws IOException {
@@ -690,7 +691,7 @@ public class ReadTdsLogs {
     reader.exit(24 * 3600); // 24 hours
 
     long elapsedTime = System.nanoTime() - startElapsed;
-    System.out.println("elapsed= " + elapsedTime / (1000 * 1000 * 1000) + "secs");
+    System.out.printf("elapsed= %d secs%n", elapsedTime / (1000 * 1000 * 1000));
 
     if (out != null) out.close();
     out2.close();
