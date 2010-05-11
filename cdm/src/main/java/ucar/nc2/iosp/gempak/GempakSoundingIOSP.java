@@ -39,31 +39,22 @@ import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CF;
-import ucar.nc2.constants.FeatureType;
 import ucar.nc2.constants._Coordinate;
-import ucar.nc2.iosp.AbstractIOServiceProvider;
 
 import ucar.nc2.iosp.IOServiceProvider;
-import ucar.nc2.units.DateFormatter;
 import ucar.nc2.util.CancelTask;
 
 import ucar.unidata.io.RandomAccessFile;
-import ucar.unidata.util.StringUtil;
 
 import visad.util.Trace;
 
-import java.io.ByteArrayOutputStream;
-
 import java.io.IOException;
-import java.io.PrintStream;
 
 import java.nio.ByteBuffer;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.StringTokenizer;
 
 
 /**
@@ -128,7 +119,7 @@ public class GempakSoundingIOSP extends GempakStationFileIOSP {
      * @return the feature type
      */
     public String getCFFeatureType() {
-        return CF.FeatureType.stationProfile.toString();
+        return CF.FeatureType.timeSeriesProfile.toString();
     }
 
     /**
@@ -406,7 +397,7 @@ public class GempakSoundingIOSP extends GempakStationFileIOSP {
         ncfile.addAttribute(
             null,
             new Attribute(
-                "CF:featureType", CF.FeatureType.stationProfile.toString()));
+                "CF:featureType", CF.FeatureType.timeSeriesProfile.toString()));
         ncfile.addVariable(null, sVar);
     }
 

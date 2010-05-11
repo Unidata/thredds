@@ -69,17 +69,17 @@ public class BufrCdm extends TableConfigurerImpl {
 
   public TableConfig getConfig(FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) {
     String ftypeS = ds.findAttValueIgnoreCase(null, CF.featureTypeAtt, null);
-    CF.FeatureType ftype = (ftypeS == null) ? CF.FeatureType.point : CF.FeatureType.valueOf(ftypeS);
+    CF.FeatureType ftype = (ftypeS == null) ? CF.FeatureType.point : CF.FeatureType.getFeatureType(ftypeS);
     switch (ftype) {
       case point:
         return getPointConfig(ds, errlog);
-      case stationTimeSeries:
+      case timeSeries:
         return getStationConfig(ds, errlog);
       case profile:
         return getProfileConfig(ds, errlog);
       case trajectory:
         return getTrajectoryConfig(ds, errlog);
-      case stationProfile:
+      case timeSeriesProfile:
         return getStationProfileConfig(ds, errlog);
       default:
         throw new IllegalStateException("invalid ftype= " + ftype);

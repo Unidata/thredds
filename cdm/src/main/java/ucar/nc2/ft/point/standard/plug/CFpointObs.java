@@ -86,18 +86,11 @@ public class CFpointObs extends TableConfigurerImpl {
 
     CF.FeatureType ftype;
     if (ftypeS == null)
-      ftype = CF.FeatureType.point;  // ?? wantFeatureType ??
+      ftype = CF.FeatureType.point;
     else {
-      try {
-        ftype = CF.FeatureType.valueOf(ftypeS);
-      } catch (Throwable t) {
-        if (ftypeS.equalsIgnoreCase("stationProfileTimeSeries"))
-          ftype = CF.FeatureType.stationProfile;
-        else if (ftypeS.equalsIgnoreCase("station"))
-          ftype = CF.FeatureType.stationTimeSeries;
-        else
-          ftype = CF.FeatureType.point; // ?? error ??
-      }
+      ftype = CF.FeatureType.getFeatureType(ftypeS);
+      if (ftypeS == null)
+        ftype = CF.FeatureType.point;
     }
 
     // make sure lat, lon, time coordinates exist
@@ -106,15 +99,15 @@ public class CFpointObs extends TableConfigurerImpl {
     switch (ftype) {
       case point:
         return getPointConfig(ds, errlog);
-      case stationTimeSeries:
+      case timeSeries:
         return getStationConfig(ds, errlog);
       case profile:
         return getProfileConfig(ds, errlog);
       case trajectory:
         return getTrajectoryConfig(ds, errlog);
-      case stationProfile:
+      case timeSeriesProfile:
         return getStationProfileConfig(ds, errlog);
-      case section:
+      case trajectoryProfile:
         return getSectionConfig(ds, errlog);
     }
 
@@ -175,7 +168,7 @@ public class CFpointObs extends TableConfigurerImpl {
 
   ////
   private TableConfig getStationConfig(NetcdfDataset ds, Formatter errlog) throws IOException {
-    EncodingInfo info = identifyEncoding(ds, CF.FeatureType.stationTimeSeries, errlog);
+    EncodingInfo info = identifyEncoding(ds, CF.FeatureType.timeSeries, errlog);
     if (info == null) return null;
 
     // obs dimension
@@ -191,7 +184,7 @@ public class CFpointObs extends TableConfigurerImpl {
     }
 
     // check for flat - correct the encoding if so 
-    Variable parentId = identifyParent(ds, CF.FeatureType.stationTimeSeries);
+    Variable parentId = identifyParent(ds, CF.FeatureType.timeSeries);
     if ((parentId != null) && (parentId.getRank() == 1) && (parentId.getDimension(0).equals(obsDim))){
       info =  new EncodingInfo(Encoding.flat, parentId);
     }
@@ -323,7 +316,7 @@ public class CFpointObs extends TableConfigurerImpl {
 
   ////
   private TableConfig getStationProfileConfig(NetcdfDataset ds, Formatter errlog) throws IOException {
-    EncodingInfo info = identifyEncoding(ds, CF.FeatureType.stationProfile, errlog);
+    EncodingInfo info = identifyEncoding(ds, CF.FeatureType.timeSeriesProfile, errlog);
     if (info == null) return null;
 
     VariableDS time = CoordSysEvaluator.findCoordByType(ds, AxisType.Time);
@@ -345,7 +338,7 @@ public class CFpointObs extends TableConfigurerImpl {
 
     // distinguish multidim from flat
     if ((info.encoding == Encoding.multidim) && (time.getRank() < 3) && (z.getRank() < 3)) {
-      Variable parentId = identifyParent(ds, CF.FeatureType.stationProfile);
+      Variable parentId = identifyParent(ds, CF.FeatureType.timeSeriesProfile);
       if ((parentId != null) && (parentId.getRank() == 1) && (parentId.getDimension(0).equals(time.getDimension(0)))){
         if (time.getRank() == 1) // multidim time must be 2 or 3 dim
           info =  new EncodingInfo(Encoding.flat, parentId);
@@ -516,7 +509,7 @@ public class CFpointObs extends TableConfigurerImpl {
 
      case flat:
         profileDim = time.getDimension(0); // may be time(profile) or time(profile, z)
-        Variable parentId = identifyParent(ds, CF.FeatureType.stationProfile);
+        Variable parentId = identifyParent(ds, CF.FeatureType.timeSeriesProfile);
 
         TableConfig profileTable = makeStructTable(ds, FeatureType.SECTION, info, errlog);
         profileTable.parentIndex = parentId.getName();
@@ -539,7 +532,7 @@ public class CFpointObs extends TableConfigurerImpl {
   }
 
   private TableConfig getSectionConfig(NetcdfDataset ds, Formatter errlog) throws IOException {
-    EncodingInfo info = identifyEncoding(ds, CF.FeatureType.section, errlog);
+    EncodingInfo info = identifyEncoding(ds, CF.FeatureType.trajectoryProfile, errlog);
     if (info == null) return null;
 
     VariableDS time = CoordSysEvaluator.findCoordByType(ds, AxisType.Time);
@@ -550,7 +543,7 @@ public class CFpointObs extends TableConfigurerImpl {
 
     if (info.encoding == Encoding.single) {
       Dimension profileDim = time.getDimension(0); // may be time(profile) or time(profile, z)
-      Variable parentId = identifyParent(ds, CF.FeatureType.section);
+      Variable parentId = identifyParent(ds, CF.FeatureType.trajectoryProfile);
       if ((parentId != null) && (parentId.getRank() == 1) && (parentId.getDimension(0).equals(profileDim))){
         info =  new EncodingInfo(Encoding.flat, parentId);
       }
@@ -558,7 +551,7 @@ public class CFpointObs extends TableConfigurerImpl {
 
     TableConfig parentTable = makeStructTable(ds, FeatureType.SECTION, info, errlog);
     if (parentTable == null) return null;
-    parentTable.feature_id = identifyParentId(ds, CF.FeatureType.section);
+    parentTable.feature_id = identifyParentId(ds, CF.FeatureType.trajectoryProfile);
     if (parentTable.feature_id == null) {
       errlog.format("getSectionConfig cant find a section id %n");
     }
@@ -703,7 +696,7 @@ public class CFpointObs extends TableConfigurerImpl {
       case flat:
         parentTable.type = Table.Type.Construct; // override default
         profileDim = time.getDimension(0); // may be time(profile) or time(profile, z)
-        Variable parentId = identifyParent(ds, CF.FeatureType.section);
+        Variable parentId = identifyParent(ds, CF.FeatureType.trajectoryProfile);
 
         TableConfig profileTable = makeStructTable(ds, FeatureType.SECTION, info, errlog);
         profileTable.parentIndex = parentId.getName();
@@ -739,10 +732,11 @@ public class CFpointObs extends TableConfigurerImpl {
     }
   }
 
+  // given the feature type, figure out the encoding
   private EncodingInfo identifyEncoding(NetcdfDataset ds, CF.FeatureType ftype, Formatter errlog) {
     Variable ragged_rowSize = Evaluator.getVariableWithAttribute(ds, CF.STANDARD_NAME, CF.RAGGED_ROWSIZE);
     if (ragged_rowSize != null) {
-      if (ftype == CF.FeatureType.section) {
+      if (ftype == CF.FeatureType.trajectoryProfile) {
         Variable parentId = identifyParent(ds, ftype);
         if (parentId == null) {
           errlog.format("Section ragged must have section_id variable%n");
@@ -769,9 +763,9 @@ public class CFpointObs extends TableConfigurerImpl {
       case point:
         return new EncodingInfo(Encoding.multidim, (Dimension) null);
 
-      case stationTimeSeries:
+      case timeSeries:
       case profile:
-      case stationProfile:
+      case timeSeriesProfile:
         if (lat.getRank() == 0)
           return new EncodingInfo(Encoding.single, (Dimension) null);
         else if (lat.getRank() == 1)
@@ -781,7 +775,7 @@ public class CFpointObs extends TableConfigurerImpl {
         return null;
 
       case trajectory:
-      case section:
+      case trajectoryProfile:
         if (lat.getRank() == 1)
           return new EncodingInfo(Encoding.single, (Dimension) null);
         else if (lat.getRank() == 2)
@@ -801,15 +795,15 @@ public class CFpointObs extends TableConfigurerImpl {
 
   private Variable identifyParent(NetcdfDataset ds, CF.FeatureType ftype) {
     switch (ftype) {
-      case stationProfile:
-      case stationTimeSeries:
+      case timeSeriesProfile:
+      case timeSeries:
         return Evaluator.getVariableWithAttribute(ds, CF.STANDARD_NAME, CF.STATION_ID);
       case trajectory:
         return Evaluator.getVariableWithAttribute(ds, CF.STANDARD_NAME, CF.TRAJ_ID);
       case profile:
         return Evaluator.getVariableWithAttribute(ds, CF.STANDARD_NAME, CF.PROFILE_ID);
-      case section:
-        return Evaluator.getVariableWithAttribute(ds, CF.STANDARD_NAME, CF.SECTION_ID);
+      case trajectoryProfile:
+        return Evaluator.getVariableWithAttribute(ds, CF.STANDARD_NAME, CF.TRAJ_ID);
     }
     return null;
   }

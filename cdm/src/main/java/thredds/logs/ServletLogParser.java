@@ -33,8 +33,6 @@
 
 package thredds.logs;
 
-import ucar.nc2.units.DateFormatter;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.regex.*;
@@ -51,7 +49,6 @@ import java.net.URLDecoder;
  * @since Apr 10, 2008
  */
 public class ServletLogParser implements LogReader.LogParser {
-
   static public class ServletLog extends LogReader.Log {
     public long getReqTime() {
       return reqTime;
@@ -219,12 +216,12 @@ public class ServletLogParser implements LogReader.LogParser {
   }
 
   // 2010-04-21T13:05:22.006 -0600
-  private DateFormatter df = new DateFormatter();
+  private SimpleDateFormat df = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
   private long convertDate(String accessDateFormat) {
     // 30/Sep/2009:23:50:47 -0600
     try {
-      Date d = df.getISODate(accessDateFormat);
-      return d.getTime(); // formatTo.toDateTimeStringISO(d);
+      Date d = df.parse(accessDateFormat);
+      return d.getTime();
     } catch (Throwable t) {
       System.out.printf("Bad date format = %s err = %s%n", accessDateFormat, t.getMessage());
     }

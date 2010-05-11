@@ -72,23 +72,23 @@ public class GempakCdm extends TableConfigurerImpl {
     if (!ok) return false;
 
     String ftypeS = ds.findAttValueIgnoreCase(null, CF.featureTypeAtt, null);
-    CF.FeatureType ftype = (ftypeS == null) ? CF.FeatureType.point : CF.FeatureType.valueOf(ftypeS);
-    return (ftype == CF.FeatureType.stationTimeSeries) || (ftype == CF.FeatureType.stationProfile);
+    CF.FeatureType ftype = (ftypeS == null) ? CF.FeatureType.point : CF.FeatureType.getFeatureType(ftypeS);
+    return (ftype == CF.FeatureType.timeSeries) || (ftype == CF.FeatureType.timeSeriesProfile);
   }
 
   public TableConfig getConfig(FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) throws IOException {
 
     String ftypeS = ds.findAttValueIgnoreCase(null, CF.featureTypeAtt, null);
-    CF.FeatureType ftype = (ftypeS == null) ? CF.FeatureType.point : CF.FeatureType.valueOf(ftypeS);
+    CF.FeatureType ftype = (ftypeS == null) ? CF.FeatureType.point : CF.FeatureType.getFeatureType(ftypeS);
     switch (ftype) {
       case point:
         return null; // use default handler
-      case stationTimeSeries:
+      case timeSeries:
         if (wantFeatureType == FeatureType.POINT)
           return getStationAsPointConfig(ds, errlog);
         else
           return getStationConfig(ds, errlog);
-      case stationProfile:
+      case timeSeriesProfile:
           return getStationProfileConfig(ds, errlog);
       default:
         throw new IllegalStateException("unimplemented feature ftype= " + ftype);

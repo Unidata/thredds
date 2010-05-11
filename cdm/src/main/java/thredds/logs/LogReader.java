@@ -50,7 +50,6 @@ import java.util.*;
 public class LogReader {
   private static SimpleDateFormat df = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 
-
   public interface LogParser {
     public Log nextLog(BufferedReader reader) throws IOException;
   }
@@ -61,8 +60,6 @@ public class LogReader {
     }
 
     public String getDate() {
-      //DateFormatter formatTo = new DateFormatter();
-      //return formatTo.toDateTimeStringISO(new Date(date));
       return df.format(new Date(date));
     }
 

@@ -3,6 +3,9 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Changes in version 4.2:
+ 3:(2010-xx-xx)
+  CF 1.5 point obs fixes
+  remove dependency on gnu-regexp
  2: (2010-05-04)
   ThreddsDataFactory does not open NetcdfDataset in enhance mode.
   use opendap-2.2.jar (new parser)

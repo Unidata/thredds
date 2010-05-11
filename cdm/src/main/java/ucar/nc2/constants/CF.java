@@ -41,53 +41,67 @@ package ucar.nc2.constants;
 public class CF {
   public final static String POSITIVE_UP = "up";
   public final static String POSITIVE_DOWN = "down";
-  public final static String COORDINATES = "coordinates";
 
   public static final String featureTypeAtt = "CF:featureType";
   public static final String featureTypeAtt2 = "CF-featureType";
   public static final String featureTypeAtt3 = "CFfeatureType";
 
-  // CF standard names
+  // standard attributes
+  public final static String COORDINATES = "coordinates";
   public static final String GRID_MAPPING = "grid_mapping";
   public static final String GRID_MAPPING_NAME = "grid_mapping_name";
   public static final String STANDARD_NAME = "standard_name";
   public static final String UNITS = "units";
 
-  // proposed
-  public static final String RAGGED_ROWSIZE = "ragged_row_size";
-  public static final String RAGGED_PARENTINDEX = "ragged_parent_index";
+  // proposed attributes
+  public static final String RAGGED_ROWSIZE = "CF:ragged_row_count";
+  public static final String RAGGED_PARENTINDEX = "CF:ragged_parent_index";
+
+  // proposed standard_names
   public static final String STATION_ID = "station_id";
   public static final String STATION_DESC = "station_desc";
-  public static final String STATION_ALTITUDE = "station_altitude";
+  public static final String STATION_ALTITUDE = "surface_altitude";
   public static final String STATION_WMOID = "station_WMO_id";
   public static final String TRAJ_ID = "trajectory_id";
   public static final String PROFILE_ID = "profile_id";
-  public static final String SECTION_ID = "section_id";
-
-
 
   /**
    * Start of map from CF feature type names to our FeatureType enums.
    * Unofficial.
    */
   public enum FeatureType {
-    point, stationTimeSeries, profile, trajectory, stationProfile, section;
+    point, timeSeries, profile, trajectory, timeSeriesProfile, trajectoryProfile;
 
     public static FeatureType convert(ucar.nc2.constants.FeatureType ft) {
       switch (ft) {
         case POINT:
           return CF.FeatureType.point;
         case STATION:
-          return CF.FeatureType.stationTimeSeries;
+          return CF.FeatureType.timeSeries;
         case PROFILE:
           return CF.FeatureType.profile;
         case TRAJECTORY:
           return CF.FeatureType.trajectory;
         case STATION_PROFILE:
-          return CF.FeatureType.stationProfile;
+          return CF.FeatureType.timeSeriesProfile;
         case SECTION:
-          return CF.FeatureType.section;
-      }
+          return CF.FeatureType.trajectoryProfile;
+      }                                                                     
+      return null;
+    }
+
+    public static FeatureType getFeatureType(String s) {
+      if (s.equalsIgnoreCase("point")) return FeatureType.point;
+      if (s.equalsIgnoreCase("timeSeries")) return FeatureType.timeSeries;
+      if (s.equalsIgnoreCase("stationTimeSeries")) return FeatureType.timeSeries;
+      if (s.equalsIgnoreCase("station")) return FeatureType.timeSeries;
+      if (s.equalsIgnoreCase("profile")) return FeatureType.profile;
+      if (s.equalsIgnoreCase("trajectory")) return FeatureType.trajectory;
+      if (s.equalsIgnoreCase("timeSeriesProfile")) return FeatureType.timeSeriesProfile;
+      if (s.equalsIgnoreCase("stationProfile")) return FeatureType.timeSeriesProfile;
+      if (s.equalsIgnoreCase("stationProfileTimeSeries")) return FeatureType.timeSeriesProfile;
+      if (s.equalsIgnoreCase("trajectoryProfile")) return FeatureType.trajectoryProfile;
+      if (s.equalsIgnoreCase("section")) return FeatureType.trajectoryProfile;
       return null;
     }
   }
