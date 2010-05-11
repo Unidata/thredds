@@ -19,7 +19,7 @@ dl {margin: 10px 5px 5px 15px;)
   <p>The <strong>netcdf.jar</strong>  implements the full CDM model, but is unbundled from the other jar dependencies, including logging. Use it when you need to choose which other jars to use, for example when using the netcdf-java library as part of a bigger system, such as a server. Get the current version of the other jar files in netcdfAll.zip. Choose a <a href="#logging">logging implementation</a>, and add the following libraries to your classpath as needed:</p>
   <ul>
     <li> <a name="optionalLibraries" id="optionalLibraries"></a>Reading BUFR files: <strong>bufrTables.jar</strong>,<strong> jdom.jar</strong></li>
-    <li>Reading GRIB files: <strong>grib.jar, jpeg2000.jar</strong></li>
+    <li>Reading GRIB files: <strong>grib.jar</strong></li>
     <li>Reading OPeNDAP: <strong>opendap.jar, jdom.jar, commons-httpclient.jar, commons-logging.jar, commons-codec.jar. </strong>Note that we have a special release of the OPeNDAP-Java library.</li>
     <li>Reading remote files over HTTP: <strong>commons-httpclient.jar, commons-logging.jar, commons-codec.jar</strong></li>
     <li>Reading THREDDS catalogs, NcML, BUFR, HDF-EOS, NEXRAD2, OPeNDAP: <strong>jdom.jar</strong></li>
@@ -36,7 +36,7 @@ dl {margin: 10px 5px 5px 15px;)
 </blockquote>
 <h3>Core Library: ncCore-{version}.jar</h3>
 <blockquote>
-  <p>The minimal library for just reading netcdf-3 files, using JDK Logging. You can use it, for example, like ncdump (but only on netccdf-3 files):</p>
+  <p>The minimal library for just reading netcdf-3 files, using JDK Logging. You can use it, for example, like ncdump (but only on netCDF-3 files):</p>
   <blockquote>
     <pre><strong>java -Xmx512m -classpath ncCore-4.0.jar ucar.nc2.NCdumpW D:/test/myFile.nc</strong></pre>
   </blockquote>
@@ -100,15 +100,14 @@ lm.readConfiguration(<a href="http://java.sun.com/j2se/1.4.2/docs/api/java/io/In
   <li><strong> commons-httpclient.jar, commons-logging.jar, commons-codec.jar: </strong><a href="http://hc.apache.org/httpclient-3.x/">Apache Commons</a></li>
   <li><strong><a href="http://www.jdom.org/downloads/source.html"> jdom.jar</a></strong></li>
   <li><strong>grib.jar</strong>: Also includes GRIB tables. Add to CDM source tree.</li>
-  <li><strong> <a href="http://code.google.com/p/openjpeg/downloads/list">jpeg2000.jar</a></strong> included in grib</li>
   <li><strong>opendap.jar</strong> </li>
-  <li><strong><a href="ftp://ftp.ssec.wisc.edu/pub/visad-2.0/visad_src-2.0.jar">visadNoDods.jar</a></strong> Note we remove opendap.* from there since they are in conflict with our version</li>
+  <li><strong><a href="ftp://ftp.ssec.wisc.edu/pub/visad-2.0/visad_src-2.0.jar">visadNoDods.jar</a></strong> Note we remove opendap.* and gnu* from standard visad release, since these are in conflict with our version.</li>
 </ul>
 <hr width="100%" />
 <address>
 </address>
 <address>
-<img src="../nc.gif" alt="" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated April 27, 2010
+<img src="../nc.gif" alt="" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated May 2010
 </address>
 </body>
 </html>

@@ -112,10 +112,8 @@
   <property name="commons-io.jar" value="external/commons-io-1.4.jar"/>
   <property name="epsg-wkt.jar" value="external/epsg-wkt.jar"/>
   <property name="geotk-bundle-referencing.jar" value="external/geotk-bundle-referencing-3.04.jar"/>
-  <!-- property name="gnu-regexp.jar" value="external/gnu-regexp-1.1.4.jar"/ -->
   <property name="http-codec.jar" value="external/commons-codec-1.3.jar"/>
   <property name="http-logging.jar" value="external/commons-logging-1.1.jar"/>
-  <property name="jpeg2000.jar" value="external/jpeg2000.jar"/>
   <property name="json-taglib.jar" value="external/json-taglib-0.4.1.jar"/>
 
   <!-- The servlet jar file is needed to compile the servlet but is not needed
@@ -168,7 +166,6 @@
       <include name="${http-logging.jar}"/>
       <include name="${jcommon.jar}"/>
       <include name="${jfreechart.jar}"/>
-      <include name="${jpeg2000.jar}"/>
       <include name="${json-taglib.jar}"/>
       <include name="${jstl.jar}"/>
       <include name="${jstl-standard.jar}"/>

@@ -52,7 +52,6 @@
   <property name="bounce.jar" value="bounce-0.14.jar"/>
   <property name="bufrTables.jar" value="bufrTables-2.0.jar"/>
   <property name="ehcache.jar" value="ehcache-1.6.0.jar"/>
-  <property name="gnu-regexp.jar" value="gnu-regexp-1.1.4.jar" />
   <property name="grib.jar" value="grib-8.0.jar"/>
   <property name="httpclient3.jar" value="commons-httpclient-3.1.jar"/>
   <property name="httpclient4.jar" value="httpclient-4.0.1.jar"/>
@@ -62,7 +61,6 @@
   <property name="jdom.jar" value="jdom.jar"/>
   <property name="guiBuilder.jar" value="forms_rt.jar"/>
   <property name="jgoodies.jar" value="forms-1.0.7.jar"/>
-  <property name="jpeg2000.jar" value="jpeg2000.jar"/>
   <property name="junit.jar" value="junit-4.5.jar"/>
   <property name="easymock.jar" value="easymock-2.5.2.jar"/>
   <property name="loggingAPI.jar" value="slf4j-api-1.5.6.jar"/>
@@ -89,7 +87,6 @@
     <include name="external/${bdb.jar}"/>
     <include name="external/${ehcache.jar}"/>
     <include name="release/${grib.jar}"/>
-    <include name="external/${gnu-regexp.jar}"/>
     <include name="release/${opendap.jar}"/>
     <include name="external/${httpclient3.jar}"/>
     <include name="external/${jdom.jar}"/>
@@ -105,7 +102,6 @@
     <include name="lib/${bdb.jar}"/>
     <include name="lib/${ehcache.jar}"/>
     <include name="lib/${grib.jar}"/>
-    <include name="lib/${gnu-regexp.jar}"/>
     <include name="lib/${opendap.jar}"/>
     <include name="lib/${httpclient3.jar}"/>
     <include name="lib/${jdom.jar}"/>
@@ -334,7 +330,6 @@
         <include name="external/${http-logging.jar}"/>
         <include name="external/${loggingAPI.jar}"/>
         <include name="external/${logging-minimal.jar}"/>
-        <include name="external/${gnu-regexp.jar}"/>
         <include name="release/${opendap.jar}"/>
         <include name="release/${protobuf.jar}"/>
         <include name="release/${visadNoDods.jar}"/>
@@ -410,7 +405,6 @@
         <include name="external/${http-logging.jar}"/>
         <include name="external/${loggingAPI.jar}"/>
         <include name="external/${logging-minimal.jar}"/>
-        <include name="external/${gnu-regexp.jar}"/>
         <include name="release/${opendap.jar}"/>
         <include name="external/${protobuf.jar}"/>
       </fileset>
@@ -889,8 +883,6 @@
              signedjar="${webstart_dir}/unidatacommon.jar" storepass="${keystore.password}"/>
     <signjar alias="idv" jar="${lib.dir}/external/${ehcache.jar}" keystore="${keystore}"
              signedjar="${webstart_dir}/ehcache.jar" storepass="${keystore.password}"/>
-    <signjar alias="idv" jar="${lib.dir}/external/${gnu-regexp.jar}" keystore="${keystore}"
-             signedjar="${webstart_dir}/gnu-regexp.jar" storepass="${keystore.password}"/>
     <signjar alias="idv" jar="${lib.dir}/release/${grib.jar}" keystore="${keystore}"
              signedjar="${webstart_dir}/grib.jar" storepass="${keystore.password}"/>
     <signjar alias="idv" jar="${lib.dir}/external/${jdom.jar}" keystore="${keystore}"

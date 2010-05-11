@@ -3,7 +3,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<title>Collection Specification</title>
+<title>Collection Specification String</title>
 </head>
 <style type="text/css">
 pre {font-size: 9pt; padding: 10px; background-color: #E7E7E7; border: 1px solid #CFCFCF; width: 85%;}
@@ -12,7 +12,7 @@ dl {margin: 10px 5px 5px 15px;)
 .style1 {font-style: italic}
 </style>
 <body>
-<h1>Collections Specification</h1>
+<h1>Collection Specification String</h1>
 <p>A <em><strong>collection specification string</strong></em>  creates a collection of files by scanning file directories and looking for matches. It can optionally extract a date from a filename.</p>
 <h3>Example 1</h3>
 <pre> /data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km/.*nc$</pre>
@@ -43,7 +43,7 @@ All files ending with &quot;.nc&quot; in the directory<em> /data/ldm/pub/native/
   <pre>/data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km/**/GFS_Alaska_191km_20090301_0600.grib1</pre>
   Demarcate the part of the filename where the run date is encoded, using '#' chars:
   <pre>/data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km/**/GFS_Alaska_191km_#20090301_0600#.grib1</pre>
-  Substitute: 
+  Substitute a SimpleDateFormat: 
   <pre>/data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km/**/GFS_Alaska_191km_#<strong>yyyyMMdd_HHmm</strong>#.grib1</pre>
 Make sure that the name ends with &quot;grib1&quot;:
 <pre>/data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km/**/GFS_Alaska_191km_#<strong>yyyyMMdd_HHmm</strong>#\.grib1$</pre>
