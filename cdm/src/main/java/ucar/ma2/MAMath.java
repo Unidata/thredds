@@ -32,6 +32,8 @@
  */
 package ucar.ma2;
 
+import ucar.nc2.util.Misc;
+
 /**
  * Element by element algebra on Arrays
  *
@@ -84,7 +86,6 @@ public class MAMath {
 
     while (iterA.hasNext())
       iterR.setDoubleNext(iterA.getDoubleNext() + iterB.getDoubleNext());
-
   }
 
   /**
@@ -671,5 +672,57 @@ public class MAMath {
       this.scale = scale;
       this.offset = offset;
     }
+  }
+
+  public static boolean isEqual(Array data1, Array data2) {
+    if (data1.getSize() != data2.getSize()) return false;
+    DataType dt = DataType.getType(data1.getElementType());
+
+    IndexIterator iter1 = data1.getIndexIterator();
+    IndexIterator iter2 = data2.getIndexIterator();
+
+    if (dt == DataType.DOUBLE) {
+      while (iter1.hasNext() && iter2.hasNext()) {
+        double v1 = iter1.getDoubleNext();
+        double v2 = iter2.getDoubleNext();
+        if (!Double.isNaN(v1) || !Double.isNaN(v2))
+          if (!Misc.closeEnough(v1, v2, 1.0e-8))
+            return false;
+      }
+    } else if (dt == DataType.FLOAT) {
+      while (iter1.hasNext() && iter2.hasNext()) {
+        float v1 = iter1.getFloatNext();
+        float v2 = iter2.getFloatNext();
+        if (!Float.isNaN(v1) || !Float.isNaN(v2))
+          if (!Misc.closeEnough(v1, v2, 1.0e-5))
+            return false;
+      }
+    } else if (dt == DataType.INT) {
+      while (iter1.hasNext() && iter2.hasNext()) {
+        int v1 = iter1.getIntNext();
+        int v2 = iter2.getIntNext();
+        if (v1 != v2) return false;
+      }
+    } else if (dt == DataType.SHORT) {
+      while (iter1.hasNext() && iter2.hasNext()) {
+        short v1 = iter1.getShortNext();
+        short v2 = iter2.getShortNext();
+        if (v1 != v2) return false;
+      }
+    } else if (dt == DataType.BYTE) {
+      while (iter1.hasNext() && iter2.hasNext()) {
+        byte v1 = iter1.getByteNext();
+        byte v2 = iter2.getByteNext();
+        if (v1 != v2) return false;
+      }
+    } else if (dt == DataType.LONG) {
+      while (iter1.hasNext() && iter2.hasNext()) {
+        long v1 = iter1.getLongNext();
+        long v2 = iter2.getLongNext();
+        if (v1 != v2) return false;
+      }
+    }
+
+    return true;
   }
 }

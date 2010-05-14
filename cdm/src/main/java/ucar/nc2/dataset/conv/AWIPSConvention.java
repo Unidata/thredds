@@ -68,7 +68,7 @@ public class AWIPSConvention extends CoordSysBuilder {
   }
 
   private final boolean debugProj = false;
-  private final boolean debugBreakup = false;
+  private final boolean debugBreakup = true;
 
   private List<Variable> mungedList = new ArrayList<Variable>();
   private ProjectionCT projCT = null;
@@ -118,12 +118,13 @@ public class AWIPSConvention extends CoordSysBuilder {
       if (levelVar.getRank() != 2) continue;
       if (levelVar.getDataType() != DataType.CHAR) continue;
 
-      List<Dimension> levels = breakupLevels(ds, levelVar);
       try {
+        List<Dimension> levels = breakupLevels(ds, levelVar);
         createNewVariables(ds, ncvar, levels, levelVar.getDimension(0));
-      }
-      catch (InvalidRangeException ex) {
+      } catch (InvalidRangeException ex) {
         parseInfo.format("createNewVariables InvalidRangeException\n");
+      } catch (IOException ioe) {
+        parseInfo.format("createNewVariables IOException\n");
       }
       mungedList.add(ncvar);
     }
@@ -161,9 +162,10 @@ public class AWIPSConvention extends CoordSysBuilder {
     return units;
   }
 
+  // LOOK not dealing with "FHAG 0 10 ", "FHAG 0 30 "
   // take a combined level variable and create multiple levels out of it
   // return the list of Dimensions that were created
-  private List<Dimension> breakupLevels( NetcdfDataset ds, Variable levelVar) {
+  private List<Dimension> breakupLevels( NetcdfDataset ds, Variable levelVar) throws IOException {
     if (debugBreakup) parseInfo.format("breakupLevels = %s\n", levelVar.getName());
     List<Dimension> dimList = new ArrayList<Dimension>();
 
@@ -181,6 +183,16 @@ public class AWIPSConvention extends CoordSysBuilder {
       String s = iter.next();
       if (debugBreakup) parseInfo.format("   %s\n", s);
       StringTokenizer stoke = new StringTokenizer(s);
+
+/* problem with blank string:
+   char pvvLevels(levels_35=35, charsPerLevel=10);
+"MB 1000   ", "MB 975    ", "MB 950    ", "MB 925    ", "MB 900    ", "MB 875    ", "MB 850    ", "MB 825    ", "MB 800    ", "MB 775    ", "MB 750    ",
+"MB 725    ", "MB 700    ", "MB 675    ", "MB 650    ", "MB 625    ", "MB 600    ", "MB 575    ", "MB 550    ", "MB 525    ", "MB 500    ", "MB 450    ",
+"MB 400    ", "MB 350    ", "MB 300    ", "MB 250    ", "MB 200    ", "MB 150    ", "MB 100    ", "BL 0 30   ", "BL 60 90  ", "BL 90 120 ", "BL 120 150",
+"BL 150 180", ""
+*/
+      if (!stoke.hasMoreTokens())
+        continue; // skip it
 
       // first token is the unit
       String units = stoke.nextToken().trim();
@@ -206,7 +218,7 @@ public class AWIPSConvention extends CoordSysBuilder {
   }
 
   // make a new variable out of the list in "values"
-  private Dimension makeZCoordAxis( NetcdfDataset ds, List<String> values, String units) {
+  private Dimension makeZCoordAxis( NetcdfDataset ds, List<String> values, String units) throws IOException {
     int len = values.size();
     String name = makeZCoordName( units);
     if (len > 1)
@@ -215,13 +227,25 @@ public class AWIPSConvention extends CoordSysBuilder {
       name = name + values.get(0);
     StringUtil.replace(  name, ' ', "-");
 
-    // LOOK replace with check against actual values !!!
     Dimension dim;
     if (null != (dim = ds.getRootGroup().findDimension(name))) {
       if (dim.getLength() == len) {
-        if (debugBreakup) parseInfo.format("  use existing dim %s\n", dim);
-        return dim;
+        // check against actual values
+        Variable coord = ds.getRootGroup().findVariable(name);
+        Array coordData = coord.read();
+        Array newData = Array.makeArray(coord.getDataType(), values);
+        if (MAMath.isEqual(coordData, newData)) {
+          if (debugBreakup) parseInfo.format("  use existing coord %s\n", dim);
+          return dim;
+        }
       }
+    }
+
+    String orgName = name;
+    int count = 1;
+    while (ds.getRootGroup().findDimension(name) != null) {
+      name = orgName + "-"+count;
+      count++;
     }
 
     // create new one
