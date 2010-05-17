@@ -107,7 +107,7 @@ public class GridTimeCoord {
         if ( records.get( 0 ) instanceof GribGridRecord ) {
           GribGridRecord ggr = (GribGridRecord) records.get( 0 );
           if ( ggr.startOfInterval != GribNumbers.UNDEFINED &&
-            ggr.productType > 8 && ggr.productType < 15)
+            ggr.productType > 7 && ggr.productType < 16)
             intervalLength = ggr.forecastTime - ggr.startOfInterval;
         }
         addTimes(records);

@@ -482,7 +482,7 @@ public class GridVariable {
     if ( firstRecord instanceof GribGridRecord ) {
       GribGridRecord ggr = (GribGridRecord) firstRecord;
       if ( ggr.startOfInterval != GribNumbers.UNDEFINED) {
-        v.addAttribute(new Attribute("standard_name", "accumulated_"+ vname ));
+        //v.addAttribute(new Attribute("standard_name", "accumulated_"+ vname ));
         v.addAttribute(new Attribute("cell_methods", tcs.getName() +": sum"  ));
       }
     }
