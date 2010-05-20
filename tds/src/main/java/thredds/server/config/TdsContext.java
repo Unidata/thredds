@@ -339,11 +339,11 @@ public class TdsContext
     jspRequestDispatcher = servletContext.getNamedDispatcher( "jsp" );
     defaultRequestDispatcher = servletContext.getNamedDispatcher( "default" );
 
-    TdsConfigurator tdsConfigurator = new TdsConfigurator();
-    tdsConfigurator.setTdsServerInfo( this.serverInfo );
-    tdsConfigurator.setHtmlConfig( this.htmlConfig );
-    tdsConfigurator.setWmsConfig( this.wmsConfig );
-    tdsConfigurator.init( this);
+    TdsConfigMapper tdsConfigMapper = new TdsConfigMapper();
+    tdsConfigMapper.setTdsServerInfo( this.serverInfo );
+    tdsConfigMapper.setHtmlConfig( this.htmlConfig );
+    tdsConfigMapper.setWmsConfig( this.wmsConfig );
+    tdsConfigMapper.init( this);
   }
 
   /**

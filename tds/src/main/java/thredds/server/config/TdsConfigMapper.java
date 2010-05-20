@@ -8,9 +8,9 @@ import thredds.servlet.ThreddsConfig;
  * @author edavis
  * @since 4.1
  */
- class TdsConfigurator
+ class TdsConfigMapper
 {
-  TdsConfigurator() {}
+  TdsConfigMapper() {}
 
   private TdsServerInfo tdsServerInfo;
   private HtmlConfig htmlConfig;
@@ -60,7 +60,7 @@ import thredds.servlet.ThreddsConfig;
 
     public String getValueFromThreddsConfig()
     {
-      return TdsConfigurator.getValueFromThreddsConfig( this.key, this.alternateKey, this.defaultValue);
+      return TdsConfigMapper.getValueFromThreddsConfig( this.key, this.alternateKey, this.defaultValue);
     }
   }
 
@@ -89,7 +89,7 @@ import thredds.servlet.ThreddsConfig;
     }
 
     public String getValueFromThreddsConfig() {
-      return TdsConfigurator.getValueFromThreddsConfig( this.key, this.alternateKey, this.defaultValue);
+      return TdsConfigMapper.getValueFromThreddsConfig( this.key, this.alternateKey, this.defaultValue);
     }
   }
 
@@ -120,7 +120,7 @@ import thredds.servlet.ThreddsConfig;
     }
 
     public String getValueFromThreddsConfig() {
-      return TdsConfigurator.getValueFromThreddsConfig( this.key, this.alternateKey, this.defaultValue);
+      return TdsConfigMapper.getValueFromThreddsConfig( this.key, this.alternateKey, this.defaultValue);
     }
   }
 
