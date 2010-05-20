@@ -3,6 +3,27 @@
 
   <!-- all options are commented out in standard install - meaning use default values -->
   <!-- see http://www.unidata.ucar.edu/projects/THREDDS/tech/reference/ThreddsConfigXMLFile.html -->
+  <serverInformation>
+    <name>Initial TDS Installation</name>
+    <logoUrl>threddsIcon.gif</logoUrl>
+    <logoAltText>Initial TDS Installation</logoAltText>
+
+    <abstract>Scientific Data</abstract>
+    <keywords>meteorology, atmosphere, climate, ocean, earth science</keywords>
+    
+    <contact>
+      <name>Support</name>
+      <organization>My Group</organization>
+      <email>support@my.group</email>
+      <!--phone></phone-->
+    </contact>
+    <hostInstitution>
+      <name>My Group</name>
+      <webSite>http://www.my.site/</webSite>
+      <logoUrl>myGroup.gif</logoUrl>
+      <logoAltText>My Group</logoAltText>
+    </hostInstitution>
+  </serverInformation>
 
   <!--
   The <catalogRoot> element:
@@ -39,20 +60,6 @@
     <datasetIconUrl>dataset.gif</datasetIconUrl> <!-- Not currently used. -->
     <datasetIconAlt>Dataset</datasetIconAlt>     <!-- Not currently used. -->
 
-    <!--
-     * Name and logo for this installation.
-     * -->
-    <installName>Initial Installation</installName>
-    <installLogoUrl>yourLogo.gif</installLogoUrl>
-    <installLogoAlt>Initial Install</installLogoAlt>
-
-    <!--
-     * Name, URL, and logo for the institution hosting this installation.
-     * -->
-    <hostInstName>My Group</hostInstName>
-    <hostInstUrl>http://www.my.site/</hostInstUrl>
-    <hostInstLogoUrl>myGroup.gif</hostInstLogoUrl>
-    <hostInstLogoAlt>My Group</hostInstLogoAlt>
   </htmlSetup>
 
   <!--

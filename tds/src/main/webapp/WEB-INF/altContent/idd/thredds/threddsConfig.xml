@@ -1,6 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <threddsConfig>
 
+  <serverInformation>
+    <name>IDD TDS</name>
+    <logoUrl>threddsIcon.gif</logoUrl>
+    <logoAltText>IDD TDS</logoAltText>
+
+    <abstract>Scientific Data</abstract>
+    <keywords>meteorology, atmosphere, climate, ocean, earth science</keywords>
+
+    <contact>
+      <name>Support</name>
+      <organization>My Group</organization>
+      <email>support@my.group</email>
+      <!--phone></phone-->
+    </contact>
+    <hostInstitution>
+      <name>My Group</name>
+      <webSite>http://www.my.group/</webSite>
+      <logoUrl>myGroup.gif</logoUrl>
+      <logoAltText>My Group</logoAltText>
+    </hostInstitution>
+  </serverInformation>
+
   <contentRoots>
     <contentRoot>idd</contentRoot>
   </contentRoots>
@@ -33,23 +55,6 @@
     <datasetIconUrl>dataset.gif</datasetIconUrl>
     <datasetIconAlt>Dataset</datasetIconAlt>
 
-    <!--
-     * The URL and alternate text for this TDS installations logo.
-     * -->
-    <installName>IDD TDS</installName>
-    <installLogoUrl>threddsIcon.gif</installLogoUrl>
-    <installLogoAlt>IDD TDS</installLogoAlt>
-
-    <!--
-     * Information for the institution hosting this TDS installation:
-     * - a URL for the institution;
-     * - a URL to the institution logo; and
-     * - alternate text for the institution logo.
-     * -->
-    <hostInstName>My Group</hostInstName>
-    <hostInstUrl>http://www.my.site/</hostInstUrl>
-    <hostInstLogoUrl>myGroup.gif</hostInstLogoUrl>
-    <hostInstLogoAlt>My Group</hostInstLogoAlt>
   </htmlSetup>
 
   <!--
