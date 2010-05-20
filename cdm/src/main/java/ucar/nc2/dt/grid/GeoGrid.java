@@ -105,7 +105,7 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
     // construct canonical dimension list
     int count = 0;
     this.mydims = new ArrayList<Dimension>();
-    if (rtDimOrgIndex >= 0) {
+    if ((rtDimOrgIndex >= 0) && (rtDimOrgIndex != tDimOrgIndex)) {
       mydims.add(dsvar.getDimension(rtDimOrgIndex));
       rtDimNewIndex = count++;
     }

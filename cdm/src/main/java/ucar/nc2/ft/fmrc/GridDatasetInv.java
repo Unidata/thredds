@@ -88,11 +88,12 @@ public class GridDatasetInv {
         // drop through and regenerate
       } else {
         GridDatasetInv inv = readXML(xmlBytes);
-        if (inv.getLastModified() >= mfile.getLastModified()) { // LOOK if fileDate is -1, will always succeed
-          // System.out.println("xmlBytes= "+ new String(xmlBytes));
+        long fileModifiedSecs = mfile.getLastModified() / 1000; // ignore msecs
+        long xmlModifiedSecs = inv.getLastModified() / 1000; // ignore msecs
+        if (xmlModifiedSecs >= fileModifiedSecs) { // LOOK if fileDate is -1, will always succeed
           return inv;
         } else {
-          if (log.isInfoEnabled()) log.info(" cache out of date "+new Date(inv.getLastModified())+" > "+new Date(mfile.getLastModified()));
+          if (log.isInfoEnabled()) log.info(" cache out of date "+new Date(inv.getLastModified())+" < "+new Date(mfile.getLastModified()));
         }
       }
     }

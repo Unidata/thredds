@@ -68,7 +68,6 @@ import javax.swing.*;
 
 public class GeoGridTable extends JPanel {
   private PreferencesExt prefs;
-  private NetcdfDataset ds;
   private GridDataset gridDataset;
 
   private BeanTableSorted varTable, csTable = null, axisTable = null;
@@ -86,7 +85,7 @@ public class GeoGridTable extends JPanel {
     csPopup.addAction("Show Declaration", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         GeogridBean vb = (GeogridBean) varTable.getSelectedBean();
-        Variable v = ds.findVariable( vb.getName()); // LOOK cant just do NetcdfFile.escapeName()
+        Variable v = vb.geogrid.getVariable();
         infoTA.clear();
         if (v == null)
           infoTA.appendLine( "Cant find variable "+vb.getName()+" escaped= ("+NetcdfFile.escapeName( vb.getName())+")");
@@ -168,7 +167,6 @@ public class GeoGridTable extends JPanel {
   }
 
   public void setDataset(NetcdfDataset ds) throws IOException {
-    this.ds = ds;
     this.gridDataset = new ucar.nc2.dt.grid.GridDataset(ds);
 
     List<GeogridBean> beanList = new ArrayList<GeogridBean>();
@@ -248,6 +246,7 @@ public class GeoGridTable extends JPanel {
   public class GeogridBean {
     // static public String editableProperties() { return "title include logging freq"; }
 
+    private GridDatatype geogrid;
     private String name, desc, units, csys;
     private String dims, x, y, z, t, ens, rt;
 
@@ -256,6 +255,7 @@ public class GeoGridTable extends JPanel {
 
     // create from a dataset
     public GeogridBean( GridDatatype geogrid) {
+      this.geogrid = geogrid;
       setName( geogrid.getName());
       setDescription( geogrid.getDescription());
       setUnits( geogrid.getUnitsString());
