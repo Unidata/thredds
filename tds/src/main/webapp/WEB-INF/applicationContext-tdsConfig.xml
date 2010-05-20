@@ -27,13 +27,17 @@
 
     <property name="tdsConfigFileName" value="${tds.config.file}"/>
 
+    <property name="serverInfo" ref="serverInfo"/>
     <property name="htmlConfig" ref="htmlConfig"/>
+    <property name="wmsConfig" ref="wmsConfig"/>
   </bean>
 
   <bean id="tdsDRH" class="thredds.servlet.DataRootHandler">
     <constructor-arg ref="tdsContext" />
   </bean>
-  
+
+  <bean id="serverInfo" class="thredds.server.config.TdsServerInfo" />
+
   <bean id="htmlConfig" class="thredds.server.config.HtmlConfig">
     <property name="webappUrl" value="${tds.url}" />
     <property name="webappDocsUrl" value="${tds.documentation.url}" />
@@ -42,6 +46,8 @@
 
     <property name="installUrl" value="${tds.install.url}" />
   </bean>
+
+  <bean id="wmsConfig" class="thredds.server.config.WmsConfig" />
 
   <bean id="htmlWriter" class="thredds.servlet.HtmlWriter">
     <property name="tdsContext" ref="tdsContext" />

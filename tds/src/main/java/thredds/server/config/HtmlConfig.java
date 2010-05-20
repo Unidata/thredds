@@ -91,38 +91,6 @@ public class HtmlConfig
     this.webappVersionBrief = webappVersionBrief;
     this.webappVersionBuildDate = webappVersionBuildDate;
     this.webappContextPath = webappContextPath;
-
-    initFromConfig();
-  }
-
-  private void initFromConfig()
-  {
-    this.pageCssUrl    = ThreddsConfig.get( "htmlSetup.standardCssUrl", "" );
-    this.catalogCssUrl = ThreddsConfig.get( "htmlSetup.catalogCssUrl", "");
-
-    this.folderIconUrl  = ThreddsConfig.get( "htmlSetup.folderIconUrl", "");
-    this.folderIconAlt  = ThreddsConfig.get( "htmlSetup.folderIconAlt", "");
-    this.datasetIconUrl = ThreddsConfig.get( "htmlSetup.datasetIconUrl", "");
-    this.datasetIconAlt = ThreddsConfig.get( "htmlSetup.datasetIconAlt", "");
-
-    // Get server information (prefered tag, deprecated tag, default value).
-    this.installName = ThreddsConfig.get( "serverInformation.name", null);
-    if ( this.installName == null ) this.installName    = ThreddsConfig.get( "htmlSetup.installName", "");
-    this.installLogoUrl = ThreddsConfig.get( " serverInformation.logoUrl", null);
-    if ( this.installLogoUrl == null ) this.installLogoUrl = ThreddsConfig.get( "htmlSetup.installLogoUrl", "");
-    this.installLogoAlt = ThreddsConfig.get( "serverInformation.logoAltText", null);
-    if ( this.installLogoAlt == null ) this.installLogoAlt = ThreddsConfig.get( "htmlSetup.installLogoAlt", "");
-
-    // Get host institution information (prefered tag, deprecated tag, default value).
-    this.hostInstName = ThreddsConfig.get( "serverInformation.hostInstitution.name", null );
-    this.hostInstUrl = ThreddsConfig.get( "serverInformation.hostInstitution.webSite", null );
-    this.hostInstLogoUrl = ThreddsConfig.get( "serverInformation.hostInstitution.logoUrl", null );
-    this.hostInstLogoAlt = ThreddsConfig.get( "serverInformation.hostInstitution.logoAltText", null );
-
-    if ( this.hostInstName == null) this.hostInstName = ThreddsConfig.get( "htmlSetup.hostInstName", "" );
-    if ( this.hostInstUrl == null ) this.hostInstUrl = ThreddsConfig.get( "htmlSetup.hostInstUrl", "" );
-    if ( this.hostInstLogoUrl == null ) this.hostInstLogoUrl = ThreddsConfig.get( "htmlSetup.hostInstLogoUrl", "" );
-    if ( this.hostInstLogoAlt == null ) this.hostInstLogoAlt = ThreddsConfig.get( "htmlSetup.hostInstLogoAlt", "" );
   }
 
   public String getWebappName() {

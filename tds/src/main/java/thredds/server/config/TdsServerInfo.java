@@ -1,5 +1,7 @@
 package thredds.server.config;
 
+import thredds.servlet.ThreddsConfig;
+
 import java.util.Hashtable;
 import java.util.Map;
 
@@ -11,31 +13,6 @@ import java.util.Map;
  */
 public class TdsServerInfo
 {
-  public static final String SERVER_NAME = "server.name";
-  public static final String SERVER_LOGO_URL = "server.logoUrl";
-  public static final String SERVER_LOGO_ALT_TEXT = "server.logoAltText";
-  public static final String SERVER_ABSTRACT = "server.abstract";
-  public static final String SERVER_KEYWORDS = "server.keywords";
-  public static final String SERVER_CONTACT_NAME = "server.contact.name";
-  public static final String SERVER_CONTACT_ORGANIZATION = "server.contact.organization";
-  public static final String SERVER_CONTACT_EMAIL = "server.contact.email";
-  public static final String SERVER_HOST_INSTITUTION_NAME = "server.hostInstitution.name";
-  public static final String SERVER_HOST_INSTITUTION_WEBSITE = "server.hostInstitution.webSite";
-  public static final String SERVER_HOST_INSTITUTION_LOGO_URL = "server.hostInstitution.logoUrl";
-  public static final String SERVER_HOST_INSTITUTION_LOGO_ALT_TEXT = "server.hostInstitution.logoAltText";
-
-  private Map<String,String> contents;
-
-  private TdsServerInfo() {
-    this.contents = new Hashtable<String,String>();
-  }
-
-  public void put(String key, String value) {
-    if ( key == null || value == null )
-      throw new IllegalArgumentException( "Neither key [" + key + "] nor value [" + value + "] may be null.");
-    this.contents.put( key, value );
-  }
-
   private String name;
   private String logoUrl;
   private String logoAltText;
@@ -44,6 +21,7 @@ public class TdsServerInfo
   private String contactName;
   private String contactOrganization;
   private String contactEmail;
+  private String contactPhone;
   private String hostInstitutionName;
   private String hostInstitutionWebSite;
   private String hostInstitutionLogoUrl;
@@ -111,6 +89,14 @@ public class TdsServerInfo
 
   public void setContactEmail( String contactEmail ) {
     this.contactEmail = contactEmail;
+  }
+
+  public String getContactPhone() {
+    return contactPhone;
+  }
+
+  public void setContactPhone( String contactPhone ) {
+    this.contactPhone = contactPhone;
   }
 
   public String getHostInstitutionName() {

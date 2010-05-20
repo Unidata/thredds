@@ -1,0 +1,221 @@
+/*
+ * Copyright (c) 2007 The University of Reading
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ * 3. Neither the name of the University of Reading, nor the names of the
+ *    authors or contributors may be used to endorse or promote products
+ *    derived from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+ * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+ * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+ * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+ * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+package thredds.server.wms;
+
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collection;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.web.servlet.ModelAndView;
+import thredds.servlet.DatasetHandler;
+import thredds.servlet.ServletUtil;
+import thredds.servlet.UsageLog;
+import thredds.util.TdsPathUtils;
+import ucar.nc2.dt.GridDataset;
+import uk.ac.rdg.resc.ncwms.controller.AbstractWmsController;
+import uk.ac.rdg.resc.ncwms.controller.RequestParams;
+import uk.ac.rdg.resc.ncwms.exceptions.LayerNotDefinedException;
+import uk.ac.rdg.resc.ncwms.exceptions.OperationNotSupportedException;
+import uk.ac.rdg.resc.ncwms.exceptions.WmsException;
+import uk.ac.rdg.resc.ncwms.usagelog.UsageLogEntry;
+import uk.ac.rdg.resc.ncwms.wms.Dataset;
+import uk.ac.rdg.resc.ncwms.wms.Layer;
+
+/**
+ * <p>WmsController for THREDDS</p>
+ *
+ * @author Jon Blower
+ */
+public final class ThreddsWmsController extends AbstractWmsController
+{
+  private static final Logger log = LoggerFactory.getLogger( ThreddsWmsController.class );
+
+  private static final class ThreddsLayerFactory implements LayerFactory
+  {
+    private Dataset ds;
+
+    public ThreddsLayerFactory( Dataset ds )
+    {
+      this.ds = ds;
+    }
+
+    @Override
+    public Layer getLayer( String layerName ) throws LayerNotDefinedException
+    {
+      Layer layer = ds.getLayerById( layerName );
+      if ( layer == null ) throw new LayerNotDefinedException( ( layerName ) );
+      return layer;
+    }
+  }
+
+  @Override
+  protected ModelAndView dispatchWmsRequest(
+          String request,
+          RequestParams params,
+          HttpServletRequest httpServletRequest,
+          HttpServletResponse httpServletResponse,
+          UsageLogEntry usageLogEntry ) throws Exception
+  {
+    ThreddsServerConfig threddsServerConfig = (ThreddsServerConfig) this.serverConfig;
+    if ( ! threddsServerConfig.isAllow() )
+    {
+      log.info( "dispatchWmsRequest(): WMS service not supported." );
+      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_FORBIDDEN, -1 ) );
+      httpServletResponse.sendError( HttpServletResponse.SC_FORBIDDEN, "WMS service not supported." );
+      return null;
+    }
+
+    GridDataset gd = null;
+    try
+    {
+      RequestedDataset reqDataset = new RequestedDataset( httpServletRequest );
+      if ( reqDataset.isRemote() && ! threddsServerConfig.isAllowRemote() )
+      {
+        log.info( "dispatchWmsRequest(): WMS service not supported for remote datasets." );
+        log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_FORBIDDEN, -1 ) );
+        throw new WmsException( "WMS service not supported for remote (non-server-resident) datasets.", "");
+        //httpServletResponse.sendError( HttpServletResponse.SC_FORBIDDEN, "WMS service not supported for remote datasets." );
+        //return null;
+      }
+
+      gd = reqDataset.openAsGridDataset( httpServletRequest, httpServletResponse );
+      if ( gd == null )
+      {
+        // We have sent an auth challenge to the client, so we send no
+        // further information
+        return null;
+      }
+
+      // Extract the metadata from the GridDataset to form a Dataset object
+      // TODO: what to use for the dataset ID?
+      // TODO: It can be inefficient to create an entire {@link ThreddsDataset} object when
+      // all we need is a single layer. This means that a lot of unnecessary objects will be
+      // created when only a single layer is needed, e.g. for a GetMap operation. Should create
+      //  a means to extract a single layer without creating a whole dataset; however, this
+      //  could be tricky when dealing with virtual layers (e.g. velocities).
+      Dataset ds = new ThreddsDataset( null, gd );
+      // Create an object that extracts layers from the dataset
+      LayerFactory layerFactory = new ThreddsLayerFactory( ds );
+
+      if ( request.equals( "GetCapabilities" ) )
+      {
+        // The Capabilities document will contain a single dataset
+        Collection<? extends Dataset> datasets = Arrays.asList( ds );
+        // In THREDDS we don't know the last update time so we use null
+        return getCapabilities( datasets, null, params, httpServletRequest, usageLogEntry );
+      }
+      else if ( request.equals( "GetMap" ) )
+      {
+        return getMap( params, layerFactory, httpServletResponse, usageLogEntry );
+      }
+      else if ( request.equals( "GetFeatureInfo" ) )
+      {
+        return getFeatureInfo( params, layerFactory, httpServletRequest,
+                               httpServletResponse, usageLogEntry );
+      }
+      else if ( request.equals( "GetLegendGraphic" ) )
+      {
+        // This is a request for an image that contains the colour scale
+        // and range for a given layer
+        return getLegendGraphic( params, layerFactory, httpServletResponse );
+      }
+      else if ( request.equals( "GetTransect" ) )
+      {
+        return getTransect( params, layerFactory, httpServletResponse, usageLogEntry );
+      }
+      else
+      {
+        throw new OperationNotSupportedException( request );
+      }
+    }
+    finally {
+      // We ensure that the GridDataset object is closed
+      if ( gd != null) gd.close();
+    }
+  }
+
+  /**
+   * Extracts the dataset ID from the HttpServletRequest and determines if it is
+   * a local dataset path or a remote dataset URL.
+   *
+   * <p>The requested dataset can be opened by using the
+   * {@link #openAsGridDataset(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)}
+   * method.
+   */
+  private static class RequestedDataset
+  {
+    private boolean isRemote = false;
+    private String path;
+
+    RequestedDataset( HttpServletRequest request) throws WmsException
+    {
+      path = TdsPathUtils.extractPath( request );
+      if ( path == null )
+      {
+        path = ServletUtil.getParameterIgnoreCase( request, "dataset" );
+        isRemote = ( path != null );
+      }
+      if ( path == null )
+      {
+        log.debug( "Request does not specify a dataset." );
+        throw new WmsException( "Request does not specify a dataset." );
+      }
+    }
+
+    /**
+     * Open the requested dataset as a GridDataset. If the request requires an
+     * authentication challenge, a challenge will be sent back to the client using
+     * the response object, and this method will return null.  (This is the only
+     *  circumstance in which this method will return null.)
+     *
+     * @param request the HttpServletRequest
+     * @param response the HttpServletResponse
+     * @return the requested dataset as a GridDataset
+     * @throws IOException if have trouble opening the dataset
+     */
+    public GridDataset openAsGridDataset( HttpServletRequest request,
+                                          HttpServletResponse response )
+            throws IOException
+    {
+      return isRemote ? ucar.nc2.dt.grid.GridDataset.open( path )
+                      : DatasetHandler.openGridDataset( request, response, path );
+    }
+
+    public boolean isRemote() {
+      return isRemote;
+    }
+
+    public String getPath() {
+      return path;
+    }
+  }
+}

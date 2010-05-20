@@ -10,8 +10,7 @@
     <property name="defaultPaletteLocation" value="/WEB-INF/palettes/"/>
   </bean>
   <!-- This Controller will handle all the requests to the WMS -->
-  <bean id="wmsController" class="uk.ac.rdg.resc.ncwms.controller.WmsController"
-        init-method="init">
+  <bean id="wmsController" class="thredds.server.wms.ThreddsWmsController" init-method="init">
     <property name="supportedMethods" value="GET"/>
     <property name="serverConfig">
       <ref local="config"/>

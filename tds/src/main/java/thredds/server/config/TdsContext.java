@@ -99,6 +99,8 @@ public class TdsContext
 
   private String tdsConfigFileName;
   private HtmlConfig htmlConfig;
+  private TdsServerInfo serverInfo;
+  private WmsConfig wmsConfig;
 
   public TdsContext() {}
 
@@ -113,31 +115,37 @@ public class TdsContext
   public void setIddContentPath( String iddContentPath ) { this.iddContentPath = iddContentPath; }
   public void setMotherlodeContentPath( String motherlodeContentPath ) { this.motherlodeContentPath = motherlodeContentPath; }
 
-  public void setTdsConfigFileName( String filename ) { this.tdsConfigFileName = filename; }
-  public String getTdsConfigFileName() { return this.tdsConfigFileName; }
+  public void setTdsConfigFileName( String filename ) {
+    this.tdsConfigFileName = filename;
+  }
 
-  public void setHtmlConfig( HtmlConfig htmlConfig ) { this.htmlConfig = htmlConfig; }
-  public HtmlConfig getHtmlConfig() { return this.htmlConfig; }
+  public String getTdsConfigFileName() {
+    return this.tdsConfigFileName;
+  }
 
-//  /**
-//   * Constructor.
-//   *
-//   * @param startupContentPath initial content path (relative to the web app root directory).
-//   * @param iddContentPath
-//   * @param motherlodeContentPath
-//   */
-//  public TdsContext( String startupContentPath,
-//                     String iddContentPath, String motherlodeContentPath )
-//  {
-//    if ( startupContentPath == null
-//         || iddContentPath == null
-//         || motherlodeContentPath == null )
-//      throw new IllegalArgumentException( "Null values not allowed.");
-//
-//    this.startupContentPath = startupContentPath;
-//    this.iddContentPath = iddContentPath;
-//    this.motherlodeContentPath = motherlodeContentPath;
-//  }
+  public void setServerInfo( TdsServerInfo serverInfo ) {
+    this.serverInfo = serverInfo;
+  }
+
+  public TdsServerInfo getServerInfo() {
+    return serverInfo;
+  }
+
+  public void setHtmlConfig( HtmlConfig htmlConfig ) {
+    this.htmlConfig = htmlConfig;
+  }
+
+  public HtmlConfig getHtmlConfig() {
+    return this.htmlConfig;
+  }
+
+  public WmsConfig getWmsConfig() {
+    return wmsConfig;
+  }
+
+  public void setWmsConfig( WmsConfig wmsConfig ) {
+    this.wmsConfig = wmsConfig;
+  }
 
   public void destroy() {}
 
@@ -331,12 +339,11 @@ public class TdsContext
     jspRequestDispatcher = servletContext.getNamedDispatcher( "jsp" );
     defaultRequestDispatcher = servletContext.getNamedDispatcher( "default" );
 
-    if ( this.htmlConfig != null )
-      this.htmlConfig.init( this.getWebappName(),
-                               this.getWebappVersion(),
-                               this.getWebappVersionBrief(),
-                               this.getWebappVersionBuildDate(),
-                               this.getContextPath());
+    TdsConfigurator tdsConfigurator = new TdsConfigurator();
+    tdsConfigurator.setTdsServerInfo( this.serverInfo );
+    tdsConfigurator.setHtmlConfig( this.htmlConfig );
+    tdsConfigurator.setWmsConfig( this.wmsConfig );
+    tdsConfigurator.init( this);
   }
 
   /**

@@ -59,14 +59,14 @@ public class IddModelDatasetsUtils
                   // datasetScan not datasetFmrc { "NCEP/SREF/CONUS_40km/pgrb_biasc"}, // idd and/or idv ?
                   { "NCEP/SREF/PacificNE_0p4/ensprod"},            // idd and/or idv ?
                   
-                  { "NCEP/WW3/Alaskan_4minute"},
-                  { "NCEP/WW3/Alaskan_10minute"},
-                  { "NCEP/WW3/Atlantic_4minute"},
-                  { "NCEP/WW3/Atlantic_10minute"},
-                  { "NCEP/WW3/EasternPacific_10minute"},
-                  { "NCEP/WW3/Global_30minute"},
-                  { "NCEP/WW3/WestCoast_4minute"},
-                  { "NCEP/WW3/WestCoast_10minute"}
+                  { "NCEP/WW3/Coastal_Alaska"},
+                  { "NCEP/WW3/Coastal_US_East_Coast"},
+                  { "NCEP/WW3/Coastal_US_West_Coast"},
+                  { "NCEP/WW3/Global"},
+                  { "NCEP/WW3/Regional_Alaska"},
+                  {"NCEP/WW3/Regional_Eastern_Pacific"},
+                  {"NCEP/WW3/Regional_US_East_Coast"},
+                  {"NCEP/WW3/Regional_US_West_Coast"}
 
           };
 

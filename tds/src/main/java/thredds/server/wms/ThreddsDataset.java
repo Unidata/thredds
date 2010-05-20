@@ -33,7 +33,6 @@
 package thredds.server.wms;
 
 import org.joda.time.DateTime;
-import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
@@ -41,18 +40,16 @@ import uk.ac.rdg.resc.ncwms.cdm.AbstractScalarLayerBuilder;
 import uk.ac.rdg.resc.ncwms.cdm.CdmUtils;
 import uk.ac.rdg.resc.ncwms.cdm.DataReadingStrategy;
 import uk.ac.rdg.resc.ncwms.cdm.LayerBuilder;
-import uk.ac.rdg.resc.ncwms.exceptions.LayerNotDefinedException;
 import uk.ac.rdg.resc.ncwms.util.WmsUtils;
 import uk.ac.rdg.resc.ncwms.wms.Dataset;
 import uk.ac.rdg.resc.ncwms.wms.Layer;
 import uk.ac.rdg.resc.ncwms.wms.VectorLayer;
 
-import java.io.IOException;
 import java.util.*;
 
 /**
- * A {@link uk.ac.rdg.resc.ncwms.wms.Dataset} that provides access to layers read from {@link ucar.nc2.dataset.NetcdfDataset}
- * objects.
+ * A {@link uk.ac.rdg.resc.ncwms.wms.Dataset} that provides access to layers read from
+ * {@link ucar.nc2.dataset.NetcdfDataset} objects.
  *
  * @author Jon
  */
@@ -94,7 +91,7 @@ class ThreddsDataset implements Dataset
    * @throws java.io.IOException if there was an i/o error extracting a GridDataset
    *                             from the given NetcdfDataset
    */
-  public ThreddsDataset( String id, GridDataset gridDataset ) throws IOException
+  public ThreddsDataset( String id, GridDataset gridDataset )// throws IOException
   {
     this.id = id;
     this.title = gridDataset.getTitle();
@@ -165,13 +162,11 @@ class ThreddsDataset implements Dataset
    * @todo repetitive of code in ncwms.config.Dataset: any way to refactor?
    */
   @Override
-  public Layer getLayerById( String layerId ) throws LayerNotDefinedException
+  public Layer getLayerById( String layerId )
   {
     Layer layer = this.scalarLayers.get( layerId );
     if ( layer == null )
       layer = this.vectorLayers.get( layerId );
-    if ( layer == null )
-      throw new LayerNotDefinedException( layerId );
 
     return layer;
   }
