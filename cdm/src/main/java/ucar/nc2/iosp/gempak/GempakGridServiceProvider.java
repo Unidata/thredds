@@ -61,14 +61,13 @@ import java.util.List;
 
 
 /**
- * An IOSP for Gempak Grid data
+ * An IOSP for GEMPAK Grid data
  *
- * @author IDV Development Team
- * @version $Revision: 1.3 $
+ * @author Don Murray
  */
 public class GempakGridServiceProvider extends GridServiceProvider {
 
-    /** Gempak file reader */
+    /** GEMPAK file reader */
     protected GempakGridReader gemreader;
 
     /** Reread the file on a sync */
@@ -79,7 +78,7 @@ public class GempakGridServiceProvider extends GridServiceProvider {
      *
      * @param raf  RandomAccessFile to check
      *
-     * @return true if a valid Gempak grid file
+     * @return true if a valid GEMPAK grid file
      *
      * @throws IOException  problem reading file
      */
