@@ -1,5 +1,5 @@
 /*
- * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2010 University Corporation for Atmospheric Research/Unidata
  *
  * Portions of this software were developed by the Unidata Program at the
  * University Corporation for Atmospheric Research.
@@ -49,10 +49,9 @@ import java.util.List;
 
 
 /**
- * Read a Gempak grid file
+ * Read a GEMPAK grid file
  *
- * @author IDV Development Team
- * @version $Revision: 1.3 $
+ * @author Don Murray
  */
 public class GempakGridReader extends GempakFileReader {
 
@@ -509,6 +508,9 @@ public class GempakGridReader extends GempakFileReader {
                 return unpackGrib1Data(iiword, nword, kxky, nbits, ref,
                                        scale, miss, decimalScale);
             } else {
+            	if (nword*32 < kxky*nbits) { // to account for badly written files
+            		nword++;
+            	}
                 int[] ksgrid = new int[nword];
                 DM_RINT(iiword, ksgrid);
                 return DP_UGRB(ksgrid, kxky, nbits, ref, scale, miss,
