@@ -74,7 +74,7 @@ public class H5header {
   static private boolean warnings = false, debugReference = false, debugRegionReference = false, debugCreationOrder = false, debugFractalHeap = false;
   static private boolean debugDimensionScales = false;
 
-  static void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
+  static public void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
     debug1 = debugFlag.isSet("H5header/header");
     debugBtree2 = debugFlag.isSet("H5header/btree2");
     debugContinueMessage = debugFlag.isSet("H5header/continueMessage");
@@ -145,7 +145,7 @@ public class H5header {
     this.h5iosp = h5iosp;
   }
 
-  void read(java.io.PrintStream debugPS) throws IOException {
+  public void read(java.io.PrintStream debugPS) throws IOException {
     if (debugPS != null)
       debugOut = debugPS;
 
@@ -155,7 +155,7 @@ public class H5header {
     if (!isValidFile(raf))
       throw new IOException("Not a netCDF4/HDF5 file ");
     // if (debug1) debugOut.format("H5header 0pened file to read:'%s' size= %d %n", ncfile.getLocation(), + actualSize);
-    if (debug1) debugOut.println("H5header 0pened file to read:'" + ncfile.getLocation() +"' size= " + actualSize);
+    if (debug1) debugOut.println("H5header 0pened file to read:'" + raf.getLocation() +"' size= " + actualSize);
     // now we are positioned right after the header
 
     // header information is in le byte order
@@ -1981,8 +1981,8 @@ public class H5header {
         if (pos > 0) {
           raf.seek(pos);
           MessageAttribute attMessage = new MessageAttribute();
-          attMessage.read();
-          list.add(attMessage);
+          if (attMessage.read())
+            list.add(attMessage);
           if (debugBtree2) System.out.println("    attMessage=" + attMessage);
         }
       }
@@ -3208,7 +3208,7 @@ public class H5header {
       return name;
     }
 
-    void read() throws IOException {
+    boolean read() throws IOException {
       if (debugPos) debugOut.println("   *MessageAttribute start pos= " + raf.getFilePointer());
       short nameSize, typeSize, spaceSize;
       byte flags = 0;
@@ -3227,8 +3227,11 @@ public class H5header {
         typeSize = raf.readShort();
         spaceSize = raf.readShort();
         if (version == 3) encoding = raf.readByte();
+
       } else {
-        throw new IllegalStateException("MessageAttribute unknown version " + version);
+        log.error("bad version "+version+" at filePos " + raf.getFilePointer()); // buggery, may be HDF5 "more than 8 attributes" error
+        return false;
+        // throw new IllegalStateException("MessageAttribute unknown version " + version);
       }
 
       // read the attribute name
@@ -3264,6 +3267,7 @@ public class H5header {
       // heres where the data starts
       dataPos = raf.getFilePointer();
       if (debug1) debugOut.println("   *MessageAttribute dataPos= " + dataPos);
+      return true;
     }
   }
 
@@ -3338,6 +3342,7 @@ public class H5header {
     }
 
     String trunc(String s, int max) {
+      if (s == null) return null;
       if (s.length() < max) return s;
       return s.substring(0, max);
     }

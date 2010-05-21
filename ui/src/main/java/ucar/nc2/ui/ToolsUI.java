@@ -2265,6 +2265,26 @@ public class ToolsUI extends JPanel {
       super(p, "file:", true, false);
       hdf5Table = new Hdf5Table(prefs);
       add(hdf5Table, BorderLayout.CENTER);
+
+      AbstractButton infoButton = BAMutil.makeButtcon("Information", "Detail Info", false);
+      infoButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          Formatter f = new Formatter();
+          try {
+            hdf5Table.showInfo(f);
+          } catch (IOException ioe) {
+            ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
+            ioe.printStackTrace();
+            ioe.printStackTrace(new PrintStream(bos));
+            // ta.setText( datasetFactory.getErrorMessages());
+            ta.appendLine(bos.toString());
+          }
+          detailTA.setText(f.toString());
+          detailTA.gotoTop();
+          detailWindow.show();
+        }
+      });
+      buttPanel.add(infoButton);
     }
 
     boolean process(Object o) {
