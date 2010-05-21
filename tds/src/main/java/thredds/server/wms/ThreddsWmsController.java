@@ -85,6 +85,8 @@ public final class ThreddsWmsController extends AbstractWmsController
           HttpServletResponse httpServletResponse,
           UsageLogEntry usageLogEntry ) throws Exception
   {
+    log.info( UsageLog.setupRequestContext( httpServletRequest ) );
+
     ThreddsServerConfig threddsServerConfig = (ThreddsServerConfig) this.serverConfig;
     if ( ! threddsServerConfig.isAllow() )
     {
@@ -126,36 +128,40 @@ public final class ThreddsWmsController extends AbstractWmsController
       // Create an object that extracts layers from the dataset
       LayerFactory layerFactory = new ThreddsLayerFactory( ds );
 
+      ModelAndView modelAndView;
       if ( request.equals( "GetCapabilities" ) )
       {
         // The Capabilities document will contain a single dataset
         Collection<? extends Dataset> datasets = Arrays.asList( ds );
         // In THREDDS we don't know the last update time so we use null
-        return getCapabilities( datasets, null, params, httpServletRequest, usageLogEntry );
+        modelAndView = getCapabilities( datasets, null, params, httpServletRequest, usageLogEntry );
       }
       else if ( request.equals( "GetMap" ) )
       {
-        return getMap( params, layerFactory, httpServletResponse, usageLogEntry );
+        modelAndView = getMap( params, layerFactory, httpServletResponse, usageLogEntry );
       }
       else if ( request.equals( "GetFeatureInfo" ) )
       {
-        return getFeatureInfo( params, layerFactory, httpServletRequest,
+        modelAndView = getFeatureInfo( params, layerFactory, httpServletRequest,
                                httpServletResponse, usageLogEntry );
       }
       else if ( request.equals( "GetLegendGraphic" ) )
       {
         // This is a request for an image that contains the colour scale
         // and range for a given layer
-        return getLegendGraphic( params, layerFactory, httpServletResponse );
+        modelAndView = getLegendGraphic( params, layerFactory, httpServletResponse );
       }
       else if ( request.equals( "GetTransect" ) )
       {
-        return getTransect( params, layerFactory, httpServletResponse, usageLogEntry );
+        modelAndView = getTransect( params, layerFactory, httpServletResponse, usageLogEntry );
       }
       else
       {
         throw new OperationNotSupportedException( request );
       }
+
+      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, -1 ) );
+      return modelAndView;
     }
     finally {
       // We ensure that the GridDataset object is closed
