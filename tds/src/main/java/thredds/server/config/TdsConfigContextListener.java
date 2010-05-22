@@ -42,19 +42,16 @@ import org.springframework.web.util.Log4jWebConfigurer;
 import thredds.servlet.*;
 
 /**
- * _more_
+ * This is the first TDS code called in the servlet init sequence.
+ * Configured in web.xml.
  *
  * @author edavis
  * @since 4.0
  */
-public class TdsConfigContextListener
-        implements ServletContextListener
-{
-  private org.slf4j.Logger logServerStartup =
-          org.slf4j.LoggerFactory.getLogger( "serverStartup" );
+public class TdsConfigContextListener implements ServletContextListener {
+  private org.slf4j.Logger logServerStartup = org.slf4j.LoggerFactory.getLogger( "serverStartup" );
 
-  public void contextInitialized( ServletContextEvent event )
-  {
+  public void contextInitialized( ServletContextEvent event ) {
     // ToDo Instead of stdout, use servletContext.log( "...").
     System.out.println( "TdsConfigContextListener.contextInitialized(): start." );
 
@@ -65,11 +62,15 @@ public class TdsConfigContextListener
     // Initialize the TDS context.
     TdsContext tdsContext = (TdsContext) wac.getBean( "tdsContext", TdsContext.class );
     tdsContext.init( servletContext );
+
     // tdsContext.init() call above initializes tds.log.dir system property
     // which is used in log4j.xml file loaded here.
     Log4jWebConfigurer.initLogging( servletContext );
-
     logServerStartup.info( "TdsConfigContextListener.contextInitialized() start[2]: " + UsageLog.setupNonRequestContext() );
+
+    // Initialize the CDM, now that tdsContext is ready
+    CdmInit cdmInit = (CdmInit) wac.getBean( "cdmInit", CdmInit.class );
+    cdmInit.init( tdsContext);
 
     // Initialize the DataRootHandler.
     DataRootHandler catHandler = (DataRootHandler) wac.getBean( "tdsDRH", DataRootHandler.class );
@@ -77,21 +78,15 @@ public class TdsConfigContextListener
     catHandler.init();
     DataRootHandler.setInstance( catHandler );
 
-    // Initialize the CDM, now that tdsContext is ready
-    CdmInit cdmInit = (CdmInit) wac.getBean( "cdmInit", CdmInit.class );
-    cdmInit.init(tdsContext);
-
     // YUCK! This is done so that not-yet-Spring-ified servlets can access the singleton HtmlWriter.
     // LOOK! ToDo This should be removed once the catalog service controllers uses JSP.
     HtmlWriter htmlWriter = (HtmlWriter) wac.getBean( "htmlWriter", HtmlWriter.class );
     htmlWriter.setSingleton( htmlWriter );
 
     logServerStartup.info( "TdsConfigContextListener.contextInitialized(): done - " + UsageLog.closingMessageNonRequestContext() );
-
   }
 
-  public void contextDestroyed( ServletContextEvent event )
-  {
+  public void contextDestroyed( ServletContextEvent event ) {
     logServerStartup.info( "TdsConfigContextListener.contextDestroyed(): start." + UsageLog.setupNonRequestContext() );
     DataRootHandler.getInstance().shutdown();
 
