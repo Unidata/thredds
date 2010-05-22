@@ -96,7 +96,16 @@ public class Evaluator {
     return v == null ? null : v.getShortName();
   }
 
-  static public Variable getVariableWithAttribute(NetcdfDataset ds, String attName, String attValue) {
+  static public Variable getVariableWithAttribute(NetcdfDataset ds, String attName) {
+    for (Variable v : ds.getVariables()) {
+      String stdName = ds.findAttValueIgnoreCase(v, attName, null);
+      if (stdName != null)
+        return v;
+    }
+    return null;
+  }
+
+  static public Variable getVariableWithAttributeValue(NetcdfDataset ds, String attName, String attValue) {
     for (Variable v : ds.getVariables()) {
       String stdName = ds.findAttValueIgnoreCase(v, attName, null);
       if ((stdName != null) && stdName.equals(attValue))
@@ -106,7 +115,7 @@ public class Evaluator {
   }
 
   static public String getNameOfVariableWithAttribute(NetcdfDataset ds, String attName, String attValue) {
-    Variable v = getVariableWithAttribute(ds, attName, attValue);
+    Variable v = getVariableWithAttributeValue(ds, attName, attValue);
     return (v == null) ? null : v.getShortName();
   }
 

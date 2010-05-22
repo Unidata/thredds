@@ -71,12 +71,14 @@ public class TdsConfigContextListener implements ServletContextListener {
     // Initialize the CDM, now that tdsContext is ready
     CdmInit cdmInit = (CdmInit) wac.getBean( "cdmInit", CdmInit.class );
     cdmInit.init( tdsContext);
+    logServerStartup.info( "TdsConfigContextListener: CdmInit done" );
 
     // Initialize the DataRootHandler.
     DataRootHandler catHandler = (DataRootHandler) wac.getBean( "tdsDRH", DataRootHandler.class );
     catHandler.registerConfigListener( new RestrictedAccessConfigListener() );
     catHandler.init();
     DataRootHandler.setInstance( catHandler );
+    logServerStartup.info( "TdsConfigContextListener: DataRootHandler done" );
 
     // YUCK! This is done so that not-yet-Spring-ified servlets can access the singleton HtmlWriter.
     // LOOK! ToDo This should be removed once the catalog service controllers uses JSP.

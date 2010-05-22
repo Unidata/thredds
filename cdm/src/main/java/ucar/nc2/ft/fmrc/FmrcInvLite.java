@@ -60,6 +60,9 @@ public class FmrcInvLite implements java.io.Serializable {
   public List<Gridset> gridSets = new ArrayList<Gridset>();
   public List<GridInventory> invList = new ArrayList<GridInventory>(); // share these, they are expensive!
 
+  private DateFormatter df = new DateFormatter();
+
+
   public FmrcInvLite(FmrcInv fmrcInv) {
     this.collectionName = fmrcInv.getName();
     this.base = fmrcInv.getBaseDate();
@@ -217,11 +220,9 @@ public class FmrcInvLite implements java.io.Serializable {
             double run_offset = runOffset[runIdx];
             if (Misc.closeEnough(run_offset, tc_offset))
               break;
-            DateFormatter df = new DateFormatter();
             String missingDate = df.toDateTimeStringISO(FmrcInv.makeOffsetDate(base, run_offset));
             String wantDate = df.toDateTimeStringISO(tc.getRunDate());
-            //log.warn(collectionName +": runseq missing time "+missingDate+" looking for "+ wantDate+" for var = "+ runseq.getUberGrids().get(0).getName()); LOOK
-            runIdx++;
+            log.warn(collectionName +": runseq missing time "+missingDate+" looking for "+ wantDate+" for var = "+ runseq.getUberGrids().get(0).getName());             runIdx++;
           }
 
         } else {  // common case
@@ -385,7 +386,7 @@ public class FmrcInvLite implements java.io.Serializable {
 
         // do we have a grid for this runDate?
         if (gridIdx >= grids.size()) {
-          log.error(collectionName+": cant find "+ugrid.getName()+" for "+runDate); // LOOK WHY?
+          log.warn(collectionName+": cant find "+ugrid.getName()+" for "+df.toDateTimeStringISO(runDate)); // LOOK WHY?
           break;
         }
         FmrInv.GridVariable grid = grids.get(gridIdx);

@@ -632,7 +632,7 @@ public class DataRootHandler {
           initCatalog(path, true);
         }
 
-      } else if (!(invDataset instanceof InvDatasetScan) && !(invDataset instanceof InvDatasetFmrc)) {
+      } else if (!(invDataset instanceof InvDatasetScan) && !(invDataset instanceof InvDatasetFmrc) && !(invDataset instanceof InvDatasetFeatureCollection)) {
         // recurse through nested datasets
         initFollowCatrefs(dirPath, invDataset.getDatasets());
       }

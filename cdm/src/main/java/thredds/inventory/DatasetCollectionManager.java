@@ -114,7 +114,7 @@ public class DatasetCollectionManager implements CollectionManager {
 
   public DatasetCollectionManager(FeatureCollectionConfig.Config config, Formatter errlog) {
     this.sp = new CollectionSpecParser(config.spec, errlog);
-    this.collectionName = config.name == null ? config.name : config.spec;
+    this.collectionName = config.name != null ? config.name : config.spec;
     this.dateExtractor = (sp.getDateFormatMark() == null) ? new DateExtractorNone() : new DateExtractorFromName(sp.getDateFormatMark(), true);
 
     List<MFileFilter> filters = new ArrayList<MFileFilter>(3);

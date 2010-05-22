@@ -165,6 +165,7 @@ public class CoordSysTable extends JPanel {
         if (axis == null) return;
         infoTA.clear();
         infoTA.appendLine(axis.toString());
+        infoTA.appendLine(showMissing(axis));
         infoTA.gotoTop();
         infoWindow.showIfNotIconified();
       }

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
+    <dimension name="time" length="4" />
+    <dimension name="lat"  length="4"  />
+    <dimension name="lon"  length="4"  />
+    <dimension name="bnds" length="2"  />
+    
+    <attribute name="Conventions" value="CF-1.0" />
+
+    <variable name="time" shape="time" type="double">
+        <attribute name="units" type="String" value="days since 1850-01-01" />
+        <attribute name="calendar" type="String" value="standard" />
+        <attribute name="bounds" type="String" value="time_bnds" />
+        <values>15.5 45.0 74.5 105.0</values>
+    </variable>
+
+    <variable name="time_bnds" shape="time bnds" type="double">
+        <values>0.0 31.0 31.0 59.0 59.0 90.0 90.0 120.0</values>
+    </variable>
+
+    <variable name="lat" shape="lat" type="double">
+        <attribute name="units" type="String" value="degrees_north" />
+        <attribute name="bounds" type="String" value="lat_bnds" />
+        <values>-54 9 54 81</values>
+    </variable>
+
+    <variable name="lat_bnds" shape="lat bnds" type="double">
+        <values>-90 -18 -18 36 36 72 72 90</values>
+    </variable>
+
+    <variable name="lon" shape="lon" type="double">
+        <attribute name="units" type="String" value="degrees_east" />
+        <attribute name="bounds" type="String" value="lon_bnds" />
+        <values>18 72 162 288</values>
+    </variable>
+
+    <variable name="lon_bnds" shape="lon bnds" type="double">
+        <values>0 36 36 108 108 216 216 360</values>
+    </variable>
+
+    <variable name="foo" shape="time lat lon" type="float">
+        <values start="1.0" increment="1.0" />
+    </variable>
+</netcdf> 

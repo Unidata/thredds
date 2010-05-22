@@ -75,9 +75,9 @@ public class CdmInit {
     String fcCache = ThreddsConfig.get("FeatureCollection.cacheDirectory", tdsContext.getContentDirectory().getPath() + "/collectionCache/");
     try {
       thredds.inventory.bdb.MetadataManager.setCacheDirectory(fcCache);
-      startupLog.info("FeatureCollection.cacheDirectory= "+fcCache);
+      startupLog.info("CdmInit: FeatureCollection.cacheDirectory= "+fcCache);
     } catch (Exception e) {
-      startupLog.error("Failed to open FeatureCollection.cacheDirectory= "+fcCache, e);
+      startupLog.error("CdmInit: Failed to open FeatureCollection.cacheDirectory= "+fcCache, e);
     }
 
     // new for 4.1 - ehcache object caching
@@ -86,11 +86,10 @@ public class CdmInit {
     try {
       cacheManager = thredds.filesystem.ControllerCaching.makeStandardController(ehConfig, ehDirectory);
       thredds.inventory.DatasetCollectionManager.setController(cacheManager);
-      startupLog.info("ehcache.config= "+ehConfig);
-      startupLog.info("ehcache.directory= "+ehDirectory);
+      startupLog.info("CdmInit: ehcache.config= "+ehConfig+" directory= "+ehDirectory);
 
     } catch (IOException ioe) {
-      startupLog.error("Cant read ehcache config file "+ehConfig, ioe);
+      startupLog.error("CdmInit: Cant read ehcache config file "+ehConfig, ioe);
     }
 
     boolean useBytesForDataSize = ThreddsConfig.getBoolean("catalogWriting.useBytesForDataSize", false);    
@@ -152,6 +151,8 @@ public class CdmInit {
     c.add(Calendar.SECOND, scourSecs / 2); // starting in half the scour time
     timer = new Timer();
     timer.scheduleAtFixedRate(new CacheScourTask(maxSize), c.getTime(), (long) 1000 * scourSecs);
+
+    startupLog.info("CdmInit complete");
   }
 
   // should be called when tomcat exits

@@ -4,6 +4,9 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.2:
  3:(2010-xx-xx)
+  AWIPS CoordSysBuilder improvements
+  H5header: workaround for natts > 8 hdf5 bug
+  N3header: deal with possible vsize overflow.
   FMRC xml cache lastModified needs to ignore msecs.
   GridDatatype was adding duplicate time dimension when had coordsys runtime(time), time(time) eg FMRC best
   CF 1.5 point obs fixes

@@ -188,7 +188,7 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
   protected VariableDS( VariableDS vds) {
     super(vds);
 
-    this.orgVar = vds;
+    this.orgVar = vds; // .orgVar; // LOOK ??
 
     this.orgDataType = vds.orgDataType;
     this.orgName = vds.orgName;

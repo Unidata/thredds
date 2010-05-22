@@ -49,6 +49,7 @@ import java.io.IOException;
 
 public class N3header {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(N3header.class);
+  static private final long MAX_UNSIGNED_INT = 0x00000000ffffffffL;
 
   static final byte[] MAGIC = new byte[]{0x43, 0x44, 0x46, 0x01};
   static final byte[] MAGIC_LONG = new byte[]{0x43, 0x44, 0x46, 0x02}; // 64-bit offset format : only affects the variable offset value
@@ -78,13 +79,12 @@ public class N3header {
   private Dimension udim; // the unlimited dimension
 
   // N3iosp needs access to these
-  private boolean useLongOffset;
   boolean isStreaming = false; // is streaming (numrecs = -1)
-
   int numrecs = 0; // number of records written
   long recsize = 0; // size of each record (padded)
   long recStart = Integer.MAX_VALUE; // where the record data starts
 
+  private boolean useLongOffset;
   private long nonRecordDataSize; // size of non-record variables
   private long dataStart = Long.MAX_VALUE; // where the data starts
 
@@ -192,7 +192,7 @@ public class N3header {
       Variable var = new Variable(ncfile, ncfile.getRootGroup(), null, name);
 
       // get dimensions
-      int velems = 1;
+      long velems = 1;
       boolean isRecord = false;
       int rank = raf.readInt();
       List<Dimension> dims = new ArrayList<Dimension>();
@@ -222,13 +222,23 @@ public class N3header {
 
       // data type
       int type = raf.readInt();
-      var.setDataType(getDataType(type));
+      DataType dataType = getDataType(type);
+      var.setDataType(dataType);
 
       // size and beginning data position in file
-      int vsize = raf.readInt();
+      long vsize = (long) raf.readInt();
       long begin = useLongOffset ? raf.readLong() : (long) raf.readInt();
-      if (fout != null)
+
+      if (fout != null) {
         fout.format(" name= %s type=%d vsize=%s velems=%d begin= %d isRecord=%s attsPos=%d\n", name, type, vsize, velems, begin, isRecord, varAttsPos);
+        long calcVsize = (velems + padding(velems)) * dataType.getSize();
+        if (vsize != calcVsize)
+          fout.format(" *** readVsize %d != calcVsize %d\n", vsize, calcVsize);
+      }
+      if (vsize < 0) {
+        vsize = (velems + padding(velems)) * dataType.getSize();
+      }
+
       var.setSPobject(new Vinfo(vsize, begin, isRecord, varAttsPos));
 
       // track how big each record is
@@ -239,7 +249,7 @@ public class N3header {
         nonRecordDataSize = Math.max(nonRecordDataSize, begin + vsize);
       }
 
-      dataStart = Math.min(dataStart, (int) begin);
+      dataStart = Math.min(dataStart, begin);
 
       if (debugVariablePos)
         System.out.printf("%s begin at=%d end=%d  isRecord=%s nonRecordDataSize=%d\n", var.getName(), begin, (begin + vsize), isRecord, nonRecordDataSize);
@@ -251,7 +261,7 @@ public class N3header {
       ncfile.addVariable(null, var);
     }
 
-    pos = (int) raf.getFilePointer();
+    pos = raf.getFilePointer();
 
     // if nvars == 0
     if (dataStart == Long.MAX_VALUE) {
@@ -333,6 +343,11 @@ public class N3header {
     else if (actual != calcSize)
       out.format(" actual size larger = %d (%d byte extra) %n", actual, (actual-calcSize));
 
+    out.format("%n  %20s____start_____size__unlim%n", "name");
+    for (Variable v : ncfile.getVariables()) {
+      Vinfo vinfo = (Vinfo) v.getSPobject();
+      out.format("  %20s %8d %8d  %s %n", v.getShortName(), vinfo.begin, vinfo.vsize, vinfo.isRecord);
+    }
   }
 
   synchronized boolean removeRecordStructure() {
@@ -898,7 +913,7 @@ public class N3header {
       int type = getType(var.getDataType());
       raf.writeInt(type);
 
-      int vsizeWrite =  (vsize < Integer.MAX_VALUE) ?  (int) vsize : Integer.MAX_VALUE;
+      int vsizeWrite = (vsize < MAX_UNSIGNED_INT) ? (int) vsize : -1;
       raf.writeInt(vsizeWrite);
       long pos = raf.getFilePointer();
       if (largeFile)

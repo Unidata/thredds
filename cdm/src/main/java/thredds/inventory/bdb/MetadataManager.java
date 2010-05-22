@@ -74,7 +74,7 @@ public class MetadataManager {
   }
 
 
-  static public void setCacheDirectory( String dir ) {
+  static public void setCacheDirectory(String dir) {
     root = dir;
     setup(root, false);
   }
@@ -122,7 +122,8 @@ public class MetadataManager {
     secondary = myEnv.openSecondaryDatabase(null, "secDatabase", database, secConfig);  */
   }
 
-   // Close the store and environment
+  // Close the store and environment
+
   static public void closeAll() {
     if (debug) System.out.println("close MetadataManager");
 
@@ -154,7 +155,7 @@ public class MetadataManager {
         // Finally, close the store and environment.
         myEnv.close();
         myEnv = null;
-        
+
       } catch (DatabaseException dbe) {
         logger.error("Error closing MyDbEnv: " + dbe.toString());
         System.exit(-1);
@@ -184,14 +185,21 @@ public class MetadataManager {
     return myEnv.getDatabaseNames();
   }
 
-  static public void deleteCollection(String collectionName) {
-    myEnv.removeDatabase( null, collectionName);
-  }
+  static public boolean deleteCollection(String collectionName) {
+    try {
+      myEnv.removeDatabase(null, collectionName);
+      return true;
+    } catch (Exception e) {
+      e.printStackTrace();
+      logger.error("BDB failed to delete Collection ", e);
+      return false;
+    }
+}
 
   static public void delete(String collectionName, String key) {
     try {
       MetadataManager mm = new MetadataManager(collectionName);
-      mm.delete( key);
+      mm.delete(key);
       mm.close();
     } catch (IOException e) {
       throw new RuntimeException(e);
@@ -353,7 +361,7 @@ public class MetadataManager {
       while (myCursor.getNext(foundKey, foundData, LockMode.DEFAULT) == OperationStatus.SUCCESS) {
         String key = new String(foundKey.getData(), UTF8);
         String data = new String(foundData.getData(), UTF8);
-        result.add( new KeyValue(key, data));
+        result.add(new KeyValue(key, data));
         //System.out.printf("key = %s; data = %s %n", key, data);
         count++;
       }
@@ -366,18 +374,20 @@ public class MetadataManager {
     return result;
   }
 
-  public class KeyValue {
-    public String key;
-    public String value;
-    KeyValue(String key, String value) {
-      this.key = key;
-      this.value = value;
-    }
+public class KeyValue {
+  public String key;
+  public String value;
+
+  KeyValue(String key, String value) {
+    this.key = key;
+    this.value = value;
   }
+
+}
 
   public static void main(String args[]) throws Exception {
     MetadataManager indexer = new MetadataManager("dummy");
-    indexer.showStats( new Formatter(System.out));
+    indexer.showStats(new Formatter(System.out));
     MetadataManager.closeAll();
   }
 

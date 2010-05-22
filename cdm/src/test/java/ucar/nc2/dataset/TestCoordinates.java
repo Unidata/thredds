@@ -36,6 +36,9 @@ package ucar.nc2.dataset;
 
 
 import junit.framework.*;
+import ucar.ma2.Array;
+import ucar.ma2.IndexIterator;
+import ucar.nc2.NCdumpW;
 import ucar.nc2.TestAll;
 import ucar.nc2.Variable;
 
@@ -59,4 +62,24 @@ public class TestCoordinates extends TestCase {
     assert null != ncd.findDimension("ensemble");
     assert v.getDimension(0) == ncd.findDimension("ensemble");
   }
+
+
+  // test offset only gets applied once
+  public void testWrapOnce() throws IOException {
+    String filename = TestAll.cdmUnitTestDir + "ncml/coords/testCoordScaling.ncml";
+    System.out.printf("%s%n", filename);
+    NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset( filename);
+    Variable v = ncd.findCoordinateAxis("Longitude");
+    assert v != null;
+    assert v instanceof CoordinateAxis1D;
+
+    // if offset is applied twice, the result is not in +-180 range
+    Array data = v.read();
+    NCdumpW.printArray(data);
+    IndexIterator ii = data.getIndexIterator();
+    while (ii.hasNext()) {
+      assert Math.abs(ii.getDoubleNext()) < 180 : ii.getDoubleCurrent();
+    }
+  }
+
 }

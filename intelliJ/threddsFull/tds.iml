@@ -15,7 +15,6 @@
         <sourceRoots>
           <root url="file://$MODULE_DIR$/../../tds/src/main/java" />
         </sourceRoots>
-        <context-artifact name="tds:tds exploded" />
       </configuration>
     </facet>
     <facet type="web" name="dqcServletRedirect">
@@ -26,7 +25,6 @@
         <webroots>
           <root url="file://$MODULE_DIR$/../../tds/src/main/webapp-dqcServletRedirect/resources" relative="/" />
         </webroots>
-        <context-artifact name="tds:dqcServletRedirect exploded" />
       </configuration>
     </facet>
     <facet type="web" name="CdmValidator">
@@ -37,7 +35,6 @@
         <webroots>
           <root url="file://$MODULE_DIR$/../../tds/src/main/webapp-cdmValidator" relative="/" />
         </webroots>
-        <context-artifact name="tds:CdmValidator exploded" />
       </configuration>
     </facet>
   </component>

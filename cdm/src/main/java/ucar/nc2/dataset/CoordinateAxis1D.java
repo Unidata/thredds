@@ -755,7 +755,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
     try {
       setUseNaNs(false); // missing values not allowed
       data = read();
-      if (!hasCachedData()) setCachedData(data, false); //cache data for subsequent reading
+      // if (!hasCachedData()) setCachedData(data, false); //cache data for subsequent reading
     } catch (IOException ioe) {
       log.error("Error reading coordinate values ", ioe);
       throw new IllegalStateException(ioe);

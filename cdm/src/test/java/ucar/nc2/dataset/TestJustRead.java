@@ -70,7 +70,7 @@ public class TestJustRead extends TestCase {
 
   }
 
-  public void testProblem() throws Exception {
+  public void utestProblem() throws Exception {
     show = true;
     doOne( "http://dods.ndbc.noaa.gov/thredds/dodsC/data/stdmet/31201/31201h2005.nc");
   }

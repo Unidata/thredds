@@ -38,13 +38,6 @@ import ucar.ma2.*;
 
 import junit.framework.TestCase;
 
-/**
- * Created by IntelliJ IDEA.
- * User: caron
- * Date: Dec 28, 2008
- * Time: 12:45:20 PM
- * To change this template use File | Settings | File Templates.
- */
 public class TestScaleOffset extends TestCase {
   private String filename = TestAll.cdmLocalTestDataDir +"scaleOffset.nc";
 
