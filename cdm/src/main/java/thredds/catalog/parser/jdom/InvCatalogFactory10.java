@@ -349,6 +349,7 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
       return null;
     }
 
+    String specName = collElem.getAttributeValue("name");
     String spec = collElem.getAttributeValue("spec");
     String olderThan = collElem.getAttributeValue("olderThan");
     String recheckAfter = collElem.getAttributeValue("recheckAfter");
@@ -359,7 +360,7 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
       return null;
     }
 
-    FeatureCollectionConfig.Config config = new FeatureCollectionConfig.Config(spec, olderThan, recheckAfter);
+    FeatureCollectionConfig.Config config = new FeatureCollectionConfig.Config(name, spec, olderThan, recheckAfter);
 
     Element updateElem = dsElem.getChild( "update", defNS );
     if (updateElem != null) {

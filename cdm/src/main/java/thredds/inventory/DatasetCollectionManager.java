@@ -87,7 +87,6 @@ public class DatasetCollectionManager implements CollectionManager {
   protected String collectionName;
   private CollectionSpecParser sp;
   private DateExtractor dateExtractor;
-  // public FeatureCollection.CollectionChange changes = FeatureCollection.CollectionChange.False;
 
   private final List<MCollection> scanList = new ArrayList<MCollection>();
   protected TimeUnit recheck = null; // how often to recheck
@@ -114,9 +113,8 @@ public class DatasetCollectionManager implements CollectionManager {
   }
 
   public DatasetCollectionManager(FeatureCollectionConfig.Config config, Formatter errlog) {
-    //this.changes = config.changes;
     this.sp = new CollectionSpecParser(config.spec, errlog);
-    this.collectionName = sp.getSpec();
+    this.collectionName = config.name == null ? config.name : config.spec;
     this.dateExtractor = (sp.getDateFormatMark() == null) ? new DateExtractorNone() : new DateExtractorFromName(sp.getDateFormatMark(), true);
 
     List<MFileFilter> filters = new ArrayList<MFileFilter>(3);

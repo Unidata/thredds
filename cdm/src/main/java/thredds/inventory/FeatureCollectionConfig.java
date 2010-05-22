@@ -43,9 +43,6 @@ import java.util.*;
  * @since Mar 30, 2010
  */
 public class FeatureCollectionConfig {
-  /* static public enum CollectionChange {
-    True, False, Trigger, AppendOnly, Rolling
-  } */
 
   static public enum ProtoChoice {
     First, Random, Latest, Penultimate
@@ -63,8 +60,7 @@ public class FeatureCollectionConfig {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FeatureCollectionConfig.class);
 
   static public class Config {
-    public String spec, olderThan, recheckAfter;
-    //public CollectionChange changes = CollectionChange.False;
+    public String name, spec, olderThan, recheckAfter;
     public UpdateConfig updateConfig = new UpdateConfig();
     public ProtoConfig protoConfig = new ProtoConfig();
     public FmrcConfig fmrcConfig = new FmrcConfig();
@@ -72,23 +68,17 @@ public class FeatureCollectionConfig {
     public Config() {
     }
 
-    public Config(String spec, String olderThan, String recheckAfter) {
+    public Config(String name, String spec, String olderThan, String recheckAfter) {
+      this.name = name;
       this.spec = spec;
       this.olderThan = olderThan;
       this.recheckAfter = recheckAfter;
-
-      /* if (changes != null) {
-        try {
-          this.changes = CollectionChange.valueOf(changes);
-        } catch (Exception e) {
-          log.warn("Dont recognize CollectionChange " + changes);
-        }
-      } */
     }
 
     @Override
     public String toString() {
       return "Config{" +
+              "name='" + name + '\'' +
               "spec='" + spec + '\'' +
               ", olderThan='" + olderThan + '\'' +
               ", recheckAfter='" + recheckAfter + '\'' +
@@ -124,8 +114,6 @@ public class FeatureCollectionConfig {
               '}';
     }
   }
-
-
 
   static public class ProtoConfig {
     public ProtoChoice choice = ProtoChoice.Penultimate;
@@ -201,7 +189,6 @@ public class FeatureCollectionConfig {
     public List<BestDataset> getBestDatasets() {
       return bestDatasets;
     }
-
 
     @Override
     public String toString() {

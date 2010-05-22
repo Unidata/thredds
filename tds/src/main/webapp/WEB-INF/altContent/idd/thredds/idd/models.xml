@@ -72,6 +72,7 @@
         </metadata>
 
         <collection spec="/data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km/GFS_Alaska_191km_#yyyyMMdd_HHmm#.grib1"
+                    name="GFS_Alaska_191km"
                     recheckAfter="15 min"
                     olderThan="5 min"/>
         <manage deleteAfter="45 days" check="0 0 3 * * ? *" />
@@ -90,6 +91,7 @@
         </metadata>
 
         <collection spec="/data/ldm/pub/native/grid/NCEP/GFS/CONUS_80km/GFS_CONUS_80km_#yyyyMMdd_HHmm#.grib1"
+                    name="GFS_CONUS_80km"
                     recheckAfter="15 min"
                     olderThan="5 min"/>
         <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
@@ -108,6 +110,7 @@
         </metadata>
 
         <collection spec="/data/ldm/pub/native/grid/NCEP/GFS/CONUS_95km/GFS_CONUS_95km_#yyyyMMdd_HHmm#.grib1"
+                    name="GFS_CONUS_95km"
                     recheckAfter="15 min"
                     olderThan="5 min"/>
         <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
@@ -126,6 +129,7 @@
         </metadata>
 
         <collection spec="/data/ldm/pub/native/grid/NCEP/GFS/CONUS_191km/GFS_CONUS_191km_#yyyyMMdd_HHmm#.grib1"
+                    name="GFS_CONUS_191km"
                     recheckAfter="15 min"
                     olderThan="5 min"/>
         <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
@@ -146,6 +150,7 @@
         </metadata>
 
         <collection spec="/data/ldm/pub/native/grid/NCEP/GFS/Global_0p5deg/GFS_Global_0p5deg_#yyyyMMdd_HHmm#.grib2"
+                    name="GFS_Global_0p5deg"
                     recheckAfter="15 min"
                     olderThan="5 min"/>
         <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
@@ -166,6 +171,7 @@
         </metadata>
 
         <collection spec="/data/ldm/pub/native/grid/NCEP/GFS/Global_onedeg/GFS_Global_onedeg_#yyyyMMdd_HHmm#.grib2"
+                    name="GFS_Global_onedeg"
                     recheckAfter="15 min"
                     olderThan="5 min"/>
         <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
@@ -186,6 +192,7 @@
         </metadata>
 
         <collection spec="/data/ldm/pub/native/grid/NCEP/GFS/Global_2p5deg/GFS_Global_2p5deg_#yyyyMMdd_HHmm#.grib2"
+                    name="GFS_Global_2p5deg"
                     recheckAfter="15 min"
                     olderThan="5 min"/>
         <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
@@ -204,6 +211,7 @@
         </metadata>
 
         <collection spec="/data/ldm/pub/native/grid/NCEP/GFS/Hawaii_160km/GFS_Hawaii_160km_#yyyyMMdd_HHmm#.grib1"
+                    name="GFS_Hawaii_160km"
                     recheckAfter="15 min"
                     olderThan="5 min"/>
         <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
@@ -223,6 +231,7 @@
 
         <collection
             spec="/data/ldm/pub/native/grid/NCEP/GFS/N_Hemisphere_381km/GFS_N_Hemisphere_381km_#yyyyMMdd_HHmm#.grib1"
+            name="GFS_N_Hemisphere_381km"
             recheckAfter="15 min"
             olderThan="5 min"/>
         <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
@@ -242,6 +251,7 @@
 
         <collection
             spec="/data/ldm/pub/native/grid/NCEP/GFS/Puerto_Rico_191km/GFS_Puerto_Rico_191km_#yyyyMMdd_HHmm#.grib1"
+            name="GFS_Puerto_Rico_191km"
             recheckAfter="15 min"
             olderThan="5 min"/>
         <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
@@ -273,6 +283,7 @@
 
          <collection
              spec="/data/ldm/pub/native/grid/NCEP/NAM/Alaska_11km/NAM_Alaska_11km_#yyyyMMdd_HHmm#.grib2"
+             name="NAM_Alaska_11km"
              recheckAfter="15 min"
              olderThan="5 min"/>
          <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
@@ -291,6 +302,7 @@
 
          <collection
              spec="/data/ldm/pub/native/grid/NCEP/NAM/Alaska_22km/NAM_Alaska_22km_#yyyyMMdd_HHmm#.grib1"
+             name="NAM_Alaska_22km"
              recheckAfter="15 min"
              olderThan="5 min"/>
          <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
@@ -311,6 +323,7 @@
 
          <collection
              spec="/data/ldm/pub/native/grid/NCEP/NAM/Alaska_45km/noaaport/NAM_Alaska_45km_noaaport_#yyyyMMdd_HHmm#.grib1"
+             name="NAM_Alaska_45km_noaaport"
              recheckAfter="15 min"
              olderThan="5 min"/>
          <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
@@ -331,6 +344,7 @@
 
          <collection
              spec="/data/ldm/pub/native/grid/NCEP/NAM/Alaska_45km/conduit/NAM_Alaska_45km_conduit_#yyyyMMdd_HHmm#.grib2"
+             name="NAM_Alaska_45km_conduit"
              recheckAfter="15 min"
              olderThan="5 min"/>
          <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
@@ -352,6 +366,7 @@
 
         <collection
             spec="/data/ldm/pub/native/grid/NCEP/NAM/Alaska_95km/NAM_Alaska_95km_#yyyyMMdd_HHmm#.grib1"
+            name="NAM_Alaska_95km"
             recheckAfter="15 min"
             olderThan="5 min"/>
         <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
@@ -373,6 +388,7 @@
 
           <collection
               spec="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_12km/NAM_CONUS_12km_#yyyyMMdd_HHmm#.grib2"
+              name="NAM_CONUS_12km-noaaport"
               recheckAfter="15 min"
               olderThan="5 min"/>
           <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
@@ -392,6 +408,7 @@
 
           <collection
               spec="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_12km_conduit/NAM_CONUS_12km_#yyyyMMdd_HHmm#.grib2"
+              name="NAM_CONUS_12km_conduit"
               recheckAfter="15 min"
               olderThan="5 min"/>
           <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
@@ -418,6 +435,7 @@
 
           <collection
               spec="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_20km/surface/NAM_CONUS_20km_surface_#yyyyMMdd_HHmm#.grib2"
+              name="NAM_CONUS_20km_surface"
               recheckAfter="15 min"
               olderThan="5 min"/>
           <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
@@ -437,6 +455,7 @@
 
           <collection
               spec="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_20km/selectsurface/NAM_CONUS_20km_selectsurface_#yyyyMMdd_HHmm#.grib2"
+              name="NAM_CONUS_20km_selectsurface"
               recheckAfter="15 min"
               olderThan="5 min"/>
           <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
@@ -456,6 +475,7 @@
 
           <collection
               spec="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_20km/noaaport/NAM_CONUS_20km_noaaport_#yyyyMMdd_HHmm#.grib1"
+              name="NAM_CONUS_20km_noaaport"
               recheckAfter="15 min"
               olderThan="5 min"/>
           <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
@@ -483,6 +503,7 @@
 
           <collection
               spec="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_40km/conduit/NAM_CONUS_40km_conduit_#yyyyMMdd_HHmm#.grib2"
+              name="NAM_CONUS_40km_conduit"
               recheckAfter="15 min"
               olderThan="5 min"/>
           <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
@@ -504,6 +525,7 @@
 
         <collection
             spec="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_80km/NAM_CONUS_80km_#yyyyMMdd_HHmm#.grib1"
+            name="NAM_CONUS_80km"
             recheckAfter="15 min"
             olderThan="5 min"/>
         <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
@@ -523,6 +545,7 @@
 
         <collection
             spec="/data/ldm/pub/native/grid/NCEP/NAM/Polar_90km/NAM_Polar_90km_#yyyyMMdd_HHmm#.grib2"
+            name="NAM_Polar_90km"
             recheckAfter="15 min"
             olderThan="5 min"/>
         <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
@@ -560,6 +583,7 @@
 
           <collection
               spec="/data/ldm/pub/native/grid/NCEP/RUC2/CONUS_20km/surface/RUC2_CONUS_20km_surface_#yyyyMMdd_HHmm#.grib2"
+              name="RUC2_CONUS_20km_surface"
               recheckAfter="15 min"
               olderThan="5 min"/>
           <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
@@ -579,6 +603,7 @@
 
           <collection
               spec="/data/ldm/pub/native/grid/NCEP/RUC2/CONUS_20km/pressure/RUC2_CONUS_20km_pressure_#yyyyMMdd_HHmm#.grib2"
+              name="RUC2_CONUS_20km_pressure"
               recheckAfter="15 min"
               olderThan="5 min"/>
           <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
@@ -598,6 +623,7 @@
 
           <collection
               spec="/data/ldm/pub/native/grid/NCEP/RUC2/CONUS_20km/hybrid/RUC2_CONUS_20km_hybrid_#yyyyMMdd_HHmm#.grib2"
+              name="RUC2_CONUS_20km_hybrid"
               recheckAfter="15 min"
               olderThan="5 min"/>
           <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
@@ -618,6 +644,7 @@
 
         <collection
             spec="/data/ldm/pub/native/grid/NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_#yyyyMMdd_HHmm#.grib1"
+            name="RUC2_CONUS_40km"
             recheckAfter="15 min"
             olderThan="5 min"/>
         <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
@@ -637,6 +664,7 @@
 
         <collection
             spec="/data/ldm/pub/native/grid/NCEP/RUC/CONUS_80km/RUC_CONUS_80km_#yyyyMMdd_HHmm#.grib1"
+            name="RUC_CONUS_80km"
             recheckAfter="15 min"
             olderThan="5 min"/>
         <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
@@ -669,6 +697,7 @@
 
         <collection
             spec="/data/ldm/pub/native/grid/NCEP/DGEX/CONUS_12km/DGEX_CONUS_12km_#yyyyMMdd_HHmm#.grib2"
+            name="DGEX_CONUS_12km"
             recheckAfter="15 min"
             olderThan="5 min"/>
         <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
@@ -687,6 +716,7 @@
 
         <collection
             spec="/data/ldm/pub/native/grid/NCEP/DGEX/Alaska_12km/DGEX_Alaska_12km_#yyyyMMdd_HHmm#.grib2"
+            name="DGEX_Alaska_12km"
             recheckAfter="15 min"
             olderThan="5 min"/>
         <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
@@ -718,6 +748,7 @@
 
           <collection
               spec="/data/ldm/pub/native/grid/NCEP/GEFS/Global_1p0deg_Ensemble/derived/GEFS_Global_1p0deg_Ensemble_derived_#yyyyMMdd_HHmm#.grib2"
+              name="GEFS_Global_1p0deg_Ensemble_derived"
               recheckAfter="15 min"
               olderThan="5 min"/>
           <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
@@ -875,6 +906,7 @@
 
           <collection
               spec="/data/ldm/pub/native/grid/NCEP/SREF/CONUS_40km/ensprod/SREF_CONUS_40km_ensprod_#yyyyMMdd_HHmm#.grib2"
+              name="SREF_CONUS_40km_ensprod"
               recheckAfter="15 min"
               olderThan="5 min"/>
           <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
@@ -892,6 +924,7 @@
 
           <collection
               spec="/data/ldm/pub/native/grid/NCEP/SREF/CONUS_40km/ensprod_biasc/SREF_CONUS_40km_ensprod_biasc_#yyyyMMdd_HHmm#.grib2"
+              name="SREF_CONUS_40km_ensprod_biasc"
               recheckAfter="15 min"
               olderThan="5 min"/>
           <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
@@ -984,6 +1017,7 @@
 
         <collection
             spec="/data/ldm/pub/native/grid/NCEP/SREF/Alaska_45km/ensprod/SREF_Alaska_45km_ensprod_#yyyyMMdd_HHmm#.grib2"
+            name="SREF_Alaska_45km_ensprod"
             recheckAfter="15 min"
             olderThan="5 min"/>
         <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
@@ -1001,6 +1035,7 @@
 
         <collection
             spec="/data/ldm/pub/native/grid/NCEP/SREF/PacificNE_0p4/ensprod/SREF_PacificNE_0p4_ensprod_#yyyyMMdd_HHmm#.grib2"
+            name="SREF_PacificNE_0p4_ensprod"
             recheckAfter="15 min"
             olderThan="5 min"/>
         <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
@@ -1028,6 +1063,7 @@
 
         <collection
             spec="/data/ldm/pub/native/grid/NCEP/NDFD/CONUS_5km/NDFD_CONUS_5km_#yyyyMMdd_HHmm#.grib2"
+            name="NDFD_CONUS_5km"
             recheckAfter="15 min"
             olderThan="5 min"/>
         <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
@@ -1055,6 +1091,7 @@
 
          <collection
              spec="/data/ldm/pub/native/grid/NCEP/WW3/Global/WW3_Global_#yyyyMMdd_HHmm#.grib2"
+             name="WW3_Global"
              recheckAfter="15 min"
              olderThan="5 min"/>
          <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
@@ -1073,6 +1110,7 @@
 
          <collection
              spec="/data/ldm/pub/native/grid/NCEP/WW3/Regional_Alaska/WW3_Regional_Alaska_#yyyyMMdd_HHmm#.grib2"
+             name="WW3_Regional_Alaska"
              recheckAfter="15 min"
              olderThan="5 min"/>
          <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
@@ -1091,6 +1129,7 @@
 
          <collection
              spec="/data/ldm/pub/native/grid/NCEP/WW3/Regional_Eastern_Pacific/WW3_Regional_Eastern_Pacific_#yyyyMMdd_HHmm#.grib2"
+             name="WW3_Regional_Eastern_Pacific"
              recheckAfter="15 min"
              olderThan="5 min"/>
          <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
@@ -1109,6 +1148,7 @@
 
          <collection
              spec="/data/ldm/pub/native/grid/NCEP/WW3/Regional_US_East_Coast/WW3_Regional_US_East_Coast_#yyyyMMdd_HHmm#.grib2"
+             name="WW3_Regional_US_East_Coast"
              recheckAfter="15 min"
              olderThan="5 min"/>
          <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
@@ -1127,6 +1167,7 @@
 
          <collection
              spec="/data/ldm/pub/native/grid/NCEP/WW3/Regional_US_West_Coast/WW3_Regional_US_West_Coast_#yyyyMMdd_HHmm#.grib2"
+             name="WW3_Regional_US_West_Coast"
              recheckAfter="15 min"
              olderThan="5 min"/>
          <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
@@ -1145,6 +1186,7 @@
 
          <collection
              spec="/data/ldm/pub/native/grid/NCEP/WW3/Coastal_US_East_Coast/WW3_Coastal_US_East_Coast_#yyyyMMdd_HHmm#.grib2"
+             name="WW3_Coastal_US_East_Coast"
              recheckAfter="15 min"
              olderThan="5 min"/>
          <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
@@ -1163,6 +1205,7 @@
 
          <collection
              spec="/data/ldm/pub/native/grid/NCEP/WW3/Coastal_US_West_Coast/WW3_Coastal_US_West_Coast_#yyyyMMdd_HHmm#.grib2"
+             name="WW3_Coastal_US_West_Coast"
              recheckAfter="15 min"
              olderThan="5 min"/>
          <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
@@ -1181,6 +1224,7 @@
 
         <collection
             spec="/data/ldm/pub/native/grid/NCEP/WW3/Coastal_Alaska/WW3_Coastal_Alaska_#yyyyMMdd_HHmm#.grib2"
+            name="WW3_Coastal_Alaska"
             recheckAfter="15 min"
             olderThan="5 min"/>
         <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
