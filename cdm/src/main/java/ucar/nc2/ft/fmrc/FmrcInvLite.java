@@ -51,7 +51,7 @@ public class FmrcInvLite implements java.io.Serializable {
   // public for debugging
   public String collectionName;
   public Date base;
-  public int nruns;
+  public int nruns; // runOffset[nruns]
   public double[] runOffset; // run time in offset hours since base
   public double[] forecastOffset; // all forecast times in offset hours since base, for "constant forecast" datasets
   public double[] offsets; // all the offset values, for "constant offset" datasets
@@ -186,7 +186,6 @@ public class FmrcInvLite implements java.io.Serializable {
   }
 
   // group of Grids with the same time coordinate
-
   public class Gridset implements java.io.Serializable {
     String gridsetName;
     List<Grid> grids = new ArrayList<Grid>();
@@ -221,7 +220,7 @@ public class FmrcInvLite implements java.io.Serializable {
             DateFormatter df = new DateFormatter();
             String missingDate = df.toDateTimeStringISO(FmrcInv.makeOffsetDate(base, run_offset));
             String wantDate = df.toDateTimeStringISO(tc.getRunDate());
-            log.warn(collectionName +": runseq missing time "+missingDate+" looking for "+ wantDate+" for var = "+ runseq.getUberGrids().get(0).getName());
+            //log.warn(collectionName +": runseq missing time "+missingDate+" looking for "+ wantDate+" for var = "+ runseq.getUberGrids().get(0).getName()); LOOK
             runIdx++;
           }
 
@@ -366,6 +365,7 @@ public class FmrcInvLite implements java.io.Serializable {
     }
   }
 
+  // track inventory, shared amongst grids
   public class GridInventory implements java.io.Serializable {
     int noffsets;
     int[] location;  // (run,time) file location (index+1 into locationList, 0 = missing)
@@ -378,12 +378,16 @@ public class FmrcInvLite implements java.io.Serializable {
 
       // loop over runDates
       int gridIdx = 0;
-      List<FmrInv.GridVariable> grids = ugrid.getRuns(); // must be sorted by rundate
+      List<FmrInv.GridVariable> grids = ugrid.getRuns(); // must be sorted by rundate. extract needed info, do not keep reference
 
       for (int runIdx = 0; runIdx < nruns; runIdx++) {
         Date runDate = FmrcInv.makeOffsetDate(base, runOffset[runIdx]);
 
         // do we have a grid for this runDate?
+        if (gridIdx >= grids.size()) {
+          log.error(collectionName+": cant find "+ugrid.getName()+" for "+runDate); // LOOK WHY?
+          break;
+        }
         FmrInv.GridVariable grid = grids.get(gridIdx);
         if (!grid.getRunDate().equals(runDate)) continue;
         gridIdx++; // for next loop
