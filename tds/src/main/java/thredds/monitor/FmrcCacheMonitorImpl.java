@@ -84,5 +84,9 @@ public class FmrcCacheMonitorImpl implements FmrcCacheMonitor {
     }
   }
 
+  public boolean deleteCollection(String collectionName) {
+    return MetadataManager.deleteCollection(collectionName);
+  }
+
 
 }

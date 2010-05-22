@@ -54,6 +54,7 @@ public class FmrcCacheController extends AbstractController {
   private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
   private static final String PATH = "/admin/fmrcCache";
   private static final String COLLECTION = "collection";
+  private static final String CMD = "cmd";
   private static final String FILE = "file";
   private final TdsContext tdsContext;
   private final FmrcCacheMonitorImpl monitor = new FmrcCacheMonitorImpl();
@@ -86,6 +87,7 @@ public class FmrcCacheController extends AbstractController {
 
     String collectName = req.getParameter(COLLECTION);
     String fileName = req.getParameter(FILE);
+    String cmd = req.getParameter(CMD);
 
     // show the file
     if (fileName != null) {
@@ -100,19 +102,31 @@ public class FmrcCacheController extends AbstractController {
       log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, 0) );
       return null;
     }
-
+    
     // list the collection
     if (collectName != null) {
       String ecollectName = StringUtil.escape(collectName, "");
       String url = tdsContext.getContextPath() + PATH + "?"+COLLECTION+"="+ecollectName;
       res.setContentType("text/html");
       pw.println("Files for collection = "+collectName+"");
+
+      // allow delete
+      String deleteUrl = tdsContext.getContextPath() + PATH + "?"+COLLECTION+"="+ecollectName+"&"+CMD+"=delete";
+      pw.println("<a href='" + deleteUrl + "'> Delete" + "</a>");
+
       pw.println("<ol>");
       for (String filename : monitor.getFilesInCollection(collectName)) {
         String efileName = StringUtil.escape(filename, "");
         pw.println("<li> <a href='" + url + "&"+FILE+"="+efileName + "'>" + filename + "</a>");
       }
      pw.println("</ol>");
+    }
+
+    if (cmd != null && cmd.equals("delete")) {
+      if (monitor.deleteCollection(collectName))
+        pw.println("<p/>deleted");
+      else
+        pw.println("<p/>no such collection = "+collectName);
     }
 
     log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, 0) );

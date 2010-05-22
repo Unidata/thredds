@@ -594,7 +594,9 @@ public class ServletUtil {
       endPos = Math.min(endPos, fileSize);
       contentLength = endPos - startPos;
     }
-    res.setContentLength( (int) contentLength);
+
+    res.addHeader("Content-Length", Long.toString(contentLength));
+    // res.setContentLength( (int) contentLength);
 
     String filename = file.getPath();
     boolean debugRequest = Debug.isSet("returnFile");

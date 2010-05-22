@@ -603,7 +603,8 @@ public class DataRootHandler {
   private void initFollowCatrefs(String dirPath, List<InvDataset> datasets) throws IOException {
     for (InvDataset invDataset : datasets) {
 
-      if ((invDataset instanceof InvCatalogRef) && !(invDataset instanceof InvDatasetScan) && !(invDataset instanceof InvDatasetFmrc)) {
+      if ((invDataset instanceof InvCatalogRef) && !(invDataset instanceof InvDatasetScan) && !(invDataset instanceof InvDatasetFmrc)
+              && !(invDataset instanceof InvDatasetFeatureCollection)) {
         InvCatalogRef catref = (InvCatalogRef) invDataset;
         String href = catref.getXlinkHref();
         if (logCatalogInit.isDebugEnabled()) logCatalogInit.debug("  catref.getXlinkHref=" + href);
