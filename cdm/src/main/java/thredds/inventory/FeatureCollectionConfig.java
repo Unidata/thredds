@@ -56,6 +56,10 @@ public class FeatureCollectionConfig {
     regularizeDefault = t;
   }
 
+  public static boolean getRegularizeDefault() {
+    return regularizeDefault;
+  }
+
   static private boolean regularizeDefault = false;
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FeatureCollectionConfig.class);
 

@@ -806,7 +806,10 @@ public class ToolsUI extends JPanel {
         FeatureCollectionConfig.setRegularizeDefault(state);
       }
     };
-    BAMutil.setActionPropertiesToggle(a, null, "regularize", false, 'R', -1);
+    // ToolsUI default is to regularize the FFMRC
+    FeatureCollectionConfig.setRegularizeDefault(true);
+    a.putValue(BAMutil.STATE, new Boolean(true));
+    BAMutil.setActionPropertiesToggle(a, null, "regularize", true, 'R', -1);
     BAMutil.addActionToMenu(ncMenu, a);
   }
 
@@ -4877,10 +4880,6 @@ public class ToolsUI extends JPanel {
     CdmRemote.setHttpClient(client);
     NetcdfDataset.setHttpClient(client);
     WmsViewer.setHttpClient(client);
-
-    // load protocol for ADDE URLs  - not used right now
-    //URLStreamHandlerFactory.install();
-    //URLStreamHandlerFactory.register("adde", new edu.wisc.ssec.mcidas.adde.AddeURLStreamHandler());
 
     // in case a dataset was on the command line
     if (wantDataset != null)

@@ -59,12 +59,13 @@ dl {margin: 10px 5px 5px 15px;)
 <h3>collection element</h3>
 <p>Defines the collection of datasets and provides some control over dynamically changing datasets. Takes the place of NcML aggregation element (scan and scanFmrc). </p>
 <pre>&lt;<strong>collection</strong> <strong>spec</strong>=&quot;/data/ldm/pub/native/satellite/3.9/WEST-CONUS_4km/WEST-CONUS_4km_3.9_#yyyyMMdd_HHmm#.gini$&quot;
-            <strong>olderThan</strong>=&quot;1 min&quot; <strong></strong><strong>recheckAfter</strong>=&quot;15 min&quot; /&gt;
+            <strong>name</strong>=&quot;WEST-CONUS_4km&quot; <strong>olderThan</strong>=&quot;1 min&quot; <strong></strong><strong>recheckAfter</strong>=&quot;15 min&quot; /&gt;
 </pre>
 <blockquote>
   <p>where</p>
   <ol>
     <li><strong>spec</strong>: <a href="CollectionSpecification.html">collection specification</a> string (required). In this case, all files in the directory <em>/data/ldm/pub/native/satellite/3.9/WEST-CONUS_4km/ </em>whose filename matches the reqular expression WEST-CONUS_4km_3.9_........_....\.gini$&quot;. The  time coordinate (runtime if its an FMRC) of the file will be found by matching <em>yyyyMMdd_HHmm</em> to that portion of the filename.</li>
+    <li><strong>name </strong>(optional): collection name. if missing, the spec string is used</li>
     <li><strong>olderThan</strong>: (optional) Only files whose lastModified date is older than this are included. This excludes files that are in the process of being written.</li>
     <li><strong>recheckAfter</strong>: (optional) This will cause a directory scan whenever a request comes in and this much time has elapsed since the last scan. The request will wait until the rescan is finished and a new collection is built (if needed). This minimizes unneeded processing for lightly used collections. Also see the <em>update</em> element for alternate ways to specify rescanning strategies.</li>
   </ol>

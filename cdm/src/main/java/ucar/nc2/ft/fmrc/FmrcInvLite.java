@@ -220,9 +220,12 @@ public class FmrcInvLite implements java.io.Serializable {
             double run_offset = runOffset[runIdx];
             if (Misc.closeEnough(run_offset, tc_offset))
               break;
-            String missingDate = df.toDateTimeStringISO(FmrcInv.makeOffsetDate(base, run_offset));
-            String wantDate = df.toDateTimeStringISO(tc.getRunDate());
-            log.warn(collectionName +": runseq missing time "+missingDate+" looking for "+ wantDate+" for var = "+ runseq.getUberGrids().get(0).getName());             runIdx++;
+            runIdx++;
+            if (log.isDebugEnabled()) {
+              String missingDate = df.toDateTimeStringISO(FmrcInv.makeOffsetDate(base, run_offset));
+              String wantDate = df.toDateTimeStringISO(tc.getRunDate());
+              log.debug(collectionName +": runseq missing time "+missingDate+" looking for "+ wantDate+" for var = "+ runseq.getUberGrids().get(0).getName());
+            }
           }
 
         } else {  // common case
@@ -386,11 +389,12 @@ public class FmrcInvLite implements java.io.Serializable {
 
         // do we have a grid for this runDate?
         if (gridIdx >= grids.size()) {
-          log.warn(collectionName+": cant find "+ugrid.getName()+" for "+df.toDateTimeStringISO(runDate)); // LOOK WHY?
+          log.debug(collectionName+": cant find "+ugrid.getName()+" for "+df.toDateTimeStringISO(runDate)); // could be normal condition
           break;
         }
         FmrInv.GridVariable grid = grids.get(gridIdx);
-        if (!grid.getRunDate().equals(runDate)) continue;
+        if (!grid.getRunDate().equals(runDate))
+          continue;
         gridIdx++; // for next loop
 
         // loop over actual inventory
