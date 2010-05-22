@@ -107,7 +107,7 @@
   </logger>
 
   <logger name="thredds.servlet.DataRootHandler.catalogInit" additivity="false">
-    <level value="DEBUG"/>
+    <level value="INFO"/>
     <appender-ref ref="catalogInit"/>
   </logger>
 
