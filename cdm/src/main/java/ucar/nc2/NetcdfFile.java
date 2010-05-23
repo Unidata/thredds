@@ -1783,6 +1783,37 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
   }
 
   /**
+    * Read a variable using the given section specification.
+    * The result is always an array of the type of the innermost variable.
+    * Its shape is the accumulation of all the shapes of its parent structures.
+    *
+    * @param variableSection the constraint expression.
+    * @return data requested
+    * @throws IOException if error
+    * @throws InvalidRangeException if variableSection is invalid
+    * @see <a href="http://www.unidata.ucar.edu/software/netcdf-java/reference/SectionSpecification.html">SectionSpecification</a>
+    */
+   public Array readSection(String variableSection) throws IOException, InvalidRangeException {
+     if (unlocked)
+       throw new IllegalStateException("File is unlocked - cannot use");
+
+     ParsedSectionSpec cer = ParsedSectionSpec.parseVariableSection(this, variableSection);
+     if (cer.child == null) {
+       Array result = cer.v.read(cer.section);
+       result.setUnsigned(cer.v.isUnsigned());
+       return result;
+     }
+
+     if (spi == null)
+       return IospHelper.readSection(cer);
+     else
+       // allow iosp to optimize
+       return spi.readSection(cer);
+   }
+
+
+
+  /**
    * Read data from a top level Variable and send data to a WritableByteChannel. Experimental.
    *
    * @param v a top-level Variable
@@ -1871,36 +1902,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     return readSection(variableSection);
   }
 
-  /**
-   * Read a variable using the given section specification.
-   * The result is always an array of the type of the innermost variable.
-   * Its shape is the accumulation of all the shapes of its parent structures.
-   *
-   * @param variableSection the constraint expression.
-   * @return data requested
-   * @throws IOException if error
-   * @throws InvalidRangeException if variableSection is invalid
-   * @see <a href="http://www.unidata.ucar.edu/software/netcdf-java/reference/SectionSpecification.html">SectionSpecification</a>
-   */
-  public Array readSection(String variableSection) throws IOException, InvalidRangeException {
-    if (unlocked)
-      throw new IllegalStateException("File is unlocked - cannot use");
-
-    ParsedSectionSpec cer = ParsedSectionSpec.parseVariableSection(this, variableSection);
-    if (cer.child == null) {
-      Array result = cer.v.read(cer.section);
-      result.setUnsigned(cer.v.isUnsigned());
-      return result;
-    }
-
-    if (spi == null)
-      return IospHelper.readSection(cer);
-    else
-      // allow iosp to optimize
-      return spi.readSection(cer);
-  }
-
-  /**
+   /**
    * Access to iosp debugging info.
    * @param o must be a Variable, Dimension, Attribute, or Group
    * @return debug info for this object.

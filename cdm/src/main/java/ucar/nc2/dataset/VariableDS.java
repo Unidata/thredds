@@ -106,6 +106,35 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
   }
 
   /**
+   * Make a new VariableDS, delegate data reading to the original variable, but otherwise
+   *  dont take any info from it. This is used by NcML explicit mode.
+   *
+   * @param group     the containing group; may not be null
+   * @param parent    parent Structure, may be null
+   * @param shortName variable shortName, must be unique within the Group
+   * @param orgVar the original Variable to wrap. The original Variable is not modified.
+   *    Must not be a Structure, use StructureDS instead.
+   */
+  public VariableDS(Group group, Structure parent, String shortName, Variable orgVar) {
+    super(null, group, parent, shortName);
+    setDimensions( getDimensionsString()); // reset the dimensions
+
+    if (orgVar instanceof Structure)
+      throw new IllegalArgumentException("VariableDS must not wrap a Structure; name="+orgVar.getName());
+
+    // dont share cache, iosp : all IO is delegated
+    this.ncfile = null;
+    this.spiObject = null;
+    createNewCache();
+
+    this.orgVar = orgVar;
+    this.orgDataType = orgVar.getDataType();
+
+    this.enhanceProxy = new EnhancementsImpl( this);
+    this.scaleMissingProxy = new EnhanceScaleMissingImpl();
+  }
+
+  /**
    * Wrap the given Variable, making it into a VariableDS.
    * Delegate data reading to the original variable.
    * Does not share cache, iosp, proxies.
@@ -151,37 +180,6 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
   }
 
   /**
-   * Wrap the given Variable, making it into a VariableDS.
-   * Delegate data reading to the original variable.
-   * Does not share cache, iosp.
-   * This is for NcML explicit mode
-   *
-   * @param group     the containing group; may not be null
-   * @param parent    parent Structure, may be null
-   * @param shortName variable shortName, must be unique within the Group
-   * @param orgVar the original Variable to wrap. The original Variable is not modified.
-   *    Must not be a Structure, use StructureDS instead.
-   */
-  public VariableDS(Group group, Structure parent, String shortName, Variable orgVar) {
-    super(null, group, parent, shortName);
-    setDimensions( getDimensionsString()); // reset the dimensions
-
-    if (orgVar instanceof Structure)
-      throw new IllegalArgumentException("VariableDS must not wrap a Structure; name="+orgVar.getName());
-
-    // dont share cache, iosp : all IO is delegated
-    this.ncfile = null;
-    this.spiObject = null;
-    createNewCache();
-
-    this.orgVar = orgVar;
-    this.orgDataType = orgVar.getDataType();
-
-    this.enhanceProxy = new EnhancementsImpl( this);
-    this.scaleMissingProxy = new EnhanceScaleMissingImpl();
-  }
-
-  /**
    * Copy constructor, for subclasses.
    * @param vds copy from here.
    */
@@ -189,7 +187,6 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
     super(vds);
 
     this.orgVar = vds; // .orgVar; // LOOK ??
-
     this.orgDataType = vds.orgDataType;
     this.orgName = vds.orgName;
 
@@ -243,6 +240,7 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
     // do we need to calculate the ScaleMissing ?
     if (!alreadyScaleOffsetMissing && (dataType.isNumeric() || dataType == DataType.CHAR) && 
         mode.contains(NetcdfDataset.Enhance.ScaleMissing) || mode.contains(NetcdfDataset.Enhance.ScaleMissingDefer)) {
+
       this.scaleMissingProxy = new EnhanceScaleMissingImpl( this);
 
       // promote the data type if ScaleMissing is set
@@ -445,17 +443,14 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
   protected Array _read() throws IOException {
       Array result;
 
-    // check if already cached - only done explicitly
-    if (cache != null && cache.data != null) {
+    // check if already cached - only done explicitly by app
+    if (cache != null && cache.data != null)
       result = cache.data.copy();
-
-    // check if Variable is cached
-    } else if (super.hasCachedData())
-      result = super._read(); // cache only raw data, so not twice room
+    else if (super.hasCachedData())
+      result = super._read(); // only raw data is cached
     else
       result =  proxyReader.reallyRead(this, null);
 
-    // LOOK not caching
     if (needScaleOffsetMissing)
       return convertScaleOffsetMissing(result);
     else if (needEnumConversion)
@@ -473,7 +468,6 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
     return orgVar.read();
   }
 
-
   // section of regular Variable
   @Override
   protected Array _read(Section section) throws IOException, InvalidRangeException  {
@@ -482,11 +476,10 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
       return _read();
 
     Array result;
-    // has a pre-reader proxy
     if (hasCachedData())
       result = super._read(section);
     else
-      result =  proxyReader.reallyRead(this, section, null);
+      result = proxyReader.reallyRead(this, section, null);
 
     if (needScaleOffsetMissing)
       return convertScaleOffsetMissing(result);

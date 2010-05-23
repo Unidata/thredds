@@ -677,7 +677,8 @@ public class CoordinateAxis1D extends CoordinateAxis {
         isAscending = true;
       else
         isAscending = getCoordValue(0) < getCoordValue(1);
-      
+
+      // correct non-monotonic longitude coords
       if (axisType == AxisType.Lon) {
         boolean monotonic = true;
         for (int i=0; i<midpoint.length-1; i++)
@@ -688,16 +689,17 @@ public class CoordinateAxis1D extends CoordinateAxis {
           if (isAscending) {
             for (int i=0; i<midpoint.length; i++) {
               if (cross) midpoint[i] += 360;
-              if (!cross && midpoint[i] > midpoint[i+1])
+              if (!cross && (i<midpoint.length-1) && (midpoint[i] > midpoint[i+1]))
                 cross = true;
-
             }
           } else {
              for (int i=0; i<midpoint.length; i++) {
                if (cross) midpoint[i] -= 360;
-               if (!cross && midpoint[i] < midpoint[i+1]) cross = true;
+               if (!cross && (i<midpoint.length-1) && (midpoint[i] < midpoint[i+1]))
+                 cross = true;
             }
           }
+          // LOOK - need to make sure we get stuff from the cache
           Array cachedData = Array.factory(DataType.DOUBLE, getShape(), midpoint);
           if (getDataType() != DataType.DOUBLE)
             cachedData = MAMath.convert(cachedData, getDataType());

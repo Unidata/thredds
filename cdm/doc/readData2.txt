@@ -1,0 +1,207 @@
+last updated MAy 22, 2010
+------------------
+NetcdfFile
+
+  All reading is channelled through:
+
+  protected Array readData(ucar.nc2.Variable v, Section ranges) {
+    Array result = spi.readData(v, ranges);
+    result.setUnsigned(v.isUnsigned());
+    return result;
+  }
+
+  // not general ? for reading members in a structure
+  public Array readSection(String variableSection) throws IOException, InvalidRangeException {
+     if (spi == null)
+       return IospHelper.readSection(cer);
+     else
+       return spi.readSection(cer); // allow iosp to optimize
+  }
+
+   // experimental - not general
+  protected long readToByteChannel(ucar.nc2.Variable v, Section section, WritableByteChannel wbc) {
+    return spi.readToByteChannel(v, section, wbc);
+  }
+
+  // experimental - not general
+  protected StructureDataIterator getStructureIterator(Structure s, int bufferSize) throws java.io.IOException {
+    return spi.getStructureIterator(s, bufferSize);
+  }
+
+------------------
+Variable implements ProxyReader
+
+  1) all reading is channelled through these:
+
+  protected Array _read() throws IOException {
+    if (cache != null && cache.data != null)
+      return cache.data.copy();
+
+    Array data = proxyReader.reallyRead(this, null);
+
+    // optionally cache it
+    if (isCaching()) {
+      setCachedData(data);
+      return cache.data.copy();
+    } else {
+      return data;
+    }
+  }
+
+  protected Array _read(Section section) throws IOException, InvalidRangeException {
+    if (isCaching()) {
+      if (cache.data == null)
+        setCachedData(  _read()); // read and cache entire array
+      return cache.data.sectionNoReduce(section.getRanges()).copy(); // subset it, return copy
+    }
+
+    return proxyReader.reallyRead(this, section, null);
+  }
+
+  // experimental - not general
+  public long readToByteChannel(Section section, WritableByteChannel wbc) throws IOException, InvalidRangeException {
+    if ((ncfile == null) || hasCachedData())
+      return IospHelper.copyToByteChannel( read(section), wbc);
+
+    return ncfile.readToByteChannel(this, section, wbc);
+  }
+
+  2) by default proxyReader == this variable, calling these:
+
+  public Array reallyRead(Variable client, CancelTask cancelTask) throws IOException {
+    if (isMemberOfStructure()) {
+       List<String> memList = new ArrayList<String>();
+       memList.add(this.getShortName());
+       Structure s = parent.select(memList);
+       ArrayStructure as = (ArrayStructure) s.read();
+       return as.extractMemberArray( as.findMember( shortName));
+    }
+
+    return ncfile.readData(this, getShapeAsSection());
+  }
+
+  public Array reallyRead(Variable client, Section section, CancelTask cancelTask) throws IOException, InvalidRangeException {
+    if (isMemberOfStructure())
+      throw new UnsupportedOperationException("Cannot directly read section of Member Variable="+getName());
+
+    return ncfile.readData(this, section);
+  }
+
+  so Variable gets its data from the ncfile, unless a proxyReader has been set.
+  its adds caching to whatever proxyReader does.
+  proxyReader is used by slice() and section() directly on the Variable.
+
+------------------
+VariableDS extends Variable
+
+  1) overrides:
+
+  protected Array _read() throws IOException {
+    Array result;
+
+    // check if already cached - only done explicitly by application
+    if (cache != null && cache.data != null)
+      result = cache.data.copy(); // should this return without further mod?
+    else if (super.hasCachedData()) // cache only raw data, so dont use 2x memory
+      result = super._read();
+    else
+      result = proxyReader.reallyRead(this, null);
+
+    if (needScaleOffsetMissing)
+      return convertScaleOffsetMissing(result);
+    else if (needEnumConversion)
+      return convertEnums(result);
+    else
+      return result;
+    }
+
+  public Array reallyRead(Variable client, CancelTask cancelTask) throws IOException {
+    if (orgVar == null)
+      return getMissingDataArray(shape);
+    return orgVar.read();
+  }
+
+  protected Array _read(Section section) throws IOException, InvalidRangeException  {
+    Array result;
+    if (hasCachedData())
+      result = super._read(section);
+    else
+      result = proxyReader.reallyRead(this, section, null);
+
+    if (needScaleOffsetMissing)
+      return convertScaleOffsetMissing(result);
+    else if (needEnumConversion)
+      return convertEnums(result);
+    else
+      return result;
+  }
+
+  public Array reallyRead(Variable client, Section section, CancelTask cancelTask) throws IOException, InvalidRangeException  {
+    if (orgVar == null)
+      return getMissingDataArray(section.getShape());
+    return orgVar.read(section);
+  }
+
+  so VariableDS gets its data from the orgVar, or returns missing data
+  it adds data conversion to whatever proxyReader does.
+  note that cahced dat should be pre-conversion.
+
+  2) Constructors for VariableDS:
+
+  // Wrap the given Variable, delegate data reading to it, separate cache
+  // used when wrapping a NetcdfFile
+  public VariableDS(Group g, Variable orgVar, boolean enhance) {
+    super(orgVar);
+    this.orgVar = orgVar;
+    ...
+    createNewCache();
+
+    // ????? seems like you want to redo these ??
+    if (orgVar instanceof VariableDS) {
+      VariableDS ncVarDS = (VariableDS) orgVar;
+      this.enhanceProxy = ncVarDS.enhanceProxy;
+      this.scaleMissingProxy = ncVarDS.scaleMissingProxy;
+      this.enhanceMode = ncVarDS.enhanceMode;
+
+    } else {
+      this.enhanceProxy = new EnhancementsImpl( this);
+      if (enhance) {
+        enhance(NetcdfDataset.getDefaultEnhanceMode());
+      } else {
+        this.scaleMissingProxy = new EnhanceScaleMissingImpl();
+      }
+    }
+  }
+
+  // copy constructor
+  protected VariableDS( VariableDS vds) {
+    super(vds);
+    this.orgVar = vds;
+
+    // ????? seems like you want to redo these ??
+    this.enhanceMode = vds.enhanceMode;
+    this.needScaleOffsetMissing = vds.needScaleOffsetMissing;
+    this.needEnumConversion = vds.needEnumConversion;
+  }
+
+-----------------
+CoordinateAxis extends VariableDS
+
+  protected CoordinateAxis(NetcdfDataset ncd, VariableDS vds) {
+    super(vds);
+    this.ncd = ncd;
+    ...
+  }
+
+-----------------
+CoordinateAxis1D extends CoordinateAxis
+
+  public CoordinateAxis1D(NetcdfDataset ncd, VariableDS vds) {
+    super(ncd, vds);
+    ...
+  }
+
+  so we use copy constructor for CoordinateAxes
+
+===========
+

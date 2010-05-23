@@ -839,11 +839,9 @@ public class Variable implements VariableIF, ProxyReader {
    */
   @Override
   public Array reallyRead(Variable client, Section section, CancelTask cancelTask) throws IOException, InvalidRangeException {
-
     if (isMemberOfStructure()) {
       throw new UnsupportedOperationException("Cannot directly read section of Member Variable="+getName());
     }
-
     // read just this section
     return ncfile.readData(this, section);
   }
@@ -1128,7 +1126,6 @@ public class Variable implements VariableIF, ProxyReader {
     this.isVariableLength = from.isVariableLength;
     this.ncfile = from.ncfile;
     this.parent = from.parent;
-    // this.proxyReader = from.proxyReader; // not sharing the proxyReader
     this.shape = from.getShape();
     this.shortName = from.shortName;
     this.sizeToCache = from.sizeToCache;
