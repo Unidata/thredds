@@ -1475,9 +1475,9 @@ public class Variable implements VariableIF, ProxyReader {
     setCachedData(cacheData, false);
   }
 
-  public Array getCachedData() {
-    return (cache == null) ? null : cache.data;
-  }
+  //public Array getCachedData() {
+  //  return (cache == null) ? null : cache.data;
+  //}
   /**
    * Set the data cache
    *
@@ -1505,11 +1505,12 @@ public class Variable implements VariableIF, ProxyReader {
   }
 
   /**
-   * Has data been read and cached
+   * Has data been read and cached.
+   * Use only on a Variable, not a subclass.
    * @return true if data is read and cached
    */
   public boolean hasCachedData() {
-    return null != cache.data;
+    return (cache != null) && (null != cache.data);
   }
 
   // this indirection allows us to share the cache among the variable's sections and copies

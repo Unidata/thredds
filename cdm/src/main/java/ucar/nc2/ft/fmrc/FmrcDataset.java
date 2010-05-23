@@ -260,7 +260,7 @@ class FmrcDataset {
         if (grid == null) { // only non-agg vars need to be cached
           Variable orgV = (Variable) v.getSPobject();
           if (orgV.getSize() > 10 * 1000 * 1000)
-            System.out.println("FMRCDataset build Proto cache >10M var= "+orgV.getName());
+            logger.info("FMRCDataset build Proto cache >10M var= "+orgV.getName());
           v.setCachedData(orgV.read()); // read from original - store in proto
         }
 
@@ -349,10 +349,10 @@ class FmrcDataset {
   }
 
   // transfer the objects in src group to the target group, unless that name already exists
-  // Dimensions, Variables, Groups are not transferred, but an equivilent object is created with same metadata
+  // Dimensions, Variables, Groups are not transferred, but an equivalent object is created with same metadata
   // Attributes and EnumTypedef are transferred, these are immutable with no references to container
 
-  private void transferGroup(Group srcGroup, Group targetGroup, NetcdfDataset target) {
+  private void transferGroup(Group srcGroup, Group targetGroup, NetcdfDataset target) throws IOException {
     // group attributes
     DatasetConstructor.transferGroupAttributes(srcGroup, targetGroup);
 
@@ -378,9 +378,10 @@ class FmrcDataset {
         }
 
         DatasetConstructor.transferVariableAttributes(v, targetV);
-        targetV.setSPobject(v); //temporary, for non-agg variables when proto is made
-        if (v.hasCachedData())
-          targetV.setCachedData(v.getCachedData()); //
+        VariableDS vds = (VariableDS) v;
+        targetV.setSPobject(vds); //temporary, for non-agg variables when proto is made
+        if (vds.hasCachedDataRecurse())
+          targetV.setCachedData(vds.read()); //
         targetGroup.addVariable(targetV);
       }
     }
@@ -844,9 +845,9 @@ class FmrcDataset {
 
     // these are the non-agg variables - get data or ProxyReader from proto
     for (Variable v : nonAggVars) {
-      Variable protoV = proto.findVariable(v.getName());
-      if (protoV.hasCachedData()) {
-        v.setCachedData(protoV.getCachedData()); // read from original
+      VariableDS protoV = (VariableDS) proto.findVariable(v.getName());
+      if (protoV.hasCachedDataRecurse()) {
+        v.setCachedData(protoV.read()); // read from original
       } else {
         v.setProxyReader(protoV.getProxyReader());
       }

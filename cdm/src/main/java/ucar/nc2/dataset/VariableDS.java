@@ -137,6 +137,7 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
   /**
    * Wrap the given Variable, making it into a VariableDS.
    * Delegate data reading to the original variable.
+   * Take all metadata from original variable.
    * Does not share cache, iosp, proxies.
    *
    * @param g logical container, if null use orgVar's group
@@ -163,24 +164,26 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
     this.orgVar = orgVar;
     this.orgDataType = orgVar.getDataType();
 
-    if (orgVar instanceof VariableDS) {
+    /* if (orgVar instanceof VariableDS) {
       VariableDS ncVarDS = (VariableDS) orgVar;
       this.enhanceProxy = ncVarDS.enhanceProxy;
       this.scaleMissingProxy = ncVarDS.scaleMissingProxy;
       this.enhanceMode = ncVarDS.enhanceMode;
 
-    } else {
+    } else { */
       this.enhanceProxy = new EnhancementsImpl( this);
       if (enhance) {
         enhance(NetcdfDataset.getDefaultEnhanceMode());
       } else {
         this.scaleMissingProxy = new EnhanceScaleMissingImpl();
       }
-    }
+    // }
   }
 
   /**
    * Copy constructor, for subclasses.
+   * Used by copy().
+   * Share everything except the coord systems.
    * @param vds copy from here.
    */
   protected VariableDS( VariableDS vds) {
@@ -439,17 +442,21 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
     return (orgVar != null) ? orgVar.toStringDebug() : "";
   }
 
+  public boolean hasCachedDataRecurse() {
+    if (super.hasCachedData()) return true;
+    if ((orgVar != null) && orgVar.hasCachedData()) return true;
+    return false;
+  }
+
     @Override
   protected Array _read() throws IOException {
-      Array result;
+     Array result;
 
-    // check if already cached - only done explicitly by app
-    if (cache != null && cache.data != null)
-      result = cache.data.copy();
-    else if (super.hasCachedData())
-      result = super._read(); // only raw data is cached
+    // check if already cached - caching in VariableDS only done explicitly by app
+    if (hasCachedData())
+      result = super._read();
     else
-      result =  proxyReader.reallyRead(this, null);
+      result = proxyReader.reallyRead(this, null);
 
     if (needScaleOffsetMissing)
       return convertScaleOffsetMissing(result);

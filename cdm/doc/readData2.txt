@@ -1,4 +1,4 @@
-last updated MAy 22, 2010
+last updated May 23, 2010
 ------------------
 NetcdfFile
 
@@ -98,11 +98,7 @@ VariableDS extends Variable
 
   protected Array _read() throws IOException {
     Array result;
-
-    // check if already cached - only done explicitly by application
-    if (cache != null && cache.data != null)
-      result = cache.data.copy(); // should this return without further mod?
-    else if (super.hasCachedData()) // cache only raw data, so dont use 2x memory
+    if (hasCachedData())
       result = super._read();
     else
       result = proxyReader.reallyRead(this, null);
@@ -144,41 +140,48 @@ VariableDS extends Variable
 
   so VariableDS gets its data from the orgVar, or returns missing data
   it adds data conversion to whatever proxyReader does.
-  note that cahced dat should be pre-conversion.
+  note that cached data should be pre-conversion.
 
   2) Constructors for VariableDS:
 
-  // Wrap the given Variable, delegate data reading to it, separate cache
-  // used when wrapping a NetcdfFile
+  // Wrap the given Variable, making it into a VariableDS.
+  // Used to wrap a NetcdfFile, and by CoordinateAxis
+  // Delegate data reading to the original variable.
+  // Take all metadata from original variable.
+  // Does not share cache, iosp, proxies.
   public VariableDS(Group g, Variable orgVar, boolean enhance) {
     super(orgVar);
-    this.orgVar = orgVar;
-    ...
+    if (g != null) this.group = g; // otherwise super() sets group; this affects the long name and the dimensions.
+    setDimensions( getDimensionsString()); // reset the dimensions
+
+    // dont share cache, iosp : all IO is delegated
+    this.ncfile = null;
+    this.spiObject = null;
     createNewCache();
 
-    // ????? seems like you want to redo these ??
-    if (orgVar instanceof VariableDS) {
-      VariableDS ncVarDS = (VariableDS) orgVar;
-      this.enhanceProxy = ncVarDS.enhanceProxy;
-      this.scaleMissingProxy = ncVarDS.scaleMissingProxy;
-      this.enhanceMode = ncVarDS.enhanceMode;
+    this.orgVar = orgVar;
+    this.orgDataType = orgVar.getDataType();
 
+    this.enhanceProxy = new EnhancementsImpl( this);
+    if (enhance) {
+      enhance(NetcdfDataset.getDefaultEnhanceMode());
     } else {
-      this.enhanceProxy = new EnhancementsImpl( this);
-      if (enhance) {
-        enhance(NetcdfDataset.getDefaultEnhanceMode());
-      } else {
-        this.scaleMissingProxy = new EnhanceScaleMissingImpl();
-      }
+      this.scaleMissingProxy = new EnhanceScaleMissingImpl();
     }
   }
 
-  // copy constructor
+  // copy constructor, used by copy()
+  // Share everything except the coord systems.
   protected VariableDS( VariableDS vds) {
     super(vds);
-    this.orgVar = vds;
 
-    // ????? seems like you want to redo these ??
+    this.orgVar = vds;
+    this.orgDataType = vds.orgDataType;
+    this.orgName = vds.orgName;
+
+    this.scaleMissingProxy = vds.scaleMissingProxy;
+    this.enhanceProxy = new EnhancementsImpl( this); //decouple coordinate systems
+
     this.enhanceMode = vds.enhanceMode;
     this.needScaleOffsetMissing = vds.needScaleOffsetMissing;
     this.needEnumConversion = vds.needEnumConversion;

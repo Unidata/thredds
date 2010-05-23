@@ -4,6 +4,9 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.2:
  3:(2010-xx-xx)
+  VariableDS: hasCachedDataRecurse() checks orgVar.hasCachedData(), used by FmrcDataset
+  clean up VariableDS cache checking
+  CoordinateAxis wraps VariableDS, instead of using copy constructor.
   AWIPS CoordSysBuilder improvements
   H5header: workaround for natts > 8 hdf5 bug
   N3header: deal with possible vsize overflow.

@@ -214,6 +214,7 @@ public class MetadataManager {
 
   private Calendar cal = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
   private DateFormatter dateFormatter = new DateFormatter();
+  private boolean showDelete = false;
 
   public MetadataManager(String collectionName) throws DatabaseException, IOException {
     this.collectionName = collectionName;
@@ -318,14 +319,19 @@ public class MetadataManager {
 
       //System.out.printf("total found to delete = %d%n", count);
 
-      for (DatabaseEntry entry : result) {
-        OperationStatus status = database.delete(null, entry);
-        String key = new String(entry.getData(), UTF8);
-        //System.out.printf("%s deleted %s%n", status, key);
+      if (showDelete) {
+        for (DatabaseEntry entry : result) {
+          OperationStatus status = database.delete(null, entry);
+          String key = new String(entry.getData(), UTF8);
+          System.out.printf("%s deleted %s%n", status, key);
+        }
       }
 
+    } catch (UnsupportedOperationException e) {
+      logger.error("Trying to delete "+collectionName, e);
+
     } catch (UnsupportedEncodingException e) {
-      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+      logger.error("Trying to delete "+collectionName, e);
 
     } finally {
       if (null != myCursor)
