@@ -91,6 +91,14 @@
     <maxAge>30 min</maxAge>
   </WCS>
 
+  <WMS>
+    <allow>true</allow>
+    <allowRemote>false</allowRemote>
+    <maxImageWidth>2000</maxImageWidth>
+    <maxImageHeight>2000</maxImageHeight>
+  </WMS>
+
+
   <!-- Viewer>my.package.MyViewer</Viewer -->
 
   <FmrcInventory>

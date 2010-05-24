@@ -118,10 +118,8 @@
   <WMS>
     <allow>true</allow>
     <allowRemote>false</allowRemote>
-    <title>TDS/ncWMS</title>
-    <allowFeatureInfo>true</allowFeatureInfo>
-    <maxImageWidth>1024</maxImageWidth>
-    <maxImageHeight>1024</maxImageHeight>
+    <maxImageWidth>5000</maxImageWidth>
+    <maxImageHeight>5000</maxImageHeight>
   </WMS>
 
   <!-- Enable CatalogGen service.

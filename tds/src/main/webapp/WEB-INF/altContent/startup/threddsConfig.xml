@@ -186,11 +186,9 @@
   <!--
   <WMS>
     <allow>false</allow>
-    <paletteLocationDir>/data/my/pallettes/</paletteLocationDir>
-    <ogcMetaXML>OGCMeta.xml</ogcMetaXML>
-    <dir>/temp/ncache/</dir>
-    <scour>15 min</scour>
-    <maxAge>30 min</maxAge>
+    <allowRemote>false</allowRemote>
+    <maxImageWidth>2000</maxImageWidth>
+    <maxImageHeight>2000</maxImageHeight>
   </WMS>
   -->
 
