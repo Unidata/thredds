@@ -303,7 +303,7 @@
 
       <p>Attempt to access the Tomcat <code><small>manager</small></code> application in your browser: <a href="http://localhost:8080/manager/html/">http://localhost:8080/manager/html/</a>. You will be prompted to login via BASIC authentication, which will end in failure since we do not yet have permission to access the <code><small>manager</small></code> application:</p>
 
-        <p><a href="../images/manager401.png"><img src="../images/manager401.png" width="400" height="433" alt="Manager app with 401 response code"></a></p>
+        <p><a href="../../images/manager401.png"><img src="../../images/manager401.png" width="400" height="433" alt="Manager app with 401 response code"></a></p>
 
       <div id="expanded" class="question">
        <p>Based on what we know about Tomcat configuration, which file in <code><small>$TOMCAT_HOME/conf</small></code> should we edit to grant ourselves access to the <code><small>manager</small></code> application?</p>
@@ -346,7 +346,7 @@
 
            <p>Attempt to access the <code><small>manager</small></code> application again (<a href="http://localhost:8080/manager/html/">http://localhost:8080/manager/html/</a>), this time logging in using the <code><small>name</small></code> and <code><small>password</small></code> specified in <code><small>tomcat-users.xml</small></code>:  </p>
 
-         <p><a href="../images/manager.png"><img src="../images/manager.png" width="400" height="433" alt="Tomcat manager application"></a></p>
+         <p><a href="../../images/manager.png"><img src="../../images/manager.png" width="400" height="433" alt="Tomcat manager application"></a></p>
 
       <div id="note" class="ahead">
        <h4>Thinking ahead</h4>
@@ -384,7 +384,7 @@
       <ol>
        <li>Use the <code>manager</code> application to undeploy the TDS.</li>          
         <p>Find the TDS in the list of web application on the <code><small>Applications</small></code> page.  <b>Stop</b> and then <b>Undeploy</b> the TDS:</p>
-        <p><img src="../images/undeploy.gif" height="92" width="754" alt="Undeploy the TDS"></p>
+        <p><img src="../../images/undeploy.gif" height="92" width="754" alt="Undeploy the TDS"></p>
         <p>List the contents of <code><small>$TOMCAT_HOME/webapps/</small></code> to verify that both <code><small>thredds.war</small></code> and the unpacked <code><small>thredds/</small></code> directory have been removed:</p>
 <pre>
 <b>$</b> cd $TOMCAT_HOME/webapps
@@ -398,7 +398,7 @@ drwxr-xr-x  3 thredds workshop     4096 2009-05-13 17:15 ROOT
 </pre>
        <li>Deploy the TDS using the <code>manager</code> application.</li>
        <p>Upload the TDS WAR file using the <code><small>Deploy</small></code> section of the <code><small>manager</small></code> application:</p>
-        <p><a href="../images/deploy.png"><img src="../images/deploy.png" height="182" width="500" alt="Deploy the TDS"></a></p>
+        <p><a href="../../images/deploy.png"><img src="../../images/deploy.png" height="182" width="500" alt="Deploy the TDS"></a></p>
        <p>Confirm the deployment went as planned by accessing the TDS using your browser: <a href="http://localhost:8080/thredds/">http://localhost:8080/thredds/</a></p>
        </ol>
      </div> <!-- end subsection -->
@@ -819,7 +819,7 @@ tcp        0      0 127.0.0.1:<b>8443</b>               0.0.0.0:*               
 &lt;/tomcat-users&gt;
 </pre>  
         <li>Restart Tomcat and try to access the TDS remote management tool: <a href="http://localhost:8080/thredds/admin/debug">http://localhost:8080/thredds/admin/debug/</a></li>
-         <p><a href="../images/ugly.png"><img src="../images/ugly.png" width="400" height="433" alt="SSL warning for self-signed certificate"></a></p>
+         <p><a href="../../images/ugly.png"><img src="../../images/ugly.png" width="400" height="433" alt="SSL warning for self-signed certificate"></a></p>
        </ol>
       </div>
 
@@ -988,7 +988,7 @@ tcp        0      0 127.0.0.1:<b>8443</b>               0.0.0.0:*               
      <li>Verify SSL has been enabled for the Tomcat <code>manager</code> application.</li>
       <p>Restart Tomcat and verify SSL has been enabled for the Tomcat <code>manager</code> application: <a href="http://localhost:8080/manager/html/">http://localhost:8080/manager/html/</a></li></p>
 
-         <p><a href="../images/managerssl.png"><img src="../images/managerssl.png" width="500" height="138" alt="Tomcat manager authentication prompt"></a></p>
+         <p><a href="../../images/managerssl.png"><img src="../../images/managerssl.png" width="500" height="138" alt="Tomcat manager authentication prompt"></a></p>
 
 
       <div id="expanded" class="troubleshooting">
@@ -1036,7 +1036,7 @@ tcp        0      0 127.0.0.1:<b>8443</b>               0.0.0.0:*               
 
 
 
-   <p><img src="../images/thread.png" height="60" alt="THREDDS" valign="top" align="left" vspace="0" hspace="10" />  This document is maintained by Unidata.  Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.</p>
+   <p><img src="../../images/thread.png" height="60" alt="THREDDS" valign="top" align="left" vspace="0" hspace="10" />  This document is maintained by Unidata.  Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.</p>
 
    
 <script language="JavaScript" type="text/JavaScript">

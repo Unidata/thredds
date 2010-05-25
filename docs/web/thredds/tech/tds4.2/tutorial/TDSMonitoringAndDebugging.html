@@ -716,7 +716,7 @@ java.io.IOException: Cant read /data/ldm/pub/native/radar/level2/KFTG/20090602/L
        <li>Information is easily saved in text files.</li>
       </ul>
 
-      <p><a href="../images/liveheaders.png"><img src="../images/liveheaders.png" width="350" height="413" alt="Live HTTP Headers"/></a></p>
+      <p><a href="../../images/liveheaders.png"><img src="../../images/liveheaders.png" width="350" height="413" alt="Live HTTP Headers"/></a></p>
 
 
 
@@ -772,7 +772,7 @@ thredds   <b>5168</b>     1  5 14:01 pts/2    00:00:12 /home/thredds/jdk1.6.0_14
 thredds   5451  4285  0 14:05 pts/2    00:00:00 grep tomcat
 </pre>
           <p>Select the local JVM process corresponding to Tomcat and connect:</p>
-          <p><a href="../images/jconsole.png"><img src="../images/jconsole.png" width="400" height="333" alt="Starting JConsole" /></a></p>
+          <p><a href="../../images/jconsole.png"><img src="../../images/jconsole.png" width="400" height="333" alt="Starting JConsole" /></a></p>
 
        <li>Try to create a <code>PermGen</code> error via the Tomcat <code>manager</code> application.</li>
           <p>In your browser window, continually <code><small>Start</small></code>, <code><small>Stop</small></code> and <code><small>reload</small></code> the TDS and other web applications using the <code><small>manager</small></code> application.</p>
@@ -784,7 +784,7 @@ thredds   5451  4285  0 14:05 pts/2    00:00:00 grep tomcat
         <ol class="little">
          <li>The <code><small>manager</small></code> application stops responding.</li>
          <li><code><small>JConsole</small></code> will loose its connection with the Tomcat JVM:</li>
-          <p><a href="../images/permgen1.png"><img src="../images/permgen1.png" width="300" height="413" alt="PermGen Error" /></a></p>
+          <p><a href="../../images/permgen1.png"><img src="../../images/permgen1.png" width="300" height="413" alt="PermGen Error" /></a></p>
          <li>The following error is reported in <code><small>catalina.out</small></code>:</li>
 
 <pre>
@@ -793,9 +793,9 @@ Exception in thread "RMI TCP Connection(idle)" java.lang.OutOfMemoryError: PermG
 
 
          <li>In the two <code><small>JConsole</small></code> screen captures below, you can see the memory usage of <code><small>PermGen</small></code> increased with every reload of the application until it reaches the point where the JVM crashes with the <code><small>OutOfMemory</small></code> error. The default maximum <code><small>PermGen</small></code> amount of JVM is 64 MB.</p>
-          <p><a href="../images/permgen2.png"><img src="../images/permgen2.png" width="300" height="413" alt="PermGen Error" /></a></p>
+          <p><a href="../../images/permgen2.png"><img src="../../images/permgen2.png" width="300" height="413" alt="PermGen Error" /></a></p>
 
-          <p><a href="../images/permgen3.png"><img src="../images/permgen3.png" width="300" height="413" alt="PermGen Error" /></a></p>
+          <p><a href="../../images/permgen3.png"><img src="../../images/permgen3.png" width="300" height="413" alt="PermGen Error" /></a></p>
 
          </ol>
      </ol>
