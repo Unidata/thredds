@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//w3c//dtd html 4.0 transitional//en">
 <html><head>
    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><title>THREDDS Servlet Framework</title>
-  <link rel="stylesheet" href="../tds.css" type="text/css">
+  <link rel="stylesheet" href="../../tds.css" type="text/css">
   <style type="text/css">
 <!--
 .style1 {font-weight: bold}
@@ -36,7 +36,7 @@ for defining
 the datasets to be cataloged and served; and 2) an API for accessing
 the configuration information, generating THREDDS catalogs, and
 responding to servlet requests. The configuration
-files are simply THREDDS catalog files that can contain <a href="../../old/datasetScan/">datasetScan</a> and datasetRoot elements.<br>
+files are simply THREDDS catalog files that can contain <a href="../../catalog/v1.0.2/InvCatalogSpec.server.html#datasetScan_Element">datasetScan</a> and datasetRoot elements.<br>
 <br>
 <h3>Related Documents</h3>
 <ul>
@@ -104,7 +104,7 @@ catalogs and recursively follows all relative <strong>catalogRef</strong>
 links to build a full list of the catalogs it will serve. (Remember,
 all these config catalogs must live under the content directory.) Each <strong>datasetRoot</strong> and <strong>datasetScan</strong>
 element found in these catalogs defines the location of a dataset
-collection and the mapping from URL path to dataset path, see the <a href="../../old/datasetScan/">datasetScan documentation</a> for more
+collection and the mapping from URL path to dataset path, see the <a href="../../catalog/v1.0.2/InvCatalogSpec.server.html#datasetScan_Element">datasetScan documentation</a> for more
 details.<br>
 
 <h3>Dataset Directories - Data Files<br>
@@ -113,7 +113,7 @@ details.<br>
 
 <p>The dataset directories are defined by the <strong>datasetRoot</strong> and <strong>datasetScan</strong> elements. The <strong>datasetScan</strong>
 element also defines the particulars of what datasets are served and
-what metadata is automatically added to the generated catalogs,more details are available in the  <a href="../../old/datasetScan/">datasetScan documentation</a>.<br>
+what metadata is automatically added to the generated catalogs,more details are available in the  <a href="../../catalog/v1.0.2/InvCatalogSpec.server.html#datasetScan_Element">datasetScan documentation</a>.<br>
 </p>
 
 <p>[Note: Datasets that are not file based can be supported by
@@ -419,7 +419,7 @@ servlet (making this the default servlet):
 
 
 
-<p>The following provides security constraints on certain URLs and methods. See the <a href="../Security.html">THREDDS Security document</a> for details on how to configure Tomcat for security.<br>
+<p>The following provides security constraints on certain URLs and methods. See the <a href="../reference/TomcatSecurity.html">THREDDS Security document</a> for details on how to configure Tomcat for security.<br>
 </p>
 
 

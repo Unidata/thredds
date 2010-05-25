@@ -187,8 +187,8 @@
   <WMS>
     <allow>false</allow>
     <allowRemote>false</allowRemote>
-    <maxImageWidth>2000</maxImageWidth>
-    <maxImageHeight>2000</maxImageHeight>
+    <maxImageWidth>2048</maxImageWidth>
+    <maxImageHeight>2048</maxImageHeight>
   </WMS>
   -->
 
