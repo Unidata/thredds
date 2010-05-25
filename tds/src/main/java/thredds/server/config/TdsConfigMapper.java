@@ -30,9 +30,9 @@ import thredds.servlet.ThreddsConfig;
 
   enum ServerInfoMappings
   {
-    SERVER_NAME( "serverInformation.name", "htmlSetup.installName", "" ),
-    SERVER_LOGO_URL( "serverInformation.logoUrl", "htmlSetup.installLogoUrl", "" ),
-    SERVER_LOGO_ALT_TEXT( "serverInformation.logoAltText", "htmlSetup.installLogoAlt", "" ),
+    SERVER_NAME( "serverInformation.name", "htmlSetup.installName", "Initial TDS Installation" ),
+    SERVER_LOGO_URL( "serverInformation.logoUrl", "htmlSetup.installLogoUrl", "threddsIcon.gif" ),
+    SERVER_LOGO_ALT_TEXT( "serverInformation.logoAltText", "htmlSetup.installLogoAlt", "Initial TDS Installation" ),
     SERVER_ABSTRACT( "serverInformation.abstract", null, "" ),
     SERVER_KEYWORDS( "serverInformation.keywords", null, "" ),
     SERVER_CONTACT_NAME( "serverInformation.contact.name", null, "" ),
