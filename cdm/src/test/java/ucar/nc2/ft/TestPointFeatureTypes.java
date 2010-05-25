@@ -85,11 +85,10 @@ public class TestPointFeatureTypes extends TestCase {
     });
   }
 
-
   class MyFileFilter implements FileFilter {
     public boolean accept(File pathname) {
       String path = pathname.getPath();
-      // eliminate once that have been replaced by ncml
+      // eliminate ones that have been replaced by ncml
       if (new File(path + ".ncml").exists()) return false;
       if (path.endsWith(".ncml")) return true;
       int pos = path.lastIndexOf(".");
@@ -179,9 +178,7 @@ public class TestPointFeatureTypes extends TestCase {
     //int n = checkPointDataset(topdir + "cfPoint/station/kunicki.nc4", FeatureType.STATION, true);
     //System.out.printf("n=%d%n", n);
 
-    //assert 6 ==
-    //assert 5 ==
-    assert 12 == checkPointDataset(CFpointObs_topdir + "sectionRagged.ncml", FeatureType.SECTION, false);
+    assert 1516 == checkPointDataset(topdir + "ft/point/Surface_Synoptic_20090921_0000.nc", FeatureType.POINT, false);
     //System.out.printf("n=%d%n", n);
 
   }
@@ -218,7 +215,7 @@ public class TestPointFeatureTypes extends TestCase {
     assert 245 == checkPointDataset(topdir + "cfPoint/trajectory/p1140004.ncml", FeatureType.TRAJECTORY, true);
 
     // netcdf-4 with structure, from tom: tkunicki@usgs.gov
-    assert 6 == checkPointDataset(topdir + "cfPoint/station/kunicki.nc4", FeatureType.STATION, true);
+    // assert 6 == checkPointDataset(topdir + "cfPoint/station/kunicki.nc4", FeatureType.STATION, true);
   }
 
   public void testPlug() throws IOException {
@@ -248,7 +245,8 @@ public class TestPointFeatureTypes extends TestCase {
     assert 55856 == checkPointDataset(topdir + "ft/point/20091030_syn.gem", FeatureType.POINT, false);
     assert 28328 == checkPointDataset(topdir + "ft/point/20091030_syn.gem", FeatureType.STATION, false);
 
-    // netcdf buoy / synoptic ( robb's perl decoders i think) ?
+    // netcdf buoy / synoptic / metars ( robb's perl decoder output)
+    assert 7 == checkPointDataset(topdir + "ft/point/Surface_METAR_latest.nc", FeatureType.POINT, false);
     assert 32452 == checkPointDataset(topdir + "ft/point/Surface_Buoy_20090921_0000.nc", FeatureType.POINT, false);
     assert 1516 == checkPointDataset(topdir + "ft/point/Surface_Synoptic_20090921_0000.nc", FeatureType.POINT, false);
 

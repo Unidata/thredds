@@ -266,7 +266,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
 
       if (v instanceof VariableDS) {
         VariableDS vds = (VariableDS) v;
-        if (vds.getNeedScaleOffsetMissing() || vds.getNeedEnumConversion())
+        if (vds.needConvert())
           return true;
       }
 
@@ -307,17 +307,10 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
 
       if (v2 instanceof VariableDS) {
         VariableDS vds = (VariableDS) v2;
-        if (vds.getNeedScaleOffsetMissing()) {
+        if (vds.needConvert()) {
           Array mdata = newAS.extractMemberArray(m);
-          mdata = vds.convertScaleOffsetMissing(mdata);
+          mdata = vds.convert(mdata);
           newAS.setMemberArray(m, mdata);
-
-        } else if (vds.getNeedEnumConversion()) {
-          Array mdata = newAS.extractMemberArray(m);
-          //System.out.print(" convert "+vds.getName()+" array="+mdata.hashCode());
-          mdata = vds.convertEnums(mdata);
-          newAS.setMemberArray(m, mdata);
-          //System.out.println(" to  array="+mdata.hashCode());
         }
 
       } else if (v2 instanceof StructureDS) {
@@ -394,10 +387,8 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
         VariableDS vds = (VariableDS) v2;
         Array mdata = sdata.getArray(m);
 
-        if (vds.getNeedScaleOffsetMissing())
-          mdata = vds.convertScaleOffsetMissing(mdata);
-        else if (vds.getNeedEnumConversion())
-          mdata = vds.convertEnums(mdata);
+        if (vds.needConvert())
+          mdata = vds.convert(mdata);
 
         result.setMemberData(mResult, mdata);
       }

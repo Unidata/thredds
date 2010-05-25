@@ -138,7 +138,7 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
    * Wrap the given Variable, making it into a VariableDS.
    * Delegate data reading to the original variable.
    * Take all metadata from original variable.
-   * Does not share cache, iosp, proxies.
+   * Does not share cache, iosp.
    *
    * @param g logical container, if null use orgVar's group
    * @param orgVar the original Variable to wrap. The original Variable is not modified.
@@ -164,48 +164,52 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
     this.orgVar = orgVar;
     this.orgDataType = orgVar.getDataType();
 
-    /* if (orgVar instanceof VariableDS) {
+    if (orgVar instanceof VariableDS) {
       VariableDS ncVarDS = (VariableDS) orgVar;
       this.enhanceProxy = ncVarDS.enhanceProxy;
       this.scaleMissingProxy = ncVarDS.scaleMissingProxy;
       this.enhanceMode = ncVarDS.enhanceMode;
 
-    } else { */
+    } else {
       this.enhanceProxy = new EnhancementsImpl( this);
       if (enhance) {
         enhance(NetcdfDataset.getDefaultEnhanceMode());
       } else {
         this.scaleMissingProxy = new EnhanceScaleMissingImpl();
       }
-    // }
+    }
   }
 
   /**
    * Copy constructor, for subclasses.
-   * Used by copy().
+   * Used by copy() and CoordinateAxis
    * Share everything except the coord systems.
    * @param vds copy from here.
+   * @param isCopy called from copy()
    */
-  protected VariableDS( VariableDS vds) {
+  protected VariableDS( VariableDS vds, boolean isCopy) {
     super(vds);
 
-    this.orgVar = vds; // .orgVar; // LOOK ??
+    this.orgVar = vds;
     this.orgDataType = vds.orgDataType;
     this.orgName = vds.orgName;
 
     this.scaleMissingProxy = vds.scaleMissingProxy;
     this.enhanceProxy = new EnhancementsImpl( this); //decouple coordinate systems
 
-    // LOOK not sure of this
     this.enhanceMode = vds.enhanceMode;
-    this.needScaleOffsetMissing = vds.needScaleOffsetMissing;
-    this.needEnumConversion = vds.needEnumConversion;
+    if (isCopy) {
+      this.needScaleOffsetMissing = vds.needScaleOffsetMissing;
+      this.needEnumConversion = vds.needEnumConversion;
+    } else {
+      createNewCache(); // dont share cache unless its a copy      
+    }
   }
 
   // for section and slice
   @Override
   protected Variable copy() {
-    return new VariableDS( this);
+    return new VariableDS( this, true);
   }
 
   /**
@@ -269,8 +273,23 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
 
   }
 
-  boolean getNeedScaleOffsetMissing() { return needScaleOffsetMissing; }
-  boolean getNeedEnumConversion() { return needEnumConversion; }
+  boolean needConvert() {
+    if (needScaleOffsetMissing || needEnumConversion) return true;
+    if ((orgVar != null) && (orgVar instanceof VariableDS)) return ((VariableDS)orgVar).needConvert();
+    return false;
+  }
+
+  Array convert(Array data) {
+    if (needScaleOffsetMissing)
+      return convertScaleOffsetMissing(data);
+    else if (needEnumConversion)
+      return convertEnums(data);
+
+    if ((orgVar != null) && (orgVar instanceof VariableDS))
+      return ((VariableDS)orgVar).convert(data);
+
+    return data;
+  }
 
   /** Get the enhancement mode
    * @return the enhancement mode

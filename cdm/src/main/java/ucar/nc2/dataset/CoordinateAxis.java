@@ -100,7 +100,7 @@ public class CoordinateAxis extends VariableDS {
    * @param vds an existing Variable
    */
   protected CoordinateAxis(NetcdfDataset ncd, VariableDS vds) {
-    super(null, vds, false);
+    super(vds, false);
     this.ncd = ncd;
 
     if (vds instanceof CoordinateAxis) {
