@@ -16,8 +16,8 @@
     <attribute name="units" value="degrees_north" />
     <values start="40" increment="2"/>
   </variable>
-  <variable name="Id" shape="prof" type="int">
-    <attribute name="standard_name" value="section_id" />
+  <variable name="Id" shape="" type="int">
+    <attribute name="standard_name" value="trajectory_id" />
     <values start="6" increment="6"/>
   </variable>
   <variable name="profileAlt" shape="prof" type="int">

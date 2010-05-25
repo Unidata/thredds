@@ -18,7 +18,7 @@
     <values start="40" increment="2"/>
   </variable>
     <variable name="sectionId" shape="section" type="int">
-    <attribute name="standard_name" value="section_id" />
+    <attribute name="standard_name" value="trajectory_id" />
     <attribute name="missing_value" type="int" value="-9999" />
     <values>1 2 -9999</values>
   </variable>

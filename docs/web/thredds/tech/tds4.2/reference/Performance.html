@@ -29,7 +29,7 @@
 <h3>Setting the number of file handles</h3>
   <p> The OS typically limits the number of open file handles per process. To check this value on Unix, use:</p>
   <pre> ulimit -n </pre>
-  <p>If you are using the default <a href="../tds4.0/reference/ThreddsConfigXMLFile.html#FileHandles">TDS configuration values</a>, this value should be 1024 or greater. Otherwise you can tune this number based on your own settings. For example, to set this value to 2048 in the <em><strong>tomcat startup.sh</strong></em> script:</p>
+  <p>If you are using the default <a href="ThreddsConfigXMLFile.html#FileHandles">TDS configuration values</a>, this value should be 1024 or greater. Otherwise you can tune this number based on your own settings. For example, to set this value to 2048 in the <em><strong>tomcat startup.sh</strong></em> script:</p>
 <pre> ulimit -n 2048</pre>
   <p>This affects the number of files to keep in the <a href="#cache">NetcdfFile cache</a>. </p>
   <p>&nbsp;</p>
@@ -81,14 +81,14 @@ export JAVA_OPT</pre></blockquote>
 <h3><a name="cache"></a>File Handles and Caching </h3>
 <p>The TDS caches file handles to minimize OS overhead. Currently this defaults to allow 200 - 400 open files for OPeNDAP and WCS, and 25 - 40 for HTTP file serving. This means that your OS must allow at least that many file handles per process, otherwise you can get a &quot;out of file handles&quot; message, and the server can freeze up. </p>
 <p>These numbers limit performance, but not functionality. For example, the number of files in an aggregation is not limited by these file handle limits. </p>
-<p>You can change these settings in the <a href="../tds3.17/reference/ThreddsConfigXMLFile.html#FileHandles">threddsConfig.xml</a> file. </p>
+<p>You can change these settings in the <a href="ThreddsConfigXMLFile.html#FileHandles">threddsConfig.xml</a> file. </p>
 <p>Each NetcdfFile object encapsolates a file. NcML aggregations are careful not to keep constituent files open. When number of cache files &gt; maxElementsInMemory, a cleanup thread starts after 100 msecs. So the number of cached files can get larger than maxElementsInMemory in the interim, but unless you are really hammering the OS by opening many files per scond, it shouldnt get too much bigger. But leave some cushion, depending on your expected rate of opening files.</p>
 <h3>Consolidate cache / temporary directories</h3>
-<p>The TDS writes temporary files and caches files. By default these are stored under <strong>${tomcat_home}/content/thredds/. </strong>These directories can get large. You might want to relocate them to another place, for example if <strong>${tomcat_home}</strong> has limited space. Also, theres no need to backup the cache directories, so they can be placed on a disk that is not backup up. To move these directories, see <a href="../tds3.17/reference/ThreddsConfigXMLFile.html#FileHandles">TDS Configuration with threddsConfig.xml</a>.</p>
+<p>The TDS writes temporary files and caches files. By default these are stored under <strong>${tomcat_home}/content/thredds/. </strong>These directories can get large. You might want to relocate them to another place, for example if <strong>${tomcat_home}</strong> has limited space. Also, theres no need to backup the cache directories, so they can be placed on a disk that is not backup up. To move these directories, see <a href="ThreddsConfigXMLFile.html">TDS Configuration with threddsConfig.xml</a>.</p>
 <h3>OPeNDAP Memory Use</h3>
 <p>The OPeNDAP-Java layer of the server currently has to read the entire data request into memory before sending it to the client (we hope to get a streaming I/O solution working eventually). Generally clients only request subsets of large files, but if you need to support large data requests, make sure that the <em><strong>-Xmx</strong></em> parameter above is set accordingly. </p>
 <h3>Pre-indexing GRIB files</h3>
-<p>If you are serving GRIB files through any of the subsetting services (OPENDAP, WCS, etc), the CDM must write an index the first time it tries to read it. This can take several minutes for very large GRIB files. By <a href="../old/IDDconfig/tdsidd.html#grib">indexing GRIB files</a> before they are accessed, users get much faster response time.</p>
+<p>If you are serving GRIB files through any of the subsetting services (OPENDAP, WCS, etc), the CDM must write an index the first time it tries to read it. This can take several minutes for very large GRIB files. By indexing GRIB files before they are accessed, users get much faster response time.</p>
 <p>&nbsp;</p>
 <hr WIDTH="100%">
 <address>

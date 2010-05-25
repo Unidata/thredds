@@ -26,11 +26,11 @@
     <values start="100" increment="6"/>
   </variable>
   <variable name="stationIndex" shape="profile" type="int">
-    <attribute name="standard_name" value="ragged_parent_index" />
+    <attribute name="CF:ragged_parent_index" value="s" />
     <values>0 1 2 0 1 2</values>
   </variable>
   <variable name="numObs" shape="profile" type="int">
-    <attribute name="standard_name" value="ragged_row_size" />
+    <attribute name="CF:ragged_row_count" value="obs" />
     <values>1 2 2 3 3 3</values>
   </variable>
 

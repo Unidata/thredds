@@ -8,7 +8,7 @@
   <attribute name="Conventions" value="CF-1.5" />
 
   <variable name="sectionId" shape="section" type="int">
-    <attribute name="standard_name" value="section_id" />
+    <attribute name="standard_name" value="trajectory_id" />
     <values start="0" increment="1"/>
   </variable>
   <variable name="lon" shape="profile" type="float">
@@ -22,11 +22,11 @@
     <values start="40" increment="2"/>
   </variable>
   <variable name="sectionIndex" shape="profile" type="int">
-    <attribute name="standard_name" value="ragged_parent_index" />
+    <attribute name="CF:ragged_parent_index" value="section" />
     <values>0 1 2 0 2 1</values>
   </variable>
   <variable name="obsCount" shape="profile" type="int">
-    <attribute name="standard_name" value="ragged_row_size" />
+    <attribute name="CF:ragged_row_count" value="obs" />
     <values>1 2 3 3 2 1</values>
   </variable>
 

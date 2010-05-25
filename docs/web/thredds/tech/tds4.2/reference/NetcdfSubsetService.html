@@ -25,26 +25,25 @@ access data through the Netcdf Subset Service, look at <a href="../../interfaceS
   <p>Then as usual, add the service to any datasets that you want served, eg:</p>
   <pre style="margin-left: 40px;">&lt;dataset name="datasetName" ID="datasetID" urlPath="/my/urlPath"&gt; <br>   &lt;serviceName&gt;<strong>subsetServer</strong>&lt;/serviceName&gt; <br>&lt;/dataset&gt; </pre>
   <p>Note that the name of the service ( <em>subsetServer</em> in this example) is arbitrary, but the <strong>serviceType </strong>and<strong> base </strong>must be exactly as shown. </p>
-  <p>2. In the <a href="../../reference/ThreddsConfigXMLFile.html#NetcdfSubsetService">threddsConfig.xml file [3.17 docs]</a>, enable the NetcdfSubsetService. </p>
-  <p>&nbsp;</p>
+  <p>2. In the <a href="ThreddsConfigXMLFile.html">threddsConfig.xml file</a>, enable the NetcdfSubsetService. </p>
+<p>&nbsp;</p>
   <h2>Restrictions on what files can be served </h2>
   <p>Only
 Gridded Data can be served, e.g. model data and non-swath sattelite
 data. The datasets must be in a format that the CDM can read. To check
 both of these, open your file in the
-    <a href="http://www.unidata.ucar.edu/software/netcdf-java/v2.2/webstart/index.html">NetCDF ToolsUI program</a>,
-    using the <em><strong>Grids</strong></em> Tab. Any  fields
+    <a href="http://www.unidata.ucar.edu/software/netcdf-java/v4.2/webstart/netCDFtools.jnlp">NetCDF ToolsUI program</a>,
+    using the <em><strong>FeratureType/Grids</strong></em> Tab. Any  fields
     identified as grids will show up in the top table. To be sure,
     go into the viewer (click
-    <img src="../../images/redraw.jpg" alt="Redraw" align="middle" height="33" width="35">
+    <img src="../../images/redraw.gif" alt="Redraw" align="middle" height="20" width="20">
     to bring up the Viewer, then click
-    <img src="../../images/redraw.jpg" alt="Redraw" align="middle" height="33" width="35">
+    <img src="../../images/redraw.gif" alt="Redraw" align="middle" height="20" width="20">
 
 again to show the data) and make sure the data is displayed correctly.
-If all that works, then the data should be served correctly by the TDS.
-</p>
+If all that works, then the data should be served correctly by the TDS.</p>
 
-  <hr width="100%">
+<hr width="100%">
   <address>
     <img alt="THREDDS" src="../../images/thread.png" height="108" width="110">
     This document is maintained by Unidata and was

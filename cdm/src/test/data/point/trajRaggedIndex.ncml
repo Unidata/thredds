@@ -22,7 +22,7 @@
     <values start="666" increment="6"/>
   </variable>
   <variable name="trajIndex" shape="obs" type="int">
-    <attribute name="standard_name" value="ragged_parent_index" />
+    <attribute name="CF:ragged_parent_index" value="traj" />
     <values>0 0 0 1 1 2</values>
   </variable>
 

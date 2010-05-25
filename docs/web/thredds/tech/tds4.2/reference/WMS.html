@@ -25,7 +25,7 @@ application. There should be one or more variables shown as a GeoGrid.</li></ol>
 WMS is enabled, datasets can be configured to have a WMS access method
 in the TDS catalog configuration files similar to how other services
 are configured. The service element's serviceType and base attribute
-values must be as follows:</p><pre style="margin-left: 40px;">&lt;service name="wms" serviceType="<strong>WMS</strong>" base="<strong>/thredds/wms/</strong>" /&gt;</pre><p>The dataset to be served must reference this service (or a containing compound service) by the service name:</p><pre style="margin-left: 40px;">&lt;dataset ID="sample" name="Sample Data" urlPath="sample.nc"&gt;<br>  &lt;serviceName&gt;wms&lt;/serviceName&gt;<br>&lt;/dataset&gt;</pre><p>The dataset can be configured by datasetRoot or datasetScan as appropriate (see "<a href="../../tutorial/BasicConfig.html">Basic Configuration</a>").
+values must be as follows:</p><pre style="margin-left: 40px;">&lt;service name="wms" serviceType="<strong>WMS</strong>" base="<strong>/thredds/wms/</strong>" /&gt;</pre><p>The dataset to be served must reference this service (or a containing compound service) by the service name:</p><pre style="margin-left: 40px;">&lt;dataset ID="sample" name="Sample Data" urlPath="sample.nc"&gt;<br>  &lt;serviceName&gt;wms&lt;/serviceName&gt;<br>&lt;/dataset&gt;</pre><p>The dataset can be configured by datasetRoot or datasetScan as appropriate (see "<a href="../tutorial/BasicTomcatAndTDSSecurity.html">Basic Configuration</a>").
 They are listed in the resulting THREDDS catalogs as are other
 datasets.&nbsp;WMS clients may not be able to directly use the THREDDS
 catalogs to find the WMS services but the catalogs are useful for users

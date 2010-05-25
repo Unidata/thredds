@@ -101,7 +101,7 @@ and 3) the status code in the end of transaction message is<strong> 500</strong>
 <p>TDS uses the <a href="http://logging.apache.org/log4j/docs/">Log4J </a> library, currently contained in the NLOG4J library which implements the <a href="http://www.slf4j.org/">SLF4J</a>
 logging facade, which the Netcdf-Java library uses. Users of the TDS
 can ignore the SLF4J facade, and need only deal with log4j. </p>
-<p>The <a href="../../reference/log4j.xml.txt">default log4j configuration file</a>  is shipped inside the TDS war file. Once the thredds.war file is expanded, you can find it at <strong>${tomcat_home}/webapps/thredds/WEB-INF/log4j.xml. </strong>You
+<p>The <a href="log4j.xml.txt">default log4j configuration file</a>  is shipped inside the TDS war file. Once the thredds.war file is expanded, you can find it at <strong>${tomcat_home}/webapps/thredds/WEB-INF/log4j.xml. </strong>You
 can modify this if you want and restart the TDS to have it take
 efffect. However, it will be overwritten when you install an updated
 thredds.war file.</p>

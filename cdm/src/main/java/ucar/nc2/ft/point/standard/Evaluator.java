@@ -107,9 +107,18 @@ public class Evaluator {
 
   static public Variable getVariableWithAttributeValue(NetcdfDataset ds, String attName, String attValue) {
     for (Variable v : ds.getVariables()) {
-      String stdName = ds.findAttValueIgnoreCase(v, attName, null);
-      if ((stdName != null) && stdName.equals(attValue))
+      String haveValue = ds.findAttValueIgnoreCase(v, attName, null);
+      if ((haveValue != null) && haveValue.equals(attValue))
         return v;
+    }
+    return null;
+  }
+
+  static public String getVariableAttributeValue(NetcdfDataset ds, String attName) {
+    for (Variable v : ds.getVariables()) {
+      String haveValue = ds.findAttValueIgnoreCase(v, attName, null);
+      if (haveValue != null)
+        return haveValue;
     }
     return null;
   }
