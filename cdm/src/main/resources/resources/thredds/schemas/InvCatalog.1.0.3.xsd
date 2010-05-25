@@ -8,9 +8,9 @@
   elementFormDefault="qualified"
   attributeFormDefault="unqualified" version="1.0.3">
 
-  <!-- import other namespaces
+  <!-- import other namespaces -->
   <xsd:import namespace="http://www.w3.org/1999/xlink" schemaLocation="http://www.unidata.ucar.edu/schemas/other/xlink.xsd"/>
-  <xsd:import namespace="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" schemaLocation="http://www.unidata.ucar.edu/schemas/netcdf/ncml-2.2.xsd"/> -->
+  <xsd:import namespace="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" schemaLocation="http://www.unidata.ucar.edu/schemas/netcdf/ncml-2.2.xsd"/>
 
   <!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx -->
   <!-- Catalog element -->
@@ -409,9 +409,7 @@
       <xsd:any namespace="http://www.w3.org/1999/xhtml" minOccurs="0" maxOccurs="unbounded" processContents="strict"/>
     </xsd:sequence>
     <xsd:attribute name="type" type="documentationEnumTypes"/>
-    <!--xsd:attribute name="xlink:type" type="xsd:string"/>
-    <xsd:attribute name="xlink:href" type="xsd:string"/-->
-    <!--xsd:attributeGroup ref="XLink"/-->
+    <xsd:attributeGroup ref="XLink"/>
   </xsd:complexType>
 
   <!-- Metadata element -->
