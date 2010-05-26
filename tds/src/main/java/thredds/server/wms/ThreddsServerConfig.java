@@ -150,7 +150,7 @@ public class ThreddsServerConfig implements ServerConfig
 
     @Override
     public Set<String> getKeywords() {
-      String[] keysArray = this.tdsContext.getServerInfo().getKeywords().split( "," );
+      String[] keysArray = this.tdsContext.getServerInfo().getKeywords().split( ",\\s*" );
       // preserves iteration order
       Set<String> keywords = new LinkedHashSet<String>( keysArray.length );
       keywords.addAll( Arrays.asList( keysArray ) );
