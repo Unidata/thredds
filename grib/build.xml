@@ -31,9 +31,9 @@
     <property name="root.dir" location="${base}"/>
 
     <property name="src.dir" value="./src"/>
-    <condition property="src.raf" value="../thredds/common/src/java">
+    <condition property="src.raf" value="../common/src/java">
       <and>
-        <available file="../thredds/common/src/java" type="dir"/>
+        <available file="../common/src/java" type="dir"/>
       </and>
     </condition>
 
@@ -132,7 +132,7 @@
   </target>
 
   <!-- Make noRaf jar file -->
-  <target name="noRaf" depends="compile">
+  <target name="noRaf" depends="compile" description="make thredds jar">
     <jar jarfile="${build.dir}/${jar.filename}"
          basedir="${build.dest.dir}"
          includes="ucar/grib/**/*.class ucar/grid/**/*.class ucar/jpeg/**/*.class **/tables/*">
@@ -222,8 +222,8 @@
   <!-- Build system -->
   <target name="build" depends="jar"/>
   
-  <target name="thredds" depends="noRaf">
-    <copy file="${build.dir}/${jar.filename}" todir="../thredds/lib/release/" />
+  <target name="thredds" depends="noRaf" description="make and release thredds jar">
+    <copy file="${build.dir}/${jar.filename}" todir="../lib/release/" />
   </target>
 
   <!-- Make javadoc -->

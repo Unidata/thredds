@@ -26,14 +26,6 @@
       <maximumStackSize value="32" />
       <properties />
     </buildFile>
-    <buildFile url="file://$PROJECT_DIR$/../../../grib/build.xml">
-      <additionalClassPath />
-      <antReference projectDefault="true" />
-      <customJdkName value="" />
-      <maximumHeapSize value="128" />
-      <maximumStackSize value="2" />
-      <properties />
-    </buildFile>
   </component>
   <component name="BuildJarProjectSettings">
     <option name="BUILD_JARS_ON_MAKE" value="false" />
@@ -562,33 +554,6 @@
                 </list>
               </option>
               <option name="trunkUrl" value="http://scm.opendap.org/svn/trunk" />
-            </SvnBranchConfiguration>
-          </value>
-        </entry>
-        <entry key="$PROJECT_DIR$/../../../grib">
-          <value>
-            <SvnBranchConfiguration>
-              <option name="branchMap">
-                <map>
-                  <entry key="svn://zero/grib/branch">
-                    <value>
-                      <list />
-                    </value>
-                  </entry>
-                  <entry key="svn://zero/grib/tag">
-                    <value>
-                      <list />
-                    </value>
-                  </entry>
-                </map>
-              </option>
-              <option name="branchUrls">
-                <list>
-                  <option value="svn://zero/grib/branch" />
-                  <option value="svn://zero/grib/tag" />
-                </list>
-              </option>
-              <option name="trunkUrl" value="svn://zero/grib/trunk" />
             </SvnBranchConfiguration>
           </value>
         </entry>

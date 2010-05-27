@@ -117,7 +117,7 @@ NcML instance document, and is said to define a <em><strong>NetCDF dataset</stro
   <LI>A <I><strong>variable</strong></I> element may contain 0 or more <I><strong>attribute</strong></I> elements,
   <LI>The optional<I> <strong>values</strong></I> element is used 
   to  specify the data values of the  variable. The values must be listed compatibly with the size and shape of the variable (slowest varying dimension first). If not specified, the data values are taken from the variable of the same name in the referenced dataset. 
-  <LI>A variable of data type <em><strong>structure</strong></em> may have nested variable elements within it. 
+  Values are the &quot;raw values&quot;, and will  have scale.offset/missing applied to them if those attributes are present.<LI>A variable of data type <em><strong>structure</strong></em> may have nested variable elements within it. 
   <LI>NOT IMPLEMENTED YET 
   <LI>  
   <LI>You can remove attributes from the underlying variable.       
