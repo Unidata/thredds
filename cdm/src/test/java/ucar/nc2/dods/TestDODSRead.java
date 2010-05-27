@@ -53,7 +53,7 @@ public class TestDODSRead extends TestCase {
   static DODSNetcdfFile openAbs(String filename) throws IOException {
     System.out.println("TestDODSRead = "+filename);
       DODSNetcdfFile dodsfile = new DODSNetcdfFile(filename);
-      if (showFileDebug) System.out.println(dodsfile.toStringDebug());
+      if (showFileDebug) System.out.println(dodsfile.getDetailInfo());
       if (showFile) System.out.println(dodsfile.toString());
       return dodsfile;
   }

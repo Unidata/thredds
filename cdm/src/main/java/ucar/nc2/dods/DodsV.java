@@ -362,8 +362,7 @@ class DodsV implements Comparable {
 
   /**
    * Parse the DAS, assign attribute tables to the DodsV objects.
-   * Nested attribute tables are supposed to follow the tree we construct with dodsV, so its
-   * easy to assign to correct dodsV.
+   * Nested attribute tables are supposed to follow the tree we construct with dodsV, so its easy to assign to correct dodsV.
    * @param das parse this DAS
    * @throws IOException on io error
    */

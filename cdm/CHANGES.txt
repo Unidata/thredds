@@ -4,6 +4,8 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.2:
  3:(2010-xx-xx)
+  NetcdfFile.readSection(String) should unescape names
+  DODNetcdfDataset.getDetailInfo() shows DAS, DDS.
   CoordinateAxis1D non-monotonic lon coordinates bug
   VariableDS() constructor must distinguish between copy() and CoordinateAxis()
   VariableDS.needConvert() for StructureDS.convert()

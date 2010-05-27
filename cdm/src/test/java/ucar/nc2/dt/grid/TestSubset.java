@@ -760,7 +760,7 @@ public class TestSubset extends TestCase {
     dataset.close();
   }
 
-  public void testSubsetCoordEdges() throws Exception {
+  public void utestSubsetCoordEdges() throws Exception {
     NetcdfDataset fooDataset = NetcdfDataset.openDataset(TestAll.cdmLocalTestDataDir + "dataset/subsetCoordEdges.ncml");
 
     try {

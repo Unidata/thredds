@@ -108,6 +108,11 @@ public class TestFmrc extends TestCase {
     }
   }
 
+  public void utestProblem() throws Exception {
+    doOne("catalog:http://motherlode.ucar.edu:8080/thredds/catalog/fmrc/NCEP/GFS/Hawaii_160km/files/catalog.xml", 15, 8, 11, 6, "Temperature", -1, 21, 111);
+  }
+
+
   static void doOne(String pathname, int ngrids, int ncoordSys, int ncoordAxes, int nVertCooordAxes,
                     String gridName, int nruns, int ntimes, int nbest) throws Exception {
 

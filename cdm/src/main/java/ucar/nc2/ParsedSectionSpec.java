@@ -108,6 +108,9 @@ public class ParsedSectionSpec {
   private static ParsedSectionSpec parseVariableSelector(Object parent, String selector) throws InvalidRangeException {
     String varName, indexSelect = null;
 
+    // names may be escaped
+    selector = NetcdfFile.unescapeName(selector);
+
     int pos1 = selector.indexOf('(');
     if (pos1 < 0) { // no selector
       varName = selector;
@@ -163,7 +166,7 @@ public class ParsedSectionSpec {
     }
     List<Range> ranges = (orgRanges == null) ? v.getRanges() : orgRanges;
 
-    sb.append( v.isMemberOfStructure() ? v.getShortName() : v.getNameEscaped());
+    sb.append( v.isMemberOfStructure() ? NetcdfFile.escapeName(v.getShortName()) : v.getNameEscaped());
 
     if (!v.isVariableLength() && !v.isScalar()) { // sequences cant be sectioned
       sb.append('(');

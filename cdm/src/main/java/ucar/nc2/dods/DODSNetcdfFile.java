@@ -1964,26 +1964,18 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
   ////////////////////////////////////////////////////////////////////////////////
   // debugging
 
-  /**
-   * @return the underlying dods info for debugging
-   */
-  public String toStringDebug() {
-    StringBuilder buff = new StringBuilder(2000);
-    buff.setLength(0);
-    buff.append("=======================================\nNETCDF DODS file ").append(getLocation()).append("\n");
+  public void getDetailInfo(Formatter f) {
+    super.getDetailInfo(f);
 
-    buff.append("DDS = \n");
+    f.format("DDS = %n");
     ByteArrayOutputStream buffOS = new ByteArrayOutputStream(8000);
     dds.print(buffOS);
-    buff.append(buffOS.toString());
+    f.format("%s%n", buffOS.toString());
 
-    buff.append("===================\nDAS = \n");
+    f.format("%nDAS = %n");
     buffOS = new ByteArrayOutputStream(8000);
     das.print(buffOS);
-    buff.append(buffOS.toString());
-    buff.append("===================\n");
-
-    return buff.toString();
+    f.format("%s%n", buffOS.toString());
   }
 
   public String getFileTypeId() {

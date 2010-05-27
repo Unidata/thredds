@@ -1917,6 +1917,11 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
    */
   public String getDetailInfo() {
     Formatter f = new Formatter();
+    getDetailInfo(f);
+    return f.toString();
+  }
+
+  public void getDetailInfo(Formatter f) {
     f.format("NetcdfFile location= %s%n", getLocation());
     f.format("  title= %s%n",getTitle());
     f.format("  id= %s%n",getId());
@@ -1932,7 +1937,6 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     }
     showCached(f);
     showProxies(f);
-    return f.toString();
   }
 
   protected void showCached(Formatter f) {
