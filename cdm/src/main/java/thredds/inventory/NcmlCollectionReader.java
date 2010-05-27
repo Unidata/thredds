@@ -62,9 +62,9 @@ public class NcmlCollectionReader {
   private static final boolean validate = false;
 
   /**
-   * Read an NcML file from a URL location, and construct a NetcdfDataset.
+   * Read an NcML file from a URL location, and construct a NcmlCollectionReader from its scan or scanFmrc element.
    *
-   * @param ncmlLocation         the URL location string of the NcML document
+   * @param ncmlLocation the URL location string of the NcML document
    * @param errlog put error messages here
    * @return the resulting NetcdfDataset
    * @throws IOException on read error, or bad referencedDatasetUri URI

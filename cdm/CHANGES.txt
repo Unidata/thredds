@@ -3,7 +3,7 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Changes in version 4.2:
- 3:(2010-xx-xx)
+ 3:(2010-05-27)
   NetcdfFile.readSection(String) should unescape names
   DODNetcdfDataset.getDetailInfo() shows DAS, DDS.
   CoordinateAxis1D non-monotonic lon coordinates bug

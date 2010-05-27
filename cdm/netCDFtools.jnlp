@@ -1,40 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<jnlp spec="1.0+" codebase="http://www.unidata.ucar.edu/software/netcdf-java/v4.1/webstart" href="netCDFtools.jnlp">
-    <information>
-        <title>NetCDF Tools UI 4.1</title>
-        <vendor>Unidata</vendor>
-        <homepage href="http://www.unidata.ucar.edu/software/netcdf-java/"/>
-        <description kind="short">GUI interface to netCDF-Java / Common Data Model</description>
-        <icon href="nc.gif"/>
-        <offline-allowed/>
-    </information>
+<jnlp spec="1.0+" codebase="http://www.unidata.ucar.edu/software/netcdf-java/v4.2/webstart" href="netCDFtools.jnlp">
+  <information>
+    <title>NetCDF Tools UI 4.2</title>
+    <vendor>Unidata</vendor>
+    <homepage href="http://www.unidata.ucar.edu/software/netcdf-java/"/>
+    <description kind="short">GUI interface to netCDF-Java / Common Data Model</description>
+    <icon href="nc.gif"/>
+    <offline-allowed/>
+  </information>
 
-    <security>
-        <all-permissions/>
-    </security>
+  <security>
+    <all-permissions/>
+  </security>
 
-    <resources>
-        <j2se version="1.6+" max-heap-size="1024m"/>
-        <jar href="netcdfUI.jar"/>
-        <jar href="bounce.jar"/>
-        <jar href="bufrTables.jar"/>
-	      <jar href="codec.jar"/>
-	      <jar href="ehcache.jar"/>
-        <jar href="grib.jar"/>
-        <jar href="httpclient.jar"/>
-        <jar href="httplogging.jar"/>
-        <jar href="jdom.jar"/>
-        <jar href="jgoodies.jar"/>
-	      <jar href="jpeg2000.jar"/>
-        <jar href="loggingAPI.jar"/>
-        <jar href="logging.jar"/>
-        <jar href="opendap.jar"/>
-        <jar href="resourcesOptional.jar"/>
-        <jar href="spring.jar"/>
-        <jar href="unidatacommon.jar"/>
-        <jar href="visadNoDods.jar"/>
-    </resources>
+  <resources>
+    <j2se version="1.6+" max-heap-size="1024m"/>
+    <jar href="netcdfUI.jar"/>
+    <jar href="bdb.jar"/>
+    <jar href="bounce.jar"/>
+    <jar href="bufrTables.jar"/>
+    <jar href="codec.jar"/>
+    <jar href="ehcache.jar"/>
+    <jar href="grib.jar"/>
+    <jar href="httpclient.jar"/>
+    <jar href="httplogging.jar"/>
+    <jar href="jdom.jar"/>
+    <jar href="jgoodies.jar"/>
+    <jar href="loggingAPI.jar"/>
+    <jar href="logging.jar"/>
+    <jar href="opendap.jar"/>
+    <jar href="protobuf.jar"/>
+    <jar href="resourcesOptional.jar"/>
+    <jar href="spring.jar"/>
+    <jar href="unidatacommon.jar"/>
+    <jar href="visadNoDods.jar"/>
+  </resources>
 
-    <application-desc main-class="ucar.nc2.ui.ToolsUI" />
+  <application-desc main-class="ucar.nc2.ui.ToolsUI"/>
 
 </jnlp>
