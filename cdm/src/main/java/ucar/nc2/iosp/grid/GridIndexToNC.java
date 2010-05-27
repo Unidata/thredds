@@ -221,6 +221,7 @@ public class GridIndexToNC {
     }
 
     // global CF Conventions
+    // Conventions attribute change must be in sync with CDM code
     ncfile.addAttribute(null, new Attribute("Conventions", "CF-1.4"));
 
     String center = null;
@@ -265,8 +266,8 @@ public class GridIndexToNC {
     if ( source != null && ! source.startsWith( "Unknown"))
       ncfile.addAttribute(null, new Attribute("source", source));
     String now = formatter.toDateTimeStringISO( Calendar.getInstance().getTime());
-    ncfile.addAttribute(null, new Attribute("history", "Direct read of "+
-        lookup.getGridType() +" into NetCDF-Java 4 API at "+ now));
+    ncfile.addAttribute(null, new Attribute("history", now +" Direct read of "+
+        lookup.getGridType() +" into NetCDF-Java 4 API"));
     if ( lookup.getComment() != null)
       ncfile.addAttribute(null, new Attribute("comment", lookup.getComment()));
 
