@@ -1,0 +1,418 @@
+/*
+ * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
+ *
+ * Portions of this software were developed by the Unidata Program at the
+ * University Corporation for Atmospheric Research.
+ *
+ * Access and use of this software shall impose the following obligations
+ * and understandings on the user. The user is granted the right, without
+ * any fee or cost, to use, copy, modify, alter, enhance and distribute
+ * this software, and any derivative works thereof, and its supporting
+ * documentation for any purpose whatsoever, provided that this entire
+ * notice appears in all copies of the software, derivative works and
+ * supporting documentation.  Further, UCAR requests that the user credit
+ * UCAR/Unidata in any publications that result from the use of this
+ * software or in any product that includes this software. The names UCAR
+ * and/or Unidata, however, may not be used in any advertising or publicity
+ * to endorse or promote any products or commercial entity unless specific
+ * written permission is obtained from UCAR/Unidata. The user also
+ * understands that UCAR/Unidata is not obligated to provide the user with
+ * any support, consulting, training or assistance of any kind with regard
+ * to the use, operation and performance of this software nor to provide
+ * the user with any updates, revisions, new versions or "bug fixes."
+ *
+ * THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+ * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+ * INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+ * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ */
+/**
+ *
+ * By:   Robb Kambic
+ * Date: Jan 31, 2009
+ * Time: 4:18:23 PM
+ *
+ */
+
+package ucar.grib;
+
+import ucar.grid.GridRecord;
+
+import java.util.Date;
+import java.util.Calendar;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+
+/**
+ * Represents index information for one record in the Grib file.
+ */
+public final class GribGridRecord implements GridRecord {
+
+  /**
+   * Represents the PDS section of a Grib Messaage.
+   * Probably only set for Ensemble data
+   */
+  //public GribPDSVariablesIF pdsVars = null;
+
+  /**
+   * productType, discipline, category, paramNumber of record.
+   */
+  public int productType, discipline, category, paramNumber;
+
+  /**
+   * typeGenProcess of record.
+   */
+  public int typeGenProcess;
+
+  /**
+   * levelType1, levelType2  of record.
+   */
+  public int levelType1, levelType2;
+
+  /**
+   * levelValue1, levelValue2  of record.
+   */
+  public double levelValue1, levelValue2;
+
+  /**
+   * gdsKey  of record.
+   */
+  public int gdsKey;
+
+  /**
+   * offset1 of record.
+   */
+  public long offset1;
+
+  /**
+   * offset2 of record.
+   */
+  public long offset2;
+
+  /**
+   * refTime as Date.
+   */
+  public Date refTime;
+
+  /**
+   * forecastTime as int.
+   * if forecast time is an interval, it's the end of the interval
+   */
+  public int forecastTime;
+
+  /**
+   * if forecast time is an interval, this is the start of the interval
+   */
+  public int startOfInterval = GribNumbers.UNDEFINED;
+
+  /**
+   * time unit of forecast time
+   */
+  public int timeUnit;
+
+  /**
+   * forecastTime as Date.
+   */
+  private Date validTime = null;
+
+  /**
+   * decimalScale for Grib1 data.
+   */
+  public int decimalScale = GribNumbers.UNDEFINED;
+
+  /**
+   * bms (Bit mapped section) Exists of record.
+   */
+  public boolean bmsExists = true;
+
+  /**
+   * center  subCenter  table of record.
+   */
+  public int center = -1, subCenter = -1, table = -1;
+
+  /**
+   * is this record an Ensemble
+   */
+  public boolean isEnsemble = false;
+
+  /**
+   *   Ensemble number.
+   */
+  public int ensembleNumber  = GribNumbers.UNDEFINED;
+
+  /**
+   * numberForecasts of Ensemble.
+   */
+  public int numberForecasts = GribNumbers.UNDEFINED;
+
+  /**
+   * Type of ensemble or Probablity forecast
+   */
+  public int type = GribNumbers.UNDEFINED;
+
+  /**
+   * lowerLimit, upperLimit of Probability type
+   */
+  public float lowerLimit = GribNumbers.UNDEFINED, upperLimit = GribNumbers.UNDEFINED;
+
+  /**
+   * default constructor, used by GribReadIndex (binary indices)
+   */
+  public GribGridRecord() {
+  }
+
+  /**
+   * constructor given all parameters as Strings. Used only by GribReadTextIndex
+   *
+   * @param calendar to convert to Dates
+   * @param productTypeS
+   * @param disciplineS
+   * @param categoryS
+   * @param paramS
+   * @param typeGenProcessS
+   * @param levelType1S
+   * @param levelValue1S
+   * @param levelType2S
+   * @param levelValue2S
+   * @param refTimeS
+   * @param foreTimeS
+   * @param gdsKeyS
+   * @param offset1S
+   * @param offset2S
+   * @param decimalScaleS
+   * @param bmsExistsS      either true or false bit-map exists
+   * @param centerS
+   * @param subCenterS
+   * @param tableS
+   */
+  GribGridRecord(Calendar calendar, SimpleDateFormat dateFormat,
+                 String productTypeS, String disciplineS, String categoryS,
+                 String paramS, String typeGenProcessS, String levelType1S,
+                 String levelValue1S, String levelType2S,
+                 String levelValue2S, String refTimeS, String foreTimeS,
+                 String gdsKeyS, String offset1S, String offset2S,
+                 String decimalScaleS, String bmsExistsS,
+                 String centerS, String subCenterS, String tableS) {
+
+    try {
+      // old indexes used long, scale down to int
+      //this.gdsKey = gdsKeyS.hashCode();
+      this.gdsKey = Integer.parseInt(gdsKeyS);
+
+      productType = Integer.parseInt(productTypeS);
+      discipline = Integer.parseInt(disciplineS);
+      category = Integer.parseInt(categoryS);
+      paramNumber = Integer.parseInt(paramS);
+      typeGenProcess = Integer.parseInt(typeGenProcessS);
+      levelType1 = Integer.parseInt(levelType1S);
+      levelValue1 = Float.parseFloat(levelValue1S);
+      levelType2 = Integer.parseInt(levelType2S);
+      levelValue2 = Float.parseFloat(levelValue2S);
+
+      this.refTime = dateFormat.parse(refTimeS);
+      forecastTime = Integer.parseInt(foreTimeS);
+      calendar.setTime(refTime);
+      calendar.add(Calendar.HOUR, forecastTime); // TODO: not always HOUR
+      validTime = calendar.getTime();
+
+      offset1 = Long.parseLong(offset1S);
+      offset2 = Long.parseLong(offset2S);
+      if (decimalScaleS != null) {
+        decimalScale = Integer.parseInt(decimalScaleS);
+      }
+      if (bmsExistsS != null) {
+        bmsExists = bmsExistsS.equals("true");
+      }
+      if (centerS != null) {
+        center = Integer.parseInt(centerS);
+      }
+      if (subCenterS != null) {
+        subCenter = Integer.parseInt(subCenterS);
+      }
+      if (tableS != null) {
+        table = Integer.parseInt(tableS);
+      }
+    } catch (NumberFormatException e) {
+      throw new RuntimeException(e);
+    } catch (ParseException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  /**
+   * Get the first level of this GridRecord
+   *
+   * @return the first level value
+   */
+  public double getLevel1() {
+    return levelValue1;
+  }
+
+  /**
+   * Get the second level of this GridRecord
+   *
+   * @return the second level value
+   */
+  public double getLevel2() {
+    return levelValue2;
+  }
+
+  /**
+   * Get the type for the first level of this GridRecord
+   *
+   * @return level type
+   */
+  public int getLevelType1() {
+    return levelType1;
+  }
+
+  /**
+   * Get the type for the second level of this GridRecord
+   *
+   * @return level type
+   */
+  public int getLevelType2() {
+    return levelType2;
+  }
+
+  /**
+   * Get the first reference time of this GridRecord
+   *
+   * @return reference time
+   */
+  public Date getReferenceTime() {
+    return refTime;
+  }
+
+  /**
+   * Get the valid time for this grid.
+   *
+   * @return valid time
+   */
+  public Date getValidTime() {
+    return validTime;
+  }
+
+  /**
+   * _more_
+   *
+   * @param t _more_
+   */
+  public void setValidTime(Date t) {
+    validTime = t;
+  }
+
+  /**
+   * Get valid time offset (minutes) of this GridRecord
+   *
+   * @return time offset
+   */
+  public int getValidTimeOffset() {
+    return forecastTime;
+  }
+
+  /**
+   * Get the parameter name
+   *
+   * @return parameter name
+   */
+  public String getParameterName() {
+    //return param;
+    return null; // This was moved to GribGridTableLookup
+  }
+
+  /**
+   * Get the grid def record id
+   *
+   * @return parameter name
+   */
+  public int getGridDefRecordIdInt() {
+    return gdsKey;
+  }
+
+  public String getGridDefRecordId() {
+    return Integer.toString( gdsKey );
+  }
+
+  /**
+   * Get the grid number
+   *
+   * @return grid number
+   */
+  public int getGridNumber() {
+    //return gridNumber;
+    return 0; // not used
+  }
+
+  /**
+   * Get the decimal scale
+   *
+   * @return decimal scale
+   */
+  public int getDecimalScale() {
+    return decimalScale;
+  }
+
+  /**
+   * is this an ensemble type record
+   * @return isEnsemble
+   */
+  public boolean isEnsemble() {
+    return isEnsemble;
+  }
+
+  /**
+   * if ensemble, ensemble type
+   * @return type as int
+   */
+  public int getEnsembleType() {
+    return type;
+  }
+
+  /**
+   * if ensemble, ensemble member number
+   * @return ensembleNumber
+   */
+  public int getEnsembleNumber() {
+    return ensembleNumber;
+  }
+
+  /**
+   * total number of ensemble forecasts
+   * @return numberForecasts
+   */
+  public int getNumberForecasts() {
+    return numberForecasts;
+  }
+
+  @Override
+  public String toString() {
+    return "GribGridRecord{" +
+            "productType=" + productType +
+            ", discipline=" + discipline +
+            ", category=" + category +
+            ", paramNumber=" + paramNumber +
+            ", typeGenProcess=" + typeGenProcess +
+            ", levelType1=" + levelType1 +
+            ", levelType2=" + levelType2 +
+            ", levelValue1=" + levelValue1 +
+            ", levelValue2=" + levelValue2 +
+            ", gdsKey=" + gdsKey +
+            ", offset1=" + offset1 +
+            ", offset2=" + offset2 +
+            ", refTime=" + refTime +
+            ", forecastTime=" + forecastTime +
+            ", decimalScale=" + decimalScale +
+            ", bmsExists=" + bmsExists +
+            ", center=" + center +
+            ", subCenter=" + subCenter +
+            ", table=" + table +
+            ", validTime=" + validTime +
+            '}';
+  }
+
+}

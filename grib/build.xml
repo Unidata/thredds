@@ -1,0 +1,313 @@
+<?xml version="1.0"?>
+<project name="grib" default="build" basedir=".">
+
+  <target name="init">
+    <property name="release.version" value="8.0"/>
+    <property name="release.version.minor" value="${release.version}.25"/>
+    <tstamp>
+      <format property="buildtime" pattern="yyyy-MM-dd HH:mm:ss"/>
+    </tstamp>
+
+    <!-- Names -->
+    <property name="Name" value="Grib-Decoder-Java"/>
+    <property name="name" value="grib-decoder-java"/>
+    <property name="version" value="${release.version}"/>
+    <property name="dist.name" value="${name}_${release.version.minor}"/>
+    <property name="year" value="2010"/>
+    <echo message="----------- ${Name} ${version} [${year}] ------------"/>
+
+    <property name="jar.filename" value="grib-${version}.jar"/>
+    <!--
+         <property name="jar.filename" value="grib.jar"/>
+   // -->
+
+    <!-- Compile options -->
+    <property name="debug" value="on"/>
+    <property name="optimize" value="on"/>
+    <property name="deprecation" value="on"/>
+
+    <!-- Directories -->
+    <property name="base" value="."/>
+    <property name="root.dir" location="${base}"/>
+
+    <property name="src.dir" value="./src"/>
+    <condition property="src.raf" value="../thredds/common/src/java">
+      <and>
+        <available file="../thredds/common/src/java" type="dir"/>
+      </and>
+    </condition>
+
+    <condition property="src.raf" value="./src/ucar/unidata/io">
+      <and>
+        <available file="./src/ucar/unidata/io" type="dir"/>
+      </and>
+    </condition>
+
+
+    <property name="lib.dir" value="./lib"/>
+    <property name="test.dir" value="./test"/>
+    <property name="test.reports.dir" value="./test"/>
+    <property name="text.dir" value="./text"/>
+
+    <property name="build.dir" value="./target"/>
+    <property name="build.src.dir" value="./target/src"/>
+    <property name="build.dest.dir" value="./target/classes"/>
+    <property name="classpath"
+              value="${build.dest.dir}:${lib.dir}/junit-4.5.jar:${lib.dir}/slf4j-jdk14.jar"/>
+    <property name="dist.dir" value="./dist"/>
+    <property name="gribtab.src" value="./resources/resources/grib/tables"/>
+    <property name="gribtab.dst" value="${build.dest.dir}/resources/grib/tables"/>
+
+    <property name="apidocs.dir" value="./apidocs"/>
+    <property name="javadoc.dir" location="${dist.dir}/javadoc"/>
+    <property name="build.javadoc.dir" location="${build.dir}/javadoc"/>
+
+    <property name="loggingAPI.jar" value="slf4j-api-1.5.6.jar"/>
+    <property name="logging.jar" value="slf4j-jdk14-1.5.6.jar"/>
+
+    <!-- source -->
+    <path id="sourcepath">
+      <pathelement location="${src.dir}"/>
+      <pathelement location="${src.raf}"/>
+    </path>
+    <!-- Libraries needed for compile. -->
+    <fileset id="compile.libraries" dir=".">
+      <include name="${lib.dir}/${loggingAPI.jar}"/>
+      <include name="${lib.dir}/junit-4.5.jar"/>
+    </fileset>
+    <path id="compile.classpath">
+      <fileset refid="compile.libraries"/>
+    </path>
+
+
+  </target>
+
+  <!-- Prepare for compile -->
+  <target name="prepare-compile" depends="init">
+
+    <!-- Make directories -->
+    <mkdir dir="${build.dir}"/>
+    <mkdir dir="${build.dest.dir}"/>
+    <mkdir dir="${gribtab.dst}"/>
+    <!-- copy grib table files -->
+    <copy todir="${gribtab.dst}">
+      <fileset dir="${gribtab.src}">
+        <include name="*.xml"/>
+        <include name="*.tab"/>
+        <include name="tablelookup.lst"/>
+      </fileset>
+    </copy>
+
+  </target>
+
+  <!-- Compile -->
+  <target name="compile" depends="prepare-compile">
+    <javac target="1.5" source="1.5"
+           destdir="${build.dest.dir}"
+           debug="${debug}" optimize="${optimize}"
+           classpath="${classpath}">
+      <src path="${src.raf}"/>
+      <src path="${src.dir}"/>
+      <include name="ucar/unidata/io/*.java"/>
+      <include name="ucar/grib/**/*.java"/>
+      <include name="ucar/grid/**/*.java"/>
+      <include name="ucar/jpeg/**/*.java"/>
+    </javac>
+  </target>
+
+  <!-- Make jar file -->
+  <target name="jar" depends="compile">
+    <jar jarfile="${build.dir}/${jar.filename}"
+         basedir="${build.dest.dir}"
+         includes="**/*.class **/tables/*">
+      <manifest>
+        <attribute name="Built-By" value="${user.name}"/>
+        <attribute name="Built-On" value="${buildtime}"/>
+        <attribute name="Implementation-Title" value="GRIB Decoder API"/>
+        <attribute name="Implementation-Version" value="${release.version.minor}"/>
+        <attribute name="Implementation-Vendor" value="UCAR/Unidata"/>
+      </manifest>
+    </jar>
+
+  </target>
+
+  <!-- Make noRaf jar file -->
+  <target name="noRaf" depends="compile">
+    <jar jarfile="${build.dir}/${jar.filename}"
+         basedir="${build.dest.dir}"
+         includes="ucar/grib/**/*.class ucar/grid/**/*.class ucar/jpeg/**/*.class **/tables/*">
+      <manifest>
+        <attribute name="Built-By" value="${user.name}"/>
+        <attribute name="Built-On" value="${buildtime}"/>
+        <attribute name="Implementation-Title" value="GRIB Decoder API"/>
+        <attribute name="Implementation-Version" value="${release.version.minor}"/>
+        <attribute name="Implementation-Vendor" value="UCAR/Unidata"/>
+      </manifest>
+    </jar>
+
+  </target>
+
+  <!-- Compile test -->
+  <target name="test" depends="compile">
+    <!--
+         <echo message="classpath=${classpath}"/>
+   // -->
+    <javac srcdir="${test.dir}" destdir="${build.dest.dir}"
+           debug="${debug}" optimize="${optimize}"
+           classpath="${classpath}"/>
+    <jar jarfile="${build.dir}/${jar.filename}"
+         basedir="${build.dest.dir}"
+         includes="ucar/grib/**/*.class ucar/grid/**/*.class ucar/jpeg/**/*.class **/tables/*">
+      <manifest>
+        <attribute name="Built-By" value="${user.name}"/>
+        <attribute name="Built-On" value="${buildtime}"/>
+        <attribute name="Implementation-Title" value="GRIB Decoder API"/>
+        <attribute name="Implementation-Version" value="${release.version.minor}"/>
+        <attribute name="Implementation-Vendor" value="UCAR/Unidata"/>
+      </manifest>
+    </jar>
+  </target>
+
+  <!-- Compile/run testall -->
+  <!--
+  <target name="testall" depends="test">
+    <echo>classpath="${classpath}"</echo>
+    <java classname="ucar.grib.TestAll" fork="yes">
+      <classpath>
+        <pathelement path="${classpath}"/>
+      </classpath>
+    </java>
+  </target>
+  <target name="unit-test-grib" description="run grib unit tests" depends="test">
+  -->
+
+   <target name="testall" description="run grib unit tests" depends="test">
+    <antcall target="unit-test-base">
+      <param name="unit.test.name" value="unit-test-grib" />
+      <param name="unit.test" value="ucar.grib.TestAll" />
+    </antcall>
+  </target>
+
+  <target name="unit-test-base" description="run junit tests">
+    <mkdir dir="${test.reports.dir}/${unit.test.name}"/>
+    <junit printsummary="false" errorProperty="test.failed" failureProperty="test.failed" fork="on" dir="${root.dir}">
+      <classpath>
+        <pathelement path="${classpath}"/>
+      </classpath>
+
+      <jvmarg value="-ea"/>
+      <jvmarg value="-Xmx1024m"/>
+      <formatter type="xml"/>
+      <formatter type="brief" usefile="false"/>
+      <test todir="${test.reports.dir}/${unit.test.name}" name="${unit.test}"/>
+    </junit>
+
+    <!-- #Generate test reports -->
+    <junitreport todir="${test.reports.dir}/${unit.test.name}">
+      <fileset dir="${test.reports.dir}/${unit.test.name}">
+        <include name="TEST-*.xml"/>
+      </fileset>
+      <report format="frames" todir="${test.reports.dir}/${unit.test.name}"/>
+    </junitreport>
+    <!-- create temporary file indicating these tests failed -->
+    <!-- #Test case bypass trick -->
+    <echo message="last build failed tests" file="${test.reports.dir}/${unit.test.name}/failed"/>
+    <fail if="test.failed">FAILED! Unit tests failed.  Look at ${test.reports.dir}/${unit.test.name}/index.html for details.</fail>
+    <!-- Remove test failed file, as these tests succeeded -->
+    <delete file="${test.reports.dir}/${unit.test.name}/failed"/>
+    <echo message="SUCCESS! Unit tests succeeded.  Look at ${test.reports.dir}/${unit.test.name}/index.html for details."/>
+  </target>
+
+
+  <!-- Build system -->
+  <target name="build" depends="jar"/>
+  
+  <target name="thredds" depends="noRaf">
+    <copy file="${build.dir}/${jar.filename}" todir="../thredds/lib/release/" />
+  </target>
+
+  <!-- Make javadoc -->
+  <target name="javadoc" depends="init">
+    <mkdir dir="${javadoc.dir}"/>
+    <javadoc Doctitle="GRIB-Decoder-Java ${release.version} API" Use="true" Windowtitle="GRIB-Decoder-Java ${release.version} API"
+             maxmemory="128m" sourcepathref="sourcepath" destdir="${javadoc.dir}" public="true" source="1.5">
+      <classpath refid="compile.classpath"/>
+      <package name="ucar.jpeg"/>
+      <package name="ucar.grid"/>
+      <package name="ucar.grib"/>
+      <package name="ucar.grib.grib1"/>
+      <package name="ucar.grib.grib2"/>
+      <!--
+      <package name="jj2000.j2k.decoder.Grib2JpegDecoder"/>
+      //-->
+    </javadoc>
+    <echo message="IndexFormat.txt todir=${javadoc.dir}"/>
+    <copy file="IndexFormat.txt" todir="${javadoc.dir}"/>
+    <echo message="Parameters.txt todir=${javadoc.dir}"/>
+    <copy file="Parameters.txt" todir="${javadoc.dir}"/>
+    <copy file="run" todir="${javadoc.dir}"/>
+  </target>
+
+  <!-- Make distribution -->
+  <target name="dist" depends="clean, build, javadoc">
+    <mkdir dir="${dist.dir}"/>
+    <copy file="build.xml" todir="${dist.dir}"/>
+    <mkdir dir="${dist.dir}/${lib.dir}"/>
+    <!-- copy library files -->
+    <copy todir="${dist.dir}/${lib.dir}">
+      <fileset dir="${lib.dir}">
+        <include name="slf4j-jdk14.jar"/>
+        <include name="junit-4.5.jar"/>
+      </fileset>
+    </copy>
+    <copy file="${build.dir}/${jar.filename}" todir="${dist.dir}/${lib.dir}"/>
+    <mkdir dir="${dist.dir}/src"/>
+    <!-- copy source files -->
+    <copy todir="${dist.dir}/src">
+      <fileset dir="${src.dir}">
+        <include name="**/*.java"/>
+      </fileset>
+      <fileset dir="${src.raf}">
+        <include name="**/*.java"/>
+      </fileset>
+    </copy>
+    <mkdir dir="${dist.dir}/test"/>
+    <!-- copy test files -->
+    <copy todir="${dist.dir}/test">
+      <fileset dir="${test.dir}">
+        <include name="**/*.java"/>
+      </fileset>
+    </copy>
+    <mkdir dir="${dist.dir}/resources"/>
+    <!-- copy resources files -->
+    <copy todir="${dist.dir}/${gribtab.src}">
+      <fileset dir="${gribtab.src}">
+        <include name="*.tab"/>
+        <include name="*.xml"/>
+        <include name="*.lst"/>
+      </fileset>
+    </copy>
+    <copy file="IndexFormat.txt" todir="${dist.dir}/${text.dir}"/>
+    <copy file="Parameters.txt" todir="${dist.dir}/${text.dir}"/>
+    <copy file="run" todir="${dist.dir}/${text.dir}"/>
+
+    <property name="dist-inc"
+              value="build.xml src/**/*.java test/**/*.java resources/**/*.tab resources/**/*.lst resources/**/*.xml lib/*.jar, text/*.txt, javadoc/**/*.html, javadoc/**/*.css, javadoc/**/*.gif"/>
+
+    <!-- Make gzipped tar file -->
+    <tar tarfile="${dist.dir}/${dist.name}.tar"
+         basedir="${dist.dir}" includes="${dist-inc}"/>
+    <gzip src="${dist.dir}/${dist.name}.tar"
+          zipfile="${dist.dir}/${dist.name}.tar.gz"/>
+    <delete file="${dist.dir}/${dist.name}.tar"/>
+
+  </target>
+
+  <!-- Clean generated files -->
+  <target name="clean" depends="init">
+    <delete dir="${build.dir}"/>
+    <delete dir="${dist.dir}"/>
+    <delete dir="${apidocs.dir}"/>
+  </target>
+
+</project>

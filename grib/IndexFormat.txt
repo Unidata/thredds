@@ -1,0 +1,69 @@
+1. Definitions
+
+A "grib file" is a collection of grib records.
+A "grib file index" is an index for the grib file, used by the netcdf-java-2.2 
+library (nj22). 
+
+If the grib file has a filename or URL "gribURL", its index file has the name 
+"gribURL.gbx" . The nj22 library looks for it in the same location as the grib 
+file, and when possible, creates it in the same location if it doesnt exist. It 
+may create it in other locations if it cant create it in the same location as the 
+grib file.
+
+The grib file index has enough information so that nj22 can create the netcdf 
+objects that represent the grib file, without having to scan the entire grib file. 
+
+
+2. Grib2 file index format
+
+Section 1 Global attributes
+name = value of the attribute
+name must be netcdf name (no blanks etc)
+value is any string, do not quote
+first attribute must be "location", with value a URL or local filename
+second attribute must be "length", the file size
+third attribute must be "created", with value the date string the index file was 
+created
+------------------------------------------------------------
+Section 2 Grib records
+one line for each record in the file
+blank separated
+ProductType Discipline Category Parameter TypeGenProcess LevelType1 LevelValue1 LevelType2 LevelValue2 ReferenceTime ForecastTime Gdskey GdsOffset PdsOffset
+------------------------------------------------------------
+Section 3+ unique GDS records
+one section for each unique GDS in the file, sections seperated by --------- line
+name = value of the attribute
+must have an attribute
+  Gdskey = token
+which matches the Gdskey token in the Grib record line
+
+
+3. Grib1 file index
+
+Section 1 same as Grib2
+
+Section 2 Grib Records
+one line for each record in the file
+blank separated
+
+ProductType Discipline Category Parameter TypeGenProcess LevelType1
+LevelValue1 255 LevelValue2 ReferenceTime ForecastTime Gdskey BmsOrGdsOffset
+EndOfRecord DecScale BmsExists center subCenter table_number
+
+
+Section 3+ unique GDS records, same as Grib2
+
+
+4. Grib Index Version numbers
+
+0 original version
+1 Grib1 index added DecimalScale & bmsExists fields to section 2 rows
+2 Grib2 data read offsets now starts at the GDS offset in the section 2 rows.
+This enabled processing of Grib2 thin grids.
+3 Grib1 index added field Type of Generating processed, needed for Ensemble
+models.
+4 Added parameters to the index GDS section ie Winds, NpProj, etc
+5 Grib 1 data read offset now starts at the GDS offset in the section 2 rows.
+This enabled processing of Grib1 thin grids
+6 Grib 1 index now has the center, subCenter, and table numbers appended to
+the section 2 rows. This enables multiple parameter tables in a model.

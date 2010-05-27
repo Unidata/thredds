@@ -1,0 +1,157 @@
+A parameter consists of a Discipline( ie Meteorological_products), 
+a Category( ie Temperature ) and a number that refers to a 
+name( ie Temperature), Description( ie Temperature at 2 meters), and 
+Units( ie K ).  
+
+There is a difference on how the parameters are read into the
+grib library for GRIB(1|2). GRIB1 has a seperate table for each Center, 
+Sub-Center, and version number. Usually the Center/Sub-Center pair has more 
+than one version number and therefore more than one table. On the other hand,
+GRIB2 has only one table with the parameters under the Discipline, Category, and
+number headings. To make Parameters consistent, GRIB1 parameters have a static
+Discipline (Meteorological Products) and a static Category (Meteorological 
+Parameters). 
+
+The above paragraph is not really important unless one plans on programming
+the parameter APIs.  Then one should look at ucar/TableLookup.java,
+ucar/grib1/Grib1Lookup.java, and ucar/grib2/Grib2Lookup.java.
+
+Because it is huge task to keep all parameter tables up to date, there are
+some routine calls to add tables/parameters to the existing ones. If the 
+additions are already in the jar, then the new addition will overwrite the
+jar entries.
+
+1. Adding GRIB1 Parameter tables and parameters:
+
+The routine for a user to read in his own Grib1 table is:
+
+GribPDSParamTable.addParameterUserLookup(String UserGribTabPath)
+
+The UserGribTabPath can be path, url, etc. and the routine expects a file
+with format:
+
+158:     0:               2:    fnmoc_2.tab
+
+and the table ie. fnmoc_2.tab can be a relative or absolute path.  The tables 
+are in ncep format:
+
+-1:158:-1:2
+0:var0:undefined
+1:PRES:Pressure [Pa]
+2:PRMSL:Pressure reduced to MSL [Pa]
+3:PTEND:Pressure tendency [Pa/s]
+4:PVORT:Pot. vorticity [km^2/kg/s]
+5:ICAHT:ICAO Standard Atmosphere Reference Height [M]
+6:GP:Geopotential [m^2/s^2]
+...
+
+2. The GRIB2 routine for a user to read in his own parameters is:
+
+ParameterTable.addParametersUser(String UserGribTable)
+
+This is a sample table, the lines starting with # are not include in table.
+# Parameters are listed by row, fields are separated by tabs:
+# Discipline, Catagory, Parmeter Number, Name, Units, & Description
+#
+#Dis	Cat	Parm #	Name		Units	Desc
+0	0	0	Temperature	K	Temperature
+
+This is the list of Discipline and Categories available. It would be wise to 
+check resources/grib/tables/grib2StdQuantities.xml before adding parameters. 
+If one uses new parameters outside their facility, then check with NCEP first.
+#
+#    <discipline id="Meteorological_products" number="0">
+#        <category id="Temperature" number="0">
+#        </category>
+#        <category id="Moisture" number="1">
+#        </category>
+#        <category id="Momentum" number="2">
+#        </category>
+#        <category id="Mass" number="3">
+#        </category>
+#        <category id="Short-wave_Radiation" number="4">
+#        </category>
+#        <category id="Long-wave_Radiation" number="5">
+#        </category>
+#        <category id="Cloud" number="6">
+#        </category>
+#        <category id="Thermodynamic_Stability_indices" number="7">
+#        </category>
+#        <category id="Kinematic_Stability_indices" number="8">
+#        </category>
+#        <category id="Temperature_Probabilities" number="9">
+#        </category>
+#        <category id="Moisture_Probabilities" number="10">
+#        </category>
+#        <category id="Momentum_Probabilities" number="11">
+#        </category>
+#        <category id="Mass_Probabilities" number="12">
+#        </category>
+#        <category id="Aerosols" number="13">
+#        </category>
+#        <category id="Trace_gases" number="14">
+#        </category>
+#        <category id="Radar" number="15">
+#        </category>
+#        <category id="Forecast_Radar_Imagery" number="16">
+#        </category>
+#        <category id="Electro-dynamics" number="17">
+#        </category>
+#        <category id="Nuclear_and_radiology" number="18">
+#        </category>
+#        <category id="Physical_atmospheric_properties" number="19">
+#        </category>
+#        <category id="ASCII_character_string" number="253">
+#        </category>
+#    </discipline>
+#    <discipline id="Hydrological_products" number="1">
+#        <category id="Hydrology" number="0">
+#        </category>
+#        <category id="Hydrology_probabilities" number="1">
+#        </category>
+#    </discipline>
+#    <discipline id="Land_surface_products" number="2">
+#        <category id="Vegetation_and_Biomass" number="0">
+#        </category>
+#        <category id="Agri-aquacultural_Special_Products_" number="1">
+#        </category>
+#        <category id="Soil_Products" number="3">
+#        </category>
+#    </discipline>
+#    <discipline id="Space_Products" number="3">
+#        <category id="Image_format_products" number="0">
+#        </category>
+#        <category id="Quantitative_products" number="1">
+#        </category>
+#    </discipline>
+#    <discipline id="Oceanographic_products" number="10">
+#        <category id="Waves" number="0">
+#        </category>
+#        <category id="Currents" number="1">
+#        <category id="Ice" number="2">
+#        </category>
+#        <category id="Surface_Properties" number="3">
+#        </category>
+#        <category id="Sub-surface_Properties" number="4">
+#        </category>
+#    </discipline>
+#
+
+3. Another way of Changing/adding tables/parameters
+
+Another way of changing the tables/parameters is to extract the table from the
+grib.jar file, make the changes, and then enter it back into the grib.jar. This
+process doesn't require any routine calls and it works well because all the
+tables are ascii text. But, one needs to make sure that the table syntax is
+followed or the table will not be processed correctly. Look at files:
+
+for GRIB1 tables
+
+resources/grib/tables/tablelookup.lst
+resources/grib/tables/nceptab_130.tab
+
+for GRIB2 table
+
+resources/grib/tables/grib2StdQuantities.xml
+
+

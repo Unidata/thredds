@@ -1,0 +1,6 @@
+
+#setenv CLASSPATH .:/home/rkambic/code/grib/target/grib.jar:/home/rkambic/code/grib/lib/jpeg2000.jar:/home/rkambic/code/grib/resources/grib/tables:/home/rkambic/code/grib/lib/junit.jar
+
+#setenv CLASSPATH .:$PWD/target/classes:$PWD/lib/jpeg2000.jar:$PWD/resources/grib/tables:$PWD/lib/junit.jar:$PWD/lib/slf4j-jdk14.jar
+
+setenv CLASSPATH .:$PWD/target/classes:$PWD/lib/junit.jar:$PWD/lib/slf4j-jdk14.jar

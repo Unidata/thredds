@@ -1,0 +1,26 @@
+#!/bin/sh
+# -----------------------------------------------------------------------------
+#
+# -----------------------------------------------------------------------------
+
+java -Xmx256m ucar/grib/grib1/Grib1Dump data/grib1/RUC.wmo > ruc.dump
+
+java -Xmx256m ucar/grib/grib2/Grib2Dump data/grib2/ndfd.wmo > ndfd.dump
+
+java -Xmx256m ucar/grib/grib2/Grib2Indexer data/grib2/ndfd.wmo ndfd.idx 
+
+java -Xmx256m ucar/grib/grib1/Grib1Indexer data/grib1/RUC.wmo  RUC.wmo.gbx
+
+java -Xmx256m ucar/grib/grib1/Grib1IndexExtender data/grib1/RUC.wmo 
+
+java -Xmx256m ucar/grib/grib2/Grib2IndexExtender data/grib2/NDFD.wmo 
+
+java -Xmx256m ucar/grib/grib2/Grib2GetData data/grib2/ndfd.wmo 498193 498274 > ndfd.data
+
+java -Xmx256m ucar/grib/grib1/Grib1GetData data/grib1/RUC.wmo 110 1 true > ruc.data
+
+java -Xmx256m ucar/grib/GribChecker data/grib2/ndfd.wmo
+
+java -Xmx256m ucar/grib/grib2/Grib2ExtractRawData <data> 0 1 192
+
+java -Xmx256m ucar/grib/TestAll

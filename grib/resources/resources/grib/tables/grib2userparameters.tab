@@ -1,0 +1,8 @@
+# Sample Grib2 table parameters that are read in externally
+# Use static method: ParameterTable.addParametersUser(String UserGribTable)
+# Grib 2 Table: http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-1.shtml
+# The fields are separated by tabs, Name cannot have spaces, use _
+# fields: 
+# Discipline Category ParameterNumber Name Unit Description
+0	1	223	Total_precipitation	kg/m2	Total precipitation in 24 hours
+0	2	1	Wind_speed	knots	Wind speed at 2 meters

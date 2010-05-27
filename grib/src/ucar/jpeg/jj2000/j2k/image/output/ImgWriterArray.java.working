@@ -1,0 +1,475 @@
+/*
+ * CVS identifier:
+ *
+ * $Id: ImgWriterArray.java,v 1.0 2004/11/02 14:10:46 rkambic Exp $
+ *
+ * Class:                   ImgWriterArray
+ *
+ * Description:             Image Writer for Array format
+ *
+ *
+ *
+ * */
+package jj2000.j2k.image.output;
+
+import jj2000.j2k.image.*;
+import jj2000.j2k.util.*;
+
+import java.io.*;
+
+/**
+ * This class extends the ImgWriter abstract class for writing Array .  Array
+ * is a custom monochrome format invented specifically to simplify the
+ * use of VM3A with images of different bit-depths in the range 1 to 31 bits
+ * per pixel.
+ *
+ * <p>The file consists of a one line text header followed by the data.</p>
+ *
+ * <p>
+ * <u>Header:</u> "PG"+ <i>ws</i> +&lt;<i>endianess</i>&gt;+ <i>ws</i>
+ * +[<i>sign</i>]+<i>ws</i> + &lt;<i>bit-depth</i>&gt;+"
+ * "+&lt;<i>width</i>&gt;+" "+&lt;<i>height</i>&gt;+'\n'</p> 
+ * 
+ * <p>where:<br>
+ * <ul>
+ * <li><i>ws</i> (white-spaces) is any combination of characters ' ' and
+ * '\t'.</li> 
+ * <li><i>endianess</i> equals "LM" or "ML"(resp. little-endian or
+ * big-endian)</li> 
+ * <li><i>sign</i> equals "+" or "-" (resp. unsigned or signed). If omited,
+ * values are supposed to be unsigned.</li> 
+ * <li><i>bit-depth</i> that can be any number between 1 and 31.</li>
+ * <li><i>width</i> and <i>height</i> are the image dimensions (in
+ * pixels).</li> 
+ * </ul>
+ * 
+ * <u>Data:</u> The image binary values appear one after the other (in raster
+ * order) immediately after the last header character ('\n') and are
+ * byte-aligned (they are packed into 1,2 or 4 bytes per sample, depending
+ * upon the bit-depth value).
+ * </p>
+ *
+ * <p> If the data is unsigned, level shifting is applied adding 2^(bit depth
+ * - 1)</p>
+ *
+ * <p><u>NOTE</u>: This class is not thread safe, for reasons of internal
+ * buffering.</p>
+ *
+ * @see ImgWriter
+ *
+ * @see BlkImgDataSrc
+ * */
+public class ImgWriterArray extends ImgWriter {
+
+    /** Used during saturation (2^bitdepth-1 if unsigned, 2^(bitdepth-1)-1 if
+     * signed)*/
+    int maxVal;
+
+    /** Used during saturation (0 if unsigned, -2^(bitdepth-1) if signed) */
+    int minVal;
+
+    /** Used with level-shiting */
+    int levShift;
+
+    /** Whether the data must be signed when writing or not. In the latter
+     * case inverse level shifting must be applied */
+    boolean isSigned;
+
+    /** The bit-depth of the input file (must be between 1 and 31)*/
+    private int bitDepth;
+
+    /** Where to write the data */
+    //private RandomAccessFile out;
+    
+    /** The offset of the raw pixel data in the Array file */
+    private int offset;
+
+    /** A DataBlk, just used to avoid allocating a new one each time it is
+        needed */
+    private DataBlkInt db = new DataBlkInt();
+
+    /** The number of fractional bits in the source data */
+    private int fb;
+
+    /** The index of the component from where to get the data */
+    private int c;
+
+    /** The pack length of one sample (in bytes, according to the output
+        bit-depth */
+    private int packBytes;
+
+    /** data array for Grib2 */
+    private int gdata[];
+
+    /** The line buffer. */
+    // This makes the class not thread safe
+    // (but it is not the only one making it so)
+    private byte buf[];
+
+    /**
+     * Creates a new writer to the specified File object, to write data from
+     * the specified component.
+     *
+     * <p>The size of the image that is written to the file is the size of the
+     * component from which to get the data, specified by b, not the size of
+     * the source image (they differ if there is some sub-sampling).</p>
+     *
+     * <p>All the header informations are given by the BlkImgDataSrc source
+     * (component width, component height, bit-depth) and sign flag, which are
+     * provided to the constructor. The endianness is always big-endian (MSB
+     * first).</p>
+     *
+     * @param out The file where to write the data
+     *
+     * @param imgSrc The source from where to get the image data to write.
+     *
+     * @param c The index of the component from where to get the data.
+     *
+     * @param isSigned Whether the datas are signed or not (needed only when
+     * writing header).
+     *
+     * @see DataBlk
+     * */
+    public ImgWriterArray(BlkImgDataSrc imgSrc, 
+			int c, boolean isSigned) throws IOException {
+        //Initialize
+        this.c = c;
+        this.isSigned = isSigned;
+        //System.out.println("sign = " + isSigned );
+        src = imgSrc;
+        w = src.getImgWidth();
+        h = src.getImgHeight();
+        fb = imgSrc.getFixedPoint(c);
+        System.out.println(" constructor iwa w=" + w +" h=" +h +" Fixedpt=" + fb ) ;
+
+        bitDepth = src.getNomRangeBits(this.c);
+        if((bitDepth<=0)||(bitDepth>31)) {
+            throw new IOException("Array supports only bit-depth between "+
+                                  "1 and 31");
+	}
+        if(bitDepth<=8) {
+            packBytes = 1;
+        } else if(bitDepth<=16) {
+            packBytes = 2;
+        } else { // <= 31
+            packBytes = 4;
+	}
+        System.out.println("data size=" + (h * w * packBytes));
+        gdata = new int[ h * w * packBytes ];
+        //gdata = new int[ h * w ];
+
+        // Writes Array header
+        //String tmpString = "PG "
+         //   + "ML " // Always writing big-endian
+          //  + ((this.isSigned) ? "- " : "+ ") // signed/unsigned
+           // + bitDepth + " " // bit-depth
+            //+ w + " " // component width
+            //+ h + "\n"; // component height
+
+        //byte[] tmpByte = tmpString.getBytes();
+        //for(int i=0; i<tmpByte.length; i++) {
+        //    this.out.write(tmpByte[i]);
+	//}
+
+        //offset = tmpByte.length;
+        offset = 0;
+        maxVal = this.isSigned ? (( 1<<(src.getNomRangeBits(c)-1) )-1):
+            ((1<<src.getNomRangeBits(c))-1);
+        minVal = this.isSigned ? (-1 * ( 1<<(src.getNomRangeBits(c)-1) )) : 0;
+            
+        levShift = (this.isSigned) ? 0 : 1<<(src.getNomRangeBits(c)-1);
+    } // end ImgWriterArray
+
+    /**
+     * Closes the underlying file or netwrok connection to where the data is
+     * written. Any call to other methods of the class become illegal after a
+     * call to this one.
+     *
+     * @exception IOException If an I/O error occurs.
+     * */
+    public void close() throws IOException {
+        int i;
+        // Finish writing the file, writing 0s at the end if the data at end
+        // has not been written.
+        //if(out.length() != w*h*packBytes+offset) {
+            // Goto end of file
+            //out.seek(out.length());
+            // Fill with 0s
+            //for(i=offset+w*h*packBytes-(int)out.length(); i>0; i--) {
+            //    out.writeByte(0);
+         //       System.out.println("close filling file w/ 0's" );
+            //}
+        //}
+        //out.close();
+        src = null;
+        //out = null;
+        //db = null;
+    }
+
+    /**
+     * Writes the data of the specified area to the file, coordinates are
+     * relative to the current tile of the source. Before writing, the
+     * coefficients are limited to the nominal range and packed into 1,2 or 4
+     * bytes (according to the bit-depth).
+     *
+     * <p>If the data is unisigned, level shifting is applied adding 2^(bit
+     * depth - 1)</p>
+     *
+     * <p>This method may not be called concurrently from different
+     * threads.</p> 
+     *
+     * <p>If the data returned from the BlkImgDataSrc source is progressive,
+     * then it is requested over and over until it is not progressive
+     * anymore.</p>
+     *
+     * @param ulx The horizontal coordinate of the upper-left corner of the
+     * area to write, relative to the current tile.
+     *
+     * @param uly The vertical coordinate of the upper-left corner of the area
+     * to write, relative to the current tile.
+     *
+     * @param width The width of the area to write.
+     *
+     * @param height The height of the area to write.
+     *
+     * @exception IOException If an I/O error occurs.
+     * */
+    public void write(int ulx, int uly, int w, int h) throws IOException {
+        int k,i,j;
+        int fracbits = fb;     // In local variable for faster access
+        int tOffx, tOffy;      // Active tile offset in the X and Y direction
+
+        //System.out.println( " ulx=" + ulx +" uly=" + uly +" w=" + w +" h=" + h);
+        // Initialize db
+        db.ulx = ulx;
+        db.uly = uly;
+        db.w = w;
+        db.h = h;
+        //db.ulx = 0;
+        //db.uly = 0;
+        //db.w = 614;
+        //db.h = 428;
+        // Get the current active tile offset
+        tOffx = src.getCompULX(c)-
+            (int)Math.ceil(src.getImgULX()/(double)src.getCompSubsX(c));
+        tOffy = src.getCompULY(c)-
+            (int)Math.ceil(src.getImgULY()/(double)src.getCompSubsY(c));
+        // Check the array size
+        if(db.data!=null && db.data.length<w*h) {
+            // A new one will be allocated by getInternCompData()
+            db.data = null;
+        }
+        // Request the data and make sure it is not
+        // progressive
+        do {
+            db = (DataBlkInt) src.getInternCompData(db,c);
+	    //System.out.println( "Progressive Comp c =" + c );
+        } while (db.progressive);
+
+	//System.out.println( "Comp c =" + c );
+
+        //System.out.println( "db.data.length = " + db.data.length );
+        //System.out.println( "gdata.length = " + gdata.length );
+        if( true )
+          return;
+
+        int tmp;
+
+
+        // Check line buffer
+        if(buf==null || buf.length<packBytes*w) {
+            buf = new byte[packBytes*w]; // Expand buffer
+        }
+
+        int index = 0;
+        switch(packBytes) {
+
+        case 1: // Samples packed into 1 byte
+            // Write line by line
+            for(i=0; i<h; i++) {
+                // Skip to beggining of line in file
+                //out.seek(offset+this.w*(uly+tOffy+i)+ulx+tOffx);
+                // Write all bytes in the line
+                if(fracbits==0) {
+                    for(k=db.offset+i*db.scanw+w-1, j=w-1; j>=0; k--) {
+                        tmp = db.data[k]+levShift;
+                        buf[j--] = (byte)((tmp < minVal) ? minVal :
+                                          ((tmp>maxVal)? maxVal: tmp));
+                    }
+                } else {
+                    for (k=db.offset+i*db.scanw+w-1, j=w-1; j>=0; k--) {
+                        tmp = (db.data[k]>>>fracbits)+levShift;
+                        buf[j--] = (byte)((tmp < minVal) ? minVal :
+                                          ((tmp>maxVal)? maxVal: tmp));
+                    }
+                }
+                //out.write(buf,0,w);
+            }
+            System.out.println( "1 byte  Write line by line" );
+            break;
+            
+        case 2: // Samples packed in to 2 bytes (short)
+            // Write line by line
+            for(i=0; i<h; i++) {
+              
+                // Skip to beggining of line in file
+                //out.seek(offset+2*(this.w*(uly+tOffy+i)+ulx+tOffx));
+                index = (offset+2*(this.w*(uly+tOffy+i)+ulx+tOffx));
+                // Write all bytes in the line
+                if(fracbits==0) {
+                    //System.out.println( "this.w = " + this.w );
+                    //System.out.println( "w = " + w );
+                    //System.out.println( "fracbits = " + fracbits );
+                    //System.out.println( "levShift = " + levShift );
+                    //System.out.println( "minVal = " + minVal );
+                    //System.out.println( "maxVal = " + maxVal );
+                    //System.out.println( "db.offset = " + db.offset );
+		    //System.out.println( "k = " + (db.offset+i*db.scanw+w-1) );
+                    //System.out.println( "db.data.length = " + db.data.length );
+                    for (k=db.offset+i*db.scanw+w-1, j=(w<<1)-1; j>=0; k--) {
+                        //if( k == 613 )
+                           //System.out.println( "j = " + j );
+                        tmp = db.data[k]+levShift;
+                        tmp = (tmp<minVal) ? minVal :
+                            ((tmp>maxVal)? maxVal: tmp);
+                        buf[j--] = (byte)tmp; // no need for 0xFF mask since
+                                              // truncation will do it already
+                        buf[j--] = (byte)(tmp>>>8);
+                        gdata[ k ] = db.data[ k ];
+                    }
+                } else {
+                    for (k=db.offset+i*db.scanw+w-1, j=(w<<1)-1; j>=0; k--) {
+                        tmp = (db.data[k]>>>fracbits)+levShift;
+                        tmp = (tmp<minVal) ? minVal :
+                            ((tmp>maxVal)? maxVal: tmp);
+                        buf[j--] = (byte)tmp; // no need for 0xFF mask since
+                                              // truncation will do it already
+                        buf[j--] = (byte)(tmp>>>8);
+                    }
+               }
+               //out.write(buf,0,w<<1);
+               //System.out.println( "index=" + index );
+               //int bufLength = w<<1;
+               //System.out.println( "bufLength=" + (w<<1) );
+               //int i , pos , bufLength ;
+               //for( int pos = 0, bufLength = w<<1; pos < bufLength; pos++ )
+                //  gdata[ index + pos ] = db.data[ pos ];
+
+               //System.out.println( "offset+2*(this.w*(uly+tOffy+i)+ulx+tOffx)="
+		//+ offset+2*(this.w*(uly+tOffy+i)+ulx+tOffx) );
+               //System.out.println( "minVal=" + minVal +" maxVal=" + maxVal + " w=" + w + 
+		//" h=" + h +" levShift=" + levShift +" k=" + k +" uly=" + uly );
+            } // end for i < h
+            //System.out.println( "2 byte  Write line by line" );
+            break;
+
+        case 4:
+            // Write line by line
+            for(i=0; i<h; i++) {
+                // Skip to beggining of line in file
+                //out.seek(offset+4*(this.w*(uly+tOffy+i)+ulx+tOffx));
+                // Write all bytes in the line
+                if(fracbits==0) {
+                    for(k=db.offset+i*db.scanw+w-1, j=(w<<2)-1; j>=0; k--) {
+                        tmp = db.data[k]+levShift;
+                        tmp = (tmp<minVal) ? minVal :
+                            ((tmp>maxVal)? maxVal: tmp);
+                        buf[j--] = (byte)tmp;        // No need to use 0xFF
+                        buf[j--] = (byte)(tmp>>>8);  // masks since truncation
+                        buf[j--] = (byte)(tmp>>>16); // will have already the
+                        buf[j--] = (byte)(tmp>>>24); // same effect
+                    }
+                } else {
+                    for(k=db.offset+i*db.scanw+w-1, j=(w<<2)-1; j>=0; k--) {
+                        tmp = (db.data[k]>>>fracbits)+levShift;
+                        tmp = (tmp<minVal) ? minVal : 
+			    ((tmp>maxVal)? maxVal: tmp);
+                        buf[j--] = (byte)tmp;        // No need to use 0xFF
+                        buf[j--] = (byte)(tmp>>>8);  // masks since truncation
+                        buf[j--] = (byte)(tmp>>>16); // will have already the
+                        buf[j--] = (byte)(tmp>>>24); // same effect
+                    }
+                }
+                //out.write(buf,0,w<<2);
+            }
+            break;
+
+        default:
+            throw new IOException("Array supports only bit-depth between "+
+                                  "1 and 31");
+        }
+
+    }
+    
+    public void writeAll() throws IOException {
+        // Find the list of tile to decode.
+        Coord nT = src.getNumTiles(null);
+        System.out.println( "ImgWriterArray nTiles = " + nT );
+
+        // Loop on vertical tiles
+        for(int y=0; y<nT.y; y++){
+            // Loop on horizontal tiles
+            for(int x=0; x<nT.x; x++){
+                System.out.println( "ImgWriterArray setTiles(x,y) = " + x + ", " + y );
+                src.setTile(x,y);
+                write( 0, 0, 614, 428 );
+            } // End loop on horizontal tiles
+        } // End loop on vertical tiles
+    }
+
+    /**
+     * Writes the source's current tile to the output. The requests of data
+     * issued to the source BlkImgDataSrc object are done by strips, in order
+     * to reduce memory usage.
+     *
+     * <p>If the data returned from the BlkImgDataSrc source is progressive,
+     * then it is requested over and over until it is not progressive
+     * anymore.</p>
+     *
+     * @exception IOException If an I/O error occurs.
+     *
+     * @see DataBlk
+     * */
+    public void write() throws IOException {
+        int i;
+        int tIdx = src.getTileIdx();
+        int tw = src.getTileCompWidth(tIdx,c);  // Tile width
+        int th = src.getTileCompHeight(tIdx,c);  // Tile height
+        // Write in strips
+        for(i=0; i<th ; i+=DEF_STRIP_HEIGHT) {
+            write(0,i,tw,(th-i<DEF_STRIP_HEIGHT) ? th-i : DEF_STRIP_HEIGHT);
+        }
+    }
+    
+    /** The pack length of one sample (in bytes, according to the output
+        bit-depth */
+    public int getPackBytes() {
+       return packBytes;
+    }
+
+    /**
+     * the jpeg data decoded into a array
+     *
+     * @return a byte[]
+     * */
+    public int[] getGdata() {
+       //return gdata;
+       return db.data;
+    }
+
+    public void flush() {
+    }
+
+    /**
+     * Returns a string of information about the object, more than 1 line
+     * long. The information string includes information from the underlying
+     * RandomAccessFile (its toString() method is called in turn).
+     *
+     * @return A string of information about the object.
+     * */
+    public String toString() {
+        return "ImgWriterArray: WxH = " + w + "x" + h + ", Component = "+
+            c + ", Bit-depth = "+bitDepth + ", signed = "+isSigned + 
+            "\nUnderlying RandomAccessFile:\n" + gdata.toString();
+    }
+} // end ImgWriterArray
