@@ -3,6 +3,10 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Changes in version 4.2:
+ 4: (xx-xx-xx)
+  CF1 use super.getAxisType()
+  CF1 break apart convention list
+  DODS parser: fix alias command in the DAS
  3:(2010-05-27)
   NetcdfFile.readSection(String) should unescape names
   DODNetcdfDataset.getDetailInfo() shows DAS, DDS.

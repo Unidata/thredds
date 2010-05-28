@@ -218,7 +218,7 @@ public class XMLEntityResolver implements org.xml.sax.EntityResolver {
 
     // catalog 1.0 schema
     initEntity( CATALOG_NAMESPACE_10,
-                "/resources/thredds/schemas/InvCatalog.1.0.2.xsd",
+                "/resources/thredds/schemas/InvCatalog.1.0.3.xsd",
                 "http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.3.xsd");
 
     // catalog 0.6 schema
