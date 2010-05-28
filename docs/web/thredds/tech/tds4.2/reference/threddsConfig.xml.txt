@@ -93,9 +93,9 @@
     <maxAge>30 days</maxAge>
   </AggregationCache>
 
-  <!-- How to choose the template dataset for an aggregation. latest, random, or penultimate   -->
+  <!-- How to choose the template dataset for an aggregation. first, latest, random, or penultimate   -->
   <Aggregation>
-    <typicalDataset>random</typicalDataset>
+    <typicalDataset>penultimate</typicalDataset>
   </Aggregation>
 
   <Opendap>
