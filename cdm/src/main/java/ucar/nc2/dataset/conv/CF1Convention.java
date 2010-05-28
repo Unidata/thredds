@@ -236,6 +236,12 @@ public class CF1Convention extends CSMConvention {
 
   }
 
+  /*  vertical coordinate will be identifiable by:
+      1. units of pressure; or
+      2. the presence of the positive attribute with a value of up or down (case insensitive).
+      3. Optionally, the vertical type may be indicated additionally by providing the standard_name attribute with an appropriate value, and/or the axis attribute with the value Z.
+   */
+
   // we assume that coordinate axes get identified by
   //  1) being coordinate variables or
   //  2) being listed in coordinates attribute.
@@ -269,7 +275,7 @@ public class CF1Convention extends CSMConvention {
 
     AxisType at = super.getAxisType(ncDataset, v);
 
-    // last choice is using axis attribute - only for X, Y, Z
+    // check axis attribute - only for X, Y, Z
     if (at == null) {
       String axis = ncDataset.findAttValueIgnoreCase((Variable) v, "axis", null);
       if (axis != null) {
@@ -296,59 +302,13 @@ public class CF1Convention extends CSMConvention {
       }
     }
 
+    // check units, positive
+    if (at == null) {
+      at = super.getAxisType(ncDataset, v);
+    }
+
     return at;
   }
-
-  /**
-   * Assign CoordinateTransform objects to Coordinate Systems.
-   * <p/>
-   * protected void assignCoordinateTransforms(NetcdfDataset ncDataset) {
-   * super.assignCoordinateTransforms(ncDataset);
-   * <p/>
-   * // need to explicitly assign vertical transforms
-   * for (int i = 0; i < varList.size(); i++) {
-   * VarProcess vp = (VarProcess) varList.get(i);
-   * if (vp.isCoordinateTransform && (vp.ct != null) && (vp.ct.getTransformType() == TransformType.Vertical)) {
-   * List domain = getFormulaDomain(ncDataset, vp.v);
-   * if (null == domain) continue;
-   * <p/>
-   * List csList = ncDataset.getCoordinateSystems();
-   * for (int j = 0; j < csList.size(); j++) {
-   * CoordinateSystem cs = (CoordinateSystem) csList.get(j);
-   * if (!cs.containsAxis(vp.v.getShortName())) continue; // cs must contain the vertical axis
-   * if (cs.containsDomain(domain)) { // cs must contain the formula domain
-   * cs.addCoordinateTransform(vp.ct);
-   * parseInfo.append(" assign (CF) coordTransform " + vp.ct + " to CoordSys= " + cs + "\n");
-   * }
-   * }
-   * }
-   * }
-   * }
-   */
-
-  /* run through all the variables in the formula, and get their domain (list of dimensions)
-  private List getFormulaDomain(NetcdfDataset ds, Variable v) {
-    String formula = ds.findAttValueIgnoreCase(v, "formula_terms", null);
-    if (null == formula) {
-      parseInfo.format("*** Cant find formula_terms attribute ");
-      return null;
-    }
-
-    ArrayList domain = new ArrayList();
-    StringTokenizer stoke = new StringTokenizer(formula);
-    while (stoke.hasMoreTokens()) {
-      String what = stoke.nextToken();
-      String varName = stoke.nextToken();
-      Variable formulaV = ds.findVariable(varName);
-      if (null == formulaV) {
-        parseInfo.format("*** Cant find formula variable= %s for term= %s\n",varName, what);
-        continue;
-      }
-      domain.addAll(formulaV.getDimensions());
-    }
-
-    return domain;
-  } */
 
 }
 

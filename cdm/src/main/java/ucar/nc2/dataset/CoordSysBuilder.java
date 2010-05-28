@@ -131,7 +131,11 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
 
     registerConvention("CF-1.", CF1Convention.class, new ConventionNameOk() {
       public boolean isMatch(String convName, String wantName) {
-        return convName.startsWith(wantName);
+        if (convName.startsWith(wantName)) return true;
+        List<String> names = breakupConventionNames(convName);
+        for (String name : names)
+          if (name.startsWith(wantName)) return true;
+        return false;
       }
     });
 
@@ -275,6 +279,26 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
     return useMaximalCoordSys;
   }
 
+  // breakup list of Conventions
+  static private List<String> breakupConventionNames(String convName) {
+    List<String> names = new ArrayList<String>();
+
+    if ((convName.indexOf(',') > 0) || (convName.indexOf(';') > 0)) {
+      StringTokenizer stoke = new StringTokenizer(convName, ",;");
+      while (stoke.hasMoreTokens()) {
+        String name = stoke.nextToken();
+        names.add(name.trim());
+      }
+    } else if ((convName.indexOf('/') > 0)) {
+      StringTokenizer stoke = new StringTokenizer(convName, "/");
+      while (stoke.hasMoreTokens()) {
+        String name = stoke.nextToken();
+        names.add(name.trim());
+      }
+    }
+    return names;
+  }
+
   /**
    * Get a CoordSysBuilder whose job it is to add Coordinate information to a NetcdfDataset.
    *
@@ -310,22 +334,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
 
       // now look for comma or semicolon or / delimited list
       if (convClass == null) {
-        List<String> names = new ArrayList<String>();
-
-        if ((convName.indexOf(',') > 0) || (convName.indexOf(';') > 0)) {
-          StringTokenizer stoke = new StringTokenizer(convName, ",;");
-          while (stoke.hasMoreTokens()) {
-            String name = stoke.nextToken();
-            names.add(name.trim());
-          }
-        } else if ((convName.indexOf('/') > 0)) {
-          StringTokenizer stoke = new StringTokenizer(convName, "/");
-          while (stoke.hasMoreTokens()) {
-            String name = stoke.nextToken();
-            names.add(name.trim());
-          }
-        }
-
+        List<String> names = breakupConventionNames(convName);
         if (names.size() > 0) {
           // search the registered conventions, in order
           for (Convention conv : conventionList) {
@@ -385,10 +394,10 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
       builder.addUserAdvice("No CoordSysBuilder found - using Default Conventions.\n");
     }
 
-    if (convName != null) {
-      builder.setConventionUsed(convName);
-    } else
+    if (convName == null)
       builder.addUserAdvice("No 'Conventions' global attribute.\n");
+    else
+      builder.setConventionUsed(convClass.getName());
 
     return builder;
   }
