@@ -38,6 +38,7 @@ import thredds.ui.ProgressMonitorTask;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.FileNotFoundException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.io.IOException;
@@ -121,7 +122,7 @@ public class CatalogFactoryCancellable extends InvCatalogFactory {
 
   /**
    * See if this object can be reused.
-   * @return true if not compled last task.
+   * @return true if not completed last task.
    */
   public boolean isBusy() { return !taskDone || !callbackDone; }
 
@@ -166,7 +167,15 @@ public class CatalogFactoryCancellable extends InvCatalogFactory {
         m.setFollowRedirects(true);
 
         HttpClient client = HttpClientManager.getHttpClient();
-        client.executeMethod(m);
+
+        int statusCode = client.executeMethod(m);
+
+        if (statusCode == 404)
+          throw new FileNotFoundException(m.getPath() + " " + m.getStatusLine());
+
+        if (statusCode >= 300)
+          throw new IOException(m.getPath() + " " + m.getStatusLine());
+        
         InputStream stream =  m.getResponseBodyAsStream();
         catalog = CatalogFactoryCancellable.super.readXML( stream, catalogURI);
 

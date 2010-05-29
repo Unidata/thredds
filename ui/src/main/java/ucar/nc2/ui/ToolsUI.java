@@ -948,7 +948,9 @@ public class ToolsUI extends JPanel {
       }
 
       if (wantsCoordSys) {
-        openCoordSystems(threddsDataFactory.openDataset(invDataset, true, null, null));
+        NetcdfDataset ncd = threddsDataFactory.openDataset(invDataset, true, null, null);
+        ncd.enhance(); // make sure its enhanced
+        openCoordSystems(ncd);
         return;
       }
 
