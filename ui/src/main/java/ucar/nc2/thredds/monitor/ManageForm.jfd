@@ -13,11 +13,11 @@
        <class>org.jdesktop.layout.GroupLayout</class> 
        <void method="setProperty"> 
         <string>$horizontalGroup</string> 
-        <string>par l {seq {par l {seq {space :p:39:p, par l {comp acceptButton::l:p::p, comp label2::l:p::p, seq l {comp label1:::p:55:p, space :::p, par l {comp server::l:p:294:p, comp wantAccess::l:p::p, comp wantServlet::l:p::p}}}}, seq l {space :p:15:p, comp scrollPane1::::649:x}}, space :::p}}</string> 
+        <string>par l {seq {par l {seq {space :p:39:p, par l {seq l {comp acceptButton:::p::p, space s:::p, comp stopButton:::p::p}, comp label2::l:p::p, seq l {comp label1:::p:55:p, space :::p, par l {comp server::l:p:294:p, comp wantAccess::l:p::p, comp wantServlet::l:p::p}}}}, seq l {space :p:15:p, comp scrollPane1::::649:x}}, space :::p}}</string> 
        </void> 
        <void method="setProperty"> 
         <string>$verticalGroup</string> 
-        <string>par l {seq l {space :p:21:p, comp label2:::p::p, space :::p, par b {comp server::b:p::p, comp label1::b:p::p}, space :::p, comp wantAccess:::p::p, space :::p, comp wantServlet:::p::p, space s:::p, comp acceptButton:::p::p, space s:::p, comp scrollPane1::::442:x, space :::p}}</string> 
+        <string>par l {seq l {space :p:21:p, comp label2:::p::p, space :::p, par b {comp server::b:p::p, comp label1::b:p::p}, space :::p, comp wantAccess:::p::p, space :::p, comp wantServlet:::p::p, space s:::p, par b {comp acceptButton::b:p::p, comp stopButton::b:p::p}, space s:::p, comp scrollPane1::::439:x, space :::p}}</string> 
        </void> 
       </object> 
       <void property="name"> 
@@ -170,6 +170,18 @@
            <string>textArea1</string> 
           </void> 
          </object> 
+        </void> 
+       </object> 
+      </void> 
+      <void method="add"> 
+       <object class="com.jformdesigner.model.FormComponent"> 
+        <string>ucar.nc2.ui.StopButton</string> 
+        <void method="setProperty"> 
+         <string>toolTipText</string> 
+         <string>stop download</string> 
+        </void> 
+        <void property="name"> 
+         <string>stopButton</string> 
         </void> 
        </object> 
       </void> 

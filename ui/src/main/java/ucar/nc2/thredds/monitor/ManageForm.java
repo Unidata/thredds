@@ -7,6 +7,7 @@ package ucar.nc2.thredds.monitor;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import javax.swing.*;
+import ucar.nc2.ui.*;
 
 /**
  * @author John Caron
@@ -28,6 +29,10 @@ public class ManageForm extends JPanel {
     return textArea1;
   }
 
+  public StopButton getStopButton() {
+    return stopButton;
+  }
+
   public JComboBox getServers() {
     return server;
   }
@@ -47,6 +52,7 @@ public class ManageForm extends JPanel {
     label2 = new JLabel();
     scrollPane1 = new JScrollPane();
     textArea1 = new JTextArea();
+    stopButton = new StopButton();
     downloadAction = new DownloadAction();
 
     //======== this ========
@@ -85,6 +91,9 @@ public class ManageForm extends JPanel {
       scrollPane1.setViewportView(textArea1);
     }
 
+    //---- stopButton ----
+    stopButton.setToolTipText("stop download");
+
     GroupLayout layout = new GroupLayout(this);
     setLayout(layout);
     layout.setHorizontalGroup(
@@ -94,7 +103,10 @@ public class ManageForm extends JPanel {
             .addGroup(layout.createSequentialGroup()
               .addGap(39, 39, 39)
               .addGroup(layout.createParallelGroup()
-                .addComponent(acceptButton)
+                .addGroup(layout.createSequentialGroup()
+                  .addComponent(acceptButton)
+                  .addGap(18, 18, 18)
+                  .addComponent(stopButton, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
                 .addComponent(label2)
                 .addGroup(layout.createSequentialGroup()
                   .addComponent(label1, GroupLayout.PREFERRED_SIZE, 55, GroupLayout.PREFERRED_SIZE)
@@ -122,9 +134,11 @@ public class ManageForm extends JPanel {
           .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
           .addComponent(wantServlet)
           .addGap(18, 18, 18)
-          .addComponent(acceptButton)
+          .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+            .addComponent(acceptButton)
+            .addComponent(stopButton, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
           .addGap(18, 18, 18)
-          .addComponent(scrollPane1, GroupLayout.DEFAULT_SIZE, 442, Short.MAX_VALUE)
+          .addComponent(scrollPane1, GroupLayout.DEFAULT_SIZE, 439, Short.MAX_VALUE)
           .addContainerGap())
     );
     // JFormDesigner - End of component initialization  //GEN-END:initComponents
@@ -140,6 +154,7 @@ public class ManageForm extends JPanel {
   private JLabel label2;
   private JScrollPane scrollPane1;
   private JTextArea textArea1;
+  private StopButton stopButton;
   private DownloadAction downloadAction;
   // JFormDesigner - End of variables declaration  //GEN-END:variables
 

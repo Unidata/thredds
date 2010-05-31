@@ -135,6 +135,15 @@ public class AccessLogTable extends JPanel {
       }
     });
 
+    varPopup.addAction("Remove selected logs", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        List all = logTable.getBeans();
+        List selected = logTable.getSelectedBeans();
+        all.removeAll(selected);
+        logTable.setBeans(all);
+      }
+    });
+
     userTable = new BeanTableSorted(User.class, (PreferencesExt) prefs.node("LogUser"), false);
     userTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
@@ -324,25 +333,21 @@ public class AccessLogTable extends JPanel {
     endDateField.setText(df.format(endDate));
   }
 
-  void showLogs(String filterS) {
+  void showLogs(LogReader.LogFilter filter) {
     Date start, end;
     try {
       start = df.parse(startDateField.getText());
       end = df.parse(endDateField.getText());
       accessLogFiles = manager.getLocalFiles(start, end);
     } catch (Exception e) {
-       e.printStackTrace();
+      e.printStackTrace();
       return;
     }
 
     LogReader reader = new LogReader(new AccessLogParser());
     completeLogs = new ArrayList<LogReader.Log>(30000);
 
-    LogReader.LogFilter filter;
-    if (filterS != null)
-      filter = new IpFilter(filterS.split(","), start.getTime(), end.getTime());
-    else
-      filter = new DateFilter(start.getTime(), end.getTime());
+    filter = new LogReader.DateFilter(start.getTime(), end.getTime(), filter);
 
     try {
       long startElapsed = System.nanoTime();
@@ -422,47 +427,6 @@ public class AccessLogTable extends JPanel {
   }
 
   ////////////////////////////////////////////////////////
-  class DateFilter implements LogReader.LogFilter {
-     long start, end;
-     DateFilter(long start, long end) {
-       this.start = start;
-       this.end = end;
-     }
-     public boolean pass(LogReader.Log log) {
-       if ((log.date < start) || (log.date > end))
-         return false;
-
-       return true;
-     }
-   }
-
-  class IpFilter implements LogReader.LogFilter {
-    String[] match;
-    long start, end;
-    IpFilter(String[] match, long start, long end) {
-      this.match = match;
-      this.start = start;
-      this.end = end;
-    }
-    public boolean pass(LogReader.Log log) {
-      if ((log.date < start) || (log.date > end))
-        return false;
-
-      for (String s: match)
-        if (log.getIp().startsWith(s))
-          return false;
-
-      return true;
-    }
-  }
-
-  class MyFF implements FileFilter {
-    public boolean accept(File f) {
-      String name = f.getName();
-      return name.startsWith("access") && name.endsWith(".log");
-    }
-  }
-
   class MyClosure implements LogReader.Closure {
     ArrayList<LogReader.Log> logs;
 

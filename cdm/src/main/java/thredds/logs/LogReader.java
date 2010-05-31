@@ -33,7 +33,6 @@
 
 package thredds.logs;
 
-import ucar.nc2.units.DateFormatter;
 import ucar.unidata.util.StringUtil;
 
 import java.io.BufferedReader;
@@ -108,15 +107,83 @@ public class LogReader {
     void process(Log log) throws IOException;
   }
 
-  public interface LogFilter {
-    boolean pass(Log log);
-  }
 
   public static class Stats {
     public long total;
     public long passed;
   }
 
+  ////////////////////////////////////////////////////////////
+
+  public interface LogFilter {
+    boolean pass(Log log);
+  }
+
+  public static class DateFilter implements LogFilter {
+    long start, end;
+    LogReader.LogFilter chain;
+
+    public DateFilter(long start, long end, LogReader.LogFilter chain) {
+      this.start = start;
+      this.end = end;
+      this.chain = chain;
+    }
+
+    public boolean pass(LogReader.Log log) {
+      if (chain != null && !chain.pass(log))
+        return false;
+
+      if ((log.date < start) || (log.date > end))
+        return false;
+
+      return true;
+    }
+  }
+
+  public static class IpFilter implements LogFilter {
+    String[] match;
+    LogReader.LogFilter chain;
+
+    public IpFilter(String[] match, LogReader.LogFilter chain) {
+      this.match = match;
+      this.chain = chain;
+    }
+
+    public boolean pass(LogReader.Log log) {
+      if (chain != null && !chain.pass(log))
+        return false;
+
+      for (String s : match)
+        if (log.getIp().startsWith(s))
+          return false;
+
+      return true;
+    }
+  }
+
+  public static class ErrorOnlyFilter implements LogFilter {
+    LogReader.LogFilter chain;
+
+    public ErrorOnlyFilter(LogReader.LogFilter chain) {
+      this.chain = chain;
+    }
+
+    public boolean pass(LogReader.Log log) {
+      if (chain != null && !chain.pass(log))
+        return false;
+
+      int status = log.getStatus();
+      if ((status < 400) || (status >= 1000)) return false;
+
+      return true;
+    }
+  }
+
+  public static class FilterNoop implements LogFilter {
+    public boolean pass(LogReader.Log log) {
+      return true;
+    }
+  }
   /////////////////////////////////////////////////////////////////////
 
   private int maxLines = -1;

@@ -157,6 +157,17 @@ public class CatalogTreeView extends JPanel implements CatalogSetCallback {
       }
     });
 
+    varPopup.addAction("Open one level of children", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        InvCatalogTreeNode node = (InvCatalogTreeNode) tree.getLastSelectedPathComponent();
+        if (node != null) {
+          node.makeChildren( true);
+          for (InvCatalogTreeNode child : node.children)
+            tree.expandPath(makeTreePath(child));
+        }
+      }
+    });
+
     ToolTipManager.sharedInstance().registerComponent(tree);
 
    // layout

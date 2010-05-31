@@ -66,6 +66,21 @@ public class StopButton extends JButton implements CancelTask {
   // event handling
   private EventListenerList listenerList = new EventListenerList();
 
+  // bean for JForm Designer - let it set sizes
+  public StopButton() {
+   setIcon(icon[0]);
+    //setMaximumSize(new java.awt.Dimension(28,28));       // kludge; consistent with BAMutil
+    //setPreferredSize(new java.awt.Dimension(28,28));
+    setFocusPainted(false);
+
+    super.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        if (debug) System.out.println(" StopButton.EVENT");
+        isCancelled = true;
+      }
+    });
+  }
+
   public StopButton(String tooltip) {
     setIcon(icon[0]);
     setMaximumSize(new java.awt.Dimension(28,28));       // kludge; consistent with BAMutil
@@ -106,6 +121,10 @@ public class StopButton extends JButton implements CancelTask {
 
   public boolean isCancel() {
     return isCancelled;
+  }
+
+  public void setCancel(boolean isCancelled) {
+    this.isCancelled = isCancelled;
   }
 
   public void setError(String msg) {

@@ -34,11 +34,9 @@
 package ucar.nc2.thredds.monitor;
 
 import org.apache.commons.httpclient.auth.CredentialsProvider;
-import ucar.nc2.ui.StopButton;
-import ucar.nc2.units.DateFormatter;
+import thredds.logs.LogReader;
 import ucar.nc2.util.net.HttpClientManager;
 import ucar.util.prefs.ui.Debug;
-import ucar.util.prefs.ui.ComboBox;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.XMLStore;
 
@@ -49,7 +47,6 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.*;
 import java.awt.*;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 import thredds.ui.*;
@@ -189,6 +186,7 @@ public class TdsMonitor extends JPanel {
   /////////////////////////
 
   private class ManagePanel extends JPanel {
+
      ManagePanel(PreferencesExt p) {
        manage = new ManageForm();
        setLayout(new BorderLayout());
@@ -200,18 +198,22 @@ public class TdsMonitor extends JPanel {
             ManageForm.Data data = (ManageForm.Data) evt.getNewValue();
             try {
               manage.getTextArea().setText(""); // clear the text area
-              
+              manage.getStopButton().setCancel(false); // clear the cancel state
+
               if (data.wantAccess) {
                 LogDownloader logManager = new LogDownloader(manage.getTextArea(), data.server, true);
-                logManager.getRemoteFiles();
+                logManager.getRemoteFiles(manage.getStopButton());
               }
               if (data.wantServlet) {
                 LogDownloader logManager = new LogDownloader(manage.getTextArea(), data.server, false);
-                logManager.getRemoteFiles();
+                logManager.getRemoteFiles(manage.getStopButton());
               }
             } catch (Throwable t) {
               t.printStackTrace();
             }
+            
+            if (manage.getStopButton().isCancel())
+              manage.getTextArea().append("\nDownload canceled by user");
           }
         });
      }
@@ -231,7 +233,8 @@ public class TdsMonitor extends JPanel {
     JTextArea startDateField, endDateField;
     JPanel topPanel;
     boolean isAccess;
-    boolean isFilter;
+    boolean removeTestReq;
+    boolean problemsOnly;
 
     OpPanel(PreferencesExt prefs, boolean isAccess) {
       this.prefs = prefs;
@@ -277,11 +280,20 @@ public class TdsMonitor extends JPanel {
       AbstractAction filterAction = new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
           Boolean state = (Boolean) getValue(BAMutil.STATE);
-          isFilter = state.booleanValue();
+          removeTestReq = state.booleanValue();
         }
       };
-      BAMutil.setActionProperties(filterAction, "time", "filter", true, 'F', -1);
+      BAMutil.setActionProperties(filterAction, "time", "remove test Requests", true, 'F', -1);
       BAMutil.addActionToContainer(topPanel, filterAction);
+
+      AbstractAction filter2Action = new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+          Boolean state = (Boolean) getValue(BAMutil.STATE);
+          problemsOnly = state.booleanValue();
+        }
+      };
+      BAMutil.setActionProperties(filter2Action, "time", "only show problems", true, 'F', -1);
+      BAMutil.addActionToContainer(topPanel, filter2Action);
 
       AbstractAction infoAction = new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
@@ -359,7 +371,13 @@ public class TdsMonitor extends JPanel {
 
     @Override
     void showLogs() {
-      logTable.showLogs(isFilter ? filterIP : null);
+      LogReader.LogFilter filter = null;
+      if (removeTestReq)
+        filter = new LogReader.IpFilter(filterIP.split(","), filter);
+      if (problemsOnly)
+        filter = new LogReader.ErrorOnlyFilter(filter);
+
+      logTable.showLogs( filter);
     }
 
     void showInfo(Formatter f) {
@@ -397,7 +415,13 @@ public class TdsMonitor extends JPanel {
 
     @Override
     void showLogs() {
-      logTable.showLogs(isFilter ? filterIP : null);
+      ServletLogTable.MergeFilter filter = null;
+      if (removeTestReq)
+        filter = new ServletLogTable.IpFilter(filterIP.split(","), filter);
+      if (problemsOnly)
+        filter = new ServletLogTable.ErrorOnlyFilter(filter);
+
+      logTable.showLogs( filter);
     }
 
     void resetLogs() {
@@ -413,6 +437,10 @@ public class TdsMonitor extends JPanel {
       super.save();
     }
   }
+
+  //////////////////////////////////////////////////////////////
+
+
 
     /**
      * Finds all files matching

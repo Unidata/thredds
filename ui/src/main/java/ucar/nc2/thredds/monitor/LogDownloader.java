@@ -33,10 +33,10 @@
 
 package ucar.nc2.thredds.monitor;
 
+import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.net.HttpClientManager;
 
 import java.io.*;
-import org.apache.commons.httpclient.auth.CredentialsProvider;
 
 import javax.swing.*;
 
@@ -52,6 +52,7 @@ public class LogDownloader {
   private String server, type;
   private File localDir;
   private JTextArea ta;
+  private CancelTask cancel;
 
   LogDownloader(JTextArea ta, String server, boolean isAccess) throws IOException {
     this.ta = ta;
@@ -65,7 +66,8 @@ public class LogDownloader {
     }
   }
 
-  public void getRemoteFiles() throws IOException {
+  public void getRemoteFiles(final CancelTask _cancel) throws IOException {
+    this.cancel = _cancel;
 
     String urls = "http://" + server + "/thredds/admin/log/"+type+"/";
     final String contents = HttpClientManager.getUrlContents(urls, 500);
@@ -83,15 +85,19 @@ public class LogDownloader {
         String[] lines = contents.split("\n");
         for (String line : lines) {
           new RemoteLog(line.trim());
-          //System.out.printf(" %s == %s %n", line, remoteLog);
-          //result.add(remoteLog);
+          if (cancel.isCancel()) {
+            break;
+          }
         }
 
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
       }
 
       public void done() {
-        ta.append(String.format("Download complete for %s%n", type));
+        if (cancel.isCancel())
+          ta.append(String.format("Download was cancelled for %s%n", type));
+        else
+          ta.append(String.format("Download complete for %s%n", type));
       }
     };
 
@@ -111,13 +117,13 @@ public class LogDownloader {
 
       localFile = new File(localDir, name);
       if (!localFile.exists() || (localFile.length() > size) || name.equals(latestServletLog)) {
-        ta.append(String.format("Read RemoteLog length=%d local=%d for %s%n", size, localFile.length(), name));
+        ta.append(String.format("Read RemoteLog length=%6d local=%6d (kb) for %s%n", size/1000, localFile.length()/1000, name));
         read();
       } else if (localFile.length() < size) {
-        ta.append(String.format("Append RemoteLog length=%d local=%d for %s%n", size, localFile.length(), name));
+        ta.append(String.format("Append RemoteLog length=%6d local=%6d (kb) for %s%n", size/1000, localFile.length()/1000, name));
         append();
       } else {
-        ta.append(String.format("Ok RemoteLog length=%d local=%d for %s%n", size, localFile.length(), name));
+        ta.append(String.format("Ok RemoteLog length=%6d local=%6d (kb) for %s%n", size/1000, localFile.length()/1000, name));
       }
       ta.setCaretPosition(ta.getText().length());   // needed to get the text to update ?
 
@@ -125,8 +131,8 @@ public class LogDownloader {
 
     void read() {
       String urls = "http://" + server + "/thredds/admin/log/"+type+"/" + name;
+      ta.append(String.format(" try to read %s to %s size=%d%n", urls, localFile.getPath(), localFile.length()));
       HttpClientManager.copyUrlContentsToFile(urls, localFile);
-      ta.append(String.format(" read %s to %s size=%d%n", urls, localFile.getPath(), localFile.length()));
     }
 
     void append() {
@@ -137,7 +143,7 @@ public class LogDownloader {
       if (want == got)
         ta.append(String.format(" append %d bytes to %s %n", got, localFile.getPath()));
       else
-        ta.append(String.format(" append got=%d want=%d bytes to %s %n", got, want, localFile.getPath()));
+        ta.append(String.format(" *** append got=%d want=%d bytes to %s %n", got, want, localFile.getPath()));
     }
 
     @Override
