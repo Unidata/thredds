@@ -1167,5 +1167,11 @@ public final class Grib2PDSVariables implements GribPDSVariablesIF {
     return input[ index ] & 0xff;
   }
 
-
+  public int getUniqueId() {
+    int result = 0;
+    for (byte b : input) {
+      result += b;
+    }
+    return result;
+  }
 }

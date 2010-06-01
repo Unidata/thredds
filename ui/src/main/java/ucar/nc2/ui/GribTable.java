@@ -83,14 +83,14 @@ public class GribTable extends JPanel {
   public GribTable(PreferencesExt prefs) {
     this.prefs = prefs;
 
-    gridRecordTable = new BeanTableSorted(GridRecordBean.class, (PreferencesExt) prefs.node("GridRecordBean"), false);
+    String tooltip = "from the index";
+    gridRecordTable = new BeanTableSorted(GridRecordBean.class, (PreferencesExt) prefs.node("GridRecordBean"), false, "GribGridRecord", tooltip);
     gridRecordTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         GridRecordBean mb = (GridRecordBean) gridRecordTable.getSelectedBean();
         infoTA.setText( mb.gr.toString());
       }
     });
-
 
     thredds.ui.PopupMenu varPopup = new thredds.ui.PopupMenu(gridRecordTable.getJTable(), "Options");
     /* varPopup.addAction("Show GDS", new AbstractAction() {
@@ -119,7 +119,8 @@ public class GribTable extends JPanel {
     });  */
 
 
-    gdsTable = new BeanTableSorted(GdsBean.class, (PreferencesExt) prefs.node("GdsBean"), false);
+    String tooltip2 = "Unique Horiz coord systems (GDS)";
+    gdsTable = new BeanTableSorted(GdsBean.class, (PreferencesExt) prefs.node("GdsBean"), false, "GridHorizCoordSys", tooltip2);
     gdsTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         GdsBean bean = (GdsBean) gdsTable.getSelectedBean();
@@ -300,6 +301,10 @@ public class GribTable extends JPanel {
       return param.getDescription();
     }
 
+    public int getDiscipline() {
+      return gr.discipline;
+    }
+
     public String getUnit() {
       return param.getUnit();
     }
@@ -317,7 +322,7 @@ public class GribTable extends JPanel {
     }
 
     public String getParamNo() {
-      return gr.discipline + "-" + gr.category + "-" + gr.paramNumber;
+      return gr.productType + "-" + gr.category + "-" + gr.paramNumber;
     }
   }
 
