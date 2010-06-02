@@ -18,14 +18,68 @@ Changes to Catalog Configuration<br>
 <h2>
 Changes to THREDDS Configuration (threddsConfig.xml)</h2>
 <h3>Server Description</h3>
-<p>You can now provide information describing your server in the threddsConfig.xml file.</p>
-<pre>  &lt;serverInformation&gt;<br>    &lt;name&gt;Initial TDS Installation&lt;/name&gt;<br>    &lt;logoUrl&gt;threddsIcon.gif&lt;/logoUrl&gt;<br>    &lt;logoAltText&gt;Initial TDS Installation&lt;/logoAltText&gt;<br><br>    &lt;abstract&gt;Scientific Data&lt;/abstract&gt;<br>    &lt;keywords&gt;meteorology, atmosphere, climate, ocean, earth science&lt;/keywords&gt;<br>    <br>    &lt;contact&gt;<br>      &lt;name&gt;Support&lt;/name&gt;<br>      &lt;organization&gt;My Group&lt;/organization&gt;<br>      &lt;email&gt;support@my.group&lt;/email&gt;<br>      &lt;!--phone&gt;&lt;/phone--&gt;<br>    &lt;/contact&gt;<br>    &lt;hostInstitution&gt;<br>      &lt;name&gt;My Group&lt;/name&gt;<br>      &lt;webSite&gt;http://www.my.site/&lt;/webSite&gt;<br>      &lt;logoUrl&gt;myGroup.gif&lt;/logoUrl&gt;<br>      &lt;logoAltText&gt;My Group&lt;/logoAltText&gt;<br>    &lt;/hostInstitution&gt;<br>  &lt;/serverInformation&gt;<br></pre>
-<p>The serverInformation section contains some of the information
-previously provided in the htmlSetup section. Use of the htmlSetup
-section for that information is now deprecated.<br>
+<p>Server information can now be provided in the <code>threddsConfig.xml</code>
+  file (more details <a href="reference/ThreddsConfigXMLFile.html#Server_Description">here</a>):
 </p>
-<h3>Change in WMS Options<br>
-</h3>
+<pre>
+&lt;serverInformation&gt;
+    &lt;name&gt;Initial TDS Installation&lt;/name&gt;
+    &lt;logoUrl&gt;threddsIcon.gif&lt;/logoUrl&gt;
+    &lt;logoAltText&gt;Initial TDS Installation&lt;/logoAltText&gt;
+
+    &lt;abstract&gt;Scientific Data&lt;/abstract&gt;
+    &lt;keywords&gt;meteorology, atmosphere, climate, ocean, earth science&lt;/keywords&gt;
+
+    &lt;contact&gt;
+      &lt;name&gt;Support&lt;/name&gt;
+      &lt;organization&gt;My Group&lt;/organization&gt;
+      &lt;email&gt;support@my.group&lt;/email&gt;
+      &lt;!--phone&gt;&lt;/phone--&gt;
+    &lt;/contact&gt;
+    &lt;hostInstitution&gt;
+      &lt;name&gt;My Group&lt;/name&gt;
+      &lt;webSite&gt;http://www.my.site/&lt;/webSite&gt;
+      &lt;logoUrl&gt;myGroup.gif&lt;/logoUrl&gt;
+      &lt;logoAltText&gt;My Group&lt;/logoAltText&gt;
+    &lt;/hostInstitution&gt;
+&lt;/serverInformation&gt;
+</pre>
+
+<p>This includes some basic descriptive information about the server; a
+name, logo, and web site URL for the hosting institution; and contact
+information.</p>
+
+<p>NOTE: Some of this information was
+previously (TDS 4.0 and 4.1) provided in the htmlSetup section. Use of the htmlSetup
+section for that information is now deprecated (though still supported, for now).<br>
+</p>
+
+<h3>Change in WMS Options</h3>
+
+<p>The following shows all the configuration options available in the WMS section of the
+  <code>threddsConfig.xml</code> file with the default values shown (more details
+  <a href="reference/ThreddsConfigXMLFile.html#WMS">here</a>):
+</p>
+
+<pre>
+&lt;<strong>WMS</strong>&gt;
+  &lt;<strong>allow</strong>&gt;false&lt;/allow&gt;
+  &lt;<strong>allowRemote</strong>&gt;false&lt;/allowRemote&gt;
+  &lt;<strong>paletteLocationDir</strong>&gt;/WEB-INF/palettes&lt;/paletteLocationDir&gt;
+  &lt;<strong>maxImageWidth</strong>&gt;2048&lt;/maxImageWidth&gt;
+  &lt;<strong>maxImageHeight</strong>&gt;2048&lt;/maxImageHeight&gt;
+&lt;/WMS&gt;
+</pre>
+
+<p>We recommend that you include in the <code>threddsConfig.xml</code>
+  file only the options you want to change. As a first pass, we recommend the following:
+</p>
+<pre>
+&lt;<strong>WMS</strong>&gt;
+  &lt;<strong>allow</strong>&gt;false&lt;/allow&gt;
+&lt;/WMS&gt;
+</pre>
+
 <h2>Changes to Catalog Configuration</h2>
 <h3>Changes to How FMRC Datasets Specified (datasetCollection)<br>
 </h3>
