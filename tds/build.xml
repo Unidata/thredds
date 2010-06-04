@@ -61,7 +61,6 @@
     <exclude name="thredds/servlet/idd/**"/>
     <include name="thredds/util/**/*.java"/>
     <include name="thredds/wcs/servlet/*.java"/>
-    <exclude name="uk/**/*.java"/>
   </patternset>
 
   <patternset id="sources-cdmvalidator">
@@ -590,6 +589,7 @@
         <exclude name="common/target/**" />
         <exclude name="cdm/doc/**" />
         <exclude name="cdm/target/**" />
+        <exclude name="intelliJ/target/**" />
         <exclude name="tds/doc/**" />
         <exclude name="tds/target/**" />
         <exclude name="tds/content/**" />

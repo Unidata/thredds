@@ -4,6 +4,7 @@ Build Date = @BUILDTIME@
 
 Release Details 4.2:
  4.2.0 (2010-xx-xx)
+   Upgrade to newly refactored ncWMS code.
    ServletUtil.sendFile(), use long instead of int for content length
    <featureCollection>
    FMRC refactor
