@@ -3,7 +3,9 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Release Details 4.2:
- 4.2.0 (2010-xx-xx)
+ 4.2 beta x (2010-xx-xx)
+ 
+ 4.2 beta 1 (2010-06-07)
    Upgrade to newly refactored ncWMS code.
    ServletUtil.sendFile(), use long instead of int for content length
    <featureCollection>
