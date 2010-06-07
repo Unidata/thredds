@@ -1163,15 +1163,44 @@ public final class Grib2PDSVariables implements GribPDSVariablesIF {
    * @param index in the byte[] to convert
    * @return int  byte as int
    */
-  public final int getInt( int index ) {
+  private final int getInt( int index ) {
     return input[ index ] & 0xff;
   }
 
-  public int getUniqueId() {
-    int result = 0;
-    for (byte b : input) {
-      result += b;
+  public String getIntervalTypeName() {
+    int byteOffset;
+    switch (productDefinition) {
+      case 8:
+        byteOffset = 46; // octet 47
+        break;
+
+      case 9:
+        byteOffset = 59; // octet 60
+        break;
+
+      case 11:
+        byteOffset = 49; // octet 50
+        break;
+
+      case 10:
+      case 12:
+        byteOffset = 48; // octet 49
+        break;
+
+      case 13:
+         byteOffset = 80; // octet 81
+         break;
+
+      case 14:
+         byteOffset = 76; // octet 77
+         break;
+
+      default:
+        return null;
     }
-    return result;
+
+    int statProcess = getInt(byteOffset);
+    return Grib2Tables.codeTable4_10short(statProcess);
   }
+
 }

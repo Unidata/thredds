@@ -4,6 +4,9 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.2:
  4: (xx-xx-xx)
+  grib refactor - time intervals
+  ToolsUI = IOSP/GRIB2 tab
+  Comparators using longs were wrong, eg DiskCache (bug fix from Steve Ansari)
   CF1 use super.getAxisType()
   CF1 break apart convention list
   DODS parser: fix alias command in the DAS

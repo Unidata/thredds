@@ -100,7 +100,7 @@ public abstract class GridDefRecord {
   /**
    * resolution
    */
-  public static final String VECTOR_COMPONET_FLAG = "VectorComponentFlag";
+  public static final String VECTOR_COMPONENT_FLAG = "VectorComponentFlag";
 
   /**
    * first lat
@@ -612,7 +612,7 @@ public abstract class GridDefRecord {
       return false;
 
     for( String key : keys ) {
-      if( key.equals(WIND_FLAG) || key.equals(RESOLUTION) || key.equals(VECTOR_COMPONET_FLAG)
+      if( key.equals(WIND_FLAG) || key.equals(RESOLUTION) || key.equals(VECTOR_COMPONENT_FLAG)
         || key.equals(GDS_KEY))
         continue;
 

@@ -238,7 +238,7 @@ public final class Grib2Dump {
     ps.println("         Number of data points : "
             + gdsv.getNumberPoints());
     ps.println("                     Grid Name : " + gdsv.getGdtn() + " "
-            + Grib2Tables.getGridName(gdsv.getGdtn()));
+            + Grib2Tables.codeTable3_1(gdsv.getGdtn()));
 
     String winds = GribNumbers.isBitSet(gdsv.getResolution(), GribNumbers.BIT_5)
             ? "Relative"
@@ -252,7 +252,7 @@ public final class Grib2Dump {
       case 3:                // Latitude/Longitude Grid
 
         ps.println("                     Grid Shape: " + gdsv.getShape()
-                + " " + Grib2Tables.getShapeName(gdsv.getShape()));
+                + " " + Grib2Tables.codeTable3_2(gdsv.getShape()));
         if (gdsv.getShape() == 1) {
           ps.println("         Spherical earth radius: "
                   + gdsv.getEarthRadius());
@@ -317,7 +317,7 @@ public final class Grib2Dump {
 
       case 10:  // Mercator
         ps.println("                     Grid Shape: " + gdsv.getShape()
-                + " " + Grib2Tables.getShapeName( gdsv.getShape() ));
+                + " " + Grib2Tables.codeTable3_2( gdsv.getShape() ));
         if (gdsv.getShape() == 1) {
           ps.println("         Spherical earth radius: "
                   + gdsv.getEarthRadius());
@@ -349,7 +349,7 @@ public final class Grib2Dump {
 
       case 20:  // Polar stereographic projection
         ps.println("                     Grid Shape: " + gdsv.getShape()
-                + " " + Grib2Tables.getShapeName( gdsv.getShape() ));
+                + " " + Grib2Tables.codeTable3_2( gdsv.getShape() ));
         if (gdsv.getShape() == 1) {
           ps.println("         Spherical earth radius: "
                   + gdsv.getEarthRadius());
@@ -375,7 +375,7 @@ public final class Grib2Dump {
 
       case 30:  // Lambert Conformal
         ps.println("                    Grid Shape : " + gdsv.getShape()
-                + " " + Grib2Tables.getShapeName( gdsv.getShape() ));
+                + " " + Grib2Tables.codeTable3_2( gdsv.getShape() ));
         if (gdsv.getShape() == 1) {
           ps.println("         Spherical earth radius: "
                   + gdsv.getEarthRadius());
@@ -418,7 +418,7 @@ public final class Grib2Dump {
       case 42:
       case 43:  // Gaussian latitude/longitude
         ps.println("                     Grid Shape: " + gdsv.getShape()
-                + " " + Grib2Tables.getShapeName( gdsv.getShape() ));
+                + " " + Grib2Tables.codeTable3_2( gdsv.getShape() ));
         if (gdsv.getShape() == 1) {
           ps.println("         Spherical earth radius: "
                   + gdsv.getEarthRadius());
@@ -533,7 +533,7 @@ public final class Grib2Dump {
 
       case 90:  // Space view perspective or orthographic
         ps.println("                     Grid Shape: " + gdsv.getShape()
-                + " " + Grib2Tables.getShapeName( gdsv.getShape() ));
+                + " " + Grib2Tables.codeTable3_2( gdsv.getShape() ));
         if (gdsv.getShape() == 1) {
           ps.println("         Spherical earth radius: "
                   + gdsv.getEarthRadius());
@@ -636,7 +636,7 @@ public final class Grib2Dump {
 
       case 204:  // Curvilinear orthographic grib
         ps.println("                     Grid Shape: " + gdsv.getShape()
-                + " " + Grib2Tables.getShapeName( gdsv.getShape() ));
+                + " " + Grib2Tables.codeTable3_2( gdsv.getShape() ));
         if (gdsv.getShape() == 1) {
           ps.println("         Spherical earth radius: "
                   + gdsv.getEarthRadius());
@@ -685,7 +685,7 @@ public final class Grib2Dump {
             //+ pds.getProductDefinition() + " "
             + productDefinition + " "
             //+ pds.getProductDefinitionName());
-            + Grib2Tables.getProductDefinitionName( productDefinition ));
+            + Grib2Tables.codeTable4_0( productDefinition ));
     ps.println("            Parameter Category : "
             + pdsv.getParameterCategory() + " "
             + ParameterTable.getCategoryName(is.getDiscipline(),
@@ -700,17 +700,17 @@ public final class Grib2Dump {
     //String tgp = pds.getTypeGenProcess();
     int tgp = pdsv.getTypeGenProcess();
     ps.println("       Generating Process Type : " + tgp + " "
-            + Grib2Tables.getTypeGenProcessName(tgp));
+            + Grib2Tables.codeTable4_3(tgp));
     ps.println("                  ForecastTime : "
             + pdsv.getForecastTime());
     ps.println("            First Surface Type : "
             + pdsv.getTypeFirstFixedSurface() + " "
-            + Grib2Tables.getTypeSurfaceName(pdsv.getTypeFirstFixedSurface()));
+            + Grib2Tables.codeTable4_5(pdsv.getTypeFirstFixedSurface()));
     ps.println("           First Surface value : "
             + pdsv.getValueFirstFixedSurface());
     ps.println("           Second Surface Type : "
             + pdsv.getTypeSecondFixedSurface() + " "
-            + Grib2Tables.getTypeSurfaceName(pdsv.getTypeSecondFixedSurface()));
+            + Grib2Tables.codeTable4_5(pdsv.getTypeSecondFixedSurface()));
     ps.println("          Second Surface value : "
             + pdsv.getValueSecondFixedSurface());
     /*

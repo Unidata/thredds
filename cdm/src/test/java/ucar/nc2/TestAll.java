@@ -35,6 +35,9 @@ package ucar.nc2;
 import junit.framework.*;
 import junit.extensions.TestSetup;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Properties;
 import java.io.File;
 import java.io.FileInputStream;
@@ -373,6 +376,20 @@ public class TestAll {
     int doAct( String filename) throws IOException;
   }
 
+  public static class FileFilterImpl implements FileFilter {
+    String[] suffixes;
+    public FileFilterImpl(String suffixes) {
+      this.suffixes = suffixes.split(" ");
+    }
+
+    @Override
+    public boolean accept(File file) {
+      for (String s: suffixes)
+        if (file.getPath().endsWith(s)) return true;
+      return false;
+    }
+  }
+
   /**
    * @param dirName recurse into this directory
    * @param ff for files that pass this filter, may be null
@@ -390,8 +407,10 @@ public class TestAll {
       System.out.println("---------------INVALID "+dirName);
       return count;
     }
+    List<File> flist = Arrays.asList(allFiles);
+    Collections.sort(flist);
 
-    for (File f : allFiles) {
+    for (File f : flist) {
       String name = f.getAbsolutePath();
       if (f.isDirectory())
         continue;

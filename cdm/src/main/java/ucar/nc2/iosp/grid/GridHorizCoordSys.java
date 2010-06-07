@@ -621,7 +621,7 @@ public class GridHorizCoordSys {
       String vals = gds.getParam(key);
       try {
         int vali = Integer.parseInt(vals);
-        if (key.equals(GridDefRecord.VECTOR_COMPONET_FLAG)) {
+        if (key.equals(GridDefRecord.VECTOR_COMPONENT_FLAG)) {
           String cf;
           if (vali == 0) {
             cf = Grib2Tables.VectorComponentFlag.easterlyNortherlyRelative.toString();

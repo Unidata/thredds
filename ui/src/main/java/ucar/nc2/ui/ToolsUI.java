@@ -2215,11 +2215,6 @@ public class ToolsUI extends JPanel {
     ucar.unidata.io.RandomAccessFile raf = null;
     Grib2Table gribTable;
 
-    boolean useDefinition = false;
-    JComboBox defComboBox;
-    IndependentWindow defWindow;
-    AbstractButton defButt;
-
     Grib2Panel(PreferencesExt p) {
       super(p, "file:", true, false);
       gribTable = new Grib2Table(prefs);
@@ -2236,7 +2231,7 @@ public class ToolsUI extends JPanel {
           raf.close();
         raf = new ucar.unidata.io.RandomAccessFile(command, "r");
 
-        gribTable.setGribFile(raf);
+        gribTable. setGribFile(raf);
 
       } catch (FileNotFoundException ioe) {
         JOptionPane.showMessageDialog(null, "Grib2Table cant open " + command + "\n" + ioe.getMessage());

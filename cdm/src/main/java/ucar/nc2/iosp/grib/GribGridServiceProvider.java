@@ -70,6 +70,7 @@ public class GribGridServiceProvider extends GridServiceProvider {
   private Grib1Data dataReaderGrib1;
   private Grib2Data dataReaderGrib2;
 
+  @Override
   public boolean isValidFile(RandomAccessFile raf) {
     try {
       raf.seek(0);
@@ -84,14 +85,17 @@ public class GribGridServiceProvider extends GridServiceProvider {
     }
   }
 
+  @Override
   public String getFileTypeId() {
     return (saveEdition == 2) ? "GRIB2" : "GRIB1";
   }
 
+  @Override
   public String getFileTypeDescription() {
     return (saveEdition == 2) ? "WMO GRIB Edition 2" : "WMO GRIB Edition 1";
   }
 
+  @Override
   public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
     this.raf = raf;
     this.ncfile = ncfile;

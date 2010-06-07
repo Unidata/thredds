@@ -271,6 +271,7 @@ public class GribReadIndex {
               ggr.levelValue1 = pdsv.getValueFirstFixedSurface();
               ggr.levelType2 = pdsv.getTypeSecondFixedSurface();
               ggr.levelValue2 = pdsv.getValueSecondFixedSurface();
+              ggr.intervalTypeName = pdsv.getIntervalTypeName();
 
               tunit = pdsv.getTimeRangeUnit();
               ggr.center = center;
@@ -455,7 +456,7 @@ public class GribReadIndex {
     //ggdr.addParam(GridDefRecord.GDS_KEY, Integer.toString(gdsv.getGdsKey()));
     ggdr.addParam(GridDefRecord.GDS_KEY, Integer.toString(gdskey));
     ggdr.addParam(GridDefRecord.GRID_TYPE, gdtn);
-    ggdr.addParam(GridDefRecord.GRID_NAME, Grib2Tables.getGridName(gdtn));
+    ggdr.addParam(GridDefRecord.GRID_NAME, Grib2Tables.codeTable3_1(gdtn));
 
     String winds = GribNumbers.isBitSet(gdsv.getResolution(), GribNumbers.BIT_5)
         ? "Relative"
@@ -469,7 +470,7 @@ public class GribReadIndex {
       int shape = gdsv.getShape();
 
       ggdr.addParam(GridDefRecord.GRID_SHAPE_CODE, shape);
-      ggdr.addParam(GridDefRecord.GRID_SHAPE, Grib2Tables.getShapeName(shape));
+      ggdr.addParam(GridDefRecord.GRID_SHAPE, Grib2Tables.codeTable3_2(shape));
       if (shape < 2 || shape == 6 || shape == 8) {
         ggdr.addParam(GridDefRecord.RADIUS_SPHERICAL_EARTH, gdsv.getEarthRadius());
       } else if ((shape > 1) && (shape < 6) || shape == 7 ) {
@@ -498,7 +499,7 @@ public class GribReadIndex {
         ggdr.addParam(GridDefRecord.LO1, gdsv.getLo1());
         ggdr.addParam(GridDefRecord.RESOLUTION, gdsv.getResolution());
         ggdr.addParam(GridDefRecord.WIND_FLAG, winds);
-        ggdr.addParam(GridDefRecord.VECTOR_COMPONET_FLAG, component_flag);
+        ggdr.addParam(GridDefRecord.VECTOR_COMPONENT_FLAG, component_flag);
         ggdr.addParam(GridDefRecord.LA2, gdsv.getLa2());
         ggdr.addParam(GridDefRecord.LO2, gdsv.getLo2());
         ggdr.addParam(GridDefRecord.DX, gdsv.getDx());
@@ -534,7 +535,7 @@ public class GribReadIndex {
         ggdr.addParam(GridDefRecord.LO1, gdsv.getLo1());
         ggdr.addParam(GridDefRecord.RESOLUTION, gdsv.getResolution());
         ggdr.addParam(GridDefRecord.WIND_FLAG, winds);
-        ggdr.addParam(GridDefRecord.VECTOR_COMPONET_FLAG, component_flag);
+        ggdr.addParam(GridDefRecord.VECTOR_COMPONENT_FLAG, component_flag);
         ggdr.addParam(GridDefRecord.LAD, gdsv.getLaD());
         ggdr.addParam(GridDefRecord.LA2, gdsv.getLa2());
         ggdr.addParam(GridDefRecord.LO2, gdsv.getLo2());
@@ -553,7 +554,7 @@ public class GribReadIndex {
         ggdr.addParam(GridDefRecord.LO1, gdsv.getLo1());
         ggdr.addParam(GridDefRecord.RESOLUTION, gdsv.getResolution());
         ggdr.addParam(GridDefRecord.WIND_FLAG, winds);
-        ggdr.addParam(GridDefRecord.VECTOR_COMPONET_FLAG, component_flag);
+        ggdr.addParam(GridDefRecord.VECTOR_COMPONENT_FLAG, component_flag);
         ggdr.addParam(GridDefRecord.LAD, gdsv.getLaD());
         ggdr.addParam(GridDefRecord.LOV, gdsv.getLoV());
         ggdr.addParam(GridDefRecord.DX, gdsv.getDx());
@@ -577,7 +578,7 @@ public class GribReadIndex {
         ggdr.addParam(GridDefRecord.LO1, gdsv.getLo1());
         ggdr.addParam(GridDefRecord.RESOLUTION, gdsv.getResolution());
         ggdr.addParam(GridDefRecord.WIND_FLAG, winds);
-        ggdr.addParam(GridDefRecord.VECTOR_COMPONET_FLAG, component_flag);
+        ggdr.addParam(GridDefRecord.VECTOR_COMPONENT_FLAG, component_flag);
         ggdr.addParam(GridDefRecord.LAD, gdsv.getLaD());
         ggdr.addParam(GridDefRecord.LOV, gdsv.getLoV());
         ggdr.addParam(GridDefRecord.DX, gdsv.getDx());
@@ -606,7 +607,7 @@ public class GribReadIndex {
         ggdr.addParam(GridDefRecord.LO1, gdsv.getLo1());
         ggdr.addParam(GridDefRecord.RESOLUTION, gdsv.getResolution());
         ggdr.addParam(GridDefRecord.WIND_FLAG, winds);
-        ggdr.addParam(GridDefRecord.VECTOR_COMPONET_FLAG, component_flag);
+        ggdr.addParam(GridDefRecord.VECTOR_COMPONENT_FLAG, component_flag);
         ggdr.addParam(GridDefRecord.LA2, gdsv.getLa2());
         ggdr.addParam(GridDefRecord.LO2, gdsv.getLo2());
         ggdr.addParam(GridDefRecord.DX, gdsv.getDx());
@@ -679,7 +680,7 @@ public class GribReadIndex {
         ggdr.addParam(GridDefRecord.LOP, gdsv.getLop());
         ggdr.addParam(GridDefRecord.RESOLUTION, gdsv.getResolution());
         ggdr.addParam(GridDefRecord.WIND_FLAG, winds);
-        ggdr.addParam(GridDefRecord.VECTOR_COMPONET_FLAG, component_flag);
+        ggdr.addParam(GridDefRecord.VECTOR_COMPONENT_FLAG, component_flag);
         ggdr.addParam(GridDefRecord.DX, gdsv.getDx());
         ggdr.addParam(GridDefRecord.DY, gdsv.getDy());
         ggdr.addParam(GridDefRecord.GRID_UNITS, gdsv.getGridUnits());
@@ -720,7 +721,7 @@ public class GribReadIndex {
           npproj = "true";
         ggdr.addParam(GridDefRecord.NPPROJ, npproj);
         ggdr.addParam(GridDefRecord.WIND_FLAG, winds);
-        ggdr.addParam(GridDefRecord.VECTOR_COMPONET_FLAG, component_flag);
+        ggdr.addParam(GridDefRecord.VECTOR_COMPONENT_FLAG, component_flag);
         ggdr.addParam(GridDefRecord.DX, gdsv.getDx());
         ggdr.addParam(GridDefRecord.DY, gdsv.getDy());
         ggdr.addParam(GridDefRecord.GRID_UNITS, gdsv.getGridUnits());
@@ -748,7 +749,7 @@ public class GribReadIndex {
         ggdr.addParam(GridDefRecord.NY, gdsv.getNy());
         ggdr.addParam(GridDefRecord.RESOLUTION, gdsv.getResolution());
         ggdr.addParam(GridDefRecord.WIND_FLAG, winds);
-        ggdr.addParam(GridDefRecord.VECTOR_COMPONET_FLAG, component_flag);
+        ggdr.addParam(GridDefRecord.VECTOR_COMPONENT_FLAG, component_flag);
         ggdr.addParam(GridDefRecord.SCANNING_MODE, gdsv.getScanMode());
         ggdr.addParam(GridDefRecord.GRID_UNITS, gdsv.getGridUnits());
         ggdr.addParam(GribGridDefRecord.GRID_UNITS, "degrees");
@@ -815,7 +816,7 @@ public class GribReadIndex {
         ggdr.addParam(GridDefRecord.LO1, gdsv.getLo1());
         ggdr.addParam(GridDefRecord.RESOLUTION, gdsv.getResolution());
         ggdr.addParam(GridDefRecord.WIND_FLAG, winds);
-        ggdr.addParam(GridDefRecord.VECTOR_COMPONET_FLAG, component_flag);
+        ggdr.addParam(GridDefRecord.VECTOR_COMPONENT_FLAG, component_flag);
         ggdr.addParam(GridDefRecord.LA2, gdsv.getLa2());
         ggdr.addParam(GridDefRecord.LO2, gdsv.getLo2());
         ggdr.addParam(GridDefRecord.DX, gdsv.getDx());
@@ -852,7 +853,7 @@ public class GribReadIndex {
         ggdr.addParam(GridDefRecord.LO1, gdsv.getLo1());
         ggdr.addParam(GridDefRecord.RESOLUTION, gdsv.getResolution());
         ggdr.addParam(GridDefRecord.WIND_FLAG, winds);
-        ggdr.addParam(GridDefRecord.VECTOR_COMPONET_FLAG, component_flag);
+        ggdr.addParam(GridDefRecord.VECTOR_COMPONENT_FLAG, component_flag);
         ggdr.addParam(GridDefRecord.LA2, gdsv.getLa2());
         ggdr.addParam(GridDefRecord.LO2, gdsv.getLo2());
         ggdr.addParam(GridDefRecord.LATIN, gdsv.getLatin1());
@@ -870,7 +871,7 @@ public class GribReadIndex {
         ggdr.addParam(GridDefRecord.LO1, gdsv.getLo1());
         ggdr.addParam(GridDefRecord.RESOLUTION, gdsv.getResolution());
         ggdr.addParam(GridDefRecord.WIND_FLAG, winds);
-        ggdr.addParam(GridDefRecord.VECTOR_COMPONET_FLAG, component_flag);
+        ggdr.addParam(GridDefRecord.VECTOR_COMPONENT_FLAG, component_flag);
         ggdr.addParam(GridDefRecord.LOV, gdsv.getLoV());
         ggdr.addParam(GridDefRecord.DX, gdsv.getDx());
         ggdr.addParam(GridDefRecord.DY, gdsv.getDy());
@@ -893,7 +894,7 @@ public class GribReadIndex {
         ggdr.addParam(GridDefRecord.LO1, gdsv.getLo1());
         ggdr.addParam(GridDefRecord.RESOLUTION, gdsv.getResolution());
         ggdr.addParam(GridDefRecord.WIND_FLAG, winds);
-        ggdr.addParam(GridDefRecord.VECTOR_COMPONET_FLAG, component_flag);
+        ggdr.addParam(GridDefRecord.VECTOR_COMPONENT_FLAG, component_flag);
         ggdr.addParam(GridDefRecord.LOV, gdsv.getLoV());
         ggdr.addParam(GridDefRecord.DX, gdsv.getDx());
         ggdr.addParam(GridDefRecord.DY, gdsv.getDy());
@@ -921,7 +922,7 @@ public class GribReadIndex {
         ggdr.addParam(GridDefRecord.LO1, gdsv.getLo1());
         ggdr.addParam(GridDefRecord.RESOLUTION, gdsv.getResolution());
         ggdr.addParam(GridDefRecord.WIND_FLAG, winds);
-        ggdr.addParam(GridDefRecord.VECTOR_COMPONET_FLAG, component_flag);
+        ggdr.addParam(GridDefRecord.VECTOR_COMPONENT_FLAG, component_flag);
         ggdr.addParam(GridDefRecord.LA2, gdsv.getLa2());
         ggdr.addParam(GridDefRecord.LO2, gdsv.getLo2());
         ggdr.addParam(GridDefRecord.DX, gdsv.getDx());
@@ -993,7 +994,7 @@ public class GribReadIndex {
         ggdr.addParam(GridDefRecord.LOP, gdsv.getLop());
         ggdr.addParam(GridDefRecord.RESOLUTION, gdsv.getResolution());
         ggdr.addParam(GridDefRecord.WIND_FLAG, winds);
-        ggdr.addParam(GridDefRecord.VECTOR_COMPONET_FLAG, component_flag);
+        ggdr.addParam(GridDefRecord.VECTOR_COMPONENT_FLAG, component_flag);
         ggdr.addParam(GridDefRecord.DX, gdsv.getDx());
         ggdr.addParam(GridDefRecord.DY, gdsv.getDy());
         ggdr.addParam(GridDefRecord.GRID_UNITS, gdsv.getGridUnits());
@@ -1062,7 +1063,7 @@ public class GribReadIndex {
         ggdr.addParam(GridDefRecord.NY, gdsv.getNy());
         ggdr.addParam(GridDefRecord.RESOLUTION, gdsv.getResolution());
         ggdr.addParam(GridDefRecord.WIND_FLAG, winds);
-        ggdr.addParam(GridDefRecord.VECTOR_COMPONET_FLAG, component_flag);
+        ggdr.addParam(GridDefRecord.VECTOR_COMPONENT_FLAG, component_flag);
         ggdr.addParam(GridDefRecord.GRID_UNITS, gdsv.getGridUnits());
         ggdr.addParam(GridDefRecord.SCANNING_MODE, gdsv.getScanMode());
 

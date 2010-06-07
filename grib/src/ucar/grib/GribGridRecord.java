@@ -40,6 +40,7 @@
 
 package ucar.grib;
 
+import ucar.grib.grib2.Grib2Tables;
 import ucar.grid.GridRecord;
 
 import java.util.Date;
@@ -158,6 +159,8 @@ public final class GribGridRecord implements GridRecord {
    * lowerLimit, upperLimit of Probability type
    */
   public float lowerLimit = GribNumbers.UNDEFINED, upperLimit = GribNumbers.UNDEFINED;
+
+  public String intervalTypeName = null;
 
   /**
    * default constructor, used by GribReadIndex (binary indices)
@@ -413,6 +416,165 @@ public final class GribGridRecord implements GridRecord {
             ", table=" + table +
             ", validTime=" + validTime +
             '}';
+  }
+
+  /**
+   * Makes a Ensemble, Derived, Probability or error Suffix
+   *
+   * @return suffix as String
+   */
+  public String makeSuffix( ) {
+
+    String interval = "";
+    // check for accumulation/probability/percentile variables
+    if( productType > 7 && productType < 16 ) {
+      int span = forecastTime - startOfInterval;
+      interval = Integer.toString( span ) + Grib2Tables.getTimeUnitFromTable4_4( timeUnit );
+      if (intervalTypeName != null) interval += "_"+intervalTypeName;
+    }
+
+    switch (productType) {
+      case 0:
+      case 7:
+      case 40: {
+        if (typeGenProcess == 6 || typeGenProcess == 7 ) {
+          return "error";
+        }
+      }
+      break;
+      case 1:
+      case 11:
+      case 41:
+      case 43: {
+        // ensemble data
+        /*
+        if (typeGenProcess == 4) {
+          if (type == 0) {
+            return "Cntrl_high";
+          } else if (type == 1) {
+            return "Cntrl_low";
+          } else if (type == 2) {
+            return "Perturb_neg";
+          } else if (type == 3) {
+            return "Perturb_pos";
+          } else {
+            return "unknownEnsemble";
+          }
+
+        }
+        */
+        break;
+      }
+
+      case 2:
+      case 3:
+      case 4: {
+        // Derived data
+        if (typeGenProcess == 4) {
+          if (type == 0) {
+            return  "unweightedMean";
+          } else if (type == 1) {
+            return  "weightedMean";
+          } else if (type == 2) {
+            return  "stdDev";
+          } else if (type == 3) {
+            return  "stdDevNor";
+          } else if (type == 4) {
+            return  "spread";
+          } else if (type == 5) {
+            return  "anomaly";
+          } else if (type == 6) {
+            return  "unweightedMeanCluster";
+          } else {
+            return  "unknownEnsemble";
+          }
+        }
+        break;
+      }
+
+      case 12:
+      case 13:
+      case 14: {
+        // Derived data
+        if (typeGenProcess == 4) {
+          interval = interval +"_";
+          if (type == 0) {
+            return interval +"unweightedMean";
+          } else if (type == 1) {
+            return interval +"weightedMean";
+          } else if (type == 2) {
+            return interval +"stdDev";
+          } else if (type == 3) {
+            return interval +"stdDevNor";
+          } else if (type == 4) {
+            return interval +"spread";
+          } else if (type == 5) {
+            return interval +"anomaly";
+          } else if (type == 6) {
+            return interval +"unweightedMeanCluster";
+          } else {
+            return interval +"unknownEnsemble";
+          }
+        }
+        break;
+      }
+
+      case 5: {
+        // probability data
+        if (typeGenProcess == 5) {
+          return getProbabilityVariableNameSuffix( lowerLimit, upperLimit, type );
+        }
+      }
+      break;
+      case 9: {
+        // probability data
+        if (typeGenProcess == 5) {
+          return interval +"_"+ getProbabilityVariableNameSuffix( lowerLimit, upperLimit, type );
+        }
+      }
+      break;
+
+      default:
+        return interval;
+    }
+    return interval;
+  }
+
+  static String getProbabilityVariableNameSuffix( float lowerLimit, float upperLimit, int type )
+  {
+    String ll = Float.toString( lowerLimit ).replace( '.', 'p' ).replaceFirst( "p0$", "" );
+    String ul = Float.toString( upperLimit ).replace( '.', 'p' ).replaceFirst( "p0$", "" );
+    if ( type == 0 )
+    {
+      //return "below_" + Float.toString(lowerLimit).replace('.', 'p');
+      return "probability_below_" + ll;
+    }
+    else if ( type == 1 )
+    {
+      //return "above_" + Float.toString(upperLimit).replace('.', 'p');
+      return "probability_above_" + ul;
+    }
+    else if ( type == 2 )
+    {
+      //return "between_" + Float.toString(lowerLimit).replace('.', 'p') + "_" +
+      //    Float.toString(upperLimit).replace('.', 'p');
+      return "probability_between_" + ll + "_" + ul;
+    }
+    else if ( type == 3 )
+    {
+      //return "above_" + Float.toString(lowerLimit).replace('.', 'p');
+      return "probability_above_" + ll;
+    }
+    else if ( type == 4 )
+    {
+      //return "below_" + Float.toString(upperLimit).replace('.', 'p');
+      return "probability_below_" + ul;
+    }
+    else
+    {
+      return "unknownProbability";
+    }
+
   }
 
 }

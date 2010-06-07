@@ -40,6 +40,7 @@ import ucar.grid.GridParameter;
 
 /**
  * lookup functions for Grib2 files
+ *
  * @deprecated
  */
 
@@ -88,8 +89,7 @@ public final class Grib2Lookup implements ucar.grib.TableLookup {
    * @return Parameter
    */
   public final GridParameter getParameter(GribGridRecord gr) {
-    return ParameterTable.getParameter(gr.discipline, gr.category,
-        gr.paramNumber);
+    return ParameterTable.getParameter(gr.discipline, gr.category, gr.paramNumber);
   }
 
   public final GridParameter getParameter(Index.GribRecord gr) {
@@ -120,52 +120,46 @@ public final class Grib2Lookup implements ucar.grib.TableLookup {
 
 
   public final String getProductDefinitionName(Index.GribRecord gr) {
-    return Grib2ProductDefinitionSection.getProductDefinitionName(
-        gr.productType);
+    return Grib2Tables.codeTable4_0(gr.productType);
   }
 
 
   public final String getTypeGenProcessName(Index.GribRecord gr) {
-    return Grib2ProductDefinitionSection.getTypeGenProcessName(
-        gr.typeGenProcess);
+    return Grib2Tables.getTypeGenProcessName(gr.typeGenProcess);
   }
 
-  /**
+  /*
    * gets the  Type Ensemble.
    *
    * @param gr
    * @return TypeEnsemble
-   */
+   *
   public final int getTypeEnsemble(Index.GribRecord gr) {
-    return Grib2ProductDefinitionSection.getTypeEnsemble(gr.typeGenProcess);
-  }
+    return Grib2Tables.getTypeEnsemble(gr.typeGenProcess);
+  } */
 
 
   public final String getLevelName(Index.GribRecord gr) {
-    return Grib2ProductDefinitionSection.getTypeSurfaceNameShort(
-        gr.levelType1);
+    return Grib2Tables.getTypeSurfaceNameShort( gr.levelType1);
   }
 
 
   public final String getLevelDescription(Index.GribRecord gr) {
-    return Grib2ProductDefinitionSection.getTypeSurfaceName(
-        gr.levelType1);
+    return Grib2Tables.codeTable4_5( gr.levelType1);
   }
 
   public final String getLevelUnit(Index.GribRecord gr) {
-    return Grib2ProductDefinitionSection.getTypeSurfaceUnit(
-        gr.levelType1);
+    return Grib2Tables.getTypeSurfaceUnit( gr.levelType1);
   }
 
 
   public final String getFirstTimeRangeUnitName() {
-    return Grib2ProductDefinitionSection.getTimeRangeUnitName(
-        firstPDS.timeRangeUnit);
+    return Grib2Tables.codeTable4_4(firstPDS.timeRangeUnit);
   }
 
 
   public final String getFirstCenterName() {
-    return Grib1Tables.getCenter_idName( firstID.getCenter_id() );
+    return Grib1Tables.getCenter_idName(firstID.getCenter_id());
   }
 
 
@@ -195,8 +189,7 @@ public final class Grib2Lookup implements ucar.grib.TableLookup {
 
 
   public final boolean isLatLon(Index.GdsRecord gds) {
-    return (gds.grid_type == 0)
-        || ((gds.grid_type >= 40) && (gds.grid_type < 44));
+    return (gds.grid_type == 0) || ((gds.grid_type >= 40) && (gds.grid_type < 44));
   }
 
   // code table 3.1
@@ -254,7 +247,7 @@ public final class Grib2Lookup implements ucar.grib.TableLookup {
 
   public final boolean isPositiveUp(Index.GribRecord gr) {
     if ((gr.levelType1 == 20) || (gr.levelType1 == 100)
-        || (gr.levelType1 == 106) || (gr.levelType1 == 160)) {
+            || (gr.levelType1 == 106) || (gr.levelType1 == 160)) {
       return false;
     } else {
       return true;

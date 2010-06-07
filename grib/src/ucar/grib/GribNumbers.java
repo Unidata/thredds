@@ -64,6 +64,11 @@ public final class GribNumbers {
     public static final int UNDEFINED = -9999;
 
     /**
+     * Grib uses this internal to mean missing
+     */
+    public static final int MISSING = 255;
+
+     /**
      * Bit mask for bit 1 in an octet
      */
     public static final int BIT_1 = 1 << 7;

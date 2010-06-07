@@ -756,7 +756,7 @@ public abstract class Array {
   }
 
   /**
-   * Copy this array to a n-Dimensioanl Java primitive array of type getElementType()
+   * Copy this array to a n-Dimensional Java primitive array of type getElementType()
    * and rank getRank(). Makes a copy of the data.
    *
    * @return a Java ND array of type getElementType().
@@ -766,7 +766,7 @@ public abstract class Array {
     try {
       javaArray = java.lang.reflect.Array.newInstance(getElementType(), getShape());
     } catch (Exception e) {
-      throw new IllegalArgumentException();
+      throw new IllegalArgumentException(e);
     }
 
     // copy data

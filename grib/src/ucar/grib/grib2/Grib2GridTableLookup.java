@@ -93,7 +93,7 @@ public final class Grib2GridTableLookup implements GridTableLookup {
    * @return GridName
    */
   public final String getGridName(GridDefRecord gds) {
-    return Grib2Tables.getGridName(gds.getParamInt(GridDefRecord.GRID_TYPE));
+    return Grib2Tables.codeTable3_1(gds.getParamInt(GridDefRecord.GRID_TYPE));
   }
 
   /**
@@ -103,7 +103,7 @@ public final class Grib2GridTableLookup implements GridTableLookup {
    * @return ShapeName
    */
   public final String getShapeName(GridDefRecord gds) {
-    return Grib2Tables.getShapeName(gds.getParamInt(GridDefRecord.GRID_SHAPE_CODE));
+    return Grib2Tables.codeTable3_2(gds.getParamInt(GridDefRecord.GRID_SHAPE_CODE));
   }
 
 
@@ -162,7 +162,7 @@ public final class Grib2GridTableLookup implements GridTableLookup {
    */
   public final String getProductDefinitionName(GridRecord gr) {
     GribGridRecord ggr = (GribGridRecord) gr;
-    return Grib2Tables.getProductDefinitionName(ggr.productType);
+    return Grib2Tables.codeTable4_0(ggr.productType);
   }
 
   /**
@@ -193,10 +193,10 @@ public final class Grib2GridTableLookup implements GridTableLookup {
    */
   public final String getTypeGenProcessName(GridRecord gr) {
     GribGridRecord ggr = (GribGridRecord) gr;
-    return Grib2Tables.getTypeGenProcessName(ggr.typeGenProcess);
+    return Grib2Tables.codeTable4_3(ggr.typeGenProcess);
   }
   public final String getTypeGenProcessName() {
-    return Grib2Tables.getTypeGenProcessName(firstPDSV.getTypeGenProcess());
+    return Grib2Tables.codeTable4_3(firstPDSV.getTypeGenProcess());
   }
 
   /**
@@ -283,7 +283,7 @@ public final class Grib2GridTableLookup implements GridTableLookup {
    */
   public String makeSuffix( GridRecord gr ) {
     GribGridRecord ggr = (GribGridRecord) gr;
-    return Grib2Tables.makeSuffix( ggr );
+    return ggr.makeSuffix( );
   }
 
   /**
@@ -305,8 +305,7 @@ public final class Grib2GridTableLookup implements GridTableLookup {
    */
   public final String getLevelDescription(GridRecord gr) {
     GribGridRecord ggr = (GribGridRecord) gr;
-    //return Grib2ProductDefinitionSection.getTypeSurfaceName(ggr.levelType1);
-    return Grib2Tables.getTypeSurfaceName(ggr.levelType1);
+    return Grib2Tables.codeTable4_5(ggr.levelType1);
   }
 
   /**
@@ -335,7 +334,7 @@ public final class Grib2GridTableLookup implements GridTableLookup {
    * @return TimeRangeUnitName
    */
   public final String getFirstTimeRangeUnitName() {
-    return Grib2Tables.getTimeRangeUnitName(firstPDSV.getTimeRangeUnit());
+    return Grib2Tables.getTimeUnitFromTable4_4(firstPDSV.getTimeRangeUnit());
   }
 
   /**

@@ -44,11 +44,12 @@ import java.util.Formatter;
 
 import thredds.catalog.crawl.CatalogCrawler;
 import thredds.catalog.*;
+import ucar.nc2.util.IO;
 
 import javax.swing.*;
 
 /**
- * Run through the named catalogs, read a random dataset from each collection
+ * Run through the named catalogs, open a random dataset from each collection
  * default is to run over the idd/models.xml catalog.
  */
 public class TestMotherlodeModels implements CatalogCrawler.Listener {
@@ -71,18 +72,17 @@ public class TestMotherlodeModels implements CatalogCrawler.Listener {
     this.skipDatasetScan = skipDatasetScan;
 
     JPanel p = new JPanel();
-    p.setBorder( BorderFactory.createLineBorder(Color.black ));
+    p.setBorder(BorderFactory.createLineBorder(Color.black));
 
-    p.add(new JLabel(name+":"));
+    p.add(new JLabel(name + ":"));
     label = new JLabel();
     p.add(label);
     stopButton = new StopButton("stopit goddammit!");
     p.add(stopButton);
-    main.add( p);
+    main.add(p);
 
     //FileOutputStream fout = new FileOutputStream(name+".txt");
     out = System.out; // new PrintStream( new BufferedOutputStream( fout));
-
   }
 
   public void extract() throws IOException {
@@ -126,16 +126,16 @@ public class TestMotherlodeModels implements CatalogCrawler.Listener {
     NetcdfDataset ncd = null;
     try {
       Formatter log = new Formatter();
-      ncd = tdataFactory.openDataset( ds,  false, null, log);
+      ncd = tdataFactory.openDataset(ds, false, null, log);
 
       if (ncd == null) {
-        out.println("**** failed= "+ds.getName()+" err="+log);
+        out.println("**** failed= " + ds.getName() + " err=" + log);
         countNoAccess++;
-      }  else if (verbose)
-        out.println("   "+ds.getName()+" ok");
+      } else if (verbose)
+        out.println("   " + ds.getName() + " ok");
 
     } catch (IOException e) {
-      out.println("**** failed= "+ds.getName()+" err= "+e.getMessage());
+      out.println("**** failed= " + ds.getName() + " err= " + e.getMessage());
       countNoOpen++;
     } finally {
       if (ncd != null) try {
@@ -145,15 +145,19 @@ public class TestMotherlodeModels implements CatalogCrawler.Listener {
     }
 
   }
-  public boolean getCatalogRef(InvCatalogRef dd, Object context) { return true; }
-   
+
+  public boolean getCatalogRef(InvCatalogRef dd, Object context) {
+    return true;
+  }
+
   public static JPanel main;
+
   public static void main(String args[]) throws IOException {
     String server = "http://motherlode.ucar.edu:9080/thredds";
 
     String catalog = "/idd/models.xml";
     String problemCat = // "/catalog/fmrc/NCEP/RUC2/CONUS_20km/surface/catalog.xml";
-                        "/catalog/fmrc/NCEP/RUC2/CONUS_20km/hybrid/catalog.xml";
+            "/catalog/fmrc/NCEP/RUC2/CONUS_20km/hybrid/catalog.xml";
     String models = "/idd/models.xml";
     String chizModels = "/idd/rtmodel.xml";
     String gribtonc = "/idd/allModels.TDS-nc.xml";
@@ -171,10 +175,10 @@ public class TestMotherlodeModels implements CatalogCrawler.Listener {
     });
 
     main = new JPanel();
-    main.setLayout( new BoxLayout(main, BoxLayout.Y_AXIS));
+    main.setLayout(new BoxLayout(main, BoxLayout.Y_AXIS));
 
     //TestMotherlodeModels problem = new TestMotherlodeModels("problem", server+problemCat, CatalogCrawler.USE_RANDOM_DIRECT, false);
-    TestMotherlodeModels all_models = new TestMotherlodeModels("models", server+catalog, CatalogCrawler.USE_RANDOM_DIRECT, false);
+    TestMotherlodeModels all_models = new TestMotherlodeModels("models", server + catalog, CatalogCrawler.USE_RANDOM_DIRECT, false);
     //TestMotherlodeModels chiz_models = new TestMotherlodeModels("chiz_models", server+chizModels, CatalogCrawler.USE_RANDOM_DIRECT, false);
     //TestMotherlodeModels nc_models = new TestMotherlodeModels("gribtonc", server+gribtonc, CatalogCrawler.USE_RANDOM_DIRECT, false);
     //TestMotherlodeModels localAll = new TestMotherlodeModels("localAll", "http://localhost:8080/thredds/catalog.xml", CatalogCrawler.USE_ALL, false);
@@ -186,7 +190,7 @@ public class TestMotherlodeModels implements CatalogCrawler.Listener {
 
     //problem.extract();
     //while (true) 
-      all_models.extract();
+    all_models.extract();
     //chiz_models.extract();
     //nc_models.extract();
     //localAll.extract();

@@ -38,76 +38,256 @@
 
 package ucar.grib.grib2;
 
-import ucar.grib.grib1.Grib1Tables;
 import ucar.grid.GridTableLookup;
-import ucar.grib.GribGridRecord;
-import ucar.grib.GribNumbers;
 
 /**
  * Class contains most of the hard coded tables for Grib2. Tables extracted from PDS
  * and GDS sections.
  */
 public class Grib2Tables {
-   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Grib2Tables.class);
-  // PDS tables
 
   /**
-   * productDefinition  Name.
-   * from code table 4.0.
+   * Grid Definition Template
+   *
+   * @param gdtn Grid definition template number same as type of grid
+   * @return GridName as a String
+   */
+  public static String codeTable3_1(int gdtn) {
+    switch (gdtn) {  // code table 3.1
+
+      case 0:
+        return "Latitude_Longitude";
+
+      case 1:
+        return "Rotated_Latitude_Longitude";
+
+      case 2:
+        return "Stretched_Latitude_Longitude";
+
+      case 3:
+        return "Rotated_and_Stretched_Latitude_Longitude";
+
+      case 10:
+        return "Mercator";
+
+      case 20:
+        return "Polar_Stereographic";
+
+      case 30:
+        return "Lambert_Conformal";
+
+      case 31:
+        return "Albers_Equal_Area";
+
+      case 40:
+        return "Gaussian_Latitude_Longitude";
+
+      case 41:
+        return "Rotated_Gaussian_Latitude_Longitude";
+
+      case 42:
+        return "Stretched_Gaussian Latitude_Longitude";
+
+      case 43:
+        return "Rotated_and_Stretched_Gaussian_Latitude_Longitude";
+
+      case 50:
+        return "Spherical_Harmonic_Coefficients";
+
+      case 51:
+        return "Rotated_Spherical_Harmonic_Coefficients";
+
+      case 52:
+        return "Stretched_Spherical_Harmonic_Coefficients";
+
+      case 53:
+        return "Rotated_and_Stretched_Spherical_Harmonic_Coefficients";
+
+      case 90:
+        return "Space_View_Perspective_or_Orthographic";
+
+      case 100:
+        return "Triangular_Grid_Based_on_an_Icosahedron";
+
+      case 110:
+        return "Equatorial_Azimuthal_Equidistant";
+
+      case 120:
+        return "Azimuth_Range";
+
+      case 204:
+        return "Curvilinear_Orthogonal";
+
+      case 1000:
+        return "Cross_Section_Grid_with_Points_Equally_Spaced_on_the_Horizontal";
+
+      case 1100:
+        return "Hovmoller_Diagram_with_Points_Equally_Spaced_on_the_Horizontal";
+
+      case 1200:
+        return "Time_Section_Grid";
+
+      case 32768:
+        return "Rotated_Latitude_Longitude_Arakawa_Staggered_E_Grid";
+      default:
+        return "Unknown projection" + gdtn;
+    }
+  }                    // end getGridName
+
+  /**
+   * Gets the ProjectionType based on the Grid definition template number.
+   * From code table 3.1
+   * @param gridType Grid definition template number
+   * @return ProjectionType
+   */
+  public static final int getProjectionType(int gridType) {
+    switch (gridType) {
+      case 1:
+        return GridTableLookup.RotatedLatLon;
+
+      case 10:
+        return GridTableLookup.Mercator;
+
+      case 20:
+        return GridTableLookup.PolarStereographic;
+
+      case 30:
+        return GridTableLookup.LambertConformal;
+
+      case 31:
+        return GridTableLookup.AlbersEqualArea;
+
+      case 40:
+        return GridTableLookup.GaussianLatLon;
+
+      case 90:
+        return GridTableLookup.Orthographic;
+
+      case 204:
+        return GridTableLookup.Curvilinear;
+
+      default:
+        return -1;
+    }
+  }
+
+  /**
+   * Shape of the Earth
+   *
+   * @param shape as an int
+   * @return shapeName as a String
+   */
+  static public String codeTable3_2(int shape) {
+    switch (shape) {
+
+      case 0:
+        return "Earth spherical with radius = 6,367,470 m";
+
+      case 1:
+        return "Earth spherical with radius specified by producer in m";
+
+      case 2:
+        return "Earth oblate spheroid with major axis = 6,378,160 m and minor axis = 6,356,775 m";
+
+      case 3:
+        return "Earth oblate spheroid with axes specified by producer in m";
+
+      case 4:
+        return "Earth oblate spheroid with major axis = 6,378,137.0 m and minor axis = 6,356,752.314 m";
+
+      case 5:
+        return "Earth represent by WGS84";
+
+      case 6:
+        return "Earth spherical with radius of 6,371,229.0 m";
+
+      case 7:
+        return "Earth oblate spheroid with axes specified by producer in m";
+
+      case 8:
+        return "Earth spherical with radius of 6,371,200.0 m, represent by WGS84";
+
+      default:
+        return "Unknown Earth Shape";
+    }
+  }
+
+  /*
+   * Center name  Uses same table as Grib1
+   *
+   * @param center int
+   * @return center name
+   *
+  public static String getCenter_idName(int center) {
+    return Grib1Tables.getCenter_idName( center );
+  }
+
+  /*
+   * SubCenter as String. NCEP has there own sub-center table, otherwise it's the
+   * same as center. Uses same table as Grib1
+   *
+   * @param center_id center
+   * @param subCenter subCenter
+   * @return subCenter
+   *
+  public static final String getSubCenter_idName(int center_id, int subCenter) {
+    return Grib1Tables.getSubCenter_idName( center_id, subCenter);
+  } */
+
+  /**
+   * Product Definition Template
+   * Code table 4.0.
    *
    * @param productDefinition productDefinition
    * @return ProductDefinitionName
    */
-  static public String getProductDefinitionName(int productDefinition) {
+  static public String codeTable4_0(int productDefinition) {
     switch (productDefinition) {
 
       case 0:
-        return "Analysis/forecast at horizontal level/layer";
+        return "Analysis/forecast at horizontal level/layer at a point in time";
 
       case 1:
         return "Individual ensemble forecast at a point in time";
 
       case 2:
-        return "Derived forecast on all ensemble members";
+        return "Derived forecast on all ensemble members at a point in time";
 
       case 3:
-        return "Derived forecasts on cluster of ensemble members over rectangular area";
+        return "Derived forecasts on cluster of ensemble members over rectangular area at a point in time";
 
       case 4:
-        return "Derived forecasts on cluster of ensemble members over circular area";
+        return "Derived forecasts on cluster of ensemble members over circular area at a point in time";
 
       case 5:
-        return "Probability forecasts at a horizontal level";
+        return "Probability forecasts at a horizontal level at a point in time";
 
       case 6:
-        return "Percentile forecasts at a horizontal level";
+        return "Percentile forecasts at a horizontal level at a point in time";
 
       case 7:
-        return "Analysis or forecast error at a horizontal level";
+        return "Analysis or forecast error at a horizontal level at a point in time";
 
       case 8:
-        return "Average, accumulation, extreme values or other statistically processed value at a horizontal level";
+        return "Average, accumulation, extreme values or other statistically processed value at a horizontal level in a time interval";
 
       case 9:
-        return
-      "Probability forecasts at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval";
+        return "Probability forecasts at a horizontal level or in a horizontal layer in a time interval";
 
       case 10:
-        return
-      "Percentile forecasts at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval";
+        return "Percentile forecasts at a horizontal level or in a horizontal layer in a time interval";
 
       case 11:
-        return "Individual ensemble forecast";
+        return "Individual ensemble forecast in a time interval";
 
       case 12:
-        return "Derived forecast on all ensemble members in a continuous or non-continuous time interval";
+        return "Derived forecast on all ensemble members in a time interval";
 
       case 13:
-        return "Derived forecasts on cluster of ensemble members over rectangular area"
-           +" in a continuous or non-continuous time interval";
+        return "Derived forecasts on cluster of ensemble members over rectangular area  in a time interval";
+
       case 14:
-        return "Derived forecasts on cluster of ensemble members over circular area"
-           +" in a continuous or non-continuous time interval";
+        return "Derived forecasts on cluster of ensemble members over circular area  in a time interval";
 
       case 15:
         return "Average, accumulation, extreme values or other statistically-processed values over a spatial area at a "
@@ -139,7 +319,7 @@ public class Grib2Tables {
         +"continuous or non-continuous time interval for atmospheric chemical constituents.";
 
       case 254:
-        return "CCITTIA5 character string";
+        return "CCITT IA5 character string";
 
       default:
         return "Unknown";
@@ -163,10 +343,10 @@ public class Grib2Tables {
     } else {
       tgp = Integer.parseInt(typeGenProcess);
     }
-    return getTypeGenProcessName(tgp);
+    return codeTable4_3(tgp);
   }
 
-  public static final String getTypeGenProcessName(int typeGenProcess) {
+  public static final String codeTable4_3(int typeGenProcess) {
 
     switch (typeGenProcess) {
 
@@ -213,6 +393,10 @@ public class Grib2Tables {
         return "Missing";
 
       default:
+        // ensemble will go from 4000 to 4399
+        if (typeGenProcess > 3999 && typeGenProcess < 4400)
+          return "Ensemble Forecast";
+
         return "Unknown";
     }
   }
@@ -220,26 +404,81 @@ public class Grib2Tables {
   /**
    * return Time Range Unit Name from code table 4.4.
    *
-   * @param timeRangeUnit timeRangeUnit
-   * @return TimeRangeUnitName
+   * @param code44 code for table 4.4
+   * @return Time Range Unit Name from table 4.4
    */
-  static public String getTimeRangeUnitName(int timeRangeUnit) {
-    switch (timeRangeUnit) {
+  static public String codeTable4_4(int code44) {
+    switch (code44) {
 
       case 0:
-        return "minutes";
+        return "Minute";
 
       case 1:
-        return "hours";
+        return "Hour";
 
       case 2:
-        return "days";
+        return "Day";
 
       case 3:
-        return "months";
+        return "Month";
 
       case 4:
-        return "years";
+        return "Year";
+
+      case 5:
+        return "Decade";
+
+      case 6:
+        return "Normal";
+
+      case 7:
+        return "Century";
+
+      case 10:
+        return "3hours";
+        //return "3hours";
+
+      case 11:
+        return "6hours";
+        //return "hours";
+
+      case 12:
+        return "12hours";
+        //return "hours";
+
+      case 13:
+        return "Second";
+
+      default:
+        //return "unknown";
+        return "minutes"; // some grids don't set, so default is minutes, same default as old code
+    }
+  }
+
+
+  /**
+   * return a udunits time unit
+   *
+   * @param code44 code for table 4.4
+   * @return udunits time unit
+   */
+  static public String getTimeUnitFromTable4_4(int code44) {
+    switch (code44) {
+
+      case 0:
+        return "minute";
+
+      case 1:
+        return "hour";
+
+      case 2:
+        return "day";
+
+      case 3:
+        return "month";
+
+      case 4:
+        return "year";
 
       case 5:
         return "decade";
@@ -251,25 +490,22 @@ public class Grib2Tables {
         return "century";
 
       case 10:
-        //return "3hours";
-        return "hours";
+        return "hour";
 
       case 11:
-        //return "6hours";
-        return "hours";
+        return "hour";
 
       case 12:
-        //return "12hours";
-        return "hours";
+        return "hour";
 
       case 13:
-        return "seconds";
+        return "second";
 
       default:
-        //return "unknown";
         return "minutes"; // some grids don't set, so default is minutes, same default as old code
     }
   }
+
 
   /**
    * type of vertical coordinate: Name
@@ -278,7 +514,7 @@ public class Grib2Tables {
    * @param id surface type
    * @return SurfaceName
    */
-  static public String getTypeSurfaceName(int id) {
+  static public String codeTable4_5(int id) {
 
     switch (id) {
 
@@ -766,165 +1002,6 @@ public class Grib2Tables {
   }  // end getTypeSurfaceUnit
 
   /**
-   * Makes a Ensemble, Derived, Probability or error Suffix
-   *
-   * @param ggr GribGridRecord
-   * @return suffix as String
-   */
-  public static String makeSuffix( GribGridRecord ggr ) {
-
-    String interval = "";
-    // check for accumulation/probability/percentile variables
-    if( ggr.productType > 7 && ggr.productType < 16 ) {
-      int span = ggr.forecastTime - ggr.startOfInterval;
-      interval = Integer.toString( span ) + getTimeRangeUnitName( ggr.timeUnit );
-    }
-    
-    switch (ggr.productType) {
-      case 0:
-      case 7:
-      case 40: {
-        if (ggr.typeGenProcess == 6 || ggr.typeGenProcess == 7 ) {
-          return "error";
-        }
-      }
-      break;
-      case 1:
-      case 11:
-      case 41:
-      case 43: {
-        // ensemble data
-        /*
-        if (typeGenProcess == 4) {
-          if (type == 0) {
-            return "Cntrl_high";
-          } else if (type == 1) {
-            return "Cntrl_low";
-          } else if (type == 2) {
-            return "Perturb_neg";
-          } else if (type == 3) {
-            return "Perturb_pos";
-          } else {
-            return "unknownEnsemble";
-          }
-
-        }
-        */
-        break;
-      }
-
-      case 2:
-      case 3:
-      case 4: {
-        // Derived data
-        if (ggr.typeGenProcess == 4) {
-          if (ggr.type == 0) {
-            return  "unweightedMean";
-          } else if (ggr.type == 1) {
-            return  "weightedMean";
-          } else if (ggr.type == 2) {
-            return  "stdDev";
-          } else if (ggr.type == 3) {
-            return  "stdDevNor";
-          } else if (ggr.type == 4) {
-            return  "spread";
-          } else if (ggr.type == 5) {
-            return  "anomaly";
-          } else if (ggr.type == 6) {
-            return  "unweightedMeanCluster";
-          } else {
-            return  "unknownEnsemble";
-          }
-        }
-        break;
-      }
-
-      case 12:
-      case 13:
-      case 14: {
-        // Derived data
-        if (ggr.typeGenProcess == 4) {
-          interval = interval +"_";
-          if (ggr.type == 0) {
-            return interval +"unweightedMean";
-          } else if (ggr.type == 1) {
-            return interval +"weightedMean";
-          } else if (ggr.type == 2) {
-            return interval +"stdDev";
-          } else if (ggr.type == 3) {
-            return interval +"stdDevNor";
-          } else if (ggr.type == 4) {
-            return interval +"spread";
-          } else if (ggr.type == 5) {
-            return interval +"anomaly";
-          } else if (ggr.type == 6) {
-            return interval +"unweightedMeanCluster";
-          } else {
-            return interval +"unknownEnsemble";
-          }
-        }
-        break;
-      }
-
-      case 5: {
-        // probability data
-        if (ggr.typeGenProcess == 5) {
-          return getProbabilityVariableNameSuffix( ggr.lowerLimit, ggr.upperLimit, ggr.type );
-        }
-      }
-      break;
-      case 9: {
-        // probability data
-        if (ggr.typeGenProcess == 5) {
-          return interval +"_"+ getProbabilityVariableNameSuffix( ggr.lowerLimit, ggr.upperLimit, ggr.type );
-        }
-      }
-      break;
-
-      default:
-        return interval;
-    }
-    return interval;
-  }
-
-  static String getProbabilityVariableNameSuffix( float lowerLimit, float upperLimit, int type )
-  {
-    String ll = Float.toString( lowerLimit ).replace( '.', 'p' ).replaceFirst( "p0$", "" );
-    String ul = Float.toString( upperLimit ).replace( '.', 'p' ).replaceFirst( "p0$", "" );
-    if ( type == 0 )
-    {
-      //return "below_" + Float.toString(lowerLimit).replace('.', 'p');
-      return "probability_below_" + ll;
-    }
-    else if ( type == 1 )
-    {
-      //return "above_" + Float.toString(upperLimit).replace('.', 'p');
-      return "probability_above_" + ul;
-    }
-    else if ( type == 2 )
-    {
-      //return "between_" + Float.toString(lowerLimit).replace('.', 'p') + "_" +
-      //    Float.toString(upperLimit).replace('.', 'p');
-      return "probability_between_" + ll + "_" + ul;
-    }
-    else if ( type == 3 )
-    {
-      //return "above_" + Float.toString(lowerLimit).replace('.', 'p');
-      return "probability_above_" + ll;
-    }
-    else if ( type == 4 )
-    {
-      //return "below_" + Float.toString(upperLimit).replace('.', 'p');
-      return "probability_below_" + ul;
-    }
-    else
-    {
-      return "unknownProbability";
-    }
-
-  }
-
-  /**
    * Gets a Ensemble type, Derived or Perturbed
    *
    * @param productType,    productType
@@ -992,6 +1069,25 @@ public class Grib2Tables {
     //return "";
   }
 
+  /*
+   * typeEnsemble number.
+   *  @deprecated
+   * @param tgp typeGenProcess
+   * @return typeEnsemble
+   *
+  public static final int getTypeEnsemble(String tgp) {
+    if (tgp.contains("C_high")) {
+      return 0;
+    } else if (tgp.contains("C_low")) {
+      return 1;
+    } else if (tgp.contains("P_neg")) {
+      return 2;
+    } else if (tgp.contains("P_pos")) {
+      return 3;
+    }
+    return -9999; //didn't know what to put as illegal
+  } */
+
   // GDS static Tables
 
   /**
@@ -1001,193 +1097,81 @@ public class Grib2Tables {
    public static enum VectorComponentFlag
      {  easterlyNortherlyRelative, gridRelative   };
 
-
   /**
-   * .
-   *
-   * @param gdtn Grid definition template number same as type of grid
-   * @return GridName as a String
+   * Code Table 4.9:	Probability Type
+   * @param code number
+   * @return String name
    */
-  public static String getGridName(int gdtn) {
-    switch (gdtn) {  // code table 3.1
-
-      case 0:
-        return "Latitude_Longitude";
-
-      case 1:
-        return "Rotated_Latitude_Longitude";
-
-      case 2:
-        return "Stretched_Latitude_Longitude";
-
-      case 3:
-        return "Rotated_and_Stretched_Latitude_Longitude";
-
-      case 10:
-        return "Mercator";
-
-      case 20:
-        return "Polar_Stereographic";
-
-      case 30:
-        return "Lambert_Conformal";
-
-      case 31:
-        return "Albers_Equal_Area";
-
-      case 40:
-        return "Gaussian_Latitude_Longitude";
-
-      case 41:
-        return "Rotated_Gaussian_Latitude_Longitude";
-
-      case 42:
-        return "Stretched_Gaussian Latitude_Longitude";
-
-      case 43:
-        return "Rotated_and_Stretched_Gaussian_Latitude_Longitude";
-
-      case 50:
-        return "Spherical_Harmonic_Coefficients";
-
-      case 51:
-        return "Rotated_Spherical_Harmonic_Coefficients";
-
-      case 52:
-        return "Stretched_Spherical_Harmonic_Coefficients";
-
-      case 53:
-        return "Rotated_and_Stretched_Spherical_Harmonic_Coefficients";
-
-      case 90:
-        return "Space_View_Perspective_or_Orthographic";
-
-      case 100:
-        return "Triangular_Grid_Based_on_an_Icosahedron";
-
-      case 110:
-        return "Equatorial_Azimuthal_Equidistant";
-
-      case 120:
-        return "Azimuth_Range";
-
-      case 204:
-        return "Curvilinear_Orthogonal";
-
-      case 1000:
-        return "Cross_Section_Grid_with_Points_Equally_Spaced_on_the_Horizontal";
-
-      case 1100:
-        return "Hovmoller_Diagram_with_Points_Equally_Spaced_on_the_Horizontal";
-
-      case 1200:
-        return "Time_Section_Grid";
-
-      case 32768:
-        return "Rotated_Latitude_Longitude_Arakawa_Staggered_E_Grid";
-      default:
-        return "Unknown projection" + gdtn;
-    }
-  }                    // end getGridName
-
-  // code table 3.1
-  /**
-   * gets the ProjectionType.
-   *
-   * @param gridType GridDefRecord
-   * @return ProjectionType
-   */
-  public static final int getProjectionType(int gridType) {
-    switch (gridType) {
-      case 1:
-        return GridTableLookup.RotatedLatLon;
-
-      case 10:
-        return GridTableLookup.Mercator;
-
-      case 20:
-        return GridTableLookup.PolarStereographic;
-
-      case 30:
-        return GridTableLookup.LambertConformal;
-
-      case 31:
-        return GridTableLookup.AlbersEqualArea;
-
-      case 40:
-        return GridTableLookup.GaussianLatLon;
-
-      case 90:
-        return GridTableLookup.Orthographic;
-
-      case 204:
-        return GridTableLookup.Curvilinear;
-
-      default:
-        return -1;
-    }
-  }
-  /**
-   * .
-   *
-   * @param shape as an int
-   * @return shapeName as a String
-   */
-  static public String getShapeName(int shape) {
-    switch (shape) {  // code table 3.2
-
-      case 0:
-        return "Earth spherical with radius = 6,367,470 m";
-
-      case 1:
-        return "Earth spherical with radius specified by producer in m";
-
-      case 2:
-        return "Earth oblate spheroid with major axis = 6,378,160 m and minor axis = 6,356,775 m";
-
-      case 3:
-        return "Earth oblate spheroid with axes specified by producer in m";
-
-      case 4:
-        return "Earth oblate spheroid with major axis = 6,378,137.0 m and minor axis = 6,356,752.314 m";
-
-      case 5:
-        return "Earth represent by WGS84";
-
-      case 6:
-        return "Earth spherical with radius of 6,371,229.0 m";
-
-      case 7:
-        return "Earth oblate spheroid with axes specified by producer in m";
-
-      case 8:
-        return "Earth spherical with radius of 6,371,200.0 m, represent by WGS84";
-
-      default:
-        return "Unknown Earth Shape";
+  static public String codeTable4_9(int code) {
+    switch (code) {
+     case 0: return	"Probability of event below lower limit";
+     case 1: return	"Probability of event above upper limit";
+     case 2: return	"Probability of event between lower and upper limits.  The range includes the lower limit but not the upper limit";
+     case 3: return	"Probability of event above lower limit";
+     case 4: return	"Probability of event below upper limit";
+     default: return "Missing";
     }
   }
 
   /**
-   * Center name  Uses same table as Grib1
-   *
-   * @param center int
-   * @return center name
+   *  Code Table 4.10: Type of statistical processing
+   * @param code number
+   * @return String name
    */
-  public static String getCenter_idName(int center) {
-    return Grib1Tables.getCenter_idName( center );
+  static public String codeTable4_10(int code) {
+    switch (code) {
+      case 0: return	"Average";
+      case 1: return	"Accumulation";
+      case 2: return	"Maximum";
+      case 3: return	"Minimum";
+      case 4: return	"Difference (Value at the end of time range minus value at the beginning)";
+      case 5: return	"Root mean square";
+      case 6: return	"Standard deviation";
+      case 7: return	"Covariance (Temporal variance)";
+      case 8: return	"Difference (Value at the start of time range minus value at the end)";
+      case 9: return	"Ratio";
+     default: return "Missing";
+    }
   }
 
   /**
-   * SubCenter as String. NCEP has there own sub-center table, otherwise it's the
-   * same as center. Uses same table as Grib1
-   *
-   * @param center_id center
-   * @param subCenter subCenter
-   * @return subCenter
+   * Code Table 4.10: Type of statistical processing, short form
+   * For embedding in a variable name
+   * @param code number
+   * @return String name, short form
    */
-  public static final String getSubCenter_idName(int center_id, int subCenter) {
-    return Grib1Tables.getSubCenter_idName( center_id, subCenter);
+  static public String codeTable4_10short(int code) {
+    switch (code) {
+      case 0: return	"Average";
+      case 1: return	"Accumulation";
+      case 2: return	"Maximum";
+      case 3: return	"Minimum";
+      case 4: return	"Difference"; // (Value at the end of time range minus value at the beginning)";
+      case 5: return	"RootMeanSquare";
+      case 6: return	"StandardDeviation";
+      case 7: return	"Covariance"; // (Temporal variance)";
+      case 8: return	"Difference"; // (Value at the start of time range minus value at the end)";
+      case 9: return	"Ratio";
+     default: return null;
+    }
   }
-  
+
+  /**
+   *  Code Table 4.11: Type of time intervals
+   * @param code number
+   * @return String name
+   */
+  static public String codeTable4_11(int code) {
+    switch (code) {
+      case 0: return	"Reserved";
+      case 1: return	"Successive times processed have same forecast time, start time of forecast is incremented";
+      case 2: return	"Successive times processed have same start time of forecast, forecast time is incremented";
+      case 3: return	"Successive times processed have start time of forecast incremented and forecast time decremented so that valid time remains constant";
+      case 4: return	"Successive times processed have start time of forecast decremented and forecast time incremented so that valid time remains constant";
+      case 5: return	"Floating subinterval of time between forecast time and end of overall time interval";
+      default: return "Missing";
+     }
+   }
+
+
 }

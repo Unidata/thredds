@@ -336,14 +336,16 @@ public class DiskCache {
 
   static private class FileSizeComparator implements Comparator<File> {
     public int compare(File f1, File f2) {
-      return (int) (f1.length() - f2.length());
+      // return (int) (f1.length() - f2.length());
+      return (f1.length()<f2.length() ? -1 : (f1.length()==f2.length() ? 0 : 1));  // Steve Ansari 6/3/2010
     }
   }
 
   // reverse sort - latest come first
   static private class FileAgeComparator implements Comparator<File> {
     public int compare(File f1, File f2) {
-      return (int) (f2.lastModified() - f1.lastModified());
+      //return (int) (f2.lastModified() - f1.lastModified());
+      return (f1.lastModified()<f2.lastModified() ? 1 : (f1.lastModified()==f2.lastModified() ? 0 : -1));  // Steve Ansari 6/3/2010
     }
   }
 

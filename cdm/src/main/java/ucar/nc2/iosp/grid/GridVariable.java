@@ -31,15 +31,12 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-
 package ucar.nc2.iosp.grid;
-
 
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 
 import ucar.nc2.*;
-import ucar.nc2.constants._Coordinate;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.iosp.mcidas.McIDASLookup;
 import ucar.nc2.iosp.gempak.GempakLookup;
@@ -50,13 +47,13 @@ import ucar.grid.GridParameter;
 import ucar.grid.GridDefRecord;
 import ucar.unidata.util.StringUtil;
 import ucar.grib.grib1.Grib1GridTableLookup;
-import ucar.grib.grib1.Grib1GDSVariables;
 import ucar.grib.grib2.Grib2GridTableLookup;
 import ucar.grib.grib2.Grib2Tables;
 import ucar.grib.GribGridRecord;
 import ucar.grib.GribNumbers;
 
 import java.util.ArrayList;
+import java.util.Formatter;
 import java.util.List;
 
 
@@ -70,18 +67,17 @@ public class GridVariable {
   /**
    * logger
    */
-  static private org.slf4j.Logger log =
-      org.slf4j.LoggerFactory.getLogger(GridVariable.class);
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GridVariable.class);
 
   /**
-   * parameter name
+   * disambiguated name == parameter name [ + suffix] [ + level]
    */
-  private String name;
+  private final String name;
 
   /**
-   * parameter description
+   * simple name without the level == parameter name [ + suffix]
    */
-  private String desc;
+  private final String nameWithoutLevel;
 
   /**
    * variable name
@@ -159,22 +155,16 @@ public class GridVariable {
   private boolean showRecords = false;
 
   /**
-   * debug flag
-   */
-  private boolean showGen = false;
-
-  /**
    * Create a new GridVariable
    *
-   * @param name   name
-   * @param desc   description
-   * @param hcs    horizontal coordinate system
-   * @param lookup lookup table
+   * @param name             name with level
+   * @param nameWithoutLevel name without level
+   * @param hcs              horizontal coordinate system
+   * @param lookup           lookup table
    */
-  GridVariable(String name, String desc, GridHorizCoordSys hcs,
-               GridTableLookup lookup) {
+  GridVariable(String name, String nameWithoutLevel, GridHorizCoordSys hcs, GridTableLookup lookup) {
     this.name = name;  // used to get unique grouping of products
-    this.desc = desc;
+    this.nameWithoutLevel = nameWithoutLevel;
     this.hcs = hcs;
     this.lookup = lookup;
   }
@@ -219,15 +209,6 @@ public class GridVariable {
   }
 
   /**
-   * Get the vertical coordinate system
-   *
-   * @return the vertical coordinate system
-   */
-  GridCoordSys getVertCoordSys() {
-    return vcs;
-  }
-
-  /**
    * Get the vertical coordinate
    *
    * @return the vertical coordinate
@@ -252,15 +233,6 @@ public class GridVariable {
    */
   void setVarName(String vname) {
     this.vname = vname;
-  }
-
-  /**
-   * Set the vertical coordinate system
-   *
-   * @param vcs the vertical coordinate system
-   */
-  void setVertCoordSys(GridCoordSys vcs) {
-    this.vcs = vcs;
   }
 
   /**
@@ -297,8 +269,8 @@ public class GridVariable {
    */
   public int getNEnsembles() {
     return (ecs == null)
-        ? 1
-        : ecs.getNEnsembles();
+            ? 1
+            : ecs.getNEnsembles();
   }
 
   /**
@@ -308,8 +280,8 @@ public class GridVariable {
    */
   public int getPDN() {
     return (ecs == null)
-        ? -1
-        : ecs.getPDN();
+            ? -1
+            : ecs.getPDN();
   }
 
   /**
@@ -319,19 +291,20 @@ public class GridVariable {
    */
   public int[] getEnsTypes() {
     return (ecs == null)
-        ? null
-        : ecs.getEnsType();
+            ? null
+            : ecs.getEnsType();
   }
 
   /**
    * Get the Index of Ensemble
+   *
    * @param record GridRecord
    * @return the Index of Ensemble
    */
-  int getEnsembleIndex( GridRecord record ) {
+  int getEnsembleIndex(GridRecord record) {
     return (ecs == null)
-        ? 1
-        : ecs.getIndex( record );
+            ? 1
+            : ecs.getIndex(record);
   }
 
   /**
@@ -341,8 +314,8 @@ public class GridVariable {
    */
   boolean hasEnsemble() {
     return (ecs == null)
-        ? false
-        : ecs.getNEnsembles() > 1;
+            ? false
+            : ecs.getNEnsembles() > 1;
   }
 
   /**
@@ -361,8 +334,8 @@ public class GridVariable {
    */
   int getVertNlevels() {
     return (vcs == null)
-        ? vc.getNLevels()
-        : vcs.getNLevels();
+            ? vc.getNLevels()
+            : vcs.getNLevels();
   }
 
   /**
@@ -372,8 +345,8 @@ public class GridVariable {
    */
   String getVertName() {
     return (vcs == null)
-        ? vc.getVariableName()
-        : vcs.getVerticalName();
+            ? vc.getVariableName()
+            : vcs.getVerticalName();
   }
 
   /**
@@ -383,8 +356,8 @@ public class GridVariable {
    */
   String getVertLevelName() {
     return (vcs == null)
-        ? vc.getLevelName()
-        : vcs.getVerticalName();
+            ? vc.getLevelName()
+            : vcs.getVerticalName();
   }
 
   /**
@@ -394,8 +367,8 @@ public class GridVariable {
    */
   boolean getVertIsUsed() {
     return (vcs == null)
-        ? !vc.dontUseVertical
-        : !vcs.dontUseVertical;
+            ? !vc.dontUseVertical
+            : !vcs.dontUseVertical;
   }
 
   /**
@@ -406,8 +379,8 @@ public class GridVariable {
    */
   int getVertIndex(GridRecord p) {
     return (vcs == null)
-        ? vc.getIndex(p)
-        : vcs.getIndex(p);
+            ? vc.getIndex(p)
+            : vcs.getIndex(p);
   }
 
   /**
@@ -417,8 +390,8 @@ public class GridVariable {
    */
   int getNTimes() {
     return (tcs == null)
-        ? 1
-        : tcs.getNTimes();
+            ? 1
+            : tcs.getNTimes();
   }
 
   /* String getSearchName() {
@@ -428,23 +401,21 @@ public class GridVariable {
  } */
 
   /**
-   * Make the variable
+   * Make the netcdf variable. If vname is not already set, use the param name or desc.
    *
-   * @param ncfile  netCDF file
-   * @param g       group
-   * @param useDesc true use the description
-   * @return the variable
+   * @param ncfile              netCDF file
+   * @param g                   group
+   * @param useNameWithoutLevel true use the nameWithoutLevel as the variable name
+   * @return the netcdf variable
    */
-  Variable makeVariable(NetcdfFile ncfile, Group g, boolean useDesc) {
+  Variable makeVariable(NetcdfFile ncfile, Group g, boolean useNameWithoutLevel) {
     assert records.size() > 0 : "no records for this variable";
     nlevels = getVertNlevels();
     nEnsembles = getNEnsembles();
     ntimes = tcs.getNTimes();
 
-    if (vname == null) {
-      vname = AbstractIOServiceProvider.createValidNetcdfObjectName(
-          useDesc ? desc : name);
-    }
+    if (vname == null)
+      vname = AbstractIOServiceProvider.createValidNetcdfObjectName(useNameWithoutLevel ? nameWithoutLevel : name);
 
     //vname = StringUtil.replace(vname, '-', "_"); // Done in dods server now
     // need for Gempak and McIDAS
@@ -455,8 +426,8 @@ public class GridVariable {
 
     String dims = tcs.getName();
 
-    if ( hasEnsemble() ) {
-      dims = dims + " " + getEnsembleName();   
+    if (hasEnsemble()) {
+      dims = dims + " " + getEnsembleName();
       //dims = getEnsembleName() + " " + dims;
     }
 
@@ -479,17 +450,17 @@ public class GridVariable {
       unit = "";
     }
     v.addAttribute(new Attribute("long_name", makeLongName(firstRecord, lookup)));
-    if ( firstRecord instanceof GribGridRecord ) {
+    if (firstRecord instanceof GribGridRecord) {
       GribGridRecord ggr = (GribGridRecord) firstRecord;
-      if ( ggr.startOfInterval != GribNumbers.UNDEFINED) {
+      if (ggr.startOfInterval != GribNumbers.UNDEFINED) {
         //v.addAttribute(new Attribute("standard_name", "accumulated_"+ vname ));
-        v.addAttribute(new Attribute("cell_methods", tcs.getName() +": sum"  ));
+        v.addAttribute(new Attribute("cell_methods", tcs.getName() + ": sum"));
       }
     }
     v.addAttribute(new Attribute("units", unit));
     v.addAttribute(
-        new Attribute(
-            "missing_value", new Float(lookup.getFirstMissingValue())));
+            new Attribute(
+                    "missing_value", new Float(lookup.getFirstMissingValue())));
     if (!hcs.isLatLon()) {
       if (ucar.nc2.iosp.grib.GribGridServiceProvider.addLatLon) {
         v.addAttribute(new Attribute("coordinates", "lat lon"));
@@ -501,12 +472,12 @@ public class GridVariable {
     * GribVariable that adds in the specific attributes.
     *
     */
-    int icf = hcs.getGds().getInt(GridDefRecord.VECTOR_COMPONET_FLAG);
+    int icf = hcs.getGds().getInt(GridDefRecord.VECTOR_COMPONENT_FLAG);
     String flag;
-    if ( icf == 0 ) {
-       flag = Grib2Tables.VectorComponentFlag.easterlyNortherlyRelative.toString();
+    if (icf == 0) {
+      flag = Grib2Tables.VectorComponentFlag.easterlyNortherlyRelative.toString();
     } else {
-       flag = Grib2Tables.VectorComponentFlag.gridRelative.toString();
+      flag = Grib2Tables.VectorComponentFlag.gridRelative.toString();
     }
     if (lookup instanceof Grib2GridTableLookup) {
       Grib2GridTableLookup g2lookup = (Grib2GridTableLookup) lookup;
@@ -516,14 +487,15 @@ public class GridVariable {
       v.addAttribute(new Attribute("GRIB_param_name", param.getName()));
       v.addAttribute(new Attribute("GRIB_param_id", Array.factory(int.class, new int[]{paramId.length}, paramId)));
       v.addAttribute(new Attribute("GRIB_product_definition_type", g2lookup.getProductDefinitionName(firstRecord)));
+      v.addAttribute(new Attribute("GRIB_product_definition_template", g2lookup.getProductDefinition(firstRecord)));
       v.addAttribute(new Attribute("GRIB_level_type", new Integer(firstRecord.getLevelType1())));
-      if (g2lookup.isEnsemble( firstRecord ))
+      if (g2lookup.isEnsemble(firstRecord))
         v.addAttribute(new Attribute("GRIB_forecasts_in_ensemble", g2lookup.NumberOfForecastsInEnsemble(firstRecord)));
-      if (g2lookup.isProbability( firstRecord ))
+      if (g2lookup.isProbability(firstRecord))
         v.addAttribute(new Attribute("GRIB_forecasts_in_probability", g2lookup.NumberOfForecastsInProbability(firstRecord)));
       //if( firstRecord.getLevelType2() != 255)
       //   v.addAttribute( new Attribute("GRIB2_level_type2", new Integer(firstRecord.getLevelType2())));
-      v.addAttribute(new Attribute("GRIB_"+ GridDefRecord.VECTOR_COMPONET_FLAG, flag ));
+      v.addAttribute(new Attribute("GRIB_" + GridDefRecord.VECTOR_COMPONENT_FLAG, flag));
     } else if (lookup instanceof Grib1GridTableLookup) {
       Grib1GridTableLookup g1lookup = (Grib1GridTableLookup) lookup;
       int[] paramId = g1lookup.getParameterId(firstRecord);
@@ -535,10 +507,10 @@ public class GridVariable {
       v.addAttribute(new Attribute("GRIB_param_id", Array.factory(int.class, new int[]{paramId.length}, paramId)));
       v.addAttribute(new Attribute("GRIB_product_definition_type", g1lookup.getProductDefinitionName(firstRecord)));
       v.addAttribute(new Attribute("GRIB_level_type", new Integer(firstRecord.getLevelType1())));
-      v.addAttribute(new Attribute("GRIB_"+ GridDefRecord.VECTOR_COMPONET_FLAG, flag ));
+      v.addAttribute(new Attribute("GRIB_" + GridDefRecord.VECTOR_COMPONENT_FLAG, flag));
 
     } else {
-      v.addAttribute(new Attribute( GridDefRecord.VECTOR_COMPONET_FLAG, flag ));
+      v.addAttribute(new Attribute(GridDefRecord.VECTOR_COMPONENT_FLAG, flag));
     }
     v.setSPobject(this);
 
@@ -550,11 +522,11 @@ public class GridVariable {
     for (GridRecord p : records) {
       if (showRecords) {
         System.out.println(" " + vc.getVariableName() + " (type="
-            + p.getLevelType1() + ","
-            + p.getLevelType2() + ")  value="
-            + p.getLevelType1() + ","
-            + p.getLevelType2()
-            //+" # genProcess="+p.typeGenProcess);
+                + p.getLevelType1() + ","
+                + p.getLevelType2() + ")  value="
+                + p.getLevelType1() + ","
+                + p.getLevelType2()
+                //+" # genProcess="+p.typeGenProcess);
         );
       }
       int level = getVertIndex(p);
@@ -566,11 +538,11 @@ public class GridVariable {
       // System.out.println("time="+time+" level="+level);
       if (level < 0) {
         log.warn("NOT FOUND record; level=" + level + " time= "
-            + time + " for " + getName() + " file="
-            + ncfile.getLocation() + "\n" + "   "
-            + getVertLevelName() + " (type=" + p.getLevelType1()
-            + "," + p.getLevelType2() + ")  value="
-            + p.getLevel1() + "," + p.getLevel2() + "\n");
+                + time + " for " + getName() + " file="
+                + ncfile.getLocation() + "\n" + "   "
+                + getVertLevelName() + " (type=" + p.getLevelType1()
+                + "," + p.getLevelType2() + ")  value="
+                + p.getLevel1() + "," + p.getLevel2() + "\n");
 
         getVertIndex(p);  // allow breakpoint
         continue;
@@ -578,19 +550,19 @@ public class GridVariable {
 
       if (time < 0) {
         log.warn("NOT FOUND record; level=" + level + " time= "
-            + time + " for " + getName() + " file="
-            + ncfile.getLocation() + "\n" + " forecastTime= "
-            + p.getValidTimeOffset() + " date= "
-            + tcs.getValidTime(p) + "\n");
+                + time + " for " + getName() + " file="
+                + ncfile.getLocation() + "\n" + " forecastTime= "
+                + p.getValidTimeOffset() + " date= "
+                + tcs.getValidTime(p) + "\n");
 
         tcs.getIndex(p);  // allow breakpoint
         continue;
       }
       int recno;
-      if ( hasEnsemble() ) {
+      if (hasEnsemble()) {
         int ens = getEnsembleIndex(p);
         //recno = time * ( nEnsembles * nlevels ) + ( ens * nlevels ) + level;
-        recno = ens * ( ntimes * nlevels ) + ( time * nlevels ) + level;
+        recno = ens * (ntimes * nlevels) + (time * nlevels) + level;
       } else {
         recno = time * nlevels + level;
       }
@@ -622,8 +594,8 @@ public class GridVariable {
       for (int i = 0; i < ntimes; i++) {
         boolean missing = recordTracker[i * nlevels + j] == null;
         System.out.print(missing
-            ? "-"
-            : "X");
+                ? "-"
+                : "X");
       }
       System.out.println();
     }
@@ -661,8 +633,8 @@ public class GridVariable {
    * @return the record or null
    */
   public GridRecord findRecord(int time, int ens, int level) {
-    if( hasEnsemble() ) {
-       return recordTracker[ens * ( ntimes * nlevels ) + ( time * nlevels ) + level];
+    if (hasEnsemble()) {
+      return recordTracker[ens * (ntimes * nlevels) + (time * nlevels) + level];
     } else {
       return recordTracker[time * nlevels + level];
     }
@@ -694,24 +666,6 @@ public class GridVariable {
   }
 
   /**
-   * Get the parameter name
-   *
-   * @return description
-   */
-  public String getParamName() {
-    return desc;
-  }
-
-  /**
-   * Get the lookup
-   *
-   * @return GridTableLookup
-   */
-  public GridTableLookup getLookup() {
-    return lookup;
-  }
-  
-  /**
    * Override Object.hashCode() to implement equals.
    *
    * @return equals;
@@ -740,17 +694,13 @@ public class GridVariable {
    */
   public String dump() {
     DateFormatter formatter = new DateFormatter();
-    StringBuilder sbuff = new StringBuilder();
-    sbuff.append(name + " " + records.size() + "\n");
+    Formatter sbuff = new Formatter();
+    sbuff.format("%s %d %n", name, records.size());
     for (GridRecord record : records) {
-      sbuff.append(" level = " + record.getLevelType1() + " "
-          + record.getLevel1());
-      if (null != record.getValidTime()) {
-        sbuff.append(
-            " time = "
-                + formatter.toDateTimeString(record.getValidTime()));
-      }
-      sbuff.append("\n");
+      sbuff.format(" level = %d %f", record.getLevelType1(), record.getLevel1());
+      if (null != record.getValidTime())
+        sbuff.format(" time = %s", formatter.toDateTimeString(record.getValidTime()));
+      sbuff.format("%n");
     }
     return sbuff.toString();
   }
@@ -767,18 +717,15 @@ public class GridVariable {
     GridParameter param = lookup.getParameter(gr);
 
     String levelName;
-    if ( (lookup instanceof GempakLookup) || (lookup instanceof McIDASLookup)) {
-      levelName = lookup.getLevelDescription( gr );
+    if ((lookup instanceof GempakLookup) || (lookup instanceof McIDASLookup)) {
+      levelName = lookup.getLevelDescription(gr);
     } else {
       levelName = GridIndexToNC.makeLevelName(gr, lookup);
     }
-    String ensembleName = GridIndexToNC.makeSuffixName(gr, lookup);
+    String suffix = GridIndexToNC.makeSuffixName(gr, lookup);
     String paramName = param.getDescription();
-    paramName = (ensembleName.length() == 0)
-        ? paramName : paramName + "_" + ensembleName;
-
-    paramName = (levelName.length() == 0)
-        ? paramName : paramName + " @ " + levelName;
+    paramName = (suffix.length() == 0) ? paramName : paramName + "_" + suffix;
+    paramName = (levelName.length() == 0) ? paramName : paramName + " @ " + levelName;
 
     return paramName;
   }

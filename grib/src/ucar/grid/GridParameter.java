@@ -35,6 +35,8 @@
 
 package ucar.grid;
 
+import java.util.Formatter;
+
 /**
  * Class which represents a grid parameter.
  * A parameter consists of a number that can be used to look up in a table,
@@ -164,15 +166,9 @@ public class GridParameter {
      * @return a String representation of this object
      */
     public String toString() {
-        StringBuilder buf = new StringBuilder("GridParameter: ");
-//        buf.append(StringUtil.padLeft(String.valueOf(getNumber()), 4));
-        buf.append(" ");
-        String param = getName() + " (" + getDescription() + ")";
-//        buf.append(StringUtil.padRight(param, 40));
-        buf.append(" [");
-        buf.append(getUnit());
-        buf.append("]");
-        return buf.toString();
+      Formatter buf = new Formatter();
+      buf.format("GridParameter: %4d %s [%s]", getNumber(), getName(), getUnit());
+      return buf.toString();
     }
 
     /**

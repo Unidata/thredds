@@ -120,7 +120,7 @@ public class GridIndexToNC {
   }
 
   /**
-   * Make the variable name
+   * Make the variable name with suffix and level if present
    *
    * @param gr     grid record
    * @param lookup lookup table
@@ -130,34 +130,28 @@ public class GridIndexToNC {
     GridParameter param = lookup.getParameter(gr);
     String levelName = makeLevelName(gr, lookup);
     String suffixName = makeSuffixName(gr, lookup);
-    String paramName = (useDescriptionForVariableName)
-        ? param.getDescription()
-        : param.getName();
-    paramName = (suffixName.length() == 0)
-        ? paramName : paramName + "_" + suffixName;
-
-    paramName = (levelName.length() == 0)
-        ? paramName : paramName + "_" + levelName;
+    String paramName = (useDescriptionForVariableName) ? param.getDescription() : param.getName();
+    paramName = (suffixName.length() == 0) ? paramName : paramName + "_" + suffixName;
+    paramName = (levelName.length() == 0) ? paramName : paramName + "_" + levelName;
 
     return paramName;
   }
 
   /**
-   * moved to GridVariable = made sense since it knows what it is
-   * Make a long name for the variable
+   * Make the variable name with suffix if present
    *
-   * @param gr   grid record
-   * @param lookup  lookup table
-   *
-   * @return long variable name
-  public static String makeLongName(GridRecord gr, GridTableLookup lookup) {
-  GridParameter param     = lookup.getParameter(gr);
-  String        levelName = makeLevelName(gr, lookup);
-  return (levelName.length() == 0)
-  ? param.getDescription()
-  : param.getDescription() + " @ " + makeLevelName(gr, lookup);
-  }
+   * @param gr     grid record
+   * @param lookup lookup table
+   * @return variable name
    */
+  public String makeVariableNameWithoutLevel(GridRecord gr, GridTableLookup lookup) {
+    GridParameter param = lookup.getParameter(gr);
+    String suffixName = makeSuffixName(gr, lookup);
+    String paramName = (useDescriptionForVariableName) ? param.getDescription() : param.getName();
+    paramName = (suffixName.length() == 0) ? paramName : paramName + "_" + suffixName;
+
+    return paramName;
+  }
 
   /**
    * Fill in the netCDF file
@@ -199,21 +193,22 @@ public class GridIndexToNC {
       if (firstRecord == null)
         firstRecord = gribRecord;
 
-      GridHorizCoordSys hcs =   hcsHash.get(gribRecord.getGridDefRecordId());
+      GridHorizCoordSys hcs =  hcsHash.get(gribRecord.getGridDefRecordId());
       String name = makeVariableName(gribRecord, lookup);
       // combo gds, param name and level name
       GridVariable pv = (GridVariable) hcs.varHash.get(name);
       if (null == pv) {
-        String pname = lookup.getParameter(gribRecord).getDescription();
-        pv = new GridVariable(name, pname, hcs, lookup);
+        String simpleName = makeVariableNameWithoutLevel(gribRecord, lookup);
+        pv = new GridVariable(name, simpleName, hcs, lookup);
         hcs.varHash.put(name, pv);
         //System.out.printf("Add name=%s pname=%s%n", name, pname);
 
-        // keep track of all products with same parameter name
-        List<GridVariable> plist = hcs.productHash.get(pname);
+        // keep track of all products with same parameter name + suffix == "simple name"
+        // String pname = lookup.getParameter(gribRecord).getDescription(); // dont use plain old parameter name anymore 6/3/2010 jc
+        List<GridVariable> plist = hcs.productHash.get(simpleName);
         if (null == plist) {
           plist = new ArrayList<GridVariable>();
-          hcs.productHash.put(pname, plist);
+          hcs.productHash.put(simpleName, plist);
         }
         plist.add(pv);
       }

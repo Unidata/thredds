@@ -4445,7 +4445,8 @@ public class H5header {
     ArrayList<DataObject> result = new ArrayList<DataObject>(addressMap.values());
     Collections.sort( result, new java.util.Comparator<DataObject>() {
       public int compare(DataObject o1, DataObject o2) {
-        return (int) (o1.address - o2.address);
+        // return (int) (o1.address - o2.address);
+        return (o1.address<o2.address ? -1 : (o1.address==o2.address ? 0 : 1));
       }
     });
     return result;
