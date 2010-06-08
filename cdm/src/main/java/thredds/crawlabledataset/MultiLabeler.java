@@ -43,8 +43,7 @@ import java.util.List;
  */
 public class MultiLabeler implements CrawlableDatasetLabeler
 {
-//  private static org.apache.commons.logging.Log log =
-//          org.apache.commons.logging.LogFactory.getLog( MultiLabeler.class );
+
 
   private List<CrawlableDatasetLabeler> labelerList;
 

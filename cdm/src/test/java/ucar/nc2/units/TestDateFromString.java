@@ -44,8 +44,7 @@ import java.util.Date;
  */
 public class TestDateFromString extends TestCase
 {
-//  private static org.apache.commons.logging.Log log =
-//          org.apache.commons.logging.LogFactory.getLog( TestDateFromString.class );
+
 
   private String fileName = "xzy_tds_20051129_1235_junk.grib";
   private String dateAsISOString = "2005-11-29T12:35";

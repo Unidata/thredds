@@ -365,12 +365,11 @@ public class StringValidateEncodeUtils
   public static String encodeContentForHtml( String content )
   {
     return HtmlUtils.htmlEscape( content );
-    //return org.apache.commons.lang.StringEscapeUtils.escapeHtml( content );
   }
 
   /* public static String encodeContentForXml( String content )
   {
-    return org.apache.commons.lang.StringEscapeUtils.escapeXml( content );
+    return StringEscapeUtils.escapeXml( content );
   }  */
 
   /**

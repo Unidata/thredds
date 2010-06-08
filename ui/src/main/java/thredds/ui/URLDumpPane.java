@@ -33,11 +33,13 @@
 
 package thredds.ui;
 
+import org.apache.http.Header;
 import org.apache.http.HeaderIterator;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.CoreProtocolPNames;
 import org.apache.http.params.HttpParams;
@@ -47,6 +49,7 @@ import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 import ucar.nc2.util.IO;
 import ucar.nc2.util.URLnaming;
+import opendap.dap.HttpWrap;
 import ucar.nc2.util.net.HttpClientManager;
 import ucar.util.prefs.*;
 import ucar.util.prefs.ui.*;
@@ -61,21 +64,17 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.InflaterInputStream;
 import javax.swing.*;
 
-import org.apache.commons.httpclient.*;
-import org.apache.commons.httpclient.params.HttpMethodParams;
-import org.apache.commons.httpclient.methods.*;
-
 
 /**
  * A text widget to dump a web URL.
- * Uses java.net.HttpURLConnection or org.apache.commons.httpclient.
+ * Uses java.net.HttpURLConnection or org.apache.http.Httpclient.
  *
  * @author John Caron
  * @see thredds.ui.UrlAuthenticatorDialog
  */
 
 public class URLDumpPane extends TextHistoryPane {
-  private enum Library {Commons, java, HttpClient};
+  private enum Library {Commons, java, HttpWrap};
   private enum Command {GET, PUT, HEAD, OPTIONS};
 
   private ComboBox cb;
@@ -117,7 +116,7 @@ public class URLDumpPane extends TextHistoryPane {
     });
 
     JButton buttOpt = new JButton("Options");
-    buttOpt.setToolTipText("Server options using HttpClient");
+    buttOpt.setToolTipText("Server options using AbstractHttpClient");
     buttOpt.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         String urlString = (String) cb.getSelectedItem();
@@ -129,7 +128,7 @@ public class URLDumpPane extends TextHistoryPane {
 
 
     JButton buttPut = new JButton("Put");
-    buttPut.setToolTipText("Put using HttpClient");
+    buttPut.setToolTipText("Put using AbstractHttpClient");
     buttPut.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         String urlString = (String) cb.getSelectedItem();
@@ -158,7 +157,7 @@ public class URLDumpPane extends TextHistoryPane {
     clear();
 
     Library impl = (Library) implCB.getSelectedItem();
-    if (impl == Library.HttpClient) {
+    if (impl == Library.HttpWrap) {
        openClient(urlString, cmd);
     } else if (impl == Library.Commons) {
        openURL2(urlString, cmd);
@@ -178,7 +177,7 @@ public class URLDumpPane extends TextHistoryPane {
   private void openClient(String urlString, Command cmd) {
     HttpEntity entity = null;
     try {
-      org.apache.http.client.HttpClient httpclient = new DefaultHttpClient();
+      HttpWrap httpclient = new HttpWrap();
 
       // request
       HttpGet httpget = new HttpGet(urlString);
@@ -197,7 +196,7 @@ public class URLDumpPane extends TextHistoryPane {
 
       //response
       BasicHttpContext localContext = new BasicHttpContext();
-      HttpResponse response = httpclient.execute(httpget, localContext);
+      httpclient.doGet(urlString, localContext);
 
       appendLine("\nHttpContext: " + localContext);
       showAtribute(ExecutionContext.HTTP_CONNECTION, localContext);
@@ -215,15 +214,14 @@ public class URLDumpPane extends TextHistoryPane {
       }
 
       appendLine("\nResponse Headers:");
-      it = response.headerIterator();
+      it =  httpclient.headerIterator();
       while (it.hasNext()) {
         appendLine(" " + it.next().toString());
       }
 
       // content
-      entity = response.getEntity();
-      if (entity != null) {
-        String contents = EntityUtils.toString(entity);
+      String contents = httpclient.getContentString();
+      if (contents != null) {
         if (contents.length() > 50 * 1000)
           contents = contents.substring(0, 50 * 1000);
         appendLine("\nContent:");
@@ -260,12 +258,11 @@ public class URLDumpPane extends TextHistoryPane {
   }
 
   ///////////////////////////////////////////////////////
-  // Uses apache commons HttpClient
+  // Uses apache commons AbstractHttpClient
 
   private void openURL2(String urlString, Command cmd) {
 
-    HttpClient httpclient = HttpClientManager.getHttpClient();
-    HttpMethodBase m = null;
+    HttpWrap  httpclient = HttpClientManager.getHttpClient();
 
     try {
       /* you might think this works, but it doesnt:
@@ -283,76 +280,71 @@ public class URLDumpPane extends TextHistoryPane {
               */
 
       urlString = URLnaming.escapeQuery(urlString);
+      httpclient.setHeader("Accept-Encoding", "gzip,deflate");
 
       if (cmd == Command.GET)
-        m = new GetMethod(urlString);
+          httpclient.doGet(urlString);
       else if (cmd == Command.HEAD)
-        m = new HeadMethod(urlString);
+        httpclient.doHead(urlString);
       else if (cmd == Command.OPTIONS)
-        m = new OptionsMethod(urlString);
+        httpclient.doOptions(urlString);
       else if (cmd == Command.PUT) {
-        PutMethod p = new PutMethod(urlString);
         try {
-          p.setRequestEntity(new StringRequestEntity(ta.getText(), "application/text", "UTF-8"));
-        } catch (UnsupportedEncodingException e) {
+            httpclient.doPut(urlString,ta.getText());
+        } catch (Exception e) {
           ByteArrayOutputStream bos = new ByteArrayOutputStream(5000);
           e.printStackTrace(new PrintStream(bos));
           appendLine(bos.toString());
           return;
         }
-        m = p;
+
       }
+      appendLine("HttpClient " + httpclient.getMethod() + " " + urlString);
+      appendLine("   do Authentication= " + httpclient.getDoAuthentication());
+      appendLine("   follow Redirects= " + httpclient.getFollowRedirects());
 
-      m.setRequestHeader("Accept-Encoding", "gzip,deflate");
+      appendLine("   cookie policy= " + httpclient.getCookiePolicy());
+      appendLine("   http version= " + httpclient.getVersion().toString());
+      appendLine("   timeout (msecs)= " + httpclient.getSoTimeout());
+      appendLine("   virtual host= " + httpclient.getVirtualHost());
 
-      appendLine("HttpClient " + m.getName() + " " + urlString);
-      appendLine("   do Authentication= " + m.getDoAuthentication());
-      appendLine("   follow Redirects= " + m.getFollowRedirects());
-
-      HttpMethodParams p = m.getParams();
-      appendLine("   cookie policy= " + p.getCookiePolicy());
-      appendLine("   http version= " + p.getVersion().toString());
-      appendLine("   timeout (msecs)= " + p.getSoTimeout());
-      appendLine("   virtual host= " + p.getVirtualHost());
-
-      printHeaders("Request Headers = ", m.getRequestHeaders());
+      printHeaders("Request Headers = ", httpclient.getHeaders());
       appendLine(" ");
 
-      httpclient.executeMethod(m);
 
-      printHeaders("Request Headers2 = ", m.getRequestHeaders());
+      printHeaders("Request Headers2 = ", httpclient.getHeaders());
       appendLine(" ");
 
-      appendLine("Status = " + m.getStatusCode() + " " + m.getStatusText());
-      appendLine("Status Line = " + m.getStatusLine());
-      printHeaders("Response Headers = ", m.getResponseHeaders());
+      appendLine("Status = " + httpclient.getStatusCode() + " " + httpclient.getStatusText());
+      appendLine("Status Line = " + httpclient.getStatusLine());
+      printHeaders("Response Headers = ", httpclient.getHeaders());
       if (cmd == Command.GET) {
         appendLine("\nResponseBody---------------");
 
-        String charset = m.getResponseCharSet();
+        String charset = httpclient.getCharSet();
         if (charset == null) charset = "UTF-8";
         String contents = null;
 
         // check for deflate and gzip compression
-        Header h = m.getResponseHeader("content-encoding");
+        Header h = httpclient.getHeader("content-encoding");
         String encoding = (h == null) ? null : h.getValue();
 
         if (encoding != null && encoding.equals("deflate")) {
-          byte[] body = m.getResponseBody();
+          byte[] body = httpclient.getContentBytes();
           InputStream is = new BufferedInputStream(new InflaterInputStream(new ByteArrayInputStream(body)), 10000);
           contents = IO.readContents(is, charset);
           double ratio = (double) contents.length() / body.length;
           appendLine("  deflate encoded=" + body.length + " decoded=" + contents.length() + " ratio= " + ratio);
 
         } else if (encoding != null && encoding.equals("gzip")) {
-          byte[] body = m.getResponseBody();
+          byte[] body = httpclient.getContentBytes();
           InputStream is = new BufferedInputStream(new GZIPInputStream(new ByteArrayInputStream(body)), 10000);
           contents = IO.readContents(is, charset);
           double ratio = (double) contents.length() / body.length;
           appendLine("  gzip encoded=" + body.length + " decoded=" + contents.length() + " ratio= " + ratio);
 
         } else {
-          byte[] body = m.getResponseBody(50 * 1000); // max 50 Kbytes
+          byte[] body = httpclient.getContentBytes(50 * 1000); // max 50 Kbytes
           contents = new String(body, charset);
         }
 
@@ -361,9 +353,9 @@ public class URLDumpPane extends TextHistoryPane {
         appendLine(contents);
 
       } else if (cmd == Command.OPTIONS)
-        printEnum("AllowedMethods = ", ((OptionsMethod) m).getAllowedMethods());
+        printStringSet("AllowedMethods = ", httpclient.getAllowedMethods());
 
-      printHeaders("Response Footers = ", m.getResponseFooters());
+      printHeaders("Response Footers = ", httpclient.getHeaders());
 
     } catch (Exception e) {
       ByteArrayOutputStream bos = new ByteArrayOutputStream(5000);
@@ -371,7 +363,7 @@ public class URLDumpPane extends TextHistoryPane {
       appendLine(bos.toString());
 
     } finally {
-      if (m != null) m.releaseConnection();
+      if (httpclient != null) httpclient.close();
     }
   }
 
@@ -383,10 +375,11 @@ public class URLDumpPane extends TextHistoryPane {
     }
   }
 
-  private void printEnum(String title, Enumeration en) {
+  private void printStringSet(String title, Set<String> en) {
     appendLine(title);
-    while (en.hasMoreElements()) {
-      Object o = en.nextElement();
+    Iterator it = en.iterator();
+      while (it.hasNext()) {
+      Object o = it.next();
       append("  " + o.toString());
     }
     appendLine("");

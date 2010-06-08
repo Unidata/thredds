@@ -32,11 +32,14 @@
  */
 package thredds.util;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.Header;
-import org.apache.commons.httpclient.params.HttpClientParams;
-import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.http.HttpResponse;
+import org.apache.http.Header;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.client.params.AllClientPNames;
+import org.apache.http.impl.client.AbstractHttpClient;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.HttpParams;
 
 import java.io.*;
 import java.net.URI;
@@ -63,7 +66,8 @@ public class HttpUriResolver
   private boolean allowContentEncoding;
   private boolean followRedirects;
 
-  private HttpMethod method = null;
+  //private HttpRequestBase method = null;
+  private HttpResponse response = null;
   private Map<String,String> respHeaders;
 
   HttpUriResolver( URI uri, long connectionTimeout, int socketTimeout,
@@ -90,35 +94,28 @@ public class HttpUriResolver
   public void makeRequest()
           throws IOException
   {
-    if ( method != null )
+    if ( response != null )
       throw new IllegalStateException( "Request already made.");
 
-    this.method = getHttpResponse( uri );
+    this.response = getHttpResponse( uri );
   }
 
   public int getResponseStatusCode()
   {
-    if ( method == null )
+    if ( response == null )
       throw new IllegalStateException( "Request has not been made." );
-    return this.method.getStatusCode();
-  }
-
-  public String getResponseStatusText()
-  {
-    if ( method == null )
-      throw new IllegalStateException( "Request has not been made." );
-    return this.method.getStatusText();
+    return this.response.getStatusLine().getStatusCode();
   }
 
   public Map<String,String> getResponseHeaders()
   {
-    if ( method == null )
+    if ( response == null )
       throw new IllegalStateException( "Request has not been made." );
 
     if ( this.respHeaders == null )
     {
       this.respHeaders = new HashMap<String,String>();
-      Header[] headers = this.method.getResponseHeaders();
+      Header[] headers = this.response.getAllHeaders();
       for ( Header h : headers )
         this.respHeaders.put( h.getName(), h.getValue() );
     }
@@ -128,21 +125,21 @@ public class HttpUriResolver
 
   public String getResponseHeaderValue( String name )
   {
-    if ( method == null )
+    if ( response == null )
       throw new IllegalStateException( "Request has not been made." );
 
-    Header responseHeader = this.method.getResponseHeader( name );
+    Header responseHeader = this.response.getFirstHeader( name );
     return responseHeader == null ? null : responseHeader.getValue();
   }
 
   public InputStream getResponseBodyAsInputStream()
           throws IOException
   {
-    if ( method == null )
+    if ( response == null )
       throw new IllegalStateException( "Request has not been made." );
 
-    InputStream is = method.getResponseBodyAsStream();
-    Header contentEncodingHeader = method.getResponseHeader( "Content-Encoding" );
+    InputStream is = response.getEntity().getContent();
+    Header contentEncodingHeader = response.getFirstHeader( "Content-Encoding" );
     if ( contentEncodingHeader != null )
     {
       String contentEncoding = contentEncodingHeader.getValue();
@@ -157,22 +154,23 @@ public class HttpUriResolver
     return is;
   }
 
-  private HttpMethod getHttpResponse( URI uri )
+  private HttpResponse getHttpResponse( URI uri )
           throws IOException
   {
-    HttpClient client = new HttpClient();
-    HttpClientParams params = client.getParams();
-    params.setConnectionManagerTimeout( this.connectionTimeout );
-    params.setSoTimeout( this.socketTimeout );
-    HttpMethod method = new GetMethod( uri.toString() );
-    method.setFollowRedirects( this.followRedirects );
-    method.addRequestHeader( "Accept-Encoding", this.contentEncoding );
+    AbstractHttpClient client = new DefaultHttpClient();
+    HttpParams params = client.getParams();
+    params.setParameter(AllClientPNames.CONNECTION_TIMEOUT, this.connectionTimeout );
+    params.setParameter(AllClientPNames.SO_TIMEOUT, this.socketTimeout );
+    HttpGet method = new HttpGet( uri.toString() );
+    //method.setFollowRedirects( this.followRedirects );
+    method.addHeader( "Accept-Encoding", this.contentEncoding );
 
-    client.executeMethod( method );
-    int statusCode = method.getStatusCode();
+    client.execute( method );
+    HttpResponse response = client.execute(method);
+    int statusCode = response.getStatusLine().getStatusCode();
     if ( statusCode == 200 || statusCode == 201 )
     {
-      return method;
+      return response;
     }
 
     return null; // ToDo throw exception with some informative inforamtion.

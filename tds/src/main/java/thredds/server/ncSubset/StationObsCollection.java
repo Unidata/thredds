@@ -33,6 +33,7 @@
 
 package thredds.server.ncSubset;
 
+import org.apache.commons.io.filefilter.SuffixFileFilter;
 import ucar.ma2.StructureData;
 import ucar.ma2.Array;
 import ucar.unidata.geoloc.Station;
@@ -195,7 +196,7 @@ public class StationObsCollection {
   ////////////////////////////////////////////
   // keep track of the available datasets LOOK should be configurable
   private String dateFormatString = "yyyyMMdd_HHmm";
-  private FileFilter ff = new org.apache.commons.io.filefilter.SuffixFileFilter(".nc");
+  private FileFilter ff = new SuffixFileFilter(".nc");
 
   private void init() {
     CollectionManager archive = new CollectionManager(archiveDir, ff, dateFormatString);
@@ -1245,7 +1246,7 @@ public class StationObsCollection {
   }
 
   static public void main(String args[]) throws IOException {
-    //getFiles("R:/testdata/station/ldm/metar/");
+    //getFiles("R:/testdata2/station/ldm/metar/");
     // StationObsCollection soc = new StationObsCollection("C:/data/metars/", false);
   }
 

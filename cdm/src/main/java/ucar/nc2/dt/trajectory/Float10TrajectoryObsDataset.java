@@ -44,7 +44,7 @@ import java.util.*;
 import java.io.IOException;
 
 /*
-netcdf U:/testdata/trajectory/buoy/testfloat10.nc {
+netcdf U:/testdata2/trajectory/buoy/testfloat10.nc {
  dimensions:
    DRIFTER100_110 = 11;   // (has coord.var)
    TIME1 = UNLIMITED;   // (1199 currently)   // (has coord.var)

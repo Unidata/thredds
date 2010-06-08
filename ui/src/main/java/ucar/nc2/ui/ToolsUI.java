@@ -33,6 +33,7 @@
 
 package ucar.nc2.ui;
 
+import org.apache.http.client.CredentialsProvider;
 import thredds.inventory.FeatureCollectionConfig;
 import ucar.nc2.*;
 import ucar.nc2.FileWriter;
@@ -58,7 +59,9 @@ import ucar.nc2.dataset.*;
 
 import ucar.nc2.geotiff.GeoTiff;
 import ucar.nc2.util.*;
+import opendap.dap.HttpWrap;
 import ucar.nc2.util.net.HttpClientManager;
+import opendap.dap.HttpWrapException;
 import ucar.nc2.util.xml.RuntimeConfigParser;
 import ucar.nc2.units.*;
 
@@ -90,9 +93,6 @@ import java.util.List;
 import javax.swing.*;
 import javax.swing.text.PlainDocument;
 import javax.swing.event.*;
-
-import org.apache.commons.httpclient.auth.CredentialsProvider;
-import org.apache.commons.httpclient.HttpClient;
 
 import org.springframework.context.*;
 import org.springframework.context.support.*;
@@ -529,7 +529,7 @@ public class ToolsUI extends JPanel {
         HttpClientManager.clearState();
       }
     };
-    BAMutil.setActionProperties(clearHttpStateAction, null, "Clear Http State", false, 'S', -1);
+    BAMutil.setActionProperties(clearHttpStateAction, null, "Clear HttpWrap State", false, 'S', -1);
     BAMutil.addActionToMenu(sysMenu, clearHttpStateAction);
 
      AbstractAction showCacheAction = new AbstractAction() {
@@ -619,8 +619,8 @@ public class ToolsUI extends JPanel {
       public void actionPerformed(ActionEvent e) {
         viewerPanel.detailTA.setText("Logging Information\n");
         static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Level2VolumeScan.class);
-        org.apache.commons.logging.LogFactory logf = org.apache.commons.logging.LogFactory.getFactory();
-        org.apache.commons.logging.Log log = logf.getInstance(this.getClass());
+        LogFactory logf = LogFactory.getFactory();
+        Log log = logf.getInstance(this.getClass());
         viewerPanel.detailTA.appendLine(" Log implementation class= " + log.getClass().getName());
         viewerPanel.detailTA.appendLine(" Log Attributes= ");
         String[] atts = logf.getAttributeNames();
@@ -4195,9 +4195,11 @@ public class ToolsUI extends JPanel {
       buttPanel.add(infoButton);
     }
 
-    boolean process(Object o) {
+    boolean process(Object o)  {
       String location = (String) o;
-      return wmsViewer.setDataset((String) types.getSelectedItem(), location);
+
+         return wmsViewer.setDataset((String) types.getSelectedItem(), location);
+  
     }
 
     void save() {
@@ -4717,7 +4719,7 @@ public class ToolsUI extends JPanel {
   static boolean isCacheInit = false;
   static boolean isDiskCacheInit = false;
 
-  public static void main(String args[]) {
+  public static void main(String args[])  {
 
     // get a splash screen up right away
     final SplashScreen splash = new SplashScreen();
@@ -4870,14 +4872,16 @@ public class ToolsUI extends JPanel {
     ucar.nc2.dods.DODSNetcdfFile.setAllowSessions(true);
 
     // use HTTPClient - could use bean wiring here
-    CredentialsProvider provider = new thredds.ui.UrlAuthenticatorDialog(frame);
-    HttpClient client = HttpClientManager.init(provider, "ToolsUI");
-    opendap.dap.DConnect2.setHttpClient(client);
+      try {
+      CredentialsProvider provider = new thredds.ui.UrlAuthenticatorDialog(frame);
+    HttpWrap client = HttpClientManager.init(provider, "ToolsUI");
     HTTPRandomAccessFile.setHttpClient(client);
     CdmRemote.setHttpClient(client);
     NetcdfDataset.setHttpClient(client);
     WmsViewer.setHttpClient(client);
-
+      } catch(IOException hie) {
+          System.out.println("XMLStore Creation failed " + hie) ;
+      }
     // in case a dataset was on the command line
     if (wantDataset != null)
       setDataset();

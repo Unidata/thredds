@@ -990,7 +990,7 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter implements TypedD
 
   public static void main(String args[]) throws Exception, IOException, InstantiationException, IllegalAccessException {
    String fileIn = "/home/yuanho/Download/KCLX_20091019_2021";
-   // String fileIn ="/upc/share/testdata/radar/NOP3_20071112_1633";
+   // String fileIn ="/upc/share/testdata2/radar/NOP3_20071112_1633";
     //RadialDatasetSweepFactory datasetFactory = new RadialDatasetSweepFactory();
     //RadialDatasetSweep rds = datasetFactory.open(fileIn, null);
   //ucar.unidata.util.Trace.call1("LevelII2Dataset:main dataset");

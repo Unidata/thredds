@@ -45,7 +45,6 @@ import ucar.nc2.iosp.netcdf3.N3iosp;
 import ucar.nc2.iosp.netcdf3.SPFactory;
 import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.iosp.IospHelper;
-import ucar.nc2.iosp.AbstractIOServiceProvider;
 
 import java.util.*;
 import java.util.zip.ZipInputStream;
@@ -2048,7 +2047,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
 
     /*
     try {
-      String filename = "R:/testdata/hdf5/npoess/ExampleFiles/AVAFO_NPP_d2003125_t10109_e101038_b9_c2005829155458_devl_Tst.h5";
+      String filename = "R:/testdata2/hdf5/npoess/ExampleFiles/AVAFO_NPP_d2003125_t10109_e101038_b9_c2005829155458_devl_Tst.h5";
       NetcdfFile ncfile = NetcdfFile.open(filename);
       //Thread.currentThread().sleep( 60 * 60 * 1000); // pause to examine in profiler
 

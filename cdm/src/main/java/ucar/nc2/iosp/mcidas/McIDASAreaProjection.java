@@ -64,7 +64,7 @@ public class McIDASAreaProjection extends ucar.unidata.geoloc.ProjectionImpl {
     /** Attribute for the Navigation Block */
     public static String GRID_MAPPING_NAME = "mcidas_area";
 
-    /** Area navigation */
+    /** Area navigation */                                                  
     private AREAnav anav = null;
 
     /** number of lines */

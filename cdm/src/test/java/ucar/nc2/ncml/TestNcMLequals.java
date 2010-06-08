@@ -34,10 +34,8 @@ package ucar.nc2.ncml;
 
 import junit.framework.*;
 
-import ucar.nc2.util.CompareNetcdf;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.ncml.NcMLReader;
-import ucar.nc2.ncml.TestNcML;
+import ucar.nc2.util.CompareNetcdf;
 
 import java.io.IOException;
 
@@ -60,7 +58,7 @@ public class TestNcMLequals extends TestCase {
     testEnhanceEquals("file:R:/testdata/2008TrainingWorkshop/tds/knmi/RAD___TEST_R_C_NL25PCP_L___20080720T000000_200807201T015500_0001_resampledto256x256.ncml");
   }
 
-  private void testEquals(String ncmlLocation) throws IOException {
+  private void testEquals(String ncmlLocation) throws  IOException {
     System.out.println("testEquals");
     NetcdfDataset ncd = NcMLReader.readNcML(ncmlLocation, null);
 
@@ -73,7 +71,7 @@ public class TestNcMLequals extends TestCase {
     ncdref.close();
   }
 
-  private void testEnhanceEquals(String ncmlLocation) throws IOException {
+  private void testEnhanceEquals(String ncmlLocation) throws  IOException {
     System.out.println("testEnhanceEquals");
     NetcdfDataset ncml = NcMLReader.readNcML(ncmlLocation, null);
     NetcdfDataset ncmlEnhanced = new NetcdfDataset(ncml, true);

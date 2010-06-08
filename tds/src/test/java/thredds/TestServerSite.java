@@ -59,8 +59,7 @@ import java.security.cert.Certificate;
 public class TestServerSite extends TestCase
 {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( TestServerSite.class );
-//  private static org.apache.commons.logging.Log log =
-//          org.apache.commons.logging.LogFactory.getLog( TestServerSite.class );
+
 
   private WebConversation wc;
 

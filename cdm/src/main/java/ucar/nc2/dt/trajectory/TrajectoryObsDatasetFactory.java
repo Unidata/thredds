@@ -36,6 +36,8 @@ package ucar.nc2.dt.trajectory;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.TrajectoryObsDataset;
 
+import java.io.IOException;
+
 /**
  * A factory for TrajectoryObsDataset.
  *
@@ -46,12 +48,12 @@ import ucar.nc2.dt.TrajectoryObsDataset;
 public class TrajectoryObsDatasetFactory
 {
 
-  static public TrajectoryObsDataset open( String netcdfFileURI) throws java.io.IOException {
+  static public TrajectoryObsDataset open( String netcdfFileURI) throws IOException {
      return open( netcdfFileURI, null);
   }
 
   static public TrajectoryObsDataset open( String netcdfFileURI, ucar.nc2.util.CancelTask cancelTask)
-          throws java.io.IOException
+          throws  IOException
   {
     NetcdfDataset ds = NetcdfDataset.acquireDataset( netcdfFileURI, cancelTask);
     if ( RafTrajectoryObsDataset.isValidFile( ds) )

@@ -49,8 +49,7 @@ import org.jdom.Document;
  */
 public class SimpleCatalogBuilder implements CatalogBuilder
 {
-//  private static org.apache.commons.logging.Log log =
-//          org.apache.commons.logging.LogFactory.getLog( SimpleCatalogBuilder.class );
+
 
   private String collectionPath;
 

@@ -92,7 +92,7 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
 
       dataVariables = openDataset.getDataVariables();
 
-    } catch (IOException ioe) {
+    } catch (Exception ioe) {
       throw new RuntimeException(ioe);
 
     } finally {
@@ -239,13 +239,15 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
       }
 
       public boolean hasNext() throws IOException {
-        if (pfIter == null) {
+
+
+          if (pfIter == null) {
           pfIter = getNextIterator();
           if (pfIter == null) {
             finish();
             return false;
           }
-        }
+          }
 
         if (!pfIter.hasNext()) {
           pfIter.finish();

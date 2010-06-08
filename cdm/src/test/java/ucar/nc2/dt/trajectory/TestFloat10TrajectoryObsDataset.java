@@ -143,7 +143,7 @@ public class TestFloat10TrajectoryObsDataset extends TestCase
  * TDS unit testing
  *
  * Revision 1.4  2005/05/25 20:53:42  edavis
- * Add some test data to CVS, the rest is on /upc/share/testdata.
+ * Add some test data to CVS, the rest is on /upc/share/testdata2.
  *
  * Revision 1.3  2005/05/11 00:10:10  caron
  * refactor StuctureData, dt.point

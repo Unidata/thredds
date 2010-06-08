@@ -181,8 +181,7 @@ import java.io.IOException;
 public class CollectionLevelScanner
 {
   // @todo Combine DatasetSource and DirectoryScanner into CollectionLevelScanner
-//  private static org.apache.commons.logging.Log log =
-//          org.apache.commons.logging.LogFactory.getLog( CollectionLevelScanner.class );
+
 
   private final String collectionPath;
   private String collectionName;

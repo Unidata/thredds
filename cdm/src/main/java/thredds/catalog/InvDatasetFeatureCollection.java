@@ -187,7 +187,7 @@ public class InvDatasetFeatureCollection extends InvCatalogRef {
     return config;
   }
 
-  public InvDatasetScan getRawFileScan() {
+  public InvDatasetScan getRawFileScan()  {
      try {
       checkState();
     } catch (IOException e) {
@@ -200,7 +200,7 @@ public class InvDatasetFeatureCollection extends InvCatalogRef {
   public java.util.List<InvDataset> getDatasets() {
     try {
       checkState();
-    } catch (IOException e) {
+    } catch (Exception e) {
       logger.error("Error in checkState", e);
     }
     return state.datasets;
@@ -219,7 +219,7 @@ public class InvDatasetFeatureCollection extends InvCatalogRef {
 
   // called by DataRootHandler.makeDynamicCatalog() when the catref is requested
 
-  public InvCatalogImpl makeCatalog(String match, String orgPath, URI baseURI) {
+  public InvCatalogImpl makeCatalog(String match, String orgPath, URI baseURI)  {
     logger.debug("FMRC make catalog for " + match + " " + baseURI);
     State localState = null;
     try {

@@ -33,31 +33,37 @@
 package thredds.ui;
 
 import java.awt.event.*;
+import java.net.Authenticator;
+import java.net.PasswordAuthentication;
 import javax.swing.JButton;
-import java.net.*;
+
+
+import org.apache.http.auth.*;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.impl.auth.BasicScheme;
+import org.apache.http.impl.auth.RFC2617Scheme;
+import org.apache.http.impl.client.BasicCredentialsProvider;
 import ucar.util.prefs.ui.*;
-import org.apache.commons.httpclient.Credentials;
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
-import org.apache.commons.httpclient.auth.AuthScheme;
-import org.apache.commons.httpclient.auth.CredentialsNotAvailableException;
-import org.apache.commons.httpclient.auth.RFC2617Scheme;
 
 /**
  * This can be used both for java.net authentication:
  *   java.net.Authenticator.setDefault(new thredds.ui.UrlAuthenticatorDialog(frame));
  *
- * or for org.apache.commons.httpclient authentication:
+ * or for org.apache.http.httpclient authentication:
  *    httpclient.getParams().setParameter( CredentialsProvider.PROVIDER, new UrlAuthenticatorDialog( null));
  *
  * @author John Caron
  */
-public class UrlAuthenticatorDialog extends Authenticator implements org.apache.commons.httpclient.auth.CredentialsProvider {
+public class UrlAuthenticatorDialog extends Authenticator implements CredentialsProvider {
 
   private IndependentDialog dialog;
-  private PasswordAuthentication pwa = null;
+  private UsernamePasswordCredentials pwa = null;
   private Field.Text serverF, realmF, userF;
   private Field.Password passwF;
   private boolean debug = false;
+
+  private BasicCredentialsProvider provider = new BasicCredentialsProvider();
+  private AuthScope anyscope = new  AuthScope(AuthScope.ANY);
 
   /** constructor
      @param parent JFrame
@@ -73,7 +79,8 @@ public class UrlAuthenticatorDialog extends Authenticator implements org.apache.
     passwF = pp.addPasswordField("password", "Password", "");
     pp.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        pwa = new PasswordAuthentication(userF.getText(), passwF.getPassword());
+        pwa = new UsernamePasswordCredentials(userF.getText(), new String(passwF.getPassword()));
+        provider.setCredentials(anyscope,pwa);
         dialog.setVisible( false);
       }
     });
@@ -93,7 +100,21 @@ public class UrlAuthenticatorDialog extends Authenticator implements org.apache.
     dialog.setLocation(100, 100);
   }
 
-  // java.net calls this:
+  public void clear()
+  {
+     provider.clear();
+  }
+  public void setCredentials(AuthScope scope, Credentials cred)
+  {
+      provider.setCredentials(scope,cred);
+  }
+
+  public Credentials getCredentials(AuthScope scope)
+  {
+      return provider.getCredentials(scope);
+  }
+
+    // java.net calls this:
   protected PasswordAuthentication getPasswordAuthentication() {
 
     if (debug) {
@@ -113,16 +134,18 @@ public class UrlAuthenticatorDialog extends Authenticator implements org.apache.
       System.out.println("password= ("+new String(pwa.getPassword())+")");
     }
 
-    return pwa;
+    return new PasswordAuthentication(pwa.getUserName(),pwa.getPassword().toCharArray());
   }
 
+
   // http client calls this:
-  public Credentials getCredentials(AuthScheme scheme, String host, int port, boolean proxy) throws CredentialsNotAvailableException {
+ public Credentials getCredentials(AuthScheme scheme, String host, int port, boolean proxy) throws InvalidCredentialsException {
+
     if (scheme == null)
-      throw new CredentialsNotAvailableException( "Null authentication scheme: ");
+      throw new InvalidCredentialsException( "Null authentication scheme: ");
 
     if (!(scheme instanceof RFC2617Scheme))
-      throw new CredentialsNotAvailableException( "Unsupported authentication scheme: " +
+      throw new InvalidCredentialsException( "Unsupported authentication scheme: " +
                         scheme.getSchemeName());
 
     if (debug) {
@@ -132,7 +155,7 @@ public class UrlAuthenticatorDialog extends Authenticator implements org.apache.
     serverF.setText(host+":"+port);
     realmF.setText(scheme.getRealm());
     dialog.setVisible( true);
-    if (pwa == null) throw new CredentialsNotAvailableException();
+    if (pwa == null) throw new InvalidCredentialsException();
 
     if (debug) {
       System.out.println("user= ("+pwa.getUserName()+")");

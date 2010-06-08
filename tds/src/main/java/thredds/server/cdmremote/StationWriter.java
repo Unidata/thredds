@@ -892,7 +892,7 @@ public class StationWriter {
   }
 
   static public void main(String args[]) throws IOException {
-    //getFiles("R:/testdata/station/ldm/metar/");
+    //getFiles("R:/testdata2/station/ldm/metar/");
     // StationObsCollection soc = new StationObsCollection("C:/data/metars/", false);
   }
 

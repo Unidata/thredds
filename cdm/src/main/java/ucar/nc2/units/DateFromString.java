@@ -46,8 +46,7 @@ import java.text.ParseException;
  */
 public class DateFromString
 {
-//  private static org.apache.commons.logging.Log log =
-//          org.apache.commons.logging.LogFactory.getLog( DateFromString.class );
+
 
   /**
    * Parse the given date string (starting at the first numeric character)

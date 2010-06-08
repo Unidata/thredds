@@ -311,7 +311,7 @@ public abstract class Aggregation {
        ncfile = ds.acquireFile(null);
        return ncfile.getFileTypeId();
 
-     } catch (IOException e) {
+     } catch (Exception e) {
        logger.error("failed to open "+ds);
 
      } finally {
@@ -332,7 +332,7 @@ public abstract class Aggregation {
        ncfile = ds.acquireFile(null);
        return ncfile.getFileTypeDescription();
 
-     } catch (IOException e) {
+     } catch (Exception e) {
        logger.error("failed to open "+ds);
 
      } finally {
@@ -692,7 +692,7 @@ public abstract class Aggregation {
      * @throws IOException           on I/O error
      * @throws InvalidRangeException on section error
      */
-    protected Array read(Variable mainv, CancelTask cancelTask, List<Range> section) throws IOException, InvalidRangeException {
+    protected Array read(Variable mainv, CancelTask cancelTask, List<Range> section) throws  IOException, InvalidRangeException {
       NetcdfFile ncd = null;
       try {
         ncd = acquireFile(cancelTask);
@@ -794,13 +794,14 @@ public abstract class Aggregation {
       }
     }
 
-    public Array reallyRead(Variable mainV, Section section, CancelTask cancelTask) throws IOException, InvalidRangeException {
+    public Array reallyRead(Variable mainV, Section section, CancelTask cancelTask) throws  IOException, InvalidRangeException {
       NetcdfFile ncfile = null;
       try {
         ncfile = dataset.acquireFile(cancelTask);
         Variable proxyV = findVariable(ncfile, mainV);
         if ((cancelTask != null) && cancelTask.isCancel()) return null;
         return proxyV.read(section);
+
       } finally {
         dataset.close( ncfile);
       }

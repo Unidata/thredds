@@ -32,9 +32,9 @@
  */
 package thredds.server.cdmvalidator;
 
-import org.springframework.util.StringUtils;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.FileItemFactory;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.springframework.util.StringUtils;
 import org.slf4j.Logger;
 
 import javax.servlet.ServletContext;

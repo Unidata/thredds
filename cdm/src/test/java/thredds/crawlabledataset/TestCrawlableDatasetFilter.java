@@ -50,8 +50,7 @@ import thredds.crawlabledataset.filter.*;
  */
 public class TestCrawlableDatasetFilter extends TestCase
 {
-//  private static org.apache.commons.logging.Log log =
-//          org.apache.commons.logging.LogFactory.getLog( TestCrawlableDatasetFilter.class );
+
 
   private List resultsNcNoCVS;
   private List resultsAll;

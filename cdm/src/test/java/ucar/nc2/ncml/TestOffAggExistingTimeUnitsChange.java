@@ -58,7 +58,7 @@ public class TestOffAggExistingTimeUnitsChange extends TestCase {
   public TestOffAggExistingTimeUnitsChange( String name) {
     super(name);
   }
-  //String location = "file:R:/testdata/ncml/nc/narr/narr.ncml";
+  //String location = "file:R:/testdata2/ncml/nc/narr/narr.ncml";
 
   public void testNamExtract() throws IOException, InvalidRangeException {
     String location = TestAll.cdmUnitTestDir + "ncml/nc/namExtract/test_agg.ncml";

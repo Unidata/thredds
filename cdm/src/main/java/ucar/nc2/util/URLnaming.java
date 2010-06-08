@@ -32,8 +32,9 @@
  */
 package ucar.nc2.util;
 
-import org.apache.commons.httpclient.util.URIUtil;
-import org.apache.commons.httpclient.URIException;
+
+
+import opendap.dap.HttpWrapException;
 
 import java.net.URI;
 import java.net.URL;
@@ -47,21 +48,11 @@ import java.io.File;
  */
 public class URLnaming {
 
-  public static String escapeQuery(String urlString) {
+  public static String escapeQuery(String urlString) throws URISyntaxException {
     urlString = urlString.trim();
-    int posQ = urlString.indexOf("?");
-    if ((posQ > 0) && (posQ < urlString.length() - 2)) {
-      String query = urlString.substring(posQ);
-      if (query.indexOf("%") < 0) { // assume that its not already encoded...
-        String path = urlString.substring(0,posQ);
-        try {
-          urlString = path + URIUtil.encodeQuery( query);
-        } catch (URIException e) {
-          e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
-      }
-    }
-    return urlString;
+      URI uri = new URI(urlString);
+      return uri.toASCIIString();
+
   }
 
   /**

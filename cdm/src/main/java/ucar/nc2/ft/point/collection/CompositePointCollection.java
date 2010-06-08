@@ -59,7 +59,7 @@ public class CompositePointCollection extends PointCollectionImpl {
     this.pointCollections = pointCollections;
   }
 
-  public List<VariableSimpleIF> getDataVariables() {
+  public List<VariableSimpleIF> getDataVariables()  {
     if (dataVariables == null) {
       // must open a prototype in order to get the data variable
       TimedCollection.Dataset td = pointCollections.getPrototype();
@@ -127,7 +127,8 @@ public class CompositePointCollection extends PointCollectionImpl {
     }
 
     public boolean hasNext() throws IOException {
-      if (pfIter == null) {
+        
+        if (pfIter == null) {
         pfIter = getNextIterator();
         if (pfIter == null) {
           finish();
@@ -141,7 +142,7 @@ public class CompositePointCollection extends PointCollectionImpl {
         pfIter = getNextIterator();
         return hasNext();
       }
-
+;
       return true;
     }
 
@@ -195,7 +196,8 @@ public class CompositePointCollection extends PointCollectionImpl {
     }
 
     public boolean hasNext() throws IOException {
-      if (pfIter == null) {
+        
+        if (pfIter == null) {
         pfIter = getNextIterator();
         if (pfIter == null) {
           finish();
@@ -209,6 +211,7 @@ public class CompositePointCollection extends PointCollectionImpl {
         pfIter = getNextIterator();
         return hasNext();
       }
+;
 
       return true;
     }

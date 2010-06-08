@@ -111,7 +111,7 @@ public class ThreddsDataFactory {
    * @return ThreddsDataFactory.Result check fatalError for validity
    * @throws java.io.IOException on read error
    */
-  public ThreddsDataFactory.Result openFeatureDataset(String urlString, ucar.nc2.util.CancelTask task) throws java.io.IOException {
+  public ThreddsDataFactory.Result openFeatureDataset(String urlString, ucar.nc2.util.CancelTask task) throws IOException {
 
     ThreddsDataFactory.Result result = new ThreddsDataFactory.Result();
     InvDataset invDataset = processLocation(urlString, task, result);
@@ -130,7 +130,8 @@ public class ThreddsDataFactory {
    * @return ThreddsDataFactory.Result check fatalError for validity
    * @throws java.io.IOException on read error
    */
-  public ThreddsDataFactory.Result openFeatureDataset(FeatureType wantFeatureType, String urlString, ucar.nc2.util.CancelTask task) throws IOException {
+  public ThreddsDataFactory.Result openFeatureDataset(FeatureType wantFeatureType, String urlString, ucar.nc2.util.CancelTask task)
+          throws IOException {
     ThreddsDataFactory.Result result = new ThreddsDataFactory.Result();
     InvDataset invDataset = processLocation(urlString, task, result);
     if (result.fatalError)
@@ -198,7 +199,8 @@ public class ThreddsDataFactory {
     return openFeatureDataset(null, invDataset, task, new Result());
   }
 
-  public ThreddsDataFactory.Result openFeatureDataset(FeatureType wantFeatureType, InvDataset invDataset, ucar.nc2.util.CancelTask task, Result result) throws IOException {
+  public ThreddsDataFactory.Result openFeatureDataset(FeatureType wantFeatureType, InvDataset invDataset, ucar.nc2.util.CancelTask task, Result result)
+          throws IOException {
 
     result.featureType = invDataset.getDataType();
     if (result.featureType == null)
@@ -281,7 +283,8 @@ public class ThreddsDataFactory {
     return openFeatureDataset(invDataset.getDataType(), access, task, result);
   }
 
-  private ThreddsDataFactory.Result openFeatureDataset(FeatureType wantFeatureType, InvAccess access, ucar.nc2.util.CancelTask task, Result result) throws IOException {
+  private ThreddsDataFactory.Result openFeatureDataset(FeatureType wantFeatureType, InvAccess access, ucar.nc2.util.CancelTask task, Result result)
+          throws IOException {
     result.featureType = wantFeatureType;
     result.accessUsed = access;
 
@@ -333,7 +336,7 @@ public class ThreddsDataFactory {
    * @return NetcdfDataset
    * @throws java.io.IOException on read error
    */
-  public NetcdfDataset openDataset(String location, boolean acquire, ucar.nc2.util.CancelTask task, Formatter log) throws java.io.IOException {
+  public NetcdfDataset openDataset(String location, boolean acquire, ucar.nc2.util.CancelTask task, Formatter log) throws IOException {
     Result result = new Result();
     InvDataset invDataset = processLocation(location, task, result);
     if (result.fatalError) {
@@ -354,14 +357,14 @@ public class ThreddsDataFactory {
    * @return NetcdfDataset or null if failure
    * @throws IOException on read error
    */
-  public NetcdfDataset openDataset(InvDataset invDataset, boolean acquire, ucar.nc2.util.CancelTask task, Formatter log) throws java.io.IOException {
+  public NetcdfDataset openDataset(InvDataset invDataset, boolean acquire, ucar.nc2.util.CancelTask task, Formatter log) throws IOException {
     Result result = new Result();
     NetcdfDataset ncd = openDataset(invDataset, acquire, task, result);
     if (log != null) log.format("%s", result.errLog);
     return (result.fatalError) ? null : ncd;
   }
 
-  private NetcdfDataset openDataset(InvDataset invDataset, boolean acquire, ucar.nc2.util.CancelTask task, Result result) throws java.io.IOException {
+  private NetcdfDataset openDataset(InvDataset invDataset, boolean acquire, ucar.nc2.util.CancelTask task, Result result) throws IOException {
 
     IOException saveException = null;
 
@@ -427,7 +430,7 @@ public class ThreddsDataFactory {
    * @return NetcdfDataset or null if failure
    * @throws IOException on read error
    */
-  public NetcdfDataset openDataset(InvAccess access, boolean acquire, ucar.nc2.util.CancelTask task, Formatter log) throws java.io.IOException {
+  public NetcdfDataset openDataset(InvAccess access, boolean acquire, ucar.nc2.util.CancelTask task, Formatter log) throws IOException {
     Result result = new Result();
     NetcdfDataset ncd = openDataset(access, acquire, task, result);
     if (log != null) log.format("%s", result.errLog);
@@ -436,7 +439,7 @@ public class ThreddsDataFactory {
 
   private static boolean enhanceMode = false;
 
-  private NetcdfDataset openDataset(InvAccess access, boolean acquire, ucar.nc2.util.CancelTask task, Result result) throws java.io.IOException {
+  private NetcdfDataset openDataset(InvAccess access, boolean acquire, ucar.nc2.util.CancelTask task, Result result) throws IOException {
     InvDataset invDataset = access.getDataset();
     String datasetId = invDataset.getID();
     String title = invDataset.getName();

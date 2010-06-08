@@ -198,7 +198,7 @@ public class NcMLReader {
    * @return the resulting NetcdfDataset
    * @throws IOException on read error, or bad referencedDatasetUri URI
    */
-  static public NetcdfDataset readNcML(String ncmlLocation, CancelTask cancelTask) throws IOException {
+  static public NetcdfDataset readNcML(String ncmlLocation, CancelTask cancelTask) throws  IOException {
     return readNcML(ncmlLocation, (String) null, cancelTask);
   }
 
@@ -368,6 +368,7 @@ public class NcMLReader {
    */
   private NetcdfDataset readNcML(String ncmlLocation, String referencedDatasetUri,
                                  Element netcdfElem, CancelTask cancelTask) throws IOException {
+
 
     // augment URI.resolve(), by also dealing with base file: URIs
     referencedDatasetUri = URLnaming.resolve(ncmlLocation, referencedDatasetUri);
@@ -1381,10 +1382,11 @@ public class NcMLReader {
     }
 
     public NetcdfFile open(String cacheName, int buffer_size, CancelTask cancelTask, Object spiObject) throws IOException {
-      if (debugAggDetail) System.out.println(" NcmlElementReader open nested dataset " + cacheName);
-      NetcdfFile result =  readNcML(ncmlLocation, location, netcdfElem, cancelTask);
-      result.setLocation(ncmlLocation+"#"+location);
-      return result;
+          if (debugAggDetail) System.out.println(" NcmlElementReader open nested dataset " + cacheName);
+     NetcdfFile result =  readNcML(ncmlLocation, location, netcdfElem, cancelTask);
+       result.setLocation(ncmlLocation+"#"+location);
+      return result; 
+
     }
   }
 

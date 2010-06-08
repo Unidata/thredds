@@ -317,7 +317,7 @@ public class WriteT41_ncFlat {
     //String fileIn = "C:/data/dt2/point/bufr/IUA_CWAO_20060202_12.bufr";
     //String fileIn = "C:/data/bufr/edition3/idd/profiler/PROFILER_3.bufr";
     //String fileIn = "C:/data/bufr/edition3/ecmwf/synop.bufr";
-    //String fileIn = "R:/testdata/bufr/edition3/idd/profiler/PROFILER_1.bufr";
+    //String fileIn = "R:/testdata2/bufr/edition3/idd/profiler/PROFILER_1.bufr";
     String fileIn = "D:/motherlode/bufr/cat.out";
     NetcdfDataset ncf = NetcdfDataset.openDataset(fileIn);
     System.out.println(ncf.toString());

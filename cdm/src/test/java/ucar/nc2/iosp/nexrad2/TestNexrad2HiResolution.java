@@ -61,7 +61,7 @@ public class TestNexrad2HiResolution extends TestCase {
     public void testRead() throws IOException {
         long start = System.currentTimeMillis();
         doDirectory(TestAll.testdataDir + "radar/nexrad/newLevel2/testfiles", false);
-        //doDirectory("/upc/share/testdata/radar/nexrad/newLevel2/testfiles", false);
+        //doDirectory("/upc/share/testdata2/radar/nexrad/newLevel2/testfiles", false);
         long took = System.currentTimeMillis() - start;
         System.out.println("that took = "+took+" msec");
       }

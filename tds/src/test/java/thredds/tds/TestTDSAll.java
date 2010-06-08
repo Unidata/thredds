@@ -42,7 +42,7 @@ import ucar.nc2.dods.DODSNetcdfFile;
  *
  * This assumes that you are running the TDS on localhost, with the standard test catalog (catalog_unitTest.xml).
  *
- * Test data is typically put into /upc/share/testdata/tds
+ * Test data is typically put into /upc/share/testdata2/tds
  *
  */
 public class TestTDSAll extends TestCase {

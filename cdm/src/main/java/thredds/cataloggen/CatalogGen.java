@@ -48,9 +48,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-//import org.apache.log4j.*;
-//import org.apache.commons.logging.Log;
-//import org.apache.commons.logging.LogFactory;
 
 /**
  * CatalogGen crawls dataset sources given in a CatalogGenConfig file

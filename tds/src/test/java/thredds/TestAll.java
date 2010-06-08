@@ -38,7 +38,6 @@ import java.io.IOException;
 import java.util.Properties;
 
 import junit.framework.TestSuite;
-import junit.framework.JUnit4TestAdapter;
 
 /**
  * TestSuite that runs all TDS unit tests.
@@ -115,7 +114,7 @@ public class TestAll
 
   /**
    * Level 3 test data directory (MAY NOT be used in Unidata nightly testing).
-   * Unidata "/upc/share/testdata" directory. For once off testing and debuging.
+   * Unidata "/upc/share/testdata2" directory. For once off testing and debuging.
    */
   public static String upcShareTestDataDir = upcShareDir + "testdata/";
 

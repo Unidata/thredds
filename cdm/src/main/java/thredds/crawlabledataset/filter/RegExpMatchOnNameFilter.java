@@ -43,8 +43,7 @@ import thredds.crawlabledataset.CrawlableDataset;
  * @since Nov 5, 2005 12:51:56 PM
  */
 public class RegExpMatchOnNameFilter implements CrawlableDatasetFilter {
-//  private static org.apache.commons.logging.Log log =
-//          org.apache.commons.logging.LogFactory.getLog( RegExpMatchOnNameFilter.class );
+
 
   private String regExpString;
   protected java.util.regex.Pattern pattern;

@@ -50,7 +50,7 @@ public class TimeGrid {
 
     /** testing */
   public static void main( String arg[]) throws IOException {
-    //String defaultFilename = "R:/testdata/motherlode/grid/NAM_Alaska_45km_conduit_20060801_0000.grib1";
+    //String defaultFilename = "R:/testdata2/motherlode/grid/NAM_Alaska_45km_conduit_20060801_0000.grib1";
     String defaultFilename = "R:/testdata/grid/grib/grib2/test/NAM_CONUS_12km_20060305_1200.grib2";
     String filename = (arg.length > 0) ? arg[0] : defaultFilename;
     try {

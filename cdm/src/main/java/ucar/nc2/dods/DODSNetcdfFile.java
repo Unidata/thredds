@@ -240,8 +240,10 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
       //dodsE.printStackTrace();
       if (dodsE.getErrorCode() == DAP2Exception.NO_SUCH_FILE)
         throw new FileNotFoundException(dodsE.getMessage());
-      else
-        throw new IOException(dodsE.getMessage());
+      else {
+        dodsE.printStackTrace(System.err);
+          throw new IOException(dodsE.getMessage());
+      }
 
     } catch (Exception e) {
       logger.info("DODSNetcdfFile " + datasetURL, e);

@@ -48,8 +48,7 @@ import java.util.Comparator;
  */
 public class LexigraphicByNameSorter implements CrawlableDatasetSorter
 {
-//  private static org.apache.commons.logging.Log log =
-//          org.apache.commons.logging.LogFactory.getLog( LexigraphicByNameSorter.class );
+
 
   private boolean increasingOrder = false;
   private Comparator<CrawlableDataset> comparator;

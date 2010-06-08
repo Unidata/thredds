@@ -1,10 +1,12 @@
 package ucar.nc2.ft.point.remote;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.message.AbstractHttpMessage;
 import ucar.nc2.stream.NcStream;
 import ucar.nc2.stream.NcStreamProto;
 import ucar.nc2.ft.PointFeature;
 import ucar.nc2.ft.point.PointIteratorAbstract;
-import org.apache.commons.httpclient.HttpMethod;
+import opendap.dap.HttpWrap;
 
 import java.io.InputStream;
 import java.io.IOException;
@@ -18,24 +20,24 @@ import java.io.IOException;
 public class RemotePointFeatureIterator extends PointIteratorAbstract {
   private static final boolean debug = false;
 
-  private HttpMethod method;
+  private HttpWrap http = null;
   private InputStream in;
   private FeatureMaker featureMaker;
 
   private PointFeature pf;
   private boolean finished = false;
 
-  RemotePointFeatureIterator(HttpMethod method, InputStream in, FeatureMaker featureMaker) throws IOException {
-    this.method = method;
+  RemotePointFeatureIterator(HttpWrap http, InputStream in, FeatureMaker featureMaker) throws IOException {
+    this.http = http;
     this.in = in;
     this.featureMaker = featureMaker;
   }
 
   public void finish() {
     if (finished) return;
-    if (method != null)
-      method.releaseConnection();
-    method = null;
+    if (http != null)
+      //fix method.releaseConnection();
+    http = null;
     finishCalcBounds();
     finished = true;
   }

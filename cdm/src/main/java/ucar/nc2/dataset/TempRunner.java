@@ -117,15 +117,15 @@ public class TempRunner {
 
     testAllInDir(new File("C:/data/grib/"), new MClosure() {
       public void run(String filename) throws IOException, InvalidRangeException {
-        if (!filename.endsWith("grib1")) return;
+              if (!filename.endsWith("grib1")) return;
         NetcdfFile ncfile = NetcdfDataset.openFile(filename, null);
         File fileout = new File(filename + ".ncml");
         if (fileout.exists()) fileout.delete();
         writer.writeXMLexplicit(ncfile, new FileOutputStream(fileout), null);
         System.out.println(" wrote ncml file  =" + fileout);
-      }
-    });
-  }
+
+      }});
+    }
 
   public void testOpenFile() throws IOException, InvalidRangeException {
     final Average fileAvg = new Average();

@@ -35,7 +35,6 @@ package ucar.nc2.iosp.hdf5;
 import junit.framework.*;
 
 import java.io.*;
-import java.util.*;
 
 import ucar.nc2.TestAll;
 import ucar.nc2.NetcdfFile;
@@ -82,7 +81,7 @@ public class TestH5read extends TestCase {
 
   public void utestProblem() {
     //H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
-    //readAllData( "C:\\data\\testdata\\hdf5\\samples\\opaque.h5");
+    //readAllData( "C:\\data\\testdata2\\hdf5\\samples\\opaque.h5");
     readAllData( testDir +"compressCompoundBarrowdale.h5");
   }
 

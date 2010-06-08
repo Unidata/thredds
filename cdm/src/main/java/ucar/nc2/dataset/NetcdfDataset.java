@@ -32,6 +32,17 @@
  */
 package ucar.nc2.dataset;
 
+import opendap.dap.DConnect2;
+import org.apache.http.HttpMessage;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.Header;
+import org.apache.http.client.methods.HttpHead;
+import org.apache.http.impl.client.AbstractHttpClient;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
+import org.apache.http.message.AbstractHttpMessage;
+import org.apache.http.params.BasicHttpParams;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
@@ -48,16 +59,13 @@ import ucar.nc2.ncml.NcMLGWriter;
 import ucar.nc2.dods.DODSNetcdfFile;
 import ucar.nc2.thredds.ThreddsDataFactory;
 
+import opendap.dap.HttpWrap;
+import opendap.dap.HttpWrapException;
 import ucar.unidata.util.StringUtil;
 
 import java.io.*;
 import java.util.*;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.Header;
-import org.apache.commons.httpclient.methods.HeadMethod;
 import thredds.catalog.ServiceType;
 
 /**
@@ -336,7 +344,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   // no state, so a singleton is ok
   static private class MyNetcdfFileFactory implements ucar.nc2.util.cache.FileFactory {
     public NetcdfFile open(String location, int buffer_size, CancelTask cancelTask, Object iospMessage) throws IOException {
-      return openFile(location, buffer_size, cancelTask, iospMessage);
+     
+          return openFile(location, buffer_size, cancelTask, iospMessage);
+
     }
   }
 
@@ -413,7 +423,8 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * @return NetcdfDataset object
    * @throws java.io.IOException on read error
    */
-  static public NetcdfDataset openDataset(String location, boolean enhance, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
+  static public NetcdfDataset openDataset(String location, boolean enhance, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject)
+          throws IOException {
     return openDataset(location, enhance ? defaultEnhanceMode : null, buffer_size, cancelTask, spiObject);
   }
 
@@ -547,7 +558,8 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     }
 
     public NetcdfFile open(String location, int buffer_size, CancelTask cancelTask, Object iospMessage) throws IOException {
-      return openDataset(location, enhanceMode, buffer_size, cancelTask, iospMessage);
+          return openDataset(location, enhanceMode, buffer_size, cancelTask, iospMessage);
+
     }
 
     public int hashCode() { // unique key, must be different than a plain NetcdfFile, deal with possible different enhancing
@@ -650,7 +662,8 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * @throws java.io.IOException on read error
    */
   static private NetcdfFile openOrAcquireFile(FileCache cache, FileFactory factory, Object hashKey,
-                                              String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
+                                              String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject)
+          throws  IOException {
 
     if (location == null)
       throw new IOException("NetcdfDataset.openFile: location is null");
@@ -703,7 +716,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * Do a HEAD call on the URL. 
    * Look for the header "Content-Description" = "ncstream" or "dods".
    */
-  static private ServiceType disambiguateHttp(String location) throws IOException {
+  static private ServiceType disambiguateHttp(String location) throws  IOException {
     initHttpClient();
 
     // have to do dods first
@@ -711,11 +724,8 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     if (result != null)
       return result;
 
-    HttpMethod method = null;
     try {
-      method = new HeadMethod(location);
-      method.setFollowRedirects(true);
-      int statusCode = httpClient.executeMethod(method);
+      int statusCode = httpClient.doHead(location);
       if (statusCode >= 300) {
         if (statusCode == 401)
           throw new IOException("Unauthorized to open dataset " + location);
@@ -723,7 +733,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
           throw new IOException(location + " is not a valid URL, return status=" + statusCode);
       }
 
-      Header h = method.getResponseHeader("Content-Description");
+      Header h = httpClient.getHeader("Content-Description");
       if ((h != null) && (h.getValue() != null)) {
         String v = h.getValue();
         if (v.equalsIgnoreCase("ncstream"))
@@ -733,25 +743,22 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
       return null;
 
     } finally {
-      if (method != null) method.releaseConnection();
+      // fix if (method != null) method.releaseConnection();
     }
   }
 
   // not sure what other opendap servers do, so fall back on check for dds
   static private ServiceType checkIfDods(String location) throws IOException {
-    HttpMethod method = null;
     try {
-      method = new HeadMethod(location + ".dds");
-      method.setFollowRedirects(true);
-      int status = httpClient.executeMethod(method);
+      int status = httpClient.doHead(location+".dds");
       if (status == 200) {
-        Header h = method.getResponseHeader("Content-Description");
+        Header h = httpClient.getHeader("Content-Description");
         if ((h != null) && (h.getValue() != null)) {
           String v = h.getValue();
           if (v.equalsIgnoreCase("dods-dds") || v.equalsIgnoreCase("dods_dds"))
             return ServiceType.OPENDAP;
           else
-            throw new IOException("OPeNDAP Server Error= " + method.getResponseBodyAsString());
+            throw new IOException("OPeNDAP Server Error= " + httpClient.getContentString());
         }
       }
       if (status == 401)
@@ -761,25 +768,24 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
       return null;
 
     } finally {
-      if (method != null) method.releaseConnection();
+     if (httpClient != null) httpClient.close();
     }
   }
 
   /**
-   * Set the HttpClient object - so that a single, shared instance is used within the application.
+   * Set the AbstractHttpClient object - so that a single, shared instance is used within the application.
    *
-   * @param client the HttpClient object
+   * @param client the AbstractHttpClient object
    */
-  static public void setHttpClient(HttpClient client) {
+  static public void setHttpClient(HttpWrap client) {
     httpClient = client;
   }
 
-  private static HttpClient httpClient = null;
+  private static HttpWrap httpClient = null;
 
-  private static synchronized void initHttpClient() {
+  private static synchronized void initHttpClient() throws HttpWrapException {
     if (httpClient != null) return;
-    MultiThreadedHttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
-    httpClient = new HttpClient(connectionManager);
+    httpClient = new HttpWrap();
   }
 
   static private NetcdfFile acquireDODS(FileCache cache, FileFactory factory, Object hashKey,
@@ -797,7 +803,8 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   }
 
   static private NetcdfFile acquireNcml(FileCache cache, FileFactory factory, Object hashKey,
-                                        String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
+                                        String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject)
+          throws IOException {
     if (cache == null) return NcMLReader.readNcML(location, cancelTask);
 
     if (factory == null) factory = new NcMLFactory();
@@ -812,10 +819,11 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
   static private NetcdfFile acquireRemote(FileCache cache, FileFactory factory, Object hashKey,
                                           String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
-    if (cache == null) return new CdmRemote(location);
-
+        if (cache == null) return new CdmRemote(location);
     if (factory == null) factory = new RemoteFactory();
     return (NetcdfFile) cache.acquire(factory, hashKey, location, buffer_size, cancelTask, spiObject);
+
+    
   }
 
   static private class RemoteFactory implements FileFactory {
@@ -1588,7 +1596,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * @param arg -in fileIn -out fileOut [-delay millisecs]
    * @throws IOException on read or write error
    */
-  public static void main(String arg[]) throws IOException {
+  public static void main(String arg[]) throws  IOException {
     String usage = "usage: ucar.nc2.dataset.NetcdfDataset -in <fileIn> -out <fileOut> [-isLargeFile]";
     if (arg.length < 4) {
       System.out.println(usage);

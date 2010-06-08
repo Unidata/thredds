@@ -51,8 +51,7 @@ import org.jdom.Document;
  */
 class CatalogBuilderHelper
 {
-//  private static org.apache.commons.logging.Log log =
-//          org.apache.commons.logging.LogFactory.getLog( CatalogBuilderHelper.class );
+
 
   /**
    * Return the requested dataset if it is the ancestor dataset or an allowed

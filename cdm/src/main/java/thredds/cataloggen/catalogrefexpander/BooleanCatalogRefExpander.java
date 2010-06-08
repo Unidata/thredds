@@ -44,8 +44,7 @@ import thredds.cataloggen.InvCrawlablePair;
  */
 public class BooleanCatalogRefExpander implements CatalogRefExpander
 {
-//  private static org.apache.commons.logging.Log log =
-//          org.apache.commons.logging.LogFactory.getLog( BooleanCatalogRefExpander.class );
+
 
   private boolean expandAll = false;
 

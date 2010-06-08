@@ -33,6 +33,9 @@
 
 package ucar.nc2.ui;
 
+import org.apache.http.Header;
+import opendap.dap.HttpWrap;
+import opendap.dap.HttpWrapException;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
 import ucar.nc2.util.IO;
@@ -58,11 +61,7 @@ import java.util.zip.ZipEntry;
 import org.jdom.input.SAXBuilder;
 import org.jdom.Element;
 import org.jdom.Namespace;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.Header;
-import org.apache.commons.httpclient.methods.GetMethod;
+
 
 /**
  * View WMS datasets
@@ -145,7 +144,7 @@ public class WmsViewer extends JPanel {
   private String version;
   private String endpoint;
 
-  public boolean setDataset(String version, String endpoint) {
+  public boolean setDataset(String version, String endpoint)  {
     this.version = version;
     this.endpoint = endpoint;
     return getCapabilities();
@@ -183,22 +182,22 @@ public class WmsViewer extends JPanel {
    *
    * @param client the HttpClient object
    */
-  static public void setHttpClient(HttpClient client) {
+  static public void setHttpClient(HttpWrap client) {
     httpClient = client;
   }
 
-  static private HttpClient httpClient = null;
+  static private HttpWrap httpClient = null;
 
-  private synchronized void initHttpClient() {
+  private synchronized void initHttpClient()  throws HttpWrapException {
     if (httpClient != null) return;
-    MultiThreadedHttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
-    httpClient = new HttpClient(connectionManager);
+    httpClient = new HttpWrap();
   }
 
   //////////////////////////////////////////////////////
 
-  private boolean getCapabilities() {
-    initHttpClient();
+  private boolean getCapabilities()  {
+      try {
+      initHttpClient();
 
     Formatter f = new Formatter();
     f.format("%s?request=GetCapabilities&service=WMS&version=%s", endpoint, version);
@@ -206,24 +205,21 @@ public class WmsViewer extends JPanel {
     info.setLength(0);
     info.append(url + "\n");
 
-    HttpMethod method = null;
-    try {
-      method = new GetMethod(url);
-      method.setFollowRedirects(true);
-      int statusCode = httpClient.executeMethod(method);
+    
+      int statusCode = httpClient.doGet(url);
 
-      info.append(" Status = " + method.getStatusCode() + " " + method.getStatusText() + "\n");
-      info.append(" Status Line = " + method.getStatusLine() + "\n");
-      printHeaders(" Response Headers = ", method.getResponseHeaders());
+      info.append(" Status = " + httpClient.getStatusCode() + "\n");
+      info.append(" Status Line = " + httpClient.getStatusLine() + "\n");
+      printHeaders(" Response Headers = ", httpClient.getHeaders());
       info.append("GetCapabilities:\n\n");
 
       if (statusCode == 404)
-        throw new FileNotFoundException(method.getPath() + " " + method.getStatusLine());
+        throw new FileNotFoundException(httpClient.getPath() + " " + httpClient.getStatusLine());
 
       if (statusCode >= 300)
-        throw new IOException(method.getPath() + " " + method.getStatusLine());
+        throw new IOException(httpClient.getPath() + " " + httpClient.getStatusLine());
 
-      String contents = IO.readContents(method.getResponseBodyAsStream());
+      String contents = IO.readContents(httpClient.getContentStream());
       info.append(contents);
 
       StringBufferInputStream is = new StringBufferInputStream(contents);
@@ -237,7 +233,7 @@ public class WmsViewer extends JPanel {
       return false;
 
     } finally {
-      if (method != null) method.releaseConnection();
+      if (httpClient != null) httpClient.close();
     }
 
     return true;
@@ -272,7 +268,8 @@ public class WmsViewer extends JPanel {
   }
 
   private boolean getMap(LayerBean layer) {
-    initHttpClient();
+      try {
+      initHttpClient();
 
     Formatter f = new Formatter();
     f.format("%s?request=GetMap&service=WMS&version=%s&", endpoint, version);
@@ -289,27 +286,24 @@ public class WmsViewer extends JPanel {
     info.setLength(0);
     info.append(url + "\n");
 
-    HttpMethod method = null;
-    try {
-      method = new GetMethod(url);
-      method.setFollowRedirects(true);
-      int statusCode = httpClient.executeMethod(method);
 
-      info.append(" Status = " + method.getStatusCode() + " " + method.getStatusText() + "\n");
-      info.append(" Status Line = " + method.getStatusLine() + "\n");
-      printHeaders(" Response Headers = ", method.getResponseHeaders());
+      int statusCode = httpClient.doGet(url);
+
+      info.append(" Status = " + httpClient.getStatusCode() + "\n");
+      info.append(" Status Line = " + httpClient.getStatusLine() + "\n");
+      printHeaders(" Response Headers = ", httpClient.getHeaders());
 
       if (statusCode == 404)
-        throw new FileNotFoundException(method.getPath() + " " + method.getStatusLine());
+        throw new FileNotFoundException(httpClient.getPath() + " " + httpClient.getStatusLine());
 
       if (statusCode >= 300)
-        throw new IOException(method.getPath() + " " + method.getStatusLine());
+        throw new IOException(httpClient.getPath() + " " + httpClient.getStatusLine());
 
-      Header h = method.getResponseHeader("Content-Type");
+      Header h = httpClient.getHeader("Content-Type");
       String mimeType = (h == null) ? "" : h.getValue();
       info.append(" mimeType = " + mimeType+ "\n");
 
-      byte[] contents = IO.readContentsToByteArray(method.getResponseBodyAsStream());
+      byte[] contents = IO.readContentsToByteArray(httpClient.getContentStream());
       info.append(" content len = " + contents.length+ "\n");
 
       ByteArrayInputStream is = new ByteArrayInputStream(contents);
@@ -346,7 +340,7 @@ public class WmsViewer extends JPanel {
       return false;
 
     } finally {
-      if (method != null) method.releaseConnection();
+      if (httpClient != null) httpClient.close();
     }
 
     return true;

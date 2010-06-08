@@ -4,9 +4,7 @@ import ucar.bufr.Index;
 import ucar.bufr.BufrDataExtractor;
 import ucar.bufr.BufrData;
 //import ucar.bufr.BufrIndexExtender;
-import ucar.ma2.*;
 
-import ucar.nc2.*;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.DiskCache;
 
@@ -955,7 +953,7 @@ public class BufrIosp implements IOServiceProvider {
     String fileIn = "/home/rkambic/code/bufr/data/PROFILER_3.bufr";
     //String fileIn = "/home/rkambic/code/bufr/data/PROFILER_1.bufr";
     //String fileIn = "/home/rkambic/code/bufr/data/PROFILER_.bufr";
-    //String fileIn = "R:/testdata/point/bufr/PROFILER_3.bufr";
+    //String fileIn = "R:/testdata2/point/bufr/PROFILER_3.bufr";
     //String fileIn = "/home/rkambic/code/bufr/data/ruc2.t22z.class1.bufr.tm00";
     ucar.nc2.NetcdfFile.registerIOProvider( ucar.nc2.iosp.bufr.BufrIosp.class);
     //ucar.nc2.NetcdfFile ncf = ucar.nc2.NetcdfFile.open(fileIn);

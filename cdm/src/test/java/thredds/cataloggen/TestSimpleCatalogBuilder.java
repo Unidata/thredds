@@ -48,8 +48,7 @@ import thredds.crawlabledataset.CrawlableDatasetFactory;
  */
 public class TestSimpleCatalogBuilder extends TestCase
 {
-//  private static org.apache.commons.logging.Log log =
-//          org.apache.commons.logging.LogFactory.getLog( TestSimpleCatalogBuilder.class );
+
 
   private boolean debugShowCatalogs = true;
 

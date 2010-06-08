@@ -1133,7 +1133,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
       isCoordinateTransform = (coordTransformType != null) || (coordAxisTypes != null);
 
       // this is the case of a Coordinate System with no references or coordinate transforms
-      // see /testdata/grid/grib/grib1/data/NOGAPS-Temp-Regional.grib
+      // see /testdata2/grid/grib/grib1/data/NOGAPS-Temp-Regional.grib
       if (!isCoordinateSystem && !isCoordinateTransform && !isCoordinateAxis && coordAxes != null) {
         // figure out if data or coordSys Variable
         StringTokenizer stoker = new StringTokenizer(coordAxes);

@@ -14,11 +14,11 @@
     </facet>
   </component>
   <component name="NewModuleRootManager" inherit-compiler-output="false">
-    <output url="file://$MODULE_DIR$/../../../Java-OPeNDAP/target/classes" />
-    <output-test url="file://$MODULE_DIR$/../../../Java-OPeNDAP/target/test/classes" />
+    <output url="file://$MODULE_DIR$/../../../Java-OpeNDAP/target/classes" />
+    <output-test url="file://$MODULE_DIR$/../../../Java-OpeNDAP/target/test/classes" />
     <exclude-output />
-    <content url="file://$MODULE_DIR$/../../../Java-OPeNDAP">
-      <sourceFolder url="file://$MODULE_DIR$/../../../Java-OPeNDAP/src" isTestSource="false" />
+    <content url="file://$MODULE_DIR$/../../../Java-OpeNDAP">
+      <sourceFolder url="file://$MODULE_DIR$/../../../Java-OpeNDAP/src" isTestSource="false" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
@@ -43,15 +43,6 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../lib/external/commons-httpclient-3.1.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
           <root url="jar://$MODULE_DIR$/../../lib/external/httpcore-4.0.1.jar!/" />
         </CLASSES>
         <JAVADOC />
@@ -62,6 +53,24 @@
       <library>
         <CLASSES>
           <root url="jar://$MODULE_DIR$/../../lib/external/httpclient-4.0.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../lib/external/junit-4.5.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../lib/external/commons-logging-1.1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

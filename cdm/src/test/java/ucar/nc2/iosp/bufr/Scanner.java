@@ -922,8 +922,8 @@ public class Scanner {
     }); // */
 
     // look for mixed message types in the files
-    /* also for missing table entries R:/testdata/bufr/edition3/idd/singleLevelSatellite/
-    test("R:/testdata/bufr/edition3/newIdd", new MClosure() {
+    /* also for missing table entries R:/testdata2/bufr/edition3/idd/singleLevelSatellite/
+    test("R:/testdata2/bufr/edition3/newIdd", new MClosure() {
        public void run(String filename) throws IOException {
          scanMixedMessageTypes(filename);
        }

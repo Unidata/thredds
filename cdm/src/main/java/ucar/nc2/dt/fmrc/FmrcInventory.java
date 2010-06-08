@@ -1538,7 +1538,7 @@ public class FmrcInventory {
   }
 
   public static void main4(String args[]) throws Exception {
-    /* String work = "R:/testdata/motherlode/grid2/";
+    /* String work = "R:/testdata2/motherlode/grid2/";
     fmrcDefinitionPath = work+"def/";
     cache = new DiskCache2(work+"inv/", false, -1, -1);
 

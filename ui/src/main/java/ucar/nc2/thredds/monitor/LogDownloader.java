@@ -110,7 +110,7 @@ public class LogDownloader {
     long size;
     File localFile;
 
-    RemoteLog(String line) {
+    RemoteLog(String line)  {
       String[] tokes = line.split(" ");
       name = tokes[0];
       size = Long.parseLong(tokes[1]);
@@ -129,13 +129,13 @@ public class LogDownloader {
 
     }
 
-    void read() {
+    void read()  {
       String urls = "http://" + server + "/thredds/admin/log/"+type+"/" + name;
       ta.append(String.format(" try to read %s to %s size=%d%n", urls, localFile.getPath(), localFile.length()));
       HttpClientManager.copyUrlContentsToFile(urls, localFile);
     }
 
-    void append() {
+    void append()  {
       String urls = "http://" + server + "/thredds/admin/log/"+type+"/" + name;
       long start = localFile.length();
       long want = size - start;

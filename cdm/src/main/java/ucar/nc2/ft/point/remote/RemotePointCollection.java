@@ -32,6 +32,8 @@
 
 package ucar.nc2.ft.point.remote;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
 import ucar.nc2.ft.point.PointCollectionImpl;
 import ucar.nc2.ft.point.PointIteratorAbstract;
 import ucar.nc2.ft.point.PointIteratorEmpty;
@@ -42,12 +44,12 @@ import ucar.nc2.stream.NcStream;
 import ucar.nc2.stream.CdmRemote;
 import ucar.nc2.stream.NcStreamProto;
 import ucar.nc2.units.DateRange;
+import opendap.dap.HttpWrap;
 import ucar.unidata.geoloc.LatLonRect;
 
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.apache.commons.httpclient.HttpMethod;
 
 /**
  * PointCollection over cdmRemote protocol
@@ -70,12 +72,12 @@ class RemotePointCollection extends PointCollectionImpl implements QueryMaker {
   }
 
   public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
-    HttpMethod method = null;
-    String errMessage = null;
+HttpWrap http = null;
+      String errMessage = null;
 
     try {
-      method = CdmRemote.sendQuery(uri, queryMaker.makeQuery());
-      InputStream in = method.getResponseBodyAsStream();
+      http = CdmRemote.sendQuery(uri, queryMaker.makeQuery());
+      InputStream in = http.getContentStream();
 
       PointStream.MessageType mtype = PointStream.readMagic(in);
       if (mtype == PointStream.MessageType.PointFeatureCollection) {
@@ -83,7 +85,7 @@ class RemotePointCollection extends PointCollectionImpl implements QueryMaker {
         byte[] b = new byte[len];
         NcStream.readFully(in, b);
         PointStreamProto.PointFeatureCollection pfc = PointStreamProto.PointFeatureCollection.parseFrom(b);
-        PointFeatureIterator iter = new RemotePointFeatureIterator(method, in, new PointStream.ProtobufPointFeatureMaker(pfc));
+        PointFeatureIterator iter = new RemotePointFeatureIterator(http, in, new PointStream.ProtobufPointFeatureMaker(pfc));
         iter.setCalculateBounds(this);
         return iter;
 
@@ -102,7 +104,7 @@ class RemotePointCollection extends PointCollectionImpl implements QueryMaker {
       }
 
     } catch (Throwable t) {
-      if (method != null) method.releaseConnection();
+      // fix if (method != null) method.releaseConnection();
       throw new RuntimeException(t);
     }
 

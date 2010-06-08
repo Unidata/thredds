@@ -47,8 +47,7 @@ import java.io.IOException;
  */
 public class TestCrawlableDataset extends TestCase
 {
-//  private static org.apache.commons.logging.Log log =
-//          org.apache.commons.logging.LogFactory.getLog( TestCrawlableDatasetAlias.class );
+
 
 
   public TestCrawlableDataset( String name )

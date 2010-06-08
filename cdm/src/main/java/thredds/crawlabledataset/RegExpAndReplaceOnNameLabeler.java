@@ -41,8 +41,7 @@ package thredds.crawlabledataset;
  */
 public class RegExpAndReplaceOnNameLabeler implements CrawlableDatasetLabeler
 {
-//  private static org.apache.commons.logging.Log log =
-//          org.apache.commons.logging.LogFactory.getLog( RegExpAndReplaceOnNameLabeler.class );
+
 
   private String regExp;
   private java.util.regex.Pattern pattern;

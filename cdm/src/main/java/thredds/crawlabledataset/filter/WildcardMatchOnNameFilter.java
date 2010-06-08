@@ -45,8 +45,7 @@ import thredds.crawlabledataset.CrawlableDataset;
  * @since Nov 5, 2005 12:51:56 PM
  */
 public class WildcardMatchOnNameFilter implements CrawlableDatasetFilter {
-//  private static org.apache.commons.logging.Log log =
-//          org.apache.commons.logging.LogFactory.getLog( WildcardMatchOnNameFilter.class );
+
 
   protected String wildcardString;
   protected java.util.regex.Pattern pattern;

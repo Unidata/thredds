@@ -33,7 +33,7 @@
 
 package ucar.nc2.thredds.monitor;
 
-import org.apache.commons.httpclient.auth.CredentialsProvider;
+import org.apache.http.client.CredentialsProvider;
 import thredds.logs.LogReader;
 import ucar.nc2.util.net.HttpClientManager;
 import ucar.util.prefs.ui.Debug;
@@ -529,7 +529,7 @@ public class TdsMonitor extends JPanel {
 
   //////////////////////////////////////////////
 
-  public static void main(String args[]) {
+  public static void main(String args[]) throws Exception  {
 
     // prefs storage
     try {

@@ -1,9 +1,9 @@
 package ucar.nc2.stream;
 
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.util.CompareNetcdf;
 import ucar.nc2.TestAll;
-import ucar.nc2.dataset.NetcdfDataset;
 import ucar.unidata.util.StringUtil;
 
 import java.io.*;

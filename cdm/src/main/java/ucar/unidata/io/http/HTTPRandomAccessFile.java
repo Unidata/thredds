@@ -38,8 +38,21 @@
 
 package ucar.unidata.io.http;
 
-import org.apache.commons.httpclient.*;
-import org.apache.commons.httpclient.methods.*;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.Header;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpHead;
+import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.conn.ClientConnectionManager;
+import org.apache.http.impl.client.AbstractHttpClient;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
+import org.apache.http.message.AbstractHttpMessage;
+import org.apache.http.params.BasicHttpParams;
+import opendap.dap.HttpWrap;
+import opendap.dap.HttpWrapException;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -59,29 +72,28 @@ import java.nio.ByteBuffer;
 public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
   static public int defaultHTTPBufferSize = 20000;
 
-  static private HttpClient _client;
+  static private HttpWrap _client;
 
   /**
    * Set the HttpClient object - a single instance is used.
    * @param client the HttpClient object
    */
-  static public void setHttpClient(HttpClient client) {
+  static public void setHttpClient(HttpWrap client) {
     _client = client;
   }
 
   /**
-   * Get the HttpClient object - a single instance is used.
-   * @return client the HttpClient object
+   * Get the AbstractHttpClient object - a single instance is used.
+   * @return client the AbstractHttpClient object
    */
-  static public HttpClient getHttpClient() {
+  static public HttpWrap getHttpClient() {
     return _client;
   }
 
-  // default HttpClient
-  private synchronized void initHttpClient() {
+  // default AbstractHttpClient
+  private synchronized void initHttpClient() throws HttpWrapException {
     if (_client != null) return;
-    MultiThreadedHttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
-    _client = new HttpClient(connectionManager);
+    _client = new HttpWrap();
   }
 
   ///////////////////////////////////////////////////////////////////////////////////
@@ -106,14 +118,12 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
 
     boolean needtest = true;
 
-    HttpMethod method = null;
     try {
-      method = new HeadMethod(url);
-      method.setFollowRedirects(true);
+      HttpHead method = new HttpHead(url);
+      _client.setMethod(method);
+      doConnect(_client);
 
-      doConnect(method);
-
-      Header head = method.getResponseHeader("Accept-Ranges");
+      Header head = _client.getHeader("Accept-Ranges");
       if (head == null) {
         needtest = true; // header is optional - need more testing
 
@@ -124,7 +134,7 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
         throw new IOException("Server does not support byte Ranges");
       }
 
-      head = method.getResponseHeader("Content-Length");
+      head = method.getFirstHeader("Content-Length");
       if (head == null) {
         throw new IOException("Server does not support Content-Length");
       }
@@ -136,7 +146,7 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
       }
 
     } finally {
-      if (method != null) method.releaseConnection();
+      if (_client != null) _client.close();
     }
 
     if (needtest && !rangeOk(url))
@@ -146,43 +156,44 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
   }
 
   private boolean rangeOk(String url) {
-    HttpMethod method = null;
-    try {
-      method = new GetMethod(url);
-      method.setFollowRedirects(true);
-      method.setRequestHeader("Range", "bytes=" + 0 + "-" + 1);
-      doConnect(method);
+    HttpGet method = null;
+      try {
+      method = new HttpGet(url);
+      method.setHeader("Range", "bytes=" + 0 + "-" + 1);
+      doConnect(_client);
 
-      int code = method.getStatusCode();
+      int code = _client.getStatusCode();
       if (code != 206)
         throw new IOException("Server does not support Range requests, code= " + code);
 
       // clear stream
-      method.getResponseBody();
+      _client.consumeContent();
       return true;
 
     } catch (IOException e) {
       return false;
 
     } finally {
-      if (method != null) method.releaseConnection();
+      // if (method != null) response.releaseConnection(); Cannot figure out how to do this with httpClient 4
     }
   }
 
-  private void doConnect(HttpMethod method) throws IOException {
+  void doConnect(HttpWrap client) throws  IOException {
 
-    // Execute the method.
-    int statusCode = _client.executeMethod(method);
+      // Execute the method.
+   client.execute();
+    int statusCode = client.getStatusCode();
 
     if (statusCode == 404)
-      throw new FileNotFoundException(url + " " + method.getStatusLine());
+      throw new FileNotFoundException(url + " " + client.getStatusLine());
+
     
     if (statusCode >= 300)
-      throw new IOException(url + " " + method.getStatusLine());
+      throw new IOException(url + " " + client.getStatusLine());
 
     if (debugDetails) {
-      printHeaders("Request: " + method.getName() + " " + method.getPath(), method.getRequestHeaders());
-      printHeaders("Response: " + method.getStatusCode(), method.getResponseHeaders());
+      printHeaders("Request: " + _client.getMethod() + " " + _client.getURI(), client.getHeaders());
+      printHeaders("Response: " + statusCode, client.getHeaders());
     }
   }
 
@@ -213,30 +224,27 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
 
     if (debug) System.out.println(" HTTPRandomAccessFile bytes=" + pos + "-" + end + ": ");
 
-    HttpMethod method = null;
     try {
-      method = new GetMethod(url);
-      method.setFollowRedirects(true);
-      method.setRequestHeader("Range", "bytes=" + pos + "-" + end);
-      doConnect(method);
-
-      int code = method.getStatusCode();
+      HttpGet method = new HttpGet(url);
+      method.setHeader("Range", "bytes=" + pos + "-" + end);
+      _client.setMethod(method);
+      int code = _client.execute();
       if (code != 206)
         throw new IOException("Server does not support Range requests, code= " + code);
 
-      String s = method.getResponseHeader("Content-Length").getValue();
+      String s = method.getFirstHeader("Content-Length").getValue();
       if (s == null)
         throw new IOException("Server does not send Content-Length header");
 
       int readLen = Integer.parseInt(s);
       readLen = Math.min(len, readLen);
 
-      InputStream is = method.getResponseBodyAsStream();
+      InputStream is = _client.getContentStream();
       readLen = copy(is, buff, offset, readLen);
       return readLen;
-
+   
     } finally {
-      if (method != null) method.releaseConnection();
+      //if (method != null) method.releaseConnection();
     }
   }
 

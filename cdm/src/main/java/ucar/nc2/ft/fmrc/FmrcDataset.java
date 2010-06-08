@@ -1075,7 +1075,7 @@ class FmrcDataset {
    * @param openFiles keep track of open files
    * @return file or null if not found
    */
-  private NetcdfDataset open(String location, HashMap<String, NetcdfDataset> openFiles) { // } throws IOException {
+  private NetcdfDataset open(String location, HashMap<String, NetcdfDataset> openFiles)  { // } throws IOException {
     NetcdfDataset ncd = null;
 
     if (openFiles != null) {

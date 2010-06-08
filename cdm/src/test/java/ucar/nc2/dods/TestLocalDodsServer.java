@@ -36,8 +36,8 @@ package ucar.nc2.dods;
 import junit.framework.TestSuite;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
-import ucar.nc2.dataset.NetcdfDataset;
 import ucar.ma2.Array;
+import ucar.nc2.dataset.NetcdfDataset;
 
 import java.io.IOException;
 import java.util.List;

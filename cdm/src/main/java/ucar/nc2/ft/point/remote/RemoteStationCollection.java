@@ -1,17 +1,19 @@
 package ucar.nc2.ft.point.remote;
 
+import org.apache.http.HttpException;
+import org.apache.http.HttpResponse;
 import ucar.nc2.ft.point.*;
 import ucar.nc2.ft.*;
 import ucar.nc2.stream.CdmRemote;
 import ucar.nc2.stream.NcStream;
 import ucar.nc2.units.DateRange;
+import opendap.dap.HttpWrap;
 import ucar.unidata.geoloc.*;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
-import org.apache.commons.httpclient.HttpMethod;
 
 /**
  * Connect to remote Station Collection using cdmremote
@@ -40,11 +42,11 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
   protected void initStationHelper() {
     // read in all the stations with the "stations" query
     stationHelper = new StationHelper();
-    HttpMethod method = null;
+    HttpWrap http = null;
     try {
       String query = "req=stations";
-      method = CdmRemote.sendQuery(uri, query);
-      InputStream in = method.getResponseBodyAsStream();
+      http = CdmRemote.sendQuery(uri, query);
+      InputStream in = http.getContentStream();
 
       PointStream.MessageType mtype = PointStream.readMagic(in);
       if (mtype != PointStream.MessageType.StationList) {
@@ -60,11 +62,12 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
         stationHelper.addStation( new RemoteStationFeatureImpl(s, null));
       }
 
-    } catch (IOException ioe) {
-      throw new RuntimeException(ioe);
+            } catch (IOException ioe) {
+              throw new RuntimeException(ioe);
+    
 
     } finally {
-      if (method != null) method.releaseConnection();
+      //fix if (method != null) method.releaseConnection();
     }
   }
 
@@ -200,10 +203,10 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
     public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
       String query = PointDatasetRemote.makeQuery("stn=" + s.getName(), null, dateRange);
 
-      HttpMethod method = null;
+      HttpWrap http = null;
       try {
-        method = CdmRemote.sendQuery(uri, query);
-        InputStream in = method.getResponseBodyAsStream();
+        http = CdmRemote.sendQuery(uri, query);
+        InputStream in = http.getContentStream();
 
         PointStream.MessageType mtype = PointStream.readMagic(in);
         if (mtype != PointStream.MessageType.PointFeatureCollection) {
@@ -215,12 +218,12 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
         NcStream.readFully(in, b);
         PointStreamProto.PointFeatureCollection pfc = PointStreamProto.PointFeatureCollection.parseFrom(b);
 
-        riter = new RemotePointFeatureIterator(method, in, new PointStream.ProtobufPointFeatureMaker(pfc));
+        riter = new RemotePointFeatureIterator(http, in, new PointStream.ProtobufPointFeatureMaker(pfc));
         riter.setCalculateBounds(this);
         return riter;
 
       } catch (Throwable t) {
-        if (method != null) method.releaseConnection();
+        // fix if (method != null) method.releaseConnection();
         throw new IOException(t.getMessage());
       } 
     }

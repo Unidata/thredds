@@ -342,7 +342,7 @@ public class TestIDVdatasets {
     //ts.extract( pout, "http://motherlode.ucar.edu:8088/thredds/dodsC/radars.xml", true, null, 0);
 
     //ts.extract(System.out, "http://motherlode.ucar.edu:8088/thredds/dodsC/radars.xml", true);
-    // ts.extract(System.out, "http://whoopee:8080/thredds/dodsC/shared/testdata/radar/nexrad/level3/catalog.xml", false);
+    // ts.extract(System.out, "http://whoopee:8080/thredds/dodsC/shared/testdata2/radar/nexrad/level3/catalog.xml", false);
   }
 
 

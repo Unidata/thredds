@@ -43,8 +43,7 @@ import junit.framework.*;
  */
 public class TestAllCrawlableDataset extends TestCase
 {
-//  private static org.apache.commons.logging.Log log =
-//          org.apache.commons.logging.LogFactory.getLog( TestAllCrawlableDataset.class );
+
 
   public TestAllCrawlableDataset( String name )
   {

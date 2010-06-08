@@ -116,12 +116,12 @@ netcdf tst_solar_2 {
 }
 
 jni:
-netcdf R:/testdata/netcdf4/nc4/tst_solar_2.nc {
+netcdf R:/testdata2/netcdf4/nc4/tst_solar_2.nc {
  :equally_unimaginatively_named_attribute_YAWN = -99, -99, -99; // int
 }
 
 java:
-netcdf R:/testdata/netcdf4/nc4/tst_solar_2.nc {
+netcdf R:/testdata2/netcdf4/nc4/tst_solar_2.nc {
  :equally_unimaginatively_named_attribute_YAWN = -99, -99, -99; // int
 }
     */
@@ -143,7 +143,7 @@ types:
 }
 
 jni:
-netcdf R:/testdata/netcdf4/nc4/tst_enums.nc {
+netcdf R:/testdata2/netcdf4/nc4/tst_enums.nc {
  types:
   enum Bradys { 'Alice' = 0, 'Whats-her-face' = 1, 'Bobby' = 2, 'Jan' = 3, 'Peter' = 4, 'Marsha' = 5, 'Greg' = 6,
     'Carol' = 7, 'Mike' = 8};
@@ -152,7 +152,7 @@ netcdf R:/testdata/netcdf4/nc4/tst_enums.nc {
 }
 
 java:
-netcdf R:/testdata/netcdf4/nc4/tst_enums.nc {
+netcdf R:/testdata2/netcdf4/nc4/tst_enums.nc {
  types:
   enum Bradys { 'Alice' = 0, 'Whats-her-face' = 1, 'Bobby' = 2, 'Jan' = 3, 'Peter' = 4, 'Marsha' = 5,
     'Greg' = 6, 'Carol' = 7, 'Mike' = 8};
@@ -182,13 +182,13 @@ types:
 }
 
 jni:
-netcdf R:/testdata/netcdf4/nc4/tst_solar_cmp.nc {
+netcdf R:/testdata2/netcdf4/nc4/tst_solar_cmp.nc {
  :my_favorite_wind_speeds.u = 13.3f, 13.3f, 13.3f; // float
  :my_favorite_wind_speeds.v = 12.2f, 12.2f, 12.2f; // float
 }
 
 java:
-netcdf R:/testdata/netcdf4/files/tst_solar_cmp.nc {
+netcdf R:/testdata2/netcdf4/files/tst_solar_cmp.nc {
  :my_favorite_wind_speeds.u = 13.3f, 13.3f, 13.3f; // float
  :my_favorite_wind_speeds.v = 12.2f, 12.2f, 12.2f; // float
 }
@@ -216,7 +216,7 @@ data:
 }
 
 java:
-netcdf R:/testdata/netcdf4/vlen/tst_vl.nc {
+netcdf R:/testdata2/netcdf4/vlen/tst_vl.nc {
  dimensions:
    dim = 3;
  variables:
@@ -228,7 +228,7 @@ var =
 
 
 jni:
-netcdf //zero/share/testdata/netcdf4/vlen/tst_vl.nc {
+netcdf //zero/share/testdata2/netcdf4/vlen/tst_vl.nc {
  dimensions:
    dim = 3;
  variables:

@@ -296,7 +296,7 @@ public class TimeStationObs {
   }
 
   static public void main(String args[]) throws IOException {
-    //getFiles("R:/testdata/station/ldm/metar/");
+    //getFiles("R:/testdata2/station/ldm/metar/");
     getFiles("C:/data/metars/");
 
     TimeStationObs t = new TimeStationObs();

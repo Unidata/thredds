@@ -45,8 +45,7 @@ import thredds.crawlabledataset.CrawlableDatasetFactory;
  */
 public class TestWildcardMatchOnNameFilter extends TestCase
 {
-//  private static org.apache.commons.logging.Log log =
-//          org.apache.commons.logging.LogFactory.getLog( TestWildcardMatchOnNameFilter.class );
+
 
   public TestWildcardMatchOnNameFilter( String name )
   {

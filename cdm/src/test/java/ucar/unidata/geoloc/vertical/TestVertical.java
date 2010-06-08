@@ -186,7 +186,7 @@ public class TestVertical extends TestCase {
     gds.close();
   }
 
-  // TestAll.upcShareDir + /testdata/grid/netcdf/wrf/wrfout_v2_Lambert.nc
+  // TestAll.upcShareDir + /testdata2/grid/netcdf/wrf/wrfout_v2_Lambert.nc
 
   public void utestStride() throws java.io.IOException, InvalidRangeException {
     String url= "dods://lead4.unidata.ucar.edu:8080/thredds/dodsC/model/UCAR/UNIDATA/WRF/STEERED/wrfout_d01_2006-04-20_00_00_00.nc";

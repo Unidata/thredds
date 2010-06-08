@@ -48,8 +48,7 @@ import thredds.crawlabledataset.CrawlableDatasetFilter;
  */
 public class MultiSelectorFilter implements CrawlableDatasetFilter
 {
-//  private static org.apache.commons.logging.Log log =
-//          org.apache.commons.logging.LogFactory.getLog( MultiSelectorFilter.class );
+
 
   private List<Selector> selectorGroup;
 

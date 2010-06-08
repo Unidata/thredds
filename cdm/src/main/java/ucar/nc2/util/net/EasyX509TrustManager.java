@@ -56,7 +56,7 @@ import javax.net.ssl.X509TrustManager;
  * @author <a href="mailto:oleg@ural.ru">Oleg Kalnichevski</a>
  *         <p/>
  *         <p/>
- *         DISCLAIMER: HttpClient developers DO NOT actively support this component.
+ *         DISCLAIMER: AbstractHttpClient developers DO NOT actively support this component.
  *         The component is provided as a reference material, which may be inappropriate
  *         for use without additional customization.
  *         </p>

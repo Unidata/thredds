@@ -172,7 +172,7 @@ public class TestSimpleTrajectoryObsDataset extends TestCase
  * TDS unit testing
  *
  * Revision 1.8  2005/05/25 20:53:42  edavis
- * Add some test data to CVS, the rest is on /upc/share/testdata.
+ * Add some test data to CVS, the rest is on /upc/share/testdata2.
  *
  * Revision 1.7  2005/05/23 17:02:23  edavis
  * Deal with converting elevation data into "meters".

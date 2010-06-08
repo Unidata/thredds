@@ -37,7 +37,6 @@ import ucar.nc2.constants.*;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dt.*;
 import ucar.nc2.units.DateUnit;
-import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.units.DateFormatter;
 import ucar.ma2.*;
 import ucar.nc2.Attribute;
@@ -769,7 +768,7 @@ public class UF2Dataset extends RadialDatasetSweepAdapter implements TypedDatase
 
   public static void main(String args[]) throws Exception, IOException, InstantiationException, IllegalAccessException {
    String fileIn = "/home/yuanho/Desktop/idv/dorade/KATX_20040113_0107";
-   // String fileIn ="/upc/share/testdata/radar/NOP3_20071112_1633";
+   // String fileIn ="/upc/share/testdata2/radar/NOP3_20071112_1633";
     //RadialDatasetSweepFactory datasetFactory = new RadialDatasetSweepFactory();
     //RadialDatasetSweep rds = datasetFactory.open(fileIn, null);
   //ucar.unidata.util.Trace.call1("LevelII2Dataset:main dataset");

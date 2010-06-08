@@ -48,8 +48,7 @@ import thredds.crawlabledataset.CrawlableDatasetFactory;
  */
 public class TestCollectionLevelScanner extends TestCase
 {
-//  private static org.apache.commons.logging.Log log =
-//          org.apache.commons.logging.LogFactory.getLog( TestCollectionLevelScanner.class );
+
 
   private boolean debugShowCatalogs = true;
 

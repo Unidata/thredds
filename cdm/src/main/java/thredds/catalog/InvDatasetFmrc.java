@@ -401,7 +401,7 @@ public class InvDatasetFmrc extends InvCatalogRef {
     return catalogRuns;
   }
 
-  private InvCatalogImpl makeCatalogOffsets(URI baseURI) throws IOException {
+  private InvCatalogImpl makeCatalogOffsets(URI baseURI) throws  IOException {
 
     if ((catalogOffsets == null) || checkIfChanged()) {
       InvCatalogImpl parent = (InvCatalogImpl) getParentCatalog();
@@ -504,7 +504,7 @@ public class InvDatasetFmrc extends InvCatalogRef {
     return datasets;
   }
 
-  private List<InvDatasetImpl> makeOffsetDatasets() throws IOException {
+  private List<InvDatasetImpl> makeOffsetDatasets() throws  IOException {
     makeFmrc();
 
     List<InvDatasetImpl> datasets = new ArrayList<InvDatasetImpl>();

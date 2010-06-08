@@ -127,7 +127,8 @@ public class CompositeStationCollectionFlattened extends PointCollectionImpl {
     }
 
     public boolean hasNext() throws IOException {
-      if (pfIter == null) {
+      
+        if (pfIter == null) {
         pfIter = getNextIterator();
         if (pfIter == null) {
           finish();
@@ -143,7 +144,7 @@ public class CompositeStationCollectionFlattened extends PointCollectionImpl {
         pfIter = getNextIterator();
         return hasNext();
       }
-
+;
       return true;
     }
 

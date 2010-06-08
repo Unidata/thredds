@@ -205,7 +205,7 @@ public class TestARMTrajectoryObsDataset extends TestCase
  * TDS unit testing
  *
  * Revision 1.3  2005/05/25 20:53:42  edavis
- * Add some test data to CVS, the rest is on /upc/share/testdata.
+ * Add some test data to CVS, the rest is on /upc/share/testdata2.
  *
  * Revision 1.2  2005/05/23 22:47:01  edavis
  * Handle changing elevation data units (done in ncDataset

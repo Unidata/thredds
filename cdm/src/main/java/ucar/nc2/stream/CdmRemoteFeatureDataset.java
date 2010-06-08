@@ -32,6 +32,7 @@
 
 package ucar.nc2.stream;
 
+import org.apache.http.HttpResponse;
 import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.remote.PointDatasetRemote;
 import ucar.nc2.ft.point.writer.FeatureDatasetPointXML;
@@ -40,6 +41,7 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.units.DateRange;
+import opendap.dap.HttpWrap;
 import ucar.unidata.geoloc.LatLonRect;
 
 import java.io.IOException;
@@ -50,7 +52,6 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.output.XMLOutputter;
 import org.jdom.input.SAXBuilder;
-import org.apache.commons.httpclient.HttpMethod;
 
 /**
  * Factory for CdmRemoteFeatureDataset. GRID, POINT, STATION so far
@@ -62,7 +63,7 @@ public class CdmRemoteFeatureDataset {
   static private boolean debug = false;
   static private boolean showXML = false;
 
-  static public FeatureDataset factory(FeatureType wantFeatureType, String endpoint) throws IOException {
+  static public FeatureDataset factory(FeatureType wantFeatureType, String endpoint) throws  IOException {
     if (endpoint.startsWith(CdmRemote.SCHEME))
       endpoint = endpoint.substring(CdmRemote.SCHEME.length());
 
@@ -92,10 +93,10 @@ public class CdmRemoteFeatureDataset {
 
   static private org.jdom.Document getCapabilities(String endpoint) throws IOException {
     org.jdom.Document doc;
-    HttpMethod method = null;
+    HttpWrap http = null;
     try {
-      method = CdmRemote.sendQuery(endpoint, "req=capabilities");
-      InputStream in = method.getResponseBodyAsStream();
+      http = CdmRemote.sendQuery(endpoint, "req=capabilities");
+      InputStream in = http.getContentStream();
       SAXBuilder builder = new SAXBuilder(false);
       doc = builder.build(in);
 
@@ -103,7 +104,7 @@ public class CdmRemoteFeatureDataset {
       throw new IOException(t);
 
     } finally {
-      if (method != null) method.releaseConnection();
+      // fix if (method != null) method.releaseConnection();
     }
 
     if (showXML) {

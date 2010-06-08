@@ -45,8 +45,7 @@ import java.io.IOException;
  */
 public class CrawlableDatasetFactory
 {
-//  private static org.apache.commons.logging.Log log =
-//          org.apache.commons.logging.LogFactory.getLog( CrawlableDatasetFactory.class );
+
 
   private static String defaultClassName = "thredds.crawlabledataset.CrawlableDatasetFile";
 

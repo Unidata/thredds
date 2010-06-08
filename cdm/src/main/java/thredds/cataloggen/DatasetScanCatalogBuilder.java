@@ -112,8 +112,7 @@ import java.io.IOException;
  */
 public class DatasetScanCatalogBuilder implements CatalogBuilder
 {
-//  private static org.apache.commons.logging.Log log =
-//          org.apache.commons.logging.LogFactory.getLog( DatasetScanCatalogBuilder.class );
+
 
   private CatalogBuilder stdCatBuilder;
 
