@@ -68,6 +68,12 @@ import java.lang.instrument.Instrumentation;
 import java.lang.reflect.*;
 import java.util.*;
 
+/**
+ * Use the Java instrumentation API to predict the amount of memory taken up by an object.
+ * This is taken from the Java Specialist newsletter #142 "Instrumentation Memory Counter",
+ * http://www.javaspecialists.eu/archive/Issue142.html.
+ *
+ */
 public class MemoryCounterAgent {
   private static Instrumentation instrumentation;
 

@@ -1,0 +1,14 @@
+ The MemoryCounterAgent class uses the Java instrumentation API to predict
+ the amount of memory taken up by an object. The code was taken from the
+ Java Specialist newsletter #142 "Instrumentation Memory Counter",
+ http://www.javaspecialists.eu/archive/Issue142.html.
+
+The build.xml builds the code and places the jar file (memoryagent.jar) in
+this directory. To use this in testing, write code that constructs an object
+and hand that object to "MemoryCounterAgent.sizeOf(Object)" and/or
+"MemoryCounterAgent.deepSizeOf(Object)".
+
+To run the test program, use the following java command-line option:
+
+ -javaagent:src/timing/java/ucar/nc2/util/memory/memoryagent.jar
+
