@@ -33,14 +33,12 @@
 package ucar.nc2;
 
 import junit.framework.TestCase;
+import ucar.ma2.*;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.dt.grid.GeoGrid;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.unidata.geoloc.vertical.VerticalTransform;
 import ucar.unidata.io.RandomAccessFile;
-import ucar.ma2.ArrayDouble;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Section;
 
 import java.io.IOException;
 import java.io.File;
@@ -175,6 +173,38 @@ z is of shape 20x2x87, it should be 20x87x193.
 
   }
 
+
+  // Xiaoshen.Li@noaa.gov
+    public void utestModifyNCfile() throws IOException, InvalidRangeException {
+        final String inputFileName = "C:/tmp/input.nc";
+
+        final String outputFileName = "C:/tmp/output.nc";
+
+        final NetcdfFileWriteable writableFile = NetcdfFileWriteable.openExisting(inputFileName);
+
+        writableFile.setRedefineMode(true);
+
+        final Variable ffgVariable = writableFile.findVariable("FFG");
+        final Array ffgVarArray = ffgVariable.read();
+        final Index ffgIndex = ffgVarArray.getIndex();
+
+        writableFile.setName(outputFileName);
+//setName() is deprecated. If commented out this method, "input.nc" will be overwritten
+        writableFile.create();
+
+        //re-set variable FFG values
+        ffgVarArray.setDouble(ffgIndex.set(0), 10.1);
+        ffgVarArray.setDouble(ffgIndex.set(1), 10.2);
+        ffgVarArray.setDouble(ffgIndex.set(2), 10.3);
+        ffgVarArray.setDouble(ffgIndex.set(3), 10.4);
+
+        // writableFile.write("FFG", ffgVarArray);
+
+        writableFile.flush();
+
+        writableFile.close();
+
+    }
 
   public static void main(String[] args) {
     String s1 = "CoastWatch/MODSCW/closest_chlora/Mean/CB05/P2009190";

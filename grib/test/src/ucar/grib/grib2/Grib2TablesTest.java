@@ -33,25 +33,26 @@
 package ucar.grib.grib2;
 
 import org.junit.Test;
+import ucar.grib.GribGridRecord;
+
 import static org.junit.Assert.*;
 
 /**
- * _more_
+ * Test creating a probability variable name
  *
  * @author edavis
  * @since 4.0
  */
-public class Grib2TablesTest
-{
+public class Grib2TablesTest {
   @Test
   public void checkProbabilityVariableNameSuffix()
   {
-    assertEquals( "probability_below_12p56", Grib2Tables.getProbabilityVariableNameSuffix( 12.56f, 0f, 0));
-    assertEquals( "probability_above_12p56", Grib2Tables.getProbabilityVariableNameSuffix( 0f, 12.56f, 1));
-    assertEquals( "probability_between_0_12p56", Grib2Tables.getProbabilityVariableNameSuffix( 0f, 12.56f, 2));
-    assertEquals( "probability_above_12p56", Grib2Tables.getProbabilityVariableNameSuffix( 12.56f, 0f, 3));
-    assertEquals( "probability_below_12p56", Grib2Tables.getProbabilityVariableNameSuffix( 0f, 12.56f, 4));
+    assertEquals( "probability_below_12p56", GribGridRecord.getProbabilityVariableNameSuffix( 12.56f, 0f, 0));
+    assertEquals( "probability_above_12p56", GribGridRecord.getProbabilityVariableNameSuffix( 0f, 12.56f, 1));
+    assertEquals( "probability_between_0_12p56", GribGridRecord.getProbabilityVariableNameSuffix( 0f, 12.56f, 2));
+    assertEquals( "probability_above_12p56", GribGridRecord.getProbabilityVariableNameSuffix( 12.56f, 0f, 3));
+    assertEquals( "probability_below_12p56", GribGridRecord.getProbabilityVariableNameSuffix( 0f, 12.56f, 4));
 
-    assertEquals( "unknownProbability", Grib2Tables.getProbabilityVariableNameSuffix( 0f, 12.56f, 5));
+    assertEquals( "unknownProbability", GribGridRecord.getProbabilityVariableNameSuffix( 0f, 12.56f, 5));
   }
 }

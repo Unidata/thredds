@@ -257,7 +257,7 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
   public Object sendIospMessage(Object special) {
     if (special instanceof FmrcCoordSys) {
       fmrcCoordSys = (FmrcCoordSys) special;
-    }
+    } 
     return null;
   }
 

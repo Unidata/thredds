@@ -540,38 +540,26 @@ public final class GribGridRecord implements GridRecord {
     return interval;
   }
 
-  static String getProbabilityVariableNameSuffix( float lowerLimit, float upperLimit, int type )
-  {
-    String ll = Float.toString( lowerLimit ).replace( '.', 'p' ).replaceFirst( "p0$", "" );
-    String ul = Float.toString( upperLimit ).replace( '.', 'p' ).replaceFirst( "p0$", "" );
-    if ( type == 0 )
-    {
+  static public String getProbabilityVariableNameSuffix(float lowerLimit, float upperLimit, int type) {
+    String ll = Float.toString(lowerLimit).replace('.', 'p').replaceFirst("p0$", "");
+    String ul = Float.toString(upperLimit).replace('.', 'p').replaceFirst("p0$", "");
+    if (type == 0) {
       //return "below_" + Float.toString(lowerLimit).replace('.', 'p');
       return "probability_below_" + ll;
-    }
-    else if ( type == 1 )
-    {
+    } else if (type == 1) {
       //return "above_" + Float.toString(upperLimit).replace('.', 'p');
       return "probability_above_" + ul;
-    }
-    else if ( type == 2 )
-    {
+    } else if (type == 2) {
       //return "between_" + Float.toString(lowerLimit).replace('.', 'p') + "_" +
       //    Float.toString(upperLimit).replace('.', 'p');
       return "probability_between_" + ll + "_" + ul;
-    }
-    else if ( type == 3 )
-    {
+    } else if (type == 3) {
       //return "above_" + Float.toString(lowerLimit).replace('.', 'p');
       return "probability_above_" + ll;
-    }
-    else if ( type == 4 )
-    {
+    } else if (type == 4) {
       //return "below_" + Float.toString(upperLimit).replace('.', 'p');
       return "probability_below_" + ul;
-    }
-    else
-    {
+    } else {
       return "unknownProbability";
     }
 

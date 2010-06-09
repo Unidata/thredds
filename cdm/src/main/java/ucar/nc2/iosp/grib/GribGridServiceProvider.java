@@ -96,6 +96,21 @@ public class GribGridServiceProvider extends GridServiceProvider {
   }
 
   @Override
+  public Object sendIospMessage(Object special) {
+    if (special instanceof String) {
+      String s = (String) special;
+      if (s.equalsIgnoreCase("GridIndex"))
+        try {
+          return getIndex(raf.getLocation());
+        } catch (IOException e) {
+          return null;
+        }
+    }
+    return super.sendIospMessage(special);
+  }
+
+
+  @Override
   public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
     this.raf = raf;
     this.ncfile = ncfile;

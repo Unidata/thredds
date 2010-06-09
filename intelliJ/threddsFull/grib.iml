@@ -6,6 +6,7 @@
     <exclude-output />
     <content url="file://$MODULE_DIR$/../../grib">
       <sourceFolder url="file://$MODULE_DIR$/../../grib/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/../../grib/test/src" isTestSource="true" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
