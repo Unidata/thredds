@@ -310,8 +310,7 @@ public class GribGridServiceProvider extends GridServiceProvider {
    * @throws IOException on read error
    */
   private File getIndexFile(String dataLocation) throws IOException {
-    //String indexLocation = dataLocation + ".gbx";
-    String indexLocation = GribIndexName.get( dataLocation );
+    String indexLocation = GribIndexName.getIndex( dataLocation, false );
     File indexFile = null;
 
     if (indexLocation.startsWith("http:")) { // LOOK direct access through http maybe should disallow ??
