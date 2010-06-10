@@ -1159,15 +1159,15 @@ public final class Grib2PDSVariables implements GribPDSVariablesIF {
   }
 
   /**
-   * Converts byte to int.
-   * @param index in the byte[] to convert
+   * Get the indexth byte as an int.
+   * @param index in the byte[]
    * @return int  byte as int
    */
   private final int getInt( int index ) {
     return input[ index ] & 0xff;
   }
 
-  public String getIntervalTypeName() {
+  public int getIntervalStatType() {
     int byteOffset;
     switch (productDefinition) {
       case 8:
@@ -1196,11 +1196,10 @@ public final class Grib2PDSVariables implements GribPDSVariablesIF {
          break;
 
       default:
-        return null;
+        return -1;
     }
 
-    int statProcess = getInt(byteOffset);
-    return Grib2Tables.codeTable4_10short(statProcess);
+    return getInt(byteOffset);
   }
 
 }

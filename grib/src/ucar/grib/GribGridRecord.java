@@ -160,7 +160,7 @@ public final class GribGridRecord implements GridRecord {
    */
   public float lowerLimit = GribNumbers.UNDEFINED, upperLimit = GribNumbers.UNDEFINED;
 
-  public String intervalTypeName = null;
+  public int intervalStatType;
 
   /**
    * default constructor, used by GribReadIndex (binary indices)
@@ -430,6 +430,7 @@ public final class GribGridRecord implements GridRecord {
     if( productType > 7 && productType < 16 ) {
       int span = forecastTime - startOfInterval;
       interval = Integer.toString( span ) + Grib2Tables.getTimeUnitFromTable4_4( timeUnit );
+      String intervalTypeName = Grib2Tables.codeTable4_10short(intervalStatType);
       if (intervalTypeName != null) interval += "_"+intervalTypeName;
     }
 

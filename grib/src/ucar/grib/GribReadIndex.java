@@ -271,7 +271,7 @@ public class GribReadIndex {
               ggr.levelValue1 = pdsv.getValueFirstFixedSurface();
               ggr.levelType2 = pdsv.getTypeSecondFixedSurface();
               ggr.levelValue2 = pdsv.getValueSecondFixedSurface();
-              ggr.intervalTypeName = pdsv.getIntervalTypeName();
+              ggr.intervalStatType = pdsv.getIntervalStatType();
 
               tunit = pdsv.getTimeRangeUnit();
               ggr.center = center;

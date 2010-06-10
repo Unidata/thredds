@@ -321,8 +321,12 @@ public class Grib2Table extends JPanel {
       return Grib2Tables.codeTable4_5(ggr.levelType1);
     }
 
-     public final String getProcType() {
+    public final String getProcType() {
       return Grib2Tables.codeTable4_3(ggr.typeGenProcess);
+    }
+
+    public final String getStatType() {
+      return Grib2Tables.codeTable4_10short(ggr.intervalStatType);
     }
 
     public int getN() {
@@ -864,7 +868,7 @@ public class Grib2Table extends JPanel {
     }
 
     public final String getStatType() {
-      return pdsv.getIntervalTypeName();
+      return Grib2Tables.codeTable4_10short(pdsv.getIntervalStatType());
     }
 
     public final boolean isEnsemble() {

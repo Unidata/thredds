@@ -2214,11 +2214,23 @@ public class ToolsUI extends JPanel {
   private class Grib2Panel extends OpPanel {
     ucar.unidata.io.RandomAccessFile raf = null;
     Grib2Table gribTable;
+    boolean useIndex = true;
 
     Grib2Panel(PreferencesExt p) {
       super(p, "file:", true, false);
       gribTable = new Grib2Table(prefs);
       add(gribTable, BorderLayout.CENTER);
+
+      AbstractAction indexAction = new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+          Boolean state = (Boolean) getValue(BAMutil.STATE);
+          useIndex = state.booleanValue();
+        }
+      };
+      useIndex = prefs.getBoolean("useIndex", true);
+      BAMutil.setActionProperties(indexAction, "addCoords", "use index", true, 'C', -1);
+      indexAction.putValue(BAMutil.STATE, new Boolean(useIndex));
+      BAMutil.addActionToContainer(buttPanel, indexAction);
     }
 
     boolean process(Object o) {
@@ -2229,9 +2241,14 @@ public class ToolsUI extends JPanel {
       try {
         if (raf != null)
           raf.close();
-        raf = new ucar.unidata.io.RandomAccessFile(command, "r");
 
-        gribTable. setGribFile(raf);
+        if (useIndex) {
+          gribTable.setGribFile(command);
+
+        } else {
+          raf = new ucar.unidata.io.RandomAccessFile(command, "r");
+          gribTable.setGribFile(raf);
+        }
 
       } catch (FileNotFoundException ioe) {
         JOptionPane.showMessageDialog(null, "Grib2Table cant open " + command + "\n" + ioe.getMessage());
@@ -2251,6 +2268,7 @@ public class ToolsUI extends JPanel {
 
     void save() {
       gribTable.save();
+      prefs.putBoolean("useIndex", useIndex);      
       super.save();
     }
 
@@ -3683,22 +3701,6 @@ public class ToolsUI extends JPanel {
       BAMutil.addActionToContainer(buttPanel, netcdfAction);
 
       dsViewer.addActions( buttPanel);
-
-
-      /* AbstractAction syncAction = new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        NetcdfFile ds = dsViewer.getDataset();
-        if (ds != null)
-          try {
-            ds.syncExtend();
-            dsViewer.setDataset(ds);
-          } catch (IOException e1) {
-            e1.printStackTrace();
-          }
-      }
-    };
-    BAMutil.setActionProperties(syncAction, null, "SyncExtend", false, 'D', -1);
-    BAMutil.addActionToContainer(buttPanel, syncAction); */
     }
 
     boolean process(Object o) {
