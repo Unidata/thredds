@@ -45,8 +45,6 @@ import java.net.URISyntaxException;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.HttpClient;
 import ucar.nc2.util.net.HttpClientManager;
 
 /**

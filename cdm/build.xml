@@ -88,7 +88,8 @@
     <include name="external/${ehcache.jar}"/>
     <include name="release/${grib.jar}"/>
     <include name="release/${opendap.jar}"/>
-    <include name="external/${httpclient3.jar}"/>
+    <include name="external/${httpcore4.jar}"/>
+    <include name="external/${httpclient4.jar}"/>
     <include name="external/${jdom.jar}"/>
     <include name="external/${loggingAPI.jar}"/>
     <include name="external/${protobuf.jar}"/>
@@ -103,7 +104,8 @@
     <include name="lib/${ehcache.jar}"/>
     <include name="lib/${grib.jar}"/>
     <include name="lib/${opendap.jar}"/>
-    <include name="lib/${httpclient3.jar}"/>
+    <include name="lib/${httpcore4.jar}"/>
+    <include name="lib/${httpclient4.jar}"/>
     <include name="lib/${jdom.jar}"/>
     <include name="lib/${loggingAPI.jar}"/>
     <include name="lib/${visadNoDods.jar}"/>
@@ -140,7 +142,7 @@
             value="${jgoodies.jar} ${grib.jar} ${jdom.jar} ${opendap.jar} ${http-codec.jar} ${httpclient3.jar} ${http-logging.jar} ${loggingAPI.jar}
             ${logging-minimal.jar} ${protobuf.jar} ${resourcesOptional.jar} ${spring.jar} ${visadNoDods.jar}"/ -->
   <property name="ClassPath-CommandLine"
-            value="lib/${grib.jar}:lib/${jdom.jar}:lib/${httpclient3.jar}:lib/${http-codec.jar}:lib/${http-logging.jar}:lib/${loggingAPI.jar}:lib/${logging-minimal.jar}:lib/${jgoodies.jar}:lib/${spring.jar}:lib/${unidatacommon.jar}:lib/${visadNoDods.jar}"/>
+            value="lib/${grib.jar}:lib/${jdom.jar}:lib/${httpcore4.jar}:lib/${httpclient4.jar}:lib/${http-codec.jar}:lib/${http-logging.jar}:lib/${loggingAPI.jar}:lib/${logging-minimal.jar}:lib/${jgoodies.jar}:lib/${spring.jar}:lib/${unidatacommon.jar}:lib/${visadNoDods.jar}"/>
 
   <!-- targets -->
   <target name="init">
@@ -325,7 +327,8 @@
         <include name="release/${unidatacommon.jar}"/>
         <include name="release/${grib.jar}"/>
         <include name="external/${jdom.jar}"/>
-        <include name="external/${httpclient3.jar}"/>
+        <include name="external/${httpcore4.jar}"/>
+        <include name="external/${httpclient4.jar}"/>
         <include name="external/${http-codec.jar}"/>
         <include name="external/${http-logging.jar}"/>
         <include name="external/${loggingAPI.jar}"/>
@@ -400,7 +403,8 @@
         <!-- include name="release/${unidatacommon.jar}"/ -->
         <include name="release/${grib.jar}"/>
         <include name="external/${jdom.jar}"/>
-        <include name="external/${httpclient3.jar}"/>
+        <include name="external/${httpcore4.jar}"/>
+        <include name="external/${httpclient4.jar}"/>
         <include name="external/${http-codec.jar}"/>
         <include name="external/${http-logging.jar}"/>
         <include name="external/${loggingAPI.jar}"/>
@@ -889,8 +893,6 @@
              signedjar="${webstart_dir}/jdom.jar" storepass="${keystore.password}"/>
     <signjar alias="idv" jar="${lib.dir}/external/${jgoodies.jar}" keystore="${keystore}"
              signedjar="${webstart_dir}/jgoodies.jar" storepass="${keystore.password}"/>
-    <signjar alias="idv" jar="${lib.dir}/external/${httpclient3.jar}" keystore="${keystore}"
-             signedjar="${webstart_dir}/httpclient.jar" storepass="${keystore.password}"/>
     <signjar alias="idv" jar="${lib.dir}/external/${httpclient4.jar}" keystore="${keystore}"
              signedjar="${webstart_dir}/httpclient4.jar" storepass="${keystore.password}"/>
     <signjar alias="idv" jar="${lib.dir}/external/${httpcore4.jar}" keystore="${keystore}"
