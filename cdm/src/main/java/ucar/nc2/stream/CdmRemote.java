@@ -33,15 +33,8 @@ package ucar.nc2.stream;
 
 
 
-import opendap.dap.DConnect2;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.impl.client.AbstractHttpClient;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
-import org.apache.http.params.BasicHttpParams;
 import org.apache.http.Header;
 
 import ucar.ma2.Array;
@@ -122,7 +115,8 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
       if (showRequest) System.out.printf(" ncstream request %s %n", url);
 
 
-      int statusCode = httpClient.doGet(url);
+       httpClient.setMethodGet(url);
+        int statusCode = httpClient.execute();
 
       if (statusCode == 404)
         throw new FileNotFoundException(method.getURI() + " " + response.getStatusLine());
@@ -158,7 +152,8 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
 
     try {
 
-      int statusCode = httpClient.doGet(sbuff.toString());
+      httpClient.setMethodGet(sbuff.toString());
+        int statusCode = httpClient.execute();
 
       if (statusCode == 404)
         throw new FileNotFoundException(httpClient.getURI() + " " + httpClient.getStatusLine());
@@ -198,7 +193,8 @@ if(httpClient != null) httpClient.close();
     if (showRequest)
       System.out.println("CdmRemote sendQuery=" + sbuff);
 
-    int statusCode = httpClient.doGet(sbuff.toString());
+    httpClient.setMethodGet(sbuff.toString());
+      int statusCode = httpClient.execute();
 
     if (statusCode == 404)
       throw new FileNotFoundException(httpClient.getURI() + " " + httpClient.getStatusLine());

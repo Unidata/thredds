@@ -125,7 +125,7 @@ public class HttpClientManager {
     }
 
     public static void clearState() {
-        _client.clear();
+        _client.close();
     }
 
     /**
@@ -137,12 +137,10 @@ public class HttpClientManager {
      */
     public static String getContent(String urlString) throws IOException {
 
-        try {
-            _client.doGet(urlString);
+       try {
+            _client.setMethodGet(urlString);
             return _client.getContentString();
-        } finally {
-            _client.close();
-        }
+       } finally {_client.close();}
     }
 
     /**
@@ -157,7 +155,8 @@ public class HttpClientManager {
         try {
             _client.setHeader("Accept-Encoding", "gzip,deflate");
 
-            int resultCode = _client.doPut(urlString, content);
+             _client.setMethodPut(urlString, content);
+            int resultCode = _client.execute();
 
             if (resultCode == 302) {
                 String redirectLocation;
@@ -181,7 +180,8 @@ public class HttpClientManager {
 
         try {
             _client.setHeader("Accept-Encoding", "gzip,deflate");
-            int status = _client.doGet(urlString);
+             _client.setMethodGet(urlString);
+            int status = _client.execute();
             if (status != 200) {
                 throw new HttpWrapException("failed status = " + status);
             }
@@ -218,7 +218,8 @@ public class HttpClientManager {
         try {
             _client.setHeader("Accept-Encoding", "gzip,deflate");
 
-            int status = _client.doGet(urlString);
+             _client.setMethodGet(urlString);
+            int status = _client.execute();
 
             if (status != 200) {
                 throw new RuntimeException("failed status = " + status);
@@ -258,7 +259,8 @@ public class HttpClientManager {
         try {
             _client.setHeader("Accept-Encoding", "gzip,deflate");
             _client.setHeader("Range", "bytes=" + start + "-" + end);
-            int status = _client.doGet(urlString);
+             _client.setMethodGet(urlString);
+            int status = _client.execute();
             if ((status != 200) && (status != 206)) {
                 throw new HttpWrapException("failed status = " + status);
             }

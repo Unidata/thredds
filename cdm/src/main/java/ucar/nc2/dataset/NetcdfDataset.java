@@ -32,17 +32,7 @@
  */
 package ucar.nc2.dataset;
 
-import opendap.dap.DConnect2;
-import org.apache.http.HttpMessage;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
 import org.apache.http.Header;
-import org.apache.http.client.methods.HttpHead;
-import org.apache.http.impl.client.AbstractHttpClient;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
-import org.apache.http.message.AbstractHttpMessage;
-import org.apache.http.params.BasicHttpParams;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
@@ -725,7 +715,8 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
       return result;
 
     try {
-      int statusCode = httpClient.doHead(location);
+     httpClient.setMethodHead(location);
+        int statusCode = httpClient.execute();
       if (statusCode >= 300) {
         if (statusCode == 401)
           throw new IOException("Unauthorized to open dataset " + location);
@@ -750,7 +741,8 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   // not sure what other opendap servers do, so fall back on check for dds
   static private ServiceType checkIfDods(String location) throws IOException {
     try {
-      int status = httpClient.doHead(location+".dds");
+      httpClient.setMethodHead(location+".dds");
+        int status = httpClient.execute();
       if (status == 200) {
         Header h = httpClient.getHeader("Content-Description");
         if ((h != null) && (h.getValue() != null)) {
