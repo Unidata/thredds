@@ -109,7 +109,7 @@ class H5tiledLayoutBB implements LayoutBB {
     // create the data chunk iterator
     H5header.DataBTree.DataChunkIterator iter = vinfo.btree.getDataChunkIterator(this.want);
     DataChunkIterator dcIter = new DataChunkIterator(iter);
-    delegate = new LayoutBBTiled(dcIter, chunkSize, elemSize, wantSection);
+    delegate = new LayoutBBTiled(dcIter, chunkSize, elemSize, this.want);
     
     if (debug) System.out.println(" H5tiledLayout: " + this);
   }
