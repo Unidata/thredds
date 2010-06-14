@@ -164,8 +164,8 @@ public class CatalogFactoryCancellable extends InvCatalogFactory {
       try {
 
         client = HttpClientManager.getHttpClient();
-
-        int statusCode = client.doGet(catalogName);
+        client.setMethodGet(catalogName);
+        int statusCode = client.execute();
 
         if (statusCode == 404)
           throw new FileNotFoundException(client.getPath() + " " + client.getStatusLine());

@@ -196,7 +196,8 @@ public class URLDumpPane extends TextHistoryPane {
 
       //response
       BasicHttpContext localContext = new BasicHttpContext();
-      httpclient.doGet(urlString, localContext);
+      httpclient.setMethodGet(urlString, localContext);
+      httpclient.execute();
 
       appendLine("\nHttpContext: " + localContext);
       showAtribute(ExecutionContext.HTTP_CONNECTION, localContext);
@@ -283,14 +284,14 @@ public class URLDumpPane extends TextHistoryPane {
       httpclient.setHeader("Accept-Encoding", "gzip,deflate");
 
       if (cmd == Command.GET)
-          httpclient.doGet(urlString);
+          httpclient.setMethodGet(urlString);
       else if (cmd == Command.HEAD)
-        httpclient.doHead(urlString);
+        httpclient.setMethodHead(urlString);
       else if (cmd == Command.OPTIONS)
-        httpclient.doOptions(urlString);
+        httpclient.setMethodOptions(urlString);
       else if (cmd == Command.PUT) {
         try {
-            httpclient.doPut(urlString,ta.getText());
+            httpclient.setMethodPut(urlString,ta.getText());
         } catch (Exception e) {
           ByteArrayOutputStream bos = new ByteArrayOutputStream(5000);
           e.printStackTrace(new PrintStream(bos));
@@ -299,6 +300,7 @@ public class URLDumpPane extends TextHistoryPane {
         }
 
       }
+       httpclient.execute();
       appendLine("HttpClient " + httpclient.getMethod() + " " + urlString);
       appendLine("   do Authentication= " + httpclient.getDoAuthentication());
       appendLine("   follow Redirects= " + httpclient.getFollowRedirects());

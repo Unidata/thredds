@@ -206,7 +206,8 @@ public class WmsViewer extends JPanel {
     info.append(url + "\n");
 
     
-      int statusCode = httpClient.doGet(url);
+      httpClient.setMethodGet(url);
+          int statusCode = httpClient.execute();
 
       info.append(" Status = " + httpClient.getStatusCode() + "\n");
       info.append(" Status Line = " + httpClient.getStatusLine() + "\n");
@@ -287,7 +288,8 @@ public class WmsViewer extends JPanel {
     info.append(url + "\n");
 
 
-      int statusCode = httpClient.doGet(url);
+      httpClient.setMethodGet(url);
+          int statusCode = httpClient.execute();
 
       info.append(" Status = " + httpClient.getStatusCode() + "\n");
       info.append(" Status Line = " + httpClient.getStatusLine() + "\n");
