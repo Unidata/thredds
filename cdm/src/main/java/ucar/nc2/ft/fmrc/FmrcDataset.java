@@ -425,7 +425,7 @@ class FmrcDataset {
     if (is2D)
       return getRunDimensionName() + " " + timeCoordName + " " + coords;
     else
-      return getRunDimensionName() + "_" + timeCoordName + " " + timeCoordName + " " + coords;
+      return timeCoordName + "_" +  getRunDimensionName() + " " + timeCoordName + " " + coords;
   }
 
   private void addAttributeInfo(NetcdfDataset result, String attName, String info) {

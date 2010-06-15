@@ -713,8 +713,17 @@ public class GridVariable {
    * @return long variable name
    */
   private String makeLongName(GridRecord gr, GridTableLookup lookup) {
+    return GridIndexToNC.makeVariableName(gr, lookup, true, true, true, true);
 
+    /*
     GridParameter param = lookup.getParameter(gr);
+    String paramName = param.getDescription();
+
+    String suffix = GridIndexToNC.makeSuffixName(gr, lookup);
+    paramName = (suffix.length() == 0) ? paramName : paramName + "_" + suffix;
+
+    String suffix = GridIndexToNC.makeSuffixName(gr, lookup);
+    paramName = (suffix.length() == 0) ? paramName : paramName + "_" + suffix;
 
     String levelName;
     if ((lookup instanceof GempakLookup) || (lookup instanceof McIDASLookup)) {
@@ -722,12 +731,10 @@ public class GridVariable {
     } else {
       levelName = GridIndexToNC.makeLevelName(gr, lookup);
     }
-    String suffix = GridIndexToNC.makeSuffixName(gr, lookup);
-    String paramName = param.getDescription();
-    paramName = (suffix.length() == 0) ? paramName : paramName + "_" + suffix;
+
     paramName = (levelName.length() == 0) ? paramName : paramName + " @ " + levelName;
 
-    return paramName;
+    return paramName; */
   }
 
 

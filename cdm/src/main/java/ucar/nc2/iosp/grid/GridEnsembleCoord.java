@@ -130,7 +130,7 @@ public class GridEnsembleCoord {
     ensembles = -1;
     for( GridRecord gr : records ) {
       GribGridRecord ggr = (GribGridRecord) gr;
-      pdn = ggr.productType;
+      pdn = ggr.productTemplate;
       int ensNumber = ggr.getEnsembleNumber();
       if (ensNumber == GribNumbers.UNDEFINED) {
         ensembles = -1;

@@ -109,7 +109,7 @@ public class TestReadAndCountDods extends TestCase {
     //NetcdfFileCache.clearCache( true);
   }
 
-  public void testProblem() throws Exception {
+  public void utestProblem() throws Exception {
     TestReadandCount.doOne("","http://motherlode.ucar.edu:8080/thredds/dodsC/modelsNc/NCEP/GFS/Global_5x2p5deg/GFS_Global_5x2p5deg_20100428_1200.nc", 31, 4, 8, 4);
   }
 

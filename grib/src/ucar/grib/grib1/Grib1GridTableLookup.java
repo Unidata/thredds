@@ -157,7 +157,7 @@ public class Grib1GridTableLookup implements GridTableLookup {
    */
   public final String getProductDefinitionName(GridRecord gr) {
     GribGridRecord ggr = (GribGridRecord) gr;
-    return Grib1Tables.getProductDefinitionName( ggr.productType );
+    return Grib1Tables.getProductDefinitionName( ggr.productTemplate);
   }
 
   /**

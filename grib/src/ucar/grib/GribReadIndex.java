@@ -167,7 +167,7 @@ public class GribReadIndex {
           // Direct read into GribGridRecord
           GribGridRecord ggr = new GribGridRecord();
           if (index_version.equals("7.0")) {
-            ggr.productType = dis.readInt();
+            ggr.productTemplate = dis.readInt();
             ggr.discipline = dis.readInt();
             ggr.category = dis.readInt();
             ggr.paramNumber = dis.readInt();
@@ -213,7 +213,7 @@ public class GribReadIndex {
             if (grid_edition_1) {
               Grib1PDSVariables pdsv = new Grib1PDSVariables(pdsData);
               // read Grib1 vars
-              ggr.productType = pdsv.getProductDefinition();
+              ggr.productTemplate = pdsv.getProductDefinition();
               ggr.category = pdsv.getParameterCategory();
               ggr.paramNumber = pdsv.getParameterNumber();
               ggr.typeGenProcess = pdsv.getTypeGenProcess();
@@ -250,11 +250,11 @@ public class GribReadIndex {
               }
             } else {  // Grib2
               Grib2PDSVariables pdsv = new Grib2PDSVariables(pdsData);
-              ggr.productType = pdsv.getProductDefinition();
+              ggr.productTemplate = pdsv.getProductDefinition();
               // These are accumulation variables. Even though 8 is accumulation
               // variable, it's used in the older models that we want to be left as is.
-              if (ggr.productType > 7 && ggr.productType < 16 ||
-                  ggr.productType == 42 || ggr.productType == 43) {
+              if (ggr.productTemplate > 7 && ggr.productTemplate < 16 ||
+                  ggr.productTemplate == 42 || ggr.productTemplate == 43) {
                 int[] interval = pdsv.getForecastTimeInterval();
                 ggr.startOfInterval = interval[0];
                 ggr.forecastTime = interval[1];
@@ -287,7 +287,7 @@ public class GribReadIndex {
                 ggr.lowerLimit = pdsv.getValueLowerLimit();
                 ggr.upperLimit = pdsv.getValueUpperLimit();
               }
-              if ( debugParse && ggr.productType == 31 ) { // Satellite data
+              if ( debugParse && ggr.productTemplate == 31 ) { // Satellite data
                 int nb = pdsv.getNB();
                 System.out.println( "NB ="+ pdsv.getNB() );
                 int[] series = pdsv.getSatelliteSeries();
@@ -335,7 +335,7 @@ public class GribReadIndex {
             ggr.timeUnit = tunit;
 
             if (debugParse)
-              System.out.println(ggr.productType + " " + ggr.discipline + " " +
+              System.out.println(ggr.productTemplate + " " + ggr.discipline + " " +
                   ggr.category + " " + ggr.paramNumber + " " +
                   ggr.typeGenProcess + " " + ggr.levelType1 + " " +
                   ggr.levelValue1 + " " + ggr.levelType2 + " " +

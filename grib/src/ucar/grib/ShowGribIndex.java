@@ -48,7 +48,6 @@ import ucar.grid.GridRecord;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.*;
-import java.net.URL;
 import java.util.*;
 
 /**
@@ -105,7 +104,7 @@ public class ShowGribIndex {
       List<GridRecord> records = index.getGridRecords();
       for (GridRecord gr : records) {
         GribGridRecord ggr = (GribGridRecord) gr;
-        System.out.println(ggr.productType + " " + ggr.discipline + " " +
+        System.out.println(ggr.productTemplate + " " + ggr.discipline + " " +
             ggr.category + " " + ggr.paramNumber + " " +
             ggr.typeGenProcess + " " + ggr.levelType1 + " " +
             ggr.levelValue1 + " " + ggr.levelType2 + " " +

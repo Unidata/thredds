@@ -162,7 +162,7 @@ public final class Grib2GridTableLookup implements GridTableLookup {
    */
   public final String getProductDefinitionName(GridRecord gr) {
     GribGridRecord ggr = (GribGridRecord) gr;
-    return Grib2Tables.codeTable4_0(ggr.productType);
+    return Grib2Tables.codeTable4_0(ggr.productTemplate);
   }
 
   /**
@@ -173,7 +173,7 @@ public final class Grib2GridTableLookup implements GridTableLookup {
    */
   public final int getProductDefinition(GridRecord gr) {
     GribGridRecord ggr = (GribGridRecord) gr;
-    return ggr.productType;
+    return ggr.productTemplate;
   }
 
   /**
@@ -284,6 +284,16 @@ public final class Grib2GridTableLookup implements GridTableLookup {
   public String makeSuffix( GridRecord gr ) {
     GribGridRecord ggr = (GribGridRecord) gr;
     return ggr.makeSuffix( );
+  }
+
+  /**
+   * Makes a Ensemble, Derived, Probability or error Suffix
+   * @param gr GridRecord
+   * @return suffix
+   */
+  public String makeIntervalName( GridRecord gr ) {
+    GribGridRecord ggr = (GribGridRecord) gr;
+    return ggr.makeIntervalName( );
   }
 
   /**

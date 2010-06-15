@@ -3,7 +3,6 @@ package ucar.nc2.iosp.grib;
 import junit.framework.TestCase;
 import ucar.grib.GribGridRecord;
 import ucar.grib.GribNumbers;
-import ucar.grib.grib2.Grib2GridDefinitionSection;
 import ucar.grib.grib2.Grib2Tables;
 import ucar.grib.grib2.ParameterTable;
 import ucar.grid.GridIndex;
@@ -82,8 +81,17 @@ public class TestIntervalVars extends TestCase {
     List<GridRecord> grList = index.getGridRecords();
     for (GridRecord gr : grList) {
       GribGridRecord ggr = (GribGridRecord) gr;
-      int interval = ggr.startOfInterval;
-      if ((interval == GribNumbers.UNDEFINED) || (interval == GribNumbers.MISSING)) continue;
+      int startInterval = ggr.startOfInterval;
+      if ((startInterval == GribNumbers.UNDEFINED) || (startInterval == GribNumbers.MISSING)) continue;
+
+      // check valid time == base time + forecast
+      int forecast = ggr.forecastTime;
+      Date validTime = ggr.getValidTime();
+      Date refTime = ggr.getReferenceTime();
+      if (forecast != startInterval) {
+        String name = ParameterTable.getParameterName(ggr.discipline, ggr.category, ggr.paramNumber) +"/" + Grib2Tables.codeTable4_5(ggr.levelType1);
+        System.out.printf(" **time %s %d != %d%n", name, forecast, startInterval);
+      }
 
       Product bean = pdsSet.get(makeUniqueId(ggr));
       if (bean == null) {
@@ -108,7 +116,7 @@ public class TestIntervalVars extends TestCase {
 
   private int makeUniqueId(GribGridRecord ggr) {
     int result = 17;
-    result += result*37 + ggr.productType;       // productType, discipline, category, paramNumber
+    result += result*37 + ggr.productTemplate;       // productType, discipline, category, paramNumber
     result += result*37 + ggr.discipline;
     result += result*37 + ggr.category;
     result += result*37 + ggr.paramNumber;

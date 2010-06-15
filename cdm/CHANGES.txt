@@ -4,8 +4,10 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.2:
  4: (xx-xx-xx)
+  Opendap : use HttpClient version 4.
+  hdf5: bug in CHAR type when compressed
   grib refactor - time intervals
-  ToolsUI = IOSP/GRIB2 tab
+  ToolsUI - IOSP/GRIB2 tab
   Comparators using longs were wrong, eg DiskCache (bug fix from Steve Ansari)
   CF1 use super.getAxisType()
   CF1 break apart convention list

@@ -142,7 +142,7 @@ public class GempakGridServiceProvider extends GridServiceProvider {
             new GempakLookup(
                 (GempakGridRecord) index.getGridRecords().get(0));
         GridIndexToNC delegate = new GridIndexToNC();
-        delegate.setUseDescriptionForVariableName(false);
+        //delegate.setUseDescriptionForVariableName(false);
         delegate.open(index, lookup, 4, ncfile, fmrcCoordSys, cancelTask);
         ncfile.finish();
     }

@@ -276,7 +276,7 @@ public class Grib2Table extends JPanel {
 
   private int makeUniqueId(GribGridRecord ggr) {
     int result = 17;
-    result += result*37 + ggr.productType;       // productType, discipline, category, paramNumber
+    result += result*37 + ggr.productTemplate;       // productType, discipline, category, paramNumber
     result += result*37 + ggr.discipline;
     result += result*37 + ggr.category;
     result += result*37 + ggr.paramNumber;
@@ -314,7 +314,7 @@ public class Grib2Table extends JPanel {
      }
 
     public String getParamNo() {
-      return ggr.productType+"-"+ggr.discipline+"-"+ggr.category + "-" + ggr.paramNumber;
+      return ggr.productTemplate +"-"+ggr.discipline+"-"+ggr.category + "-" + ggr.paramNumber;
     }
 
     public final String getSurfaceType() {

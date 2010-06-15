@@ -477,6 +477,8 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
     HttpSession session = request.getSession();
     session.removeAttribute(reqPath); // work done in the listener
 
+    response.setHeader("XDODS-Server", getServerVersion()); // needed by client
+
     /* if (path.endsWith(".close")) {
       closeSession(request, response);
       response.setContentLength(0);

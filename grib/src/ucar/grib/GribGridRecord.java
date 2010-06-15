@@ -54,15 +54,34 @@ import java.text.SimpleDateFormat;
 public final class GribGridRecord implements GridRecord {
 
   /**
-   * Represents the PDS section of a Grib Messaage.
+   * Represents the PDS section of a Grib Message.
    * Probably only set for Ensemble data
    */
   //public GribPDSVariablesIF pdsVars = null;
 
+  /** discipline (from indicator section) */
+  public int discipline;
+
+
+  //// from  identification section
+
   /**
-   * productType, discipline, category, paramNumber of record.
+   * refTime as Date
    */
-  public int productType, discipline, category, paramNumber;
+  public Date refTime;
+
+  /**
+   * center  subCenter  table of record.
+   */
+  public int center = -1, subCenter = -1, table = -1;
+
+
+  //// these are all from the PDS
+
+  /**
+   * product definition template, param category, param number
+   */
+  public int productTemplate, category, paramNumber;
 
   /**
    * typeGenProcess of record.
@@ -78,26 +97,6 @@ public final class GribGridRecord implements GridRecord {
    * levelValue1, levelValue2  of record.
    */
   public double levelValue1, levelValue2;
-
-  /**
-   * gdsKey  of record.
-   */
-  public int gdsKey;
-
-  /**
-   * offset1 of record.
-   */
-  public long offset1;
-
-  /**
-   * offset2 of record.
-   */
-  public long offset2;
-
-  /**
-   * refTime as Date.
-   */
-  public Date refTime;
 
   /**
    * forecastTime as int.
@@ -126,22 +125,12 @@ public final class GribGridRecord implements GridRecord {
   public int decimalScale = GribNumbers.UNDEFINED;
 
   /**
-   * bms (Bit mapped section) Exists of record.
-   */
-  public boolean bmsExists = true;
-
-  /**
-   * center  subCenter  table of record.
-   */
-  public int center = -1, subCenter = -1, table = -1;
-
-  /**
    * is this record an Ensemble
    */
   public boolean isEnsemble = false;
 
   /**
-   *   Ensemble number.
+   * Ensemble number.
    */
   public int ensembleNumber  = GribNumbers.UNDEFINED;
 
@@ -161,6 +150,28 @@ public final class GribGridRecord implements GridRecord {
   public float lowerLimit = GribNumbers.UNDEFINED, upperLimit = GribNumbers.UNDEFINED;
 
   public int intervalStatType;
+
+  ///////////////////////
+
+  /**
+   * bms (Bit mapped section) Exists of record.
+   */
+  public boolean bmsExists = true;
+
+  /**
+   * gdsKey  of record.
+   */
+  public int gdsKey;
+
+  /**
+   * offset1 of record.
+   */
+  public long offset1;
+
+  /**
+   * offset2 of record.
+   */
+  public long offset2;
 
   /**
    * default constructor, used by GribReadIndex (binary indices)
@@ -206,7 +217,7 @@ public final class GribGridRecord implements GridRecord {
       //this.gdsKey = gdsKeyS.hashCode();
       this.gdsKey = Integer.parseInt(gdsKeyS);
 
-      productType = Integer.parseInt(productTypeS);
+      productTemplate = Integer.parseInt(productTypeS);
       discipline = Integer.parseInt(disciplineS);
       category = Integer.parseInt(categoryS);
       paramNumber = Integer.parseInt(paramS);
@@ -395,7 +406,7 @@ public final class GribGridRecord implements GridRecord {
   @Override
   public String toString() {
     return "GribGridRecord{" +
-            "productType=" + productType +
+            "productType=" + productTemplate +
             ", discipline=" + discipline +
             ", category=" + category +
             ", paramNumber=" + paramNumber +
@@ -419,6 +430,26 @@ public final class GribGridRecord implements GridRecord {
   }
 
   /**
+   * Makes an interval name for template between 8 and 15 inclusive.
+   *
+   * @return interval name if there is one or an empty string
+   */
+  public String makeIntervalName( ) {
+
+    if( productTemplate > 7 && productTemplate < 16 ) {
+      int span = forecastTime - startOfInterval;
+      String intervalName = Integer.toString( span ) + Grib2Tables.getTimeUnitFromTable4_4( timeUnit );
+      String intervalTypeName = Grib2Tables.codeTable4_10short(intervalStatType);
+      if (intervalTypeName != null)
+        intervalName += "_"+intervalTypeName;
+      return intervalName;
+
+    } else
+      return "";
+  }
+
+
+  /**
    * Makes a Ensemble, Derived, Probability or error Suffix
    *
    * @return suffix as String
@@ -426,15 +457,15 @@ public final class GribGridRecord implements GridRecord {
   public String makeSuffix( ) {
 
     String interval = "";
-    // check for accumulation/probability/percentile variables
+    /* check for accumulation/probability/percentile variables
     if( productType > 7 && productType < 16 ) {
       int span = forecastTime - startOfInterval;
       interval = Integer.toString( span ) + Grib2Tables.getTimeUnitFromTable4_4( timeUnit );
       String intervalTypeName = Grib2Tables.codeTable4_10short(intervalStatType);
       if (intervalTypeName != null) interval += "_"+intervalTypeName;
-    }
+    } */
 
-    switch (productType) {
+    switch (productTemplate) {
       case 0:
       case 7:
       case 40: {

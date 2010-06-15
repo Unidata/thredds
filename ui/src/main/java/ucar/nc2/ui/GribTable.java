@@ -322,7 +322,7 @@ public class GribTable extends JPanel {
     }
 
     public String getParamNo() {
-      return gr.productType + "-" + gr.category + "-" + gr.paramNumber;
+      return gr.productTemplate + "-" + gr.category + "-" + gr.paramNumber;
     }
   }
 
