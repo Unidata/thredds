@@ -46,6 +46,7 @@ import uk.ac.rdg.resc.ncwms.wms.Layer;
 import uk.ac.rdg.resc.ncwms.wms.VectorLayer;
 
 import java.util.*;
+import thredds.server.wms.config.WmsDetailedConfig;
 
 /**
  * A {@link uk.ac.rdg.resc.ncwms.wms.Dataset} that provides access to layers read from
@@ -53,33 +54,35 @@ import java.util.*;
  *
  * @author Jon
  */
-class ThreddsDataset implements Dataset
+public class ThreddsDataset implements Dataset
 {
 
-  private final String id;
+  private final String urlPath;
   private final String title;
-  private final Map<String, ThreddsLayer> scalarLayers = new LinkedHashMap<String, ThreddsLayer>();
-  private final Map<String, VectorLayer> vectorLayers = new LinkedHashMap<String, VectorLayer>();
+  private final Map<String, ThreddsScalarLayer> scalarLayers =
+          new LinkedHashMap<String, ThreddsScalarLayer>();
+  private final Map<String, ThreddsVectorLayer> vectorLayers =
+          new LinkedHashMap<String, ThreddsVectorLayer>();
 
   /**
    * LayerBuilder used to create ThreddsLayers in CdmUtils.findAndUpdateLayers
    */
-  private static final LayerBuilder<ThreddsLayer> THREDDS_LAYER_BUILDER = new AbstractScalarLayerBuilder<ThreddsLayer>()
+  private static final LayerBuilder<ThreddsScalarLayer> THREDDS_LAYER_BUILDER = new AbstractScalarLayerBuilder<ThreddsScalarLayer>()
   {
     @Override
-    public ThreddsLayer newLayer( String id )
+    public ThreddsScalarLayer newLayer( String id )
     {
-      return new ThreddsLayer( id );
+      return new ThreddsScalarLayer( id );
     }
 
     @Override
-    public void setTimeValues( ThreddsLayer layer, List<DateTime> times )
+    public void setTimeValues( ThreddsScalarLayer layer, List<DateTime> times )
     {
       layer.setTimeValues( times );
     }
 
     @Override
-    public void setGridDatatype( ThreddsLayer layer, GridDatatype grid )
+    public void setGridDatatype( ThreddsScalarLayer layer, GridDatatype grid )
     {
       layer.setGridDatatype( grid );
     }
@@ -87,13 +90,10 @@ class ThreddsDataset implements Dataset
 
   /**
    * Creates a new ThreddsDataset with the given id from the given NetcdfDataset
-   *
-   * @throws java.io.IOException if there was an i/o error extracting a GridDataset
-   *                             from the given NetcdfDataset
    */
-  public ThreddsDataset( String id, GridDataset gridDataset )// throws IOException
+  public ThreddsDataset( String urlPath, GridDataset gridDataset, WmsDetailedConfig wmsConfig )
   {
-    this.id = id;
+    this.urlPath = urlPath;
     this.title = gridDataset.getTitle();
     
     NetcdfDataset ncDataset = (NetcdfDataset) gridDataset.getNetcdfFile();
@@ -107,14 +107,14 @@ class ThreddsDataset implements Dataset
     boolean scaleMissingDeferred = CdmUtils.isScaleMissingDeferred( ncDataset );
 
     // Now load the scalar layers
-    //GridDataset gd = CdmUtils.getGridDataset(ncDataset);
     CdmUtils.findAndUpdateLayers( gridDataset, THREDDS_LAYER_BUILDER, this.scalarLayers );
-    // Set the dataset property of each layer
-    for ( ThreddsLayer layer : this.scalarLayers.values() )
+    // Set the extra properties of each layer
+    for ( ThreddsScalarLayer layer : this.scalarLayers.values() )
     {
       layer.setDataReadingStrategy( drStrategy );
       layer.setScaleMissingDeferred( scaleMissingDeferred );
       layer.setDataset( this );
+      layer.setLayerSettings(wmsConfig.getSettings(layer));
     }
 
     // Find the vector quantities
@@ -122,23 +122,33 @@ class ThreddsDataset implements Dataset
     // Add the vector quantities to the map of layers
     for ( VectorLayer vecLayer : vectorLayersColl )
     {
-      this.vectorLayers.put( vecLayer.getId(), vecLayer );
+      // We must wrap these vector layers as ThreddsVectorLayers to ensure that
+      // the name of each layer matches its id.
+      ThreddsVectorLayer tdsVecLayer = new ThreddsVectorLayer(vecLayer);
+      tdsVecLayer.setLayerSettings(wmsConfig.getSettings(tdsVecLayer));
+      this.vectorLayers.put( vecLayer.getId(), tdsVecLayer );
     }
   }
 
   /**
-   * Returns the ID of this dataset, unique on the server.
+   * Uses the {@link #getDatasetPath() url path} as the unique id.
    */
   @Override
   public String getId()
   {
-    return this.id;
+    return this.urlPath;
   }
 
   @Override
   public String getTitle()
   {
     return this.title;
+  }
+
+  /** Gets the path that was specified on the incoming URL */
+  public String getDatasetPath()
+  {
+      return this.urlPath;
   }
 
   /**
@@ -162,9 +172,9 @@ class ThreddsDataset implements Dataset
    * @todo repetitive of code in ncwms.config.Dataset: any way to refactor?
    */
   @Override
-  public Layer getLayerById( String layerId )
+  public ThreddsLayer getLayerById( String layerId )
   {
-    Layer layer = this.scalarLayers.get( layerId );
+    ThreddsLayer layer = this.scalarLayers.get( layerId );
     if ( layer == null )
       layer = this.vectorLayers.get( layerId );
 

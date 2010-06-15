@@ -27,6 +27,7 @@
  */
 package thredds.server.wms;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
@@ -36,6 +37,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.ModelAndView;
+import thredds.server.wms.config.WmsConfigException;
+import thredds.server.wms.config.WmsDetailedConfig;
 import thredds.servlet.DatasetHandler;
 import thredds.servlet.ServletUtil;
 import thredds.servlet.UsageLog;
@@ -52,18 +55,21 @@ import uk.ac.rdg.resc.ncwms.wms.Layer;
 
 /**
  * <p>WmsController for THREDDS</p>
- *
+ * @todo get rid of System.out.println
+ * @todo Find better way to locate wmsStyleConfig file
  * @author Jon Blower
  */
 public final class ThreddsWmsController extends AbstractWmsController
 {
   private static final Logger log = LoggerFactory.getLogger( ThreddsWmsController.class );
 
+  private WmsDetailedConfig wmsConfig;
+
   private static final class ThreddsLayerFactory implements LayerFactory
   {
-    private Dataset ds;
+    private ThreddsDataset ds;
 
-    public ThreddsLayerFactory( Dataset ds )
+    public ThreddsLayerFactory( ThreddsDataset ds )
     {
       this.ds = ds;
     }
@@ -71,10 +77,30 @@ public final class ThreddsWmsController extends AbstractWmsController
     @Override
     public Layer getLayer( String layerName ) throws LayerNotDefinedException
     {
-      Layer layer = ds.getLayerById( layerName );
-      if ( layer == null ) throw new LayerNotDefinedException( ( layerName ) );
+      ThreddsLayer layer = ds.getLayerById( layerName );
+      if ( layer == null ) throw new LayerNotDefinedException( layerName );
       return layer;
     }
+  }
+
+  /**
+   * Called by Spring to initialize the controller. Loads the WMS configuration
+   * from /content/thredds/wmsStyleConfig.xml.
+   *
+   * @throws IOException if
+   * @throws WmsConfigException if can't find WMS config file.
+   */
+  public void init() throws Exception
+  {
+      super.init();
+      ThreddsServerConfig tdsServerConfig = (ThreddsServerConfig)this.serverConfig;
+      File wmsConfigFile = tdsServerConfig.getTdsContext().getConfigFileSource().getFile("wmsConfig.xml");
+      if (wmsConfigFile == null || !wmsConfigFile.exists() || !wmsConfigFile.isFile())
+      {
+          throw new WmsConfigException("Could not find wmsConfig.xml");
+      }
+      this.wmsConfig = WmsDetailedConfig.fromFile(wmsConfigFile);
+      log.info("Loaded WMS configuration from wmsConfig.xml");
   }
 
   @Override
@@ -100,13 +126,12 @@ public final class ThreddsWmsController extends AbstractWmsController
     try
     {
       RequestedDataset reqDataset = new RequestedDataset( httpServletRequest );
+      System.out.println("reqDataset.getPath() = " + reqDataset.getPath());
       if ( reqDataset.isRemote() && ! threddsServerConfig.isAllowRemote() )
       {
         log.info( "dispatchWmsRequest(): WMS service not supported for remote datasets." );
         log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_FORBIDDEN, -1 ) );
         throw new WmsException( "WMS service not supported for remote (non-server-resident) datasets.", "");
-        //httpServletResponse.sendError( HttpServletResponse.SC_FORBIDDEN, "WMS service not supported for remote datasets." );
-        //return null;
       }
 
       gd = reqDataset.openAsGridDataset( httpServletRequest, httpServletResponse );
@@ -124,9 +149,9 @@ public final class ThreddsWmsController extends AbstractWmsController
       // created when only a single layer is needed, e.g. for a GetMap operation. Should create
       //  a means to extract a single layer without creating a whole dataset; however, this
       //  could be tricky when dealing with virtual layers (e.g. velocities).
-      Dataset ds = new ThreddsDataset( reqDataset.getPath(), gd );
+      ThreddsDataset ds = new ThreddsDataset( reqDataset.getPath(), gd, this.wmsConfig );
       // Create an object that extracts layers from the dataset
-      LayerFactory layerFactory = new ThreddsLayerFactory( ds );
+      ThreddsLayerFactory layerFactory = new ThreddsLayerFactory( ds );
 
       ModelAndView modelAndView;
       if ( request.equals( "GetCapabilities" ) )
@@ -151,6 +176,10 @@ public final class ThreddsWmsController extends AbstractWmsController
         // and range for a given layer
         modelAndView = getLegendGraphic( params, layerFactory, httpServletResponse );
       }
+      else if ( request.equals( "GetLayerMetadata" ) )
+      {
+        modelAndView = getLayerMetadata( params, layerFactory );
+      }
       else if ( request.equals( "GetTransect" ) )
       {
         modelAndView = getTransect( params, layerFactory, httpServletResponse, usageLogEntry );
@@ -167,6 +196,19 @@ public final class ThreddsWmsController extends AbstractWmsController
       // We ensure that the GridDataset object is closed
       if ( gd != null) gd.close();
     }
+  }
+
+  /** Displays metadata for one layer, or all layers within a dataset */
+  private ModelAndView getLayerMetadata( RequestParams params, ThreddsLayerFactory layerFactory )
+          throws WmsException
+  {
+      String layerName = params.getString("layer");
+      
+      Collection<Layer> layers = layerName == null
+          ? layers = layerFactory.ds.getLayers()
+          : Arrays.asList(layerFactory.getLayer(layerName));
+
+      return new ModelAndView ( "showLayerMetadata", "layers", layers );
   }
 
   /**

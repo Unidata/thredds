@@ -86,10 +86,17 @@ public class ThreddsServerConfig implements ServerConfig
         if ( userConfigPaletteDir != null && userConfigPaletteDir.exists() && userConfigPaletteDir.isDirectory() )
           return userConfigPaletteDir;
       }
+
+      String msg = "User configured palette files location [" + this.getUserConfigPaletteLocationDir()
+                   + "] not available. Using default location [" + this.defaultPaletteLocation + "].";
+      logServerStartup.warn( msg.toString() );
+    }
+    else
+    {
+      String msg = "No user configured palette files location. Using default location [" + this.defaultPaletteLocation + "].";
+      logServerStartup.debug( msg.toString() );
     }
 
-    logServerStartup.error( "User configured palette files location [" + this.getUserConfigPaletteLocationDir()
-                            + "] not available. Using default location [" + this.defaultPaletteLocation + "]." );
     if ( this.defaultPaletteLocation != null && ! this.defaultPaletteLocation.trim().equals( "" ) )
     {
       File defaultPaletteDir = new File( context.getRealPath( this.defaultPaletteLocation ) );
@@ -115,6 +122,8 @@ public class ThreddsServerConfig implements ServerConfig
   private String getUserConfigPaletteLocationDir() {
     return this.tdsContext.getWmsConfig().getPaletteLocationDir();
   }
+
+  public TdsContext getTdsContext() { return this.tdsContext; }
 
   /**
      * Returns the current time.  THREDDS servers don't cache their metadata

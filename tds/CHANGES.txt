@@ -4,6 +4,8 @@ Build Date = @BUILDTIME@
 
 Release Details 4.2:
  4.2 beta x (2010-xx-xx)
+   Add WMS configuration file (from Jon Blower)
+   Upgraded from HttpClient 3 to HttpClient 4
  
  4.2 beta 1 (2010-06-07)
    Upgrade to newly refactored ncWMS code.

@@ -92,6 +92,7 @@
   <property name="ehcache.jar" value="external/ehcache-1.6.0.jar"/>
   <property name="fileupload.jar" value="external/commons-fileupload-1.2.1.jar"/>
   <property name="httpclient.jar" value="external/commons-httpclient-3.1.jar"/>
+  <property name="jakarta-oro.jar" value="external/jakarta-oro-2.0.8.jar"/>
   <property name="jdom.jar" value="external/jdom.jar"/>
   <property name="jcommon.jar" value="external/jcommon-1.0.15.jar"/>
   <property name="jfreechart.jar" value="external/jfreechart-1.0.12.jar"/>
@@ -113,6 +114,7 @@
   <property name="geotk-bundle-referencing.jar" value="external/geotk-bundle-referencing-3.04.jar"/>
   <property name="http-codec.jar" value="external/commons-codec-1.3.jar"/>
   <property name="http-logging.jar" value="external/commons-logging-1.1.jar"/>
+  <property name="jaxen.jar" value="external/jaxen-1.1.2.jar"/>
   <property name="json-taglib.jar" value="external/json-taglib-0.4.1.jar"/>
 
   <!-- The servlet jar file is needed to compile the servlet but is not needed
@@ -147,6 +149,7 @@
       <!-- ToDo Get rid of Geotk dependence in ThreddsLayer and move this to runtime list. -->
       <include name="${geotk-bundle-referencing.jar}" />
       <include name="${httpclient.jar}"/>
+      <include name="${jakarta-oro.jar}"/>
       <include name="${jdom.jar}"/>
       <include name="${joda.jar}"/>
       <include name="${protobuf.jar}"/>
@@ -163,6 +166,7 @@
       <include name="${epsg-wkt.jar}" />
       <include name="${http-codec.jar}"/>
       <include name="${http-logging.jar}"/>
+      <include name="${jaxen.jar}"/>
       <include name="${jcommon.jar}"/>
       <include name="${jfreechart.jar}"/>
       <include name="${json-taglib.jar}"/>
@@ -719,6 +723,10 @@
     <fileset dir="${ant.home}/lib">
       <include name="*.jar"/>
     </fileset>
+	<!-- Try to get this working at some point. -->
+	<!--fileset dir="${tomcat_root}\lib">
+	  <include name="catalina-ant.jar"/>
+	</fileset-->
   </path>
 
   <!-- Configure the custom Ant tasks for the Manager application -->
