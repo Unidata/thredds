@@ -18,6 +18,7 @@ dl {margin: 10px 5px 5px 15px;)
 <blockquote>
   <p>The <strong>netcdf.jar</strong>  implements the full CDM model, but is unbundled from the other jar dependencies, including logging. Use it when you need to choose which other jars to use, for example when using the netcdf-java library as part of a bigger system, such as a server. Get the current version of the other jar files in netcdfAll.zip. Choose a <a href="#logging">logging implementation</a>, and add the following libraries to your classpath as needed:</p>
   <ul>
+    <li>Required: <strong>unidatacommon.jar</strong></li>
     <li> <a name="optionalLibraries" id="optionalLibraries"></a>Reading BUFR files: <strong>bufrTables.jar</strong>,<strong> jdom.jar</strong></li>
     <li>Reading GRIB files: <strong>grib.jar</strong></li>
     <li>Reading OPeNDAP: <strong>opendap.jar, jdom.jar, commons-httpclient.jar, commons-logging.jar, commons-codec.jar. </strong>Note that we have a special release of the OPeNDAP-Java library.</li>
