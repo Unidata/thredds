@@ -1,31 +1,29 @@
 <!DOCTYPE html PUBLIC "-//w3c//dtd html 4.0 transitional//en">
-<html><head>
+<html>
+<head>
 
-
-  
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="Author" content="John Caron">
 
-  
-  <meta name="Author" content="John Caron"><title>Catalog Spec 1.0.2</title></head><body>
-<div class="head"> 
-  <h1> <img alt="THREDDS" src="../../images/THREDDSlogo.jpg" height="54" width="67"> Dataset Inventory Catalog Specification, Version 1.0.2<br>
-</h1>
+  <title>Catalog Spec 1.0.2</title>
+</head>
+<body>
+  <h1><img alt="THREDDS" src="../../images/THREDDSlogo.jpg" height="54" width="67"> Dataset Inventory Catalog Specification, Version 1.0.2 </h1>
   <address>
-  last update: 10 October 2006<br>
-  Comments to <a href="mailto:thredds@unidata.ucar.edu">THREDDS 
-  mailgroup</a> 
+    last update: 9 December 2009
+    <br>
+    Comments to <a href="mailto:thredds@unidata.ucar.edu">THREDDS mailgroup</a> 
   </address>
   <hr>
-  <p>A
-THREDDS catalog is a way to describe an inventory of available
-datasets. These catalogs provide a simple hierarchical structure for
-organizing a collection of datasets, an access method for each dataset,
-a human understandable name for each dataset, and a structure on which
-further descriptive information can be placed. </p>
-  <p>This document specifies the semantics of a THREDDS catalog, as well as its 
-      representation as an XML document. </p>
+  <p>A THREDDS catalog is a way to describe an inventory of available datasets.
+    These catalogs provide a simple hierarchical structure for organizing a
+    collection of datasets, an access method for each dataset, a human
+    understandable name for each dataset, and a structure on which further
+    descriptive information can be placed.</p>
+  <p>This document specifies the semantics of a THREDDS catalog, as well as its
+    representation as an XML document.</p>
+  
   <h3>Contents:</h3>
-</div>
 
 <ol>
 
@@ -50,37 +48,31 @@ further descriptive information can be placed. </p>
     <li><a href="#geospatialCoverage">geospatialCoverage</a></li>
     <li><a href="#timeCoverage">timeCoverage</a></li>
     <li><a href="#dateType">dateType</a> </li>
-    <li> <a href="#dateTypeFormatted">dateTypeFormatted</a> </li>
+    <li><a href="#dateTypeFormatted">dateTypeFormatted</a> </li>
     <li><a href="#durationType">duration</a></li>
     <li><a href="#dataSize">dataSize</a></li>
     <li><a href="#controlledVocabulary">controlledVocabulary</a></li>
     <li><a href="#variables">variables</a></li>
   </ul>
-  <li> 
-    <div class="head"><a href="#Enumerations">Enumerations</a></div></li><li><a href="#Dataset_Access_Methods">Dataset Access Methods</a><br>
-  </li>
-<li><a href="#constructingURLs">Constructing URLs</a> </li>
+  <li><a href="#Enumerations">Enumerations</a></li>
+  <li><a href="#Dataset_Access_Methods">Dataset Access Methods</a></li>
+  <li><a href="#constructingURLs">Constructing URLs</a> </li>
   <li><a href="#datasetClassification">Dataset Classification</a></li>
   <li><a href="#webResources">Datasets as Web Resources</a></li>
   <li><a href="#index">Index</a></li>
   <li><a href="#changes">Change History</a> </li>
 </ol>
 
-<div class="head">
   <h3>Related resources:</h3>
-</div>
 
 <ul>
 <li>Catalog <a href="Primer.html">Primer</a></li>
   <li><a href="../Example1.0rc8.xml">Example</a> 1.0 Catalog</li>
   <li>InvCatalog XML Schema:</li>
   <ul>
-    <li>Version 1.0.2<br>
-</li><li><a href="http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.1.xsd">Version 1.0.1</a><br>
-    </li>
-
-    <li><a href="http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.xsd">Version
-    1.0</a></li>
+    <li><a href="http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.2.xsd">Version 1.0.2</a></li>
+    <li><a href="http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.1.xsd">Version 1.0.1</a></li>
+    <li><a href="http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.xsd">Version 1.0</a></li>
   </ul>
 
   <li><a href="../DL.html">Writing metadata for Digital Libraries</a></li>
@@ -851,7 +843,6 @@ service@base attribute.</p>
 </p>
 
 <hr>
-<div class="head"> 
   <h2><a name="datasetClassification"></a>Dataset Classification</h2>
   <p>THREDDS <em><strong>Dataset Inventory Catalogs </strong></em>organize and 
     describe collections of data. A catalog can be thought of as a logical directory 
@@ -908,7 +899,6 @@ service@base attribute.</p>
   <p>A query dataset looks a lot like a <a href="#catalogRef">catalogRef</a>, 
     since you dereference a URL and get a catalog back. However, a catalogRef 
     is cacheable, but a query dataset is inherently dynamic, so is not cacheable.</p>
-</div>
 
 <hr>
 <h2><a name="webResources"></a>Datasets as Web Resources</h2>
