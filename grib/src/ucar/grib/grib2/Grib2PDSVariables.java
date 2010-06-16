@@ -42,6 +42,8 @@ import ucar.grib.GribNumbers;
 import ucar.grib.GribPDSVariablesIF;
 
 import java.io.IOException;
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Representing the product definition section (PDS) of a GRIB product as variables
@@ -773,6 +775,74 @@ public final class Grib2PDSVariables implements GribPDSVariablesIF {
         return new int[] {GribNumbers.UNDEFINED, GribNumbers.UNDEFINED};
 
     }
+  }
+
+ /**
+ * End Time Interval for productDefinition 8-14, 42 and 43 type variables.
+ *
+ * @return EndTimeInterval long
+ */
+  public final long getEndTimeInterval() {
+
+    int idx;
+    switch (productDefinition) {
+
+      // octets 35-41
+      case 8:
+        idx = 34;
+        break;
+      // octet 48
+      case 9:
+        idx = 47;
+        break;
+      // octet 36
+      case 10:
+        idx = 35;
+        break;
+      // octet 38
+      case 11:
+        idx = 37;
+        break;
+      // octet 37
+      case 12:
+        idx = 36;
+        break;
+      // octet 69
+      case 13:
+        idx = 68;
+        break;
+      // octet 65
+      case 14:
+        idx = 64;
+        break;
+      // octet 37
+      case 42:
+        idx = 36;
+        break;
+      // octet 40
+      case 43:
+        idx = 39;
+        break;
+      default:
+        return  GribNumbers.UNDEFINED ;
+    }
+
+    int year = GribNumbers.int2( getInt(idx++), getInt(idx++) );
+    int month = getInt(idx++) -1;
+    int day = getInt(idx++);
+    int hour = getInt(idx++);
+    int minute = getInt(idx++);
+    int second = getInt(idx++);
+    Calendar calendar = Calendar.getInstance();
+    calendar.clear();
+    calendar.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
+    calendar.set(Calendar.DST_OFFSET, 0);
+    calendar.set(year, month, day, hour, minute, second);
+
+    //System.out.println( "End of Time Interval from octets 35-41 "+ calendar.getTime() );
+    long refTime = calendar.getTimeInMillis();
+
+    return refTime;
   }
 
   /**
