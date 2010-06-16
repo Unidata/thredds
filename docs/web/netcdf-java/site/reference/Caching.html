@@ -21,7 +21,7 @@
   <li><span style="">
     <o:p>If a filename ends with &quot;<strong>.Z</strong>&quot;, &quot;<strong>.zip</strong>&quot;, &quot;<strong>.gzip</strong>&quot;, &quot;<strong>.gz</strong>&quot;, or &quot;<strong>.bz2</strong>&quot;, <strong>NetcdfFile.open</strong> will  write an uncompressed file of the same name, but without the suffix.</o:p>
   </span></li>
-  <li>The <strong>GRIB</strong> IOSP  writes an index file with the same name with suffix <strong>.gbx. </strong>Other IOSPs may do similar things.</li>
+  <li>The <strong>GRIB</strong> IOSP  writes an index file with the same name with suffix <strong>.gbx8. </strong>Other IOSPs may do similar things.</li>
   <li> <strong>Nexrad2, Cinrad2 </strong> files that are compressed will be uncompressed to a file with an <strong>.uncompress</strong> prefix. </li>
 </ol>
 <p><span style="">
@@ -71,14 +71,14 @@ You might want to always write temporary files to the cache directory, in order 
 <h3>GRIB indexing
 </h3>
 <p>In 4.0, the cache policy for GRIB indexes is set seperately from generic DiskCache, in order to give you seperate control: </p>
-<pre>   <strong>GribServiceProvider</strong>.<strong>setIndexAlwaysInCache</strong>( true); // always use the cache for grib index</pre>
+<pre>   <strong>GribGridServiceProvider</strong>.<strong>setIndexAlwaysInCache</strong>( true); // always use the cache for grib index</pre>
 <p>Note that you still control whether to alway use a cache directory, and where that is located with DiskCache methods:</p>
 <pre>   <o:p><strong> ucar.nc2.util.DiskCache.setCachePolicy( boolean alwaysInCache);<br />    ucar.nc2.util.DiskCache.setRootDirectory(String cacheDir)</strong></o:p>; 
 </pre>
 <p>In multi-threaded situations such as a server, you need to make sure that  grib indexing is thread-safe. One way to do this is to generate the indexes ahead of time, then tell the library to not write the index, but only use files that already have an index:</p>
-<pre>   <strong>GribServiceProvider.setIndexExtendMode</strong>( IndexExtendMode.none); // never write an index
-   <strong>GribServiceProvider.setIndexSyncMode</strong>( IndexExtendMode.none); // never sync the index</pre>
-<p>See <a href="http://www.unidata.ucar.edu/software/decoders/">GRIB decoder</a> for details on generating a GRIB index externally. See <strong>GribServiceProvider</strong> <a href="http://www.unidata.ucar.edu/software/netcdf-java/v4.0/javadoc/index.html">javadoc</a> for more details.</p>
+<pre>   <strong>GribGridServiceProvider.setIndexExtendMode</strong>( IndexExtendMode.none); // never write an index
+   <strong>GribGridServiceProvider.setIndexSyncMode</strong>( IndexExtendMode.none); // never sync the index</pre>
+<p>See <a href="http://www.unidata.ucar.edu/software/decoders/">GRIB decoder</a> for details on generating a GRIB index externally. See <strong>GribGridServiceProvider</strong> <a href="http://www.unidata.ucar.edu/software/netcdf-java/v4.0/javadoc/index.html">javadoc</a> for more details.</p>
 <hr width="100%" />
 <h2>Object Caching</h2>
 <h3>NetcdfFileCache</h3>
