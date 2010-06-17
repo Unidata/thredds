@@ -50,6 +50,7 @@ import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.params.AllClientPNames;
 import org.apache.http.client.params.CookiePolicy;
 import org.apache.http.conn.params.ConnRoutePNames;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.message.AbstractHttpMessage;
 import org.apache.http.params.CoreProtocolPNames;
 import org.apache.http.params.HttpParams;
@@ -155,7 +156,8 @@ public class HttpClientManager {
         try {
             _client.setHeader("Accept-Encoding", "gzip,deflate");
 
-             _client.setMethodPut(urlString, content);
+             _client.setContent(new StringEntity(content));
+            _client.setMethodPut(urlString);
             int resultCode = _client.execute();
 
             if (resultCode == 302) {

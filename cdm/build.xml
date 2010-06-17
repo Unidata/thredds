@@ -56,6 +56,7 @@
   <property name="httpclient3.jar" value="commons-httpclient-3.1.jar"/>
   <property name="httpclient4.jar" value="httpclient-4.0.1.jar"/>
   <property name="httpcore4.jar" value="httpcore-4.0.1.jar"/>
+  <property name="httpmime4.jar" value="httpmime-4.0.1.jar"/>
   <property name="http-logging.jar" value="commons-logging-1.1.jar"/>
   <property name="http-codec.jar" value="commons-codec-1.3.jar"/>
   <property name="jdom.jar" value="jdom.jar"/>
@@ -139,7 +140,7 @@
 
   <!-- LOOK can we generate with pathconvert? -->
   <!-- property name="Class-Path"
-            value="${jgoodies.jar} ${grib.jar} ${jdom.jar} ${opendap.jar} ${http-codec.jar} ${httpclient3.jar} ${http-logging.jar} ${loggingAPI.jar}
+            value="${jgoodies.jar} ${grib.jar} ${jdom.jar} ${opendap.jar} ${http-codec.jar} ${httpclient4.jar} ${http-logging.jar} ${loggingAPI.jar}
             ${logging-minimal.jar} ${protobuf.jar} ${resourcesOptional.jar} ${spring.jar} ${visadNoDods.jar}"/ -->
   <property name="ClassPath-CommandLine"
             value="lib/${grib.jar}:lib/${jdom.jar}:lib/${httpcore4.jar}:lib/${httpclient4.jar}:lib/${http-codec.jar}:lib/${http-logging.jar}:lib/${loggingAPI.jar}:lib/${logging-minimal.jar}:lib/${jgoodies.jar}:lib/${spring.jar}:lib/${unidatacommon.jar}:lib/${visadNoDods.jar}"/>
@@ -405,6 +406,8 @@
         <include name="external/${jdom.jar}"/>
         <include name="external/${httpcore4.jar}"/>
         <include name="external/${httpclient4.jar}"/>
+        <include name="external/${httpcore4.jar}"/>
+        <include name="external/${httpmime4.jar}"/>
         <include name="external/${http-codec.jar}"/>
         <include name="external/${http-logging.jar}"/>
         <include name="external/${loggingAPI.jar}"/>

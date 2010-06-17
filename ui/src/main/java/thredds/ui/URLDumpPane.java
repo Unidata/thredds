@@ -291,7 +291,8 @@ public class URLDumpPane extends TextHistoryPane {
         httpclient.setMethodOptions(urlString);
       else if (cmd == Command.PUT) {
         try {
-            httpclient.setMethodPut(urlString,ta.getText());
+            httpclient.setContent(new StringEntity(ta.getText()));
+                    httpclient.setMethodPut(urlString);
         } catch (Exception e) {
           ByteArrayOutputStream bos = new ByteArrayOutputStream(5000);
           e.printStackTrace(new PrintStream(bos));
