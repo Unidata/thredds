@@ -55,7 +55,6 @@ import java.util.*;
  * A Time Coordinate for a Grid dataset.
  *
  * @author caron
- * @version $Revision:63 $ $Date:2006-07-12 21:50:51Z $
  */
 public class GridTimeCoord {
 
@@ -63,13 +62,6 @@ public class GridTimeCoord {
    * logger
    */
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GridTimeCoord.class);
-
-  // for parsing dates
-
-  /**
-   * date formatter
-   */
-  private DateFormatter formatter = new DateFormatter();
 
   /**
    * calendar
@@ -89,7 +81,7 @@ public class GridTimeCoord {
   /**
    * list of times
    */
-  private List<Date> times = new ArrayList<Date>();  //  Date
+  private List<Date> times = new ArrayList<Date>();
   //private double[] offsetHours;
 
   /**
@@ -126,12 +118,18 @@ public class GridTimeCoord {
               ggr.productTemplate > 7 && ggr.productTemplate < 16)
         intervalLength = ggr.forecastTime - ggr.startOfInterval;
     }
-    addTimes(records);
+
+    for (GridRecord record : records) {
+      Date validTime = getValidTime(record, lookup);
+      if (!times.contains(validTime)) {
+        times.add(validTime);
+      }
+    }
     Collections.sort(times);
   }
 
   /**
-   * Create a new GridTimeCoord with the name, forecast times and  lookup
+   * Create a new GridTimeCoord with the name, forecast times and lookup
    *
    * @param name        name
    * @param offsetHours forecast hours
@@ -144,6 +142,7 @@ public class GridTimeCoord {
     this.lookup = lookup;
 
     Date baseTime = lookup.getFirstBaseTime();
+    DateFormatter formatter = new DateFormatter();
     String refDate = formatter.toDateTimeStringISO(baseTime);
 
     // the offset hours are reletive to whatever the base date is
@@ -163,26 +162,12 @@ public class GridTimeCoord {
   }
 
   /**
-   * Add the times from the list of records
-   *
-   * @param records list of records
-   */
-  void addTimes(List<GridRecord> records) {
-    for (GridRecord record : records) {
-      Date validTime = getValidTime(record, lookup);
-      if (!times.contains(validTime)) {
-        times.add(validTime);
-      }
-    }
-  }
-
-  /**
-   * match levels
+   * match time values
    *
    * @param records list of records
    * @return true if they are the same as this
    */
-  boolean matchLevels(List<GridRecord> records) {
+  boolean matchTimes(List<GridRecord> records) {
 
     // first create a new list
     List<Date> timeList = new ArrayList<Date>(records.size());
@@ -246,6 +231,8 @@ public class GridTimeCoord {
 
     Date baseTime = lookup.getFirstBaseTime();
     String timeUnit = lookup.getFirstTimeRangeUnitName();
+
+    DateFormatter formatter = new DateFormatter();
     String refDate = formatter.toDateTimeStringISO(baseTime);
     DateUnit dateUnit = null;
     try {
@@ -353,41 +340,32 @@ public class GridTimeCoord {
    * @return the valid time
    */
   private Date getValidTime(GridRecord record, GridTableLookup lookup) {
-    Date validTime = record.getValidTime();
-    if (validTime != null) {
-      return validTime;
+    if (record.getValidTime() != null) {
+      return record.getValidTime();
     }
 
-    try {
-      validTime =
-              formatter.getISODate(record.getReferenceTime().toString());
+    /* try {
+      validTime = formatter.getISODate(record.getReferenceTime().toString());
     } catch (Throwable e) {
       log.error("getValidTime(" + record.getReferenceTime() + ")", e);
       return null;
-    }
+    } */
 
     int calandar_unit = Calendar.HOUR;
     int factor = 1;
     String timeUnit = lookup.getFirstTimeRangeUnitName();
 
-    if (timeUnit.equalsIgnoreCase("hour")
-            || timeUnit.equalsIgnoreCase("hours")) {
+    if (timeUnit.equalsIgnoreCase("hour") || timeUnit.equalsIgnoreCase("hours")) {
       factor = 1;  // common case
-    } else if (timeUnit.equalsIgnoreCase("minutes")
-            || timeUnit.equalsIgnoreCase("minute")) {
+    } else if (timeUnit.equalsIgnoreCase("minutes") || timeUnit.equalsIgnoreCase("minute")) {
       calandar_unit = Calendar.MINUTE;
-    } else if (timeUnit.equalsIgnoreCase("second")
-            || timeUnit.equalsIgnoreCase("secs")) {
+    } else if (timeUnit.equalsIgnoreCase("second") || timeUnit.equalsIgnoreCase("secs")) {
       calandar_unit = Calendar.SECOND;
-    } else if (timeUnit.equalsIgnoreCase("day")
-            || timeUnit.equalsIgnoreCase("days")) {
+    } else if (timeUnit.equalsIgnoreCase("day") || timeUnit.equalsIgnoreCase("days")) {
       factor = 24;
-    } else if (timeUnit.equalsIgnoreCase("month")
-            || timeUnit.equalsIgnoreCase("months")) {
+    } else if (timeUnit.equalsIgnoreCase("month") || timeUnit.equalsIgnoreCase("months")) {
       factor = 24 * 30;  // ??
-    } else if (timeUnit.equalsIgnoreCase("year")
-            || timeUnit.equalsIgnoreCase("years")
-            || timeUnit.equalsIgnoreCase("1year")) {
+    } else if (timeUnit.equalsIgnoreCase("year") || timeUnit.equalsIgnoreCase("years") || timeUnit.equalsIgnoreCase("1year")) {
       factor = 24 * 365;        // ??
     } else if (timeUnit.equalsIgnoreCase("decade")) {
       factor = 24 * 365 * 10;   // ??
@@ -401,11 +379,9 @@ public class GridTimeCoord {
       factor = 12;
     }
 
-    calendar.setTime(validTime);
+    calendar.setTime(record.getReferenceTime());
     calendar.add(calandar_unit, factor * record.getValidTimeOffset());
-    validTime = calendar.getTime();
-
-    return validTime;
+    return calendar.getTime();
   }
 
 }

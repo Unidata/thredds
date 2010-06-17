@@ -369,7 +369,7 @@ public class GridIndexToNC {
         // look to see if time coord already exists
         GridTimeCoord useTimeCoord = null;
         for (GridTimeCoord gtc : timeCoords) {
-          if (gtc.matchLevels(recordList)) {  // must have the same levels
+          if (gtc.matchTimes(recordList)) {  // must have the same time coords
             useTimeCoord = gtc;
           }
         }

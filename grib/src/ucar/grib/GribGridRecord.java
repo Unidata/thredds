@@ -303,7 +303,7 @@ public final class GribGridRecord implements GridRecord {
   }
 
   /**
-   * Get the valid time for this grid.
+   * Get the valid time for this record.
    *
    * @return valid time
    */
@@ -312,9 +312,9 @@ public final class GribGridRecord implements GridRecord {
   }
 
   /**
-   * _more_
+   * Set the valid time for this record.
    *
-   * @param t _more_
+   * @param t valid time
    */
   public void setValidTime(Date t) {
     validTime = t;
