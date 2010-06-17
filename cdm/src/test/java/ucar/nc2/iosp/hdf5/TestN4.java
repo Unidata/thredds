@@ -64,9 +64,12 @@ public class TestN4 extends TestCase {
     ncfile.close();
   }
 
-  public void testTiling() throws IOException {
+  // margolis@ucar.edu
+  // I really don't think this is a problem with your code
+  // may be bug in HDF5 1.8.4-patch1
+  public void utestTiling() throws IOException {
     // Global Heap 1t 13059 runs out with no heap id = 0
-    String filename = "E:/work/margolis/gtgGrib.nc"; // testDir+"tiling.nc4";
+    String filename = testDir+"tiling.nc4";
     GridDataset gridDataset = GridDataset.open(filename);
     GridDatatype grid = gridDataset.findGridByName("Turbulence_SIGMET_AIRMET" );
     System.out.printf("grid=%s%n", grid);

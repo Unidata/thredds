@@ -720,7 +720,7 @@ public class H5header {
         for (int i = 0; i < chunk.getNelems(); i++) {
           long address = chunk.getSrcPos() + layout.getElemSize() * i;
           String sval = readHeapString(address);
-          data.set(count, sval);
+          data.set(count++, sval);
         }
       }
       return data;

@@ -105,5 +105,51 @@ public class CF {
       return null;
     }
   }
-  
+
+  public enum CellMethods {
+    point, sum, mean, maximum, minimum, mid_range, standard_deviation, variance, mode, median;
+
+    /*
+      static public String codeTable4_10short(int code) {
+    switch (code) {
+      case 0: return	"Average";
+      case 1: return	"Accumulation";
+      case 2: return	"Maximum";
+      case 3: return	"Minimum";
+      case 4: return	"Difference"; // (Value at the end of time range minus value at the beginning)";
+      case 5: return	"RootMeanSquare";
+      case 6: return	"StandardDeviation";
+      case 7: return	"Covariance"; // (Temporal variance)";
+      case 8: return	"Difference"; // (Value at the start of time range minus value at the end)";
+      case 9: return	"Ratio";
+     default: return null;
+    }
+  }
+     */
+
+    public static CellMethods convertGribCodeTable4_10(int code) {
+      switch (code) {
+        case 0:
+          return CellMethods.mean; // "Average";
+        case 1:
+          return CellMethods.sum; // "Accumulation";
+        case 2:
+          return CellMethods.maximum; // "Maximum";
+        case 3:
+          return CellMethods.minimum; // "Minimum";
+        //case 4: return	"Difference"; // (Value at the end of time range minus value at the beginning)";
+        //case 5: return	"RootMeanSquare";
+        case 6:
+          return CellMethods.standard_deviation; // "StandardDeviation";
+        case 7:
+          return CellMethods.variance; // "Covariance"; // (Temporal variance)";
+        //case 8: return	"Difference"; // (Value at the start of time range minus value at the end)";
+        //case 9: return	"Ratio";
+        default:
+          return null;
+      }
+
+    }
+  }
+
 }

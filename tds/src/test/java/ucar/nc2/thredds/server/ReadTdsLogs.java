@@ -140,7 +140,8 @@ public class ReadTdsLogs {
       try {
 
         httpClient.setMethodGet(server + URLnaming.escapeQuery(log.path));
-         statusCode = httpClient.execute();
+        statusCode = httpClient.execute();
+
         InputStream is = httpClient.getContentStream();
         if (is != null)
           bytesRead = IO.copy2null(is, 10 * 1000); // read data and throw away
@@ -207,6 +208,7 @@ public class ReadTdsLogs {
 
         httpClient.setMethodGet(serverLive + itask.log.path);
         int statusCode = httpClient.execute();
+
         InputStream is = httpClient.getContentStream();
         if (is != null)
           IO.copy2null(is, 10 * 1000); // read data and throw away

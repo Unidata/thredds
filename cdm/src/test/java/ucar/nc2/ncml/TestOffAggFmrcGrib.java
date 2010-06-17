@@ -176,9 +176,9 @@ public class TestOffAggFmrcGrib extends TestCase {
       assert data.getElementType() == double.class;
 
       IndexIterator dataI = data.getIndexIterator();
-      assert TestUtils.close(dataI.getDoubleNext(), -832.6982610175637);
-      assert TestUtils.close(dataI.getDoubleNext(), -812.3802610175637);
-      assert TestUtils.close(dataI.getDoubleNext(), -792.0622610175637);
+      assert TestUtils.close(dataI.getDoubleNext(), -832.6983183345455); // -832.6982610175637);
+      assert TestUtils.close(dataI.getDoubleNext(), -812.3803183345456); // -812.3802610175637);
+      assert TestUtils.close(dataI.getDoubleNext(), -792.0623183345456); // -792.0622610175637);
 
   }
 

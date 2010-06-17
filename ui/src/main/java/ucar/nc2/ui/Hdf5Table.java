@@ -70,7 +70,7 @@ public class Hdf5Table extends JPanel {
   public Hdf5Table(PreferencesExt prefs) {
     this.prefs = prefs;
 
-    objectTable = new BeanTableSorted(ObjectBean.class, (PreferencesExt) prefs.node("Hdf5Object"), false);
+    objectTable = new BeanTableSorted(ObjectBean.class, (PreferencesExt) prefs.node("Hdf5Object"), false, "H5header.DataObject", "Level 2A data object header");
     objectTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         messTable.setBeans(new ArrayList());
@@ -90,7 +90,7 @@ public class Hdf5Table extends JPanel {
       }
     });
 
-    messTable = new BeanTableSorted(MessageBean.class, (PreferencesExt) prefs.node("MessBean"), false);
+    messTable = new BeanTableSorted(MessageBean.class, (PreferencesExt) prefs.node("MessBean"), false, "H5header.HeaderMessage", "Level 2A1 and 2A2 (part of Data Object)");
     messTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         MessageBean mb = (MessageBean) messTable.getSelectedBean();
@@ -118,7 +118,7 @@ public class Hdf5Table extends JPanel {
       }
     });
 
-    attTable = new BeanTableSorted(AttributeBean.class, (PreferencesExt) prefs.node("AttBean"), false);
+    attTable = new BeanTableSorted(AttributeBean.class, (PreferencesExt) prefs.node("AttBean"), false, "H5header.HeaderAttribute", "Message Type 12/0xC : define an Atribute");
     attTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         AttributeBean mb = (AttributeBean) attTable.getSelectedBean();

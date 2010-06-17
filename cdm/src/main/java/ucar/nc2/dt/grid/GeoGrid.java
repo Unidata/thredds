@@ -761,7 +761,7 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
     List<Range> rangesList = Arrays.asList(ranges);
 
     // subset the variable
-    VariableDS v_section = (VariableDS) vs.section(rangesList);
+    VariableDS v_section = (VariableDS) vs.section( new Section(rangesList));
     List<Dimension> dims = v_section.getDimensions();
     for (Dimension dim : dims) {
       dim.setShared(true); // make them shared (section will make them unshared)

@@ -70,8 +70,8 @@ public class TestIntervalVars extends TestCase {
 
   private int doTwo(String filename) throws IOException {
     NetcdfFile ncd = NetcdfFile.open(filename);
-    System.out.printf("==============================================================================%n");
-    System.out.printf("Open %s%n", filename);
+    //System.out.printf("==============================================================================%n");
+    System.out.printf("%n%s%n", filename);
 
     GribGridServiceProvider iosp = (GribGridServiceProvider) ncd.getIosp();
     GridIndex index = (GridIndex) iosp.sendIospMessage("GridIndex");
@@ -84,14 +84,14 @@ public class TestIntervalVars extends TestCase {
       int startInterval = ggr.startOfInterval;
       if ((startInterval == GribNumbers.UNDEFINED) || (startInterval == GribNumbers.MISSING)) continue;
 
-      // check valid time == base time + forecast
+      /* check valid time == base time + forecast
       int forecast = ggr.forecastTime;
       Date validTime = ggr.getValidTime();
       Date refTime = ggr.getReferenceTime();
       if (forecast != startInterval) {
         String name = ParameterTable.getParameterName(ggr.discipline, ggr.category, ggr.paramNumber) +"/" + Grib2Tables.codeTable4_5(ggr.levelType1);
         System.out.printf(" **time %s %d != %d%n", name, forecast, startInterval);
-      }
+      } */
 
       Product bean = pdsSet.get(makeUniqueId(ggr));
       if (bean == null) {
@@ -106,8 +106,8 @@ public class TestIntervalVars extends TestCase {
     Collections.sort(sortList);
     for (Product p : sortList) {
       p.sort();
-      System.out.printf("***%s%n", p.name);
-      System.out.printf("%s%n", p.doAccumAlgo());
+      System.out.printf("  %s (%d)%n", p.name, p.ggr.productTemplate);
+      //System.out.printf("%s%n", p.doAccumAlgo());
     }
 
     ncd.close();

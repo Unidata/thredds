@@ -448,6 +448,20 @@ public final class GribGridRecord implements GridRecord {
       return "";
   }
 
+  public boolean isInterval( ) {
+    return ( productTemplate > 7) && ( productTemplate < 16 );
+  }
+
+  public String getIntervalTypeName( ) {
+    if( isInterval( ) ) {
+      String intervalTypeName = Grib2Tables.codeTable4_10short(intervalStatType);
+      if (intervalTypeName != null)
+        return intervalTypeName;
+    }
+
+    return "";
+  }
+
 
   /**
    * Makes a Ensemble, Derived, Probability or error Suffix

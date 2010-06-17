@@ -198,9 +198,9 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
     this.enhanceProxy = new EnhancementsImpl( this); //decouple coordinate systems
 
     this.enhanceMode = vds.enhanceMode;
-    if (isCopy) {
-      this.needScaleOffsetMissing = vds.needScaleOffsetMissing;
-      this.needEnumConversion = vds.needEnumConversion;
+    if (isCopy) { // enhancement done in orgVar
+      //this.needScaleOffsetMissing = vds.needScaleOffsetMissing;
+      //this.needEnumConversion = vds.needEnumConversion;
     } else {
       createNewCache(); // dont share cache unless its a copy      
     }

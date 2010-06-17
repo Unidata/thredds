@@ -38,6 +38,8 @@ import ucar.ma2.*;
 
 import junit.framework.TestCase;
 
+import java.io.IOException;
+
 public class TestScaleOffset extends TestCase {
   private String filename = TestAll.cdmLocalTestDataDir +"scaleOffset.nc";
 
@@ -47,6 +49,7 @@ public class TestScaleOffset extends TestCase {
 
 
   public void testWrite() throws Exception {
+    System.out.printf("Open %s%n", filename);
     NetcdfFileWriteable ncfile = NetcdfFileWriteable.createNew(filename);
 
      // define dimensions
@@ -125,5 +128,26 @@ public class TestScaleOffset extends TestCase {
       assert (diff < close) : v1 + " != " + v2 + " index=" + iter1+" packed="+p;
       //System.out.println(v1 + " == " + v2 + " index=" + iter1+" packed="+p);
     }
+  }
+
+  // check section of scale/offset only applies it once
+  public void testSubset() throws IOException, InvalidRangeException {
+    // read the packed form, enhance using scale/offset, compare to original
+    NetcdfDataset ncd = NetcdfDataset.openDataset(filename);
+    Variable vs = ncd.findVariable("packed");
+    assert vs != null;
+
+    Section s = new Section().appendRange(1,1).appendRange(1,1);
+    Array readEnhanced = vs.read(s);
+    NCdumpW.printArray(readEnhanced);
+
+    Variable sec = vs.section(s);
+    Array readSection = sec.read();
+    NCdumpW.printArray(readSection);
+
+    CompareNetcdf.compareData(readEnhanced, readSection);
+
+    ncd.close();
+
   }
 }

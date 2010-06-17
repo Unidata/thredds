@@ -4,9 +4,10 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.2:
  4: (xx-xx-xx)
+  VariableDS copy constructor - dont apply scale/offset twice
   Opendap : use HttpClient version 4.
-  hdf5: bug in CHAR type when compressed
-  grib refactor - time intervals
+  hdf5: variable length array of strings, not incrementing counter (Steve Sullivan)
+  hdf5: bug in CHAR type when compressed (Steve Sullivan)  grib refactor - time intervals
   ToolsUI - IOSP/GRIB2 tab
   Comparators using longs were wrong, eg DiskCache (bug fix from Steve Ansari)
   CF1 use super.getAxisType()

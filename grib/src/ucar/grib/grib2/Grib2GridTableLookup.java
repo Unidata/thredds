@@ -287,16 +287,6 @@ public final class Grib2GridTableLookup implements GridTableLookup {
   }
 
   /**
-   * Makes a Ensemble, Derived, Probability or error Suffix
-   * @param gr GridRecord
-   * @return suffix
-   */
-  public String makeIntervalName( GridRecord gr ) {
-    GribGridRecord ggr = (GribGridRecord) gr;
-    return ggr.makeIntervalName( );
-  }
-
-  /**
    * gets the LevelName.
    *
    * @param gr GridRecord

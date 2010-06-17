@@ -37,6 +37,7 @@ import ucar.ma2.Array;
 import ucar.ma2.DataType;
 
 import ucar.nc2.*;
+import ucar.nc2.constants.CF;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.iosp.mcidas.McIDASLookup;
 import ucar.nc2.iosp.gempak.GempakLookup;
@@ -77,7 +78,7 @@ public class GridVariable {
   /**
    * simple name without the level == parameter name [ + suffix]
    */
-  private final String nameWithoutLevel;
+  //private final String nameWithoutLevel;
 
   /**
    * variable name
@@ -158,13 +159,12 @@ public class GridVariable {
    * Create a new GridVariable
    *
    * @param name             name with level
-   * @param nameWithoutLevel name without level
    * @param hcs              horizontal coordinate system
    * @param lookup           lookup table
    */
-  GridVariable(String name, String nameWithoutLevel, GridHorizCoordSys hcs, GridTableLookup lookup) {
+  GridVariable(String name, GridHorizCoordSys hcs, GridTableLookup lookup) {
     this.name = name;  // used to get unique grouping of products
-    this.nameWithoutLevel = nameWithoutLevel;
+    // this.nameWithoutLevel = nameWithoutLevel;
     this.hcs = hcs;
     this.lookup = lookup;
   }
@@ -414,8 +414,10 @@ public class GridVariable {
     nEnsembles = getNEnsembles();
     ntimes = tcs.getNTimes();
 
-    if (vname == null)
-      vname = AbstractIOServiceProvider.createValidNetcdfObjectName(useNameWithoutLevel ? nameWithoutLevel : name);
+    if (vname == null) {
+      String simpleName = GridIndexToNC.makeVariableName(firstRecord, lookup, false, true); // LOOK may not be a good idea     
+      vname = AbstractIOServiceProvider.createValidNetcdfObjectName(useNameWithoutLevel ? simpleName : name);
+    }
 
     //vname = StringUtil.replace(vname, '-', "_"); // Done in dods server now
     // need for Gempak and McIDAS
@@ -449,12 +451,13 @@ public class GridVariable {
     if (unit == null) {
       unit = "";
     }
-    v.addAttribute(new Attribute("long_name", makeLongName(firstRecord, lookup)));
+    v.addAttribute(new Attribute("long_name", makeLongName()));
     if (firstRecord instanceof GribGridRecord) {
       GribGridRecord ggr = (GribGridRecord) firstRecord;
-      if (ggr.startOfInterval != GribNumbers.UNDEFINED) {
-        //v.addAttribute(new Attribute("standard_name", "accumulated_"+ vname ));
-        v.addAttribute(new Attribute("cell_methods", tcs.getName() + ": sum"));
+      if (ggr.isInterval()) {
+        CF.CellMethods cm = CF.CellMethods.convertGribCodeTable4_10(ggr.intervalStatType);
+        if (cm != null)
+          v.addAttribute(new Attribute("cell_methods", tcs.getName() + ": " + cm.toString()));
       }
     }
     v.addAttribute(new Attribute("units", unit));
@@ -708,33 +711,47 @@ public class GridVariable {
   /**
    * Make a long name for the variable
    *
-   * @param gr     grid record
-   * @param lookup lookup table
    * @return long variable name
    */
-  private String makeLongName(GridRecord gr, GridTableLookup lookup) {
-    return GridIndexToNC.makeVariableName(gr, lookup, true, true, true, true);
+  private String makeLongName() {
 
-    /*
-    GridParameter param = lookup.getParameter(gr);
-    String paramName = param.getDescription();
+    GridParameter param = lookup.getParameter(firstRecord);
+    String paramName = param.getName();
 
-    String suffix = GridIndexToNC.makeSuffixName(gr, lookup);
-    paramName = (suffix.length() == 0) ? paramName : paramName + "_" + suffix;
+    String suffixName = GridIndexToNC.makeSuffixName(firstRecord, lookup);
+    if (suffixName.length() != 0)
+      paramName += "_" + suffixName;
 
-    String suffix = GridIndexToNC.makeSuffixName(gr, lookup);
-    paramName = (suffix.length() == 0) ? paramName : paramName + "_" + suffix;
-
-    String levelName;
-    if ((lookup instanceof GempakLookup) || (lookup instanceof McIDASLookup)) {
-      levelName = lookup.getLevelDescription(gr);
-    } else {
-      levelName = GridIndexToNC.makeLevelName(gr, lookup);
+    if (firstRecord instanceof GribGridRecord) {
+      GribGridRecord ggr = (GribGridRecord) firstRecord;
+      if (ggr.isInterval()) {
+        String intervalName = makeIntervalName();
+        if (intervalName.length() != 0)
+          paramName += " ("+ ggr.getIntervalTypeName() + " for   " + intervalName + ")";
+      }
     }
 
-    paramName = (levelName.length() == 0) ? paramName : paramName + " @ " + levelName;
+    String levelName = GridIndexToNC.makeLevelName(firstRecord, lookup);
+    if (levelName.length() != 0)
+      paramName += " @ " + levelName;
 
-    return paramName; */
+    return paramName;
+  }
+
+  private String makeIntervalName() {
+    boolean same = true;
+    int intv = -1;
+    for (GridRecord gr : records) {
+      GribGridRecord ggr = (GribGridRecord) gr;
+      int start = ggr.startOfInterval;
+      int end = ggr.forecastTime;
+      int intv2 = end - start;
+      if (intv2 == 0) continue; // skip those weird zero-intervals
+      else if (intv < 0) intv = intv2;
+      else same = (intv == intv2);
+      if (!same) break;
+    }
+    return same ? intv + " Hour Intervals" : " Mixed Intervals";
   }
 
 

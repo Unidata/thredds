@@ -53,6 +53,9 @@ public class NppConvention extends ucar.nc2.dataset.CoordSysBuilder {
     if (!ncfile.getFileTypeId().equals("HDF5")) return false;
 
     Group loc = ncfile.findGroup("All_Data/VIIRS-MOD-GEO-TC_All");
+    if (loc == null)
+       loc = ncfile.findGroup("All_Data/VIIRS-CLD-AGG-GEO_All");
+
     if (null == loc) return false;
     if (null == loc.findVariable("Latitude")) return false;
     if (null == loc.findVariable("Longitude")) return false;
@@ -67,6 +70,8 @@ public class NppConvention extends ucar.nc2.dataset.CoordSysBuilder {
     ds.addAttribute(null, new Attribute("FeatureType", FeatureType.IMAGE.toString())); // LOOK
 
     Group loc = ds.findGroup("All_Data/VIIRS-MOD-GEO-TC_All");
+    if (loc == null)
+       loc = ds.findGroup("All_Data/VIIRS-CLD-AGG-GEO_All");
 
     Variable lat = loc.findVariable("Latitude");
     lat.addAttribute(new Attribute("units", "degrees_north"));
@@ -89,7 +94,7 @@ public class NppConvention extends ucar.nc2.dataset.CoordSysBuilder {
       int[] vs = v.getShape();
       if ((vs.length == 2) && (vs[0] == shape[0]) && (vs[1] == shape[1])) {
         v.setDimensions("scan xscan");
-        v.addAttribute(new Attribute(_Coordinate.Axes, "lat lon"));
+        v.addAttribute(new Attribute(_Coordinate.Axes, "Latitude Longitude"));
       }
     }
 

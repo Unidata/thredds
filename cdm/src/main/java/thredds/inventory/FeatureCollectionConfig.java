@@ -137,7 +137,6 @@ public class FeatureCollectionConfig {
         }
       }
 
-      this.choice = ProtoChoice.valueOf(choice);
       this.change = change;
       this.filename = filename;
     }

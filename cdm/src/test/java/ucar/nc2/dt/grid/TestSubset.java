@@ -34,6 +34,7 @@ package ucar.nc2.dt.grid;
 
 import junit.framework.TestCase;
 import ucar.ma2.*;
+import ucar.nc2.NCdumpW;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -42,12 +43,14 @@ import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.NCdump;
 import ucar.nc2.TestAll;
 import ucar.nc2.thredds.ThreddsDataFactory;
+import ucar.nc2.util.CompareNetcdf;
 import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.LatLonProjection;
 import ucar.unidata.geoloc.vertical.VerticalTransform;
 
 import ucar.nc2.constants.FeatureType;
 
+import java.io.PrintWriter;
 import java.util.Arrays;
 
 public class TestSubset extends TestCase {
@@ -829,5 +832,42 @@ public class TestSubset extends TestCase {
     for (int i=0; i<d1.length; i++)
       assert d1[i] == d2[i];
   }
+
+  public void testScaleOffset() throws Exception {
+    GridDataset dataset = GridDataset.open("http://www.esrl.noaa.gov/psd/thredds/dodsC/Datasets/noaa.oisst.v2/sst.wkmean.1990-present.nc");
+    GeoGrid grid = dataset.findGridByName("sst");
+    assert null != grid;
+    GridCoordSystem gcs = grid.getCoordinateSystem();
+    assert null != gcs;
+
+    System.out.printf("original bbox= %s (%s) %n", gcs.getBoundingBox(), gcs.getLatLonBoundingBox());
+
+    ucar.unidata.geoloc.LatLonRect llbb = gcs.getLatLonBoundingBox();
+    ucar.unidata.geoloc.LatLonRect llbb_subset = new LatLonRect(llbb.getLowerLeftPoint(), 20.0, llbb.getWidth() / 2);
+
+    GeoGrid grid2 = grid.subset(null, null, llbb_subset, 1, 1, 1);
+    GridCoordSystem gcs2 = grid2.getCoordinateSystem();
+    assert null != gcs2;
+
+    System.out.printf("subset bbox= %s (%s) %n", gcs2.getBoundingBox(), gcs2.getLatLonBoundingBox());
+
+    System.out.printf("%noriginal grid var= %s %n", grid.getVariable());
+    System.out.printf("subset grid var= %s %n%n", grid2.getVariable());
+
+    //   public Array readDataSlice(int rt, int e, int t, int z, int y, int x) throws java.io.IOException {
+
+    Array data = grid.readDataSlice(0, 0, 159, 0);
+    Array data2 = grid2.readDataSlice(0, 0, 0, 0);
+
+    PrintWriter pw = new PrintWriter(System.out);
+    NCdumpW.printArray(data, "org", pw, null);
+    NCdumpW.printArray(data2, "subset", pw, null);
+
+    CompareNetcdf.compareData(data, data2);
+
+    dataset.close();
+  }
+
+
 }
 

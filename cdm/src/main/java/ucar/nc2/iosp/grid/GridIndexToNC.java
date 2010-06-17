@@ -93,7 +93,7 @@ public class GridIndexToNC {
    * @param lookup lookup table
    * @return name for the level
    */
-  private static String makeLevelName(GridRecord gr, GridTableLookup lookup) {
+  static String makeLevelName(GridRecord gr, GridTableLookup lookup) {
     // for grib2, we need to add the layer to disambiguate
     if ( lookup instanceof Grib2GridTableLookup ) {
       String vname = lookup.getLevelName(gr);
@@ -110,18 +110,11 @@ public class GridIndexToNC {
    * @param lookup lookup table
    * @return name of the suffix, ensemble, probability, error, etc
    */
-  private static String makeSuffixName(GridRecord gr, GridTableLookup lookup) {
+  static String makeSuffixName(GridRecord gr, GridTableLookup lookup) {
     if ( ! (lookup instanceof Grib2GridTableLookup) )
       return "";
     Grib2GridTableLookup g2lookup = (Grib2GridTableLookup) lookup;
     return g2lookup.makeSuffix( gr );
-  }
-
-  private static String makeIntervalName(GridRecord gr, GridTableLookup lookup) {
-    if ( ! (lookup instanceof Grib2GridTableLookup) )
-      return "";
-    Grib2GridTableLookup g2lookup = (Grib2GridTableLookup) lookup;
-    return g2lookup.makeIntervalName( gr );
   }
 
   /**
@@ -131,49 +124,26 @@ public class GridIndexToNC {
    * @param lookup lookup table
    * @param addLevel add level name if there is one
    * @param addEnsemble  add ensemble name if there is one
-   * @param addInterval  add interval name if there is one
-   * @param isLongName create the long_name attribute, aka description
    * @return variable name
    */
-  public static String makeVariableName(GridRecord gr, GridTableLookup lookup, boolean addLevel, boolean addEnsemble, boolean addInterval, boolean isLongName) {
+  public static String makeVariableName(GridRecord gr, GridTableLookup lookup, boolean addLevel, boolean addEnsemble) {
     GridParameter param = lookup.getParameter(gr);
-    // String paramName = (useDescriptionForVariableName) ? param.getDescription() : param.getName();
-    String paramName = param.getName();
+    String paramName = param.getDescription();
 
     if (addEnsemble) {
       String suffixName = makeSuffixName(gr, lookup);
       paramName = (suffixName.length() == 0) ? paramName : paramName + "_" + suffixName;
     }
-    if (addInterval) {
-      String intervalName = makeIntervalName(gr, lookup);
-      paramName = (intervalName.length() == 0) ? paramName : paramName + "_" + intervalName;
-    }
+
     if (addLevel) {
       String levelName = makeLevelName(gr, lookup);
       if (levelName.length() != 0) {
-        paramName += (isLongName) ? " @ " : "_";
-        paramName += levelName;
+        paramName += "_" + levelName;
       }
     }
 
     return paramName;
   }
-
-  /**
-   * Make the variable name with suffix if present
-   *
-   * @param gr     grid record
-   * @param lookup lookup table
-   * @return variable name
-   *
-  public String makeVariableNameWithoutLevel(GridRecord gr, GridTableLookup lookup) {
-    GridParameter param = lookup.getParameter(gr);
-    String suffixName = makeSuffixName(gr, lookup);
-    String paramName = (useDescriptionForVariableName) ? param.getDescription() : param.getName();
-    paramName = (suffixName.length() == 0) ? paramName : paramName + "_" + suffixName;
-
-    return paramName;
-  } */
 
   /**
    * Fill in the netCDF file
@@ -187,9 +157,7 @@ public class GridIndexToNC {
    * @throws IOException Problem reading from the file
    */
   public void open(GridIndex index, GridTableLookup lookup, int version,
-                   NetcdfFile ncfile, FmrcCoordSys fmrcCoordSys,
-                   CancelTask cancelTask)
-      throws IOException {
+                   NetcdfFile ncfile, FmrcCoordSys fmrcCoordSys, CancelTask cancelTask) throws IOException {
 
     // create the HorizCoord Systems : one for each gds
     List<GridDefRecord> hcsList = index.getHorizCoordSys();
@@ -216,17 +184,17 @@ public class GridIndexToNC {
         firstRecord = gribRecord;
 
       GridHorizCoordSys hcs =  hcsHash.get(gribRecord.getGridDefRecordId());
-      String name = makeVariableName(gribRecord, lookup, true, true, false, false);
+      String name = makeVariableName(gribRecord, lookup, true, true);
       // combo gds, param name and level name
       GridVariable pv = (GridVariable) hcs.varHash.get(name);
       if (null == pv) {
-        String simpleName = makeVariableName(gribRecord, lookup, false, true, false, false); // LOOK may not be a good idea
-        pv = new GridVariable(name, simpleName, hcs, lookup);
+        pv = new GridVariable(name, hcs, lookup);
         hcs.varHash.put(name, pv);
         //System.out.printf("Add name=%s pname=%s%n", name, pname);
 
         // keep track of all products with same parameter name + suffix == "simple name"
         // String pname = lookup.getParameter(gribRecord).getDescription(); // dont use plain old parameter name anymore 6/3/2010 jc
+        String simpleName = makeVariableName(gribRecord, lookup, false, true); // LOOK may not be a good idea
         List<GridVariable> plist = hcs.productHash.get(simpleName);
         if (null == plist) {
           plist = new ArrayList<GridVariable>();
@@ -491,12 +459,9 @@ public class GridIndexToNC {
 
         if (plist.size() == 1) {
           GridVariable pv = plist.get(0);
-          Variable v;
-          if ( (lookup instanceof GempakLookup) || (lookup instanceof McIDASLookup )) {
-             v = pv.makeVariable(ncfile, hcs.getGroup(), false );
-          } else {
-             v = pv.makeVariable(ncfile, hcs.getGroup(), true);
-          }
+          boolean useNameWithoutLevel = !((lookup instanceof GempakLookup) || (lookup instanceof McIDASLookup ));
+
+          Variable v = pv.makeVariable(ncfile, hcs.getGroup(), useNameWithoutLevel );
           ncfile.addVariable(hcs.getGroup(), v);
 
         } else {
@@ -511,15 +476,19 @@ public class GridIndexToNC {
           // finally, add the variables
           for (int k = 0; k < plist.size(); k++) {
             GridVariable pv = plist.get(k);
-            if (isGrib2 &&  ( g2lookup.isEnsemble( pv.getFirstRecord()) ||
-                g2lookup.isProbability( pv.getFirstRecord() ) ) ||
-                (lookup instanceof GempakLookup) || (lookup instanceof McIDASLookup ) ) {
+
+            if (isGrib2 &&
+                (g2lookup.isEnsemble( pv.getFirstRecord()) || g2lookup.isProbability( pv.getFirstRecord() ) ) ||
+                (lookup instanceof GempakLookup) ||
+                (lookup instanceof McIDASLookup ) ) {
+
               ncfile.addVariable(hcs.getGroup(), pv.makeVariable(ncfile, hcs.getGroup(), false));
+
             } else {
               ncfile.addVariable(hcs.getGroup(), pv.makeVariable(ncfile, hcs.getGroup(), (k == 0)));
             }
           }
-        } // multipe vertical levels
+        } // multiple vertical levels
 
       } // create variable
 
@@ -739,7 +708,7 @@ public class GridIndexToNC {
   private String findVariableName(NetcdfFile ncfile, GridRecord gr, GridTableLookup lookup, FmrcCoordSys fmr) {
 
     // first lookup with name & vert name
-    String name = makeVariableName(gr, lookup, true, true, false, false);
+    String name = makeVariableName(gr, lookup, true, true);
     if (debug)
       System.out.println( "name ="+ name );
     if (fmr.hasVariable( name))
