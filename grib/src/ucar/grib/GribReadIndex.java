@@ -221,17 +221,17 @@ public class GribReadIndex {
               ggr.levelValue1 = pdsv.getValueFirstFixedSurface();
               ggr.levelType2 = pdsv.getTypeSecondFixedSurface();
               ggr.levelValue2 = pdsv.getValueSecondFixedSurface();
-              // accumulation variable
-              // removed to not break IDV grib1 bundles
-//              if (pdsv.getTimeRange() == 4 ) {
-//                int[] interval = pdsv.getForecastTimeInterval();
-//                ggr.startOfInterval = interval[ 0 ];
-//                ggr.forecastTime = interval[ 1 ];
+              // parameter with interval
+              if (pdsv.getTimeRange() == 4 ) {
+                int[] interval = pdsv.getForecastTimeInterval();
+                ggr.startOfInterval = interval[ 0 ];
+                ggr.forecastTime = interval[ 1 ];
+                //ggr.intervalStatType = pdsv.getIntervalStatType();
 //                //System.out.println( "Total Precip Interval ="+ interval[0]
 //                //+" "+ interval[1]);
-//              } else {
-              ggr.forecastTime = pdsv.getForecastTime();
-              //}
+              } else {
+                ggr.forecastTime = pdsv.getForecastTime();
+              }
               tunit = pdsv.getTimeRangeUnit();
               ggr.decimalScale = pdsv.getDecimalScale();
               ggr.bmsExists = pdsv.bmsExists();

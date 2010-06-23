@@ -448,8 +448,13 @@ public final class GribGridRecord implements GridRecord {
       return "";
   }
 
+  /*
+   * Because the templates are different for Grib 1 and 2, the startOfInterval is set
+   * to designate an interval type parameter
+   */
   public boolean isInterval( ) {
-    return ( productTemplate > 7) && ( productTemplate < 16 );
+    //return ( productTemplate > 7) && ( productTemplate < 16 );
+    return ( startOfInterval != GribNumbers.UNDEFINED );
   }
 
   public String getIntervalTypeName( ) {

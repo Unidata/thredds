@@ -716,7 +716,8 @@ public class GridVariable {
   private String makeLongName() {
 
     GridParameter param = lookup.getParameter(firstRecord);
-    String paramName = param.getName();
+    //String paramName = param.getName();
+    String paramName = param.getDescription() ;
 
     String suffixName = GridIndexToNC.makeSuffixName(firstRecord, lookup);
     if (suffixName.length() != 0)
@@ -727,7 +728,7 @@ public class GridVariable {
       if (ggr.isInterval()) {
         String intervalName = makeIntervalName();
         if (intervalName.length() != 0)
-          paramName += " ("+ ggr.getIntervalTypeName() + " for   " + intervalName + ")";
+          paramName += " ("+ ggr.getIntervalTypeName() + " for " + intervalName + ")";
       }
     }
 
