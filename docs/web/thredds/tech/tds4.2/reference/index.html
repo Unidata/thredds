@@ -1,50 +1,75 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html><head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>THREDDS Reference</title></head>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+  <title>THREDDS Reference</title>
+</head>
 <body>
 <h1><img src="../../images/unidataLogo.png" alt="Unidata" align="middle" height="75" width="75">THREDDS Reference Documentation (4.2)</h1>
+
 <hr>
+
 <h2>THREDDS Catalogs</h2>
 <ul>
   <li><a href="../../catalog/v1.0.2/Primer.html">Primer</a></li>
   <li><a href="../../catalog/v1.0.2/InvCatalogSpec.html">Specification</a> (as annotated XML Schema)</li>
   <li><a href="../../catalog/v1.0.2/InvCatalogSpec.server.html">Extensions for Server Configuration</a></li>
 </ul>
+
 <hr>
+
 <h2>THREDDS Data Server (TDS)</h2>
 
 <h3>Tomcat Configuration</h3>
-<ul><li><a href="AccessLog.html">Access Logging</a></li>
-  <li><a href="TomcatBehindProxyServer.html">Proxy Server </a>(Apache mod_proxy and mod_jk)</li>
+<p>Note: This section focuses on Tomcat running on a Unix/Linux OS but much of
+  it is appropriate for other servlet containers running on other OSs as well.</p>
+<ul>
+  <li><a href="JavaOptsSummary.html">Summary of Java JVM Settings</a></li>
   <li><a href="TomcatSecurity.html">Tomcat Security </a></li>
+  <li><a href="../tutorial/AdditionalSecurityConfiguration.html">Additional Security Configuration</a> (duplication of above?)</li>
+  <li><a href="AccessLog.html">Access Logging</a></li>
+  <li><a href="TomcatBehindProxyServer.html">Proxy Server </a>(Apache mod_proxy and mod_jk)</li>
+</ul>
+
+<h3>TDS Installation and Administration</h3>
+<ul>
+  <li><a href="ConfigDirectory.html">Configuration Directory</a></li>
+  <li><a href="InstallOptions.html">Installation Options</a></li>
+  <li><a href="ServletLog.html">Logging</a></li>
+  <li><a href="RemoteManagement.html">Remote Management </a></li>
 </ul>
 
 <h3>TDS Configuration</h3>
-<ul><li><a href="CatalogConfiguration.html">Configuration Catalogs </a>
+<ul>
+  <li><a href="ThreddsConfigXMLFile.html"> threddsConfig.xml</a></li>
+</ul>
+
+<h3>TDS Catalog and Dataset Configuration</h3>
+<ul>
+  <li><a href="CatalogConfiguration.html">Configuration Catalogs </a>
     <ul>
       <li><a href="DatasetScan.html"> DatasetScan</a></li>
       <li><a href="collections/FeatureCollections.html">FeatureCollection</a></li>
       <li><a href="DatasetFmrc.html"> <s>DatasetFmrc</s></a> (deprecated)</li>
     </ul>
   </li>
-  <li><a href="DatasetSource.html">Dataset Source Plug-in </a></li>
-  <li><a href="InstallOptions.html">Installation Options</a>
+  <li>Restricted Access to Datasets
     <ul>
-      <li><a href="ConfigDirectory.html">Configuration Directory</a></li>
+      <li><a href="RestrictedAccess.html">Restricted Access </a> to Datasets</li>
+      <li><a href="HTTPsecurityChallenge.html">HTTP Security Challenge Messages Example</a></li>
     </ul>
   </li>
-  <li><a href="ServletLog.html">Logging</a></li>
-  <li><a href="RemoteManagement.html">Remote Management </a></li>
-  <li><a href="../tutorial/AdditionalSecurityConfiguration.html">Security Configuration</a></li>
-  <li><a href="ThreddsConfigXMLFile.html"> threddsConfig.xml</a></li>
-  <li><a href="Viewers.html">Viewer Links </a></li>
+</ul>
+
+<h3>TDS Pluggable Components</h3>
+<ul>
+  <li><a href="DatasetSource.html">Dataset Source Plug-in</a></li>
+  <li>Restricting Dataset Access with <a href="PluggableRestrictedAccess.html">your own Authenticator</a></li>
+  <li><a href="Viewers.html">Viewer Links</a></li>
 </ul>
 
 <h3>Authorization</h3>
 <ul>
-  <li><a href="RestrictedAccess.html">Restricted Access </a> to Datasets</li>
-  <li><a href="PluggableRestrictedAccess.html">Adding your own Authenticator </a> for Restricted Access</li>
-  <li><a href="HTTPsecurityChallenge.html">HTTP Security Challenge Messages Example</a></li>
 </ul>
 
 <h3>TDS Services</h3>

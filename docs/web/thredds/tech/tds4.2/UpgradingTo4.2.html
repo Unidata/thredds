@@ -18,6 +18,7 @@
       <li><a href="#configWms">WMS Options</a></li>
     </ul>
   </li>
+  <li><a href="#wmsConfigFile">Additional WMS Configuration File</a></li>
   <li>Changes to Catalog Configuration
     <ul>
       <li><a href="#configFmrc">Configuring FMRC Datasets</a></li>
@@ -91,6 +92,16 @@ section for that information is now deprecated (though still supported, for now)
 &lt;/WMS&gt;
 </pre>
 
+<h2><a name="wmsConfigFile"></a>Additional WMS Configuration File</h2>
+<p>The WMS service now uses a new configuration file for a number of more detailed
+  WMS configuration options, mainly focused on the styling of WMS images. Similar
+  to the <code>threddsConfig.xml</code> file, the WMS configuration file
+  (<code>wmsConfig.xml</code>) is found in the
+  <code>${TOMCAT_HOME}/content/thredds</code> directory. A detailed description
+  of the <code>wmsConfig.xml</code> file can be found at the MyOcean
+  <a href="http://www.resc.reading.ac.uk/trac/myocean-tools/wiki/WmsDetailedConfiguration">"Detailed WMS Configuration" page</a>.
+</p>
+
 <h2>Changes to Catalog Configuration</h2>
 <h3><a name="#configFmrc">Configuring FMRC Datasets</a></h3>
 
@@ -109,4 +120,5 @@ last updated May, 2010. Send comments to <a href="mailto:support-thredds@unidata
 support</a>.
 </address>
 
-</body></html>
+</body>
+</html>
