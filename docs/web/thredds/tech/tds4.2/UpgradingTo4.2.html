@@ -12,24 +12,15 @@
 <hr>
 
 <ul>
-  <li>Changes to THREDDS Configuration (threddsConfig.xml)
-    <ul>
-      <li><a href="#configServerInfo">Server Description</a></li>
-      <li><a href="#configWms">WMS Options</a></li>
-    </ul>
-  </li>
+  <li><a href="#configServerInfo">Addition of Server Description in threddsConfig.xml</a></li>
+  <li><a href="#configWms">Changes to WMS Options in threddsConfig.xml</a></li>
   <li><a href="#wmsConfigFile">Additional WMS Configuration File</a></li>
-  <li>Changes to Catalog Configuration
-    <ul>
-      <li><a href="#configFmrc">Configuring FMRC Datasets</a></li>
-    </ul>
-  </li>
+  <li><a href="#configFmrc">Change in How FMRC Datasets Are Configured</a></li>
 </ul>
 
 <hr>
 
-<h2>Changes to THREDDS Configuration (threddsConfig.xml)</h2>
-<h3><a name="configServerInfo">Server Description</a></h3>
+<h2><a name="configServerInfo">Addition of Server Description in threddsConfig.xml</a></h2>
 <p>Server information can now be provided in the <code>threddsConfig.xml</code>
   file (more details <a href="reference/ThreddsConfigXMLFile.html#Server_Description">here</a>):
 </p>
@@ -66,7 +57,7 @@ previously (TDS 4.0 and 4.1) provided in the htmlSetup section. Use of the htmlS
 section for that information is now deprecated (though still supported, for now).<br>
 </p>
 
-<h3><a name="configWms">Change in WMS Options</a></h3>
+<h2><a name="configWms">Changes to WMS Options in threddsConfig.xml</a></h2>
 
 <p>The following shows all the configuration options available in the WMS section of the
   <code>threddsConfig.xml</code> file with the default values shown (more details
@@ -102,8 +93,7 @@ section for that information is now deprecated (though still supported, for now)
   <a href="http://www.resc.reading.ac.uk/trac/myocean-tools/wiki/WmsDetailedConfiguration">"Detailed WMS Configuration" page</a>.
 </p>
 
-<h2>Changes to Catalog Configuration</h2>
-<h3><a name="#configFmrc">Configuring FMRC Datasets</a></h3>
+<h2><a name="#configFmrc">Change in How FMRC Datasets Are Configured</a></h2>
 
 <p>The <code>datasetFmrc</code> element has been deprecated in favor of the new
   <code>featureCollection</code> element. Details on using the
