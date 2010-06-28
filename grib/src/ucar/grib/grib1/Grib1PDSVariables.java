@@ -435,13 +435,12 @@ public final class Grib1PDSVariables implements GribPDSVariablesIF {
   }
 
   /*
-   * Get Grib1 statistical processing by using Grib1 Table 5 TIME RANGE INDICATOR.
+   * Get Grib1 statistical processing by using Grib1 Table 5 TIME RANGE INDICATOR as a reference.
    * Since Grib1 and Grib2 use different tables, convert the Grib1 value to the Grib2
-   * value so GribGridRecord.getIntervalTypeName() returns the correct value.
+   * value so GribGridRecord.getIntervalTypeName() returns the correct IntervalStatType.
    *
    */
   public int getIntervalStatType() {
-    int intervalStatType;
     switch (getTimeRange()) {
       // average
       case 3:
@@ -451,43 +450,36 @@ public final class Grib1PDSVariables implements GribPDSVariablesIF {
       case 115:
       case 117:
       case 123:
-        intervalStatType = 0;
-        break;
+        return 0;
 
       // accumulation
       case 4:
       case 114:
       case 116:
       case 124:
-        intervalStatType = 1;
-        break;
+        return 1;
 
       // difference
       case 5:
-        intervalStatType = 4;
-        break;
+        return 4;
 
       // climatological mean
       case 51:
-        intervalStatType = 0; //TODO: check
-        break;
+        return 0; //TODO: check
 
       // covariance
       case 118:
-        intervalStatType = 7;
-        break;
+        return 7;
 
       // standard deviation
       case 119:
       case 125:
-        intervalStatType = 7;
-        break;
+        return 7;
 
       default:
         return -1;
     }
 
-    return -1;
   }
 
   // octet 22 & 23

@@ -222,11 +222,12 @@ public class GribReadIndex {
               ggr.levelType2 = pdsv.getTypeSecondFixedSurface();
               ggr.levelValue2 = pdsv.getValueSecondFixedSurface();
               // parameter with interval
-              if (pdsv.getTimeRange() == 4 ) {
+              //if (pdsv.getTimeRange() == 4 ) {
+              if (pdsv.getIntervalStatType() != -1 ) {
                 int[] interval = pdsv.getForecastTimeInterval();
                 ggr.startOfInterval = interval[ 0 ];
                 ggr.forecastTime = interval[ 1 ];
-                //ggr.intervalStatType = pdsv.getIntervalStatType();
+                ggr.intervalStatType = pdsv.getIntervalStatType();
 //                //System.out.println( "Total Precip Interval ="+ interval[0]
 //                //+" "+ interval[1]);
               } else {

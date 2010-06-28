@@ -569,13 +569,34 @@ public class GridVariable {
       } else {
         recno = time * nlevels + level;
       }
-
+      /*
       if (recordTracker[recno] == null) {
         recordTracker[recno] = p;
       } else {
         GridRecord q = recordTracker[recno];
         recordTracker[recno] = p;  // replace it with latest one
         // System.out.println("   gen="+p.typeGenProcess+" "+q.typeGenProcess+"=="+lookup.getTypeGenProcessName(p));
+      }
+      */
+
+      if (recordTracker[recno] == null) {
+        recordTracker[recno] = p;
+      } else {
+        GridRecord q = recordTracker[recno];
+        if (q instanceof GribGridRecord ) {
+          GribGridRecord ggrq = (GribGridRecord)q;
+          GribGridRecord ggrp = (GribGridRecord)p;
+          if(  ggrq.isInterval( )) {
+            recordTracker[recno] =
+                ((ggrq.forecastTime - ggrq.startOfInterval) > (ggrp.forecastTime - ggrp.startOfInterval)? q : p );
+
+          } else {
+            recordTracker[recno] = p;  // replace it with latest one
+          }
+        } else {
+          recordTracker[recno] = p;  // replace it with latest one
+          // System.out.println("   gen="+p.typeGenProcess+""+q.typeGenProcess+"=="+lookup.getTypeGenProcessName(p));
+        }
       }
     }
 

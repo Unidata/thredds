@@ -112,14 +112,38 @@ public class GridTimeCoord {
   GridTimeCoord(List<GridRecord> records, GridTableLookup lookup) {
     this();
     this.lookup = lookup;
+    boolean getLargestInterval = false;
     if (records.get(0) instanceof GribGridRecord) {
       GribGridRecord ggr = (GribGridRecord) records.get(0);
-      if (ggr.startOfInterval != GribNumbers.UNDEFINED &&
-              ggr.productTemplate > 7 && ggr.productTemplate < 16)
+      //if (ggr.startOfInterval != GribNumbers.UNDEFINED &&
+      //        ggr.productTemplate > 7 && ggr.productTemplate < 16)
+      if (ggr.isInterval() ) {
+        //getLargestInterval = true;
         intervalLength = ggr.forecastTime - ggr.startOfInterval;
+        /*
+        if( intervalLength == 0 ) {
+          System.out.printf( "intervalLength == 0 %n");
+          for (GridRecord record : records) {
+            ggr = (GribGridRecord) record;
+            int length = ggr.forecastTime - ggr.startOfInterval;
+            if( length != 0 ) {
+              intervalLength = length;
+              break;
+            }  
+          }
+        }
+        */
+      }
     }
 
     for (GridRecord record : records) {
+      if( getLargestInterval ) {
+        GribGridRecord ggr = (GribGridRecord) record;
+        int length = ggr.forecastTime - ggr.startOfInterval;
+        if(   intervalLength >  length)
+          intervalLength = length;
+
+      }
       Date validTime = getValidTime(record, lookup);
       if (!times.contains(validTime)) {
         times.add(validTime);
@@ -168,7 +192,15 @@ public class GridTimeCoord {
    * @return true if they are the same as this
    */
   boolean matchTimes(List<GridRecord> records) {
-
+    // times are not equal if one is an interval and the other is not an interval
+    /*
+    if (records.get(0) instanceof GribGridRecord) {
+      GribGridRecord ggr = (GribGridRecord) records.get(0);
+      if (ggr.isInterval() && intervalLength == GribNumbers.UNDEFINED)
+       return false;
+    }
+    */
+    
     // first create a new list
     List<Date> timeList = new ArrayList<Date>(records.size());
     for (GridRecord record : records) {

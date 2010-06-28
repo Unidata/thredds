@@ -475,7 +475,6 @@ public final class GribGridRecord implements GridRecord {
    */
   public String makeSuffix( ) {
 
-    String interval = "";
     /* check for accumulation/probability/percentile variables
     if( productType > 7 && productType < 16 ) {
       int span = forecastTime - startOfInterval;
@@ -548,23 +547,22 @@ public final class GribGridRecord implements GridRecord {
       case 14: {
         // Derived data
         if (typeGenProcess == 4) {
-          interval = interval +"_";
           if (type == 0) {
-            return interval +"unweightedMean";
+            return "unweightedMean";
           } else if (type == 1) {
-            return interval +"weightedMean";
+            return "weightedMean";
           } else if (type == 2) {
-            return interval +"stdDev";
+            return "stdDev";
           } else if (type == 3) {
-            return interval +"stdDevNor";
+            return "stdDevNor";
           } else if (type == 4) {
-            return interval +"spread";
+            return "spread";
           } else if (type == 5) {
-            return interval +"anomaly";
+            return "anomaly";
           } else if (type == 6) {
-            return interval +"unweightedMeanCluster";
+            return "unweightedMeanCluster";
           } else {
-            return interval +"unknownEnsemble";
+            return "unknownEnsemble";
           }
         }
         break;
@@ -580,15 +578,15 @@ public final class GribGridRecord implements GridRecord {
       case 9: {
         // probability data
         if (typeGenProcess == 5) {
-          return interval +"_"+ getProbabilityVariableNameSuffix( lowerLimit, upperLimit, type );
+          return getProbabilityVariableNameSuffix( lowerLimit, upperLimit, type );
         }
       }
       break;
 
       default:
-        return interval;
+        return "";
     }
-    return interval;
+    return "";
   }
 
   static public String getProbabilityVariableNameSuffix(float lowerLimit, float upperLimit, int type) {
