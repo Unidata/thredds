@@ -46,11 +46,6 @@
     <pathelement location="${src.dir}"/>
   </path>
 
-   <fileset id="ncWMS.libraries" dir="${lib.dir}/ncWMS/">
-      <patternset id="ncwms.libs"/>
-      <filename name="*.jar"/>
-   </fileset>
-
   <patternset id="sources">
     <include name="thredds/dqc/server/**/*.java"/>
     <exclude name="thredds/examples/*.java"/>
