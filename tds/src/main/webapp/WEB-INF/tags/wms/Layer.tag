@@ -2,7 +2,7 @@
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@taglib uri="http://www.atg.com/taglibs/json" prefix="json"%>
 <%@attribute name="dataset" required="true" type="uk.ac.rdg.resc.ncwms.wms.Dataset" description="Dataset containing this layer"%>
-<%@attribute name="id" required="true" description="ID of layer within the dataset"%>
+<%@attribute name="name" required="true" description="ID of layer within the Capabilities document"%>
 <%@attribute name="label" required="true" description="Specifies the title for this layer"%>
 <%-- A layer on this server.  Has the capability to add information about the
      readiness and error state of the layer's dataset --%>
@@ -11,7 +11,7 @@
         <json:property name="label" value="Dataset does not exist"/>
     </c:if>
     <c:if test="${dataset.ready}">
-        <json:property name="id" value="${dataset.id}/${id}"/>
+        <json:property name="id" value="${name}"/>
         <json:property name="label" value="${label}"/>
     </c:if>
     <c:if test="${dataset.loading}">

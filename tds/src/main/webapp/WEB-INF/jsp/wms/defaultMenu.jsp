@@ -9,12 +9,11 @@ response.setDateHeader ("Expires", 0); //prevents caching at the proxy server
 %>
 <%--
      Displays the hierarchy of layers from this server as a JSON object
-     See MetadataController.showLayerHierarchy().
-     
+     See MetadataController.showMenu().
+
      Data (models) passed in to this page:
          serverTitle = String: title for this server
          datasets = Map<String, Dataset>: all the datasets in this server
-         serverInfo  = uk.ac.rdg.resc.ncwms.config.Server object
 --%>
 <menu:folder label="${serverTitle}">
     <c:forEach var="dataset" items="${datasets}">

@@ -14,7 +14,7 @@
 <c:if test="${dataset.ready}">
     <menu:folder label="${title}">
         <c:forEach items="${dataset.layers}" var="layer">
-            <menu:layer dataset="${dataset}" id="${layer.id}" label="${layer.title}"/>
+            <menu:layer dataset="${dataset}" name="${layer.name}" label="${layer.title}"/>
         </c:forEach>
     </menu:folder>
 </c:if>

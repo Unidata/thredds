@@ -91,7 +91,7 @@ public class WmsDetailedConfig
 
             // Load the global default settings
             Element defaultSettingsEl =
-                (Element)XPath.selectSingleNode(doc, "//wmsConfig/global/defaults");
+                (Element)XPath.selectSingleNode(doc, "/wmsConfig/global/defaults");
             // We don't have to check for a null return value since we validated
             // the document against the DTD upon reading.  Similarly we know that
             // all the default settings are non-null: null values would have caused
@@ -101,7 +101,7 @@ public class WmsDetailedConfig
             // Load the overrides for specific standard names
             @SuppressWarnings("unchecked")
             List<Element> standardNamesList =
-                (List<Element>)XPath.selectNodes(doc, "//wmsConfig/global/standardNames/standardName");
+                (List<Element>)XPath.selectNodes(doc, "/wmsConfig/global/standardNames/standardName");
             for (Element standardNameEl : standardNamesList)
             {
                 StandardNameSettings sns = new StandardNameSettings(standardNameEl);
@@ -111,7 +111,7 @@ public class WmsDetailedConfig
             // Load the overrides for specific dataset paths
             @SuppressWarnings("unchecked")
             List<Element> datasetPathsList =
-                (List<Element>)XPath.selectNodes(doc, "//wmsConfig/overrides/datasetPath");
+                (List<Element>)XPath.selectNodes(doc, "/wmsConfig/overrides/datasetPath");
             for (Element datasetPathEl : datasetPathsList)
             {
                 DatasetPathSettings pathSettings = new DatasetPathSettings(datasetPathEl);

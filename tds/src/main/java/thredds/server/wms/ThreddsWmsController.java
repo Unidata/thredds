@@ -85,11 +85,10 @@ public final class ThreddsWmsController extends AbstractWmsController
 
   /**
    * Called by Spring to initialize the controller. Loads the WMS configuration
-   * from /content/thredds/wmsStyleConfig.xml.
-   *
-   * @throws IOException if
-   * @throws WmsConfigException if can't find WMS config file.
+   * from /content/thredds/wmsConfig.xml.
+   * @throws Exception if the config file could not be loaded for some reason.
    */
+  @Override
   public void init() throws Exception
   {
       super.init();
@@ -126,7 +125,6 @@ public final class ThreddsWmsController extends AbstractWmsController
     try
     {
       RequestedDataset reqDataset = new RequestedDataset( httpServletRequest );
-      System.out.println("reqDataset.getPath() = " + reqDataset.getPath());
       if ( reqDataset.isRemote() && ! threddsServerConfig.isAllowRemote() )
       {
         log.info( "dispatchWmsRequest(): WMS service not supported for remote datasets." );
@@ -170,15 +168,22 @@ public final class ThreddsWmsController extends AbstractWmsController
         modelAndView = getFeatureInfo( params, layerFactory, httpServletRequest,
                                httpServletResponse, usageLogEntry );
       }
+      // The REQUESTs below are non-standard and could be refactored into
+      // a different servlet endpoint
+      else if (request.equals("GetMetadata"))
+      {
+          ThreddsMetadataController tms =
+              new ThreddsMetadataController(layerFactory, threddsServerConfig, ds);
+          // This is a request for non-standard metadata.  (This will one
+          // day be replaced by queries to Capabilities fragments, if possible.)
+          // Delegate to the ThreddsMetadataController
+          return tms.handleRequest(httpServletRequest, httpServletResponse, usageLogEntry);
+      }
       else if ( request.equals( "GetLegendGraphic" ) )
       {
         // This is a request for an image that contains the colour scale
         // and range for a given layer
         modelAndView = getLegendGraphic( params, layerFactory, httpServletResponse );
-      }
-      else if ( request.equals( "GetLayerMetadata" ) )
-      {
-        modelAndView = getLayerMetadata( params, layerFactory );
       }
       else if ( request.equals( "GetTransect" ) )
       {
@@ -196,19 +201,6 @@ public final class ThreddsWmsController extends AbstractWmsController
       // We ensure that the GridDataset object is closed
       if ( gd != null) gd.close();
     }
-  }
-
-  /** Displays metadata for one layer, or all layers within a dataset */
-  private ModelAndView getLayerMetadata( RequestParams params, ThreddsLayerFactory layerFactory )
-          throws WmsException
-  {
-      String layerName = params.getString("layer");
-      
-      Collection<Layer> layers = layerName == null
-          ? layers = layerFactory.ds.getLayers()
-          : Arrays.asList(layerFactory.getLayer(layerName));
-
-      return new ModelAndView ( "showLayerMetadata", "layers", layers );
   }
 
   /**
