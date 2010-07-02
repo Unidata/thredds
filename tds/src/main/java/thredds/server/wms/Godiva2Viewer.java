@@ -34,6 +34,7 @@ import javax.servlet.http.HttpServletRequest;
 import thredds.catalog.InvAccess;
 import thredds.catalog.InvDatasetImpl;
 import thredds.catalog.ServiceType;
+import thredds.servlet.ServletUtil;
 import thredds.servlet.Viewer;
 import ucar.nc2.constants.FeatureType;
 
@@ -72,7 +73,8 @@ public class Godiva2Viewer implements Viewer
          return "Error generating viewer link";
       }
 
-      return "<a href='/thredds/godiva2/godiva2.html?server="+dataURI.toString()+"'>Godiva2 (browser-based)</a>";
+      // ToDo Switch to use TdsContext.getContextPath() 
+      return "<a href='" + ServletUtil.getContextPath() + "/godiva2/godiva2.html?server="+dataURI.toString()+"'>Godiva2 (browser-based)</a>";
     }
 
 }

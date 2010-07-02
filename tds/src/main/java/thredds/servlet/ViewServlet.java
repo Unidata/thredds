@@ -33,6 +33,7 @@
 
 package thredds.servlet;
 
+import thredds.server.wms.Godiva2Viewer;
 import ucar.unidata.util.StringUtil;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.util.IO;
@@ -63,6 +64,7 @@ public class ViewServlet extends AbstractServlet {
     registerViewer( new IDV());
     registerViewer( new ToolsUI());
     registerViewer( new StaticView());
+    registerViewer( new Godiva2Viewer());
   }
 
  static public void registerViewer( String className) {
