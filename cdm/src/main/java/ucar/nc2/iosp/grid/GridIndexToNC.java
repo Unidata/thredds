@@ -371,6 +371,7 @@ public class GridIndexToNC {
         for (GridTimeCoord gtc : timeCoords) {
           if (gtc.matchTimes(recordList)) {  // must have the same time coords
             useTimeCoord = gtc;
+            break;
           }
         }
         if (useTimeCoord == null) {  // nope, got to create it

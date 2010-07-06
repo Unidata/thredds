@@ -222,12 +222,13 @@ public class GribReadIndex {
               ggr.levelType2 = pdsv.getTypeSecondFixedSurface();
               ggr.levelValue2 = pdsv.getValueSecondFixedSurface();
               // parameter with interval
-              //if (pdsv.getTimeRange() == 4 ) {
-              if (pdsv.getIntervalStatType() != -1 ) {
+              ggr.intervalStatType = pdsv.getIntervalStatType();
+              if ( ggr.intervalStatType != -1 ) {
                 int[] interval = pdsv.getForecastTimeInterval();
                 ggr.startOfInterval = interval[ 0 ];
                 ggr.forecastTime = interval[ 1 ];
-                ggr.intervalStatType = pdsv.getIntervalStatType();
+                if( ggr.forecastTime - ggr.startOfInterval == 0 )
+                  continue;
 //                //System.out.println( "Total Precip Interval ="+ interval[0]
 //                //+" "+ interval[1]);
               } else {
@@ -252,13 +253,14 @@ public class GribReadIndex {
             } else {  // Grib2
               Grib2PDSVariables pdsv = new Grib2PDSVariables(pdsData);
               ggr.productTemplate = pdsv.getProductDefinition();
-              // These are accumulation variables. Even though 8 is accumulation
-              // variable, it's used in the older models that we want to be left as is.
-              if (ggr.productTemplate > 7 && ggr.productTemplate < 16 ||
+              // These are accumulation variables.  
+              if (ggr.productTemplate > 7 && ggr.productTemplate < 15 ||
                   ggr.productTemplate == 42 || ggr.productTemplate == 43) {
                 int[] interval = pdsv.getForecastTimeInterval();
                 ggr.startOfInterval = interval[0];
                 ggr.forecastTime = interval[1];
+                if( ggr.forecastTime - ggr.startOfInterval == 0 )
+                  continue;
                 //System.out.println( "Total Precip Interval ="+ interval[0]
                 //+" "+ interval[1]);
               } else {

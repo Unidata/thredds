@@ -588,7 +588,7 @@ public class GridVariable {
           GribGridRecord ggrp = (GribGridRecord)p;
           if(  ggrq.isInterval( )) {
             recordTracker[recno] =
-                ((ggrq.forecastTime - ggrq.startOfInterval) > (ggrp.forecastTime - ggrp.startOfInterval)? q : p );
+                ((ggrq.forecastTime - ggrq.startOfInterval) < (ggrp.forecastTime - ggrp.startOfInterval)? q : p );
 
           } else {
             recordTracker[recno] = p;  // replace it with latest one
@@ -763,6 +763,7 @@ public class GridVariable {
   private String makeIntervalName() {
     boolean same = true;
     int intv = -1;
+    /*     john  code
     for (GridRecord gr : records) {
       GribGridRecord ggr = (GribGridRecord) gr;
       int start = ggr.startOfInterval;
@@ -773,7 +774,13 @@ public class GridVariable {
       else same = (intv == intv2);
       if (!same) break;
     }
-    return same ? intv + " Hour Intervals" : " Mixed Intervals";
+    */
+ 
+    // get information from timeCoord
+    if ( tcs.isMixed() )
+      return " Mixed Intervals";
+    else
+      return tcs.getIntervalLength() +" Hour Intervals";
   }
 
 
