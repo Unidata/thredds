@@ -36,6 +36,8 @@ response.setDateHeader ("Expires", 0); //prevents caching at the proxy server
         <json:property>${layer.approxValueRange.maximum}</json:property>
     </json:array>
 
+    <json:property name="numColorBands" value="${layer.defaultNumColorBands}"/>
+
     <c:set var="styles" value="boxfill"/>
     <c:if test="${utils:isVectorLayer(layer)}">
         <c:set var="styles" value="vector,boxfill"/>

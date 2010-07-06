@@ -1,0 +1,171 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7">
+        <title>GODIVA2 Data Visualization demo page</title>
+        
+        <!-- Resets the browser's CSS definitions. This should reduce the
+             problem of fonts appearing differently in different browsers. -->
+        <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.5.2/build/reset-fonts-grids/reset-fonts-grids.css">
+        
+        <link rel="stylesheet" type="text/css" href="css/godiva2.css">
+        
+        <script type="text/javascript" src="js/OpenLayers-2.8.js"></script>
+        <script type="text/javascript" src="js/MapToolbar.js"></script>
+        <script type="text/javascript" src="js/WMS1_1_1.js"></script>
+        <script type="text/javascript" src="js/WMS1_3.js"></script>
+        <!-- Comment out the line below to stop using Google Maps -->
+        <!--<script type="text/javascript" src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAA7YuB_Hd5LuBiQ3-he19uDxTFRfqDGOwfXAlOK-54sJyR4NNS5RSdkyh_Ih5CfURmd5umFAKNKx8oJg"></script>-->
+        
+        <!-- Stuff for the calendar -->
+        <style type="text/css">@import url(css/calendar-blue.css);</style>
+        <script type="text/javascript" src="js/calendar.js"></script>
+        <script type="text/javascript" src="js/calendar-en.js"></script>
+        <script type="text/javascript" src="js/calendar-setup.js"></script>
+        
+        <!-- For the tree control --> 
+        <link type="text/css" rel="stylesheet" href="http://yui.yahooapis.com/2.5.2/build/treeview/assets/skins/sam/treeview.css">
+        <script type="text/javascript" src="http://yui.yahooapis.com/2.5.2/build/yahoo-dom-event/yahoo-dom-event.js"></script>
+        <script src="http://yui.yahooapis.com/2.5.2/build/treeview/treeview-min.js"></script>
+        
+        <!-- For the pop-up panel (used in the palette selector) -->
+        <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.5.2/build/container/assets/skins/sam/container.css">
+        <script type="text/javascript" src="http://yui.yahooapis.com/2.5.2/build/container/container-min.js"></script>
+        
+        <!-- Prototype is used only for Ajax requests in server.js - can we refactor
+             to remove this dependency? -->
+        <script type="text/javascript" src="js/prototype-1.6.1.js"></script>
+        <script type="text/javascript" src="js/basicDateSelector.js"></script>
+        <script type="text/javascript" src="js/server.js"></script>
+        <script type="text/javascript" src="js/godiva2.js"></script>
+    </head>
+    
+    <body class="yui-skin-sam">
+
+    <div id="leftPanel">
+
+        <div style="padding-left:10px;padding-top:10px">
+            <input id="zoomOnSelect" type="checkbox" checked="checked" title="Check this box to automatically zoom to a layer's maximum extent when it is loaded"/> Auto-zoom on select&nbsp;&nbsp;&nbsp;
+            <button onclick="javascript:setupLayerMenu()" title="Click to refresh the layer menu">Refresh</button>
+        </div>
+
+        <!-- This is the left menu bar that will contain the layer selector -->
+        <div id="layerSelector" class="yui-skin-sam"></div>
+
+        <div id="help" class="help">
+            <p><a href="http://www.resc.rdg.ac.uk/trac/ncWMS/wiki/GodivaTwoUserGuide">User guide</a></p>
+        </div>
+
+        <a href="http://www.resc.reading.ac.uk/" target="_blank"><img id="resclogo" src="http://www.resc.reading.ac.uk/images/new_logo_72dpi_web.png" alt="ReSC logo"></a>
+
+    </div>
+
+    <div id="mainPanel">
+        <div id="panelHeader">
+            <div id="panelText">
+                <b>Layer:</b> <span id="layerPath">Please select from the left panel</span><br />
+                <span id="units"></span><br />
+                <span id="zAxis"></span><select id="zValues" onchange="javascript:updateMap()"><option value="0">dummy</option></select><br />
+                <span id="date"></span>&nbsp;<span id="time"></span> <span id="utc">UTC</span>
+                <span id="setFrames"><span id="setFirstFrame"><a href="#" title="Set the current frame as the first frame of an animation" onclick="javascript:setFirstAnimationFrame()">first frame</a></span>
+                <span id="setLastFrame"><a href="#" title="Set the current frame as the last frame of an animation" onclick="javascript:setLastAnimationFrame()">last frame</a></span></span><br />
+                <span id="animation"><span id="createAnimation"><a href="#" onclick="javascript:createAnimation(false)">Create animation</a></span> from
+                <span id="firstFrame"></span>&nbsp;to&nbsp;<span id="lastFrame"></span></span><br /><br />
+                <!--<select id="otherGEarthDatasets" onchange="javascript:if(this.value != '') { window.open(this.value) }">
+                    <option value="" selected>Other useful datasets...</option>
+                    <option value="http://w3.jcommops.org/cgi-bin/WebObjects/Argo.woa/482/wo/Ej1NgzFtN3S024S2meG1733WzA9/0.0.56.9.2.1">ARGO float locations</option>
+                    <option value="http://www.seaice.dk/damocles/google/DAMOCLES.kmz">DAMOCLES Arctic sea-ice</option>
+                </select>-->
+            </div>
+            <div id="calendar"></div>            
+        </div>
+        
+        <div id="imagePanel" class="imagePanel">
+            <div class="aboveMap">
+                <span id="autoZoom"></span>&nbsp;&nbsp;<span id="moreInfo"></span>
+            </div>
+            <div id="hideAnimation" class="aboveMap"><a href="#" onclick="javascript:hideAnimation()">Stop animation</a></div>
+            <div id="map" class="map"></div>
+            <!-- This holds the "loading animation..." image -->
+            <div class="map" id="loadingAnimationDiv"><img id="loadingAnimation" src="images/loading_animation.png" alt="loading animation"/></div>
+            <!-- The mapOverlay will contain the animations -->
+            <div class="map" id="mapOverlayDiv"><img id="mapOverlay" alt="map overlay" onload="javascript:animationLoaded();"/></div>
+            <!-- Contains the animated gif throbber representing data that are loading -->
+            <img id="throbber" alt="throbber" height="32" width="32" src="images/ajax-loader.gif"/>
+            <img id="scaleBar" class="scaleBar" width="40" height="398" src="wms?REQUEST=GetLegendGraphic&COLORBARONLY=true&WIDTH=1&HEIGHT=398" alt="scale bar" title="Click to change the colour palette" onclick="javascript:showPaletteSelector();"/>
+            <div class="scaleMarkers">
+                <input id="scaleMax" class="scaleMax" type="text" size="11" onblur="javascript:validateScale()"/>
+                <span id="scaleTwoThirds"></span>
+                <div id="scaleControls">
+                    <select id="scaleSpacing" title="Sets the spacing of the colour scale" onchange="javascript:validateScale()">
+                        <option value="linear" selected>linear</option>
+                        <option value="logarithmic">log</option>
+                    </select><br />
+                    <span id="autoScale"><a href="#" title="Automatically stretch the colour scale range for maximum contrast" onclick="javascript:autoScale(false)">auto</a></span><br />
+                    <a href="#" title="Locks/Unlocks the colour scale range" onclick="javascript:toggleLockScale()"><span id="lockScale">lock</span></a>
+                </div>
+                <span id="scaleOneThird"></span>
+                <input id="scaleMin" class="scaleMin" type="text" size="11" onblur="javascript:validateScale()"/>
+            </div>
+            <div id="copyright"></div>
+            <div id="underMap"><span id="testImage"></span>&nbsp;&nbsp;<span id="googleEarth"></span></div>
+            <span id="opacityControl">Overlay opacity:
+                <select id="opacityValue" onchange="javascript:setDataOpacity(this.value)">
+                    <option value="1" selected="selected">100%</option>
+                    <option value="0.66">66%</option>
+                    <option value="0.33">33%</option>
+                </select>
+            </span>
+            <span id="poweredBy">Powered by <a href="http://www.openlayers.org" target="_blank">OpenLayers</a> and <a href="http://www.opengeospatial.org" target="_blank">OGC</a> standards</span>
+            <span id="permalink"></span>
+        </div>
+    </div>
+    
+    <!-- The palette selection pop-up window.  Initially invisible. -->
+    <div id="paletteSelector" style="visibility: hidden">
+        <div class="hd">Click to choose a colour palette</div>
+        <div class="bd">
+            <p>Number of colour bands:&nbsp;
+                <select id="numColorBands" onchange="javascript:updatePaletteSelector()">
+                    <!-- Values will be inserted in layerSelected() -->
+                </select>
+            </p>
+            <!-- This is where the table of palette images will go -->
+            <div id="paletteDiv"></div>
+        </div>
+    </div>
+
+    <!-- The animation resolution pop-up window.  Initially invisible. -->
+    <div id="animationSelector" style="visibility: hidden">
+        <div class="hd">Select the time resolution of your animation</div>
+        <p style="background-color: #ffffff; padding: 1em">The more frames you
+        choose the longer your animation will take to load.  Please choose the
+        smallest number you think you need!</p>
+        <div class="bd">
+            <select id="animationResolution"></select>
+            <button type="button" onclick="loadAnimation()">OK</button>
+        </div>
+    </div>
+
+    <!-- The "screenshot loading" pop-up window.  Initially invisible. -->
+    <div id="screenshotPanel" style="visibility: hidden">
+        <div class="hd">Screenshot</div>
+        <div class="bd">
+            <div style="width:660px; height:500px; background-color: #ffffff; padding: 1em; overflow: auto">
+                <p style="padding-bottom: 1em"><span id="screenshotMessage"></span></p>
+                <img id="screenshotImage" src="images/ajax-loader.gif" />
+            </div>
+        </div>
+    </div>
+
+    <!-- Google Analytics tracking code -->
+    <script src="http://www.google-analytics.com/urchin.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        _uacct = "UA-1662265-1";
+        urchinTracker();
+    </script>
+    
+    </body>
+</html>

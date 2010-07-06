@@ -169,4 +169,9 @@ class ThreddsVectorLayer implements VectorLayer, ThreddsLayer {
         return ColorPalette.get(this.layerSettings.getDefaultPaletteName());
     }
 
+    @Override
+    public int getDefaultNumColorBands() {
+        return this.layerSettings.getDefaultNumColorBands();
+    }
+
 }

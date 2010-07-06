@@ -145,7 +145,8 @@ public class WmsDetailedConfig
 
             // Now we look at the default settings for the dataset and use them
             // to insert any currently-unset values
-            settings.replaceNullValues(dpSettings.getDefaultSettings());
+            LayerSettings pathDefaults = dpSettings.getDefaultSettings();
+            if (pathDefaults != null) settings.replaceNullValues(pathDefaults);
         }
 
         // Now look for any per-standard name defaults

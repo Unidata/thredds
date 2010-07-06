@@ -29,6 +29,7 @@
 package thredds.server.wms.config;
 
 import org.jdom.Element;
+import uk.ac.rdg.resc.ncwms.graphics.ColorPalette;
 import uk.ac.rdg.resc.ncwms.util.Range;
 import uk.ac.rdg.resc.ncwms.util.Ranges;
 
@@ -45,6 +46,7 @@ public class LayerSettings
     private Range<Float> defaultColorScaleRange = null;
     private String defaultPaletteName =  null;
     private Boolean logScaling = null;
+    private Integer defaultNumColorBands = null;
 
     LayerSettings(Element parentElement) throws WmsConfigException
     {
@@ -57,6 +59,8 @@ public class LayerSettings
         {
             throw new WmsConfigException("defaultPaletteName must contain a value");
         }
+        this.defaultNumColorBands = getInteger(parentElement, "defaultNumColorBands",
+                Ranges.newRange(5, ColorPalette.MAX_NUM_COLOURS));
         this.logScaling = getBoolean(parentElement, "logScaling");
     }
 
@@ -71,6 +75,25 @@ public class LayerSettings
         if (str.equalsIgnoreCase("true")) return Boolean.TRUE;
         if (str.equalsIgnoreCase("false")) return Boolean.FALSE;
         throw new WmsConfigException("Value of " + childName + " must be true or false");
+    }
+
+    private static Integer getInteger(Element parentElement, String childName, Range<Integer> validRange)
+            throws WmsConfigException
+    {
+        String str = parentElement.getChildTextTrim(childName);
+        if (str == null) return null;
+        int val;
+        try
+        {
+            val = Integer.parseInt(str);
+        }
+        catch(NumberFormatException nfe)
+        {
+            throw new WmsConfigException(nfe);
+        }
+        if (val < validRange.getMinimum()) return validRange.getMinimum();
+        else if (val > validRange.getMaximum()) return validRange.getMaximum();
+        else return val;
     }
 
     private static Range<Float> getRange(Element parentElement, String childName)
@@ -111,6 +134,10 @@ public class LayerSettings
         return logScaling;
     }
 
+    public Integer getDefaultNumColorBands() {
+        return defaultNumColorBands;
+    }
+
     /**
      * Replaces all unset values in this object with values from the given
      * LayerSettings object.
@@ -121,6 +148,7 @@ public class LayerSettings
         if (this.defaultColorScaleRange == null) this.defaultColorScaleRange = newSettings.defaultColorScaleRange;
         if (this.defaultPaletteName == null) this.defaultPaletteName = newSettings.defaultPaletteName;
         if (this.logScaling == null) this.logScaling = newSettings.logScaling;
+        if (this.defaultNumColorBands == null) this.defaultNumColorBands = newSettings.defaultNumColorBands;
     }
 
     void setDefaultColorScaleRange(Range<Float> defaultColorScaleRange)
@@ -131,7 +159,7 @@ public class LayerSettings
     @Override
     public String toString()
     {
-        return String.format("allowFeatureInfo = %s, defaultColorScaleRange = %s, defaultPaletteName = %s, logScaling = %s",
-            this.allowFeatureInfo , this.defaultColorScaleRange, this.defaultPaletteName, this.logScaling);
+        return String.format("allowFeatureInfo = %s, defaultColorScaleRange = %s, defaultPaletteName = %s, defaultNumColorBands = %s, logScaling = %s",
+            this.allowFeatureInfo , this.defaultColorScaleRange, this.defaultPaletteName, this.defaultNumColorBands, this.logScaling);
     }
 }

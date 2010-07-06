@@ -13,11 +13,11 @@ for more information.
 
 <!ELEMENT global (defaults, standardNames?)>
 
-<!ELEMENT defaults (allowFeatureInfo, defaultColorScaleRange, defaultPaletteName, logScaling)>
+<!ELEMENT defaults (allowFeatureInfo, defaultColorScaleRange, defaultPaletteName, defaultNumColorBands, logScaling)>
 
 <!ELEMENT standardNames (standardName*)>
 
-<!ELEMENT standardName (defaultColorScaleRange?, defaultPaletteName?, logScaling?)>
+<!ELEMENT standardName (defaultColorScaleRange?, defaultPaletteName?, defaultNumColorBands?, logScaling?)>
 <!ATTLIST standardName name CDATA #REQUIRED>
 <!ATTLIST standardName units CDATA #REQUIRED>
 
@@ -26,16 +26,17 @@ for more information.
 <!ELEMENT datasetPath (pathDefaults?, variables?)>
 <!ATTLIST datasetPath pathSpec CDATA #REQUIRED>
 
-<!ELEMENT pathDefaults (allowFeatureInfo?, defaultColorScaleRange?, defaultPaletteName?, logScaling?)>
+<!ELEMENT pathDefaults (allowFeatureInfo?, defaultColorScaleRange?, defaultPaletteName?, defaultNumColorBands?, logScaling?)>
 
 <!ELEMENT variables (variable*)>
 
-<!ELEMENT variable (defaultColorScaleRange?, defaultPaletteName?, logScaling?)>
+<!ELEMENT variable (defaultColorScaleRange?, defaultPaletteName?, defaultNumColorBands?, logScaling?)>
 <!ATTLIST variable id CDATA #REQUIRED>
 
 <!ELEMENT allowFeatureInfo (#PCDATA)>
 <!ELEMENT defaultColorScaleRange (#PCDATA)>
 <!ELEMENT defaultPaletteName (#PCDATA)>
+<!ELEMENT defaultNumColorBands (#PCDATA)>
 <!ELEMENT logScaling (#PCDATA)>
 ]>
 <wmsConfig>
@@ -48,6 +49,7 @@ for more information.
             <allowFeatureInfo>true</allowFeatureInfo>
             <defaultColorScaleRange>-50 50</defaultColorScaleRange>
             <defaultPaletteName>rainbow</defaultPaletteName>
+            <defaultNumColorBands>20</defaultNumColorBands>
             <logScaling>false</logScaling>
         </defaults>
 
