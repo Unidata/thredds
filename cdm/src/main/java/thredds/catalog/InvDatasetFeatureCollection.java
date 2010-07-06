@@ -141,6 +141,9 @@ public class InvDatasetFeatureCollection extends InvCatalogRef {
     super(parent, name, "/thredds/catalog/" + path + "/catalog.xml");
     this.path = path;
     this.featureType = FeatureType.getType(featureType);
+    if ( featureType.equalsIgnoreCase( "FMRC" ))
+      this.getLocalMetadataInheritable().setDataType( FeatureType.GRID );
+    
     this.config = config;
     this.wantDatasets = config.fmrcConfig.datasets;
 
