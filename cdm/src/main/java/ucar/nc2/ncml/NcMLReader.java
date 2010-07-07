@@ -711,7 +711,7 @@ public class NcMLReader {
    */
   private void readGroup(NetcdfDataset newds, NetcdfFile refds, Group parent, Group refParent, Element groupElem) throws IOException {
 
-    Group g, refg;
+    Group g, refg = null;
     if (parent == null) { // this is the <netcdf> element
       g = newds.getRootGroup();
       refg = refds.getRootGroup();
@@ -729,7 +729,8 @@ public class NcMLReader {
       if (nameInFile == null) nameInFile = name;
 
       // see if it exists in referenced dataset
-      refg = refParent.findGroup(nameInFile);
+      if (refParent != null)
+        refg = refParent.findGroup(nameInFile);
       if (refg == null) { // new
         g = new Group(newds, parent, name);
         parent.addGroup(g);
