@@ -52,17 +52,21 @@ import java.util.HashMap;
 /*
  * TestIntervalsTimeCoords tests the different type of Grib intervals.
  *
- * - Grib1 parameters with constant intervals  12, 24, 36   interval length 12
- * - Grib1 parameters with mixed intervals 6, 12, 18, ... 180, 192  interval
+ * For grib parameters that have intervals, the interval start and end
+ * points are in the time bounds variables.
+ *
+ * - Grib1 parameters with constant size intervals use the constant interval length.
+ * - Grib1 parameters with mixed intervals for instance of 6, 12 use interval
  *   lengths 6 and 12
- * - Grib2 parameters with constant intervals  12, 24, 36   interval length 12
- * - Grib2 parameters with multiple intervals ending on the same forecast time, the
- *   smallest interval is picked to represent the data. Other intervals can be calculated
- *   from the given interval.  For forecast hour 15, there are intervals 12-15, 9-15, and
- *   3-15 which results in three intervals of 3, 6, 12. The 3 hour interval is picked
- *   because the other intervals can be calculated from the 3 hour interval.
+ * - Grib2 parameters with constant size intervals use the constant interval length.
+ * - Grib2 parameters with multiple intervals ending on the same forecast hour, the
+ *   smallest interval is picked to represent the data because the other intervals
+ *   can be calculated from the given interval.  For example forecast hour 15, there
+ *   are intervals 12-15, 9-15, and 3-15 which results in three intervals of 3, 6, 12.
+ *   The 3 hour interval is used because the 6 and 12 hour intervals can be calculated
+ *   from the 3 hour interval.
  * - Grib2 parameters with multiple intervals but there is at least one interval for
- *   each forecast time that starts with 0. Intervals can be 0-1, 0-2, 0-3, ...
+ *   each forecast time that starts with 0. Intervals used are 0-1, 0-2, 0-3, ...
  *
  */
 public class TestIntervalsTimeCoords extends TestCase {
