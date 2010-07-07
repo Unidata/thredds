@@ -428,16 +428,22 @@ public class N3header {
         int nelems = raf.readInt();
 
         DataType dtype = getDataType(type);
-        int[] shape = {nelems};
-        Array arr = Array.factory(dtype.getPrimitiveClassType(), shape);
-        IndexIterator ii = arr.getIndexIterator();
-        int nbytes = 0;
-        for (int j = 0; j < nelems; j++)
-          nbytes += readAttributeValue(dtype, ii);
 
-        att = new Attribute(name, arr); // no validation !!
+        if (nelems == 0) {
+          att = new Attribute(name, dtype); // empty - no values
 
-        skip(nbytes);
+        } else {
+          int[] shape = {nelems};
+          Array arr = Array.factory(dtype.getPrimitiveClassType(), shape);
+          IndexIterator ii = arr.getIndexIterator();
+          int nbytes = 0;
+          for (int j = 0; j < nelems; j++)
+            nbytes += readAttributeValue(dtype, ii);
+
+          att = new Attribute(name, arr); // no validation !!
+          skip(nbytes);
+        }
+
         if (fout != null) fout.format(" end read val pos= %d\n", raf.getFilePointer());
       }
 

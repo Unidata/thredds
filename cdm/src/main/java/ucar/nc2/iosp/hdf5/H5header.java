@@ -612,12 +612,18 @@ public class H5header {
     Vinfo vinfo = new Vinfo(matt.mdt, matt.mds, matt.dataPos);
     DataType dtype = vinfo.getNCDataType();
 
+    // check for empty attribute case
+    if (matt.mds.dimLength.length == 0) {
+      return new Attribute(matt.name, dtype);
+    }
+
     Array attData = null;
     try {
       attData = readAttributeData(matt, vinfo, dtype);
       attData.setUnsigned(matt.mdt.unsigned);
+      
     } catch (InvalidRangeException e) {
-      log.error("failed to read Attrinute "+matt.name, e);
+      log.error("failed to read Attribute "+matt.name, e);
       return null;
     }
 

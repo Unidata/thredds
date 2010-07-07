@@ -51,9 +51,9 @@ import net.jcip.annotations.Immutable;
 @Immutable
 public class Attribute {
   private final String name;
-  private String svalue; // optimization for common case of String values attribute
+  private String svalue; // optimization for common case of String valued attribute
   private DataType dataType;
-  private int nelems;
+  private int nelems; // can be 0 or greater
   private Array values;
 
   /**
@@ -94,7 +94,7 @@ public class Attribute {
   }
 
   /**
-   * Get the length of the array of values; = 1 if scaler.
+   * Get the length of the array of values
    *
    * @return number of elementss in the array.
    */
@@ -367,6 +367,18 @@ public class Attribute {
   }
 
   /**
+   * Construct an empty attribute with no values
+   *
+   * @param name   name of attribute
+   * @param dataType type of Attribute.
+   */
+  public Attribute(String name, DataType dataType) {
+    this.name = name;
+    this.dataType = dataType;
+    this.nelems = 0;
+  }
+
+  /**
    * Construct attribute with list of String or Number values.
    *
    * @param name   name of attribute
@@ -483,7 +495,7 @@ public class Attribute {
 
     if (arr.getElementType() == char.class) { // turn CHAR into STRING
       ArrayChar carr = (ArrayChar) arr;
-      if (carr.getRank() == 1) { // coomon case
+      if (carr.getRank() == 1) { // common case
         svalue = carr.getString();
         this.nelems = 1;
         this.dataType = DataType.STRING;
@@ -512,7 +524,7 @@ public class Attribute {
       arr = Array.factory(DataType.BYTE, new int[] {totalLen}, ba);
     }
 
-    if (arr.getRank() != 1)
+    if (arr.getRank() > 1)
       arr = arr.reshape(new int[]{(int) arr.getSize()}); // make sure 1D
 
     this.values = arr;
