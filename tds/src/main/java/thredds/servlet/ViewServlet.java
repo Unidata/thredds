@@ -173,9 +173,13 @@ public class ViewServlet extends AbstractServlet {
     sbuff.append("<h3>Viewers:</h3><ul>\r\n");
     for (Viewer viewer : viewerList) {
       if (viewer.isViewable(dataset)) {
-        sbuff.append("  <li> ");
-        sbuff.append(viewer.getViewerLinkHtml(dataset, req));
-        sbuff.append("</li>\n");
+        String viewerLinkHtml = viewer.getViewerLinkHtml( dataset, req );
+        if ( viewerLinkHtml != null )
+        {
+          sbuff.append("  <li> ");
+          sbuff.append( viewerLinkHtml );
+          sbuff.append("</li>\n");
+        }
       }
     }
     sbuff.append("</ul>\r\n");
@@ -256,9 +260,23 @@ public class ViewServlet extends AbstractServlet {
 
     public String  getViewerLinkHtml( InvDatasetImpl ds, HttpServletRequest req) {
       String viewer = ds.findProperty("viewer");
-      String[] parts = viewer.split(",");
-      String link = StringUtil.quoteHtmlContent( sub(parts[0], ds, req));
-      return "<a href='"+link+"'>"+parts[1]+"</a>";
+      if ( viewer == null || viewer.equals("")) return null;
+      int lastCommaLocation = viewer.lastIndexOf( "," );
+      String link;
+      String text;
+      if ( lastCommaLocation != -1 ) {
+        link = viewer.substring( 0, lastCommaLocation );
+        text = viewer.substring( lastCommaLocation + 1 );
+        if ( link.equals( "" ) ) return null;
+        if ( text.equals( "") ) text = link;
+      }
+      else {
+        link = viewer;
+        text = viewer;
+      }
+      link = StringUtil.quoteHtmlContent( sub( link, ds, req ) );
+
+      return "<a href='" + link + "'>" + text + "</a>";
     }
 
     public String sub(String org, InvDatasetImpl ds, HttpServletRequest req) {
