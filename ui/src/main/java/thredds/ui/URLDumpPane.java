@@ -307,7 +307,7 @@ public class URLDumpPane extends TextHistoryPane {
       appendLine("   follow Redirects= " + httpclient.getFollowRedirects());
 
       appendLine("   cookie policy= " + httpclient.getCookiePolicy());
-      appendLine("   http version= " + httpclient.getVersion().toString());
+      appendLine("   http version= " + httpclient.getProtocolVersion().toString());
       appendLine("   timeout (msecs)= " + httpclient.getSoTimeout());
       appendLine("   virtual host= " + httpclient.getVirtualHost());
 

@@ -305,7 +305,7 @@ public class HttpClientManager {
 
         HttpParams p = m.getParams();
         f.format("   cookie policy    =%s%n", _client.getCookiePolicy());
-        f.format("   http version     =%s%n", _client.getVersion());
+        f.format("   http version     =%s%n", _client.getProtocolVersion());
         f.format("   timeout (msecs)  =%d%n", _client.getSoTimeout());
         f.format("   virtual host     =%s%n", _client.getVirtualHost());
 
