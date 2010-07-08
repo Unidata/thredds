@@ -394,6 +394,20 @@ public class GridVariable {
             : tcs.getNTimes();
   }
 
+  /**
+   * is this a interval variable
+   *
+   * @return true if interval
+   */
+  boolean isInterval() {
+    //getFirstRecord()
+    if( firstRecord instanceof GribGridRecord ) {
+      GribGridRecord ggr = (GribGridRecord) firstRecord;
+      return ggr.isInterval();
+    }
+    return false;
+  }
+
   /* String getSearchName() {
    Parameter param = lookup.getParameter( firstRecord);
    String vname = lookup.getLevelName( firstRecord);

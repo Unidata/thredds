@@ -541,6 +541,17 @@ public final class Grib2GridTableLookup implements GridTableLookup {
   }
 
   /**
+   *  is this GridRecord an Interval
+   *
+   * @param gr GridRecord
+   * @return isInterval
+   */
+  public final boolean isInterval(GridRecord gr) {
+    GribGridRecord ggr = (GribGridRecord) gr;
+    return ggr.isInterval();
+  }
+
+  /**
    * gets the Number of Bands in the radar PDS.
    *
    * @return NB int
