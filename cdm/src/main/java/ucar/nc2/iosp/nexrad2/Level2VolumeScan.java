@@ -70,6 +70,7 @@ public class Level2VolumeScan {
   static public final String AR2V0002 = "AR2V0002";
   static public final String AR2V0003 = "AR2V0003";
   static public final String AR2V0004 = "AR2V0004";
+  static public final String AR2V0006 = "AR2V0006";
 
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Level2VolumeScan.class);
   ////////////////////////////////////////////////////////////////////////////////////
@@ -148,7 +149,8 @@ public class Level2VolumeScan {
     }
 
     //see if we have to uncompress
-    if (dataFormat.equals(AR2V0001) || dataFormat.equals(AR2V0003) || dataFormat.equals(AR2V0004)) {
+     if (dataFormat.equals(AR2V0001) || dataFormat.equals(AR2V0003)
+            || dataFormat.equals(AR2V0004) || dataFormat.equals(AR2V0006) ) {
       raf.skipBytes(4);
       String BZ = raf.readString(2);
       if (BZ.equals("BZ")) {
@@ -553,6 +555,18 @@ public class Level2VolumeScan {
 
   public List getHighResSpectrumGroups() {
     return spectrumHighResGroups;
+  }
+
+  public List getHighResDiffReflectGroups() {
+    return diffReflectHighResGroups;
+  }
+
+  public List getHighResDiffPhaseGroups() {
+    return diffPhaseHighResGroups;
+  }
+
+  public List getHighResCoeffocientGroups() {
+    return coefficientHighResGroups;
   }
 
   private class GroupComparator implements Comparator<List<Level2Record>> {

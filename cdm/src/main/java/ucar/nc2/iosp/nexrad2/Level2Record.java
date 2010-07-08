@@ -192,10 +192,13 @@ public class Level2Record {
         case REFLECTIVITY_HIGH : return ref_snr_threshold;
         case VELOCITY_HIGH : return vel_snr_threshold;
         case SPECTRUM_WIDTH_HIGH : return sw_snr_threshold;
-
+        case DIFF_REFLECTIVITY_HIGH : return zdrHR_snr_threshold;
+        case DIFF_PHASE : return phiHR_snr_threshold;
+        case CORRELATION_COEFFICIENT : return rhoHR_snr_threshold;
       default : throw new IllegalArgumentException();
     }
-   }
+   }    
+
    public short getDatatypeRangeFoldingThreshhold(int datatype) {
     switch (datatype) {
         case REFLECTIVITY_HIGH : return ref_rf_threshold;
@@ -205,6 +208,9 @@ public class Level2Record {
         case VELOCITY_LOW :
         case VELOCITY_HI :
         case SPECTRUM_WIDTH :  return threshhold;
+        case DIFF_REFLECTIVITY_HIGH : return zdrHR_rf_threshold;
+        case DIFF_PHASE : return phiHR_rf_threshold;
+        case CORRELATION_COEFFICIENT : return rhoHR_rf_threshold;
 
       default : throw new IllegalArgumentException();
     }
@@ -219,9 +225,9 @@ public class Level2Record {
         case REFLECTIVITY_HIGH : return 1/reflectHR_scale;
         case VELOCITY_HIGH : return 1/velocityHR_scale;
         case SPECTRUM_WIDTH_HIGH : return 1/spectrumHR_scale;
-        case DIFF_REFLECTIVITY_HIGH : return 1.0f;
-        case DIFF_PHASE :
-        case CORRELATION_COEFFICIENT : return 1.0f;
+        case DIFF_REFLECTIVITY_HIGH : return 1.0f/zdrHR_scale;
+        case DIFF_PHASE :  return 1.0f/phiHR_scale;
+        case CORRELATION_COEFFICIENT : return 1.0f/rhoHR_scale;
 
       default : throw new IllegalArgumentException();
     }
@@ -236,9 +242,9 @@ public class Level2Record {
       case REFLECTIVITY_HIGH : return reflectHR_addoffset*(-1)/reflectHR_scale;
       case VELOCITY_HIGH : return velocityHR_addoffset*(-1)/velocityHR_scale;
       case SPECTRUM_WIDTH_HIGH : return spectrumHR_addoffset*(-1)/spectrumHR_scale;
-      case DIFF_REFLECTIVITY_HIGH : return -128.0f;
-      case DIFF_PHASE :
-      case CORRELATION_COEFFICIENT : return -2.0f;
+      case DIFF_REFLECTIVITY_HIGH : return zdrHR_addoffset*(-1)/zdrHR_scale;
+      case DIFF_PHASE : return phiHR_addoffset*(-1)/phiHR_scale;
+      case CORRELATION_COEFFICIENT : return rhoHR_addoffset*(-1)/rhoHR_scale;
 
       default : throw new IllegalArgumentException();
     }
@@ -351,9 +357,15 @@ public class Level2Record {
   short ref_snr_threshold; // reflectivity signal to noise threshhold
   short vel_snr_threshold;
   short sw_snr_threshold;
+  short zdrHR_snr_threshold;
+  short phiHR_snr_threshold;
+  short rhoHR_snr_threshold;
   short ref_rf_threshold; // reflectivity range folding threshhold
   short vel_rf_threshold;
   short sw_rf_threshold;
+  short zdrHR_rf_threshold;
+  short phiHR_rf_threshold;
+  short rhoHR_rf_threshold;
 
   private short reflect_offset; // reflectivity data pointer (byte number from start of message)
   private short velocity_offset; // velocity data pointer (byte number from start of message)
@@ -386,12 +398,21 @@ public class Level2Record {
   float reflectHR_scale = 0;
   float velocityHR_scale = 0;
   float spectrumHR_scale = 0;
+  float zdrHR_scale = 0;
+  float phiHR_scale = 0;
+  float rhoHR_scale = 0;
   float reflectHR_addoffset = 0;
   float velocityHR_addoffset = 0;
   float spectrumHR_addoffset = 0;
+  float zdrHR_addoffset = 0;
+  float phiHR_addoffset = 0;
+  float rhoHR_addoffset = 0;
   short reflectHR_offset = 0;
   short velocityHR_offset = 0;
   short spectrumHR_offset = 0;
+  short zdrHR_offset = 0;
+  short phiHR_offset = 0;
+  short rhoHR_offset = 0;
   short zdrHR_gate_count = 0;
   short phiHR_gate_count = 0;
   short rhoHR_gate_count = 0;
@@ -593,18 +614,33 @@ public class Level2Record {
             zdrHR_gate_count = getDataBlockValue(din, (short) dbp7, 8);
             zdrHR_first_gate = getDataBlockValue(din, (short) dbp7, 10);
             zdrHR_gate_size = getDataBlockValue(din, (short) dbp7, 12);
+            zdrHR_rf_threshold = getDataBlockValue(din, (short) dbpp6, 14);
+            zdrHR_snr_threshold = getDataBlockValue(din, (short) dbpp6, 16);
+            zdrHR_scale = getDataBlockValue1(din, (short) dbpp6, 20);
+            zdrHR_addoffset = getDataBlockValue1(din, (short) dbpp6, 24);
+            zdrHR_offset = (short) (dbpp6 + 28);
         }
         hasHighResPHIData = (dbp8 > 0);
         if(hasHighResPHIData) {
             phiHR_gate_count = getDataBlockValue(din, (short) dbp8, 8);
             phiHR_first_gate = getDataBlockValue(din, (short) dbp8, 10);
             phiHR_gate_size = getDataBlockValue(din, (short) dbp8, 12);
+            phiHR_rf_threshold = getDataBlockValue(din, (short) dbpp6, 14);
+            phiHR_snr_threshold = getDataBlockValue(din, (short) dbpp6, 16);
+            phiHR_scale = getDataBlockValue1(din, (short) dbpp6, 20);
+            phiHR_addoffset = getDataBlockValue1(din, (short) dbpp6, 24);
+            phiHR_offset = (short) (dbpp6 + 28);
         }
         hasHighResRHOData = (dbp9 > 0);
         if(hasHighResRHOData)  {
             rhoHR_gate_count = getDataBlockValue(din, (short) dbp9, 8);
             rhoHR_first_gate = getDataBlockValue(din, (short) dbp9, 10);
             rhoHR_gate_size = getDataBlockValue(din, (short) dbp9, 12);
+            rhoHR_rf_threshold = getDataBlockValue(din, (short) dbpp6, 14);
+            rhoHR_snr_threshold = getDataBlockValue(din, (short) dbpp6, 16);
+            rhoHR_scale = getDataBlockValue1(din, (short) dbpp6, 20);
+            rhoHR_addoffset = getDataBlockValue1(din, (short) dbpp6, 24);
+            rhoHR_offset = (short) (dbpp6 + 28);
         }
 
         return;

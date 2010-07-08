@@ -66,7 +66,7 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
       String test = new String( b);
       return test.equals( Level2VolumeScan.ARCHIVE2) || test.equals( Level2VolumeScan.AR2V0001) ||
              test.equals( Level2VolumeScan.AR2V0003)|| test.equals( Level2VolumeScan.AR2V0004) ||
-              test.equals( Level2VolumeScan.AR2V0002);
+             test.equals( Level2VolumeScan.AR2V0002) || test.equals( Level2VolumeScan.AR2V0006);
     } catch (IOException ioe) {
       return false;
     }
@@ -102,11 +102,28 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
                 makeVariableNoCoords( ncfile, Level2Record.SPECTRUM_WIDTH_HIGH, "SpectrumWidth", "Radial Spectrum", v0, record);
         }
     }
-    if( volScan.getReflectivityGroups() != null) {
+
+    List<Level2Record> gps = volScan.getHighResDiffReflectGroups();
+    if( gps != null) {
+        makeVariable2( ncfile, Level2Record.DIFF_REFLECTIVITY_HIGH, "DifferentialReflectivity", "Differential Reflectivity", "D", volScan);
+    }
+
+    gps = volScan.getHighResCoeffocientGroups();
+    if(gps != null) {
+        makeVariable2( ncfile, Level2Record.CORRELATION_COEFFICIENT, "CorrelationCoefficient", "Correlation Coefficient", "C", volScan);
+    }
+
+    gps = volScan.getHighResDiffPhaseGroups();
+    if( gps != null) {
+        makeVariable2( ncfile, Level2Record.DIFF_PHASE, "DifferentialPhase", "Differential Phase", "P", volScan);
+    }
+
+    gps = volScan.getReflectivityGroups();
+    if( gps != null) {
         makeVariable( ncfile, Level2Record.REFLECTIVITY, "Reflectivity", "Reflectivity", "R", volScan.getReflectivityGroups(), 0);
         int velocity_type =  (volScan.getDopplarResolution() == Level2Record.DOPPLER_RESOLUTION_HIGH_CODE) ? Level2Record.VELOCITY_HI : Level2Record.VELOCITY_LOW;
         Variable v = makeVariable( ncfile, velocity_type, "RadialVelocity", "Radial Velocity", "V", volScan.getVelocityGroups(), 0);
-        List<Level2Record> gps = volScan.getVelocityGroups();
+        gps = volScan.getVelocityGroups();
         List<Level2Record> gp = (List)gps.get(0);
         Level2Record record = gp.get(0);
         makeVariableNoCoords( ncfile, Level2Record.SPECTRUM_WIDTH, "SpectrumWidth", "Spectrum Width", v, record);
@@ -184,6 +201,12 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
         groups = vScan.getHighResReflectivityGroups();
       else if( shortName.startsWith("RadialVelocity"))
         groups = vScan.getHighResVelocityGroups();
+      else if( shortName.startsWith("DifferentialReflectivity"))
+        groups = vScan.getHighResDiffReflectGroups();
+      else if( shortName.startsWith("CorrelationCoefficient"))
+        groups = vScan.getHighResCoeffocientGroups();
+      else if( shortName.startsWith("DifferentialPhase"))
+        groups = vScan.getHighResDiffPhaseGroups();
 
       int nscans = groups.size();
 
@@ -197,8 +220,13 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
     for(int i = 0; i < nscans; i++) {
         List o = (List) groups.get(i);
         Level2Record firstRecord = (Level2Record)o.get(0);
-
-        if(firstRecord.getGateCount(REFLECTIVITY_HIGH) > 500 || firstRecord.getGateCount(VELOCITY_HIGH) > 1000)
+        int ol = o.size();
+        
+        if(ol >= 720 )
+            firstGroup.add(o);
+        else if(ol <= 360)
+            secondGroup.add(o);
+        else if( firstRecord.getGateCount(REFLECTIVITY_HIGH) > 500 || firstRecord.getGateCount(VELOCITY_HIGH) > 1000)
             firstGroup.add(o);
         else
             secondGroup.add(o);
