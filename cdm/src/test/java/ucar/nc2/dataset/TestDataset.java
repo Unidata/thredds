@@ -50,6 +50,7 @@ public class TestDataset {
     suite.addTest(new TestSuite(TestSectionFillValue.class));
     suite.addTest(new TestSuite(TestDatasetWrap.class));
 
+    suite.addTest(new TestSuite(TestFindCoord.class));
     suite.addTest(new TestSuite(TestCoordinates.class));
     suite.addTest(new TestSuite(TestTransforms.class));
     suite.addTest(new TestSuite(TestConventions.class));

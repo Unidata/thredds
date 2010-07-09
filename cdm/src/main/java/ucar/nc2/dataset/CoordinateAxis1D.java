@@ -38,7 +38,6 @@ import ucar.nc2.constants._Coordinate;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.util.NamedObject;
 import ucar.unidata.util.Format;
-import ucar.unidata.geoloc.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -53,6 +52,12 @@ import java.util.List;
  * <p/>
  * If the coordinates are regularly spaced, <i>isRegular()</i> is true, and the values are equal to
  * <i>getStart()</i> + i * <i>getIncrement()</i>.
+ * <p/>
+ * This will also set "cell bounds" for this axis. By default, the cell bounds are midway between the coordinates values,
+ * and are therefore contiguous, and can be accessed though getCoordEdge(i).
+ * The only way the bunds can be set is if the coordinate variable has an attribute "bounds" that points to another variable
+ * bounds(ncoords,2). These contain the cell bounds, and must be ascending or descending as the coordinate values are. In
+ * this case isContiguous() is true when bounds1(i+1) == bounds2(i) for all i.
  *
  * @author john caron
  * @see CoordinateAxis#factory
@@ -88,7 +93,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
   CoordinateAxis1D(NetcdfDataset ncd, CoordinateAxis1D org) {
     //super(ncd, org.getParentGroup(), org.getShortName(), org.getDataType(), org.getDimensionsString(),
     //        org.getUnitsString(), org.getDescription());
-    super( ncd, org);
+    super(ncd, org);
     this.orgName = org.orgName;
     this.cache = new Variable.Cache(); // decouple cache
     setIsLayer();
@@ -106,7 +111,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
    * @param desc      long name.
    */
   public CoordinateAxis1D(NetcdfDataset ds, Group group, String shortName,
-          DataType dataType, String dims, String units, String desc) {
+                          DataType dataType, String dims, String units, String desc) {
 
     super(ds, group, shortName, dataType, dims, units, desc);
     setIsLayer();
@@ -125,6 +130,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
   }
 
   // for section and slice
+
   @Override
   protected Variable copy() {
     return new CoordinateAxis1D(this.ncd, this);
@@ -133,9 +139,9 @@ public class CoordinateAxis1D extends CoordinateAxis {
   @Override
   public CoordinateAxis copyNoCache() {
     CoordinateAxis1D axis = new CoordinateAxis1D(ncd, getParentGroup(), getShortName(), getDataType(), getDimensionsString(),
-            getUnitsString(), getDescription());
+        getUnitsString(), getDescription());
 
-        // other state
+    // other state
     axis.axisType = this.axisType;
     axis.boundaryRef = this.boundaryRef;
     axis.isContiguous = this.isContiguous;
@@ -247,6 +253,13 @@ public class CoordinateAxis1D extends CoordinateAxis {
     return edge.clone();
   }
 
+  @Override
+  public boolean isContiguous() {
+    if (!wasRead) doRead();
+    if (!hasBounds) makeBounds();
+    return isContiguous;
+  }
+
   /**
    * Get the coordinate bound1 as a double array.
    * bound1[i] # coordValue[i] # bound2[i], where # is < if increasing (bound1[i] < bound1[i+1])
@@ -322,146 +335,32 @@ public class CoordinateAxis1D extends CoordinateAxis {
     if (isContiguous())
       return findCoordElementIrregular(coordVal, false);
     else
-      return findCoordElement(coordVal, -1);
+      return findCoordElementNonContiguous(coordVal, false);
   }
 
   /**
-   * Given a coordinate position, find what grid element contains it.
-   * This means that
-   * <pre>
-   * edge[i] <= pos < edge[i+1] (if values are ascending)
-   * edge[i] > pos >= edge[i+1] (if values are descending)
-   * </pre>
-   *
-   * @param coordVal  position in this coordinate system
-   * @param lastIndex last position we looked for, or -1 if none
-   * @return index of grid point containing it, or -1 if outside grid area
-   */
-  public int findCoordElement(double coordVal, int lastIndex) {
-    if (!isNumeric())
-      throw new UnsupportedOperationException("CoordinateAxis.findCoordElement() on non-numeric");
-
-    if (axisType == AxisType.Lon) {
-      for (int x = 0; x < getSize(); x++) {
-        if (betweenLon(coordVal, getCoordEdge(x), getCoordEdge(x + 1)))
-          return x;
-      }
-      return -1;
-    }
-
-    if (lastIndex < 0) lastIndex = (int) getSize() / 2;
-
-    if (isAscending) {
-
-      if ((coordVal < getCoordEdge(0)) || (coordVal > getCoordEdge((int) getSize())))
-        return -1;
-      while (coordVal < getCoordEdge(lastIndex))
-        lastIndex--;
-      while (coordVal > getCoordEdge(lastIndex + 1))
-        lastIndex++;
-      return lastIndex;
-
-    } else {
-
-      if ((coordVal > getCoordEdge(0)) || (coordVal < getCoordEdge((int) getSize())))
-        return -1;
-      while (coordVal > getCoordEdge(lastIndex))
-        lastIndex--;
-      while (coordVal < getCoordEdge(lastIndex + 1))
-        lastIndex++;
-      return lastIndex;
-    }
-  }
-
-  private boolean betweenLon(double lon, double lonBeg, double lonEnd) {
-    while (lon < lonBeg) lon += 360;
-    return (lon >= lonBeg) && (lon <= lonEnd);
-  }
-
-  /**
-   * Given a coordinate position, find what grid element contains it, but always return valid index.
+   * Given a coordinate position, find what grid element contains it, or is closest to it.
    *
    * @param coordVal position in this coordinate system
-   * @return index of grid point containing it, or closest
+   * @return index of grid point containing it, or best estimate of closest grid interval.
    */
   public int findCoordElementBounded(double coordVal) {
     if (!isNumeric())
-      throw new UnsupportedOperationException("CoordinateAxis.findCoordElement() on non-numeric");
+      throw new UnsupportedOperationException("CoordinateAxis.findCoordElementBounded() on non-numeric");
 
     if (isRegular())
       return findCoordElementRegular(coordVal, true);
     if (isContiguous())
       return findCoordElementIrregular(coordVal, true);
     else
-      return findCoordElementBounded(coordVal, -1);
+      return findCoordElementNonContiguous(coordVal, true);
   }
 
   /**
-   * Given a coordinate position, find what grid element contains it, but always return valid index.
-   * This means that
-   * <pre>
-   * if values are ascending:
-   * pos < edge[0] return 0
-   * edge[n] < pos return n-1
-   * edge[i] <= pos < edge[i+1] return i
-   * <p/>
-   * if values are descending:
-   * pos > edge[0] return 0
-   * edge[n] > pos return n-1
-   * edge[i] > pos >= edge[i+1] return i
-   * </pre>
-   *
-   * @param pos       position in this coordinate system
-   * @param lastIndex last position we looked for, or -1 if none
-   * @return index of grid point containing it
+   * @deprecated use findCoordElement(coordVal)
    */
-  private int findCoordElementBounded(double pos, int lastIndex) {
-    if (!isNumeric())
-      throw new UnsupportedOperationException("CoordinateAxis.findCoordElement() on non-numeric");
-
-    if (axisType == AxisType.Lon) {
-      for (int x = 0; x < getSize(); x++) {
-        if (betweenLon(pos, getCoordEdge(x), getCoordEdge(x + 1)))
-          return x;
-      }
-      return pos <= getCoordEdge(0) ? 0 : (int) getSize() - 1;  // LOOK could screw up if pos not normalized to longitude interval
-    }
-
-    if (lastIndex < 0) lastIndex = (int) getSize() / 2;
-    int n = (int) getSize();
-
-    if (isAscending) {
-
-      if (pos < getCoordEdge(0))
-        return 0;
-
-      if (pos > getCoordEdge(n))
-        return n - 1;
-
-      while (pos < getCoordEdge(lastIndex))
-        lastIndex--;
-
-      while (pos > getCoordEdge(lastIndex + 1))
-        lastIndex++;
-
-      return lastIndex;
-
-    } else {
-
-      if (pos > getCoordEdge(0))
-        return 0;
-
-      if (pos < getCoordEdge(n))
-        return n - 1;
-
-      while (pos > getCoordEdge(lastIndex))
-        lastIndex--;
-
-      while (pos < getCoordEdge(lastIndex + 1))
-        lastIndex++;
-
-      return lastIndex;
-    }
+  public int findCoordElement(double coordVal, int lastIndex) {
+    return findCoordElement(coordVal);
   }
 
   //////////////////////////////////////////////////////////////////
@@ -473,7 +372,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
    * Optimize the regular case
    * Gets the index of the given point. Uses index = (value - start) / stride,
    * hence this is faster than an exhaustive search.
-   * from blower ncWMS.
+   * from jon blower's ncWMS.
    *
    * @param coordValue The value along this coordinate axis
    * @param bounded    if false and not in range, return -1, else nearest index
@@ -483,9 +382,9 @@ public class CoordinateAxis1D extends CoordinateAxis {
   private int findCoordElementRegular(double coordValue, boolean bounded) {
     int n = (int) this.getSize();
 
-    if (axisType == AxisType.Lon) {
+  /*  if (axisType == AxisType.Lon) {
       double maxValue = this.start + this.increment * n;
-      if (/* this.wraps || */ betweenLon(coordValue, this.start, maxValue)) {
+      if (betweenLon(coordValue, this.start, maxValue)) {
         double distance = LatLonPointImpl.getClockwiseDistanceTo(this.start, coordValue);
         double exactNumSteps = distance / this.increment;
         // This axis might wrap, so we make sure that the returned index is within range
@@ -496,7 +395,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
       } else {
         return bounded ? n - 1 : -1;
       }
-    }
+    } */
 
     double distance = coordValue - this.start;
     double exactNumSteps = distance / this.increment;
@@ -506,6 +405,11 @@ public class CoordinateAxis1D extends CoordinateAxis {
     else if (index >= n)
       return bounded ? n - 1 : -1;
     return index;
+  }
+
+  private boolean betweenLon(double lon, double lonBeg, double lonEnd) {
+    while (lon < lonBeg) lon += 360;
+    return (lon >= lonBeg) && (lon <= lonEnd);
   }
 
   /**
@@ -525,7 +429,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
     int low = 0;
     int high = n;
 
-    // special case for longitude
+    /* special case for longitude
     if (axisType == AxisType.Lon) {
       if (target < this.edge[low]) {
         target += 360.0;
@@ -537,7 +441,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
         if (target < this.edge[low])
           return bounded ? n - 1 : -1;
       }
-    }
+    } */
 
     if (isAscending) {
       // Check that the point is within range
@@ -576,9 +480,77 @@ public class CoordinateAxis1D extends CoordinateAxis {
         else low = mid;
       }
 
-      return high-1;
+      return high - 1;
     }
   }
+
+  /**
+   * Given a coordinate position, find what grid element contains it.
+   * Only use if isContiguous() == false
+   * This algorithm does a linear search in the bound1[] amd bound2[] array.
+   * <p/>
+   * This means that
+   * <pre>
+   * edge[i] <= pos < edge[i+1] (if values are ascending)
+   * edge[i] > pos >= edge[i+1] (if values are descending)
+   * </pre>
+   *
+   * @param target  The value to search for
+   * @param bounded if false, and not in range, return -1, else nearest index
+   * @return the index of the element in values whose value is closest to target,
+   *         or -1 if the target is out of range
+   */
+  private int findCoordElementNonContiguous(double target, boolean bounded) {
+    if (!wasRead) doRead();
+    if (!hasBounds) makeBounds();
+
+    double[] bounds1 = getBound1();
+    double[] bounds2 = getBound2();
+    int n = bounds1.length;
+
+    if (isAscending) {
+      // Check that the point is within range
+      if (target < bounds1[0])
+        return bounded ? 0 : -1;
+      else if (target > bounds2[n-1])
+        return bounded ? n-1 : -1;
+
+      // do a linear search to find the nearest index
+      for (int i=0; i<n; i++) {
+        if ((bound1[i] <= target) && (target <= bound2[i]))
+           return i;
+        if (bound1[i] > target) {
+          if (!bounded) return -1;
+          double d1 = bound1[i] - target;
+          double d2 = target - bound1[i-1];
+          return (d1 > d2) ? i-1 : i;
+        }
+      }
+      return bounded ? n-1 : -1;
+
+    } else {
+
+      // Check that the point is within range
+      if (target > bounds1[0])
+        return bounded ? 0 : -1;
+      else if (target < bounds2[n-1])
+        return bounded ? n-1 : -1;
+
+      // do a linear search to find the nearest index
+      for (int i=0; i<n; i++) {
+        if ((bound2[i] <= target) && (target <= bound1[i]))
+           return i;
+        if (bound2[i] < target) {
+          if (!bounded) return -1;
+          double d1 = bound2[i] - target;
+          double d2 = target - bound2[i-1];
+          return (d1 > d2) ? i-1 : i;
+        }
+      }
+      return bounded ? n-1 : -1;
+    }
+  }
+
 
   ///////////////////////////////////////////////////////////////////////////////
   // checkIsRegular
@@ -587,6 +559,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
 
   /**
    * Get starting value if isRegular()
+   *
    * @return starting value if isRegular()
    */
   public double getStart() {
@@ -681,22 +654,22 @@ public class CoordinateAxis1D extends CoordinateAxis {
       // correct non-monotonic longitude coords
       if (axisType == AxisType.Lon) {
         boolean monotonic = true;
-        for (int i=0; i<midpoint.length-1; i++)
-          monotonic &= isAscending ? midpoint[i] < midpoint[i+1] : midpoint[i] > midpoint[i+1];
+        for (int i = 0; i < midpoint.length - 1; i++)
+          monotonic &= isAscending ? midpoint[i] < midpoint[i + 1] : midpoint[i] > midpoint[i + 1];
 
         if (!monotonic) {
           boolean cross = false;
           if (isAscending) {
-            for (int i=0; i<midpoint.length; i++) {
+            for (int i = 0; i < midpoint.length; i++) {
               if (cross) midpoint[i] += 360;
-              if (!cross && (i<midpoint.length-1) && (midpoint[i] > midpoint[i+1]))
+              if (!cross && (i < midpoint.length - 1) && (midpoint[i] > midpoint[i + 1]))
                 cross = true;
             }
           } else {
-             for (int i=0; i<midpoint.length; i++) {
-               if (cross) midpoint[i] -= 360;
-               if (!cross && (i<midpoint.length-1) && (midpoint[i] < midpoint[i+1]))
-                 cross = true;
+            for (int i = 0; i < midpoint.length; i++) {
+              if (cross) midpoint[i] -= 360;
+              if (!cross && (i < midpoint.length - 1) && (midpoint[i] < midpoint[i + 1]))
+                cross = true;
             }
           }
           // LOOK - need to make sure we get stuff from the cache
@@ -706,7 +679,6 @@ public class CoordinateAxis1D extends CoordinateAxis {
           setCachedData(cachedData);
         }
       }
-      
 
       //  calcIsRegular();
     } else if (getDataType() == DataType.STRING) {
@@ -719,6 +691,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
   }
 
   // only used if String
+
   private void readStringValues() {
     int count = 0;
     Array data;
@@ -796,7 +769,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
       return false;
     }
 
-    assert (data.getRank() == 2) && (data.getShape()[1] == 2) : "incorrect shape data for variable "+  boundsVar;
+    assert (data.getRank() == 2) && (data.getShape()[1] == 2) : "incorrect shape data for variable " + boundsVar;
 
     // extract the bounds
     int n = shape[0];

@@ -202,7 +202,7 @@ public class CoordinateAxis extends VariableDS {
    *
    * @param isContiguous true if the adjacent edges touch
    */
-  public void setContiguous(boolean isContiguous) {
+  protected void setContiguous(boolean isContiguous) {
     this.isContiguous = isContiguous;
   }
 
