@@ -74,7 +74,7 @@ public class FeatureCollectionConfig {
 
     public Config(String name, String spec, String olderThan, String recheckAfter) {
       this.name = name;
-      this.spec = spec;
+      this.spec = spec.trim();
       this.olderThan = olderThan;
       this.recheckAfter = recheckAfter;
     }

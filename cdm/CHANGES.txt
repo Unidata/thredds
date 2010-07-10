@@ -4,6 +4,8 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.2:
  4: (xx-xx-xx)
+  FeatureCollectionConfig.Config: use collection name if it exists
+  CollectionSpecParser, FeatureCollectionConfig: trim the spec string
   bugs in CoordinateAxis1D.findCoordElement - remove longitude special case, rely on fixing mononicity.
   VariableDS copy constructor - dont apply scale/offset twice
   Opendap : use HttpClient version 4.

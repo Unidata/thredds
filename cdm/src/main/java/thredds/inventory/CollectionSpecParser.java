@@ -74,7 +74,7 @@ public class CollectionSpecParser {
   // not dealing yet with dateFormatMark being anywhere else than in the filename, ie not the path
 
   public CollectionSpecParser(String collectionSpec, Formatter errlog) {
-    this.spec = collectionSpec;
+    this.spec = collectionSpec.trim();
     int posFilter = -1;
 
     int posGlob = collectionSpec.indexOf("/**/");

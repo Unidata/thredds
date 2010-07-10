@@ -360,7 +360,8 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
       return null;
     }
 
-    FeatureCollectionConfig.Config config = new FeatureCollectionConfig.Config(name, spec, olderThan, recheckAfter);
+    String collName = (specName != null) ? specName : name;
+    FeatureCollectionConfig.Config config = new FeatureCollectionConfig.Config(collName, spec, olderThan, recheckAfter);
 
     Element updateElem = dsElem.getChild( "update", defNS );
     if (updateElem != null) {
