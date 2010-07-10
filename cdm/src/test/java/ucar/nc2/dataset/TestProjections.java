@@ -99,6 +99,30 @@ public class TestProjections extends TestCase {
         MSGnavigation.class);
   }
 
+  public void testProjectionsHeiko() throws IOException, InvalidRangeException {
+    Projection p;
+    String dir = "C:/data/work/heiko/";
+
+    p = test(dir+ "topo_stere_sphere.nc",
+        "projection_stere",
+        "air_temperature_2m",
+        Stereographic.class);
+
+    p = test(dir+ "topo_stere_WGS.nc",
+        "projection_stere",
+        "air_temperature_2m",
+        ucar.unidata.geoloc.projection.proj4.StereographicAzimuthalProjection.class);
+
+    p = test(dir+ "topo_utm_sphere.nc",
+        "projection_tmerc",
+        "air_temperature_2m",
+        ucar.unidata.geoloc.projection.TransverseMercator.class);
+
+    p = test(dir+ "topo_utm_WGS.nc",
+        "projection_tmerc",
+        "air_temperature_2m",
+        ucar.unidata.geoloc.projection.proj4.TransverseMercatorProjection.class);
+  }
 
   private Projection test(String filename, String ctvName, String varName, Class projClass) throws IOException, InvalidRangeException {
     System.out.printf("Open= %s%n", filename);
