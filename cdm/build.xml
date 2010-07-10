@@ -57,6 +57,7 @@
   <property name="httpclient4.jar" value="httpclient-4.1.jar"/>
   <property name="httpcore4.jar" value="httpcore-4.1.jar"/>
   <property name="httpmime4.jar" value="httpmime-4.1.jar"/>
+  <property name="httpclient3.jar" value="commons-httpclient-3.1.jar"/>
   <property name="http-logging.jar" value="commons-logging-1.1.jar"/>
   <property name="http-codec.jar" value="commons-codec-1.3.jar"/>
   <property name="jdom.jar" value="jdom.jar"/>
@@ -409,8 +410,7 @@
         <include name="external/${jdom.jar}"/>
         <include name="external/${httpcore4.jar}"/>
         <include name="external/${httpclient4.jar}"/>
-        <include name="external/${httpcore4.jar}"/>
-        <include name="external/${httpmime4.jar}"/>
+        <include name="external/${httpclient3.jar}"/>
         <include name="external/${http-codec.jar}"/>
         <include name="external/${http-logging.jar}"/>
         <include name="external/${loggingAPI.jar}"/>
@@ -438,6 +438,8 @@
         <attribute name="Implementation-Vendor" value="UCAR/Unidata"/>
       </manifest>
     </jar>
+      <copy file="c:/Users/dmh/IdeaProjects/tds4.2/thredds/cdm/target/ncIdv.jar"
+            tofile="c:/Users/dmh/IdeaProjects/idv/lib/ncIdv.jar" />
   </target>
 
   <!-- $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$  -->
