@@ -38,6 +38,7 @@ import ucar.nc2.dataset.ProjectionCT;
 import ucar.nc2.dataset.TransformType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.Variable;
+import ucar.unidata.geoloc.Earth;
 
 /**
  * Create a Stereographic Projection from the information in the Coordinate Transform Variable.
@@ -62,13 +63,28 @@ public class Stereographic extends AbstractCoordTransBuilder {
     double false_northing = readAttributeDouble(ctv, "false_northing", 0.0);
 
     if ((false_easting != 0.0) || (false_northing != 0.0)) {
-      double scalef = getFalseEastingScaleFactor(ds, ctv);
+      double scalef = getFalseEastingScaleFactor(ds, ctv); // conversion from axis-unit to km
       false_easting *= scalef;
       false_northing *= scalef;
     }
 
+    // these are as of CF in meters, need to be km (as false_easting...)
+    double earth_radius = readAttributeDouble(ctv, "earth_radius", Earth.getRadius()) * .001;
 
-    ucar.unidata.geoloc.projection.Stereographic proj = new ucar.unidata.geoloc.projection.Stereographic( lat0, lon0, scale, false_easting, false_northing);
+    double semi_major_axis = readAttributeDouble(ctv, "semi_major_axis", Double.NaN) * .001;
+    double semi_minor_axis = readAttributeDouble(ctv, "semi_minor_axis", Double.NaN) * .001;
+    double inverse_flattening = readAttributeDouble(ctv, "inverse_flattening", 0.0);
+
+    ucar.unidata.geoloc.ProjectionImpl proj;
+
+
+    // check for ellipsoidal earth
+    if (!Double.isNaN(semi_major_axis) && (!Double.isNaN(semi_minor_axis) || inverse_flattening != 0.0)) {
+      Earth earth = new Earth(semi_major_axis, semi_minor_axis, inverse_flattening);
+      proj = new ucar.unidata.geoloc.projection.proj4.StereographicAzimuthalProjection(lat0, lon0, scale, 90., false_easting, false_northing, earth);
+    } else {
+      proj = new ucar.unidata.geoloc.projection.Stereographic( lat0, lon0, scale, false_easting, false_northing);
+    }
     return new ProjectionCT(ctv.getShortName(), "FGDC", proj);
   }
 }

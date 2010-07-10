@@ -4,6 +4,7 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.2:
  4: (xx-xx-xx)
+  add StereographicAzimuthalProjection, TransverseMercatorProjection elliptical earth (Heiko.Klein@met.no)
   FeatureCollectionConfig.Config: use collection name if it exists
   CollectionSpecParser, FeatureCollectionConfig: trim the spec string
   bugs in CoordinateAxis1D.findCoordElement - remove longitude special case, rely on fixing mononicity.

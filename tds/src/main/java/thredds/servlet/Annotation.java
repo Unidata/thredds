@@ -35,6 +35,9 @@ package thredds.servlet;
 
 import java.util.*;
 
+/**
+ * Not currently used.
+ */
 public class Annotation {
   static private List<Annotation> annotations = new ArrayList<Annotation>();
 

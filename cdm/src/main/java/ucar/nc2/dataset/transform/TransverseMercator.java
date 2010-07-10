@@ -38,6 +38,7 @@ import ucar.nc2.dataset.ProjectionCT;
 import ucar.nc2.dataset.TransformType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.Variable;
+import ucar.unidata.geoloc.Earth;
 
 /**
  * Create a Transverse Mercator Projection from the information in the Coordinate Transform Variable.
@@ -68,8 +69,23 @@ public class TransverseMercator extends AbstractCoordTransBuilder {
       false_northing *= scalef;
     }
 
-    ucar.unidata.geoloc.projection.TransverseMercator proj =
-            new ucar.unidata.geoloc.projection.TransverseMercator(lat0, lon0, scale, false_easting, false_northing);
+        // these are as of CF in meters, need to be km (as false_easting...)
+    double earth_radius = readAttributeDouble(ctv, "earth_radius", Earth.getRadius()) * .001;
+
+    double semi_major_axis = readAttributeDouble(ctv, "semi_major_axis", Double.NaN) * .001;
+    double semi_minor_axis = readAttributeDouble(ctv, "semi_minor_axis", Double.NaN) * .001;
+    double inverse_flattening = readAttributeDouble(ctv, "inverse_flattening", 0.0);
+
+    ucar.unidata.geoloc.ProjectionImpl proj;
+
+
+    // check for ellipsoidal earth
+    if (!Double.isNaN(semi_major_axis) && (!Double.isNaN(semi_minor_axis) || inverse_flattening != 0.0)) {
+      Earth earth = new Earth(semi_major_axis, semi_minor_axis, inverse_flattening);
+      proj = new ucar.unidata.geoloc.projection.proj4.TransverseMercatorProjection(earth, lon0, lat0, scale, false_easting, false_northing);
+    } else {
+      proj = new ucar.unidata.geoloc.projection.TransverseMercator(lat0, lon0, scale, false_easting, false_northing);
+    }
     return new ProjectionCT(ctv.getShortName(), "FGDC", proj);
   }
 }
