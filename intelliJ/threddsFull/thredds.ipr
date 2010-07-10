@@ -662,7 +662,7 @@
   <component name="SvnBranchConfigurationManager">
     <option name="myConfigurationMap">
       <map>
-        <entry key="$PROJECT_DIR$/../../../Java-OpeNDAP">
+        <entry key="$PROJECT_DIR$/../../../Java-OPeNDAP">
           <value>
             <SvnBranchConfiguration>
               <option name="branchMap">
@@ -852,6 +852,33 @@
           </value>
         </entry>
         <entry key="$PROJECT_DIR$">
+          <value>
+            <SvnBranchConfiguration>
+              <option name="branchMap">
+                <map>
+                  <entry key="svn://zero/thredds/branch">
+                    <value>
+                      <list />
+                    </value>
+                  </entry>
+                  <entry key="svn://zero/thredds/tag">
+                    <value>
+                      <list />
+                    </value>
+                  </entry>
+                </map>
+              </option>
+              <option name="branchUrls">
+                <list>
+                  <option value="svn://zero/thredds/branch" />
+                  <option value="svn://zero/thredds/tag" />
+                </list>
+              </option>
+              <option name="trunkUrl" value="svn://zero/thredds/trunk" />
+            </SvnBranchConfiguration>
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../../ldm">
           <value>
             <SvnBranchConfiguration>
               <option name="branchMap">

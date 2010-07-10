@@ -613,7 +613,7 @@ public class H5header {
     DataType dtype = vinfo.getNCDataType();
 
     // check for empty attribute case
-    if (matt.mds.dimLength.length == 0) {
+    if (matt.mds.type == 2) {
       return new Attribute(matt.name, dtype);
     }
 
@@ -2390,9 +2390,12 @@ public class H5header {
 
   // Message Type 1 : "Simple Dataspace" = dimension list / shape
   public class MessageDataspace implements Named {
-    byte ndims, flags, type;
-    int[] dimLength, maxLength, permute;
-    boolean isPermuted;
+    byte ndims, flags;
+    byte type;  // 0	A scalar dataspace, i.e. a dataspace with a single, dimensionless element.
+                // 1	A simple dataspace, i.e. a dataspace with a a rank > 0 and an appropriate # of dimensions.
+                // 2	A null dataspace, i.e. a dataspace with no elements.
+    int[] dimLength, maxLength; // , permute;
+    // boolean isPermuted;
 
     public String getName() {
       StringBuilder sbuff = new StringBuilder();
@@ -2403,14 +2406,13 @@ public class H5header {
     }
 
     public String toString() {
-      StringBuilder sbuff = new StringBuilder();
-      sbuff.append(" length=(");
-      for (int size : dimLength) sbuff.append(size).append(",");
-      sbuff.append(") max=(");
-      for (int aMaxLength : maxLength) sbuff.append(aMaxLength).append(",");
-      sbuff.append(") permute=(");
-      for (int aPermute : permute) sbuff.append(aPermute).append(",");
-      sbuff.append(")");
+      Formatter sbuff = new Formatter();
+      sbuff.format(" ndims=%d flags=%x type=%d ", ndims, flags, type);
+      sbuff.format(" length=(");
+      for (int size : dimLength) sbuff.format("%d,", size);
+      sbuff.format(") max=(");
+      for (int aMaxLength : maxLength) sbuff.format("%d,", aMaxLength);
+      sbuff.format(")");
       return sbuff.toString();
     }
 
@@ -2447,13 +2449,6 @@ public class H5header {
           maxLength[i] = (int) readLength();
       } else {
         System.arraycopy(dimLength, 0, maxLength, 0, ndims);
-      }
-
-      isPermuted = (flags & 0x02) != 0;
-      permute = new int[ndims];
-      if (isPermuted) {
-        for (int i = 0; i < ndims; i++)
-          permute[i] = (int) readLength();
       }
 
       if (debug1) {

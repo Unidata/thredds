@@ -4,6 +4,8 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.2:
  4: (xx-xx-xx)
+  MSGNavigation had major/minor axes reversed
+  hdf5, nc3: attributes with no value
   add StereographicAzimuthalProjection, TransverseMercatorProjection elliptical earth (Heiko.Klein@met.no)
   FeatureCollectionConfig.Config: use collection name if it exists
   CollectionSpecParser, FeatureCollectionConfig: trim the spec string

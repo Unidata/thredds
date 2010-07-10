@@ -222,5 +222,10 @@ public class TestOddTypes extends TestCase {
     ncfile.close();
   }
 
+  public void testEmptyAtts() throws IOException {
+    NetcdfFile ncfile = NetcdfFile.open(TestAll.testdataDir + "netcdf4/testEmptyAtts .nc");
+    System.out.printf("%s%n", ncfile);
+    ncfile.close();
+  }
 
 }

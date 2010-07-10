@@ -40,7 +40,7 @@ import ucar.nc2.Attribute;
 import ucar.unidata.geoloc.ProjectionImpl;
 
 /**
- * Class Description
+ * MSGnavigation projection
  *
  * @author caron
  * @since Jan 9, 2010
@@ -67,7 +67,7 @@ public class MSGnavigation extends AbstractCoordTransBuilder {
       double scale_x = readAttributeDouble( ctv, "scale_x", Double.NaN);
       double scale_y = readAttributeDouble( ctv, "scale_y", Double.NaN);
 
-      ProjectionImpl proj = new ucar.unidata.geoloc.projection.sat.MSGnavigation(lat0, lon0, minor_axis, major_axis, height, scale_x, scale_y);
+      ProjectionImpl proj = new ucar.unidata.geoloc.projection.sat.MSGnavigation(lat0, lon0, major_axis, minor_axis, height, scale_x, scale_y);
       return new ProjectionCT(ctv.getShortName(), "FGDC", proj);
     }
 

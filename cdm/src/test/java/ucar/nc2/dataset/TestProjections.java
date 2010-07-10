@@ -34,12 +34,15 @@
 package ucar.nc2.dataset;
 
 import ucar.nc2.TestAll;
+import ucar.nc2.Variable;
+import ucar.nc2.util.CompareNetcdf;
 import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.projection.*;
 import ucar.unidata.geoloc.projection.sat.MSGnavigation;
 import ucar.ma2.InvalidRangeException;
 
 import java.io.IOException;
+import java.util.Formatter;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -97,13 +100,15 @@ public class TestProjections extends TestCase {
   }
 
 
-  private Projection test(String filename, String ctv, String varName, Class projClass) throws IOException, InvalidRangeException {
+  private Projection test(String filename, String ctvName, String varName, Class projClass) throws IOException, InvalidRangeException {
+    System.out.printf("Open= %s%n", filename);
     NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset(filename);
 
-    if (ctv != null) {
-      VariableDS lev = (VariableDS) ncd.findVariable(ctv);
-      assert lev != null;
-      System.out.println(" dump of ctv = \n" + lev);
+    Variable ctv = null;
+    if (ctvName != null) {
+      ctv = ncd.findVariable(ctvName);
+      assert ctv != null;
+      System.out.println(" dump of ctv = \n" + ctv);
     }
 
     VariableDS v = (VariableDS) ncd.findVariable(varName);
@@ -134,6 +139,11 @@ public class TestProjections extends TestCase {
 
     VariableDS ctvSyn = CoordTransBuilder.makeDummyTransformVariable(ncd, ct);
     System.out.println(" dump of equivilent ctv = \n" + ctvSyn);
+
+    if (ctv != null) {
+      Formatter f = new Formatter(System.out);
+      CompareNetcdf.checkContains(ctv.getAttributes(), ctvSyn.getAttributes(), f);
+    }
 
     ncd.close();
     return proj;

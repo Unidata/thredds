@@ -163,7 +163,6 @@ public class CompareNetcdf {
 
   public boolean compareVariable(Variable org, Variable copy, Formatter f) {
     return compareVariables(org, copy, compareData, f);
-
   }
 
   private boolean compareVariables(Variable org, Variable copy, boolean compareData, Formatter f) {
@@ -217,6 +216,22 @@ public class CompareNetcdf {
 
     return ok;
   }
+
+  // make sure each object in wantList is contained in container, using equals().
+  static public boolean checkContains(List container, List wantList, Formatter f) {
+    boolean ok = true;
+
+    for (Object want1 : wantList) {
+      int index2 = container.indexOf(want1);
+      if (index2 < 0) {
+         f.format("  ** %s %s missing %n", want1.getClass().getName(), want1);
+         ok = false;
+      }
+    }
+
+    return ok;
+  }
+
 
   // make sure each object in each list are in the other list, using equals().
   // return an arrayList of paired objects.
