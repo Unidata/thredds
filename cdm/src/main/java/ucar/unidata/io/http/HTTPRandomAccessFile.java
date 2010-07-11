@@ -61,7 +61,7 @@ import java.nio.ByteBuffer;
 public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
   static public int defaultHTTPBufferSize = 20000;
 
-  static private HttpWrap _client;
+ static  private HttpWrap _client = null;
 
   /**
    * Set the HttpClient object - a single instance is used.
@@ -81,8 +81,8 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
 
   // default AbstractHttpClient
   private synchronized void initHttpClient() throws HttpWrapException {
-    if (_client != null) return;
-    _client = new HttpWrap();
+    if (_client == null)
+        _client = new HttpWrap();
   }
 
   ///////////////////////////////////////////////////////////////////////////////////
