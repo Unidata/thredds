@@ -77,28 +77,28 @@ public class TestIntervalsTimeCoords extends TestCase {
 
   static String[] testdata = {
       TestAll.testdataDir +"cdmUnitTest/tds/new/GFS_Puerto_Rico_191km_20100515_0000.grib1",
-      "Total_precipitation", "coords0",
+      "Total_precipitation", "bounds0",
       TestAll.testdataDir +"cdmUnitTest/tds/new/GFS_CONUS_80km_20100513_0600.grib1",
-      "Total_precipitation", "coords1",
+      "Total_precipitation", "bounds1",
       TestAll.testdataDir +"cdmUnitTest/tds/new/NAM_CONUS_12km_20100520_0000.grib2",
-      "Total_precipitation", "coords2",
+      "Total_precipitation", "bounds2",
       TestAll.testdataDir +"cdmUnitTest/tds/new/SREF_Alaska_45km_ensprod_20100525_0300.grib2",
-      "Total_precipitation_probability_above_0p25", "coords3",
+      "Total_precipitation_probability_above_0p25", "bounds3",
       TestAll.testdataDir +"cdmUnitTest/tds/new/RUC2_CONUS_20km_pressure_20100509_1300.grib2",
-      "Convective_precipitation", "coords4",
+      "Convective_precipitation", "bounds4",
       TestAll.testdataDir +"cdmUnitTest/tds/new/GFS_Global_2p5deg_20100602_1200.grib2",
-      "Total_precipitation", "coords5",
+      "Total_precipitation", "bounds5",
       TestAll.testdataDir +"grid/grib/grib2/CFSR/pgbhnl.gdas.U_GRD.10mbar.grb2",
-      "U-component_of_wind", "coords6"
+      "U-component_of_wind", "bounds6"
   };
 
-  static int[][] coords0 = {
+  static int[][] bounds0 = {
     {0, 12}, {12, 24}, {24, 36}, {36, 48}, {48, 60}, {60, 72}, {72, 84}, {84, 96},
     {96, 108}, {108, 120}, {120, 132}, {132, 144}, {144, 156}, {156, 168}, {168, 180},
     {180, 192}, {192, 204}, {204, 216}, {216, 228}, {228, 240}
   };
 
-  static int[][] coords1 = {
+  static int[][] bounds1 = {
     {0, 6}, {6, 12}, {12, 18}, {18, 24}, {24, 30}, {30, 36}, {36, 42}, {42, 48}, {48, 54},
     {54, 60}, {60, 66}, {66, 72}, {72, 78}, {78, 84}, {84, 90}, {90, 96}, {96, 102},
     {102, 108}, {108, 114}, {114, 120}, {120, 126}, {126, 132}, {132, 138}, {138, 144},
@@ -106,7 +106,7 @@ public class TestIntervalsTimeCoords extends TestCase {
     {192, 204}, {204, 216}, {216, 228}, {228, 240}
   };
 
-  static int[][] coords2 = {
+  static int[][] bounds2 = {
     {0, 3}, {3, 6}, {6, 9}, {9, 12}, {12, 15}, {15, 18}, {18, 21}, {21, 24}, {24, 27},
     {27, 30}, {30, 33}, {33, 36}, {36, 39}, {39, 42}, {42, 45}, {45, 48}, {48, 51},
     {51, 54}, {54, 57}, {57, 60}, {60, 63}, {63, 66}, {66, 69}, {69, 72}, {72, 75},
@@ -114,25 +114,25 @@ public class TestIntervalsTimeCoords extends TestCase {
   };
 
 
-  static int[][] coords3 = {
+  static int[][] bounds3 = {
     {3, 6}, {6, 9}, {9, 12}, {12, 15}, {15, 18}, {18, 21}, {21, 24}, {24, 27}, {27, 30},
     {30, 33}, {33, 36}, {36, 39}, {39, 42}, {42, 45}, {45, 48}, {48, 51}, {51, 54},
     {54, 57}, {57, 60}, {60, 63}, {63, 66}, {66, 69}, {69, 72}, {72, 75}, {75, 78},
     {78, 81}, {81, 84}, {84, 87}
   };
 
-  static int[][] coords4 = {
+  static int[][] bounds4 = {
     {0, 1}, {0, 2}, {0, 3}, {0, 4}, {0, 5}, {0, 6}, {0, 7}, {0, 8}, {0, 9}, {0, 10},
     {0, 11}, {0, 12}, {0, 13}, {0, 14}, {0, 15}, {0, 16}, {0, 17}, {0, 18}
   };
 
-  static int[][] coords5 = {
+  static int[][] bounds5 = {
     {180, 192}, {192, 204}, {204, 216}, {216, 228}, {228, 240}, {240, 252}, {252, 264},
     {264, 276}, {276, 288}, {288, 300}, {300, 312}, {312, 324}, {324, 336}, {336, 348},
     {348, 360}, {360, 372}, {372, 384}
   };
 
-  static int[][] coords6 = {
+  static int[][] bounds6 = {
     {0, 744}, {0, 1416}, {0, 2160}, {0, 2880}, {0, 3624}, {0, 4344}, {0, 5088}, {0, 5832},
     {0, 6552}, {0, 7296}, {0, 8016}, {0, 8760}, {0, 9504}, {0, 10200}, {0, 10944}, {0, 11664},
     {0, 12408}, {0, 13128}, {0, 13872}, {0, 14616}, {0, 15336}, {0, 16080}, {0, 16800},
@@ -188,16 +188,16 @@ public class TestIntervalsTimeCoords extends TestCase {
     {0, 268080}, {0, 268824}, {0, 269544}
   };
 
-  static HashMap<String, int[][]> timeCoords = new HashMap <String, int[][]>()
+  static HashMap<String, int[][]> timeBounds = new HashMap <String, int[][]>()
   {
     {
-      put( "coords0", coords0 );
-      put( "coords1", coords1 );
-      put( "coords2", coords2 );
-      put( "coords3", coords3 );
-      put( "coords4", coords4 );
-      put( "coords5", coords5 );
-      put( "coords6", coords6 );
+      put( "bounds0", bounds0 );
+      put( "bounds1", bounds1 );
+      put( "bounds2", bounds2 );
+      put( "bounds3", bounds3 );
+      put( "bounds4", bounds4 );
+      put( "bounds5", bounds5 );
+      put( "bounds6", bounds6 );
     }
   };
 
@@ -208,7 +208,7 @@ public class TestIntervalsTimeCoords extends TestCase {
     for( int i = 0; i < testdata.length; i += 3) {
       String grib = testdata[ i ];
       String parameter = testdata[ i +1];
-      int[][]tc = timeCoords.get( testdata[ i +2] );
+      int[][]tb = timeBounds.get( testdata[ i +2] );
 
       try {
         NetcdfFile ncf = NetcdfFile.open( grib );
@@ -222,15 +222,18 @@ public class TestIntervalsTimeCoords extends TestCase {
         while (iter.hasNext()) {
           int start = iter.getIntNext();
           int end = iter.getIntNext();
-          assert( start == tc[idx][0]);
-          assert( end == tc[idx][1]);
-          System.out.printf( "interval %d - %d  known %d - %d%n",
-              start, end, tc[idx][0],  tc[idx][1] );
+          if( start != tb[idx][0] || end != tb[idx][1]) {
+            System.out.printf( "bounds for file %s, parameter %s failed%n", grib, parameter);
+            System.out.printf( "interval %d - %d  known %d - %d%n",
+              start, end, tb[idx][0],  tb[idx][1] );
+          }  
+          assert( start == tb[idx][0]);
+          assert( end == tb[idx][1]);
           idx++;
         }
         ncf.close();
 
-        System.out.println("Success");
+        //System.out.println("Success");
       } catch (Exception exc) {
         exc.printStackTrace();
       }

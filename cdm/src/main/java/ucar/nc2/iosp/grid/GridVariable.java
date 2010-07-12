@@ -583,7 +583,7 @@ public class GridVariable {
       } else {
         recno = time * nlevels + level;
       }
-      /*
+      /*  original code
       if (recordTracker[recno] == null) {
         recordTracker[recno] = p;
       } else {
@@ -600,16 +600,19 @@ public class GridVariable {
         if (q instanceof GribGridRecord ) {
           GribGridRecord ggrq = (GribGridRecord)q;
           GribGridRecord ggrp = (GribGridRecord)p;
-          if(  ggrq.isInterval( )) {
+          // if Grib2 mixed interval, pick out record with startOfInterval = 0
+          // else if Grib1 or Grib2 interval pick out smallest interval
+          if( tcs.isMixed() && ggrq.isInterval( ) ) {
+            if( ggrp.startOfInterval == 0 )
+              recordTracker[recno] = p;
+          } else if(  ggrq.isInterval( ) ) {
             recordTracker[recno] =
-                ((ggrq.forecastTime - ggrq.startOfInterval) < (ggrp.forecastTime - ggrp.startOfInterval)? q : p );
-
+              ((ggrq.forecastTime - ggrq.startOfInterval) < (ggrp.forecastTime - ggrp.startOfInterval)? q : p );
           } else {
             recordTracker[recno] = p;  // replace it with latest one
           }
         } else {
           recordTracker[recno] = p;  // replace it with latest one
-          // System.out.println("   gen="+p.typeGenProcess+""+q.typeGenProcess+"=="+lookup.getTypeGenProcessName(p));
         }
       }
     }

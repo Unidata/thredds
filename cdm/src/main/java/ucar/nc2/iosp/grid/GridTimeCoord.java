@@ -122,21 +122,13 @@ public class GridTimeCoord {
       // since the norm is not interval parameter, have separate processing because messy
       if (ggr.isInterval() ) {
         intervalLength = ggr.forecastTime - ggr.startOfInterval;
-        // TODO: check if still needed
-        if( intervalLength == 0 ) {
-          //System.out.printf( "intervalLength == 0 %n");
-          records.remove( 0 );
-          if( records.size() > 0 ) {
-            ggr = (GribGridRecord) records.get(0);
-            intervalLength = ggr.forecastTime - ggr.startOfInterval;
-          }
-        } else { // check for mixed intervals
+        // check for mixed intervals
           int startAtZero = 0;
           for (GridRecord record : records) {
             ggr = (GribGridRecord) record;
 
             // debug
-            if( false && ggr.category == 1 && ggr.paramNumber == 8)
+            if(  false && ggr.category == 4 && ggr.paramNumber == 192)
               System.out.printf( "start %d forecast %d interval=%d%n",
                 ggr.startOfInterval, ggr.forecastTime, (ggr.forecastTime - ggr.startOfInterval));
 
@@ -154,10 +146,8 @@ public class GridTimeCoord {
           if ( mixed && lookup.getGridType().equals( "GRIB-2"))
             mixed = ( startAtZero == times.size());
 
-
           Collections.sort(times);
           return;
-        }
       }
     }
 
@@ -221,12 +211,9 @@ public class GridTimeCoord {
         for (GridRecord record : records) {
           ggr = (GribGridRecord) record;
 
-          if( false && ggr.category == 1 && ggr.paramNumber == 8)
-            System.out.printf( "reference time %s start %d forecast %d interval=%d%n",
+          if( false && ggr.category == 4 && ggr.paramNumber == 192)
+            System.out.printf( "reference time %s start %d end %d interval=%d%n",
               ggr.getReferenceTime(), ggr.startOfInterval, ggr.forecastTime, (ggr.forecastTime - ggr.startOfInterval));
-          if( ggr.forecastTime - ggr.startOfInterval == 0 || 
-              ggr.startOfInterval == GribNumbers.UNDEFINED )
-            continue;
           Date validTime = getValidTime(record, lookup);
           if (!timeList.contains(validTime)) {
             timeList.add(validTime);

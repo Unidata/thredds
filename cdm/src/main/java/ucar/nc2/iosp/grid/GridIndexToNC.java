@@ -201,7 +201,31 @@ public class GridIndexToNC {
           hcs.productHash.put(simpleName, plist);
         }
         plist.add(pv);
+      } else if ( lookup instanceof Grib2GridTableLookup ) {
+        Grib2GridTableLookup g2lookup = (Grib2GridTableLookup) lookup;
+        // check for non interval pv and interval record which needs a interval pv
+        if( ! pv.isInterval() && g2lookup.isInterval( gribRecord ) ) {
+          // make a interval variable
+          String interval = name +"_interval";
+          pv = (GridVariable) hcs.varHash.get(interval);
+          if (null == pv) {
+            pv = new GridVariable(interval, hcs, lookup);
+            hcs.varHash.put(interval, pv);
+            String simpleName = makeVariableName(gribRecord, lookup, false, true); // LOOK may not be a good idea
+            List<GridVariable> plist = hcs.productHash.get(simpleName);
+            if (null == plist) {
+              plist = new ArrayList<GridVariable>();
+              hcs.productHash.put(simpleName, plist);
+            }
+            plist.add(pv);
+          }
+        } else if ( pv.isInterval() && !g2lookup.isInterval( gribRecord )  ) {
+          // make a non-interval variable
+          logger.info( "Non-Interval records for %s%n", pv.getName());
+            continue;
+        }
       }
+
       pv.addProduct(gribRecord);
     }
 
@@ -365,7 +389,6 @@ public class GridIndexToNC {
           vertCoords.add(useVertCoord);
         }
         pv.setVertCoord(useVertCoord);
-
         // look to see if time coord already exists
         GridTimeCoord useTimeCoord = null;
         for (GridTimeCoord gtc : timeCoords) {

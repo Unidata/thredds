@@ -1,4 +1,9 @@
 Grib Jar Version Information
+8.26 Monday July 12, 2010
+Refactored Grib parameters with intervals, also added parameters that are interval and
+non-intervals. ie Downward_Short__Wave_Rad_Flux.  Added Grib1 New Delhi and updated
+French parameter tables
+
 8.25 Thursday May 27, 2010
 Added parameter table name to the missing parameter names and warning messages.
 Changed CF global attribute to have center name prepended to title and current time

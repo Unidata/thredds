@@ -3,7 +3,7 @@
 
   <target name="init">
     <property name="release.version" value="8.0"/>
-    <property name="release.version.minor" value="${release.version}.25"/>
+    <property name="release.version.minor" value="${release.version}.26"/>
     <tstamp>
       <format property="buildtime" pattern="yyyy-MM-dd HH:mm:ss"/>
     </tstamp>
