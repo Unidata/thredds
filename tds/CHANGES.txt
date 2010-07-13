@@ -4,6 +4,7 @@ Build Date = @BUILDTIME@
 
 Release Details 4.2:
  4.2 beta x (2010-xx-xx)
+   Add Godiva2, a browser based WMS client, and make it a default viewer link (from Jon Blower) 
    Add WMS configuration file (from Jon Blower)
    Upgraded from HttpClient 3 to HttpClient 4
  
