@@ -706,8 +706,8 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * Do a HEAD call on the URL. 
    * Look for the header "Content-Description" = "ncstream" or "dods".
    */
-  static private ServiceType disambiguateHttp(String location) throws  IOException {
-    initHttpClient();
+  static  private ServiceType disambiguateHttp(String location) throws  IOException {
+    HttpWrap httpClient = new HttpWrap();//initHttpClient();
 
     // have to do dods first
     ServiceType result = checkIfDods(location);
@@ -741,7 +741,8 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   // not sure what other opendap servers do, so fall back on check for dds
   static private ServiceType checkIfDods(String location) throws IOException {
     try {
-      httpClient.setMethodHead(location+".dds");
+      HttpWrap httpClient = new HttpWrap();
+        httpClient.setMethodHead(location+".dds");
         int status = httpClient.execute();
       if (status == 200) {
         Header h = httpClient.getHeader("Content-Description");
@@ -773,12 +774,14 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     httpClient = client;
   } */
 
-  private static HttpWrap httpClient = null;
+ // private static  HttpWrap httpClient = null;
 
-  private static synchronized void initHttpClient() throws HttpWrapException {
+  /*
+  private  synchronized void initHttpClient() throws HttpWrapException {
     if (httpClient != null) return;
     httpClient = new HttpWrap();
   }
+    */
 
   static private NetcdfFile acquireDODS(FileCache cache, FileFactory factory, Object hashKey,
                                         String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {

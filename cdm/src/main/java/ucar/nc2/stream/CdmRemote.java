@@ -58,8 +58,9 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
   static public final String SCHEME = "cdmremote:";
 
   static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CdmRemote.class);
-  static private HttpWrap httpClient;
   static private boolean showRequest = true;
+
+  private HttpWrap httpClient;
 
   /**
    * Create the canonical form of the URL.
@@ -85,7 +86,9 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
     httpClient = client;
   } */
 
-  static private synchronized void initHttpClient()  throws HttpWrapException {
+
+   private  void initHttpClient()  throws HttpWrapException {
+
     if (httpClient != null) return;
     httpClient = new HttpWrap();
   }
@@ -183,7 +186,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
   }
 
   public static HttpWrap sendQuery(String remoteURI, String query) throws IOException {
-    initHttpClient();
+    HttpWrap httpClient = new HttpWrap();
     
     StringBuilder sbuff = new StringBuilder(remoteURI);
     sbuff.append("?");

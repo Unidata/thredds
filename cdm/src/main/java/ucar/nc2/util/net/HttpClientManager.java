@@ -70,8 +70,9 @@ import ucar.nc2.util.IO;
  */
 public class HttpClientManager {
     static private boolean debug = false;
-    static private HttpWrap _client;
     static private int timeout = 0;
+
+     private HttpWrap _client;
 
     /**
      * initialize the AbstractHttpClient layer.
@@ -79,8 +80,8 @@ public class HttpClientManager {
      * @param provider  CredentialsProvider.
      * @param userAgent Content of User-Agent header, may be null
      */
-    static public HttpWrap  init(CredentialsProvider provider, String userAgent) throws IOException  {
-        initHttpClient();
+     public HttpWrap  init(CredentialsProvider provider, String userAgent) throws IOException  {
+         initHttpClient();
 
         if (provider != null)
             _client.setCredentialsProvider(provider);
@@ -105,11 +106,13 @@ public class HttpClientManager {
      *
      * @return the  HttpClient object
      */
-    static public HttpWrap getHttpClient() {
+     /*
+     public HttpWrap getHttpClient() {
         return _client;
     }
+    */
 
-    private static synchronized void initHttpClient()  throws IOException {
+    private  void initHttpClient()  throws IOException {
 
        if (_client != null) return;
         _client = new HttpWrap();
@@ -136,7 +139,7 @@ public class HttpClientManager {
      * @return contents of url as a String
      * @throws java.io.IOException on error
      */
-    public static String getContent(String urlString) throws IOException {
+    public  String getContent(String urlString) throws IOException {
 
        try {
             _client.setMethodGet(urlString);
@@ -154,7 +157,7 @@ public class HttpClientManager {
      * @return the HTTP status return code
      * @throws java.io.IOException on error
      */
-    public static int putContent(String urlString, String content) throws IOException {
+    public  int putContent(String urlString, String content) throws IOException {
         try {
             _client.setHeader("Accept-Encoding", "gzip,deflate");
 
@@ -180,7 +183,7 @@ public class HttpClientManager {
 
     //////////////////////
 
-    static public String getUrlContents(String urlString, int maxKbytes)  {
+     public String getUrlContents(String urlString, int maxKbytes)  {
 
         try {
             _client.setHeader("Accept-Encoding", "gzip,deflate");
@@ -217,7 +220,7 @@ public class HttpClientManager {
         }
     }
 
-    static public void copyUrlContentsToFile(String urlString, File file)  {
+     public void copyUrlContentsToFile(String urlString, File file)  {
 
         try {
             _client.setHeader("Accept-Encoding", "gzip,deflate");
@@ -256,7 +259,7 @@ public class HttpClientManager {
         }
     }
 
-    static public long appendUrlContentsToFile(String urlString, File file, long start, long end)  {
+     public long appendUrlContentsToFile(String urlString, File file, long start, long end)  {
         long nbytes = 0;
 
 
@@ -298,7 +301,7 @@ public class HttpClientManager {
         return nbytes;
     }
 
-    static public void showHttpRequestInfo(Formatter f, AbstractHttpMessage m)  {
+     public void showHttpRequestInfo(Formatter f, AbstractHttpMessage m)  {
         f.format("HttpClient request %s %s %n", _client.getName(), _client.getURI());
         // fix f.format("   do Authentication=%s%n", _client.getDoAuthentication());
         f.format("   follow Redirects =%s%n", _client.getFollowRedirects());

@@ -187,7 +187,7 @@ public class WmsViewer extends JPanel {
    httpClient = client;
   } */
 
-  static private HttpWrap httpClient = null;
+   private HttpWrap httpClient = null;
 
   private synchronized void initHttpClient()  throws HttpWrapException {
     if (httpClient != null) return;

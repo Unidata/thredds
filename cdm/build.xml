@@ -438,8 +438,8 @@
         <attribute name="Implementation-Vendor" value="UCAR/Unidata"/>
       </manifest>
     </jar>
-      <copy file="c:/Users/dmh/IdeaProjects/tds4.2/thredds/cdm/target/ncIdv.jar"
-            tofile="c:/Users/dmh/IdeaProjects/idv/lib/ncIdv.jar" />
+     <copy file="c:/Users/dmh/IdeaProjects/tds4.2/thredds/cdm/target/ncIdv.jar"
+            tofile="c:/Users/dmh/IdeaProjects/idv/lib/ncIdv.jar" />  
   </target>
 
   <!-- $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$  -->
