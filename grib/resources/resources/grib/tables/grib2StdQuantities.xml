@@ -275,6 +275,10 @@
               description="Convective precipitation (nearest grid point)" />
             <quantity id="Freezing_rain" number="225" unit="kg/m2"
               description="Freezing rain" />
+            <quantity id="Predominant_weather" number="226" unit=""
+              description="Predominant weather" />
+            <quantity id="Frozen_rain" number="227" unit="kg/m2"
+              description="Frozen rain" />
         </category>
         <category id="Momentum" number="2">
             <quantity id="Wind_direction" number="0" unit="degrees"
@@ -764,6 +768,18 @@
                 description="Radar spectra 3" />
         </category>
         <category id="Forecast_Radar_Imagery" number="16">
+            <quantity id="Equivalent_radar_reflectivity_factor_for_rain" number="0" unit="mm6m-3"
+              description="Equivalent radar reflectivity factor for rain" />
+            <quantity id="Equivalent_radar_reflectivity_factor_for_snow" number="1" unit="mm6m-3"
+              description="Equivalent radar reflectivity factor for snow" />
+            <quantity id="Equivalent_radar_reflectivity_factor_for_parameterized_convection" number="2" unit="mm6m-3"
+              description="Equivalent radar reflectivity factor for parameterized convection" />
+            <quantity id="Echo_top" number="3" unit="m"
+              description="Echo Top" />
+            <quantity id="Reflectivity" number="4" unit="dB"
+              description="Reflectivity" />
+            <quantity id="Composite_reflectivity" number="5" unit="dB"
+              description="Composite reflectivity" />
             <quantity id="Derived_radar_reflectivity_backscatter_from_rain" number="192" unit="mm6/m3"
                 description="Derived radar reflectivity backscatter from rain" />
             <quantity id="Derived_radar_reflectivity_backscatter_from_ice" number="193" unit="mm6/m3"
@@ -1499,6 +1515,8 @@
         <category id="Miscallaneous" number="191">
             <quantity id="Seconds_prior_to_initial_reference_time" number="0" unit="s"
                 description="Seconds Prior To Initial Reference Time" />
+            <quantity id="Meridional_overturning_stream_function" number="1" unit="m3s-1"
+              description="Meridional overturning stream function" />
         </category>
     </discipline>
 </standardQuantities>

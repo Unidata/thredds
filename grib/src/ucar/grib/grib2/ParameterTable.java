@@ -169,6 +169,8 @@ public final class ParameterTable {
         }      // end for category
         discipline.add(dis);
       }
+      is.close();
+      addLocalParameters("resources/grib/tables/grib2local.tab");
     } catch (Throwable e) {
       logger.error("grib2 table reading failed", e);
     }
@@ -369,6 +371,41 @@ public final class ParameterTable {
   }
 
   /**
+   * Get a Local Parameter obj for the Parameter with ids <tt>id</tt>.
+   *
+   * @param d Discipline
+   * @param c Category
+   * @param p Parameter
+   * @param center
+   * @return Parameter
+   */
+  public static GridParameter getParameter(int d, int c, int p, int center) {
+    // local parameters disciplines are offset by center and size of discipline
+    Discipline discipline = getDiscipline( center * 255 + d);
+    if (discipline == null) {
+      String unknown = "UnknownParameter_D"+ Integer.toString(d) +"_C"+
+          Integer.toString(c) +"_"+ Integer.toString(p);
+      return new GridParameter(p, unknown, unknown, "Unknown");
+    }
+
+    Category category = discipline.getCategory(c);
+    if (category == null) {
+      String unknown = "UnknownParameter_D"+ Integer.toString(d) +"_C"+
+          Integer.toString(c) +"_"+ Integer.toString(p);
+      return new GridParameter(p, unknown, unknown, "Unknown");
+    }
+
+    GridParameter parameter = category.getParameter(p);
+    if (parameter == null) {
+      String unknown = "UnknownParameter_D"+ Integer.toString(d) +"_C"+
+          Integer.toString(c) +"_"+ Integer.toString(p);
+      return new GridParameter(p, unknown, unknown, "Unknown");
+    }
+
+    return parameter;
+  }
+
+  /**
    * Reads in the list of parameters and stores them.
    * Parameters are listed by row, fields are separated by tabs:
    * Discipline, Catagory, Parmeter Number, Name, Units, & Description.
@@ -385,7 +422,7 @@ public final class ParameterTable {
   }
 
   /**
-   * _more_
+   * Let the user add parameters
    *
    * @param is InputStream
    * @throws IOException on read
@@ -423,6 +460,70 @@ public final class ParameterTable {
   }
 
   /**
+   * Read in local parameters
+   *
+   * @param LocalParameters
+   * @throws IOException on read
+   */
+  public static void addLocalParameters( String LocalParameters ) throws IOException {
+
+    InputStream is = getInputStream( LocalParameters );
+    if (is == null) {
+      return;
+    }
+    InputStreamReader isr = new InputStreamReader(is);
+    BufferedReader br = new BufferedReader(isr);
+
+    String line;
+    int center = 0;
+    String centerStr = null;
+    while ((line = br.readLine()) != null) {
+
+      if (line.startsWith( "#"))
+        continue;
+      line.trim();
+      // fields seperated by at least double spaces
+      String[] field = line.split("\\s[\\s]+");
+      if (field.length == 1) {
+        centerStr = "center_"+ field[ 0 ];
+        center = Integer.parseInt( field[ 0 ]);
+        continue;
+      } else if( field.length == 6 ) {
+        // 0   1   192  Weather  non-dim  Weather
+        // remove non-dim unit
+        if( field[ 4 ].compareToIgnoreCase( "non-dim") == 0)
+          field[ 4 ] = "";
+        Parameter p = new Parameter(Integer.parseInt(field[ 2 ]),
+            field[ 3 ], field[ 5 ], field[ 4 ]);
+        // unique the discipline number so no conflicts from different centers
+        // first time disciplines will not exist
+        int d = center * 255 + Integer.parseInt(field[ 0 ]);
+        Discipline dis = getDiscipline( d );
+        if (dis == null) {
+          dis = new Discipline();
+          dis.setNumber( d );
+          dis.setName( centerStr );
+          discipline.add(dis);
+        }
+        int c = Integer.parseInt(field[ 1 ]);
+        // first time category will not exist
+        Category cat = dis.getCategory( c );
+        if ( cat == null ) {
+          cat = new Category();
+          cat.setNumber( c );
+          cat.setName( field[ 1 ] );
+          dis.setCategory( cat );
+        }
+        cat.setParameter( p );
+      } else {
+        // wrong number of fields
+        logger.error("Grib2 local table reading failed");
+      }
+    }
+    is.close();
+  }
+
+  /**
    * Get an input stream for the filename.
    *
    * @param filename name of file
@@ -444,7 +545,10 @@ public final class ParameterTable {
   }
 
   public static void main(String[] args) {
-    System.out.println( "Parameter = "+ ParameterTable.getParameterName( 20, 0, 210 ) );
+    GridParameter p = ParameterTable.getParameter( 0, 0, 193, 8 );
+    System.out.println( "Parameter = "+ p.getName() );
+
+    System.out.println( "Parameter = "+ ParameterTable.getParameterName( 0, 0, 193 ) );
   }
 }
 

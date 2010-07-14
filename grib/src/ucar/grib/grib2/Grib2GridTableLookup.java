@@ -131,13 +131,21 @@ public final class Grib2GridTableLookup implements GridTableLookup {
 
   /**
    * Get the grid parameter that corresponds to this record
+   * Check for local parameters, default is NCEP so check it first.
+   * The NCEP local parameters are included in the main table with the WMO ones.
    *
    * @param gr record to check
    * @return Parameter.
    */
   public GridParameter getParameter(GridRecord gr) {
     GribGridRecord ggr = (GribGridRecord) gr;
-    return ParameterTable.getParameter(ggr.discipline, ggr.category, ggr.paramNumber);
+    // NCEP is default, table has all parameters even local ones > 191
+    if (firstID.getCenter_id() == 7 ||
+        ggr.paramNumber < 192 && ggr.category < 192 &&  ggr.discipline  < 192)
+      return ParameterTable.getParameter(ggr.discipline, ggr.category, ggr.paramNumber);
+    else  { // get local parameter for center
+      return ParameterTable.getParameter(ggr.discipline, ggr.category, ggr.paramNumber, firstID.getCenter_id());
+    }
   }
 
   /**
