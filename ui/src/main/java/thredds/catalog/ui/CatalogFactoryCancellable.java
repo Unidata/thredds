@@ -186,7 +186,7 @@ public class CatalogFactoryCancellable extends InvCatalogFactory {
         return;
 
       } finally {
-        if (null != client) client.close();
+        //if (null != client) client.close();
       }
 
       success = !cancel;

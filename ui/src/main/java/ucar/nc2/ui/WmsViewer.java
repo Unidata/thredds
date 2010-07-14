@@ -180,11 +180,12 @@ public class WmsViewer extends JPanel {
   /**
    * Set the HttpClient object - so that a single, shared instance is used within the application.
    *
-   * @param client the HttpClient object
+   * xx@param client the HttpClient object
    */
+  /*
   static public void setHttpClient(HttpWrap client) {
-    httpClient = client;
-  }
+   httpClient = client;
+  } */
 
   static private HttpWrap httpClient = null;
 
@@ -234,7 +235,7 @@ public class WmsViewer extends JPanel {
       return false;
 
     } finally {
-      if (httpClient != null) httpClient.close();
+      //if (httpClient != null) httpClient.close();
     }
 
     return true;
@@ -342,7 +343,7 @@ public class WmsViewer extends JPanel {
       return false;
 
     } finally {
-      if (httpClient != null) httpClient.close();
+      //if (httpClient != null) httpClient.close();
     }
 
     return true;

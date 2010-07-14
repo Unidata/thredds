@@ -366,7 +366,7 @@ public class URLDumpPane extends TextHistoryPane {
       appendLine(bos.toString());
 
     } finally {
-      if (httpclient != null) httpclient.close();
+      //if (httpclient != null) httpclient.close();
     }
   }
 

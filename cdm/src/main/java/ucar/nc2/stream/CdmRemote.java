@@ -78,11 +78,12 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
   /**
    * Set the AbstractHttpClient object - so that a single, shared instance is used within the application.
    *
-   * @param client the AbstractHttpClient object
+   * xx@param client the AbstractHttpClient object
    */
+  /*
   static public void setHttpClient(HttpWrap client) {
     httpClient = client;
-  }
+  } */
 
   static private synchronized void initHttpClient()  throws HttpWrapException {
     if (httpClient != null) return;
@@ -130,7 +131,6 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
       this.location = SCHEME + remoteURI;
 
     } finally {
-      if(httpClient != null) httpClient.close();
     }
   }
 
@@ -179,7 +179,6 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
       return result.data;
 
     } finally {
-if(httpClient != null) httpClient.close();
     }
   }
 

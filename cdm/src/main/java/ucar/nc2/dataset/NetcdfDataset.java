@@ -760,18 +760,18 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
       return null;
 
     } finally {
-     if (httpClient != null) httpClient.close();
     }
   }
 
   /**
    * Set the AbstractHttpClient object - so that a single, shared instance is used within the application.
    *
-   * @param client the AbstractHttpClient object
+   * xx@param client the AbstractHttpClient object
    */
+  /*
   static public void setHttpClient(HttpWrap client) {
     httpClient = client;
-  }
+  } */
 
   private static HttpWrap httpClient = null;
 

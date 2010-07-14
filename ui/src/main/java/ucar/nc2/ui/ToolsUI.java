@@ -4876,12 +4876,14 @@ public class ToolsUI extends JPanel {
     // use HTTPClient - could use bean wiring here
       try {
       CredentialsProvider provider = new thredds.ui.UrlAuthenticatorDialog(frame);
-    HttpWrap client = HttpClientManager.init(provider, "ToolsUI");
-    HTTPRandomAccessFile.setHttpClient(client);
-    CdmRemote.setHttpClient(client);
+      HttpWrap.setGlobalCredentialsProvider(   provider);
+
+   /* CdmRemote.setHttpClient(client);
     NetcdfDataset.setHttpClient(client);
+    HttpRandomAccessFile.close();
     WmsViewer.setHttpClient(client);
-      } catch(IOException hie) {
+    */
+      } catch(Exception hie) {
           System.out.println("XMLStore Creation failed " + hie) ;
       }
     // in case a dataset was on the command line

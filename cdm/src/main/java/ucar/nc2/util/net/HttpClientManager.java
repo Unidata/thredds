@@ -126,7 +126,7 @@ public class HttpClientManager {
     }
 
     public static void clearState() {
-        _client.close();
+        //_client.close();
     }
 
     /**
@@ -141,7 +141,9 @@ public class HttpClientManager {
        try {
             _client.setMethodGet(urlString);
             return _client.getContentString();
-       } finally {_client.close();}
+       } finally {
+          // _client.close();
+       }
     }
 
     /**
@@ -172,7 +174,7 @@ public class HttpClientManager {
             return resultCode;
 
         } finally {
-            _client.close();
+            //_client.close();
         }
     }
 
@@ -250,7 +252,7 @@ public class HttpClientManager {
             e.printStackTrace();
 
         } finally {
-            _client.close();
+            //_client.close();
         }
     }
 
@@ -290,7 +292,7 @@ public class HttpClientManager {
             e.printStackTrace();
 
         } finally {
-            _client.close();
+            //_client.close();
         }
 
         return nbytes;

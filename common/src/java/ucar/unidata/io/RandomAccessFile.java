@@ -1288,7 +1288,7 @@ public class RandomAccessFile implements DataInput, DataOutput {
    */
   public final void readDouble(double[] pa, int start, int n) throws IOException {
     for (int i = 0; i < n; i++) {
-      pa[start + i] = Double.longBitsToDouble(readLong());
+        pa[start + i] = Double.longBitsToDouble(readLong());
     }
   }
 
