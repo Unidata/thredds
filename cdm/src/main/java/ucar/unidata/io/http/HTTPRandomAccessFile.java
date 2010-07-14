@@ -65,11 +65,13 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
 
   /**
    * Set the HttpClient object - a single instance is used.
-   * @param client the HttpClient object
+   * xx@param client the HttpClient object
    */
+/*
   static public void setHttpClient(HttpWrap client) {
     _client = client;
   }
+*/
 
   /**
    * Get the AbstractHttpClient object - a single instance is used.
@@ -133,7 +135,7 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
       }
 
     } finally {
-      if (_client != null) _client.close();
+      // if (_client != null) _client.close();
     }
 
     if (needtest && !rangeOk(url))
@@ -210,7 +212,7 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
     if (debug) System.out.println(" HTTPRandomAccessFile bytes=" + pos + "-" + end + ": ");
 
     try {
-      _client.setHeader("Range", "bytes=" + pos + "-" + end);
+      _client.setMethodHeader("Range", "bytes=" + pos + "-" + end);
      _client.setMethodGet(url);
         int code = _client.execute();
       if (code != 206)
@@ -228,7 +230,7 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
       return readLen;
    
     } finally {
-      if(_client != null) _client.close();
+     // if(_client != null) _client.close();
     }
   }
 
