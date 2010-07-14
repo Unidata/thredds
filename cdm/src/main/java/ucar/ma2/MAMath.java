@@ -595,6 +595,14 @@ public class MAMath {
       this.min = min;
       this.max = max;
     }
+
+    @Override
+    public String toString() {
+      return "MinMax{" +
+              "min=" + min +
+              ", max=" + max +
+              '}';
+    }
   }
 
   /**

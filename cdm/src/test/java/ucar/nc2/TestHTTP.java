@@ -144,6 +144,7 @@ public class TestHTTP extends TestCase {
     List locs = makeList();
     for (Iterator iter = locs.iterator(); iter.hasNext(); ) {
       String loc = (String) iter.next();
+      System.out.printf("open %s%n", loc);
       ucar.nc2.dataset.NetcdfDataset.open( loc);
     }
 

@@ -868,6 +868,46 @@ public class TestSubset extends TestCase {
     dataset.close();
   }
 
+  public void testScaleOffset2() throws Exception {
+    GridDataset dataset = GridDataset.open("http://nomads.ncdc.noaa.gov/thredds/dodsC/cr20sixhr/air.1936.nc");
+    GeoGrid grid = dataset.findGridByName("air");
+    assert null != grid;
+    GridCoordSystem gcs = grid.getCoordinateSystem();
+    assert null != gcs;
+
+    System.out.printf("original bbox= %s (%s) %n", gcs.getBoundingBox(), gcs.getLatLonBoundingBox());
+
+    ucar.unidata.geoloc.LatLonRect llbb = gcs.getLatLonBoundingBox();
+    ucar.unidata.geoloc.LatLonRect llbb_subset = new LatLonRect(llbb.getLowerLeftPoint(), 20.0, llbb.getWidth() / 2);
+
+    GeoGrid grid2 = grid.subset(null, null, llbb_subset, 1, 1, 1);
+    GridCoordSystem gcs2 = grid2.getCoordinateSystem();
+    assert null != gcs2;
+
+    System.out.printf("subset bbox= %s (%s) %n", gcs2.getBoundingBox(), gcs2.getLatLonBoundingBox());
+
+    System.out.printf("%noriginal grid var= %s %n", grid.getVariable());
+    System.out.printf("subset grid var= %s %n%n", grid2.getVariable());
+
+    //   public Array readDataSlice(int rt, int e, int t, int z, int y, int x) throws java.io.IOException {
+
+    Array data = grid.readVolumeData(0);
+    Array data2 = grid2.readVolumeData(0);
+    //Array data2 = grid2.readDataSlice(0, 0, 0, 0);
+
+    //PrintWriter pw = new PrintWriter(System.out);
+    //NCdumpW.printArray(data, "org", pw, null);
+    //NCdumpW.printArray(data2, "subset", pw, null);
+
+    //CompareNetcdf.compareData(data, data2);
+
+    System.out.printf("minmax org data= %s %n%n", MAMath.getMinMax(data));
+    System.out.printf("minmax subset data= %s %n%n", MAMath.getMinMax(data2));
+
+
+    dataset.close();
+  }
+
 
 }
 

@@ -209,13 +209,15 @@ public class URLDumpPane extends TextHistoryPane {
 
       HttpRequest req = (HttpRequest) localContext.getAttribute(ExecutionContext.HTTP_REQUEST);
       appendLine("\nRequest Headers:");
-      HeaderIterator it = req.headerIterator();
-      while (it.hasNext()) {
-        appendLine(" " + it.next().toString());
+      if (req != null) {
+        HeaderIterator it = req.headerIterator();
+        while (it.hasNext()) {
+          appendLine(" " + it.next().toString());
+        }
       }
 
       appendLine("\nResponse Headers:");
-      it =  httpclient.headerIterator();
+      HeaderIterator it =  httpclient.headerIterator();
       while (it.hasNext()) {
         appendLine(" " + it.next().toString());
       }

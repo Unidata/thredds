@@ -57,8 +57,9 @@ public interface Viewer {
 
   /**
    * Get an HTML fragment link to the viewer JNLP file, for this dataset.
-   * Example: "<a href='idv.jnlp?url="+access.getStandardUrlName()+"'>Integrated Data Viewer (IDV) (webstart)</a>"
-   * 
+   * Example:
+   *   return "<a href='" + req.getContextPath() + "/view/idv.jnlp?url="+dataURI.toString()+"'>Integrated Data Viewer (IDV) (webstart)</a>";
+   *
    * @param ds the dataset to view
    * @param req the request
    * @return HTML fragment string
