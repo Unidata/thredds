@@ -1132,6 +1132,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
       coordTransformType = ds.findAttValueIgnoreCase(v, _Coordinate.TransformType, null);
       isCoordinateTransform = (coordTransformType != null) || (coordAxisTypes != null);
 
+      /* WTF? JC 7/15/2010
       // this is the case of a Coordinate System with no references or coordinate transforms
       // see /testdata2/grid/grib/grib1/data/NOGAPS-Temp-Regional.grib
       if (!isCoordinateSystem && !isCoordinateTransform && !isCoordinateAxis && coordAxes != null) {
@@ -1143,7 +1144,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
           if ((axis != null) && !isCoordinateAxisForVariable(axis, ve))
             isCoordinateSystem = true;
         }
-      }
+      } */
     }
 
     // fakeroo

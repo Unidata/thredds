@@ -99,11 +99,20 @@ public class Madis extends TableConfigurerImpl  {
     }
     VNames vn = getVariableNames(ds, errlog);
 
+    String levVarName = null;
+    String levDimName = null;
     boolean hasStruct = Evaluator.hasRecordStructure(ds);
     FeatureType ft = Evaluator.getFeatureType(ds, ":thredds_data_type", errlog);
     if (null == ft) {
-      if (ds.findDimension("manLevel") != null)
+      if ((ds.findDimension("manLevel") != null) && (ds.findVariable("prMan") != null)) {
         ft = FeatureType.STATION_PROFILE;
+        levVarName = "prMan";
+        levDimName = "manLevel";
+      } else if ((ds.findDimension("level") != null) && (ds.findVariable("levels") != null)) {
+        ft = FeatureType.STATION_PROFILE;
+        levVarName = "levels";
+        levDimName = "level";
+      }
     }
     if (null == ft) ft = FeatureType.POINT;
 
@@ -163,9 +172,9 @@ public class Madis extends TableConfigurerImpl  {
       stnTable.addChild(obs);
 
       TableConfig lev = new TableConfig(Table.Type.MultidimInner, "mandatory");
-      lev.elev = "prMan";
+      lev.elev = levVarName;
       lev.outerName = obs.dimName;
-      lev.innerName = "manLevel";
+      lev.innerName = levDimName;
       obs.addChild(lev);
 
       return stnTable;

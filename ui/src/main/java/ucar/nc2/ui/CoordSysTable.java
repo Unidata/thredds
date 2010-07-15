@@ -361,12 +361,16 @@ public class CoordSysTable extends JPanel {
     Formatter buff = new Formatter();
     buff.format("%s:", v.getName());
     List<CoordinateSystem> csList = v.getCoordinateSystems();
-    for (CoordinateSystem cs : csList) {
-      buff.format("%s:", cs.getName());
-      if (GridCoordSys.isGridCoordSys(buff, cs, v)) {
-        buff.format("GRID OK%n");
-      } else {
-        buff.format(" NOT GRID");
+    if (csList.size() == 0)
+      buff.format(" No Coord System found");
+    else {
+      for (CoordinateSystem cs : csList) {
+        buff.format("%s:", cs.getName());
+        if (GridCoordSys.isGridCoordSys(buff, cs, v)) {
+          buff.format("GRID OK%n");
+        } else {
+          buff.format(" NOT GRID");
+        }
       }
     }
     return buff.toString();

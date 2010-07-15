@@ -650,17 +650,17 @@ public class GridHorizCoordSys {
    * @param name   name of the variable
    * @param dims   dimensions
    */
-  private void addCoordSystemVariable(NetcdfFile ncfile, String name,
-                                      String dims) {
+  private void addCoordSystemVariable(NetcdfFile ncfile, String name, String dims) {
     Variable v = new Variable(ncfile, g, null, name);
     v.setDataType(DataType.CHAR);
     v.setDimensions(""); // scalar
     Array dataArray = Array.factory(DataType.CHAR, new int[0], new char[]{'0'});
     v.setCachedData(dataArray, false);
     v.addAttribute(new Attribute(_Coordinate.Axes, dims));
-    if (!isLatLon()) {
+    if (isLatLon())
+      v.addAttribute(new Attribute(_Coordinate.Transforms, "")); // to make sure its identified as a Coordinate System Variable
+    else
       v.addAttribute(new Attribute(_Coordinate.Transforms, getGridName()));
-    }
     addGDSparams(v);
     ncfile.addVariable(g, v);
   }

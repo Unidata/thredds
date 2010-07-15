@@ -4,6 +4,8 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.2:
  4: (xx-xx-xx)
+  MADIS/AWIPS station profile improvements to plugin
+  GRIB adds attribute _CoordinateTransforms = "" to lat/lon Coord sys variable; no longer need weird code in CoordSysBuilder.VarProcess()
   MSGNavigation had major/minor axes reversed
   hdf5, nc3: attributes with no value
   add StereographicAzimuthalProjection, TransverseMercatorProjection elliptical earth (Heiko.Klein@met.no)
