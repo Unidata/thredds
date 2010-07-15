@@ -37,16 +37,13 @@ import org.apache.http.Header;
 import org.apache.http.HeaderIterator;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpRequest;
-import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.CoreProtocolPNames;
 import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.ExecutionContext;
 import org.apache.http.protocol.HttpContext;
-import org.apache.http.util.EntityUtils;
 import ucar.nc2.util.IO;
 import ucar.nc2.util.URLnaming;
 import opendap.dap.HttpWrap;
@@ -74,7 +71,7 @@ import javax.swing.*;
  */
 
 public class URLDumpPane extends TextHistoryPane {
-  private enum Library {Commons, java, HttpWrap};
+  private enum Library {java, HttpWrap};
   private enum Command {GET, PUT, HEAD, OPTIONS};
 
   private ComboBox cb;
@@ -158,9 +155,9 @@ public class URLDumpPane extends TextHistoryPane {
 
     Library impl = (Library) implCB.getSelectedItem();
     if (impl == Library.HttpWrap) {
-       openClient(urlString, cmd);
-    } else if (impl == Library.Commons) {
-       openURL2(urlString, cmd);
+       openHttpWrap(urlString, cmd);
+    //} else if (impl == Library.Commons) {
+    //   openURL2(urlString, cmd);
     } else if (impl == Library.java) {
       if (cmd == Command.GET)
         readURL(urlString);
@@ -174,7 +171,7 @@ public class URLDumpPane extends TextHistoryPane {
   ///////////////////////////////////////////////////////
   // Uses apache HttpComponents
 
-  private void openClient(String urlString, Command cmd) {
+  private void openHttpWrap(String urlString, Command cmd) {
     HttpEntity entity = null;
     try {
       HttpWrap httpclient = new HttpWrap();
@@ -263,7 +260,7 @@ public class URLDumpPane extends TextHistoryPane {
   ///////////////////////////////////////////////////////
   // Uses apache commons AbstractHttpClient
 
-  private void openURL2(String urlString, Command cmd) {
+  /* private void openURL2(String urlString, Command cmd) {
 
     HttpWrap  httpclient = HttpClientManager.getHttpClient();
 
@@ -280,7 +277,7 @@ public class URLDumpPane extends TextHistoryPane {
       appendLine("encoded scheme= " + uri.getScheme() + "\n auth= " + uri.getAuthority() + "\n path= " + uri.getPath() +
            "\n query= " + uri.getQuery() + "\n fragment= " + uri.getFragment()+"\n");
       urlString = uri.toString();
-              */
+
 
       urlString = URLnaming.escapeQuery(urlString);
       httpclient.setHeader("Accept-Encoding", "gzip,deflate");
@@ -370,7 +367,7 @@ public class URLDumpPane extends TextHistoryPane {
     } finally {
       //if (httpclient != null) httpclient.close();
     }
-  }
+  } */
 
   private void printHeaders(String title, Header[] heads) {
     appendLine(title);
