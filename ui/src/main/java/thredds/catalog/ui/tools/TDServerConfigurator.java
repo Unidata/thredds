@@ -304,8 +304,8 @@ public class TDServerConfigurator extends JPanel {
         try {
           String result = HttpClientManager.getContent( serverURL+"debug?catalogs/reinit");
           savePane.setText(result);
-        } catch (IOException e) {
-          //savePane.setText( e.getMessage());
+        } catch (Exception e) {
+          savePane.setText( e.getMessage());
         }
 
       }

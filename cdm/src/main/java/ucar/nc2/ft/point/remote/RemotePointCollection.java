@@ -32,19 +32,14 @@
 
 package ucar.nc2.ft.point.remote;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
 import ucar.nc2.ft.point.PointCollectionImpl;
-import ucar.nc2.ft.point.PointIteratorAbstract;
 import ucar.nc2.ft.point.PointIteratorEmpty;
 import ucar.nc2.ft.PointFeatureIterator;
 import ucar.nc2.ft.PointFeatureCollection;
-import ucar.nc2.ft.PointFeature;
 import ucar.nc2.stream.NcStream;
 import ucar.nc2.stream.CdmRemote;
 import ucar.nc2.stream.NcStreamProto;
 import ucar.nc2.units.DateRange;
-import opendap.dap.HttpWrap;
 import ucar.unidata.geoloc.LatLonRect;
 
 import java.io.IOException;
@@ -72,12 +67,10 @@ class RemotePointCollection extends PointCollectionImpl implements QueryMaker {
   }
 
   public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
-HttpWrap http = null;
-      String errMessage = null;
-
+    String errMessage = null;
+    CdmRemote cdm = new CdmRemote();
     try {
-      http = CdmRemote.sendQuery(uri, queryMaker.makeQuery());
-      InputStream in = http.getContentStream();
+      InputStream in = cdm.sendQuery(uri, queryMaker.makeQuery());
 
       PointStream.MessageType mtype = PointStream.readMagic(in);
       if (mtype == PointStream.MessageType.PointFeatureCollection) {
@@ -85,7 +78,7 @@ HttpWrap http = null;
         byte[] b = new byte[len];
         NcStream.readFully(in, b);
         PointStreamProto.PointFeatureCollection pfc = PointStreamProto.PointFeatureCollection.parseFrom(b);
-        PointFeatureIterator iter = new RemotePointFeatureIterator(http, in, new PointStream.ProtobufPointFeatureMaker(pfc));
+        PointFeatureIterator iter = new RemotePointFeatureIterator(in, new PointStream.ProtobufPointFeatureMaker(pfc));
         iter.setCalculateBounds(this);
         return iter;
 
@@ -104,8 +97,10 @@ HttpWrap http = null;
       }
 
     } catch (Throwable t) {
-      // fix if (method != null) method.releaseConnection();
       throw new RuntimeException(t);
+
+    } finally {
+      if (cdm != null) cdm.close();
     }
 
     if (errMessage != null)

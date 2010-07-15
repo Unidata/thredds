@@ -70,7 +70,7 @@ public class LogDownloader {
     this.cancel = _cancel;
 
     String urls = "http://" + server + "/thredds/admin/log/"+type+"/";
-    final String contents = HttpClientManager.getUrlContents(urls, 500);
+    final String contents = HttpClientManager.getContent(urls);
     if (contents == null) {
       ta.append(String.format("Failed to access logs at URL = %s%n%n", urls));
       return;

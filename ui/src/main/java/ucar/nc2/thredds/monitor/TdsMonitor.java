@@ -33,6 +33,7 @@
 
 package ucar.nc2.thredds.monitor;
 
+import opendap.dap.HttpWrap;
 import org.apache.http.client.CredentialsProvider;
 import thredds.logs.LogReader;
 import ucar.nc2.util.net.HttpClientManager;
@@ -545,7 +546,8 @@ public class TdsMonitor extends JPanel {
     BAMutil.setResourcePath("/resources/nj22/ui/icons/");
 
     CredentialsProvider provider = new thredds.ui.UrlAuthenticatorDialog(null);
-    HttpClientManager.init(provider, "TdsMonitor");
+    HttpWrap.setGlobalCredentialsProvider(provider);
+    HttpWrap.setGlobalUserAgent("TdsMonitor");
 
      // put UI in a JFrame
     frame = new JFrame("TDS Monitor");

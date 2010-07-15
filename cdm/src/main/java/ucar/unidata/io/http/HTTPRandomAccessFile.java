@@ -61,7 +61,7 @@ import java.nio.ByteBuffer;
 public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
   static public int defaultHTTPBufferSize = 20000;
 
-   private HttpWrap _client = null;
+  private HttpWrap _client = null;
 
   /**
    * Set the HttpClient object - a single instance is used.
@@ -75,6 +75,7 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
 
   /**
    * Get the AbstractHttpClient object - a single instance is used.
+   *
    * @return client the AbstractHttpClient object
    */
   /*
@@ -85,7 +86,7 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
   // default AbstractHttpClient
   private synchronized void initHttpClient() throws HttpWrapException {
     if (_client == null)
-        _client = new HttpWrap();
+      _client = new HttpWrap();
   }
 
   ///////////////////////////////////////////////////////////////////////////////////
@@ -111,7 +112,7 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
     boolean needtest = true;
 
     try {
-      doConnect(_client,url);
+      doConnect(_client, url);
 
       Header head = _client.getHeader("Accept-Ranges");
       if (head == null) {
@@ -146,9 +147,9 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
   }
 
   private boolean rangeOk(String url) {
-      try {
+    try {
       _client.setHeader("Range", "bytes=" + 0 + "-" + 1);
-      doConnect(_client,url);
+      doConnect(_client, url);
 
       int code = _client.getStatusCode();
       if (code != 206)
@@ -166,21 +167,21 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
     }
   }
 
-  void doConnect(HttpWrap client, String url) throws  IOException {
+  private void doConnect(HttpWrap client, String url) throws IOException {
 
-      // Execute the method.
+    // Execute the method.
     client.setMethodGet(url);
-      int statusCode = client.execute();
+    int statusCode = client.execute();
 
     if (statusCode == 404)
       throw new FileNotFoundException(url + " " + client.getStatusLine());
 
-    
+
     if (statusCode >= 300)
       throw new IOException(url + " " + client.getStatusLine());
 
     if (debugDetails) {
-      printHeaders("Request: " + _client.getMethod() + " " + _client.getURI(), client.getHeaders());
+      printHeaders("Request: GET " + client.getURI(), client.getHeaders());
       printHeaders("Response: " + statusCode, client.getHeaders());
     }
   }
@@ -198,7 +199,7 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
    * All reading goes through here or readToByteChannel;
    *
    * @param pos    start here in the file
-   * @param buff      put data into this buffer
+   * @param buff   put data into this buffer
    * @param offset buffer offset
    * @param len    this number of bytes
    * @return actual number of bytes read
@@ -214,8 +215,8 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
 
     try {
       _client.setMethodHeader("Range", "bytes=" + pos + "-" + end);
-     _client.setMethodGet(url);
-        int code = _client.execute();
+      _client.setMethodGet(url);
+      int code = _client.execute();
       if (code != 206)
         throw new IOException("Server does not support Range requests, code= " + code);
 
@@ -229,9 +230,9 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
       InputStream is = _client.getContentStream();
       readLen = copy(is, buff, offset, readLen);
       return readLen;
-   
+
     } finally {
-     // if(_client != null) _client.close();
+      // if(_client != null) _client.close();
     }
   }
 
@@ -256,6 +257,7 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
   }
 
   // override selected RandomAccessFile public methods
+
   @Override
   public long length() throws IOException {
     long fileLength = total_length;

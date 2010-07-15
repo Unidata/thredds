@@ -32,16 +32,12 @@
 package ucar.nc2.stream;
 
 
-
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.Header;
 
 import ucar.ma2.Array;
 import ucar.ma2.Section;
 import ucar.ma2.InvalidRangeException;
 import opendap.dap.HttpWrap;
-import opendap.dap.HttpWrapException;
 
 import java.io.IOException;
 import java.io.FileNotFoundException;
@@ -76,59 +72,46 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
     return urlName;
   }
 
-  /**
-   * Set the AbstractHttpClient object - so that a single, shared instance is used within the application.
-   *
-   * xx@param client the AbstractHttpClient object
-   */
-  /*
-  static public void setHttpClient(HttpWrap client) {
-    httpClient = client;
-  } */
+  //////////////////////////////////////////////////////
+  private String remoteURI;
 
-
-   private  void initHttpClient()  throws HttpWrapException {
-
-    if (httpClient != null) return;
+  public CdmRemote() throws IOException {
     httpClient = new HttpWrap();
   }
-
-  //////////////////////////////////////////////////////
-  private final String remoteURI;
 
   public CdmRemote(String _remoteURI) throws IOException {
 
     // get http URL
     String temp = _remoteURI;
 
-      if (temp.startsWith(SCHEME))
-        temp = temp.substring(SCHEME.length());
-      if (!temp.startsWith("http:"))
-        temp = "http:" + temp;
-    
+    if (temp.startsWith(SCHEME))
+      temp = temp.substring(SCHEME.length());
+    if (!temp.startsWith("http:"))
+      temp = "http:" + temp;
+
     remoteURI = temp;
 
-    initHttpClient(); // make sure the httpClient has been set
+    httpClient = new HttpWrap();
 
     // get the header
-    HttpGet method = null;
-    HttpResponse response = null;
+    //HttpGet method = null;
+    //HttpResponse response = null;
     try {
       String url = remoteURI + "?req=header";
 
       if (showRequest) System.out.printf(" ncstream request %s %n", url);
 
-
-       httpClient.setMethodGet(url);
-        int statusCode = httpClient.execute();
+      httpClient = new HttpWrap();
+      httpClient.setMethodGet(url);
+      int statusCode = httpClient.execute();
 
       if (statusCode == 404)
-        throw new FileNotFoundException(method.getURI() + " " + response.getStatusLine());
+        throw new FileNotFoundException(httpClient.getURI() + " " + httpClient.getStatusLine());
 
       if (statusCode >= 300)
-        throw new IOException(method.getURI() + " " + response.getStatusLine());
+        throw new IOException(httpClient.getURI() + " " + httpClient.getStatusLine());
 
-      InputStream is = response.getEntity().getContent();
+      InputStream is = httpClient.getContentStream();
       NcStreamReader reader = new NcStreamReader();
       reader.readStream(is, this);
       this.location = SCHEME + remoteURI;
@@ -138,13 +121,13 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
   }
 
   @Override
-  protected Array readData(ucar.nc2.Variable v, Section section) throws  IOException, InvalidRangeException {
+  protected Array readData(ucar.nc2.Variable v, Section section) throws IOException, InvalidRangeException {
     if (unlocked)
       throw new IllegalStateException("File is unlocked - cannot use");
 
     StringBuilder sbuff = new StringBuilder(remoteURI);
     sbuff.append("?var=");
-    sbuff.append( URLEncoder.encode(v.getShortName(), "UTF-8"));
+    sbuff.append(URLEncoder.encode(v.getShortName(), "UTF-8"));
     sbuff.append("(");
     sbuff.append(section.toString());
     sbuff.append(")");
@@ -156,7 +139,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
     try {
 
       httpClient.setMethodGet(sbuff.toString());
-        int statusCode = httpClient.execute();
+      int statusCode = httpClient.execute();
 
       if (statusCode == 404)
         throw new FileNotFoundException(httpClient.getURI() + " " + httpClient.getStatusLine());
@@ -182,12 +165,19 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
       return result.data;
 
     } finally {
+      if (httpClient != null) httpClient.close();
     }
   }
 
-  public static HttpWrap sendQuery(String remoteURI, String query) throws IOException {
-    HttpWrap httpClient = new HttpWrap();
-    
+  @Override
+  public void close() throws IOException {
+    if (httpClient != null) httpClient.close();
+    super.close();
+  }
+
+  public InputStream sendQuery(String remoteURI, String query) throws IOException {
+    //HttpWrap httpClient = new HttpWrap();
+
     StringBuilder sbuff = new StringBuilder(remoteURI);
     sbuff.append("?");
     sbuff.append(query);
@@ -196,7 +186,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
       System.out.println("CdmRemote sendQuery=" + sbuff);
 
     httpClient.setMethodGet(sbuff.toString());
-      int statusCode = httpClient.execute();
+    int statusCode = httpClient.execute();
 
     if (statusCode == 404)
       throw new FileNotFoundException(httpClient.getURI() + " " + httpClient.getStatusLine());
@@ -204,7 +194,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
     if (statusCode >= 300)
       throw new IOException(httpClient.getURI() + " " + httpClient.getStatusLine());
 
-    return httpClient;
+    return httpClient.getContentStream();
   }
 
   public String getFileTypeId() {

@@ -32,7 +32,6 @@
 
 package ucar.nc2.stream;
 
-import org.apache.http.HttpResponse;
 import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.remote.PointDatasetRemote;
 import ucar.nc2.ft.point.writer.FeatureDatasetPointXML;
@@ -41,7 +40,6 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.units.DateRange;
-import opendap.dap.HttpWrap;
 import ucar.unidata.geoloc.LatLonRect;
 
 import java.io.IOException;
@@ -93,10 +91,10 @@ public class CdmRemoteFeatureDataset {
 
   static private org.jdom.Document getCapabilities(String endpoint) throws IOException {
     org.jdom.Document doc;
-    HttpWrap http = null;
+    CdmRemote cdm = null;
     try {
-      http = CdmRemote.sendQuery(endpoint, "req=capabilities");
-      InputStream in = http.getContentStream();
+      cdm = new CdmRemote();
+      InputStream in = cdm.sendQuery(endpoint, "req=capabilities");
       SAXBuilder builder = new SAXBuilder(false);
       doc = builder.build(in);
 
@@ -104,7 +102,7 @@ public class CdmRemoteFeatureDataset {
       throw new IOException(t);
 
     } finally {
-      // fix if (method != null) method.releaseConnection();
+      if (cdm != null) cdm.close();
     }
 
     if (showXML) {

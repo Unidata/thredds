@@ -35,7 +35,6 @@ package ucar.nc2.ui;
 
 import org.apache.http.Header;
 import opendap.dap.HttpWrap;
-import opendap.dap.HttpWrapException;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
 import ucar.nc2.util.IO;
@@ -144,7 +143,7 @@ public class WmsViewer extends JPanel {
   private String version;
   private String endpoint;
 
-  public boolean setDataset(String version, String endpoint)  {
+  public boolean setDataset(String version, String endpoint) {
     this.version = version;
     this.endpoint = endpoint;
     return getCapabilities();
@@ -177,38 +176,22 @@ public class WmsViewer extends JPanel {
 
   }
 
-  /**
-   * Set the HttpClient object - so that a single, shared instance is used within the application.
-   *
-   * xx@param client the HttpClient object
-   */
-  /*
-  static public void setHttpClient(HttpWrap client) {
-   httpClient = client;
-  } */
-
-   private HttpWrap httpClient = null;
-
-  private synchronized void initHttpClient()  throws HttpWrapException {
-    if (httpClient != null) return;
-    httpClient = new HttpWrap();
-  }
-
   //////////////////////////////////////////////////////
 
-  private boolean getCapabilities()  {
-      try {
-      initHttpClient();
+  private boolean getCapabilities() {
+    HttpWrap httpClient = null;
+    try {
+      httpClient = new HttpWrap();
 
-    Formatter f = new Formatter();
-    f.format("%s?request=GetCapabilities&service=WMS&version=%s", endpoint, version);
-    String url = f.toString();
-    info.setLength(0);
-    info.append(url + "\n");
+      Formatter f = new Formatter();
+      f.format("%s?request=GetCapabilities&service=WMS&version=%s", endpoint, version);
+      String url = f.toString();
+      info.setLength(0);
+      info.append(url + "\n");
 
-    
+
       httpClient.setMethodGet(url);
-          int statusCode = httpClient.execute();
+      int statusCode = httpClient.execute();
 
       info.append(" Status = " + httpClient.getStatusCode() + "\n");
       info.append(" Status Line = " + httpClient.getStatusLine() + "\n");
@@ -235,7 +218,7 @@ public class WmsViewer extends JPanel {
       return false;
 
     } finally {
-      //if (httpClient != null) httpClient.close();
+      if (httpClient != null) httpClient.close();
     }
 
     return true;
@@ -270,27 +253,28 @@ public class WmsViewer extends JPanel {
   }
 
   private boolean getMap(LayerBean layer) {
-      try {
-      initHttpClient();
+    HttpWrap httpClient = null;
+    try {
+      httpClient = new HttpWrap();
 
-    Formatter f = new Formatter();
-    f.format("%s?request=GetMap&service=WMS&version=%s&", endpoint, version);
-    f.format("layers=%s&CRS=%s&", layer.getName(), layer.getCRS());
-    f.format("bbox=%s,%s,%s,%s&", layer.getMinx(), layer.getMiny(), layer.getMaxx(), layer.getMaxy());
-    f.format("width=500&height=500&");
-    f.format("styles=%s&", styleChooser.getSelectedObject());
-    f.format("format=%s&", formatChooser.getSelectedObject());
-    if (layer.hasTime)
-      f.format("time=%s&", timeChooser.getSelectedObject());
-    if (layer.hasLevel)
-      f.format("elevation=%s&", levelChooser.getSelectedObject());
-    String url = f.toString();
-    info.setLength(0);
-    info.append(url + "\n");
+      Formatter f = new Formatter();
+      f.format("%s?request=GetMap&service=WMS&version=%s&", endpoint, version);
+      f.format("layers=%s&CRS=%s&", layer.getName(), layer.getCRS());
+      f.format("bbox=%s,%s,%s,%s&", layer.getMinx(), layer.getMiny(), layer.getMaxx(), layer.getMaxy());
+      f.format("width=500&height=500&");
+      f.format("styles=%s&", styleChooser.getSelectedObject());
+      f.format("format=%s&", formatChooser.getSelectedObject());
+      if (layer.hasTime)
+        f.format("time=%s&", timeChooser.getSelectedObject());
+      if (layer.hasLevel)
+        f.format("elevation=%s&", levelChooser.getSelectedObject());
+      String url = f.toString();
+      info.setLength(0);
+      info.append(url + "\n");
 
 
       httpClient.setMethodGet(url);
-          int statusCode = httpClient.execute();
+      int statusCode = httpClient.execute();
 
       info.append(" Status = " + httpClient.getStatusCode() + "\n");
       info.append(" Status Line = " + httpClient.getStatusLine() + "\n");
@@ -304,10 +288,10 @@ public class WmsViewer extends JPanel {
 
       Header h = httpClient.getHeader("Content-Type");
       String mimeType = (h == null) ? "" : h.getValue();
-      info.append(" mimeType = " + mimeType+ "\n");
+      info.append(" mimeType = " + mimeType + "\n");
 
       byte[] contents = IO.readContentsToByteArray(httpClient.getContentStream());
-      info.append(" content len = " + contents.length+ "\n");
+      info.append(" content len = " + contents.length + "\n");
 
       ByteArrayInputStream is = new ByteArrayInputStream(contents);
 
@@ -317,16 +301,16 @@ public class WmsViewer extends JPanel {
       if (img == null) {
         info.append("getMap:\n\n");
         if (mimeType.equals("application/vnd.google-earth.kmz")) {
-          File temp = File.createTempFile("Temp",  ".kmz");
+          File temp = File.createTempFile("Temp", ".kmz");
           // File temp = new File("C:/temp/temp.kmz");
           IO.writeToFile(contents, temp);
           contents = null;
 
-          ZipFile zfile = new ZipFile( temp);
+          ZipFile zfile = new ZipFile(temp);
           Enumeration entries = zfile.entries();
           while (entries.hasMoreElements()) {
             ZipEntry entry = (ZipEntry) entries.nextElement();
-            info.append( " entry="+entry+ "\n");
+            info.append(" entry=" + entry + "\n");
             if (entry.getName().endsWith(".kml")) {
               InputStream kml = zfile.getInputStream(entry);
               contents = IO.readContentsToByteArray(kml);
@@ -335,7 +319,7 @@ public class WmsViewer extends JPanel {
         }
 
         if (contents != null)
-          info.append(new String(contents)+ "\n");
+          info.append(new String(contents) + "\n");
       }
 
     } catch (Exception e) {
@@ -343,7 +327,7 @@ public class WmsViewer extends JPanel {
       return false;
 
     } finally {
-      //if (httpClient != null) httpClient.close();
+      if (httpClient != null) httpClient.close();
     }
 
     return true;
@@ -360,6 +344,7 @@ public class WmsViewer extends JPanel {
   }
 
   ///////////////////////////////////////////////////////////////////////////////////
+
   public class LayerBean {
     String name;
     String title;
@@ -377,6 +362,7 @@ public class WmsViewer extends JPanel {
     java.util.List<String> times = new ArrayList<String>();
 
     // no-arg constructor
+
     public LayerBean() {
     }
 
