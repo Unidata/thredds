@@ -233,6 +233,10 @@ public class Grib1GridTableLookup implements GridTableLookup {
     return Grib1Tables.getTimeUnit( firstPDSV.getTimeRangeUnit()) ;
   }
 
+  public final String getTimeRangeUnitName( int tunit ) {
+    return Grib1Tables.getTimeUnit( firstPDSV.getTimeRangeUnit()) ;
+  }
+
   /**
    * gets the CenterName.
    *

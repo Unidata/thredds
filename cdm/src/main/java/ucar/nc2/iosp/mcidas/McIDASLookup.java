@@ -175,6 +175,9 @@ public final class McIDASLookup implements GridTableLookup {
     public final String getFirstTimeRangeUnitName() {
         return "hour";
     }
+    public final String getTimeRangeUnitName( int tunit ) {
+        return "hour";
+    }
 
     /**
      * gets the BaseTime Forecastime.

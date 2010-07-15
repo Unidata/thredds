@@ -196,6 +196,9 @@ public final class GempakLookup implements GridTableLookup {
     public final String getFirstTimeRangeUnitName() {
         return "minute";
     }
+    public final String getTimeRangeUnitName( int tunit ) {
+        return "minute";
+    }
 
     /**
      * gets the BaseTime Forecastime.

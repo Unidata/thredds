@@ -90,6 +90,11 @@ public class GridTimeCoord {
   private int intervalLength = GribNumbers.UNDEFINED;
 
   /**
+   * time range unit   hour is default
+   */
+  private int tunit = 1;
+
+  /**
    * is this a mixed interval
    */
   private boolean mixed = false;
@@ -119,6 +124,8 @@ public class GridTimeCoord {
     this.lookup = lookup;
     if (records.get(0) instanceof GribGridRecord) {
       GribGridRecord ggr = (GribGridRecord) records.get(0);
+      // some model now use different unit for different variables. ie NDFD
+      tunit = ggr.timeUnit;
       // since the norm is not interval parameter, have separate processing because messy
       if (ggr.isInterval() ) {
         intervalLength = ggr.forecastTime - ggr.startOfInterval;
@@ -128,9 +135,9 @@ public class GridTimeCoord {
             ggr = (GribGridRecord) record;
 
             // debug
-            if(  false && ggr.category == 4 && ggr.paramNumber == 192)
-              System.out.printf( "start %d forecast %d interval=%d%n",
-                ggr.startOfInterval, ggr.forecastTime, (ggr.forecastTime - ggr.startOfInterval));
+            if( false &&  ggr.category == 1 && ggr.paramNumber == 8)
+              System.out.printf( "start %d end %d interval %d time unit =%d%n",
+                ggr.startOfInterval, ggr.forecastTime, (ggr.forecastTime - ggr.startOfInterval), ggr.timeUnit);
 
             if( ggr.startOfInterval == 0 )
               startAtZero++;
@@ -203,6 +210,9 @@ public class GridTimeCoord {
     // times are not equal if one is an interval and the other is not an interval
     if (records.get(0) instanceof GribGridRecord) {
       GribGridRecord ggr = (GribGridRecord) records.get(0);
+      // some models have a mixture of units
+      if( tunit != ggr.timeUnit )
+        return false;
       if ((ggr.isInterval() && intervalLength == GribNumbers.UNDEFINED) ||
         ( ! ggr.isInterval() && intervalLength != GribNumbers.UNDEFINED) )
         return false;
@@ -285,7 +295,8 @@ public class GridTimeCoord {
     int[] data = new int[ntimes];
 
     Date baseTime = lookup.getFirstBaseTime();
-    String timeUnit = lookup.getFirstTimeRangeUnitName();
+    //String timeUnit = lookup.getFirstTimeRangeUnitName();
+    String timeUnit = lookup.getTimeRangeUnitName( tunit );
 
     DateFormatter formatter = new DateFormatter();
     String refDate = formatter.toDateTimeStringISO(baseTime);
@@ -310,7 +321,8 @@ public class GridTimeCoord {
       v.addAttribute(new Attribute("long_name", "forecast time"));
       v.addAttribute(new Attribute("units", timeUnit + " since " + refDate));
     } else {
-      StringBuilder interval = new StringBuilder (lookup.getFirstTimeRangeUnitName());
+      //StringBuilder interval = new StringBuilder (lookup.getFirstTimeRangeUnitName());
+      StringBuilder interval = new StringBuilder (lookup.getTimeRangeUnitName( this.tunit ));
       if ( mixed ) {
         interval.insert( 0, "Mixed ");
       } else {
@@ -421,6 +433,15 @@ public class GridTimeCoord {
   }
 
   /**
+   * Get TimeUnit
+   *
+   * @return TimeUnit
+   */
+  int getTimeUnit() {
+    return tunit;
+  }
+
+  /**
    * is this a mixed interval
    *
    * @return mixed
@@ -450,7 +471,9 @@ public class GridTimeCoord {
 
     int calandar_unit = Calendar.HOUR;
     int factor = 1;
+    // TODO: this is not always correct but this code doesn't get executed often, can we delete
     String timeUnit = lookup.getFirstTimeRangeUnitName();
+    //String timeUnit = lookup.lookup.getTimeRangeUnitName( this.tunit ); //should be
 
     if (timeUnit.equalsIgnoreCase("hour") || timeUnit.equalsIgnoreCase("hours")) {
       factor = 1;  // common case

@@ -825,6 +825,9 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
         public final String getFirstTimeRangeUnitName() {
             return "second";
         }
+        public final String getTimeRangeUnitName( int tunit) {
+            return "second";
+        }
 
         /**
          * gets the BaseTime Forecastime.
