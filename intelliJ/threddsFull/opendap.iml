@@ -65,7 +65,12 @@
           <root url="jar://$MODULE_DIR$/../../../Java-OpeNDAP/lib/httpcore-4.1.jar!/" />
         </CLASSES>
         <JAVADOC />
-        <SOURCES />
+        <SOURCES>
+          <root url="jar://$MODULE_DIR$/../../../Java-OpeNDAP/lib/httpcore-4.1.jar!/" />
+          <root url="file://$MODULE_DIR$/../../../../httpcomponents-core-4.1-beta1/src" />
+          <root url="jar://$MODULE_DIR$/../../../Java-OpeNDAP/lib/httpclient-4.1.jar!/" />
+          <root url="file://$MODULE_DIR$/../../../../httpcomponents-client-4.1-alpha2/httpclient/src/main/java" />
+        </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
