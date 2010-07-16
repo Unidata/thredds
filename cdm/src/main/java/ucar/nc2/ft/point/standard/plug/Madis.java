@@ -167,7 +167,7 @@ public class Madis extends TableConfigurerImpl  {
       obs.stnDesc = vn.stnDesc;
       obs.lat = vn.lat;
       obs.lon = vn.lon;
-      obs.elev = vn.elev;
+      obs.stnAlt = vn.elev;
   
       stnTable.addChild(obs);
 
@@ -234,7 +234,10 @@ public class Madis extends TableConfigurerImpl  {
       vn.stnId = val;
     }
 
-    vn.elev = "altitude";
+    if (null != ds.findVariable("altitude"))
+      vn.elev = "altitude";
+    else if (null != ds.findVariable("elevation"))
+      vn.elev = "elevation";
 
     return vn;
   }
