@@ -3663,7 +3663,8 @@ public class H5header {
         for (int i = 0; i < nentries; i++) {
           SymbolTableEntry entry = new SymbolTableEntry(posEntry);
           posEntry += entry.getSize();
-          symbols.add(entry);
+          if (entry.objectHeaderAddress != 0)  // LOOK: Probably a bug in HDF5 file format ?? jc July 16 2010
+            symbols.add(entry);
         }
         if (debugDetail) debugOut.println("-- Group Node end position=" + raf.getFilePointer());
         long size = 8 + nentries * 40;
