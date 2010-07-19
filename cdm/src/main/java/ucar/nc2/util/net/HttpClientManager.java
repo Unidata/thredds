@@ -38,12 +38,14 @@ package ucar.nc2.util.net;
 //import ucar.unidata.io.http.HTTPRandomAccessFile;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.zip.InflaterInputStream;
 import java.util.zip.GZIPInputStream;
 import java.util.Formatter;
 
-import opendap.dap.HttpWrap;
-import opendap.dap.HttpWrapException;
+import opendap.dap.HttpSession;
+import opendap.dap.HttpSessionException;
 import org.apache.http.HttpHost;
 import org.apache.http.Header;
 import org.apache.http.client.CredentialsProvider;
@@ -52,13 +54,14 @@ import org.apache.http.client.params.CookiePolicy;
 import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.AbstractHttpMessage;
+import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.CoreProtocolPNames;
 import org.apache.http.params.HttpParams;
 import ucar.nc2.util.IO;
 
 
 /**
- * Manage HttpWrap Client protocol settings.
+ * Manage HttpSession Client protocol settings.
  * <pre>
  * Example:
  *   CredentialsProvider provider = new thredds.ui.UrlAuthenticatorDialog(frame);
@@ -72,7 +75,9 @@ public class HttpClientManager {
   static private boolean debug = false;
   static private int timeout = 0;
 
-  private HttpWrap _client;
+   HttpSession _client = null;
+
+
 
   /**
    * initialize the AbstractHttpClient layer.
@@ -80,7 +85,7 @@ public class HttpClientManager {
    * @param provider  CredentialsProvider.
    * @param userAgent Content of User-Agent header, may be null
    */
-  public HttpWrap init(CredentialsProvider provider, String userAgent) throws IOException {
+  public HttpSession init(CredentialsProvider provider, String userAgent) throws IOException {
     initHttpClient();
 
     if (provider != null)
@@ -89,14 +94,14 @@ public class HttpClientManager {
     if (userAgent != null)
       _client.setUserAgent(userAgent + "/NetcdfJava/HttpClient");
     else
-      _client.setParameter(CoreProtocolPNames.USER_AGENT, "NetcdfJava/HttpClient");
+        _client.setUserAgent("/NetcdfJava/HttpClient");
 
     // nick.bower@metoceanengineers.com
     String proxyHost = System.getProperty("http.proxyHost");
     String proxyPort = System.getProperty("http.proxyPort");
     if ((proxyHost != null) && (proxyPort != null) && !proxyPort.trim().equals("")) {
       HttpHost proxy = new HttpHost(proxyHost, Integer.parseInt(proxyPort));
-      _client.setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
+      _client.setProxy(proxy);
     }
     return _client;
   }
@@ -107,18 +112,14 @@ public class HttpClientManager {
    * @return the  HttpClient object
    */
   /*
-   public HttpWrap getHttpClient() {
+   public HttpSession getHttpClient() {
       return _client;
   }
   */
   private void initHttpClient() throws IOException {
 
     if (_client != null) return;
-    _client = new HttpWrap();
-    _client.setParameter(AllClientPNames.SO_TIMEOUT, timeout);
-    _client.setParameter(AllClientPNames.ALLOW_CIRCULAR_REDIRECTS, Boolean.TRUE);
-    _client.setParameter(AllClientPNames.COOKIE_POLICY, CookiePolicy.RFC_2109);
-
+    _client = new HttpSession();
 
     // allow self-signed certificates
 
@@ -134,19 +135,26 @@ public class HttpClientManager {
   /**
    * Get the content from a url. For large returns, its better to use getResponseAsStream.
    *
-   * @param urlString url as a String
+   * xx@param urlString url as a String
    * @return contents of url as a String
    * @throws java.io.IOException on error
    *
   public String getContent(String urlString) throws IOException {
 
     try {
-      _client.setMethodGet(urlString);
+      _client.newMethod("get",(urlString);
       return _client.getContentString();
     } finally {
       // _client.close();
     }
   } */
+
+  static void initMethod(HttpSession.Method method)
+  {
+       method.setParameter(AllClientPNames.SO_TIMEOUT, (Object)timeout);
+       method.setParameter(AllClientPNames.ALLOW_CIRCULAR_REDIRECTS, (Object) Boolean.TRUE);
+       method.setParameter(AllClientPNames.COOKIE_POLICY, (Object)CookiePolicy.RFC_2109);
+  }
 
   /**
    * Put content to a url, using HTTP PUT. Handles one level of 302 redirection.
@@ -157,18 +165,20 @@ public class HttpClientManager {
    * @throws java.io.IOException on error
    */
   static public int putContent(String urlString, String content) throws IOException {
-    HttpWrap client = null;
+    HttpSession client = null;
+      HttpSession.Method method = null;
     try {
-      client = new HttpWrap();
-      client.setHeader("Accept-Encoding", "gzip,deflate");
+      client = new HttpSession();
+        method = client.newMethod("get",urlString);
+        initMethod(method);
+      method.setMethodHeader("Accept-Encoding", "gzip,deflate");
 
-      client.setContent(new StringEntity(content));
-      client.setMethodPut(urlString);
-      int resultCode = client.execute();
+      method.setContent(new StringEntity(content));
+      int resultCode = method.execute();
 
       if (resultCode == 302) {
         String redirectLocation;
-        Header locationHeader = client.getHeader("location");
+        Header locationHeader = method.getResponseHeader("location");
         if (locationHeader != null) {
           redirectLocation = locationHeader.getValue();
           if (debug) System.out.println("***Follow Redirection = " + redirectLocation);
@@ -178,6 +188,7 @@ public class HttpClientManager {
       return resultCode;
 
     } finally {
+        if (method != null) method.close();
       if (client != null) client.close();
     }
   }
@@ -186,35 +197,36 @@ public class HttpClientManager {
 
   static public String getContent(String urlString) {
 
-    HttpWrap client = null;
+    HttpSession client = null;
+      HttpSession.Method  method = null;
     try {
-      client = new HttpWrap();
-      client.setHeader("Accept-Encoding", "gzip,deflate");
-      client.setMethodGet(urlString);
-      int status = client.execute();
+      client = new HttpSession();
+        method = client.newMethod("get",urlString);
+      method.setMethodHeader("Accept-Encoding", "gzip,deflate");
+      int status = method.execute();
       if (status != 200) {
-        throw new HttpWrapException("failed status = " + status);
+        throw new HttpSessionException("failed status = " + status);
       }
 
-      String charset = client.getCharSet();
+      String charset = method.getCharSet();
       if (charset == null) charset = "UTF-8";
 
       // check for deflate and gzip compression
-      Header h = client.getHeader("content-encoding");
+      Header h = method.getResponseHeader("content-encoding");
       String encoding = (h == null) ? null : h.getValue();
 
       if (encoding != null && encoding.equals("deflate")) {
-        InputStream body = client.getContentStream();
+        InputStream body = method.getContentStream();
         InputStream is = new BufferedInputStream(new InflaterInputStream(body), 10000);
         return IO.readContents(is, charset); //readContents(is, charset, maxKbytes);
 
       } else if (encoding != null && encoding.equals("gzip")) {
-        InputStream body = client.getContentStream();
+        InputStream body = method.getContentStream();
         InputStream is = new BufferedInputStream(new GZIPInputStream(body), 10000);
         return IO.readContents(is, charset); //readContents(is, charset, maxKbytes);
 
       } else {
-        return client.getContentString(charset);
+        return method.getContentString(charset);
       }
 
     } catch (Exception e) {
@@ -222,90 +234,99 @@ public class HttpClientManager {
       return null;
 
     } finally {
-      if (client != null) client.close();
+      if (method != null) method.close();
+        if (client != null) client.close();
+
     }
   }
 
   static public void copyUrlContentsToFile(String urlString, File file) {
 
-    HttpWrap client = null;
+    HttpSession client = null;
+      HttpSession.Method method = null;
     try {
-      client = new HttpWrap();
-      client.setHeader("Accept-Encoding", "gzip,deflate");
+      client = new HttpSession();
+        method = client.newMethod("get",urlString);
 
-      client.setMethodGet(urlString);
-      int status = client.execute();
+      method.setMethodHeader("Accept-Encoding", "gzip,deflate");
+
+      int status = method.execute();
 
       if (status != 200) {
         throw new RuntimeException("failed status = " + status);
       }
 
-      String charset = client.getCharSet();
+      String charset = method.getCharSet();
       if (charset == null) charset = "UTF-8";
 
       // check for deflate and gzip compression
-      Header h = client.getHeader("content-encoding");
+      Header h = method.getResponseHeader("content-encoding");
       String encoding = (h == null) ? null : h.getValue();
 
       if (encoding != null && encoding.equals("deflate")) {
-        InputStream is = new BufferedInputStream(new InflaterInputStream(client.getContentStream()), 10000);
+        InputStream is = new BufferedInputStream(new InflaterInputStream(method.getContentStream()), 10000);
         IO.writeToFile(is, file.getPath());
 
       } else if (encoding != null && encoding.equals("gzip")) {
-        InputStream is = new BufferedInputStream(new GZIPInputStream(client.getContentStream()), 10000);
+        InputStream is = new BufferedInputStream(new GZIPInputStream(method.getContentStream()), 10000);
         IO.writeToFile(is, file.getPath());
 
       } else {
-        IO.writeToFile(client.getContentStream(), file.getPath());
+        IO.writeToFile(method.getContentStream(), file.getPath());
       }
 
     } catch (Exception e) {
       e.printStackTrace();
 
     } finally {
-      if (client != null) client.close();
+      if (method != null) method.close();
+        if (client != null) client.close();
+
     }
   }
 
   static public long appendUrlContentsToFile(String urlString, File file, long start, long end) {
     long nbytes = 0;
 
-    HttpWrap client = null;
+    HttpSession client = null;
+      HttpSession.Method method = null;
     try {
-      client = new HttpWrap();
+      client = new HttpSession();
+        method = client.newMethod("get",urlString);
 
-      client.setHeader("Accept-Encoding", "gzip,deflate");
-      client.setHeader("Range", "bytes=" + start + "-" + end);
-      client.setMethodGet(urlString);
-      int status = client.execute();
+      method.setMethodHeader("Accept-Encoding", "gzip,deflate");
+      method.setMethodHeader("Range", "bytes=" + start + "-" + end);
+      int status = method.execute();
       if ((status != 200) && (status != 206)) {
-        throw new HttpWrapException("failed status = " + status);
+        throw new HttpSessionException("failed status = " + status);
       }
 
-      String charset = client.getCharSet();
+      String charset = method.getCharSet();
       if (charset == null) charset = "UTF-8";
 
       // check for deflate and gzip compression
-      Header h = client.getHeader("content-encoding");
+      Header h = method.getResponseHeader("content-encoding");
       String encoding = (h == null) ? null : h.getValue();
 
       if (encoding != null && encoding.equals("deflate")) {
-        InputStream is = new BufferedInputStream(new InflaterInputStream(client.getContentStream()), 10000);
+        InputStream is = new BufferedInputStream(new InflaterInputStream(method.getContentStream()), 10000);
         nbytes = IO.appendToFile(is, file.getPath());
 
       } else if (encoding != null && encoding.equals("gzip")) {
-        InputStream is = new BufferedInputStream(new GZIPInputStream(client.getContentStream()), 10000);
+        InputStream is = new BufferedInputStream(new GZIPInputStream(method.getContentStream()), 10000);
         nbytes = IO.appendToFile(is, file.getPath());
 
       } else {
-        nbytes = IO.appendToFile(client.getContentStream(), file.getPath());
+        nbytes = IO.appendToFile(method.getContentStream(), file.getPath());
       }
 
     } catch (Exception e) {
       e.printStackTrace();
 
     } finally {
-      if (client != null) client.close();
+      if (method != null) method.close();
+        if (client != null) client.close();
+
     }
 
     return nbytes;
@@ -332,7 +353,7 @@ public class HttpClientManager {
     f.format("%n");
   }
 
-  static public void showHttpResponseInfo(Formatter f, HttpWrap h) {
+  static public void showHttpResponseInfo(Formatter f, HttpSession h) {
     f.format("HttpClient response status = %s%n", h.getStatusLine());
     f.format("Reponse Headers = %n");
     Header[] heads = h.getHeaders();

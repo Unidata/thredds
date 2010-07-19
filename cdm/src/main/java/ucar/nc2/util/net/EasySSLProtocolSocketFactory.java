@@ -156,7 +156,7 @@ public class EasySSLProtocolSocketFactory extends SSLSocketFactory {
    * @param port         the port on the host
    * @param localAddress the local host name/IP to bind the socket to
    * @param localPort    the port on the local machine
-   * @param params       {@link HttpParams HttpWrap connection parameters}
+   * @param params       {@link HttpParams HttpSession connection parameters}
    * @return Socket a new socket
    * @throws IOException          if an I/O error occurs while creating the socket
    * @throws UnknownHostException if the IP address of the host cannot be

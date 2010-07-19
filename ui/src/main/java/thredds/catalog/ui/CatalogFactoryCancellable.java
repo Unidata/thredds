@@ -33,7 +33,7 @@
 
 package thredds.catalog.ui;
 
-import opendap.dap.HttpWrap;
+import opendap.dap.HttpSession;
 import thredds.catalog.*;
 import thredds.ui.ProgressMonitorTask;
 
@@ -161,19 +161,20 @@ public class CatalogFactoryCancellable extends InvCatalogFactory {
         return;
       }
 
-      HttpWrap client = null;
+      HttpSession client = null;
+        HttpSession.Method method = null;
       try {
-        client = new HttpWrap();
-        client.setMethodGet(catalogName);
-        int statusCode = client.execute();
+        client = new HttpSession();
+        method = client.newMethod("get",catalogName);
+        int statusCode = method.execute();
 
         if (statusCode == 404)
-          throw new FileNotFoundException(client.getPath() + " " + client.getStatusLine());
+          throw new FileNotFoundException(method.getPath() + " " + method.getStatusLine());
 
         if (statusCode >= 300)
-          throw new IOException(client.getPath() + " " + client.getStatusLine());
+          throw new IOException(method.getPath() + " " + method.getStatusLine());
 
-        InputStream stream = client.getContentStream();
+        InputStream stream = method.getContentStream();
         catalog = CatalogFactoryCancellable.super.readXML(stream, catalogURI);
 
       } catch (IOException e) {
@@ -186,6 +187,7 @@ public class CatalogFactoryCancellable extends InvCatalogFactory {
         return;
 
       } finally {
+          if (null != method) method.close();
         if (null != client) client.close();
       }
 

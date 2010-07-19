@@ -37,7 +37,7 @@ import org.apache.http.Header;
 import ucar.ma2.Array;
 import ucar.ma2.Section;
 import ucar.ma2.InvalidRangeException;
-import opendap.dap.HttpWrap;
+import opendap.dap.HttpSession;
 
 import java.io.IOException;
 import java.io.FileNotFoundException;
@@ -56,7 +56,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
   static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CdmRemote.class);
   static private boolean showRequest = true;
 
-  private HttpWrap httpClient;
+  private HttpSession session;
 
   /**
    * Create the canonical form of the URL.
@@ -76,7 +76,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
   private String remoteURI;
 
   public CdmRemote() throws IOException {
-    httpClient = new HttpWrap();
+    session = new HttpSession();
   }
 
   public CdmRemote(String _remoteURI) throws IOException {
@@ -91,7 +91,8 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
 
     remoteURI = temp;
 
-    httpClient = new HttpWrap();
+    session = new HttpSession();
+    HttpSession.Method method = null;
 
     // get the header
     //HttpGet method = null;
@@ -101,22 +102,22 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
 
       if (showRequest) System.out.printf(" ncstream request %s %n", url);
 
-      httpClient = new HttpWrap();
-      httpClient.setMethodGet(url);
-      int statusCode = httpClient.execute();
+    method = session.newMethod("get",url);
+    int statusCode = method.execute();
 
       if (statusCode == 404)
-        throw new FileNotFoundException(httpClient.getURI() + " " + httpClient.getStatusLine());
+        throw new FileNotFoundException(method.getURI() + " " + method.getStatusLine());
 
       if (statusCode >= 300)
-        throw new IOException(httpClient.getURI() + " " + httpClient.getStatusLine());
+        throw new IOException(method.getURI() + " " + method.getStatusLine());
 
-      InputStream is = httpClient.getContentStream();
+      InputStream is = method.getContentStream();
       NcStreamReader reader = new NcStreamReader();
       reader.readStream(is, this);
       this.location = SCHEME + remoteURI;
 
     } finally {
+        method.close();
     }
   }
 
@@ -135,20 +136,21 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
     if (showRequest)
       System.out.println("CdmRemote data request for variable: " + v.getName() + " section= " + section + " url=" + sbuff);
 
+    HttpSession.Method method = null;
 
     try {
 
-      httpClient.setMethodGet(sbuff.toString());
-      int statusCode = httpClient.execute();
+      method = session.newMethod("get",(sbuff.toString()));
+      int statusCode = method.execute();
 
       if (statusCode == 404)
-        throw new FileNotFoundException(httpClient.getURI() + " " + httpClient.getStatusLine());
+        throw new FileNotFoundException(method.getURI() + " " + method.getStatusLine());
 
       if (statusCode >= 300)
-        throw new IOException(httpClient.getURI() + " " + httpClient.getStatusLine());
+        throw new IOException(method.getURI() + " " + method.getStatusLine());
 
       int wantSize = (int) (v.getElementSize() * section.computeSize());
-      Header h = httpClient.getHeader("Content-Length");
+      Header h = method.getResponseHeader("Content-Length");
       if (h != null) {
         String s = h.getValue();
         int readLen = Integer.parseInt(s);
@@ -156,7 +158,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
           throw new IOException("content-length= " + readLen + " not equal expected Size= " + wantSize);
       }
 
-      InputStream is = httpClient.getContentStream();
+      InputStream is = method.getContentStream();
       NcStreamReader reader = new NcStreamReader();
       NcStreamReader.DataResult result = reader.readData(is, this);
 
@@ -165,18 +167,18 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
       return result.data;
 
     } finally {
-      if (httpClient != null) httpClient.close();
+      if (method != null) method.close();
     }
   }
 
   @Override
   public void close() throws IOException {
-    if (httpClient != null) httpClient.close();
+    if (session != null) session.close();
     super.close();
   }
 
   public InputStream sendQuery(String remoteURI, String query) throws IOException {
-    //HttpWrap httpClient = new HttpWrap();
+    //HttpSession session = new HttpSession();
 
     StringBuilder sbuff = new StringBuilder(remoteURI);
     sbuff.append("?");
@@ -185,16 +187,20 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
     if (showRequest)
       System.out.println("CdmRemote sendQuery=" + sbuff);
 
-    httpClient.setMethodGet(sbuff.toString());
-    int statusCode = httpClient.execute();
+    HttpSession.Method method = null;
+      try {
+          method = session.newMethod("get",(sbuff.toString()));
+    int statusCode = method.execute();
 
     if (statusCode == 404)
-      throw new FileNotFoundException(httpClient.getURI() + " " + httpClient.getStatusLine());
+      throw new FileNotFoundException(method.getURI() + " " + method.getStatusLine());
 
     if (statusCode >= 300)
-      throw new IOException(httpClient.getURI() + " " + httpClient.getStatusLine());
-
-    return httpClient.getContentStream();
+      throw new IOException(method.getURI() + " " + method.getStatusLine());
+      } finally {
+          if(method != null) method.close();
+      }
+    return method.getContentStream();
   }
 
   public String getFileTypeId() {

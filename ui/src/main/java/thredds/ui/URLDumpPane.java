@@ -46,7 +46,7 @@ import org.apache.http.protocol.ExecutionContext;
 import org.apache.http.protocol.HttpContext;
 import ucar.nc2.util.IO;
 import ucar.nc2.util.URLnaming;
-import opendap.dap.HttpWrap;
+import opendap.dap.HttpSession;
 import ucar.nc2.util.net.HttpClientManager;
 import ucar.util.prefs.*;
 import ucar.util.prefs.ui.*;
@@ -71,7 +71,7 @@ import javax.swing.*;
  */
 
 public class URLDumpPane extends TextHistoryPane {
-  private enum Library {java, HttpWrap};
+  private enum Library {java, HttpSession};
   private enum Command {GET, PUT, HEAD, OPTIONS};
 
   private ComboBox cb;
@@ -154,7 +154,7 @@ public class URLDumpPane extends TextHistoryPane {
     clear();
 
     Library impl = (Library) implCB.getSelectedItem();
-    if (impl == Library.HttpWrap) {
+    if (impl == Library.HttpSession) {
        openHttpWrap(urlString, cmd);
     //} else if (impl == Library.Commons) {
     //   openURL2(urlString, cmd);
@@ -173,14 +173,18 @@ public class URLDumpPane extends TextHistoryPane {
 
   private void openHttpWrap(String urlString, Command cmd) {
     HttpEntity entity = null;
+      HttpSession httpclient = null;
+      HttpSession.Method httpget = null;
+
     try {
-      HttpWrap httpclient = new HttpWrap();
+      httpclient = new HttpSession();
 
       // request
-      HttpGet httpget = new HttpGet(urlString);
+
+      httpget = httpclient.newMethod("get",urlString);
       appendLine("Request: " + httpget.getRequestLine());
 
-      HttpParams params = httpget.getParams();
+      HttpParams params = httpget.getMethodParameters();
       appendLine("Params: ");
       showParameter(CoreProtocolPNames.HTTP_CONTENT_CHARSET, params);
       showParameter(CoreProtocolPNames.HTTP_ELEMENT_CHARSET, params);
@@ -192,9 +196,9 @@ public class URLDumpPane extends TextHistoryPane {
       showParameter(CoreProtocolPNames.WAIT_FOR_CONTINUE, params);
 
       //response
-      BasicHttpContext localContext = new BasicHttpContext();
-      httpclient.setMethodGet(urlString, localContext);
-      httpclient.execute();
+      HttpContext localContext = new BasicHttpContext();
+        httpget.setContext(localContext);
+      httpget.execute();
 
       appendLine("\nHttpContext: " + localContext);
       showAtribute(ExecutionContext.HTTP_CONNECTION, localContext);
@@ -214,13 +218,13 @@ public class URLDumpPane extends TextHistoryPane {
       }
 
       appendLine("\nResponse Headers:");
-      HeaderIterator it =  httpclient.headerIterator();
-      while (it.hasNext()) {
-        appendLine(" " + it.next().toString());
+      Header[] it =  httpget.getResponseHeaders();
+      for(Header h: it) {
+        appendLine(" " + h.toString());
       }
 
       // content
-      String contents = httpclient.getContentString();
+      String contents = httpget.getContentString();
       if (contents != null) {
         if (contents.length() > 50 * 1000)
           contents = contents.substring(0, 50 * 1000);
@@ -262,7 +266,7 @@ public class URLDumpPane extends TextHistoryPane {
 
   /* private void openURL2(String urlString, Command cmd) {
 
-    HttpWrap  httpclient = HttpClientManager.getHttpClient();
+    HttpSession  httpclient = HttpClientManager.getHttpClient();
 
     try {
       /* you might think this works, but it doesnt:
@@ -283,7 +287,7 @@ public class URLDumpPane extends TextHistoryPane {
       httpclient.setHeader("Accept-Encoding", "gzip,deflate");
 
       if (cmd == Command.GET)
-          httpclient.setMethodGet(urlString);
+          httpclient.newMethod("get",(urlString);
       else if (cmd == Command.HEAD)
         httpclient.setMethodHead(urlString);
       else if (cmd == Command.OPTIONS)

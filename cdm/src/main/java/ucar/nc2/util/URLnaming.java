@@ -34,7 +34,7 @@ package ucar.nc2.util;
 
 
 
-import opendap.dap.HttpWrapException;
+import opendap.dap.HttpSessionException;
 
 import java.net.URI;
 import java.net.URL;

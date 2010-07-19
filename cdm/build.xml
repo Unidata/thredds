@@ -438,11 +438,13 @@
         <attribute name="Implementation-Vendor" value="UCAR/Unidata"/>
       </manifest>
     </jar>
-     <copy file="c:/Users/dmh/IdeaProjects/tds4.2/thredds/cdm/target/ncIdv.jar"
-            tofile="c:/Users/dmh/IdeaProjects/idv/lib/ncIdv.jar" />  
   </target>
 
-  <!-- $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$  -->
+    <target name="copyidvjar" depends="makeIDVjar">
+     <copy file="c:/Users/dmh/IdeaProjects/tds4.2/thredds/cdm/target/ncIdv.jar"
+            tofile="c:/Users/dmh/IdeaProjects/idv/lib/ncIdv.jar" />
+  </target>
+        <!-- $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$  -->
   <!-- source release -->
 
   <property name="ncSrcRelease.jar" value="ncSrc-${release.version}.zip"/>

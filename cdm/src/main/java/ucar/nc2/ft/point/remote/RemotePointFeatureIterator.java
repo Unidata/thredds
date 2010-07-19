@@ -17,7 +17,7 @@ import java.io.IOException;
 public class RemotePointFeatureIterator extends PointIteratorAbstract {
   private static final boolean debug = false;
 
-  //private HttpWrap http = null;
+  //private HttpSession http = null;
   private InputStream in;
   private FeatureMaker featureMaker;
 

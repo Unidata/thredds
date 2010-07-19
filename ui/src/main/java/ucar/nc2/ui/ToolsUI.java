@@ -58,7 +58,7 @@ import ucar.nc2.dataset.*;
 
 import ucar.nc2.geotiff.GeoTiff;
 import ucar.nc2.util.*;
-import opendap.dap.HttpWrap;
+import opendap.dap.HttpSession;
 import ucar.nc2.util.net.HttpClientManager;
 import ucar.nc2.util.xml.RuntimeConfigParser;
 import ucar.nc2.units.*;
@@ -523,10 +523,10 @@ public class ToolsUI extends JPanel {
 
     AbstractAction clearHttpStateAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        HttpWrap.clearState();
+        //fix: HttpSession.clearState();
       }
     };
-    BAMutil.setActionProperties(clearHttpStateAction, null, "Clear HttpWrap State", false, 'S', -1);
+    BAMutil.setActionProperties(clearHttpStateAction, null, "Clear HttpSession State", false, 'S', -1);
     BAMutil.addActionToMenu(sysMenu, clearHttpStateAction);
 
     AbstractAction showCacheAction = new AbstractAction() {
@@ -4894,8 +4894,8 @@ public class ToolsUI extends JPanel {
     // use HTTPClient - could use bean wiring here
     try {
       CredentialsProvider provider = new thredds.ui.UrlAuthenticatorDialog(frame);
-      HttpWrap.setGlobalCredentialsProvider(provider);
-      HttpWrap.setGlobalUserAgent("ToolsUI");
+      HttpSession.setGlobalCredentialsProvider(provider);
+      HttpSession.setGlobalUserAgent("ToolsUI");
 
       /* CdmRemote.setHttpClient(client);
       NetcdfDataset.setHttpClient(client);

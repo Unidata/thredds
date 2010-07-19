@@ -34,7 +34,7 @@
 package ucar.nc2.ui;
 
 import org.apache.http.Header;
-import opendap.dap.HttpWrap;
+import opendap.dap.HttpSession;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
 import ucar.nc2.util.IO;
@@ -179,9 +179,10 @@ public class WmsViewer extends JPanel {
   //////////////////////////////////////////////////////
 
   private boolean getCapabilities() {
-    HttpWrap httpClient = null;
+    HttpSession httpClient = null;
+      HttpSession.Method method = null;
     try {
-      httpClient = new HttpWrap();
+      httpClient = new HttpSession();
 
       Formatter f = new Formatter();
       f.format("%s?request=GetCapabilities&service=WMS&version=%s", endpoint, version);
@@ -189,22 +190,21 @@ public class WmsViewer extends JPanel {
       info.setLength(0);
       info.append(url + "\n");
 
+      method = httpClient.newMethod("get",url);
+      int statusCode = method.execute();
 
-      httpClient.setMethodGet(url);
-      int statusCode = httpClient.execute();
-
-      info.append(" Status = " + httpClient.getStatusCode() + "\n");
-      info.append(" Status Line = " + httpClient.getStatusLine() + "\n");
-      printHeaders(" Response Headers = ", httpClient.getHeaders());
+      info.append(" Status = " + method.getStatusCode() + "\n");
+      info.append(" Status Line = " + method.getStatusLine() + "\n");
+      printHeaders(" Response Headers = ", method.getResponseHeaders());
       info.append("GetCapabilities:\n\n");
 
       if (statusCode == 404)
-        throw new FileNotFoundException(httpClient.getPath() + " " + httpClient.getStatusLine());
+        throw new FileNotFoundException(method.getPath() + " " + method.getStatusLine());
 
       if (statusCode >= 300)
-        throw new IOException(httpClient.getPath() + " " + httpClient.getStatusLine());
+        throw new IOException(method.getPath() + " " + method.getStatusLine());
 
-      String contents = IO.readContents(httpClient.getContentStream());
+      String contents = IO.readContents(method.getContentStream());
       info.append(contents);
 
       StringBufferInputStream is = new StringBufferInputStream(contents);
@@ -218,7 +218,8 @@ public class WmsViewer extends JPanel {
       return false;
 
     } finally {
-      if (httpClient != null) httpClient.close();
+        if (method != null) method.close();
+        if (httpClient != null) httpClient.close();
     }
 
     return true;
@@ -253,9 +254,10 @@ public class WmsViewer extends JPanel {
   }
 
   private boolean getMap(LayerBean layer) {
-    HttpWrap httpClient = null;
+    HttpSession httpClient = null;
+      HttpSession.Method method  = null;
     try {
-      httpClient = new HttpWrap();
+      httpClient = new HttpSession();
 
       Formatter f = new Formatter();
       f.format("%s?request=GetMap&service=WMS&version=%s&", endpoint, version);
@@ -273,24 +275,24 @@ public class WmsViewer extends JPanel {
       info.append(url + "\n");
 
 
-      httpClient.setMethodGet(url);
-      int statusCode = httpClient.execute();
+      method = httpClient.newMethod("get",url);
+      int statusCode = method.execute();
 
-      info.append(" Status = " + httpClient.getStatusCode() + "\n");
-      info.append(" Status Line = " + httpClient.getStatusLine() + "\n");
-      printHeaders(" Response Headers = ", httpClient.getHeaders());
+      info.append(" Status = " + method.getStatusCode() + "\n");
+      info.append(" Status Line = " + method.getStatusLine() + "\n");
+      printHeaders(" Response Headers = ", method.getResponseHeaders());
 
       if (statusCode == 404)
-        throw new FileNotFoundException(httpClient.getPath() + " " + httpClient.getStatusLine());
+        throw new FileNotFoundException(method.getPath() + " " + method.getStatusLine());
 
       if (statusCode >= 300)
-        throw new IOException(httpClient.getPath() + " " + httpClient.getStatusLine());
+        throw new IOException(method.getPath() + " " + method.getStatusLine());
 
-      Header h = httpClient.getHeader("Content-Type");
+      Header h = method.getResponseHeader("Content-Type");
       String mimeType = (h == null) ? "" : h.getValue();
       info.append(" mimeType = " + mimeType + "\n");
 
-      byte[] contents = IO.readContentsToByteArray(httpClient.getContentStream());
+      byte[] contents = IO.readContentsToByteArray(method.getContentStream());
       info.append(" content len = " + contents.length + "\n");
 
       ByteArrayInputStream is = new ByteArrayInputStream(contents);
@@ -327,7 +329,8 @@ public class WmsViewer extends JPanel {
       return false;
 
     } finally {
-      if (httpClient != null) httpClient.close();
+        if (method != null) method.close();
+        if (httpClient != null) httpClient.close();
     }
 
     return true;
