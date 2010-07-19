@@ -73,10 +73,7 @@ dl {margin: 10px 5px 5px 15px;}
 <h3>protoDataset element</h3>
 <p>Provides control over the choice of the prototype dataset for the collection.</p>
 <pre>&lt;protoDataset <strong>choice</strong>=&quot;First | Random | Penultimate | Latest&quot; <strong>change</strong>=&quot;expr&quot; /&gt;</pre>
-<pre>
-&lt;protoDataset&gt;filename&lt;/protoDataset&gt;</pre>
 <blockquote>
-  <p> where: </p>
   <ol>
     <li><strong>choice</strong>= &quot;First | Random | Penultimate | Latest&quot; : select prototype from a time ordered list, using the first, a randomly selected one, the next to last, or the last dataset in the list. default is &quot;Penultimate&quot;.</li>
     <li> <strong>change</strong>= &quot;cron expr&quot; (optional). This specifies when the protoDataset should be reselected, using a <a href="http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html">cron expression</a>. </li>
@@ -84,7 +81,6 @@ dl {margin: 10px 5px 5px 15px;}
       <li><em>change = &quot;0 2 3 * * ? *&quot;</em> means every day at 3.02 am.</li>
       <li>if not specified, the prototype dataset is not changed, except when restarting the TDS.</li>
     </ul>
-    <li>&lt;protoDataset&gt;filename&lt;/protoDataset&gt;allows you to specify a specific file as the prototype. (NOT IMPLEMENTED YET)</li>
   </ol>
 </blockquote>
 <p>On rolling datsets, you will want to change the prototype, otherwise it will get deleted eventually.</p>
