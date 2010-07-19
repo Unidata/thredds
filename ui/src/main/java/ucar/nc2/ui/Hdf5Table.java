@@ -152,7 +152,7 @@ public class Hdf5Table extends JPanel {
     prefs.putInt("splitPosH", splitH.getDividerLocation());
   }
 
-  private H5header header;
+  private H5iosp iosp;
   private String location;
 
   public void setHdf5File(RandomAccessFile raf) throws IOException {
@@ -160,7 +160,7 @@ public class Hdf5Table extends JPanel {
     long start = System.nanoTime();
     java.util.List<ObjectBean> beanList = new ArrayList<ObjectBean>();
 
-    H5iosp iosp = new H5iosp();
+    iosp = new H5iosp();
     NetcdfFile ncfile = new MyNetcdfFile(iosp);
     try {
       iosp.open(raf, ncfile, null);
@@ -171,7 +171,7 @@ public class Hdf5Table extends JPanel {
       dumpTA.setText( bos.toString());      
     }
 
-    header = (H5header) iosp.sendIospMessage("header");
+    H5header header = (H5header) iosp.sendIospMessage("header");
     for (H5header.DataObject dataObj : header.getDataObjects()) {
       beanList.add(new ObjectBean(dataObj));
     }
@@ -180,12 +180,13 @@ public class Hdf5Table extends JPanel {
   }
 
   public void showInfo(Formatter f) throws IOException {
-    if (header == null) return;
+    if (iosp == null) return;
 
     ByteArrayOutputStream ff = new ByteArrayOutputStream(100 * 1000);
     PrintStream ps = new PrintStream(ff);
-    H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header H5header/headerDetails"));
-    header.read(ps);
+    H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header H5header/headerDetails H5header/symbolTable H5header/memTracker"));
+    H5header headerEmpty = (H5header) iosp.sendIospMessage("headerEmpty");
+    headerEmpty.read(ps);
     H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl(""));
     ps.flush();
     f.format("%s", ff.toString());

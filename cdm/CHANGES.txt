@@ -4,6 +4,7 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.2:
  4: (xx-xx-xx)
+  HDF5 bug: group btree entries were the wrong size when offsets = 4 bytes (!)
   MADIS/AWIPS station profile improvements to plugin
   GRIB adds attribute _CoordinateTransforms = "" to lat/lon Coord sys variable; no longer need weird code in CoordSysBuilder.VarProcess()
   MSGNavigation had major/minor axes reversed

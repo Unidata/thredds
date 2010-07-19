@@ -221,7 +221,7 @@ public class H5header {
     btreeInternalNodeSize = raf.readShort();
     if (debugDetail)
       debugOut.println(" btreeLeafNodeSize= " + btreeLeafNodeSize + " btreeInternalNodeSize= " + btreeInternalNodeSize);
-    ;
+
     //debugOut.println(" position="+mapBuffer.position());
 
     fileFlags = raf.readInt();
@@ -1840,12 +1840,12 @@ public class H5header {
     }
 
     public List<MessageAttribute> getAttributes() {
-      List<MessageAttribute> result = new ArrayList<MessageAttribute>(100);
+     /* List<MessageAttribute> result = new ArrayList<MessageAttribute>(100);
       for (HeaderMessage m : messages)
         if (m.messData instanceof MessageAttribute)
           result.add((MessageAttribute)m.messData);
-      result.addAll(attributes);
-      return result;
+      result.addAll(attributes); */
+      return attributes;
     }
 
     long address; // aka object id : obviously unique
@@ -3663,8 +3663,12 @@ public class H5header {
         for (int i = 0; i < nentries; i++) {
           SymbolTableEntry entry = new SymbolTableEntry(posEntry);
           posEntry += entry.getSize();
-          if (entry.objectHeaderAddress != 0)  // LOOK: Probably a bug in HDF5 file format ?? jc July 16 2010
+          if (entry.objectHeaderAddress != 0)  { // LOOK: Probably a bug in HDF5 file format ?? jc July 16 2010
+            if (debug1) debugOut.printf("   add %s%n", entry);
             symbols.add(entry);
+        }  else {
+            if (debug1) debugOut.printf("   BAD objectHeaderAddress==0 !! %s%n", entry);
+          }
         }
         if (debugDetail) debugOut.println("-- Group Node end position=" + raf.getFilePointer());
         long size = 8 + nentries * 40;
@@ -3746,7 +3750,7 @@ public class H5header {
     }
 
     public int getSize() {
-      return 40;
+      return isOffsetLong ? 40 : 32;
     }
 
     public long getObjectAddress() {
@@ -3756,7 +3760,21 @@ public class H5header {
     public long getNameOffset() {
       return nameOffset;
     }
-  } // SymbolTable
+
+    @Override
+    public String toString() {
+      return "SymbolTableEntry{" +
+              "nameOffset=" + nameOffset +
+              ", objectHeaderAddress=" + objectHeaderAddress +
+              ", btreeAddress=" + btreeAddress +
+              ", nameHeapAddress=" + nameHeapAddress +
+              ", cacheType=" + cacheType +
+              ", linkOffset=" + linkOffset +
+              ", posData=" + posData +
+              ", isSymbolicLink=" + isSymbolicLink +
+              '}';
+    }
+  } // SymbolTableEntry
 
   // Level 1A2
   private class BTree2 {
