@@ -674,8 +674,9 @@ public class InvCatalogFactory {
    * testing
    */
   public static void main(String[] args) throws Exception {
-    InvCatalogFactory catFactory = InvCatalogFactory.getDefaultFactory(true);
-    doOne(catFactory, "http://www.unidata.ucar.edu/georesources/idvcatalog.xml", true);
+    InvCatalogFactory catFactory = InvCatalogFactory.getDefaultFactory(false);
+    //doOne(catFactory, "http://www.unidata.ucar.edu/georesources/idvcatalog.xml", true);
+    doOne(catFactory, "file:C:/data/work/maurer/atm_mod.xml", true);
     //Thread.currentThread().sleep(10 * 10000);
     //InvCatalogFactory catFactoryNo = InvCatalogFactory.getDefaultFactory(false);
 

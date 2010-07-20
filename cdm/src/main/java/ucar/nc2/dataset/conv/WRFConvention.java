@@ -240,9 +240,10 @@ map_proj =  1: Lambert Conformal
         case 2:
           // Thanks to Heiko Klein for figuring out WRF Stereographic
           double lon0 = (Double.isNaN(standardLon)) ? centralLon : standardLon;
+          double lat0 = (Double.isNaN(centralLat)) ? lat2 : centralLat;  // ?? 7/20/2010
           double scaleFactor = (1 + Math.abs(Math.sin(Math.toRadians(lat1)))) / 2.;  // R Schmunk 9/10/07
-          //double scaleFactor = (1 + Math.sin(Math.toRadians(lat1))) / 2.;
-          proj = new Stereographic(lat2, lon0, scaleFactor);
+          // proj = new Stereographic(lat2, lon0, scaleFactor);
+          proj = new Stereographic(lat0, lon0, scaleFactor);
           projCT = new ProjectionCT("Stereographic", "FGDC", proj);
           break;
         case 3:
