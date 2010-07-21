@@ -15,22 +15,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" readonly="true" id="3941a6fd-8741-4634-b66c-38b370c3a191" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/opendap.iml" afterPath="$PROJECT_DIR$/opendap.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../ui/src/main/java/thredds/catalog/ui/CatalogFactoryCancellable.java" afterPath="$PROJECT_DIR$/../../ui/src/main/java/thredds/catalog/ui/CatalogFactoryCancellable.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../ui/src/main/java/ucar/nc2/ui/WmsViewer.java" afterPath="$PROJECT_DIR$/../../ui/src/main/java/ucar/nc2/ui/WmsViewer.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../ui/src/main/java/thredds/ui/URLDumpPane.java" afterPath="$PROJECT_DIR$/../../ui/src/main/java/thredds/ui/URLDumpPane.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../ui/src/main/java/ucar/nc2/ui/ToolsUI.java" afterPath="$PROJECT_DIR$/../../ui/src/main/java/ucar/nc2/ui/ToolsUI.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/dataset/NetcdfDataset.java" afterPath="$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/dataset/NetcdfDataset.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/stream/CdmRemote.java" afterPath="$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/stream/CdmRemote.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/URLnaming.java" afterPath="$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/URLnaming.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/cdm.iml" afterPath="$PROJECT_DIR$/cdm.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/bufrTables.iml" afterPath="$PROJECT_DIR$/bufrTables.iml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/thredds.iws" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../ui/src/main/java/ucar/nc2/thredds/monitor/TdsMonitor.java" afterPath="$PROJECT_DIR$/../../ui/src/main/java/ucar/nc2/thredds/monitor/TdsMonitor.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../cdm/src/main/java/ucar/unidata/io/http/HTTPRandomAccessFile.java" afterPath="$PROJECT_DIR$/../../cdm/src/main/java/ucar/unidata/io/http/HTTPRandomAccessFile.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/net/HttpClientManager.java" afterPath="$PROJECT_DIR$/../../cdm/src/main/java/ucar/nc2/util/net/HttpClientManager.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/tds.iml" afterPath="$PROJECT_DIR$/tds.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../../lib/release/unidatacommon.jar" afterPath="$PROJECT_DIR$/../../lib/release/unidatacommon.jar" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/thredds.iws" afterPath="$PROJECT_DIR$/thredds.iws" />
     </list>
     <ignored path="$USER_HOME_GRIFFON$/" />
     <ignored path="$USER_HOME_GRAILS$/" />
@@ -597,7 +582,7 @@
     <option name="ENABLE_BACKGROUND_PROCESSES" value="false" />
     <option name="CHANGED_ON_SERVER_INTERVAL" value="60" />
     <option name="FORCE_NON_EMPTY_COMMENT" value="false" />
-    <option name="LAST_COMMIT_MESSAGE" />
+    <option name="LAST_COMMIT_MESSAGE" value="" />
     <option name="MAKE_NEW_CHANGELIST_ACTIVE" value="true" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_FILES_UP_TO_DATE_BEFORE_COMMIT" value="false" />

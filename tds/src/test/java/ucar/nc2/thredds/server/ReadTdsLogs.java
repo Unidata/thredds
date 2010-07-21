@@ -33,10 +33,11 @@
 
 package ucar.nc2.thredds.server;
 
+import opendap.dap.DAPException;
+import opendap.dap.DAPSession;
+import opendap.dap.DAPMethod;
 import ucar.nc2.util.IO;
 import ucar.nc2.util.URLnaming;
-import opendap.dap.HttpWrap;
-import opendap.dap.HttpWrapException;
 
 import java.io.BufferedReader;
 import java.io.*;
@@ -59,7 +60,7 @@ public class ReadTdsLogs {
   private static AtomicInteger reqno = new AtomicInteger(0);
   private static Formatter out, out2;
 
-  private HttpWrap httpClient;
+  private DAPSession httpClient;
 
   ///////////////////////////////////////////////////////
   // multithreading
@@ -82,7 +83,7 @@ public class ReadTdsLogs {
     this.server = server;
 
     try {
-      httpClient = new HttpWrap();
+      httpClient = new DAPSession();
 
       httpClient.setThreadCount(nthreads);
 
@@ -94,7 +95,7 @@ public class ReadTdsLogs {
 
       resultProcessingThread = new Thread(new ResultProcessor());
       resultProcessingThread.start();
-    } catch (HttpWrapException hie) {
+    } catch (DAPException hie) {
       throw new FileNotFoundException(hie.toString());
     }
   }
@@ -138,19 +139,19 @@ public class ReadTdsLogs {
     }
 
     void send() throws IOException {
-
+      DAPMethod method = null;
       try {
 
-        httpClient.setMethodGet(server + URLnaming.escapeQuery(log.path));
-        statusCode = httpClient.execute();
+        method = httpClient.newMethod("get",(server + URLnaming.escapeQuery(log.path)));
+        statusCode = method.execute();
 
-        InputStream is = httpClient.getContentStream();
+        InputStream is = method.getContentStream();
         if (is != null)
           bytesRead = IO.copy2null(is, 10 * 1000); // read data and throw away
       } catch (URISyntaxException use) {
         throw new IOException(use);
       } finally {
-        if (httpClient != null) httpClient.close();
+        if (method != null) method.close();
       }
 
     }
@@ -207,13 +208,13 @@ public class ReadTdsLogs {
 
     private boolean compareAgainstLive(SendRequestTask itask) throws IOException {
       if (serverLive == null) return true;
-
+        DAPMethod method = null;
       try {
 
-        httpClient.setMethodGet(serverLive + itask.log.path);
-        int statusCode = httpClient.execute();
+        method = httpClient.newMethod("get",(serverLive + itask.log.path));
+        int statusCode = method.execute();
 
-        InputStream is = httpClient.getContentStream();
+        InputStream is = method.getContentStream();
         if (is != null)
           IO.copy2null(is, 10 * 1000); // read data and throw away
 
@@ -221,7 +222,7 @@ public class ReadTdsLogs {
         return statusCode == itask.statusCode;
 
       } finally {
-        if (httpClient != null) httpClient.close();
+        if (method != null) method.close();
       }
 
     }
@@ -664,7 +665,7 @@ public class ReadTdsLogs {
     out = null; // new Formatter(new FileOutputStream("C:/TEMP/readTdsLogs.txt"));
     out2 = new Formatter(System.out);
 
-    HttpWrap.setGlobalUserAgent("ReadTdsLogs");
+    DAPSession.setGlobalUserAgent("ReadTdsLogs");
 
     // sendRequests
     final ReadTdsLogs reader = new ReadTdsLogs(serverTest);
