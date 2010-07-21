@@ -1047,6 +1047,7 @@
 
     <dataset ID="FMRC/NWS/NDFD" name="NWS National Digital Forecast Database">
       <metadata inherited="true">
+        <dataFormat>GRIB-2</dataFormat>
         <documentation type="summary">National Digital Forecast Database (NDFD): US National Weather Service gridded
           forecasts of sensible weather elements.
         </documentation>
@@ -1055,9 +1056,9 @@
 
       <featureCollection name="NCEP-NDFD-CONUS_5km" featureType="FMRC" harvest="true" path="fmrc/NCEP/NDFD/CONUS_5km">
         <metadata inherited="true">
-          <dataFormat>GRIB-2</dataFormat>
+
           <documentation type="summary">
-            1073 by 689 points, resolution 5 km. Models are run daily at 12Z. Forecasts every 6 hours from 96 to 180 hours.
+            1073 by 689 points, resolution 5 km. Models are run daily at 12Z and 18Z. Forecasts every 6 hours from 90 to 180 hours.
           </documentation>
         </metadata>
 
@@ -1070,7 +1071,33 @@
         <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
         <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
       </featureCollection>
-      
+
+     <dataset ID="FMRC/NWS/NDFD/conduit" name="conduit">
+      <metadata inherited="true">
+        <documentation type="summary">National Digital Forecast Database (NDFD): US National Weather Service gridded
+          forecasts of sensible weather elements.
+        </documentation>
+        <documentation xlink:href="http://www.weather.gov/ndfd/" xlink:title="NWS/NDFD Website"/>
+      </metadata>
+      <featureCollection name="NCEP-NDFD-CONUS_5km_conduit" featureType="FMRC" harvest="true" path="fmrc/NCEP/NDFD/conduit/CONUS_5km">
+        <metadata inherited="true">
+
+          <documentation type="summary">
+            1073 by 689 points, resolution 5 km. Models are run hourly. Forecasts every 3 hours from 2 to 74 hours and
+              every 6 hours from 74 to 170.
+          </documentation>
+        </metadata>
+
+        <collection
+            spec="/data/ldm/pub/native/grid/NCEP/NDFD/conduit/CONUS_5km/NDFD_CONUS_5km_conduit_#yyyyMMdd_HHmm#.grib2"
+            name="NDFD_CONUS_5km_conduit"
+            recheckAfter="15 min"
+            olderThan="5 min"/>
+        <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
+        <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
+        <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
+      </featureCollection>
+     </dataset>
     </dataset>
 
     <dataset ID="FMRC/NCEP/WW3" name="NCEP Wave Watch III">
