@@ -34,8 +34,6 @@ package ucar.nc2.util;
 
 
 
-import opendap.dap.HttpSessionException;
-
 import java.net.URI;
 import java.net.URL;
 import java.net.URISyntaxException;

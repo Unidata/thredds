@@ -33,7 +33,8 @@
 
 package thredds.catalog.ui;
 
-import opendap.dap.HttpSession;
+import opendap.dap.DAPMethod;
+import opendap.dap.DAPSession;
 import thredds.catalog.*;
 import thredds.ui.ProgressMonitorTask;
 
@@ -161,10 +162,10 @@ public class CatalogFactoryCancellable extends InvCatalogFactory {
         return;
       }
 
-      HttpSession client = null;
-        HttpSession.Method method = null;
+      DAPSession client = null;
+        DAPMethod method = null;
       try {
-        client = new HttpSession();
+        client = new DAPSession();
         method = client.newMethod("get",catalogName);
         int statusCode = method.execute();
 

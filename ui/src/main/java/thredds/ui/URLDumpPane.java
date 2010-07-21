@@ -33,21 +33,19 @@
 
 package thredds.ui;
 
+import opendap.dap.DAPHeader;
+import opendap.dap.DAPMethod;
 import org.apache.http.Header;
 import org.apache.http.HeaderIterator;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpRequest;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.entity.StringEntity;
 import org.apache.http.params.CoreProtocolPNames;
 import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.ExecutionContext;
 import org.apache.http.protocol.HttpContext;
 import ucar.nc2.util.IO;
-import ucar.nc2.util.URLnaming;
-import opendap.dap.HttpSession;
-import ucar.nc2.util.net.HttpClientManager;
+import opendap.dap.DAPSession;
 import ucar.util.prefs.*;
 import ucar.util.prefs.ui.*;
 
@@ -57,8 +55,6 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 import java.util.List;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.InflaterInputStream;
 import javax.swing.*;
 
 
@@ -173,27 +169,34 @@ public class URLDumpPane extends TextHistoryPane {
 
   private void openHttpWrap(String urlString, Command cmd) {
     HttpEntity entity = null;
-      HttpSession httpclient = null;
-      HttpSession.Method httpget = null;
+      DAPSession httpclient = null;
+      DAPMethod httpget = null;
 
     try {
-      httpclient = new HttpSession();
+      httpclient = new DAPSession();
 
       // request
 
       httpget = httpclient.newMethod("get",urlString);
       appendLine("Request: " + httpget.getRequestLine());
 
-      HttpParams params = httpget.getMethodParameters();
       appendLine("Params: ");
-      showParameter(CoreProtocolPNames.HTTP_CONTENT_CHARSET, params);
-      showParameter(CoreProtocolPNames.HTTP_ELEMENT_CHARSET, params);
-      showParameter(CoreProtocolPNames.ORIGIN_SERVER, params);
-      showParameter(CoreProtocolPNames.PROTOCOL_VERSION, params);
-      showParameter(CoreProtocolPNames.STRICT_TRANSFER_ENCODING, params);
-      showParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, params);
-      showParameter(CoreProtocolPNames.USER_AGENT, params);
-      showParameter(CoreProtocolPNames.WAIT_FOR_CONTINUE, params);
+      showParameter(CoreProtocolPNames.HTTP_CONTENT_CHARSET,
+		    httpget.getMethodParameter(CoreProtocolPNames.HTTP_CONTENT_CHARSET));
+      showParameter(CoreProtocolPNames.HTTP_ELEMENT_CHARSET,
+		    httpget.getMethodParameter(CoreProtocolPNames.HTTP_ELEMENT_CHARSET));
+      showParameter(CoreProtocolPNames.ORIGIN_SERVER,
+		    httpget.getMethodParameter(CoreProtocolPNames.ORIGIN_SERVER));
+      showParameter(CoreProtocolPNames.PROTOCOL_VERSION,
+		    httpget.getMethodParameter(CoreProtocolPNames.PROTOCOL_VERSION));
+      showParameter(CoreProtocolPNames.STRICT_TRANSFER_ENCODING,
+		    httpget.getMethodParameter(CoreProtocolPNames.STRICT_TRANSFER_ENCODING));
+      showParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE,
+		    httpget.getMethodParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE));
+      showParameter(CoreProtocolPNames.USER_AGENT,
+		    httpget.getMethodParameter(CoreProtocolPNames.USER_AGENT));
+      showParameter(CoreProtocolPNames.WAIT_FOR_CONTINUE,
+		    httpget.getMethodParameter(CoreProtocolPNames.WAIT_FOR_CONTINUE));
 
       //response
       HttpContext localContext = new BasicHttpContext();
@@ -218,8 +221,8 @@ public class URLDumpPane extends TextHistoryPane {
       }
 
       appendLine("\nResponse Headers:");
-      Header[] it =  httpget.getResponseHeaders();
-      for(Header h: it) {
+      DAPHeader[] it =  httpget.getResponseHeaders();
+      for(DAPHeader h: it) {
         appendLine(" " + h.toString());
       }
 
@@ -255,12 +258,15 @@ public class URLDumpPane extends TextHistoryPane {
       appendLine(" " + key + ": " + value);
   }
 
-  private void showParameter(String key, HttpParams params) {
+  private void showParameterx(String key, HttpParams params) {
     Object value = params.getParameter(key);
     if (null != value)
       appendLine(" " + key + ": " + value);
   }
-
+  private void showParameter(String key, Object value) {
+    if (null != value)
+      appendLine(" " + key + ": " + value);
+  }
   ///////////////////////////////////////////////////////
   // Uses apache commons AbstractHttpClient
 

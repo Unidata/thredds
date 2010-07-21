@@ -33,8 +33,10 @@
 
 package ucar.nc2.ui;
 
+import opendap.dap.DAPHeader;
+import opendap.dap.DAPSession;
+import opendap.dap.DAPMethod;
 import org.apache.http.Header;
-import opendap.dap.HttpSession;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
 import ucar.nc2.util.IO;
@@ -179,10 +181,10 @@ public class WmsViewer extends JPanel {
   //////////////////////////////////////////////////////
 
   private boolean getCapabilities() {
-    HttpSession httpClient = null;
-      HttpSession.Method method = null;
+    DAPSession httpClient = null;
+      DAPMethod method = null;
     try {
-      httpClient = new HttpSession();
+      httpClient = new DAPSession();
 
       Formatter f = new Formatter();
       f.format("%s?request=GetCapabilities&service=WMS&version=%s", endpoint, version);
@@ -254,10 +256,10 @@ public class WmsViewer extends JPanel {
   }
 
   private boolean getMap(LayerBean layer) {
-    HttpSession httpClient = null;
-      HttpSession.Method method  = null;
+    DAPSession httpClient = null;
+      DAPMethod method  = null;
     try {
-      httpClient = new HttpSession();
+      httpClient = new DAPSession();
 
       Formatter f = new Formatter();
       f.format("%s?request=GetMap&service=WMS&version=%s&", endpoint, version);
@@ -288,7 +290,7 @@ public class WmsViewer extends JPanel {
       if (statusCode >= 300)
         throw new IOException(method.getPath() + " " + method.getStatusLine());
 
-      Header h = method.getResponseHeader("Content-Type");
+      DAPHeader h = method.getResponseHeader("Content-Type");
       String mimeType = (h == null) ? "" : h.getValue();
       info.append(" mimeType = " + mimeType + "\n");
 
@@ -337,10 +339,10 @@ public class WmsViewer extends JPanel {
   }
 
 
-  private void printHeaders(String title, Header[] heads) {
+  private void printHeaders(String title, DAPHeader[] heads) {
     info.append(title + "\n");
     for (int i = 0; i < heads.length; i++) {
-      Header head = heads[i];
+      DAPHeader head = heads[i];
       info.append("  " + head.toString());
     }
     info.append("\n");

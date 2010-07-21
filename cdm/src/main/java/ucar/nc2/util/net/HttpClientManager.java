@@ -38,25 +38,19 @@ package ucar.nc2.util.net;
 //import ucar.unidata.io.http.HTTPRandomAccessFile;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.zip.InflaterInputStream;
 import java.util.zip.GZIPInputStream;
-import java.util.Formatter;
 
-import opendap.dap.HttpSession;
-import opendap.dap.HttpSessionException;
+import opendap.dap.DAPHeader;
+import opendap.dap.DAPMethod;
+import opendap.dap.DAPSession;
+import opendap.dap.DAPException;
 import org.apache.http.HttpHost;
 import org.apache.http.Header;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.params.AllClientPNames;
 import org.apache.http.client.params.CookiePolicy;
-import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.message.AbstractHttpMessage;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.CoreProtocolPNames;
-import org.apache.http.params.HttpParams;
 import ucar.nc2.util.IO;
 
 
@@ -75,7 +69,7 @@ public class HttpClientManager {
   static private boolean debug = false;
   static private int timeout = 0;
 
-   HttpSession _client = null;
+   DAPSession _client = null;
 
 
 
@@ -85,7 +79,7 @@ public class HttpClientManager {
    * @param provider  CredentialsProvider.
    * @param userAgent Content of User-Agent header, may be null
    */
-  public HttpSession init(CredentialsProvider provider, String userAgent) throws IOException {
+  public DAPSession init(CredentialsProvider provider, String userAgent) throws IOException {
     initHttpClient();
 
     if (provider != null)
@@ -119,7 +113,7 @@ public class HttpClientManager {
   private void initHttpClient() throws IOException {
 
     if (_client != null) return;
-    _client = new HttpSession();
+    _client = new DAPSession();
 
     // allow self-signed certificates
 
@@ -149,7 +143,7 @@ public class HttpClientManager {
     }
   } */
 
-  static void initMethod(HttpSession.Method method)
+  static void initMethod(DAPMethod method)
   {
        method.setParameter(AllClientPNames.SO_TIMEOUT, (Object)timeout);
        method.setParameter(AllClientPNames.ALLOW_CIRCULAR_REDIRECTS, (Object) Boolean.TRUE);
@@ -165,10 +159,10 @@ public class HttpClientManager {
    * @throws java.io.IOException on error
    */
   static public int putContent(String urlString, String content) throws IOException {
-    HttpSession client = null;
-      HttpSession.Method method = null;
+    DAPSession client = null;
+      DAPMethod method = null;
     try {
-      client = new HttpSession();
+      client = new DAPSession();
         method = client.newMethod("get",urlString);
         initMethod(method);
       method.setMethodHeader("Accept-Encoding", "gzip,deflate");
@@ -178,7 +172,7 @@ public class HttpClientManager {
 
       if (resultCode == 302) {
         String redirectLocation;
-        Header locationHeader = method.getResponseHeader("location");
+        DAPHeader locationHeader = method.getResponseHeader("location");
         if (locationHeader != null) {
           redirectLocation = locationHeader.getValue();
           if (debug) System.out.println("***Follow Redirection = " + redirectLocation);
@@ -197,22 +191,22 @@ public class HttpClientManager {
 
   static public String getContent(String urlString) {
 
-    HttpSession client = null;
-      HttpSession.Method  method = null;
+    DAPSession client = null;
+      DAPMethod method = null;
     try {
-      client = new HttpSession();
+      client = new DAPSession();
         method = client.newMethod("get",urlString);
       method.setMethodHeader("Accept-Encoding", "gzip,deflate");
       int status = method.execute();
       if (status != 200) {
-        throw new HttpSessionException("failed status = " + status);
+        throw new DAPException("failed status = " + status);
       }
 
       String charset = method.getCharSet();
       if (charset == null) charset = "UTF-8";
 
       // check for deflate and gzip compression
-      Header h = method.getResponseHeader("content-encoding");
+      DAPHeader h = method.getResponseHeader("content-encoding");
       String encoding = (h == null) ? null : h.getValue();
 
       if (encoding != null && encoding.equals("deflate")) {
@@ -242,10 +236,10 @@ public class HttpClientManager {
 
   static public void copyUrlContentsToFile(String urlString, File file) {
 
-    HttpSession client = null;
-      HttpSession.Method method = null;
+    DAPSession client = null;
+      DAPMethod method = null;
     try {
-      client = new HttpSession();
+      client = new DAPSession();
         method = client.newMethod("get",urlString);
 
       method.setMethodHeader("Accept-Encoding", "gzip,deflate");
@@ -260,7 +254,7 @@ public class HttpClientManager {
       if (charset == null) charset = "UTF-8";
 
       // check for deflate and gzip compression
-      Header h = method.getResponseHeader("content-encoding");
+      DAPHeader h = method.getResponseHeader("content-encoding");
       String encoding = (h == null) ? null : h.getValue();
 
       if (encoding != null && encoding.equals("deflate")) {
@@ -288,24 +282,24 @@ public class HttpClientManager {
   static public long appendUrlContentsToFile(String urlString, File file, long start, long end) {
     long nbytes = 0;
 
-    HttpSession client = null;
-      HttpSession.Method method = null;
+    DAPSession client = null;
+      DAPMethod method = null;
     try {
-      client = new HttpSession();
+      client = new DAPSession();
         method = client.newMethod("get",urlString);
 
       method.setMethodHeader("Accept-Encoding", "gzip,deflate");
       method.setMethodHeader("Range", "bytes=" + start + "-" + end);
       int status = method.execute();
       if ((status != 200) && (status != 206)) {
-        throw new HttpSessionException("failed status = " + status);
+        throw new DAPException("failed status = " + status);
       }
 
       String charset = method.getCharSet();
       if (charset == null) charset = "UTF-8";
 
       // check for deflate and gzip compression
-      Header h = method.getResponseHeader("content-encoding");
+      DAPHeader h = method.getResponseHeader("content-encoding");
       String encoding = (h == null) ? null : h.getValue();
 
       if (encoding != null && encoding.equals("deflate")) {

@@ -14,7 +14,6 @@
           <root url="file://$MODULE_DIR$/../../bufrTables/src/main/resources" relative="/WEB-INF/classes" />
         </webroots>
         <sourceRoots />
-        <context-artifact name="bufrTables:bufrTables exploded" />
       </configuration>
     </facet>
   </component>

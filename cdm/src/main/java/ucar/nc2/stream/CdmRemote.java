@@ -32,12 +32,14 @@
 package ucar.nc2.stream;
 
 
+import opendap.dap.DAPHeader;
+import opendap.dap.DAPMethod;
+import opendap.dap.DAPSession;
 import org.apache.http.Header;
 
 import ucar.ma2.Array;
 import ucar.ma2.Section;
 import ucar.ma2.InvalidRangeException;
-import opendap.dap.HttpSession;
 
 import java.io.IOException;
 import java.io.FileNotFoundException;
@@ -56,7 +58,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
   static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CdmRemote.class);
   static private boolean showRequest = true;
 
-  private HttpSession session;
+  private DAPSession session;
 
   /**
    * Create the canonical form of the URL.
@@ -76,7 +78,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
   private String remoteURI;
 
   public CdmRemote() throws IOException {
-    session = new HttpSession();
+    session = new DAPSession();
   }
 
   public CdmRemote(String _remoteURI) throws IOException {
@@ -91,8 +93,8 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
 
     remoteURI = temp;
 
-    session = new HttpSession();
-    HttpSession.Method method = null;
+    session = new DAPSession();
+    DAPMethod method = null;
 
     // get the header
     //HttpGet method = null;
@@ -136,7 +138,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
     if (showRequest)
       System.out.println("CdmRemote data request for variable: " + v.getName() + " section= " + section + " url=" + sbuff);
 
-    HttpSession.Method method = null;
+    DAPMethod method = null;
 
     try {
 
@@ -150,7 +152,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
         throw new IOException(method.getURI() + " " + method.getStatusLine());
 
       int wantSize = (int) (v.getElementSize() * section.computeSize());
-      Header h = method.getResponseHeader("Content-Length");
+      DAPHeader h = method.getResponseHeader("Content-Length");
       if (h != null) {
         String s = h.getValue();
         int readLen = Integer.parseInt(s);
@@ -187,7 +189,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
     if (showRequest)
       System.out.println("CdmRemote sendQuery=" + sbuff);
 
-    HttpSession.Method method = null;
+    DAPMethod method = null;
       try {
           method = session.newMethod("get",(sbuff.toString()));
     int statusCode = method.execute();

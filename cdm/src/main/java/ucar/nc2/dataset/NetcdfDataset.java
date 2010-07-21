@@ -32,6 +32,9 @@
  */
 package ucar.nc2.dataset;
 
+import opendap.dap.DAPHeader;
+import opendap.dap.DAPSession;
+import opendap.dap.DAPMethod;
 import org.apache.http.Header;
 import ucar.ma2.*;
 import ucar.nc2.*;
@@ -49,8 +52,6 @@ import ucar.nc2.ncml.NcMLGWriter;
 import ucar.nc2.dods.DODSNetcdfFile;
 import ucar.nc2.thredds.ThreddsDataFactory;
 
-import opendap.dap.HttpSession;
-import opendap.dap.HttpSessionException;
 import ucar.unidata.util.StringUtil;
 
 import java.io.*;
@@ -716,10 +717,10 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     if (result != null)
       return result;
 
-    HttpSession httpClient = null;
-      HttpSession.Method method = null;
+    DAPSession httpClient = null;
+      DAPMethod method = null;
     try {
-      httpClient = new HttpSession();
+      httpClient = new DAPSession();
         method = httpClient.newMethod("get",location);
       int statusCode = method.execute();
       if (statusCode >= 300) {
@@ -729,7 +730,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
           throw new IOException(location + " is not a valid URL, return status=" + statusCode);
       }
 
-      Header h = method.getResponseHeader("Content-Description");
+      DAPHeader h = method.getResponseHeader("Content-Description");
       if ((h != null) && (h.getValue() != null)) {
         String v = h.getValue();
         if (v.equalsIgnoreCase("ncstream"))
@@ -747,14 +748,14 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
   // not sure what other opendap servers do, so fall back on check for dds
   static private ServiceType checkIfDods(String location) throws IOException {
-    HttpSession httpClient = null;
-      HttpSession.Method method = null;
+    DAPSession httpClient = null;
+      DAPMethod method = null;
     try {
-      httpClient = new HttpSession();
+      httpClient = new DAPSession();
         method = httpClient.newMethod("get",location+".dods");
       int status = method.execute();
       if (status == 200) {
-        Header h = method.getResponseHeader("Content-Description");
+        DAPHeader h = method.getResponseHeader("Content-Description");
         if ((h != null) && (h.getValue() != null)) {
           String v = h.getValue();
           if (v.equalsIgnoreCase("dods-dds") || v.equalsIgnoreCase("dods_dds"))
