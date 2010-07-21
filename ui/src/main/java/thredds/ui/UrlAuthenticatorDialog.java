@@ -38,18 +38,16 @@ import java.net.PasswordAuthentication;
 import javax.swing.JButton;
 
 
-import org.apache.http.auth.*;
-import org.apache.http.client.CredentialsProvider;
-import org.apache.http.impl.auth.BasicScheme;
-import org.apache.http.impl.auth.RFC2617Scheme;
-import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.commons.httpclient.Credentials;
+import org.apache.commons.httpclient.UsernamePasswordCredentials;
+import org.apache.commons.httpclient.auth.*;
 import ucar.util.prefs.ui.*;
 
 /**
  * This can be used both for java.net authentication:
  *   java.net.Authenticator.setDefault(new thredds.ui.UrlAuthenticatorDialog(frame));
  *
- * or for org.apache.http.httpclient authentication:
+ * or for org.apache.commons.httpclient authentication:
  *    httpclient.getParams().setParameter( CredentialsProvider.PROVIDER, new UrlAuthenticatorDialog( null));
  *
  * @author John Caron
@@ -62,7 +60,6 @@ public class UrlAuthenticatorDialog extends Authenticator implements Credentials
   private Field.Password passwF;
   private boolean debug = false;
 
-  private BasicCredentialsProvider provider = new BasicCredentialsProvider();
   private AuthScope anyscope = new  AuthScope(AuthScope.ANY);
 
   /** constructor
@@ -80,7 +77,6 @@ public class UrlAuthenticatorDialog extends Authenticator implements Credentials
     pp.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         pwa = new UsernamePasswordCredentials(userF.getText(), new String(passwF.getPassword()));
-        provider.setCredentials(anyscope,pwa);
         dialog.setVisible( false);
       }
     });
@@ -102,9 +98,9 @@ public class UrlAuthenticatorDialog extends Authenticator implements Credentials
 
   public void clear()
   {
-     provider.clear();
   }
-  public void setCredentials(AuthScope scope, Credentials cred)
+
+  /*fix:public void setCredentials(AuthScope scope, Credentials cred)
   {
       provider.setCredentials(scope,cred);
   }
@@ -112,7 +108,7 @@ public class UrlAuthenticatorDialog extends Authenticator implements Credentials
   public Credentials getCredentials(AuthScope scope)
   {
       return provider.getCredentials(scope);
-  }
+  } */
 
     // java.net calls this:
   protected PasswordAuthentication getPasswordAuthentication() {
@@ -139,13 +135,14 @@ public class UrlAuthenticatorDialog extends Authenticator implements Credentials
 
 
   // http client calls this:
- public Credentials getCredentials(AuthScheme scheme, String host, int port, boolean proxy) throws InvalidCredentialsException {
-
+ public Credentials getCredentials(AuthScheme scheme, String host, int port, boolean proxy)
+         throws CredentialsNotAvailableException
+ {
     if (scheme == null)
-      throw new InvalidCredentialsException( "Null authentication scheme: ");
+      throw new CredentialsNotAvailableException( "Null authentication scheme: ");
 
     if (!(scheme instanceof RFC2617Scheme))
-      throw new InvalidCredentialsException( "Unsupported authentication scheme: " +
+      throw new CredentialsNotAvailableException( "Unsupported authentication scheme: " +
                         scheme.getSchemeName());
 
     if (debug) {
@@ -155,7 +152,7 @@ public class UrlAuthenticatorDialog extends Authenticator implements Credentials
     serverF.setText(host+":"+port);
     realmF.setText(scheme.getRealm());
     dialog.setVisible( true);
-    if (pwa == null) throw new InvalidCredentialsException();
+    if (pwa == null) throw new CredentialsNotAvailableException();
 
     if (debug) {
       System.out.println("user= ("+pwa.getUserName()+")");

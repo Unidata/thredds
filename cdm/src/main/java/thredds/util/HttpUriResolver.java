@@ -32,14 +32,10 @@
  */
 package thredds.util;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.Header;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.client.params.AllClientPNames;
-import org.apache.http.impl.client.AbstractHttpClient;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.HttpParams;
+import opendap.dap.DAPHeader;
+import opendap.dap.DAPMethod;
+import opendap.dap.DAPSession;
+
 
 import java.io.*;
 import java.net.URI;
@@ -67,7 +63,7 @@ public class HttpUriResolver
   private boolean followRedirects;
 
   //private HttpRequestBase method = null;
-  private HttpResponse response = null;
+  private DAPMethod response = null;
   private Map<String,String> respHeaders;
 
   HttpUriResolver( URI uri, long connectionTimeout, int socketTimeout,
@@ -104,7 +100,7 @@ public class HttpUriResolver
   {
     if ( response == null )
       throw new IllegalStateException( "Request has not been made." );
-    return this.response.getStatusLine().getStatusCode();
+    return this.response.getStatusCode();
   }
 
   public Map<String,String> getResponseHeaders()
@@ -115,8 +111,8 @@ public class HttpUriResolver
     if ( this.respHeaders == null )
     {
       this.respHeaders = new HashMap<String,String>();
-      Header[] headers = this.response.getAllHeaders();
-      for ( Header h : headers )
+      DAPHeader[] headers = this.response.getResponseHeaders();
+      for ( DAPHeader h : headers )
         this.respHeaders.put( h.getName(), h.getValue() );
     }
 
@@ -128,7 +124,7 @@ public class HttpUriResolver
     if ( response == null )
       throw new IllegalStateException( "Request has not been made." );
 
-    Header responseHeader = this.response.getFirstHeader( name );
+    DAPHeader responseHeader = this.response.getResponseHeader( name );
     return responseHeader == null ? null : responseHeader.getValue();
   }
 
@@ -138,8 +134,8 @@ public class HttpUriResolver
     if ( response == null )
       throw new IllegalStateException( "Request has not been made." );
 
-    InputStream is = response.getEntity().getContent();
-    Header contentEncodingHeader = response.getFirstHeader( "Content-Encoding" );
+    InputStream is = response.getContentStream();
+    DAPHeader contentEncodingHeader = response.getResponseHeader( "Content-Encoding" );
     if ( contentEncodingHeader != null )
     {
       String contentEncoding = contentEncodingHeader.getValue();
@@ -154,23 +150,21 @@ public class HttpUriResolver
     return is;
   }
 
-  private HttpResponse getHttpResponse( URI uri )
+  private DAPMethod getHttpResponse( URI uri )
           throws IOException
   {
-    AbstractHttpClient client = new DefaultHttpClient();
-    HttpParams params = client.getParams();
-    params.setParameter(AllClientPNames.CONNECTION_TIMEOUT, this.connectionTimeout );
-    params.setParameter(AllClientPNames.SO_TIMEOUT, this.socketTimeout );
-    HttpGet method = new HttpGet( uri.toString() );
+    DAPSession client = new DAPSession();
+      DAPMethod method = client.newMethod("get",uri.toString() );
+    method.setParameter(DAPSession.CONNECTION_TIMEOUT, this.connectionTimeout );
+    method.setParameter(DAPSession.SO_TIMEOUT, this.socketTimeout );
     //method.setFollowRedirects( this.followRedirects );
-    method.addHeader( "Accept-Encoding", this.contentEncoding );
+    method.setRequestHeader( "Accept-Encoding", this.contentEncoding );
 
-    client.execute( method );
-    HttpResponse response = client.execute(method);
-    int statusCode = response.getStatusLine().getStatusCode();
+    method.execute();
+    int statusCode = method.getStatusCode();
     if ( statusCode == 200 || statusCode == 201 )
     {
-      return response;
+      return method;
     }
 
     return null; // ToDo throw exception with some informative inforamtion.

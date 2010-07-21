@@ -34,7 +34,7 @@
 package ucar.nc2.thredds.monitor;
 
 import opendap.dap.DAPSession;
-import org.apache.http.client.CredentialsProvider;
+import org.apache.commons.httpclient.auth.CredentialsProvider;
 import thredds.logs.LogReader;
 import ucar.util.prefs.ui.Debug;
 import ucar.util.prefs.PreferencesExt;

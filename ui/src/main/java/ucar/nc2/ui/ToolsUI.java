@@ -34,7 +34,7 @@
 package ucar.nc2.ui;
 
 import opendap.dap.DAPSession;
-import org.apache.http.client.CredentialsProvider;
+import org.apache.commons.httpclient.auth.CredentialsProvider;
 import thredds.inventory.FeatureCollectionConfig;
 import ucar.nc2.*;
 import ucar.nc2.FileWriter;

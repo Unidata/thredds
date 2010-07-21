@@ -42,9 +42,7 @@ package ucar.unidata.io.http;
 import opendap.dap.DAPException;
 import opendap.dap.DAPHeader;
 import opendap.dap.DAPMethod;
-import org.apache.http.Header;
 import opendap.dap.DAPSession;
-import org.apache.http.message.BasicHeader;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -177,7 +175,7 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
 
     // Execute the method.
     DAPMethod method = client.newMethod("get",url);
-      if(h != null) method.setMethodHeader(h);
+      if(h != null) method.setRequestHeader(h);
     int statusCode = method.execute();
 
     if (statusCode == 404)
@@ -188,7 +186,7 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
       throw new IOException(url + " " + method.getStatusLine());
 
     if (debugDetails) {
-      printHeaders("Request: GET " + method.getURI(), method.getMethodHeaders());
+      printHeaders("Request: GET " + method.getURI(), method.getRequestHeaders());
       printHeaders("Response: " + statusCode, method.getResponseHeaders());
     }
       return method;
@@ -223,7 +221,7 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
     DAPMethod method = null;
     try {
       method = _client.newMethod("get",url);
-      method.setMethodHeader("Range", "bytes=" + pos + "-" + end);
+      method.setRequestHeader("Range", "bytes=" + pos + "-" + end);
       int code = method.execute();
       if (code != 206)
         throw new IOException("Server does not support Range requests, code= " + code);

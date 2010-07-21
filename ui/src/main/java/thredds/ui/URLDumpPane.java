@@ -35,15 +35,8 @@ package thredds.ui;
 
 import opendap.dap.DAPHeader;
 import opendap.dap.DAPMethod;
-import org.apache.http.Header;
-import org.apache.http.HeaderIterator;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpRequest;
-import org.apache.http.params.CoreProtocolPNames;
-import org.apache.http.params.HttpParams;
-import org.apache.http.protocol.BasicHttpContext;
-import org.apache.http.protocol.ExecutionContext;
-import org.apache.http.protocol.HttpContext;
+
+import org.apache.commons.httpclient.params.HttpParams;
 import ucar.nc2.util.IO;
 import opendap.dap.DAPSession;
 import ucar.util.prefs.*;
@@ -60,7 +53,7 @@ import javax.swing.*;
 
 /**
  * A text widget to dump a web URL.
- * Uses java.net.HttpURLConnection or org.apache.http.Httpclient.
+ * Uses java.net.HttpURLConnection or org.apache.commons.Httpclient.
  *
  * @author John Caron
  * @see thredds.ui.UrlAuthenticatorDialog
@@ -151,7 +144,7 @@ public class URLDumpPane extends TextHistoryPane {
 
     Library impl = (Library) implCB.getSelectedItem();
     if (impl == Library.HttpSession) {
-       openHttpWrap(urlString, cmd);
+       openSession(urlString, cmd);
     //} else if (impl == Library.Commons) {
     //   openURL2(urlString, cmd);
     } else if (impl == Library.java) {
@@ -167,8 +160,7 @@ public class URLDumpPane extends TextHistoryPane {
   ///////////////////////////////////////////////////////
   // Uses apache HttpComponents
 
-  private void openHttpWrap(String urlString, Command cmd) {
-    HttpEntity entity = null;
+  private void openSession(String urlString, Command cmd) {
       DAPSession httpclient = null;
       DAPMethod httpget = null;
 
@@ -181,51 +173,45 @@ public class URLDumpPane extends TextHistoryPane {
       appendLine("Request: " + httpget.getRequestLine());
 
       appendLine("Params: ");
-      showParameter(CoreProtocolPNames.HTTP_CONTENT_CHARSET,
-		    httpget.getMethodParameter(CoreProtocolPNames.HTTP_CONTENT_CHARSET));
-      showParameter(CoreProtocolPNames.HTTP_ELEMENT_CHARSET,
-		    httpget.getMethodParameter(CoreProtocolPNames.HTTP_ELEMENT_CHARSET));
-      showParameter(CoreProtocolPNames.ORIGIN_SERVER,
-		    httpget.getMethodParameter(CoreProtocolPNames.ORIGIN_SERVER));
-      showParameter(CoreProtocolPNames.PROTOCOL_VERSION,
-		    httpget.getMethodParameter(CoreProtocolPNames.PROTOCOL_VERSION));
-      showParameter(CoreProtocolPNames.STRICT_TRANSFER_ENCODING,
-		    httpget.getMethodParameter(CoreProtocolPNames.STRICT_TRANSFER_ENCODING));
-      showParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE,
-		    httpget.getMethodParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE));
-      showParameter(CoreProtocolPNames.USER_AGENT,
-		    httpget.getMethodParameter(CoreProtocolPNames.USER_AGENT));
-      showParameter(CoreProtocolPNames.WAIT_FOR_CONTINUE,
-		    httpget.getMethodParameter(CoreProtocolPNames.WAIT_FOR_CONTINUE));
+      showParameter(DAPSession.HTTP_CONTENT_CHARSET,
+		    httpget.getMethodParameter(DAPSession.HTTP_CONTENT_CHARSET));
+      showParameter(DAPSession.HTTP_ELEMENT_CHARSET,
+		    httpget.getMethodParameter(DAPSession.HTTP_ELEMENT_CHARSET));
+      showParameter(DAPSession.PROTOCOL_VERSION,
+		    httpget.getMethodParameter(DAPSession.PROTOCOL_VERSION));
+      showParameter(DAPSession.STRICT_TRANSFER_ENCODING,
+		    httpget.getMethodParameter(DAPSession.STRICT_TRANSFER_ENCODING));
+      showParameter(DAPSession.USE_EXPECT_CONTINUE,
+		    httpget.getMethodParameter(DAPSession.USE_EXPECT_CONTINUE));
+      showParameter(DAPSession.USER_AGENT,
+		    httpget.getMethodParameter(DAPSession.USER_AGENT));
+      /*fix: showParameter(DAPSession.ORIGIN_SERVER,
+		    httpget.getMethodParameter(DAPSession.ORIGIN_SERVER));
+      showParameter(DAPSession.WAIT_FOR_CONTINUE,
+		    httpget.getMethodParameter(CoreProtocolPNames.WAIT_FOR_CONTINUE)); */
 
-      //response
-      HttpContext localContext = new BasicHttpContext();
-        httpget.setContext(localContext);
       httpget.execute();
 
-      appendLine("\nHttpContext: " + localContext);
-      showAtribute(ExecutionContext.HTTP_CONNECTION, localContext);
-      showAtribute(ExecutionContext.HTTP_PROXY_HOST, localContext);
-      showAtribute(ExecutionContext.HTTP_REQ_SENT, localContext);
-      showAtribute(ExecutionContext.HTTP_REQUEST, localContext);
-      showAtribute(ExecutionContext.HTTP_RESPONSE, localContext);
-      showAtribute(ExecutionContext.HTTP_TARGET_HOST, localContext);
+      /*fix: appendLine("\nHttpContext: " + localContext);
+      showAtribute(DAPSession.HTTP_CONNECTION, httpget);
+      showAtribute(DAPSession.HTTP_PROXY_HOST, httpget);
+      showAtribute(DAPSession.HTTP_REQ_SENT, httpget);
+      showAtribute(DAPSession.HTTP_REQUEST, httpget);
+      showAtribute(DAPSession.HTTP_RESPONSE, httpget);
+      showAtribute(DAPSession.HTTP_TARGET_HOST, httpget);  */
 
-      HttpRequest req = (HttpRequest) localContext.getAttribute(ExecutionContext.HTTP_REQUEST);
       appendLine("\nRequest Headers:");
-      if (req != null) {
-        HeaderIterator it = req.headerIterator();
-        while (it.hasNext()) {
-          appendLine(" " + it.next().toString());
+        DAPHeader[] headers = httpget.getRequestHeaders();
+        for(DAPHeader h : headers) {
+          appendLine(" " + h.toString());
         }
-      }
+
 
       appendLine("\nResponse Headers:");
-      DAPHeader[] it =  httpget.getResponseHeaders();
-      for(DAPHeader h: it) {
-        appendLine(" " + h.toString());
-      }
-
+       headers = httpget.getResponseHeaders();
+       for(DAPHeader h : headers) {
+          appendLine(" " + h.toString());
+        }
       // content
       String contents = httpget.getContentString();
       if (contents != null) {
@@ -239,21 +225,14 @@ public class URLDumpPane extends TextHistoryPane {
       ByteArrayOutputStream bos = new ByteArrayOutputStream(5000);
       e.printStackTrace(new PrintStream(bos));
       appendLine(bos.toString());
-
-    } finally {
-      if (entity != null) try {
-        entity.consumeContent();
-
-      } catch (IOException e) {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream(5000);
-        e.printStackTrace(new PrintStream(bos));
-        appendLine(bos.toString());
-      }
+      } finally {
+        if (httpget != null) httpget.close();
+        if (httpclient != null) httpclient.close();
     }
   }
 
-  private void showAtribute(String key, HttpContext localContext) {
-    Object value = localContext.getAttribute(key);
+  private void showAtribute(String key, DAPMethod method) {
+    Object value = null; //localContext.getAttribute(key);
     if (null != value)
       appendLine(" " + key + ": " + value);
   }
@@ -379,10 +358,10 @@ public class URLDumpPane extends TextHistoryPane {
     }
   } */
 
-  private void printHeaders(String title, Header[] heads) {
+  private void printHeaders(String title, DAPHeader[] heads) {
     appendLine(title);
     for (int i = 0; i < heads.length; i++) {
-      Header head = heads[i];
+      DAPHeader head = heads[i];
       append("  " + head.toString());
     }
   }

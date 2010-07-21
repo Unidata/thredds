@@ -35,7 +35,7 @@ package ucar.nc2.stream;
 import opendap.dap.DAPHeader;
 import opendap.dap.DAPMethod;
 import opendap.dap.DAPSession;
-import org.apache.http.Header;
+import org.apache.commons.httpclient.Header;
 
 import ucar.ma2.Array;
 import ucar.ma2.Section;

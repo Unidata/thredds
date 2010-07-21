@@ -33,7 +33,7 @@
  */
 package ucar.nc2.util;
 
-import org.apache.http.HttpException;
+import org.apache.commons.httpclient.HttpException;
 import ucar.nc2.dataset.VariableEnhanced;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.*;

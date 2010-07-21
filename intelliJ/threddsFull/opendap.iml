@@ -60,31 +60,7 @@
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../../Java-OpeNDAP/lib/httpclient-4.1.jar!/" />
-          <root url="jar://$MODULE_DIR$/../../../Java-OpeNDAP/lib/httpcore-4.1.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES>
-          <root url="jar://$MODULE_DIR$/../../../Java-OpeNDAP/lib/httpcore-4.1.jar!/" />
-          <root url="file://$MODULE_DIR$/../../../../httpcomponents-core-4.1-beta1/src" />
-          <root url="jar://$MODULE_DIR$/../../../Java-OpeNDAP/lib/httpclient-4.1.jar!/" />
-          <root url="file://$MODULE_DIR$/../../../../httpcomponents-client-4.1-alpha2/httpclient/src/main/java" />
-        </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" exported="">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../../Java-OPeNDAP/lib/httpclient-4.0.1.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" exported="">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../../Java-OPeNDAP/lib/httpcore-4.0.1.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../lib/external/commons-httpclient-3.1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

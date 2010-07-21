@@ -35,7 +35,6 @@ package ucar.nc2.dataset;
 import opendap.dap.DAPHeader;
 import opendap.dap.DAPSession;
 import opendap.dap.DAPMethod;
-import org.apache.http.Header;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;

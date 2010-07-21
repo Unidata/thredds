@@ -45,12 +45,10 @@ import opendap.dap.DAPHeader;
 import opendap.dap.DAPMethod;
 import opendap.dap.DAPSession;
 import opendap.dap.DAPException;
-import org.apache.http.HttpHost;
-import org.apache.http.Header;
-import org.apache.http.client.CredentialsProvider;
-import org.apache.http.client.params.AllClientPNames;
-import org.apache.http.client.params.CookiePolicy;
-import org.apache.http.entity.StringEntity;
+import org.apache.commons.httpclient.HttpHost;
+import  org.apache.commons.httpclient.auth.CredentialsProvider;
+import org.apache.commons.httpclient.cookie.CookiePolicy;
+import org.apache.commons.httpclient.params.HttpClientParams;
 import ucar.nc2.util.IO;
 
 
@@ -145,9 +143,9 @@ public class HttpClientManager {
 
   static void initMethod(DAPMethod method)
   {
-       method.setParameter(AllClientPNames.SO_TIMEOUT, (Object)timeout);
-       method.setParameter(AllClientPNames.ALLOW_CIRCULAR_REDIRECTS, (Object) Boolean.TRUE);
-       method.setParameter(AllClientPNames.COOKIE_POLICY, (Object)CookiePolicy.RFC_2109);
+       method.setParameter(HttpClientParams.SO_TIMEOUT, (Object)timeout);
+       method.setParameter(HttpClientParams.ALLOW_CIRCULAR_REDIRECTS, (Object) Boolean.TRUE);
+       method.setParameter(HttpClientParams.COOKIE_POLICY, (Object) CookiePolicy.RFC_2109);
   }
 
   /**
@@ -165,9 +163,9 @@ public class HttpClientManager {
       client = new DAPSession();
         method = client.newMethod("get",urlString);
         initMethod(method);
-      method.setMethodHeader("Accept-Encoding", "gzip,deflate");
+      method.setRequestHeader("Accept-Encoding", "gzip,deflate");
 
-      method.setContent(new StringEntity(content));
+      method.setContentString(content);
       int resultCode = method.execute();
 
       if (resultCode == 302) {
@@ -196,7 +194,7 @@ public class HttpClientManager {
     try {
       client = new DAPSession();
         method = client.newMethod("get",urlString);
-      method.setMethodHeader("Accept-Encoding", "gzip,deflate");
+      method.setRequestHeader("Accept-Encoding", "gzip,deflate");
       int status = method.execute();
       if (status != 200) {
         throw new DAPException("failed status = " + status);
@@ -242,7 +240,7 @@ public class HttpClientManager {
       client = new DAPSession();
         method = client.newMethod("get",urlString);
 
-      method.setMethodHeader("Accept-Encoding", "gzip,deflate");
+      method.setRequestHeader("Accept-Encoding", "gzip,deflate");
 
       int status = method.execute();
 
@@ -288,8 +286,8 @@ public class HttpClientManager {
       client = new DAPSession();
         method = client.newMethod("get",urlString);
 
-      method.setMethodHeader("Accept-Encoding", "gzip,deflate");
-      method.setMethodHeader("Range", "bytes=" + start + "-" + end);
+      method.setRequestHeader("Accept-Encoding", "gzip,deflate");
+      method.setRequestHeader("Range", "bytes=" + start + "-" + end);
       int status = method.execute();
       if ((status != 200) && (status != 206)) {
         throw new DAPException("failed status = " + status);

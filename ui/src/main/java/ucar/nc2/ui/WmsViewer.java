@@ -36,7 +36,7 @@ package ucar.nc2.ui;
 import opendap.dap.DAPHeader;
 import opendap.dap.DAPSession;
 import opendap.dap.DAPMethod;
-import org.apache.http.Header;
+import org.apache.commons.httpclient.Header;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
 import ucar.nc2.util.IO;

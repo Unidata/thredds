@@ -25,12 +25,13 @@
 
 package ucar.nc2.util.net;
 
-import org.apache.http.HttpException;
-import org.apache.http.client.params.AllClientPNames;
-import org.apache.http.conn.ConnectTimeoutException;
-import org.apache.http.conn.scheme.SocketFactory;
-import org.apache.http.conn.ssl.SSLSocketFactory;
-import org.apache.http.params.HttpParams;
+
+import opendap.dap.DAPException;
+import org.apache.commons.httpclient.HttpException;
+import org.apache.commons.httpclient.params.HttpConnectionParams;
+import org.apache.commons.httpclient.params.HttpMethodParams;
+import org.apache.commons.httpclient.params.HttpParams;
+import org.apache.commons.httpclient.protocol.SSLProtocolSocketFactory;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -85,7 +86,8 @@ import javax.net.ssl.TrustManager;
  *         </p>
  */
 
-public class EasySSLProtocolSocketFactory extends SSLSocketFactory {
+public class EasySSLProtocolSocketFactory extends SSLProtocolSocketFactory
+{
 
   /**
    * Log object for this class.
@@ -99,7 +101,7 @@ public class EasySSLProtocolSocketFactory extends SSLSocketFactory {
    * Constructor for EasySSLProtocolSocketFactory.
    */
   public EasySSLProtocolSocketFactory() throws IOException {
-          super(createEasySSLContext());
+          super();
 
   }
 
@@ -133,7 +135,8 @@ public class EasySSLProtocolSocketFactory extends SSLSocketFactory {
           int port,
           InetAddress clientHost,
           int clientPort)
-          throws IOException, HttpException {
+          throws IOException, HttpException
+  {
 
     return getSSLContext().getSocketFactory().createSocket(
             host,
@@ -149,7 +152,7 @@ public class EasySSLProtocolSocketFactory extends SSLSocketFactory {
    * To circumvent the limitations of older JREs that do not support connect timeout a
    * controller thread is executed. The controller thread attempts to create a new socket
    * within the given limit of time. If socket constructor does not return until the
-   * timeout expires, the controller terminates and throws an {@link ConnectTimeoutException}
+   * timeout expires, the controller terminates and throws an { ConnectTimeoutException}
    * </p>
    *
    * @param host         the host name/IP
@@ -168,11 +171,12 @@ public class EasySSLProtocolSocketFactory extends SSLSocketFactory {
           final InetAddress localAddress,
           final int localPort,
           final HttpParams params
-  ) throws IOException, HttpException {
+  ) throws IOException, HttpException
+  {
     if (params == null) {
       throw new IllegalArgumentException("Parameters may not be null");
     }
-    int timeout = params.getIntParameter(AllClientPNames.CONNECTION_TIMEOUT,25);
+    int timeout = params.getIntParameter(HttpConnectionParams.CONNECTION_TIMEOUT,25);
     return createSocket(host, port, localAddress, localPort);
   }
 
