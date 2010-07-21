@@ -1,6 +1,7 @@
 Grib Jar Version Information
-8.27 Wednesday July 15, 2010
-Grib2 local parameters are now working, the table needs populated.
+8.27 Wednesday July 21, 2010
+Grib2 local parameters are now working, the table needs populated. Only center 8 local
+parameters have been added. 
 
 8.26 Monday July 12, 2010
 Refactored Grib parameters with intervals, also added parameters that are interval and
