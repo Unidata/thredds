@@ -1300,6 +1300,9 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
         throw new InvalidRangeException("Request Bounding box does not intersect Grid");
     }
 
+    CoordinateAxis xaxis = getXHorizAxis();
+    CoordinateAxis yaxis = getYHorizAxis();
+
     if (isLatLon()) {
 
       LatLonPointImpl llpt = rect.getLowerLeftPoint();
@@ -1311,6 +1314,11 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
       miny = Math.min(llpt.getLatitude(), lrpt.getLatitude());
       maxx = getMinOrMaxLon(urpt.getLongitude(), lrpt.getLongitude(), false);
       maxy = Math.min(ulpt.getLatitude(), urpt.getLatitude());
+
+      // normalize to [minLon,minLon+360]
+      double minLon = xaxis.getMinValue();
+      minx = LatLonPointImpl.lonNormalFrom( minx, minLon);
+      maxx = LatLonPointImpl.lonNormalFrom( maxx, minLon);
 
     } else {
       ProjectionRect prect = getProjection().latLonToProjBB(rect); // allow VerticalPerspectiveView to override
@@ -1333,8 +1341,6 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
       maxy = Math.max(ul.getY(), ur.getY()); */
     }
 
-    CoordinateAxis xaxis = getXHorizAxis();
-    CoordinateAxis yaxis = getYHorizAxis();
 
     if ((xaxis instanceof CoordinateAxis1D) && (yaxis instanceof CoordinateAxis1D)) {
       CoordinateAxis1D xaxis1 = (CoordinateAxis1D) xaxis;

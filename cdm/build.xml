@@ -782,7 +782,8 @@
 
   </target>
 
-  <target name="makeAll" depends="makeCore, makeMain, makeBufrTables, makeMainComplete, makeUI, makeAllzip, makeToolsUI" description="create netcdfAll zip file"/>
+  <target name="makeAll" depends="makeCore, makeMain, makeBufrTables, makeMainComplete, makeUI, makeAllzip, makeToolsUI"
+          description="create all files"/>
 
   <property name="jarResourcesOptional" value="resourcesOptional-${release.version}.jar"/>
   <target name="makeResourcesOptional" description="make resourcesOptional.jar">
