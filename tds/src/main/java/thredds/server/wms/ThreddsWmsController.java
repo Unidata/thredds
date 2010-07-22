@@ -62,6 +62,7 @@ import uk.ac.rdg.resc.ncwms.wms.Layer;
 public final class ThreddsWmsController extends AbstractWmsController
 {
   private static final Logger log = LoggerFactory.getLogger( ThreddsWmsController.class );
+  private final Logger logServerStartup = org.slf4j.LoggerFactory.getLogger( "serverStartup" );
 
   private WmsDetailedConfig wmsConfig;
 
@@ -96,10 +97,12 @@ public final class ThreddsWmsController extends AbstractWmsController
       File wmsConfigFile = tdsServerConfig.getTdsContext().getConfigFileSource().getFile("wmsConfig.xml");
       if (wmsConfigFile == null || !wmsConfigFile.exists() || !wmsConfigFile.isFile())
       {
-          throw new WmsConfigException("Could not find wmsConfig.xml");
+        ((ThreddsServerConfig) this.serverConfig).getTdsContext().getWmsConfig().setAllow( false );
+        logServerStartup.error( "init(): Disabling WMS: Could not find wmsConfig.xml. [Default version available at ${TOMCAT_HOME}/webapps/thredds/WEB-INF/altContent/startup/wmsConfig.xml." );
+        return;
       }
       this.wmsConfig = WmsDetailedConfig.fromFile(wmsConfigFile);
-      log.info("Loaded WMS configuration from wmsConfig.xml");
+      logServerStartup.info("init(): Loaded WMS configuration from wmsConfig.xml");
   }
 
   @Override

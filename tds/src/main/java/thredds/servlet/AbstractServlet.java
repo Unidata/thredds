@@ -43,7 +43,7 @@ import javax.servlet.http.*;
  * @author caron
  */
 public abstract class AbstractServlet extends HttpServlet {
-  static protected org.slf4j.Logger logServerStartup = org.slf4j.LoggerFactory.getLogger("serverStartup");
+  protected org.slf4j.Logger logServerStartup = org.slf4j.LoggerFactory.getLogger("serverStartup");
   protected org.slf4j.Logger log;
   protected String contentPath;
 
