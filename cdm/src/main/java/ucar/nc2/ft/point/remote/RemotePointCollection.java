@@ -33,9 +33,11 @@
 package ucar.nc2.ft.point.remote;
 
 import ucar.nc2.ft.point.PointCollectionImpl;
+import ucar.nc2.ft.point.PointIteratorAbstract;
 import ucar.nc2.ft.point.PointIteratorEmpty;
 import ucar.nc2.ft.PointFeatureIterator;
 import ucar.nc2.ft.PointFeatureCollection;
+import ucar.nc2.ft.PointFeature;
 import ucar.nc2.stream.NcStream;
 import ucar.nc2.stream.CdmRemote;
 import ucar.nc2.stream.NcStreamProto;
@@ -45,6 +47,7 @@ import ucar.unidata.geoloc.LatLonRect;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.apache.commons.httpclient.HttpMethod;
 
 /**
  * PointCollection over cdmRemote protocol
@@ -67,10 +70,12 @@ class RemotePointCollection extends PointCollectionImpl implements QueryMaker {
   }
 
   public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
+    HttpMethod method = null;
     String errMessage = null;
-    CdmRemote cdm = new CdmRemote();
+
     try {
-      InputStream in = cdm.sendQuery(uri, queryMaker.makeQuery());
+      method = CdmRemote.sendQuery(uri, queryMaker.makeQuery());
+      InputStream in = method.getResponseBodyAsStream();
 
       PointStream.MessageType mtype = PointStream.readMagic(in);
       if (mtype == PointStream.MessageType.PointFeatureCollection) {
@@ -78,7 +83,7 @@ class RemotePointCollection extends PointCollectionImpl implements QueryMaker {
         byte[] b = new byte[len];
         NcStream.readFully(in, b);
         PointStreamProto.PointFeatureCollection pfc = PointStreamProto.PointFeatureCollection.parseFrom(b);
-        PointFeatureIterator iter = new RemotePointFeatureIterator(in, new PointStream.ProtobufPointFeatureMaker(pfc));
+        PointFeatureIterator iter = new RemotePointFeatureIterator(method, in, new PointStream.ProtobufPointFeatureMaker(pfc));
         iter.setCalculateBounds(this);
         return iter;
 
@@ -97,10 +102,8 @@ class RemotePointCollection extends PointCollectionImpl implements QueryMaker {
       }
 
     } catch (Throwable t) {
+      if (method != null) method.releaseConnection();
       throw new RuntimeException(t);
-
-    } finally {
-      if (cdm != null) cdm.close();
     }
 
     if (errMessage != null)

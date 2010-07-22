@@ -47,7 +47,7 @@ import ucar.nc2.Variable;
 public class RotatedLatLon extends AbstractCoordTransBuilder {
 
   public String getTransformName() {
-    return "rotated_lat_lon";
+    return "rotated_latlon_grib";
   }
 
   public TransformType getTransformType() {

@@ -60,28 +60,28 @@ public class CoordTransBuilder {
   // search in the order added
   static {
     registerTransform("albers_conical_equal_area", AlbersEqualArea.class);
+    registerTransform("flat_earth", FlatEarth.class);
     registerTransform("lambert_azimuthal_equal_area", LambertAzimuthal.class);
     registerTransform("lambert_conformal_conic", LambertConformalConic.class);
     registerTransformMaybe("mcidas_area", "ucar.nc2.iosp.mcidas.McIDASAreaTransformBuilder"); // optional - needs visad.jar
     registerTransform("mercator", Mercator.class);
+    registerTransform("MSGnavigation", MSGnavigation.class);
     registerTransform("orthographic", Orthographic.class);
     registerTransform("polar_stereographic", PolarStereographic.class);
     registerTransform("rotated_latitude_longitude", RotatedPole.class);
-    registerTransform("rotated_lat_lon", RotatedLatLon.class);
+    registerTransform("rotated_latlon_grib", RotatedLatLon.class);
     registerTransform("stereographic", Stereographic.class);
     registerTransform("transverse_mercator", TransverseMercator.class);
     registerTransform("vertical_perspective", VerticalPerspective.class);
     registerTransform("UTM", UTM.class);
-    registerTransform("MSGnavigation", MSGnavigation.class);
 
-    registerTransform("atmosphere_sigma_coordinate", VAtmSigma.class);
-    registerTransform("atmosphere_hybrid_sigma_pressure_coordinate", VAtmHybridSigmaPressure.class);
     registerTransform("atmosphere_hybrid_height_coordinate", VAtmHybridHeight.class);
+    registerTransform("atmosphere_hybrid_sigma_pressure_coordinate", VAtmHybridSigmaPressure.class);
+    registerTransform("atmosphere_sigma_coordinate", VAtmSigma.class);
     registerTransform("ocean_s_coordinate", VOceanS.class);
     registerTransform("ocean_sigma_coordinate", VOceanSigma.class);
     registerTransform("explicit_field", VExplicitField.class);
     registerTransform("existing3DField", VExplicitField.class); // deprecate
-    registerTransform("flat_earth", FlatEarth.class);
 
     //-sachin 03/25/09
     registerTransform("ocean_s_coordinate_g1", VOceanSG1.class);

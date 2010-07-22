@@ -98,7 +98,6 @@ public class PolarStereographic extends AbstractCoordTransBuilder {
 
     ucar.unidata.geoloc.ProjectionImpl proj;
 
-
     // check for ellipsoidal earth
     if (!Double.isNaN(semi_major_axis) && (!Double.isNaN(semi_minor_axis) || inverse_flattening != 0.0)) {
       Earth earth = new Earth(semi_major_axis, semi_minor_axis, inverse_flattening);

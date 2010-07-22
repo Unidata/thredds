@@ -25,18 +25,17 @@
 
 package ucar.nc2.util.net;
 
-
-import opendap.dap.DAPException;
-import org.apache.commons.httpclient.HttpException;
-import org.apache.commons.httpclient.params.HttpConnectionParams;
-import org.apache.commons.httpclient.params.HttpMethodParams;
-import org.apache.commons.httpclient.params.HttpParams;
-import org.apache.commons.httpclient.protocol.SSLProtocolSocketFactory;
-
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+
+import org.apache.commons.httpclient.ConnectTimeoutException;
+import org.apache.commons.httpclient.HttpClientError;
+import org.apache.commons.httpclient.params.HttpConnectionParams;
+import org.apache.commons.httpclient.protocol.ControllerThreadSocketFactory;
+import org.apache.commons.httpclient.protocol.SecureProtocolSocketFactory;
+import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
@@ -58,7 +57,7 @@ import javax.net.ssl.TrustManager;
  * <pre>
  *     Protocol easyhttps = new Protocol("https", new EasySSLProtocolSocketFactory(), 443);
  * <p/>
- *     AbstractHttpClient client = new DefaultHttpClient();
+ *     HttpClient client = new HttpClient();
  *     client.getHostConfiguration().setHost("localhost", 443, easyhttps);
  *     // use relative url only
  *     GetMethod httpget = new GetMethod("/");
@@ -71,7 +70,7 @@ import javax.net.ssl.TrustManager;
  *     Protocol easyhttps = new Protocol("https", new EasySSLProtocolSocketFactory(), 443);
  *     Protocol.registerProtocol("https", easyhttps);
  * <p/>
- *     AbstractHttpClient client = new DefaultHttpClient();
+ *     HttpClient client = new HttpClient();
  *     GetMethod httpget = new GetMethod("https://localhost/");
  *     client.executeMethod(httpget);
  *     </pre>
@@ -80,14 +79,13 @@ import javax.net.ssl.TrustManager;
  * @author <a href="mailto:oleg -at- ural.ru">Oleg Kalnichevski</a>
  *         <p/>
  *         <p/>
- *         DISCLAIMER: AbstractHttpClient developers DO NOT actively support this component.
+ *         DISCLAIMER: HttpClient developers DO NOT actively support this component.
  *         The component is provided as a reference material, which may be inappropriate
  *         for use without additional customization.
  *         </p>
  */
 
-public class EasySSLProtocolSocketFactory extends SSLProtocolSocketFactory
-{
+public class EasySSLProtocolSocketFactory implements ProtocolSocketFactory {
 
   /**
    * Log object for this class.
@@ -100,12 +98,11 @@ public class EasySSLProtocolSocketFactory extends SSLProtocolSocketFactory
   /**
    * Constructor for EasySSLProtocolSocketFactory.
    */
-  public EasySSLProtocolSocketFactory() throws IOException {
-          super();
-
+  public EasySSLProtocolSocketFactory() {
+    super();
   }
 
-  private static SSLContext createEasySSLContext() throws IOException {
+  private static SSLContext createEasySSLContext() {
     try {
       SSLContext context = SSLContext.getInstance("SSL");
       context.init(
@@ -115,13 +112,11 @@ public class EasySSLProtocolSocketFactory extends SSLProtocolSocketFactory
       return context;
     } catch (Exception e) {
       logger.error("createEasySSLContext", e);
-      throw new IOException(e.toString());
+      throw new HttpClientError(e.toString());
     }
   }
 
-  public boolean isSecure(Socket s) {return true;};
-
-  private SSLContext getSSLContext() throws IOException {
+  private SSLContext getSSLContext() {
     if (this.sslcontext == null) {
       this.sslcontext = createEasySSLContext();
     }
@@ -129,14 +124,14 @@ public class EasySSLProtocolSocketFactory extends SSLProtocolSocketFactory
   }
 
   /**
+   * @see SecureProtocolSocketFactory#createSocket(java.lang.String,int,java.net.InetAddress,int)
    */
   public Socket createSocket(
           String host,
           int port,
           InetAddress clientHost,
           int clientPort)
-          throws IOException, HttpException
-  {
+          throws IOException, UnknownHostException {
 
     return getSSLContext().getSocketFactory().createSocket(
             host,
@@ -152,38 +147,44 @@ public class EasySSLProtocolSocketFactory extends SSLProtocolSocketFactory
    * To circumvent the limitations of older JREs that do not support connect timeout a
    * controller thread is executed. The controller thread attempts to create a new socket
    * within the given limit of time. If socket constructor does not return until the
-   * timeout expires, the controller terminates and throws an { ConnectTimeoutException}
+   * timeout expires, the controller terminates and throws an {@link ConnectTimeoutException}
    * </p>
    *
    * @param host         the host name/IP
    * @param port         the port on the host
    * @param localAddress the local host name/IP to bind the socket to
    * @param localPort    the port on the local machine
-   * @param params       {@link HttpParams HttpSession connection parameters}
+   * @param params       {@link HttpConnectionParams Http connection parameters}
    * @return Socket a new socket
    * @throws IOException          if an I/O error occurs while creating the socket
    * @throws UnknownHostException if the IP address of the host cannot be
    *                              determined
    */
-  private Socket createSocket(
+  public Socket createSocket(
           final String host,
           final int port,
           final InetAddress localAddress,
           final int localPort,
-          final HttpParams params
-  ) throws IOException, HttpException
-  {
+          final HttpConnectionParams params
+  ) throws IOException, UnknownHostException, ConnectTimeoutException {
     if (params == null) {
       throw new IllegalArgumentException("Parameters may not be null");
     }
-    int timeout = params.getIntParameter(HttpConnectionParams.CONNECTION_TIMEOUT,25);
-    return createSocket(host, port, localAddress, localPort);
+    int timeout = params.getConnectionTimeout();
+    if (timeout == 0) {
+      return createSocket(host, port, localAddress, localPort);
+    } else {
+      // To be eventually deprecated when migrated to Java 1.4 or above
+      return ControllerThreadSocketFactory.createSocket(
+              this, host, port, localAddress, localPort, timeout);
+    }
   }
 
   /**
+   * @see SecureProtocolSocketFactory#createSocket(java.lang.String,int)
    */
   public Socket createSocket(String host, int port)
-          throws IOException {
+          throws IOException, UnknownHostException {
     return getSSLContext().getSocketFactory().createSocket(
             host,
             port
@@ -191,13 +192,14 @@ public class EasySSLProtocolSocketFactory extends SSLProtocolSocketFactory
   }
 
   /**
+   * @see SecureProtocolSocketFactory#createSocket(java.net.Socket,java.lang.String,int,boolean)
    */
-  public Socket getSocket(
+  public Socket createSocket(
           Socket socket,
           String host,
           int port,
           boolean autoClose)
-          throws IOException {
+          throws IOException, UnknownHostException {
     return getSSLContext().getSocketFactory().createSocket(
             socket,
             host,
@@ -205,9 +207,5 @@ public class EasySSLProtocolSocketFactory extends SSLProtocolSocketFactory
             autoClose
     );
   }
-    public Socket getSocket()
-          throws IOException {
-        return getSSLContext().getSocketFactory().createSocket();
-    }
 
 }

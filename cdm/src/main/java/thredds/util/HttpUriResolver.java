@@ -32,10 +32,11 @@
  */
 package thredds.util;
 
-import opendap.dap.DAPHeader;
-import opendap.dap.DAPMethod;
-import opendap.dap.DAPSession;
-
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpMethod;
+import org.apache.commons.httpclient.Header;
+import org.apache.commons.httpclient.params.HttpClientParams;
+import org.apache.commons.httpclient.methods.GetMethod;
 
 import java.io.*;
 import java.net.URI;
@@ -62,8 +63,7 @@ public class HttpUriResolver
   private boolean allowContentEncoding;
   private boolean followRedirects;
 
-  //private HttpRequestBase method = null;
-  private DAPMethod response = null;
+  private HttpMethod method = null;
   private Map<String,String> respHeaders;
 
   HttpUriResolver( URI uri, long connectionTimeout, int socketTimeout,
@@ -90,29 +90,36 @@ public class HttpUriResolver
   public void makeRequest()
           throws IOException
   {
-    if ( response != null )
+    if ( method != null )
       throw new IllegalStateException( "Request already made.");
 
-    this.response = getHttpResponse( uri );
+    this.method = getHttpResponse( uri );
   }
 
   public int getResponseStatusCode()
   {
-    if ( response == null )
+    if ( method == null )
       throw new IllegalStateException( "Request has not been made." );
-    return this.response.getStatusCode();
+    return this.method.getStatusCode();
+  }
+
+  public String getResponseStatusText()
+  {
+    if ( method == null )
+      throw new IllegalStateException( "Request has not been made." );
+    return this.method.getStatusText();
   }
 
   public Map<String,String> getResponseHeaders()
   {
-    if ( response == null )
+    if ( method == null )
       throw new IllegalStateException( "Request has not been made." );
 
     if ( this.respHeaders == null )
     {
       this.respHeaders = new HashMap<String,String>();
-      DAPHeader[] headers = this.response.getResponseHeaders();
-      for ( DAPHeader h : headers )
+      Header[] headers = this.method.getResponseHeaders();
+      for ( Header h : headers )
         this.respHeaders.put( h.getName(), h.getValue() );
     }
 
@@ -121,21 +128,21 @@ public class HttpUriResolver
 
   public String getResponseHeaderValue( String name )
   {
-    if ( response == null )
+    if ( method == null )
       throw new IllegalStateException( "Request has not been made." );
 
-    DAPHeader responseHeader = this.response.getResponseHeader( name );
+    Header responseHeader = this.method.getResponseHeader( name );
     return responseHeader == null ? null : responseHeader.getValue();
   }
 
   public InputStream getResponseBodyAsInputStream()
           throws IOException
   {
-    if ( response == null )
+    if ( method == null )
       throw new IllegalStateException( "Request has not been made." );
 
-    InputStream is = response.getContentStream();
-    DAPHeader contentEncodingHeader = response.getResponseHeader( "Content-Encoding" );
+    InputStream is = method.getResponseBodyAsStream();
+    Header contentEncodingHeader = method.getResponseHeader( "Content-Encoding" );
     if ( contentEncodingHeader != null )
     {
       String contentEncoding = contentEncodingHeader.getValue();
@@ -150,17 +157,18 @@ public class HttpUriResolver
     return is;
   }
 
-  private DAPMethod getHttpResponse( URI uri )
+  private HttpMethod getHttpResponse( URI uri )
           throws IOException
   {
-    DAPSession client = new DAPSession();
-      DAPMethod method = client.newMethod("get",uri.toString() );
-    method.setParameter(DAPSession.CONNECTION_TIMEOUT, this.connectionTimeout );
-    method.setParameter(DAPSession.SO_TIMEOUT, this.socketTimeout );
-    //method.setFollowRedirects( this.followRedirects );
-    method.setRequestHeader( "Accept-Encoding", this.contentEncoding );
+    HttpClient client = new HttpClient();
+    HttpClientParams params = client.getParams();
+    params.setConnectionManagerTimeout( this.connectionTimeout );
+    params.setSoTimeout( this.socketTimeout );
+    HttpMethod method = new GetMethod( uri.toString() );
+    method.setFollowRedirects( this.followRedirects );
+    method.addRequestHeader( "Accept-Encoding", this.contentEncoding );
 
-    method.execute();
+    client.executeMethod( method );
     int statusCode = method.getStatusCode();
     if ( statusCode == 200 || statusCode == 201 )
     {

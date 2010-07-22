@@ -836,7 +836,7 @@ public class GridHorizCoordSys {
     addCoordSystemVariable(ncfile, "latLonCoordSys", "time y x");
 
     // splat, splon, spangle
-    attributes.add(new Attribute(GridCF.GRID_MAPPING_NAME, "rotated_lat_lon"));
+    attributes.add(new Attribute(GridCF.GRID_MAPPING_NAME, "rotated_latlon_grib"));
     attributes.add(new Attribute("grid_south_pole_latitude", new Double(splat)));
     attributes.add(new Attribute("grid_south_pole_longitude", new Double(splon)));
     attributes.add(new Attribute("grid_south_pole_angle", new Double(spangle)));

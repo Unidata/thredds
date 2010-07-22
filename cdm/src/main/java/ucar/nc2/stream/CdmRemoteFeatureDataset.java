@@ -50,6 +50,7 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.output.XMLOutputter;
 import org.jdom.input.SAXBuilder;
+import org.apache.commons.httpclient.HttpMethod;
 
 /**
  * Factory for CdmRemoteFeatureDataset. GRID, POINT, STATION so far
@@ -61,7 +62,7 @@ public class CdmRemoteFeatureDataset {
   static private boolean debug = false;
   static private boolean showXML = false;
 
-  static public FeatureDataset factory(FeatureType wantFeatureType, String endpoint) throws  IOException {
+  static public FeatureDataset factory(FeatureType wantFeatureType, String endpoint) throws IOException {
     if (endpoint.startsWith(CdmRemote.SCHEME))
       endpoint = endpoint.substring(CdmRemote.SCHEME.length());
 
@@ -91,10 +92,10 @@ public class CdmRemoteFeatureDataset {
 
   static private org.jdom.Document getCapabilities(String endpoint) throws IOException {
     org.jdom.Document doc;
-    CdmRemote cdm = null;
+    HttpMethod method = null;
     try {
-      cdm = new CdmRemote();
-      InputStream in = cdm.sendQuery(endpoint, "req=capabilities");
+      method = CdmRemote.sendQuery(endpoint, "req=capabilities");
+      InputStream in = method.getResponseBodyAsStream();
       SAXBuilder builder = new SAXBuilder(false);
       doc = builder.build(in);
 
@@ -102,7 +103,7 @@ public class CdmRemoteFeatureDataset {
       throw new IOException(t);
 
     } finally {
-      if (cdm != null) cdm.close();
+      if (method != null) method.releaseConnection();
     }
 
     if (showXML) {

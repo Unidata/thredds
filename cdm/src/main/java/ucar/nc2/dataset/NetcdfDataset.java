@@ -32,9 +32,6 @@
  */
 package ucar.nc2.dataset;
 
-import opendap.dap.DAPHeader;
-import opendap.dap.DAPSession;
-import opendap.dap.DAPMethod;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
@@ -56,6 +53,11 @@ import ucar.unidata.util.StringUtil;
 import java.io.*;
 import java.util.*;
 
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
+import org.apache.commons.httpclient.HttpMethod;
+import org.apache.commons.httpclient.Header;
+import org.apache.commons.httpclient.methods.HeadMethod;
 import thredds.catalog.ServiceType;
 
 /**
@@ -332,12 +334,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   }
 
   // no state, so a singleton is ok
-
   static private class MyNetcdfFileFactory implements ucar.nc2.util.cache.FileFactory {
     public NetcdfFile open(String location, int buffer_size, CancelTask cancelTask, Object iospMessage) throws IOException {
-
       return openFile(location, buffer_size, cancelTask, iospMessage);
-
     }
   }
 
@@ -414,8 +413,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * @return NetcdfDataset object
    * @throws java.io.IOException on read error
    */
-  static public NetcdfDataset openDataset(String location, boolean enhance, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject)
-          throws IOException {
+  static public NetcdfDataset openDataset(String location, boolean enhance, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
     return openDataset(location, enhance ? defaultEnhanceMode : null, buffer_size, cancelTask, spiObject);
   }
 
@@ -456,16 +454,15 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    *
    * Possible remove all direct access to Variable.enhance
    */
-
   static private CoordSysBuilderIF enhance(NetcdfDataset ds, Set<Enhance> mode, CancelTask cancelTask) throws IOException {
     //if (ds.isEnhanceProcessed) return;
     if (mode == null) return null;
 
-    // CoordSysBuilder may enhance dataset: add new variables, attributes, etc
+     // CoordSysBuilder may enhance dataset: add new variables, attributes, etc
     CoordSysBuilderIF builder = null;
     if (mode.contains(Enhance.CoordSystems) && !ds.enhanceMode.contains(Enhance.CoordSystems)) {
       builder = ucar.nc2.dataset.CoordSysBuilder.factory(ds, cancelTask);
-      builder.augmentDataset(ds, cancelTask);
+      builder.augmentDataset( ds, cancelTask);
       ds.convUsed = builder.getConventionUsed();
     }
 
@@ -480,7 +477,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
     // now find coord systems which may change some Variables to axes, etc
     if (builder != null) {
-      builder.buildCoordinateSystems(ds);
+       builder.buildCoordinateSystems(ds);
     }
 
     ds.finish(); // recalc the global lists
@@ -551,7 +548,6 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
     public NetcdfFile open(String location, int buffer_size, CancelTask cancelTask, Object iospMessage) throws IOException {
       return openDataset(location, enhanceMode, buffer_size, cancelTask, iospMessage);
-
     }
 
     public int hashCode() { // unique key, must be different than a plain NetcdfFile, deal with possible different enhancing
@@ -654,8 +650,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * @throws java.io.IOException on read error
    */
   static private NetcdfFile openOrAcquireFile(FileCache cache, FileFactory factory, Object hashKey,
-                                              String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject)
-          throws IOException {
+                                              String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
 
     if (location == null)
       throw new IOException("NetcdfDataset.openFile: location is null");
@@ -708,20 +703,19 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * Do a HEAD call on the URL. 
    * Look for the header "Content-Description" = "ncstream" or "dods".
    */
-
   static private ServiceType disambiguateHttp(String location) throws IOException {
+    initHttpClient();
 
     // have to do dods first
     ServiceType result = checkIfDods(location);
     if (result != null)
       return result;
 
-    DAPSession httpClient = null;
-      DAPMethod method = null;
+    HttpMethod method = null;
     try {
-      httpClient = new DAPSession();
-        method = httpClient.newMethod("get",location);
-      int statusCode = method.execute();
+      method = new HeadMethod(location);
+      method.setFollowRedirects(true);
+      int statusCode = httpClient.executeMethod(method);
       if (statusCode >= 300) {
         if (statusCode == 401)
           throw new IOException("Unauthorized to open dataset " + location);
@@ -729,7 +723,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
           throw new IOException(location + " is not a valid URL, return status=" + statusCode);
       }
 
-      DAPHeader h = method.getResponseHeader("Content-Description");
+      Header h = method.getResponseHeader("Content-Description");
       if ((h != null) && (h.getValue() != null)) {
         String v = h.getValue();
         if (v.equalsIgnoreCase("ncstream"))
@@ -739,31 +733,27 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
       return null;
 
     } finally {
-      if (method != null) method.close();
-        if (httpClient != null) httpClient.close();
-
+      if (method != null) method.releaseConnection();
     }
   }
 
   // not sure what other opendap servers do, so fall back on check for dds
   static private ServiceType checkIfDods(String location) throws IOException {
-    DAPSession httpClient = null;
-      DAPMethod method = null;
+    HttpMethod method = null;
     try {
-      httpClient = new DAPSession();
-        method = httpClient.newMethod("get",location+".dods");
-      int status = method.execute();
+      method = new HeadMethod(location + ".dds");
+      method.setFollowRedirects(true);
+      int status = httpClient.executeMethod(method);
       if (status == 200) {
-        DAPHeader h = method.getResponseHeader("Content-Description");
+        Header h = method.getResponseHeader("Content-Description");
         if ((h != null) && (h.getValue() != null)) {
           String v = h.getValue();
           if (v.equalsIgnoreCase("dods-dds") || v.equalsIgnoreCase("dods_dds"))
             return ServiceType.OPENDAP;
           else
-            throw new IOException("OPeNDAP Server Error= " + method.getContentString());
+            throw new IOException("OPeNDAP Server Error= " + method.getResponseBodyAsString());
         }
       }
-
       if (status == 401)
         throw new IOException("Unauthorized to open dataset " + location);
 
@@ -771,28 +761,27 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
       return null;
 
     } finally {
-      if (httpClient != null) httpClient.close();
+      if (method != null) method.releaseConnection();
     }
   }
 
   /**
-   * Set the AbstractHttpClient object - so that a single, shared instance is used within the application.
-   * <p/>
-   * xx@param client the AbstractHttpClient object
+   * Set the HttpClient object - so that a single, shared instance is used within the application.
+   *
+   * @param client the HttpClient object
    */
-  /*
-  static public void setHttpClient(HttpSession client) {
+  static public void setHttpClient(HttpClient client) {
     httpClient = client;
-  } */
-
-  // private static  HttpSession httpClient = null;
-
-  /*
-  private  synchronized void initHttpClient() throws HttpSessionException {
-    if (httpClient != null) return;
-    httpClient = new HttpSession();
   }
-    */
+
+  private static HttpClient httpClient = null;
+
+  private static synchronized void initHttpClient() {
+    if (httpClient != null) return;
+    MultiThreadedHttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
+    httpClient = new HttpClient(connectionManager);
+  }
+
   static private NetcdfFile acquireDODS(FileCache cache, FileFactory factory, Object hashKey,
                                         String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
     if (cache == null) return new DODSNetcdfFile(location, cancelTask);
@@ -808,8 +797,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   }
 
   static private NetcdfFile acquireNcml(FileCache cache, FileFactory factory, Object hashKey,
-                                        String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject)
-          throws IOException {
+                                        String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
     if (cache == null) return NcMLReader.readNcML(location, cancelTask);
 
     if (factory == null) factory = new NcMLFactory();
@@ -825,10 +813,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   static private NetcdfFile acquireRemote(FileCache cache, FileFactory factory, Object hashKey,
                                           String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
     if (cache == null) return new CdmRemote(location);
+
     if (factory == null) factory = new RemoteFactory();
     return (NetcdfFile) cache.acquire(factory, hashKey, location, buffer_size, cancelTask, spiObject);
-
-
   }
 
   static private class RemoteFactory implements FileFactory {
@@ -1183,7 +1170,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
       g.addEnumeration(et);
 
     for (Dimension d : from.getDimensions())
-      g.addDimension(new Dimension(d.getName(), d));
+      g.addDimension( new Dimension(d.getName(), d));
 
     for (Attribute a : from.getAttributes())
       g.addAttribute(a);
@@ -1203,7 +1190,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     if (v instanceof Sequence) {
       newVar = new SequenceDS(g, (Sequence) v);
     } else if (v instanceof Structure) {
-      newVar = new StructureDS(g, (Structure) v);
+        newVar = new StructureDS(g, (Structure) v);
     } else {
       newVar = new VariableDS(g, v, false); // enhancement done later
     }
@@ -1271,7 +1258,6 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   }
 
   // sort by coord sys, then name
-
   private class VariableComparator implements java.util.Comparator {
     public int compare(Object o1, Object o2) {
       VariableEnhanced v1 = (VariableEnhanced) o1;
@@ -1399,8 +1385,8 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   /**
    * recalc enhancement info - use default enhance mode
    *
-   * @return the CoordSysBuilder used, for debugging. do not modify or retain a reference
    * @throws java.io.IOException on error
+   * @return the CoordSysBuilder used, for debugging. do not modify or retain a reference
    */
   public CoordSysBuilderIF enhance() throws IOException {
     return enhance(this, defaultEnhanceMode, null);
@@ -1576,7 +1562,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
   public void check(Formatter f) {
     for (Variable v : getVariables()) {
-      VariableDS vds = (VariableDS) v;
+      VariableDS vds =  (VariableDS) v;
       if (vds.getOriginalDataType() != vds.getDataType()) {
         f.format("Variable %s has type %s, org = %s%n", vds.getName(), vds.getOriginalDataType(), vds.getDataType());
       }

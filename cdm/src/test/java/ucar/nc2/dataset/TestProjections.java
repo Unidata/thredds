@@ -101,7 +101,7 @@ public class TestProjections extends TestCase {
 
   public void testProjectionsHeiko() throws IOException, InvalidRangeException {
     Projection p;
-    String dir = "C:/data/work/heiko/";
+    String dir = TestAll.testdataDir + testDir + "heiko/";
 
     p = test(dir+ "topo_stere_sphere.nc",
         "projection_stere",

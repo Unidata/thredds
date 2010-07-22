@@ -33,11 +33,9 @@
 
 package ucar.nc2.thredds.server;
 
-import opendap.dap.DAPException;
-import opendap.dap.DAPSession;
-import opendap.dap.DAPMethod;
 import ucar.nc2.util.IO;
 import ucar.nc2.util.URLnaming;
+import ucar.nc2.util.net.HttpClientManager;
 
 import java.io.BufferedReader;
 import java.io.*;
@@ -48,6 +46,10 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.*;
 
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpMethod;
+import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
+import org.apache.commons.httpclient.methods.GetMethod;
 
 /**
  * Read TDS access logs
@@ -60,7 +62,7 @@ public class ReadTdsLogs {
   private static AtomicInteger reqno = new AtomicInteger(0);
   private static Formatter out, out2;
 
-  private DAPSession httpClient;
+  private HttpClient httpClient;
 
   ///////////////////////////////////////////////////////
   // multithreading
@@ -76,28 +78,24 @@ public class ReadTdsLogs {
   AtomicLong total_sendRequest_time = new AtomicLong();
   AtomicLong total_expected_time = new AtomicLong();
 
-  String server = null;
+  final String server;
   boolean dump = false;
 
   ReadTdsLogs(String server) throws FileNotFoundException {
     this.server = server;
 
-    try {
-      httpClient = new DAPSession();
+    httpClient = HttpClientManager.init(null, "ReadTdsLogs");
+    MultiThreadedHttpConnectionManager cm = (MultiThreadedHttpConnectionManager) httpClient.getHttpConnectionManager();
+    cm.setMaxConnectionsPerHost(nthreads);
 
-      httpClient.setThreadCount(nthreads);
+    executor = Executors.newFixedThreadPool(nthreads); // number of threads
+    //completionQ = new ArrayBlockingQueue<Future<SendRequestTask>>(30); // bounded, threadsafe
+    completionService = new ExecutorCompletionService<SendRequestTask>(executor);
 
-      executor = Executors.newFixedThreadPool(nthreads); // number of threads
-      //completionQ = new ArrayBlockingQueue<Future<SendRequestTask>>(30); // bounded, threadsafe
-      completionService = new ExecutorCompletionService<SendRequestTask>(executor);
+    // out = new Formatter(new FileOutputStream("C:/TEMP/readTdsLogs.txt"));
 
-      // out = new Formatter(new FileOutputStream("C:/TEMP/readTdsLogs.txt"));
-
-      resultProcessingThread = new Thread(new ResultProcessor());
-      resultProcessingThread.start();
-    } catch (DAPException hie) {
-      throw new FileNotFoundException(hie.toString());
-    }
+    resultProcessingThread = new Thread(new ResultProcessor());
+    resultProcessingThread.start();
   }
 
   public class SendRequestTask implements Callable<SendRequestTask> {
@@ -139,19 +137,24 @@ public class ReadTdsLogs {
     }
 
     void send() throws IOException {
-      DAPMethod method = null;
+
+      HttpMethod method = null;
       try {
+        method = new GetMethod(server + URLnaming.escapeQuery(log.path));
+        // out2.format("send %s %n", method.getPath());
 
-        method = httpClient.newMethod("get",(server + URLnaming.escapeQuery(log.path)));
-        statusCode = method.execute();
+        method.setFollowRedirects(true);
+        statusCode = httpClient.executeMethod(method);
 
-        InputStream is = method.getContentStream();
+        InputStream is = method.getResponseBodyAsStream();
         if (is != null)
-          bytesRead = IO.copy2null(is, 10 * 1000); // read data and throw away
-      } catch (URISyntaxException use) {
-        throw new IOException(use);
+          bytesRead = IO.copy2null(method.getResponseBodyAsStream(), 10 * 1000); // read data and throw away
+
+      } catch (URISyntaxException e) {
+        e.printStackTrace();
+        
       } finally {
-        if (method != null) method.close();
+        if (method != null) method.releaseConnection();
       }
 
     }
@@ -183,14 +186,12 @@ public class ReadTdsLogs {
 
           else if ((itask.statusCode != log.returnCode) && (log.returnCode != 304) && (log.returnCode != 302)) {
             if (!compareAgainstLive(itask)) {
-              if (out != null)
-                out.format("%5d: status=%d was=%d %s  %n", itask.reqnum, itask.statusCode, log.returnCode, log.path);
+              if (out != null) out.format("%5d: status=%d was=%d %s  %n", itask.reqnum, itask.statusCode, log.returnCode, log.path);
               out2.format("%5d: status=%d was=%d %s  %n", itask.reqnum, itask.statusCode, log.returnCode, log.path);
             }
 
           } else if ((itask.statusCode == 200) && (itask.bytesRead != log.sizeBytes)) {
-            if (out != null)
-              out.format("%5d: bytes=%d was=%d %s%n", itask.reqnum, itask.bytesRead, log.sizeBytes, log.path);
+            if (out != null) out.format("%5d: bytes=%d was=%d %s%n", itask.reqnum, itask.bytesRead, log.sizeBytes, log.path);
             // out2.format("%5d: bytes=%d was=%d %s%n", reqno, itask.bytesRead, log.sizeBytes, log.path);
           }
 
@@ -208,21 +209,24 @@ public class ReadTdsLogs {
 
     private boolean compareAgainstLive(SendRequestTask itask) throws IOException {
       if (serverLive == null) return true;
-        DAPMethod method = null;
+
+      HttpMethod method = null;
       try {
+        method = new GetMethod(serverLive + itask.log.path);
+        // out2.format("send %s %n", method.getPath());
 
-        method = httpClient.newMethod("get",(serverLive + itask.log.path));
-        int statusCode = method.execute();
+        method.setFollowRedirects(true);
+        int statusCode = httpClient.executeMethod(method);
 
-        InputStream is = method.getContentStream();
+        InputStream is = method.getResponseBodyAsStream();
         if (is != null)
-          IO.copy2null(is, 10 * 1000); // read data and throw away
+          IO.copy2null(method.getResponseBodyAsStream(), 10 * 1000); // read data and throw away
 
         // out2.format("%5d: test status=%d live=%d %n", itask.reqnum, itask.statusCode, statusCode);
         return statusCode == itask.statusCode;
 
       } finally {
-        if (method != null) method.close();
+        if (method != null) method.releaseConnection();
       }
 
     }
@@ -403,10 +407,10 @@ public class ReadTdsLogs {
         continue;
       }
 
-      /* if (!(log.path.indexOf("wcs") > 0) && !(log.path.indexOf("wms") > 0))  {    // wcs/wms only
-     skip++;
-     continue;
-   }   */
+     /* if (!(log.path.indexOf("wcs") > 0) && !(log.path.indexOf("wms") > 0))  {    // wcs/wms only
+       skip++;
+       continue;
+     }   */
 
       if (log.path.indexOf("fileServer") > 0) {
         // System.out.println(" *** skip fmrc " + log);
@@ -665,7 +669,12 @@ public class ReadTdsLogs {
     out = null; // new Formatter(new FileOutputStream("C:/TEMP/readTdsLogs.txt"));
     out2 = new Formatter(System.out);
 
-    DAPSession.setGlobalUserAgent("ReadTdsLogs");
+    /* why ?
+    HttpClient client = HttpClientManager.init(null, "ReadTdsLogs");       
+    DConnect2.setHttpClient(client);                                                      
+    HTTPRandomAccessFile.setHttpClient(client);
+    NcStreamRemote.setHttpClient(client);
+    NetcdfDataset.setHttpClient(client);  */
 
     // sendRequests
     final ReadTdsLogs reader = new ReadTdsLogs(serverTest);

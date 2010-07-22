@@ -33,10 +33,6 @@
 
 package ucar.nc2.ui;
 
-import opendap.dap.DAPHeader;
-import opendap.dap.DAPSession;
-import opendap.dap.DAPMethod;
-import org.apache.commons.httpclient.Header;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
 import ucar.nc2.util.IO;
@@ -62,7 +58,11 @@ import java.util.zip.ZipEntry;
 import org.jdom.input.SAXBuilder;
 import org.jdom.Element;
 import org.jdom.Namespace;
-
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
+import org.apache.commons.httpclient.HttpMethod;
+import org.apache.commons.httpclient.Header;
+import org.apache.commons.httpclient.methods.GetMethod;
 
 /**
  * View WMS datasets
@@ -178,24 +178,41 @@ public class WmsViewer extends JPanel {
 
   }
 
+  /**
+   * Set the HttpClient object - so that a single, shared instance is used within the application.
+   *
+   * @param client the HttpClient object
+   */
+  static public void setHttpClient(HttpClient client) {
+    httpClient = client;
+  }
+
+  static private HttpClient httpClient = null;
+
+  private synchronized void initHttpClient() {
+    if (httpClient != null) return;
+    MultiThreadedHttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
+    httpClient = new HttpClient(connectionManager);
+  }
+
   //////////////////////////////////////////////////////
 
   private boolean getCapabilities() {
-    DAPSession httpClient = null;
-      DAPMethod method = null;
+    initHttpClient();
+
+    Formatter f = new Formatter();
+    f.format("%s?request=GetCapabilities&service=WMS&version=%s", endpoint, version);
+    String url = f.toString();
+    info.setLength(0);
+    info.append(url + "\n");
+
+    HttpMethod method = null;
     try {
-      httpClient = new DAPSession();
+      method = new GetMethod(url);
+      method.setFollowRedirects(true);
+      int statusCode = httpClient.executeMethod(method);
 
-      Formatter f = new Formatter();
-      f.format("%s?request=GetCapabilities&service=WMS&version=%s", endpoint, version);
-      String url = f.toString();
-      info.setLength(0);
-      info.append(url + "\n");
-
-      method = httpClient.newMethod("get",url);
-      int statusCode = method.execute();
-
-      info.append(" Status = " + method.getStatusCode() + "\n");
+      info.append(" Status = " + method.getStatusCode() + " " + method.getStatusText() + "\n");
       info.append(" Status Line = " + method.getStatusLine() + "\n");
       printHeaders(" Response Headers = ", method.getResponseHeaders());
       info.append("GetCapabilities:\n\n");
@@ -206,7 +223,7 @@ public class WmsViewer extends JPanel {
       if (statusCode >= 300)
         throw new IOException(method.getPath() + " " + method.getStatusLine());
 
-      String contents = IO.readContents(method.getContentStream());
+      String contents = IO.readContents(method.getResponseBodyAsStream());
       info.append(contents);
 
       StringBufferInputStream is = new StringBufferInputStream(contents);
@@ -220,8 +237,7 @@ public class WmsViewer extends JPanel {
       return false;
 
     } finally {
-        if (method != null) method.close();
-        if (httpClient != null) httpClient.close();
+      if (method != null) method.releaseConnection();
     }
 
     return true;
@@ -256,31 +272,30 @@ public class WmsViewer extends JPanel {
   }
 
   private boolean getMap(LayerBean layer) {
-    DAPSession httpClient = null;
-      DAPMethod method  = null;
+    initHttpClient();
+
+    Formatter f = new Formatter();
+    f.format("%s?request=GetMap&service=WMS&version=%s&", endpoint, version);
+    f.format("layers=%s&CRS=%s&", layer.getName(), layer.getCRS());
+    f.format("bbox=%s,%s,%s,%s&", layer.getMinx(), layer.getMiny(), layer.getMaxx(), layer.getMaxy());
+    f.format("width=500&height=500&");
+    f.format("styles=%s&", styleChooser.getSelectedObject());
+    f.format("format=%s&", formatChooser.getSelectedObject());
+    if (layer.hasTime)
+      f.format("time=%s&", timeChooser.getSelectedObject());
+    if (layer.hasLevel)
+      f.format("elevation=%s&", levelChooser.getSelectedObject());
+    String url = f.toString();
+    info.setLength(0);
+    info.append(url + "\n");
+
+    HttpMethod method = null;
     try {
-      httpClient = new DAPSession();
+      method = new GetMethod(url);
+      method.setFollowRedirects(true);
+      int statusCode = httpClient.executeMethod(method);
 
-      Formatter f = new Formatter();
-      f.format("%s?request=GetMap&service=WMS&version=%s&", endpoint, version);
-      f.format("layers=%s&CRS=%s&", layer.getName(), layer.getCRS());
-      f.format("bbox=%s,%s,%s,%s&", layer.getMinx(), layer.getMiny(), layer.getMaxx(), layer.getMaxy());
-      f.format("width=500&height=500&");
-      f.format("styles=%s&", styleChooser.getSelectedObject());
-      f.format("format=%s&", formatChooser.getSelectedObject());
-      if (layer.hasTime)
-        f.format("time=%s&", timeChooser.getSelectedObject());
-      if (layer.hasLevel)
-        f.format("elevation=%s&", levelChooser.getSelectedObject());
-      String url = f.toString();
-      info.setLength(0);
-      info.append(url + "\n");
-
-
-      method = httpClient.newMethod("get",url);
-      int statusCode = method.execute();
-
-      info.append(" Status = " + method.getStatusCode() + "\n");
+      info.append(" Status = " + method.getStatusCode() + " " + method.getStatusText() + "\n");
       info.append(" Status Line = " + method.getStatusLine() + "\n");
       printHeaders(" Response Headers = ", method.getResponseHeaders());
 
@@ -290,12 +305,12 @@ public class WmsViewer extends JPanel {
       if (statusCode >= 300)
         throw new IOException(method.getPath() + " " + method.getStatusLine());
 
-      DAPHeader h = method.getResponseHeader("Content-Type");
+      Header h = method.getResponseHeader("Content-Type");
       String mimeType = (h == null) ? "" : h.getValue();
-      info.append(" mimeType = " + mimeType + "\n");
+      info.append(" mimeType = " + mimeType+ "\n");
 
-      byte[] contents = IO.readContentsToByteArray(method.getContentStream());
-      info.append(" content len = " + contents.length + "\n");
+      byte[] contents = IO.readContentsToByteArray(method.getResponseBodyAsStream());
+      info.append(" content len = " + contents.length+ "\n");
 
       ByteArrayInputStream is = new ByteArrayInputStream(contents);
 
@@ -305,16 +320,16 @@ public class WmsViewer extends JPanel {
       if (img == null) {
         info.append("getMap:\n\n");
         if (mimeType.equals("application/vnd.google-earth.kmz")) {
-          File temp = File.createTempFile("Temp", ".kmz");
+          File temp = File.createTempFile("Temp",  ".kmz");
           // File temp = new File("C:/temp/temp.kmz");
           IO.writeToFile(contents, temp);
           contents = null;
 
-          ZipFile zfile = new ZipFile(temp);
+          ZipFile zfile = new ZipFile( temp);
           Enumeration entries = zfile.entries();
           while (entries.hasMoreElements()) {
             ZipEntry entry = (ZipEntry) entries.nextElement();
-            info.append(" entry=" + entry + "\n");
+            info.append( " entry="+entry+ "\n");
             if (entry.getName().endsWith(".kml")) {
               InputStream kml = zfile.getInputStream(entry);
               contents = IO.readContentsToByteArray(kml);
@@ -323,7 +338,7 @@ public class WmsViewer extends JPanel {
         }
 
         if (contents != null)
-          info.append(new String(contents) + "\n");
+          info.append(new String(contents)+ "\n");
       }
 
     } catch (Exception e) {
@@ -331,25 +346,23 @@ public class WmsViewer extends JPanel {
       return false;
 
     } finally {
-        if (method != null) method.close();
-        if (httpClient != null) httpClient.close();
+      if (method != null) method.releaseConnection();
     }
 
     return true;
   }
 
 
-  private void printHeaders(String title, DAPHeader[] heads) {
+  private void printHeaders(String title, Header[] heads) {
     info.append(title + "\n");
     for (int i = 0; i < heads.length; i++) {
-      DAPHeader head = heads[i];
+      Header head = heads[i];
       info.append("  " + head.toString());
     }
     info.append("\n");
   }
 
   ///////////////////////////////////////////////////////////////////////////////////
-
   public class LayerBean {
     String name;
     String title;
@@ -367,7 +380,6 @@ public class WmsViewer extends JPanel {
     java.util.List<String> times = new ArrayList<String>();
 
     // no-arg constructor
-
     public LayerBean() {
     }
 

@@ -33,6 +33,18 @@
 
 package ucar.nc2.util.net;
 
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
+import org.apache.commons.httpclient.Header;
+import org.apache.commons.httpclient.HttpMethodBase;
+import org.apache.commons.httpclient.cookie.CookiePolicy;
+import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.httpclient.methods.PutMethod;
+import org.apache.commons.httpclient.methods.StringRequestEntity;
+import org.apache.commons.httpclient.protocol.Protocol;
+import org.apache.commons.httpclient.params.HttpClientParams;
+import org.apache.commons.httpclient.params.HttpMethodParams;
+import org.apache.commons.httpclient.auth.CredentialsProvider;
 
 //import opendap.dap.DConnect2;
 //import ucar.unidata.io.http.HTTPRandomAccessFile;
@@ -40,80 +52,72 @@ package ucar.nc2.util.net;
 import java.io.*;
 import java.util.zip.InflaterInputStream;
 import java.util.zip.GZIPInputStream;
+import java.util.Formatter;
 
-import opendap.dap.DAPHeader;
-import opendap.dap.DAPMethod;
-import opendap.dap.DAPSession;
-import opendap.dap.DAPException;
-import org.apache.commons.httpclient.HttpHost;
-import  org.apache.commons.httpclient.auth.CredentialsProvider;
-import org.apache.commons.httpclient.cookie.CookiePolicy;
-import org.apache.commons.httpclient.params.HttpClientParams;
 import ucar.nc2.util.IO;
 
-
 /**
- * Manage HttpSession Client protocol settings.
+ * Manage Http Client protocol settings.
  * <pre>
  * Example:
- *   CredentialsProvider provider = new thredds.ui.UrlAuthenticatorDialog(frame);
- * opendap.dap.HttpWrapClientManager.init(provider, "ToolsUI");
- * <p/>
+ *   org.apache.commons.httpclient.auth.CredentialsProvider provider = new thredds.ui.UrlAuthenticatorDialog(frame);
+ * ucar.nc2.util.net.HttpClientManager.init(provider, "ToolsUI");
  * </pre>
  *
  * @author caron
  */
 public class HttpClientManager {
   static private boolean debug = false;
+  static private HttpClient _client;
   static private int timeout = 0;
 
-   DAPSession _client = null;
-
-
-
   /**
-   * initialize the AbstractHttpClient layer.
+   * initialize the HttpClient layer.
    *
    * @param provider  CredentialsProvider.
    * @param userAgent Content of User-Agent header, may be null
    */
-  public DAPSession init(CredentialsProvider provider, String userAgent) throws IOException {
+  static public org.apache.commons.httpclient.HttpClient init(CredentialsProvider provider, String userAgent) {
     initHttpClient();
-
+    
     if (provider != null)
-      _client.setCredentialsProvider(provider);
+      _client.getParams().setParameter(CredentialsProvider.PROVIDER, provider);
 
     if (userAgent != null)
-      _client.setUserAgent(userAgent + "/NetcdfJava/HttpClient");
+      _client.getParams().setParameter(HttpMethodParams.USER_AGENT, userAgent + "/NetcdfJava/HttpClient");
     else
-        _client.setUserAgent("/NetcdfJava/HttpClient");
+      _client.getParams().setParameter(HttpMethodParams.USER_AGENT, "NetcdfJava/HttpClient");
 
     // nick.bower@metoceanengineers.com
     String proxyHost = System.getProperty("http.proxyHost");
     String proxyPort = System.getProperty("http.proxyPort");
     if ((proxyHost != null) && (proxyPort != null) && !proxyPort.trim().equals("")) {
-      HttpHost proxy = new HttpHost(proxyHost, Integer.parseInt(proxyPort));
-      _client.setProxy(proxy);
+        _client.getHostConfiguration().setProxy(proxyHost, Integer.parseInt(proxyPort));
     }
+
     return _client;
   }
 
   /**
    * Get the HttpClient object - a single instance is used.
-   *
    * @return the  HttpClient object
    */
-  /*
-   public HttpSession getHttpClient() {
-      return _client;
+  static public HttpClient getHttpClient() {
+    return _client;
   }
-  */
-  private void initHttpClient() throws IOException {
 
+  private static synchronized void initHttpClient() {
     if (_client != null) return;
-    _client = new DAPSession();
+    MultiThreadedHttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
+    _client = new HttpClient(connectionManager);
+
+    HttpClientParams params = _client.getParams();
+    params.setParameter(HttpMethodParams.SO_TIMEOUT, timeout);
+    params.setParameter(HttpClientParams.ALLOW_CIRCULAR_REDIRECTS, Boolean.TRUE);
+    params.setParameter(HttpClientParams.COOKIE_POLICY, CookiePolicy.RFC_2109);
 
     // allow self-signed certificates
+    Protocol.registerProtocol("https", new Protocol("https", new EasySSLProtocolSocketFactory(), 8443));
 
     // LOOK need default CredentialsProvider ??
     // _client.getParams().setParameter(CredentialsProvider.PROVIDER, provider);
@@ -121,238 +125,226 @@ public class HttpClientManager {
   }
 
   public static void clearState() {
-    //_client.close();
+    _client.getState().clearCookies();
+    _client.getState().clearCredentials();
   }
 
   /**
    * Get the content from a url. For large returns, its better to use getResponseAsStream.
-   *
-   * xx@param urlString url as a String
+   * @param urlString url as a String
    * @return contents of url as a String
    * @throws java.io.IOException on error
-   *
-  public String getContent(String urlString) throws IOException {
+   */
+  public static String getContent(String urlString) throws IOException {
+    GetMethod m = new GetMethod(urlString);
+    m.setFollowRedirects(true);
 
     try {
-      _client.newMethod("get",(urlString);
-      return _client.getContentString();
-    } finally {
-      // _client.close();
-    }
-  } */
+      _client.executeMethod(m);
+      return m.getResponseBodyAsString();
 
-  static void initMethod(DAPMethod method)
-  {
-       method.setParameter(HttpClientParams.SO_TIMEOUT, (Object)timeout);
-       method.setParameter(HttpClientParams.ALLOW_CIRCULAR_REDIRECTS, (Object) Boolean.TRUE);
-       method.setParameter(HttpClientParams.COOKIE_POLICY, (Object) CookiePolicy.RFC_2109);
+    } finally {
+      m.releaseConnection();
+    }
   }
 
   /**
    * Put content to a url, using HTTP PUT. Handles one level of 302 redirection.
-   *
    * @param urlString url as a String
-   * @param content   PUT this content at the given url.
+   * @param content PUT this content at the given url.
    * @return the HTTP status return code
    * @throws java.io.IOException on error
    */
-  static public int putContent(String urlString, String content) throws IOException {
-    DAPSession client = null;
-      DAPMethod method = null;
+  public static int putContent(String urlString, String content) throws IOException {
+    PutMethod m = new PutMethod(urlString);
+    m.setDoAuthentication( true );
+
     try {
-      client = new DAPSession();
-        method = client.newMethod("get",urlString);
-        initMethod(method);
-      method.setRequestHeader("Accept-Encoding", "gzip,deflate");
+      m.setRequestEntity(new StringRequestEntity(content));
 
-      method.setContentString(content);
-      int resultCode = method.execute();
+      _client.executeMethod(m);
 
-      if (resultCode == 302) {
-        String redirectLocation;
-        DAPHeader locationHeader = method.getResponseHeader("location");
-        if (locationHeader != null) {
-          redirectLocation = locationHeader.getValue();
-          if (debug) System.out.println("***Follow Redirection = " + redirectLocation);
-          resultCode = putContent(redirectLocation, content);
-        }
-      }
+      int resultCode = m.getStatusCode();
+
+       // followRedirect wont work for PUT
+       if (resultCode == 302) {
+         String redirectLocation;
+         Header locationHeader = m.getResponseHeader("location");
+         if (locationHeader != null) {
+           redirectLocation = locationHeader.getValue();
+           if (debug) System.out.println("***Follow Redirection = "+redirectLocation);
+           resultCode = putContent(redirectLocation, content);
+         }
+       }
+
       return resultCode;
 
     } finally {
-        if (method != null) method.close();
-      if (client != null) client.close();
+      m.releaseConnection();
     }
   }
 
   //////////////////////
 
-  static public String getContent(String urlString) {
+   static public String getUrlContents(String urlString, int maxKbytes) {
+     HttpMethodBase m = new GetMethod(urlString);
+     m.setFollowRedirects(true);
+     m.setRequestHeader("Accept-Encoding", "gzip,deflate");
 
-    DAPSession client = null;
-      DAPMethod method = null;
-    try {
-      client = new DAPSession();
-        method = client.newMethod("get",urlString);
-      method.setRequestHeader("Accept-Encoding", "gzip,deflate");
-      int status = method.execute();
-      if (status != 200) {
-        throw new DAPException("failed status = " + status);
-      }
+     try {
+       int status = _client.executeMethod(m);
+       if (status != 200) {
+         throw new RuntimeException("failed status = "+status);
+       }
 
-      String charset = method.getCharSet();
-      if (charset == null) charset = "UTF-8";
+       String charset = m.getResponseCharSet();
+       if (charset == null) charset = "UTF-8";
 
-      // check for deflate and gzip compression
-      DAPHeader h = method.getResponseHeader("content-encoding");
-      String encoding = (h == null) ? null : h.getValue();
+       // check for deflate and gzip compression
+       Header h = m.getResponseHeader("content-encoding");
+       String encoding = (h == null) ? null : h.getValue();
 
-      if (encoding != null && encoding.equals("deflate")) {
-        InputStream body = method.getContentStream();
-        InputStream is = new BufferedInputStream(new InflaterInputStream(body), 10000);
-        return IO.readContents(is, charset); //readContents(is, charset, maxKbytes);
+       if (encoding != null && encoding.equals("deflate")) {
+         byte[] body = m.getResponseBody();
+         InputStream is = new BufferedInputStream(new InflaterInputStream(new ByteArrayInputStream(body)), 10000);
+         return readContents(is, charset, maxKbytes);
 
-      } else if (encoding != null && encoding.equals("gzip")) {
-        InputStream body = method.getContentStream();
-        InputStream is = new BufferedInputStream(new GZIPInputStream(body), 10000);
-        return IO.readContents(is, charset); //readContents(is, charset, maxKbytes);
+       } else if (encoding != null && encoding.equals("gzip")) {
+         byte[] body = m.getResponseBody();
+         InputStream is = new BufferedInputStream(new GZIPInputStream(new ByteArrayInputStream(body)), 10000);
+         return readContents(is, charset, maxKbytes);
 
-      } else {
-        return method.getContentString(charset);
-      }
+       } else {
+         byte[] body = m.getResponseBody(maxKbytes * 1000);
+         return new String(body, charset);
+       }
 
-    } catch (Exception e) {
-      e.printStackTrace();
-      return null;
+     } catch (Exception e) {
+       e.printStackTrace();
+       return null;
 
-    } finally {
-      if (method != null) method.close();
-        if (client != null) client.close();
+     } finally {
+       m.releaseConnection();
+     }
+   }
 
-    }
-  }
+   static private String readContents(InputStream is, String charset, int maxKbytes) throws IOException {
+     ByteArrayOutputStream bout = new ByteArrayOutputStream(1000 * maxKbytes);
+     IO.copy(is, bout, 1000 * maxKbytes);
+     return bout.toString(charset);
+   }
 
-  static public void copyUrlContentsToFile(String urlString, File file) {
+   static public  void copyUrlContentsToFile(String urlString, File file) {
+     HttpMethodBase m = new GetMethod(urlString);
+     m.setFollowRedirects(true);
+     m.setRequestHeader("Accept-Encoding", "gzip,deflate");
 
-    DAPSession client = null;
-      DAPMethod method = null;
-    try {
-      client = new DAPSession();
-        method = client.newMethod("get",urlString);
+     try {
+       int status = _client.executeMethod(m);
 
-      method.setRequestHeader("Accept-Encoding", "gzip,deflate");
+       if (status != 200) {
+         throw new RuntimeException("failed status = "+status);
+       }
 
-      int status = method.execute();
+       String charset = m.getResponseCharSet();
+       if (charset == null) charset = "UTF-8";
 
-      if (status != 200) {
-        throw new RuntimeException("failed status = " + status);
-      }
+       // check for deflate and gzip compression
+       Header h = m.getResponseHeader("content-encoding");
+       String encoding = (h == null) ? null : h.getValue();
 
-      String charset = method.getCharSet();
-      if (charset == null) charset = "UTF-8";
+       if (encoding != null && encoding.equals("deflate")) {
+         InputStream is = new BufferedInputStream(new InflaterInputStream(m.getResponseBodyAsStream()), 10000);
+         IO.writeToFile(is, file.getPath());
 
-      // check for deflate and gzip compression
-      DAPHeader h = method.getResponseHeader("content-encoding");
-      String encoding = (h == null) ? null : h.getValue();
+       } else if (encoding != null && encoding.equals("gzip")) {
+         InputStream is = new BufferedInputStream(new GZIPInputStream(m.getResponseBodyAsStream()), 10000);
+         IO.writeToFile(is, file.getPath());
 
-      if (encoding != null && encoding.equals("deflate")) {
-        InputStream is = new BufferedInputStream(new InflaterInputStream(method.getContentStream()), 10000);
-        IO.writeToFile(is, file.getPath());
+       } else {
+         IO.writeToFile(m.getResponseBodyAsStream(), file.getPath());
+       }
 
-      } else if (encoding != null && encoding.equals("gzip")) {
-        InputStream is = new BufferedInputStream(new GZIPInputStream(method.getContentStream()), 10000);
-        IO.writeToFile(is, file.getPath());
+     } catch (Exception e) {
+       e.printStackTrace();
 
-      } else {
-        IO.writeToFile(method.getContentStream(), file.getPath());
-      }
+     } finally {
+       m.releaseConnection();
+     }
+   }
 
-    } catch (Exception e) {
-      e.printStackTrace();
+   static public long appendUrlContentsToFile(String urlString, File file, long start, long end) {
+     long nbytes = 0;
 
-    } finally {
-      if (method != null) method.close();
-        if (client != null) client.close();
+     HttpMethodBase m = new GetMethod(urlString);
+     m.setRequestHeader("Accept-Encoding", "gzip,deflate");
+     m.setFollowRedirects(true);
+     m.setRequestHeader("Range", "bytes=" + start + "-" + end);
 
-    }
-  }
+     try {
+       int status = _client.executeMethod(m);
+       if ((status != 200) && (status != 206)) {
+         throw new RuntimeException("failed status = "+status);
+       }
 
-  static public long appendUrlContentsToFile(String urlString, File file, long start, long end) {
-    long nbytes = 0;
+       String charset = m.getResponseCharSet();
+       if (charset == null) charset = "UTF-8";
 
-    DAPSession client = null;
-      DAPMethod method = null;
-    try {
-      client = new DAPSession();
-        method = client.newMethod("get",urlString);
+       // check for deflate and gzip compression
+       Header h = m.getResponseHeader("content-encoding");
+       String encoding = (h == null) ? null : h.getValue();
 
-      method.setRequestHeader("Accept-Encoding", "gzip,deflate");
-      method.setRequestHeader("Range", "bytes=" + start + "-" + end);
-      int status = method.execute();
-      if ((status != 200) && (status != 206)) {
-        throw new DAPException("failed status = " + status);
-      }
+       if (encoding != null && encoding.equals("deflate")) {
+         InputStream is = new BufferedInputStream(new InflaterInputStream(m.getResponseBodyAsStream()), 10000);
+         nbytes = IO.appendToFile(is, file.getPath());
 
-      String charset = method.getCharSet();
-      if (charset == null) charset = "UTF-8";
+       } else if (encoding != null && encoding.equals("gzip")) {
+         InputStream is = new BufferedInputStream(new GZIPInputStream(m.getResponseBodyAsStream()), 10000);
+         nbytes = IO.appendToFile(is, file.getPath());
 
-      // check for deflate and gzip compression
-      DAPHeader h = method.getResponseHeader("content-encoding");
-      String encoding = (h == null) ? null : h.getValue();
+       } else {
+         nbytes = IO.appendToFile(m.getResponseBodyAsStream(), file.getPath());
+       }
 
-      if (encoding != null && encoding.equals("deflate")) {
-        InputStream is = new BufferedInputStream(new InflaterInputStream(method.getContentStream()), 10000);
-        nbytes = IO.appendToFile(is, file.getPath());
+     } catch (Exception e) {
+       e.printStackTrace();
 
-      } else if (encoding != null && encoding.equals("gzip")) {
-        InputStream is = new BufferedInputStream(new GZIPInputStream(method.getContentStream()), 10000);
-        nbytes = IO.appendToFile(is, file.getPath());
+     } finally {
+       m.releaseConnection();
+     }
 
-      } else {
-        nbytes = IO.appendToFile(method.getContentStream(), file.getPath());
-      }
+     return nbytes;
+   }
 
-    } catch (Exception e) {
-      e.printStackTrace();
+  static public void showHttpRequestInfo(Formatter f, HttpMethodBase m) {
+    f.format("HttpClient request %s %s %n", m.getName(), m.getPath());
+    f.format("   do Authentication=%s%n", m.getDoAuthentication());
+    f.format("   follow Redirects =%s%n", m.getFollowRedirects());
+    f.format("   effectiveVersion =%s%n", m.getEffectiveVersion());
+    f.format("   hostAuthState    =%s%n", m.getHostAuthState());
 
-    } finally {
-      if (method != null) method.close();
-        if (client != null) client.close();
-
-    }
-
-    return nbytes;
-  }
-
-  /* public void showHttpRequestInfo(Formatter f, AbstractHttpMessage m) {
-    f.format("HttpClient request %s %s %n", _client.getName(), _client.getURI());
-    // fix f.format("   do Authentication=%s%n", _client.getDoAuthentication());
-    f.format("   follow Redirects =%s%n", _client.getFollowRedirects());
-    // fix f.format("   effectiveVersion =%s%n", m.getEffectiveVersion());
-    // fix f.format("   hostAuthState    =%s%n", m.getHostAuthState());
-
-    HttpParams p = m.getParams();
-    f.format("   cookie policy    =%s%n", _client.getCookiePolicy());
-    f.format("   http version     =%s%n", _client.getProtocolVersion());
-    f.format("   timeout (msecs)  =%d%n", _client.getSoTimeout());
-    f.format("   virtual host     =%s%n", _client.getVirtualHost());
+    HttpMethodParams p = m.getParams();
+    f.format("   cookie policy    =%s%n", p.getCookiePolicy());
+    f.format("   http version     =%s%n", p.getVersion());
+    f.format("   timeout (msecs)  =%d%n", p.getSoTimeout());
+    f.format("   virtual host     =%s%n", p.getVirtualHost());
 
     f.format("Request Headers = %n");
-    Header[] heads = _client.getHeaders();
+    Header[] heads = m.getRequestHeaders();
     for (int i = 0; i < heads.length; i++)
       f.format("  %s", heads[i]);
 
     f.format("%n");
   }
 
-  static public void showHttpResponseInfo(Formatter f, HttpSession h) {
-    f.format("HttpClient response status = %s%n", h.getStatusLine());
+  static public void showHttpResponseInfo(Formatter f, HttpMethodBase m) {
+    f.format("HttpClient response status = %s%n", m.getStatusLine());
     f.format("Reponse Headers = %n");
-    Header[] heads = h.getHeaders();
+    Header[] heads = m.getResponseHeaders();
     for (int i = 0; i < heads.length; i++)
       f.format("  %s", heads[i]);
     f.format("%n");
-  } */
+  }
 
 
 }
