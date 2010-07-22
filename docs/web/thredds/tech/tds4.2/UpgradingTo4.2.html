@@ -93,7 +93,14 @@ section for that information is now deprecated (though still supported, for now)
   <a href="http://www.resc.reading.ac.uk/trac/myocean-tools/wiki/WmsDetailedConfiguration">"Detailed WMS Configuration" page</a>.
 </p>
 
-<h2><a name="#configFmrc">Change in How FMRC Datasets Are Configured</a></h2>
+<p>If you are installing a new TDS, you should find a default <code>wmsConfig.xml</code> file (along
+  with other configuration files) in your <code>content/thredds</code> directory after you first
+  deploy the TDS. If you are upgrading from a TDS version before version <code>4.2.20100615.*</code>,
+  you will have to copy the default file from
+  <code>TOMCAT_HOME/webapps/thredds/WEB-INF/altContent/startup/wmsConfig.xml</code>.
+</p>
+
+<h2><a name="configFmrc">Change in How FMRC Datasets Are Configured</a></h2>
 
 <p>The <code>datasetFmrc</code> element has been deprecated in favor of the new
   <code>featureCollection</code> element. Details on using the
