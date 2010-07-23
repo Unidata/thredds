@@ -14,6 +14,7 @@ public class IddModelDatasetsUtils
   private static final String[][] modelIds =
           {
                   { "NCEP/NDFD/CONUS_5km"},                       // idd and/or idv ?
+                  { "NCEP/NDFD/conduit/CONUS_5km"},                       // idd and/or idv ?
 
                   { "NCEP/DGEX/Alaska_12km"},                     // idd and/or idv ?
                   { "NCEP/DGEX/CONUS_12km"},                      // idd and/or idv ?
