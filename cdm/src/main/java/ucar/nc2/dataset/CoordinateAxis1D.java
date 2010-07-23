@@ -742,6 +742,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
   }
 
   private void makeBounds() {
+    if (!isNumeric()) return;
     if (!makeBoundsFromAux()) {
       makeEdges();
       makeBoundsFromEdges();

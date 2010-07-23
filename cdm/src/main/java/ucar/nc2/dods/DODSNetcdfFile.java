@@ -908,7 +908,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
    * If an equivilent shared dimension already exists, use it, else add d to shared dimensions.
    * Equivilent is same name and length.
    *
-   * @param group from this goup, if null, use rootGroup
+   * @param group from this group, if null, use rootGroup
    * @param d find equivilent shared dimension to this one.
    * @return equivilent shared dimension or d.
    */

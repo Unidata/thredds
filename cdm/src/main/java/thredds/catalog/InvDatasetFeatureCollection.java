@@ -482,9 +482,11 @@ public class InvDatasetFeatureCollection extends InvCatalogRef {
       if (checkProto) {
          // add Variables, GeospatialCoverage, TimeCoverage
         GridDataset gds = getGridDataset(FMRC);
-        localState.vars = MetadataExtractor.extractVariables(this, gds);
-        localState.gc = MetadataExtractor.extractGeospatial(gds);
-        localState.dateRange = MetadataExtractor.extractDateRange(gds);
+        if (null != gds) {
+          localState.vars = MetadataExtractor.extractVariables(this, gds);
+          localState.gc = MetadataExtractor.extractGeospatial(gds);
+          localState.dateRange = MetadataExtractor.extractDateRange(gds);
+        }
         localState.lastProtoChange = new Date();
       }
 

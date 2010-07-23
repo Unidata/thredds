@@ -337,6 +337,9 @@
   </xsd:complexType>
 
   <xsd:complexType name="protoDatasetType">
+    <xsd:sequence>
+      <xsd:element ref="ncml:netcdf" minOccurs="0"/>
+    </xsd:sequence>
     <xsd:attribute name="choice" type="protoChoices"/>
     <xsd:attribute name="change" type="xsd:string"/>
   </xsd:complexType>

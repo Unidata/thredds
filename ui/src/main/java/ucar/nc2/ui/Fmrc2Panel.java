@@ -313,7 +313,7 @@ public class Fmrc2Panel extends JPanel {
   public void showDataset() throws IOException {
     if (fmrcInv == null) return;
     if (dialog == null) {
-      dialog = new Fmrc2Dialog(null, fmrc);
+      dialog = new Fmrc2Dialog(null);
       dialog.pack();
       dialog.addPropertyChangeListener("OK", new PropertyChangeListener() {
         public void propertyChange(PropertyChangeEvent evt) {
@@ -324,6 +324,7 @@ public class Fmrc2Panel extends JPanel {
         }
       });
     }
+    dialog.setFmrc(fmrc);
     dialog.setVisible(true);
   }
 

@@ -73,12 +73,15 @@ public class Fmrc2Dialog extends JDialog {
   }
 
   private Fmrc fmrc;
-  public Fmrc2Dialog(Frame owner, Fmrc fmrc) {
+  public Fmrc2Dialog(Frame owner) {
     super(owner);
-    this.fmrc = fmrc;
     initComponents();
   }
 
+  public void setFmrc(Fmrc fmrc) {
+    this.fmrc = fmrc;
+  }
+  
   private void okButtonActionPerformed(ActionEvent e) {
     Data data =  new Data((String) comboBox1.getSelectedItem(), comboBox2.getSelectedItem(), (String) list1.getSelectedValue());
     firePropertyChange("OK", null, data);

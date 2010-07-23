@@ -53,6 +53,10 @@ public class FmrcCacheMonitorImpl implements FmrcCacheMonitor {
     return result;
   }
 
+  public String getCacheLocation() {
+    return MetadataManager.getCacheLocation();
+  }
+
   public List<String> getFilesInCollection(String collectionName) {
     java.util.List<String> result = new ArrayList<String>();
     MetadataManager mm = null;

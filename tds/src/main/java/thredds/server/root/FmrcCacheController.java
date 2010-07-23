@@ -67,6 +67,7 @@ public class FmrcCacheController extends AbstractController {
 
     act = new DebugHandler.Action("showFmrcCache", "Show FMRC Cache") {
       public void doAction(DebugHandler.Event e) {
+        e.pw.println("<p>cache location = "+monitor.getCacheLocation()+"<p>");
         for (String name : monitor.getCachedCollections()) {
           String ename = StringUtil.escape(name, "");
           String url = tdsContext.getContextPath() + PATH + "?"+COLLECTION+"="+ename;

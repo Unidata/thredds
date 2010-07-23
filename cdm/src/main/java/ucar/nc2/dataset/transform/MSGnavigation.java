@@ -36,7 +36,6 @@ import ucar.nc2.dataset.CoordinateTransform;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.ProjectionCT;
 import ucar.nc2.Variable;
-import ucar.nc2.Attribute;
 import ucar.unidata.geoloc.ProjectionImpl;
 
 /**
@@ -68,7 +67,7 @@ public class MSGnavigation extends AbstractCoordTransBuilder {
       double scale_y = readAttributeDouble( ctv, "scale_y", Double.NaN);
 
       //ProjectionImpl proj = new ucar.unidata.geoloc.projection.sat.MSGnavigation(lat0, lon0, major_axis, minor_axis, height, scale_x, scale_y);
-      ProjectionImpl proj = new ucar.unidata.geoloc.projection.sat.MSGnavigation(lat0, lon0, minor_axis, major_axis, height, scale_x, scale_y);
+      ProjectionImpl proj = new ucar.unidata.geoloc.projection.sat.MSGnavigation(lat0, lon0, minor_axis, major_axis, height, scale_x, scale_y);  // LOOK WTF?
       return new ProjectionCT(ctv.getShortName(), "FGDC", proj);
     }
 

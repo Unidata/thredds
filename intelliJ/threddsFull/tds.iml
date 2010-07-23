@@ -15,6 +15,7 @@
         <sourceRoots>
           <root url="file://$MODULE_DIR$/../../tds/src/main/java" />
         </sourceRoots>
+        <context-artifact name="tds:tds exploded" />
       </configuration>
     </facet>
     <facet type="web" name="dqcServletRedirect">
@@ -274,7 +275,7 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module-library">
+    <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
           <root url="jar://$MODULE_DIR$/../../lib/external/jakarta-oro-2.0.8.jar!/" />

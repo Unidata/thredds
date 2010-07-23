@@ -32,6 +32,8 @@
  */
 package ucar.nc2.thredds.server;
 
+import ucar.nc2.dt.GridDatatype;
+import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.ui.StopButton;
 import ucar.nc2.thredds.ThreddsDataFactory;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -40,7 +42,7 @@ import java.io.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.*;
-import java.util.Formatter;
+import java.util.*;
 
 import thredds.catalog.crawl.CatalogCrawler;
 import thredds.catalog.*;
@@ -131,11 +133,21 @@ public class TestMotherlodeModels implements CatalogCrawler.Listener {
       if (ncd == null) {
         out.println("**** failed= " + ds.getName() + " err=" + log);
         countNoAccess++;
-      } else if (verbose)
-        out.println("   " + ds.getName() + " ok");
 
-    } catch (IOException e) {
-      out.println("**** failed= " + ds.getName() + " err= " + e.getMessage());
+      } else {
+        GridDataset gds = new GridDataset(ncd);
+        java.util.List<GridDatatype> grids =  gds.getGrids();
+        int n = grids.size();
+        //assert n != 0;
+        if (verbose) {
+          out.printf("   %d %s OK%n", n, gds.getLocationURI());
+        }
+      }
+
+    } catch (Exception e) {
+      out.println("**** failed= " + ds.getName());
+      e.printStackTrace();
+      
       countNoOpen++;
     } finally {
       if (ncd != null) try {
@@ -150,14 +162,22 @@ public class TestMotherlodeModels implements CatalogCrawler.Listener {
     return true;
   }
 
+  public static void main2(String args[]) throws IOException {
+    String url = "http://motherlode.ucar.edu:9080/thredds/dodsC/fmrc/NCEP/GFS/Alaska_191km/forecast/NCEP-GFS-Alaska_191km_ConstantForecast_2010-06-07T06:00:00Z";
+    System.out.printf("open %s%n", url);
+    GridDataset gds = GridDataset.open(url);
+    java.util.List<GridDatatype> grids =  gds.getGrids();
+    System.out.printf("ngrids=%d%n", grids.size());
+  }
+
+  ////////////////////////////////////////
   public static JPanel main;
 
   public static void main(String args[]) throws IOException {
     String server = "http://motherlode.ucar.edu:9080/thredds";
 
     String catalog = "/idd/models.xml";
-    String problemCat = // "/catalog/fmrc/NCEP/RUC2/CONUS_20km/surface/catalog.xml";
-            "/catalog/fmrc/NCEP/RUC2/CONUS_20km/hybrid/catalog.xml";
+    String problemCat = "/catalog/fmrc/NCEP/NDFD/conduit/CONUS_5km/catalog.xml";
     String models = "/idd/models.xml";
     String chizModels = "/idd/rtmodel.xml";
     String gribtonc = "/idd/allModels.TDS-nc.xml";
@@ -177,23 +197,15 @@ public class TestMotherlodeModels implements CatalogCrawler.Listener {
     main = new JPanel();
     main.setLayout(new BoxLayout(main, BoxLayout.Y_AXIS));
 
-    //TestMotherlodeModels problem = new TestMotherlodeModels("problem", server+problemCat, CatalogCrawler.USE_RANDOM_DIRECT, false);
-    TestMotherlodeModels all_models = new TestMotherlodeModels("models", server + catalog, CatalogCrawler.USE_RANDOM_DIRECT, false);
-    //TestMotherlodeModels chiz_models = new TestMotherlodeModels("chiz_models", server+chizModels, CatalogCrawler.USE_RANDOM_DIRECT, false);
-    //TestMotherlodeModels nc_models = new TestMotherlodeModels("gribtonc", server+gribtonc, CatalogCrawler.USE_RANDOM_DIRECT, false);
-    //TestMotherlodeModels localAll = new TestMotherlodeModels("localAll", "http://localhost:8080/thredds/catalog.xml", CatalogCrawler.USE_ALL, false);
+    TestMotherlodeModels job = new TestMotherlodeModels("problem", server+problemCat, CatalogCrawler.USE_RANDOM_DIRECT, false);
+    // TestMotherlodeModels job = new TestMotherlodeModels("models", server + catalog, CatalogCrawler.USE_RANDOM_DIRECT, false);
 
     frame.getContentPane().add(main);
     frame.pack();
     frame.setLocation(40, 300);
     frame.setVisible(true);
 
-    //problem.extract();
-    //while (true) 
-    all_models.extract();
-    //chiz_models.extract();
-    //nc_models.extract();
-    //localAll.extract();
+    job.extract();
   }
 
 }

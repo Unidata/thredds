@@ -329,6 +329,11 @@ class FmrcDataset {
           if (axis.getAxisType() == AxisType.GeoY) {
             coordV.addAttribute(new Attribute("standard_name", "projection_y_coordinate"));
           }
+          if (axis.getAxisType() == AxisType.Time) {
+            Attribute att = axis.findAttribute("bounds");  // LOOK nasty : remove time bounds from proto
+            if ((att != null) && att.isString())
+              result.removeVariable(null, att.getStringValue());
+          }
         }
       }
 
@@ -344,6 +349,10 @@ class FmrcDataset {
         if (null != (att = v.findAttribute(_Coordinate.Transforms.toString())))
           v.remove(att);
       }
+
+      // apply ncml if it exists
+      if (protoConfig.ncml != null)
+        NcMLReader.mergeNcMLdirect(result, protoConfig.ncml);
 
       return result;
 
@@ -782,7 +791,7 @@ class FmrcDataset {
 
       // construct the dimension
       int ntimes = timeInv.getTimeLength(gridset);
-      if (ntimes == 0) {   // eg a constant offset dataset for variables that dont ahve that offset
+      if (ntimes == 0) {   // eg a constant offset dataset for variables that dont have that offset
         // remove all variables that are in this gridsset
         for (FmrcInvLite.Gridset.Grid ugrid : gridset.grids)
          result.removeVariable(group, ugrid.name);
@@ -794,26 +803,26 @@ class FmrcDataset {
       result.addDimension(group, timeDim);
 
       // optional time coordinate
+      group.removeVariable(timeDimName);
       double[] timeCoordValues = timeInv.getTimeCoords(gridset);
       if (timeCoordValues != null) {
         VariableDS timeCoord = makeTimeCoordinate(result, group, timeDimName, lite.base, timeCoordValues, dateFormatter);
-        group.removeVariable(timeCoord.getShortName());
         group.addVariable(timeCoord);
       }
 
       // optional runtime coordinate
+      group.removeVariable(timeDimName+"_run");
       double[] runtimeCoordValues = timeInv.getRunTimeCoords(gridset);
       if (runtimeCoordValues != null) {
         VariableDS runtimeCoord = makeRunTimeCoordinate(result, group, timeDimName, lite.base, runtimeCoordValues, dateFormatter);
-        group.removeVariable(runtimeCoord.getShortName());
         group.addVariable(runtimeCoord);
       }
 
       // optional offset coordinate
+      group.removeVariable(timeDimName+"_offset");
       double[] offsetCoordValues = timeInv.getOffsetCoords(gridset);
       if (offsetCoordValues != null) {
         VariableDS offsetCoord = makeOffsetCoordinate(result, group, timeDimName, lite.base, offsetCoordValues, dateFormatter);
-        group.removeVariable(offsetCoord.getShortName());
         group.addVariable(offsetCoord);
       }
 
@@ -967,6 +976,7 @@ class FmrcDataset {
           TimeInventory.Instance timeInv =  vstate.timeInv.getInstance(vstate.gridLite, timeIdx);
           if (timeInv == null)
             logger.error("Missing Inventory timeInx="+timeIdx+ " for "+ mainv.getName()+" in "+state.lite.collectionName);
+          
           if (timeInv.getDatasetLocation() != null) {
             if (debugRead) System.out.printf("HIT %d ", timeIdx);
             result = read(timeInv, mainv.getName(), innerSection, openFilesRead); // may return null

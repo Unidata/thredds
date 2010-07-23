@@ -375,8 +375,9 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     if (protoElem != null) {
       String choice = protoElem.getAttributeValue("choice");
       String change = protoElem.getAttributeValue("change");
-      String content = protoElem.getTextNormalize();
-      config.protoConfig = new FeatureCollectionConfig.ProtoConfig(choice, change, content);
+      Element ncmlElem = protoElem.getChild( "netcdf", ncmlNS );
+      config.protoConfig = new FeatureCollectionConfig.ProtoConfig(choice, change, ncmlElem);
+
     }
 
     Element fmrcElem = dsElem.getChild( "fmrcConfig", defNS );

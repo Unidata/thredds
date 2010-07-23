@@ -214,6 +214,8 @@ public class Dimension implements Comparable {
     this.isVariableLength = isVariableLength;
     setLength(length);
     assert (name != null) || !this.isShared;
+    //if (!isShared)
+    //  System.out.println("HEY");
   }
 
   /**

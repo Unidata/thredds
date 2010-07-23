@@ -32,6 +32,7 @@
 
 package thredds.inventory;
 
+import org.jdom.Element;
 import ucar.unidata.util.StringUtil;
 
 import java.util.*;
@@ -122,13 +123,13 @@ public class FeatureCollectionConfig {
   static public class ProtoConfig {
     public ProtoChoice choice = ProtoChoice.Penultimate;
     public String change = null;
-    public String filename = null;
+    public Element ncml = null;
     public boolean cacheAll = true;
 
     public ProtoConfig() { // defaults
     }
 
-    public ProtoConfig(String choice, String change, String filename) {
+    public ProtoConfig(String choice, String change, Element ncml) {
       if (choice != null) {
         try {
           this.choice = ProtoChoice.valueOf(choice);
@@ -138,7 +139,7 @@ public class FeatureCollectionConfig {
       }
 
       this.change = change;
-      this.filename = filename;
+      this.ncml = ncml;
     }
 
     @Override
@@ -146,7 +147,7 @@ public class FeatureCollectionConfig {
       return "ProtoConfig{" +
               "choice=" + choice +
               ", change='" + change + '\'' +
-              ", filename='" + filename + '\'' +
+              ", ncml='" + ncml + '\'' +
               ", cacheAll=" + cacheAll +
               '}';
     }

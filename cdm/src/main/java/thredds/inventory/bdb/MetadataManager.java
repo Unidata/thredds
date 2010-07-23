@@ -179,6 +179,10 @@ public class MetadataManager {
     }
   }
 
+  static public String getCacheLocation() {
+    return root;
+  }
+
   static public List<String> getCollectionNames() {
     if (myEnv == null)
       setup(root, false);
