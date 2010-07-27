@@ -39,8 +39,6 @@ import ucar.ma2.DataType;
 import ucar.nc2.*;
 import ucar.nc2.constants.CF;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
-import ucar.nc2.iosp.mcidas.McIDASLookup;
-import ucar.nc2.iosp.gempak.GempakLookup;
 import ucar.nc2.units.DateFormatter;
 import ucar.grid.GridRecord;
 import ucar.grid.GridTableLookup;
@@ -51,7 +49,6 @@ import ucar.grib.grib1.Grib1GridTableLookup;
 import ucar.grib.grib2.Grib2GridTableLookup;
 import ucar.grib.grib2.Grib2Tables;
 import ucar.grib.GribGridRecord;
-import ucar.grib.GribNumbers;
 
 import java.util.ArrayList;
 import java.util.Formatter;
@@ -395,9 +392,9 @@ public class GridVariable {
   }
 
   /**
-   * is this a interval variable
+   * is this a time interval variable
    *
-   * @return true if interval
+   * @return true if uses time intervals
    */
   boolean isInterval() {
     //getFirstRecord()

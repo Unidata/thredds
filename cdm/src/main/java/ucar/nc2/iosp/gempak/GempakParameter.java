@@ -31,11 +31,7 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-
-
-
 package ucar.nc2.iosp.gempak;
-
 
 import ucar.grid.GridParameter;
 

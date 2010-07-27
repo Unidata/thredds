@@ -33,16 +33,13 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-
 package ucar.grid;
-
 
 import ucar.grib.GribGDSVariablesIF;
 import ucar.grib.GribNumbers;
 
 import java.util.HashMap;
 import java.util.Map;
-
 
 /**
  * Class to represent the grid definition (projection) information

@@ -28,13 +28,14 @@ import java.util.*;
 public class TestIntervalVars extends TestCase {
   private boolean show = false;
 
-  public TestIntervalVars( String name) {
+  public TestIntervalVars(String name) {
     super(name);
   }
 
   public int nfiles = 0;
   public int nvars = 0;
   public int nintVars = 0;
+
   public void testCountIntervalVars() throws Exception {
     String dir = TestAll.testdataDir + "cdmUnitTest/tds/new";
     //String dir = "E:/formats/grib";
@@ -96,7 +97,7 @@ public class TestIntervalVars extends TestCase {
       Product bean = pdsSet.get(makeUniqueId(ggr));
       if (bean == null) {
         bean = new Product(ggr);
-        pdsSet.put( makeUniqueId(ggr), bean);
+        pdsSet.put(makeUniqueId(ggr), bean);
       }
       bean.list.add(ggr);
     }
@@ -107,7 +108,7 @@ public class TestIntervalVars extends TestCase {
     for (Product p : sortList) {
       p.sort();
       System.out.printf("  %s (%d)%n", p.name, p.ggr.productTemplate);
-      //System.out.printf("%s%n", p.doAccumAlgo());
+      System.out.printf("%s%n", p.doAccumAlgo(false));
     }
 
     ncd.close();
@@ -116,11 +117,11 @@ public class TestIntervalVars extends TestCase {
 
   private int makeUniqueId(GribGridRecord ggr) {
     int result = 17;
-    result += result*37 + ggr.productTemplate;       // productType, discipline, category, paramNumber
-    result += result*37 + ggr.discipline;
-    result += result*37 + ggr.category;
-    result += result*37 + ggr.paramNumber;
-    result *= result*37 + ggr.levelType1;
+    result += result * 37 + ggr.productTemplate;       // productType, discipline, category, paramNumber
+    result += result * 37 + ggr.discipline;
+    result += result * 37 + ggr.category;
+    result += result * 37 + ggr.paramNumber;
+    result *= result * 37 + ggr.levelType1;
     return result;
   }
 
@@ -130,8 +131,8 @@ public class TestIntervalVars extends TestCase {
     String name;
 
     Product(GribGridRecord ggr) {
-      this.ggr= ggr;
-      name = ParameterTable.getParameterName(ggr.discipline, ggr.category, ggr.paramNumber) +"/" + Grib2Tables.codeTable4_5(ggr.levelType1);
+      this.ggr = ggr;
+      name = ParameterTable.getParameterName(ggr.discipline, ggr.category, ggr.paramNumber) + "/" + Grib2Tables.codeTable4_5(ggr.levelType1);
     }
 
     void sort() {
@@ -144,8 +145,8 @@ public class TestIntervalVars extends TestCase {
       });
     }
 
-    private String doAccumAlgo() {
-      List<GribGridRecord> all = new ArrayList<GribGridRecord>( list);
+    private String doAccumAlgo(boolean detail) {
+      List<GribGridRecord> all = new ArrayList<GribGridRecord>(list);
       List<GribGridRecord> hourAccum = new ArrayList<GribGridRecord>(all.size());
       List<GribGridRecord> runAccum = new ArrayList<GribGridRecord>(all.size());
 
@@ -153,11 +154,11 @@ public class TestIntervalVars extends TestCase {
 
       for (GribGridRecord rb : all) {
         int ftime = rb.forecastTime;
-        ftimes.add( ftime);
+        ftimes.add(ftime);
 
         int start = rb.startOfInterval;
         int end = rb.forecastTime;
-        if (end-start == 1) hourAccum.add(rb);
+        if (end - start == 1) hourAccum.add(rb);
         if (start == 0) runAccum.add(rb);
       }
 
@@ -165,50 +166,53 @@ public class TestIntervalVars extends TestCase {
 
       Formatter f = new Formatter();
       f.format("      all: ");
-      showList(all, f);
+      if (detail) showList(all, f); else testConstantInterval(all, f);
 
-      if (hourAccum.size() > n -2) {
-        for (GribGridRecord rb :hourAccum) all.remove(rb);
+      if (hourAccum.size() > n - 2) {
+        for (GribGridRecord rb : hourAccum) all.remove(rb);
         f.format("hourAccum: ");
-        showList(hourAccum, f);
+        if (detail) showList(hourAccum, f); else testConstantInterval(hourAccum, f);
       }
 
-      if (runAccum.size() > n -2) {
-        for (GribGridRecord rb :runAccum) all.remove(rb);
+      if (runAccum.size() > n - 2) {
+        for (GribGridRecord rb : runAccum) all.remove(rb);
         f.format(" runAccum: ");
-        showList(runAccum, f);
+        if (detail) showList(runAccum, f); else testConstantInterval(runAccum, f);
       }
 
       if ((all.size() > 0) && (all.size() != list.size())) {
         f.format("remaining: ");
-        showList(all, f);
+        if (detail) showList(all, f); else testConstantInterval(all, f);
       }
 
       return f.toString();
     }
 
-    private String testConstantInterval(List<GribGridRecord> list) {
-        boolean same = true;
-        int intv = -1;
-        for (GribGridRecord rb :list) {
-          int start = rb.startOfInterval;
-          int end = rb.forecastTime;
-          int intv2 = end - start;
-          if (intv2 == 0) continue; // skip those weird zero-intervals
-          else if (intv < 0) intv = intv2;
-          else same = (intv == intv2);
-          if (!same) break;
-        }
-     return same ? " Interval="+intv : " Mixed";
-    }
 
     private void showList(List<GribGridRecord> list, Formatter f) {
       f.format("(%d) ", list.size());
       for (GribGridRecord rb : list)
         f.format(" %d-%d", rb.startOfInterval, rb.forecastTime);
-      f.format(" %s %n", testConstantInterval(list));
+      testConstantInterval(list, f);
     }
 
+    private void testConstantInterval(List<GribGridRecord> list, Formatter f) {
+      boolean same = true;
+      int intv = -1;
+      for (GribGridRecord rb : list) {
+        int start = rb.startOfInterval;
+        int end = rb.forecastTime;
+        int intv2 = end - start;
+        if (intv2 == 0) continue; // skip those weird zero-intervals
+        else if (intv < 0) intv = intv2;
+        else same = (intv == intv2);
+        if (!same) break;
+      }
+      if (same)
+        f.format(" Interval=%d%n",intv);
+      else
+        f.format(" Mixed%n");
+    }
 
     @Override
     public int compareTo(Product o) {

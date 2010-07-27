@@ -528,7 +528,7 @@ class FmrcDataset {
       // promote all grid variables to agg variables
       for (FmrcInvLite.Gridset.Grid ugrid : gridset.grids) {
         VariableDS aggVar = (VariableDS) result.findVariable(ugrid.name);
-        if (aggVar == null) {
+        if (aggVar == null) { // a ugrid is not in the proto
           logger.error("cant find ugrid variable "+ugrid.name+" in collection "+lite.collectionName);
           continue; // skip
         }
@@ -831,7 +831,7 @@ class FmrcDataset {
         //BestInventory bestInv = makeBestInventory(bestTimeCoord, ugrid);
 
         VariableDS aggVar = (VariableDS) result.findVariable(ugrid.name);
-        if (aggVar == null) {
+        if (aggVar == null) { // a ugrid is not in the proto
           logger.error("cant find ugrid variable "+ugrid.name+" in collection "+lite.collectionName);
           continue; // skip
         }

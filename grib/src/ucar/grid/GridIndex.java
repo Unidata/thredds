@@ -39,6 +39,7 @@ import java.util.*;
 
 /**
  * An "in memory" index for 2D grid files.
+ * Has list of GridRecord (Parameter), GridDefRecord (GDS) and attributes.
  *
  */
 public final class GridIndex {
@@ -120,8 +121,8 @@ public final class GridIndex {
     }
 
     /**
-     * Get the grid count
-     * @return the count
+     * Get the count of GridRecords
+     * @return the count of GridRecords
      */
     public int getGridCount() {
         return index.size();
