@@ -74,6 +74,10 @@ public class NsslRadarMosaicConvention extends CoordSysBuilder {
         (null == ncfile.findGlobalAttribute("Time")))
       return false;
 
+    if ( null == ncfile.findDimension( "Lat" ) ||
+         null == ncfile.findDimension( "Lon" ) )
+      return false;
+
     return true;
   }
 
