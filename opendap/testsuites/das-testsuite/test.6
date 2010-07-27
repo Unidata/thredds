@@ -1,0 +1,10 @@
+
+#  Test unterminated comments. Old test, should fail miserably
+
+attributes {
+    var_11 {
+	string slota val1;
+	string slotb val2; /* a bad comment
+    }
+}
+

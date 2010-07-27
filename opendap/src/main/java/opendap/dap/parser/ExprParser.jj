@@ -1,0 +1,515 @@
+/////////////////////////////////////////////////////////////////////////////
+// This file is part of the "Java-DAP" project, a Java implementation
+// of the OPeNDAP Data Access Protocol.
+//
+// Copyright (c) 2007 OPeNDAP, Inc.
+// Author: James Gallagher <jgallagher@opendap.org>
+//
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License, or (at your option) any later version.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+// You can contact OPeNDAP, Inc. at PO Box 112, Saunderstown, RI. 02874-0112.
+/////////////////////////////////////////////////////////////////////////////
+
+
+options {
+    STATIC = false;		// Methods are _not_ static
+    DEBUG_PARSER = false;
+    DEBUG_LOOKAHEAD = false;
+    DEBUG_TOKEN_MANAGER = false;
+}
+
+PARSER_BEGIN(ExprParser)
+
+package opendap.dap.parser;
+
+import java.util.Vector;
+import java.util.Stack;
+
+import opendap.dap.*;
+import opendap.dap.Server.*;
+
+/** The constraint expression parser class. <p>
+
+    Because it only makes sense to evaluate CEs when serving data, the
+    BaseTyeFactory <em>must</em> create instances of the SDtype classes, not
+    the Dtype classes. The is because we use the setRead method of the class
+    ServerMethods when creating constants (to ensure that the evaluator
+    doesn't try to read tem from the dataset!).
+
+    @author jhrg */
+
+public class ExprParser {
+    private ServerDDS sdds;
+    private CEEvaluator ceEval;
+    private BaseTypeFactory factory;
+    private ClauseFactory clauseFactory;
+
+    /** Run the named projection function. Projection functions are run for
+	their side effect; the return value is discarded.
+	@param name The name of the projection function, look this up in the
+	ServerDDS.
+	@param btv A vector of BaseType variables that are the arguments of
+	the projection function. */
+    private void runProjectionFunction(String name, Vector btv) {
+    }
+
+    /** Remove double quotes from around a string. If there's not both start
+	and ending quotes, does nothing.
+	@param s The source string.
+	@return The string without double quotes. */
+    private String removeQuotes(String s) {
+	if (s.startsWith("\"") && s.endsWith("\""))
+	    return s.substring(1, s.length() - 1);
+	else
+	    return s;
+    }
+
+    /** Given a stack of BaseType variables, mark these as part of the
+     * current projection. This function assumes that if the TOS contains a
+     * Ctor type variable, all of its members are to be projected. Also
+     * assume  all variables under the TOS are Ctor variables and
+     * only the ctor itself is to be projected; the member within the Ctor
+     * that is part of the projection will be on the stack, too. */
+    private void markStackedVariables(Stack s) {
+	// Reverse the stack.
+	Stack bts = new Stack();
+	// System.err.println("Variables to be marked:");
+	while (!s.empty()) {
+	    // System.err.println(((BaseType)s.peek()).getName());
+	    bts.push(s.pop());
+	}
+
+	// For each but the last stack element, set the projection.
+	// setProject(true, false) for a ctor type sets the projection for
+	// the ctor itself but *does not* set the projection for all its
+	// children. Thus, if a user wants the variable S.X, and S contains Y
+	// and Z too, S's projection will be set (so serialize will descend
+	// into S) but X, Y and Z's projection remain clear. In this example,
+	// X's projection is set by the code that follows the while loop.
+	// 1/28/2000 jhrg
+	while (bts.size() > 1) {
+	    ServerMethods ct = (ServerMethods)bts.pop();
+	    ct.setProject(true, false);
+	}
+
+	// For the last element, project the entire variable.
+	ServerMethods bt = (ServerMethods)bts.pop();
+	bt.setProject(true, true);
+    }
+}
+
+PARSER_END(ExprParser)
+
+SKIP : {
+    " "
+    | "\t"
+    | "\n"
+    | "\r"
+}
+
+TOKEN : {
+    <EQUAL: "=">        |
+    <NOT_EQUAL:	"!=">   |
+    <GREATER: ">">      |
+    <GREATER_EQL: ">="> |
+    <LESS: "<">         |
+    <LESS_EQL: "<=">    |
+    <REGEXP: "=~">      |
+
+    <LBRACKET: "[">     |
+    <RBRACKET: "]">     |
+    <COLON: ":">        |
+    <COMMA: ",">        |
+    <AMPERSAND: "&">    |
+    <LPAREN: "(">       |
+    <RPAREN: ")">       |
+    <LBRACE: "{">       |
+    <RBRACE: "}">       |
+    <SEPARATOR: ".">    |
+
+    // Note about WORD: In libdap WORD includes the dot (.) character. Here
+    // it does not. This is because this software parses dot and builds a
+    // Stack of names and then passes those to a DDS::search() method.
+    // That method returns a second Stack which holds the corresponding
+    // BaseType objects, which is then used by the markStackedVariables()
+    // method here to mark the projection. So, in libdap (C++) the dot
+    // is part of WORD and is parsed by the C++ code; here it is not part
+    // of WORD and is parsed by the parser. jhrg 08/13/07
+    <WORD: ["+","-","a"-"z","A"-"Z","0"-"9","_","/","%","\\","*"](["-","+","a"-"z","A"-"Z","0"-"9","_","/","%","\\","#","*"])*>
+}
+
+/** This is the entry point for the Constraint expression parser.<p>
+
+    Note that this method catches any ParserException and recasts it to a
+    DAP2Exception after replacing all double quotes with single quotes.
+
+    @param ceEval A CEEvaluator instance where any select clauses will be
+    dumped and from which the DDS, which supplies the evaluation environment,
+    will be read.
+    @param factory A BaseTypeFactory used to generate instances of variables
+    as needed (e.g., to hold values of constants).
+    @param clauseFactory A ClauseFactory used to generate instances of each
+    type of clause. */
+
+void constraint_expression(CEEvaluator ceEval, BaseTypeFactory factory,
+                           ClauseFactory clauseFactory)
+    throws NoSuchVariableException, NoSuchFunctionException,
+	   InvalidOperatorException, DAP2Exception, InvalidParameterException,
+	   SBHException, WrongTypeException:
+{
+    this.ceEval = ceEval;
+    this.sdds = ceEval.getDDS();
+    this.factory = factory;
+    this.clauseFactory = clauseFactory;
+}
+{
+    try {
+	projection() ( selection() )* // Projection given
+	|
+	{
+	    ceEval.markAll(true); // No projection; mark all
+	}
+	( selection() )*
+    }
+    catch (ParseException pe) {
+	// Extract the message and rethrow after changing all the double
+	// quotes to single quotes so that the code that (might) send the
+	// text of this exception back to a client over the network won't
+	// barf.
+	String msg = pe.getMessage();
+	if (msg != null)
+	    msg = msg.replace('\"', '\'');
+	throw new DAP2Exception(DAP2Exception.MALFORMED_EXPR, msg);
+    }
+}
+
+void selection()
+    throws NoSuchVariableException, NoSuchFunctionException,
+	   InvalidOperatorException, ParseException, SBHException,
+	   DAP2Exception:
+{
+    Clause c;
+}
+{
+    <AMPERSAND> c = clause()
+    {
+	ceEval.appendClause(c);
+    }
+}
+
+Clause clause()
+    throws NoSuchVariableException, NoSuchFunctionException,
+	   InvalidOperatorException, ParseException, DAP2Exception:
+{
+    Clause c;
+    SubClause lop, rop;
+    Vector ropv;
+    int op;
+}
+{
+    LOOKAHEAD(2) c = bool_function()
+    {
+	return c;
+    }
+
+    | lop = value() op = rel_op() {ropv = new Vector();}
+	  (
+	    rop = value() {ropv.addElement(rop);}
+	    | <LBRACE> (rop = value() {ropv.addElement(rop);} (<COMMA>)? )+ <RBRACE>
+	  )
+    {
+	return clauseFactory.newRelOpClause(op, lop, ropv);
+    }
+}
+
+Clause bool_function()
+    throws NoSuchVariableException, NoSuchFunctionException,
+	   InvalidOperatorException, ParseException, DAP2Exception:
+{
+    Token name;			// Name of the function
+    Vector btv;			// Vector of BaseTypes; the arguments
+}
+{
+    name = <WORD> btv = arg_list()
+    {
+	return clauseFactory.newBoolFunctionClause(name.image, btv);
+    }
+}
+
+// Note that I'm using the constants from the ExprParserConstants interface
+// rather than (re)define a new set of constants. 7/20/99 jhrg
+int rel_op() :
+{
+    Token op;
+}
+{
+    op = <EQUAL>
+    { return op.kind; }
+
+    | op = <NOT_EQUAL>
+    { return op.kind; }
+
+    | op = <GREATER>
+    { return op.kind; }
+
+    | op = <GREATER_EQL>
+    { return op.kind; }
+
+    | op = <LESS>
+    { return op.kind; }
+
+    | op = <LESS_EQL>
+    { return op.kind; }
+
+    | op = <REGEXP>
+    { return op.kind; }
+
+}
+
+void projection()
+    throws NoSuchVariableException, NoSuchFunctionException,
+	   InvalidOperatorException, ParseException, InvalidParameterException,
+	   SBHException, WrongTypeException, DAP2Exception:
+{}
+{
+    proj_clause() ( <COMMA> proj_clause() )*
+}
+
+// Note that we have to keep a count of the array index number for the calls
+// to array_index(). 7/20/99 jhrg
+void proj_clause()
+    throws NoSuchVariableException, NoSuchFunctionException,
+	   InvalidOperatorException, ParseException, InvalidParameterException,
+	   SBHException, WrongTypeException, DAP2Exception:
+{
+    Token t;
+    Vector btv;
+}
+{
+    LOOKAHEAD(2) t = <WORD> btv = arg_list()
+    {
+	ceEval.appendClause(clauseFactory.newBTFunctionClause(t.image, btv));
+	// runProjectionFunction(t.image, btv);
+    }
+    | proj_variable()
+}
+
+void proj_variable()
+    throws NoSuchVariableException, NoSuchFunctionException,
+	   InvalidOperatorException, ParseException, InvalidParameterException,
+	   SBHException, WrongTypeException, DAP2Exception:
+{
+    Token t;
+    BaseType bt;
+    Stack comp = new Stack();	// Stack of components
+}
+{
+    comp = component(comp) ( <SEPARATOR> comp = component(comp) )*
+    {
+	markStackedVariables(comp);
+    }
+}
+
+Stack component(Stack components)
+    throws ParseException, DAP2Exception:
+{
+    Token t;
+    int count = 0;
+    ServerArrayMethods abt;
+}
+{
+    LOOKAHEAD(2) t = <WORD>
+    {
+	components = sdds.search(t.image, components);
+	try {
+	    abt = (ServerArrayMethods)components.peek();
+	}
+	catch (ClassCastException cce) {
+	    String msg = "Attempt to treat the variable `" + t.image
+	    + "' as if it is an array.";
+	    throw new DAP2Exception(DAP2Exception.MALFORMED_EXPR, msg);
+	}
+    }
+    (array_index(count++, abt))+
+    {
+	return components;
+    }
+    | t = <WORD>
+    {
+	components = sdds.search(t.image, components);
+	return components;
+    }
+}
+
+Vector arg_list()
+    throws NoSuchVariableException, NoSuchFunctionException,
+	   InvalidOperatorException, ParseException, DAP2Exception:
+{
+    Vector cv = new Vector();
+    Clause c;
+}
+{
+    <LPAREN> (c = value() {cv.addElement(c);} (<COMMA>)? )*
+    <RPAREN> {return cv;}
+}
+
+// Note that we must explicitly catch the NumberFormatExceptions since it is
+// a child of RuntimeException. Might as well do it here and munge the
+// message into a DAP2Exception object. 1/6/2000 jhrg
+
+void array_index(int count, ServerArrayMethods bt)
+    throws ParseException, DAP2Exception, InvalidParameterException,
+	   SBHException:
+{
+    Token t1, t2, t3;
+}
+{
+    LOOKAHEAD(5) <LBRACKET> t1=<WORD> <COLON> t2=<WORD> <COLON> t3=<WORD> <RBRACKET>
+    {
+	try {
+	    bt.setProjection(count, Integer.parseInt(t1.image),
+			     Integer.parseInt(t2.image),
+			     Integer.parseInt(t3.image) );
+	}
+	catch (NumberFormatException e) {
+	    throw new DAP2Exception(DAP2Exception.MALFORMED_EXPR,
+"Could not parse one of " + t1.image + ", " + t2.image + ", " + t3.image +
+" as an integer: " + e.getMessage());
+	}
+    }
+    | LOOKAHEAD(3) <LBRACKET> t1=<WORD> <COLON> t2=<WORD> <RBRACKET>
+      {
+	  try {
+	      bt.setProjection(count, Integer.parseInt(t1.image), 1,
+			       Integer.parseInt(t2.image) );
+	  }
+	  catch (NumberFormatException e) {
+	      throw new DAP2Exception(DAP2Exception.MALFORMED_EXPR,
+"Could not parse one of " + t1.image + ", " + t2.image +
+" as an integer: " + e.getMessage());
+	  }
+      }
+    | <LBRACKET> t1=<WORD> <RBRACKET>
+       {
+	   try {
+	       bt.setProjection(count, Integer.parseInt(t1.image), 1,
+				Integer.parseInt(t1.image) );
+	   }
+	   catch (NumberFormatException e) {
+	       throw new DAP2Exception(DAP2Exception.MALFORMED_EXPR,
+"Could not parse " + t1.image + " as an integer: " + e.getMessage());
+	   }
+       }
+}
+
+// Values only appear in the selection part of a CE.
+// Use clauseFactory to create the appropriate type of clause - joew
+SubClause value()
+    throws NoSuchVariableException, NoSuchFunctionException,
+	   InvalidOperatorException, DAP2Exception, ParseException:
+{
+    Token t;
+    Vector btv;
+    BaseType bt;
+    String name;
+    Stack comp = new Stack();
+}
+{
+    LOOKAHEAD(2) t = <WORD> btv = arg_list()
+    {
+	return clauseFactory.newBTFunctionClause(t.image, btv);
+    }
+
+    | LOOKAHEAD(2) comp = component(comp)
+	( <SEPARATOR> comp = component(comp) )*
+    {
+	bt = (BaseType)comp.pop();
+	return clauseFactory.newValueClause(bt, false);
+    }
+
+    | LOOKAHEAD(2) bt = constant()
+    {
+	return clauseFactory.newValueClause(bt, true);
+    }
+}
+
+String field()
+    throws ParseException:
+{
+    String name;
+    Token t;
+}
+{
+    t = <WORD>
+    {
+	name = t.image;
+    }
+    (<SEPARATOR> t = <WORD>
+	{
+	    name += "." + t.image;
+	}
+    )+
+    {
+	return name;
+    }
+}
+
+// See my comment above about the NumberFormatExceptions. 8/20/99 jhrg
+BaseType constant() throws DAP2Exception, ParseException:
+{
+    Token t;
+}
+{
+    LOOKAHEAD(2) t = <WORD>
+    {
+	//System.out.println("Setting constant value: "+t.image + " (<WORD>)");
+	DInt32 i = factory.newDInt32("constant");
+	try {
+	    i.setValue(Integer.parseInt(t.image));
+	    ((ServerMethods)i).setRead(true);
+	    ((ServerMethods)i).setProject(true);
+	}
+	catch (NumberFormatException e) {
+	    throw new DAP2Exception(DAP2Exception.MALFORMED_EXPR,
+            "Could not parse `" + t.image + "' as an integer: " + e.getMessage());
+	}
+	return i;
+    }
+    | LOOKAHEAD(2) t = <WORD>
+    {
+    System.out.println("Setting constant value: "+t.image + " (<WORD>)");
+	DFloat64 f = factory.newDFloat64("constant");
+	try {
+	    f.setValue(Double.valueOf(t.image).doubleValue());
+	    ((ServerMethods)f).setRead(true);
+	    ((ServerMethods)f).setProject(true);
+	}
+	catch (NumberFormatException e) {
+	    throw new DAP2Exception(DAP2Exception.MALFORMED_EXPR,
+            "Could not parse `" + t.image + "' as an integer: " + e.getMessage());
+	}
+	return f;
+    }
+    | t = <WORD>
+    {
+    System.out.println("Setting constant value: "+t.image + " (<WORD>)");
+	DString s = factory.newDString("constant");
+	s.setValue(removeQuotes(t.image));
+	((ServerMethods)s).setRead(true);
+        ((ServerMethods)s).setProject(true);
+
+	return s;
+    }
+}

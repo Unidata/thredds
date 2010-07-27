@@ -1,0 +1,15 @@
+
+# -*- Perl -*-
+# test all sorts of numbers (do they all parse correctly?)
+
+Attributes {
+    test {
+	String names this, is, a, vector, of, strings;
+	Byte b 1, 0, 127, 255;
+	Int32 int_vec 1, 2, 2147483647; # nearly the bigest int32 allowed
+	Float64 float_vec 1.0, -1.0, +1.0, 0.2, -0.2, +0.2, .3, -.3, +.3,
+	                  -3.1415, -3.1415e-99, -3.1415e+99, +3.1415e-99,
+	                  -3., +2., 4.; # big float vector
+        Url where http://bozo.place.com/home.html;
+    }
+}

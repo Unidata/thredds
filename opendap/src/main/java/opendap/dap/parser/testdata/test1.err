@@ -1,0 +1,4 @@
+Error {
+    code = 2;
+    message = "The variable `xx' was not found in the dataset.";
+};

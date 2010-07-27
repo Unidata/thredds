@@ -1,0 +1,702 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+    <title>Servlet Configuration</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body>
+<h1 align="center"><img src="images/opendap-logo.gif" width="0" height="0" align="absmiddle"></h1>
+<h1 align="center">&nbsp;</h1>
+<h2 align="center">Servlet Configuration And General Information</h2>
+<hr>
+
+<h3>Servlets</h3>
+
+<p>This document should help you get started configuring your OPeNDAP servlets.
+    These servlets were developed, compiled, and tested using
+    the javac 1.4.1 compiler, the 1.4.1 Java Virtual Machine, and Jakarta Tomcat
+    4.1.18 (which also provided the javax.servlet packages).</p>
+<ul>
+    <li><a href="#CONFIG"><strong>Servlet Configuration</strong></a></li>
+</ul>
+
+<p>The specific configuration details for servlets distributed with the core
+    Java-OPeNDAP software can be found below:</p>
+<ul>
+    <li><strong><a href="#DTS">DAP2 Test Server
+        (DTS) configuration</a></strong></li>
+    <li><strong><a href="#DRDS">DAP2 Relational Database Server (DRDS) configuration</a></strong></li>
+</ul>
+
+<p>There are a number of ways to customize the .info service of your OPeNDAP
+    servlet. See:</p>
+<ul>
+    <li><a href="#ADDINFFILES"><strong> Additional Information Files</strong></a></li>
+</ul>
+
+<p>for instructions on how to perform this customization.</p>
+
+<p><strong><em>Note</em></strong>: All Examples of web.xml configurations in
+    this document were check against Jakarta Tomcat 4.1.18</p>
+<hr>
+
+<h3><a name="CONFIG"></a>Servlet Configuration
+</h3>
+
+<p>The OPeNDAP servlets get their configuration from the servlet's web.xml file.
+    The default location of the web.xml file is (at least in Tomcat 4.1)
+    in <em>$TOMCATHOME/webapps/opendap/WEB-INF </em>(Obviously if the <em>opendap</em> directory
+    gets renamed then things change accordingly.)</p>
+
+<p> Each instance of a servlet running
+    in the opendap servlet area needs an entry in the web.xml file. Multiple
+    instances of a servlet and/or several different servlets can be configured
+    in the one
+    web.xml file. For instance you can have a DTS and 2 instances of the DRDS
+    configured through one web.xml file.</p>
+
+<p>Each instance of a servlet needs a unique name which is specified inside a
+    <em>&lt;servlet&gt;</em> element in the web.xml file using the <em>&lt;servlet-name&gt;</em> tag.
+    This is a name of convenience, for example if you where serving data from an
+    ARGOS satellite you might call that servlet <em>argos</em>.</p>
+
+<p>Additionally each instance of a <em>&lt;servlet&gt;</em> must specify which
+    Java class contains the actual servlet to run. This is done in the <em>&lt;servlet-class&gt;</em> element.
+    For example the DRDS's class name is <em>opendap.servers.sql.drds</em></p>
+
+<p>Here is a syntax example combining the two previous example values:</p>
+<pre>
+    &lt;servlet&gt;
+    &lt;servlet-name&gt;argos&lt;/servlet-name&gt;
+    &lt;servlet-class&gt;opendap.servers.sql.drds&lt;/servlet-name&gt;
+    .
+    .
+    .
+    &lt;/servlet&gt;</pre>
+
+<p>This servlet could then be accessed as:</p>
+<blockquote>
+    <p><em>http://hostname/opendap/servlet/argos</em></p>
+</blockquote>
+
+<p>You may also add to the end of the <em>web.xml</em> file a set of &lt;servlet-mapping&gt;
+    elements. These allow you to abbreviate the URL or the servlet. By placing
+    the servlet mappings:</p>
+<blockquote>
+    <pre>
+        &lt;servlet-mapping&gt;
+        &lt;servlet-name&gt;argos&lt;/servlet-name&gt;
+        &lt;url-pattern&gt;/argos&lt;/url-pattern&gt;
+        &lt;/servlet-mapping&gt;
+        &lt;servlet-mapping&gt;
+        &lt;servlet-name&gt;argos&lt;/servlet-name&gt;
+        &lt;url-pattern&gt;/argos/*&lt;/url-pattern&gt;
+        &lt;/servlet-mapping&gt;
+    </pre>
+</blockquote>
+
+<p>At the end of the <em>web.xml</em> file our previous example changes it's URL to:</p>
+<blockquote>
+    <p><em>http://hostname/opendap/argos</em></p>
+</blockquote>
+
+<p>Eliminating the need for the word <em>servlet</em> in the URL. For more on
+    the <em>&lt;servlet-mapping&gt;</em> element see the Jakarta-Tomcat documentation.</p>
+
+<h3>&lt;init-param&gt; Elements</h3>
+
+<p> The OPeNDAP servlets use <em>&lt;init-param&gt; </em>elements inside of
+    each <em>&lt;servlet&gt;</em> element to get specific configuration information. </p>
+
+<p><em>&lt;init-param&gt;'s </em> common
+    to all OPeNDAP servlets are: </p>
+<ul>
+    <li><strong>DebugOn</strong> - This controls output to the terminal from which
+        the servlet engine was launched. The value is a list of flags that turn on
+        debugging instrumentation
+        in different parts of the code. Common values are : <em>showRequest, showResponse</em>,
+        <em>showException</em>, and<em> probeRequest</em> Other debugging values that are specific
+        to each servlet should be documented in
+        each servlets javadoc documentation. <br>
+        <em>Example:</em>
+        <pre>&lt;init-param&gt;
+            &lt;param-name&gt;DebugOn&lt;/param-name&gt;
+            &lt;param-value&gt;showRequest showResponse&lt;/param-value&gt;
+            &lt;/init-param&gt;
+        </pre>
+        <em>Default</em>: If this parameter is
+        not set, or the value field is empty then debugging instrumentation is not
+        turned on.<br>
+    </li>
+    <br>
+    <li><strong>DDXcache</strong> - This is should be set to the directory
+        containing the DDX files for the data sets used by the servlet. Some servlets
+        have been developed that
+        do not use DDX's that are cached on the disk, however the default behavior
+        is for the servlet to load DDX images from disk. <br>
+        <em>Example:</em>
+        <pre>&lt;init-param&gt;
+            &lt;param-name&gt;DDXcache&lt;/param-name&gt;
+            &lt;param-value&gt;/usr/OPeNDAP/sdds-testsuite/ddx/&lt;/param-value&gt;
+            &lt;/init-param&gt;
+        </pre>
+        <em>Default</em>: If this parameter is not set (does not appear in as an <em>&lt;init-param&gt;</em>)
+        then it is set to <em>$TOMCATHOME/webapps/opendap/datasets/<strong>servlet-name</strong>/ddx</em> (where
+        <em><strong>servlet-name</strong></em><strong></strong>is the same as the
+        name specified in the <em>&lt;servlet-name&gt;</em> element of the servlet
+        configuration) .<br>
+    </li>
+    <br>
+    <li><strong>DDScache</strong> - This is should
+        be set to the directory containing the DDS files for the data sets used
+        by the
+        servlet. Some servlets have been
+        developed that do not use DDS's that are cached on the disk, however
+        the default behavior is for the servlet to load DDS images from disk. <br>
+        <em>Example:</em>
+        <pre>
+            &lt;init-param&gt;
+            &lt;param-name&gt;DDScache&lt;/param-name&gt;
+            &lt;param-value&gt;/usr/OPeNDAP/sdds-testsuite/dds/&lt;/param-value&gt;
+            &lt;/init-param&gt;
+        </pre>
+        <em>Default</em></em><strong>:</strong> If this parameter is not set (does
+    not appear in as an <em>&lt;init-param&gt;</em>) then it is
+    set to <em>$TOMCATHOME/webapps/opendap/datasets/<strong>servlet-name</strong>/dds</em> (where <em><strong>
+    servlet-name</strong></em> is
+    the same as the name specified in the <em>&lt;servlet-name&gt;</em> element
+    of the servlet configuration)<br>
+</li>
+<br>
+<li><strong>DAScache</strong> - This is should be set to the directory
+    containing the DAS files for the data sets used by the servlet. Some servlets
+    have been developed that
+    do not use DAS's that are cached on the disk, however the default behavior
+    is for the servlet to load DAS images from disk. <strong></strong><br>
+    <em>Example:</em>
+    <pre>
+        &lt;init-param&gt;
+        &lt;param-name&gt;DAScache&lt;/param-name&gt;
+        &lt;param-value&gt;/usr/OPeNDAP/sdds-testsuite/das/&lt;/param-value&gt;
+        &lt;/init-param&gt;
+    </pre>
+    <em>Default</em><strong>:</strong> If this parameter is not set (does not appear
+    in as an <em>&lt;init-param&gt;</em>) then it is
+    set to <em>$TOMCATHOME/webapps/opendap/datasets/<strong>servlet-name</strong>/das</em> (where <em><strong>
+    servlet-name</strong></em> is
+    the same as the name specified in the <em>&lt;servlet-name&gt;</em> element
+    of the servlet configuration) .<br>
+</li>
+<br>
+<li><strong>INFOcache</strong> - This is should
+    be set to the directory containing the files used by the &quot;.info&quot; service
+    for the servlet. This directory should contain any data set specific &quot;over-ride&quot; files
+    (see below), any data set specific additional information files (see below),
+    and any servlet specific information
+    files(see below). <br>
+    <em>Example:</em>
+    <pre>
+        &lt;init-param&gt;
+        &lt;param-name&gt;INFOcache&lt;/param-name&gt;
+        &lt;param-value&gt;/usr/OPeNDAP/sdds-testsuite/info/&lt;/param-value&gt;
+        &lt;/init-param&gt;
+    </pre>
+    <em>Default</em><strong>:</strong> If this parameter is not set (does not appear
+    in as an <em>&lt;init-param&gt;</em>) then it is
+    set to <em>$TOMCATHOME/webapps/opendap/datasets/<strong>servlet-name</strong>/info</em> (where <em><strong>
+    servlet-name</strong></em> is
+    the same as the name specified in the <em>&lt;servlet-name&gt;</em> element of
+    the servlet configuration) <br>
+</li>
+<br>
+<li><strong>SchemaLocation</strong> - The value of this <em>&lt;init-param&gt;</em> should
+    be set to the URL that points to the OPeNDAP XML schema file used by the
+    servlet. In general this should not be set and allowed to be it's default. <br>
+    <em>Example:</em>
+    <pre>
+        &lt;init-param&gt;
+        &lt;param-name&gt;SchemaLocation&lt;/param-name&gt;
+        &lt;param-value&gt; http://dods.coas.oregonstate.edu:8080/opendap/opendap.xsd&lt;/param-value&gt;
+        &lt;/init-param&gt;
+    </pre>
+    <em>Default:</em> If this parameter is not set (does not appear in as an <em>&lt;init-param&gt;</em>) then the
+    SchemaLocation is
+    set to <em>http://<strong>hostname</strong>/opendap/opendap.xsd </em> where <em><strong>hostname</strong></em> is
+    the hostname and socket of the servlet engine. For example, if my hostname
+    is <em>opendap.org</em> and my servlet engine is running on port <em>8080</em> the my default
+    SchemaLocation is: <br>
+    <em>http://opendap.org:8080/opendap/opendap.xsd</em><br>
+</li>
+</ul>
+
+<p>&nbsp;</p>
+
+
+<hr>
+<strong><a name="DTS"></a>DAP2 Test Server (DTS) </strong><em>classname</em>: opendap.servers.test.dts<br>
+<br>
+This servlet is primarily used to test the core code (in particular the DAP).
+This servlet will take any DDS in it's DDScache (see below) and populate it with
+invented data per client request. This allows the testing of unusual DDS structures.<br>
+</p>
+<p><strong>DTS Configuration</strong></p>
+<p><em>&lt;init-param&gt;'s </em> unique to the DTS:</p>
+<ul>
+    <li><strong>SequenceLength</strong> -
+        This <em>&lt;init-param&gt;</em> sets the number of rows each Sequence
+        returned by the DTS will have. Common values are typically small (5-100)
+        for simple testing.
+        If you are to testing client code against the DTS you may wish to use a large
+        value (&gt;50000) here to check the client's ability to handle large Sequences. <br>
+        <em>Example:</em>
+        <pre>
+            &lt;init-param&gt;
+            &lt;param-name&gt;SequenceLength&lt;/param-name&gt;
+            &lt;param-value&gt;100&lt;/param-value&gt;
+            &lt;/init-param&gt;
+        </pre>
+        <em>Default:</em> Is set to <em>5 </em> if this parameter is not set (does not appear in as an <em>&lt;init-param&gt;</em>).
+        <br>
+    </li><br>
+    <li><strong> DebugOn</strong> - There are no DTS specific values for
+        this <em>&lt;init-param&gt;</em></li>
+</ul>
+<p><strong>Example of web.xml content:</strong></p>
+<pre>
+    &lt;servlet&gt;
+    &lt;servlet-name&gt;
+    dts
+    &lt;/servlet-name&gt;
+    &lt;servlet-class&gt;
+    opendap.servers.test.dts
+    &lt;/servlet-class&gt;
+    &lt;init-param&gt;
+    &lt;param-name&gt;DebugOn&lt;/param-name&gt;
+    &lt;param-value&gt;showRequest showResponse &lt;/param-value&gt;
+    &lt;/init-param&gt;
+    &lt;param-name&gt;SequenceLength&lt;/param-name&gt;
+    &lt;param-value&gt;100&lt;/param-value&gt;
+    &lt;/init-param&gt;
+    &lt;/servlet&gt;
+</pre>
+<p>In this example SequenceLength gets set to 100.</p>
+<hr>
+    <p><strong><a name="DRDS"></a>DAP2 Relational Database Server (DRDS) </strong> <em>classname</em>:
+        opendap.servers.sql.drds <br>
+        <br>
+        This OPeNDAP server serves data from a relational
+database to OPeNDAP clients. </p>
+
+    <p>The DRDS uses the JDBC interface to connect to the
+        database. This means that to use
+        this server you will need to locate and install JDBC drivers for your database
+        system. (This requirement is for the server only, the OPeNDAP clients that use
+        the server need know nothing about JDBC or SQL). Here are some links that
+        should lead you to the JDBC support pages for some of the more common RDBM's:</p>
+    <ul>
+        <li><strong><a href="http://www.mysql.com/products/connector-j/index.html">MySQL
+            JConnector site </a></strong></li>
+        <li><strong><a href="http://jdbc.postgresql.org/">PostgreSQL
+            JDBC site</a></strong><strong>, additional </strong><strong><a
+                href="http://developer.postgresql.org/docs/postgres/jdbc.html">PostgreSQL
+            JDBC documentation</a></a></strong></li>
+    <li><strong><a href="http://otn.oracle.com/tech/java/sqlj_jdbc/content.html">Oracle's
+        SQLJ, JDBC, &amp; JPublisher site</a></strong></li>
+    <li><a href="http://www-3.ibm.com/software/data/informix/tools/jdbc/"><strong>Informix JDBC Drivers site</strong>
+    </a></li>
+</ul>
+<p>Most modern database vendors usually provide JDBC drivers for their product.
+    The glaring exception has been Microsoft, which isn't surprising as they have
+    made
+    no bones about wanting to kill Java. As of the release of MSSQL-Server 2000,
+    Microsoft appears to be offering a JDBC driver for Win2000/XP systems. I have
+    developed using MSSQL-Server for some time (still do actually.) and I have
+    been using
+    a purchased set of drivers from DataDirect Technologies (formerly
+    known
+    as
+    Merant DataDirect). I am using their &quot;SequeLink&quot; product and it's
+    been working great. Find it, and
+    the
+    Microsoft
+    stuff, at the following links:</p>
+<ul>
+    <li><strong><a
+            href="http://www.microsoft.com/downloads/details.aspx?FamilyID=86212d54-8488-481d-b46b-af29bb18e1e5&DisplayLang=en">Microsoft
+        SQL-Server 2000 JDBC Drivers</a></strong></li>
+    <li><strong><a href="http://www.datadirect-technologies.com/">Data Direct Technologies</a></strong></li>
+</ul>
+<p> In this release the DRDS does
+    not
+    support SQL JOIN operations. Each database table must appear as a OPeNDAP Sequence
+    data type in its own DDS file. If your data crosses multiple tables then you
+    will need to make a &quot;view&quot; or a &quot;virtual table&quot; in the
+    database in order to serve the data with the DRDS. This situation will improve
+    in the
+    next major revision. (I have an as yet un-implemented plan to allow the DRDS
+    to support SQL JOIN operations.) </p>
+<p><strong>DRDS Datatype Translation</strong></p>
+Since the DRDS is reading data from
+a relational database through a JDBC connection it is important
+to note    that their are several layers of type translation happening in this:
+
+<blockquote>
+    <p>Database -> JDBC -> Java -> OPeNDAP</p>
+</blockquote>
+<p>The Database types are the native types for the particular database
+    that is being read from. The translation from Database->JDBC is handled
+    before we get to the data (most likely by the JDBC Drivers). Our mapping
+    of JDBC type to OPeNDAP types (the intermediate Java types happen in
+    the process) looks like this: </p>
+<blockquote>
+    <pre>
+        <strong>JDBC Type       OPeNDAP Type</strong>
+        TINYINT             Byte
+        SMALLINT            Int16
+        INTEGER             Int32
+        BIGINT              Int32 **NO SENSIBLE MAPPING (Need Int64)
+        REAL                Float32
+        FLOAT               Float64
+        DOUBLE              Float64
+        DECIMAL             Float64 **NO SENSIBLE MAPPING (Need Some Kind Monsterous Floating point value)
+        NUMERIC             Float64 **NO SENSIBLE MAPPING (ibid)
+        CHAR                String
+        VARCHAR             String
+		
+        LONGVARCHAR         Implemented to be read into a String, 
+		                       although it is a "BLOB" type and
+                               might be better represented as an 
+							   Array(of bytes).
+							   
+        BINARY              Array(of bytes)
+        VARBINARY           Array(of bytes)
+        LONGVARBINARY       Array(of bytes)
+        TIME                String
+        TIMESTAMP           String
+    </pre>
+</blockquote>
+<p>
+    And are handled in the read() method for each of the corresponding
+    OPeNDAP data types.
+</p>
+<p>&nbsp;</p>
+<p><strong>DRDS Configuration</strong></p>
+<p><em>&lt;init-param&gt;'s</em> unique to the DRDS:</p>
+<ul>
+    <li><strong>JDBCdriver</strong> - This must be set to the fully qualified Java
+        class name of the JDBC drivers that the servlet is to use to make the JDBC
+        connection to the DBMS. In my servlet that is using the Merant
+        DataDirect JDBC drivers the class name of the JDBC driver is <strong>
+        com.merant.sequelink.jdbc.SequeLinkDriver</strong><br>
+        <em>Example:</em>
+    </li>
+</ul>
+<blockquote>
+    <pre>
+        &lt;init-param&gt;
+        &lt;param-name&gt;JDBCDriver&lt;/param-name&gt;
+        &lt;param-value&gt;com.merant.sequelink.jdbc.SequeLinkDriver&lt;/param-value&gt;
+        &lt;/init-param&gt;
+    </pre>
+
+    <p><em>Default:</em>
+        This is a <strong>required</strong> <em>&lt;init-param&gt;</em>, there is no default value. <br>
+    </p>
+
+    <p><br>
+    </p>
+</blockquote>
+<ul>
+    <li><strong>JDBCconnectionURL</strong> -
+        This is the connection URL (aka the connection string) that the DRDS
+        is to use to connect to to the DBMS. This is usually defined by
+        the developers of the JDBC driver. Read the documentation for the JDBC
+        driver that you are using. It is not always easy to ascertain for
+        a particular installation.
+        For example, in my
+        server
+        that
+        is using the Data Direct drivers the value is set to: &quot;jdbc:sequelink://sugar.oce.orst.edu:19996&quot;
+        <strong></strong>If
+        you are stumped get in touch with me(<a href="mailto:ndp@coas.oregonstate.edu">ndp@coas.oregonstate.edu</a>)
+        and I'll try to help.<strong><br>
+    </strong><br>
+        <em>Example:</em>
+    </li>
+</ul>
+<blockquote>
+    <pre>
+        &lt;init-param&gt;
+        &lt;param-name&gt;JDBCconnectionURL&lt;/param-name&gt;
+        &lt;param-value&gt;jdbc:sequelink://sugar.oce.orst.edu:19996&lt;/param-value&gt;
+        &lt;/init-param&gt;
+    </pre>
+
+    <p><em>Default:</em>
+        This is a <strong>required</strong> <em>&lt;init-param&gt;</em>, there is no default value. <br>
+    </p>
+
+    <p><br>
+    </p>
+</blockquote>
+<ul>
+    <li><strong> JDBCusername</strong> -
+        This is the user name for the DBMS that the JDBC connection will be
+        made under. This is often set to &quot;guest&quot;.<br>
+        <br>
+        <em>Example:</em>
+    </li>
+</ul>
+<blockquote>
+    <pre>
+        &lt;init-param&gt;
+        &lt;param-name&gt;JDBCusername&lt;/param-name&gt;
+        &lt;param-value&gt;guest&lt;/param-value&gt;
+        &lt;/init-param&gt;
+    </pre>
+
+    <p><em>Default:</em>
+        This is a <strong>required</strong> <em>&lt;init-param&gt;</em>, there is no default value. <br>
+    </p>
+
+    <p><br>
+    </p>
+</blockquote>
+<ul>
+    <li><strong> JDBCpassword</strong> -
+        The password associated with the above username. This is stored as simple
+        text, so make sure that the JDBC user doesn't have
+        any significant
+        privileges! If there is no password required, you must still set the this <em>&lt;init-param&gt;</em>,
+        just leave the value element empty.<br>
+        <br>
+        <em>Example:</em>
+    </li>
+</ul>
+<blockquote>
+    <pre>
+        &lt;init-param&gt;
+        &lt;param-name&gt;JDBCpassword&lt;/param-name&gt;
+        &lt;param-value&gt;abracadabra&lt;/param-value&gt;
+        &lt;/init-param&gt;
+    </pre>
+
+    <p><em>Default:</em>
+        This is a <strong>required</strong> <em>&lt;init-param&gt;</em>, there is no default value. <br>
+    </p>
+
+    <p><br>
+    </p>
+</blockquote>
+<ul>
+    <li><strong>JDBCMaxResponseLength</strong> - This limits the number
+        of lines that the DRDS will for a given client request. For debugging
+        I use 300. For production I use 300000. Your milage may vary depending
+        on the amount of memory resources available. You may wish to perform
+        some
+        testing
+        on
+        your server to establish an appropriate value. <strong>Warning:</strong> Small
+        values may lead to incomplete returns from queries.<br>
+        <br>
+        <em>Example:</em></li>
+</ul>
+<blockquote>
+    <pre>
+        &lt;init-param&gt;
+        &lt;param-name&gt;JDBCMaxResponseLength&lt;/param-name&gt;
+        &lt;param-value&gt;50000&lt;/param-value&gt;
+        &lt;/init-param&gt;
+    </pre>
+
+    <p><em>Default:</em>
+        : If this parameter is not set (does not appear in as an <em>&lt;init-param&gt;</em>)
+        then it is set to 100.</p>
+
+    <p>&nbsp;      </p>
+</blockquote>
+<ul>
+    <li><strong> UseDatasetName</strong> -
+        This is a (probably temporary) hack. Some databases (in particular
+        MS-SQL Server 7.0) require that the database name and the owner of the
+        database
+        be
+        specified in every variable and table name. This is awkward for the
+        current implementation of the DRDS. The work around is to name the data
+        set (in
+        the DDS file) with the database name and owner name of the table
+        being served.
+        For
+        example in one data set that I server the database name is &quot;EOSDB&quot; and
+        the owner of the database is &quot;DBO&quot;. I set the<em> init-param</em> UseDatasetName
+        then I define the DDS as follows:
+    </li>
+</ul>
+<blockquote>
+    <pre>
+        Dataset {
+        Sequence {
+        Float64 battery;
+        Float64 checksum;
+        Float64 data_age;
+        } Drifters;
+        } EOSDB.DBO;
+    </pre>
+
+    <p> Thus the hack is invoked. It doesn't matter if the value of this<em> init-param</em> is
+        empty (although if it's not you should set it to &quot;true&quot;),
+        it simply needs to appear in the <strong>web.xml</strong> file.If you don't want to use
+        this hack then DO NOT even included the<em> init-param </em>&quot;UseDatasetName&quot; in
+        the web.xml entry for the DRDS. <br>
+        <br>
+        <em>Example:</em>
+    </p>
+    <pre>
+        &lt;init-param&gt;
+        &lt;param-name&gt;JDBCDriver&lt;/param-name&gt;
+        &lt;param-value&gt;com.merant.sequelink.jdbc.SequeLinkDriver&lt;/param-value&gt;
+        &lt;/init-param&gt;
+    </pre>
+
+    <p><em>Default:</em>
+        If this <em>&lt;init-param&gt;</em> does not appear in the configuration then the hack
+        is not invoked.. <br>
+    </li>
+    <br>
+</p>
+</blockquote>
+<ul>
+    <li><strong> DebugOn</strong> - Values specific to the DRDS are: <em>JDBC</em><br>
+    </li>
+</ul>
+<p><strong>Example of web.xml content:</strong></p>
+<pre>&lt;servlet&gt;
+    &lt;servlet-name&gt;
+        drds
+    &lt;/servlet-name&gt;
+	
+    &lt;servlet-class&gt;
+        opendap.servers.sql.drds
+    &lt;/servlet-class&gt;
+	
+    &lt;init-param&gt;
+       &lt;param-name&gt;JDBCdriver&lt;/param-name&gt;
+       &lt;param-value&gt; com.merant.sequelink.jdbc.SequeLinkDriver&lt;/param-value&gt;
+    &lt;/init-param&gt;
+	
+    &lt;init-param&gt;
+        &lt;param-name&gt;JDBCconnectionURL&lt;/param-name&gt;
+        &lt;param-value&gt;jdbc:sequelink://sugar:19996&lt;/param-value&gt;
+    &lt;/init-param&gt;
+	
+    &lt;init-param&gt;
+        &lt;param-name&gt;JDBCusername&lt;/param-name&gt;
+        &lt;param-value&gt;guest&lt;/param-value&gt;
+    &lt;/init-param&gt;
+	
+    &lt;init-param&gt;
+        &lt;param-name&gt;JDBCpassword&lt;/param-name&gt;
+        &lt;param-value&gt;&lt;/param-value&gt;
+    &lt;/init-param&gt;
+	
+    &lt;init-param&gt;
+        &lt;param-name&gt;JDBCMaxResponseLength&lt;/param-name&gt;
+        &lt;param-value&gt;300&lt;/param-value&gt;
+    &lt;/init-param&gt;
+	
+    &lt;init-param&gt;
+        &lt;param-name&gt;UseDatasetName&lt;/param-name&gt;
+        &lt;param-value&gt;&lt;/param-value&gt;
+    &lt;/init-param&gt;
+	
+    &lt;init-param&gt;
+        &lt;param-name&gt;INFOcache&lt;/param-name&gt;
+        &lt;param-value&gt;/usr/Java-OPeNDAP/testsuites/sdds-testsuite/info/&lt;/param-value&gt;
+    &lt;/init-param&gt;
+	
+    &lt;init-param&gt;
+        &lt;param-name&gt;DDScache&lt;/param-name&gt;
+        &lt;param-value&gt;/usr/Java-OPeNDAP/testsuites/sdds-testsuite/dds/&lt;/param-value&gt;
+    &lt;/init-param&gt;
+	
+    &lt;init-param&gt;
+        &lt;param-name&gt;DAScache&lt;/param-name&gt;
+        &lt;param-value&gt;/usr/Java-OPeNDAP/testsuites/sdds-testsuite/das/&lt;/param-value&gt;
+    &lt;/init-param&gt;
+	
+    &lt;init-param&gt;
+        &lt;param-name&gt;DebugOn&lt;/param-name&gt;
+        &lt;param-value&gt;showRequest showResponse JDBC&lt;/param-value&gt;
+    &lt;/init-param&gt;
+
+&lt;/servlet&gt;</pre>
+<hr>
+    <strong><a name="ADDINFFILES"></a>Additional Information Files
+    </strong>
+
+    <p>The current implementation of the AbstractServlet provides a &quot;.info&quot; service
+        in addition to the &quot;.dds&quot;, &quot;.das&quot;, and &quot;.dods&quot; services.
+        This &quot;.info&quot;
+        service returns an html document that renders human readable content in a
+        browser. This document is a synthesis of the contents of the DDS and the DAS.
+        There are
+        provisions for adding additional information, and for overriding the
+        default document. There are three types of files used by the &quot;.info&quot; service
+        to achieve this. They are: </p>
+    <ul>
+        <li><strong>Dataset Over-Ride Files</strong> - These files live in the <strong><a href="#CONFIG">INFOcache</a>
+        </strong> directory.
+            To override the .info service output for a particular dataset, place a file
+            of
+            html text containing the override document in the <a href="#CONFIG"><strong>INFOcache</strong></a>
+            directory.
+            The file should be a complete HTML document that can be rendered by
+            most browsers.
+            The
+            file should have the same name as the dataset with an additional&quot;.ovr&quot; suffix.
+            For example, is my dataset is called &quot;test.22&quot; then the over-ride
+            file is called &quot;test.22.ovr&quot; <strong><br>
+        </strong></li>
+        <li><strong> Dataset Additional Information
+            Files</strong> -
+            These files live in the <a href="#CONFIG"><strong>INFOcache</strong></a> directory.
+            If you want to supplement the &quot;.info&quot; service
+            output provided by the servlet, place a file of html text containing
+            the additional information
+            in the <strong><a href="#CONFIG">INFOcache</a></strong> directory.
+            This html text should be a snippet of html, not a complete document.
+            It will
+            be inserted into the &quot;.info&quot; service
+            response. It should not contain &lt;head&gt;, &lt;meta&gt;, &lt;body&gt; or
+            other document definition tags. The file should have the same name as the
+            dataset with an additional&quot;.html&quot; suffix. For example, is my
+            dataset is called &quot;test.22&quot; then the additional information
+            file is called &quot;test.22.html&quot; <strong><br>
+        </strong></li>
+        <li><strong> Servlet
+            Information Files</strong> -
+            These files live in the <a href="#CONFIG"><strong>INFOcache</strong></a> directory.
+            They are used to provide servlet specific information in the &quot;.info&quot; service
+            response. If you write a servlet and want to add information to the &quot;.info&quot; service
+            response about your servlets idiosyncrasies, place a file of html
+            text containing the additional information in the <strong><a href="#CONFIG">INFOcache</a></strong>
+            directory.
+            This html text should
+            be a snippet of html, not a complete document. It will be inserted
+            into the &quot;.info&quot; service
+            response. It should not contain &lt;head&gt;, &lt;meta&gt;, &lt;body&gt; or
+            other document definition tags. The file should have the same name as the
+            java CLASSPATH of the servlet followed by a &quot;.html&quot; suffix. For
+            example the DAP2 Test Servlet (DTS) that I developed has a class name
+            of &quot;opendap.servers.test.dts&quot; Thus,
+            its servlet information file is called &quot;opendap.servers.test.dts.html&quot;</li>
+    </ul>
+
+    <p>Examples of all of
+        these files can be found in the default <a href="#CONFIG"><strong>INFOcache</strong></a> directory
+        of this servlet distribution.  <br>
+        <br>
+    </p>
+</body>
+</html>

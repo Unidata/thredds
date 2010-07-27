@@ -1,23 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module relativePaths="true" type="JAVA_MODULE" version="4">
-  <component name="FacetManager">
-    <facet type="web" name="opendap">
-      <configuration>
-        <descriptors>
-          <deploymentDescriptor name="web.xml" url="file://$MODULE_DIR$/../../../Java-OPeNDAP/resources/WEB-INF/web.xml" />
-        </descriptors>
-        <webroots>
-          <root url="file://$MODULE_DIR$/../../../Java-OPeNDAP/resources" relative="/" />
-        </webroots>
-      </configuration>
-    </facet>
-  </component>
   <component name="NewModuleRootManager" inherit-compiler-output="false">
-    <output url="file://$MODULE_DIR$/../../../Java-OPeNDAP/target/classes" />
-    <output-test url="file://$MODULE_DIR$/../../../Java-OPeNDAP/target/test/classes" />
+    <output url="file://$MODULE_DIR$/../../opendap/target/classes" />
+    <output-test url="file://$MODULE_DIR$/../../opendap/target/test/classes" />
     <exclude-output />
-    <content url="file://$MODULE_DIR$/../../../Java-OPeNDAP">
-      <sourceFolder url="file://$MODULE_DIR$/../../../Java-OPeNDAP/src" isTestSource="false" />
+    <content url="file://$MODULE_DIR$/../../opendap">
+      <sourceFolder url="file://$MODULE_DIR$/../../opendap/src/main/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/../../opendap/src/test/java" isTestSource="true" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
@@ -48,7 +37,7 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module-library" exported="">
+    <orderEntry type="module-library">
       <library>
         <CLASSES>
           <root url="jar://$MODULE_DIR$/../../lib/external/commons-logging-1.1.jar!/" />
@@ -61,24 +50,6 @@
       <library>
         <CLASSES>
           <root url="jar://$MODULE_DIR$/../../lib/external/commons-httpclient-3.1.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" exported="">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../lib/external/commons-codec-1.3.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" exported="">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../lib/external/commons-io-1.4.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

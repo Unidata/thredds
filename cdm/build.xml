@@ -38,6 +38,10 @@
   <property name="javadoc.dir" value="${build.dir}/javadoc"/>
   <property name="javadocAll.dir" value="${build.dir}/javadocAll"/>
 
+  <!-- Relative path to opendap dir -->
+  <property name="opendap.relpath" value="../opendap"/>
+
+
   <property name="release.library.dir" value="${uni.ftp.dir}/pub/netcdf-java/v${release.version}/"/>
   <property name="release.doc.dir" value="${uni.ftp.dir}/pub/netcdf-java/v${release.version}/"/>
   <property name="release.html.dir" value="${uni.www.dir}/content/software/netcdf-java/v${release.version}/"/>
@@ -390,7 +394,7 @@
 
   <property name="jarIdv" value="ncIdv.jar"/>
   <property name="idv.dir" value="${build.dir}/idv"/>
-  <target name="makeIDVjar" depends="makeMain" description="create jar for idv">
+  <target name="makeIDVjar" depends="makeMain, opendap" description="create jar for idv">
     <mkdir dir="${idv.dir}"/>
     <unzip dest="${idv.dir}">
       <fileset dir="${lib.dir}">
@@ -1018,5 +1022,10 @@
   </target>
 
   <!-- -->
+
+  <target name="opendap">
+        <!-- Build opendap.jar and copy to release dir -->
+	<ant dir="${opendap.relpath}" target="thredds" inheritAll="false"/>
+  </target>
 
 </project>

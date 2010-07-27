@@ -1,0 +1,13 @@
+version 2.2:  0725/2010
+	- Integrate as part of thredds
+
+version 2.2:  04/01/2010
+	- Code management turned over to Dennis Heimbigner
+	  (dmh@ucar.edu)
+	- Removed deprecated code
+	- Moved the parsing from using javacup to using
+          Bison 2.4.2; constraint expression parsing for the server
+          still uses Javacup.
+
+version 1.1.7:  04/01/2010
+	- Current version on opendap.org.

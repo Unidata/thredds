@@ -10,14 +10,6 @@
       <maximumStackSize value="128" />
       <properties />
     </buildFile>
-    <buildFile url="file://$PROJECT_DIR$/../../../Java-OPeNDAP/build.xml">
-      <additionalClassPath />
-      <antReference projectDefault="true" />
-      <customJdkName value="" />
-      <maximumHeapSize value="128" />
-      <maximumStackSize value="2" />
-      <properties />
-    </buildFile>
   </component>
   <component name="ArtifactManager">
     <artifact type="exploded-war" name="tds:tds exploded">
@@ -33,8 +25,8 @@
             <element id="dir-copy" path="$PROJECT_DIR$/../../cdm/src/main/resources" />
             <element id="module-output" name="common" />
             <element id="module-output" name="unidataCommon" />
-            <element id="module-output" name="opendap" />
             <element id="module-output" name="grib" />
+            <element id="module-output" name="opendap" />
             <element id="dir-copy" path="$PROJECT_DIR$/../../grib/resources" />
           </element>
           <element id="directory" name="lib">
@@ -219,11 +211,6 @@
             <files>
               <file url="file://$PROJECT_DIR$/../../bufrTables/src/main/webapp/WEB-INF/web.xml" />
               <file url="file://$PROJECT_DIR$/../../bufrTables/target/WEB-INF/web.xml" />
-            </files>
-          </module>
-          <module name="opendap">
-            <files>
-              <file url="file://$PROJECT_DIR$/../../../Java-OPeNDAP/resources/WEB-INF/web.xml" />
             </files>
           </module>
         </modules>
@@ -582,33 +569,6 @@
   <component name="SvnBranchConfigurationManager">
     <option name="myConfigurationMap">
       <map>
-        <entry key="$PROJECT_DIR$/../../../Java-OPeNDAP">
-          <value>
-            <SvnBranchConfiguration>
-              <option name="branchMap">
-                <map>
-                  <entry key="http://scm.opendap.org/svn/branch">
-                    <value>
-                      <list />
-                    </value>
-                  </entry>
-                  <entry key="http://scm.opendap.org/svn/tags">
-                    <value>
-                      <list />
-                    </value>
-                  </entry>
-                </map>
-              </option>
-              <option name="branchUrls">
-                <list>
-                  <option value="http://scm.opendap.org/svn/branch" />
-                  <option value="http://scm.opendap.org/svn/tags" />
-                </list>
-              </option>
-              <option name="trunkUrl" value="http://scm.opendap.org/svn/trunk" />
-            </SvnBranchConfiguration>
-          </value>
-        </entry>
         <entry key="$PROJECT_DIR$/../../bufrTables">
           <value>
             <SvnBranchConfiguration>
@@ -852,6 +812,33 @@
             </SvnBranchConfiguration>
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/../../opendap">
+          <value>
+            <SvnBranchConfiguration>
+              <option name="branchMap">
+                <map>
+                  <entry key="svn://zero/thredds/branch">
+                    <value>
+                      <list />
+                    </value>
+                  </entry>
+                  <entry key="svn://zero/thredds/tag">
+                    <value>
+                      <list />
+                    </value>
+                  </entry>
+                </map>
+              </option>
+              <option name="branchUrls">
+                <list>
+                  <option value="svn://zero/thredds/branch" />
+                  <option value="svn://zero/thredds/tag" />
+                </list>
+              </option>
+              <option name="trunkUrl" value="svn://zero/thredds/trunk" />
+            </SvnBranchConfiguration>
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/../../tds">
           <value>
             <SvnBranchConfiguration>
@@ -940,7 +927,6 @@
   </component>
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="svn" />
-    <mapping directory="$PROJECT_DIR$/../../../Java-OPeNDAP" vcs="svn" />
     <mapping directory="$PROJECT_DIR$/../../../grib" vcs="svn" />
     <mapping directory="$PROJECT_DIR$/../../../ncwms" vcs="svn" />
     <mapping directory="$PROJECT_DIR$/../../../unidataCommon" vcs="svn" />

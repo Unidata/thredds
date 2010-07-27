@@ -1,0 +1,11 @@
+Dataset {
+    Grid {
+     ARRAY:
+        Float64 tamp[5][5][5][5];
+     MAPS:
+        Float64 x[5];
+        Float64 y[5];
+        Float64 z[5];
+        Float64 t[5];
+    } FourD;
+} SimpleGrids;

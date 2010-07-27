@@ -1,0 +1,103 @@
+
+# expect/tcl code to test the das scanner
+# jhrg
+#
+# $Log: scanner.a.exp,v $
+# Revision 1.1  2003/08/11 20:50:09  ndp
+# Initial revision
+#
+# Revision 1.2  1998/10/06 22:51:36  jehamby
+# Increase timeouts to 5 seconds in case Java is slower than usual.
+#
+# Revision 1.1.1.1  1998/10/06 01:54:38  jehamby
+# Imported sources
+#
+# Revision 1.1  1996/07/16 16:54:41  jimg
+# Added.
+#
+#
+
+global comp_output		# contains output from das-test_start
+global verbose			# this and srcdir are set by runtest.exp
+global srcdir
+
+set test_name scanner.a
+
+set prompt "das-test:"
+set timeout 5
+set pass 1
+
+das-test_start s
+
+expect {
+    "${prompt} " { 
+    }
+    timeout { 
+	send_user "Timeout\n"
+	set pass 0
+    }
+}
+
+if {$pass} {
+    set thing "\{\r\n"
+    send $thing
+
+    expect {
+	-re ".*Left Brace\r\n${prompt} $" { 
+	}
+	timeout { 
+	    send_user "Timeout\n"
+	    set pass 0
+	}
+    }
+}
+
+if {$pass} {
+    set thing "\}\r\n"
+    send $thing
+
+    expect {
+	-re ".*Right Brace\r\n${prompt} $" { 
+	}
+	timeout { 
+	    send_user "Timeout\n"
+	    set pass 0
+	}
+    }
+}
+
+if {$pass} {
+    set thing ";\r\n"
+    send $thing
+
+    expect {
+	-re ".*Semicolon\r\n${prompt} $" { 
+	}
+	timeout { 
+	    send_user "Timeout\n"
+	    set pass 0
+	}
+    }
+}
+
+if {$pass} {
+    set thing ",\r\n"
+    send $thing
+
+    expect {
+	-re ".*Comma\r\n${prompt} $" { 
+	}
+	timeout { 
+	    send_user "Timeout\n"
+	    set pass 0
+	}
+    }
+}
+
+if {$pass} {
+    pass $test_name
+} else {
+    fail $test_name
+}
+
+das-test_exit

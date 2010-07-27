@@ -1,0 +1,57 @@
+#
+# expect/tcl code to test the dds parser and scanner
+# jhrg
+#
+# $Id: test.19.exp 15901 2007-02-28 23:57:28Z jimg $
+
+global comp_output		# contains output from dds-test_start
+global verbose			# this and srcdir are set by runtest.exp
+global srcdir
+
+# The variable `test_name' is the name of the das input file for this test.
+
+set test_name test.19
+
+# The variable `test_out' is a string that contains the text that should be
+# stored in comp_output by das-test_start. The two strings should match
+# exactly.
+
+set test_out "DDS past semantic check
+DDS past full semantic check
+Dataset {
+    Int32 a;
+    Int32 b%23c\[10\];
+    Float64 c%23d;
+    Grid {
+     ARRAY:
+        Byte Image%23data\[512\];
+     MAPS:
+        String colors\[512\];
+    } huh;
+} test.19;"
+
+dds-test_start p $srcdir/$test_name
+
+if ![string compare $test_out $comp_output] { # check comp_output
+    pass "$test_name"
+} else {
+    fail "$test_name"
+}
+
+# $Log: test.19.exp,v $
+# Revision 1.1  2003/08/11 20:50:10  ndp
+# Initial revision
+#
+# Revision 1.2  2002/06/11 00:57:28  jimg
+# Added latest version from C++.
+#
+# Revision 1.1.2.2  2001/07/28 01:12:28  jimg
+# Updated to work with the new escaping code. Some of our tests assumed
+# that dashes (-) were not OK in symbol names. However, changes in the
+# DAP parsers along with changes in the escaping functions now make this
+# possible.
+#
+# Revision 1.1.2.1  2001/06/23 00:52:32  jimg
+# Added tests for `#' in IDs.
+#
+

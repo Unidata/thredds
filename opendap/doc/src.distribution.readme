@@ -1,0 +1,54 @@
+
+#######################################################################
+
+                             Java-OPeNDAP
+
+                      Source Distribution README
+
+                           $Name:  $
+
+.......................................................................
+
+
+
+This is the source code distribution for Java-OPeNDAP. It relies on the
+ANT program (http://ant.apache.org) to exercise it's production rules.
+
+It contains:
+
+    * The source code files for the Java-OPeNDAP project. Files
+      located in "src" directory.
+
+    * Documentation located in the "doc" directory.
+
+    * Ancillary libraries required to compile. Files located in
+      the "lib" directory.
+
+    *  ANT build files located in the "buildfiles" directory.
+
+The basic compile targets (dap, servers, compile, clean-compile, doc)
+work. The more complex distribution related targets don't work, as many
+of the necessary files are not included here. The complete file-set is
+available in the Java-OPeNDAP subversion repository, for those of you that
+just  have to have the whole shooting match.
+
+To build all of the source code go to the top level directory (below
+which should be the Java-OPeNDAP and buildfiles directories) and run the
+command:
+
+    ant -f buildfiles/opendap.xml compile
+
+Read the build file "buildfiles/opendap.xml" to see what it all does.
+
+Happy Coding.
+
+N.
+
+=======================================================================
+
+Nathan Potter                        ndp at opendap.org
+OPeNDAP, Inc.                        541.752.1852
+
+#######################################################################
+
+

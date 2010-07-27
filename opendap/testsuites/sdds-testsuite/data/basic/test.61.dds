@@ -1,0 +1,7 @@
+Dataset {
+    List Int32 i[10][20];
+    Structure {
+        Int32 j;
+        Int32 i;
+    } exp;
+} ListAndStructure;

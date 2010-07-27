@@ -1,0 +1,15 @@
+# Basic HDF-EOS tests
+
+global comp_output		# contains output from das-test_start
+global verbose			# this and srcdir are set by runtest.exp
+global srcdir
+global host
+
+set testdir ${TESTDIR}
+
+set test_name "hdfeos"
+
+geturl_all "${testdir}" "GridFile" {UTMGrid.Data%20Fields.Vegetation[0:5][0:5]}
+geturl_all "${testdir}" "PointFile"
+geturl_all "${testdir}" "SwathFile"
+

@@ -1,0 +1,246 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+    <title>Developer Information</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body>
+<h1 align="center"><img src="images/opendap-logo.gif" align="absmiddle"></h1>
+<h1 align="center">Java Software</h1>
+<h2 align="center">Developers Information</h2>
+<hr>
+
+<h3><br>
+    <a name="DEPENDS"></a>Dependencies</h3>
+
+<p><a href="http://java.sun.com/j2se/"><strong><font size="+1">Java 2 Standard Edition (J2SE)</font></strong></a></p>
+
+<p><em><strong>Minimum</strong></em><strong>:</strong> Java 1.2<br>
+    <em><strong>Recommended</strong></em><strong>:</strong> Java 1.4.1 or newer.</p>
+
+<p>This software was developed and tested against the 1.4.1 release of the J2SE</p>
+
+<p><strong><a href="https://javacc.dev.java.net/"><font size="+1">JavaCC</font></a></strong></p>
+
+<p><em><strong>Minimum</strong></em><strong>:</strong> Optional (Only required if you lan on working on the parsers.)
+    <br>
+    <em><strong>Recommended</strong></em><strong>:</strong> 2.1 or higher. (<a href="#ANTWARNING">Warning!</a>)</p>
+
+<p>Javacc takes a grammar file and produces a Java source code file from it.
+    All of these resulting Java source files are checked into the CVS tree, so
+    unless you anticipate working on the grammar files themselves you will not
+    need to get Javacc. Most of the OPeNDAP parsers rely on the <strong>JavaCC</strong> tool
+    to build. The parsers are built from a grammar file with a .jj extension. The
+    grammars
+    contain
+    the rules for
+    both the scanner and the parser (and thus encapsulate both the functionalities
+    of <strong>lex</strong> and <strong>yacc</strong>). The Javacc tool appears
+    to be a red headed step child of the Java development community. Originally
+    it was written by someone at Sun Microsystems ( possibly Bill Joy?). Eventually
+    it was farmed off to small company called WebGain. It now appears that WebGain
+    went
+    under
+    in
+    the Dot Com bust and now
+    Sun has
+    it
+    in an
+    Open Source project under the BSD license. I think it survives because it does
+    something important, we can't live without it, and there is nothing else like
+    it out there. If you are going to work on the parsers you should :</p>
+<ol>
+    <li>Talk to me first: <a href="mailto:ndp@coas.oregonstate.edu">Nathan Potter</a> voice:
+        (541) 737-2293</li>
+    <li>Read the ANT section below on how to compile the parsers.</li>
+</ol>
+
+<p><strong><a href="http://jakarta.apache.org/tomcat/index.html"><font size="+1">Jakarta Tomcat
+</font></a></strong></p>
+
+<p><em><strong>Minimum</strong></em><strong>:</strong> 4.1.18<br>
+    <em><strong>Recommended</strong></em><strong>:</strong> 4.1.27</p>
+
+<p><strong>Note</strong>: This code has not been tested against version 5 of Tomcat!</p>
+
+<p>The servlets were developed and tested using Jakarta/Tomcat 4.1.18. In particular,
+    the code was linked against the servlet.jar bundled with this particular version
+    of Tomcat. This is not (to the best
+    of my knowledge) a library that is included with the standard Java distributions.</p>
+
+<p><strong><a href="http://ant.apache.org/"><font size="+1">ANT</font></a></strong></p>
+
+<p><em><strong>Minimum</strong></em><strong>: </strong>1.5.2 (<a href="#ANTWARNING">Warning!</a>)<br>
+    <em><strong>Recommended</strong></em><strong>:</strong> 1.6 or higher</p>
+
+<p>This software now builds entirely with ANT. If you haven't already got ANT,
+    then go get it: You need it. There is a master build file in the top level
+    directory, <em>Java-OPeNDAP/build.xml</em> which relies on the numerous build
+    files located in the <em>Java-OPeNDAP/buildfiles</em> directory. The master
+    build file contains only a few simple targets. The serious developer will want
+    to read and understand the collection of build files in the <em>buildfiles</em> directory.</p>
+
+<p><em><strong>Compiling the source:</strong></em> This should be straight forward.
+    Just go to the top level directory and type &quot;ant compile&quot;. For more
+    detailed instructions you should
+    read the
+    master build file, Java-OPeNDAP/build.xml, and the core build files in
+    Java-OPeNDAP/buildfiles.</p>
+
+<p><em><strong>Compiling the parsers:</strong></em> First let me point out that
+    unless you are actively involved in parser development for OPeNDAP you shouldn't
+    bother with this. The parsers are built using JavaCC, which takes grammar files
+    (.jj) and makes Java code from them. This Java code is checked into the OPeNDAP
+    CVS tree and thus does not need to be rebuilt unless the underlying grammar
+    (.jj) files have been changed, which is strongly discouraged unless you are a
+    OPeNDAP core programmer. <strong>I suggest you turn back now</strong>. Still
+    here? I warned you...</p>
+
+<p>The <em>parsers</em> target
+    in the <em>opendap.xml</em> build
+    file uses the &lt;javacc&gt; task
+    build the parsers. The javacc task requires that the local installation of
+    JavaCC be identified as an attribute.
+    In order to
+    build the parser you will need to create a separate properties
+    file
+    (that is <strong>not</strong> checked
+    into CVS). This file must be called <em>javacc-config</em> and it must live
+    in the <em>Java-OPeNDAP/buildfiles</em> directory. The content of the <em>javacc-config</em> file
+    must be the property <em>JavaCC.home</em> and its value should be set to the
+    top level directory of the JavaCC distribution on your development system.</p>
+
+<p>Here is an example of the content of the <em>javacc-config </em>file:</p>
+
+<pre>
+    JavaCC.home=/usr/local/javacc
+</pre>
+
+Once you have created the <em>javacc-config</em> then the <em>parsers</em>
+target in <em>Java-OPeNDAP/buildfiles/opendap.xml </em>should work, at least
+within the constraints of the <a href="#ANTWARNING">Warning</a>.
+<p><em><strong>Using the deployment targets:</strong></em> There is a separate
+    ANT build file called <em>catalina-targets.xml</em> in <em>Java-OPeNDAP/buildfiles</em> which
+    contains a number of targets (<em>webapp-deploy, webapp-remove, webapp-redeploy</em>)
+    that allow the developer to build the software and deploy it into a running
+    Jakarta-Tomcat
+    (aka Catalina) server, and one target (<em>webapp-list</em>) to check on
+    the running servlets in Tomcat. Also, for the sake of rapid development and
+    conservation of effort, the <em>opendap.xml</em> build file contains two targets
+    (<em>deploy</em>,
+    and <em>quick-deploy</em>) that will compile the project (with and without
+    the JavaDoc's respectively) and put it into a running Tomcat server.</p>
+
+<p>All of these targets require that you
+    modify
+    your
+    local installation of ANT (see below)
+    and that
+    you create an ANT properties file to configure the ANT tasks to talk to and
+    authenticate with Tomcat. </p>
+
+<p>The properties file must called <em>catalina-config</em> and
+    it must be located in <em>Java-OPeNDAP/buildfiles</em>. The <em>catalina-config</em> file
+    must contain three property definitions: <em>Catalina.url</em>, <em>Catalina.username</em>,
+    and <em>Catalina.password</em>.</p>
+
+<p>Here is an example of the content of the <em>catalina-config</em> file: </p>
+<blockquote>
+    <pre>
+        Catalina.url=http://localhost:8080/manager
+        Catalina.username=admin
+        Catalina.password=secretstuff
+    </pre>
+</blockquote>
+
+<p>Where the username and password pair will authenticate as a Tomcat manager
+    (see below)</p>
+
+<p>Additionally you will need to configure ANT as described
+    below in this excerpt from the
+    Tomcat
+    4
+    online
+    documentation:</p>
+<pre>
+    In addition to the ability to execute Manager commands via HTTP requests Tomcat
+    4 includes a convenient set of Task definitions for the Ant (version 1.4
+    or later) build tool. In order to use these commands, you must perform the
+    following setup operations:
+
+
+    * Download the binary distribution of Ant from http://jakarta.apache.org/ant.
+    You must use version 1.4 or later.
+    * Install the Ant distribution in a convenient
+    directory (called ANT_HOME in the remainder of these instructions).
+    * Copy the file server/lib/catalina-ant.jar from your Tomcat 4 installation into
+    Ant's library directory ($ANT_HOME/lib).
+    * Add the $ANT_HOME/bin directory
+    to your PATH environment variable.
+    * Configure at least one username/password combination in your Tomcat user
+    database that includes the manager role.
+</pre>
+
+<p> You may wish to read more about the configuration issues for Tomcat. Check
+    out the online documentation in your running version. Assuming that you have
+    tomcat running on port 8080, then at: http://yourhost:8080 You should find
+    the additional information you need.</p>
+
+<p><strong><em><a name="ANTWARNING"></a>Warning</em></strong>: <font size="-1">There
+    exists a version conflict between some versions of ANT and some versions
+    of JavaCC. If you have JavaCC 2.1 or
+    2.0 then the parsers should compile
+    fine, no matter what version of ANT you have. However, if you are using JavaCC
+    3.0 or newer (released after the JavaCC project migrated from WebGain to Java.Net)
+    older versions of ANT will fail to correctly identify the JavaCC libraries. The
+    mail and bug archives indicate that the problem was fixed as of 5/26/2003,
+    but the patch won't migrate into a release until version 1.6.
+    You can grab a nightly build of Ant release 1.6beta as work around until 1.6
+    hits the street. Good luck.</font></p>
+
+<p><strong>Additional Libraries:</strong></p>
+
+<p>The core software depends on several third part libraries. All of these are
+    included with the distribution, and these (should) be the ones that the code
+    was compiled against for development and testing purposes. It is possibly (in
+    fact likely) that newer versions of these libraries are available from the
+    various development teams that create these products. Replace them at your
+    own risk.</p>
+
+<p> The <strong>JDOM</strong> package, version Beta 9, available from <a href="http://www.jdom.org">jdom.org</a><br>
+    The <strong>gnu regexp</strong> package, version 1.1.4, available
+    from <a href="http://www.gnu.org">gnu.org</a><br>
+    The <strong>gnu getopt</strong> package, version 1.0.6, available form <a href="http://www.gnu.org">gnu.org</a><br>
+    The <strong>Apache SOAP</strong> package, version 2.3.1, available from <a href="http://ws.apache.org/soap">apache.org</a>
+</p>
+
+<p>&nbsp;</p>
+
+<h3>Building the code</h3>
+
+<p>Building the Java-OPeNDAP software should be very simple.</p>
+<ol>
+    <li>Go get and install the current J2SE and ANT (<a href="#DEPENDS">see above</a>)</li>
+    <li>If you haven't got it already, get the source code distribution from <a
+            href="http://www.opendap.org/">OPeNDAP</a>.</li>
+    <li>Unpack the source code distribution (jar -xvf DistributionFileName.jar)</li>
+    <li>Enter the top level directory (Java-OPeNDAP)</li>
+    <li>Run the command &quot;ant compile&quot;</li>
+</ol>
+
+<p>This will compile all of the distributed software, but nothing more. Each
+    sub project in Java-OPeNDAP has it's own build file with targets that are unique
+    to it. For more detailed information you should
+    read (and
+    try to understand) the ANT files
+    in <em>Java-OPeNDAP/buildfiles</em>. For
+    those of you using an IDE you will have to follow your own &quot;path&quot; to
+    get this going.</p>
+<hr>
+
+<p>&nbsp;</p>
+
+<p>&nbsp;</p>
+</body>
+</html>

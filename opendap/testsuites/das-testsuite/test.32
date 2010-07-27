@@ -1,0 +1,10 @@
+# -*- perl -*-
+#
+
+Attributes {
+    var1 {
+	 Float64 g 6.02e23;
+	 Float64 h NaN;
+	 Float32 i NaN;
+    }
+}

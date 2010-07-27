@@ -27,6 +27,7 @@ Changes in version 4.2:
   CF1 use super.getAxisType()
   CF1 break apart convention list
   DODS parser: fix alias command in the DAS
+  Integrate Java-OPeNDAP  into thredds under name opendap and parallel to eg cdm.
  3:(2010-05-27)
   NetcdfFile.readSection(String) should unescape names
   DODNetcdfDataset.getDetailInfo() shows DAS, DDS.

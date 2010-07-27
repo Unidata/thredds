@@ -1,0 +1,4 @@
+Dataset {
+    Int32 i32;
+    String s;
+} SimpleTypes;

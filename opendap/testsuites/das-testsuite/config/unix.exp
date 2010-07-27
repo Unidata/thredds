@@ -1,0 +1,59 @@
+
+# Tcl/Expect code for the DAS test.
+
+# Make sure the global var DASTEST is set correctly.
+
+global DASTEST
+if ![info exists DASTEST] then {
+    set DASTEST "java dods.dap.test.das_test"
+}
+
+# The four `required' procs are _start, _load, _exit and _version.
+
+proc das-test_start { sw {ifile ""} {ofile ""}} {
+    global verbose
+    global DASTEST
+    global comp_output
+    global spawn_id
+
+    if {$verbose >= 1} {
+	send_user "Testing $ifile $ofile ...\n"
+	exp_internal 1
+    }
+
+    if {$ifile != ""} {
+	set ifile "< $ifile"
+    }
+
+    if {$ofile != ""} {
+	set ofile "> $ofile"
+    }
+
+    switch $sw {
+	p {catch "exec $DASTEST -p $ifile $ofile" comp_output}
+	s {eval "spawn $DASTEST -s"}
+    }
+
+    if {$verbose >= 1} {
+	switch $sw {
+	    p {
+                send_user "\n----- Comp output -----\n"
+                send_user "$comp_output"
+                send_user "\n-----------------------\n"
+              }
+
+	    s {send_user "Program running: spawn_id=$spawn_id\n"}
+	}
+    }
+}
+
+proc das-test_load {} {
+}
+
+proc das-test_exit {} {
+    send -raw ""
+}
+
+proc das-test_version {} {
+    send_user "DAS test suite 1.2\n"
+}

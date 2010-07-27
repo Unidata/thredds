@@ -1,0 +1,37 @@
+/* Copyright 2009, UCAR/Unidata and OPeNDAP, Inc.
+   See the COPYRIGHT file for more information. */
+
+%parse-param {InputStream stream}
+
+%define public
+%define package "opendap.dap.parser"
+%define extends "opendap.dap.parser.Dapparse"
+%define throws "ParseException"
+%define lex_throws "ParseException"
+
+%code imports {
+import opendap.dap.BaseTypeFactory;
+import opendap.dap.parser.ParseException;
+import java.io.*;
+}
+
+%code {
+ 
+    /**
+     * Instantiates the Bison-generated parser.
+     * @param yylexer The scanner that will supply tokens to the parser.
+     */
+
+    public DapParser(InputStream stream)
+    {
+	this(stream,(BaseTypeFactory)null);
+    }
+
+    public DapParser(InputStream stream, BaseTypeFactory factory)
+    {
+	super(factory);
+	this.yylexer = new Daplex(stream,this);
+	this.stream = stream;
+	super.lexstate = (Daplex)this.yylexer;
+    }
+}

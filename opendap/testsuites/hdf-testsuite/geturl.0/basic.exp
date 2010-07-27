@@ -1,0 +1,37 @@
+# Basic HDF tests
+
+global comp_output		# contains output from das-test_start
+global verbose			# this and srcdir are set by runtest.exp
+global srcdir
+global host
+
+set testdir ${TESTDIR}
+
+set test_name "basic"
+
+geturl_all "${testdir}" "testsds1"
+geturl_subset "${testdir}" "testsds1" {SDS_DFNT_INT32[1:2],SDS_DFNT_UINT32[1:1],SDS_DFNT_INT16[1:2],SDS_DFNT_UINT16[0:0],SDS_DFNT_INT8[0:0],SDS_DFNT_UINT8[2:2],SDS_DFNT_FLOAT32[2:3],SDS_DFNT_FLOAT64,SDS_DFNT_CHAR8[0:1],SDS_DFNT_UCHAR8[0:1]}
+geturl_all "${testdir}" "testsds2"
+geturl_all "${testdir}" "testsds3"
+geturl_subset "${testdir}" "testsds3" {SDS_2[3:5][2:3],SDS_3[2:2][2:3][0:1],SDS_6[0:1][0:0][0:0][0:0][0:0][0:0],SDS_20[0:1][0:0][0:0][0:0][0:0][0:0][0:0][0:0][0:0][0:0][0:0][0:0][0:0][0:0][0:0][0:0][0:1][0:0][0:0][0:0]}
+geturl_all "${testdir}" "testsds4"
+geturl_all "${testdir}" "testsds5"
+geturl_all "${testdir}" "testsds6"
+geturl_all "${testdir}" "testsds7"
+geturl_all "${testdir}" "testgr1"
+geturl_subset "${testdir}" "testgr1" {GR_DFNT_INT32[0:1][1:2],GR_DFNT_FLOAT64[2:3][0:1]}
+geturl_all "${testdir}" "testgr2"
+geturl_all "${testdir}" "testgr3"
+geturl_all "${testdir}" "testgr4"
+geturl_all "${testdir}" "testgr5"
+geturl_all "${testdir}" "testan1"
+geturl_all "${testdir}" "testdfr1"
+#geturl_all "${testdir}" "testdfr2"
+#geturl_all "${testdir}" "testdfr3"
+geturl_all "${testdir}" "testdfp1"
+geturl_all "${testdir}" "testvs1"
+geturl_subset "${testdir}" "testvs1" {Vdata_DFNT_UINT16&Vdata_DFNT_UINT16.Field_DFNT_UINT16.Field_DFNT_UINT16__0<5}
+geturl_all "${testdir}" "testvs2"
+geturl_all "${testdir}" "testvs3"
+geturl_all "${testdir}" "testvs4"
+geturl_all "${testdir}" "testvs5"

@@ -1,0 +1,429 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+    <title>OPeNDAP Release Notes</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body>
+<h1 align="center"><img src="images/opendap-logo.gif" align="absmiddle"> </h1>
+<h1 align="center"> Java Software</h1>
+<h2 align="center">Release Notes</h2>
+<hr>
+
+<p>&nbsp;</p>
+
+<p>The OPeNDAP software started life as the Distributed Oceanographic Data System
+    (DODS) project. Here are the release notes from previous version of the Java-DODS
+    software on which OPeNDAP is based:</p>
+
+<p><strong>Java-DODS Release 1.1.3</strong> -- 05/12/03 (ndp)<br>
+    This is a supplemental release of 1.1 that contains the fixes mentioned below
+    plus a fix of a regexp problem in the DRDS (bug 608).</p>
+
+<p><strong>Java-DODS Release 1.1.2 </strong>-- 03/11/03
+    (ndp)<br>
+    This is a supplemental release of 1.1 that contains bug fixes for server side
+    issues that only exhibit on the Windows operating system.</p>
+
+<p>J<strong>ava-DODS Release 1.1.1</strong> -- 4/9/02 (ndp)<br>
+    This is a supplemental
+    release of 1.1 that contains bug fixes for DDS, and DAS parser problems and
+    repairs
+    to the DRDS constraint expression handling.</p>
+
+<p><strong>Java-DODS Release 1.1.0</strong> -- 06/11/01 (ndp)<br>
+    Repaired DODS relational Database Server (DRDS, dods.servers.sql.drds) so that
+    it correctly handles &quot;null&quot; values in the backend database
+    tables. Repaired DODS Test Server (DTS, dods.servers.test.dts). Test server output
+    is now stable.<br>
+</p>
+
+<p><br>
+    <strong>Java-DODS Release 1.0.0</strong> -- 10/13/00 (ndp)<br>
+    Placed the majority of the server diagnostic output under conditional control.
+    Found and fixed several bugs in the server code including:</p>
+<ul>
+    <li>Problem with the
+        string types where if a user requests variable x from a server and constrains
+        it on y and y is a string the server was returning y too. (example:
+        http://DODS.URL/dataset.dods?x&amp;y=&quot;bob&quot;)</li>
+    <li>Constraint Expressions
+        were simply not working.*</li>
+    <li>The right operand in the Clause's of the constraint
+        expression was not being
+        correctly marked by the ExprParser (thanks to James G. for the fix.)
+        This should help things a bit.<br>
+    </li>
+</ul>
+
+<p><strong>Release 1.0.6 </strong>(ndp)
+</p>
+
+<p>Many things have been changed and re-arranged:
+    The servlets should now be thread safe. Much of the core
+    servlet code has been re-architected and should be carefully
+    reviewed if you have been using it and wish to continue to
+    use it.
+    The servlet NO LONGER USES .ini files. All configuration information
+    is no passed to the servlet through the javax.servlet.ServletConfig
+    interface (in particular the getInitParameter() method). This information
+    is stored in the web.xml file located in the WEB-INF directory for
+    the servlet. See the file SERVLET for more information.
+    The special clients www and ascii have been moved from
+    dods.clients to dods.servers (dods.servers.www and dods.servers.ascii
+    respectively) </p>
+
+<p><strong>Release 1.0 </strong>(ndp) </p>
+
+<p>This is the first full release of the Java-DODS core software.
+    Some fairly significant organizational changes have been made
+    since Jake's original code, and since Beta 1.1. If you have been
+    using the code it would behoove you to review the inheritance
+    hierarchy, the functional hierarchy, and the organization of
+    the packages. In particular this release ships with 2 functional
+    servers (dods.servers.test.dts and dods.servers.test.drds), 1
+    functional client (dods.clients.geturl.Geturl), 2 special clients
+    (dods.clients.ascii and dods.clients.www) that get used in the
+    server architecture. The problems that Jake pointed out below about
+    Input/Output Stream's and Reader/Writer's still remain to be
+    resolved, and unfortunately this means that we are still using
+    deprecated API's in several places.**NOTE: The test suites are currently
+    broken. They did work, but changes in
+    test server (repeated identical calls for the same dataset will produce
+    different, although predictable, data) have rendered them non functional
+    for the time being.</p>
+
+<p>
+    <strong>Beta 1.0 </strong>(ndp) </p>
+
+<p>At this time the Server side code has been written. Class hierarchies
+    have been cleaned up and in general the core code in the &quot;dap&quot; is
+    tight and clean. Many of the ancillary programs written by Jake have
+    not been extensively tested, this includes Geturl. The Server code
+    has been tested and seems to work well. </p>
+<hr>
+<strong>Note:</strong><em> The following may be completely out of date, but they are still
+    included as part of our legacy.</em>
+<hr>
+
+<h3><strong>Jake's Original Design Notes</strong></h3>
+
+<p>The following are some notes about the design
+    and implementation of
+    the Java DAP library. It should be useful reading for anyone who
+    needs to fix bugs or add features to this code.</p>
+
+<p><strong>Design Differences</strong></p>
+
+<p>The definitive documentation for the DAP is contained in the Javadoc
+    comments included with the source code. You can build this
+    documentation with the &quot;make doc&quot; target of the Makefile. Here are
+    some important differences between the API described in the Javadoc
+    comments, and the C++ version of DODS, as well as James Gallagher's
+    initial Java DAP design.</p>
+<ul>
+    <li>Only the client-side design is implemented in this library. This
+        code can form a base for a Java DODS server, but several important
+        pieces of functionality will need be written. These include: the
+        Projection, RelOps and ServerIO interfaces from James' design, the
+        Function and ServerDDS classes, and the Constraint Evaluator (CE).<br>
+    </li>
+    <li> Unlike
+        James' design, which had a single Attribute class, this implementation
+        features separate Attribute and AttributeTable classes,
+        which more closely correspond to the C++ implementation's AttrTable
+        class and its 'entry' structure.<br>
+    </li>
+    <li> One weakness of the C++ implementation
+        is the lack of encapsulation for the different DODS types. In particular,
+        a number of core
+        classes, including BaseType.cc, have to be aware of every DODS type.
+        Also, being able to set and get the type of a variable overrides the
+        natural class hierarchy accessible in C++ through RTTI (which, in
+        fairness, wasn't available when the C++ DODS was written), and in Java
+        through the 'instanceof' operator. Therefore, when designing the Java
+        DAP, I ensured that the BaseType class has no special knowledge of
+        particular DODS types, and that adding new DODS types would be as easy
+        as possible. Information on doing so is described later in this file.<br>
+    </li>
+    <li> As part
+        of the encapsulation requirement set forth in the previous point, I added
+        a new class, PrimitiveVector, to manage arrays of each
+        primitive BaseType. Each primitive type (DByte, DInt32, etc.) defines
+        its own PrimitiveVector class, which stores arrays of that primitive
+        type in a very compact form (byte[], int[], etc.). There is also a
+        generic BaseTypePrimitiveVector, which stores arrays of the DString
+        type, as well as more complex types (DStructure, etc.).
+        PrimitiveVector is public so that DODS clients can get and set the individual
+        values of each array type efficiently by retrieving the PrimitiveVector
+        object from the DVector and then casting it to the
+        appropriate child (BytePrimitiveVector, etc.).<br>
+    </li>
+    <li> One source of many problems
+        in the C++ core was the implementation of Sequence. This table type is the
+        only DODS type which must be
+        deserialized repeatedly, once for each row of the table. While this
+        design may be useful when deserializing a very large dataset
+        asynchronously, it complicates the deserialization process for all
+        other types which have to deal with sequences. When designing the
+        Java core, I wrote DSequence to retrieve all rows of the table with a
+        single call to the deserialize method. Because there is currently no
+        asynchronous getData method (the entire dataset is retrieved fully
+        populated) in the Java core, the user of the Java core can be
+        confident that either they will have received the entire dataset from
+        the getData call, or an exception will be thrown. This vastly
+        simplifies usage of this library by clients. Users who might desire
+        the asynchronous deserialization approach should be able to get the
+        same result by using Java threads and the StatusUI interface.</li>
+</ul>
+
+<p><strong>Java Pitfalls</strong></p>
+
+<p>Here are some miscellaneous comments on particular aspects of Java
+    which I had to deal with when designing the Java DAP. Hopefully you
+    won't stumble into these pitfalls yourself if I mention them here:</p>
+<ul>
+<li>InputStream vs. Reader: The biggest change in the java.io package
+    between Java 1.0 and 1.1 was the addition of a number of new classes
+    based on the Reader and Writer abstract classes instead of the
+    InputStream and OutputStream abstract classes used in Java 1.0. This
+    addition is very confusing because many other areas of Java, including
+    the standard input and output (System.in, System.out, and System.err)
+    and the java.net classes (URLConnection's getInputStream method),
+    continue to support only the older InputStream and OutputStream.<br>
+    <br>
+    Also, neither
+    class is a proper superset of the other: the DataInputStream class is the
+    only built in way to read binary values,
+    such as 'int' and 'double' types, while the BufferedReader provides
+    the only non-deprecated way to read a line of text as a String. It's
+    possible to wrap an InputStream with a Reader, but not possible to go
+    in the other direction.<br>
+    <br>
+    Furthermore, the BufferedReader has the limitation of
+    reading ahead (or buffering, hence the name) in the stream, which means that
+    the
+    original InputStream can't be used after it has been wrapped in a
+    BufferedReader. This is why the DConnect class uses the deprecated
+    DataInputStream.readLine() method, because it must use the InputStream
+    as a DataInputStream (and not a Reader) later in the code. Using a
+    deprecated method is probably the easiest way to solve this problem,
+    and I'm explaining the reasoning in detail here in case a future
+    programmer is bothered by the use of a deprecated method. By the way,
+    the reason this method was deprecated is because it doesn't properly
+    handle Unicode: since the C++ version of DODS doesn't even attempt to
+    handle Unicode, I don't think this is a big concern! <br>
+</li>
+<li> The JavaCC generated
+    parser classes perform their own buffering. Therefore it's not necessary
+    to use a BufferedReader or
+    BufferedInputStream. However, because of this lookahead, it was
+    necessary for me to write a line-buffering class called
+    HeaderInputStream to not allow the parser to read beyond the &quot;Data:&quot;
+    line. When reading data from DODS, the server sends the DDS, followed
+    by a &quot;Data:&quot; line, then the actual data. Without my HeaderInputStream
+    in the middle, the parser was reading the DDS, and buffering ahead all
+    of the data as well. HeaderInputStream is a very naive filter, and
+    could certainly be optimized for better performance, however I've not
+    profiled the code, so I don't know if it's a bottleneck or not.<br>
+</li>
+<li> A note on
+    BufferedWriter: the DAS, DDS, and DataDDS print methods which take an OutputStream
+    parameter wrap it in a BufferedWriter for
+    better performance. This allows a simple client to pass System.out
+    directly to the print method and expect reasonable performance.
+    However, note the importance of calling the flush method on the
+    BufferedWriter before returning from the print method, or else the
+    data might not be output. Again, this is all handled by the DAP, but
+    if you use BufferedWriter in your own code, make sure to properly
+    flush the stream at regular intervals, or you might not see the output
+    you expected.<br>
+</li>
+<li> A major component of the DAP is the use of the XDR library to
+    encode binary data in a platform independent manner. Fortunately, in Java,
+    there is little need for an XDR library, because the DataInputStream
+    class makes it easy to read XDR data. The only complexity is
+    reading the Byte types, because all XDR values are padded to a
+    multiple of 4 bytes, thus necessitating insertion of padding in bytes,
+    byte arrays, and strings. For more information on the XDR format,
+    look up the RFC 1014 Internet standard.<br>
+</li>
+<li> DODS has support for unsigned types
+    (UInt32), while Java does not. However, it is possible to print a Java int
+    as if it were unsigned
+    through a clever trick: cast the int to a long (64-bit) and mask
+    off the sign bits: </li>
+
+<pre> long tempVal = ((long)val) &amp; 0xFFFFFFFFL; </pre>
+
+<p>Therefore, the only significant difference between DInt32 and DUInt32
+    is in the print method, so the DUInt32 class inherits from DInt32. </p>
+<li> The
+    above tip, and many other useful tips, are listed in the Java Programmers
+    FAQ, available here:
+    http://www.best.com/~pvdl/javafaq.html.<br>
+</li>
+<li> One interesting feature of the Java
+    DAP is that many of the classes implement the Cloneable interface. This
+    enables an entire DAS or DDS
+    to be cloned by a line like the following: </li>
+
+<pre> DAS newDAS = (DAS)oldDAS.clone(); </pre>
+
+<p>The implementation of the clone method is different from the default
+    implementation supported by most Java classes in that it performs a
+    deep copy of all data contained in it. This means that once a DAS or
+    DDS is cloned, it is completely independent, and any future
+    modifications made to either class won't affect the other.</p>
+<li>Thread safety
+    is an important, and underrated issue, affecting many Java programs. The
+    Java DAP is nominally threadsafe in that the
+    deserialize method is marked as 'synchronized', which means that only
+    one thread can load new data into a DDS at a time. This is not
+    strictly necessary because deserialization is normally handled behind
+    the scenes in a single thread of the core, but it may be useful in the
+    future. Also, there are no uses of global or static variables or
+    other inherently non-threadsafe designs in the core. In particular,
+    the &quot;STATIC = false&quot; option is supplied in all three JavaCC generated
+    parsers, which means that multiple instances of the parser can be run
+    at once without conflicting.<br>
+    <br>
+    One use of the DAP which should be totally
+    threadsafe is reading multiple DAS's or DDS's at the same time, using separate
+    DConnect
+    objects (pointing to the same or different URL's). Trying to read the
+    DAS, DDS, and Data at the same time from the same DConnect object
+    should also work, since a new URLConnection is created inside the
+    method, but this hasn't been tested. Deserializing the DAS, DDS, or
+    Data while simultaneously reading out the values will probably not
+    work, but this is prevented by the design of DConnect, which only
+    returns fully downloaded DAS, DDS, or DataDDS objects.<br>
+</li>
+<li> If you need to debug
+    the parser code, you'll probably want to comment out the try/catch block
+    for ParseException in the parser
+    source (e.g. DASParser.jj for the DAS parser). This code catches an
+    exception thrown by the parser and rethrows a much more general
+    exception, which is probably less useful if you suspect a bug in the
+    parser itself. Temporarily commenting these lines out will return a
+    very specific error from the parser describing what line the error
+    occurred and which token or tokens were expected.<br>
+</li>
+<li> In the Java Geturl client,
+    you may notice particularly ugly printing of floating point values. For example,
+    0.3 prints as &quot;
+    0.30000000000000004&quot;. This is because Java, by default, prints
+    floating point numbers to their full precision, such that reading the
+    ASCII version will produce a number bit for bit identical with the
+    original. It is possible to &quot;pretty-print&quot; floating point numbers
+    using the java.text.NumberFormat class, but I didn't use this, as it
+    doesn't support exponential notation for very large or very small numbers.<br>
+</li>
+<li> One
+    feature of Java is its support for Unicode characters. These are usually
+    sent over the network in UTF-8 format, which uses a single
+    byte to represent the 7-bit ASCII characters, and two or three bytes
+    to represent the other characters in the 16-bit Unicode format.
+    Unfortunately, Unicode support is not easy in C++, and DODS currently
+    provides no international character support. Theoretically, one could
+    use the upper 128 characters in the ISO Latin 1 codeset in the C++
+    DODS to represent all characters used in the Western European
+    languages, but in both C++ and Java, I've chosen to escape any
+    characters outside of the usual 7-bit printable ASCII range for
+    clarity. If international character support is needed in the future,
+    then I suggest that the Unicode UTF-8 encoding be adopted, and that
+    this be converted into whatever format is used by the native OS on the
+    C++ side.<br>
+</li>
+<li> If you'd like to use the DAP code in a Java applet, you'll need
+    to be aware of the security restrictions surrounding applets. In
+    particular, applets are normally only allowed to establish network
+    connections to the host from which they are downloaded. This
+    restriction was designed to prevent a malicious applet from contacting
+    hosts on your internal network and giving that information to an
+    attacker outside the firewall. However, for DODS, this restriction is
+    unfortunate, because a Java DODS applet may want to communicate with
+    many different DODS servers. In this case, you can use a signed
+    applet which asks the user for permission to relax this security
+    restriction. The alternate would be to write a DODS proxy server to
+    sit on the Web server and retrieve DODS URL's from the other sites
+    which the applet can't directly access.</li>
+</ul>
+
+<p><strong>Testing</strong></p>
+
+<p>Here is some information about the test cases written for this code:</p>
+<ul>
+    <li>The das-check and dds-check testsuites were ported almost directly
+        from the C++ code. The fact that the testsuite returns identical
+        results to the C++ version is a testament to the compatibility between
+        the two versions.<br>
+    </li>
+    <li> The dap-check target is a new test program to programmatically
+        construct a DAS and DDS, fill them with data, clone them (thus testing
+        the Cloneable interface), and verify the original contents.<br>
+    </li>
+    <li> The server-check
+        target is a port of the C++ HDF DODS server, and unlike the other tests,
+        returns slightly different results from its
+        C++ counterpart. The primary difference is that floating point values
+        print slightly differently in Java (more digits of precision).
+        Another difference is that the order in which DAS attributes are
+        printed is occasionally different from the C++ version, due to the use
+        of a C++ map class (DASVHMap) which doesn't always preserve the order
+        in which the DAS was downloaded. Finally, there are a few
+        inconsistencies in the C++ printing of Sequence (indentation of braces
+        is inconsistent) and UInt32 (printed as &quot;Uint32&quot; in C++) which the
+        Java version corrects.<br>
+    </li>
+    <li> Areas which have not been tested include the old Sequence
+        deserialize protocol and deserializing a Function. This should not
+        present a big concern because the code is straightforward enough that
+        it should work, and because both cases are somewhat rare (the old
+        Sequence protocol was buggy and limited, so servers using it should be
+        upgraded anyway, and the DODS Function type has been deprecated). </li>
+</ul>
+
+<p><strong>Adding New Types To The Dap</strong></p>
+
+<p>Unlike the C++ version of DODS, the Java DAP port was designed to make
+    it easy to add new data types to the core. Here are the places where
+    the code will need to be changed to incorporate a new primitive type: </p>
+<ul>
+    <li>Add the new type as a class inheriting from BaseType. Implement all
+        required methods, using an existing class, like DInt32, as an example.
+        <br>
+    </li>
+    <li> Add a new PrimitiveVector class to handle arrays of the new type. See
+        Int32PrimitiveVector as an example. Your new type class will
+        return this new vector type in its newPrimitiveVector method. <br>
+    </li>
+    <li> Add methods
+        to the BaseTypeFactory interface and DefaultFactory class to construct a
+        new instance of your type. See the existing
+        methods as an example.<br>
+    </li>
+    <li> Add code to the DDSParser.jj to recognize your new
+        type when listed in a DAS or DDS.<br>
+    </li>
+    <li> If your type is a primitive type which
+        you want to allow in a DAS Attribute, then edit the Attribute class and DASParser.jj
+        to recognize
+        your new type when converted to String form.<br>
+    </li>
+    <li> If you have written a Java
+        DODS server (which is not currently possible, since only the client portion
+        of the DAP is implemented in
+        Java), then you may want to add this type to the list that is
+        currently served. </li>
+    <li></li>
+    <li>If you have written a Java DODS client which has detailed
+        knowledge of the DODS types (unavoidable unless you want to limit yourself
+        to
+        printing out the data in ASCII, as Geturl does), then you will need to
+        add knowledge of the new data type to your client.Jake Hamby (Jake.Hamby@jpl.nasa.gov)
+        NASA/JPL October 1998</li>
+</ul>
+</body>
+</html>
