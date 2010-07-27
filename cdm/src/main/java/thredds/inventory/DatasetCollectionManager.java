@@ -61,7 +61,6 @@ public class DatasetCollectionManager implements CollectionManager {
   public static final String CATALOG = "catalog:";
 
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(DatasetCollectionManager.class);
-  //static private final boolean debugSyncDetail = false;
   static private MController controller;
 
   /**
@@ -74,8 +73,7 @@ public class DatasetCollectionManager implements CollectionManager {
 
   public static DatasetCollectionManager open(String collection, String olderThan, Formatter errlog) throws IOException {
     if (collection.startsWith(CATALOG)) {
-      String catUrl = collection.substring(CATALOG.length());
-      return new DatasetCollectionFromCatalog(catUrl, null);
+      return new DatasetCollectionFromCatalog(collection);
     }  
 
     return new DatasetCollectionManager(collection, errlog);
@@ -86,7 +84,7 @@ public class DatasetCollectionManager implements CollectionManager {
 
   protected String collectionName;
   private CollectionSpecParser sp;
-  private DateExtractor dateExtractor;
+  protected DateExtractor dateExtractor;
 
   private final List<MCollection> scanList = new ArrayList<MCollection>();
   protected TimeUnit recheck = null; // how often to recheck

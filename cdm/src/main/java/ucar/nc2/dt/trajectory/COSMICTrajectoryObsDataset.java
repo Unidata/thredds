@@ -47,8 +47,6 @@ import ucar.unidata.util.DateUtil;
 import java.util.*;
 import java.io.IOException;
 
-import visad.CommonUnit;
-
 /**
  * Created by IntelliJ IDEA.
  * User: yuanho

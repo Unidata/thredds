@@ -58,10 +58,19 @@ public class DatasetCollectionFromCatalog extends DatasetCollectionManager imple
   private final String catalogUrl;
   private boolean debug = false;
 
-  public DatasetCollectionFromCatalog(String catalogUrl, TimeUnit recheck) {
-    this.collectionName = catalogUrl;
-    this.catalogUrl = catalogUrl;
-    this.recheck = recheck;
+  public DatasetCollectionFromCatalog(String collection) {
+    this.collectionName = collection;
+
+    if (collection.startsWith(DatasetCollectionManager.CATALOG))
+      collection = collection.substring(DatasetCollectionManager.CATALOG.length());
+
+    int pos = collection.indexOf('?');
+    if (pos > 0) {
+      this.dateExtractor = new DateExtractorFromName(collection.substring(pos+1), true);
+      collection = collection.substring(0,pos);
+    }
+
+    this.catalogUrl = collection;
   }
 
   @Override
@@ -159,7 +168,7 @@ public class DatasetCollectionFromCatalog extends DatasetCollectionManager imple
 
   public static void main(String arg[]) throws IOException {
     String catUrl = "http://motherlode.ucar.edu:8080/thredds/catalog/fmrc/NCEP/NDFD/CONUS_5km/files/catalog.xml";
-    DatasetCollectionFromCatalog man = new DatasetCollectionFromCatalog(catUrl, null);
+    DatasetCollectionFromCatalog man = new DatasetCollectionFromCatalog(catUrl);
     man.debug = true;
     man.scan(null);
     Formatter errlog = new Formatter();

@@ -77,8 +77,7 @@ public class Fmrc {
    */
   public static Fmrc open(String collection, Formatter errlog) throws IOException {
     if (collection.startsWith(DatasetCollectionManager.CATALOG)) {
-      String catUrl = collection.substring(DatasetCollectionManager.CATALOG.length());
-      DatasetCollectionFromCatalog manager = new DatasetCollectionFromCatalog(catUrl, null);
+      DatasetCollectionFromCatalog manager = new DatasetCollectionFromCatalog(collection);
       return new Fmrc(manager);
 
     } else if (collection.endsWith(".ncml")) {
@@ -94,8 +93,7 @@ public class Fmrc {
 
   public static Fmrc open(FeatureCollectionConfig.Config config, Formatter errlog) throws IOException {
     if (config.spec.startsWith(DatasetCollectionManager.CATALOG)) {
-      String catUrl = config.spec.substring(DatasetCollectionManager.CATALOG.length());
-      DatasetCollectionFromCatalog manager = new DatasetCollectionFromCatalog(catUrl, null);
+      DatasetCollectionFromCatalog manager = new DatasetCollectionFromCatalog(config.spec);
       return new Fmrc(manager);
     }
 
