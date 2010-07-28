@@ -53,14 +53,15 @@ import java.text.SimpleDateFormat;
  */
 public final class GribGridRecord implements GridRecord {
 
-  /** discipline (from indicator section) */
+  //// from  indicator section
+
   public int discipline;
 
 
   //// from  identification section
 
   /**
-   * refTime as Date
+   * reference Time as Date
    */
   public Date refTime;
 

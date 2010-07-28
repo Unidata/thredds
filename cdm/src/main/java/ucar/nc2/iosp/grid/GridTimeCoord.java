@@ -61,11 +61,11 @@ public class GridTimeCoord {
   private String name;
   private GridTableLookup lookup;
   private int seq = 0; // for getting a unique name
+  private int timeUnit = 1; // time range unit in GRIB code. hour is default
 
   private List<Date> times = new ArrayList<Date>();
-  private int intervalLength = GribNumbers.UNDEFINED;
-  private int tunit = 1; // time range unit   hour is default
-  private boolean mixedInterval = false;
+  private int[] intervals;
+  private int constantInterval = -1;
 
   private GridTimeCoord() {
     // need to have this non-static for thread safety
@@ -86,36 +86,27 @@ public class GridTimeCoord {
     if (records.get(0) instanceof GribGridRecord) {
       GribGridRecord ggr = (GribGridRecord) records.get(0);
       // some models now use different unit for different variables. ie NDFD
-      tunit = ggr.timeUnit;
-      // since the norm is not interval parameter, have separate processing because messy
-      if (ggr.isInterval() ) {
-        intervalLength = ggr.forecastTime - ggr.startOfInterval;
-        // check for mixed intervals
-          int startAtZero = 0;
-          for (GridRecord record : records) {
-            ggr = (GribGridRecord) record;
+      timeUnit = ggr.timeUnit;
 
-            // debug
-            if( false &&  ggr.category == 1 && ggr.paramNumber == 8)
-              System.out.printf( "start %d end %d interval %d time unit =%d%n",
-                ggr.startOfInterval, ggr.forecastTime, (ggr.forecastTime - ggr.startOfInterval), ggr.timeUnit);
+      if (ggr.isInterval()) {
+        intervals = new int[records.size()];
+        boolean same = true;
+        int intv = -1;
+        int count = 0;
+        for (GridRecord gr : records) {
+          ggr = (GribGridRecord) gr;
+          int start = ggr.startOfInterval;
+          int end = ggr.forecastTime;
+          int intv2 = end - start;
 
-            if( ggr.startOfInterval == 0 )
-              startAtZero++;
-
-            if( (ggr.forecastTime - ggr.startOfInterval) != intervalLength )
-              mixedInterval = true;
-            Date validTime = getValidTime(record, lookup);
-            if (!times.contains(validTime)) {
-              times.add(validTime);
-            }
+          if (intv2 > 0) {; // skip those weird zero-intervals
+            if (intv < 0) intv = intv2;
+            else same = same && (intv == intv2);
           }
-          // Grib2 check for intervals 0-1, 0-2, 0-3,... ie RUC2_CONUS-20km_pressure
-          if ( mixedInterval && lookup.getGridType().equals( "GRIB-2"))
-            mixedInterval = ( startAtZero == times.size());
 
-          Collections.sort(times);
-          return;
+          intervals[count++] = end - start;
+        }
+        if (same) constantInterval = intv;
       }
     }
 
@@ -128,6 +119,25 @@ public class GridTimeCoord {
     }
     Collections.sort(times);
   }
+
+  private void testConstantInterval(List<GribGridRecord> list, Formatter f) {
+    boolean same = true;
+    int intv = -1;
+    for (GribGridRecord rb : list) {
+      int start = rb.startOfInterval;
+      int end = rb.forecastTime;
+      int intv2 = end - start;
+      if (intv2 == 0) continue; // skip those weird zero-intervals
+      else if (intv < 0) intv = intv2;
+      else same = (intv == intv2);
+      if (!same) break;
+    }
+    if (same)
+      f.format(" Interval=%d%n",intv);
+    else
+      f.format(" Mixed%n");
+  }
+
 
   /**
    * Create a new GridTimeCoord with the name, forecast times and lookup
@@ -174,10 +184,10 @@ public class GridTimeCoord {
     if (records.get(0) instanceof GribGridRecord) {
       GribGridRecord ggr = (GribGridRecord) records.get(0);
       // some models have a mixture of units
-      if( tunit != ggr.timeUnit )
+      if( timeUnit != ggr.timeUnit )
         return false;
-      if ((ggr.isInterval() && intervalLength == GribNumbers.UNDEFINED) ||
-        ( ! ggr.isInterval() && intervalLength != GribNumbers.UNDEFINED) )
+      if ((ggr.isInterval() && constantInterval == GribNumbers.UNDEFINED) ||
+        ( ! ggr.isInterval() && constantInterval != GribNumbers.UNDEFINED) )
         return false;
       else if( ggr.isInterval() ) { // can we match
         List<Date> timeList = new ArrayList<Date>(records.size());
@@ -255,7 +265,7 @@ public class GridTimeCoord {
 
     Date baseTime = lookup.getFirstBaseTime();
     //String timeUnit = lookup.getFirstTimeRangeUnitName();
-    String timeUnit = lookup.getTimeRangeUnitName( tunit );
+    String timeUnit = lookup.getTimeRangeUnitName(this.timeUnit);
 
     DateFormatter formatter = new DateFormatter();
     String refDate = formatter.toDateTimeStringISO(baseTime);
@@ -276,16 +286,16 @@ public class GridTimeCoord {
     v.setDimensions(v.getShortName());
     v.setCachedData(dataArray, false);
 
-    if (intervalLength == GribNumbers.UNDEFINED) {
+    if (constantInterval == GribNumbers.UNDEFINED) {
       v.addAttribute(new Attribute("long_name", "forecast time"));
       v.addAttribute(new Attribute("units", timeUnit + " since " + refDate));
     } else {
       //StringBuilder interval = new StringBuilder (lookup.getFirstTimeRangeUnitName());
-      StringBuilder interval = new StringBuilder (lookup.getTimeRangeUnitName( this.tunit ));
+      StringBuilder interval = new StringBuilder (lookup.getTimeRangeUnitName( this.timeUnit));
       if (mixedInterval) {
         interval.insert( 0, "Mixed ");
       } else {
-        interval.insert( 0, Integer.toString(intervalLength));
+        interval.insert( 0, Integer.toString(constantInterval));
 //        String interval = Integer.toString(intervalLength) +
 //                lookup.getFirstTimeRangeUnitName() + " intervals";
 //        v.addAttribute(new Attribute("long_name", "time for " + interval));
@@ -312,12 +322,12 @@ public class GridTimeCoord {
       Array bdataArray = Array.factory(DataType.INT, new int[]{data.length, 2});
       ucar.ma2.Index ima = bdataArray.getIndex();
       if ( mixedInterval && lookup.getGridType().equals( "GRIB-1")) {
-        bdataArray.setInt(ima.set(0, 0), data[0] - intervalLength);
+        bdataArray.setInt(ima.set(0, 0), data[0] - constantInterval);
         bdataArray.setInt(ima.set(0, 1), data[0]);
         for (int i = 1; i < data.length; i++) {
-          if( (data[i] - data[i -1] != intervalLength ))
-            intervalLength = data[i] - data[i -1];
-          bdataArray.setInt(ima.set(i, 0), data[i] - intervalLength);
+          if( (data[i] - data[i -1] != constantInterval))
+            constantInterval = data[i] - data[i -1];
+          bdataArray.setInt(ima.set(i, 0), data[i] - constantInterval);
           bdataArray.setInt(ima.set(i, 1), data[i]);
         }
       } else if ( mixedInterval && lookup.getGridType().equals( "GRIB-2")) {
@@ -327,7 +337,7 @@ public class GridTimeCoord {
         }
       } else {
         for (int i = 0; i < data.length; i++) {
-          bdataArray.setInt(ima.set(i, 0), data[i] - intervalLength);
+          bdataArray.setInt(ima.set(i, 0), data[i] - constantInterval);
           bdataArray.setInt(ima.set(i, 1), data[i]);
         }
       }
@@ -387,8 +397,8 @@ public class GridTimeCoord {
    *
    * @return IntervalLength
    */
-  int getIntervalLength() {
-    return intervalLength;
+  int getConstantInterval() {
+    return constantInterval;
   }
 
   /**
@@ -397,7 +407,7 @@ public class GridTimeCoord {
    * @return TimeUnit
    */
   int getTimeUnit() {
-    return tunit;
+    return timeUnit;
   }
 
   /**

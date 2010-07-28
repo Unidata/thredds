@@ -251,6 +251,7 @@ public class GribIndexReader {
                 ggr.lowerLimit = pdsv.getValueLowerLimit();
                 ggr.upperLimit = pdsv.getValueUpperLimit();
               }
+
             } else {  // Grib2
               Grib2Pds pdsv = new Grib2Pds(pdsData);
               ggr.productTemplate = pdsv.getProductDefinition();
