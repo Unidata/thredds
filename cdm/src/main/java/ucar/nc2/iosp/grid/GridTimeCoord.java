@@ -44,7 +44,6 @@ import ucar.grid.GridTableLookup;
 import ucar.grid.GridRecord;
 import ucar.grib.grib2.Grib2GridTableLookup;
 import ucar.grib.grib1.Grib1GridTableLookup;
-import ucar.grib.GribNumbers;
 import ucar.grib.GribGridRecord;
 
 import java.util.*;
@@ -126,7 +125,7 @@ public class GridTimeCoord {
       }
     }
 
-    // interval case - currently only GRIB2
+    // interval case - currently only GRIB-2
     if (records.get(0) instanceof GribGridRecord) {
       GribGridRecord ggr = (GribGridRecord) records.get(0);
 
@@ -148,11 +147,10 @@ public class GridTimeCoord {
 
           Date validTime = getValidTime(gr, lookup);
           TimeCoordWithInterval timeCoordIntv = new TimeCoordWithInterval(validTime, start, intv2);
-          if (!timeIntvs.contains(timeCoordIntv)) {  // LOOK case when multiple validTimes with different intervals
+          if (!timeIntvs.contains(timeCoordIntv))   // LOOK case when multiple validTimes with different intervals
             timeIntvs.add(timeCoordIntv);
-          }
-          if (same) constantInterval = intv;
         }
+        if (same) constantInterval = intv;
         Collections.sort(timeIntvs);
         return;
       }
@@ -252,45 +250,6 @@ public class GridTimeCoord {
       return timeList.equals(times);
     }
 
-
-    /* times are not equal if one is an interval and the other is not an interval
-    if (records.get(0) instanceof GribGridRecord) {
-      GribGridRecord ggr = (GribGridRecord) records.get(0);
-      // some models have a mixture of units
-      if (this.timeUnit != record.getTimeRangeUnitName())
-        return false;
-      if ((ggr.isInterval() && constantInterval == GribNumbers.UNDEFINED) ||
-              (!ggr.isInterval() && constantInterval != GribNumbers.UNDEFINED))
-        return false;
-      else if (ggr.isInterval()) { // can we match
-        List<Date> timeList = new ArrayList<Date>(records.size());
-        for (GridRecord record : records) {
-          ggr = (GribGridRecord) record;
-
-          if (false && ggr.category == 4 && ggr.paramNumber == 192)
-            System.out.printf("reference time %s start %d end %d interval=%d%n",
-                    ggr.getReferenceTime(), ggr.startOfInterval, ggr.forecastTime, (ggr.forecastTime - ggr.startOfInterval));
-          Date validTime = getValidTime(record, lookup);
-          if (!timeList.contains(validTime)) {
-            timeList.add(validTime);
-          }
-        }
-        Collections.sort(timeList);
-        return timeList.equals(times);
-      }
-    }
-
-    // first create a new list
-    List<Date> timeList = new ArrayList<Date>(records.size());
-    for (GridRecord record : records) {
-      Date validTime = getValidTime(record, lookup);
-      if (!timeList.contains(validTime)) {
-        timeList.add(validTime);
-      }
-    }
-
-    Collections.sort(timeList);
-    return timeList.equals(times); */
   }
 
   /**
@@ -378,18 +337,12 @@ public class GridTimeCoord {
       v.addAttribute(new Attribute("units", timeUnit + " since " + refDate));
 
     } else {
-      //StringBuilder interval = new StringBuilder (lookup.getFirstTimeRangeUnitName());
-      StringBuilder intervalName = new StringBuilder(this.timeUnit);
-      if (constantInterval < 0) {
-        intervalName.insert(0, "Mixed ");
-      } else {
-        intervalName.insert(0, Integer.toString(constantInterval));
-//        String interval = Integer.toString(intervalLength) +
-//                lookup.getFirstTimeRangeUnitName() + " intervals";
-//        v.addAttribute(new Attribute("long_name", "time for " + interval));
-      }
-      intervalName.append(" intervals");
-      v.addAttribute(new Attribute("long_name", "time for " + intervalName.toString()));
+      Formatter intervalName = new Formatter();
+      if (constantInterval < 0)
+        intervalName.format("(mixed intervals)");
+      else
+        intervalName.format("(%d %s intervals)", constantInterval, this.timeUnit);
+      v.addAttribute(new Attribute("long_name", "forecast time for " + intervalName.toString()));
       v.addAttribute(new Attribute("units", timeUnit + " since " + refDate));
       v.addAttribute(new Attribute("bounds", getName() + "_bounds"));
 
@@ -401,35 +354,11 @@ public class GridTimeCoord {
       Variable vb = new Variable(ncfile, g, null, getName() + "_bounds");
       vb.setDataType(DataType.INT);
       vb.setDimensions(getName() + " ncell");
-      vb.addAttribute(new Attribute("long_name", "bounds " + intervalName.toString()));
+      vb.addAttribute(new Attribute("long_name", "bounds for " + getName()));
       vb.addAttribute(new Attribute("units", timeUnit + " since " + refDate));
 
       // add data
       vb.setCachedData(boundsArray, false);
-
-      /* Array bdataArray = Array.factory(DataType.INT, new int[]{coordData.length, 2});
-      ucar.ma2.Index ima = bdataArray.getIndex();
-      if ( mixedInterval && lookup.getGridType().equals( "GRIB-1")) {
-        bdataArray.setInt(ima.set(0, 0), coordData[0] - constantInterval);
-        bdataArray.setInt(ima.set(0, 1), coordData[0]);
-        for (int i = 1; i < coordData.length; i++) {
-          if( (coordData[i] - coordData[i -1] != constantInterval))
-            constantInterval = coordData[i] - coordData[i -1];
-          bdataArray.setInt(ima.set(i, 0), coordData[i] - constantInterval);
-          bdataArray.setInt(ima.set(i, 1), coordData[i]);
-        }
-      } else if ( mixedInterval && lookup.getGridType().equals( "GRIB-2")) {
-        for (int i = 0; i < coordData.length; i++) {
-          bdataArray.setInt(ima.set(i, 0), 0);
-          bdataArray.setInt(ima.set(i, 1), coordData[i]);
-        }
-      } else {
-        for (int i = 0; i < coordData.length; i++) {
-          bdataArray.setInt(ima.set(i, 0), coordData[i] - constantInterval);
-          bdataArray.setInt(ima.set(i, 1), coordData[i]);
-        }
-      }
-      vb.setCachedData(bdataArray, true); */
       ncfile.addVariable(g, vb);
     }
 
@@ -567,39 +496,5 @@ public class GridTimeCoord {
     calendar.add(calandar_unit, factor * record.getValidTimeOffset());
     return calendar.getTime();
   }
-
-  // TODO: this is not always correct but this code doesn't get executed often, can we delete
-
-  private int getValidTimeFactor(String timeUnit) {
-    int calandar_unit = Calendar.HOUR;
-    int factor = 1;
-
-    if (timeUnit.equalsIgnoreCase("hour") || timeUnit.equalsIgnoreCase("hours")) {
-      factor = 1;  // common case
-    } else if (timeUnit.equalsIgnoreCase("minutes") || timeUnit.equalsIgnoreCase("minute")) {
-      calandar_unit = Calendar.MINUTE;
-    } else if (timeUnit.equalsIgnoreCase("second") || timeUnit.equalsIgnoreCase("secs")) {
-      calandar_unit = Calendar.SECOND;
-    } else if (timeUnit.equalsIgnoreCase("day") || timeUnit.equalsIgnoreCase("days")) {
-      factor = 24;
-    } else if (timeUnit.equalsIgnoreCase("month") || timeUnit.equalsIgnoreCase("months")) {
-      factor = 24 * 30;  // ??
-    } else if (timeUnit.equalsIgnoreCase("year") || timeUnit.equalsIgnoreCase("years") || timeUnit.equalsIgnoreCase("1year")) {
-      factor = 24 * 365;        // ??
-    } else if (timeUnit.equalsIgnoreCase("decade")) {
-      factor = 24 * 365 * 10;   // ??
-    } else if (timeUnit.equalsIgnoreCase("century")) {
-      factor = 24 * 365 * 100;  // ??
-    } else if (timeUnit.equalsIgnoreCase("3hours")) {
-      factor = 3;
-    } else if (timeUnit.equalsIgnoreCase("6hours")) {
-      factor = 6;
-    } else if (timeUnit.equalsIgnoreCase("12hours")) {
-      factor = 12;
-    }
-
-    return factor;
-  }
-
 
 }

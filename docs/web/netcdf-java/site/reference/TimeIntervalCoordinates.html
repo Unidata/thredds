@@ -73,68 +73,96 @@
   {78, 81},<br />
   {81, 84}<br />
   }</p>
-<h2>Case 2 - mixed intervals, unique endpoints</h2>
+<h2>Case 3 - mixed intervals, unique endpoints, two coordinates with same endpoints and different intervals</h2>
+<p>Accumulation variables have different intervals than Average variables, both time coordinate have the same set of values.</p>
 <p>Q:\cdmUnitTest\tds\new\NAM_Polar_90km_20100525_1200.grib2</p>
 <pre> float Evaporation(time1=28, y=110, x=147);
  :long_name = &quot;Evaporation (Accumulation for 3 hour Intervals) @ surface&quot;;
  :cell_methods = &quot;time1: sum&quot;;
  :units = &quot;kg m-2&quot;;
- :missing_value = NaNf; // float
- :grid_mapping = &quot;Polar_Stereographic&quot;;
- :GRIB_param_discipline = &quot;Meteorological_products&quot;;
- :GRIB_param_category = &quot;Moisture&quot;;
- :GRIB_param_name = &quot;Evaporation&quot;;
- :GRIB_param_id = 2, 0, 1, 6; // int
- :GRIB_product_definition_type = &quot;Average, accumulation, extreme values or other statistically processed value at a horizontal level in a time interval&quot;;
- :GRIB_product_definition_template = 8; // int
- :GRIB_level_type = 1; // int
- :GRIB_VectorComponentFlag = &quot;gridRelative&quot;;</pre>
+</pre>
 <p> all: (28)  0-3 0-6 0-9 0-12 12-15 12-18 12-21 12-24 24-27 24-30 24-33 24-36 36-39 36-42 36-45 36-48 48-51 48-54 48-57 48-60 60-63 60-66 60-69 60-72 72-75 72-78 72-81 72-84  Mixed </p>
-<pre> int time1(time1=28);
- :long_name = &quot;time for 3hour intervals&quot;;
- :units = &quot;hour since 2010-05-25T12:00:00Z&quot;;
- :bounds = &quot;time1_bounds&quot;;
- :GRIB_orgReferenceTime = &quot;2010-05-25T12:00:00Z&quot;;
- :GRIB2_significanceOfRTName = &quot;Start of forecast&quot;;
- :_CoordinateAxisType = &quot;Time&quot;;</pre>
+<pre>  int time1(time1=28);<br />     :long_name = &quot;forecast time for (mixed intervals)&quot;;<br />     :units = &quot;hour since 2010-05-25T12:00:00Z&quot;;<br />     :bounds = &quot;time1_bounds&quot;;<br />     :GRIB_orgReferenceTime = &quot;2010-05-25T12:00:00Z&quot;;<br />     :GRIB2_significanceOfRTName = &quot;Start of forecast&quot;;<br />     :_CoordinateAxisType = &quot;Time&quot;;</pre>
 <p>time1 =<br />
-  {3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36, 39, 42, 45, 48, 51, 54, 57, 60, 63, 66, 69, 72, 75, 78, 81, 84}</p>
-<p> edges= 0.0 3.0 6.0 9.0 12.0 15.0 18.0 21.0 24.0 27.0 30.0 33.0 36.0 39.0 42.0 45.0 48.0 51.0 54.0 57.0 60.0 63.0 66.0 69.0 72.0 75.0 78.0 81.0 84.0</p>
-<p> int time1_bounds(time1=28, ncell=2);<br />
-:long_name = &quot;3hour intervals&quot;;<br />
-:units = &quot;hour since 2010-05-25T12:00:00Z&quot;;</p>
+{3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36, 39, 42, 45, 48, 51, 54, 57, 60, 63, 66, 69, 72, 75, 78, 81, 84}</p>
+<p> bound1= 0.0 0.0 0.0 0.0 12.0 12.0 12.0 12.0 24.0 24.0 24.0 24.0 36.0 36.0 36.0 36.0 48.0 48.0 48.0 48.0 60.0 60.0 60.0 60.0 72.0 72.0 72.0 72.0</p>
+<p> bound2= 3.0 6.0 9.0 12.0 15.0 18.0 21.0 24.0 27.0 30.0 33.0 36.0 39.0 42.0 45.0 48.0 51.0 54.0 57.0 60.0 63.0 66.0 69.0 72.0 75.0 78.0 81.0 84.0</p>
+<pre> float Total_cloud_cover(time2=28, y=110, x=147);
+  :long_name = &quot;Total_cloud_cover (Average for  Mixed Intervals) @ entire_atmosphere&quot;;
+  :cell_methods = &quot;time2: mean&quot;;
+  :units = &quot;percent&quot;;
+
+
+ int time2(time2=28);<br />  :long_name = &quot;forecast time for  (mixed intervals)&quot;;<br />  :units = &quot;hour since 2010-05-25T12:00:00Z&quot;;<br />  :bounds = &quot;time2_bounds&quot;;<br />  :GRIB_orgReferenceTime = &quot;2010-05-25T12:00:00Z&quot;;<br />  :GRIB2_significanceOfRTName = &quot;Start of forecast&quot;;<br />  :_CoordinateAxisType = &quot;Time&quot;;</pre>
+<p>time2 =<br />
+{3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36, 39, 42, 45, 48, 51, 54, 57, 60, 63, 66, 69, 72, 75, 78, 81, 84}</p>
+<p> bound1= 0.0 0.0 6.0 6.0 12.0 12.0 18.0 18.0 24.0 24.0 30.0 30.0 36.0 36.0 42.0 42.0 48.0 48.0 54.0 54.0 60.0 60.0 66.0 66.0 72.0 72.0 78.0 78.0</p>
+<p> bound2= 3.0 6.0 9.0 12.0 15.0 18.0 21.0 24.0 27.0 30.0 33.0 36.0 39.0 42.0 45.0 48.0 51.0 54.0 57.0 60.0 63.0 66.0 69.0 72.0 75.0 78.0 81.0 84.0</p>
+<h2>Case 4. Mixed, non-unique endpoints</h2>
+<p>Q:/cdmUnitTest/tds/new/RUC2_CONUS_20km_pressure_20100509_1300.grib2</p>
+<p> float Convective_precipitation(time=45, y=225, x=301);<br />
+:long_name = &quot;Convective_precipitation (Accumulation for  Mixed Intervals) @ surface&quot;;<br />
+:cell_methods = &quot;time: sum&quot;;<br />
+:units = &quot;kg m-2&quot;;</p>
+<p>&nbsp;</p>
+<p>time =<br />
+{1, 2, 2, 3, 3, 4, 4, 5, 5, 5, 6, 6, 6, 7, 7, 8, 8, 8, 9, 9, 9, 10, 10, 11, 11, 11, 12, 12, 12, 13, 13, 14, 14, 14, 15, 15, 15, 16, 16, 17, 17, 17, 18, 18, 18}</p>
+<p> bound1= 1.0 2.0 2.0 3.0 3.0 4.0 4.0 5.0 5.0 5.0 6.0 6.0 6.0 7.0 7.0 8.0 8.0 8.0 9.0 9.0 9.0 10.0 10.0 11.0 11.0 11.0 12.0 12.0 12.0 13.0 13.0 14.0 14.0 14.0 15.0 15.0 15.0 16.0 16.0 17.0 17.0 17.0 18.0 18.0 18.0</p>
+<p> bound2= 0.0 1.0 0.0 2.0 0.0 3.0 0.0 4.0 3.0 0.0 5.0 3.0 0.0 6.0 0.0 7.0 6.0 0.0 8.0 6.0 0.0 9.0 0.0 10.0 9.0 0.0 11.0 9.0 0.0 12.0 0.0 13.0 12.0 0.0 14.0 12.0 0.0 15.0 0.0 16.0 15.0 0.0 17.0 15.0 0.0</p>
+<p></p>
+<p><br />
+</p>
+<p> int time_bounds(time=45, ncell=2);<br />
+:long_name = &quot;bounds for time&quot;;<br />
+:units = &quot;hour since 2010-05-09T13:00:00Z&quot;;</p>
 <p> data:</p>
 <p> {<br />
+  {0, 1},<br />
+  {1, 2},<br />
+  {0, 2},<br />
+  {2, 3},<br />
   {0, 3},<br />
+  {3, 4},<br />
+  {0, 4},<br />
+  {4, 5},<br />
+  {3, 5},<br />
+  {0, 5},<br />
+  {5, 6},<br />
   {3, 6},<br />
+  {0, 6},<br />
+  {6, 7},<br />
+  {0, 7},<br />
+  {7, 8},<br />
+  {6, 8},<br />
+  {0, 8},<br />
+  {8, 9},<br />
   {6, 9},<br />
+  {0, 9},<br />
+  {9, 10},<br />
+  {0, 10},<br />
+  {10, 11},<br />
+  {9, 11},<br />
+  {0, 11},<br />
+  {11, 12},<br />
   {9, 12},<br />
+  {0, 12},<br />
+  {12, 13},<br />
+  {0, 13},<br />
+  {13, 14},<br />
+  {12, 14},<br />
+  {0, 14},<br />
+  {14, 15},<br />
   {12, 15},<br />
+  {0, 15},<br />
+  {15, 16},<br />
+  {0, 16},<br />
+  {16, 17},<br />
+  {15, 17},<br />
+  {0, 17},<br />
+  {17, 18},<br />
   {15, 18},<br />
-  {18, 21},<br />
-  {21, 24},<br />
-  {24, 27},<br />
-  {27, 30},<br />
-  {30, 33},<br />
-  {33, 36},<br />
-  {36, 39},<br />
-  {39, 42},<br />
-  {42, 45},<br />
-  {45, 48},<br />
-  {48, 51},<br />
-  {51, 54},<br />
-  {54, 57},<br />
-  {57, 60},<br />
-  {60, 63},<br />
-  {63, 66},<br />
-  {66, 69},<br />
-  {69, 72},<br />
-  {72, 75},<br />
-  {75, 78},<br />
-  {78, 81},<br />
-  {81, 84}<br />
-  }</p>
-<p><br />
+  {0, 18}<br />
+  }<br />
 </p>
 <p>&nbsp; </p>
 </body>
