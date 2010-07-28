@@ -106,7 +106,7 @@ public class Grib1WriteIndex {
     if( success && makeIndex ) {
       try {
         Thread.sleep(2000); // 2 secs to let file system catch up
-        return new GribReadIndex().open( gbxName );
+        return new GribIndexReader().open( gbxName );
       } catch (InterruptedException e1) {
       }
     }
@@ -163,7 +163,7 @@ public class Grib1WriteIndex {
       for (int i = 0; i < products.size(); i++) {
         Grib1Product product = products.get(i);
         Grib1ProductDefinitionSection pds = product.getPDS();
-        Grib1PDSVariables pdsv = pds.getPdsVars();
+        Grib1Pds pdsv = pds.getPdsVars();
         if (i == 0) {
           sb.append(" center " + pdsv.getCenter());
           sb.append(" sub_center " + pdsv.getSubCenter());
@@ -290,7 +290,7 @@ public class Grib1WriteIndex {
     if( success && makeIndex ) {
       try {
         Thread.sleep(2000); // 2 secs to let file system catch up
-        return new GribReadIndex().open( gbxName );
+        return new GribIndexReader().open( gbxName );
       } catch (InterruptedException e1) {
       }
     }
@@ -362,7 +362,7 @@ public class Grib1WriteIndex {
       for (int i = 0; i < products.size(); i++) {
         Grib1Product product = products.get(i);
         Grib1ProductDefinitionSection pds = product.getPDS();
-        Grib1PDSVariables pdsv = pds.getPdsVars();
+        Grib1Pds pdsv = pds.getPdsVars();
         if (i == 0) {
           sb.append(" center " + pdsv.getCenter());
           sb.append(" sub_center " + pdsv.getSubCenter());

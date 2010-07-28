@@ -33,53 +33,44 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-
 package ucar.grid;
-
 
 import java.util.Date;
 
-
 /**
- * An interface for handling information about a 2D grid (eg:  GRIB, GEMPAK,
- * McIDAS grid)
+ * An interface for one 2D gridded data record (used by  GRIB, GEMPAK, McIDAS gridded data).
+ * A collection of these records comprise a CDM variable, usually adding time and optionally vertical, and ensemble dimensions.
+ * @author rkambic
  */
 public interface GridRecord {
 
     /**
-     * Get the first level of this GridRecord
+     * Get the first vertical level of this GridRecord
      *
-     * @return the first level value
+     * @return the first vertical level value
      */
     public double getLevel1();
 
     /**
-     * Get the second level of this GridRecord
+     * Get the second vertical level of this GridRecord
      *
-     * @return the second level value
+     * @return the second vertical level value
      */
     public double getLevel2();
 
     /**
-     * Get the level type of this GridRecord
+     * Get the vertical level type of this GridRecord
      *
-     * @return level type
+     * @return vertical level type
      */
     public int getLevelType1();
 
     /**
-     * Get the level type of this GridRecord
+     * Get the vertical level type of this GridRecord
      *
-     * @return level type
+     * @return vertical level type
      */
     public int getLevelType2();
-
-    /**
-     * Get the level type of this GridRecord
-     *
-     * @return level type
-     */
-    //public int getLevelName();
 
     /**
      * Get the first reference time of this GridRecord
@@ -89,7 +80,7 @@ public interface GridRecord {
     public Date getReferenceTime();
 
     /**
-     * Get the valid time for this grid.
+     * Get the valid time for this GridRecord.
      *
      * @return valid time
      */

@@ -49,14 +49,13 @@ import ucar.grib.GribNumbers;
 
 public final class Grib2GridTableLookup implements GridTableLookup {
 
-  static private org.slf4j.Logger logger =
-        org.slf4j.LoggerFactory.getLogger(Grib2GridTableLookup.class);
+  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2GridTableLookup.class);
   /**
    * the ProductDefinitionSection of the first record of the Grib file in
    * Grib2PDSVariables format.
    */
   //private final Grib2ProductDefinitionSection firstPDS;
-  private final Grib2PDSVariables firstPDSV;
+  private final Grib2Pds firstPDSV;
 
   /**
    * the IdentificationSection of the first record of the Grib file.
@@ -85,7 +84,6 @@ public final class Grib2GridTableLookup implements GridTableLookup {
     this.firstDRS = firstRecord.getDRS();
   }
 
-
   /**
    * gets the grid type.
    *
@@ -105,7 +103,6 @@ public final class Grib2GridTableLookup implements GridTableLookup {
   public final String getShapeName(GridDefRecord gds) {
     return Grib2Tables.codeTable3_2(gds.getParamInt(GridDefRecord.GRID_SHAPE_CODE));
   }
-
 
   /**
    * gets the DisciplineName.

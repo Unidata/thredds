@@ -38,12 +38,12 @@
 
 package ucar.grib;
 
+import ucar.grib.grib1.Grib1Pds;
 import ucar.grid.GridIndex;
 import ucar.grid.GridDefRecord;
-import ucar.grib.grib2.Grib2PDSVariables;
+import ucar.grib.grib2.Grib2Pds;
 import ucar.grib.grib2.Grib2GDSVariables;
 import ucar.grib.grib2.Grib2Tables;
-import ucar.grib.grib1.Grib1PDSVariables;
 import ucar.grib.grib1.Grib1GDSVariables;
 import ucar.grib.grib1.Grib1Tables;
 import ucar.grib.grib1.Grib1Grid;
@@ -55,13 +55,14 @@ import java.util.Date;
 import java.util.Calendar;
 
 /**
- * Reads either a binary or text index and returns a GridIndex
+ * Reads either a binary or text index and returns a GridIndex.
+ * For GRIB 1 or 2
+ *
  */
 
-public class GribReadIndex {
+public class GribIndexReader {
 
-  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GribReadIndex.class);
-
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GribIndexReader.class);
   static private boolean debugTiming = false;
   static private boolean debugParse = false;
 
@@ -71,7 +72,7 @@ public class GribReadIndex {
   /**
    * Constructor for creating an Index from the Grib file.
    */
-  public GribReadIndex() {
+  public GribIndexReader() {
     dateFormat = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
     dateFormat.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));  //same as UTC
 
@@ -211,7 +212,7 @@ public class GribReadIndex {
             int tunit;
 
             if (grid_edition_1) {
-              Grib1PDSVariables pdsv = new Grib1PDSVariables(pdsData);
+              Grib1Pds pdsv = new Grib1Pds(pdsData);
               // read Grib1 vars
               ggr.productTemplate = pdsv.getProductDefinition();
               ggr.category = pdsv.getParameterCategory();
@@ -251,7 +252,7 @@ public class GribReadIndex {
                 ggr.upperLimit = pdsv.getValueUpperLimit();
               }
             } else {  // Grib2
-              Grib2PDSVariables pdsv = new Grib2PDSVariables(pdsData);
+              Grib2Pds pdsv = new Grib2Pds(pdsData);
               ggr.productTemplate = pdsv.getProductDefinition();
               // These are accumulation variables.  
               if (ggr.productTemplate > 7 && ggr.productTemplate < 15 ||
@@ -303,7 +304,8 @@ public class GribReadIndex {
                 }
               }
               
-            }
+            } // end GRIB 2
+
             // setValidTime  hour, day, minute, month. second, year, decade, normal, century
             // only test data available for hour
             // hour
@@ -348,7 +350,7 @@ public class GribReadIndex {
                   ggr.type + " " + ggr.numberForecasts + " " + ggr.lowerLimit + " " + ggr.upperLimit);
           }
           gridIndex.addGridRecord(ggr);
-        }
+        } // loop over grib records in the index
 
         // section 3+ - GDS
         // old
@@ -1108,7 +1110,7 @@ public class GribReadIndex {
           for (String child : children) {
             if (!child.endsWith("gbx8"))
               continue;
-            GridIndex index = new GribReadIndex().open(topDir + "/" + child);
+            GridIndex index = new GribIndexReader().open(topDir + "/" + child);
 
           }
           long time = System.currentTimeMillis() - start;
@@ -1126,7 +1128,7 @@ public class GribReadIndex {
           for (String child : children) {
             if (!child.endsWith("gbx"))
               continue;
-            GridIndex index = new GribReadIndex().open(topDir + "/" + child);
+            GridIndex index = new GribIndexReader().open(topDir + "/" + child);
             if (i == 0)
               count++;
           }
@@ -1150,9 +1152,9 @@ public class GribReadIndex {
     debugParse = true;
     GridIndex index;
     if (args.length < 1) {
-      index = new GribReadIndex().open(gbx.getPath());
+      index = new GribIndexReader().open(gbx.getPath());
     } else {
-      index = new GribReadIndex().open(args[0]);
+      index = new GribIndexReader().open(args[0]);
     }
     if (debugTiming)
       return;

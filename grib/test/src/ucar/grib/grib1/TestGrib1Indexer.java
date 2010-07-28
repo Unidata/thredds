@@ -81,9 +81,9 @@ public final class TestGrib1Indexer extends TestCase {
     } else {
       args[1] = dataPath + "RUC.wmo"+ GribIndexName.currentSuffix;
       Grib1WriteIndex.main(args);
-      GridIndex index1 = new GribReadIndex().open(args[1]);
+      GridIndex index1 = new GribIndexReader().open(args[1]);
 
-      GridIndex index2 = new GribReadIndex().open(testPath + "RUC.wmo"+ GribIndexName.currentSuffix);
+      GridIndex index2 = new GribIndexReader().open(testPath + "RUC.wmo"+ GribIndexName.currentSuffix);
       // Compare Indexes
       testEquals( index1, index2 );
       f = new File(args[1]);
@@ -101,9 +101,9 @@ public final class TestGrib1Indexer extends TestCase {
     } else {
       args[1] = dataPath + "RUC2_CONUS_20km_surface_20051011_2300.grib1"+ GribIndexName.currentSuffix;
       Grib1WriteIndex.main(args);
-      GridIndex index1 = new GribReadIndex().open(args[1]);
+      GridIndex index1 = new GribIndexReader().open(args[1]);
 
-      GridIndex index2 = new GribReadIndex().open(testPath + "RUC2_CONUS_20km_surface_20051011_2300.grib1"+ GribIndexName.currentSuffix);
+      GridIndex index2 = new GribIndexReader().open(testPath + "RUC2_CONUS_20km_surface_20051011_2300.grib1"+ GribIndexName.currentSuffix);
       // Compare Indexes
       testEquals( index1, index2 );
       f = new File(args[1]);

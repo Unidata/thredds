@@ -49,7 +49,6 @@ import java.io.BufferedReader;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import ucar.grib.Parameter;
 import ucar.grid.GridParameter;
 
 /**
@@ -128,7 +127,7 @@ public final class ParameterTable {
             }
             //System.out.println( "node=" + p.item(m).getNodeName());
 
-            Parameter par = null;
+            GridParameter par = null;
             String pName = "";
             int pNumber = -1;
             String pUnit = "";
@@ -149,7 +148,7 @@ public final class ParameterTable {
             }
             if (!(pName.startsWith("Reserved") ||  // add new par
                 pName.startsWith("Missing"))) {
-              par = new Parameter();
+              par = new GridParameter();
               par.setName(pName);
               par.setNumber(pNumber);
               par.setUnit(pUnit);
@@ -448,8 +447,7 @@ public final class ParameterTable {
       }
       m = p_parameter.matcher(line);
       if (m.find() && (m.groupCount() == 6)) {
-        Parameter p = new Parameter(Integer.parseInt(m.group(3)),
-            m.group(4), m.group(6),
+        GridParameter p = new GridParameter(Integer.parseInt(m.group(3)), m.group(4), m.group(6),
             m.group(5));
         getDiscipline(Integer.parseInt(m.group(1))).getCategory(
             Integer.parseInt(m.group(2))).setParameter(p);
@@ -493,8 +491,7 @@ public final class ParameterTable {
         // remove non-dim unit
         if( field[ 4 ].compareToIgnoreCase( "non-dim") == 0)
           field[ 4 ] = "";
-        Parameter p = new Parameter(Integer.parseInt(field[ 2 ]),
-            field[ 3 ], field[ 5 ], field[ 4 ]);
+        GridParameter p = new GridParameter(Integer.parseInt(field[ 2 ]), field[ 3 ], field[ 5 ], field[ 4 ]);
         // unique the discipline number so no conflicts from different centers
         // first time disciplines will not exist
         int d = center * 255 + Integer.parseInt(field[ 0 ]);

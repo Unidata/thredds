@@ -85,7 +85,7 @@ public class ShowGribIndex {
    */
   public final void show(String location) throws IOException {
     try {
-      GridIndex index = new GribReadIndex().open(location);
+      GridIndex index = new GribIndexReader().open(location);
       Map<String, String> attrs = index.getGlobalAttributes();
       System.out.println("index_version = " + attrs.get("index_version"));
       System.out.println("grid_edition = " + attrs.get("grid_edition"));

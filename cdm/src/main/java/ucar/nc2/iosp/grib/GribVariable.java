@@ -33,7 +33,6 @@
 package ucar.nc2.iosp.grib;
 
 import ucar.grib.Index;
-import ucar.grib.Parameter;
 import ucar.grib.TableLookup;
 import ucar.grib.grib1.Grib1Lookup;
 import ucar.nc2.*;

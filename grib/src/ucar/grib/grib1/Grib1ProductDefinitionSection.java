@@ -31,14 +31,12 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-// $Id: Grib1ProductDefinitionSection.java,v 1.38 2006/08/18 20:21:59 rkambic Exp $
-
 /**
  * Grib1ProductDefinitionSection.java  1.1  09/30/2004
  *
  *   Parameters use external tables, so program does not have to be modified to
  *      add support for new tables.
- *   @see  Parameter, GribPDSParamTable, and GribPDSLevel classes.
+ *   @see  GridParameter , GribPDSParamTable, and GribPDSLevel classes.
  */
 
 package ucar.grib.grib1;
@@ -178,7 +176,7 @@ public final class Grib1ProductDefinitionSection {
   /**
    * PDS as Variables from a byte[]
    */
-   private final Grib1PDSVariables pdsVars;
+   private final Grib1Pds pdsVars;
   // *** constructors *******************************************************
 
     /**
@@ -202,7 +200,7 @@ public final class Grib1ProductDefinitionSection {
         // reset to beginning of section and read data
         raf.skipBytes( -3 );
         raf.read( pdsData );
-        pdsVars = new Grib1PDSVariables( pdsData );
+        pdsVars = new Grib1Pds( pdsData );
 
         // reset for variable section read and set sectionEnd
         raf.seek( sectionEnd +3 );
@@ -403,7 +401,7 @@ public final class Grib1ProductDefinitionSection {
         parameter_table = GribPDSParamTable.getParameterTable(center_id,
                 subcenter_id, table_version);
         parameter = parameter_table.getParameter(parameterNumber);
-        Grib1PDSVariables gpv = pdsVars;
+        Grib1Pds gpv = pdsVars;
         if ( false && gpv.isEnsemble() ) {
           if ((center_id == 7) && (subcenter_id == 2)) {  // ensemble product
             System.out.println("Parm ="+ parameterNumber
@@ -1507,7 +1505,7 @@ public final class Grib1ProductDefinitionSection {
    * PDS as Grib1PDSVariables
    * @return  Grib1PDSVariables PDS vars
    */
-  public Grib1PDSVariables getPdsVars() {
+  public Grib1Pds getPdsVars() {
     return pdsVars;
   }
 
@@ -1529,7 +1527,7 @@ public final class Grib1ProductDefinitionSection {
     // backup to PDS; most of the time it's only 28 bytes
     //raf.skipBytes( -28 ); //TODO: check
     Grib1ProductDefinitionSection pds = new Grib1ProductDefinitionSection( raf );
-    Grib1PDSVariables gpv = pds.pdsVars;
+    Grib1Pds gpv = pds.pdsVars;
     ps.println( "Length = "+ gpv.getLength());
     ps.println( "ProductDefinition = "+ gpv.getProductDefinition());
 

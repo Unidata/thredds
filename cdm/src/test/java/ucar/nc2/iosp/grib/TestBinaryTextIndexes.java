@@ -45,15 +45,13 @@ import java.io.File;
 import java.util.List;
 import java.util.Map;
 
+import ucar.grib.GribIndexReader;
 import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.TestAll;
 import ucar.grid.GridIndex;
 import ucar.grid.GridDefRecord;
-import ucar.grid.GridRecord;
-import ucar.grib.GribReadIndex;
-import ucar.grib.GribGridRecord;
 import ucar.unidata.io.RandomAccessFile;
 
 public class TestBinaryTextIndexes extends TestCase {
@@ -110,8 +108,8 @@ public class TestBinaryTextIndexes extends TestCase {
   }
 
   void compareIndexes(String fileBinary, String fileText) throws IOException {
-    GridIndex giB = new GribReadIndex().open(fileBinary + ".gbx8");
-    GridIndex giT = new GribReadIndex().open(fileText + ".gbx");
+    GridIndex giB = new GribIndexReader().open(fileBinary + ".gbx8");
+    GridIndex giT = new GribIndexReader().open(fileText + ".gbx");
 
     // Coordinate systems
     List<GridDefRecord> hcsB = giB.getHorizCoordSys();

@@ -36,15 +36,12 @@
 package ucar.grib;
 
 /**
+ * Interface for storing Grib1 and Grib2 PDS as byte[].
  * User: rkambic
  * Date: Jun 15, 2009
  * Time: 9:31:23 AM
  */
-
-/**
- * A interface for handling Grib1 and Grib2 PDS variables from a byte[].
- */
-public interface GribPDSVariablesIF {
+public interface GribPdsIF {
 
   /**
    * PDS as a byte[]
@@ -52,7 +49,7 @@ public interface GribPDSVariablesIF {
    */
   public byte[] getPDSBytes();
 
-  // getters for ProductDefinitions  Variables
+  // getters for ProductDefinitions fields
 
   //  Length of PDS
   public int getLength();

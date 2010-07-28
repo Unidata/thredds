@@ -226,7 +226,7 @@ public final class Grib1Dump {
                                  Grib1ProductDefinitionSection pds,
                                  PrintStream ps) {
 
-        Grib1PDSVariables pdsv = pds.getPdsVars();
+        Grib1Pds pdsv = pds.getPdsVars();
         Grib1GDSVariables gdsv = gds.getGdsVars();
 
         int gdtn = gdsv.getGdtn();
@@ -498,7 +498,7 @@ public final class Grib1Dump {
      * @param ps _more_
      */
     private static void printPDS(Grib1ProductDefinitionSection pds, PrintStream ps) {
-      Grib1PDSVariables pdsv = pds.getPdsVars();
+      Grib1Pds pdsv = pds.getPdsVars();
         int center = pdsv.getCenter();
         int subCenter = pdsv.getSubCenter();
 

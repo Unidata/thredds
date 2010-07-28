@@ -40,12 +40,9 @@
 package ucar.grib;
 
 
-import ucar.grib.GribNumbers;
-import ucar.grib.NotSupportedException;
-import ucar.grib.NoValidGribException;
 import ucar.grib.grib2.Grib2Input;
+import ucar.grib.grib2.Grib2Pds;
 import ucar.grib.grib2.Grib2Product;
-import ucar.grib.grib2.Grib2PDSVariables;
 import ucar.grib.grib2.Grib2GDSVariables;
 import ucar.grib.grib1.*;
 
@@ -187,7 +184,7 @@ public final class TestCompareGribPDSGDSsections extends TestCase {
       Grib2Product product = products.get(i);
       raf.seek(product.getPdsOffset());
       PdsReader2 pds = new PdsReader2(raf);
-      Grib2PDSVariables gpv = pds.pdsVars;
+      Grib2Pds gpv = pds.pdsVars;
       if (passOne) {
         System.out.println(" Section = " + gpv.getSection());
         System.out.println(" Length = " + gpv.getLength());
@@ -735,7 +732,7 @@ public final class TestCompareGribPDSGDSsections extends TestCase {
         Grib1Product product = (Grib1Product) products.get(i);
         raf.seek(product.getOffset1());
         PdsReader1 pds = new PdsReader1(raf);
-        Grib1PDSVariables gpv = pds.pdsVars;
+        Grib1Pds gpv = pds.pdsVars;
         if (passOne) {
           System.out.println(" Section = " + gpv.getSection());
           System.out.println(" Length = " + gpv.getLength());
@@ -819,7 +816,7 @@ public final class TestCompareGribPDSGDSsections extends TestCase {
       for (int i = 0; i < products.size(); i++) {
         Grib1Product product = products.get(i);
         Grib1ProductDefinitionSection pds = product.getPDS();
-        Grib1PDSVariables g1pdsv = pds.getPdsVars();
+        Grib1Pds g1pdsv = pds.getPdsVars();
         if (product.getOffset1() == -1)
           break;
         raf.seek(product.getOffset1());
@@ -1146,7 +1143,7 @@ public final class TestCompareGribPDSGDSsections extends TestCase {
     /**
      * PDS as Variables from a byte[]
      */
-    public final Grib2PDSVariables pdsVars;
+    public final Grib2Pds pdsVars;
 
     // *** constructors *******************************************************
     /**
@@ -1167,7 +1164,7 @@ public final class TestCompareGribPDSGDSsections extends TestCase {
       // reset to beginning of section and read data
       raf.skipBytes(-4);
       raf.read(pdsData);
-      pdsVars = new Grib2PDSVariables(pdsData);
+      pdsVars = new Grib2Pds(pdsData);
       // reset for variable section read and set sectionEnd
       raf.seek(sectionEnd + 4);
       sectionEnd += length;
@@ -1670,7 +1667,7 @@ public final class TestCompareGribPDSGDSsections extends TestCase {
      *
      * @return Grib2PDSVariables PDS vars
      */
-    public Grib2PDSVariables getPdsVars() {
+    public Grib2Pds getPdsVars() {
       return pdsVars;
     }
 
@@ -2787,7 +2784,7 @@ public final class TestCompareGribPDSGDSsections extends TestCase {
     /**
      * PDS as Variables from a byte[]
      */
-    public final Grib1PDSVariables pdsVars;
+    public final Grib1Pds pdsVars;
     // *** constructors *******************************************************
 
     /**
@@ -2812,7 +2809,7 @@ public final class TestCompareGribPDSGDSsections extends TestCase {
       // reset to beginning of section and read data
       raf.skipBytes(-3);
       raf.read(pdsData);
-      pdsVars = new Grib1PDSVariables(pdsData);
+      pdsVars = new Grib1Pds(pdsData);
 
       // reset for variable section read and set sectionEnd
       raf.seek(fpStart + 3);
@@ -3013,7 +3010,7 @@ public final class TestCompareGribPDSGDSsections extends TestCase {
           subcenter_id, table_version);
       parameter = parameter_table.getParameter(parameterNumber);
 
-      Grib1PDSVariables gpv = pdsVars;
+      Grib1Pds gpv = pdsVars;
         if (  gpv.isEnsemble() ) {
           System.out.println("Parm ="+ parameterNumber
                   +" Extension ="+ gpv.getExtension()

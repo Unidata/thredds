@@ -30,8 +30,13 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
+
 /**
- * User: rkambic
+ * Represents the product definition section (PDS) of a GRIB-2
+ * extracted from a byte[].
+ * This is section 4 of a Grib record that contains information about the parameter
+ *
+ * @author rkambic
  * Date: Jun 5, 2009
  * Time: 2:52:45 PM
  */
@@ -39,21 +44,16 @@
 package ucar.grib.grib2;
 
 import ucar.grib.GribNumbers;
-import ucar.grib.GribPDSVariablesIF;
+import ucar.grib.GribPdsIF;
 
 import java.io.IOException;
 import java.util.Calendar;
-import java.util.Date;
 
-/**
- * Representing the product definition section (PDS) of a GRIB product as variables
- * extracted from a byte[].
- * This is section 4 of a Grib record that contains information about the parameter
- */
 
-public final class Grib2PDSVariables implements GribPDSVariablesIF {
 
-  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Grib2PDSVariables.class);
+public final class Grib2Pds implements GribPdsIF {
+
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Grib2Pds.class);
 
   /**
    *   PDS as byte array.
@@ -61,7 +61,7 @@ public final class Grib2PDSVariables implements GribPDSVariablesIF {
   private final byte[] input;
 
   /**
-   * productDefinition.
+   * productDefinition, aka template
    */
   private final int productDefinition;
 
@@ -73,7 +73,7 @@ public final class Grib2PDSVariables implements GribPDSVariablesIF {
    * @param input PDS
    * @throws java.io.IOException if raf contains no valid GRIB file
    */
-  public Grib2PDSVariables( byte[] input ) throws IOException {
+  public Grib2Pds( byte[] input ) throws IOException {
 
     this.input = input;
 
@@ -88,39 +88,6 @@ public final class Grib2PDSVariables implements GribPDSVariablesIF {
   public byte[] getPDSBytes() {
     return input;
   }
-
-  /**
-   * calculates the increment between time intervals
-   * @param tui time unit indicator,
-   * @param length of interval
-   * @return increment
-   */
-  private int calculateIncrement(int tui, int length) {
-    switch (tui) {
-
-      case 1:
-        return length;
-      case 10:
-        return 3 * length;
-      case 11:
-        return 6 * length;
-      case 12:
-        return 12 * length;
-      case 0:
-      case 2:
-      case 3:
-      case 4:
-      case 5:
-      case 6:
-      case 7:
-      case 13:
-        return length;
-      default:
-        return GribNumbers.UNDEFINED;
-    }
-
-  }
-
 
   // getters  Covers ProductDefinitions 0-14 first
 
@@ -775,6 +742,38 @@ public final class Grib2PDSVariables implements GribPDSVariablesIF {
         return new int[] {GribNumbers.UNDEFINED, GribNumbers.UNDEFINED};
 
     }
+  }
+
+  /**
+   * calculates the increment between time intervals
+   * @param tui time unit indicator,
+   * @param length of interval
+   * @return increment
+   */
+  private int calculateIncrement(int tui, int length) {
+    switch (tui) {
+
+      case 1:
+        return length;
+      case 10:
+        return 3 * length;
+      case 11:
+        return 6 * length;
+      case 12:
+        return 12 * length;
+      case 0:
+      case 2:
+      case 3:
+      case 4:
+      case 5:
+      case 6:
+      case 7:
+      case 13:
+        return length;
+      default:
+        return GribNumbers.UNDEFINED;
+    }
+
   }
 
  /**

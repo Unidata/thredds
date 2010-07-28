@@ -30,29 +30,28 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-/**
- * User: rkambic
- * Date: Jun 11, 2009
- * Time: 3:24:50 PM
- */
 
 package ucar.grib.grib1;
 
 import ucar.grib.GribNumbers;
-import ucar.grib.GribPDSVariablesIF;
+import ucar.grib.GribPdsIF;
 
 import java.io.IOException;
 import java.util.Date;
 import java.util.Calendar;
 
 /**
- * A class representing the product definition section (PDS) of a GRIB product.
+ * A class representing the product definition section (PDS) of a GRIB-1 product.
  * This is section 1 of a Grib record that contains information about the parameter
+ *
+ * User: rkambic
+ * Date: Jun 11, 2009
+ * Time: 3:24:50 PM
  */
 
-public final class Grib1PDSVariables implements GribPDSVariablesIF {
+public final class Grib1Pds implements GribPdsIF {
 
-  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Grib1PDSVariables.class);
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Grib1Pds.class);
 
   /**
    * PDS as byte array.
@@ -72,8 +71,7 @@ public final class Grib1PDSVariables implements GribPDSVariablesIF {
    * @param input PDS
    * @throws java.io.IOException byte[] read
    */
-  public Grib1PDSVariables(byte[] input) throws IOException {
-
+  public Grib1Pds(byte[] input) throws IOException {
     this.input = input;
     this.length = GribNumbers.int3(getInt(0), getInt(1), getInt(2));
   }

@@ -152,7 +152,7 @@ public final class Grib1ExtractRawData {
             raf.seek(EOR);
             continue;
           }
-          Grib1PDSVariables pdsv = pds.getPdsVars();
+          Grib1Pds pdsv = pds.getPdsVars();
           if (getParameter && parm[0] == pdsv.getParameterNumber()) {
             raf.seek(SOR);
             byte[] oneRecord = new byte[(int) is.getGribLength()];

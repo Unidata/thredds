@@ -35,7 +35,6 @@ package ucar.grib.grib1;
 
 import ucar.grib.GribResourceReader;
 import ucar.grib.NotSupportedException;
-import ucar.grib.Parameter;
 import ucar.grid.GridParameter;
 
 import java.io.*;
@@ -466,7 +465,7 @@ public final class GribPDSParamTable {
         if ((line.length() == 0) || line.startsWith("#")) {
           continue;
         }
-        Parameter parameter = new Parameter();
+        GridParameter parameter = new GridParameter();
         tableDefArr = line.split(":");
         parameter.setNumber(Integer.parseInt(tableDefArr[0].trim()));
         parameter.setName(tableDefArr[1].trim());

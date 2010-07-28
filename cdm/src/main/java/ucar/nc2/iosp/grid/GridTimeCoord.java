@@ -33,7 +33,6 @@
 
 package ucar.nc2.iosp.grid;
 
-
 import ucar.ma2.*;
 
 import ucar.nc2.*;
@@ -50,71 +49,32 @@ import ucar.grib.GribGridRecord;
 
 import java.util.*;
 
-
 /**
  * A Time Coordinate for a Grid dataset.
  *
  * @author caron
  */
 public class GridTimeCoord {
-
-  /**
-   * logger
-   */
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GridTimeCoord.class);
 
-  /**
-   * calendar
-   */
   private Calendar calendar;
-
-  /**
-   * name
-   */
   private String name;
-
-  /**
-   * lookup table
-   */
   private GridTableLookup lookup;
+  private int seq = 0; // for getting a unique name
 
-  /**
-   * list of times
-   */
   private List<Date> times = new ArrayList<Date>();
-  //private double[] offsetHours;
-
-  /**
-   * interval length
-   */
   private int intervalLength = GribNumbers.UNDEFINED;
+  private int tunit = 1; // time range unit   hour is default
+  private boolean mixedInterval = false;
 
-  /**
-   * time range unit   hour is default
-   */
-  private int tunit = 1;
-
-  /**
-   * is this a mixed interval
-   */
-  private boolean mixed = false;
-
-  /**
-   * sequence #
-   */
-  private int seq = 0;
-
-  /**
-   * Create a new GridTimeCoord
-   */
-  GridTimeCoord() {
+  private GridTimeCoord() {
     // need to have this non-static for thread safety
     calendar = Calendar.getInstance();
     calendar.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
   }
 
   /**
-   * Create a new GridTimeCoord with the list of records
+   * Create a new GridTimeCoord from the list of GridRecord
    *
    * @param records records to use
    * @param lookup  lookup table
@@ -122,9 +82,10 @@ public class GridTimeCoord {
   GridTimeCoord(List<GridRecord> records, GridTableLookup lookup) {
     this();
     this.lookup = lookup;
+
     if (records.get(0) instanceof GribGridRecord) {
       GribGridRecord ggr = (GribGridRecord) records.get(0);
-      // some model now use different unit for different variables. ie NDFD
+      // some models now use different unit for different variables. ie NDFD
       tunit = ggr.timeUnit;
       // since the norm is not interval parameter, have separate processing because messy
       if (ggr.isInterval() ) {
@@ -143,21 +104,22 @@ public class GridTimeCoord {
               startAtZero++;
 
             if( (ggr.forecastTime - ggr.startOfInterval) != intervalLength )
-              mixed = true;
+              mixedInterval = true;
             Date validTime = getValidTime(record, lookup);
             if (!times.contains(validTime)) {
               times.add(validTime);
             }
           }
           // Grib2 check for intervals 0-1, 0-2, 0-3,... ie RUC2_CONUS-20km_pressure
-          if ( mixed && lookup.getGridType().equals( "GRIB-2"))
-            mixed = ( startAtZero == times.size());
+          if ( mixedInterval && lookup.getGridType().equals( "GRIB-2"))
+            mixedInterval = ( startAtZero == times.size());
 
           Collections.sort(times);
           return;
       }
     }
 
+    // get list of unique times
     for (GridRecord record : records) {
       Date validTime = getValidTime(record, lookup);
       if (!times.contains(validTime)) {
@@ -173,6 +135,7 @@ public class GridTimeCoord {
    * @param name        name
    * @param offsetHours forecast hours
    * @param lookup      lookup table
+   * @deprecated dont use definition files as of 4.2
    */
   GridTimeCoord(String name, double[] offsetHours, GridTableLookup lookup) {
     this();
@@ -201,7 +164,7 @@ public class GridTimeCoord {
   }
 
   /**
-   * match time values
+   * match time values - can list of GridRecords use this coordinate?
    *
    * @param records list of records
    * @return true if they are the same as this
@@ -262,12 +225,8 @@ public class GridTimeCoord {
    * @return the name
    */
   String getName() {
-    if (name != null) {
-      return name;
-    }
-    return (seq == 0)
-            ? "time"
-            : "time" + seq;
+    if (name != null)  return name;
+    return (seq == 0) ? "time" : "time" + seq;
   }
 
   /**
@@ -323,7 +282,7 @@ public class GridTimeCoord {
     } else {
       //StringBuilder interval = new StringBuilder (lookup.getFirstTimeRangeUnitName());
       StringBuilder interval = new StringBuilder (lookup.getTimeRangeUnitName( this.tunit ));
-      if ( mixed ) {
+      if (mixedInterval) {
         interval.insert( 0, "Mixed ");
       } else {
         interval.insert( 0, Integer.toString(intervalLength));
@@ -352,7 +311,7 @@ public class GridTimeCoord {
       // add data
       Array bdataArray = Array.factory(DataType.INT, new int[]{data.length, 2});
       ucar.ma2.Index ima = bdataArray.getIndex();
-      if ( mixed && lookup.getGridType().equals( "GRIB-1")) {
+      if ( mixedInterval && lookup.getGridType().equals( "GRIB-1")) {
         bdataArray.setInt(ima.set(0, 0), data[0] - intervalLength);
         bdataArray.setInt(ima.set(0, 1), data[0]);
         for (int i = 1; i < data.length; i++) {
@@ -361,7 +320,7 @@ public class GridTimeCoord {
           bdataArray.setInt(ima.set(i, 0), data[i] - intervalLength);
           bdataArray.setInt(ima.set(i, 1), data[i]);
         }
-      } else if ( mixed && lookup.getGridType().equals( "GRIB-2")) {
+      } else if ( mixedInterval && lookup.getGridType().equals( "GRIB-2")) {
         for (int i = 0; i < data.length; i++) {
           bdataArray.setInt(ima.set(i, 0), 0);
           bdataArray.setInt(ima.set(i, 1), data[i]);
@@ -394,10 +353,10 @@ public class GridTimeCoord {
   }
 
   /**
-   * Get the index of a GridRecord
+   * Get the index of a GridRecord in the list of times
    *
-   * @param record the record
-   * @return the index or -1 if not found
+   * @param record the GridRecord
+   * @return the index in the list of time values, or -1 if not found
    */
   int getIndex(GridRecord record) {
     Date validTime = getValidTime(record, lookup);
@@ -446,8 +405,8 @@ public class GridTimeCoord {
    *
    * @return mixed
    */
-  boolean isMixed() {
-    return mixed;
+  boolean isMixedInterval() {
+    return mixedInterval;
   }
 
   /**

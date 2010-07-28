@@ -30,10 +30,7 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-
-
 package ucar.nc2.iosp.grid;
-
 
 import ucar.nc2.*;
 import ucar.nc2.iosp.mcidas.McIDASLookup;
@@ -49,9 +46,7 @@ import ucar.unidata.util.StringUtil;
 import ucar.grid.*;
 
 import java.io.*;
-
 import java.util.*;
-
 
 /**
  * Create a Netcdf File from a GridIndex
@@ -60,31 +55,15 @@ import java.util.*;
  */
 public class GridIndexToNC {
 
-  /**
-   * logger
-   */
-  static private org.slf4j.Logger logger =
-      org.slf4j.LoggerFactory.getLogger(GridIndexToNC.class);
+  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GridIndexToNC.class);
 
   /**
    * map of horizontal coordinate systems
    */
   private Map<String,GridHorizCoordSys> hcsHash = new HashMap<String,GridHorizCoordSys>(10);  // GridHorizCoordSys
 
-  /**
-   * date formattter
-   */
   private DateFormatter formatter = new DateFormatter();
-
-  /**
-   * debug flag
-   */
   private boolean debug = false;
-
-  /**
-   * flag for using GridParameter description for variable names
-   */
-  //private boolean useDescriptionForVariableName = true;
 
   /**
    * Make the level name
@@ -176,16 +155,15 @@ public class GridIndexToNC {
     // run through each record
     GridRecord firstRecord = null;
     List<GridRecord> records = index.getGridRecords();
-    if (GridServiceProvider.debugOpen) {
+    if (GridServiceProvider.debugOpen)
       System.out.println(" number of products = " + records.size());
-    }
+
     for (GridRecord gribRecord : records) {
       if (firstRecord == null)
         firstRecord = gribRecord;
 
       GridHorizCoordSys hcs =  hcsHash.get(gribRecord.getGridDefRecordId());
-      String name = makeVariableName(gribRecord, lookup, true, true);
-      // combo gds, param name and level name
+      String name = makeVariableName(gribRecord, lookup, true, true); // combo param, ens, level name
       GridVariable pv = (GridVariable) hcs.varHash.get(name);
       if (null == pv) {
         pv = new GridVariable(name, hcs, lookup);
@@ -194,18 +172,19 @@ public class GridIndexToNC {
 
         // keep track of all products with same parameter name + suffix == "simple name"
         // String pname = lookup.getParameter(gribRecord).getDescription(); // dont use plain old parameter name anymore 6/3/2010 jc
-        String simpleName = makeVariableName(gribRecord, lookup, false, true); // LOOK may not be a good idea
+        String simpleName = makeVariableName(gribRecord, lookup, false, true); // combo param, level name LOOK may not be a good idea
         List<GridVariable> plist = hcs.productHash.get(simpleName);
         if (null == plist) {
           plist = new ArrayList<GridVariable>();
           hcs.productHash.put(simpleName, plist);
         }
         plist.add(pv);
+
       } else if ( lookup instanceof Grib2GridTableLookup ) {
         Grib2GridTableLookup g2lookup = (Grib2GridTableLookup) lookup;
         // check for non interval pv and interval record which needs a interval pv
         if( ! pv.isInterval() && g2lookup.isInterval( gribRecord ) ) {
-          // make a interval variable
+          // make an interval variable
           String interval = name +"_interval";
           pv = (GridVariable) hcs.varHash.get(interval);
           if (null == pv) {
@@ -219,12 +198,13 @@ public class GridIndexToNC {
             }
             plist.add(pv);
           }
+
         } else if ( pv.isInterval() && !g2lookup.isInterval( gribRecord )  ) {
           // make a non-interval variable
           logger.info( "Non-Interval records for %s%n", pv.getName());
             continue;
         }
-      }
+      } // grid2
 
       pv.addProduct(gribRecord);
     }
@@ -572,9 +552,9 @@ public class GridIndexToNC {
    * @param lookup lookup table
    * @param fmr    FmrcCoordSys
    * @throws IOException problem reading from file
+   * @deprecated dont use definition files as of 4.2
    */
-  private void makeDefinedCoordSys(NetcdfFile ncfile,
-    GridTableLookup lookup, FmrcCoordSys fmr) throws IOException {
+  private void makeDefinedCoordSys(NetcdfFile ncfile, GridTableLookup lookup, FmrcCoordSys fmr) throws IOException {
 
     List<GridTimeCoord> timeCoords = new ArrayList<GridTimeCoord>();
     List<GridVertCoord> vertCoords = new ArrayList<GridVertCoord>();

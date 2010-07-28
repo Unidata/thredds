@@ -34,7 +34,7 @@ package ucar.grib.grib2;
 
 import junit.framework.*;
 import ucar.grid.GridIndex;
-import ucar.grib.GribReadIndex;
+import ucar.grib.GribIndexReader;
 import ucar.grib.TestAll;
 import ucar.grib.GribIndexName;
 
@@ -87,9 +87,9 @@ public final class TestGrib2Indexer extends TestCase {
     } else {
       args[1] = dataPath + "ndfd.wmo"+ GribIndexName.currentSuffix;
       Grib2WriteIndex.main(args);
-      GridIndex index1 = new GribReadIndex().open(args[1]);
+      GridIndex index1 = new GribIndexReader().open(args[1]);
 
-      GridIndex index2 = new GribReadIndex().open(testPath + "ndfd.wmo"+ GribIndexName.currentSuffix);
+      GridIndex index2 = new GribIndexReader().open(testPath + "ndfd.wmo"+ GribIndexName.currentSuffix);
       // Compare Indexes
       testEquals(index1, index2);
       f = new File(args[1]);
@@ -109,9 +109,9 @@ public final class TestGrib2Indexer extends TestCase {
     } else {
       args[1] = dataPath + "AVN.5deg.wmo"+ GribIndexName.currentSuffix;
       Grib2WriteIndex.main(args);
-      GridIndex index1 = new GribReadIndex().open(args[1]);
+      GridIndex index1 = new GribIndexReader().open(args[1]);
 
-      GridIndex index2 = new GribReadIndex().open(testPath + "AVN.5deg.wmo"+ GribIndexName.currentSuffix);
+      GridIndex index2 = new GribIndexReader().open(testPath + "AVN.5deg.wmo"+ GribIndexName.currentSuffix);
       // Compare Indexes
       testEquals(index1, index2);
       f = new File(args[1]);
@@ -130,9 +130,9 @@ public final class TestGrib2Indexer extends TestCase {
     } else {
       args[1] = dataPath + "CLDGRIB2.2005040905"+ GribIndexName.currentSuffix;
       Grib2WriteIndex.main(args);
-      GridIndex index1 = new GribReadIndex().open(args[1]);
+      GridIndex index1 = new GribIndexReader().open(args[1]);
 
-      GridIndex index2 = new GribReadIndex().open(testPath + "CLDGRIB2.2005040905"+ GribIndexName.currentSuffix);
+      GridIndex index2 = new GribIndexReader().open(testPath + "CLDGRIB2.2005040905"+ GribIndexName.currentSuffix);
       // Compare Indexes
       testEquals(index1, index2);
       f = new File(args[1]);
@@ -150,9 +150,9 @@ public final class TestGrib2Indexer extends TestCase {
     } else {
       args[1] = dataPath + "Global_1p0deg_Ensemble.grib2"+ GribIndexName.currentSuffix;
       Grib2WriteIndex.main(args);
-      GridIndex index1 = new GribReadIndex().open(args[1]);
+      GridIndex index1 = new GribIndexReader().open(args[1]);
 
-      GridIndex index2 = new GribReadIndex().open(testPath + "Global_1p0deg_Ensemble.grib2"+ GribIndexName.currentSuffix);
+      GridIndex index2 = new GribIndexReader().open(testPath + "Global_1p0deg_Ensemble.grib2"+ GribIndexName.currentSuffix);
       // Compare Indexes
       testEquals(index1, index2);
       f = new File(args[1]);

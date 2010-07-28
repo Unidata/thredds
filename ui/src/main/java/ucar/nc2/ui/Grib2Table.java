@@ -85,7 +85,7 @@ public class Grib2Table extends JPanel {
 
     thredds.ui.PopupMenu varPopup;
 
-    productTable = new BeanTableSorted(Product.class, (PreferencesExt) prefs.node("Product"), false, "GribGridRecord (index)", "from gbx8 index");
+    productTable = new BeanTableSorted(Product.class, (PreferencesExt) prefs.node("Product"), false, "GribGridRecord group", "same param / levelType");
     productTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         Product pb = (Product) productTable.getSelectedBean();
@@ -109,7 +109,7 @@ public class Grib2Table extends JPanel {
       }
     });
 
-    recordTable = new BeanTableSorted(IndexRecordBean.class, (PreferencesExt) prefs.node("IndexRecordBean"), false, "GribGridRecord (index)", "from gbx8 index");
+    recordTable = new BeanTableSorted(IndexRecordBean.class, (PreferencesExt) prefs.node("IndexRecordBean"), false, "GribGridRecord", "one record");
 
     ////////////////
     productBeanTable = new BeanTableSorted(ProductBean.class, (PreferencesExt) prefs.node("ProductBean"), false, "Grib2PDSVariables", "from Grib2Input.getRecords()");
@@ -317,7 +317,7 @@ public class Grib2Table extends JPanel {
       return ggr.productTemplate +"-"+ggr.discipline+"-"+ggr.category + "-" + ggr.paramNumber;
     }
 
-    public final String getSurfaceType() {
+    public final String getLevelType() {
       return Grib2Tables.codeTable4_5(ggr.levelType1);
     }
 
@@ -638,7 +638,7 @@ public class Grib2Table extends JPanel {
   public class ProductBean {
     Grib2IdentificationSection id;
     Grib2ProductDefinitionSection pds;
-    Grib2PDSVariables pdsv;
+    Grib2Pds pdsv;
     List<RecordBean> records;
     int discipline;
 
@@ -732,7 +732,7 @@ public class Grib2Table extends JPanel {
   } // ProductBean (old)
 
   private void showRawPds(Grib2ProductDefinitionSection pds, Formatter f) {
-    Grib2PDSVariables pdsv = pds.getPdsVars();
+    Grib2Pds pdsv = pds.getPdsVars();
     int template = pdsv.getProductDefinition();
     byte[] raw = pdsv.getPDSBytes();
     byte[] bytes = new byte[raw.length+1];
@@ -813,7 +813,7 @@ public class Grib2Table extends JPanel {
     Grib2IdentificationSection id;
     Grib2GridDefinitionSection gds;
     Grib2ProductDefinitionSection pds;
-    Grib2PDSVariables pdsv;
+    Grib2Pds pdsv;
     int[] interval;
 
     // no-arg constructor

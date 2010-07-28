@@ -85,7 +85,7 @@ public class TestGribReadIndex {
         bargs[0] = bdir +File.separator+ child;
         //bargs[1] = bdir  +File.separator+ child + GribIndexName.currentSuffix;
         bstart = System.currentTimeMillis();
-        GribReadIndex.main(bargs);
+        GribIndexReader.main(bargs);
         btime = System.currentTimeMillis() - bstart;
         btotal += btime;
         System.out.print( "  "+ btime );

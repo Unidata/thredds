@@ -677,7 +677,7 @@ public final class Grib2Dump {
           Grib2ProductDefinitionSection pds,
           PrintStream ps) {
 
-    Grib2PDSVariables pdsv = pds.getPdsVars();
+    Grib2Pds pdsv = pds.getPdsVars();
 
     int productDefinition = pdsv.getProductDefinition();
 

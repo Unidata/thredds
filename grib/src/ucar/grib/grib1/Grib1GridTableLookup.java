@@ -54,7 +54,7 @@ public class Grib1GridTableLookup implements GridTableLookup {
   /**
    * the ProductDefinitionSection of the first record as a Grib1PDSVariables.
    */
-  private final Grib1PDSVariables firstPDSV;
+  private final Grib1Pds firstPDSV;
 
   /**
    * the IdentificationSection of the first record of the Grib file.

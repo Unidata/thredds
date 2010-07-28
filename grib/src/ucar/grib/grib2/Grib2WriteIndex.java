@@ -121,7 +121,7 @@ public class Grib2WriteIndex {
     if( success && makeIndex ) {
       try {
         Thread.sleep(2000); // 2 secs to let file system catch up
-        return new GribReadIndex().open( gbxName );
+        return new GribIndexReader().open( gbxName );
       } catch (InterruptedException e1) {
       }
     }
@@ -303,7 +303,7 @@ public class Grib2WriteIndex {
     if( success && makeIndex ) {
           try {
             Thread.sleep(2000); // 2 secs to let file system catch up
-            return new GribReadIndex().open(gbxName);
+            return new GribIndexReader().open(gbxName);
           } catch (InterruptedException e1) {
           }
       }

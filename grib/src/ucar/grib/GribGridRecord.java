@@ -53,12 +53,6 @@ import java.text.SimpleDateFormat;
  */
 public final class GribGridRecord implements GridRecord {
 
-  /**
-   * Represents the PDS section of a Grib Message.
-   * Probably only set for Ensemble data
-   */
-  //public GribPDSVariablesIF pdsVars = null;
-
   /** discipline (from indicator section) */
   public int discipline;
 
@@ -149,6 +143,9 @@ public final class GribGridRecord implements GridRecord {
    */
   public float lowerLimit = GribNumbers.UNDEFINED, upperLimit = GribNumbers.UNDEFINED;
 
+  /**
+   * Type of interval statistic
+   */
   public int intervalStatType;
 
   ///////////////////////
@@ -202,6 +199,8 @@ public final class GribGridRecord implements GridRecord {
    * @param centerS
    * @param subCenterS
    * @param tableS
+   *
+   * @deprecated text indices should be rewritten to binary
    */
   GribGridRecord(Calendar calendar, SimpleDateFormat dateFormat,
                  String productTypeS, String disciplineS, String categoryS,
@@ -262,6 +261,7 @@ public final class GribGridRecord implements GridRecord {
    *
    * @return the first level value
    */
+  @Override
   public double getLevel1() {
     return levelValue1;
   }
@@ -271,6 +271,7 @@ public final class GribGridRecord implements GridRecord {
    *
    * @return the second level value
    */
+  @Override
   public double getLevel2() {
     return levelValue2;
   }
@@ -280,6 +281,7 @@ public final class GribGridRecord implements GridRecord {
    *
    * @return level type
    */
+  @Override
   public int getLevelType1() {
     return levelType1;
   }
@@ -289,6 +291,7 @@ public final class GribGridRecord implements GridRecord {
    *
    * @return level type
    */
+  @Override
   public int getLevelType2() {
     return levelType2;
   }
@@ -298,6 +301,7 @@ public final class GribGridRecord implements GridRecord {
    *
    * @return reference time
    */
+  @Override
   public Date getReferenceTime() {
     return refTime;
   }
@@ -307,6 +311,7 @@ public final class GribGridRecord implements GridRecord {
    *
    * @return valid time
    */
+  @Override
   public Date getValidTime() {
     return validTime;
   }
@@ -325,6 +330,7 @@ public final class GribGridRecord implements GridRecord {
    *
    * @return time offset
    */
+  @Override
   public int getValidTimeOffset() {
     return forecastTime;
   }
@@ -334,32 +340,15 @@ public final class GribGridRecord implements GridRecord {
    *
    * @return parameter name
    */
+  @Override
   public String getParameterName() {
     //return param;
     return null; // This was moved to GribGridTableLookup
   }
 
-  /**
-   * Get the grid def record id
-   *
-   * @return parameter name
-   */
-  public int getGridDefRecordIdInt() {
-    return gdsKey;
-  }
-
+  @Override
   public String getGridDefRecordId() {
     return Integer.toString( gdsKey );
-  }
-
-  /**
-   * Get the grid number
-   *
-   * @return grid number
-   */
-  public int getGridNumber() {
-    //return gridNumber;
-    return 0; // not used
   }
 
   /**
@@ -367,6 +356,7 @@ public final class GribGridRecord implements GridRecord {
    *
    * @return decimal scale
    */
+  @Override
   public int getDecimalScale() {
     return decimalScale;
   }

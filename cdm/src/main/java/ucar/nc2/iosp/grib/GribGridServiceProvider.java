@@ -45,7 +45,6 @@ import ucar.nc2.iosp.grid.GridIndexToNC;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.DiskCache;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.dt.fmrc.FmrcDefinition;
 import ucar.grib.*;
 import ucar.grib.grib1.*;
 import ucar.grib.grib2.*;
@@ -247,7 +246,7 @@ public class GribGridServiceProvider extends GridServiceProvider {
       InputStream ios = indexExistsAsURL(indexLocation);
       if (ios != null) {
         log.debug(" getIndex() HTTP index = " + indexLocation);
-        return new GribReadIndex().open(indexLocation, ios);
+        return new GribIndexReader().open(indexLocation, ios);
       }
     }
 
@@ -257,7 +256,7 @@ public class GribGridServiceProvider extends GridServiceProvider {
     // if index exist already, read it
     if (!forceNewIndex && indexFile.exists()) {
       try {
-        index = new GribReadIndex().open(indexFile.getPath());
+        index = new GribIndexReader().open(indexFile.getPath());
         log.debug("  opened index = " + indexFile.getPath());
 
         // deal with possiblity that the grib file has changed, and the index should be extended or rewritten.
@@ -363,7 +362,7 @@ public class GribGridServiceProvider extends GridServiceProvider {
       if (indexFileModeOnSync == IndexExtendMode.readonly) {
         log.debug("  sync() read Index = " + indexFile.getPath());
         try {
-          index = new GribReadIndex().open(indexFile.getPath());
+          index = new GribIndexReader().open(indexFile.getPath());
         } catch (Exception e) {
           log.warn("  sync() return false: GribReadIndex() failed = " + indexFile.getPath());
           return false;

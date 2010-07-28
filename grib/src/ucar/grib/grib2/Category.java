@@ -43,7 +43,6 @@
 package ucar.grib.grib2;
 
 
-import ucar.grib.Parameter;
 import ucar.grid.GridParameter;
 
 import java.util.HashMap;
@@ -74,7 +73,7 @@ public final class Category {
    * Each catagory has a set of parameter associated with it.
    * parameter - a HashMap of Parameters.
    */
-  private final HashMap<String,Parameter> parameter;
+  private final HashMap<String, GridParameter> parameter;
 
   /**
    * Constructor for a Category.
@@ -83,7 +82,7 @@ public final class Category {
     number = -1;
     name = "undefined";
     //description = "undefined";
-    parameter = new HashMap<String,Parameter>();
+    parameter = new HashMap<String, GridParameter>();
   }
 
   /**
@@ -112,7 +111,7 @@ public final class Category {
    */
   public final GridParameter getParameter(int paramNumber) {
     if (parameter.containsKey(Integer.toString(paramNumber)))
-      return (Parameter) parameter.get(Integer.toString(paramNumber));
+      return parameter.get(Integer.toString(paramNumber));
 
     logger.warn("Category: "+ name +" UnknownParameter "+ Integer.toString(paramNumber));
     return null;
@@ -142,7 +141,7 @@ public final class Category {
    *
    * @param param object
    */
-  public final void setParameter(Parameter param) {
+  public final void setParameter(GridParameter param) {
     parameter.put(Integer.toString(param.getNumber()), param);
   }
 

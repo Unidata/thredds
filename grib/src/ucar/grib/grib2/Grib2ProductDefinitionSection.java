@@ -175,7 +175,7 @@ public final class Grib2ProductDefinitionSection {
   /**
    * PDS as Variables from a byte[]
    */
-  private final Grib2PDSVariables pdsVars;
+  private final Grib2Pds pdsVars;
   // *** constructors *******************************************************
 
   /**
@@ -196,7 +196,7 @@ public final class Grib2ProductDefinitionSection {
     // reset to beginning of section and read data
     raf.skipBytes( -4 );
     raf.read( pdsData);
-    pdsVars = new Grib2PDSVariables( pdsData );
+    pdsVars = new Grib2Pds( pdsData );
 
     // reset for variable section read and set sectionEnd
     raf.seek( sectionEnd +4 );
@@ -943,7 +943,7 @@ public final class Grib2ProductDefinitionSection {
    * PDS as Grib2PDSVariables
    * @return  Grib2PDSVariables PDS vars
    */
-  public Grib2PDSVariables getPdsVars() {
+  public Grib2Pds getPdsVars() {
     return pdsVars;
   }
 
@@ -962,7 +962,7 @@ public final class Grib2ProductDefinitionSection {
     raf.order(RandomAccessFile.BIG_ENDIAN);
     raf.skipBytes( Integer.parseInt( args[1]));
     Grib2ProductDefinitionSection pds = new Grib2ProductDefinitionSection( raf );
-    Grib2PDSVariables gpv = pds.pdsVars;
+    Grib2Pds gpv = pds.pdsVars;
     ps.println( "Section = "+ gpv.getSection());
     ps.println( "Length = "+ gpv.getLength());
     ps.println( "ProductDefinition = "+ gpv.getProductDefinition());

@@ -38,7 +38,6 @@ package ucar.grib.grib1;
 
 import ucar.grib.*;
 import ucar.grib.Index;
-import ucar.grib.Parameter;
 import ucar.grid.GridParameter;
 
 

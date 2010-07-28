@@ -31,11 +31,7 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-// $Id: GribNumbers.java,v 1.9 2005/12/12 18:22:11 rkambic Exp $
-
-
 package ucar.grib;
-
 
 import ucar.unidata.io.RandomAccessFile;
 
