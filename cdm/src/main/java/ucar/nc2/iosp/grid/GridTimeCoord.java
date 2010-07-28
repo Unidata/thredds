@@ -63,14 +63,42 @@ public class GridTimeCoord {
   private int seq = 0; // for getting a unique name
   private int timeUnit = 1; // time range unit in GRIB code. hour is default
 
-  private List<Date> times = new ArrayList<Date>();
-  private int[] intervals;
+  private List<Date> times;
+  private List<TimeCoordWithInterval> timeIntvs;
   private int constantInterval = -1;
 
   private GridTimeCoord() {
     // need to have this non-static for thread safety
     calendar = Calendar.getInstance();
     calendar.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
+  }
+
+  private class TimeCoordWithInterval implements Comparable<TimeCoordWithInterval> {
+    Date coord;
+    int start, interval;
+
+    private TimeCoordWithInterval(Date coord, int start, int interval) {
+      this.coord = coord;
+      this.start = start;
+      this.interval = interval;
+    }
+
+    @Override
+    public int compareTo(TimeCoordWithInterval o) {
+      int diff = coord.compareTo(o.coord);
+      return (diff == 0) ? (interval - o.interval) : diff;
+    }
+
+    @Override
+    public int hashCode() {
+      return 17 * coord.hashCode() + interval;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+      TimeCoordWithInterval o = (TimeCoordWithInterval) obj;
+      return coord.equals(o.coord) && (interval == o.interval);
+    }
   }
 
   /**
@@ -85,59 +113,48 @@ public class GridTimeCoord {
 
     if (records.get(0) instanceof GribGridRecord) {
       GribGridRecord ggr = (GribGridRecord) records.get(0);
-      // some models now use different unit for different variables. ie NDFD
-      timeUnit = ggr.timeUnit;
+      timeUnit = ggr.timeUnit;  // some models now use different unit for different variables. ie NDFD
 
+      // interval case
       if (ggr.isInterval()) {
-        intervals = new int[records.size()];
+        timeIntvs = new ArrayList<TimeCoordWithInterval>();
+
         boolean same = true;
         int intv = -1;
-        int count = 0;
         for (GridRecord gr : records) {
           ggr = (GribGridRecord) gr;
           int start = ggr.startOfInterval;
           int end = ggr.forecastTime;
           int intv2 = end - start;
 
-          if (intv2 > 0) {; // skip those weird zero-intervals
+          if (intv2 > 0) { // skip those weird zero-intervals when testing for constant interval
             if (intv < 0) intv = intv2;
             else same = same && (intv == intv2);
           }
 
-          intervals[count++] = end - start;
+          Date validTime = getValidTime(gr, lookup);
+          TimeCoordWithInterval timeCoordIntv = new TimeCoordWithInterval(validTime, start, intv2);
+          if (!timeIntvs.contains(timeCoordIntv)) {  // LOOK case when multiple validTimes with different intervals
+            timeIntvs.add(timeCoordIntv);
+          }
+          if (same) constantInterval = intv;
         }
-        if (same) constantInterval = intv;
+        Collections.sort(timeIntvs);
+        return;
       }
-    }
 
-    // get list of unique times
-    for (GridRecord record : records) {
-      Date validTime = getValidTime(record, lookup);
-      if (!times.contains(validTime)) {
-        times.add(validTime);
+      // non - interval case
+      // get list of unique times
+      times = new ArrayList<Date>();
+      for (GridRecord record : records) {
+        Date validTime = getValidTime(record, lookup);
+        if (!times.contains(validTime)) {
+          times.add(validTime);
+        }
       }
+      Collections.sort(times);
     }
-    Collections.sort(times);
   }
-
-  private void testConstantInterval(List<GribGridRecord> list, Formatter f) {
-    boolean same = true;
-    int intv = -1;
-    for (GribGridRecord rb : list) {
-      int start = rb.startOfInterval;
-      int end = rb.forecastTime;
-      int intv2 = end - start;
-      if (intv2 == 0) continue; // skip those weird zero-intervals
-      else if (intv < 0) intv = intv2;
-      else same = (intv == intv2);
-      if (!same) break;
-    }
-    if (same)
-      f.format(" Interval=%d%n",intv);
-    else
-      f.format(" Mixed%n");
-  }
-
 
   /**
    * Create a new GridTimeCoord with the name, forecast times and lookup
@@ -246,7 +263,7 @@ public class GridTimeCoord {
    * @param g      the group in the file
    */
   void addDimensionsToNetcdfFile(NetcdfFile ncfile, Group g) {
-    Collections.sort(times);
+    //Collections.sort(times);
     ncfile.addDimension(g, new Dimension(getName(), getNTimes(), true));
   }
 
@@ -259,9 +276,6 @@ public class GridTimeCoord {
   void addToNetcdfFile(NetcdfFile ncfile, Group g) {
     Variable v = new Variable(ncfile, g, null, getName());
     v.setDataType(DataType.INT);
-
-    int ntimes = getNTimes();
-    int[] data = new int[ntimes];
 
     Date baseTime = lookup.getFirstBaseTime();
     //String timeUnit = lookup.getFirstTimeRangeUnitName();
@@ -277,71 +291,89 @@ public class GridTimeCoord {
       return;
     }
 
-    // convert the date into the time unit.
-    for (int i = 0; i < times.size(); i++) {
-      Date validTime = (Date) times.get(i);
-      data[i] = (int) dateUnit.makeValue(validTime);
-    }
-    Array dataArray = Array.factory(DataType.INT, new int[]{ntimes}, data);
-    v.setDimensions(v.getShortName());
-    v.setCachedData(dataArray, false);
+    // create the data
+    Array coordArray = null;
+    Array boundsArray = null;
+    int ntimes = getNTimes();
+    int[] coordData = new int[ntimes];
+    if (!isInterval()) {
+      for (int i = 0; i < times.size(); i++)
+        coordData[i] = (int) dateUnit.makeValue(times.get(i)); // LOOK why int ?
+      coordArray = Array.factory(DataType.INT, new int[]{ntimes}, coordData);
 
-    if (constantInterval == GribNumbers.UNDEFINED) {
+    } else {
+      int[] boundsData = new int[ntimes*2];
+      for (int i = 0; i < timeIntvs.size(); i++) {
+        TimeCoordWithInterval tintv = timeIntvs.get(i);
+        coordData[i] = (int) dateUnit.makeValue(tintv.coord);
+        Date start = tintv.coord; // LOOK temp kludge makeStartDate(tintv.coord, tintv.interval); 
+        boundsData[2*i] = (int) dateUnit.makeValue( start);
+        boundsData[2*i+1] = (int) dateUnit.makeValue(tintv.coord);
+      }
+      coordArray = Array.factory(DataType.INT, new int[]{ntimes}, coordData);
+      boundsArray = Array.factory(DataType.INT, new int[]{ntimes, 2}, boundsData);
+    }
+
+    v.setDimensions(v.getShortName());
+    v.setCachedData(coordArray, false);
+
+    if (!isInterval()) {
       v.addAttribute(new Attribute("long_name", "forecast time"));
       v.addAttribute(new Attribute("units", timeUnit + " since " + refDate));
+
     } else {
       //StringBuilder interval = new StringBuilder (lookup.getFirstTimeRangeUnitName());
-      StringBuilder interval = new StringBuilder (lookup.getTimeRangeUnitName( this.timeUnit));
-      if (mixedInterval) {
-        interval.insert( 0, "Mixed ");
+      StringBuilder intervalName = new StringBuilder( lookup.getTimeRangeUnitName( this.timeUnit));
+      if (constantInterval < 0) {
+        intervalName.insert( 0, "Mixed ");
       } else {
-        interval.insert( 0, Integer.toString(constantInterval));
+        intervalName.insert( 0, Integer.toString(constantInterval));
 //        String interval = Integer.toString(intervalLength) +
 //                lookup.getFirstTimeRangeUnitName() + " intervals";
 //        v.addAttribute(new Attribute("long_name", "time for " + interval));
       }
-      interval.append( " intervals" );
-      v.addAttribute(new Attribute("long_name", "time for " + interval.toString()));
+      intervalName.append( " intervals" );
+      v.addAttribute(new Attribute("long_name", "time for " + intervalName.toString()));
       v.addAttribute(new Attribute("units", timeUnit + " since " + refDate));
       v.addAttribute(new Attribute("bounds", getName() + "_bounds"));
 
       // add times bound variable
+      if (g == null) g = ncfile.getRootGroup();
+      if (g.findDimension("ncell") == null)
+        ncfile.addDimension(g, new Dimension("ncell", 2, true));
+
       Variable vb = new Variable(ncfile, g, null, getName() + "_bounds");
       vb.setDataType(DataType.INT);
-      if (g == null) {
-        g = ncfile.getRootGroup();
-      }
-      if (g.findDimension("ncell") == null) {
-        ncfile.addDimension(g, new Dimension("ncell", 2, true));
-      }
       vb.setDimensions(getName() + " ncell");
-
-      vb.addAttribute(new Attribute("long_name", interval.toString()));
+      vb.addAttribute(new Attribute("long_name", "bounds "+ intervalName.toString()));
       vb.addAttribute(new Attribute("units", timeUnit + " since " + refDate));
+
       // add data
-      Array bdataArray = Array.factory(DataType.INT, new int[]{data.length, 2});
+      vb.setCachedData(boundsArray, false);
+
+      /* Array bdataArray = Array.factory(DataType.INT, new int[]{coordData.length, 2});
       ucar.ma2.Index ima = bdataArray.getIndex();
       if ( mixedInterval && lookup.getGridType().equals( "GRIB-1")) {
-        bdataArray.setInt(ima.set(0, 0), data[0] - constantInterval);
-        bdataArray.setInt(ima.set(0, 1), data[0]);
-        for (int i = 1; i < data.length; i++) {
-          if( (data[i] - data[i -1] != constantInterval))
-            constantInterval = data[i] - data[i -1];
-          bdataArray.setInt(ima.set(i, 0), data[i] - constantInterval);
-          bdataArray.setInt(ima.set(i, 1), data[i]);
+        bdataArray.setInt(ima.set(0, 0), coordData[0] - constantInterval);
+        bdataArray.setInt(ima.set(0, 1), coordData[0]);
+        for (int i = 1; i < coordData.length; i++) {
+          if( (coordData[i] - coordData[i -1] != constantInterval))
+            constantInterval = coordData[i] - coordData[i -1];
+          bdataArray.setInt(ima.set(i, 0), coordData[i] - constantInterval);
+          bdataArray.setInt(ima.set(i, 1), coordData[i]);
         }
       } else if ( mixedInterval && lookup.getGridType().equals( "GRIB-2")) {
-        for (int i = 0; i < data.length; i++) {
+        for (int i = 0; i < coordData.length; i++) {
           bdataArray.setInt(ima.set(i, 0), 0);
-          bdataArray.setInt(ima.set(i, 1), data[i]);
+          bdataArray.setInt(ima.set(i, 1), coordData[i]);
         }
       } else {
-        for (int i = 0; i < data.length; i++) {
-          bdataArray.setInt(ima.set(i, 0), data[i] - constantInterval);
-          bdataArray.setInt(ima.set(i, 1), data[i]);
+        for (int i = 0; i < coordData.length; i++) {
+          bdataArray.setInt(ima.set(i, 0), coordData[i] - constantInterval);
+          bdataArray.setInt(ima.set(i, 1), coordData[i]);
         }
       }
-      vb.setCachedData(bdataArray, true);
+      vb.setCachedData(bdataArray, true); */
       ncfile.addVariable(g, vb);
     }
 
@@ -349,13 +381,11 @@ public class GridTimeCoord {
     if (lookup instanceof Grib2GridTableLookup) {
       Grib2GridTableLookup g2lookup = (Grib2GridTableLookup) lookup;
       v.addAttribute(new Attribute("GRIB_orgReferenceTime", formatter.toDateTimeStringISO(d)));
-      v.addAttribute(new Attribute("GRIB2_significanceOfRTName",
-              g2lookup.getFirstSignificanceOfRTName()));
+      v.addAttribute(new Attribute("GRIB2_significanceOfRTName", g2lookup.getFirstSignificanceOfRTName()));
     } else if (lookup instanceof Grib1GridTableLookup) {
       Grib1GridTableLookup g1lookup = (Grib1GridTableLookup) lookup;
       v.addAttribute(new Attribute("GRIB_orgReferenceTime", formatter.toDateTimeStringISO(d)));
-      v.addAttribute(new Attribute("GRIB2_significanceOfRTName",
-              g1lookup.getFirstSignificanceOfRTName()));
+      v.addAttribute(new Attribute("GRIB2_significanceOfRTName", g1lookup.getFirstSignificanceOfRTName()));
     }
     v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
 
@@ -370,7 +400,16 @@ public class GridTimeCoord {
    */
   int getIndex(GridRecord record) {
     Date validTime = getValidTime(record, lookup);
-    return times.indexOf(validTime);
+    if (!isInterval())
+      return times.indexOf(validTime);
+    else {
+      int index = 0;
+      for (TimeCoordWithInterval t : timeIntvs) {
+        if (t.coord.equals(validTime)) return index;
+        index++;
+      }
+      return -1;
+    }
   }
 
   /**
@@ -389,7 +428,7 @@ public class GridTimeCoord {
    * @return the number of times
    */
   int getNTimes() {
-    return times.size();
+    return isInterval() ? timeIntvs.size() : times.size();
   }
 
   /**
@@ -415,8 +454,8 @@ public class GridTimeCoord {
    *
    * @return mixed
    */
-  boolean isMixedInterval() {
-    return mixedInterval;
+  boolean isInterval() {
+    return timeIntvs != null;
   }
 
   /**
@@ -472,5 +511,39 @@ public class GridTimeCoord {
     calendar.add(calandar_unit, factor * record.getValidTimeOffset());
     return calendar.getTime();
   }
+
+  // TODO: this is not always correct but this code doesn't get executed often, can we delete
+  private int getValidTimeFactor(String timeUnit) {
+    int calandar_unit = Calendar.HOUR;
+    int factor = 1;
+
+    if (timeUnit.equalsIgnoreCase("hour") || timeUnit.equalsIgnoreCase("hours")) {
+      factor = 1;  // common case
+    } else if (timeUnit.equalsIgnoreCase("minutes") || timeUnit.equalsIgnoreCase("minute")) {
+      calandar_unit = Calendar.MINUTE;
+    } else if (timeUnit.equalsIgnoreCase("second") || timeUnit.equalsIgnoreCase("secs")) {
+      calandar_unit = Calendar.SECOND;
+    } else if (timeUnit.equalsIgnoreCase("day") || timeUnit.equalsIgnoreCase("days")) {
+      factor = 24;
+    } else if (timeUnit.equalsIgnoreCase("month") || timeUnit.equalsIgnoreCase("months")) {
+      factor = 24 * 30;  // ??
+    } else if (timeUnit.equalsIgnoreCase("year") || timeUnit.equalsIgnoreCase("years") || timeUnit.equalsIgnoreCase("1year")) {
+      factor = 24 * 365;        // ??
+    } else if (timeUnit.equalsIgnoreCase("decade")) {
+      factor = 24 * 365 * 10;   // ??
+    } else if (timeUnit.equalsIgnoreCase("century")) {
+      factor = 24 * 365 * 100;  // ??
+    } else if (timeUnit.equalsIgnoreCase("3hours")) {
+      factor = 3;
+    } else if (timeUnit.equalsIgnoreCase("6hours")) {
+      factor = 6;
+    } else if (timeUnit.equalsIgnoreCase("12hours")) {
+      factor = 12;
+    }
+
+    return factor;
+  }
+
+
 
 }

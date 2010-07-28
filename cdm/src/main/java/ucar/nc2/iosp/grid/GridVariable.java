@@ -597,9 +597,9 @@ public class GridVariable {
         if (q instanceof GribGridRecord ) {
           GribGridRecord ggrq = (GribGridRecord)q;
           GribGridRecord ggrp = (GribGridRecord)p;
-          // if Grib2 mixed interval, pick out record with startOfInterval = 0
+          // if Grib2 mixed interval, pick out record with startOfInterval = 0  LOOK WRONG
           // else if Grib1 or Grib2 interval pick out smallest interval
-          if( tcs.isMixedInterval() && ggrq.isInterval( ) ) {
+          if( (tcs.getConstantInterval() < 0) && ggrq.isInterval( ) ) {
             if( ggrp.startOfInterval == 0 )
               recordTracker[recno] = p;
           } else if(  ggrq.isInterval( ) ) {
@@ -791,7 +791,7 @@ public class GridVariable {
     */
  
     // get information from timeCoord
-    if ( tcs.isMixedInterval() )
+    if ( tcs.getConstantInterval() < 0 )
       return " Mixed Intervals";
     else
       return tcs.getConstantInterval() +" "+ lookup.getTimeRangeUnitName( tcs.getTimeUnit() )
