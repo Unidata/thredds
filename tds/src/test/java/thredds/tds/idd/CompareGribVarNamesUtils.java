@@ -49,7 +49,7 @@ import static org.junit.Assert.*;
 import static org.junit.Assert.assertTrue;
 
 /**
- * _more_
+ * Utility class for comparing FMRC RUN datasets with FMRC Raw File datasets with matching run time.
  *
  * @author edavis
  * @since 4.0
@@ -59,23 +59,19 @@ public class CompareGribVarNamesUtils
     private CompareGribVarNamesUtils() {}
 
     private final static String FMRC_PREFIX = "catalog/fmrc/";
-    private final static String FMRC_RUN_SUFFIX = "/runs/catalog.xml";
-
-    private final static String SCAN_PREFIX = "catalog/fmrc/";
-    private final static String SCAN_CATALOG_SUFFIX = "/files/catalog.xml";
-//    private final static String SCAN_PREFIX = "catalog/model/";
-//    private final static String SCAN_CATALOG_SUFFIX = "/catalog.xml";
+    private final static String FMRC_RUN_CATALOG_SUFFIX = "/runs/catalog.xml";
+    private final static String FMRC_RAW_FILE_CATALOG_SUFFIX = "/files/catalog.xml";
 
     /**
      * For the given model ID, get the dataset at the given index in the
      * "FMRC Run" catalog and compare it to the dataset with matching
-     * run time from the IDV datasetScan catalog.
+     * run time in the "FMRC Raw File" catalog.
      *
      * @param tdsUrl the URL of the target TDS.
      * @param modelId the ID of the target FMRC model to compare.
      * @param index   the index of the target dataset in the "FMRC Run" catalog.
      */
-    public static void assertEqualityOfFmrcRunDsAndMatchingScanDsVariableNames(String tdsUrl, String modelId, int index )
+    public static void assertEqualityOfFmrcRunDsAndMatchingFmrcRawFileDsVariableNames(String tdsUrl, String modelId, int index )
     {
         // 1) Get the dataset at <index> in "FMRC Run" catalog.
         GridDataset fmrcRunGridDs = assertFmrcRunDatasetIsAccessible( tdsUrl, modelId, index );
@@ -84,7 +80,7 @@ public class CompareGribVarNamesUtils
         Date runDate = parseTimestampInFmrcRunDatasetUrl( fmrcRunGridDs );
 
         // 3) Locate the dataset with matching run date in IDV datasetScan.
-        GridDataset scanGridDs = assertScanDatasetForMatchingTimeIsAccessible( tdsUrl, modelId, runDate );
+        GridDataset scanGridDs = assertFmrcRawFileDatasetForMatchingTimeIsAccessible( tdsUrl, modelId, runDate );
 
         // 4) Compare the matching datasets.
         StringBuilder diffLog = new StringBuilder();
@@ -105,7 +101,7 @@ public class CompareGribVarNamesUtils
     private static GridDataset assertFmrcRunDatasetIsAccessible( String tdsUrl, String modelId, int index )
     {
         // Construct URL for the given model's FMRC Run catalog.
-        String fmrcRunCatUrl = tdsUrl + FMRC_PREFIX + modelId + FMRC_RUN_SUFFIX;
+        String fmrcRunCatUrl = tdsUrl + FMRC_PREFIX + modelId + FMRC_RUN_CATALOG_SUFFIX;
 
         // Read the "FMRC Run" catalog
         InvCatalogImpl cat = InvCatalogFactory.getDefaultFactory( false ).readXML( fmrcRunCatUrl );
@@ -144,13 +140,13 @@ public class CompareGribVarNamesUtils
         }
         catch ( IOException e )
         {
-            fail( "\"Latest\" dataset [" + requestedChildDs.getFullName() + "] failed to open:"
+            fail( "Dataset [" + requestedChildDs.getFullName() + "] failed to open:"
                   + "\n*****" + e.getMessage()
                   + "\n*****" + errlog.toString() );
         }
-        assertNotNull( "\"Latest\" dataset [" + requestedChildDs.getFullName() + "] failed to open: " + errlog.toString(),
+        assertNotNull( "Dataset [" + requestedChildDs.getFullName() + "] failed to open: " + errlog.toString(),
                        dataset );
-        assertTrue( "\"Latest\" dataset [" + requestedChildDs.getFullName() + "] not a gridded dataset: " + errlog.toString(),
+        assertTrue( "Dataset [" + requestedChildDs.getFullName() + "] not a gridded dataset: " + errlog.toString(),
                     dataset instanceof GridDataset );
 
         return (GridDataset) dataset;
@@ -189,7 +185,7 @@ public class CompareGribVarNamesUtils
     }
 
     /**
-     * Return the dataset from the IDV model datasetScan for the given model ID
+     * Return the dataset from the "FMRC Raw File" catalog for the given model ID
      * with a run time/date matching the given run date.
      *
      * @param tdsUrl the URL of the target TDS.
@@ -197,21 +193,21 @@ public class CompareGribVarNamesUtils
      * @param runDate the Date of the target run time/date.
      * @return the desired grid dataset.
      */
-    private static GridDataset assertScanDatasetForMatchingTimeIsAccessible( String tdsUrl, String modelId, Date runDate )
+    private static GridDataset assertFmrcRawFileDatasetForMatchingTimeIsAccessible( String tdsUrl, String modelId, Date runDate )
     {
         // Construct URL for the given model's "Scan" catalog.
-        String scanCatalogUrl = tdsUrl + SCAN_PREFIX + modelId + SCAN_CATALOG_SUFFIX;
+        String scanCatalogUrl = tdsUrl + FMRC_PREFIX + modelId + FMRC_RAW_FILE_CATALOG_SUFFIX;
 
         // Read the "Scan" catalog.
         InvCatalogImpl cat = InvCatalogFactory.getDefaultFactory( false ).readXML( scanCatalogUrl );
-        assertFalse( "\"Scan\" catalog [" + scanCatalogUrl + "] had a fatal error.", cat.hasFatalError() );
+        assertFalse( "\"FMRC Raw File\" catalog [" + scanCatalogUrl + "] had a fatal error.", cat.hasFatalError() );
 
         // Make sure the "Scan" catalog contains one top dataset and that it has children.
         List<InvDataset> datasets = cat.getDatasets();
-        assertEquals( "\"Scan\" catalog [" + scanCatalogUrl + "] contains more than one dataset.",
+        assertEquals( "\"FMRC Raw File\" catalog [" + scanCatalogUrl + "] contains more than one dataset.",
                       datasets.size(), 1 );
         InvDataset topDs = datasets.get( 0 );
-        assertTrue( "\"Scan\" top dataset [" + topDs.getFullName() + "] does not have child datasets.",
+        assertTrue( "\"FMRC Raw File\" top dataset [" + topDs.getFullName() + "] does not have child datasets.",
                     topDs.hasNestedDatasets() );
 
         // Determine timestamp String to look for in dataset URL
@@ -244,7 +240,7 @@ public class CompareGribVarNamesUtils
             break;
         }
 
-        System.out.println( "\"Scan\" matching [" + timeStamp + "] dataset: " + dsUrl );
+        System.out.println( "\"FMRC Raw File\" matching [" + timeStamp + "] dataset: " + dsUrl );
 
         // Open the dataset as a gridded dataset.
         Formatter errlog = new Formatter();
@@ -255,13 +251,13 @@ public class CompareGribVarNamesUtils
         }
         catch ( IOException e )
         {
-            fail( "\"Latest\" dataset [" + ds.getFullName() + "][" + dsUrl + "] failed to open:"
+            fail( "Matching dataset [" + ds.getFullName() + "][" + dsUrl + "] failed to open:"
                   + "\n*****" + e.getMessage()
                   + "\n*****" + errlog.toString() );
         }
-        assertNotNull( "\"Latest\" dataset [" + ds.getFullName() + "][" + dsUrl + "] failed to open: " + errlog.toString(),
+        assertNotNull( "Matching dataset [" + ds.getFullName() + "][" + dsUrl + "] failed to open: " + errlog.toString(),
                        gridDs );
-        assertTrue( "\"Latest\" dataset [" + ds.getFullName() + "][" + dsUrl + "] not a gridded dataset: " + errlog.toString(),
+        assertTrue( "Matching dataset [" + ds.getFullName() + "][" + dsUrl + "] not a gridded dataset: " + errlog.toString(),
                     gridDs instanceof GridDataset );
 
         return (GridDataset) gridDs;
