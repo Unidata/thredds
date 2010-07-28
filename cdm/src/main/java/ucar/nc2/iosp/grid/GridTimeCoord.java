@@ -230,8 +230,8 @@ public class GridTimeCoord {
         int intv2 = end - start;
         Date validTime = getValidTime(record, lookup);
         TimeCoordWithInterval timeCoordIntv = new TimeCoordWithInterval(validTime, start, intv2);
-        if (!timeIntvs.contains(timeCoordIntv)) {
-          timeIntvs.add(timeCoordIntv);
+        if (!timeList.contains(timeCoordIntv)) {
+          timeList.add(timeCoordIntv);
         }
       }
 
@@ -362,10 +362,9 @@ public class GridTimeCoord {
       int[] boundsData = new int[ntimes * 2];
       for (int i = 0; i < timeIntvs.size(); i++) {
         TimeCoordWithInterval tintv = timeIntvs.get(i);
-        coordData[i] = (int) dateUnit.makeValue(tintv.coord);
-        Date start = tintv.coord; // LOOK temp kludge makeStartDate(tintv.coord, tintv.interval); 
-        boundsData[2 * i] = (int) dateUnit.makeValue(start);
-        boundsData[2 * i + 1] = (int) dateUnit.makeValue(tintv.coord);
+        coordData[i] = tintv.start + tintv.interval; // end
+        boundsData[2 * i + 1] = tintv.start + tintv.interval; // end
+        boundsData[2 * i] = tintv.start; // start
       }
       coordArray = Array.factory(DataType.INT, new int[]{ntimes}, coordData);
       boundsArray = Array.factory(DataType.INT, new int[]{ntimes, 2}, boundsData);

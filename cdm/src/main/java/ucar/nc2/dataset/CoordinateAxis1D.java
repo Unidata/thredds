@@ -784,7 +784,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
     }
 
     // flip if needed
-    boolean goesUp = (n < 2) || value1[1] > value1[0];
+    boolean goesUp = (n < 2) || value1[n-1] > value1[0];
     boolean firstLower = value1[0] < value2[0];
     if (goesUp != firstLower) {
       double[] temp = value1;
