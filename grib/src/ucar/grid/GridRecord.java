@@ -114,5 +114,11 @@ public interface GridRecord {
      */
     public int getDecimalScale();
 
+  /**
+   * Get the time units as a String
+   *
+   * @return the time units as a String
+   */
+    public String getTimeUnitName();
 }
 

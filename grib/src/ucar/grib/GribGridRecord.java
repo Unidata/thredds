@@ -362,6 +362,11 @@ public final class GribGridRecord implements GridRecord {
     return decimalScale;
   }
 
+  @Override
+  public String getTimeUnitName() {
+    return Grib2Tables.getTimeUnitFromTable4_4( timeUnit );
+  }
+
   /**
    * is this an ensemble type record
    * @return isEnsemble

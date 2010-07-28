@@ -187,5 +187,10 @@ public class McIDASGridRecord extends GridDirectory implements GridRecord {
         return ( !((gribSection == McIDASUtil.MCMISSING)
                    || (gribSection == 0)));
     }
+
+    @Override
+    public String getTimeUnitName() {
+      return "minutes";
+    }
 }
 

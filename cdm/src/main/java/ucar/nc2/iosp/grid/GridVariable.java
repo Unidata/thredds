@@ -794,8 +794,7 @@ public class GridVariable {
     if ( tcs.getConstantInterval() < 0 )
       return " Mixed Intervals";
     else
-      return tcs.getConstantInterval() +" "+ lookup.getTimeRangeUnitName( tcs.getTimeUnit() )
-          +" Intervals";
+      return tcs.getConstantInterval() +" "+ tcs.getTimeUnit() +" Intervals";
       //return tcs.getIntervalLength() +" Hour Intervals";
   }
 

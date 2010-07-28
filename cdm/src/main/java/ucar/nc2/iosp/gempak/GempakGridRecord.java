@@ -239,7 +239,12 @@ public class GempakGridRecord implements GridRecord {
         return decimalScale;
     }
 
-    /**
+    @Override
+    public String getTimeUnitName() {
+      return "minutes";
+    }
+
+  /**
      * Get a String representation of this object
      * @return a String representation of this object
      */

@@ -61,8 +61,9 @@ public class GridTimeCoord {
   private String name;
   private GridTableLookup lookup;
   private int seq = 0; // for getting a unique name
-  private int timeUnit = 1; // time range unit in GRIB code. hour is default
+  private String timeUnit;
 
+  private Date baseDate;
   private List<Date> times;
   private List<TimeCoordWithInterval> timeIntvs;
   private int constantInterval = -1;
@@ -111,11 +112,24 @@ public class GridTimeCoord {
     this();
     this.lookup = lookup;
 
+    // make sure that the base times and time units agree
+    for (GridRecord record : records) {
+      if (this.baseDate == null) {
+        this.baseDate = record.getReferenceTime();
+        this.timeUnit = record.getTimeUnitName();
+      } else {
+        Date ref = record.getReferenceTime();
+        if (!baseDate.equals(ref))
+          throw new IllegalStateException(record + " does not have same base date= " + baseDate + " != " + ref);
+        if (this.timeUnit != record.getTimeUnitName())
+          throw new IllegalStateException(record + " does not have same time unit= " + this.timeUnit + " != " + record.getTimeUnitName());
+      }
+    }
+
+    // interval case - currently only GRIB2
     if (records.get(0) instanceof GribGridRecord) {
       GribGridRecord ggr = (GribGridRecord) records.get(0);
-      timeUnit = ggr.timeUnit;  // some models now use different unit for different variables. ie NDFD
 
-      // interval case
       if (ggr.isInterval()) {
         timeIntvs = new ArrayList<TimeCoordWithInterval>();
 
@@ -142,18 +156,18 @@ public class GridTimeCoord {
         Collections.sort(timeIntvs);
         return;
       }
-
-      // non - interval case
-      // get list of unique times
-      times = new ArrayList<Date>();
-      for (GridRecord record : records) {
-        Date validTime = getValidTime(record, lookup);
-        if (!times.contains(validTime)) {
-          times.add(validTime);
-        }
-      }
-      Collections.sort(times);
     }
+
+    // non - interval case
+    // get list of unique times
+    times = new ArrayList<Date>();
+    for (GridRecord record : records) {
+      Date validTime = getValidTime(record, lookup);
+      if (!times.contains(validTime)) {
+        times.add(validTime);
+      }
+    }
+    Collections.sort(times);
   }
 
   /**
@@ -197,23 +211,65 @@ public class GridTimeCoord {
    * @return true if they are the same as this
    */
   boolean matchTimes(List<GridRecord> records) {
-    // times are not equal if one is an interval and the other is not an interval
+    // make sure that the base times and time units agree
+    for (GridRecord record : records) {
+      Date ref = record.getReferenceTime();
+      if (!baseDate.equals(ref))
+        return false;
+      if (this.timeUnit != record.getTimeUnitName())
+        return false;
+    }
+
+    if (isInterval()) {
+      // first create a new list
+      List<TimeCoordWithInterval> timeList = new ArrayList<TimeCoordWithInterval>(records.size());
+      for (GridRecord record : records) {
+        GribGridRecord ggr = (GribGridRecord) record;
+        int start = ggr.startOfInterval;
+        int end = ggr.forecastTime;
+        int intv2 = end - start;
+        Date validTime = getValidTime(record, lookup);
+        TimeCoordWithInterval timeCoordIntv = new TimeCoordWithInterval(validTime, start, intv2);
+        if (!timeIntvs.contains(timeCoordIntv)) {
+          timeIntvs.add(timeCoordIntv);
+        }
+      }
+
+      Collections.sort(timeList);
+      return timeList.equals(timeIntvs);
+
+    } else {
+      // first create a new list
+      List<Date> timeList = new ArrayList<Date>(records.size());
+      for (GridRecord record : records) {
+        Date validTime = getValidTime(record, lookup);
+        if (!timeList.contains(validTime)) {
+          timeList.add(validTime);
+        }
+      }
+
+      Collections.sort(timeList);
+      return timeList.equals(times);
+    }
+
+
+    /* times are not equal if one is an interval and the other is not an interval
     if (records.get(0) instanceof GribGridRecord) {
       GribGridRecord ggr = (GribGridRecord) records.get(0);
       // some models have a mixture of units
-      if( timeUnit != ggr.timeUnit )
+      if (this.timeUnit != record.getTimeRangeUnitName())
         return false;
       if ((ggr.isInterval() && constantInterval == GribNumbers.UNDEFINED) ||
-        ( ! ggr.isInterval() && constantInterval != GribNumbers.UNDEFINED) )
+              (!ggr.isInterval() && constantInterval != GribNumbers.UNDEFINED))
         return false;
-      else if( ggr.isInterval() ) { // can we match
+      else if (ggr.isInterval()) { // can we match
         List<Date> timeList = new ArrayList<Date>(records.size());
         for (GridRecord record : records) {
           ggr = (GribGridRecord) record;
 
-          if( false && ggr.category == 4 && ggr.paramNumber == 192)
-            System.out.printf( "reference time %s start %d end %d interval=%d%n",
-              ggr.getReferenceTime(), ggr.startOfInterval, ggr.forecastTime, (ggr.forecastTime - ggr.startOfInterval));
+          if (false && ggr.category == 4 && ggr.paramNumber == 192)
+            System.out.printf("reference time %s start %d end %d interval=%d%n",
+                    ggr.getReferenceTime(), ggr.startOfInterval, ggr.forecastTime, (ggr.forecastTime - ggr.startOfInterval));
           Date validTime = getValidTime(record, lookup);
           if (!timeList.contains(validTime)) {
             timeList.add(validTime);
@@ -234,7 +290,7 @@ public class GridTimeCoord {
     }
 
     Collections.sort(timeList);
-    return timeList.equals(times);
+    return timeList.equals(times); */
   }
 
   /**
@@ -252,7 +308,7 @@ public class GridTimeCoord {
    * @return the name
    */
   String getName() {
-    if (name != null)  return name;
+    if (name != null) return name;
     return (seq == 0) ? "time" : "time" + seq;
   }
 
@@ -279,15 +335,16 @@ public class GridTimeCoord {
 
     Date baseTime = lookup.getFirstBaseTime();
     //String timeUnit = lookup.getFirstTimeRangeUnitName();
-    String timeUnit = lookup.getTimeRangeUnitName(this.timeUnit);
+    // String timeUnit = lookup.getTimeRangeUnitName(this.timeUnit);
 
     DateFormatter formatter = new DateFormatter();
     String refDate = formatter.toDateTimeStringISO(baseTime);
+    String udunit = timeUnit + " since " + refDate;
     DateUnit dateUnit = null;
     try {
-      dateUnit = new DateUnit(timeUnit + " since " + refDate);
+      dateUnit = new DateUnit(udunit);
     } catch (Exception e) {
-      log.error("TimeCoord not added, cant make DateUnit from String '" + timeUnit + " since " + refDate + "'", e);
+      log.error("TimeCoord not added, cant make DateUnit from String '" + udunit + "'", e);
       return;
     }
 
@@ -302,13 +359,13 @@ public class GridTimeCoord {
       coordArray = Array.factory(DataType.INT, new int[]{ntimes}, coordData);
 
     } else {
-      int[] boundsData = new int[ntimes*2];
+      int[] boundsData = new int[ntimes * 2];
       for (int i = 0; i < timeIntvs.size(); i++) {
         TimeCoordWithInterval tintv = timeIntvs.get(i);
         coordData[i] = (int) dateUnit.makeValue(tintv.coord);
         Date start = tintv.coord; // LOOK temp kludge makeStartDate(tintv.coord, tintv.interval); 
-        boundsData[2*i] = (int) dateUnit.makeValue( start);
-        boundsData[2*i+1] = (int) dateUnit.makeValue(tintv.coord);
+        boundsData[2 * i] = (int) dateUnit.makeValue(start);
+        boundsData[2 * i + 1] = (int) dateUnit.makeValue(tintv.coord);
       }
       coordArray = Array.factory(DataType.INT, new int[]{ntimes}, coordData);
       boundsArray = Array.factory(DataType.INT, new int[]{ntimes, 2}, boundsData);
@@ -323,16 +380,16 @@ public class GridTimeCoord {
 
     } else {
       //StringBuilder interval = new StringBuilder (lookup.getFirstTimeRangeUnitName());
-      StringBuilder intervalName = new StringBuilder( lookup.getTimeRangeUnitName( this.timeUnit));
+      StringBuilder intervalName = new StringBuilder(this.timeUnit);
       if (constantInterval < 0) {
-        intervalName.insert( 0, "Mixed ");
+        intervalName.insert(0, "Mixed ");
       } else {
-        intervalName.insert( 0, Integer.toString(constantInterval));
+        intervalName.insert(0, Integer.toString(constantInterval));
 //        String interval = Integer.toString(intervalLength) +
 //                lookup.getFirstTimeRangeUnitName() + " intervals";
 //        v.addAttribute(new Attribute("long_name", "time for " + interval));
       }
-      intervalName.append( " intervals" );
+      intervalName.append(" intervals");
       v.addAttribute(new Attribute("long_name", "time for " + intervalName.toString()));
       v.addAttribute(new Attribute("units", timeUnit + " since " + refDate));
       v.addAttribute(new Attribute("bounds", getName() + "_bounds"));
@@ -345,7 +402,7 @@ public class GridTimeCoord {
       Variable vb = new Variable(ncfile, g, null, getName() + "_bounds");
       vb.setDataType(DataType.INT);
       vb.setDimensions(getName() + " ncell");
-      vb.addAttribute(new Attribute("long_name", "bounds "+ intervalName.toString()));
+      vb.addAttribute(new Attribute("long_name", "bounds " + intervalName.toString()));
       vb.addAttribute(new Attribute("units", timeUnit + " since " + refDate));
 
       // add data
@@ -445,7 +502,7 @@ public class GridTimeCoord {
    *
    * @return TimeUnit
    */
-  int getTimeUnit() {
+  String getTimeUnit() {
     return timeUnit;
   }
 
@@ -513,6 +570,7 @@ public class GridTimeCoord {
   }
 
   // TODO: this is not always correct but this code doesn't get executed often, can we delete
+
   private int getValidTimeFactor(String timeUnit) {
     int calandar_unit = Calendar.HOUR;
     int factor = 1;
@@ -543,7 +601,6 @@ public class GridTimeCoord {
 
     return factor;
   }
-
 
 
 }
