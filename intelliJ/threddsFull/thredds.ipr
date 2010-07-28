@@ -10,6 +10,22 @@
       <maximumStackSize value="128" />
       <properties />
     </buildFile>
+    <buildFile url="file://$PROJECT_DIR$/../../tds/build.xml">
+      <additionalClassPath />
+      <antReference projectDefault="true" />
+      <customJdkName value="" />
+      <maximumHeapSize value="128" />
+      <maximumStackSize value="2" />
+      <properties />
+    </buildFile>
+    <buildFile url="file://$PROJECT_DIR$/../../grib/build.xml">
+      <additionalClassPath />
+      <antReference projectDefault="true" />
+      <customJdkName value="" />
+      <maximumHeapSize value="128" />
+      <maximumStackSize value="2" />
+      <properties />
+    </buildFile>
   </component>
   <component name="ArtifactManager">
     <artifact type="exploded-war" name="tds:tds exploded">
@@ -63,6 +79,7 @@
             <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/jdom.jar" />
             <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/commons-logging-1.1.jar" />
             <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/commons-codec-1.3.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/jaxen-1.1.2.jar" />
           </element>
         </element>
       </root>
@@ -213,6 +230,11 @@
               <file url="file://$PROJECT_DIR$/../../bufrTables/target/WEB-INF/web.xml" />
             </files>
           </module>
+          <module name="opendap">
+            <files>
+              <file url="file://$PROJECT_DIR$/../../../Java-OPeNDAP/resources/WEB-INF/web.xml" />
+            </files>
+          </module>
         </modules>
       </facet-type>
       <facet-type id="Spring">
@@ -225,16 +247,6 @@
           </module>
           <module name="tds">
             <files>
-              <file url="file://$PROJECT_DIR$/../../tds/runenv/WEB-INF/admin-servlet.xml" />
-              <file url="file://$PROJECT_DIR$/../../tds/runenv/WEB-INF/applicationContext-tdsConfig.xml" />
-              <file url="file://$PROJECT_DIR$/../../tds/runenv/WEB-INF/catalogGen-servlet.xml" />
-              <file url="file://$PROJECT_DIR$/../../tds/runenv/WEB-INF/catalogService-servlet.xml" />
-              <file url="file://$PROJECT_DIR$/../../tds/runenv/WEB-INF/cdmRemote-servlet.xml" />
-              <file url="file://$PROJECT_DIR$/../../tds/runenv/WEB-INF/dqc-servlet.xml" />
-              <file url="file://$PROJECT_DIR$/../../tds/runenv/WEB-INF/ncOpendap-servlet.xml" />
-              <file url="file://$PROJECT_DIR$/../../tds/runenv/WEB-INF/root-servlet.xml" />
-              <file url="file://$PROJECT_DIR$/../../tds/runenv/WEB-INF/view.xml" />
-              <file url="file://$PROJECT_DIR$/../../tds/runenv/WEB-INF/wms-servlet.xml" />
               <file url="file://$PROJECT_DIR$/../../tds/src/main/webapp-cdmValidator/WEB-INF/applicationContext-cdmValidatorConfig.xml" />
               <file url="file://$PROJECT_DIR$/../../tds/src/main/webapp-cdmValidator/WEB-INF/cdmvalidator-servlet.xml" />
               <file url="file://$PROJECT_DIR$/../../tds/src/main/webapp-expThredds/WEB-INF/applicationContext-tdsConfig.xml" />
@@ -530,6 +542,7 @@
         <w>dataset</w>
         <w>datasets</w>
         <w>fmrc</w>
+        <w>metadata</w>
         <w>ncml</w>
         <w>netcdf</w>
         <w>thredds</w>
@@ -549,7 +562,6 @@
       <module fileurl="file://$PROJECT_DIR$/intelliJ.iml" filepath="$PROJECT_DIR$/intelliJ.iml" />
       <module fileurl="file://$PROJECT_DIR$/ldm.iml" filepath="$PROJECT_DIR$/ldm.iml" />
       <module fileurl="file://$PROJECT_DIR$/lib.iml" filepath="$PROJECT_DIR$/lib.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../../../ncwms.iml" filepath="$PROJECT_DIR$/../../../ncwms.iml" />
       <module fileurl="file://$PROJECT_DIR$/opendap.iml" filepath="$PROJECT_DIR$/opendap.iml" />
       <module fileurl="file://$PROJECT_DIR$/tds.iml" filepath="$PROJECT_DIR$/tds.iml" />
       <module fileurl="file://$PROJECT_DIR$/ui.iml" filepath="$PROJECT_DIR$/ui.iml" />
@@ -574,12 +586,12 @@
             <SvnBranchConfiguration>
               <option name="branchMap">
                 <map>
-                  <entry key="svn://zero/thredds/branch">
+                  <entry key="http://sub.unidata.ucar.edu/thredds/branch">
                     <value>
                       <list />
                     </value>
                   </entry>
-                  <entry key="svn://zero/thredds/tag">
+                  <entry key="http://sub.unidata.ucar.edu/thredds/tag">
                     <value>
                       <list />
                     </value>
@@ -588,11 +600,11 @@
               </option>
               <option name="branchUrls">
                 <list>
-                  <option value="svn://zero/thredds/branch" />
-                  <option value="svn://zero/thredds/tag" />
+                  <option value="http://sub.unidata.ucar.edu/thredds/branch" />
+                  <option value="http://sub.unidata.ucar.edu/thredds/tag" />
                 </list>
               </option>
-              <option name="trunkUrl" value="svn://zero/thredds/trunk" />
+              <option name="trunkUrl" value="http://sub.unidata.ucar.edu/thredds/trunk" />
             </SvnBranchConfiguration>
           </value>
         </entry>
@@ -601,12 +613,12 @@
             <SvnBranchConfiguration>
               <option name="branchMap">
                 <map>
-                  <entry key="svn://zero/thredds/branch">
+                  <entry key="http://sub.unidata.ucar.edu/thredds/branch">
                     <value>
                       <list />
                     </value>
                   </entry>
-                  <entry key="svn://zero/thredds/tag">
+                  <entry key="http://sub.unidata.ucar.edu/thredds/tag">
                     <value>
                       <list />
                     </value>
@@ -615,11 +627,11 @@
               </option>
               <option name="branchUrls">
                 <list>
-                  <option value="svn://zero/thredds/branch" />
-                  <option value="svn://zero/thredds/tag" />
+                  <option value="http://sub.unidata.ucar.edu/thredds/branch" />
+                  <option value="http://sub.unidata.ucar.edu/thredds/tag" />
                 </list>
               </option>
-              <option name="trunkUrl" value="svn://zero/thredds/trunk" />
+              <option name="trunkUrl" value="http://sub.unidata.ucar.edu/thredds/trunk" />
             </SvnBranchConfiguration>
           </value>
         </entry>
@@ -628,12 +640,12 @@
             <SvnBranchConfiguration>
               <option name="branchMap">
                 <map>
-                  <entry key="svn://zero/thredds/branch">
+                  <entry key="http://sub.unidata.ucar.edu/thredds/branch">
                     <value>
                       <list />
                     </value>
                   </entry>
-                  <entry key="svn://zero/thredds/tag">
+                  <entry key="http://sub.unidata.ucar.edu/thredds/tag">
                     <value>
                       <list />
                     </value>
@@ -642,11 +654,11 @@
               </option>
               <option name="branchUrls">
                 <list>
-                  <option value="svn://zero/thredds/branch" />
-                  <option value="svn://zero/thredds/tag" />
+                  <option value="http://sub.unidata.ucar.edu/thredds/branch" />
+                  <option value="http://sub.unidata.ucar.edu/thredds/tag" />
                 </list>
               </option>
-              <option name="trunkUrl" value="svn://zero/thredds/trunk" />
+              <option name="trunkUrl" value="http://sub.unidata.ucar.edu/thredds/trunk" />
             </SvnBranchConfiguration>
           </value>
         </entry>
@@ -655,12 +667,12 @@
             <SvnBranchConfiguration>
               <option name="branchMap">
                 <map>
-                  <entry key="svn://zero/thredds/branch">
+                  <entry key="http://sub.unidata.ucar.edu/thredds/branch">
                     <value>
                       <list />
                     </value>
                   </entry>
-                  <entry key="svn://zero/thredds/tag">
+                  <entry key="http://sub.unidata.ucar.edu/thredds/tag">
                     <value>
                       <list />
                     </value>
@@ -669,11 +681,11 @@
               </option>
               <option name="branchUrls">
                 <list>
-                  <option value="svn://zero/thredds/branch" />
-                  <option value="svn://zero/thredds/tag" />
+                  <option value="http://sub.unidata.ucar.edu/thredds/branch" />
+                  <option value="http://sub.unidata.ucar.edu/thredds/tag" />
                 </list>
               </option>
-              <option name="trunkUrl" value="svn://zero/thredds/trunk" />
+              <option name="trunkUrl" value="http://sub.unidata.ucar.edu/thredds/trunk" />
             </SvnBranchConfiguration>
           </value>
         </entry>
@@ -709,12 +721,12 @@
             <SvnBranchConfiguration>
               <option name="branchMap">
                 <map>
-                  <entry key="svn://zero/thredds/branch">
+                  <entry key="http://sub.unidata.ucar.edu/thredds/branch">
                     <value>
                       <list />
                     </value>
                   </entry>
-                  <entry key="svn://zero/thredds/tag">
+                  <entry key="http://sub.unidata.ucar.edu/thredds/tag">
                     <value>
                       <list />
                     </value>
@@ -723,11 +735,11 @@
               </option>
               <option name="branchUrls">
                 <list>
-                  <option value="svn://zero/thredds/branch" />
-                  <option value="svn://zero/thredds/tag" />
+                  <option value="http://sub.unidata.ucar.edu/thredds/branch" />
+                  <option value="http://sub.unidata.ucar.edu/thredds/tag" />
                 </list>
               </option>
-              <option name="trunkUrl" value="svn://zero/thredds/trunk" />
+              <option name="trunkUrl" value="http://sub.unidata.ucar.edu/thredds/trunk" />
             </SvnBranchConfiguration>
           </value>
         </entry>
@@ -736,12 +748,12 @@
             <SvnBranchConfiguration>
               <option name="branchMap">
                 <map>
-                  <entry key="svn://zero/thredds/branch">
+                  <entry key="http://sub.unidata.ucar.edu/thredds/branch">
                     <value>
                       <list />
                     </value>
                   </entry>
-                  <entry key="svn://zero/thredds/tag">
+                  <entry key="http://sub.unidata.ucar.edu/thredds/tag">
                     <value>
                       <list />
                     </value>
@@ -750,11 +762,11 @@
               </option>
               <option name="branchUrls">
                 <list>
-                  <option value="svn://zero/thredds/branch" />
-                  <option value="svn://zero/thredds/tag" />
+                  <option value="http://sub.unidata.ucar.edu/thredds/branch" />
+                  <option value="http://sub.unidata.ucar.edu/thredds/tag" />
                 </list>
               </option>
-              <option name="trunkUrl" value="svn://zero/thredds/trunk" />
+              <option name="trunkUrl" value="http://sub.unidata.ucar.edu/thredds/trunk" />
             </SvnBranchConfiguration>
           </value>
         </entry>
@@ -763,12 +775,12 @@
             <SvnBranchConfiguration>
               <option name="branchMap">
                 <map>
-                  <entry key="svn://zero/thredds/branch">
+                  <entry key="http://sub.unidata.ucar.edu/thredds/branch">
                     <value>
                       <list />
                     </value>
                   </entry>
-                  <entry key="svn://zero/thredds/tag">
+                  <entry key="http://sub.unidata.ucar.edu/thredds/tag">
                     <value>
                       <list />
                     </value>
@@ -777,11 +789,11 @@
               </option>
               <option name="branchUrls">
                 <list>
-                  <option value="svn://zero/thredds/branch" />
-                  <option value="svn://zero/thredds/tag" />
+                  <option value="http://sub.unidata.ucar.edu/thredds/branch" />
+                  <option value="http://sub.unidata.ucar.edu/thredds/tag" />
                 </list>
               </option>
-              <option name="trunkUrl" value="svn://zero/thredds/trunk" />
+              <option name="trunkUrl" value="http://sub.unidata.ucar.edu/thredds/trunk" />
             </SvnBranchConfiguration>
           </value>
         </entry>
@@ -790,12 +802,12 @@
             <SvnBranchConfiguration>
               <option name="branchMap">
                 <map>
-                  <entry key="svn://zero/thredds/branch">
+                  <entry key="http://sub.unidata.ucar.edu/thredds/branch">
                     <value>
                       <list />
                     </value>
                   </entry>
-                  <entry key="svn://zero/thredds/tag">
+                  <entry key="http://sub.unidata.ucar.edu/thredds/tag">
                     <value>
                       <list />
                     </value>
@@ -804,11 +816,11 @@
               </option>
               <option name="branchUrls">
                 <list>
-                  <option value="svn://zero/thredds/branch" />
-                  <option value="svn://zero/thredds/tag" />
+                  <option value="http://sub.unidata.ucar.edu/thredds/branch" />
+                  <option value="http://sub.unidata.ucar.edu/thredds/tag" />
                 </list>
               </option>
-              <option name="trunkUrl" value="svn://zero/thredds/trunk" />
+              <option name="trunkUrl" value="http://sub.unidata.ucar.edu/thredds/trunk" />
             </SvnBranchConfiguration>
           </value>
         </entry>
@@ -817,12 +829,12 @@
             <SvnBranchConfiguration>
               <option name="branchMap">
                 <map>
-                  <entry key="svn://zero/thredds/branch">
+                  <entry key="http://sub.unidata.ucar.edu/thredds/branch">
                     <value>
                       <list />
                     </value>
                   </entry>
-                  <entry key="svn://zero/thredds/tag">
+                  <entry key="http://sub.unidata.ucar.edu/thredds/tag">
                     <value>
                       <list />
                     </value>
@@ -831,11 +843,11 @@
               </option>
               <option name="branchUrls">
                 <list>
-                  <option value="svn://zero/thredds/branch" />
-                  <option value="svn://zero/thredds/tag" />
+                  <option value="http://sub.unidata.ucar.edu/thredds/branch" />
+                  <option value="http://sub.unidata.ucar.edu/thredds/tag" />
                 </list>
               </option>
-              <option name="trunkUrl" value="svn://zero/thredds/trunk" />
+              <option name="trunkUrl" value="http://sub.unidata.ucar.edu/thredds/trunk" />
             </SvnBranchConfiguration>
           </value>
         </entry>
@@ -844,12 +856,12 @@
             <SvnBranchConfiguration>
               <option name="branchMap">
                 <map>
-                  <entry key="svn://zero/thredds/branch">
+                  <entry key="http://sub.unidata.ucar.edu/thredds/branch">
                     <value>
                       <list />
                     </value>
                   </entry>
-                  <entry key="svn://zero/thredds/tag">
+                  <entry key="http://sub.unidata.ucar.edu/thredds/tag">
                     <value>
                       <list />
                     </value>
@@ -858,11 +870,11 @@
               </option>
               <option name="branchUrls">
                 <list>
-                  <option value="svn://zero/thredds/branch" />
-                  <option value="svn://zero/thredds/tag" />
+                  <option value="http://sub.unidata.ucar.edu/thredds/branch" />
+                  <option value="http://sub.unidata.ucar.edu/thredds/tag" />
                 </list>
               </option>
-              <option name="trunkUrl" value="svn://zero/thredds/trunk" />
+              <option name="trunkUrl" value="http://sub.unidata.ucar.edu/thredds/trunk" />
             </SvnBranchConfiguration>
           </value>
         </entry>
@@ -871,12 +883,12 @@
             <SvnBranchConfiguration>
               <option name="branchMap">
                 <map>
-                  <entry key="svn://zero/thredds/branch">
+                  <entry key="http://sub.unidata.ucar.edu/thredds/branch">
                     <value>
                       <list />
                     </value>
                   </entry>
-                  <entry key="svn://zero/thredds/tag">
+                  <entry key="http://sub.unidata.ucar.edu/thredds/tag">
                     <value>
                       <list />
                     </value>
@@ -885,11 +897,11 @@
               </option>
               <option name="branchUrls">
                 <list>
-                  <option value="svn://zero/thredds/branch" />
-                  <option value="svn://zero/thredds/tag" />
+                  <option value="http://sub.unidata.ucar.edu/thredds/branch" />
+                  <option value="http://sub.unidata.ucar.edu/thredds/tag" />
                 </list>
               </option>
-              <option name="trunkUrl" value="svn://zero/thredds/trunk" />
+              <option name="trunkUrl" value="http://sub.unidata.ucar.edu/thredds/trunk" />
             </SvnBranchConfiguration>
           </value>
         </entry>
@@ -898,12 +910,12 @@
             <SvnBranchConfiguration>
               <option name="branchMap">
                 <map>
-                  <entry key="svn://zero/common/java/branch">
+                  <entry key="http://sub.unidata.ucar.edu/common/java/branch">
                     <value>
                       <list />
                     </value>
                   </entry>
-                  <entry key="svn://zero/common/java/tag">
+                  <entry key="http://sub.unidata.ucar.edu/common/java/tag">
                     <value>
                       <list />
                     </value>
@@ -912,11 +924,11 @@
               </option>
               <option name="branchUrls">
                 <list>
-                  <option value="svn://zero/common/java/branch" />
-                  <option value="svn://zero/common/java/tag" />
+                  <option value="http://sub.unidata.ucar.edu/common/java/branch" />
+                  <option value="http://sub.unidata.ucar.edu/common/java/tag" />
                 </list>
               </option>
-              <option name="trunkUrl" value="svn://zero/common/java/trunk" />
+              <option name="trunkUrl" value="http://sub.unidata.ucar.edu/common/java/trunk" />
             </SvnBranchConfiguration>
           </value>
         </entry>
