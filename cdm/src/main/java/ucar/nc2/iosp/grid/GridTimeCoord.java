@@ -125,7 +125,7 @@ public class GridTimeCoord {
       }
     }
 
-    // interval case - currently only GRIB-2
+    // interval case - currently only GRIB
     if (records.get(0) instanceof GribGridRecord) {
       GribGridRecord ggr = (GribGridRecord) records.get(0);
 
@@ -217,6 +217,13 @@ public class GridTimeCoord {
       if (this.timeUnit != record.getTimeUnitName())
         return false;
     }
+
+    // check intervals match
+    if (records.get(0) instanceof GribGridRecord) {
+      GribGridRecord ggr = (GribGridRecord) records.get(0);
+      if (ggr.isInterval() != isInterval()) return false;
+    }
+
 
     if (isInterval()) {
       // first create a new list

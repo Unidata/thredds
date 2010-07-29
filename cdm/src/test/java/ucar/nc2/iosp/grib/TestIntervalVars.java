@@ -71,6 +71,7 @@ public class TestIntervalVars extends TestCase {
 
   private int doTwo(String filename) throws IOException {
     NetcdfFile ncd = NetcdfFile.open(filename);
+    nfiles++;
     //System.out.printf("==============================================================================%n");
     System.out.printf("%n%s%n", filename);
 
@@ -98,6 +99,7 @@ public class TestIntervalVars extends TestCase {
       if (bean == null) {
         bean = new Product(ggr);
         pdsSet.put(makeUniqueId(ggr), bean);
+        nintVars++;
       }
       bean.list.add(ggr);
     }
@@ -166,26 +168,35 @@ public class TestIntervalVars extends TestCase {
 
       Formatter f = new Formatter();
       f.format("      all: ");
-      if (detail) showList(all, f); else testConstantInterval(all, f);
+      check(detail, all, f);
 
       if (hourAccum.size() > n - 2) {
         for (GribGridRecord rb : hourAccum) all.remove(rb);
         f.format("hourAccum: ");
-        if (detail) showList(hourAccum, f); else testConstantInterval(hourAccum, f);
+        check(detail, hourAccum, f);
       }
 
       if (runAccum.size() > n - 2) {
         for (GribGridRecord rb : runAccum) all.remove(rb);
         f.format(" runAccum: ");
-        if (detail) showList(runAccum, f); else testConstantInterval(runAccum, f);
+        check(detail, runAccum, f);
       }
 
       if ((all.size() > 0) && (all.size() != list.size())) {
         f.format("remaining: ");
-        if (detail) showList(all, f); else testConstantInterval(all, f);
+        check(detail, all, f);
       }
 
       return f.toString();
+    }
+
+    void check(boolean detail, List<GribGridRecord> list, Formatter f) {
+      if (detail) showList(list, f);
+      else {
+        boolean unique = testUniqueEndpoint(list, f);
+        if (!unique) showList(list, f);
+        else testConstantInterval(list, f);
+      }
     }
 
 
@@ -209,9 +220,24 @@ public class TestIntervalVars extends TestCase {
         if (!same) break;
       }
       if (same)
-        f.format(" Interval=%d%n",intv);
+        f.format(" Interval=%d%n", intv);
       else
         f.format(" Mixed%n");
+    }
+
+    private boolean testUniqueEndpoint(List<GribGridRecord> list, Formatter f) {
+      boolean unique = true;
+      HashSet<Integer> set = new HashSet<Integer>();
+      for (GribGridRecord rb : list) {
+        int end = rb.forecastTime;
+        if (set.contains(end)) {
+          unique = false;
+          break;
+        }
+        set.add(end);
+      }
+      f.format(" Unique=%s", unique);
+      return unique;
     }
 
     @Override

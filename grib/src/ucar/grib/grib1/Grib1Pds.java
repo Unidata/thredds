@@ -289,7 +289,7 @@ public final class Grib1Pds implements GribPdsIF {
 
   // octet  20 used to create Forecast time
   /**
-   * P2.
+   * P2 - octet 20 - Period of time or time interval
    *
    * @return p2
    */
@@ -299,9 +299,8 @@ public final class Grib1Pds implements GribPdsIF {
     return getInt(19);
   }
 
-  // octet  21
   /**
-   * TimeRange as int.
+   * TimeRange - octet  21  (see Table 5)
    *
    * @return timeRangeValue
    */

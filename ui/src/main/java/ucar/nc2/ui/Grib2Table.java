@@ -835,6 +835,10 @@ public class Grib2Table extends JPanel {
       return Grib2Tables.codeTable4_4(unit);
     }
 
+    public final Date getBaseTime() {
+       return id.getBaseTime();
+    }
+
     public final int getForecastTime() {
       return pdsv.getForecastTime();
     }

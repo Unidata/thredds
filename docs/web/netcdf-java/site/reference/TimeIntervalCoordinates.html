@@ -99,6 +99,36 @@
 <p> bound1= 0.0 0.0 6.0 6.0 12.0 12.0 18.0 18.0 24.0 24.0 30.0 30.0 36.0 36.0 42.0 42.0 48.0 48.0 54.0 54.0 60.0 60.0 66.0 66.0 72.0 72.0 78.0 78.0</p>
 <p> bound2= 3.0 6.0 9.0 12.0 15.0 18.0 21.0 24.0 27.0 30.0 33.0 36.0 39.0 42.0 45.0 48.0 51.0 54.0 57.0 60.0 63.0 66.0 69.0 72.0 75.0 78.0 81.0 84.0</p>
 <h2>Case 4. Mixed, non-unique endpoints</h2>
+<p>Q:\cdmUnitTest\tds\new\NAM_CONUS_20km_selectsurface_20100426_1800.grib2</p>
+<p> Total_precipitation/Ground or water surface (8)<br />
+all:  Unique=false(44)  0-3 0-3 3-6 3-6 6-9 6-9 9-12 9-12 12-15 12-15 15-18 15-18 18-21 18-21 21-24 21-24 24-27 24-27 27-30 27-30 30-33 30-33 33-36 33-36 36-39 36-39 39-42 39-42 42-45 42-45 45-48 45-48 48-51 51-54 54-57 57-60 60-63 63-66 66-69 69-72 72-75 75-78 78-81 81-84 Interval=3<br />
+</p>
+<p>Q:\cdmUnitTest\tds\new\NAM_CONUS_40km_conduit_20100506_1800.grib2</p>
+<p> Total_precipitation/Ground or water surface (8)<br />
+all:  Unique=false(44)  0-3 0-3 3-6 3-6 6-9 6-9 9-12 9-12 12-15 12-15 15-18 15-18 18-21 18-21 21-24 21-24 24-27 24-27 27-30 27-30 30-33 30-33 33-36 33-36 36-39 36-39 39-42 39-42 42-45 42-45 45-48 45-48 48-51 51-54 54-57 57-60 60-63 63-66 66-69 69-72 72-75 75-78 78-81 81-84 Interval=3<br />
+</p>
+<p>Q:\cdmUnitTest\tds\new\RUC2_CONUS_20km_pressure_20100509_1300.grib2<br />
+Convective_precipitation/Ground or water surface (8)<br />
+all:  Unique=false(45)  0-1 0-2 1-2 0-3 2-3 0-4 3-4 3-5 4-5 0-5 0-6 5-6 3-6 6-7 0-7 0-8 7-8 6-8 0-9 8-9 6-9 0-10 9-10 0-11 10-11 9-11 11-12 9-12 0-12 12-13 0-13 12-14 13-14 0-14 14-15 12-15 0-15 15-16 0-16 16-17 15-17 0-17 0-18 17-18 15-18 Mixed<br />
+hourAccum:  Unique=true Interval=1<br />
+runAccum:  Unique=true Mixed<br />
+remaining:  Unique=true Mixed</p>
+<p> Large_scale_precipitation/Ground or water surface (8)<br />
+  all:  Unique=false(45)  0-1 1-2 0-2 2-3 0-3 3-4 0-4 3-5 4-5 0-5 0-6 5-6 3-6 6-7 0-7 7-8 0-8 6-8 8-9 6-9 0-9 9-10 0-10 10-11 9-11 0-11 9-12 0-12 11-12 12-13 0-13 12-14 0-14 13-14 12-15 0-15 14-15 15-16 0-16 15-17 0-17 16-17 17-18 0-18 15-18 Mixed<br />
+  hourAccum:  Unique=true Interval=1<br />
+  runAccum:  Unique=true Mixed<br />
+remaining:  Unique=true Mixed<br />
+</p>
+<p>Q:\cdmUnitTest\tds\new\RUC2_CONUS_20km_surface_20100516_1600.grib2<br />
+  Convective_precipitation/Ground or water surface (8)<br />
+  all:  Unique=false(15)  0-1 0-2 1-2 2-3 0-3 3-6 5-6 6-9 8-9 9-12 11-12 14-15 12-15 15-18 17-18 Mixed<br />
+  hourAccum:  Unique=true Interval=1<br />
+  remaining:  Unique=true Mixed</p>
+<p> Large_scale_precipitation/Ground or water surface (8)<br />
+  all:  Unique=false(15)  0-1 0-2 1-2 2-3 0-3 3-6 5-6 6-9 8-9 11-12 9-12 12-15 14-15 15-18 17-18 Mixed<br />
+  hourAccum:  Unique=true Interval=1<br />
+  remaining:  Unique=true Mixed<br />
+</p>
 <p>Q:/cdmUnitTest/tds/new/RUC2_CONUS_20km_pressure_20100509_1300.grib2</p>
 <p> float Convective_precipitation(time=45, y=225, x=301);<br />
 :long_name = &quot;Convective_precipitation (Accumulation for  Mixed Intervals) @ surface&quot;;<br />
@@ -162,6 +192,59 @@
   {17, 18},<br />
   {15, 18},<br />
   {0, 18}<br />
+  }<br />
+</p>
+<p>&nbsp;</p>
+<h2>Case 5 mixed but contiguous</h2>
+<p>Q:/cdmUnitTest/tds/new/GFS_CONUS_80km_20100513_0600.grib1</p>
+<p>total_precipitation</p>
+<p> int time4(time4=35);<br />
+:long_name = &quot;forecast time for (mixed intervals)&quot;;<br />
+:units = &quot;hour since 2010-05-13T06:00:00Z&quot;;<br />
+:bounds = &quot;time4_bounds&quot;;</p>
+<p>time4 =<br />
+{6, 12, 18, 24, 30, 36, 42, 48, 54, 60, 66, 72, 78, 84, 90, 96, 102, 108, 114, 120, 126, 132, 138, 144, 150, 156, 162, 168, 174, 180, 192, 204, 216, 228, 240}</p>
+<p> edges= 0.0 6.0 12.0 18.0 24.0 30.0 36.0 42.0 48.0 54.0 60.0 66.0 72.0 78.0 84.0 90.0 96.0 102.0 108.0 114.0 120.0 126.0 132.0 138.0 144.0 150.0 156.0 162.0 168.0 174.0 180.0 192.0 204.0 216.0 228.0 240.0</p>
+<p> int time4_bounds(time4=35, ncell=2);<br />
+:long_name = &quot;bounds for time4&quot;;<br />
+:units = &quot;hour since 2010-05-13T06:00:00Z&quot;;</p>
+<p> data:</p>
+<p> {<br />
+  {0, 6},<br />
+  {6, 12},<br />
+  {12, 18},<br />
+  {18, 24},<br />
+  {24, 30},<br />
+  {30, 36},<br />
+  {36, 42},<br />
+  {42, 48},<br />
+  {48, 54},<br />
+  {54, 60},<br />
+  {60, 66},<br />
+  {66, 72},<br />
+  {72, 78},<br />
+  {78, 84},<br />
+  {84, 90},<br />
+  {90, 96},<br />
+  {96, 102},<br />
+  {102, 108},<br />
+  {108, 114},<br />
+  {114, 120},<br />
+  {120, 126},<br />
+  {126, 132},<br />
+  {132, 138},<br />
+  {138, 144},<br />
+  {144, 150},<br />
+  {150, 156},<br />
+  {156, 162},<br />
+  {162, 168},<br />
+  {168, 174},<br />
+  {174, 180},<br />
+  {180, 192}, look 12<br />
+  {192, 204}, look 12<br />
+  {204, 216}, look 12<br />
+  {216, 228}, look 12<br />
+  {228, 240} look 12<br />
   }<br />
 </p>
 <p>&nbsp; </p>
