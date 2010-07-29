@@ -1030,12 +1030,15 @@
     <property name="runtime.test.classpath" refid="runtime.test.classpath"/>
     <echo>runtime.test.classpath=${runtime.test.classpath}</echo>
 
+    <property name="junit.temp.dir" value="${build.dir}/junit/temp" />
+    <mkdir dir="${junit.temp.dir}" />
+
     <mkdir dir="${test.reports.dir}/${unit.test.name}"/>
-    <junit printsummary="false" errorProperty="test.failed" failureProperty="test.failed" fork="true" forkmode="once" dir="${root.dir}">
+    <junit printsummary="false" errorProperty="test.failed" failureProperty="test.failed"
+           fork="true" forkmode="once" dir="${root.dir}" tempdir="${junit.temp.dir}">
       <classpath>
         <path refid="runtime.test.classpath" />
       </classpath>
-
 
       <jvmarg value="-ea"/>
       <jvmarg value="-Xmx1024m"/>

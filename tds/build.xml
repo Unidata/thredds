@@ -1013,9 +1013,13 @@
     <echo>thredds.tds.test.level=${thredds.tds.test.level}</echo>
     <echo>thredds.tds.test.catalogs=${thredds.tds.test.catalogs}</echo>
     <echo>[OR : thredds.tds.test.catalog=${thredds.tds.test.catalog}]</echo>
-    
+
+    <property name="junit.temp.dir" value="${build.dir}/junit/temp" />
+    <mkdir dir="${junit.temp.dir}" />
+
     <mkdir dir="${test.reports.dir}/${thredds.tds.test.id}"/>
-    <junit printsummary="false" errorProperty="test.failed" failureProperty="test.failed" fork="on"  dir="${root.dir}">
+    <junit printsummary="false" errorProperty="test.failed" failureProperty="test.failed"
+           fork="on"  dir="${root.dir}" tempdir="${junit.temp.dir}">
       <classpath>
         <path refid="test.classpath" />
         <pathelement location="${test.classes.jar}" />
@@ -1069,8 +1073,12 @@
     -->
   <target name="run-unit-test" description="run a unit test with parameters 'test.id' and 'test.class'.">
 
+    <property name="junit.temp.dir" value="${build.dir}/junit/temp" />
+    <mkdir dir="${junit.temp.dir}" />
+
     <mkdir dir="${test.reports.dir}/${test.id}"/>
-    <junit printsummary="false" errorProperty="test.failed" failureProperty="test.failed" fork="on"  dir="${root.dir}">
+    <junit printsummary="false" errorProperty="test.failed" failureProperty="test.failed"
+           fork="on" dir="${root.dir}" tempdir="${junit.temp.dir}">
       <classpath>
         <path refid="test.classpath" />
         <pathelement location="${test.classes.jar}" />
