@@ -921,6 +921,7 @@
   <property name="test.dir" value="${build.dir}/test"/>
   <property name="test.classes.dir" value="${test.dir}/classes"/>
   <property name="test.reports.dir" value="${test.dir}/reports"/>
+  <property name="test.classes.jar" value="cdmTestClasses.jar"/>
 
   <path id="test.sourcepath">
     <path refid="sourcepathUI"/>
@@ -933,16 +934,39 @@
   </fileset>
 
   <path id="test.classpath">
-    <fileset refid="compile.libraries"/>
-    <fileset refid="compileUI.libraries"/>
-    <fileset refid="runtime.libraries"/>
     <pathelement location="${build.classes.dir}"/>
     <pathelement location="${resources.dir}"/>
     <pathelement location="${resourcesUI.dir}"/>
+    <fileset refid="compile.libraries"/>
+    <fileset refid="compileUI.libraries"/>
+    <fileset refid="runtime.libraries"/>
     <fileset refid="test.libraries"/>
   </path>
+  <path id="runtime.test.classpath">
+    <pathelement location="${test.classes.dir}" />
+    <path  refid="test.classpath" />
+  </path>
 
-  <property name="test.classes.jar" value="${build.dir}/cdmTestClasses.jar"/>
+  <path id="test.classpath.release">
+    <pathelement location="${lib.dir}/release/${jarMain}"/>
+    <fileset refid="compile.libraries"/>
+    <fileset refid="compileUI.libraries"/>
+    <fileset refid="runtime.libraries"/>
+    <fileset refid="test.libraries"/>
+  </path>
+  <path id="runtime.test.classpath.release">
+    <pathelement location="${lib.dir}/release/${test.classes.jar}" />
+    <path refid="test.classpath.release" />
+  </path>
+
+
+  <target name="releaseInternal-testClasses" depends="test-setup"
+          description="internal release to lib of test classes">
+    <copy todir="${lib.dir}/release" overwrite="true">
+      <fileset dir="${build.dir}" includes="${test.classes.jar}" />
+    </copy>
+  </target>
+
   <target name="test-setup" depends="compile" description="compile and package test classes">
     <mkdir dir="${test.dir}"/>
     <mkdir dir="${test.classes.dir}"/>
@@ -958,7 +982,7 @@
       <classpath refid="test.classpath"/>
     </javac>
 
-    <jar jarfile="${test.classes.jar}" index="true" duplicate="preserve">
+    <jar jarfile="${build.dir}/${test.classes.jar}" index="true" duplicate="preserve">
       <fileset dir="${test.classes.dir}" />
 
       <manifest>
@@ -976,27 +1000,42 @@
     <antcall target="unit-test-thredds" />
   </target>
 
+  <target name="unit-test-all-release" description="run nc unit tests using released jars">
+
+    <antcall target="unit-test-nc">
+      <reference refid="runtime.test.classpath.release" torefid="runtime.test.classpath" />
+    </antcall>
+    <antcall target="unit-test-thredds">
+      <reference refid="runtime.test.classpath.release" torefid="runtime.test.classpath" />
+    </antcall>
+  </target>
+
   <target name="unit-test-nc" description="run nc unit tests">
     <antcall target="unit-test-base">
       <param name="unit.test.name" value="unit-test-nc" />
       <param name="unit.test.class.name" value="ucar.nc2.TestAll" />
+      <reference refid="runtime.test.classpath" />
     </antcall>
   </target>
 
   <target name="unit-test-thredds" description="run thredds unit tests">
     <antcall target="unit-test-base">
-      <param name="unit.test.name" value="unit-test-thredds" />
+      <param name="unit.test.name"  value="unit-test-thredds" />
       <param name="unit.test.class.name" value="thredds.catalog.TestCatalogAll" />
+      <reference refid="runtime.test.classpath" />
     </antcall>
   </target>
 
   <target name="unit-test-base" description="run junit tests">
+    <property name="runtime.test.classpath" refid="runtime.test.classpath"/>
+    <echo>runtime.test.classpath=${runtime.test.classpath}</echo>
+
     <mkdir dir="${test.reports.dir}/${unit.test.name}"/>
     <junit printsummary="false" errorProperty="test.failed" failureProperty="test.failed" fork="true" forkmode="once" dir="${root.dir}">
       <classpath>
-        <path refid="test.classpath" />
-        <pathelement location="${test.classes.jar}" />
+        <path refid="runtime.test.classpath" />
       </classpath>
+
 
       <jvmarg value="-ea"/>
       <jvmarg value="-Xmx1024m"/>
