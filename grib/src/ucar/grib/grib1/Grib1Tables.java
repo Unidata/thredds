@@ -1797,7 +1797,7 @@ public class Grib1Tables {
    * @param type
    * @return name
    */
-  static public String getName(int type) {
+  static public String getGridName(int type) {
     switch (type) {
 
       case 0:

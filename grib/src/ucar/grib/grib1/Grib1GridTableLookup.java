@@ -79,7 +79,7 @@ public class Grib1GridTableLookup implements GridTableLookup {
   public final String getGridName(GridDefRecord gds) {
     //return Grib1GridDefinitionSection.getName(
     //    gds.getParamInt(gds.GRID_TYPE));
-    return Grib1Tables.getName( gds.getParamInt(GridDefRecord.GRID_TYPE) );
+    return Grib1Tables.getGridName( gds.getParamInt(GridDefRecord.GRID_TYPE) );
   }
 
   /**

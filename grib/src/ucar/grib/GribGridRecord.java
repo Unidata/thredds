@@ -55,7 +55,9 @@ public final class GribGridRecord implements GridRecord {
 
   //// from  indicator section
 
-  public int discipline;
+  public int edition; // grib 1 or 2
+
+  public int discipline;  // grib 2 only  ?
 
 
   //// from  identification section

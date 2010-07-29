@@ -300,9 +300,9 @@ public final class Grib1Pds implements GribPdsIF {
   }
 
   /**
-   * TimeRange - octet  21  (see Table 5)
+   * TimeRange indicator - octet  21  (see Table 5)
    *
-   * @return timeRangeValue
+   * @return TimeRange indicator
    */
   public final int getTimeRange() {
     return getInt(20);

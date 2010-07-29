@@ -237,7 +237,7 @@ public final class Grib1Dump {
             numberOfPoints = gdsv.getNx() * gdsv.getNy();
         }
         ps.println("         Number of data points : " + numberOfPoints);
-        ps.println("                     Grid Name : " + Grib1Tables.getName(gdtn));
+        ps.println("                     Grid Name : " + Grib1Tables.getGridName(gdtn));
 
         String winds = GribNumbers.isBitSet(gdsv.getResolution(), GribNumbers.BIT_5)
                        ? "Relative"

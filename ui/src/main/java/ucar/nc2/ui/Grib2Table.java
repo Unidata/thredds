@@ -35,8 +35,11 @@ package ucar.nc2.ui;
 
 import ucar.grib.GribGridRecord;
 import ucar.grib.GribNumbers;
+import ucar.grib.NotSupportedException;
 import ucar.grib.grib1.Grib1Tables;
+import ucar.grib.grib1.GribPDSParamTable;
 import ucar.grid.GridIndex;
+import ucar.grid.GridParameter;
 import ucar.grid.GridRecord;
 import ucar.ma2.DataType;
 import ucar.nc2.NetcdfFile;
@@ -293,7 +296,18 @@ public class Grib2Table extends JPanel {
 
     Product(GribGridRecord ggr) {
       this.ggr= ggr;
-      name = ParameterTable.getParameterName(ggr.discipline, ggr.category, ggr.paramNumber);
+      if (ggr.edition == 2)
+        name = ParameterTable.getParameterName(ggr.discipline, ggr.category, ggr.paramNumber);
+      else {
+        GribPDSParamTable pt = null;
+        try {
+          pt = GribPDSParamTable.getParameterTable(ggr.center, ggr.subCenter, ggr.table);
+        } catch (NotSupportedException e) {
+          name = e.getMessage();
+        }
+        GridParameter p = pt.getParameter(ggr.paramNumber);
+         name = p.getName() +"/"+ p.getDescription();
+      }
     }
 
      ///////////////
@@ -317,16 +331,25 @@ public class Grib2Table extends JPanel {
       return ggr.productTemplate +"-"+ggr.discipline+"-"+ggr.category + "-" + ggr.paramNumber;
     }
 
-    public final String getLevelType() {
-      return Grib2Tables.codeTable4_5(ggr.levelType1);
+    public final String getLevelType() {   // LOOK this kind of stuff needs to be pushed down into GRIB library !
+      if (ggr.edition == 2)
+        return Grib2Tables.codeTable4_5(ggr.levelType1);
+      else
+        return Grib1Tables.getLevelDescription(ggr.levelType1);
     }
 
     public final String getProcType() {
-      return Grib2Tables.codeTable4_3(ggr.typeGenProcess);
+      if (ggr.edition == 2)
+        return Grib2Tables.codeTable4_3(ggr.typeGenProcess);
+      else
+        return Grib1Tables.getTypeGenProcessName(ggr.center, ggr.typeGenProcess);
     }
 
     public final String getStatType() {
-      return Grib2Tables.codeTable4_10short(ggr.intervalStatType);
+      //if (ggr.edition == 2)
+        return Grib2Tables.codeTable4_10short(ggr.intervalStatType); // see GribPds.getIntervalStatType() - barfalicious
+      //else
+      //  return Grib1Tables.getProductDefinitionName( firstPDSV.getTimeRange());
     }
 
     public int getN() {
@@ -468,19 +491,23 @@ public class Grib2Table extends JPanel {
     }
 
     public final String getSurfaceType() {
-      String s = Grib2Tables.getTypeSurfaceNameShort(ggr.levelType1);
-      int lev2 = ggr.levelType2;
-      if ((lev2 != GribNumbers.UNDEFINED) && (lev2 != GribNumbers.MISSING))
-        s += "/"+Grib2Tables.getTypeSurfaceNameShort(lev2);
-      return s;
+      if (ggr.edition == 2) {
+        String s = Grib2Tables.getTypeSurfaceNameShort(ggr.levelType1);
+        int lev2 = ggr.levelType2;
+        if ((lev2 != GribNumbers.UNDEFINED) && (lev2 != GribNumbers.MISSING))
+          s += "/"+Grib2Tables.getTypeSurfaceNameShort(lev2);
+        return s;
+      } else {
+        return "TODO";
+      }
     }
 
     public String getSurfaceValue() {
-      int lev2 = ggr.levelType2;
-      if ((lev2 != GribNumbers.UNDEFINED) && (lev2 != GribNumbers.MISSING))
-        return ggr.levelValue1 + "-" + ggr.levelValue2;
-      else
-        return Double.toString(ggr.levelValue1);
+        int lev2 = ggr.levelType2;
+        if ((lev2 != GribNumbers.UNDEFINED) && (lev2 != GribNumbers.MISSING))
+          return ggr.levelValue1 + "-" + ggr.levelValue2;
+        else
+          return Double.toString(ggr.levelValue1);
     }
 
     public int getStartInterval() {

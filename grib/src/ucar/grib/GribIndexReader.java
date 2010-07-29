@@ -196,6 +196,7 @@ public class GribIndexReader {
               ggr.table = dis.readInt();
             }
           } else { // index version 8.0 or higher
+            ggr.edition = grid_edition_1 ? 1 : 2;
             ggr.discipline = dis.readInt();
             long refTime = dis.readLong();
             calendar.setTimeInMillis(refTime);
@@ -780,7 +781,7 @@ public class GribIndexReader {
     //ggdr.addParam(GridDefRecord.GDS_KEY, Integer.toString(gdsv.getGdsKey()));
     ggdr.addParam(GridDefRecord.GDS_KEY, Integer.toString(gdskey));
     ggdr.addParam(GridDefRecord.GRID_TYPE, gdtn);
-    ggdr.addParam(GridDefRecord.GRID_NAME, Grib1Tables.getName(gdtn));
+    ggdr.addParam(GridDefRecord.GRID_NAME, Grib1Tables.getGridName(gdtn));
 
     String winds = GribNumbers.isBitSet(gdsv.getResolution(), GribNumbers.BIT_5)
         ? "Relative"

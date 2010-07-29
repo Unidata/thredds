@@ -44,8 +44,6 @@ package ucar.grib.grib1;
 
 import ucar.grib.*;
 
-import java.io.IOException;
-
 
 /**
  * A class that represents a canned grid definition section (GDS) .
@@ -347,7 +345,7 @@ public final class Grib1Grid extends Grib1GridDefinitionSection {
       case 24: {
         gdtn = 0;  // Latitude/Longitude
         System.out.println(GribGridDefRecord.GRID_TYPE +" = "+ gdtn);
-        System.out.println(GribGridDefRecord.GRID_NAME +" = "+ Grib1Tables.getName(gdtn));
+        System.out.println(GribGridDefRecord.GRID_NAME +" = "+ Grib1Tables.getGridName(gdtn));
 
         // (Nx - number of points along x-axis)
         //nx = 37;
@@ -432,7 +430,7 @@ public final class Grib1Grid extends Grib1GridDefinitionSection {
       case 26: {
         gdtn = 0;  // Latitude/Longitude
         System.out.println(GribGridDefRecord.GRID_TYPE +" = "+ gdtn);
-        System.out.println(GribGridDefRecord.GRID_NAME +" = "+ Grib1Tables.getName(gdtn));
+        System.out.println(GribGridDefRecord.GRID_NAME +" = "+ Grib1Tables.getGridName(gdtn));
 
         // (Nx - number of points along x-axis)
         //nx = 72;
@@ -489,7 +487,7 @@ public final class Grib1Grid extends Grib1GridDefinitionSection {
       case 64: {
         gdtn = 0;  // Latitude/Longitude
         System.out.println(GribGridDefRecord.GRID_TYPE +" = "+ gdtn);
-        System.out.println(GribGridDefRecord.GRID_NAME +" = "+ Grib1Tables.getName(gdtn));
+        System.out.println(GribGridDefRecord.GRID_NAME +" = "+ Grib1Tables.getGridName(gdtn));
 
         // (Nx - number of points along x-axis)
         //nx = 91;
@@ -571,7 +569,7 @@ public final class Grib1Grid extends Grib1GridDefinitionSection {
       case 87: {
         gdtn = 5;  //
         System.out.println(GribGridDefRecord.GRID_TYPE +" = "+ gdtn);
-        System.out.println(GribGridDefRecord.GRID_NAME +" = "+ Grib1Tables.getName(gdtn));
+        System.out.println(GribGridDefRecord.GRID_NAME +" = "+ Grib1Tables.getGridName(gdtn));
         // (Nx - number of points along x-axis)
         //nx = 81;
         System.out.println(GribGridDefRecord.NX +" = "+ 81);
@@ -654,7 +652,7 @@ public final class Grib1Grid extends Grib1GridDefinitionSection {
       case 24: {
         gdtn = 0;  // Latitude/Longitude
         ggdr.addParam(GribGridDefRecord.GRID_TYPE, gdtn);
-        ggdr.addParam(GribGridDefRecord.GRID_NAME, Grib1Tables.getName(gdtn));
+        ggdr.addParam(GribGridDefRecord.GRID_NAME, Grib1Tables.getGridName(gdtn));
 
         // (Nx - number of points along x-axis)
         //nx = 37;
@@ -739,7 +737,7 @@ public final class Grib1Grid extends Grib1GridDefinitionSection {
       case 26: {
         gdtn = 0;  // Latitude/Longitude
         ggdr.addParam(GribGridDefRecord.GRID_TYPE, gdtn);
-        ggdr.addParam(GribGridDefRecord.GRID_NAME, Grib1Tables.getName(gdtn));
+        ggdr.addParam(GribGridDefRecord.GRID_NAME, Grib1Tables.getGridName(gdtn));
 
         // (Nx - number of points along x-axis)
         //nx = 72;
@@ -796,7 +794,7 @@ public final class Grib1Grid extends Grib1GridDefinitionSection {
       case 64: {
         gdtn = 0;  // Latitude/Longitude
         ggdr.addParam(GribGridDefRecord.GRID_TYPE, gdtn);
-        ggdr.addParam(GribGridDefRecord.GRID_NAME, Grib1Tables.getName(gdtn));
+        ggdr.addParam(GribGridDefRecord.GRID_NAME, Grib1Tables.getGridName(gdtn));
 
         // (Nx - number of points along x-axis)
         //nx = 91;
@@ -878,7 +876,7 @@ public final class Grib1Grid extends Grib1GridDefinitionSection {
       case 87: {
         gdtn = 5;  //
         ggdr.addParam(GribGridDefRecord.GRID_TYPE, gdtn);
-        ggdr.addParam(GribGridDefRecord.GRID_NAME, Grib1Tables.getName(gdtn));
+        ggdr.addParam(GribGridDefRecord.GRID_NAME, Grib1Tables.getGridName(gdtn));
         // (Nx - number of points along x-axis)
         //nx = 81;
         ggdr.addParam(GribGridDefRecord.NX, 81);
