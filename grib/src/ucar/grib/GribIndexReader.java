@@ -262,8 +262,8 @@ public class GribIndexReader {
                 int[] interval = pdsv.getForecastTimeInterval();
                 ggr.startOfInterval = interval[0];
                 ggr.forecastTime = interval[1];
-                if( ggr.forecastTime - ggr.startOfInterval == 0 )
-                  continue;
+                //if( ggr.forecastTime - ggr.startOfInterval == 0 ) // WTF ??
+                //  continue;
                 //System.out.println( "Total Precip Interval ="+ interval[0]
                 //+" "+ interval[1]);
               } else {
@@ -272,6 +272,7 @@ public class GribIndexReader {
               ggr.category = pdsv.getParameterCategory();
               ggr.paramNumber = pdsv.getParameterNumber();
               ggr.typeGenProcess = pdsv.getTypeGenProcess();
+              ggr.analGenProcess = pdsv.getAnalysisGenProcess();
               //int typeForeProcess = pdsv.getAnalysisGenProcess();
               ggr.levelType1 = pdsv.getTypeFirstFixedSurface();
               ggr.levelValue1 = pdsv.getValueFirstFixedSurface();

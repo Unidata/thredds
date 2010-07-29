@@ -210,7 +210,7 @@ public class TestReadandCount extends TestCase {
    public static void main( String arg[]) throws Exception {
      // new TestReadandCount("dummy").doOne("C:/data/conventions/wrf/","wrf.nc", 33, 5, 7, 7);  // missing TSLB
      //new TestReadandCount("dummy").testRead();  // missing TSLB
-     doOne(TestAll.testdataDir + "grid/grib/grib1/data/","radar_regional.grib", 1, -1, -1, -1);
+     doOne(TestAll.testdataDir + "grid/grib/grib1/data/","AVN.wmo", 22, -1, -1, -1);
 
   }
 

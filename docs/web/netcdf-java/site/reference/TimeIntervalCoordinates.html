@@ -6,8 +6,64 @@
 </head>
 
 <body>
-<h1>Time Interval Coordinates</h1>
-<h2>Case 1 - even intervals</h2>
+<h1>GRIB IOSP notes</h1>
+<p><em>jcaron </em><em>last update 7/29/2010</em></p>
+<p>A &quot;Grib dataset&quot; is a collection of GRIB records. Generally, the records should be from a single model run, although in some cases other collections may be useful.</p>
+<p>In practice, the following  homogeneity constraints are assumed:</p>
+<ol>
+  <li>Global attributes are taken from the firsst record, so</li>
+</ol>
+<pre>Grib2IndicatorSection
+   Discipline = Meteorological products
+   Edition    = 2
+   Length     = 214</pre>
+<pre>Grib2IdentificationSection
+   Center        = US National Weather Service - NCEP(WMC)
+   Master Table  = 2
+   Local Table   = 1
+   RefTimeSignif = Start of forecast
+   RefTime       = Wed Jul 28 06:00:00 MDT 2010
+   ProductStatus = Operational products
+   ProductType   = Forecast products
+ </pre>
+<pre>&nbsp;  
+
+
+</pre>
+<h3>Problems</h3>
+<p>1. appears to be duplicates - actually seperate generating processes</p>
+<p>Q:\cdmUnitTest\tds\new\NAM_CONUS_20km_selectsurface_20100426_1800.grib2</p>
+<p> Total_precipitation/Ground or water surface (8)<br />
+  all:  Unique=false(44)  0-3 0-3 3-6 3-6 6-9 6-9 9-12 9-12 12-15 12-15 15-18 15-18 18-21 18-21 21-24 21-24 24-27 24-27 27-30 27-30 30-33 30-33 33-36 33-36 36-39 36-39 39-42 39-42 42-45 42-45 45-48 45-48 48-51 51-54 54-57 57-60 60-63 63-66 66-69 69-72 72-75 75-78 78-81 81-84 Interval=3<br />
+</p>
+<p>A number of records have analProc = 89, but most have 84. perhaps 89 are incorrect? If we use these from <a href="http://www.nco.ncep.noaa.gov/pmb/docs/on388/tablea.html">http://www.nco.ncep.noaa.gov/pmb/docs/on388/tablea.html</a> :</p>
+<table border="1" cellpadding="5" cellspacing="0" width="80%">
+  <tbody>
+    <tr>
+      <td><center>
+        84
+      </center></td>
+      <td>MESO NAM Model (currently 12 km)</td>
+    </tr>
+  </tbody>
+</table>
+<table border="1" cellpadding="5" cellspacing="0" width="80%">
+  <tbody>
+    <tr>
+      <td><center>
+        89
+      </center></td>
+      <td>Non-hydrostatic Meso Model (NMM) (Currently 8 km)</td>
+    </tr>
+  </tbody>
+</table>
+<p>2. same</p>
+<p>Q:\cdmUnitTest\tds\new\NAM_CONUS_40km_conduit_20100506_1800.grib2</p>
+<p> Total_precipitation/Ground or water surface (8)<br />
+  all:  Unique=false(44)  0-3 0-3 3-6 3-6 6-9 6-9 9-12 9-12 12-15 12-15 15-18 15-18 18-21 18-21 21-24 21-24 24-27 24-27 27-30 27-30 30-33 30-33 33-36 33-36 36-39 36-39 39-42 39-42 42-45 42-45 45-48 45-48 48-51 51-54 54-57 57-60 60-63 63-66 66-69 69-72 72-75 75-78 78-81 81-84 Interval=3</p>
+<p>3. PDS templates are munged together -need to be seperated, probably subclasses</p>
+<h2>Time Interval Coordinates</h2>
+<h3>Case 1 - even intervals</h3>
 <p>Q:\cdmUnitTest\tds\new\NAM_CONUS_12km_20100520_0000.grib2</p>
 <pre> float Probability_of_frozen_Precipitation(time1=28, y=428, x=614);
  :long_name = &quot;Probability_of_frozen_Precipitation (Accumulation for 3 hour Intervals) @ surface&quot;;
@@ -73,7 +129,7 @@
   {78, 81},<br />
   {81, 84}<br />
   }</p>
-<h2>Case 3 - mixed intervals, unique endpoints, two coordinates with same endpoints and different intervals</h2>
+<h3>Case 3 - mixed intervals, unique endpoints, two coordinates with same endpoints and different intervals</h3>
 <p>Accumulation variables have different intervals than Average variables, both time coordinate have the same set of values.</p>
 <p>Q:\cdmUnitTest\tds\new\NAM_Polar_90km_20100525_1200.grib2</p>
 <pre> float Evaporation(time1=28, y=110, x=147);
@@ -98,14 +154,16 @@
 {3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36, 39, 42, 45, 48, 51, 54, 57, 60, 63, 66, 69, 72, 75, 78, 81, 84}</p>
 <p> bound1= 0.0 0.0 6.0 6.0 12.0 12.0 18.0 18.0 24.0 24.0 30.0 30.0 36.0 36.0 42.0 42.0 48.0 48.0 54.0 54.0 60.0 60.0 66.0 66.0 72.0 72.0 78.0 78.0</p>
 <p> bound2= 3.0 6.0 9.0 12.0 15.0 18.0 21.0 24.0 27.0 30.0 33.0 36.0 39.0 42.0 45.0 48.0 51.0 54.0 57.0 60.0 63.0 66.0 69.0 72.0 75.0 78.0 81.0 84.0</p>
-<h2>Case 4. Mixed, non-unique endpoints</h2>
+<h3>Case 4. Mixed, non-unique endpoints</h3>
+<p>Appear to be duplicates:</p>
 <p>Q:\cdmUnitTest\tds\new\NAM_CONUS_20km_selectsurface_20100426_1800.grib2</p>
 <p> Total_precipitation/Ground or water surface (8)<br />
 all:  Unique=false(44)  0-3 0-3 3-6 3-6 6-9 6-9 9-12 9-12 12-15 12-15 15-18 15-18 18-21 18-21 21-24 21-24 24-27 24-27 27-30 27-30 30-33 30-33 33-36 33-36 36-39 36-39 39-42 39-42 42-45 42-45 45-48 45-48 48-51 51-54 54-57 57-60 60-63 63-66 66-69 69-72 72-75 75-78 78-81 81-84 Interval=3<br />
 </p>
 <p>Q:\cdmUnitTest\tds\new\NAM_CONUS_40km_conduit_20100506_1800.grib2</p>
 <p> Total_precipitation/Ground or water surface (8)<br />
-all:  Unique=false(44)  0-3 0-3 3-6 3-6 6-9 6-9 9-12 9-12 12-15 12-15 15-18 15-18 18-21 18-21 21-24 21-24 24-27 24-27 27-30 27-30 30-33 30-33 33-36 33-36 36-39 36-39 39-42 39-42 42-45 42-45 45-48 45-48 48-51 51-54 54-57 57-60 60-63 63-66 66-69 69-72 72-75 75-78 78-81 81-84 Interval=3<br />
+all:  Unique=false(44)  0-3 0-3 3-6 3-6 6-9 6-9 9-12 9-12 12-15 12-15 15-18 15-18 18-21 18-21 21-24 21-24 24-27 24-27 27-30 27-30 30-33 30-33 33-36 33-36 36-39 36-39 39-42 39-42 42-45 42-45 45-48 45-48 48-51 51-54 54-57 57-60 60-63 63-66 66-69 69-72 72-75 75-78 78-81 81-84 Interval=3</p>
+<p>-------------------------------------------<br />
 </p>
 <p>Q:\cdmUnitTest\tds\new\RUC2_CONUS_20km_pressure_20100509_1300.grib2<br />
 Convective_precipitation/Ground or water surface (8)<br />
@@ -195,7 +253,7 @@ remaining:  Unique=true Mixed<br />
   }<br />
 </p>
 <p>&nbsp;</p>
-<h2>Case 5 mixed but contiguous</h2>
+<h3>Case 5 mixed but contiguous</h3>
 <p>Q:/cdmUnitTest/tds/new/GFS_CONUS_80km_20100513_0600.grib1</p>
 <p>total_precipitation</p>
 <p> int time4(time4=35);<br />

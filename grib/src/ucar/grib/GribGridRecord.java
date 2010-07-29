@@ -40,13 +40,19 @@
 
 package ucar.grib;
 
+import ucar.grib.grib1.Grib1Tables;
+import ucar.grib.grib1.GribPDSParamTable;
 import ucar.grib.grib2.Grib2Tables;
+import ucar.grib.grib2.ParameterTable;
+import ucar.grid.GridParameter;
 import ucar.grid.GridRecord;
+import ucar.grid.GridTableLookup;
 
 import java.util.Date;
 import java.util.Calendar;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Formatter;
 
 /**
  * Represents index information for one record in the Grib file.
@@ -81,9 +87,15 @@ public final class GribGridRecord implements GridRecord {
   public int productTemplate, category, paramNumber;
 
   /**
-   * typeGenProcess of record.
+   * type of Generating Process (Table 4.3)
    */
   public int typeGenProcess;
+
+
+  /**
+   * type of Analysis or Forecast Generating Process (defined by originating center)
+   */
+  public int analGenProcess;
 
   /**
    * levelType1, levelType2  of record.
@@ -172,6 +184,8 @@ public final class GribGridRecord implements GridRecord {
    * offset2 of record.
    */
   public long offset2;
+
+  private String paramName;
 
   /**
    * default constructor, used by GribReadIndex (binary indices)
@@ -345,8 +359,25 @@ public final class GribGridRecord implements GridRecord {
    */
   @Override
   public String getParameterName() {
-    //return param;
-    return null; // This was moved to GribGridTableLookup
+    if (paramName == null) {
+
+      if (edition == 2) {
+        GridParameter p = ParameterTable.getParameter(discipline, category, paramNumber);
+        paramName = p.getDescription();
+
+      } else {
+        GribPDSParamTable pt = null;
+        try {
+          pt = GribPDSParamTable.getParameterTable(center, subCenter, table);
+        } catch (NotSupportedException e) {
+          paramName = e.getMessage();
+        }
+        GridParameter p = pt.getParameter(paramNumber);
+        paramName = p.getName() + " / " + p.getDescription();
+      }
+    }
+
+    return paramName;
   }
 
   @Override
@@ -366,8 +397,57 @@ public final class GribGridRecord implements GridRecord {
 
   @Override
   public String getTimeUnitName() {
-    return Grib2Tables.getTimeUnitFromTable4_4( timeUnit );
+    if (edition == 2)
+      return Grib2Tables.getUdunitTimeUnitFromTable4_4( timeUnit );
+    else
+      return Grib1Tables.getTimeUnit(timeUnit);
   }
+
+  /**
+   * A hash code to group records into a CDM variable
+   * @return group hash code
+   */
+  @Override
+  public int cdmVariableHash() {
+    int result = 17;
+    if (isInterval()) result += getIntervalTypeName().hashCode();
+    result += result * 37 + discipline;
+    result += result * 37 + category;
+    result += result * 37 + paramNumber;
+    result *= result * 37 + levelType1;
+    // result *= result * 37 + analGenProcess;
+    return result;
+  }
+
+  /**
+   * A unique name for the CDM variable, must be consistent with cdmVariableHash
+   * @return unique CDM variable name
+   */
+  @Override
+  public String cdmVariableName(GridTableLookup lookup, boolean useLevel, boolean useStat) {
+    Formatter f = new Formatter();
+    f.format("%s", getParameterName());
+
+    if (useLevel) {
+      String levelName = lookup.getLevelName(this);
+      if (levelName.length() != 0) {
+        if (lookup.isLayer(this))
+          f.format("_%s_layer", lookup.getLevelName(this));
+         else
+          f.format("_%s", lookup.getLevelName(this));
+      }
+    }
+
+    if (useStat && isInterval()) {
+      String intervalTypeName = Grib2Tables.codeTable4_10short(intervalStatType);
+      if (intervalTypeName != null && intervalTypeName.length() != 0)
+        f.format("_%s", intervalTypeName);
+    }
+
+    return f.toString();
+  }
+
+  //////////////////////////////////////////////
 
   /**
    * is this an ensemble type record
@@ -436,7 +516,7 @@ public final class GribGridRecord implements GridRecord {
 
     if( productTemplate > 7 && productTemplate < 16 ) {
       int span = forecastTime - startOfInterval;
-      String intervalName = Integer.toString( span ) + Grib2Tables.getTimeUnitFromTable4_4( timeUnit );
+      String intervalName = Integer.toString( span ) + Grib2Tables.getUdunitTimeUnitFromTable4_4( timeUnit );
       String intervalTypeName = Grib2Tables.codeTable4_10short(intervalStatType);
       if (intervalTypeName != null)
         intervalName += "_"+intervalTypeName;
@@ -455,7 +535,7 @@ public final class GribGridRecord implements GridRecord {
     return ( startOfInterval != GribNumbers.UNDEFINED );
   }
 
-  public String getIntervalTypeName( ) {
+  public String getIntervalTypeName( ) {  // LOOK need GRIB1
     if( isInterval( ) ) {
       String intervalTypeName = Grib2Tables.codeTable4_10short(intervalStatType);
       if (intervalTypeName != null)

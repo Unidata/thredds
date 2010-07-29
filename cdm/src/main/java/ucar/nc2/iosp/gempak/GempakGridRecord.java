@@ -41,13 +41,16 @@ import edu.wisc.ssec.mcidas.McIDASUtil;
 
 
 //import ucar.nc2.iosp.grid.GridRecord;
+import ucar.grid.GridParameter;
 import ucar.grid.GridRecord;
 
 
+import ucar.grid.GridTableLookup;
 import ucar.unidata.util.StringUtil;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Formatter;
 
 
 /**
@@ -242,6 +245,31 @@ public class GempakGridRecord implements GridRecord {
     @Override
     public String getTimeUnitName() {
       return "minutes";
+    }
+
+    @Override
+    // this determines how records get grouped into a cdm variable
+    // unique parameter name and level type.
+    public int cdmVariableHash() {
+      return param.hashCode() + 37 * getLevelType1();
+    }
+
+    @Override
+    public String cdmVariableName(GridTableLookup lookup, boolean useLevel, boolean useStat) {
+      Formatter f = new Formatter();
+      f.format("%s", getParameterName());
+
+      if (useLevel) {
+        String levelName = lookup.getLevelName(this);
+        if (levelName.length() != 0) {
+          if (lookup.isLayer(this))
+            f.format("_%s_layer", lookup.getLevelName(this));
+           else
+            f.format("_%s", lookup.getLevelName(this));
+        }
+      }
+
+      return f.toString();
     }
 
   /**

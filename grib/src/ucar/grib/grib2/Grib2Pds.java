@@ -146,7 +146,7 @@ public final class Grib2Pds implements GribPdsIF {
   }
 
   /**
-   * type of Generating Process.
+   * type of Generating Process (Code Table 4.3)
    *
    * @return GenProcess
    */
@@ -187,7 +187,6 @@ public final class Grib2Pds implements GribPdsIF {
       }
       default:
         return GribNumbers.UNDEFINED;
-
     }
   }
 
@@ -381,6 +380,10 @@ public final class Grib2Pds implements GribPdsIF {
   }
   /**
    * analysisGenProcess.
+   * For NCEP, apparently
+   * http://www.nco.ncep.noaa.gov/pmb/docs/on388/tablea.html
+   *   as linked from here:
+   * http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_temp4-0.shtml
    *
    * @return analysisGenProcess
    */

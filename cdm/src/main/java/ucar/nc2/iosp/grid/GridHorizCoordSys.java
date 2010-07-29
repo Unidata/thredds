@@ -75,7 +75,7 @@ public class GridHorizCoordSys {
   /**
    * GridVariables that have this GridHorizCoordSys
    */
-  Map<String, GridVariable> varHash = new HashMap<String, GridVariable>(200);
+  Map<Integer, GridVariable> varHash = new HashMap<Integer, GridVariable>(200);
 
   /**
    * List of GridVariable, sorted by product desc

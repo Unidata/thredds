@@ -42,7 +42,9 @@ public class TestIntervalVars extends TestCase {
     TestAll.actOnAll(dir, new TestAll.FileFilterImpl("grib2"), new TestAll.Act() {
       @Override
       public int doAct(String filename) throws IOException {
-        return doTwo(filename);
+        System.out.printf("%n%s%n", filename);
+        analalyseIntervals(filename);
+        return checkAnal(filename);
       }
     });
     System.out.printf("%nnfiles = %d %n", nfiles);
@@ -50,9 +52,8 @@ public class TestIntervalVars extends TestCase {
     System.out.printf("intVars = %d %n", nintVars);
   }
 
-  private int doOne(String filename) throws IOException {
+  private int showTemplates(String filename) throws IOException {
     GridDataset ncd = GridDataset.open(filename);
-    System.out.printf("Open %s%n", filename);
     nfiles++;
     for (GridDatatype g : ncd.getGrids()) {
       GridCoordSystem gsys = g.getCoordinateSystem();
@@ -69,11 +70,40 @@ public class TestIntervalVars extends TestCase {
     return 1;
   }
 
-  private int doTwo(String filename) throws IOException {
+  // see if analy code differs
+  private int checkAnal(String filename) throws IOException {
     NetcdfFile ncd = NetcdfFile.open(filename);
     nfiles++;
     //System.out.printf("==============================================================================%n");
-    System.out.printf("%n%s%n", filename);
+
+    GribGridServiceProvider iosp = (GribGridServiceProvider) ncd.getIosp();
+    GridIndex index = (GridIndex) iosp.sendIospMessage("GridIndex");
+
+    Set<Integer> codeSet = null;
+    List<GridRecord> grList = index.getGridRecords();
+    for (GridRecord gr : grList) {
+      GribGridRecord ggr = (GribGridRecord) gr;
+      if (codeSet == null) {
+        codeSet = new HashSet<Integer>();
+        codeSet.add(ggr.analGenProcess);
+        System.out.printf("analGen=%d ", ggr.analGenProcess);
+      } else {
+        if (codeSet.contains(ggr.analGenProcess)) continue;
+        codeSet.add(ggr.analGenProcess);
+        System.out.printf("%d (%s) ", ggr.analGenProcess, ggr.getParameterName());
+      }
+    }
+    System.out.printf("%n");
+
+    ncd.close();
+    return 1;
+  }
+
+
+  private int analalyseIntervals(String filename) throws IOException {
+    NetcdfFile ncd = NetcdfFile.open(filename);
+    nfiles++;
+    //System.out.printf("==============================================================================%n");
 
     GribGridServiceProvider iosp = (GribGridServiceProvider) ncd.getIosp();
     GridIndex index = (GridIndex) iosp.sendIospMessage("GridIndex");
@@ -95,10 +125,10 @@ public class TestIntervalVars extends TestCase {
         System.out.printf(" **time %s %d != %d%n", name, forecast, startInterval);
       } */
 
-      Product bean = pdsSet.get(makeUniqueId(ggr));
+      Product bean = pdsSet.get(ggr.cdmVariableHash());
       if (bean == null) {
         bean = new Product(ggr);
-        pdsSet.put(makeUniqueId(ggr), bean);
+        pdsSet.put(ggr.cdmVariableHash(), bean);
         nintVars++;
       }
       bean.list.add(ggr);
@@ -115,16 +145,6 @@ public class TestIntervalVars extends TestCase {
 
     ncd.close();
     return 1;
-  }
-
-  private int makeUniqueId(GribGridRecord ggr) {
-    int result = 17;
-    result += result * 37 + ggr.productTemplate;       // productType, discipline, category, paramNumber
-    result += result * 37 + ggr.discipline;
-    result += result * 37 + ggr.category;
-    result += result * 37 + ggr.paramNumber;
-    result *= result * 37 + ggr.levelType1;
-    return result;
   }
 
   private class Product implements Comparable<Product> {

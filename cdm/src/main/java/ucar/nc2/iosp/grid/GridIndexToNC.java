@@ -33,6 +33,7 @@
 package ucar.nc2.iosp.grid;
 
 import ucar.nc2.*;
+import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.iosp.mcidas.McIDASLookup;
 import ucar.nc2.iosp.gempak.GempakLookup;
 import ucar.nc2.constants._Coordinate;
@@ -158,21 +159,23 @@ public class GridIndexToNC {
     if (GridServiceProvider.debugOpen)
       System.out.println(" number of products = " + records.size());
 
-    for (GridRecord gribRecord : records) {
+    for (GridRecord gridRecord : records) {
       if (firstRecord == null)
-        firstRecord = gribRecord;
+        firstRecord = gridRecord;
 
-      GridHorizCoordSys hcs =  hcsHash.get(gribRecord.getGridDefRecordId());
-      String name = makeVariableName(gribRecord, lookup, true, true); // combo param, ens, level name
-      GridVariable pv = (GridVariable) hcs.varHash.get(name);
+      GridHorizCoordSys hcs =  hcsHash.get(gridRecord.getGridDefRecordId());
+      int cdmHash = gridRecord.cdmVariableHash();
+      GridVariable pv = (GridVariable) hcs.varHash.get(cdmHash);
       if (null == pv) {
+        // String name = makeVariableName(gridRecord, lookup, true, true); // combo param, ens, level name
+        String name = gridRecord.cdmVariableName(lookup, true, true);
         pv = new GridVariable(name, hcs, lookup);
-        hcs.varHash.put(name, pv);
+        hcs.varHash.put(cdmHash, pv);
         //System.out.printf("Add name=%s pname=%s%n", name, pname);
 
         // keep track of all products with same parameter name + suffix == "simple name"
         // String pname = lookup.getParameter(gribRecord).getDescription(); // dont use plain old parameter name anymore 6/3/2010 jc
-        String simpleName = makeVariableName(gribRecord, lookup, false, true); // combo param, level name LOOK may not be a good idea
+        String simpleName = makeVariableName(gridRecord, lookup, false, false); // combo param, level name LOOK may not be a good idea
         List<GridVariable> plist = hcs.productHash.get(simpleName);
         if (null == plist) {
           plist = new ArrayList<GridVariable>();
@@ -180,17 +183,17 @@ public class GridIndexToNC {
         }
         plist.add(pv);
 
-      } else if ( lookup instanceof Grib2GridTableLookup ) {
+      } /* else if ( lookup instanceof Grib2GridTableLookup ) {
         Grib2GridTableLookup g2lookup = (Grib2GridTableLookup) lookup;
         // check for non interval pv and interval record which needs a interval pv
-        if( ! pv.isInterval() && g2lookup.isInterval( gribRecord ) ) {
+        if( ! pv.isInterval() && g2lookup.isInterval(gridRecord) ) {
           // make an interval variable
           String interval = name +"_interval";
           pv = (GridVariable) hcs.varHash.get(interval);
           if (null == pv) {
             pv = new GridVariable(interval, hcs, lookup);
-            hcs.varHash.put(interval, pv);
-            String simpleName = makeVariableName(gribRecord, lookup, false, true); // LOOK may not be a good idea
+            hcs.varHash.put(cdmHash, pv);
+            String simpleName = makeVariableName(gridRecord, lookup, false, true); // LOOK may not be a good idea
             List<GridVariable> plist = hcs.productHash.get(simpleName);
             if (null == plist) {
               plist = new ArrayList<GridVariable>();
@@ -199,14 +202,14 @@ public class GridIndexToNC {
             plist.add(pv);
           }
 
-        } else if ( pv.isInterval() && !g2lookup.isInterval( gribRecord )  ) {
+        } else if ( pv.isInterval() && !g2lookup.isInterval(gridRecord)  ) {
           // make a non-interval variable
-          logger.info( "Non-Interval records for %s%n", pv.getName());
+          // logger.info( "Non-Interval records for %s%n", pv.getName());  LOOK
             continue;
         }
-      } // grid2
+      } // grid2 */
 
-      pv.addProduct(gribRecord);
+      pv.addProduct(gridRecord);
     }
 
     // global CF Conventions
@@ -463,24 +466,29 @@ public class GridIndexToNC {
 
         if (plist.size() == 1) {
           GridVariable pv = plist.get(0);
-          boolean useNameWithoutLevel = !((lookup instanceof GempakLookup) || (lookup instanceof McIDASLookup ));
-
-          Variable v = pv.makeVariable(ncfile, hcs.getGroup(), useNameWithoutLevel );
+          String name = pv.getFirstRecord().cdmVariableName(lookup, false, false); // plain ole name
+          Variable v = pv.makeVariable(ncfile, hcs.getGroup(), name );
           ncfile.addVariable(hcs.getGroup(), v);
 
         } else {
 
           Collections.sort(plist, new CompareGridVariableByNumberVertLevels());
-          boolean isGrib2 = false;
-          Grib2GridTableLookup g2lookup = null;
-          if ( (lookup instanceof Grib2GridTableLookup) ) {
-            g2lookup = (Grib2GridTableLookup) lookup;
-            isGrib2 = true;
-          }
+
           // finally, add the variables
           for (int k = 0; k < plist.size(); k++) {
             GridVariable pv = plist.get(k);
 
+            String name = pv.getFirstRecord().cdmVariableName(lookup, k != 0, k!= 0);
+            String vname = AbstractIOServiceProvider.createValidNetcdfObjectName(name);
+
+            ncfile.addVariable(hcs.getGroup(), pv.makeVariable(ncfile, hcs.getGroup(), vname));
+
+            /* boolean isGrib2 = false;
+            Grib2GridTableLookup g2lookup = null;
+            if ( (lookup instanceof Grib2GridTableLookup) ) {
+              g2lookup = (Grib2GridTableLookup) lookup;
+              isGrib2 = true;
+            }
             if (isGrib2 &&
                 (g2lookup.isEnsemble( pv.getFirstRecord()) || g2lookup.isProbability( pv.getFirstRecord() ) ) ||
                 (lookup instanceof GempakLookup) ||
@@ -490,7 +498,7 @@ public class GridIndexToNC {
 
             } else {
               ncfile.addVariable(hcs.getGroup(), pv.makeVariable(ncfile, hcs.getGroup(), (k == 0)));
-            }
+            }   */
           }
         } // multiple vertical levels
 
@@ -560,7 +568,7 @@ public class GridIndexToNC {
     List<GridVertCoord> vertCoords = new ArrayList<GridVertCoord>();
     List<GridEnsembleCoord> ensembleCoords = new ArrayList<GridEnsembleCoord>();
 
-    List<String> removeVariables = new ArrayList<String>();
+    List<Integer> removeVariables = new ArrayList<Integer>();
 
     // loop over HorizCoordSys
     Collection<GridHorizCoordSys> hcset = hcsHash.values();
@@ -568,8 +576,8 @@ public class GridIndexToNC {
 
       // loop over GridVariables in the HorizCoordSys
       // create the time and vertical coordinates
-      Set<String> keys = hcs.varHash.keySet();
-      for (String key : keys) {
+      Set<Integer> keys = hcs.varHash.keySet();
+      for (Integer key : keys) {
         GridVariable pv = hcs.varHash.get(key);
         GridRecord record = pv.getFirstRecord();
 
@@ -642,7 +650,7 @@ public class GridIndexToNC {
       }
 
       // any need to be removed?
-      for (String key : removeVariables) {
+      for (Integer key : removeVariables) {
         hcs.varHash.remove(key);
       }
 
@@ -653,7 +661,7 @@ public class GridIndexToNC {
       Collection<GridVariable> vars = hcs.varHash.values();
       for (GridVariable pv : vars) {
         Group g = hcs.getGroup() == null ? ncfile.getRootGroup() : hcs.getGroup();
-        Variable v = pv.makeVariable(ncfile, g, true);
+        Variable v = pv.makeVariable(ncfile, g, null); // name is already set
         if (g.findVariable( v.getShortName()) != null) { // already got. can happen when a new vert level is added
           logger.warn("GribGridServiceProvider.GridIndexToNC: FmrcCoordSys has 2 variables mapped to ="+v.getShortName()+
                   " for file "+ncfile.getLocation());
@@ -796,11 +804,8 @@ public class GridIndexToNC {
 
   /**
    * Comparator for grid variables by number of vertical levels
-   *
-   * @author IDV Development Team
-   * @version $Revision: 1.3 $
    */
-  private class CompareGridVariableByNumberVertLevels implements Comparator {
+  private class CompareGridVariableByNumberVertLevels implements Comparator<GridVariable> {
 
     /**
      * Compare the two lists of names
@@ -809,16 +814,25 @@ public class GridIndexToNC {
      * @param o2 second list
      * @return comparison
      */
-    public int compare(Object o1, Object o2) {
-      GridVariable gv1 = (GridVariable) o1;
-      GridVariable gv2 = (GridVariable) o2;
+    public int compare(GridVariable o1, GridVariable o2) {
+      GridVertCoord vc1 = o1.getVertCoord();
+      GridVertCoord vc2 = o2.getVertCoord();
 
-      int n1 = gv1.getVertCoord().getNLevels();
-      int n2 = gv2.getVertCoord().getNLevels();
+      int n1 = vc1.getNLevels();
+      int n2 = vc2.getNLevels();
 
-      if (n1 == n2) {  // break ties for consistency
-        return gv1.getVertCoord().getLevelName().compareTo(
-            gv2.getVertCoord().getLevelName());
+      if (n1 == n2) {
+        if (!vc1.getLevelName().equals( vc2.getLevelName())) // different coords
+          return vc1.getLevelName().compareTo( vc2.getLevelName());
+
+        if (o1.isInterval()) {
+          if (!o1.getIntervalTypeName().equals( o2.getIntervalTypeName()))
+            return o1.getIntervalTypeName().compareTo( o2.getIntervalTypeName());
+        }
+
+        // what else ?
+        return 0;
+
       } else {
         return n2 - n1;  // highest number first
       }

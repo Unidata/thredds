@@ -119,9 +119,9 @@ public class GridTimeCoord {
       } else {
         Date ref = record.getReferenceTime();
         if (!baseDate.equals(ref))
-          throw new IllegalStateException(record + " does not have same base date= " + baseDate + " != " + ref);
+          log.warn(record + " does not have same base date= " + baseDate + " != " + ref);
         if (this.timeUnit != record.getTimeUnitName())
-          throw new IllegalStateException(record + " does not have same time unit= " + this.timeUnit + " != " + record.getTimeUnitName());
+          log.warn(record + " does not have same time unit= " + this.timeUnit + " != " + record.getTimeUnitName());
       }
     }
 

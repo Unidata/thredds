@@ -339,7 +339,7 @@ public final class Grib2GridTableLookup implements GridTableLookup {
    * @return TimeRangeUnitName
    */
   public final String getTimeRangeUnitName( int tunit ) {
-    return Grib2Tables.getTimeUnitFromTable4_4( tunit );
+    return Grib2Tables.getUdunitTimeUnitFromTable4_4( tunit );
   }
 
   /**
@@ -349,7 +349,7 @@ public final class Grib2GridTableLookup implements GridTableLookup {
    * @return TimeRangeUnitName
    */
   public final String getFirstTimeRangeUnitName() {
-    return Grib2Tables.getTimeUnitFromTable4_4(firstPDSV.getTimeRangeUnit());
+    return Grib2Tables.getUdunitTimeUnitFromTable4_4(firstPDSV.getTimeRangeUnit());
   }
 
   /**

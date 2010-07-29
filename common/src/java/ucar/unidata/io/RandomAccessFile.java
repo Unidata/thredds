@@ -1686,7 +1686,7 @@ public class RandomAccessFile implements DataInput, DataOutput {
   /**
    * Search forward from the current pos, looking for a match.
    *
-   * @param match    the match youre looking for.
+   * @param match    the match to look for.
    * @param maxBytes maximum number of bytes to search. use -1 for all
    * @return true if found, file position will be at the start of the match.
    * @throws IOException on read error

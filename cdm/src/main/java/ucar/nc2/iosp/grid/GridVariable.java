@@ -397,12 +397,19 @@ public class GridVariable {
    * @return true if uses time intervals
    */
   boolean isInterval() {
-    //getFirstRecord()
     if( firstRecord instanceof GribGridRecord ) {
       GribGridRecord ggr = (GribGridRecord) firstRecord;
       return ggr.isInterval();
     }
     return false;
+  }
+
+  String getIntervalTypeName() {
+    if( firstRecord instanceof GribGridRecord ) {
+      GribGridRecord ggr = (GribGridRecord) firstRecord;
+      return ggr.getIntervalTypeName();
+    }
+    return null;
   }
 
   /* String getSearchName() {
@@ -414,25 +421,18 @@ public class GridVariable {
   /**
    * Make the netcdf variable. If vname is not already set, use the param name or desc.
    *
-   * @param ncfile              netCDF file
-   * @param g                   group
-   * @param useNameWithoutLevel true use the nameWithoutLevel as the variable name
+   * @param ncfile   netCDF file
+   * @param g        group
+   * @param useName    use this as the variable name
    * @return the netcdf variable
    */
-  Variable makeVariable(NetcdfFile ncfile, Group g, boolean useNameWithoutLevel) {
+  Variable makeVariable(NetcdfFile ncfile, Group g, String useName) {
     assert records.size() > 0 : "no records for this variable";
-    nlevels = getVertNlevels();
-    nEnsembles = getNEnsembles();
-    ntimes = tcs.getNTimes();
-
-    if (vname == null) {
-      String simpleName = GridIndexToNC.makeVariableName(firstRecord, lookup, false, true); // LOOK may not be a good idea     
-      vname = AbstractIOServiceProvider.createValidNetcdfObjectName(useNameWithoutLevel ? simpleName : name);
-    }
-
-    //vname = StringUtil.replace(vname, '-', "_"); // Done in dods server now
-    // need for Gempak and McIDAS
-    vname = StringUtil.replace(vname, ' ', "_");
+    this.nlevels = getVertNlevels();
+    this.nEnsembles = getNEnsembles();
+    this.ntimes = tcs.getNTimes();
+    if (vname == null)
+      this.vname = StringUtil.replace(useName, ' ', "_");
 
     Variable v = new Variable(ncfile, g, null, vname);
     v.setDataType(DataType.FLOAT);

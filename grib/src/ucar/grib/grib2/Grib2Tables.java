@@ -462,7 +462,7 @@ public class Grib2Tables {
    * @param code44 code for table 4.4
    * @return udunits time unit
    */
-  static public String getTimeUnitFromTable4_4(int code44) {
+  static public String getUdunitTimeUnitFromTable4_4(int code44) {
     switch (code44) {
 
       case 0:

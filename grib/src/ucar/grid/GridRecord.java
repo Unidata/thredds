@@ -120,5 +120,18 @@ public interface GridRecord {
    * @return the time units as a String
    */
     public String getTimeUnitName();
+
+   /**
+   * A hash code to group records into a CDM variable
+   * @return group hash code
+   */
+    public int cdmVariableHash();
+
+    /**
+   * A unique name for the CDM variable, must be consistent with cdmVariableHash
+   * @return unique CDM variable name
+   */
+  public String cdmVariableName(GridTableLookup lookup, boolean useLevel, boolean useStat);
+
 }
 
