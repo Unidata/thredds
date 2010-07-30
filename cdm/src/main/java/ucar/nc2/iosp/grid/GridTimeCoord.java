@@ -53,7 +53,7 @@ import java.util.*;
  *
  * @author caron
  */
-public class GridTimeCoord {
+public class GridTimeCoord implements Comparable<GridTimeCoord> {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GridTimeCoord.class);
 
   private Calendar calendar;
@@ -71,6 +71,11 @@ public class GridTimeCoord {
     // need to have this non-static for thread safety
     calendar = Calendar.getInstance();
     calendar.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
+  }
+
+  @Override
+  public int compareTo(GridTimeCoord o) {
+    return o.getNTimes() - getNTimes(); // reverse sort on number of coords
   }
 
   private class TimeCoordWithInterval implements Comparable<TimeCoordWithInterval> {

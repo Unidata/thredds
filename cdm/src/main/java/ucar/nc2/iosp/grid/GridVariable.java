@@ -431,8 +431,10 @@ public class GridVariable {
     this.nlevels = getVertNlevels();
     this.nEnsembles = getNEnsembles();
     this.ntimes = tcs.getNTimes();
-    if (vname == null)
-      this.vname = StringUtil.replace(useName, ' ', "_");
+    if (vname == null) {
+      useName = StringUtil.replace(useName, ' ', "_");
+      this.vname = AbstractIOServiceProvider.createValidNetcdfObjectName(useName);
+    }
 
     Variable v = new Variable(ncfile, g, null, vname);
     v.setDataType(DataType.FLOAT);

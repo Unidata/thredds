@@ -79,8 +79,7 @@ public final class Grib2Data {
      * @throws IOException  if raf does not contain a valid GRIB record.
      * @return float[] the data
      */
-    public final float[] getData(long GdsOffset, long PdsOffset)
-            throws IOException {
+    public final float[] getData(long GdsOffset, long PdsOffset) throws IOException {
         //long start = System.currentTimeMillis();
 
         /*

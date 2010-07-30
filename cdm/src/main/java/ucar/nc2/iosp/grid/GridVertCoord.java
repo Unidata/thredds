@@ -31,10 +31,7 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-// $Id: GridVertCoord.java 63 2006-07-12 21:50:51Z edavis $
-
 package ucar.nc2.iosp.grid;
-
 
 import ucar.ma2.*;
 
@@ -51,20 +48,14 @@ import ucar.grib.grib1.Grib1GDSVariables;
 
 import java.util.*;
 
-
 /**
  * A Vertical Coordinate variable for a Grid variable.
  *
  * @author caron
- * @version $Revision: 63 $ $Date: 2006-07-12 15:50:51 -0600 (Wed, 12 Jul 2006) $
  */
-public class GridVertCoord implements Comparable {
+public class GridVertCoord implements Comparable<GridVertCoord> {
 
-  /**
-   * logger
-   */
-  static private org.slf4j.Logger logger =
-      org.slf4j.LoggerFactory.getLogger(GridVertCoord.class);
+  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GridVertCoord.class);
 
   /**
    * typical record for this vertical coordinate
@@ -513,11 +504,6 @@ public class GridVertCoord implements Comparable {
     }
   }
 
-  void empty() {
-    // let all references to Index go, to reduce retained size
-    typicalRecord = null;
-  }
-
   /**
    * Get the index of the particular record
    *
@@ -534,19 +520,15 @@ public class GridVertCoord implements Comparable {
   /**
    * Compare this to another
    *
-   * @param o the other GridVertCoord
+   * @param gv the other GridVertCoord
    * @return the comparison
    */
-  public int compareTo(Object o) {
-    GridVertCoord gv = (GridVertCoord) o;
+  public int compareTo(GridVertCoord gv) {
     return getLevelName().compareToIgnoreCase(gv.getLevelName());
   }
 
   /**
    * A level coordinate
-   *
-   * @author IDV Development Team
-   * @version $Revision: 1.3 $
    */
   private class LevelCoord implements Comparable {
 
@@ -623,7 +605,6 @@ public class GridVertCoord implements Comparable {
       return (int) (value1 * 100000 + value2 * 100);
     }
   }
-
 
   /**
    * Get the coordinate index for the record

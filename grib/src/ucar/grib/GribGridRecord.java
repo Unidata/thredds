@@ -58,6 +58,7 @@ import java.util.Formatter;
  * Represents index information for one record in the Grib file.
  */
 public final class GribGridRecord implements GridRecord {
+  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GribGridRecord.class);
 
   //// from  indicator section
 
@@ -185,7 +186,7 @@ public final class GribGridRecord implements GridRecord {
    */
   public long offset2;
 
-  private String paramName;
+  private String paramName, paramDesc;
 
   /**
    * default constructor, used by GribReadIndex (binary indices)
@@ -363,21 +364,49 @@ public final class GribGridRecord implements GridRecord {
 
       if (edition == 2) {
         GridParameter p = ParameterTable.getParameter(discipline, category, paramNumber);
-        paramName = p.getDescription();
+        paramName = p.getName();
 
       } else {
         GribPDSParamTable pt = null;
         try {
           pt = GribPDSParamTable.getParameterTable(center, subCenter, table);
         } catch (NotSupportedException e) {
-          paramName = e.getMessage();
+          logger.error("Failed to get Parameter name for "+this);
         }
         GridParameter p = pt.getParameter(paramNumber);
-        paramName = p.getName() + " / " + p.getDescription();
+        paramName = p.getName();
       }
     }
 
     return paramName;
+  }
+
+  /**
+   * Get the parameter name
+   *
+   * @return parameter name
+   */
+  @Override
+  public String getParameterDescription() {
+    if (paramDesc == null) {
+
+      if (edition == 2) {
+        GridParameter p = ParameterTable.getParameter(discipline, category, paramNumber);
+        paramDesc = p.getDescription();
+
+      } else {
+        GribPDSParamTable pt = null;
+        try {
+          pt = GribPDSParamTable.getParameterTable(center, subCenter, table);
+        } catch (NotSupportedException e) {
+          logger.error("Failed to get Parameter desc for "+this);
+        }
+        GridParameter p = pt.getParameter(paramNumber);
+        paramDesc = p.getDescription();
+      }
+    }
+
+    return paramDesc;
   }
 
   @Override

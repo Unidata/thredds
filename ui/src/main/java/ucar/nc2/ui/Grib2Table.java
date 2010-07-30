@@ -114,6 +114,18 @@ public class Grib2Table extends JPanel {
 
     recordTable = new BeanTableSorted(IndexRecordBean.class, (PreferencesExt) prefs.node("IndexRecordBean"), false, "GribGridRecord", "one record");
 
+    varPopup = new thredds.ui.PopupMenu(recordTable.getJTable(), "Options");
+    varPopup.addAction("Show GridRecord", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        IndexRecordBean bean = (IndexRecordBean) recordTable.getSelectedBean();
+        if (bean != null) {
+          infoPopup2.setText(bean.ggr.toString());
+          infoPopup2.gotoTop();
+          infoWindow2.showIfNotIconified();
+        }
+      }
+    });
+
     ////////////////
     productBeanTable = new BeanTableSorted(ProductBean.class, (PreferencesExt) prefs.node("ProductBean"), false, "Grib2PDSVariables", "from Grib2Input.getRecords()");
     productBeanTable.addListSelectionListener(new ListSelectionListener() {

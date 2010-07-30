@@ -144,6 +144,15 @@ public class McIDASGridRecord extends GridDirectory implements GridRecord {
     }
 
     /**
+    * Get the parameter description
+    *
+    * @return parameter description
+    */
+   public String getParameterDescription() {
+       return getParamName();
+   }
+
+    /**
      * Get the decimal scale
      *
      * @return decimal scale

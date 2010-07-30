@@ -65,8 +65,8 @@ public class GribGridServiceProvider extends GridServiceProvider {
 
   private long rafLength;    // length of the file when opened - used for syncing
   private long indexLength;  // length of the index in getIndex - used for syncing
-  private int saveEdition = 0;
-  private float version = 0;
+  private int saveEdition = 0; // GRIB edition
+  private float version = 0;  // index version
 
   private Grib1Data dataReaderGrib1;
   private Grib2Data dataReaderGrib2;

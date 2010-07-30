@@ -167,15 +167,12 @@ public class GridIndexToNC {
       int cdmHash = gridRecord.cdmVariableHash();
       GridVariable pv = (GridVariable) hcs.varHash.get(cdmHash);
       if (null == pv) {
-        // String name = makeVariableName(gridRecord, lookup, true, true); // combo param, ens, level name
         String name = gridRecord.cdmVariableName(lookup, true, true);
         pv = new GridVariable(name, hcs, lookup);
         hcs.varHash.put(cdmHash, pv);
-        //System.out.printf("Add name=%s pname=%s%n", name, pname);
 
-        // keep track of all products with same parameter name + suffix == "simple name"
-        // String pname = lookup.getParameter(gribRecord).getDescription(); // dont use plain old parameter name anymore 6/3/2010 jc
-        String simpleName = makeVariableName(gridRecord, lookup, false, false); // combo param, level name LOOK may not be a good idea
+        // keep track of all products with same parameter name == "simple name"
+        String simpleName = gridRecord.getParameterName();
         List<GridVariable> plist = hcs.productHash.get(simpleName);
         if (null == plist) {
           plist = new ArrayList<GridVariable>();
@@ -407,33 +404,23 @@ public class GridIndexToNC {
           pv.setEnsembleCoord(useEnsembleCoord);
       }
 
-      //// assign time coordinate names
-      // find time dimensions with largest length
-      GridTimeCoord tcs0 = null;
-      int maxTimes = 0;
+      // assign time coordinate names, add dimensions to file
+      // reverse sort by length - give time dimensions unique names
+      Collections.sort(timeCoords);
+      int count = 0;
       for (GridTimeCoord tcs : timeCoords) {
-        if (tcs.getNTimes() > maxTimes) {
-          tcs0 = tcs;
-          maxTimes = tcs.getNTimes();
-        }
-      }
-
-      // add time dimensions, give time dimensions unique names
-      int seqno = 1;
-      for (GridTimeCoord tcs : timeCoords) {
-        if (tcs != tcs0) {
-          tcs.setSequence(seqno++);
-        }
+        tcs.setSequence(count++);
         tcs.addDimensionsToNetcdfFile(ncfile, hcs.getGroup());
       }
 
       // add Ensemble dimensions, give Ensemble dimensions unique names
-      seqno = 0;
+      int seqno = 0;
       for (GridEnsembleCoord gec : ensembleCoords) {
         gec.setSequence(seqno++);
         if (gec.getNEnsembles() > 1)
           gec.addDimensionsToNetcdfFile(ncfile, hcs.getGroup());
       }
+
       // add x, y dimensions
       hcs.addDimensionsToNetcdfFile(ncfile);
 
@@ -457,10 +444,8 @@ public class GridIndexToNC {
       }
       makeVerticalDimensions(vertCoords.subList(start, vcIndex), ncfile, hcs.getGroup());
 
-      // create a variable for each entry, but check for other products with same desc
-      // to disambiguate by vertical coord
+      // create a variable for each entry, but check for other products with same simple name to disambiguate
       List<List<GridVariable>> products = new ArrayList<List<GridVariable>>(hcs.productHash.values());
-      Collections.sort( products, new CompareGridVariableListByName());
       for (List<GridVariable> plist : products) {
         if ((cancelTask != null) && cancelTask.isCancel()) break;
 
@@ -472,34 +457,38 @@ public class GridIndexToNC {
 
         } else {
 
-          Collections.sort(plist, new CompareGridVariableByNumberVertLevels());
-
-          // finally, add the variables
-          for (int k = 0; k < plist.size(); k++) {
-            GridVariable pv = plist.get(k);
-
-            String name = pv.getFirstRecord().cdmVariableName(lookup, k != 0, k!= 0);
-            String vname = AbstractIOServiceProvider.createValidNetcdfObjectName(name);
-
-            ncfile.addVariable(hcs.getGroup(), pv.makeVariable(ncfile, hcs.getGroup(), vname));
-
-            /* boolean isGrib2 = false;
-            Grib2GridTableLookup g2lookup = null;
-            if ( (lookup instanceof Grib2GridTableLookup) ) {
-              g2lookup = (Grib2GridTableLookup) lookup;
-              isGrib2 = true;
+          // collect them grouped by vertical coord
+          Map<GridVertCoord,VertCollection> vcMap = new HashMap<GridVertCoord,VertCollection>();
+          for (GridVariable gv : plist) {
+            VertCollection vc = vcMap.get(gv.getVertCoord());
+            if (vc == null) {
+              vc = new VertCollection(gv);
+              vcMap.put(gv.getVertCoord(), vc);
             }
-            if (isGrib2 &&
-                (g2lookup.isEnsemble( pv.getFirstRecord()) || g2lookup.isProbability( pv.getFirstRecord() ) ) ||
-                (lookup instanceof GempakLookup) ||
-                (lookup instanceof McIDASLookup ) ) {
+            vc.list.add(gv);
+          }
 
-              ncfile.addVariable(hcs.getGroup(), pv.makeVariable(ncfile, hcs.getGroup(), false));
+          // sort by larger # vert levels
+          List<VertCollection> vclist = new ArrayList<VertCollection>(vcMap.values());
+          Collections.sort(vclist);
+
+          boolean firstVertCoord = true;
+          for (VertCollection vc : vclist) {
+            List<GridVariable> list = vc.list;
+            if (list.size() == 1) {
+              GridVariable gv = list.get(0);
+              String name = gv.getFirstRecord().cdmVariableName(lookup, !firstVertCoord, false);
+              ncfile.addVariable(hcs.getGroup(), gv.makeVariable(ncfile, hcs.getGroup(), name));
 
             } else {
-              ncfile.addVariable(hcs.getGroup(), pv.makeVariable(ncfile, hcs.getGroup(), (k == 0)));
-            }   */
+              for (GridVariable gv : list) { // more than one - disambiguate by stat name
+                String name = gv.getFirstRecord().cdmVariableName(lookup, !firstVertCoord, true);
+                ncfile.addVariable(hcs.getGroup(), gv.makeVariable(ncfile, hcs.getGroup(), name));
+              }
+            }
+            firstVertCoord = false;
           }
+
         } // multiple vertical levels
 
       } // create variable
@@ -524,6 +513,31 @@ public class GridIndexToNC {
     //  gvcs.empty();
     //}
 
+  }
+
+  private class VertCollection implements Comparable<VertCollection> {
+    GridVertCoord vc;
+    List<GridVariable> list = new ArrayList<GridVariable>(3);
+
+    VertCollection(GridVariable gv) {
+      this.vc = gv.getVertCoord();
+    }
+
+    @Override
+    public int hashCode() {
+      return vc.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+      VertCollection oc = (VertCollection) obj;
+      return vc.equals(oc.vc);
+    }
+
+    @Override
+    public int compareTo(VertCollection o) {
+      return o.vc.getNLevels() - vc.getNLevels();
+    }
   }
 
   /**
@@ -752,33 +766,6 @@ public class GridIndexToNC {
     return null;
   }
 
-
-  /**
-   * Comparable object for grid variable
-   *
-   * @author IDV Development Team
-   * @version $Revision: 1.3 $
-   */
-  private class CompareGridVariableListByName implements Comparator {
-
-    /**
-     * Compare the two lists of names
-     *
-     * @param o1 first list
-     * @param o2 second list
-     * @return comparison
-     */
-    public int compare(Object o1, Object o2) {
-      ArrayList list1 = (ArrayList) o1;
-      ArrayList list2 = (ArrayList) o2;
-
-      GridVariable gv1 = (GridVariable) list1.get(0);
-      GridVariable gv2 = (GridVariable) list2.get(0);
-
-      return gv1.getName().compareToIgnoreCase(gv2.getName());
-    }
-  }
-
   /**
    * Comparator for grids by vertical variable name
    *
@@ -801,51 +788,5 @@ public class GridIndexToNC {
       return gv1.getVertName().compareToIgnoreCase(gv2.getVertName());
     }
   }
-
-  /**
-   * Comparator for grid variables by number of vertical levels
-   */
-  private class CompareGridVariableByNumberVertLevels implements Comparator<GridVariable> {
-
-    /**
-     * Compare the two lists of names
-     *
-     * @param o1 first list
-     * @param o2 second list
-     * @return comparison
-     */
-    public int compare(GridVariable o1, GridVariable o2) {
-      GridVertCoord vc1 = o1.getVertCoord();
-      GridVertCoord vc2 = o2.getVertCoord();
-
-      int n1 = vc1.getNLevels();
-      int n2 = vc2.getNLevels();
-
-      if (n1 == n2) {
-        if (!vc1.getLevelName().equals( vc2.getLevelName())) // different coords
-          return vc1.getLevelName().compareTo( vc2.getLevelName());
-
-        if (o1.isInterval()) {
-          if (!o1.getIntervalTypeName().equals( o2.getIntervalTypeName()))
-            return o1.getIntervalTypeName().compareTo( o2.getIntervalTypeName());
-        }
-
-        // what else ?
-        return 0;
-
-      } else {
-        return n2 - n1;  // highest number first
-      }
-    }
-  }
-
-  /*
-   * Should use the description for the variable name.
-   *
-   * @param value false to use name instead of description
-   *
-  public void setUseDescriptionForVariableName(boolean value) {
-    useDescriptionForVariableName = value;
-  } */
 
 }

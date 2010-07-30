@@ -206,16 +206,25 @@ public class GempakGridRecord implements GridRecord {
         return validOffset;
     }
 
-    /**
-     * Get the parameter name
-     *
-     * @return parameter name
-     */
-    public String getParameterName() {
-        return param;
-    }
+  /**
+    * Get the parameter name
+    *
+    * @return parameter name
+    */
+   public String getParameterName() {
+       return param;
+   }
 
-    /**
+  /**
+    * Get the parameter description
+    *
+    * @return parameter description
+    */
+   public String getParameterDescription() {
+       return param;
+   }
+
+     /**
      * Get the grid def record id
      *
      * @return parameter name

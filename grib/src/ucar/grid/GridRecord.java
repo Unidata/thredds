@@ -40,95 +40,105 @@ import java.util.Date;
 /**
  * An interface for one 2D gridded data record (used by  GRIB, GEMPAK, McIDAS gridded data).
  * A collection of these records comprise a CDM variable, usually adding time and optionally vertical, and ensemble dimensions.
+ *
  * @author rkambic
  */
 public interface GridRecord {
 
-    /**
-     * Get the first vertical level of this GridRecord
-     *
-     * @return the first vertical level value
-     */
-    public double getLevel1();
+  /**
+   * Get the first vertical level of this GridRecord
+   *
+   * @return the first vertical level value
+   */
+  public double getLevel1();
 
-    /**
-     * Get the second vertical level of this GridRecord
-     *
-     * @return the second vertical level value
-     */
-    public double getLevel2();
+  /**
+   * Get the second vertical level of this GridRecord
+   *
+   * @return the second vertical level value
+   */
+  public double getLevel2();
 
-    /**
-     * Get the vertical level type of this GridRecord
-     *
-     * @return vertical level type
-     */
-    public int getLevelType1();
+  /**
+   * Get the vertical level type of this GridRecord
+   *
+   * @return vertical level type
+   */
+  public int getLevelType1();
 
-    /**
-     * Get the vertical level type of this GridRecord
-     *
-     * @return vertical level type
-     */
-    public int getLevelType2();
+  /**
+   * Get the vertical level type of this GridRecord
+   *
+   * @return vertical level type
+   */
+  public int getLevelType2();
 
-    /**
-     * Get the first reference time of this GridRecord
-     *
-     * @return reference time
-     */
-    public Date getReferenceTime();
+  /**
+   * Get the first reference time of this GridRecord
+   *
+   * @return reference time
+   */
+  public Date getReferenceTime();
 
-    /**
-     * Get the valid time for this GridRecord.
-     *
-     * @return valid time
-     */
-    public Date getValidTime();
+  /**
+   * Get the valid time for this GridRecord.
+   *
+   * @return valid time
+   */
+  public Date getValidTime();
 
-    /**
-     * Get valid time offset of this GridRecord
-     *
-     * @return time offset
-     */
-    public int getValidTimeOffset();
+  /**
+   * Get valid time offset of this GridRecord
+   *
+   * @return time offset
+   */
+  public int getValidTimeOffset();
 
-    /**
-     * Get the parameter name
-     *
-     * @return parameter name
-     */
-    public String getParameterName();
+  /**
+   * Get the parameter name
+   *
+   * @return parameter name
+   */
+  public String getParameterName();
 
-    /**
-     * Get the grid def record id
-     *
-     * @return parameter name
-     */
-    public String getGridDefRecordId();
+  /**
+   * Get the parameter description
+   *
+   * @return parameter description
+   */
+  public String getParameterDescription();
 
-    /**
-     * Get the decimal scale of the values
-     *
-     * @return decimal scale
-     */
-    public int getDecimalScale();
+  /**
+   * Get the grid def record id
+   *
+   * @return parameter name
+   */
+  public String getGridDefRecordId();
+
+  /**
+   * Get the decimal scale of the values
+   *
+   * @return decimal scale
+   */
+  public int getDecimalScale();
 
   /**
    * Get the time units as a String
    *
    * @return the time units as a String
    */
-    public String getTimeUnitName();
+  public String getTimeUnitName();
 
-   /**
+  /**
    * A hash code to group records into a CDM variable
+   *
    * @return group hash code
    */
-    public int cdmVariableHash();
+  public int cdmVariableHash();
 
-    /**
+  /**
    * A unique name for the CDM variable, must be consistent with cdmVariableHash
+   *
    * @return unique CDM variable name
    */
   public String cdmVariableName(GridTableLookup lookup, boolean useLevel, boolean useStat);
