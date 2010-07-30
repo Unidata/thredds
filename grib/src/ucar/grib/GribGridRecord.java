@@ -66,7 +66,6 @@ public final class GribGridRecord implements GridRecord {
 
   public int discipline;  // grib 2 only  ?
 
-
   //// from  identification section
 
   /**
@@ -127,7 +126,7 @@ public final class GribGridRecord implements GridRecord {
   /**
    * forecastTime as Date.
    */
-  private Date validTime = null;
+  public Date validTime = null;
 
   /**
    * decimalScale for Grib1 data.
@@ -455,7 +454,7 @@ public final class GribGridRecord implements GridRecord {
   @Override
   public String cdmVariableName(GridTableLookup lookup, boolean useLevel, boolean useStat) {
     Formatter f = new Formatter();
-    f.format("%s", getParameterName());
+    f.format("%s", getParameterDescription());
 
     if (useLevel) {
       String levelName = lookup.getLevelName(this);
@@ -560,8 +559,13 @@ public final class GribGridRecord implements GridRecord {
    * to designate an interval type parameter
    */
   public boolean isInterval( ) {
-    //return ( productTemplate > 7) && ( productTemplate < 16 );
     return ( startOfInterval != GribNumbers.UNDEFINED );
+  }
+
+  @Override
+  public int getTimeInterval( ) {
+    if (!isInterval()) return -1;
+    return forecastTime - startOfInterval;
   }
 
   public String getIntervalTypeName( ) {  // LOOK need GRIB1

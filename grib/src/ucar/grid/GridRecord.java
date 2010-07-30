@@ -143,5 +143,12 @@ public interface GridRecord {
    */
   public String cdmVariableName(GridTableLookup lookup, boolean useLevel, boolean useStat);
 
+  /**
+   * Get the time interval, if there is one
+   *
+   * @return time interval in units of getTimeUnitName(), or -1 if not a time interval
+   */
+  public int getTimeInterval();
+
 }
 

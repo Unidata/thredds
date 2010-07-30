@@ -89,15 +89,12 @@ public final class Grib2Data {
         raf.seek(GdsOffset);
 
         // Need section 3, 4, 5, 6, and 7 to read/interpet the data
-        Grib2GridDefinitionSection gds = new Grib2GridDefinitionSection(raf,
-                                             false);  // Section 3 no checksum
+        Grib2GridDefinitionSection gds = new Grib2GridDefinitionSection(raf, false);  // Section 3 no checksum
 
         raf.seek(PdsOffset);  // could have more than one pds for a gds
-        Grib2ProductDefinitionSection pds =
-            new Grib2ProductDefinitionSection(raf);  // Section 4
+        Grib2ProductDefinitionSection pds = new Grib2ProductDefinitionSection(raf);  // Section 4
 
-        Grib2DataRepresentationSection drs =
-            new Grib2DataRepresentationSection(raf);  // Section 5
+        Grib2DataRepresentationSection drs = new Grib2DataRepresentationSection(raf);  // Section 5
 
         Grib2BitMapSection bms = new Grib2BitMapSection(true, raf, gds);  // Section 6
         if( bms.getBitmapIndicator() == 254 ) { //previously defined in the same GRIB2 record

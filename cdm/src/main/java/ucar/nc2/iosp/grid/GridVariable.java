@@ -363,9 +363,7 @@ public class GridVariable {
    * @return true if vertical used
    */
   boolean getVertIsUsed() {
-    return (vcs == null)
-            ? !vc.dontUseVertical
-            : !vcs.dontUseVertical;
+    return (vcs == null) ? !vc.dontUseVertical : !vcs.dontUseVertical;
   }
 
   /**
@@ -375,9 +373,7 @@ public class GridVariable {
    * @return the index
    */
   int getVertIndex(GridRecord p) {
-    return (vcs == null)
-            ? vc.getIndex(p)
-            : vcs.getIndex(p);
+    return (vcs == null) ? vc.getIndex(p) : vcs.getIndex(p);
   }
 
   /**
@@ -386,9 +382,7 @@ public class GridVariable {
    * @return the number of times
    */
   int getNTimes() {
-    return (tcs == null)
-            ? 1
-            : tcs.getNTimes();
+    return (tcs == null) ? 1 : tcs.getNTimes();
   }
 
   /**
@@ -419,7 +413,7 @@ public class GridVariable {
  } */
 
   /**
-   * Make the netcdf variable. If vname is not already set, use the param name or desc.
+   * Make the netcdf variable. If vname is not already set, use useName as name
    *
    * @param ncfile   netCDF file
    * @param g        group
@@ -458,36 +452,30 @@ public class GridVariable {
     }
 
     v.setDimensions(dims);
-    GridParameter param = lookup.getParameter(firstRecord);
 
+    // add attributes
+    GridParameter param = lookup.getParameter(firstRecord);
     String unit = param.getUnit();
-    if (unit == null) {
-      unit = "";
-    }
+    if (unit == null) unit = "";
+    v.addAttribute(new Attribute("units", unit));
+
     v.addAttribute(new Attribute("long_name", makeLongName()));
     if (firstRecord instanceof GribGridRecord) {
       GribGridRecord ggr = (GribGridRecord) firstRecord;
       if (ggr.isInterval()) {
-        CF.CellMethods cm = CF.CellMethods.convertGribCodeTable4_10(ggr.intervalStatType);
+        CF.CellMethods cm = CF.CellMethods.convertGribCodeTable4_10(ggr.intervalStatType); // LOOK kludge
         if (cm != null)
           v.addAttribute(new Attribute("cell_methods", tcs.getName() + ": " + cm.toString()));
       }
     }
-    v.addAttribute(new Attribute("units", unit));
-    v.addAttribute(
-            new Attribute(
-                    "missing_value", new Float(lookup.getFirstMissingValue())));
+    v.addAttribute( new Attribute("missing_value", new Float(lookup.getFirstMissingValue())));
     if (!hcs.isLatLon()) {
-      if (ucar.nc2.iosp.grib.GribGridServiceProvider.addLatLon) {
+      if (ucar.nc2.iosp.grib.GribGridServiceProvider.addLatLon)
         v.addAttribute(new Attribute("coordinates", "lat lon"));
-      }
       v.addAttribute(new Attribute("grid_mapping", hcs.getGridName()));
     }
 
-    /*
-    * GribVariable that adds in the specific attributes.
-    *
-    */
+    // LOOK VECTOR_COMPONENT_FLAG handling is very lame
     int icf = hcs.getGds().getInt(GridDefRecord.VECTOR_COMPONENT_FLAG);
     String flag;
     if (icf == 0) {
@@ -495,6 +483,7 @@ public class GridVariable {
     } else {
       flag = Grib2Tables.VectorComponentFlag.gridRelative.toString();
     }
+
     if (lookup instanceof Grib2GridTableLookup) {
       Grib2GridTableLookup g2lookup = (Grib2GridTableLookup) lookup;
       int[] paramId = g2lookup.getParameterId(firstRecord);
@@ -512,6 +501,7 @@ public class GridVariable {
       //if( firstRecord.getLevelType2() != 255)
       //   v.addAttribute( new Attribute("GRIB2_level_type2", new Integer(firstRecord.getLevelType2())));
       v.addAttribute(new Attribute("GRIB_" + GridDefRecord.VECTOR_COMPONENT_FLAG, flag));
+
     } else if (lookup instanceof Grib1GridTableLookup) {
       Grib1GridTableLookup g1lookup = (Grib1GridTableLookup) lookup;
       int[] paramId = g1lookup.getParameterId(firstRecord);
@@ -534,6 +524,7 @@ public class GridVariable {
       System.out.println("Variable " + getName());
     }
 
+    // assign the records to the recordTracker array
     recordTracker = new GridRecord[ntimes * nEnsembles * nlevels];
     for (GridRecord p : records) {
       if (showRecords) {
@@ -545,12 +536,14 @@ public class GridVariable {
                 //+" # genProcess="+p.typeGenProcess);
         );
       }
+
       int level = getVertIndex(p);
       if (!getVertIsUsed() && (level > 0)) {
         log.warn("inconsistent level encoding=" + level);
         level = 0;  // inconsistent level encoding ??
       }
-      int time = tcs.getIndex(p);
+
+      int time = tcs.findIndex(p);
       // System.out.println("time="+time+" level="+level);
       if (level < 0) {
         log.warn("NOT FOUND record; level=" + level + " time= "
@@ -571,48 +564,39 @@ public class GridVariable {
                 + p.getValidTimeOffset() + " date= "
                 + tcs.getValidTime(p) + "\n");
 
-        tcs.getIndex(p);  // allow breakpoint
+        tcs.findIndex(p);  // allow breakpoint
         continue;
       }
+
       int recno;
       if (hasEnsemble()) {
         int ens = getEnsembleIndex(p);
-        //recno = time * ( nEnsembles * nlevels ) + ( ens * nlevels ) + level;
         recno = ens * (ntimes * nlevels) + (time * nlevels) + level;
       } else {
         recno = time * nlevels + level;
       }
-      /*  original code
-      if (recordTracker[recno] == null) {
-        recordTracker[recno] = p;
-      } else {
-        GridRecord q = recordTracker[recno];
-        recordTracker[recno] = p;  // replace it with latest one
-        // System.out.println("   gen="+p.typeGenProcess+" "+q.typeGenProcess+"=="+lookup.getTypeGenProcessName(p));
-      }
-      */
 
       if (recordTracker[recno] == null) {
         recordTracker[recno] = p;
-      } else {
-        GridRecord q = recordTracker[recno];
-        if (q instanceof GribGridRecord ) {
-          GribGridRecord ggrq = (GribGridRecord)q;
-          GribGridRecord ggrp = (GribGridRecord)p;
-          // if Grib2 mixed interval, pick out record with startOfInterval = 0  LOOK WRONG
-          // else if Grib1 or Grib2 interval pick out smallest interval
-          if( (tcs.getConstantInterval() < 0) && ggrq.isInterval( ) ) {
-            if( ggrp.startOfInterval == 0 )
-              recordTracker[recno] = p;
-          } else if(  ggrq.isInterval( ) ) {
-            recordTracker[recno] =
-              ((ggrq.forecastTime - ggrq.startOfInterval) < (ggrp.forecastTime - ggrp.startOfInterval)? q : p );
-          } else {
-            recordTracker[recno] = p;  // replace it with latest one
+        //p.setBelongs( this, recno);
+
+      } else { // already one in that slot
+
+        log.warn(p + "\n already in that slot = \n"+ recordTracker[recno]);
+        recordTracker[recno] = p;  // replace it with latest one
+
+        /* if (p instanceof GribGridRecord ) {
+          GribGridRecord ggp = (GribGridRecord) p;
+          GribGridRecord ggq = (GribGridRecord) recordTracker[recno];
+          if (ggp.isInterval()) {
+            int intp = ggp.forecastTime - ggp.startOfInterval;
+            int intq = ggq.forecastTime - ggq.startOfInterval;
+            if (intp < intq) recordTracker[recno] = p; // replace it if its a smaller interval
           }
+
         } else {
           recordTracker[recno] = p;  // replace it with latest one
-        }
+        }  */
       }
     }
 
@@ -633,9 +617,7 @@ public class GridVariable {
       System.out.print("   ");
       for (int i = 0; i < ntimes; i++) {
         boolean missing = recordTracker[i * nlevels + j] == null;
-        System.out.print(missing
-                ? "-"
-                : "X");
+        System.out.print(missing ? "-" : "X");
       }
       System.out.println();
     }

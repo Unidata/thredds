@@ -58,7 +58,7 @@ import java.util.ArrayList;
  */
 public class IndexChunkerTiled {
   private List<Dim> dimList = new ArrayList<Dim>();
-  private Index dataIndex;    // Index into the data source section - used to calculate chunk.filePos
+  private IndexLong dataIndex;    // Index into the data source section - used to calculate chunk.filePos
   private Index resultIndex; // Index into the data result section - used to calculate chunk.startElem
 
   private IndexChunker.Chunk chunk; // gets returned on next().
@@ -169,7 +169,7 @@ public class IndexChunkerTiled {
 
      // we will use Index objects to keep track of the chunks
     int rank = dimList.size();
-    int[] dataStrides = new int[rank];
+    long[] dataStrides = new long[rank];
     int[] resultStrides = new int[rank];
     int[] shape = new int[rank];
     for (int i = 0; i < dimList.size(); i++) {  // reverse to slowest first
@@ -179,16 +179,16 @@ public class IndexChunkerTiled {
       shape[rank - i - 1] = dim.wantNelems;
     }
     if (debugDetail) {
-      printa(" indexShape=", shape);
-      printa(" dataStrides=", dataStrides);
-      printa(" wantStride=", resultStrides);
+      IndexChunker.printa(" indexShape=", shape);
+      IndexChunker.printl(" dataStrides=", dataStrides);
+      IndexChunker.printa(" wantStride=", resultStrides);
       System.out.println(" indexChunks=" + Index.computeSize(shape));
     }
-    dataIndex = new Index(shape, dataStrides);
+    dataIndex = new IndexLong(shape, dataStrides);
     resultIndex = new Index(shape, resultStrides);
 
     if (debugDetail) {
-      System.out.println(" dataIndex="+ dataIndex.toStringDebug());
+      System.out.println(" dataIndex="+ dataIndex.toString());
       System.out.println(" resultIndex="+ resultIndex.toStringDebug());
     }
 
@@ -273,12 +273,6 @@ public class IndexChunkerTiled {
       sbuff.append(elem);
     }
     return sbuff.toString();
-  }
-
-  private void printa(String name, int[] a) {
-    System.out.print(name + "= ");
-    for (int i = 0; i < a.length; i++) System.out.print(a[i] + " ");
-    System.out.println();
   }
 
 }

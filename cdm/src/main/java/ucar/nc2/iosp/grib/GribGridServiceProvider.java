@@ -51,7 +51,6 @@ import ucar.grib.grib2.*;
 import ucar.grid.GridRecord;
 import ucar.grid.GridIndex;
 import ucar.grid.GridTableLookup;
-import ucar.unidata.io.KMPMatch;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.*;
@@ -61,7 +60,6 @@ import java.net.URL;
 
 public class GribGridServiceProvider extends GridServiceProvider {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GribGridServiceProvider.class);
-  private static final KMPMatch matcher = new KMPMatch("GRIB".getBytes());
 
   private long rafLength;    // length of the file when opened - used for syncing
   private long indexLength;  // length of the index in getIndex - used for syncing
@@ -326,7 +324,7 @@ public class GribGridServiceProvider extends GridServiceProvider {
   }
 
 
-  private GridIndex writeIndex(File indexFile, RandomAccessFile raf) throws IOException, NotSupportedException {
+  private GridIndex writeIndex(File indexFile, RandomAccessFile raf) throws IOException {
     GridIndex index = null;
 
     if (indexFile.exists()) {

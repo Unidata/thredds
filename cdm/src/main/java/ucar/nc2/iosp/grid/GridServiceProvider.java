@@ -31,7 +31,6 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-
 package ucar.nc2.iosp.grid;
 
 import ucar.ma2.*;
@@ -213,8 +212,7 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
    * @param cancelTask cancel task
    * @throws IOException problem reading the file
    */
-  protected abstract void open(GridIndex index, CancelTask cancelTask)
-          throws IOException;
+  protected abstract void open(GridIndex index, CancelTask cancelTask) throws IOException;
 
   /**
    * Open the service provider for reading.
@@ -224,9 +222,8 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
    * @param cancelTask task for cancelling
    * @throws IOException problem reading file
    */
-  public void open(RandomAccessFile raf, NetcdfFile ncfile,
-          CancelTask cancelTask)
-          throws IOException {
+  @Override
+  public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
     this.raf = raf;
     this.ncfile = ncfile;
   }
@@ -236,6 +233,7 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
    *
    * @throws IOException problem closing file
    */
+  @Override
   public void close() throws IOException {
     raf.close();
   }
@@ -245,6 +243,7 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
    *
    * @return the detail info
    */
+  @Override
   public String getDetailInfo() {
     return ""; // parseInfo.toString();
   }
@@ -254,6 +253,7 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
    *
    * @param special isn't that special?
    */
+  @Override
   public Object sendIospMessage(Object special) {
     if (special instanceof FmrcCoordSys) {
       fmrcCoordSys = (FmrcCoordSys) special;
@@ -270,8 +270,8 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
    * @throws IOException           problem reading from file
    * @throws InvalidRangeException invalid Range
    */
-  public Array readData(Variable v2, Section section)
-          throws IOException, InvalidRangeException {
+  @Override
+  public Array readData(Variable v2, Section section) throws IOException, InvalidRangeException {
     long start = System.currentTimeMillis();
 
     Array dataArray = Array.factory(DataType.FLOAT, section.getShape());
@@ -293,8 +293,7 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
     IndexIterator ii = dataArray.getIndexIterator();
 
     // loop over time
-    for (int timeIdx = timeRange.first(); timeIdx <= timeRange.last();
-         timeIdx += timeRange.stride()) {
+    for (int timeIdx = timeRange.first(); timeIdx <= timeRange.last(); timeIdx += timeRange.stride()) {
       if (pv.hasEnsemble()) {
         readEnsemble(v2, timeIdx, ensRange, levRange, yRange, xRange, ii);
       } else if (pv.hasVert()) {
@@ -325,8 +324,7 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
    * @throws IOException           problem reading the file
    * @throws InvalidRangeException invalid range
    */
-  private void readEnsemble(Variable v2, int timeIdx, Range ensRange,
-    Range levRange, Range yRange, Range xRange, IndexIterator ii)
+  private void readEnsemble(Variable v2, int timeIdx, Range ensRange,  Range levRange, Range yRange, Range xRange, IndexIterator ii)
           throws IOException, InvalidRangeException {
 
     for (int ensIdx = ensRange.first(); ensIdx <= ensRange.last(); ensIdx += ensRange.stride()) {
@@ -354,8 +352,7 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
    * @throws IOException           problem reading the file
    * @throws InvalidRangeException invalid range
    */
-  private void readLevel(Variable v2, int timeIdx, Range levelRange,
-          Range yRange, Range xRange, IndexIterator ii)
+  private void readLevel(Variable v2, int timeIdx, Range levelRange, Range yRange, Range xRange, IndexIterator ii)
           throws IOException, InvalidRangeException {
 
     for (int levIdx = levelRange.first(); levIdx <= levelRange.last(); levIdx += levelRange.stride()) {
@@ -369,6 +366,7 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
    *
    * @param v2      variable to put the data into
    * @param timeIdx time index
+   * @param ensIdx  ensemble index
    * @param levIdx  level index
    * @param yRange  x range
    * @param xRange  y range
@@ -376,9 +374,9 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
    * @throws IOException           problem reading the file
    * @throws InvalidRangeException invalid range
    */
-  private void readXY(Variable v2, int timeIdx, int ensIdx, int levIdx, Range yRange,
-          Range xRange, IndexIterator ii)
+  private void readXY(Variable v2, int timeIdx, int ensIdx, int levIdx, Range yRange,  Range xRange, IndexIterator ii)
           throws IOException, InvalidRangeException {
+
     Attribute att = v2.findAttribute("missing_value");
     float missing_value = (att == null)
             ? -9999.0f
@@ -399,10 +397,8 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
     // otherwise read it
     float[] data = _readData(record);
 
-    for (int y = yRange.first(); y <= yRange.last();
-         y += yRange.stride()) {
-      for (int x = xRange.first(); x <= xRange.last();
-           x += xRange.stride()) {
+    for (int y = yRange.first(); y <= yRange.last(); y += yRange.stride()) {
+      for (int x = xRange.first(); x <= xRange.last(); x += xRange.stride()) {
         int index = y * nx + x;
         ii.setFloatNext(data[index]);
       }
@@ -414,12 +410,12 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
    *
    * @param v2      Variable
    * @param timeIdx time index
+   * @param ensIdx  ensemble index
    * @param levIdx  level index
    * @return true if missing
    * @throws InvalidRangeException invalid range
    */
-  public boolean isMissingXY(Variable v2, int timeIdx, int ensIdx, int levIdx)
-          throws InvalidRangeException {
+  public boolean isMissingXY(Variable v2, int timeIdx, int ensIdx, int levIdx) throws InvalidRangeException {
     GridVariable pv = (GridVariable) v2.getSPobject();
     if (null == pv) System.out.println("HEY");
     if ((timeIdx < 0) || (timeIdx >= pv.getNTimes())) {

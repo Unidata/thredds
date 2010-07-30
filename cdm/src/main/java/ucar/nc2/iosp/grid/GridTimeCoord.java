@@ -390,19 +390,19 @@ public class GridTimeCoord implements Comparable<GridTimeCoord> {
   }
 
   /**
-   * Get the index of a GridRecord in the list of times
+   * Find the index of a GridRecord in the list of times
    *
    * @param record the GridRecord
    * @return the index in the list of time values, or -1 if not found
    */
-  int getIndex(GridRecord record) {
+  int findIndex(GridRecord record) {
     Date validTime = getValidTime(record, lookup);
     if (!isInterval())
       return times.indexOf(validTime);
     else {
       int index = 0;
       for (TimeCoordWithInterval t : timeIntvs) {
-        if (t.coord.equals(validTime)) return index;
+        if (t.coord.equals(validTime) && t.interval == record.getTimeInterval()) return index;
         index++;
       }
       return -1;

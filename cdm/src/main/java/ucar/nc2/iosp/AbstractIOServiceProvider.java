@@ -38,14 +38,10 @@ import ucar.nc2.ParsedSectionSpec;
 import ucar.nc2.Structure;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.util.CancelTask;
-import ucar.nc2.stream.NcStream;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.IOException;
-import java.io.DataOutputStream;
 import java.nio.channels.WritableByteChannel;
-import java.nio.channels.Channels;
-import java.nio.ByteBuffer;
 
 /**
  * Abstract base class for IOSP implementations that provides default implementations
@@ -80,9 +76,7 @@ public abstract class AbstractIOServiceProvider implements IOServiceProvider {
   protected ucar.unidata.io.RandomAccessFile raf;
 
   @Override
-  public void open( RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask )
-          throws IOException
-  {
+  public void open( RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask ) throws IOException {
     this.raf = raf;
   }
 

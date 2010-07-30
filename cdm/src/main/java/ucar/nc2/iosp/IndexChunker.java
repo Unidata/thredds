@@ -34,7 +34,6 @@ package ucar.nc2.iosp;
 
 import ucar.ma2.Section;
 import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Index;
 import ucar.ma2.Range;
 
 import java.util.List;
@@ -83,16 +82,15 @@ public class IndexChunker {
   private static final boolean debug = false, debugMerge = false, debugNext = false;
 
   private List<Dim> dimList = new ArrayList<Dim>();
-  private Index chunkIndex; // each element is one chunk; strides track position in source
+  private IndexLong chunkIndex; // each element is one chunk; strides track position in source
 
   private Chunk chunk; // gets returned on next().
   private int nelems; // number of elements to read at one time
   private long start, total, done;
 
-
   /**
    * Constructor
-   * @param srcShape the shape of the source, eg Variable.getSHape()
+   * @param srcShape the shape of the source, eg Variable.getShape()
    * @param wantSection the wanted section in srcShape, ie must be sibset of srcShape.
    * @throws InvalidRangeException if wantSection is incorrect
    */
@@ -108,13 +106,13 @@ public class IndexChunker {
     // see if this is a "want all of it" single chunk
     if (wantSection.equivalent(srcShape)) {
       this.nelems = (int) this.total;
-      chunkIndex = Index.factory(new int[] {1});
+      chunkIndex = new IndexLong();
       return;
     }
 
     // create the List<Dim> tracking each dimension
     int varRank = srcShape.length;
-    int stride = 1;
+    long stride = 1;
     for (int ii = varRank - 1; ii >= 0; ii--) {
       dimList.add(new Dim(stride, srcShape[ii], wantSection.getRange(ii))); // note reversed : fastest first
       stride *= srcShape[ii];
@@ -162,12 +160,12 @@ public class IndexChunker {
 
     start = 0; // first wanted value
     for (Dim dim : dimList) {
-      start += ((long) dim.stride) * dim.want.first();  // watch for overflow on large files
+      start += dim.stride * dim.want.first();  // watch for overflow on large files
     }
 
     // we will use an Index object to keep track of the chunks, each index represents nelems
     int rank = dimList.size();
-    int[] wstride = new int[rank];
+    long[] wstride = new long[rank];
     int[] shape = new int[rank];
     for (int i = 0; i < rank; i++) {
       Dim dim = dimList.get(i);
@@ -175,14 +173,14 @@ public class IndexChunker {
       shape[rank - i - 1] = dim.wantSize;
     }
     if (debug) {
-      System.out.println("  elemsPerChunk=" + nelems+ "  nchunks=" + Index.computeSize(shape));
+      System.out.println("  elemsPerChunk=" + nelems+ "  nchunks=" + IndexLong.computeSize(shape));
       printa("  indexShape=", shape);
-      printa("  indexStride=", wstride);
+      printl("  indexStride=", wstride);
     }
-    chunkIndex = new Index(shape, wstride);
+    chunkIndex = new IndexLong(shape, wstride);
 
     // sanity check
-    assert Index.computeSize(shape) * nelems == total;
+    assert IndexLong.computeSize(shape) * nelems == total;
 
     if (debug) {
       System.out.println("Index2= " + this);
@@ -191,12 +189,12 @@ public class IndexChunker {
   }
 
   private class Dim {
-    int stride;    // number of elements
+    long stride;    // number of elements
     long maxSize;   // number of elements - must be a long since we may merge
     Range want;    // desired Range
     int wantSize;  // keep seperate from want so we can modify when merging
 
-    Dim(int byteStride, int maxSize, Range want) {
+    Dim(long byteStride, int maxSize, Range want) {
       this.stride = byteStride;
       this.maxSize = maxSize;
       this.wantSize = want.length();
@@ -315,19 +313,6 @@ public class IndexChunker {
     public void incrSrcPos(int incr) { this.srcPos += incr; }
   }
 
-  // debugging
-  protected String printa(int[] a) {
-    StringBuilder sbuff = new StringBuilder();
-    for (int i = 0; i < a.length; i++) sbuff.append(a[i] + " ");
-    return sbuff.toString();
-  }
-
-  protected void printa(String name, int[] a) {
-    System.out.print(name + "= ");
-    for (int i = 0; i < a.length; i++) System.out.print(a[i] + " ");
-    System.out.println();
-  }
-
   public String toString() {
     StringBuilder sbuff = new StringBuilder();
     sbuff.append("wantSize=");
@@ -355,6 +340,25 @@ public class IndexChunker {
       sbuff.append(elem.stride);
     }
     return sbuff.toString();
+  }
+
+  // debugging
+  static protected String printa(int[] a) {
+    StringBuilder sbuff = new StringBuilder();
+    for (int i = 0; i < a.length; i++) sbuff.append(a[i] + " ");
+    return sbuff.toString();
+  }
+
+  static protected void printa(String name, int[] a) {
+    System.out.print(name + "= ");
+    for (int i = 0; i < a.length; i++) System.out.print(a[i] + " ");
+    System.out.println();
+  }
+
+  static protected void printl(String name, long[] a) {
+    System.out.print(name + "= ");
+    for (int i = 0; i < a.length; i++) System.out.print(a[i] + " ");
+    System.out.println();
   }
 
 }

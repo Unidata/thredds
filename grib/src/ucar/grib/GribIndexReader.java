@@ -456,8 +456,7 @@ public class GribIndexReader {
    * @param gdsv Grib2GDSVariables gdsv
    * @param gdskey  key for this gds
    */
-  public void Grib2GDS(GribGridDefRecord ggdr, Grib2GDSVariables gdsv,
-              int gdskey ) {
+  public void Grib2GDS(GribGridDefRecord ggdr, Grib2GDSVariables gdsv,  int gdskey ) {
 
     int gdtn = gdsv.getGdtn();
 
@@ -775,8 +774,7 @@ public class GribIndexReader {
    * @param ggdr GridDefRecord
    * @param gdsv Grib1GDSVariables gdsv
    */
-  public void Grib1GDS(GribGridDefRecord ggdr, Grib1GDSVariables gdsv,
-              int gdskey ) {
+  public void Grib1GDS(GribGridDefRecord ggdr, Grib1GDSVariables gdsv, int gdskey ) {
     int gdtn = gdsv.getGdtn();
 
     //ggdr.addParam(GridDefRecord.GDS_KEY, Integer.toString(gdsv.getGdsKey()));

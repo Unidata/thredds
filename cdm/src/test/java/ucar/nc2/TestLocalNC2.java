@@ -33,8 +33,7 @@
 package ucar.nc2;
 
 import junit.framework.*;
-import ucar.nc2.iosp.TestIndexer;
-import ucar.nc2.iosp.TestRegularLayout;
+import ucar.nc2.iosp.TestIndexChunker;
 import ucar.nc2.dataset.TestScaleOffsetMissingForStructure;
 import ucar.nc2.util.cache.TestNetcdfFileCache;
 
@@ -69,8 +68,8 @@ public class TestLocalNC2 {
 
   public static junit.framework.Test suite ( ) {
     TestSuite suite= new TestSuite();
-    suite.addTest(new TestSuite(TestIndexer.class));
-    suite.addTest(new TestSuite(TestRegularLayout.class)); // */
+    suite.addTest(new TestSuite(TestIndexChunker.class));
+   // suite.addTest(new TestSuite(TestRegularLayout.class)); // */
     suite.addTest(new TestSuite(TestNetcdfFileCache.class));
     
     suite.addTest(new TestSuite(TestWrite.class));

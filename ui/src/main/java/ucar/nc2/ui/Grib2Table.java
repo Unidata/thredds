@@ -112,14 +112,41 @@ public class Grib2Table extends JPanel {
       }
     });
 
+    varPopup.addAction("Show record -> variable data assignments", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        Product pb = (Product) productTable.getSelectedBean();
+        if (pb != null) {
+          Formatter f = new Formatter();
+          showRecords(pb, f);
+          infoPopup2.setText(f.toString());
+          infoPopup2.gotoTop();
+          infoWindow2.showIfNotIconified();
+        }
+      }
+    });
     recordTable = new BeanTableSorted(IndexRecordBean.class, (PreferencesExt) prefs.node("IndexRecordBean"), false, "GribGridRecord", "one record");
 
     varPopup = new thredds.ui.PopupMenu(recordTable.getJTable(), "Options");
-    varPopup.addAction("Show GridRecord", new AbstractAction() {
+    varPopup.addAction("Show GridRecords", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        IndexRecordBean bean = (IndexRecordBean) recordTable.getSelectedBean();
-        if (bean != null) {
-          infoPopup2.setText(bean.ggr.toString());
+        List list = recordTable.getSelectedBeans();
+        infoPopup2.clear();
+        for (int i=0; i<list.size(); i++) {
+          IndexRecordBean bean = (IndexRecordBean) recordTable.getSelectedBean();
+          infoPopup2.appendLine(bean.ggr.toString());
+        }
+        infoPopup2.gotoTop();
+        infoWindow2.showIfNotIconified();
+      }
+    });
+
+    varPopup.addAction("Compare GridRecord", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        List list = recordTable.getSelectedBeans();
+        if (list.size() == 2) {
+          IndexRecordBean bean1 = (IndexRecordBean) list.get(0);
+          IndexRecordBean bean2 = (IndexRecordBean) list.get(1);
+          infoPopup2.setText(compare(bean1, bean2));
           infoPopup2.gotoTop();
           infoWindow2.showIfNotIconified();
         }
@@ -290,6 +317,133 @@ public class Grib2Table extends JPanel {
     recordTable.setBeans(new ArrayList());
   }
 
+  private void showRecords(Product bean, Formatter f) {
+    //bean.ggr;
+  }
+
+  /*
+      public int edition; // grib 1 or 2
+
+  public int discipline;  // grib 2 only  ?
+  public Date refTime;
+  public int center = -1, subCenter = -1, table = -1;
+  public int productTemplate, category, paramNumber;
+  public int typeGenProcess;
+  public int analGenProcess;
+  public int levelType1, levelType2;
+  public double levelValue1, levelValue2;
+  public int forecastTime;
+  public int startOfInterval = GribNumbers.UNDEFINED;
+  public int timeUnit;
+  private Date validTime = null;
+  public int decimalScale = GribNumbers.UNDEFINED;
+  public boolean isEnsemble = false;
+  public int ensembleNumber  = GribNumbers.UNDEFINED;
+  public int numberForecasts = GribNumbers.UNDEFINED;
+  public int type = GribNumbers.UNDEFINED;
+  public float lowerLimit = GribNumbers.UNDEFINED, upperLimit = GribNumbers.UNDEFINED;
+  public int intervalStatType;
+  */
+
+  String compare(IndexRecordBean bean1, IndexRecordBean bean2) {
+    Formatter f = new Formatter();
+    GribGridRecord ggr1 = bean1.ggr;
+    GribGridRecord ggr2 = bean2.ggr;
+
+    boolean ok = true;
+    if (ggr1.discipline != ggr2.discipline) {
+      f.format("discipline differs %d != %d %n", ggr1.discipline, ggr2.discipline);
+      ok = false;
+    }
+    if (ggr1.edition != ggr2.edition) {
+      f.format("edition differs %d != %d %n", ggr1.edition, ggr2.edition);
+      ok = false;
+    }
+    if (ggr1.center != ggr2.center) {
+      f.format("center differs %d != %d %n", ggr1.center, ggr2.center);
+      ok = false;
+    }
+    if (ggr1.subCenter != ggr2.subCenter) {
+      f.format("subCenter differs %d != %d %n", ggr1.subCenter, ggr2.subCenter);
+      ok = false;
+    }
+    if (ggr1.table != ggr2.table) {
+      f.format("table differs %d != %d %n", ggr1.table, ggr2.table);
+      ok = false;
+    }
+    if (ggr1.productTemplate != ggr2.productTemplate) {
+      f.format("productTemplate differs %d != %d %n", ggr1.productTemplate, ggr2.productTemplate);
+      ok = false;
+    }
+    if (ggr1.category != ggr2.category) {
+      f.format("category differs %d != %d %n", ggr1.category, ggr2.category);
+      ok = false;
+    }
+    if (ggr1.paramNumber != ggr2.paramNumber) {
+      f.format("paramNumber differs %d != %d %n", ggr1.paramNumber, ggr2.paramNumber);
+      ok = false;
+    }
+    if (ggr1.typeGenProcess != ggr2.typeGenProcess) {
+      f.format("typeGenProcess differs %d != %d %n", ggr1.typeGenProcess, ggr2.typeGenProcess);
+      ok = false;
+    }
+    if (ggr1.analGenProcess != ggr2.analGenProcess) {
+      f.format("analGenProcess differs %d != %d %n", ggr1.analGenProcess, ggr2.analGenProcess);
+      ok = false;
+    }
+    if (ggr1.levelValue1 != ggr2.levelValue1) {
+      f.format("levelValue1 differs %d != %d %n", ggr1.levelValue1, ggr2.levelValue1);
+      ok = false;
+    }
+    if (ggr1.levelValue2 != ggr2.levelValue2) {
+      f.format("levelValue2 differs %d != %d %n", ggr1.levelValue2, ggr2.levelValue2);
+      ok = false;
+    }
+    if (ggr1.forecastTime != ggr2.forecastTime) {
+      f.format("forecastTime differs %d != %d %n", ggr1.forecastTime, ggr2.forecastTime);
+      ok = false;
+    }
+    if (ggr1.startOfInterval != ggr2.startOfInterval) {
+      f.format("startOfInterval differs %d != %d %n", ggr1.startOfInterval, ggr2.startOfInterval);
+      ok = false;
+    }
+    if (ggr1.timeUnit != ggr2.timeUnit) {
+      f.format("timeUnit differs %d != %d %n", ggr1.timeUnit, ggr2.timeUnit);
+      ok = false;
+    }
+    if (ggr1.decimalScale != ggr2.decimalScale) {
+      f.format("decimalScale differs %d != %d %n", ggr1.decimalScale, ggr2.decimalScale);
+      ok = false;
+    }
+    if (ggr1.ensembleNumber != ggr2.ensembleNumber) {
+      f.format("ensembleNumber differs %d != %d %n", ggr1.ensembleNumber, ggr2.ensembleNumber);
+      ok = false;
+    }
+    if (ggr1.intervalStatType != ggr2.intervalStatType) {
+      f.format("intervalStatType differs %d != %d %n", ggr1.intervalStatType, ggr2.intervalStatType);
+      ok = false;
+    }
+    if (ggr1.lowerLimit != ggr2.lowerLimit) {
+      f.format("lowerLimit differs %f != %f %n", ggr1.lowerLimit, ggr2.lowerLimit);
+      ok = false;
+    }
+    if (ggr1.upperLimit != ggr2.upperLimit) {
+      f.format("upperLimit differs %f != %f %n", ggr1.upperLimit, ggr2.upperLimit);
+      ok = false;
+    }
+    if ((ggr1.refTime != null) && !ggr1.refTime.equals(ggr2.refTime)) {
+      f.format("refTime differs %s != %s %n", ggr1.refTime, ggr2.refTime);
+      ok = false;
+    }
+    if ((ggr1.validTime != null) && !ggr1.validTime.equals(ggr2.validTime)) {
+      f.format("refTime differs %s != %s %n", ggr1.validTime, ggr2.validTime);
+      ok = false;
+    }
+
+    if (ok) f.format("All OK!%n");
+    return f.toString();
+  }
+
   public class Product implements Comparable<Product> {
     GribGridRecord ggr;
     List<IndexRecordBean> list = new ArrayList<IndexRecordBean>();
@@ -309,20 +463,6 @@ public class Grib2Table extends JPanel {
     public String getName() {
       return name;
     }
-
-    /*
-      private int makeUniqueId(GribGridRecord ggr) {
-    int result = 17;
-    result += result * 37 + ggr.productTemplate;
-    result += result * 37 + ggr.discipline;
-    result += result * 37 + ggr.category;
-    result += result * 37 + ggr.paramNumber;
-    result *= result * 37 + ggr.levelType1;
-    result *= result * 37 + ggr.analGenProcess;
-    return result;
-  }
-     */
-
 
     public String getParamNo() {
       return ggr.discipline + "-" + ggr.category + "-" + ggr.paramNumber;
@@ -541,15 +681,15 @@ public class Grib2Table extends JPanel {
     }
 
     public int getTimeInterval() {
-      return ( ggr.startOfInterval == GribNumbers.UNDEFINED) ? -1 : ggr.forecastTime - ggr.startOfInterval;
+      return (ggr.startOfInterval == GribNumbers.UNDEFINED) ? -1 : ggr.forecastTime - ggr.startOfInterval;
     }
 
     public final int getEnsNumber() {
-      return ( ggr.ensembleNumber == GribNumbers.UNDEFINED) ? -1 : ggr.ensembleNumber;
+      return (ggr.ensembleNumber == GribNumbers.UNDEFINED) ? -1 : ggr.ensembleNumber;
     }
 
     public final String getProbability() {
-      return (ggr.lowerLimit == GribNumbers.UNDEFINED) ? "" :  ggr.lowerLimit + "-" + ggr.upperLimit;
+      return (ggr.lowerLimit == GribNumbers.UNDEFINED) ? "" : ggr.lowerLimit + "-" + ggr.upperLimit;
     }
 
 
@@ -607,6 +747,7 @@ public class Grib2Table extends JPanel {
   }
 
   // see ggr.cdmVariableHash() {
+
   public int makeUniqueId(Grib2ProductDefinitionSection pds, int discipline) {
     int result = 17;
     result += result * 37 + pds.getProductDefinition();

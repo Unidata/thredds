@@ -307,5 +307,9 @@ public class GempakGridRecord implements GridRecord {
         return buf.toString();
     }
 
+  public int getTimeInterval( ) { 
+    return -1;
+  }
+
 }
 

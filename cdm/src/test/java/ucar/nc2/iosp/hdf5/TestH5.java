@@ -102,7 +102,7 @@ public class TestH5 {
     suite.addTest(new TestSuite(TestH5ReadArray.class)); //
     suite.addTest(new TestSuite(TestOddTypes.class)); //
     suite.addTest(new TestSuite(TestH5compressed.class)); //
-    suite.addTest(new TestSuite(TestChunkIndexer.class)); //
+    // suite.addTest(new TestSuite(TestChunkIndexer.class)); //
     suite.addTest(new TestSuite(TestH5filter.class)); //
     suite.addTest(new TestSuite(TestH5eos.class)); //
     suite.addTest(new TestSuite(TestH5aura.class)); //

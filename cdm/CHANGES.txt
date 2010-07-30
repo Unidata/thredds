@@ -3,6 +3,9 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Changes in version 4.2:
+ 5: (xxxx-xx-xx)
+  iosp.IndexChunker needs to use a special version of Index that uses longs, since the source can be a file > 2^32
+  remove old iosp.Indexer cruft
  4: (2010-07-26)
   FMRCDataset process ncml in ProtoDataset element
   FMRCDataset check if 2D dataset exists, ncml in ProtoDataset
