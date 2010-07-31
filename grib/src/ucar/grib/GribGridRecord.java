@@ -438,13 +438,13 @@ public final class GribGridRecord implements GridRecord {
   @Override
   public int cdmVariableHash() {
     int result = 17;
-    result += result * 31 + discipline;
-    result += result * 31 + category;
-    result += result * 31 + paramNumber;
-    result += result * 31 + levelType1;
-    result += result * 31 + levelType2;
+    result += result * 37 + discipline;
+    result += result * 37 + category;
+    result += result * 37 + paramNumber;
+    result += result * 37 + levelType1;
+    result += result * 37 + levelType2;
     if (isInterval())
-      result += result * 31 + getIntervalTypeName().hashCode();
+      result += getIntervalTypeName().hashCode();
     return result;
   }
 
