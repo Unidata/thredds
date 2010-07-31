@@ -156,8 +156,6 @@ public class GridIndexToNC {
     // run through each record
     GridRecord firstRecord = null;
     List<GridRecord> records = index.getGridRecords();
-    if (GridServiceProvider.debugOpen)
-      System.out.println(" number of products = " + records.size());
 
     for (GridRecord gridRecord : records) {
       if (firstRecord == null)

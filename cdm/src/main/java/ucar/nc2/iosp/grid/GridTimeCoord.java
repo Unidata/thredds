@@ -66,6 +66,7 @@ public class GridTimeCoord implements Comparable<GridTimeCoord> {
   private List<Date> times;
   private List<TimeCoordWithInterval> timeIntvs;
   private int constantInterval = -1;
+  private int[] coordData;
 
   private GridTimeCoord() {
     // need to have this non-static for thread safety
@@ -323,7 +324,7 @@ public class GridTimeCoord implements Comparable<GridTimeCoord> {
     Array coordArray = null;
     Array boundsArray = null;
     int ntimes = getNTimes();
-    int[] coordData = new int[ntimes];
+    coordData = new int[ntimes];
     if (!isInterval()) {
       for (int i = 0; i < times.size(); i++)
         coordData[i] = (int) dateUnit.makeValue(times.get(i)); // LOOK why int ?
@@ -509,4 +510,13 @@ public class GridTimeCoord implements Comparable<GridTimeCoord> {
     return calendar.getTime();
   }
 
+  public String getCoord(int i) {
+    if (timeIntvs == null)
+      return coordData[i]+" ";
+    else {
+      TimeCoordWithInterval ti = timeIntvs.get(i);
+      return coordData[i]+"=" + ti.start+"/"+ti.interval;
+
+    }
+  }
 }

@@ -390,9 +390,7 @@ public class GridVertCoord implements Comparable<GridVertCoord> {
         coordValues[i] = lc.mid;
       }
     }
-    Array dataArray = Array.factory(DataType.DOUBLE,
-        new int[]{coordValues.length},
-        coordValues);
+    Array dataArray = Array.factory(DataType.DOUBLE, new int[]{coordValues.length}, coordValues);
 
     v.setDimensions(getVariableName());
     v.setCachedData(dataArray, true);
@@ -525,6 +523,10 @@ public class GridVertCoord implements Comparable<GridVertCoord> {
    */
   public int compareTo(GridVertCoord gv) {
     return getLevelName().compareToIgnoreCase(gv.getLevelName());
+  }
+
+  public double getCoord(int i) {
+    return (coordValues == null) ? 0.0 : coordValues[i];
   }
 
   /**

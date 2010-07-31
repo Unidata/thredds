@@ -68,6 +68,7 @@ public class GribGridServiceProvider extends GridServiceProvider {
 
   private Grib1Data dataReaderGrib1;
   private Grib2Data dataReaderGrib2;
+  private GridIndex gridIndexSave = null;
 
   @Override
   public boolean isValidFile(RandomAccessFile raf) {
@@ -93,6 +94,7 @@ public class GribGridServiceProvider extends GridServiceProvider {
     if (special instanceof String) {
       String s = (String) special;
       if (s.equalsIgnoreCase("GridIndex"))
+      if (gridIndexSave != null) return gridIndexSave;
         try {
           return getIndex(raf.getLocation());
         } catch (IOException e) {
@@ -110,8 +112,6 @@ public class GribGridServiceProvider extends GridServiceProvider {
     this.rafLength = raf.length();
 
     long start = System.currentTimeMillis();
-    if (GridServiceProvider.debugOpen)
-      System.out.println(" open() = " + ncfile.getLocation());
 
     GridIndex index = getIndex(raf.getLocation());
     Map<String, String> attr = index.getGlobalAttributes();
@@ -130,6 +130,10 @@ public class GribGridServiceProvider extends GridServiceProvider {
     // make it into netcdf objects
     new GridIndexToNC().open(index, lookup, saveEdition, ncfile, fmrcCoordSys, cancelTask);
     ncfile.finish();
+
+    // may want to save index for debugging
+    if (GridServiceProvider.debugOpen)
+      gridIndexSave= index;
 
     if (debugTiming) {
       long took = System.currentTimeMillis() - start;

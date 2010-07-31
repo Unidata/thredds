@@ -576,13 +576,21 @@ public class GridVariable {
         recno = time * nlevels + level;
       }
 
+      if (p instanceof GribGridRecord ) {
+        GribGridRecord ggp = (GribGridRecord) p;
+        if (ggp.getBelongs() != null) {
+          log.warn("GribGridRecord "+ggp.cdmVariableName(lookup, true, true) +" recno = " + recno + " already belongs to = "+ ggp.getBelongs());
+        }
+        ggp.setBelongs(this);
+      }
+
       if (recordTracker[recno] == null) {
         recordTracker[recno] = p;
         //p.setBelongs( this, recno);
 
       } else { // already one in that slot
 
-        log.warn(p + "\n already in that slot = \n"+ recordTracker[recno]);
+        log.warn(p + "\n already has in that slot = \n"+ recordTracker[recno]);
         recordTracker[recno] = p;  // replace it with latest one
 
         /* if (p instanceof GribGridRecord ) {
@@ -606,6 +614,18 @@ public class GridVariable {
     return v;
 
   }
+
+  public void showRecord(int recnum, Formatter f) {
+    if ((recnum < 0) || (recnum > recordTracker.length-1)) {
+      f.format("%d out of range [0,%d]%n", recnum, recordTracker.length-1);
+      return;
+    }
+    int time = recnum / nlevels;
+    int level = recnum % nlevels;
+
+    f.format("%d = %s time=%s(%d) level=%f(%d)%n", recnum, recordTracker[recnum], tcs.getCoord(time), time, vc.getCoord(level), level);
+  }
+
 
   /**
    * Dump out the missing data
@@ -708,6 +728,12 @@ public class GridVariable {
    */
   private volatile int hashCode = 0;
 
+  @Override
+  public String toString() {
+    return "GridVariable{" +
+            "vname='" + vname + '\'' +
+            '}';
+  }
 
   /**
    * Dump this variable

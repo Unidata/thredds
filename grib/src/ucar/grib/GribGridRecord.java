@@ -438,11 +438,11 @@ public final class GribGridRecord implements GridRecord {
   @Override
   public int cdmVariableHash() {
     int result = 17;
+    result += result * 31 + discipline;
+    result += result * 31 + category;
+    result += result * 31 + paramNumber;
+    result += result * 31 + levelType1;
     if (isInterval()) result += getIntervalTypeName().hashCode();
-    result += result * 37 + discipline;
-    result += result * 37 + category;
-    result += result * 37 + paramNumber;
-    result *= result * 37 + levelType1;
     // result *= result * 37 + analGenProcess;
     return result;
   }
@@ -512,6 +512,7 @@ public final class GribGridRecord implements GridRecord {
   @Override
   public String toString() {
     return "GribGridRecord{" +
+            "cdmHash=" + cdmVariableHash() +
             "productType=" + productTemplate +
             ", discipline=" + discipline +
             ", category=" + category +
@@ -532,6 +533,17 @@ public final class GribGridRecord implements GridRecord {
             ", subCenter=" + subCenter +
             ", table=" + table +
             ", validTime=" + validTime +
+            '}';
+  }
+
+  public String toString2() {
+    return "GribGridRecord{" +
+            ", discipline=" + discipline +
+            ", category=" + category +
+            ", paramNumber=" + paramNumber +
+            ", levelType1=" + levelType1 +
+            ", levelValue1=" + levelValue1 +
+            ", forecastTime=" + forecastTime +
             '}';
   }
 
@@ -723,6 +735,15 @@ public final class GribGridRecord implements GridRecord {
       return "unknownProbability";
     }
 
+  }
+
+  // debugging
+  private Object belongsTo;
+  public Object getBelongs() {
+    return belongsTo;
+  }
+  public void setBelongs(Object gv) {
+    this.belongsTo = gv;
   }
 
 }

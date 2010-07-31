@@ -44,7 +44,10 @@ import ucar.grid.GridRecord;
 import ucar.ma2.DataType;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.iosp.grib.GribGridServiceProvider;
+import ucar.nc2.iosp.grid.GridServiceProvider;
+import ucar.nc2.iosp.grid.GridVariable;
 import ucar.nc2.units.DateFormatter;
+import ucar.nc2.util.DebugFlagsImpl;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
 import ucar.unidata.io.RandomAccessFile;
@@ -124,6 +127,7 @@ public class Grib2Table extends JPanel {
         }
       }
     });
+
     recordTable = new BeanTableSorted(IndexRecordBean.class, (PreferencesExt) prefs.node("IndexRecordBean"), false, "GribGridRecord", "one record");
 
     varPopup = new thredds.ui.PopupMenu(recordTable.getJTable(), "Options");
@@ -132,7 +136,7 @@ public class Grib2Table extends JPanel {
         List list = recordTable.getSelectedBeans();
         infoPopup2.clear();
         for (int i=0; i<list.size(); i++) {
-          IndexRecordBean bean = (IndexRecordBean) recordTable.getSelectedBean();
+          IndexRecordBean bean = (IndexRecordBean) list.get(i);
           infoPopup2.appendLine(bean.ggr.toString());
         }
         infoPopup2.gotoTop();
@@ -151,6 +155,20 @@ public class Grib2Table extends JPanel {
           infoWindow2.showIfNotIconified();
         }
       }
+    });
+
+    varPopup.addAction("Show record -> variable data assignments", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        Formatter f = new Formatter();
+        List list = recordTable.getSelectedBeans();
+        for (int i=0; i<list.size(); i++) {
+          IndexRecordBean bean = (IndexRecordBean) list.get(i);
+          showRecord(bean.ggr, f);
+        }
+        infoPopup2.setText(f.toString());
+        infoPopup2.gotoTop();
+        infoWindow2.showIfNotIconified();
+       }
     });
 
     ////////////////
@@ -281,6 +299,7 @@ public class Grib2Table extends JPanel {
     add(split2, BorderLayout.CENTER);
     revalidate();
 
+    GridServiceProvider.debugOpen = true;
     NetcdfFile ncd = NetcdfFile.open(filename);
 
     GribGridServiceProvider iosp = (GribGridServiceProvider) ncd.getIosp();
@@ -312,13 +331,24 @@ public class Grib2Table extends JPanel {
     }
 
     ncd.close();
+    GridServiceProvider.debugOpen = false;
 
     productTable.setBeans(products);
     recordTable.setBeans(new ArrayList());
   }
 
   private void showRecords(Product bean, Formatter f) {
-    //bean.ggr;
+    for (IndexRecordBean ibean :  bean.list) {
+      showRecord(ibean.ggr, f);
+    }
+  }
+
+  private void showRecord(GribGridRecord ggr, Formatter f) {
+    GridVariable gv = (GridVariable) ggr.getBelongs();
+    f.format("%s == %s : ", ggr.toString2(), ggr.getBelongs());
+    int recnum = 0;
+    gv.showRecord(recnum, f);
+    f.format("%n");
   }
 
   /*

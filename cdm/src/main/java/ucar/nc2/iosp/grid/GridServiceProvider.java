@@ -82,7 +82,7 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
   /**
    * debug flags
    */
-  protected static boolean debugOpen = false,
+  public static boolean debugOpen = false,
           debugMissing = false,
           debugMissingDetails = false,
           debugProj = false,
