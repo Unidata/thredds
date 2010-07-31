@@ -101,17 +101,11 @@ public class IospHelper {
 
     if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR) || (dataType == DataType.ENUM1) ) {
        byte[] pa = (byte[]) arr;
-      int count = 0;
        while (layout.hasNext()) {
-         if (count == 408)
-           System.out.println("HEY");
          Layout.Chunk chunk = layout.next();
          raf.order(byteOrder);
-         if (chunk.getSrcPos() < 0)
-           System.out.println("HEY");
          raf.seek(chunk.getSrcPos());
          raf.read(pa, (int) chunk.getDestElem(), chunk.getNelems());
-         count++;
        }
       //return (convertChar && dataType == DataType.CHAR) ? convertByteToChar(pa) : pa;
       if (convertChar && dataType == DataType.CHAR) return convertByteToChar(pa); else return pa; // javac ternary compile error

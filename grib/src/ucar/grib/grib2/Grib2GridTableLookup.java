@@ -488,7 +488,7 @@ public final class Grib2GridTableLookup implements GridTableLookup {
    */
   public final boolean isVerticalCoordinate(GridRecord gr) {
     GribGridRecord ggr = (GribGridRecord) gr;
-    if (ggr.levelType1 == 105)
+    if ((ggr.levelType1 == 104) || (ggr.levelType1 == 105))  // sigma or hybrid
       return true;
 
     String units = getLevelUnit(gr);
@@ -498,12 +498,6 @@ public final class Grib2GridTableLookup implements GridTableLookup {
     if (ggr.levelType1 == 0) {
       return false;
     }
-    if (ggr.levelType1 == 104) {
-      return false;
-    }
-//    if (ggr.levelType1 == 105) {
-//      return false;
-//    }
     return true;
   }
 

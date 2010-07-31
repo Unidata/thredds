@@ -98,7 +98,7 @@ public final class GribGridRecord implements GridRecord {
   public int analGenProcess;
 
   /**
-   * levelType1, levelType2  of record.
+   * levelType1, levelType2  of record. (for Grib2, Code Table 4.5)
    */
   public int levelType1, levelType2;
 
@@ -442,8 +442,9 @@ public final class GribGridRecord implements GridRecord {
     result += result * 31 + category;
     result += result * 31 + paramNumber;
     result += result * 31 + levelType1;
-    if (isInterval()) result += getIntervalTypeName().hashCode();
-    // result *= result * 37 + analGenProcess;
+    result += result * 31 + levelType2;
+    if (isInterval())
+      result += result * 31 + getIntervalTypeName().hashCode();
     return result;
   }
 
@@ -513,7 +514,7 @@ public final class GribGridRecord implements GridRecord {
   public String toString() {
     return "GribGridRecord{" +
             "cdmHash=" + cdmVariableHash() +
-            "productType=" + productTemplate +
+            " productType=" + productTemplate +
             ", discipline=" + discipline +
             ", category=" + category +
             ", paramNumber=" + paramNumber +
@@ -538,7 +539,7 @@ public final class GribGridRecord implements GridRecord {
 
   public String toString2() {
     return "GribGridRecord{" +
-            ", discipline=" + discipline +
+            "discipline=" + discipline +
             ", category=" + category +
             ", paramNumber=" + paramNumber +
             ", levelType1=" + levelType1 +

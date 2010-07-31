@@ -138,6 +138,7 @@ public class Grib2Table extends JPanel {
         for (int i=0; i<list.size(); i++) {
           IndexRecordBean bean = (IndexRecordBean) list.get(i);
           infoPopup2.appendLine(bean.ggr.toString());
+          infoPopup2.appendLine("");
         }
         infoPopup2.gotoTop();
         infoWindow2.showIfNotIconified();
@@ -344,10 +345,9 @@ public class Grib2Table extends JPanel {
   }
 
   private void showRecord(GribGridRecord ggr, Formatter f) {
-    GridVariable gv = (GridVariable) ggr.getBelongs();
+    GridVariable.Belongs b = (GridVariable.Belongs) ggr.getBelongs();
     f.format("%s == %s : ", ggr.toString2(), ggr.getBelongs());
-    int recnum = 0;
-    gv.showRecord(recnum, f);
+    b.gv.showRecord(b.recnum, f);
     f.format("%n");
   }
 
@@ -422,11 +422,11 @@ public class Grib2Table extends JPanel {
       ok = false;
     }
     if (ggr1.levelValue1 != ggr2.levelValue1) {
-      f.format("levelValue1 differs %d != %d %n", ggr1.levelValue1, ggr2.levelValue1);
+      f.format("levelValue1 differs %f != %f %n", ggr1.levelValue1, ggr2.levelValue1);
       ok = false;
     }
     if (ggr1.levelValue2 != ggr2.levelValue2) {
-      f.format("levelValue2 differs %d != %d %n", ggr1.levelValue2, ggr2.levelValue2);
+      f.format("levelValue2 differs %f != %f %n", ggr1.levelValue2, ggr2.levelValue2);
       ok = false;
     }
     if (ggr1.forecastTime != ggr2.forecastTime) {

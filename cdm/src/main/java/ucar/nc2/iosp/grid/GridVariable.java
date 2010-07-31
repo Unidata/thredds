@@ -310,9 +310,7 @@ public class GridVariable {
    * @return true if has a Ensemble dimension
    */
   boolean hasEnsemble() {
-    return (ecs == null)
-            ? false
-            : ecs.getNEnsembles() > 1;
+    return (ecs == null) ? false : ecs.getNEnsembles() > 1;
   }
 
   /**
@@ -330,9 +328,7 @@ public class GridVariable {
    * @return the number of vertical levels
    */
   int getVertNlevels() {
-    return (vcs == null)
-            ? vc.getNLevels()
-            : vcs.getNLevels();
+    return (vcs == null) ? vc.getNLevels() : vcs.getNLevels();
   }
 
   /**
@@ -363,7 +359,7 @@ public class GridVariable {
    * @return true if vertical used
    */
   boolean getVertIsUsed() {
-    return (vcs == null) ? !vc.dontUseVertical : !vcs.dontUseVertical;
+    return (vcs == null) ? vc.isVertDimensionUsed(): !vcs.dontUseVertical;
   }
 
   /**
@@ -422,6 +418,7 @@ public class GridVariable {
    */
   Variable makeVariable(NetcdfFile ncfile, Group g, String useName) {
     assert records.size() > 0 : "no records for this variable";
+
     this.nlevels = getVertNlevels();
     this.nEnsembles = getNEnsembles();
     this.ntimes = tcs.getNTimes();
@@ -576,12 +573,19 @@ public class GridVariable {
         recno = time * nlevels + level;
       }
 
+      boolean sentMessage = false;
       if (p instanceof GribGridRecord ) {
         GribGridRecord ggp = (GribGridRecord) p;
         if (ggp.getBelongs() != null) {
           log.warn("GribGridRecord "+ggp.cdmVariableName(lookup, true, true) +" recno = " + recno + " already belongs to = "+ ggp.getBelongs());
         }
-        ggp.setBelongs(this);
+        ggp.setBelongs(new Belongs(recno, this));
+
+        if (recordTracker[recno] != null) {
+          GribGridRecord ggq = (GribGridRecord) recordTracker[recno];
+          log.warn("GridVariable "+vname +" recno = " + recno + " already has in slot = "+ ggq.toString2());
+          sentMessage = true;
+        }
       }
 
       if (recordTracker[recno] == null) {
@@ -590,7 +594,8 @@ public class GridVariable {
 
       } else { // already one in that slot
 
-        log.warn(p + "\n already has in that slot = \n"+ recordTracker[recno]);
+        if (!sentMessage)
+          log.warn(p + "\n already has in slot "+recno+"\n"+ recordTracker[recno]);
         recordTracker[recno] = p;  // replace it with latest one
 
         /* if (p instanceof GribGridRecord ) {
@@ -612,7 +617,24 @@ public class GridVariable {
     records.clear();
 
     return v;
+  }
 
+  public class Belongs {
+    public int recnum;
+    public GridVariable gv;
+
+    private Belongs(int recnum, GridVariable gv) {
+      this.recnum = recnum;
+      this.gv = gv;
+    }
+
+    @Override
+    public String toString() {
+      return "Belongs{" +
+          "recnum=" + recnum +
+          ", gv=" + gv.vname +
+          '}';
+    }
   }
 
   public void showRecord(int recnum, Formatter f) {
@@ -620,10 +642,11 @@ public class GridVariable {
       f.format("%d out of range [0,%d]%n", recnum, recordTracker.length-1);
       return;
     }
+    GridRecord gr = recordTracker[recnum];
     int time = recnum / nlevels;
     int level = recnum % nlevels;
 
-    f.format("%d = %s time=%s(%d) level=%f(%d)%n", recnum, recordTracker[recnum], tcs.getCoord(time), time, vc.getCoord(level), level);
+    f.format("recnum=%d (record hash=%d) time=%s(%d) level=%f(%d)%n", recnum, gr.hashCode(), tcs.getCoord(time), time, vc.getCoord(level), level);
   }
 
 

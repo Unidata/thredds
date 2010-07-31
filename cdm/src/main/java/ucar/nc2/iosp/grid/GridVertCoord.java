@@ -85,27 +85,27 @@ public class GridVertCoord implements Comparable<GridVertCoord> {
   /**
    * uses bounds flag
    */
-  boolean usesBounds = false;
+  private boolean usesBounds = false;
 
   /**
-   * don't use vertical flag
+   * if only one level, should this be made into another dimension ?
    */
-  boolean dontUseVertical = false;
+  private boolean isVerticalCoordinate = false;
 
   /**
      * vertical pressure factors
      */
-  double[] factors = null;
+  private double[] factors = null;
 
   /**
    * positive  direction
    */
-  String positive = "up";
+  private String positive = "up";
 
   /**
    * units
    */
-  String units;
+  private String units;
 
   /**
    * levels
@@ -113,13 +113,13 @@ public class GridVertCoord implements Comparable<GridVertCoord> {
   private List<LevelCoord> levels = new ArrayList<LevelCoord>();  // LevelCoord
 
   /**
-   * Create a new GridVertCoord with the given name
+   * Create a new GridVertCoord with the given name.
+   * Used by deprecated GridIndex2NC.makeDefinedCoord()
    *
    * @param name name
    */
   GridVertCoord(String name) {
     this.levelName = name;
-    dontUseVertical = true;
   }
 
   /**
@@ -130,34 +130,54 @@ public class GridVertCoord implements Comparable<GridVertCoord> {
    * @param lookup    the lookup table
    * @param hcs Horizontal coordinate
    */
-  GridVertCoord(List<GridRecord> records, String levelName,
-                GridTableLookup lookup, GridHorizCoordSys hcs) {
+  GridVertCoord(List<GridRecord> records, String levelName, GridTableLookup lookup, GridHorizCoordSys hcs) {
     this.typicalRecord = records.get(0);
     this.levelName = levelName;
     this.lookup = lookup;
 
-    dontUseVertical = !lookup.isVerticalCoordinate(typicalRecord);
-    positive = lookup.isPositiveUp(typicalRecord)
-        ? "up"
-        : "down";
+    isVerticalCoordinate = lookup.isVerticalCoordinate(typicalRecord);
+    positive = lookup.isPositiveUp(typicalRecord) ? "up" : "down";
     units = lookup.getLevelUnit(typicalRecord);
 
     usesBounds = lookup.isLayer(this.typicalRecord);
-    addLevels(records);
 
+    for (GridRecord record : records) {
+
+      if (coordIndex(record) < 0) {
+        levels.add(new LevelCoord(record.getLevel1(), record.getLevel2()));
+
+        /* check if assumption violated
+       if (!isVerticalCoordinate && (levels.size() > 1)) {
+         if (GridServiceProvider.debugVert) {
+           logger.warn( "GribCoordSys: unused level coordinate has > 1 levels = "
+                   + levelName + " " + record.getLevelType1() + " "
+                   + levels.size());
+         }
+       } */
+      }
+    }
+
+    Collections.sort(levels);
+      if (positive.equals("down")) {
+        Collections.reverse(levels);
+      }
+
+
+    // LOOK WTF ?
     if (typicalRecord.getLevelType1() == 109 && lookup instanceof Grib1GridTableLookup )
       checkForPressureLevels( records, hcs );
 
     if (GridServiceProvider.debugVert) {
       System.out.println("GribVertCoord: " + getVariableName() + "("
           + typicalRecord.getLevelType1()
-          + ") useVertical= " + (!dontUseVertical)
+          + ") isVertDimensionUsed= " + isVertDimensionUsed()
           + " positive=" + positive + " units=" + units);
     }
   }
 
   /**
    * Create a new GridVertCoord for a layer
+   * Used by deprecated GridIndex2NC.makeDefinedCoord()
    *
    * @param record    layer record
    * @param levelName name of this level
@@ -165,31 +185,26 @@ public class GridVertCoord implements Comparable<GridVertCoord> {
    * @param level1    level 1
    * @param level2    level 2
    */
-  GridVertCoord(GridRecord record, String levelName,
-                GridTableLookup lookup, double[] level1, double[] level2) {
+  GridVertCoord(GridRecord record, String levelName, GridTableLookup lookup, double[] level1, double[] level2) {
     this.typicalRecord = record;
     this.levelName = levelName;
     this.lookup = lookup;
 
     //dontUseVertical    = !lookup.isVerticalCoordinate(record);
-    positive = lookup.isPositiveUp(record)
-        ? "up"
-        : "down";
+    positive = lookup.isPositiveUp(record) ? "up" : "down";
     units = lookup.getLevelUnit(record);
     usesBounds = lookup.isLayer(this.typicalRecord);
 
     levels = new ArrayList<LevelCoord>(level1.length);
     for (int i = 0; i < level1.length; i++) {
-      levels.add(new LevelCoord(level1[i], (level2 == null)
-          ? 0.0
-          : level2[i]));
+      levels.add(new LevelCoord(level1[i], (level2 == null) ? 0.0  : level2[i]));
     }
 
     Collections.sort(levels);
     if (positive.equals("down")) {
       Collections.reverse(levels);
     }
-    dontUseVertical = (levels.size() == 1);
+    isVerticalCoordinate = (levels.size() > 1);
   }
 
   /**
@@ -216,9 +231,7 @@ public class GridVertCoord implements Comparable<GridVertCoord> {
    * @return the variable name
    */
   String getVariableName() {
-    return (seq == 0)
-        ? levelName
-        : levelName + seq;  // more than one with same levelName
+    return (seq == 0) ? levelName : levelName + seq;  // more than one with same levelName
   }
 
   /**
@@ -227,37 +240,15 @@ public class GridVertCoord implements Comparable<GridVertCoord> {
    * @return number of levels
    */
   int getNLevels() {
-    return dontUseVertical
-        ? 1
-        : levels.size();
+    return levels.size();
   }
 
   /**
-   * Add levels
-   *
-   * @param records GridRecords, one for each level
+   * vert coordinates are used when nlevels > 1, otherwise use isVerticalCoordinate
+   * @return if should be made into a seperate dimension
    */
-  void addLevels(List<GridRecord> records) {
-    for (int i = 0; i < records.size(); i++) {
-      GridRecord record = records.get(i);
-
-      if (coordIndex(record) < 0) {
-        levels.add(new LevelCoord(record.getLevel1(),
-            record.getLevel2()));
-        if (dontUseVertical && (levels.size() > 1)) {
-          if (GridServiceProvider.debugVert) {
-            logger.warn(
-                "GribCoordSys: unused level coordinate has > 1 levels = "
-                    + levelName + " " + record.getLevelType1() + " "
-                    + levels.size());
-          }
-        }
-      }
-    }
-    Collections.sort(levels);
-    if (positive.equals("down")) {
-      Collections.reverse(levels);
-    }
+  boolean isVertDimensionUsed() {
+    return (getNLevels() == 1) ? isVerticalCoordinate : true;
   }
 
   /**
@@ -271,8 +262,7 @@ public class GridVertCoord implements Comparable<GridVertCoord> {
     // first create a new list
     List<LevelCoord> levelList = new ArrayList<LevelCoord>(records.size());
     for (GridRecord record : records) {
-      LevelCoord lc = new LevelCoord(record.getLevel1(),
-          record.getLevel2());
+      LevelCoord lc = new LevelCoord(record.getLevel1(), record.getLevel2());
       if (!levelList.contains(lc)) {
         levelList.add(lc);
       }
@@ -318,9 +308,9 @@ public class GridVertCoord implements Comparable<GridVertCoord> {
    * @param g      group in the file
    */
   void addDimensionsToNetcdfFile(NetcdfFile ncfile, Group g) {
-    if (dontUseVertical) {
+    if (!isVertDimensionUsed())
       return;
-    }
+    
     int nlevs = levels.size();
     if ( coordValues != null )
       nlevs = coordValues.length;
@@ -334,8 +324,8 @@ public class GridVertCoord implements Comparable<GridVertCoord> {
    * @param g      group in file
    */
   void addToNetcdfFile(NetcdfFile ncfile, Group g) {
-    if (dontUseVertical) {
-      typicalRecord = null;
+    if (!isVertDimensionUsed()) {
+      typicalRecord = null; // LOOK why?
       return;
     }
 
@@ -353,8 +343,7 @@ public class GridVertCoord implements Comparable<GridVertCoord> {
     }
 
     v.addAttribute(new Attribute("long_name", desc));
-    v.addAttribute(new Attribute("units",
-        lookup.getLevelUnit(typicalRecord)));
+    v.addAttribute(new Attribute("units", lookup.getLevelUnit(typicalRecord)));
 
     // positive attribute needed for CF-1 Height and Pressure
     if (positive != null) {
@@ -371,16 +360,12 @@ public class GridVertCoord implements Comparable<GridVertCoord> {
         axisType = AxisType.GeoZ;
       }
 
-      if (lookup instanceof Grib2GridTableLookup ||
-          lookup instanceof Grib1GridTableLookup) {
-        v.addAttribute(new Attribute("GRIB_level_type",
-            Integer.toString(typicalRecord.getLevelType1())));
+      if (lookup instanceof Grib2GridTableLookup || lookup instanceof Grib1GridTableLookup) {
+        v.addAttribute(new Attribute("GRIB_level_type", Integer.toString(typicalRecord.getLevelType1())));
       } else {
-        v.addAttribute(new Attribute("level_type",
-            Integer.toString(typicalRecord.getLevelType1())));
+        v.addAttribute(new Attribute("level_type", Integer.toString(typicalRecord.getLevelType1())));
       }
-      v.addAttribute(new Attribute(_Coordinate.AxisType,
-          axisType.toString()));
+      v.addAttribute(new Attribute(_Coordinate.AxisType, axisType.toString()));
     }
 
     if (coordValues == null) {
@@ -509,9 +494,9 @@ public class GridVertCoord implements Comparable<GridVertCoord> {
    * @return the index or -1 if not found
    */
   int getIndex(GridRecord record) {
-    if (dontUseVertical) {
+    if (!isVertDimensionUsed())
       return 0;
-    }
+
     return coordIndex(record);
   }
 
@@ -557,9 +542,7 @@ public class GridVertCoord implements Comparable<GridVertCoord> {
         this.value1 = value2;
         this.value2 = value1;
       }
-      mid = usesBounds
-          ? (value1 + value2) / 2
-          : value1;
+      mid = usesBounds ? (value1 + value2) / 2 : value1;
     }
 
     /**
@@ -625,8 +608,7 @@ public class GridVertCoord implements Comparable<GridVertCoord> {
     for (int i = 0; i < levels.size(); i++) {
       LevelCoord lc = (LevelCoord) levels.get(i);
       if (usesBounds) {
-        if (ucar.nc2.util.Misc.closeEnough(lc.value1, val)
-            && ucar.nc2.util.Misc.closeEnough(lc.value2, val2)) {
+        if (ucar.nc2.util.Misc.closeEnough(lc.value1, val) && ucar.nc2.util.Misc.closeEnough(lc.value2, val2)) {
           return i;
         }
       } else {

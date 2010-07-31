@@ -169,7 +169,7 @@ public interface GridTableLookup {
 
     /**
      * If vertical level should be made into a coordinate; 
-     * dont do for surface, 1D levels.
+     * dont do for surface, or levels without a meaningful coordinate value
      * @param gr GridRecord with metadata
      * @return is this a VerticalCoordinate
      */
