@@ -484,8 +484,7 @@ public class Grib2Table extends JPanel {
 
     Product(GribGridRecord ggr) {
       this.ggr = ggr;
-      this.name = ggr.getParameterName();
-      ;
+      this.name = ggr.getParameterDescription();
     }
 
     ///////////////

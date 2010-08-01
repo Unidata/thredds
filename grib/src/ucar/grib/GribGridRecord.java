@@ -30,13 +30,6 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-/**
- *
- * By:   Robb Kambic
- * Date: Jan 31, 2009
- * Time: 4:18:23 PM
- *
- */
 
 package ucar.grib;
 
@@ -55,7 +48,7 @@ import java.text.SimpleDateFormat;
 import java.util.Formatter;
 
 /**
- * Represents index information for one record in the Grib file.
+ * Represents information for one record in the Grib file.
  */
 public final class GribGridRecord implements GridRecord {
   static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GribGridRecord.class);
@@ -141,7 +134,7 @@ public final class GribGridRecord implements GridRecord {
   /**
    * Ensemble number.
    */
-  public int ensembleNumber  = GribNumbers.UNDEFINED;
+  public int ensembleNumber = GribNumbers.UNDEFINED;
 
   /**
    * numberForecasts of Ensemble.
@@ -149,7 +142,7 @@ public final class GribGridRecord implements GridRecord {
   public int numberForecasts = GribNumbers.UNDEFINED;
 
   /**
-   * Type of ensemble or Probablity forecast
+   * Type of ensemble or probability forecast
    */
   public int type = GribNumbers.UNDEFINED;
 
@@ -191,86 +184,6 @@ public final class GribGridRecord implements GridRecord {
    * default constructor, used by GribReadIndex (binary indices)
    */
   public GribGridRecord() {
-  }
-
-  /**
-   * constructor given all parameters as Strings. Used only by GribReadTextIndex
-   *
-   * @param calendar to convert to Dates
-   * @param productTypeS
-   * @param disciplineS
-   * @param categoryS
-   * @param paramS
-   * @param typeGenProcessS
-   * @param levelType1S
-   * @param levelValue1S
-   * @param levelType2S
-   * @param levelValue2S
-   * @param refTimeS
-   * @param foreTimeS
-   * @param gdsKeyS
-   * @param offset1S
-   * @param offset2S
-   * @param decimalScaleS
-   * @param bmsExistsS      either true or false bit-map exists
-   * @param centerS
-   * @param subCenterS
-   * @param tableS
-   *
-   * @deprecated text indices should be rewritten to binary
-   */
-  GribGridRecord(Calendar calendar, SimpleDateFormat dateFormat,
-                 String productTypeS, String disciplineS, String categoryS,
-                 String paramS, String typeGenProcessS, String levelType1S,
-                 String levelValue1S, String levelType2S,
-                 String levelValue2S, String refTimeS, String foreTimeS,
-                 String gdsKeyS, String offset1S, String offset2S,
-                 String decimalScaleS, String bmsExistsS,
-                 String centerS, String subCenterS, String tableS) {
-
-    try {
-      // old indexes used long, scale down to int
-      //this.gdsKey = gdsKeyS.hashCode();
-      this.gdsKey = Integer.parseInt(gdsKeyS);
-
-      productTemplate = Integer.parseInt(productTypeS);
-      discipline = Integer.parseInt(disciplineS);
-      category = Integer.parseInt(categoryS);
-      paramNumber = Integer.parseInt(paramS);
-      typeGenProcess = Integer.parseInt(typeGenProcessS);
-      levelType1 = Integer.parseInt(levelType1S);
-      levelValue1 = Float.parseFloat(levelValue1S);
-      levelType2 = Integer.parseInt(levelType2S);
-      levelValue2 = Float.parseFloat(levelValue2S);
-
-      this.refTime = dateFormat.parse(refTimeS);
-      forecastTime = Integer.parseInt(foreTimeS);
-      calendar.setTime(refTime);
-      calendar.add(Calendar.HOUR, forecastTime); // TODO: not always HOUR
-      validTime = calendar.getTime();
-
-      offset1 = Long.parseLong(offset1S);
-      offset2 = Long.parseLong(offset2S);
-      if (decimalScaleS != null) {
-        decimalScale = Integer.parseInt(decimalScaleS);
-      }
-      if (bmsExistsS != null) {
-        bmsExists = bmsExistsS.equals("true");
-      }
-      if (centerS != null) {
-        center = Integer.parseInt(centerS);
-      }
-      if (subCenterS != null) {
-        subCenter = Integer.parseInt(subCenterS);
-      }
-      if (tableS != null) {
-        table = Integer.parseInt(tableS);
-      }
-    } catch (NumberFormatException e) {
-      throw new RuntimeException(e);
-    } catch (ParseException e) {
-      throw new RuntimeException(e);
-    }
   }
 
   /**
@@ -370,7 +283,7 @@ public final class GribGridRecord implements GridRecord {
         try {
           pt = GribPDSParamTable.getParameterTable(center, subCenter, table);
         } catch (NotSupportedException e) {
-          logger.error("Failed to get Parameter name for "+this);
+          logger.error("Failed to get Parameter name for " + this);
         }
         GridParameter p = pt.getParameter(paramNumber);
         paramName = p.getName();
@@ -398,7 +311,7 @@ public final class GribGridRecord implements GridRecord {
         try {
           pt = GribPDSParamTable.getParameterTable(center, subCenter, table);
         } catch (NotSupportedException e) {
-          logger.error("Failed to get Parameter desc for "+this);
+          logger.error("Failed to get Parameter desc for " + this);
         }
         GridParameter p = pt.getParameter(paramNumber);
         paramDesc = p.getDescription();
@@ -410,7 +323,7 @@ public final class GribGridRecord implements GridRecord {
 
   @Override
   public String getGridDefRecordId() {
-    return Integer.toString( gdsKey );
+    return Integer.toString(gdsKey);
   }
 
   /**
@@ -426,30 +339,34 @@ public final class GribGridRecord implements GridRecord {
   @Override
   public String getTimeUnitName() {
     if (edition == 2)
-      return Grib2Tables.getUdunitTimeUnitFromTable4_4( timeUnit );
+      return Grib2Tables.getUdunitTimeUnitFromTable4_4(timeUnit);
     else
       return Grib1Tables.getTimeUnit(timeUnit);
   }
 
   /**
    * A hash code to group records into a CDM variable
+   *
    * @return group hash code
    */
   @Override
   public int cdmVariableHash() {
-    int result = 17;
-    result += result * 37 + discipline;
-    result += result * 37 + category;
-    result += result * 37 + paramNumber;
-    result += result * 37 + levelType1;
-    result += result * 37 + levelType2;
-    if (isInterval())
-      result += getIntervalTypeName().hashCode();
-    return result;
+    if (hashcode == 0) {
+      int result = 17;
+      result += result * 37 + levelType1;
+      result += result * 37 + getParameterName().hashCode();
+      if (isInterval()) result += result * 37 + getIntervalTypeName().hashCode();
+      result += result * 37 + levelType2;
+      hashcode = result;
+    }
+    return hashcode;
   }
+
+  private int hashcode = 0;
 
   /**
    * A unique name for the CDM variable, must be consistent with cdmVariableHash
+   *
    * @return unique CDM variable name
    */
   @Override
@@ -462,7 +379,7 @@ public final class GribGridRecord implements GridRecord {
       if (levelName.length() != 0) {
         if (lookup.isLayer(this))
           f.format("_%s_layer", lookup.getLevelName(this));
-         else
+        else
           f.format("_%s", lookup.getLevelName(this));
       }
     }
@@ -480,6 +397,7 @@ public final class GribGridRecord implements GridRecord {
 
   /**
    * is this an ensemble type record
+   *
    * @return isEnsemble
    */
   public boolean isEnsemble() {
@@ -488,6 +406,7 @@ public final class GribGridRecord implements GridRecord {
 
   /**
    * if ensemble, ensemble type
+   *
    * @return type as int
    */
   public int getEnsembleType() {
@@ -496,6 +415,7 @@ public final class GribGridRecord implements GridRecord {
 
   /**
    * if ensemble, ensemble member number
+   *
    * @return ensembleNumber
    */
   public int getEnsembleNumber() {
@@ -504,48 +424,11 @@ public final class GribGridRecord implements GridRecord {
 
   /**
    * total number of ensemble forecasts
+   *
    * @return numberForecasts
    */
   public int getNumberForecasts() {
     return numberForecasts;
-  }
-
-  @Override
-  public String toString() {
-    return "GribGridRecord{" +
-            "cdmHash=" + cdmVariableHash() +
-            " productType=" + productTemplate +
-            ", discipline=" + discipline +
-            ", category=" + category +
-            ", paramNumber=" + paramNumber +
-            ", typeGenProcess=" + typeGenProcess +
-            ", levelType1=" + levelType1 +
-            ", levelType2=" + levelType2 +
-            ", levelValue1=" + levelValue1 +
-            ", levelValue2=" + levelValue2 +
-            ", gdsKey=" + gdsKey +
-            ", offset1=" + offset1 +
-            ", offset2=" + offset2 +
-            ", refTime=" + refTime +
-            ", forecastTime=" + forecastTime +
-            ", decimalScale=" + decimalScale +
-            ", bmsExists=" + bmsExists +
-            ", center=" + center +
-            ", subCenter=" + subCenter +
-            ", table=" + table +
-            ", validTime=" + validTime +
-            '}';
-  }
-
-  public String toString2() {
-    return "GribGridRecord{" +
-            "discipline=" + discipline +
-            ", category=" + category +
-            ", paramNumber=" + paramNumber +
-            ", levelType1=" + levelType1 +
-            ", levelValue1=" + levelValue1 +
-            ", forecastTime=" + forecastTime +
-            '}';
   }
 
   /**
@@ -553,14 +436,14 @@ public final class GribGridRecord implements GridRecord {
    *
    * @return interval name if there is one or an empty string
    */
-  public String makeIntervalName( ) {
+  public String makeIntervalName() {
 
-    if( productTemplate > 7 && productTemplate < 16 ) {
+    if (productTemplate > 7 && productTemplate < 16) {
       int span = forecastTime - startOfInterval;
-      String intervalName = Integer.toString( span ) + Grib2Tables.getUdunitTimeUnitFromTable4_4( timeUnit );
+      String intervalName = Integer.toString(span) + Grib2Tables.getUdunitTimeUnitFromTable4_4(timeUnit);
       String intervalTypeName = Grib2Tables.codeTable4_10short(intervalStatType);
       if (intervalTypeName != null)
-        intervalName += "_"+intervalTypeName;
+        intervalName += "_" + intervalTypeName;
       return intervalName;
 
     } else
@@ -571,18 +454,19 @@ public final class GribGridRecord implements GridRecord {
    * Because the templates are different for Grib 1 and 2, the startOfInterval is set
    * to designate an interval type parameter
    */
-  public boolean isInterval( ) {
-    return ( startOfInterval != GribNumbers.UNDEFINED );
+
+  public boolean isInterval() {
+    return (startOfInterval != GribNumbers.UNDEFINED);
   }
 
   @Override
-  public int getTimeInterval( ) {
+  public int getTimeInterval() {
     if (!isInterval()) return -1;
     return forecastTime - startOfInterval;
   }
 
-  public String getIntervalTypeName( ) {  // LOOK need GRIB1
-    if( isInterval( ) ) {
+  public String getIntervalTypeName() {  // LOOK need GRIB1
+    if (isInterval()) {
       String intervalTypeName = Grib2Tables.codeTable4_10short(intervalStatType);
       if (intervalTypeName != null)
         return intervalTypeName;
@@ -591,13 +475,12 @@ public final class GribGridRecord implements GridRecord {
     return "";
   }
 
-
   /**
    * Makes a Ensemble, Derived, Probability or error Suffix
    *
    * @return suffix as String
    */
-  public String makeSuffix( ) {
+  public String makeSuffix() {
 
     /* check for accumulation/probability/percentile variables
     if( productType > 7 && productType < 16 ) {
@@ -611,7 +494,7 @@ public final class GribGridRecord implements GridRecord {
       case 0:
       case 7:
       case 40: {
-        if (typeGenProcess == 6 || typeGenProcess == 7 ) {
+        if (typeGenProcess == 6 || typeGenProcess == 7) {
           return "error";
         }
       }
@@ -646,21 +529,21 @@ public final class GribGridRecord implements GridRecord {
         // Derived data
         if (typeGenProcess == 4) {
           if (type == 0) {
-            return  "unweightedMean";
+            return "unweightedMean";
           } else if (type == 1) {
-            return  "weightedMean";
+            return "weightedMean";
           } else if (type == 2) {
-            return  "stdDev";
+            return "stdDev";
           } else if (type == 3) {
-            return  "stdDevNor";
+            return "stdDevNor";
           } else if (type == 4) {
-            return  "spread";
+            return "spread";
           } else if (type == 5) {
-            return  "anomaly";
+            return "anomaly";
           } else if (type == 6) {
-            return  "unweightedMeanCluster";
+            return "unweightedMeanCluster";
           } else {
-            return  "unknownEnsemble";
+            return "unknownEnsemble";
           }
         }
         break;
@@ -695,14 +578,14 @@ public final class GribGridRecord implements GridRecord {
       case 5: {
         // probability data
         if (typeGenProcess == 5) {
-          return getProbabilityVariableNameSuffix( lowerLimit, upperLimit, type );
+          return getProbabilityVariableNameSuffix(lowerLimit, upperLimit, type);
         }
       }
       break;
       case 9: {
         // probability data
         if (typeGenProcess == 5) {
-          return getProbabilityVariableNameSuffix( lowerLimit, upperLimit, type );
+          return getProbabilityVariableNameSuffix(lowerLimit, upperLimit, type);
         }
       }
       break;
@@ -738,13 +621,116 @@ public final class GribGridRecord implements GridRecord {
 
   }
 
-  // debugging
+  //// debugging
+
+    @Override
+  public String toString() {
+    return "GribGridRecord{" +
+        "cdmHash=" + cdmVariableHash() +
+        " productType=" + productTemplate +
+        ", discipline=" + discipline +
+        ", category=" + category +
+        ", paramNumber=" + paramNumber +
+        ", typeGenProcess=" + typeGenProcess +
+        ", levelType1=" + levelType1 +
+        ", levelType2=" + levelType2 +
+        ", levelValue1=" + levelValue1 +
+        ", levelValue2=" + levelValue2 +
+        ", gdsKey=" + gdsKey +
+        ", offset1=" + offset1 +
+        ", offset2=" + offset2 +
+        ", refTime=" + refTime +
+        ", forecastTime=" + forecastTime +
+        ", decimalScale=" + decimalScale +
+        ", bmsExists=" + bmsExists +
+        ", center=" + center +
+        ", subCenter=" + subCenter +
+        ", table=" + table +
+        ", validTime=" + validTime +
+        '}';
+  }
+
+  public String toString2() {
+    return "GribGridRecord{" +
+        "discipline=" + discipline +
+        ", category=" + category +
+        ", paramNumber=" + paramNumber +
+        ", levelType1=" + levelType1 +
+        ", levelValue1=" + levelValue1 +
+        ", forecastTime=" + forecastTime +
+        '}';
+  }
+
   private Object belongsTo;
+
   public Object getBelongs() {
     return belongsTo;
   }
+
   public void setBelongs(Object gv) {
     this.belongsTo = gv;
   }
+
+  ///////////////////////
+  // deprecated
+
+  /**
+   * constructor given all parameters as Strings. Used only by deprecated GribReadTextIndex
+   * @deprecated text indices should be rewritten to binary
+   */
+  GribGridRecord(Calendar calendar, SimpleDateFormat dateFormat,
+                 String productTypeS, String disciplineS, String categoryS,
+                 String paramS, String typeGenProcessS, String levelType1S,
+                 String levelValue1S, String levelType2S,
+                 String levelValue2S, String refTimeS, String foreTimeS,
+                 String gdsKeyS, String offset1S, String offset2S,
+                 String decimalScaleS, String bmsExistsS,
+                 String centerS, String subCenterS, String tableS) {
+
+    try {
+      // old indexes used long, scale down to int
+      //this.gdsKey = gdsKeyS.hashCode();
+      this.gdsKey = Integer.parseInt(gdsKeyS);
+
+      productTemplate = Integer.parseInt(productTypeS);
+      discipline = Integer.parseInt(disciplineS);
+      category = Integer.parseInt(categoryS);
+      paramNumber = Integer.parseInt(paramS);
+      typeGenProcess = Integer.parseInt(typeGenProcessS);
+      levelType1 = Integer.parseInt(levelType1S);
+      levelValue1 = Float.parseFloat(levelValue1S);
+      levelType2 = Integer.parseInt(levelType2S);
+      levelValue2 = Float.parseFloat(levelValue2S);
+
+      this.refTime = dateFormat.parse(refTimeS);
+      forecastTime = Integer.parseInt(foreTimeS);
+      calendar.setTime(refTime);
+      calendar.add(Calendar.HOUR, forecastTime); // TODO: not always HOUR
+      validTime = calendar.getTime();
+
+      offset1 = Long.parseLong(offset1S);
+      offset2 = Long.parseLong(offset2S);
+      if (decimalScaleS != null) {
+        decimalScale = Integer.parseInt(decimalScaleS);
+      }
+      if (bmsExistsS != null) {
+        bmsExists = bmsExistsS.equals("true");
+      }
+      if (centerS != null) {
+        center = Integer.parseInt(centerS);
+      }
+      if (subCenterS != null) {
+        subCenter = Integer.parseInt(subCenterS);
+      }
+      if (tableS != null) {
+        table = Integer.parseInt(tableS);
+      }
+    } catch (NumberFormatException e) {
+      throw new RuntimeException(e);
+    } catch (ParseException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
 
 }
