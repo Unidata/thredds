@@ -511,16 +511,24 @@ public class Grib2Table extends JPanel {
       return ggr.levelType1;
     }
 
+    public int getProbType() {
+      return ggr.type;
+    }
+
     public final int getAnalProc() {
       return ggr.analGenProcess;
     }
 
-    public final String getCenter() {
+    /* public final String getCenter() {
       return Grib1Tables.getCenter_idName(ggr.center) + " (" + ggr.center + "/" + ggr.subCenter + ")";
-    }
+    } */
 
     public final int getTable() {
       return ggr.table;
+    }
+
+    public int getTemplate() {
+      return ggr.productTemplate;
     }
 
     public final Date getRefTime() {
@@ -730,6 +738,10 @@ public class Grib2Table extends JPanel {
 
     public final int getEnsNumber() {
       return (ggr.ensembleNumber == GribNumbers.UNDEFINED) ? -1 : ggr.ensembleNumber;
+    }
+
+    public int getProbType() {
+      return ggr.type;
     }
 
     public final String getProbability() {

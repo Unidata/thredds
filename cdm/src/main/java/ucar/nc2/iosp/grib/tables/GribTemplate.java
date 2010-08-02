@@ -58,6 +58,7 @@ public class GribTemplate implements Comparable<GribTemplate> {
     convertMap.put("Type of generating process", "4.3");
     convertMap.put("Indicator of unit of time range", "4.4");
     convertMap.put("Type of first fixed surface", "4.5");
+    convertMap.put("Type of second fixed surface", "4.5");
     convertMap.put("Derived forecast", "4.7");
     convertMap.put("Probability type", "4.9");
     convertMap.put("Type of time increment between successive fields used in the statistical processing", "4.11");
