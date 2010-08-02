@@ -113,7 +113,7 @@ public final class Category {
     if (parameter.containsKey(Integer.toString(paramNumber)))
       return parameter.get(Integer.toString(paramNumber));
 
-    logger.warn("Category: "+ name +" UnknownParameter "+ Integer.toString(paramNumber));
+    //logger.warn("Category: "+ name +" UnknownParameter "+ Integer.toString(paramNumber));
     return null;
   }
 

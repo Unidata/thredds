@@ -106,7 +106,7 @@ public final class Grib2Pds implements GribPdsIF {
 
   // octet 6-7
   /**
-   * Number of this coordinates.
+   * Number of coordinates.
    *
    * @return Coordinates number
    */
@@ -120,7 +120,7 @@ public final class Grib2Pds implements GribPdsIF {
    *
    * @return ProductDefinition
    */
-  public final int getProductDefinition() {
+  public final int getProductDefinitionTemplate() {
     //return GribNumbers.int2( getInt(7), getInt(8) );
     return productDefinition;
   }

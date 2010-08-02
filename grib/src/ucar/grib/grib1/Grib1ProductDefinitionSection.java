@@ -1529,7 +1529,7 @@ public final class Grib1ProductDefinitionSection {
     Grib1ProductDefinitionSection pds = new Grib1ProductDefinitionSection( raf );
     Grib1Pds gpv = pds.pdsVars;
     ps.println( "Length = "+ gpv.getLength());
-    ps.println( "ProductDefinition = "+ gpv.getProductDefinition());
+    ps.println( "ProductDefinition = "+ gpv.getProductDefinitionTemplate());
 
     assert( pds.length == gpv.getLength());
     assert( pds.table_version == gpv.getTableVersion());

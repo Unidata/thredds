@@ -35,19 +35,17 @@ package ucar.nc2.ui;
 
 import ucar.grib.GribGridRecord;
 import ucar.grib.GribNumbers;
-import ucar.grib.NotSupportedException;
 import ucar.grib.grib1.Grib1Tables;
-import ucar.grib.grib1.GribPDSParamTable;
+import ucar.grib.grib1.GribPDSLevel;
 import ucar.grid.GridIndex;
-import ucar.grid.GridParameter;
 import ucar.grid.GridRecord;
 import ucar.ma2.DataType;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.iosp.grib.GribGridServiceProvider;
+import ucar.nc2.iosp.grib.tables.GribTemplate;
 import ucar.nc2.iosp.grid.GridServiceProvider;
 import ucar.nc2.iosp.grid.GridVariable;
 import ucar.nc2.units.DateFormatter;
-import ucar.nc2.util.DebugFlagsImpl;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
 import ucar.unidata.io.RandomAccessFile;
@@ -82,9 +80,7 @@ public class Grib2Table extends JPanel {
   private TextHistoryPane infoPopup, infoPopup2, infoPopup3;
   private IndependentWindow infoWindow, infoWindow2, infoWindow3;
 
-  private StructureTable dataTable;
-  private IndependentWindow dataWindow;
-  private DateFormatter df;
+  private Map<Integer, GribTemplate> productTemplates = null;
 
   public Grib2Table(PreferencesExt prefs) {
     this.prefs = prefs;
@@ -135,7 +131,7 @@ public class Grib2Table extends JPanel {
       public void actionPerformed(ActionEvent e) {
         List list = recordTable.getSelectedBeans();
         infoPopup2.clear();
-        for (int i=0; i<list.size(); i++) {
+        for (int i = 0; i < list.size(); i++) {
           IndexRecordBean bean = (IndexRecordBean) list.get(i);
           infoPopup2.appendLine(bean.ggr.toString());
           infoPopup2.appendLine("");
@@ -162,14 +158,28 @@ public class Grib2Table extends JPanel {
       public void actionPerformed(ActionEvent e) {
         Formatter f = new Formatter();
         List list = recordTable.getSelectedBeans();
-        for (int i=0; i<list.size(); i++) {
+        for (int i = 0; i < list.size(); i++) {
           IndexRecordBean bean = (IndexRecordBean) list.get(i);
           showRecord(bean.ggr, f);
         }
         infoPopup2.setText(f.toString());
         infoPopup2.gotoTop();
         infoWindow2.showIfNotIconified();
-       }
+      }
+    });
+
+    varPopup.addAction("Show raw PDS", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        Formatter f = new Formatter();
+        List list = recordTable.getSelectedBeans();
+        for (int i = 0; i < list.size(); i++) {
+          IndexRecordBean bean = (IndexRecordBean) list.get(i);
+          showRawPds(bean.ggr, f);
+        }
+        infoPopup2.setText(f.toString());
+        infoPopup2.gotoTop();
+        infoWindow2.showIfNotIconified();
+      }
     });
 
     ////////////////
@@ -339,7 +349,7 @@ public class Grib2Table extends JPanel {
   }
 
   private void showRecords(Product bean, Formatter f) {
-    for (IndexRecordBean ibean :  bean.list) {
+    for (IndexRecordBean ibean : bean.list) {
       showRecord(ibean.ggr, f);
     }
   }
@@ -543,12 +553,12 @@ public class Grib2Table extends JPanel {
       return list.size();
     }
 
-    public final boolean isEnsemble() {
-      return ggr.isEnsemble;
+    public final int getNEns() {
+      return (ggr.numberForecasts == GribNumbers.UNDEFINED) ? -1 : ggr.numberForecasts;
     }
 
-    public final int getNEnsForecasts() {
-      return (ggr.numberForecasts == GribNumbers.UNDEFINED) ? -1 : ggr.numberForecasts;
+    public final boolean isEnsemble() {
+      return ggr.isEnsemble();
     }
 
     void sort() {
@@ -556,7 +566,7 @@ public class Grib2Table extends JPanel {
 
         @Override
         public int compare(IndexRecordBean o1, IndexRecordBean o2) {
-          if (isEnsemble()) {
+          if (getNEns() >= 0) {
             if (o1.getForecastTime() == o2.getForecastTime())
               return o1.getEnsNumber() - o2.getEnsNumber();
           }
@@ -566,7 +576,7 @@ public class Grib2Table extends JPanel {
     }
 
     private void doAccumAlgo(Formatter f) {
-      if (!isEnsemble()) {
+      if (getNEns() < 0) {
         doAccumAlgo(list, f);
         return;
       } else {
@@ -684,8 +694,13 @@ public class Grib2Table extends JPanel {
         if ((lev2 != GribNumbers.UNDEFINED) && (lev2 != GribNumbers.MISSING))
           s += "/" + Grib2Tables.getTypeSurfaceNameShort(lev2);
         return s;
+
       } else {
-        return "TODO";
+        String s = GribPDSLevel.getLevelDescription(ggr.levelType1);
+        int lev2 = ggr.levelType2;
+        if ((lev2 != GribNumbers.UNDEFINED) && (lev2 != GribNumbers.MISSING))
+          s += "/" + GribPDSLevel.getLevelDescription(lev2);
+        return s;
       }
     }
 
@@ -923,7 +938,7 @@ public class Grib2Table extends JPanel {
     }
 
     public String getParamNo() {
-      return pdsv.getProductDefinition() + "-" + discipline + "-" + pdsv.getParameterCategory() + "-" + pdsv.getParameterNumber();
+      return pdsv.getProductDefinitionTemplate() + "-" + discipline + "-" + pdsv.getParameterCategory() + "-" + pdsv.getParameterNumber();
     }
 
     public final String getSurfaceType() {
@@ -953,16 +968,39 @@ public class Grib2Table extends JPanel {
 
   } // ProductBean (old)
 
+  private void showRawPds(GribGridRecord ggr, Formatter f) {
+    if (productTemplates == null)
+      try {
+        productTemplates = GribTemplate.getParameterTemplates();
+      } catch (IOException e) {
+        f.format("Read template failed = %s%n", e.getMessage());
+        return;
+      }
+
+    int template = ggr.productTemplate;
+    byte[] raw = ggr.getPdsBytes();
+    if (raw == null) {
+      f.format("PDS bytes not available %d%n", template);
+      return;
+    }
+
+    GribTemplate gt = productTemplates.get(template);
+    if (gt == null)
+      f.format("Cant find template %d%n", template);
+    else
+      gt.showInfo(raw, f);
+  }
+
   private void showRawPds(Grib2ProductDefinitionSection pds, Formatter f) {
     Grib2Pds pdsv = pds.getPdsVars();
-    int template = pdsv.getProductDefinition();
+    int template = pdsv.getProductDefinitionTemplate();
     byte[] raw = pdsv.getPDSBytes();
     byte[] bytes = new byte[raw.length + 1];
     System.arraycopy(raw, 0, bytes, 1, raw.length); // offset by 1 so we can use 1-based indexing
 
     f.format("PDS length   = %d%n", pdsv.getLength());
     f.format(" ncoords     = %d%n", pdsv.getCoordinates());
-    f.format(" template    = %d%n", pdsv.getProductDefinition());
+    f.format(" template    = %d%n", pdsv.getProductDefinitionTemplate());
     f.format(" category    = %d%n", bytes[10] & 0xff);
     f.format(" number      = %d%n", bytes[11] & 0xff);
 
@@ -977,18 +1015,18 @@ public class Grib2Table extends JPanel {
 
   void showTemplate8(byte[] bytes, Formatter f) {
     f.format("                                          Type of generating process = %d (%s)%n", bytes[12] & 0xff,
-            Grib2Tables.codeTable4_0(bytes[12] & 0xff));
+        Grib2Tables.codeTable4_0(bytes[12] & 0xff));
     f.format("          Background generating process id (from originating center) = %d%n", bytes[13] & 0xff);
     f.format(" Analysis/forecast generating processes id (from originating center) = %d%n", bytes[14] & 0xff);
     f.format("                       Hours after reference time of data cutoff     = %d%n", GribNumbers.int2(bytes[15] & 0xff, bytes[16] & 0xff));
     f.format("                     Minutes after reference time of data cutoff     = %d%n", bytes[17] & 0xff);
     f.format("                                  Indicator of unit of time range    = %d (%s)%n", bytes[18] & 0xff,
-            Grib2Tables.codeTable4_4(bytes[18] & 0xff));
+        Grib2Tables.codeTable4_4(bytes[18] & 0xff));
     f.format("    Forecast time in above units (beginning of overall time period)  = %d%n", GribNumbers.int4(bytes[19] & 0xff, bytes[20] & 0xff, bytes[21] & 0xff, bytes[22] & 0xff));
     f.format("                                         Type of first fixed surface = %d (%s)%n", bytes[23] & 0xff,
-            Grib2Tables.codeTable4_5(bytes[23] & 0xff));
+        Grib2Tables.codeTable4_5(bytes[23] & 0xff));
     f.format("                                        Type of second fixed surface = %d (%s)%n", bytes[29] & 0xff,
-            Grib2Tables.codeTable4_5(bytes[29] & 0xff));
+        Grib2Tables.codeTable4_5(bytes[29] & 0xff));
     f.format("                 Year of time of end of overall time interval        = %d%n", GribNumbers.int2(bytes[35] & 0xff, bytes[36] & 0xff));
     f.format("                  month                                              = %d%n", bytes[37] & 0xff);
     f.format("                  day                                                = %d%n", bytes[38] & 0xff);
@@ -998,23 +1036,23 @@ public class Grib2Table extends JPanel {
     f.format("                               Number of time range specifications   = %d%n", bytes[42] & 0xff);
     f.format("                                 number of data values missing       = %d%n", GribNumbers.int4(bytes[43] & 0xff, bytes[44] & 0xff, bytes[45] & 0xff, bytes[46] & 0xff));
     f.format("           Statistical process used to calculate the processed field = %d (%s)%n", bytes[47] & 0xff,
-            Grib2Tables.codeTable4_10(bytes[47] & 0xff));
+        Grib2Tables.codeTable4_10(bytes[47] & 0xff));
     f.format("                    Type of time increment between successive fields = %d (%s)%n", bytes[48] & 0xff,
-            Grib2Tables.codeTable4_11(bytes[48] & 0xff));
+        Grib2Tables.codeTable4_11(bytes[48] & 0xff));
     f.format("             Unit of time for time range for statistical processing  = %d (%s)%n", bytes[49] & 0xff,
-            Grib2Tables.codeTable4_4(bytes[49] & 0xff));
+        Grib2Tables.codeTable4_4(bytes[49] & 0xff));
     f.format(" Length of the time range over which statistical processing is done  = %d%n", GribNumbers.int4(bytes[50] & 0xff, bytes[51] & 0xff, bytes[52] & 0xff, bytes[53] & 0xff));
     f.format("   Unit of time for the increment between the successive fields used = %d (%s)%n", bytes[54] & 0xff,
-            Grib2Tables.codeTable4_4(bytes[54] & 0xff));
+        Grib2Tables.codeTable4_4(bytes[54] & 0xff));
     f.format("                            Time increment between successive fields = %d%n", GribNumbers.int4(bytes[55] & 0xff, bytes[56] & 0xff, bytes[57] & 0xff, bytes[58] & 0xff));
   }
 
   private void showProcessedPds(Grib2ProductDefinitionSection pds, int discipline, Formatter f) {
     f.format(" Product Definition = %3d %s%n", pds.getProductDefinition(), pds.getProductDefinitionName());
     f.format(" Parameter Category = %3d %s%n", pds.getParameterCategory(),
-            ParameterTable.getCategoryName(discipline, pds.getParameterCategory()));
+        ParameterTable.getCategoryName(discipline, pds.getParameterCategory()));
     f.format(" Parameter Name     = %3d %s %n", pds.getParameterNumber(),
-            ParameterTable.getParameterName(discipline, pds.getParameterCategory(), pds.getParameterNumber()));
+        ParameterTable.getParameterName(discipline, pds.getParameterCategory(), pds.getParameterNumber()));
     f.format(" Parameter Units    = %s %n", ParameterTable.getParameterUnit(discipline, pds.getParameterCategory(), pds.getParameterNumber()));
 
     int tgp = pds.getTypeGenProcessNumeric();
@@ -1022,10 +1060,10 @@ public class Grib2Table extends JPanel {
     f.format(" Forecast Offset    = %3d %n", pds.getForecastTime());
     f.format(" Ending  Time       = %s %n", pds.getEndTI());
     f.format(" First Surface Type = %3d %s %n", pds.getTypeFirstFixedSurface(),
-            Grib2Tables.codeTable4_5(pds.getTypeFirstFixedSurface()));
+        Grib2Tables.codeTable4_5(pds.getTypeFirstFixedSurface()));
     f.format(" First Surface value= %3f %n", pds.getValueFirstFixedSurface());
     f.format(" Second Surface Type= %3d %s %n", pds.getTypeSecondFixedSurface(),
-            Grib2Tables.codeTable4_5(pds.getTypeSecondFixedSurface()));
+        Grib2Tables.codeTable4_5(pds.getTypeSecondFixedSurface()));
     f.format(" Second Surface val = %3f %n", pds.getValueSecondFixedSurface());
   }
 

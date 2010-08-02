@@ -671,6 +671,15 @@ public final class GribGridRecord implements GridRecord {
     this.belongsTo = gv;
   }
 
+  byte[] raw;
+  public byte[] getPdsBytes() {
+    return raw;
+  }
+  public void setPdsBytes(byte[] raw) {
+    this.raw = raw;
+  }
+
+
   ///////////////////////
   // deprecated
 

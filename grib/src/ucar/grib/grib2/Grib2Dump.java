@@ -679,7 +679,7 @@ public final class Grib2Dump {
 
     Grib2Pds pdsv = pds.getPdsVars();
 
-    int productDefinition = pdsv.getProductDefinition();
+    int productDefinition = pdsv.getProductDefinitionTemplate();
 
     ps.println("            Product Definition : "
             //+ pds.getProductDefinition() + " "

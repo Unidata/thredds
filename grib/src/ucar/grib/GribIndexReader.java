@@ -215,7 +215,7 @@ public class GribIndexReader {
             if (grid_edition_1) {
               Grib1Pds pdsv = new Grib1Pds(pdsData);
               // read Grib1 vars
-              ggr.productTemplate = pdsv.getProductDefinition();
+              ggr.productTemplate = pdsv.getProductDefinitionTemplate();
               ggr.category = pdsv.getParameterCategory();
               ggr.paramNumber = pdsv.getParameterNumber();
               ggr.typeGenProcess = pdsv.getTypeGenProcess();
@@ -255,7 +255,9 @@ public class GribIndexReader {
 
             } else {  // Grib2
               Grib2Pds pdsv = new Grib2Pds(pdsData);
-              ggr.productTemplate = pdsv.getProductDefinition();
+              ggr.productTemplate = pdsv.getProductDefinitionTemplate();
+              ggr.setPdsBytes( pdsv.getPDSBytes());
+
               // These are accumulation variables.  
               if (ggr.productTemplate > 7 && ggr.productTemplate < 15 ||
                   ggr.productTemplate == 42 || ggr.productTemplate == 43) {

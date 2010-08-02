@@ -513,8 +513,8 @@ public final class Grib1Dump {
         //ps.println("                Reference Time : " +
         //pds.getReferenceTime() );
         ps.println(
-            "            Product Definition : " + pdsv.getProductDefinition()
-            + " " + Grib1Tables.getProductDefinitionName(pdsv.getProductDefinition()));
+            "            Product Definition : " + pdsv.getProductDefinitionTemplate()
+            + " " + Grib1Tables.getProductDefinitionName(pdsv.getProductDefinitionTemplate()));
         ps.println("            Parameter Category : "
                    + "-1 Meteorological Parameters");
         try {

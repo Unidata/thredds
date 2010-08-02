@@ -315,7 +315,7 @@ public final class Grib1Pds implements GribPdsIF {
    *
    * @return ProductDefinition
    */
-  public final int getProductDefinition() {
+  public final int getProductDefinitionTemplate() {
     return getTimeRange();
   }
 

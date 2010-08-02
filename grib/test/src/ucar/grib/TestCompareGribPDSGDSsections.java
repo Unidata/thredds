@@ -188,14 +188,14 @@ public final class TestCompareGribPDSGDSsections extends TestCase {
       if (passOne) {
         System.out.println(" Section = " + gpv.getSection());
         System.out.println(" Length = " + gpv.getLength());
-        System.out.println(" ProductDefinition = " + gpv.getProductDefinition());
+        System.out.println(" ProductDefinition = " + gpv.getProductDefinitionTemplate());
         passOne = false;
       }
 
       assert (pds.length == gpv.getLength());
       assert (pds.section == gpv.getSection());
       assert (pds.coordinates == gpv.getCoordinates());
-      assert (pds.productDefinition == gpv.getProductDefinition());
+      assert (pds.productDefinition == gpv.getProductDefinitionTemplate());
       assert (pds.parameterCategory == gpv.getParameterCategory());
       assert (pds.parameterNumber == gpv.getParameterNumber());
       if (pds.productDefinition < 20) {  // NCEP models
@@ -736,7 +736,7 @@ public final class TestCompareGribPDSGDSsections extends TestCase {
         if (passOne) {
           System.out.println(" Section = " + gpv.getSection());
           System.out.println(" Length = " + gpv.getLength());
-          System.out.println(" ProductDefinition = " + gpv.getProductDefinition());
+          System.out.println(" ProductDefinition = " + gpv.getProductDefinitionTemplate());
         }
         assert (pds.length == gpv.getLength());
         assert (pds.table_version == gpv.getTableVersion());

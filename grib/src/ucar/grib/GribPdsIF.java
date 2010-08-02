@@ -74,7 +74,7 @@ public interface GribPdsIF {
    *
    * @return ProductDefinition
    */
-  public int getProductDefinition();
+  public int getProductDefinitionTemplate();
 
    /**
    * parameter Category .

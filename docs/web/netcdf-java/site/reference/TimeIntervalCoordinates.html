@@ -8,12 +8,18 @@
 <body>
 <h1>GRIB IOSP notes</h1>
 <p><em>jcaron </em><em>last update 7/29/2010</em></p>
-<p>A &quot;Grib dataset&quot; is a collection of GRIB records. Generally, the records should be from a single model run, although in some cases other collections may be useful.</p>
+<p>A &quot;Grib dataset&quot; is a collection of GRIB records. Generally, the records should be from a single model run, although in some cases other collections may be useful. </p>
 <p>In practice, the following  homogeneity constraints are assumed:</p>
 <ol>
-  <li>Global attributes are taken from the firsst record, so</li>
+  <li>Global attributes are taken from the first record, so</li>
 </ol>
-<pre>Grib2IndicatorSection
+<p>GRIB records are 2D (x, y), and the CDM library has to collect them together into an 3,4,or 5 dimension Variable, by finding the ones with the same parameter, with different time / level / ensemble coordinates. This amounts to guessing the database schema and the intent of the data provider, and is unfortunately a bit arbitrary. Most of our testing is against the NCEP operational models from the IDD, and so are influenced by those. Deciding how to group the GRIB records into CDM Variables is one of the main source of problems.</p>
+<p>Time coordinates. As of TDS 4.2, we are trying to correctly deal with &quot;time interval coordinates&quot;. This has the affect that the time vales may not be unique, one needs to also look at the bounds.<br>
+</p>
+<pre>
+
+
+Grib2IndicatorSection
    Discipline = Meteorological products
    Edition    = 2
    Length     = 214</pre>
@@ -31,36 +37,17 @@
 
 </pre>
 <h3>Problems</h3>
-<p>1. appears to be duplicates - actually seperate generating processes</p>
-<p>Q:\cdmUnitTest\tds\new\NAM_CONUS_20km_selectsurface_20100426_1800.grib2</p>
-<p> Total_precipitation/Ground or water surface (8)<br />
-  all:  Unique=false(44)  0-3 0-3 3-6 3-6 6-9 6-9 9-12 9-12 12-15 12-15 15-18 15-18 18-21 18-21 21-24 21-24 24-27 24-27 27-30 27-30 30-33 30-33 33-36 33-36 36-39 36-39 39-42 39-42 42-45 42-45 45-48 45-48 48-51 51-54 54-57 57-60 60-63 63-66 66-69 69-72 72-75 75-78 78-81 81-84 Interval=3<br />
-</p>
-<p>A number of records have analProc = 89, but most have 84. perhaps 89 are incorrect? If we use these from <a href="http://www.nco.ncep.noaa.gov/pmb/docs/on388/tablea.html">http://www.nco.ncep.noaa.gov/pmb/docs/on388/tablea.html</a> :</p>
-<table border="1" cellpadding="5" cellspacing="0" width="80%">
-  <tbody>
-    <tr>
-      <td><center>
-        84
-      </center></td>
-      <td>MESO NAM Model (currently 12 km)</td>
-    </tr>
-  </tbody>
-</table>
-<table border="1" cellpadding="5" cellspacing="0" width="80%">
-  <tbody>
-    <tr>
-      <td><center>
-        89
-      </center></td>
-      <td>Non-hydrostatic Meso Model (NMM) (Currently 8 km)</td>
-    </tr>
-  </tbody>
-</table>
-<p>2. same</p>
-<p>Q:\cdmUnitTest\tds\new\NAM_CONUS_40km_conduit_20100506_1800.grib2</p>
-<p> Total_precipitation/Ground or water surface (8)<br />
-  all:  Unique=false(44)  0-3 0-3 3-6 3-6 6-9 6-9 9-12 9-12 12-15 12-15 15-18 15-18 18-21 18-21 21-24 21-24 24-27 24-27 27-30 27-30 30-33 30-33 33-36 33-36 36-39 36-39 39-42 39-42 42-45 42-45 45-48 45-48 48-51 51-54 54-57 57-60 60-63 63-66 66-69 69-72 72-75 75-78 78-81 81-84 Interval=3</p>
+<p><strong>1. IDD pqact was wrong on </strong></p>
+<blockquote>
+  <p>Q:\cdmUnitTest\tds\new\NAM_CONUS_20km_selectsurface_20100426_1800.grib2</p>
+  <p>Q:\cdmUnitTest\tds\new\NAM_CONUS_40km_conduit_20100506_1800.grib2</p>
+</blockquote>
+<p><strong>2. GridVertCoord.useVertcoord = true incorrectly exclude variables with n &gt; 1 records.</strong></p>
+<p><strong>X 3. Probability limits incorrectly coded</strong></p>
+<p>C:/data/thredds/SREF_Alaska_45km_ensprod_20100801_0900.grib2, Total_Precipitation</p>
+<p>has 0 - 50.8, should be &gt; 50.8 due to prob type field (octet 37 in template 9) = Probability of event above upper limit.</p>
+<p>&nbsp;</p>
+<p>TODO</p>
 <p>3. PDS templates are munged together -need to be seperated, probably subclasses</p>
 <h2>Time Interval Coordinates</h2>
 <h3>Case 1 - even intervals</h3>

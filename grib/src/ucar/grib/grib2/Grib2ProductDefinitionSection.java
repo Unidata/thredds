@@ -965,12 +965,12 @@ public final class Grib2ProductDefinitionSection {
     Grib2Pds gpv = pds.pdsVars;
     ps.println( "Section = "+ gpv.getSection());
     ps.println( "Length = "+ gpv.getLength());
-    ps.println( "ProductDefinition = "+ gpv.getProductDefinition());
+    ps.println( "ProductDefinition = "+ gpv.getProductDefinitionTemplate());
 
     assert( pds.length == gpv.getLength());
     assert( pds.section == gpv.getSection());
     assert( pds.coordinates == gpv.getCoordinates());
-    assert( pds.productDefinition == gpv.getProductDefinition());
+    assert( pds.productDefinition == gpv.getProductDefinitionTemplate());
     assert( pds.parameterCategory == gpv.getParameterCategory());
     assert( pds.parameterNumber == gpv.getParameterNumber());
     if ( pds.productDefinition < 20 ) {  // NCEP models
