@@ -62,12 +62,12 @@ import java.util.*;
 import java.util.List;
 
 /**
- * ToolsUI/Iosp/Bufr
+ * ToolsUI/Iosp/Grib
  *
  * @author caron
  * @since Aug 15, 2008
  */
-public class GribTable extends JPanel {
+public class GribPanel extends JPanel {
   private PreferencesExt prefs;
 
   private BeanTableSorted gridRecordTable, gdsTable;
@@ -80,7 +80,7 @@ public class GribTable extends JPanel {
   private IndependentWindow dataWindow;
   private FileManager fileChooser;
 
-  public GribTable(PreferencesExt prefs) {
+  public GribPanel(PreferencesExt prefs) {
     this.prefs = prefs;
 
     String tooltip = "from the index";

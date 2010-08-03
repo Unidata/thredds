@@ -151,6 +151,7 @@ public class GridVariable {
    * debug flag
    */
   private boolean showRecords = false;
+  private boolean warnOk = false;
 
   /**
    * Create a new GridVariable
@@ -583,7 +584,7 @@ public class GridVariable {
 
         if (recordTracker[recno] != null) {
           GribGridRecord ggq = (GribGridRecord) recordTracker[recno];
-          log.warn("GridVariable "+vname +" recno = " + recno + " already has in slot = "+ ggq.toString2());
+          if (warnOk) log.warn("GridVariable "+vname +" recno = " + recno + " already has in slot = "+ ggq.toString2());
           sentMessage = true;
         }
       }

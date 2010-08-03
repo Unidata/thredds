@@ -1113,6 +1113,27 @@ public class Grib2Tables {
     }
   }
 
+  static public String codeTable4_7short(int code) {
+    switch (code) {
+      case 0:
+        return "unweightedMean";
+      case 1:
+        return "weightedMean";
+      case 2:
+        return "stdDev";
+      case 3:
+        return "stdDevNor";
+      case 4:
+        return "spread";
+      case 5:
+        return "anomaly";
+      case 6:
+        return "unweightedMeanCluster";
+      default:
+        return "unknownEnsemble";
+    }
+  }
+
   /**
    *  Code Table 4.10: Type of statistical processing
    * @param code number

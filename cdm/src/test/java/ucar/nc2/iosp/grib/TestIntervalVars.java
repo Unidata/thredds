@@ -43,8 +43,9 @@ public class TestIntervalVars extends TestCase {
       @Override
       public int doAct(String filename) throws IOException {
         System.out.printf("%n%s%n", filename);
-        analalyseIntervals(filename);
-        return checkAnal(filename);
+        //analalyseIntervals(filename);
+        checkTemplates(filename);
+        return 0;
       }
     });
     System.out.printf("%nnfiles = %d %n", nfiles);
@@ -52,21 +53,36 @@ public class TestIntervalVars extends TestCase {
     System.out.printf("intVars = %d %n", nintVars);
   }
 
-  private int showTemplates(String filename) throws IOException {
+  private int checkTemplates(String filename) throws IOException {
     GridDataset ncd = GridDataset.open(filename);
     nfiles++;
+
+    HashMap<Integer, List<String>> map = new  HashMap<Integer, List<String>>();
+
     for (GridDatatype g : ncd.getGrids()) {
       GridCoordSystem gsys = g.getCoordinateSystem();
       CoordinateAxis t = gsys.getTimeAxis();
       Variable v = g.getVariable();
-      nvars++;
-      if (null != v.findAttribute("cell_methods")) {
-        Attribute param = v.findAttribute("GRIB_product_definition_template");
-        System.out.printf(" %s (ntimes=%d) template=%s %n", v.getName(), t.getSize(), param.getNumericValue());
-        nintVars++;
+      Attribute param = v.findAttribute("GRIB_product_definition_template");
+      Integer template = param.getNumericValue().intValue();
+      List<String> list = map.get(template);
+      if (list == null) {
+        list = new ArrayList<String>();
+        map.put(template, list);
       }
+      list.add(v.getShortName());
     }
     ncd.close();
+
+    for (Integer key : map.keySet()) {
+      System.out.printf("template=%d:", key);
+      List<String> list = map.get(key);
+      for (String vname : list)
+        System.out.printf("%s, ", vname);
+      System.out.printf("%n");
+    }
+    System.out.printf("%n");
+
     return 1;
   }
 
@@ -94,6 +110,36 @@ public class TestIntervalVars extends TestCase {
       }
     }
     System.out.printf("%n");
+
+    ncd.close();
+    return 1;
+  }
+
+  // look for probability vars
+  private int checkProb(String filename) throws IOException {
+    NetcdfFile ncd = NetcdfFile.open(filename);
+    nfiles++;
+    //System.out.printf("==============================================================================%n");
+
+    Set<String> vars = new HashSet<String>();
+
+    GribGridServiceProvider iosp = (GribGridServiceProvider) ncd.getIosp();
+    GridIndex index = (GridIndex) iosp.sendIospMessage("GridIndex");
+
+    List<GridRecord> grList = index.getGridRecords();
+    for (GridRecord gr : grList) {
+      GribGridRecord ggr = (GribGridRecord) gr;
+      if ((ggr.productTemplate == 5) || (ggr.productTemplate == 9)) {
+        vars.add( ggr.getParameterName());
+      }
+    }
+
+    if (vars.size() > 0) {
+    System.out.printf("Vars with templates 5,9: ");
+    for (String vname : vars)
+      System.out.printf("%s, ",vname);
+    System.out.printf("%n");
+    }
 
     ncd.close();
     return 1;

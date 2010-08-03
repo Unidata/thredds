@@ -71,7 +71,7 @@ import java.util.List;
  * @author caron
  * @since Aug 15, 2008
  */
-public class Grib2Table extends JPanel {
+public class Grib2Panel extends JPanel {
   private PreferencesExt prefs;
 
   private BeanTableSorted recordTable, gdsTable, productTable, productBeanTable, recordBeanTable;
@@ -82,7 +82,7 @@ public class Grib2Table extends JPanel {
 
   private Map<Integer, GribTemplate> productTemplates = null;
 
-  public Grib2Table(PreferencesExt prefs) {
+  public Grib2Panel(PreferencesExt prefs) {
     this.prefs = prefs;
 
     thredds.ui.PopupMenu varPopup;
@@ -511,8 +511,8 @@ public class Grib2Table extends JPanel {
       return ggr.levelType1;
     }
 
-    public int getProbType() {
-      return ggr.type;
+    public String getSuffix() {
+      return ggr.getSuffix();
     }
 
     public final int getAnalProc() {
@@ -521,11 +521,11 @@ public class Grib2Table extends JPanel {
 
     /* public final String getCenter() {
       return Grib1Tables.getCenter_idName(ggr.center) + " (" + ggr.center + "/" + ggr.subCenter + ")";
-    } */
+    }
 
     public final int getTable() {
       return ggr.table;
-    }
+    } */
 
     public int getTemplate() {
       return ggr.productTemplate;
@@ -534,7 +534,6 @@ public class Grib2Table extends JPanel {
     public final Date getRefTime() {
       return ggr.getReferenceTime();
     }
-
 
     public final String getLevelName() {   // LOOK this kind of stuff needs to be pushed down into GRIB library !
       if (ggr.edition == 2)

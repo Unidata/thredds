@@ -37,6 +37,7 @@ import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import ucar.grib.grib2.ParameterTable;
 import ucar.grid.GridParameter;
+import ucar.nc2.util.IO;
 import ucar.unidata.util.StringUtil;
 
 import java.io.FileInputStream;
@@ -238,9 +239,16 @@ public class GribCodeTable implements Comparable<GribCodeTable> {
     return tlist;
   }
 
+  static String resourceName = "/resources/grib/wmo/GRIB2_5_2_0_CodeFlag_E.xml";
   static public Map<String, GribCodeTable> readGribCodes() throws IOException {
-    String filename = "C:\\docs\\dataFormats\\grib\\GRIB2_5_2_0_xml\\wmoGribCodes.xml";
-    List<GribCodeTable> tlist = readGribCodes(new FileInputStream(filename));
+    Class c = GribCodeTable.class;
+    InputStream in = c.getResourceAsStream(resourceName);
+    if (in == null) {
+      System.out.printf("cant open %s%n", resourceName);
+      return null;
+    }
+    
+    List<GribCodeTable> tlist = readGribCodes(in);
     Map<String, GribCodeTable> map = new HashMap<String, GribCodeTable>( 2* tlist.size());
     for (GribCodeTable ct : tlist) {
       String id = ct.m1+"."+ct.m2;
@@ -253,8 +261,16 @@ public class GribCodeTable implements Comparable<GribCodeTable> {
 
   static boolean showDiff = false;
   public static void main(String arg[]) throws IOException {
-    String filename = "C:\\docs\\dataFormats\\grib\\GRIB2_5_2_0_xml\\wmoGribCodes.xml";
-    List<GribCodeTable> tlist = readGribCodes(new FileInputStream(filename));
+    //String filename = "C:\\docs\\dataFormats\\grib\\GRIB2_5_2_0_xml\\wmoGribCodes.xml";
+    //List<GribCodeTable> tlist = readGribCodes(new FileInputStream(filename));
+
+    Class c = GribCodeTable.class;
+    InputStream in = c.getResourceAsStream(resourceName);
+    if (in == null) {
+      System.out.printf("cant open %s%n", resourceName);
+      return;
+    }
+    List<GribCodeTable> tlist = readGribCodes(in);
 
     for (GribCodeTable gt : tlist) {
       System.out.printf("%d.%d (%d,%d) %s %n", gt.m1, gt.m2, gt.discipline, gt.category, gt.name);

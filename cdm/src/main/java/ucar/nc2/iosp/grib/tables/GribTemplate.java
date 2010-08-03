@@ -244,9 +244,17 @@ public class GribTemplate implements Comparable<GribTemplate> {
     return tlist;
   }
 
+  static String resourceName = "/resources/grib/wmo/GRIB2_5_2_0_Templates_E.xml";
+
   static public Map<Integer, GribTemplate> getParameterTemplates() throws IOException {
-    String filename = "C:\\docs\\dataFormats\\grib\\GRIB2_5_2_0_xml\\wmoGribTemplates.xml";
-    List<GribTemplate> tlist = readXml(new FileInputStream(filename));
+    Class c = GribCodeTable.class;
+    InputStream in = c.getResourceAsStream(resourceName);
+    if (in == null) {
+      System.out.printf("cant open %s%n", resourceName);
+      return null;
+    }
+
+    List<GribTemplate> tlist = readXml(in);
 
     Map<Integer, GribTemplate> map = new HashMap<Integer, GribTemplate>(100);
     for (GribTemplate t : tlist) {
@@ -258,8 +266,14 @@ public class GribTemplate implements Comparable<GribTemplate> {
 
 
   public static void main(String arg[]) throws IOException {
-    String filename = "C:\\docs\\dataFormats\\grib\\GRIB2_5_2_0_xml\\wmoGribTemplates.xml";
-    List<GribTemplate> tlist = readXml(new FileInputStream(filename));
+    Class c = GribCodeTable.class;
+    InputStream in = c.getResourceAsStream(resourceName);
+    if (in == null) {
+      System.out.printf("cant open %s%n", resourceName);
+      return;
+    }
+
+    List<GribTemplate> tlist = readXml(in);
 
     for (GribTemplate t : tlist) {
       System.out.printf("%n(%s) %s %n", t.name, t.desc);

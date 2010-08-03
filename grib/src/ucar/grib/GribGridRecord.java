@@ -355,8 +355,15 @@ public final class GribGridRecord implements GridRecord {
       int result = 17;
       result += result * 37 + levelType1;
       result += result * 37 + getParameterName().hashCode();
+      result += result * 37 + productTemplate;
       if (isInterval()) result += result * 37 + getIntervalTypeName().hashCode();
       result += result * 37 + levelType2;
+
+      if (productTemplate == 2)
+        result += result * 37 + type; // derived code (table 4.7)
+      else if (productTemplate == 5) {
+        result +=  result * 37 + getProbabilityVariableNameSuffix(lowerLimit, upperLimit, type).hashCode() * 37;
+      }
       hashcode = result;
     }
     return hashcode;
@@ -384,10 +391,37 @@ public final class GribGridRecord implements GridRecord {
       }
     }
 
-    if (useStat && isInterval()) {
+    if (useStat) {
+      f.format("%s", getSuffix());
+    }
+
+    return f.toString();
+  }
+
+  public String getSuffix() {
+    Formatter f = new Formatter();
+    boolean disambig = false;
+
+    if (isInterval()) {
       String intervalTypeName = Grib2Tables.codeTable4_10short(intervalStatType);
-      if (intervalTypeName != null && intervalTypeName.length() != 0)
+      if (intervalTypeName != null && intervalTypeName.length() != 0) {
         f.format("_%s", intervalTypeName);
+        disambig = true;
+      }
+    }
+
+    if (productTemplate == 2) {
+      f.format("_%s", Grib2Tables.codeTable4_7short(type));
+      disambig = true;
+    }
+
+    if (productTemplate == 5) {
+      f.format("_%s", getProbabilityVariableNameSuffix(lowerLimit, upperLimit, type));
+      disambig = true;
+    }
+
+    if (!disambig) {
+      f.format("_template%d", productTemplate);
     }
 
     return f.toString();

@@ -2129,7 +2129,7 @@ public class ToolsUI extends JPanel {
   /////////////////////////////////////////////////////////////////////
   private class GribPanel extends OpPanel {
     ucar.unidata.io.RandomAccessFile raf = null;
-    GribTable gribTable;
+    ucar.nc2.ui.GribPanel gribTable;
 
     boolean useDefinition = false;
     JComboBox defComboBox;
@@ -2138,7 +2138,7 @@ public class ToolsUI extends JPanel {
 
     GribPanel(PreferencesExt p) {
       super(p, "file:", true, false);
-      gribTable = new GribTable(prefs);
+      gribTable = new ucar.nc2.ui.GribPanel(prefs);
       add(gribTable, BorderLayout.CENTER);
 
       AbstractButton grib2dump = BAMutil.makeButtcon("alien", "Grib2 dump", false);
@@ -2214,12 +2214,12 @@ public class ToolsUI extends JPanel {
 
   private class Grib2Panel extends OpPanel {
     ucar.unidata.io.RandomAccessFile raf = null;
-    Grib2Table gribTable;
+    ucar.nc2.ui.Grib2Panel gribTable;
     boolean useIndex = true;
 
     Grib2Panel(PreferencesExt p) {
       super(p, "file:", true, false);
-      gribTable = new Grib2Table(prefs);
+      gribTable = new ucar.nc2.ui.Grib2Panel(prefs);
       add(gribTable, BorderLayout.CENTER);
 
       AbstractAction indexAction = new AbstractAction() {

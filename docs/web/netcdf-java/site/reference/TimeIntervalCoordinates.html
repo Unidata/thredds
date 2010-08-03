@@ -46,9 +46,16 @@ Grib2IndicatorSection
 <p><strong>X 3. Probability limits incorrectly coded</strong></p>
 <p>C:/data/thredds/SREF_Alaska_45km_ensprod_20100801_0900.grib2, Total_Precipitation</p>
 <p>has 0 - 50.8, should be &gt; 50.8 due to prob type field (octet 37 in template 9) = Probability of event above upper limit.</p>
+<p><strong>4. confusion of local and WMO tables</strong></p>
+<p>systemic, eg code table 4.5 200 hard coded with NCEP : see Grib2Tables.codeTable4_5()</p>
 <p>&nbsp;</p>
 <p>TODO</p>
 <p>3. PDS templates are munged together -need to be seperated, probably subclasses</p>
+<h2>Probability Variables</h2>
+<p><strong>PDS Template 2 = derived forecasts based on all ensemble members</strong></p>
+<p>Derived forecast == 1 (table 4.7: Weighted mean of all members)</p>
+<p><strong>PDS Template 5 and 9</strong></p>
+<p>Probabality type (Table 4.9), and upper/lower prob limits</p>
 <h2>Time Interval Coordinates</h2>
 <h3>Case 1 - even intervals</h3>
 <p>Q:\cdmUnitTest\tds\new\NAM_CONUS_12km_20100520_0000.grib2</p>
