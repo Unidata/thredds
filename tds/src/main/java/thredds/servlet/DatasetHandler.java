@@ -243,7 +243,7 @@ public class DatasetHandler {
    * @throws IOException on read error
    */
   static public GridDataset openGridDataset( HttpServletRequest req, HttpServletResponse res, String reqPath) throws IOException {
-    return openGridDataset(req, res, reqPath, null);
+    return openGridDataset(req, res, reqPath, NetcdfDataset.getDefaultEnhanceMode());
   }
 
     /**
