@@ -55,11 +55,15 @@ public class FslWindProfiler extends TableConfigurerImpl  {
     // :title = "WPDN data : selected by ob time : time range from 1207951200 to 1207954800";
   public boolean isMine(FeatureType wantFeatureType, NetcdfDataset ds) {
     String title = ds.findAttValueIgnoreCase(null, "title", null);
-    return title != null && (title.startsWith("WPDN data") || title.startsWith("RASS data"));
+    if (title == null)
+        title = ds.findAttValueIgnoreCase(null, "DD_reference", null);
+    return title != null && (title.startsWith("WPDN data") || title.startsWith("RASS data") || title.contains("88-21-R2"));
   }
 
   public TableConfig getConfig(FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) throws IOException {
     String title = ds.findAttValueIgnoreCase(null, "title", null);
+    if (title == null)
+        title = ds.findAttValueIgnoreCase(null, "DD_reference", null);
     boolean isRass = title.startsWith("RASS data");
     String xml = isRass ? "resources/nj22/pointConfig/FslRassProfiler.xml" : "resources/nj22/pointConfig/FslWindProfiler.xml";
 
