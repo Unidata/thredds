@@ -187,7 +187,7 @@ public class GribReadTextIndex {
             ? stoke.nextToken()
             : table_versionS;
 
-        GribGridRecord ggr = new GribGridRecord(calendar, dateFormat,
+        /* GribGridRecord ggr = new GribGridRecord(calendar, dateFormat,
             productType,
             discipline, category,
             param, typeGenProcess, levelType1,
@@ -197,10 +197,10 @@ public class GribReadTextIndex {
             decimalScale, bmsExists,
             center, subCenter, table);
 
-        gridIndex.addGridRecord(ggr);
+        gridIndex.addGridRecord(ggr); 
         if (debugParse) {
           System.out.println(ggr.toString());
-        }
+        }    */
       }
 
       // section 3+ - GDS

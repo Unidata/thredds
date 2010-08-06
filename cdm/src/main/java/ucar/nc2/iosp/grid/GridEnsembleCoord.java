@@ -41,12 +41,10 @@ package ucar.nc2.iosp.grid;
 import ucar.nc2.*;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.constants.AxisType;
-import ucar.grid.GridTableLookup;
 import ucar.grid.GridRecord;
 import ucar.ma2.DataType;
 import ucar.ma2.Array;
 import ucar.grib.GribGridRecord;
-import ucar.grib.GribNumbers;
 import ucar.grib.grib2.Grib2Tables;
 
 import java.util.*;
@@ -55,95 +53,76 @@ import java.util.*;
  * Handles the Ensemble coordinate dimension
  */
 public class GridEnsembleCoord {
-  /**
-   * logger
-   */
-  static private org.slf4j.Logger log =
-      org.slf4j.LoggerFactory.getLogger(GridEnsembleCoord.class);
+  static private org.slf4j.Logger log =  org.slf4j.LoggerFactory.getLogger(GridEnsembleCoord.class);
 
-  /**
-   * name
-   */
-  private String name;
-
-  /**
-   * lookup table
-   */
-  private GridTableLookup lookup;
-
-  /**
-   * number of ensembles
-   */
-  private int ensembles = -1;
-
-  /** types for the ensembles dimensions */
-  private int[] ensTypes;
-
-  /**
-   * product definition  #
-   */
-  private int pdn = -1;
-
-  /**
-   * sequence #
-   */
+  private List<EnsCoord> ensCoords;
   private int seq = 0;
-
-  /**
-   * Create a new GridEnsembleCoord from a record
-   *
-   * @param record record to use
-   * @param lookup lookup table
-   */
-  GridEnsembleCoord(GridRecord record, GridTableLookup lookup) {
-    this.lookup = lookup;
-    if (record instanceof GribGridRecord) { // check for ensemble
-      GribGridRecord ggr = (GribGridRecord) record;
-      if (ggr.getEnsembleNumber() == GribNumbers.UNDEFINED) {
-        ensembles = -1;
-        return;
-      }
-      ensembles = ggr.getNumberForecasts();
-    }
-  }
 
   /**
    * Create a new GridEnsembleCoord with the list of records
    *
    * @param records records to use
-   * @param lookup  lookup table
    */
-  GridEnsembleCoord(List<GridRecord> records, GridTableLookup lookup) {
-    this.lookup = lookup;
-    GridRecord gr = records.get( 0 );
-    if (gr instanceof GribGridRecord)
-      calEnsembles(records);
+  GridEnsembleCoord(List<GridRecord> records) {
+    Map<Integer,EnsCoord> map = new HashMap<Integer,EnsCoord>();
+
+    for( GridRecord record : records ) {
+      GribGridRecord ggr = (GribGridRecord) record;
+      int ensNumber = ggr.getPds().getPerturbationNumber();
+      int ensType = ggr.getPds().getPerturbationType();
+      map.put(ensNumber, new EnsCoord(ensNumber, ensType));
+    }
+
+    ensCoords = new ArrayList<EnsCoord>(map.values());
+    Collections.sort(ensCoords);
   }
 
-  /**
-   * add Ensemble dimension
-   */
-  private void calEnsembles(List<GridRecord> records) {
+  private class EnsCoord implements Comparable<EnsCoord> {
+    int number, type;
 
-    int[] enstypes = new int[100];
-
-    ensembles = -1;
-    for( GridRecord gr : records ) {
-      GribGridRecord ggr = (GribGridRecord) gr;
-      pdn = ggr.productTemplate;
-      int ensNumber = ggr.getEnsembleNumber();
-      if (ensNumber == GribNumbers.UNDEFINED) {
-        ensembles = -1;
-        return;
-      }
-      if ( ensembles < ensNumber )
-        ensembles = ensNumber;
-      enstypes[ ensNumber ] = ggr.getEnsembleType();
+    private EnsCoord(int number, int type) {
+      this.number = number;
+      this.type = type;
     }
-    ensembles++;
 
-    ensTypes = new int[ ensembles ];
-    System.arraycopy( enstypes, 0, ensTypes, 0, ensembles);
+    @Override
+    public int compareTo(EnsCoord o) {
+      return number - o.number;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
+
+      EnsCoord ensCoord = (EnsCoord) o;
+
+      if (number != ensCoord.number) return false;
+      if (type != ensCoord.type) return false;
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      int result = number;
+      result = 31 * result + type;
+      return result;
+    }
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    GridEnsembleCoord that = (GridEnsembleCoord) o;
+    return ensCoords.equals(that.ensCoords);
+  }
+
+  @Override
+  public int hashCode() {
+    return ensCoords.hashCode();
   }
 
   /**
@@ -161,12 +140,7 @@ public class GridEnsembleCoord {
    * @return the name
    */
   String getName() {
-    if (name != null) {
-      return name;
-    }
-    return (seq == 0)
-        ? "ens"
-        : "ens" + seq;
+    return (seq == 0) ? "ens" : "ens" + seq;
   }
 
   /**
@@ -187,30 +161,19 @@ public class GridEnsembleCoord {
    */
   void addToNetcdfFile(NetcdfFile ncfile, Group g) {
     Variable v = new Variable(ncfile, g, null, getName());
-   // v.setDataType(DataType.INT);
+    v.setDimensions(v.getShortName());
     v.setDataType(DataType.STRING);
     v.addAttribute(new Attribute("long_name", "ensemble"));
-    /*
-    int[] data = new int[ensembles];
+    v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Ensemble.toString()));
 
-    for (int i = 0; i < ensembles; i++) {
-      data[i] = i;
+    String[] data = new String[getNEnsembles()];
+
+    for (int i = 0; i < getNEnsembles(); i++) {
+      EnsCoord ec = ensCoords.get(i);
+      data[i] = Grib2Tables.codeTable4_6( ec.type) +" "+ ec.number;
     }
-    Array dataArray = Array.factory(DataType.INT,
-        new int[]{ensembles}, data);
-    */
-    String[] data = new String[ensembles];
-
-    for (int i = 0; i < ensembles; i++) {
-      data[i] = Grib2Tables.getEnsembleType( pdn, ensTypes[ i ]) +" "+ Integer.toString( i );
-    }
-    Array dataArray = Array.factory(DataType.STRING, new int[]{ensembles}, data);
-
-    v.setDimensions(v.getShortName());
+    Array dataArray = Array.factory(DataType.STRING, new int[]{getNEnsembles()}, data);
     v.setCachedData(dataArray, false);
-
-    v.addAttribute(new Attribute(_Coordinate.AxisType,
-        AxisType.Ensemble.toString()));
 
     ncfile.addVariable(g, v);
   }
@@ -222,14 +185,14 @@ public class GridEnsembleCoord {
    * @return the index or -1 if not found
    */
   int getIndex(GridRecord record) {
+    GribGridRecord ggr = (GribGridRecord) record;
+    int ensNumber = ggr.getPds().getPerturbationNumber();
+    int ensType = ggr.getPds().getPerturbationType();
 
-    if (record instanceof GribGridRecord) {
-      GribGridRecord ggr = (GribGridRecord) record;
-      int en = ggr.getEnsembleNumber();
-      if (en == GribNumbers.UNDEFINED)
-        return 0;
-
-      return en;
+    int count = 0;
+    for (EnsCoord coord : ensCoords) {
+      if ((coord.number == ensNumber) && (coord.type == ensType)) return count;
+      count++;
     }
     return -1;
   }
@@ -240,24 +203,7 @@ public class GridEnsembleCoord {
    * @return the number of Ensembles
    */
   int getNEnsembles() {
-    return ensembles;
+    return ensCoords.size();
   }
 
-  /**
-   * Get the product definition number of Ensembles
-   *
-   * @return the product definition number of Ensembles
-   */
-  int getPDN() {
-    return pdn;
-  }
-
-  /**
-   * Get the types of Ensembles
-   *
-   * @return the types of Ensembles
-   */
-  int[] getEnsType() {
-    return ensTypes;
-  }
 }

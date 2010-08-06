@@ -273,14 +273,13 @@ public final class GribPDSParamTable {
    *
    * @param center    - integer from PDS octet 5, representing Center.
    * @param subcenter - integer from PDS octet 26, representing Subcenter
-   * @param number    - integer from PDS octet 4, representing Parameter Table Version
+   * @param tableVersion    - integer from PDS octet 4, representing Parameter Table Version
    * @return GribPDSParamTable matching center, subcenter, and number
    * @throws NotSupportedException no table found
    */
-  public static GribPDSParamTable getParameterTable(int center, int subcenter, int number)
-          throws NotSupportedException {
+  public static GribPDSParamTable getParameterTable(int center, int subcenter, int tableVersion) throws NotSupportedException {
 
-    String key = center + "_" + subcenter + "_" + number;
+    String key = center + "_" + subcenter + "_" + tableVersion;
     if ( center == -1 ) { // non existent table
        logger.error( "GribPDSParamTable: non existent table for center, subcenter, table = "+ key );
        return null;
@@ -290,12 +289,12 @@ public final class GribPDSParamTable {
     if (table != null)
       return table;
 
-    table = readParameterTable(center, subcenter, number, true);
+    table = readParameterTable(center, subcenter, tableVersion, true);
 
     if (table == null) {
       logger.error( "GribPDSParamTable: cannot find table for center, subcenter, table "+ key );
       throw new NotSupportedException("Could not find a table entry for GRIB file with center: "
-                      + center + " subCenter: " + subcenter + " number: " + number);
+                      + center + " subCenter: " + subcenter + " number: " + tableVersion);
     }
 
     tableMap.put(key, table);

@@ -35,17 +35,18 @@ package ucar.nc2.ui;
 
 import ucar.grib.GribGridRecord;
 import ucar.grib.GribNumbers;
+import ucar.grib.GribPds;
 import ucar.grib.grib1.Grib1Tables;
 import ucar.grib.grib1.GribPDSLevel;
 import ucar.grid.GridIndex;
 import ucar.grid.GridRecord;
 import ucar.ma2.DataType;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.Variable;
 import ucar.nc2.iosp.grib.GribGridServiceProvider;
 import ucar.nc2.iosp.grib.tables.GribTemplate;
 import ucar.nc2.iosp.grid.GridServiceProvider;
 import ucar.nc2.iosp.grid.GridVariable;
-import ucar.nc2.units.DateFormatter;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
 import ucar.unidata.io.RandomAccessFile;
@@ -82,6 +83,8 @@ public class Grib2Panel extends JPanel {
 
   private Map<Integer, GribTemplate> productTemplates = null;
 
+  private NetcdfFile ncd;
+
   public Grib2Panel(PreferencesExt prefs) {
     this.prefs = prefs;
 
@@ -98,7 +101,7 @@ public class Grib2Panel extends JPanel {
       }
     });
     varPopup = new thredds.ui.PopupMenu(productTable.getJTable(), "Options");
-    varPopup.addAction("Run accum algorithm", new AbstractAction() {
+    /* varPopup.addAction("Run accum algorithm", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Product pb = (Product) productTable.getSelectedBean();
         if (pb != null) {
@@ -109,7 +112,7 @@ public class Grib2Panel extends JPanel {
           infoWindow2.showIfNotIconified();
         }
       }
-    });
+    }); */
 
     varPopup.addAction("Show record -> variable data assignments", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
@@ -124,7 +127,7 @@ public class Grib2Panel extends JPanel {
       }
     });
 
-    recordTable = new BeanTableSorted(IndexRecordBean.class, (PreferencesExt) prefs.node("IndexRecordBean"), false, "GribGridRecord", "one record");
+    recordTable = new BeanTableSorted(GribGridRecordBean.class, (PreferencesExt) prefs.node("IndexRecordBean"), false, "GribGridRecord", "one record");
 
     varPopup = new thredds.ui.PopupMenu(recordTable.getJTable(), "Options");
     varPopup.addAction("Show GridRecords", new AbstractAction() {
@@ -132,7 +135,7 @@ public class Grib2Panel extends JPanel {
         List list = recordTable.getSelectedBeans();
         infoPopup2.clear();
         for (int i = 0; i < list.size(); i++) {
-          IndexRecordBean bean = (IndexRecordBean) list.get(i);
+          GribGridRecordBean bean = (GribGridRecordBean) list.get(i);
           infoPopup2.appendLine(bean.ggr.toString());
           infoPopup2.appendLine("");
         }
@@ -145,8 +148,8 @@ public class Grib2Panel extends JPanel {
       public void actionPerformed(ActionEvent e) {
         List list = recordTable.getSelectedBeans();
         if (list.size() == 2) {
-          IndexRecordBean bean1 = (IndexRecordBean) list.get(0);
-          IndexRecordBean bean2 = (IndexRecordBean) list.get(1);
+          GribGridRecordBean bean1 = (GribGridRecordBean) list.get(0);
+          GribGridRecordBean bean2 = (GribGridRecordBean) list.get(1);
           infoPopup2.setText(compare(bean1, bean2));
           infoPopup2.gotoTop();
           infoWindow2.showIfNotIconified();
@@ -159,7 +162,7 @@ public class Grib2Panel extends JPanel {
         Formatter f = new Formatter();
         List list = recordTable.getSelectedBeans();
         for (int i = 0; i < list.size(); i++) {
-          IndexRecordBean bean = (IndexRecordBean) list.get(i);
+          GribGridRecordBean bean = (GribGridRecordBean) list.get(i);
           showRecord(bean.ggr, f);
         }
         infoPopup2.setText(f.toString());
@@ -173,7 +176,7 @@ public class Grib2Panel extends JPanel {
         Formatter f = new Formatter();
         List list = recordTable.getSelectedBeans();
         for (int i = 0; i < list.size(); i++) {
-          IndexRecordBean bean = (IndexRecordBean) list.get(i);
+          GribGridRecordBean bean = (GribGridRecordBean) list.get(i);
           showRawPds(bean.ggr, f);
         }
         infoPopup2.setText(f.toString());
@@ -183,10 +186,10 @@ public class Grib2Panel extends JPanel {
     });
 
     ////////////////
-    productBeanTable = new BeanTableSorted(ProductBean.class, (PreferencesExt) prefs.node("ProductBean"), false, "Grib2PDSVariables", "from Grib2Input.getRecords()");
+    productBeanTable = new BeanTableSorted(ParameterBean.class, (PreferencesExt) prefs.node("ProductBean"), false, "Grib2PDSVariables", "from Grib2Input.getRecords()");
     productBeanTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
-        ProductBean pb = (ProductBean) productBeanTable.getSelectedBean();
+        ParameterBean pb = (ParameterBean) productBeanTable.getSelectedBean();
         if (pb != null) {
           recordBeanTable.setBeans(pb.getRecordBeans());
           // System.out.printf("records = %d%n", pb.getRecordBeans().size());
@@ -197,7 +200,7 @@ public class Grib2Panel extends JPanel {
     varPopup = new thredds.ui.PopupMenu(productBeanTable.getJTable(), "Options");
     varPopup.addAction("Show raw PDS", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        ProductBean pb = (ProductBean) productBeanTable.getSelectedBean();
+        ParameterBean pb = (ParameterBean) productBeanTable.getSelectedBean();
         if (pb != null) {
           infoPopup2.setText(pb.toString());
           infoPopup2.gotoTop();
@@ -207,7 +210,7 @@ public class Grib2Panel extends JPanel {
     });
     varPopup.addAction("Show processed PDS", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        ProductBean pb = (ProductBean) productBeanTable.getSelectedBean();
+        ParameterBean pb = (ParameterBean) productBeanTable.getSelectedBean();
         if (pb != null) {
           infoPopup3.setText(pb.toProcessedString());
           infoPopup3.gotoTop();
@@ -217,7 +220,7 @@ public class Grib2Panel extends JPanel {
     });
     varPopup.addAction("Run accum algorithm", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        ProductBean pb = (ProductBean) productBeanTable.getSelectedBean();
+        ParameterBean pb = (ParameterBean) productBeanTable.getSelectedBean();
         if (pb != null) {
           infoPopup3.setText(doAccumAlgo(pb));
           infoPopup3.gotoTop();
@@ -310,8 +313,10 @@ public class Grib2Panel extends JPanel {
     add(split2, BorderLayout.CENTER);
     revalidate();
 
+    if (ncd != null) ncd.close();
+
     GridServiceProvider.debugOpen = true;
-    NetcdfFile ncd = NetcdfFile.open(filename);
+    ncd = NetcdfFile.open(filename);
 
     GribGridServiceProvider iosp = (GribGridServiceProvider) ncd.getIosp();
     GridIndex index = (GridIndex) iosp.sendIospMessage("GridIndex");
@@ -322,8 +327,6 @@ public class Grib2Panel extends JPanel {
     List<GridRecord> grList = index.getGridRecords();
     for (GridRecord gr : grList) {
       GribGridRecord ggr = (GribGridRecord) gr;
-      // int interval = ggr.startOfInterval;
-      // if ((interval == GribNumbers.UNDEFINED) || (interval == GribNumbers.MISSING)) continue;
 
       Product bean = pdsSet.get(ggr.cdmVariableHash());
       if (bean == null) {
@@ -331,25 +334,38 @@ public class Grib2Panel extends JPanel {
         pdsSet.put(ggr.cdmVariableHash(), bean);
         products.add(bean);
       }
-      bean.list.add(new IndexRecordBean(ggr));
+      bean.list.add(new GribGridRecordBean(ggr));
     }
 
     List<Product> sortList = new ArrayList<Product>();
     sortList.addAll(pdsSet.values());
     Collections.sort(sortList);
-    for (Product p : sortList) {
+    for (Product p : sortList)
       p.sort();
-    }
 
-    ncd.close();
     GridServiceProvider.debugOpen = false;
 
     productTable.setBeans(products);
     recordTable.setBeans(new ArrayList());
   }
 
+  public void showInfo(Formatter f) {
+    if (ncd == null) return;
+
+    int missing = 0;
+    for (Variable v : ncd.getVariables()) {
+      GridVariable pv = (GridVariable) v.getSPobject();
+      if (pv == null) {
+        f.format("%s has no GridVariable%n", v.getShortName());
+      } else {
+        missing += pv.showMissingSummary(f);
+      }
+    }
+    f.format("Toal Missing = %d%n", missing);
+  }
+
   private void showRecords(Product bean, Formatter f) {
-    for (IndexRecordBean ibean : bean.list) {
+    for (GribGridRecordBean ibean : bean.list) {
       showRecord(ibean.ggr, f);
     }
   }
@@ -385,8 +401,8 @@ public class Grib2Panel extends JPanel {
   public int intervalStatType;
   */
 
-  String compare(IndexRecordBean bean1, IndexRecordBean bean2) {
-    Formatter f = new Formatter();
+  String compare(GribGridRecordBean bean1, GribGridRecordBean bean2) {
+  /*   Formatter f = new Formatter();
     GribGridRecord ggr1 = bean1.ggr;
     GribGridRecord ggr2 = bean2.ggr;
 
@@ -481,12 +497,13 @@ public class Grib2Panel extends JPanel {
     }
 
     if (ok) f.format("All OK!%n");
-    return f.toString();
+    return f.toString();  */
+    return "";
   }
 
   public class Product implements Comparable<Product> {
     GribGridRecord ggr;
-    List<IndexRecordBean> list = new ArrayList<IndexRecordBean>();
+    List<GribGridRecordBean> list = new ArrayList<GribGridRecordBean>();
     String name;
 
     Product() {
@@ -504,19 +521,20 @@ public class Grib2Panel extends JPanel {
     }
 
     public String getParamNo() {
-      return ggr.discipline + "-" + ggr.category + "-" + ggr.paramNumber;
+      if (ggr.getEdition() == 1)
+        return ggr.getParameterNumber()+" ";
+      else {
+        Grib2Pds pds2 = (Grib2Pds) ggr.getPds();
+        return ggr.getDiscipline() + "-" + pds2.getParameterCategory() + "-" + ggr.getParameterNumber();
+      }
     }
 
     public int getLevelType() {
-      return ggr.levelType1;
+      return ggr.getLevelType1();
     }
 
     public String getSuffix() {
-      return ggr.getSuffix();
-    }
-
-    public final int getAnalProc() {
-      return ggr.analGenProcess;
+      return ggr.makeSuffix();
     }
 
     /* public final String getCenter() {
@@ -528,7 +546,12 @@ public class Grib2Panel extends JPanel {
     } */
 
     public int getTemplate() {
-      return ggr.productTemplate;
+      if (ggr.getEdition() == 1)
+        return -1;
+      else {
+        Grib2Pds pds2 = (Grib2Pds) ggr.getPds();
+        return pds2.getProductDefinitionTemplate();
+      }
     }
 
     public final Date getRefTime() {
@@ -536,24 +559,21 @@ public class Grib2Panel extends JPanel {
     }
 
     public final String getLevelName() {   // LOOK this kind of stuff needs to be pushed down into GRIB library !
-      if (ggr.edition == 2)
-        return Grib2Tables.codeTable4_5(ggr.levelType1);
+      if (ggr.getEdition() == 2)
+        return Grib2Tables.codeTable4_5(ggr.getLevelType1());
       else
-        return Grib1Tables.getLevelDescription(ggr.levelType1);
+        return Grib1Tables.getLevelDescription(ggr.getLevelType1());
     }
 
-    public final String getProcType() {
-      if (ggr.edition == 2)
-        return Grib2Tables.codeTable4_3(ggr.typeGenProcess);
+    public final String getGenProc() {
+      if (ggr.getEdition() == 2)
+        return Grib2Tables.codeTable4_3(ggr.getTypeGenProcess());
       else
-        return Grib1Tables.getTypeGenProcessName(ggr.center, ggr.typeGenProcess);
+        return Grib1Tables.getTypeGenProcessName(ggr.getCenter(), ggr.getTypeGenProcess());
     }
 
     public final String getStatType() {
-      //if (ggr.edition == 2)
-      return Grib2Tables.codeTable4_10short(ggr.intervalStatType); // see GribPds.getIntervalStatType() - barfalicious
-      //else
-      //  return Grib1Tables.getProductDefinitionName( firstPDSV.getTimeRange());
+      return Grib2Tables.codeTable4_10short(ggr.getPds().getIntervalStatType());
     }
 
     public int getN() {
@@ -561,43 +581,50 @@ public class Grib2Panel extends JPanel {
     }
 
     public final int getNEns() {
-      return (ggr.numberForecasts == GribNumbers.UNDEFINED) ? -1 : ggr.numberForecasts;
+      if (isEnsemble() || isDerived()) {
+        return ggr.getPds().getNumberEnsembleForecasts();
+      }
+      return -1;
     }
 
     public final boolean isEnsemble() {
-      return ggr.isEnsemble();
+      return ggr.getPds().isEnsemble();
+    }
+
+    public final boolean isDerived() {
+      return ggr.getPds().isEnsembleDerived();
     }
 
     void sort() {
-      Collections.sort(list, new Comparator<IndexRecordBean>() {
+      Collections.sort(list, new Comparator<GribGridRecordBean>() {
 
         @Override
-        public int compare(IndexRecordBean o1, IndexRecordBean o2) {
+        public int compare(GribGridRecordBean o1, GribGridRecordBean o2) {
           if (getNEns() >= 0) {
             if (o1.getForecastTime() == o2.getForecastTime())
-              return o1.getEnsNumber() - o2.getEnsNumber();
+              return o1.getPertNumber() - o2.getPertNumber();
           }
           return o1.getForecastTime() - o2.getForecastTime();
         }
       });
     }
 
-    private void doAccumAlgo(Formatter f) {
+    /* private void doAccumAlgo(Formatter f) {
       if (getNEns() < 0) {
         doAccumAlgo(list, f);
         return;
       } else {
-        HashMap<Integer, List<IndexRecordBean>> map = new HashMap<Integer, List<IndexRecordBean>>();
-        for (IndexRecordBean bean : list) {
-          List<IndexRecordBean> list = map.get(bean.getEnsNumber());
+        HashMap<Integer, List<GribGridRecordBean>> map = new HashMap<Integer, List<GribGridRecordBean>>();
+        for (GribGridRecordBean bean : list) {
+          List<GribGridRecordBean> list = map.get(bean.getEnsNumber());
           if (list == null) {
-            list = new ArrayList<IndexRecordBean>();
+            list = new ArrayList<GribGridRecordBean>();
             map.put(bean.getEnsNumber(), list);
           }
           list.add(bean);
         }
         for (int ensNo : map.keySet()) {
-          List<IndexRecordBean> list = map.get(ensNo);
+          List<GribGridRecordBean> list = map.get(ensNo);
           f.format("==========Ensemble %d %n", ensNo);
           doAccumAlgo(list, f);
         }
@@ -605,14 +632,14 @@ public class Grib2Panel extends JPanel {
       }
     }
 
-    private void doAccumAlgo(List<IndexRecordBean> list, Formatter f) {
+    private void doAccumAlgo(List<GribGridRecordBean> list, Formatter f) {
       List<GribGridRecord> all = new ArrayList<GribGridRecord>();
       List<GribGridRecord> hourAccum = new ArrayList<GribGridRecord>(all.size());
       List<GribGridRecord> runAccum = new ArrayList<GribGridRecord>(all.size());
 
       Set<Integer> ftimes = new HashSet<Integer>();
 
-      for (IndexRecordBean bean : list) {
+      for (GribGridRecordBean bean : list) {
         GribGridRecord rb = bean.ggr;
         all.add(rb);
 
@@ -669,7 +696,7 @@ public class Grib2Panel extends JPanel {
       for (GribGridRecord rb : list)
         f.format(" %d-%d", rb.startOfInterval, rb.forecastTime);
       f.format(" %s %n", testConstantInterval(list));
-    }
+    } */
 
 
     @Override
@@ -678,16 +705,18 @@ public class Grib2Panel extends JPanel {
     }
   }
 
-  public class IndexRecordBean {
+  public class GribGridRecordBean {
     GribGridRecord ggr;
+    GribPds pds;;
 
     // no-arg constructor
 
-    public IndexRecordBean() {
+    public GribGridRecordBean() {
     }
 
-    public IndexRecordBean(GribGridRecord ggr) {
+    public GribGridRecordBean(GribGridRecord ggr) {
       this.ggr = ggr;
+      this.pds = ggr.getPds();
     }
 
     public final String getTimeUnit() {
@@ -695,16 +724,16 @@ public class Grib2Panel extends JPanel {
     }
 
     public final String getSurfaceType() {
-      if (ggr.edition == 2) {
-        String s = Grib2Tables.getTypeSurfaceNameShort(ggr.levelType1);
-        int lev2 = ggr.levelType2;
+      if (ggr.getEdition() == 2) {
+        String s = Grib2Tables.getTypeSurfaceNameShort(ggr.getLevelType1());
+        int lev2 = ggr.getLevelType2();
         if ((lev2 != GribNumbers.UNDEFINED) && (lev2 != GribNumbers.MISSING))
           s += "/" + Grib2Tables.getTypeSurfaceNameShort(lev2);
         return s;
 
       } else {
-        String s = GribPDSLevel.getLevelDescription(ggr.levelType1);
-        int lev2 = ggr.levelType2;
+        String s = GribPDSLevel.getLevelDescription(ggr.getLevelType1());
+        int lev2 = ggr.getLevelType2();
         if ((lev2 != GribNumbers.UNDEFINED) && (lev2 != GribNumbers.MISSING))
           s += "/" + GribPDSLevel.getLevelDescription(lev2);
         return s;
@@ -712,44 +741,56 @@ public class Grib2Panel extends JPanel {
     }
 
     public String getSurfaceValue() {
-      int lev2 = ggr.levelType2;
-      if ((lev2 != GribNumbers.UNDEFINED) && (lev2 != GribNumbers.MISSING))
-        return ggr.levelValue1 + "-" + ggr.levelValue2;
-      else
-        return Double.toString(ggr.levelValue1);
+        return ggr.getLevel1() + "-" + ggr.getLevel2();
     }
 
-    public int getStartInterval() {
-      return (ggr.startOfInterval == GribNumbers.UNDEFINED) ? -1 : ggr.startOfInterval;
+    public String getInterval() {
+      if (pds.isInterval()) {
+        int[] intv = pds.getForecastTimeInterval();
+        return intv[0]+"-"+intv[1];
+      }
+      return "";
     }
 
-    public int getEndInterval() {
-      return ggr.forecastTime;
+    public Date getIntervalEnd() {
+      if (pds.isInterval()) {
+        return new Date(pds.getIntervalTimeEnd());
+      }
+      return null;
     }
+
+    public Date getValidTime() {
+      return pds.getForecastDate();
+    }
+
 
     public int getForecastTime() {
-      return ggr.forecastTime;
+      return pds.getForecastTime();
     }
 
-    public int getTimeInterval() {
-      return (ggr.startOfInterval == GribNumbers.UNDEFINED) ? -1 : ggr.forecastTime - ggr.startOfInterval;
+    public final int getPertNumber() {
+      if (pds.isInterval()) {
+        return pds.getPerturbationNumber();
+      }
+      return -1;
     }
 
-    public final int getEnsNumber() {
-      return (ggr.ensembleNumber == GribNumbers.UNDEFINED) ? -1 : ggr.ensembleNumber;
-    }
-
-    public int getProbType() {
-      return ggr.type;
+    public int getPertType() {
+      if (pds.isInterval()) {
+        return pds.getPerturbationType();
+      }
+      return -1;
     }
 
     public final String getProbability() {
-      return (ggr.lowerLimit == GribNumbers.UNDEFINED) ? "" : ggr.lowerLimit + "-" + ggr.upperLimit;
+      if (pds.isProbability()) {
+        return pds.getProbabilityLowerLimit()+"-"+pds.getProbabilityUpperLimit();
+      }
+      return "";
     }
 
-
-    public int getTemplate() {
-      return ggr.productTemplate;
+    public final int getLocalGenProc() {
+      return pds.getTypeGenProcess();
     }
 
   }
@@ -769,19 +810,19 @@ public class Grib2Panel extends JPanel {
     revalidate();
 
     Map<Integer, Grib2GridDefinitionSection> gdsSet = new HashMap<Integer, Grib2GridDefinitionSection>();
-    Map<Integer, ProductBean> pdsSet = new HashMap<Integer, ProductBean>();
+    Map<Integer, ParameterBean> pdsSet = new HashMap<Integer, ParameterBean>();
 
     Grib2Input reader = new Grib2Input(raf);
     raf.seek(0);
     reader.scan(false, false);
 
-    java.util.List<ProductBean> products = new ArrayList<ProductBean>();
+    java.util.List<ParameterBean> products = new ArrayList<ParameterBean>();
     for (Grib2Record gr : reader.getRecords()) {
       Grib2ProductDefinitionSection pds = gr.getPDS();
       int discipline = gr.getIs().getDiscipline();
-      ProductBean bean = pdsSet.get(makeUniqueId(pds, discipline));
+      ParameterBean bean = pdsSet.get(makeUniqueId(pds, discipline));
       if (bean == null) {
-        bean = new ProductBean(gr);
+        bean = new ParameterBean(gr);
         pdsSet.put(makeUniqueId(pds, discipline), bean);
         products.add(bean);
       }
@@ -813,7 +854,7 @@ public class Grib2Panel extends JPanel {
     return result;
   }
 
-  private String doAccumAlgo(ProductBean pb) {
+  private String doAccumAlgo(ParameterBean pb) {
     List<RecordBean> all = new ArrayList<RecordBean>(pb.getRecordBeans());
     List<RecordBean> hourAccum = new ArrayList<RecordBean>(all.size());
     List<RecordBean> runAccum = new ArrayList<RecordBean>(all.size());
@@ -877,12 +918,39 @@ public class Grib2Panel extends JPanel {
       f.format(" %d-%d", rb.getStartInterval(), rb.getEndInterval());
   }
 
+  private void showRawPds(GribGridRecord ggr, Formatter f) {
+    if (ggr.getEdition() != 2) return;
+
+    Grib2Pds pds2 = (Grib2Pds) ggr.getPds();
+    int template = pds2.getProductDefinitionTemplate();
+
+    byte[] raw = ggr.getPds().getPDSBytes();
+    if (raw == null) {
+      f.format("PDS bytes not available template=%d%n", template);
+      return;
+    }
+    showRawPds(template, raw, f);
+  }
+
+  private void showRawPds(int template, byte[] raw, Formatter f) {
+    if (productTemplates == null)
+      try {
+        productTemplates = GribTemplate.getParameterTemplates();
+      } catch (IOException e) {
+        f.format("Read template failed = %s%n", e.getMessage());
+        return;
+      }
+
+    GribTemplate gt = productTemplates.get(template);
+    if (gt == null)
+      f.format("Cant find template %d%n", template);
+    else
+      gt.showInfo(raw, f);
+  }
+
   ////////////////////////////////////////////////////////////////////////////
 
-  /**
-   * @deprecated
-   */
-  public class ProductBean {
+  public class ParameterBean {
     Grib2IdentificationSection id;
     Grib2ProductDefinitionSection pds;
     Grib2Pds pdsv;
@@ -891,10 +959,10 @@ public class Grib2Panel extends JPanel {
 
     // no-arg constructor
 
-    public ProductBean() {
+    public ParameterBean() {
     }
 
-    public ProductBean(Grib2Record r) {
+    public ParameterBean(Grib2Record r) {
       pds = r.getPDS();
       pdsv = pds.getPdsVars();
       id = r.getId();
@@ -928,13 +996,13 @@ public class Grib2Panel extends JPanel {
       return ParameterTable.getParameterName(discipline, pds.getParameterCategory(), pds.getParameterNumber());
     }
 
-    public final String getCenter() {
+   /*  public final String getCenter() {
       return Grib1Tables.getCenter_idName(id.getCenter_id()) + " (" + id.getCenter_id() + "/" + id.getSubcenter_id() + ")";
     }
 
     public final String getTable() {
       return id.getMaster_table_version() + "-" + id.getLocal_table_version();
-    }
+    } */
 
     public final Date getBaseTime() {
       return id.getBaseTime();
@@ -949,19 +1017,27 @@ public class Grib2Panel extends JPanel {
     }
 
     public String getParamNo() {
-      return pdsv.getProductDefinitionTemplate() + "-" + discipline + "-" + pdsv.getParameterCategory() + "-" + pdsv.getParameterNumber();
+      return discipline + "-" + pdsv.getParameterCategory() + "-" + pdsv.getParameterNumber();
     }
 
-    public final String getSurfaceType() {
-      return Grib2Tables.codeTable4_5(pdsv.getTypeFirstFixedSurface());
+    public int getTemplate() {
+      return pdsv.getProductDefinitionTemplate() ;
     }
 
-    public final String getProcType() {
+    public final int getLevelType() {
+      return pdsv.getLevelType1();
+    }
+
+    public final String getLevelName() {
+      return Grib2Tables.codeTable4_5(pdsv.getLevelType1());
+    }
+
+     public final String getProcessType() {
       int tgp = pdsv.getTypeGenProcess();
       return Grib2Tables.codeTable4_3(tgp);
     }
 
-    public final int getAnalProcId() {
+   /*  public final int getAnalProcId() {
       return pdsv.getAnalysisGenProcess();
     }
 
@@ -971,7 +1047,7 @@ public class Grib2Panel extends JPanel {
 
     public final int getObsProcId() {
       return pdsv.getObservationProcess();
-    }
+    } */
 
     public int getN() {
       return records.size();
@@ -979,83 +1055,12 @@ public class Grib2Panel extends JPanel {
 
   } // ProductBean (old)
 
-  private void showRawPds(GribGridRecord ggr, Formatter f) {
-    if (productTemplates == null)
-      try {
-        productTemplates = GribTemplate.getParameterTemplates();
-      } catch (IOException e) {
-        f.format("Read template failed = %s%n", e.getMessage());
-        return;
-      }
-
-    int template = ggr.productTemplate;
-    byte[] raw = ggr.getPdsBytes();
-    if (raw == null) {
-      f.format("PDS bytes not available %d%n", template);
-      return;
-    }
-
-    GribTemplate gt = productTemplates.get(template);
-    if (gt == null)
-      f.format("Cant find template %d%n", template);
-    else
-      gt.showInfo(raw, f);
-  }
-
   private void showRawPds(Grib2ProductDefinitionSection pds, Formatter f) {
     Grib2Pds pdsv = pds.getPdsVars();
     int template = pdsv.getProductDefinitionTemplate();
     byte[] raw = pdsv.getPDSBytes();
-    byte[] bytes = new byte[raw.length + 1];
-    System.arraycopy(raw, 0, bytes, 1, raw.length); // offset by 1 so we can use 1-based indexing
 
-    f.format("PDS length   = %d%n", pdsv.getLength());
-    f.format(" ncoords     = %d%n", pdsv.getCoordinates());
-    f.format(" template    = %d%n", pdsv.getProductDefinitionTemplate());
-    f.format(" category    = %d%n", bytes[10] & 0xff);
-    f.format(" number      = %d%n", bytes[11] & 0xff);
-
-    switch (template) {
-      case 8:
-        showTemplate8(bytes, f);
-        break;
-      default:
-        f.format("N/A");
-    }
-  }
-
-  void showTemplate8(byte[] bytes, Formatter f) {
-    f.format("                                          Type of generating process = %d (%s)%n", bytes[12] & 0xff,
-        Grib2Tables.codeTable4_0(bytes[12] & 0xff));
-    f.format("          Background generating process id (from originating center) = %d%n", bytes[13] & 0xff);
-    f.format(" Analysis/forecast generating processes id (from originating center) = %d%n", bytes[14] & 0xff);
-    f.format("                       Hours after reference time of data cutoff     = %d%n", GribNumbers.int2(bytes[15] & 0xff, bytes[16] & 0xff));
-    f.format("                     Minutes after reference time of data cutoff     = %d%n", bytes[17] & 0xff);
-    f.format("                                  Indicator of unit of time range    = %d (%s)%n", bytes[18] & 0xff,
-        Grib2Tables.codeTable4_4(bytes[18] & 0xff));
-    f.format("    Forecast time in above units (beginning of overall time period)  = %d%n", GribNumbers.int4(bytes[19] & 0xff, bytes[20] & 0xff, bytes[21] & 0xff, bytes[22] & 0xff));
-    f.format("                                         Type of first fixed surface = %d (%s)%n", bytes[23] & 0xff,
-        Grib2Tables.codeTable4_5(bytes[23] & 0xff));
-    f.format("                                        Type of second fixed surface = %d (%s)%n", bytes[29] & 0xff,
-        Grib2Tables.codeTable4_5(bytes[29] & 0xff));
-    f.format("                 Year of time of end of overall time interval        = %d%n", GribNumbers.int2(bytes[35] & 0xff, bytes[36] & 0xff));
-    f.format("                  month                                              = %d%n", bytes[37] & 0xff);
-    f.format("                  day                                                = %d%n", bytes[38] & 0xff);
-    f.format("                  hour                                               = %d%n", bytes[39] & 0xff);
-    f.format("                  min                                                = %d%n", bytes[40] & 0xff);
-    f.format("                  sec                                                = %d%n", bytes[41] & 0xff);
-    f.format("                               Number of time range specifications   = %d%n", bytes[42] & 0xff);
-    f.format("                                 number of data values missing       = %d%n", GribNumbers.int4(bytes[43] & 0xff, bytes[44] & 0xff, bytes[45] & 0xff, bytes[46] & 0xff));
-    f.format("           Statistical process used to calculate the processed field = %d (%s)%n", bytes[47] & 0xff,
-        Grib2Tables.codeTable4_10(bytes[47] & 0xff));
-    f.format("                    Type of time increment between successive fields = %d (%s)%n", bytes[48] & 0xff,
-        Grib2Tables.codeTable4_11(bytes[48] & 0xff));
-    f.format("             Unit of time for time range for statistical processing  = %d (%s)%n", bytes[49] & 0xff,
-        Grib2Tables.codeTable4_4(bytes[49] & 0xff));
-    f.format(" Length of the time range over which statistical processing is done  = %d%n", GribNumbers.int4(bytes[50] & 0xff, bytes[51] & 0xff, bytes[52] & 0xff, bytes[53] & 0xff));
-    f.format("   Unit of time for the increment between the successive fields used = %d (%s)%n", bytes[54] & 0xff,
-        Grib2Tables.codeTable4_4(bytes[54] & 0xff));
-    f.format("                            Time increment between successive fields = %d%n", GribNumbers.int4(bytes[55] & 0xff, bytes[56] & 0xff, bytes[57] & 0xff, bytes[58] & 0xff));
+    showRawPds(template, raw, f);
   }
 
   private void showProcessedPds(Grib2ProductDefinitionSection pds, int discipline, Formatter f) {
@@ -1078,9 +1083,6 @@ public class Grib2Panel extends JPanel {
     f.format(" Second Surface val = %3f %n", pds.getValueSecondFixedSurface());
   }
 
-  /**
-   * @deprecated
-   */
   public class RecordBean {
     Grib2Record gr;
     Grib2IdentificationSection id;
@@ -1104,7 +1106,7 @@ public class Grib2Panel extends JPanel {
     }
 
     public final String getTimeUnit() {
-      int unit = pdsv.getTimeRangeUnit();
+      int unit = pdsv.getTimeUnit();
       return Grib2Tables.codeTable4_4(unit);
     }
 
@@ -1116,20 +1118,8 @@ public class Grib2Panel extends JPanel {
       return pdsv.getForecastTime();
     }
 
-    public final String getSurfaceType() {
-      String s = Grib2Tables.getTypeSurfaceNameShort(pdsv.getTypeFirstFixedSurface());
-      int lev2 = pdsv.getTypeSecondFixedSurface();
-      if ((lev2 != GribNumbers.UNDEFINED) && (lev2 != GribNumbers.MISSING))
-        s += "/" + Grib2Tables.getTypeSurfaceNameShort(lev2);
-      return s;
-    }
-
     public String getSurfaceValue() {
-      int lev2 = pdsv.getTypeSecondFixedSurface();
-      if ((lev2 != GribNumbers.UNDEFINED) && (lev2 != GribNumbers.MISSING))
-        return pdsv.getValueFirstFixedSurface() + "-" + lev2;
-      else
-        return Float.toString(pdsv.getValueFirstFixedSurface());
+        return pdsv.getLevelValue1() + "-" + pdsv.getLevelValue2();
     }
 
     public int getStartInterval() {
@@ -1152,9 +1142,9 @@ public class Grib2Panel extends JPanel {
       return pdsv.isEnsemble();
     }
 
-    public final int getVCoords() {
+   /* public final int getVCoords() {
       return pdsv.getCoordinates();
-    }
+    } */
 
     public final int getEnsN() {
       return pdsv.getPerturbation();
@@ -1164,13 +1154,22 @@ public class Grib2Panel extends JPanel {
       return pdsv.getNumberForecasts();
     }
 
-    public final String getLimit() {
+    public final int getType() {
+      return pdsv.getType();
+    }
+
+    public final String getProbLimit() {
       return pdsv.getValueLowerLimit() + "-" + pdsv.getValueUpperLimit();
     }
 
+    /*
     public final int getChem() {
       return pdsv.getChemicalType();
     }
+
+    public final int getBands() {
+      return pdsv.getNB();
+    }  */
 
     public final long getGdsOffset() {
       return gr.getGdsOffset();
@@ -1180,13 +1179,10 @@ public class Grib2Panel extends JPanel {
       return gr.getPdsOffset();
     }
 
-    public final int getBands() {
-      return pdsv.getNB();
-    }
-
+   /*
     public final String getCutoff() {
       return pdsv.getHoursAfter() + ":" + pdsv.getMinutesAfter();
-    }
+    }  */
 
     public String toRawPdsString() {
       byte[] bytes = pdsv.getPDSBytes();

@@ -512,15 +512,12 @@ public final class Grib1Dump {
           ps.println( " "+  sc);
         //ps.println("                Reference Time : " +
         //pds.getReferenceTime() );
-        ps.println(
-            "            Product Definition : " + pdsv.getProductDefinitionTemplate()
-            + " " + Grib1Tables.getProductDefinitionName(pdsv.getProductDefinitionTemplate()));
-        ps.println("            Parameter Category : "
-                   + "-1 Meteorological Parameters");
+        ps.println("            TimeRangeIndicator : " + pdsv.getTimeRangeIndicator());
+        ps.println("            Parameter Category : -1 Meteorological Parameters");
         try {
           int pn = pdsv.getParameterNumber();
           GribPDSParamTable parameter_table = GribPDSParamTable.getParameterTable(
-            center, subCenter,  pdsv.getTableVersion() );
+            center, subCenter,  pdsv.getParameterTableVersion() );
           GridParameter parameter = parameter_table.getParameter(pn);
 
           ps.println("                Parameter Name : "
@@ -530,16 +527,15 @@ public final class Grib1Dump {
           ps.println( "NotSupportedException caught");
         }
         //ps.println("                Reference Time : " + dateFormat.format( pds.getBaseTime()));
-        long refTime = pdsv.getRefTime();
+        long refTime = pdsv.getReferenceTime();
         calendar.setTimeInMillis(refTime);
         ps.println("                Reference Time : " + dateFormat.format( calendar.getTime()));
         //ps.println("                    Time Units : " + pds.getTimeUnit());
-        ps.println("                    Time Units : " +
-            Grib1Tables.getTimeUnit( pdsv.getTimeRangeUnit()  ));
+        ps.println("                    Time Units : " + Grib1Tables.getTimeUnit( pdsv.getTimeUnit()  ));
         //ps.println("          Time Range Indicator : "
         //           + pds.getTimeRangeString());
         ps.println("          Time Range Indicator : "
-                   + Grib1Tables.getTimeRange( pdsv.getTimeRange() ));
+                   + Grib1Tables.getTimeRange( pdsv.getTimeRangeIndicator() ));
         ps.println("                   Time 1 (P1) : " + pdsv.getP1());
         ps.println("                   Time 2 (P2) : " + pdsv.getP2());
         //String tgp = Integer.toString(pds.getTypeGenProcess());
@@ -557,10 +553,8 @@ public final class Grib1Dump {
 //        ps.println("                 Level Value 2 : "
 //                   + pds.getLevelValue2());
 
-        ps.println("                 Level Value 1 : "
-                   + pdsv.getValueFirstFixedSurface());
-        ps.println("                 Level Value 2 : "
-                   + pdsv.getValueSecondFixedSurface());
+        ps.println("                 Level Value 1 : " + pdsv.getLevelValue1());
+        ps.println("                 Level Value 2 : " + pdsv.getLevelValue2());
         ps.println("                    GDS Exists : " + pdsv.gdsExists());
         ps.println("                    BMS Exists : " + pdsv.bmsExists());
     }  // end printPDS

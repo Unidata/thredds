@@ -33,9 +33,6 @@
 package ucar.nc2.iosp.grid;
 
 import ucar.nc2.*;
-import ucar.nc2.iosp.AbstractIOServiceProvider;
-import ucar.nc2.iosp.mcidas.McIDASLookup;
-import ucar.nc2.iosp.gempak.GempakLookup;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dt.fmr.FmrcCoordSys;
@@ -43,7 +40,6 @@ import ucar.nc2.units.DateFormatter;
 import ucar.nc2.util.CancelTask;
 import ucar.grib.grib2.Grib2GridTableLookup;
 import ucar.grib.grib1.Grib1GridTableLookup;
-import ucar.unidata.util.StringUtil;
 import ucar.grid.*;
 
 import java.io.*;
@@ -81,48 +77,6 @@ public class GridIndexToNC {
     } else {
       return lookup.getLevelName(gr);  // GEMPAK, GRIB1
     }
-  }
-
-  /**
-   * Get suffix name of variable if it exists
-   *
-   * @param gr     grid record
-   * @param lookup lookup table
-   * @return name of the suffix, ensemble, probability, error, etc
-   */
-  static String makeSuffixName(GridRecord gr, GridTableLookup lookup) {
-    if ( ! (lookup instanceof Grib2GridTableLookup) )
-      return "";
-    Grib2GridTableLookup g2lookup = (Grib2GridTableLookup) lookup;
-    return g2lookup.makeSuffix( gr );
-  }
-
-  /**
-   * Make the variable name with suffix and level if present
-   *
-   * @param gr     grid record
-   * @param lookup lookup table
-   * @param addLevel add level name if there is one
-   * @param addEnsemble  add ensemble name if there is one
-   * @return variable name
-   */
-  public static String makeVariableName(GridRecord gr, GridTableLookup lookup, boolean addLevel, boolean addEnsemble) {
-    GridParameter param = lookup.getParameter(gr);
-    String paramName = param.getDescription();
-
-    if (addEnsemble) {
-      String suffixName = makeSuffixName(gr, lookup);
-      paramName = (suffixName.length() == 0) ? paramName : paramName + "_" + suffixName;
-    }
-
-    if (addLevel) {
-      String levelName = makeLevelName(gr, lookup);
-      if (levelName.length() != 0) {
-        paramName += "_" + levelName;
-      }
-    }
-
-    return paramName;
   }
 
   /**
@@ -270,28 +224,31 @@ public class GridIndexToNC {
     ncfile.addAttribute(null, new Attribute(_Coordinate.ModelRunDate,
             formatter.toDateTimeStringISO(lookup.getFirstBaseTime())));
 
-    if (fmrcCoordSys != null) {
+    /* if (fmrcCoordSys != null) {
       makeDefinedCoordSys(ncfile, lookup, fmrcCoordSys);
     } else {
       makeDenseCoordSys(ncfile, lookup, cancelTask);
-    }
+    } */
+    makeDenseCoordSys(ncfile, lookup, cancelTask);
 
     if (GridServiceProvider.debugMissing) {
+      Formatter f = new Formatter(System.out);
       int count = 0;
       Collection<GridHorizCoordSys> hcset = hcsHash.values();
       for (GridHorizCoordSys hcs : hcset) {
         List<GridVariable> gribvars = new ArrayList<GridVariable>(hcs.varHash.values());
         for (GridVariable gv : gribvars) {
-          count += gv.dumpMissingSummary();
+          count += gv.showMissingSummary(f);
         }
       }
       System.out.println(" total missing= " + count);
     }
 
     if (GridServiceProvider.debugMissingDetails) {
+      Formatter f = new Formatter(System.out);
       Collection<GridHorizCoordSys> hcset = hcsHash.values();
       for (GridHorizCoordSys hcs : hcset) {
-        System.out.println("******** Horiz Coordinate= " + hcs.getGridName());
+        f.format("******** Horiz Coordinate= %s%n", hcs.getGridName());
 
         String lastVertDesc = null;
         List<GridVariable> gribvars = new ArrayList<GridVariable>(hcs.varHash.values());
@@ -300,10 +257,10 @@ public class GridIndexToNC {
         for (GridVariable gv : gribvars) {
           String vertDesc = gv.getVertName();
           if (!vertDesc.equals(lastVertDesc)) {
-            System.out.println("---Vertical Coordinate= " + vertDesc);
+            f.format("---Vertical Coordinate= %s%n", vertDesc);
             lastVertDesc = vertDesc;
           }
-          gv.dumpMissing();
+          gv.showMissing(f);
         }
       }
     }
@@ -346,10 +303,10 @@ public class GridIndexToNC {
       // loop over GridVariables in the HorizCoordSys
       // create the time and vertical coordinates
       List<GridVariable> gribvars = new ArrayList<GridVariable>(hcs.varHash.values());
-      for (GridVariable pv : gribvars) {
+      for (GridVariable gv : gribvars) {
         if ((cancelTask != null) && cancelTask.isCancel()) break;
 
-        List<GridRecord> recordList = pv.getRecords();
+        List<GridRecord> recordList = gv.getRecords();
         GridRecord record = recordList.get(0);
         String vname = makeLevelName(record, lookup);
 
@@ -366,7 +323,7 @@ public class GridIndexToNC {
           useVertCoord = new GridVertCoord(recordList, vname, lookup, hcs);
           vertCoords.add(useVertCoord);
         }
-        pv.setVertCoord(useVertCoord);
+        gv.setVertCoord(useVertCoord);
         // look to see if time coord already exists
         GridTimeCoord useTimeCoord = null;
         for (GridTimeCoord gtc : timeCoords) {
@@ -379,27 +336,23 @@ public class GridIndexToNC {
           useTimeCoord = new GridTimeCoord(recordList, lookup);
           timeCoords.add(useTimeCoord);
         }
-        pv.setTimeCoord(useTimeCoord);
+        gv.setTimeCoord(useTimeCoord);
 
-        // check for ensemble members
-        //System.out.println( pv.getName() +"  "+ pv.getParamName() );
-        GridEnsembleCoord useEnsembleCoord = null;
-        GridEnsembleCoord  ensembleCoord = new GridEnsembleCoord(recordList, lookup);
-        for (GridEnsembleCoord gec : ensembleCoords) {
-          if (ensembleCoord.getNEnsembles() == gec.getNEnsembles()) {
-            useEnsembleCoord = gec;
-            break;
+        if (gv.isEnsemble()) {
+          GridEnsembleCoord useEnsembleCoord = null;
+          GridEnsembleCoord ensembleCoord = new GridEnsembleCoord(recordList);
+          for (GridEnsembleCoord gec : ensembleCoords) {
+            if (ensembleCoord.equals(gec)) {
+              useEnsembleCoord = gec;
+              break;
+            }
           }
+          if (useEnsembleCoord == null) {
+            useEnsembleCoord = ensembleCoord;
+            ensembleCoords.add(ensembleCoord);
+          }
+          gv.setEnsembleCoord(useEnsembleCoord);
         }
-
-        if (useEnsembleCoord == null) {
-          //useEnsembleCoord = new GridEnsembleCoord(recordList, lookup);
-          useEnsembleCoord = ensembleCoord;
-          ensembleCoords.add(useEnsembleCoord);
-        }
-        // only add ensemble dimensions
-        if (useEnsembleCoord.getNEnsembles() > 1)
-          pv.setEnsembleCoord(useEnsembleCoord);
       }
 
       // assign time coordinate names, add dimensions to file
@@ -415,8 +368,7 @@ public class GridIndexToNC {
       int seqno = 0;
       for (GridEnsembleCoord gec : ensembleCoords) {
         gec.setSequence(seqno++);
-        if (gec.getNEnsembles() > 1)
-          gec.addDimensionsToNetcdfFile(ncfile, hcs.getGroup());
+        gec.addDimensionsToNetcdfFile(ncfile, hcs.getGroup());
       }
 
       // add x, y dimensions
@@ -495,10 +447,11 @@ public class GridIndexToNC {
       for (GridTimeCoord tcs : timeCoords) {
         tcs.addToNetcdfFile(ncfile, hcs.getGroup());
       }
-      for (GridEnsembleCoord gec : ensembleCoords) {
-        if (gec.getNEnsembles() > 1)
-          gec.addToNetcdfFile(ncfile, hcs.getGroup());
+
+      for (GridEnsembleCoord ens : ensembleCoords) {
+        ens.addToNetcdfFile(ncfile, hcs.getGroup());
       }
+
       hcs.addToNetcdfFile(ncfile);
 
       for (GridVertCoord gvcs : vertCoords) {
@@ -565,7 +518,33 @@ public class GridIndexToNC {
     }
   }
 
+
   /**
+   * Comparator for grids by vertical variable name
+   *
+   * @author IDV Development Team
+   * @version $Revision: 1.3 $
+   */
+  private class CompareGridVariableByVertName implements Comparator {
+
+    /**
+     * Compare the two lists of names
+     *
+     * @param o1 first list
+     * @param o2 second list
+     * @return comparison
+     */
+    public int compare(Object o1, Object o2) {
+      GridVariable gv1 = (GridVariable) o1;
+      GridVariable gv2 = (GridVariable) o2;
+
+      return gv1.getVertName().compareToIgnoreCase(gv2.getVertName());
+    }
+  }
+
+}
+
+/*
    * Make coordinate system from a Definition object
    *
    * @param ncfile netCDF file to add to
@@ -573,7 +552,7 @@ public class GridIndexToNC {
    * @param fmr    FmrcCoordSys
    * @throws IOException problem reading from file
    * @deprecated dont use definition files as of 4.2
-   */
+   *
   private void makeDefinedCoordSys(NetcdfFile ncfile, GridTableLookup lookup, FmrcCoordSys fmr) throws IOException {
 
     List<GridTimeCoord> timeCoords = new ArrayList<GridTimeCoord>();
@@ -701,7 +680,6 @@ public class GridIndexToNC {
     if (debug) System.out.println("GridIndexToNC.makeDefinedCoordSys for "+ncfile.getLocation());
   }
 
-  /**
    * Find the variable name for the grid
    *
    * @param ncfile netCDF file
@@ -727,7 +705,7 @@ public class GridIndexToNC {
             + name + " or " + pname + " for file " + ncfile.getLocation());
 
     return null;
-  } */
+  }
 
   private String findVariableName(NetcdfFile ncfile, GridRecord gr, GridTableLookup lookup, FmrcCoordSys fmr) {
 
@@ -764,27 +742,32 @@ public class GridIndexToNC {
     return null;
   }
 
-  /**
-   * Comparator for grids by vertical variable name
+   * Make the variable name with suffix and level if present
    *
-   * @author IDV Development Team
-   * @version $Revision: 1.3 $
-   */
-  private class CompareGridVariableByVertName implements Comparator {
+   * @param gr     grid record
+   * @param lookup lookup table
+   * @param addLevel add level name if there is one
+   * @param addEnsemble  add ensemble name if there is one
+   * @return variable name
 
-    /**
-     * Compare the two lists of names
-     *
-     * @param o1 first list
-     * @param o2 second list
-     * @return comparison
-     */
-    public int compare(Object o1, Object o2) {
-      GridVariable gv1 = (GridVariable) o1;
-      GridVariable gv2 = (GridVariable) o2;
+  public static String makeVariableName(GridRecord gr, GridTableLookup lookup, boolean addLevel, boolean addEnsemble) {
+    GridParameter param = lookup.getParameter(gr);
+    String paramName = param.getDescription();
 
-      return gv1.getVertName().compareToIgnoreCase(gv2.getVertName());
+    if (addEnsemble) {
+      String suffixName = makeSuffixName(gr, lookup);
+      paramName = (suffixName.length() == 0) ? paramName : paramName + "_" + suffixName;
     }
+
+    if (addLevel) {
+      String levelName = makeLevelName(gr, lookup);
+      if (levelName.length() != 0) {
+        paramName += "_" + levelName;
+      }
+    }
+
+    return paramName;
   }
 
-}
+
+ */

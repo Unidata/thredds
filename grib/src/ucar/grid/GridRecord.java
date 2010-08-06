@@ -90,9 +90,9 @@ public interface GridRecord {
   /**
    * Get valid time offset of this GridRecord
    *
-   * @return time offset
-   */
-  public int getValidTimeOffset();
+   * @return time offset in minutes from getReferenceTime()
+   *
+  public int getValidTimeOffset(); */
 
   /**
    * Get the parameter name

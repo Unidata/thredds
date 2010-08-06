@@ -417,7 +417,7 @@ public final class Grib1ProductDefinitionSection {
                   +" Type ="+ gpv.getType()
                   +" Stream ="+ gpv.getStream() );
               if( gpv.getExtension() == 30 ) {
-                System.out.println(" Ensemble number ="+ gpv.getEnsembleNumber()
+                System.out.println(" Ensemble number ="+ gpv.getPerturbationNumber()
                   +" NumberForecasts ="+ gpv.getNumberForecasts()
                 );
               }
@@ -1529,28 +1529,28 @@ public final class Grib1ProductDefinitionSection {
     Grib1ProductDefinitionSection pds = new Grib1ProductDefinitionSection( raf );
     Grib1Pds gpv = pds.pdsVars;
     ps.println( "Length = "+ gpv.getLength());
-    ps.println( "ProductDefinition = "+ gpv.getProductDefinitionTemplate());
+    ps.println( "TimeRangeIndicator = "+ gpv.getTimeRangeIndicator());
 
     assert( pds.length == gpv.getLength());
-    assert( pds.table_version == gpv.getTableVersion());
+    assert( pds.table_version == gpv.getParameterTableVersion());
     assert( pds.center_id == gpv.getCenter());
     assert( pds.typeGenProcess == gpv.getTypeGenProcess());
 
     assert( pds.typeGenProcess == gpv.getTypeGenProcess());
-    assert( pds.grid_id == gpv.getGrid_Id());
+    assert( pds.grid_id == gpv.getGridId());
     assert( pds.gds_exists == gpv.gdsExists());
     assert( pds.bms_exists == gpv.bmsExists());
     assert( pds.parameterNumber == gpv.getParameterNumber());
-    assert( pds.getLevelType() == gpv.getTypeFirstFixedSurface());
-    assert( pds.getLevelValue1() == gpv.getValueFirstFixedSurface());
-    assert( pds.getLevelValue2() == gpv.getValueSecondFixedSurface());
+    assert( pds.getLevelType() == gpv.getLevelType1());
+    assert( pds.getLevelValue1() == gpv.getLevelValue1());
+    assert( pds.getLevelValue2() == gpv.getLevelValue2());
 
-    assert( pds.baseTime.equals( gpv.getBaseTime()));
-    assert( pds.refTime == gpv.getRefTime());
+    assert( pds.baseTime.equals( gpv.getReferenceDate()));
+    assert( pds.refTime == gpv.getReferenceTime());
     //assert( pds.tUnit == gpv.getTimeUnit() );
     assert( pds.p1 == gpv.getP1() );
     assert( pds.p2 == gpv. getP2());
-    assert( pds.timeRangeValue == gpv. getTimeRange());
+    assert( pds.timeRangeValue == gpv.getTimeRangeIndicator());
     assert( pds.subcenter_id == gpv.getSubCenter());
     assert( pds.decscale == gpv.getDecimalScale());
     assert( pds.forecastTime == gpv.getForecastTime());

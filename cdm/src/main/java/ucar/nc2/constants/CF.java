@@ -45,6 +45,7 @@ public class CF {
   public static final String featureTypeAtt = "CF:featureType";
   public static final String featureTypeAtt2 = "CF-featureType";
   public static final String featureTypeAtt3 = "CFfeatureType";
+  public static final String featureTypeAtt4 = "featureType";
 
   // standard attributes
   public final static String COORDINATES = "coordinates";

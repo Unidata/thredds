@@ -83,6 +83,8 @@ public class CFpointObs extends TableConfigurerImpl {
       ftypeS = ds.findAttValueIgnoreCase(null, CF.featureTypeAtt2, null);
     if (ftypeS == null)
       ftypeS = ds.findAttValueIgnoreCase(null, CF.featureTypeAtt3, null);
+    if (ftypeS == null)
+      ftypeS = ds.findAttValueIgnoreCase(null, CF.featureTypeAtt4, null);
 
     CF.FeatureType ftype;
     if (ftypeS == null)

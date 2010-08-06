@@ -33,8 +33,9 @@
 
 package ucar.grib.grib1;
 
+import net.jcip.annotations.Immutable;
 import ucar.grib.GribNumbers;
-import ucar.grib.GribPdsIF;
+import ucar.grib.GribPds;
 
 import java.io.IOException;
 import java.util.Date;
@@ -43,53 +44,92 @@ import java.util.Calendar;
 /**
  * A class representing the product definition section (PDS) of a GRIB-1 product.
  * This is section 1 of a Grib record that contains information about the parameter
- *
- * User: rkambic
- * Date: Jun 11, 2009
- * Time: 3:24:50 PM
  */
-
-public final class Grib1Pds implements GribPdsIF {
+@Immutable
+public final class Grib1Pds extends GribPds {
 
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Grib1Pds.class);
-
-  /**
-   * PDS as byte array.
-   */
-  private final byte[] input;
 
   /**
    * Length in bytes of this PDS.
    */
   private final int length;
 
-  // *** constructors *******************************************************
+  /**
+   * Reference time in msecs
+   */
+  private final long refTime;
 
   /**
+   * Valid time in msecs
+   */
+  private final long validTime;
+
+  private GribPDSLevel level;
+
+  // *** constructors *******************************************************
+
+    /**
    * Constructs Grib1PDSVariables from a byte[].
    *
    * @param input PDS
    * @throws java.io.IOException byte[] read
    */
   public Grib1Pds(byte[] input) throws IOException {
+    this(input,  Calendar.getInstance());
+  }
+
+  /**
+   * Constructs Grib1PDSVariables from a byte[].
+   *
+   * @param input PDS
+   * @param cal use this calendar to set the date
+   * @throws java.io.IOException byte[] read
+   */
+  public Grib1Pds(byte[] input, Calendar cal) throws IOException {
     this.input = input;
-    this.length = GribNumbers.int3(getInt(0), getInt(1), getInt(2));
+    this.length = GribNumbers.int3(getOctet(1), getOctet(2), getOctet(3));
+    this.level = new GribPDSLevel(getOctet(10), getOctet(11), getOctet(12));
+
+    // calculate the reference date
+    // octet 25
+    int century = getOctet(25) - 1;
+    if (century == -1) century = 20;
+    // octets 13-17 (base time for reference time)
+    int year = getOctet(13);
+    int month = getOctet(14);
+    int day = getOctet(15);
+    int hour = getOctet(16);
+    int minute = getOctet(17);
+
+    cal.clear();
+    cal.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
+    cal.set(Calendar.DST_OFFSET, 0);
+    cal.set((century * 100 + year), month - 1, day, hour, minute, 0);
+    refTime = cal.getTimeInMillis();
+
+    // calculate the valid date
+    int type = 1;
+    int factor = 1;
+    switch (getTimeUnit()) {
+      case 0: type = Calendar.MINUTE; break;
+      case 1: type = Calendar.HOUR; break;
+      case 2: type = Calendar.HOUR; factor = 24; break;
+      case 3: type = Calendar.MONTH; break;
+      case 4: type = Calendar.YEAR; break;
+      case 5: type = Calendar.YEAR; factor = 10; break;
+      case 6: type = Calendar.YEAR; factor = 30; break;
+      case 7: type = Calendar.YEAR; factor = 100; break;
+      case 10: type = Calendar.HOUR; factor = 3; break;
+      case 11: type = Calendar.HOUR; factor = 6; break;
+      case 12: type = Calendar.HOUR; factor = 12; break;
+      default: throw new IllegalArgumentException("Unknown timeUnit= "+ getTimeUnit());
+    }
+    cal.add(type, factor * getForecastTime());
+    validTime = cal.getTimeInMillis();
   }
 
   // getters
-
-  /**
-   * PDS as byte[]
-   */
-  public byte[] getPDSBytes() {
-    return input;
-  }
-
-  // octets 1-3 (Length of PDS)
-
-  public final int getLength() {
-    return length;
-  }
 
   /**
    * Number PDS section .
@@ -98,54 +138,65 @@ public final class Grib1Pds implements GribPdsIF {
     return 1;
   }
 
+    // octets 1-3 (Length of PDS)
+
+  public final int getLength() {
+    return length;
+  }
+
   // octet 4
+
   /**
    * gets the Table version as a int.
    *
    * @return table_version
    */
-  public final int getTableVersion() {
-    return getInt(3);
+  public final int getParameterTableVersion() {
+    return getOctet(4);
   }
 
   // octet 5
+
   /**
-   * Center as int.
+   * Center see table 0
    *
    * @return center_id
    */
   public final int getCenter() {
-    return getInt(4);
+    return getOctet(5);
   }
 
   // octet 6
+
   /**
-   * Process Id as int.
+   * Type of Generating Process code see Table A
    *
-   * @return typeGenProcess
+   * @return Type of Generating Process code
    */
   public final int getTypeGenProcess() {
-    return getInt(5);
+    return getOctet(6);
   }
 
   // octet 7
+
   /**
-   * Grid ID as int.
+   * Grid ID see Table B
    *
    * @return grid_id
    */
-  public final int getGrid_Id() {
-    return getInt(6);
+  public final int getGridId() {
+    return getOctet(7);
   }
 
   // octet 8
+
   /**
-   * Check if GDS exists.
+   * Check if GDS exists
    *
    * @return true, if GDS exists
    */
   public final boolean gdsExists() {
-    return (getInt(7) & 128) == 128;
+    return (getOctet(8) & 128) == 128;
   }
 
   /**
@@ -154,66 +205,59 @@ public final class Grib1Pds implements GribPdsIF {
    * @return true, if BMS exists
    */
   public final boolean bmsExists() {
-    return (getInt(7) & 64) == 64;
-  }
-
-  /**
-   * parameter Category .
-   *
-   * @return parameterCategory as int
-   */
-  public final int getParameterCategory() {
-    return -1;
+    return (getOctet(8) & 64) == 64;
   }
 
   // octet 9
+
   /**
-   * Get the number of the parameter.
+   * Get the number of the parameter, see Table 2
    *
    * @return index number of parameter in table
    */
   public final int getParameterNumber() {
-    return getInt(8);
+    return getOctet(9);
   }
 
   //octet 10
+
   /**
-   * Get the numeric type for 1st level.
+   * Get the numeric type for 1st level, see Table 3 and 3a
    *
    * @return type of level (height or pressure)
    */
-  public final int getTypeFirstFixedSurface() {
-    return getInt(9);
+  public final int getLevelType1() {
+    return level.getIndex();
   }
 
   // octet 11-12
+
   /**
-   * Get the numeric value for this level.
+   * Get the numeric value for this level, see Table 3
    *
    * @return int level value
    */
-  public final float getValueFirstFixedSurface() {
-    GribPDSLevel level = new GribPDSLevel(getInt(9), getInt(10), getInt(11));
+  public final double getLevelValue1() {
     return level.getValue1();
   }
 
   /**
    * Get the numeric type for 2nd level.
    *
-   * @return type of level always 255, Grib1 does't have type 2nd level
+   * @return type of level always 255, Grib1 doesn't have type 2nd level
    */
-  public final int getTypeSecondFixedSurface() {
-    return 255;
+  public final int getLevelType2() {
+    return 255; // LOOK ??
   }
 
   // octet 11-12
+
   /**
    * Get value 2 (if it exists) for this level.
    *
    * @return int level value
    */
-  public final float getValueSecondFixedSurface() {
-    GribPDSLevel level = new GribPDSLevel(getInt(9), getInt(10), getInt(11));
+  public final double getLevelValue2() {
     return level.getValue2();
   }
 
@@ -222,24 +266,8 @@ public final class Grib1Pds implements GribPdsIF {
    *
    * @return date of basetime
    */
-  public final Date getBaseTime() {
-    // octet 25
-    int century = getInt(24) - 1;
-    if (century == -1) century = 20;
-    // octets 13-17 (base time for reference time)
-    int year = getInt(12);
-    int month = getInt(13);
-    int day = getInt(14);
-    int hour = getInt(15);
-    int minute = getInt(16);
-
-    Calendar calendar = Calendar.getInstance();
-    calendar.clear();
-    calendar.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
-    calendar.set(Calendar.DST_OFFSET, 0);
-    calendar.set((century * 100 + year), month - 1, day, hour, minute, 0);
-
-    return calendar.getTime();
+  public final Date getReferenceDate() {
+    return new Date(refTime);
   }
 
   /**
@@ -247,76 +275,55 @@ public final class Grib1Pds implements GribPdsIF {
    *
    * @return refTime
    */
-  public final long getRefTime() {
-    // octet 25
-    int century = getInt(24) - 1;
-    if (century == -1) century = 20;
-    // octets 13-17 (base time for reference time)
-    int year = getInt(12);
-    int month = getInt(13);
-    int day = getInt(14);
-    int hour = getInt(15);
-    int minute = getInt(16);
-
-    Calendar calendar = Calendar.getInstance();
-    calendar.clear();
-    calendar.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
-    calendar.set(Calendar.DST_OFFSET, 0);
-    calendar.set((century * 100 + year), month - 1, day, hour, minute, 0);
-
-    return calendar.getTimeInMillis();
+  public final long getReferenceTime() {
+    return refTime;
   }
 
-  // octet 18 Forecast time unit
   /**
+   * octet 18 Forecast time unit, see Table 4
+   *
    * @return int time unit index
    */
-  public final int getTimeRangeUnit() {
-    return getInt(17);
+  public final int getTimeUnit() {
+    return getOctet(18);
   }
 
   // octet 19  used to create Forecast time
+
   /**
-   * P1.
+   * Period of time, octet 19 in units of getTimeRangeUnit()
    *
-   * @return p1
+   * @return P1
    */
   public final int getP1() {
-    if( getTimeRange() == 10 )
-       return GribNumbers.int2(getInt(18), getInt(19));
-    return getInt(18);
+    if (getTimeRangeIndicator() == 10)
+      return GribNumbers.int2(getOctet(19), getOctet(20));
+    return getOctet(19);
   }
 
-  // octet  20 used to create Forecast time
   /**
    * P2 - octet 20 - Period of time or time interval
+   * in units of getTimeRangeUnit()
    *
-   * @return p2
+   * @return P2
    */
   public final int getP2() {
-    if( getTimeRange() == 10 )
-       return 0;
-    return getInt(19);
+    if (getTimeRangeIndicator() == 10)
+      return 0;
+    return getOctet(20);
   }
 
   /**
-   * TimeRange indicator - octet  21  (see Table 5)
+   * Time Range indicator - octet 21 (see Table 5)
    *
-   * @return TimeRange indicator
+   * @return Time Range indicator
    */
-  public final int getTimeRange() {
-    return getInt(20);
+  public final int getTimeRangeIndicator() {
+    return getOctet(21);
   }
 
-  /**
-   * ProductDefinition
-   * Since Grib1 doesn't have a Product Definition, use the ime range. This is
-   * subjective but works.
-   *
-   * @return ProductDefinition
-   */
-  public final int getProductDefinitionTemplate() {
-    return getTimeRange();
+  public final Date getForecastDate() {
+    return new Date(validTime);
   }
 
   /**
@@ -326,7 +333,7 @@ public final class Grib1Pds implements GribPdsIF {
    */
   public final int getForecastTime() {
     // forecast time is always at the end of the range
-    switch (getTimeRange()) {
+    switch (getTimeRangeIndicator()) {
 
       case 0:
         return getP1();
@@ -356,7 +363,7 @@ public final class Grib1Pds implements GribPdsIF {
         // p1 really consists of 2 bytes p1 and p2
         //return GribNumbers.int2(getP1(), getP2());
         return getP1();
-      
+
       case 51:
         return getP2();
 
@@ -365,80 +372,45 @@ public final class Grib1Pds implements GribPdsIF {
 
       default:
         log.error("PDS: Time Range Indicator "
-            + getTimeRange() + " is not yet supported");
+                + getTimeRangeIndicator() + " is not yet supported");
     }
     return GribNumbers.UNDEFINED;
   }
 
-   /**
+  public final boolean isInterval() {
+    int code = getTimeRangeIndicator();
+    return (code == 2) || (code == 3) || (code == 4) || (code == 5) || (code == 6) || (code == 7);
+    // LOOK not sure about code > 10
+  }
+
+  public long getIntervalTimeEnd() {
+    return -1;
+  }
+
+
+  /**
    * Get the time interval of the forecast.
    *
    * @return interval as int[2]
    */
   public int[] getForecastTimeInterval() {
-     int[] interval = new int[ 2 ];
-     interval[ 0 ] = getP1();
-     interval[ 1 ] = getP2();
-     return interval;
+    if (!isInterval()) return null;
+
+    int[] interval = new int[2];
+    interval[0] = getP1();
+    interval[1] = getP2();
+    return interval;
   }
 
-  /**  // TODO: move to Grib1GridTableLookup
-   * TimeRange as String.
-   *
-   * @return timeRange
-   */
-  public final String getTimeRangeString() {
-    switch (getTimeRange()) {
-
-      case 0:
-        return "product valid at RT + P1";
-
-      case 1:
-        return "product valid for RT, P1=0";
-
-      case 2:
-        return "product valid from (RT + P1) to (RT + P2)";
-
-      case 3:
-        return "product is an average between (RT + P1) to (RT + P2)";
-
-      case 4:
-        return "product is an accumulation between (RT + P1) to (RT + P2)";
-
-      case 5:
-        return "product is the difference (RT + P2) - (RT + P1)";
-
-      case 6:
-        return "product is an average from (RT - P1) to (RT - P2)";
-
-      case 7:
-        return "product is an average from (RT - P1) to (RT + P2)";
-
-      case 10:
-        return "product valid at RT + P1";
-        // p1 really consists of 2 bytes p1 and p2
-
-      case 51:
-        return "mean value from RT to (RT + P2)";
-
-      case 113:
-        return "Average of N forecasts, forecast period of P1, reference intervals of P2";
-
-      default:
-        log.error("PDS: Time Range Indicator "
-            + getTimeRange() + " is not yet supported");
-    }
-    return "";
-  }
-
-  /*
+  /**
    * Get Grib1 statistical processing by using Grib1 Table 5 TIME RANGE INDICATOR as a reference.
    * Since Grib1 and Grib2 use different tables, convert the Grib1 value to the Grib2
    * value so GribGridRecord.getIntervalTypeName() returns the correct IntervalStatType.
    *
+   * @return Grib-2 Interval Statistic Type (Table 4-10)
    */
   public int getIntervalStatType() {
-    switch (getTimeRange()) {
+    switch (getTimeRangeIndicator()) {
       // average
       case 3:
       case 6:
@@ -480,94 +452,74 @@ public final class Grib1Pds implements GribPdsIF {
   }
 
   // octet 22 & 23
+
   /**
-   * AvgInclude as int.
+   * Number Included In Average, octet 22 & 23
    *
-   * @return AvgInclude
+   * @return Number Included In Average
    */
-  public final int getAvgInclude() {
-    return GribNumbers.int2(getInt(21), getInt(22));
+  public final int getNumberIncludedInAverage() {
+    return GribNumbers.int2(getOctet(22), getOctet(23));
   }
 
   // octet 24
+
   /**
-   * getAvgMissing as int.
+   * Number Missing In Average, octet 24
    *
-   * @return getAvgMissing
+   * @return Number Missing In Average
    */
-  public final int getAvgMissing() {
-    return getInt(23);
+  public final int getNumberMissingInAverage() {
+    return getOctet(24);
   }
 
   // octet 26
+
   /**
-   * SubCenter as int.
+   * SubCenter, allocated by center (Table C)
    *
    * @return subCenter
    */
   public final int getSubCenter() {
-    return getInt(25);
+    return getOctet(26);
   }
 
   // octets 27-28 (decimal scale factor)
+
   /**
    * Get the exponent of the decimal scale used for all data values.
    *
    * @return exponent of decimal scale
    */
   public final int getDecimalScale() {
-    return GribNumbers.int2(getInt(26), getInt(27));
+    return GribNumbers.int2(getOctet(27), getOctet(28));
   }
+
+  //////////////////////////////////////////////////////////////////
+  // Local table Specific processing
 
   // octet 41 id's ensemble
   // Ensemble processing
+
   /**
    * NCEP Appendix C Manual 388
    * states that if the PDS is > 28 bytes and octet 41 == 1
-   * then it's ensemble an product.
+   * then it's an ensemble an product.
    *
-   * @return
+   * @return true if this is an ensemble
    */
   public final boolean isEnsemble() {
-    return (length > 40 && getInt(40) != 0);
+    if ((getCenter() == 7) && (length > 40 && getOctet(41) != 0)) return true;
+    if ((getCenter() == 98) && (length > 40 && getOctet(41) != 0)) return true; // LOOK ecmwf ??
+    return false;
   }
+
   public final int getExtension() {
-    if (length > 40 ) {
-      return  getInt(40);
-    } else {
-      return GribNumbers.UNDEFINED;
-    }
+    return getOctet(41);
   }
-  // octet 42 Type
-  /**
-   * type of ensemble
-   *
-   * @return type
-   */
-  public final int getType() {
-    switch (getCenter()) {
-      case 7:
-      case 8:
-      case 9: {
-        if (length > 41 ) {
-          return getInt(41);
-        } else {
-          return GribNumbers.UNDEFINED;
-        }
-      }
-      // octet 43   ECWMF
-      case 98: {
-        if (length > 42 ) {
-          return getInt(42);
-        } else {
-          return GribNumbers.UNDEFINED;
-        }
-      }
-      default:
-        return GribNumbers.UNDEFINED;
-    }
-  }
+
   // octet 42   ECWMF
+
   /**
    * Class
    *
@@ -576,11 +528,7 @@ public final class Grib1Pds implements GribPdsIF {
   public final int getEcmwfClass() {
     switch (getCenter()) {
       case 98: {
-        if (length > 41 ) {
-          return getInt(41);
-        } else {
-          return GribNumbers.UNDEFINED;
-        }
+        return getOctet(42);
       }
       default:
         return GribNumbers.UNDEFINED;
@@ -588,6 +536,7 @@ public final class Grib1Pds implements GribPdsIF {
   }
 
   // octet 43 Identification number
+
   /**
    * ID of ensemble
    *
@@ -598,110 +547,84 @@ public final class Grib1Pds implements GribPdsIF {
       case 7:
       case 8:
       case 9: {
-      if (length > 42 ) {
-        return getInt(42);
-      } else {
-        return GribNumbers.UNDEFINED;
+        return getOctet(43);
       }
-    }
       default:
         return GribNumbers.UNDEFINED;
     }
   }
 
   // octets 44-45
+
   /**
    * Stream.
    *
    * @return Stream.
    */
   public final int getStream() {
-    return GribNumbers.int2(getInt(43), getInt(44));
+    return GribNumbers.int2(getOctet(44), getOctet(45));
   }
-  
+
   // octet 44 Product Identifier
+
   /**
    * Product of ensemble
    *
    * @return ID
    */
   public final int getProductID() {
-    if (length > 43 ) {
-      return getInt(43);
-    } else {
-      return GribNumbers.UNDEFINED;
-    }
+    return getOctet(44);
   }
 
   // octet 45 Spatial Identifier or Probability
+
   /**
    * Spatial Identifier or Probability of ensemble
    *
    * @return ID
    */
   public final int getSpatialorProbability() {
-    if (length > 44 ) {
-      return getInt(44);
-    } else {
-      return GribNumbers.UNDEFINED;
-    }
+    return getOctet(45);
   }
 
   // octet 46 Probability product definition
+
   /**
    * Product of ensemble
    *
    * @return ID
    */
   public final int getProbabilityProduct() {
-    if (length > 45 &&
-        ((getParameterNumber() == 191) || (getParameterNumber() == 192))) {
+    if (length > 45 && ((getParameterNumber() == 191) || (getParameterNumber() == 192))) {
       // octet 46 Probability product definition
-      return getInt(45);
+      return getOctet(46);
     } else {
       return GribNumbers.UNDEFINED;
     }
   }
 
   // octet 47 Probability type
+
   /**
    * Product type of probability
    *
    * @return ID
    */
   public final int getProbabilityType() {
-    if (length > 46 &&
-        ((getParameterNumber() == 191) || (getParameterNumber() == 192))) {
-      return getInt(46);
+    if (length > 46 && ((getParameterNumber() == 191) || (getParameterNumber() == 192))) {
+      return getOctet(47);
     } else {
       return GribNumbers.UNDEFINED;
     }
   }
 
-  /**
-   * Octet 50
-   *
-   * @return int octet 50
-   */
-  public final int getOctet50() {
-    return getInt(49);
-  }
-
   // octet 50   ECWMF
-  /**
-   * Class
-   *
-   * @return Class
-   */
-  public final int getEnsembleNumber() {
+
+  public final int getPerturbationNumber() {
     switch (getCenter()) {
       case 98: {
-        if ( getExtension() == 30 ) {
-          if (length > 49 ) {
-            return getInt(49);
-          } else {
-            return GribNumbers.UNDEFINED;
-          }
+        if (getExtension() == 30) {
+          return getOctet(50);
         }
       }
       default:
@@ -709,55 +632,96 @@ public final class Grib1Pds implements GribPdsIF {
     }
   }
 
-  /**
-   * Octet 51
-   *
-   * @return int octet 51
-   */
-  public final int getOctet51() {
-    return getInt(50);
+    // octet 42 Type
+
+    /**
+     * type of ensemble
+     *
+     * @return type
+     */
+    public final int getPerturbationType() {
+      switch (getCenter()) {
+        // octet 43   ECWMF
+         case 98:  return getOctet(43);
+         default: return GribNumbers.UNDEFINED;
+      }
+   }
+
+  @Override
+  public boolean isEnsembleDerived() {
+    return false;
   }
 
-  /**
-   * Octet 52
-   *
-   * @return int octet 52
-   */
-  public final int getOctet52() {
-    return getInt(51);
+  @Override
+  public int getNumberEnsembleForecasts() {
+    return 0;
   }
+
+  @Override
+  public boolean isProbability() {
+    return false;
+  }
+
+  @Override
+  public double getProbabilityLowerLimit() {
+    return Double.NaN;
+  }
+
+  @Override
+  public double getProbabilityUpperLimit() {
+    return Double.NaN;
+  }
+
+  public final int getType() {
+      switch (getCenter()) {
+        case 7:
+        case 8:
+        case 9: {
+          return getOctet(42);
+        }
+        // octet 43   ECWMF
+        case 98: {
+          return getOctet(43);
+        }
+        default:
+          return GribNumbers.UNDEFINED;
+      }
+    }
+
+
 
   // octet 48-51 Probability lower limit
+
   /**
    * lower limit of probability
    *
    * @return ID
    */
   public final float getValueLowerLimit() {
-    if (length > 50 &&
-        ((getParameterNumber() == 191) || (getParameterNumber() == 192))) {
-      return GribNumbers.float4(getInt(47), getInt(48), getInt(49), getInt(50));
+    if (length > 50 && ((getParameterNumber() == 191) || (getParameterNumber() == 192))) {
+      return GribNumbers.float4(getOctet(48), getOctet(49), getOctet(50), getOctet(51));
     } else {
       return GribNumbers.UNDEFINED;
     }
   }
 
   // octet 52-55 Probability upper limit
+
   /**
    * upper limit of probability
    *
    * @return ID
    */
   public final float getValueUpperLimit() {
-    if (length > 54 &&
-        ((getParameterNumber() == 191) || (getParameterNumber() == 192))) {
-      return GribNumbers.float4(getInt(51), getInt(52), getInt(53), getInt(54));
+    if (length > 54 && ((getParameterNumber() == 191) || (getParameterNumber() == 192))) {
+      return GribNumbers.float4(getOctet(52), getOctet(53), getOctet(54), getOctet(55));
     } else {
       return GribNumbers.UNDEFINED;
     }
   }
 
   // octet 61 members / forecasts
+
   /**
    * number members / forecasts
    *
@@ -768,22 +732,17 @@ public final class Grib1Pds implements GribPdsIF {
       case 7:
       case 8:
       case 9: {
-        if (length > 60 &&
-            ((getType() == 4) || (getType() == 5))) {
-          return getInt(60);
+        if (length > 60 && ((getType() == 4) || (getType() == 5))) {
+          return getOctet(61);
         } else {
           return GribNumbers.UNDEFINED;
         }
       }
       // octet 51   ECWMF
       case 98: {
-        if ( getExtension() == 30 ) {
-          if (length > 50 ) {
-            return getInt(50);
-          } else {
-            return GribNumbers.UNDEFINED;
-          }
-        }  
+        if (getExtension() == 30) {
+          return getOctet(51);
+        }
       }
       default:
         return GribNumbers.UNDEFINED;
@@ -791,111 +750,112 @@ public final class Grib1Pds implements GribPdsIF {
   }
 
   // octet 62 Cluster size
+
   /**
    * size Clusters
    *
    * @return ID
    */
   public final int getSizeClusters() {
-    if (length > 61 &&
-        ((getType() == 4) || (getType() == 5))) {
-      return getInt(61);
+    if (length > 61 && ((getType() == 4) || (getType() == 5))) {
+      return getOctet(62);
     } else {
       return GribNumbers.UNDEFINED;
     }
   }
 
   // octet 63 Number of clusters
+
   /**
    * number Clusters
    *
    * @return Number
    */
   public final int getNumberClusters() {
-    if (length > 62 &&
-        ((getType() == 4) || (getType() == 5))) {
-      return getInt(62);
+    if (length > 62 && ((getType() == 4) || (getType() == 5))) {
+      return getOctet(63);
     } else {
       return GribNumbers.UNDEFINED;
     }
   }
 
   // octet 64 Clustering Method
+
   /**
    * Method
    *
    * @return Method
    */
   public final int getMethod() {
-    if (length > 63 &&
-        ((getType() == 4) || (getType() == 5))) {
-      return getInt(63);
+    if (length > 63 && ((getType() == 4) || (getType() == 5))) {
+      return getOctet(64);
     } else {
       return GribNumbers.UNDEFINED;
     }
   }
 
   // octet 65-67 Northern latitude of clustering domain
+
   /**
    * Northern latitude
    *
    * @return Northern latitude
    */
   public final float getNorthLatitude() {
-    if (length > 66 &&
-        ((getType() == 4) || (getType() == 5))) {
-      return GribNumbers.int3(getInt(64), getInt(65), getInt(66)) / 1000;
+    if (length > 66 && ((getType() == 4) || (getType() == 5))) {
+      return GribNumbers.int3(getOctet(65), getOctet(66), getOctet(67)) / 1000;
     } else {
       return GribNumbers.UNDEFINED;
     }
   }
 
   // octet 68-70 Southern latitude of clustering domain
+
   /**
    * Southern latitude
    *
    * @return Southern latitude
    */
   public final float getSouthLatitude() {
-    if (length > 69 &&
-        ((getType() == 4) || (getType() == 5))) {
-      return GribNumbers.int3(getInt(67), getInt(68), getInt(69)) / 1000;
+    if (length > 69 && ((getType() == 4) || (getType() == 5))) {
+      return GribNumbers.int3(getOctet(68), getOctet(69), getOctet(70)) / 1000;
     } else {
       return GribNumbers.UNDEFINED;
     }
   }
 
   // octet 71-73 Eastern Longitude of clustering domain
+
   /**
    * Eastern Longitude
    *
    * @return Eastern Longitude
    */
   public final float getEastLongitude() {
-    if (length > 72 &&
-        ((getType() == 4) || (getType() == 5))) {
-      return GribNumbers.int3(getInt(70), getInt(71), getInt(72)) / 1000;
+    if (length > 72 && ((getType() == 4) || (getType() == 5))) {
+      return GribNumbers.int3(getOctet(71), getOctet(72), getOctet(73)) / 1000;
     } else {
       return GribNumbers.UNDEFINED;
     }
   }
 
   // octet 74-76 Western Longitude of clustering domain
+
   /**
    * Western Longitude
    *
    * @return Western Longitude
    */
   public final float getWestLongitude() {
-    if (length > 75 &&
-        ((getType() == 4) || (getType() == 5))) {
-      return GribNumbers.int3(getInt(73), getInt(74), getInt(75)) / 1000;
+    if (length > 75 && ((getType() == 4) || (getType() == 5))) {
+      return GribNumbers.int3(getOctet(74), getOctet(75), getOctet(76)) / 1000;
     } else {
       return GribNumbers.UNDEFINED;
     }
   }
 
   // octet 77-86
+
   /**
    * Membership
    *
@@ -904,121 +864,13 @@ public final class Grib1Pds implements GribPdsIF {
   public final int[] getMembership() {
     if (length > 85 && (getType() == 4)) {
       int[] member = new int[10];
-      int idx = 76;
+      int idx = 77;
       for (int i = 0; i < 10; i++)
-        member[i] = getInt(idx++);
+        member[i] = getOctet(idx++);
       return member;
     } else {
       return null;
     }
-  }
-
-  // implemented to satisfy interface GribPDSVariablesIF
-
-  /**
-   * Number of this coordinates.
-   *
-   * @return Coordinates number
-   */
-  public final int getCoordinates() {
-    return GribNumbers.UNDEFINED;
-  }
-
-  /**
-   * ChemicalType.
-   *
-   * @return ChemicalType
-   */
-  public final int getChemicalType() {
-        return GribNumbers.UNDEFINED;
-  }
-
-  /**
-   * backGenProcess.
-   *
-   * @return BackGenProcess
-   */
-  public final int getBackGenProcess() {
-        return GribNumbers.UNDEFINED;
-  }
-
-  /**
-   * ObservationProcess.
-   *
-   * @return ObservationProcess
-   */
-  public final int getObservationProcess() {
-        return GribNumbers.UNDEFINED;
-  }
-
-  /**
-   * Number Bands.
-   *
-   * @return NB
-   */
-  public final int getNB() {
-        return GribNumbers.UNDEFINED;
-  }
-  /**
-   * analysisGenProcess.
-   *
-   * @return analysisGenProcess
-   */
-  public final int getAnalysisGenProcess() {
-        return GribNumbers.UNDEFINED;
-  }
-
-  /**
-   * hoursAfter.
-   *
-   * @return HoursAfter
-   */
-  public final int getHoursAfter() {
-        return 0;
-  }
-
-  /**
-   * minutesAfter.
-   *
-   * @return MinutesAfter
-   */
-  public final int getMinutesAfter() {
-        return 0;
-  }
-
-  /**
-   * ForecastProbability.
-   *
-   * @return int ForecastProbability
-   */
-  public final int getForecastProbability() {
-        return getProbabilityType();
-  }
-
-  /**
-   * ForecastPercentile.
-   *
-   * @return int ForecastPercentile
-   */
-  public final int getForecastPercentile() {
-        return GribNumbers.UNDEFINED;
-  }
-
-  /**
-   * Perturbation number
-   * @return int Perturbation
-   */
-  public final int getPerturbation() {
-        return GribNumbers.UNDEFINED;
-  }
-
-  /**
-   * Converts byte to int.
-   *
-   * @return int  byte as int
-   */
-  public final int getInt(int index) {
-    return input[index] & 0xff;
   }
 
 }

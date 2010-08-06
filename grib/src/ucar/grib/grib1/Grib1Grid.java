@@ -63,7 +63,7 @@ public final class Grib1Grid extends Grib1GridDefinitionSection {
     super();
 
     //int generatingProcess = pds.getTypeGenProcess();
-    int gridNumber = pds.getPdsVars().getGrid_Id();
+    int gridNumber = pds.getPdsVars().getGridId();
 
     // gdskey = 1000 + grid number
     gdskey = 1000 + gridNumber;

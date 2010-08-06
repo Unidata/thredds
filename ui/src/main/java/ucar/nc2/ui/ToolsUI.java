@@ -1243,14 +1243,6 @@ public class ToolsUI extends JPanel {
 
       buttPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
 
-      /* button and comboBox dont work!
-      AbstractAction getAction =  new AbstractAction() {
-        public void actionPerformed(ActionEvent e) {
-          doit( cb.getSelectedItem());
-        }
-      };
-      BAMutil.setActionProperties( getAction, "Doit", "open selected", false, 'O', -1);  */
-
       if (addFileButton) {
         AbstractAction fileAction = new AbstractAction() {
           public void actionPerformed(ActionEvent e) {
@@ -2232,6 +2224,26 @@ public class ToolsUI extends JPanel {
       BAMutil.setActionProperties(indexAction, "addCoords", "use index", true, 'C', -1);
       indexAction.putValue(BAMutil.STATE, new Boolean(useIndex));
       BAMutil.addActionToContainer(buttPanel, indexAction);
+
+      AbstractAction infoAction = new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+          Formatter f = new Formatter();
+          try {
+            gribTable.showInfo(f);
+
+          } catch (Exception ioe) {
+            ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
+            ioe.printStackTrace();
+            ioe.printStackTrace(new PrintStream(bos));
+            ta.appendLine(bos.toString());
+          }
+          detailTA.setText(f.toString());
+          detailTA.gotoTop();
+          detailWindow.show();
+        }
+      };
+      BAMutil.setActionProperties(infoAction, "Information", "show Info", false, 'I', -1);
+      BAMutil.addActionToContainer(buttPanel, infoAction);
     }
 
     boolean process(Object o) {

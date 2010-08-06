@@ -104,7 +104,7 @@ public class ShowGribIndex {
       List<GridRecord> records = index.getGridRecords();
       for (GridRecord gr : records) {
         GribGridRecord ggr = (GribGridRecord) gr;
-        System.out.println(ggr.productTemplate + " " + ggr.discipline + " " +
+        /* System.out.println(ggr.productTemplate + " " + ggr.discipline + " " +
             ggr.category + " " + ggr.paramNumber + " " +
             ggr.typeGenProcess + " " + ggr.levelType1 + " " +
             ggr.levelValue1 + " " + ggr.levelType2 + " " +
@@ -113,7 +113,7 @@ public class ShowGribIndex {
             ggr.forecastTime + " " + ggr.gdsKey + " " + ggr.offset1 + " " + ggr.offset2 + " " +
             ggr.decimalScale + " " + ggr.bmsExists + " " + ggr.center + " " +
             ggr.subCenter + " " + ggr.table + " " +
-            ggr.type + " " + ggr.numberForecasts + " " + ggr.lowerLimit + " " + ggr.upperLimit);
+            ggr.type + " " + ggr.numberForecasts + " " + ggr.lowerLimit + " " + ggr.upperLimit);  */
       }
 
       System.out.println("-----------------------------------------------------------------");

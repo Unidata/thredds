@@ -167,8 +167,8 @@ public class Grib1WriteIndex {
         if (i == 0) {
           sb.append(" center " + pdsv.getCenter());
           sb.append(" sub_center " + pdsv.getSubCenter());
-          sb.append(" table_version " + pdsv.getTableVersion());
-          sb.append(" basetime " + dateFormat.format(pdsv.getBaseTime()));
+          sb.append(" table_version " + pdsv.getParameterTableVersion());
+          sb.append(" basetime " + dateFormat.format(pdsv.getReferenceDate()));
           sb.append(" ensemble ");
           sb.append( (pdsv.isEnsemble()) ? "true" : "false");
           out.writeUTF(sb.toString());
@@ -179,7 +179,7 @@ public class Grib1WriteIndex {
             System.out.println( "Index created with number records ="+ products.size());
         }
         out.writeInt(product.getDiscipline());
-        out.writeLong(pdsv.getRefTime());
+        out.writeLong(pdsv.getReferenceTime());
         out.writeInt(product.getGDSkeyInt());
         out.writeLong(product.getOffset1());
         out.writeLong(product.getOffset2());
@@ -366,8 +366,8 @@ public class Grib1WriteIndex {
         if (i == 0) {
           sb.append(" center " + pdsv.getCenter());
           sb.append(" sub_center " + pdsv.getSubCenter());
-          sb.append(" table_version " + pdsv.getTableVersion());
-          sb.append(" basetime " + dateFormat.format(pdsv.getBaseTime()));
+          sb.append(" table_version " + pdsv.getParameterTableVersion());
+          sb.append(" basetime " + dateFormat.format(pdsv.getReferenceDate()));
           sb.append(" ensemble ");
           sb.append( (pdsv.isEnsemble()) ? "true" : "false");
           out.writeUTF(sb.toString());
@@ -391,7 +391,7 @@ public class Grib1WriteIndex {
         }
 
         out.writeInt(product.getDiscipline());
-        out.writeLong(pdsv.getRefTime());
+        out.writeLong(pdsv.getReferenceTime());
         out.writeInt(product.getGDSkeyInt());
         out.writeLong(product.getOffset1());
         out.writeLong(product.getOffset2());

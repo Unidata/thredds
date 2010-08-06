@@ -281,12 +281,8 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
     Range timeRange = new Range( 0, 0 ); // kludge for coordinate variables without a timeRange
     if( section.getRank() > 2 )
       timeRange = section.getRange(count++);
-    Range ensRange = pv.hasEnsemble()
-            ? section.getRange(count++)
-            : null;
-    Range levRange = pv.hasVert()
-            ? section.getRange(count++)
-            : null;
+    Range ensRange = pv.hasEnsemble() ? section.getRange(count++) : null;
+    Range levRange = pv.hasVert() ? section.getRange(count++) : null;
     Range yRange = section.getRange(count++);
     Range xRange = section.getRange(count);
 
@@ -378,9 +374,7 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
           throws IOException, InvalidRangeException {
 
     Attribute att = v2.findAttribute("missing_value");
-    float missing_value = (att == null)
-            ? -9999.0f
-            : att.getNumericValue().floatValue();
+    float missing_value = (att == null) ? -9999.0f : att.getNumericValue().floatValue();
 
     GridVariable pv = (GridVariable) v2.getSPobject();
     GridHorizCoordSys hsys = pv.getHorizCoordSys();
@@ -430,7 +424,7 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
     return (null == pv.findRecord(timeIdx, ensIdx, levIdx));
   }
 
-  /**
+  /*
    * Ensemble information for this Variable:
    *  ensembles - number of ensembles
    *  pdn - productType of Ensemble
@@ -444,7 +438,7 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
    *
    * @param v2      Variable
    * @return ensInfo int[]
-   */
+   *
   public int[] ensembleInfo(Variable v2 ) {
     GridVariable pv = (GridVariable) v2.getSPobject();
     int ensembles = pv.getNEnsembles();
@@ -455,7 +449,7 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
     System.arraycopy( pv.getEnsTypes(), 0, ensInfo, 2, ensembles);
 
     return ensInfo;
-  }
+  } */
 
   /**
    * Read the data for this GridRecord

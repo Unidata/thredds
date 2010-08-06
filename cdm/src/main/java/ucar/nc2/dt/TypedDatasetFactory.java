@@ -45,6 +45,7 @@ import ucar.nc2.constants.FeatureType;
  * Manager of factories for TypedDatasets.
  * NOTE: use ucar.nc2.ft.FeatureDatasetFactoryManager instead, starting with 4.0
  *
+ * @deprecated
  * @author caron
  */
 public class TypedDatasetFactory {

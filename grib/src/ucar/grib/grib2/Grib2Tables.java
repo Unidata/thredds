@@ -1001,6 +1001,16 @@ public class Grib2Tables {
     }
   }  // end getTypeSurfaceUnit
 
+  public static String codeTable4_6( int type) {
+    switch (type) {
+      case 0: return "Unperturbed-hires";
+      case 1: return "Unperturbed-lores";
+      case 2: return "Negetively-perturbed";
+      case 3: return "Positively-perturbed";
+      default: return "Unknowntype="+type;
+    }
+  }
+
   /**
    * Gets a Ensemble type, Derived or Perturbed
    *

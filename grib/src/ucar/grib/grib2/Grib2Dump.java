@@ -99,7 +99,7 @@ public final class Grib2Dump {
     TimeZone.setDefault(tz);
 
     // Say hello
-    Date now = Calendar.getInstance().getTime();
+    //Date now = Calendar.getInstance().getTime();
     //System.out.println(now.toString() + " ... Start of Grib2Dump");
 
     // Reading of Grib files must be inside a try-catch block
@@ -180,7 +180,7 @@ public final class Grib2Dump {
     }
 
     // Goodbye message
-    now = Calendar.getInstance().getTime();
+    //now = Calendar.getInstance().getTime();
     //System.out.println(now.toString() + " ... End of Grib2Dump!");
 
   }  // end main
@@ -703,16 +703,14 @@ public final class Grib2Dump {
             + Grib2Tables.codeTable4_3(tgp));
     ps.println("                  ForecastTime : "
             + pdsv.getForecastTime());
-    ps.println("            First Surface Type : "
-            + pdsv.getTypeFirstFixedSurface() + " "
-            + Grib2Tables.codeTable4_5(pdsv.getTypeFirstFixedSurface()));
+    ps.println("            First Surface Type : " + pdsv.getLevelType1() + " "
+            + Grib2Tables.codeTable4_5(pdsv.getLevelType1()));
     ps.println("           First Surface value : "
-            + pdsv.getValueFirstFixedSurface());
-    ps.println("           Second Surface Type : "
-            + pdsv.getTypeSecondFixedSurface() + " "
-            + Grib2Tables.codeTable4_5(pdsv.getTypeSecondFixedSurface()));
+            + pdsv.getLevelValue1());
+    ps.println("           Second Surface Type : " + pdsv.getLevelType2() + " "
+            + Grib2Tables.codeTable4_5(pdsv.getLevelType2()));
     ps.println("          Second Surface value : "
-            + pdsv.getValueSecondFixedSurface());
+            + pdsv.getLevelValue2());
     /*
     if (pds.getProductDefinition() == 8) {
       ps.println("             End Time Interval : "

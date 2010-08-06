@@ -194,7 +194,7 @@ public final class TestCompareGribPDSGDSsections extends TestCase {
 
       assert (pds.length == gpv.getLength());
       assert (pds.section == gpv.getSection());
-      assert (pds.coordinates == gpv.getCoordinates());
+      assert (pds.coordinates == gpv.getNumberCoordinates());
       assert (pds.productDefinition == gpv.getProductDefinitionTemplate());
       assert (pds.parameterCategory == gpv.getParameterCategory());
       assert (pds.parameterNumber == gpv.getParameterNumber());
@@ -202,15 +202,15 @@ public final class TestCompareGribPDSGDSsections extends TestCase {
         assert (pds.typeGenProcess == gpv.getTypeGenProcess());
         assert (pds.backGenProcess == gpv.getBackGenProcess());
         assert (pds.analysisGenProcess == gpv.getAnalysisGenProcess());
-        assert (pds.hoursAfter == gpv.getHoursAfter());
-        assert (pds.minutesAfter == gpv.getMinutesAfter());
-        assert (pds.timeRangeUnit == gpv.getTimeRangeUnit());
+        assert (pds.hoursAfter == gpv.getHoursAfterCutoff());
+        assert (pds.minutesAfter == gpv.getMinutesAfterCutoff());
+        assert (pds.timeRangeUnit == gpv.getTimeUnit());
         //System.out.println( i +" "+ pds.forecastTime +" "+ gpv.getForecastTime());
         assert (pds.forecastTime == gpv.getForecastTime());
-        assert (pds.typeFirstFixedSurface == gpv.getTypeFirstFixedSurface());
-        assert (pds.FirstFixedSurfaceValue == gpv.getValueFirstFixedSurface());
-        assert (pds.typeSecondFixedSurface == gpv.getTypeSecondFixedSurface());
-        assert (pds.SecondFixedSurfaceValue == gpv.getValueSecondFixedSurface());
+        assert (pds.typeFirstFixedSurface == gpv.getLevelType1());
+        assert (pds.FirstFixedSurfaceValue == gpv.getLevelValue1());
+        assert (pds.typeSecondFixedSurface == gpv.getLevelType2());
+        assert (pds.SecondFixedSurfaceValue == gpv.getLevelValue2());
       }
 
       if ((pds.productDefinition == 1) || (pds.productDefinition == 11)) {
@@ -736,26 +736,26 @@ public final class TestCompareGribPDSGDSsections extends TestCase {
         if (passOne) {
           System.out.println(" Section = " + gpv.getSection());
           System.out.println(" Length = " + gpv.getLength());
-          System.out.println(" ProductDefinition = " + gpv.getProductDefinitionTemplate());
+          System.out.println(" TimeRangeIndicator = " + gpv.getTimeRangeIndicator());
         }
         assert (pds.length == gpv.getLength());
-        assert (pds.table_version == gpv.getTableVersion());
+        assert (pds.table_version == gpv.getParameterTableVersion());
         assert (pds.center_id == gpv.getCenter());
         assert (pds.typeGenProcess == gpv.getTypeGenProcess());
-        assert (pds.grid_id == gpv.getGrid_Id());
+        assert (pds.grid_id == gpv.getGridId());
         assert (pds.gds_exists == gpv.gdsExists());
         assert (pds.bms_exists == gpv.bmsExists());
         assert (pds.parameterNumber == gpv.getParameterNumber());
-        assert (pds.getLevelType() == gpv.getTypeFirstFixedSurface());
-        assert (pds.getLevelValue1() == gpv.getValueFirstFixedSurface());
-        assert (pds.getLevelValue2() == gpv.getValueSecondFixedSurface());
+        assert (pds.getLevelType() == gpv.getLevelType1());
+        assert (pds.getLevelValue1() == gpv.getLevelValue1());
+        assert (pds.getLevelValue2() == gpv.getLevelValue2());
 
-        assert (pds.baseTime.equals(gpv.getBaseTime()));
-        assert (pds.refTime == gpv.getRefTime());
+        assert (pds.baseTime.equals(gpv.getReferenceDate()));
+        assert (pds.refTime == gpv.getReferenceTime());
         //assert( pds.tUnit == gpv.getTimeUnit() );
         assert (pds.p1 == gpv.getP1());
         assert (pds.p2 == gpv.getP2());
-        assert (pds.timeRangeValue == gpv.getTimeRange());
+        assert (pds.timeRangeValue == gpv.getTimeRangeIndicator());
         assert (pds.subcenter_id == gpv.getSubCenter());
         assert (pds.decscale == gpv.getDecimalScale());
         assert (pds.forecastTime == gpv.getForecastTime());
@@ -771,8 +771,8 @@ public final class TestCompareGribPDSGDSsections extends TestCase {
         }
         if (gpv.isEnsemble() && pds.center_id == 98) {
           System.out.println("Class =" + gpv.getType() + " Type =" + gpv.getID()
-              + " Stream =" + gpv.getStream() + " Labeling =" + gpv.getOctet50()
-              + " NumberOfForecast =" + gpv.getOctet51());
+              + " Stream =" + gpv.getStream() + " Labeling =" + gpv.getOctet(50)
+              + " NumberOfForecast =" + gpv.getOctet(51));
         } else if (gpv.getLength() > 40) {
           // TODO: fix for NCEP ensembles
           //System.out.println("Type =" + gpv.getType() + " ID =" + gpv.getID()
@@ -835,7 +835,7 @@ public final class TestCompareGribPDSGDSsections extends TestCase {
         //System.out.println( "GDS NV = " + NV );
         if( gpv.hasVerticalPressureLevels() ) {
           System.out.println( "Vertical Pressure Levels" );
-          double[] plevels = gpv.getVerticalPressureLevels( g1pdsv.getValueFirstFixedSurface() );
+          double[] plevels = gpv.getVerticalPressureLevels( g1pdsv.getLevelValue1() );
         }
         assert (gds.P_VorL == gpv.getPVorPL());
         //System.out.println( "GDS PL = " + P_VorL );
@@ -1152,8 +1152,7 @@ public final class TestCompareGribPDSGDSsections extends TestCase {
      * @param raf RandomAccessFile with PDS content
      * @throws java.io.IOException if raf contains no valid GRIB file
      */
-    public PdsReader2(RandomAccessFile raf)
-        throws IOException {
+    public PdsReader2(RandomAccessFile raf) throws IOException {
 
       long sectionEnd = raf.getFilePointer();
       // octets 1-4 (Length of PDS)
@@ -1164,7 +1163,7 @@ public final class TestCompareGribPDSGDSsections extends TestCase {
       // reset to beginning of section and read data
       raf.skipBytes(-4);
       raf.read(pdsData);
-      pdsVars = new Grib2Pds(pdsData);
+      pdsVars = Grib2Pds.factory(pdsData, 0, Calendar.getInstance());
       // reset for variable section read and set sectionEnd
       raf.seek(sectionEnd + 4);
       sectionEnd += length;
@@ -2795,8 +2794,7 @@ public final class TestCompareGribPDSGDSsections extends TestCase {
      * @throws ucar.grib.NotSupportedException
      *                             if raf contains no valid GRIB file
      */
-    public PdsReader1(RandomAccessFile raf)
-        throws IOException {
+    public PdsReader1(RandomAccessFile raf) throws IOException {
 
       long fpStart = raf.getFilePointer();
 

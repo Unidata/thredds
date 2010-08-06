@@ -33,6 +33,7 @@
 
 package ucar.nc2.ui;
 
+import ucar.grib.grib2.Grib2Pds;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
 import ucar.unidata.io.RandomAccessFile;
@@ -289,8 +290,8 @@ public class GribPanel extends JPanel {
       return gr.getValidTime();
     }
 
-    public int getOffsetHour() {
-      return gr.getValidTimeOffset();
+    public int getOffset() {
+      return gr.getPds().getForecastTime();
     }
 
     public String getName() {
@@ -302,7 +303,7 @@ public class GribPanel extends JPanel {
     }
 
     public int getDiscipline() {
-      return gr.discipline;
+      return gr.getDiscipline();
     }
 
     public String getUnit() {
@@ -318,11 +319,16 @@ public class GribPanel extends JPanel {
     }
 
     public String getTable() {
-      return gr.center + "-" + gr.subCenter + "-" + gr.table;
+      return gr.getCenter() + "-" + gr.getSubCenter() + "-" + gr.getTableVersion();
     }
 
     public String getParamNo() {
-      return gr.productTemplate + "-" + gr.category + "-" + gr.paramNumber;
+      if (gr.getEdition() == 1)
+        return gr.getParameterNumber()+" ";
+      else {
+        Grib2Pds pds2 = (Grib2Pds) gr.getPds();
+        return pds2.getProductDefinitionTemplate() + "-" + pds2.getParameterCategory() + "-" + gr.getParameterNumber();
+      }
     }
   }
 

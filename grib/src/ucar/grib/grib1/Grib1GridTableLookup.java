@@ -125,11 +125,11 @@ public class Grib1GridTableLookup implements GridTableLookup {
     GribGridRecord ggr = (GribGridRecord) gr;
     try {
       GribPDSParamTable pt;
-      pt = GribPDSParamTable.getParameterTable(ggr.center, ggr.subCenter, ggr.table);
-      return pt.getParameter(ggr.paramNumber);
+      pt = GribPDSParamTable.getParameterTable(ggr.getCenter(), ggr.getSubCenter(), ggr.getTableVersion());
+      return pt.getParameter(ggr.getParameterNumber());
     } catch (NotSupportedException noSupport) {
-      logger.error("Grib1GridTableLookup: Parameter "+ ggr.paramNumber +" not found for center"+
-          ggr.center +" subcenter "+ ggr.subCenter +" table number "+ ggr.table);
+      logger.error("Grib1GridTableLookup: Parameter "+ ggr.getParameterNumber() +" not found for center"+
+          ggr.getCenter() +" subcenter "+ ggr.getSubCenter() +" table number "+ ggr.getTableVersion());
       logger.error("NotSupportedException : " + noSupport);
       return new GridParameter();
     }
@@ -143,9 +143,9 @@ public class Grib1GridTableLookup implements GridTableLookup {
     GribGridRecord ggr = (GribGridRecord) gr;
     int[] result = new int[4];
     result[0] = 1;
-    result[1] = ggr.center; //firstPDS.getCenter();
-    result[2] = ggr.table; //firstPDS.getTableVersion();
-    result[3] = ggr.paramNumber;
+    result[1] = ggr.getCenter(); //firstPDS.getCenter();
+    result[2] = ggr.getTableVersion(); //firstPDS.getTableVersion();
+    result[3] = ggr.getParameterNumber();
     return result;
   }
 
@@ -157,7 +157,7 @@ public class Grib1GridTableLookup implements GridTableLookup {
    */
   public final String getProductDefinitionName(GridRecord gr) {
     GribGridRecord ggr = (GribGridRecord) gr;
-    return Grib1Tables.getProductDefinitionName( ggr.productTemplate);
+    return Grib1Tables.getTimeRangeIndicatorName( ggr.getTimeUnit()); // pretty bloody wierd
   }
 
   /**
@@ -167,19 +167,19 @@ public class Grib1GridTableLookup implements GridTableLookup {
    * @return source
    */
   public final String getSource() {
-    return  Grib1Tables.getProductDefinitionName( firstPDSV.getTimeRange());
+    return  Grib1Tables.getTimeRangeIndicatorName( firstPDSV.getTimeRangeIndicator());
 
   }
 
   /**
-   * gets the  Type of Gen Process Name.
+   * gets the Type of Gen Process Name.
    *
    * @param gr GridRecord
    * @return typeGenProcessName
    */
   public final String getTypeGenProcessName(GridRecord gr) {
     GribGridRecord ggr = (GribGridRecord) gr;
-    return Grib1Tables.getTypeGenProcessName( firstPDSV.getCenter(), ggr.typeGenProcess );
+    return Grib1Tables.getTypeGenProcessName( firstPDSV.getCenter(), ggr.getTypeGenProcess() );
   }
 
   /**
@@ -190,7 +190,7 @@ public class Grib1GridTableLookup implements GridTableLookup {
    */
   public final String getLevelName(GridRecord gr) {
     GribGridRecord ggr = (GribGridRecord) gr;
-    return GribPDSLevel.getNameShort(ggr.levelType1);
+    return GribPDSLevel.getNameShort(ggr.getLevelType1());
   }
 
   /**
@@ -201,7 +201,7 @@ public class Grib1GridTableLookup implements GridTableLookup {
    */
   public final String getLevelDescription(GridRecord gr) {
     GribGridRecord ggr = (GribGridRecord) gr;
-    return GribPDSLevel.getLevelDescription(ggr.levelType1);
+    return GribPDSLevel.getLevelDescription(ggr.getLevelType1());
   }
 
   /**
@@ -212,7 +212,7 @@ public class Grib1GridTableLookup implements GridTableLookup {
    */
   public final String getLevelUnit(GridRecord gr) {
     GribGridRecord ggr = (GribGridRecord) gr;
-    return GribPDSLevel.getUnits(ggr.levelType1);
+    return GribPDSLevel.getUnits(ggr.getLevelType1());
   }
 
   /**
@@ -221,7 +221,7 @@ public class Grib1GridTableLookup implements GridTableLookup {
    * @return FirstBaseTime.
    */
   public final java.util.Date getFirstBaseTime() {
-    return firstPDSV.getBaseTime() ;
+    return firstPDSV.getReferenceDate() ;
   }
 
   /**
@@ -230,11 +230,11 @@ public class Grib1GridTableLookup implements GridTableLookup {
    * @return TimeRangeUnitName
    */
   public final String getFirstTimeRangeUnitName() {
-    return Grib1Tables.getTimeUnit( firstPDSV.getTimeRangeUnit()) ;
+    return Grib1Tables.getTimeUnit( firstPDSV.getTimeUnit()) ;
   }
 
   public final String getTimeRangeUnitName( int tunit ) {
-    return Grib1Tables.getTimeUnit( firstPDSV.getTimeRangeUnit()) ;
+    return Grib1Tables.getTimeUnit( firstPDSV.getTimeUnit()) ;
   }
 
   /**
@@ -310,7 +310,7 @@ public class Grib1GridTableLookup implements GridTableLookup {
    */
   public final String getFirstProductTypeName() {
     // not in grib1, extracting from time range indicator
-    return Grib1Tables.getProductDefinitionName( firstPDSV.getTimeRange());
+    return Grib1Tables.getTimeRangeIndicatorName( firstPDSV.getTimeRangeIndicator());
   }
 
   /**
@@ -381,23 +381,24 @@ public class Grib1GridTableLookup implements GridTableLookup {
   public final boolean isVerticalCoordinate(GridRecord gr) {
 
     GribGridRecord ggr = (GribGridRecord) gr;
+    int levelType = ggr.getLevelType1();
 
-    if (ggr.levelType1 == 20) {
+    if (levelType == 20) {
       return true;
     }
-    if (ggr.levelType1 == 100) {
+    if (levelType == 100) {
       return true;
     }
-    if (ggr.levelType1 == 101) {
+    if (levelType == 101) {
       return true;
     }
-    if ((ggr.levelType1 >= 103) && (ggr.levelType1 <= 128)) {
+    if ((levelType >= 103) && (levelType <= 128)) {
       return true;
     }
-    if (ggr.levelType1 == 141) {
+    if (levelType == 141) {
       return true;
     }
-    if (ggr.levelType1 == 160) {
+    if (levelType == 160) {
       return true;
     }
     return false;
@@ -411,25 +412,27 @@ public class Grib1GridTableLookup implements GridTableLookup {
    */
   public final boolean isPositiveUp(GridRecord gr) {
     GribGridRecord ggr = (GribGridRecord) gr;
-    if (ggr.levelType1 == 103) {
+    int levelType = ggr.getLevelType1();
+
+    if (levelType == 103) {
       return true;
     }
-    if (ggr.levelType1 == 104) {
+    if (levelType == 104) {
       return true;
     }
-    if (ggr.levelType1 == 105) {
+    if (levelType == 105) {
       return true;
     }
-    if (ggr.levelType1 == 106) {
+    if (levelType == 106) {
       return true;
     }
-    if (ggr.levelType1 == 111) {
+    if (levelType == 111) {
       return true;
     }
-    if (ggr.levelType1 == 112) {
+    if (levelType == 112) {
       return true;
     }
-    if (ggr.levelType1 == 125) {
+    if (levelType == 125) {
       return true;
     }
     return false;
@@ -452,18 +455,20 @@ public class Grib1GridTableLookup implements GridTableLookup {
    */
   public final boolean isLayer(GridRecord gr) {
     GribGridRecord ggr = (GribGridRecord) gr;
-    if (ggr.levelType1 == 101) return true;
-    if (ggr.levelType1 == 104) return true;
-    if (ggr.levelType1 == 106) return true;
-    if (ggr.levelType1 == 108) return true;
-    if (ggr.levelType1 == 110) return true;
-    if (ggr.levelType1 == 112) return true;
-    if (ggr.levelType1 == 114) return true;
-    if (ggr.levelType1 == 116) return true;
-    if (ggr.levelType1 == 120) return true;
-    if (ggr.levelType1 == 121) return true;
-    if (ggr.levelType1 == 128) return true;
-    if (ggr.levelType1 == 141) return true;
+    int levelType = ggr.getLevelType1();
+
+    if (levelType == 101) return true;
+    if (levelType == 104) return true;
+    if (levelType == 106) return true;
+    if (levelType == 108) return true;
+    if (levelType == 110) return true;
+    if (levelType == 112) return true;
+    if (levelType == 114) return true;
+    if (levelType == 116) return true;
+    if (levelType == 120) return true;
+    if (levelType == 121) return true;
+    if (levelType == 128) return true;
+    if (levelType == 141) return true;
     return false;
   }
 
@@ -490,7 +495,7 @@ public class Grib1GridTableLookup implements GridTableLookup {
       }
     }
 
-    String productType = Grib1Tables.getProductDefinitionName( firstPDSV.getTimeRange());
+    String productType = Grib1Tables.getTimeRangeIndicatorName( firstPDSV.getTimeRangeIndicator());
     if( productType != null ) {
       title.append( " ");
       title.append( productType );

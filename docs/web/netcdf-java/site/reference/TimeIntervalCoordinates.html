@@ -48,14 +48,82 @@ Grib2IndicatorSection
 <p>has 0 - 50.8, should be &gt; 50.8 due to prob type field (octet 37 in template 9) = Probability of event above upper limit.</p>
 <p><strong>4. confusion of local and WMO tables</strong></p>
 <p>systemic, eg code table 4.5 200 hard coded with NCEP : see Grib2Tables.codeTable4_5()</p>
+<p><strong>5. Confusion of GRIB1 and GRIB2</strong></p>
+<p>eg using time range id as product template, see:</p>
+<pre> Grib1PDS.getProductDefinitionTemplate() {  return getTimeRange(); }</pre>
 <p>&nbsp;</p>
-<p>TODO</p>
+<h2>TODO</h2>
 <p>3. PDS templates are munged together -need to be seperated, probably subclasses</p>
-<h2>Probability Variables</h2>
-<p><strong>PDS Template 2 = derived forecasts based on all ensemble members</strong></p>
-<p>Derived forecast == 1 (table 4.7: Weighted mean of all members)</p>
-<p><strong>PDS Template 5 and 9</strong></p>
+<h2>Product Templates</h2>
+<h3>0. Normal (time, vert)</h3>
+<p>PDS Template 0 = Analysis or forecast at a horizontal level or in a horizontal layer at a <strong>point in time</strong>\\</p>
+<h3>1, 11. Ensemble (ens, time, vert)</h3>
+<p>PDS Template 11 = PDS Template 1 = Individual ensemble forecast, control and perturbed, at a horizontal level or in a horizontal layer at a point in time </p>
+<p>Individual ensemble forecast, control and perturbed, at a horizontal level or in a horizontal layer, in a continuous or non-continuous interval</p>
+<h3>2, 12. Ensemble derived (time, vert) (seperate variable for each derived type)</h3>
+<p>PDS Template 2 = <strong>derived </strong>forecasts based on <strong>all ensemble members</strong></p>
+<p>PDS Template 12 = <strong>Derived</strong> forecasts based in all ensemble members at a horizontal level or in a horizontal layer, in a continuous or non-continuous interval </p>
+<p>Derived forecast (octet 35) : table 4.7</p>
+<h3>5, 9 Probability intervals (seperate variable for each prob value)</h3>
+<p>PDS Template 5 = Probability forecasts at a horizontal level or in a horizontal layer at a point in time</p>
+<p>PDS Template 9 = Probability forecasts at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval</p>
 <p>Probabality type (Table 4.9), and upper/lower prob limits</p>
+<h3>8. Normal (timeInterval, vert)</h3>
+<p>PDS Template 8 =  Average, accumulation, extreme values or other statistically processed values at a horizontal level or in a horizontal layer in a continuous or non-continuous<strong> time interval </strong></p>
+<pre>Code Table 4.0:  Product Definition Template Number 
+   
+Number  Description 
+ 0  Analysis or forecast at a horizontal level or in a horizontal layer at a <strong>point in time</strong> 
+ 1  Individual ensemble forecast, control and perturbed, at a horizontal level or in a horizontal layer at a point in time 
+ 2  Derived forecast based on all ensemble members at a horizontal level or in a horizontal layer at a point in time 
+ 3  Derived forecasts based on a cluster of ensemble members over a rectangular area at a horizontal level or in a horizontal layer at a point in time 
+ 4  Derived forecasts based on a cluster of ensemble members over a circular area at a horizontal level or in a horizontal layer at a point in time 
+ 5  Probability forecasts at a horizontal level or in a horizontal layer at a point in time 
+ 6  Percentile forecasts at a horizontal level or in a horizontal layer at a point in time 
+ 7  Analysis or forecast error at a horizontal level or in a horizontal layer at a point in time 
+ 8  Average, accumulation, extreme values or other statistically processed values at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval 
+ 9  Probability forecasts at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval 
+ 10 Percentile forecasts at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval 
+ 11 Individual ensemble forecast, control and perturbed, at a horizontal level or in a horizontal layer, in a continuous or non-continuous interval 
+ 12 Derived forecasts based in all ensemble members at a horizontal level or in a horizontal layer, in a continuous or non-continuous interval 
+ 13 Derived forecasts based on a cluster of ensemble members over a rectangular area, at a horizontal level or in a horizontal layer, in a continuous or non-continuous interval 
+ 14 Derived forecasts based on a cluster of ensemble members over a circular area, at a horizontal level or in a horizontal layer, in a continuous or non-continuous interval 
+ 20 Radar product 
+
+ 30    Satellite product 
+ 1000  Cross section of analysis and forecast at a point in time 
+ 1001  Cross section of averaged or otherwise statistically processed analysis or forecast over a range of time 
+ 1002  Cross-section of analysis and forecast, averaged or otherwise statistically processed 
+
+ 1100  Hovmller-type grid with no averaging or other statistical processing 
+ 1101  Hovmller-type grid with averaging or other statistical processing 
+ </pre>
+<p>Q:\cdmUnitTest\tds\ens\GEFS_Global_1p0deg_Ensemble_20100424_0000.grib2<br />
+  template=1: U-component_of_wind, U-component_of_wind_height_above_ground, Precipitable_water, Geopotential_height, Geopotential_height_surface, Convective_inhibition, Volumetric_Soil_Moisture_Content, Water_equivalent_of_accumulated_snow_depth, Snow_depth, Relative_humidity, Relative_humidity_height_above_ground, Pressure, Pressure_reduced_to_MSL, Vertical_velocity_pressure, Temperature, Temperature_height_above_ground, Temperature_depth_below_surface_layer, V-component_of_wind, V-component_of_wind_height_above_ground, Convective_available_potential_energy, <br />
+  template=11:Categorical_Rain, Categorical_Freezing_Rain, Total_precipitation, Upward_Short-Wave_Rad_Flux, Minimum_temperature, Latent_heat_net_flux, Total_cloud_cover, Categorical_Snow, Downward_Short-Wave_Rad_Flux, Downward_Long-Wave_Rad_Flux, Upward_Long-Wave_Rad_Flux, Upward_Long-Wave_Rad_Flux_surface, Sensible_heat_net_flux, Categorical_Ice_Pellets, Maximum_temperature, <br />
+</p>
+<p>Q:\cdmUnitTest\tds\ens\GEFS_Global_1p0deg_Ensemble_derived_20100423_0000.grib2<br />
+  template=2:U-component_of_wind, U-component_of_wind_height_above_ground, Precipitable_water, Geopotential_height, Geopotential_height_surface, Convective_inhibition, Volumetric_Soil_Moisture_Content, Water_equivalent_of_accumulated_snow_depth, Snow_depth, Relative_humidity, Relative_humidity_height_above_ground, Pressure, Pressure_reduced_to_MSL, Vertical_velocity_pressure, Temperature, Temperature_height_above_ground, Temperature_depth_below_surface_layer, V-component_of_wind, V-component_of_wind_height_above_ground, Convective_available_potential_energy, <br />
+  template=12:Categorical_Rain, Categorical_Freezing_Rain, Total_precipitation, Upward_Short-Wave_Rad_Flux, Minimum_temperature, Latent_heat_net_flux, Total_cloud_cover, Categorical_Snow, Downward_Short-Wave_Rad_Flux, Downward_Long-Wave_Rad_Flux, Upward_Long-Wave_Rad_Flux, Upward_Long-Wave_Rad_Flux_surface, Sensible_heat_net_flux, Categorical_Ice_Pellets, Maximum_temperature, <br />
+</p>
+<p>Q:\cdmUnitTest\tds\ens\SREF_Alaska_45km_ensprod_20100525_0300.grib2<br />
+  template=2:U-component_of_wind, U-component_of_wind_height_above_ground, Geopotential_height, Geopotential_height_pressure_layer, Dew_point_temperature, Dew_point_temperature_height_above_ground, Wind_speed, Wind_speed_height_above_ground, Pressure_reduced_to_MSL, Temperature, Temperature_height_above_ground, V-component_of_wind, V-component_of_wind_height_above_ground, <br />
+  template=5:Categorical_Rain, Categorical_Freezing_Rain, Categorical_Snow, Parcel_lifted_index_to_500_hPa, Categorical_Ice_Pellets, Convective_available_potential_energy, <br />
+  template=9:Total_precipitation, Large_scale_snow, <br />
+</p>
+<p>Q:\cdmUnitTest\tds\ens\SREF_CONUS_40km_ensprod_20100513_1500.grib2<br />
+  template=2:U-component_of_wind, U-component_of_wind_height_above_ground, Precipitable_water, Geopotential_height, Dew_point_temperature, Dew_point_temperature_height_above_ground, Wind_speed, Wind_speed_height_above_ground, Pressure_reduced_to_MSL, Temperature, Temperature_height_above_ground, V-component_of_wind, V-component_of_wind_height_above_ground, <br />
+  template=5:Categorical_Rain, Categorical_Freezing_Rain, Geopotential_height_cloud_ceiling, Categorical_Snow, Visibility, Parcel_lifted_index_to_500_hPa, Categorical_Ice_Pellets, Convective_available_potential_energy, <br />
+  template=12:Total_precipitation, Large_scale_snow, <br />
+</p>
+<p>Q:\cdmUnitTest\tds\ens\SREF_CONUS_40km_ensprod_biasc_20100531_1500.grib2<br />
+  template=2:U-component_of_wind, U-component_of_wind_height_above_ground, Geopotential_height, Geopotential_height_pressure_layer, Relative_humidity, Relative_humidity_height_above_ground, Wind_speed, Wind_speed_height_above_ground, Pressure_reduced_to_MSL, Temperature, Temperature_height_above_ground, V-component_of_wind, V-component_of_wind_height_above_ground, <br />
+</p>
+<p>Q:\cdmUnitTest\tds\ens\SREF_PacificNE_0p4_ensprod_20100509_2100.grib2<br />
+  template=2:Categorical_Rain, U-component_of_wind, U-component_of_wind_height_above_ground, Categorical_Freezing_Rain, Geopotential_height, Dew_point_temperature, Dew_point_temperature_height_above_ground, Categorical_Snow, Wind_speed, Wind_speed_height_above_ground, Categorical_Ice_Pellets, Pressure_reduced_to_MSL, Temperature, Temperature_height_above_ground, V-component_of_wind, V-component_of_wind_height_above_ground, <br />
+  template=5:Parcel_lifted_index_to_500_hPa, Convective_available_potential_energy, <br />
+  template=12:Total_precipitation, <br />
+</p>
 <h2>Time Interval Coordinates</h2>
 <h3>Case 1 - even intervals</h3>
 <p>Q:\cdmUnitTest\tds\new\NAM_CONUS_12km_20100520_0000.grib2</p>

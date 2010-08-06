@@ -33,6 +33,7 @@
 
 package ucar.nc2.iosp.grid;
 
+import ucar.grib.GribPds;
 import ucar.ma2.*;
 
 import ucar.nc2.*;
@@ -142,8 +143,11 @@ public class GridTimeCoord implements Comparable<GridTimeCoord> {
         int intv = -1;
         for (GridRecord gr : records) {
           ggr = (GribGridRecord) gr;
-          int start = ggr.startOfInterval;
-          int end = ggr.forecastTime;
+          GribPds pds = ggr.getPds();
+          int[] timeInv = pds.getForecastTimeInterval();
+
+          int start = timeInv[0];
+          int end = timeInv[1];
           int intv2 = end - start;
 
           if (intv2 > 0) { // skip those weird zero-intervals when testing for constant interval
@@ -151,7 +155,7 @@ public class GridTimeCoord implements Comparable<GridTimeCoord> {
             else same = same && (intv == intv2);
           }
 
-          Date validTime = getValidTime(gr, lookup);
+          Date validTime = gr.getValidTime();
           TimeCoordWithInterval timeCoordIntv = new TimeCoordWithInterval(validTime, start, intv2);
           if (!timeIntvs.contains(timeCoordIntv))   // LOOK case when multiple validTimes with different intervals
             timeIntvs.add(timeCoordIntv);
@@ -165,8 +169,8 @@ public class GridTimeCoord implements Comparable<GridTimeCoord> {
     // non - interval case
     // get list of unique times
     times = new ArrayList<Date>();
-    for (GridRecord record : records) {
-      Date validTime = getValidTime(record, lookup);
+    for (GridRecord gr : records) {
+      Date validTime = gr.getValidTime();
       if (!times.contains(validTime)) {
         times.add(validTime);
       }
@@ -181,7 +185,7 @@ public class GridTimeCoord implements Comparable<GridTimeCoord> {
    * @param offsetHours forecast hours
    * @param lookup      lookup table
    * @deprecated dont use definition files as of 4.2
-   */
+   *
   GridTimeCoord(String name, double[] offsetHours, GridTableLookup lookup) {
     this();
     this.name = name;
@@ -206,7 +210,7 @@ public class GridTimeCoord implements Comparable<GridTimeCoord> {
     for (double offsetHour : offsetHours) {
       times.add(convertUnit.makeDate(offsetHour));
     }
-  }
+  } */
 
   /**
    * match time values - can list of GridRecords use this coordinate?
@@ -236,10 +240,13 @@ public class GridTimeCoord implements Comparable<GridTimeCoord> {
       List<TimeCoordWithInterval> timeList = new ArrayList<TimeCoordWithInterval>(records.size());
       for (GridRecord record : records) {
         GribGridRecord ggr = (GribGridRecord) record;
-        int start = ggr.startOfInterval;
-        int end = ggr.forecastTime;
+        GribPds pds = ggr.getPds();
+        int[] timeInv = pds.getForecastTimeInterval();
+
+        int start = timeInv[0];
+        int end = timeInv[1];
         int intv2 = end - start;
-        Date validTime = getValidTime(record, lookup);
+        Date validTime = record.getValidTime();
         TimeCoordWithInterval timeCoordIntv = new TimeCoordWithInterval(validTime, start, intv2);
         if (!timeList.contains(timeCoordIntv)) {
           timeList.add(timeCoordIntv);
@@ -253,7 +260,7 @@ public class GridTimeCoord implements Comparable<GridTimeCoord> {
       // first create a new list
       List<Date> timeList = new ArrayList<Date>(records.size());
       for (GridRecord record : records) {
-        Date validTime = getValidTime(record, lookup);
+        Date validTime = record.getValidTime();
         if (!timeList.contains(validTime)) {
           timeList.add(validTime);
         }
@@ -397,7 +404,7 @@ public class GridTimeCoord implements Comparable<GridTimeCoord> {
    * @return the index in the list of time values, or -1 if not found
    */
   int findIndex(GridRecord record) {
-    Date validTime = getValidTime(record, lookup);
+    Date validTime = record.getValidTime();
     if (!isInterval())
       return times.indexOf(validTime);
     else {
@@ -408,16 +415,6 @@ public class GridTimeCoord implements Comparable<GridTimeCoord> {
       }
       return -1;
     }
-  }
-
-  /**
-   * Get the valid time for a GridRecord
-   *
-   * @param record the record
-   * @return the valid time
-   */
-  Date getValidTime(GridRecord record) {
-    return getValidTime(record, lookup);
   }
 
   /**
@@ -454,60 +451,6 @@ public class GridTimeCoord implements Comparable<GridTimeCoord> {
    */
   boolean isInterval() {
     return timeIntvs != null;
-  }
-
-  /**
-   * Get the valid time for this record
-   *
-   * @param record the record in question
-   * @param lookup the lookup table
-   * @return the valid time
-   */
-  private Date getValidTime(GridRecord record, GridTableLookup lookup) {
-    if (record.getValidTime() != null) {
-      return record.getValidTime();
-    }
-
-    /* try {
-      validTime = formatter.getISODate(record.getReferenceTime().toString());
-    } catch (Throwable e) {
-      log.error("getValidTime(" + record.getReferenceTime() + ")", e);
-      return null;
-    } */
-
-    int calandar_unit = Calendar.HOUR;
-    int factor = 1;
-    // TODO: this is not always correct but this code doesn't get executed often, can we delete
-    String timeUnit = lookup.getFirstTimeRangeUnitName();
-    //String timeUnit = lookup.lookup.getTimeRangeUnitName( this.tunit ); //should be
-
-    if (timeUnit.equalsIgnoreCase("hour") || timeUnit.equalsIgnoreCase("hours")) {
-      factor = 1;  // common case
-    } else if (timeUnit.equalsIgnoreCase("minutes") || timeUnit.equalsIgnoreCase("minute")) {
-      calandar_unit = Calendar.MINUTE;
-    } else if (timeUnit.equalsIgnoreCase("second") || timeUnit.equalsIgnoreCase("secs")) {
-      calandar_unit = Calendar.SECOND;
-    } else if (timeUnit.equalsIgnoreCase("day") || timeUnit.equalsIgnoreCase("days")) {
-      factor = 24;
-    } else if (timeUnit.equalsIgnoreCase("month") || timeUnit.equalsIgnoreCase("months")) {
-      factor = 24 * 30;  // ??
-    } else if (timeUnit.equalsIgnoreCase("year") || timeUnit.equalsIgnoreCase("years") || timeUnit.equalsIgnoreCase("1year")) {
-      factor = 24 * 365;        // ??
-    } else if (timeUnit.equalsIgnoreCase("decade")) {
-      factor = 24 * 365 * 10;   // ??
-    } else if (timeUnit.equalsIgnoreCase("century")) {
-      factor = 24 * 365 * 100;  // ??
-    } else if (timeUnit.equalsIgnoreCase("3hours")) {
-      factor = 3;
-    } else if (timeUnit.equalsIgnoreCase("6hours")) {
-      factor = 6;
-    } else if (timeUnit.equalsIgnoreCase("12hours")) {
-      factor = 12;
-    }
-
-    calendar.setTime(record.getReferenceTime());
-    calendar.add(calandar_unit, factor * record.getValidTimeOffset());
-    return calendar.getTime();
   }
 
   public String getCoord(int i) {

@@ -1131,12 +1131,12 @@ public class Grib1Tables {
   }
 
   /**
-   * ProductDefinition name.
+   * Time Range Indicator Name.  Table 5
    *
    * @param type
    * @return name of ProductDefinition
    */
-  public static String getProductDefinitionName(int type) {
+  public static String getTimeRangeIndicatorName(int type) {
     switch (type) {
 
       case 0:
@@ -1932,4 +1932,50 @@ public class Grib1Tables {
   }
 
 
+  /**
+   * TimeRange as String.
+   *
+   * @return timeRange
+   */
+  public final String getTable5(int timeRange) {
+    switch (timeRange) {
+
+      case 0:
+        return "product valid at RT + P1";
+
+      case 1:
+        return "product valid for RT, P1=0";
+
+      case 2:
+        return "product valid from (RT + P1) to (RT + P2)";
+
+      case 3:
+        return "product is an average between (RT + P1) to (RT + P2)";
+
+      case 4:
+        return "product is an accumulation between (RT + P1) to (RT + P2)";
+
+      case 5:
+        return "product is the difference (RT + P2) - (RT + P1)";
+
+      case 6:
+        return "product is an average from (RT - P1) to (RT - P2)";
+
+      case 7:
+        return "product is an average from (RT - P1) to (RT + P2)";
+
+      case 10:
+        return "product valid at RT + P1";
+        // p1 really consists of 2 bytes p1 and p2
+
+      case 51:
+        return "mean value from RT to (RT + P2)";
+
+      case 113:
+        return "Average of N forecasts, forecast period of P1, reference intervals of P2";
+
+      default:
+        return "Unknown timeRange "+timeRange;
+    }
+  }
 }

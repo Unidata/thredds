@@ -41,7 +41,6 @@ package ucar.grib;
 import ucar.grib.grib1.Grib1Pds;
 import ucar.grid.GridIndex;
 import ucar.grid.GridDefRecord;
-import ucar.grib.grib2.Grib2Pds;
 import ucar.grib.grib2.Grib2GDSVariables;
 import ucar.grib.grib2.Grib2Tables;
 import ucar.grib.grib1.Grib1GDSVariables;
@@ -57,7 +56,6 @@ import java.util.Calendar;
 /**
  * Reads either a binary or text index and returns a GridIndex.
  * For GRIB 1 or 2
- *
  */
 
 public class GribIndexReader {
@@ -110,7 +108,7 @@ public class GribIndexReader {
    */
   public final GridIndex open(String location, InputStream ios) throws IOException {
 
-    int tpasses = 5;
+    int tpasses = 5; // LOOK why ?
     for (int pass = 0; pass < tpasses; pass++) {
       if (pass != 0) // have to start with fresh ios
         ios = new FileInputStream(location);
@@ -127,7 +125,8 @@ public class GribIndexReader {
         if (lastModified == 7597120008394602085L) {// this is a text index
           dis.close();  // close, has to be reopened differently
           dis = null;
-          return new GribReadTextIndex().open(location);
+          throw new UnsupportedOperationException("Dont support text indexes");
+          //return new GribReadTextIndex().open(location);
         }
 
         // section 1 - global attributes
@@ -165,8 +164,9 @@ public class GribIndexReader {
 
         // section 2 -- grib records
         for (int i = 0; i < number; i++) {
-          // Direct read into GribGridRecord
           GribGridRecord ggr = new GribGridRecord();
+
+          /*
           if (index_version.equals("7.0")) {
             ggr.productTemplate = dis.readInt();
             ggr.discipline = dis.readInt();
@@ -196,24 +196,43 @@ public class GribIndexReader {
               ggr.table = dis.readInt();
             }
           } else { // index version 8.0 or higher
-            ggr.edition = grid_edition_1 ? 1 : 2;
-            ggr.discipline = dis.readInt();
-            long refTime = dis.readLong();
-            calendar.setTimeInMillis(refTime);
-            ggr.refTime = calendar.getTime();
-            ggr.gdsKey = dis.readInt();
-            ggr.offset1 = dis.readLong();
-//            if ( pass == 0 )    // Testing partial index reads
-//              throw new EOFException();
-            ggr.offset2 = dis.readLong();
-            // read PDS data
-            int pdsSize = dis.readInt();
-            byte[] pdsData = new byte[pdsSize];
-            dis.readFully(pdsData);
-            int tunit;
 
-            if (grid_edition_1) {
-              Grib1Pds pdsv = new Grib1Pds(pdsData);
+          */  // only support index version 8.0 or higher
+          ggr.edition = grid_edition_1 ? 1 : 2;
+          ggr.discipline = dis.readInt();
+          long refTime = dis.readLong();
+          calendar.setTimeInMillis(refTime);
+          ggr.refTime = calendar.getTime(); // ??
+          ggr.gdsKey = dis.readInt();
+          ggr.offset1 = dis.readLong();
+          ggr.offset2 = dis.readLong();
+
+          // read PDS data
+          int pdsSize = dis.readInt();
+          byte[] pdsData = new byte[pdsSize];
+          dis.readFully(pdsData);
+
+          GribPds pdsv = GribPds.factory(ggr.edition, pdsData, refTime, calendar);
+          if (pdsv == null) continue;
+          ggr.setPds(pdsv);
+
+          if (grid_edition_1) {
+            Grib1Pds pds1 = (Grib1Pds) pdsv;
+            ggr.bmsExists = pds1.bmsExists();
+            ggr.center = pds1.getCenter();
+            ggr.subCenter = pds1.getSubCenter();
+            ggr.table = pds1.getParameterTableVersion();
+            
+          } else {
+            ggr.center = center;
+            ggr.subCenter = sub_center;
+            ggr.table = table_version;
+
+          }
+
+            /* if (grid_edition_1) {
+              GribPds pdsv = GribPds.factory(1, pdsData, calendar);
+
               // read Grib1 vars
               ggr.productTemplate = pdsv.getProductDefinitionTemplate();
               ggr.category = pdsv.getParameterCategory();
@@ -241,11 +260,11 @@ public class GribIndexReader {
               ggr.bmsExists = pdsv.bmsExists();
               ggr.center = pdsv.getCenter();
               ggr.subCenter = pdsv.getSubCenter();
-              ggr.table = pdsv.getTableVersion();
+              ggr.table = pdsv.getParameterTableVersion();
               if (pdsv.isEnsemble()) {
                 //ggr.pdsVars = pdsv; To expensive to store.
                 // ensemble, derived, or probability information
-                ggr.isEnsemble = true;
+                //ggr.isEnsemble = true;
                 ggr.type = pdsv.getType();
                 ggr.ensembleNumber = pdsv.getEnsembleNumber();
                 ggr.numberForecasts = pdsv.getNumberForecasts();
@@ -254,9 +273,8 @@ public class GribIndexReader {
               }
 
             } else {  // Grib2
-              Grib2Pds pdsv = new Grib2Pds(pdsData);
+              Grib2Pds pdsv = Grib2Pds.factory(pdsData, calendar);
               ggr.productTemplate = pdsv.getProductDefinitionTemplate();
-              ggr.setPdsBytes( pdsv.getPDSBytes());
 
               // These are accumulation variables.  
               if (ggr.productTemplate > 7 && ggr.productTemplate < 15 ||
@@ -289,7 +307,7 @@ public class GribIndexReader {
               if (pdsv.isEnsemble()) {
                 //ggr.pdsVars = pdsv; To expensive to store.
                 // ensemble, derived, or probability information
-                ggr.isEnsemble = true;
+                //ggr.isEnsemble = true;
                 ggr.type = pdsv.getType();
                 ggr.ensembleNumber = pdsv.getPerturbation();
                 ggr.numberForecasts = pdsv.getNumberForecasts();
@@ -309,11 +327,11 @@ public class GribIndexReader {
                 }
               }
               
-            } // end GRIB 2
+            } // end GRIB 2  */
 
             // setValidTime  hour, day, minute, month. second, year, decade, normal, century
             // only test data available for hour
-            // hour
+            /* hour
             if (tunit == 1 || tunit == 10 || tunit == 11 || tunit == 12) {
               calendar.add(Calendar.HOUR, ggr.forecastTime);
               // day, it's 24 hours so multiply forecast * 24
@@ -342,9 +360,9 @@ public class GribIndexReader {
               calendar.add(Calendar.YEAR, ggr.forecastTime * 100);
             }
             ggr.setValidTime(calendar.getTime());
-            ggr.timeUnit = tunit;
+            ggr.timeUnit = tunit; */
 
-            if (debugParse)
+            /* if (debugParse)
               System.out.println(ggr.productTemplate + " " + ggr.discipline + " " +
                   ggr.category + " " + ggr.paramNumber + " " +
                   ggr.typeGenProcess + " " + ggr.levelType1 + " " +
@@ -353,112 +371,116 @@ public class GribIndexReader {
                   ggr.forecastTime + " " + ggr.gdsKey + " " + ggr.offset1 + " " + ggr.offset2 + " " +
                   ggr.decimalScale + " " + ggr.bmsExists + " " + ggr.center + " " + ggr.subCenter + " " + ggr.table + " " +
                   ggr.type + " " + ggr.numberForecasts + " " + ggr.lowerLimit + " " + ggr.upperLimit);
-          }
-          gridIndex.addGridRecord(ggr);
-        } // loop over grib records in the index
+          } */
 
-        // section 3+ - GDS
-        // old
-        if (index_version.startsWith("7")) {
-          while (true) {
-            line = dis.readUTF();
-            if (line.equals("End")) {
-              break;
-            }
-            GribGridDefRecord gds = new GribGridDefRecord(line);
-            gridIndex.addHorizCoordSys(gds);
-          }
-        } else {
-          // new
-          number = dis.readInt();
-          for (int j = 0; j < number; j++) {
-            int gdsSize = dis.readInt();
-            if (gdsSize == 4) { // for Grib1 records with no GDS
-              int gdskey = dis.readInt();
-              GribGridDefRecord ggdr = new GribGridDefRecord();
-              Grib1Grid.PopulateGDS(ggdr, gdskey);
-              gridIndex.addHorizCoordSys(ggdr);
-              continue;
-            }
-            byte[] gdsData = new byte[gdsSize];
-            dis.readFully(gdsData);
-            int gdskey;
-            if (grid_edition_1) {
-              Grib1GDSVariables gdsv = new Grib1GDSVariables(gdsData);
-              GribGridDefRecord ggdr = new GribGridDefRecord(gdsv);
-              if (index_version.startsWith("8.0")) {
-                gdskey = gdsv.get80TypeGdsKey();
-              } else {
-                gdskey = gdsv.getGdsKey();
+            gridIndex.addGridRecord(ggr);
+          } // loop over grib records in the index
+
+          // section 3+ - GDS
+          // old
+          if (index_version.startsWith("7")) {
+            while (true) {
+              line = dis.readUTF();
+              if (line.equals("End")) {
+                break;
               }
-              Grib1GDS( ggdr, gdsv, gdskey );
-              gridIndex.addHorizCoordSys(ggdr);
-              //System.out.println("GDS length =" + gdsv.getLength());
-              //System.out.println("GDS GdsKey =" + gdsv.getOldTypeGdsKey());
-            } else {
-              Grib2GDSVariables gdsv = new Grib2GDSVariables(gdsData);
-              GribGridDefRecord ggdr = new GribGridDefRecord(gdsv);
-              if (index_version.startsWith("8.0")) {
-                gdskey = gdsv.get80TypeGdsKey();
-              } else {
-                gdskey = gdsv.getGdsKey(); // version higher than 8.0
-              }
-              Grib2GDS(ggdr, gdsv, gdskey);
-              gridIndex.addHorizCoordSys(ggdr);
-              //System.out.println("GDS length =" + gdsv.getLength());
-              //System.out.println("GDS GdsKey =" + gdsv.getGdsKey());
+              GribGridDefRecord gds = new GribGridDefRecord(line);
+              gridIndex.addHorizCoordSys(gds);
             }
-            
+          } else {
+            // new
+            number = dis.readInt();
+            for (int j = 0; j < number; j++) {
+              int gdsSize = dis.readInt();
+              if (gdsSize == 4) { // for Grib1 records with no GDS
+                int gdskey = dis.readInt();
+                GribGridDefRecord ggdr = new GribGridDefRecord();
+                Grib1Grid.PopulateGDS(ggdr, gdskey);
+                gridIndex.addHorizCoordSys(ggdr);
+                continue;
+              }
+              byte[] gdsData = new byte[gdsSize];
+              dis.readFully(gdsData);
+              int gdskey;
+              if (grid_edition_1) {
+                Grib1GDSVariables gdsv = new Grib1GDSVariables(gdsData);
+                GribGridDefRecord ggdr = new GribGridDefRecord(gdsv);
+                if (index_version.startsWith("8.0")) {
+                  gdskey = gdsv.get80TypeGdsKey();
+                } else {
+                  gdskey = gdsv.getGdsKey();
+                }
+                Grib1GDS(ggdr, gdsv, gdskey);
+                gridIndex.addHorizCoordSys(ggdr);
+                //System.out.println("GDS length =" + gdsv.getLength());
+                //System.out.println("GDS GdsKey =" + gdsv.getOldTypeGdsKey());
+              } else {
+                Grib2GDSVariables gdsv = new Grib2GDSVariables(gdsData);
+                GribGridDefRecord ggdr = new GribGridDefRecord(gdsv);
+                if (index_version.startsWith("8.0")) {
+                  gdskey = gdsv.get80TypeGdsKey();
+                } else {
+                  gdskey = gdsv.getGdsKey(); // version higher than 8.0
+                }
+                Grib2GDS(ggdr, gdsv, gdskey);
+                gridIndex.addHorizCoordSys(ggdr);
+                //System.out.println("GDS length =" + gdsv.getLength());
+                //System.out.println("GDS GdsKey =" + gdsv.getGdsKey());
+              }
+
+            }
+            //gridIndex.finish();
           }
-          //gridIndex.finish();
+          if (debugTiming) {
+            long took = System.currentTimeMillis() - start;
+            System.out.println(" Index read " + location + " count="
+                    + gridIndex.getGridCount() + " took=" + took + " msec ");
+          }
+          log.debug("Binary index read: " + location);
+          log.debug("Number Records =" + gridIndex.getGridCount() + " at " +
+                  dateFormat.format(Calendar.getInstance().getTime()));
+          return gridIndex;
+
+        }catch(IOException
+        e){
+          // there can be tpasses attempts to read the index, sometimes the 1st read
+          // fails because of network or NFS errors
+          if (pass == tpasses) {
+            String message = "I/O error at record " + gridIndex.getGridCount() + " in index file";
+            //log.warn("open(): " + message + "[" + location + "]");
+            throw new IOException(message);
+          }
+          // retry
+          log.info("open(): rereading index [" + location + "]");
+          try {
+            Thread.sleep(1000); // 1 secs to let file system catch up
+          } catch (InterruptedException e1) {
+          }
+
+        }catch(ParseException
+        e){
+          log.error("open(): ParseException reading index " + e.getMessage(), e);
+          throw new RuntimeException(e);
+
+        }finally{
+          if (dis != null)
+            dis.close();
         }
-        if (debugTiming) {
-          long took = System.currentTimeMillis() - start;
-          System.out.println(" Index read " + location + " count="
-              + gridIndex.getGridCount() + " took=" + took + " msec ");
-        }
-        log.debug("Binary index read: " + location);
-        log.debug("Number Records =" + gridIndex.getGridCount() + " at " +
-            dateFormat.format(Calendar.getInstance().getTime()));
-        return gridIndex;
 
-      } catch (IOException e) {
-        // there can be tpasses attempts to read the index, sometimes the 1st read
-        // fails because of network or NFS errors
-        if (pass == tpasses) {
-          String message = "I/O error at record " + gridIndex.getGridCount() + " in index file";
-          //log.warn("open(): " + message + "[" + location + "]");
-          throw new IOException(message);
-        }
-        // retry
-        log.info("open(): rereading index [" + location + "]");
-        try {
-          Thread.sleep(1000); // 1 secs to let file system catch up
-        } catch (InterruptedException e1) {
-        }
+      } // for pass, code throws exception before getting here
+      return null;
 
-      } catch (ParseException e) {
-        log.error("open(): ParseException reading index " + e.getMessage(), e);
-        throw new RuntimeException(e);
+    }
 
-      } finally {
-        if (dis != null)
-          dis.close();
-      }
+    /**
+     * Populates a GridDefRecord according to Projection.
+     *
+     * @param ggdr GridDefRecord
+     * @param gdsv Grib2GDSVariables gdsv
+     * @param gdskey  key for this gds
+     */
 
-    } // for pass, code throws exception before getting here
-    return null;
-
-  }
-
-  /**
-   * Populates a GridDefRecord according to Projection.
-   *
-   * @param ggdr GridDefRecord
-   * @param gdsv Grib2GDSVariables gdsv
-   * @param gdskey  key for this gds
-   */
-  public void Grib2GDS(GribGridDefRecord ggdr, Grib2GDSVariables gdsv,  int gdskey ) {
+  public void Grib2GDS(GribGridDefRecord ggdr, Grib2GDSVariables gdsv, int gdskey) {
 
     int gdtn = gdsv.getGdtn();
 
@@ -468,21 +490,21 @@ public class GribIndexReader {
     ggdr.addParam(GridDefRecord.GRID_NAME, Grib2Tables.codeTable3_1(gdtn));
 
     String winds = GribNumbers.isBitSet(gdsv.getResolution(), GribNumbers.BIT_5)
-        ? "Relative"
-        : "True";
+            ? "Relative"
+            : "True";
     int component_flag = GribNumbers.isBitSet(gdsv.getResolution(), GribNumbers.BIT_5)
-        ? 1 : 0;
+            ? 1 : 0;
 
     if (((gdtn < 50) || (gdtn > 53))
-        && (gdtn != 100) && (gdtn != 120)
-        && (gdtn != 1200)) {
+            && (gdtn != 100) && (gdtn != 120)
+            && (gdtn != 1200)) {
       int shape = gdsv.getShape();
 
       ggdr.addParam(GridDefRecord.GRID_SHAPE_CODE, shape);
       ggdr.addParam(GridDefRecord.GRID_SHAPE, Grib2Tables.codeTable3_2(shape));
       if (shape < 2 || shape == 6 || shape == 8) {
         ggdr.addParam(GridDefRecord.RADIUS_SPHERICAL_EARTH, gdsv.getEarthRadius());
-      } else if ((shape > 1) && (shape < 6) || shape == 7 ) {
+      } else if ((shape > 1) && (shape < 6) || shape == 7) {
         ggdr.addParam(GridDefRecord.MAJOR_AXIS_EARTH, gdsv.getMajorAxis());
         ggdr.addParam(GridDefRecord.MINOR_AXIS_EARTH, gdsv.getMinorAxis());
       }
@@ -647,40 +669,40 @@ public class GribIndexReader {
 
         }
         break;
-        /*
-        case 50:
-        case 51:
-        case 52:
-        case 53:                       // Spherical harmonic coefficients
-          ggdr.addParam(GridDefRecord.J\t" + gds.getJ());
-          ggdr.addParam(GridDefRecord.K\t" + gds.getK());
-          ggdr.addParam(GridDefRecord.M\t" + gds.getM());
-          ggdr.addParam(GridDefRecord.MethodNorm\t" + gds.getMethod());
-          ggdr.addParam(GridDefRecord.ModeOrder\t" + gds.getMode());
-          ggdr.addParam(GridDefRecord.GRID_UNITS, gdsv.getGridUnits());
-          if (gdtn == 51) {  //Rotated Spherical harmonic coefficients
-            ggdr.addParam(GridDefRecord.SPLAT, gdsv.getSpLat());
-            ggdr.addParam(GridDefRecord.SPLON, gdsv.getSpLon());
-            ggdr.addParam(GridDefRecord.ROTATIONANGLE, gdsv.getRotationAngle());
+      /*
+      case 50:
+      case 51:
+      case 52:
+      case 53:                       // Spherical harmonic coefficients
+        ggdr.addParam(GridDefRecord.J\t" + gds.getJ());
+        ggdr.addParam(GridDefRecord.K\t" + gds.getK());
+        ggdr.addParam(GridDefRecord.M\t" + gds.getM());
+        ggdr.addParam(GridDefRecord.MethodNorm\t" + gds.getMethod());
+        ggdr.addParam(GridDefRecord.ModeOrder\t" + gds.getMode());
+        ggdr.addParam(GridDefRecord.GRID_UNITS, gdsv.getGridUnits());
+        if (gdtn == 51) {  //Rotated Spherical harmonic coefficients
+          ggdr.addParam(GridDefRecord.SPLAT, gdsv.getSpLat());
+          ggdr.addParam(GridDefRecord.SPLON, gdsv.getSpLon());
+          ggdr.addParam(GridDefRecord.ROTATIONANGLE, gdsv.getRotationAngle());
 
-          } else if (gdtn == 52) {  //Stretched Spherical
-            // harmonic coefficients
-            ggdr.addParam(GridDefRecord.PLAT, gdsv.getPoleLat());
-            ggdr.addParam(GridDefRecord.PLON, gdsv.getPoleLon());
-            ggdr.addParam(GridDefRecord.STRETCHINGFACTOR, gdsv.getStretchingFactor());
+        } else if (gdtn == 52) {  //Stretched Spherical
+          // harmonic coefficients
+          ggdr.addParam(GridDefRecord.PLAT, gdsv.getPoleLat());
+          ggdr.addParam(GridDefRecord.PLON, gdsv.getPoleLon());
+          ggdr.addParam(GridDefRecord.STRETCHINGFACTOR, gdsv.getStretchingFactor());
 
-          } else if (gdtn == 53) {  //Stretched and Rotated
-            // Spherical harmonic coefficients
-            ggdr.addParam(GridDefRecord.SPLAT, gdsv.getSpLat());
-            ggdr.addParam(GridDefRecord.SPLON, gdsv.getSpLon());
-            ggdr.addParam(GridDefRecord.ROTATIONANGLE, gdsv.getRotationAngle());
-            ggdr.addParam(GridDefRecord.PLAT, gdsv.getPoleLat());
-            ggdr.addParam(GridDefRecord.PLON, gdsv.getPoleLon());
-            ggdr.addParam(GridDefRecord.STRETCHINGFACTOR, gdsv.getStretchingFactor());
+        } else if (gdtn == 53) {  //Stretched and Rotated
+          // Spherical harmonic coefficients
+          ggdr.addParam(GridDefRecord.SPLAT, gdsv.getSpLat());
+          ggdr.addParam(GridDefRecord.SPLON, gdsv.getSpLon());
+          ggdr.addParam(GridDefRecord.ROTATIONANGLE, gdsv.getRotationAngle());
+          ggdr.addParam(GridDefRecord.PLAT, gdsv.getPoleLat());
+          ggdr.addParam(GridDefRecord.PLON, gdsv.getPoleLon());
+          ggdr.addParam(GridDefRecord.STRETCHINGFACTOR, gdsv.getStretchingFactor());
 
-          }
-          break;
-        */
+        }
+        break;
+      */
 
       case 90:  // Space view perspective or orthographic
         ggdr.addParam(GridDefRecord.NX, gdsv.getNx());
@@ -695,7 +717,7 @@ public class GribIndexReader {
         ggdr.addParam(GridDefRecord.GRID_UNITS, gdsv.getGridUnits());
         ggdr.addParam(GridDefRecord.XP, gdsv.getXp());
         ggdr.addParam(GridDefRecord.YP, gdsv.getYp());
-        ggdr.addParam(GridDefRecord.SCANNING_MODE, gdsv.getScanMode() );
+        ggdr.addParam(GridDefRecord.SCANNING_MODE, gdsv.getScanMode());
         ggdr.addParam(GridDefRecord.ANGLE, gdsv.getAngle());
         ggdr.addParam(GridDefRecord.NR, gdsv.getNr());
         ggdr.addParam(GridDefRecord.XO, gdsv.getXo());
@@ -703,22 +725,22 @@ public class GribIndexReader {
 
         break;
 
-        /*
-        case 100:  // Triangular grid based on an icosahedron
-          ggdr.addParam(GridDefRecord.Exponent2Intervals\t" + gds.getN2());
-          ggdr.addParam(GridDefRecord.Exponent3Intervals\t" + gds.getN3());
-          ggdr.addParam(GridDefRecord.NumberIntervals\t" + gds.getNi());
-          ggdr.addParam(GridDefRecord.NumberDiamonds\t" + gds.getNd());
-          ggdr.addParam(GridDefRecord.PLAT, gdsv.getPoleLat());
-          ggdr.addParam(GridDefRecord.PLON, gdsv.getPoleLon());
-          ggdr.addParam(GridDefRecord.GridPointPosition\t" + gds.getPosition());
-          ggdr.addParam(GridDefRecord.NumberOrderDiamonds\t" + gds.getOrder());
-          ggdr.addParam(GridDefRecord.NumberParallels\t" + gds.getN());
-          ggdr.addParam(GridDefRecord.SCANNING_MODE, gdsv.getScanMode());
-          ggdr.addParam(GridDefRecord.GRID_UNITS, gdsv.getGridUnits());
+      /*
+      case 100:  // Triangular grid based on an icosahedron
+        ggdr.addParam(GridDefRecord.Exponent2Intervals\t" + gds.getN2());
+        ggdr.addParam(GridDefRecord.Exponent3Intervals\t" + gds.getN3());
+        ggdr.addParam(GridDefRecord.NumberIntervals\t" + gds.getNi());
+        ggdr.addParam(GridDefRecord.NumberDiamonds\t" + gds.getNd());
+        ggdr.addParam(GridDefRecord.PLAT, gdsv.getPoleLat());
+        ggdr.addParam(GridDefRecord.PLON, gdsv.getPoleLon());
+        ggdr.addParam(GridDefRecord.GridPointPosition\t" + gds.getPosition());
+        ggdr.addParam(GridDefRecord.NumberOrderDiamonds\t" + gds.getOrder());
+        ggdr.addParam(GridDefRecord.NumberParallels\t" + gds.getN());
+        ggdr.addParam(GridDefRecord.SCANNING_MODE, gdsv.getScanMode());
+        ggdr.addParam(GridDefRecord.GRID_UNITS, gdsv.getGridUnits());
 
-          break;
-        */
+        break;
+      */
       case 110:  // Equatorial azimuthal equidistant projection
         ggdr.addParam(GridDefRecord.NX, gdsv.getNx());
         ggdr.addParam(GridDefRecord.NY, gdsv.getNy());
@@ -738,21 +760,21 @@ public class GribIndexReader {
         ggdr.addParam(GridDefRecord.SCANNING_MODE, gdsv.getScanMode());
 
         break;
-        /*
-        case 120:  // Azimuth-range Projection
-          ggdr.addParam(GridDefRecord.NumberDataBins\t" + gds.getNb());
-          ggdr.addParam(GridDefRecord.NumberRadials\t" + gds.getNr());
-          ggdr.addParam(GridDefRecord.NumberPointsParallel\t" + gds.getNx());
-          ggdr.addParam(GridDefRecord.LA1, gdsv.getLa1());
-          ggdr.addParam(GridDefRecord.LO1, gdsv.getLo1());
-          ggdr.addParam(GridDefRecord.DX, gdsv.getDx());
-          ggdr.addParam(GridDefRecord.GRID_UNITS, gdsv.getGridUnits());
-          ggdr.addParam(GridDefRecord.OffsetFromOrigin\t" + gds.getDstart());
-          //ggdr.addParam( "need code to get azi and adelta" );
-          ggdr.addParam(GridDefRecord.SCANNING_MODE, gdsv.getScanMode());
+      /*
+      case 120:  // Azimuth-range Projection
+        ggdr.addParam(GridDefRecord.NumberDataBins\t" + gds.getNb());
+        ggdr.addParam(GridDefRecord.NumberRadials\t" + gds.getNr());
+        ggdr.addParam(GridDefRecord.NumberPointsParallel\t" + gds.getNx());
+        ggdr.addParam(GridDefRecord.LA1, gdsv.getLa1());
+        ggdr.addParam(GridDefRecord.LO1, gdsv.getLo1());
+        ggdr.addParam(GridDefRecord.DX, gdsv.getDx());
+        ggdr.addParam(GridDefRecord.GRID_UNITS, gdsv.getGridUnits());
+        ggdr.addParam(GridDefRecord.OffsetFromOrigin\t" + gds.getDstart());
+        //ggdr.addParam( "need code to get azi and adelta" );
+        ggdr.addParam(GridDefRecord.SCANNING_MODE, gdsv.getScanMode());
 
-          break;
-        */
+        break;
+      */
       case 204:  // Curvilinear orthographic
         ggdr.addParam(GridDefRecord.NX, gdsv.getNx());
         ggdr.addParam(GridDefRecord.NY, gdsv.getNy());
@@ -776,7 +798,7 @@ public class GribIndexReader {
    * @param ggdr GridDefRecord
    * @param gdsv Grib1GDSVariables gdsv
    */
-  public void Grib1GDS(GribGridDefRecord ggdr, Grib1GDSVariables gdsv, int gdskey ) {
+  public void Grib1GDS(GribGridDefRecord ggdr, Grib1GDSVariables gdsv, int gdskey) {
     int gdtn = gdsv.getGdtn();
 
     //ggdr.addParam(GridDefRecord.GDS_KEY, Integer.toString(gdsv.getGdsKey()));
@@ -785,22 +807,22 @@ public class GribIndexReader {
     ggdr.addParam(GridDefRecord.GRID_NAME, Grib1Tables.getGridName(gdtn));
 
     String winds = GribNumbers.isBitSet(gdsv.getResolution(), GribNumbers.BIT_5)
-        ? "Relative"
-        : "True";
+            ? "Relative"
+            : "True";
 
     int component_flag = GribNumbers.isBitSet(gdsv.getResolution(), GribNumbers.BIT_5)
-        ? 1 : 0;
+            ? 1 : 0;
 
     if (((gdtn < 50) || (gdtn > 53))
-        && (gdtn != 100) && (gdtn != 120)
-        && (gdtn != 1200)) {
+            && (gdtn != 100) && (gdtn != 120)
+            && (gdtn != 1200)) {
       int shape = gdsv.getShape();
 
       ggdr.addParam(GridDefRecord.GRID_SHAPE_CODE, shape);
       ggdr.addParam(GridDefRecord.GRID_SHAPE, Grib1Tables.getShapeName(shape));
-      if ( shape == 0 ) {
+      if (shape == 0) {
         ggdr.addParam(GridDefRecord.RADIUS_SPHERICAL_EARTH, gdsv.getEarthRadius());
-      } else if ( shape == 1 ) {
+      } else if (shape == 1) {
         ggdr.addParam(GridDefRecord.MAJOR_AXIS_EARTH, gdsv.getMajorAxis());
         ggdr.addParam(GridDefRecord.MINOR_AXIS_EARTH, gdsv.getMinorAxis());
       }
@@ -960,40 +982,40 @@ public class GribIndexReader {
 
         }
         break;
-        /*
-        case 50:
-        case 60:
-        case 70:
-        case 80:                       // Spherical harmonic coefficients
-          ggdr.addParam(GridDefRecord.J\t" + gds.getJ());
-          ggdr.addParam(GridDefRecord.K\t" + gds.getK());
-          ggdr.addParam(GridDefRecord.M\t" + gds.getM());
-          ggdr.addParam(GridDefRecord.MethodNorm\t" + gds.getMethod());
-          ggdr.addParam(GridDefRecord.ModeOrder\t" + gds.getMode());
-          ggdr.addParam(GridDefRecord.GRID_UNITS, gdsv.getGridUnits());
-          if (gdtn == 51) {  //Rotated Spherical harmonic coefficients
-            ggdr.addParam(GridDefRecord.SPLAT, gdsv.getSpLat());
-            ggdr.addParam(GridDefRecord.SPLON, gdsv.getSpLon());
-            ggdr.addParam(GridDefRecord.ROTATIONANGLE, gdsv.getRotationAngle());
+      /*
+      case 50:
+      case 60:
+      case 70:
+      case 80:                       // Spherical harmonic coefficients
+        ggdr.addParam(GridDefRecord.J\t" + gds.getJ());
+        ggdr.addParam(GridDefRecord.K\t" + gds.getK());
+        ggdr.addParam(GridDefRecord.M\t" + gds.getM());
+        ggdr.addParam(GridDefRecord.MethodNorm\t" + gds.getMethod());
+        ggdr.addParam(GridDefRecord.ModeOrder\t" + gds.getMode());
+        ggdr.addParam(GridDefRecord.GRID_UNITS, gdsv.getGridUnits());
+        if (gdtn == 51) {  //Rotated Spherical harmonic coefficients
+          ggdr.addParam(GridDefRecord.SPLAT, gdsv.getSpLat());
+          ggdr.addParam(GridDefRecord.SPLON, gdsv.getSpLon());
+          ggdr.addParam(GridDefRecord.ROTATIONANGLE, gdsv.getRotationAngle());
 
-          } else if (gdtn == 52) {  //Stretched Spherical
-            // harmonic coefficients
-            ggdr.addParam(GridDefRecord.PLAT, gdsv.getPoleLat());
-            ggdr.addParam(GridDefRecord.PLON, gdsv.getPoleLon());
-            ggdr.addParam(GridDefRecord.STRETCHINGFACTOR, gdsv.getStretchingFactor());
+        } else if (gdtn == 52) {  //Stretched Spherical
+          // harmonic coefficients
+          ggdr.addParam(GridDefRecord.PLAT, gdsv.getPoleLat());
+          ggdr.addParam(GridDefRecord.PLON, gdsv.getPoleLon());
+          ggdr.addParam(GridDefRecord.STRETCHINGFACTOR, gdsv.getStretchingFactor());
 
-          } else if (gdtn == 53) {  //Stretched and Rotated
-            // Spherical harmonic coefficients
-            ggdr.addParam(GridDefRecord.SPLAT, gdsv.getSpLat());
-            ggdr.addParam(GridDefRecord.SPLON, gdsv.getSpLon());
-            ggdr.addParam(GridDefRecord.ROTATIONANGLE, gdsv.getRotationAngle());
-            ggdr.addParam(GridDefRecord.PLAT, gdsv.getPoleLat());
-            ggdr.addParam(GridDefRecord.PLON, gdsv.getPoleLon());
-            ggdr.addParam(GridDefRecord.STRETCHINGFACTOR, gdsv.getStretchingFactor());
+        } else if (gdtn == 53) {  //Stretched and Rotated
+          // Spherical harmonic coefficients
+          ggdr.addParam(GridDefRecord.SPLAT, gdsv.getSpLat());
+          ggdr.addParam(GridDefRecord.SPLON, gdsv.getSpLon());
+          ggdr.addParam(GridDefRecord.ROTATIONANGLE, gdsv.getRotationAngle());
+          ggdr.addParam(GridDefRecord.PLAT, gdsv.getPoleLat());
+          ggdr.addParam(GridDefRecord.PLON, gdsv.getPoleLon());
+          ggdr.addParam(GridDefRecord.STRETCHINGFACTOR, gdsv.getStretchingFactor());
 
-          }
-          break;
-        */
+        }
+        break;
+      */
 
       case 90:  // Space view perspective or orthographic
         ggdr.addParam(GridDefRecord.NX, gdsv.getNx());
@@ -1016,56 +1038,56 @@ public class GribIndexReader {
 
         break;
 
-        /*
-        case 100:  // Triangular grid based on an icosahedron
-          ggdr.addParam(GridDefRecord.Exponent2Intervals\t" + gds.getN2());
-          ggdr.addParam(GridDefRecord.Exponent3Intervals\t" + gds.getN3());
-          ggdr.addParam(GridDefRecord.NumberIntervals\t" + gds.getNi());
-          ggdr.addParam(GridDefRecord.NumberDiamonds\t" + gds.getNd());
-          ggdr.addParam(GridDefRecord.PLAT, gdsv.getPoleLat());
-          ggdr.addParam(GridDefRecord.PLON, gdsv.getPoleLon());
-          ggdr.addParam(GridDefRecord.GridPointPosition\t" + gds.getPosition());
-          ggdr.addParam(GridDefRecord.NumberOrderDiamonds\t" + gds.getOrder());
-          ggdr.addParam(GridDefRecord.NumberParallels\t" + gds.getN());
-          ggdr.addParam(GridDefRecord.GRID_UNITS, gdsv.getGridUnits());
-
-          break;
-        */
-        /*
-      case 110:  // Equatorial azimuthal equidistant projection
-        ggdr.addParam(GridDefRecord.NX, gdsv.getNx());
-        ggdr.addParam(GridDefRecord.NY, gdsv.getNy());
-        ggdr.addParam(GridDefRecord.LA1, gdsv.getLa1());
-        ggdr.addParam(GridDefRecord.LO1, gdsv.getLo1());
-        ggdr.addParam(GridDefRecord.RESOLUTION, gdsv.getResolution());
-        npproj = "false";
-        if ((gdsv.getProjectionFlag() & 128) == 0)
-          npproj = "true";
-        ggdr.addParam(GridDefRecord.NPPROJ, npproj);
-        ggdr.addParam(GridDefRecord.WIND_FLAG, winds);
-        ggdr.addParam(GridDefRecord.VECTOR_COMPONET_FLAG, component_flag);
-        ggdr.addParam(GridDefRecord.DX, gdsv.getDx());
-        ggdr.addParam(GridDefRecord.DY, gdsv.getDy());
+      /*
+      case 100:  // Triangular grid based on an icosahedron
+        ggdr.addParam(GridDefRecord.Exponent2Intervals\t" + gds.getN2());
+        ggdr.addParam(GridDefRecord.Exponent3Intervals\t" + gds.getN3());
+        ggdr.addParam(GridDefRecord.NumberIntervals\t" + gds.getNi());
+        ggdr.addParam(GridDefRecord.NumberDiamonds\t" + gds.getNd());
+        ggdr.addParam(GridDefRecord.PLAT, gdsv.getPoleLat());
+        ggdr.addParam(GridDefRecord.PLON, gdsv.getPoleLon());
+        ggdr.addParam(GridDefRecord.GridPointPosition\t" + gds.getPosition());
+        ggdr.addParam(GridDefRecord.NumberOrderDiamonds\t" + gds.getOrder());
+        ggdr.addParam(GridDefRecord.NumberParallels\t" + gds.getN());
         ggdr.addParam(GridDefRecord.GRID_UNITS, gdsv.getGridUnits());
-        ggdr.addParam(GridDefRecord.PROJ, gdsv.getProjectionFlag());
 
         break;
-        */
+      */
+      /*
+    case 110:  // Equatorial azimuthal equidistant projection
+      ggdr.addParam(GridDefRecord.NX, gdsv.getNx());
+      ggdr.addParam(GridDefRecord.NY, gdsv.getNy());
+      ggdr.addParam(GridDefRecord.LA1, gdsv.getLa1());
+      ggdr.addParam(GridDefRecord.LO1, gdsv.getLo1());
+      ggdr.addParam(GridDefRecord.RESOLUTION, gdsv.getResolution());
+      npproj = "false";
+      if ((gdsv.getProjectionFlag() & 128) == 0)
+        npproj = "true";
+      ggdr.addParam(GridDefRecord.NPPROJ, npproj);
+      ggdr.addParam(GridDefRecord.WIND_FLAG, winds);
+      ggdr.addParam(GridDefRecord.VECTOR_COMPONET_FLAG, component_flag);
+      ggdr.addParam(GridDefRecord.DX, gdsv.getDx());
+      ggdr.addParam(GridDefRecord.DY, gdsv.getDy());
+      ggdr.addParam(GridDefRecord.GRID_UNITS, gdsv.getGridUnits());
+      ggdr.addParam(GridDefRecord.PROJ, gdsv.getProjectionFlag());
 
-        /*
-        case 120:  // Azimuth-range Projection
-          ggdr.addParam(GridDefRecord.NumberDataBins\t" + gds.getNb());
-          ggdr.addParam(GridDefRecord.NumberRadials\t" + gds.getNr());
-          ggdr.addParam(GridDefRecord.NumberPointsParallel\t" + gds.getNx());
-          ggdr.addParam(GridDefRecord.LA1, gdsv.getLa1());
-          ggdr.addParam(GridDefRecord.LO1, gdsv.getLo1());
-          ggdr.addParam(GridDefRecord.DX, gdsv.getDx());
-          ggdr.addParam(GridDefRecord.GRID_UNITS, gdsv.getGridUnits());
-          ggdr.addParam(GridDefRecord.OffsetFromOrigin\t" + gds.getDstart());
-          //ggdr.addParam( "need code to get azi and adelta" );
+      break;
+      */
 
-          break;
-        */
+      /*
+      case 120:  // Azimuth-range Projection
+        ggdr.addParam(GridDefRecord.NumberDataBins\t" + gds.getNb());
+        ggdr.addParam(GridDefRecord.NumberRadials\t" + gds.getNr());
+        ggdr.addParam(GridDefRecord.NumberPointsParallel\t" + gds.getNx());
+        ggdr.addParam(GridDefRecord.LA1, gdsv.getLa1());
+        ggdr.addParam(GridDefRecord.LO1, gdsv.getLo1());
+        ggdr.addParam(GridDefRecord.DX, gdsv.getDx());
+        ggdr.addParam(GridDefRecord.GRID_UNITS, gdsv.getGridUnits());
+        ggdr.addParam(GridDefRecord.OffsetFromOrigin\t" + gds.getDstart());
+        //ggdr.addParam( "need code to get azi and adelta" );
+
+        break;
+      */
       case 204:  // Curvilinear orthographic
         ggdr.addParam(GridDefRecord.NX, gdsv.getNx());
         ggdr.addParam(GridDefRecord.NY, gdsv.getNy());
@@ -1146,9 +1168,9 @@ public class GribIndexReader {
       System.out.println("Number of files in directory " + count);
       return;
     }
-      File gbx = new File(GribIndexName.get("C:/data/NDFD.grib2"));
-      if (!gbx.exists()) { // work machine
-        gbx = new File(GribIndexName.get("/local/robb/data/grib/idd/text/NDFD_CONUS_5km_20090221_1200.grib2"));
+    File gbx = new File(GribIndexName.get("C:/data/NDFD.grib2"));
+    if (!gbx.exists()) { // work machine
+      gbx = new File(GribIndexName.get("/local/robb/data/grib/idd/text/NDFD_CONUS_5km_20090221_1200.grib2"));
     }
 
     //debugTiming = true;

@@ -47,6 +47,7 @@ import ucar.unidata.io.RandomAccessFile;
 
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
@@ -196,7 +197,7 @@ public final class Grib2ProductDefinitionSection {
     // reset to beginning of section and read data
     raf.skipBytes( -4 );
     raf.read( pdsData);
-    pdsVars = new Grib2Pds( pdsData );
+    pdsVars = Grib2Pds.factory( pdsData, 0, Calendar.getInstance() );
 
     // reset for variable section read and set sectionEnd
     raf.seek( sectionEnd +4 );
@@ -969,7 +970,7 @@ public final class Grib2ProductDefinitionSection {
 
     assert( pds.length == gpv.getLength());
     assert( pds.section == gpv.getSection());
-    assert( pds.coordinates == gpv.getCoordinates());
+    assert( pds.coordinates == gpv.getNumberCoordinates());
     assert( pds.productDefinition == gpv.getProductDefinitionTemplate());
     assert( pds.parameterCategory == gpv.getParameterCategory());
     assert( pds.parameterNumber == gpv.getParameterNumber());
@@ -977,14 +978,14 @@ public final class Grib2ProductDefinitionSection {
       assert( pds.typeGenProcess == gpv.getTypeGenProcess());
       assert( pds.backGenProcess == gpv.getBackGenProcess());
       assert( pds.analysisGenProcess == gpv.getAnalysisGenProcess());
-      assert( pds.hoursAfter == gpv.getHoursAfter());
-      assert( pds.minutesAfter == gpv.getMinutesAfter());
-      assert( pds.timeRangeUnit == gpv.getTimeRangeUnit());
+      assert( pds.hoursAfter == gpv.getHoursAfterCutoff());
+      assert( pds.minutesAfter == gpv.getMinutesAfterCutoff());
+      assert( pds.timeRangeUnit == gpv.getTimeUnit());
       assert( pds.forecastTime == gpv.getForecastTime());
-      assert( pds.typeFirstFixedSurface == gpv.getTypeFirstFixedSurface());
-      assert( pds.FirstFixedSurfaceValue == gpv.getValueFirstFixedSurface());
-      assert( pds.typeSecondFixedSurface == gpv.getTypeSecondFixedSurface());
-      assert( pds.SecondFixedSurfaceValue == gpv.getValueSecondFixedSurface());
+      assert( pds.typeFirstFixedSurface == gpv.getLevelType1());
+      assert( pds.FirstFixedSurfaceValue == gpv.getLevelValue1());
+      assert( pds.typeSecondFixedSurface == gpv.getLevelType2());
+      assert( pds.SecondFixedSurfaceValue == gpv.getLevelValue2());
     }
 
     if ((pds.productDefinition == 1) || (pds.productDefinition == 11)) {

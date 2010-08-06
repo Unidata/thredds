@@ -308,9 +308,9 @@ public class ForecastModelRunInventory {
   }
 
   private int[] getEnsInfo( Variable v ) {
-    if (gribIosp == null) return null;
-    int[] info = gribIosp.ensembleInfo(v);
-    return info;
+    //if (gribIosp == null) return null;
+    //int[] info = gribIosp.ensembleInfo(v);
+    return null;
   }
 
   /////////////////////////////////////////////////////////////////////////
