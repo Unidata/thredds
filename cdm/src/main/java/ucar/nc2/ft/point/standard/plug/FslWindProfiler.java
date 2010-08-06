@@ -55,8 +55,12 @@ public class FslWindProfiler extends TableConfigurerImpl  {
     // :title = "WPDN data : selected by ob time : time range from 1207951200 to 1207954800";
   public boolean isMine(FeatureType wantFeatureType, NetcdfDataset ds) {
     String title = ds.findAttValueIgnoreCase(null, "title", null);
-    if (title == null)
+    if (title == null) {
         title = ds.findAttValueIgnoreCase(null, "DD_reference", null);
+        if(title != null) {
+            title = ds.findVariable("staLat") != null ? title : null;
+        }
+    }
     return title != null && (title.startsWith("WPDN data") || title.startsWith("RASS data") || title.contains("88-21-R2"));
   }
 
