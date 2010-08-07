@@ -602,10 +602,19 @@ public class GridVariable {
       return;
     }
     GridRecord gr = recordTracker[recnum];
-    int time = recnum / nlevels;
-    int level = recnum % nlevels;
 
-    f.format("recnum=%d (record hash=%d) time=%s(%d) level=%f(%d)%n", recnum, gr.hashCode(), tcs.getCoord(time), time, vc.getCoord(level), level);
+    if (hasEnsemble()) {
+      // recnum = ens * (ntimes * nlevels) + (time * nlevels) + level
+      int ens = recnum / (nlevels * ntimes);
+      int tmp = recnum - ens *(nlevels * ntimes);
+      int time = tmp / nlevels;
+      int level = tmp % nlevels;
+      f.format("recnum=%d (record hash=%d) ens=%d time=%s(%d) level=%f(%d)%n", recnum, gr.hashCode(), ens, tcs.getCoord(time), time, vc.getCoord(level), level);
+    }  else {
+      int time = recnum / nlevels;
+      int level = recnum % nlevels;
+      f.format("recnum=%d (record hash=%d) time=%s(%d) level=%f(%d)%n", recnum, gr.hashCode(), tcs.getCoord(time), time, vc.getCoord(level), level);
+    }
   }
 
 
@@ -744,14 +753,13 @@ public class GridVariable {
   private String makeLongName() {
 
     GridParameter param = lookup.getParameter(firstRecord);
-    //String paramName = param.getName();
     String paramName = param.getDescription();
 
     if (firstRecord instanceof GribGridRecord) {
       GribGridRecord ggr = (GribGridRecord) firstRecord;
       String suffixName = ggr.makeSuffix( );
       if (suffixName != null && suffixName.length() != 0)
-        paramName += "_" + suffixName;
+        paramName += suffixName;
 
       if (ggr.isInterval()) {
         String intervalName = makeIntervalName();

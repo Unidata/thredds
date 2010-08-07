@@ -412,9 +412,9 @@ public final class GribGridRecord implements GridRecord {
          disambig = true;
        }
 
-        if (!disambig) {
-          f.format("_template%d", pds2.getProductDefinitionTemplate());
-        }
+        //if (!disambig) {
+        //  f.format("_template%d", pds2.getProductDefinitionTemplate());
+        //}
      }
 
     return f.toString();

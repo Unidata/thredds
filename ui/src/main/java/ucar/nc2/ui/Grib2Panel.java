@@ -144,7 +144,7 @@ public class Grib2Panel extends JPanel {
       }
     });
 
-    varPopup.addAction("Compare GridRecord", new AbstractAction() {
+    varPopup.addAction("Compare Pds", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         List list = recordTable.getSelectedBeans();
         if (list.size() == 2) {
@@ -165,7 +165,7 @@ public class Grib2Panel extends JPanel {
         List list = recordTable.getSelectedBeans();
         for (int i = 0; i < list.size(); i++) {
           GribGridRecordBean bean = (GribGridRecordBean) list.get(i);
-          showRecord(bean.ggr, f);
+          showRecordBelongs(bean.ggr, f);
         }
         infoPopup2.setText(f.toString());
         infoPopup2.gotoTop();
@@ -285,11 +285,11 @@ public class Grib2Panel extends JPanel {
 
   private void showRecords(Product bean, Formatter f) {
     for (GribGridRecordBean ibean : bean.list) {
-      showRecord(ibean.ggr, f);
+      showRecordBelongs(ibean.ggr, f);
     }
   }
 
-  private void showRecord(GribGridRecord ggr, Formatter f) {
+  private void showRecordBelongs(GribGridRecord ggr, Formatter f) {
     GridVariable.Belongs b = (GridVariable.Belongs) ggr.getBelongs();
     f.format("%s == %s : ", ggr.toString2(), ggr.getBelongs());
     b.gv.showRecord(b.recnum, f);
@@ -323,6 +323,15 @@ public class Grib2Panel extends JPanel {
   void compare(GribGridRecordBean bean1, GribGridRecordBean bean2, Formatter f) {
     GribGridRecord ggr1 = bean1.ggr;
     GribGridRecord ggr2 = bean2.ggr;
+
+    boolean ok = true;
+    if (ggr1.getGdsKey() != ggr2.getGdsKey()) {
+      f.format("gds differs %d != %d %n", ggr1.getGdsKey(), ggr2.getGdsKey());
+      ok = false;
+    }
+
+    if (ok) f.format("All OK!%n");
+    
 
     /*
 
@@ -420,7 +429,7 @@ public class Grib2Panel extends JPanel {
     if (ok) f.format("All OK!%n");
     return f.toString();  */
 
-    f.format("%n");
+    f.format("Compare PDS bytes %n");
     byte[] raw1 = ggr1.getPds().getPDSBytes();
     byte[] raw2 = ggr2.getPds().getPDSBytes();
     if (raw1.length != raw2.length) {
@@ -432,6 +441,7 @@ public class Grib2Panel extends JPanel {
       if (raw1[i] != raw2[i])
         f.format(" %3d : %3d != %3d%n", i + 1, raw1[i], raw2[i]);
     }
+    f.format("tested %d bytes %n", len);
     return;
   }
 
