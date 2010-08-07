@@ -171,6 +171,8 @@ public class GridTimeCoord implements Comparable<GridTimeCoord> {
     times = new ArrayList<Date>();
     for (GridRecord gr : records) {
       Date validTime = gr.getValidTime();
+      if (validTime == null)
+        validTime = gr.getReferenceTime();
       if (!times.contains(validTime)) {
         times.add(validTime);
       }
@@ -261,6 +263,8 @@ public class GridTimeCoord implements Comparable<GridTimeCoord> {
       List<Date> timeList = new ArrayList<Date>(records.size());
       for (GridRecord record : records) {
         Date validTime = record.getValidTime();
+        if (validTime == null)
+          validTime = record.getReferenceTime();
         if (!timeList.contains(validTime)) {
           timeList.add(validTime);
         }

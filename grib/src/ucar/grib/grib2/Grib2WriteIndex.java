@@ -102,9 +102,7 @@ public class Grib2WriteIndex {
    * @return Index if makeIndex is true, else null
    * @throws IOException on gbx write
    */
-  public final GridIndex writeGribIndex(
-      File grib,
-      String gbxName, RandomAccessFile raf, boolean makeIndex) throws IOException {
+  public final GridIndex writeGribIndex(File grib, String gbxName, RandomAccessFile raf, boolean makeIndex) throws IOException {
 
     DataOutputStream out = null;
     boolean success;

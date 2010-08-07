@@ -225,8 +225,8 @@ public class ToolsUI extends JPanel {
     iospTabPane.addTab("BUFR", new JLabel("BUFR"));
     iospTabPane.addTab("BUFRTableB", new JLabel("BUFRTableB"));
     iospTabPane.addTab("BUFRTableD", new JLabel("BUFRTableD"));
-    iospTabPane.addTab("GRIB", new JLabel("GRIB"));
-    iospTabPane.addTab("GRIB2", new JLabel("GRIB2"));
+    iospTabPane.addTab("GRIB-RAW", new JLabel("GRIB-RAW"));
+    iospTabPane.addTab("GRIB-INDEX", new JLabel("GRIB-INDEX"));
     iospTabPane.addTab("HDF5", new JLabel("HDF5"));
     iospTabPane.addTab("HDF4", new JLabel("HDF4"));
     iospTabPane.addChangeListener(new ChangeListener() {
@@ -376,11 +376,11 @@ public class ToolsUI extends JPanel {
       bufrTableDPanel = new BufrTableDPanel((PreferencesExt) mainPrefs.node("bufrD"));
       c = bufrTableDPanel;
 
-    } else if (title.equals("GRIB")) {
+    } else if (title.equals("GRIB-RAW")) {
       gribPanel = new GribPanel((PreferencesExt) mainPrefs.node("grib"));
       c = gribPanel;
 
-    } else if (title.equals("GRIB2")) {
+    } else if (title.equals("GRIB-INDEX")) {
       grib2Panel = new Grib2Panel((PreferencesExt) mainPrefs.node("grib2"));
       c = grib2Panel;
 
@@ -2119,14 +2119,10 @@ public class ToolsUI extends JPanel {
   }
 
   /////////////////////////////////////////////////////////////////////
+  // raw grib access - dont go through the IOSP
   private class GribPanel extends OpPanel {
     ucar.unidata.io.RandomAccessFile raf = null;
     ucar.nc2.ui.GribPanel gribTable;
-
-    boolean useDefinition = false;
-    JComboBox defComboBox;
-    IndependentWindow defWindow;
-    AbstractButton defButt;
 
     GribPanel(PreferencesExt p) {
       super(p, "file:", true, false);
@@ -2203,27 +2199,16 @@ public class ToolsUI extends JPanel {
   }
 
  /////////////////////////////////////////////////////////////////////
-
+ // Indexed GRIB, using the IOSP
   private class Grib2Panel extends OpPanel {
-    ucar.unidata.io.RandomAccessFile raf = null;
+    // ucar.unidata.io.RandomAccessFile raf = null;
     ucar.nc2.ui.Grib2Panel gribTable;
-    boolean useIndex = true;
+    //boolean useIndex = true;
 
     Grib2Panel(PreferencesExt p) {
       super(p, "file:", true, false);
       gribTable = new ucar.nc2.ui.Grib2Panel(prefs);
       add(gribTable, BorderLayout.CENTER);
-
-      AbstractAction indexAction = new AbstractAction() {
-        public void actionPerformed(ActionEvent e) {
-          Boolean state = (Boolean) getValue(BAMutil.STATE);
-          useIndex = state.booleanValue();
-        }
-      };
-      useIndex = prefs.getBoolean("useIndex", true);
-      BAMutil.setActionProperties(indexAction, "addCoords", "use index", true, 'C', -1);
-      indexAction.putValue(BAMutil.STATE, new Boolean(useIndex));
-      BAMutil.addActionToContainer(buttPanel, indexAction);
 
       AbstractAction infoAction = new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
@@ -2252,16 +2237,7 @@ public class ToolsUI extends JPanel {
 
       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
-        if (raf != null)
-          raf.close();
-
-        if (useIndex) {
-          gribTable.setGribFile(command);
-
-        } else {
-          raf = new ucar.unidata.io.RandomAccessFile(command, "r");
-          gribTable.setGribFile(raf);
-        }
+        gribTable.setGribFile(command);
 
       } catch (FileNotFoundException ioe) {
         JOptionPane.showMessageDialog(null, "Grib2Table cant open " + command + "\n" + ioe.getMessage());
@@ -2281,7 +2257,6 @@ public class ToolsUI extends JPanel {
 
     void save() {
       gribTable.save();
-      prefs.putBoolean("useIndex", useIndex);
       super.save();
     }
 

@@ -230,6 +230,10 @@ public final class Grib1Pds extends GribPds {
     return level.getIndex();
   }
 
+  public final String getLevelName() {
+    return level.getName();
+  }
+
   // octet 11-12
 
   /**
@@ -501,19 +505,6 @@ public final class Grib1Pds extends GribPds {
   // octet 41 id's ensemble
   // Ensemble processing
 
-  /**
-   * NCEP Appendix C Manual 388
-   * states that if the PDS is > 28 bytes and octet 41 == 1
-   * then it's an ensemble an product.
-   *
-   * @return true if this is an ensemble
-   */
-  public final boolean isEnsemble() {
-    if ((getCenter() == 7) && (length > 40 && getOctet(41) != 0)) return true;
-    if ((getCenter() == 98) && (length > 40 && getOctet(41) != 0)) return true; // LOOK ecmwf ??
-    return false;
-  }
-
   public final int getExtension() {
     return getOctet(41);
   }
@@ -618,43 +609,54 @@ public final class Grib1Pds extends GribPds {
     }
   }
 
-  // octet 50   ECWMF
-
-  public final int getPerturbationNumber() {
-    switch (getCenter()) {
-      case 98: {
-        if (getExtension() == 30) {
-          return getOctet(50);
-        }
-      }
-      default:
-        return GribNumbers.UNDEFINED;
-    }
+  /**
+   * NCEP Appendix C Manual 388
+   * http://www.nco.ncep.noaa.gov/pmb/docs/on388/appendixc.html
+   * states that if the PDS is > 28 bytes and octet 41 == 1
+   * then it's an ensemble an product.
+   *
+   * @return true if this is an ensemble
+   */
+  public final boolean isEnsemble() {
+    if ((getCenter() == 7) && (length >= 44 && getOctet(41) == 1 && getOctet(42) < 4 )) return true;
+    if ((getCenter() == 98) && (length > 40 && getOctet(41) != 0)) return true; // LOOK ecmwf reference ??
+    return false;
   }
 
-    // octet 42 Type
+  public final int getPerturbationType() {
+    if (!isEnsemble()) return GribNumbers.UNDEFINED;
+    if (getCenter() == 7) return getOctet(42);
+    if (getCenter() == 98) return getOctet(43);
+    return GribNumbers.UNDEFINED;
+  }
 
-    /**
-     * type of ensemble
-     *
-     * @return type
+  public final int getPerturbationNumber() {
+    if (!isEnsemble()) return GribNumbers.UNDEFINED;
+
+    /*
+    0 = Unperturbed control forecast
+    1-5 = Individual negatively perturbed forecast
+    6-10 = Individual positively perturbed forecast
      */
-    public final int getPerturbationType() {
-      switch (getCenter()) {
-        // octet 43   ECWMF
-         case 98:  return getOctet(43);
-         default: return GribNumbers.UNDEFINED;
-      }
-   }
-
-  @Override
-  public boolean isEnsembleDerived() {
-    return false;
+    if (getCenter() == 7) {
+      int type =  getOctet(42);
+      int id =  getOctet(43);
+      if (type == 1) return 0;
+      if (type == 2) return id;
+      if (type == 3) return 5 + id;
+    }
+    if (getCenter() == 98) return getOctet(43);
+    return GribNumbers.UNDEFINED;
   }
 
   @Override
   public int getNumberEnsembleForecasts() {
     return 0;
+  }
+
+  @Override
+  public boolean isEnsembleDerived() {
+    return false;
   }
 
   @Override

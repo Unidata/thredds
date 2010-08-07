@@ -1267,9 +1267,9 @@ public class Grib1Tables {
         return "seconds";
 
       default:
-        System.err.println("PDS: Time Unit " + tUnit + " is not yet supported");
+        return null;
+        // System.err.println("PDS: Time Unit " + tUnit + " is not yet supported");
     }
-    return "";
   }
 
   /**

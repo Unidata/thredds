@@ -976,10 +976,6 @@ public final class Grib2ProductDefinitionSection {
     assert( pds.parameterNumber == gpv.getParameterNumber());
     if ( pds.productDefinition < 20 ) {  // NCEP models
       assert( pds.typeGenProcess == gpv.getTypeGenProcess());
-      assert( pds.backGenProcess == gpv.getBackGenProcess());
-      assert( pds.analysisGenProcess == gpv.getAnalysisGenProcess());
-      assert( pds.hoursAfter == gpv.getHoursAfterCutoff());
-      assert( pds.minutesAfter == gpv.getMinutesAfterCutoff());
       assert( pds.timeRangeUnit == gpv.getTimeUnit());
       assert( pds.forecastTime == gpv.getForecastTime());
       assert( pds.typeFirstFixedSurface == gpv.getLevelType1());
@@ -989,25 +985,25 @@ public final class Grib2ProductDefinitionSection {
     }
 
     if ((pds.productDefinition == 1) || (pds.productDefinition == 11)) {
-      assert( pds.typeEnsemble == gpv.getType());
-      assert( pds.perturbNumber == gpv.getPerturbation());
-      assert( pds.numberForecasts == gpv.getNumberForecasts());
+      assert( pds.typeEnsemble == gpv.getPerturbationType());
+      assert( pds.perturbNumber == gpv.getPerturbationNumber());
+      assert( pds.numberForecasts == gpv.getNumberEnsembleForecasts());
 
     } else if( pds.productDefinition == 2 ) {
-      assert( pds.typeEnsemble == gpv.getType());
-      assert( pds.numberForecasts == gpv.getNumberForecasts());
+      assert( pds.typeEnsemble == gpv.getPerturbationType());
+      assert( pds.numberForecasts == gpv.getNumberEnsembleForecasts());
 
     } else if( pds.productDefinition == 5 ) {
-      assert( pds.typeEnsemble == gpv.getType() );
-      assert( pds.lowerLimit == gpv.getValueLowerLimit() );
-      assert( pds.upperLimit == gpv.getValueUpperLimit() );
+      assert( pds.typeEnsemble == gpv.getPerturbationType() );
+      assert( pds.lowerLimit == gpv.getProbabilityLowerLimit() );
+      assert( pds.upperLimit == gpv.getProbabilityUpperLimit() );
 
     } else if( pds.productDefinition == 9 ) {
-      assert( pds.typeEnsemble == gpv.getType() );
-      assert( pds.numberForecasts == gpv.getNumberForecasts());
+      assert( pds.typeEnsemble == gpv.getPerturbationType() );
+      assert( pds.numberForecasts == gpv.getNumberEnsembleForecasts());
       // probability type
-      assert( pds.lowerLimit == gpv.getValueLowerLimit() );
-      assert( pds.upperLimit == gpv.getValueUpperLimit() );
+      assert( pds.lowerLimit == gpv.getProbabilityLowerLimit() );
+      assert( pds.upperLimit == gpv.getProbabilityUpperLimit() );
     }
 
   }

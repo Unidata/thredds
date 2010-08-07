@@ -124,7 +124,7 @@ public class GridIndexToNC {
         hcs.varHash.put(cdmHash, pv);
 
         // keep track of all products with same parameter name == "simple name"
-        String simpleName = gridRecord.getParameterName();
+        String simpleName = gridRecord.getParameterDescription();
         List<GridVariable> plist = hcs.productHash.get(simpleName);
         if (null == plist) {
           plist = new ArrayList<GridVariable>();

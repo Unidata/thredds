@@ -558,5 +558,34 @@ public final class Grib1Dump {
         ps.println("                    GDS Exists : " + pdsv.gdsExists());
         ps.println("                    BMS Exists : " + pdsv.bmsExists());
     }  // end printPDS
+
+   public static void printPDS( Grib1Pds pdsv, Formatter f) {
+        int center = pdsv.getCenter();
+        int subCenter = pdsv.getSubCenter();
+
+        f.format("            Originating Center : (%d) %s%n", center,Grib1Tables.getCenter_idName( center ));
+        f.format("        Originating Sub-Center : (%d) %s%n", subCenter,  Grib1Tables.getSubCenter_idName(center, subCenter) );
+        try {
+          int pn = pdsv.getParameterNumber();
+          GribPDSParamTable parameter_table = GribPDSParamTable.getParameterTable( center, subCenter,  pdsv.getParameterTableVersion() );
+          GridParameter parameter = parameter_table.getParameter(pn);
+          f.format("                Parameter Name : %d %s %s%n" , pn, parameter.getName(),parameter.getDescription());
+          f.format("               Parameter Units : %s%n", parameter.getUnit());
+        } catch( NotSupportedException nse ) {
+          f.format("               Parameter_table : %d %d %d NOT FOUND%n" , center, subCenter,  pdsv.getParameterTableVersion());
+        }
+        f.format("                Reference Time : %s%n", dateFormat.format( pdsv.getReferenceDate()));
+        f.format("                    Time Units : %s%n", Grib1Tables.getTimeUnit( pdsv.getTimeUnit()  ));
+        f.format("          Time Range Indicator : (%d) %s%n", pdsv.getTimeRangeIndicator(), Grib1Tables.getTimeRange( pdsv.getTimeRangeIndicator() ));
+        f.format("                   Time 1 (P1) : %s%n", pdsv.getP1());
+        f.format("                   Time 2 (P2) : %s%n", pdsv.getP2());
+        int tgp =  pdsv.getTypeGenProcess();
+        f.format("       Generating Process Type : (%d) %s%n", tgp, Grib1Tables.getTypeGenProcessName(center, tgp));
+        f.format("                    Level Type : (%d) %s%n", pdsv.getLevelType1(), pdsv.getLevelName());
+        f.format("                 Level Value 1 : %f%n", pdsv.getLevelValue1());
+        f.format("                 Level Value 2 : %f%n", pdsv.getLevelValue2());
+        f.format("                    GDS Exists : %s%n", pdsv.gdsExists());
+        f.format("                    BMS Exists : %s%n", pdsv.bmsExists());
+    }  // end printPDS
 }
 

@@ -79,7 +79,7 @@ public class TestReadingGempak extends TestCase {
         if ( child.endsWith( ".gem" ) ) {
           if( child.startsWith( "air"))
             continue;
-          System.out.println("\n\nReading File " + child);
+          System.out.println("\n\nReading File " + dirB1 + "/" + child);
           long start = System.currentTimeMillis();
 
           NetcdfFile ncfileBinary = NetcdfFile.open(dirB1 + "/" + child);

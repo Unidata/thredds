@@ -450,8 +450,8 @@ public class Grib2Tables {
         return "Second";
 
       default:
-        //return "unknown";
-        return "minutes"; // some grids don't set, so default is minutes, same default as old code
+        return null;
+        // return "minutes"; // some grids don't set, so default is minutes, same default as old code
     }
   }
 
@@ -502,7 +502,8 @@ public class Grib2Tables {
         return "second";
 
       default:
-        return "minutes"; // some grids don't set, so default is minutes, same default as old code
+        return null;
+        // return "minutes"; // some grids don't set, so default is minutes, same default as old code
     }
   }
 
@@ -1119,7 +1120,7 @@ public class Grib2Tables {
      case 2: return	"Probability of event between lower and upper limits.  The range includes the lower limit but not the upper limit";
      case 3: return	"Probability of event above lower limit";
      case 4: return	"Probability of event below upper limit";
-     default: return "Missing";
+     default: return "UnknownCodeTable4.9="+code;
     }
   }
 
@@ -1139,8 +1140,7 @@ public class Grib2Tables {
         return "anomaly";
       case 6:
         return "unweightedMeanCluster";
-      default:
-        return "unknownEnsemble";
+      default: return "UnknownCodeTable4.7="+code;
     }
   }
 
@@ -1161,7 +1161,7 @@ public class Grib2Tables {
       case 7: return	"Covariance (Temporal variance)";
       case 8: return	"Difference (Value at the start of time range minus value at the end)";
       case 9: return	"Ratio";
-     default: return "Missing";
+      default: return "UnknownCodeTable4.10="+code;
     }
   }
 
@@ -1183,7 +1183,7 @@ public class Grib2Tables {
       case 7: return	"Covariance"; // (Temporal variance)";
       case 8: return	"Difference"; // (Value at the start of time range minus value at the end)";
       case 9: return	"Ratio";
-     default: return null;
+     default: return "UnknownCodeTable4.10="+code;
     }
   }
 
@@ -1200,7 +1200,7 @@ public class Grib2Tables {
       case 3: return	"Successive times processed have start time of forecast incremented and forecast time decremented so that valid time remains constant";
       case 4: return	"Successive times processed have start time of forecast decremented and forecast time incremented so that valid time remains constant";
       case 5: return	"Floating subinterval of time between forecast time and end of overall time interval";
-      default: return "Missing";
+      default: return "UnknownCodeTable4.11="+code;
      }
    }
 

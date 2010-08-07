@@ -620,4 +620,11 @@ public class GridVertCoord implements Comparable<GridVertCoord> {
     return -1;
   }
 
+  @Override
+  public String toString() {
+    return "GridVertCoord{" +
+            "levelName='" + levelName + '\'' +
+            ", seq=" + seq +
+            '}';
+  }
 }

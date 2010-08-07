@@ -326,8 +326,6 @@ public final class GribGridRecord implements GridRecord {
 
       } else {
         Grib2Pds pds2 = (Grib2Pds) pds;
-        if (pds2 == null)
-          System.out.println("HEY");
         int productTemplate = pds2.getProductDefinitionTemplate();
 
         result += result * 37 + getLevelType1();
@@ -366,15 +364,16 @@ public final class GribGridRecord implements GridRecord {
   @Override
   public String cdmVariableName(GridTableLookup lookup, boolean useLevel, boolean useStat) {
     Formatter f = new Formatter();
-    f.format("%s", getParameterDescription());
+    String desc = getParameterDescription();
+    f.format("%s", desc);
 
     if (useLevel) {
       String levelName = lookup.getLevelName(this);
       if (levelName.length() != 0) {
         if (lookup.isLayer(this))
-          f.format("_%s_layer", lookup.getLevelName(this));
+          f.format("_%s_layer", levelName);
         else
-          f.format("_%s", lookup.getLevelName(this));
+          f.format("_%s", levelName);
       }
     }
 
@@ -506,11 +505,8 @@ public final class GribGridRecord implements GridRecord {
   }
 
   public String getIntervalTypeName() {
-    if (isInterval()) {
-      String intervalTypeName = Grib2Tables.codeTable4_10short( pds.getIntervalStatType());
-      if (intervalTypeName != null)
-        return intervalTypeName;
-    }
+    if (isInterval())
+      return Grib2Tables.codeTable4_10short( pds.getIntervalStatType());
 
     return null;
   }

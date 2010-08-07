@@ -83,6 +83,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
 
   /**
    * Set whether to allow messages to be compressed.
+   *
    * @param b true or false.
    * @deprecated use setAllowCompression
    */
@@ -92,6 +93,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
 
   /**
    * Set whether to allow messages to be compressed.
+   *
    * @param b true or false.
    */
   static public void setAllowCompression(boolean b) {
@@ -100,6 +102,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
 
   /**
    * Debugging flags. This is a way to decouple setting flags from particular implementations.
+   *
    * @param debugFlag set of debug flags.
    */
   static public void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
@@ -122,6 +125,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
 
   /**
    * Set whether small variables are preloaded; only turn off for debugging.
+   *
    * @param b true if small variables are preloaded (default true)
    */
   static public void setPreload(boolean b) {
@@ -130,6 +134,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
 
   /**
    * If preloading, set maximum size of coordinate variables to be preloaded.
+   *
    * @param size maximum size of coordinate variables to be preloaded.
    */
   static public void setCoordinateVariablePreloadSize(int size) {
@@ -163,7 +168,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
    *
    * @param datasetURL URL of the file. This should start with the protocol "dods:"
    *                   It may also start with protocol "http:".
-   * @throws IOException on io error
+   * @throws IOException                    on io error
    * @throws java.net.MalformedURLException
    */
   public DODSNetcdfFile(String datasetURL) throws IOException {
@@ -176,7 +181,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
    *
    * @param datasetURL URL of the file. This should start with the protocol "dods:" or "http:".
    * @param cancelTask check if task is cancelled. may be null.
-   * @throws IOException on io error
+   * @throws IOException                    on io error
    * @throws java.net.MalformedURLException
    */
   public DODSNetcdfFile(String datasetURL, CancelTask cancelTask) throws IOException {
@@ -205,7 +210,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
         System.out.println("DDS = ");
         dds.print(System.out);
       }
-      if (cancelTask != null && cancelTask.isCancel()) return;                                   
+      if (cancelTask != null && cancelTask.isCancel()) return;
 
       das = dodsConnection.getDAS();
       if (debugServerCall) System.out.println("DODSNetcdfFile readDAS");
@@ -227,14 +232,14 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
     } catch (opendap.dap.DASException e) {
       logger.info("DODSNetcdfFile " + datasetURL, e);
       if (debugOpenResult)
-        System.out.println("open failure = " + e.getClass().getName()+": "+e.getMessage());
-      throw new IOException(e.getClass().getName()+": "+e.getMessage());
+        System.out.println("open failure = " + e.getClass().getName() + ": " + e.getMessage());
+      throw new IOException(e.getClass().getName() + ": " + e.getMessage());
 
     } catch (opendap.dap.DDSException e) {
       logger.info("DODSNetcdfFile " + datasetURL, e);
       if (debugOpenResult)
-        System.out.println("open failure = " + e.getClass().getName()+": "+e.getMessage());
-      throw new IOException(e.getClass().getName()+": "+e.getMessage());
+        System.out.println("open failure = " + e.getClass().getName() + ": " + e.getMessage());
+      throw new IOException(e.getClass().getName() + ": " + e.getMessage());
 
     } catch (DAP2Exception dodsE) {
       //dodsE.printStackTrace();
@@ -242,14 +247,14 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
         throw new FileNotFoundException(dodsE.getMessage());
       else {
         dodsE.printStackTrace(System.err);
-          throw new IOException(dodsE.getMessage());
+        throw new IOException(dodsE);
       }
 
     } catch (Exception e) {
       logger.info("DODSNetcdfFile " + datasetURL, e);
       if (debugOpenResult)
-        System.out.println("open failure = " + e.getClass().getName()+": "+e.getMessage());
-      throw new IOException(e.getClass().getName()+": "+e.getMessage());
+        System.out.println("open failure = " + e.getClass().getName() + ": " + e.getMessage());
+      throw new IOException(e.getClass().getName() + ": " + e.getMessage());
     }
 
     // now initialize the DODSNetcdf metadata
@@ -313,7 +318,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
         if ((dodsVar.isCoordinateVariable() && size < preloadCoordVarSize) || dodsVar.isCaching() || dodsVar.getDataType() == DataType.STRING) {
           dodsVar.setCaching(true);
           preloadList.add(dodsVar);
-          if (debugPreload) System.out.println("  preload"+dodsVar);
+          if (debugPreload) System.out.println("  preload" + dodsVar);
         }
       }
       if (cancelTask != null && cancelTask.isCancel()) return;
@@ -622,6 +627,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
   }
 
   // recursively make new variables: all new variables come through here
+
   Variable addVariable(Group parentGroup, Structure parentStructure, DodsV dodsV) throws IOException {
     Variable v = makeVariable(parentGroup, parentStructure, dodsV);
     if (v != null) {
@@ -754,6 +760,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
   }
 
   // make a structure into a group if its scalar and all parents are groups
+
   private boolean isGroup(DStructure dstruct) {
     BaseType parent = dstruct.getParent();
     if (parent == null) return true;
@@ -827,7 +834,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
     Attribute axes = v.findAttribute("coordinates");
     Attribute _axes = v.findAttribute(_Coordinate.Axes);
     if ((null != axes) && (null != _axes)) {
-      v.addAttribute(new Attribute(_Coordinate.Axes, axes.getStringValue()+" "+_axes.getStringValue()));
+      v.addAttribute(new Attribute(_Coordinate.Axes, axes.getStringValue() + " " + _axes.getStringValue()));
     }
   }
 
@@ -909,7 +916,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
    * Equivilent is same name and length.
    *
    * @param group from this group, if null, use rootGroup
-   * @param d find equivilent shared dimension to this one.
+   * @param d     find equivilent shared dimension to this one.
    * @return equivilent shared dimension or d.
    */
   Dimension getSharedDimension(Group group, Dimension d) {
@@ -926,6 +933,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
   }
 
   // construct list of dimensions to use
+
   List<Dimension> constructDimensions(Group group, opendap.dap.DArray dodsArray) {
     if (group == null) group = rootGroup;
 
@@ -985,6 +993,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
   }
 
   // kludge for single inheritence
+
   static public String getDODSshortName(Variable var) {
     if (var instanceof DODSVariable)
       return ((DODSVariable) var).getDODSshortName();
@@ -1023,7 +1032,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
    * Get the DODS data class corresponding to the Netcdf data type.
    * This is the inverse of convertToNCType().
    *
-   * @param dataType Netcdf data type.
+   * @param dataType   Netcdf data type.
    * @param isUnsigned if its unsigned
    * @return the corresponding DODS type enum, from opendap.dap.Attribute.XXXX.
    */
@@ -1143,8 +1152,9 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
    *
    * @param CE constraint expression; use empty string if none
    * @return DataDDS
-   * @throws java.io.IOException on io error
-   * @throws opendap.dap.parser.ParseException if error parsing return
+   * @throws java.io.IOException       on io error
+   * @throws opendap.dap.parser.ParseException
+   *                                   if error parsing return
    * @throws opendap.dap.DAP2Exception if you have otherwise been bad
    */
   DataDDS readDataDDSfromServer(String CE) throws IOException, opendap.dap.parser.ParseException,
@@ -1192,13 +1202,13 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
     DodsV root;
     for (Variable var : preloadVariables) {
       if (var.hasCachedData()) continue;
-      reqDodsVlist.add((DodsV)var.getSPobject());
+      reqDodsVlist.add((DodsV) var.getSPobject());
     }
     Collections.sort(reqDodsVlist); // "depth first" order
 
     // read the data
     DataDDS dataDDS;
-    Map<DodsV,DodsV> map = new HashMap<DodsV,DodsV>(2 * reqDodsVlist.size() + 1);
+    Map<DodsV, DodsV> map = new HashMap<DodsV, DodsV>(2 * reqDodsVlist.size() + 1);
     if (reqDodsVlist.size() > 0) {
 
       // Create the request
@@ -1339,7 +1349,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
 
   @Override
   public long readToByteChannel(ucar.nc2.Variable v, Section section, WritableByteChannel channel)
-        throws java.io.IOException, ucar.ma2.InvalidRangeException {
+          throws java.io.IOException, ucar.ma2.InvalidRangeException {
     if (unlocked)
       throw new IllegalStateException("File is unlocked - cannot use");
 

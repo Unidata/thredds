@@ -268,7 +268,8 @@ public class GempakGridRecord implements GridRecord {
       Formatter f = new Formatter();
       f.format("%s", getParameterName());
 
-      if (useLevel) {
+      // always use level
+      //if (useLevel) {
         String levelName = lookup.getLevelName(this);
         if (levelName.length() != 0) {
           if (lookup.isLayer(this))
@@ -276,7 +277,7 @@ public class GempakGridRecord implements GridRecord {
            else
             f.format("_%s", lookup.getLevelName(this));
         }
-      }
+      //}
 
       return f.toString();
     }

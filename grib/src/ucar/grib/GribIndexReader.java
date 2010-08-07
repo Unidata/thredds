@@ -93,8 +93,7 @@ public class GribIndexReader {
     } else {
       ios = new FileInputStream(location);
     }
-    if (ios == null)
-      return null;
+    if (ios == null) return null;
     return open(location, ios);
   }
 
@@ -222,7 +221,7 @@ public class GribIndexReader {
             ggr.center = pds1.getCenter();
             ggr.subCenter = pds1.getSubCenter();
             ggr.table = pds1.getParameterTableVersion();
-            
+
           } else {
             ggr.center = center;
             ggr.subCenter = sub_center;
@@ -230,255 +229,253 @@ public class GribIndexReader {
 
           }
 
-            /* if (grid_edition_1) {
-              GribPds pdsv = GribPds.factory(1, pdsData, calendar);
+          /* if (grid_edition_1) {
+      GribPds pdsv = GribPds.factory(1, pdsData, calendar);
 
-              // read Grib1 vars
-              ggr.productTemplate = pdsv.getProductDefinitionTemplate();
-              ggr.category = pdsv.getParameterCategory();
-              ggr.paramNumber = pdsv.getParameterNumber();
-              ggr.typeGenProcess = pdsv.getTypeGenProcess();
-              ggr.levelType1 = pdsv.getTypeFirstFixedSurface();
-              ggr.levelValue1 = pdsv.getValueFirstFixedSurface();
-              ggr.levelType2 = pdsv.getTypeSecondFixedSurface();
-              ggr.levelValue2 = pdsv.getValueSecondFixedSurface();
-              // parameter with interval
-              ggr.intervalStatType = pdsv.getIntervalStatType();
-              if ( ggr.intervalStatType != -1 ) {
-                int[] interval = pdsv.getForecastTimeInterval();
-                ggr.startOfInterval = interval[ 0 ];
-                ggr.forecastTime = interval[ 1 ];
-                if( ggr.forecastTime - ggr.startOfInterval == 0 )
-                  continue;
+      // read Grib1 vars
+      ggr.productTemplate = pdsv.getProductDefinitionTemplate();
+      ggr.category = pdsv.getParameterCategory();
+      ggr.paramNumber = pdsv.getParameterNumber();
+      ggr.typeGenProcess = pdsv.getTypeGenProcess();
+      ggr.levelType1 = pdsv.getTypeFirstFixedSurface();
+      ggr.levelValue1 = pdsv.getValueFirstFixedSurface();
+      ggr.levelType2 = pdsv.getTypeSecondFixedSurface();
+      ggr.levelValue2 = pdsv.getValueSecondFixedSurface();
+      // parameter with interval
+      ggr.intervalStatType = pdsv.getIntervalStatType();
+      if ( ggr.intervalStatType != -1 ) {
+        int[] interval = pdsv.getForecastTimeInterval();
+        ggr.startOfInterval = interval[ 0 ];
+        ggr.forecastTime = interval[ 1 ];
+        if( ggr.forecastTime - ggr.startOfInterval == 0 )
+          continue;
 //                //System.out.println( "Total Precip Interval ="+ interval[0]
 //                //+" "+ interval[1]);
-              } else {
-                ggr.forecastTime = pdsv.getForecastTime();
-              }
-              tunit = pdsv.getTimeRangeUnit();
-              ggr.decimalScale = pdsv.getDecimalScale();
-              ggr.bmsExists = pdsv.bmsExists();
-              ggr.center = pdsv.getCenter();
-              ggr.subCenter = pdsv.getSubCenter();
-              ggr.table = pdsv.getParameterTableVersion();
-              if (pdsv.isEnsemble()) {
-                //ggr.pdsVars = pdsv; To expensive to store.
-                // ensemble, derived, or probability information
-                //ggr.isEnsemble = true;
-                ggr.type = pdsv.getType();
-                ggr.ensembleNumber = pdsv.getEnsembleNumber();
-                ggr.numberForecasts = pdsv.getNumberForecasts();
-                ggr.lowerLimit = pdsv.getValueLowerLimit();
-                ggr.upperLimit = pdsv.getValueUpperLimit();
-              }
+      } else {
+        ggr.forecastTime = pdsv.getForecastTime();
+      }
+      tunit = pdsv.getTimeRangeUnit();
+      ggr.decimalScale = pdsv.getDecimalScale();
+      ggr.bmsExists = pdsv.bmsExists();
+      ggr.center = pdsv.getCenter();
+      ggr.subCenter = pdsv.getSubCenter();
+      ggr.table = pdsv.getParameterTableVersion();
+      if (pdsv.isEnsemble()) {
+        //ggr.pdsVars = pdsv; To expensive to store.
+        // ensemble, derived, or probability information
+        //ggr.isEnsemble = true;
+        ggr.type = pdsv.getType();
+        ggr.ensembleNumber = pdsv.getEnsembleNumber();
+        ggr.numberForecasts = pdsv.getNumberForecasts();
+        ggr.lowerLimit = pdsv.getValueLowerLimit();
+        ggr.upperLimit = pdsv.getValueUpperLimit();
+      }
 
-            } else {  // Grib2
-              Grib2Pds pdsv = Grib2Pds.factory(pdsData, calendar);
-              ggr.productTemplate = pdsv.getProductDefinitionTemplate();
+    } else {  // Grib2
+      Grib2Pds pdsv = Grib2Pds.factory(pdsData, calendar);
+      ggr.productTemplate = pdsv.getProductDefinitionTemplate();
 
-              // These are accumulation variables.  
-              if (ggr.productTemplate > 7 && ggr.productTemplate < 15 ||
-                  ggr.productTemplate == 42 || ggr.productTemplate == 43) {
-                int[] interval = pdsv.getForecastTimeInterval();
-                ggr.startOfInterval = interval[0];
-                ggr.forecastTime = interval[1];
-                //if( ggr.forecastTime - ggr.startOfInterval == 0 ) // WTF ??
-                //  continue;
-                //System.out.println( "Total Precip Interval ="+ interval[0]
-                //+" "+ interval[1]);
-              } else {
-                ggr.forecastTime = pdsv.getForecastTime();
-              }
-              ggr.category = pdsv.getParameterCategory();
-              ggr.paramNumber = pdsv.getParameterNumber();
-              ggr.typeGenProcess = pdsv.getTypeGenProcess();
-              ggr.analGenProcess = pdsv.getAnalysisGenProcess();
-              //int typeForeProcess = pdsv.getAnalysisGenProcess();
-              ggr.levelType1 = pdsv.getTypeFirstFixedSurface();
-              ggr.levelValue1 = pdsv.getValueFirstFixedSurface();
-              ggr.levelType2 = pdsv.getTypeSecondFixedSurface();
-              ggr.levelValue2 = pdsv.getValueSecondFixedSurface();
-              ggr.intervalStatType = pdsv.getIntervalStatType();
+      // These are accumulation variables.
+      if (ggr.productTemplate > 7 && ggr.productTemplate < 15 ||
+          ggr.productTemplate == 42 || ggr.productTemplate == 43) {
+        int[] interval = pdsv.getForecastTimeInterval();
+        ggr.startOfInterval = interval[0];
+        ggr.forecastTime = interval[1];
+        //if( ggr.forecastTime - ggr.startOfInterval == 0 ) // WTF ??
+        //  continue;
+        //System.out.println( "Total Precip Interval ="+ interval[0]
+        //+" "+ interval[1]);
+      } else {
+        ggr.forecastTime = pdsv.getForecastTime();
+      }
+      ggr.category = pdsv.getParameterCategory();
+      ggr.paramNumber = pdsv.getParameterNumber();
+      ggr.typeGenProcess = pdsv.getTypeGenProcess();
+      ggr.analGenProcess = pdsv.getAnalysisGenProcess();
+      //int typeForeProcess = pdsv.getAnalysisGenProcess();
+      ggr.levelType1 = pdsv.getTypeFirstFixedSurface();
+      ggr.levelValue1 = pdsv.getValueFirstFixedSurface();
+      ggr.levelType2 = pdsv.getTypeSecondFixedSurface();
+      ggr.levelValue2 = pdsv.getValueSecondFixedSurface();
+      ggr.intervalStatType = pdsv.getIntervalStatType();
 
-              tunit = pdsv.getTimeRangeUnit();
-              ggr.center = center;
-              ggr.subCenter = sub_center;
-              ggr.table = table_version;
-              if (pdsv.isEnsemble()) {
-                //ggr.pdsVars = pdsv; To expensive to store.
-                // ensemble, derived, or probability information
-                //ggr.isEnsemble = true;
-                ggr.type = pdsv.getType();
-                ggr.ensembleNumber = pdsv.getPerturbation();
-                ggr.numberForecasts = pdsv.getNumberForecasts();
-                ggr.lowerLimit = pdsv.getValueLowerLimit();
-                ggr.upperLimit = pdsv.getValueUpperLimit();
-              }
-              if ( debugParse && ggr.productTemplate == 31 ) { // Satellite data
-                int nb = pdsv.getNB();
-                System.out.println( "NB ="+ pdsv.getNB() );
-                int[] series = pdsv.getSatelliteSeries();
-                int[] satellite = pdsv.getSatellite();
-                int[] instrument = pdsv.getSatelliteInstrument();
-                float[] wave = pdsv.getSatelliteWave();
-                for( int n = 0; n < nb; n++) {
-                  System.out.println( series[ n ] +" "+ satellite[ n ] +" "+
-                      instrument[ n ] +" "+ wave[ n ]);
-                }
-              }
-              
-            } // end GRIB 2  */
+      tunit = pdsv.getTimeRangeUnit();
+      ggr.center = center;
+      ggr.subCenter = sub_center;
+      ggr.table = table_version;
+      if (pdsv.isEnsemble()) {
+        //ggr.pdsVars = pdsv; To expensive to store.
+        // ensemble, derived, or probability information
+        //ggr.isEnsemble = true;
+        ggr.type = pdsv.getType();
+        ggr.ensembleNumber = pdsv.getPerturbation();
+        ggr.numberForecasts = pdsv.getNumberForecasts();
+        ggr.lowerLimit = pdsv.getValueLowerLimit();
+        ggr.upperLimit = pdsv.getValueUpperLimit();
+      }
+      if ( debugParse && ggr.productTemplate == 31 ) { // Satellite data
+        int nb = pdsv.getNB();
+        System.out.println( "NB ="+ pdsv.getNB() );
+        int[] series = pdsv.getSatelliteSeries();
+        int[] satellite = pdsv.getSatellite();
+        int[] instrument = pdsv.getSatelliteInstrument();
+        float[] wave = pdsv.getSatelliteWave();
+        for( int n = 0; n < nb; n++) {
+          System.out.println( series[ n ] +" "+ satellite[ n ] +" "+
+              instrument[ n ] +" "+ wave[ n ]);
+        }
+      }
 
-            // setValidTime  hour, day, minute, month. second, year, decade, normal, century
-            // only test data available for hour
-            /* hour
-            if (tunit == 1 || tunit == 10 || tunit == 11 || tunit == 12) {
-              calendar.add(Calendar.HOUR, ggr.forecastTime);
-              // day, it's 24 hours so multiply forecast * 24
-            } else if (tunit == 2) {
-              calendar.add(Calendar.HOUR, ggr.forecastTime * 24);
-              // minute
-            } else if (tunit == 0) {
-              calendar.add(Calendar.MINUTE, ggr.forecastTime);
-              // month
-            } else if (tunit == 3) {
-              calendar.add(Calendar.MONTH, ggr.forecastTime);
-              // second
-            } else if (tunit == 13 || tunit == 254) {
-              calendar.add(Calendar.SECOND, ggr.forecastTime * 3600);
-              // year
-            } else if (tunit == 4) {
-              calendar.add(Calendar.YEAR, ggr.forecastTime);
-              // decade
-            } else if (tunit == 5) {
-              calendar.add(Calendar.YEAR, ggr.forecastTime * 10);
-              // normal
-            } else if (tunit == 6) {
-              calendar.add(Calendar.YEAR, ggr.forecastTime * 30);
-              // century
-            } else if (tunit == 7) {
-              calendar.add(Calendar.YEAR, ggr.forecastTime * 100);
+    } // end GRIB 2  */
+
+          // setValidTime  hour, day, minute, month. second, year, decade, normal, century
+          // only test data available for hour
+          /* hour
+       if (tunit == 1 || tunit == 10 || tunit == 11 || tunit == 12) {
+         calendar.add(Calendar.HOUR, ggr.forecastTime);
+         // day, it's 24 hours so multiply forecast * 24
+       } else if (tunit == 2) {
+         calendar.add(Calendar.HOUR, ggr.forecastTime * 24);
+         // minute
+       } else if (tunit == 0) {
+         calendar.add(Calendar.MINUTE, ggr.forecastTime);
+         // month
+       } else if (tunit == 3) {
+         calendar.add(Calendar.MONTH, ggr.forecastTime);
+         // second
+       } else if (tunit == 13 || tunit == 254) {
+         calendar.add(Calendar.SECOND, ggr.forecastTime * 3600);
+         // year
+       } else if (tunit == 4) {
+         calendar.add(Calendar.YEAR, ggr.forecastTime);
+         // decade
+       } else if (tunit == 5) {
+         calendar.add(Calendar.YEAR, ggr.forecastTime * 10);
+         // normal
+       } else if (tunit == 6) {
+         calendar.add(Calendar.YEAR, ggr.forecastTime * 30);
+         // century
+       } else if (tunit == 7) {
+         calendar.add(Calendar.YEAR, ggr.forecastTime * 100);
+       }
+       ggr.setValidTime(calendar.getTime());
+       ggr.timeUnit = tunit; */
+
+          /* if (debugParse)
+             System.out.println(ggr.productTemplate + " " + ggr.discipline + " " +
+                 ggr.category + " " + ggr.paramNumber + " " +
+                 ggr.typeGenProcess + " " + ggr.levelType1 + " " +
+                 ggr.levelValue1 + " " + ggr.levelType2 + " " +
+                 ggr.levelValue2 + " " + dateFormat.format(calendar.getTime()) + " " +
+                 ggr.forecastTime + " " + ggr.gdsKey + " " + ggr.offset1 + " " + ggr.offset2 + " " +
+                 ggr.decimalScale + " " + ggr.bmsExists + " " + ggr.center + " " + ggr.subCenter + " " + ggr.table + " " +
+                 ggr.type + " " + ggr.numberForecasts + " " + ggr.lowerLimit + " " + ggr.upperLimit);
+         } */
+
+          gridIndex.addGridRecord(ggr);
+        } // loop over grib records in the index
+
+        // section 3+ - GDS
+        // old
+        if (index_version.startsWith("7")) {
+          while (true) {
+            line = dis.readUTF();
+            if (line.equals("End")) {
+              break;
             }
-            ggr.setValidTime(calendar.getTime());
-            ggr.timeUnit = tunit; */
-
-            /* if (debugParse)
-              System.out.println(ggr.productTemplate + " " + ggr.discipline + " " +
-                  ggr.category + " " + ggr.paramNumber + " " +
-                  ggr.typeGenProcess + " " + ggr.levelType1 + " " +
-                  ggr.levelValue1 + " " + ggr.levelType2 + " " +
-                  ggr.levelValue2 + " " + dateFormat.format(calendar.getTime()) + " " +
-                  ggr.forecastTime + " " + ggr.gdsKey + " " + ggr.offset1 + " " + ggr.offset2 + " " +
-                  ggr.decimalScale + " " + ggr.bmsExists + " " + ggr.center + " " + ggr.subCenter + " " + ggr.table + " " +
-                  ggr.type + " " + ggr.numberForecasts + " " + ggr.lowerLimit + " " + ggr.upperLimit);
-          } */
-
-            gridIndex.addGridRecord(ggr);
-          } // loop over grib records in the index
-
-          // section 3+ - GDS
-          // old
-          if (index_version.startsWith("7")) {
-            while (true) {
-              line = dis.readUTF();
-              if (line.equals("End")) {
-                break;
-              }
-              GribGridDefRecord gds = new GribGridDefRecord(line);
-              gridIndex.addHorizCoordSys(gds);
+            GribGridDefRecord gds = new GribGridDefRecord(line);
+            gridIndex.addHorizCoordSys(gds);
+          }
+        } else {
+          // new
+          number = dis.readInt();
+          for (int j = 0; j < number; j++) {
+            int gdsSize = dis.readInt();
+            if (gdsSize == 4) { // for Grib1 records with no GDS
+              int gdskey = dis.readInt();
+              GribGridDefRecord ggdr = new GribGridDefRecord();
+              Grib1Grid.PopulateGDS(ggdr, gdskey);
+              gridIndex.addHorizCoordSys(ggdr);
+              continue;
             }
-          } else {
-            // new
-            number = dis.readInt();
-            for (int j = 0; j < number; j++) {
-              int gdsSize = dis.readInt();
-              if (gdsSize == 4) { // for Grib1 records with no GDS
-                int gdskey = dis.readInt();
-                GribGridDefRecord ggdr = new GribGridDefRecord();
-                Grib1Grid.PopulateGDS(ggdr, gdskey);
-                gridIndex.addHorizCoordSys(ggdr);
-                continue;
-              }
-              byte[] gdsData = new byte[gdsSize];
-              dis.readFully(gdsData);
-              int gdskey;
-              if (grid_edition_1) {
-                Grib1GDSVariables gdsv = new Grib1GDSVariables(gdsData);
-                GribGridDefRecord ggdr = new GribGridDefRecord(gdsv);
-                if (index_version.startsWith("8.0")) {
-                  gdskey = gdsv.get80TypeGdsKey();
-                } else {
-                  gdskey = gdsv.getGdsKey();
-                }
-                Grib1GDS(ggdr, gdsv, gdskey);
-                gridIndex.addHorizCoordSys(ggdr);
-                //System.out.println("GDS length =" + gdsv.getLength());
-                //System.out.println("GDS GdsKey =" + gdsv.getOldTypeGdsKey());
+            byte[] gdsData = new byte[gdsSize];
+            dis.readFully(gdsData);
+            int gdskey;
+            if (grid_edition_1) {
+              Grib1GDSVariables gdsv = new Grib1GDSVariables(gdsData);
+              GribGridDefRecord ggdr = new GribGridDefRecord(gdsv);
+              if (index_version.startsWith("8.0")) {
+                gdskey = gdsv.get80TypeGdsKey();
               } else {
-                Grib2GDSVariables gdsv = new Grib2GDSVariables(gdsData);
-                GribGridDefRecord ggdr = new GribGridDefRecord(gdsv);
-                if (index_version.startsWith("8.0")) {
-                  gdskey = gdsv.get80TypeGdsKey();
-                } else {
-                  gdskey = gdsv.getGdsKey(); // version higher than 8.0
-                }
-                Grib2GDS(ggdr, gdsv, gdskey);
-                gridIndex.addHorizCoordSys(ggdr);
-                //System.out.println("GDS length =" + gdsv.getLength());
-                //System.out.println("GDS GdsKey =" + gdsv.getGdsKey());
+                gdskey = gdsv.getGdsKey();
               }
-
+              Grib1GDS(ggdr, gdsv, gdskey);
+              gridIndex.addHorizCoordSys(ggdr);
+              //System.out.println("GDS length =" + gdsv.getLength());
+              //System.out.println("GDS GdsKey =" + gdsv.getOldTypeGdsKey());
+            } else {
+              Grib2GDSVariables gdsv = new Grib2GDSVariables(gdsData);
+              GribGridDefRecord ggdr = new GribGridDefRecord(gdsv);
+              if (index_version.startsWith("8.0")) {
+                gdskey = gdsv.get80TypeGdsKey();
+              } else {
+                gdskey = gdsv.getGdsKey(); // version higher than 8.0
+              }
+              Grib2GDS(ggdr, gdsv, gdskey);
+              gridIndex.addHorizCoordSys(ggdr);
+              //System.out.println("GDS length =" + gdsv.getLength());
+              //System.out.println("GDS GdsKey =" + gdsv.getGdsKey());
             }
-            //gridIndex.finish();
-          }
-          if (debugTiming) {
-            long took = System.currentTimeMillis() - start;
-            System.out.println(" Index read " + location + " count="
-                    + gridIndex.getGridCount() + " took=" + took + " msec ");
-          }
-          log.debug("Binary index read: " + location);
-          log.debug("Number Records =" + gridIndex.getGridCount() + " at " +
-                  dateFormat.format(Calendar.getInstance().getTime()));
-          return gridIndex;
 
-        }catch(IOException
-        e){
-          // there can be tpasses attempts to read the index, sometimes the 1st read
-          // fails because of network or NFS errors
-          if (pass == tpasses) {
-            String message = "I/O error at record " + gridIndex.getGridCount() + " in index file";
-            //log.warn("open(): " + message + "[" + location + "]");
-            throw new IOException(message);
           }
-          // retry
-          log.info("open(): rereading index [" + location + "]");
-          try {
-            Thread.sleep(1000); // 1 secs to let file system catch up
-          } catch (InterruptedException e1) {
-          }
+          //gridIndex.finish();
+        }
+        if (debugTiming) {
+          long took = System.currentTimeMillis() - start;
+          System.out.println(" Index read " + location + " count="
+                  + gridIndex.getGridCount() + " took=" + took + " msec ");
+        }
+        log.debug("Binary index read: " + location);
+        log.debug("Number Records =" + gridIndex.getGridCount() + " at " +
+                dateFormat.format(Calendar.getInstance().getTime()));
+        return gridIndex;
 
-        }catch(ParseException
-        e){
-          log.error("open(): ParseException reading index " + e.getMessage(), e);
-          throw new RuntimeException(e);
-
-        }finally{
-          if (dis != null)
-            dis.close();
+      } catch (IOException e) {
+        // there can be tpasses attempts to read the index, sometimes the 1st read
+        // fails because of network or NFS errors
+        if (pass == tpasses) {
+          String message = "I/O error at record " + gridIndex.getGridCount() + " in index file";
+          //log.warn("open(): " + message + "[" + location + "]");
+          throw new IOException(message);
+        }
+        // retry
+        log.info("open(): rereading index [" + location + "]");
+        try {
+          Thread.sleep(1000); // 1 secs to let file system catch up
+        } catch (InterruptedException e1) {
         }
 
-      } // for pass, code throws exception before getting here
-      return null;
+      } catch (ParseException e) {
+        log.error("open(): ParseException reading index " + e.getMessage(), e);
+        throw new RuntimeException(e);
 
-    }
+      } finally {
+        if (dis != null)
+          dis.close();
+      }
 
-    /**
-     * Populates a GridDefRecord according to Projection.
-     *
-     * @param ggdr GridDefRecord
-     * @param gdsv Grib2GDSVariables gdsv
-     * @param gdskey  key for this gds
-     */
+    } // for pass, code throws exception before getting here
+    return null;
+
+  }
+
+  /**
+   * Populates a GridDefRecord according to Projection.
+   *
+   * @param ggdr   GridDefRecord
+   * @param gdsv   Grib2GDSVariables gdsv
+   * @param gdskey key for this gds
+   */
 
   public void Grib2GDS(GribGridDefRecord ggdr, Grib2GDSVariables gdsv, int gdskey) {
 
