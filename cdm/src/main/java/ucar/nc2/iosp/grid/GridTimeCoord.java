@@ -236,7 +236,6 @@ public class GridTimeCoord implements Comparable<GridTimeCoord> {
       if (ggr.isInterval() != isInterval()) return false;
     }
 
-
     if (isInterval()) {
       // first create a new list
       List<TimeCoordWithInterval> timeList = new ArrayList<TimeCoordWithInterval>(records.size());
@@ -244,6 +243,8 @@ public class GridTimeCoord implements Comparable<GridTimeCoord> {
         GribGridRecord ggr = (GribGridRecord) record;
         GribPds pds = ggr.getPds();
         int[] timeInv = pds.getForecastTimeInterval();
+        if (timeInv == null)
+          System.out.println("HEY");
 
         int start = timeInv[0];
         int end = timeInv[1];

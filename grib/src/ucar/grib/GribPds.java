@@ -103,6 +103,11 @@ public abstract class GribPds {
    */
   abstract public int getIntervalStatType();
 
+  /**
+   * Grib-2 encodes an "end of overall time interval" .
+   * Grib-1 return < 0.
+   * @return end of overall time interval
+   */
   abstract public long getIntervalTimeEnd();
 
   /**

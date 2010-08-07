@@ -37,6 +37,7 @@ import ucar.ma2.*;
 import ucar.nc2.ParsedSectionSpec;
 import ucar.nc2.Structure;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.Variable;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.io.RandomAccessFile;
 
@@ -110,6 +111,9 @@ public abstract class AbstractIOServiceProvider implements IOServiceProvider {
 
   @Override
   public Object sendIospMessage(Object message) {
+    if (message == NetcdfFile.IOSP_MESSAGE_RANDOM_ACCESS_FILE) {
+      return raf;
+    }
     return null;
   }
 

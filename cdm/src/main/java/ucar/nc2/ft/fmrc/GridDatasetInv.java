@@ -77,6 +77,8 @@ import thredds.inventory.CollectionManager;
  */
 public class GridDatasetInv {
   static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GridDatasetInv.class);
+  static private final int REQ_VERSION = 1; // minimum required version, else regenerate XML
+  static private final int CURR_VERSION = 1;  // current version
 
   public static GridDatasetInv open(CollectionManager cm, MFile mfile, Element ncml) throws IOException {
     // do we already have it ?
@@ -88,12 +90,19 @@ public class GridDatasetInv {
         // drop through and regenerate
       } else {
         GridDatasetInv inv = readXML(xmlBytes);
-        long fileModifiedSecs = mfile.getLastModified() / 1000; // ignore msecs
-        long xmlModifiedSecs = inv.getLastModified() / 1000; // ignore msecs
-        if (xmlModifiedSecs >= fileModifiedSecs) { // LOOK if fileDate is -1, will always succeed
-          return inv;
+
+        // check if version required regen
+        if (inv.version < REQ_VERSION) {
+          // check if file has changed
+          long fileModifiedSecs = mfile.getLastModified() / 1000; // ignore msecs
+          long xmlModifiedSecs = inv.getLastModified() / 1000; // ignore msecs
+          if (xmlModifiedSecs >= fileModifiedSecs) { // LOOK if fileDate is -1, will always succeed
+            return inv; // ok, use it
+          } else {
+            if (log.isInfoEnabled()) log.info(" cache out of date: "+new Date(inv.getLastModified())+" < "+new Date(mfile.getLastModified()));
+          }
         } else {
-          if (log.isInfoEnabled()) log.info(" cache out of date "+new Date(inv.getLastModified())+" < "+new Date(mfile.getLastModified()));
+          if (log.isInfoEnabled()) log.info(" version needs upgrade: "+inv.version+" < "+REQ_VERSION);
         }
       }
     }
@@ -127,6 +136,7 @@ public class GridDatasetInv {
   /////////////////////////////////////////////////////////////////////////////////////
 
   private String location;
+  private int version;
   private final List<TimeCoord> times = new ArrayList<TimeCoord>(); // list of TimeCoord
   private final List<VertCoord> vaxes = new ArrayList<VertCoord>(); // list of VertCoord
   private final List<EnsCoord> eaxes = new ArrayList<EnsCoord>(); // list of EnsCoord
@@ -476,9 +486,11 @@ public class GridDatasetInv {
     Document doc = new Document(rootElem);
     rootElem.setAttribute("location", location);
     rootElem.setAttribute("runTime", runTime);
-    DateFormatter df = new DateFormatter();
-    if (lastModified != null)
+    if (lastModified != null) {
+      DateFormatter df = new DateFormatter();
       rootElem.setAttribute("lastModified", df.toDateTimeString(lastModified));
+    }
+    rootElem.setAttribute("version", Integer.toString(CURR_VERSION));
 
     // list all the vertical coords
     Collections.sort(vaxes);
@@ -568,6 +580,8 @@ public class GridDatasetInv {
     DateFormatter df = new DateFormatter();
     if (lastModifiedS != null)
       fmr.lastModified = df.getISODate(lastModifiedS);
+    String version = rootElem.getAttributeValue("version");
+    fmr.version = (version == null) ? 0 : Integer.parseInt(version);
 
     DateFormatter formatter = new DateFormatter();
     fmr.runDate = formatter.getISODate(fmr.runTime);

@@ -198,7 +198,7 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
   /**
    * the RandomAccessFile we are reading from
    */
-  protected RandomAccessFile raf;
+  // protected RandomAccessFile raf;
 
   /*
    * place to store debug stuff
@@ -229,16 +229,6 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
   }
 
   /**
-   * Close this IOSP
-   *
-   * @throws IOException problem closing file
-   */
-  @Override
-  public void close() throws IOException {
-    raf.close();
-  }
-
-  /**
    * Get the detail information
    *
    * @return the detail info
@@ -258,7 +248,7 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
     if (special instanceof FmrcCoordSys) {
       fmrcCoordSys = (FmrcCoordSys) special;
     } 
-    return null;
+    return super.sendIospMessage(special);
   }
 
   /**

@@ -93,13 +93,14 @@ public class GribGridServiceProvider extends GridServiceProvider {
   public Object sendIospMessage(Object special) {
     if (special instanceof String) {
       String s = (String) special;
-      if (s.equalsIgnoreCase("GridIndex"))
-      if (gridIndexSave != null) return gridIndexSave;
-        try {
-          return getIndex(raf.getLocation());
-        } catch (IOException e) {
-          return null;
-        }
+      if (s.equalsIgnoreCase("GridIndex")) {
+        if (gridIndexSave != null) return gridIndexSave;
+          try {
+            return getIndex(raf.getLocation());
+          } catch (IOException e) {
+            return null;
+          }
+      }
     }
     return super.sendIospMessage(special);
   }

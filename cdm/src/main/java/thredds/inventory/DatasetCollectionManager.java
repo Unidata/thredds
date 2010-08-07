@@ -423,6 +423,7 @@ public class DatasetCollectionManager implements CollectionManager {
     try {
       mm = new MetadataManager(collectionName);
     } catch (IOException e) {
+      e.printStackTrace();
       throw new RuntimeException(e.getMessage());
     }
   }

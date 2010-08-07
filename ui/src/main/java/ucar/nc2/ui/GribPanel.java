@@ -146,21 +146,6 @@ public class GribPanel extends JPanel {
       }
     });
 
-    varPopup.addAction("Compare Pds", new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        List list = record2BeanTable.getSelectedBeans();
-        if (list.size() == 2) {
-          Grib2RecordBean bean1 = (Grib2RecordBean) list.get(0);
-          Grib2RecordBean bean2 = (Grib2RecordBean) list.get(1);
-          Formatter f = new Formatter();
-          compare(bean1.pdsv, bean2.pdsv, f);
-          infoPopup2.setText(f.toString());
-          infoPopup2.gotoTop();
-          infoWindow2.showIfNotIconified();
-        }
-      }
-    });
-
     varPopup.addAction("Show raw PDS bytes", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Grib2RecordBean bean = (Grib2RecordBean) record2BeanTable.getSelectedBean();
@@ -317,15 +302,23 @@ public class GribPanel extends JPanel {
   }
 
   private void compare(Grib2RecordBean bean1, Grib2RecordBean bean2, Formatter f) {
-    f.format("Id Section%n");
+    Grib2IndicatorSection is1 = bean1.gr.getIs();
+    Grib2IndicatorSection is2 = bean2.gr.getIs();
+    f.format("Indicator Section%n");
+    if (is1.getGribEdition() != is2.getGribEdition())
+      f.format("getGribEdition differs %d != %d %n", is1.getGribEdition(),is2.getGribEdition());
+    if (is1.getDiscipline() != is2.getDiscipline())
+      f.format("getDiscipline differs %d != %d %n", is1.getDiscipline(),is2.getDiscipline());
+
+    f.format("%nId Section%n");
     Grib2IdentificationSection id1 = bean1.id;
     Grib2IdentificationSection id2 = bean2.id;
-    if (id1.getMaster_table_version() != id2.getMaster_table_version())
-      f.format("Master_table_version differs %d != %d %n", id1.getMaster_table_version(),id2.getMaster_table_version());
     if (id1.getCenter_id() != id2.getCenter_id())
       f.format("Center_id differs %d != %d %n", id1.getCenter_id(),id2.getCenter_id());
     if (id1.getSubcenter_id() != id2.getSubcenter_id())
       f.format("Subcenter_id differs %d != %d %n", id1.getSubcenter_id(),id2.getSubcenter_id());
+    if (id1.getMaster_table_version() != id2.getMaster_table_version())
+      f.format("Master_table_version differs %d != %d %n", id1.getMaster_table_version(),id2.getMaster_table_version());
     if (id1.getLocal_table_version() != id2.getLocal_table_version())
       f.format("Local_table_version differs %d != %d %n", id1.getLocal_table_version(),id2.getLocal_table_version());
     if (id1.getProductStatus() != id2.getProductStatus())
@@ -337,17 +330,40 @@ public class GribPanel extends JPanel {
     if (id1.getSignificanceOfRT() != id2.getSignificanceOfRT())
       f.format("getSignificanceOfRT differs %d != %d %n", id1.getSignificanceOfRT(),id2.getSignificanceOfRT());
 
+    byte[] lus1 = bean1.gr.getLocalUseSection();
+    byte[] lus2 = bean2.gr.getLocalUseSection();
+    if (lus1 == null || lus2 == null) {
+      if (lus1 == lus2)
+        f.format("%nLus are both null%n");
+      else
+        f.format("%nLus are different %s != %s %n", lus1, lus2);
+    } else {
+      f.format("%nCompare LocalUseSection%n");
+      compare( lus1, lus2, f);
+    }
+    
     compare( bean1.pdsv, bean2.pdsv, f);
+    compare( bean1.gds, bean2.gds, f);
+  }
+
+  private void compare(Grib2GridDefinitionSection gds1, Grib2GridDefinitionSection gds2, Formatter f) {
+    Grib2GDSVariables gdsv1 = gds1.getGdsVars();
+    Grib2GDSVariables gdsv2 = gds2.getGdsVars();
+
+    f.format("%nCompare Gds%n");
+    byte[] raw1 = gdsv1.getGDSBytes();
+    byte[] raw2 = gdsv2.getGDSBytes();
+    compare( raw1, raw2, f);
   }
 
   private void compare(GribPds pds1, GribPds pds2, Formatter f) {
-    f.format("Compare Pds%n");
+    f.format("%nCompare Pds%n");
     byte[] raw1 = pds1.getPDSBytes();
     byte[] raw2 = pds2.getPDSBytes();
     compare( raw1, raw2, f);
   }
 
-  private void compare(byte[] raw1, byte[] raw2, Formatter f) {
+  static public void compare(byte[] raw1, byte[] raw2, Formatter f) {
     if (raw1.length != raw2.length) {
       f.format("length 1= %3d != length 2=%3d%n", raw1.length, raw2.length);
     }
@@ -357,6 +373,20 @@ public class GribPanel extends JPanel {
       if (raw1[i] != raw2[i])
         f.format(" %3d : %3d != %3d%n", i + 1, raw1[i], raw2[i]);
     }
+    f.format("tested %d bytes %n", len);
+  }
+
+  static public void compare(float[] raw1, float[] raw2, Formatter f) {
+    if (raw1.length != raw2.length) {
+      f.format("compareFloat: length 1= %3d != length 2=%3d%n", raw1.length, raw2.length);
+    }
+    int len = Math.min(raw1.length, raw2.length);
+
+    for (int i = 0; i < len; i++) {
+      if (raw1[i] != raw2[i])
+        f.format(" %5d : %3f != %3f%n", i, raw1[i], raw2[i]);
+    }
+    f.format("tested %d floats %n", len);
   }
 
 
@@ -852,8 +882,10 @@ public class GribPanel extends JPanel {
       f.format(" Grid Template      = %d%n", gds.getGdtn());
       f.format("%nGrib2ProductDefinitionSection%n");
       int[] intv = pds.getPdsVars().getForecastTimeInterval();
-      f.format(" Start interval     = %d%n", intv[0]);
-      f.format(" End   interval     = %d%n", intv[1]);
+      if (intv != null) {
+        f.format(" Start interval     = %d%n", intv[0]);
+        f.format(" End   interval     = %d%n", intv[1]);
+      }
 
       showRawPds(pds, f);
 

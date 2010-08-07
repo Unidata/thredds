@@ -133,9 +133,10 @@ public class GribIndexReader {
         boolean grid_edition_1 = false;
         String index_version = "";
         int center = 0, sub_center = 0, table_version = 0;
+
+        // read (name,value) string pairs, blank separated, stored all on one line
         String line = dis.readUTF();
-        if (debugParse)
-          System.out.println(line);
+        if (debugParse) System.out.println(line);
         String[] split = line.split("\\s");
         for (int i = 0; i < split.length; i += 2) {
           gridIndex.addGlobalAttribute(split[i], split[i + 1]);
@@ -158,6 +159,10 @@ public class GribIndexReader {
             table_version = Integer.parseInt(split[i + 1]);
           }
         }
+
+        // binary data
+        // DataInputStream assumes big-endian i think
+
         // number of grib records to read
         int number = dis.readInt();
 
@@ -206,7 +211,7 @@ public class GribIndexReader {
           ggr.offset1 = dis.readLong();
           ggr.offset2 = dis.readLong();
 
-          // read PDS data
+          // read PDS as raw bytes
           int pdsSize = dis.readInt();
           byte[] pdsData = new byte[pdsSize];
           dis.readFully(pdsData);
@@ -376,7 +381,7 @@ public class GribIndexReader {
         } // loop over grib records in the index
 
         // section 3+ - GDS
-        // old
+        /* old
         if (index_version.startsWith("7")) {
           while (true) {
             line = dis.readUTF();
@@ -386,7 +391,7 @@ public class GribIndexReader {
             GribGridDefRecord gds = new GribGridDefRecord(line);
             gridIndex.addHorizCoordSys(gds);
           }
-        } else {
+        } else { */
           // new
           number = dis.readInt();
           for (int j = 0; j < number; j++) {
@@ -394,12 +399,15 @@ public class GribIndexReader {
             if (gdsSize == 4) { // for Grib1 records with no GDS
               int gdskey = dis.readInt();
               GribGridDefRecord ggdr = new GribGridDefRecord();
-              Grib1Grid.PopulateGDS(ggdr, gdskey);
+              Grib1Grid.populateGDS(ggdr, gdskey);
               gridIndex.addHorizCoordSys(ggdr);
               continue;
             }
+
+            // read GDS as raw bytes
             byte[] gdsData = new byte[gdsSize];
             dis.readFully(gdsData);
+            
             int gdskey;
             if (grid_edition_1) {
               Grib1GDSVariables gdsv = new Grib1GDSVariables(gdsData);
@@ -409,7 +417,7 @@ public class GribIndexReader {
               } else {
                 gdskey = gdsv.getGdsKey();
               }
-              Grib1GDS(ggdr, gdsv, gdskey);
+              populateGDS1(ggdr, gdsv, gdskey);
               gridIndex.addHorizCoordSys(ggdr);
               //System.out.println("GDS length =" + gdsv.getLength());
               //System.out.println("GDS GdsKey =" + gdsv.getOldTypeGdsKey());
@@ -421,7 +429,7 @@ public class GribIndexReader {
               } else {
                 gdskey = gdsv.getGdsKey(); // version higher than 8.0
               }
-              Grib2GDS(ggdr, gdsv, gdskey);
+              populateGDS2(ggdr, gdsv, gdskey);
               gridIndex.addHorizCoordSys(ggdr);
               //System.out.println("GDS length =" + gdsv.getLength());
               //System.out.println("GDS GdsKey =" + gdsv.getGdsKey());
@@ -429,7 +437,7 @@ public class GribIndexReader {
 
           }
           //gridIndex.finish();
-        }
+        //}
         if (debugTiming) {
           long took = System.currentTimeMillis() - start;
           System.out.println(" Index read " + location + " count="
@@ -477,7 +485,7 @@ public class GribIndexReader {
    * @param gdskey key for this gds
    */
 
-  public void Grib2GDS(GribGridDefRecord ggdr, Grib2GDSVariables gdsv, int gdskey) {
+  public void populateGDS2(GribGridDefRecord ggdr, Grib2GDSVariables gdsv, int gdskey) {
 
     int gdtn = gdsv.getGdtn();
 
@@ -795,7 +803,7 @@ public class GribIndexReader {
    * @param ggdr GridDefRecord
    * @param gdsv Grib1GDSVariables gdsv
    */
-  public void Grib1GDS(GribGridDefRecord ggdr, Grib1GDSVariables gdsv, int gdskey) {
+  public void populateGDS1(GribGridDefRecord ggdr, Grib1GDSVariables gdsv, int gdskey) {
     int gdtn = gdsv.getGdtn();
 
     //ggdr.addParam(GridDefRecord.GDS_KEY, Integer.toString(gdsv.getGdsKey()));

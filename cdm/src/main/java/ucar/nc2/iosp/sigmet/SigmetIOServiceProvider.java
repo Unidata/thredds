@@ -745,10 +745,6 @@ public class SigmetIOServiceProvider  extends AbstractIOServiceProvider {
         return Array.factory(data);
     }
     //----------------------------------------------------------------------------------
-    /** A way to communicate arbitrary information to an iosp. */
-    public Object sendIospMessage(Object message) {
-        return super.sendIospMessage(message);
-    }
 
     /** Read data from a top level Variable and send data to a WritableByteChannel.
      * @param v2  Variable

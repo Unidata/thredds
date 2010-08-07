@@ -88,6 +88,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
   static public final String IOSP_MESSAGE_ADD_RECORD_STRUCTURE = "AddRecordStructure";
   static public final String IOSP_MESSAGE_CONVERT_RECORD_STRUCTURE = "ConvertRecordStructure"; // not implemented yet
   static public final String IOSP_MESSAGE_REMOVE_RECORD_STRUCTURE = "RemoveRecordStructure";
+  static public final String IOSP_MESSAGE_RANDOM_ACCESS_FILE = "RandomAccessFile";
 
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NetcdfFile.class);
 

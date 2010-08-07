@@ -42,18 +42,21 @@ Grib2IndicatorSection
   <p>Q:\cdmUnitTest\tds\new\NAM_CONUS_20km_selectsurface_20100426_1800.grib2</p>
   <p>Q:\cdmUnitTest\tds\new\NAM_CONUS_40km_conduit_20100506_1800.grib2</p>
 </blockquote>
-<p><strong>2. GridVertCoord.useVertcoord = true incorrectly exclude variables with n &gt; 1 records.</strong></p>
-<p><strong>X 3. Probability limits incorrectly coded</strong></p>
-<p>C:/data/thredds/SREF_Alaska_45km_ensprod_20100801_0900.grib2, Total_Precipitation</p>
-<p>has 0 - 50.8, should be &gt; 50.8 due to prob type field (octet 37 in template 9) = Probability of event above upper limit.</p>
-<p><strong>4. confusion of local and WMO tables</strong></p>
+<p><strong>2. GridVertCoord.useVertcoord = true incorrectly exclude records for variables with n &gt; 1 records.</strong></p>
+<p><strong>3. Statistic (eg Average, Accumunulation) was ignored. </strong></p>
+<p>When same parameter had both, only one variable was created (eg /testdata:/cdmUnitTest/rtmodels/06091200_nmm_alt1.GrbF02800):</p>
+<pre> float Convective_cloud_cover(time, y, x);</pre>
+<p>should be</p>
+<pre> float Convective_cloud_cover(time, y, x);
+ float Convective_cloud_cover_Average(time1, y, x);</pre>
+<p><strong>4. Interval Time coordinates were ignored</strong></p>
+<p>When same parameter had both, only one variable was created, with arbitrary mixture.</p>
+<p><strong>5. Confusion of local and WMO tables</strong></p>
 <p>systemic, eg code table 4.5 200 hard coded with NCEP : see Grib2Tables.codeTable4_5()</p>
 <p><strong>5. Confusion of GRIB1 and GRIB2</strong></p>
 <p>eg using time range id as product template, see:</p>
 <pre> Grib1PDS.getProductDefinitionTemplate() {  return getTimeRange(); }</pre>
 <p>&nbsp;</p>
-<h2>TODO</h2>
-<p>3. PDS templates are munged together -need to be seperated, probably subclasses</p>
 <h2>Product Templates</h2>
 <h3>0. Normal (time, vert)</h3>
 <p>PDS Template 0 = Analysis or forecast at a horizontal level or in a horizontal layer at a <strong>point in time</strong>\\</p>

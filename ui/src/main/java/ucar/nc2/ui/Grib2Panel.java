@@ -36,10 +36,7 @@ package ucar.nc2.ui;
 import ucar.grib.GribGridRecord;
 import ucar.grib.GribNumbers;
 import ucar.grib.GribPds;
-import ucar.grib.grib1.Grib1Dump;
-import ucar.grib.grib1.Grib1Pds;
-import ucar.grib.grib1.Grib1Tables;
-import ucar.grib.grib1.GribPDSLevel;
+import ucar.grib.grib1.*;
 import ucar.grid.GridIndex;
 import ucar.grid.GridRecord;
 import ucar.nc2.NetcdfFile;
@@ -48,6 +45,8 @@ import ucar.nc2.iosp.grib.GribGridServiceProvider;
 import ucar.nc2.iosp.grib.tables.GribTemplate;
 import ucar.nc2.iosp.grid.GridServiceProvider;
 import ucar.nc2.iosp.grid.GridVariable;
+import ucar.unidata.io.*;
+import ucar.unidata.io.RandomAccessFile;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
 import ucar.grib.grib2.*;
@@ -144,7 +143,7 @@ public class Grib2Panel extends JPanel {
       }
     });
 
-    varPopup.addAction("Compare Pds", new AbstractAction() {
+    varPopup.addAction("Compare GridRecords", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         List list = recordTable.getSelectedBeans();
         if (list.size() == 2) {
@@ -184,6 +183,21 @@ public class Grib2Panel extends JPanel {
         infoPopup2.setText(f.toString());
         infoPopup2.gotoTop();
         infoWindow2.showIfNotIconified();
+      }
+    });
+
+    varPopup.addAction("Compare Data", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        List list = recordTable.getSelectedBeans();
+        if (list.size() == 2) {
+          GribGridRecordBean bean1 = (GribGridRecordBean) list.get(0);
+          GribGridRecordBean bean2 = (GribGridRecordBean) list.get(1);
+          Formatter f = new Formatter();
+          compareData(bean1, bean2, f);
+          infoPopup2.setText(f.toString());
+          infoPopup2.gotoTop();
+          infoWindow2.showIfNotIconified();
+        }
       }
     });
 
@@ -296,29 +310,31 @@ public class Grib2Panel extends JPanel {
     f.format("%n");
   }
 
-  /*
-      public int edition; // grib 1 or 2
+  void compareData(GribGridRecordBean bean1, GribGridRecordBean bean2, Formatter f) {
+    RandomAccessFile raf = (RandomAccessFile) ncd.sendIospMessage(NetcdfFile.IOSP_MESSAGE_RANDOM_ACCESS_FILE);
+    if (raf == null) return;
 
-  public int discipline;  // grib 2 only  ?
-  public Date refTime;
-  public int center = -1, subCenter = -1, table = -1;
-  public int productTemplate, category, paramNumber;
-  public int typeGenProcess;
-  public int analGenProcess;
-  public int levelType1, levelType2;
-  public double levelValue1, levelValue2;
-  public int forecastTime;
-  public int startOfInterval = GribNumbers.UNDEFINED;
-  public int timeUnit;
-  private Date validTime = null;
-  public int decimalScale = GribNumbers.UNDEFINED;
-  public boolean isEnsemble = false;
-  public int ensembleNumber  = GribNumbers.UNDEFINED;
-  public int numberForecasts = GribNumbers.UNDEFINED;
-  public int type = GribNumbers.UNDEFINED;
-  public float lowerLimit = GribNumbers.UNDEFINED, upperLimit = GribNumbers.UNDEFINED;
-  public int intervalStatType;
-  */
+     GribGridRecord ggr1 = bean1.ggr;
+     GribGridRecord ggr2 = bean2.ggr;
+
+    float[] data1 = null, data2 = null;
+    try {
+      if (ggr1.getEdition() == 2) {
+        Grib2Data g2read = new Grib2Data(raf);
+        data1 =  g2read.getData(ggr1.getOffset1(), ggr1.getOffset2());
+        data2 =  g2read.getData(ggr2.getOffset1(), ggr2.getOffset2());
+      } else  {
+        Grib1Data g1read = new Grib1Data(raf);
+        data1 =  g1read.getData(ggr1.getOffset1(), ggr1.getOffset2(), ggr1.getDecimalScale(), ggr1.isBmsExists());
+        data2 =  g1read.getData(ggr2.getOffset1(), ggr2.getOffset2(), ggr2.getDecimalScale(), ggr2.isBmsExists());
+      }
+    } catch (IOException e) {
+      f.format("IOException %s", e.getMessage());
+      return;
+    }
+
+    GribPanel.compare(data1, data2, f);
+  }
 
   void compare(GribGridRecordBean bean1, GribGridRecordBean bean2, Formatter f) {
     GribGridRecord ggr1 = bean1.ggr;
@@ -329,6 +345,8 @@ public class Grib2Panel extends JPanel {
       f.format("gds differs %d != %d %n", ggr1.getGdsKey(), ggr2.getGdsKey());
       ok = false;
     }
+
+    ggr1.getGridDefRecordId();
 
     if (ok) f.format("All OK!%n");
     
@@ -432,16 +450,7 @@ public class Grib2Panel extends JPanel {
     f.format("Compare PDS bytes %n");
     byte[] raw1 = ggr1.getPds().getPDSBytes();
     byte[] raw2 = ggr2.getPds().getPDSBytes();
-    if (raw1.length != raw2.length) {
-      f.format("length 1= %3d != length 2=%3d%n", raw1.length, raw2.length);
-    }
-    int len = Math.min(raw1.length, raw2.length);
-
-    for (int i = 0; i < len; i++) {
-      if (raw1[i] != raw2[i])
-        f.format(" %3d : %3d != %3d%n", i + 1, raw1[i], raw2[i]);
-    }
-    f.format("tested %d bytes %n", len);
+    GribPanel.compare(raw1, raw2, f);
     return;
   }
 
@@ -701,7 +710,9 @@ public class Grib2Panel extends JPanel {
 
     public Date getIntervalEnd() {
       if (pds.isInterval()) {
-        return new Date(pds.getIntervalTimeEnd());
+        long msecs = pds.getIntervalTimeEnd();
+        if (msecs >= 0) // GRIB-1 doesnt have this
+          return new Date(msecs);
       }
       return null;
     }

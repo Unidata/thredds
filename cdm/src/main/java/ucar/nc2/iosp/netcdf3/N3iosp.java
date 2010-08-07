@@ -897,7 +897,7 @@ public String NC_check_name(String name) {
     else if (message == NetcdfFile.IOSP_MESSAGE_REMOVE_RECORD_STRUCTURE)
       return header.removeRecordStructure();
 
-    return null;
+    return super.sendIospMessage(message);
   }
 
   public String getFileTypeId() { return "netCDF"; }

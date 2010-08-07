@@ -47,137 +47,153 @@ package ucar.grib.grib2;
 
 public final class Grib2Record {
 
-    /**
-     * Grib record header.
-     */
-    private final String header;
+  /**
+   * Grib record header.
+   */
+  private final String header;
 
-    /**
-     * Grib2IndicatorSection object.
-     */
-    private Grib2IndicatorSection is = null;
+  /**
+   * Grib2IndicatorSection object.
+   */
+  private Grib2IndicatorSection is = null;
 
-    /**
-     * Grib2IdentificationSection object.
-     */
-    private Grib2IdentificationSection id = null;
+  /**
+   * Grib2IdentificationSection object.
+   */
+  private Grib2IdentificationSection id = null;
 
-    /**
-     * Grib2GridDefinitionSection object.
-     */
-    private Grib2GridDefinitionSection gds = null;
+  private byte[] lus; // local use section
 
-    /**
-     * Grib2ProductDefinitionSection object.
-     */
-    private Grib2ProductDefinitionSection pds = null;
+  /**
+   * Grib2GridDefinitionSection object.
+   */
+  private Grib2GridDefinitionSection gds = null;
 
-    /**
-     * Grib2DataRepresentationSection object.
-     */
-    private Grib2DataRepresentationSection drs = null;
+  /**
+   * Grib2ProductDefinitionSection object.
+   */
+  private Grib2ProductDefinitionSection pds = null;
 
-    /**
-     * GdsOffset in file.
-     */
-    private long GdsOffset = -1;
+  /**
+   * Grib2DataRepresentationSection object.
+   */
+  private Grib2DataRepresentationSection drs = null;
 
-    /**
-     * PdsOffset in file.
-     */
-    private long PdsOffset = -1;
+  /**
+   * GdsOffset in file.
+   */
+  private long GdsOffset = -1;
 
-    /**
-     * Construction for Grib2Record.
-     * @param header Grib header
-     * @param is Grib2IndicatorSection
-     * @param id Grib2IdentificationSection
-     * @param pds Grib2ProductDefinitionSection
-     * @param drs Grib2DataRepresentationSection
-     * @param GdsOffset GDS offset in Grib file
-     * @param PdsOffset PDS offset in Grib file
+  /**
+   * PdsOffset in file.
+   */
+  private long PdsOffset = -1;
 
-     */
-    public Grib2Record(String header, Grib2IndicatorSection is,
-                       Grib2IdentificationSection id,
-                       Grib2GridDefinitionSection gds,
-                       Grib2ProductDefinitionSection pds,
-                       Grib2DataRepresentationSection drs,
-                       long GdsOffset,
-                       long PdsOffset) {
+  /**
+   * Construction for Grib2Record.
+   *
+   * @param header    Grib header
+   * @param is        Grib2IndicatorSection
+   * @param id        Grib2IdentificationSection
+   * @param pds       Grib2ProductDefinitionSection
+   * @param drs       Grib2DataRepresentationSection
+   * @param GdsOffset GDS offset in Grib file
+   * @param PdsOffset PDS offset in Grib file
+   */
+  public Grib2Record(String header, Grib2IndicatorSection is,
+                     Grib2IdentificationSection id,
+                     byte[] lus,
+                     Grib2GridDefinitionSection gds,
+                     Grib2ProductDefinitionSection pds,
+                     Grib2DataRepresentationSection drs,
+                     long GdsOffset,
+                     long PdsOffset) {
 
-        this.header = header;
-        this.is     = is;
-        this.id     = id;
-        this.gds    = gds;
-        this.pds    = pds;
-        this.drs    = drs;
-        this.GdsOffset = GdsOffset;
-        this.PdsOffset = PdsOffset;
-    }
+    this.header = header;
+    this.is = is;
+    this.id = id;
+    this.lus = lus;
+    this.gds = gds;
+    this.pds = pds;
+    this.drs = drs;
+    this.GdsOffset = GdsOffset;
+    this.PdsOffset = PdsOffset;
+  }
 
-    /**
-     * returns Header of Grib record.
-     * @return header
-     */
-    public final String getHeader() {
-        return header;
-    }
+  /**
+   * returns Header of Grib record.
+   *
+   * @return header
+   */
+  public final String getHeader() {
+    return header;
+  }
 
-    /**
-     * returns GDS offset in file.
-     * @return GdsOffset
-     */
-    public final long getGdsOffset() {
-        return GdsOffset;
-    }
+  /**
+   * returns GDS offset in file.
+   *
+   * @return GdsOffset
+   */
+  public final long getGdsOffset() {
+    return GdsOffset;
+  }
 
-    /**
-     * returns Pds Offset.
-     * @return PdsOffset
-     */
-    public final long getPdsOffset() {
-        return PdsOffset;
-    }
+  /**
+   * returns Pds Offset.
+   *
+   * @return PdsOffset
+   */
+  public final long getPdsOffset() {
+    return PdsOffset;
+  }
 
-    /**
-     * returns Inofrmation Section of record.
-     * @return is
-     */
-    public final Grib2IndicatorSection getIs() {
-        return is;
-    }
+  /**
+   * returns Inofrmation Section of record.
+   *
+   * @return is
+   */
+  public final Grib2IndicatorSection getIs() {
+    return is;
+  }
 
-    /**
-     * returns IdentificationSection.
-     * @return IdentificationSection
-     */
-    public final Grib2IdentificationSection getId() {
-        return id;
-    }
+  /**
+   * returns IdentificationSection.
+   *
+   * @return IdentificationSection
+   */
+  public final Grib2IdentificationSection getId() {
+    return id;
+  }
 
-    /**
-     * returns GDS of record.
-     * @return gds
-     */
-    public final Grib2GridDefinitionSection getGDS() {
-        return gds;
-    }
+  public byte[] getLocalUseSection() {
+    return lus;
+  }
 
-    /**
-     * returns PDS.
-     * @return pds
-     */
-    public final Grib2ProductDefinitionSection getPDS() {
-        return pds;
-    }
+  /**
+   * returns GDS of record.
+   *
+   * @return gds
+   */
+  public final Grib2GridDefinitionSection getGDS() {
+    return gds;
+  }
 
-    /**
-     * returns Data Representation Section.
-     * @return DataRepresentationSection
-     */
-    public final Grib2DataRepresentationSection getDRS() {
-        return drs;
-    }
+  /**
+   * returns PDS.
+   *
+   * @return pds
+   */
+  public final Grib2ProductDefinitionSection getPDS() {
+    return pds;
+  }
+
+  /**
+   * returns Data Representation Section.
+   *
+   * @return DataRepresentationSection
+   */
+  public final Grib2DataRepresentationSection getDRS() {
+    return drs;
+  }
 }
 

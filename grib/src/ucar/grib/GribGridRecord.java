@@ -323,6 +323,7 @@ public final class GribGridRecord implements GridRecord {
       if (edition == 1) {
         result += result * 37 + getLevelType1();
         result += result * 37 + getParameterName().hashCode();
+        if (isInterval()) result += result * 37 + getIntervalTypeName().hashCode();
 
       } else {
         Grib2Pds pds2 = (Grib2Pds) pds;

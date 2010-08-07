@@ -687,6 +687,8 @@ class FmrcDataset {
     @Override
     public Array reallyRead(Variable mainv, CancelTask cancelTask) throws IOException {
       try {
+        if (mainv.getShortName().equals("Convective_inhibition"))
+          System.out.println("HEY");
         return reallyRead(mainv, mainv.getShapeAsSection(), cancelTask);
 
       } catch (InvalidRangeException e) {

@@ -66,6 +66,8 @@ public final class Grib2GridDefinitionSection {
    */
   private static final float tenToNegThree = (float) (1 / 1000.0);
 
+  private long posStart; // starting position in the RAF
+
   /**
    * Length in bytes of this section.
    */
@@ -396,10 +398,7 @@ public final class Grib2GridDefinitionSection {
    * @param doCheckSum calculate the checksum
    * @throws IOException if raf contains no valid GRIB product
    */
-  public Grib2GridDefinitionSection(
-      RandomAccessFile raf,
-      boolean doCheckSum)
-      throws IOException {
+  public Grib2GridDefinitionSection( RandomAccessFile raf, boolean doCheckSum) throws IOException {
 
     double checkSum;
     int scalefactorradius = 0;
@@ -409,7 +408,8 @@ public final class Grib2GridDefinitionSection {
     int scalefactorminor = 0;
     int scaledvalueminor = 0;
 
-    long sectionEnd = raf.getFilePointer();
+    long pos = raf.getFilePointer();
+    posStart = pos;
 
     // octets 1-4 (Length of GDS)
     length = GribNumbers.int4(raf);
@@ -422,8 +422,8 @@ public final class Grib2GridDefinitionSection {
     raf.read(gdsData);
     gdsVars = new Grib2GDSVariables(gdsData);
     // reset for variable section read and set sectionEnd
-    raf.seek(sectionEnd + 4);
-    sectionEnd += length;
+    raf.seek(posStart + 4);
+    posStart += length;
 
     // octet 5
     section = raf.read();  // This is section 3

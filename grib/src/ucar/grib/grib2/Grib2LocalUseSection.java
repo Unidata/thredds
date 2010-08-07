@@ -32,10 +32,7 @@
  */
 
 // $Id: Grib2LocalUseSection.java,v 1.4 2005/12/05 19:24:21 rkambic Exp $
-
-
 package ucar.grib.grib2;
-
 
 import ucar.grib.GribNumbers;
 
@@ -49,49 +46,45 @@ import ucar.unidata.io.RandomAccessFile;
 
 import java.io.IOException;
 
-
 /**
  * A class that represents the local use section (LUS) of a GRIB product.
- * This is section 2, local user section. It mostly unused.
- *
+ * This is section 2, local user section.
  */
-
 public final class Grib2LocalUseSection {
+  /**
+   * Length in bytes of this section.
+   */
+  private byte[] rawData;
 
-    /**
-     * Length in bytes of this section.
-     */
-    private final int length;
+  // *** constructors *******************************************************
 
-    /**
-     * section number should be 2.
-     */
-    private final int section;
+  /**
+   * Constructs a <tt>Grib2LocalUseSection</tt> object from a raf.
+   *
+   * @param raf RandomAccessFile
+   * @throws IOException if raf contains no valid GRIB product
+   */
+  public Grib2LocalUseSection(RandomAccessFile raf) throws IOException {
 
-    // *** constructors *******************************************************
+    // octets 1-4 (Length of GDS)
+    int length = GribNumbers.int4(raf);
 
-    /**
-     * Constructs a <tt>Grib2LocalUseSection</tt> object from a raf.
-     * @param raf RandomAccessFile
-     * @throws IOException  if raf contains no valid GRIB product
-     */
-    public Grib2LocalUseSection(RandomAccessFile raf) throws IOException {
+    int section = raf.read();  // This is section 2
 
-        // octets 1-4 (Length of GDS)
-        length = GribNumbers.int4(raf);
-        //System.out.println( "LUS length=" + length );
+    if (section != 2) {  // no local use section
+      length = 0;
+      raf.skipBytes(-5);
+      return;
+    } else {
+      rawData = new byte[length-5];
+      raf.readFully(rawData);
+    }
+  }
 
-        section = raf.read();  // This is section 2
-        //System.out.println( "LUS Local Use is 2, section=" + section );
+  public byte[] getLocalUseSection() {
+    return rawData;
+  }
 
-        if (section != 2) {  // no local use section
-            raf.skipBytes(-5);
-            return;
-        } else {
-            raf.skipBytes(length - 5);
-        }
-    }                        // end of Grib2LocalUseSection
-
-}  // end Grib2LocalUseSection
+}
 
 

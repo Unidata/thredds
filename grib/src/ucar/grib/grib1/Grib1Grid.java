@@ -329,7 +329,7 @@ public final class Grib1Grid extends Grib1GridDefinitionSection {
    * Prints out GDS for records with predefined GDS
    * @param gdsKey
    */
-  public static void PrintGDS( int gdsKey ) {
+  public static void printGDS( int gdsKey ) {
     int gridNumber = gdsKey - 1000;
 
     System.out.println(GribGridDefRecord.GDS_KEY +" = "+ Integer.toString(gdsKey));
@@ -635,7 +635,7 @@ public final class Grib1Grid extends Grib1GridDefinitionSection {
    * @param ggdr   GridDefRecord
    * @param gdsKey as int
    */
-  public static void PopulateGDS(GribGridDefRecord ggdr, int gdsKey) {
+  public static void populateGDS(GribGridDefRecord ggdr, int gdsKey) {
 
     int gridNumber = gdsKey - 1000;
 

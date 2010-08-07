@@ -229,7 +229,7 @@ public final class Grib2Input {
         //getGDSkey(gds), gds.getGdsKey(), pds, GdsOffset, PdsOffset);
         products.add(gp);
       } else {
-        Grib2Record gr = new Grib2Record(header, is, id, gds, pds, drs, GdsOffset, PdsOffset);
+        Grib2Record gr = new Grib2Record(header, is, id, lus.getLocalUseSection(), gds, pds, drs, GdsOffset, PdsOffset);
         records.add(gr);
       }
       if (oneRecord) {
