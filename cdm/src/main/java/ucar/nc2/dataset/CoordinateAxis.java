@@ -197,14 +197,14 @@ public class CoordinateAxis extends VariableDS {
     return isContiguous;
   }
 
-  /**
+  /*
    * Set if the edges are contiguous or disjoint.
    *
    * @param isContiguous true if the adjacent edges touch
-   */
+   *
   protected void setContiguous(boolean isContiguous) {
     this.isContiguous = isContiguous;
-  }
+  } */
 
   /**
    * Get the direction of increasing values, used only for vertical Axes.

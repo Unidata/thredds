@@ -129,7 +129,8 @@ public class GribGridServiceProvider extends GridServiceProvider {
     //FmrcDefinition fmrcCoordSys = new FmrcDefinition();
     //fmrcCoordSys.readDefinitionXML("/local/robb/data/grib/SREF/NCEP-SREF-PacificNE_0p4-ensprod.fmrcDefinition.xml");
     // make it into netcdf objects
-    new GridIndexToNC().open(index, lookup, saveEdition, ncfile, fmrcCoordSys, cancelTask);
+    GridIndexToNC convert = new GridIndexToNC(raf.getLocation());
+    convert.open(index, lookup, saveEdition, ncfile, fmrcCoordSys, cancelTask);
     ncfile.finish();
 
     // may want to save index for debugging
@@ -149,7 +150,8 @@ public class GribGridServiceProvider extends GridServiceProvider {
     GridTableLookup lookup = (saveEdition == 2) ? getLookup2() : getLookup1();
 
     // make it into netcdf objects
-    new GridIndexToNC().open(index, lookup, saveEdition, ncfile, fmrcCoordSys, cancelTask);
+    GridIndexToNC convert = new GridIndexToNC(index.filename);
+    convert.open(index, lookup, saveEdition, ncfile, fmrcCoordSys, cancelTask);
 
     ncfile.finish();
 

@@ -83,7 +83,7 @@ public class TestReadandCountGrib extends TestCase {
   }
 
   public void testProblem() throws Exception {
-    doOne("grib2/data/","CLDGRIB2.2005040905", 5, 1, 3, 0);    
+    doOne("grib2/data/","AVOR_000.grb", 1, 2, 4, 1); 
   }
 
    public static void main( String arg[]) throws Exception {

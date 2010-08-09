@@ -1040,7 +1040,7 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
       if (axis == null)
         System.out.println(" No Axis " + vc.getName());
       else {
-        if (axis.isLayer()) {
+        if (axis.isInterval()) {
           System.out.println(" Layer " + vc.getName() + " contig= " + axis.isContiguous());
           // see if theres any TimeCoord that use this
           findGridsForVertCoord(fmrDef, vc);

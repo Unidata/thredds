@@ -157,7 +157,7 @@ public class McIDASGridReader {
             logError("File is null");
             return false;
         }
-        gridIndex = new GridIndex();
+        gridIndex = new GridIndex(rf.getLocation());
 
         rf.order(RandomAccessFile.BIG_ENDIAN);
         int numEntries = Math.abs(readInt(10));

@@ -92,17 +92,17 @@ public class GridDatasetInv {
         GridDatasetInv inv = readXML(xmlBytes);
 
         // check if version required regen
-        if (inv.version < REQ_VERSION) {
+        if (inv.version >= REQ_VERSION) {
           // check if file has changed
           long fileModifiedSecs = mfile.getLastModified() / 1000; // ignore msecs
           long xmlModifiedSecs = inv.getLastModified() / 1000; // ignore msecs
           if (xmlModifiedSecs >= fileModifiedSecs) { // LOOK if fileDate is -1, will always succeed
             return inv; // ok, use it
           } else {
-            if (log.isInfoEnabled()) log.info(" cache out of date: "+new Date(inv.getLastModified())+" < "+new Date(mfile.getLastModified()));
+            if (log.isInfoEnabled()) log.info(" cache out of date "+new Date(inv.getLastModified())+" < "+new Date(mfile.getLastModified()));
           }
         } else {
-          if (log.isInfoEnabled()) log.info(" version needs upgrade: "+inv.version+" < "+REQ_VERSION);
+          if (log.isInfoEnabled()) log.info(" version needs upgrade "+inv.version+" < "+REQ_VERSION);
         }
       }
     }

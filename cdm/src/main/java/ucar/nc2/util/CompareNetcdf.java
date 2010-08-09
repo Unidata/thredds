@@ -75,8 +75,8 @@ public class CompareNetcdf {
   }
 
   public boolean compare(NetcdfFile org, NetcdfFile copy, Formatter f) {
-    f.format("Original = %s%n", org.getLocation());
-    f.format("CompareTo= %s%n", copy.getLocation());
+    f.format("First file = %s%n", org.getLocation());
+    f.format("Second file= %s%n", copy.getLocation());
 
     long start = System.currentTimeMillis();
 
@@ -95,9 +95,10 @@ public class CompareNetcdf {
     boolean ok = true;
 
     for (Variable orgV : org.getVariables()) {
+      if (orgV.isCoordinateVariable()) continue;
       Variable copyVar = copy.findVariable(orgV.getShortName());
       if (copyVar == null) {
-        f.format(" cant find variable %s in 2nd file%n", orgV.getName());
+        f.format(" MISSING '%s' in 2nd file%n", orgV.getName());
         ok = false;
       } else {
         List<Dimension> dims1 = orgV.getDimensions();
@@ -105,15 +106,17 @@ public class CompareNetcdf {
         if (!compare(dims1, dims2)) {
           f.format(" %s != %s%n", orgV.getNameAndDimensions(), copyVar.getNameAndDimensions());
         } else {
-          f.format("   ok %s%n", orgV.getName());
+          // f.format("   ok %s%n", orgV.getName());
         }
       }
     }
 
+    f.format("%n");
     for (Variable orgV : copy.getVariables()) {
+      if (orgV.isCoordinateVariable()) continue;
       Variable copyVar = org.findVariable(orgV.getShortName());
       if (copyVar == null) {
-        f.format(" cant find variable %s in 1st file%n", orgV.getName());
+        f.format(" MISSING '%s' in 1st file%n", orgV.getName());
         ok = false;
       }
     }

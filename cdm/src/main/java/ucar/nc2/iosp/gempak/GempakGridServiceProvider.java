@@ -84,7 +84,7 @@ public class GempakGridServiceProvider extends GridServiceProvider {
      */
     public boolean isValidFile(RandomAccessFile raf) throws IOException {
         try {
-            gemreader = new GempakGridReader();
+            gemreader = new GempakGridReader(raf.getLocation());
             gemreader.init(raf, false);
         } catch (Exception ioe) {
             return false;
@@ -115,7 +115,7 @@ public class GempakGridServiceProvider extends GridServiceProvider {
         // debugProj = true;
         long start = System.currentTimeMillis();
         if (gemreader == null) {
-            gemreader = new GempakGridReader();
+            gemreader = new GempakGridReader(raf.getLocation());
         }
         initTables();
         gemreader.init(raf, true);
@@ -141,7 +141,7 @@ public class GempakGridServiceProvider extends GridServiceProvider {
         GempakLookup lookup =
             new GempakLookup(
                 (GempakGridRecord) index.getGridRecords().get(0));
-        GridIndexToNC delegate = new GridIndexToNC();
+        GridIndexToNC delegate = new GridIndexToNC(index.filename);
         //delegate.setUseDescriptionForVariableName(false);
         delegate.open(index, lookup, 4, ncfile, fmrcCoordSys, cancelTask);
         ncfile.finish();

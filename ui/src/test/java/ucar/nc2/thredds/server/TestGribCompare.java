@@ -52,7 +52,7 @@ public class TestGribCompare {
       ncfile1 = NetcdfDataset.openFile(dsName1, null);
       ncfile2 = NetcdfDataset.openFile(dsName2, null);
       f.format("-------------------------------------%n");
-      compare.compareVariables(ncfile1, ncfile2, f);
+      compare.compareVariables(ncfile2, ncfile1, f);
     } catch (Throwable t) {
       t.printStackTrace();
     } finally {
@@ -99,10 +99,15 @@ public class TestGribCompare {
   public static void main(String args[]) throws Exception {
     Formatter f = new Formatter(System.out);
     for (String dsname : FmrcDefinition.fmrcDatasets) {
-      String ds = findDataset(serverOld + "/thredds/fmrc/" + dsname + "/runs/catalog.xml", f);
-      f.format(" URL1= %s%n", serverOld + ds);
-      f.format(" URL2= %s%n", serverNew + ds);
-      compare(serverOld + ds, serverNew + ds, f);
+      String catOld = serverOld + "/thredds/fmrc/" + dsname + "/runs/catalog.xml";
+      String ds = findDataset(catOld, f);
+      //f.format(" URL1= %s%n", serverOld + ds);
+      //f.format(" URL2= %s%n", serverNew + ds);
+      if (ds == null) {
+        f.format("CANT FIND DATASET in cat %s%n ", catOld);
+      } else {
+        compare(serverOld + ds, serverNew + ds, f);
+      }
     }
 
   }

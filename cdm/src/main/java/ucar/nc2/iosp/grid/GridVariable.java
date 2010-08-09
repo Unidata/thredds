@@ -69,6 +69,8 @@ public class GridVariable {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GridVariable.class);
   static private boolean warnOk = true;
 
+  private final String filename;
+
   /**
    * disambiguated name == parameter name [ + suffix] [ + level]
    */
@@ -151,9 +153,9 @@ public class GridVariable {
    * @param hcs    horizontal coordinate system
    * @param lookup lookup table
    */
-  GridVariable(String name, GridHorizCoordSys hcs, GridTableLookup lookup) {
+  GridVariable(String filename, String name, GridHorizCoordSys hcs, GridTableLookup lookup) {
+    this.filename = filename;  //for debugging
     this.name = name;  // used to get unique grouping of products
-    // this.nameWithoutLevel = nameWithoutLevel;
     this.hcs = hcs;
     this.lookup = lookup;
   }
@@ -550,7 +552,7 @@ public class GridVariable {
         if (recordTracker[recno] != null) {
           GribGridRecord ggq = (GribGridRecord) recordTracker[recno];
           if (warnOk)
-            log.warn("GridVariable " + vname + " recno = " + recno + " already has in slot = " + ggq.toString2());
+            log.warn("GridVariable " + vname + " recno = " + recno + " already has in slot = " + ggq.toString2()+" for "+filename);
           sentMessage = true;
         }
       }

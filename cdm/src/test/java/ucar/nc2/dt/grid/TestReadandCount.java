@@ -182,6 +182,10 @@ public class TestReadandCount extends TestCase {
     gridDs.close();
   }
 
+  public void testProblem() throws Exception {
+    doOne(TestAll.testdataDir + "grid/grib/grib1/data/","AVN.wmo", 22, -1, -1, -1);    
+  }
+
   public void utestReadNcMLInputStream() throws Exception {
     String ncmlLoc = "file:C:\\data\\work\\margolis\\test.ncml";
     GridDataset fullDataset = GridDataset.open( ncmlLoc);

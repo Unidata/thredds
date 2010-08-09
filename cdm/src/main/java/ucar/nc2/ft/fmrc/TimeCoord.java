@@ -49,8 +49,12 @@ public class TimeCoord implements Comparable {
   private Date runDate;
   private List<GridDatasetInv.Grid> gridInv; // all use this coord
   private int id; // unique id for serialization
-  private double[] offset; // hours since runDate
   private String axisName; // time coordinate axis
+
+  // time at point has offsets, intervals have bounds
+  private double[] offset; // hours since runDate
+  private boolean isInterval = false;
+  private double[] bound1, bound2; // hours since runDate [ntimes,2]
 
   TimeCoord(Date runDate) {
     this.runDate = runDate;
@@ -65,6 +69,9 @@ public class TimeCoord implements Comparable {
     this.runDate = from.runDate;
     this.axisName = from.axisName;
     this.offset = from.offset;
+    this.isInterval = from.isInterval;
+    this.bound1 = from.bound1;
+    this.bound2 = from.bound2;
     this.id = from.id;
   }
 
@@ -80,10 +87,16 @@ public class TimeCoord implements Comparable {
     }
 
     int n = (int) axis.getSize();
-    offset = new double[n];
-    for (int i = 0; i < axis.getSize(); i++) {
-      Date d = unit.makeDate(axis.getCoordValue(i));
-      offset[i] = FmrcInv.getOffsetInHours(runDate, d);
+    if (axis.isInterval()) {
+      this.isInterval = true;
+      this.bound1 = axis.getBound1();
+      this.bound2 = axis.getBound2();
+    } else {
+      offset = new double[n];
+      for (int i = 0; i < axis.getSize(); i++) {
+        Date d = unit.makeDate(axis.getCoordValue(i));
+        offset[i] = FmrcInv.getOffsetInHours(runDate, d);
+      }
     }
   }
 
@@ -145,34 +158,60 @@ public class TimeCoord implements Comparable {
     this.offset = offset;
   }
 
+  public void setBounds(double[] bound1, double[] bound2) {
+    this.bound1 = bound1;
+    this.bound2 = bound2;
+    this.isInterval = true;
+  }
+
   @Override
   public String toString() {
     DateFormatter df = new DateFormatter();
     Formatter out = new Formatter();
     out.format("%-10s %-26s offsets=", getName(), df.toDateTimeString(runDate));
-    for (double val : offset) out.format("%3.1f, ", val);
+    if (isInterval)
+      for (int i=0; i<bound1.length; i++) out.format("(%3.1f,%3.1f) ", bound1[i], bound2[i]);
+    else
+      for (double val : offset) out.format("%3.1f, ", val);
     return out.toString();
   }
 
   /**
-   * Instances that have the same offsetHours and runtime are equal
+   * Instances that have the same offsetHours/bounds and runtime are equal
    *
-   * @param tother compare this TomCoord's data
-   * @return true if data is equal
+   * @param tother compare this TimeCoord's data
+   * @return true if data are equal
    */
   public boolean equalsData(TimeCoord tother) {
     if (getRunDate() != null) {
       if (!getRunDate().equals(tother.getRunDate())) return false;
     }
 
-    if (offset.length != tother.offset.length)
-      return false;
+    if (isInterval != tother.isInterval) return false;
 
-    for (int i = 0; i < offset.length; i++) {
-      if (!ucar.nc2.util.Misc.closeEnough(offset[i], tother.offset[i]))
+    if (isInterval) {
+      if (bound1.length != tother.bound1.length)
         return false;
+
+      for (int i = 0; i < bound1.length; i++) {
+        if (!ucar.nc2.util.Misc.closeEnough(bound1[i], tother.bound1[i]))
+          return false;
+        if (!ucar.nc2.util.Misc.closeEnough(bound2[i], tother.bound2[i]))
+          return false;
+      }
+      return true;
+
+    } else { // non interval
+
+      if (offset.length != tother.offset.length)
+        return false;
+
+      for (int i = 0; i < offset.length; i++) {
+        if (!ucar.nc2.util.Misc.closeEnough(offset[i], tother.offset[i]))
+          return false;
+      }
+      return true;
     }
-    return true;
   }
 
   public int findIndex(double offsetHour) {
@@ -190,8 +229,8 @@ public class TimeCoord implements Comparable {
   /////////////////////////////////////////////
 
   /**
-   * Look through timeCoords to see if equivilent to want exists.
-   * Equiv means runDate is the same, and offsets match.
+   * Look through timeCoords to see if one matches want.
+   * Matches means equalsData() is true.
    * If not found, make a new one and add to timeCoords.
    *
    * @param timeCoords look through this list
@@ -219,9 +258,21 @@ public class TimeCoord implements Comparable {
    * @return union TimeCoord
    */
   static public TimeCoord makeUnion(List<TimeCoord> timeCoords, Date baseDate) {
+    if (timeCoords.size() == 0) return new TimeCoord(baseDate);
+    if (timeCoords.size() == 1) return timeCoords.get(0);
+
+    if (timeCoords.get(0).isInterval)
+      return makeUnionInv(timeCoords, baseDate);
+    else
+      return makeUnionReg(timeCoords, baseDate);
+  }
+
+  static private TimeCoord makeUnionReg(List<TimeCoord> timeCoords, Date baseDate) {
     // put into a set for uniqueness
     Set<Double> offsets = new HashSet<Double>();
     for (TimeCoord tc : timeCoords) {
+      if (tc.isInterval)
+        throw new IllegalArgumentException("Cant mix interval coordinates");
       for (double off : tc.getOffsetHours())
         offsets.add(off);
     }
@@ -241,13 +292,79 @@ public class TimeCoord implements Comparable {
     result.setOffsetHours(offset);
     return result;
   }
+
+  static private TimeCoord makeUnionInv(List<TimeCoord> timeCoords, Date baseDate) {
+    // put into a set for uniqueness
+    Set<Tinv> offsets = new HashSet<Tinv>();
+    for (TimeCoord tc : timeCoords) {
+      if (!tc.isInterval)
+        throw new IllegalArgumentException("Cant mix non-interval coordinates");
+      for (int i=0; i<tc.bound1.length; i++)
+        offsets.add(new Tinv(tc.bound1[i], tc.bound2[i]));
+    }
+
+    // extract into a List
+    List<Tinv> bounds = Arrays.asList((Tinv[]) offsets.toArray(new Tinv[offsets.size()]));
+
+    // sort and extract into double[] bounds arrays
+    Collections.sort(bounds);
+    int n = bounds.size();
+    double[] bounds1 = new double[n];
+    double[] bounds2 = new double[n];
+    for (int i=0; i<n; i++) {
+      Tinv tinv = bounds.get(i);
+      bounds1[i] = tinv.b1;
+      bounds2[i] = tinv.b2;
+    }
+
+    // make the resulting time coord
+    TimeCoord result = new TimeCoord(baseDate);
+    result.setBounds(bounds1, bounds2);
+    return result;
+  }
+
+  // use for matching intervals
+  private static class Tinv implements Comparable<Tinv> {
+    double b1, b2;
+
+    private Tinv(double b1, double b2) {
+      this.b1 = b1;
+      this.b2 = b2;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      Tinv tinv = (Tinv) o;
+      if (Double.compare(tinv.b1, b1) != 0) return false;
+      if (Double.compare(tinv.b2, b2) != 0) return false;
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      int result;
+      long temp;
+      temp = b1 != +0.0d ? Double.doubleToLongBits(b1) : 0L;
+      result = (int) (temp ^ (temp >>> 32));
+      temp = b2 != +0.0d ? Double.doubleToLongBits(b2) : 0L;
+      result = 31 * result + (int) (temp ^ (temp >>> 32));
+      return result;
+    }
+
+    @Override
+    public int compareTo(Tinv o) {
+      int c1 = Double.compare(b2, o.b2);
+      if (c1 == 0) return  Double.compare(b1, o.b1);
+      return c1;
+    }
+  }
   
-  /**
+  /*
    * Create the union of all the values in the list of TimeCoord, converting all to a common baseDate
    * @param timeCoords list of TimeCoord
    * @param baseDate resulting union timeCoord uses this as a base date
    * @return union TimeCoord
-   */
+   *
   static public TimeResult makeUnionConvert(List<TimeCoord> timeCoords, Date baseDate) {
 
     Map<Double, Double> offsetMap = new HashMap<Double, Double>(256);
@@ -285,7 +402,7 @@ public class TimeCoord implements Comparable {
       this.offsets = offsets;
       this.runOffsets = runOffsets;
     }
-  }
+  } */
 
 
 }

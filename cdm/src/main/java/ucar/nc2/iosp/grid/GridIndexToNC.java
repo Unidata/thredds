@@ -61,6 +61,7 @@ public class GridIndexToNC {
 
   private DateFormatter formatter = new DateFormatter();
   private boolean debug = false;
+  private String filename;
 
   /**
    * Make the level name
@@ -79,6 +80,9 @@ public class GridIndexToNC {
     }
   }
 
+  public GridIndexToNC(String filename) {
+    this.filename = filename;
+  }
   /**
    * Fill in the netCDF file
    *
@@ -120,7 +124,7 @@ public class GridIndexToNC {
       GridVariable pv = (GridVariable) hcs.varHash.get(cdmHash);
       if (null == pv) {
         String name = gridRecord.cdmVariableName(lookup, true, true);
-        pv = new GridVariable(name, hcs, lookup);
+        pv = new GridVariable(filename, name, hcs, lookup);
         hcs.varHash.put(cdmHash, pv);
 
         // keep track of all products with same parameter name == "simple name"
@@ -428,15 +432,16 @@ public class GridIndexToNC {
           boolean firstVertCoord = true;
           for (VertCollection vc : vclist) {
             boolean hasMultipleLevels = vc.vc.getNLevels() > 1;
+            boolean noLevelOk = firstVertCoord && hasMultipleLevels;
             List<GridVariable> list = vc.list;
             if (list.size() == 1) {
               GridVariable gv = list.get(0);
-              String name = gv.getFirstRecord().cdmVariableName(lookup, !firstVertCoord && hasMultipleLevels, false);
+              String name = gv.getFirstRecord().cdmVariableName(lookup, !noLevelOk, false);
               ncfile.addVariable(hcs.getGroup(), gv.makeVariable(ncfile, hcs.getGroup(), name));
 
             } else {
               for (GridVariable gv : list) { // more than one - disambiguate by stat name
-                String name = gv.getFirstRecord().cdmVariableName(lookup, !firstVertCoord && hasMultipleLevels, true);
+                String name = gv.getFirstRecord().cdmVariableName(lookup, !noLevelOk, true);
                 ncfile.addVariable(hcs.getGroup(), gv.makeVariable(ncfile, hcs.getGroup(), name));
               }
             }

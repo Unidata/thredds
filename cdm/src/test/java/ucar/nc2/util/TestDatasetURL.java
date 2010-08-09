@@ -71,8 +71,8 @@ public class TestDatasetURL extends TestCase {
       "<?xml version='1.0' encoding='UTF-8'?>\n" +
       "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n" +
       " <aggregation type='joinNew' dimName='fake'>\n" +
-      "  <netcdf location='"+dir+"tds/dir mit blank/20070101.nc' coord='1'/>\n" +
-      "  <netcdf location='"+dir+"tds/dir mit blank/20070301.nc' coord='2'/>\n" +
+      "  <netcdf location='"+dir+"dir mit blank/20070101.nc' coord='1'/>\n" +
+      "  <netcdf location='"+dir+"dir mit blank/20070301.nc' coord='2'/>\n" +
       " </aggregation>\n" +
       "</netcdf> ";
     NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(ncml), null);

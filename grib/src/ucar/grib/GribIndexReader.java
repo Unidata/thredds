@@ -117,7 +117,7 @@ public class GribIndexReader {
       DataInputStream dis = null;
 
       try {
-        gridIndex = new GridIndex();
+        gridIndex = new GridIndex(location);
         dis = new DataInputStream(new BufferedInputStream(ios));
         // lastModified of raf, used for Index Extending
         long lastModified = dis.readLong();

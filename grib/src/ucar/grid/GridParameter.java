@@ -157,16 +157,20 @@ public class GridParameter {
         this.unit = unit;
     }
 
-    /**
-     * Return a String representation of this object
-     *
-     * @return a String representation of this object
-     */
-    public String toString() {
-      Formatter buf = new Formatter();
-      buf.format("GridParameter: %4d %s [%s]", getNumber(), getName(), getUnit());
-      return buf.toString();
-    }
+  /**
+   * Return a String representation of this object
+   *
+   * @return a String representation of this object
+   */
+  @Override
+  public String toString() {
+    return "GridParameter{" +
+            "number=" + number +
+            ", name='" + name + '\'' +
+            ", description='" + description + '\'' +
+            ", unit='" + unit + '\'' +
+            '}';
+  }
 
     /**
      * Check for equality
@@ -194,6 +198,7 @@ public class GridParameter {
         return number + name.hashCode() + description.hashCode()
                + unit.hashCode();
     }
+
 
 
 }

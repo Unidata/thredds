@@ -54,7 +54,7 @@ public class VertCoord implements Comparable {
     this.units = axis.getUnitsString();
 
     int n = (int) axis.getSize();
-    if (axis.isLayer()) {
+    if (axis.isInterval()) {
       values1 = axis.getBound1();
       values2 = axis.getBound2();
     } else {

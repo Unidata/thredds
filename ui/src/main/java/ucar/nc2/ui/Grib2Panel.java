@@ -469,7 +469,7 @@ public class Grib2Panel extends JPanel {
 
     ///////////////
 
-    public String getName() {
+    public String getDesc() {
       return name;
     }
 

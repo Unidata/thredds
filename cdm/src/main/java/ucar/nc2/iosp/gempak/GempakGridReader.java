@@ -86,11 +86,14 @@ public class GempakGridReader extends GempakFileReader {
     /** grid header len */
     private int khdrln = 0;
 
+  private final String filename;
+
     /**
      * Bean ctor.  Need to call init if you want anything to work
      */
-    GempakGridReader() {}
-
+    GempakGridReader(String filename) {
+      this.filename = filename;
+    }
     /**
      * Initialize the file, read in all the metadata (ala DM_OPEN)
      *
@@ -103,7 +106,7 @@ public class GempakGridReader extends GempakFileReader {
     public static GempakGridReader getInstance(RandomAccessFile raf,
             boolean fullCheck)
             throws IOException {
-        GempakGridReader ggr = new GempakGridReader();
+        GempakGridReader ggr = new GempakGridReader(raf.getLocation());
         ggr.init(raf, fullCheck);
         return ggr;
     }
@@ -155,7 +158,7 @@ public class GempakGridReader extends GempakFileReader {
             return true;
         }
 
-        gridIndex = new GridIndex();
+        gridIndex = new GridIndex(filename);
         // Make the NAV and ANAL blocks
         float[] headerArray = getFileHeader(NAVB);
         if (headerArray == null) {

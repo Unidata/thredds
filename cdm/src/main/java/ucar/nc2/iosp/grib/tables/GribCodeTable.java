@@ -259,7 +259,7 @@ public class GribCodeTable implements Comparable<GribCodeTable> {
     return map;
   }
 
-  static boolean showDiff = false;
+  static boolean showDiff = true;
   public static void main(String arg[]) throws IOException {
     //String filename = "C:\\docs\\dataFormats\\grib\\GRIB2_5_2_0_xml\\wmoGribCodes.xml";
     //List<GribCodeTable> tlist = readGribCodes(new FileInputStream(filename));
@@ -286,6 +286,7 @@ public class GribCodeTable implements Comparable<GribCodeTable> {
       int ndiff = 0;
       int unknown = 0;
 
+      System.out.printf("DIFFERENCES with current parameter table");
       for (GribCodeTable gt : tlist) {
         if (!gt.isParameter) continue;
         for (TableEntry p : gt.entries) {

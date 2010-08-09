@@ -109,7 +109,7 @@ public class GribReadTextIndex {
 
     long start = System.currentTimeMillis();
 
-    GridIndex gridIndex = new GridIndex();
+    GridIndex gridIndex = new GridIndex(location);
     BufferedReader dataIS = null;
     boolean old_index_version = false;
     try {

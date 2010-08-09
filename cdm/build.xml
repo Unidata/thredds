@@ -814,13 +814,13 @@
   </target>
 
   <!-- $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$  -->
-  <target name="dist" depends="makeAll, makeIDVjar, releaseInternal, makeSrc-CDM, javadoc, javadocAll"
+  <target name="dist" depends="makeAll, makeIDVjar, thredds, makeSrc-CDM, javadoc, javadocAll"
           description="create a full distribution"/>
 
-  <target  name="cleanReleaseInternal" depends="clean, makeAll, makeIDVjar, releaseInternal" />
+  <target  name="cleanReleaseInternal" depends="clean, makeAll, makeIDVjar, thredds" />
 
-  <!-- release library -->
-  <target name="releaseInternal" description="internal release to lib">
+  <!-- release library for thredds build  -->
+  <target name="thredds" depends="makeMain" description="internal release to lib">
     <copy todir="${lib.dir}/release" overwrite="true">
       <fileset dir="${build.dir}" includes="${jarMain}"/>
       <fileset dir="${build.dir}" includes="${jarIdv}"/>

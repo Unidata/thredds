@@ -863,11 +863,12 @@ public class GribPanel extends JPanel {
     public String toString() {
       Formatter f = new Formatter();
       f.format("Grib2IndicatorSection%n");
-      f.format(" Discipline = %s%n", gr.getIs().getDisciplineName());
+      f.format(" Discipline = (%d) %s%n",  gr.getIs().getDiscipline(), gr.getIs().getDisciplineName());
       f.format(" Edition    = %d%n", gr.getIs().getGribEdition());
       f.format(" Length     = %d%n", gr.getIs().getGribLength());
       f.format("%nGrib2IdentificationSection%n");
-      f.format(" Center        = %s%n", Grib1Tables.getCenter_idName(id.getCenter_id()));
+      f.format(" Center        = (%d) %s%n", id.getCenter_id(), Grib1Tables.getCenter_idName(id.getCenter_id()));
+      f.format(" SubCenter     = (%d) %n", id.getSubcenter_id());
       f.format(" Master Table  = %d%n", id.getMaster_table_version());
       f.format(" Local Table   = %d%n", id.getLocal_table_version());
       f.format(" RefTimeSignif = %s%n", id.getSignificanceOfRTName());
@@ -1017,7 +1018,7 @@ public class GribPanel extends JPanel {
 
     ///////////////
 
-    public String getName() {
+    public String getDesc() {
       return pds.getParameter().getDescription();
     }
 

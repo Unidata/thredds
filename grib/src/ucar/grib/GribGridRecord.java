@@ -95,7 +95,7 @@ public final class GribGridRecord implements GridRecord {
    */
   long offset2;
 
-  private String paramName, paramDesc;
+  private String paramDesc;
 
   /**
    * default constructor, used by GribReadIndex (binary indices)
@@ -235,12 +235,7 @@ public final class GribGridRecord implements GridRecord {
    */
   @Override
   public String getParameterName() {
-    if (paramName == null) {
-      GridParameter p = getParameter();
-      paramName = p.getName();
-      paramDesc = p.getDescription();
-    }
-    return paramName;
+    return getParameterDescription();
   }
 
   /**
@@ -250,9 +245,8 @@ public final class GribGridRecord implements GridRecord {
    */
   @Override
   public String getParameterDescription() {
-     if (paramDesc == null) {
+    if (paramDesc == null) {
       GridParameter p = getParameter();
-      paramName = p.getName();
       paramDesc = p.getDescription();
     }
     return paramDesc;
@@ -329,10 +323,11 @@ public final class GribGridRecord implements GridRecord {
         int productTemplate = pds2.getProductDefinitionTemplate();
 
         result += result * 37 + getLevelType1();
-        result += result * 37 + getParameterName().hashCode();
+        result += result * 37 + pds2.getParameterCategory();
         result += result * 37 + productTemplate;
         if (isInterval()) result += result * 37 + getIntervalTypeName().hashCode();
         result += result * 37 +  getLevelType2(); // ??
+        result += result * 37 + pds2.getParameterNumber();
 
         if (pds2.isEnsembleDerived()) {
           Grib2Pds.PdsEnsembleDerived pdsDerived = (Grib2Pds.PdsEnsembleDerived) pds2;
@@ -372,7 +367,7 @@ public final class GribGridRecord implements GridRecord {
       if (levelName.length() != 0) {
         //if (lookup.isLayer(this))
         //  f.format("_%s_layer", levelName);
-       // else
+        //else
           f.format("_%s", levelName);
       }
     }
@@ -535,7 +530,6 @@ public final class GribGridRecord implements GridRecord {
             ", gdsKey=" + gdsKey +
             ", offset1=" + offset1 +
             ", offset2=" + offset2 +
-            ", paramName='" + paramName + '\'' +
             ", paramDesc='" + paramDesc + '\'' +
             ", pds=" + pds +
             '}';
@@ -543,7 +537,7 @@ public final class GribGridRecord implements GridRecord {
 
   public String toString2() {
     return "GribGridRecord{" +
-        ", param=" + getParameterName() +
+        ", param=" + getParameterDescription() +
         ", levelType1=" + pds.getLevelType1() +
         ", levelValue1=" + pds.getLevelType2() +
         ", forecastDate=" + pds.getForecastDate() +
@@ -559,16 +553,6 @@ public final class GribGridRecord implements GridRecord {
   public void setBelongs(Object gv) {
     this.belongsTo = gv;
   }
-
-  /*
-  byte[] raw;
-  public byte[] getPdsBytes() {
-    return raw;
-  }
-  public void setPdsBytes(byte[] raw) {
-    this.raw = raw;
-  } */
-
 
   ///////////////////////
   // deprecated

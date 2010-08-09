@@ -40,104 +40,113 @@ import java.util.*;
 /**
  * An "in memory" index for 2D grid files.
  * Has list of GridRecord (Parameter), GridDefRecord (GDS) and attributes.
- *
  */
 public final class GridIndex {
 
-   /**
+  /**
    * used to check versions of already created indexes.
    */
-    static public final String current_index_version = "8.0";
+  static public final String current_index_version = "8.0";
 
-    /**
-     * Contains GridRecords
-     */
-    private final List<GridRecord> index = new ArrayList<GridRecord>();
+  public final String filename;
 
-    /**
-     * Contains list of grid definitions (mostly projection info)
-     */
-    private final List<GridDefRecord> gcs = new ArrayList<GridDefRecord>();
+  /**
+   * Contains GridRecords
+   */
+  private final List<GridRecord> index = new ArrayList<GridRecord>();
 
-    /**
-     *
-     * contains global attributes of the Index.
-     */
-    private final Map<String, String> atts = new HashMap<String, String>();
+  /**
+   * Contains list of grid definitions (mostly projection info)
+   */
+  private final List<GridDefRecord> gcs = new ArrayList<GridDefRecord>();
 
-    /**
-     * Constructor for creating an Index from the Grid file.
-     * Use the addXXX() methods.
-     */
-    public GridIndex() {}
+  /**
+   * contains global attributes of the Index.
+   */
+  private final Map<String, String> atts = new HashMap<String, String>();
 
-    /**
-     * GlobalAttributes of index.
-     * @return HashMap of type GlobalAttributes.
-     */
-    public final Map<String,String> getGlobalAttributes() {
-        return atts;
-    }
+  /**
+   * Constructor for creating an Index from the Grid file.
+   * Use the addXXX() methods.
+   * @param filename name of data file, for debugging
+   */
+  public GridIndex(String filename) {
+    this.filename = filename;
+  }
 
-    /**
-     * Grib records of index, one for each parameter.
-     * @return list of type GridRecord.
-     */
-    public final List<GridRecord> getGridRecords() {
-        return index;
-    }
+  /**
+   * GlobalAttributes of index.
+   *
+   * @return HashMap of type GlobalAttributes.
+   */
+  public final Map<String, String> getGlobalAttributes() {
+    return atts;
+  }
 
-    /**
-     * GridDefs of the index.
-     * @return list of type GridDef.
-     */
-    public final List<GridDefRecord> getHorizCoordSys() {
-        return gcs;
-    }
+  /**
+   * Grib records of index, one for each parameter.
+   *
+   * @return list of type GridRecord.
+   */
+  public final List<GridRecord> getGridRecords() {
+    return index;
+  }
 
-    /**
-     * adds a GridRecord to the index.
-     * @param gr GridRecord
-     */
-    public final void addGridRecord(GridRecord gr) {
-        index.add(gr);
-    }
+  /**
+   * GridDefs of the index.
+   *
+   * @return list of type GridDef.
+   */
+  public final List<GridDefRecord> getHorizCoordSys() {
+    return gcs;
+  }
 
-    /**
-     * adds a GridDefRecord to the index.
-     * @param gds GdsRecord
-     */
-    public final void addHorizCoordSys(GridDefRecord gds) {
-        gcs.add(gds);
-    }
+  /**
+   * adds a GridRecord to the index.
+   *
+   * @param gr GridRecord
+   */
+  public final void addGridRecord(GridRecord gr) {
+    index.add(gr);
+  }
 
-    /**
-     * adds a GlobalAttribute to the index.
-     * @param name GlobalAttribute
-     * @param value String
-     */
-    public final void addGlobalAttribute(String name, String value) {
-        atts.put(name, value);
-    }
+  /**
+   * adds a GridDefRecord to the index.
+   *
+   * @param gds GdsRecord
+   */
+  public final void addHorizCoordSys(GridDefRecord gds) {
+    gcs.add(gds);
+  }
 
-    /**
-     * Get the count of GridRecords
-     * @return the count of GridRecords
-     */
-    public int getGridCount() {
-        return index.size();
-    }
+  /**
+   * adds a GlobalAttribute to the index.
+   *
+   * @param name  GlobalAttribute
+   * @param value String
+   */
+  public final void addGlobalAttribute(String name, String value) {
+    atts.put(name, value);
+  }
+
+  /**
+   * Get the count of GridRecords
+   *
+   * @return the count of GridRecords
+   */
+  public int getGridCount() {
+    return index.size();
+  }
 
   /**
    * compares GDS for duplicates
-   *
    */
   public void finish() {
-    if( gcs.size() == 1 )
+    if (gcs.size() == 1)
       return;
-    if( gcs.size() == 2 ) {
+    if (gcs.size() == 2) {
       List hcs = getHorizCoordSys();
-      GridDefRecord.compare( (GridDefRecord) hcs.get(0), (GridDefRecord)hcs.get(1));
+      GridDefRecord.compare((GridDefRecord) hcs.get(0), (GridDefRecord) hcs.get(1));
     }
   }
 

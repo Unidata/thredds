@@ -144,7 +144,7 @@ public class McIDASGridServiceProvider extends GridServiceProvider {
         McIDASLookup lookup =
             new McIDASLookup(
                 (McIDASGridRecord) index.getGridRecords().get(0));
-        GridIndexToNC delegate = new GridIndexToNC();
+        GridIndexToNC delegate = new GridIndexToNC(index.filename);
         //delegate.setUseDescriptionForVariableName(false);
         delegate.open(index, lookup, 4, ncfile, fmrcCoordSys, cancelTask);
         ncfile.finish();

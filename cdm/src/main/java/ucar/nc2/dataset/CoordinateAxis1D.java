@@ -34,7 +34,6 @@ package ucar.nc2.dataset;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
-import ucar.nc2.constants._Coordinate;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.util.NamedObject;
 import ucar.unidata.util.Format;
@@ -66,9 +65,10 @@ import java.util.List;
 public class CoordinateAxis1D extends CoordinateAxis {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordinateAxis1D.class);
 
-  private boolean wasRead = false;
-  private boolean hasBounds = false;
-  private boolean wasCalc = false;
+  private boolean wasRead = false; // have the data values been  read
+  private boolean wasCalcRegular = false; // have we checked if the data is regularly spaced ?
+  private boolean wasBoundsDone = false; // have we created the bounds arrays if exists ?
+  private boolean isInterval = false; // is this an interval coordinates - then should use bounds
   private boolean isAscending;
 
   // read in on doRead()
@@ -77,7 +77,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
 
   // defer until ask, use makeBounds()
   private double[] edge; // n+1 edges, edge[k] < midpoint[k] < edge[k+1]
-  private double[] bound1, bound2; // not contiguous
+  private double[] bound1, bound2; // may not be not contiguous
 
   /**
    * Create a 1D coordinate axis from an existing Variable
@@ -87,7 +87,6 @@ public class CoordinateAxis1D extends CoordinateAxis {
    */
   public CoordinateAxis1D(NetcdfDataset ncd, VariableDS vds) {
     super(ncd, vds);
-    setIsLayer();
   }
 
   CoordinateAxis1D(NetcdfDataset ncd, CoordinateAxis1D org) {
@@ -96,7 +95,6 @@ public class CoordinateAxis1D extends CoordinateAxis {
     super(ncd, org);
     this.orgName = org.orgName;
     this.cache = new Variable.Cache(); // decouple cache
-    setIsLayer();
   }
 
   /**
@@ -114,7 +112,6 @@ public class CoordinateAxis1D extends CoordinateAxis {
                           DataType dataType, String dims, String units, String desc) {
 
     super(ds, group, shortName, dataType, dims, units, desc);
-    setIsLayer();
   }
 
   /**
@@ -146,7 +143,6 @@ public class CoordinateAxis1D extends CoordinateAxis {
     axis.boundaryRef = this.boundaryRef;
     axis.isContiguous = this.isContiguous;
     axis.positive = this.positive;
-    setIsLayer();
 
     axis.cache = new Variable.Cache(); // decouple cache
     return axis;
@@ -220,8 +216,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
   public double getCoordEdge(int index) {
     if (!isNumeric())
       throw new UnsupportedOperationException("CoordinateAxis1D.getCoordEdge() on non-numeric");
-    if (!wasRead) doRead();
-    if (!hasBounds) makeBounds();
+    if (!wasBoundsDone) makeBounds();
     return edge[index];
   }
 
@@ -248,16 +243,26 @@ public class CoordinateAxis1D extends CoordinateAxis {
   public double[] getCoordEdges() {
     if (!isNumeric())
       throw new UnsupportedOperationException("CoordinateAxis1D.getCoordEdges() on non-numeric");
-    if (!wasRead) doRead();
-    if (!hasBounds) makeBounds();
+    if (!wasBoundsDone) makeBounds();
     return edge.clone();
   }
 
   @Override
   public boolean isContiguous() {
-    if (!wasRead) doRead();
-    if (!hasBounds) makeBounds();
+    if (!wasBoundsDone) makeBounds();
     return isContiguous;
+  }
+
+  ///////////////////////////////////////////////
+
+  /**
+   * If this coordinate has interval values.
+   * If so, then one should use getBound1, getBound2, and not getCoordEdges()
+   * @return true if coordinate has interval values
+   */
+  public boolean isInterval() {
+    if (!wasBoundsDone) makeBounds();
+    return isInterval;
   }
 
   /**
@@ -271,8 +276,8 @@ public class CoordinateAxis1D extends CoordinateAxis {
   public double[] getBound1() {
     if (!isNumeric())
       throw new UnsupportedOperationException("CoordinateAxis1D.getBound1() on non-numeric");
-    if (!wasRead) doRead();
-    if (!hasBounds) makeBounds();
+    if (!wasBoundsDone) makeBounds();
+    if (bound1 == null) makeBoundsFromEdges();
     return bound1.clone();
   }
 
@@ -287,8 +292,8 @@ public class CoordinateAxis1D extends CoordinateAxis {
   public double[] getBound2() {
     if (!isNumeric())
       throw new UnsupportedOperationException("CoordinateAxis1D.getBound2() on non-numeric");
-    if (!wasRead) doRead();
-    if (!hasBounds) makeBounds();
+    if (!wasBoundsDone) makeBounds();
+    if (bound2 == null) makeBoundsFromEdges();
     return bound2.clone();
   }
 
@@ -301,8 +306,8 @@ public class CoordinateAxis1D extends CoordinateAxis {
    * @return double[2] edges for ith coordinate
    */
   public double[] getCoordEdges(int i) {
-    if (!wasRead) doRead();
-    if (!hasBounds) makeBounds();
+    if (!wasBoundsDone) makeBounds();
+    if (!isContiguous()) makeBoundsFromEdges();
 
     double[] e = new double[2];
     if (isContiguous()) {
@@ -422,9 +427,6 @@ public class CoordinateAxis1D extends CoordinateAxis {
    *         or -1 if the target is out of range
    */
   private int findCoordElementIrregular(double target, boolean bounded) {
-    if (!wasRead) doRead();
-    if (!hasBounds) makeBounds();
-
     int n = (int) this.getSize();
     int low = 0;
     int high = n;
@@ -501,8 +503,6 @@ public class CoordinateAxis1D extends CoordinateAxis {
    *         or -1 if the target is out of range
    */
   private int findCoordElementNonContiguous(double target, boolean bounded) {
-    if (!wasRead) doRead();
-    if (!hasBounds) makeBounds();
 
     double[] bounds1 = getBound1();
     double[] bounds2 = getBound2();
@@ -551,9 +551,29 @@ public class CoordinateAxis1D extends CoordinateAxis {
     }
   }
 
+  ////////////////////////////////////
+  // hmmm dubious
+
+  // private boolean isLayer = false;
+
+  /*
+   * Caution: many datasets do not explicitly specify this info, this is often a guess; default is false.
+   *
+   * @return true if coordinate lies between a layer, or false if its at a point.
+   *
+  public boolean isLayer() {
+    return isLayer;
+  }
+
+
+  private void setIsLayer() {
+    Attribute att = findAttribute(_Coordinate.ZisLayer);
+    if ((att != null) && att.getStringValue().equalsIgnoreCase("true"))
+      this.isLayer = true;
+  } */
 
   ///////////////////////////////////////////////////////////////////////////////
-  // checkIsRegular
+  // check if Regular
   private boolean isRegular = false;
   private double start, increment;
 
@@ -577,33 +597,6 @@ public class CoordinateAxis1D extends CoordinateAxis {
     return increment;
   }
 
-
-  private boolean isLayer = false;
-
-  /**
-   * Caution: many datasets do not explicitly specify this info, this is often a guess; default is false.
-   *
-   * @return true if coordinate lies between a layer, or false if its at a point.
-   */
-  public boolean isLayer() {
-    return isLayer;
-  }
-
-  /**
-   * Set if coordinate lies between a layer, or is at a point.
-   *
-   * @param isLayer true if coordinate lies between a layer, or false if its at a point
-   */
-  public void setLayer(boolean isLayer) {
-    this.isLayer = isLayer;
-  }
-
-  private void setIsLayer() {
-    Attribute att = findAttribute(_Coordinate.ZisLayer);
-    if ((att != null) && att.getStringValue().equalsIgnoreCase("true"))
-      this.isLayer = true;
-  }
-
   /**
    * If true, then value(i) = <i>getStart()</i> + i * <i>getIncrement()</i>.
    *
@@ -615,7 +608,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
   }
 
   private void calcIsRegular() {
-    if (wasCalc) return;
+    if (wasCalcRegular) return;
     if (!wasRead) doRead();
 
     if (!isNumeric())
@@ -630,12 +623,10 @@ public class CoordinateAxis1D extends CoordinateAxis {
       for (int i = 1; i < getSize(); i++)
         if (!ucar.nc2.util.Misc.closeEnough(getCoordValue(i) - getCoordValue(i - 1), increment, 5.0e-3)) {
           isRegular = false;
-          // double diff = Math.abs(getCoordValue(i) - getCoordValue(i-1) - increment);
-          //System.out.println(i+" diff= "+getCoordValue(i)+" "+getCoordValue(i-1));
           break;
         }
     }
-    wasCalc = true;
+    wasCalcRegular = true;
   }
 
   ///////////////////////////////////////////////////////////////////////////////
@@ -644,7 +635,6 @@ public class CoordinateAxis1D extends CoordinateAxis {
   private void doRead() {
     if (isNumeric()) {
       readValues();
-      wasRead = true;
 
       if (getSize() < 2)
         isAscending = true;
@@ -683,11 +673,11 @@ public class CoordinateAxis1D extends CoordinateAxis {
       //  calcIsRegular();
     } else if (getDataType() == DataType.STRING) {
       readStringValues();
-      wasRead = true;
     } else {
       readCharValues();
-      wasRead = true;
     }
+
+    wasRead = true;
   }
 
   // only used if String
@@ -742,12 +732,13 @@ public class CoordinateAxis1D extends CoordinateAxis {
   }
 
   private void makeBounds() {
-    if (!isNumeric()) return;
-    if (!makeBoundsFromAux()) {
-      makeEdges();
-      makeBoundsFromEdges();
+    if (!wasRead) doRead();
+    if (isNumeric()) {
+      if (!makeBoundsFromAux()) {
+        makeEdges();
+      }
     }
-    hasBounds = true;
+    wasBoundsDone = true;
   }
 
   private boolean makeBoundsFromAux() {
@@ -810,11 +801,12 @@ public class CoordinateAxis1D extends CoordinateAxis {
       for (int i = 1; i < n; i++)
         edge[i] = (value1[i] + value2[i - 1]) / 2;
       edge[n] = value2[n - 1];
-      setContiguous(false);
+      isContiguous = false;
     }
 
     bound1 = value1;
     bound2 = value2;
+    isInterval = true;
 
     return true;
   }

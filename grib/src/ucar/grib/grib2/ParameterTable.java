@@ -542,10 +542,10 @@ public final class ParameterTable {
   }
 
   public static void main(String[] args) {
-    GridParameter p = ParameterTable.getParameter( 0, 0, 193, 8 );
-    System.out.println( "Parameter = "+ p.getName() );
+    System.out.println( "Parameter = "+ ParameterTable.getParameter( 0, 2, 22, 8 ) );
+    System.out.println( "Parameter = "+ ParameterTable.getParameter( 0, 2, 22, 0 ) );
 
-    System.out.println( "Parameter = "+ ParameterTable.getParameterName( 0, 0, 193 ) );
+    // System.out.println( "Parameter = "+ ParameterTable.getParameterName( 0, 0, 193 ) );
   }
 }
 

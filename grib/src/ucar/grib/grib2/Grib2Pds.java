@@ -307,7 +307,7 @@ public class Grib2Pds extends GribPds {
       }
 
       // rather mysterious
-      switch (ti.timeIncrementType) {
+      switch (ti.timeIncrementType) { // code table 4.11
         case 1:
         case 2:
         case 3:
@@ -319,7 +319,7 @@ public class Grib2Pds extends GribPds {
         case 255:
           break;
         default:
-          throw new IllegalArgumentException("Unknown timeIncrementType= " + ti.timeIncrementType);
+          log.warn("Unknown timeIncrementType= " + ti.timeIncrementType+" for "+getProductDefinitionTemplate()+"/"+getParameterCategory()+"/"+getParameterNumber());
       }
 
     }
