@@ -197,7 +197,7 @@ public class TestMotherlodeModels implements CatalogCrawler.Listener {
     main = new JPanel();
     main.setLayout(new BoxLayout(main, BoxLayout.Y_AXIS));
 
-    TestMotherlodeModels job = new TestMotherlodeModels("problem", server+problemCat, CatalogCrawler.USE_RANDOM_DIRECT, false);
+    TestMotherlodeModels job = new TestMotherlodeModels("problem", server+catalog, CatalogCrawler.USE_RANDOM_DIRECT, false);
     // TestMotherlodeModels job = new TestMotherlodeModels("models", server + catalog, CatalogCrawler.USE_RANDOM_DIRECT, false);
 
     frame.getContentPane().add(main);

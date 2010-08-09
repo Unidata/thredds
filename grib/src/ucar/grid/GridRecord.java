@@ -123,9 +123,10 @@ public interface GridRecord {
   public int getDecimalScale();
 
   /**
-   * Get the time units as a String
+   * Get the time unit as a String. Must be able to create a udunit like:
+   * String udunit = timeUnit + " since " + refDate
    *
-   * @return the time units as a String
+   * @return the time unit as a String
    */
   public String getTimeUnitName();
 

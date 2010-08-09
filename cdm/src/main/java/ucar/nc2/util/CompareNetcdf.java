@@ -99,6 +99,14 @@ public class CompareNetcdf {
       if (copyVar == null) {
         f.format(" cant find variable %s in 2nd file%n", orgV.getName());
         ok = false;
+      } else {
+        List<Dimension> dims1 = orgV.getDimensions();
+        List<Dimension> dims2 = copyVar.getDimensions();
+        if (!compare(dims1, dims2)) {
+          f.format(" %s != %s%n", orgV.getNameAndDimensions(), copyVar.getNameAndDimensions());
+        } else {
+          f.format("   ok %s%n", orgV.getName());
+        }
       }
     }
 
@@ -110,7 +118,20 @@ public class CompareNetcdf {
       }
     }
 
+
+
     return ok;
+  }
+
+  private boolean compare(List<Dimension> dims1, List<Dimension> dims2) {
+    if (dims1.size() != dims2.size()) return false;
+    for (int i=0; i<dims1.size(); i++) {
+      Dimension dim1 = dims1.get(i);
+      Dimension dim2 = dims2.get(i);
+      //if (!dim1.getName().equals(dim2.getName())) return false;
+      if (dim1.getLength() != dim2.getLength()) return false;
+    }
+    return true;
   }
 
   private boolean compareGroups(Group org, Group copy, Formatter f) {

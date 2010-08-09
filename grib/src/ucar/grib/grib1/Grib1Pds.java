@@ -407,9 +407,7 @@ public final class Grib1Pds extends GribPds {
   }
 
   /**
-   * Get Grib1 statistical processing by using Grib1 Table 5 TIME RANGE INDICATOR as a reference.
-   * Since Grib1 and Grib2 use different tables, convert the Grib1 value to the Grib2
-   * value so GribGridRecord.getIntervalTypeName() returns the correct IntervalStatType.
+   * Get Grib-2 Interval Statistic Type (Table 4-10) by converting Grib-1 Table 5
    *
    * @return Grib-2 Interval Statistic Type (Table 4-10)
    */

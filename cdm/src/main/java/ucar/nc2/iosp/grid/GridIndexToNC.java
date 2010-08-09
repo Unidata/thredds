@@ -295,6 +295,9 @@ public class GridIndexToNC {
     List<GridVertCoord> vertCoords = new ArrayList<GridVertCoord>();
     List<GridEnsembleCoord> ensembleCoords = new ArrayList<GridEnsembleCoord>();
 
+    Calendar calendar = Calendar.getInstance();
+    calendar.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
+
     // loop over HorizCoordSys
     Collection<GridHorizCoordSys> hcset = hcsHash.values();
     for (GridHorizCoordSys hcs : hcset) {
@@ -333,7 +336,7 @@ public class GridIndexToNC {
           }
         }
         if (useTimeCoord == null) {  // nope, got to create it
-          useTimeCoord = new GridTimeCoord(recordList, lookup);
+          useTimeCoord = new GridTimeCoord(recordList);
           timeCoords.add(useTimeCoord);
         }
         gv.setTimeCoord(useTimeCoord);
@@ -424,15 +427,16 @@ public class GridIndexToNC {
 
           boolean firstVertCoord = true;
           for (VertCollection vc : vclist) {
+            boolean hasMultipleLevels = vc.vc.getNLevels() > 1;
             List<GridVariable> list = vc.list;
             if (list.size() == 1) {
               GridVariable gv = list.get(0);
-              String name = gv.getFirstRecord().cdmVariableName(lookup, !firstVertCoord, false);
+              String name = gv.getFirstRecord().cdmVariableName(lookup, !firstVertCoord && hasMultipleLevels, false);
               ncfile.addVariable(hcs.getGroup(), gv.makeVariable(ncfile, hcs.getGroup(), name));
 
             } else {
               for (GridVariable gv : list) { // more than one - disambiguate by stat name
-                String name = gv.getFirstRecord().cdmVariableName(lookup, !firstVertCoord, true);
+                String name = gv.getFirstRecord().cdmVariableName(lookup, !firstVertCoord && hasMultipleLevels, true);
                 ncfile.addVariable(hcs.getGroup(), gv.makeVariable(ncfile, hcs.getGroup(), name));
               }
             }

@@ -43,7 +43,6 @@ import ucar.grid.GridParameter;
 import ucar.grid.GridRecord;
 import ucar.grid.GridTableLookup;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Formatter;
 
@@ -371,9 +370,9 @@ public final class GribGridRecord implements GridRecord {
     if (useLevel) {
       String levelName = lookup.getLevelName(this);
       if (levelName.length() != 0) {
-        if (lookup.isLayer(this))
-          f.format("_%s_layer", levelName);
-        else
+        //if (lookup.isLayer(this))
+        //  f.format("_%s_layer", levelName);
+       // else
           f.format("_%s", levelName);
       }
     }
@@ -507,14 +506,14 @@ public final class GribGridRecord implements GridRecord {
 
   public String getIntervalTypeName() {
     if (isInterval())
-      return Grib2Tables.codeTable4_10short( pds.getIntervalStatType());
+      return Grib2Tables.codeTable4_10short( getIntervalStatType());
 
     return null;
   }
 
   /**
    * Get interval type, GRIB-2 code table 4.10
-   * @return interval type
+   * @return interval statistic type
    */
   public int getIntervalStatType() {
     return pds.getIntervalStatType();

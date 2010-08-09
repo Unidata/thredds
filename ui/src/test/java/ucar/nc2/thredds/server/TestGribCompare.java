@@ -51,7 +51,8 @@ public class TestGribCompare {
     try {
       ncfile1 = NetcdfDataset.openFile(dsName1, null);
       ncfile2 = NetcdfDataset.openFile(dsName2, null);
-      compare.compare(ncfile1, ncfile2, f);
+      f.format("-------------------------------------%n");
+      compare.compareVariables(ncfile1, ncfile2, f);
     } catch (Throwable t) {
       t.printStackTrace();
     } finally {

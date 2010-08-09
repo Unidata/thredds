@@ -10,6 +10,9 @@ import java.util.Date;
 /**
  * Grib1 and Grib 2 PDS superclass.
  * Try to abstract the common fields.
+ * This is fairly low-level, corresponding to the actual values in the file.
+ * Meaning often depend if its GRIB1 or GRIB2
+ * GridRecord translates these into values that are file type independdednt.
  *
  * @author caron
  * @since Aug 4, 2010
@@ -28,6 +31,7 @@ public abstract class GribPds {
 
   /**
    * PDS as byte[]
+   * @return PDS as byte[]
    */
   public byte[] getPDSBytes() {
     return input;
@@ -35,7 +39,7 @@ public abstract class GribPds {
 
   /**
    * Get the indexth byte in the PDS as an integer.
-   * THIS IS ONE BASED to correspond with the manual
+   * THIS IS ONE BASED (not zero) to correspond with the manual
    *
    * @param index 1 based index
    * @return input[index-1] & 0xff
@@ -47,6 +51,10 @@ public abstract class GribPds {
 
   ///////////////
 
+  /**
+   * Parameter number
+   * @return Parameter number
+   */
   abstract public int getParameterNumber();
 
    /**
@@ -91,9 +99,18 @@ public abstract class GribPds {
    */
   abstract public int getForecastTime();
 
+  /**
+   * Forecast time as a Date
+   *
+   * @return Forecast Date
+   */
   abstract public Date getForecastDate();
 
-
+  /**
+   * Is this a time interval. If so, then coordinate is a range [min, max].
+   * Otherwise coord is assumed to be a point (instance) in time.
+   * @return if time interval
+   */
   abstract public boolean isInterval();
 
   /**
