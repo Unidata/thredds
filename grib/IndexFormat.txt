@@ -6,7 +6,7 @@ parameters.
 A "grib file index" (gbx8) is an index for the grib file that contains global attributes about
 the file, metadata for the parameters including data offsets, and the grid information.
 
-2. Index
+2. Binary Index(gbx8) Structure
 
 The original version of the indexes where text format but slow write/read performance and
 static structure caused the conversion to a binary format.
@@ -20,7 +20,7 @@ The gbx8 structure has three sections:
 Since the index is in binary format, the ShowGribIndex method displays the contents of the
 index, it's invoked by ucar.grib.ShowGribIndex <indexfile>.
 
-Sample output for a GFS_Global_2p5deg.gbx8 index.
+Sample output for a GFS_Global_2p5deg.gbx8 index using ShowGribIndex.
 
 index_version = 8.0
 grid_edition = 2
@@ -75,7 +75,7 @@ http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_doc.shtml
 GRIB1 documentation:
 http://www.nco.ncep.noaa.gov/pmb/docs/on388/
 
-4. Index Description
+4. Binary Index(gbx8) Dump Explanation.
 
 First section is self explanatory.
 
@@ -92,13 +92,13 @@ ensemble = false
 
 
 Second section has one line of metadata about each parameter in the file. Most of the
-information is obtained from the Production Definition Section(PDS).
+information is obtained from the Production Definition Section(PDS) in the record.
 
 Using the first line in the second section above as a sample:
 
 0 0 2 2 2 100 1000.0 255 0.0 2009-02-04T12:00:00Z 192 51437077 37 109 -9999 true 7 0 1 -9999 -9999 -9999.0 -9999.0
 
-The numbers positions represent:
+A description of the above numbers by row position follows:
 
 1 The Product template number used to encode the PDS.
 2-4 A parameter is referenced by a Discipline, Category, and a Parameter number from a
@@ -149,4 +149,27 @@ VectorComponentFlag = 0
 Winds = True
 scanning_mode = 0
 grid_units = degrees
- 
+
+
+5. The actual sequence of data in the gbx8 index.
+
+// Section 1 Global attributes
+- One string separated by spaces that contains:
+       index_version, grid_edition, location, file length, created date, center, sub_center
+       table_version, baseTime, basetime, and if ensemble data.
+
+// Section 2 Individual record information
+- Number of records
+
+- One line for each record containing:
+ Discipline, RefTime, GDSkey, GdsOffset, PdsOffset, PDS length, PDSBytes
+
+
+// section 3: GDSs in this File
+
+- Number of GDSs in file
+
+- For each GDS: length, GDS Bytes
+
+
+
