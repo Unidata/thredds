@@ -67,7 +67,8 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter implements TypedD
     if ((null != convention) && convention.equals(_Coordinate.Convention)) {
       String format = ds.findAttValueIgnoreCase(null, "Format", null);
       if (format.equals("ARCHIVE2") || format.equals("AR2V0001") || format.equals("CINRAD-SA")
-              || format.equals("AR2V0003") || format.equals("AR2V0002") || format.equals("AR2V0004"))
+              || format.equals("AR2V0003") || format.equals("AR2V0002") || format.equals("AR2V0004")
+              || format.equals("AR2V0006"))
         return true;
     }
     return false;
@@ -371,7 +372,10 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter implements TypedD
           
             int[] shape1 = v.getShape();
             int[] shape2 = v0.getShape();
-            int shp1 = (shape1[1]*stride[1] > shape2[1]) ? shape2[1] : shape1[1]*stride[1];
+            int  shp1 = (shape1[1]*stride[1] > shape2[1]) ? shape2[1] : shape1[1]*stride[1];
+            if(shape2[2] == shape1[2]) { //this dual pole
+                stride = new int [] {1, 2, 1};
+            }
             int shp2 = (shape1[2]*stride[2] > shape2[2]) ? shape2[2] : shape1[2]*stride[2];
             
             int[] shape = {shape2[0], shp1, shp2};
@@ -989,8 +993,8 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter implements TypedD
 
 
   public static void main(String args[]) throws Exception, IOException, InstantiationException, IllegalAccessException {
-   String fileIn = "/home/yuanho/Download/KCLX_20091019_2021";
-   // String fileIn ="/upc/share/testdata2/radar/NOP3_20071112_1633";
+   // String fileIn = "/home/yuanho/Download/KCLX_20091019_2021";
+   String fileIn ="C:/Users/yuanho/Downloads/RADAR/KOUN20100405042306V06.raw.uncompress";
     //RadialDatasetSweepFactory datasetFactory = new RadialDatasetSweepFactory();
     //RadialDatasetSweep rds = datasetFactory.open(fileIn, null);
   //ucar.unidata.util.Trace.call1("LevelII2Dataset:main dataset");
@@ -1005,7 +1009,7 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter implements TypedD
     }
     List rvars = rds.getDataVariables();
     RadialDatasetSweep.RadialVariable vDM = (RadialDatasetSweep.RadialVariable) rds.getDataVariable("Reflectivity");
-    vDM.readAllData();
+    float [] adata = vDM.readAllData();
     testRadialVariable(vDM);
     for (int i = 0; i < rvars.size(); i++) {
       RadialDatasetSweep.RadialVariable rv = (RadialDatasetSweep.RadialVariable) rvars.get(i);
