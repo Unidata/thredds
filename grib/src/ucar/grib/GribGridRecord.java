@@ -365,9 +365,9 @@ public final class GribGridRecord implements GridRecord {
     if (useLevel) {
       String levelName = lookup.getLevelName(this);
       if (levelName.length() != 0) {
-        //if (lookup.isLayer(this))
-        //  f.format("_%s_layer", levelName);
-        //else
+        if (lookup.isLayer(this))
+          f.format("_%s_layer", levelName);
+       else
           f.format("_%s", levelName);
       }
     }

@@ -39,7 +39,6 @@ import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.ncml.NcMLReader;
-import ucar.nc2.util.Misc;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.DateFormatter;
@@ -323,13 +322,13 @@ public class GridDatasetInv {
     }
 
     public int countTotal() {
-      int ntimes = tc.getOffsetHours().length;
+      int ntimes = tc.getNCoords();
       return ntimes * getVertCoordLength();
     }
 
     public String toString() { return name; }
 
-    public String showCount() {
+   /*  public String showCount() {
       int ntimes = tc.getOffsetHours().length;
       int nverts = getVertCoordLength();
       return countTotal()+" ("+ntimes+" x "+nverts+") " + tc;
@@ -340,7 +339,7 @@ public class GridDatasetInv {
         if (Misc.closeEnough(want, got)) return true;
       }
       return false;
-    }
+    } */
 
     public int getVertCoordLength() {
       return (vc == null) ? 1 : vc.getValues1().length;
@@ -352,20 +351,20 @@ public class GridDatasetInv {
 
     public GridDatasetInv getFile() { return GridDatasetInv.this; }
 
-    public int countInventory(double hourOffset) {
+   /*  public int countInventory(double hourOffset) {
       int timeIndex = tc.findIndex(hourOffset);
       if (timeIndex < 0)
         return 0;
 
       return getVertCoordLength();
-    }
+    } */
 
-    /**
+    /*
      * Get inventory as an array of vert coords, at a particular time coord = hourOffset
      *
      * @param hourOffset : may or may not be in the list of time coords
      * @return array of vert coords. NaN = missing; -0.0 = surface.
-     */
+     *
     public double[] getVertCoords(double hourOffset) {
 
       int timeIndex = tc.findIndex(hourOffset);
@@ -379,7 +378,7 @@ public class GridDatasetInv {
       }
 
       return vc.getValues1().clone();
-    }
+    } */
   }
 
   //////////////////////////////////////////////////////
@@ -522,24 +521,30 @@ public class GridDatasetInv {
     count = 0;
     for (TimeCoord tc : times) {
       tc.setId(count++);
-      Element offsetElem = new Element("timeCoord");
-      rootElem.addContent(offsetElem);
-      offsetElem.setAttribute("id", Integer.toString(tc.getId()));
-      offsetElem.setAttribute("name", tc.getName());
+      Element timeElement = new Element("timeCoord");
+      rootElem.addContent(timeElement);
+      timeElement.setAttribute("id", Integer.toString(tc.getId()));
+      timeElement.setAttribute("name", tc.getName());
+      timeElement.setAttribute("isInterval", tc.isInterval() ? "true" : "false");
 
-      double[] offset = tc.getOffsetHours();
-      StringBuilder sbuff = new StringBuilder();
-      for (int j = 0; j < offset.length; j++) {
-        if (j > 0) sbuff.append(" ");
-        sbuff.append(Double.toString(offset[j]));
+      Formatter sbuff = new Formatter();
+      if (tc.isInterval()) {
+        double[] bound1 = tc.getBound1();
+        double[] bound2 = tc.getBound2();
+        for (int j = 0; j < bound1.length; j++)
+          sbuff.format("%f %f,", bound1[j], bound2[j]);
+
+      } else {
+        for (double offset : tc.getOffsetTimes())
+          sbuff.format("%f,", offset);
       }
-      offsetElem.addContent(sbuff.toString());
+      timeElement.addContent(sbuff.toString());
 
       List<GridDatasetInv.Grid> vars = tc.getGridInventory();
       Collections.sort(vars);
       for (Grid grid : vars) {
         Element varElem = new Element("grid");
-        offsetElem.addContent(varElem);
+        timeElement.addContent(varElem);
         varElem.setAttribute("name", grid.name);
         if (grid.ec != null)
           varElem.setAttribute("ens_id", Integer.toString(grid.ec.getId()));
@@ -582,6 +587,7 @@ public class GridDatasetInv {
       fmr.lastModified = df.getISODate(lastModifiedS);
     String version = rootElem.getAttributeValue("version");
     fmr.version = (version == null) ? 0 : Integer.parseInt(version);
+    if (fmr.version < REQ_VERSION) return fmr;
 
     DateFormatter formatter = new DateFormatter();
     fmr.runDate = formatter.getISODate(fmr.runTime);
@@ -625,16 +631,34 @@ public class GridDatasetInv {
       TimeCoord tc = new TimeCoord(fmr.runDate);
       fmr.times.add(tc);
       tc.setId(Integer.parseInt(timeElem.getAttributeValue("id")));
+      String s = timeElem.getAttributeValue("isInterval");
+      boolean isInterval = (s != null) && (s.equals("true"));
 
-      // parse the values
-      String values = timeElem.getTextNormalize();
-      String[] value = values.split(" "); 
-      int n = value.length;
-      double[] offsets = new double[n];
-      int count = 0;
-      for (String v : value)
-        offsets[count++] = Double.parseDouble(v);
-      tc.setOffsetHours(offsets);
+      if (isInterval) {
+        String boundsAll = timeElem.getTextNormalize();
+        String[] bounds = boundsAll.split(",");
+        int n = bounds.length;
+        double[] bound1 = new double[n];
+        double[] bound2 = new double[n];
+        int count = 0;
+        for (String b : bounds) {
+          String[] value = b.split(" ");
+          bound1[count] = Double.parseDouble(value[0]);
+          bound2[count] = Double.parseDouble(value[1]);
+          count++;
+        }
+        tc.setBounds(bound1, bound2);
+
+      } else {
+        String values = timeElem.getTextNormalize();
+        String[] value = values.split(",");
+        int n = value.length;
+        double[] offsets = new double[n];
+        int count = 0;
+        for (String v : value)
+          offsets[count++] = Double.parseDouble(v);
+        tc.setOffsetTimes(offsets);
+      }
 
       //get the variable names
       List<Element> varList = timeElem.getChildren("grid");
@@ -650,6 +674,13 @@ public class GridDatasetInv {
     }
 
     return fmr;
+  }
+
+  public static void main(String[] args) {
+    String values = "1,2,3,4";
+    String[] value = values.split("[,]");
+    for (String s : value)
+      System.out.printf("%s%n", s);
   }
 
 }

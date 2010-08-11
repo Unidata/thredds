@@ -476,16 +476,13 @@ public class Fmrc2Panel extends JPanel {
 
     out.format("                             Forecast Time Offset %n");
     out.format(" RunTime             Total ");
-    double[] offsets = ugrid.getUnionOffsetHours();
-    for (double wantOffset : offsets) {
-      out.format("%6.0f ", wantOffset);
-    }
+    showCoords( ugrid.getUnionTimeCoord(), "6.0", out);
     out.format("%n");
 
     for (FmrInv.GridVariable run : ugrid.getRuns()) {
       for (GridDatasetInv.Grid inv : run.getInventory()) {
         out.format(" %s ", df.toDateTimeString(run.getRunDate()));
-        count += showCount2(inv, offsets, out);
+        count += showCount2(inv, ugrid.getUnionTimeCoord().getOffsetTimes(), out);
         out.format(" %s%n", inv.getLocation());
       }
     }
@@ -493,14 +490,13 @@ public class Fmrc2Panel extends JPanel {
 
     out.format("                             Forecast Time Offset %n");
     out.format(" RunTime               ");
-    for (double wantOffset : ugrid.getUnionOffsetHours())
-      out.format("%9.0f ", wantOffset);
+    showCoords( ugrid.getUnionTimeCoord(), "9.0", out);
     out.format("%n");
     
     count = 0;
     for (FmrInv.GridVariable run : ugrid.getRuns()) {
       out.format(" %s ", df.toDateTimeString(run.getRunDate()));
-      for (double wantOffset : offsets) {
+      for (double wantOffset : ugrid.getUnionTimeCoord().getOffsetTimes()) {
         FmrcInv.Inventory inv = getInventory(run, wantOffset);
         count += inv.showInventory(out);
       }
@@ -515,6 +511,19 @@ public class Fmrc2Panel extends JPanel {
     infoTA.setText(out.toString());
     infoWindow.showIfNotIconified();
   }
+
+  public void showCoords(TimeCoord tc, String format, Formatter f) {
+    if (!tc.isInterval()) {
+      for (double off : tc.getOffsetTimes())
+        f.format("%"+format+"f,", off);
+    } else {
+      double[] bound1 = tc.getBound1();
+      double[] bound2 = tc.getBound1();
+      for (int i=0; i<bound1.length; i++)
+        f.format("%"+format+"f %"+format+"f,", bound1[i], bound2[i]);
+    }
+  }
+
 
   // for a given offset hour and GridVariable, find the expected and actual inventory
   private FmrcInv.Inventory getInventory(FmrInv.GridVariable grid, double hour) {
@@ -689,9 +698,17 @@ public class Fmrc2Panel extends JPanel {
     }
 
     public String getCoords() {
-      StringBuilder sb = new StringBuilder();
-      for (double off : runSeq.getUnionOffsetHours())
-        sb.append(off).append(" ");
+      Formatter sb = new Formatter();
+      TimeCoord tc = runSeq.getUnionTimeCoord();
+      if (!tc.isInterval()) {
+        for (double off : tc.getOffsetTimes())
+          sb.format("%f,", off);
+      } else {
+        double[] bound1 = tc.getBound1();
+        double[] bound2 = tc.getBound1();
+        for (int i=0; i<bound1.length; i++)
+          sb.format("%f %f,", bound1[i], bound2[i]);
+      }
       return sb.toString();
     }
   }

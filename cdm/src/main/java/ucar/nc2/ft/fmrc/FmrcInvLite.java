@@ -201,8 +201,7 @@ public class FmrcInvLite implements java.io.Serializable {
       this.gridsetName = runseq.getName();
       List<TimeCoord> timeList = runseq.getTimes();
       boolean hasMissingTimes = (nruns != timeList.size()); // missing one or more variables in one or more runs
-      double[] unionOffsetHours = runseq.getUnionOffsetHours();
-      noffsets = unionOffsetHours.length;
+      noffsets = runseq.getUnionTimeCoord().getNCoords();
 
       // this is the twoD time coordinate for this Gridset
       timeOffset = new double[nruns * noffsets];
@@ -233,7 +232,7 @@ public class FmrcInvLite implements java.io.Serializable {
         }
 
         double run_offset = FmrcInv.getOffsetInHours(base, tc.getRunDate());
-        double[] offsets = tc.getOffsetHours();
+        double[] offsets = tc.getOffsetTimes();
         int ntimes = offsets.length;
         for (int time = 0; time < ntimes; time++)
           timeOffset[runIdx * noffsets + time] = run_offset + offsets[time];
@@ -400,7 +399,7 @@ public class FmrcInvLite implements java.io.Serializable {
         // loop over actual inventory
         for (GridDatasetInv.Grid inv : grid.getInventory()) {
           double invOffset = FmrcInv.getOffsetInHours(base, inv.tc.getRunDate());
-          double[] offsets = inv.tc.getOffsetHours();
+          double[] offsets = inv.tc.getOffsetTimes();
           for (int i = 0; i < offsets.length; i++) {
             int timeIdx = findIndex(timeOffset, runIdx, invOffset + offsets[i]);
             if (timeIdx >= 0) {

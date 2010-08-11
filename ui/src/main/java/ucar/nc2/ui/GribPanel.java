@@ -512,6 +512,7 @@ public class GribPanel extends JPanel {
     result += result * 37 + pds.getParameterCategory();
     result += result * 37 + pds.getParameterNumber();
     result *= result * 37 + pds.getTypeFirstFixedSurface();
+    result *= result * 37 + pds.getTypeSecondFixedSurface();
     return result;
   }
 
@@ -677,14 +678,6 @@ public class GribPanel extends JPanel {
       return id.getBaseTime();
     }
 
-    public String getProductStatus() {
-      return id.getProductStatusName();
-    }
-
-    public String getProductType() {
-      return id.getProductTypeName();
-    }
-
     public String getParamNo() {
       return discipline + "-" + pdsv.getParameterCategory() + "-" + pdsv.getParameterNumber();
     }
@@ -701,10 +694,23 @@ public class GribPanel extends JPanel {
       return Grib2Tables.codeTable4_5(pdsv.getLevelType1());
     }
 
-    public final String getProcessType() {
+    public final String getLevelNameShort() {
+      return Grib2Tables.getTypeSurfaceNameShort(pdsv.getLevelType1());
+    }
+
+    public final String getTypeGenProcess() {
       int tgp = pdsv.getTypeGenProcess();
       return Grib2Tables.codeTable4_3(tgp);
     }
+
+   /*
+    public String getProductStatus() {
+      return id.getProductStatusName();
+    }
+
+    public String getProductType() {
+      return id.getProductTypeName();
+    }   */
 
     /*  public final int getAnalProcId() {
      return pdsv.getAnalysisGenProcess();
@@ -784,6 +790,10 @@ public class GribPanel extends JPanel {
 
     public final int getForecastTime() {
       return pdsv.getForecastTime();
+    }
+
+    public String getSurfaceType() {
+      return pdsv.getLevelType1() + "-" + pdsv.getLevelType2();
     }
 
     public String getSurfaceValue() {

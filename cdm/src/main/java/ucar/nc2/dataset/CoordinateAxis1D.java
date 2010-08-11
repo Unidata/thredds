@@ -635,6 +635,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
   private void doRead() {
     if (isNumeric()) {
       readValues();
+      wasRead = true;
 
       if (getSize() < 2)
         isAscending = true;
@@ -673,11 +674,11 @@ public class CoordinateAxis1D extends CoordinateAxis {
       //  calcIsRegular();
     } else if (getDataType() == DataType.STRING) {
       readStringValues();
+      wasRead = true;
     } else {
       readCharValues();
+      wasRead = true;
     }
-
-    wasRead = true;
   }
 
   // only used if String

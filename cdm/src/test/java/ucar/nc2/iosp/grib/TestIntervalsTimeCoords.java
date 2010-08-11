@@ -76,13 +76,13 @@ public class TestIntervalsTimeCoords extends TestCase {
   }
 
   static String[] testdata = {
-      TestAll.testdataDir +"cdmUnitTest/tds/new/GFS_Puerto_Rico_191km_20100515_0000.grib1", "Total_precipitation", "bounds0",
-      TestAll.testdataDir +"cdmUnitTest/tds/new/GFS_CONUS_80km_20100513_0600.grib1", "Total_precipitation", "bounds1",
-      TestAll.testdataDir +"cdmUnitTest/tds/new/NAM_CONUS_12km_20100520_0000.grib2", "Total_precipitation", "bounds2",
-      // TestAll.testdataDir +"cdmUnitTest/tds/new/SREF_Alaska_45km_ensprod_20100525_0300.grib2",  "Total_precipitation_probability_above_0p25", "bounds3",
-      // TestAll.testdataDir +"cdmUnitTest/tds/new/RUC2_CONUS_20km_pressure_20100509_1300.grib2", "Convective_precipitation", "bounds4",
-      TestAll.testdataDir +"cdmUnitTest/tds/new/GFS_Global_2p5deg_20100602_1200.grib2",  "Total_precipitation", "bounds5",
-      TestAll.testdataDir +"grid/grib/grib2/CFSR/pgbhnl.gdas.U_GRD.10mbar.grb2", "U-component_of_wind", "bounds6"
+      TestAll.testdataDir +"cdmUnitTest/tds/normal/GFS_Puerto_Rico_191km_20100515_0000.grib1", "Total_precipitation", "bounds0",
+      TestAll.testdataDir +"cdmUnitTest/tds/normal/GFS_CONUS_80km_20100513_0600.grib1", "Total_precipitation", "bounds1",
+      TestAll.testdataDir +"cdmUnitTest/tds/normal/NAM_CONUS_12km_20100520_0000.grib2", "Total_precipitation", "bounds2",
+      // TestAll.testdataDir +"cdmUnitTest/tds/normal/SREF_Alaska_45km_ensprod_20100525_0300.grib2",  "Total_precipitation_probability_above_0p25", "bounds3",
+      // TestAll.testdataDir +"cdmUnitTest/tds/normal/RUC2_CONUS_20km_pressure_20100509_1300.grib2", "Convective_precipitation", "bounds4",
+      // TestAll.testdataDir +"cdmUnitTest/tds/normal/GFS_Global_2p5deg_20100602_1200.grib2",  "Total_precipitation", "bounds5",
+      // TestAll.testdataDir +"grid/grib/grib2/CFSR/pgbhnl.gdas.U_GRD.10mbar.grb2", "U-component_of_wind", "bounds6"
   };
 
   static int[][] bounds0 = {

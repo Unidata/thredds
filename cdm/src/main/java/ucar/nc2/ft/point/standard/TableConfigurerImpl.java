@@ -32,6 +32,7 @@
  */
 package ucar.nc2.ft.point.standard;
 
+import ucar.ma2.DataType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.Dimension;
@@ -78,11 +79,15 @@ public abstract class TableConfigurerImpl implements TableConfigurer {
       if ((stdName != null) && stdName.equals(standard_name)) {
         if (v.getRank() > 0 && v.getDimension(0).equals(outer))
           return v;
-        if ((v.getRank() == 0) && (outer == null))
+        if (isEffectivelyScaler(v) && (outer == null))
           return v;
       }
     }
     return null;
+  }
+
+  protected boolean isEffectivelyScaler(Variable v) {
+    return (v.getRank() == 0) || (v.getRank() == 1 && v.getDataType() == DataType.CHAR);
   }
 
   protected Variable findVariableWithStandardNameAndNotDimension(NetcdfDataset ds, String standard_name, Dimension outer, Formatter errlog) {

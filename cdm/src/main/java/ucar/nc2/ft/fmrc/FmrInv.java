@@ -85,12 +85,12 @@ public class FmrInv implements Comparable<FmrInv> {
     return "";
   }
 
-  public TimeCoord findTimeCoord(String name) {
+  /* public TimeCoord findTimeCoord(String name) {
     for (TimeCoord tc : timeCoords) {
       if (tc.getName().equals(name)) return tc;
     }
     return null;
-  }
+  } */
 
 
   ////////////////////////////////////////////////////////////////////////////////////
@@ -108,10 +108,7 @@ public class FmrInv implements Comparable<FmrInv> {
     if (debug != null) {
       debug.format(" Fmr add GridDatasetInv %s = ", inv.getLocation());
       for (TimeCoord tc : inv.getTimeCoords()) {
-        debug.format("  %s offsets = ", tc.getName());
-        for (double off : tc.getOffsetHours())
-          debug.format("%f,", off);
-        debug.format("%n");
+        debug.format("  %s %n", tc);
       }
     }
 

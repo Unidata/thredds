@@ -110,6 +110,10 @@ public class TimeCoord implements Comparable {
     return runDate;
   }
 
+  public boolean isInterval() {
+    return isInterval;
+  }
+
   /**
    * The list of GridDatasetInv.Grid that use this TimeCoord
    *
@@ -146,15 +150,27 @@ public class TimeCoord implements Comparable {
     return axisName;
   }
 
+  public int getNCoords() {
+    return (isInterval) ? bound1.length : offset.length;
+  }
+
    /**
    * The list of valid times, in units of hours since the run time
    * @return list of valid times, in units of hours since the run time
    */
-  public double[] getOffsetHours() {
-    return offset;
+  public double[] getOffsetTimes() {
+    return isInterval ? bound2 : offset;
   }
 
-  public void setOffsetHours(double[] offset) {
+  public double[] getBound1() {
+    return bound1;
+  }
+
+  public double[] getBound2() {
+    return bound2;
+  }
+
+  public void setOffsetTimes(double[] offset) {
     this.offset = offset;
   }
 
@@ -273,7 +289,7 @@ public class TimeCoord implements Comparable {
     for (TimeCoord tc : timeCoords) {
       if (tc.isInterval)
         throw new IllegalArgumentException("Cant mix interval coordinates");
-      for (double off : tc.getOffsetHours())
+      for (double off : tc.getOffsetTimes())
         offsets.add(off);
     }
 
@@ -289,7 +305,7 @@ public class TimeCoord implements Comparable {
 
     // make the resulting time coord
     TimeCoord result = new TimeCoord(baseDate);
-    result.setOffsetHours(offset);
+    result.setOffsetTimes(offset);
     return result;
   }
 
