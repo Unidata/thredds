@@ -68,7 +68,7 @@ public class AWIPSConvention extends CoordSysBuilder {
   }
 
   private final boolean debugProj = false;
-  private final boolean debugBreakup = true;
+  private final boolean debugBreakup = false;
 
   private List<Variable> mungedList = new ArrayList<Variable>();
   private ProjectionCT projCT = null;

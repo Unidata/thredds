@@ -4,6 +4,12 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.2:
  5: (xxxx-xx-xx)
+  CFPoint: bug when feature id was a char type
+  dual pole radar changes
+  Remove Indexing cruft
+  IOSP: Replace Index with IndexLong to deal with very large files
+  Fix problem with WMS ignoring _FillValue (see JIRA TDS-108). Clean up some NetcdfDataset and GridDataset enhance mode stuff.
+  refactor grib, deal with time intervals
   iosp.IndexChunker needs to use a special version of Index that uses longs, since the source can be a file > 2^32
   remove old iosp.Indexer cruft
  4: (2010-07-26)

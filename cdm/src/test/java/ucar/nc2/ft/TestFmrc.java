@@ -66,7 +66,7 @@ public class TestFmrc extends TestCase {
   private static boolean showCount = true;
 
   // remove until GRIB stuff is fixed
-  public void utestCollections() throws Exception {
+  public void testCollections() throws Exception {
     try {
       FeatureCollectionConfig.setRegularizeDefault( true);
 

@@ -231,8 +231,9 @@ public class TimeCoord implements Comparable {
   }
 
   public int findIndex(double offsetHour) {
-    for (int i = 0; i < offset.length; i++)
-      if (Misc.closeEnough(offset[i], offsetHour))
+    double[] off = getOffsetTimes();
+    for (int i = 0; i < off.length; i++)
+      if (Misc.closeEnough(off[i], offsetHour))
         return i;
     return -1;
   }
