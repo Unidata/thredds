@@ -527,9 +527,13 @@ public class Level2Record {
         int dbpp4 = 0;
         int dbpp5 = 0;
         int dbpp6 = 0;
+        int dbpp7 = 0;
+        int dbpp8 = 0;
+        int dbpp9 = 0;
+
         if(dbp4 > 0) {
             String tname =    getDataBlockStringValue(din, (short) dbp4, 1,3);
-            if(tname.startsWith("REF")) {
+           if(tname.startsWith("REF")) {
                 hasHighResREFData = true;
                 dbpp4 = dbp4;
             } else if (tname.startsWith("VEL")) {
@@ -538,6 +542,17 @@ public class Level2Record {
             } else if (tname.startsWith("SW")) {
                 hasHighResSWData = true;
                 dbpp6 = dbp4;
+            }  else if (tname.startsWith("ZDR")) {
+                hasHighResZDRData = true;
+                dbpp7 = dbp4;
+            } else if (tname.startsWith("PHI")) {
+                hasHighResPHIData = true;
+                dbpp8 = dbp4;
+            } else if (tname.startsWith("RHO")) {
+                hasHighResRHOData = true;
+                dbpp9 = dbp4;
+            }  else {
+                System.out.println("Missing radial product");
             }
 
         }
@@ -553,6 +568,17 @@ public class Level2Record {
             } else if (tname.startsWith("SW")) {
                 hasHighResSWData = true;
                 dbpp6 = dbp5;
+            }  else if (tname.startsWith("ZDR")) {
+                hasHighResZDRData = true;
+                dbpp7 = dbp5;
+            } else if (tname.startsWith("PHI")) {
+                hasHighResPHIData = true;
+                dbpp8 = dbp5;
+            } else if (tname.startsWith("RHO")) {
+                hasHighResRHOData = true;
+                dbpp9 = dbp5;
+            }  else {
+                System.out.println("Missing radial product");
             }
         }
         if(dbp6 > 0) {
@@ -567,9 +593,97 @@ public class Level2Record {
             } else if (tname.startsWith("SW")) {
                 hasHighResSWData = true;
                 dbpp6 = dbp6;
+            }  else if (tname.startsWith("ZDR")) {
+                hasHighResZDRData = true;
+                dbpp7 = dbp6;
+            } else if (tname.startsWith("PHI")) {
+                hasHighResPHIData = true;
+                dbpp8 = dbp6;
+            } else if (tname.startsWith("RHO")) {
+                hasHighResRHOData = true;
+                dbpp9 = dbp6;
+            } else {
+                System.out.println("Missing radial product");
             }
         }
 
+        if(dbp7 > 0) {
+
+            String tname =    getDataBlockStringValue(din, (short) dbp7, 1,3);
+            if(tname.startsWith("REF")) {
+                hasHighResREFData = true;
+                dbpp4 = dbp7;
+            } else if (tname.startsWith("VEL")) {
+                hasHighResVELData = true;
+                dbpp5 = dbp7;
+            } else if (tname.startsWith("SW")) {
+                hasHighResSWData = true;
+                dbpp6 = dbp7;
+            }  else if (tname.startsWith("ZDR")) {
+                hasHighResZDRData = true;
+                dbpp7 = dbp7;
+            } else if (tname.startsWith("PHI")) {
+                hasHighResPHIData = true;
+                dbpp8 = dbp7;
+            } else if (tname.startsWith("RHO")) {
+                hasHighResRHOData = true;
+                dbpp9 = dbp7;
+            } else {
+                System.out.println("Missing radial product");
+            }
+        }
+
+        if(dbp8 > 0) {
+
+            String tname =    getDataBlockStringValue(din, (short) dbp8, 1,3);
+            if(tname.startsWith("REF")) {
+                hasHighResREFData = true;
+                dbpp4 = dbp8;
+            } else if (tname.startsWith("VEL")) {
+                hasHighResVELData = true;
+                dbpp5 = dbp8;
+            } else if (tname.startsWith("SW")) {
+                hasHighResSWData = true;
+                dbpp6 = dbp8;
+            }  else if (tname.startsWith("ZDR")) {
+                hasHighResZDRData = true;
+                dbpp7 = dbp8;
+            } else if (tname.startsWith("PHI")) {
+                hasHighResPHIData = true;
+                dbpp8 = dbp8;
+            } else if (tname.startsWith("RHO")) {
+                hasHighResRHOData = true;
+                dbpp9 = dbp8;
+            } else {
+                System.out.println("Missing radial product");
+            }
+        }
+
+        if(dbp9 > 0) {
+
+            String tname =    getDataBlockStringValue(din, (short) dbp9, 1,3);
+            if(tname.startsWith("REF")) {
+                hasHighResREFData = true;
+                dbpp4 = dbp9;
+            } else if (tname.startsWith("VEL")) {
+                hasHighResVELData = true;
+                dbpp5 = dbp9;
+            } else if (tname.startsWith("SW")) {
+                hasHighResSWData = true;
+                dbpp6 = dbp9;
+            }  else if (tname.startsWith("ZDR")) {
+                hasHighResZDRData = true;
+                dbpp7 = dbp9;
+            } else if (tname.startsWith("PHI")) {
+                hasHighResPHIData = true;
+                dbpp8 = dbp9;
+            } else if (tname.startsWith("RHO")) {
+                hasHighResRHOData = true;
+                dbpp9 = dbp9;
+            } else {
+                System.out.println("Missing radial product");
+            }
+        }
         //hasHighResREFData = (dbp4 > 0);
 
         if(hasHighResREFData ) {
@@ -585,7 +699,6 @@ public class Level2Record {
         }
         //hasHighResVELData = (dbp5 > 0);
         if(hasHighResVELData) {
-
             velocityHR_gate_count = getDataBlockValue(din, (short) dbpp5, 8);
             velocityHR_first_gate = getDataBlockValue(din, (short) dbpp5, 10);
             velocityHR_gate_size = getDataBlockValue(din, (short) dbpp5, 12);
@@ -598,7 +711,6 @@ public class Level2Record {
         }
        // hasHighResSWData  = (dbp6 > 0);
         if(hasHighResSWData) {
-
             spectrumHR_gate_count = getDataBlockValue(din, (short) dbpp6, 8);
             spectrumHR_first_gate = getDataBlockValue(din, (short) dbpp6, 10);
             spectrumHR_gate_size = getDataBlockValue(din, (short) dbpp6, 12);
@@ -609,38 +721,38 @@ public class Level2Record {
             spectrumHR_offset = (short) (dbpp6 + 28);
 
         }
-        hasHighResZDRData = (dbp7 > 0);
+       // hasHighResZDRData = (dbp7 > 0);
         if(hasHighResZDRData) {
-            zdrHR_gate_count = getDataBlockValue(din, (short) dbp7, 8);
-            zdrHR_first_gate = getDataBlockValue(din, (short) dbp7, 10);
-            zdrHR_gate_size = getDataBlockValue(din, (short) dbp7, 12);
-            zdrHR_rf_threshold = getDataBlockValue(din, (short) dbpp6, 14);
-            zdrHR_snr_threshold = getDataBlockValue(din, (short) dbpp6, 16);
-            zdrHR_scale = getDataBlockValue1(din, (short) dbpp6, 20);
-            zdrHR_addoffset = getDataBlockValue1(din, (short) dbpp6, 24);
-            zdrHR_offset = (short) (dbpp6 + 28);
+            zdrHR_gate_count = getDataBlockValue(din, (short) dbpp7, 8);
+            zdrHR_first_gate = getDataBlockValue(din, (short) dbpp7, 10);
+            zdrHR_gate_size = getDataBlockValue(din, (short) dbpp7, 12);
+            zdrHR_rf_threshold = getDataBlockValue(din, (short) dbpp7, 14);
+            zdrHR_snr_threshold = getDataBlockValue(din, (short) dbpp7, 16);
+            zdrHR_scale = getDataBlockValue1(din, (short) dbpp7, 20);
+            zdrHR_addoffset = getDataBlockValue1(din, (short) dbpp7, 24);
+            zdrHR_offset = (short) (dbpp7 + 28);
         }
-        hasHighResPHIData = (dbp8 > 0);
+        //hasHighResPHIData = (dbp8 > 0);
         if(hasHighResPHIData) {
-            phiHR_gate_count = getDataBlockValue(din, (short) dbp8, 8);
-            phiHR_first_gate = getDataBlockValue(din, (short) dbp8, 10);
-            phiHR_gate_size = getDataBlockValue(din, (short) dbp8, 12);
-            phiHR_rf_threshold = getDataBlockValue(din, (short) dbpp6, 14);
-            phiHR_snr_threshold = getDataBlockValue(din, (short) dbpp6, 16);
-            phiHR_scale = getDataBlockValue1(din, (short) dbpp6, 20);
-            phiHR_addoffset = getDataBlockValue1(din, (short) dbpp6, 24);
-            phiHR_offset = (short) (dbpp6 + 28);
+            phiHR_gate_count = getDataBlockValue(din, (short) dbpp8, 8);
+            phiHR_first_gate = getDataBlockValue(din, (short) dbpp8, 10);
+            phiHR_gate_size = getDataBlockValue(din, (short) dbpp8, 12);
+            phiHR_rf_threshold = getDataBlockValue(din, (short) dbpp8, 14);
+            phiHR_snr_threshold = getDataBlockValue(din, (short) dbpp8, 16);
+            phiHR_scale = getDataBlockValue1(din, (short) dbpp8, 20);
+            phiHR_addoffset = getDataBlockValue1(din, (short) dbpp8, 24);
+            phiHR_offset = (short) (dbpp8 + 28);
         }
-        hasHighResRHOData = (dbp9 > 0);
+        //hasHighResRHOData = (dbp9 > 0);
         if(hasHighResRHOData)  {
-            rhoHR_gate_count = getDataBlockValue(din, (short) dbp9, 8);
-            rhoHR_first_gate = getDataBlockValue(din, (short) dbp9, 10);
-            rhoHR_gate_size = getDataBlockValue(din, (short) dbp9, 12);
-            rhoHR_rf_threshold = getDataBlockValue(din, (short) dbpp6, 14);
-            rhoHR_snr_threshold = getDataBlockValue(din, (short) dbpp6, 16);
-            rhoHR_scale = getDataBlockValue1(din, (short) dbpp6, 20);
-            rhoHR_addoffset = getDataBlockValue1(din, (short) dbpp6, 24);
-            rhoHR_offset = (short) (dbpp6 + 28);
+            rhoHR_gate_count = getDataBlockValue(din, (short) dbpp9, 8);
+            rhoHR_first_gate = getDataBlockValue(din, (short) dbpp9, 10);
+            rhoHR_gate_size = getDataBlockValue(din, (short) dbpp9, 12);
+            rhoHR_rf_threshold = getDataBlockValue(din, (short) dbpp9, 14);
+            rhoHR_snr_threshold = getDataBlockValue(din, (short) dbpp9, 16);
+            rhoHR_scale = getDataBlockValue1(din, (short) dbpp9, 20);
+            rhoHR_addoffset = getDataBlockValue1(din, (short) dbpp9, 24);
+            rhoHR_offset = (short) (dbpp9 + 28);
         }
 
         return;
