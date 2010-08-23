@@ -90,7 +90,6 @@ public class RadarMethods {
        nexradMap = sm.getStationMap( nexradList );
        terminalMap = sm.getStationMap( terminalList );
 
-       // should be a more efficient way
        nexradVars.add( "N0R");
        nexradVars.add( "N1R");
        nexradVars.add( "N2R");
@@ -126,6 +125,48 @@ public class RadarMethods {
        nexradVars.add( "N3U");
        nexradVars.add( "DVL");
        nexradVars.add( "EET");
+
+       nexradVars.add( "N0X"); // new vars starting on Nov 17, 2010
+       nexradVars.add( "NAX");
+       nexradVars.add( "N1X");
+       nexradVars.add( "NBX");
+       nexradVars.add( "N2X");
+       nexradVars.add( "N3X");
+       nexradVars.add( "N0C");
+       nexradVars.add( "NAC");
+       nexradVars.add( "N1C");
+       nexradVars.add( "NBC");
+       nexradVars.add( "N2C");
+       nexradVars.add( "N3C");
+       nexradVars.add( "N0K");
+       nexradVars.add( "NAK");
+       nexradVars.add( "N1K");
+       nexradVars.add( "NBK");
+       nexradVars.add( "N2K");
+       nexradVars.add( "N3K");
+       nexradVars.add( "N0H");
+       nexradVars.add( "NAH");
+       nexradVars.add( "N1H");
+       nexradVars.add( "NBH");
+       nexradVars.add( "N2H");
+       nexradVars.add( "N3H");
+       nexradVars.add( "N0M");
+       nexradVars.add( "NAM");
+       nexradVars.add( "N1M");
+       nexradVars.add( "NBM");
+       nexradVars.add( "N2M");
+       nexradVars.add( "N3M");
+       nexradVars.add( "DPR");
+       nexradVars.add( "HHC");
+       nexradVars.add( "OHA");
+       nexradVars.add( "DAA");
+       nexradVars.add( "PTA");
+       nexradVars.add( "DTA");
+       nexradVars.add( "DU3");
+       nexradVars.add( "DU6");
+       nexradVars.add( "DOD");
+       nexradVars.add( "DSD");
+
        nexradVars.add( "BREF1");// old vars naming conventions
        nexradVars.add( "BREF2");
        nexradVars.add( "BREF248");
