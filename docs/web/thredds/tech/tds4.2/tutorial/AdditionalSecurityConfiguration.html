@@ -74,33 +74,38 @@
 
 
     <dt><h3>Denying access to the TDS by remote IP address or host</h3></dt>
-      <p>Use the <code>RemoteHostValve</code> or <code>RemoteAddrValve</code> to restrict access to the TDS.  For example, the following <code>Valve</code> declarations show ways to either <i>allow</i> or <i>deny</i> access to content:</p>
+      <p>Use the <code>RemoteHostValve</code> or <code>RemoteAddrValve</code> to restrict access to the TDS.
+        For example, the following <code>Valve</code> declarations show ways to either <i>allow</i> or <i>deny</i>
+        access to content (note that the allow and deny values are comma separated lists of regular expressions):</p>
 
 <pre>
 &lt;!-- This example denies access based on IP addresses --&gt;
 &lt;Valve className="org.apache.catalina.valves.RemoteAddrValve"
-       deny="128.117.47.201,128.107.157.210,96.33.56.215" /&gt;
+       deny="128\.117\.47\.201,128\.107\.157\.210,96\.33\.56\.215" /&gt;
 </pre>
 <pre>
 &lt;!-- This example denies access based on host names --&gt;
 &lt;Valve className="org.apache.catalina.valves.RemoteHostValve"
-           deny="www.badguys.com,www.bandwidthhog.net" /&gt;
+           deny="www\.badguys\.com,www\.bandwidthhog\.net" /&gt;
 </pre>
 <pre>
 &lt;!-- Wildcard characters can with the both valves --&gt;
 &lt;Valve className="org.apache.catalina.valves.RemoteAddrValve"
-       deny="128.117.47.*" /&gt;
+       deny="128\.117\.47\..*" /&gt;
 </pre>
 <pre>
 &lt;!-- This example only allows the specified IPs to access  --&gt;
 &lt;Valve className="org.apache.catalina.valves.RemoteAddrValve"
-          allow="128.117.140.*" /&gt;
+          allow="128\.117\.140\..*" /&gt;
 </pre>
 
-      <p>The last example above would be a good candidate to utilize for adding an extra layer of security to the <code>manager</code> application if you were certain it would only need to be accessed from within a specific range of IP address.</p>
-      <p class="note"><i>Note</i>: These valves rely on incoming IP addresses or hostnames which are vulnerable to spoofing.</p>
-      <p class="note">For more information, see the Tomcat <a href="http://www.robotstxt.org/robotstxt.html">Valve Component</a> documentation.</p>
-
+      <p>The last example above would be a good candidate to utilize for adding an extra layer of security to
+        the <code>manager</code> application if you were certain it would only need to be accessed from within
+        a specific range of IP address.</p>
+      <p class="note"><i>Note</i>: These valves rely on incoming IP addresses or hostnames which are vulnerable
+        to spoofing.</p>
+      <p class="note">For more information, see the Tomcat
+        <a href="http://www.robotstxt.org/robotstxt.html">Valve Component</a> documentation.</p>
  
    </dl>
     <dl>

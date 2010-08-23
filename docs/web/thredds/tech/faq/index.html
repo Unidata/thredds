@@ -67,19 +67,36 @@
   <blockquote>
     <p>Well-behaved web crawlers are supposed to look for a <strong>robots.txt</strong> file on the server and follow its instructions. To set up a robots.txt file that excludes web crawlers from crawling your server, follow <a href="../reference/Performance.html#robots">these directions</a>. </p>
   </blockquote>
+
   <p><strong>Q: How can I prevent someone from accessing my server? </strong></p>
   <blockquote>
-    <p>If you want to prevent some annoying person from accessing your server, its best to exclude them using their  IP address, to avoid having to do a reverse DNS lookup for each request. To do so, edit <strong>${tomcat_home}/conf/server.xml</strong>, find the following section and add the following Valve element:</p>
-    <pre>  &lt;Host name=&quot;localhost&quot; debug=&quot;0&quot; appBase=&quot;webapps&quot; .. &gt; 
-    <strong>&lt;Valve className=&quot;org.apache.catalina.valves.RemoteAddrValve&quot; deny=&quot;</strong>18.83.0.150<strong>&quot; /&gt; </strong> 
-   ...
-  &lt;/Host&gt;</pre>
-    <p>You can use lists of IP addresses as well as wildcards: </p>
-    <ul>
-      <li><strong>deny="18.83.0.150<strong></strong>, 128.100.34.99, 128.117.140.*"</strong></li>
-    </ul>
-    <p>You need to restart the server before this will take effect.</p>
+    <p>If your server is being overwhelmed by requests from a particular user/computer, it is best to exclude
+      them using their IP address rather than their hostname (this avoids having to perform a DNS lookup for
+      each request). To do so, edit the <strong>${tomcat_home}/conf/server.xml</strong> file and find the
+      "localhost" <strong>Host</strong> element. Add a RemoteAddrValve <strong>Valve</strong> element as
+      follows:
+    </p>
+
+    <blockquote>
+    <pre>
+&lt;Host name=&quot;localhost&quot; debug=&quot;0&quot; appBase=&quot;webapps&quot; .. &gt;
+    <strong>&lt;Valve className=&quot;org.apache.catalina.valves.RemoteAddrValve&quot; deny=&quot;18\.83\.0\.150&quot; /&gt;</strong>
+    ...
+&lt;/Host&gt;
+    </pre>
+    </blockquote>
+
+    <p>The value of the deny attribute must be one or more (comma delimited) regular expressions each of which will
+      be compared to the remote clients IP addresses. For instance:</p>
+
+    <blockquote>
+    <pre>
+deny="18\.83\.0\.150,128\.100\.34\.99,128\.117\.140\..*"
+    </pre>
+    </blockquote>
+    <p>NOTE: You need to restart the server before this will take effect.</p>
   </blockquote>
+
   <p><strong>Q: How do I remove Servlet Autodeploy?</strong></p>
   <blockquote>
     <p>Its recommendded to remove autodetection of changes while Tomcat is running, for performance reasons. In a production environment, its better to explicitly redeploy the application: </p>
