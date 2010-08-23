@@ -56,45 +56,54 @@
 <h2>Separate<a name="Separate" id="Separate"></a> User Roles For Restricted Datasets</h2>
 <p>The <em>tdsConfig, manager </em>and<em> admin</em> roles allow access to secure parts of  Tomcat and TDS. These can only be accessed using HTTPS (TLS), and so are considered secure. If you are  <a href="RestrictedAccess.html">restricting access to datasets</a>, you will also add other users who will have the <strong>restrictedDatasetUser </strong>role<strong>. <em>Do not give any of these users (including yourself!) any of the </em>tdsConfig, manager <em>or</em> admin<em> roles - keep them strictly separate.</em> </strong>This is because <strong>restrictedDatasetUser </strong>usage can also use non-HTTPS URLs, and so is vulnerable to <a href="http://en.wikipedia.org/wiki/Session_hijacking">session hijacking</a>. By keeping the roles separate, you make sure that the worst that can happen is that someone can download some scientific data they shouldn't have access to.<br>
 </p>
-<h2>Restrict Access to Tomcat  Manager Applications </h2>
-<p>The best way to secure the Tomcat manager and administration webapps is to restrict what IP addresses can access them. To do so:</p>
-<ol>
-  <li>Edit <strong>${tomcat_home}/conf/Catalina/localhost/admin.xml</strong> and uncomment the boldface line:
-      <pre>&lt;Context path=&quot;/admin&quot; docBase=&quot;${catalina.home}/server/webapps/admin&quot;<br>        debug=&quot;0&quot; privileged=&quot;true&quot;&gt;</pre>
-      <pre> &lt;!-- Uncomment this Valve to limit access to the Admin app to localhost
-   for obvious security reasons. Allow may be a comma-separated list of
-   hosts (or even regular expressions). --&gt;
-<strong> &lt;Valve className=&quot;org.apache.catalina.valves.RemoteAddrValve&quot; allow=&quot;127.0.0.1&quot;/&gt;</strong></pre>
-      <pre> &lt;Logger className=&quot;org.apache.catalina.logger.FileLogger&quot;
-   prefix=&quot;localhost_admin_log.&quot; suffix=&quot;.txt&quot;
-   timestamp=&quot;true&quot;/&gt;</pre>
-      <pre>&lt;/Context&gt;
-       </pre>
-  </li>
-  <li>Edit <strong>${tomcat_home}/conf/Catalina/localhost/manager.xml</strong> and add the following boldface line: </li>
-</ol>
-<blockquote>
-  <pre>&lt;Context path=&quot;/manager&quot; docBase=&quot;${catalina.home}/server/webapps/manager&quot;<br>        debug=&quot;0&quot; privileged=&quot;true&quot;&gt;
 
-  <strong>&lt;Valve className="org.apache.catalina.valves.RemoteAddrValve" allow="127.0.0.1"/&gt;</strong></pre>
-  <pre>  &lt;!-- Link to the user database we will get roles from --&gt;
-  &lt;ResourceLink name=&quot;users&quot; global=&quot;UserDatabase&quot; type=&quot;org.apache.catalina.UserDatabase&quot;/&gt;</pre>
-  <pre>&lt;/Context&gt;
+<h2>Restrict Access to Tomcat  Manager Applications </h2>
+<p>The best way to secure the Tomcat manager and administration webapps is to restrict the set of
+  IP addresses that can access them. This can be accomplished by including a RemoteAddrValve
+  (<a href="http://tomcat.apache.org/tomcat-6.0-doc/config/valve.html#Remote_Address_Filter">Tomcat docs</a>)
+  in the Context element of these applications. For instance, to only allows connections from the localhost
+  (127.0.0.1), i.e., the machine on which the Tomcat server is running, do the following:</p>
+<ol>
+  <li>Edit <strong>${tomcat_home}/conf/Catalina/localhost/admin.xml</strong>. It will probably look something like this:
+    <pre>
+&lt;Context antiResourceLocking=&quot;false&quot; privileged=&quot;true&quot; /&gt;
     </pre>
-</blockquote>
-<p>The above uses the allow value <strong>"127.0.0.1"</strong> which will restrict access to &quot;localhost&quot;, that is, the machine that the Tomcat server is running on. You may change the <em><strong>allow</strong></em> value to an IP address, a list of IP address or a subnet, eg:</p>
+    Change it to include the highlighted line here:
+    <pre>
+&lt;Context antiResourceLocking=&quot;false&quot; privileged=&quot;true&quot;&gt;
+    <strong>&lt;Valve className=&quot;org.apache.catalina.valves.RemoteAddrValve&quot; allow=&quot;127\.0\.0\.1&quot;/&gt;</strong>
+&lt;/Context&gt;
+    </pre>
+  </li>
+  <li>Edit <strong>${tomcat_home}/conf/Catalina/localhost/manager.xml</strong> and add the same line:
+    <pre>
+&lt;Context antiResourceLocking=&quot;false&quot; privileged=&quot;true&quot;&gt;
+    <strong>&lt;Valve className=&quot;org.apache.catalina.valves.RemoteAddrValve&quot; allow=&quot;127\.0\.0\.1&quot;/&gt;</strong>
+&lt;/Context&gt;
+    </pre>
+  </li>
+</ol>
+<p>NOTE: The value of the <strong>allow</strong> attribute must be a comma separated list of regular expressions
+  used to match against the remote client's IP address. Here are several examples:
+</p>
+
 <ul>
   <li>
-    <p><strong>allow="128.117.140.62"</strong></p>
+    <p><strong>allow="128\.117\.140\.62"</strong></p>
   </li>
   <li>
-    <p><strong>allow="128.117.140.62, 128.117.140.63, 128.117.140.99"</strong></p>
+    <p><strong>allow="128\.117\.140\.62,128\.117\.140\.63,128\.117\.140\.99"</strong></p>
   </li>
-  <li> <strong>allow="128.117.140.*"</strong></li>
+  <li> <strong>allow="128\.117\.140\..*"</strong></li>
 </ul>
-<p>You can also use the <em><strong>RemoteHostValve</strong></em> to filter by host name, eg: </p>
+
+<p>Similarly, you can use the <em><strong>RemoteHostValve</strong></em> to filter by host name. Again, the value
+  of the <strong>allow</strong> and <strong>deny</strong> attributes must be a comma separated list of regular
+  expressions which will be used to match against the remote client's host name. For instance: </p>
 <blockquote>
-  <pre><strong>&lt;Valve className="org.apache.catalina.valves.RemoteHostValve" allow="(*.).ucar.edu"/&gt;</strong></pre></blockquote>
+  <pre><strong>&lt;Valve className="org.apache.catalina.valves.RemoteHostValve" allow=".*\.ucar\.edu"/&gt;</strong></pre>
+</blockquote>
+
 <h2> Java Security Manager</h2>
 <p>An additional level of security can be provided by running Tomcat with the Java Security Manager turned on. This can provide fine-grained security policies, at the cost of complexity in understanding what rights are needed to do any useful work, and how to grant them. This is needed if you allow untrusted servlets or JSPs to execute on your machine. If you are running just the THREDDS Data Server, you probably don't need to deal with this. </p>
 <h3>Resources</h3>
