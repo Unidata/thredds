@@ -458,7 +458,10 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     }
 
     // now enhance scale/offset, using augmented dataset
-    if (mode.contains(Enhance.ConvertEnums) || mode.contains(Enhance.ScaleMissing) || mode.contains(Enhance.ScaleMissingDefer)) {
+    if ( ( mode.contains(Enhance.ConvertEnums) && ! ds.enhanceMode.contains( Enhance.ConvertEnums) )
+        || ( mode.contains(Enhance.ScaleMissing) && ! ds.enhanceMode.contains(Enhance.ScaleMissing ) )
+        || ( mode.contains(Enhance.ScaleMissingDefer) && ! ds.enhanceMode.contains( Enhance.ScaleMissingDefer ) ) )
+    {
       for (Variable v : ds.getVariables()) {
         VariableEnhanced ve = (VariableEnhanced) v;
         ve.enhance(mode);

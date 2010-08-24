@@ -243,6 +243,17 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
         }
       }
     }
+    else
+    {
+      EnumSet<NetcdfDataset.Enhance> enhanceMode = this.getEnhanceMode();
+      if ( enhanceMode != null )
+      {
+        if ( enhanceMode.contains( NetcdfDataset.Enhance.ScaleMissing ) )
+          alreadyScaleOffsetMissing = true;
+        if ( enhanceMode.contains( NetcdfDataset.Enhance.ConvertEnums ) )
+          alreadyEnumConversion = true;
+      }
+    }
 
     // do we need to calculate the ScaleMissing ?
     if (!alreadyScaleOffsetMissing && (dataType.isNumeric() || dataType == DataType.CHAR) && 
