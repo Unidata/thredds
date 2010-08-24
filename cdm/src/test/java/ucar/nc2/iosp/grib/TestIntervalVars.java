@@ -2,9 +2,7 @@ package ucar.nc2.iosp.grib;
 
 import junit.framework.TestCase;
 import ucar.grib.GribGridRecord;
-import ucar.grib.GribNumbers;
-import ucar.grib.grib2.Grib2Tables;
-import ucar.grib.grib2.ParameterTable;
+import ucar.grib.GribPds;
 import ucar.grid.GridIndex;
 import ucar.grid.GridRecord;
 import ucar.nc2.Attribute;
@@ -86,7 +84,7 @@ public class TestIntervalVars extends TestCase {
     return 1;
   }
 
-  // see if analy code differs
+  /* see if analy code differs
   private int checkAnal(String filename) throws IOException {
     NetcdfFile ncd = NetcdfFile.open(filename);
     nfiles++;
@@ -143,7 +141,7 @@ public class TestIntervalVars extends TestCase {
 
     ncd.close();
     return 1;
-  }
+  } */
 
 
   private int analalyseIntervals(String filename) throws IOException {
@@ -159,8 +157,11 @@ public class TestIntervalVars extends TestCase {
     List<GridRecord> grList = index.getGridRecords();
     for (GridRecord gr : grList) {
       GribGridRecord ggr = (GribGridRecord) gr;
-      int startInterval = ggr.startOfInterval;
-      if ((startInterval == GribNumbers.UNDEFINED) || (startInterval == GribNumbers.MISSING)) continue;
+      GribPds pds =  ggr.getPds();
+      if (!pds.isInterval()) continue;
+
+      //int startInterval = ggr.startOfInterval;
+      //if ((startInterval == GribNumbers.UNDEFINED) || (startInterval == GribNumbers.MISSING)) continue;
 
       /* check valid time == base time + forecast
       int forecast = ggr.forecastTime;
@@ -185,7 +186,7 @@ public class TestIntervalVars extends TestCase {
     Collections.sort(sortList);
     for (Product p : sortList) {
       p.sort();
-      System.out.printf("  %s (%d)%n", p.name, p.ggr.productTemplate);
+      System.out.printf("  %s (%d)%n", p.name, p.ggr.getPds().getParameterNumber());
       System.out.printf("%s%n", p.doAccumAlgo(false));
     }
 
@@ -200,7 +201,7 @@ public class TestIntervalVars extends TestCase {
 
     Product(GribGridRecord ggr) {
       this.ggr = ggr;
-      name = ParameterTable.getParameterName(ggr.discipline, ggr.category, ggr.paramNumber) + "/" + Grib2Tables.codeTable4_5(ggr.levelType1);
+      name = ggr.getParameterName() + "/" + ggr.getLevelType1();
     }
 
     void sort() {
@@ -208,7 +209,7 @@ public class TestIntervalVars extends TestCase {
 
         @Override
         public int compare(GribGridRecord o1, GribGridRecord o2) {
-          return o1.forecastTime - o2.forecastTime;
+          return (int) (o1.getValidTime().getTime() - o2.getValidTime().getTime());
         }
       });
     }
@@ -221,11 +222,14 @@ public class TestIntervalVars extends TestCase {
       Set<Integer> ftimes = new HashSet<Integer>();
 
       for (GribGridRecord rb : all) {
-        int ftime = rb.forecastTime;
+        GribPds pds =  ggr.getPds();
+        int ftime = pds.getForecastTime();
         ftimes.add(ftime);
 
-        int start = rb.startOfInterval;
-        int end = rb.forecastTime;
+        int[] intv = pds.getForecastTimeInterval();
+
+        int start = intv[0];
+        int end = intv[1];
         if (end - start == 1) hourAccum.add(rb);
         if (start == 0) runAccum.add(rb);
       }
@@ -268,8 +272,11 @@ public class TestIntervalVars extends TestCase {
 
     private void showList(List<GribGridRecord> list, Formatter f) {
       f.format("(%d) ", list.size());
-      for (GribGridRecord rb : list)
-        f.format(" %d-%d", rb.startOfInterval, rb.forecastTime);
+      for (GribGridRecord rb : list) {
+        GribPds pds =  rb.getPds();
+        int[] intv = pds.getForecastTimeInterval();
+        f.format(" %d-%d", intv[0], intv[1]);
+      }
       testConstantInterval(list, f);
     }
 
@@ -277,8 +284,10 @@ public class TestIntervalVars extends TestCase {
       boolean same = true;
       int intv = -1;
       for (GribGridRecord rb : list) {
-        int start = rb.startOfInterval;
-        int end = rb.forecastTime;
+        GribPds pds =  rb.getPds();
+        int[] interv = pds.getForecastTimeInterval();
+        int start = interv[0];
+        int end = interv[1];
         int intv2 = end - start;
         if (intv2 == 0) continue; // skip those weird zero-intervals
         else if (intv < 0) intv = intv2;
@@ -295,7 +304,8 @@ public class TestIntervalVars extends TestCase {
       boolean unique = true;
       HashSet<Integer> set = new HashSet<Integer>();
       for (GribGridRecord rb : list) {
-        int end = rb.forecastTime;
+        GribPds pds =  rb.getPds();
+        int end = pds.getForecastTime();
         if (set.contains(end)) {
           unique = false;
           break;
