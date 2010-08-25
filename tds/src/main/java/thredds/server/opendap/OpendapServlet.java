@@ -803,7 +803,7 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
       if (!session.isNew()) {
         GuardedDatasetImpl gdataset = (GuardedDatasetImpl) session.getAttribute(reqPath);
         if (null != gdataset) {
-          //System.out.printf(" found gdataset %s in session %s %n", reqPath, session.getId());
+          if (debugSession) System.out.printf(" found gdataset %s in session %s %n", reqPath, session.getId());
           if (log.isDebugEnabled()) log.debug(" found gdataset " + gdataset + " in session " + session.getId());
           return gdataset;
         }

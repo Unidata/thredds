@@ -354,19 +354,20 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * Make NetcdfFile into NetcdfDataset with given enhance mode
    *
    * @param ncfile      wrap this
-   * @param enhanceMode using this enhance mode (may be null)
+   * @param mode using this enhance mode (may be null)
    * @return NetcdfDataset wrapping the given ncfile
    * @throws IOException on io error
    */
-  static public NetcdfDataset wrap(NetcdfFile ncfile, Set<Enhance> enhanceMode) throws IOException {
-    NetcdfDataset ncd;
+  static public NetcdfDataset wrap(NetcdfFile ncfile, Set<Enhance> mode) throws IOException {
     if (ncfile instanceof NetcdfDataset) {
-      ncd = (NetcdfDataset) ncfile;
-      ncd.enhance(enhanceMode);
-    } else {
-      ncd = new NetcdfDataset(ncfile, enhanceMode);
+      NetcdfDataset ncd = (NetcdfDataset) ncfile;
+      if (!ncd.enhanceNeeded(mode))
+        return (NetcdfDataset) ncfile;
     }
-    return ncd;
+
+    // enhancement requires wrappping, to not modify underlying dataset, eg if cached
+    // perhaps need a method variant that allows the ncfile to be modified
+    return new NetcdfDataset(ncfile, mode);
   }
 
   /**
@@ -1395,6 +1396,24 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   public void enhance(Set<Enhance> mode) throws IOException {
     enhance(this, mode, null);
   }
+
+
+  /**
+   * is this enhancement already done ?
+   *
+   * @param want enhancements wanted
+   * @throws java.io.IOException on error
+   * @return true if wanted enhancement is not done
+   */
+  public boolean enhanceNeeded(Set<Enhance> want) throws IOException {
+    if (want == null) return false;
+    for (Enhance mode : want) {
+      if (!this.enhanceMode.contains(mode)) return true;
+    }
+    return false;
+  }
+
+
   ///////////////////////////////////////////////////////////////////////
   // setting variable data values
 

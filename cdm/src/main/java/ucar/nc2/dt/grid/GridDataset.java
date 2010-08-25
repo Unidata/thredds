@@ -123,7 +123,8 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, ucar.nc2.ft.Feature
    */
   public GridDataset(NetcdfDataset ds, Formatter parseInfo) throws IOException {
     this.ds = ds;
-    ds.enhance(EnumSet.of(NetcdfDataset.Enhance.CoordSystems));
+    // ds.enhance(EnumSet.of(NetcdfDataset.Enhance.CoordSystems));
+    ds.enhance(NetcdfDataset.getDefaultEnhanceMode());
 
     // look for geoGrids
     if (parseInfo != null) parseInfo.format("GridDataset look for GeoGrids\n");
