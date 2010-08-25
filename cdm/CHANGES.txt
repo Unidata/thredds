@@ -4,6 +4,8 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.2:
  5: (xxxx-xx-xx)
+  NetcdfDataset.wrap() creates real wrapper when enhancement needed - to not munge cached file
+  GridDataset always uses default enhance mode.
   CFPoint: bug when feature id was a char type
   dual pole radar changes
   Remove Indexing cruft
