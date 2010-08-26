@@ -52,13 +52,14 @@ import java.util.*;
  * @since Jul 31, 2010
  */
 
-
 public class GribCodeTable implements Comparable<GribCodeTable> {
-  String name;
-  int m1, m2;
-  boolean isParameter;
-  int discipline = -1, category = -1;
-  List<TableEntry> entries = new ArrayList<TableEntry>();
+  public String name;
+  public int m1, m2;
+  public boolean isParameter;
+  public int discipline = -1;
+  public int category = -1;
+
+  public List<TableEntry> entries = new ArrayList<TableEntry>();
 
   GribCodeTable(String name) {
     this.name = name;
@@ -97,8 +98,8 @@ public class GribCodeTable implements Comparable<GribCodeTable> {
     isParameter = (discipline >= 0) && (category >= 0);
   }
 
-  void add(String code, String meaning) {
-    entries.add(new TableEntry(code, meaning));
+  void add(String line, String code, String meaning, String unit, String status) {
+    entries.add(new TableEntry(line, code, meaning, unit, status));
   }
 
   String get(int value) {
@@ -128,13 +129,17 @@ public class GribCodeTable implements Comparable<GribCodeTable> {
         '}';
   }
 
-  class TableEntry implements Comparable<TableEntry> {
-    int start, stop;
-    String code, meaning;
+  public class TableEntry implements Comparable<TableEntry> {
+    public int start, stop, line;
+    public String code, meaning, unit, status;
 
-    TableEntry(String code, String meaning) {
+    TableEntry(String line, String code, String meaning, String unit, String status) {
+      this.line = Integer.parseInt(line);
       this.code = code;
       this.meaning = meaning;
+      this.unit = unit;
+      this.status = status;
+
       if (isParameter) {
         this.meaning = StringUtil.replace(this.meaning, ' ', "_");
         this.meaning = StringUtil.replace(this.meaning, '/', "-");
@@ -195,13 +200,10 @@ public class GribCodeTable implements Comparable<GribCodeTable> {
 
     Map<String, GribCodeTable> map = new HashMap<String, GribCodeTable>();
 
-    //GribCodeTable currTable = null;
-    //GribCodeTable currSubTable = null;
-
     List<Element> featList = root.getChildren("ForExport_CodeFlag_E");
     for (Element elem : featList) {
+      String line = elem.getChildTextNormalize("No");
       String tableName = elem.getChildTextNormalize("TableTitle_E");
-      Element subtableElem = elem.getChild("TableSubTitle_E");
       String code = elem.getChildTextNormalize("CodeFlag");
       String meaning = elem.getChildTextNormalize("Meaning_E");
 
@@ -211,20 +213,27 @@ public class GribCodeTable implements Comparable<GribCodeTable> {
         map.put(tableName, ct);
       }
 
+      Element unitElem = elem.getChild("AsciiUnit_x002F_Description_E");
+      String unit = (unitElem == null) ? null : unitElem.getTextNormalize();
+
+      Element statusElem = elem.getChild("Status");
+      String status = (statusElem == null) ? null : statusElem.getTextNormalize();
+
+      Element subtableElem = elem.getChild("TableSubTitle_E");
       if (subtableElem != null) {
         String subTableName = subtableElem.getTextNormalize();
         GribCodeTable cst = map.get(subTableName);
         if (cst == null) {
           cst = new GribCodeTable(tableName, subTableName);
           map.put(subTableName, cst);
-          if (!cst.isParameter) {
-            System.out.printf("HEY subtable %s not a parameter %n",cst);
-          }
-          cst.add(code, meaning);
+          //if (!cst.isParameter) {
+          //  System.out.printf("HEY subtable %s not a parameter %n",cst);
+          //}
         }
+        cst.add(line, code, meaning, unit, status);
 
       } else {
-        ct.add(code, meaning);
+        ct.add(line, code, meaning, unit, status);
       }
 
     }
@@ -239,7 +248,6 @@ public class GribCodeTable implements Comparable<GribCodeTable> {
     return tlist;
   }
 
-  static String resourceName = "/resources/grib/wmo/GRIB2_5_2_0_CodeFlag_E.xml";
   static public Map<String, GribCodeTable> readGribCodes() throws IOException {
     Class c = GribCodeTable.class;
     InputStream in = c.getResourceAsStream(resourceName);
@@ -259,6 +267,22 @@ public class GribCodeTable implements Comparable<GribCodeTable> {
     return map;
   }
 
+  public static List<GribCodeTable> getWmoStandard() throws IOException {
+    Class c = GribCodeTable.class;
+    InputStream in = c.getResourceAsStream(resourceName);
+    if (in == null) {
+      System.out.printf("cant open %s%n", resourceName);
+      return null;
+    }
+    try {
+      return readGribCodes(in);
+    } finally {
+      in.close();
+    }
+
+  }
+
+  static String resourceName = "/resources/grib/wmo/GRIB2_5_2_0_CodeFlag_E.xml";
   static boolean showDiff = true;
   public static void main(String arg[]) throws IOException {
     //String filename = "C:\\docs\\dataFormats\\grib\\GRIB2_5_2_0_xml\\wmoGribCodes.xml";
