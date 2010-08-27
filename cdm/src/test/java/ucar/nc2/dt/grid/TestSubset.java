@@ -497,7 +497,8 @@ public class TestSubset extends TestCase {
     dataset.close();
   }
 
-  public void testBBSubset2() throws Exception {
+  // NCEP-NAM-CONUS_40km-conduit messed up right now
+  public void utestBBSubset2() throws Exception {
     GridDataset dataset = GridDataset.open("dods://motherlode.ucar.edu:8080/thredds/dodsC/fmrc/NCEP/NAM/CONUS_40km/conduit/NCEP-NAM-CONUS_40km-conduit_best.ncd");
     GeoGrid grid = dataset.findGridByName("Pressure");
     assert null != grid;
