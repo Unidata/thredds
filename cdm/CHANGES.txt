@@ -4,6 +4,7 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.2:
  5: (xxxx-xx-xx)
+  WMO grib code tables UI
   NetcdfDataset.wrap() creates real wrapper when enhancement needed - to not munge cached file
   GridDataset always uses default enhance mode.
   CFPoint: bug when feature id was a char type
@@ -29,7 +30,7 @@ Changes in version 4.2:
   add StereographicAzimuthalProjection, TransverseMercatorProjection elliptical earth (Heiko.Klein@met.no)
   FeatureCollectionConfig.Config: use collection name if it exists
   CollectionSpecParser, FeatureCollectionConfig: trim the spec string
-  bugs in CoordinateAxis1D.findCoordElement - remove longitude special case, rely on fixing mononicity.
+  bugs in CoordinateAxis1D.findCoordElement - remove longitude special case, rely on fixing monotonicity.
   VariableDS copy constructor - dont apply scale/offset twice
   hdf5: variable length array of strings, not incrementing counter (Steve Sullivan)
   hdf5: bug in CHAR type when compressed (Steve Sullivan)  grib refactor - time intervals

@@ -4,6 +4,13 @@ import thredds.ui.BAMutil;
 import thredds.ui.FileManager;
 import thredds.ui.IndependentWindow;
 import thredds.ui.TextHistoryPane;
+import ucar.grib.grib2.ParameterTable;
+import ucar.grid.GridParameter;
+import ucar.nc2.Attribute;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.Variable;
+import ucar.nc2.dt.GridDatatype;
+import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.iosp.grib.tables.GribCodeTable;
 import ucar.nc2.units.SimpleUnit;
 import ucar.unidata.util.StringUtil;
@@ -14,6 +21,11 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.IOException;
 import java.util.*;
 import java.util.List;
 
@@ -68,17 +80,29 @@ public class GribTableCodes extends JPanel {
         compareTA.gotoTop();
         infoWindow.setVisible(true);
       }
-    });
+    }); */
 
-    AbstractButton compareButton = BAMutil.makeButtcon("Select", "Compare to standard table", false);
+    AbstractButton compareButton = BAMutil.makeButtcon("Select", "Compare to current table", false);
     compareButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        compareToStandard();
+        compareToCurrent();
       }
     });
     buttPanel.add(compareButton);
 
-    AbstractAction refAction = new AbstractAction() {
+    AbstractButton modelsButton = BAMutil.makeButtcon("Select", "Check current models", false);
+    modelsButton.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        try {
+          checkCurrentModels();
+        } catch (IOException e1) {
+          e1.printStackTrace();
+        }
+      }
+    });
+    buttPanel.add(modelsButton);
+
+    /* AbstractAction refAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         refTable = currTable;
         loadVariant(refTable.getName(), refTable);
@@ -208,6 +232,55 @@ public class GribTableCodes extends JPanel {
     entryTable.setBeans(beans);
   }
 
+  private boolean showSame = false, showCase = false, showUnknown = false;
+  private void compareToCurrent() {
+    int total = 0;
+    int nsame = 0;
+    int nsameIgn = 0;
+    int ndiff = 0;
+    int unknownCount = 0;
+
+    Formatter f = new Formatter();
+    f.format("DIFFERENCES with current parameter table%n");
+    List tables = codeTable.getBeans();
+    for (Object t : tables) {
+      GribCodeTable gt = ((CodeBean) t).code;
+      if (!gt.isParameter) continue;
+      for (GribCodeTable.TableEntry p : gt.entries) {
+        if (p.meaning.equalsIgnoreCase("Reserved")) continue;
+        if (p.meaning.equalsIgnoreCase("Missing")) continue;
+        if (p.start != p.stop) continue;
+
+        GridParameter gp = ParameterTable.getParameter(gt.discipline, gt.category, p.start);
+        String paramDesc = gp.getDescription();
+        boolean unknown = paramDesc.startsWith("Unknown");
+        if (unknown) unknownCount++;
+        boolean same = paramDesc.equals(p.name);
+        if (same) nsame++;
+        boolean sameIgnore = paramDesc.equalsIgnoreCase(p.name);
+        if (sameIgnore) nsameIgn++;
+        else ndiff++;
+        total++;
+
+        String unitsCurr = gp.getUnit();
+        String unitsWmo = p.unit;
+        boolean sameUnits = (unitsWmo == null) ? (unitsCurr == null) : unitsWmo.equals(unitsCurr);
+        same = same && sameUnits;
+
+        if (unknown && !showUnknown) continue;
+        if (same && !showSame) continue;
+        if (sameIgnore && !showCase) continue;
+
+        String state = same ? "  " : (sameIgnore ? "* " : "**");
+        f.format("%s%d %d %d (%d)%n wmo =%s%n curr=%s%n", state, gt.discipline, gt.category, p.start, p.line, p.name, paramDesc);
+        if (!sameUnits) f.format(" units wmo='%s' curr='%s' %n", unitsWmo, unitsCurr);
+      }
+    }
+    f.format("%nTotal=%d same=%d sameIgnoreCase=%d dif=%d unknown=%d%n", total, nsame, nsameIgn, ndiff, unknownCount);
+    compareTA.setText(f.toString());
+    infoWindow.show();
+  }
+
   private char[] remove = new char[]{'(', ')', ' ', '"', ',', '*', '-'};
   private String[] replace = new String[]{"", "", "", "", "", "", ""};
 
@@ -231,6 +304,72 @@ public class GribTableCodes extends JPanel {
     } catch (Exception e) {
       return equiv(unitS1, unitS2);
     }
+  }
+
+  private void checkCurrentModels() throws IOException {
+    int total = 0;
+    int nsame = 0;
+    int nsameIgn = 0;
+    int ndiff = 0;
+    int unknownCount = 0;
+
+    String dirName = "Q:/cdmUnitTest/tds/normal";
+
+    Formatter fm = new Formatter();
+    fm.format("Check Current Models in directory %s%n", dirName);
+    File allDir = new File(dirName);
+    File[] allFiles = allDir.listFiles();
+    List<File> flist = Arrays.asList(allFiles);
+    Collections.sort(flist);
+
+    for (File f : flist) {
+      String name = f.getAbsolutePath();
+      if (f.isDirectory()) continue;
+      if (!name.endsWith(".grib2")) continue;
+      fm.format("Check file %s%n", name);
+
+      GridDataset ncfile = null;
+      try {
+        ncfile = GridDataset.open(name);
+        for (GridDatatype dt : ncfile.getGrids()) {
+          String currName = dt.getName().toLowerCase();
+          Attribute att = dt.findAttributeIgnoreCase("GRIB_param_id");
+          int discipline = (Integer) att.getValue(1);
+          int category = (Integer) att.getValue(2);
+          int number = (Integer) att.getValue(3);
+          if (number >= 192) continue;
+          
+          GribCodeTable.TableEntry entry = GribCodeTable.getEntry(discipline, category, number);
+          if (entry == null) {
+            fm.format("%n%d %d %d CANT FIND %s%n", discipline, category, number, currName);
+            continue;
+          }
+
+          String wmoName = entry.name.toLowerCase();
+          boolean same = currName.startsWith(wmoName);
+          if (same) nsame++;
+          else ndiff++;
+          total++;
+
+          /* String unitsCurr = dt.findAttributeIgnoreCase("units").getStringValue();
+          String unitsWmo = entry.unit;
+          boolean sameUnits = (unitsWmo == null) ? (unitsCurr == null) : unitsWmo.equals(unitsCurr);
+          same = same && sameUnits; */
+
+          if (same && !showSame) continue;
+
+          fm.format("%d %d %d%n wmo =%s%n curr=%s%n", discipline, category, number, wmoName, currName);
+          //if (!sameUnits) fm.format(" units wmo='%s' curr='%s' %n", unitsWmo, unitsCurr);
+
+        }
+      } finally {
+        if (ncfile != null) ncfile.close();
+      }
+    }
+
+    fm.format("%nTotal=%d same=%d sameIgnoreCase=%d dif=%d unknown=%d%n", total, nsame, nsameIgn, ndiff, unknownCount);
+    compareTA.setText(fm.toString());
+    infoWindow.show();
   }
 
   public class CodeBean {
@@ -290,6 +429,10 @@ public class GribTableCodes extends JPanel {
       return te.code;
     }
 
+    public String getName() {
+      return te.name;
+    }
+
     public String getMeaning() {
       return te.meaning;
     }
@@ -315,14 +458,6 @@ public class GribTableCodes extends JPanel {
 
     public String getStatus() {
       return te.status;
-    }
-
-    public int getStart() {
-      return te.start;
-    }
-
-    public int getStop() {
-      return te.stop;
     }
 
     public int getLine() {
