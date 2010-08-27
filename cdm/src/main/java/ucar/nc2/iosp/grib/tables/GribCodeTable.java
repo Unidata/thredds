@@ -37,6 +37,7 @@ import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import ucar.grib.grib2.ParameterTable;
 import ucar.grid.GridParameter;
+import ucar.nc2.iosp.netcdf3.N3iosp;
 import ucar.nc2.util.IO;
 import ucar.unidata.util.StringUtil;
 
@@ -53,6 +54,18 @@ import java.util.*;
  */
 
 public class GribCodeTable implements Comparable<GribCodeTable> {
+  private static Map<String, GribCodeTable> tables;
+
+  public static GribCodeTable.TableEntry getEntry(int discipline, int category, int number) {
+    GribCodeTable table = tables.get( getId(discipline, category)) ;
+    if (table == null) return null;
+    return table.get(number);
+  }
+
+  private static String getId(int discipline, int category) {
+    return discipline+"."+ category;
+  }
+
   public String name;
   public int m1, m2;
   public boolean isParameter;
@@ -102,9 +115,9 @@ public class GribCodeTable implements Comparable<GribCodeTable> {
     entries.add(new TableEntry(line, code, meaning, unit, status));
   }
 
-  String get(int value) {
+  TableEntry get(int value) {
     for (TableEntry p : entries) {
-      if (p.start == value) return p.meaning;
+      if (p.start == value) return p;
     }
     return null;
   }
@@ -129,24 +142,37 @@ public class GribCodeTable implements Comparable<GribCodeTable> {
         '}';
   }
 
+  // remove () for the following:
+  private static int[] badones = new int[] {
+          0, 1, 51,
+          0, 6, 25,
+          0, 19, 22,
+          0, 191, 0,
+          1, 0, 0,
+          1, 0, 1,
+          1, 1, 0,
+          1, 1, 1,
+          1, 1, 2,
+          2, 0, 0,
+          10, 191, 0};
+
+  private boolean remove(TableEntry entry) {
+    for (int i=0; i < badones.length; i+=3) {
+      if (discipline == badones[i] && category == badones[i+1] && entry.number == badones[i+2]) return true;
+    }
+    return false;
+  }
+
   public class TableEntry implements Comparable<TableEntry> {
     public int start, stop, line;
-    public String code, meaning, unit, status;
+    public int number = -1;
+    public String code, meaning, name, unit, status;
 
     TableEntry(String line, String code, String meaning, String unit, String status) {
       this.line = Integer.parseInt(line);
       this.code = code;
       this.meaning = meaning;
-      this.unit = unit;
       this.status = status;
-
-      if (isParameter) {
-        this.meaning = StringUtil.replace(this.meaning, ' ', "_");
-        this.meaning = StringUtil.replace(this.meaning, '/', "-");
-        this.meaning = StringUtil.replace(this.meaning, '.', "p");
-        this.meaning = StringUtil.remove(this.meaning, '(');
-        this.meaning = StringUtil.remove(this.meaning, ')');
-      }
 
       try {
         int pos = code.indexOf('-');
@@ -157,18 +183,42 @@ public class GribCodeTable implements Comparable<GribCodeTable> {
         } else {
           start = Integer.parseInt(code);
           stop = start;
+          number = start;
         }
       } catch (Exception e) {
         start = -1;
         stop = 0;
       }
-    }
+
+      if (isParameter) {
+        // some need the () comment removed - must be hand specified (!)
+        if (remove(this)) {
+          int pos1 = meaning.indexOf('(');
+          int pos2 = meaning.indexOf(')');
+          if ((pos1 > 0) && (pos2 > 0))
+            meaning = meaning.substring(0, pos1).trim(); // assume () is at the end od string
+        }
+
+        // meaning = StringUtil.replace(meaning, '-', "_");
+        meaning = StringUtil.replace(meaning, '/', "-");
+        meaning = StringUtil.replace(meaning, '.', "p");
+        meaning = StringUtil.remove(meaning, '(');
+        meaning = StringUtil.remove(meaning, ')');
+        this.name = N3iosp.createValidNetcdf3ObjectName(meaning);
+
+        // massage units
+        if (unit != null) {
+          if (unit.equalsIgnoreCase("Proportion")) unit = "";
+          if (unit.equalsIgnoreCase("Numeric")) unit = "";
+        }
+        this.unit = unit;
+      }
+   }
 
     @Override
     public int compareTo(TableEntry o) {
       return start - o.start;
     }
-
 
   }
 
@@ -199,6 +249,7 @@ public class GribCodeTable implements Comparable<GribCodeTable> {
     Element root = doc.getRootElement();
 
     Map<String, GribCodeTable> map = new HashMap<String, GribCodeTable>();
+    tables = new HashMap<String, GribCodeTable>();
 
     List<Element> featList = root.getChildren("ForExport_CodeFlag_E");
     for (Element elem : featList) {
@@ -226,9 +277,7 @@ public class GribCodeTable implements Comparable<GribCodeTable> {
         if (cst == null) {
           cst = new GribCodeTable(tableName, subTableName);
           map.put(subTableName, cst);
-          //if (!cst.isParameter) {
-          //  System.out.printf("HEY subtable %s not a parameter %n",cst);
-          //}
+          tables.put(getId(cst.discipline, cst.category), cst);
         }
         cst.add(line, code, meaning, unit, status);
 
@@ -240,7 +289,7 @@ public class GribCodeTable implements Comparable<GribCodeTable> {
 
     ios.close();
 
-    List<GribCodeTable> tlist = new ArrayList<GribCodeTable>(map.values());
+    List<GribCodeTable> tlist = new ArrayList<GribCodeTable>(tables.values());
     Collections.sort(tlist);
     for (GribCodeTable gt : tlist)
       Collections.sort(gt.entries);

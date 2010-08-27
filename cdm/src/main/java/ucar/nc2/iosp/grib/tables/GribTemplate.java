@@ -78,8 +78,8 @@ public class GribTemplate implements Comparable<GribTemplate> {
 
     GribCodeTable gct = gribCodes.get(table);
     if (gct == null) return table+" not found";
-    String codeDesc = gct.get(value);
-    if (codeDesc != null) return codeDesc;
+    GribCodeTable.TableEntry entry = gct.get(value);
+    if (entry != null) return entry.meaning;
     return "Table "+table+" code "+ value+ " not found";
   }
 
