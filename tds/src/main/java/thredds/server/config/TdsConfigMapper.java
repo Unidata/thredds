@@ -3,13 +3,18 @@ package thredds.server.config;
 import thredds.servlet.ThreddsConfig;
 
 /**
- * _more_
+ * Centralize the mapping of threddsConfig.xml configuration settings to the data objects used by
+ * the various servlets. Supports earlier versions (some deprecated) of threddsConfig.xml config
+ * settings. 
  *
  * @author edavis
  * @since 4.1
  */
- class TdsConfigMapper
+class TdsConfigMapper
 {
+  // ToDo Consider moving to Spring-like configuration.
+  // ToDo Not yet using ThreddsConfig.get<type>() methods.
+
   TdsConfigMapper() {}
 
   private TdsServerInfo tdsServerInfo;
@@ -24,7 +29,7 @@ import thredds.servlet.ThreddsConfig;
     this.htmlConfig = htmlConfig;
   }
 
-  public void setWmsConfig( WmsConfig wmsConfig ) {
+  void setWmsConfig( WmsConfig wmsConfig ) {
     this.wmsConfig = wmsConfig;
   }
 
@@ -58,7 +63,7 @@ import thredds.servlet.ThreddsConfig;
       this.defaultValue = defaultValue;
     }
 
-    public String getValueFromThreddsConfig()
+    String getValueFromThreddsConfig()
     {
       return TdsConfigMapper.getValueFromThreddsConfig( this.key, this.alternateKey, this.defaultValue);
     }
@@ -88,7 +93,7 @@ import thredds.servlet.ThreddsConfig;
       this.defaultValue = defaultValue;
     }
 
-    public String getValueFromThreddsConfig() {
+    String getValueFromThreddsConfig() {
       return TdsConfigMapper.getValueFromThreddsConfig( this.key, this.alternateKey, this.defaultValue);
     }
   }
@@ -115,11 +120,11 @@ import thredds.servlet.ThreddsConfig;
       this.defaultValue = defaultValue;
     }
 
-    public String getDefaultValue() {
+    String getDefaultValue() {
       return this.defaultValue;
     }
 
-    public String getValueFromThreddsConfig() {
+    String getValueFromThreddsConfig() {
       return TdsConfigMapper.getValueFromThreddsConfig( this.key, this.alternateKey, this.defaultValue);
     }
   }

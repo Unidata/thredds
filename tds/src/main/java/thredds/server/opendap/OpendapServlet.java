@@ -89,10 +89,10 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
     org.slf4j.Logger logServerStartup = org.slf4j.LoggerFactory.getLogger("serverStartup");
     logServerStartup.info(getClass().getName() + " initialization start - " + UsageLog.setupNonRequestContext());
 
-    this.ascLimit = ThreddsConfig.getInt("ascLimit", ascLimit);
-    this.binLimit = ThreddsConfig.getInt("binLimit", binLimit);
+    this.ascLimit = ThreddsConfig.getInt( "Opendap.ascLimit", ascLimit);
+    this.binLimit = ThreddsConfig.getInt( "Opendap.binLimit", binLimit);
 
-    this.odapVersionString = ThreddsConfig.get("serverVersion", odapVersionString);
+    this.odapVersionString = ThreddsConfig.get( "Opendap.serverVersion", odapVersionString);
 
     // debugging actions
     makeDebugActions();
