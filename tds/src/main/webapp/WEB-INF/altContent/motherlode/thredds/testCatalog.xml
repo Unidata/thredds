@@ -37,5 +37,11 @@
     <dataType>Grid</dataType>
   </dataset>
 
+  <datasetScan name="OPeNDAP Test Data" ID="testdods" path="testdods" location="/data/testdods">
+    <metadata inherited="true">
+      <serviceName>all</serviceName>
+      <dataType>Grid</dataType>
+    </metadata>
+  </datasetScan>
 
 </catalog>
