@@ -45,7 +45,7 @@
     <li><a href="Paths.html#modelInventory">FmrcInventoryServlet</a><em>: /modelInventory/* </em></li>
     <li>MetarServlet: <em>/idd/metar/*</em></li>
     <li><a href="Paths.html#dodsC">NcDODSServlet</a>: <em>/dodsC/*</em></li>
-    <li><a href="Paths.html#ncServer">NetcdfServlet</a>: <em>/ncServer/*</em></li>
+    <li><a href="Paths.html#ncss">NetcdfServlet</a>: <em>/ncss/grid/*</em></li>
     <li>StationObsCollectionServlet: <em>/obsServer/*</em></li>
     <li>ThreddsDefaultServlet<em>: everything else </em></li>
     <li><a href="Paths.html#view">ViewServlet</a><em>: /view/* </em></li>
@@ -78,11 +78,11 @@
     <li>http://<em>{server:port</em>}/{<em>contextPath}</em>/<strong>dodsC/{dataPath}/</strong>{file}.{service}</li>
     <li>{service} = {dods, dds, dap, ascii, info, html, ver, help, close} </li>
   </ul>
-  <h3>NetCDF Grid Subsetting<a name="ncServer"></a></h3>
+  <h3>NetCDF Grid Subsetting<a name="ncss"></a></h3>
   <p>The dataPath must be a forecast model run. The grid(s) are subset by lat/lon and/or time. NCEP gribs are returned as CF. Not yet a generic CF file writer though. </p>
   <ul>
-    <li>http://<em>{server:port</em>}/{<em>contextPath}</em>/<strong>ncServer/{dataPath}</strong>?showForm</li>
-    <li>http://<em>{server:port</em>}/{<em>contextPath}</em>/<strong>ncServer/{dataPath}<em>?query </em></strong> 
+    <li>http://<em>{server:port</em>}/{<em>contextPath}</em>/<strong>ncss/grid/{dataPath}</strong>?showForm</li>
+    <li>http://<em>{server:port</em>}/{<em>contextPath}</em>/<strong>ncss/grid/{dataPath}<em>?query </em></strong>
       <ul>
         <li><strong>grid</strong>={varName};{varName};...</li>
         <li><strong>north</strong>={north lat}&amp;<strong>south</strong>={south lat}&amp;<strong>east</strong>={east lon}&amp;<strong>west</strong>={west lon} </li>
@@ -94,9 +94,9 @@
   <p>Notes:</p>
   <ul>
     <li>uses Location header to return a file with .nc ending </li>
-    <li>response to query has Content-Location= /thredds/ncServer<strong>/cache/{resultID}.nc. </strong>This currently is kept 1 day.</li>
-    <li> should showForm be /thredds/ncServer/{dataPath}/<strong>form.html </strong>?</li>
-    <li> could have XML version /thredds/ncServer/{dataPath}/<strong>info.xml</strong> ? Currently would return fmrInv.xml </li>
+    <li>response to query has Content-Location= /thredds/ncss/grid/<strong>/cache/{resultID}.nc. </strong>This currently is kept 1 day.</li>
+    <li> should showForm be /thredds/ncss/grid/{dataPath}/<strong>form.html </strong>?</li>
+    <li> could have XML version /thredds/ncss/grid/{dataPath}/<strong>info.xml</strong> ? Currently would return fmrInv.xml </li>
   </ul>
   <h3>WCS server<a name="wcs"></a></h3>
   <p>The dataPath must be a file with gridded data.</p>

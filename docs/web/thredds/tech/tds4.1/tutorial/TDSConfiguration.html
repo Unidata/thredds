@@ -84,7 +84,7 @@ following service elements in your TDS configuration catalogs: </p>
   <p><strong>WCS Server </strong>: </p>
   <pre>  &lt;<strong>service</strong> name="wcsServer" serviceType="WCS" base="<strong>/thredds/wcs/</strong>" &gt;</pre>
   <p><strong>NetCDF Subsetting Server </strong>: </p>
-  <pre>  &lt;<strong>service</strong> name="subsetter" serviceType="NetcdfServer" base="<strong>/thredds/ncServer/</strong>" &gt;</pre>
+  <pre>  &lt;<strong>service</strong> name="subsetter" serviceType="NetcdfServer" base="<strong>/thredds/ncss/grid/</strong>" &gt;</pre>
   <p>You can use whatever name you choose for the service, it only needs to match the ones used in the dataset <em>serviceName</em>.Note that the base URLs are relative, so your catalogs are independent of your server hostname and port.<br>
   </p>
   <h2>Serving the same Dataset in different ways </h2>
@@ -122,7 +122,7 @@ the data root</p>
   <li><strong>OpenDAP server</strong>: &lt;<strong>service</strong> name="ncdods" serviceType="OpenDAP" base="<strong>/thredds/dodsC/</strong>" &gt;</li>
   <li><strong>HTTP bulk file server </strong>: &lt;<strong>service</strong> name="fileServer" serviceType="HTTPServer" base="<strong>/thredds/fileServer/"</strong> &gt;</li>
   <li><strong>WCS Server </strong>: &lt;<strong>service</strong> name="wcsServer" serviceType="WCS" base="<strong>/thredds/wcs/</strong>" &gt;</li>
-  <li> <strong>NetcdfServer</strong>: &lt;<strong>service</strong> name="subsetter" serviceType="NetcdfServer" base="<strong>/thredds/ncServer/</strong>" &gt;</li>
+  <li> <strong>NetcdfServer</strong>: &lt;<strong>service</strong> name="subsetter" serviceType="NetcdfServer" base="<strong>/thredds/ncss/grid/</strong>" &gt;</li>
 </ul>
 <p>Note that these base URLs are relative, so your catalogs are independent of your server hostname and port. </p>
 <h3><strong>2. Choose a unique <em>path</em> for each group of datasets you want to serve </strong></h3>
