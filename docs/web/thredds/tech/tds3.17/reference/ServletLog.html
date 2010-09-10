@@ -11,7 +11,7 @@
 <hr>
 <h2>Log4J</h2>
 <p>TDS uses the <a href="http://logging.apache.org/log4j/docs/">Log4J </a> library, currently contained in the NLOG4J library which implements the <a href="http://www.slf4j.org/">SLF4J</a> logging facade, which the Netcdf-Java library uses. Users of the TDS can ignore the SLF4J facade, and need only deal with  log4j. </p>
-<p>The <a href="../../reference/log4j.xml.txt">default log4j configuration file</a>  is shipped inside the TDS war file. Once the thredds.war file is expanded, you can find it at <strong>${tomcat_home}/webapps/thredds/WEB-INF/log4j.xml. </strong>You can modify this if you want and restart the TDS to have it take efffect. However, it will be overwritten when you install an updated thredds.war file.</p>
+<p>The <a href="log4j.xml.txt">default log4j configuration file</a>  is shipped inside the TDS war file. Once the thredds.war file is expanded, you can find it at <strong>${tomcat_home}/webapps/thredds/WEB-INF/log4j.xml. </strong>You can modify this if you want and restart the TDS to have it take efffect. However, it will be overwritten when you install an updated thredds.war file.</p>
 <p>You can change the location of the  log4j configuration file with the <em>log4j-init-file</em> context parameter in the thredds configuration file <strong>${tomcat_home}/webapps/thredds/WEB-INF/web.xml.</strong> file. For example:</p>
 <pre> &lt;context-param&gt;
    &lt;param-name&gt;<strong>log4j-init-file</strong>&lt;/param-name&gt;

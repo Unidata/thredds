@@ -48,9 +48,9 @@
 <p><strong>Q: Im getting the error &quot;java.lang.OutOfMemoryError: PermGen<a name="PermGen"></a> space&quot;. Whats up?</strong></p>
   <blockquote>
     <p>If you reload the <strong>thredds.war</strong> webapp enough times without restarting Tomcat, you will eventually run into &quot;<strong>java.lang.OutOfMemoryError: PermGen space</strong>&quot;. This is a known bug in  JDK/Tomcat. The only thing to do is to stop and restart Tomcat. </p>
-    <p wrap="">You can increase PermGen using this JVM option:     </p>
-    <p wrap=""><strong>-XX:MaxPermSize=128m    </strong></p>
-    <p wrap="">On the JDK1.6 -server JVM, the default seems to be 64m.     However, with enough redeploys , you will eventually run out of PermGen space no matter what your <strong>MaxPermSize</strong> setting is. We have gotten into the habit of restarting tomcat on our production server whenever we redeploy. Lots of redeploys only happen on our test server.</p>
+    <p>You can increase PermGen using this JVM option:     </p>
+    <p><strong>-XX:MaxPermSize=128m    </strong></p>
+    <p>On the JDK1.6 -server JVM, the default seems to be 64m.     However, with enough redeploys , you will eventually run out of PermGen space no matter what your <strong>MaxPermSize</strong> setting is. We have gotten into the habit of restarting tomcat on our production server whenever we redeploy. Lots of redeploys only happen on our test server.</p>
     <p>Resources:</p>
     <ul>
       <li><a href="http://blogs.sun.com/fkieviet/entry/classloader_leaks_the_dreaded_java">&quot;Classloader leaks&quot; (sun blog)</a> (2006-10-16)</li>
@@ -65,7 +65,7 @@
   </blockquote>
   <p><strong>Q: How can I control whether I want Web crawlers to access my server?</strong></p>
   <blockquote>
-    <p>Well-behaved web crawlers are supposed to look for a <strong>robots.txt</strong> file on the server and follow its instructions. To set up a robots.txt file that excludes web crawlers from crawling your server, follow <a href="../reference/Performance.html#robots">these directions</a>. </p>
+    <p>Well-behaved web crawlers are supposed to look for a <strong>robots.txt</strong> file on the server and follow its instructions. To set up a robots.txt file that excludes web crawlers from crawling your server, follow <a href="../tds4.1/reference/Performance.html#robots">these directions</a>. </p>
   </blockquote>
 
   <p><strong>Q: How can I prevent someone from accessing my server? </strong></p>
