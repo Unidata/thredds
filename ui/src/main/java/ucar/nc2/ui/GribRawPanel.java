@@ -67,7 +67,7 @@ import java.util.List;
  * @author caron
  * @since Aug 15, 2008
  */
-public class GribPanel extends JPanel {
+public class GribRawPanel extends JPanel {
   private static final KMPMatch matcher = new KMPMatch("GRIB".getBytes());
 
   private PreferencesExt prefs;
@@ -79,9 +79,9 @@ public class GribPanel extends JPanel {
   private TextHistoryPane infoPopup, infoPopup2, infoPopup3;
   private IndependentWindow infoWindow, infoWindow2, infoWindow3;
 
-  private Map<Integer, GribTemplate> productTemplates = null;
+  private Map<String, GribTemplate> productTemplates = null;
 
-  public GribPanel(PreferencesExt prefs) {
+  public GribRawPanel(PreferencesExt prefs) {
     this.prefs = prefs;
 
     thredds.ui.PopupMenu varPopup;
@@ -599,10 +599,10 @@ public class GribPanel extends JPanel {
       f.format("PDS bytes not available template=%d%n", template);
       return;
     }
-    showRawPds(template, raw, f);
+    showRawPds("3."+template, raw, f);
   }
 
-  private void showRawPds(int template, byte[] raw, Formatter f) {
+  private void showRawPds(String key, byte[] raw, Formatter f) {
     if (productTemplates == null)
       try {
         productTemplates = GribTemplate.getParameterTemplates();
@@ -611,9 +611,9 @@ public class GribPanel extends JPanel {
         return;
       }
 
-    GribTemplate gt = productTemplates.get(template);
+    GribTemplate gt = productTemplates.get(key);
     if (gt == null)
-      f.format("Cant find template %d%n", template);
+      f.format("Cant find template %s%n", key);
     else
       gt.showInfo(raw, f);
   }
@@ -730,12 +730,20 @@ public class GribPanel extends JPanel {
 
   }
 
+  private void showRawGds(Grib2GridDefinitionSection gds, Formatter f) {
+    Grib2GDSVariables gdsv = gds.getGdsVars();
+    int template = gdsv.getGdtn();
+    byte[] raw = gdsv.getGDSBytes();
+
+    showRawPds("3."+template, raw, f);
+  }
+
   private void showRawPds(Grib2ProductDefinitionSection pds, Formatter f) {
     Grib2Pds pdsv = pds.getPdsVars();
     int template = pdsv.getProductDefinitionTemplate();
     byte[] raw = pdsv.getPDSBytes();
 
-    showRawPds(template, raw, f);
+    showRawPds("4."+template, raw, f);
   }
 
   private void showProcessedPds(Grib2ProductDefinitionSection pds, int discipline, Formatter f) {
@@ -886,11 +894,10 @@ public class GribPanel extends JPanel {
       f.format(" ProductStatus = %s%n", id.getProductStatusName());
       f.format(" ProductType   = %s%n", id.getProductTypeName());
       f.format("%nGrib2GridDefinitionSection%n");
-      f.format(" Source             = %d%n", gds.getSource());
       f.format(" Npts               = %d%n", gds.getNumberPoints());
-      f.format(" QuasiRegularOctets = %d%n", gds.getOlon());
-      f.format(" QuasiRegularInterp = %d%n", gds.getIolon());
       f.format(" Grid Template      = %d%n", gds.getGdtn());
+      showRawGds(gds, f);
+
       f.format("%nGrib2ProductDefinitionSection%n");
       int[] intv = pds.getPdsVars().getForecastTimeInterval();
       if (intv != null) {

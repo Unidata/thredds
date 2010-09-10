@@ -45,7 +45,6 @@ import ucar.nc2.iosp.grib.GribGridServiceProvider;
 import ucar.nc2.iosp.grib.tables.GribTemplate;
 import ucar.nc2.iosp.grid.GridServiceProvider;
 import ucar.nc2.iosp.grid.GridVariable;
-import ucar.unidata.io.*;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
@@ -66,12 +65,12 @@ import java.util.*;
 import java.util.List;
 
 /**
- * ToolsUI/Iosp/Grib2
+ * ToolsUI/Iosp/Grib2 - indexed access
  *
  * @author caron
  * @since Aug 15, 2008
  */
-public class Grib2Panel extends JPanel {
+public class GribIndexPanel extends JPanel {
   private PreferencesExt prefs;
 
   private BeanTableSorted recordTable, gdsTable, productTable;
@@ -80,11 +79,11 @@ public class Grib2Panel extends JPanel {
   private TextHistoryPane infoPopup, infoPopup2, infoPopup3;
   private IndependentWindow infoWindow, infoWindow2, infoWindow3;
 
-  private Map<Integer, GribTemplate> productTemplates = null;
+  private Map<String, GribTemplate> templates = null;
 
   private NetcdfFile ncd;
 
-  public Grib2Panel(PreferencesExt prefs) {
+  public GribIndexPanel(PreferencesExt prefs) {
     this.prefs = prefs;
 
     thredds.ui.PopupMenu varPopup;
@@ -305,7 +304,7 @@ public class Grib2Panel extends JPanel {
 
   private void showRecordBelongs(GribGridRecord ggr, Formatter f) {
     GridVariable.Belongs b = (GridVariable.Belongs) ggr.getBelongs();
-    f.format("%s == %s : ", ggr.toString2(), ggr.getBelongs());
+    f.format("%s == %s : ", ggr.toString(), ggr.getBelongs());
     b.gv.showRecord(b.recnum, f);
     f.format("%n");
   }
@@ -333,7 +332,7 @@ public class Grib2Panel extends JPanel {
       return;
     }
 
-    GribPanel.compare(data1, data2, f);
+    GribRawPanel.compare(data1, data2, f);
   }
 
   void compare(GribGridRecordBean bean1, GribGridRecordBean bean2, Formatter f) {
@@ -450,7 +449,7 @@ public class Grib2Panel extends JPanel {
     f.format("Compare PDS bytes %n");
     byte[] raw1 = ggr1.getPds().getPDSBytes();
     byte[] raw2 = ggr2.getPds().getPDSBytes();
-    GribPanel.compare(raw1, raw2, f);
+    GribRawPanel.compare(raw1, raw2, f);
     return;
   }
 
@@ -772,21 +771,21 @@ public class Grib2Panel extends JPanel {
       f.format("PDS bytes not available template=%d%n", template);
       return;
     }
-    showRawPds(template, raw, f);
+    showRawTemplate("4."+template, raw, f);
   }
 
-  private void showRawPds(int template, byte[] raw, Formatter f) {
-    if (productTemplates == null)
+  private void showRawTemplate(String key, byte[] raw, Formatter f) {
+    if (templates == null)
       try {
-        productTemplates = GribTemplate.getParameterTemplates();
+        templates = GribTemplate.getParameterTemplates();
       } catch (IOException e) {
         f.format("Read template failed = %s%n", e.getMessage());
         return;
       }
 
-    GribTemplate gt = productTemplates.get(template);
+    GribTemplate gt = templates.get(key);
     if (gt == null)
-      f.format("Cant find template %d%n", template);
+      f.format("Cant find template %s%n", key);
     else
       gt.showInfo(raw, f);
   }

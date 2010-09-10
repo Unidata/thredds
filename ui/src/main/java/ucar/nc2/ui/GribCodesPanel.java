@@ -30,12 +30,12 @@ import java.util.*;
 import java.util.List;
 
 /**
- * GribTables - Codes
+ * WMO Grib 2 Tables - Codes
  *
  * @author caron
  * @since Aug 25, 2010
  */
-public class GribTableCodes extends JPanel {
+public class GribCodesPanel extends JPanel {
   private PreferencesExt prefs;
 
   private BeanTableSorted codeTable, entryTable;
@@ -46,7 +46,7 @@ public class GribTableCodes extends JPanel {
 
   private FileManager fileChooser;
 
-  public GribTableCodes(final PreferencesExt prefs, JPanel buttPanel) {
+  public GribCodesPanel(final PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
 
     codeTable = new BeanTableSorted(CodeBean.class, (PreferencesExt) prefs.node("CodeBean"), false);

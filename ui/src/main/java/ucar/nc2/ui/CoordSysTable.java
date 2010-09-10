@@ -101,7 +101,7 @@ public class CoordSysTable extends JPanel {
     varPopup.addAction("Show Declaration", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         VariableBean vb = (VariableBean) varTable.getSelectedBean();
-        VariableDS v = (VariableDS)  ds.findVariable( vb.getName());
+        VariableDS v = (VariableDS) ds.findVariable(vb.getName());
         if (v == null) return;
         infoTA.clear();
         infoTA.appendLine(v.toString());
@@ -114,7 +114,7 @@ public class CoordSysTable extends JPanel {
     varPopup.addAction("Try as Grid", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         VariableBean vb = (VariableBean) varTable.getSelectedBean();
-        VariableEnhanced v = (VariableEnhanced) ds.findVariable( vb.getName());
+        VariableEnhanced v = (VariableEnhanced) ds.findVariable(vb.getName());
         if (v == null) return;
         infoTA.clear();
         infoTA.appendLine(tryGrid(v));
@@ -131,11 +131,11 @@ public class CoordSysTable extends JPanel {
         infoTA.clear();
         infoTA.appendLine("Coordinate System = " + coordSys.getName());
         for (CoordinateAxis axis : coordSys.getCoordinateAxes()) {
-          infoTA.appendLine("  " + axis.getAxisType()+" "+axis);
+          infoTA.appendLine("  " + axis.getAxisType() + " " + axis);
         }
         infoTA.appendLine(" Coordinate Transforms");
         for (CoordinateTransform ct : coordSys.getCoordinateTransforms()) {
-          infoTA.appendLine("  " + ct.getName()+" type="+ct.getTransformType());
+          infoTA.appendLine("  " + ct.getName() + " type=" + ct.getTransformType());
           for (Parameter p : ct.getParameters()) {
             infoTA.appendLine("    " + p);
           }
@@ -161,7 +161,7 @@ public class CoordSysTable extends JPanel {
     axisPopup.addAction("Show Declaration", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         AxisBean bean = (AxisBean) axisTable.getSelectedBean();
-        CoordinateAxis axis = (CoordinateAxis) ds.findVariable( bean.getName());
+        CoordinateAxis axis = (CoordinateAxis) ds.findVariable(bean.getName());
         if (axis == null) return;
         infoTA.clear();
         infoTA.appendLine(axis.toString());
@@ -199,7 +199,7 @@ public class CoordSysTable extends JPanel {
     axisPopup.addAction("Show Value Differences", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         AxisBean bean = (AxisBean) axisTable.getSelectedBean();
-        CoordinateAxis axis = (CoordinateAxis) ds.findVariable( bean.getName());
+        CoordinateAxis axis = (CoordinateAxis) ds.findVariable(bean.getName());
         infoTA.clear();
         try {
           if (axis instanceof CoordinateAxis1D && axis.isNumeric()) {
@@ -222,7 +222,7 @@ public class CoordSysTable extends JPanel {
     axisPopup.addAction("Show Values as Date", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         AxisBean bean = (AxisBean) axisTable.getSelectedBean();
-        VariableEnhanced axis = (VariableEnhanced) ds.findVariable( bean.getName());
+        VariableEnhanced axis = (VariableEnhanced) ds.findVariable(bean.getName());
         String units = axis.getUnitsString();
         infoTA.clear();
 
@@ -395,10 +395,12 @@ public class CoordSysTable extends JPanel {
     boolean isCoordVar, axis;
 
     // no-arg constructor
+
     public VariableBean() {
     }
 
     // create from a dataset
+
     public VariableBean(VariableEnhanced v) {
       this.ve = v;
 
@@ -437,7 +439,7 @@ public class CoordSysTable extends JPanel {
 
         Formatter gridBuff = new Formatter();
         if (GridCoordSys.isGridCoordSys(gridBuff, cs, v)) {
-            addDataType("grid");
+          addDataType("grid");
 
         } /* else if (PointDatasetDefaultHandler.isPointFeatureDataset(ds)) {
           addDataType("point");
@@ -513,6 +515,7 @@ public class CoordSysTable extends JPanel {
     private boolean isGeoXY, isLatLon, isProductSet, isRegular;
 
     // no-arg constructor
+
     public CoordinateSystemBean() {
     }
 
@@ -636,14 +639,18 @@ public class CoordSysTable extends JPanel {
     CoordinateAxis axis;
     CoordinateSystem firstCoordSys = null;
     String name, desc, units, axisType = "", positive = "", incr = "";
-    String dims, shape, csNames;
-    boolean isCoordVar, isLayer;
+    String dims, shape;
+    boolean isCoordVar;
+    boolean isLayer;
+    boolean isInterval;
 
     // no-arg constructor
+
     public AxisBean() {
     }
 
     // create from a dataset
+
     public AxisBean(CoordinateAxis v) {
       this.axis = v;
 
@@ -681,6 +688,7 @@ public class CoordSysTable extends JPanel {
         if (v1.isRegular())
           setRegular(Double.toString(v1.getIncrement()));
         isLayer = (null != axis.findAttribute(_Coordinate.ZisLayer));
+        isInterval = v1.isInterval();
       }
     }
 
@@ -706,6 +714,10 @@ public class CoordSysTable extends JPanel {
 
     public boolean isLayer() {
       return isLayer;
+    }
+
+    public boolean isInterval() {
+      return isInterval;
     }
 
     public String getShape() {
