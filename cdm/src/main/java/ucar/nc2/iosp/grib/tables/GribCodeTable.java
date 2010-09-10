@@ -289,7 +289,7 @@ public class GribCodeTable implements Comparable<GribCodeTable> {
 
     ios.close();
 
-    List<GribCodeTable> tlist = new ArrayList<GribCodeTable>(tables.values());
+    List<GribCodeTable> tlist = new ArrayList<GribCodeTable>(map.values());
     Collections.sort(tlist);
     for (GribCodeTable gt : tlist)
       Collections.sort(gt.entries);
@@ -328,7 +328,6 @@ public class GribCodeTable implements Comparable<GribCodeTable> {
     } finally {
       in.close();
     }
-
   }
 
   static String resourceName = "/resources/grib/wmo/GRIB2_5_2_0_CodeFlag_E.xml";

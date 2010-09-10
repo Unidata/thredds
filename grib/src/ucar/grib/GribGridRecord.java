@@ -517,8 +517,7 @@ public final class GribGridRecord implements GridRecord {
   //// debugging
 
 
-  @Override
-  public String toString() {
+  public String toString2() {
     return "GribGridRecord{" +
             "edition=" + edition +
             ", discipline=" + discipline +
@@ -530,12 +529,13 @@ public final class GribGridRecord implements GridRecord {
             ", gdsKey=" + gdsKey +
             ", offset1=" + offset1 +
             ", offset2=" + offset2 +
-            ", paramDesc='" + paramDesc + '\'' +
+            ", paramDesc='" + getParameterDescription() + '\'' +
             ", pds=" + pds +
             '}';
   }
 
-  public String toString2() {
+  @Override
+  public String toString() {
     return "GribGridRecord{" +
         ", param=" + getParameterDescription() +
         ", levelType1=" + pds.getLevelType1() +

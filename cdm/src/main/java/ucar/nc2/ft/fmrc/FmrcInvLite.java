@@ -60,9 +60,6 @@ public class FmrcInvLite implements java.io.Serializable {
   public List<Gridset> gridSets = new ArrayList<Gridset>();
   public List<GridInventory> invList = new ArrayList<GridInventory>(); // share these, they are expensive!
 
-  private DateFormatter df = new DateFormatter();
-
-
   public FmrcInvLite(FmrcInv fmrcInv) {
     this.collectionName = fmrcInv.getName();
     this.base = fmrcInv.getBaseDate();
@@ -110,6 +107,7 @@ public class FmrcInvLite implements java.io.Serializable {
     return result;
   }
 
+  // for making constant offset datasets
   public double[] getForecastOffsets() {
     if (offsets == null) {
       TreeSet<Double> tree = new TreeSet<Double>();
@@ -147,13 +145,12 @@ public class FmrcInvLite implements java.io.Serializable {
       out.format("Cant find grid = %s%n", gridName);
       return;
     }
-    BestDatasetInventory best = new BestDatasetInventory( null);
 
     Gridset gridset = grid.getGridset();
-    out.format("%n=======================================%nFmrcLite%n");
+    out.format("%n=======================================%nFmrcLite.Grid%n");
 
     // show the 2D    
-    out.format("run   %n");
+    out.format("2D%n   run%n");
     for (int i=0; i< gridset.noffsets; i++)
       out.format(" %6d", i);
     out.format("%n");
@@ -167,13 +164,14 @@ public class FmrcInvLite implements java.io.Serializable {
     out.format("%n");
 
 
+    BestDatasetInventory best = new BestDatasetInventory( null);
     List<TimeInv> bestInv = gridset.timeCoordMap.get("Best");
     if (bestInv == null) bestInv = gridset.makeBest(null);
-    double[] coords = best.getTimeCoords( gridset);
+    FmrcInvLite.ValueB coords = best.getTimeCoords( gridset); // must call this to be sure data is there
 
     // show the best
     out.format("            ");
-    for (int i=0; i< coords.length; i++)
+    for (int i=0; i< bestInv.size(); i++)
       out.format(" %6d", i);
     out.format("%n");
 
@@ -194,6 +192,7 @@ public class FmrcInvLite implements java.io.Serializable {
     List<Grid> grids = new ArrayList<Grid>();
     int noffsets;
     double[] timeOffset;  // timeOffset(nruns,noffsets) in offset hours since base. this is the twoD time coordinate for this Gridset
+    double[] timeBounds;  // timeBounds(nruns,noffsets,2) in offset hours since base. null means not an interval time coordinate
 
     Map<String, List<TimeInv>> timeCoordMap = new HashMap<String, List<TimeInv>>();
 
@@ -206,6 +205,13 @@ public class FmrcInvLite implements java.io.Serializable {
       // this is the twoD time coordinate for this Gridset
       timeOffset = new double[nruns * noffsets];
       for (int i = 0; i < timeOffset.length; i++) timeOffset[i] = Double.NaN;
+
+      if (runseq.isInterval()) {
+        timeBounds = new double[nruns * noffsets * 2];
+        for (int i = 0; i < timeBounds.length; i++) timeBounds[i] = Double.NaN;
+      }
+
+      DateFormatter df = new DateFormatter();
 
       // fill twoD time coordinate from the sequence of time coordinates
       int runIdx = 0;
@@ -236,6 +242,16 @@ public class FmrcInvLite implements java.io.Serializable {
         int ntimes = offsets.length;
         for (int time = 0; time < ntimes; time++)
           timeOffset[runIdx * noffsets + time] = run_offset + offsets[time];
+
+        // optionally create 2D bounds
+        if (runseq.isInterval()) {
+          double[] bound1 = tc.getBound1();
+          double[] bound2 = tc.getBound2();
+          for (int time = 0; time < ntimes; time++) {
+            timeBounds[2*(runIdx * noffsets + time)] = run_offset + bound1[time];
+            timeBounds[2*(runIdx * noffsets + time)+1] = run_offset + bound2[time];
+          }
+        }
 
         runIdx++;
       }
@@ -268,15 +284,21 @@ public class FmrcInvLite implements java.io.Serializable {
       return timeOffset[run * noffsets + time];
     }
 
-    // time coord in hours since base
     private List<TimeInv> makeBest(FeatureCollectionConfig.BestDataset bd) {
-      Map<Double, TimeInv> map = new HashMap<Double, TimeInv>();
+      Map<TimeCoord.Tinv, TimeInv> map = new HashMap<TimeCoord.Tinv, TimeInv>();
+
       for (int run = 0; run < nruns; run++) {
         for (int time = 0; time < noffsets; time++) {
           double baseOffset = timeOffset[run * noffsets + time];
           if (Double.isNaN(baseOffset)) continue;
           if (bd != null && baseOffset < bd.greaterThan) continue; // skip it
-          map.put(baseOffset, new TimeInv(run, time, baseOffset)); // later ones override
+          if (timeBounds == null)
+            map.put(new TimeCoord.Tinv(baseOffset), new TimeInv(run, time, baseOffset)); // later ones override
+          else {
+            double b1 = timeBounds[2*(run*noffsets+time)];
+            double b2 = timeBounds[2*(run*noffsets+time)+1];
+            map.put(new TimeCoord.Tinv(b1, b2), new TimeInv(run, time, b1, b2)); // hmmmmm ????
+          }
         }
       }
 
@@ -292,8 +314,14 @@ public class FmrcInvLite implements java.io.Serializable {
       List<TimeInv> result = new ArrayList<TimeInv>(noffsets);
       for (int time = 0; time < noffsets; time++) {
         double offset = timeOffset[runIdx * noffsets + time];
-        if (!Double.isNaN(offset))
+        if (Double.isNaN(offset)) continue;
+        if (timeBounds == null)
           result.add(new TimeInv(runIdx, time, offset));
+        else {
+          double b1 = timeBounds[2*(runIdx*noffsets+time)];
+          double b2 = timeBounds[2*(runIdx*noffsets+time)+1];
+          result.add(new TimeInv(runIdx, time, b1, b2));
+        }
       }
       timeCoordMap.put("run" + runIdx, result);
       return result;
@@ -330,7 +358,7 @@ public class FmrcInvLite implements java.io.Serializable {
 
     class Grid implements java.io.Serializable {
       String name;
-      GridInventory inv;
+      GridInventory inv; // shared
 
       Grid(String name, GridInventory inv) {
         this.name = name;
@@ -351,10 +379,20 @@ public class FmrcInvLite implements java.io.Serializable {
     }
   }
 
-  // represents 1 element in a 2d time matrix
+  // represents 1 time coord in a 2d time matrix, point or interval
   private class TimeInv implements Comparable<TimeInv> {
     int runIdx, timeIdx;
     double offset; // hours since base or hours since run time
+    double startIntv = Double.NaN;
+    boolean isInterval = false;
+
+    TimeInv(int runIdx, int timeIdx, double b1, double b2) {
+      this.runIdx = runIdx;
+      this.timeIdx = timeIdx;
+      this.startIntv = b1;
+      this.offset = b2;
+      isInterval = true;
+    }
 
     TimeInv(int runIdx, int timeIdx, double offset) {
       this.runIdx = runIdx;
@@ -364,7 +402,36 @@ public class FmrcInvLite implements java.io.Serializable {
 
     @Override
     public int compareTo(TimeInv o) {
-      return (int) (offset - o.offset);
+      int c1 = Double.compare(offset, o.offset);
+      if ((c1 == 0) && isInterval) return Double.compare(startIntv, o.startIntv);
+      return c1;
+    }
+  }
+
+  // efficient representation of time coords - point or interval
+  public static class ValueB {
+    double[] offset; // the forecast time
+    double[] bounds; // bounds of interval or null. shape = (ntimes, 2)
+
+    public ValueB(List<TimeInv> invs) {
+      boolean isInterval = invs.size() > 0 && invs.get(0).isInterval;
+      offset = new double[invs.size()];
+
+      if (isInterval) {
+        bounds = new double[2 * invs.size()];
+        for (int i = 0; i < invs.size(); i++) {
+          TimeInv b = invs.get(i);
+          offset[i] = b.offset;
+          bounds[2*i] = b.startIntv;
+          bounds[2*i+1] = b.offset; // end of interval is also the forecast time
+        }
+
+      } else {
+        for (int i = 0; i < invs.size(); i++) {
+          TimeInv b = invs.get(i);
+          offset[i] = b.offset;
+        }
+      }
     }
   }
 
@@ -374,6 +441,12 @@ public class FmrcInvLite implements java.io.Serializable {
     int[] location;  // (run,time) file location (index+1 into locationList, 0 = missing)
     int[] invIndex;  // (run,time) time index in file
 
+    /**
+     * Create 2D location, time index representing the inventory for a Grid.
+     * @param ugrid for this grid
+     * @param timeOffset timeOffset(nruns, noffsets) 2D time offsets
+     * @param noffsets stride
+     */
     GridInventory(FmrcInv.UberGrid ugrid, double[] timeOffset, int noffsets) {
       this.noffsets = noffsets;
       this.location = new int[nruns * noffsets];
@@ -388,6 +461,7 @@ public class FmrcInvLite implements java.io.Serializable {
 
         // do we have a grid for this runDate?
         if (gridIdx >= grids.size()) {
+          DateFormatter df = new DateFormatter();
           log.debug(collectionName+": cant find "+ugrid.getName()+" for "+df.toDateTimeStringISO(runDate)); // could be normal condition
           break;
         }
@@ -399,7 +473,7 @@ public class FmrcInvLite implements java.io.Serializable {
         // loop over actual inventory
         for (GridDatasetInv.Grid inv : grid.getInventory()) {
           double invOffset = FmrcInv.getOffsetInHours(base, inv.tc.getRunDate());
-          double[] offsets = inv.tc.getOffsetTimes();
+          double[] offsets = inv.tc.getOffsetTimes(); // LOOK  intv
           for (int i = 0; i < offsets.length; i++) {
             int timeIdx = findIndex(timeOffset, runIdx, invOffset + offsets[i]);
             if (timeIdx >= 0) {
@@ -444,6 +518,7 @@ public class FmrcInvLite implements java.io.Serializable {
 
   }
 
+  // lightweight tracker of where a Grid lives
   static class TimeInstance implements TimeInventory.Instance {
     String location;
     int index; // time index in the file named by inv
@@ -504,16 +579,10 @@ public class FmrcInvLite implements java.io.Serializable {
     }
 
     @Override
-    public double[] getTimeCoords(Gridset gridset) {
+    public FmrcInvLite.ValueB getTimeCoords(Gridset gridset) {
       List<TimeInv> best = gridset.timeCoordMap.get(getName());
       if (best == null) best = gridset.makeBest(bd);
-
-      double[] result = new double[best.size()];
-      for (int i = 0; i < best.size(); i++) {
-        TimeInv b = best.get(i);
-        result[i] = b.offset;
-      }
-      return result;
+      return new ValueB(best);
     }
 
     @Override
@@ -589,17 +658,11 @@ public class FmrcInvLite implements java.io.Serializable {
     }
 
     @Override
-    public double[] getTimeCoords(Gridset gridset) {
+    public FmrcInvLite.ValueB getTimeCoords(Gridset gridset) {
       List<TimeInv> coords = gridset.timeCoordMap.get("run" + runIdx);
       if (coords == null)
         coords = gridset.makeRun(runIdx);
-
-      double[] result = new double[coords.size()];
-      for (int i = 0; i < coords.size(); i++) {
-        TimeInv b = coords.get(i);
-        result[i] = b.offset;
-      }
-      return result;
+      return new FmrcInvLite.ValueB(coords);
     }
 
     @Override
@@ -661,7 +724,7 @@ public class FmrcInvLite implements java.io.Serializable {
     }
 
     @Override
-    public double[] getTimeCoords(Gridset gridset) {
+    public FmrcInvLite.ValueB getTimeCoords(Gridset gridset) {
       return null;
     }
 
@@ -733,17 +796,11 @@ public class FmrcInvLite implements java.io.Serializable {
     }
 
     @Override
-    public double[] getTimeCoords(Gridset gridset) {
+    public FmrcInvLite.ValueB getTimeCoords(Gridset gridset) {
       List<TimeInv> coords = gridset.timeCoordMap.get("offset" + offset);
       if (coords == null)
         coords = gridset.makeConstantOffset(offset);
-
-      double[] result = new double[coords.size()];
-      for (int i = 0; i < coords.size(); i++) {
-        TimeInv b = coords.get(i);
-        result[i] = b.offset;
-      }
-      return result;
+      return new FmrcInvLite.ValueB(coords);
     }
 
     @Override

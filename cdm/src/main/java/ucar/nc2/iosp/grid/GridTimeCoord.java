@@ -149,14 +149,15 @@ public class GridTimeCoord implements Comparable<GridTimeCoord> {
   boolean matchTimes(List<GridRecord> records) {
     // make sure that the time units agree
     for (GridRecord record : records) {
-      if (this.timeUnit != record.getTimeUnitName())
+      if (!this.timeUnit.equals(record.getTimeUnitName()))
         return false;
     }
 
     // check intervals match
     if (records.get(0) instanceof GribGridRecord) {
       GribGridRecord ggr = (GribGridRecord) records.get(0);
-      if (ggr.isInterval() != isInterval()) return false;
+      if (ggr.isInterval() != isInterval())
+        return false;
     }
 
     if (isInterval()) {

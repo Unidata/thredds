@@ -33,6 +33,7 @@
 package ucar.nc2.ft.fmrc;
 
 /**
+ * Extract time coordinates from a FmrcInvLite.Gridset.
  * For 1D time datasets.
  *
  * @author caron
@@ -42,7 +43,7 @@ public interface TimeInventory {
   public String getName();
 
   public int getTimeLength(FmrcInvLite.Gridset gridset);
-  public double[] getTimeCoords(FmrcInvLite.Gridset gridset);
+  public FmrcInvLite.ValueB getTimeCoords(FmrcInvLite.Gridset gridset);
   public double[] getRunTimeCoords(FmrcInvLite.Gridset gridset);
   public double[] getOffsetCoords(FmrcInvLite.Gridset gridset);  
 

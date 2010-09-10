@@ -112,6 +112,7 @@ class FmrcDataset {
     return localState.lite.getForecastDates();
   }
 
+  // for making offset datasets
   double[] getForecastOffsets() {
     State localState;
     synchronized (lock) {
@@ -193,7 +194,7 @@ class FmrcDataset {
       }
     }
 
-    // switch to new FmrcInvLite
+    // switch to FmrcInvLite to reduce memory usage
     FmrcInvLite liteLocal = new FmrcInvLite(fmrcInv);
     synchronized (lock) {
       if (protoLocal == null) protoLocal = state.proto;
@@ -525,6 +526,15 @@ class FmrcDataset {
       Array timeCoordVals = Array.factory(DataType.DOUBLE, timeVar.getShape(), gridset.timeOffset);
       timeVar.setCachedData(timeCoordVals);
 
+      if (gridset.timeBounds != null) {
+        String bname = timeVar.getShortName() + "_bounds";
+        timeVar.addAttribute(new ucar.nc2.Attribute("bounds", bname));
+        VariableDS boundsVar = new VariableDS(result, newGroup, null, bname, dtype, dims+" 2", null, null);
+        boundsVar.addAttribute(new Attribute("long_name", "bounds for "+ timeVar.getShortName()));
+        boundsVar.setCachedData(Array.factory( DataType.DOUBLE, new int[] {nruns, gridset.noffsets, 2}, gridset.timeBounds));
+        newGroup.addVariable(boundsVar);
+      }
+
       // promote all grid variables to agg variables
       for (FmrcInvLite.Gridset.Grid ugrid : gridset.grids) {
         VariableDS aggVar = (VariableDS) result.findVariable(ugrid.name);
@@ -794,7 +804,7 @@ class FmrcDataset {
       // construct the dimension
       int ntimes = timeInv.getTimeLength(gridset);
       if (ntimes == 0) {   // eg a constant offset dataset for variables that dont have that offset
-        // remove all variables that are in this gridsset
+        // remove all variables that are in this gridset
         for (FmrcInvLite.Gridset.Grid ugrid : gridset.grids)
          result.removeVariable(group, ugrid.name);
         continue; // skip the rest
@@ -806,26 +816,23 @@ class FmrcDataset {
 
       // optional time coordinate
       group.removeVariable(timeDimName);
-      double[] timeCoordValues = timeInv.getTimeCoords(gridset);
+      FmrcInvLite.ValueB timeCoordValues = timeInv.getTimeCoords(gridset);
       if (timeCoordValues != null) {
-        VariableDS timeCoord = makeTimeCoordinate(result, group, timeDimName, lite.base, timeCoordValues, dateFormatter);
-        group.addVariable(timeCoord);
+        makeTimeCoordinate(result, group, timeDimName, lite.base, timeCoordValues, dateFormatter);
       }
 
       // optional runtime coordinate
       group.removeVariable(timeDimName+"_run");
       double[] runtimeCoordValues = timeInv.getRunTimeCoords(gridset);
       if (runtimeCoordValues != null) {
-        VariableDS runtimeCoord = makeRunTimeCoordinate(result, group, timeDimName, lite.base, runtimeCoordValues, dateFormatter);
-        group.addVariable(runtimeCoord);
+        makeRunTimeCoordinate(result, group, timeDimName, lite.base, runtimeCoordValues, dateFormatter);
       }
 
       // optional offset coordinate
       group.removeVariable(timeDimName+"_offset");
       double[] offsetCoordValues = timeInv.getOffsetCoords(gridset);
       if (offsetCoordValues != null) {
-        VariableDS offsetCoord = makeOffsetCoordinate(result, group, timeDimName, lite.base, offsetCoordValues, dateFormatter);
-        group.addVariable(offsetCoord);
+        makeOffsetCoordinate(result, group, timeDimName, lite.base, offsetCoordValues, dateFormatter);
       }
 
       // promote all grid variables to agg variables
@@ -875,7 +882,7 @@ class FmrcDataset {
     return new ucar.nc2.dt.grid.GridDataset(result);
   }
 
-  private VariableDS makeTimeCoordinate(NetcdfDataset result, Group group, String dimName, Date base, double[] values, DateFormatter dateFormatter) {
+  private VariableDS makeTimeCoordinate(NetcdfDataset result, Group group, String dimName, Date base, FmrcInvLite.ValueB valueb, DateFormatter dateFormatter) {
     DataType dtype = DataType.DOUBLE;
     VariableDS timeVar = new VariableDS(result, group, null, dimName, dtype, dimName, null, null); // LOOK could just make a CoordinateAxis1D
     timeVar.addAttribute(new Attribute("long_name", "Forecast time for ForecastModelRunCollection"));
@@ -885,9 +892,18 @@ class FmrcDataset {
     timeVar.addAttribute(new ucar.nc2.Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
 
     // construct the values
-    int ntimes = values.length;
-    ArrayDouble.D1 timeCoordVals = (ArrayDouble.D1) Array.factory( DataType.DOUBLE, new int[] {ntimes}, values);
-    timeVar.setCachedData(timeCoordVals);
+    int ntimes = valueb.offset.length;
+    timeVar.setCachedData(Array.factory( DataType.DOUBLE, new int[] {ntimes}, valueb.offset));
+    group.addVariable(timeVar);
+
+    if (valueb.bounds != null) {
+      String bname = timeVar.getShortName() + "_bounds";
+      timeVar.addAttribute(new ucar.nc2.Attribute("bounds", bname));
+      VariableDS boundsVar = new VariableDS(result, group, null, bname, dtype, dimName+" 2", null, null);
+      boundsVar.addAttribute(new Attribute("long_name", "bounds for "+ timeVar.getShortName()));
+      boundsVar.setCachedData(Array.factory( DataType.DOUBLE, new int[] {ntimes, 2}, valueb.bounds));
+      group.addVariable(boundsVar);
+    }
 
     return timeVar;
   }
@@ -905,6 +921,7 @@ class FmrcDataset {
     int ntimes = values.length;
     ArrayDouble.D1 timeCoordVals = (ArrayDouble.D1) Array.factory( DataType.DOUBLE, new int[] {ntimes}, values);
     timeVar.setCachedData(timeCoordVals);
+    group.addVariable(timeVar);
 
     return timeVar;
   }
@@ -921,6 +938,7 @@ class FmrcDataset {
     int ntimes = values.length;
     ArrayDouble.D1 timeCoordVals = (ArrayDouble.D1) Array.factory( DataType.DOUBLE, new int[] {ntimes}, values);
     timeVar.setCachedData(timeCoordVals);
+    group.addVariable(timeVar);
 
     return timeVar;
   }

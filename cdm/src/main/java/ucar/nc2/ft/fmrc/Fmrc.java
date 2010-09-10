@@ -174,6 +174,7 @@ public class Fmrc {
     return fmrcDataset.getForecastDates();
   }
 
+  // for making offset datasets
   public double[] getForecastOffsets() throws IOException {
     checkNeeded( false); // ??
     return fmrcDataset.getForecastOffsets();

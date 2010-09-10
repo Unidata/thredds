@@ -67,10 +67,12 @@ import ucar.unidata.geoloc.projection.*;
  * cell-based/cell-centered instead of vertex-based.
  * The cells are hexahedra and should be visualized as constant-colored
  * (no shade colors). With the VG scheme, all cells at a given layer are at
- * the same height varying rectillinearly based on pressure.
+ * the same height varying rectilinearly based on pressure.
  * The pressure-based levels are converted into approximate z in meters above
  * mean sea level.
  * @invariant ncfile != null implies isValidM3IOFile()
+ *
+ * 09/2010 plessel.todd@epa.gov add projection types 6,7,8,9,10
  *
  * @HISTORY: 2003/06/26
  * @author plessel.todd@epa.gov, based on WRFConvention.java
@@ -92,6 +94,11 @@ public class M3IOVGGridConvention extends CoordSysBuilder {
   private static final int MERGRD3 = 3;
   private static final int STEGRD3 = 4;
   private static final int UTMGRD3 = 5;
+  private static final int POLGRD3 = 6;
+  private static final int EQMGRD3 = 7;
+  private static final int TRMGRD3 = 8;
+  private static final int ALBGRD3 = 9;
+  private static final int LEQGRD3 = 10;
   private static final int VGSGPH3 = 1;
   private static final int VGSGPN3 = 2;
   private static final int VGSIGZ3 = 3;
@@ -173,6 +180,22 @@ public class M3IOVGGridConvention extends CoordSysBuilder {
       p = new Stereographic( p_alp, p_bet, 1.0 );
       break;
     case UTMGRD3:
+      p = new UtmProjection( 6370000.0, 1e+30, (int) p_alp, ycent >= 0.0 );
+      break;
+    case POLGRD3:
+      p = new Stereographic( ycent, xcent, 1.0 );
+      break;
+    case EQMGRD3:
+      p = new Mercator( p_gam, p_alp );
+      break;
+    case TRMGRD3:
+      p = new TransverseMercator( p_alp, p_gam, 1.0 );
+      break;
+    case ALBGRD3:
+      p = new AlbersEqualArea( ycent, xcent, p_alp, p_bet );
+      break;
+    case LEQGRD3:
+      p = new LambertAzimuthalEqualArea( ycent, xcent, 0.0, 0.0, 6370000.0 );
       break;
     default:
       break;
@@ -376,7 +399,7 @@ public class M3IOVGGridConvention extends CoordSysBuilder {
   }
 
   /*
-   * 
+   *
    * Return "up" if this is a Vertical (z) coordinate axis which goes up as
    * coords get bigger
    * @param axis The axis to query.
@@ -567,7 +590,10 @@ public class M3IOVGGridConvention extends CoordSysBuilder {
       result = nthik <= min && ncols <= max;
     }
 
-    final int gdtypes[] = { LATGRD3, LAMGRD3, MERGRD3, STEGRD3, UTMGRD3 };
+    final int gdtypes[] = {
+      LATGRD3, LAMGRD3, MERGRD3, STEGRD3, UTMGRD3, POLGRD3, EQMGRD3,
+      TRMGRD3, ALBGRD3, LEQGRD3
+    };
     result = result && hasIntAttributeIn_( ncFile, "GDTYP", gdtypes );
     result = result && hasDoubleAttribute_( ncFile, "P_ALP", -90.0, 90.0 );
     result = result && hasDoubleAttribute_( ncFile, "P_BET", -90.0, 90.0 );
@@ -891,14 +917,50 @@ public class M3IOVGGridConvention extends CoordSysBuilder {
                inRange_( ycent,  -90.0,  90.0 );
       break;
     case MERGRD3:
-      /* Fall thru */
+      result = inRange_( p_alp, -90.0, 90.0 ) &&
+               inRange_( p_bet, -180.0, 180.0 ) &&
+               p_gam == 0.0 &&
+               inRange_( xcent, -180.0, 180.0 ) &&
+               inRange_( ycent,  -90.0,  90.0 );
+      break;
     case STEGRD3:
       result = inRange_( p_alp,  -90.0,  90.0 ) &&
-               inRange_( p_bet,  p_alp,  p_alp > 0 ? 90.0 : 0.0 ) &&
+               inRange_( p_bet,  p_alp,  p_alp > 0.0 ? 90.0 : 0.0 ) &&
                inRange_( p_gam, -180.0, 180.0 );
       break;
     case UTMGRD3:
       result = inRange_( p_alp, 1.0, 60.0 );
+      break;
+    case POLGRD3:
+      result = ( p_alp == -1.0 || p_alp == 1.0 ) &&
+               inRange_( p_bet, -90.0, 90.0 ) &&
+               inRange_( p_gam, -180.0, 180.0 ) &&
+               inRange_( xcent, -180.0, 180.0 ) &&
+               inRange_( ycent,  -90.0,  90.0 );
+      break;
+    case EQMGRD3:
+      result = inRange_( p_alp, -90.0, 90.0 ) &&
+               p_gam == xcent &&
+               inRange_( xcent, -180.0, 180.0 ) &&
+               inRange_( ycent,  -90.0,  90.0 );
+      break;
+    case TRMGRD3:
+      result = inRange_( p_alp, -90.0, 90.0 ) &&
+               p_gam == xcent &&
+               inRange_( xcent, -180.0, 180.0 ) &&
+               inRange_( ycent,  -90.0,  90.0 );
+      break;
+    case ALBGRD3:
+      result = inRange_( p_alp, -90.0, 90.0 ) &&
+               inRange_( p_bet,  p_alp,  p_alp > 0 ? 90.0 : 0.0 ) &&
+               p_gam == xcent &&
+               inRange_( xcent, -180.0, 180.0 ) &&
+               inRange_( ycent,  -90.0,  90.0 );
+    case LEQGRD3:
+      result = inRange_( p_alp, -90.0, 90.0 ) &&
+               p_gam == xcent &&
+               inRange_( xcent, -180.0, 180.0 ) &&
+               inRange_( ycent,  -90.0,  90.0 );
       break;
     default:
       break;

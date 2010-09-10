@@ -317,15 +317,15 @@ public class GridHorizCoordSys {
               "x coordinate of projection", "projection_x_coordinate", AxisType.GeoX);
 
         } else if (lookup.getProjectionType(gds) == GridTableLookup.Orthographic) {
-
           yData = addCoordAxis(ncfile, "y", gds.getInt(GridDefRecord.NY), starty, incry, "km",  // fake km - really pixel
               "y coordinate of projection", "projection_y_coordinate", AxisType.GeoY);     // dunno what the 3 is
           xData = addCoordAxis(ncfile, "x", gds.getInt(GridDefRecord.NX), startx, incrx, "km",
               "x coordinate of projection", "projection_x_coordinate", AxisType.GeoX);
-        } else if (lookup.getProjectionType(gds) ==   GridTableLookup.Curvilinear ) {
+
+        } else if (lookup.getProjectionType(gds) ==  GridTableLookup.Curvilinear ) {
           yData = null;
           xData = null;
-          curvilinearAxis( ncfile );
+
         } else {
           yData = addCoordAxis(ncfile, "y", gds.getInt(GridDefRecord.NY),
               starty, getDyInKm(), "km", "y coordinate of projection",
@@ -552,6 +552,7 @@ public class GridHorizCoordSys {
         break;
 
       case GridTableLookup.Curvilinear:
+        makeCurvilinearAxis( ncfile);
         break;
 
       default:
@@ -1098,6 +1099,7 @@ public class GridHorizCoordSys {
     }
   }
 
+  // LOOK
   /**
    * CurvilinearAxis
    *
@@ -1107,7 +1109,7 @@ public class GridHorizCoordSys {
    * to start with Latitude/Longitude and other coordinate of depth.
    * @param ncfile  NetcdfFile
    */
-  private void curvilinearAxis( NetcdfFile ncfile ) {
+  private void makeCurvilinearAxis( NetcdfFile ncfile ) {
 
     List<Variable> vars = ncfile.getRootGroup().getVariables();
     String latpp = null, lonpp = null, latU = null, lonU = null, latV = null, lonV = null;
@@ -1206,6 +1208,7 @@ public class GridHorizCoordSys {
     }
 
   }
+
    /**
    * Calculate the dx and dy from startx, starty and projection.
    *

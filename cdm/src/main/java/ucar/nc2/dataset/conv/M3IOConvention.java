@@ -52,7 +52,10 @@ import java.util.*;
  * <p/>
  * 6/24/09: Modified to support multiple projection types of data by Qun He <qunhe@unc.edu> and Alexis Zubrow <azubrow@unc.edu>
  * added makePolarStereographicProjection, UTM, and modified latlon
+ * <p/>
+ * 09/2010 plessel.todd@epa.gov add projections 7,8,9,10
  *
+ * @author plessel.todd@epa.gov
  * @author caron
  * @see <a href="http://www.baronams.com/products/ioapi/index.html">http://www.baronams.com/products/ioapi/index.html</a>
  */
@@ -124,6 +127,14 @@ public class M3IOConvention extends CoordSysBuilder {
         ct = makeUTMProjection(ds);
       else if (projType == 6) // Was 7. See http://www.baronams.com/products/ioapi/GRIDS.html
         ct = makePolarStereographicProjection(ds);
+      else if (projType == 7)
+        ct = makeEquitorialMercatorProjection(ds);
+      else if (projType == 8)
+        ct = makeTransverseMercatorProjection(ds);
+      else if (projType == 9)
+        ct = makeAlbersProjection(ds);
+      else if (projType == 10)
+        ct = makeLambertAzimuthalProjection(ds);
 
       if (ct != null) {
         VariableDS v = makeCoordinateTransformVariable(ds, ct);
@@ -284,6 +295,48 @@ public class M3IOConvention extends CoordSysBuilder {
     return ct;
   }
 
+  private CoordinateTransform makeEquitorialMercatorProjection(NetcdfDataset ds) {
+    double lon0 = findAttributeDouble(ds, "XCENT");
+    double par  = findAttributeDouble(ds, "P_ALP");
+
+    Mercator p = new Mercator(lon0, par);
+    CoordinateTransform ct = new ProjectionCT("EquitorialMercator", "FGDC", p);
+
+    return ct;
+  }
+
+  private CoordinateTransform makeTransverseMercatorProjection(NetcdfDataset ds) {
+    double lat0 = findAttributeDouble(ds, "P_ALP");
+    double tangentLon = findAttributeDouble(ds, "P_GAM");
+
+    TransverseMercator p = new TransverseMercator(lat0, tangentLon, 1.0);
+    CoordinateTransform ct = new ProjectionCT("TransverseMercator", "FGDC", p);
+
+    return ct;
+  }
+
+  private CoordinateTransform makeAlbersProjection(NetcdfDataset ds) {
+    double lat0 = findAttributeDouble(ds, "YCENT");
+    double lon0 = findAttributeDouble(ds, "XCENT");
+    double par1 = findAttributeDouble(ds, "P_ALP");
+    double par2 = findAttributeDouble(ds, "P_BET");
+
+    AlbersEqualArea p = new AlbersEqualArea(lat0, lon0, par1, par2);
+    CoordinateTransform ct = new ProjectionCT("Albers", "FGDC", p);
+
+    return ct;
+  }
+
+  private CoordinateTransform makeLambertAzimuthalProjection(NetcdfDataset ds) {
+    double lat0 = findAttributeDouble(ds, "YCENT");
+    double lon0 = findAttributeDouble(ds, "XCENT");
+
+    LambertAzimuthalEqualArea p =
+      new LambertAzimuthalEqualArea(lat0, lon0, 0.0, 0.0, 6370000.0);
+    CoordinateTransform ct = new ProjectionCT("LambertAzimuthal", "FGDC", p);
+
+    return ct;
+  }
 
   private CoordinateTransform makeSTProjection(NetcdfDataset ds) {
     double latt = findAttributeDouble(ds, "PROJ_ALPHA");

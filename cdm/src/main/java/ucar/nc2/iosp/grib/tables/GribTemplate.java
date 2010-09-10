@@ -49,7 +49,6 @@ import java.util.*;
  * @since Jul 31, 2010
  */
 
-
 public class GribTemplate implements Comparable<GribTemplate> {
   static Map<String, String> convertMap = new HashMap<String, String>();
   static Map<String, GribCodeTable> gribCodes;
@@ -87,9 +86,9 @@ public class GribTemplate implements Comparable<GribTemplate> {
   ///////////////////////////////////////
 
 
-  String name, desc;
-  int m1, m2;
-  List<Field> flds = new ArrayList<Field>();
+  public String name, desc;
+  public int m1, m2;
+  public List<Field> flds = new ArrayList<Field>();
 
   GribTemplate(String desc) {
     this.desc = desc;
@@ -123,9 +122,9 @@ public class GribTemplate implements Comparable<GribTemplate> {
     else return m1 - o.m1;
   }
 
-  class Field implements Comparable<Field> {
-    String octet, content;
-    int start, nbytes;
+  public class Field implements Comparable<Field> {
+    public String octet, content;
+    public int start, nbytes;
 
     Field(String octet, String content) {
       this.octet = octet;
@@ -136,8 +135,12 @@ public class GribTemplate implements Comparable<GribTemplate> {
         if (pos > 0) {
           start = Integer.parseInt(octet.substring(0, pos));
           String stops = octet.substring(pos+1);
-          int stop = Integer.parseInt(stops);
-          nbytes = stop - start + 1;
+          int stop = -1;
+          try {
+            stop = Integer.parseInt(stops);
+            nbytes = stop - start + 1;
+          } catch (Exception e) {
+          }
         } else {
           start = Integer.parseInt(octet);
           nbytes = 1;
@@ -238,10 +241,21 @@ public class GribTemplate implements Comparable<GribTemplate> {
     List<GribTemplate> tlist = new ArrayList<GribTemplate>(map.values());
     Collections.sort(tlist);
     for (GribTemplate t : tlist) {
-      t.add( 1, 4, "PDS length");
-      t.add( 5, 1, "Section");
-      t.add( 6, 2, "Number of coordinates values after Template");
-      t.add( 8, 2, "Product Definition Template Number");
+      if (t.m1 == 3) {
+        t.add( 1, 4, "GDS length");
+        t.add( 5, 1, "Section");
+        t.add( 6, 1, "Source of Grid Definition (see code table 3.0)");
+        t.add( 7, 4, "Number of data points");
+        t.add( 11, 1, "Number of octects for optional list of numbers");
+        t.add( 12, 1, "Interpretation of list of numbers");
+        t.add( 13, 2, "Grid Definition Template Number");
+
+      } else if (t.m1 == 4) {
+        t.add( 1, 4, "PDS length");
+        t.add( 5, 1, "Section");
+        t.add( 6, 2, "Number of coordinates values after Template");
+        t.add( 8, 2, "Product Definition Template Number");
+      }
       Collections.sort(t.flds);
     }
     return tlist;
@@ -249,7 +263,7 @@ public class GribTemplate implements Comparable<GribTemplate> {
 
   static String resourceName = "/resources/grib/wmo/GRIB2_5_2_0_Templates_E.xml";
 
-  static public Map<Integer, GribTemplate> getParameterTemplates() throws IOException {
+  static public Map<String, GribTemplate> getParameterTemplates() throws IOException {
     Class c = GribCodeTable.class;
     InputStream in = c.getResourceAsStream(resourceName);
     if (in == null) {
@@ -259,12 +273,25 @@ public class GribTemplate implements Comparable<GribTemplate> {
 
     List<GribTemplate> tlist = readXml(in);
 
-    Map<Integer, GribTemplate> map = new HashMap<Integer, GribTemplate>(100);
+    Map<String, GribTemplate> map = new HashMap<String, GribTemplate>(100);
     for (GribTemplate t : tlist) {
-      if (t.m1 == 4)
-        map.put(t.m2, t);
+        map.put(t.m1+"."+t.m2, t);
     }
     return map;
+  }
+
+  public static List<GribTemplate> getWmoStandard() throws IOException {
+    Class c = GribCodeTable.class;
+    InputStream in = c.getResourceAsStream(resourceName);
+    if (in == null) {
+      System.out.printf("cant open %s%n", resourceName);
+      return null;
+    }
+    try {
+      return readXml(in);
+    } finally {
+      in.close();
+    }
   }
 
 

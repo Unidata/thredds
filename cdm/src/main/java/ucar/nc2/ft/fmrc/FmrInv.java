@@ -49,7 +49,7 @@ import java.util.*;
  * @since Jan 11, 2010
  */
 public class FmrInv implements Comparable<FmrInv> {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FmrInv.class);
+  //static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FmrInv.class);
 
   private final List<TimeCoord> timeCoords = new ArrayList<TimeCoord>(); // list of unique TimeCoord
   private final List<EnsCoord> ensCoords = new ArrayList<EnsCoord>(); // list of unique EnsCoord
@@ -84,14 +84,6 @@ public class FmrInv implements Comparable<FmrInv> {
   public String getName() {
     return "";
   }
-
-  /* public TimeCoord findTimeCoord(String name) {
-    for (TimeCoord tc : timeCoords) {
-      if (tc.getName().equals(name)) return tc;
-    }
-    return null;
-  } */
-
 
   ////////////////////////////////////////////////////////////////////////////////////
 
@@ -162,7 +154,7 @@ public class FmrInv implements Comparable<FmrInv> {
     EnsCoord ensCoordUnion = null; // union of ens coords NOT USED YET
     TimeCoord timeCoordUnion = null; // union of time coords
     TimeCoord timeExpected = null; // expected time coords
-    private int countInv, countExpected;
+    //private int countInv, countExpected;
 
     GridVariable(String name) {
       this.name = name;

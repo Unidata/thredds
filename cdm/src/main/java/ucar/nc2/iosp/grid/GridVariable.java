@@ -552,7 +552,7 @@ public class GridVariable {
         if (recordTracker[recno] != null) {
           GribGridRecord ggq = (GribGridRecord) recordTracker[recno];
           if (warnOk)
-            log.warn("GridVariable " + vname + " recno = " + recno + " already has in slot = " + ggq.toString2()+" for "+filename);
+            log.warn("GridVariable " + vname + " recno = " + recno + " already has in slot = " + ggq.toString()+" for "+filename);
           sentMessage = true;
         }
       }
@@ -724,9 +724,7 @@ public class GridVariable {
 
   @Override
   public String toString() {
-    return "GridVariable{" +
-            "vname='" + vname + '\'' +
-            '}';
+    return vname == null ? name : vname;
   }
 
   /**

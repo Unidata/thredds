@@ -65,15 +65,14 @@ public class TestFmrc extends TestCase {
   private static String datadir = TestAll.cdmUnitTestDir + "fmrc/";
   private static boolean showCount = true;
 
-  // remove until GRIB stuff is fixed
   public void testCollections() throws Exception {
     try {
       FeatureCollectionConfig.setRegularizeDefault( true);
 
       // spec
       doOne(datadir + "toms/**/hiig_#yyyyMMdd#.nc", 25, 11, 13, 2, "u", 4, 25, 58);
-      doOne(datadir + "bom/**/ocean_fc_#yyyyMMdd#_..._eta.nc", 1, 1, 8, 0, "eta_t", 2, 7, 10);
-      doOne(TestAll.cdmUnitTestDir + "ncml/nc/ruc_conus40/RUC_CONUS_40km_#yyyyMMdd_HHmm#.grib1", 48, 12, 16, 6, "Pressure", 3, 9, 9);
+      doOne(datadir + "bom/**/ocean_fc_#yyyyMMdd#_..._eta.nc$", 1, 1, 8, 0, "eta_t", 2, 7, 14); // Q:/cdmUnitTest/fmrc/bom/**/ocean_fc_#yyyyMMdd#_..._eta.nc$
+      doOne(TestAll.cdmUnitTestDir + "ncml/nc/ruc_conus40/RUC_CONUS_40km_#yyyyMMdd_HHmm#.grib1", 48, 12, 16, 6, "Pressure_tropopause", 3, 9, 9);
 
       // really a joinExisting
       doOne(TestAll.cdmUnitTestDir + "ncml/agg/#yyyyMMdd_HHmm#.nc$", 10, 4, 8, 2, "Visibility", 4, 2, 8);     //*/

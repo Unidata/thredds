@@ -45,15 +45,15 @@ import java.util.*;
  */
 public class TimeCoord implements Comparable {
   static public final TimeCoord EMPTY = new TimeCoord(new Date(), new double[0]);
-  
+
   private Date runDate;
-  private List<GridDatasetInv.Grid> gridInv; // all use this coord
+  private List<GridDatasetInv.Grid> gridInv; // track the grids that use this coord
   private int id; // unique id for serialization
   private String axisName; // time coordinate axis
 
   // time at point has offsets, intervals have bounds
-  private double[] offset; // hours since runDate
   private boolean isInterval = false;
+  private double[] offset; // hours since runDate
   private double[] bound1, bound2; // hours since runDate [ntimes,2]
 
   TimeCoord(Date runDate) {
@@ -180,6 +180,18 @@ public class TimeCoord implements Comparable {
     this.isInterval = true;
   }
 
+  public void setBounds(List<TimeCoord.Tinv> tinvs) {
+    this.bound1 = new double[tinvs.size()];
+    this.bound2 = new double[tinvs.size()];
+    int count = 0;
+    for (TimeCoord.Tinv tinv : tinvs) {
+      this.bound1[count] = tinv.b1;
+      this.bound2[count] = tinv.b2;
+      count++;
+    }
+    this.isInterval = true;
+  }
+
   @Override
   public String toString() {
     DateFormatter df = new DateFormatter();
@@ -231,7 +243,7 @@ public class TimeCoord implements Comparable {
   }
 
   public int findIndex(double offsetHour) {
-    double[] off = getOffsetTimes();
+    double[] off = getOffsetTimes(); // LOOK intv
     for (int i = 0; i < off.length; i++)
       if (Misc.closeEnough(off[i], offsetHour))
         return i;
@@ -279,7 +291,7 @@ public class TimeCoord implements Comparable {
     if (timeCoords.size() == 1) return timeCoords.get(0);
 
     if (timeCoords.get(0).isInterval)
-      return makeUnionInv(timeCoords, baseDate);
+      return makeUnionIntv(timeCoords, baseDate);
     else
       return makeUnionReg(timeCoords, baseDate);
   }
@@ -290,7 +302,7 @@ public class TimeCoord implements Comparable {
     for (TimeCoord tc : timeCoords) {
       if (tc.isInterval)
         throw new IllegalArgumentException("Cant mix interval coordinates");
-      for (double off : tc.getOffsetTimes())
+      for (double off : tc.getOffsetTimes()) 
         offsets.add(off);
     }
 
@@ -310,7 +322,7 @@ public class TimeCoord implements Comparable {
     return result;
   }
 
-  static private TimeCoord makeUnionInv(List<TimeCoord> timeCoords, Date baseDate) {
+  static private TimeCoord makeUnionIntv(List<TimeCoord> timeCoords, Date baseDate) {
     // put into a set for uniqueness
     Set<Tinv> offsets = new HashSet<Tinv>();
     for (TimeCoord tc : timeCoords) {
@@ -341,10 +353,14 @@ public class TimeCoord implements Comparable {
   }
 
   // use for matching intervals
-  private static class Tinv implements Comparable<Tinv> {
-    double b1, b2;
+  public static class Tinv implements Comparable<Tinv> {
+    private double b1, b2;  // bounds
 
-    private Tinv(double b1, double b2) {
+    public Tinv(double offset) {
+      this.b2 = offset;
+    }
+
+    public Tinv(double b1, double b2) {
       this.b1 = b1;
       this.b2 = b2;
     }
@@ -361,7 +377,7 @@ public class TimeCoord implements Comparable {
     public int hashCode() {
       int result;
       long temp;
-      temp = b1 != +0.0d ? Double.doubleToLongBits(b1) : 0L;
+      temp = b1 != +0.0d ? Double.doubleToLongBits(b1) : 0L;   // Bloch item 9
       result = (int) (temp ^ (temp >>> 32));
       temp = b2 != +0.0d ? Double.doubleToLongBits(b2) : 0L;
       result = 31 * result + (int) (temp ^ (temp >>> 32));
@@ -375,7 +391,7 @@ public class TimeCoord implements Comparable {
       return c1;
     }
   }
-  
+
   /*
    * Create the union of all the values in the list of TimeCoord, converting all to a common baseDate
    * @param timeCoords list of TimeCoord
