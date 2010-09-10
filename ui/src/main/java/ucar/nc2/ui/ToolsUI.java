@@ -133,9 +133,10 @@ public class ToolsUI extends JPanel {
   private FmrcImplPanel fmrcImplPanel;
   private FmrcPanel fmrcPanel;
   private GeoGridPanel gridPanel;
-  private GribPanel gribPanel;
-  private Grib2Panel grib2Panel;
+  private GribRawPanel gribRawPanel;
+  private GribIndexPanel gribIndexPanel;
   private GribCodePanel gribCodePanel;
+  private GribTemplatePanel gribTemplatePanel;
   private Hdf5Panel hdf5Panel;
   private Hdf4Panel hdf4Panel;
   private ImagePanel imagePanel;
@@ -229,6 +230,7 @@ public class ToolsUI extends JPanel {
     iospTabPane.addTab("GRIB-RAW", new JLabel("GRIB-RAW"));
     iospTabPane.addTab("GRIB-INDEX", new JLabel("GRIB-INDEX"));
     iospTabPane.addTab("GRIB-CODES", new JLabel("GRIB-CODES"));
+    iospTabPane.addTab("GRIB-TEMPLATES", new JLabel("GRIB-TEMPLATES"));
     iospTabPane.addTab("HDF5", new JLabel("HDF5"));
     iospTabPane.addTab("HDF4", new JLabel("HDF4"));
     iospTabPane.addChangeListener(new ChangeListener() {
@@ -379,16 +381,20 @@ public class ToolsUI extends JPanel {
       c = bufrTableDPanel;
 
     } else if (title.equals("GRIB-RAW")) {
-      gribPanel = new GribPanel((PreferencesExt) mainPrefs.node("grib"));
-      c = gribPanel;
+      gribRawPanel = new GribRawPanel((PreferencesExt) mainPrefs.node("grib"));
+      c = gribRawPanel;
 
     } else if (title.equals("GRIB-INDEX")) {
-      grib2Panel = new Grib2Panel((PreferencesExt) mainPrefs.node("grib2"));
-      c = grib2Panel;
+      gribIndexPanel = new GribIndexPanel((PreferencesExt) mainPrefs.node("grib2"));
+      c = gribIndexPanel;
 
     } else if (title.equals("GRIB-CODES")) {
       gribCodePanel = new GribCodePanel((PreferencesExt) mainPrefs.node("grib-codes"));
       c = gribCodePanel;
+
+    } else if (title.equals("GRIB-TEMPLATES")) {
+      gribTemplatePanel = new GribTemplatePanel((PreferencesExt) mainPrefs.node("grib-templates"));
+      c = gribTemplatePanel;
 
     } else if (title.equals("CoordSys")) {
       coordSysPanel = new CoordSysPanel((PreferencesExt) mainPrefs.node("CoordSys"));
@@ -834,9 +840,10 @@ public class ToolsUI extends JPanel {
     if (fmrcImplPanel != null) fmrcImplPanel.save();
     if (fmrcInvPanel != null) fmrcInvPanel.save();
     if (geotiffPanel != null) geotiffPanel.save();
-    if (gribPanel != null) gribPanel.save();
-    if (grib2Panel != null) grib2Panel.save();
+    if (gribRawPanel != null) gribRawPanel.save();
+    if (gribIndexPanel != null) gribIndexPanel.save();
     if (gribCodePanel != null) gribCodePanel.save();
+    if (gribTemplatePanel != null) gribTemplatePanel.save();
     if (gridPanel != null) gridPanel.save();
     if (hdf5Panel != null) hdf5Panel.save();
     if (hdf4Panel != null) hdf4Panel.save();
@@ -2127,13 +2134,13 @@ public class ToolsUI extends JPanel {
 
   /////////////////////////////////////////////////////////////////////
   // raw grib access - dont go through the IOSP
-  private class GribPanel extends OpPanel {
+  private class GribRawPanel extends OpPanel {
     ucar.unidata.io.RandomAccessFile raf = null;
-    ucar.nc2.ui.GribPanel gribTable;
+    ucar.nc2.ui.GribRawPanel gribTable;
 
-    GribPanel(PreferencesExt p) {
+    GribRawPanel(PreferencesExt p) {
       super(p, "file:", true, false);
-      gribTable = new ucar.nc2.ui.GribPanel(prefs);
+      gribTable = new ucar.nc2.ui.GribRawPanel(prefs);
       add(gribTable, BorderLayout.CENTER);
 
       AbstractButton grib2dump = BAMutil.makeButtcon("alien", "Grib2 dump", false);
@@ -2207,14 +2214,14 @@ public class ToolsUI extends JPanel {
 
  /////////////////////////////////////////////////////////////////////
  // Indexed GRIB, using the IOSP
-  private class Grib2Panel extends OpPanel {
+  private class GribIndexPanel extends OpPanel {
     // ucar.unidata.io.RandomAccessFile raf = null;
-    ucar.nc2.ui.Grib2Panel gribTable;
+    ucar.nc2.ui.GribIndexPanel gribTable;
     //boolean useIndex = true;
 
-    Grib2Panel(PreferencesExt p) {
+    GribIndexPanel(PreferencesExt p) {
       super(p, "file:", true, false);
-      gribTable = new ucar.nc2.ui.Grib2Panel(prefs);
+      gribTable = new ucar.nc2.ui.GribIndexPanel(prefs);
       add(gribTable, BorderLayout.CENTER);
 
       AbstractAction infoAction = new AbstractAction() {
@@ -2269,8 +2276,10 @@ public class ToolsUI extends JPanel {
 
   }
 
+  /////////////////////////////////////////////////////////////////////
+
   private class GribCodePanel extends OpPanel {
-    GribTableCodes codeTable;
+    GribCodesPanel codeTable;
 
     boolean useDefinition = false;
     JComboBox defComboBox;
@@ -2281,57 +2290,13 @@ public class ToolsUI extends JPanel {
     GribCodePanel(PreferencesExt p) {
       super(p, "table:", false, false);
 
-      /* AbstractAction fileAction = new AbstractAction() {
-        public void actionPerformed(ActionEvent e) {
-          if (bufrFileChooser == null) initBufrFileChooser();
-          String filename = bufrFileChooser.chooseFilename();
-          if (filename == null) return;
-          cb.setSelectedItem(filename);
-        }
-      };
-      BAMutil.setActionProperties(fileAction, "FileChooser", "open Local table...", false, 'L', -1);
-      BAMutil.addActionToContainer(buttPanel, fileAction);
-
-      modes = new JComboBox(new String[]{"mel-bufr", "ncep", "ncep-nm", "ecmwf", "csv", "ukmet", "mel-tabs", "wmo-xml"});
-      buttPanel.add(modes);
-
-      JButton accept = new JButton("Accept");
-      buttPanel.add(accept);
-      accept.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          accept();
-        }
-      });  */
-
-      codeTable = new GribTableCodes(prefs, buttPanel);
+      codeTable = new GribCodesPanel(prefs, buttPanel);
       add(codeTable, BorderLayout.CENTER);
     }
 
     boolean process(Object command) {
       return true;
     }
-
-    /* void accept() {
-      String command = (String) cb.getSelectedItem();
-
-      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
-      try {
-        String mode = (String) modes.getSelectedItem();
-        codeTable.setGribCodes(command, mode);
-
-      } catch (FileNotFoundException ioe) {
-        JOptionPane.showMessageDialog(null, "BufrTableViewer cant open " + command + "\n" + ioe.getMessage());
-        detailTA.setText("Failed to open <" + command + ">\n" + ioe.getMessage());
-        detailTA.setVisible(true);
-
-      } catch (Exception e) {
-        e.printStackTrace();
-        e.printStackTrace(new PrintStream(bos));
-        detailTA.setText(bos.toString());
-        detailTA.setVisible(true);
-      }
-
-    }  */
 
     void save() {
       codeTable.save();
@@ -2341,6 +2306,34 @@ public class ToolsUI extends JPanel {
   }
 
   /////////////////////////////////////////////////////////////////////
+
+  private class GribTemplatePanel extends OpPanel {
+    GribTemplatesPanel codeTable;
+
+    boolean useDefinition = false;
+    JComboBox defComboBox;
+    IndependentWindow defWindow;
+    AbstractButton defButt;
+    JComboBox modes;
+
+    GribTemplatePanel(PreferencesExt p) {
+      super(p, "table:", false, false);
+
+      codeTable = new GribTemplatesPanel(prefs, buttPanel);
+      add(codeTable, BorderLayout.CENTER);
+    }
+
+    boolean process(Object command) {
+      return true;
+    }
+
+    void save() {
+      codeTable.save();
+      super.save();
+    }
+
+  }
+
 
   /////////////////////////////////////////////////////////////////////
   private class Hdf5Panel extends OpPanel {
