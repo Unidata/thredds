@@ -43,6 +43,9 @@ import ucar.grid.GridTableLookup;
 /**
  * Class contains most of the hard coded tables for Grib2. Tables extracted from PDS
  * and GDS sections.
+ * LOOK replace with reading actual WMO tables, now that they are in XML - jcaron 9/13/10
+ * NCEP specific : http://www.nco.ncep.noaa.gov/pmb/docs/on388/
+ * http://www.nco.ncep.noaa.gov/pmb/docs/on388/tableb.html
  */
 public class Grib2Tables {
 
@@ -115,7 +118,7 @@ public class Grib2Tables {
       case 120:
         return "Azimuth_Range";
 
-      case 204:
+      case 204: // LOOK NCEP specific
         return "Curvilinear_Orthogonal";
 
       case 1000:
@@ -163,7 +166,7 @@ public class Grib2Tables {
       case 90:
         return GridTableLookup.Orthographic;
 
-      case 204:
+      case 204:  // LOOK NCEP specific
         return GridTableLookup.Curvilinear;
 
       default:

@@ -4,6 +4,7 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.2:
  5: (xxxx-xx-xx)
+  GribIOSP: raf was not setting endianess
   Fmrc : integrate time intervals
   M3IO : add projection types 6,7,8,9,10 (from plessel.todd@epa.gov)
   ToolsUI: WMO grib code tables UI

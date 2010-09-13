@@ -111,6 +111,7 @@ public class GribGridServiceProvider extends GridServiceProvider {
     this.raf = raf;
     this.ncfile = ncfile;
     this.rafLength = raf.length();
+    raf.order(RandomAccessFile.BIG_ENDIAN);
 
     long start = System.currentTimeMillis();
 
@@ -118,16 +119,8 @@ public class GribGridServiceProvider extends GridServiceProvider {
     Map<String, String> attr = index.getGlobalAttributes();
     saveEdition = attr.get("grid_edition").equals("2") ? 2 : 1;
     version = Float.parseFloat(attr.get("index_version"));
+    GridTableLookup lookup = (saveEdition == 2) ? getLookup2() : getLookup1();
 
-    GridTableLookup lookup;
-    if (saveEdition == 2) {
-      lookup = getLookup2();
-    } else {
-      lookup = getLookup1();
-    }
-    // code to test fmrcCoordSys, need to make sure definition file matches data file
-    //FmrcDefinition fmrcCoordSys = new FmrcDefinition();
-    //fmrcCoordSys.readDefinitionXML("/local/robb/data/grib/SREF/NCEP-SREF-PacificNE_0p4-ensprod.fmrcDefinition.xml");
     // make it into netcdf objects
     GridIndexToNC convert = new GridIndexToNC(raf.getLocation());
     convert.open(index, lookup, saveEdition, ncfile, fmrcCoordSys, cancelTask);
@@ -135,7 +128,7 @@ public class GribGridServiceProvider extends GridServiceProvider {
 
     // may want to save index for debugging
     if (GridServiceProvider.debugOpen)
-      gridIndexSave= index;
+      gridIndexSave = index;
 
     if (debugTiming) {
       long took = System.currentTimeMillis() - start;

@@ -200,6 +200,20 @@ public class GribIndexPanel extends JPanel {
       }
     });
 
+    varPopup.addAction("Show Data", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        Formatter f = new Formatter();
+        List list = recordTable.getSelectedBeans();
+        for (int i=0; i<list.size(); i++) {
+          GribGridRecordBean bean = (GribGridRecordBean) list.get(i);
+          showData(bean, f);
+        }
+        infoPopup2.setText(f.toString());
+        infoPopup2.gotoTop();
+        infoWindow2.showIfNotIconified();
+      }
+    });
+
     gdsTable = new BeanTableSorted(GdsBean.class, (PreferencesExt) prefs.node("GdsBean"), false, "Grib2GridDefinitionSection", "unique from Grib2Records");
     gdsTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
@@ -333,6 +347,30 @@ public class GribIndexPanel extends JPanel {
     }
 
     GribRawPanel.compare(data1, data2, f);
+  }
+
+  void showData(GribGridRecordBean bean, Formatter f) {
+    RandomAccessFile raf = (RandomAccessFile) ncd.sendIospMessage(NetcdfFile.IOSP_MESSAGE_RANDOM_ACCESS_FILE);
+    if (raf == null) return;
+
+     GribGridRecord ggr = bean.ggr;
+
+    float[] data = null;
+    try {
+      if (ggr.getEdition() == 2) {
+        Grib2Data g2read = new Grib2Data(raf);
+        data =  g2read.getData(ggr.getOffset1(), ggr.getOffset2());
+      } else  {
+        Grib1Data g1read = new Grib1Data(raf);
+        data =  g1read.getData(ggr.getOffset1(), ggr.getOffset2(), ggr.getDecimalScale(), ggr.isBmsExists());
+      }
+    } catch (IOException e) {
+      f.format("IOException %s", e.getMessage());
+      return;
+    }
+
+    for (float fd : data)
+      f.format("%f%n", fd);
   }
 
   void compare(GribGridRecordBean bean1, GribGridRecordBean bean2, Formatter f) {

@@ -75,25 +75,25 @@ public class TestFmrc extends TestCase {
       doOne(TestAll.cdmUnitTestDir + "ncml/nc/ruc_conus40/RUC_CONUS_40km_#yyyyMMdd_HHmm#.grib1", 48, 12, 16, 6, "Pressure_tropopause", 3, 9, 9);
 
       // really a joinExisting
-      doOne(TestAll.cdmUnitTestDir + "ncml/agg/#yyyyMMdd_HHmm#.nc$", 10, 4, 8, 2, "Visibility", 4, 2, 8);     //*/
+      doOne(TestAll.cdmUnitTestDir + "ncml/agg/#yyyyMMdd_HHmm#.nc$", 10, 4, 8, 2, "Visibility", 4, 2, 8);
 
       // catalog
       doOne("catalog:http://motherlode.ucar.edu:8080/thredds/catalog/fmrc/NCEP/GFS/Hawaii_160km/files/catalog.xml", 15, 8, 11, 6, "Temperature", -1, 21, 111);
 
       // from an ncml aggregation
       doOne(datadir + "bom/BoM_test.ncml", 1, 3, 8, 0, "eta_t", 2, 7, 10);
-      doOne(datadir + "ncom/ncom_fmrc.ncml", 1, 1, 5, 1, "surf_el", 3, 25, 41); // */
-      doOne(datadir + "rtofs/rtofs.ncml", 9, 4, 9, 1, "N3-D_Temperature", 2, 3, 4);
+      doOne(datadir + "ncom/ncom_fmrc.ncml", 1, 1, 5, 1, "surf_el", 3, 25, 41);
+      doOne(datadir + "rtofs/rtofs.ncml", 9, 6, 10, 1, "N3-D_Temperature", 2, 3, 4);
 
-      doOne(TestAll.cdmLocalTestDataDir + "ncml/offsite/AggFmrcGribRunseq.ncml", 13,3,6,2, "Temperature", 4, 29, 35);
-      doOne(TestAll.cdmLocalTestDataDir + "ncml/offsite/AggFmrcGrib.ncml", 54, 13, 16, 12, "Temperature", 8, 29, 72);
-      doOne(TestAll.cdmLocalTestDataDir + "ncml/offsite/AggFmrcNomads.ncml", 117, 17, 19, 14, "Temperature", 1, 3, 3);
+      doOne(TestAll.cdmLocalTestDataDir + "ncml/offsite/AggFmrcGribRunseq.ncml", 13,5,7,2, "Temperature", 4, 29, 35);
+      doOne(TestAll.cdmLocalTestDataDir + "ncml/offsite/AggFmrcGrib.ncml", 54, 19, 19, 12, "Temperature", 8, 29, 72);
+      doOne(TestAll.cdmLocalTestDataDir + "ncml/offsite/AggFmrcNomads.ncml", 118, 20, 21, 14, "Temperature", 1, 3, 3);
       doOne(TestAll.cdmLocalTestDataDir + "ncml/offsite/AggFmrcNonuniform.ncml", 48, 12, 16, 6, "Temperature", 3, 11, 11);
-      doOne(TestAll.cdmLocalTestDataDir + "ncml/offsite/aggForecastModel.ncml", 41, 6, 10, 4, "u", 14, 11, 37);
+      doOne(TestAll.cdmLocalTestDataDir + "ncml/offsite/aggForecastModel.ncml", 41, 6, 10, 4, "u", 14, 11, 37);     //*/
 
       // fmrcSingle
-      doOne(TestAll.cdmLocalTestDataDir + "ncml/offsite/aggFmrcScan2.ncml", 148, 24, 27, 23, "Temperature", 2, 3,  6);
-      doOne(datadir + "nomads/nomads.ncml", 117, 17, 19, 14, "Temperature", 1, 3, 3);
+      doOne(TestAll.cdmLocalTestDataDir + "ncml/offsite/aggFmrcScan2.ncml", 158, 27, 28, 23, "Temperature", 2, 3,  6);
+      doOne(datadir + "nomads/nomads.ncml", 118, 20, 21, 14, "Temperature", 1, 3, 3);
 
       // needs ncmlInner to work
       doOne(datadir + "gomoos/fmrc.ncml", 16, -1, 7, 1, "salt", 2, 21, 29);     //*/

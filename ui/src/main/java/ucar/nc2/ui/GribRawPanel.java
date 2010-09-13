@@ -884,6 +884,7 @@ public class GribRawPanel extends JPanel {
       f.format(" Discipline = (%d) %s%n",  gr.getIs().getDiscipline(), gr.getIs().getDisciplineName());
       f.format(" Edition    = %d%n", gr.getIs().getGribEdition());
       f.format(" Length     = %d%n", gr.getIs().getGribLength());
+
       f.format("%nGrib2IdentificationSection%n");
       f.format(" Center        = (%d) %s%n", id.getCenter_id(), Grib1Tables.getCenter_idName(id.getCenter_id()));
       f.format(" SubCenter     = (%d) %n", id.getSubcenter_id());
@@ -893,9 +894,11 @@ public class GribRawPanel extends JPanel {
       f.format(" RefTime       = %s%n", id.getBaseTime());
       f.format(" ProductStatus = %s%n", id.getProductStatusName());
       f.format(" ProductType   = %s%n", id.getProductTypeName());
+
       f.format("%nGrib2GridDefinitionSection%n");
+      f.format(" Source  (3.0)      = %d%n", gds.getSource());
       f.format(" Npts               = %d%n", gds.getNumberPoints());
-      f.format(" Grid Template      = %d%n", gds.getGdtn());
+      f.format(" Template (3.1)     = %d%n", gds.getGdtn());
       showRawGds(gds, f);
 
       f.format("%nGrib2ProductDefinitionSection%n");

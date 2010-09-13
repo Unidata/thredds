@@ -105,8 +105,7 @@ public class GridHorizCoordSys {
   /**
    * flags
    */
-  private boolean isLatLon = true,
-      isGaussian = false;
+  private boolean isLatLon = true, isGaussian = false;
 
 
   /**
@@ -289,23 +288,29 @@ public class GridHorizCoordSys {
         dy = (gds.getDouble(GridDefRecord.LA2) < gds.getDouble(GridDefRecord.LA1))
             ? -gds.getDouble(GridDefRecord.DY) : gds.getDouble(GridDefRecord.DY);
       }
+
+      // lat
       if (isGaussian) {
-        addGaussianLatAxis(ncfile, "lat", "degrees_north",
-            "latitude coordinate", "latitude", AxisType.Lat);
+        addGaussianLatAxis(ncfile, "lat", "degrees_north", "latitude coordinate", "latitude", AxisType.Lat);
+
       } else {
-        addCoordAxis(ncfile, "lat", gds.getInt(GridDefRecord.NY),
-            gds.getDouble(GridDefRecord.LA1), dy, "degrees_north",
-            "latitude coordinate", "latitude", AxisType.Lat);
+        addCoordAxis(ncfile, "lat", gds.getInt(GridDefRecord.NY), gds.getDouble(GridDefRecord.LA1), dy,
+                "degrees_north", "latitude coordinate", "latitude", AxisType.Lat);
       }
-      addCoordAxis(ncfile, "lon", gds.getInt(GridDefRecord.NX),
-          gds.getDouble(GridDefRecord.LO1), gds.getDouble(GridDefRecord.DX), "degrees_east",
-          "longitude coordinate", "longitude", AxisType.Lon);
+
+      // lon
+      addCoordAxis(ncfile, "lon", gds.getInt(GridDefRecord.NX), gds.getDouble(GridDefRecord.LO1), gds.getDouble(GridDefRecord.DX),
+              "degrees_east", "longitude coordinate", "longitude", AxisType.Lon);
+
+      // add dummy variable for lat/lon coord system
       addCoordSystemVariable(ncfile, "latLonCoordSys", "time lat lon");
 
     } else {
-      if (makeProjection(ncfile)) {
+      int projType = lookup.getProjectionType(gds);
+      if (makeProjection(ncfile, projType)) {
+
         double[] yData, xData;
-        if (lookup.getProjectionType(gds) == GridTableLookup.RotatedLatLon) {
+        if (projType == GridTableLookup.RotatedLatLon) {
           double dy = (gds.getDouble("La2") < gds.getDouble(GridDefRecord.LA1)
               ? -gds.getDouble(GridDefRecord.DY) : gds.getDouble(GridDefRecord.DY));
 
@@ -316,25 +321,25 @@ public class GridHorizCoordSys {
               gds.getDouble(GridDefRecord.LO1), gds.getDouble(GridDefRecord.DX), "degrees",
               "x coordinate of projection", "projection_x_coordinate", AxisType.GeoX);
 
-        } else if (lookup.getProjectionType(gds) == GridTableLookup.Orthographic) {
+        } else if (projType == GridTableLookup.Orthographic) {
           yData = addCoordAxis(ncfile, "y", gds.getInt(GridDefRecord.NY), starty, incry, "km",  // fake km - really pixel
               "y coordinate of projection", "projection_y_coordinate", AxisType.GeoY);     // dunno what the 3 is
           xData = addCoordAxis(ncfile, "x", gds.getInt(GridDefRecord.NX), startx, incrx, "km",
               "x coordinate of projection", "projection_x_coordinate", AxisType.GeoX);
 
-        } else if (lookup.getProjectionType(gds) ==  GridTableLookup.Curvilinear ) {
+        } else if (projType ==  GridTableLookup.Curvilinear ) {
           yData = null;
           xData = null;
 
         } else {
-          yData = addCoordAxis(ncfile, "y", gds.getInt(GridDefRecord.NY),
-              starty, getDyInKm(), "km", "y coordinate of projection",
+          yData = addCoordAxis(ncfile, "y", gds.getInt(GridDefRecord.NY), starty, getDyInKm(), "km", "y coordinate of projection",
               "projection_y_coordinate", AxisType.GeoY);
-          xData = addCoordAxis(ncfile, "x", gds.getInt(GridDefRecord.NX),
-              startx, getDxInKm(), "km", "x coordinate of projection",
+          xData = addCoordAxis(ncfile, "x", gds.getInt(GridDefRecord.NX), startx, getDxInKm(), "km", "x coordinate of projection",
               "projection_x_coordinate", AxisType.GeoX);
         }
-        if (GridServiceProvider.addLatLon)
+
+        // optional 2D lat/lon
+        if (GridServiceProvider.addLatLon && (projType != GridTableLookup.Curvilinear))
           addLatLon2D(ncfile, xData, yData);
       }
     }
@@ -406,12 +411,10 @@ public class GridHorizCoordSys {
                                       String units, String desc, String standard_name, AxisType axis) {
 
     double np = gds.getDouble(GridDefRecord.NUMBERPARALLELS);
+    if (Double.isNaN(np)) np = gds.getDouble("Np");
     if (Double.isNaN(np))
-      np = gds.getDouble("Np");
-    if (Double.isNaN(np)) {
-      throw new IllegalArgumentException(
-          "Gaussian LAt/Lon grid must have NumberParallels parameter");
-    }
+      throw new IllegalArgumentException( "Gaussian Lat/Lon grid must have 'NumberParallels' or 'Np' (number of parallels) parameter");
+
     double startLat = gds.getDouble(GridDefRecord.LA1);
     double endLat = gds.getDouble(GridDefRecord.LA2);
 
@@ -467,10 +470,8 @@ public class GridHorizCoordSys {
     v = new Variable(ncfile, g, null, "gaussw");
     v.setDataType(DataType.DOUBLE);
     v.setDimensions(name);
-    v.addAttribute(new Attribute("long_name",
-        "gaussian weights (unnormalized)"));
-    dataArray = Array.factory(DataType.DOUBLE,
-        new int[]{n}, gaussw);
+    v.addAttribute(new Attribute("long_name", "gaussian weights (unnormalized)"));
+    dataArray = Array.factory(DataType.DOUBLE, new int[]{n}, gaussw);
     v.setCachedData(dataArray, false);
     ncfile.addVariable(g, v);
 
@@ -527,8 +528,8 @@ public class GridHorizCoordSys {
    * @param ncfile netCDF file
    * @return true if projection was added and coordinates need to be added, false means do nothing
    */
-  private boolean makeProjection(NetcdfFile ncfile) {
-    switch (lookup.getProjectionType(gds)) {
+  private boolean makeProjection(NetcdfFile ncfile, int projType) {
+    switch (projType) {
 
       case GridTableLookup.RotatedLatLon:
         makeRotatedLatLon(ncfile);
@@ -560,6 +561,7 @@ public class GridHorizCoordSys {
             + gds.getInt(GridDefRecord.GRID_TYPE));
     }
 
+    // dummy coordsys variable
     Variable v = new Variable(ncfile, g, null, grid_name);
     v.setDataType(DataType.CHAR);
     v.setDimensions(""); // scalar
@@ -567,14 +569,13 @@ public class GridHorizCoordSys {
     Array dataArray = Array.factory(DataType.CHAR, new int[0], data);
     v.setCachedData(dataArray, false);
 
-    for (Attribute att : attributes) {
+    for (Attribute att : attributes)
       v.addAttribute(att);
-    }
 
     // add CF Conventions attributes
     v.addAttribute(new Attribute(GridCF.EARTH_SHAPE, shape_name));
 
-    // spherical earth
+    // LOOK - spherical earth ??
     double radius_spherical_earth = gds.getDouble(GridDefRecord.RADIUS_SPHERICAL_EARTH);
     // have to check both because Grib1 and Grib2 used different names
     if (Double.isNaN(radius_spherical_earth))
@@ -1167,22 +1168,10 @@ public class GridHorizCoordSys {
       }
    }
 
-   // add coordinates to variables
+   // add coordinates attribute to variables
    for( Variable var : vars ) {
      List<Dimension> dims = var.getDimensions();
-     if( var.getName().startsWith( "Latitude") || var.getName().startsWith( "Longitude" )) {
-
-      // check for other coordinate variables
-     } else if( var.getName().startsWith( "time") || var.getName().startsWith( "depth")) {
-        // remove time dependency if it exists
-        int[] shape = var.getShape();
-        if (var.getRank() == 3 && shape[0] == 1) { // remove time dependencies - MAJOR KLUDGE
-              dims.remove(0);
-              var.setDimensions(dims);
-        }
-      } else if( var.getName().startsWith( "Curvilinear") ) {
-        // nothing at this time
-      } else if( var.getName().startsWith( "U-component") ) {
+     if( var.getName().startsWith( "U-component") ) {
         var.addAttribute(new Attribute("coordinates", latU +" "+ lonU));
         if( ! timeDimV.contains( dims.get( 0 ).getName() ))
                 timeDimV.add( dims.get( 0 ).getName() );
@@ -1198,14 +1187,15 @@ public class GridHorizCoordSys {
                 timeDimV.add( dims.get( 0 ).getName() );
      }
     }
-    // remove Latitude/Longitude time dimension and variable if possible
+
+    /* remove Latitude/Longitude time dimension and variable if possible
     for( String tdLL : timeDimLL) {
       if( timeDimV.contains( tdLL ))
         continue;
       // else only used with Lat/Lon
       ncfile.getRootGroup().removeDimension( tdLL );
       ncfile.getRootGroup().removeVariable( tdLL );
-    }
+    } */
 
   }
 
