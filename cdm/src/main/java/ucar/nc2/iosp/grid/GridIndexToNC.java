@@ -62,6 +62,7 @@ public class GridIndexToNC {
   private DateFormatter formatter = new DateFormatter();
   private boolean debug = false;
   private String filename;
+  private ucar.unidata.io.RandomAccessFile raf;
 
   /**
    * Make the level name
@@ -83,6 +84,13 @@ public class GridIndexToNC {
   public GridIndexToNC(String filename) {
     this.filename = filename;
   }
+
+  public GridIndexToNC(ucar.unidata.io.RandomAccessFile raf) {
+    this.filename = raf.getLocation();
+    this.raf = raf;
+  }
+
+
   /**
    * Fill in the netCDF file
    *
@@ -409,7 +417,7 @@ public class GridIndexToNC {
         if (plist.size() == 1) {
           GridVariable pv = plist.get(0);
           String name = pv.getFirstRecord().cdmVariableName(lookup, false, false); // plain ole name
-          Variable v = pv.makeVariable(ncfile, hcs.getGroup(), name );
+          Variable v = pv.makeVariable(ncfile, hcs.getGroup(), name, raf );
           ncfile.addVariable(hcs.getGroup(), v);
 
         } else {
@@ -437,12 +445,12 @@ public class GridIndexToNC {
             if (list.size() == 1) {
               GridVariable gv = list.get(0);
               String name = gv.getFirstRecord().cdmVariableName(lookup, !noLevelOk, false);
-              ncfile.addVariable(hcs.getGroup(), gv.makeVariable(ncfile, hcs.getGroup(), name));
+              ncfile.addVariable(hcs.getGroup(), gv.makeVariable(ncfile, hcs.getGroup(), name, raf));
 
             } else {
               for (GridVariable gv : list) { // more than one - disambiguate by stat name
                 String name = gv.getFirstRecord().cdmVariableName(lookup, !noLevelOk, true);
-                ncfile.addVariable(hcs.getGroup(), gv.makeVariable(ncfile, hcs.getGroup(), name));
+                ncfile.addVariable(hcs.getGroup(), gv.makeVariable(ncfile, hcs.getGroup(), name, raf));
               }
             }
             firstVertCoord = false;

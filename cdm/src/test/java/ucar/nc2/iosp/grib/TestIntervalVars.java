@@ -34,6 +34,7 @@ public class TestIntervalVars extends TestCase {
   public int nvars = 0;
   public int nintVars = 0;
 
+  // grib 2 only
   public void testCountIntervalVars() throws Exception {
     String dir = TestAll.testdataDir + "cdmUnitTest/tds/normal";
     //String dir = "E:/formats/grib";

@@ -122,7 +122,7 @@ public class GribGridServiceProvider extends GridServiceProvider {
     GridTableLookup lookup = (saveEdition == 2) ? getLookup2() : getLookup1();
 
     // make it into netcdf objects
-    GridIndexToNC convert = new GridIndexToNC(raf.getLocation());
+    GridIndexToNC convert = new GridIndexToNC(raf);
     convert.open(index, lookup, saveEdition, ncfile, fmrcCoordSys, cancelTask);
     ncfile.finish();
 

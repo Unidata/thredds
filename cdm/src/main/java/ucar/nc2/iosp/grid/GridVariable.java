@@ -33,6 +33,8 @@
 
 package ucar.nc2.iosp.grid;
 
+import ucar.grib.grib1.Grib1Data;
+import ucar.grib.grib2.Grib2Data;
 import ucar.grib.grib2.Grib2Pds;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
@@ -45,12 +47,14 @@ import ucar.grid.GridRecord;
 import ucar.grid.GridTableLookup;
 import ucar.grid.GridParameter;
 import ucar.grid.GridDefRecord;
+import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.StringUtil;
 import ucar.grib.grib1.Grib1GridTableLookup;
 import ucar.grib.grib2.Grib2GridTableLookup;
 import ucar.grib.grib2.Grib2Tables;
 import ucar.grib.GribGridRecord;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
@@ -391,7 +395,7 @@ public class GridVariable {
    * @param useName use this as the variable name
    * @return the netcdf variable
    */
-  Variable makeVariable(NetcdfFile ncfile, Group g, String useName) {
+  Variable makeVariable(NetcdfFile ncfile, Group g, String useName, RandomAccessFile raf) {
     assert records.size() > 0 : "no records for this variable";
 
     this.nlevels = getVertNlevels();
@@ -551,16 +555,19 @@ public class GridVariable {
 
         if (recordTracker[recno] != null) {
           GribGridRecord ggq = (GribGridRecord) recordTracker[recno];
-          if (warnOk)
-            log.warn("GridVariable " + vname + " recno = " + recno + " already has in slot = " + ggq.toString()+" for "+filename);
-          sentMessage = true;
+          if (warnOk) {
+            boolean sameData = compareData(ggq, ggp, raf);
+            if (!sameData)
+              log.warn("GridVariable " + vname + " recno = " + recno + " already has in slot = " + ggq.toString()+
+                    " sameData = "+ sameData+ " for "+filename);
+            sentMessage = true;
+          }
         }
       }
 
       if (recordTracker[recno] == null) {
         recordTracker[recno] = p;
-        if (log.isDebugEnabled()) log.debug(" " + vc.getVariableName() + " (type="
-                + p.getLevelType1() + "," + p.getLevelType2() + ")  value="
+        if (log.isDebugEnabled()) log.debug(" " + vc.getVariableName() + " (type=" + p.getLevelType1() + "," + p.getLevelType2() + ")  value="
                 + p.getLevel1() + "," + p.getLevel2());
 
       } else { // already one in that slot
@@ -576,6 +583,36 @@ public class GridVariable {
 
     return v;
   }
+
+  private boolean compareData(GribGridRecord ggr1, GribGridRecord ggr2, RandomAccessFile raf) {
+    if (raf == null) return false;
+
+    float[] data1 = null, data2 = null;
+    try {
+      if (ggr1.getEdition() == 2) {
+        Grib2Data g2read = new Grib2Data(raf);
+        data1 =  g2read.getData(ggr1.getGdsOffset(), ggr1.getPdsOffset());
+        data2 =  g2read.getData(ggr2.getGdsOffset(), ggr2.getPdsOffset());
+      } else  {
+        Grib1Data g1read = new Grib1Data(raf);
+        data1 =  g1read.getData(ggr1.getGdsOffset(), ggr1.getPdsOffset(), ggr1.getDecimalScale(), ggr1.isBmsExists());
+        data2 =  g1read.getData(ggr2.getGdsOffset(), ggr2.getPdsOffset(), ggr2.getDecimalScale(), ggr2.isBmsExists());
+      }
+    } catch (IOException e) {
+      log.error("Failed to read data", e);
+      return false;
+    }
+
+    if (data1.length != data2.length)
+      return false;
+
+    for (int i = 0; i < data1.length; i++) {
+      if (data1[i] != data2[i])
+        return false;
+    }
+    return true;
+  }
+
 
   //////////////////////////////////////
   // debugging
