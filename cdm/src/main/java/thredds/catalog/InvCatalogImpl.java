@@ -67,7 +67,7 @@ public class InvCatalogImpl extends InvCatalog {
     InvDatasetImpl dataset = (InvDatasetImpl) ds;
 
     // Make all inherited metadata local.
-    dataset.transferMetadata(dataset);
+    dataset.transferMetadata(dataset, true);
 
     topDataset = dataset;
     datasets.clear(); // throw away the rest

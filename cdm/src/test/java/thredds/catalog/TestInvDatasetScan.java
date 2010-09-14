@@ -33,6 +33,7 @@
 package thredds.catalog;
 
 import junit.framework.TestCase;
+import thredds.catalog.util.DeepCopyUtils;
 import thredds.cataloggen.TestCatalogGen;
 
 import java.io.File;
@@ -775,7 +776,7 @@ public class TestInvDatasetScan extends TestCase
    */
   public void testSubsetCatOnDs()
   {
-    String filePath = "test/data/thredds/catalog";
+    String filePath = "src/test/data/thredds/catalog";
     String inFileName = "testInvDsScan.subsetCatOnDs.input.xml";
     String resFileName = "testInvDsScan.subsetCatOnDs.result.xml";
 
@@ -784,11 +785,13 @@ public class TestInvDatasetScan extends TestCase
 
     InvCatalogFactory fac = InvCatalogFactory.getDefaultFactory( false );
     InvCatalogImpl cat = fac.readXML( inFile.toURI() );
+    StringBuilder validationLog = new StringBuilder();
+    boolean valid = cat.check( validationLog );
+    assertTrue( validationLog.toString(), valid );
 
-    InvDataset targetDs = cat.findDatasetByID( targetDatasetID );
-    cat.subset( targetDs );
+    InvCatalog subsetCat = DeepCopyUtils.subsetCatalogOnDataset( cat, targetDatasetID );
 
-    TestCatalogGen.compareCatalogToCatalogResource( cat, configResourcePath + "/" + resFileName, debugShowCatalogs );
+    TestCatalogGen.compareCatalogToCatalogResource( subsetCat, configResourcePath + "/" + resFileName, debugShowCatalogs );
   }
 
   public void testDsScanPreRefactor()

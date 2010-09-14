@@ -56,7 +56,7 @@ public class ServiceNameInheritanceTest
   {
     StringBuilder sb = new StringBuilder()
             .append( "<dataset name='ds1' ID='DS1' urlPath='dir/file1.nc' serviceName='odap' />" );
-    return CatalogXmlUtils.wrapThreddsXmlInCatalogWithCompoundService( sb.toString(), null );
+    return CatalogXmlUtils.wrapThreddsXmlInCatalogWithCompoundService( sb.toString(), null, null, null );
   }
 
   @Test
@@ -80,7 +80,7 @@ public class ServiceNameInheritanceTest
             .append( "<dataset name='ds1' ID='DS1' urlPath='dir/file1.nc'>" )
             .append( "    <serviceName>odap</serviceName>" )
             .append( "</dataset>" );
-    return CatalogXmlUtils.wrapThreddsXmlInCatalogWithCompoundService( sb.toString(), null );
+    return CatalogXmlUtils.wrapThreddsXmlInCatalogWithCompoundService( sb.toString(), null, null, null );
   }
 
   @Test
@@ -106,7 +106,7 @@ public class ServiceNameInheritanceTest
             .append( "    <serviceName>odap</serviceName>" )
             .append( "  </metadata>" )
             .append( "</dataset>" );
-    return CatalogXmlUtils.wrapThreddsXmlInCatalogWithCompoundService( sb.toString(), null );
+    return CatalogXmlUtils.wrapThreddsXmlInCatalogWithCompoundService( sb.toString(), null, null, null );
   }
 
   @Test
@@ -132,7 +132,7 @@ public class ServiceNameInheritanceTest
             .append( "    <serviceName>odap</serviceName>" )
             .append( "  </metadata>" )
             .append( "</dataset>" );
-    return CatalogXmlUtils.wrapThreddsXmlInCatalogWithCompoundService( sb.toString(), null );
+    return CatalogXmlUtils.wrapThreddsXmlInCatalogWithCompoundService( sb.toString(), null, null, null );
   }
 
   @Test
@@ -157,7 +157,7 @@ public class ServiceNameInheritanceTest
             .append( "<dataset name='ds1' ID='DS1' urlPath='dir/file1.nc' serviceName='odap'>" )
             .append( "  <dataset name='dataset 2' ID='DS2' />" )
             .append( "</dataset>" );
-    return CatalogXmlUtils.wrapThreddsXmlInCatalogWithCompoundService( sb.toString(), null );
+    return CatalogXmlUtils.wrapThreddsXmlInCatalogWithCompoundService( sb.toString(), null, null, null );
   }
 
   @Test
@@ -183,7 +183,7 @@ public class ServiceNameInheritanceTest
             .append( "    <serviceName>odap</serviceName>" )
             .append( "  <dataset name='dataset 2' ID='DS2' />" )
             .append( "</dataset>" );
-    return CatalogXmlUtils.wrapThreddsXmlInCatalogWithCompoundService( sb.toString(), null );
+    return CatalogXmlUtils.wrapThreddsXmlInCatalogWithCompoundService( sb.toString(), null, null, null );
   }
 
   @Test
@@ -211,7 +211,7 @@ public class ServiceNameInheritanceTest
             .append( "  </metadata>" )
             .append( "  <dataset name='dataset 2' ID='DS2' />" )
             .append( "</dataset>" );
-    return CatalogXmlUtils.wrapThreddsXmlInCatalogWithCompoundService( sb.toString(), null );
+    return CatalogXmlUtils.wrapThreddsXmlInCatalogWithCompoundService( sb.toString(), null, null, null );
   }
 
   @Test
@@ -239,7 +239,7 @@ public class ServiceNameInheritanceTest
             .append( "  </metadata>" )
             .append( "  <dataset name='ds2' ID='DS2' urlPath='dir/file2.nc' />" )
             .append( "</dataset>" );
-    return CatalogXmlUtils.wrapThreddsXmlInCatalogWithCompoundService( sb.toString(), null );
+    return CatalogXmlUtils.wrapThreddsXmlInCatalogWithCompoundService( sb.toString(), null, null, null );
   }
 
   @Test
@@ -267,7 +267,7 @@ public class ServiceNameInheritanceTest
             .append( "  </metadata>" )
             .append( "  <dataset name='ds2' ID='DS2' urlPath='dir/file2.nc' serviceName='wcs' />" )
             .append( "</dataset>" );
-    return CatalogXmlUtils.wrapThreddsXmlInCatalogWithCompoundService( sb.toString(), null );
+    return CatalogXmlUtils.wrapThreddsXmlInCatalogWithCompoundService( sb.toString(), null, null, null );
   }
 
   @Test
@@ -298,7 +298,7 @@ public class ServiceNameInheritanceTest
             .append( "  </dataset>" )
             .append( "</dataset>" );
 
-    return CatalogXmlUtils.wrapThreddsXmlInCatalogWithCompoundService( sb.toString(), null );
+    return CatalogXmlUtils.wrapThreddsXmlInCatalogWithCompoundService( sb.toString(), null, null, null );
   }
 
   @Test
@@ -331,7 +331,7 @@ public class ServiceNameInheritanceTest
             .append( "  </dataset>" )
             .append( "</dataset>" );
 
-    return CatalogXmlUtils.wrapThreddsXmlInCatalogWithCompoundService( sb.toString(), null );
+    return CatalogXmlUtils.wrapThreddsXmlInCatalogWithCompoundService( sb.toString(), null, null, null );
   }
 
   @Test
@@ -364,7 +364,7 @@ public class ServiceNameInheritanceTest
             .append( "  </dataset>" )
             .append( "</dataset>" );
 
-    return CatalogXmlUtils.wrapThreddsXmlInCatalogWithCompoundService( sb.toString(), null );
+    return CatalogXmlUtils.wrapThreddsXmlInCatalogWithCompoundService( sb.toString(), null, null, null );
   }
 
   @Test
@@ -388,7 +388,7 @@ public class ServiceNameInheritanceTest
             .append( "<dataset name='ds1' ID='DS1'>" )
             .append( "  <access urlPath='dir/file1.nc' serviceName='odap' />")
             .append( "</dataset>");
-    return CatalogXmlUtils.wrapThreddsXmlInCatalogWithCompoundService( sb.toString(), null );
+    return CatalogXmlUtils.wrapThreddsXmlInCatalogWithCompoundService( sb.toString(), null, null, null );
   }
 
   @Test
@@ -412,7 +412,7 @@ public class ServiceNameInheritanceTest
             .append( "<dataset name='ds1' ID='DS1' serviceName='odap'>" )
             .append( "  <access urlPath='dir/file1.nc' />")
             .append( "</dataset>");
-    return CatalogXmlUtils.wrapThreddsXmlInCatalogWithCompoundService( sb.toString(), null );
+    return CatalogXmlUtils.wrapThreddsXmlInCatalogWithCompoundService( sb.toString(), null, null, null );
   }
 
   @Test
@@ -437,7 +437,7 @@ public class ServiceNameInheritanceTest
             .append( "  <serviceName>odap</serviceName>")
             .append( "  <access urlPath='dir/file1.nc' />")
             .append( "</dataset>");
-    return CatalogXmlUtils.wrapThreddsXmlInCatalogWithCompoundService( sb.toString(), null );
+    return CatalogXmlUtils.wrapThreddsXmlInCatalogWithCompoundService( sb.toString(), null, null, null );
   }
 
   @Test
@@ -464,7 +464,7 @@ public class ServiceNameInheritanceTest
             .append( "  </metadata>" )
             .append( "  <access urlPath='dir/file1.nc' />")
             .append( "</dataset>");
-    return CatalogXmlUtils.wrapThreddsXmlInCatalogWithCompoundService( sb.toString(), null );
+    return CatalogXmlUtils.wrapThreddsXmlInCatalogWithCompoundService( sb.toString(), null, null, null );
   }
 
   @Test
@@ -491,7 +491,7 @@ public class ServiceNameInheritanceTest
             .append( "  </metadata>" )
             .append( "  <access urlPath='dir/file1.nc' />")
             .append( "</dataset>");
-    return CatalogXmlUtils.wrapThreddsXmlInCatalogWithCompoundService( sb.toString(), null );
+    return CatalogXmlUtils.wrapThreddsXmlInCatalogWithCompoundService( sb.toString(), null, null, null );
   }
 
   private static void assertDatasetOneHasOdapAccess( CatalogBuilder catBuilder ) {

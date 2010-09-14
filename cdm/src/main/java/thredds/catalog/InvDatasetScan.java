@@ -32,6 +32,7 @@
  */
 package thredds.catalog;
 
+import thredds.catalog.util.DeepCopyUtils;
 import thredds.cataloggen.*;
 import thredds.cataloggen.datasetenhancer.RegExpAndDurationTimeCoverageEnhancer;
 import thredds.cataloggen.inserter.SimpleLatestProxyDsHandler;
@@ -749,9 +750,9 @@ public class InvDatasetScan extends InvCatalogRef {
    String latestName = baseName.equals( "" ) ? "Latest" : "Latest " + baseName;
    latestDs.setName( latestName );
 
-   cat.subset( latestDs );
+   InvCatalog subsetCat = DeepCopyUtils.subsetCatalogOnDataset( cat, latestDs );
 
-   return ( cat );
+   return ( subsetCat );
  }
 
   // override some InvCatalogRef stuf

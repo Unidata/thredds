@@ -52,10 +52,10 @@ public class CatalogXmlUtils
     }
 
     public static String getCatalog( DateType expires ) {
-        return wrapThreddsXmlInCatalog( "", expires );
+        return wrapThreddsXmlInCatalog( "", null, null, expires );
     }
 
-  public static String wrapThreddsXmlInCatalog( String threddsXml, DateType expires )
+  public static String wrapThreddsXmlInCatalog( String threddsXml, String name, String version, DateType expires )
   {
     StringBuilder sb = new StringBuilder()
             .append( "<?xml version='1.0' encoding='UTF-8'?>\n" )
@@ -63,8 +63,8 @@ public class CatalogXmlUtils
             .append( "         xmlns:xlink='http://www.w3.org/1999/xlink'\n" );
     if ( expires != null )
       sb.append( "         expires='" ).append( expires.toString() ).append( "'\n" );
-    sb      .append( "         name='").append( catName).append( "'\n" )
-            .append( "         version='").append( catVersion).append( "'>\n" )
+    sb      .append( "         name='").append( name != null ? name : catName).append( "'\n" )
+            .append( "         version='").append( version != null ? version : catVersion).append( "'>\n" )
             .append(    threddsXml )
             .append( "</catalog>" );
 
@@ -92,7 +92,7 @@ public class CatalogXmlUtils
             .append( "  <service name='odap' serviceType='OPENDAP' base='/thredds/dodsC/' />\n" )
             .append(    threddsXml );
 
-    return wrapThreddsXmlInCatalog(  sb.toString(), expires );
+    return wrapThreddsXmlInCatalog(  sb.toString(), null, null, expires );
   }
 
   public static void assertCatalogWithServiceAsExpected( CatalogBuilder catBuilder, URI docBaseUri, DateType expires)
@@ -109,10 +109,10 @@ public class CatalogXmlUtils
   }
 
   public static String getCatalogWithCompoundService( DateType expires ) {
-    return wrapThreddsXmlInCatalogWithCompoundService( "", expires );
+    return wrapThreddsXmlInCatalogWithCompoundService( "", null, null, expires );
   }
 
-  public static String wrapThreddsXmlInCatalogWithCompoundService( String threddsXml, DateType expires )
+  public static String wrapThreddsXmlInCatalogWithCompoundService( String threddsXml, String catName, String catVersion, DateType expires )
   {
     StringBuilder sb = new StringBuilder()
             .append( "  <service name='all' serviceType='Compound' base=''>\n" )
@@ -122,7 +122,7 @@ public class CatalogXmlUtils
             .append( "  </service>\n" )
             .append(    threddsXml );
 
-    return wrapThreddsXmlInCatalog(  sb.toString(), expires );
+    return wrapThreddsXmlInCatalog(  sb.toString(), catName, catVersion, expires );
   }
 
   public static void assertCatalogWithCompoundServiceAsExpected( CatalogBuilder catBuilder, URI docBaseUri, DateType expires )
@@ -164,7 +164,7 @@ public class CatalogXmlUtils
             .append( "    <serviceName>odap</serviceName>\n" )
             .append( "  </dataset>\n" );
 
-    return wrapThreddsXmlInCatalogWithCompoundService( sb.toString(), null );
+    return wrapThreddsXmlInCatalogWithCompoundService( sb.toString(), null, null, null );
   }
 
   public static String getCatalogWithSingleAccessDatasetWithMetadataServiceName()
@@ -176,7 +176,7 @@ public class CatalogXmlUtils
             .append( "    </metadata>\n" )
             .append( "  </dataset>\n" );
 
-    return wrapThreddsXmlInCatalogWithCompoundService( sb.toString(), null );
+    return wrapThreddsXmlInCatalogWithCompoundService( sb.toString(), null, null, null );
   }
 
   public static String getCatalogWithSingleAccessDatasetWithInheritedMetadataServiceName()
@@ -188,14 +188,14 @@ public class CatalogXmlUtils
             .append( "    </metadata>\n" )
             .append( "  </dataset>\n" );
 
-    return wrapThreddsXmlInCatalogWithCompoundService( sb.toString(), null );
+    return wrapThreddsXmlInCatalogWithCompoundService( sb.toString(), null, null, null );
   }
 
   public static String getCatalogWithSingleAccessDatasetOldStyle()
   {
     String sb = "<dataset name='Test1' urlPath='test/test1.nc' serviceName='odap' />\n";
 
-    return wrapThreddsXmlInCatalogWithCompoundService( sb, null );
+    return wrapThreddsXmlInCatalogWithCompoundService( sb, null, null, null );
   }
 
   public static void assertCatalogHasSingleAccessDataset( CatalogBuilder catBuilder,
@@ -229,7 +229,7 @@ public class CatalogXmlUtils
             .append(      threddsXml )
             .append( "  </dataset>\n" );
 
-    return wrapThreddsXmlInCatalogWithCompoundService( sb.toString(), null );
+    return wrapThreddsXmlInCatalogWithCompoundService( sb.toString(), null, null, null );
   }
 
     public static DatasetBuilder assertCatalogWithContainerDatasetAsExpected( CatalogBuilder catBuilder,
@@ -282,7 +282,7 @@ public class CatalogXmlUtils
             .append( "    <dataset name='ds2' urlPath='test/test1.nc' />\n")
             .append( "  </dataset>\n");
 
-    return wrapThreddsXmlInCatalogWithCompoundService( sb.toString(), null );
+    return wrapThreddsXmlInCatalogWithCompoundService( sb.toString(), null, null, null );
   }
 
   public static String getNestedDatasetWithMetadataServiceName()
@@ -293,7 +293,7 @@ public class CatalogXmlUtils
             .append( "    <dataset name='ds2' urlPath='test/test1.nc' />\n")
             .append( "  </dataset>\n");
 
-    return wrapThreddsXmlInCatalogWithCompoundService( sb.toString(), null );
+    return wrapThreddsXmlInCatalogWithCompoundService( sb.toString(), null, null, null );
   }
 
   public static String getNestedDatasetWithUninheritedMetadataServiceName()
@@ -304,7 +304,7 @@ public class CatalogXmlUtils
             .append( "    <dataset name='ds2' urlPath='test/test1.nc' />\n")
             .append( "  </dataset>\n");
 
-    return wrapThreddsXmlInCatalogWithCompoundService( sb.toString(), null );
+    return wrapThreddsXmlInCatalogWithCompoundService( sb.toString(), null, null, null );
   }
 
   public static String getNestedDatasetWithInheritedMetadataServiceName()
@@ -315,7 +315,7 @@ public class CatalogXmlUtils
             .append( "    <dataset name='ds2' urlPath='test/test1.nc' />\n")
             .append( "  </dataset>\n");
 
-    return wrapThreddsXmlInCatalogWithCompoundService( sb.toString(), null );
+    return wrapThreddsXmlInCatalogWithCompoundService( sb.toString(), null, null, null );
   }
 
   public static void assertNestedDatasetIsAccessible( CatalogBuilder catBuilder,
@@ -379,7 +379,7 @@ public class CatalogXmlUtils
             .append( "    </dataset>")
             .append( "  </dataset>");
 
-    return wrapThreddsXmlInCatalogWithCompoundService( sb.toString(), null );
+    return wrapThreddsXmlInCatalogWithCompoundService( sb.toString(), null, null, null );
   }
 
 

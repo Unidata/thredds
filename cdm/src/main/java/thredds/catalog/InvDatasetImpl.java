@@ -281,13 +281,13 @@ public class InvDatasetImpl extends InvDataset {
    *
    * @param fromDs transfer from here
    */
-  public void transferMetadata(InvDatasetImpl fromDs) {
+  public void transferMetadata(InvDatasetImpl fromDs, boolean copyInheritedMetadataFromParents) {
     if (debugInherit2) System.out.println(" transferMetadata= " + fromDs.getName());
 
     if (this != fromDs)
       getLocalMetadata().add(fromDs.getLocalMetadata(), false);
 
-    transferInheritableMetadata(fromDs, getLocalMetadataInheritable());
+    transferInheritableMetadata(fromDs, getLocalMetadataInheritable(), copyInheritedMetadataFromParents);
 
     setResourceControl(fromDs.getRestrictAccess());
   }
@@ -297,7 +297,9 @@ public class InvDatasetImpl extends InvDataset {
    * @param fromDs transfer from here, plus its parents
    * @param target transfer to here
    */
-  private void transferInheritableMetadata(InvDatasetImpl fromDs, ThreddsMetadata target) {
+  private void transferInheritableMetadata(InvDatasetImpl fromDs, ThreddsMetadata target,
+                                           boolean copyInheritedMetadataFromParents)
+  {
     if (fromDs == null) return;
     if (debugInherit2) System.out.println(" transferInheritedMetadata= " + fromDs.getName());
 
@@ -320,7 +322,8 @@ public class InvDatasetImpl extends InvDataset {
     }   */
 
     // now do the same for the parents
-    transferInheritableMetadata((InvDatasetImpl) fromDs.getParent(), target);
+    if ( copyInheritedMetadataFromParents)
+      transferInheritableMetadata((InvDatasetImpl) fromDs.getParent(), target, true);
   }
 
 

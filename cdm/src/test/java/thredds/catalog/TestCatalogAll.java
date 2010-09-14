@@ -34,6 +34,7 @@ package thredds.catalog;
 
 import java.util.*;
 import junit.framework.*;
+import thredds.catalog.util.DeepCopyUtilsTest;
 import ucar.nc2.TestAll;
 
 /**
@@ -142,7 +143,8 @@ public class TestCatalogAll extends TestCase {
     suite.addTest(new TestSuite(TestTimeCoverage.class)); // */
 
     suite.addTest( new JUnit4TestAdapter( DatasetScanExpandSubdirsTest.class ));
-    
+    suite.addTest( new JUnit4TestAdapter( DeepCopyUtilsTest.class ));
+
     suite.addTestSuite( thredds.catalog.parser.jdom.TestDatasetScanFilter.class );
     suite.addTestSuite( thredds.catalog.parser.jdom.TestReadMetadata.class );
 

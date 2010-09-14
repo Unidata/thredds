@@ -305,7 +305,7 @@ public class InvDatasetFmrc extends InvCatalogRef {
       top.setParent( null);
       InvDatasetImpl parent = (InvDatasetImpl) this.getParent();
       if (parent != null)
-        top.transferMetadata( parent ); // make all inherited metadata local
+        top.transferMetadata( parent, true ); // make all inherited metadata local
 
       String id = getID();
       if (id == null)
@@ -381,7 +381,7 @@ public class InvDatasetFmrc extends InvCatalogRef {
       InvCatalogImpl runCatalog  = new InvCatalogImpl( getFullName(), parent.getVersion(), myURI);
       InvDatasetImpl top = new InvDatasetImpl(this);
       top.setParent(null);
-      top.transferMetadata( (InvDatasetImpl) this.getParent() ); // make all inherited metadata local
+      top.transferMetadata( (InvDatasetImpl) this.getParent(), true ); // make all inherited metadata local
       top.setName(TITLE_RUNS);
       runCatalog.addDataset(top);
 
@@ -409,7 +409,7 @@ public class InvDatasetFmrc extends InvCatalogRef {
       InvCatalogImpl offCatalog = new InvCatalogImpl( getFullName(), parent.getVersion(), myURI);
       InvDatasetImpl top = new InvDatasetImpl(this);
       top.setParent(null);
-      top.transferMetadata( (InvDatasetImpl) this.getParent() ); // make all inherited metadata local
+      top.transferMetadata( (InvDatasetImpl) this.getParent(), true ); // make all inherited metadata local
 
       top.setName(TITLE_OFFSET);
       offCatalog.addDataset(top);
@@ -437,7 +437,7 @@ public class InvDatasetFmrc extends InvCatalogRef {
       InvCatalogImpl foreCatalog = new InvCatalogImpl( getFullName(), parent.getVersion(), myURI);
       InvDatasetImpl top = new InvDatasetImpl(this);
       top.setParent(null);
-      top.transferMetadata( (InvDatasetImpl) this.getParent() ); // make all inherited metadata local
+      top.transferMetadata( (InvDatasetImpl) this.getParent(), true ); // make all inherited metadata local
       top.setName(TITLE_FORECAST);
       foreCatalog.addDataset(top);
 

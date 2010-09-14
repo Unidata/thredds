@@ -2,7 +2,6 @@ package thredds.catalog2;
 
 import org.junit.runners.Suite;
 import org.junit.runner.RunWith;
-import thredds.catalog2.xml.parser.stax.XMLEvent_WriteAsEncodedUnicodeMethodTest;
 
 /**
  * _more_

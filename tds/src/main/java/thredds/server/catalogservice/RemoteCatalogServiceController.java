@@ -41,6 +41,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.util.HtmlUtils;
+import thredds.catalog.util.DeepCopyUtils;
 import thredds.servlet.HtmlWriter;
 import thredds.servlet.ThreddsConfig;
 import thredds.servlet.UsageLog;
@@ -247,8 +248,8 @@ public class RemoteCatalogServiceController extends AbstractController
         }
         else
         {
-          catalog.subset( dataset ); // subset the catalog
-          return new ModelAndView( "threddsInvCatXmlView", "catalog", catalog );
+          InvCatalog subsetCat = DeepCopyUtils.subsetCatalogOnDataset( catalog, dataset );
+          return new ModelAndView( "threddsInvCatXmlView", "catalog", subsetCat );
         }
       }
       else if ( catalogServiceRequest.getCommand().equals( Command.VALIDATE ) )

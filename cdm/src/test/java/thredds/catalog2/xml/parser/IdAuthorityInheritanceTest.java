@@ -47,7 +47,7 @@ public class IdAuthorityInheritanceTest
   {
     StringBuilder sb = new StringBuilder()
             .append( "<dataset name='dataset' ID='DS1' authority='auth1' />" );
-    return CatalogXmlUtils.wrapThreddsXmlInCatalog( sb.toString(), null );
+    return CatalogXmlUtils.wrapThreddsXmlInCatalog( sb.toString(), null, null, null );
   }
 
   @Test
@@ -71,7 +71,7 @@ public class IdAuthorityInheritanceTest
             .append( "<dataset name='dataset 1' ID='DS1'>" )
             .append( "  <authority>auth1</authority>" )
             .append( "</dataset>" );
-    return CatalogXmlUtils.wrapThreddsXmlInCatalog( sb.toString(), null );
+    return CatalogXmlUtils.wrapThreddsXmlInCatalog( sb.toString(), null, null, null );
   }
 
   @Test
@@ -97,7 +97,7 @@ public class IdAuthorityInheritanceTest
             .append( "    <authority>auth1</authority>" )
             .append( "  </metadata>" )
             .append( "</dataset>" );
-    return CatalogXmlUtils.wrapThreddsXmlInCatalog( sb.toString(), null );
+    return CatalogXmlUtils.wrapThreddsXmlInCatalog( sb.toString(), null, null, null );
   }
 
   @Test
@@ -123,7 +123,7 @@ public class IdAuthorityInheritanceTest
             .append( "    <authority>auth1</authority>" )
             .append( "  </metadata>" )
             .append( "</dataset>" );
-    return CatalogXmlUtils.wrapThreddsXmlInCatalog( sb.toString(), null );
+    return CatalogXmlUtils.wrapThreddsXmlInCatalog( sb.toString(), null, null, null );
   }
 
   @Test
@@ -147,7 +147,7 @@ public class IdAuthorityInheritanceTest
             .append( "<dataset name='dataset 1' ID='DS1' authority='auth1'>" )
             .append( "  <dataset name='dataset 2' ID='DS2' />" )
             .append( "</dataset>" );
-    return CatalogXmlUtils.wrapThreddsXmlInCatalog( sb.toString(), null );
+    return CatalogXmlUtils.wrapThreddsXmlInCatalog( sb.toString(), null, null, null );
   }
 
   @Test
@@ -172,7 +172,7 @@ public class IdAuthorityInheritanceTest
             .append( "  <authority>auth1</authority>" )
             .append( "  <dataset name='dataset 2' ID='DS2' />" )
             .append( "</dataset>" );
-    return CatalogXmlUtils.wrapThreddsXmlInCatalog( sb.toString(), null );
+    return CatalogXmlUtils.wrapThreddsXmlInCatalog( sb.toString(), null, null, null );
   }
 
   @Test
@@ -199,7 +199,7 @@ public class IdAuthorityInheritanceTest
             .append( "  </metadata>" )
             .append( "  <dataset name='dataset 2' ID='DS2' />" )
             .append( "</dataset>" );
-    return CatalogXmlUtils.wrapThreddsXmlInCatalog( sb.toString(), null );
+    return CatalogXmlUtils.wrapThreddsXmlInCatalog( sb.toString(), null, null, null );
   }
 
   @Test
@@ -226,7 +226,7 @@ public class IdAuthorityInheritanceTest
             .append( "  </metadata>" )
             .append( "  <dataset name='dataset 2' ID='DS2' />" )
             .append( "</dataset>" );
-    return CatalogXmlUtils.wrapThreddsXmlInCatalog( sb.toString(), null );
+    return CatalogXmlUtils.wrapThreddsXmlInCatalog( sb.toString(), null, null, null );
   }
 
   @Test
@@ -253,7 +253,7 @@ public class IdAuthorityInheritanceTest
             .append( "  </metadata>" )
             .append( "  <dataset name='dataset 2' ID='DS2' authority='auth2' />" )
             .append( "</dataset>" );
-    return CatalogXmlUtils.wrapThreddsXmlInCatalog( sb.toString(), null );
+    return CatalogXmlUtils.wrapThreddsXmlInCatalog( sb.toString(), null, null, null );
   }
 
   @Test
@@ -283,7 +283,7 @@ public class IdAuthorityInheritanceTest
             .append( "  </dataset>" )
             .append( "</dataset>" );
 
-    return CatalogXmlUtils.wrapThreddsXmlInCatalog( sb.toString(), null );
+    return CatalogXmlUtils.wrapThreddsXmlInCatalog( sb.toString(), null, null, null );
   }
 
   @Test
@@ -315,7 +315,7 @@ public class IdAuthorityInheritanceTest
             .append( "  </dataset>" )
             .append( "</dataset>" );
 
-    return CatalogXmlUtils.wrapThreddsXmlInCatalog( sb.toString(), null );
+    return CatalogXmlUtils.wrapThreddsXmlInCatalog( sb.toString(), null, null, null );
   }
 
   @Test
@@ -347,7 +347,7 @@ public class IdAuthorityInheritanceTest
             .append( "  </dataset>" )
             .append( "</dataset>" );
 
-    return CatalogXmlUtils.wrapThreddsXmlInCatalog( sb.toString(), null );
+    return CatalogXmlUtils.wrapThreddsXmlInCatalog( sb.toString(), null, null, null );
   }
 
   private static void assertDatasetOneHasAuthorityOne( CatalogBuilder catBuilder ) {

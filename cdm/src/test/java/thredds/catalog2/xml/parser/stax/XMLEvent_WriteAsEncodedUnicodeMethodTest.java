@@ -54,7 +54,7 @@ public class XMLEvent_WriteAsEncodedUnicodeMethodTest
   public void tryWriteAsEncodedUnicode()
           throws XMLStreamException
   {
-    String xml = CatalogXmlUtils.wrapThreddsXmlInCatalog( "<serviceName>OPeNDAP</serviceName>", null );
+    String xml = CatalogXmlUtils.wrapThreddsXmlInCatalog( "<serviceName>OPeNDAP</serviceName>", null, null, null );
     String baseUriString = "http://test.metadata.parser/tmd.xml";
 
     Reader reader = new StringReader( xml );

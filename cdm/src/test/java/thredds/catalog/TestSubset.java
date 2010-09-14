@@ -33,6 +33,7 @@
 package thredds.catalog;
 
 import junit.framework.*;
+import thredds.catalog.util.DeepCopyUtils;
 import ucar.nc2.constants.FeatureType;
 
 public class TestSubset extends TestCase {
@@ -48,10 +49,11 @@ public class TestSubset extends TestCase {
     assert (ds != null) : "cant find dataset 'testSubset'";
     assert ds.getDataType() == FeatureType.GRID;
 
-    cat.subset(ds);
+    InvCatalogImpl subsetCat = (InvCatalogImpl) DeepCopyUtils.subsetCatalogOnDataset( cat, ds );
 
+    InvCatalogFactory fac = InvCatalogFactory.getDefaultFactory( true );
     try {
-      cat.writeXML(System.out);
+      fac.writeXML( subsetCat, System.out);
     } catch (java.io.IOException ioe) {
       assert false;
     }

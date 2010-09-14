@@ -41,6 +41,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletException;
 
+import thredds.catalog.util.DeepCopyUtils;
 import thredds.servlet.DataRootHandler;
 import thredds.servlet.HtmlWriter;
 import thredds.servlet.UsageLog;
@@ -241,8 +242,8 @@ public class LocalCatalogServiceController extends AbstractController
         }
         else
         {
-          catalog.subset( dataset ); // subset the catalog
-          return new ModelAndView( "threddsInvCatXmlView", "catalog", catalog );
+          InvCatalog subsetCat = DeepCopyUtils.subsetCatalogOnDataset( catalog, dataset );
+          return new ModelAndView( "threddsInvCatXmlView", "catalog", subsetCat );
         }
       }
       else

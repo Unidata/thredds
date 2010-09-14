@@ -668,7 +668,7 @@ public class CollectionLevelScanner
     // metadata container to all generated catalogs.
     InvDatasetImpl topInvDs = (InvDatasetImpl) catalog.getDataset();
 
-    topInvDs.transferMetadata( this.topLevelMetadataContainer );
+    topInvDs.transferMetadata( this.topLevelMetadataContainer, true );
 
     // LOOK experimental datasetScan may have its own access elements
     for ( Iterator it = this.topLevelMetadataContainer.getAccess().iterator(); it.hasNext(); )
