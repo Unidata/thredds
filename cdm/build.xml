@@ -292,7 +292,7 @@
 
     <jar jarfile="${build.dir}/${jarMain}" index="true">
       <fileset dir="${build.classes.dir}">
-        <exclude name="thredds/catalog2/**"/>
+        <!-- exclude name="thredds/catalog2/**"/-->
         <!-- exclude name="thredds/wcs/**"/ -->
         <!-- exclude name="ucar/unidata/geoloc/ogc/**"/ -->
       </fileset>
