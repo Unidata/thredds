@@ -35,7 +35,7 @@ public class TestIntervalVars extends TestCase {
   public int nintVars = 0;
 
   public void testCountIntervalVars() throws Exception {
-    String dir = TestAll.testdataDir + "cdmUnitTest/tds/new";
+    String dir = TestAll.testdataDir + "cdmUnitTest/tds/normal";
     //String dir = "E:/formats/grib";
     TestAll.actOnAll(dir, new TestAll.FileFilterImpl("grib2"), new TestAll.Act() {
       @Override
@@ -49,6 +49,10 @@ public class TestIntervalVars extends TestCase {
     System.out.printf("%nnfiles = %d %n", nfiles);
     System.out.printf("totvars = %d %n", nvars);
     System.out.printf("intVars = %d %n", nintVars);
+  }
+
+  public void utestOne() throws IOException {
+    checkTemplates("Q:\\cdmUnitTest\\tds\\normal\\NAM_Polar_90km_20100913_0000.grib2");
   }
 
   private int checkTemplates(String filename) throws IOException {

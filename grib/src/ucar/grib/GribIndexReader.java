@@ -208,8 +208,8 @@ public class GribIndexReader {
           calendar.setTimeInMillis(refTime);
           ggr.refTime = calendar.getTime(); // ??
           ggr.gdsKey = dis.readInt();
-          ggr.offset1 = dis.readLong();
-          ggr.offset2 = dis.readLong();
+          ggr.gdsOffset = dis.readLong();
+          ggr.pdsOffset = dis.readLong();
 
           // read PDS as raw bytes
           int pdsSize = dis.readInt();

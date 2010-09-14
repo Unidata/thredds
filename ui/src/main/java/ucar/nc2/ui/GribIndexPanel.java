@@ -290,6 +290,7 @@ public class GribIndexPanel extends JPanel {
       p.sort();
 
     GridServiceProvider.debugOpen = false;
+    System.out.printf("Products = %d GridRecords = %d%n", sortList.size(), grList.size());
 
     productTable.setBeans(products);
     recordTable.setBeans(new ArrayList());
@@ -334,12 +335,12 @@ public class GribIndexPanel extends JPanel {
     try {
       if (ggr1.getEdition() == 2) {
         Grib2Data g2read = new Grib2Data(raf);
-        data1 =  g2read.getData(ggr1.getOffset1(), ggr1.getOffset2());
-        data2 =  g2read.getData(ggr2.getOffset1(), ggr2.getOffset2());
+        data1 =  g2read.getData(ggr1.getGdsOffset(), ggr1.getPdsOffset());
+        data2 =  g2read.getData(ggr2.getGdsOffset(), ggr2.getPdsOffset());
       } else  {
         Grib1Data g1read = new Grib1Data(raf);
-        data1 =  g1read.getData(ggr1.getOffset1(), ggr1.getOffset2(), ggr1.getDecimalScale(), ggr1.isBmsExists());
-        data2 =  g1read.getData(ggr2.getOffset1(), ggr2.getOffset2(), ggr2.getDecimalScale(), ggr2.isBmsExists());
+        data1 =  g1read.getData(ggr1.getGdsOffset(), ggr1.getPdsOffset(), ggr1.getDecimalScale(), ggr1.isBmsExists());
+        data2 =  g1read.getData(ggr2.getGdsOffset(), ggr2.getPdsOffset(), ggr2.getDecimalScale(), ggr2.isBmsExists());
       }
     } catch (IOException e) {
       f.format("IOException %s", e.getMessage());
@@ -359,10 +360,10 @@ public class GribIndexPanel extends JPanel {
     try {
       if (ggr.getEdition() == 2) {
         Grib2Data g2read = new Grib2Data(raf);
-        data =  g2read.getData(ggr.getOffset1(), ggr.getOffset2());
+        data =  g2read.getData(ggr.getGdsOffset(), ggr.getPdsOffset());
       } else  {
         Grib1Data g1read = new Grib1Data(raf);
-        data =  g1read.getData(ggr.getOffset1(), ggr.getOffset2(), ggr.getDecimalScale(), ggr.isBmsExists());
+        data =  g1read.getData(ggr.getGdsOffset(), ggr.getPdsOffset(), ggr.getDecimalScale(), ggr.isBmsExists());
       }
     } catch (IOException e) {
       f.format("IOException %s", e.getMessage());
@@ -777,15 +778,23 @@ public class GribIndexPanel extends JPanel {
       return -1;
     }
 
-    public final String getProbability() {
+    public String getProbability() {
       if (pds.isProbability()) {
         return pds.getProbabilityLowerLimit()+"-"+pds.getProbabilityUpperLimit();
       }
       return "";
     }
 
-    public final int getLocalGenProc() {
+    public int getLocalGenProc() {
       return pds.getTypeGenProcess();
+    }
+
+    public long getGdsOffset() {
+      return ggr.getGdsOffset();
+    }
+
+    public long getPdsOffset() {
+      return ggr.getPdsOffset();
     }
 
   }
@@ -857,7 +866,7 @@ public class GribIndexPanel extends JPanel {
     }
 
     public String getGridName() {
-      return gds.getGridName(gds.getGdtn());
+      return Grib2Tables.codeTable3_1( gds.getGdtn());
     }
 
     public String getScanMode() {

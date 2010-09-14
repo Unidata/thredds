@@ -477,10 +477,13 @@ public class GribRawPanel extends JPanel {
 
     Grib2Input reader = new Grib2Input(raf);
     raf.seek(0);
+    raf.order(RandomAccessFile.BIG_ENDIAN);
     reader.scan(false, false);
 
     java.util.List<Grib2ParameterBean> products = new ArrayList<Grib2ParameterBean>();
     for (Grib2Record gr : reader.getRecords()) {
+      if (gr.getPdsOffset() == 4265983L)
+        System.out.println("HEY");
       Grib2ProductDefinitionSection pds = gr.getPDS();
       int discipline = gr.getIs().getDiscipline();
       Grib2ParameterBean bean = pdsSet.get(makeUniqueId(pds, discipline));
@@ -943,7 +946,7 @@ public class GribRawPanel extends JPanel {
     }
 
     public String getGridName() {
-      return gds.getGridName(gds.getGdtn());
+      return Grib2Tables.codeTable3_1( gds.getGdtn());
     }
 
     public String getScanMode() {

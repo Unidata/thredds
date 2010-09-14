@@ -138,8 +138,8 @@ public final class Grib2Input {
     long EOR = 0;
     boolean startAtHeader = true;  // otherwise skip to GDS
     boolean processGDS = true;
-    long GdsOffset = 0;     // GDS offset from start of file
-    long PdsOffset = 0;
+    long gdsOffset = 0;     // GDS offset from start of file
+    long pdsOffset = 0;
     Grib2ProductDefinitionSection pds = null;
     Grib2DataRepresentationSection drs = null;
     Grib2BitMapSection bms = null;
@@ -178,17 +178,12 @@ public final class Grib2Input {
           lus = new Grib2LocalUseSection(raf);
 
           // obtain GDS offset in the file for this record
-          GdsOffset = raf.getFilePointer();
-
-          // Section 3
+          gdsOffset = raf.getFilePointer();
           gds = new Grib2GridDefinitionSection(raf, getProductsOnly);
-          //System.out.println( "GDS length=" + gds.getLength() );
-
-        }  // end processGDS
+        }
 
         // obtain PDS offset in the file for this record
-        PdsOffset = raf.getFilePointer();
-
+        pdsOffset = raf.getFilePointer();
         pds = new Grib2ProductDefinitionSection(raf);  // Section 4
 
         drs = new Grib2DataRepresentationSection(raf);  // Section 5
@@ -212,7 +207,6 @@ public final class Grib2Input {
         ds = new Grib2DataSection(false, raf, gds, drs, bms);  //Section 7
 
       } catch (Exception e) {
-        //System.out.println( "Caught Exception scannning record" );
         e.printStackTrace();
         //startAtHeader = true;  // otherwise skip to GDS
         //processGDS    = true;
@@ -225,11 +219,11 @@ public final class Grib2Input {
 
       // assume scan ok
       if (getProductsOnly) {
-        Grib2Product gp = new Grib2Product(header, is, id, getGDSkey(gds), pds, GdsOffset, PdsOffset);
+        Grib2Product gp = new Grib2Product(header, is, id, getGDSkey(gds), pds, gdsOffset, pdsOffset);
         //getGDSkey(gds), gds.getGdsKey(), pds, GdsOffset, PdsOffset);
         products.add(gp);
       } else {
-        Grib2Record gr = new Grib2Record(header, is, id, lus.getLocalUseSection(), gds, pds, drs, GdsOffset, PdsOffset);
+        Grib2Record gr = new Grib2Record(header, is, id, lus.getLocalUseSection(), gds, pds, drs, gdsOffset, pdsOffset);
         records.add(gr);
       }
       if (oneRecord) {
@@ -318,8 +312,7 @@ public final class Grib2Input {
    * @return true or false, header found
    * @throws IOException raf read
    */
-  private boolean seekHeader(RandomAccessFile raf, long stop)
-          throws IOException {
+  private boolean seekHeader(RandomAccessFile raf, long stop) throws IOException {
     // seek header
     StringBuffer hdr = new StringBuffer();
     int match = 0;

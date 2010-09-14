@@ -42,7 +42,7 @@ package ucar.grib.grib2;
 
 /**
  * Class which represents a record in a Grib2File.
- * This is a heavy weight representation of the Grib record.
+ * This is a heavyweight representation of the Grib record.
  */
 
 public final class Grib2Record {
@@ -82,12 +82,12 @@ public final class Grib2Record {
   /**
    * GdsOffset in file.
    */
-  private long GdsOffset = -1;
+  private long gdsOffset = -1;
 
   /**
    * PdsOffset in file.
    */
-  private long PdsOffset = -1;
+  private long pdsOffset = -1;
 
   /**
    * Construction for Grib2Record.
@@ -95,6 +95,8 @@ public final class Grib2Record {
    * @param header    Grib header
    * @param is        Grib2IndicatorSection
    * @param id        Grib2IdentificationSection
+   * @param lus       raw bytes of local use section
+   * @param gds       Grib2GridDefinitionSection
    * @param pds       Grib2ProductDefinitionSection
    * @param drs       Grib2DataRepresentationSection
    * @param GdsOffset GDS offset in Grib file
@@ -116,8 +118,8 @@ public final class Grib2Record {
     this.gds = gds;
     this.pds = pds;
     this.drs = drs;
-    this.GdsOffset = GdsOffset;
-    this.PdsOffset = PdsOffset;
+    this.gdsOffset = GdsOffset;
+    this.pdsOffset = PdsOffset;
   }
 
   /**
@@ -135,7 +137,7 @@ public final class Grib2Record {
    * @return GdsOffset
    */
   public final long getGdsOffset() {
-    return GdsOffset;
+    return gdsOffset;
   }
 
   /**
@@ -144,7 +146,7 @@ public final class Grib2Record {
    * @return PdsOffset
    */
   public final long getPdsOffset() {
-    return PdsOffset;
+    return pdsOffset;
   }
 
   /**

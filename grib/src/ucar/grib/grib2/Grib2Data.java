@@ -74,24 +74,24 @@ public final class Grib2Data {
     /**
      * Reads the Grib data with a certain offsets in the file.
      *
-     * @param GdsOffset position in record where GDS starts
-     * @param PdsOffset position in record where PDS starts
+     * @param gdsOffset position in record where GDS starts
+     * @param pdsOffset position in record where PDS starts
      * @throws IOException  if raf does not contain a valid GRIB record.
      * @return float[] the data
      */
-    public final float[] getData(long GdsOffset, long PdsOffset) throws IOException {
+    public final float[] getData(long gdsOffset, long pdsOffset) throws IOException {
         //long start = System.currentTimeMillis();
 
         /*
          *  Expand Quasi-Regular grids
         */
         boolean expandQuasi = true;
-        raf.seek(GdsOffset);
+        raf.seek(gdsOffset);
 
         // Need section 3, 4, 5, 6, and 7 to read/interpet the data
         Grib2GridDefinitionSection gds = new Grib2GridDefinitionSection(raf, false);  // Section 3 no checksum
 
-        raf.seek(PdsOffset);  // could have more than one pds for a gds
+        raf.seek(pdsOffset);  // could have more than one pds for a gds
         Grib2ProductDefinitionSection pds = new Grib2ProductDefinitionSection(raf);  // Section 4
 
         Grib2DataRepresentationSection drs = new Grib2DataRepresentationSection(raf);  // Section 5
@@ -99,7 +99,7 @@ public final class Grib2Data {
         Grib2BitMapSection bms = new Grib2BitMapSection(true, raf, gds);  // Section 6
         if( bms.getBitmapIndicator() == 254 ) { //previously defined in the same GRIB2 record
             long offset = raf.getFilePointer();
-            raf.seek(GdsOffset);                // go get it
+            raf.seek(gdsOffset);                // go get it
             //Grib2GridDefinitionSection savegds = gds;
             gds = new Grib2GridDefinitionSection(raf, false);
             Grib2ProductDefinitionSection savepds =  pds;

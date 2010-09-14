@@ -55,22 +55,14 @@ public final class GribGridRecord implements GridRecord {
   //// from  indicator section
 
   int edition; // grib 1 or 2
-
   int discipline;  // grib 2 only  ?
 
   //// from  identification section
 
-  /**
-   * reference Time as Date
-   */
   Date refTime;
-
-  /**
-   * center  subCenter  table of record.
-   */
   int center = -1, subCenter = -1, table = -1;
 
-  //// these are all from the PDS
+  //// these are from the PDS
   private GribPds pds;
 
    ///////////////////////
@@ -86,14 +78,14 @@ public final class GribGridRecord implements GridRecord {
   int gdsKey;
 
   /**
-   * offset1 of record.
+   * offset of GDS .
    */
-  long offset1;
+  long gdsOffset;
 
   /**
-   * offset2 of record.
+   * offset of PDS.
    */
-  long offset2;
+  long pdsOffset;
 
   private String paramDesc;
 
@@ -131,12 +123,12 @@ public final class GribGridRecord implements GridRecord {
     return table;
   }
 
-  public long getOffset1() {
-    return offset1;
+  public long getGdsOffset() {
+    return gdsOffset;
   }
 
-  public long getOffset2() {
-    return offset2;
+  public long getPdsOffset() {
+    return pdsOffset;
   }
 
   public int getGdsKey() {
@@ -322,6 +314,7 @@ public final class GribGridRecord implements GridRecord {
         Grib2Pds pds2 = (Grib2Pds) pds;
         int productTemplate = pds2.getProductDefinitionTemplate();
 
+        result += result * 37 + discipline;
         result += result * 37 + getLevelType1();
         result += result * 37 + pds2.getParameterCategory();
         result += result * 37 + productTemplate;
@@ -527,8 +520,8 @@ public final class GribGridRecord implements GridRecord {
             ", table=" + table +
             ", bmsExists=" + bmsExists +
             ", gdsKey=" + gdsKey +
-            ", offset1=" + offset1 +
-            ", offset2=" + offset2 +
+            ", offset1=" + gdsOffset +
+            ", offset2=" + pdsOffset +
             ", paramDesc='" + getParameterDescription() + '\'' +
             ", pds=" + pds +
             '}';

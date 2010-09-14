@@ -32,10 +32,7 @@
  */
 
 // $Id: Grib2GridDefinitionSection.java,v 1.27 2005/12/12 18:22:40 rkambic Exp $
-
-
 package ucar.grib.grib2;
-
 
 import ucar.grib.GribNumbers;
 
@@ -53,7 +50,6 @@ import java.io.IOException;
  * A class that represents the grid definition section (GDS) of a GRIB product.
  * This is section 3 of a Grib record that contains coordinate information.
  */
-
 public final class Grib2GridDefinitionSection {
 
   /**
@@ -116,7 +112,7 @@ public final class Grib2GridDefinitionSection {
   /**
    * Grid name.
    */
-  private final String name;
+  // private final String name;
 
   /**
    * grid definitions from template 3.
@@ -413,7 +409,6 @@ public final class Grib2GridDefinitionSection {
 
     // octets 1-4 (Length of GDS)
     length = GribNumbers.int4(raf);
-    //System.out.println( "GDS length=" + length );
 
     // read in whole GDS as byte[]
     byte[] gdsData = new byte[length];
@@ -427,31 +422,23 @@ public final class Grib2GridDefinitionSection {
 
     // octet 5
     section = raf.read();  // This is section 3
-    //System.out.println( "GDS is 3, section=" + section );
 
     // octet 6
     source = raf.read();
-    //System.out.println( "GDS source=" + source );
 
     // octets 7-10
     numberPoints = GribNumbers.int4(raf);
-    //System.out.println( "GDS numberPoints=" + numberPoints );
     checkSum = numberPoints;
 
     // octet 11
     olon = raf.read();
-    //System.out.println( "GDS olon=" + olon );
 
     // octet 12
     iolon = raf.read();
-    //System.out.println( "GDS iolon=" + iolon );
 
     // octets 13-14
     gdtn = GribNumbers.int2(raf);
-    //System.out.println( "GDS gdtn=" + gdtn );
     checkSum = 7 * checkSum + gdtn;
-
-    name = getGridName(gdtn);
 
     float ratio;
 
@@ -462,7 +449,6 @@ public final class Grib2GridDefinitionSection {
       case 2:
       case 3:       // Latitude/Longitude Grid
         shape = raf.read();
-        //System.out.println( "shape=" + shape );
         scalefactorradius = raf.read();
         scaledvalueradius = GribNumbers.int4(raf);
         scalefactormajor = raf.read();
@@ -470,9 +456,7 @@ public final class Grib2GridDefinitionSection {
         scalefactorminor = raf.read();
         scaledvalueminor = GribNumbers.int4(raf);
         nx = GribNumbers.int4(raf);
-        //System.out.println( "nx=" + nx);
         ny = GribNumbers.int4(raf);
-        //System.out.println( "ny=" + ny);
         angle = GribNumbers.int4(raf);
         subdivisionsangle = GribNumbers.int4(raf);
         if (angle == 0) {
@@ -480,7 +464,6 @@ public final class Grib2GridDefinitionSection {
         } else {
           ratio = angle / subdivisionsangle;
         }
-        //System.out.println( "ratio =" + ratio );
         la1 = (float) (GribNumbers.int4(raf) * ratio);
         checkSum = 7 * checkSum + la1;
         lo1 = (float) (GribNumbers.int4(raf) * ratio);
@@ -1055,85 +1038,7 @@ public final class Grib2GridDefinitionSection {
   }  // end of Grib2GridDefinitionSection
 
   /**
-   * .
-   * @deprecated
-   * @param gdtn Grid definition template number same as type of grid
-   * @return GridName as a String
-   */
-  public static String getGridName(int gdtn) {
-    switch (gdtn) {  // code table 3.2
-
-      case 0:
-        return "Latitude/Longitude";
-
-      case 1:
-        return "Rotated Latitude/Longitude";
-
-      case 2:
-        return "Stretched Latitude/Longitude";
-
-      case 3:
-        return "iStretched and Rotated Latitude/Longitude";
-
-      case 10:
-        return "Mercator";
-
-      case 20:
-        return "Polar stereographic";
-
-      case 30:
-        return "Lambert Conformal";
-
-      case 31:
-        return "Albers Equal Area";
-
-      case 40:
-        return "Gaussian latitude/longitude";
-
-      case 41:
-        return "Rotated Gaussian Latitude/longitude";
-
-      case 42:
-        return "Stretched Gaussian Latitude/longitude";
-
-      case 43:
-        return "Stretched and Rotated Gaussian Latitude/longitude";
-
-      case 50:
-        return "Spherical harmonic coefficients";
-
-      case 51:
-        return "Rotated Spherical harmonic coefficients";
-
-      case 52:
-        return "Stretched Spherical harmonic coefficients";
-
-      case 53:
-        return "Stretched and Rotated Spherical harmonic coefficients";
-
-      case 90:
-        return "Space View Perspective or Orthographic";
-
-      case 100:
-        return "Triangular Grid Based on an Icosahedron";
-
-      case 110:
-        return "Equatorial Azimuthal Equidistant";
-
-      case 120:
-        return "Azimuth-Range";
-
-      case 204:
-        return "Curvilinear Orthogonal Grid";
-
-      default:
-        return "Unknown projection" + gdtn;
-    }
-  }                    // end getGridName
-
-  /**
    * source of grid definition.
-   * @deprecated
    * @return source
    */
   public final int getSource() {
@@ -1187,7 +1092,6 @@ public final class Grib2GridDefinitionSection {
 
   /**
    * Grid Definition Template Number .
-   * @deprecated
    * @return gdtn
    */
   public final int getGdtn() {
@@ -1198,10 +1102,11 @@ public final class Grib2GridDefinitionSection {
    * Grid name .
    * @deprecated
    * @return gridName
-   */
+   * use  Grib2Tables.codeTable3_1( gds.getGdtn());
+   *
   public final String getName() {
     return name;
-  }
+  }  */
 
   /**
    * .
@@ -1737,7 +1642,7 @@ public final class Grib2GridDefinitionSection {
             "\n   olonPts=" + olonPts +
             "\n   maxPts=" + maxPts +
             "\n   gdtn=" + gdtn +
-            "\n   name='" + name + '\'' +
+            "\n   name='" + Grib2Tables.codeTable3_1(gdtn) + '\'' +
             "\n   shape=" + shape +
             "\n   earthRadius=" + earthRadius +
             "\n   majorAxis=" + majorAxis +

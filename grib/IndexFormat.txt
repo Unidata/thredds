@@ -8,9 +8,6 @@ the file, metadata for the parameters including data offsets, and the grid infor
 
 2. Binary Index(gbx8) Structure
 
-The original version of the indexes where text format but slow write/read performance and
-static structure caused the conversion to a binary format.
-
 The gbx8 structure has three sections:
  - global attributes for the file
  - the definition of the parameter from the Production Definition Section(PDS), time information,
