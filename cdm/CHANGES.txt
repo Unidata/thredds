@@ -4,6 +4,8 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.2:
  5: (xxxx-xx-xx)
+  FeatureCollectionConfig.ProtoChoice : add Run, with param = run hour
+  Calendar.HOUR should be Calendar.HOUR_OF_DAY everywhere
   GribIOSP: raf was not setting endianess
   Fmrc : integrate time intervals
   M3IO : add projection types 6,7,8,9,10 (from plessel.todd@epa.gov)

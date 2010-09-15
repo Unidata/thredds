@@ -486,7 +486,7 @@ public class Fmrc2Panel extends JPanel {
     for (FmrInv.GridVariable run : ugrid.getRuns()) {
       for (GridDatasetInv.Grid inv : run.getInventory()) {
         out.format(" %s ", df.toDateTimeString(run.getRunDate()));
-        count += showCountInventory(inv,union, w2, out);
+        count += showCountInventory(inv, union, w2, out);
         out.format(" %s%n", inv.getLocation());
       }
     }

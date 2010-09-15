@@ -360,7 +360,7 @@ public final class GribGridRecord implements GridRecord {
       if (levelName.length() != 0) {
         if (lookup.isLayer(this))
           f.format("_%s_layer", levelName);
-       else
+       else  
           f.format("_%s", levelName);
       }
     }

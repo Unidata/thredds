@@ -230,6 +230,21 @@ class FmrcDataset {
       case Latest:
         protoIdx = Math.max(list.size() - 1, 0);
         break;
+
+      case Run:
+        int runOffset = 0;
+        if (protoConfig.param != null)
+          runOffset = Integer.parseInt(protoConfig.param);
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeZone(TimeZone.getTimeZone("GMT"));
+        for (int i=0; i<list.size(); i++) {
+          FmrInv fmr = list.get(i);
+          cal.setTime( fmr.getRunDate());
+          int hour = cal.get(Calendar.HOUR_OF_DAY);
+          if (hour == runOffset)
+            protoIdx = i; // later ones override
+        }
+        break;
     }
     FmrInv proto = list.get(protoIdx); // use this one
 

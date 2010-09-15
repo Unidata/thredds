@@ -463,22 +463,31 @@ public class GridVariable {
     if (lookup instanceof Grib2GridTableLookup) {
       Grib2GridTableLookup g2lookup = (Grib2GridTableLookup) lookup;
       GribGridRecord ggr = (GribGridRecord) firstRecord;
-      Grib2Pds pds = (Grib2Pds) ggr.getPds();
+      Grib2Pds pds2 = (Grib2Pds) ggr.getPds();
 
       int[] paramId = g2lookup.getParameterId(firstRecord);
       v.addAttribute(new Attribute("GRIB_param_discipline", lookup.getDisciplineName(firstRecord)));
       v.addAttribute(new Attribute("GRIB_param_category", lookup.getCategoryName(firstRecord)));
       v.addAttribute(new Attribute("GRIB_param_name", param.getName()));
       v.addAttribute(new Attribute("GRIB_param_id", Array.factory(int.class, new int[]{paramId.length}, paramId)));
-      v.addAttribute(new Attribute("GRIB_product_definition_type", g2lookup.getProductDefinitionName(firstRecord)));
-      v.addAttribute(new Attribute("GRIB_product_definition_template", g2lookup.getProductDefinition(firstRecord)));
-      v.addAttribute(new Attribute("GRIB_level_type", new Integer(firstRecord.getLevelType1())));
-      //if (pds.isEnsemble())
-      //  v.addAttribute(new Attribute("GRIB_forecasts_in_ensemble", pds.getNumberForecasts())); // g2lookup.NumberOfForecastsInEnsemble(firstRecord)));
-      //if (pds.isProbability())
-      //  v.addAttribute(new Attribute("GRIB_forecasts_in_probability", pds.getNumberOfForecastsInProbability()));
-      //if( firstRecord.getLevelType2() != 255)
-      //   v.addAttribute( new Attribute("GRIB2_level_type2", new Integer(firstRecord.getLevelType2())));
+      v.addAttribute(new Attribute("GRIB_product_definition_template", pds2.getProductDefinitionTemplate()));
+      v.addAttribute(new Attribute("GRIB_product_definition_template_desc", Grib2Tables.codeTable4_0( pds2.getProductDefinitionTemplate())));
+      v.addAttribute(new Attribute("GRIB_level_type", new Integer(pds2.getLevelType1())));
+      v.addAttribute(new Attribute("GRIB_level_type_name", lookup.getLevelName(firstRecord)));
+      if (pds2.isInterval())
+        v.addAttribute(new Attribute("GRIB_interval_stat_type", ggr.getIntervalTypeName() ));
+      if (pds2.isEnsembleDerived()) {
+        Grib2Pds.PdsEnsembleDerived pdsDerived = (Grib2Pds.PdsEnsembleDerived) pds2;
+        v.addAttribute(new Attribute("GRIB_ensemble_derived_type", new Integer(pdsDerived.getDerivedForecastType()) ));
+      }
+      if (pds2.isEnsemble())
+        v.addAttribute(new Attribute("GRIB_ensemble", "true"));
+      if (pds2.isProbability()) {
+        Grib2Pds.PdsProbability pdsProb = (Grib2Pds.PdsProbability) pds2;
+        v.addAttribute(new Attribute("GRIB_probability_type", new Integer(pdsProb.getProbabilityType()) ));
+        v.addAttribute(new Attribute("GRIB_probability_lower_limit", new Double(pdsProb.getProbabilityLowerLimit()) ));
+        v.addAttribute(new Attribute("GRIB_probability_upper_limit", new Double(pdsProb.getProbabilityUpperLimit()) ));
+      }
       v.addAttribute(new Attribute("GRIB_" + GridDefRecord.VECTOR_COMPONENT_FLAG, flag));
 
     } else if (lookup instanceof Grib1GridTableLookup) {
@@ -607,7 +616,7 @@ public class GridVariable {
       return false;
 
     for (int i = 0; i < data1.length; i++) {
-      if (data1[i] != data2[i])
+      if (data1[i] != data2[i] && !Double.isNaN(data1[i]) && !Double.isNaN(data2[i]))
         return false;
     }
     return true;

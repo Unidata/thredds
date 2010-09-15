@@ -270,7 +270,7 @@ public class DMSPiosp extends AbstractIOServiceProvider {
           secOfMinute = secOfHour % 60.0;
           secs = Math.floor( secOfMinute);
           millis = Math.floor(( secOfMinute - secs) * 1000.0);
-          calendar.add( Calendar.HOUR, (int) hours);
+          calendar.add( Calendar.HOUR_OF_DAY, (int) hours);
           calendar.add( Calendar.MINUTE, (int) mins);
           calendar.add( Calendar.SECOND, (int) secs);
           calendar.add( Calendar.MILLISECOND, (int) millis );

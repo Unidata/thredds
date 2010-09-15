@@ -45,6 +45,7 @@ import ucar.grib.GribPds;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Formatter;
 
 @Immutable
 public class Grib2Pds extends GribPds {
@@ -107,10 +108,10 @@ public class Grib2Pds extends GribPds {
         type = Calendar.MINUTE;
         break;
       case 1:
-        type = Calendar.HOUR;
+        type = Calendar.HOUR_OF_DAY;
         break;
       case 2:
-        type = Calendar.HOUR;
+        type = Calendar.HOUR_OF_DAY;
         factor = 24;
         break;
       case 3:
@@ -132,19 +133,19 @@ public class Grib2Pds extends GribPds {
         factor = 100;
         break;
       case 10:
-        type = Calendar.HOUR;
+        type = Calendar.HOUR_OF_DAY;
         factor = 3;
         break;
       case 11:
-        type = Calendar.HOUR;
+        type = Calendar.HOUR_OF_DAY;
         factor = 6;
         break;
       case 12:
-        type = Calendar.HOUR;
+        type = Calendar.HOUR_OF_DAY;
         factor = 12;
         break;
       case MISSING: // if there is no time unit / valid time, assume valid time == ref time
-        type = Calendar.HOUR;
+        type = Calendar.HOUR_OF_DAY;
         factor = 0;
         break;
       default:
@@ -292,7 +293,7 @@ public class Grib2Pds extends GribPds {
    * Time Interval for accumulation type variables.
    * Forecast Time is always at the end.
    *
-   * @return TimeInterval int[2] = start, end of interval  in units of getTimeUnit()
+   * @return TimeInterval int[2] = start, end of interval in units of getTimeUnit()
    */
   public int[] getForecastTimeInterval() {
     if (!isInterval()) return null;
@@ -306,6 +307,10 @@ public class Grib2Pds extends GribPds {
         log.warn("TimeInterval has different units timeUnit= " + timeUnit + " TimeInterval=" + ti);
       }
 
+      incr += ti.timeRangeLength;
+      if (ti.timeIncrementUnit != 255) incr += ti.timeIncrement;
+
+      /*
       // rather mysterious
       switch (ti.timeIncrementType) { // code table 4.11
         case 1:
@@ -320,7 +325,7 @@ public class Grib2Pds extends GribPds {
           break;
         default:
           log.warn("Unknown timeIncrementType= " + ti.timeIncrementType+" for "+getProductDefinitionTemplate()+"/"+getParameterCategory()+"/"+getParameterNumber());
-      }
+      } */
 
     }
 
@@ -331,6 +336,7 @@ public class Grib2Pds extends GribPds {
     return result;
   }
 
+  // forecast time for points, beginning of interval for intervals
   protected int _getForecastTime() {
     return GribNumbers.int4(getOctet(19), getOctet(20), getOctet(21), getOctet(22));
   }
@@ -378,6 +384,10 @@ public class Grib2Pds extends GribPds {
   @Override
   public int getProbabilityType() {
     return MISSING;
+  }
+
+  public void show(Formatter f) {
+    f.format("Grib2Pds{ template=%d, validTime=%s }", template,  getForecastDate());
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////
@@ -732,6 +742,10 @@ public class Grib2Pds extends GribPds {
           return GribNumbers.UNDEFINED;
 
       }
+    }
+
+    public void show(Formatter f) {
+      super.show(f);
     }
 
   }
@@ -1096,6 +1110,14 @@ public class Grib2Pds extends GribPds {
       return 46 + getNumberTimeRanges() * 12;
     }
 
+    public void show(Formatter f) {
+      super.show(f);
+      f.format("%n   endInterval=%s%n", new Date(endInterval));
+      for (TimeInterval ti : getTimeIntervals()) {
+        ti.show(f);
+      }
+    }
+
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////
@@ -1211,16 +1233,9 @@ public class Grib2Pds extends GribPds {
     public int timeIncrementUnit; // (code table 4.4) Indicator of unit of time for the increment between the successive fields used
     public int timeIncrement; // Time increment between successive fields, in units defined by the previous octet
 
-    @Override
-    public String toString() {
-      return "TimeInterval{" +
-              "statProcessType=" + statProcessType +
-              ", timeIncrementType=" + timeIncrementType +
-              ", timeRangeUnit=" + timeRangeUnit +
-              ", timeRangeLength=" + timeRangeLength +
-              ", timeIncrementUnit=" + timeIncrementUnit +
-              ", timeIncrement=" + timeIncrement +
-              '}';
+    public void show(Formatter f) {
+      f.format( "TimeInterval: statProcessType= %d, timeIncrementType= %d, timeRangeUnit= %d, timeRangeLength= %d, timeIncrementUnit= %d, timeIncrement=%d%n",
+              statProcessType, timeIncrementType, timeRangeUnit, timeRangeLength, timeIncrementUnit, timeIncrement);
     }
   }
 

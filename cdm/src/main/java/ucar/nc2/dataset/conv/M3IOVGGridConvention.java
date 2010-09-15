@@ -363,7 +363,7 @@ public class M3IOVGGridConvention extends CoordSysBuilder {
     cal.clear();
     cal.set( Calendar.YEAR, yyyy );
     cal.set( Calendar.DAY_OF_YEAR, ddd );
-    cal.set( Calendar.HOUR, hh );
+    cal.set( Calendar.HOUR_OF_DAY, hh );
     cal.set( Calendar.MINUTE, mm );
     cal.set( Calendar.SECOND, ss );
     java.text.SimpleDateFormat dateFormatOut =

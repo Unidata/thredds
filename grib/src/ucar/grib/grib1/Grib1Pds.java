@@ -113,16 +113,16 @@ public final class Grib1Pds extends GribPds {
     int factor = 1;
     switch (getTimeUnit()) {
       case 0: type = Calendar.MINUTE; break;
-      case 1: type = Calendar.HOUR; break;
-      case 2: type = Calendar.HOUR; factor = 24; break;
+      case 1: type = Calendar.HOUR_OF_DAY; break;
+      case 2: type = Calendar.HOUR_OF_DAY; factor = 24; break;
       case 3: type = Calendar.MONTH; break;
       case 4: type = Calendar.YEAR; break;
       case 5: type = Calendar.YEAR; factor = 10; break;
       case 6: type = Calendar.YEAR; factor = 30; break;
       case 7: type = Calendar.YEAR; factor = 100; break;
-      case 10: type = Calendar.HOUR; factor = 3; break;
-      case 11: type = Calendar.HOUR; factor = 6; break;
-      case 12: type = Calendar.HOUR; factor = 12; break;
+      case 10: type = Calendar.HOUR_OF_DAY; factor = 3; break;
+      case 11: type = Calendar.HOUR_OF_DAY; factor = 6; break;
+      case 12: type = Calendar.HOUR_OF_DAY; factor = 12; break;
       default: throw new IllegalArgumentException("Unknown timeUnit= "+ getTimeUnit());
     }
     cal.add(type, factor * getForecastTime());

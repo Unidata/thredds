@@ -7,7 +7,6 @@
 pre {font-size: 9pt; padding: 10px; background-color: #E7E7E7; border: 1px solid #CFCFCF; width: 85%;}
 code {font-size: 11pt;}
 dl {margin: 10px 5px 5px 15px;}
-.style1 {font-style: italic}
 </style>
 </head>
 
@@ -72,10 +71,11 @@ dl {margin: 10px 5px 5px 15px;}
 </blockquote>
 <h3>protoDataset element</h3>
 <p>Provides control over the choice of the prototype dataset for the collection.</p>
-<pre>&lt;protoDataset <strong>choice</strong>=&quot;First | Random | Penultimate | Latest&quot; <strong>change</strong>=&quot;expr&quot; /&gt;</pre>
+<pre>&lt;protoDataset <strong>choice</strong>=&quot;First | Random | Penultimate | Latest | Run&quot; param=&quot;0&quot; <strong>change</strong>=&quot;expr&quot; /&gt;</pre>
 <blockquote>
   <ol>
-    <li><strong>choice</strong>= &quot;First | Random | Penultimate | Latest&quot; : select prototype from a time ordered list, using the first, a randomly selected one, the next to last, or the last dataset in the list. default is &quot;Penultimate&quot;.</li>
+    <li><strong>choice</strong>= &quot;First | Random | Penultimate | Latest | Run&quot; : select prototype from a time ordered list, using the first, a randomly selected one, the next to last, or the last dataset in the list. default is &quot;Penultimate&quot;.</li>
+    <li><strong>param</strong>= used only with choice=&quot;Run&quot;. Names the run to use,  in hours since 0Z. For example,  choice=&quot;Run&quot; param=&quot;0&quot; means to use the latest 0Z dataset run.</li>
     <li> <strong>change</strong>= &quot;cron expr&quot; (optional). This specifies when the protoDataset should be reselected, using a <a href="http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html">cron expression</a>. </li>
     <ul>
       <li><em>change = &quot;0 2 3 * * ? *&quot;</em> means every day at 3.02 am.</li>

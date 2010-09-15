@@ -46,7 +46,7 @@ import java.util.*;
 public class FeatureCollectionConfig {
 
   static public enum ProtoChoice {
-    First, Random, Latest, Penultimate
+    First, Random, Latest, Penultimate, Run
   }
 
   static public enum FmrcDatasetType {
@@ -121,7 +121,8 @@ public class FeatureCollectionConfig {
   }
 
   static public class ProtoConfig {
-    public ProtoChoice choice = ProtoChoice.Penultimate;
+    public ProtoChoice choice = ProtoChoice.Run;
+    public String param = null;
     public String change = null;
     public Element ncml = null;
     public boolean cacheAll = true;
@@ -129,7 +130,7 @@ public class FeatureCollectionConfig {
     public ProtoConfig() { // defaults
     }
 
-    public ProtoConfig(String choice, String change, Element ncml) {
+    public ProtoConfig(String choice, String change, String param, Element ncml) {
       if (choice != null) {
         try {
           this.choice = ProtoChoice.valueOf(choice);
@@ -139,6 +140,7 @@ public class FeatureCollectionConfig {
       }
 
       this.change = change;
+      this.param = param;
       this.ncml = ncml;
     }
 
@@ -147,6 +149,7 @@ public class FeatureCollectionConfig {
       return "ProtoConfig{" +
               "choice=" + choice +
               ", change='" + change + '\'' +
+              ", param='" + param + '\'' +
               ", ncml='" + ncml + '\'' +
               ", cacheAll=" + cacheAll +
               '}';

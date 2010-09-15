@@ -663,7 +663,7 @@ public class ReadTdsLogs {
   }
 
   static String serverLive = null; // "http://motherlode.ucar.edu:8080";
-  static String serverTest = "http://motherlode.ucar.edu:9080";
+  static String serverTest = "http://motherlode.ucar.edu:8081";
 
   public static void main(String args[]) throws IOException {
     out = null; // new Formatter(new FileOutputStream("C:/TEMP/readTdsLogs.txt"));
@@ -683,7 +683,7 @@ public class ReadTdsLogs {
     //String accessLogs = "D:\\logs\\motherlode\\live\\access";
     //String accessLogs = "C:\\Documents and Settings\\caron.UNIDATA_DOMAIN\\tdsMonitor\\motherlode.ucar.edu%3A8080\\access";
     //String accessLogs = "C:/Users/caron/tdsMonitor/motherlode.ucar.edu%3A8080/access/"; // "/home/caron/tdsMonitor/motherlode%3A8080/access/";
-    String accessLogs = "C:\\Users\\caron\\tdsMonitor\\motherlode.ucar.edu%3A8080\\access\\access.2010-05-29.log";
+    String accessLogs = "C:\\Users\\caron\\tdsMonitor\\motherlode.ucar.edu%3A8080\\access\\";
 
     System.out.printf("server=%s send files from %s %n", serverTest, accessLogs);
 

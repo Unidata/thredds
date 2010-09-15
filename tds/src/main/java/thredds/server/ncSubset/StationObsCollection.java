@@ -270,7 +270,7 @@ public class StationObsCollection {
     variableList = null;
 
     Calendar c = Calendar.getInstance(); // contains current startup time
-    c.add(Calendar.HOUR, -8 * 24); // 7 or 8 days ago
+    c.add(Calendar.HOUR_OF_DAY, -8 * 24); // 7 or 8 days ago
     Date firstDate = c.getTime();
     cacheLogger.info("StationObsCollection: delete files before " + firstDate);
 

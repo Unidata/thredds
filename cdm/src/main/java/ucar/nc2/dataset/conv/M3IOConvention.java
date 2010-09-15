@@ -223,7 +223,7 @@ public class M3IOConvention extends CoordSysBuilder {
     cal.clear();
     cal.set(Calendar.YEAR, year);
     cal.set(Calendar.DAY_OF_YEAR, doy);
-    cal.set(Calendar.HOUR, hour);
+    cal.set(Calendar.HOUR_OF_DAY, hour);
     cal.set(Calendar.MINUTE, min);
     cal.set(Calendar.SECOND, sec);
     //cal.setTimeZone( new SimpleTimeZone(0, "GMT"));

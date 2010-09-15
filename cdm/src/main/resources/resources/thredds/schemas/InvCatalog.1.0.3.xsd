@@ -342,6 +342,7 @@
     </xsd:sequence>
     <xsd:attribute name="choice" type="protoChoices"/>
     <xsd:attribute name="change" type="xsd:string"/>
+    <xsd:attribute name="param" type="xsd:string"/>
   </xsd:complexType>
 
    <xsd:simpleType name="protoChoices">
@@ -352,6 +353,7 @@
           <xsd:enumeration value="Random"/>
           <xsd:enumeration value="Penultimate"/>
           <xsd:enumeration value="Latest"/>
+          <xsd:enumeration value="Run"/>
         </xsd:restriction>
       </xsd:simpleType>
     </xsd:union>

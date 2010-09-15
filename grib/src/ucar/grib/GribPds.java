@@ -11,7 +11,7 @@ import java.util.Date;
  * Grib1 and Grib 2 PDS superclass.
  * Try to abstract the common fields.
  * This is fairly low-level, corresponding to the actual values in the file.
- * Meaning often depend if its GRIB1 or GRIB2
+ * Meaning often depends if its GRIB1 or GRIB2
  * GridRecord translates these into values that are file type independdednt.
  *
  * @author caron

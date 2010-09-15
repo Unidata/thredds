@@ -220,6 +220,18 @@ public class GribCodeTable implements Comparable<GribCodeTable> {
       return start - o.start;
     }
 
+    @Override
+    public String toString() {
+      return "TableEntry{" +
+              ", discipline=" + discipline +
+              ", category=" + category +
+              ", number=" + number +
+              ", org='" + meaning + '\'' +
+              ", name='" + name + '\'' +
+              ", unit='" + unit + '\'' +
+              ", status='" + status + '\'' +
+              '}';
+    }
   }
 
   //////////////////////////////////////////////////////////////////////

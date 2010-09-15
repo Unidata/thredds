@@ -42,7 +42,7 @@ public class TestIntervalVars extends TestCase {
       @Override
       public int doAct(String filename) throws IOException {
         System.out.printf("%n%s%n", filename);
-        //analalyseIntervals(filename);
+        //showNames(filename);
         checkTemplates(filename);
         return 0;
       }
@@ -87,6 +87,37 @@ public class TestIntervalVars extends TestCase {
     System.out.printf("%n");
 
     return 1;
+  }
+
+  private void showNames(String filename) throws IOException {
+    GridDataset ncd = GridDataset.open(filename);
+    nfiles++;
+
+    String format = "%-50s %-20s %-12s %-12s %-12s %n";
+    System.out.printf(format, " ", "level", "stat", "ens", "prob" );
+
+    List<GridDatatype> grids =  ncd.getGrids();
+    Collections.sort(grids);
+    for (GridDatatype g : grids) {
+      GridCoordSystem gsys = g.getCoordinateSystem();
+      CoordinateAxis t = gsys.getTimeAxis();
+      Variable v = g.getVariable();
+      String level = v.findAttribute("GRIB_level_type_name").getStringValue();
+      Attribute att = v.findAttribute("GRIB_interval_stat_type");
+      String stat = (att == null) ? "" : att.getStringValue();
+      att = v.findAttribute("GRIB_ensemble");
+      String ens = "";
+      if (att != null) ens = att.getStringValue();
+      else {
+        att = v.findAttribute("GRIB_ensemble_derived_type");
+        if (att != null) ens = att.getStringValue();
+      }
+      att = v.findAttribute("GRIB_probability_type");
+      String prob = (att == null) ? "" : att.getStringValue();
+      System.out.printf(format, v.getName(), level, stat, ens, prob);
+    }
+    System.out.printf("%n");
+    ncd.close();
   }
 
   /* see if analy code differs

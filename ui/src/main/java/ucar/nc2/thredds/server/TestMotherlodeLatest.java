@@ -48,7 +48,7 @@ import java.io.IOException;
 public class TestMotherlodeLatest extends TimerTask {
   static private final String server1 = "http://motherlode.ucar.edu:8080/";
   //static private final String server1 = "http://thredds.cise-nsf.gov:8080/";
-  static private final String server2 = "http://motherlode.ucar.edu:9080/";
+  static private final String server2 = "http://motherlode.ucar.edu:8081/";
 
   // fmrc
   static private final String latestPrefix = "thredds/catalog/fmrc/";
@@ -85,7 +85,7 @@ public class TestMotherlodeLatest extends TimerTask {
 
   void doAll() throws IOException {
 
-    for (String model : FmrcDefinition.fmrcDatasets) {
+    for (String model : FmrcDefinition.fmrcDatasets_41) {
       doOne(model, suffix);
     }
 
@@ -93,8 +93,8 @@ public class TestMotherlodeLatest extends TimerTask {
 
   void doOne(String model, String suffix) throws IOException {
 
-    GridDataset gds1 = getDataset(makeDatasetURL( server1, model, suffix));
-    GridDataset gds2 = getDataset(makeDatasetURL( server2, model, suffix));
+    GridDataset gds1 = getDataset(makeDatasetURL( server1, model, suffix), "1");
+    GridDataset gds2 = getDataset(makeDatasetURL( server2, model, suffix), "2" );
     System.out.printf(" compare 1 to 2%n");
     compare(gds1, gds2);
     System.out.printf(" compare 2 to 1%n");
@@ -112,16 +112,16 @@ public class TestMotherlodeLatest extends TimerTask {
       return server + bestPrefix + model + suffix;
   }
 
-  private GridDataset getDataset(String ds) throws IOException {
+  private GridDataset getDataset(String ds, String which) throws IOException {
 
     Formatter errlog = new Formatter();
     FeatureDataset result = FeatureDatasetFactoryManager.open(FeatureType.GRID, ds, null, errlog);
-    System.out.printf(" %s result errlog= %s%n", ds, errlog);
+    //System.out.printf(" %s result errlog= %s%n", ds, errlog);
     assert result != null;
     assert result instanceof GridDataset;
 
     GridDataset dataset = (GridDataset) result;
-    System.out.printf(" dataset=%s%n", dataset.getLocationURI());
+    System.out.printf(" %s dataset=%s%n", which, dataset.getLocationURI());
 
     return dataset;
   }
@@ -189,19 +189,21 @@ public class TestMotherlodeLatest extends TimerTask {
 
     // http://motherlode.ucar.edu:9080/thredds/catalog/model/NCEP/RUC2/CONUS_20km/pressure/latest.xml
 
+    /*
     TestMotherlodeLatest test1 = new TestMotherlodeLatest("NCEP/RUC2/CONUS_20km/pressure", bestSuffix);
-    timer.schedule(test1, 0, 1000 * 60 * 2); // 2 mins   */
+    timer.schedule(test1, 0, 1000 * 60 * 2); // 2 mins
 
     TestMotherlodeLatest test2 = new TestMotherlodeLatest("NCEP/RUC2/CONUS_20km/pressure", latestSuffix);
-    timer.schedule(test2, 0, 1000 * 60 * 2); // 2 mins  */
+    timer.schedule(test2, 0, 1000 * 60 * 2); // 2 mins
 
     TestMotherlodeLatest test3 = new TestMotherlodeLatest("NCEP/NAM/CONUS_12km", latestSuffix);
-    timer.schedule(test3, 0, 1000 * 60 * 10); // 10 mins  */
+    timer.schedule(test3, 0, 1000 * 60 * 10); // 10 mins
 
    TestMotherlodeLatest test4 = new TestMotherlodeLatest("NCEP/NAM/CONUS_12km", bestSuffix);
     timer.schedule(test4, 0, 1000 * 60 * 10); // 10 mins  */
 
-    test2.doAll();
+    TestMotherlodeLatest testAll = new TestMotherlodeLatest("NCEP/RUC2/CONUS_20km/pressure", latestSuffix);
+    testAll.doAll();
   }
 
 }

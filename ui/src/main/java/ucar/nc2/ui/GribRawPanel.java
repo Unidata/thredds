@@ -171,7 +171,7 @@ public class GribRawPanel extends JPanel {
       public void actionPerformed(ActionEvent e) {
         Grib2RecordBean bean = (Grib2RecordBean) record2BeanTable.getSelectedBean();
         if (bean != null) {
-          infoPopup2.setText(bean.gr.toString());
+          infoPopup2.setText(bean.toProcessedString());
           infoPopup2.gotoTop();
           infoWindow2.showIfNotIconified();
         }
@@ -383,7 +383,7 @@ public class GribRawPanel extends JPanel {
     int len = Math.min(raw1.length, raw2.length);
 
     for (int i = 0; i < len; i++) {
-      if (raw1[i] != raw2[i])
+      if (raw1[i] != raw2[i] && !Double.isNaN(raw1[i]) && !Double.isNaN(raw2[i]))
         f.format(" %5d : %3f != %3f%n", i, raw1[i], raw2[i]);
     }
     f.format("tested %d floats %n", len);
@@ -913,6 +913,12 @@ public class GribRawPanel extends JPanel {
 
       showRawPds(pds, f);
 
+      return f.toString();
+    }
+
+    public String toProcessedString() {
+      Formatter f = new Formatter();
+      pdsv.show(f);
       return f.toString();
     }
 

@@ -152,7 +152,7 @@ public class FmrcInvLite implements java.io.Serializable {
     // show the 2D    
     out.format("2D%n   run%n");
     for (int i=0; i< gridset.noffsets; i++)
-      out.format(" %6d", i);
+      out.format("       %6d", i);
     out.format("%n");
     for (int run = 0; run < nruns; run++) {
       out.format("%6d", run);
@@ -164,25 +164,31 @@ public class FmrcInvLite implements java.io.Serializable {
     out.format("%n");
 
 
+    out.format("Best%n");
     BestDatasetInventory best = new BestDatasetInventory( null);
     List<TimeInv> bestInv = gridset.timeCoordMap.get("Best");
     if (bestInv == null) bestInv = gridset.makeBest(null);
     FmrcInvLite.ValueB coords = best.getTimeCoords( gridset); // must call this to be sure data is there
 
     // show the best
-    out.format("            ");
+    out.format("        ");
     for (int i=0; i< bestInv.size(); i++)
       out.format(" %6d", i);
     out.format("%n");
 
-    out.format("best coords=");
+    out.format(" coord =");
     for (TimeInv inv : bestInv)
       out.format(" %6.0f", inv.offset);
     out.format("%n");
 
-    out.format("best run   =");
+    out.format(" run   =");
     for (TimeInv inv : bestInv)
       out.format(" %6d", inv.runIdx);
+    out.format("%n");
+
+    out.format(" idx   =");
+    for (TimeInv inv : bestInv)
+      out.format(" %6d", inv.timeIdx);
     out.format("%n");
   }
 
@@ -200,7 +206,10 @@ public class FmrcInvLite implements java.io.Serializable {
       this.gridsetName = runseq.getName();
       List<TimeCoord> timeList = runseq.getTimes();
       boolean hasMissingTimes = (nruns != timeList.size()); // missing one or more variables in one or more runs
-      noffsets = runseq.getUnionTimeCoord().getNCoords();
+      noffsets = 0;
+      for (TimeCoord tc : timeList)
+        noffsets = Math.max(noffsets, tc.getNCoords());
+     // noffsets = runseq.getUnionTimeCoord().getNCoords();
 
       // this is the twoD time coordinate for this Gridset
       timeOffset = new double[nruns * noffsets];
@@ -381,7 +390,8 @@ public class FmrcInvLite implements java.io.Serializable {
 
   // represents 1 time coord in a 2d time matrix, point or interval
   private class TimeInv implements Comparable<TimeInv> {
-    int runIdx, timeIdx;
+    int runIdx;
+    int timeIdx;
     double offset; // hours since base or hours since run time
     double startIntv = Double.NaN;
     boolean isInterval = false;

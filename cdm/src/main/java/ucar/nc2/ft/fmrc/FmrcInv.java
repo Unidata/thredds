@@ -202,9 +202,12 @@ public class FmrcInv {
   }
 
   private int getHour(Date d) {
-    if (cal == null) cal = Calendar.getInstance();
+    if (cal == null) {
+      cal = Calendar.getInstance();
+      cal.setTimeZone(TimeZone.getTimeZone("GMT"));
+    }
     cal.setTime(d);
-    return cal.get(Calendar.HOUR);
+    return cal.get(Calendar.HOUR_OF_DAY);
   }
 
   /* private UberGrid findVar(String varName) {
@@ -312,7 +315,11 @@ public class FmrcInv {
       return gridName;
     }
 
-    // the union of all offset hours, ignoring rundate
+    public String toString() {
+      return gridName;
+    }
+
+     // the union of all offset hours, ignoring rundate
     public TimeCoord getUnionTimeCoord() {
       return runSeq.getUnionTimeCoord();
     }

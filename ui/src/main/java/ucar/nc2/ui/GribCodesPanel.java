@@ -90,6 +90,14 @@ public class GribCodesPanel extends JPanel {
     });
     buttPanel.add(compareButton);
 
+    AbstractButton dupButton = BAMutil.makeButtcon("Select", "Check for duplicate param names", false);
+    dupButton.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        checkDuplicates();
+      }
+    });
+    buttPanel.add(dupButton);
+
     AbstractButton modelsButton = BAMutil.makeButtcon("Select", "Check current models", false);
     modelsButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
@@ -231,6 +239,40 @@ public class GribCodesPanel extends JPanel {
     }
     entryTable.setBeans(beans);
   }
+
+  private void checkDuplicates() {
+    int total = 0;
+    int dups = 0;
+
+    HashMap<String, GribCodeTable.TableEntry> paramSet = new HashMap<String, GribCodeTable.TableEntry>();
+
+    Formatter f = new Formatter();
+    f.format("Duplicates in WMO parameter table%n");
+    List tables = codeTable.getBeans();
+    for (Object t : tables) {
+      GribCodeTable gt = ((CodeBean) t).code;
+      if (!gt.isParameter) continue;
+      for (GribCodeTable.TableEntry p : gt.entries) {
+        if (p.meaning.equalsIgnoreCase("Reserved")) continue;
+        if (p.meaning.equalsIgnoreCase("Missing")) continue;
+        if (p.start != p.stop) continue;
+
+        GribCodeTable.TableEntry pdup = paramSet.get(p.name);
+        if (pdup != null) {
+          f.format("Duplicate %s%n", p);
+          f.format("          %s%n", pdup);
+          dups++;
+        } else {
+          paramSet.put(p.name, p);
+        }
+        total++;
+      }
+    }
+    f.format("%nTotal=%d dups=%d%n", total, dups);
+    compareTA.setText(f.toString());
+    infoWindow.show();
+  }
+
 
   private boolean showSame = false, showCase = false, showUnknown = false;
   private void compareToCurrent() {

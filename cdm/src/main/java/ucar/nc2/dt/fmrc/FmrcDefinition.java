@@ -1121,6 +1121,56 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
           "NCEP/WW3/WestCoast_10minute",
   };
 
+  public static String[] fmrcDatasets_41 = {
+          "NCEP/GFS/Alaska_191km",
+          "NCEP/GFS/CONUS_80km",
+          "NCEP/GFS/CONUS_95km",
+          "NCEP/GFS/CONUS_191km",
+          "NCEP/GFS/Global_0p5deg",
+          "NCEP/GFS/Global_onedeg",
+          "NCEP/GFS/Global_2p5deg",
+          "NCEP/GFS/Hawaii_160km",
+          "NCEP/GFS/N_Hemisphere_381km",
+          "NCEP/GFS/Puerto_Rico_191km",
+
+          "NCEP/NAM/Alaska_11km",
+          "NCEP/NAM/Alaska_22km",
+          "NCEP/NAM/Alaska_45km/noaaport",
+          "NCEP/NAM/Alaska_45km/conduit",
+          "NCEP/NAM/Alaska_95km",
+          "NCEP/NAM/CONUS_12km/conduit",
+          "NCEP/NAM/CONUS_20km/surface",
+          "NCEP/NAM/CONUS_20km/selectsurface",
+          "NCEP/NAM/CONUS_20km/noaaport",
+          "NCEP/NAM/CONUS_40km/conduit",
+          "NCEP/NAM/CONUS_80km",
+          "NCEP/NAM/Polar_90km",
+
+          "NCEP/RUC2/CONUS_20km/surface",
+          "NCEP/RUC2/CONUS_20km/pressure",
+          "NCEP/RUC2/CONUS_20km/hybrid",
+          "NCEP/RUC2/CONUS_40km",
+          "NCEP/RUC/CONUS_80km",
+
+          "NCEP/DGEX/CONUS_12km",
+          "NCEP/DGEX/Alaska_12km",
+
+          /*
+          "NCEP/GEFS/Global_1p0deg_Ensemble/derived",
+          "NCEP/GEFS/Global_1p0deg_Ensemble/member",
+
+
+          "NCEP/SREF/CONUS_40km/ensprod",
+          "NCEP/SREF/CONUS_40km/ensprod_biasc",
+          // "NCEP/SREF/CONUS_40km/pgrb_biasc", 
+          "NCEP/SREF/Alaska_45km/ensprod",
+          "NCEP/SREF/PacificNE_0p4/ensprod",
+                   */
+
+          "NCEP/NDFD/CONUS_5km",
+  };
+
+
 
   private static String fmrcDefinitionDir = "C:/dev/tds/thredds/tds/src/main/webapp/WEB-INF/altContent/idd/thredds/modelInventory/";
   private static String[] fmrcDefinitionFiles;
