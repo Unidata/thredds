@@ -358,9 +358,13 @@ public final class GribGridRecord implements GridRecord {
     if (useLevel) {
       String levelName = lookup.getLevelName(this);
       if (levelName.length() != 0) {
-        if (lookup.isLayer(this))
+        boolean hasLayerInName = levelName.indexOf("layer") >= 0;
+        boolean isLayer = lookup.isLayer(this);
+        if (isLayer && !hasLayerInName)
           f.format("_%s_layer", levelName);
-       else  
+        // else if (!isLayer && hasLayerInName) LOOK remove for now - but see NAM_CONUS_12km_conduit
+        //  f.format("_%s_level", levelName);
+        else
           f.format("_%s", levelName);
       }
     }

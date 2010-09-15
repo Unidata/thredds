@@ -89,8 +89,8 @@ public class GridVertCoord implements Comparable<GridVertCoord> {
 
   /**
    * if only one level, should this be made into another dimension ?
-   */
-  private boolean isVerticalCoordinate = false;
+   *
+  private boolean isVerticalCoordinate = false; */
 
   /**
      * vertical pressure factors
@@ -135,7 +135,7 @@ public class GridVertCoord implements Comparable<GridVertCoord> {
     this.levelName = levelName;
     this.lookup = lookup;
 
-    isVerticalCoordinate = lookup.isVerticalCoordinate(typicalRecord);
+    //isVerticalCoordinate = lookup.isVerticalCoordinate(typicalRecord);
     positive = lookup.isPositiveUp(typicalRecord) ? "up" : "down";
     units = lookup.getLevelUnit(typicalRecord);
 
@@ -179,6 +179,7 @@ public class GridVertCoord implements Comparable<GridVertCoord> {
    * Create a new GridVertCoord for a layer
    * Used by deprecated GridIndex2NC.makeDefinedCoord()
    *
+   * @deprecated
    * @param record    layer record
    * @param levelName name of this level
    * @param lookup    lookup table
@@ -204,7 +205,7 @@ public class GridVertCoord implements Comparable<GridVertCoord> {
     if (positive.equals("down")) {
       Collections.reverse(levels);
     }
-    isVerticalCoordinate = (levels.size() > 1);
+    //isVerticalCoordinate = (levels.size() > 1);
   }
 
   /**
@@ -245,10 +246,10 @@ public class GridVertCoord implements Comparable<GridVertCoord> {
 
   /**
    * vert coordinates are used when nlevels > 1, otherwise use isVerticalCoordinate
-   * @return if should be made into a seperate dimension
+   * @return if vert dimension should be used
    */
   boolean isVertDimensionUsed() {
-    return (getNLevels() == 1) ? isVerticalCoordinate : true;
+    return (getNLevels() == 1) ? lookup.isVerticalCoordinate(typicalRecord) : true;
   }
 
   /**

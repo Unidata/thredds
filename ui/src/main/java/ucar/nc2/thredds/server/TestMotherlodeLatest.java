@@ -91,14 +91,17 @@ public class TestMotherlodeLatest extends TimerTask {
 
   }
 
+  private boolean checkRank = true;
+  private boolean checkSize = false;
+
   void doOne(String model, String suffix) throws IOException {
 
     GridDataset gds1 = getDataset(makeDatasetURL( server1, model, suffix), "1");
     GridDataset gds2 = getDataset(makeDatasetURL( server2, model, suffix), "2" );
     System.out.printf(" compare 1 to 2%n");
-    compare(gds1, gds2);
+    compare(gds1, gds2, checkRank, checkSize);
     System.out.printf(" compare 2 to 1%n");
-    compare(gds2, gds1);
+    compare(gds2, gds1, false, false);
     System.out.printf(" DONE%n%n");
 
     gds1.close();
@@ -126,28 +129,37 @@ public class TestMotherlodeLatest extends TimerTask {
     return dataset;
   }
 
-
-
-  private void compare(GridDataset gds1, GridDataset gds2) {
+  private void compare(GridDataset gds1, GridDataset gds2, boolean checkRank, boolean checkSize) {
 
     for (GridDatatype grid1 : gds1.getGrids()) {
 
       try {
         GridDatatype grid2 = gds2.findGridDatatype(grid1.getName());
-        assert grid2 != null : "cant find " + grid1.getName();
-        long size1 = new Section(grid1.getShape()).computeSize();
-        long size2 = new Section(grid2.getShape()).computeSize();
-        if (size1 != size2) {
-          System.out.printf("%s size mismatch: %s != %s%n", grid1.getName(), show(grid1), show(grid2));
-          throw new RuntimeException();
+        if (grid2 == null) {
+          System.out.printf("%s MISSING%n", grid1.getName());
+          continue;
         }
+        if (checkRank) {
+          if (grid1.getRank() != grid2.getRank()) {
+            System.out.printf("%s rank mismatch: %s != %s%n", grid1.getName(), show(grid1), show(grid2));
+            continue;
+          }
+        }
+        if (checkSize) {
+          long size1 = new Section(grid1.getShape()).computeSize();
+          long size2 = new Section(grid2.getShape()).computeSize();
+          if (size1 != size2) {
+            System.out.printf("%s size mismatch: %s != %s%n", grid1.getName(), show(grid1), show(grid2));
+            continue;
+          }
+        }
+        
       } catch (Throwable e) {
         // e.printStackTrace();
         System.out.printf(" *** %s %n", e.getMessage());
       }
 
     }
-
 
   }
 
@@ -172,8 +184,7 @@ public class TestMotherlodeLatest extends TimerTask {
   }
 
 
-  private void compare(Map<String, CoordinateAxis1DTime> map1,
-          Map<String, CoordinateAxis1DTime> map2) throws Exception {
+  private void compare(Map<String, CoordinateAxis1DTime> map1, Map<String, CoordinateAxis1DTime> map2) throws Exception {
 
     for (CoordinateAxis1DTime time1 : map1.values()) {
       CoordinateAxis1DTime time2 = map2.get(time1.getName());

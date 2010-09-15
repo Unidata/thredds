@@ -440,7 +440,7 @@ public class GridIndexToNC {
           boolean firstVertCoord = true;
           for (VertCollection vc : vclist) {
             boolean hasMultipleLevels = vc.vc.getNLevels() > 1;
-            boolean noLevelOk = firstVertCoord && hasMultipleLevels;
+            boolean noLevelOk = firstVertCoord; //  && hasMultipleLevels;  LOOK turned off for now 9/15/10
             List<GridVariable> list = vc.list;
             if (list.size() == 1) {
               GridVariable gv = list.get(0);
@@ -504,7 +504,13 @@ public class GridIndexToNC {
 
     @Override
     public int compareTo(VertCollection o) {
-      return o.vc.getNLevels() - vc.getNLevels();
+      int ret = o.vc.getNLevels() - vc.getNLevels();
+
+      if (ret == 0) {  // break ties for consistency
+        ret = vc.getLevelName().compareTo(o.vc.getLevelName());
+      }
+
+      return ret;
     }
   }
 
@@ -558,6 +564,32 @@ public class GridIndexToNC {
       return gv1.getVertName().compareToIgnoreCase(gv2.getVertName());
     }
   }
+
+  private class CompareGridVariableByNumberVertLevels implements Comparator {
+
+    /**
+     * Compare the two lists of names
+     *
+     * @param o1 first list
+     * @param o2 second list
+     * @return comparison
+     */
+    public int compare(Object o1, Object o2) {
+      GridVariable gv1 = (GridVariable) o1;
+      GridVariable gv2 = (GridVariable) o2;
+
+      int n1 = gv1.getVertCoord().getNLevels();
+      int n2 = gv2.getVertCoord().getNLevels();
+
+      if (n1 == n2) {  // break ties for consistency
+        return gv1.getVertCoord().getLevelName().compareTo(
+            gv2.getVertCoord().getLevelName());
+      } else {
+        return n2 - n1;  // highest number first
+      }
+    }
+  }
+
 
 }
 
