@@ -61,7 +61,7 @@ public class TestDirectoryScanner extends TestCase
   private String serviceAccessPoint = "src/test/data/thredds/cataloggen/testData/modelNotFlat/";
   private String serviceAccessPointHeader = "src/test/data/thredds/cataloggen/";
 
-  private String configResourcePath = "/thredds/cataloggen";
+  private String configResourcePath = "src/test/data/thredds/cataloggen";
   private String testDirScan_topLevelDirNoCatRefs_ResourceName = "testDirScan.topLevelDirNoCatRefs.result.xml";
   private String testDirScan_topLevelDirNoName_ResourceName = "testDirScan.topLevelDirNoName.result.xml";
   private String testDirScan_topLevelDir_ResourceName = "testDirScan.topLevelDir.result.xml";
@@ -79,9 +79,10 @@ public class TestDirectoryScanner extends TestCase
   {
   }
 
-  public void testTopLevelDirNoCatRefs()
+  public void testTopLevelDirNoCatRefs() throws IOException
   {
     String expectedCatalogResourceName = configResourcePath + "/" + testDirScan_topLevelDirNoCatRefs_ResourceName;
+    File expectedCatalogDocFile = new File( expectedCatalogResourceName);
 
     // Test on lower directory level than servers root directory (so top-level dataset name is some path)
     // Request is http://localhost:8080/thredds/dodsC/testData/modelNotFlat/catalog.xml
@@ -93,12 +94,13 @@ public class TestDirectoryScanner extends TestCase
     InvCatalog catalog = me.getDirCatalog( new File( this.serviceAccessPoint), null, false, false);
 
     // Compare the resulting catalog an the expected catalog resource.
-    TestCatalogGen.compareCatalogToCatalogResource( catalog, expectedCatalogResourceName, debugShowCatalogs );
+    TestCatalogGen.compareCatalogToCatalogDocFile( catalog, expectedCatalogDocFile, debugShowCatalogs );
   }
 
-  public void testTopLevelDirNoName()
+  public void testTopLevelDirNoName() throws IOException
   {
     String expectedCatalogResourceName = configResourcePath + "/" + testDirScan_topLevelDirNoName_ResourceName;
+    File expectedCatalogDocFile = new File( expectedCatalogResourceName );
 
     // Test on the servers root directory (so top-level dataset name is "")
     // Request is http://localhost:8080/thredds/dodsC/testData/modelNotFlat/catalog.xml
@@ -110,12 +112,13 @@ public class TestDirectoryScanner extends TestCase
     InvCatalog catalog = me.getDirCatalog( new File( this.serviceAccessPoint), null, false, false);
 
     // Compare the resulting catalog an the expected catalog resource.
-    TestCatalogGen.compareCatalogToCatalogResource( catalog, expectedCatalogResourceName, debugShowCatalogs );
+    TestCatalogGen.compareCatalogToCatalogDocFile( catalog, expectedCatalogDocFile, debugShowCatalogs );
   }
 
-  public void testTopLevelDir()
+  public void testTopLevelDir() throws IOException
   {
     String expectedCatalogResourceName = configResourcePath + "/" + testDirScan_topLevelDir_ResourceName;
+    File expectedCatalogDocFile = new File( expectedCatalogResourceName );
 
     // Test on lower directory level than servers root directory (so top-level dataset name is some path)
     // Request is http://localhost:8080/thredds/dodsC/testData/modelNotFlat/catalog.xml
@@ -127,12 +130,13 @@ public class TestDirectoryScanner extends TestCase
     InvCatalog catalog = me.getDirCatalog( new File( this.serviceAccessPoint), null, false, false);
 
     // Compare the resulting catalog an the expected catalog resource.
-    TestCatalogGen.compareCatalogToCatalogResource( catalog, expectedCatalogResourceName, debugShowCatalogs );
+    TestCatalogGen.compareCatalogToCatalogDocFile( catalog, expectedCatalogDocFile, debugShowCatalogs );
   }
 
-  public void testWithFilter()
+  public void testWithFilter() throws IOException
   {
     String expectedCatalogResourceName = configResourcePath + "/" + testDirScan_withFilter_ResourceName;
+    File expectedCatalogDocFile = new File( expectedCatalogResourceName );
 
     File dirToScan = new File( this.serviceAccessPoint + "eta_211/" );
     String filterPattern = ".*12_eta_211\\.nc$";
@@ -147,12 +151,13 @@ public class TestDirectoryScanner extends TestCase
     InvCatalog catalog = me.getDirCatalog( dirToScan, filterPattern, false, false);
 
     // Compare the resulting catalog an the expected catalog resource.
-    TestCatalogGen.compareCatalogToCatalogResource( catalog, expectedCatalogResourceName, debugShowCatalogs );
+    TestCatalogGen.compareCatalogToCatalogDocFile( catalog, expectedCatalogDocFile, debugShowCatalogs );
   }
 
-  public void testWithAliasDirPattern()
+  public void testWithAliasDirPattern() throws IOException
   {
     String expectedCatalogResourceName = configResourcePath + "/" + testDirScan_withDirPattern_ResourceName;
+    File expectedCatalogDocFile = new File( expectedCatalogResourceName );
 
     String dataDirHeader = "src/test/data/thredds/cataloggen/testData";
     String dataDir = "src/test/data/thredds/cataloggen/testData/uahRadarLevelII/2004*/KBMX";
@@ -166,12 +171,6 @@ public class TestDirectoryScanner extends TestCase
     {
       catalogCrDs = CrawlableDatasetFactory.createCrawlableDataset( dataDirFile.getAbsolutePath(), null, null );
     }
-    catch ( IOException e )
-    {
-      assertTrue( "IOException creating dataset <" + dataDirFile.getAbsolutePath() + ">: " + e.getMessage(),
-                  false);
-      return;
-    }
     catch ( ClassNotFoundException e )
     {
       throw new IllegalArgumentException( "Did not find class: " + e.getMessage() );
@@ -198,12 +197,13 @@ public class TestDirectoryScanner extends TestCase
     InvCatalog catalog = me.getDirCatalog( catalogCrDs, ".*", true, "idBase", false, null, null, null);
 
     // Compare the resulting catalog an the expected catalog resource.
-    TestCatalogGen.compareCatalogToCatalogResource( catalog, expectedCatalogResourceName, debugShowCatalogs );
+    TestCatalogGen.compareCatalogToCatalogDocFile( catalog, expectedCatalogDocFile, debugShowCatalogs );
   }
 
-  public void testWithAliasDirAndFilePattern()
+  public void testWithAliasDirAndFilePattern() throws IOException
   {
     String expectedCatalogResourceName = configResourcePath + "/" + testDirScan_withAliasDirAndFilePattern_ResourceName;
+    File expectedCatalogDocFile = new File( expectedCatalogResourceName );
 
     String dataDirHeader = "src/test/data/thredds/cataloggen/testData";
     String dataDir = "src/test/data/thredds/cataloggen/testData/uahRadarLevelII/2004*/KBMX/*bz2";
@@ -217,12 +217,6 @@ public class TestDirectoryScanner extends TestCase
     {
       catalogCrDs = CrawlableDatasetFactory.createCrawlableDataset( dataDirFile.getAbsolutePath(), null, null );
     }
-    catch ( IOException e )
-    {
-      assertTrue( "IOException creating dataset <" + dataDirFile.getAbsolutePath() + ">: " + e.getMessage(),
-                  false );
-      return;
-    }
     catch ( ClassNotFoundException e )
     {
       throw new IllegalArgumentException( "Did not find class: " + e.getMessage() );
@@ -249,12 +243,13 @@ public class TestDirectoryScanner extends TestCase
     InvCatalog catalog = me.getDirCatalog( catalogCrDs, ".*", true, "idBase", false, null, null, null);
 
     // Compare the resulting catalog an the expected catalog resource.
-    TestCatalogGen.compareCatalogToCatalogResource( catalog, expectedCatalogResourceName, debugShowCatalogs );
+    TestCatalogGen.compareCatalogToCatalogDocFile( catalog, expectedCatalogDocFile, debugShowCatalogs );
   }
 
-  public void testCatRefRepeatedDirProblem()
+  public void testCatRefRepeatedDirProblem() throws IOException
   {
     String expectedCatalogResourceName = configResourcePath + "/" + testDirScan_catRefRepeatedDirProblem_ResourceName;
+    File expectedCatalogDocFile = new File( expectedCatalogResourceName );
 
     String serviceId = "ncdods";
     String serviceTitle = "nc and dods server";
@@ -277,6 +272,6 @@ public class TestDirectoryScanner extends TestCase
     InvCatalog catalog = me.getDirCatalog( dirToScan, filterPattern, false, false );
 
     // Compare the resulting catalog an the expected catalog resource.
-    TestCatalogGen.compareCatalogToCatalogResource( catalog, expectedCatalogResourceName, debugShowCatalogs );
+    TestCatalogGen.compareCatalogToCatalogDocFile( catalog, expectedCatalogDocFile, debugShowCatalogs );
   }
 }

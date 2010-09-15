@@ -334,13 +334,12 @@ public class DatasetFilter
       if ( this.getMatchPatternTarget().equals( "name"))
       {
         java.util.regex.Matcher matcher = this.regExpPattern.matcher( dataset.getName() );
-        isMatch = matcher.matches();
+        isMatch = matcher.find();
       }
       else if ( this.getMatchPatternTarget().equals( "urlPath"))
       {
-
         java.util.regex.Matcher matcher = this.regExpPattern.matcher( ( (InvDatasetImpl) dataset ).getUrlPath() );
-        isMatch = matcher.matches();
+        isMatch = matcher.find();
       }
       else
       {

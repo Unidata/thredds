@@ -34,6 +34,7 @@ package thredds.cataloggen;
 
 import junit.framework.*;
 
+import java.io.File;
 import java.io.IOException;
 
 import thredds.catalog.InvCatalog;
@@ -64,7 +65,7 @@ public class TestSimpleCatalogBuilder extends TestCase
   /**
    * Test ...
    */
-  public void testBasic()
+  public void testBasic() throws IOException
   {
     String collectionPath = "src/test/data/thredds/cataloggen/testData/modelNotFlat";
     String catalogPath = "src/test/data/thredds/cataloggen/testData/modelNotFlat/eta_211";
@@ -97,18 +98,10 @@ public class TestSimpleCatalogBuilder extends TestCase
       return;
     }
 
-    InvCatalog catalog = null;
-    try
-    {
-      catalog = builder.generateCatalog( catalogCrDs );
-    }
-    catch ( IOException e )
-    {
-      assertTrue( "IOException generating catalog for given path <" + catalogPath + ">: " + e.getMessage(),
-                  false );
-    }
+    InvCatalog catalog = builder.generateCatalog( catalogCrDs );
 
     // Compare the resulting catalog an the expected catalog resource.
-    TestCatalogGen.compareCatalogToCatalogResource( catalog, "/thredds/cataloggen/testSimpleCatBuilder.basic.result.xml", debugShowCatalogs );
+    File expectedCatDocFile = new File( "/thredds/cataloggen/testSimpleCatBuilder.basic.result.xml");
+    TestCatalogGen.compareCatalogToCatalogDocFile( catalog, expectedCatDocFile, debugShowCatalogs );
   }
 }

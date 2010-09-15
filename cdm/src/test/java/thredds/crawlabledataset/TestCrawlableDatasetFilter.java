@@ -30,7 +30,6 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-// $Id: TestCrawlableDatasetFilter.java 61 2006-07-12 21:36:00Z edavis $
 package thredds.crawlabledataset;
 
 import junit.framework.*;
@@ -63,13 +62,13 @@ public class TestCrawlableDatasetFilter extends TestCase
   protected void setUp()
   {
     resultsNcNoCVS = new ArrayList();
-    resultsNcNoCVS.add( "test/data/thredds/cataloggen/testData/modelNotFlat/gfs_211/2004050300_gfs_211.nc" );
-    resultsNcNoCVS.add( "test/data/thredds/cataloggen/testData/modelNotFlat/gfs_211/2004050306_gfs_211.nc" );
-    resultsNcNoCVS.add( "test/data/thredds/cataloggen/testData/modelNotFlat/gfs_211/2004050312_gfs_211.nc" );
-    resultsNcNoCVS.add( "test/data/thredds/cataloggen/testData/modelNotFlat/gfs_211/2004050318_gfs_211.nc" );
+    resultsNcNoCVS.add( "src/test/data/thredds/cataloggen/testData/modelNotFlat/gfs_211/2004050300_gfs_211.nc" );
+    resultsNcNoCVS.add( "src/test/data/thredds/cataloggen/testData/modelNotFlat/gfs_211/2004050306_gfs_211.nc" );
+    resultsNcNoCVS.add( "src/test/data/thredds/cataloggen/testData/modelNotFlat/gfs_211/2004050312_gfs_211.nc" );
+    resultsNcNoCVS.add( "src/test/data/thredds/cataloggen/testData/modelNotFlat/gfs_211/2004050318_gfs_211.nc" );
 
     resultsAll = new ArrayList( resultsNcNoCVS );
-    resultsAll.add( "test/data/thredds/cataloggen/testData/modelNotFlat/gfs_211/CVS" );
+    resultsAll.add( "src/test/data/thredds/cataloggen/testData/modelNotFlat/gfs_211/CVS" );
   }
 
   /**
@@ -77,7 +76,7 @@ public class TestCrawlableDatasetFilter extends TestCase
    */
   public void testRegExpIncludeAll()
   {
-    String path = "test/data/thredds/cataloggen/testData/modelNotFlat/gfs_211";
+    String path = "src/test/data/thredds/cataloggen/testData/modelNotFlat/gfs_211";
     String name = "gfs_211";
 
     CrawlableDataset cd = createCrawlableDataset( path, name );
@@ -114,7 +113,7 @@ public class TestCrawlableDatasetFilter extends TestCase
 
   public void testRegExpIncludeNcExcludeCVS()
   {
-    String path = "test/data/thredds/cataloggen/testData/modelNotFlat/gfs_211";
+    String path = "src/test/data/thredds/cataloggen/testData/modelNotFlat/gfs_211";
     String name = "gfs_211";
 
     CrawlableDataset cd = createCrawlableDataset( path, name );
@@ -148,7 +147,7 @@ public class TestCrawlableDatasetFilter extends TestCase
 
   public void testWildcardIncludeNcExcludeCVS()
   {
-    String path = "test/data/thredds/cataloggen/testData/modelNotFlat/gfs_211";
+    String path = "src/test/data/thredds/cataloggen/testData/modelNotFlat/gfs_211";
     String name = "gfs_211";
 
     CrawlableDataset cd = createCrawlableDataset( path, name );
@@ -206,18 +205,3 @@ public class TestCrawlableDatasetFilter extends TestCase
   }
 
 }
-/*
- * $Log: TestCrawlableDatasetFilter.java,v $
- * Revision 1.3  2005/12/30 00:18:56  edavis
- * Expand the datasetScan element in the InvCatalog XML Schema and update InvCatalogFactory10
- * to handle the expanded datasetScan. Add handling of user defined CrawlableDataset implementations
- * and other interfaces in thredds.crawlabledataset (e.g., CrawlableDatasetFilter). Add tests to
- * TestInvDatasetScan for refactored datasetScan.
- *
- * Revision 1.2  2005/11/18 23:51:06  edavis
- * More work on CrawlableDataset refactor of CatGen.
- *
- * Revision 1.1  2005/11/15 18:40:52  edavis
- * More work on CrawlableDataset refactor of CatGen.
- *
- */

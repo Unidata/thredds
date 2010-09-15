@@ -12,7 +12,7 @@ import org.junit.runner.RunWith;
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
         thredds.catalog.TestCatalogAll.class,
-        thredds.catalog2.AllTests.class,
+        //thredds.catalog2.AllTests.class,
         thredds.cataloggen.TestAllCatGen.class,
         thredds.crawlabledataset.TestAllCrawlableDataset.class,
         thredds.util.TestUriResolver.class,

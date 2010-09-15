@@ -78,7 +78,7 @@ public class DeepCopyUtils
   private static URI formDocBaseUriForSubsetCatalog( InvCatalog catalog, InvDataset dataset )
   {
     String catDocBaseUri = catalog.getUriString();
-    String subsetDocBaseUriString = catDocBaseUri + ( dataset.getID() != null ? dataset.getID() : dataset.getName() );
+    String subsetDocBaseUriString = catDocBaseUri + "/" + ( dataset.getID() != null ? dataset.getID() : dataset.getName() );
     URI thisDocBaseUri = ((InvCatalogImpl) catalog ).getBaseURI();
     try {
 //      String uriPath = thisDocBaseUri.getPath() + "/" + ( dataset.getID() != null ? dataset.getID() : dataset.getName() );

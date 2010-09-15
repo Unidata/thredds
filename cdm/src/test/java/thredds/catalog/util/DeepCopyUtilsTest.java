@@ -76,8 +76,8 @@ public class DeepCopyUtilsTest
     assertNotNull( "Catalog is null.", catalog );
     assertNotNull( "DocBase URI is null.", docBaseUri );
 
-    assertEquals( catalog.getUriString(), docBaseUri.toString() + "/ds2" );
-    assertEquals( catalog.getName(), "ds 2" );
+    assertEquals( docBaseUri.toString() + "/ds2", catalog.getUriString());
+    assertEquals( "ds 2", catalog.getName() );
 
     List<InvService> services = catalog.getServices();
     InvService allService = assertCatalogServicesAsExpected( services );

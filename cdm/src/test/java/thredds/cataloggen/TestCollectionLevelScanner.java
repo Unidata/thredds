@@ -34,6 +34,7 @@ package thredds.cataloggen;
 
 import junit.framework.*;
 
+import java.io.File;
 import java.io.IOException;
 
 import thredds.catalog.*;
@@ -52,7 +53,7 @@ public class TestCollectionLevelScanner extends TestCase
 
   private boolean debugShowCatalogs = true;
 
-  private String resourcePath = "/thredds/cataloggen";
+  private String resourcePath = "src/test/data/thredds/cataloggen";
   private String resource_simpleWithEmptyServiceBase_result = "testCollectionScanner.simpleWithEmptyServiceBase.result.xml";
   private String resource_simpleWithNotEmptyServiceBase_result = "testCollectionScanner.simpleWithNotEmptyServiceBase.result.xml";
   private String resource_namedForDirWithNotEmptyServiceBase_result = "testCollectionScanner.namedForDirWithNotEmptyServiceBase.result.xml";
@@ -69,9 +70,10 @@ public class TestCollectionLevelScanner extends TestCase
   /**
    * Test ...
    */
-  public void testSimpleWithEmptyServiceBase()
+  public void testSimpleWithEmptyServiceBase() throws IOException
   {
     String resultResourceName = resourcePath + "/" + resource_simpleWithEmptyServiceBase_result;
+    File expectedCatalogDocFile = new File( resultResourceName );
 
     String collectionPath = "src/test/data/thredds/cataloggen/testData/modelNotFlat";
     String catalogPath = "src/test/data/thredds/cataloggen/testData/modelNotFlat/eta_211";
@@ -95,27 +97,17 @@ public class TestCollectionLevelScanner extends TestCase
                                                         "", null, null));
     assertTrue( me != null );
 
-    InvCatalog cat;
-    try
-    {
-      me.scan();
-      cat = me.generateCatalog();
-    }
-    catch ( IOException e )
-    {
-      assertTrue( "Failed to generate catalog: " + e.getMessage(),
-                  false );
-      return;
-    }
+    me.scan();
+    InvCatalog cat = me.generateCatalog();
 
     // Compare the resulting catalog an the expected catalog resource.
-    TestCatalogGen.compareCatalogToCatalogResource( cat, resultResourceName, debugShowCatalogs );
-
+    TestCatalogGen.compareCatalogToCatalogDocFile( cat, expectedCatalogDocFile, debugShowCatalogs );
   }
 
-  public void testSimpleWithNotEmptyServiceBase()
+  public void testSimpleWithNotEmptyServiceBase() throws IOException
   {
     String resultResourceName = resourcePath + "/" + resource_simpleWithNotEmptyServiceBase_result;
+    File expectedCatalogDocFile = new File( resultResourceName );
 
     String collectionPath = "src/test/data/thredds/cataloggen/testData/modelNotFlat";
     String catalogPath = "src/test/data/thredds/cataloggen/testData/modelNotFlat/eta_211";
@@ -139,27 +131,18 @@ public class TestCollectionLevelScanner extends TestCase
                                                         "/thredds/dodsC", null, null ) );
     assertTrue( me != null );
 
-    InvCatalog cat;
-    try
-    {
-      me.scan();
-      cat = me.generateCatalog();
-    }
-    catch ( IOException e )
-    {
-      assertTrue( "Failed to generate catalog: " + e.getMessage(),
-                  false );
-      return;
-    }
+    me.scan();
+    InvCatalog cat = me.generateCatalog();
 
     // Compare the resulting catalog an the expected catalog resource.
-    TestCatalogGen.compareCatalogToCatalogResource( cat, resultResourceName, debugShowCatalogs );
+    TestCatalogGen.compareCatalogToCatalogDocFile( cat, expectedCatalogDocFile, debugShowCatalogs );
 
   }
 
-  public void testNamedForDirWithNotEmptyServiceBase()
+  public void testNamedForDirWithNotEmptyServiceBase() throws IOException
   {
     String resultResourceName = resourcePath + "/" + resource_namedForDirWithNotEmptyServiceBase_result;
+    File expectedCatalogDocFile = new File( resultResourceName );
 
     String collectionPath = "src/test/data/thredds/cataloggen/testData/modelNotFlat";
     String catalogPath = "src/test/data/thredds/cataloggen/testData/modelNotFlat/eta_211";
@@ -183,21 +166,10 @@ public class TestCollectionLevelScanner extends TestCase
                                                         "/thredds/dodsC", null, null ) );
     assertTrue( me != null );
 
-    InvCatalog cat;
-    try
-    {
-      me.scan();
-      cat = me.generateCatalog();
-    }
-    catch ( IOException e )
-    {
-      assertTrue( "Failed to generate catalog: " + e.getMessage(),
-                  false );
-      return;
-    }
+    me.scan();
+    InvCatalog cat = me.generateCatalog();
 
     // Compare the resulting catalog an the expected catalog resource.
-    TestCatalogGen.compareCatalogToCatalogResource( cat, resultResourceName, debugShowCatalogs );
-
+    TestCatalogGen.compareCatalogToCatalogDocFile( cat, expectedCatalogDocFile, debugShowCatalogs );
   }
 }

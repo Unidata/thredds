@@ -46,13 +46,7 @@ public class TestDatasetSource extends TestCase
 {
   //static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(TestDatasetSource.class);
 
-  private boolean debugShowCatalogs = true;
-
-  private String configResourcePath = "/thredds/cataloggen/config";
-  private String test1DatasetSourceResultCatalog_1_0_ResourceName = "test1ResultCatalog1.0.dss.xml";
-  private String testDsfDirFilter1_ResultCatalog_1_0_ResourceName = "testDsfDirFilter1.ResultCatalog1.0.xml";
-  private String testDatasetSource_allCatalogRef_ResultCatalog_ResourceName = "testDatasetSource.allCatalogRef.result.xml";
-  private String testDsSource_expandFlatAddTimecoverage_ResourceName = "testDsSource.expandFlatAddTimecoverage.result.xml";
+  private boolean debugShowCatalogs = false;
 
   private DatasetSource me1 = null;
   private DatasetSource me2 = null;
@@ -122,58 +116,51 @@ public class TestDatasetSource extends TestCase
   //}
 
   // Test expand on a flat collection dataset.
-  public void testExpandFlat()
+  public void testExpandFlat() throws IOException
   {
-    String expectedCatalogResourceName = configResourcePath + "/" + test1DatasetSourceResultCatalog_1_0_ResourceName;
+    File expectedCatDocFile = new File( "src/test/data/thredds/cataloggen/config/test1ResultCatalog1.0.dss.xml" );
 
     String service1Name = "myServer";
     String service1Type = "DODS";
     String service1Base = "/dods/";
     String service1Suffix = null;
-    String service1AccessPointHeader = "./build/test/classes/thredds/cataloggen/";
+    String service1AccessPointHeader = "./src/test/data/thredds/cataloggen/";
     ResultService service1 = new ResultService( service1Name, ServiceType.getType( service1Type),
                                                 service1Base, service1Suffix,
                                                 service1AccessPointHeader);
 
-    String accessPoint = "./build/test/classes/thredds/cataloggen/testData/model";
+    String accessPoint = "./src/test/data/thredds/cataloggen/testData/model";
     me1 = DatasetSource.newDatasetSource( "NCEP Eta 80km CONUS model data",
                                           DatasetSourceType.LOCAL, DatasetSourceStructure.FLAT,
                                           accessPoint, service1 );
 
     DatasetFilter dsF = new DatasetFilter( me1, "Accept netCDF Eta 211 files only",
                                            DatasetFilter.Type.REGULAR_EXPRESSION,
-                                           "/[0-9][^/]*_eta_211\\.nc$");
+                                           "/[0-9]*_eta_211\\.nc$");
     me1.addDatasetFilter( dsF);
+    dsF = new DatasetFilter( me1, "reject all subdirs", DatasetFilter.Type.REGULAR_EXPRESSION, ".*", true, false, true);
+    me1.addDatasetFilter( dsF );
 
-    InvDataset ds = null;
-    try
-    {
-      ds = me1.expand();
-    }
-    catch ( IOException e )
-    {
-      throw new IllegalArgumentException( "Given directory is not a collection dataset <" + accessPoint + ">.");
-    }
+    InvDataset ds = me1.expand();
 
-    // Compare the resulting catalog an the expected catalog resource.
-    TestCatalogGen.compareCatalogToCatalogResource( ds.getParentCatalog(), expectedCatalogResourceName, debugShowCatalogs );
+    TestCatalogGen.compareCatalogToCatalogDocFile( ds.getParentCatalog(), expectedCatDocFile, debugShowCatalogs );
   }
 
   // Expand a nested collection dataset using directory filtering.
-  public void testExpandNotFlatWithDirFilter()
+  public void testExpandNotFlatWithDirFilter() throws IOException
   {
-    String expectedCatalogResourceName = configResourcePath + "/" + testDsfDirFilter1_ResultCatalog_1_0_ResourceName;
+    File expectedCatalogDocFile = new File( "src/test/data/thredds/cataloggen/config/testDsfDirFilter1.ResultCatalog1.0.xml");
 
     String service1Name = "myServer";
     String service1Type = "DODS";
     String service1Base = "/dods/";
     String service1Suffix = null;
-    String service1AccessPointHeader = "./build/test/classes/thredds/cataloggen/";
+    String service1AccessPointHeader = "./src/test/data/thredds/cataloggen/";
     ResultService service1 = new ResultService( service1Name, ServiceType.getType( service1Type),
                                                 service1Base, service1Suffix,
                                                 service1AccessPointHeader);
 
-    String service1AccessPoint = "./build/test/classes/thredds/cataloggen/testData/modelNotFlat";
+    String service1AccessPoint = "./src/test/data/thredds/cataloggen/testData/modelNotFlat";
     me1 = DatasetSource.newDatasetSource( "NCEP Eta 80km CONUS model data",
                                           DatasetSourceType.LOCAL, DatasetSourceStructure.FLAT,
                                           service1AccessPoint, service1 );
@@ -185,75 +172,64 @@ public class TestDatasetSource extends TestCase
     DatasetFilter dsF2 = new DatasetFilter( me1, "Accept Eta 211 directory only",
                                             DatasetFilter.Type.REGULAR_EXPRESSION,
                                             "eta_211$", true, false, false);
-    dsF2.setApplyToCollectionDatasets( true);
-    dsF2.setApplyToAtomicDatasets( false);
     me1.addDatasetFilter( dsF2);
+    DatasetFilter dsF3 = new DatasetFilter( me1, "Reject .svn directory only",
+                                            DatasetFilter.Type.REGULAR_EXPRESSION,
+                                            ".svn$", true, false, true);
+    me1.addDatasetFilter( dsF3);
 
-    InvDataset ds = null;
-    try
-    {
-      ds = me1.expand();
-    }
-    catch ( IOException e )
-    {
-      throw new IllegalArgumentException( "Given directory is not a collection dataset <" + service1AccessPoint + ">.");
-
-    }
+    InvDataset ds = me1.expand();
 
     // Compare the resulting catalog an the expected catalog resource.
-    TestCatalogGen.compareCatalogToCatalogResource(ds.getParentCatalog(), expectedCatalogResourceName, debugShowCatalogs);
+    TestCatalogGen.compareCatalogToCatalogDocFile(ds.getParentCatalog(), expectedCatalogDocFile, debugShowCatalogs);
   }
 
   // Expand a nested collection dataset creating catalogRefs for all sub-collection datasets.
-  public void testExpandNotFlatWithAllCatalogRef()
+  public void testExpandNotFlatWithAllCatalogRef() throws IOException
   {
-    String expectedCatalogResourceName = configResourcePath + "/" + testDatasetSource_allCatalogRef_ResultCatalog_ResourceName;
+    File expectedCatalogDocFile = new File( "src/test/data/thredds/cataloggen/config/testDatasetSource.allCatalogRef.result.xml");
 
     String service1Name = "myServer";
     String service1Type = "DODS";
     String service1Base = "/dods/";
     String service1Suffix = null;
-    String service1AccessPointHeader = "./build/test/classes/thredds/cataloggen/";
+    String service1AccessPointHeader = "./src/test/data/thredds/cataloggen/";
     ResultService service1 = new ResultService( service1Name, ServiceType.getType( service1Type ),
                                                 service1Base, service1Suffix,
                                                 service1AccessPointHeader );
 
-    String service1AccessPoint = "./build/test/classes/thredds/cataloggen/testData/modelNotFlat";
+    String service1AccessPoint = "./src/test/data/thredds/cataloggen/testData/modelNotFlat";
     me1 = DatasetSource.newDatasetSource( "NCEP Eta 80km CONUS model data",
                                           DatasetSourceType.LOCAL, DatasetSourceStructure.FLAT,
                                           service1AccessPoint, service1 );
     me1.setCreateCatalogRefs( true );
+    DatasetFilter dsF = new DatasetFilter( me1, "Accept 'eta_211' and 'gfs_211' directories",
+                                           DatasetFilter.Type.REGULAR_EXPRESSION,
+                                           "_211$", true, false, false );
+    me1.addDatasetFilter( dsF );
 
-    InvDataset ds = null;
-    try
-    {
-      ds = me1.expand();
-    }
-    catch ( IOException e )
-    {
-      throw new IllegalArgumentException( "Given directory is not a collection dataset <" + service1AccessPoint + ">." );
 
-    }
+    InvDataset ds = me1.expand();
 
     // Compare the resulting catalog an the expected catalog resource.
-    TestCatalogGen.compareCatalogToCatalogResource( ds.getParentCatalog(), expectedCatalogResourceName, debugShowCatalogs );
+    TestCatalogGen.compareCatalogToCatalogDocFile( ds.getParentCatalog(), expectedCatalogDocFile, debugShowCatalogs );
   }
 
   // Expand a nested collection dataset creating catalogRefs for all sub-collection datasets.
-  public void testExpandFlatAddTimecoverage()
+  public void testExpandFlatAddTimecoverage() throws IOException
   {
-    String expectedCatalogResourceName = configResourcePath + "/" + testDsSource_expandFlatAddTimecoverage_ResourceName;
+    File expectedCatalogDocFile = new File( "src/test/data/thredds/cataloggen/config/testDsSource.expandFlatAddTimecoverage.result.xml" );
 
     String serviceName = "localServer";
     String serviceType = "DODS";
     String serviceBase = "http://localhost:8080/thredds/dodsC/";
     String serviceSuffix = null;
-    String serviceAccessPointHeader = "./test/data/thredds/cataloggen/testData";
+    String serviceAccessPointHeader = "./src/test/data/thredds/cataloggen/testData";
     ResultService service = new ResultService( serviceName, ServiceType.getType( serviceType),
                                                serviceBase, serviceSuffix,
                                                serviceAccessPointHeader);
 
-    String service1AccessPoint = "./test/data/thredds/cataloggen/testData/model";
+    String service1AccessPoint = "./src/test/data/thredds/cataloggen/testData/model";
     me1 = DatasetSource.newDatasetSource( "NCEP Eta 80km CONUS model data",
                                           DatasetSourceType.LOCAL, DatasetSourceStructure.FLAT,
                                           service1AccessPoint, service );
@@ -264,19 +240,10 @@ public class TestDatasetSource extends TestCase
                     "([0-9][0-9][0-9][0-9])([0-9][0-9])([0-9][0-9])([0-9][0-9])",
                     "$1-$2-$3T$4:00:00", "60 hours" ) );
 
-    InvCatalog cat = null;
-    try
-    {
-      cat = me1.fullExpand();
-    }
-    catch ( IOException e )
-    {
-      throw new IllegalArgumentException( "Given directory is not a collection dataset <" + service1AccessPoint + ">.");
-
-    }
+    InvCatalog cat = me1.fullExpand();
 
     // Compare the resulting catalog an the expected catalog resource.
-    TestCatalogGen.compareCatalogToCatalogResource( cat, expectedCatalogResourceName, debugShowCatalogs);
+    TestCatalogGen.compareCatalogToCatalogDocFile( cat, expectedCatalogDocFile, debugShowCatalogs);
   }
 
   public void testGetSet()

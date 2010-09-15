@@ -30,14 +30,12 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-// $Id: TestCatGenConfigMetadataFactory.java 61 2006-07-12 21:36:00Z edavis $
 package thredds.cataloggen.config;
 
 import junit.framework.TestCase;
 import thredds.catalog.*;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -54,7 +52,6 @@ public class TestCatGenConfigMetadataFactory extends TestCase
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(TestCatGenConfigMetadataFactory.class);
 
   private String configResourcePath = "/thredds/cataloggen/config";
-  private String catGenConf_0_6_ResourceName = "test1CatGenConfig0.6.xml";
   private String catGenConf_1_0_ResourceName = "test1CatGenConfig1.0.xml";
 
   private String catName = "THREDDS CatalogGen test config file";
@@ -62,8 +59,7 @@ public class TestCatGenConfigMetadataFactory extends TestCase
   private String resultServiceName = "mlode";
   private String resultServiceType = "DODS";
   private String resultServiceBase = "http://localhost:8080/thredds/cataloggen/";
-  //private String resultServiceAccessPointHeader = "./content/thredds/cataloggen/";
-  private String resultServiceAccessPointHeader = "./test/data/thredds/cataloggen/";
+  private String resultServiceAccessPointHeader = "src/test/data/thredds/cataloggen/";
   private String dsFilterName="Accept netCDF files only";
   private String dsFilterType="RegExp";
   private String dsFilterMatchPattern="/[0-9][^/]*_eta_211\\.nc$";
@@ -96,85 +92,17 @@ public class TestCatGenConfigMetadataFactory extends TestCase
   /**
    * Test parsing of InvCatalog 1.0 catalog.
    */
-  public void testParse_1_0()
+  public void testParse_1_0() throws IOException
   {
-    String tmpMsg = "Test InvCatalog 1.0 parsing of metadata content.";
-    log.debug( "testParse(): " + tmpMsg );
+    String catalogFileName = resultServiceAccessPointHeader + "config/" + catGenConf_1_0_ResourceName;
+    File catalogFile = new File( catalogFileName );
+    InputStream is = new FileInputStream( catalogFile );
 
-    // Open a CatalogGenConfig document resource as an InputStream.
-    String resourceName = configResourcePath + "/" + catGenConf_1_0_ResourceName;
-    String resourceURIName = "http://TestCatGenConfigMetadataFactory.resource/" + resourceName;
-    URI resourceURI = null;
-    try
-    {
-      resourceURI = new URI( resourceURIName );
-    }
-    catch ( URISyntaxException e )
-    {
-      tmpMsg = "URISyntaxException thrown creating URI w/ " + resourceURIName + ": " + e.getMessage();
-      log.debug( "testParse(): " + tmpMsg, e);
-      assertTrue( tmpMsg, false);
-    }
-    InputStream is = this.getClass().getResourceAsStream( resourceName );
+    InvCatalog catalog = this.factory.readXML( is, catalogFile.toURI() );
 
-    // Parse the CatalogGenConfig document.
-    InvCatalog catalog = this.factory.readXML( is, resourceURI );
-
-    // Close the InputStream.
-    try
-    {
-      is.close();
-    }
-    catch ( IOException e )
-    {
-      tmpMsg = "IOException thrown while closing input stream to resource <" + resourceName + ">: " + e.getMessage();
-      log.debug( "testParse(): " + tmpMsg, e );
-      assertTrue( tmpMsg, false );
-    }
+    is.close();
 
     this.parsedCatalogTests( catalog);
-  }
-
-  /**
-   * Test parsing of InvCatalog 0.6 catalog.
-   */
-  public void testParse_0_6()
-  {
-    String tmpMsg = "Test InvCatalog 0.6 parsing of metadata content.";
-    log.debug( "testParse(): " + tmpMsg );
-
-    // Open a CatalogGenConfig document resource as an InputStream.
-    String resourceName = configResourcePath + "/" + catGenConf_0_6_ResourceName;
-    String resourceURIName = "http://TestCatGenConfigMetadataFactory.resource/" + resourceName;
-    URI resourceURI = null;
-    try
-    {
-      resourceURI = new URI( resourceURIName );
-    }
-    catch ( URISyntaxException e )
-    {
-      tmpMsg = "URISyntaxException thrown creating URI w/ " + resourceURIName + ": " + e.getMessage();
-      log.debug( "testParse(): " + tmpMsg, e );
-      assertTrue( tmpMsg, false );
-    }
-    InputStream is = this.getClass().getResourceAsStream( resourceName );
-
-    // Parse the CatalogGenConfig document.
-    InvCatalog catalog = this.factory.readXML( is, resourceURI );
-
-    // Close the InputStream.
-    try
-    {
-      is.close();
-    }
-    catch ( IOException e )
-    {
-      tmpMsg = "IOException thrown while closing input stream to resource <" + resourceName + ">: " + e.getMessage();
-      log.debug( "testParse(): " + tmpMsg, e );
-      assertTrue( tmpMsg, false );
-    }
-
-    this.parsedCatalogTests( catalog );
   }
 
   private void parsedCatalogTests( InvCatalog catalog)
@@ -229,8 +157,7 @@ public class TestCatGenConfigMetadataFactory extends TestCase
                 resultService.getServiceType().toString().equals( resultServiceType ) );
     assertTrue( "ResultService base URL <" + resultService.getBase() + "> != expected base URL <" + resultServiceBase + ">.",
                 resultService.getBase().equals( resultServiceBase ) );
-    assertTrue( "ResultService access point header <" + resultService.getAccessPointHeader() + "> != expected access point header <" + resultServiceAccessPointHeader + ">.",
-                resultService.getAccessPointHeader().equals( resultServiceAccessPointHeader ) );
+    assertEquals( resultServiceAccessPointHeader, resultService.getAccessPointHeader());
 
     // Check that only one DatasetFilter in DatasetSource and that it has
     // the expected name, serviceType, and matchPattern.
@@ -299,34 +226,3 @@ public class TestCatGenConfigMetadataFactory extends TestCase
 //    assertTrue( catParsedToString.equals( catString) );
 
 }
-
-/*
- * $Log: TestCatGenConfigMetadataFactory.java,v $
- * Revision 1.4  2006/01/20 02:08:25  caron
- * switch to using slf4j for logging facade
- *
- * Revision 1.3  2005/07/14 20:01:26  edavis
- * Make ID generation mandatory for datasetScan generated catalogs.
- * Also, remove log4j from some tests.
- *
- * Revision 1.2  2005/03/30 19:55:09  edavis
- * Continue simplifying build process (build.xml fixes and update tests.
- *
- * Revision 1.1  2005/03/30 05:41:18  edavis
- * Simplify build process: 1) combine all build scripts into one,
- * thredds/build.xml; 2) combine contents of all resources/ directories into
- * one, thredds/resources; 3) move all test source code and test data into
- * thredds/test/src and thredds/test/data; and 3) move all schemas (.xsd and .dtd)
- * into thredds/resources/resources/thredds/schemas.
- *
- * Revision 1.3  2004/11/30 22:19:25  edavis
- * Clean up some CatalogGen tests and add testing for DatasetSource (without and with filtering on collection datasets).
- *
- * Revision 1.2  2004/08/23 16:45:17  edavis
- * Update DqcServlet to work with DQC spec v0.3 and InvCatalog v1.0. Folded DqcServlet into the THREDDS server framework/build/distribution. Updated documentation (DqcServlet and THREDDS server).
- *
- * Revision 1.1  2004/06/03 20:39:51  edavis
- * Added tests to check that CatGen config files are parsed correctly and
- * expanded catalogs are written correctly.
- *
- */

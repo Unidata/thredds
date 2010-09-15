@@ -69,7 +69,7 @@ public class TestWcsServer extends TestCase {
     String dataset = "http://motherlode.ucar.edu:9080/thredds/wcs/fmrc/NCEP/NAM/CONUS_80km/best.ncd";
     showGetCapabilities(dataset);
     showDescribeCoverage(dataset, "Precipitable_water");
-    showGetCoverage(dataset, "Precipitable_water", "2006-08-11T18:00:00Z",null,"220,20,250,50", "netCDF3", false);
+    showGetCoverage(dataset, "Precipitable_water", "2010-09-13T18:00:00Z",null,"220,20,250,50", "netCDF3", false);
   }
 
   public void testBbox() throws IOException {
@@ -133,7 +133,7 @@ public class TestWcsServer extends TestCase {
     showGetCapabilities(dataset);
     String fld = "Total_precipitation";
     showDescribeCoverage(dataset, fld);
-    showGetCoverage(dataset, fld, "2008-04-26T00:00:00Z", null,"-140,20,-100,40","GeoTIFFfloat", false);
+    showGetCoverage(dataset, fld, "2010-09-14T00:00:00Z", null,"-140,20,-100,40","GeoTIFFfloat", false);
   }
 
   ////////////////////////////////////////////////////////////////
