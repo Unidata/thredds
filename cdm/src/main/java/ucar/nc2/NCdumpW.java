@@ -62,8 +62,6 @@ public class NCdumpW {
     none, coordsOnly, all
   }
 
-  ;
-
   /**
    * Print netcdf "header only" in CDL.
    *
