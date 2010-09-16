@@ -300,12 +300,11 @@ public class GridTimeCoord implements Comparable<GridTimeCoord> {
 
       // add times bound variable
       if (g == null) g = ncfile.getRootGroup();
-      if (g.findDimension("ncell") == null)
-        ncfile.addDimension(g, new Dimension("ncell", 2, true));
+      Dimension bd = ucar.nc2.dataset.DatasetConstructor.getBoundsDimension(ncfile);
 
       Variable vb = new Variable(ncfile, g, null, getName() + "_bounds");
       vb.setDataType(DataType.INT);
-      vb.setDimensions(getName() + " ncell");
+      vb.setDimensions(getName() + " "+ bd.getName());
       vb.addAttribute(new Attribute("long_name", "bounds for " + getName()));
       vb.addAttribute(new Attribute("units", timeUnit + " since " + refDate));
 

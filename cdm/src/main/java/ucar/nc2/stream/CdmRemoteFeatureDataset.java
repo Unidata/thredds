@@ -59,8 +59,8 @@ import org.apache.commons.httpclient.HttpMethod;
  * @since May 19, 2009
  */
 public class CdmRemoteFeatureDataset {
-  static private boolean debug = false;
-  static private boolean showXML = false;
+  static private boolean debug = true;
+  static private boolean showXML = true;
 
   static public FeatureDataset factory(FeatureType wantFeatureType, String endpoint) throws IOException {
     if (endpoint.startsWith(CdmRemote.SCHEME))
@@ -76,7 +76,7 @@ public class CdmRemoteFeatureDataset {
 
     FeatureType ft = FeatureType.getType(fType);
 
-    if (ft == null || ft == FeatureType.GRID) {
+    if (ft == null || ft == FeatureType.NONE || ft == FeatureType.GRID) {
       CdmRemote ncremote = new CdmRemote(uri);
       NetcdfDataset ncd = new NetcdfDataset(ncremote, null);
       return new GridDataset(ncd);

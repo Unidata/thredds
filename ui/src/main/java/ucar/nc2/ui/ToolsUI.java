@@ -1013,6 +1013,7 @@ public class ToolsUI extends JPanel {
       setThreddsDatatype(threddsData);
 
     } catch (IOException ioe) {
+      ioe.printStackTrace();
       JOptionPane.showMessageDialog(null, "Error on setThreddsDatatype = " + ioe.getMessage());
     }
 

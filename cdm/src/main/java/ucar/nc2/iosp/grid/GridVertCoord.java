@@ -62,35 +62,17 @@ public class GridVertCoord implements Comparable<GridVertCoord> {
    */
   private GridRecord typicalRecord;
 
-  /**
-   * level name
-   */
   private String levelName;
 
-  /**
-   * lookup table
-   */
   private GridTableLookup lookup;
 
-  /**
-   * sequence #
-   */
   private int seq = 0;
 
-  /**
-   * coord values
-   */
   private double[] coordValues = null;
 
-  /**
-   * uses bounds flag
-   */
   private boolean usesBounds = false;
 
-  /**
-   * if only one level, should this be made into another dimension ?
-   *
-  private boolean isVerticalCoordinate = false; */
+  private boolean isVerticalCoordinate = false;
 
   /**
      * vertical pressure factors
@@ -134,6 +116,7 @@ public class GridVertCoord implements Comparable<GridVertCoord> {
     this.typicalRecord = records.get(0);
     this.levelName = levelName;
     this.lookup = lookup;
+    this.isVerticalCoordinate = lookup.isVerticalCoordinate(typicalRecord);
 
     //isVerticalCoordinate = lookup.isVerticalCoordinate(typicalRecord);
     positive = lookup.isPositiveUp(typicalRecord) ? "up" : "down";
@@ -175,7 +158,7 @@ public class GridVertCoord implements Comparable<GridVertCoord> {
     }
   }
 
-  /**
+  /*
    * Create a new GridVertCoord for a layer
    * Used by deprecated GridIndex2NC.makeDefinedCoord()
    *
@@ -185,7 +168,7 @@ public class GridVertCoord implements Comparable<GridVertCoord> {
    * @param lookup    lookup table
    * @param level1    level 1
    * @param level2    level 2
-   */
+   *
   GridVertCoord(GridRecord record, String levelName, GridTableLookup lookup, double[] level1, double[] level2) {
     this.typicalRecord = record;
     this.levelName = levelName;
@@ -206,7 +189,7 @@ public class GridVertCoord implements Comparable<GridVertCoord> {
       Collections.reverse(levels);
     }
     //isVerticalCoordinate = (levels.size() > 1);
-  }
+  } */
 
   /**
    * Set the sequence number
@@ -249,7 +232,7 @@ public class GridVertCoord implements Comparable<GridVertCoord> {
    * @return if vert dimension should be used
    */
   boolean isVertDimensionUsed() {
-    return (getNLevels() == 1) ? lookup.isVerticalCoordinate(typicalRecord) : true;
+    return (getNLevels() == 1) ? isVerticalCoordinate : true;
   }
 
   /**
@@ -326,7 +309,7 @@ public class GridVertCoord implements Comparable<GridVertCoord> {
    */
   void addToNetcdfFile(NetcdfFile ncfile, Group g) {
     if (!isVertDimensionUsed()) {
-      typicalRecord = null; // LOOK why?
+      typicalRecord = null; // allow gc
       return;
     }
 
@@ -384,10 +367,7 @@ public class GridVertCoord implements Comparable<GridVertCoord> {
     ncfile.addVariable(g, v);
 
     if (usesBounds) {
-      String boundsDimName = "bounds_dim";
-      if (g.findDimension(boundsDimName) == null) {
-        ncfile.addDimension(g, new Dimension(boundsDimName, 2, true));
-      }
+      Dimension bd = ucar.nc2.dataset.DatasetConstructor.getBoundsDimension(ncfile);
 
       String bname = getVariableName() + "_bounds";
       v.addAttribute(new Attribute("bounds", bname));
@@ -395,7 +375,7 @@ public class GridVertCoord implements Comparable<GridVertCoord> {
 
       Variable b = new Variable(ncfile, g, null, bname);
       b.setDataType(DataType.DOUBLE);
-      b.setDimensions(getVariableName() + " " + boundsDimName);
+      b.setDimensions(getVariableName() + " " + bd.getName());
       b.addAttribute(new Attribute("long_name",
           "bounds for " + v.getName()));
       b.addAttribute(new Attribute("units",
@@ -486,6 +466,9 @@ public class GridVertCoord implements Comparable<GridVertCoord> {
       ncfile.addVariable(g, hb);
       */
     }
+
+    // allow gc
+    // typicalRecord = null;
   }
 
   /**

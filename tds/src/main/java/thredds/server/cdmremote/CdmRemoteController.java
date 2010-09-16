@@ -415,7 +415,7 @@ public class CdmRemoteController extends AbstractCommandController { // implemen
 
       switch (qb.getRequestType()) {
         case capabilities:
-          sendCapabilities(out, FeatureType.NONE, absPath); // LOOK: should default be GRID ?
+          sendCapabilities(out, FeatureType.GRID, absPath); // LOOK: should default be GRID ?
           res.flushBuffer();
           log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
           return null;

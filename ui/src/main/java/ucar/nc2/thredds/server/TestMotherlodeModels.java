@@ -174,7 +174,7 @@ public class TestMotherlodeModels implements CatalogCrawler.Listener {
   public static JPanel main;
 
   public static void main(String args[]) throws IOException {
-    String server = "http://motherlode.ucar.edu:9080/thredds";
+    String server = "http://motherlode.ucar.edu:8081/thredds";
 
     String catalog = "/idd/models.xml";
     String problemCat = "/catalog/fmrc/NCEP/NDFD/conduit/CONUS_5km/catalog.xml";

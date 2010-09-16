@@ -7,8 +7,6 @@ import thredds.ui.TextHistoryPane;
 import ucar.grib.grib2.ParameterTable;
 import ucar.grid.GridParameter;
 import ucar.nc2.Attribute;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.Variable;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.iosp.grib.tables.GribCodeTable;
@@ -24,7 +22,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.FileFilter;
 import java.io.IOException;
 import java.util.*;
 import java.util.List;
@@ -90,10 +87,10 @@ public class GribCodesPanel extends JPanel {
     });
     buttPanel.add(compareButton);
 
-    AbstractButton dupButton = BAMutil.makeButtcon("Select", "Check for duplicate param names", false);
+    AbstractButton dupButton = BAMutil.makeButtcon("Select", "Look for problems in WMO table", false);
     dupButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        checkDuplicates();
+        lookForProblems();
       }
     });
     buttPanel.add(dupButton);
@@ -240,16 +237,14 @@ public class GribCodesPanel extends JPanel {
     entryTable.setBeans(beans);
   }
 
-  private void checkDuplicates() {
+  private void lookForProblems() {
     int total = 0;
     int dups = 0;
 
     HashMap<String, GribCodeTable.TableEntry> paramSet = new HashMap<String, GribCodeTable.TableEntry>();
-
     Formatter f = new Formatter();
     f.format("Duplicates in WMO parameter table%n");
-    List tables = codeTable.getBeans();
-    for (Object t : tables) {
+    for (Object t : codeTable.getBeans()) {
       GribCodeTable gt = ((CodeBean) t).code;
       if (!gt.isParameter) continue;
       for (GribCodeTable.TableEntry p : gt.entries) {
@@ -268,7 +263,24 @@ public class GribCodesPanel extends JPanel {
         total++;
       }
     }
-    f.format("%nTotal=%d dups=%d%n", total, dups);
+    f.format("%nTotal=%d dups=%d%n%n", total, dups);
+
+    total = 0;
+    dups = 0;
+    f.format("() in WMO parameter table%n");
+    for (Object t : codeTable.getBeans()) {
+      GribCodeTable gt = ((CodeBean) t).code;
+      if (!gt.isParameter) continue;
+      for (GribCodeTable.TableEntry p : gt.entries) {
+        if (p.meaning.indexOf('(') > 0) {
+          f.format("  org='%s'%n name='%s' %n%n", p.meaning, p.name);
+          dups++;
+        }
+        total++;
+      }
+    }
+    f.format("%nTotal=%d parens=%d%n%n", total, dups);
+
     compareTA.setText(f.toString());
     infoWindow.show();
   }

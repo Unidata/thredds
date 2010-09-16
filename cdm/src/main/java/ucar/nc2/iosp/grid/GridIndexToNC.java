@@ -51,7 +51,6 @@ import java.util.*;
  * @author caron
  */
 public class GridIndexToNC {
-
   static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GridIndexToNC.class);
 
   /**

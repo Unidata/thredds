@@ -156,4 +156,14 @@ public class DatasetConstructor {
     }
     return newg;
   }
+
+  static private final String boundsDimName = "bounds_dim";
+  static public Dimension getBoundsDimension(NetcdfFile ncfile) {
+    Group g = ncfile.getRootGroup();
+    Dimension d = g.findDimension(boundsDimName);
+    if (d == null)
+      d = ncfile.addDimension(g, new Dimension(boundsDimName, 2, true));
+    return d;
+  }
+
 }

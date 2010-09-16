@@ -41,6 +41,7 @@ import ucar.grib.grib1.*;
 import ucar.ma2.DataType;
 import ucar.nc2.iosp.grib.tables.GribTemplate;
 import ucar.nc2.iosp.grid.GridVariable;
+import ucar.nc2.util.Misc;
 import ucar.unidata.io.KMPMatch;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
@@ -383,7 +384,7 @@ public class GribRawPanel extends JPanel {
     int len = Math.min(raw1.length, raw2.length);
 
     for (int i = 0; i < len; i++) {
-      if (raw1[i] != raw2[i] && !Double.isNaN(raw1[i]) && !Double.isNaN(raw2[i]))
+      if ( !Misc.closeEnough(raw1[i], raw2[i]) && !Double.isNaN(raw1[i]) && !Double.isNaN(raw2[i]))
         f.format(" %5d : %3f != %3f%n", i, raw1[i], raw2[i]);
     }
     f.format("tested %d floats %n", len);

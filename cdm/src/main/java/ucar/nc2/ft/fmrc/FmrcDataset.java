@@ -544,7 +544,8 @@ class FmrcDataset {
       if (gridset.timeBounds != null) {
         String bname = timeVar.getShortName() + "_bounds";
         timeVar.addAttribute(new ucar.nc2.Attribute("bounds", bname));
-        VariableDS boundsVar = new VariableDS(result, newGroup, null, bname, dtype, dims+" 2", null, null);
+        Dimension bd = ucar.nc2.dataset.DatasetConstructor.getBoundsDimension( result);
+        VariableDS boundsVar = new VariableDS(result, newGroup, null, bname, dtype, dims+" "+bd.getName(), null, null);
         boundsVar.addAttribute(new Attribute("long_name", "bounds for "+ timeVar.getShortName()));
         boundsVar.setCachedData(Array.factory( DataType.DOUBLE, new int[] {nruns, gridset.noffsets, 2}, gridset.timeBounds));
         newGroup.addVariable(boundsVar);
@@ -914,7 +915,8 @@ class FmrcDataset {
     if (valueb.bounds != null) {
       String bname = timeVar.getShortName() + "_bounds";
       timeVar.addAttribute(new ucar.nc2.Attribute("bounds", bname));
-      VariableDS boundsVar = new VariableDS(result, group, null, bname, dtype, dimName+" 2", null, null);
+      Dimension bd = ucar.nc2.dataset.DatasetConstructor.getBoundsDimension( result);
+      VariableDS boundsVar = new VariableDS(result, group, null, bname, dtype, dimName+" " + bd.getName(), null, null);
       boundsVar.addAttribute(new Attribute("long_name", "bounds for "+ timeVar.getShortName()));
       boundsVar.setCachedData(Array.factory( DataType.DOUBLE, new int[] {ntimes, 2}, valueb.bounds));
       group.addVariable(boundsVar);
