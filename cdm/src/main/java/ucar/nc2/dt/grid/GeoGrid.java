@@ -612,7 +612,7 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
     try {
       dataVolume = vs.read(start, shape);
     } catch (Exception ex) {
-      log.error("GeoGrid.getdataSlice() on dataset " + getName(), ex);
+      log.error("GeoGrid.getdataSlice() on dataset " + getName()+" "+ dataset.getLocation(), ex);
       throw new java.io.IOException(ex.getMessage());
     }
 

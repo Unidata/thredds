@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<jnlp spec="1.0+" codebase="http://www.unidata.ucar.edu/software/netcdf-java/v4.1/webstart">
+<jnlp spec="1.0+" codebase="http://www.unidata.ucar.edu/software/netcdf-java/v4.2/webstart" href="netCDFtools.jnlp">
   <information>
     <title>NetCDF Tools UI 4.2</title>
     <vendor>Unidata</vendor>
@@ -39,5 +39,5 @@
   <application-desc main-class="ucar.nc2.ui.ToolsUI">
     <argument>{catalog}#{dataset}</argument>
   </application-desc>
-</jnlp>
 
+</jnlp>

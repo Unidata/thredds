@@ -103,7 +103,7 @@ import org.bounce.text.xml.XMLDocument;
 import org.bounce.text.xml.XMLEditorKit;
 
 /**
- * Netcdf Tools user interface   .
+ * Netcdf Tools user interface.
  *
  * @author caron
  */
@@ -4787,9 +4787,19 @@ public class ToolsUI extends JPanel {
     SwingUtilities.invokeLater(new Runnable() { // do it in the swing event thread
 
       public void run() {
-        ui.makeComponent(null, "THREDDS");
-        ui.threddsUI.setDataset(wantDataset);
-        ui.tabbedPane.setSelectedComponent(ui.threddsUI);
+        int pos = wantDataset.indexOf('#');
+        if (pos > 0) {
+          String catName = wantDataset.substring(0, pos); // {catalog}#{dataset}
+          if (catName.endsWith(".xml")) {
+            ui.makeComponent(null, "THREDDS");
+            ui.threddsUI.setDataset(wantDataset);
+            ui.tabbedPane.setSelectedComponent(ui.threddsUI);
+          }
+          return;
+        }
+
+        // default
+        ui.openNetcdfFile(wantDataset);     
       }
     });
   }

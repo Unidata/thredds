@@ -124,6 +124,8 @@ public class LogLocalManager {
         last.start = nextLast.end;
         last.end = new Date(last.start.getTime()+interval);
       }
+    } else { // only one
+       prev.end = isAccess ? new Date(prev.start.getTime()+ 24 * 3600 * 1000) : new Date(prev.start.getTime()+3600 * 1000);
     }
 
     // filter by time range
