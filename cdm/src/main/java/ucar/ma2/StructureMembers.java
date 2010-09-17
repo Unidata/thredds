@@ -377,8 +377,15 @@ public class StructureMembers {
         this.desc = desc;
     }
 
-    public String toString() { return name; }
-
+    public void showInternal(Formatter f, String leadingSpace) {
+      f.format("%sname='%s' desc='%s' units='%s' dtype=%s size=%d dataObject=%s dataParam=%d", leadingSpace, name, desc, units, dtype, size, dataObject, dataParam);
+      if (members != null) {
+        f.format("%n%sNested members %s%n", leadingSpace, members.getName());
+        for (StructureMembers.Member m : members.getMembers())
+          m.showInternal(f, leadingSpace + "  ");
+      }
+      f.format("%n");
+    }
   }
 
 }

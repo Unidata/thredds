@@ -143,8 +143,8 @@ public class NcStreamReader {
     if (dataType == DataType.STRUCTURE) {
       Structure s = (Structure) ncfile.findVariable(dproto.getVarName());
       StructureMembers members = s.makeStructureMembers();
-      ArrayStructureBB data = new ArrayStructureBB(members, section.getShape(), ByteBuffer.wrap(datab), 0);
       ArrayStructureBB.setOffsets(members);
+      ArrayStructureBB data = new ArrayStructureBB(members, section.getShape(), ByteBuffer.wrap(datab), 0);
       return new DataResult(dproto.getVarName(), section, data);
 
     } else {

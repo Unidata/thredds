@@ -32,6 +32,8 @@
  */
 package ucar.ma2;
 
+import java.util.Formatter;
+
 /**
  * A StructureData implementation delegates everything to the containing ArrayStructure.
  *
@@ -265,6 +267,12 @@ public class StructureDataA extends StructureData {
 
   public ArraySequence getArraySequence(StructureMembers.Member m) {
     return sa.getArraySequence(recno, m);
+  }
+
+  @Override
+  public void showInternal(Formatter f, String leadingSpace) {
+    super.showInternal(f, leadingSpace);
+    sa.showInternal(f, leadingSpace);
   }
 
 }

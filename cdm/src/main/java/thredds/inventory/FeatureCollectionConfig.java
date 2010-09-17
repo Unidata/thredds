@@ -121,7 +121,7 @@ public class FeatureCollectionConfig {
   }
 
   static public class ProtoConfig {
-    public ProtoChoice choice = ProtoChoice.Run;
+    public ProtoChoice choice = ProtoChoice.Penultimate;
     public String param = null;
     public String change = null;
     public Element ncml = null;

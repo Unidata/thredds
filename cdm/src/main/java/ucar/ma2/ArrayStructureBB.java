@@ -34,6 +34,7 @@ package ucar.ma2;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.Formatter;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -63,7 +64,8 @@ import java.util.ArrayList;
 public class ArrayStructureBB extends ArrayStructure {
 
   /**
-   * Set the offsets, based on m.getSizeBytes()
+   * Set the offsets, based on m.getSizeBytes().
+   * Also sets members.setStructureSize().
    * @param members set offsets for these members
    * @return the total size
    */
@@ -73,11 +75,11 @@ public class ArrayStructureBB extends ArrayStructure {
       m.setDataParam(offset);
       offset += m.getSizeBytes();
 
-      // set inner offsets
-      if (m.getDataType() == DataType.STRUCTURE) {
+      // set inner offsets (starts again at 0)
+      if (m.getStructureMembers() != null)
         setOffsets(m.getStructureMembers());
-      }
     }
+    members.setStructureSize(offset);
     return offset;
   }
 
@@ -489,6 +491,24 @@ public class ArrayStructureBB extends ArrayStructure {
     if (null == heap) heap = new ArrayList<Object>();
     heap.add(s);
     return heap.size() - 1;
+  }
+
+  @Override
+  public void showInternal(Formatter f, String leadingSpace) {
+    super.showInternal(f, leadingSpace);
+
+    f.format("%sByteBuffer = %s (hash=0x%x)%n", leadingSpace,  bbuffer, bbuffer.hashCode());
+    if (null != heap) {
+      f.format("%s  Heap Objects%n", leadingSpace);
+      for (int i=0; i<heap.size(); i++) {
+        Object o =  heap.get(i);
+        f.format("%s   %d class=%s hash=0x%x = %s%n", leadingSpace, i, o.getClass().getName(), o.hashCode(), o);
+        if (o instanceof ArrayStructure)
+          ((ArrayStructure) o).showInternal(f, leadingSpace+"    ");
+      }
+      f.format("%n");
+    }
+
   }
 
   ////////////////////////////////////////////////////////////////////////

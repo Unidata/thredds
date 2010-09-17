@@ -213,17 +213,13 @@ public class PointStream {
         dateUnit = DateUnit.getUnixDateUnit();
       }
 
-      int offset = 0;
       sm = new StructureMembers(pfc.getName());
       for (PointStreamProto.Member m : pfc.getMembersList()) {
-        StructureMembers.Member member = sm.addMember(m.getName(), m.getDesc(), m.getUnits(),
+        sm.addMember(m.getName(), m.getDesc(), m.getUnits(),
                 NcStream.decodeDataType(m.getDataType()),
                 NcStream.decodeSection(m.getSection()).getShape());
-        member.setDataParam(offset);
-        //System.out.printf("%s offset=%d%n", member.getName(), offset);
-        offset += member.getSizeBytes();
       }
-      sm.setStructureSize(offset);
+      ArrayStructureBB.setOffsets(sm);
     }
 
     public PointFeature make(byte[] rawBytes) throws InvalidProtocolBufferException {

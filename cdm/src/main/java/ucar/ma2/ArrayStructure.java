@@ -33,6 +33,7 @@
 package ucar.ma2;
 
 import java.io.IOException;
+import java.util.Formatter;
 import java.util.List;
 import java.nio.ByteBuffer;
 
@@ -255,35 +256,40 @@ public abstract class ArrayStructure extends Array {
   }
 
   public StructureDataIterator getStructureDataIterator() throws java.io.IOException {
-    return new StructureDataIterator() {
-      private int count = 0;
-      private int size = (int) getSize();
+    return new ArrayStructureIterator();
+  }
 
-      @Override
-      public boolean hasNext() throws IOException {
-        return count < size;
-      }
+  public class ArrayStructureIterator implements StructureDataIterator {
+    private int count = 0;
+    private int size = (int) getSize();
 
-      @Override
-      public StructureData next() throws IOException {
-        return getStructureData(count++);
-      }
+    @Override
+    public boolean hasNext() throws IOException {
+      return count < size;
+    }
 
-      @Override
-      public void setBufferSize(int bytes) {
-      }
+    @Override
+    public StructureData next() throws IOException {
+      return getStructureData(count++);
+    }
 
-      @Override
-      public StructureDataIterator reset() {
-        count = 0;
-        return this;
-      }
+    @Override
+    public void setBufferSize(int bytes) {
+    }
 
-      @Override
-      public int getCurrentRecno() {
-        return count-1;
-      }
-    };
+    @Override
+    public StructureDataIterator reset() {
+      count = 0;
+      return this;
+    }
+
+    @Override
+    public int getCurrentRecno() {
+      return count-1;
+    }
+
+    // debugging
+    public ArrayStructure getArrayStructure() { return ArrayStructure.this; }
   }
 
   ///////////////////////////////////////////////////////////////////////////////
@@ -965,6 +971,17 @@ public abstract class ArrayStructure extends Array {
 
     ArrayObject array = (ArrayObject) m.getDataArray();
     return (ArrayObject) array.getObject(recnum);     // LOOK ??
+  }
+
+  ////////////////////////////////////////////////////////////////////////////////////////////////
+  public void showInternal(Formatter f, String leadingSpace) {
+    f.format("%sArrayStructure %s size=%d class=%s hash=0x%x%n", leadingSpace, members.getName(), getSize(), this.getClass().getName(), hashCode());
+  }
+
+  public void showInternalMembers(Formatter f, String leadingSpace) {
+    f.format("%sArrayStructure %s class=%s hash=0x%x%n", leadingSpace, members.getName(), this.getClass().getName(), hashCode());
+    for (StructureMembers.Member m : getMembers())
+      m.showInternal(f, leadingSpace+"  ");
   }
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////

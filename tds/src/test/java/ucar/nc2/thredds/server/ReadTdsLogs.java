@@ -683,7 +683,7 @@ public class ReadTdsLogs {
     //String accessLogs = "D:\\logs\\motherlode\\live\\access";
     //String accessLogs = "C:\\Documents and Settings\\caron.UNIDATA_DOMAIN\\tdsMonitor\\motherlode.ucar.edu%3A8080\\access";
     //String accessLogs = "C:/Users/caron/tdsMonitor/motherlode.ucar.edu%3A8080/access/"; // "/home/caron/tdsMonitor/motherlode%3A8080/access/";
-    String accessLogs = "C:\\Users\\caron\\tdsMonitor\\motherlode.ucar.edu%3A8080\\access\\";
+    String accessLogs = "C:\\Users\\caron\\tdsMonitor\\motherlode.ucar.edu%3A8080\\access\\temp\\";
 
     System.out.printf("server=%s send files from %s %n", serverTest, accessLogs);
 

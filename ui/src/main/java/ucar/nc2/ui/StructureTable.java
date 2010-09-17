@@ -240,6 +240,12 @@ public class StructureTable extends JPanel {
       }
     });
 
+    addActionToPopupMenu("Show Internal", new AbstractAction() {
+      public void actionPerformed(java.awt.event.ActionEvent e) {
+        showDataInternal();
+      }
+    });
+
     // add any subtables from inner Structures
     for (Structure s : m.subtables) {
       addActionToPopupMenu("Data Table for "+s.getShortName(), new SubtableAbstractAction(s));
@@ -331,9 +337,22 @@ public class StructureTable extends JPanel {
       NCdumpW.printStructureData(new PrintWriter(bos), sd);
     } catch (IOException e) {
       String mess = e.getMessage();
-      bos.write( mess.getBytes(), 0, mess.length());
+      bos.write(mess.getBytes(), 0, mess.length());
     }
     dumpTA.setText(bos.toString());
+
+    dumpWindow.setVisible(true);
+  }
+
+  private void showDataInternal() {
+    StructureData sd = getSelectedStructureData();
+    if (sd == null) return;
+
+    Formatter f = new Formatter();
+    sd.showInternalMembers(f, "");
+    f.format("%n");
+    sd.showInternal(f, "");
+    dumpTA.setText(f.toString());
     dumpWindow.setVisible(true);
   }
 
@@ -388,20 +407,21 @@ public class StructureTable extends JPanel {
 
     public int getColumnCount() {
       if (members == null) return 0;
-      return members.getMembers().size() + (wantDate ? 2 : 0);
+      return members.getMembers().size() + (wantDate ? 2 : 0) + 1;
     }
 
     public String getColumnName(int columnIndex) {
-      if (wantDate && (columnIndex == 0))
-        return "obsDate";
+      if (columnIndex == 0)
+        return "hash";
       if (wantDate && (columnIndex == 1))
+        return "obsDate";
+      if (wantDate && (columnIndex == 2))
         return "nomDate";
-      int memberCol = wantDate ? columnIndex - 2 : columnIndex;
+      int memberCol = wantDate ? columnIndex - 3 : columnIndex - 1;
       return members.getMember(memberCol).getName();
     }
 
-
-    public String getColumnDesc(int columnIndex) {
+   /* public String getColumnDesc(int columnIndex) {
       if (wantDate && (columnIndex == 0))
         return "Date of observation";
       if (wantDate && (columnIndex == 1))
@@ -409,7 +429,7 @@ public class StructureTable extends JPanel {
       int memberCol = wantDate ? columnIndex - 2 : columnIndex;
       StructureMembers.Member m = members.getMember(memberCol);
       return m.getUnitsString();
-    }
+    }  */
 
      // get row data if in the cache, otherwise read it
     public StructureData getStructureDataHash(int row) throws InvalidRangeException, IOException {
@@ -422,9 +442,16 @@ public class StructureTable extends JPanel {
     }
 
     public Object getValueAt(int row, int column) {
-      if (wantDate && (column == 0))
-        return getObsDate(row);
+      if (column == 0) {
+        try {
+          return Long.toHexString( getStructureData(row).hashCode());
+        } catch (Exception e) {
+          return "ERROR";
+        }
+      }
       if (wantDate && (column == 1))
+        return getObsDate(row);
+      if (wantDate && (column == 2))
         return getNomDate(row);
 
       StructureData sd;
@@ -477,10 +504,6 @@ public class StructureTable extends JPanel {
       return struct.readStructure(row);
     }
 
-    public Object getValueAt(int row, int column) {
-      return super.getValueAt(row, column);
-    }
-
     public void clear() {
       struct = null;
       fireTableDataChanged();
@@ -529,9 +552,18 @@ public class StructureTable extends JPanel {
       return sdataList.get(row);
     }
 
+    // LOOK does this have to override ?
     public Object getValueAt(int row, int column) {
       StructureData sd = sdataList.get(row);
-      return sd.getScalarObject( sd.getStructureMembers().getMember( column));
+
+      if (column == 0) {
+        try {
+          return Long.toHexString( sd.hashCode());
+        } catch (Exception e) {
+          return "ERROR";
+        }
+      }
+      return sd.getScalarObject( sd.getStructureMembers().getMember( column-1));
     }
 
     public void clear() {

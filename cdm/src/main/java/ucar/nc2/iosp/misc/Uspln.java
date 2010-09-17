@@ -30,19 +30,12 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-
-
-
 package ucar.nc2.iosp.misc;
-
 
 import ucar.ma2.*;
 
 import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
-import ucar.nc2.constants.CF;
-import ucar.nc2.constants.FeatureType;
-import ucar.nc2.constants._Coordinate;
 import ucar.nc2.util.CancelTask;
 
 import ucar.unidata.io.RandomAccessFile;
@@ -236,18 +229,9 @@ public class Uspln extends AbstractLightningIOSP {
         addLightningGlobalAttributes(ncfile);
         ncfile.finish();
         sm = seq.makeStructureMembers();
-        int size = ArrayStructureBB.setOffsets(sm);
-        sm.setStructureSize(size);
-
+        ArrayStructureBB.setOffsets(sm);
     }
 
-    /**
-     * _more_
-     *
-     * @param ncfile _more_
-     *
-     * @return _more_
-     */
     protected Sequence makeSequence(NetcdfFile ncfile) {
 
         Sequence seq = new Sequence(ncfile, null, null, RECORD);

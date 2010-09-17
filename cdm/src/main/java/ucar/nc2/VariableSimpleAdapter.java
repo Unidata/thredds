@@ -82,7 +82,7 @@ public class VariableSimpleAdapter implements VariableSimpleIF {
   }
 
   public String toString() {
-    return m.toString();
+    return m.getName();
   }
 
   /**

@@ -34,6 +34,7 @@ package ucar.ma2;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Formatter;
 
 /**
  * ArraySequence is the way to contain the data for a Sequence, using a StructureDataIterator.
@@ -341,7 +342,17 @@ public class ArraySequence extends ArrayStructure {
 
   @Override
   public String toString() {
-    return Integer.toString(nelems); // "Seq@"+hashCode();
+    return getClass().getName()+" nelems="+ Integer.toString(nelems); 
   }
+
+  @Override
+  public void showInternal(Formatter f, String leadingSpace) {
+    super.showInternal(f, leadingSpace);
+    f.format("%sStructureDataIterator Class=%s hash=0x%x%n", leadingSpace, iter.getClass().getName(), iter.hashCode());
+    if (iter instanceof ArrayStructure.ArrayStructureIterator) {
+      ArrayStructure.ArrayStructureIterator ii = (ArrayStructure.ArrayStructureIterator)  iter;
+      ii.getArrayStructure().showInternal(f, leadingSpace+"  ");     
+    }
+  }  
 
 }

@@ -32,6 +32,7 @@
  */
 package ucar.ma2;
 
+import java.util.Formatter;
 import java.util.List;
 
 /**
@@ -642,4 +643,17 @@ abstract public class StructureData {
    * @return ArrayStructure
    */
   abstract public ArraySequence getArraySequence(StructureMembers.Member m);
+
+  ////////////////////////////////////////////////////////////////////////////////////////////////
+  // debugging
+  public void showInternal(Formatter f, String leadingSpace) {
+    f.format("%sStructureData %s class=%s hash=0x%x%n", leadingSpace, members.getName(), this.getClass().getName(), hashCode());
+  }
+
+  public void showInternalMembers(Formatter f, String leadingSpace) {
+    f.format("%sStructureData %s class=%s hash=0x%x%n", leadingSpace, members.getName(), this.getClass().getName(), hashCode());
+    for (StructureMembers.Member m : getMembers())
+      m.showInternal(f, leadingSpace+"  ");
+  }
+
 }

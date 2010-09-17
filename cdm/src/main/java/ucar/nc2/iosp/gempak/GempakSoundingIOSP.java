@@ -251,7 +251,6 @@ public class GempakSoundingIOSP extends GempakStationFileIOSP {
         int numLevels = values.length / params.size();
         StructureMembers              members = seq.makeStructureMembers();
         int offset = ArrayStructureBB.setOffsets(members);
-        members.setStructureSize(offset);
 
         int        size  = offset * numLevels;
         byte[]     bytes = new byte[size];

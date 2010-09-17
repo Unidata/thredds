@@ -176,9 +176,9 @@ The following will return any compatible type as a double or float, but will hav
   <li>sequence: <strong>ArraySequence</strong></li>
 </ul>
 <h4>ArrayStructureBB Nested Structures</h4>
-<p>You can accomodate arbitrary nesting of Structures by using a recursive method to set the offsets: </p>
+<p>You can accomodate arbitrary nesting of Structures by using a recursive method to set the offsets. The following is a static convenience method in ArrayStructureBB:</p>
 <pre>
-  private int setOffsets(StructureMembers members) {
+  public int ArrayStructureBB.setOffsets(StructureMembers members) {
     int offset = 0;
     for (StructureMembers.Member m : members.getMembers()) {
       m.setDataParam(offset);
@@ -253,7 +253,7 @@ class EmptyStructureDataIterator implements StructureDataIterator {
 <hr />
 <p>&nbsp;</p>
 <address>
-<img src="../nc.gif" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Oct 2009
+<img src="../nc.gif" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated  Sep 2010
 </address>
 </body>
 </html>

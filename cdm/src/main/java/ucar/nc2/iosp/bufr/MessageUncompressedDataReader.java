@@ -107,6 +107,8 @@ public class MessageUncompressedDataReader {
     StructureMembers members = s.makeStructureMembers();
     ArrayStructureBB.setOffsets(members);
 
+    // bbtest = null;
+    
     int n = m.getNumberDatasets();
     ArrayStructureBB abb = new ArrayStructureBB(members, new int[]{n});
     ByteBuffer bb = abb.getByteBuffer();
@@ -115,8 +117,15 @@ public class MessageUncompressedDataReader {
     boolean addTime = (s.findVariable(ConstructNC.TIME_NAME) != null);
     readData(abb, m, raf, null, addTime, f);
 
+    //Formatter ff = new Formatter(System.out);
+    //abb.showInternalMembers(ff, "");
+    //abb.showInternal(ff, "");
     return abb;
   }
+
+
+    // temp debugging
+  // private ByteBuffer bbtest = null;
 
   // read / count the bits in an uncompressed message
   // This assumes that all of the fields and all of the datasets are being read
@@ -276,6 +285,13 @@ public class MessageUncompressedDataReader {
       if (out != null)
         out.f.format("%4d %s read %s (%s %s) bitWidth=%d end at= 0x%x raw=%d convert=%f\n",
                 out.fldno++, out.indent(), dkey.getFxyName(), dkey.getName(), dkey.getUnits(), dkey.bitWidth, reader.getPos(), val, dkey.convert(val));
+
+      /* if (bbtest == null && req.abb != null && req.bb != null) {
+        if ("obs.seq1".equals(req.abb.getStructureMembers().getName()))
+          bbtest = req.bb;  
+      } else {
+        System.out.printf("%d%n", bbtest.get(10));
+      } */
     }
 
   }
@@ -346,7 +362,7 @@ public class MessageUncompressedDataReader {
   private ArraySequence makeArraySequenceUncompressed(DebugOut out, BitReader reader, BitCounterUncompressed bitCounterNested,
                                                       DataDescriptor seqdd, Request req) throws IOException {
 
-    int count = bitCounterNested.getNumberRows();
+    int count = bitCounterNested.getNumberRows(); // the actual number of rows in this sequence
     ArrayStructureBB abb = null;
     StructureMembers members = null;
 
@@ -360,11 +376,11 @@ public class MessageUncompressedDataReader {
       //    System.out.println("HEY");
 
       // allocate ArrayStructureBB for outer structure
+      // LOOK why is this different from ArrayStructureBB.setOffsets() ?
       int offset = 0;
       members = seq.makeStructureMembers();
       for (StructureMembers.Member m : members.getMembers()) {
         m.setDataParam(offset);
-        //System.out.println(m.getName()+" offset="+offset);
 
         Variable mv = seq.findVariable(m.getName());
         DataDescriptor dk = (DataDescriptor) mv.getSPobject();
@@ -372,6 +388,9 @@ public class MessageUncompressedDataReader {
           offset += 4;
         else
           offset += dk.getByteWidthCDM();
+
+        if (m.getStructureMembers() != null)
+          ArrayStructureBB.setOffsets(m.getStructureMembers());
       }
 
       abb = new ArrayStructureBB(members, shape);

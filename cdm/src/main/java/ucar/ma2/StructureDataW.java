@@ -32,6 +32,7 @@
  */
 package ucar.ma2;
 
+import java.util.Formatter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -324,5 +325,16 @@ public class StructureDataW extends StructureData {
   public ArraySequence getArraySequence(StructureMembers.Member m) {
     return (ArraySequence) getArray(m);
   }
+
+  @Override
+  public void showInternal(Formatter f, String leadingSpace) {
+    super.showInternal(f, leadingSpace);
+    for (StructureMembers.Member m : memberData.keySet()) {
+      Array data = memberData.get(m);
+      f.format("%s %s = %s%n", leadingSpace, m, data);
+    }
+
+  }
+
 
 }

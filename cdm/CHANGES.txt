@@ -3,7 +3,9 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Changes in version 4.2:
- 5: (xxxx-xx-xx)
+ 5: (2010-09-17)
+  ArrayStructureBB.setOffsets() also calls setStructureSize(), does all nested members.
+  BUFR MessageUncompressedDataReader: bug in deeply nested structures
   FeatureCollectionConfig.ProtoChoice : add Run, with param = run hour
   Calendar.HOUR should be Calendar.HOUR_OF_DAY everywhere
   GribIOSP: raf was not setting endianess
