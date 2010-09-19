@@ -146,7 +146,8 @@ public class Fmrc2Dialog extends JDialog {
             "NetcdfFile Viewer",
             "CoordSys Tab",
             "Grid FeatureType",
-            "Detail Info"
+            "GridDataset Info",
+            "Selected UberGrid Info"
           };
           public int getSize() { return values.length; }
           public Object getElementAt(int i) { return values[i]; }
@@ -178,7 +179,7 @@ public class Fmrc2Dialog extends JDialog {
                 .addComponent(comboBox2, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                 .addComponent(comboBox1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                 .addComponent(list1))
-              .addContainerGap(133, Short.MAX_VALUE))
+              .addContainerGap(140, Short.MAX_VALUE))
         );
         contentPanelLayout.setVerticalGroup(
           contentPanelLayout.createParallelGroup()
@@ -191,9 +192,9 @@ public class Fmrc2Dialog extends JDialog {
               .addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                 .addComponent(comboBox2, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
                 .addComponent(label3))
-              .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 28, Short.MAX_VALUE)
+              .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 14, Short.MAX_VALUE)
               .addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                .addComponent(list1, GroupLayout.PREFERRED_SIZE, 72, GroupLayout.PREFERRED_SIZE)
+                .addComponent(list1, GroupLayout.PREFERRED_SIZE, 86, GroupLayout.PREFERRED_SIZE)
                 .addComponent(label2))
               .addContainerGap())
         );

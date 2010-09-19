@@ -309,7 +309,7 @@ public class Fmrc2Panel extends JPanel {
           Fmrc2Dialog.Data data = (Fmrc2Dialog.Data) evt.getNewValue();
           if ((data.type == null) || (data.where == null)) return;
           //System.out.printf("name=%s %s%n", evt.getPropertyName(), data);
-          showDataset(data);
+          processDialog(data);
         }
       });
     }
@@ -317,7 +317,14 @@ public class Fmrc2Panel extends JPanel {
     dialog.setVisible(true);
   }
 
-  private void showDataset(Fmrc2Dialog.Data data) {
+  private void processDialog(Fmrc2Dialog.Data data) {
+    if (data.where.startsWith("Selected UberGrid")) {
+      GridBean bean = (GridBean) gridTable.getSelectedBean();
+      if (bean == null) return;
+      showGridInv(data, bean);
+      return;
+    }
+
     GridDataset gds = null;
     try {
       if (data.type.equals("Dataset2D"))
@@ -346,18 +353,16 @@ public class Fmrc2Panel extends JPanel {
       firePropertyChange("openNetcdfFile", null, gds.getNetcdfFile());
     else if (data.where.startsWith("CoordSys"))
       firePropertyChange("openCoordSys", null, gds.getNetcdfFile());
+    else if (data.where.startsWith("GridDataset"))
+      showGridDatasetInfo(gds);
     else if (data.where.startsWith("Grid"))
       firePropertyChange("openGridDataset", null, gds);
-    else
-      showDetails(gds);
   }
 
-  public void showDetails(GridDataset gds) {
+  private void showGridDatasetInfo(GridDataset gds) {
     infoTA.setText(gds.getDetailInfo());
     infoWindow.showIfNotIconified();
   }
-
-
 
   private void setFmr(FmrInv fmr) {
     if (fmr == null) return;
@@ -544,6 +549,82 @@ public class Fmrc2Panel extends JPanel {
       for (int i=0; i<bound1.length; i++)
         f.format("%"+w+".0f-%"+w+".0f,", bound1[i], bound2[i]);
     }
+  }
+
+
+  private void showGridInv(Fmrc2Dialog.Data ddata, GridBean bean) {
+    Formatter out = new Formatter();
+    FmrcInv.UberGrid ugrid = ((GridBean) bean).grid;
+    FmrcInvLite.Gridset gset = lite.findGridset(ugrid.getName());
+
+    TimeInventory ti = null;
+    try {
+      if (ddata.type.equals("Best")) {
+        ti = lite.makeBestDatasetInventory();
+
+      } else if (ddata.type.equals("Run")) {
+        DateFormatter df = new DateFormatter();
+        ti = lite.makeRunTimeDatasetInventory(df.getISODate((String)ddata.param));
+
+      } else if (ddata.type.equals("ConstantForecast")) {
+        DateFormatter df = new DateFormatter();
+        ti = lite.getConstantForecastDataset(df.getISODate((String)ddata.param));
+
+      } else if (ddata.type.equals("ConstantOffset")) {
+        ti = lite.getConstantOffsetDataset( (Double) ddata.param);
+      }
+
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
+    out.format("Show UberGrid '%s' for dataset '%s'%n", ugrid.getName(), ti.getName());
+
+    double[] runCoords = ti.getRunTimeCoords(gset);
+    FmrcInvLite.ValueB timeCoords = ti.getTimeCoords(gset);
+    double[] offsetCoords = ti.getOffsetCoords(gset);
+
+    if (runCoords != null) {
+      out.format("RunTimeCoords = ");
+      for (double rc : runCoords) {
+        out.format(" %10f", rc);
+      }
+      out.format("%n");
+    }
+
+    if (offsetCoords != null) {
+      out.format("%noffsetCoords = ");
+      for (double rc : offsetCoords) {
+        out.format(" %10f", rc);
+      }
+      out.format("%n");
+    }
+
+    if (timeCoords != null) {
+      out.format("%ntimeCoords = ");
+      if (timeCoords.bounds == null) {
+        for (double rc : timeCoords.offset) {
+          out.format(" %10f", rc);
+        }
+      } else {
+         for (int i=0; i<timeCoords.bounds.length; i+=2) {
+          out.format(" (%6f %6f)", timeCoords.bounds[i], timeCoords.bounds[i+1]);
+        }
+      }
+      out.format("%n");
+    }
+
+
+    FmrcInvLite.Gridset.Grid grid = lite.findGrid(ugrid.getName());
+    int ntimes = ti.getTimeLength(gset);
+    out.format("%nInventory%n");
+    for (int i=0; i<ntimes; i++) {
+      TimeInventory.Instance ins = ti.getInstance( grid, i);
+      out.format(" %3d: %3d, %s%n", i, ins.getDatasetIndex(), ins.getDatasetLocation());
+    }
+
+    infoTA.setText(out.toString());
+    infoWindow.showIfNotIconified();
   }
 
 

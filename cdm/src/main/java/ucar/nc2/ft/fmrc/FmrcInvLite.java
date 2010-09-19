@@ -139,6 +139,15 @@ public class FmrcInvLite implements java.io.Serializable {
     return null;
   }
 
+  public Gridset findGridset(String gridName) {
+    for (Gridset gridset : gridSets) {
+      for (Gridset.Grid grid : gridset.grids) {
+        if (gridName.equals(grid.name)) return gridset;
+      }
+    }
+    return null;
+  }
+
   public void showGridInfo(String gridName, Formatter out) {
     Gridset.Grid grid = findGrid(gridName);
     if (grid == null ) {
@@ -365,7 +374,7 @@ public class FmrcInvLite implements java.io.Serializable {
       return result;
     }
 
-    class Grid implements java.io.Serializable {
+    public class Grid implements java.io.Serializable {
       String name;
       GridInventory inv; // shared
 
@@ -420,8 +429,8 @@ public class FmrcInvLite implements java.io.Serializable {
 
   // efficient representation of time coords - point or interval
   public static class ValueB {
-    double[] offset; // the forecast time
-    double[] bounds; // bounds of interval or null. shape = (ntimes, 2)
+    public double[] offset; // the forecast time
+    public double[] bounds; // bounds of interval or null. shape = (ntimes, 2)
 
     public ValueB(List<TimeInv> invs) {
       boolean isInterval = invs.size() > 0 && invs.get(0).isInterval;
@@ -549,7 +558,8 @@ public class FmrcInvLite implements java.io.Serializable {
     }
   }
 
-  TimeInventory makeBestDatasetInventory() {
+  // public for debugging
+  public TimeInventory makeBestDatasetInventory() {
     return new BestDatasetInventory(null);
   }
 
@@ -557,15 +567,18 @@ public class FmrcInvLite implements java.io.Serializable {
     return new BestDatasetInventory(bd);
   }
 
-  TimeInventory makeRunTimeDatasetInventory(Date run) throws FileNotFoundException {
+  // public for debugging
+  public TimeInventory makeRunTimeDatasetInventory(Date run) throws FileNotFoundException {
     return new RunTimeDatasetInventory(run);
   }
 
-  TimeInventory getConstantForecastDataset(Date time) throws FileNotFoundException {
+  // public for debugging
+  public TimeInventory getConstantForecastDataset(Date time) throws FileNotFoundException {
     return new ConstantForecastDataset(time);
   }
 
-  TimeInventory getConstantOffsetDataset(double hour) throws FileNotFoundException {
+  // public for debugging
+  public TimeInventory getConstantOffsetDataset(double hour) throws FileNotFoundException {
     return new ConstantOffsetDataset(hour);
   }
 

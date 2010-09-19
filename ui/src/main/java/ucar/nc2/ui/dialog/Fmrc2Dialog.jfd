@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?> 
-<java version="1.6.0_18" class="java.beans.XMLDecoder"> 
+<java version="1.6.0_17" class="java.beans.XMLDecoder"> 
  <object class="com.jformdesigner.model.FormModel"> 
   <void property="contentType"> 
    <string>form/swing</string> 
@@ -43,11 +43,11 @@
            <class>org.jdesktop.layout.GroupLayout</class> 
            <void method="setProperty"> 
             <string>$horizontalGroup</string> 
-            <string>par l {seq l {space :::p, par t {par l {comp label1:::p::p, comp label2::l:p::p}, comp label3::t:p::p}, space :::p, par l {comp comboBox2::l:p::p, comp comboBox1::l:p::p, comp list1:::p::p}, space ::133:x}}</string> 
+            <string>par l {seq l {space :::p, par t {par l {comp label1:::p::p, comp label2::l:p::p}, comp label3::t:p::p}, space :::p, par l {comp comboBox2::l:p::p, comp comboBox1::l:p::p, comp list1:::p::p}, space ::140:x}}</string> 
            </void> 
            <void method="setProperty"> 
             <string>$verticalGroup</string> 
-            <string>par l {seq l {space :::p, par b {comp label1::b:p::p, comp comboBox1::b:p::p}, space s:::p, par b {comp comboBox2::b:p::p, comp label3::b:p::p}, space ::28:x, par b {comp list1::b:p:72:p, comp label2::b:p::p}, space :::p}}</string> 
+            <string>par l {seq l {space :::p, par b {comp label1::b:p::p, comp comboBox1::b:p::p}, space s:::p, par b {comp comboBox2::b:p::p, comp label3::b:p::p}, space ::14:x, par b {comp list1::b:p:86:p, comp label2::b:p::p}, space :::p}}</string> 
            </void> 
           </object> 
           <void property="name"> 
@@ -150,7 +150,10 @@
                <string>Grid FeatureType</string> 
               </void> 
               <void method="addElement"> 
-               <string>Detail Info</string> 
+               <string>GridDataset Info</string> 
+              </void> 
+              <void method="addElement"> 
+               <string>Selected UberGrid Info</string> 
               </void> 
              </object> 
             </void> 
