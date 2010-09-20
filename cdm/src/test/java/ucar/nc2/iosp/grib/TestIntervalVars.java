@@ -42,8 +42,8 @@ public class TestIntervalVars extends TestCase {
       @Override
       public int doAct(String filename) throws IOException {
         System.out.printf("%n%s%n", filename);
-        //showNames(filename);
-        checkTemplates(filename);
+        showNames(filename);
+        //checkTemplates(filename);
         return 0;
       }
     });

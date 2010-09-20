@@ -217,9 +217,8 @@ public class GridIndexToNC {
     String source = lookup.getSource();
     if ( source != null && ! source.startsWith( "Unknown"))
       ncfile.addAttribute(null, new Attribute("source", source));
-    String now = formatter.toDateTimeStringISO( Calendar.getInstance().getTime());
-    ncfile.addAttribute(null, new Attribute("history", now +" Direct read of "+
-        lookup.getGridType() +" into NetCDF-Java 4 API"));
+    // String now = formatter.toDateTimeStringISO( Calendar.getInstance().getTime());
+    ncfile.addAttribute(null, new Attribute("history", "Direct read of "+ lookup.getGridType() +" into NetCDF-Java 4 API"));
     if ( lookup.getComment() != null)
       ncfile.addAttribute(null, new Attribute("comment", lookup.getComment()));
 

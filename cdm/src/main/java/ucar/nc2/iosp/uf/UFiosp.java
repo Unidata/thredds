@@ -114,7 +114,7 @@ public class UFiosp extends AbstractIOServiceProvider {
         double lonRadiusDegrees = Math.toDegrees( radarRadius / cosLat / ucar.unidata.geoloc.Earth.getRadius());
         ncfile.addAttribute(null, new Attribute("geospatial_lon_min", new Double(headerParser.getStationLongitude() - lonRadiusDegrees)));
         ncfile.addAttribute(null, new Attribute("geospatial_lon_max", new Double(headerParser.getStationLongitude() + lonRadiusDegrees)));
-        ncfile.addAttribute(null, new Attribute("history", "direct read of Nexrad Level 2 file into NetCDF-Java 2.2 API"));
+        ncfile.addAttribute(null, new Attribute("history", "Direct read of Nexrad Level 2 file into NetCDF-Java 2.2 API"));
         ncfile.addAttribute(null, new Attribute("DataType", "Radial"));
 
         ncfile.addAttribute(null, new Attribute("Title", "Nexrad Level 2 Station "+headerParser.getStationId()+" from "+

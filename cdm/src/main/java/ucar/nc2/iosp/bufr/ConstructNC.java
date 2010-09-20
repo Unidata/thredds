@@ -85,7 +85,7 @@ class ConstructNC {
     }  */
 
     // global Attributes
-    ncfile.addAttribute(null, new Attribute("history", "direct read of BUFR data by CDM version 4.1"));
+    ncfile.addAttribute(null, new Attribute("history", "Direct read of BUFR data by CDM version 4.1"));
     ncfile.addAttribute(null, new Attribute("location", nc.getLocation()));
     ncfile.addAttribute(null, new Attribute("BUFR:edition", proto.is.getBufrEdition()));
     ncfile.addAttribute(null, new Attribute("BUFR:categoryName", proto.getCategoryName()));

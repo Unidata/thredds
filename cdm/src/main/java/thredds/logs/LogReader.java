@@ -33,6 +33,7 @@
 
 package thredds.logs;
 
+import ucar.nc2.units.DateFormatter;
 import ucar.unidata.util.StringUtil;
 
 import java.io.BufferedReader;
@@ -100,6 +101,25 @@ public class LogReader {
     public String toString() {
       return ip + " [" + getDate() + "] " + verb + " " + getPath() + " " + http + " " + returnCode + " " + sizeBytes + " " + referrer + " " + client + " " + msecs;
     }
+
+    public void toString(Formatter f) {
+      f.format("path = %s%n", path);
+      int pos = path.indexOf('?');
+      if (pos > 0 ) {
+        f.format("  path = %s%n", path.substring(0,pos));
+        f.format("  query = %s%n", path.substring(pos+1));
+      }
+      f.format("%n");
+      f.format("date = %s%n", getDate());
+      f.format("verb = %s%n", verb);
+      f.format("status = %d%n", returnCode);
+      f.format("took = %d msecs%n", msecs);
+      f.format("size = %d bytes%n", sizeBytes);
+      f.format("from address = %s%n", ip);
+      f.format("client = %s%n", client);
+      f.format("referrer = %s%n", referrer);
+    }
+
 
   }
 

@@ -4,6 +4,8 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.2:
  6: (xxxx-xx-xx)
+  Remove Date from GridIndexToNC "history" attribute.
+  ToolsUI : allow http: argument to directly open a dods URL
   FmrcInvLite.GridInventory now checks for intervals correctly
   CoordinateAxis1D.makeBounds() - check for ordering, dont accept equality
  5: (2010-09-17)

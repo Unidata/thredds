@@ -98,6 +98,7 @@ public class LogLocalManager {
 
     List<FileDateRange> list = new ArrayList<FileDateRange>();
     for (File f : localDir.listFiles()) {
+      if (f.isDirectory()) continue;
       if (f.getName().endsWith(".zip")) continue;
       list.add(new FileDateRange(f));
     }
@@ -124,7 +125,7 @@ public class LogLocalManager {
         last.start = nextLast.end;
         last.end = new Date(last.start.getTime()+interval);
       }
-    } else { // only one
+    } else if (prev != null) { // only one
        prev.end = isAccess ? new Date(prev.start.getTime()+ 24 * 3600 * 1000) : new Date(prev.start.getTime()+3600 * 1000);
     }
 
@@ -164,10 +165,10 @@ public class LogLocalManager {
     if (!isAccess && name.equals(specialLog))
       return new Date(); // LOOK LAME
     else {
-      String filenameDate = name.substring( filenameDatePos);
       try {
+        String filenameDate = name.substring( filenameDatePos);
         return localFormat.parse( filenameDate );
-      } catch (ParseException e) {
+      } catch (Exception e) {
         e.printStackTrace();
         return null;
       }

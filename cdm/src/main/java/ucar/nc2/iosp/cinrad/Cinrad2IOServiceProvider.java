@@ -212,7 +212,7 @@ public class Cinrad2IOServiceProvider extends AbstractIOServiceProvider {
     ncfile.addAttribute(null, new Attribute("time_coverage_start", formatter.toDateTimeStringISO(volScan.getStartDate())));; //.toDateTimeStringISO(d)));
     ncfile.addAttribute(null, new Attribute("time_coverage_end", formatter.toDateTimeStringISO(volScan.getEndDate())));
 
-    ncfile.addAttribute(null, new Attribute("history", "direct read of Nexrad Level 2 file into NetCDF-Java 2.2 API"));
+    ncfile.addAttribute(null, new Attribute("history", "Direct read of Nexrad Level 2 file into NetCDF-Java 2.2 API"));
     ncfile.addAttribute(null, new Attribute("DataType", "Radial"));
 
     ncfile.addAttribute(null, new Attribute("Title", "Nexrad Level 2 Station "+volScan.getStationId()+" from "+

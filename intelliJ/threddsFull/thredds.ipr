@@ -87,7 +87,6 @@
       <file url="file://$PROJECT_DIR$/../../cdm/src/test/java/ucar/nc2/jni/netcdf/TestJni.java" />
       <file url="file://$PROJECT_DIR$/../../ldm/src/main/thredds/ldm/BerkeleyDBIndexer.java" />
       <file url="file://$PROJECT_DIR$/../../tds/src/main/java/thredds/servlet/MyWebDavServlet.java" />
-      <file url="file://$PROJECT_DIR$/../../cdm/src/test/java/ucar/nc2/iosp/grib/TestIntervalVars.java" />
     </excludeFromCompile>
     <resourceExtensions>
       <entry name=".+\.(properties|xml|html|dtd|tld)" />

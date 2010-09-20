@@ -113,6 +113,17 @@ public class AccessLogTable extends JPanel {
     });
 
     thredds.ui.PopupMenu varPopup = new thredds.ui.PopupMenu(logTable.getJTable(), "Options");
+    varPopup.addAction("Show", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        LogReader.Log log = (LogReader.Log) logTable.getSelectedBean();
+        if (log == null) return;
+        Formatter f = new Formatter();
+        log.toString(f);
+        infoTA.setText(f.toString());
+        infoWindow.showIfNotIconified();
+      }
+    });
+
     varPopup.addAction("DNS Lookup", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         LogReader.Log log = (LogReader.Log) logTable.getSelectedBean();
