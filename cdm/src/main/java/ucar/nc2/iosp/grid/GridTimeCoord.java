@@ -411,7 +411,7 @@ public class GridTimeCoord implements Comparable<GridTimeCoord> {
     @Override
     public int compareTo(TimeCoordWithInterval o) {
       int diff = coord.compareTo(o.coord);
-      return (diff == 0) ? (interval - o.interval) : diff;
+      return (diff == 0) ? (o.interval - interval) : diff;  // longer intervals first
     }
 
     @Override

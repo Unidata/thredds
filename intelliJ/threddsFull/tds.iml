@@ -15,7 +15,6 @@
         <sourceRoots>
           <root url="file://$MODULE_DIR$/../../tds/src/main/java" />
         </sourceRoots>
-        <context-artifact name="tds:tds exploded" />
       </configuration>
     </facet>
     <facet type="web" name="dqcServletRedirect">

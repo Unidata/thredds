@@ -58,7 +58,7 @@ public class FmrcInvLite implements java.io.Serializable {
 
   public List<String> locationList = new ArrayList<String>();
   public List<Gridset> gridSets = new ArrayList<Gridset>();
-  public List<GridInventory> invList = new ArrayList<GridInventory>(); // share these, they are expensive!
+  public List<Gridset.GridInventory> invList = new ArrayList<Gridset.GridInventory>(); // share these, they are expensive!
 
   public FmrcInvLite(FmrcInv fmrcInv) {
     this.collectionName = fmrcInv.getName();
@@ -148,6 +148,7 @@ public class FmrcInvLite implements java.io.Serializable {
     return null;
   }
 
+  // debugging
   public void showGridInfo(String gridName, Formatter out) {
     Gridset.Grid grid = findGrid(gridName);
     if (grid == null ) {
@@ -159,9 +160,9 @@ public class FmrcInvLite implements java.io.Serializable {
     out.format("%n=======================================%nFmrcLite.Grid%n");
 
     // show the 2D    
-    out.format("2D%n   run%n");
+    out.format("2D%n   run%n time  ");
     for (int i=0; i< gridset.noffsets; i++)
-      out.format("       %6d", i);
+      out.format("%6d ", i);
     out.format("%n");
     for (int run = 0; run < nruns; run++) {
       out.format("%6d", run);
@@ -206,7 +207,8 @@ public class FmrcInvLite implements java.io.Serializable {
     String gridsetName;
     List<Grid> grids = new ArrayList<Grid>();
     int noffsets;
-    double[] timeOffset;  // timeOffset(nruns,noffsets) in offset hours since base. this is the twoD time coordinate for this Gridset
+    double[] timeOffset;  // timeOffset(nruns,noffsets) in offset hours since base. this is the twoD time coordinate for this Gridset;
+                          // Double.NaN for missing values; these are dense (a ragged array has missing all at end)
     double[] timeBounds;  // timeBounds(nruns,noffsets,2) in offset hours since base. null means not an interval time coordinate
 
     Map<String, List<TimeInv>> timeCoordMap = new HashMap<String, List<TimeInv>>();
@@ -259,7 +261,7 @@ public class FmrcInvLite implements java.io.Serializable {
         double[] offsets = tc.getOffsetTimes();
         int ntimes = offsets.length;
         for (int time = 0; time < ntimes; time++)
-          timeOffset[runIdx * noffsets + time] = run_offset + offsets[time];
+          timeOffset[runIdx * noffsets + time] = run_offset + offsets[time];  // offset == bound2 when its an interval
 
         // optionally create 2D bounds
         if (runseq.isInterval()) {
@@ -282,7 +284,7 @@ public class FmrcInvLite implements java.io.Serializable {
     // create GridInventory, see if it matches other Grids
     private GridInventory getInventory(FmrcInv.UberGrid ugrid) {
       GridInventory result = null;
-      GridInventory need = new GridInventory(ugrid, timeOffset, noffsets);
+      GridInventory need = new GridInventory(ugrid);
 
       // see if we already have it
       for (GridInventory got : invList) {
@@ -394,6 +396,123 @@ public class FmrcInvLite implements java.io.Serializable {
         int invIndex = inv.getInvIndex(runIdx, timeIdx);
         return new TimeInstance(locationList.get(locIdx - 1), invIndex);
       }
+    } // Grid
+
+    // track inventory, shared amongst grids
+    public class GridInventory implements java.io.Serializable {
+      int[] location;  // (run,time) file location (index+1 into locationList, 0 = missing)
+      int[] invIndex;  // (run,time) time index in file = 'location'
+
+      /**
+       * Create 2D location, time index representing the inventory for a Grid.
+       * @param ugrid for this grid
+       */
+      GridInventory(FmrcInv.UberGrid ugrid) {
+        this.location = new int[nruns * noffsets];
+        this.invIndex = new int[nruns * noffsets];
+
+        // loop over runDates
+        int gridIdx = 0;
+        List<FmrInv.GridVariable> grids = ugrid.getRuns(); // must be sorted by rundate. extract needed info, do not keep reference
+
+        for (int runIdx = 0; runIdx < nruns; runIdx++) {
+          Date runDate = FmrcInv.makeOffsetDate(base, runOffset[runIdx]);
+
+          // do we have a grid for this runDate?
+          if (gridIdx >= grids.size()) {
+            DateFormatter df = new DateFormatter();
+            log.debug(collectionName+": cant find "+ugrid.getName()+" for "+df.toDateTimeStringISO(runDate)); // could be normal condition
+            break;
+          }
+          FmrInv.GridVariable grid = grids.get(gridIdx);
+          if (!grid.getRunDate().equals(runDate))
+            continue;
+          gridIdx++; // for next loop
+
+          // loop over actual inventory
+          for (GridDatasetInv.Grid inv : grid.getInventory()) {
+            double invOffset = FmrcInv.getOffsetInHours(base, inv.tc.getRunDate()); // offset of this file
+
+            for (int i = 0; i < inv.tc.getNCoords(); i++) {
+               int timeIdx = -1;
+
+              if (timeBounds == null) {              
+                timeIdx = findIndex(runIdx, invOffset + inv.tc.getOffsetTimes()[i]);
+              } else {
+                timeIdx = findBounds(runIdx, invOffset + inv.tc.getBound1()[i], invOffset + inv.tc.getBound2()[i]);
+              }
+
+              if (timeIdx >= 0) {
+                location[runIdx * noffsets + timeIdx] = findLocation(inv.getLocation()) + 1;
+                invIndex[runIdx * noffsets + timeIdx] = i;
+              }
+            } // loop over time coordinates
+
+          } // loop over files
+        } // loop over run
+      }
+
+      private boolean equalData(Object oo) {
+        GridInventory o = (GridInventory) oo;
+        if (o.location.length != location.length) return false;
+        if (o.invIndex.length != invIndex.length) return false;
+        for (int i = 0; i < location.length; i++)
+          if (location[i] != o.location[i]) return false;
+        for (int i = 0; i < invIndex.length; i++)
+          if (invIndex[i] != o.invIndex[i]) return false;
+        return true;
+      }
+
+      // LOOK linear search!
+      private int findIndex(int runIdx, double want) {
+        for (int j = 0; j < noffsets; j++)
+          if (Misc.closeEnough(timeOffset[runIdx * noffsets + j], want)) return j;
+        return -1;
+      }
+
+      // LOOK linear search!
+      private int findBounds(int runIdx, double b1, double b2) {
+        for (int j = 0; j < noffsets; j++)
+          if (Misc.closeEnough(timeBounds[2*(runIdx * noffsets + j)], b1) && Misc.closeEnough(timeBounds[2*(runIdx * noffsets + j)+1], b2))
+            return j;
+        return -1;
+      }
+
+      // LOOK linear search!
+      private int findLocation(String location) {
+        return locationList.indexOf(location);
+      }
+
+      int getLocation(int run, int time) {
+        return location[run * noffsets + time];
+      }
+
+      int getInvIndex(int run, int time) {
+        return invIndex[run * noffsets + time];
+      }
+
+    } // GridInventory
+
+  } // Gridset
+
+    // lightweight tracker of where a Grid lives
+  static class TimeInstance implements TimeInventory.Instance {
+    String location;
+    int index; // time index in the file = 'location'
+
+    TimeInstance(String location, int index) {
+      this.location = location;
+      this.index = index;
+    }
+
+    @Override
+    public String getDatasetLocation() {
+      return location;
+    }
+
+    @Override
+    public int getDatasetIndex() {
+      return index;
     }
   }
 
@@ -451,110 +570,6 @@ public class FmrcInvLite implements java.io.Serializable {
           offset[i] = b.offset;
         }
       }
-    }
-  }
-
-  // track inventory, shared amongst grids
-  public class GridInventory implements java.io.Serializable {
-    int noffsets;
-    int[] location;  // (run,time) file location (index+1 into locationList, 0 = missing)
-    int[] invIndex;  // (run,time) time index in file
-
-    /**
-     * Create 2D location, time index representing the inventory for a Grid.
-     * @param ugrid for this grid
-     * @param timeOffset timeOffset(nruns, noffsets) 2D time offsets
-     * @param noffsets stride
-     */
-    GridInventory(FmrcInv.UberGrid ugrid, double[] timeOffset, int noffsets) {
-      this.noffsets = noffsets;
-      this.location = new int[nruns * noffsets];
-      this.invIndex = new int[nruns * noffsets];
-
-      // loop over runDates
-      int gridIdx = 0;
-      List<FmrInv.GridVariable> grids = ugrid.getRuns(); // must be sorted by rundate. extract needed info, do not keep reference
-
-      for (int runIdx = 0; runIdx < nruns; runIdx++) {
-        Date runDate = FmrcInv.makeOffsetDate(base, runOffset[runIdx]);
-
-        // do we have a grid for this runDate?
-        if (gridIdx >= grids.size()) {
-          DateFormatter df = new DateFormatter();
-          log.debug(collectionName+": cant find "+ugrid.getName()+" for "+df.toDateTimeStringISO(runDate)); // could be normal condition
-          break;
-        }
-        FmrInv.GridVariable grid = grids.get(gridIdx);
-        if (!grid.getRunDate().equals(runDate))
-          continue;
-        gridIdx++; // for next loop
-
-        // loop over actual inventory
-        for (GridDatasetInv.Grid inv : grid.getInventory()) {
-          double invOffset = FmrcInv.getOffsetInHours(base, inv.tc.getRunDate());
-          double[] offsets = inv.tc.getOffsetTimes(); // LOOK  intv
-          for (int i = 0; i < offsets.length; i++) {
-            int timeIdx = findIndex(timeOffset, runIdx, invOffset + offsets[i]);
-            if (timeIdx >= 0) {
-              location[runIdx * noffsets + timeIdx] = findLocation(inv.getLocation()) + 1;
-              invIndex[runIdx * noffsets + timeIdx] = i;
-            }
-          }
-        }
-      }
-    }
-
-    private boolean equalData(Object oo) {
-      GridInventory o = (GridInventory) oo;
-      if (o.location.length != location.length) return false;
-      if (o.invIndex.length != invIndex.length) return false;
-      for (int i = 0; i < location.length; i++)
-        if (location[i] != o.location[i]) return false;
-      for (int i = 0; i < invIndex.length; i++)
-        if (invIndex[i] != o.invIndex[i]) return false;
-      return true;
-    }
-
-    // LOOK linear search!
-    private int findIndex(double[] coords, int runIdx, double want) {
-      for (int j = 0; j < noffsets; j++)
-        if (Misc.closeEnough(coords[runIdx * noffsets + j], want)) return j;
-      return -1;
-    }
-
-    // LOOK linear search!
-    private int findLocation(String location) {
-      return locationList.indexOf(location);
-    }
-
-    int getLocation(int run, int time) {
-      return location[run * noffsets + time];
-    }
-
-    int getInvIndex(int run, int time) {
-      return invIndex[run * noffsets + time];
-    }
-
-  }
-
-  // lightweight tracker of where a Grid lives
-  static class TimeInstance implements TimeInventory.Instance {
-    String location;
-    int index; // time index in the file named by inv
-
-    TimeInstance(String location, int index) {
-      this.location = location;
-      this.index = index;
-    }
-
-    @Override
-    public String getDatasetLocation() {
-      return location;
-    }
-
-    @Override
-    public int getDatasetIndex() {
-      return index;
     }
   }
 

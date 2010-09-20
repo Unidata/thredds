@@ -242,8 +242,15 @@ public class TimeCoord implements Comparable {
     }
   }
 
+  public int findInterval(double b1, double b2) {
+    for (int i = 0; i < getNCoords(); i++)
+      if (Misc.closeEnough(bound1[i], b1) && Misc.closeEnough(bound2[i], b2))
+        return i;
+    return -1;
+  }
+
   public int findIndex(double offsetHour) {
-    double[] off = getOffsetTimes(); // LOOK intv
+    double[] off = getOffsetTimes();
     for (int i = 0; i < off.length; i++)
       if (Misc.closeEnough(off[i], offsetHour))
         return i;

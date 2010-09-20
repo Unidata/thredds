@@ -3,6 +3,9 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Changes in version 4.2:
+ 6: (xxxx-xx-xx)
+  FmrcInvLite.GridInventory now checks for intervals correctly
+  CoordinateAxis1D.makeBounds() - check for ordering, dont accept equality
  5: (2010-09-17)
   ArrayStructureBB.setOffsets() also calls setStructureSize(), does all nested members.
   BUFR MessageUncompressedDataReader: bug in deeply nested structures
