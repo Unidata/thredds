@@ -32,6 +32,8 @@
  */
 package ucar.nc2.thredds.server;
 
+import ucar.ma2.Array;
+import ucar.nc2.Dimension;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dt.GridDataset;
@@ -41,6 +43,7 @@ import ucar.nc2.dt.fmrc.FmrcDefinition;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.ma2.Section;
+import ucar.nc2.util.CompareNetcdf;
 
 import java.util.*;
 import java.io.IOException;
@@ -79,7 +82,7 @@ public class TestMotherlodeLatest extends TimerTask {
       //doAll();
       doOne(model, suffix);
     } catch (IOException e) {
-      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+      e.printStackTrace();  
     }
   }
 
@@ -92,17 +95,18 @@ public class TestMotherlodeLatest extends TimerTask {
 
   }
 
-  private boolean checkRank = true;
+  private boolean checkRank = false;
   private boolean checkSize = false;
+  private boolean readData = true;
 
   void doOne(String model, String suffix) throws IOException {
 
     GridDataset gds1 = getDataset(makeDatasetURL( server1, model, suffix), "1");
     GridDataset gds2 = getDataset(makeDatasetURL( server2, model, suffix), "2" );
     System.out.printf(" compare 1 to 2%n");
-    compare(gds1, gds2, checkRank, checkSize);
+    compare(gds1, gds2, checkRank, checkSize, readData);
     System.out.printf(" compare 2 to 1%n");
-    compare(gds2, gds1, false, false);
+    compare(gds2, gds1, false, false, false);
     System.out.printf(" DONE%n%n");
 
     gds1.close();
@@ -130,7 +134,7 @@ public class TestMotherlodeLatest extends TimerTask {
     return dataset;
   }
 
-  private void compare(GridDataset gds1, GridDataset gds2, boolean checkRank, boolean checkSize) {
+  private void compare(GridDataset gds1, GridDataset gds2, boolean checkRank, boolean checkSize, boolean readData) {
 
     for (GridDatatype grid1 : gds1.getGrids()) {
 
@@ -154,6 +158,24 @@ public class TestMotherlodeLatest extends TimerTask {
             continue;
           }
         }
+
+        if (readData) {
+          if (grid1.getRank() != grid2.getRank()) {
+            System.out.printf("%s rank mismatch: %s != %s%n", grid1.getName(), show(grid1), show(grid2));
+            continue;
+          }
+
+          int timeIdx = choose( grid1.getTimeDimension());
+          int zIndex = choose( grid1.getZDimension());
+          //System.out.printf("Compare %s %s%n", gds1.getLocationURI(), grid1.getName());
+          Array data1 = grid1.readDataSlice(timeIdx, zIndex, -1, -1);
+          Array data2 = grid2.readDataSlice(timeIdx, zIndex, -1, -1);
+          try {
+            CompareNetcdf.compareData(data1,data2);
+          } catch (Throwable t) {
+            System.out.printf("Failed on %s for %s (%d,%d,-1,-1)%n:%s%n", gds1.getLocationURI(), grid1.getName(), timeIdx, zIndex, t.getMessage());
+          }
+        }
         
       } catch (Throwable e) {
         // e.printStackTrace();
@@ -162,6 +184,13 @@ public class TestMotherlodeLatest extends TimerTask {
 
     }
 
+  }
+
+  Random r = new Random();
+  private int choose(Dimension d) {
+    if (d == null) return -1;
+    if (d.getLength() < 2) return -1;
+    return r.nextInt(d.getLength());
   }
 
   private String show(GridDatatype grid) {
