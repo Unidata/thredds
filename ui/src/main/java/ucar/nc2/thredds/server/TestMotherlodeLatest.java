@@ -88,6 +88,7 @@ public class TestMotherlodeLatest extends TimerTask {
     for (String model : FmrcDefinition.fmrcDatasets_41) {
       doOne(model, suffix);
     }
+    System.out.printf("ALL DONE%n");
 
   }
 
