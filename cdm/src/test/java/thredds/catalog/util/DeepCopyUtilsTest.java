@@ -217,12 +217,32 @@ public class DeepCopyUtilsTest
     assertEquals( "more fun", docs.get( 1 ).getInlineContent() );
     assertEquals( "fun", docs.get( 2 ).getInlineContent() );
 
+    List<InvProperty> properties = test1.getProperties();
+    assertNotNull( properties);
+    assertEquals( 2, properties.size() );
+    assertEquals( "viewer", properties.get( 0).getName());
+    assertEquals( "a viewer", properties.get( 0).getValue());
+    assertEquals( "viewer2", properties.get( 1).getName());
+    assertEquals( "yet another viewer", properties.get( 1).getValue());
+
     ThreddsMetadata tm = ( (InvDatasetImpl) test1 ).getLocalMetadata();
-    assertThreddsMetadataIsEmpty( tm, Collections.singletonList( "documentation" ));
+    List<String> skipList = new ArrayList<String>();
+    skipList.add( "properties" );
+    skipList.add( "documentation" );
+    assertThreddsMetadataIsEmpty( tm, skipList);
     docs = tm.getDocumentation();
     assertNotNull( docs );
     assertEquals( 1, docs.size() );
     assertEquals( "even more fun", docs.get( 0 ).getInlineContent() );
+    properties = tm.getProperties();
+    assertNotNull( properties );
+    assertEquals( 3, properties.size() );
+    assertEquals( "viewer", properties.get( 0 ).getName() );
+    assertEquals( "a viewer", properties.get( 0 ).getValue() );
+    assertEquals( "viewer", properties.get( 1 ).getName() );
+    assertEquals( "another viewer", properties.get( 1 ).getValue() );
+    assertEquals( "viewer2", properties.get( 2 ).getName() );
+    assertEquals( "yet another viewer", properties.get( 2 ).getValue() );
 
     assertThreddsMetadataIsEmpty( ( (InvDatasetImpl) test1 ).getLocalMetadataInheritable(), Collections.<String>emptyList() );
   }
@@ -309,6 +329,9 @@ public class DeepCopyUtilsTest
             .append( "      </metadata>\n" )
             .append( "      <dataset name='Test 1' ID='Test1' urlPath='test/test1.nc'>\n" )
             .append( "        <documentation>even more fun</documentation>" )
+            .append( "        <property name='viewer' value='a viewer' />" )
+            .append( "        <property name='viewer' value='another viewer' />" )
+            .append( "        <property name='viewer2' value='yet another viewer' />" )
             .append( "      </dataset>" )
             .append( "      <dataset name='Test 2' ID='Test2' urlPath='test/test2.nc' />\n" )
             .append( "    </dataset>" )

@@ -35,6 +35,7 @@ package thredds.servlet;
 import thredds.catalog.InvDatasetImpl;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * Interface for plugging in Viewers.
@@ -43,16 +44,10 @@ import javax.servlet.http.HttpServletRequest;
  * Then all instances of "{param}" will be replaced by subst, and
  * all instances of "{name}" will be replaced by value, etc.
  *
- * @see ViewServlet#registerViewer
+ * @see thredds.servlet.ViewServlet#registerViewer
  */
-public interface Viewer {
-
-  /**
-   * Is this dataset vieweable by me?
-   * @param ds the dataset
-   * @return  true if viewable
-   */
-   public boolean isViewable( InvDatasetImpl ds);
+public interface ViewerLinkProvider extends Viewer
+{
 
   /**
    * Get an HTML fragment link to the viewer JNLP file, for this dataset.
@@ -63,6 +58,19 @@ public interface Viewer {
    * @param req the request
    * @return HTML fragment string
    */
-   public String getViewerLinkHtml( InvDatasetImpl ds, HttpServletRequest req);
+   public List<ViewerLink> getViewerLinks( InvDatasetImpl ds, HttpServletRequest req);
 
+  public class ViewerLink
+  {
+    private String title;
+    private String url;
+
+    public ViewerLink( String title, String url) {
+      this.title = title;
+      this.url = url;
+    }
+
+    public String getTitle() { return title; }
+    public String getUrl() { return url; }
+  }
 }
