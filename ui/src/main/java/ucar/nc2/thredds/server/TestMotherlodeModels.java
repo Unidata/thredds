@@ -46,7 +46,7 @@ import java.util.*;
 
 import thredds.catalog.crawl.CatalogCrawler;
 import thredds.catalog.*;
-import ucar.nc2.util.IO;
+import ucar.nc2.util.CompareNetcdf2;
 
 import javax.swing.*;
 
@@ -67,6 +67,7 @@ public class TestMotherlodeModels implements CatalogCrawler.Listener {
   private PrintStream out;
   private int countDatasets, countNoAccess, countNoOpen;
   private boolean verbose = true;
+  private boolean compareCdm = true;
 
   TestMotherlodeModels(String name, String catURL, int type, boolean skipDatasetScan) throws IOException {
     this.catUrl = catURL;
@@ -123,7 +124,8 @@ public class TestMotherlodeModels implements CatalogCrawler.Listener {
     countDatasets++;
 
     ThreddsMetadata.GeospatialCoverage gc = ds.getGeospatialCoverage();
-    //assert gc != null;
+    if (gc == null)
+      out.printf("   GeospatialCoverage NULL id = %s%n", ds.getID());
 
     NetcdfDataset ncd = null;
     try {
@@ -131,17 +133,19 @@ public class TestMotherlodeModels implements CatalogCrawler.Listener {
       ncd = tdataFactory.openDataset(ds, false, null, log);
 
       if (ncd == null) {
-        out.println("**** failed= " + ds.getName() + " err=" + log);
+        out.printf("**** failed= %s err=%s%n", ds.getName(), log);
         countNoAccess++;
 
       } else {
         GridDataset gds = new GridDataset(ncd);
         java.util.List<GridDatatype> grids =  gds.getGrids();
         int n = grids.size();
-        //assert n != 0;
-        if (verbose) {
+        if (n == 0)
+          out.printf("  # Grids == 0 id = %s%n", ds.getID());
+        else if (verbose)
           out.printf("   %d %s OK%n", n, gds.getLocationURI());
-        }
+
+        if (compareCdm) compareCdm(ds, ncd);
       }
 
     } catch (Exception e) {
@@ -156,6 +160,37 @@ public class TestMotherlodeModels implements CatalogCrawler.Listener {
       }
     }
 
+  }
+
+  private void compareCdm(InvDataset ds, NetcdfDataset dods) {
+    NetcdfDataset cdm = null;
+    try {
+      ThreddsDataFactory.preferCdm = true;
+      Formatter log = new Formatter();
+      cdm = tdataFactory.openDataset(ds, false, null, log);
+
+      if (cdm == null) {
+        out.println("**** failed= " + ds.getName() + " err=" + log);
+        countNoAccess++;
+
+      } else {
+         // compareFiles(NetcdfFile org, NetcdfFile copy, boolean _compareData, boolean _showCompare, boolean _showEach)
+        cdm.enhance();
+        CompareNetcdf2.compareFiles(dods, cdm,  new Formatter(System.out), false, false, false);
+      }
+
+    } catch (Exception e) {
+      out.println("**** failed to open cdm dataset = " + ds.getName());
+      e.printStackTrace();
+
+      countNoOpen++;
+    } finally {
+      ThreddsDataFactory.preferCdm = false;
+      if (cdm != null) try {
+        cdm.close();
+      } catch (IOException e) {
+      }
+    }
   }
 
   public boolean getCatalogRef(InvCatalogRef dd, Object context) {
@@ -177,10 +212,7 @@ public class TestMotherlodeModels implements CatalogCrawler.Listener {
     String server = "http://motherlode.ucar.edu:8081/thredds";
 
     String catalog = "/idd/models.xml";
-    String problemCat = "/catalog/fmrc/NCEP/NDFD/conduit/CONUS_5km/catalog.xml";
-    String models = "/idd/models.xml";
-    String chizModels = "/idd/rtmodel.xml";
-    String gribtonc = "/idd/allModels.TDS-nc.xml";
+    String problemCat = "http://localhost:8080/thredds/catalog/aggorama/catalog.xml";   //  http://localhost:8080/thredds/catalog/aggorama/catalog.html
 
     //"http://motherlode.ucar.edu:9080/thredds/idd/models_old.xml"
 
@@ -197,8 +229,8 @@ public class TestMotherlodeModels implements CatalogCrawler.Listener {
     main = new JPanel();
     main.setLayout(new BoxLayout(main, BoxLayout.Y_AXIS));
 
+    // TestMotherlodeModels job = new TestMotherlodeModels("problem", problemCat, CatalogCrawler.USE_ALL, false);
     TestMotherlodeModels job = new TestMotherlodeModels("problem", server+catalog, CatalogCrawler.USE_RANDOM_DIRECT, false);
-    // TestMotherlodeModels job = new TestMotherlodeModels("models", server + catalog, CatalogCrawler.USE_RANDOM_DIRECT, false);
 
     frame.getContentPane().add(main);
     frame.pack();

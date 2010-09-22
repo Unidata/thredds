@@ -83,10 +83,15 @@ public class GridServlet extends AbstractServlet {
   </NetcdfSubsetService> */
 
     allow = ThreddsConfig.getBoolean("NetcdfSubsetService.allow", false);
+    if (!allow) return;
+
     //maxFileDownloadSize = ThreddsConfig.getBytes("NetcdfSubsetService.maxFileDownloadSize", (long) 1000 * 1000 * 1000);
     String cache = ThreddsConfig.get("NetcdfSubsetService.dir", contentPath + "/cache");
     File cacheDir = new File(cache);
-    cacheDir.mkdirs();
+    if (!cacheDir.mkdirs()) {
+      logServerStartup.error("Cant make cache directory "+cache);
+      throw new IllegalArgumentException("Cant make cache directory "+cache);
+    }
 
     int scourSecs = ThreddsConfig.getSeconds("NetcdfSubsetService.scour", 60 * 10);
     int maxAgeSecs = ThreddsConfig.getSeconds("NetcdfSubsetService.maxAge", -1);
@@ -251,7 +256,7 @@ public class GridServlet extends AbstractServlet {
         return;
       }
 
-      GridPointWriter writer = new GridPointWriter(gds);
+      GridPointWriter writer = new GridPointWriter(gds, diskCache);
 
       // set content type
       String contentType = qp.acceptType;
@@ -318,7 +323,7 @@ public class GridServlet extends AbstractServlet {
     String url = "/thredds/ncServer/cache/" + pathname;
 
     try {
-      GridPointWriter writer = new GridPointWriter(gds);
+      GridPointWriter writer = new GridPointWriter(gds, diskCache);
       PrintWriter pw = !qp.acceptType.equals(QueryParams.NETCDF) ? res.getWriter() : null;
       result = writer.write(qp, pw);
 
@@ -458,17 +463,18 @@ public class GridServlet extends AbstractServlet {
               qp.hasDateRange ? qp.getDateRange() : null,
               addLatLon, qp.horizStride, qp.vertStride, qp.timeStride);
 
-    } catch (IOException ioe) {
-      log.error("Writing to " + cacheFilename, ioe);
-      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
-      res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ioe.getMessage());
-      return;
-
     } catch (IllegalArgumentException e) { // file too big
       log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_FORBIDDEN, 0));
       res.sendError(HttpServletResponse.SC_FORBIDDEN, e.getMessage());
       return;
+
+    } catch (Exception ioe) {
+      log.error("Writing to " + cacheFilename, ioe);
+      log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
+      res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ioe.getMessage());
+      return;
     }
+
 
     res.addHeader("Content-Location", url);
     res.setHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");

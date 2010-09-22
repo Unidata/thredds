@@ -57,7 +57,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
 
   static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CdmRemote.class);
   static private HttpClient httpClient;
-  static private boolean showRequest = true;
+  static private boolean showRequest = false;
 
   /**
    * Create the canonical form of the URL.
@@ -112,7 +112,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
       String url = remoteURI + "?req=header";
       method = new GetMethod(url);
       method.setFollowRedirects(true);
-      if (showRequest) System.out.printf(" ncstream request %s %n", url);
+      if (showRequest) System.out.printf("CdmRemote request %s %n", url);
       int statusCode = httpClient.executeMethod(method);
 
       if (statusCode == 404)
@@ -144,7 +144,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
     sbuff.append(")");
 
     if (showRequest)
-      System.out.println("CdmRemote data request for variable: " + v.getName() + " section= " + section + " url=" + sbuff);
+      System.out.println(" CdmRemote data request for variable: " + v.getName() + " section= " + section + " url=" + sbuff);
 
     HttpMethod method = null;
     try {
@@ -188,7 +188,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
     sbuff.append(query);
 
     if (showRequest)
-      System.out.println("CdmRemote sendQuery=" + sbuff);
+      System.out.println(" CdmRemote sendQuery=" + sbuff);
 
     HttpMethod method = new GetMethod(sbuff.toString());
 

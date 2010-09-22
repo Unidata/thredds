@@ -241,13 +241,13 @@ public class FmrcInventoryServlet extends AbstractServlet {
       def = new FmrcDefinition();
       def.makeFromCollectionInventory(fmrc);
       def.writeDefinitionXML(fos);
-      System.out.println(" write to " + fmrc.getDefinitionPath());
+      if (debug) System.out.println(" write to " + fmrc.getDefinitionPath());
 
     } else if ((def != null) && (define.equals("addVert"))) {
       FileOutputStream fos = new FileOutputStream(fmrc.getDefinitionPath());
       def.addVertCoordsFromCollectionInventory(fmrc);
       def.writeDefinitionXML(fos);
-      System.out.println(" write to " + fmrc.getDefinitionPath());
+      if (debug) System.out.println(" write to " + fmrc.getDefinitionPath());
     }
 
     if (def == null) {

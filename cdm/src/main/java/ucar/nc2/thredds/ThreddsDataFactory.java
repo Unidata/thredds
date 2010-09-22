@@ -70,6 +70,7 @@ import java.io.IOException;
  */
 public class ThreddsDataFactory {
   static public final String SCHEME = "thredds:";
+  static public boolean preferCdm = false; // temp debugging
 
   static public void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
     debugOpen = debugFlag.isSet("thredds/debugOpen");
@@ -401,7 +402,7 @@ public class ThreddsDataFactory {
         ds = openDataset(access, acquire, task, result);
 
       } catch (IOException e) {
-        result.errLog.format("Cant open %s %n", datasetLocation);
+        result.errLog.format("Cant open %s %n err=%s%n", datasetLocation, e.getMessage());
         if (debugOpen) {
           System.out.println("Cant open= " + datasetLocation + " " + serviceType);
           e.printStackTrace();
@@ -515,12 +516,12 @@ public class ThreddsDataFactory {
     if (accessList.size() == 0)
       return null;
 
-// better to be null, then o try to read unreadable file
-// if (accessList.size() == 1)
-//  return (InvAccess) accessList.get(0);
+    InvAccess access = null;
+    if (preferCdm)
+      access = findAccessByServiceType(accessList, ServiceType.CdmRemote);
 
-    // should mean that it can be opened through netcdf API
-    InvAccess access = findAccessByServiceType(accessList, ServiceType.FILE);
+    if (access == null)
+      access = findAccessByServiceType(accessList, ServiceType.FILE); // should mean that it can be opened through netcdf API
     if (access == null)
       access = findAccessByServiceType(accessList, ServiceType.NETCDF); //  ServiceType.NETCDF is deprecated, use FILE
     if (access == null)

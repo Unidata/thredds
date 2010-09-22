@@ -51,6 +51,7 @@ import java.util.*;
 import java.text.ParseException;
 
 import thredds.servlet.UsageLog;
+import ucar.nc2.util.DiskCache2;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -62,9 +63,11 @@ public class GridPointWriter {
 
   private DateFormatter format = new DateFormatter();
   private GridDataset gds;
+  private ucar.nc2.util.DiskCache2 diskCache;
 
-  public GridPointWriter(GridDataset gds) {
+  public GridPointWriter(GridDataset gds, ucar.nc2.util.DiskCache2 diskCache) {
     this.gds = gds;
+    this.diskCache = diskCache;
   }
 
   private class Limit {
@@ -395,13 +398,13 @@ public class GridPointWriter {
     WriterNetcdfStation(QueryParams qp, List<String> varNames, final java.io.PrintWriter writer) throws IOException {
       super(qp, varNames, writer);
 
-      netcdfResult = File.createTempFile("ncss", ".nc");
+      netcdfResult = diskCache.createUniqueFile("ncss", ".nc");
 
       sobsWriter = new WriterStationObsDataset(netcdfResult.getAbsolutePath(),
               "Extract Points data from Grid file "+ gds.getLocationURI());
 
       NetcdfDataset ncfile = (NetcdfDataset) gds.getNetcdfFile(); // fake-arino
-      System.out.println("write to  "+netcdfResult.getPath());
+      if (debug) System.out.println("write to  "+netcdfResult.getPath());
 
       // need VariableSimpleIF for each variable
       varList = new ArrayList<VariableSimpleIF>(varNames.size());
@@ -455,13 +458,13 @@ public class GridPointWriter {
       this.nprofilers = nprofilers;
       this.altVarName = altVarName;
 
-      netcdfResult = File.createTempFile("ncss", ".nc");
+      netcdfResult = diskCache.createUniqueFile("ncss", ".nc");
 
       pobsWriter = new WriterProfileObsDataset(netcdfResult.getAbsolutePath(),
               "Extract Profiler data from Grid file "+ gds.getLocationURI());
 
       NetcdfDataset ncfile = (NetcdfDataset) gds.getNetcdfFile(); // fake-arino
-      System.out.println("write to  "+netcdfResult.getPath());
+      if (debug) System.out.println("write to  "+netcdfResult.getPath());
 
       // need VariableSimpleIF for each variable
       varList = new ArrayList<VariableSimpleIF>(varNames.size());
@@ -516,7 +519,7 @@ public class GridPointWriter {
     String fileIn = "C:/data/grib/nam/conus80/NAM_CONUS_80km_20060812_0000.grib1";
     ucar.nc2.dt.GridDataset gds = ucar.nc2.dt.grid.GridDataset.open(fileIn);
 
-    GridPointWriter writer = new GridPointWriter(gds);
+    GridPointWriter writer = new GridPointWriter(gds, new DiskCache2("C:/tmp/", false, 0, 0));
     QueryParams qp = new QueryParams();
     qp.acceptType = QueryParams.NETCDF;
 

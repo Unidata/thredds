@@ -166,6 +166,26 @@ public class DiskCache2 {
   }
 
   /**
+   * Create a new, uniquely named file in the root directory.
+   * Mimics File.createTempFile()
+   *
+   * @param prefix The prefix string to be used in generating the file's
+   *               name; must be at least three characters long
+   * @param suffix The suffix string to be used in generating the file's
+   *               name; may be <code>null</code>, in which case the
+   *               suffix <code>".tmp"</code> will be used
+   * @return uniquely named file
+   */
+  public synchronized File createUniqueFile(String prefix, String suffix) {
+    if (suffix == null) suffix = ".tmp";
+    Random random = new Random(System.currentTimeMillis());
+    File result = new File(getRootDirectory(), prefix + Integer.toString(random.nextInt()) + suffix);
+    while (result.exists())
+      result = new File(getRootDirectory(), prefix + Integer.toString(random.nextInt()) + suffix);
+    return result;
+  }
+
+  /**
    * Set the cache path policy
    * @param cachePathPolicy one of:
    *   CACHEPATH_POLICY_ONE_DIRECTORY (default) : replace "/" with "-", so all files are in one directory.

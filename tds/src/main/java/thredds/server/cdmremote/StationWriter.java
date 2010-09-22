@@ -77,11 +77,13 @@ public class StationWriter {
   private List<VariableSimpleIF> wantVars;
   private DateRange wantRange;
   private PointFeatureCollection pfc;
+  private ucar.nc2.util.DiskCache2 diskCache;
 
-  public StationWriter(FeatureDatasetPoint fd, StationTimeSeriesFeatureCollection sfc, PointQueryBean qb) throws IOException {
+  public StationWriter(FeatureDatasetPoint fd, StationTimeSeriesFeatureCollection sfc, PointQueryBean qb, ucar.nc2.util.DiskCache2 diskCache) throws IOException {
     this.fd = fd;
     this.sfc = sfc;
     this.qb = qb;
+    this.diskCache = diskCache;
 
     start = fd.getStartDate();
     end = fd.getEndDate();
@@ -628,7 +630,7 @@ public class StationWriter {
     WriterNetcdf() throws IOException {
       super(null);
 
-      netcdfResult = File.createTempFile("ncss", ".nc"); // LOOK : put in some specified place
+      netcdfResult = diskCache.createUniqueFile("cdmSW", ".nc");
       cfWriter = new WriterCFStationDataset(netcdfResult.getAbsolutePath(), "Extracted data from TDS using CDM remote subsetting");
 
       // verify SpatialSelection has some stations

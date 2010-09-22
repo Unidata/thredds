@@ -38,7 +38,6 @@ import ucar.nc2.Group;
 import ucar.nc2.Variable;
 import ucar.nc2.TestAll;
 import ucar.nc2.util.CompareNetcdf;
-import ucar.nc2.iosp.hdf5.TestH5;
 import ucar.ma2.*;
 
 import java.io.IOException;

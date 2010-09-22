@@ -33,7 +33,6 @@
  */
 package ucar.nc2.util;
 
-import org.apache.commons.httpclient.HttpException;
 import ucar.nc2.dataset.VariableEnhanced;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.*;
@@ -47,7 +46,8 @@ import java.io.PrintStream;
 import java.io.ByteArrayOutputStream;
 
 /**
- * Compare two NetcdfFile
+ * Compare two NetcdfFile. Uses assert.
+ * Test classes only.
  *
  * @author john
  */

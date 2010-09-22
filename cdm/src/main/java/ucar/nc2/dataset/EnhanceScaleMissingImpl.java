@@ -389,6 +389,10 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
     return hasFillValue && (val == fillValue);
   }
 
+  public double getFillValue() {
+    return fillValue;
+  }
+
   /**
    * true if Variable data will be converted using scale and offet
    */
@@ -413,6 +417,10 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
       if (ucar.nc2.util.Misc.closeEnough(val, missingValue[i]))
         return true;
     return false;
+  }
+
+  public double[] getMissingValues() {
+    return missingValue;
   }
 
   /**
@@ -500,6 +508,11 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
     return false;
   }
 
+  /**
+   * Get FillValue. Check if set, use default value if not
+   * @param dt the variable datatype
+   * @return java primitive array of length 1, or a String.
+   */
   public Object getFillValue(DataType dt) {
     DataType useType = convertedDataType == null ? dt : convertedDataType;
     if ((useType == DataType.BYTE) || (useType == DataType.ENUM1)) {

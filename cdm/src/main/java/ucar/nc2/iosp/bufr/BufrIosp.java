@@ -37,14 +37,12 @@ import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.util.CancelTask;
-import ucar.nc2.util.CompareNetcdf;
+import ucar.nc2.util.CompareNetcdf2;
 
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.*;
 import java.util.*;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 
 /**
  * IOSP for BUFR data
@@ -881,7 +879,8 @@ return abb;
       int n = m.getNumberDatasets();
       m.calcTotalBits(null);
       Array data2 = obs.read(new Section().appendRange(start, start + n - 1));
-      CompareNetcdf.compareData(data1, data2);
+      CompareNetcdf2 cn = new CompareNetcdf2( new Formatter(System.out), true, true, true);
+      cn.compareData("all", data1, data2, true);
 
       start += n;
     }

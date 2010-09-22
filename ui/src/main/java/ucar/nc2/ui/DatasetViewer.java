@@ -37,7 +37,7 @@ import ucar.nc2.*;
 
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ui.dialog.CompareDialog;
-import ucar.nc2.util.CompareNetcdf;
+import ucar.nc2.util.CompareNetcdf2;
 import ucar.util.prefs.*;
 import ucar.util.prefs.ui.*;
 import ucar.ma2.Array;
@@ -172,16 +172,16 @@ public class DatasetViewer extends JPanel {
       compareFile = NetcdfDataset.openFile(data.name, null);
 
       Formatter f = new Formatter();
-      CompareNetcdf cn = new CompareNetcdf(data.showCompare, data.showDetails, data.readData);
+      CompareNetcdf2 cn = new CompareNetcdf2(f, data.showCompare, data.showDetails, data.readData);
       if (data.howMuch == CompareDialog.HowMuch.All)
-        cn.compare(ds, compareFile, f);
+        cn.compare(ds, compareFile);
       else {
         NestedTable nested = nestedTableList.get(0);
         Variable org = getCurrentVariable(nested.table);
         if (org == null) return;
         Variable ov = compareFile.findVariable(org.getName());
         if (ov != null)
-          cn.compareVariable(org, ov, f);
+          cn.compareVariable(org, ov);
       }      
 
       infoTA.setText(f.toString());

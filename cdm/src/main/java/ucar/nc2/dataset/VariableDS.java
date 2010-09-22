@@ -559,15 +559,21 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
     f.format("use NaNs = %s%n", scaleMissingProxy.getUseNaNs());
     f.format("has missing = %s%n", scaleMissingProxy.hasMissing());
     if (scaleMissingProxy.hasMissing()) {
-      Object mv = scaleMissingProxy.getFillValue( getDataType());
-      String mvs = (mv instanceof String) ? (String) mv : java.lang.reflect.Array.get(mv, 0).toString();
-      f.format(" missing data value = %s%n", mvs);
-      f.format(" has missing value = %s%n", scaleMissingProxy.hasMissingValue());
-      f.format(" has fill value = %s%n", scaleMissingProxy.hasFillValue());
-      f.format(" has invalid value = %s%n", scaleMissingProxy.hasInvalidData());
+      if (scaleMissingProxy.hasMissingValue()) {
+        f.format("   missing value(s) = ");
+        for (double d : scaleMissingProxy.getMissingValues())
+          f.format(" %f", d);
+        f.format("%n");
+      }
+      if (scaleMissingProxy.hasFillValue())
+        f.format("   fillValue = %f%n", scaleMissingProxy.getFillValue());
       if (scaleMissingProxy.hasInvalidData())
         f.format("   valid min/max = [%f,%f]%n", scaleMissingProxy.getValidMin(), scaleMissingProxy.getValidMax());
     }
+    Object mv = scaleMissingProxy.getFillValue( getDataType());
+    String mvs = (mv instanceof String) ? (String) mv : java.lang.reflect.Array.get(mv, 0).toString();
+    f.format("FillValue or default = %s%n", mvs);
+
     f.format("%nhas scale/offset = %s%n", scaleMissingProxy.hasScaleOffset());
     if (scaleMissingProxy.hasScaleOffset()) {
       double offset = scaleMissingProxy.convertScaleOffsetMissing(0.0);

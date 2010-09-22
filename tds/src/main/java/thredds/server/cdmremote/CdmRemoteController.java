@@ -65,6 +65,7 @@ import ucar.nc2.stream.NcStreamProto;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.ParsedSectionSpec;
+import ucar.nc2.util.DiskCache2;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.geoloc.Station;
 
@@ -81,8 +82,8 @@ public class CdmRemoteController extends AbstractCommandController { // implemen
 
   private TdsContext tdsContext;
   private boolean allow = true;
-  private String configDirectory;
   private CollectionManager collectionManager;
+  private DiskCache2 diskCache;
 
   public CdmRemoteController() {
     setCommandClass(PointQueryBean.class);
@@ -97,13 +98,14 @@ public class CdmRemoteController extends AbstractCommandController { // implemen
     this.allow = allow;
   }
 
-  public void setConfigDirectory(String configDirectory) {
-    this.configDirectory = configDirectory;
+  public void setDiskCache(DiskCache2 diskCache) {
+    this.diskCache = diskCache;
   }
 
   public void setCollections(CollectionManager collectionManager) {
     this.collectionManager = collectionManager;
   }
+
 
   /* public long getLastModified(HttpServletRequest req) {
     File file = DataRootHandler.getInstance().getCrawlableDatasetAsFile(req.getPathInfo()); // LOOK
@@ -237,7 +239,7 @@ public class CdmRemoteController extends AbstractCommandController { // implemen
     List<FeatureCollection> coll = fdp.getPointFeatureCollectionList();
     StationTimeSeriesFeatureCollection sfc = (StationTimeSeriesFeatureCollection) coll.get(0);
 
-    StationWriter stationWriter = new StationWriter(fdp, sfc, qb);
+    StationWriter stationWriter = new StationWriter(fdp, sfc, qb, diskCache);
     if (!stationWriter.validate(res)) {
       log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_BAD_REQUEST, -1));
       return null; // error was sent
@@ -334,13 +336,13 @@ public class CdmRemoteController extends AbstractCommandController { // implemen
     NetcdfFile ncfile = fdp.getNetcdfFile(); // LOOK will fail
     NcStreamWriter ncWriter = new NcStreamWriter(ncfile, absPath);
     WritableByteChannel wbc = Channels.newChannel(out);
-    ncWriter.sendHeader(wbc);
+    long size = ncWriter.sendHeader(wbc);
     NcStream.writeVInt(out, 0);
 
     out.flush();
     res.flushBuffer();
 
-    log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
+    log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, size+1));
     return null;
   }
 

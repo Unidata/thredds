@@ -43,7 +43,7 @@ import ucar.nc2.dt.fmrc.FmrcDefinition;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.ma2.Section;
-import ucar.nc2.util.CompareNetcdf;
+import ucar.nc2.util.CompareNetcdf2;
 
 import java.util.*;
 import java.io.IOException;
@@ -171,7 +171,8 @@ public class TestMotherlodeLatest extends TimerTask {
           Array data1 = grid1.readDataSlice(timeIdx, zIndex, -1, -1);
           Array data2 = grid2.readDataSlice(timeIdx, zIndex, -1, -1);
           try {
-            CompareNetcdf.compareData(data1,data2);
+            CompareNetcdf2 cn = new CompareNetcdf2( new Formatter(System.out), true, true, true);
+            cn.compareData(grid1.getName(), data1, data2, true);
           } catch (Throwable t) {
             System.out.printf("Failed on %s for %s (%d,%d,-1,-1)%n:%s%n", gds1.getLocationURI(), grid1.getName(), timeIdx, zIndex, t.getMessage());
           }

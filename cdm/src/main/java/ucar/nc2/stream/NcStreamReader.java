@@ -60,10 +60,14 @@ public class NcStreamReader {
     assert readAndTest(is, NcStream.MAGIC_HEADER);
 
     int msize = NcStream.readVInt(is);
-    if (debug) System.out.println("READ header len= " + msize);
-
     byte[] m = new byte[msize];
     NcStream.readFully(is, m);
+
+    if (debug) {
+      System.out.println("READ header len= " + msize);
+      //System.out.println("READ header= " + new String(m, "UTF-8"));
+    }
+
     proto = NcStreamProto.Header.parseFrom(m);
     ncfile = proto2nc(proto, ncfile);
     if (debug) System.out.printf("  proto= ", proto);
@@ -97,14 +101,14 @@ public class NcStreamReader {
     assert readAndTest(is, NcStream.MAGIC_DATA);
 
     int psize = NcStream.readVInt(is);
-    if (debug) System.out.println(" readData len= " + psize);
+    if (debug) System.out.println("  readData data message len= " + psize);
     byte[] dp = new byte[psize];
     NcStream.readFully(is, dp);
     NcStreamProto.Data dproto = NcStreamProto.Data.parseFrom(dp);
-    if (debug) System.out.println(" readData proto = " + dproto);
+    // if (debug) System.out.println(" readData proto = " + dproto);
 
     int dsize = NcStream.readVInt(is);
-    if (debug) System.out.println(" readData len= " + dsize);
+    if (debug) System.out.println("  readData data len= " + dsize);
 
     DataType dataType = NcStream.decodeDataType(dproto.getDataType());
     Section section = NcStream.decodeSection(dproto.getSection());

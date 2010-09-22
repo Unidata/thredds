@@ -39,7 +39,6 @@ import ucar.nc2.*;
 import ucar.nc2.util.CompareNetcdf;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VariableDS;
-import ucar.nc2.ncml.TestNcML;
 
 import java.io.IOException;
 

@@ -38,8 +38,7 @@ import ucar.util.prefs.ui.BeanTableSorted;
 import ucar.nc2.iosp.bufr.DataDescriptor;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.*;
-import ucar.nc2.util.CompareNetcdf;
-import ucar.nc2.util.CancelTask;
+import ucar.nc2.util.CompareNetcdf2;
 import ucar.nc2.ncml.Aggregation;
 import ucar.ma2.StructureData;
 import ucar.ma2.Array;
@@ -51,7 +50,6 @@ import javax.swing.event.ListSelectionEvent;
 import thredds.ui.TextHistoryPane;
 import thredds.ui.IndependentWindow;
 import thredds.ui.BAMutil;
-import thredds.ui.FileManager;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -237,8 +235,8 @@ public class AggTable extends JPanel {
         if (org == null)
           org = ncd;
         else {
-          CompareNetcdf cn = new CompareNetcdf(false, false, false);
-          cn.compareVariables(org, ncd, f);
+          CompareNetcdf2 cn = new CompareNetcdf2(f, false, false, false);
+          cn.compareVariables(org, ncd);
           ncd.close();
           f.format("--------------------------------%n");
         }
