@@ -3,6 +3,8 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Changes in version 4.2:
+ 7: (2010-09-21)
+  Set cacheSize for coordinate variable == 40K
  6: (2010-09-21)
   Remove Date from GridIndexToNC "history" attribute.
   ToolsUI : allow http: argument to directly open a dods URL

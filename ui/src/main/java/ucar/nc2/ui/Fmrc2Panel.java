@@ -212,6 +212,8 @@ public class Fmrc2Panel extends JPanel {
     //if (!showCollectionInfo(false))
     //  return;
 
+    long start = System.currentTimeMillis();
+
     errlog = new Formatter();
     fmrc = Fmrc.open(collectionSpec, errlog);
     if (fmrc == null) {
@@ -238,6 +240,9 @@ public class Fmrc2Panel extends JPanel {
 
     setCoords(fmrcInv);
     setGrids(fmrcInv);
+
+    long took = System.currentTimeMillis() - start;
+    System.out.printf("that took %f secs%n", ((double)took)/1000);    
   }
 
   public boolean showCollectionInfo(boolean alwaysShow) {

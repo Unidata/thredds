@@ -78,6 +78,8 @@ public class GridDatasetInv {
   static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GridDatasetInv.class);
   static private final int REQ_VERSION = 1; // minimum required version, else regenerate XML
   static private final int CURR_VERSION = 1;  // current version
+  
+  static private boolean debug = false;  // current version
 
   public static GridDatasetInv open(CollectionManager cm, MFile mfile, Element ncml) throws IOException {
     // do we already have it ?
@@ -125,7 +127,8 @@ public class GridDatasetInv {
       String xmlString = inv.writeXML( new Date(mfile.getLastModified()));
       cm.putMetadata(mfile, "fmrInv.xml", xmlString.getBytes("UTF-8"));
       if (log.isDebugEnabled()) log.debug(" added xmlFile "+ mfile.getPath()+".fmrInv.xml to cache");
-      //System.out.println("new xmlBytes= "+ xmlString);
+      if (debug) System.out.printf(" added xmlFile %s.fmrInv.xml to cache%n", mfile.getPath());
+      // System.out.println("new xmlBytes= "+ xmlString);
       return inv;
     } finally {
       if (gds != null) gds.close();

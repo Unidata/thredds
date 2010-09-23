@@ -33,6 +33,9 @@
 
 package thredds.catalog;
 
+import ucar.nc2.stream.CdmRemote;
+import ucar.nc2.thredds.ThreddsDataFactory;
+
 import java.net.URI;
 
 /**
@@ -135,7 +138,9 @@ abstract public class InvAccess {
 
   private String wrap(String url) {
     if (service.getServiceType() == ServiceType.THREDDS)
-      return "thredds:" + url;
+      return ThreddsDataFactory.SCHEME + url;
+    if (service.getServiceType() == ServiceType.CdmRemote)
+      return CdmRemote.SCHEME + url;
     return url;
   }
 }

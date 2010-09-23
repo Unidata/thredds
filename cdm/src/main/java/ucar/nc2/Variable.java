@@ -53,8 +53,9 @@ import java.nio.channels.WritableByteChannel;
  */
 
 public class Variable implements VariableIF, ProxyReader {
-  /** cache any variable whose size() < defaultSizeToCache */
-  static public final int defaultSizeToCache = 4000; // bytes
+  static public final int defaultSizeToCache = 4000; // bytes  cache any variable whose size() < defaultSizeToCache
+  static public final int defaultCoordsSizeToCache = 40 * 1000; // bytes cache coordinate variable whose size() < defaultSizeToCache
+
   static protected boolean debugCaching = false;
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Variable.class);
 
@@ -74,7 +75,7 @@ public class Variable implements VariableIF, ProxyReader {
   private boolean immutable = false; // cache can change
 
   protected Cache cache = new Cache();
-  protected int sizeToCache = defaultSizeToCache; // bytes
+  protected int sizeToCache = -1; // bytes
 
   protected Structure parent = null; // for variables inside a Structure, aka "structure members"
   protected ProxyReader proxyReader = this;
@@ -1422,18 +1423,19 @@ public class Variable implements VariableIF, ProxyReader {
   // caching
 
   /**
-   * If total data is less than SizeToCache in bytes, then cache.
+   * If total data size is less than SizeToCache in bytes, then cache.
    *
    * @return size at which caching happens
    */
   public int getSizeToCache() {
-    return sizeToCache;
+    if (sizeToCache >= 0) return sizeToCache; // it was set
+    return isCoordinateVariable() ? defaultCoordsSizeToCache : defaultSizeToCache;
   }
 
   /**
-   * Set the sizeToCache. If not set, use Variable.defaultSizeToCache
+   * Set the sizeToCache. If not set, use defaults
    *
-   * @param sizeToCache size at which caching happens
+   * @param sizeToCache size at which caching happens. < 0 means use defaults
    */
   public void setSizeToCache(int sizeToCache) {
     this.sizeToCache = sizeToCache;
@@ -1458,7 +1460,7 @@ public class Variable implements VariableIF, ProxyReader {
    */
   public boolean isCaching() {
     if (!this.cache.cachingSet) {
-      cache.isCaching = !isVariableLength && (getSize() * getElementSize() < sizeToCache);
+      cache.isCaching = !isVariableLength && (getSize() * getElementSize() < getSizeToCache());
       this.cache.cachingSet = true;
     }
     return cache.isCaching;

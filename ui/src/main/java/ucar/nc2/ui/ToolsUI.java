@@ -291,8 +291,8 @@ public class ToolsUI extends JPanel {
     //fmrcImplPanel = new FmrcImplPanel((PreferencesExt) mainPrefs.node("fmrcImpl"));
     fmrcTabPane.addTab("Fmrc", new JLabel("Fmrc"));
     fmrcTabPane.addTab("Collections", new JLabel("Collections"));
-    fmrcTabPane.addTab("FmrcImpl", new JLabel("FmrcImpl"));
-    fmrcTabPane.addTab("Inventory", new JLabel("Inventory"));
+    //fmrcTabPane.addTab("FmrcImpl", new JLabel("FmrcImpl"));
+    //fmrcTabPane.addTab("Inventory", new JLabel("Inventory"));
     fmrcTabPane.addChangeListener(new ChangeListener() {
       public void stateChanged(ChangeEvent e) {
         Component c = fmrcTabPane.getSelectedComponent();
@@ -822,6 +822,17 @@ public class ToolsUI extends JPanel {
     FeatureCollectionConfig.setRegularizeDefault(true);
     a.putValue(BAMutil.STATE, new Boolean(true));
     BAMutil.setActionPropertiesToggle(a, null, "regularize", true, 'R', -1);
+    BAMutil.addActionToMenu(ncMenu, a);
+
+    a = new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        Boolean state = (Boolean) getValue(BAMutil.STATE);
+        ThreddsDataFactory.preferCdm = state;
+      }
+    };
+    // ToolsUI default is to regularize the FFMRC
+    a.putValue(BAMutil.STATE, new Boolean(ThreddsDataFactory.preferCdm));
+    BAMutil.setActionPropertiesToggle(a, null, "preferCdm", ThreddsDataFactory.preferCdm, 'P', -1);
     BAMutil.addActionToMenu(ncMenu, a);
   }
 
