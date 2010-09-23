@@ -62,6 +62,8 @@ public class InvCatalogImpl extends InvCatalog {
    * Munge this catalog so the given dataset is the top catalog.
    *
    * @param ds make this top; must be existing dataset in this catalog.
+   *
+   * @deprecated in favor of thredds.catalog.util.DeepCopyUtils.subsetCatalogOnDataset
    */
   public void subset(InvDataset ds) {
     InvDatasetImpl dataset = (InvDatasetImpl) ds;
