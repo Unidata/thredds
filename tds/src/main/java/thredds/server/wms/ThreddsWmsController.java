@@ -140,6 +140,7 @@ public final class ThreddsWmsController extends AbstractWmsController
       {
         // We have sent an auth challenge to the client, so we send no
         // further information
+        log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_UNAUTHORIZED, -1 ) );
         return null;
       }
 
@@ -175,12 +176,12 @@ public final class ThreddsWmsController extends AbstractWmsController
       // a different servlet endpoint
       else if (request.equals("GetMetadata"))
       {
-          ThreddsMetadataController tms =
-              new ThreddsMetadataController(layerFactory, threddsServerConfig, ds);
-          // This is a request for non-standard metadata.  (This will one
-          // day be replaced by queries to Capabilities fragments, if possible.)
-          // Delegate to the ThreddsMetadataController
-          return tms.handleRequest(httpServletRequest, httpServletResponse, usageLogEntry);
+        ThreddsMetadataController tms =
+            new ThreddsMetadataController(layerFactory, threddsServerConfig, ds);
+        // This is a request for non-standard metadata.  (This will one
+        // day be replaced by queries to Capabilities fragments, if possible.)
+        // Delegate to the ThreddsMetadataController
+        modelAndView = tms.handleRequest( httpServletRequest, httpServletResponse, usageLogEntry );
       }
       else if ( request.equals( "GetLegendGraphic" ) )
       {
@@ -199,6 +200,21 @@ public final class ThreddsWmsController extends AbstractWmsController
 
       log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, -1 ) );
       return modelAndView;
+    }
+    catch ( WmsException e ) {
+      log.info( "dispatchWmsRequest(): WmsException: " + e.getMessage() );
+      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, -1 ) );
+      throw e;
+    }
+    catch ( Exception e ) {
+      log.info( "dispatchWmsRequest(): Exception: " + e.getMessage() );
+      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, -1 ) );
+      throw e;
+    }
+    catch ( Error e ) {
+      log.info( "dispatchWmsRequest(): Error: " + e.getMessage() );
+      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, -1 ) );
+      throw e;
     }
     finally {
       // We ensure that the GridDataset object is closed
