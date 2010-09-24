@@ -55,7 +55,7 @@ public class TestDodsServer extends TestCase {
     super(name);
   }
 
-  String dataset = "http://localhost:8080/thredds/dodsC/gribCollection/NAM_CONUS_20km_surface_20060315_1800.grib1";
+  String dataset = "http://localhost:8080/thredds/dodsC/testCdmUnitTest/grib/nam/c20s/NAM_CONUS_20km_surface_20060317_0000.grib1";
   public void testGrid() {
     String grid = dataset + ".ascii?Visibility[0:1:0][0:1:0][0:1:0]";
     System.out.println(" request= "+grid);
@@ -75,8 +75,8 @@ public class TestDodsServer extends TestCase {
   public void testSingleDataset() throws IOException {
     InvCatalogImpl cat = TestTDSAll.open(null);
 
-    InvDataset ds = cat.findDatasetByID("testSingleDataset");
-    assert (ds != null) : "cant find dataset 'testSingleDataset'";
+    InvDataset ds = cat.findDatasetByID("testDataset");
+    assert (ds != null) : "cant find dataset 'testDataset'";
     assert ds.getDataType() == FeatureType.GRID;
 
     ThreddsDataFactory fac = new ThreddsDataFactory();
@@ -121,8 +121,8 @@ public class TestDodsServer extends TestCase {
   }
 
   public void testUrlReading() throws IOException {
-    doOne("http://localhost:8080/thredds/dodsC/testEnhanced/2004050412_eta_211.nc");
-    doOne("http://localhost:8080/thredds/dodsC/testNestedCatalog/ocean.nc");
+    doOne("http://localhost:8080/thredds/dodsC/testCdmUnitTest/normal/NAM_Alaska_22km_20100504_0000.grib1");
+    doOne("http://localhost:8080/thredds/dodsC/testCdmUnitTest/normal/NAM_Alaska_45km_conduit_20100913_0000.grib2");
   }
 
 

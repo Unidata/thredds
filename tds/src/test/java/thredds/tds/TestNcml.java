@@ -35,6 +35,7 @@ package thredds.tds;
 import junit.framework.*;
 
 import thredds.catalog.*;
+import ucar.nc2.Attribute;
 import ucar.nc2.thredds.ThreddsDataFactory;
 import ucar.nc2.dataset.*;
 import ucar.nc2.Variable;
@@ -56,15 +57,12 @@ public class TestNcml extends TestCase {
     super(name);
   }
 
-  public void testNcMLinDatasetScan() throws IOException {
+  public void testNcMLinDataset() throws IOException {
     InvCatalogImpl cat = TestTDSAll.open(null);
 
-    InvDataset parent = cat.findDatasetByID("testAddRecords");
-    assert (parent != null) : "cant find dataset 'testAddRecords'";
-
-    InvDataset ds = parent.findDatasetByName("NAM_CONUS_80km_20051206_0000.nc");
-    assert (ds != null) : "cant find dataset 'NAM_CONUS_80km_20051206_0000.nc'";
-    assert ds.getDataType() == FeatureType.GRID;
+    InvDataset ds = cat.findDatasetByID("ExampleNcMLModified");
+    assert (ds != null) : "cant find dataset 'ExampleNcMLModified'";
+    assert ds.getDataType() == FeatureType.GRID : ds.getDataType();
 
     // ncml should not be sent to the client
     assert null == ((InvDatasetImpl)ds).getNcmlElement();
@@ -79,40 +77,57 @@ public class TestNcml extends TestCase {
     Variable v = ncd.findVariable("record");
     assert v != null;
 
-    assert ncd.findAttValueIgnoreCase(null,  "name2", "").equals("value2");
+    assert ncd.findAttValueIgnoreCase(null,  "name", "").equals("value");
+
+    assert ncd.findVariable("Temperature") != null;
+    assert ncd.findVariable("T") == null;
+
+    v = ncd.findVariable("ReletiveHumidity");
+    assert v != null;
+    Attribute att = v.findAttribute("long_name");
+    assert att != null;
+    assert att.getStringValue().equals("relatively humid");
+    assert null == v.findAttribute("description");
 
     ncd.close();
   }
 
-  // simple NcML wrapping
-  public void testNcmlModify() throws IOException {
+  public void testNcMLinDatasetScan() throws IOException {
     InvCatalogImpl cat = TestTDSAll.open(null);
 
-    InvDataset ds = cat.findDatasetByID("NcML-modify");
-    assert (ds != null) : "cant find dataset 'NcML-modify'";
+    InvDataset parent = cat.findDatasetByID("ModifyDatasetScan");
+    assert (parent != null) : "cant find dataset 'ModifyDatasetScan'";
+    InvDataset ds = parent.findDatasetByName("example1.nc");
+
+    assert ds.getDataType() == FeatureType.GRID : ds.getDataType();
+
+    // ncml should not be sent to the client
+    assert null == ((InvDatasetImpl)ds).getNcmlElement();
 
     ThreddsDataFactory fac = new ThreddsDataFactory();
     Formatter log = new Formatter();
 
     NetcdfDataset ncd = fac.openDataset( ds, false, null, log);
+
     assert ncd != null : log.toString();
 
-    Variable v = ncd.findVariable("Temperature");
+    Variable v = ncd.findVariable("record");
     assert v != null;
+
+    assert ncd.findAttValueIgnoreCase(null,  "name", "").equals("value");
+
+    assert ncd.findVariable("Temperature") != null;
+    assert ncd.findVariable("T") == null;
+
+    v = ncd.findVariable("ReletiveHumidity");
+    assert v != null;
+    Attribute att = v.findAttribute("long_name");
+    assert att != null;
+    assert att.getStringValue().equals("relatively humid");
+    assert null == v.findAttribute("description");
+
+    ncd.close();
   }
-
-
-  // ncml should not be sent to the client
-  public void testDatasetNcml() throws IOException {
-    InvCatalogImpl cat = TestTDSAll.open(null);
-
-    InvDataset ds = cat.findDatasetByID("aggNewTest");
-    assert (ds != null) : "cant find dataset 'aggNewTest'";
-
-    // ncml should not be sent to the client
-    assert null == ((InvDatasetImpl)ds).getNcmlElement();
-  }
-
 
   public void testAggExisting() throws IOException {
     NetcdfFile ncd = NetcdfDataset.openFile("http://localhost:8080/thredds/dodsC/aggExistingTest/seawifs.nc", null);
@@ -210,43 +225,5 @@ public class TestNcml extends TestCase {
 
     ncd.close();
   }
-
-  public void testWcs() throws IOException {
-    showGetCapabilities("http://localhost:8080/thredds/wcs/aggNewTest/SUPER-NATIONAL_8km_WV.gini");
-    showDescribeCoverage("http://localhost:8080/thredds/wcs/aggNewTest/SUPER-NATIONAL_8km_WV.gini", "IR_WV");
-    showGetCoverage("http://localhost:8080/thredds/wcs/aggNewTest/SUPER-NATIONAL_8km_WV.gini", "IR_WV",
-            "2000-06-16T07:00:00Z", null, null);
-  }
-
-  private void showGetCapabilities(String url) throws IOException {
-    showRead(url+"?request=GetCapabilities&version=1.0.0&service=WCS");
-  }
-
-  private void showDescribeCoverage(String url, String grid) throws IOException {
-    showRead(url+"?request=DescribeCoverage&version=1.0.0&service=WCS&coverage="+grid);
-  }
-
-  private void showGetCoverage(String url, String grid, String time, String vert, String bb) throws IOException {
-    String getURL = url+"?request=GetCoverage&version=1.0.0&service=WCS&format=NetCDF3&coverage="+grid;
-    if (time != null)
-      getURL = getURL + "&time="+time;
-    if (vert != null)
-      getURL = getURL + "&vertical="+vert;
-    if (bb != null)
-      getURL = getURL + "&bbox="+bb;
-
-    File file = new File("C:/TEMP/"+grid+"3.nc");
-    IO.readURLtoFile(getURL, file);
-    System.out.println(" copied contents to "+file.getPath());
-  }
-
-  private void showRead(String url) throws IOException {
-    System.out.println("****************\n");
-    System.out.println(url+"\n");
-    String contents = IO.readURLcontentsWithException( url);
-    System.out.println(contents);
-  }
-
-
 
 }

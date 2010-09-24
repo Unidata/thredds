@@ -47,18 +47,18 @@ public class TestDatasetScan extends TestCase {
 
 
   public void testSort() throws IOException {
-    InvCatalog cat = TestTDSAll.open("/catalog/gribCollection/catalog.xml");
-    InvDataset top = cat.getDataset();
-    List dss = top.getDatasets();
-    assert (dss.size() > 2);
+    InvCatalog cat = TestTDSAll.open("/catalog/testCdmUnitTest/normal/catalog.xml");
 
-    InvDataset ds1 = (InvDataset) dss.get(1);
-    InvDataset ds2 = (InvDataset) dss.get(2);
-    assert ds1.getName().compareTo( ds2.getName()) < 0 ;
+    InvDataset last = null;
+    for (InvDataset ds : cat.getDatasets()) {
+      if (last != null)
+        assert ds.getName().compareTo( last.getName()) > 0 ;
+      last = ds;
+    }
   }
 
   public void testLatest() throws IOException {
-     InvCatalogImpl cat = TestTDSAll.open("/catalog/gribCollection/latest.xml");
+     InvCatalogImpl cat = TestTDSAll.open("/catalog/testCdmUnitTest/netcdf/seawifs/latest.xml");
      List dss = cat.getDatasets();
      assert (dss.size() == 1);
 
@@ -71,7 +71,7 @@ public class TestDatasetScan extends TestCase {
    }
 
   public void testHarvest() throws IOException {
-    InvCatalogImpl cat = TestTDSAll.open("/catalog/ncmodels/catalog.xml");  // http://localhost:8080/thredds/catalog/ncmodels/catalog.html?dataset=ncmodels
+    InvCatalogImpl cat = TestTDSAll.open("/catalog/testCdmUnitTest/netcdf/seawifs/catalog.xml");
     InvDataset dscan = cat.findDatasetByID("ncmodels");
     assert dscan != null;
     assert dscan.isHarvest();

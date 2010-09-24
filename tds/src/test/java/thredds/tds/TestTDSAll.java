@@ -38,12 +38,14 @@ import thredds.catalog.InvCatalogFactory;
 import ucar.nc2.dods.DODSNetcdfFile;
 
 /**
- * TestSuite that runs all the sample tests for testing the TDS.
+ * TestSuite that runs all the sample tests for testing the TDS on localhost.
  *
- * This assumes that you are running the TDS on localhost, with the standard test catalog (catalog_unitTest.xml).
+ * The local server should run the catalog at thredds\tds\src\test\data\thredds\tds\catalog.xml. Please keep this
+ * updated and checked into svn.
  *
- * Test data is typically put into /upc/share/testdata2/tds
+ * Data should be kept in /upc/share/cdmUnitTest/tds
  *
+ * jcaron, resurrected Sep 2010
  */
 public class TestTDSAll extends TestCase {
   public static String topCatalog = "http://localhost:8080/thredds";
@@ -82,6 +84,7 @@ public class TestTDSAll extends TestCase {
     suite.addTest(new TestSuite(TestNcml.class));
     suite.addTest(new TestSuite(TestNetcdfSubsetService.class));
     suite.addTest(new TestSuite(TestDatasetScan.class));
+    suite.addTest(new TestSuite(TestWxs.class));
 
     return suite;
   }
