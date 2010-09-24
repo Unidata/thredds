@@ -33,59 +33,53 @@
 package thredds.tds;
 
 import junit.framework.*;
-import thredds.catalog.InvCatalogImpl;
-import thredds.catalog.InvCatalogFactory;
-import ucar.nc2.dods.DODSNetcdfFile;
 
-/**
- * TestSuite that runs all the sample tests for testing the TDS on localhost.
- *
- * The local server should run the catalog at thredds\tds\src\test\data\thredds\tds\catalog.xml. Please keep this
- * updated and checked into svn.
- *
- * Data should be kept in /upc/share/cdmUnitTest/tds
- *
- * jcaron, resurrected Sep 2010
- */
-public class TestTDSAll extends TestCase {
-  public static String topCatalog = "http://localhost:8080/thredds";
-  public static boolean showValidationMessages = false;
+import ucar.nc2.dataset.*;
+import ucar.nc2.*;
+import ucar.nc2.util.IO;
 
-  public static InvCatalogImpl open(String catalogName) {
-    if (catalogName == null) catalogName = "/catalog.xml";
-    String catalogPath = topCatalog + catalogName;
-    System.out.println("\n open= "+catalogPath);
-    StringBuilder buff = new StringBuilder();
-    InvCatalogFactory catFactory = InvCatalogFactory.getDefaultFactory( false);
+import java.io.IOException;
+import java.io.File;
 
+public class TestTdsNetcdfSubsetService extends TestCase {
+
+  public TestTdsNetcdfSubsetService( String name) {
+    super(name);
+  }
+
+  public void testNetcdfSubsetService() throws IOException {
+    String url = "/ncServer/gribCollection/NAM_CONUS_20km_surface_20060316_0000.grib1.nc?grid=K_index&grid=Sweat_index&west=-140&east=-90&north=50&south=20&time_start=3&time_end=12";
+    File fileSave = new File("C:/TEMP/testNetcdfSubsetService.nc");
+
+    IO.readURLtoFile(TestTdsLocal.topCatalog+url, fileSave);
+    System.out.println("Copied "+ TestTdsLocal.topCatalog+url+" to "+fileSave.getPath());
+
+    NetcdfFile ncd = null;
     try {
-      InvCatalogImpl cat = catFactory.readXML(catalogPath);
-      boolean isValid = cat.check( buff, false);
-      if (!isValid) {
-        System.out.println("Validate failed "+ catalogName+" = \n<"+ buff.toString()+">");
-        assertTrue( false);
-      } else if (showValidationMessages)
-        System.out.println("Validate ok "+ catalogName+" = \n<"+ buff.toString()+">");
-      return cat;
-
-    } catch (Exception e) {
-      e.printStackTrace();
-      assertTrue( false);
+      ncd = NetcdfDataset.openFile(fileSave.getPath(), null);
+    } catch (Throwable t) {
+      IO.copyFile(fileSave.getPath(), System.out);
+      return;
     }
+    assert ncd != null;
 
-    return null;
+    assert ncd.findVariable("K_index") != null;
+    assert ncd.findVariable("Sweat_index") != null;
+    assert ncd.findVariable("time") != null;
+    assert ncd.findVariable("y") != null;
+    assert ncd.findVariable("x") != null;
+
+    Variable v = ncd.findVariable("time");
+    assert v.getSize() == 4;
+
+    v = ncd.findVariable("x");
+    assert v.getSize() == 235;
+
+    v = ncd.findVariable("y");
+    assert v.getSize() == 199;
+
+    ncd.close();
   }
 
-  public static junit.framework.Test suite ( ) {
-    DODSNetcdfFile.debugServerCall = true;
 
-    TestSuite suite= new TestSuite();
-    suite.addTest(new TestSuite(TestDodsServer.class));
-    suite.addTest(new TestSuite(TestNcml.class));
-    suite.addTest(new TestSuite(TestNetcdfSubsetService.class));
-    suite.addTest(new TestSuite(TestDatasetScan.class));
-    suite.addTest(new TestSuite(TestWxs.class));
-
-    return suite;
-  }
 }

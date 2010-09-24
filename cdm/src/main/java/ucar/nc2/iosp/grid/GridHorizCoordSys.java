@@ -727,10 +727,9 @@ public class GridHorizCoordSys {
     double scale = .933;
 
     String nproj = gds.getParam(GridDefRecord.NPPROJ);
-    double latOrigin = (nproj == null || nproj.equalsIgnoreCase("true"))
-        ? 90.0 : -90.0;
+    double latOrigin = (nproj == null || nproj.equalsIgnoreCase("true")) ? 90.0 : -90.0;
 
-    // Why the scale factor?. accordining to GRIB docs:
+    // Why the scale factor?. according to GRIB docs:
     // "Grid lengths are in units of meters, at the 60 degree latitude circle nearest to the pole"
     // since the scale factor at 60 degrees = k = 2*k0/(1+sin(60))  [Snyder,Working Manual p157]
     // then to make scale = 1 at 60 degrees, k0 = (1+sin(60))/2 = .933
@@ -738,35 +737,28 @@ public class GridHorizCoordSys {
 
     // we have to project in order to find the origin
     ProjectionPointImpl start = (ProjectionPointImpl) proj.latLonToProj(
-        new LatLonPointImpl(
-            gds.getDouble(GridDefRecord.LA1), gds.getDouble(GridDefRecord.LO1)));
+        new LatLonPointImpl( gds.getDouble(GridDefRecord.LA1), gds.getDouble(GridDefRecord.LO1)));
     startx = start.getX();
     starty = start.getY();
 
-    if (Double.isNaN(getDxInKm())) {
+    if (Double.isNaN(getDxInKm()))
       setDxDy(startx, starty, proj);
-    }
 
     if (GridServiceProvider.debugProj) {
       System.out.println("start at proj coord " + start);
       LatLonPoint llpt = proj.projToLatLon(start);
       System.out.println("   end at lat/lon coord " + llpt);
-      System.out.println("   should be lat=" + gds.getDouble(GridDefRecord.LA1)
-          + " lon=" + gds.getDouble(GridDefRecord.LO1));
+      System.out.println("   should be lat=" + gds.getDouble(GridDefRecord.LA1) + " lon=" + gds.getDouble(GridDefRecord.LO1));
     }
 
     attributes.add(new Attribute(GridCF.GRID_MAPPING_NAME, "polar_stereographic"));
     //attributes.add(new Attribute("longitude_of_projection_origin",
-    attributes.add(new Attribute(GridCF.LONGITUDE_OF_PROJECTION_ORIGIN,
-        new Double(gds.getDouble(GridDefRecord.LOV))));
+    attributes.add(new Attribute(GridCF.LONGITUDE_OF_PROJECTION_ORIGIN,  new Double(gds.getDouble(GridDefRecord.LOV))));
     //attributes.add(new Attribute("straight_vertical_longitude_from_pole",
-    attributes.add(new Attribute( GridCF.STRAIGHT_VERTICAL_LONGITUDE_FROM_POLE,
-        new Double(gds.getDouble(GridDefRecord.LOV))));
+    attributes.add(new Attribute( GridCF.STRAIGHT_VERTICAL_LONGITUDE_FROM_POLE,  new Double(gds.getDouble(GridDefRecord.LOV))));
     //attributes.add(new Attribute("scale_factor_at_projection_origin",
-    attributes.add(new Attribute(GridCF.SCALE_FACTOR_AT_PROJECTION_ORIGIN,
-        new Double(scale)));
-    attributes.add(new Attribute(GridCF.LATITUDE_OF_PROJECTION_ORIGIN,
-        new Double(latOrigin)));
+    attributes.add(new Attribute(GridCF.SCALE_FACTOR_AT_PROJECTION_ORIGIN,  new Double(scale)));
+    attributes.add(new Attribute(GridCF.LATITUDE_OF_PROJECTION_ORIGIN, new Double(latOrigin)));
   }
 
   /**

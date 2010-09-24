@@ -48,8 +48,8 @@ public class TestDLwriter extends TestCase {
   public void testDLwriter() throws IOException {
     String url = "/DLwriter?type=ADN&catalog=/thredds/catalog/testEnhanced/catalog.xml";
 
-    System.out.println("Response from "+TestTDSAll.topCatalog+url);
-    String result = IO.readURLcontents(TestTDSAll.topCatalog+url);
+    System.out.println("Response from "+ TestTdsLocal.topCatalog+url);
+    String result = IO.readURLcontents(TestTdsLocal.topCatalog+url);
     System.out.println(result);
   }
 }

@@ -51,9 +51,9 @@ import java.io.IOException;
 import java.io.File;
 import java.util.Formatter;
 
-public class TestWxs extends TestCase {
+public class TestTdsWxs extends TestCase {
 
-  public TestWxs( String name) {
+  public TestTdsWxs( String name) {
     super(name);
   }
 

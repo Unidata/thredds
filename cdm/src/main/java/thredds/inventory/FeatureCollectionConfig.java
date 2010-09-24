@@ -69,15 +69,17 @@ public class FeatureCollectionConfig {
     public UpdateConfig updateConfig = new UpdateConfig();
     public ProtoConfig protoConfig = new ProtoConfig();
     public FmrcConfig fmrcConfig = new FmrcConfig();
+    public Element innerNcml = null;
 
     public Config() {
     }
 
-    public Config(String name, String spec, String olderThan, String recheckAfter) {
+    public Config(String name, String spec, String olderThan, String recheckAfter, Element innerNcml) {
       this.name = name;
       this.spec = spec.trim();
       this.olderThan = olderThan;
       this.recheckAfter = recheckAfter;
+      this.innerNcml = innerNcml;
     }
 
     @Override
@@ -124,7 +126,7 @@ public class FeatureCollectionConfig {
     public ProtoChoice choice = ProtoChoice.Penultimate;
     public String param = null;
     public String change = null;
-    public Element ncml = null;
+    public Element outerNcml = null;
     public boolean cacheAll = true;
 
     public ProtoConfig() { // defaults
@@ -141,7 +143,7 @@ public class FeatureCollectionConfig {
 
       this.change = change;
       this.param = param;
-      this.ncml = ncml;
+      this.outerNcml = ncml;
     }
 
     @Override
@@ -150,7 +152,7 @@ public class FeatureCollectionConfig {
               "choice=" + choice +
               ", change='" + change + '\'' +
               ", param='" + param + '\'' +
-              ", ncml='" + ncml + '\'' +
+              ", outerNcml='" + outerNcml + '\'' +
               ", cacheAll=" + cacheAll +
               '}';
     }

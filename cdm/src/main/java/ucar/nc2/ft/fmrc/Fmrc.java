@@ -105,7 +105,7 @@ public class Fmrc {
   private final FeatureCollectionConfig.Config config;
 
   // should be final
-  private Element ncmlOuter, ncmlInner;
+  // private Element ncmlOuter, ncmlInner;
 
   // the current state - changing must be thread safe
   private Object lock = new Object();
@@ -133,9 +133,9 @@ public class Fmrc {
     this.config = new FeatureCollectionConfig.Config();
   }
 
-  public void setNcml(Element ncmlOuter, Element ncmlInner) {
-    this.ncmlOuter = ncmlOuter;
-    this.ncmlInner = ncmlInner;
+  public void setNcml(Element outerNcml, Element innerNcml) {
+    config.protoConfig.outerNcml = outerNcml;
+    config.innerNcml = innerNcml;
   }
 
   public double getOlderThanFilterInSecs() {
@@ -234,7 +234,7 @@ public class Fmrc {
 
       if (fmrcDataset == null) {
         try {
-          fmrcDataset = new FmrcDataset(config, ncmlInner, ncmlOuter);
+          fmrcDataset = new FmrcDataset(config);
           manager.scan(null);
           FmrcInv fmrcInv = makeFmrcInv(null);
           fmrcDataset.setInventory(fmrcInv, forceProtoLocal);
@@ -279,7 +279,7 @@ public class Fmrc {
         if (logger.isDebugEnabled())
           logger.debug("Fmrc: "+config.spec+": file="+f.getPath());
 
-        GridDatasetInv inv = GridDatasetInv.open(manager, f, ncmlInner); // inventory is discovered for each GDS
+        GridDatasetInv inv = GridDatasetInv.open(manager, f, config.innerNcml); // inventory is discovered for each GDS
         Date runDate = inv.getRunDate();
         if (debug != null) debug.format("  opened %s rundate = %s%n", f.getPath(), inv.getRunDateString());
 

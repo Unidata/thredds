@@ -35,30 +35,27 @@ package thredds.tds;
 import junit.framework.*;
 
 import thredds.catalog.*;
-import ucar.nc2.Attribute;
+import ucar.ma2.DataType;
+import ucar.nc2.*;
 import ucar.nc2.thredds.ThreddsDataFactory;
 import ucar.nc2.dataset.*;
-import ucar.nc2.Variable;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.NCdump;
-import ucar.nc2.util.IO;
 import ucar.nc2.constants.FeatureType;
 import ucar.ma2.Array;
 import ucar.ma2.IndexIterator;
 import ucar.ma2.InvalidRangeException;
 
 import java.io.IOException;
-import java.io.File;
+import java.io.PrintWriter;
 import java.util.Formatter;
 
-public class TestNcml extends TestCase {
+public class TestTdsNcml extends TestCase {
 
-  public TestNcml( String name) {
+  public TestTdsNcml( String name) {
     super(name);
   }
 
   public void testNcMLinDataset() throws IOException {
-    InvCatalogImpl cat = TestTDSAll.open(null);
+    InvCatalogImpl cat = TestTdsLocal.open(null);
 
     InvDataset ds = cat.findDatasetByID("ExampleNcMLModified");
     assert (ds != null) : "cant find dataset 'ExampleNcMLModified'";
@@ -93,7 +90,7 @@ public class TestNcml extends TestCase {
   }
 
   public void testNcMLinDatasetScan() throws IOException {
-    InvCatalogImpl cat = TestTDSAll.open(null);
+    InvCatalogImpl cat = TestTdsLocal.open(null);
 
     InvDataset parent = cat.findDatasetByID("ModifyDatasetScan");
     assert (parent != null) : "cant find dataset 'ModifyDatasetScan'";
@@ -129,49 +126,40 @@ public class TestNcml extends TestCase {
     ncd.close();
   }
 
-  public void testAggExisting() throws IOException {
-    NetcdfFile ncd = NetcdfDataset.openFile("http://localhost:8080/thredds/dodsC/aggExistingTest/seawifs.nc", null);
-    assert ncd != null;
+  public void testAggExisting() throws IOException, InvalidRangeException {
+    NetcdfFile ncfile = NetcdfDataset.openFile("http://localhost:8080/thredds/dodsC/ExampleNcML/Agg.nc", null);
 
-    // test attributes added in NcML
-    String testAtt = ncd.findAttValueIgnoreCase(null, "ncmlAdded", null);
-    assert testAtt != null;
-    assert testAtt.equals("value");
-
-    Variable v = ncd.findVariable("latitude");
+    Variable v = ncfile.findVariable("time");
     assert v != null;
-    testAtt = ncd.findAttValueIgnoreCase(v, "ncmlAdded", null);
-    assert testAtt != null;
-    assert testAtt.equals("lat_value");
+    assert v.getDataType() == DataType.DOUBLE;
 
-    v = ncd.findVariable("chlorophylle_a");
-    assert v != null;
-    testAtt = ncd.findAttValueIgnoreCase(v, "ncmlAdded", null);
-    assert testAtt != null;
-    assert testAtt.equals("chlor_value");
-
-    v = ncd.findVariable("time");
-    assert v != null;
-    testAtt = ncd.findAttValueIgnoreCase(v, "ncmlAdded", null);
-    assert testAtt != null;
-    assert testAtt.equals("time_value");
-
-    Array data = v.read();
-    assert data.getSize() == v.getSize();
-    assert data.getSize() == 6;
+    String units = v.getUnitsString();
+    assert units != null;
+    assert units.equals("hours since 2006-09-25T06:00:00Z");
 
     int count = 0;
-    double[] want = new double[]  {890184.0, 890232.0, 890256.0, 890304.0, 890352.0, 890376.0};
-    IndexIterator ii = data.getIndexIterator();
-    while (ii.hasNext()) {
-      double val = ii.getDoubleNext();
-      assert val == want[count++];
+    Array data = v.read();
+    NCdumpW.printArray(data, "time", new PrintWriter(System.out), null);
+    while (data.hasNext()) {
+      assert TestAll.closeEnough(data.nextInt(), (count + 1) * 3);
+      count++;
     }
 
-    ncd.close();
+     // test attributes added in NcML
+    String testAtt = ncfile.findAttValueIgnoreCase(null, "ncmlAdded", null);
+    assert testAtt != null;
+    assert testAtt.equals("stuff");
+
+    v = ncfile.findVariable("lat");
+    assert v != null;
+    testAtt = ncfile.findAttValueIgnoreCase(v, "ncmlAdded", null);
+    assert testAtt != null;
+    assert testAtt.equals("lat_stuff");
+
+    ncfile.close();
   }
 
-  public void testAggNew() throws IOException, InvalidRangeException {
+  public void utestAggNew() throws IOException, InvalidRangeException {
     NetcdfFile ncd = NetcdfDataset.openFile("http://localhost:8080/thredds/dodsC/aggNewTest/SUPER-NATIONAL_8km_WV.gini", null);
     assert ncd != null;
 

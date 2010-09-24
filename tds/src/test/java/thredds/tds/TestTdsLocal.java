@@ -33,58 +33,59 @@
 package thredds.tds;
 
 import junit.framework.*;
+import thredds.catalog.InvCatalogImpl;
+import thredds.catalog.InvCatalogFactory;
+import ucar.nc2.dods.DODSNetcdfFile;
 
-import thredds.catalog.*;
+/**
+ * TestSuite that runs all the sample tests for testing the TDS on localhost.
+ *
+ * The local server should run the catalog at thredds\tds\src\test\data\thredds\tds\catalog.xml. Please keep this
+ * updated and checked into svn.
+ *
+ * Data should be kept in /upc/share/cdmUnitTest/tds
+ *
+ * jcaron, resurrected Sep 2010
+ */
+public class TestTdsLocal extends TestCase {
+  public static String topCatalog = "http://localhost:8080/thredds";
+  public static boolean showValidationMessages = false;
 
-import java.io.IOException;
-import java.util.List;
+  public static InvCatalogImpl open(String catalogName) {
+    if (catalogName == null) catalogName = "/catalog.xml";
+    String catalogPath = topCatalog + catalogName;
+    System.out.println("\n open= "+catalogPath);
+    StringBuilder buff = new StringBuilder();
+    InvCatalogFactory catFactory = InvCatalogFactory.getDefaultFactory( false);
 
-public class TestDatasetScan extends TestCase {
+    try {
+      InvCatalogImpl cat = catFactory.readXML(catalogPath);
+      boolean isValid = cat.check( buff, false);
+      if (!isValid) {
+        System.out.println("Validate failed "+ catalogName+" = \n<"+ buff.toString()+">");
+        assertTrue( false);
+      } else if (showValidationMessages)
+        System.out.println("Validate ok "+ catalogName+" = \n<"+ buff.toString()+">");
+      return cat;
 
-  public TestDatasetScan( String name) {
-    super(name);
-  }
-
-
-  public void testSort() throws IOException {
-    InvCatalog cat = TestTDSAll.open("/catalog/testCdmUnitTest/normal/catalog.xml");
-
-    InvDataset last = null;
-    for (InvDataset ds : cat.getDatasets()) {
-      if (last != null)
-        assert ds.getName().compareTo( last.getName()) > 0 ;
-      last = ds;
+    } catch (Exception e) {
+      e.printStackTrace();
+      assertTrue( false);
     }
+
+    return null;
   }
 
-  public void testLatest() throws IOException {
-     InvCatalogImpl cat = TestTDSAll.open("/catalog/testCdmUnitTest/netcdf/seawifs/latest.xml");
-     List dss = cat.getDatasets();
-     assert (dss.size() == 1);
+  public static junit.framework.Test suite ( ) {
+    DODSNetcdfFile.debugServerCall = true;
 
-     InvDatasetImpl ds = (InvDatasetImpl) dss.get(0);
-     assert ds.hasAccess();
-     assert ds.getDatasets().size() == 0;
+    TestSuite suite= new TestSuite();
+    suite.addTest(new TestSuite(TestTdsDodsServer.class));
+    suite.addTest(new TestSuite(TestTdsNcml.class));
+    suite.addTest(new TestSuite(TestTdsDatasetScan.class));
+    //suite.addTest(new TestSuite(TestTdsNetcdfSubsetService.class));
+    //suite.addTest(new TestSuite(TestTdsWxs.class));
 
-     assert ds.getID() != null;
-     assert ds.getDataSize() > 0.0;
-   }
-
-  public void testHarvest() throws IOException {
-    InvCatalogImpl cat = TestTDSAll.open("/catalog/testCdmUnitTest/netcdf/seawifs/catalog.xml");
-    InvDataset dscan = cat.findDatasetByID("ncmodels");
-    assert dscan != null;
-    assert dscan.isHarvest();
-
-    List dss = dscan.getDatasets();
-    assert (dss.size() > 0);
-    InvDataset nested = (InvDataset) dss.get(0);
-    assert !nested.isHarvest();
-
-    cat = TestTDSAll.open("/catalog/ncmodels/canonical/catalog.xml");
-    InvDataset ds = cat.findDatasetByID("ncmodels/canonical");
-    assert ds != null;
-    assert !ds.isHarvest();
+    return suite;
   }
-
 }

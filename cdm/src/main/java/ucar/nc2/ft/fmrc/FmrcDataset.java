@@ -73,7 +73,7 @@ class FmrcDataset {
   static private final boolean debugEnhance = false, debugRead = false;
 
   private final FeatureCollectionConfig.Config config;
-  private final Element ncmlOuter, ncmlInner;
+  // private final Element ncmlOuter, ncmlInner;
 
   //private List<String> protoList; // the list of datasets in the proto that have proxy reader, so these need to exist. not implemented yet
 
@@ -90,10 +90,10 @@ class FmrcDataset {
   private State state;
   private Object lock= new Object();
 
-  FmrcDataset(FeatureCollectionConfig.Config config, Element ncmlInner, Element ncmlOuter) {
+  FmrcDataset(FeatureCollectionConfig.Config config) { // }, Element ncmlInner, Element ncmlOuter) {
     this.config = config;
-    this.ncmlInner = ncmlInner;
-    this.ncmlOuter = ncmlOuter;
+    //this.ncmlInner = ncmlInner;
+    //this.ncmlOuter = ncmlOuter;
   }
 
   List<Date> getRunDates() {
@@ -188,10 +188,6 @@ class FmrcDataset {
     // make new proto if needed
     if (state == null || forceProto) {
       protoLocal = buildProto(fmrcInv, config.protoConfig);
-
-      if (ncmlOuter != null) {
-        protoLocal = NcMLReader.mergeNcMLdirect(protoLocal, ncmlOuter);
-      }
     }
 
     // switch to FmrcInvLite to reduce memory usage
@@ -367,8 +363,8 @@ class FmrcDataset {
       }
 
       // apply ncml if it exists
-      if (protoConfig.ncml != null)
-        NcMLReader.mergeNcMLdirect(result, protoConfig.ncml);
+      if (protoConfig.outerNcml != null)
+        NcMLReader.mergeNcMLdirect(result, protoConfig.outerNcml);
 
       return result;
 
@@ -1131,12 +1127,12 @@ class FmrcDataset {
     }
 
     try {
-      if (ncmlInner == null) {
+      if (config.innerNcml == null) {
         ncd = NetcdfDataset.acquireDataset(location, null);  // default enhance
 
       } else {
         NetcdfFile nc = NetcdfDataset.acquireFile(location, null);
-        ncd = NcMLReader.mergeNcML(nc, ncmlInner); // create new dataset
+        ncd = NcMLReader.mergeNcML(nc, config.innerNcml); // create new dataset
         ncd.enhance(); // now that the ncml is added, enhance "in place", ie modify the NetcdfDataset
       }
     } catch (IOException ioe) {

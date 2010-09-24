@@ -38,10 +38,13 @@
     <sort>
       <lexigraphicByName increasing="true"/>
     </sort>
+    <addDatasetSize />
+
   </datasetScan>
 
   <catalogRef xlink:title="Test Enhanced Catalog" xlink:href="enhancedCatalog.xml" name=""/>
 
+  <!-- test NcML in dataset -->
   <dataset name="Example NcML Modified" ID="ExampleNcMLModified" urlPath="ExampleNcML/Modified.nc">
     <serviceName>odap</serviceName>
     <dataType>Grid</dataType>
@@ -56,6 +59,7 @@
     </netcdf>
   </dataset>
 
+  <!-- test NcML in datasetScan -->
   <datasetScan name="ModifyDatasetScan" ID="ModifyDatasetScan" path="ModifyDatasetScan" location="Q:/cdmUnitTest/tds/">
     <metadata inherited="true">
       <serviceName>all</serviceName>
@@ -79,6 +83,24 @@
 
   </datasetScan>
 
+  <!-- test NcML aggregation in dataset -->
+  <dataset name="Example NcML Aggregation" ID="ExampleNcMLAgg" urlPath="ExampleNcML/Agg.nc">
+    <serviceName>odap</serviceName>
+    <dataType>Grid</dataType>
+    <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
+      <aggregation dimName="time" type="joinExisting" timeUnitsChange="true">
+        <netcdf location="Q:/cdmUnitTest/ncml/nc/namExtract/20060925_0600.nc" ncoords="2"/>
+        <netcdf location="Q:/cdmUnitTest/ncml/nc/namExtract/20060925_1200.nc" ncoords="2"/>
+        <netcdf location="Q:/cdmUnitTest/ncml/nc/namExtract/20060925_1800.nc" ncoords="2"/>
+        <netcdf location="Q:/cdmUnitTest/ncml/nc/namExtract/20060926_0000.nc" ncoords="2"/>
+      </aggregation>
+      <attribute name="ncmlAdded" value="stuff"/>
+      <variable name="lat">
+        <attribute name="ncmlAdded" value="lat_stuff"/>
+      </variable>
+    </netcdf>
+  </dataset>
+
   <!-- test FMRC -->
   <featureCollection featureType="FMRC" name="NAM FMRC" path="aggorama">
 
@@ -91,8 +113,25 @@
                 recheckAfter="30 sec"
                 olderThan="10 min"/>
     <update startup="true" rescan="10 43 * * * ? *" trigger="allow"/>
-    <protoDataset choice="Penultimate" change="0 43 * * * ? *"/>
-    <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
+
+    <protoDataset choice="Penultimate" change="0 43 * * * ? *">
+      <!-- outer ncml -->
+      <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
+        <attribute name="ncmlAdded" value="goodStuff"/>
+        <variable name="Visibility">
+          <attribute name="ncmlAdded" value="reallyGoodStuff"/>
+        </variable>
+      </netcdf>
+    </protoDataset>
+
+    <!-- inner ncml -->
+    <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
+        <variable name="Visibility">
+          <attribute name="ncmlInnerAdded" value="innerTruth"/>
+        </variable>
+     </netcdf>
+
+    <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets"/>
 
   </featureCollection>
 

@@ -41,7 +41,7 @@ import junit.framework.TestCase;
 import java.io.IOException;
 
 public class TestScaleOffset extends TestCase {
-  private String filename = TestAll.cdmLocalTestDataDir +"scaleOffset.nc";
+  private String filename = TestAll.temporaryLocalDataDir +"scaleOffset.nc";
 
   public TestScaleOffset( String name) {
     super(name);

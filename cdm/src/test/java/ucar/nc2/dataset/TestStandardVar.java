@@ -35,7 +35,10 @@ package ucar.nc2.dataset;
 import junit.framework.*;
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.nc2.util.CompareNetcdf;
+import ucar.nc2.util.CompareNetcdf2;
 
+import java.io.IOException;
 import java.util.*;
 
 /** Test TestStandardVar in JUnit framework. */
@@ -414,5 +417,58 @@ public class TestStandardVar extends TestCase {
     assert TestAll.closeEnough(val, -999.99) : val;
     assert v.isMissing(val);
   }
+
+  public void testEnhanceDefer() throws IOException {
+    NetcdfDataset ncd = NetcdfDataset.openDataset(filename, EnumSet.of(NetcdfDataset.Enhance.ScaleMissing), -1, null, null);
+    VariableDS enhancedVar = (VariableDS) ncd.findVariable("t1");
+
+    NetcdfDataset ncdefer = NetcdfDataset.openDataset(filename, EnumSet.of(NetcdfDataset.Enhance.ScaleMissingDefer), -1, null, null);
+    VariableDS deferVar = (VariableDS) ncdefer.findVariable("t1");
+
+    Array data = enhancedVar.read();
+    Array dataDefer =  deferVar.read();
+
+    System.out.printf("Enhanced=");
+    NCdumpW.printArray(data);
+    System.out.printf("%nDeferred=");
+    NCdumpW.printArray(dataDefer);
+    System.out.printf("%nProcessed=");
+
+    CompareNetcdf2 nc = new CompareNetcdf2(new Formatter(System.out), false, false, true);
+    assert !nc.compareData(enhancedVar.getShortName(), data, dataDefer, false);
+
+    IndexIterator ii = dataDefer.getIndexIterator();
+    while (ii.hasNext()) {
+      double val = deferVar.convertScaleOffsetMissing(ii.getDoubleNext());
+      ii.setDoubleCurrent(val);
+    }
+    NCdumpW.printArray(dataDefer);
+
+    assert nc.compareData(enhancedVar.getShortName(), data, dataDefer, false);
+
+    ncd.close();
+    ncdefer.close();
+  }
+
+  // for jon blower
+  private Array getEnhancedArray(VariableDS vds) throws IOException {
+    Array data = vds.read();
+    EnumSet<NetcdfDataset.Enhance> mode = vds.getEnhanceMode();
+    if (mode.contains(NetcdfDataset.Enhance.ScaleMissing))
+      return data;
+    if (!mode.contains(NetcdfDataset.Enhance.ScaleMissingDefer))
+      throw new IllegalStateException("Must include "+NetcdfDataset.Enhance.ScaleMissingDefer);
+
+    IndexIterator ii = data.getIndexIterator();
+    while (ii.hasNext()) {
+      double val = vds.convertScaleOffsetMissing(ii.getDoubleNext());
+      ii.setDoubleCurrent(val);
+    }
+    return data;
+  }
+
+
+
+
 
 }

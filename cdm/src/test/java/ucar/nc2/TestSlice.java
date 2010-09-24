@@ -48,7 +48,7 @@ public class TestSlice extends TestCase {
     super(name);
   }
 
-  private static final String NETCDF_FILE = TestLocal.cdmTestDataDir +"testSlice.nc";
+  private static final String NETCDF_FILE = TestLocal.temporaryDataDir +"testSlice.nc";
   private static final String DATA_VARIABLE = "data";
   private static final int DIM_T = 10;
   private static final int DIM_ALT = 5;

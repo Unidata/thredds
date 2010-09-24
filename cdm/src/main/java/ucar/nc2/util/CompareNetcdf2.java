@@ -69,6 +69,10 @@ public class CompareNetcdf2 {
   private boolean showEach = false;
   private boolean compareData = false;
 
+  public CompareNetcdf2() {
+    this(new Formatter(System.out), false, false, false);
+  }
+
   public CompareNetcdf2(Formatter f, boolean showCompare, boolean showEach, boolean compareData) {
     this.f = f;
     this.compareData = compareData;

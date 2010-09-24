@@ -310,6 +310,7 @@
             <xsd:element type="updateType" name="update" minOccurs="0"/>
             <xsd:element type="protoDatasetType" name="protoDataset" minOccurs="0"/>
             <xsd:element type="fmrcConfigType" name="fmrcConfig" minOccurs="0"/>
+            <xsd:element ref="ncml:netcdf" minOccurs="0"/>
           </xsd:sequence>
           <xsd:attribute name="featureType" type="xsd:string" use="required"/>
           <xsd:attribute name="path" type="xsd:string" use="required"/>
@@ -325,7 +326,7 @@
     <xsd:attribute name="recheckAfter" type="xsd:string" />
   </xsd:complexType>
 
-  <xsd:complexType name="manageType">
+  <xsd:complexType name="manageType">   <!-- mot implemented yet -->
     <xsd:attribute name="deleteAfter" type="xsd:string" use="required"/>
     <xsd:attribute name="check" type="xsd:token"/>
   </xsd:complexType>

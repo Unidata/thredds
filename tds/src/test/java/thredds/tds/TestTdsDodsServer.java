@@ -49,9 +49,9 @@ import ucar.ma2.Array;
 import java.io.IOException;
 import java.util.List;
 
-public class TestDodsServer extends TestCase {
+public class TestTdsDodsServer extends TestCase {
 
-  public TestDodsServer( String name) {
+  public TestTdsDodsServer( String name) {
     super(name);
   }
 
@@ -73,7 +73,7 @@ public class TestDodsServer extends TestCase {
   }
 
   public void testSingleDataset() throws IOException {
-    InvCatalogImpl cat = TestTDSAll.open(null);
+    InvCatalogImpl cat = TestTdsLocal.open(null);
 
     InvDataset ds = cat.findDatasetByID("testDataset");
     assert (ds != null) : "cant find dataset 'testDataset'";

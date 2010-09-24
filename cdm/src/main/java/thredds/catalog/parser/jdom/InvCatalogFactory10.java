@@ -343,12 +343,12 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     String path = dsElem.getAttributeValue("path");
     String featureType = dsElem.getAttributeValue("featureType");
 
+    // collection element required
     Element collElem = dsElem.getChild( "collection", defNS );
     if (collElem == null) {
       logger.error( "featureCollection "+name+" must have a <collection> element." );
       return null;
     }
-
     String specName = collElem.getAttributeValue("name");
     String spec = collElem.getAttributeValue("spec");
     String olderThan = collElem.getAttributeValue("olderThan");
@@ -359,10 +359,11 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
       logger.error( "featureCollection "+name+" must have a spec attribute." );
       return null;
     }
-
     String collName = (specName != null) ? specName : name;
-    FeatureCollectionConfig.Config config = new FeatureCollectionConfig.Config(collName, spec, olderThan, recheckAfter);
+    Element innerNcml = dsElem.getChild( "netcdf", ncmlNS );
+    FeatureCollectionConfig.Config config = new FeatureCollectionConfig.Config(collName, spec, olderThan, recheckAfter, innerNcml);
 
+    // update element optional
     Element updateElem = dsElem.getChild( "update", defNS );
     if (updateElem != null) {
       String startup = updateElem.getAttributeValue("startup");
@@ -371,6 +372,7 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
       config.updateConfig = new FeatureCollectionConfig.UpdateConfig(startup, rescan, trigger);
     }
 
+    // protoDataset element optional
     Element protoElem = dsElem.getChild( "protoDataset", defNS );
     if (protoElem != null) {
       String choice = protoElem.getAttributeValue("choice");
@@ -378,9 +380,9 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
       String param = protoElem.getAttributeValue("param");
       Element ncmlElem = protoElem.getChild( "netcdf", ncmlNS );
       config.protoConfig = new FeatureCollectionConfig.ProtoConfig(choice, change, param, ncmlElem);
-
     }
 
+    // fmrcConfig element optional
     Element fmrcElem = dsElem.getChild( "fmrcConfig", defNS );
     if (fmrcElem != null) {
       String regularize = fmrcElem.getAttributeValue("regularize");
@@ -402,6 +404,7 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
 
     InvDatasetFeatureCollection ds = new InvDatasetFeatureCollection( parent, name, path, featureType, config);
 
+    // regular dataset elements
     readDatasetInfo( catalog, ds, dsElem, base);
     return ds;
   }

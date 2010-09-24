@@ -3,7 +3,8 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Release Details 4.2:
- 4.2 beta 2 (2010-xx-xx)
+ 4.2 beta 2 (2010-09-24)
+   FeatureDataset inner and outer Ncml
    Multiple Viewers are allowed.
    Fix temp file placement for GridPointWriter and CdmRemote
    Fix GRIB intervals.

@@ -34,52 +34,56 @@ package thredds.tds;
 
 import junit.framework.*;
 
-import ucar.nc2.dataset.*;
-import ucar.nc2.*;
-import ucar.nc2.util.IO;
+import thredds.catalog.*;
 
 import java.io.IOException;
-import java.io.File;
+import java.util.List;
 
-public class TestNetcdfSubsetService extends TestCase {
+public class TestTdsDatasetScan extends TestCase {
 
-  public TestNetcdfSubsetService( String name) {
+  public TestTdsDatasetScan( String name) {
     super(name);
   }
 
-  public void testNetcdfSubsetService() throws IOException {
-    String url = "/ncServer/gribCollection/NAM_CONUS_20km_surface_20060316_0000.grib1.nc?grid=K_index&grid=Sweat_index&west=-140&east=-90&north=50&south=20&time_start=3&time_end=12";
-    File fileSave = new File("C:/TEMP/testNetcdfSubsetService.nc");
+  public void testSort() throws IOException {
+    InvCatalog cat = TestTdsLocal.open("/catalog/testCdmUnitTest/normal/catalog.xml");
 
-    IO.readURLtoFile(TestTDSAll.topCatalog+url, fileSave);
-    System.out.println("Copied "+TestTDSAll.topCatalog+url+" to "+fileSave.getPath());
-
-    NetcdfFile ncd = null;
-    try {
-      ncd = NetcdfDataset.openFile(fileSave.getPath(), null);
-    } catch (Throwable t) {
-      IO.copyFile(fileSave.getPath(), System.out);
-      return;
+    InvDataset last = null;
+    for (InvDataset ds : cat.getDatasets()) {
+      if (last != null)
+        assert ds.getName().compareTo( last.getName()) > 0 ;
+      last = ds;
     }
-    assert ncd != null;
-
-    assert ncd.findVariable("K_index") != null;
-    assert ncd.findVariable("Sweat_index") != null;
-    assert ncd.findVariable("time") != null;
-    assert ncd.findVariable("y") != null;
-    assert ncd.findVariable("x") != null;
-
-    Variable v = ncd.findVariable("time");
-    assert v.getSize() == 4;
-
-    v = ncd.findVariable("x");
-    assert v.getSize() == 235;
-
-    v = ncd.findVariable("y");
-    assert v.getSize() == 199;
-
-    ncd.close();
   }
 
+  public void testLatest() throws IOException {
+     InvCatalogImpl cat = TestTdsLocal.open("/catalog/testCdmUnitTest/netcdf/seawifs/latest.xml");
+     List dss = cat.getDatasets();
+     assert (dss.size() == 1);
+
+     InvDatasetImpl ds = (InvDatasetImpl) dss.get(0);
+     assert ds.hasAccess();
+     assert ds.getDatasets().size() == 0;
+
+     assert ds.getID() != null;
+     assert ds.getDataSize() > 0.0;
+   }
+
+  public void testHarvest() throws IOException {
+    InvCatalogImpl cat = TestTdsLocal.open("/catalog/testEnhanced/catalog.xml");
+    InvDataset dscan = cat.findDatasetByID("testEnhanced");
+    assert dscan != null;
+    assert dscan.isHarvest();
+
+    List dss = dscan.getDatasets();
+    assert (dss.size() > 0);
+    InvDataset nested = (InvDataset) dss.get(0);
+    assert !nested.isHarvest();
+
+    cat = TestTdsLocal.open("/catalog.xml");
+    InvDataset ds = cat.findDatasetByID("testDataset");
+    assert ds != null;
+    assert !ds.isHarvest();
+  }
 
 }
