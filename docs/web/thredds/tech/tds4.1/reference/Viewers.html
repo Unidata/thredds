@@ -13,26 +13,57 @@
 <p>Currently, the TDS automatically adds a NetCDF-Java Tools link to
 any direct dataset that has an ID. It adds an IDV link to any dataset
 that has an OPENDAP service, and has a DataType of <em>GRID</em>.</p>
-<p>The TDS also supports several ways to configure other viewer links and their results:&nbsp;</p><p>You can add your own viewer links in these ways:</p>
+<p>The TDS also supports several ways to configure other viewer links and their results:&nbsp;</p>
+<p>You can add your own viewer links in these ways:</p>
 <ol>
   <li><a href="#Adding_a_viewer_link_with_a_viewer">Add a viewer link by adding a "viewer" property element to&nbsp;dataset</a>, explicitly listing the URL of the viewer.</li>
   <li><a href="#Create_a_Viewer_implementation_Java">Add a viewer link by creating a Java class</a> that tells the TDS what datasets are viewable, and what HTML fragment to include.</li><li>If your viewer link points to a JNLP file, <a href="#Returning_a_JNLP_file_">the TDS can generate the JNLP file</a> from a template file.</li>
-</ol><hr style="width: 100%; height: 2px;">
-<h2><a name="Adding_a_viewer_link_with_a_viewer"></a>Adding a viewer link with a "viewer" property element&nbsp; </h2>
-<p>This method is available in TDS version 3.17+.</p><p>To add a viewer
-link to a specific dataset, add a "viewer" property element to the
-dataset element in the TDS configuration catalog.When the TDS generates
-an HTML dataset page, it looks for a
-"viewer" property element in the dataset and, if it finds one, uses the
-value of the property element to generate a viewer link. The value of
-the "viewer" property element must be a string containing a URL and a
-name separated by a a comma. An HTML link is built using the URL and
-the name. For instance,&nbsp;the following example:</p><pre style="margin-left: 40px;">&lt;dataset&nbsp;name="Test Viewer" ID="testViewer" serviceName="dapService" urlPath="test/testData.nc" dataType="Grid"&gt;<br>  <strong>&lt;property name="viewer" value="http://www.unidata.ucar.edu/staff/caron/,MyViewer"/&gt;<br></strong>&lt;/dataset&gt;<br></pre><p>gives the URL as "http://www.unidata.ucar.edu/staff/caron/"&nbsp;and the name as "MyViewer".</p><p>So the resulting HTML fragment&nbsp;is:</p><pre style="margin-left: 40px;">&lt;a href='<strong>http://www.unidata.ucar.edu/staff/caron/</strong>'&gt;<strong>MyViewer</strong>&lt;/a&gt;</pre>
-<p>Which looks like this on the TDS page:</p><pre style="margin-left: 40px;"><a href="http://www.unidata.ucar.edu/staff/caron/">MyViewer</a></pre><h3>Adding viewer links to many datasets</h3><span style="font-weight: bold;"></span><p>When
-a "viewer" property element is contained in an inherited metadata
+</ol>
+
+<hr style="width: 100%; height: 2px;">
+
+<h2><a name="Adding_a_viewer_link_with_a_viewer"></a>Adding viewer links with "viewer*" property elements</h2>
+
+<p>Dataset viewer links can be added to dataset HTML pages using "viewer*" property elements.
+  To add a dataset viewer link to a specific dataset, add a <code>property</code> element that
+  has a name starting with "viewer". When the TDS generates a dataset HTML page, it looks for all
+  "viewer*" property elements and uses the value of each property element to generate a viewer link.
+  The value of the "viewer" <code>property</code> element must be a string containing a URL and a
+  name separated by a a comma. An HTML link is built using the URL and the name. For instance,
+  the following example:</p>
+
+<pre style="margin-left: 40px;">
+&lt;dataset&nbsp;name="Test Viewer" ID="testViewer" serviceName="dapService" urlPath="test/testData.nc" dataType="Grid"&gt;
+  <strong>&lt;property name="viewer" value="http://www.unidata.ucar.edu/staff/caron/,MyViewer"/&gt;</strong>
+  <strong>&lt;property name="viewer2" value="http://www.unidata.ucar.edu/,MyOtherViewer"/&gt;</strong>
+&lt;/dataset&gt;
+</pre>
+<p>results in the following HTML fragment:</p>
+
+<pre style="margin-left: 40px;">
+&lt;a href='<strong>http://www.unidata.ucar.edu/staff/caron/</strong>'&gt;<strong>MyViewer</strong>&lt;/a&gt;
+&lt;a href='<strong>http://www.unidata.ucar.edu/</strong>'&gt;<strong>MyOtherViewer</strong>&lt;/a&gt;
+</pre>
+
+<p>Which looks like this on the TDS page:</p>
+
+<pre style="margin-left: 40px;">
+<a href="http://www.unidata.ucar.edu/staff/caron/">MyViewer</a>
+<a href="http://www.unidata.ucar.edu/">MyOtherViewer</a>
+</pre>
+
+<p><strong>NOTE</strong>: Before TDS 4.1.9 (but only since TDs 3.17) only a single viewer link could be added in this
+  way using a <code>property</code> element whose name exactly matched the string "viewer".</p>
+
+<h3>Adding viewer links to many datasets</h3>
+
+<p>When
+a "viewer*" property element is contained in an inherited metadata
 element, it will apply to all the descendants of the containing
 dataset. For instance, the following example will result in viewer
-links for all children datasets:</p><pre style="margin-left: 40px;">&lt;dataset name="Test inherited viewer" ID="tiv"&gt;<br>  &lt;<strong>metadata inherited="true"</strong>&gt;<br>    &lt;serviceName&gt;all&lt;/serviceName&gt;<br>    &lt;property name="<strong>viewer</strong>" value="<strong>http://www.unidata.ucar.edu/staff/caron/,MyViewer</strong>" /&gt;<strong><br></strong>&nbsp; &lt;/metadata&gt;<br>  &lt;dataset name="test inherited viewer ds 1" ID="tiv/ds1" urlPath="tiv/ds1.nc"&gt;<br>  &lt;dataset name="test inherited viewer ds 2" ID="tiv/ds2" urlPath="tiv/ds2.nc"&gt;<br>&lt;/dataset&gt;</pre><p>When added to a <code>datasetScan</code> elements, the "viewer" property results in a viewer link being added to the HTML dataset pages for each generated dataset:</p><pre style="margin-left: 40px;">&lt;datasetScan name="Test inherited viewer dsScan" ID="tivScan"<br>             path="tivScan" location="C:/some/good/data/"&gt;<br>  &lt;<strong>metadata inherited="true"</strong>&gt;<br>    &lt;serviceName&gt;all&lt;/serviceName&gt;<br>    &lt;property name="<strong>viewer</strong>" value="<strong>http://www.unidata.ucar.edu/staff/caron/,MyViewer</strong>" /&gt;<strong><br></strong>&nbsp; &lt;/metadata&gt;<br>&lt;/datasetScan&gt;</pre>
+links for all children datasets:</p>
+
+<pre style="margin-left: 40px;">&lt;dataset name="Test inherited viewer" ID="tiv"&gt;<br>  &lt;<strong>metadata inherited="true"</strong>&gt;<br>    &lt;serviceName&gt;all&lt;/serviceName&gt;<br>    &lt;property name="<strong>viewer</strong>" value="<strong>http://www.unidata.ucar.edu/staff/caron/,MyViewer</strong>" /&gt;<strong><br></strong>&nbsp; &lt;/metadata&gt;<br>  &lt;dataset name="test inherited viewer ds 1" ID="tiv/ds1" urlPath="tiv/ds1.nc"&gt;<br>  &lt;dataset name="test inherited viewer ds 2" ID="tiv/ds2" urlPath="tiv/ds2.nc"&gt;<br>&lt;/dataset&gt;</pre><p>When added to a <code>datasetScan</code> elements, the "viewer" property results in a viewer link being added to the HTML dataset pages for each generated dataset:</p><pre style="margin-left: 40px;">&lt;datasetScan name="Test inherited viewer dsScan" ID="tivScan"<br>             path="tivScan" location="C:/some/good/data/"&gt;<br>  &lt;<strong>metadata inherited="true"</strong>&gt;<br>    &lt;serviceName&gt;all&lt;/serviceName&gt;<br>    &lt;property name="<strong>viewer</strong>" value="<strong>http://www.unidata.ucar.edu/staff/caron/,MyViewer</strong>" /&gt;<strong><br></strong>&nbsp; &lt;/metadata&gt;<br>&lt;/datasetScan&gt;</pre>
 
 <h3>Adding the Dataset URL to the Viewer Link</h3>
 <p>Adding the same viewer link to all your dataset pages may
