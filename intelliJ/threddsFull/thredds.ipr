@@ -28,7 +28,7 @@
     </buildFile>
   </component>
   <component name="ArtifactManager">
-    <artifact type="exploded-war" name="tds:tds exploded">
+    <artifact type="exploded-war" build-on-make="true" name="tds:tds exploded">
       <output-path>$PROJECT_DIR$/../../tds/target/war</output-path>
       <root id="root">
         <element id="javaee-facet-resources" facet="tds/web/tds" />
@@ -57,7 +57,6 @@
             <element id="library" level="module" name="Logging" module-name="tds" />
             <element id="library" level="module" name="Spring" module-name="tds" />
             <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/quartz-1.7.3.jar" />
-            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/spring-test-2.5.jar" />
             <element id="library" level="module" name="JSTL" module-name="tds" />
             <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/je-4.0.71.jar" />
             <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/jfreechart-1.0.12.jar" />
@@ -75,11 +74,11 @@
             <element id="library" level="module" name="stax" module-name="cdm" />
             <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/jna.jar" />
             <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/slf4j-api-1.5.6.jar" />
-            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/slf4j-jdk14-1.5.6.jar" />
             <element id="library" level="project" name="ehcache" />
             <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/protobuf-java-2.1.0.jar" />
             <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/easymock-2.5.2.jar" />
             <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/commons-httpclient-3.1.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/slf4j-jdk14-1.5.6.jar" />
           </element>
         </element>
       </root>

@@ -16,7 +16,8 @@ message Attribute {
   }
   required Type type = 2;
   required uint32 len = 3;
-  required bytes data = 4;
+  optional bytes data = 4; // not needed if len == 0
+  repeated string sdata = 5; // used for string data
 }
 
 enum DataType {
@@ -51,6 +52,7 @@ message Variable {
   repeated Attribute atts = 4;
   optional bool unsigned = 5;  // default false
   optional bytes data = 6;    // "immediate" - store small data in header
+  optional string enumType = 7;  // only for enum types
 }
 
 message Structure {
@@ -62,6 +64,15 @@ message Structure {
   repeated Structure structs = 6;
 }
 
+message EnumTypedef {
+  message EnumType {
+    required uint32 code = 1;
+    required string value = 2;
+  }
+  required string name = 1;
+  repeated EnumType map = 2;
+}
+
 message Group {
   required string name = 1;
   repeated Dimension dims = 2;
@@ -69,6 +80,7 @@ message Group {
   repeated Structure structs = 4;
   repeated Attribute atts = 5;
   repeated Group groups = 6;
+  repeated EnumTypedef enumTypes = 7;
 }
 
 message Header {

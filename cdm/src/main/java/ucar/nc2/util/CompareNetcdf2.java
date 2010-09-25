@@ -81,16 +81,24 @@ public class CompareNetcdf2 {
   }
 
   public boolean compare(NetcdfFile org, NetcdfFile copy) {
+    return compare(org, copy, showCompare, showEach, compareData);
+  }
+
+  public boolean compare(NetcdfFile org, NetcdfFile copy, boolean showCompare, boolean showEach, boolean compareData) {
+    this.compareData = compareData;
+    this.showCompare = showCompare;
+    this.showEach = showEach;
+
     f.format("First file = %s%n", org.getLocation());
     f.format("Second file= %s%n", copy.getLocation());
 
     long start = System.currentTimeMillis();
 
     boolean ok = compareGroups(org.getRootGroup(), copy.getRootGroup());
-    f.format("Files are the same = %s%n", ok);
+    f.format(" Files are the same = %s%n", ok);
 
     long took = System.currentTimeMillis() - start;
-    f.format("Time to compare = %d msecs%n", took);
+    f.format(" Time to compare = %d msecs%n", took);
 
     return ok;
   }
@@ -292,19 +300,19 @@ public class CompareNetcdf2 {
     try {
       int index2 = list2.indexOf(want1);
       if (index2 < 0) {
-        f.format("  ** %s %s (%s) not in %s %n", want1.getClass().getName(), want1, name1, name2);
+        f.format("  ** %s %s 0x%x (%s) not in %s %n", want1.getClass().getName(), want1, want1.hashCode(), name1, name2);
         ok = false;
       } else { // found it in second list
         Object want2 = list2.get(index2);
         int index1 = list1.indexOf(want2);
         if (index1 < 0) { // can this happen ??
-          f.format("  ** %s %s (%s) not in %s %n", want2.getClass().getName(), want2, name2, name1);
+          f.format("  ** %s %s 0x%x (%s) not in %s %n", want2.getClass().getName(), want2, want2.hashCode(), name2, name1);
           ok = false;
 
         } else { // found it in both lists
           Object want = list1.get(index1);
-          if (want != want1) {
-            f.format("  ** %s %s (%s) not equal to %s (%s) %n", want1.getClass().getName(), want1, name1, want2, name2);
+          if (!want.equals(want1)) {
+            f.format("  ** %s %s 0x%x (%s) not equal to %s 0x%x (%s) %n", want1.getClass().getName(), want1, want1.hashCode(), name1, want2, want2.hashCode(), name2);
             ok = false;
           } else {
             if (showEach) f.format("  OK <%s> equals <%s>%n", want1, want2);

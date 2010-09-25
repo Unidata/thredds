@@ -390,6 +390,10 @@ public class TestAll {
     }
   }
 
+  public static int actOnAll(String dirName, FileFilter ff, Act act) throws IOException {
+    return actOnAll( dirName, ff, act, true);
+  }
+
   /**
    * @param dirName recurse into this directory
    * @param ff for files that pass this filter, may be null
@@ -397,7 +401,7 @@ public class TestAll {
    * @return count
    * @throws IOException on IO error
    */
-  public static int actOnAll(String dirName, FileFilter ff, Act act) throws IOException {
+  public static int actOnAll(String dirName, FileFilter ff, Act act, boolean recurse) throws IOException {
     int count = 0;
 
     System.out.println("---------------Reading directory "+dirName);
@@ -418,6 +422,8 @@ public class TestAll {
         count += act.doAct(name);
     }
 
+    if (!recurse) return count;
+    
     for (File f : allFiles) {
       if (f.isDirectory() && !f.getName().equals("exclude"))
         count += actOnAll(f.getAbsolutePath(), ff, act);

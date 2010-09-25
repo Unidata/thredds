@@ -49,18 +49,8 @@ public class NcStreamIosp extends AbstractIOServiceProvider {
     NcStreamProto.Header proto = NcStreamProto.Header.parseFrom(m);
 
     NcStreamProto.Group root = proto.getRoot();
-
-    for (NcStreamProto.Dimension dim : root.getDimsList()) {
-      ncfile.addDimension(null, NcStream.decodeDim(dim));
-    }
-
-    for (NcStreamProto.Attribute att : root.getAttsList()) {
-      ncfile.addAttribute(null, NcStream.decodeAtt(att));
-    }
-
-    for (NcStreamProto.Variable var : root.getVarsList()) {
-      ncfile.addVariable(null, NcStream.decodeVar(ncfile, null, null, var));
-    }
+    NcStream.readGroup(root, ncfile, ncfile.getRootGroup());
+    ncfile.finish();
 
     // LOOK why doesnt this work ?
     //CodedInputStream cis = CodedInputStream.newInstance(is);
@@ -91,6 +81,7 @@ public class NcStreamIosp extends AbstractIOServiceProvider {
       raf.skipBytes(dsize);
     }
   }
+
 
   private class DataSection {
     int size;

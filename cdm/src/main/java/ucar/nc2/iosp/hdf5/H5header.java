@@ -255,7 +255,7 @@ public class H5header {
     // look for file truncation
     long fileSize = raf.length();
     if (fileSize < eofAddress)
-      throw new IOException("File is truncated should be= " + eofAddress + " actual = " + fileSize);
+      throw new IOException("File is truncated should be= " + eofAddress + " actual = " + fileSize+"%nlocation= "+raf.getLocation());
 
     // next comes the root objext's SymbolTableEntry
     SymbolTableEntry rootEntry = new SymbolTableEntry(raf.getFilePointer());
@@ -1085,7 +1085,7 @@ public class H5header {
     }
 
     if (transformReference && (facade.dobj.mdt.type == 7) && (facade.dobj.mdt.referenceType == 1)) { // region reference
-      System.out.println("transform region Reference: facade=" + facade.name +" variable name=" + v.getName());
+      log.warn("transform region Reference: facade=" + facade.name +" variable name=" + v.getName());
       int nelems = (int) v.getSize();
       int heapIdSize = 12;
       /* doesnt work yet

@@ -671,9 +671,9 @@ public abstract class Array {
   /**
    * Create an Array from a ByteBuffer
    * @param dtype type of data
-   * @param shape shape of data
+   * @param shape shape of data; if null, then use int[]{bb.limit()}
    * @param bb data is in here
-   * @return equivilent array
+   * @return equivilent Array
    */
   public static Array factory(DataType dtype, int[] shape, ByteBuffer bb) {
     int size;

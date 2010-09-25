@@ -175,28 +175,9 @@ public class NcStreamReader {
     if (proto.hasTitle()) ncfile.setTitle(proto.getTitle());
 
     NcStreamProto.Group root = proto.getRoot();
-    readGroup(root, ncfile, ncfile.getRootGroup());
+    NcStream.readGroup(root, ncfile, ncfile.getRootGroup());
     ncfile.finish();
     return ncfile;
-  }
-
-  private void readGroup(NcStreamProto.Group proto, NetcdfFile ncfile, Group g) throws InvalidProtocolBufferException {
-
-    for (NcStreamProto.Dimension dim : proto.getDimsList())
-      g.addDimension(NcStream.decodeDim(dim));
-
-    for (NcStreamProto.Attribute att : proto.getAttsList())
-      g.addAttribute(NcStream.decodeAtt(att));
-
-    for (NcStreamProto.Variable var : proto.getVarsList())
-      g.addVariable(NcStream.decodeVar(ncfile, g, null, var));
-
-    for (NcStreamProto.Structure s : proto.getStructsList())
-      g.addVariable(NcStream.decodeStructure(ncfile, g, null, s));
-
-    for (NcStreamProto.Group gp : proto.getGroupsList())
-      readGroup(gp, ncfile, g);
-
   }
 
   private class NetcdfFileStream extends NetcdfFile {

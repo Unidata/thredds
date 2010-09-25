@@ -144,7 +144,6 @@ public class Attribute {
    */
   public String getStringValue() {
     return (svalue != null) ? svalue : getStringValue(0);
-    //return getStringValue(0);
   }
 
   /**
@@ -374,7 +373,7 @@ public class Attribute {
    */
   public Attribute(String name, DataType dataType) {
     this.name = name;
-    this.dataType = dataType;
+    this.dataType = dataType == DataType.CHAR ? DataType.STRING : dataType;
     this.nelems = 0;
   }
 

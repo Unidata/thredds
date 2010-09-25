@@ -4,54 +4,72 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.util.CompareNetcdf;
 import ucar.nc2.TestAll;
+import ucar.nc2.util.CompareNetcdf2;
 import ucar.unidata.util.StringUtil;
 
 import java.io.*;
 import java.nio.channels.WritableByteChannel;
+import java.util.Formatter;
 
 import junit.framework.TestCase;
 
 
 public class TestNetcdfStream extends TestCase {
-  String serverRoot = "C:/data/";
+  String serverRoot = "C:/data/formats";
   
   public TestNetcdfStream(String name) {
     super(name);
   }
 
-  public void testCompare() throws IOException {
-    doOne("C:/data/formats/netcdf3/standardVar.nc");
+  public void testProblem() throws IOException {
+    doOne("C:/data/formats/netcdf4/tst_enums.nc");
   }
 
   public void testScan() throws IOException {
-    /* scanDir("C:/data/", new FileFilter() {
+    scanDir("C:/data/formats/netcdf3/", ".nc");
+    scanDir("C:/data/formats/netcdf4/", ".nc");
+    scanDir("C:/data/formats/hdf5/",  new FileFilter() {
       public boolean accept(File pathname) {
-        //return !pathname.getPath().endsWith(".xml") && !pathname.getPath().endsWith(".gbx");
-        return pathname.getPath().endsWith(".nc");
+        return pathname.getPath().endsWith(".h5") || pathname.getPath().endsWith(".he5");
       }
-    }); */
+    });
+    scanDir("C:/data/formats/hdf4/",  new FileFilter() {
+       public boolean accept(File pathname) {
+         return pathname.getPath().endsWith(".hdf") || pathname.getPath().endsWith(".eos");
+       }
+     }); 
+    scanDir("C:/data/formats/grib/",  new FileFilter() {
+       public boolean accept(File pathname) {
+         return pathname.getPath().endsWith(".grib") || pathname.getPath().endsWith(".grib1") || pathname.getPath().endsWith(".grib2");
+       }
+     });  // */
+     scanDir("C:/data/formats/gini/", ".gini");
+     scanDir("C:/data/formats/gempak/", ".gem");
+     scanDir("C:/data/formats/gempak/", ".gem");
 
-    scanDir("C:\\data\\formats\\gempak\\surface", new FileFilter() {
+  }
+
+  void scanDir(String dirName, final String suffix) throws IOException {
+    scanDir(dirName, new FileFilter() {
       public boolean accept(File pathname) {
-        //return !pathname.getPath().endsWith(".xml") && !pathname.getPath().endsWith(".gbx");
-        return pathname.getPath().endsWith(".gem");
+        return pathname.getPath().endsWith(suffix);
       }
     });
   }
 
   void scanDir(String dirName, FileFilter ff) throws IOException {
-    TestAll.actOnAll( dirName, ff, new TestAll.Act() {
+     TestAll.actOnAll( dirName, ff, new TestAll.Act() {
       public int doAct(String filename) throws IOException {
         doOne(filename);
         return 1;
       }
-    });
-
+    }, true);
   }
 
   void doOne(String filename) throws IOException {
     String name = StringUtil.substitute(filename.substring(serverRoot.length()), "\\", "/");
-    String remote = "http://localhost:8080/thredds/cdmremote/testCdmRemote/" + name;
+    String remote = "http://localhost:8080/thredds/cdmremote/testCdmremote" + name;
+    System.out.printf("%s%n", filename);
     compare(filename, remote);
   }
 
@@ -59,10 +77,14 @@ public class TestNetcdfStream extends TestCase {
     System.out.printf("---------------------------\n");
     NetcdfFile ncfile = NetcdfDataset.openFile(file, null);
     NetcdfFile ncfileRemote = new CdmRemote(remote);
-    CompareNetcdf.compareFiles(ncfile, ncfileRemote, false, false, false);
-    System.out.printf("compare %s ok %n", file);
-    CompareNetcdf.compareFiles(ncfile, ncfileRemote, true, true, true);
-    System.out.printf("compare data %s ok %n", file);
+
+    Formatter f= new Formatter();
+    CompareNetcdf2 cn = new CompareNetcdf2(f, false, false, false);
+    boolean ok = cn.compare(ncfile, ncfileRemote);
+    if (ok)
+      System.out.printf("compare %s ok %n", file);
+    else
+      System.out.printf("compare %s NOT OK %n%s", file, f.toString());
     ncfile.close();
     ncfileRemote.close();
   }

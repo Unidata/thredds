@@ -554,7 +554,7 @@ public class Variable implements VariableIF, ProxyReader {
     this.enumTypedef = enumTypedef;
   }
 
-  // public EnumTypedef getEnumTypedef() { return enumTypedef; }
+  public EnumTypedef getEnumTypedef() { return enumTypedef; }
 
   //////////////////////////////////////////////////////////////////////////////
   // IO

@@ -208,7 +208,7 @@ public class Dimension implements Comparable {
    * @param isVariableLength whether the length is unknown until the data is read.
    */
   public Dimension(String name, int length, boolean isShared, boolean isUnlimited, boolean isVariableLength) {
-    this.name = name;
+    setName(name);
     this.isShared = isShared;
     this.isUnlimited = isUnlimited;
     this.isVariableLength = isVariableLength;
@@ -224,7 +224,7 @@ public class Dimension implements Comparable {
    * @param from copy all other fields from here.
    */
   public Dimension(String name, Dimension from) {
-    this.name = name;
+    setName(name);
     this.length = from.length;
     this.isUnlimited = from.isUnlimited;
     this.isVariableLength = from.isVariableLength;
@@ -279,7 +279,7 @@ public class Dimension implements Comparable {
    */
   public void setName( String name) {
     if (immutable) throw new IllegalStateException("Cant modify");
-    this.name = (name == null) ? null : AbstractIOServiceProvider.createValidNetcdfObjectName(name);
+    this.name = (name == null) || name == "" ? null : AbstractIOServiceProvider.createValidNetcdfObjectName(name);
     hashCode = 0;
   }
 

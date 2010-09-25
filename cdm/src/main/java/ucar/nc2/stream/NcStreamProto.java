@@ -193,19 +193,30 @@ public final class NcStreamProto {
     public boolean hasLen() { return hasLen; }
     public int getLen() { return len_; }
     
-    // required bytes data = 4;
+    // optional bytes data = 4;
     public static final int DATA_FIELD_NUMBER = 4;
     private boolean hasData;
     private com.google.protobuf.ByteString data_ = com.google.protobuf.ByteString.EMPTY;
     public boolean hasData() { return hasData; }
     public com.google.protobuf.ByteString getData() { return data_; }
     
+    // repeated string sdata = 5;
+    public static final int SDATA_FIELD_NUMBER = 5;
+    private java.util.List<java.lang.String> sdata_ =
+      java.util.Collections.emptyList();
+    public java.util.List<java.lang.String> getSdataList() {
+      return sdata_;
+    }
+    public int getSdataCount() { return sdata_.size(); }
+    public java.lang.String getSdata(int index) {
+      return sdata_.get(index);
+    }
+    
     @Override
     public final boolean isInitialized() {
       if (!hasName) return false;
       if (!hasType) return false;
       if (!hasLen) return false;
-      if (!hasData) return false;
       return true;
     }
     
@@ -223,6 +234,9 @@ public final class NcStreamProto {
       }
       if (hasData()) {
         output.writeBytes(4, getData());
+      }
+      for (java.lang.String element : getSdataList()) {
+        output.writeString(5, element);
       }
       getUnknownFields().writeTo(output);
     }
@@ -249,6 +263,15 @@ public final class NcStreamProto {
       if (hasData()) {
         size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(4, getData());
+      }
+      {
+        int dataSize = 0;
+        for (java.lang.String element : getSdataList()) {
+          dataSize += com.google.protobuf.CodedOutputStream
+            .computeStringSizeNoTag(element);
+        }
+        size += dataSize;
+        size += 1 * getSdataList().size();
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -374,6 +397,10 @@ public final class NcStreamProto {
         if (result == null) {
           throw new IllegalStateException(
             "build() has already been called on this Builder.");  }
+        if (result.sdata_ != java.util.Collections.EMPTY_LIST) {
+          result.sdata_ =
+            java.util.Collections.unmodifiableList(result.sdata_);
+        }
         ucar.nc2.stream.NcStreamProto.Attribute returnMe = result;
         result = null;
         return returnMe;
@@ -402,6 +429,12 @@ public final class NcStreamProto {
         }
         if (other.hasData()) {
           setData(other.getData());
+        }
+        if (!other.sdata_.isEmpty()) {
+          if (result.sdata_.isEmpty()) {
+            result.sdata_ = new java.util.ArrayList<java.lang.String>();
+          }
+          result.sdata_.addAll(other.sdata_);
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -457,6 +490,10 @@ public final class NcStreamProto {
             }
             case 34: {
               setData(input.readBytes());
+              break;
+            }
+            case 42: {
+              addSdata(input.readString());
               break;
             }
           }
@@ -524,7 +561,7 @@ public final class NcStreamProto {
         return this;
       }
       
-      // required bytes data = 4;
+      // optional bytes data = 4;
       public boolean hasData() {
         return result.hasData();
       }
@@ -542,6 +579,46 @@ public final class NcStreamProto {
       public Builder clearData() {
         result.hasData = false;
         result.data_ = com.google.protobuf.ByteString.EMPTY;
+        return this;
+      }
+      
+      // repeated string sdata = 5;
+      public java.util.List<java.lang.String> getSdataList() {
+        return java.util.Collections.unmodifiableList(result.sdata_);
+      }
+      public int getSdataCount() {
+        return result.getSdataCount();
+      }
+      public java.lang.String getSdata(int index) {
+        return result.getSdata(index);
+      }
+      public Builder setSdata(int index, java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  result.sdata_.set(index, value);
+        return this;
+      }
+      public Builder addSdata(java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  if (result.sdata_.isEmpty()) {
+          result.sdata_ = new java.util.ArrayList<java.lang.String>();
+        }
+        result.sdata_.add(value);
+        return this;
+      }
+      public Builder addAllSdata(
+          java.lang.Iterable<? extends java.lang.String> values) {
+        if (result.sdata_.isEmpty()) {
+          result.sdata_ = new java.util.ArrayList<java.lang.String>();
+        }
+        super.addAll(values, result.sdata_);
+        return this;
+      }
+      public Builder clearSdata() {
+        result.sdata_ = java.util.Collections.emptyList();
         return this;
       }
     }
@@ -1055,6 +1132,13 @@ public final class NcStreamProto {
     public boolean hasData() { return hasData; }
     public com.google.protobuf.ByteString getData() { return data_; }
     
+    // optional string enumType = 7;
+    public static final int ENUMTYPE_FIELD_NUMBER = 7;
+    private boolean hasEnumType;
+    private java.lang.String enumType_ = "";
+    public boolean hasEnumType() { return hasEnumType; }
+    public java.lang.String getEnumType() { return enumType_; }
+    
     @Override
     public final boolean isInitialized() {
       if (!hasName) return false;
@@ -1085,6 +1169,9 @@ public final class NcStreamProto {
       }
       if (hasData()) {
         output.writeBytes(6, getData());
+      }
+      if (hasEnumType()) {
+        output.writeString(7, getEnumType());
       }
       getUnknownFields().writeTo(output);
     }
@@ -1119,6 +1206,10 @@ public final class NcStreamProto {
       if (hasData()) {
         size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(6, getData());
+      }
+      if (hasEnumType()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeStringSize(7, getEnumType());
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -1293,6 +1384,9 @@ public final class NcStreamProto {
         if (other.hasData()) {
           setData(other.getData());
         }
+        if (other.hasEnumType()) {
+          setEnumType(other.getEnumType());
+        }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
@@ -1359,6 +1453,10 @@ public final class NcStreamProto {
             }
             case 50: {
               setData(input.readBytes());
+              break;
+            }
+            case 58: {
+              setEnumType(input.readString());
               break;
             }
           }
@@ -1546,6 +1644,27 @@ public final class NcStreamProto {
       public Builder clearData() {
         result.hasData = false;
         result.data_ = com.google.protobuf.ByteString.EMPTY;
+        return this;
+      }
+      
+      // optional string enumType = 7;
+      public boolean hasEnumType() {
+        return result.hasEnumType();
+      }
+      public java.lang.String getEnumType() {
+        return result.getEnumType();
+      }
+      public Builder setEnumType(java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  result.hasEnumType = true;
+        result.enumType_ = value;
+        return this;
+      }
+      public Builder clearEnumType() {
+        result.hasEnumType = false;
+        result.enumType_ = "";
         return this;
       }
     }
@@ -2229,6 +2348,679 @@ public final class NcStreamProto {
     }
   }
   
+  public static final class EnumTypedef extends
+      com.google.protobuf.GeneratedMessage {
+    // Use EnumTypedef.newBuilder() to construct.
+    private EnumTypedef() {}
+    
+    private static final EnumTypedef defaultInstance = new EnumTypedef();
+    public static EnumTypedef getDefaultInstance() {
+      return defaultInstance;
+    }
+    
+    public EnumTypedef getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+    
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_EnumTypedef_descriptor;
+    }
+    
+    @Override
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_EnumTypedef_fieldAccessorTable;
+    }
+    
+    public static final class EnumType extends
+        com.google.protobuf.GeneratedMessage {
+      // Use EnumType.newBuilder() to construct.
+      private EnumType() {}
+      
+      private static final EnumType defaultInstance = new EnumType();
+      public static EnumType getDefaultInstance() {
+        return defaultInstance;
+      }
+      
+      public EnumType getDefaultInstanceForType() {
+        return defaultInstance;
+      }
+      
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_EnumTypedef_EnumType_descriptor;
+      }
+      
+      @Override
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_EnumTypedef_EnumType_fieldAccessorTable;
+      }
+      
+      // required uint32 code = 1;
+      public static final int CODE_FIELD_NUMBER = 1;
+      private boolean hasCode;
+      private int code_ = 0;
+      public boolean hasCode() { return hasCode; }
+      public int getCode() { return code_; }
+      
+      // required string value = 2;
+      public static final int VALUE_FIELD_NUMBER = 2;
+      private boolean hasValue;
+      private java.lang.String value_ = "";
+      public boolean hasValue() { return hasValue; }
+      public java.lang.String getValue() { return value_; }
+      
+      @Override
+      public final boolean isInitialized() {
+        if (!hasCode) return false;
+        if (!hasValue) return false;
+        return true;
+      }
+      
+      @Override
+      public void writeTo(com.google.protobuf.CodedOutputStream output)
+                          throws java.io.IOException {
+        if (hasCode()) {
+          output.writeUInt32(1, getCode());
+        }
+        if (hasValue()) {
+          output.writeString(2, getValue());
+        }
+        getUnknownFields().writeTo(output);
+      }
+      
+      private int memoizedSerializedSize = -1;
+      @Override
+      public int getSerializedSize() {
+        int size = memoizedSerializedSize;
+        if (size != -1) return size;
+      
+        size = 0;
+        if (hasCode()) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeUInt32Size(1, getCode());
+        }
+        if (hasValue()) {
+          size += com.google.protobuf.CodedOutputStream
+            .computeStringSize(2, getValue());
+        }
+        size += getUnknownFields().getSerializedSize();
+        memoizedSerializedSize = size;
+        return size;
+      }
+      
+      public static ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType parseFrom(
+          com.google.protobuf.ByteString data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return newBuilder().mergeFrom(data).buildParsed();
+      }
+      public static ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType parseFrom(
+          com.google.protobuf.ByteString data,
+          com.google.protobuf.ExtensionRegistry extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return newBuilder().mergeFrom(data, extensionRegistry)
+                 .buildParsed();
+      }
+      public static ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType parseFrom(byte[] data)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return newBuilder().mergeFrom(data).buildParsed();
+      }
+      public static ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType parseFrom(
+          byte[] data,
+          com.google.protobuf.ExtensionRegistry extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return newBuilder().mergeFrom(data, extensionRegistry)
+                 .buildParsed();
+      }
+      public static ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType parseFrom(java.io.InputStream input)
+          throws java.io.IOException {
+        return newBuilder().mergeFrom(input).buildParsed();
+      }
+      public static ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType parseFrom(
+          java.io.InputStream input,
+          com.google.protobuf.ExtensionRegistry extensionRegistry)
+          throws java.io.IOException {
+        return newBuilder().mergeFrom(input, extensionRegistry)
+                 .buildParsed();
+      }
+      public static ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType parseDelimitedFrom(java.io.InputStream input)
+          throws java.io.IOException {
+        return newBuilder().mergeDelimitedFrom(input).buildParsed();
+      }
+      public static ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType parseDelimitedFrom(
+          java.io.InputStream input,
+          com.google.protobuf.ExtensionRegistry extensionRegistry)
+          throws java.io.IOException {
+        return newBuilder().mergeDelimitedFrom(input, extensionRegistry)
+                 .buildParsed();
+      }
+      public static ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType parseFrom(
+          com.google.protobuf.CodedInputStream input)
+          throws java.io.IOException {
+        return newBuilder().mergeFrom(input).buildParsed();
+      }
+      public static ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType parseFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistry extensionRegistry)
+          throws java.io.IOException {
+        return newBuilder().mergeFrom(input, extensionRegistry)
+                 .buildParsed();
+      }
+      
+      public static Builder newBuilder() { return new Builder(); }
+      public Builder newBuilderForType() { return new Builder(); }
+      public static Builder newBuilder(ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType prototype) {
+        return new Builder().mergeFrom(prototype);
+      }
+      public Builder toBuilder() { return newBuilder(this); }
+      
+      public static final class Builder extends
+          com.google.protobuf.GeneratedMessage.Builder<Builder> {
+        // Construct using ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType.newBuilder()
+        private Builder() {}
+        
+        ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType result = new ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType();
+        
+        @Override
+        protected ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType internalGetResult() {
+          return result;
+        }
+        
+        @Override
+        public Builder clear() {
+          result = new ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType();
+          return this;
+        }
+        
+        @Override
+        public Builder clone() {
+          return new Builder().mergeFrom(result);
+        }
+        
+        @Override
+        public com.google.protobuf.Descriptors.Descriptor
+            getDescriptorForType() {
+          return ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType.getDescriptor();
+        }
+        
+        public ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType getDefaultInstanceForType() {
+          return ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType.getDefaultInstance();
+        }
+        
+        public ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType build() {
+          if (result != null && !isInitialized()) {
+            throw new com.google.protobuf.UninitializedMessageException(
+              result);
+          }
+          return buildPartial();
+        }
+        
+        private ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType buildParsed()
+            throws com.google.protobuf.InvalidProtocolBufferException {
+          if (!isInitialized()) {
+            throw new com.google.protobuf.UninitializedMessageException(
+              result).asInvalidProtocolBufferException();
+          }
+          return buildPartial();
+        }
+        
+        public ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType buildPartial() {
+          if (result == null) {
+            throw new IllegalStateException(
+              "build() has already been called on this Builder.");  }
+          ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType returnMe = result;
+          result = null;
+          return returnMe;
+        }
+        
+        @Override
+        public Builder mergeFrom(com.google.protobuf.Message other) {
+          if (other instanceof ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType) {
+            return mergeFrom((ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType)other);
+          } else {
+            super.mergeFrom(other);
+            return this;
+          }
+        }
+        
+        public Builder mergeFrom(ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType other) {
+          if (other == ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType.getDefaultInstance()) return this;
+          if (other.hasCode()) {
+            setCode(other.getCode());
+          }
+          if (other.hasValue()) {
+            setValue(other.getValue());
+          }
+          this.mergeUnknownFields(other.getUnknownFields());
+          return this;
+        }
+        
+        @Override
+        public Builder mergeFrom(
+            com.google.protobuf.CodedInputStream input)
+            throws java.io.IOException {
+          return mergeFrom(input,
+            com.google.protobuf.ExtensionRegistry.getEmptyRegistry());
+        }
+        
+        @Override
+        public Builder mergeFrom(
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistry extensionRegistry)
+            throws java.io.IOException {
+          com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+            com.google.protobuf.UnknownFieldSet.newBuilder(
+              this.getUnknownFields());
+          while (true) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                this.setUnknownFields(unknownFields.build());
+                return this;
+              default: {
+                if (!parseUnknownField(input, unknownFields,
+                                       extensionRegistry, tag)) {
+                  this.setUnknownFields(unknownFields.build());
+                  return this;
+                }
+                break;
+              }
+              case 8: {
+                setCode(input.readUInt32());
+                break;
+              }
+              case 18: {
+                setValue(input.readString());
+                break;
+              }
+            }
+          }
+        }
+        
+        
+        // required uint32 code = 1;
+        public boolean hasCode() {
+          return result.hasCode();
+        }
+        public int getCode() {
+          return result.getCode();
+        }
+        public Builder setCode(int value) {
+          result.hasCode = true;
+          result.code_ = value;
+          return this;
+        }
+        public Builder clearCode() {
+          result.hasCode = false;
+          result.code_ = 0;
+          return this;
+        }
+        
+        // required string value = 2;
+        public boolean hasValue() {
+          return result.hasValue();
+        }
+        public java.lang.String getValue() {
+          return result.getValue();
+        }
+        public Builder setValue(java.lang.String value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  result.hasValue = true;
+          result.value_ = value;
+          return this;
+        }
+        public Builder clearValue() {
+          result.hasValue = false;
+          result.value_ = "";
+          return this;
+        }
+      }
+      
+      static {
+        ucar.nc2.stream.NcStreamProto.getDescriptor();
+      }
+    }
+    
+    // required string name = 1;
+    public static final int NAME_FIELD_NUMBER = 1;
+    private boolean hasName;
+    private java.lang.String name_ = "";
+    public boolean hasName() { return hasName; }
+    public java.lang.String getName() { return name_; }
+    
+    // repeated .ncstream.EnumTypedef.EnumType map = 2;
+    public static final int MAP_FIELD_NUMBER = 2;
+    private java.util.List<ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType> map_ =
+      java.util.Collections.emptyList();
+    public java.util.List<ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType> getMapList() {
+      return map_;
+    }
+    public int getMapCount() { return map_.size(); }
+    public ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType getMap(int index) {
+      return map_.get(index);
+    }
+    
+    @Override
+    public final boolean isInitialized() {
+      if (!hasName) return false;
+      for (ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType element : getMapList()) {
+        if (!element.isInitialized()) return false;
+      }
+      return true;
+    }
+    
+    @Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (hasName()) {
+        output.writeString(1, getName());
+      }
+      for (ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType element : getMapList()) {
+        output.writeMessage(2, element);
+      }
+      getUnknownFields().writeTo(output);
+    }
+    
+    private int memoizedSerializedSize = -1;
+    @Override
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+    
+      size = 0;
+      if (hasName()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeStringSize(1, getName());
+      }
+      for (ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType element : getMapList()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(2, element);
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+    
+    public static ucar.nc2.stream.NcStreamProto.EnumTypedef parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static ucar.nc2.stream.NcStreamProto.EnumTypedef parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistry extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static ucar.nc2.stream.NcStreamProto.EnumTypedef parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static ucar.nc2.stream.NcStreamProto.EnumTypedef parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistry extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static ucar.nc2.stream.NcStreamProto.EnumTypedef parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static ucar.nc2.stream.NcStreamProto.EnumTypedef parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistry extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    public static ucar.nc2.stream.NcStreamProto.EnumTypedef parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeDelimitedFrom(input).buildParsed();
+    }
+    public static ucar.nc2.stream.NcStreamProto.EnumTypedef parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistry extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeDelimitedFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    public static ucar.nc2.stream.NcStreamProto.EnumTypedef parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static ucar.nc2.stream.NcStreamProto.EnumTypedef parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistry extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    
+    public static Builder newBuilder() { return new Builder(); }
+    public Builder newBuilderForType() { return new Builder(); }
+    public static Builder newBuilder(ucar.nc2.stream.NcStreamProto.EnumTypedef prototype) {
+      return new Builder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+    
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder> {
+      // Construct using ucar.nc2.stream.NcStreamProto.EnumTypedef.newBuilder()
+      private Builder() {}
+      
+      ucar.nc2.stream.NcStreamProto.EnumTypedef result = new ucar.nc2.stream.NcStreamProto.EnumTypedef();
+      
+      @Override
+      protected ucar.nc2.stream.NcStreamProto.EnumTypedef internalGetResult() {
+        return result;
+      }
+      
+      @Override
+      public Builder clear() {
+        result = new ucar.nc2.stream.NcStreamProto.EnumTypedef();
+        return this;
+      }
+      
+      @Override
+      public Builder clone() {
+        return new Builder().mergeFrom(result);
+      }
+      
+      @Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return ucar.nc2.stream.NcStreamProto.EnumTypedef.getDescriptor();
+      }
+      
+      public ucar.nc2.stream.NcStreamProto.EnumTypedef getDefaultInstanceForType() {
+        return ucar.nc2.stream.NcStreamProto.EnumTypedef.getDefaultInstance();
+      }
+      
+      public ucar.nc2.stream.NcStreamProto.EnumTypedef build() {
+        if (result != null && !isInitialized()) {
+          throw new com.google.protobuf.UninitializedMessageException(
+            result);
+        }
+        return buildPartial();
+      }
+      
+      private ucar.nc2.stream.NcStreamProto.EnumTypedef buildParsed()
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        if (!isInitialized()) {
+          throw new com.google.protobuf.UninitializedMessageException(
+            result).asInvalidProtocolBufferException();
+        }
+        return buildPartial();
+      }
+      
+      public ucar.nc2.stream.NcStreamProto.EnumTypedef buildPartial() {
+        if (result == null) {
+          throw new IllegalStateException(
+            "build() has already been called on this Builder.");  }
+        if (result.map_ != java.util.Collections.EMPTY_LIST) {
+          result.map_ =
+            java.util.Collections.unmodifiableList(result.map_);
+        }
+        ucar.nc2.stream.NcStreamProto.EnumTypedef returnMe = result;
+        result = null;
+        return returnMe;
+      }
+      
+      @Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof ucar.nc2.stream.NcStreamProto.EnumTypedef) {
+          return mergeFrom((ucar.nc2.stream.NcStreamProto.EnumTypedef)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+      
+      public Builder mergeFrom(ucar.nc2.stream.NcStreamProto.EnumTypedef other) {
+        if (other == ucar.nc2.stream.NcStreamProto.EnumTypedef.getDefaultInstance()) return this;
+        if (other.hasName()) {
+          setName(other.getName());
+        }
+        if (!other.map_.isEmpty()) {
+          if (result.map_.isEmpty()) {
+            result.map_ = new java.util.ArrayList<ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType>();
+          }
+          result.map_.addAll(other.map_);
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+      
+      @Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input)
+          throws java.io.IOException {
+        return mergeFrom(input,
+          com.google.protobuf.ExtensionRegistry.getEmptyRegistry());
+      }
+      
+      @Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistry extensionRegistry)
+          throws java.io.IOException {
+        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder(
+            this.getUnknownFields());
+        while (true) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              this.setUnknownFields(unknownFields.build());
+              return this;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                this.setUnknownFields(unknownFields.build());
+                return this;
+              }
+              break;
+            }
+            case 10: {
+              setName(input.readString());
+              break;
+            }
+            case 18: {
+              ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType.Builder subBuilder = ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType.newBuilder();
+              input.readMessage(subBuilder, extensionRegistry);
+              addMap(subBuilder.buildPartial());
+              break;
+            }
+          }
+        }
+      }
+      
+      
+      // required string name = 1;
+      public boolean hasName() {
+        return result.hasName();
+      }
+      public java.lang.String getName() {
+        return result.getName();
+      }
+      public Builder setName(java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  result.hasName = true;
+        result.name_ = value;
+        return this;
+      }
+      public Builder clearName() {
+        result.hasName = false;
+        result.name_ = "";
+        return this;
+      }
+      
+      // repeated .ncstream.EnumTypedef.EnumType map = 2;
+      public java.util.List<ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType> getMapList() {
+        return java.util.Collections.unmodifiableList(result.map_);
+      }
+      public int getMapCount() {
+        return result.getMapCount();
+      }
+      public ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType getMap(int index) {
+        return result.getMap(index);
+      }
+      public Builder setMap(int index, ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        result.map_.set(index, value);
+        return this;
+      }
+      public Builder setMap(int index, ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType.Builder builderForValue) {
+        result.map_.set(index, builderForValue.build());
+        return this;
+      }
+      public Builder addMap(ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        if (result.map_.isEmpty()) {
+          result.map_ = new java.util.ArrayList<ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType>();
+        }
+        result.map_.add(value);
+        return this;
+      }
+      public Builder addMap(ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType.Builder builderForValue) {
+        if (result.map_.isEmpty()) {
+          result.map_ = new java.util.ArrayList<ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType>();
+        }
+        result.map_.add(builderForValue.build());
+        return this;
+      }
+      public Builder addAllMap(
+          java.lang.Iterable<? extends ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType> values) {
+        if (result.map_.isEmpty()) {
+          result.map_ = new java.util.ArrayList<ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType>();
+        }
+        super.addAll(values, result.map_);
+        return this;
+      }
+      public Builder clearMap() {
+        result.map_ = java.util.Collections.emptyList();
+        return this;
+      }
+    }
+    
+    static {
+      ucar.nc2.stream.NcStreamProto.getDescriptor();
+    }
+  }
+  
   public static final class Group extends
       com.google.protobuf.GeneratedMessage {
     // Use Group.newBuilder() to construct.
@@ -2321,6 +3113,18 @@ public final class NcStreamProto {
       return groups_.get(index);
     }
     
+    // repeated .ncstream.EnumTypedef enumTypes = 7;
+    public static final int ENUMTYPES_FIELD_NUMBER = 7;
+    private java.util.List<ucar.nc2.stream.NcStreamProto.EnumTypedef> enumTypes_ =
+      java.util.Collections.emptyList();
+    public java.util.List<ucar.nc2.stream.NcStreamProto.EnumTypedef> getEnumTypesList() {
+      return enumTypes_;
+    }
+    public int getEnumTypesCount() { return enumTypes_.size(); }
+    public ucar.nc2.stream.NcStreamProto.EnumTypedef getEnumTypes(int index) {
+      return enumTypes_.get(index);
+    }
+    
     @Override
     public final boolean isInitialized() {
       if (!hasName) return false;
@@ -2334,6 +3138,9 @@ public final class NcStreamProto {
         if (!element.isInitialized()) return false;
       }
       for (ucar.nc2.stream.NcStreamProto.Group element : getGroupsList()) {
+        if (!element.isInitialized()) return false;
+      }
+      for (ucar.nc2.stream.NcStreamProto.EnumTypedef element : getEnumTypesList()) {
         if (!element.isInitialized()) return false;
       }
       return true;
@@ -2359,6 +3166,9 @@ public final class NcStreamProto {
       }
       for (ucar.nc2.stream.NcStreamProto.Group element : getGroupsList()) {
         output.writeMessage(6, element);
+      }
+      for (ucar.nc2.stream.NcStreamProto.EnumTypedef element : getEnumTypesList()) {
+        output.writeMessage(7, element);
       }
       getUnknownFields().writeTo(output);
     }
@@ -2393,6 +3203,10 @@ public final class NcStreamProto {
       for (ucar.nc2.stream.NcStreamProto.Group element : getGroupsList()) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(6, element);
+      }
+      for (ucar.nc2.stream.NcStreamProto.EnumTypedef element : getEnumTypesList()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(7, element);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -2538,6 +3352,10 @@ public final class NcStreamProto {
           result.groups_ =
             java.util.Collections.unmodifiableList(result.groups_);
         }
+        if (result.enumTypes_ != java.util.Collections.EMPTY_LIST) {
+          result.enumTypes_ =
+            java.util.Collections.unmodifiableList(result.enumTypes_);
+        }
         ucar.nc2.stream.NcStreamProto.Group returnMe = result;
         result = null;
         return returnMe;
@@ -2587,6 +3405,12 @@ public final class NcStreamProto {
             result.groups_ = new java.util.ArrayList<ucar.nc2.stream.NcStreamProto.Group>();
           }
           result.groups_.addAll(other.groups_);
+        }
+        if (!other.enumTypes_.isEmpty()) {
+          if (result.enumTypes_.isEmpty()) {
+            result.enumTypes_ = new java.util.ArrayList<ucar.nc2.stream.NcStreamProto.EnumTypedef>();
+          }
+          result.enumTypes_.addAll(other.enumTypes_);
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -2654,6 +3478,12 @@ public final class NcStreamProto {
               ucar.nc2.stream.NcStreamProto.Group.Builder subBuilder = ucar.nc2.stream.NcStreamProto.Group.newBuilder();
               input.readMessage(subBuilder, extensionRegistry);
               addGroups(subBuilder.buildPartial());
+              break;
+            }
+            case 58: {
+              ucar.nc2.stream.NcStreamProto.EnumTypedef.Builder subBuilder = ucar.nc2.stream.NcStreamProto.EnumTypedef.newBuilder();
+              input.readMessage(subBuilder, extensionRegistry);
+              addEnumTypes(subBuilder.buildPartial());
               break;
             }
           }
@@ -2934,6 +3764,57 @@ public final class NcStreamProto {
       }
       public Builder clearGroups() {
         result.groups_ = java.util.Collections.emptyList();
+        return this;
+      }
+      
+      // repeated .ncstream.EnumTypedef enumTypes = 7;
+      public java.util.List<ucar.nc2.stream.NcStreamProto.EnumTypedef> getEnumTypesList() {
+        return java.util.Collections.unmodifiableList(result.enumTypes_);
+      }
+      public int getEnumTypesCount() {
+        return result.getEnumTypesCount();
+      }
+      public ucar.nc2.stream.NcStreamProto.EnumTypedef getEnumTypes(int index) {
+        return result.getEnumTypes(index);
+      }
+      public Builder setEnumTypes(int index, ucar.nc2.stream.NcStreamProto.EnumTypedef value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        result.enumTypes_.set(index, value);
+        return this;
+      }
+      public Builder setEnumTypes(int index, ucar.nc2.stream.NcStreamProto.EnumTypedef.Builder builderForValue) {
+        result.enumTypes_.set(index, builderForValue.build());
+        return this;
+      }
+      public Builder addEnumTypes(ucar.nc2.stream.NcStreamProto.EnumTypedef value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        if (result.enumTypes_.isEmpty()) {
+          result.enumTypes_ = new java.util.ArrayList<ucar.nc2.stream.NcStreamProto.EnumTypedef>();
+        }
+        result.enumTypes_.add(value);
+        return this;
+      }
+      public Builder addEnumTypes(ucar.nc2.stream.NcStreamProto.EnumTypedef.Builder builderForValue) {
+        if (result.enumTypes_.isEmpty()) {
+          result.enumTypes_ = new java.util.ArrayList<ucar.nc2.stream.NcStreamProto.EnumTypedef>();
+        }
+        result.enumTypes_.add(builderForValue.build());
+        return this;
+      }
+      public Builder addAllEnumTypes(
+          java.lang.Iterable<? extends ucar.nc2.stream.NcStreamProto.EnumTypedef> values) {
+        if (result.enumTypes_.isEmpty()) {
+          result.enumTypes_ = new java.util.ArrayList<ucar.nc2.stream.NcStreamProto.EnumTypedef>();
+        }
+        super.addAll(values, result.enumTypes_);
+        return this;
+      }
+      public Builder clearEnumTypes() {
+        result.enumTypes_ = java.util.Collections.emptyList();
         return this;
       }
     }
@@ -4746,6 +5627,16 @@ public final class NcStreamProto {
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_ncstream_Structure_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_ncstream_EnumTypedef_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_ncstream_EnumTypedef_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_ncstream_EnumTypedef_EnumType_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_ncstream_EnumTypedef_EnumType_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
     internal_static_ncstream_Group_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
@@ -4785,41 +5676,46 @@ public final class NcStreamProto {
   static {
     java.lang.String descriptorData =
       "\n\036ucar/nc2/stream/ncStream.proto\022\010ncstre" +
-      "am\"\257\001\n\tAttribute\022\014\n\004name\030\001 \002(\t\022&\n\004type\030\002" +
+      "am\"\276\001\n\tAttribute\022\014\n\004name\030\001 \002(\t\022&\n\004type\030\002" +
       " \002(\0162\030.ncstream.Attribute.Type\022\013\n\003len\030\003 " +
-      "\002(\r\022\014\n\004data\030\004 \002(\014\"Q\n\004Type\022\n\n\006STRING\020\000\022\010\n" +
-      "\004BYTE\020\001\022\t\n\005SHORT\020\002\022\007\n\003INT\020\003\022\010\n\004LONG\020\004\022\t\n" +
-      "\005FLOAT\020\005\022\n\n\006DOUBLE\020\006\"a\n\tDimension\022\014\n\004nam" +
-      "e\030\001 \001(\t\022\016\n\006length\030\002 \001(\004\022\023\n\013isUnlimited\030\003" +
-      " \001(\010\022\016\n\006isVlen\030\004 \001(\010\022\021\n\tisPrivate\030\005 \001(\010\"" +
-      "\245\001\n\010Variable\022\014\n\004name\030\001 \002(\t\022$\n\010dataType\030\002" +
-      " \002(\0162\022.ncstream.DataType\022\"\n\005shape\030\003 \003(\0132" +
-      "\023.ncstream.Dimension\022!\n\004atts\030\004 \003(\0132\023.ncs" +
-      "tream.Attribute\022\020\n\010unsigned\030\005 \001(\010\022\014\n\004dat" +
-      "a\030\006 \001(\014\"\316\001\n\tStructure\022\014\n\004name\030\001 \002(\t\022$\n\010d" +
-      "ataType\030\002 \002(\0162\022.ncstream.DataType\022\"\n\005sha" +
-      "pe\030\003 \003(\0132\023.ncstream.Dimension\022!\n\004atts\030\004 " +
-      "\003(\0132\023.ncstream.Attribute\022 \n\004vars\030\005 \003(\0132\022" +
-      ".ncstream.Variable\022$\n\007structs\030\006 \003(\0132\023.nc" +
-      "stream.Structure\"\304\001\n\005Group\022\014\n\004name\030\001 \002(\t" +
-      "\022!\n\004dims\030\002 \003(\0132\023.ncstream.Dimension\022 \n\004v" +
-      "ars\030\003 \003(\0132\022.ncstream.Variable\022$\n\007structs" +
-      "\030\004 \003(\0132\023.ncstream.Structure\022!\n\004atts\030\005 \003(" +
-      "\0132\023.ncstream.Attribute\022\037\n\006groups\030\006 \003(\0132\017" +
-      ".ncstream.Group\"T\n\006Header\022\020\n\010location\030\001 " +
-      "\001(\t\022\r\n\005title\030\002 \001(\t\022\n\n\002id\030\003 \001(\t\022\035\n\004root\030\004" +
-      " \002(\0132\017.ncstream.Group\"w\n\004Data\022\017\n\007varName" +
-      "\030\001 \002(\t\022$\n\010dataType\030\002 \002(\0162\022.ncstream.Data" +
-      "Type\022\"\n\007section\030\003 \002(\0132\021.ncstream.Section" +
-      "\022\024\n\006bigend\030\004 \001(\010:\004true\"4\n\005Range\022\r\n\005start" +
-      "\030\001 \001(\004\022\014\n\004size\030\002 \002(\004\022\016\n\006stride\030\003 \001(\004\")\n\007" +
-      "Section\022\036\n\005range\030\001 \003(\0132\017.ncstream.Range\"" +
-      "\030\n\005Error\022\017\n\007message\030\001 \002(\t*\251\001\n\010DataType\022\010" +
-      "\n\004CHAR\020\000\022\010\n\004BYTE\020\001\022\t\n\005SHORT\020\002\022\007\n\003INT\020\003\022\010" +
-      "\n\004LONG\020\004\022\t\n\005FLOAT\020\005\022\n\n\006DOUBLE\020\006\022\n\n\006STRIN" +
-      "G\020\007\022\r\n\tSTRUCTURE\020\010\022\014\n\010SEQUENCE\020\t\022\t\n\005ENUM" +
-      "1\020\n\022\t\n\005ENUM2\020\013\022\t\n\005ENUM4\020\014\022\n\n\006OPAQUE\020\rB \n" +
-      "\017ucar.nc2.streamB\rNcStreamProto";
+      "\002(\r\022\014\n\004data\030\004 \001(\014\022\r\n\005sdata\030\005 \003(\t\"Q\n\004Type" +
+      "\022\n\n\006STRING\020\000\022\010\n\004BYTE\020\001\022\t\n\005SHORT\020\002\022\007\n\003INT" +
+      "\020\003\022\010\n\004LONG\020\004\022\t\n\005FLOAT\020\005\022\n\n\006DOUBLE\020\006\"a\n\tD" +
+      "imension\022\014\n\004name\030\001 \001(\t\022\016\n\006length\030\002 \001(\004\022\023" +
+      "\n\013isUnlimited\030\003 \001(\010\022\016\n\006isVlen\030\004 \001(\010\022\021\n\ti" +
+      "sPrivate\030\005 \001(\010\"\267\001\n\010Variable\022\014\n\004name\030\001 \002(" +
+      "\t\022$\n\010dataType\030\002 \002(\0162\022.ncstream.DataType\022" +
+      "\"\n\005shape\030\003 \003(\0132\023.ncstream.Dimension\022!\n\004a" +
+      "tts\030\004 \003(\0132\023.ncstream.Attribute\022\020\n\010unsign" +
+      "ed\030\005 \001(\010\022\014\n\004data\030\006 \001(\014\022\020\n\010enumType\030\007 \001(\t" +
+      "\"\316\001\n\tStructure\022\014\n\004name\030\001 \002(\t\022$\n\010dataType" +
+      "\030\002 \002(\0162\022.ncstream.DataType\022\"\n\005shape\030\003 \003(" +
+      "\0132\023.ncstream.Dimension\022!\n\004atts\030\004 \003(\0132\023.n" +
+      "cstream.Attribute\022 \n\004vars\030\005 \003(\0132\022.ncstre" +
+      "am.Variable\022$\n\007structs\030\006 \003(\0132\023.ncstream." +
+      "Structure\"q\n\013EnumTypedef\022\014\n\004name\030\001 \002(\t\022+" +
+      "\n\003map\030\002 \003(\0132\036.ncstream.EnumTypedef.EnumT" +
+      "ype\032\'\n\010EnumType\022\014\n\004code\030\001 \002(\r\022\r\n\005value\030\002" +
+      " \002(\t\"\356\001\n\005Group\022\014\n\004name\030\001 \002(\t\022!\n\004dims\030\002 \003" +
+      "(\0132\023.ncstream.Dimension\022 \n\004vars\030\003 \003(\0132\022." +
+      "ncstream.Variable\022$\n\007structs\030\004 \003(\0132\023.ncs" +
+      "tream.Structure\022!\n\004atts\030\005 \003(\0132\023.ncstream" +
+      ".Attribute\022\037\n\006groups\030\006 \003(\0132\017.ncstream.Gr" +
+      "oup\022(\n\tenumTypes\030\007 \003(\0132\025.ncstream.EnumTy" +
+      "pedef\"T\n\006Header\022\020\n\010location\030\001 \001(\t\022\r\n\005tit" +
+      "le\030\002 \001(\t\022\n\n\002id\030\003 \001(\t\022\035\n\004root\030\004 \002(\0132\017.ncs" +
+      "tream.Group\"w\n\004Data\022\017\n\007varName\030\001 \002(\t\022$\n\010" +
+      "dataType\030\002 \002(\0162\022.ncstream.DataType\022\"\n\007se" +
+      "ction\030\003 \002(\0132\021.ncstream.Section\022\024\n\006bigend" +
+      "\030\004 \001(\010:\004true\"4\n\005Range\022\r\n\005start\030\001 \001(\004\022\014\n\004" +
+      "size\030\002 \002(\004\022\016\n\006stride\030\003 \001(\004\")\n\007Section\022\036\n" +
+      "\005range\030\001 \003(\0132\017.ncstream.Range\"\030\n\005Error\022\017" +
+      "\n\007message\030\001 \002(\t*\251\001\n\010DataType\022\010\n\004CHAR\020\000\022\010" +
+      "\n\004BYTE\020\001\022\t\n\005SHORT\020\002\022\007\n\003INT\020\003\022\010\n\004LONG\020\004\022\t" +
+      "\n\005FLOAT\020\005\022\n\n\006DOUBLE\020\006\022\n\n\006STRING\020\007\022\r\n\tSTR" +
+      "UCTURE\020\010\022\014\n\010SEQUENCE\020\t\022\t\n\005ENUM1\020\n\022\t\n\005ENU" +
+      "M2\020\013\022\t\n\005ENUM4\020\014\022\n\n\006OPAQUE\020\rB \n\017ucar.nc2." +
+      "streamB\rNcStreamProto";
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
         public com.google.protobuf.ExtensionRegistry assignDescriptors(
@@ -4830,7 +5726,7 @@ public final class NcStreamProto {
           internal_static_ncstream_Attribute_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_ncstream_Attribute_descriptor,
-              new java.lang.String[] { "Name", "Type", "Len", "Data", },
+              new java.lang.String[] { "Name", "Type", "Len", "Data", "Sdata", },
               ucar.nc2.stream.NcStreamProto.Attribute.class,
               ucar.nc2.stream.NcStreamProto.Attribute.Builder.class);
           internal_static_ncstream_Dimension_descriptor =
@@ -4846,7 +5742,7 @@ public final class NcStreamProto {
           internal_static_ncstream_Variable_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_ncstream_Variable_descriptor,
-              new java.lang.String[] { "Name", "DataType", "Shape", "Atts", "Unsigned", "Data", },
+              new java.lang.String[] { "Name", "DataType", "Shape", "Atts", "Unsigned", "Data", "EnumType", },
               ucar.nc2.stream.NcStreamProto.Variable.class,
               ucar.nc2.stream.NcStreamProto.Variable.Builder.class);
           internal_static_ncstream_Structure_descriptor =
@@ -4857,16 +5753,32 @@ public final class NcStreamProto {
               new java.lang.String[] { "Name", "DataType", "Shape", "Atts", "Vars", "Structs", },
               ucar.nc2.stream.NcStreamProto.Structure.class,
               ucar.nc2.stream.NcStreamProto.Structure.Builder.class);
-          internal_static_ncstream_Group_descriptor =
+          internal_static_ncstream_EnumTypedef_descriptor =
             getDescriptor().getMessageTypes().get(4);
+          internal_static_ncstream_EnumTypedef_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_ncstream_EnumTypedef_descriptor,
+              new java.lang.String[] { "Name", "Map", },
+              ucar.nc2.stream.NcStreamProto.EnumTypedef.class,
+              ucar.nc2.stream.NcStreamProto.EnumTypedef.Builder.class);
+          internal_static_ncstream_EnumTypedef_EnumType_descriptor =
+            internal_static_ncstream_EnumTypedef_descriptor.getNestedTypes().get(0);
+          internal_static_ncstream_EnumTypedef_EnumType_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_ncstream_EnumTypedef_EnumType_descriptor,
+              new java.lang.String[] { "Code", "Value", },
+              ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType.class,
+              ucar.nc2.stream.NcStreamProto.EnumTypedef.EnumType.Builder.class);
+          internal_static_ncstream_Group_descriptor =
+            getDescriptor().getMessageTypes().get(5);
           internal_static_ncstream_Group_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_ncstream_Group_descriptor,
-              new java.lang.String[] { "Name", "Dims", "Vars", "Structs", "Atts", "Groups", },
+              new java.lang.String[] { "Name", "Dims", "Vars", "Structs", "Atts", "Groups", "EnumTypes", },
               ucar.nc2.stream.NcStreamProto.Group.class,
               ucar.nc2.stream.NcStreamProto.Group.Builder.class);
           internal_static_ncstream_Header_descriptor =
-            getDescriptor().getMessageTypes().get(5);
+            getDescriptor().getMessageTypes().get(6);
           internal_static_ncstream_Header_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_ncstream_Header_descriptor,
@@ -4874,7 +5786,7 @@ public final class NcStreamProto {
               ucar.nc2.stream.NcStreamProto.Header.class,
               ucar.nc2.stream.NcStreamProto.Header.Builder.class);
           internal_static_ncstream_Data_descriptor =
-            getDescriptor().getMessageTypes().get(6);
+            getDescriptor().getMessageTypes().get(7);
           internal_static_ncstream_Data_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_ncstream_Data_descriptor,
@@ -4882,7 +5794,7 @@ public final class NcStreamProto {
               ucar.nc2.stream.NcStreamProto.Data.class,
               ucar.nc2.stream.NcStreamProto.Data.Builder.class);
           internal_static_ncstream_Range_descriptor =
-            getDescriptor().getMessageTypes().get(7);
+            getDescriptor().getMessageTypes().get(8);
           internal_static_ncstream_Range_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_ncstream_Range_descriptor,
@@ -4890,7 +5802,7 @@ public final class NcStreamProto {
               ucar.nc2.stream.NcStreamProto.Range.class,
               ucar.nc2.stream.NcStreamProto.Range.Builder.class);
           internal_static_ncstream_Section_descriptor =
-            getDescriptor().getMessageTypes().get(8);
+            getDescriptor().getMessageTypes().get(9);
           internal_static_ncstream_Section_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_ncstream_Section_descriptor,
@@ -4898,7 +5810,7 @@ public final class NcStreamProto {
               ucar.nc2.stream.NcStreamProto.Section.class,
               ucar.nc2.stream.NcStreamProto.Section.Builder.class);
           internal_static_ncstream_Error_descriptor =
-            getDescriptor().getMessageTypes().get(9);
+            getDescriptor().getMessageTypes().get(10);
           internal_static_ncstream_Error_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_ncstream_Error_descriptor,

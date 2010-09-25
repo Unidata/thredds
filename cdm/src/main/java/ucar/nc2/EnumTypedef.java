@@ -64,6 +64,10 @@ public class EnumTypedef {
     }
     return enumStrings;
   }
+  public Map<Integer, String> getMap() {
+    return map;
+  }
+
 
   public String lookupEnumString(int e) {
     String result = map.get(e);
