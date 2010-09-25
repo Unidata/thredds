@@ -48,7 +48,7 @@ public class TestRead extends TestCase {
     //testRead( TestCatalogAll.open( "enhancedCat.xml", false));
     //testRead( TestCatalogAll.open( "InvCatalogBadDTD.xml", true));
     //testRead( TestCatalogAll.open( "TestAlias.xml", true));
-    testRead( TestCatalogAll.open( "DatasetFmrc.xml", true));
+    // testRead( TestCatalogAll.open( "DatasetFmrc.xml", true));
   }
 
   public void testRead(InvCatalog cat) {

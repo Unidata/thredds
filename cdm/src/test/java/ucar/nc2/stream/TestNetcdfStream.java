@@ -15,39 +15,40 @@ import junit.framework.TestCase;
 
 
 public class TestNetcdfStream extends TestCase {
-  String serverRoot = "C:/data/formats";
+  String serverRoot = "E:/formats";
   
   public TestNetcdfStream(String name) {
     super(name);
   }
 
   public void testProblem() throws IOException {
-    doOne("C:\\data\\formats\\hdf4\\ncidc\\AIRS.2003.02.01.A.L1B.Browse_HSB.v4.0.9.0.G06065143355.hdf");
+    doOne("C:/data/formats/netcdf4/tst_enums.nc");
   }
 
   public void testScan() throws IOException {
-    //
-    scanDir("C:/data/formats/netcdf3/", ".nc");
-    scanDir("C:/data/formats/netcdf4/", ".nc");
-    scanDir("C:/data/formats/hdf5/",  new FileFilter() {
+    /*    */
+    scanDir(serverRoot+"/netcdf3/", ".nc");
+    scanDir(serverRoot+"/netcdf4/", ".nc");
+    scanDir(serverRoot+"/hdf5/",  new FileFilter() {
       public boolean accept(File pathname) {
         return pathname.getPath().endsWith(".h5") || pathname.getPath().endsWith(".he5");
       }
-    });
-    scanDir("C:/data/formats/hdf4/",  new FileFilter() {
+    });   // */
+    scanDir(serverRoot+"/hdf4/",  new FileFilter() {
        public boolean accept(File pathname) {
          return pathname.getPath().endsWith(".hdf") || pathname.getPath().endsWith(".eos");
        }
      }); 
-    scanDir("C:/data/formats/grib/",  new FileFilter() {
+    /*  */
+    scanDir(serverRoot+"/grib/",  new FileFilter() {
        public boolean accept(File pathname) {
          return pathname.getPath().endsWith(".grib") || pathname.getPath().endsWith(".grib1") || pathname.getPath().endsWith(".grib2");
        }
      });
-     scanDir("C:/data/formats/gini/", ".gini");
-     scanDir("C:/data/formats/gempak/", ".gem");
-     scanDir("C:/data/formats/gempak/", ".gem");
-
+     scanDir(serverRoot+"/gini/", ".gini");
+     scanDir(serverRoot+"/gempak/", ".gem");
+     scanDir(serverRoot+"/gempak/", ".gem");
+     scanDir(serverRoot+"/gnexrad2empak/", ".ar2v"); // */
   }
 
   void scanDir(String dirName, final String suffix) throws IOException {
