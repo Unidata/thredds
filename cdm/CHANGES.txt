@@ -3,9 +3,9 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Changes in version 4.2:
- 8: (2010-xx-xx)
+ 7: (2010-xx-xx)
+  cdmremote works for full netcdf-4 data model
   FeatureDataset inner and outer Ncml
- 7: (2010-09-21)
   Set cacheSize for coordinate variable == 40K
  6: (2010-09-21)
   Remove Date from GridIndexToNC "history" attribute.
