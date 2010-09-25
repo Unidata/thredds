@@ -8,6 +8,7 @@ import java.nio.channels.WritableByteChannel;
 import java.io.OutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -379,12 +380,18 @@ public class NcStream {
         ncvar.setEnumTypedef(enumType);
     }
 
-    StringBuilder sbuff = new StringBuilder();
+    List<Dimension> dims = new ArrayList<Dimension>(6);
     for (ucar.nc2.stream.NcStreamProto.Dimension dim : var.getShapeList()) {
-      sbuff.append(dim.getName().length() > 0 ? dim.getName() : Long.toString( dim.getLength())); // anon dimensions use the length
-      sbuff.append(" ");
+      if (dim.getIsPrivate())
+        dims.add(new Dimension(dim.getName(), (int) dim.getLength(), false, dim.getIsUnlimited(), dim.getIsVlen()));
+      else {
+        Dimension d = g.findDimension(dim.getName());
+        if (d == null)
+          throw new IllegalStateException("Can find shared dimension "+dim.getName());
+        dims.add(d);
+      }
     }
-    ncvar.setDimensions(sbuff.toString());
+    ncvar.setDimensions(dims);
 
     for (ucar.nc2.stream.NcStreamProto.Attribute att : var.getAttsList())
       ncvar.addAttribute(decodeAtt(att));
@@ -409,12 +416,18 @@ public class NcStream {
 
     ncvar.setDataType(decodeDataType(s.getDataType()));
 
-    StringBuilder sbuff = new StringBuilder();
+    List<Dimension> dims = new ArrayList<Dimension>(6);
     for (ucar.nc2.stream.NcStreamProto.Dimension dim : s.getShapeList()) {
-      sbuff.append(dim.getName().length() > 0 ? dim.getName() : Long.toString( dim.getLength())); // anon dimensions use the length
-      sbuff.append(" ");
+      if (dim.getIsPrivate())
+        dims.add(new Dimension(dim.getName(), (int) dim.getLength(), false, dim.getIsUnlimited(), dim.getIsVlen()));
+      else {
+        Dimension d = g.findDimension(dim.getName());
+        if (d == null)
+          throw new IllegalStateException("Can find shared dimension "+dim.getName());
+        dims.add(d);
+      }
     }
-    ncvar.setDimensions(sbuff.toString());
+    ncvar.setDimensions(dims);
 
     for (ucar.nc2.stream.NcStreamProto.Attribute att : s.getAttsList())
       ncvar.addAttribute(decodeAtt(att));

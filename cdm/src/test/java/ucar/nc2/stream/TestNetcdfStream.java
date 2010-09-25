@@ -22,10 +22,11 @@ public class TestNetcdfStream extends TestCase {
   }
 
   public void testProblem() throws IOException {
-    doOne("C:/data/formats/netcdf4/tst_enums.nc");
+    doOne("C:\\data\\formats\\hdf4\\ncidc\\AIRS.2003.02.01.A.L1B.Browse_HSB.v4.0.9.0.G06065143355.hdf");
   }
 
   public void testScan() throws IOException {
+    //
     scanDir("C:/data/formats/netcdf3/", ".nc");
     scanDir("C:/data/formats/netcdf4/", ".nc");
     scanDir("C:/data/formats/hdf5/",  new FileFilter() {
@@ -42,7 +43,7 @@ public class TestNetcdfStream extends TestCase {
        public boolean accept(File pathname) {
          return pathname.getPath().endsWith(".grib") || pathname.getPath().endsWith(".grib1") || pathname.getPath().endsWith(".grib2");
        }
-     });  // */
+     });
      scanDir("C:/data/formats/gini/", ".gini");
      scanDir("C:/data/formats/gempak/", ".gem");
      scanDir("C:/data/formats/gempak/", ".gem");

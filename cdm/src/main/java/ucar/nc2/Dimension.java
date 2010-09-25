@@ -213,9 +213,7 @@ public class Dimension implements Comparable {
     this.isUnlimited = isUnlimited;
     this.isVariableLength = isVariableLength;
     setLength(length);
-    assert (name != null) || !this.isShared;
-    //if (!isShared)
-    //  System.out.println("HEY");
+    assert (this.name != null) || !this.isShared;
   }
 
   /**
@@ -279,7 +277,7 @@ public class Dimension implements Comparable {
    */
   public void setName( String name) {
     if (immutable) throw new IllegalStateException("Cant modify");
-    this.name = (name == null) || name == "" ? null : AbstractIOServiceProvider.createValidNetcdfObjectName(name);
+    this.name = (name == null) || name.length() == 0 ? null : AbstractIOServiceProvider.createValidNetcdfObjectName(name);
     hashCode = 0;
   }
 
