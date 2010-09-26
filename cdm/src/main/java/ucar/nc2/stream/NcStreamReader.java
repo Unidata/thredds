@@ -33,7 +33,6 @@
 package ucar.nc2.stream;
 
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.Group;
 import ucar.nc2.Structure;
 import ucar.ma2.*;
 
@@ -44,7 +43,8 @@ import java.nio.ByteBuffer;
 import com.google.protobuf.InvalidProtocolBufferException;
 
 /**
- * Read an ncStream InputStream into a NetcdfFile
+ * Read an ncStream InputStream into a NetcdfFile.
+ * Used by CdmRemote
  *
  * @author caron
  * @since Feb 7, 2009
@@ -53,12 +53,11 @@ public class NcStreamReader {
 
   private static final boolean debug = false;
 
-  private NcStreamProto.Header proto;
-
   public NetcdfFile readStream(InputStream is, NetcdfFile ncfile) throws IOException {
-    assert readAndTest(is, NcStream.MAGIC_START);
-    assert readAndTest(is, NcStream.MAGIC_HEADER);
+    //assert readAndTest(is, NcStream.MAGIC_START);
 
+    // header
+    assert readAndTest(is, NcStream.MAGIC_HEADER);
     int msize = NcStream.readVInt(is);
     byte[] m = new byte[msize];
     NcStream.readFully(is, m);
@@ -68,9 +67,9 @@ public class NcStreamReader {
       //System.out.println("READ header= " + new String(m, "UTF-8"));
     }
 
-    proto = NcStreamProto.Header.parseFrom(m);
+    NcStreamProto.Header proto = NcStreamProto.Header.parseFrom(m);
     ncfile = proto2nc(proto, ncfile);
-    if (debug) System.out.printf("  proto= ", proto);
+    if (debug) System.out.printf("  proto= %s%n", proto);
 
     // LOOK why doesnt this work ?
     //CodedInputStream cis = CodedInputStream.newInstance(is);

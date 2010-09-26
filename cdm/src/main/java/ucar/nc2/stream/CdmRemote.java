@@ -48,6 +48,7 @@ import java.net.URLEncoder;
 
 /**
  * A remote CDM dataset, using ncstream to communicate.
+ * Supports full CDM / netcdf-4 data model.
  *
  * @author caron
  * @since Feb 7, 2009

@@ -33,13 +33,10 @@
 
 package thredds.catalog;
 
-import ucar.nc2.stream.CdmRemote;
-import ucar.nc2.thredds.ThreddsDataFactory;
-
 import java.net.URI;
 
 /**
- * Public interface to an access element, defining how to access a specific web resource.
+ * Public interface to a catalog access element, defining how to access a specific web resource.
  *
  * @author john caron
  */
@@ -138,9 +135,9 @@ abstract public class InvAccess {
 
   private String wrap(String url) {
     if (service.getServiceType() == ServiceType.THREDDS)
-      return ThreddsDataFactory.SCHEME + url;
+      return ucar.nc2.thredds.ThreddsDataFactory.SCHEME + url;
     if (service.getServiceType() == ServiceType.CdmRemote)
-      return CdmRemote.SCHEME + url;
+      return ucar.nc2.stream.CdmRemote.SCHEME + url;
     return url;
   }
 }

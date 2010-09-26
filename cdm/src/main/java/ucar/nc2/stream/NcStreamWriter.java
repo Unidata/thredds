@@ -72,7 +72,7 @@ public class NcStreamWriter {
     long size = 0;
 
     //// header message
-    size += writeBytes(wbc, NcStream.MAGIC_START); // magic
+    //size += writeBytes(wbc, NcStream.MAGIC_START); // magic
     size += writeBytes(wbc, NcStream.MAGIC_HEADER); // magic
     byte[] b = header.toByteArray();
     size += NcStream.writeVInt(wbc, b.length); // len

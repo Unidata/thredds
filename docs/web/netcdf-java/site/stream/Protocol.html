@@ -3,8 +3,66 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Untitled Document</title>
+<style type="text/css">
+pre {font-size: 9pt; padding: 10px; background-color: #E7E7E7; border: 1px solid #CFCFCF; width: 85%;}
+code {font-size: 11pt;}
+dl {margin: 10px 5px 5px 15px;)
+.style1 {font-style: italic}
+</style>
 </head>
 
 <body>
+<h2>Ncstream Grammer</h2>
+<p>last update Sep 25, 2010</p>
+<p>An <em><strong>ncstream</strong></em> is a sequence of one or more messages:</p>
+<pre>   <strong>ncstream</strong> = {message}
+   <strong>message</strong> = headerMessage | dataMessage | vdataMessage | errorMessage
+   <strong>headerMessage</strong> = MAGIC_HEADER, vlen, NcStreamProto.Header
+   <strong>dataMessage</strong> = MAGIC_DATA, vlen, NcStreamProto.Data, vlen, (byte)*vlen
+   <strong>vdataMessage</strong> = MAGIC_DATA, vlen, NcStreamProto.Data, vn, (vlen, bytes)*vn
+   <strong>errorMessage</strong> = MAGIC_ERR, vlen, NcStreamProto.Error
+   
+   <strong>vlen</strong> = variable length encoded positive integer == length of the following object in bytes
+   <strong>vn</strong> = variable length encoded positive integer == number of objects that follow
+   <strong>NcStreamProto.Header</strong> = Header message encoded by protobuf
+   <strong>NcStreamProto.Data</strong> = Data message encoded by protobuf
+   <strong>data</strong> = actual bytes of data, encoding described by the NcStreamProto.Data message
+
+primitives: 
+   <strong>MAGIC_HEADER</strong>= 0xad, 0xec, 0xce, 0xda 
+   <strong>MAGIC_DATA</strong> =  0xab, 0xec, 0xce, 0xba <br />
+   <strong>MAGIC_ERR</strong>   = 0xab, 0xad, 0xba, 0xda <br />
+</pre>
+<p>The protobuf messages are defined by </p>
+<ul>
+  <li><strong>thredds\cdm\src\main\java\ucar\nc2\stream\ncStream.proto</strong></li>
+  <li><strong>thredds\cdm\src\main\java\ucar\nc2\ft\point\remote\pointStream.proto</strong><br />
+  </li>
+</ul>
+<p>(these are files on Unidata's SVN server)</p>
+<p>An <em><strong>ncstream dataset </strong></em> starts with MAGIC_START,  followed by a set of messages. </p>
+<pre>	ncstreamDataset = MAGIC_START ncstream
+
+
+
+   MAGIC_START = 0x43, 0x44, 0x46, 0x53 // 'CDFS'
+</pre>
+<h4> Rules:</h4>
+<ul>
+  <li>A valid dataset must have at least one header message</li>
+  <li>A variable must be defined first in a header message, before it can appear in a data message.</li>
+</ul>
+<h3>Data encoding</h3>
+<p>There is just enough information in the stream to break the stream into messages and to know what kind of message it is. To interpret the message correctly, one must have the correct proto file. To interpret the data stream correctly, one must have the header information.<em> (is that really true? maybe only for structs)</em></p>
+<p>NcStreamProto.Data contains the full variable name the data belongs to, the DataType and Section,<em> if its big-endian or little-endian. ?? Note in Java, DataOutputStream always writes in big-endian order.</em></p>
+<pre> message Data {<br />   required string varName = 1;<br />   required DataType dataType = 2;<br />   required Section section = 3;<br />   optional bool bigend = 4 [default=true];<br /> }</pre>
+<p><strong>Primitive types (byte, char, short, int, long, float, double)</strong>: arrays of primitives are stored in row-major order. The endian-ness is specified in the NcStreamProto.Data message when needed.</p>
+<ul>
+  <li> <strong>char</strong> is a legacy data type contains uninterpreted  characters, one character per byte. Typically these contain 7-bit ASCII characters.</li>
+  <li> <strong>byte, short, int, long</strong> may be interpreted as signed or unsigned. This is specified in the variable's header information. </li>
+</ul>
+<p><strong>Variable length types (String, Opaque): </strong>First the number of objects is written, then each object, preceeded by its length in bytes as a vlen. Strings are encoded as UTF-8 bytes. Opaque is just a bag of bytes. <em>what about vlen? eg int (3, *) ??</em></p>
+<p><strong>Structure types (Structure, Sequence): </strong>An array of StructureData. Can be encoded in row or col (?). <em>What about vlens ??</em></p>
+<p>Should have a way to efficiently encode sparse data. Look at Bigtable/hBase.</p>
 </body>
 </html>
