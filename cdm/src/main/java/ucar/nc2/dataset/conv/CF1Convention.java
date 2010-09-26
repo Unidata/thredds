@@ -162,8 +162,17 @@ public class CF1Convention extends CSMConvention {
       }
     }
 
+    // make corrections for specific datasets
+    String src = ds.findAttValueIgnoreCase(null, "Source", "");
+    if (src.equals("NOAA/National Climatic Data Center")) {
+      String title = ds.findAttValueIgnoreCase(null, "title", "");
+      avhrr_oiv2 = title.indexOf("OI-V2") > 0;
+    }
     ds.finish();
   }
+
+  private boolean avhrr_oiv2 = false;
+
 
   private void makeAtmLnCoordinate(NetcdfDataset ds, Variable v) {
     // get the formula attribute
@@ -302,9 +311,9 @@ public class CF1Convention extends CSMConvention {
       }
     }
 
-    // check units, positive
-    if (at == null) {
-      at = super.getAxisType(ncDataset, v);
+    if ((at == null) && avhrr_oiv2) {
+      if (v.getShortName().equals("zlev"))
+        return AxisType.Height;
     }
 
     return at;

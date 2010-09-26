@@ -330,7 +330,7 @@ public class Grib2Pds extends GribPds {
     }
 
     int[] result = new int[2];
-    result[0] = _getForecastTime();
+    result[0] = _getForecastTime();  // LOOK probably wrong - depends on ti.timeIncrementType, see code table 4.11
     result[1] = result[0] + incr;
 
     return result;

@@ -3,6 +3,8 @@ package ucar.nc2.iosp.grib;
 import junit.framework.TestCase;
 import ucar.grib.GribGridRecord;
 import ucar.grib.GribPds;
+import ucar.grib.grib2.Grib2Pds;
+import ucar.grib.grib2.Grib2Tables;
 import ucar.grid.GridIndex;
 import ucar.grid.GridRecord;
 import ucar.nc2.Attribute;
@@ -13,6 +15,7 @@ import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
+import ucar.nc2.iosp.grid.GridServiceProvider;
 
 import java.io.IOException;
 import java.util.*;
@@ -36,14 +39,15 @@ public class TestIntervalVars extends TestCase {
 
   // grib 2 only
   public void testCountIntervalVars() throws Exception {
-    String dir = TestAll.testdataDir + "cdmUnitTest/tds/normal";
+    String dir = TestAll.testdataDir + "cdmUnitTest/tds/prob";
     //String dir = "E:/formats/grib";
     TestAll.actOnAll(dir, new TestAll.FileFilterImpl("grib2"), new TestAll.Act() {
       @Override
       public int doAct(String filename) throws IOException {
         System.out.printf("%n%s%n", filename);
-        showNames(filename);
+        //showNames(filename);
         //checkTemplates(filename);
+        checkIntervalType(filename);
         return 0;
       }
     });
@@ -52,9 +56,85 @@ public class TestIntervalVars extends TestCase {
     System.out.printf("intVars = %d %n", nintVars);
   }
 
-  public void utestOne() throws IOException {
-    checkTemplates("Q:\\cdmUnitTest\\tds\\normal\\NAM_Polar_90km_20100913_0000.grib2");
+  public void testOne() throws IOException {
+    checkIntervalType("Q:/cdmUnitTest/tds/grib/ndfd/NDFD_CONUS_5km_conduit_20100913_0000.grib2");
   }
+
+  public void checkIntervalType(String filename) throws IOException {
+    GridServiceProvider.debugOpen = true;
+    NetcdfFile ncd = NetcdfFile.open(filename);
+
+    GribGridServiceProvider iosp = (GribGridServiceProvider) ncd.getIosp();
+    GridIndex index = (GridIndex) iosp.sendIospMessage("GridIndex");
+
+    Map<Integer, List<String>> map = new HashMap<Integer, List<String>>();
+
+    List<GridRecord> grList = index.getGridRecords();
+    for (GridRecord gr : grList) {
+      GribGridRecord ggr = (GribGridRecord) gr;
+      if (!ggr.isInterval()) continue;
+
+      Grib2Pds pds = (Grib2Pds) ggr.getPds();
+      Grib2Pds.PdsInterval pdsIntv = (Grib2Pds.PdsInterval) pds;
+      for (Grib2Pds.TimeInterval intv : pdsIntv.getTimeIntervals()) {
+        int val = intv.timeIncrementType;
+        List<String> uses = map.get(val);
+        if (uses == null) {
+          uses = new ArrayList<String>();
+          map.put(val, uses);
+        }
+        String name = ggr.getParameterName();
+        if (!uses.contains(name))
+          uses.add(name);
+      }
+    }
+
+    List<Integer> sortList = new ArrayList<Integer>();
+    sortList.addAll(map.keySet());
+    Collections.sort(sortList);
+    for (int val : sortList) {
+      System.out.printf(" %d (%s)%n", val, Grib2Tables.codeTable4_11(val));
+      List<String> uses = map.get(val);
+      for (String use : uses)
+        System.out.printf("   %s%n", use);
+    }
+
+    GridServiceProvider.debugOpen = false;
+  }
+
+  private int checkIntervalTypqe(String filename) throws IOException {
+    GridDataset ncd = GridDataset.open(filename);
+    nfiles++;
+
+    HashMap<Integer, List<String>> map = new  HashMap<Integer, List<String>>();
+
+    for (GridDatatype g : ncd.getGrids()) {
+      GridCoordSystem gsys = g.getCoordinateSystem();
+      CoordinateAxis t = gsys.getTimeAxis();
+      Variable v = g.getVariable();
+      Attribute param = v.findAttribute("GRIB_product_definition_template");
+      Integer template = param.getNumericValue().intValue();
+      List<String> list = map.get(template);
+      if (list == null) {
+        list = new ArrayList<String>();
+        map.put(template, list);
+      }
+      list.add(v.getShortName());
+    }
+    ncd.close();
+
+    for (Integer key : map.keySet()) {
+      System.out.printf("template=%d:", key);
+      List<String> list = map.get(key);
+      for (String vname : list)
+        System.out.printf("%s, ", vname);
+      System.out.printf("%n");
+    }
+    System.out.printf("%n");
+
+    return 1;
+  }
+
 
   private int checkTemplates(String filename) throws IOException {
     GridDataset ncd = GridDataset.open(filename);
