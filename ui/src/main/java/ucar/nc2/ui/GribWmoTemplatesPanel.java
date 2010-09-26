@@ -33,7 +33,7 @@ import java.util.*;
  * @author caron
  * @since Aug 27, 2010
  */
-public class GribTemplatesPanel extends JPanel {
+public class GribWmoTemplatesPanel extends JPanel {
   private PreferencesExt prefs;
 
   private BeanTableSorted codeTable, entryTable;
@@ -44,7 +44,7 @@ public class GribTemplatesPanel extends JPanel {
 
   private FileManager fileChooser;
 
-  public GribTemplatesPanel(final PreferencesExt prefs, JPanel buttPanel) {
+  public GribWmoTemplatesPanel(final PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
 
     codeTable = new BeanTableSorted(CodeBean.class, (PreferencesExt) prefs.node("CodeBean"), false);

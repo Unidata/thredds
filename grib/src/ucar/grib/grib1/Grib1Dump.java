@@ -565,6 +565,7 @@ public final class Grib1Dump {
 
         f.format("            Originating Center : (%d) %s%n", center,Grib1Tables.getCenter_idName( center ));
         f.format("        Originating Sub-Center : (%d) %s%n", subCenter,  Grib1Tables.getSubCenter_idName(center, subCenter) );
+        f.format("               Parameter_table : center=%d subcenter=%d tableVersion=%d%n" , center, subCenter,  pdsv.getParameterTableVersion());
         try {
           int pn = pdsv.getParameterNumber();
           GribPDSParamTable parameter_table = GribPDSParamTable.getParameterTable( center, subCenter,  pdsv.getParameterTableVersion() );

@@ -176,7 +176,7 @@ public class Grib2Pds extends GribPds {
 
   /**
    * Number of coordinate values at end of template.
-   *
+   *                                              
    * @return Coordinates number
    */
   public final int getNumberCoordinates() {

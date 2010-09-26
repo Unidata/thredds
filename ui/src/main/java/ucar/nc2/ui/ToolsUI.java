@@ -137,6 +137,7 @@ public class ToolsUI extends JPanel {
   private GribIndexPanel gribIndexPanel;
   private GribCodePanel gribCodePanel;
   private GribTemplatePanel gribTemplatePanel;
+  private Grib1TablePanel grib1TablePanel;
   private Hdf5Panel hdf5Panel;
   private Hdf4Panel hdf4Panel;
   private ImagePanel imagePanel;
@@ -155,7 +156,7 @@ public class ToolsUI extends JPanel {
   private WmsPanel wmsPanel;
 
   private JTabbedPane tabbedPane;
-  private JTabbedPane iospTabPane;
+  private JTabbedPane iospTabPane, bufrTabPane, gribTabPane;
   private JTabbedPane ftTabPane;
   private JTabbedPane fmrcTabPane;
   private JTabbedPane ncmlTabPane;
@@ -189,6 +190,8 @@ public class ToolsUI extends JPanel {
     // all the tabbed panes
     tabbedPane = new JTabbedPane(JTabbedPane.TOP);
     iospTabPane = new JTabbedPane(JTabbedPane.TOP);
+    gribTabPane = new JTabbedPane(JTabbedPane.TOP);
+    bufrTabPane = new JTabbedPane(JTabbedPane.TOP);
     ftTabPane = new JTabbedPane(JTabbedPane.TOP);
     fmrcTabPane = new JTabbedPane(JTabbedPane.TOP);
     ncmlTabPane = new JTabbedPane(JTabbedPane.TOP);
@@ -224,13 +227,8 @@ public class ToolsUI extends JPanel {
     add(tabbedPane, BorderLayout.CENTER);
 
     // nested tab - iosp
-    iospTabPane.addTab("BUFR", new JLabel("BUFR"));
-    iospTabPane.addTab("BUFRTableB", new JLabel("BUFRTableB"));
-    iospTabPane.addTab("BUFRTableD", new JLabel("BUFRTableD"));
-    iospTabPane.addTab("GRIB-RAW", new JLabel("GRIB-RAW"));
-    iospTabPane.addTab("GRIB-INDEX", new JLabel("GRIB-INDEX"));
-    iospTabPane.addTab("GRIB-CODES", new JLabel("GRIB-CODES"));
-    iospTabPane.addTab("GRIB-TEMPLATES", new JLabel("GRIB-TEMPLATES"));
+    iospTabPane.addTab("BUFR", bufrTabPane);
+    iospTabPane.addTab("GRIB", gribTabPane);
     iospTabPane.addTab("HDF5", new JLabel("HDF5"));
     iospTabPane.addTab("HDF4", new JLabel("HDF4"));
     iospTabPane.addChangeListener(new ChangeListener() {
@@ -250,6 +248,58 @@ public class ToolsUI extends JPanel {
           int idx = iospTabPane.getSelectedIndex();
           String title = iospTabPane.getTitleAt(idx);
           makeComponent(iospTabPane, title);
+        }
+      }
+    });
+
+    // nested-2 tab - bufr
+    bufrTabPane.addTab("BUFR", new JLabel("BUFR"));
+    bufrTabPane.addTab("BUFRTableB", new JLabel("BUFRTableB"));
+    bufrTabPane.addTab("BUFRTableD", new JLabel("BUFRTableD"));
+    bufrTabPane.addChangeListener(new ChangeListener() {
+      public void stateChanged(ChangeEvent e) {
+        Component c = bufrTabPane.getSelectedComponent();
+        if (c instanceof JLabel) {
+          int idx = bufrTabPane.getSelectedIndex();
+          String title = bufrTabPane.getTitleAt(idx);
+          makeComponent(bufrTabPane, title);
+        }
+      }
+    });
+    bufrTabPane.addComponentListener(new ComponentAdapter() {
+      public void componentShown(ComponentEvent e) {
+        Component c = bufrTabPane.getSelectedComponent();
+        if (c instanceof JLabel) {
+          int idx = bufrTabPane.getSelectedIndex();
+          String title = bufrTabPane.getTitleAt(idx);
+          makeComponent(bufrTabPane, title);
+        }
+      }
+    });
+
+    // nested-2 tab - grib
+    gribTabPane.addTab("GRIB-RAW", new JLabel("GRIB-RAW"));
+    gribTabPane.addTab("GRIB-INDEX", new JLabel("GRIB-INDEX"));
+    gribTabPane.addTab("WMO-CODES", new JLabel("GRIB-CODES"));
+    gribTabPane.addTab("WMO-TEMPLATES", new JLabel("GRIB-TEMPLATES"));
+    gribTabPane.addTab("GRIB1-TABLES", new JLabel("GRIB1-TABLES"));
+    gribTabPane.addChangeListener(new ChangeListener() {
+      public void stateChanged(ChangeEvent e) {
+        Component c = gribTabPane.getSelectedComponent();
+        if (c instanceof JLabel) {
+          int idx = gribTabPane.getSelectedIndex();
+          String title = gribTabPane.getTitleAt(idx);
+          makeComponent(gribTabPane, title);
+        }
+      }
+    });
+    gribTabPane.addComponentListener(new ComponentAdapter() {
+      public void componentShown(ComponentEvent e) {
+        Component c = gribTabPane.getSelectedComponent();
+        if (c instanceof JLabel) {
+          int idx = gribTabPane.getSelectedIndex();
+          String title = gribTabPane.getTitleAt(idx);
+          makeComponent(gribTabPane, title);
         }
       }
     });
@@ -395,6 +445,10 @@ public class ToolsUI extends JPanel {
     } else if (title.equals("GRIB-TEMPLATES")) {
       gribTemplatePanel = new GribTemplatePanel((PreferencesExt) mainPrefs.node("grib-templates"));
       c = gribTemplatePanel;
+
+    } else if (title.equals("GRIB1-TABLES")) {
+      grib1TablePanel = new Grib1TablePanel((PreferencesExt) mainPrefs.node("grib1-tables"));
+      c = grib1TablePanel;
 
     } else if (title.equals("CoordSys")) {
       coordSysPanel = new CoordSysPanel((PreferencesExt) mainPrefs.node("CoordSys"));
@@ -855,6 +909,7 @@ public class ToolsUI extends JPanel {
     if (gribIndexPanel != null) gribIndexPanel.save();
     if (gribCodePanel != null) gribCodePanel.save();
     if (gribTemplatePanel != null) gribTemplatePanel.save();
+    if (grib1TablePanel != null) grib1TablePanel.save();
     if (gridPanel != null) gridPanel.save();
     if (hdf5Panel != null) hdf5Panel.save();
     if (hdf4Panel != null) hdf4Panel.save();
@@ -2291,7 +2346,7 @@ public class ToolsUI extends JPanel {
   /////////////////////////////////////////////////////////////////////
 
   private class GribCodePanel extends OpPanel {
-    GribCodesPanel codeTable;
+    GribWmoCodesPanel codeTable;
 
     boolean useDefinition = false;
     JComboBox defComboBox;
@@ -2302,7 +2357,7 @@ public class ToolsUI extends JPanel {
     GribCodePanel(PreferencesExt p) {
       super(p, "table:", false, false);
 
-      codeTable = new GribCodesPanel(prefs, buttPanel);
+      codeTable = new GribWmoCodesPanel(prefs, buttPanel);
       add(codeTable, BorderLayout.CENTER);
     }
 
@@ -2320,18 +2375,33 @@ public class ToolsUI extends JPanel {
   /////////////////////////////////////////////////////////////////////
 
   private class GribTemplatePanel extends OpPanel {
-    GribTemplatesPanel codeTable;
-
-    boolean useDefinition = false;
-    JComboBox defComboBox;
-    IndependentWindow defWindow;
-    AbstractButton defButt;
-    JComboBox modes;
+    GribWmoTemplatesPanel codeTable;
 
     GribTemplatePanel(PreferencesExt p) {
       super(p, "table:", false, false);
+      codeTable = new GribWmoTemplatesPanel(prefs, buttPanel);
+      add(codeTable, BorderLayout.CENTER);
+    }
 
-      codeTable = new GribTemplatesPanel(prefs, buttPanel);
+    boolean process(Object command) {
+      return true;
+    }
+
+    void save() {
+      codeTable.save();
+      super.save();
+    }
+
+  }
+
+
+  /////////////////////////////////////////////////////////////////////
+
+  private class Grib1TablePanel extends OpPanel {
+    Grib1TablesViewer codeTable;
+    Grib1TablePanel(PreferencesExt p) {
+      super(p, "table:", false, false);
+      codeTable = new Grib1TablesViewer(prefs, buttPanel);
       add(codeTable, BorderLayout.CENTER);
     }
 
