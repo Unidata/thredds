@@ -414,6 +414,7 @@ public class CdmRemoteController extends AbstractCommandController { // implemen
       }
 
       OutputStream out = new BufferedOutputStream(res.getOutputStream(), 10 * 1000);
+      long size = -1;
 
       switch (qb.getRequestType()) {
         case capabilities:
@@ -427,7 +428,9 @@ public class CdmRemoteController extends AbstractCommandController { // implemen
           res.setContentType("text/plain");
           String cdl = ncfile.toString();
           res.setContentLength(cdl.length());
-          out.write(cdl.getBytes());
+          byte[] b = cdl.getBytes("UTF-8");
+          out.write(b);
+          size = b.length;
           break;
 
         case ncml:
@@ -441,7 +444,7 @@ public class CdmRemoteController extends AbstractCommandController { // implemen
 
           WritableByteChannel wbc = Channels.newChannel(out);
           NcStreamWriter ncWriter = new NcStreamWriter(ncfile, ServletUtil.getRequestBase(req));
-          ncWriter.sendHeader(wbc);
+          size = ncWriter.sendHeader(wbc);
           break;
         }
 
@@ -449,6 +452,7 @@ public class CdmRemoteController extends AbstractCommandController { // implemen
           res.setContentType("application/octet-stream");
           res.setHeader("Content-Description", "ncstream");
 
+          size = 0;
           WritableByteChannel wbc = Channels.newChannel(out);
           NcStreamWriter ncWriter = new NcStreamWriter(ncfile, ServletUtil.getRequestBase(req));
           String query = qb.getVar() != null ? qb.getVar() : req.getQueryString();
@@ -461,14 +465,14 @@ public class CdmRemoteController extends AbstractCommandController { // implemen
           StringTokenizer stoke = new StringTokenizer(query, ";"); // need UTF/%decode
           while (stoke.hasMoreTokens()) {
             ParsedSectionSpec cer = ParsedSectionSpec.parseVariableSection(ncfile, stoke.nextToken());
-            ncWriter.sendData(cer.v, cer.section, wbc);
+            size += ncWriter.sendData(cer.v, cer.section, wbc);
           }
         }
       } // end switch on req type
 
       out.flush();
       res.flushBuffer();
-      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
+      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, size));
 
     } catch (FileNotFoundException e) {
       log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));

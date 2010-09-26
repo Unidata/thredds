@@ -54,10 +54,15 @@ public class NcStreamReader {
   private static final boolean debug = false;
 
   public NetcdfFile readStream(InputStream is, NetcdfFile ncfile) throws IOException {
-    //assert readAndTest(is, NcStream.MAGIC_START);
+    byte[] b = new byte[4];
+    NcStream.readFully(is, b);
+
+    if (test(b, NcStream.MAGIC_START))
+      assert readAndTest(is, NcStream.MAGIC_HEADER);
+    else
+      assert test(b, NcStream.MAGIC_HEADER);
 
     // header
-    assert readAndTest(is, NcStream.MAGIC_HEADER);
     int msize = NcStream.readVInt(is);
     byte[] m = new byte[msize];
     NcStream.readFully(is, m);
@@ -160,6 +165,13 @@ public class NcStreamReader {
     byte[] b = new byte[test.length];
     NcStream.readFully(is, b);
 
+    if (b.length != test.length) return false;
+    for (int i = 0; i < b.length; i++)
+      if (b[i] != test[i]) return false;
+    return true;
+  }
+
+  private boolean test(byte[] b, byte[] test) throws IOException {
     if (b.length != test.length) return false;
     for (int i = 0; i < b.length; i++)
       if (b[i] != test[i]) return false;

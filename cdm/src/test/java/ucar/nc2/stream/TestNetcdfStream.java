@@ -94,8 +94,7 @@ public class TestNetcdfStream extends TestCase {
   //////////////////////////////////////////////////////////////
   public static void main2(String[] args) {
     try {
-      String filename = "src/test/data/feb.nc";
-      //String filename = "src/test/data/dmsp/F14200307192230.s.OIS";
+      String filename = "C:/data/formats/netcdf3/testWrite.nc";
       NetcdfFile ncfile = NetcdfFile.open(filename);
       NcStreamWriter writer = new NcStreamWriter(ncfile, null);
 
@@ -105,28 +104,48 @@ public class TestNetcdfStream extends TestCase {
       writer.streamAll( wbc);
       wbc.close();
 
-      NcStreamReader reader = new NcStreamReader();      
-      InputStream is = new BufferedInputStream( new FileInputStream(file));
-      NetcdfFile ncfileBack = reader.readStream(is, null);
-      CompareNetcdf.compareFiles(ncfile, ncfileBack, false, true, false);
+      NetcdfFile ncfileBack = NetcdfFile.open(file.getPath());
 
-      /*
+      Formatter f = new Formatter();
+      CompareNetcdf2 cn = new CompareNetcdf2(f, false, false, true);
+      boolean ok = cn.compare(ncfile, ncfileBack);
+      if (ok)
+        System.out.printf("compare %s ok %n", file);
+      else
+        System.out.printf("compare %s NOT OK %n%s", file, f.toString());
 
-      NcStreamProto.Stream proto = ncstream.nc2proto(ncfile);
-
-      byte[] s = proto.toByteArray();
-      System.out.println(" len= " + s.length);
-      NcStreamProto.Stream readBack = NcStreamProto.Stream.parseFrom(s);
-      ncstream.show(readBack);
-
-      NetcdfFile ncfileBack = ncstream.proto2nc(readBack);
-
-      System.out.println("ncfileBack= " + ncfileBack);
-
-      TestCompare.compareFiles(ncfile, ncfileBack, false, true, false); */
-
+      ncfileBack.close();
       ncfile.close();
 
+
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+
+  public static void main(String[] args) {
+    try {
+      String remote = "http://localhost:8080/thredds/cdmremote/testCdmremote/netcdf3/testWrite.nc";
+      CdmRemote ncfileRemote = new CdmRemote(remote);
+
+      String fileOut = "C:/temp/out2.ncs";
+      ncfileRemote.writeToFile(fileOut);
+      NetcdfFile ncfileBack = NetcdfFile.open(fileOut);
+
+      String filename = "C:/data/formats/netcdf3/testWrite.nc";
+      NetcdfFile ncfileOrg = NetcdfFile.open(filename);
+
+      Formatter f = new Formatter();
+      CompareNetcdf2 cn = new CompareNetcdf2(f, false, false, true);
+      boolean ok = cn.compare(ncfileOrg, ncfileBack);
+      if (ok)
+        System.out.printf("compare %s ok %n", fileOut);
+      else
+        System.out.printf("compare %s NOT OK %n%s", fileOut, f.toString());
+
+      ncfileBack.close();
+      ncfileOrg.close();
+      ncfileRemote.close();
 
     } catch (Exception e) {
       e.printStackTrace();

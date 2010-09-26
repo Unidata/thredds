@@ -40,11 +40,12 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import ucar.ma2.Array;
 import ucar.ma2.Section;
 import ucar.ma2.InvalidRangeException;
+import ucar.nc2.Variable;
+import ucar.nc2.util.IO;
 
-import java.io.IOException;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URLEncoder;
+import java.nio.channels.WritableByteChannel;
 
 /**
  * A remote CDM dataset, using ncstream to communicate.
@@ -139,7 +140,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
 
     StringBuilder sbuff = new StringBuilder(remoteURI);
     sbuff.append("?var=");
-    sbuff.append( URLEncoder.encode(v.getShortName(), "UTF-8"));
+    sbuff.append(URLEncoder.encode(v.getShortName(), "UTF-8"));
     sbuff.append("(");
     sbuff.append(section.toString());
     sbuff.append(")");
@@ -183,7 +184,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
 
   public static HttpMethod sendQuery(String remoteURI, String query) throws IOException {
     initHttpClient();
-    
+
     StringBuilder sbuff = new StringBuilder(remoteURI);
     sbuff.append("?");
     sbuff.append(query);
@@ -205,12 +206,85 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
     return method;
   }
 
+  @Override
   public String getFileTypeId() {
     return "ncstreamRemote";
   }
 
+  @Override
   public String getFileTypeDescription() {
     return "ncstreamRemote";
+  }
+
+  public void writeToFile(String filename) throws IOException {
+    File file = new File(filename);
+    FileOutputStream fos = new FileOutputStream(file);
+    WritableByteChannel wbc = fos.getChannel();
+
+    long size = 4;
+    fos.write(NcStream.MAGIC_START);
+
+    // header
+    HttpMethod method = null;
+    try {
+      // get the header
+      String url = remoteURI + "?req=header";
+      method = new GetMethod(url);
+      method.setFollowRedirects(true);
+      if (showRequest) System.out.printf("CdmRemote request %s %n", url);
+      int statusCode = httpClient.executeMethod(method);
+
+      if (statusCode == 404)
+        throw new FileNotFoundException(method.getURI() + " " + method.getStatusLine());
+
+      if (statusCode >= 300)
+        throw new IOException(method.getURI() + " " + method.getStatusLine());
+
+      InputStream is = method.getResponseBodyAsStream();
+      size += IO.copyB(is, fos, IO.default_socket_buffersize);
+
+    } finally {
+      if (method != null) method.releaseConnection();
+    }
+
+    for (Variable v : getVariables()) {
+      StringBuilder sbuff = new StringBuilder(remoteURI);
+      sbuff.append("?var=");
+      sbuff.append(URLEncoder.encode(v.getShortName(), "UTF-8"));
+
+      if (showRequest)
+        System.out.println(" CdmRemote data request for variable: " + v.getName() + " url=" + sbuff);
+
+      try {
+        method = new GetMethod(sbuff.toString());
+        method.setFollowRedirects(true);
+        int statusCode = httpClient.executeMethod(method);
+
+        if (statusCode == 404)
+          throw new FileNotFoundException(method.getPath() + " " + method.getStatusLine());
+
+        if (statusCode >= 300)
+          throw new IOException(method.getPath() + " " + method.getStatusLine());
+
+        int wantSize = (int) (v.getSize());
+        Header h = method.getResponseHeader("Content-Length");
+        if (h != null) {
+          String s = h.getValue();
+          int readLen = Integer.parseInt(s);
+          if (readLen != wantSize)
+            throw new IOException("content-length= " + readLen + " not equal expected Size= " + wantSize);
+        }
+
+        InputStream is = method.getResponseBodyAsStream();
+        size += IO.copyB(is, fos, IO.default_socket_buffersize);
+
+      } finally {
+        if (method != null) method.releaseConnection();
+      }
+    }
+
+    fos.flush();
+    fos.close();
   }
 
 }

@@ -72,7 +72,6 @@ public class NcStreamWriter {
     long size = 0;
 
     //// header message
-    //size += writeBytes(wbc, NcStream.MAGIC_START); // magic
     size += writeBytes(wbc, NcStream.MAGIC_HEADER); // magic
     byte[] b = header.toByteArray();
     size += NcStream.writeVInt(wbc, b.length); // len
@@ -100,23 +99,24 @@ public class NcStreamWriter {
     size += NcStream.writeVInt(wbc, (int) len); // data len or number of objects
     if (show) System.out.println(v.getName() + " vlen=" + len);
 
-    long readCount = v.readToByteChannel(section, wbc);
+    size += v.readToByteChannel(section, wbc);
 
-    return readCount;
+    return size;
   }
 
   private int writeBytes(WritableByteChannel wbc, byte[] b) throws IOException {
     return wbc.write(ByteBuffer.wrap(b));
   }
 
-  public void streamAll(WritableByteChannel wbc) throws IOException, InvalidRangeException {
-    sendHeader(wbc);
+  public long streamAll(WritableByteChannel wbc) throws IOException, InvalidRangeException {
+    long size = writeBytes(wbc, NcStream.MAGIC_START);
+    size += sendHeader(wbc);
 
-    long size = 0;
     for (Variable v : ncfile.getVariables())
       size += sendData(v, v.getShapeAsSection(), wbc);
 
     if (show) System.out.println(" total size=" + size);
+    return size;
   }
 
 

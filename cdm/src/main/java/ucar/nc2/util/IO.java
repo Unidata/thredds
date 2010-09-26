@@ -52,8 +52,8 @@ import java.nio.ByteBuffer;
  */
 public class IO {
 
-  static private int default_file_buffersize = 9200;
-  static private int default_socket_buffersize = 64000;
+  static public int default_file_buffersize = 9200;
+  static public int default_socket_buffersize = 64000;
   static private boolean showStackTrace = false;
   static private boolean debug = false, showResponse = false;
   static private boolean showHeaders = false;

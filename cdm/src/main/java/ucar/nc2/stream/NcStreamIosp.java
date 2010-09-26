@@ -14,6 +14,7 @@ import java.nio.ByteBuffer;
  * Read ncStream file (raf), make into a NetcdfFile.
  */
 public class NcStreamIosp extends AbstractIOServiceProvider {
+  private static final boolean debug = false;
 
   public boolean isValidFile(RandomAccessFile raf) throws IOException {
     raf.seek(0);
@@ -42,7 +43,7 @@ public class NcStreamIosp extends AbstractIOServiceProvider {
     assert readAndTest(raf, NcStream.MAGIC_HEADER);
 
     int msize = readVInt(raf);
-    System.out.println("READ header len= " + msize);
+    if (debug) System.out.println("READ header len= " + msize);
 
     byte[] m = new byte[msize];
     raf.read(m);
@@ -61,14 +62,14 @@ public class NcStreamIosp extends AbstractIOServiceProvider {
       assert readAndTest(raf, NcStream.MAGIC_DATA);
 
       int psize = readVInt(raf);
-      System.out.println(" dproto len= " + psize);
+      if (debug) System.out.println(" dproto len= " + psize);
       byte[] dp = new byte[psize];
       raf.read(dp);
       NcStreamProto.Data dproto = NcStreamProto.Data.parseFrom(dp);
-      System.out.println(" dproto = " + dproto);
+      if (debug) System.out.println(" dproto = " + dproto);
 
       int dsize = readVInt(raf);
-      System.out.println(" data len= " + dsize);
+      if (debug) System.out.println(" data len= " + dsize);
 
       DataSection dataSection = new DataSection();
       dataSection.size = dsize;
