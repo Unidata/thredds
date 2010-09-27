@@ -5,11 +5,13 @@
     <format property="build.time" pattern="yyyy-MM-dd HH:mm:ss" timezone="GMT"/>
     <format property="build.time.number" pattern="yyyyMMdd.HHmm" timezone="GMT"/>
   </tstamp>
-
-  <property name="release.version" value="4.2"/>
   <!-- TeamCity sets "build.number" property to value of its build counter. -->
   <property name="build.number" value="${build.time.number}" />
+  <property name="build.name" value="${build.number}" />
+
+  <property name="release.version" value="4.2"/>
   <property name="release.version.minor" value="${release.version}.${build.number}"/>
+  <property name="release.dir.name" value="${release.version}.${build.name}"/>
 
   <!-- Load environment and user properties. -->
   <property environment="env"/>
@@ -32,8 +34,10 @@
 
   <property name="uni.ftp.dir" value="O:"/>
   <property name="uni.www.dir" value="Z:"/>
-  <property name="release.dir" value="${uni.ftp.dir}/pub/thredds/${release.version}/"/>
-  <property name="releaseTest.dir" value="${uni.ftp.dir}/pub/thredds/${release.version}/test/"/>
+
+  <property name="release.dir.root" value="${uni.ftp.dir}/pub/thredds/${release.version}" />
+  <property name="release.dir" value="${release.dir.root}/${release.dir.name}" />
+  <property name="releaseSnapshot.dir" value="${release.dir.root}/snapshot/${release.dir.name}" />
 
   <!-- Information about the servlet context and such. -->
   <property name="context.name" value="thredds"/>
@@ -290,12 +294,14 @@
 
   </target>
 
+  <property name="readme.file" value="${war.dir}/docs/README.txt" />
+  <property name="changeLog.file" value="${war.dir}/docs/CHANGES.txt" />
   <!-- build war directory -->
   <target name="war-setup" depends="compile, compile-war-extra" description="create a distribution">
 
     <!-- create README file with time and version -->
     <mkdir dir="${war.dir}"/>
-    <copy file="README.TEMPLATE" tofile="${war.dir}/docs/README.txt" overwrite="true">
+    <copy file="README.TEMPLATE" tofile="${readme.file}" overwrite="true">
       <filterset>
         <filter token="BUILDTIME" value="${build.time}"/>
         <filter token="VERSION" value="${release.version.minor}"/>
@@ -303,7 +309,7 @@
       </filterset>
     </copy>
 
-    <copy file="CHANGES.txt" tofile="${war.dir}/docs/CHANGES.txt" overwrite="true">
+    <copy file="CHANGES.txt" tofile="${changeLog.file}" overwrite="true">
       <filterset>
         <filter token="BUILDTIME" value="${build.time}"/>
         <filter token="VERSION" value="${release.version}"/>
@@ -767,23 +773,34 @@
     <stop url="${server_url}/manager" username="${username}" password="${tomcat.password}" path="${contextPath}"/>
   </target>
 
-  <!-- release war file -->
-  <target name="release" description="Release war files to release directory: do 'ant makeWar' first">
-    <copy todir="${release.dir}" overwrite="true">
-      <fileset dir="${build.dir}" includes="${warfile}"/>
-    </copy>
-    <copy todir="${release.dir}" overwrite="true">
-      <fileset file="${war.dir}/docs/CHANGES.txt"/>
-    </copy>
+  <!-- Clean, make source, make war, make checksums, and copy to release directory on FTP site. -->
+  <target name="cleanRelease" depends="makeSrcAndWar"
+          description="Copy README, CHANGES.txt, source jar and war file to release directory.">
+    <antcall target="doNotUseDirectly-release">
+      <param name="target.release.directory" value="${release.dir}" />
+    </antcall>
   </target>
 
-  <!-- release war file to test directory -->
-  <target name="releaseTest" description="Release war files to releaseTest directory: do 'ant makeWar' first">
-    <copy todir="${releaseTest.dir}" overwrite="true">
-      <fileset dir="${build.dir}" includes="${warfile}"/>
-    </copy>
-    <copy todir="${releaseTest.dir}" overwrite="true">
-      <fileset file="${war.dir}/docs/CHANGES.txt"/>
+  <!-- Clean, make source, make war, make checksums, and copy to snapshot directory on FTP site. -->
+  <target name="cleanReleaseSnapshot" depends="makeSrcAndWar">
+    <antcall target="doNotUseDirectly-release">
+      <param name="target.release.directory" value="${releaseSnapshot.dir}" />
+    </antcall>
+  </target>
+  
+  <target name="doNotUseDirectly-release">
+    <!-- Set default target directory. -->
+    <property name="target.release.directory" value="${user.home}/temp.tdsReleaseTestDir/${release.dir.name}" />
+    <mkdir dir="${target.release.directory}" />
+    <copy todir="${target.release.directory}" overwrite="true">
+      <fileset file="${readme.file}" />
+      <fileset file="${changeLog.file}" />
+      <fileset dir="${build.dir}">
+        <include name="${warfile}" />
+        <include name="${warfile}.MD5" />
+        <include name="${tdsSrcRelease.jar}" />
+        <include name="${tdsSrcRelease.jar}.MD5" />
+      </fileset>
     </copy>
   </target>
 
