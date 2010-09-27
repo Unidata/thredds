@@ -23,6 +23,7 @@
   <li><a href="#proxyServerAndGeneratedURLs">My TDS server is behind a proxy server.
     Why do some TDS generated URLs point to my TDS server instead of my proxy server?</a></li>
 
+  <li><a href="#JoinExisting">I have modified my configuration of a JoinExisting Aggregation dataset, but nothing has changed.</a></li>
 </ul>
 <h2>Tomcat</h2>
 <ul>
@@ -128,6 +129,13 @@
     mod_proxy.</p>
 </blockquote>
 
+<hr width="50%" align="left">
+<h4><a name="JoinExisting"></a><a>Q: I have modified my configuration of a JoinExisting Aggregation</a> dataset, but nothing has changed.</h4>
+<blockquote>
+  <p> The files and coordinates in a JoinExisting Aggregations are cached, and   in some circumstances wont get updated. The default location for the   cache is <strong>${tomcat_home}/content/thredds/cacheAged/</strong> unless you change it   in the<a href="reference/ThreddsConfigXMLFile.html#AggregationCache"> threddsConfig.xml </a>file.
+Go to that directory, there will be files with the name of the cached   dataset(s). Delete the file for the dataset that needs updating and   restart Tomcat.</p>
+  <p>&nbsp;</p>
+</blockquote>
 <hr width="100%">
 <h2>Tomcat<a name="tomcat"></a></h2>
 

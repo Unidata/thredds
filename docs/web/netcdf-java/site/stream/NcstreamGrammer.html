@@ -47,7 +47,7 @@ primitives:
 <p><strong>Variable length types (String, Opaque): </strong>First the number of objects is written, then each object, preceeded by its length in bytes as a vlen. Strings are encoded as UTF-8 bytes. Opaque is just a bag of bytes. <em>what about vlen? eg int (3, *) ??</em></p>
 <p><strong>Structure types (Structure, Sequence): </strong>An array of StructureData. Can be encoded in row or col (?). <em>What about vlens ??</em></p>
 <p>Should have a way to efficiently encode sparse data. Look at Bigtable/hBase.</p>
-<h2>Ncstream Dataset</h2>
+<h2>Ncstream Dataset (Incomplete)</h2>
 <p>A <em><strong>ncstream dataset </strong></em> can be stored in a file and read  as a CDM dataset. It is an alternate encoding of CDM files. The intention is that these are &quot;write-optimized&quot; append-only files.</p>
 <p>A ncstream dataset starts with MAGIC_START,  followed by a set of messages, followed by MAGIC_END:</p>
 <pre>	ncstreamDataset = MAGIC_START, {message}, MAGIC_END
