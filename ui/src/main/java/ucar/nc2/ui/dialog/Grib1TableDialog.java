@@ -42,6 +42,7 @@ public class Grib1TableDialog extends JDialog {
     okButton = new JButton();
     cancelButton = new JButton();
     action1 = new OkAction();
+    action2 = new cancelAction();
 
     //======== this ========
     setTitle("Get Grib1 Table Used");
@@ -87,25 +88,25 @@ public class Grib1TableDialog extends JDialog {
             .addGroup(GroupLayout.Alignment.TRAILING, contentPanelLayout.createSequentialGroup()
               .addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
                 .addGroup(GroupLayout.Alignment.LEADING, contentPanelLayout.createSequentialGroup()
-                  .addGap(32, 32, 32)
+                  .addContainerGap()
                   .addComponent(label4)
-                  .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                  .addComponent(result, GroupLayout.PREFERRED_SIZE, 148, GroupLayout.PREFERRED_SIZE))
+                  .addGap(18, 18, 18)
+                  .addComponent(result, GroupLayout.DEFAULT_SIZE, 279, Short.MAX_VALUE))
                 .addGroup(contentPanelLayout.createSequentialGroup()
                   .addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.TRAILING)
-                    .addComponent(label3, GroupLayout.Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 124, Short.MAX_VALUE)
-                    .addComponent(label2, GroupLayout.Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 124, Short.MAX_VALUE)
-                    .addComponent(label1, GroupLayout.Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 124, Short.MAX_VALUE))
+                    .addComponent(label3, GroupLayout.Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 182, Short.MAX_VALUE)
+                    .addComponent(label2, GroupLayout.Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 182, Short.MAX_VALUE)
+                    .addComponent(label1, GroupLayout.Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 182, Short.MAX_VALUE))
                   .addGroup(contentPanelLayout.createParallelGroup()
                     .addGroup(contentPanelLayout.createSequentialGroup()
                       .addGap(12, 12, 12)
                       .addGroup(contentPanelLayout.createParallelGroup()
-                        .addComponent(version, GroupLayout.DEFAULT_SIZE, 111, Short.MAX_VALUE)
-                        .addComponent(subcenter, GroupLayout.DEFAULT_SIZE, 111, Short.MAX_VALUE)))
+                        .addComponent(version, GroupLayout.DEFAULT_SIZE, 170, Short.MAX_VALUE)
+                        .addComponent(subcenter, GroupLayout.DEFAULT_SIZE, 170, Short.MAX_VALUE)))
                     .addGroup(contentPanelLayout.createSequentialGroup()
                       .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
-                      .addComponent(center, GroupLayout.DEFAULT_SIZE, 111, Short.MAX_VALUE)))))
-              .addGap(123, 123, 123))
+                      .addComponent(center, GroupLayout.DEFAULT_SIZE, 170, Short.MAX_VALUE)))))
+              .addContainerGap())
         );
         contentPanelLayout.setVerticalGroup(
           contentPanelLayout.createParallelGroup()
@@ -126,12 +127,12 @@ public class Grib1TableDialog extends JDialog {
                   .addComponent(version, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
               .addGap(42, 42, 42)
               .addGroup(contentPanelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                .addComponent(label4)
-                .addComponent(result, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                .addComponent(result, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                .addComponent(label4))
               .addContainerGap(117, Short.MAX_VALUE))
         );
       }
-      dialogPane.add(contentPanel, BorderLayout.WEST);
+      dialogPane.add(contentPanel, BorderLayout.EAST);
 
       //======== buttonBar ========
       {
@@ -141,7 +142,7 @@ public class Grib1TableDialog extends JDialog {
         okButton.setAction(action1);
 
         //---- cancelButton ----
-        cancelButton.setText("Cancel");
+        cancelButton.setAction(action2);
 
         GroupLayout buttonBarLayout = new GroupLayout(buttonBar);
         buttonBar.setLayout(buttonBarLayout);
@@ -150,13 +151,16 @@ public class Grib1TableDialog extends JDialog {
             .addGroup(buttonBarLayout.createSequentialGroup()
               .addGap(214, 214, 214)
               .addComponent(okButton, GroupLayout.PREFERRED_SIZE, 75, GroupLayout.PREFERRED_SIZE)
-              .addGap(6, 6, 6)
-              .addComponent(cancelButton, GroupLayout.PREFERRED_SIZE, 75, GroupLayout.PREFERRED_SIZE))
+              .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+              .addComponent(cancelButton, GroupLayout.PREFERRED_SIZE, 75, GroupLayout.PREFERRED_SIZE)
+              .addContainerGap())
         );
         buttonBarLayout.setVerticalGroup(
           buttonBarLayout.createParallelGroup()
             .addComponent(okButton)
-            .addComponent(cancelButton)
+            .addGroup(buttonBarLayout.createSequentialGroup()
+              .addComponent(cancelButton, GroupLayout.DEFAULT_SIZE, 19, Short.MAX_VALUE)
+              .addContainerGap())
         );
       }
       dialogPane.add(buttonBar, BorderLayout.SOUTH);
@@ -183,6 +187,7 @@ public class Grib1TableDialog extends JDialog {
   private JButton okButton;
   private JButton cancelButton;
   private OkAction action1;
+  private cancelAction action2;
   // JFormDesigner - End of variables declaration  //GEN-END:variables
 
   private class OkAction extends AbstractAction {
@@ -202,11 +207,24 @@ public class Grib1TableDialog extends JDialog {
         if (t == null)
           result.setText("NOT FOUND");
         else
-          result.setText(t.getCenter_id()+" "+t.getSubcenter_id()+" "+t.getTable_number());
+          result.setText(t.getCenter_id()+" "+t.getSubcenter_id()+" "+t.getTable_number()+": "+t.getFilename());
 
       } catch (Exception ee) {
 
       }
+    }
+  }
+
+  private class cancelAction extends AbstractAction {
+    private cancelAction() {
+      // JFormDesigner - Action initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
+      // Generated using JFormDesigner non-commercial license
+      putValue(NAME, "Cancel");
+      // JFormDesigner - End of action initialization  //GEN-END:initComponents
+    }
+
+    public void actionPerformed(ActionEvent e) {
+      setVisible(false);
     }
   }
 }

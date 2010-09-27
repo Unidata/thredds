@@ -7,7 +7,6 @@
 pre {font-size: 9pt; padding: 10px; background-color: #E7E7E7; border: 1px solid #CFCFCF; width: 85%;}
 code {font-size: 11pt;}
 dl {margin: 10px 5px 5px 15px;}
-.style1 {font-style: italic}
 </style>
 </head>
 
@@ -20,11 +19,13 @@ dl {margin: 10px 5px 5px 15px;}
   <ul>
     <li> <a name="optionalLibraries" id="optionalLibraries"></a>Reading BUFR files: <strong>bufrTables.jar</strong>,<strong> jdom.jar</strong></li>
     <li>Reading GRIB files: <strong>grib.jar</strong></li>
-    <li>Reading OPeNDAP: <strong>opendap.jar, jdom.jar, commons-httpclient.jar, commons-logging.jar, commons-codec.jar. </strong>Note that we have a special release of the OPeNDAP-Java library.</li>
+    <li>Reading OPeNDAP: <strong>opendap.jar, jdom.jar, commons-httpclient.jar, commons-logging.jar, commons-codec.jar. </strong></li>
     <li>Reading remote files over HTTP: <strong>commons-httpclient.jar, commons-logging.jar, commons-codec.jar</strong></li>
     <li>Reading THREDDS catalogs, NcML, BUFR, HDF-EOS, NEXRAD2, OPeNDAP: <strong>jdom.jar</strong></li>
     <li>Reading McIDAS AREA files: <strong>visadNoDods.jar</strong></li>
     <li>Using aggregations: <strong>je-4.0.17.jar</strong> (Berkely DB, Java Edition)</li>
+    <li>Object caching:<strong> ehcache.jar</strong></li>
+    <li>ncstream, cdmRemote: <strong>protobuf.jar</strong></li>
   </ul>
 </blockquote>
 <h3><strong>CDM Complete Library: netcdfAll-{version}.jar</strong></h3>
@@ -59,7 +60,7 @@ dl {margin: 10px 5px 5px 15px;}
    <p>The <strong>netcdfUI.jar</strong> has the full CDM model along with the UI classes,  unbundled from the other jar dependencies, including logging. Use it in a GUI application when you need to choose which other jars to use. Get the current version of the other jar files in netcdfAll.zip. Choose a <a href="#logging">logging implementation</a>, add <a href="#optionalLibraries">optional libraries</a>, as well as  the following optional libraries to your classpath:</p>
    <ul>
      <li>   <a href="http://www.jgoodies.com/">jgoodies</a> form library: <strong>forms.jar</strong></li>
-     <li>Catalog searching: <strong>lucene.jar</strong></li>
+     <li><a href="http://www.formdev.com/">JFormDesigner</a>: <strong>bounce.jar</strong></li>
      <li>       GUI resources: <strong>resourcesOptional.jar</strong></li>
      <li><a href="http://www.springsource.org/">Spring</a> framework: <strong>spring.jar</strong><br>
  </li>
@@ -100,15 +101,13 @@ lm.readConfiguration(<a href="http://java.sun.com/j2se/1.4.2/docs/api/java/io/In
   <li><strong>bufrTables.jar: </strong>These are BUFR tables only (no source)</li>
   <li><strong> commons-httpclient.jar, commons-logging.jar, commons-codec.jar: </strong><a href="http://hc.apache.org/httpclient-3.x/">Apache Commons</a></li>
   <li><strong><a href="http://www.jdom.org/downloads/source.html"> jdom.jar</a></strong></li>
-  <li><strong>grib.jar</strong>: Also includes GRIB tables. Add to CDM source tree.</li>
-  <li><strong>opendap.jar</strong> </li>
-  <li><strong><a href="ftp://ftp.ssec.wisc.edu/pub/visad-2.0/visad_src-2.0.jar">visadNoDods.jar</a></strong> Note we remove opendap.* and gnu* from standard visad release, since these are in conflict with our version.</li>
+  <li><strong><a href="ftp://ftp.ssec.wisc.edu/pub/visad-2.0/visad_src-2.0.jar">visadNoDods.jar</a></strong> Note we remove opendap.* and gnu* from the standard visad release, since these are in conflict with our versions.</li>
 </ul>
 <hr width="100%" />
 <address>
 </address>
 <address>
-<img src="../nc.gif" alt="" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated May 2010
+<img src="../nc.gif" alt="" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated Sep 2010
 </address>
 </body>
 </html>

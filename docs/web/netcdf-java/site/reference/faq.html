@@ -142,11 +142,12 @@ dl {margin: 10px 5px 5px 15px;)
 <p><strong>Q: What about writing NetCDF-4<a name="netcdf4" id="netcdf4"></a> format?</strong></p>
 <blockquote>
   <p>NetCDF-4 format is built on top of the <a href="http://www.hdfgroup.org/HDF5/">HDF5 file format</a>. It adds shared dimensions, so it is unfortunately not a strict subset of HDF5. HDF5 is a very complicated format, and at this time we do not have resources to write a 100% Java version for writing (we do have a 100% Java version for reading). We are considering a <a href="http://en.wikipedia.org/wiki/Java_Native_Interface">JNI</a> interface to the NetCDF-4 C library, but there is no current timeline for that. So for now, you can only use the <a href="http://www.unidata.ucar.edu/software/netcdf/">NetCDF-4 C library</a> to write NetCDF-4 format files.</p>
+  <p>You might want to have a look at <a href="http://www.ral.ucar.edu/~steves/nujan.html">Nujan</a>.</p>
 </blockquote>
 <p><strong>Q: Can I stream a NetcdfFile object to a client?</strong></p>
 <blockquote>
-  <p> NetCDF is a random access format, so streaming is not always possible. The standard way to do this is to write to a disk file  (so that you have random access), using <strong>ucar.nc2.FileWriter</strong>, then copy the file to the client. Note  that you must stay within the &quot;classic model&quot; to write  a netCDF-3 file.</p>
-  <p>There are  experimental classes based on <strong>ucar.nc2.iosp.netcdf3.N3streamWriter</strong>, but these  shouldnt be used in production without extensive testing. If you want to experiment, <strong>ucar.nc2.ft.point.writer.WriterCFPointObsDataset</strong> is an example class that uses  stream writing. <em>Stream writing is experimental and the APIs may change or be withdrawn in  future releases.</em></p>
+  <p>NetCDF is a random access format, so streaming is not always possible. The standard way to do this is to write to a disk file  (so that you have random access), using <strong>ucar.nc2.FileWriter</strong>, then copy the file to the client. Note  that you must stay within the &quot;classic model&quot; to write  a netCDF-3 file.</p>
+  <p>We are working on an experimental streaming format for NetCDF, called <a href="../stream/NcStream.html">ncstream</a>, and a remote access protocol called <a href="../stream/CdmRemote.html">CdmRemote</a>. These are fully functional as of CDM version 4.2, but are still evolving and should only be used if you can tolerate them changing.</p>
 </blockquote>
 <p><strong>Q: <a name="writeGuide" id="writeGuide"></a>What kind of information should I put into my netCDF file to help others read it? </strong></p>
 <blockquote>
@@ -159,7 +160,7 @@ dl {margin: 10px 5px 5px 15px;)
 </blockquote>
 <hr />
 <address>
-<img src="../nc.gif" alt="" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Oct 13, 2009
+<img src="../nc.gif" alt="" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated Sep 2010
 </address>
 </body>
 </html>

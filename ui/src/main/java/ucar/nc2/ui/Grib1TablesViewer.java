@@ -86,11 +86,6 @@ public class Grib1TablesViewer extends JPanel {
       public void actionPerformed(ActionEvent e) {
         if (dialog == null) {
           dialog = new Grib1TableDialog( (Frame) null);
-          dialog.addPropertyChangeListener("CANCEL", new PropertyChangeListener() {
-            public void propertyChange(PropertyChangeEvent evt) {
-              dialog.setVisible(false);
-            }
-          });
           dialog.pack();
         }
         dialog.setVisible(true);

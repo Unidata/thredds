@@ -4,6 +4,7 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.2:
  7: (2010-xx-xx)
+  ToolsUI : Grib1 Tables Viewer
   special hack for avhrr OI-V2 files, need zlev to be recognized as HEIGHT coord
   cdmremote works for full netcdf-4 data model
   FeatureDataset inner and outer Ncml
