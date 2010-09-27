@@ -46,6 +46,7 @@ public final class DArrayDimension implements Cloneable, java.io.Serializable {
     static final long serialVersionUID = 1;
 
     private String name;
+    private String nameEncoded;
     private int size;
     private int start;
     private int stride;
@@ -109,6 +110,7 @@ public final class DArrayDimension implements Cloneable, java.io.Serializable {
      */
     public void setName(String name) {
         this.name = EscapeStrings.www2id(name);
+	this.nameEncoded = name;
     }
 
     /**
@@ -123,6 +125,7 @@ public final class DArrayDimension implements Cloneable, java.io.Serializable {
      */
     public void setClearName(String name) {
         this.name = name;
+	this.nameEncoded = EscapeStrings.id2www(name);
     }
 
     /**

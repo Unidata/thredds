@@ -1775,8 +1775,9 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
       throw new IllegalStateException("File is unlocked - cannot use\n"+info);
     }
 
-    if (spi == null)
-      System.out.println("HEY missing spi");
+    if (spi == null) {
+      throw new IOException("HEY: missing spi: "+v.getName());
+    }
     Array result = spi.readData(v, ranges);
     result.setUnsigned(v.isUnsigned());
     return result;

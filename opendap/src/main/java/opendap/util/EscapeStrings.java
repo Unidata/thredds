@@ -95,17 +95,14 @@ public class EscapeStrings {
 
         }
 
-        if (Debug.isSet("EscapeStrings.normalizeToXML"))
-            System.out.println("String: `" + s + "` normalized to: `" + sb + "`");
-
         return (sb.toString());
 
     }
 
 
     // May need to include/exclude the escape character!
-    private static char[] _allowableInURI = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-+_/.\\*".toCharArray();
-    private static char[] _allowableInURI_CE = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-+_/.\\,".toCharArray();
+    private static String _allowableInURI = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-+_/.\\*";
+    private static String _allowableInURI_CE = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-+_/.\\,";
     private static char _URIEscape = '%';
 
     /**
@@ -152,35 +149,26 @@ public class EscapeStrings {
      * @param esc       The escape String (typically "%" for a URI or "\" for a regular expression).
      * @return The modified identifier.
      */
-    public static String escapeString(String in, char[] allowable, char esc) throws Exception {
+    public static String escapeString(String in, String allowable, char esc) throws Exception {
         String out = "";
 
 
         if (in == null) return null;
 
-        if (isEscAllowed(allowable, esc)) {
+        if (allowable.indexOf(esc) >= 0) {//isEscAllowed(allowable, esc)) 
             throw new Exception("Escape character MAY NOT be in the list of allowed characters!");
         }
-
 
         char[] inca = in.toCharArray();
         String c;
 
         boolean isAllowed;
         for (char candidate : inca) {
-            isAllowed = false;
-            for (char allowed : allowable) {
-                if (candidate == allowed)
-                    isAllowed = true;
-            }
+            isAllowed = allowable.indexOf(candidate) >= 0;
             if (isAllowed) {
-                if (Debug.isSet("EscapeStrings.escapeString"))
-                    System.out.println("candidate: " + candidate + "(" + ((int) candidate) + ")     Integer.toHexString(): " + Integer.toHexString(candidate));
                 out += candidate;
             } else {
                 c = Integer.toHexString(candidate);
-                if (Debug.isSet("EscapeStrings.escapeString"))
-                    System.out.println("candidate: " + candidate + "(" + ((int) candidate) + ")     Integer.toHexString(): " + c);
                 if (c.length() < 2)
                     c = "0" + c;
                 out += esc + c;
@@ -190,15 +178,6 @@ public class EscapeStrings {
 
         return out;
 
-    }
-
-    private static boolean isEscAllowed(char[] allowable, char esc) {
-
-        for (char allowed : allowable) {
-            if (esc == allowed)
-                return true;
-        }
-        return false;
     }
 
     /**
@@ -239,9 +218,6 @@ public class EscapeStrings {
      * @return The modified string.
      */
     public static String unescapeString(String in, char escape, String except) {
-        if (Debug.isSet("EscapeStrings.unescapeString"))
-            System.out.println("string: \"" + in + "\" length: " + in.length());
-
         if (in == null) return null;
 
         String esc = String.valueOf(escape);
@@ -251,12 +227,7 @@ public class EscapeStrings {
 
             String candidate = out.substring(i, i + 3);
 
-            if (Debug.isSet("EscapeStrings.unescapeString"))
-                System.out.println("index: " + i + "  candidate: " + candidate);
-
             if (candidate.equals(except)) {
-                if (Debug.isSet("EscapeStrings.unescapeString"))
-                    System.out.println("candiate equals excepted string, not replaced");
                 i += 3;
 
             } else {
@@ -271,7 +242,6 @@ public class EscapeStrings {
                 if (replacement.equals(esc))
                     i++;
 
-                if (Debug.isSet("EscapeStrings.unescapeString")) System.out.println("replacement: " + replacement);
             }
         }
 
@@ -315,9 +285,6 @@ public class EscapeStrings {
 
 
     public static void main(String[] args) throws Exception {
-
-        Debug.set("EscapeStrings.escapeString", false);
-        Debug.set("EscapeStrings.unescapeString", false);
 
         if (args.length > 0) {
             for (String s : args) {

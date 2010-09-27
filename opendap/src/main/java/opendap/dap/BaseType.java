@@ -63,6 +63,10 @@ public abstract class BaseType implements Cloneable, Serializable {
      * The name of this variable.
      */
     private String _name;
+    /**
+     * The name of this variable encoded
+     */
+    private String _nameEncoded;
 
     /**
      * The parent (container class) of this object, if one exists
@@ -103,9 +107,9 @@ public abstract class BaseType implements Cloneable, Serializable {
 
         if (decodeName)
             _name = EscapeStrings.www2id(n);
-        else
+        else 
             _name = n;
-
+        _nameEncoded = EscapeStrings.www2id(_name);
 
         _myParent = null;
         _attrTbl = new AttributeTable(_name);
@@ -148,7 +152,7 @@ public abstract class BaseType implements Cloneable, Serializable {
      * @return the name of the class instance.
      */
     public final String getName() {
-        return EscapeStrings.id2www(_name);
+        return _nameEncoded;
     }
 
     /**
@@ -171,6 +175,7 @@ public abstract class BaseType implements Cloneable, Serializable {
         _name = n;
         _attr.setClearName(n);
         _attrTbl.setClearName(n);
+        _nameEncoded = EscapeStrings.id2www(n);
     }
 
     /**

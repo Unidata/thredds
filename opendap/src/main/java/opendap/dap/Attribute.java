@@ -124,6 +124,7 @@ public class Attribute implements Cloneable, Serializable {
    * The name of the attribute.
    */
   private String name;
+  private String nameEncoded;
 
   /**
    * Either an AttributeTable or a Vector of String.
@@ -329,13 +330,14 @@ public class Attribute implements Cloneable, Serializable {
    * @return the attribute name.
    */
   public String getName() {
-    return EscapeStrings.id2www(name);
+    return nameEncoded;
   }
 
   /**
    * Sets the attribute's name.
    */
   public void setName(String n) {
+    nameEncoded = n;
     setClearName(EscapeStrings.www2id(n));
   }
 
@@ -353,6 +355,7 @@ public class Attribute implements Cloneable, Serializable {
    */
   public void setClearName(String n) {
     name = n;
+    nameEncoded = EscapeStrings.id2www(n);
   }
 
   /**
