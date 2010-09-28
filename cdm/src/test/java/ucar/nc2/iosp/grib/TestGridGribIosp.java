@@ -54,25 +54,25 @@ import junit.framework.TestCase;
 
 public class TestGridGribIosp extends TestCase {
 
-    public TestGridGribIosp(String name) {
-      super(name);
+  public TestGridGribIosp(String name) {
+    super(name);
+  }
+
+  public void testCompare() throws IOException {
+    File where = new File("C:/data/grib/idd");
+    if (where.exists()) {
+      String[] args = new String[1];
+      args[0] = "C:/data/grib/idd";
+      doAll(args);
+    } else {
+      doAll(null);
     }
+  }
 
-    public void testCompare() throws IOException {
-      File where = new File("C:/data/grib/idd");
-      if( where.exists() ) {
-        String[] args = new String[ 1 ];
-        args[ 0 ] = "C:/data/grib/idd";
-        doAll( args );
-      } else {
-        doAll( null );
-      }
-    }
+  void compareNC(String fileBinary, String fileText) throws IOException {
 
-    void compareNC(String fileBinary, String fileText) throws IOException {
+    long start = System.currentTimeMillis();
 
-    long start = System.currentTimeMillis() ;
- 
     Class c = ucar.nc2.iosp.grib.GribGridServiceProvider.class;
     IOServiceProvider spiB = null;
     try {
@@ -87,7 +87,7 @@ public class TestGridGribIosp extends TestCase {
     NetcdfFile ncfileBinary = new NetcdfFileSPI(spiB, rafB, fileBinary, null);
     //System.out.println( "Time to create Netcdf object using GridGrib Iosp "+
     //  (System.currentTimeMillis() - start) );
-    System.out.println( "Binary Netcdf created" );
+    System.out.println("Binary Netcdf created");
 
     start = System.currentTimeMillis();
 
@@ -103,28 +103,28 @@ public class TestGridGribIosp extends TestCase {
     rafT.order(ucar.unidata.io.RandomAccessFile.BIG_ENDIAN);
     NetcdfFile ncfileText = new NetcdfFileSPI(spiT, rafT, fileText, null);
 
-    System.out.println( "Text Netcdf created" );
+    System.out.println("Text Netcdf created");
 
-      //System.out.println( "Time to create Netcdf object using Grid1 Grib2 Iosp "+
+    //System.out.println( "Time to create Netcdf object using Grid1 Grib2 Iosp "+
     //  (System.currentTimeMillis() - start) );
     // org,  copy,  _compareData,  _showCompare,  _showEach
     //ucar.nc2.TestCompare.compareFiles(ncfileBinary, ncfileText, true, true, true);
-     CompareNetcdf.compareFiles(ncfileBinary, ncfileText, false, true, false);
-     ncfileBinary.close();
-     ncfileText.close();
+    CompareNetcdf.compareFiles(ncfileBinary, ncfileText, false, true, false);
+    ncfileBinary.close();
+    ncfileText.close();
   }
 
   void doAll(String args[]) throws IOException {
 
     String dirB1, dirB2;
-    if ( args == null || args.length < 1 ) {
-      dirB1 = TestAll.testdataDir +"test/motherlode/grid/grib/binary";
-      dirB2 = TestAll.testdataDir +"test/motherlode/grid/grib/text";
+    if (args == null || args.length < 1) {
+      dirB1 = TestAll.testdataDir + "test/motherlode/grid/grib/binary";
+      dirB2 = TestAll.testdataDir + "test/motherlode/grid/grib/text";
     } else {
-      dirB1 = args[ 0 ] +"/binary";
-      dirB2 = args[ 0 ] +"/text";
+      dirB1 = args[0] + "/binary";
+      dirB2 = args[0] + "/text";
     }
-    File dir = new File( dirB1 );
+    File dir = new File(dirB1);
     if (dir.isDirectory()) {
       System.out.println("In directory " + dir.getParent() + "/" + dir.getName());
       String[] children = dir.list();
@@ -135,22 +135,22 @@ public class TestGridGribIosp extends TestCase {
         if (aChild.isDirectory()) {
           // skip index *gbx and inventory *xml files
         } else if (
-            child.contains( "ECMWF") ||
-            child.contains( "1p25") ||
-            child.contains( "OCEAN") ||  
-            child.contains( "SPECTRAL") ||  
-            child.contains( "SST") ||  
-            child.contains( "ukm") ||  
-            child.contains( "UKM") ||  
-            child.contains( "Ensemble") || // Generating Process ID are Strings
-            child.endsWith("gbx") ||
-            child.endsWith("gbx8") ||
-            child.endsWith("xml") ||
-            child.endsWith("tmp") || //index in creation process
-            child.length() == 0) { // zero length file, ugh...
+                child.contains("ECMWF") ||
+                        child.contains("1p25") ||
+                        child.contains("OCEAN") ||
+                        child.contains("SPECTRAL") ||
+                        child.contains("SST") ||
+                        child.contains("ukm") ||
+                        child.contains("UKM") ||
+                        child.contains("Ensemble") || // Generating Process ID are Strings
+                        child.endsWith("gbx") ||
+                        child.endsWith("gbx8") ||
+                        child.endsWith("xml") ||
+                        child.endsWith("tmp") || //index in creation process
+                        child.length() == 0) { // zero length file, ugh...
         } else {
-          System.out.println( "\n\nComparing File "+ child );
-          compareNC( dirB1 +"/"+ child, dirB2 +"/"+ child);
+          System.out.println("\n\nComparing File " + child);
+          compareNC(dirB1 + "/" + child, dirB2 + "/" + child);
         }
       }
     } else {
@@ -164,7 +164,7 @@ public class TestGridGribIosp extends TestCase {
   }
 
   static public void main(String args[]) throws IOException {
-    TestGridGribIosp ggi = new TestGridGribIosp( "" );
+    TestGridGribIosp ggi = new TestGridGribIosp("");
     ggi.testCompare();
   }
 }

@@ -3,6 +3,11 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Changes in version 4.2:
+ 8: (2010-xx-xx)
+  opendap performance improvements (~36% on opening dataset)
+  Grib1: add table 7-4-128
+  Grib1 Time Range Indicator 123, 124
+  ToolsUI PointFeature: remove structure hashCode in column 0
  7: (2010-09-27)
   ToolsUI : Grib1 Tables Viewer
   special hack for avhrr OI-V2 files, need zlev to be recognized as HEIGHT coord

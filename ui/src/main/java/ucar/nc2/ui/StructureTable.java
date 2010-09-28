@@ -203,7 +203,6 @@ public class StructureTable extends JPanel {
   public void setPointFeatureData(List<PointFeature> obsData) throws IOException {
     dataModel = new PointFeatureDataModel(obsData);
     initTable(dataModel);
-    //jtable.getColumnModel().getColumn(0).setCellRenderer(new DateRenderer());
   }
 
   private void initTable(StructureTableModel m) {
@@ -407,29 +406,19 @@ public class StructureTable extends JPanel {
 
     public int getColumnCount() {
       if (members == null) return 0;
-      return members.getMembers().size() + (wantDate ? 2 : 0) + 1;
+      return members.getMembers().size() + (wantDate ? 2 : 0);
     }
 
     public String getColumnName(int columnIndex) {
-      if (columnIndex == 0)
-        return "hash";
-      if (wantDate && (columnIndex == 1))
+     // if (columnIndex == 0)
+     //   return "hash";
+      if (wantDate && (columnIndex == 0))
         return "obsDate";
-      if (wantDate && (columnIndex == 2))
+      if (wantDate && (columnIndex == 1))
         return "nomDate";
-      int memberCol = wantDate ? columnIndex - 3 : columnIndex - 1;
+      int memberCol = wantDate ? columnIndex - 2 : columnIndex;
       return members.getMember(memberCol).getName();
     }
-
-   /* public String getColumnDesc(int columnIndex) {
-      if (wantDate && (columnIndex == 0))
-        return "Date of observation";
-      if (wantDate && (columnIndex == 1))
-        return "Nominal Date of collection";
-      int memberCol = wantDate ? columnIndex - 2 : columnIndex;
-      StructureMembers.Member m = members.getMember(memberCol);
-      return m.getUnitsString();
-    }  */
 
      // get row data if in the cache, otherwise read it
     public StructureData getStructureDataHash(int row) throws InvalidRangeException, IOException {
@@ -442,16 +431,16 @@ public class StructureTable extends JPanel {
     }
 
     public Object getValueAt(int row, int column) {
-      if (column == 0) {
+      /* if (column == 0) {
         try {
           return Long.toHexString( getStructureData(row).hashCode());
         } catch (Exception e) {
           return "ERROR";
         }
-      }
-      if (wantDate && (column == 1))
+      } */
+      if (wantDate && (column == 0))
         return getObsDate(row);
-      if (wantDate && (column == 2))
+      if (wantDate && (column == 1))
         return getNomDate(row);
 
       StructureData sd;
@@ -556,14 +545,14 @@ public class StructureTable extends JPanel {
     public Object getValueAt(int row, int column) {
       StructureData sd = sdataList.get(row);
 
-      if (column == 0) {
+      /* if (column == 0) {
         try {
           return Long.toHexString( sd.hashCode());
         } catch (Exception e) {
           return "ERROR";
         }
-      }
-      return sd.getScalarObject( sd.getStructureMembers().getMember( column-1));
+      } */
+      return sd.getScalarObject( sd.getStructureMembers().getMember( column));
     }
 
     public void clear() {

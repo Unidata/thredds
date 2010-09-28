@@ -374,9 +374,12 @@ public final class Grib1Pds extends GribPds {
       case 113:
         return getP1();
 
+      case 123:
+      case 124:
+        return 0;
+
       default:
-        log.error("PDS: Time Range Indicator "
-                + getTimeRangeIndicator() + " is not yet supported");
+        log.error("PDS: Time Range Indicator " + getTimeRangeIndicator() + " is not yet supported");
     }
     return GribNumbers.UNDEFINED;
   }

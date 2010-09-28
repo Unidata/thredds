@@ -250,7 +250,7 @@ public class GribRawPanel extends JPanel {
       public void actionPerformed(ActionEvent e) {
         Grib1RecordBean bean = (Grib1RecordBean) record1BeanTable.getSelectedBean();
         if (bean != null) {
-          infoPopup2.setText(bean.gr.toString());
+          infoPopup2.setText(bean.toProcessedString());
           infoPopup2.gotoTop();
           infoWindow2.showIfNotIconified();
         }
@@ -483,8 +483,6 @@ public class GribRawPanel extends JPanel {
 
     java.util.List<Grib2ParameterBean> products = new ArrayList<Grib2ParameterBean>();
     for (Grib2Record gr : reader.getRecords()) {
-      if (gr.getPdsOffset() == 4265983L)
-        System.out.println("HEY");
       Grib2ProductDefinitionSection pds = gr.getPDS();
       int discipline = gr.getIs().getDiscipline();
       Grib2ParameterBean bean = pdsSet.get(makeUniqueId(pds, discipline));
@@ -584,26 +582,12 @@ public class GribRawPanel extends JPanel {
       f.format(" %d-%d", rb.getStartInterval(), rb.getEndInterval());
   }  */
 
-  private void showRawPds(GribGridRecord ggr, Formatter f) {
-    if (ggr.getEdition() == 1) {
-      Grib1Dump.printPDS((Grib1Pds) ggr.getPds(), f);
-      byte[] raw = ggr.getPds().getPDSBytes();
-      f.format("%n");
-      for (int i = 28; i < raw.length; i++) {
-        f.format(" %3d : %3d%n", i + 1, raw[i]);
-      }
-      return;
+  private void showRawPds(Grib1Pds pds, Formatter f) {
+    byte[] raw = pds.getPDSBytes();
+    f.format("%n");
+    for (int i = 0; i < raw.length; i++) {
+      f.format(" %3d : %3d%n", i + 1, raw[i]);
     }
-
-    Grib2Pds pds2 = (Grib2Pds) ggr.getPds();
-    int template = pds2.getProductDefinitionTemplate();
-
-    byte[] raw = ggr.getPds().getPDSBytes();
-    if (raw == null) {
-      f.format("PDS bytes not available template=%d%n", template);
-      return;
-    }
-    showRawPds("3."+template, raw, f);
   }
 
   private void showRawPds(String key, byte[] raw, Formatter f) {
@@ -1036,13 +1020,13 @@ public class GribRawPanel extends JPanel {
 
     public String toRawString() {
       Formatter f = new Formatter();
-      // showRawPds(pds, f);
+      showRawPds(pdsv, f);
       return f.toString();
     }
 
     public String toProcessedString() {
       Formatter f = new Formatter();
-      // showProcessedPds(pds, discipline, f);
+      Grib1Dump.printPDS(pdsv, f);
       return f.toString();
     }
 
@@ -1103,6 +1087,11 @@ public class GribRawPanel extends JPanel {
       if (interval == null) interval = new int[] {0,0};
     }
 
+
+    public String getHeader() {
+      return gr.getHeader();
+    }
+
     public final String getTimeUnit() {
       int unit = pdsv.getTimeUnit();
       return Grib2Tables.codeTable4_4(unit);
@@ -1159,13 +1148,13 @@ public class GribRawPanel extends JPanel {
 
     public String toRawString() {
       Formatter f = new Formatter();
-      // showRawPds(pds, f);
+      showRawPds(pdsv, f);
       return f.toString();
     }
 
     public String toProcessedString() {
       Formatter f = new Formatter();
-      // showProcessedPds(pds, discipline, f);
+      Grib1Dump.printPDS(pdsv, f);
       return f.toString();
     }
 

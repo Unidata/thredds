@@ -354,11 +354,14 @@ public class NcStream {
     DataType dt = decodeAttributeType(attp.getType());
 
     if (dt == DataType.STRING) {
-      if (len == 1)
+      int lenp = attp.getSdataCount();
+      if (lenp != len)
+        System.out.println("HEY");
+      if (lenp == 1)
         return new Attribute(attp.getName(), attp.getSdata(0));
       else {
-        Array data = Array.factory(dt, new int[] {len});
-        for (int i=0; i<len; i++) data.setObject(i, attp.getSdata(i));
+        Array data = Array.factory(dt, new int[] {lenp});
+        for (int i=0; i<lenp; i++) data.setObject(i, attp.getSdata(i));
         return new Attribute(attp.getName(), data);
       }
     } else {

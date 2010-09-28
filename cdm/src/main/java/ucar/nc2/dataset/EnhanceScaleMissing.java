@@ -141,10 +141,13 @@ import java.io.IOException;
 
 public interface EnhanceScaleMissing {
 
-  /** true if Variable has missing data values */
+  /** true if Variable has missing data values
+   * @return true if Variable has missing data values
+   */
   public boolean hasMissing();
 
   /** true if val is a missing data value.
+   * @param val unpacked value
    * @return true if this value is a misssing value
    */
   public boolean isMissing( double val );
@@ -152,6 +155,7 @@ public interface EnhanceScaleMissing {
   /** true if val is a missing data value.
    * if useNaNs is true (default) and the variable is of type float or double,
    *   then assume that missing values have been set to NaN, which speeds up the test considerably.
+   * @param val unpacked value
    * @return true if this value is a misssing value
    */
   public boolean isMissingFast( double val ); 
