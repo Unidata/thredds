@@ -47,7 +47,7 @@
 188:EMNP:Evaporation   Precipitation [cm/day]
 190:KENG:Kinetic Energy [J/kg]
 192:LAYTH:Layer Thickness [m]
-193:SSTT:Sufrace Temperature Trend [K/day]
+193:SSTT:Surface Temperature Trend [K/day]
 194:SSST:Surface Salinity Trend [psu/day]
 254:RERRVAR:Relative Error Variance  []
 255:var255:undefined []
