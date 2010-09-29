@@ -11,25 +11,28 @@ import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.TestAll;
 import ucar.nc2.Variable;
-import ucar.nc2.dataset.CoordinateAxis;
+import ucar.nc2.dataset.*;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.iosp.grid.GridServiceProvider;
+import ucar.unidata.geoloc.LatLonPointImpl;
+import ucar.unidata.geoloc.Projection;
+import ucar.unidata.geoloc.ProjectionImpl;
 
 import java.io.IOException;
 import java.util.*;
 
 /**
- * Describe
+ * misc test against the TDS grib files
  *
  * @author caron
  * @since Jun 3, 2010
  */
-public class TestIntervalVars extends TestCase {
+public class TestGribFromTds extends TestCase {
   private boolean show = false;
 
-  public TestIntervalVars(String name) {
+  public TestGribFromTds(String name) {
     super(name);
   }
 
@@ -38,16 +41,17 @@ public class TestIntervalVars extends TestCase {
   public int nintVars = 0;
 
   // grib 2 only
-  public void testCountIntervalVars() throws Exception {
-    String dir = TestAll.testdataDir + "cdmUnitTest/tds/prob";
-    //String dir = "E:/formats/grib";
-    TestAll.actOnAll(dir, new TestAll.FileFilterImpl("grib2"), new TestAll.Act() {
+  public void testGribFromTds() throws Exception {
+    //String dir = TestAll.testdataDir + "cdmUnitTest/tds/normal";
+    String dir = "E:/work/foster";
+    TestAll.actOnAll(dir, new TestAll.FileFilterImpl("grib2 grib1"), new TestAll.Act() {
       @Override
       public int doAct(String filename) throws IOException {
         System.out.printf("%n%s%n", filename);
         //showNames(filename);
         //checkTemplates(filename);
-        checkIntervalType(filename);
+        //checkIntervalType(filename);
+        checkProjectionType(filename);
         return 0;
       }
     });
@@ -58,6 +62,58 @@ public class TestIntervalVars extends TestCase {
 
   public void testOne() throws IOException {
     checkIntervalType("Q:/cdmUnitTest/tds/grib/ndfd/NDFD_CONUS_5km_conduit_20100913_0000.grib2");
+  }
+
+  public void checkProjectionType(String filename) throws IOException {
+    NetcdfDataset ncd = NetcdfDataset.openDataset(filename);
+    GridDataset gds = new GridDataset(ncd);
+    nfiles++;
+
+    Map<String, HoldEm> map = new HashMap<String, HoldEm>();
+
+    for (ucar.nc2.dt.GridDataset.Gridset g : gds.getGridsets()) {
+      GridCoordSystem gsys = g.getGeoCoordSystem();
+      for (CoordinateTransform t : gsys.getCoordinateTransforms()) {
+        if (t instanceof ProjectionCT) {
+          ncd.findVariable(t.getName());
+          ProjectionImpl p = ((ProjectionCT)t).getProjection();
+          map.put(t.getName()+" "+p.paramsToString(), new HoldEm(gsys, p, ncd.findVariable(t.getName())));
+        }
+      }
+    }
+
+    for (String key : map.keySet()) {
+      System.out.printf("  %s: %n", key);
+      checkProjection( map.get(key));
+    }
+    System.out.printf("%n");
+    ncd.close();
+  }
+
+  private class HoldEm {
+    GridCoordSystem gcs;
+    Variable projVar;
+    ProjectionImpl p;
+
+    private HoldEm(GridCoordSystem gcs, ProjectionImpl p, Variable projVar) {
+      this.gcs = gcs;
+      this.p = p;
+      this.projVar = projVar;
+    }
+  }
+
+  private void checkProjection(HoldEm h) {
+    System.out.printf( "    llbb=%s%n", h.gcs.getLatLonBoundingBox());
+    System.out.printf( "%s%n", h.projVar);
+
+    CoordinateAxis1D xaxis = (CoordinateAxis1D) h.gcs.getXHorizAxis();
+    CoordinateAxis1D yaxis =  (CoordinateAxis1D) h.gcs.getYHorizAxis();
+    h.p.projToLatLon(xaxis.getCoordValue(0), yaxis.getCoordValue(0)  );
+    LatLonPointImpl start1 =  h.p.projToLatLon(xaxis.getCoordValue(0), yaxis.getCoordValue(0));
+    LatLonPointImpl start2 =  h.p.projToLatLon(xaxis.getCoordValue((int)xaxis.getSize()-1), yaxis.getCoordValue((int)yaxis.getSize()-1));
+    System.out.printf( "start = %s%n", start1);
+    System.out.printf( "end   = %s%n", start2);
+
   }
 
   public void checkIntervalType(String filename) throws IOException {
@@ -102,7 +158,7 @@ public class TestIntervalVars extends TestCase {
     GridServiceProvider.debugOpen = false;
   }
 
-  private int checkIntervalTypqe(String filename) throws IOException {
+  private int checkIntervalType2(String filename) throws IOException {
     GridDataset ncd = GridDataset.open(filename);
     nfiles++;
 

@@ -280,8 +280,8 @@ public class ToolsUI extends JPanel {
     // nested-2 tab - grib
     gribTabPane.addTab("GRIB-RAW", new JLabel("GRIB-RAW"));
     gribTabPane.addTab("GRIB-INDEX", new JLabel("GRIB-INDEX"));
-    gribTabPane.addTab("WMO-CODES", new JLabel("GRIB-CODES"));
-    gribTabPane.addTab("WMO-TEMPLATES", new JLabel("GRIB-TEMPLATES"));
+    gribTabPane.addTab("WMO-CODES", new JLabel("WMO-CODES"));
+    gribTabPane.addTab("WMO-TEMPLATES", new JLabel("WMO-TEMPLATES"));
     gribTabPane.addTab("GRIB1-TABLES", new JLabel("GRIB1-TABLES"));
     gribTabPane.addChangeListener(new ChangeListener() {
       public void stateChanged(ChangeEvent e) {
@@ -438,11 +438,11 @@ public class ToolsUI extends JPanel {
       gribIndexPanel = new GribIndexPanel((PreferencesExt) mainPrefs.node("grib2"));
       c = gribIndexPanel;
 
-    } else if (title.equals("GRIB-CODES")) {
+    } else if (title.equals("WMO-CODES")) {
       gribCodePanel = new GribCodePanel((PreferencesExt) mainPrefs.node("grib-codes"));
       c = gribCodePanel;
 
-    } else if (title.equals("GRIB-TEMPLATES")) {
+    } else if (title.equals("WMO-TEMPLATES")) {
       gribTemplatePanel = new GribTemplatePanel((PreferencesExt) mainPrefs.node("grib-templates"));
       c = gribTemplatePanel;
 

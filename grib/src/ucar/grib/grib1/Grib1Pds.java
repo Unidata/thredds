@@ -610,6 +610,16 @@ public final class Grib1Pds extends GribPds {
     }
   }
 
+  @Override
+  public boolean isPercentile() {
+    return false;
+  }
+
+  @Override
+  public int getPercentileValue() {
+    return -1;
+  }
+
   /**
    * NCEP Appendix C Manual 388
    * http://www.nco.ncep.noaa.gov/pmb/docs/on388/appendixc.html

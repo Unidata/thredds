@@ -65,10 +65,14 @@ public class Grib2Pds extends GribPds {
         return new Grib2Pds2(input, refTime, cal);
       case 5:
         return new Grib2Pds5(input, refTime, cal);
+      case 6:
+        return new Grib2Pds6(input, refTime, cal);
       case 8:
         return new Grib2Pds8(input, refTime, cal);
       case 9:
         return new Grib2Pds9(input, refTime, cal);
+      case 10:
+        return new Grib2Pds10(input, refTime, cal);
       case 11:
         return new Grib2Pds11(input, refTime, cal);
       case 12:
@@ -386,6 +390,17 @@ public class Grib2Pds extends GribPds {
     return MISSING;
   }
 
+  @Override
+  public boolean isPercentile() {
+    return false;
+  }
+
+  @Override
+  public int getPercentileValue() {
+    return -1;
+  }
+
+
   public void show(Formatter f) {
     f.format("Grib2Pds{ template=%d, validTime=%s }", template,  getForecastDate());
   }
@@ -415,6 +430,11 @@ public class Grib2Pds extends GribPds {
 
     public int getNumberEnsembleForecasts();
   }
+
+  static public interface PdsPercentile {
+    public int getPercentileValue();
+  }
+
 
   static public interface PdsProbability {
     public int getForecastProbabilityNumber();
@@ -1119,6 +1139,90 @@ public class Grib2Pds extends GribPds {
     }
 
   }
+
+  //////////////////////////////////////////////////////////////////////////////////////////////
+
+  /**
+   * Product definition template 4.6 -
+   * percentile forecasts at a horizontal level or in a horizontal layer at a point in time
+   */
+  static private class Grib2Pds6 extends Grib2Pds0 implements PdsPercentile {
+
+    Grib2Pds6(byte[] input, long refTime, Calendar cal) throws IOException {
+      super(input, refTime, cal);
+    }
+
+    public boolean isPercentile() {
+      return true;
+    }
+
+    /**
+     * Percentile - from 100 to 0
+     *
+     * @return Percentile
+     */
+    public int getPercentileValue() {
+      return getOctet(35);
+    }
+
+    @Override
+    public int templateLength() {
+      return 36;
+    }
+
+  }
+
+
+  /**
+   * Product definition template 4.10 -
+   * percentile forecasts at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval
+   */
+  static private class Grib2Pds10 extends Grib2Pds6 implements PdsInterval {
+    long endInterval;
+
+    Grib2Pds10(byte[] input, long refTime, Calendar cal) throws IOException {
+      super(input, refTime, cal);
+      endInterval = calcTime(cal, 36);
+    }
+
+    /**
+     * End of overall time interval
+     *
+     * @return End of overall time interval
+     */
+    public long getIntervalTimeEnd() {
+      return endInterval;
+    }
+
+    /**
+     * number of time range specifications describing the time intervals used to calculate the statistically-processed field
+     *
+     * @return number of time range
+     */
+    public int getNumberTimeRanges() {
+      return getOctet(43);
+    }
+
+    /**
+     * Total number of data values missing in statistical process
+     *
+     * @return Total number of data values missing in statistical process
+     */
+    public final int getNumberMissing() {
+      return GribNumbers.int4(getOctet(44), getOctet(45), getOctet(46), getOctet(47));
+    }
+
+    public TimeInterval[] getTimeIntervals() {
+      return readTimeIntervals(getNumberTimeRanges(), 48);
+    }
+
+    @Override
+    public int templateLength() {
+      return 48 + getNumberTimeRanges() * 12;
+    }
+
+  }
+
 
   //////////////////////////////////////////////////////////////////////////////////////////////
 

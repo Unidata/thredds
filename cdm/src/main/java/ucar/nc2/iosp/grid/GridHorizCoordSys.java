@@ -693,8 +693,7 @@ public class GridHorizCoordSys {
       LatLonPointImpl endLL = new LatLonPointImpl(La2, Lo2);
       System.out.println("GridHorizCoordSys.makeLC end at latlon " + endLL);
 
-      ProjectionPointImpl endPP =
-          (ProjectionPointImpl) proj.latLonToProj(endLL);
+      ProjectionPointImpl endPP = (ProjectionPointImpl) proj.latLonToProj(endLL);
       System.out.println("   end at proj coord " + endPP);
 
       double endx = startx + getNx() * getDxInKm();
@@ -704,28 +703,21 @@ public class GridHorizCoordSys {
 
     attributes.add(new Attribute(GridCF.GRID_MAPPING_NAME, "lambert_conformal_conic"));
     if (gds.getDouble(GridDefRecord.LATIN1) == gds.getDouble(GridDefRecord.LATIN2)) {
-      attributes.add(new Attribute(GridCF.STANDARD_PARALLEL,
-          new Double(gds.getDouble(GridDefRecord.LATIN1))));
+      attributes.add(new Attribute(GridCF.STANDARD_PARALLEL, new Double(gds.getDouble(GridDefRecord.LATIN1))));
     } else {
-      double[] data = new double[]{gds.getDouble(GridDefRecord.LATIN1),
-          gds.getDouble(GridDefRecord.LATIN2)};
-      attributes.add(new Attribute(GridCF.STANDARD_PARALLEL,
-          Array.factory(DataType.DOUBLE, new int[]{2}, data)));
+      double[] data = new double[]{gds.getDouble(GridDefRecord.LATIN1), gds.getDouble(GridDefRecord.LATIN2)};
+      attributes.add(new Attribute(GridCF.STANDARD_PARALLEL, Array.factory(DataType.DOUBLE, new int[]{2}, data)));
     }
     //attributes.add(new Attribute("longitude_of_central_meridian",
-    attributes.add(new Attribute(GridCF.LONGITUDE_OF_CENTRAL_MERIDIAN,
-        new Double(gds.getDouble(GridDefRecord.LOV))));
+    attributes.add(new Attribute(GridCF.LONGITUDE_OF_CENTRAL_MERIDIAN, new Double(gds.getDouble(GridDefRecord.LOV))));
     //attributes.add(new Attribute("latitude_of_projection_origin",
-    attributes.add(new Attribute(GridCF.LATITUDE_OF_PROJECTION_ORIGIN,
-        new Double(gds.getDouble(GridDefRecord.LATIN1))));
+    attributes.add(new Attribute(GridCF.LATITUDE_OF_PROJECTION_ORIGIN,  new Double(gds.getDouble(GridDefRecord.LATIN1))));
   }
 
   /**
    * Make a PolarStereographic projection
    */
   private void makePS() {
-    double scale = .933;
-
     String nproj = gds.getParam(GridDefRecord.NPPROJ);
     double latOrigin = (nproj == null || nproj.equalsIgnoreCase("true")) ? 90.0 : -90.0;
 
@@ -733,6 +725,14 @@ public class GridHorizCoordSys {
     // "Grid lengths are in units of meters, at the 60 degree latitude circle nearest to the pole"
     // since the scale factor at 60 degrees = k = 2*k0/(1+sin(60))  [Snyder,Working Manual p157]
     // then to make scale = 1 at 60 degrees, k0 = (1+sin(60))/2 = .933
+    double scale;
+    double lad = gds.getDouble(GridDefRecord.LAD);
+    if (Double.isNaN(lad)) {
+      scale = .933;
+    } else {
+      scale = (1.0+Math.sin( Math.toRadians(lad) ))/2;
+    }
+
     proj = new Stereographic(latOrigin, gds.getDouble(GridDefRecord.LOV), scale);
 
     // we have to project in order to find the origin
@@ -745,10 +745,8 @@ public class GridHorizCoordSys {
       setDxDy(startx, starty, proj);
 
     if (GridServiceProvider.debugProj) {
-      System.out.println("start at proj coord " + start);
-      LatLonPoint llpt = proj.projToLatLon(start);
-      System.out.println("   end at lat/lon coord " + llpt);
-      System.out.println("   should be lat=" + gds.getDouble(GridDefRecord.LA1) + " lon=" + gds.getDouble(GridDefRecord.LO1));
+      System.out.printf("starting proj coord %s lat/lon %s%n", start, proj.projToLatLon(start));
+      System.out.println("   should be LA1=" + gds.getDouble(GridDefRecord.LA1) + " l)1=" + gds.getDouble(GridDefRecord.LO1));
     }
 
     attributes.add(new Attribute(GridCF.GRID_MAPPING_NAME, "polar_stereographic"));

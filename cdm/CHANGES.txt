@@ -4,6 +4,9 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.2:
  8: (2010-xx-xx)
+  Grib2 PDS: add template 6, 10
+  GridHorizCoordSys, Polar Stereographic : look for GridDefRecord.LAD, set scale accordingly.
+  remove error messsage in GribPDSParamTable; return false on file not found
   opendap performance improvements (~36% on opening dataset)
   Grib1: add table 7-4-128
   Grib1 Time Range Indicator 123, 124

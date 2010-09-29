@@ -208,19 +208,19 @@ public final class GribPDSParamTable {
    * getParameterTable method).
    *
    * @param userGribTabList string of userlookup file
-   * @throws IOException on read error
+   * @throws IOException if file found but read error
+   * @return true if  read ok, false if file not found
    */
-  public static void addParameterUserLookup(String userGribTabList) throws IOException {
+  public static boolean addParameterUserLookup(String userGribTabList) throws IOException {
 
     // leave out of lock since it does IO
     ArrayList<GribPDSParamTable> tables = new ArrayList<GribPDSParamTable>();
     if (!readTableEntries(userGribTabList, tables)) {
-      logger.error("could not read:" + userGribTabList);
-      return;
+      //logger.error("could not read:" + userGribTabList);
+      return false;
     }
 
     synchronized (lock) {
-      //           System.err.println ("read:" + userGribTabList);
       // tmp table stores new user defined tables plus tablelookup.lst table entries
       GribPDSParamTable[] tmp = new GribPDSParamTable[paramTables.length + tables.size()];
       for (int idx = 0; idx < paramTables.length + tables.size(); idx++) {
@@ -232,6 +232,8 @@ public final class GribPDSParamTable {
       }
       paramTables = tmp;  // new copy of the data structure
     }
+
+    return true;
   }
 
   /**
@@ -520,9 +522,10 @@ public final class GribPDSParamTable {
             '}';
   }
 
-  static public void main(String[] args) {
+  static public void main(String[] args) throws IOException {
     debug = true;
-    GribPDSParamTable.readParameterTable(221, 221, 1, true);
+    addParameterUserLookup("C:/dev/tds4.2/thredds/grib/resources/resources/grib/tables/zagreb_221_1.tab");
+
   }
 }
 
