@@ -16,6 +16,7 @@ import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.iosp.grid.GridServiceProvider;
+import ucar.nc2.units.DateFormatter;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.ProjectionImpl;
@@ -50,8 +51,8 @@ public class TestGribFromTds extends TestCase {
         System.out.printf("%n%s%n", filename);
         //showNames(filename);
         //checkTemplates(filename);
-        //checkIntervalType(filename);
-        checkProjectionType(filename);
+        checkTimeInterval(filename);
+        //checkProjectionType(filename);
         return 0;
       }
     });
@@ -61,7 +62,7 @@ public class TestGribFromTds extends TestCase {
   }
 
   public void testOne() throws IOException {
-    checkIntervalType("Q:/cdmUnitTest/tds/grib/ndfd/NDFD_CONUS_5km_conduit_20100913_0000.grib2");
+    checkTimeInterval("Q:/cdmUnitTest/tds/grib/ndfd/NDFD_CONUS_5km_conduit_20100913_0000.grib2");
   }
 
   public void checkProjectionType(String filename) throws IOException {
@@ -116,7 +117,7 @@ public class TestGribFromTds extends TestCase {
 
   }
 
-  public void checkIntervalType(String filename) throws IOException {
+  public void checkTimeIntervalType(String filename) throws IOException {
     GridServiceProvider.debugOpen = true;
     NetcdfFile ncd = NetcdfFile.open(filename);
 
@@ -158,41 +159,37 @@ public class TestGribFromTds extends TestCase {
     GridServiceProvider.debugOpen = false;
   }
 
-  private int checkIntervalType2(String filename) throws IOException {
-    GridDataset ncd = GridDataset.open(filename);
-    nfiles++;
+  public void checkTimeInterval(String filename) throws IOException {
+    GridServiceProvider.debugOpen = true;
+    NetcdfFile ncd = NetcdfFile.open(filename);
+    DateFormatter df = new DateFormatter();
 
-    HashMap<Integer, List<String>> map = new  HashMap<Integer, List<String>>();
+    GribGridServiceProvider iosp = (GribGridServiceProvider) ncd.getIosp();
+    GridIndex index = (GridIndex) iosp.sendIospMessage("GridIndex");
 
-    for (GridDatatype g : ncd.getGrids()) {
-      GridCoordSystem gsys = g.getCoordinateSystem();
-      CoordinateAxis t = gsys.getTimeAxis();
-      Variable v = g.getVariable();
-      Attribute param = v.findAttribute("GRIB_product_definition_template");
-      Integer template = param.getNumericValue().intValue();
-      List<String> list = map.get(template);
-      if (list == null) {
-        list = new ArrayList<String>();
-        map.put(template, list);
+    List<GridRecord> grList = index.getGridRecords();
+    for (GridRecord gr : grList) {
+      GribGridRecord ggr = (GribGridRecord) gr;
+      if (!ggr.isInterval()) continue;
+
+      Grib2Pds pds = (Grib2Pds) ggr.getPds();
+      System.out.printf(" ref=%s fore=%s%n", df.toDateTimeStringISO(gr.getReferenceTime()), df.toDateTimeStringISO(pds.getForecastDate()));
+
+      Grib2Pds.PdsInterval pdsIntv = (Grib2Pds.PdsInterval) pds;
+      long timeEnd = pdsIntv.getIntervalTimeEnd();
+      int[] intv = pds.getForecastTimeInterval();
+      System.out.printf("  timeEnd=%s intv=[%d,%d]%n", df.toDateTimeStringISO(new Date(timeEnd)), intv[0], intv[1]);
+
+      for (Grib2Pds.TimeInterval ti : pdsIntv.getTimeIntervals()) {
+        System.out.printf("    TimeInterval type=%d range=%d incr=%d%n", ti.timeIncrementType, ti.timeRangeLength, ti.timeIncrement);
       }
-      list.add(v.getShortName());
+      break;
     }
-    ncd.close();
 
-    for (Integer key : map.keySet()) {
-      System.out.printf("template=%d:", key);
-      List<String> list = map.get(key);
-      for (String vname : list)
-        System.out.printf("%s, ", vname);
-      System.out.printf("%n");
-    }
-    System.out.printf("%n");
-
-    return 1;
+    GridServiceProvider.debugOpen = false;
   }
 
-
-  private int checkTemplates(String filename) throws IOException {
+  private int checkTemplateType(String filename) throws IOException {
     GridDataset ncd = GridDataset.open(filename);
     nfiles++;
 
