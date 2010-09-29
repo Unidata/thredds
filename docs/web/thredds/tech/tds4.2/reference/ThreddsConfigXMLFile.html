@@ -140,8 +140,7 @@ list here, plus any catalogs that are referenced by them in a <strong>catalogRef
    threddsConfig.xml:</p>
 <pre style="margin-left: 40px;">&lt;CatalogServices&gt;<br>    &lt;allowRemote&gt;true&lt;/allowRemote&gt;<br>&lt;/CatalogServices&gt;<br></pre>
  
- <h3><a name="HtmlConfig">Configuration for HTML Pages</a></h3><br>
-<h3>CDM library Disk cache </h3>
+ <h3><a name="DiskCache"></a>CDM library Disk cache </h3>
 <pre>  &lt;<strong>DiskCache</strong>&gt;<br>    &lt;<strong>alwaysUse</strong>&gt;false&lt;/alwaysUse&gt;<br>    &lt;<strong>dir</strong>&gt;/temp/cache/&lt;/dir&gt;<br>    &lt;<strong>scour</strong>&gt;1 hour&lt;/scour&gt;<br>    &lt;<strong>maxSize</strong>&gt;10 Gb&lt;/maxSize&gt;<br>  &lt;/DiskCache&gt;<br></pre>
  <p>These elements control where the <em><strong>CDM/NetCDF-Java</strong></em> library writes temporary files, for example when it needs to unzip files, or write GRIB index files, etc. If <strong>alwaysUse</strong> is true, these temporary files will always be written to the <em>cache directory</em> specified by <strong>dir</strong> (<a href="#Cache_Locations">choosing a cache directory</a>). If <strong>alwaysUse</strong>
 is false, TDS will try to write them to the same directory as the
