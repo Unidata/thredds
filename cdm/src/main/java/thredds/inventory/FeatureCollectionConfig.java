@@ -179,7 +179,7 @@ public class FeatureCollectionConfig {
       if (!explicit) datasets = EnumSet.noneOf(FmrcDatasetType.class);
       explicit = true;
 
-      String[] types = StringUtil.split(datasetTypes);
+      String[] types = StringUtil.splitString(datasetTypes);
       for (String type : types) {
         try {
           FmrcDatasetType fdt = FmrcDatasetType.valueOf(type);
