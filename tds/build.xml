@@ -773,21 +773,30 @@
     <stop url="${server_url}/manager" username="${username}" password="${tomcat.password}" path="${contextPath}"/>
   </target>
 
-  <!-- Clean, make source, make war, make checksums, and copy to release directory on FTP site. -->
-  <target name="cleanRelease" depends="makeSrcAndWar"
-          description="Copy README, CHANGES.txt, source jar and war file to release directory.">
-    <antcall target="doNotUseDirectly-release">
-      <param name="target.release.directory" value="${release.dir}" />
-    </antcall>
-  </target>
-
   <!-- Clean, make source, make war, make checksums, and copy to snapshot directory on FTP site. -->
   <target name="cleanReleaseSnapshot" depends="makeSrcAndWar">
     <antcall target="doNotUseDirectly-release">
       <param name="target.release.directory" value="${releaseSnapshot.dir}" />
     </antcall>
   </target>
-  
+
+  <!-- Clean, make source, make war, make checksums, and copy to release directory on FTP site. -->
+  <target name="cleanRelease" depends="makeSrcAndWar, release">
+  </target>
+
+  <!-- Copy already built distribution to release directory on FTP site.
+     Make sure the same values of 'build.number' and 'build.name' are used
+     for the build and for this target:
+     'ant -Dbuild.number=X -Dbuild.name=Y makeSrcAnsWar'
+     'ant -Dbuild.number=X -Dbuild.name=Y release'
+    -->
+  <target name="release"
+          description="Copy README, CHANGES.txt, source jar and war file to release directory.">
+    <antcall target="doNotUseDirectly-release">
+      <param name="target.release.directory" value="${release.dir}" />
+    </antcall>
+  </target>
+
   <target name="doNotUseDirectly-release">
     <!-- Set default target directory. -->
     <property name="target.release.directory" value="${user.home}/temp.tdsReleaseTestDir/${release.dir.name}" />
