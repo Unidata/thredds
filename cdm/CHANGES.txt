@@ -5,7 +5,7 @@ Build Date = @BUILDTIME@
 Changes in version 4.2:
  8: (2010-09-30)
   move ucar.unidata.util completely to unidataCommon for now
-  Grib2: new way to calculate intervals, works even for NDFD gribs
+  Grib2: new way to calculate intervals, works even for NDFD 
   Grib2 PDS: add template 6, 10
   GridHorizCoordSys, Polar Stereographic : look for GridDefRecord.LAD, set scale accordingly.
   remove error messsage in GribPDSParamTable; return false on file not found
