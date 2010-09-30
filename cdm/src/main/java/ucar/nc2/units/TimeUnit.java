@@ -33,9 +33,8 @@
 
 package ucar.nc2.units;
 
-import ucar.units.ConversionException;
-import ucar.units.Unit;
 import ucar.unidata.util.Format;
+import ucar.units.ConversionException;
 
 import java.util.StringTokenizer;
 import java.util.Date;

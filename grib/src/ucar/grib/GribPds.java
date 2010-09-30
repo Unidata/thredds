@@ -93,7 +93,7 @@ public abstract class GribPds {
   abstract public int getTimeUnit();
 
   /**
-   * Forecast time in units (defined by getTimeUnit()) from getReferenceTime()
+   * Forecast time in units defined by getTimeUnit()) from getReferenceTime()
    *
    * @return Forecast time
    */
@@ -105,6 +105,22 @@ public abstract class GribPds {
    * @return Forecast Date
    */
   abstract public Date getForecastDate();
+
+  /**
+   * Reference time as a long millis.
+   *
+   * @return refTime
+   */
+  abstract public long getReferenceTime();
+
+  /**
+   * Reference time as a Date
+   *
+   * @return Reference Date
+   */
+  public final Date getReferenceDate() {
+    return new Date(getReferenceTime());
+  }
 
   /**
    * Is this a time interval. If so, then coordinate is a range [min, max].

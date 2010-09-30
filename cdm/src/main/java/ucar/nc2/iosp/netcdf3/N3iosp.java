@@ -34,9 +34,9 @@ package ucar.nc2.iosp.netcdf3;
 
 import ucar.ma2.*;
 import ucar.unidata.io.RandomAccessFile;
-import ucar.unidata.util.Format;
 import ucar.nc2.*;
 import ucar.nc2.iosp.*;
+import ucar.unidata.util.Format;
 
 import java.util.*;
 import java.util.regex.Pattern;

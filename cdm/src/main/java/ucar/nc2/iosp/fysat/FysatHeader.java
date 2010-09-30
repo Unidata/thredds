@@ -39,10 +39,9 @@ import ucar.unidata.geoloc.projection.Stereographic;
 import ucar.unidata.geoloc.projection.Mercator;
 import ucar.unidata.geoloc.projection.LatLonProjection;
 import ucar.unidata.io.RandomAccessFile;
-import ucar.unidata.util.Parameter;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
-
+import ucar.unidata.util.Parameter;
 
 
 /**

@@ -45,8 +45,8 @@ import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.util.CancelTask;
 
 import ucar.unidata.io.RandomAccessFile;
-import ucar.unidata.util.StringUtil;
 
+import ucar.unidata.util.StringUtil;
 import visad.util.Trace;
 
 import java.io.IOException;

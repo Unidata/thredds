@@ -141,16 +141,19 @@ public class DateUnit { // extends SimpleUnit {
   }
 
   /**
-   * Constructor that takes a value and a "base" udunit string.
-   * @param value
-   * @param unitString eg "secs since 1970-01-01T00:00:00Z"
+   * Constructor that takes a value, timeUnitString, and a Date since
+   * @param value number of time units
+   * @param timeUnitString eg "secs"
+   * @param since date since, eg "secs since 1970-01-01T00:00:00Z"
    * @throws java.lang.Exception if not valid time unit.
-   *
-  public DateUnit(double value, String unitString) throws Exception {
+   */
+  public DateUnit(double value, String timeUnitString, Date since) throws Exception {
     this.value = value;
-    this.unitString = unitString;
-    uu = SimpleUnit.makeUnit( unitString);
-  } */
+    DateFormatter df = new DateFormatter();
+    this.udunitString = timeUnitString+" since "+df.toDateTimeStringISO(since);
+    uu = SimpleUnit.makeUnit( this.udunitString);
+    timeUnit = new TimeUnit( timeUnitString);
+  }
 
   /** Get the origin Date.
    * @return Date or null if not a time unit.

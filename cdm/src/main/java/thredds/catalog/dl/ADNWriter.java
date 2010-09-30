@@ -47,10 +47,10 @@ import java.io.*;
 import java.util.*;
 import java.net.URI;
 
-import ucar.unidata.util.StringUtil;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.nc2.units.TimeUnit;
 import ucar.nc2.constants.FeatureType;
+import ucar.unidata.util.StringUtil;
 
 public class ADNWriter {
   private static final Namespace defNS = Namespace.getNamespace("http://adn.dlese.org");

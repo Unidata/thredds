@@ -39,8 +39,6 @@ package ucar.nc2.iosp.gempak;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.Station;
-
-
 import ucar.unidata.util.Format;
 import ucar.unidata.util.StringUtil;
 

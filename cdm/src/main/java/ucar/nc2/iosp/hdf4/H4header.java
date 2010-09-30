@@ -33,10 +33,10 @@
 package ucar.nc2.iosp.hdf4;
 
 import ucar.unidata.io.RandomAccessFile;
-import ucar.unidata.util.Format;
-import ucar.unidata.util.StringUtil;
 import ucar.nc2.*;
 import ucar.ma2.*;
+import ucar.unidata.util.Format;
+import ucar.unidata.util.StringUtil;
 
 import java.io.IOException;
 import java.io.PrintStream;

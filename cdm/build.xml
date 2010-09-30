@@ -38,9 +38,10 @@
   <property name="javadoc.dir" value="${build.dir}/javadoc"/>
   <property name="javadocAll.dir" value="${build.dir}/javadocAll"/>
 
-  <!-- Relative path to opendap dir -->
+  <!-- Relative path to other dir -->
   <property name="opendap.relpath" value="../opendap"/>
-
+  <property name="grib.relpath" value="../grib"/>
+  <property name="common.relpath" value="../../unidataCommon"/>
 
   <property name="release.library.dir" value="${uni.ftp.dir}/pub/netcdf-java/v${release.version}/"/>
   <property name="release.doc.dir" value="${uni.ftp.dir}/pub/netcdf-java/v${release.version}/"/>
@@ -273,7 +274,7 @@
 
   <!-- make library jars -->
   <property name="jarMain" value="netcdf-${release.version}.jar"/>
-  <target name="makeMain" depends="compile" description="make library jars">
+  <target name="makeMain" depends="grib, opendap, compile" description="make library jars">
     <copy file="README.TEMPLATE" tofile="${build.dir}/README" overwrite="true">
       <filterset>
         <filter token="BUILDTIME" value="${build.time}"/>
@@ -1065,9 +1066,15 @@
 
   <!-- -->
 
+  <!-- Build other jars and copy to release dir -->
+  <!-- target name="common">
+	  <ant dir="${common.relpath}" target="thredds" inheritAll="false"/>
+  </target -->
+  <target name="grib">
+	  <ant dir="${grib.relpath}" target="thredds" inheritAll="false"/>
+  </target>
   <target name="opendap">
-        <!-- Build opendap.jar and copy to release dir -->
-	<ant dir="${opendap.relpath}" target="thredds" inheritAll="false"/>
+	  <ant dir="${opendap.relpath}" target="thredds" inheritAll="false"/>
   </target>
 
 </project>

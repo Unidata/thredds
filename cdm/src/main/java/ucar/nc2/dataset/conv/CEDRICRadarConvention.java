@@ -34,26 +34,16 @@ package ucar.nc2.dataset.conv;
 
 import ucar.nc2.dataset.CoordSysBuilder;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Dimension;
 import ucar.nc2.Variable;
 import ucar.nc2.Attribute;
-import ucar.nc2.constants._Coordinate;
-import ucar.nc2.constants.AxisType;
 import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.util.CancelTask;
-import ucar.unidata.geoloc.ProjectionImpl;
-import ucar.unidata.geoloc.projection.FlatEarth;
-import ucar.unidata.util.Parameter;
-import ucar.unidata.util.DateUtil;
-import ucar.ma2.DataType;
-import ucar.ma2.Array;
-import ucar.ma2.ArrayInt;
 import ucar.ma2.ArrayDouble;
+import ucar.unidata.util.DateUtil;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Date;
 
 /**

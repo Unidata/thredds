@@ -32,6 +32,8 @@
 package ucar.nc2.iosp.bufr.tables;
 
 
+import ucar.unidata.util.StringUtil;
+
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.HashMap;
@@ -40,8 +42,6 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.FileInputStream;
 import java.nio.charset.Charset;
-
-import ucar.unidata.util.StringUtil;
 
 /**
  * Compare wmo excel CodeTables with ours

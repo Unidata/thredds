@@ -47,12 +47,12 @@ import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.*;
 import ucar.unidata.geoloc.projection.sat.MSGnavigation;
 import ucar.unidata.util.GaussianLatitudes;
-import ucar.unidata.util.StringUtil;
 import ucar.grid.GridTableLookup;
 import ucar.grid.GridDefRecord;
 import ucar.grib.grib2.Grib2GridTableLookup;
 import ucar.grib.grib2.Grib2Tables;
 import ucar.grib.grib1.Grib1GridTableLookup;
+import ucar.unidata.util.StringUtil;
 
 import java.util.*;
 

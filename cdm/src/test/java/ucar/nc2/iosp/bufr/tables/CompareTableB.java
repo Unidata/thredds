@@ -45,8 +45,8 @@ import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 import java.nio.charset.Charset;
 
-import ucar.unidata.util.StringUtil;
 import ucar.nc2.iosp.bufr.Descriptor;
+import ucar.unidata.util.StringUtil;
 
 /**
  * @author caron

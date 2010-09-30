@@ -55,8 +55,6 @@ import ucar.nc2.units.DateFormatter;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.iosp.grid.GridServiceProvider;
-import ucar.nc2.iosp.grid.GridVariable;
-import ucar.nc2.iosp.grid.GridEnsembleCoord;
 import ucar.nc2.Variable;
 import ucar.nc2.util.DiskCache2;
 import ucar.nc2.util.IO;

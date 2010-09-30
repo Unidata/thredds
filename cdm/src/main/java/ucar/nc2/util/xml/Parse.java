@@ -35,10 +35,9 @@ package ucar.nc2.util.xml;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
+import ucar.unidata.util.StringUtil;
 
 import java.io.IOException;
-
-import ucar.unidata.util.StringUtil;
 
 /**
  * Miscellaneous XML parsing methods

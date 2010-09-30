@@ -44,12 +44,12 @@ import ucar.nc2.dt.*;
 import ucar.nc2.dt.GridDataset;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPoint;
-import ucar.unidata.util.Parameter;
 
 import org.jdom.output.XMLOutputter;
 import org.jdom.output.Format;
 import org.jdom.Document;
 import org.jdom.Element;
+import ucar.unidata.util.Parameter;
 
 import java.util.*;
 import java.io.OutputStream;

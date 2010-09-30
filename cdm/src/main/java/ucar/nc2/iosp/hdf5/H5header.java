@@ -33,8 +33,6 @@
 package ucar.nc2.iosp.hdf5;
 
 import ucar.unidata.io.RandomAccessFile;
-import ucar.unidata.util.Format;
-import ucar.unidata.util.SpecialMathFunction;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.*;
 import ucar.nc2.EnumTypedef;
@@ -43,6 +41,7 @@ import ucar.nc2.iosp.LayoutTiled;
 import ucar.nc2.iosp.Layout;
 import ucar.nc2.iosp.LayoutRegular;
 import ucar.ma2.*;
+import ucar.unidata.util.SpecialMathFunction;
 
 import java.util.*;
 import java.text.*;
@@ -5412,11 +5411,11 @@ Where startingBlockSize is from the header, ie the same for all indirect blocks.
     private void doOne(char c, long start, long end, long size, String name) {
       sbuff.setLength(0);
       sbuff.append(c);
-      sbuff.append(Format.l(start, 6));
+      sbuff.append(ucar.unidata.util.Format.l(start, 6));
       sbuff.append(" ");
-      sbuff.append(Format.l(end, 6));
+      sbuff.append(ucar.unidata.util.Format.l(end, 6));
       sbuff.append(" ");
-      sbuff.append(Format.l(size, 6));
+      sbuff.append(ucar.unidata.util.Format.l(size, 6));
       sbuff.append(" ");
       sbuff.append(name);
       debugOut.println(sbuff.toString());

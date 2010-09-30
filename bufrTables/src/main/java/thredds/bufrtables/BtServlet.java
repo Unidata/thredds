@@ -59,7 +59,6 @@ import java.util.GregorianCalendar;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import ucar.unidata.util.StringUtil;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.nc2.util.DiskCache2;
 import ucar.nc2.util.IO;
@@ -70,6 +69,7 @@ import ucar.nc2.iosp.bufr.MessageScanner;
 import ucar.nc2.iosp.bufr.Message;
 import ucar.nc2.iosp.bufr.DataDescriptor;
 import ucar.nc2.iosp.bufr.writer.Bufr2Xml;
+import ucar.unidata.util.StringUtil;
 
 /**
  * NOT USED - replaced with spring beans

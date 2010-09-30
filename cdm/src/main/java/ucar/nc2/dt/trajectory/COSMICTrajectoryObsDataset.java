@@ -34,15 +34,11 @@ package ucar.nc2.dt.trajectory;
 
 import ucar.nc2.dt.TypedDatasetFactoryIF;
 import ucar.nc2.dt.TypedDataset;
-import ucar.nc2.dt.TrajectoryObsDataset;
-import ucar.nc2.dt.TypedDatasetFactory;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.Dimension;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.SimpleUnit;
-import ucar.unidata.util.DateUtil;
 
 import java.util.*;
 import java.io.IOException;

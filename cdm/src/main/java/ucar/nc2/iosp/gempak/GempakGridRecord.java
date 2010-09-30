@@ -41,7 +41,6 @@ import edu.wisc.ssec.mcidas.McIDASUtil;
 
 
 //import ucar.nc2.iosp.grid.GridRecord;
-import ucar.grid.GridParameter;
 import ucar.grid.GridRecord;
 
 

@@ -40,8 +40,6 @@ import ucar.nc2.dataset.*;
 import ucar.unidata.geoloc.vertical.HybridHeight;
 import ucar.unidata.util.Parameter;
 
-import java.util.StringTokenizer;
-
 /**
  * Create a atmosphere_hybrid_height_coordinate Vertical Transform from
  * the information in the Coordinate Transform Variable.

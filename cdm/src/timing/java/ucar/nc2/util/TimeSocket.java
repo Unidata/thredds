@@ -32,12 +32,12 @@
  */
 package ucar.nc2.util;
 
-import ucar.unidata.util.Format;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.ParsedSectionSpec;
 import ucar.nc2.iosp.netcdf3.N3channelWriter;
 import ucar.nc2.iosp.netcdf3.N3outputStreamWriter;
 import ucar.ma2.InvalidRangeException;
+import ucar.unidata.util.Format;
 
 import java.io.*;
 import java.net.Socket;

@@ -48,13 +48,11 @@ import ucar.nc2.dataset.*;
 import ucar.nc2.util.CancelTask;
 
 import ucar.unidata.util.DateUtil;
-
 import visad.DateTime;
 
 import java.io.IOException;
 
 import java.util.Calendar;
-import java.util.Date;
 import java.util.GregorianCalendar;
 
 

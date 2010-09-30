@@ -41,6 +41,7 @@ import ucar.grib.grib1.*;
 import ucar.ma2.DataType;
 import ucar.nc2.iosp.grib.tables.GribTemplate;
 import ucar.nc2.iosp.grid.GridVariable;
+import ucar.nc2.units.DateFormatter;
 import ucar.nc2.util.Misc;
 import ucar.unidata.io.KMPMatch;
 import ucar.util.prefs.PreferencesExt;
@@ -81,6 +82,8 @@ public class GribRawPanel extends JPanel {
   private IndependentWindow infoWindow, infoWindow2, infoWindow3;
 
   private Map<String, GribTemplate> productTemplates = null;
+
+  private DateFormatter df = new DateFormatter();
 
   public GribRawPanel(PreferencesExt prefs) {
     this.prefs = prefs;
@@ -875,11 +878,11 @@ public class GribRawPanel extends JPanel {
 
       f.format("%nGrib2IdentificationSection%n");
       f.format(" Center        = (%d) %s%n", id.getCenter_id(), Grib1Tables.getCenter_idName(id.getCenter_id()));
-      f.format(" SubCenter     = (%d) %n", id.getSubcenter_id());
+      f.format(" SubCenter     = (%d) %s%n", id.getSubcenter_id(), Grib1Tables.getSubCenter_idName(id.getCenter_id(), id.getSubcenter_id()));
       f.format(" Master Table  = %d%n", id.getMaster_table_version());
       f.format(" Local Table   = %d%n", id.getLocal_table_version());
       f.format(" RefTimeSignif = %s%n", id.getSignificanceOfRTName());
-      f.format(" RefTime       = %s%n", id.getBaseTime());
+      f.format(" RefTime       = %s%n", df.toDateTimeStringISO(id.getBaseTime()));
       f.format(" ProductStatus = %s%n", id.getProductStatusName());
       f.format(" ProductType   = %s%n", id.getProductTypeName());
 

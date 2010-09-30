@@ -32,7 +32,7 @@
 package ucar.nc2.ui;
 
 import ucar.nc2.ui.dialog.BufrBCompare;
-import ucar.nc2.ui.dialog.CompareDialog;
+import ucar.unidata.util.StringUtil;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
 import ucar.nc2.units.DateFormatter;
@@ -40,7 +40,6 @@ import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.iosp.bufr.*;
 import ucar.nc2.iosp.bufr.tables.BufrTables;
 import ucar.nc2.iosp.bufr.tables.TableB;
-import ucar.unidata.util.StringUtil;
 import ucar.unidata.io.RandomAccessFile;
 
 import javax.swing.*;

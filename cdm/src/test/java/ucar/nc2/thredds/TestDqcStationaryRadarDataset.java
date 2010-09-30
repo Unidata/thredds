@@ -40,9 +40,8 @@ import java.io.IOException;
 
 import ucar.nc2.dt.RadialDatasetSweep;
 import ucar.nc2.units.DateUnit;
-import ucar.unidata.util.DateSelectionInfo;
-import ucar.unidata.util.DateSelection;
 import junit.framework.TestCase;
+import ucar.unidata.util.DateSelection;
 
 
 /**

@@ -48,11 +48,11 @@ import ucar.grid.GridTableLookup;
 import ucar.grid.GridParameter;
 import ucar.grid.GridDefRecord;
 import ucar.unidata.io.RandomAccessFile;
-import ucar.unidata.util.StringUtil;
 import ucar.grib.grib1.Grib1GridTableLookup;
 import ucar.grib.grib2.Grib2GridTableLookup;
 import ucar.grib.grib2.Grib2Tables;
 import ucar.grib.GribGridRecord;
+import ucar.unidata.util.StringUtil;
 
 import java.io.IOException;
 import java.util.ArrayList;

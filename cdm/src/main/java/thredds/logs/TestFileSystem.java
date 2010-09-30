@@ -35,10 +35,9 @@ package thredds.logs;
 
 import thredds.filesystem.CacheDirectory;
 import thredds.filesystem.CacheManager;
+import ucar.unidata.util.StringUtil;
 
 import java.io.*;
-
-import ucar.unidata.util.StringUtil;
 
 /**
  * Class Description.

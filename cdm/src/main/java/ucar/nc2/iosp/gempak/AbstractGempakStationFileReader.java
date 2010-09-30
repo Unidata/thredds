@@ -37,10 +37,6 @@
 package ucar.nc2.iosp.gempak;
 
 
-import ucar.unidata.io.RandomAccessFile;
-import ucar.unidata.util.Format;
-import ucar.unidata.util.StringUtil;
-
 import visad.util.Trace;
 
 import java.io.*;
@@ -52,7 +48,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;

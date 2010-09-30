@@ -33,7 +33,6 @@
 
 package ucar.nc2.util.xml;
 
-import ucar.unidata.util.Format;
 import ucar.nc2.NetcdfFileWriteable;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
@@ -41,11 +40,7 @@ import ucar.nc2.Attribute;
 import ucar.ma2.DataType;
 import ucar.ma2.ArrayChar;
 import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Array;
 
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamReader;
-import javax.xml.stream.XMLStreamException;
 import java.io.*;
 import java.nio.charset.Charset;
 import java.util.Map;

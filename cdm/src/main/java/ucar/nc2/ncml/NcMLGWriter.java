@@ -36,7 +36,6 @@ import ucar.nc2.*;
 import ucar.nc2.Attribute;
 import ucar.nc2.dataset.*;
 import ucar.ma2.*;
-import ucar.unidata.util.Parameter;
 
 import org.jdom.*;
 import org.jdom.output.XMLOutputter;
@@ -46,6 +45,7 @@ import java.io.*;
 import java.util.*;
 
 import thredds.catalog.XMLEntityResolver;
+import ucar.unidata.util.Parameter;
 
 /**
  * Helper class to write NcML-G.

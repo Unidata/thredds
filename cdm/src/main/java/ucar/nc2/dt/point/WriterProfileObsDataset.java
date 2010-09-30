@@ -36,7 +36,6 @@ package ucar.nc2.dt.point;
 import ucar.nc2.dt.*;
 import ucar.nc2.*;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.VariableEnhanced;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.units.DateUnit;

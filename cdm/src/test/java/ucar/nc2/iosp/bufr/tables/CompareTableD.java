@@ -35,6 +35,7 @@ package ucar.nc2.iosp.bufr.tables;
 import org.jdom.input.SAXBuilder;
 import org.jdom.Element;
 import org.jdom.JDOMException;
+import ucar.unidata.util.StringUtil;
 
 import java.io.IOException;
 import java.io.BufferedReader;
@@ -42,8 +43,6 @@ import java.io.InputStreamReader;
 import java.io.FileInputStream;
 import java.util.*;
 import java.nio.charset.Charset;
-
-import ucar.unidata.util.StringUtil;
 
 /**
  * @author caron

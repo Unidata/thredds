@@ -33,7 +33,6 @@
 package ucar.nc2.ui.util;
 
 import ucar.nc2.util.IO;
-import ucar.unidata.util.Format;
 
 import java.net.*;
 import java.io.*;

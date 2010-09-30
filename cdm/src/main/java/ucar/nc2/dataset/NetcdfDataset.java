@@ -48,8 +48,6 @@ import ucar.nc2.ncml.NcMLGWriter;
 import ucar.nc2.dods.DODSNetcdfFile;
 import ucar.nc2.thredds.ThreddsDataFactory;
 
-import ucar.unidata.util.StringUtil;
-
 import java.io.*;
 import java.util.*;
 
@@ -59,6 +57,7 @@ import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.methods.HeadMethod;
 import thredds.catalog.ServiceType;
+import ucar.unidata.util.StringUtil;
 
 /**
  * NetcdfDataset extends the netCDF API, adding standard attribute parsing such as

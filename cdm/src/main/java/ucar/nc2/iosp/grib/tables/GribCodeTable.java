@@ -38,10 +38,8 @@ import org.jdom.input.SAXBuilder;
 import ucar.grib.grib2.ParameterTable;
 import ucar.grid.GridParameter;
 import ucar.nc2.iosp.netcdf3.N3iosp;
-import ucar.nc2.util.IO;
 import ucar.unidata.util.StringUtil;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;

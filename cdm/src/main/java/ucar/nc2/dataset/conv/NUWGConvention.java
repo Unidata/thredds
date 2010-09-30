@@ -39,12 +39,12 @@ import ucar.nc2.constants._Coordinate;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.dataset.*;
-import ucar.unidata.util.Format;
-import ucar.unidata.util.StringUtil;
 import ucar.nc2.units.SimpleUnit;
 
 import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.*;
+import ucar.unidata.util.Format;
+import ucar.unidata.util.StringUtil;
 
 import java.io.IOException;
 import java.util.*;

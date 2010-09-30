@@ -39,7 +39,6 @@ import ucar.grid.GridIndex;
 import ucar.grid.GridRecord;
 
 import ucar.unidata.io.RandomAccessFile;
-import ucar.unidata.util.StringUtil;
 
 import java.io.*;
 

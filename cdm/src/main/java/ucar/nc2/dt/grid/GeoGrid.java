@@ -39,8 +39,8 @@ import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.util.NamedObject;
 import ucar.nc2.dataset.*;
 import ucar.nc2.constants._Coordinate;
-import ucar.unidata.util.Format;
 import ucar.unidata.geoloc.*;
+import ucar.unidata.util.Format;
 
 import java.util.*;
 import java.io.IOException;

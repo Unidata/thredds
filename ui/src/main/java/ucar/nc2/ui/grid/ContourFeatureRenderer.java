@@ -36,8 +36,8 @@ package ucar.nc2.ui.grid;
 import ucar.unidata.geoloc.*;
 import thredds.datamodel.gis.GisFeatureAdapter;
 
-import ucar.unidata.util.Format;
 import thredds.ui.FontUtil;
+import ucar.unidata.util.Format;
 import ucar.util.prefs.ui.Debug;
 
 import java.awt.RenderingHints;

@@ -39,8 +39,6 @@ import ucar.nc2.Dimension;
 import ucar.unidata.geoloc.vertical.OceanSigma;
 import ucar.unidata.util.Parameter;
 
-import java.util.StringTokenizer;
-
 /**
  * Create a ocean_sigma_coordinate Vertical Transform from the information in the Coordinate Transform Variable.
  *

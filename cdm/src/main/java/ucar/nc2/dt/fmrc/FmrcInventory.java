@@ -34,7 +34,6 @@ package ucar.nc2.dt.fmrc;
 
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.util.DiskCache2;
-import ucar.unidata.util.StringUtil;
 
 import java.util.*;
 import java.io.*;
@@ -49,6 +48,7 @@ import thredds.catalog.InvDataset;
 import thredds.catalog.InvAccess;
 import thredds.catalog.ServiceType;
 import thredds.catalog.InvCatalogRef;
+import ucar.unidata.util.StringUtil;
 
 /**
  * A collection of ForecastModelRun (aka "run").

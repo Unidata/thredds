@@ -33,11 +33,11 @@
 package ucar.nc2.dods;
 
 import ucar.ma2.*;
-import ucar.unidata.util.StringUtil;
 
 import java.util.*;
 
 import net.jcip.annotations.Immutable;
+import ucar.unidata.util.StringUtil;
 
 /**
  * Adapter for dods.dap.Attribute into a ucar.nc2.Attribute.

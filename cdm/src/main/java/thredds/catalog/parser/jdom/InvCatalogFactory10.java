@@ -56,7 +56,6 @@ import java.util.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
-import ucar.unidata.util.Format;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.units.TimeDuration;
 import ucar.nc2.units.DateRange;
@@ -2409,7 +2408,7 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     }
 
     sizeElem.setAttribute("units", unit);
-    sizeElem.setText( Format.d(size, 4));
+    sizeElem.setText( ucar.unidata.util.Format.d(size, 4));
 
     return sizeElem;
   }

@@ -33,7 +33,6 @@
 package ucar.nc2;
 
 import ucar.ma2.*;
-import ucar.unidata.util.StringUtil;
 import ucar.unidata.io.UncompressInputStream;
 import ucar.unidata.io.InMemoryRandomAccessFile;
 import ucar.unidata.io.bzip2.CBZip2InputStream;
@@ -45,6 +44,7 @@ import ucar.nc2.iosp.netcdf3.N3iosp;
 import ucar.nc2.iosp.netcdf3.SPFactory;
 import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.iosp.IospHelper;
+import ucar.unidata.util.StringUtil;
 
 import java.util.*;
 import java.util.zip.ZipInputStream;

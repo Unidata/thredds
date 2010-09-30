@@ -266,15 +266,6 @@ public final class Grib1Pds extends GribPds {
   }
 
   /**
-   * Get the base (analysis) time of the forecast.
-   *
-   * @return date of basetime
-   */
-  public final Date getReferenceDate() {
-    return new Date(refTime);
-  }
-
-  /**
    * gets reference time as a long millis.
    *
    * @return refTime

@@ -33,7 +33,6 @@
 
 package ucar.nc2.util.xml;
 
-import ucar.unidata.util.Format;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.Structure;
@@ -41,6 +40,7 @@ import ucar.ma2.StructureData;
 import ucar.ma2.StructureMembers;
 import ucar.ma2.DataType;
 import ucar.ma2.StructureDataIterator;
+import ucar.unidata.util.Format;
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;

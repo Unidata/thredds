@@ -40,9 +40,9 @@ import ucar.nc2.constants.AxisType;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.dataset.*;
 import ucar.nc2.dataset.transform.AbstractCoordTransBuilder;
-import ucar.unidata.util.Parameter;
 import ucar.unidata.geoloc.vertical.HybridSigmaPressure;
 import ucar.unidata.geoloc.vertical.AtmosSigma;
+import ucar.unidata.util.Parameter;
 
 import java.io.*;
 import java.util.*;

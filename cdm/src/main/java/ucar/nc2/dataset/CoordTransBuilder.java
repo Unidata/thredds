@@ -38,9 +38,9 @@ import ucar.nc2.Attribute;
 import ucar.nc2.constants.CF;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.transform.*;
-import ucar.unidata.util.Parameter;
 import ucar.ma2.DataType;
 import ucar.ma2.Array;
+import ucar.unidata.util.Parameter;
 
 import java.util.List;
 import java.util.ArrayList;

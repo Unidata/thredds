@@ -46,8 +46,8 @@ import java.io.*;
 import java.util.*;
 import java.net.URI;
 
-import ucar.unidata.util.StringUtil;
 import ucar.unidata.geoloc.*;
+import ucar.unidata.util.StringUtil;
 
 public class DIFWriter {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DIFWriter.class);

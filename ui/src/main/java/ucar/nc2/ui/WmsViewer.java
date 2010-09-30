@@ -33,10 +33,10 @@
 
 package ucar.nc2.ui;
 
+import ucar.unidata.util.StringUtil;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
 import ucar.nc2.util.IO;
-import ucar.unidata.util.StringUtil;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionListener;

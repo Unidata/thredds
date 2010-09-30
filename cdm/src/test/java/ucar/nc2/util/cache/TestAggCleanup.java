@@ -36,7 +36,6 @@ package ucar.nc2.util.cache;
 import junit.framework.TestCase;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.TestLocal;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.ncml.TestNcML;
@@ -47,9 +46,7 @@ import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.StringUtil;
 
 import java.io.IOException;
-import java.io.File;
 import java.io.StringReader;
-import java.util.Formatter;
 import java.util.List;
 
 /**

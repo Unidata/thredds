@@ -41,7 +41,6 @@ import ucar.ma2.InvalidRangeException;
 import ucar.nc2.Dimension;
 import ucar.nc2.Variable;
 import ucar.nc2.NetcdfFile;
-
 import ucar.unidata.util.Parameter;
 
 import java.io.IOException;

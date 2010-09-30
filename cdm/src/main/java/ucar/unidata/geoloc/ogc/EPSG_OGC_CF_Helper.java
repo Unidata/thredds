@@ -36,9 +36,9 @@ import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.Attribute;
 import ucar.nc2.Variable;
-import ucar.unidata.util.Parameter;
 import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.ProjectionImpl;
+import ucar.unidata.util.Parameter;
 
 import java.util.List;
 

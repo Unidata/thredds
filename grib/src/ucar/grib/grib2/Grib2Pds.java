@@ -48,7 +48,7 @@ import java.util.Date;
 import java.util.Formatter;
 
 @Immutable
-public class Grib2Pds extends GribPds {
+abstract public class Grib2Pds extends GribPds {
 
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Grib2Pds.class);
   private static final int MISSING = -9999;
@@ -85,29 +85,16 @@ public class Grib2Pds extends GribPds {
     }
   }
 
-  ////////////////////////
+  static public long makeDate(long refTime, int timeUnit, int forecastTime, Calendar cal) {
 
-  protected final int template; // product definition template
-  protected final long validTime; // valid date in millisecs
-
-  /**
-   * Constructs a Grib2PDSVariables object from a byte[].
-   *
-   * @param input   PDS
-   * @param refTime reference time in msecs
-   * @param cal     helper for creating Dates
-   * @throws java.io.IOException if raf contains no valid GRIB file
-   */
-  protected Grib2Pds(byte[] input, long refTime, Calendar cal) throws IOException {
-    this.input = input;
-    template = GribNumbers.int2(getOctet(8), getOctet(9));
-
+    if (cal == null) cal = Calendar.getInstance();
+    cal.clear();
     cal.setTimeInMillis(refTime);
 
-    // calculate the valid date
-    int type = 1; // default hour
+    // add the forecast time
+    int type = 1; // default = hour
     int factor = 1;
-    switch (getTimeUnit()) { // code table 4.4
+    switch (timeUnit) { // code table 4.4
       case 0:
         type = Calendar.MINUTE;
         break;
@@ -153,13 +140,112 @@ public class Grib2Pds extends GribPds {
         factor = 0;
         break;
       default:
-        log.warn("Unknown timeUnit= " + getTimeUnit());
+        log.warn("Unknown timeUnit= " + timeUnit);
         factor = 0;
         break;
     }
     if (factor != 0)
-      cal.add(type, factor * getForecastTime());
-    validTime = cal.getTimeInMillis();
+      cal.add(type, factor * forecastTime);
+
+    return cal.getTimeInMillis();
+  }
+
+  // given reference and forecast date, calculate forecastTime in units of timeUnit
+  static public int makeForecastTime(long refTime, long foreDate, int timeUnit) {
+
+    int intv =  (int)((foreDate - refTime) / 1000); // secs
+
+    // common cases
+    if (timeUnit == 1)
+      return intv / 3600; // hour
+    else if (timeUnit == 0)
+      return intv / 60; // minute
+    else if (timeUnit == 2)
+      return intv / 3600 / 24; // day
+    else if (timeUnit == 10)
+      return intv / 3600 / 3; // 3 hour
+    else if (timeUnit == 11)
+      return intv / 3600 / 6; // 6 hour
+    else if (timeUnit == 12)
+      return intv / 3600 / 12; // 12 hour
+    else if (timeUnit == 13)
+      return intv; // sec
+
+    // otherwise ??
+
+    throw new UnsupportedOperationException();
+
+    /* String timeUnitString;
+    switch (timeUnit) { // code table 4.4
+      case 3:
+        timeUnitString = "month";
+        break;
+      case 4:
+        type = Calendar.YEAR;
+        break;
+      case 5:
+        type = Calendar.YEAR;
+        factor = 10;
+        break;
+      case 6:
+        type = Calendar.YEAR;
+        factor = 30;
+        break;
+      case 7:
+        type = Calendar.YEAR;
+        factor = 100;
+        break;
+      case 10:
+        type = Calendar.HOUR_OF_DAY;
+        factor = 3;
+        break;
+      case 11:
+        type = Calendar.HOUR_OF_DAY;
+        factor = 6;
+        break;
+      case 12:
+        type = Calendar.HOUR_OF_DAY;
+        factor = 12;
+        break;
+      case MISSING: // if there is no time unit / valid time, assume valid time == ref time
+        type = Calendar.HOUR_OF_DAY;
+        factor = 0;
+        break;
+      default:
+        log.warn("Unknown timeUnit= " + timeUnit);
+        factor = 0;
+        break;
+    }
+    // otherwise
+    DateUnit du = new DateUnit(intv, String timeUnitString, new Date(refTime));
+
+
+    */
+  }
+
+   ////////////////////////
+
+  protected final int template; // product definition template
+  protected final long refTime; // reference date in millisecs
+  protected long validTime = -1; // reference date in millisecs
+  protected int[] intv = null;
+
+  /**
+   * Constructs a Grib2PDSVariables object from a byte[].
+   *
+   * @param input   PDS
+   * @param refTime reference time in msecs
+   * @param cal     helper for creating Dates
+   * @throws java.io.IOException if raf contains no valid GRIB file
+   */
+  protected Grib2Pds(byte[] input, long refTime, Calendar cal) throws IOException {
+    this.input = input;
+    this.refTime = refTime;
+    template = GribNumbers.int2(getOctet(8), getOctet(9));
+  }
+
+  public long getReferenceTime() {
+    return refTime;
   }
 
   // octets 1-4 (Length of PDS)
@@ -169,14 +255,11 @@ public class Grib2Pds extends GribPds {
   }
 
   /**
-   * octet 5
    * Number of this section, should be 4.
    */
   public final int getSection() {
     return getOctet(5);
   }
-
-  // octet 6-7
 
   /**
    * Number of coordinate values at end of template.
@@ -187,18 +270,14 @@ public class Grib2Pds extends GribPds {
     return GribNumbers.int2(getOctet(6), getOctet(7));
   }
 
-  // octet 8-9
-
   /**
-   * product Definition template, see Core Table 4.0
+   * product Definition template, Table 4.0
    *
    * @return ProductDefinition
    */
   public final int getProductDefinitionTemplate() {
     return template;
   }
-
-  // octet 10
 
   /**
    * Parameter Category .
@@ -208,8 +287,6 @@ public class Grib2Pds extends GribPds {
   public final int getParameterCategory() {
     return getOctet(10);
   }
-
-  // octet 11
 
   /**
    * Parameter Number.
@@ -229,43 +306,25 @@ public class Grib2Pds extends GribPds {
     return getOctet(12);
   }
 
-  public int getAnalysisGenProcess()  {
-    return MISSING;
-  }
-
-  @Override
-  public double getLevelValue1() {
-    return MISSINGD;
-  }
-
-  @Override
-  public double getLevelValue2() {
-    return MISSING;
-  }
-
-  @Override
-  public int getLevelType1() {
-    return MISSING;
-  }
-
-  @Override
-  public int getLevelType2() {
-    return MISSING;
-  }
-
-  @Override
-  public int getTimeUnit() {
-    return 0;
-  }
-
-  @Override
-  public int getForecastTime() {
-    return 0;
-  }
-
   @Override
   public Date getForecastDate() {
-    return null;
+    if (validTime < 0)
+      validTime = makeDate(refTime, getTimeUnit(), getForecastTime(), null);      
+    return new Date(validTime);
+  }
+
+  /**
+   * Forecast generating process identifier (defined by originating centre).
+   * <p/>
+   * For NCEP, apparently
+   * http://www.nco.ncep.noaa.gov/pmb/docs/on388/tablea.html
+   * as linked from here:
+   * http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_temp4-0.shtml
+   *
+   * @return Forecast generating process
+   */
+  public int getAnalysisGenProcess()  {
+    return MISSING;
   }
 
   @Override
@@ -273,10 +332,6 @@ public class Grib2Pds extends GribPds {
     return (template >= 8) && (template <= 14);
   }
 
-  @Override
-  public long getIntervalTimeEnd() {
-    return MISSING;
-  }
 
   @Override
   public int getIntervalStatType() {
@@ -293,6 +348,26 @@ public class Grib2Pds extends GribPds {
     return -1;
   }
 
+  @Override
+  public long getIntervalTimeEnd() {
+    return MISSING;
+  }
+
+
+  /**
+   * Forecast time in units defined by octet 18 (getTimeUnit())
+   *
+   * @return Forecast time
+   */
+  @Override
+  public int getForecastTime() {
+    if (isInterval()) {
+      int[] intv = getForecastTimeInterval();
+      return intv[1];
+    }
+    return _getForecastTime();
+  }
+
   /**
    * Time Interval for accumulation type variables.
    * Forecast Time is always at the end.
@@ -301,6 +376,7 @@ public class Grib2Pds extends GribPds {
    */
   public int[] getForecastTimeInterval() {
     if (!isInterval()) return null;
+    if (intv != null) return intv;
 
     int timeUnit = getTimeUnit();
     PdsInterval pdsIntv = (PdsInterval) this;
@@ -334,9 +410,12 @@ public class Grib2Pds extends GribPds {
     }
 
     int[] result = new int[2];
-    result[0] = _getForecastTime();  // LOOK probably wrong - depends on ti.timeIncrementType, see code table 4.11
-    result[1] = result[0] + incr;
+    //result[0] = _getForecastTime();  // LOOK probably wrong - depends on ti.timeIncrementType, see code table 4.11
+    // result[1] = result[0] + incr;
+    result[1] = pdsIntv.calcForecastTime();
+    result[0] = result[1] - incr;
 
+    intv = result;
     return result;
   }
 
@@ -410,6 +489,8 @@ public class Grib2Pds extends GribPds {
   static public interface PdsInterval {
     public long getIntervalTimeEnd();
 
+    public int calcForecastTime();
+
     public int getNumberTimeRanges();
 
     public int getNumberMissing();
@@ -460,19 +541,6 @@ public class Grib2Pds extends GribPds {
       super(input, refTime, cal);
     }
 
-    /*
-      // octet 14
-      case 40:
-      case 41:
-      case 42:
-      case 43: {
-        return getOctet(14);
-      }
-      default:
-        return GribNumbers.UNDEFINED;
-    }
-  }  */
-
     /**
      * Background generating process identifier (defined by originating centre)
      *
@@ -482,48 +550,9 @@ public class Grib2Pds extends GribPds {
       return getOctet(13);
     }
 
-    /*
-      // octet 15
-      case 40:
-      case 41:
-      case 42:
-      case 43: {
-        return getOctet(14);
-      }
-      default:
-        return GribNumbers.UNDEFINED;
-
-    }
-  }  */
-
-
-    /**
-     * Forecast generating process identifier (defined by originating centre).
-     * <p/>
-     * For NCEP, apparently
-     * http://www.nco.ncep.noaa.gov/pmb/docs/on388/tablea.html
-     * as linked from here:
-     * http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_temp4-0.shtml
-     *
-     * @return Forecast generating process
-     */
     public int getAnalysisGenProcess() {
       return getOctet(14);
     }
-
-    /*
-      // octet 16
-      case 40:
-      case 41:
-      case 42:
-      case 43: {
-        return getOctet(15);
-      }
-      default:
-        return GribNumbers.UNDEFINED;
-
-    }
-  }  */
 
     /**
      * Hours after reference time of data cutoff
@@ -534,20 +563,6 @@ public class Grib2Pds extends GribPds {
       return GribNumbers.int2(getOctet(15), getOctet(16));
     }
 
-    /*
-      // octet 17-18
-      case 40:
-      case 41:
-      case 42:
-      case 43: {
-        return GribNumbers.int2( getOctet(16), getOctet(17) );
-      }
-      default:
-        return GribNumbers.UNDEFINED;
-
-    }
-  }  */
-
     /**
      * Minutes after reference time of data cutoff
      *
@@ -556,20 +571,6 @@ public class Grib2Pds extends GribPds {
     public int getMinutesAfterCutoff() {
       return getOctet(17);
     }
-
-    /*
-  // octet 19
-  case 40:
-  case 41:
-  case 42:
-  case 43: {
-    return getOctet(18);
-  }
-  default:
-    return GribNumbers.UNDEFINED;
-
-}
-}    */
 
     /**
      * Indicator of unit of time range (see Code table 4.4)
@@ -580,44 +581,6 @@ public class Grib2Pds extends GribPds {
     public int getTimeUnit() {
       return getOctet(18);
     }
-
-    /*
-      // octet 14
-      case 20: {
-        return getOctet(13);
-      }
-      // octet 20
-      case 40:
-      case 41:
-      case 42:
-      case 43: {
-        return getOctet(19);
-      }
-      default:
-        return GribNumbers.UNDEFINED;
-
-    }
-  }  */
-
-    @Override
-    public final Date getForecastDate() {
-      return new Date(validTime);
-    }
-
-    /**
-     * Forecast time in units defined by octet 18 (getTimeUnit())
-     *
-     * @return Forecast time
-     */
-    @Override
-    public int getForecastTime() {
-      if (isInterval()) {
-        int[] intv = getForecastTimeInterval();
-        return intv[1];
-      }
-      return _getForecastTime();
-    }
-
 
     /**
      * Type of first fixed surface (see Code table 4.5)
@@ -828,10 +791,12 @@ public class Grib2Pds extends GribPds {
    */
   static private class Grib2Pds11 extends Grib2Pds1 implements PdsInterval {
     private long endInterval; // Date msecs
+    private int ft; // forecasst time in units of time intv
 
     Grib2Pds11(byte[] input, long refTime, Calendar cal) throws IOException {
       super(input, refTime, cal);
       endInterval = calcTime(cal, 37);
+      ft = makeForecastTime(refTime, endInterval, getTimeUnit());
     }
 
     /**
@@ -841,6 +806,11 @@ public class Grib2Pds extends GribPds {
      */
     public long getIntervalTimeEnd() {
       return endInterval;
+    }
+
+    @Override
+    public int calcForecastTime() {
+      return ft;
     }
 
     /**
@@ -921,11 +891,13 @@ public class Grib2Pds extends GribPds {
    * continuous or non-continuous time interval
    */
   static private class Grib2Pds12 extends Grib2Pds2 implements PdsInterval {
-    private long endInterval; // Date msecs
+    long endInterval; // Date msecs
+    int ft;
 
     Grib2Pds12(byte[] input, long refTime, Calendar cal) throws IOException {
       super(input, refTime, cal);
       endInterval = calcTime(cal, 37);
+      ft = makeForecastTime(refTime, endInterval, getTimeUnit());
     }
 
     /**
@@ -935,6 +907,11 @@ public class Grib2Pds extends GribPds {
      */
     public long getIntervalTimeEnd() {
       return endInterval;
+    }
+
+    @Override
+    public int calcForecastTime() {
+      return ft;
     }
 
     /**
@@ -1034,11 +1011,13 @@ public class Grib2Pds extends GribPds {
    * probability forecasts at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval
    */
   static private class Grib2Pds9 extends Grib2Pds5 implements PdsInterval {
-    private long endInterval; // Date msecs
+    long endInterval; // Date msecs
+    int ft;
 
     Grib2Pds9(byte[] input, long refTime, Calendar cal) throws IOException {
       super(input, refTime, cal);
       endInterval = calcTime(cal, 48);
+      ft = makeForecastTime(refTime, endInterval, getTimeUnit());
     }
 
     /**
@@ -1048,6 +1027,11 @@ public class Grib2Pds extends GribPds {
      */
     public long getIntervalTimeEnd() {
       return endInterval;
+    }
+
+    @Override
+    public int calcForecastTime() {
+      return ft;
     }
 
     /**
@@ -1087,11 +1071,13 @@ public class Grib2Pds extends GribPds {
    * horizontal layer in a continuous or non-continuous time interval
    */
   static private class Grib2Pds8 extends Grib2Pds0 implements PdsInterval {
-    private long endInterval; // Date msecs
+    long endInterval; // Date msecs
+    int ft;
 
     Grib2Pds8(byte[] input, long refTime, Calendar cal) throws IOException {
       super(input, refTime, cal);
       endInterval = calcTime(cal, 35);
+      ft = makeForecastTime(refTime, endInterval, getTimeUnit());
     }
 
     /**
@@ -1101,6 +1087,11 @@ public class Grib2Pds extends GribPds {
      */
     public long getIntervalTimeEnd() {
       return endInterval;
+    }
+
+    @Override
+    public int calcForecastTime() {
+      return ft;
     }
 
     /**
@@ -1179,10 +1170,12 @@ public class Grib2Pds extends GribPds {
    */
   static private class Grib2Pds10 extends Grib2Pds6 implements PdsInterval {
     long endInterval;
+    int ft;
 
     Grib2Pds10(byte[] input, long refTime, Calendar cal) throws IOException {
       super(input, refTime, cal);
       endInterval = calcTime(cal, 36);
+      ft = makeForecastTime(refTime, endInterval, getTimeUnit());
     }
 
     /**
@@ -1192,6 +1185,11 @@ public class Grib2Pds extends GribPds {
      */
     public long getIntervalTimeEnd() {
       return endInterval;
+    }
+
+    @Override
+    public int calcForecastTime() {
+      return ft;
     }
 
     /**
@@ -1235,6 +1233,43 @@ public class Grib2Pds extends GribPds {
    Grib2Pds30(byte[] input, long refTime, Calendar cal) throws IOException {
      super(input, refTime, cal);
    }
+
+    // LOOK - could put this into a dummy superclass in case others need
+   @Override
+    public double getLevelValue1() {
+      return MISSINGD;
+    }
+
+    @Override
+    public double getLevelValue2() {
+      return MISSING;
+    }
+
+    @Override
+    public int getLevelType1() {
+      return MISSING;
+    }
+
+    @Override
+    public int getLevelType2() {
+      return MISSING;
+    }
+
+    @Override
+    public int getTimeUnit() {
+      return 0;
+    }
+
+    @Override
+    public int getForecastTime() {
+      return 0;
+    }
+
+    @Override
+    public Date getForecastDate() {
+      return null;
+    }
+
 
   /**
    * Observation generating process identifier (defined by originating centre)

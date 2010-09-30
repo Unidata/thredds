@@ -36,8 +36,8 @@ package ucar.unidata.geoloc.vertical;
 import ucar.nc2.Variable;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Dimension;
-import ucar.unidata.util.Parameter;
 import ucar.ma2.*;
+import ucar.unidata.util.Parameter;
 
 import java.util.List;
 import java.io.IOException;

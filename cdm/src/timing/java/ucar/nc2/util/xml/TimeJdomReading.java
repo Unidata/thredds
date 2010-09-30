@@ -34,11 +34,10 @@ package ucar.nc2.util.xml;
 
 import org.jdom.input.SAXBuilder;
 import org.jdom.*;
+import ucar.unidata.util.Format;
 
 import java.io.IOException;
 import java.util.List;
-
-import ucar.unidata.util.Format;
 
 public class TimeJdomReading {
 

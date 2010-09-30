@@ -40,12 +40,12 @@ import ucar.nc2.dataset.*;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.dt.*;
 import ucar.unidata.geoloc.LatLonRect;
-import ucar.unidata.util.Parameter;
 
 import org.jdom.output.XMLOutputter;
 import org.jdom.output.Format;
 import org.jdom.Document;
 import org.jdom.Element;
+import ucar.unidata.util.Parameter;
 
 import java.util.*;
 import java.util.zip.GZIPOutputStream;

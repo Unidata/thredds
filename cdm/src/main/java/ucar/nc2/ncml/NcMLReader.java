@@ -39,12 +39,12 @@ import ucar.nc2.dataset.*;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.IO;
 import ucar.nc2.util.URLnaming;
-import ucar.unidata.util.StringUtil;
 
 import thredds.catalog.XMLEntityResolver;
 import org.jdom.*;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.XMLOutputter;
+import ucar.unidata.util.StringUtil;
 
 import java.io.*;
 import java.net.*;

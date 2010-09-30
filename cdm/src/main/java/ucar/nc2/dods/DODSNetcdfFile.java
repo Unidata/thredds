@@ -38,10 +38,10 @@ import ucar.nc2.Attribute;
 import ucar.nc2.iosp.IospHelper;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.util.*;
-import ucar.unidata.util.StringUtil;
 
 import opendap.dap.*;
 import opendap.dap.parser.*;
+import ucar.unidata.util.StringUtil;
 
 import java.io.*;
 import java.util.*;

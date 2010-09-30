@@ -43,9 +43,9 @@ import ucar.nc2.constants.*;
 import ucar.nc2.units.DateFormatter;
 import ucar.unidata.geoloc.projection.FlatEarth;
 import ucar.unidata.geoloc.ProjectionImpl;
-import ucar.unidata.util.Parameter;
 import ucar.unidata.io.bzip2.CBZip2InputStream;
 import ucar.unidata.io.bzip2.BZip2ReadException;
+import ucar.unidata.util.Parameter;
 
 import java.io.*;
 import java.nio.*;

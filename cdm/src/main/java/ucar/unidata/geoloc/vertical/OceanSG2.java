@@ -26,7 +26,6 @@ package ucar.unidata.geoloc.vertical;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
-
 import ucar.unidata.util.Parameter;
 
 import java.io.IOException;

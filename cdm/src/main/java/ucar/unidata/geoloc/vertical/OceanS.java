@@ -34,8 +34,8 @@ package ucar.unidata.geoloc.vertical;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
-import ucar.unidata.util.SpecialMathFunction;
 import ucar.unidata.util.Parameter;
+import ucar.unidata.util.SpecialMathFunction;
 
 import java.io.IOException;
 import java.util.List;

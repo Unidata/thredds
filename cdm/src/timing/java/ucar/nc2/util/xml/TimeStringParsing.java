@@ -36,20 +36,11 @@ package ucar.nc2.util.xml;
 import org.jdom.Element;
 
 import java.io.*;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.List;
 
-import ucar.nc2.ncml.Aggregation;
 import ucar.nc2.ncml.NcMLReader;
-import ucar.nc2.ncml.AggregationOuterDimension;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
-import ucar.unidata.util.Format;
-
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamReader;
-import javax.xml.stream.XMLStreamException;
 
 /**
  * Class Description.

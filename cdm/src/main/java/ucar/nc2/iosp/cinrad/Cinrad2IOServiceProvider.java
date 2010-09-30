@@ -41,11 +41,9 @@ import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.io.RandomAccessFile;
-import ucar.unidata.util.DateUtil;
 
 import java.io.IOException;
 import java.util.*;
-import java.text.ParseException;
 
 /**
  * An IOServiceProvider for CINRAD level II files.

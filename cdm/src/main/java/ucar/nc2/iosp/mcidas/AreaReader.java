@@ -59,21 +59,18 @@ import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
-import ucar.nc2.constants._Coordinate;
 
 import ucar.nc2.units.DateFormatter;
 
 import ucar.unidata.geoloc.ProjectionImpl;
 
 import ucar.unidata.io.RandomAccessFile;
-
 import ucar.unidata.util.Parameter;
 
 import java.io.IOException;
 
 import java.util.ArrayList;
 
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 

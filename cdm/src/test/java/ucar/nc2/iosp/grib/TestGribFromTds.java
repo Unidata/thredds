@@ -43,16 +43,17 @@ public class TestGribFromTds extends TestCase {
 
   // grib 2 only
   public void testGribFromTds() throws Exception {
-    //String dir = TestAll.testdataDir + "cdmUnitTest/tds/normal";
-    String dir = "E:/work/foster";
-    TestAll.actOnAll(dir, new TestAll.FileFilterImpl("grib2 grib1"), new TestAll.Act() {
+    String dir = TestAll.testdataDir + "cdmUnitTest/tds/normal";
+    //String dir = "E:/work/foster";
+    TestAll.actOnAll(dir, new TestAll.FileFilterImpl("grib2"), new TestAll.Act() {
       @Override
       public int doAct(String filename) throws IOException {
         System.out.printf("%n%s%n", filename);
         //showNames(filename);
-        //checkTemplates(filename);
-        checkTimeInterval(filename);
         //checkProjectionType(filename);
+        //checkTemplates(filename);
+        //checkTimeIntervalType(filename);
+        checkTimeInterval(filename);
         return 0;
       }
     });
@@ -62,7 +63,8 @@ public class TestGribFromTds extends TestCase {
   }
 
   public void testOne() throws IOException {
-    checkTimeInterval("Q:/cdmUnitTest/tds/grib/ndfd/NDFD_CONUS_5km_conduit_20100913_0000.grib2");
+    //checkTimeInterval("Q:/cdmUnitTest/tds/grib/ndfd/NDFD_CONUS_5km_conduit_20100913_0000.grib2");
+    checkTimeInterval("Q:/cdmUnitTest/tds/normal/NDFD_CONUS_5km_20100912_1800.grib2");
   }
 
   public void checkProjectionType(String filename) throws IOException {
@@ -163,6 +165,7 @@ public class TestGribFromTds extends TestCase {
     GridServiceProvider.debugOpen = true;
     NetcdfFile ncd = NetcdfFile.open(filename);
     DateFormatter df = new DateFormatter();
+    Calendar cal = Calendar.getInstance();
 
     GribGridServiceProvider iosp = (GribGridServiceProvider) ncd.getIosp();
     GridIndex index = (GridIndex) iosp.sendIospMessage("GridIndex");
@@ -178,7 +181,18 @@ public class TestGribFromTds extends TestCase {
       Grib2Pds.PdsInterval pdsIntv = (Grib2Pds.PdsInterval) pds;
       long timeEnd = pdsIntv.getIntervalTimeEnd();
       int[] intv = pds.getForecastTimeInterval();
-      System.out.printf("  timeEnd=%s intv=[%d,%d]%n", df.toDateTimeStringISO(new Date(timeEnd)), intv[0], intv[1]);
+      long startDate = Grib2Pds.makeDate(gr.getReferenceTime().getTime(), pds.getTimeUnit(), intv[0], cal);
+      long endDate = Grib2Pds.makeDate(gr.getReferenceTime().getTime(), pds.getTimeUnit(), intv[1], cal);
+
+      System.out.printf("  intv=[%s, %s] = [%d,%d]%n",  df.toDateTimeStringISO(new Date(startDate)),
+              df.toDateTimeStringISO(new Date(endDate)), intv[0], intv[1]);
+      System.out.printf("  timeEnd=%s", df.toDateTimeStringISO(new Date(timeEnd)));
+
+      if (timeEnd == startDate)
+        System.out.printf(" agrees with intv start");
+      if (timeEnd == endDate)
+        System.out.printf(" agrees with intv end");
+      System.out.printf("%n");
 
       for (Grib2Pds.TimeInterval ti : pdsIntv.getTimeIntervals()) {
         System.out.printf("    TimeInterval type=%d range=%d incr=%d%n", ti.timeIncrementType, ti.timeRangeLength, ti.timeIncrement);

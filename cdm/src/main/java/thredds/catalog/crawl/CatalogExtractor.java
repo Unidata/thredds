@@ -46,15 +46,15 @@ import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
 import ucar.unidata.geoloc.*;
-import ucar.unidata.util.Format;
-import ucar.unidata.util.StringUtil;
-import ucar.unidata.util.Parameter;
 
 import java.io.*;
 import java.util.List;
 import java.util.Formatter;
 
 import thredds.catalog.*;
+import ucar.unidata.util.Format;
+import ucar.unidata.util.Parameter;
+import ucar.unidata.util.StringUtil;
 
 /**
  * Utilities for extracting info from a catalog.

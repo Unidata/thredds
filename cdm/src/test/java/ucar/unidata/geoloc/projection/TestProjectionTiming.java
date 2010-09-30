@@ -34,8 +34,6 @@ package ucar.unidata.geoloc.projection;
 
 import ucar.unidata.geoloc.*;
 import junit.framework.*;
-import ucar.unidata.util.Format;
-import java.util.*;
 
 /** Test basic projection methods */
 

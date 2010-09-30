@@ -4,15 +4,7 @@ import thredds.ui.BAMutil;
 import thredds.ui.FileManager;
 import thredds.ui.IndependentWindow;
 import thredds.ui.TextHistoryPane;
-import ucar.grib.grib2.ParameterTable;
-import ucar.grid.GridParameter;
-import ucar.nc2.Attribute;
-import ucar.nc2.dt.GridDatatype;
-import ucar.nc2.dt.grid.GridDataset;
-import ucar.nc2.iosp.grib.tables.GribCodeTable;
 import ucar.nc2.iosp.grib.tables.GribTemplate;
-import ucar.nc2.units.SimpleUnit;
-import ucar.unidata.util.StringUtil;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
 
@@ -20,11 +12,6 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
-import java.awt.List;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.IOException;
 import java.util.*;
 
 /**

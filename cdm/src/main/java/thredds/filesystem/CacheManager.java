@@ -42,8 +42,8 @@ import java.util.List;
 import java.util.Collections;
 import java.util.Formatter;
 
-import ucar.unidata.util.StringUtil;
 import ucar.nc2.util.IO;
+import ucar.unidata.util.StringUtil;
 
 /**
  * Cache filesystem info.

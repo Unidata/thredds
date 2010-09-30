@@ -33,9 +33,9 @@
  */
 package thredds.catalog.ui.tools;
 
+import ucar.unidata.util.StringUtil;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.*;
-import ucar.unidata.util.StringUtil;
 import ucar.nc2.util.net.HttpClientManager;
 
 import javax.swing.*;

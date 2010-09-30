@@ -33,7 +33,6 @@
 
 package thredds.logs;
 
-import ucar.nc2.units.DateFormatter;
 import ucar.unidata.util.StringUtil;
 
 import java.io.BufferedReader;

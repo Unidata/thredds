@@ -39,11 +39,8 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VerticalCT;
 import ucar.nc2.Variable;
 import ucar.nc2.Dimension;
-import ucar.unidata.util.Parameter;
-import ucar.unidata.geoloc.vertical.AtmosSigma;
 import ucar.unidata.geoloc.vertical.AtmosLnPressure;
-
-import java.util.StringTokenizer;
+import ucar.unidata.util.Parameter;
 
 /**
  * implementation for CF vertical coordinate "atmosphere_ln_pressure_coordinate".

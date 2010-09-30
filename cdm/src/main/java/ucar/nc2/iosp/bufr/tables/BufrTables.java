@@ -35,7 +35,6 @@ package ucar.nc2.iosp.bufr.tables;
 import ucar.nc2.iosp.bufr.Descriptor;
 import ucar.nc2.iosp.bufr.BufrIdentificationSection;
 import ucar.nc2.util.TableParser;
-import ucar.unidata.util.StringUtil;
 
 import java.lang.*;     // Standard java functions
 import java.util.*;
@@ -49,6 +48,7 @@ import java.nio.charset.Charset;
 import org.jdom.input.SAXBuilder;
 import org.jdom.Element;
 import org.jdom.JDOMException;
+import ucar.unidata.util.StringUtil;
 
 /**
  * Reads BUFR tables of various forms. Interacts with TableLookup.

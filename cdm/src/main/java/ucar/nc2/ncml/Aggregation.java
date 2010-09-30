@@ -40,7 +40,6 @@ import ucar.nc2.units.DateFormatter;
 import ucar.nc2.dataset.*;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.DiskCache2;
-import ucar.unidata.util.StringUtil;
 
 import java.util.*;
 import java.util.concurrent.Executor;
@@ -49,6 +48,7 @@ import java.io.*;
 import org.jdom.Element;
 import thredds.inventory.MFile;
 import thredds.inventory.DatasetCollectionManager;
+import ucar.unidata.util.StringUtil;
 
 /**
  * Superclass for NcML Aggregation.

@@ -38,11 +38,11 @@ import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.TimeUnit;
 import ucar.nc2.Variable;
-import ucar.unidata.util.Parameter;
 
 import org.jdom.*;
 import org.jdom.output.XMLOutputter;
 import org.jdom.output.Format;
+import ucar.unidata.util.Parameter;
 
 import java.util.List;
 import java.util.StringTokenizer;

@@ -2,16 +2,15 @@ package ucar.nc2.stream;
 
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.util.CompareNetcdf;
 import ucar.nc2.TestAll;
 import ucar.nc2.util.CompareNetcdf2;
-import ucar.unidata.util.StringUtil;
 
 import java.io.*;
 import java.nio.channels.WritableByteChannel;
 import java.util.Formatter;
 
 import junit.framework.TestCase;
+import ucar.unidata.util.StringUtil;
 
 
 public class TestNetcdfStream extends TestCase {

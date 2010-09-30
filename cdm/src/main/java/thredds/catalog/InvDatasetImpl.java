@@ -36,12 +36,12 @@ package thredds.catalog;
 import java.util.*;
 import java.net.URI;
 
-import ucar.unidata.util.StringUtil;
-import ucar.unidata.util.Format;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.units.TimeDuration;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateType;
+import ucar.unidata.util.Format;
+import ucar.unidata.util.StringUtil;
 
 /**
  * Concrete implementation of a thredds Dataset, for reading and writing from XML.
