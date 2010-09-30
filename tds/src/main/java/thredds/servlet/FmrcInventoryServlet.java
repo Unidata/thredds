@@ -47,8 +47,8 @@ import ucar.nc2.dt.fmrc.FmrcInventory;
 import ucar.nc2.dt.fmrc.FmrcDefinition;
 import ucar.nc2.dt.fmrc.FmrcReport;
 import ucar.nc2.dt.fmrc.ForecastModelRunInventory;
-import ucar.unidata.util.StringUtil;
 import thredds.catalog.InvDatasetFmrc;
+import ucar.unidata.util.StringUtil;
 
 /**
  * Servlet shows Forecast Model Run Collection Inventory.

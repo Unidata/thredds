@@ -36,8 +36,6 @@ import thredds.catalog.*;
 import thredds.server.config.TdsContext;
 import thredds.server.config.HtmlConfig;
 import ucar.nc2.units.DateType;
-import ucar.unidata.util.StringUtil;
-import ucar.unidata.util.Format;
 
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -45,6 +43,8 @@ import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.VariableEnhanced;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.GridDataset;
+import ucar.unidata.util.Format;
+import ucar.unidata.util.StringUtil;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletRequest;

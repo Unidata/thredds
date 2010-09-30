@@ -61,8 +61,8 @@ import org.jdom.Element;
 import org.jdom.transform.XSLTransformer;
 import org.jdom.output.XMLOutputter;
 import org.jdom.output.Format;
-import ucar.unidata.util.StringUtil;
 import ucar.unidata.geoloc.LatLonRect;
+import ucar.unidata.util.StringUtil;
 
 public class RadarServer extends AbstractServlet {
   public enum RadarType {

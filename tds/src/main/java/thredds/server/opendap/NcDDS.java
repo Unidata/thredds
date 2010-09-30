@@ -35,10 +35,10 @@ package thredds.server.opendap;
 
 import ucar.nc2.*;
 import ucar.ma2.DataType;
-import ucar.unidata.util.StringUtil;
 
 import opendap.dap.Server.*;
 import opendap.dap.BaseType;
+import ucar.unidata.util.StringUtil;
 
 import java.util.*;
 

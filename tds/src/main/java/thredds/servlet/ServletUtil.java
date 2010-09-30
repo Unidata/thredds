@@ -40,11 +40,11 @@ import java.net.URISyntaxException;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
-import ucar.unidata.util.StringUtil;
 import ucar.nc2.util.cache.FileCacheRaf;
 import ucar.nc2.util.IO;
 import thredds.catalog.XMLEntityResolver;
 import thredds.util.RequestForwardUtils;
+import ucar.unidata.util.StringUtil;
 
 public class ServletUtil {
 

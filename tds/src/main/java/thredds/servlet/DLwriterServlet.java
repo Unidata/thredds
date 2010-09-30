@@ -41,8 +41,8 @@ import java.net.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
-import ucar.unidata.util.StringUtil;
 import ucar.nc2.util.IO;
+import ucar.unidata.util.StringUtil;
 
 /**
  * Servlet handles creating DL records.

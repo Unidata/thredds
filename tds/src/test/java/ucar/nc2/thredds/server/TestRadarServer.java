@@ -1,6 +1,5 @@
 package ucar.nc2.thredds.server;
 
-import ucar.unidata.util.StringUtil;
 import ucar.nc2.util.IO;
 
 import java.io.File;

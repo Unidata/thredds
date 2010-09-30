@@ -52,7 +52,6 @@ import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateType;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPointImpl;
-import ucar.unidata.util.Format;
 
 import java.io.*;
 import java.util.*;
@@ -62,6 +61,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import thredds.catalog.XMLEntityResolver;
 import org.jdom.Document;
 import org.jdom.Element;
+import ucar.unidata.util.Format;
 
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamWriter;

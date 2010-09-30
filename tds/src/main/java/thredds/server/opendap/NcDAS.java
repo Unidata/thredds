@@ -36,7 +36,6 @@ package thredds.server.opendap;
 
 import ucar.nc2.*;
 import ucar.nc2.dods.*;
-import ucar.unidata.util.StringUtil;
 import ucar.ma2.DataType;
 
 import java.util.Iterator;
@@ -44,6 +43,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import opendap.dap.AttributeExistsException;
+import ucar.unidata.util.StringUtil;
 
 /**
  * Netcdf DAS object

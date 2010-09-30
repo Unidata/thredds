@@ -35,11 +35,10 @@
 package ucar.nc2.thredds.server;
 
 import ucar.nc2.util.IO;
+import ucar.unidata.util.StringUtil;
 
 import java.io.File;
 import java.io.IOException;
-
-import ucar.unidata.util.StringUtil;
 
 /**
  * Class Description.

@@ -45,8 +45,6 @@ import thredds.util.StartsWithPathAliasReplacement;
 import thredds.util.TdsPathUtils;
 import thredds.util.RequestForwardUtils;
 import ucar.nc2.units.DateType;
-import ucar.unidata.util.StringUtil;
-import ucar.unidata.util.DateUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -59,6 +57,8 @@ import java.net.URISyntaxException;
 import java.io.*;
 
 import org.springframework.util.StringUtils;
+import ucar.unidata.util.DateUtil;
+import ucar.unidata.util.StringUtil;
 
 /**
  * The DataRootHandler manages all the "data roots" for a given web application

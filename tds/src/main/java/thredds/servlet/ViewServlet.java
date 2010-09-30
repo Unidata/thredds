@@ -35,7 +35,6 @@ package thredds.servlet;
 
 import thredds.catalog.InvProperty;
 import thredds.server.wms.Godiva2Viewer;
-import ucar.unidata.util.StringUtil;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.util.IO;
 
@@ -50,6 +49,7 @@ import java.net.URISyntaxException;
 import thredds.catalog.InvDatasetImpl;
 import thredds.catalog.InvAccess;
 import thredds.catalog.ServiceType;
+import ucar.unidata.util.StringUtil;
 
 /**
  * Catalog Serving

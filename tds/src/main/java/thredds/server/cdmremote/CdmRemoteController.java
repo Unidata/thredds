@@ -66,8 +66,8 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.ParsedSectionSpec;
 import ucar.nc2.util.DiskCache2;
-import ucar.unidata.util.StringUtil;
 import ucar.unidata.geoloc.Station;
+import ucar.unidata.util.StringUtil;
 
 /**
  * Controller for CdmRemote service.
