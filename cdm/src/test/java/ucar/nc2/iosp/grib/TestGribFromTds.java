@@ -52,8 +52,8 @@ public class TestGribFromTds extends TestCase {
         //showNames(filename);
         //checkProjectionType(filename);
         //checkTemplates(filename);
-        //checkTimeIntervalType(filename);
-        checkTimeInterval(filename);
+        checkTimeIntervalType(filename);
+        //checkTimeInterval(filename);
         return 0;
       }
     });

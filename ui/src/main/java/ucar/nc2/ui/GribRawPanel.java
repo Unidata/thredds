@@ -33,6 +33,7 @@
 
 package ucar.nc2.ui;
 
+import thredds.ui.FileManager;
 import ucar.grib.GribGridRecord;
 import ucar.grib.GribNumbers;
 import ucar.grib.GribPds;
@@ -42,6 +43,7 @@ import ucar.ma2.DataType;
 import ucar.nc2.iosp.grib.tables.GribTemplate;
 import ucar.nc2.iosp.grid.GridVariable;
 import ucar.nc2.units.DateFormatter;
+import ucar.nc2.util.IO;
 import ucar.nc2.util.Misc;
 import ucar.unidata.io.KMPMatch;
 import ucar.util.prefs.PreferencesExt;
@@ -80,7 +82,9 @@ public class GribRawPanel extends JPanel {
 
   private TextHistoryPane infoPopup, infoPopup2, infoPopup3;
   private IndependentWindow infoWindow, infoWindow2, infoWindow3;
+  private FileManager fileChooser;
 
+  private RandomAccessFile raf = null;
   private Map<String, GribTemplate> productTemplates = null;
 
   private DateFormatter df = new DateFormatter();
@@ -171,6 +175,7 @@ public class GribRawPanel extends JPanel {
         }
       }
     });
+
     varPopup.addAction("Show Processed GridRecord", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Grib2RecordBean bean = (Grib2RecordBean) record2BeanTable.getSelectedBean();
@@ -178,6 +183,15 @@ public class GribRawPanel extends JPanel {
           infoPopup2.setText(bean.toProcessedString());
           infoPopup2.gotoTop();
           infoWindow2.showIfNotIconified();
+        }
+      }
+    });
+
+    varPopup.addAction("Save GribRecord to File", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        Grib2RecordBean bean = (Grib2RecordBean) record2BeanTable.getSelectedBean();
+        if (bean != null) {
+          writeToFile(bean);
         }
       }
     });
@@ -305,6 +319,50 @@ public class GribRawPanel extends JPanel {
     if (split != null) prefs.putInt("splitPos2", split2.getDividerLocation());
   }
 
+  private void writeToFile(Grib2RecordBean bean) {
+    try {
+      String defloc;
+      String header = bean.gr.getHeader();
+      if (header != null) {
+        header = header.split(" ")[0];
+      }
+      if (header == null) {
+        defloc = (raf.getLocation() == null) ? "." : raf.getLocation();
+        int pos = defloc.lastIndexOf(".");
+        if (pos > 0)
+          defloc = defloc.substring(0, pos);
+      } else
+        defloc = header;
+
+      Grib2IndicatorSection is = bean.gr.getIs();
+      if (is.getStartPos() < 0) return;
+
+      if (fileChooser == null)
+        fileChooser = new FileManager(null, null, null, (PreferencesExt) prefs.node("FileManager"));
+
+      String filename = fileChooser.chooseFilenameToSave(defloc + ".grib2");
+      if (filename == null) return;
+
+      File file = new File(filename);
+      FileOutputStream fos = new FileOutputStream(file);
+      int size = (int)(is.getEndPos() - is.getStartPos());
+      byte[] rb = new byte[size];
+      raf.seek(is.getStartPos());
+      raf.readFully(rb);
+
+      if (header != null && !header.contains("GRIB"))
+        fos.write(bean.gr.getHeader().getBytes());
+      fos.write(rb);
+      fos.close();
+
+      JOptionPane.showMessageDialog(GribRawPanel.this, filename + " successfully written");
+
+    } catch (Exception ex) {
+      JOptionPane.showMessageDialog(GribRawPanel.this, "ERROR: " + ex.getMessage());
+      ex.printStackTrace();
+    }
+  }
+
   private void compare(Grib2RecordBean bean1, Grib2RecordBean bean2, Formatter f) {
     Grib2IndicatorSection is1 = bean1.gr.getIs();
     Grib2IndicatorSection is2 = bean2.gr.getIs();
@@ -395,6 +453,7 @@ public class GribRawPanel extends JPanel {
 
 
    public void setGribFile(RandomAccessFile raf) throws Exception {
+    this.raf = raf;
 
     raf.seek(0);
     if (!raf.searchForward(matcher, 8000)) return; // must find "GRIB" in first 8k
@@ -789,6 +848,10 @@ public class GribRawPanel extends JPanel {
 
     public final int getForecastTime() {
       return pdsv.getForecastTime();
+    }
+
+    public String getHeader() {
+      return gr.getHeader();
     }
 
     public String getSurfaceType() {

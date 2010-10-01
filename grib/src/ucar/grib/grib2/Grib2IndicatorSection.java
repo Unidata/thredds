@@ -55,140 +55,154 @@ import java.io.IOException;
 /**
  * A class that represents the IndicatorSection of a GRIB record.
  * The first section of a Grib record
- *
  */
 
 public final class Grib2IndicatorSection {
 
-    /**
-     * Length in bytes of GRIB record.
-     */
-    private long gribLength;
+  /**
+   * Length in bytes of GRIB record.
+   */
+  private long gribLength;
 
-    /**
-     * Length in bytes of IndicatorSection.
-     * Section length differs between GRIB editions 1 and 2
-     * Currently only GRIB edition 2 supported - length is 16 octets/bytes.
-     */
-    private int length;
+  /**
+   * Length in bytes of IndicatorSection.
+   * Section length differs between GRIB editions 1 and 2
+   * Currently only GRIB edition 2 supported - length is 16 octets/bytes.
+   */
+  private int length;
 
-    /**
-     * Discipline - GRIB Master Table Number.
-     */
-    private int discipline;
+  /**
+   * Discipline - GRIB Master Table Number.
+   */
+  private int discipline;
 
-    /**
-     * Edition of GRIB specification used.
-     */
-    private final int edition;
+  /**
+   * Edition of GRIB specification used.
+   */
+  private final int edition;
+
+  // starting and ending position in the file
+  private long startPos = -1, endPos = -1;
 
 
-    // *** constructors *******************************************************
+  // *** constructors *******************************************************
 
-    /**
-     * Constructs a <tt>Grib2IndicatorSection</tt> object from a byteBuffer.
-     *
-     * @param raf RandomAccessFile with IndicatorSection content
-     *
-     * @throws IOException  if raf contains no valid GRIB file
-     * @throws NotSupportedException _more_
-     */
-    public Grib2IndicatorSection(RandomAccessFile raf)  throws IOException {
+  /**
+   * Constructs a <tt>Grib2IndicatorSection</tt> object from a byteBuffer.
+   *
+   * @param raf RandomAccessFile with IndicatorSection content
+   * @throws IOException           if raf contains no valid GRIB file
+   * @throws NotSupportedException _more_
+   */
+  public Grib2IndicatorSection(RandomAccessFile raf) throws IOException {
 
-        //if Grib edition 1, get bytes for the gribLength
-        int[] data = new int[3];
-        for (int i = 0; i < 3; i++) {
-            data[i] = raf.read();
-        }
-        //System.out.println( "data[]=" + data[0] +", "+ data[1]+", "+data[2] ) ;
-
-        // edition of GRIB specification
-        edition = raf.read();
-        //System.out.println( "edition=" + edition ) ;
-        if (edition == 1) {
-            // length of GRIB record
-            gribLength = (long) GribNumbers.uint3(data[0], data[1], data[2]);
-            //System.out.println( "Error Grib 1 record in Grib2 file" ) ;
-            //System.out.println( "edition 1 gribLength=" + gribLength ) ;
-            // skip the grib1 record
-            raf.seek( raf.getFilePointer() + gribLength -4 );
-            length = 8;
-
-        } else if (edition == 2) {
-            // length of GRIB record
-            discipline = data[2];
-            //System.out.println( "discipline=" + discipline) ;
-            gribLength = GribNumbers.int8(raf);
-            //System.out.println( "editon 2 gribLength=" + gribLength) ;
-            length = 16;
-        } else {
-            throw new NotSupportedException("GRIB edition " + edition
-                                            + " is not yet supported");
-        }
-    }  // end Grib2IndicatorSection
-
-    /**
-     * Get the byte length of this GRIB record.
-     *
-     * @return length in bytes of GRIB record
-     */
-    public final long getGribLength() {
-        return gribLength;
+    //if Grib edition 1, get bytes for the gribLength
+    int[] data = new int[3];
+    for (int i = 0; i < 3; i++) {
+      data[i] = raf.read();
     }
+    //System.out.println( "data[]=" + data[0] +", "+ data[1]+", "+data[2] ) ;
 
-    /**
-     * Get the byte length of the IndicatorSection0 section.
-     *
-     * @return length in bytes of IndicatorSection0 section
-     */
-    public final int getLength()
-    {
-       return length;
+    // edition of GRIB specification
+    edition = raf.read();
+    //System.out.println( "edition=" + edition ) ;
+    if (edition == 1) {
+      // length of GRIB record
+      gribLength = (long) GribNumbers.uint3(data[0], data[1], data[2]);
+      //System.out.println( "Error Grib 1 record in Grib2 file" ) ;
+      //System.out.println( "edition 1 gribLength=" + gribLength ) ;
+      // skip the grib1 record
+      raf.seek(raf.getFilePointer() + gribLength - 4);
+      length = 8;
+
+    } else if (edition == 2) {
+      // length of GRIB record
+      discipline = data[2];
+      //System.out.println( "discipline=" + discipline) ;
+      gribLength = GribNumbers.int8(raf);
+      //System.out.println( "editon 2 gribLength=" + gribLength) ;
+      length = 16;
+    } else {
+      throw new NotSupportedException("GRIB edition " + edition
+              + " is not yet supported");
     }
+  }  // end Grib2IndicatorSection
 
-    /**
-     * Discipline - GRIB Master Table Number.
-     * @return discipline number
-     */
-    public final int getDiscipline() {
-        return discipline;
+  /**
+   * Get the byte length of this GRIB record.
+   *
+   * @return length in bytes of GRIB record
+   */
+  public final long getGribLength() {
+    return gribLength;
+  }
+
+  /**
+   * Get the byte length of the IndicatorSection0 section.
+   *
+   * @return length in bytes of IndicatorSection0 section
+   */
+  public final int getLength() {
+    return length;
+  }
+
+  /**
+   * Discipline - GRIB Master Table Number.
+   *
+   * @return discipline number
+   */
+  public final int getDiscipline() {
+    return discipline;
+  }
+
+  /**
+   * Discipline - GRIB Master Table Name.
+   *
+   * @return disciplineName
+   */
+  public final String getDisciplineName() {
+    switch (discipline) {
+
+      case 0:
+        return "Meteorological products";
+
+      case 1:
+        return "Hydrological products";
+
+      case 2:
+        return "Land surface products";
+
+      case 3:
+        return "Space products";
+
+      case 10:
+        return "Oceanographic products";
+
+      default:
+        return "Unknown";
     }
+  }
 
-    /**
-     * Discipline - GRIB Master Table Name.
-     * @return disciplineName
-     */
-    public final String getDisciplineName() {
-        switch (discipline) {
+  /**
+   * Get the edition of the GRIB specification used.
+   *
+   * @return edition number of GRIB specification
+   */
+  public final int getGribEdition() {
+    return edition;
+  }
 
-          case 0 :
-              return "Meteorological products";
+  public long getStartPos() {
+    return startPos;
+  }
 
-          case 1 :
-              return "Hydrological products";
+  public void setPos(long startPos, long endPos) {
+    this.startPos = startPos;
+    this.endPos = endPos;
+  }
 
-          case 2 :
-              return "Land surface products";
-
-          case 3 :
-              return "Space products";
-
-          case 10 :
-              return "Oceanographic products";
-
-          default :
-              return "Unknown";
-        }
-    }
-
-
-    /**
-     * Get the edition of the GRIB specification used.
-     *
-     * @return edition number of GRIB specification
-     */
-    public final int getGribEdition() {
-        return edition;
-    }
+  public long getEndPos() {
+    return endPos;
+  }
 }
 

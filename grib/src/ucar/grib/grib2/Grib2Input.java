@@ -59,9 +59,27 @@ import java.util.regex.Pattern;
  */
 
 public final class Grib2Input {
+  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2Input.class);
+
+  static public boolean isValidFile(RandomAccessFile raf) throws IOException {
+    raf.seek(0);
+    if (!raf.searchForward(matcher, 8000)) return false; // must find "GRIB" in first 8k
+    raf.skipBytes(4);
+    //  Read Section 0 Indicator Section to get Edition number
+    Grib2IndicatorSection is = new Grib2IndicatorSection(raf);  // section 0
+    if (is.getGribEdition() != 1 && is.getGribEdition() != 2)
+      return false;
+    if (is.getGribLength() > raf.length())
+      return false;
+
+    return true;
+  }
+
+  /////////////////////////////////////////////////////////////////////
 
   private final RandomAccessFile raf;
   private String header = "GRIB2";
+  private long startPos = -1;
 
   /**
    * IDD Pattern to extract header.
@@ -118,7 +136,7 @@ public final class Grib2Input {
    */
   public final boolean scan(boolean getProductsOnly, boolean oneRecord) throws IOException {
 
-    long start = System.currentTimeMillis();
+    //long start = System.currentTimeMillis();
 
     Grib2IndicatorSection is = null;
     Grib2IdentificationSection id = null;
@@ -135,7 +153,6 @@ public final class Grib2Input {
       //System.out.println( "Scan succeeded to find end of record");
     }
     //System.out.println("Scan file pointer =" + raf.getFilePointer());
-    long EOR = 0;
     boolean startAtHeader = true;  // otherwise skip to GDS
     boolean processGDS = true;
     long gdsOffset = 0;     // GDS offset from start of file
@@ -144,8 +161,6 @@ public final class Grib2Input {
     Grib2DataRepresentationSection drs = null;
     Grib2BitMapSection bms = null;
     Grib2DataSection ds = null;
-    //int mvm = -1;
-    //float pmv = -1, smv = -1;
 
     //scan until we run out
     while (raf.getFilePointer() < raf.length()) {
@@ -157,13 +172,14 @@ public final class Grib2Input {
 
         // Read Section 0 Indicator Section
         is = new Grib2IndicatorSection(raf);  // section 0
-        //System.out.println( "Grib record length=" + is.getGribLength());
         // EOR (EndOfRecord) calculated so skipping data sections is faster
-        EOR = raf.getFilePointer() + is.getGribLength() - is.getLength();
+        long endPos = raf.getFilePointer() + is.getGribLength() - is.getLength();
+        is.setPos(startPos, endPos);
+
         // TODO: delete is.getDiscipline from if when 40 beta released
         if (is.getGribEdition() == 1 || is.getDiscipline() == 255) {
-          //System.out.println( "Error Grib 1 record in Grib2 file" ) ;
-          raf.seek(EOR);
+          logger.warn( "Grib1 record in Grib2 file "+raf.getLocation()) ;
+          raf.seek(endPos);
           continue;
         }
         // Read other SectionsGrib2
@@ -267,13 +283,9 @@ public final class Grib2Input {
           }
         }
       }
-      //System.out.println( "raf.getFilePointer=" + raf.getFilePointer() );
-      //System.out.println( "raf.length()=" + raf.length() );
     }  // end raf.getFilePointer() < raf.length()
-    //System.out.println("GribInput: processed in " +
-    //   (System.currentTimeMillis()- start) + " milliseconds");
-    return true;
 
+    return true;
   }  // end scan
 
   /**
@@ -292,21 +304,9 @@ public final class Grib2Input {
     return is.getGribEdition();
   }
 
-  static public boolean isValidFile(RandomAccessFile raf) throws IOException {
-    raf.seek(0);
-    if (!raf.searchForward(matcher, 8000)) return false; // must find "GRIB" in first 8k
-    raf.skipBytes(4);
-    //  Read Section 0 Indicator Section to get Edition number
-    Grib2IndicatorSection is = new Grib2IndicatorSection(raf);  // section 0
-    if (is.getGribEdition() != 1 && is.getGribEdition() != 2)
-      return false;
-    if (is.getGribLength() > raf.length())
-      return false;
-
-    return true;
-  }
 
   /**
+   * LOOK change to KMPmatch
    * @param raf  RandomAccessFile
    * @param stop don't go pass this point
    * @return true or false, header found
@@ -337,6 +337,8 @@ public final class Grib2Input {
           //header = hdr.toString();
           header = "GRIB2";
         }
+
+        startPos = raf.getFilePointer() - 4;
         //System.out.println( "header =" + header.toString() );
         return true;
       } else {

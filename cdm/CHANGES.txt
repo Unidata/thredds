@@ -3,6 +3,9 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Changes in version 4.2:
+ 9: (2010-xx-xx)
+  ToolsUI: Grib2RawPanel can save individual records to a file
+  Grib2Input: track start, end file pos of records
  8: (2010-09-30)
   move ucar.unidata.util completely to unidataCommon for now
   Grib2: new way to calculate intervals, works even for NDFD 
