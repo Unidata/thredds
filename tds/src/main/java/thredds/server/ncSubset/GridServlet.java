@@ -123,7 +123,7 @@ public class GridServlet extends AbstractServlet {
 
     String pathInfo = req.getPathInfo();
     if ( pathInfo == null ) {
-      log.info( "doGet(): Path info was null - " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_NOT_FOUND, -1 ));
+      log.info( "doGet(): Path info was null - " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_NOT_FOUND, 0));
       res.sendError( HttpServletResponse.SC_NOT_FOUND);
       return;
     }
