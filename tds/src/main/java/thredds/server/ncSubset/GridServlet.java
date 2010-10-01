@@ -88,9 +88,11 @@ public class GridServlet extends AbstractServlet {
     //maxFileDownloadSize = ThreddsConfig.getBytes("NetcdfSubsetService.maxFileDownloadSize", (long) 1000 * 1000 * 1000);
     String cache = ThreddsConfig.get("NetcdfSubsetService.dir", contentPath + "/cache");
     File cacheDir = new File(cache);
-    if (!cacheDir.mkdirs()) {
-      logServerStartup.error("Cant make cache directory "+cache);
-      throw new IllegalArgumentException("Cant make cache directory "+cache);
+    if (!cacheDir.exists())  {
+      if (!cacheDir.mkdirs()) {
+        logServerStartup.error("Cant make cache directory "+cache);
+        throw new IllegalArgumentException("Cant make cache directory "+cache);
+      }
     }
 
     int scourSecs = ThreddsConfig.getSeconds("NetcdfSubsetService.scour", 60 * 10);
