@@ -186,8 +186,8 @@
     <dir>/data/thredds/tds-live/content/thredds/cache/ehcache/</dir>
   </ehcache>
 
-  <featureCollection>
+  <FeatureCollection>
     <dir>/data/thredds/tds-live/content/thredds/cache/collection/</dir>
-  </featureCollection>
+  </FeatureCollection>
 
 </threddsConfig>
