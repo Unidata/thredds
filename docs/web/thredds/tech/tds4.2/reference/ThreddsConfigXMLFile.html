@@ -140,7 +140,7 @@ list here, plus any catalogs that are referenced by them in a <strong>catalogRef
    threddsConfig.xml:</p>
 <pre style="margin-left: 40px;">&lt;CatalogServices&gt;<br>    &lt;allowRemote&gt;true&lt;/allowRemote&gt;<br>&lt;/CatalogServices&gt;<br></pre>
  
- <h3><a name="DiskCache"></a>CDM library Disk cache </h3>
+<h3><a name="DiskCache"></a>CDM library Disk cache </h3>
 <pre>  &lt;<strong>DiskCache</strong>&gt;<br>    &lt;<strong>alwaysUse</strong>&gt;false&lt;/alwaysUse&gt;<br>    &lt;<strong>dir</strong>&gt;/temp/cache/&lt;/dir&gt;<br>    &lt;<strong>scour</strong>&gt;1 hour&lt;/scour&gt;<br>    &lt;<strong>maxSize</strong>&gt;10 Gb&lt;/maxSize&gt;<br>  &lt;/DiskCache&gt;<br></pre>
  <p>These elements control where the <em><strong>CDM/NetCDF-Java</strong></em> library writes temporary files, for example when it needs to unzip files, or write GRIB index files, etc. If <strong>alwaysUse</strong> is true, these temporary files will always be written to the <em>cache directory</em> specified by <strong>dir</strong> (<a href="#Cache_Locations">choosing a cache directory</a>). If <strong>alwaysUse</strong>
 is false, TDS will try to write them to the same directory as the
@@ -361,7 +361,7 @@ exists, assuming new files are generated externally. <br>
 
  <h2>Options in 4.1 </h2>
  <h3>Controlling Ehcache </h3>
-<pre> &lt;eh<strong>cache</strong>&gt;<br>   &lt;<strong>configFile</strong>&gt;/tomcat_home/webapp/WEB-INF/ehcache.xml&lt;/<strong>configFile</strong>&gt;<br>   &lt;<strong>directory</strong>&gt;/tomcat_home/content/thredds/ehcache/&lt;/<strong>directory</strong>&gt;<br> &lt;/ehcache&gt;<br></pre>
+<pre> &lt;eh<strong>cache</strong>&gt;<br>   &lt;<strong>configFile</strong>&gt;/tomcat_home/webapp/WEB-INF/ehcache.xml&lt;/<strong>configFile</strong>&gt;<br>   &lt;<strong>dir</strong>&gt;/tomcat_home/content/thredds/ehcache/&lt;/<strong>dir</strong>&gt;<br> &lt;/ehcache&gt;<br></pre>
 <ul>
    <li>location of ehcache configuration file</li>
    <li>location of ehcache data files<br>
@@ -379,7 +379,7 @@ appropriately.</li>
  </ul>
 <hr style="width: 100%; height: 2px;">
 <h2>Options in 4.2 </h2>
-<pre> &lt;featureCollection<strong></strong>&gt;<br>   &lt;<strong>cacheDirectory</strong>&gt;/tomcat_home/content/thredds/collectionCache/&lt;/<strong>cacheDirectory</strong>&gt;<br> &lt;/featureCollection&gt;<br></pre>
+<pre> &lt;featureCollection<strong></strong>&gt;<br>   &lt;<strong>dir</strong>&gt;/tomcat_home/content/thredds/collectionCache/&lt;/<strong>dir</strong>&gt;<br> &lt;/featureCollection&gt;<br></pre>
 <ul>
   <li>location of Feature Collection cache<br>
   </li>

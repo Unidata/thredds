@@ -72,7 +72,9 @@ public class CdmInit {
 
   void init(TdsContext tdsContext) {
     // new for 4.2 - feature collection caching
-    String fcCache = ThreddsConfig.get("FeatureCollection.cacheDirectory", tdsContext.getContentDirectory().getPath() + "/collectionCache/");
+    String fcCache = ThreddsConfig.get("FeatureCollection.dir", null);
+    if (fcCache == null)
+      fcCache = ThreddsConfig.get("FeatureCollection.cacheDirectory", tdsContext.getContentDirectory().getPath() + "/collectionCache/"); // old way
     try {
       thredds.inventory.bdb.MetadataManager.setCacheDirectory(fcCache);
       startupLog.info("CdmInit: FeatureCollection.cacheDirectory= "+fcCache);
@@ -82,7 +84,9 @@ public class CdmInit {
 
     // new for 4.1 - ehcache object caching
     String ehConfig = ThreddsConfig.get("ehcache.configFile", tdsContext.getWebinfPath() + "/ehcache.xml");
-    String ehDirectory = ThreddsConfig.get("ehcache.directory", tdsContext.getContentDirectory().getPath() + "/ehcache/");
+    String ehDirectory = ThreddsConfig.get("ehcache.dir", null);
+    if (ehDirectory == null)
+      ehDirectory = ThreddsConfig.get("ehcache.directory", tdsContext.getContentDirectory().getPath() + "/ehcache/"); // old way
     try {
       cacheManager = thredds.filesystem.ControllerCaching.makeStandardController(ehConfig, ehDirectory);
       thredds.inventory.DatasetCollectionManager.setController(cacheManager);

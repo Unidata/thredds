@@ -2,7 +2,7 @@
 <threddsConfig>
 
   <serverInformation>
-    <name>IDD TDS</name>
+       <name>IDD TDS</name>
     <logoUrl>threddsIcon.gif</logoUrl>
     <logoAltText>IDD TDS</logoAltText>
 

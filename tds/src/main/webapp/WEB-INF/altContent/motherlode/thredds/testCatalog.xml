@@ -20,8 +20,10 @@
     </metadata>
   </datasetScan>
 
+  <!-- idv -->
   <catalogRef xlink:title="GEMPAK Test Catalog" xlink:href="gempakTestCat.xml" name="" />
   
+  <!-- idv -->
   <datasetScan name="McIDAS AREA Test files" ID="McIDAS/test"
                path="mcidas/test" location="/data/ldm/pub/casestudies/idvtest/sat">
     <metadata inherited="true">
@@ -29,14 +31,17 @@
     </metadata>
   </datasetScan>
 
+  <!-- john -->
   <catalogRef xlink:href="cdmremoteCatalog.xml" xlink:title="CDM Remote Test datasets" name=""/>
 
+  <!-- john -->
   <dataset name="Test Restricted Dataset" ID="testRestrictedDataset" urlPath="restrict/testData.nc"
            restrictAccess="tiggeData">
     <serviceName>odap</serviceName>
     <dataType>Grid</dataType>
   </dataset>
 
+  <!-- dennis -->
   <datasetScan name="OPeNDAP Test Data" ID="testdods" path="testdods" location="/data/testdods">
     <metadata inherited="true">
       <serviceName>all</serviceName>
