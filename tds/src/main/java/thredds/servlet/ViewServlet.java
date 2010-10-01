@@ -270,7 +270,7 @@ public class ViewServlet extends AbstractServlet {
     }
   }
 
-  private static class StaticView implements ViewerLinkProvider {
+  protected static class StaticView implements ViewerLinkProvider {
 
     private final String propertyNamePrefix = "viewer";
 
@@ -345,29 +345,29 @@ public class ViewServlet extends AbstractServlet {
       return result;
     }
 
-    private String sub(String org, InvDatasetImpl ds, HttpServletRequest req) {
-      List<InvAccess> access = ds.getAccess();
-      if (access.size() == 0) return org;
 
-      // look through all access for {serviceName}
-      for (InvAccess acc : access) {
-        String sname = "{"+acc.getService().getServiceType()+"}";
-        if (org.indexOf(sname) >= 0) {
-          String relUrl = acc.getStandardUri().toString();
-          String server = ServletUtil.getRequestServer(req);
+  private String sub( String org, InvDatasetImpl ds, HttpServletRequest req )
+  {
+    List<InvAccess> access = ds.getAccess();
+    if ( access.size() == 0 ) return org;
 
-          return StringUtil.substitute(org, sname, server + relUrl);
-        }
-      }
-
-      String sname = "{url}";
-      if ((org.indexOf(sname) >= 0) && (access.size() > 0)) {
-        InvAccess acc = access.get(0); // just use the first one
-        return StringUtil.substitute(org, sname, acc.getStandardUri().toString());
-      }
-
-      return org;
+    // look through all access for {serviceName}
+    for ( InvAccess acc : access )
+    {
+      String sname = "{" + acc.getService().getServiceType() + "}";
+      if ( org.indexOf( sname ) >= 0 )
+        return StringUtil.substitute( org, sname, acc.getStandardUri().toString() );
     }
+
+    String sname = "{url}";
+    if ( ( org.indexOf( sname ) >= 0 ) && ( access.size() > 0 ) )
+    {
+      InvAccess acc = access.get( 0 ); // just use the first one
+      return StringUtil.substitute( org, sname, acc.getStandardUri().toString() );
+    }
+
+    return org;
   }
+}
 
 }

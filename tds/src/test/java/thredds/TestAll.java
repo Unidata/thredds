@@ -37,6 +37,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
+import junit.framework.JUnit4TestAdapter;
 import junit.framework.TestSuite;
 
 /**
@@ -49,7 +50,8 @@ public class TestAll
   {
     TestSuite suite = new TestSuite();
     suite.addTestSuite( thredds.servlet.TestDataRootHandler.class );
-    //suite.addTest( new JUnit4TestAdapter( thredds.server.catalogservice.LocalCatalogServiceControllerTest.class ) );
+    suite.addTest( new JUnit4TestAdapter( thredds.servlet.StaticViewerTest.class ));
+    // suite.addTest( new JUnit4TestAdapter( thredds.server.catalogservice.LocalCatalogServiceControllerTest.class ) );
     suite.addTestSuite( thredds.server.catalogservice.TestLocalCatalogRequest.class );
     suite.addTestSuite( thredds.server.catalogservice.TestRemoteCatalogRequest.class );
     suite.addTestSuite( thredds.util.TestStartsWithPathAliasReplacement.class );
