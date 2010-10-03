@@ -45,7 +45,6 @@ Changes in version 4.2:
   Fix problem with WMS ignoring _FillValue (see JIRA TDS-108). Clean up some NetcdfDataset and GridDataset enhance mode stuff.
   refactor grib, deal with time intervals
   iosp.IndexChunker needs to use a special version of Index that uses longs, since the source can be a file > 2^32
-  remove old iosp.Indexer cruft
  4: (2010-07-26)
   FMRCDataset process ncml in ProtoDataset element
   FMRCDataset check if 2D dataset exists, ncml in ProtoDataset

@@ -556,8 +556,7 @@
 
     <dataset ID="FMRC/NCEP/RUC" name="Rapid Update Cycle (RUC) Model">
       <metadata inherited="true">
-        <documentation type="summary">NCEP Rapid Update Cycle (RUC) Model: frequently updated short-range weather
-          forecasts.
+        <documentation type="summary">NCEP Rapid Update Cycle (RUC) Model: frequently updated short-range weather forecasts.
         </documentation>
         <documentation xlink:href="http://meted.ucar.edu/nwp/pcu2/rucintro.htm"
                        xlink:title="COMET MetEd (Meteorology Education and Training) documentation"/>
@@ -584,9 +583,8 @@
           <collection
               spec="/data/ldm/pub/native/grid/NCEP/RUC2/CONUS_20km/surface/RUC2_CONUS_20km_surface_#yyyyMMdd_HHmm#.grib2"
               name="RUC2_CONUS_20km_surface"
-              recheckAfter="15 min"
               olderThan="5 min"/>
-          <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
+          <update startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
           <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
           <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
         </featureCollection>
@@ -604,9 +602,8 @@
           <collection
               spec="/data/ldm/pub/native/grid/NCEP/RUC2/CONUS_20km/pressure/RUC2_CONUS_20km_pressure_#yyyyMMdd_HHmm#.grib2"
               name="RUC2_CONUS_20km_pressure"
-              recheckAfter="15 min"
               olderThan="5 min"/>
-          <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
+          <update startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
           <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
           <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
         </featureCollection>
@@ -624,9 +621,8 @@
           <collection
               spec="/data/ldm/pub/native/grid/NCEP/RUC2/CONUS_20km/hybrid/RUC2_CONUS_20km_hybrid_#yyyyMMdd_HHmm#.grib2"
               name="RUC2_CONUS_20km_hybrid"
-              recheckAfter="15 min"
               olderThan="5 min"/>
-          <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
+          <update startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
           <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
           <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
         </featureCollection>
@@ -645,9 +641,8 @@
         <collection
             spec="/data/ldm/pub/native/grid/NCEP/RUC2/CONUS_40km/RUC2_CONUS_40km_#yyyyMMdd_HHmm#.grib1"
             name="RUC2_CONUS_40km"
-            recheckAfter="15 min"
             olderThan="5 min"/>
-        <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
+        <update startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
         <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
         <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
       </featureCollection>
@@ -665,9 +660,8 @@
         <collection
             spec="/data/ldm/pub/native/grid/NCEP/RUC/CONUS_80km/RUC_CONUS_80km_#yyyyMMdd_HHmm#.grib1"
             name="RUC_CONUS_80km"
-            recheckAfter="15 min"
             olderThan="5 min"/>
-        <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
+        <update startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
         <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
         <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
       </featureCollection>
