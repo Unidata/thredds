@@ -309,8 +309,13 @@ public class Level2VolumeScan {
       Level2Record r =(Level2Record) group.get(0);
       if(runCheck) testScan(name, group);
       if(r.getGateCount(REFLECTIVITY_HIGH) > 500 || r.getGateCount(VELOCITY_HIGH) > 1000) {
-        max_radials_hr = Math.max(max_radials_hr, group.size());
-        min_radials_hr = Math.min(min_radials_hr, group.size());
+          if(group.size() <= 360) {
+              max_radials = Math.max(max_radials, group.size());
+              min_radials = Math.min(min_radials, group.size());
+          } else {
+              max_radials_hr = Math.max(max_radials_hr, group.size());
+              min_radials_hr = Math.min(min_radials_hr, group.size());
+          }
       }
       else {
         max_radials = Math.max(max_radials, group.size());
