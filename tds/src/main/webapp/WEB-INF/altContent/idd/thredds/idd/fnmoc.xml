@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
+         xmlns:xlink="http://www.w3.org/1999/xlink" name="Unidata THREDDS Data Server" version="1.0.2">
+
+  <service name="latest" serviceType="Resolver" base=""/>
+
+  <service name="fmrcServices" serviceType="Compound" base="">
+    <service name="ncdods" serviceType="OPENDAP" base="/thredds/dodsC/"/>
+    <service name="HTTPServer" serviceType="HTTPServer" base="/thredds/fileServer/"/>
+    <service name="wcs" serviceType="WCS" base="/thredds/wcs/"/>
+    <service name="wms" serviceType="WMS" base="/thredds/wms/"/>
+    <service name="ncss" serviceType="NetcdfSubset" base="/thredds/ncss/grid/"/>
+    <service name="cdmremote" serviceType="CdmRemote" base="/thredds/cdmremote/"/>
+  </service>
+
+  <dataset name="FNMOC Model Data">
+
+    <metadata inherited="true">
+      <serviceName>fmrcServices</serviceName>
+      <authority>edu.ucar.unidata</authority>
+      <dataType>Grid</dataType>
+      <dataFormat>GRIB-1</dataFormat>
+      <documentation xlink:href="https://www.fnmoc.navy.mil/public"
+                     xlink:title="FNMOC Model documentation"/>
+      <documentation type="rights">Freely available</documentation>
+      <documentation type="processing_level">Transmitted through Unidata Internet Data Distribution.</documentation>
+      <documentation type="processing_level">Read by CDM Forecast Model Run Collection.</documentation>
+
+<!--
+      <creator>
+        <name vocabulary="DIF">DOC/NOAA/NWS/NCEP</name>
+        <contact url="http://www.ncep.noaa.gov/" email="http://www.ncep.noaa.gov/mail_liaison.shtml"/>
+      </creator>
+      <publisher>
+        <name vocabulary="DIF">UCAR/UNIDATA</name>
+        <contact url="http://www.unidata.ucar.edu/" email="support@unidata.ucar.edu"/>
+      </publisher>
+//-->
+      <creator>
+        <name vocabulary="DIF">Fleet Numerical Meteorology and Oceanography Center(FNMOC)
+        </name>
+        <contact url="http://gcmd.nasa.gov/Aboutus/software_docs/help_guide.html" email="http://gcmd.nasa.gov/MailComments/MailComments.jsf?rcpt=gcmduso"/>
+      </creator>
+      <publisher>
+        <name vocabulary="ADN">University Corporation for Atmospheric Research (UCAR)/Unidata</name>
+        <contact url="http://www.unidata.ucar.edu/" email="support@unidata.ucar.edu"/>
+      </publisher>
+      <timeCoverage>
+        <end>present</end>
+        <duration>45 days</duration>
+      </timeCoverage>
+    </metadata>
+
+    <dataset name="Navy Operational Global Atmospheric Prediction System (NOGAPS) Model">
+      <metadata inherited="true">
+        <documentation type="summary">FNMOC Fleet Numerical Meteorology and Oceanography Center
+        </documentation>
+        <documentation xlink:href="http://www.nrlmry.navy.mil/nogaps_his.htm"
+                       xlink:title="NOGAPS home page"/>
+      </metadata>
+
+      <featureCollection name="FNMOC-NOGAPS-Global_1p0deg" featureType="FMRC" harvest="true" path="fmrc/FNMOC/NOGAPS/Global_1p0deg">
+        <metadata inherited="true">
+          <documentation type="summary">FNMOC GFS Model : AWIPS 203 (J) Grid. National - Alaska (polar stereographic).
+            Model runs are made at 0, 6, 12, and 18Z, with analysis and forecasts every 6 hours out 5 days.
+            Horizontal = 45 by 39 points, resolution 190.5 km, Polar Stereographic projection.
+            Vertical = 1000 to 100 hPa mandatory pressure levels (10 levels); surface, height above ground, pressure layers.
+          </documentation>
+        </metadata>
+
+        <collection spec="/data/ldm/pub/native/grid/FNMOC/NOGAPS/Global_1p0deg/FNMOC_NOGAPS_Global_1p0deg_#yyyyMMdd_HHmm#.grib1"
+                    name="FNMOC_NOGAPS_Global_1p0deg"
+                    recheckAfter="15 min"
+                    olderThan="5 min"/>
+        <manage deleteAfter="45 days" check="0 0 3 * * ? *" />
+        <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
+        <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
+        <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
+      </featureCollection>
+
+    </dataset>
+
+    <dataset name="Wave Watch 3 (WW3) Model">
+      <metadata inherited="true">
+        <documentation type="summary">FNMOC Fleet Numerical Meteorology and Oceanography Center
+        </documentation>
+        <documentation xlink:href="http://gcmd.nasa.gov/records/GCMD_FNMOC_WaveWatchIII.html"
+                       xlink:title="GCMD documentation"/>
+      </metadata>
+
+      <featureCollection name="FNMOC-WW3-Global_1p0deg" featureType="FMRC" harvest="true" path="fmrc/FNMOC/WW3/Global_1p0deg">
+        <metadata inherited="true">
+          <documentation type="summary">FNMOC WW3 Global_1p0deg Model : Global Lat/Lon grid.
+            Model runs are made at 0, and 12Z, with analysis and forecasts every 3 hours out 24 hours then every 6 hours out 180 hours.
+            Horizontal= 181 by 360 points, resolution 1 degree, Lat/Lon projection.
+          </documentation>
+        </metadata>
+
+        <collection spec="/data/ldm/pub/native/grid/FNMOC/WW3/Global_1p0deg/FNMOC_WW3_Global_1p0deg_#yyyyMMdd_HHmm#.grib1"
+                    name="FNMOC_WW3_Global_1p0deg"
+                    recheckAfter="15 min"
+                    olderThan="5 min"/>
+        <manage deleteAfter="45 days" check="0 0 3 * * ? *" />
+        <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
+        <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
+        <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
+      </featureCollection>
+
+    </dataset>
+
+    <dataset name="Forecast of Aerosol Radiative Optical Properties (FAROP) Model">
+      <metadata inherited="true">
+        <documentation type="summary">FNMOC Fleet Numerical Meteorology and Oceanography Center
+        </documentation>
+        <documentation xlink:href="http://www.bsc.es/wmo/files/Westphal_presentation.pdf"
+                       xlink:title="FAROP documentation(pdf)"/>
+      </metadata>
+
+      <featureCollection name="FNMOC-FAROP-Global_1p0deg" featureType="FMRC" harvest="true" path="fmrc/FNMOC/FAROP/Global_1p0deg">
+        <metadata inherited="true">
+          <documentation type="summary">FNMOC FAROP Global_1p0deg Model : Global Lat/Lon grid.
+            Model runs are made at 0, 6, 12, and 18Z, with analysis and forecasts every 3 hours out 9 hours.
+            Horizontal= 181 by 360 points, resolution 1 degree, Lat/Lon projection.
+          </documentation>
+        </metadata>
+
+        <collection spec="/data/ldm/pub/native/grid/FNMOC/FAROP/Global_1p0deg/FNMOC_FAROP_Global_1p0deg_#yyyyMMdd_HHmm#.grib1"
+                    name="FNMOC_FAROP_Global_1p0deg"
+                    recheckAfter="15 min"
+                    olderThan="5 min"/>
+        <manage deleteAfter="45 days" check="0 0 3 * * ? *" />
+        <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
+        <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
+        <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
+      </featureCollection>
+
+    </dataset>
+
+    <dataset name="Coupled Ocean / Atmosphere Mesoscale Prediction System (COAMPS) Model">
+      <metadata inherited="true">
+        <documentation type="summary">FNMOC Fleet Numerical Meteorology and Oceanography Center
+        </documentation>
+        <documentation xlink:href="http://www.nrlmry.navy.mil/coamps-web/web/home"
+                       xlink:title="COAMPS home page"/>
+        <documentation xlink:href="http://gcmd.nasa.gov/records/COAMPS.html"
+                       xlink:title="GCMD Notes"/>
+      </metadata>
+
+      <featureCollection name="FNMOC-COAMPS-Western_Atlantic" featureType="FMRC" harvest="true" path="fmrc/FNMOC/COAMPS/Western_Atlantic">
+        <metadata inherited="true">
+          <documentation type="summary">FNMOC COAMPS Western Atlantic Model : Global Lat/Lon grid.
+            Model runs are made at 0 and 12Z, with analysis and forecasts every 6 hours out 2 days.
+            Horizontal= 176 by 191 points, resolution .2 degree, Lat/Lon projection.
+          </documentation>
+        </metadata>
+
+        <collection spec="/data/ldm/pub/native/grid/FNMOC/COAMPS/Western_Atlantic/FNMOC_COAMPS_Western_Atlantic_#yyyyMMdd_HHmm#.grib1"
+                    name="FNMOC_COAMPS_Western_Atlantic"
+                    recheckAfter="15 min"
+                    olderThan="5 min"/>
+        <manage deleteAfter="45 days" check="0 0 3 * * ? *" />
+        <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
+        <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
+        <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
+      </featureCollection>
+
+      <featureCollection name="FNMOC-COAMPS-Central_America" featureType="FMRC" harvest="true" path="fmrc/FNMOC/COAMPS/Central_America">
+        <metadata inherited="true">
+          <documentation type="summary">FNMOC COAMPS Central America Model : Global Lat/Lon grid.
+            Model runs are made at 0 and 12Z, with analysis and forecasts every 6 hours out 2 days.
+            Horizontal= 161 by 301 points, resolution .2 degree, Lat/Lon projection.
+          </documentation>
+        </metadata>
+
+        <collection spec="/data/ldm/pub/native/grid/FNMOC/COAMPS/Central_America/FNMOC_COAMPS_Central_America_#yyyyMMdd_HHmm#.grib1"
+                    name="FNMOC_COAMPS_Central_America"
+                    recheckAfter="15 min"
+                    olderThan="5 min"/>
+        <manage deleteAfter="45 days" check="0 0 3 * * ? *" />
+        <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
+        <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
+        <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
+      </featureCollection>
+
+      <featureCollection name="FNMOC-COAMPS-Eastern_Pacific" featureType="FMRC" harvest="true" path="fmrc/FNMOC/COAMPS/Eastern_Pacific">
+        <metadata inherited="true">
+          <documentation type="summary">FNMOC COAMPS Eastern Pacific Model : Global Lat/Lon grid.
+            Model runs are made at 0 and 12Z, with analysis and forecasts every 6 hours out 2 days.
+            Horizontal= 156 by 231 points, resolution .2 degree, Lat/Lon projection.
+          </documentation>
+        </metadata>
+
+        <collection spec="/data/ldm/pub/native/grid/FNMOC/COAMPS/Eastern_Pacific/FNMOC_COAMPS_Eastern_Pacific_#yyyyMMdd_HHmm#.grib1"
+                    name="FNMOC_COAMPS_Eastern_Pacific"
+                    recheckAfter="15 min"
+                    olderThan="5 min"/>
+        <manage deleteAfter="45 days" check="0 0 3 * * ? *" />
+        <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
+        <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
+        <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
+      </featureCollection>
+    </dataset>
+
+    <dataset name="Navy Coupled Ocean Data Assimilation (NCODA) Model">
+      <metadata inherited="true">
+        <documentation type="summary">FNMOC Fleet Numerical Meteorology and Oceanography Center
+        </documentation>
+        <documentation xlink:href="http://coastalmodeling.rsmas.miami.edu/Application/View/21/MQ=="
+                       xlink:title="NCODA documentation"/>
+      </metadata>
+
+      <featureCollection name="FNMOC-NCODA-Global_Ocean" featureType="FMRC" harvest="true" path="fmrc/FNMOC/NCODA/Global_Ocean">
+        <metadata inherited="true">
+          <documentation type="summary">FNMOC NCODA Model : Global Lat/Lon grid.
+            Model runs are made at 12Z, with analysis and forecasts.
+            Horizontal= 721 by 1440 points, resolution .25 degree, Lat/Lon projection.
+          </documentation>
+        </metadata>
+
+        <collection spec="/data/ldm/pub/native/grid/FNMOC/NCODA/Global_Ocean/FNMOC_NCODA_Global_Ocean_#yyyyMMdd_HHmm#.grib1"
+                    name="FNMOC_NCODA_Global_Ocean"
+                    recheckAfter="15 min"
+                    olderThan="5 min"/>
+        <manage deleteAfter="45 days" check="0 0 3 * * ? *" />
+        <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
+        <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
+        <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
+      </featureCollection>
+
+    </dataset>
+
+  </dataset>
+
+
+</catalog>
+
