@@ -506,25 +506,23 @@ public class Cosmic1Convention extends CoordSysBuilder {
      * This subroutine computes the Greenwich Apparent Siderial
      * Time angle given a UTC date and time.
      *
-     *       gast
      * parameter  Input parameters:
      * Inputs:
-     * @param  iyr, integer, 1995
-     * @param  imon, integer, 5
-     * @param  iday, integer, 5
-     * @param  ihr, integer, 5
-     * @param  imin, integer, 5
-     * @param  sec, double, 31.0
-     * @param  dsec, double, 0.0
+     * @param  iyr integer year 1995
+     * @param  imon integer month 5
+     * @param  iday integer day 5
+     * @param  ihr integer hour 5
+     * @param  imin integer minute 5
+     * @param  sec double second 31.0
+     * @param  dsec double second 0.0
      * Outputs:
-     * theta, GAST angle in radians
+     * @return theta GAST angle in radians
      *
      * @author     Bill Schreiner
      * @since      May 1995
      * @version    $URL: svn://ursa.cosmic.ucar.edu/trunk/src/roam/gast.f $ $Id: gast.f 10129 2008-07-30 17:10:52Z dhunt $
      * -----------------------------------------------------------------------
      */
-
 
     public double gast(int iyr, int imon, int iday, int ihr, int imin,
                        double sec, double dsec) {
@@ -629,8 +627,8 @@ public class Cosmic1Convention extends CoordSysBuilder {
      *  Output parameters:
      *  v2   - output vector
      *
-     * @author     S.V.Sokolovskiy
-     * @version    $URL: svn://ursa.cosmic.ucar.edu/trunk/src/roam/spin.f $ $Id: spin.f 10129 2008-07-30 17:10:52Z dhunt $
+     * S.V.Sokolovskiy
+     * URL: svn://ursa.cosmic.ucar.edu/trunk/src/roam/spin.f $ $Id: spin.f 10129 2008-07-30 17:10:52Z dhunt $
      * -----------------------------------------------------------------------
      *
      * @param v1 - Vector to be rotated
