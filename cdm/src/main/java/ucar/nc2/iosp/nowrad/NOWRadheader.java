@@ -705,7 +705,7 @@ public class NOWRadheader {
      * @param s1            short one
      * @param s2            short two
      * @param swapBytes      if swap bytes
-     * @return
+     * @return    integer
      */
     public static int shortsToInt(short s1, short s2, boolean swapBytes) {
         byte[] b = new byte[4];
@@ -722,7 +722,7 @@ public class NOWRadheader {
      * convert bytes into integer
      * @param bytes           bytes array
      * @param swapBytes       if need to swap
-     * @return
+     * @return   integer
      */
     public static int bytesToInt(byte[] bytes, boolean swapBytes) {
         byte a = bytes[0];
@@ -741,7 +741,7 @@ public class NOWRadheader {
      * get unsigned integer from byte array
      * @param b
      * @param num
-     * @return
+     * @return   unsign integer
      */
     int getUInt(byte[] b, int num) {
         int base = 1;
@@ -830,7 +830,7 @@ public class NOWRadheader {
     /**
      *  convert short to unsigned integer
      * @param b
-     * @return
+     * @return   unsign integer
      */
     public int convertShort2unsignedInt(short b) {
         return (b < 0)
@@ -842,7 +842,7 @@ public class NOWRadheader {
      * get jave date
      * @param julianDays
      * @param msecs
-     * @return
+     * @return   java date
      */
     static public java.util.Date getDate(int julianDays, int msecs) {
         long total = ((long) (julianDays - 1)) * 24 * 3600 * 1000 + msecs;
