@@ -326,6 +326,7 @@ public class TdsMonitor extends JPanel {
       if (infoWindow != null) prefs.putBeanObject(FRAME_SIZE, infoWindow.getBounds());
     }
   }
+  
 
   /////////////////////////////////////////////////////////////////////
   String filterIP = "128.117.156,128.117.140,128.117.149";
