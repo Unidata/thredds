@@ -68,9 +68,12 @@ public class NcDDS extends ServerDDS implements Cloneable {
       Dimension dim = (Dimension) o;
       Variable cv = ncfile.findVariable(dim.getName()); // LOOK WRONG
       if ((cv != null) && cv.isCoordinateVariable()) {
-        BaseType bt = new NcSDArray(cv, createScalarVariable(ncfile, cv));
-        if ((cv.getDataType() == DataType.CHAR) && (cv.getRank() > 1))
-          bt = new NcSDCharArray(cv);
+        BaseType bt = null;
+        if ((cv.getDataType() == DataType.CHAR))
+          bt = (cv.getRank() > 1) ? new NcSDCharArray(cv) : new NcSDString(cv);
+        else
+          bt = new NcSDArray(cv, createScalarVariable(ncfile, cv));
+
         dimHash.put(dim.getName(), bt);
         if (log.isDebugEnabled())
           log.debug(" NcDDS adding coordinate variable " + cv.getName() + " for dimension " + dim.getName());

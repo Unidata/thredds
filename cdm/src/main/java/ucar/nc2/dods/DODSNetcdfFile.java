@@ -1157,8 +1157,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
    *                                   if error parsing return
    * @throws opendap.dap.DAP2Exception if you have otherwise been bad
    */
-  DataDDS readDataDDSfromServer(String CE) throws IOException, opendap.dap.parser.ParseException,
-          opendap.dap.DAP2Exception {
+  DataDDS readDataDDSfromServer(String CE) throws IOException, opendap.dap.parser.ParseException, opendap.dap.DAP2Exception {
     if (debugServerCall) System.out.println("DODSNetcdfFile.readDataDDSfromServer = <" + CE + ">");
 
     long start = 0;

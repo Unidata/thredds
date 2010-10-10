@@ -235,6 +235,8 @@ public class DataRootHandler {
   public void shutdown() {
     try {
       scheduler.shutdown( false);
+      org.slf4j.Logger logServerStartup = org.slf4j.LoggerFactory.getLogger( "serverStartup" );
+      logServerStartup.info( "DataRootHandler shutdown" );
     } catch (SchedulerException e) {
       log.error("Scheduler failed to shutdown", e);
       scheduler = null;
