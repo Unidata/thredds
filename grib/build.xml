@@ -52,11 +52,10 @@
     <property name="build.dir" value="./target"/>
     <property name="build.src.dir" value="./target/src"/>
     <property name="build.dest.dir" value="./target/classes"/>
-    <property name="classpath"
-              value="${build.dest.dir}:${lib.dir}/junit-4.5.jar:${lib.dir}/slf4j-jdk14.jar"/>
+    <property name="classpath" value="${build.dest.dir}:${lib.dir}/junit-4.5.jar:${lib.dir}/slf4j-jdk14.jar"/>
     <property name="dist.dir" value="./dist"/>
-    <property name="gribtab.src" value="./resources/resources/grib/tables"/>
-    <property name="gribtab.dst" value="${build.dest.dir}/resources/grib/tables"/>
+    <property name="gribtab.src" value="./resources/resources/grib/"/>
+    <property name="gribtab.dst" value="${build.dest.dir}/resources/grib/"/>
 
     <property name="apidocs.dir" value="./apidocs"/>
     <property name="javadoc.dir" location="${dist.dir}/javadoc"/>
@@ -92,9 +91,9 @@
     <!-- copy grib table files -->
     <copy todir="${gribtab.dst}">
       <fileset dir="${gribtab.src}">
-        <include name="*.xml"/>
-        <include name="*.tab"/>
-        <include name="tablelookup.lst"/>
+        <include name="**/*.xml"/>
+        <include name="**/*.tab"/>
+        <include name="**/tablelookup.lst"/>
       </fileset>
     </copy>
 
@@ -119,7 +118,7 @@
   <target name="jar" depends="compile">
     <jar jarfile="${build.dir}/${jar.filename}"
          basedir="${build.dest.dir}"
-         includes="**/*.class **/tables/*">
+         includes="**/*.class resources/**">
       <manifest>
         <attribute name="Built-By" value="${user.name}"/>
         <attribute name="Built-On" value="${buildtime}"/>
@@ -133,9 +132,10 @@
 
   <!-- Make noRaf jar file -->
   <target name="noRaf" depends="compile" description="make thredds jar">
-    <jar jarfile="${build.dir}/${jar.filename}"
-         basedir="${build.dest.dir}"
-         includes="ucar/grib/**/*.class ucar/grid/**/*.class ucar/jpeg/**/*.class **/tables/*">
+    <echo message="basedir=${build.dest.dir}"/>
+
+    <jar jarfile="${build.dir}/${jar.filename}" basedir="${build.dest.dir}"
+         includes="**/*.class resources/**" excludes="ucar/unidata/**">
       <manifest>
         <attribute name="Built-By" value="${user.name}"/>
         <attribute name="Built-On" value="${buildtime}"/>
@@ -155,9 +155,10 @@
     <javac srcdir="${test.dir}" destdir="${build.dest.dir}"
            debug="${debug}" optimize="${optimize}"
            classpath="${classpath}"/>
+
     <jar jarfile="${build.dir}/${jar.filename}"
          basedir="${build.dest.dir}"
-         includes="ucar/grib/**/*.class ucar/grid/**/*.class ucar/jpeg/**/*.class **/tables/*">
+         includes="ucar/grib/**/*.class ucar/grid/**/*.class ucar/jpeg/**/*.class resources/**">
       <manifest>
         <attribute name="Built-By" value="${user.name}"/>
         <attribute name="Built-On" value="${buildtime}"/>
