@@ -71,7 +71,7 @@ public class GridVariable {
    * logger
    */
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GridVariable.class);
-  static private boolean warnOk = true;
+  static private boolean warnOk = false;
 
   private final String filename;
 
@@ -581,7 +581,7 @@ public class GridVariable {
 
       } else { // already one in that slot
 
-        if (!sentMessage)
+        if (!sentMessage && warnOk)
           log.warn(p + "\n already has in slot " + recno + "\n" + recordTracker[recno]);
         recordTracker[recno] = p;  // replace it with latest one
       }

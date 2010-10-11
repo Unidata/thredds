@@ -290,9 +290,9 @@ public final class GribGridRecord implements GridRecord {
     return pds.getTimeUnit();
   }
 
-  public int getTypeGenProcess() {
-    return pds.getTypeGenProcess();
-  }
+  //public int getTypeGenProcess() {
+  //  return pds.getTypeGenProcess();
+  //}
 
   /////////////////////////////////////////////////////////////////////////////
   /**

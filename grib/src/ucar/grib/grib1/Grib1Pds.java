@@ -169,11 +169,11 @@ public final class Grib1Pds extends GribPds {
   // octet 6
 
   /**
-   * Type of Generating Process code see Table A
+   * Generating Process Id, see Table A, assigned by originating center
    *
-   * @return Type of Generating Process code
+   * @return Generating Process code
    */
-  public final int getTypeGenProcess() {
+  public final int getGenProcessId() {
     return getOctet(6);
   }
 

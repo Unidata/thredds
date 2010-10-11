@@ -108,7 +108,7 @@ public class TestFmrc extends TestCase {
     }
   }
 
-  public void utestProblem() throws Exception {
+  public void testProblem() throws Exception {
     doOne("catalog:http://motherlode.ucar.edu:8080/thredds/catalog/fmrc/NCEP/GFS/Hawaii_160km/files/catalog.xml", 15, 8, 11, 6, "Temperature", -1, 21, 111);
   }
 

@@ -698,7 +698,7 @@ public final class Grib2Dump {
             + ParameterTable.getParameterUnit(is.getDiscipline(),
             pdsv.getParameterCategory(), pdsv.getParameterNumber()));
     //String tgp = pds.getTypeGenProcess();
-    int tgp = pdsv.getTypeGenProcess();
+    int tgp = pdsv.getGenProcessType();
     ps.println("       Generating Process Type : " + tgp + " "
             + Grib2Tables.codeTable4_3(tgp));
     ps.println("                  ForecastTime : "

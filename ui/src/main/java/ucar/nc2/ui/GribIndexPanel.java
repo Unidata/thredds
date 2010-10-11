@@ -557,10 +557,15 @@ public class GribIndexPanel extends JPanel {
     }
 
     public final String getGenProc() {
-      if (ggr.getEdition() == 2)
-        return Grib2Tables.codeTable4_3(ggr.getTypeGenProcess());
-      else
-        return Grib1Tables.getTypeGenProcessName(ggr.getCenter(), ggr.getTypeGenProcess());
+        return Grib1Tables.getTypeGenProcessName(ggr.getCenter(), ggr.getPds().getGenProcessId());
+    }
+
+    public final String getGenProcType() {
+      if (ggr.getEdition() == 2) {
+        Grib2Pds pds = (Grib2Pds) ggr.getPds();
+        return Grib2Tables.codeTable4_3( pds.getGenProcessType());
+      } else
+        return "";
     }
 
     public final String getStatType() {
@@ -785,8 +790,12 @@ public class GribIndexPanel extends JPanel {
       return "";
     }
 
-    public int getLocalGenProc() {
-      return pds.getTypeGenProcess();
+    public final int getGenProcType() {
+      if (ggr.getEdition() == 2) {
+        Grib2Pds pds = (Grib2Pds) ggr.getPds();
+        return pds.getGenProcessType();
+      } else
+        return -1;
     }
 
     public long getGdsOffset() {

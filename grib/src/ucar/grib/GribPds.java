@@ -150,6 +150,7 @@ public abstract class GribPds {
    */
   abstract public int[] getForecastTimeInterval();
 
+  abstract public int getGenProcessId(); 
 
   abstract public boolean isEnsemble();
   abstract public int getPerturbationNumber();
@@ -164,14 +165,5 @@ public abstract class GribPds {
 
   abstract public boolean isPercentile();
   abstract public int getPercentileValue();
-
-  /**
-   * Type of Generating Process code see Table A
-   *
-   * @return Type of Generating Process code
-   */
-  abstract public int getTypeGenProcess();
-
-
 
 }

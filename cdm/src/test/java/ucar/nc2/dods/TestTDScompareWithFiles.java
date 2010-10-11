@@ -42,7 +42,7 @@ import ucar.nc2.constants._Coordinate;
 import ucar.ma2.*;
 import ucar.unidata.util.StringUtil;
 
-/** compare files served hrough netcdf-DODS server. */
+/** compare files served through netcdf-DODS server. */
 
 public class TestTDScompareWithFiles extends TestCase {
   static boolean showCompare = false, showEach = false, showStringValues = false;

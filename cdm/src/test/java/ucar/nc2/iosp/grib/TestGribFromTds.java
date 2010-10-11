@@ -21,6 +21,8 @@ import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.ProjectionImpl;
 
+import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
 import java.util.*;
 
@@ -43,24 +45,32 @@ public class TestGribFromTds extends TestCase {
 
   // grib 2 only
   public void testGribFromTds() throws Exception {
-    String dir = TestAll.testdataDir + "cdmUnitTest/tds/normal";
+    String dir = TestAll.testdataDir + "cdmUnitTest/formats/grib2";
     //String dir = "E:/work/foster";
-    TestAll.actOnAll(dir, new TestAll.FileFilterImpl("grib2"), new TestAll.Act() {
+    TestAll.actOnAll(dir, new GribFilter(), new TestAll.Act() {
       @Override
       public int doAct(String filename) throws IOException {
         System.out.printf("%n%s%n", filename);
         //showNames(filename);
         //checkProjectionType(filename);
         //checkTemplates(filename);
-        checkTimeIntervalType(filename);
+        checkGenType(filename, false);
+        // checkTimeIntervalType(filename);
         //checkTimeInterval(filename);
         return 0;
       }
-    });
+    }, false);
     System.out.printf("%nnfiles = %d %n", nfiles);
     System.out.printf("totvars = %d %n", nvars);
     System.out.printf("intVars = %d %n", nintVars);
   }
+
+  public class GribFilter implements FileFilter {
+    public boolean accept(File file) {
+      return (!file.getPath().endsWith(".gbx8"));
+    }
+  }
+
 
   public void testOne() throws IOException {
     //checkTimeInterval("Q:/cdmUnitTest/tds/grib/ndfd/NDFD_CONUS_5km_conduit_20100913_0000.grib2");
@@ -118,6 +128,61 @@ public class TestGribFromTds extends TestCase {
     System.out.printf( "end   = %s%n", start2);
 
   }
+
+  public void checkGenType(String filename, boolean showVars) throws IOException {
+    GridServiceProvider.debugOpen = true;
+    NetcdfFile ncd = null;
+    try {
+      ncd = NetcdfFile.open(filename);
+    } catch (Throwable t) {
+      System.out.printf("Failed on %s = %s%n", filename, t.getMessage());
+      return;
+    }
+
+    GribGridServiceProvider iosp = (GribGridServiceProvider) ncd.getIosp();
+    GridIndex index = (GridIndex) iosp.sendIospMessage("GridIndex");
+    boolean isGrib1 = iosp.getFileTypeId().equals("GRIB1");
+
+    boolean first = true;
+    Map<Integer, List<String>> map = new HashMap<Integer, List<String>>();
+
+    List<GridRecord> grList = index.getGridRecords();
+    for (GridRecord gr : grList) {
+      GribGridRecord ggr = (GribGridRecord) gr;
+      Grib2Pds pds =  (Grib2Pds) ggr.getPds();
+      int genType = pds.getGenProcessType();
+      List<String> uses = map.get(genType);
+      if (uses == null) {
+        uses = new ArrayList<String>();
+        map.put(genType, uses);
+      }
+      String name = ggr.getParameterName();
+      if (!uses.contains(name))
+        uses.add(name);
+
+      if (first) {
+        System.out.printf("Center=  %d / %d%n", ggr.getCenter(), ggr.getSubCenter());
+        first = false;
+      }
+    }
+
+    List<Integer> sortList = new ArrayList<Integer>();
+    sortList.addAll(map.keySet());
+    Collections.sort(sortList);
+    for (int val : sortList) {
+      String desc = isGrib1 ? "" : Grib2Tables.codeTable4_3(val);
+      System.out.printf(" %d (%s)%n", val, Grib2Tables.codeTable4_3(val));
+      if (showVars) {
+        List<String> uses = map.get(val);
+        for (String use : uses)
+          System.out.printf("   %s%n", use);
+      }
+    }
+
+    GridServiceProvider.debugOpen = false;
+  }
+
+
 
   public void checkTimeIntervalType(String filename) throws IOException {
     GridServiceProvider.debugOpen = true;

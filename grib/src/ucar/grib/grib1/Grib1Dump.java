@@ -231,7 +231,7 @@ public final class Grib1Dump {
 
         int gdtn = gdsv.getGdtn();
         int numberOfPoints = 0;
-        if (pdsv.getTypeGenProcess() == 96) {  //thin grid
+        if (pdsv.getGenProcessId() == 96) {  //thin grid
             numberOfPoints = 3447;
         } else {
             numberOfPoints = gdsv.getNx() * gdsv.getNy();
@@ -539,7 +539,7 @@ public final class Grib1Dump {
         ps.println("                   Time 1 (P1) : " + pdsv.getP1());
         ps.println("                   Time 2 (P2) : " + pdsv.getP2());
         //String tgp = Integer.toString(pds.getTypeGenProcess());
-        int tgp =  pdsv.getTypeGenProcess();
+        int tgp =  pdsv.getGenProcessId();
         ps.println("       Generating Process Type : " + tgp + " "
                    + Grib1Tables.getTypeGenProcessName(center, tgp));
         //ps.println("                  ForecastTime : " +
@@ -580,7 +580,7 @@ public final class Grib1Dump {
         f.format("          Time Range Indicator : (%d) %s%n", pdsv.getTimeRangeIndicator(), Grib1Tables.getTimeRange( pdsv.getTimeRangeIndicator() ));
         f.format("                   Time 1 (P1) : %s%n", pdsv.getP1());
         f.format("                   Time 2 (P2) : %s%n", pdsv.getP2());
-        int tgp =  pdsv.getTypeGenProcess();
+        int tgp =  pdsv.getGenProcessId();
         f.format("       Generating Process Type : (%d) %s%n", tgp, Grib1Tables.getTypeGenProcessName(center, tgp));
         f.format("                    Level Type : (%d) %s%n", pdsv.getLevelType1(), pdsv.getLevelName());
         f.format("                 Level Value 1 : %f%n", pdsv.getLevelValue1());

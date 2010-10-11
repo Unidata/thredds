@@ -64,15 +64,13 @@ public class TestTransforms extends TestCase {
 
   public void testHybridSigmaPressure() throws IOException, InvalidRangeException {
     String filename = TestAll.testdataDir + testDir + "HybridSigmaPressure.nc";
-    test(filename, "lev", "T", "time", VerticalCT.Type.HybridSigmaPressure, HybridSigmaPressure.class,
-        SimpleUnit.pressureUnit);
+    test(filename, "lev", "T", "time", VerticalCT.Type.HybridSigmaPressure, HybridSigmaPressure.class, SimpleUnit.pressureUnit);
   }
 
   public void testHybridSigmaPressure2() throws IOException, InvalidRangeException {
     String filename = TestAll.testdataDir + "grid/netcdf/cf/climo.cam2.h0.0000-09.nc";
     NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset(filename);
-    VerticalTransform vt = test(ncd, "lev", "T", "time", VerticalCT.Type.HybridSigmaPressure, HybridSigmaPressure.class,
-        SimpleUnit.pressureUnit);
+    VerticalTransform vt = test(ncd, "lev", "T", "time", VerticalCT.Type.HybridSigmaPressure, HybridSigmaPressure.class, SimpleUnit.pressureUnit);
 
     Dimension timeDim = ncd.findDimension("time");
     for (int i = 0; i < timeDim.getLength(); i++) {

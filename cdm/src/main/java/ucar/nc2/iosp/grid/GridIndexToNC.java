@@ -186,7 +186,7 @@ public class GridIndexToNC {
       //if (subcenter != null)
       //  ncfile.addAttribute(null, new Attribute("Originating_subcenter", subcenter));
 
-      String genType = g2lookup.getTypeGenProcessName(firstRecord);
+      String genType = g2lookup.getGenProcessTypeName(firstRecord);
       if (genType != null)
         ncfile.addAttribute(null, new Attribute("Generating_Process_or_Model", genType));
       if (null != g2lookup.getFirstProductStatusName())
@@ -201,9 +201,9 @@ public class GridIndexToNC {
       if (subcenter != null)
       ncfile.addAttribute(null, new Attribute("Originating_subcenter", subcenter));
 
-      String genType = g1lookup.getTypeGenProcessName(firstRecord);
-      if (genType != null)
-        ncfile.addAttribute(null, new Attribute("Generating_Process_or_Model", genType));
+      String genName = g1lookup.getGenProcessName(firstRecord);
+      if (genName != null)
+        ncfile.addAttribute(null, new Attribute("Generating_Process_or_Model", genName));
       if (null != g1lookup.getFirstProductStatusName())
         ncfile.addAttribute(null, new Attribute("Product_Status", g1lookup.getFirstProductStatusName()));
       ncfile.addAttribute(null, new Attribute("Product_Type", g1lookup.getFirstProductTypeName()));

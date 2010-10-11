@@ -151,9 +151,10 @@ abstract public class Grib2Pds extends GribPds {
   }
 
   // given reference and forecast date, calculate forecastTime in units of timeUnit
+
   static public int makeForecastTime(long refTime, long foreDate, int timeUnit) {
 
-    int intv =  (int)((foreDate - refTime) / 1000); // secs
+    int intv = (int) ((foreDate - refTime) / 1000); // secs
 
     // common cases
     if (timeUnit == 1)
@@ -223,7 +224,7 @@ abstract public class Grib2Pds extends GribPds {
     */
   }
 
-   ////////////////////////
+  ////////////////////////
 
   protected final int template; // product definition template
   protected final long refTime; // reference date in millisecs
@@ -263,7 +264,7 @@ abstract public class Grib2Pds extends GribPds {
 
   /**
    * Number of coordinate values at end of template.
-   *                                              
+   *
    * @return Coordinates number
    */
   public final int getNumberCoordinates() {
@@ -280,7 +281,7 @@ abstract public class Grib2Pds extends GribPds {
   }
 
   /**
-   * Parameter Category .
+   * Parameter Category
    *
    * @return parameterCategory as int
    */
@@ -289,7 +290,7 @@ abstract public class Grib2Pds extends GribPds {
   }
 
   /**
-   * Parameter Number.
+   * Parameter Number
    *
    * @return ParameterNumber
    */
@@ -300,30 +301,30 @@ abstract public class Grib2Pds extends GribPds {
   /**
    * Type of Generating Process (Code Table 4.3)
    *
-   * @return GenProcess
+   * @return Type of Generating Process
    */
-  public int getTypeGenProcess() {
-    return getOctet(12);
+  public int getGenProcessType() {
+    return MISSING;
   }
 
   @Override
   public Date getForecastDate() {
     if (validTime < 0)
-      validTime = makeDate(refTime, getTimeUnit(), getForecastTime(), null);      
+      validTime = makeDate(refTime, getTimeUnit(), getForecastTime(), null);
     return new Date(validTime);
   }
 
   /**
-   * Forecast generating process identifier (defined by originating centre).
+   * Forecast/Analysis generating process identifier (defined by originating centre).
    * <p/>
    * For NCEP, apparently
    * http://www.nco.ncep.noaa.gov/pmb/docs/on388/tablea.html
    * as linked from here:
    * http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_temp4-0.shtml
    *
-   * @return Forecast generating process
+   * @return generating process id
    */
-  public int getAnalysisGenProcess()  {
+  public int getGenProcessId() {
     return MISSING;
   }
 
@@ -420,6 +421,7 @@ abstract public class Grib2Pds extends GribPds {
   }
 
   // forecast time for points, beginning of interval for intervals
+
   protected int _getForecastTime() {
     return GribNumbers.int4(getOctet(19), getOctet(20), getOctet(21), getOctet(22));
   }
@@ -481,7 +483,7 @@ abstract public class Grib2Pds extends GribPds {
 
 
   public void show(Formatter f) {
-    f.format("Grib2Pds{ template=%d, validTime=%s }", template,  getForecastDate());
+    f.format("Grib2Pds{ template=%d, validTime=%s }", template, getForecastDate());
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////
@@ -541,16 +543,20 @@ abstract public class Grib2Pds extends GribPds {
       super(input, refTime, cal);
     }
 
+    public int getGenProcessType() {
+      return getOctet(12);
+    }
+
     /**
      * Background generating process identifier (defined by originating centre)
      *
-     * @return Background generating process
+     * @return Background generating process id
      */
-    public int getBackGenProcess() {
+    public int getGenProcessIdBackground() {
       return getOctet(13);
     }
 
-    public int getAnalysisGenProcess() {
+    public int getGenProcessId() {
       return getOctet(14);
     }
 
@@ -1226,16 +1232,18 @@ abstract public class Grib2Pds extends GribPds {
 
   /**
    * Product definition template 4.30 - satellite product
+   *
    * @deprecated
-  */
- static private class Grib2Pds30 extends Grib2Pds {
+   */
+  static private class Grib2Pds30 extends Grib2Pds {
 
-   Grib2Pds30(byte[] input, long refTime, Calendar cal) throws IOException {
-     super(input, refTime, cal);
-   }
+    Grib2Pds30(byte[] input, long refTime, Calendar cal) throws IOException {
+      super(input, refTime, cal);
+    }
 
     // LOOK - could put this into a dummy superclass in case others need
-   @Override
+
+    @Override
     public double getLevelValue1() {
       return MISSINGD;
     }
@@ -1265,20 +1273,14 @@ abstract public class Grib2Pds extends GribPds {
       return 0;
     }
 
-    @Override
-    public Date getForecastDate() {
-      return null;
+    /**
+     * Observation generating process identifier (defined by originating centre)
+     *
+     * @return GenProcess
+     */
+    public int getGenProcessId() {
+      return getOctet(13);
     }
-
-
-  /**
-   * Observation generating process identifier (defined by originating centre)
-   *
-   * @return GenProcess
-   */
-  public int getObsGenProcess() {
-    return getOctet(13);
-  }
 
     /**
      * Number of contributing spectral bands (NB)
@@ -1298,13 +1300,13 @@ abstract public class Grib2Pds extends GribPds {
       int nb = getNumSatelliteBands();
       SatelliteBand[] result = new SatelliteBand[nb];
       int pos = 15;
-      for (int i=0; i<nb; i++) {
+      for (int i = 0; i < nb; i++) {
         SatelliteBand sb = new SatelliteBand();
-        sb.number = GribNumbers.int2(getOctet(pos),getOctet(pos+1));
-        sb.series = GribNumbers.int2(getOctet(pos+2),getOctet(pos+3));
-        sb.instrumentType = getOctet(pos+4);
-        int scaleFactor = getOctet(pos+5);
-        int svalue = GribNumbers.int4(getOctet(pos+6),getOctet(pos+7),getOctet(pos+8),getOctet(pos+9));
+        sb.number = GribNumbers.int2(getOctet(pos), getOctet(pos + 1));
+        sb.series = GribNumbers.int2(getOctet(pos + 2), getOctet(pos + 3));
+        sb.instrumentType = getOctet(pos + 4);
+        int scaleFactor = getOctet(pos + 5);
+        int svalue = GribNumbers.int4(getOctet(pos + 6), getOctet(pos + 7), getOctet(pos + 8), getOctet(pos + 9));
         sb.value = applyScaleFactor(scaleFactor, svalue);
         pos += 10;
         result[i] = sb;
@@ -1312,10 +1314,10 @@ abstract public class Grib2Pds extends GribPds {
       return result;
     }
 
-   public int templateLength() {
-     return 14 + getNumSatelliteBands() * 10;
-   }
- }
+    public int templateLength() {
+      return 14 + getNumSatelliteBands() * 10;
+    }
+  }
 
   static public class SatelliteBand {
     public int series; // Satellite series of band nb (code table defined by originating/generating centre)
@@ -1373,7 +1375,7 @@ abstract public class Grib2Pds extends GribPds {
     public int timeIncrement; // Time increment between successive fields, in units defined by the previous octet
 
     public void show(Formatter f) {
-      f.format( "TimeInterval: statProcessType= %d, timeIncrementType= %d, timeRangeUnit= %d, timeRangeLength= %d, timeIncrementUnit= %d, timeIncrement=%d%n",
+      f.format("TimeInterval: statProcessType= %d, timeIncrementType= %d, timeRangeUnit= %d, timeRangeLength= %d, timeIncrementUnit= %d, timeIncrement=%d%n",
               statProcessType, timeIncrementType, timeRangeUnit, timeRangeLength, timeIncrementUnit, timeIncrement);
     }
   }

@@ -975,7 +975,7 @@ public final class Grib2ProductDefinitionSection {
     assert( pds.parameterCategory == gpv.getParameterCategory());
     assert( pds.parameterNumber == gpv.getParameterNumber());
     if ( pds.productDefinition < 20 ) {  // NCEP models
-      assert( pds.typeGenProcess == gpv.getTypeGenProcess());
+      assert( pds.typeGenProcess == gpv.getGenProcessType());
       assert( pds.timeRangeUnit == gpv.getTimeUnit());
       assert( pds.forecastTime == gpv.getForecastTime());
       assert( pds.typeFirstFixedSurface == gpv.getLevelType1());

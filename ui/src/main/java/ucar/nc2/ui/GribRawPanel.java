@@ -34,16 +34,12 @@
 package ucar.nc2.ui;
 
 import thredds.ui.FileManager;
-import ucar.grib.GribGridRecord;
-import ucar.grib.GribNumbers;
 import ucar.grib.GribPds;
 import ucar.grib.NoValidGribException;
 import ucar.grib.grib1.*;
 import ucar.ma2.DataType;
 import ucar.nc2.iosp.grib.tables.GribTemplate;
-import ucar.nc2.iosp.grid.GridVariable;
 import ucar.nc2.units.DateFormatter;
-import ucar.nc2.util.IO;
 import ucar.nc2.util.Misc;
 import ucar.unidata.io.KMPMatch;
 import ucar.util.prefs.PreferencesExt;
@@ -749,7 +745,7 @@ public class GribRawPanel extends JPanel {
     }
 
     public final String getTypeGenProcess() {
-      int tgp = pdsv.getTypeGenProcess();
+      int tgp = pdsv.getGenProcessType();
       return Grib2Tables.codeTable4_3(tgp);
     }
 

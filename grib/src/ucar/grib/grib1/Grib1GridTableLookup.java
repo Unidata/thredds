@@ -177,9 +177,9 @@ public class Grib1GridTableLookup implements GridTableLookup {
    * @param gr GridRecord
    * @return typeGenProcessName
    */
-  public final String getTypeGenProcessName(GridRecord gr) {
+  public final String getGenProcessName(GridRecord gr) {
     GribGridRecord ggr = (GribGridRecord) gr;
-    return Grib1Tables.getTypeGenProcessName( firstPDSV.getCenter(), ggr.getTypeGenProcess() );
+    return Grib1Tables.getTypeGenProcessName( firstPDSV.getCenter(), ggr.getPds().getGenProcessId() );
   }
 
   /**
@@ -480,7 +480,7 @@ public class Grib1GridTableLookup implements GridTableLookup {
    */
   public final String getTitle() {
     StringBuilder title = new StringBuilder( Grib1Tables.getCenter_idName( firstPDSV.getCenter() ) );
-    String model = Grib1Tables.getModelName( firstPDSV.getCenter(), firstPDSV.getTypeGenProcess() );
+    String model = Grib1Tables.getModelName( firstPDSV.getCenter(), firstPDSV.getGenProcessId() );
     if( model != null ) {
       title.append( " ");
       title.append( model );
@@ -488,7 +488,7 @@ public class Grib1GridTableLookup implements GridTableLookup {
 
     // Next try to get Grid type from WMO Table 6
     if( firstPDSV.getCenter() != 7 ) {
-      String grid = Grib1Tables.getGridDefinition( firstPDSV.getTypeGenProcess() );
+      String grid = Grib1Tables.getGridDefinition( firstPDSV.getGenProcessId() );
       if( grid != null ) {
         title.append( " ");
         title.append( grid );

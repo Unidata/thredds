@@ -199,7 +199,7 @@ public final class TestCompareGribPDSGDSsections extends TestCase {
       assert (pds.parameterCategory == gpv.getParameterCategory());
       assert (pds.parameterNumber == gpv.getParameterNumber());
       if (pds.productDefinition < 20) {  // NCEP models
-        assert (pds.typeGenProcess == gpv.getTypeGenProcess());
+        assert (pds.typeGenProcess == gpv.getGenProcessType());
         assert (pds.timeRangeUnit == gpv.getTimeUnit());
         //System.out.println( i +" "+ pds.forecastTime +" "+ gpv.getForecastTime());
         assert (pds.forecastTime == gpv.getForecastTime());
@@ -737,7 +737,7 @@ public final class TestCompareGribPDSGDSsections extends TestCase {
         assert (pds.length == gpv.getLength());
         assert (pds.table_version == gpv.getParameterTableVersion());
         assert (pds.center_id == gpv.getCenter());
-        assert (pds.typeGenProcess == gpv.getTypeGenProcess());
+        assert (pds.typeGenProcess == gpv.getGenProcessId());
         assert (pds.grid_id == gpv.getGridId());
         assert (pds.gds_exists == gpv.gdsExists());
         assert (pds.bms_exists == gpv.bmsExists());

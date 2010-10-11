@@ -206,9 +206,8 @@ public final class Grib2GridTableLookup implements GridTableLookup {
    * @param gr GridRecord
    * @return typeGenProcessName
    */
-  public final String getTypeGenProcessName(GridRecord gr) {
-    GribGridRecord ggr = (GribGridRecord) gr;
-    return Grib2Tables.codeTable4_3( ggr.getTypeGenProcess());
+  public final String getGenProcessTypeName(GridRecord gr) {
+    return Grib2Tables.codeTable4_3( getGenProcessType(gr));
   }
 
   /**
@@ -217,9 +216,10 @@ public final class Grib2GridTableLookup implements GridTableLookup {
    * @param gr GridRecord
    * @return typeGenProcessName
    */
-  public final int getTypeGenProcess(GridRecord gr) {
+  public final int getGenProcessType(GridRecord gr) {
     GribGridRecord ggr = (GribGridRecord) gr;
-    return ggr.getTypeGenProcess();
+    Grib2Pds pds = (Grib2Pds) ggr.getPds();
+    return pds.getGenProcessType();
   }
 
   /**
@@ -357,7 +357,7 @@ public final class Grib2GridTableLookup implements GridTableLookup {
    */
   public final String getTitle() {
     StringBuilder title = new StringBuilder( Grib1Tables.getCenter_idName( firstID.getCenter_id() ) );
-    String model = Grib1Tables.getModelName(firstID.getCenter_id(), firstPDSV.getAnalysisGenProcess());;
+    String model = Grib1Tables.getModelName(firstID.getCenter_id(), firstPDSV.getGenProcessId());;
     if( model != null ) {
       title.append( " ");
       title.append( model );

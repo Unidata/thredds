@@ -4,6 +4,7 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.2:
  9: (2010-xx-xx)
+  Grib2Pds30: use superclass getForecastDate()
   ToolsUI: Grib2RawPanel can save individual records to a file
   Grib2Input: track start, end file pos of records
  8: (2010-09-30)
