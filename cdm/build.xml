@@ -274,7 +274,7 @@
 
   <!-- make library jars -->
   <property name="jarMain" value="netcdf-${release.version}.jar"/>
-  <target name="makeMain" depends="grib, opendap, compile" description="make library jars">
+  <target name="makeMain" depends="compile" description="make library jars">
     <copy file="README.TEMPLATE" tofile="${build.dir}/README" overwrite="true">
       <filterset>
         <filter token="BUILDTIME" value="${build.time}"/>
