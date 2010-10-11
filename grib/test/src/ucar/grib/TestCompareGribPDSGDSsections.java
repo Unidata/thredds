@@ -64,9 +64,6 @@ import junit.framework.TestCase;
  * A class to compare the product definition section (PDS) of a GRIB product being
  * created by a direct read manner against the PDS byte[] manner via object
  * Grib(1|2)PDSVariable.
- * A class to compare the grid definition section (GDS) of a GRIB product being
- * created by a direct read manner against the GDS byte[] manner via object
- * Grib(1|2)GDSVariable.
  */
 
 public final class TestCompareGribPDSGDSsections extends TestCase {

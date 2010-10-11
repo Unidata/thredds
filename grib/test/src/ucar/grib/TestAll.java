@@ -132,10 +132,11 @@ public class TestAll {
     suite.addTest( ucar.grib.grib2.TestGrib2Dump.suite());
     suite.addTest( ucar.grib.grib2.TestGrib2Indexer.suite());
     suite.addTest( ucar.grib.grib2.TestGrib2Data.suite()); // */
-      suite.addTest( new JUnit4TestAdapter( ucar.grib.grib2.Grib2TablesTest.class ) );
+
+      // suite.addTest( new JUnit4TestAdapter( ucar.grib.grib2.Grib2TablesTest.class ) );
 
 
-      suite.addTest( ucar.grib.TestCompareGribPDSGDSsections.suite()); // */
+     //  suite.addTest( ucar.grib.TestCompareGribPDSGDSsections.suite()); // */
 
 
     return suite;
