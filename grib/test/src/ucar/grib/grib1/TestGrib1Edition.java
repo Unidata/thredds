@@ -43,11 +43,9 @@ import java.io.IOException;
  */
 public final class TestGrib1Edition extends TestCase {
   private String dataPath;
-  private String testPath;
 
   protected final void setUp() {
-    dataPath = TestAll.testdataDir + "grid/grib/grib1/data/";
-    testPath = TestAll.testdataDir + "grid/grib/grib1/test/";
+    dataPath = TestAll.testdataDir + "cdmUnitTest/formats/grib1/";
   }
 
   /**
