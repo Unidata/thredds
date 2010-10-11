@@ -48,7 +48,7 @@ public final class TestGrib1Dump extends TestCase {
   private Diff d;
 
   protected final void setUp() {
-    dataPath = TestAll.testdataDir + "grid/grib/grib1/data/";
+    dataPath = TestAll.testdataDir + "cdmUnitTest/formats/grib1/";
     testPath = TestAll.testdataDir + "grid/grib/grib1/test/";
     d = new Diff();
   }
