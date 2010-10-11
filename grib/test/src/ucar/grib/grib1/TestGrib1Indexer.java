@@ -49,7 +49,7 @@ public final class TestGrib1Indexer extends TestCase {
   private File f;
 
   protected final void setUp() {
-    dataPath = TestAll.testdataDir +"grid/grib/grib1/data/";
+    dataPath = TestAll.testdataDir + "cdmUnitTest/formats/grib1/";
     testPath = TestAll.testdataDir +"grid/grib/grib1/test/";
   }
 
@@ -68,42 +68,45 @@ public final class TestGrib1Indexer extends TestCase {
    * @throws IOException
    */
   public final void testIndexer() throws IOException {
-    System.out.println("\nTesting indexing of RUC.wmo");
+    String file1 = "pgbf12.gfs.2004091700";
+    System.out.println("\nTesting indexing of "+file1);
     String args[] = new String[2];
-    args[0] = dataPath + "RUC.wmo";
+    args[0] = dataPath + file1;
     File f;
     if (reset) {
-      args[1] = testPath + "RUC.wmo"+ GribIndexName.currentSuffix;
+      args[1] = testPath + file1+ GribIndexName.currentSuffix;
       f = new File( args[1] );
       f.delete();
       System.out.println("Creating new test index " + args[1]);
       Grib1WriteIndex.main(args);
     } else {
-      args[1] = dataPath + "RUC.wmo"+ GribIndexName.currentSuffix;
+      args[1] = dataPath + file1+ GribIndexName.currentSuffix;
       Grib1WriteIndex.main(args);
       GridIndex index1 = new GribIndexReader().open(args[1]);
 
-      GridIndex index2 = new GribIndexReader().open(testPath + "RUC.wmo"+ GribIndexName.currentSuffix);
+      GridIndex index2 = new GribIndexReader().open(testPath + file1+ GribIndexName.currentSuffix);
       // Compare Indexes
       testEquals( index1, index2 );
       f = new File(args[1]);
       f.delete();
     }
 
-    System.out.println("\nTesting indexing of RUC2_CONUS_20km_surface_20051011_2300.grib1");
-    args[0] = dataPath + "RUC2_CONUS_20km_surface_20051011_2300.grib1";
+    //String file = "RUC2_CONUS_20km_surface_20051011_2300.grib1";
+    String file = "wrf.grib";
+    System.out.println("\nTesting indexing of "+ file);
+    args[0] = dataPath + file;
     if (reset) {
-      args[1] = testPath + "RUC2_CONUS_20km_surface_20051011_2300.grib1"+ GribIndexName.currentSuffix;
+      args[1] = testPath + file+ GribIndexName.currentSuffix;
       f = new File( args[1] );
       f.delete();
       System.out.println("Creating new test index " + args[1]);
       Grib1WriteIndex.main(args);
     } else {
-      args[1] = dataPath + "RUC2_CONUS_20km_surface_20051011_2300.grib1"+ GribIndexName.currentSuffix;
+      args[1] = dataPath + file+ GribIndexName.currentSuffix;
       Grib1WriteIndex.main(args);
       GridIndex index1 = new GribIndexReader().open(args[1]);
 
-      GridIndex index2 = new GribIndexReader().open(testPath + "RUC2_CONUS_20km_surface_20051011_2300.grib1"+ GribIndexName.currentSuffix);
+      GridIndex index2 = new GribIndexReader().open(testPath + file+ GribIndexName.currentSuffix);
       // Compare Indexes
       testEquals( index1, index2 );
       f = new File(args[1]);
