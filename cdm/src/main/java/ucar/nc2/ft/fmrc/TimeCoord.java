@@ -63,6 +63,7 @@ public class TimeCoord implements Comparable {
   TimeCoord(Date runDate, double[] offset) {
     this.runDate = runDate;
     this.offset = offset;
+    check();
   }
 
   TimeCoord(TimeCoord from) {
@@ -73,6 +74,7 @@ public class TimeCoord implements Comparable {
     this.bound1 = from.bound1;
     this.bound2 = from.bound2;
     this.id = from.id;
+    check();
   }
 
   TimeCoord(Date runDate, CoordinateAxis1DTime axis) {
@@ -98,6 +100,12 @@ public class TimeCoord implements Comparable {
         offset[i] = FmrcInv.getOffsetInHours(runDate, d);
       }
     }
+    check();
+  }
+
+  void check() {
+    if (!isInterval() && getNCoords() == 46)
+      System.out.println("HEY");
   }
 
   void addGridInventory(GridDatasetInv.Grid grid) {
@@ -172,6 +180,7 @@ public class TimeCoord implements Comparable {
 
   public void setOffsetTimes(double[] offset) {
     this.offset = offset;
+    check();
   }
 
   public void setBounds(double[] bound1, double[] bound2) {

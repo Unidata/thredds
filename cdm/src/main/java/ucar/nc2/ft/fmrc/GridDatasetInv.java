@@ -100,10 +100,10 @@ public class GridDatasetInv {
           if (xmlModifiedSecs >= fileModifiedSecs) { // LOOK if fileDate is -1, will always succeed
             return inv; // ok, use it
           } else {
-            if (log.isInfoEnabled()) log.info(" cache out of date "+new Date(inv.getLastModified())+" < "+new Date(mfile.getLastModified()));
+            if (log.isInfoEnabled()) log.info(" cache out of date "+new Date(inv.getLastModified())+" < "+new Date(mfile.getLastModified())+" for " + mfile.getName());
           }
         } else {
-          if (log.isInfoEnabled()) log.info(" version needs upgrade "+inv.version+" < "+REQ_VERSION);
+          if (log.isInfoEnabled()) log.info(" version needs upgrade "+inv.version+" < "+REQ_VERSION +" for " + mfile.getName());
         }
       }
     }
@@ -149,7 +149,7 @@ public class GridDatasetInv {
   private GridDatasetInv() {
   }
 
-  private GridDatasetInv(ucar.nc2.dt.GridDataset gds, Date runDate) {
+  public GridDatasetInv(ucar.nc2.dt.GridDataset gds, Date runDate) {
     this.location = gds.getLocationURI();
 
     NetcdfFile ncfile = gds.getNetcdfFile();

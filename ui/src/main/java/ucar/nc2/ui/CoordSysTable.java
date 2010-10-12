@@ -186,6 +186,14 @@ public class CoordSysTable extends JPanel {
             } else {
               printArray("bound1=", axis1D.getBound1());
               printArray("bound2=", axis1D.getBound2());
+
+              Formatter f= new Formatter();
+              double[] b1 = axis1D.getBound1();
+              double[] b2 = axis1D.getBound2();
+              for (int i=0; i<b1.length; i++) {
+                f.format("(%f,%f)%n", b1[i], b2[i]);
+              }
+              infoTA.appendLine(f.toString());
             }
           }
         } catch (IOException e1) {

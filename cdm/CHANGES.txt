@@ -4,6 +4,8 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.2:
  9: (2010-10-12)
+  UI: CoordSys tab "show values" shows irregular bounds as a pair
+  UI: add GridInv tab in FeatureType/Grid
   Grib2: distinguish genProcType from genProcId. Use genProcType in variable name when its type "error".
   Fmrc.makeFmrcInv(): on io error, skip file. 
   Grib2Pds30: use superclass getForecastDate()

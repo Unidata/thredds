@@ -241,12 +241,15 @@ public class FmrInv implements Comparable<FmrInv> {
       List<TimeCoord> timeList = new ArrayList<TimeCoord>();
       for (GridDatasetInv.Grid grid : gridList) {
         TimeCoord tc = grid.tc;
+        if ("Convective_precipitation".equals(name) && !tc.isInterval())
+          System.out.println("HEY");
         timeList.add(tc);
       }
       // all time coordinates have the same run date
       TimeCoord tc_union = TimeCoord.makeUnion(timeList, getRunDate()); // add the other coords
       timeCoordUnion = TimeCoord.findTimeCoord(getTimeCoords(), tc_union); // now find unique within collection
-    }
+       if ("Convective_precipitation".equals(name) && !timeCoordUnion.isInterval())
+          System.out.println("HEY");   }
 
   }
 

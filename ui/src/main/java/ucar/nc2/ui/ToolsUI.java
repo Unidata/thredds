@@ -36,6 +36,7 @@ package ucar.nc2.ui;
 import thredds.inventory.FeatureCollectionConfig;
 import ucar.nc2.*;
 import ucar.nc2.FileWriter;
+import ucar.nc2.ft.fmrc.GridDatasetInv;
 import ucar.nc2.stream.CdmRemote;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
@@ -884,7 +885,8 @@ public class ToolsUI extends JPanel {
         ThreddsDataFactory.preferCdm = state;
       }
     };
-    // ToolsUI default is to regularize the FFMRC
+    // ToolsUI default is to use cdmRemote access
+    ThreddsDataFactory.preferCdm = true;
     a.putValue(BAMutil.STATE, new Boolean(ThreddsDataFactory.preferCdm));
     BAMutil.setActionPropertiesToggle(a, null, "preferCdm", ThreddsDataFactory.preferCdm, 'P', -1);
     BAMutil.addActionToMenu(ncMenu, a);
@@ -3614,6 +3616,24 @@ public class ToolsUI extends JPanel {
         }
       });
       buttPanel.add(wcsButton);
+
+      JButton invButton = new JButton("GridInv");
+      invButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          GridDataset gds = dsTable.getGridDataset();
+          if (gds == null) return;
+          GridDatasetInv inv = new GridDatasetInv(gds, null);
+          try {
+            detailTA.setText(inv.writeXML(new Date()));
+            detailTA.gotoTop();
+            detailWindow.show();
+          } catch (Exception e1) {
+            e1.printStackTrace();
+          }
+        }
+      });
+      buttPanel.add(invButton);
+
     }
 
     private void makeGridUI() {
