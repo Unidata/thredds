@@ -28,6 +28,7 @@
 package thredds.server.wms;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
@@ -37,7 +38,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.ModelAndView;
-import thredds.server.wms.config.WmsConfigException;
 import thredds.server.wms.config.WmsDetailedConfig;
 import thredds.servlet.DatasetHandler;
 import thredds.servlet.ServletUtil;
@@ -131,11 +131,17 @@ public final class ThreddsWmsController extends AbstractWmsController
       if ( reqDataset.isRemote() && ! threddsServerConfig.isAllowRemote() )
       {
         log.info( "dispatchWmsRequest(): WMS service not supported for remote datasets." );
-        log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_FORBIDDEN, -1 ) );
-        throw new WmsException( "WMS service not supported for remote (non-server-resident) datasets.", "");
+        throw new WmsException( "WMS service not supported for remote (non-server-resident) datasets.", "LayerNotDefined");
       }
 
-      gd = reqDataset.openAsGridDataset( httpServletRequest, httpServletResponse );
+      try {
+        gd = reqDataset.openAsGridDataset( httpServletRequest, httpServletResponse );
+      }
+      catch ( FileNotFoundException e ) {
+        // LOOK ToDo Instead could catch FileNotFoundExceptions below and also add to exceptionResolver in wms-servlet.xml 
+        log.info( "dispatchWmsRequest(): File not found [" + reqDataset.getPath() + "]:" + e.getMessage() + "." );
+        throw new LayerNotDefinedException( reqDataset.getPath() + "/*");
+      }
       if ( gd == null )
       {
         // We have sent an auth challenge to the client, so we send no
@@ -200,6 +206,11 @@ public final class ThreddsWmsController extends AbstractWmsController
 
       log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, -1 ) );
       return modelAndView;
+    }
+    catch ( LayerNotDefinedException e ) {
+      log.info( "dispatchWmsRequest(): WmsException: " + e.getMessage() );
+      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_NOT_FOUND, -1 ) );
+      throw e;
     }
     catch ( WmsException e ) {
       log.info( "dispatchWmsRequest(): WmsException: " + e.getMessage() );
