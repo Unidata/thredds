@@ -33,6 +33,7 @@
 
 package thredds.dqc.server;
 
+import thredds.servlet.ServletUtil;
 import thredds.servlet.UsageLog;
 import thredds.util.RequestForwardUtils;
 
@@ -65,6 +66,14 @@ public class DqcServletRedirect extends HttpServlet
   private String testRedirectPath = "/redirect-test";
   private String testRedirectStopPath = "/redirect-stop-test";
 
+  @Override
+  public void init() throws ServletException
+  {
+    this.getServletConfig();
+    ServletUtil.setContextPath( testTargetContextPath );
+    ServletUtil.initContext( this.getServletContext() );
+  }
+
   /**
    * Redirect all GET requests.
    *
@@ -84,21 +93,190 @@ public class DqcServletRedirect extends HttpServlet
     String reqPath = req.getPathInfo();
 
     if ( reqPath == null )
-    {
       doDispatch( req, res, false );
-    }
-    else if ( reqPath.startsWith( testRedirectPath ) && enableTestRedirect )
-    {
-      this.handleGetRequestForRedirectTest( res, req );
-    }
+
+    else if ( reqPath.equals( testRedirectPath + "/index.html"))
+      ServletUtil.handleRequestForRawFile( "index.html", this, req, res );
+    else if ( reqPath.equals( testRedirectPath + "/301.html"))
+      handleGetRequestForRedirectTest( res, req, StatusCode.SC_301, BodyType.HTML);
+    else if ( reqPath.equals( testRedirectPath + "/302.html"))
+      handleGetRequestForRedirectTest( res, req, StatusCode.SC_302, BodyType.HTML);
+    else if ( reqPath.equals( testRedirectPath + "/305.html"))
+      handleGetRequestForRedirectTest( res, req, StatusCode.SC_305, BodyType.HTML);
+    else if ( reqPath.equals( testRedirectPath + "/307.html"))
+      handleGetRequestForRedirectTest( res, req, StatusCode.SC_307, BodyType.HTML);
+
+    else if ( reqPath.equals( testRedirectPath + "/301.xml"))
+      handleGetRequestForRedirectTest( res, req, StatusCode.SC_301, BodyType.XML);
+    else if ( reqPath.equals( testRedirectPath + "/302.xml"))
+      handleGetRequestForRedirectTest( res, req, StatusCode.SC_302, BodyType.XML);
+    else if ( reqPath.equals( testRedirectPath + "/305.xml"))
+      handleGetRequestForRedirectTest( res, req, StatusCode.SC_305, BodyType.XML);
+    else if ( reqPath.equals( testRedirectPath + "/307.xml"))
+      handleGetRequestForRedirectTest( res, req, StatusCode.SC_307, BodyType.XML);
+
+    else if ( reqPath.startsWith( testRedirectPath + "/301.dods.nc" ) )
+      handleGetRequestForRedirectTest( res, req, StatusCode.SC_301, BodyType.DAP );
+    else if ( reqPath.startsWith( testRedirectPath + "/302.dods.nc" ) )
+      handleGetRequestForRedirectTest( res, req, StatusCode.SC_302, BodyType.DAP );
+    else if ( reqPath.startsWith( testRedirectPath + "/305.dods.nc" ) )
+      handleGetRequestForRedirectTest( res, req, StatusCode.SC_305, BodyType.DAP );
+    else if ( reqPath.startsWith( testRedirectPath + "/307.dods.nc" ) )
+      handleGetRequestForRedirectTest( res, req, StatusCode.SC_307, BodyType.DAP );
+
     else if ( reqPath.startsWith( testRedirectStopPath ) && enableTestRedirect )
-    {
       this.handleGetRequestForRedirectStopTest( res, req );
-    }
     else
-    {
       doDispatch( req, res, false );
+
+    return;
+  }
+  enum BodyType{ HTML, XML, DAP }
+  enum StatusCode {
+    SC_200( "200", "OK"),
+    SC_301( "301", "Moved Permanently"),
+    SC_302( "302", "Found"),
+    SC_305( "305", "Use Proxy"),
+    SC_307( "307", "Temporary Redirect");
+
+    private String scId;
+    private String scMsg;
+
+    StatusCode( String id, String msg) { scId = id; scMsg = msg; }
+
+    public String toString() { return scId; }
+    public String getMessage() { return scMsg; }
+  }
+
+  private void handleGetRequestForRedirectTest( HttpServletResponse res, HttpServletRequest req,
+                                                StatusCode sc, BodyType desiredBodyType )
+          throws IOException
+  {
+    String urlSuffix = null;
+    BodyType respBodyType = null;
+    if ( desiredBodyType.equals( BodyType.HTML )) {
+      urlSuffix = ".html";
+      respBodyType = BodyType.HTML;
     }
+    else if ( desiredBodyType.equals( BodyType.XML )) {
+      urlSuffix = ".xml";
+      respBodyType = BodyType.XML;
+    }
+    else if ( desiredBodyType.equals( BodyType.DAP )) {
+      urlSuffix = ".dods.nc";
+      respBodyType = BodyType.HTML;
+    }
+
+    String requestUrlString = req.getRequestURL().toString();
+    String reqPath = req.getPathInfo();
+    String expectedPath = testRedirectPath + "/" + sc.toString() + urlSuffix;
+    if ( ! reqPath.startsWith( expectedPath ))
+      throw new IllegalStateException( "Request [" + reqPath + "] not as expected [" + expectedPath + "]." );
+    if ( ( desiredBodyType.equals( BodyType.HTML ) || desiredBodyType.equals( BodyType.XML ) ) &&  ! reqPath.equals( expectedPath ))
+      throw new IllegalStateException( "Request [" + reqPath + "] not as expected [" + expectedPath + "].");
+
+    String queryString = req.getQueryString();
+    String targetUrlString = null;
+    if ( desiredBodyType.equals( BodyType.DAP )) {
+      String remainingPath = reqPath.substring( expectedPath.length() );
+      targetUrlString = "http://motherlode.ucar.edu:8080/thredds/dodsC/public/dataset/testData.nc" + remainingPath + (queryString != null ? ("?" + queryString) : "");
+//      targetUrlString = "/thredds/dodsC/public/dataset/testData.nc" + remainingPath + "?" + queryString;
+//      URI targetUrl = null;
+//      try {
+//        targetUrl = new URI( requestUrlString ).resolve( targetUrlString);
+//      }
+//      catch ( URISyntaxException e ) {
+//        throw new IllegalStateException( "Bad URL [" + requestUrlString + "].");
+//      }
+    } else {
+      StringBuffer targetUrlStringBuffer = new StringBuffer( requestUrlString );
+      int start = targetUrlStringBuffer.indexOf( testRedirectPath );
+      targetUrlStringBuffer.replace( start, start + testRedirectPath.length(), testRedirectStopPath );
+      if ( queryString != null )
+        targetUrlStringBuffer.append( "?" ).append( queryString );
+      targetUrlString = targetUrlStringBuffer.toString();
+    }
+
+    String title = "Redirection: " + sc.toString() + "(" + sc.getMessage() + ")" + " to " + targetUrlString;
+    StringBuilder response = null;
+    if ( desiredBodyType.equals( BodyType.HTML) || desiredBodyType.equals( BodyType.DAP) )
+    {
+      StringBuilder htmlBody = new StringBuilder()
+              .append( "<p>" )
+              .append( "The requested URL [" ).append( requestUrlString )
+              .append( "] has been redirected [").append( sc.toString()).append( " (").append( sc.getMessage()).append( ")]." )
+              .append( " Instead, please use the following URL: <a href='" ).append( targetUrlString ).append( "'>" )
+              .append( targetUrlString ).append( "</a>." )
+              .append( "</p>" );
+      response = generateHtmlResponse( title, htmlBody.toString() );
+    } else if ( desiredBodyType.equals( BodyType.XML))
+      response = generateCatalogResponse( title, targetUrlString, title );
+
+    sendResponse( res, targetUrlString, sc, response.toString(), respBodyType );
+    return;
+  }
+
+  private void handleGetRequestForRedirectStopTest( HttpServletResponse res, HttpServletRequest req )
+          throws IOException
+  {
+    String requestUrlString = req.getRequestURL().toString();
+
+    String reqPath = req.getPathInfo();
+    String queryString = req.getQueryString();
+
+    log.debug( "handleGetRequestForRedirectStopTest(): handle GET path \"" + reqPath + "\") with query \"" + queryString + "\">." );
+    String title = "Redirected: " + requestUrlString;
+    StringBuilder response = null;
+    BodyType responseBodyType = null;
+    if ( reqPath.endsWith( ".xml") ) {
+      responseBodyType = BodyType.XML;
+      response = generateCatalogResponse( title, "/thredds/catalog.xml", "main catalog" );
+    }
+    else // if ( reqPath.endsWith( ".html"))
+    {
+      responseBodyType = BodyType.HTML;
+      StringBuilder body = new StringBuilder()
+              .append( "<p>" )
+              .append( requestUrlString )
+              .append( "</p>" );
+      response = generateHtmlResponse( title, body.toString() );
+    }
+
+    sendResponse( res, null, StatusCode.SC_200, response.toString(), responseBodyType );
+    log.info( "handleGetRequestForRedirectStopTest(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, response.length() ) );
+    return;
+  }
+
+  private void sendResponse( HttpServletResponse response,
+                                        String targetUrlString, StatusCode sc,
+                                        String body, BodyType bodyType )
+          throws IOException
+  {
+    if ( sc.equals( StatusCode.SC_200)) {
+      response.setStatus( HttpServletResponse.SC_OK );
+    }
+    if ( sc.equals( StatusCode.SC_301)) {
+      response.setStatus( HttpServletResponse.SC_MOVED_PERMANENTLY );
+      response.addHeader( "Location", targetUrlString );
+    } else if ( sc.equals( StatusCode.SC_305 ) ) {
+      response.setStatus( HttpServletResponse.SC_USE_PROXY );
+      response.addHeader( "Location", targetUrlString );
+    }
+    else if ( sc.equals( StatusCode.SC_307 ) ) {
+      response.setStatus( HttpServletResponse.SC_TEMPORARY_REDIRECT );
+      response.addHeader( "Location", targetUrlString );
+    }
+
+    PrintWriter out = response.getWriter();
+    if ( bodyType.equals( BodyType.XML ))
+      response.setContentType( "application/xml" );
+    else if ( bodyType.equals( BodyType.HTML ) )
+      response.setContentType( "text/html" );
+
+    out.print( body );
+
+    if ( sc.equals( StatusCode.SC_302 ) )
+      response.sendRedirect( targetUrlString );
 
     return;
   }
@@ -137,40 +315,6 @@ public class DqcServletRedirect extends HttpServlet
                                                              ? this.testTargetContextPath.length()
                                                              : this.targetContextPath.length() );
 
-//    // Determine the target URI path without the context.
-//    String targetURIPathNoContext;
-//    if ( useTestContext )
-//    {
-//      if ( req.getPathInfo().length() > this.testRedirectPath.length())
-//      {
-//        targetURIPathNoContext = new StringBuffer()
-//                .append( this.testTargetServletPath )
-//                .append( this.testRedirectStopPath )
-//                .append( req.getPathInfo().substring( this.testRedirectPath.length() ) )
-//                .toString();
-//      }
-//      else
-//      {
-//        targetURIPathNoContext = new StringBuffer()
-//                .append( this.testTargetServletPath )
-//                .append( this.testRedirectStopPath )
-//                .toString();
-//      }
-//    }
-//    else
-//    {
-//      targetURIPathNoContext = new StringBuffer()
-//              .append( this.targetServletPath )
-//              .append( req.getPathInfo() )
-//              .toString();
-//    }
-//
-//    // Determine the target URI path with the context.
-//    String targetURIPath = new StringBuffer()
-//            .append( useTestContext ? this.testTargetContextPath : this.targetContextPath )
-//            .append( targetURIPathNoContext )
-//            .toString();
-
     String queryString = req.getQueryString();
     String reqURL = requestURIPath;
     String targetURL = targetURIPath;
@@ -194,248 +338,7 @@ public class DqcServletRedirect extends HttpServlet
     }
 
     RequestForwardUtils.forwardRequestRelativeToGivenContext( targetURIPathNoContext,
-                                                              targetContext,
-                                                              req, res );
-  }
-
-  private void handleGetRequestForRedirectTest( HttpServletResponse res, HttpServletRequest req )
-          throws IOException, ServletException
-  {
-    String reqPath = req.getPathInfo();
-    String queryString = req.getQueryString();
-
-    log.debug( "handleGetRequestForRedirectTest(): handle GET path \"" + reqPath + "\") with query \"" + queryString + "\">." );
-    if ( reqPath.equals( testRedirectPath ) )
-    {
-      if ( queryString == null )
-      {
-        log.warn( "handleGetRequestForRedirectTest(): request not understood <" + reqPath + ">." );
-        log.info( "handleGetRequestForRedirectTest(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, 0 ) );
-        res.setStatus( HttpServletResponse.SC_BAD_REQUEST );
-      }
-      else if ( queryString.equals( "301" ) )
-        this.doRedirect301( req, res, true );
-      else if ( queryString.equals( "302" ) )
-        this.doRedirect302( req, res, true );
-      else if ( queryString.equals( "305" ) )
-        this.doUseProxy305( req, res, true );
-      else if ( queryString.equals( "dispatch" ) )
-        this.doDispatch( req, res, true );
-      else
-      {
-        log.warn( "handleGetRequestForRedirectTest(): request not understood <" + reqPath + " -- " + queryString + ">." );
-        log.info( "handleGetRequestForRedirectTest(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, 0 ) );
-        res.setStatus( HttpServletResponse.SC_BAD_REQUEST );
-      }
-    }
-    else if ( reqPath.equals( testRedirectPath + "/" ) )
-    {
-      log.warn( "handleGetRequestForRedirectTest(): request not understood <" + reqPath + " -- " + queryString + ">." );
-      log.info( "handleGetRequestForRedirectTest(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, 0 ) );
-      res.setStatus( HttpServletResponse.SC_BAD_REQUEST );
-    }
-    else if ( reqPath.equals( testRedirectPath + "/301" ) && queryString == null )
-      this.doRedirect301( req, res, true );
-    else if ( reqPath.equals( testRedirectPath + "/302" ) && queryString == null )
-      this.doRedirect302( req, res, true );
-    else if ( reqPath.equals( testRedirectPath + "/305" ) && queryString == null )
-      this.doUseProxy305( req, res, true );
-    else if ( reqPath.equals( testRedirectPath + "/dispatch" ) && queryString == null )
-      this.doDispatch( req, res, true );
-    else
-    {
-      log.warn( "handleGetRequestForRedirectTest(): request not understood <" + reqPath + " -- " + queryString + ">." );
-      log.info( "handleGetRequestForRedirectTest(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, 0 ) );
-      res.setStatus( HttpServletResponse.SC_BAD_REQUEST );
-    }
-    return;
-  }
-
-  private void handleGetRequestForRedirectStopTest( HttpServletResponse res, HttpServletRequest req )
-          throws IOException
-  {
-    String reqPath = req.getPathInfo();
-    String queryString = req.getQueryString();
-
-    log.debug( "handleGetRequestForRedirectStopTest(): handle GET path \"" + reqPath + "\") with query \"" + queryString + "\">." );
-
-    String title = "The Resource";
-    String htmlResp = new StringBuffer()
-            .append( getHtmlDoctypeAndOpenTag() )
-            .append( "<head><title>" )
-            .append( title )
-            .append( "</title></head><body>" )
-            .append( "<h1>" ).append( title ).append( "</h1>" )
-            .append( "<ul>" )
-            .append( "<li>" ).append( "Path : " ).append( reqPath ).append( "</li>" )
-            .append( "<li>" ).append( "Query: " ).append( queryString ).append( "</li>" )
-            .append( "</ul>" )
-            .append( "</body></html>" )
-            .toString();
-    // Write the catalog out.
-    PrintWriter out = res.getWriter();
-    res.setContentType( "text/html" );
-    res.setStatus( HttpServletResponse.SC_OK );
-    out.print( htmlResp );
-    log.info( "handleGetRequestForRedirectStopTest(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, htmlResp.length() ));
-
-    return;
-  }
-
-  private void doRedirect301( HttpServletRequest req, HttpServletResponse res, boolean useTestContext )
-          throws IOException
-  {
-    String requestURIPath = new StringBuffer()
-            .append( req.getContextPath() )
-            .append( req.getServletPath() )
-            .append( req.getPathInfo() )
-            .toString();
-    String targetURIPath = convertRequestURLToResponseURL( requestURIPath, req, useTestContext );
-//    String targetURIPathNoContext = targetURIPath.substring( useTestContext
-//                                                             ? this.testTargetContextPath.length()
-//                                                             : this.targetContextPath.length() );
-//    String targetURIPathNoContext = new StringBuffer()
-//            .append( useTestContext ? this.testTargetServletPath : this.targetServletPath )
-//            .append( this.testRedirectStopPath )
-//            .toString();
-//    String targetURIPath = new StringBuffer()
-//            .append( useTestContext ? this.testTargetContextPath : this.targetContextPath )
-//            .append( targetURIPathNoContext )
-//            .toString();
-
-    String queryString = req.getQueryString();
-    if ( queryString != null ) targetURIPath = targetURIPath + "?" + queryString;
-
-    targetURIPath = res.encodeRedirectURL( targetURIPath );
-    log.info( "doRedirect301(): " + req.getRemoteHost() + " - requested URL \"" + requestURIPath
-               + "\" permanently moved, redirect to \"" + targetURIPath + "\"." );
-    res.setStatus( HttpServletResponse.SC_MOVED_PERMANENTLY );
-    res.addHeader( "Location", targetURIPath );
-
-    String title = "Permanently Moved - 301";
-    String body = new StringBuffer()
-            .append( "<p>" )
-            .append( "The requested URL <" ).append( req.getRequestURL() )
-            .append( "> has been permanently moved (HTTP status code 301)." )
-            .append( " Instead, please use the following URL: <a href=\"" ).append( targetURIPath ).append( "\">" ).append( targetURIPath ).append( "</a>." )
-            .append( "</p>" )
-            .toString();
-    String htmlResp = new StringBuffer()
-            .append( getHtmlDoctypeAndOpenTag() )
-            .append( "<head><title>" )
-            .append( title )
-            .append( "</title></head><body>" )
-            .append( "<h1>" ).append( title ).append( "</h1>" )
-            .append( body )
-            .append( "</body></html>" )
-            .toString();
-    // Write the catalog out.
-    PrintWriter out = res.getWriter();
-    res.setContentType( "text/html" );
-    out.print( htmlResp );
-
-    log.info( "doRedirect301(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_MOVED_PERMANENTLY, 0 ));
-    return;
-  }
-
-  private void doRedirect302( HttpServletRequest req, HttpServletResponse res, boolean useTestContext )
-          throws IOException
-  {
-    String requestURIPath = new StringBuffer()
-            .append( req.getContextPath() )
-            .append( req.getServletPath() )
-            .append( req.getPathInfo() )
-            .toString();
-    String targetURIPath = convertRequestURLToResponseURL( requestURIPath, req, useTestContext );
-//    String targetURIPathNoContext = targetURIPath.substring( useTestContext
-//                                                             ? this.testTargetContextPath.length()
-//                                                             : this.targetContextPath.length() );
-
-//    String targetURIPathNoContext = new StringBuffer()
-//            .append( useTestContext ? this.testTargetServletPath : this.targetServletPath )
-//            .append( this.testRedirectStopPath )
-//            .toString();
-//    String targetURIPath = new StringBuffer()
-//            .append( useTestContext ? this.testTargetContextPath : this.targetContextPath )
-//            .append( targetURIPathNoContext )
-//            .toString();
-
-    String queryString = req.getQueryString();
-    if ( queryString != null ) targetURIPath = targetURIPath + "?" + queryString;
-
-    targetURIPath = res.encodeRedirectURL( targetURIPath );
-
-    log.info( "doRedirect302(): " + req.getRemoteHost() + " - requested URL \"" + requestURIPath
-               + "\" temporarily moved, redirect to \"" + targetURIPath + "\"." );
-
-    String title = "Temporarily Moved - 302";
-    String body = new StringBuffer()
-            .append( "<p>" )
-            .append( "The requested URL <" ).append( req.getRequestURL() )
-            .append( "> has been temporarily moved (HTTP status code 302)." )
-            .append( " Instead, please use the following URL: <a href=\"" ).append( targetURIPath ).append( "\">" ).append( targetURIPath ).append( "</a>." )
-            .append( "</p>" )
-            .toString();
-    String htmlResp = new StringBuffer()
-            .append( getHtmlDoctypeAndOpenTag() )
-            .append( "<head><title>" )
-            .append( title )
-            .append( "</title></head><body>" )
-            .append( "<h1>" ).append( title ).append( "</h1>" )
-            .append( body )
-            .append( "</body></html>" )
-            .toString();
-    // Write the catalog out.
-    PrintWriter out = res.getWriter();
-    res.setContentType( "text/html" );
-    out.print( htmlResp );
-
-    res.sendRedirect( targetURIPath );
-    //res.setStatus( HttpServletResponse.SC_MOVED_TEMPORARILY );
-    //res.addHeader( "Location", targetURIPath );
-
-    log.info( "doRedirect302(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_MOVED_TEMPORARILY, 0 ));
-    return;
-  }
-
-  private void doUseProxy305( HttpServletRequest req, HttpServletResponse res, boolean useTestContext )
-          throws IOException
-  {
-    String reqURL = req.getRequestURL().toString();
-
-    String targetURL = res.encodeRedirectURL(
-            convertRequestURLToResponseURL( reqURL, req, useTestContext ) );
-
-    String queryString = req.getQueryString();
-    if ( queryString != null ) reqURL = reqURL + "?" + queryString;
-    if ( queryString != null ) targetURL = targetURL + "?" + queryString;
-    log.info( "doUseProxy305(): " + req.getRemoteHost() + " - proxy requested URI \"" + reqURL
-               + "\" to \"" + targetURL + "\"." );
-    res.addHeader( "Location", targetURL );
-
-    String title = "Use Proxy - 305";
-    String body = new StringBuffer()
-            .append( "<ul>" )
-            .append( "<li>" ).append( "request URL : " ).append( req.getRequestURL() ).append( "</li>" )
-            .append( "<li>" ).append( "proxy URL   : <a href=\"" ).append( targetURL ).append( "\">" ).append( targetURL ).append( "</a></li>" )
-            .append( "</ul>" )
-            .toString();
-    String htmlResp = new StringBuffer()
-            .append( getHtmlDoctypeAndOpenTag() )
-            .append( "<head><title>" )
-            .append( title )
-            .append( "</title></head><body>" )
-            .append( "<h1>" ).append( title ).append( "</h1>" )
-            .append( body )
-            .append( "</body></html>" )
-            .toString();
-    // Write the catalog out.
-    PrintWriter out = res.getWriter();
-    res.setContentType( "text/html" );
-    res.setStatus( HttpServletResponse.SC_USE_PROXY );
-    out.print( htmlResp );
-    log.info( "doRedirect305(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_USE_PROXY, 0 ));
-    return;
+                                                              targetContext, req, res );
   }
 
   private String convertRequestURLToResponseURL( String reqURL, HttpServletRequest req, boolean useTestContext )
@@ -456,23 +359,38 @@ public class DqcServletRedirect extends HttpServlet
     return reqURLBuffer.toString();
   }
 
+  private StringBuilder generateCatalogResponse( String title, String catLink, String catName )
+  {
+    StringBuilder response = new StringBuilder()
+            .append( "<?xml version='1.0' encoding='UTF-8'?>\n" )
+            .append( "<catalog xmlns='http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0'\n" )
+            .append( "         xmlns:xlink='http://www.w3.org/1999/xlink' name='" ).append( title ).append( "' version='1.0.3'>\n" )
+            .append( "  <dataset name='" ).append( title ).append( "'>\n" )
+            .append( "    <catalogRef xlink:href='" ).append( catLink )
+            .append( "' xlink:title='" ).append( catName ).append( "' name='' />\n" )
+            .append( "  </dataset>\n" )
+            .append( "</catalog>\n" );
+    return response;
+  }
+
+  private StringBuilder generateHtmlResponse( String title, String body )
+  {
+    StringBuilder response = new StringBuilder()
+            .append( getHtmlDoctypeAndOpenTag() )
+            .append( "<head><title>" ).append( title ).append( "</title></head>" )
+            .append( "<body>" )
+            .append( "<h1>" ).append( title ).append( "</h1>" )
+            .append( body )
+            .append( "</body></html>" );
+    return response;
+  }
+
   private String getHtmlDoctypeAndOpenTag()
   {
-    return new StringBuffer()
+    return new StringBuilder()
             .append( "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"\n" )
             .append( "        \"http://www.w3.org/TR/html4/loose.dtd\">\n" )
             .append( "<html>\n" )
             .toString();
   }
-
-//  private String getXHtmlDoctypeAndOpenTag()
-//  {
-//    return new StringBuffer()
-//            // .append( "<?xml version=\"1.0\" encoding=\"utf-8\"?>")
-//            .append( "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\"\n" )
-//            .append( "        \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n" )
-//            .append( "<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\" lang=\"en\">" )
-//            .toString();
-//  }
-
 }

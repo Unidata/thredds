@@ -44,7 +44,7 @@ import java.nio.CharBuffer;
 import java.nio.ByteBuffer;
 
 /**
- * _more_
+ * Utility methods for validating strings.
  *
  * @author edavis
  * @since 3.16.47
@@ -462,16 +462,5 @@ public class StringValidateEncodeUtils
     }
 
     return encodedString.toString();
-  }
-
-  public static void main( String[] args )
-  {
-    for ( int codePoint = 2000; codePoint < 2050; codePoint++ )
-    {
-      String utf8 = unicodeCodePoint2PercentHexString( codePoint, "UTF-8" );
-      String iso8859_1 = unicodeCodePoint2PercentHexString( codePoint, "ISO-8859-1" );
-      String codePointAsString = Character.isISOControl( codePoint ) ? "control" : new String( Character.toChars( codePoint ));
-      System.out.println( "Code point [" + codePoint + "] -- utf-8 [" + utf8 + "] -- ISO-8859-1 [" + iso8859_1 + "] -- [" + codePointAsString +"].");
-    }
   }
 }

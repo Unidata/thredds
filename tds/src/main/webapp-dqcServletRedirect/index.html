@@ -8,25 +8,55 @@
 
     <hr width="100%"/>
 
+    <ul>
+      <li>GET Redirects for HTML pages
+        <ul>
+          <li><a href="301.html">HTML 301 (Moved Permanently)</a></li>
+          <li><a href="302.html">HTML 302 (Moved Temporarily)</a></li>
+          <li><a href="305.html">HTML 305 (Use Proxy)</a></li>
+          <li><a href="307.html">HTML 307 (Temporary Redirect)</a></li>
+        </ul>
+      </li>
+      <li>GET Redirects for XML pages
+        <ul>
+          <li><a href="301.xml">XML 301 (Moved Permanently)</a></li>
+          <li><a href="302.xml">XML 302 (Moved Temporarily)</a></li>
+          <li><a href="305.xml">XML 305 (Use Proxy)</a></li>
+          <li><a href="307.xml">XML 307 (Temporary Redirect)</a></li>
+        </ul>
+      </li>
+      <li>GET Redirects for OPeNDAP datasets
+        <ul>
+          <li><a href="301.dods.nc.dds">OPeNDAP DDS 301 (Moved Permanently)</a></li>
+          <li><a href="302.dods.nc.dds">OPeNDAP DDS 302 (Moved Temporarily)</a></li>
+          <li><a href="305.dods.nc.dds">OPeNDAP DDS 305 (Use Proxy)</a></li>
+          <li><a href="307.dods.nc.dds">OPeNDAP DDS 307 (Temporary Redirect)</a></li>
+        </ul>
+      </li>
+    </ul>
+
     <h2 align="left">GET links using query string</h2>
 
-    <a href="/dqcServlet/dqc/redirect-test?301">301 (Permanently Moved)</a>
+    <a href="../redirect-test?301">301 (Permanently Moved)</a>
     <br/>
-    <a href="/dqcServlet/dqc/redirect-test?302">302 (Temporarily Moved)</a>
+    <a href="../redirect-test?302">302 (Temporarily Moved)</a>
     <br/>
-    <a href="/dqcServlet/dqc/redirect-test?305">305 (Use Proxy)</a>
+    <a href="../redirect-test?305">305 (Use Proxy)</a>
     <br/>
-    <a href="/dqcServlet/dqc/redirect-test?dispatch">dispatch (not client visible)</a>
+    <a href="../redirect-test?dispatch">dispatch (not client visible)</a>
 
     <h2 align="left">GET links using additional path info</h2>
 
-    <a href="/dqcServlet/dqc/redirect-test/301">301 (Permanently Moved)</a>
+    <a href="301">301 (Permanently Moved)</a>
     <br/>
-    <a href="/dqcServlet/dqc/redirect-test/302">302 (Temporarily Moved)</a>
+    <a href="302">302 (Temporarily Moved)</a>
     <br/>
-    <a href="/dqcServlet/dqc/redirect-test/305">305 (Use Proxy)</a>
+    <a href="305">305 (Use Proxy)</a>
     <br/>
-    <a href="/dqcServlet/dqc/redirect-test/dispatch">dispatch (not client visible)</a>
+    <a href="dispatch">dispatch (not client visible)</a>
+
+    <h2 align="left">GET links using additional path info</h2>
+
 
     <!-- Redirects don't really work for POST - but dispatch does !
     <!--h2 align="left">POST form</h2>

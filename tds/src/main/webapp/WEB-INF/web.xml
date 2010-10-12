@@ -145,6 +145,10 @@
   </filter-mapping>
   <filter-mapping>
     <filter-name>RequestQueryFilter</filter-name>
+    <servlet-name>wms</servlet-name>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>RequestQueryFilter</filter-name>
     <servlet-name>ForecastModelRunInventory</servlet-name>
   </filter-mapping>
   <filter-mapping>
@@ -159,13 +163,6 @@
     <filter-name>RequestQueryFilter</filter-name>
     <servlet-name>cdmRemote</servlet-name>
   </filter-mapping>
-
-  <!-- New -->
-  <filter-mapping>
-    <filter-name>RequestQueryFilter</filter-name>
-    <servlet-name>tester</servlet-name>
-  </filter-mapping>
-
 
   <!--
   Filter:
@@ -462,12 +459,6 @@
     <load-on-startup>10</load-on-startup>
   </servlet>
 
-  <servlet>
-    <servlet-name>tester</servlet-name>
-    <servlet-class>thredds.servlet.TesterServlet</servlet-class>
-    <load-on-startup>10</load-on-startup>
-  </servlet>
-
   <!-- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ -->
 
   <!-- default servlet -->
@@ -591,11 +582,6 @@
   <servlet-mapping>
      <servlet-name>View</servlet-name>
      <url-pattern>/view/*</url-pattern>
-   </servlet-mapping>
-
-  <servlet-mapping>
-     <servlet-name>tester</servlet-name>
-     <url-pattern>/tester/*</url-pattern>
    </servlet-mapping>
 
   <error-page>
