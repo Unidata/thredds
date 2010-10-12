@@ -42,6 +42,13 @@
 
   </datasetScan>
 
+  <!-- opendap specific -->
+  <datasetScan name="opendapTest" ID="opendapTest" path="opendapTest" location="Q:/cdmUnitTest/tds/opendap">
+    <metadata inherited="true">
+      <serviceName>odap</serviceName>
+    </metadata>
+  </datasetScan>
+
   <catalogRef xlink:title="Test Enhanced Catalog" xlink:href="enhancedCatalog.xml" name=""/>
 
   <!-- test NcML in dataset -->

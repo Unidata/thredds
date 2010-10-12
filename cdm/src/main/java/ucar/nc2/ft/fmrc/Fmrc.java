@@ -279,7 +279,14 @@ public class Fmrc {
         if (logger.isDebugEnabled())
           logger.debug("Fmrc: "+config.spec+": file="+f.getPath());
 
-        GridDatasetInv inv = GridDatasetInv.open(manager, f, config.innerNcml); // inventory is discovered for each GDS
+        GridDatasetInv inv = null;
+        try {
+          inv = GridDatasetInv.open(manager, f, config.innerNcml); // inventory is discovered for each GDS
+        } catch (IOException ioe) {
+          logger.warn("Error opening " + f.getPath() + "(skipped)", ioe.getMessage());
+          continue; // skip
+        }
+
         Date runDate = inv.getRunDate();
         if (debug != null) debug.format("  opened %s rundate = %s%n", f.getPath(), inv.getRunDateString());
 

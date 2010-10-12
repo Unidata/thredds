@@ -99,7 +99,7 @@ public class DiskCache2 {
     setRootDirectory(root);
 
     if (scourEveryMinutes > 0) {
-      timer = new Timer();
+      timer = new Timer("DiskCache-"+root);
       Calendar c = Calendar.getInstance(); // contains current startup time
       c.add(Calendar.MINUTE, scourEveryMinutes);
       timer.scheduleAtFixedRate(new CacheScourTask(), c.getTime(), (long) 1000 * 60 * scourEveryMinutes);

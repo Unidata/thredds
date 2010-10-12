@@ -132,7 +132,7 @@ public class CdmInit {
     // optimization: netcdf-3 files can only grow, not have metadata changes
     ucar.nc2.NetcdfFile.setProperty("syncExtendOnly", "true");
 
-    // persist joinNew aggregations. default every 24 hours, delete stuff older than 90 days
+    // persist joinExisting aggregations. default every 24 hours, delete stuff older than 90 days
     String dir = ThreddsConfig.get("AggregationCache.dir", new File( tdsContext.getContentDirectory().getPath(), "cacheAged").getPath());
     int scourSecs = ThreddsConfig.getSeconds("AggregationCache.scour", 24 * 60 * 60);
     int maxAgeSecs = ThreddsConfig.getSeconds("AggregationCache.maxAge", 90 * 24 * 60 * 60);
@@ -153,7 +153,7 @@ public class CdmInit {
 
     Calendar c = Calendar.getInstance(); // contains current startup time
     c.add(Calendar.SECOND, scourSecs / 2); // starting in half the scour time
-    timer = new Timer();
+    timer = new Timer("CdmDiskCache");
     timer.scheduleAtFixedRate(new CacheScourTask(maxSize), c.getTime(), (long) 1000 * scourSecs);
 
     startupLog.info("CdmInit complete");
@@ -166,6 +166,7 @@ public class CdmInit {
     if (aggCache != null) aggCache.exit();
     if (cacheManager != null) cacheManager.close();
     thredds.inventory.bdb.MetadataManager.closeAll();
+    startupLog.info("CdmInit shutdown");
   }
 
   private class CacheScourTask extends TimerTask {

@@ -3,6 +3,12 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Release Details 4.2:
+ 4.2 release candidate 3 (2010-10-xx)
+   CdmRemoteController diskCache2 not exiting
+   DataRootHandler.shutdown(waitForJobsToComplete = true)
+   Fmrc.makeFmrcInv(): on io error, skip file. 
+   InvDatasetFeatureCollection: test for full FMRC pathname.
+
  4.2 release candidate 2 (2010-10-01)
    Fix for FMRC caching bug.
    Fix dataset viewer link generation from "viewer" properties containing access method replacement strings, e.g., "{OPENDAP}" (TDS-122).

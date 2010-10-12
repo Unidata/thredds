@@ -21,7 +21,7 @@
     <property name="collections" ref="collectionManager"/>
   </bean>
 
-  <bean id="diskCache" class="ucar.nc2.util.DiskCache2">
+  <bean id="diskCache" class="ucar.nc2.util.DiskCache2"  destroy-method="exit">
     <constructor-arg value="/data/tmp/thredds4/cdm/working/"/>
     <constructor-arg value="false"/>
     <constructor-arg value="30"/>

@@ -35,17 +35,22 @@ package thredds.tds;
 import junit.framework.*;
 
 import thredds.catalog.*;
+import ucar.nc2.TestAll;
+import ucar.nc2.dods.TestLocalDodsServer;
 import ucar.nc2.thredds.ThreddsDataFactory;
 import ucar.nc2.dataset.*;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
+import ucar.nc2.util.CompareNetcdf;
 import ucar.nc2.util.IO;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDataset;
 import ucar.ma2.Array;
+import ucar.unidata.util.StringUtil;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -123,6 +128,26 @@ public class TestTdsDodsServer extends TestCase {
   public void testUrlReading() throws IOException {
     doOne("http://localhost:8080/thredds/dodsC/testCdmUnitTest/normal/NAM_Alaska_22km_20100504_0000.grib1");
     doOne("http://localhost:8080/thredds/dodsC/testCdmUnitTest/normal/NAM_Alaska_45km_conduit_20100913_0000.grib2");
+  }
+
+  public void testCompareWithFile() throws IOException {
+    final String urlPrefix = "dods://localhost:8080/thredds/dodsC/opendapTest/";
+    final String dirName = TestAll.cdmUnitTestDir + "tds/opendap/";  // read all files from this dir
+
+    TestAll.actOnAll(dirName, null, new TestAll.Act() {
+      public int doAct(String filename) throws IOException {
+        filename = StringUtil.replace(filename, '\\', "/");
+        filename = StringUtil.remove(filename, dirName);
+        String dodsUrl = urlPrefix+filename;
+        String localPath = dirName+filename;
+        System.out.println("--Compare "+localPath+" to "+dodsUrl);
+
+        NetcdfDataset org_ncfile = NetcdfDataset.openDataset(localPath);
+        NetcdfDataset dods_file = NetcdfDataset.openDataset(dodsUrl);
+        CompareNetcdf.compareFiles(org_ncfile, dods_file);
+        return 1;
+      }
+    });
   }
 
 

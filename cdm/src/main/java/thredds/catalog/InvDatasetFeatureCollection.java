@@ -58,7 +58,7 @@ import java.util.regex.Pattern;
 /**
  * Feature Collection (experimental).
  * Like InvDatasetFmrc, this is a InvCatalogRef subclass. So the reference is placed in the parent, but
- * the catalog itself isnt constructed until it is the following is called from DataRootHandler.makeDynamicCatalog():
+ * the catalog itself isnt constructed until the following call from DataRootHandler.makeDynamicCatalog():
  *       match.dataRoot.featCollection.makeCatalog(match.remaining, path, baseURI);
  *
  * Generate anew each call; use object caching if needed to improve efficiency
@@ -91,7 +91,7 @@ public class InvDatasetFeatureCollection extends InvCatalogRef {
   /////////////////////////////////////////////////////////////////////////////
 
   private final String path;
-  private final FeatureType featureType;
+  private final FeatureType featureType; /// not yet
   private final FeatureCollectionConfig.Config config;
 
   private final Fmrc fmrc;
@@ -668,41 +668,42 @@ public class InvDatasetFeatureCollection extends InvCatalogRef {
   // called by DatasetHandler.openGridDataset()
   public GridDataset getGridDataset(String matchPath) throws IOException {
     int pos = matchPath.indexOf("/");
-    String type = (pos > -1) ? matchPath.substring(0, pos) : matchPath;
-    String name = (pos > -1) ? matchPath.substring(pos + 1) : matchPath;
+    String wantType = (pos > -1) ? matchPath.substring(0, pos) : matchPath;
+    String wantName = (pos > -1) ? matchPath.substring(pos + 1) : matchPath;
+    String hasName = StringUtil.replace(name, ' ', "_") + "_";
 
     try {
-      if (type.equals(SCAN)) {
+      if (wantType.equals(SCAN)) {
         NetcdfDataset ncd = getNetcdfDataset(matchPath);
         return ncd == null ? null : new ucar.nc2.dt.grid.GridDataset(ncd);
 
-      } else if (name.endsWith(FMRC) && wantDatasets.contains(FeatureCollectionConfig.FmrcDatasetType.TwoD)) {
+      } else if (wantName.equals(hasName + FMRC) && wantDatasets.contains(FeatureCollectionConfig.FmrcDatasetType.TwoD)) {
         return fmrc.getDataset2D(null);
 
-      } else if (name.endsWith(BEST) && wantDatasets.contains(FeatureCollectionConfig.FmrcDatasetType.Best)) {
+      } else if (wantName.equals(hasName + BEST) && wantDatasets.contains(FeatureCollectionConfig.FmrcDatasetType.Best)) {
         return fmrc.getDatasetBest();
 
-      } else if (type.equals(OFFSET) && wantDatasets.contains(FeatureCollectionConfig.FmrcDatasetType.ConstantOffsets)) {
-        int pos1 = name.indexOf(OFFSET_NAME);
-        int pos2 = name.indexOf("hr");
+      } else if (wantType.equals(OFFSET) && wantDatasets.contains(FeatureCollectionConfig.FmrcDatasetType.ConstantOffsets)) {
+        int pos1 = wantName.indexOf(OFFSET_NAME);
+        int pos2 = wantName.indexOf("hr");
         if ((pos1<0) || (pos2<0)) return null;
-        String id = name.substring(pos1+OFFSET_NAME.length(), pos2);
+        String id = wantName.substring(pos1+OFFSET_NAME.length(), pos2);
         double hour = Double.parseDouble(id);
         return fmrc.getConstantOffsetDataset( hour);
 
-      } else if (type.equals(RUNS) && wantDatasets.contains(FeatureCollectionConfig.FmrcDatasetType.Runs)) {
-        int pos1 = name.indexOf(RUN_NAME);
+      } else if (wantType.equals(RUNS) && wantDatasets.contains(FeatureCollectionConfig.FmrcDatasetType.Runs)) {
+        int pos1 = wantName.indexOf(RUN_NAME);
         if (pos1<0) return null;
-        String id = name.substring(pos1+RUN_NAME.length());
+        String id = wantName.substring(pos1+RUN_NAME.length());
 
         DateFormatter formatter = new DateFormatter();
         Date date = formatter.getISODate(id);
         return fmrc.getRunTimeDataset(date);
 
-      } else if (type.equals(FORECAST) && wantDatasets.contains(FeatureCollectionConfig.FmrcDatasetType.ConstantForecasts)) {
-        int pos1 = name.indexOf(FORECAST_NAME);
+      } else if (wantType.equals(FORECAST) && wantDatasets.contains(FeatureCollectionConfig.FmrcDatasetType.ConstantForecasts)) {
+        int pos1 = wantName.indexOf(FORECAST_NAME);
         if (pos1<0) return null;
-        String id = name.substring(pos1+FORECAST_NAME.length());
+        String id = wantName.substring(pos1+FORECAST_NAME.length());
 
         DateFormatter formatter = new DateFormatter();
         Date date = formatter.getISODate(id);
@@ -710,7 +711,7 @@ public class InvDatasetFeatureCollection extends InvCatalogRef {
 
       } else if (config.fmrcConfig.getBestDatasets() != null) {
         for (FeatureCollectionConfig.BestDataset bd : config.fmrcConfig.getBestDatasets()) {
-          if (name.endsWith(bd.name)) {
+          if (wantName.endsWith(bd.name)) {
             return fmrc.getDatasetBest(bd);
           }
         }
