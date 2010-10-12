@@ -105,11 +105,11 @@ public class ServerMethods {
         dateFormat = new SimpleDateFormat("yyyyMMdd");
         dateFormat.setTimeZone(TimeZone.getTimeZone("GMT")); // same as UTC
     }
-
-    private org.slf4j.Logger log;
+    private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
+    //private org.slf4j.Logger log;
 
     public ServerMethods( org.slf4j.Logger log ) {
-        this.log = log;
+        //this.log = log;
     }
 
     /*

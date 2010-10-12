@@ -71,12 +71,13 @@ public class RadarMethods {
 
   private ServerMethods sm;
   private boolean debug = false;
-  private org.slf4j.Logger log;
+  private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
+  //private org.slf4j.Logger log;
 
   public RadarMethods( ) {}
 
   public RadarMethods( String contentPath, org.slf4j.Logger log ) {
-     this.log = log;
+     //this.log = log;
      sm = new  ServerMethods( log );
      if( nexradList.size() == 0 ) {
        nexradList = sm.getStations( contentPath + getPath() + nexradStations );
