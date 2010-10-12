@@ -43,9 +43,12 @@ public class TestGribFromTds extends TestCase {
   public int nvars = 0;
   public int nintVars = 0;
 
-  // grib 2 only
   public void testGribFromTds() throws Exception {
-    String dir = TestAll.testdataDir + "cdmUnitTest/formats/grib2";
+    doDir(TestAll.testdataDir + "cdmUnitTest/formats/grib2");
+    doDir(TestAll.testdataDir + "cdmUnitTest/tds/normal");
+  }
+
+  public void doDir(String dir) throws Exception {
     //String dir = "E:/work/foster";
     TestAll.actOnAll(dir, new GribFilter(), new TestAll.Act() {
       @Override
@@ -64,6 +67,7 @@ public class TestGribFromTds extends TestCase {
     System.out.printf("totvars = %d %n", nvars);
     System.out.printf("intVars = %d %n", nintVars);
   }
+
 
   public class GribFilter implements FileFilter {
     public boolean accept(File file) {
@@ -149,8 +153,11 @@ public class TestGribFromTds extends TestCase {
     List<GridRecord> grList = index.getGridRecords();
     for (GridRecord gr : grList) {
       GribGridRecord ggr = (GribGridRecord) gr;
-      Grib2Pds pds =  (Grib2Pds) ggr.getPds();
-      int genType = pds.getGenProcessType();
+      int genType = ggr.getPds().getGenProcessId();
+      if (!isGrib1) {
+        Grib2Pds pds =  (Grib2Pds) ggr.getPds();
+        genType = pds.getGenProcessType();
+      }
       List<String> uses = map.get(genType);
       if (uses == null) {
         uses = new ArrayList<String>();
@@ -171,7 +178,7 @@ public class TestGribFromTds extends TestCase {
     Collections.sort(sortList);
     for (int val : sortList) {
       String desc = isGrib1 ? "" : Grib2Tables.codeTable4_3(val);
-      System.out.printf(" %d (%s)%n", val, Grib2Tables.codeTable4_3(val));
+      System.out.printf(" %d (%s)%n", val, desc);
       if (showVars) {
         List<String> uses = map.get(val);
         for (String use : uses)

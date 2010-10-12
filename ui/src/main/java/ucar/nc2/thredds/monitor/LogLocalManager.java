@@ -33,12 +33,9 @@
 package ucar.nc2.thredds.monitor;
 
 import ucar.nc2.units.DateFormatter;
-import ucar.nc2.units.DateFromString;
-import ucar.nc2.units.DateRange;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;/*
 
@@ -111,6 +108,7 @@ public class LogLocalManager {
         prev.end = new Date(fdr.start.getTime()-1);
       prev = fdr;
     }
+
     // deal with last one
     if (list.size() > 1) {
       FileDateRange first = list.get(0);
@@ -126,7 +124,11 @@ public class LogLocalManager {
         last.end = new Date(last.start.getTime()+interval);
       }
     } else if (prev != null) { // only one
-       prev.end = isAccess ? new Date(prev.start.getTime()+ 24 * 3600 * 1000) : new Date(prev.start.getTime()+3600 * 1000);
+      if (isAccess)
+         prev.end = new Date(prev.start.getTime()+ 24 * 3600 * 1000);
+      else {
+        prev.end = new Date(prev.start.getTime()+3600 * 1000);
+      }
     }
 
     // filter by time range
@@ -161,20 +163,6 @@ public class LogLocalManager {
     return f.end;
   }
 
-  Date extractDate(String name) {
-    if (!isAccess && name.equals(specialLog))
-      return new Date(); // LOOK LAME
-    else {
-      try {
-        String filenameDate = name.substring( filenameDatePos);
-        return localFormat.parse( filenameDate );
-      } catch (Exception e) {
-        e.printStackTrace();
-        return null;
-      }
-    }
-  }
-
   public String getServer() {
     return server;
   }
@@ -187,8 +175,25 @@ public class LogLocalManager {
 
     FileDateRange(File f) {
       this.f = f;
-      this.start = extractDate(f.getName());
+      this.start = extractStartDate(f.getName());
       System.out.printf(" %s == %s%n", f.getName(), df.toDateTimeStringISO(start));
+    }
+
+    Date extractStartDate(String name) {
+      if (!isAccess && name.equals(specialLog)) {
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.HOUR_OF_DAY, -1);
+        return cal.getTime();
+
+      } else {
+        try {
+          String filenameDate = name.substring( filenameDatePos);
+          return localFormat.parse( filenameDate );
+        } catch (Exception e) {
+          e.printStackTrace();
+          return null;
+        }
+      }
     }
   }
 

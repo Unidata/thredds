@@ -518,6 +518,10 @@ public class Grib1GridTableLookup implements GridTableLookup {
     */
   }
 
+  public final String getModel() {
+    return Grib1Tables.getModelName( firstPDSV.getCenter(), firstPDSV.getGenProcessId() );
+  }
+
   /**
    * gets the grid type.
    *

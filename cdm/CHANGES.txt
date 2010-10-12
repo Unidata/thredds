@@ -3,10 +3,13 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Changes in version 4.2:
- 9: (2010-xx-xx)
+ 9: (2010-10-12)
+  Grib2: distinguish genProcType from genProcId. Use genProcType in variable name when its type "error".
+  Fmrc.makeFmrcInv(): on io error, skip file. 
   Grib2Pds30: use superclass getForecastDate()
   ToolsUI: Grib2RawPanel can save individual records to a file
   Grib2Input: track start, end file pos of records
+  nexrad : bug fix for dual pole radars.
  8: (2010-09-30)
   move ucar.unidata.util completely to unidataCommon for now
   Grib2: new way to calculate intervals, works even for NDFD 

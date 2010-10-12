@@ -370,6 +370,10 @@ public final class Grib2GridTableLookup implements GridTableLookup {
     return title.toString();
   }
 
+  public final String getModel() {
+    return Grib1Tables.getModelName(firstID.getCenter_id(), firstPDSV.getGenProcessId());
+  }
+
   /**
    * gets the SignificanceOfRTName.
    *

@@ -321,6 +321,8 @@ public final class GribGridRecord implements GridRecord {
         if (isInterval()) result += result * 37 + getIntervalTypeName().hashCode();
         result += result * 37 +  getLevelType2(); // ??
         result += result * 37 + pds2.getParameterNumber();
+        String useGenType = pds2.getUseGenProcessType();
+        if (useGenType != null) result += result * 37 + useGenType.hashCode();
 
         if (pds2.isEnsembleDerived()) {
           Grib2Pds.PdsEnsembleDerived pdsDerived = (Grib2Pds.PdsEnsembleDerived) pds2;
@@ -354,6 +356,14 @@ public final class GribGridRecord implements GridRecord {
     Formatter f = new Formatter();
     String desc = getParameterDescription();
     f.format("%s", desc);
+
+
+    if (edition == 2) {
+      Grib2Pds pds2 = (Grib2Pds) pds;
+      String useGenType = pds2.getUseGenProcessType();
+      if (useGenType != null)
+        f.format("_%s", useGenType);
+    }
 
     if (useLevel) {
       String levelName = lookup.getLevelName(this);

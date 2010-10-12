@@ -71,7 +71,7 @@ public class GridVariable {
    * logger
    */
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GridVariable.class);
-  static private boolean warnOk = false;
+  static private boolean warnOk = true;
 
   private final String filename;
 
@@ -469,6 +469,7 @@ public class GridVariable {
       v.addAttribute(new Attribute("GRIB_param_discipline", lookup.getDisciplineName(firstRecord)));
       v.addAttribute(new Attribute("GRIB_param_category", lookup.getCategoryName(firstRecord)));
       v.addAttribute(new Attribute("GRIB_param_name", param.getName()));
+      v.addAttribute(new Attribute("GRIB_generating_process_type", g2lookup.getGenProcessTypeName(firstRecord)));
       v.addAttribute(new Attribute("GRIB_param_id", Array.factory(int.class, new int[]{paramId.length}, paramId)));
       v.addAttribute(new Attribute("GRIB_product_definition_template", pds2.getProductDefinitionTemplate()));
       v.addAttribute(new Attribute("GRIB_product_definition_template_desc", Grib2Tables.codeTable4_0( pds2.getProductDefinitionTemplate())));
@@ -798,27 +799,36 @@ public class GridVariable {
    */
   private String makeLongName() {
 
+    Formatter f = new Formatter();
     GridParameter param = lookup.getParameter(firstRecord);
-    String paramName = param.getDescription();
+    f.format("%s", param.getDescription());
 
     if (firstRecord instanceof GribGridRecord) {
       GribGridRecord ggr = (GribGridRecord) firstRecord;
+
+      if (ggr.getEdition() == 2) {
+        Grib2Pds pds2 = (Grib2Pds) ggr.getPds();
+        String useGenType = pds2.getUseGenProcessType();
+        if (useGenType != null)
+          f.format("_%s", useGenType);
+      }
+
       String suffixName = ggr.makeSuffix( );
       if (suffixName != null && suffixName.length() != 0)
-        paramName += suffixName;
+        f.format("%s", suffixName);
 
       if (ggr.isInterval()) {
         String intervalName = makeIntervalName();
         if (intervalName.length() != 0)
-          paramName += " (" + ggr.getIntervalTypeName() + " for " + intervalName + ")";
+          f.format(" (%s for %s)", ggr.getIntervalTypeName(), intervalName);
       }
     }
 
     String levelName = GridIndexToNC.makeLevelName(firstRecord, lookup);
     if (levelName.length() != 0)
-      paramName += " @ " + levelName;
+      f.format(" @ %s", levelName);
 
-    return paramName;
+    return f.toString();
   }
 
   private String makeIntervalName() {

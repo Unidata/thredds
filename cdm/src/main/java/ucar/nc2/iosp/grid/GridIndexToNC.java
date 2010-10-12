@@ -32,6 +32,7 @@
  */
 package ucar.nc2.iosp.grid;
 
+import ucar.grib.GribGridRecord;
 import ucar.nc2.*;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.constants.FeatureType;
@@ -123,8 +124,9 @@ public class GridIndexToNC {
     List<GridRecord> records = index.getGridRecords();
 
     for (GridRecord gridRecord : records) {
-      if (firstRecord == null)
+      if (firstRecord == null) {
         firstRecord = gridRecord;
+      }
 
       GridHorizCoordSys hcs =  hcsHash.get(gridRecord.getGridDefRecordId());
       int cdmHash = gridRecord.cdmVariableHash();
@@ -180,15 +182,16 @@ public class GridIndexToNC {
     String subcenter = null;
     if ( lookup instanceof Grib2GridTableLookup ) {
       Grib2GridTableLookup g2lookup = (Grib2GridTableLookup) lookup;
+      GribGridRecord ggr = (GribGridRecord) firstRecord;
       center = g2lookup.getFirstCenterName();
-      subcenter = g2lookup.getFirstSubcenterName();
       ncfile.addAttribute(null, new Attribute("Originating_center", center));
-      //if (subcenter != null)
-      //  ncfile.addAttribute(null, new Attribute("Originating_subcenter", subcenter));
+      subcenter = g2lookup.getFirstSubcenterName();
+      if (subcenter != null)
+        ncfile.addAttribute(null, new Attribute("Originating_subcenter", subcenter));
 
-      String genType = g2lookup.getGenProcessTypeName(firstRecord);
-      if (genType != null)
-        ncfile.addAttribute(null, new Attribute("Generating_Process_or_Model", genType));
+      String model = g2lookup.getModel();
+      if (model != null)
+        ncfile.addAttribute(null, new Attribute("Generating_Model", model));
       if (null != g2lookup.getFirstProductStatusName())
         ncfile.addAttribute(null, new Attribute("Product_Status", g2lookup.getFirstProductStatusName()));
       ncfile.addAttribute(null, new Attribute("Product_Type", g2lookup.getFirstProductTypeName()));
@@ -201,18 +204,17 @@ public class GridIndexToNC {
       if (subcenter != null)
       ncfile.addAttribute(null, new Attribute("Originating_subcenter", subcenter));
 
-      String genName = g1lookup.getGenProcessName(firstRecord);
-      if (genName != null)
-        ncfile.addAttribute(null, new Attribute("Generating_Process_or_Model", genName));
+      String model = g1lookup.getModel();
+      if (model != null)
+        ncfile.addAttribute(null, new Attribute("Generating_Model", model));
       if (null != g1lookup.getFirstProductStatusName())
         ncfile.addAttribute(null, new Attribute("Product_Status", g1lookup.getFirstProductStatusName()));
       ncfile.addAttribute(null, new Attribute("Product_Type", g1lookup.getFirstProductTypeName()));
     }
 
     // CF Global attributes
-    ncfile.addAttribute(null, new Attribute("title", lookup.getTitle() +" at "+
-    formatter.toDateTimeStringISO(lookup.getFirstBaseTime()) ));
-    if ( lookup.getInstitution() != null)
+    ncfile.addAttribute(null, new Attribute("title", lookup.getTitle()));
+    if (lookup.getInstitution() != null)
       ncfile.addAttribute(null, new Attribute("institution", lookup.getInstitution()));
     String source = lookup.getSource();
     if ( source != null && ! source.startsWith( "Unknown"))

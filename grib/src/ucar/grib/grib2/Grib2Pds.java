@@ -307,6 +307,12 @@ abstract public class Grib2Pds extends GribPds {
     return MISSING;
   }
 
+  public String getUseGenProcessType() {
+    int type = getGenProcessType();
+    if ((type == 7) || (type == 6)) return "error";
+    return null;
+  }
+
   @Override
   public Date getForecastDate() {
     if (validTime < 0)

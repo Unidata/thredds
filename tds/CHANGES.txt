@@ -3,7 +3,7 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Release Details 4.2:
- 4.2 release candidate 3 (2010-10-xx)
+ 4.2 release candidate 3 (2010-10-12)
    CdmRemoteController diskCache2 not exiting
    DataRootHandler.shutdown(waitForJobsToComplete = true)
    Fmrc.makeFmrcInv(): on io error, skip file. 
