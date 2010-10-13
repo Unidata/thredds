@@ -150,7 +150,7 @@ is false, TDS will first look for the temporary file in the same
 directory as the original file, and if not found, then will look in the
 cache.</p>
  <p>Every <strong>scour</strong> amount of time, the largest items in the cache will be deleted, until the directory has less than <strong>maxSize</strong> bytes. Note that the directory will sometimes exceed <strong>maxSize</strong>, and will only be knocked back to <strong>maxSize</strong> when the scour thread runs.</p>
- <p>If not otherwise set, the TDS will use the <strong>${tomcat_home}/content/thredds/cache/</strong> directory. </p>
+ <p>If not otherwise set, the TDS will use the <strong>${tomcat_home}/content/thredds/cache/cdm</strong> directory. We recommend that you use this default, by not specifying the DiskCache.dir.</p>
  <h3>THREDDS <strong>NetcdfFile<a name="NetcdfFileCache"></a></strong> Object / File Handle<a name="FileHandles"></a> Caching </h3>
 <pre>  &lt;<strong>NetcdfFileCache</strong>&gt;<br>    &lt;<strong>minFiles</strong>&gt;200&lt;/minFiles&gt;<br>    &lt;<strong>maxFiles</strong>&gt;400&lt;/maxFiles&gt;<br>    &lt;<strong>scour</strong>&gt;10 min&lt;/scour&gt;<br>  &lt;/NetcdfFileCache&gt;</pre>
 <pre>  &lt;<strong>HTTPFileCache</strong>&gt;<br>    &lt;<strong>minFiles</strong>&gt;25&lt;/minFiles&gt;<br>    &lt;<strong>maxFiles</strong>&gt;40&lt;/maxFiles&gt;<br>    &lt;<strong>scour</strong>&gt;10 min&lt;/scour&gt;<br>  &lt;/HTTPFileCache&gt;<br></pre>
@@ -165,8 +165,8 @@ index. When GRIB indexing is being done by an external process, its
 best to turn off automatic index extension, by setting <strong>setExtendIndex</strong> to false, so there is no possibility of a collision by the GRIB indexing process and the TDS. If you  have <strong>setExtendIndex</strong> true, you should also set <strong>alwaysUseCache</strong> to true, to avoid collisions with an external indexer.</p>
  <h3>Aggregation Cache<a name="AggregationCache"></a> </h3>
  <pre>  &lt;<strong>AggregationCache</strong>&gt;<br>    &lt;<strong>dir</strong>&gt;/temp/acache/&lt;/dir&gt;<br>    &lt;<strong>scour</strong>&gt;24 hours&lt;/scour&gt;<br>    &lt;<strong>maxAge</strong>&gt;90 days&lt;/maxAge&gt;<br>  &lt;/AggregationCache&gt;<br></pre>
- <p> If you have <strong>joinExisting</strong> Aggregations, coordinate information will be written to a cache directory specified by <strong>dir</strong> (<a href="#Cache_Locations">choosing a cache directory</a>). If not otherwise set, the TDS will use the <strong>${tomcat_home}/content/thredds/cacheAged/</strong> directory. </p>
- <p>Every <strong>scour</strong> amount of time, any item that hasnt been changed since <em>maxAge</em> time will be deleted. Set scour to -1 to not scour at all. </p>
+ <p> If you have <strong>joinExisting</strong> Aggregations, coordinate information will be written to a cache directory specified by <strong>dir</strong> (<a href="#Cache_Locations">choosing a cache directory</a>). If not otherwise set, the TDS will use the <strong>${tomcat_home}/content/thredds/cache/agg/</strong> directory. We recommend that you use this default, by not specifying a <strong>AggregationCache</strong>.<strong>dir</strong> element.</p>
+<p>Every <strong>scour</strong> amount of time, any item that hasnt been changed since <em>maxAge</em> time will be deleted. Set scour to -1 to not scour at all. </p>
  <p>This
 cache information is intended to be permanent, it stores coordinate
 information from each file in the aggregation, so that the file does
@@ -226,13 +226,13 @@ below the defaults.</p>
    <li><strong>allow</strong>: to allow, change this to true.</li>
    <li><strong>dir</strong>: the working directory where generated files are cached
      before being sent to the client (More information on
-     <a href="#Cache_Locations">choosing a cache directory</a>.)   </li>
+     <a href="#Cache_Locations">choosing a cache directory</a>.)   If not otherwise set, the TDS will use the <strong>${tomcat_home}/content/thredds/cache/wcs/</strong> directory We recommend that you use this default, by not specifying a <strong>WCS</strong>.<strong>dir</strong> element.</li>
    <li> <strong>scour</strong>: how often to scour the working directory of files that were
      not successfully downloaded. </li>
    <li><strong>maxAge</strong>: how long to leave the files in the working directory while
      the download is occurring. The files are deleted after a successful download. </li>
 </ol>
- <p>Note: If WCS is allowed but the directory is not set, the TDS will use
+<p>Note: If WCS is allowed but the directory is not set, the TDS will use
    the <code>${tomcat_home}/content/thredds/wcs/wcache/</code> directory for
    temporary files.</p>
 
@@ -297,7 +297,7 @@ below the defaults.</p>
 
  <ol>
    <li><strong>allow</strong>: Set to "true" to enable the NetcdfSubset service.</li>
-   <li><strong>dir</strong> : the working directory for creating files for download&nbsp;(See <a href="#Cache_Locations">choosing a cache directory</a>) </li>
+   <li><strong>dir</strong> : the working directory for creating files for download&nbsp;(See <a href="#Cache_Locations">choosing a cache directory</a>). If not otherwise set, the TDS will use the <strong>${tomcat_home}/content/thredds/cache/ncss/</strong> directory We recommend that you use this default, by not specifying a <strong>NetcdfSubsetService</strong>.<strong>dir</strong> element.</li>
    <li> <strong>scour</strong> : how often to scour the working directory, to delete files that were not successfully downloaded. </li>
    <li><strong>maxAge</strong>:
      how long to leave the files in the working directory while the download
@@ -351,11 +351,11 @@ exists, assuming new files are generated externally. <br>
  <h3>Controlling Ehcache </h3>
 <pre> &lt;eh<strong>cache</strong>&gt;<br>   &lt;<strong>configFile</strong>&gt;/tomcat_home/webapp/WEB-INF/ehcache.xml&lt;/<strong>configFile</strong>&gt;<br>   &lt;<strong>dir</strong>&gt;/tomcat_home/content/thredds/ehcache/&lt;/<strong>dir</strong>&gt;<br> &lt;/ehcache&gt;<br></pre>
 <ul>
-   <li>location of ehcache configuration file</li>
-   <li>location of ehcache data files<br>
+   <li>location of ehcache configuration file. </li>
+   <li>location of ehcache data files.  If not otherwise set, the TDS will use the <strong>${tomcat_home}/content/thredds/cache/ehcache/</strong> directory We recommend that you use this default, by not specifying an <strong>ehcache</strong>.<strong>dir</strong> element.<br>
    </li>
  </ul>
- <h3><br>
+<h3><br>
    Controlling THREDDS catalog output<br>
  </h3>
  <pre>&lt;catalogWriting&gt;<br>  &lt;<strong>useBytesForDataSize</strong>&gt;false&lt;useBytesForDataSize/&gt;<br>&lt;/catalogWriting&gt;<br></pre>
@@ -369,7 +369,7 @@ appropriately.</li>
 <h2>Options in 4.2 </h2>
 <pre> &lt;FeatureCollection<strong></strong>&gt;<br>   &lt;<strong>dir</strong>&gt;/tomcat_home/content/thredds/collectionCache/&lt;/<strong>dir</strong>&gt;<br> &lt;/FeatureCollection&gt;<br></pre>
 <ul>
-  <li>location of Feature Collection cache<br>
+  <li>location of Feature Collection cache. If not otherwise set, the TDS will use the <strong>${tomcat_home}/content/thredds/cache/collection/</strong> directory We recommend that you use this default, by not specifying a <strong>FeatureCollection</strong>.<strong>dir</strong> element.<br>
   </li>
 </ul>
 <hr style="width: 100%; height: 2px;">
