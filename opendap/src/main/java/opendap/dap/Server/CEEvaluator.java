@@ -176,6 +176,9 @@ public class CEEvaluator {
             exp.constraint_expression(this, _dds.getFactory(), clauseFactory);
         } catch (TokenMgrError tme) {
             throw new ParseException(tme.getMessage());
+        } catch (Throwable t) {
+          t.printStackTrace();
+          throw new ParseException(t.getMessage());
         }
 
 

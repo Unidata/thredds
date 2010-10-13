@@ -919,15 +919,13 @@ public class DDS extends DStructure {
      *         of the DDS to the named variable.
      * @throws NoSuchVariableException
      */
-    public Stack search(String name, Stack compStack)
-            throws NoSuchVariableException {
+    public Stack search(String name, Stack compStack) throws NoSuchVariableException {
         DDSSearch ddsSearch = new DDSSearch(compStack);
 
         if (ddsSearch.deepSearch(name))
             return ddsSearch.components;
         else
-            throw new NoSuchVariableException("The variable `" + name
-                    + "' was not found in the dataset.");
+            throw new NoSuchVariableException("The variable `" + name + "' was not found in the dataset.");
     }
 
     /**
