@@ -56,7 +56,6 @@
   <!-- CDM uses the DiskCache directory to store temporary files, like uncompressed files.  -->
   <DiskCache>
     <alwaysUse>false</alwaysUse>
-    <dir>/data/tmp/thredds/cache/</dir>
     <scour>1 hour</scour>
     <maxSize>1 Gb</maxSize>
   </DiskCache>
@@ -88,7 +87,6 @@
 
   <!--  Persist joinNew aggregations to named directory. scour every 24 hours, delete stuff older than 30 days   -->
   <AggregationCache>
-    <dir>/data/tmp/thredds/aggcache/</dir>
     <scour>24 hours</scour>
     <maxAge>30 days</maxAge>
   </AggregationCache>
@@ -108,7 +106,6 @@
   <WCS>
     <allow>false</allow> 
     <allowRemote>false</allowRemote>
-    <dir>/data/tmp/thredds/wcsCache/</dir>
     <scour>15 min</scour>
     <maxAge>30 min</maxAge>
   </WCS>
@@ -129,11 +126,6 @@
   <!-- Add a DataSource - essentially an IOSP with access to Servlet request parameters  -->
   <DatsetSource>my.package.DatsetSourceImpl</DatsetSource>
 
-  <!-- Forecast Model Run Collection Inventory   -->
-  <FmrcInventory>
-    <openType>XML_ONLY</openType>
-  </FmrcInventory> 
-  
   <!--
   Configuring the CDM (netcdf-java library)
   see http://www.unidata.ucar.edu/software/netcdf-java/reference/RuntimeLoading.html   -->

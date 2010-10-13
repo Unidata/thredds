@@ -101,7 +101,6 @@
 
   <CdmValidatorService>
     <allow>true</allow>
-    <dir>/data/thredds/tds-live/content/thredds/cache/cdmValidate/</dir>
     <maxFileUploadSize>1 Gb</maxFileUploadSize>
     <scour>24 hours</scour>
     <maxAge>30 days</maxAge>
@@ -109,7 +108,6 @@
 
   <NetcdfSubsetService>
     <allow>true</allow>
-    <dir>/data/thredds/tds-live/content/thredds/cache/ncss/</dir>
     <scour>15 min</scour>
     <maxAge>30 min</maxAge>
   </NetcdfSubsetService>
@@ -117,7 +115,6 @@
   <WCS>
     <allow>true</allow>
     <allowRemote>false</allowRemote>
-    <dir>/data/thredds/tds-live/content/thredds/cache/wcs/</dir>
     <scour>15 min</scour>
     <maxAge>30 min</maxAge>
   </WCS>
@@ -166,7 +163,6 @@
 
   <DiskCache>
     <alwaysUse>false</alwaysUse>
-    <dir>/data/thredds/tds-live/content/thredds/cache/cdm/</dir>
     <scour>1 hour</scour>
     <maxSize>1 Gb</maxSize>
   </DiskCache>
@@ -177,17 +173,9 @@
   </GribIndexing>
 
   <AggregationCache>
-    <dir>/data/thredds/tds-live/content/thredds/cache/agg/</dir>
     <scour>24 hours</scour>
     <maxAge>90 days</maxAge>
   </AggregationCache>
 
-  <ehcache>
-    <dir>/data/thredds/tds-live/content/thredds/cache/ehcache/</dir>
-  </ehcache>
-
-  <FeatureCollection>
-    <dir>/data/thredds/tds-live/content/thredds/cache/collection/</dir>
-  </FeatureCollection>
 
 </threddsConfig>

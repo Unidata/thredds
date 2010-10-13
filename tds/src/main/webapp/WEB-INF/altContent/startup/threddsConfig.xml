@@ -90,7 +90,6 @@
   CDM uses the DiskCache directory to store temporary files, like uncompressed files.
   <DiskCache>
     <alwaysUse>false</alwaysUse>
-    <dir>/data/tmp/thredds/cache/</dir>
     <scour>1 hour</scour>
     <maxSize>1 Gb</maxSize>
   </DiskCache>
@@ -104,16 +103,6 @@
     <maxFiles>400</maxFiles>
     <scour>10 min</scour>
   </NetcdfFileCache>
-  -->
-
-  <!--
-  Caching open NetcdfDataset objects.
-   default allow 100 - 200 open datasets, cleanup every 10 minutes
-  <NetcdfDatasetCache>
-    <minFiles>100</minFiles>
-    <maxFiles>200</maxFiles>
-    <scour>10 min</scour>
-  </NetcdfDatasetCache>
   -->
 
   <!--
@@ -138,7 +127,6 @@
   <!--
   Persist joinNew aggregations to named directory. scour every 24 hours, delete stuff older than 30 days
   <AggregationCache>
-    <dir>/data/tmp/thredds/aggcache/</dir>
     <scour>24 hours</scour>
     <maxAge>30 days</maxAge>
   </AggregationCache>
@@ -155,7 +143,6 @@
   The Netcdf Subset Service is off by default.
   <NetcdfSubsetService>
     <allow>false</allow>
-    <dir>/data/tmp/thredds/ncSubsetCache/</dir>
     <scour>10 min</scour>
     <maxAge>-1 min</maxAge>
     <metarDataDir>/opt/tomcat/content/thredds/public/stn/</metarDataDir>
@@ -177,7 +164,6 @@
   <WCS>
     <allow>false</allow>
     <allowRemote>false</allowRemote>
-    <dir>/data/tmp/thredds/wcsCache/</dir>
     <scour>15 min</scour>
     <maxAge>30 min</maxAge>
   </WCS>
@@ -222,13 +208,6 @@
    Add a DataSource - essentially an IOSP with access to Servlet request parameters
    <DatsetSource>my.package.DatsetSourceImpl</DatsetSource>
    -->
-
-  <!--
-  Forecast Model Run Collection Inventory
-  <FmrcInventory>
-    <openType>XML_ONLY</openType>
-  </FmrcInventory>
-  -->
 
   <!--
   Modify Logging parameters. Normally use log4j.xml
