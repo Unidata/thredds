@@ -134,7 +134,7 @@ public class GribIndexPanel extends JPanel {
         infoPopup2.clear();
         for (int i = 0; i < list.size(); i++) {
           GribGridRecordBean bean = (GribGridRecordBean) list.get(i);
-          infoPopup2.appendLine(bean.ggr.toString());
+          infoPopup2.appendLine(bean.ggr.toString2());
           infoPopup2.appendLine("");
         }
         infoPopup2.gotoTop();

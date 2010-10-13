@@ -74,7 +74,7 @@ public class CdmInit {
     // new for 4.2 - feature collection caching
     String fcCache = ThreddsConfig.get("FeatureCollection.dir", null);
     if (fcCache == null)
-      fcCache = ThreddsConfig.get("FeatureCollection.cacheDirectory", tdsContext.getContentDirectory().getPath() + "/collectionCache/"); // old way
+      fcCache = ThreddsConfig.get("FeatureCollection.cacheDirectory", tdsContext.getContentDirectory().getPath() + "/cache/collection/");  // cacheDirectory is old way
     try {
       thredds.inventory.bdb.MetadataManager.setCacheDirectory(fcCache);
       startupLog.info("CdmInit: FeatureCollection.cacheDirectory= "+fcCache);
@@ -86,7 +86,7 @@ public class CdmInit {
     String ehConfig = ThreddsConfig.get("ehcache.configFile", tdsContext.getWebinfPath() + "/ehcache.xml");
     String ehDirectory = ThreddsConfig.get("ehcache.dir", null);
     if (ehDirectory == null)
-      ehDirectory = ThreddsConfig.get("ehcache.directory", tdsContext.getContentDirectory().getPath() + "/ehcache/"); // old way
+      ehDirectory = ThreddsConfig.get("ehcache.directory", tdsContext.getContentDirectory().getPath() + "/cache/ehcache/");  // directory is old way
     try {
       cacheManager = thredds.filesystem.ControllerCaching.makeStandardController(ehConfig, ehDirectory);
       thredds.inventory.DatasetCollectionManager.setController(cacheManager);
@@ -133,7 +133,7 @@ public class CdmInit {
     ucar.nc2.NetcdfFile.setProperty("syncExtendOnly", "true");
 
     // persist joinExisting aggregations. default every 24 hours, delete stuff older than 90 days
-    String dir = ThreddsConfig.get("AggregationCache.dir", new File( tdsContext.getContentDirectory().getPath(), "cacheAged").getPath());
+    String dir = ThreddsConfig.get("AggregationCache.dir", new File( tdsContext.getContentDirectory().getPath(), "/cache/agg/").getPath());
     int scourSecs = ThreddsConfig.getSeconds("AggregationCache.scour", 24 * 60 * 60);
     int maxAgeSecs = ThreddsConfig.getSeconds("AggregationCache.maxAge", 90 * 24 * 60 * 60);
     aggCache = new DiskCache2(dir, false, maxAgeSecs / 60, scourSecs / 60);
@@ -144,7 +144,7 @@ public class CdmInit {
     Aggregation.setTypicalDatasetMode(typicalDataset);
 
     // Nj22 disk cache
-    dir = ThreddsConfig.get("DiskCache.dir", new File( tdsContext.getContentDirectory(), "cache" ).getPath());
+    dir = ThreddsConfig.get("DiskCache.dir", new File( tdsContext.getContentDirectory(), "/cache/cdm/" ).getPath());
     boolean alwaysUse = ThreddsConfig.getBoolean("DiskCache.alwaysUse", false);
     scourSecs = ThreddsConfig.getSeconds("DiskCache.scour", 60 * 60);
     long maxSize = ThreddsConfig.getBytes("DiskCache.maxSize", (long) 1000 * 1000 * 1000);

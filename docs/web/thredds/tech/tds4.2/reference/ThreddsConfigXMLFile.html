@@ -11,8 +11,7 @@
 
  <hr>
  <p>The TDS configuration file (<code>${tomcat_home}/content/thredds/threddsConfig.xml</code>)
-   allows the TDS administrator to set a number of parameters that control the behavior of the TDS.
- </p>
+   allows the TDS administrator to set a number of parameters that control the behavior of the TDS. </p>
  <p>In general, you do not have to change any of these parameters, since the TDS will
    use default settings. If you do change any of these, you must restart the thredds
    webapp (e.g., through the tomcat manager application) for them to take effect. The
@@ -38,7 +37,6 @@
   <li>Caching Options</li>
   <li>GRIB Indexing Options<br>
   </li>
-
 </ul>
 
 
@@ -84,11 +82,9 @@ information about the group that hosts the server.<br>
 <p>Some of the information provided in the <code>serverInformation</code> element
   supersedes information in the <code>htmlSetup</code> element (described below).
   The superseded information is listed as deprecated in the description of the
-  <code>htmlSetup</code> element below.
-</p>
+  <code>htmlSetup</code> element below.</p>
 <p>NOTE: URLs may be absolute or relative. Relative URLs must be
-relative to the webapp URL, i.e., http://server:port/thredds/.
-</p>
+relative to the webapp URL, i.e., http://server:port/thredds/.</p>
 
 <h2><a name="Generated_HTML_Pages"></a>Generated HTML Pages</h2>
 <p>In the <code>htmlSetup</code> element, you can configure which CSS
@@ -205,8 +201,7 @@ below the defaults.</p>
  <p>The OGC WCS service provided as part of the TDS is described in more detail
    <a href="WCS.html">here</a>. By default this service is disabled in the TDS.
    It can be enabled by including the following in the <code>threddsConfig.xml</code>
-   file:
- </p>
+   file: </p>
  <pre>
  &lt;WCS&gt;
    &lt;allow&gt;false&lt;/allow&gt;
@@ -214,8 +209,7 @@ below the defaults.</p>
  </pre>
 
  <p>The following shows all the configuration options available in the WCS section of the
-   <code>threddsConfig.xml</code> file with the default values shown:
- </p>
+   <code>threddsConfig.xml</code> file with the default values shown: </p>
  <pre>
 &lt;<strong>WCS</strong>&gt;
     &lt;<strong>allow</strong>&gt;false&lt;/allow&gt;
@@ -227,14 +221,12 @@ below the defaults.</p>
 
  <p>We recommend that you include in the <code>threddsConfig.xml</code>
    file only the options you want to change. Here is the description of the
-   various options:
- </p>
+   various options: </p>
  <ol>
    <li><strong>allow</strong>: to allow, change this to true.</li>
    <li><strong>dir</strong>: the working directory where generated files are cached
      before being sent to the client (More information on
-     <a href="#Cache_Locations">choosing a cache directory</a>.)
-   </li>
+     <a href="#Cache_Locations">choosing a cache directory</a>.)   </li>
    <li> <strong>scour</strong>: how often to scour the working directory of files that were
      not successfully downloaded. </li>
    <li><strong>maxAge</strong>: how long to leave the files in the working directory while
@@ -249,8 +241,7 @@ below the defaults.</p>
  <p>The OGC WMS service provided as part of the TDS is described in more detail
    <a href="WMS.html">here</a>. By default this service is disabled in the TDS.
    It can be enabled by including the following in the <code>threddsConfig.xml</code>
-   file:
- </p>
+   file: </p>
  <pre>
  &lt;WMS&gt;
    &lt;allow&gt;false&lt;/allow&gt;
@@ -258,8 +249,7 @@ below the defaults.</p>
  </pre>
 
  <p>The following shows all the configuration options available in the WMS section of the
-   <code>threddsConfig.xml</code> file with the default values shown:
- </p>
+   <code>threddsConfig.xml</code> file with the default values shown: </p>
 
  <pre>
 &lt;<strong>WMS</strong>&gt;
@@ -272,8 +262,7 @@ below the defaults.</p>
 
  <p>We recommend that you include in the <code>threddsConfig.xml</code>
    file only the options you want to change. Here is the description of the
-   various options:
- </p>
+   various options: </p>
 
  <ol>
    <li><strong>allow</strong>: a value of "true" enables the WMS service.</li>
@@ -302,8 +291,7 @@ below the defaults.</p>
    subset requests in terms of latitude/longitude bounding boxes and date ranges rather
    than array index ranges. More information is available on the
    <a href="../../interfaceSpec/NetcdfSubsetService.html">NetcdfSubset Service Reference</a>
-   page.
- </p>
+   page. </p>
  <p>By default, this service is not enabled. It can be enabled by setting the value
    of the allow element to "true".</p>
 
@@ -385,18 +373,64 @@ appropriately.</li>
   </li>
 </ul>
 <hr style="width: 100%; height: 2px;">
-<p>&nbsp;</p>
-<h3><a name="Cache_Locations"></a>Cache Locations</h3><p>The
-various cache locations at times will contain large amounts of data.
-You should choose a location that will not fill up (especially if that
-location affects other important locations like /opt, /home, etc). If
-you have a large disk for your data, that may be a good location for
-the cache directories. On unix-like machines, you can run 'df' to get a
-listing of disks on your machine. The listing includes size and mount
-location. </p>
- <hr width="100%">
- <address>
- <img src="../../images/thread.png" height="108" width="110" alt="THREDDS">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated  Oct 2010
+<h2><a name="Cache_Locations"></a>Cache Locations</h2>
+<p>As of TDS 4.2 (stable release), the various cache directory locations are now by default are all under <strong>{tomcat_home}/content/thredds/ :</strong></p>
+<blockquote>
+  <table width="443" border="1">
+    <tr>
+      <th width="205" scope="col">cache</th>
+      <th width="113" scope="col">location</th>
+      <th width="113" scope="col">check</th>
+    </tr>
+    <tr>
+      <td>AggregationCache.dir</td>
+      <td><strong>cache/agg/</strong></td>
+      <td>x</td>
+    </tr>
+    <tr>
+      <td>CdmValidatorService.dir</td>
+      <td><strong>cache/cdmValidate/</strong></td>
+      <td>&nbsp;</td>
+    </tr>
+    <tr>
+      <td>DiskCache.dir </td>
+      <td><strong>cache/cdm/</strong></td>
+      <td>x</td>
+    </tr>
+    <tr>
+      <td>ehcache.dir</td>
+      <td><strong>cache/ehcache/</strong></td>
+      <td>x</td>
+    </tr>
+    <tr>
+      <td>FeatureCollection.dir</td>
+      <td><strong>cache/collection/</strong></td>
+      <td>x</td>
+    </tr>
+    <tr>
+      <td>NetcdfSubsetService.dir</td>
+      <td><strong>cache/ncss/</strong></td>
+      <td>contentPath</td>
+    </tr>
+    <tr>
+      <td>WCS.dir </td>
+      <td><strong>cache/wcs/</strong></td>
+      <td>contentPath</td>
+    </tr>
+  </table>
+</blockquote>
+<p>We recommend that you use these defaults, by not specifying them in the threddsConfig.xml file. If you need to move the cache location, move all of them by using a link in  <strong>{tomcat_home}/content/thredds/.</strong></p>
+<p>These
+    various caches at times may contain large amounts of data.
+    You should choose a location that will not fill up (especially if that
+    location affects other important locations like /opt, /home, etc). If
+    you have a large disk for your data, that may be a good location for
+    the cache directories. On unix-like machines, you can run 'df' to get a
+    listing of disks on your machine. The listing includes size and mount
+    location. </p>
+<hr width="100%">
+<address>
+<img src="../../images/thread.png" height="108" width="110" alt="THREDDS">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated  Oct 2010
 </address>
- <p></p>
+  <p>&nbsp;</p>
 </body></html>

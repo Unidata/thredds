@@ -57,6 +57,7 @@ public class FmrcInvLite implements java.io.Serializable {
   public double[] offsets; // all the offset values, for "constant offset" datasets
 
   public List<String> locationList = new ArrayList<String>();
+  public Map<String,Integer> locationMap = new HashMap<String,Integer>();
   public List<Gridset> gridSets = new ArrayList<Gridset>();
   public List<Gridset.GridInventory> invList = new ArrayList<Gridset.GridInventory>(); // share these, they are expensive!
 
@@ -77,12 +78,15 @@ public class FmrcInvLite implements java.io.Serializable {
     nruns = fmrList.size();
     runOffset = new double[nruns];
 
+    int countIndex = 0;
     for (int run = 0; run < nruns; run++) {
       FmrInv fmr = fmrList.get(run);
       runOffset[run] = FmrcInv.getOffsetInHours(base, fmr.getRunDate());
 
       for (GridDatasetInv inv : fmr.getInventoryList()) {
         locationList.add(inv.getLocation());
+        locationMap.put(inv.getLocation(), countIndex);
+        countIndex++;
       }
     }
 
@@ -478,9 +482,8 @@ public class FmrcInvLite implements java.io.Serializable {
         return -1;
       }
 
-      // LOOK linear search!
       private int findLocation(String location) {
-        return locationList.indexOf(location);
+        return locationMap.get(location);
       }
 
       int getLocation(int run, int time) {

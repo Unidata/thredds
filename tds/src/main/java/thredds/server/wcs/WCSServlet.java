@@ -82,7 +82,7 @@ public class WCSServlet extends AbstractServlet {
     allowRemote = ThreddsConfig.getBoolean( "WCS.allowRemote", false );
     deleteImmediately = ThreddsConfig.getBoolean( "WCS.deleteImmediately", deleteImmediately);
     maxFileDownloadSize = ThreddsConfig.getBytes("WCS.maxFileDownloadSize", (long) 1000 * 1000 * 1000);
-    String cache = ThreddsConfig.get("WCS.dir", contentPath + "/wcache");
+    String cache = ThreddsConfig.get("WCS.dir", contentPath + "/cache/wcs/");
     File cacheDir = new File(cache);
     cacheDir.mkdirs();
 

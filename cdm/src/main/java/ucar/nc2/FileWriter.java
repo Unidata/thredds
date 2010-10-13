@@ -277,8 +277,7 @@ public class FileWriter {
           ncfile.write("record", origin, recordData);  // rather magic here - only writes the ones in ncfile !!
           if (debug && (count == 0)) System.out.println("write record size = " + sdataSize);
         } catch (InvalidRangeException e) {
-          e.printStackTrace();
-          break;
+          throw new IOException(e.getMessage() + " for record Variable ", e);
         }
         totalRecordBytes += sdataSize;
 
@@ -309,8 +308,7 @@ public class FileWriter {
         ncfile.write(newName, data);
 
     } catch (InvalidRangeException e) {
-      e.printStackTrace();
-      throw new IOException(e.getMessage() + " for Variable " + oldVar.getName());
+      throw new IOException(e.getMessage() + " for Variable " + oldVar.getName(), e);
     }
   }
 
@@ -382,8 +380,7 @@ public class FileWriter {
 
         index.setCurrentCounter(index.currentElement() + (int) Index.computeSize(chunkShape));
       } catch (InvalidRangeException e) {
-        e.printStackTrace();
-        throw new IOException(e.getMessage());
+        throw new IOException(e.getMessage(), e);
       }
     }
   }

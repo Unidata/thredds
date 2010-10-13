@@ -3,6 +3,8 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Changes in version 4.2:
+ 10: (2010-10-xx)
+  FmrcInvLite: change linear search - CPU bottleneck
  9: (2010-10-12)
   UI: CoordSys tab "show values" shows irregular bounds as a pair
   UI: add GridInv tab in FeatureType/Grid

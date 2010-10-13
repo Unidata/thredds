@@ -232,7 +232,7 @@ public class CdmValidatorContext
     // Configure CdmValidator: max upload size; cache dir and scheme.
     maxFileUploadSize = ThreddsConfig.getBytes( "CdmValidatorService.maxFileUploadSize", (long) 1000 * 1000 * 1000 );
 
-    String cacheDirPath = ThreddsConfig.get( "CdmValidatorService.cache.dir", new File( this.getContentDirectory(), "cache" ).getPath() );
+    String cacheDirPath = ThreddsConfig.get( "CdmValidatorService.cache.dir", new File( this.getContentDirectory(), "/cache/cdmValidate" ).getPath() );
 
     int scourSecs = ThreddsConfig.getSeconds( "CdmValidatorService.cache.scour", -1 );
     int maxAgeSecs = ThreddsConfig.getSeconds( "CdmValidatorService.cache.maxAge", -1 );
