@@ -4,6 +4,7 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.2:
  10: (2010-10-xx)
+  DatasetConstructor.transfer() (Aggregations) wasnt allowing unlimited dimensions, not sure why, but passed usint test.  
   FmrcInvLite: change linear search - CPU bottleneck
  9: (2010-10-12)
   UI: CoordSys tab "show values" shows irregular bounds as a pair

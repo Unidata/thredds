@@ -60,7 +60,7 @@ public class DatasetConstructor {
 
   // transfer the objects in src group to the target group
   static private void transferGroup(NetcdfFile ds, NetcdfDataset targetDs, Group src, Group targetGroup, ReplaceVariableCheck replaceCheck) {
-    boolean unlimitedOK = false; // LOOK why not allowed?
+    boolean unlimitedOK = true; // LOOK why not allowed?
 
     // group attributes
     transferGroupAttributes(src, targetGroup);

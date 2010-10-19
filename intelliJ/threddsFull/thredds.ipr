@@ -186,9 +186,6 @@
       <option name="filler" value=" " />
     </LanguageOptions>
   </component>
-  <component name="DependenciesAnalyzeManager">
-    <option name="myForwardDirection" value="false" />
-  </component>
   <component name="DependencyValidationManager">
     <option name="SKIP_IMPORT_STATEMENTS" value="false" />
   </component>
