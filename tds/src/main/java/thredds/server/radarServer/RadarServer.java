@@ -190,7 +190,7 @@ public class RadarServer extends AbstractServlet {
         return;
       } else if (pathInfo.startsWith("/catalog.html") || pathInfo.startsWith("/dataset.html")) {
         try {
-          int i = HtmlWriter.getInstance().writeCatalog(res, cat, true); // show catalog as HTML
+          int i = HtmlWriter.getInstance().writeCatalog(req, res, cat, true); // show catalog as HTML
           log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, i));
         } catch (Exception e) {
           res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "radarServer HtmlWriter error " + pathInfo);
@@ -203,7 +203,7 @@ public class RadarServer extends AbstractServlet {
       // level2 and level3 catalog/dataset
       if (pathInfo.contains("level2/catalog.") || pathInfo.contains("level3/catalog.")
           || pathInfo.contains("level2/dataset.") || pathInfo.contains("level3/dataset.")) {
-        level2level3catalog(radarType, pathInfo, pw, res);
+        level2level3catalog(radarType, pathInfo, pw, req, res);
         log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
         return;
       }
@@ -248,7 +248,7 @@ public class RadarServer extends AbstractServlet {
 
   } // end doGet
 
-  private void level2level3catalog(RadarType radarType, String pathInfo, PrintWriter pw, HttpServletResponse res)
+  private void level2level3catalog(RadarType radarType, String pathInfo, PrintWriter pw, HttpServletRequest req, HttpServletResponse res)
       throws IOException {
 
     try {
@@ -291,7 +291,7 @@ public class RadarServer extends AbstractServlet {
         pw.println(catAsString);
         pw.flush();
       } else {
-        int i = HtmlWriter.getInstance().writeCatalog(res, tCat, true); // show catalog as HTML
+        int i = HtmlWriter.getInstance().writeCatalog(req, res, tCat, true); // show catalog as HTML
         log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, i));
       }
     } catch (Throwable e) {

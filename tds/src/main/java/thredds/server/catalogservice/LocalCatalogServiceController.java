@@ -213,7 +213,7 @@ public class LocalCatalogServiceController extends AbstractController
       {
         if ( this.htmlView )
         {
-          int i = this.htmlWriter.writeCatalog( response, (InvCatalogImpl) catalog, true );
+          int i = this.htmlWriter.writeCatalog( request, response, (InvCatalogImpl) catalog, true );
           log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, i ) );
           return null;
           // return constructModelForCatalogView( catalog, this.htmlView );

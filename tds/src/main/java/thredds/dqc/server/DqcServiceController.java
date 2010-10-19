@@ -182,7 +182,7 @@ public class DqcServiceController extends AbstractController
     else if ( reqPath.equals( "/catalog.html" ) )
     {
       InvCatalog catalog = this.createCatalogRepresentation( request.getContextPath(), request.getServletPath() );
-      int i = this.htmlWriter.writeCatalog( response, (InvCatalogImpl) catalog, true );
+      int i = this.htmlWriter.writeCatalog( request, response, (InvCatalogImpl) catalog, true );
       log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, i ) );
 
       return null;

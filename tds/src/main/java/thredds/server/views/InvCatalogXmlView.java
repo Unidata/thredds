@@ -69,18 +69,21 @@ public class InvCatalogXmlView extends AbstractView
     res.setContentType( "application/xml" );
     res.setCharacterEncoding( "UTF-8" );
     OutputStream os = null;
-    try
+    if ( ! req.getMethod().equals( "HEAD" ) )
     {
-      os = res.getOutputStream();
-      // Return catalog as XML response.
-      InvCatalogFactory catFactory = InvCatalogFactory.getDefaultFactory( false );
-      log.info( "renderMergedOutputModel(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, -1 ));
-      catFactory.writeXML( cat, os );
-    }
-    finally
-    {
-      if ( os != null )
-        os.close();
+      try
+      {
+        os = res.getOutputStream();
+        // Return catalog as XML response.
+        InvCatalogFactory catFactory = InvCatalogFactory.getDefaultFactory( false );
+        log.info( "renderMergedOutputModel(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, -1 ));
+        catFactory.writeXML( cat, os );
+      }
+      finally
+      {
+        if ( os != null )
+          os.close();
+      }
     }
   }
 }

@@ -140,7 +140,7 @@ public final class ThreddsWmsController extends AbstractWmsController
       catch ( FileNotFoundException e ) {
         // LOOK ToDo Instead could catch FileNotFoundExceptions below and also add to exceptionResolver in wms-servlet.xml 
         log.info( "dispatchWmsRequest(): File not found [" + reqDataset.getPath() + "]:" + e.getMessage() + "." );
-        throw new LayerNotDefinedException( reqDataset.getPath() + "/*");
+        throw new LayerNotDefinedException( reqDataset.getPath());
       }
       if ( gd == null )
       {
