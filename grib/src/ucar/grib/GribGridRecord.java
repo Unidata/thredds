@@ -308,7 +308,7 @@ public final class GribGridRecord implements GridRecord {
       if (edition == 1) {
         result += result * 37 + getLevelType1();
         result += result * 37 + getParameterName().hashCode();
-        if (isInterval()) result += result * 37 + getIntervalTypeName().hashCode();
+        if (isInterval()) result += result * 37 + getStatisticalProcessTypeName().hashCode();
 
       } else {
         Grib2Pds pds2 = (Grib2Pds) pds;
@@ -318,7 +318,9 @@ public final class GribGridRecord implements GridRecord {
         result += result * 37 + getLevelType1();
         result += result * 37 + pds2.getParameterCategory();
         result += result * 37 + productTemplate;
-        if (isInterval()) result += result * 37 + getIntervalTypeName().hashCode();
+        String statName = getStatisticalProcessTypeName();
+        if (statName != null) result += result * 37 + statName.hashCode();
+
         result += result * 37 +  getLevelType2(); // ??
         result += result * 37 + pds2.getParameterNumber();
         String useGenType = pds2.getUseGenProcessType();
@@ -357,7 +359,6 @@ public final class GribGridRecord implements GridRecord {
     String desc = getParameterDescription();
     f.format("%s", desc);
 
-
     if (edition == 2) {
       Grib2Pds pds2 = (Grib2Pds) pds;
       String useGenType = pds2.getUseGenProcessType();
@@ -390,12 +391,10 @@ public final class GribGridRecord implements GridRecord {
     Formatter f = new Formatter();
     boolean disambig = false;
 
-    if (isInterval()) {
-      String intervalTypeName = getIntervalTypeName();
-      if (intervalTypeName != null && intervalTypeName.length() != 0) {
-        f.format("_%s", intervalTypeName);
-        disambig = true;
-      }
+    String statName = getStatisticalProcessTypeName();
+    if (statName != null) {
+       f.format("_%s", statName);
+       disambig = true;
     }
 
     if (edition == 2) {
@@ -506,19 +505,16 @@ public final class GribGridRecord implements GridRecord {
     return intv[1] - intv[0];
   }
 
-  public String getIntervalTypeName() {
-    if (isInterval())
-      return Grib2Tables.codeTable4_10short( getIntervalStatType());
-
-    return null;
+  public String getStatisticalProcessTypeName() {
+    return Grib2Tables.codeTable4_10short( getStatisticalProcessType());
   }
 
   /**
    * Get interval type, GRIB-2 code table 4.10
    * @return interval statistic type
    */
-  public int getIntervalStatType() {
-    return pds.getIntervalStatType();
+  public int getStatisticalProcessType() {
+    return pds.getStatisticalProcessType();
   }
 
   //// debugging

@@ -56,6 +56,7 @@ import java.util.TimeZone;
 /**
  * A class representing the product definition section (PDS) of a GRIB product.
  * This is section 4 of a Grib record that contains information about the parameter
+ * @deprecated use Grib2Pds
  */
 
 public final class Grib2ProductDefinitionSection {
@@ -177,6 +178,7 @@ public final class Grib2ProductDefinitionSection {
    * PDS as Variables from a byte[]
    */
   private final Grib2Pds pdsVars;
+
   // *** constructors *******************************************************
 
   /**
@@ -650,7 +652,7 @@ public final class Grib2ProductDefinitionSection {
    * Number of this coordinates.
    * @deprecated
    * @return Coordinates number
-   */
+   *
   public final int getCoordinates() {
     return coordinates;
   }
@@ -659,7 +661,7 @@ public final class Grib2ProductDefinitionSection {
    * productDefinition.
    * @deprecated
    * @return ProductDefinition
-   */
+   *
   public final int getProductDefinition() {
     return productDefinition;
   }
@@ -668,16 +670,16 @@ public final class Grib2ProductDefinitionSection {
    * product Definition  Name.
    * @deprecated
    * @return ProductDefinitionName
-   */
+   *
   public final String getProductDefinitionName() {
     return Grib2Tables.codeTable4_0(productDefinition);
   }
 
-  /**
+  /*
    * parameter Category .
    * @deprecated
    * @return parameterCategory as int
-   */
+   *
   public final int getParameterCategory() {
     return parameterCategory;
   }
@@ -686,7 +688,7 @@ public final class Grib2ProductDefinitionSection {
    * parameter Number.
    * @deprecated
    * @return ParameterNumber
-   */
+   *
   public final int getParameterNumber() {
     return parameterNumber;
   }
@@ -695,7 +697,7 @@ public final class Grib2ProductDefinitionSection {
    * type of Generating Process.
    * @deprecated
    * @return GenProcess
-   */
+   *
   public final String getTypeGenProcess() {
     if (typeGenProcess == 4) {  //ensemble
       String type;
@@ -720,7 +722,7 @@ public final class Grib2ProductDefinitionSection {
    * type of Generating Process.
    * @deprecated
    * @return GenProcess
-   */
+   *
   public final int getTypeGenProcessNumeric() {
     return typeGenProcess;
   }
@@ -729,7 +731,7 @@ public final class Grib2ProductDefinitionSection {
    * backGenProcess.
    * @deprecated
    * @return BackGenProcess
-   */
+   *
   public final int getBackGenProcess() {
     return backGenProcess;
   }
@@ -738,7 +740,7 @@ public final class Grib2ProductDefinitionSection {
    * analysisGenProcess.
    * @deprecated
    * @return analysisGenProcess
-   */
+   *
   public final int getAnalysisGenProcess() {
     return analysisGenProcess;
   }
@@ -747,7 +749,7 @@ public final class Grib2ProductDefinitionSection {
    * hoursAfter.
    * @deprecated
    * @return HoursAfter
-   */
+   *
   public final int getHoursAfter() {
     return hoursAfter;
   }
@@ -756,7 +758,7 @@ public final class Grib2ProductDefinitionSection {
    * minutesAfter.
    * @deprecated
    * @return MinutesAfter
-   */
+   *
   public final int getMinutesAfter() {
     return minutesAfter;
   }
@@ -765,7 +767,7 @@ public final class Grib2ProductDefinitionSection {
    * returns timeRangeUnit .
    * @deprecated
    * @return TimeRangeUnitName
-   */
+   *
   public final int getTimeRangeUnit() {
     return timeRangeUnit;
   }

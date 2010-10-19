@@ -401,11 +401,11 @@ public final class Grib1Pds extends GribPds {
   }
 
   /**
-   * Get Grib-2 Interval Statistic Type (Table 4-10) by converting Grib-1 Table 5
+   * Get Grib-2 Statistic Type (Table 4-10) by converting Grib-1 Table 5
    *
-   * @return Grib-2 Interval Statistic Type (Table 4-10)
+   * @return Grib-2 Statistic Type (Table 4-10)
    */
-  public int getIntervalStatType() {
+  public int getStatisticalProcessType() {
     switch (getTimeRangeIndicator()) {
       // average
       case 3:

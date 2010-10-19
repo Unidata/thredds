@@ -132,9 +132,9 @@ public abstract class GribPds {
   /**
    * Get Grib-2 Interval Statistic Type code, only valid if isInterval()
    *
-   * @return Grib-2 Interval Statistic Type (Table 4-10)
+   * @return Grib-2 Interval Statistic Type (Table 4-10), or < 0 is none
    */
-  abstract public int getIntervalStatType();
+  abstract public int getStatisticalProcessType();
 
   /**
    * Grib-2 encodes an "end of overall time interval" .

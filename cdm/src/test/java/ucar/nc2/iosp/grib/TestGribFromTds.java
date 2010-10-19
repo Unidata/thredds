@@ -57,7 +57,8 @@ public class TestGribFromTds extends TestCase {
         //showNames(filename);
         //checkProjectionType(filename);
         //checkTemplates(filename);
-        checkGenType(filename, false);
+        checkStatType(filename, true);
+        // checkGenType(filename, false);
         // checkTimeIntervalType(filename);
         //checkTimeInterval(filename);
         return 0;
@@ -183,6 +184,63 @@ public class TestGribFromTds extends TestCase {
         List<String> uses = map.get(val);
         for (String use : uses)
           System.out.printf("   %s%n", use);
+      }
+    }
+
+    GridServiceProvider.debugOpen = false;
+  }
+
+  public void checkStatType(String filename, boolean showVars) throws IOException {
+    GridServiceProvider.debugOpen = true;
+    NetcdfFile ncd = null;
+    try {
+      ncd = NetcdfFile.open(filename);
+    } catch (Throwable t) {
+      System.out.printf("Failed on %s = %s%n", filename, t.getMessage());
+      return;
+    }
+
+    GribGridServiceProvider iosp = (GribGridServiceProvider) ncd.getIosp();
+    GridIndex index = (GridIndex) iosp.sendIospMessage("GridIndex");
+    boolean isGrib1 = iosp.getFileTypeId().equals("GRIB1");
+
+    boolean first = true;
+    Map<String, List<Integer>> map = new HashMap<String, List<Integer>>();
+
+    List<GridRecord> grList = index.getGridRecords();
+    for (GridRecord gr : grList) {
+      GribGridRecord ggr = (GribGridRecord) gr;
+      int genType = ggr.getPds().getStatisticalProcessType();
+      if (genType < 0) continue;
+      
+      String vname = ggr.getParameterName();
+      List<Integer> uses = map.get(vname);
+      if (uses == null) {
+        uses = new ArrayList<Integer>();
+        map.put(vname, uses);
+      }
+      if (!uses.contains(genType))
+        uses.add(genType);
+
+      if (first) {
+        System.out.printf("Center=  %d / %d%n", ggr.getCenter(), ggr.getSubCenter());
+        first = false;
+      }
+    }
+
+    List<String> sortList = new ArrayList<String>();
+    sortList.addAll(map.keySet());
+    Collections.sort(sortList);
+    for (String vname : sortList) {
+      List<Integer> uses = map.get(vname);
+      if (showVars || uses.size() > 1) {
+        for (int val : map.get(vname)) {
+          if (uses.size() > 1)
+            System.out.printf("***** ");
+          System.out.printf(" %s%n", vname);
+          String desc = Grib2Tables.codeTable4_10short( val);
+          System.out.printf("  %d (%s)%n", val, desc);
+        }
       }
     }
 

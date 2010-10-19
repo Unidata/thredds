@@ -1153,6 +1153,8 @@ public class Grib2Tables {
    * @return String name
    */
   static public String codeTable4_10(int code) {
+    if (code < 0) return null;
+
     switch (code) {
       case 0: return	"Average";
       case 1: return	"Accumulation";
@@ -1175,6 +1177,8 @@ public class Grib2Tables {
    * @return String name, short form
    */
   static public String codeTable4_10short(int code) {
+    if (code < 0) return null;
+
     switch (code) {
       case 0: return	"Average";
       case 1: return	"Accumulation";

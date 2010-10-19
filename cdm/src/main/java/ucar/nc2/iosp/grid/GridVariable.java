@@ -382,7 +382,7 @@ public class GridVariable {
   String getIntervalTypeName() {
     if (firstRecord instanceof GribGridRecord) {
       GribGridRecord ggr = (GribGridRecord) firstRecord;
-      return ggr.getIntervalTypeName();
+      return ggr.getStatisticalProcessTypeName();
     }
     return null;
   }
@@ -439,7 +439,7 @@ public class GridVariable {
     if (firstRecord instanceof GribGridRecord) {
       GribGridRecord ggr = (GribGridRecord) firstRecord;
       if (ggr.isInterval()) {
-        CF.CellMethods cm = CF.CellMethods.convertGribCodeTable4_10(ggr.getIntervalStatType());
+        CF.CellMethods cm = CF.CellMethods.convertGribCodeTable4_10(ggr.getStatisticalProcessType());
         if (cm != null)
           v.addAttribute(new Attribute("cell_methods", tcs.getName() + ": " + cm.toString()));
       }
@@ -476,7 +476,7 @@ public class GridVariable {
       v.addAttribute(new Attribute("GRIB_level_type", new Integer(pds2.getLevelType1())));
       v.addAttribute(new Attribute("GRIB_level_type_name", lookup.getLevelName(firstRecord)));
       if (pds2.isInterval())
-        v.addAttribute(new Attribute("GRIB_interval_stat_type", ggr.getIntervalTypeName() ));
+        v.addAttribute(new Attribute("GRIB_interval_stat_type", ggr.getStatisticalProcessTypeName() ));
       if (pds2.isEnsembleDerived()) {
         Grib2Pds.PdsEnsembleDerived pdsDerived = (Grib2Pds.PdsEnsembleDerived) pds2;
         v.addAttribute(new Attribute("GRIB_ensemble_derived_type", new Integer(pdsDerived.getDerivedForecastType()) ));
@@ -820,7 +820,7 @@ public class GridVariable {
       if (ggr.isInterval()) {
         String intervalName = makeIntervalName();
         if (intervalName.length() != 0)
-          f.format(" (%s for %s)", ggr.getIntervalTypeName(), intervalName);
+          f.format(" (%s for %s)", ggr.getStatisticalProcessTypeName(), intervalName);
       }
     }
 

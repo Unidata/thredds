@@ -4,6 +4,9 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.2:
  10: (2010-10-xx)
+  Grib2: add template 15
+  GribPds.getIntervalStatType() -> getStatisticalProcessType()
+  AggOuterDimension.getNestedJoinRange() getting strides wrong sometimes.
   DatasetConstructor.transfer() (Aggregations) wasnt allowing unlimited dimensions, not sure why, but passed usint test.  
   FmrcInvLite: change linear search - CPU bottleneck
  9: (2010-10-12)

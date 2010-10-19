@@ -53,7 +53,7 @@ import thredds.inventory.MFile;
  */
 
 public abstract class AggregationOuterDimension extends Aggregation implements ProxyReader  {
-  static protected boolean debugCache = false, debugInvocation = false;
+  static protected boolean debugCache = false, debugInvocation = false, debugStride = false;
   static public int invocation = 0;  // debugging
 
   protected List<String> aggVarNames = new ArrayList<String>(); // explicitly specified in the NcML
@@ -695,7 +695,7 @@ public abstract class AggregationOuterDimension extends Aggregation implements P
       if ((firstInInterval < 0) || (firstInInterval >= aggEnd))
         return null;
 
-      int start = Math.max(aggStart, wantStart) - aggStart;
+      int start = Math.max(firstInInterval, wantStart) - aggStart;
       int stop = Math.min(aggEnd, wantStop) - aggStart;
 
       return new Range(start, stop - 1, totalRange.stride()); // Range has last inclusive
@@ -836,9 +836,12 @@ public abstract class AggregationOuterDimension extends Aggregation implements P
 
         // can we skip ?
         Range nestedJoinRange = dod.getNestedJoinRange(joinRange);
-        if (nestedJoinRange == null)
+        if (nestedJoinRange == null)  {
+          // if (debugStride) System.out.printf("  skip [%d,%d) (%d) %f for %s%n", dod.aggStart, dod.aggEnd, dod.ncoord, dod.aggStart / 8.0, vnested.getLocation());
           continue;
-
+        }
+        if (debugStride) System.out.printf("%d: %s [%d,%d) (%d) %f for %s%n",
+                resultPos, nestedJoinRange, dod.aggStart, dod.aggEnd, dod.ncoord,  dod.aggStart / 8.0, vnested.getLocation());
         Array varData = read(dod);
 
         // which subset do we want?
@@ -853,11 +856,13 @@ public abstract class AggregationOuterDimension extends Aggregation implements P
           varData = varData.section(nestedSection);
         }
 
-        // may not know the data until now
+        // may not know the data type until now
         if (dtype == null)
           dtype = DataType.getType(varData.getElementType());
-        if (allData == null)
+        if (allData == null) {
           allData = Array.factory(dtype, section.getShape());
+          if (debugStride) System.out.printf("total result section = %s (%d)%n", section, Index.computeSize(section.getShape()));
+        }
 
         // copy to result array
         int nelems = (int) varData.getSize();

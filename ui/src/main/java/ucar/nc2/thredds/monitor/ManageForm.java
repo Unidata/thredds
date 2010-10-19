@@ -65,7 +65,8 @@ public class ManageForm extends JPanel {
     server.setModel(new DefaultComboBoxModel(new String[] {
       "motherlode.ucar.edu:8080",
       "motherlode.ucar.edu:8081",
-      "motherlode.ucar.edu:9080"
+      "motherlode.ucar.edu:9080",
+      "geoport.whoi.edu"
     }));
 
     //---- wantAccess ----

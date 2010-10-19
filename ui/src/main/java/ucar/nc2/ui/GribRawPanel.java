@@ -543,10 +543,10 @@ public class GribRawPanel extends JPanel {
     for (Grib2Record gr : reader.getRecords()) {
       Grib2ProductDefinitionSection pds = gr.getPDS();
       int discipline = gr.getIs().getDiscipline();
-      Grib2ParameterBean bean = pdsSet.get(makeUniqueId(pds, discipline));
+      Grib2ParameterBean bean = pdsSet.get(makeUniqueId(pds.getPdsVars(), discipline));
       if (bean == null) {
         bean = new Grib2ParameterBean(gr);
-        pdsSet.put(makeUniqueId(pds, discipline), bean);
+        pdsSet.put(makeUniqueId(pds.getPdsVars(), discipline), bean);
         products.add(bean);
       }
       bean.addRecord(gr);
@@ -565,14 +565,14 @@ public class GribRawPanel extends JPanel {
     gds2Table.setBeans(gdsList);
   }
 
-  public int makeUniqueId(Grib2ProductDefinitionSection pds, int discipline) {
+  public int makeUniqueId(Grib2Pds pds, int discipline) {
     int result = 17;
-    result += result * 37 + pds.getProductDefinition();
+    result += result * 37 + pds.getProductDefinitionTemplate();
     result += result * 37 + discipline;
     result += result * 37 + pds.getParameterCategory();
     result += result * 37 + pds.getParameterNumber();
-    result *= result * 37 + pds.getTypeFirstFixedSurface();
-    result *= result * 37 + pds.getTypeSecondFixedSurface();
+    result *= result * 37 + pds.getLevelType1();
+    result *= result * 37 + pds.getLevelType2();
     return result;
   }
 
@@ -702,14 +702,14 @@ public class GribRawPanel extends JPanel {
 
     public String toProcessedString() {
       Formatter f = new Formatter();
-      showProcessedPds(pds, discipline, f);
+      showProcessedPds(pdsv, discipline, f);
       return f.toString();
     }
 
     ///////////////
 
     public String getName() {
-      return ParameterTable.getParameterName(discipline, pds.getParameterCategory(), pds.getParameterNumber());
+      return ParameterTable.getParameterName(discipline, pdsv.getParameterCategory(), pdsv.getParameterNumber());
     }
 
     /*  public final String getCenter() {
@@ -792,24 +792,22 @@ public class GribRawPanel extends JPanel {
     showRawPds("4."+template, raw, f);
   }
 
-  private void showProcessedPds(Grib2ProductDefinitionSection pds, int discipline, Formatter f) {
-    f.format(" Product Definition = %3d %s%n", pds.getProductDefinition(), pds.getProductDefinitionName());
+  private void showProcessedPds(Grib2Pds pds, int discipline, Formatter f) {
+    int template = pds.getProductDefinitionTemplate();
+    f.format(" Product Template = %3d %s%n",template, Grib2Tables.codeTable4_0(template));
     f.format(" Parameter Category = %3d %s%n", pds.getParameterCategory(),
             ParameterTable.getCategoryName(discipline, pds.getParameterCategory()));
     f.format(" Parameter Name     = %3d %s %n", pds.getParameterNumber(),
             ParameterTable.getParameterName(discipline, pds.getParameterCategory(), pds.getParameterNumber()));
     f.format(" Parameter Units    = %s %n", ParameterTable.getParameterUnit(discipline, pds.getParameterCategory(), pds.getParameterNumber()));
 
-    int tgp = pds.getTypeGenProcessNumeric();
-    f.format(" Generating Process = %3d %s %n", tgp, Grib2Tables.codeTable4_3(tgp));
+    int tgp = pds.getGenProcessType();
+    f.format(" Generating Process Type = %3d %s %n", tgp, Grib2Tables.codeTable4_3(tgp));
     f.format(" Forecast Offset    = %3d %n", pds.getForecastTime());
-    f.format(" Ending  Time       = %s %n", pds.getEndTI());
-    f.format(" First Surface Type = %3d %s %n", pds.getTypeFirstFixedSurface(),
-            Grib2Tables.codeTable4_5(pds.getTypeFirstFixedSurface()));
-    f.format(" First Surface value= %3f %n", pds.getValueFirstFixedSurface());
-    f.format(" Second Surface Type= %3d %s %n", pds.getTypeSecondFixedSurface(),
-            Grib2Tables.codeTable4_5(pds.getTypeSecondFixedSurface()));
-    f.format(" Second Surface val = %3f %n", pds.getValueSecondFixedSurface());
+    f.format(" First Surface Type = %3d %s %n", pds.getLevelType1(), Grib2Tables.codeTable4_5(pds.getLevelType1()));
+    f.format(" First Surface value= %3f %n", pds.getLevelValue1());
+    f.format(" Second Surface Type= %3d %s %n", pds.getLevelType2(), Grib2Tables.codeTable4_5(pds.getLevelType2()));
+    f.format(" Second Surface val = %3f %n", pds.getLevelValue2());
   }
 
   public class Grib2RecordBean {
@@ -867,8 +865,8 @@ public class GribRawPanel extends JPanel {
     }
 
     public final String getStatType() {
-      int code = pdsv.getIntervalStatType();
-      return (code >= 0) ? Grib2Tables.codeTable4_10short(pdsv.getIntervalStatType()) : "";
+      int code = pdsv.getStatisticalProcessType();
+      return (code >= 0) ? Grib2Tables.codeTable4_10short(pdsv.getStatisticalProcessType()) : "";
     }
 
     public final boolean isEnsemble() {
@@ -1184,8 +1182,8 @@ public class GribRawPanel extends JPanel {
     }
 
     public final String getStatType() {
-      int code = pdsv.getIntervalStatType();
-      return (code >= 0) ? Grib2Tables.codeTable4_10short(pdsv.getIntervalStatType()) : "";
+      int code = pdsv.getStatisticalProcessType();
+      return (code >= 0) ? Grib2Tables.codeTable4_10short(pdsv.getStatisticalProcessType()) : "";
     }
 
     public final boolean isEnsemble() {

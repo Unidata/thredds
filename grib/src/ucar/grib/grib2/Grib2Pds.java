@@ -77,6 +77,8 @@ abstract public class Grib2Pds extends GribPds {
         return new Grib2Pds11(input, refTime, cal);
       case 12:
         return new Grib2Pds12(input, refTime, cal);
+      case 15:
+        return new Grib2Pds15(input, refTime, cal);
       case 30:
         return new Grib2Pds30(input, refTime, cal);
       default:
@@ -341,7 +343,7 @@ abstract public class Grib2Pds extends GribPds {
 
 
   @Override
-  public int getIntervalStatType() {
+  public int getStatisticalProcessType() {
     if (!isInterval()) return -1;
 
     // assume they are all the same
@@ -748,13 +750,42 @@ abstract public class Grib2Pds extends GribPds {
   //////////////////////////////////////////////////////////////////////////////////////////////
 
   /**
-   * Product definition template 4.1 -
-   * individual ensemble forecast, control and perturbed, at a horizontal level or in a horizontal layer at a point in time
+   * Product definition template 4.15 - average, accumulation, extreme values, or other statistically-processed
+	 * values over a spatial area at a horizontal level or in a horizontal layer at a point in time
    */
-  static private class Grib2Pds1 extends Grib2Pds0 implements PdsEnsemble {
-    Grib2Pds1(byte[] input, long refTime, Calendar cal) throws IOException {
+  static private class Grib2Pds15 extends Grib2Pds0 {
+    Grib2Pds15(byte[] input, long refTime, Calendar cal) throws IOException {
       super(input, refTime, cal);
     }
+
+    // table 4.10
+    @Override
+    public int getStatisticalProcessType() {
+      return getOctet(35);
+    }
+
+    // code 4.15
+    public int getSpatialProcessType() {
+      return getOctet(36);
+    }
+
+    public int getNSpatialDataPoints() {
+      return getOctet(37);
+    }
+
+  }
+
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Product definition template 4.1 -
+     * individual ensemble forecast, control and perturbed, at a horizontal level or in a horizontal layer at a point in time
+     */
+    static private class Grib2Pds1 extends Grib2Pds0 implements PdsEnsemble {
+      Grib2Pds1(byte[] input, long refTime, Calendar cal) throws IOException {
+        super(input, refTime, cal);
+      }
 
     public boolean isEnsemble() {
       return true;

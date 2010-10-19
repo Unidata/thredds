@@ -92,6 +92,8 @@ public class LogLocalManager {
 
   public List<FileDateRange> getLocalFiles(Date start, Date end) {
     File localDir = getDirectory(server, isAccess);
+    if (!localDir.exists())
+      localDir.mkdir();
 
     List<FileDateRange> list = new ArrayList<FileDateRange>();
     for (File f : localDir.listFiles()) {

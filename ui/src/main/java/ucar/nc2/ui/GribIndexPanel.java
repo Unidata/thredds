@@ -570,7 +570,7 @@ public class GribIndexPanel extends JPanel {
 
     public final String getStatType() {
       if (ggr.getPds().isInterval())
-        return Grib2Tables.codeTable4_10short(ggr.getPds().getIntervalStatType());
+        return Grib2Tables.codeTable4_10short(ggr.getPds().getStatisticalProcessType());
       else
         return "";
     }
@@ -706,7 +706,7 @@ public class GribIndexPanel extends JPanel {
 
   public class GribGridRecordBean {
     GribGridRecord ggr;
-    GribPds pds;;
+    GribPds pds;
 
     // no-arg constructor
 
@@ -796,6 +796,11 @@ public class GribIndexPanel extends JPanel {
         return pds.getGenProcessType();
       } else
         return -1;
+    }
+
+    public final String getStatType() {
+      int code = pds.getStatisticalProcessType();
+      return (code >= 0) ? Grib2Tables.codeTable4_10short(pds.getStatisticalProcessType()) : "";
     }
 
     public long getGdsOffset() {
