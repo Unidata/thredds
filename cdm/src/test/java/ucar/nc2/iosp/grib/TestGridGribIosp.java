@@ -59,13 +59,37 @@ public class TestGridGribIosp extends TestCase {
   }
 
   public void testCompare() throws IOException {
-    File where = new File("C:/data/grib/idd");
-    if (where.exists()) {
-      String[] args = new String[1];
-      args[0] = "C:/data/grib/idd";
-      doAll(args);
-    } else {
-      doAll(null);
+
+    String dirB1 = TestAll.testdataDir + "test/motherlode/grid/grib/binary";
+    String dirB2 = TestAll.testdataDir + "test/motherlode/grid/grib/text";
+    File dir = new File(dirB1);
+
+    System.out.println("In directory " + dir.getParent() + "/" + dir.getName());
+    String[] children = dir.list();
+    for (String child : children) {
+      //System.out.println( "children i ="+ children[ i ]);
+      File aChild = new File(dir, child);
+      //System.out.println( "child ="+ child.getName() );
+      if (aChild.isDirectory()) {
+        // skip index *gbx and inventory *xml files
+      } else if (
+              child.contains("ECMWF") ||
+                      child.contains("1p25") ||
+                      child.contains("OCEAN") ||
+                      child.contains("SPECTRAL") ||
+                      child.contains("SST") ||
+                      child.contains("ukm") ||
+                      child.contains("UKM") ||
+                      child.contains("Ensemble") || // Generating Process ID are Strings
+                      child.endsWith("gbx") ||
+                      child.endsWith("gbx8") ||
+                      child.endsWith("xml") ||
+                      child.endsWith("tmp") || //index in creation process
+                      child.length() == 0) { // zero length file, ugh...
+      } else {
+        System.out.println("\n\nComparing File " + child);
+        compareNC(dirB1 + "/" + child, dirB2 + "/" + child);
+      }
     }
   }
 
@@ -112,49 +136,6 @@ public class TestGridGribIosp extends TestCase {
     CompareNetcdf.compareFiles(ncfileBinary, ncfileText, false, true, false);
     ncfileBinary.close();
     ncfileText.close();
-  }
-
-  void doAll(String args[]) throws IOException {
-
-    String dirB1, dirB2;
-    if (args == null || args.length < 1) {
-      dirB1 = TestAll.testdataDir + "test/motherlode/grid/grib/binary";
-      dirB2 = TestAll.testdataDir + "test/motherlode/grid/grib/text";
-    } else {
-      dirB1 = args[0] + "/binary";
-      dirB2 = args[0] + "/text";
-    }
-    File dir = new File(dirB1);
-    if (dir.isDirectory()) {
-      System.out.println("In directory " + dir.getParent() + "/" + dir.getName());
-      String[] children = dir.list();
-      for (String child : children) {
-        //System.out.println( "children i ="+ children[ i ]);
-        File aChild = new File(dir, child);
-        //System.out.println( "child ="+ child.getName() );
-        if (aChild.isDirectory()) {
-          // skip index *gbx and inventory *xml files
-        } else if (
-                child.contains("ECMWF") ||
-                        child.contains("1p25") ||
-                        child.contains("OCEAN") ||
-                        child.contains("SPECTRAL") ||
-                        child.contains("SST") ||
-                        child.contains("ukm") ||
-                        child.contains("UKM") ||
-                        child.contains("Ensemble") || // Generating Process ID are Strings
-                        child.endsWith("gbx") ||
-                        child.endsWith("gbx8") ||
-                        child.endsWith("xml") ||
-                        child.endsWith("tmp") || //index in creation process
-                        child.length() == 0) { // zero length file, ugh...
-        } else {
-          System.out.println("\n\nComparing File " + child);
-          compareNC(dirB1 + "/" + child, dirB2 + "/" + child);
-        }
-      }
-    } else {
-    }
   }
 
   private static class NetcdfFileSPI extends NetcdfFile {

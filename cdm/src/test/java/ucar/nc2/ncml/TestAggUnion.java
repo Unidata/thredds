@@ -209,7 +209,7 @@ public class TestAggUnion extends TestCase {
     assert null != timeDim;
     assert timeDim.getName().equals("time");
     assert timeDim.getLength() == 2;
-    assert !timeDim.isUnlimited();
+    assert timeDim.isUnlimited();
   }
 
   public void testCoordvar() {
@@ -264,7 +264,7 @@ public class TestAggUnion extends TestCase {
     assert v.getDataType() == DataType.INT;
 
     assert !v.isCoordinateVariable();
-    assert !v.isUnlimited();
+    assert v.isUnlimited();
 
     assert v.getDimension(0).equals(ncfile.findDimension("time"));
     assert v.getDimension(1).equals(ncfile.findDimension("lat"));
@@ -373,7 +373,7 @@ public class TestAggUnion extends TestCase {
     assert v.getDataType() == DataType.DOUBLE;
 
     assert !v.isCoordinateVariable();
-    assert !v.isUnlimited();
+    assert v.isUnlimited();
 
     assert v.getDimension(0).equals(ncfile.findDimension("time"));
     assert v.getDimension(1).equals(ncfile.findDimension("lat"));

@@ -71,12 +71,18 @@ public class DatasetCollectionManager implements CollectionManager {
     controller = _controller;
   }
 
-  public static DatasetCollectionManager open(String collection, String olderThan, Formatter errlog) throws IOException {
+  static public DatasetCollectionManager open(String collection, String olderThan, Formatter errlog) throws IOException {
     if (collection.startsWith(CATALOG)) {
       return new DatasetCollectionFromCatalog(collection);
     }  
 
     return new DatasetCollectionManager(collection, errlog);
+  }
+
+  // explicit enabling - allows deleteOld to work first time
+  static private boolean enableMetadataManager = false;
+  static public void enableMetadataManager() {
+    enableMetadataManager = true;
   }
 
 
@@ -430,7 +436,7 @@ public class DatasetCollectionManager implements CollectionManager {
 
   // clean up deleted files in metadata manager
   private void deleteOld(Map<String, MFile> newMap) {
-    if (mm == null) initMM();
+    if (mm == null && enableMetadataManager) initMM();
     if (mm != null) mm.delete(newMap);
   }
 

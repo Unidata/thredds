@@ -5020,6 +5020,7 @@ public class ToolsUI extends JPanel {
     DiskCache2 cacheDir = new DiskCache2(".unidata/ehcache", true, -1, -1);
     cacheManager = thredds.filesystem.ControllerCaching.makeTestController(cacheDir.getRootDirectory());
     thredds.inventory.DatasetCollectionManager.setController(cacheManager);
+    thredds.inventory.DatasetCollectionManager.enableMetadataManager();
 
     // for efficiency, persist aggregations. every hour, delete stuff older than 30 days
     Aggregation.setPersistenceCache(new DiskCache2("/.unidata/aggCache", true, 60 * 24 * 30, 60));

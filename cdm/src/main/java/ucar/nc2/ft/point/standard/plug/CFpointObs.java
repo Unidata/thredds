@@ -825,7 +825,7 @@ public class CFpointObs extends TableConfigurerImpl {
     }
     Dimension obsDim = null;
     if (time.getRank() > 0)
-      obsDim = time.getDimension(time.getRank() - 1); // may be time(time) or time(stn, obs)
+      obsDim = time.getDimension(time.getRank() - 1); // may be time(time) or time(traj, obs)
     else if (time.getParentStructure() != null) {
       Structure parent = time.getParentStructure(); // if time axis is a structure member, try pulling dimension out of parent structure
       obsDim = parent.getDimension(parent.getRank() - 1);
@@ -860,6 +860,20 @@ public class CFpointObs extends TableConfigurerImpl {
       return new EncodingInfo(Encoding.raggedContiguous, parentDim, obsDim);
     }
 
+    VariableDS lat = CoordSysEvaluator.findCoordByType(ds, AxisType.Lat);
+    if (lat == null) {
+      errlog.format("Must have a Lat coordinate%n");
+      return null;
+    }
+    if (lat.getRank() > 0) { // multidim case
+      for (Dimension d : lat.getDimensions()) {
+         if (!d.equals(obsDim)) {
+            return new EncodingInfo(Encoding.multidim, d, obsDim);
+         }
+      }
+    }
+
+    //othewise its a single traj in the file
     return new EncodingInfo(Encoding.single, null, obsDim);
   }
 
@@ -1159,6 +1173,31 @@ public class CFpointObs extends TableConfigurerImpl {
     tableConfig.lon = matchAxisTypeAndDimension(ds, AxisType.Lon, info.parentDim);
     tableConfig.elev = matchAxisTypeAndDimension(ds, AxisType.Height, info.parentDim);
     tableConfig.time = matchAxisTypeAndDimension(ds, AxisType.Time, info.parentDim);
+    tableConfig.featureType = ftype;
+
+    if (info.encoding != Encoding.single) {
+      // set up structure
+      boolean stnIsStruct = Evaluator.hasRecordStructure(ds) && info.parentDim.isUnlimited();
+      tableConfig.structureType = stnIsStruct ? TableConfig.StructureType.Structure : TableConfig.StructureType.PsuedoStructure;
+      tableConfig.dimName = info.parentDim.getName();
+      tableConfig.structName = stnIsStruct ? "record" : tableConfig.dimName;
+    }
+
+    return tableConfig;
+  }
+
+  // test E:/work/signell/traj2D.ncml
+  private TableConfig makeStructTableTestTraj(NetcdfDataset ds, FeatureType ftype, EncodingInfo info, Formatter errlog) throws IOException {
+    Table.Type tableType = Table.Type.Structure;
+    if (info.encoding == Encoding.single) tableType = Table.Type.Top;
+    if (info.encoding == Encoding.flat) tableType = Table.Type.ParentId;
+
+    String name = (info.parentDim == null) ? " single" : info.parentDim.getName();
+    TableConfig tableConfig = new TableConfig(tableType, name);
+    tableConfig.lat = CoordSysEvaluator.findCoordNameByType(ds, AxisType.Lat);
+    tableConfig.lon = CoordSysEvaluator.findCoordNameByType(ds, AxisType.Lon);
+    tableConfig.elev = CoordSysEvaluator.findCoordNameByType(ds, AxisType.Height);
+    tableConfig.time = CoordSysEvaluator.findCoordNameByType(ds, AxisType.Time);
     tableConfig.featureType = ftype;
 
     if (info.encoding != Encoding.single) {

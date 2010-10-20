@@ -3,11 +3,12 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Changes in version 4.2:
- 10: (2010-10-xx)
+ 10: (2010-10-20)
+  DatasetCollectionManager.enableMetadataManager(): allow bdb caching to be optional
   Grib2: add template 15
   GribPds.getIntervalStatType() -> getStatisticalProcessType()
   AggOuterDimension.getNestedJoinRange() getting strides wrong sometimes.
-  DatasetConstructor.transfer() (Aggregations) wasnt allowing unlimited dimensions, not sure why, but passed usint test.  
+  DatasetConstructor.transfer() (Aggregations) wasnt allowing unlimited dimensions, not sure why, but passes unit tests without it.
   FmrcInvLite: change linear search - CPU bottleneck
  9: (2010-10-12)
   UI: CoordSys tab "show values" shows irregular bounds as a pair
