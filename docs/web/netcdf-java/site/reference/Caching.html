@@ -98,12 +98,46 @@ You might want to always write temporary files to the cache directory, in order 
 <pre>
    <strong>NetcdfDataset.initNetcdfFileCache(int minElementsInMemory, int maxElementsInMemory, int hardLimit, int period);</strong>
 </pre>
-<p>  so that as soon as the number of NetcdfFile objects exceeds <em>hardLimit</em> , a cleanup is done immediately in the calling thread.<br>
-</p>
+<p>  so that as soon as the number of NetcdfFile objects exceeds <em>hardLimit</em> , a cleanup is done immediately in the calling thread.</p>
+<hr width="100%" />
+<h2>Collection Caching Directory Scans and Metadata</h2>
+<ul>
+  <li>Introduced in CDM 4.2, to support large collections of  files that may change.</li>
+  <li>Interface <strong>CollectionManager</strong>, has implementations <strong>DatasetCollectionManager</strong> and <strong>DatasetCollectionFromCatalog</strong></li>
+  <li><strong>DatasetCollectionManager</strong> has an <strong>MController</strong> that does the directory scanning</li>
+  <li>Interface<strong> MController</strong> has implementations <strong>ControllerCaching</strong> and <strong>ControllerOS</strong> (default)</li>
+</ul>
+<h3><strong>ControllerCaching</strong></h3>
+<ul>
+  <li>You must enable by calling <strong>DatasetCollectionManager</strong>.<strong>setController</strong>()
+    <ul>
+      <li>Done  in TDS though <strong>CdmInit</strong></li>
+      <li>Done in ToolsUI by calling
+        <pre> DiskCache2 cacheDir = new DiskCache2(&quot;.unidata/ehcache&quot;, true, -1, -1);<br /> ControllerCaching cacheManager = thredds.filesystem.ControllerCaching.makeTestController(cacheDir.getRootDirectory());
+ thredds.inventory.DatasetCollectionManager.setController(cacheManager);</pre>
+      </li>
+    </ul>
+  </li>
+  <li>Uses ehcache object caching, so requires ehcache.jar</li>
+  <li>Granularity is a directory</li>
+  <li>Call the OS to get the last modified date of the directory, and if changed then make an OS request for the list of directories
+    <ul>
+      <li>Therefore, a good stategy is to divide data into subdirectories that minimize changes, so you dont have to scan older ones.</li>
+      <li>If not changed, use the cached info<br>
+        </li>
+    </ul>
+  </li>
+</ul>
+<h3>FMRC Caching</h3>
+<ul>
+  <li>uses Berkeley DB</li>
+  <li> default root dir is ${user.home}/.unidata/bdb</li>
+  <li>MetadataManager.setCacheDirectory();</li>
+</ul>
 <pre>&nbsp; </pre>
 <hr width="100%" />
 <address>
-<img src="../nc.gif" width="64" height="64" /> This document is maintained by John Caron and was last updated on Sep 28, 2009
+<img src="../nc.gif" width="64" height="64" /> This document is maintained by John Caron and was last updated  Oct 2010
 </address>
 <p>&nbsp; </p>
 </body>

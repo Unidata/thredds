@@ -15,7 +15,7 @@ dl {margin: 10px 5px 5px 15px;)
 <h2>Ncstream Grammer</h2>
 <p>last update Sep 25, 2010</p>
 <p>An <em><strong>ncstream</strong></em> is a sequence of one or more messages:</p>
-<pre>   <strong>ncstream</strong> = {message}
+<pre>   <strong>ncstream</strong> = <strong>MAGIC_START</strong>, {message}
    <strong>message</strong> = headerMessage | dataMessage | vdataMessage | errorMessage
    <strong>headerMessage</strong> = MAGIC_HEADER, vlen, NcStreamProto.Header
    <strong>dataMessage</strong> = MAGIC_DATA, vlen, NcStreamProto.Data, vlen, (byte)*vlen
@@ -28,10 +28,12 @@ dl {margin: 10px 5px 5px 15px;)
    <strong>NcStreamProto.Data</strong> = Data message encoded by protobuf
    <strong>data</strong> = actual bytes of data, encoding described by the NcStreamProto.Data message
 
-primitives: 
+primitives:
+   <strong>MAGIC_START</strong> = 0x43, 0x44, 0x46, 0x53 
    <strong>MAGIC_HEADER</strong>= 0xad, 0xec, 0xce, 0xda 
    <strong>MAGIC_DATA</strong> =  0xab, 0xec, 0xce, 0xba <br />
-   <strong>MAGIC_ERR</strong>   = 0xab, 0xad, 0xba, 0xda <br />
+   <strong>MAGIC_ERR</strong>   = 0xab, 0xad, 0xba, 0xda 
+   <strong>MAGIC_END</strong> =   0xed, 0xed, 0xde, 0xde;<br />
 </pre>
 <p>The protobuf messages are defined by </p>
 <ul>
