@@ -3,8 +3,10 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Release Details 4.2:
+ 4.2 release candidate 4 (2010-10-20)
+   AggOuterDimension.getNestedJoinRange() getting strides wrong sometimes.
+    
  4.2 release candidate 3 (2010-10-13)
-   AggOuterDimension.getNestedJoinRange() getting strides wrong sometimes. 
    Change cache default locations
    CdmRemoteController diskCache2 not exiting
    DataRootHandler.shutdown(waitForJobsToComplete = true)
