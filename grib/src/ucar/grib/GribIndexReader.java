@@ -225,12 +225,12 @@ public class GribIndexReader {
             ggr.bmsExists = pds1.bmsExists();
             ggr.center = pds1.getCenter();
             ggr.subCenter = pds1.getSubCenter();
-            ggr.table = pds1.getParameterTableVersion();
+            ggr.tableVersion = pds1.getParameterTableVersion();
 
           } else {
             ggr.center = center;
             ggr.subCenter = sub_center;
-            ggr.table = table_version;
+            ggr.tableVersion = table_version;
 
           }
 

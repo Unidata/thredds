@@ -3,7 +3,8 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Changes in version 4.2:
- 10: (2010-10-20)
+ 10: (2010-10-21)
+  Grib2DataSection: handle all missing data case (DS error os=2 nbitsd=0)
   DatasetCollectionManager.enableMetadataManager(): allow bdb caching to be optional
   Grib2: add template 15
   GribPds.getIntervalStatType() -> getStatisticalProcessType()

@@ -3,6 +3,8 @@ package ucar.nc2.iosp.grib;
 import junit.framework.TestCase;
 import ucar.grib.GribGridRecord;
 import ucar.grib.GribPds;
+import ucar.grib.grib1.Grib1Pds;
+import ucar.grib.grib1.Grib1Tables;
 import ucar.grib.grib2.Grib2Pds;
 import ucar.grib.grib2.Grib2Tables;
 import ucar.grid.GridIndex;
@@ -44,7 +46,8 @@ public class TestGribFromTds extends TestCase {
   public int nintVars = 0;
 
   public void testGribFromTds() throws Exception {
-    doDir(TestAll.testdataDir + "cdmUnitTest/formats/grib2");
+    doDir(TestAll.testdataDir + "cdmUnitTest/formats/grib1");
+    //doDir(TestAll.testdataDir + "cdmUnitTest/formats/grib2");
     doDir(TestAll.testdataDir + "cdmUnitTest/tds/normal");
   }
 
@@ -57,7 +60,8 @@ public class TestGribFromTds extends TestCase {
         //showNames(filename);
         //checkProjectionType(filename);
         //checkTemplates(filename);
-        checkStatType(filename, true);
+        //checkStatType(filename, true);
+        checkTableVersion(filename, true);
         // checkGenType(filename, false);
         // checkTimeIntervalType(filename);
         //checkTimeInterval(filename);
@@ -212,7 +216,7 @@ public class TestGribFromTds extends TestCase {
       GribGridRecord ggr = (GribGridRecord) gr;
       int genType = ggr.getPds().getStatisticalProcessType();
       if (genType < 0) continue;
-      
+
       String vname = ggr.getParameterName();
       List<Integer> uses = map.get(vname);
       if (uses == null) {
@@ -243,6 +247,46 @@ public class TestGribFromTds extends TestCase {
         }
       }
     }
+
+    GridServiceProvider.debugOpen = false;
+  }
+
+  public void checkTableVersion(String filename, boolean showVars) throws IOException {
+    GridServiceProvider.debugOpen = true;
+    NetcdfFile ncd = null;
+    try {
+      ncd = NetcdfFile.open(filename);
+    } catch (Throwable t) {
+      System.out.printf("Failed on %s = %s%n", filename, t.getMessage());
+      return;
+    }
+
+    GribGridServiceProvider iosp = (GribGridServiceProvider) ncd.getIosp();
+    GridIndex index = (GridIndex) iosp.sendIospMessage("GridIndex");
+    boolean isGrib1 = iosp.getFileTypeId().equals("GRIB1");
+    if (!isGrib1) return;
+
+    boolean first = true;
+    Set<Integer> versionSet = new HashSet<Integer>();
+
+    List<GridRecord> grList = index.getGridRecords();
+    for (GridRecord gr : grList) {
+      GribGridRecord ggr = (GribGridRecord) gr;
+      int ver = ggr.getTableVersion();
+      versionSet.add(ver);
+      if (first) {
+        System.out.printf(    "Originating Center : (%d) %s%n", ggr.getCenter(), Grib1Tables.getCenter_idName( ggr.getCenter() ));
+        System.out.printf("Originating Sub-Center : (%d) %s%n",  ggr.getSubCenter(),  Grib1Tables.getSubCenter_idName( ggr.getCenter(), ggr.getSubCenter()) );
+        first = false;
+      }
+    }
+
+    System.out.printf("Version(s) = ");
+    Iterator<Integer> iter = versionSet.iterator();
+    while (iter.hasNext()) {
+      System.out.printf(" %d", iter.next());
+    }
+    System.out.printf("%n");
 
     GridServiceProvider.debugOpen = false;
   }

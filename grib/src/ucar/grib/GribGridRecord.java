@@ -60,7 +60,7 @@ public final class GribGridRecord implements GridRecord {
   //// from  identification section
 
   Date refTime;
-  int center = -1, subCenter = -1, table = -1;
+  int center = -1, subCenter = -1, tableVersion = -1;
 
   //// these are from the PDS
   private GribPds pds;
@@ -120,7 +120,7 @@ public final class GribGridRecord implements GridRecord {
   }
 
   public int getTableVersion() {
-    return table;
+    return tableVersion;
   }
 
   public long getGdsOffset() {
@@ -253,7 +253,7 @@ public final class GribGridRecord implements GridRecord {
       } else {
         GribPDSParamTable pt = null;
         try {
-          pt = GribPDSParamTable.getParameterTable(center, subCenter, table);
+          pt = GribPDSParamTable.getParameterTable(center, subCenter, tableVersion);
         } catch (NotSupportedException e) {
           logger.error("Failed to get Parameter name for " + this);
         }
@@ -528,7 +528,7 @@ public final class GribGridRecord implements GridRecord {
             ", refTime=" + refTime +
             ", center=" + center +
             ", subCenter=" + subCenter +
-            ", table=" + table +
+            ", table=" + tableVersion +
             ", bmsExists=" + bmsExists +
             ", gdsKey=" + gdsKey +
             ", offset1=" + gdsOffset +
