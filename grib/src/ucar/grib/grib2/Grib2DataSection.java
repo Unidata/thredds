@@ -497,7 +497,7 @@ public final class Grib2DataSection {
     int sign;
     // ds is number of bytes, convert to bits -1 for sign bit
     nbitsd = nbitsd * 8;
-    if (nbitsd != 0 ) {         // first order spatial differencing g1 and gMin
+    if (nbitsd > 0 ) {         // first order spatial differencing g1 and gMin
       sign = bits2UInt(1, raf);
       ival1 = bits2UInt(nbitsd -1, raf);
       if (sign == 1) {
@@ -517,7 +517,12 @@ public final class Grib2DataSection {
       }
       //System.out.println( "DS nbitsd ="+ nbitsd +" ival1=" + ival1 +" ival2 =" + ival2 + " minsd=" + minsd );
     } else {
-      System.out.println("DS error os=" + os + " nbitsd -1 =" + (nbitsd -1));
+      if( debug )
+        System.out.println("DS error os=" + os + " nbitsd -1 =" + (nbitsd -1));
+      int numberPoints = gds.getGdsVars().getNumberPoints();
+      data = new float[numberPoints];
+      for (int i = 0; i < numberPoints; i++)
+            data[i] = mv;
       return;
     }
 
