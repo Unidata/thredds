@@ -613,7 +613,7 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
       // for this server.
       ServerDDS myDDS = ds.getDDS();
       DAS das = ds.getDAS();
-      GetHTMLInterfaceHandler di = new GetHTMLInterfaceHandler();
+      GetHTMLInterfaceHandler2 di = new GetHTMLInterfaceHandler2();
       di.sendDataRequestForm(request, response, rs.getDataSet(), myDDS, das);
 
     } finally {  // release lock if needed
@@ -710,13 +710,15 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
    */
   private void printBadURLPage(PrintWriter pw) {
 
+    String serverContactName = ThreddsConfig.get( "serverInformation.contact.name", "UNKNOWN" );
+    String serverContactEmail = ThreddsConfig.get( "serverInformation.contact.email", "UNKNOWN" );
     pw.println("<h3>Error in URL</h3>");
     pw.println("The URL extension did not match any that are known by this");
     pw.println("server. Below is a list of the five extensions that are be recognized by");
     pw.println("all OPeNDAP servers. If you think that the server is broken (that the URL you");
     pw.println("submitted should have worked), then please contact the");
-    pw.println("OPeNDAP user support coordinator at: ");
-    pw.println("<a href=\"mailto:support@unidata.ucar.edu\">support@unidata.ucar.edu</a><p>");
+    pw.println("administrator of this server [" + serverContactName + "] at: ");
+    pw.println("<a href='mailto:" + serverContactEmail + "'>" + serverContactEmail +"</a><p>");
 
   }
 

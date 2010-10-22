@@ -22,17 +22,22 @@
 /////////////////////////////////////////////////////////////////////////////
 
 
+package thredds.server.opendap;
 
-package opendap.servlet;
 
-
-import java.io.*;
-import javax.servlet.http.*;
-
-import opendap.servers.www.*;
-import opendap.dap.*;
-import opendap.dap.parser.ParseException;
+import opendap.dap.DAP2Exception;
+import opendap.dap.DAS;
+import opendap.dap.DDS;
 import opendap.dap.Server.ServerDDS;
+import opendap.dap.parser.ParseException;
+import opendap.servers.www.jscriptCore;
+import opendap.servers.www.wwwFactory;
+import opendap.servers.www.wwwOutPut;
+import thredds.servlet.ThreddsConfig;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
 
 /**
  * Default handler for OPeNDAP .html requests. This class is used
@@ -43,12 +48,17 @@ import opendap.dap.Server.ServerDDS;
  * @author Nathan David Potter
  */
 
-public class GetHTMLInterfaceHandler {
+public class GetHTMLInterfaceHandler2
+{
 
     private static final boolean _Debug = false;
     private String helpLocation = "http://www.opendap.org/online_help_files/";
 
-    /**
+    private String serverContactName = ThreddsConfig.get( "serverInformation.contact.name", "UNKNOWN" );
+    private String serverContactEmail = ThreddsConfig.get( "serverInformation.contact.email", "UNKNOWN" );
+    private String odapSupportEmail = "support@opendap.org";
+
+  /**
      * ************************************************************************
      * Default handler for OPeNDAP .html requests. Returns an html form
      * and javascript code that allows the user to use their browser
@@ -62,7 +72,7 @@ public class GetHTMLInterfaceHandler {
      * @param sdds
      * @param myDAS
      * @throws opendap.dap.DAP2Exception
-     * @throws ParseException
+     * @throws opendap.dap.parser.ParseException
      * @see opendap.servers.www.wwwFactory
      */
     public void sendDataRequestForm(HttpServletRequest request,
@@ -155,16 +165,15 @@ public class GetHTMLInterfaceHandler {
             pw.println("</table></form>\n");
             pw.println("<hr>\n");
 
+            pw.println( "<address>");
+            pw.println( "<p>For questions or comments about this dataset, contact the administrator of this server ["
+                      + serverContactName + "] at: <a href='mailto:" + serverContactEmail + "'>"
+                      + serverContactEmail + "</a></p>");
+            pw.println( "<p>For questions or comments about OPeNDAP, email OPeNDAP support at:"
+                        + " <a href='mailto:" + odapSupportEmail + "'>" + odapSupportEmail + "</a></p>" );
+          pw.println( "</address></body></html>" );
 
-            pw.println(
-                    "<address>Send questions or comments to: "
-                            + "<a href=\"mailto:support@opendap.org\">"
-                            + "support@opendap.org"
-                            + "</a></address>"
-                            + "</body></html>\n"
-            );
-
-            pw.println("<hr>");
+          pw.println("<hr>");
             pw.println("<h2>DDS:</h2>");
 
             pw.println("<pre>");
