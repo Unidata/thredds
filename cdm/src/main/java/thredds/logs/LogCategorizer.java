@@ -189,7 +189,8 @@ public class LogCategorizer {
   }
 
   public static void setRoots(String raw) {
-    roots = raw;
+    if (null != raw)
+      roots = raw;
   }
 
   public static PathMatcher readRoots() {

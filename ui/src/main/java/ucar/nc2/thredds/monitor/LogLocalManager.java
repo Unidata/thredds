@@ -33,8 +33,10 @@
 package ucar.nc2.thredds.monitor;
 
 import ucar.nc2.units.DateFormatter;
+import ucar.nc2.util.IO;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.*;/*
@@ -90,6 +92,18 @@ public class LogLocalManager {
     filenameDatePos = isAccess ? "access.".length() : "threddsServlet.log.".length();
     String format = isAccess ? "yyyy-MM-dd" : "yyyy-MM-dd-HH";
     localFormat = new SimpleDateFormat(format, Locale.US );
+  }
+
+  public String getRoots() {
+     File localDir = LogLocalManager.getDirectory(server, "");
+     File file = new File(localDir, "roots.txt");
+     if (!file.exists()) return null;
+
+     try {
+       return IO.readFile(file.getPath());
+     } catch( IOException ioe) {
+       return null;
+     }
   }
 
   public List<FileDateRange> getLocalFiles(Date start, Date end) {

@@ -274,6 +274,8 @@ public class AccessLogTable extends JPanel {
       startDateField.setText(df.format(startDate));
     if (endDate != null)
       endDateField.setText(df.format(endDate));
+
+    LogCategorizer.setRoots( manager.getRoots());
   }
 
   void showLogs(LogReader.LogFilter filter) {

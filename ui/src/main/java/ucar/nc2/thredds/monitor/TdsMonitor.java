@@ -36,6 +36,7 @@ package ucar.nc2.thredds.monitor;
 import org.apache.commons.httpclient.auth.CredentialsProvider;
 import thredds.logs.LogReader;
 import thredds.logs.LogCategorizer;
+import ucar.nc2.util.IO;
 import ucar.nc2.util.net.HttpClientManager;
 import ucar.util.prefs.ui.Debug;
 import ucar.util.prefs.PreferencesExt;
@@ -188,48 +189,53 @@ public class TdsMonitor extends JPanel {
 
   private class ManagePanel extends JPanel {
 
-     ManagePanel(PreferencesExt p) {
-       manage = new ManageForm();
-       setLayout(new BorderLayout());
-       add(manage, BorderLayout.CENTER);
+    ManagePanel(PreferencesExt p) {
+      manage = new ManageForm();
+      setLayout(new BorderLayout());
+      add(manage, BorderLayout.CENTER);
 
-        manage.addPropertyChangeListener( new PropertyChangeListener() {
-          public void propertyChange(PropertyChangeEvent evt) {
-            if (!evt.getPropertyName().equals("Download")) return;
-            ManageForm.Data data = (ManageForm.Data) evt.getNewValue();
-            try {
-              manage.getTextArea().setText(""); // clear the text area
-              manage.getStopButton().setCancel(false); // clear the cancel state
+      manage.addPropertyChangeListener(new PropertyChangeListener() {
+        public void propertyChange(PropertyChangeEvent evt) {
+          if (!evt.getPropertyName().equals("Download")) return;
+          ManageForm.Data data = (ManageForm.Data) evt.getNewValue();
+          try {
+            manage.getTextArea().setText(""); // clear the text area
+            manage.getStopButton().setCancel(false); // clear the cancel state
 
-              if (data.wantAccess) {
-                TdsDownloader logManager = new TdsDownloader(manage.getTextArea(), data.server, TdsDownloader.Type.access);
-                logManager.getRemoteFiles(manage.getStopButton());
-              }
-              if (data.wantServlet) {
-                 TdsDownloader logManager = new TdsDownloader(manage.getTextArea(), data.server, TdsDownloader.Type.thredds);
-                 logManager.getRemoteFiles(manage.getStopButton());
-               }
-              if (data.wantRoots) {
-                String urls = "http://" + data.server + "/thredds/admin/roots";
-                String roots = HttpClientManager.getContent(urls);
-                JTextArea ta = manage.getTextArea();
-                ta.append("\nRoots:\n");
-                ta.append(roots);
-                LogCategorizer.setRoots(roots);
-              }
-
-            } catch (Throwable t) {
-              t.printStackTrace();
+            if (data.wantAccess) {
+              TdsDownloader logManager = new TdsDownloader(manage.getTextArea(), data.server, TdsDownloader.Type.access);
+              logManager.getRemoteFiles(manage.getStopButton());
             }
-            
-            if (manage.getStopButton().isCancel())
-              manage.getTextArea().append("\nDownload canceled by user");
+            if (data.wantServlet) {
+              TdsDownloader logManager = new TdsDownloader(manage.getTextArea(), data.server, TdsDownloader.Type.thredds);
+              logManager.getRemoteFiles(manage.getStopButton());
+            }
+
+            if (data.wantRoots) {
+              String urls = "http://" + data.server + "/thredds/admin/roots";
+              File localDir = LogLocalManager.getDirectory(data.server, "");
+              File file = new File(localDir, "roots.txt");
+              HttpClientManager.copyUrlContentsToFile(urls, file);
+              String roots = IO.readFile(file.getPath());
+
+              JTextArea ta = manage.getTextArea();
+              ta.append("\nRoots:\n");
+              ta.append(roots);
+              LogCategorizer.setRoots(roots);
+            }
+
+          } catch (Throwable t) {
+            t.printStackTrace();
           }
-        });
-     }
+
+          if (manage.getStopButton().isCancel())
+            manage.getTextArea().append("\nDownload canceled by user");
+        }
+      });
+    }
 
     void save() {
-      
+
     }
   }
 
@@ -260,11 +266,11 @@ public class TdsMonitor extends JPanel {
       serverCB = new JComboBox();
       serverCB.setModel(manage.getServers().getModel());
       serverCB.addActionListener(new ActionListener() {
-         public void actionPerformed(ActionEvent e) {
-           String server = (String) serverCB.getSelectedItem();
-           setServer(server);
-         }
-       });
+        public void actionPerformed(ActionEvent e) {
+          String server = (String) serverCB.getSelectedItem();
+          setServer(server);
+        }
+      });
 
       // serverCB.setModel(manage.getServers().getModel());
       topPanel.add(new JLabel("server:"));
@@ -316,27 +322,31 @@ public class TdsMonitor extends JPanel {
       BAMutil.setActionProperties(infoAction, "Information", "info on selected logs", false, 'I', -1);
       BAMutil.addActionToContainer(topPanel, infoAction);
 
-      setLayout( new BorderLayout());
+      setLayout(new BorderLayout());
       add(topPanel, BorderLayout.NORTH);
     }
 
     private LogLocalManager manager;
+
     public void setServer(String server) {
       manager = new LogLocalManager(server, isAccess);
       manager.getLocalFiles(null, null);
       setLocalManager(manager);
     }
 
-    abstract void setLocalManager( LogLocalManager manager);
+    abstract void setLocalManager(LogLocalManager manager);
+
     abstract void showLogs();
+
     abstract void showInfo(Formatter f);
+
     abstract void resetLogs();
 
     void save() {
       if (infoWindow != null) prefs.putBeanObject(FRAME_SIZE, infoWindow.getBounds());
     }
   }
-  
+
 
   /////////////////////////////////////////////////////////////////////
   String filterIP = "128.117.156,128.117.140,128.117.149";
@@ -348,13 +358,13 @@ public class TdsMonitor extends JPanel {
       super(p, true);
       logTable = new AccessLogTable(startDateField, endDateField, p, dnsCache);
       logTable.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
-         public void propertyChange(java.beans.PropertyChangeEvent e) {
-           if (e.getPropertyName().equals("UrlDump")) {
-             String path = (String) e.getNewValue();
-             gotoUrlDump(path);
-           }
-         }
-       });
+        public void propertyChange(java.beans.PropertyChangeEvent e) {
+          if (e.getPropertyName().equals("UrlDump")) {
+            String path = (String) e.getNewValue();
+            gotoUrlDump(path);
+          }
+        }
+      });
 
       AbstractAction allAction = new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
@@ -376,8 +386,8 @@ public class TdsMonitor extends JPanel {
     }
 
     @Override
-    void setLocalManager( LogLocalManager manager) {
-      logTable.setLocalManager( manager);
+    void setLocalManager(LogLocalManager manager) {
+      logTable.setLocalManager(manager);
     }
 
     @Override
@@ -388,7 +398,7 @@ public class TdsMonitor extends JPanel {
       if (problemsOnly)
         filter = new LogReader.ErrorOnlyFilter(filter);
 
-      logTable.showLogs( filter);
+      logTable.showLogs(filter);
     }
 
     void showInfo(Formatter f) {
@@ -410,18 +420,19 @@ public class TdsMonitor extends JPanel {
   }
 
   /////////////////////////////////////////////////////////////////////
+
   private class ServletLogPanel extends OpPanel {
     ServletLogTable logTable;
 
     ServletLogPanel(PreferencesExt p) {
       super(p, false);
-      logTable = new ServletLogTable( startDateField, endDateField, p, dnsCache);
+      logTable = new ServletLogTable(startDateField, endDateField, p, dnsCache);
       add(logTable, BorderLayout.CENTER);
     }
 
     @Override
-    void setLocalManager( LogLocalManager manager) {
-      logTable.setLocalManager( manager);
+    void setLocalManager(LogLocalManager manager) {
+      logTable.setLocalManager(manager);
     }
 
     @Override
@@ -432,7 +443,7 @@ public class TdsMonitor extends JPanel {
       if (problemsOnly)
         filter = new ServletLogTable.ErrorOnlyFilter(filter);
 
-      logTable.showLogs( filter);
+      logTable.showLogs(filter);
     }
 
     void resetLogs() {
@@ -452,91 +463,84 @@ public class TdsMonitor extends JPanel {
   //////////////////////////////////////////////////////////////
 
 
-
-    /**
-     * Finds all files matching
-     * a glob pattern.  This method recursively searches directories, allowing
-     * for glob expressions like {@code "c:\\data\\200[6-7]\\*\\1*\\A*.nc"}.
-     * @param globExpression The glob expression
-     * @return List of File objects matching the glob pattern.  This will never
-     * be null but might be empty
-     * @throws Exception if the glob expression does not represent an absolute
-     * path
-     * @author Mike Grant, Plymouth Marine Labs; Jon Blower
-     */
-    java.util.List<File> globFiles(String globExpression) throws Exception {
-        // Check that the glob expression is an absolute path.  Relative paths
-        // would cause unpredictable and platform-dependent behaviour so
-        // we disallow them.
-        // If ds.getLocation() is a glob expression this test will still work
-        // because we are not attempting to resolve the string to a real path.
-        File globFile = new File(globExpression);
-        if (!globFile.isAbsolute())
-        {
-            throw new Exception("Dataset location " + globExpression +
-                " must be an absolute path");
-        }
-
-        // Break glob pattern into path components.  To do this in a reliable
-        // and platform-independent way we use methods of the File class, rather
-        // than String.split().
-        java.util.List<String> pathComponents = new ArrayList<String>();
-        while (globFile != null)
-        {
-            // We "pop off" the last component of the glob pattern and place
-            // it in the first component of the pathComponents List.  We therefore
-            // ensure that the pathComponents end up in the right order.
-            File parent = globFile.getParentFile();
-            // For a top-level directory, getName() returns an empty string,
-            // hence we use getPath() in this case
-            String pathComponent = parent == null ? globFile.getPath() : globFile.getName();
-            pathComponents.add(0, pathComponent);
-            globFile = parent;
-        }
-
-        // We must have at least two path components: one directory and one
-        // filename or glob expression
-        java.util.List<File> searchPaths = new ArrayList<File>();
-        searchPaths.add(new File(pathComponents.get(0)));
-        int i = 1; // Index of the glob path component
-
-        while(i < pathComponents.size())
-        {
-            FilenameFilter globFilter = new GlobFilenameFilter(pathComponents.get(i));
-            java.util.List<File> newSearchPaths = new ArrayList<File>();
-            // Look for matches in all the current search paths
-            for (File dir : searchPaths)
-            {
-                if (dir.isDirectory())
-                {
-                    // Workaround for automounters that don't make filesystems
-                    // appear unless they're poked
-                    // do a listing on searchpath/pathcomponent whether or not
-                    // it exists, then discard the results
-                    new File(dir, pathComponents.get(i)).list();
-
-                    for (File match : dir.listFiles(globFilter))
-                    {
-                        newSearchPaths.add(match);
-                    }
-                }
-            }
-            // Next time we'll search based on these new matches and will use
-            // the next globComponent
-            searchPaths = newSearchPaths;
-            i++;
-        }
-
-        // Now we've done all our searching, we'll only retain the files from
-        // the list of search paths
-        java.util.List<File> filesToReturn = new ArrayList<File>();
-        for (File path : searchPaths)
-        {
-            if (path.isFile()) filesToReturn.add(path);
-        }
-
-        return filesToReturn;
+  /**
+   * Finds all files matching
+   * a glob pattern.  This method recursively searches directories, allowing
+   * for glob expressions like {@code "c:\\data\\200[6-7]\\*\\1*\\A*.nc"}.
+   *
+   * @param globExpression The glob expression
+   * @return List of File objects matching the glob pattern.  This will never
+   *         be null but might be empty
+   * @throws Exception if the glob expression does not represent an absolute
+   *                   path
+   * @author Mike Grant, Plymouth Marine Labs; Jon Blower
+   */
+  java.util.List<File> globFiles(String globExpression) throws Exception {
+    // Check that the glob expression is an absolute path.  Relative paths
+    // would cause unpredictable and platform-dependent behaviour so
+    // we disallow them.
+    // If ds.getLocation() is a glob expression this test will still work
+    // because we are not attempting to resolve the string to a real path.
+    File globFile = new File(globExpression);
+    if (!globFile.isAbsolute()) {
+      throw new Exception("Dataset location " + globExpression +
+              " must be an absolute path");
     }
+
+    // Break glob pattern into path components.  To do this in a reliable
+    // and platform-independent way we use methods of the File class, rather
+    // than String.split().
+    java.util.List<String> pathComponents = new ArrayList<String>();
+    while (globFile != null) {
+      // We "pop off" the last component of the glob pattern and place
+      // it in the first component of the pathComponents List.  We therefore
+      // ensure that the pathComponents end up in the right order.
+      File parent = globFile.getParentFile();
+      // For a top-level directory, getName() returns an empty string,
+      // hence we use getPath() in this case
+      String pathComponent = parent == null ? globFile.getPath() : globFile.getName();
+      pathComponents.add(0, pathComponent);
+      globFile = parent;
+    }
+
+    // We must have at least two path components: one directory and one
+    // filename or glob expression
+    java.util.List<File> searchPaths = new ArrayList<File>();
+    searchPaths.add(new File(pathComponents.get(0)));
+    int i = 1; // Index of the glob path component
+
+    while (i < pathComponents.size()) {
+      FilenameFilter globFilter = new GlobFilenameFilter(pathComponents.get(i));
+      java.util.List<File> newSearchPaths = new ArrayList<File>();
+      // Look for matches in all the current search paths
+      for (File dir : searchPaths) {
+        if (dir.isDirectory()) {
+          // Workaround for automounters that don't make filesystems
+          // appear unless they're poked
+          // do a listing on searchpath/pathcomponent whether or not
+          // it exists, then discard the results
+          new File(dir, pathComponents.get(i)).list();
+
+          for (File match : dir.listFiles(globFilter)) {
+            newSearchPaths.add(match);
+          }
+        }
+      }
+      // Next time we'll search based on these new matches and will use
+      // the next globComponent
+      searchPaths = newSearchPaths;
+      i++;
+    }
+
+    // Now we've done all our searching, we'll only retain the files from
+    // the list of search paths
+    java.util.List<File> filesToReturn = new ArrayList<File>();
+    for (File path : searchPaths) {
+      if (path.isFile()) filesToReturn.add(path);
+    }
+
+    return filesToReturn;
+  }
 
   //////////////////////////////////////////////
 
@@ -558,7 +562,7 @@ public class TdsMonitor extends JPanel {
     CredentialsProvider provider = new thredds.ui.UrlAuthenticatorDialog(null);
     HttpClientManager.init(provider, "TdsMonitor");
 
-     // put UI in a JFrame
+    // put UI in a JFrame
     frame = new JFrame("TDS Monitor");
     ui = new TdsMonitor(prefs, frame);
 
