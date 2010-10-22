@@ -41,31 +41,38 @@ import java.io.*;
 import javax.swing.*;
 
 /**
- * Manage remote log files.
- *
+ * Download files from TDS, must have remote management turned on.
+ * <pre>
+ *   1) log files
+ *   2) roots
+ * </pre>
  * @author caron
  * @since Apr 24, 2009
  */
-public class LogDownloader {
+public class TdsDownloader {
   static private final String latestServletLog = "threddsServlet.log";
 
-  private String server, type;
+  public enum Type {access, thredds}
+
+  private String server;
+  private Type type;
   private File localDir;
   private JTextArea ta;
   private CancelTask cancel;
 
-  LogDownloader(JTextArea ta, String server, boolean isAccess) throws IOException {
+  TdsDownloader(JTextArea ta, String server, Type type) throws IOException {
     this.ta = ta;
     this.server = server;
-    this.type = isAccess ? "access" : "thredds";
+    this.type = type;
 
-    localDir = LogLocalManager.getDirectory(server, isAccess);
+    localDir = LogLocalManager.getDirectory(server, type.toString());
     if (!localDir.exists() && !localDir.mkdirs()) {
       ta.setText(String.format("Failed to create local directory in = %s%n%n", localDir));
       return;
     }
   }
 
+  // copy remote files to localDir
   public void getRemoteFiles(final CancelTask _cancel) throws IOException {
     this.cancel = _cancel;
 

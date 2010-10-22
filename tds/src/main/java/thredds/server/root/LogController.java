@@ -3,6 +3,8 @@ package thredds.server.root;
 import org.springframework.web.servlet.mvc.AbstractController;
 import org.springframework.web.servlet.ModelAndView;
 import thredds.server.config.TdsContext;
+import thredds.servlet.DataRootHandler;
+import thredds.servlet.PathMatcher;
 import thredds.servlet.UsageLog;
 import thredds.servlet.ServletUtil;
 //import thredds.filesystem.server.LogReader;
@@ -95,7 +97,17 @@ public class LogController extends AbstractController {
     }
 
     File file = null;
-    if (path.equals("/log/access/current")) {
+    if (path.equals("/roots")) {
+      PrintWriter pw = new PrintWriter(res.getOutputStream());
+      PathMatcher pathMatcher = DataRootHandler.getInstance().getPathMatcher();
+      Iterator iter = pathMatcher.iterator();
+      while (iter.hasNext()) {
+        DataRootHandler.DataRoot ds = (DataRootHandler.DataRoot) iter.next();
+        pw.format("%s%n", ds.toString2()); // path,dir
+      }
+      pw.flush();
+
+    } else if (path.equals("/log/access/current")) {
 
       File dir = tdsContext.getTomcatLogDirectory();
       File[] files = dir.listFiles(new FilenameFilter() {

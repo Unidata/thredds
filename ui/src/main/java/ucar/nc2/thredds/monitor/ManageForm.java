@@ -16,12 +16,13 @@ public class ManageForm extends JPanel {
 
   public class Data {
     public String server;
-    public boolean wantAccess, wantServlet;
+    public boolean wantAccess, wantServlet, wantRoots;
 
-    private Data(String server, boolean access, boolean servlet) {
+    private Data(String server, boolean access, boolean servlet, boolean roots) {
       this.server = server;
       this.wantAccess = access;
       this.wantServlet = servlet;
+      this.wantRoots = roots;
     }
   }
 
@@ -53,6 +54,7 @@ public class ManageForm extends JPanel {
     scrollPane1 = new JScrollPane();
     textArea1 = new JTextArea();
     stopButton = new StopButton();
+    wantRoots = new JRadioButton();
     downloadAction = new DownloadAction();
 
     //======== this ========
@@ -66,7 +68,7 @@ public class ManageForm extends JPanel {
       "motherlode.ucar.edu:8080",
       "motherlode.ucar.edu:8081",
       "motherlode.ucar.edu:9080",
-      "geoport.whoi.edu"
+      "localhost:8080"
     }));
 
     //---- wantAccess ----
@@ -95,6 +97,11 @@ public class ManageForm extends JPanel {
     //---- stopButton ----
     stopButton.setToolTipText("stop download");
 
+    //---- wantRoots ----
+    wantRoots.setText("data roots");
+    wantRoots.setSelected(true);
+    wantRoots.setFont(wantRoots.getFont().deriveFont(wantRoots.getFont().getStyle() | Font.BOLD));
+
     GroupLayout layout = new GroupLayout(this);
     setLayout(layout);
     layout.setHorizontalGroup(
@@ -114,7 +121,10 @@ public class ManageForm extends JPanel {
                   .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                   .addGroup(layout.createParallelGroup()
                     .addComponent(server, GroupLayout.PREFERRED_SIZE, 294, GroupLayout.PREFERRED_SIZE)
-                    .addComponent(wantAccess)
+                    .addGroup(layout.createSequentialGroup()
+                      .addComponent(wantAccess)
+                      .addGap(77, 77, 77)
+                      .addComponent(wantRoots))
                     .addComponent(wantServlet)))))
             .addGroup(layout.createSequentialGroup()
               .addGap(15, 15, 15)
@@ -131,7 +141,9 @@ public class ManageForm extends JPanel {
             .addComponent(server, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
             .addComponent(label1))
           .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-          .addComponent(wantAccess)
+          .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+            .addComponent(wantAccess)
+            .addComponent(wantRoots))
           .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
           .addComponent(wantServlet)
           .addGap(18, 18, 18)
@@ -139,7 +151,7 @@ public class ManageForm extends JPanel {
             .addComponent(acceptButton)
             .addComponent(stopButton, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
           .addGap(18, 18, 18)
-          .addComponent(scrollPane1, GroupLayout.DEFAULT_SIZE, 439, Short.MAX_VALUE)
+          .addComponent(scrollPane1, GroupLayout.DEFAULT_SIZE, 430, Short.MAX_VALUE)
           .addContainerGap())
     );
     // JFormDesigner - End of component initialization  //GEN-END:initComponents
@@ -156,6 +168,7 @@ public class ManageForm extends JPanel {
   private JScrollPane scrollPane1;
   private JTextArea textArea1;
   private StopButton stopButton;
+  private JRadioButton wantRoots;
   private DownloadAction downloadAction;
   // JFormDesigner - End of variables declaration  //GEN-END:variables
 
@@ -168,7 +181,8 @@ public class ManageForm extends JPanel {
     }
 
     public void actionPerformed(ActionEvent e) {
-      Data data =  new Data((String) server.getSelectedItem(), wantAccess.isSelected(), wantServlet.isSelected());
+      Data data =  new Data((String) server.getSelectedItem(), wantAccess.isSelected(), wantServlet.isSelected(),
+              wantRoots.isSelected());
       ManageForm.this.firePropertyChange("Download", null, data);
     }
   }

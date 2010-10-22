@@ -33,6 +33,7 @@
 
 package ucar.nc2.thredds.monitor;
 
+import thredds.logs.LogCategorizer;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
 import ucar.nc2.units.TimeUnit;
@@ -47,7 +48,6 @@ import thredds.ui.TextHistoryPane;
 import thredds.ui.IndependentWindow;
 import thredds.ui.BAMutil;
 import thredds.logs.AccessLogParser;
-import thredds.logs.TestFileSystem;
 import thredds.logs.LogReader;
 
 import java.util.*;
@@ -57,8 +57,6 @@ import java.util.concurrent.ExecutorService;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
-import java.io.File;
-import java.io.FileFilter;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
@@ -272,8 +270,10 @@ public class AccessLogTable extends JPanel {
 
     Date startDate = manager.getStartDate();
     Date endDate = manager.getEndDate();
-    startDateField.setText(df.format(startDate));
-    endDateField.setText(df.format(endDate));
+    if (startDate != null)
+      startDateField.setText(df.format(startDate));
+    if (endDate != null)
+      endDateField.setText(df.format(endDate));
   }
 
   void showLogs(LogReader.LogFilter filter) {
@@ -527,7 +527,7 @@ public class AccessLogTable extends JPanel {
 
     for (LogReader.Log log : logs) {
       String path = log.getPath();
-      String dataRoot = TestFileSystem.getDataroot(path);
+      String dataRoot = LogCategorizer.getDataroot(path);
       Dataroot accum = map.get(dataRoot);
       if (accum == null) {
         accum = new Dataroot(dataRoot);
@@ -561,7 +561,7 @@ public class AccessLogTable extends JPanel {
 
     for (LogReader.Log log : logs) {
       String path = log.getPath();
-        String service = TestFileSystem.getService(path);
+        String service = LogCategorizer.getService(path);
         Service accum = map.get(service);
         if (accum == null) {
           accum = new Service(service);

@@ -49,7 +49,7 @@ import java.io.*;
 
 
 /**
- * Class Description
+ * Not used yet
  *
  * @author caron
  * @since Jul 4, 2009
@@ -207,7 +207,7 @@ public class CacheViewer extends JPanel {
   /////////////////////////////////////////////////////////////////////
   private class CachePanel extends OpPanel {
     CacheTable cacheTable;
-    LogDownloader logManager = null;
+    TdsDownloader logManager = null;
 
     CachePanel(PreferencesExt p) {
       super(p);

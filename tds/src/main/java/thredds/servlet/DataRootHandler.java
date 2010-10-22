@@ -890,6 +890,11 @@ public class DataRootHandler {
       return path;
     }
 
+    // debug
+    public String toString2() {
+      return path+","+dirLocation;
+    }
+
     /**
      * Instances which have same path are equal.
      */
@@ -1759,9 +1764,14 @@ public class DataRootHandler {
   } */
 
 
-  /**
+  /*
    * ***********************************************************************
    */
+
+  // debugging only !!
+  public PathMatcher getPathMatcher() {
+    return pathMatcher;
+  }
 
   public void makeDebugActions() {
     DebugHandler debugHandler = DebugHandler.get("catalogs");

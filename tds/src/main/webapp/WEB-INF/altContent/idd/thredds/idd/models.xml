@@ -151,9 +151,8 @@
 
         <collection spec="/data/ldm/pub/native/grid/NCEP/GFS/Global_0p5deg/GFS_Global_0p5deg_#yyyyMMdd_HHmm#.grib2"
                     name="GFS_Global_0p5deg"
-                    recheckAfter="15 min"
                     olderThan="5 min"/>
-        <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
+        <update startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
         <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
         <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
       </featureCollection>
@@ -907,7 +906,8 @@
           <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
         </featureCollection>
 
-        <featureCollection name="NCEP-SREF-CONUS_40km-biasCorrected-derived" featureType="FMRC" harvest="true" path="fmrc/NCEP/SREF/CONUS_40km/ensprod_biasc">
+        <featureCollection name="NCEP-SREF-CONUS_40km-biasCorrected-derived" featureType="FMRC" harvest="true"
+                           path="fmrc/NCEP/SREF/CONUS_40km/ensprod_biasc">
           <metadata inherited="true">
             <dataFormat>GRIB-2</dataFormat>
             <documentation type="summary">

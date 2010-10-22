@@ -47,17 +47,14 @@ import thredds.ui.IndependentWindow;
 import thredds.ui.BAMutil;
 import thredds.logs.LogReader;
 import thredds.logs.ServletLogParser;
-import thredds.logs.TestFileSystem;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.io.File;
-import java.io.FileFilter;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
@@ -85,8 +82,8 @@ public class ServletLogTable extends JPanel {
   private TextHistoryPane infoTA;
   private IndependentWindow infoWindow;
 
-  private JComboBox rootSelector, serviceSelector;
-  private JLabel sizeLable;
+  //private JComboBox rootSelector, serviceSelector;
+  //private JLabel sizeLable;
   private JTextArea startDateField, endDateField;
 
   public ServletLogTable(JTextArea startDateField, JTextArea endDateField, PreferencesExt prefs, Cache dnsCache) {
@@ -186,7 +183,7 @@ public class ServletLogTable extends JPanel {
     infoWindow = new IndependentWindow("Extra Information", BAMutil.getImage("netcdfUI"), infoTA);
     infoWindow.setBounds((Rectangle) prefs.getBean("InfoWindowBounds", new Rectangle(300, 300, 800, 100)));
 
-    // the selectors
+    /* the selectors
 
     rootSelector = new JComboBox(TestFileSystem.getRoots());
     rootSelector.insertItemAt("", 0);
@@ -213,7 +210,7 @@ public class ServletLogTable extends JPanel {
     topPanel.add(serviceSelector);
     topPanel.add(new JLabel("Size:"));
     sizeLable = new JLabel();
-    topPanel.add(sizeLable);
+    topPanel.add(sizeLable);  */
 
     split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, uptimeTable, mergeTable);
     split.setDividerLocation(prefs.getInt("splitPos", 500));
@@ -239,7 +236,10 @@ public class ServletLogTable extends JPanel {
       }
     });
 
-    AbstractAction allAction = new AbstractAction() {
+    setLayout(new BorderLayout());
+
+
+    /* AbstractAction allAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         logTable.setBeans(completeLogs);
         tabbedPanel.setSelectedIndex(0);
@@ -247,9 +247,8 @@ public class ServletLogTable extends JPanel {
     };
     BAMutil.setActionProperties(allAction, "Refresh", "show All Logs", false, 'A', -1);
     BAMutil.addActionToContainer(topPanel, allAction);
+    add(topPanel, BorderLayout.NORTH); */
 
-    setLayout(new BorderLayout());
-    add(topPanel, BorderLayout.NORTH);
     add(tabbedPanel, BorderLayout.CENTER);
   }
 
@@ -271,8 +270,10 @@ public class ServletLogTable extends JPanel {
 
     Date startDate = manager.getStartDate();
     Date endDate = manager.getEndDate();
-    startDateField.setText(df.format(startDate));
-    endDateField.setText(df.format(endDate));
+    if (startDate != null)
+      startDateField.setText(df.format(startDate));
+    if (endDate != null)
+     endDateField.setText(df.format(endDate));
   }
 
   private MergeFilter currFilter = null;
@@ -708,6 +709,7 @@ public class ServletLogTable extends JPanel {
 
   ////////////////////////////////////////////////
 
+  /*
   void selectRoot(String root) {
     if (root.length() == 0) {
       mergeTable.setBeans(completeMerge);
@@ -738,7 +740,7 @@ public class ServletLogTable extends JPanel {
     mergeTable.setBeans(restrictMerge);
     sizeLable.setText(Integer.toString(restrictMerge.size()));
     calcMerge = true;
-  }
+  }  */
 
 
 }

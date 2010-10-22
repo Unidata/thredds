@@ -45,9 +45,10 @@ import java.io.*;
  * @author caron
  * @since Mar 23, 2009
  */
-public class TestFileSystem {
+public class LogCategorizer {
   static String prefix = "/thredds/catalog/";
 
+  // default roots
   static private String roots =
           "terminal/level3/IDD,/data/ldm/pub/native/radar/level3/\n" +
                   "terminal/level3,/data/ldm/pub/native/radar/level3/\n" +
@@ -187,6 +188,9 @@ public class TestFileSystem {
     return result;
   }
 
+  public static void setRoots(String raw) {
+    roots = raw;
+  }
 
   public static PathMatcher readRoots() {
     PathMatcher pathMatcher = new PathMatcher();
@@ -212,22 +216,38 @@ public class TestFileSystem {
     else if (!path.startsWith("/thredds/"))
       dataRoot = "root";
     else {
-      path = path.substring(9);
-      String service = findService(path);
+      String spath = path.substring(9); // remove /thredds/
+      String service = findService(spath);
       if (service != null) {
         if (service.equals("radarServer")) dataRoot = "radarServer";
           //else if (service.equals("casestudies")) dataRoot = "casestudies";
         else if (service.equals("dqc")) dataRoot = "dqc";
-        else if (path.length() > service.length()) {
-          path = path.substring(service.length() + 1);
-          PathMatcher.Match match = pathMatcher.match(path);
+        else if (spath.length() > service.length()) {
+          spath = spath.substring(service.length() + 1);
+          PathMatcher.Match match = pathMatcher.match(spath);
           if (match != null) dataRoot = match.root;
         }
       }
-      if ((dataRoot == null) && (path.endsWith("xml") || path.endsWith("html")))
-        dataRoot = "catalog";
-      if (dataRoot == null)
-        dataRoot = "misc";
+      if (dataRoot == null) {
+
+        if (path.startsWith("/thredds/admin"))
+          dataRoot = "admin";
+        else if (path.startsWith("/thredds/godiva2"))
+          dataRoot = "godiva2";
+        else if (path.startsWith("/thredds/view"))
+          dataRoot = "webstart";
+        else if (path.startsWith("/thredds/catalog/"))
+          dataRoot = "catalog";
+        else {
+          int pos = path.indexOf("?"); // get rid of query
+          if (pos > 0)
+            path = path.substring(0, pos);
+          if (path.endsWith("xml") || path.endsWith("html"))
+            dataRoot = "catalog";
+          else
+            dataRoot = "misc";
+        }
+      }
     }
     return dataRoot;
   }
@@ -346,7 +366,7 @@ public class TestFileSystem {
   String ehLocation = "C:/data/ehcache/";
   CacheManager manager;
 
-  TestFileSystem() {
+  LogCategorizer() {
     CacheManager.makeTestCacheManager(ehLocation);
     manager = new CacheManager("directories");
     System.out.printf(" Ehcache at %s%n", ehLocation);
@@ -391,7 +411,7 @@ public class TestFileSystem {
       if (arg.equals("nocache")) nocache = true;
     }
 
-    TestFileSystem reader = new TestFileSystem();
+    LogCategorizer reader = new LogCategorizer();
 
     System.out.printf(" Reading logs from %s%n", path);
     reader.process(path);

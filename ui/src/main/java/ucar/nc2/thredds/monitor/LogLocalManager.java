@@ -61,21 +61,22 @@ public class LogLocalManager {
     System.out.printf("logs stored at= %s%n", topDir);
   }
 
-  static File getDirectory(String server, boolean isAccess) {
-    String type = isAccess ? "access" : "thredds";
+  static File getDirectory(String server, String where) {
     String cleanServer = null;
     try {
       cleanServer = java.net.URLEncoder.encode(server, "UTF8");
     } catch (UnsupportedEncodingException e) {
       throw new RuntimeException(e);   // wont happen
     }
-    return new File(topDir, cleanServer+"/"+type);
+    return new File(topDir, cleanServer+"/"+where);
   }
 
   /////////////////////////////////////////////
   private static final String specialLog = "threddsServlet.log";
   private String server;
   private boolean isAccess;
+  private String where;
+
   private List<FileDateRange> localFiles;
   private SimpleDateFormat localFormat;
   private int filenameDatePos; // where the date starts in the filename
@@ -83,6 +84,7 @@ public class LogLocalManager {
   LogLocalManager(String server, boolean isAccess) {
     this.server = server;
     this.isAccess = isAccess;
+    where = isAccess ? "access" : "thredds";
 
     // default is local time zone
     filenameDatePos = isAccess ? "access.".length() : "threddsServlet.log.".length();
@@ -91,9 +93,13 @@ public class LogLocalManager {
   }
 
   public List<FileDateRange> getLocalFiles(Date start, Date end) {
-    File localDir = getDirectory(server, isAccess);
-    if (!localDir.exists())
-      localDir.mkdir();
+    File localDir = getDirectory(server, where);
+    if (!localDir.exists()) {
+      if (!localDir.mkdirs()) {
+        System.out.printf("cant create %s%n", localDir);
+        return new ArrayList<FileDateRange>(0);
+      }
+    }
 
     List<FileDateRange> list = new ArrayList<FileDateRange>();
     for (File f : localDir.listFiles()) {

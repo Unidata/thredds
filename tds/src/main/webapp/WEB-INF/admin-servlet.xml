@@ -36,6 +36,7 @@
         /debug/*=debugController
         /fmrcCache=fmrcCacheController
         /log/**=logController
+        /roots=logController
         /trigger=triggerController
         /*=dirDisplayController
       </value>

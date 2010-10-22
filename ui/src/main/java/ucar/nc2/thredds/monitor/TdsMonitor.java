@@ -35,6 +35,7 @@ package ucar.nc2.thredds.monitor;
 
 import org.apache.commons.httpclient.auth.CredentialsProvider;
 import thredds.logs.LogReader;
+import thredds.logs.LogCategorizer;
 import ucar.nc2.util.net.HttpClientManager;
 import ucar.util.prefs.ui.Debug;
 import ucar.util.prefs.PreferencesExt;
@@ -201,13 +202,22 @@ public class TdsMonitor extends JPanel {
               manage.getStopButton().setCancel(false); // clear the cancel state
 
               if (data.wantAccess) {
-                LogDownloader logManager = new LogDownloader(manage.getTextArea(), data.server, true);
+                TdsDownloader logManager = new TdsDownloader(manage.getTextArea(), data.server, TdsDownloader.Type.access);
                 logManager.getRemoteFiles(manage.getStopButton());
               }
               if (data.wantServlet) {
-                LogDownloader logManager = new LogDownloader(manage.getTextArea(), data.server, false);
-                logManager.getRemoteFiles(manage.getStopButton());
+                 TdsDownloader logManager = new TdsDownloader(manage.getTextArea(), data.server, TdsDownloader.Type.thredds);
+                 logManager.getRemoteFiles(manage.getStopButton());
+               }
+              if (data.wantRoots) {
+                String urls = "http://" + data.server + "/thredds/admin/roots";
+                String roots = HttpClientManager.getContent(urls);
+                JTextArea ta = manage.getTextArea();
+                ta.append("\nRoots:\n");
+                ta.append(roots);
+                LogCategorizer.setRoots(roots);
               }
+
             } catch (Throwable t) {
               t.printStackTrace();
             }

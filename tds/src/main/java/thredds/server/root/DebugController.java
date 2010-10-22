@@ -38,9 +38,12 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import thredds.servlet.DataRootHandler;
 import thredds.servlet.DebugHandler;
 import thredds.servlet.UsageLog;
 import thredds.server.config.TdsContext;
+
+import java.util.Iterator;
 
 /**
  * Handle the /admin/debug interface
