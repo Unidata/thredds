@@ -70,6 +70,7 @@ public class ManageForm extends JPanel {
       "motherlode.ucar.edu:9080",
       "localhost:8080"
     }));
+    server.setEditable(true);
 
     //---- wantAccess ----
     wantAccess.setText("access logs");

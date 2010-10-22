@@ -6,21 +6,19 @@
 </head>
 
 <body>
-<table width="1565" height="758" border="1">
+<table width="1222" height="758" border="1">
   <tr>
     <th width="96" scope="col">Type</th>
     <th width="244" scope="col">single</th>
-    <th width="384" scope="col">multidim</th>
-    <th width="350" scope="col">ragged</th>
-    <th width="247" scope="col">flattened</th>
-    <th width="204" scope="col">Nested Table</th>
+    <th width="312" scope="col">multidim</th>
+    <th width="334" scope="col">ragged</th>
+    <th width="202" scope="col">Nested Table</th>
   </tr>
   <tr>
     <td height="68"><strong>point</strong></td>
     <td>      <p align="center">N/A</p></td>
     <td>      <pre>data(obs)
 <strong>time,lat,lon,</strong>z(obs)</pre></td>
-    <td><div align="center">N/A</div></td>
     <td><div align="center">N/A</div></td>
     <td><pre>Table { 
   <strong>lat, lon, z, time</strong>;    
@@ -39,10 +37,6 @@ scalar <strong>lat,lon</strong>,stn_alt,<strong>stn_id</strong></pre></td>
 <strong>time</strong>(obs)        
 <strong>lat,lon</strong>,stn_alt<strong>,stn_id</strong>(station)
 <strong>row_size</strong>(station) | <strong>stn_index</strong>(obs) </pre></td>
-    <td>      <pre>data(obs)
-<strong>time</strong>(obs)<strong>
-lat,lon</strong>,stn_alt(obs)
-<strong>stn_id</strong>(obs)</pre></td>
     <td><pre>Table {
   <strong>lat, lon, z;</strong>
   Table {
@@ -57,15 +51,12 @@ lat,lon</strong>,stn_alt(obs)
 <strong>time</strong>,<strong>lat,lon</strong>,z(obs)
 scalar <strong>traj_id</strong>      </pre></td>
     <td>      <pre>data(traj,obs)<strong>
-time</strong>,<strong>lat,lon</strong>,z(traj,obs) | <strong>time</strong>(time)
+time</strong>,<strong>lat,lon</strong>,z(traj,obs)|<strong>time</strong>(obs)
 <strong>traj_id</strong>(traj)     </pre>    </td>
     <td>      <pre>data(obs)
 <strong>time</strong>,<strong>lat,lon</strong>,z(obs)
 <strong>row_size</strong>(traj) | <strong>traj_index</strong>(obs)
 <strong>traj_id</strong>(traj)</pre></td>
-    <td>      <div align="center">
-      <pre>N/I</pre>
-    </div></td>
     <td><pre>Table {
 <strong></strong>
   Table {
@@ -94,9 +85,6 @@ lat,lon</strong>(profile)
 <strong>row_size</strong>(profile) | <strong>profile_index</strong>(obs)
 
 <strong>profile_id</strong>(profile) </pre>    </td>
-    <td>      <div align="center">
-      <pre>N/I</pre>
-    </div></td>
     <td><pre>Table {
   <strong>lat, lon, time;</strong>
   Table {
@@ -112,7 +100,7 @@ lat,lon</strong>(profile)
 <strong>lat,lon</strong>,<strong>stn_alt,stn_id
 </strong><strong>alt</strong>(profile,z) | <strong>z</strong>(z)     </pre>    </td>
     <td>      <pre>data(station, profile, z)
-<strong>time</strong>(station, profile, z)|<strong>time</strong>(station, profile)<strong>
+<strong>time</strong>(sta,prof,z)|<strong>time</strong>(sta,prof)<strong>
 lat,lon,stn_alt,stn_id</strong>(station)
 <strong>alt</strong>(station, profile,z) | <strong>z</strong>(z)     </pre>    </td>
     <td>      <pre>// contig z, profiles in any sequence
@@ -123,9 +111,6 @@ z</strong>(obs)
 <strong>station_index</strong>(profile),<strong>row_size</strong>(profile)
 
 <strong></strong></pre>    </td>
-    <td>      <div align="center">
-      <pre>N/I</pre>
-    </div>      <pre>&nbsp;</pre>    </td>
     <td><pre>Table {
   <strong>lat, lon, alt;</strong>
   Table {
@@ -143,10 +128,9 @@ z</strong>(obs)
 time</strong>(profile, z)|<strong>time</strong>(profile)<strong>
 lat,lon</strong>(profile)
 <strong>alt</strong>( profile,z) |<strong> z</strong>(z)
-scalar<strong> traj_id</strong>     </pre>
-    </td>
+scalar<strong> traj_id</strong>     </pre>    </td>
     <td>      <pre>data(traj, profile, z)
-<strong>time</strong>(traj, profile, z)|<strong>time</strong>(traj, profile)
+<strong>time</strong>(traj,prof,z)|<strong>time</strong>(traj,prof)
 <strong>lat,lon</strong>(traj, profile)
 <strong>alt</strong>(traj,profile,z) | <strong>z</strong>(z)
 <strong>traj_id</strong>(traj)     </pre>    </td>
@@ -157,9 +141,6 @@ lat,lon</strong>(profile)
 <strong>z</strong>(obs) | <strong>z</strong>(z)
 <strong>traj_index</strong>(profile),<strong>row_size</strong>(profile)
 <strong>traj_id</strong>(traj)</pre>    </td>
-    <td>      <div align="center">
-      <pre>N/I</pre>
-    </div>      <pre>&nbsp;</pre>    </td>
     <td><pre>Table {<strong></strong>
   Table {
    <strong> lat, lon, time;</strong>

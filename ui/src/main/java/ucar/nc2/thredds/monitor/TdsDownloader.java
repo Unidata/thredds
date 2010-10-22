@@ -62,7 +62,7 @@ public class TdsDownloader {
 
   TdsDownloader(JTextArea ta, String server, Type type) throws IOException {
     this.ta = ta;
-    this.server = server;
+    this.server = server.trim();
     this.type = type;
 
     localDir = LogLocalManager.getDirectory(server, type.toString());

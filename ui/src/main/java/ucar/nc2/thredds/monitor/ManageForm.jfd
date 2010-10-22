@@ -67,6 +67,10 @@
           </void> 
          </object> 
         </void> 
+        <void method="setProperty"> 
+         <string>editable</string> 
+         <boolean>true</boolean> 
+        </void> 
         <void property="name"> 
          <string>server</string> 
         </void> 
