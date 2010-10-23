@@ -124,10 +124,10 @@ public class TdsDownloader {
 
       localFile = new File(localDir, name);
       if (!localFile.exists() || (localFile.length() > size) || name.equals(latestServletLog)) {
-        ta.append(String.format("Read RemoteLog length=%6d local=%6d (kb) for %s%n", size/1000, localFile.length()/1000, name));
+        ta.append(String.format("Read RemoteLog length=%6d Kb for %s%n", size/1000, name));
         read();
       } else if (localFile.length() < size) {
-        ta.append(String.format("Append RemoteLog length=%6d local=%6d (kb) for %s%n", size/1000, localFile.length()/1000, name));
+        ta.append(String.format("Append RemoteLog length=%6d Kb to local=%6d Kb for %s%n", size/1000, localFile.length()/1000, name));
         append();
       } else {
         ta.append(String.format("Ok RemoteLog length=%6d local=%6d (kb) for %s%n", size/1000, localFile.length()/1000, name));
@@ -138,7 +138,7 @@ public class TdsDownloader {
 
     void read()  {
       String urls = "http://" + server + "/thredds/admin/log/"+type+"/" + name;
-      ta.append(String.format(" try to read %s to %s size=%d%n", urls, localFile.getPath(), localFile.length()));
+      ta.append(String.format(" reading %s to %s%n", urls, localFile.getPath()));
       HttpClientManager.copyUrlContentsToFile(urls, localFile);
     }
 

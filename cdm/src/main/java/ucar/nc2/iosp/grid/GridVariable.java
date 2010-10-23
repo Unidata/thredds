@@ -585,7 +585,7 @@ public class GridVariable {
         if (!sentMessage && warnOk)
           log.warn(p + "\n already has in slot " + recno + "\n" + recordTracker[recno]);
         recordTracker[recno] = p;  // replace it with latest one
-      }
+      }                                                 
     }
 
     // let all references to Index go, to reduce retained size LOOK
