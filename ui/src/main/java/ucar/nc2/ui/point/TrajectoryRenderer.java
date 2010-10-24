@@ -32,6 +32,7 @@
  */
 package ucar.nc2.ui.point;
 
+import thredds.ui.viewer.ui.Renderer;
 import ucar.nc2.ui.widget.FontUtil;
 
 import java.util.ArrayList;
@@ -50,7 +51,7 @@ import ucar.nc2.dt.TrajectoryObsDatatype;
  *
  * @author caron
  */
-public class TrajectoryRenderer implements thredds.viewer.ui.Renderer {
+public class TrajectoryRenderer implements Renderer {
 
   private java.util.List<ObservationUI> obsUIlist = new ArrayList<ObservationUI>(); // ObservationUI objects
   private ProjectionImpl project = null;        // display projection

@@ -33,7 +33,8 @@
  */
 package ucar.nc2.ui.grid;
 
-import thredds.datamodel.gis.*;
+import thredds.ui.datamodel.gis.AbstractGisFeature;
+import thredds.ui.datamodel.gis.GisPart;
 
 import java.util.*;      // for Iterator and ArrayList
 import java.awt.geom.*;  // for Point2D.Double
@@ -47,7 +48,7 @@ import java.awt.geom.*;  // for Point2D.Double
  * @version $Revision: 50 $ $Date: 2006-07-12 16:30:06Z $
  */
 
-public class ContourFeature extends thredds.datamodel.gis.AbstractGisFeature {
+public class ContourFeature extends AbstractGisFeature {
   private int numparts, npts;
   private ArrayList lines; // arrayList of ContourLines
   private double contourValue;

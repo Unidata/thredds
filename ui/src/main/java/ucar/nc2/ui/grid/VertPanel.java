@@ -32,12 +32,12 @@
  */
 package ucar.nc2.ui.grid;
 
+import thredds.ui.viewer.ui.ScaledPanel;
 import ucar.unidata.geoloc.*;
 import ucar.nc2.dataset.*;
 import ucar.nc2.dt.GridCoordSystem;
 
-import thredds.viewer.ui.ScaledPanel;
-import thredds.viewer.ui.event.ActionSourceListener;
+import thredds.ui.viewer.ui.event.ActionSourceListener;
 
 import java.awt.*;
 import javax.swing.*;

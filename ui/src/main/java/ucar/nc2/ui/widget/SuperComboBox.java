@@ -33,10 +33,14 @@
  */
 package ucar.nc2.ui.widget;
 
+import thredds.ui.viewer.ui.event.ActionSourceListener;
+import thredds.ui.viewer.ui.event.ActionValueEvent;
+import thredds.ui.viewer.ui.event.ActionValueListener;
+import thredds.ui.viewer.ui.table.JTableSorted;
+import thredds.ui.viewer.ui.table.TableRow;
+import thredds.ui.viewer.ui.table.TableRowAbstract;
 import ucar.nc2.util.NamedObject;
-import thredds.viewer.ui.table.*;
 
-import thredds.viewer.ui.event.*;
 import ucar.util.prefs.ui.*;
 
 import java.awt.*;

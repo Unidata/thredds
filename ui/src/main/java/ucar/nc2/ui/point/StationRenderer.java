@@ -38,8 +38,9 @@ package ucar.nc2.ui.point;
  * @author caron
  */
 
+import thredds.ui.viewer.gis.SpatialGrid;
+import thredds.ui.viewer.ui.Renderer;
 import ucar.nc2.ui.widget.FontUtil;
-import thredds.viewer.gis.SpatialGrid;
 import ucar.unidata.geoloc.*;
 
 import java.awt.*;
@@ -47,7 +48,7 @@ import java.awt.geom.*;
 import java.util.*;
 import java.util.List;
 
-class StationRenderer implements thredds.viewer.ui.Renderer {
+class StationRenderer implements Renderer {
   private List<StationUI> stations = new ArrayList<StationUI>(); // StationUI objects
   private HashMap<String, StationUI> stationHash = new HashMap<String, StationUI>();
   private SpatialGrid stationGrid;              // for "decluttering" and closest point

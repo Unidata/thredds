@@ -34,6 +34,8 @@
 package ucar.nc2.ui;
 
 import thredds.inventory.FeatureCollectionConfig;
+import thredds.ui.viewer.gis.shapefile.ShapeFileBean;
+import thredds.ui.viewer.gis.worldmap.WorldMapBean;
 import ucar.nc2.*;
 import ucar.nc2.FileWriter;
 import ucar.nc2.ft.fmrc.GridDatasetInv;
@@ -3642,9 +3644,9 @@ public class ToolsUI extends JPanel {
       viewerWindow = new IndependentWindow("Grid Viewer", BAMutil.getImage("netcdfUI"));
 
       gridUI = new GridUI((PreferencesExt) prefs.node("GridUI"), viewerWindow, fileChooser, 800);
-      gridUI.addMapBean(new thredds.viewer.gis.worldmap.WorldMapBean());
-      gridUI.addMapBean(new thredds.viewer.gis.shapefile.ShapeFileBean("WorldDetailMap", "Global Detailed Map", "WorldDetailMap", WorldDetailMap));
-      gridUI.addMapBean(new thredds.viewer.gis.shapefile.ShapeFileBean("USDetailMap", "US Detailed Map", "USMap", USMap));
+      gridUI.addMapBean(new WorldMapBean());
+      gridUI.addMapBean(new ShapeFileBean("WorldDetailMap", "Global Detailed Map", "WorldDetailMap", WorldDetailMap));
+      gridUI.addMapBean(new ShapeFileBean("USDetailMap", "US Detailed Map", "USMap", USMap));
 
       viewerWindow.setComponent(gridUI);
       viewerWindow.setBounds((Rectangle) mainPrefs.getBean(GRIDVIEW_FRAME_SIZE, new Rectangle(77, 22, 700, 900)));

@@ -32,10 +32,10 @@
  */
 package ucar.nc2.ui.grid;
 
+import thredds.ui.viewer.ui.event.ActionSourceListener;
 import ucar.nc2.dataset.*;
 
-import thredds.viewer.ui.event.ActionSourceListener;
-import thredds.viewer.ui.event.ActionValueEvent;
+import thredds.ui.viewer.ui.event.ActionValueEvent;
 
 import java.awt.*;
 import java.awt.event.*;

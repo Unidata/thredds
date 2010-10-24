@@ -33,6 +33,12 @@
  */
 package ucar.nc2.ui.grid;
 
+import thredds.ui.viewer.ui.*;
+import thredds.ui.viewer.ui.Renderer;
+import thredds.ui.viewer.ui.event.ActionCoordinator;
+import thredds.ui.viewer.ui.event.ActionSourceListener;
+import thredds.ui.viewer.ui.event.ActionValueEvent;
+import thredds.ui.viewer.ui.geoloc.*;
 import ucar.ma2.Array;
 import ucar.nc2.dataset.*;
 import ucar.nc2.dt.*;
@@ -40,10 +46,6 @@ import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.grid.*;
 import ucar.nc2.ui.widget.BAMutil;
 import ucar.unidata.geoloc.*;
-
-import thredds.viewer.ui.*;
-import thredds.viewer.ui.event.*;
-import thredds.viewer.ui.geoloc.*;
 
 import ucar.nc2.util.NamedObject;
 import ucar.nc2.ncml.NcMLWriter;
@@ -102,7 +104,7 @@ public class GridController {
   // private MyImageObserver imageObs = new MyImageObserver();
   // private MyPrintable printer = null;
 
-  private thredds.viewer.ui.Renderer renderMap = null;
+  private Renderer renderMap = null;
   private GridRenderer renderGrid;
   //private WindRenderer renderWind;
   private javax.swing.Timer redrawTimer;
@@ -430,7 +432,7 @@ public class GridController {
     ensembleCoordinator.addActionSourceListener(ensembleSource);
 
       // get Projection Events from the navigated panel
-    np.addNewProjectionListener( new thredds.viewer.ui.geoloc.NewProjectionListener() {
+    np.addNewProjectionListener( new NewProjectionListener() {
       public void actionPerformed( NewProjectionEvent e) {
         if (Debug.isSet("event/NewProjection"))
            System.out.println("Controller got NewProjectionEvent "+ np.getMapArea());
@@ -919,7 +921,7 @@ public class GridController {
     redrawLater();
   }
 
-  void setMapRenderer( thredds.viewer.ui.Renderer mapRenderer) {
+  void setMapRenderer( thredds.ui.viewer.ui.Renderer mapRenderer) {
     this.renderMap = mapRenderer;
     mapRenderer.setProjection(np.getProjectionImpl());
     mapRenderer.setColor(mapColor);

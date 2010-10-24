@@ -34,12 +34,11 @@
 package ucar.nc2.ui.grid;
 
 import thredds.catalog.*;
-import thredds.viewer.ui.Renderer;
+import thredds.ui.viewer.gis.MapBean;
+import thredds.ui.viewer.ui.geoloc.NavigatedPanel;
+import thredds.ui.viewer.ui.Renderer;
 
 import ucar.nc2.dataset.*;
-
-import thredds.viewer.ui.geoloc.NavigatedPanel;
-import thredds.viewer.gis.MapBean;
 
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.GridCoordSystem;
@@ -248,7 +247,7 @@ public class GridUI extends JPanel {
   }
 
            // add a MapBean to the User Interface
-  public void addMapBean( thredds.viewer.gis.MapBean mb) {
+  public void addMapBean( MapBean mb) {
     mapBeanMenu.addAction( mb.getActionDesc(), mb.getIcon(), mb.getAction());
 
     // first one is the "default"
@@ -266,7 +265,7 @@ public class GridUI extends JPanel {
    });
   }
 
-  void setMapRenderer( thredds.viewer.ui.Renderer mapRenderer) {
+  void setMapRenderer( Renderer mapRenderer) {
     controller.setMapRenderer( mapRenderer);
   }
 

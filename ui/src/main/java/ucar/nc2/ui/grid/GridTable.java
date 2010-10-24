@@ -32,10 +32,11 @@
  */
 package ucar.nc2.ui.grid;
 
+import thredds.ui.viewer.ui.event.ActionSourceListener;
+import thredds.ui.viewer.ui.event.ActionValueEvent;
+import thredds.ui.viewer.ui.table.JTableSorted;
+import thredds.ui.viewer.ui.table.TableRowAbstract;
 import ucar.nc2.dt.GridDatatype;
-import thredds.viewer.ui.table.JTableSorted;
-import thredds.viewer.ui.table.TableRowAbstract;
-import thredds.viewer.ui.event.*;
 
 import java.util.ArrayList;
 
@@ -46,7 +47,7 @@ import javax.swing.event.*;
  * Put the fields of a GridDatatype dataset in a JTable.
  * Uses ActionSourceListener for events.
  *
- * @see thredds.viewer.ui.event.ActionSourceListener
+ * @see thredds.ui.viewer.ui.event.ActionSourceListener
  *
  * @author caron
  */

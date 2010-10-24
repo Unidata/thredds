@@ -32,10 +32,12 @@
  */
 package ucar.nc2.ui.point;
 
-import thredds.viewer.ui.*;
-import thredds.viewer.ui.Renderer;
-import thredds.viewer.ui.geoloc.*;
-import thredds.viewer.ui.event.*;
+import thredds.ui.viewer.ui.RubberbandRectangleHandles;
+import thredds.ui.viewer.ui.event.ActionSourceListener;
+import thredds.ui.viewer.ui.event.ActionValueEvent;
+import thredds.ui.viewer.ui.event.ActionValueListener;
+import thredds.ui.viewer.ui.geoloc.*;
+import thredds.ui.viewer.ui.Renderer;
 import ucar.nc2.ui.widget.PopupManager;
 import ucar.nc2.ui.widget.RangeDateSelector;
 import ucar.nc2.ui.widget.IndependentDialog;
@@ -81,7 +83,7 @@ import javax.swing.event.EventListenerList;
 /* implementation note:
  * do we wnat to remove actionSource ? we have setSelectedStation instead.
  */
-public class StationRegionDateChooser extends thredds.viewer.ui.geoloc.NPController {
+public class StationRegionDateChooser extends NPController {
   private boolean regionSelect = true, stationSelect = true, dateSelect = true;
 
   // station

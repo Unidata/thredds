@@ -34,8 +34,11 @@
 
 package ucar.nc2.ui.widget;
 
-import thredds.datatype.prefs.*;
-import thredds.viewer.ui.event.*;
+import thredds.ui.datatype.prefs.DateField;
+import thredds.ui.datatype.prefs.DurationField;
+import thredds.ui.viewer.ui.event.ActionSourceListener;
+import thredds.ui.viewer.ui.event.ActionValueEvent;
+import thredds.ui.viewer.ui.event.ActionValueListener;
 
 import ucar.util.prefs.ui.*;
 import ucar.nc2.units.*;

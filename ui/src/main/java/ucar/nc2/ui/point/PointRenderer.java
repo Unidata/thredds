@@ -32,6 +32,7 @@
 
 package ucar.nc2.ui.point;
 
+import thredds.ui.viewer.ui.Renderer;
 import ucar.unidata.geoloc.*;
 import ucar.nc2.ft.PointFeature;
 
@@ -51,7 +52,7 @@ import ucar.nc2.ui.widget.FontUtil;
  * @author caron
  * @since Nov 17, 2009
  */
-public class PointRenderer implements thredds.viewer.ui.Renderer {
+public class PointRenderer implements Renderer {
 
   private java.util.List<ObservationUI> obsUIlist = new ArrayList<ObservationUI>(); // ObservationUI objects
   private ProjectionImpl project = null;        // display projection

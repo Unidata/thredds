@@ -32,6 +32,7 @@
 
 package ucar.nc2.ui.point;
 
+import thredds.ui.viewer.ui.geoloc.NPController;
 import ucar.nc2.ft.PointFeature;
 
 import javax.swing.*;
@@ -46,7 +47,7 @@ import ucar.nc2.ui.widget.BAMutil;
  * @author caron
  * @since Nov 17, 2009
  */
-public class PointController extends thredds.viewer.ui.geoloc.NPController {
+public class PointController extends NPController {
   private PointRenderer pointRenderer;
   private boolean drawConnectingLine = false;
 

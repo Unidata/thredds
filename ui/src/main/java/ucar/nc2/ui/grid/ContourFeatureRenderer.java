@@ -33,9 +33,10 @@
  */
 package ucar.nc2.ui.grid;
 
+import thredds.ui.viewer.gis.GisFeatureRenderer;
 import ucar.nc2.ui.widget.FontUtil;
 import ucar.unidata.geoloc.*;
-import thredds.datamodel.gis.GisFeatureAdapter;
+import thredds.ui.datamodel.gis.GisFeatureAdapter;
 
 import ucar.unidata.util.Format;
 import ucar.util.prefs.ui.Debug;
@@ -56,7 +57,7 @@ import java.awt.geom.Rectangle2D;
  * @author caron
  * @version $Revision: 50 $ $Date: 2006-07-12 16:30:06Z $
  */
-public class ContourFeatureRenderer extends thredds.viewer.gis.GisFeatureRenderer {
+public class ContourFeatureRenderer extends GisFeatureRenderer {
 
   private ProjectionImpl dataProjection;
   private GisFeatureAdapter features;
