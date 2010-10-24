@@ -31,9 +31,9 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package thredds.ui.catalog.ui.tools;
+package thredds.ui.catalog.tools;
 
-import thredds.ui.catalog.ui.CatalogTreeView;
+import thredds.ui.catalog.CatalogTreeView;
 import ucar.unidata.util.StringUtil;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.*;

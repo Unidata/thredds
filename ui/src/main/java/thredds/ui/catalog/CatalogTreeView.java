@@ -31,7 +31,7 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package thredds.ui.catalog.ui;
+package thredds.ui.catalog;
 
 import thredds.catalog.*;
 

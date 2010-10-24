@@ -32,16 +32,14 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package thredds.ui.catalog.ui.tools;
+package thredds.ui.catalog.tools;
 
 import thredds.catalog.*;
-import thredds.ui.*;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.queryParser.QueryParser;
-import org.apache.lucene.search.*;
 
 import ucar.util.prefs.*;
 import ucar.util.prefs.ui.*;

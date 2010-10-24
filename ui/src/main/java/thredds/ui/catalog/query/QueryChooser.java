@@ -30,7 +30,7 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package thredds.ui.catalog.ui.query;
+package thredds.ui.catalog.query;
 
 import thredds.catalog.*;
 import thredds.catalog.query.*;
@@ -38,7 +38,7 @@ import thredds.catalog.query.*;
 import thredds.ui.RangeSelector;
 import thredds.ui.RangeDateSelector;
 
-import thredds.ui.catalog.ui.CatalogChooser;
+import thredds.ui.catalog.CatalogChooser;
 import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.Station;
 import ucar.unidata.util.Format;

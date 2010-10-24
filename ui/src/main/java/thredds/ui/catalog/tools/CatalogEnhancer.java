@@ -32,11 +32,11 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package thredds.ui.catalog.ui.tools;
+package thredds.ui.catalog.tools;
 
 import thredds.catalog.*;
-import thredds.ui.catalog.ui.CatalogChooser;
-import thredds.ui.catalog.ui.CatalogTreeView;
+import thredds.ui.catalog.CatalogChooser;
+import thredds.ui.catalog.CatalogTreeView;
 import thredds.ui.datatype.prefs.DateField;
 import thredds.ui.datatype.prefs.DurationField;
 import ucar.nc2.constants.FeatureType;

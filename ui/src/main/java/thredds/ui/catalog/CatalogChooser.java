@@ -31,7 +31,7 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package thredds.ui.catalog.ui;
+package thredds.ui.catalog;
 
 import thredds.catalog.*;
 
@@ -223,7 +223,7 @@ public class CatalogChooser extends JPanel {
         AbstractAction srcEditAction = new AbstractAction() {
           public void actionPerformed(ActionEvent e) {
             TextGetPutPane sourceEditor = new TextGetPutPane(null);
-            IndependentWindow sourceEditorWindow = new IndependentWindow( "Source", BAMutil.getImage( "thredds"), sourceEditor);
+            IndependentWindow sourceEditorWindow = new IndependentWindow( "Source", BAMutil.getImage("thredds"), sourceEditor);
             sourceEditorWindow.setBounds(new Rectangle(50, 50, 725, 450));
             sourceEditorWindow.show();
           }
@@ -372,7 +372,7 @@ public class CatalogChooser extends JPanel {
 
   private void makeSourceEditWindow() {
     TextGetPutPane sourceEditor = new TextGetPutPane(null);
-    IndependentWindow sourceEditorWindow = new IndependentWindow( "Source", BAMutil.getImage( "thredds"), sourceEditor);
+    IndependentWindow sourceEditorWindow = new IndependentWindow( "Source", BAMutil.getImage("thredds"), sourceEditor);
     sourceEditorWindow.setBounds(new Rectangle(50, 50, 725, 450));
     sourceEditorWindow.show();
   }

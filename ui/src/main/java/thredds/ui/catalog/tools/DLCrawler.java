@@ -30,7 +30,7 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package thredds.ui.catalog.ui.tools;
+package thredds.ui.catalog.tools;
 
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.*;
@@ -49,8 +49,8 @@ import java.net.MalformedURLException;
 import java.io.IOException;
 import java.io.InputStream;
 
-import thredds.ui.catalog.ui.CatalogChooser;
-import thredds.ui.catalog.ui.CatalogTreeView;
+import thredds.ui.catalog.CatalogChooser;
+import thredds.ui.catalog.CatalogTreeView;
 import thredds.catalog.*;
 import thredds.catalog.dl.DIFWriter;
 import thredds.catalog.dl.ADNWriter;
