@@ -136,9 +136,9 @@
   <component name="CompilerConfiguration">
     <option name="DEFAULT_COMPILER" value="Javac" />
     <excludeFromCompile>
-      <file url="file://$PROJECT_DIR$/../../ui/src/main/java/thredds/catalog/ui/tools/CatalogSearcher.java" />
-      <file url="file://$PROJECT_DIR$/../../ui/src/main/java/thredds/catalog/search/Indexer.java" />
-      <file url="file://$PROJECT_DIR$/../../ui/src/main/java/thredds/catalog/search/ui/CatalogIndexer.java" />
+      <file url="file://$PROJECT_DIR$/../../ui/src/main/java/thredds/catalog/catalog/ui/tools/CatalogSearcher.java" />
+      <file url="file://$PROJECT_DIR$/../../ui/src/main/java/thredds/catalog/catalog/search/Indexer.java" />
+      <file url="file://$PROJECT_DIR$/../../ui/src/main/java/thredds/catalog/catalog/search/ui/CatalogIndexer.java" />
       <file url="file://$PROJECT_DIR$/../../tds/src/main/java/thredds/servlet/tomcat/UsageValve.java" />
       <file url="file://$PROJECT_DIR$/../../ldm/src/main/thredds/db/TestBabu.java" />
       <file url="file://$PROJECT_DIR$/../../cdm/src/test/java/ucar/nc2/jni/netcdf/TestJni.java" />
@@ -231,6 +231,11 @@
               <file url="file://$PROJECT_DIR$/../../../Java-OPeNDAP/resources/WEB-INF/web.xml" />
             </files>
           </module>
+          <module name="rcdm">
+            <files>
+              <file url="file://$PROJECT_DIR$/../../rcdm/web/WEB-INF/web.xml" />
+            </files>
+          </module>
         </modules>
       </facet-type>
       <facet-type id="Spring">
@@ -263,6 +268,11 @@
           <module name="ui">
             <files>
               <file url="file://$PROJECT_DIR$/../../ui/src/main/resources/resources/nj22/ui/spring/application-config.xml" />
+            </files>
+          </module>
+          <module name="rcdm">
+            <files>
+              <file url="file://$PROJECT_DIR$/../../rcdm/web/WEB-INF/embedded-jetty-context.xml" />
             </files>
           </module>
         </modules>
@@ -560,6 +570,7 @@
       <module fileurl="file://$PROJECT_DIR$/ldm.iml" filepath="$PROJECT_DIR$/ldm.iml" />
       <module fileurl="file://$PROJECT_DIR$/lib.iml" filepath="$PROJECT_DIR$/lib.iml" />
       <module fileurl="file://$PROJECT_DIR$/opendap.iml" filepath="$PROJECT_DIR$/opendap.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../rcdm/rcdm.iml" filepath="$PROJECT_DIR$/../../rcdm/rcdm.iml" />
       <module fileurl="file://$PROJECT_DIR$/tds.iml" filepath="$PROJECT_DIR$/tds.iml" />
       <module fileurl="file://$PROJECT_DIR$/ui.iml" filepath="$PROJECT_DIR$/ui.iml" />
       <module fileurl="file://$PROJECT_DIR$/unidataCommon.iml" filepath="$PROJECT_DIR$/unidataCommon.iml" />
@@ -1020,6 +1031,75 @@
       </CLASSES>
       <JAVADOC />
       <SOURCES />
+    </library>
+    <library name="jetty">
+      <CLASSES>
+        <root url="file://$PROJECT_DIR$/../../../../lib/jetty/jetty-distribution-7.2.0.v20101020/lib" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="file://$PROJECT_DIR$/../../../../lib/jetty/jetty-distribution-7.2.0.v20101020/src/jetty-rewrite/src/main/java" />
+        <root url="file://$PROJECT_DIR$/../../../../lib/jetty/jetty-distribution-7.2.0.v20101020/src/jetty-servlets/src/test/java" />
+        <root url="file://$PROJECT_DIR$/../../../../lib/jetty/jetty-distribution-7.2.0.v20101020/src/jetty-http/src/test/java" />
+        <root url="file://$PROJECT_DIR$/../../../../lib/jetty/jetty-distribution-7.2.0.v20101020/src/jetty-annotations/src/test/java" />
+        <root url="file://$PROJECT_DIR$/../../../../lib/jetty/jetty-distribution-7.2.0.v20101020/src/jetty-osgi/jetty-osgi-boot-warurl/src/main/java" />
+        <root url="file://$PROJECT_DIR$/../../../../lib/jetty/jetty-distribution-7.2.0.v20101020/src/jetty-websocket/src/main/java" />
+        <root url="file://$PROJECT_DIR$/../../../../lib/jetty/jetty-distribution-7.2.0.v20101020/src/jetty-jmx/src/test/java" />
+        <root url="file://$PROJECT_DIR$/../../../../lib/jetty/jetty-distribution-7.2.0.v20101020/src/jetty-start/src/main/java" />
+        <root url="file://$PROJECT_DIR$/../../../../lib/jetty/jetty-distribution-7.2.0.v20101020/src/jetty-io/src/main/java" />
+        <root url="file://$PROJECT_DIR$/../../../../lib/jetty/jetty-distribution-7.2.0.v20101020/src/jetty-annotations/src/main/java" />
+        <root url="file://$PROJECT_DIR$/../../../../lib/jetty/jetty-distribution-7.2.0.v20101020/src/jetty-osgi/jetty-osgi-boot-logback/src/main/java" />
+        <root url="file://$PROJECT_DIR$/../../../../lib/jetty/jetty-distribution-7.2.0.v20101020/src/jetty-deploy/src/main/java" />
+        <root url="file://$PROJECT_DIR$/../../../../lib/jetty/jetty-distribution-7.2.0.v20101020/src/jetty-servlet/src/test/java" />
+        <root url="file://$PROJECT_DIR$/../../../../lib/jetty/jetty-distribution-7.2.0.v20101020/src/jetty-policy/src/test/java" />
+        <root url="file://$PROJECT_DIR$/../../../../lib/jetty/jetty-distribution-7.2.0.v20101020/src/jetty-xml/src/main/java" />
+        <root url="file://$PROJECT_DIR$/../../../../lib/jetty/jetty-distribution-7.2.0.v20101020/src/jetty-http/src/main/java" />
+        <root url="file://$PROJECT_DIR$/../../../../lib/jetty/jetty-distribution-7.2.0.v20101020/src/jetty-osgi/jetty-osgi-boot-jsp/src/main/java" />
+        <root url="file://$PROJECT_DIR$/../../../../lib/jetty/jetty-distribution-7.2.0.v20101020/src/jetty-security/src/test/java" />
+        <root url="file://$PROJECT_DIR$/../../../../lib/jetty/jetty-distribution-7.2.0.v20101020/src/jetty-ajp/src/test/java" />
+        <root url="file://$PROJECT_DIR$/../../../../lib/jetty/jetty-distribution-7.2.0.v20101020/src/jetty-servlets/src/main/java" />
+        <root url="file://$PROJECT_DIR$/../../../../lib/jetty/jetty-distribution-7.2.0.v20101020/src/jetty-continuation/src/main/java" />
+        <root url="file://$PROJECT_DIR$/../../../../lib/jetty/jetty-distribution-7.2.0.v20101020/src/jetty-server/src/main/java" />
+        <root url="file://$PROJECT_DIR$/../../../../lib/jetty/jetty-distribution-7.2.0.v20101020/src/jetty-policy/src/main/java" />
+        <root url="file://$PROJECT_DIR$/../../../../lib/jetty/jetty-distribution-7.2.0.v20101020/src/jetty-websocket/src/test/java" />
+        <root url="file://$PROJECT_DIR$/../../../../lib/jetty/jetty-distribution-7.2.0.v20101020/src/jetty-osgi/jetty-osgi-boot/src/main/java" />
+        <root url="file://$PROJECT_DIR$/../../../../lib/jetty/jetty-distribution-7.2.0.v20101020/src/jetty-util/src/test/java" />
+        <root url="file://$PROJECT_DIR$/../../../../lib/jetty/jetty-distribution-7.2.0.v20101020/src/jetty-ajp/src/main/java" />
+        <root url="file://$PROJECT_DIR$/../../../../lib/jetty/jetty-distribution-7.2.0.v20101020/src/jetty-webapp/src/main/java" />
+        <root url="file://$PROJECT_DIR$/../../../../lib/jetty/jetty-distribution-7.2.0.v20101020/src/jetty-plus/src/test/java" />
+        <root url="file://$PROJECT_DIR$/../../../../lib/jetty/jetty-distribution-7.2.0.v20101020/src/jetty-jsp-2.1/src/main/java" />
+        <root url="file://$PROJECT_DIR$/../../../../lib/jetty/jetty-distribution-7.2.0.v20101020/src/jetty-security/src/main/java" />
+        <root url="file://$PROJECT_DIR$/../../../../lib/jetty/jetty-distribution-7.2.0.v20101020/src/jetty-xml/src/test/java" />
+        <root url="file://$PROJECT_DIR$/../../../../lib/jetty/jetty-distribution-7.2.0.v20101020/src/jetty-client/src/test/java" />
+        <root url="file://$PROJECT_DIR$/../../../../lib/jetty/jetty-distribution-7.2.0.v20101020/src/example-jetty-embedded/src/main/java" />
+        <root url="file://$PROJECT_DIR$/../../../../lib/jetty/jetty-distribution-7.2.0.v20101020/src/jetty-jmx/src/main/java" />
+        <root url="file://$PROJECT_DIR$/../../../../lib/jetty/jetty-distribution-7.2.0.v20101020/src/jetty-util/src/main/java" />
+        <root url="file://$PROJECT_DIR$/../../../../lib/jetty/jetty-distribution-7.2.0.v20101020/src/tests/test-sessions/test-sessions-common/src/main/java" />
+        <root url="file://$PROJECT_DIR$/../../../../lib/jetty/jetty-distribution-7.2.0.v20101020/src/jetty-servlet/src/main/java" />
+        <root url="file://$PROJECT_DIR$/../../../../lib/jetty/jetty-distribution-7.2.0.v20101020/src/jetty-plus/src/main/java" />
+        <root url="file://$PROJECT_DIR$/../../../../lib/jetty/jetty-distribution-7.2.0.v20101020/src/tests/test-webapps/test-webapp-rfc2616/src/main/java" />
+        <root url="file://$PROJECT_DIR$/../../../../lib/jetty/jetty-distribution-7.2.0.v20101020/src/jetty-client/src/main/java" />
+        <root url="file://$PROJECT_DIR$/../../../../lib/jetty/jetty-distribution-7.2.0.v20101020/src/jetty-jndi/src/main/java" />
+        <root url="file://$PROJECT_DIR$/../../../../lib/jetty/jetty-distribution-7.2.0.v20101020/src/jetty-webapp/src/test/java" />
+        <root url="file://$PROJECT_DIR$/../../../../lib/jetty/jetty-distribution-7.2.0.v20101020/src/jetty-osgi/test-jetty-osgi/src/test/java" />
+        <root url="file://$PROJECT_DIR$/../../../../lib/jetty/jetty-distribution-7.2.0.v20101020/src/jetty-rewrite/src/test/java" />
+        <root url="file://$PROJECT_DIR$/../../../../lib/jetty/jetty-distribution-7.2.0.v20101020/src/jetty-server/src/test/java" />
+        <root url="file://$PROJECT_DIR$/../../../../lib/jetty/jetty-distribution-7.2.0.v20101020/src/jetty-io/src/test/java" />
+        <root url="file://$PROJECT_DIR$/../../../../lib/jetty/jetty-distribution-7.2.0.v20101020/src/jetty-osgi/jetty-osgi-httpservice/src/main/java" />
+        <root url="file://$PROJECT_DIR$/../../../../lib/jetty/jetty-distribution-7.2.0.v20101020/src/jetty-deploy/src/test/java" />
+        <root url="file://$PROJECT_DIR$/../../../../lib/jetty/jetty-distribution-7.2.0.v20101020/src/jetty-jaspi/src/main/java" />
+        <root url="file://$PROJECT_DIR$/../../../../lib/jetty/jetty-distribution-7.2.0.v20101020/src/jetty-jndi/src/test/java" />
+        <root url="file://$PROJECT_DIR$/../../../../lib/jetty/jetty-distribution-7.2.0.v20101020/src/jetty-start/src/test/java" />
+      </SOURCES>
+      <jarDirectory url="file://$PROJECT_DIR$/../../../../lib/jetty/jetty-distribution-7.2.0.v20101020/lib" recursive="false" />
+    </library>
+    <library name="Spring-3.0">
+      <CLASSES>
+        <root url="file://$PROJECT_DIR$/../../rcdm/lib" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES />
+      <jarDirectory url="file://$PROJECT_DIR$/../../rcdm/lib" recursive="false" />
     </library>
   </component>
   <component name="org.twodividedbyzero.idea.findbugs">

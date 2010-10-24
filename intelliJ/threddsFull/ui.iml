@@ -55,15 +55,6 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../lib/external/lucene-core-2.3.2.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
           <root url="jar://$MODULE_DIR$/../../lib/external/slf4j-jdk14-1.5.6.jar!/" />
         </CLASSES>
         <JAVADOC />
@@ -72,25 +63,10 @@
     </orderEntry>
     <orderEntry type="library" name="ehcache" level="project" />
     <orderEntry type="module-library">
-      <library>
+      <library name="jfreechart">
         <CLASSES>
           <root url="jar://$MODULE_DIR$/../../lib/external/jfreechart-1.0.12.jar!/" />
           <root url="jar://$MODULE_DIR$/../../lib/external/jcommon-1.0.15.jar!/" />
-        </CLASSES>
-        <JAVADOC>
-          <root url="file://$MODULE_DIR$/../../../../lib/jfreechart-1.0.12/javadoc" />
-          <root url="file://$MODULE_DIR$/../../../../lib/jcommon-1.0.15/javadoc" />
-        </JAVADOC>
-        <SOURCES>
-          <root url="file://$MODULE_DIR$/../../../../lib/jfreechart-1.0.12/source" />
-          <root url="file://$MODULE_DIR$/../../../../lib/jcommon-1.0.15/source" />
-        </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../lib/external/bounce-0.14.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -99,7 +75,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../lib/external/jakarta-oro-2.0.8.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../lib/external/bounce-0.14.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

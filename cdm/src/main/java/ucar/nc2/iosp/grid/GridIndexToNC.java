@@ -61,7 +61,7 @@ public class GridIndexToNC {
 
   private DateFormatter formatter = new DateFormatter();
   private boolean debug = false;
-  private String filename;
+  private String indexFilename;
   private ucar.unidata.io.RandomAccessFile raf;
 
   /**
@@ -82,11 +82,11 @@ public class GridIndexToNC {
   }
 
   public GridIndexToNC(String filename) {
-    this.filename = filename;
+    this.indexFilename = filename;
   }
 
   public GridIndexToNC(ucar.unidata.io.RandomAccessFile raf) {
-    this.filename = raf.getLocation();
+    this.indexFilename = raf.getLocation();
     this.raf = raf;
   }
 
@@ -133,7 +133,7 @@ public class GridIndexToNC {
       GridVariable pv = (GridVariable) hcs.varHash.get(cdmHash);
       if (null == pv) {
         String name = gridRecord.cdmVariableName(lookup, true, true);
-        pv = new GridVariable(filename, name, hcs, lookup);
+        pv = new GridVariable(indexFilename, name, hcs, lookup);
         hcs.varHash.put(cdmHash, pv);
 
         // keep track of all products with same parameter name == "simple name"
