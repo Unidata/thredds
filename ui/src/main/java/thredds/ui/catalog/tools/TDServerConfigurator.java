@@ -1,4 +1,3 @@
-// $Id: TDServerConfigurator.java 50 2006-07-12 16:30:06Z caron $
 /*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
@@ -34,6 +33,7 @@
 package thredds.ui.catalog.tools;
 
 import thredds.ui.catalog.CatalogTreeView;
+import ucar.nc2.ui.widget.PopupMenu;
 import ucar.unidata.util.StringUtil;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.*;
@@ -51,15 +51,13 @@ import java.net.URISyntaxException;
 
 import thredds.catalog.*;
 import thredds.catalog.crawl.CatalogExtractor;
-import thredds.ui.PopupMenu;
 import ucar.nc2.util.IO;
-//import thredds.util.net.HttpSession;
+import ucar.nc2.ui.widget.*;
 
 /**
  * Experimental widget for creating Thredds Data server configuration Catalogs.
  *
  * @author John Caron
- * @version $Id: TDServerConfigurator.java 50 2006-07-12 16:30:06Z caron $
  */
 
 public class TDServerConfigurator extends JPanel {

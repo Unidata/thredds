@@ -35,6 +35,7 @@ package thredds.ui.catalog.tools;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.*;
 import ucar.nc2.constants.FeatureType;
+import ucar.nc2.ui.widget.*;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionListener;

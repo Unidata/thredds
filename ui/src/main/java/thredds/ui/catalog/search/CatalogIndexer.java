@@ -1,4 +1,3 @@
-// $Id: CatalogIndexer.java 50 2006-07-12 16:30:06Z caron $
 /*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
@@ -37,9 +36,9 @@ package thredds.ui.catalog.search;
 import thredds.catalog.*;
 import thredds.catalog.dl.*;
 
-import thredds.ui.catalog.search.Indexer;
 import thredds.ui.catalog.CatalogChooser;
 import thredds.ui.catalog.CatalogTreeView;
+import ucar.nc2.ui.widget.*;
 import ucar.util.prefs.*;
 import ucar.util.prefs.ui.BeanTableSorted;
 
@@ -54,7 +53,6 @@ import javax.swing.event.*;
  * Experimental widget for extracting and modifying catalogs. Do not use yet.
  *
  * @author John Caron
- * @version $Id: CatalogIndexer.java 50 2006-07-12 16:30:06Z caron $
  */
 
 public class CatalogIndexer extends JPanel {
@@ -294,26 +292,3 @@ public class CatalogIndexer extends JPanel {
   }
 
 }
-
-
-/* Change History:
-   $Log: CatalogIndexer.java,v $
-   Revision 1.3  2004/09/30 00:33:36  caron
-   *** empty log message ***
-
-   Revision 1.2  2004/09/24 03:26:30  caron
-   merge nj22
-
-   Revision 1.1  2004/06/12 02:01:10  caron
-   dqc 0.3
-
-   Revision 1.1  2004/05/11 23:30:32  caron
-   release 2.0a
-
-   Revision 1.5  2004/03/05 23:35:48  caron
-   rel 1.3.1 javadoc
-
-   Revision 1.3  2004/02/20 00:49:53  caron
-   1.3 changes
-
- */

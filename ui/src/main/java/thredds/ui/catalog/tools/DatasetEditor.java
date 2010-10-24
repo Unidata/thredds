@@ -41,9 +41,7 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateType;
 import thredds.catalog.*;
-import thredds.ui.RangeDateSelector;
-import thredds.ui.IndependentWindow;
-import thredds.ui.BAMutil;
+import ucar.nc2.ui.widget.*;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -890,7 +888,7 @@ pp.addComponent(geoPanel, 0, row++, "left, center"); */
     frame.setVisible(true);
 
     // LOOK-NOSAVE
-    java.net.Authenticator.setDefault(new thredds.ui.UrlAuthenticatorDialog(frame));
+    java.net.Authenticator.setDefault(new UrlAuthenticatorDialog(frame));
 
     // String url = "http://uni10.unidata.ucar.edu:8088/thredds/content/idd/models.xml";
     String url = "http://motherlode.ucar.edu:8088/thredds/content/idd/models.xml";

@@ -32,14 +32,13 @@
  */
 package ucar.nc2.ui;
 
-import thredds.catalog.catalog.ui.CatalogChooser;
-import thredds.catalog.catalog.ui.ThreddsDatasetChooser;
-import thredds.catalog.catalog.ui.query.QueryChooser;
-import thredds.catalog.catalog.ui.tools.CatalogEnhancer;
-import thredds.catalog.catalog.ui.tools.DLCrawler;
+import thredds.ui.catalog.*;
 import thredds.catalog.*;
-import thredds.catalog.catalog.ui.tools.TDServerConfigurator;
 
+import thredds.ui.catalog.query.QueryChooser;
+import thredds.ui.catalog.tools.CatalogEnhancer;
+import thredds.ui.catalog.tools.DLCrawler;
+import thredds.ui.catalog.tools.TDServerConfigurator;
 import ucar.nc2.ui.widget.*;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.*;

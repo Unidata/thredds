@@ -1,4 +1,3 @@
-// $Id: CatalogEnhancer.java 50 2006-07-12 16:30:06Z caron $
 /*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
@@ -45,7 +44,7 @@ import thredds.catalog.dl.*;
 
 import ucar.util.prefs.*;
 import ucar.util.prefs.ui.*;
-//import ucar.util.prefs.ui.*;
+import ucar.nc2.ui.widget.*;
 
 import java.io.*;
 import java.net.*;
@@ -60,7 +59,6 @@ import javax.swing.event.*;
  * Experimental widget for extracting and modifying catalogs. Do not use yet.
  *
  * @author John Caron
- * @version $Id: CatalogEnhancer.java 50 2006-07-12 16:30:06Z caron $
  */
 
 public class CatalogEnhancer extends JPanel {
@@ -270,7 +268,7 @@ public class CatalogEnhancer extends JPanel {
 
         // do in background task
         CheckURLsTask task = new CheckURLsTask();
-        thredds.ui.ProgressMonitor pm = new thredds.ui.ProgressMonitor(task, 100, 100);
+        ucar.nc2.ui.widget.ProgressMonitor pm = new ucar.nc2.ui.widget.ProgressMonitor(task, 100, 100);
         pm.addActionListener( new ActionListener() {
           public void actionPerformed(ActionEvent e) {
             daTable.revalidate();
@@ -727,46 +725,3 @@ public class CatalogEnhancer extends JPanel {
     }
 
 }
-
-
-/* Change History:
-   $Log: CatalogEnhancer.java,v $
-   Revision 1.6  2006/01/20 20:49:05  caron
-   disambiguate DataType
-
-   Revision 1.5  2005/06/23 19:18:50  caron
-   no message
-
-   Revision 1.4  2005/04/29 14:55:56  edavis
-   Fixes for change in InvCatalogFactory.writeXML( cat, filename) method
-   signature. And start on allowing wildcard characters in pathname given
-   to DirectoryScanner.
-
-   Revision 1.3  2005/04/28 23:15:11  caron
-   catChooser writes catalog to directory
-
-   Revision 1.2  2004/11/16 23:35:37  caron
-   no message
-
-   Revision 1.1  2004/11/04 20:16:42  caron
-   no message
-
-   Revision 1.5  2004/09/30 00:33:36  caron
-   *** empty log message ***
-
-   Revision 1.4  2004/09/24 03:26:30  caron
-   merge nj22
-
-   Revision 1.3  2004/06/12 02:01:11  caron
-   dqc 0.3
-
-   Revision 1.1  2004/05/11 23:30:32  caron
-   release 2.0a
-
-   Revision 1.5  2004/03/05 23:35:48  caron
-   rel 1.3.1 javadoc
-
-   Revision 1.3  2004/02/20 00:49:53  caron
-   1.3 changes
-
- */

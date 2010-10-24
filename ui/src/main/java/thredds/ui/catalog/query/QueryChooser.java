@@ -35,10 +35,8 @@ package thredds.ui.catalog.query;
 import thredds.catalog.*;
 import thredds.catalog.query.*;
 
-import thredds.ui.RangeSelector;
-import thredds.ui.RangeDateSelector;
-
 import thredds.ui.catalog.CatalogChooser;
+import ucar.nc2.ui.widget.*;
 import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.Station;
 import ucar.unidata.util.Format;
@@ -78,7 +76,6 @@ import javax.swing.event.*;
  * </pre>
  *
  * @author John Caron
- * @version $Id: QueryChooser.java 50 2006-07-12 16:30:06Z caron $
  */
 
 public class QueryChooser extends JPanel {
@@ -1095,66 +1092,3 @@ public class QueryChooser extends JPanel {
   }
 
 }
-
-/* Change History:
-   $Log: QueryChooser.java,v $
-   Revision 1.20  2005/08/22 01:12:24  caron
-   DatasetEditor
-
-   Revision 1.19  2005/06/23 19:18:50  caron
-   no message
-
-   Revision 1.18  2005/06/11 19:03:55  caron
-   no message
-
-   Revision 1.17  2005/05/12 14:29:54  caron
-   more station refactoring
-   intelliJ CVS wierdness
-
-   Revision 1.16  2005/05/04 17:56:27  caron
-   use nj22.09
-
-   Revision 1.15  2005/05/04 17:16:23  caron
-   replace ThreddsMetadata.TimeCoverage object with DateRange
-
-   Revision 1.14  2005/05/04 02:16:12  caron
-   mv CatalogEnhancer.java, consolidate QueryChooser widgets
-
-   Revision 1.13  2004/12/14 15:41:01  caron
-   *** empty log message ***
-
-   Revision 1.12  2004/11/16 23:35:36  caron
-   no message
-
-   Revision 1.11  2004/11/07 03:00:47  caron
-   *** empty log message ***
-
-   Revision 1.10  2004/11/07 02:55:10  caron
-   no message
-
-   Revision 1.9  2004/10/15 19:16:07  caron
-   enum now keyword in 1.5
-   SelectDateRange send ISO date string
-
-   Revision 1.8  2004/09/24 03:26:31  caron
-   merge nj22
-
-   Revision 1.7  2004/06/19 00:45:43  caron
-   redo nested select list
-
-   Revision 1.6  2004/06/18 21:54:27  caron
-   update dqc 0.3
-
-   Revision 1.5  2004/06/12 04:12:43  caron
-   *** empty log message ***
-
-   Revision 1.4  2004/06/12 02:01:11  caron
-   dqc 0.3
-
-   Revision 1.3  2004/06/09 00:27:29  caron
-   version 2.0a release; cleanup javadoc
-
-   Revision 1.2  2004/05/21 05:57:33  caron
-   release 2.0b
-
-*/
