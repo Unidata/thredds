@@ -33,6 +33,8 @@
 
 package ucar.nc2.ui;
 
+import ucar.nc2.ui.widget.BAMutil;
+import ucar.nc2.ui.widget.SuperComboBox;
 import ucar.unidata.util.StringUtil;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
@@ -42,9 +44,6 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.imageio.ImageIO;
-
-import thredds.ui.SuperComboBox;
-import thredds.ui.BAMutil;
 
 import java.awt.*;
 import java.awt.event.ActionListener;

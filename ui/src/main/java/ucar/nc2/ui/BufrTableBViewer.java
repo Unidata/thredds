@@ -32,6 +32,8 @@
 package ucar.nc2.ui;
 
 import ucar.nc2.ui.dialog.BufrBCompare;
+import ucar.nc2.ui.widget.*;
+import ucar.nc2.ui.widget.PopupMenu;
 import ucar.unidata.util.StringUtil;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
@@ -46,10 +48,9 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.ListSelectionEvent;
 
-import thredds.ui.TextHistoryPane;
-import thredds.ui.IndependentWindow;
-import thredds.ui.FileManager;
-import thredds.ui.BAMutil;
+import ucar.nc2.ui.widget.TextHistoryPane;
+import ucar.nc2.ui.widget.FileManager;
+import ucar.nc2.ui.widget.BAMutil;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -102,7 +103,7 @@ public class BufrTableBViewer extends JPanel {
       }
     });
 
-    thredds.ui.PopupMenu varPopup = new thredds.ui.PopupMenu(ddsTable.getJTable(), "Options");
+    PopupMenu varPopup = new ucar.nc2.ui.widget.PopupMenu(ddsTable.getJTable(), "Options");
     varPopup.addAction("Show uses", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Formatter out = new Formatter();

@@ -38,7 +38,7 @@ import javax.swing.*;
 import java.io.IOException;
 import java.awt.event.ActionEvent;
 
-import thredds.ui.BAMutil;
+import ucar.nc2.ui.widget.BAMutil;
 
 /**
  * Describe

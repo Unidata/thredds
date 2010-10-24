@@ -1,13 +1,14 @@
 package ucar.nc2.ui;
 
-import thredds.ui.BAMutil;
-import thredds.ui.IndependentWindow;
-import thredds.ui.TextHistoryPane;
+import ucar.nc2.ui.widget.*;
+import ucar.nc2.ui.widget.IndependentWindow;
 import ucar.grib.GribResourceReader;
 import ucar.grib.grib1.Grib1Tables;
 import ucar.grib.grib1.GribPDSParamTable;
 import ucar.grid.GridParameter;
 import ucar.nc2.ui.dialog.Grib1TableDialog;
+import ucar.nc2.ui.widget.PopupMenu;
+import ucar.nc2.ui.widget.TextHistoryPane;
 import ucar.nc2.util.IO;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
@@ -18,8 +19,6 @@ import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
@@ -53,7 +52,7 @@ public class Grib1TablesViewer extends JPanel {
       }
     });
 
-    thredds.ui.PopupMenu varPopup = new thredds.ui.PopupMenu(codeTable.getJTable(), "Options");
+    ucar.nc2.ui.widget.PopupMenu varPopup = new PopupMenu(codeTable.getJTable(), "Options");
     varPopup.addAction("Show File contents", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         TableBean bean = (TableBean) codeTable.getSelectedBean();

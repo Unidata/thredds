@@ -33,6 +33,8 @@
 package ucar.nc2.ui;
 
 import thredds.inventory.bdb.MetadataManager;
+import ucar.nc2.ui.widget.*;
+import ucar.nc2.ui.widget.PopupMenu;
 import ucar.unidata.util.StringUtil;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
@@ -41,9 +43,8 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.ListSelectionEvent;
 
-import thredds.ui.TextHistoryPane;
-import thredds.ui.IndependentWindow;
-import thredds.ui.BAMutil;
+import ucar.nc2.ui.widget.TextHistoryPane;
+import ucar.nc2.ui.widget.IndependentWindow;
 
 import java.util.*;
 import java.awt.event.ActionEvent;
@@ -76,7 +77,7 @@ public class CollectionTable extends JPanel {
       }
     });
 
-    thredds.ui.PopupMenu varPopup = new thredds.ui.PopupMenu(collectionNameTable.getJTable(), "Options");
+    PopupMenu varPopup = new ucar.nc2.ui.widget.PopupMenu(collectionNameTable.getJTable(), "Options");
     varPopup.addAction("Show Collection Stats", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         CollectionBean bean = (CollectionBean) collectionNameTable.getSelectedBean();
@@ -100,7 +101,7 @@ public class CollectionTable extends JPanel {
         showData(bean);
       }
     });
-    varPopup = new thredds.ui.PopupMenu(dataTable.getJTable(), "Options");
+    varPopup = new PopupMenu(dataTable.getJTable(), "Options");
     varPopup.addAction("delete", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         CollectionBean cbean = (CollectionBean) collectionNameTable.getSelectedBean();

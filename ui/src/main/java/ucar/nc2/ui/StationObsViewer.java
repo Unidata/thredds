@@ -35,6 +35,9 @@ package ucar.nc2.ui;
 
 import ucar.nc2.dt.*;
 import ucar.nc2.ui.point.StationRegionDateChooser;
+import ucar.nc2.ui.widget.BAMutil;
+import ucar.nc2.ui.widget.IndependentDialog;
+import ucar.nc2.ui.widget.TextHistoryPane;
 import ucar.nc2.units.DateRange;
 
 import ucar.util.prefs.*;
@@ -43,7 +46,6 @@ import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.Station;
-import thredds.ui.*;
 
 import java.awt.BorderLayout;
 import java.awt.Rectangle;

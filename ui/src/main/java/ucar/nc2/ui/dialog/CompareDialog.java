@@ -36,7 +36,7 @@
 
 package ucar.nc2.ui.dialog;
 
-import thredds.ui.FileManager;
+import ucar.nc2.ui.widget.FileManager;
 
 import java.awt.*;
 import java.awt.event.*;

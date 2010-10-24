@@ -32,7 +32,7 @@
  */
 package ucar.nc2.ui.point;
 
-import thredds.ui.FontUtil;
+import ucar.nc2.ui.widget.FontUtil;
 
 import java.util.ArrayList;
 import java.awt.geom.AffineTransform;
@@ -45,7 +45,6 @@ import java.io.IOException;
 import ucar.unidata.geoloc.*;
 import ucar.nc2.dt.PointObsDatatype;
 import ucar.nc2.dt.TrajectoryObsDatatype;
-import ucar.unidata.geoloc.EarthLocation;
 
 /**
  *

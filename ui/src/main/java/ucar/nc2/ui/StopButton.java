@@ -33,19 +33,20 @@
 
 package ucar.nc2.ui;
 
-import thredds.ui.*;
 import javax.swing.*;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.event.EventListenerList;
 
+import ucar.nc2.ui.widget.BAMutil;
+import ucar.nc2.ui.widget.ProgressMonitorTask;
 import ucar.nc2.util.CancelTask;
 
 /**
  * A UI Component for running background tasks and letting user cancel them.
  * Also can be used as a CancelTask implementation.
- * @see ProgressMonitorTask
+ * @see ucar.nc2.ui.widget.ProgressMonitorTask
  *
  * @author caron
  */

@@ -58,6 +58,8 @@ import ucar.nc2.dt.fmrc.FmrcImpl;
 import ucar.nc2.dataset.*;
 
 import ucar.nc2.geotiff.GeoTiff;
+import ucar.nc2.ui.widget.*;
+import ucar.nc2.ui.widget.ProgressMonitor;
 import ucar.nc2.util.*;
 import ucar.nc2.util.net.HttpClientManager;
 import ucar.nc2.util.xml.RuntimeConfigParser;
@@ -78,7 +80,6 @@ import thredds.wcs.v1_0_0_1.GetCapabilities;
 import thredds.wcs.v1_0_0_1.WcsException;
 import thredds.inventory.MController;
 import thredds.inventory.bdb.MetadataManager;
-import thredds.ui.*;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -1271,7 +1272,7 @@ public class ToolsUI extends JPanel {
     };
 
     GetDataTask task = new GetDataTask(runner, urlString, values);
-    thredds.ui.ProgressMonitor pm = new thredds.ui.ProgressMonitor(task);
+    ProgressMonitor pm = new ProgressMonitor(task);
     pm.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         JOptionPane.showMessageDialog(null, e.getActionCommand() + "\n" + downloadStatus);
@@ -4659,7 +4660,7 @@ public class ToolsUI extends JPanel {
     public void run(Object o) throws IOException;
   }
 
-  private class GetDataTask extends thredds.ui.ProgressMonitorTask implements ucar.nc2.util.CancelTask {
+  private class GetDataTask extends ProgressMonitorTask implements ucar.nc2.util.CancelTask {
     GetDataRunnable getData;
     Object o;
     String name, errMsg = null;
@@ -5055,14 +5056,14 @@ public class ToolsUI extends JPanel {
     frame.setVisible(true);
 
     // set Authentication for accessing passsword protected services like TDS PUT
-    java.net.Authenticator.setDefault(new thredds.ui.UrlAuthenticatorDialog(frame));
+    java.net.Authenticator.setDefault(new UrlAuthenticatorDialog(frame));
 
     // open dap initializations
     ucar.nc2.dods.DODSNetcdfFile.setAllowCompression(true);
     ucar.nc2.dods.DODSNetcdfFile.setAllowSessions(true);
 
     // use HTTPClient - could use bean wiring here
-    CredentialsProvider provider = new thredds.ui.UrlAuthenticatorDialog(frame);
+    CredentialsProvider provider = new UrlAuthenticatorDialog(frame);
     HttpClient client = HttpClientManager.init(provider, "ToolsUI");
     //opendap.dap.DConnect2.setHttpClient(client);
     HTTPRandomAccessFile.setHttpClient(client);

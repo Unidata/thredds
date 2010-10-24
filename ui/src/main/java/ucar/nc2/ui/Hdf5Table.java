@@ -33,6 +33,7 @@
 
 package ucar.nc2.ui;
 
+import ucar.nc2.ui.widget.PopupMenu;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
 import ucar.unidata.io.RandomAccessFile;
@@ -44,9 +45,9 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.ListSelectionEvent;
 
-import thredds.ui.TextHistoryPane;
-import thredds.ui.IndependentWindow;
-import thredds.ui.BAMutil;
+import ucar.nc2.ui.widget.TextHistoryPane;
+import ucar.nc2.ui.widget.IndependentWindow;
+import ucar.nc2.ui.widget.BAMutil;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -98,7 +99,7 @@ public class Hdf5Table extends JPanel {
       }
     });
 
-    thredds.ui.PopupMenu varPopup = new thredds.ui.PopupMenu(messTable.getJTable(), "Options");
+    PopupMenu varPopup = new ucar.nc2.ui.widget.PopupMenu(messTable.getJTable(), "Options");
     varPopup.addAction("Show FractalHeap", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         MessageBean mb = (MessageBean) messTable.getSelectedBean();

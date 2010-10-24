@@ -33,11 +33,11 @@
  */
 package thredds.viewer.ui.geoloc;
 
+import ucar.nc2.ui.widget.BAMutil;
 import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.*;
 import thredds.viewer.ui.*;
 
-import thredds.ui.BAMutil;
 import ucar.nc2.ui.util.ListenerManager;
 import ucar.unidata.util.Format;
 import ucar.util.prefs.ui.Debug;

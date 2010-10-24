@@ -33,8 +33,9 @@
  */
 package thredds.viewer.ui.table;
 
-import thredds.ui.BAMutil;
-import thredds.ui.MyMouseAdapter;
+import ucar.nc2.ui.widget.BAMutil;
+import ucar.nc2.ui.widget.MyMouseAdapter;
+import ucar.nc2.ui.widget.PopupMenu;
 import ucar.util.prefs.PreferencesExt;
 import ucar.nc2.ui.util.ListenerManager;
 
@@ -75,7 +76,7 @@ public class JTreeTableSorted extends JPanel {
   private TableRow selectedRow;
 
   private JScrollPane scrollPane;
-  private thredds.ui.PopupMenu popupMenu = null;
+  private PopupMenu popupMenu = null;
   private PopupAction[] acts;
 
   private boolean treeSort;
@@ -123,7 +124,7 @@ public class JTreeTableSorted extends JPanel {
     }
 
     // popupMenu
-    popupMenu = new thredds.ui.PopupMenu(table.getTableHeader(), "Visible");
+    popupMenu = new ucar.nc2.ui.widget.PopupMenu(table.getTableHeader(), "Visible");
     int ncols = model.getColumnCount();
     acts = new PopupAction[ncols];
     for (int i=0; i<ncols; i++) {

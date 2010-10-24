@@ -33,6 +33,8 @@
  */
 package thredds.viewer.gis.worldmap;
 
+import ucar.nc2.ui.widget.BAMutil;
+
 /** Wraps the default WorldMap into a MapBean */
 
 public class WorldMapBean extends thredds.viewer.gis.MapBean {
@@ -48,7 +50,7 @@ public class WorldMapBean extends thredds.viewer.gis.MapBean {
   }
 
   public javax.swing.ImageIcon getIcon() {
-    return thredds.ui.BAMutil.getIcon("WorldMap", true);
+    return BAMutil.getIcon("WorldMap", true);
   }
   public String getActionName() { return "WorldMap"; }
   public String getActionDesc() { return "use World Map"; }

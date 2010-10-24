@@ -33,6 +33,7 @@
 
 package thredds.datatype.prefs;
 
+import ucar.nc2.ui.widget.MultilineTooltip;
 import ucar.nc2.units.*;
 
 import ucar.util.prefs.ui.PersistenceManager;
@@ -62,7 +63,7 @@ public class DurationField extends ucar.util.prefs.ui.Field {
     super(name, label, storeData);
     validValue = getStoreValue( defValue);
     tf = new JTextField() {
-      public JToolTip createToolTip() { return new thredds.ui.MultilineTooltip(); }
+      public JToolTip createToolTip() { return new MultilineTooltip(); }
     };
     tf.setToolTipText("Formats:\n udunits time duration string");
     tf.setInputVerifier( new FldInputVerifier(tf, this));

@@ -33,6 +33,7 @@
 
 package ucar.util.prefs.ui;
 
+import ucar.nc2.ui.widget.MultilineTooltip;
 import ucar.util.prefs.*;
 
 import java.awt.*;
@@ -130,7 +131,7 @@ public class BeanTable extends JPanel {
       if (tooltip != null) {
         headerLabel = new JLabel(header, SwingConstants.CENTER) {
           public JToolTip createToolTip() {
-            return new thredds.ui.MultilineTooltip();
+            return new MultilineTooltip();
           }
         };
         headerLabel.setToolTipText(tooltip);

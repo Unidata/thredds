@@ -32,18 +32,13 @@
  */
 package thredds.viewer.ui.geoloc;
 
-import thredds.viewer.ui.*;
 import thredds.viewer.ui.Renderer;
 import thredds.viewer.gis.MapBean;
-import thredds.ui.BAMutil;
+import ucar.nc2.ui.widget.*;
 import ucar.unidata.geoloc.*;
-import ucar.unidata.geoloc.projection.*;
-import ucar.util.prefs.ui.Debug;
 
 import javax.swing.*;
 import javax.swing.border.EtchedBorder;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.geom.AffineTransform;
 import java.awt.*;
 import java.util.ArrayList;
@@ -93,7 +88,7 @@ public class NPController extends JPanel {
       }
     });
 
-    thredds.ui.PopupMenu mapBeanMenu = MapBean.getStandardMapSelectButton( new PropertyChangeListener() {
+    ucar.nc2.ui.widget.PopupMenu mapBeanMenu = MapBean.getStandardMapSelectButton( new PropertyChangeListener() {
      public void propertyChange( java.beans.PropertyChangeEvent e) {
        if (e.getPropertyName().equals("Renderer")) {
          Renderer mapRender = (Renderer) e.getNewValue();

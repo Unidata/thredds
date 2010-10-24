@@ -1,9 +1,9 @@
 package ucar.nc2.ui;
 
-import thredds.ui.BAMutil;
-import thredds.ui.FileManager;
-import thredds.ui.IndependentWindow;
-import thredds.ui.TextHistoryPane;
+import ucar.nc2.ui.widget.BAMutil;
+import ucar.nc2.ui.widget.FileManager;
+import ucar.nc2.ui.widget.IndependentWindow;
+import ucar.nc2.ui.widget.TextHistoryPane;
 import ucar.grib.grib2.ParameterTable;
 import ucar.grid.GridParameter;
 import ucar.nc2.Attribute;

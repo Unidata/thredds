@@ -34,7 +34,6 @@
 package ucar.nc2.ui;
 
 import ucar.nc2.*;
-import ucar.nc2.Dimension;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.GridCoordSystem;
@@ -42,10 +41,11 @@ import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.grid.GridCoordSys;
 import ucar.nc2.dataset.*;
 
+import ucar.nc2.ui.widget.*;
+import ucar.nc2.ui.widget.PopupMenu;
 import ucar.util.prefs.*;
 import ucar.util.prefs.ui.*;
 import ucar.unidata.geoloc.ProjectionImpl;
-import thredds.ui.*;
 import thredds.wcs.v1_0_0_1.WcsException;
 import thredds.wcs.v1_0_0_1.DescribeCoverage;
 
@@ -81,7 +81,7 @@ public class GeoGridTable extends JPanel {
     varTable = new BeanTableSorted(GeogridBean.class, (PreferencesExt) prefs.node("GeogridBeans"), false);
     JTable jtable = varTable.getJTable();
 
-    thredds.ui.PopupMenu csPopup = new thredds.ui.PopupMenu(jtable, "Options");
+    PopupMenu csPopup = new ucar.nc2.ui.widget.PopupMenu(jtable, "Options");
     csPopup.addAction("Show Declaration", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         GeogridBean vb = (GeogridBean) varTable.getSelectedBean();

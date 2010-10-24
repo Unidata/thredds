@@ -33,8 +33,8 @@
  */
 package thredds.viewer.gis;
 
-import thredds.viewer.gis.worldmap.WorldMapBean;
-import thredds.ui.BAMutil;
+import ucar.nc2.ui.widget.BAMutil;
+import ucar.nc2.ui.widget.PopupMenu;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeEvent;
@@ -132,7 +132,7 @@ public abstract class MapBean {
        }
      });
    */
-  static public thredds.ui.PopupMenu makeMapSelectButton() {
+  static public PopupMenu makeMapSelectButton() {
 
     AbstractAction mapSelectAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
@@ -143,12 +143,12 @@ public abstract class MapBean {
     BAMutil.setActionProperties( mapSelectAction, "WorldMap", "select map", false, 'M', -1);
     AbstractButton mapSelectButton = BAMutil.makeButtconFromAction( mapSelectAction);
 
-    thredds.ui.PopupMenu mapPopup = new thredds.ui.PopupMenu(mapSelectButton, "Select Map", true);
+    PopupMenu mapPopup = new PopupMenu(mapSelectButton, "Select Map", true);
     return mapPopup;
   }
 
-  static public thredds.ui.PopupMenu getStandardMapSelectButton(PropertyChangeListener pcl) {
-    thredds.ui.PopupMenu mapBeanMenu = makeMapSelectButton();
+  static public PopupMenu getStandardMapSelectButton(PropertyChangeListener pcl) {
+    PopupMenu mapBeanMenu = makeMapSelectButton();
 
         // standard maps
     ArrayList standardMaps = new ArrayList();

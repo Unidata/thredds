@@ -38,7 +38,6 @@ import java.awt.image.*;
 import java.net.URL;
 import java.net.MalformedURLException;
 import java.io.File;
-import java.util.Date;
 import java.util.Random;
 import javax.swing.*;
 import javax.swing.event.*;
@@ -46,7 +45,7 @@ import javax.swing.event.*;
 import ucar.nc2.dt.image.ImageDatasetFactory;
 import ucar.nc2.dt.image.ImageFactoryRandom;
 import ucar.nc2.dt.GridDatatype;
-import thredds.ui.BAMutil;
+import ucar.nc2.ui.widget.BAMutil;
 
 /**
  *  *

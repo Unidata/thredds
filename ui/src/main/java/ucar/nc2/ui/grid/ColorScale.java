@@ -33,7 +33,7 @@
  */
 package ucar.nc2.ui.grid;
 
-import thredds.ui.FontUtil;
+import ucar.nc2.ui.widget.FontUtil;
 
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.ui.util.ListenerManager;

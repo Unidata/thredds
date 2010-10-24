@@ -34,8 +34,7 @@
 
 package ucar.util.prefs.ui;
 
-import thredds.ui.IndependentDialog;
-import thredds.ui.IndependentWindow;
+import ucar.nc2.ui.widget.IndependentDialog;
 import ucar.util.prefs.*;
 import java.util.*;
 import java.util.List;

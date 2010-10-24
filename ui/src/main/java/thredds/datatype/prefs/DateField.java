@@ -33,6 +33,7 @@
 
 package thredds.datatype.prefs;
 
+import ucar.nc2.ui.widget.MultilineTooltip;
 import ucar.nc2.units.*;
 
 import ucar.util.prefs.ui.PersistenceManager;
@@ -65,7 +66,7 @@ public class DateField extends ucar.util.prefs.ui.Field {
     validValue = getStoreValue(defValue);
     tf = new JTextField() {
       public JToolTip createToolTip() {
-        return new thredds.ui.MultilineTooltip();
+        return new MultilineTooltip();
       }
     };
     tf.setToolTipText("Formats:\n 'present'\n CCYY-MM-DD\n CCYY-MM-DDThh:mm:ss\n udunits date string");

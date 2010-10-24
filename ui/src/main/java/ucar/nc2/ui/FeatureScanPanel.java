@@ -32,6 +32,7 @@
  */
 package ucar.nc2.ui;
 
+import ucar.nc2.ui.widget.PopupMenu;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
 import ucar.nc2.ft.scan.FeatureScan;
@@ -40,9 +41,9 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.ListSelectionEvent;
 
-import thredds.ui.TextHistoryPane;
-import thredds.ui.IndependentWindow;
-import thredds.ui.BAMutil;
+import ucar.nc2.ui.widget.TextHistoryPane;
+import ucar.nc2.ui.widget.IndependentWindow;
+import ucar.nc2.ui.widget.BAMutil;
 
 import java.awt.event.ActionEvent;
 import java.awt.*;
@@ -73,7 +74,7 @@ public class FeatureScanPanel extends JPanel {
       }
     });
 
-    thredds.ui.PopupMenu varPopup = new thredds.ui.PopupMenu(ftTable.getJTable(), "Options");
+    PopupMenu varPopup = new ucar.nc2.ui.widget.PopupMenu(ftTable.getJTable(), "Options");
     varPopup.addAction("Open as NetcdfFile", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         FeatureScan.Bean ftb = (FeatureScan.Bean) ftTable.getSelectedBean();

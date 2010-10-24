@@ -34,6 +34,8 @@
 package ucar.nc2.ui;
 
 import ucar.nc2.*;
+import ucar.nc2.ui.widget.*;
+import ucar.nc2.ui.widget.PopupMenu;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.dt.radial.RadialCoordSys;
@@ -47,7 +49,6 @@ import ucar.util.prefs.*;
 import ucar.util.prefs.ui.*;
 import ucar.ma2.Array;
 import ucar.ma2.IndexIterator;
-import thredds.ui.*;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -97,7 +98,7 @@ public class CoordSysTable extends JPanel {
 
     axisTable = new BeanTableSorted(AxisBean.class, (PreferencesExt) prefs.node("CoordinateAxisBean"), false);
 
-    thredds.ui.PopupMenu varPopup = new thredds.ui.PopupMenu(varTable.getJTable(), "Options");
+    ucar.nc2.ui.widget.PopupMenu varPopup = new PopupMenu(varTable.getJTable(), "Options");
     varPopup.addAction("Show Declaration", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         VariableBean vb = (VariableBean) varTable.getSelectedBean();
@@ -123,7 +124,7 @@ public class CoordSysTable extends JPanel {
       }
     });
 
-    thredds.ui.PopupMenu csPopup = new thredds.ui.PopupMenu(csTable.getJTable(), "Options");
+    PopupMenu csPopup = new PopupMenu(csTable.getJTable(), "Options");
     csPopup.addAction("Show CoordSys", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         CoordinateSystemBean csb = (CoordinateSystemBean) csTable.getSelectedBean();
@@ -157,7 +158,7 @@ public class CoordSysTable extends JPanel {
       }
     });
 
-    thredds.ui.PopupMenu axisPopup = new thredds.ui.PopupMenu(axisTable.getJTable(), "Options");
+    PopupMenu axisPopup = new PopupMenu(axisTable.getJTable(), "Options");
     axisPopup.addAction("Show Declaration", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         AxisBean bean = (AxisBean) axisTable.getSelectedBean();

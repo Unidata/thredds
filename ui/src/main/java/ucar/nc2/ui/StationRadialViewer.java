@@ -33,6 +33,8 @@
 
 package ucar.nc2.ui;
 
+import ucar.nc2.ui.widget.IndependentDialog;
+import ucar.nc2.ui.widget.TextHistoryPane;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
 import ucar.nc2.dt.RadialDatasetSweep;
@@ -43,8 +45,6 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.ListSelectionEvent;
 
-import thredds.ui.IndependentDialog;
-import thredds.ui.TextHistoryPane;
 import ucar.nc2.units.DateRange;
 import ucar.unidata.geoloc.Station;
 import ucar.unidata.geoloc.LatLonPoint;

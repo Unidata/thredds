@@ -35,12 +35,14 @@ package ucar.nc2.ui;
 
 import ucar.nc2.*;
 import ucar.nc2.dt.image.ImageArrayAdapter;
+import ucar.nc2.ui.widget.IndependentWindow;
+import ucar.nc2.ui.widget.ProgressMonitorTask;
+import ucar.nc2.ui.widget.TextHistoryPane;
 import ucar.util.prefs.*;
 import ucar.util.prefs.ui.*;
 
 import ucar.nc2.ui.image.ImageViewPanel;
-import thredds.ui.IndependentWindow;
-import thredds.ui.BAMutil;
+import ucar.nc2.ui.widget.BAMutil;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -54,7 +56,7 @@ import javax.swing.*;
  * @author caron
  */
 
-public class NCdumpPane extends thredds.ui.TextHistoryPane {
+public class NCdumpPane extends TextHistoryPane {
   private static final String ImageViewer_WindowSize = "ImageViewer_WindowSize";
 
   private PreferencesExt prefs;
@@ -180,7 +182,7 @@ public class NCdumpPane extends thredds.ui.TextHistoryPane {
     ta.setText(text);
   }
 
-  private abstract class CommonTask extends thredds.ui.ProgressMonitorTask implements ucar.nc2.util.CancelTask {
+  private abstract class CommonTask extends ProgressMonitorTask implements ucar.nc2.util.CancelTask {
     String contents, command;
     ucar.nc2.Variable v = null;
     ucar.ma2.Array data;

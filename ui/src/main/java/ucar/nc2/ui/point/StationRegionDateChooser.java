@@ -36,10 +36,10 @@ import thredds.viewer.ui.*;
 import thredds.viewer.ui.Renderer;
 import thredds.viewer.ui.geoloc.*;
 import thredds.viewer.ui.event.*;
-import thredds.ui.BAMutil;
-import thredds.ui.PopupManager;
-import thredds.ui.RangeDateSelector;
-import thredds.ui.IndependentDialog;
+import ucar.nc2.ui.widget.PopupManager;
+import ucar.nc2.ui.widget.RangeDateSelector;
+import ucar.nc2.ui.widget.IndependentDialog;
+import ucar.nc2.ui.widget.BAMutil;
 import ucar.nc2.units.DateRange;
 
 import ucar.unidata.geoloc.*;

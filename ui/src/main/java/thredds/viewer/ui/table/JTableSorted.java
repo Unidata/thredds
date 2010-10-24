@@ -33,9 +33,10 @@
  */
 package thredds.viewer.ui.table;
 
-import thredds.ui.BAMutil;
+import ucar.nc2.ui.widget.BAMutil;
 import thredds.viewer.ui.event.*;
 import ucar.nc2.ui.util.ListenerManager;
+import ucar.nc2.ui.widget.PopupMenu;
 import ucar.nc2.util.NamedObject;
 
 import java.util.ArrayList;
@@ -70,7 +71,7 @@ public class JTableSorted extends JPanel {
   private JTable jtable;
   private JScrollPane scrollPane;
   private TableRowModel model;
-  private thredds.ui.PopupMenu popupMenu = null;
+  private ucar.nc2.ui.widget.PopupMenu popupMenu = null;
   private PopupAction[] acts;
 
   private boolean debug = false;
@@ -150,7 +151,7 @@ public class JTableSorted extends JPanel {
 
     if (enableColumnManipulation) {
       // popupMenu
-      popupMenu = new thredds.ui.PopupMenu(jtable.getTableHeader(), "Visible");
+      popupMenu = new PopupMenu(jtable.getTableHeader(), "Visible");
       int ncols = colName.length;
       acts = new PopupAction[ncols];
       for (int i=0; i<ncols; i++) {

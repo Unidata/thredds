@@ -45,6 +45,7 @@ import ucar.nc2.iosp.grib.GribGridServiceProvider;
 import ucar.nc2.iosp.grib.tables.GribTemplate;
 import ucar.nc2.iosp.grid.GridServiceProvider;
 import ucar.nc2.iosp.grid.GridVariable;
+import ucar.nc2.ui.widget.PopupMenu;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
@@ -54,9 +55,9 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import thredds.ui.TextHistoryPane;
-import thredds.ui.IndependentWindow;
-import thredds.ui.BAMutil;
+import ucar.nc2.ui.widget.TextHistoryPane;
+import ucar.nc2.ui.widget.IndependentWindow;
+import ucar.nc2.ui.widget.BAMutil;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -86,7 +87,7 @@ public class GribIndexPanel extends JPanel {
   public GribIndexPanel(PreferencesExt prefs) {
     this.prefs = prefs;
 
-    thredds.ui.PopupMenu varPopup;
+    PopupMenu varPopup;
 
     productTable = new BeanTableSorted(Product.class, (PreferencesExt) prefs.node("Product"), false, "GribGridRecord group", "same param / levelType");
     productTable.addListSelectionListener(new ListSelectionListener() {
@@ -98,7 +99,7 @@ public class GribIndexPanel extends JPanel {
         }
       }
     });
-    varPopup = new thredds.ui.PopupMenu(productTable.getJTable(), "Options");
+    varPopup = new PopupMenu(productTable.getJTable(), "Options");
     /* varPopup.addAction("Run accum algorithm", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Product pb = (Product) productTable.getSelectedBean();
@@ -127,7 +128,7 @@ public class GribIndexPanel extends JPanel {
 
     recordTable = new BeanTableSorted(GribGridRecordBean.class, (PreferencesExt) prefs.node("IndexRecordBean"), false, "GribGridRecord", "one record");
 
-    varPopup = new thredds.ui.PopupMenu(recordTable.getJTable(), "Options");
+    varPopup = new ucar.nc2.ui.widget.PopupMenu(recordTable.getJTable(), "Options");
     varPopup.addAction("Show GridRecords", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         List list = recordTable.getSelectedBeans();

@@ -14,7 +14,7 @@
 
 package thredds.viewer.ui.table;
 
-import thredds.ui.BAMutil;
+import ucar.nc2.ui.widget.BAMutil;
 
 import javax.swing.*;
 import javax.swing.event.*;

@@ -38,6 +38,8 @@ import thredds.inventory.DatasetCollectionManager;
 import thredds.inventory.MFile;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.ui.dialog.Fmrc2Dialog;
+import ucar.nc2.ui.widget.*;
+import ucar.nc2.ui.widget.PopupMenu;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
 import ucar.nc2.ft.fmrc.*;
@@ -47,9 +49,8 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.ListSelectionEvent;
 
-import thredds.ui.TextHistoryPane;
-import thredds.ui.IndependentWindow;
-import thredds.ui.BAMutil;
+import ucar.nc2.ui.widget.TextHistoryPane;
+import ucar.nc2.ui.widget.BAMutil;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -126,7 +127,7 @@ public class Fmrc2Panel extends JPanel {
       }
     });
 
-    thredds.ui.PopupMenu varPopup = new thredds.ui.PopupMenu(invTable.getJTable(), "Options");
+    PopupMenu varPopup = new ucar.nc2.ui.widget.PopupMenu(invTable.getJTable(), "Options");
     varPopup.addAction("Open in NetcdfFile Viewer", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         InvBean dsb = (InvBean) invTable.getSelectedBean();
@@ -160,7 +161,7 @@ public class Fmrc2Panel extends JPanel {
       }
     });
 
-    varPopup = new thredds.ui.PopupMenu(coordTable.getJTable(), "Options");
+    varPopup = new PopupMenu(coordTable.getJTable(), "Options");
     varPopup.addAction("Show Inv", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         CoordBean bean = (CoordBean) coordTable.getSelectedBean();
@@ -169,7 +170,7 @@ public class Fmrc2Panel extends JPanel {
       }
     });
 
-    varPopup = new thredds.ui.PopupMenu(gridTable.getJTable(), "Options");
+    varPopup = new PopupMenu(gridTable.getJTable(), "Options");
     varPopup.addAction("Show Inv Coords", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         GridBean bean = (GridBean) gridTable.getSelectedBean();

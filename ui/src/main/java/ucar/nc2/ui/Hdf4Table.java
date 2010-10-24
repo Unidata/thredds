@@ -33,6 +33,7 @@
 
 package ucar.nc2.ui;
 
+import ucar.nc2.ui.widget.IndependentWindow;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
 import ucar.unidata.io.RandomAccessFile;
@@ -44,8 +45,7 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.ListSelectionEvent;
 
-import thredds.ui.TextHistoryPane;
-import thredds.ui.IndependentWindow;
+import ucar.nc2.ui.widget.TextHistoryPane;
 
 import java.awt.*;
 import java.io.*;

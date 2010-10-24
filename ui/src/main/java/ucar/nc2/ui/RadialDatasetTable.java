@@ -35,6 +35,8 @@ package ucar.nc2.ui;
 
 import ucar.nc2.*;
 import ucar.nc2.ui.image.ImageViewPanel;
+import ucar.nc2.ui.widget.*;
+import ucar.nc2.ui.widget.PopupMenu;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.dt.RadialDatasetSweep;
 import ucar.nc2.dt.image.ImageArrayAdapter;
@@ -43,13 +45,11 @@ import ucar.util.prefs.*;
 import ucar.util.prefs.ui.*;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
-import thredds.ui.*;
 
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
 import java.util.List;
-import java.io.PrintStream;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionListener;
@@ -84,7 +84,7 @@ public class RadialDatasetTable extends JPanel {
 
     JTable jtable = varTable.getJTable();
 
-    thredds.ui.PopupMenu csPopup = new thredds.ui.PopupMenu(jtable, "Options");
+    PopupMenu csPopup = new PopupMenu(jtable, "Options");
     csPopup.addAction("Show Declaration", new AbstractAction() {
        public void actionPerformed(ActionEvent e) {
          VariableBean vb = (VariableBean) varTable.getSelectedBean();
@@ -103,7 +103,7 @@ public class RadialDatasetTable extends JPanel {
 
     sweepTable = new BeanTableSorted(SweepBean.class, (PreferencesExt) prefs.node("SweepBean"), false);
 
-    thredds.ui.PopupMenu sweepPopup = new thredds.ui.PopupMenu(sweepTable.getJTable(), "Options");
+    ucar.nc2.ui.widget.PopupMenu sweepPopup = new PopupMenu(sweepTable.getJTable(), "Options");
     sweepPopup.addAction("Show Image", new AbstractAction() {
        public void actionPerformed(ActionEvent e) {
          showImage(  (SweepBean) sweepTable.getSelectedBean());

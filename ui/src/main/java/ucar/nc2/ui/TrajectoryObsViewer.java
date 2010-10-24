@@ -36,9 +36,11 @@ package ucar.nc2.ui;
 import ucar.nc2.dt.*;
 import ucar.nc2.ui.point.TrajectoryRegionDateChooser;
 
+import ucar.nc2.ui.widget.BAMutil;
+import ucar.nc2.ui.widget.IndependentWindow;
+import ucar.nc2.ui.widget.TextHistoryPane;
 import ucar.util.prefs.*;
 import ucar.util.prefs.ui.*;
-import thredds.ui.*;
 
 import java.awt.BorderLayout;
 import java.awt.Rectangle;

@@ -34,6 +34,8 @@
 package ucar.nc2.ui;
 
 import ucar.nc2.*;
+import ucar.nc2.ui.widget.BAMutil;
+import ucar.nc2.ui.widget.MultilineTooltip;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -70,7 +72,7 @@ public class DatasetTreeView extends JPanel {
   public DatasetTreeView() {
     // the catalog tree
     tree = new JTree() {
-      public JToolTip createToolTip() { return new thredds.ui.MultilineTooltip(); }
+      public JToolTip createToolTip() { return new MultilineTooltip(); }
     };
     tree.setModel(new DefaultTreeModel(new DefaultMutableTreeNode(null, false)));
     tree.setCellRenderer(new MyTreeCellRenderer());
@@ -505,8 +507,8 @@ public class DatasetTreeView extends JPanel {
     String tooltipText = null;
 
     public MyTreeCellRenderer() {
-      structIcon = thredds.ui.BAMutil.getIcon( "Structure", true);
-      dimIcon = thredds.ui.BAMutil.getIcon( "Dimension", true);
+      structIcon = BAMutil.getIcon( "Structure", true);
+      dimIcon = BAMutil.getIcon( "Dimension", true);
     }
 
     public Component getTreeCellRendererComponent(JTree tree, Object value,

@@ -37,11 +37,11 @@ import ucar.nc2.*;
 
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ui.dialog.CompareDialog;
+import ucar.nc2.ui.widget.*;
 import ucar.nc2.util.CompareNetcdf2;
 import ucar.util.prefs.*;
 import ucar.util.prefs.ui.*;
 import ucar.ma2.Array;
-import thredds.ui.*;
 
 import java.awt.BorderLayout;
 import java.awt.Rectangle;

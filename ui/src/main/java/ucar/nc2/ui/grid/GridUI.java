@@ -34,7 +34,6 @@
 package ucar.nc2.ui.grid;
 
 import thredds.catalog.*;
-import thredds.ui.*;
 import thredds.viewer.ui.Renderer;
 
 import ucar.nc2.dataset.*;
@@ -45,6 +44,9 @@ import thredds.viewer.gis.MapBean;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDataset;
+import ucar.nc2.ui.widget.*;
+import ucar.nc2.ui.widget.PopupMenu;
+import ucar.nc2.ui.widget.ProgressMonitor;
 import ucar.nc2.util.NamedObject;
 import ucar.nc2.constants.FeatureType;
 
@@ -93,7 +95,7 @@ public class GridUI extends JPanel {
   private JPanel drawingPanel;
   private JSplitPane splitDraw;
   private JComboBox csDataMinMax;
-  private thredds.ui.PopupMenu mapBeanMenu;
+  private PopupMenu mapBeanMenu;
 
   private JLabel datasetNameLabel;
   // private Field.TextCombo gridUrlIF;
@@ -272,7 +274,7 @@ public class GridUI extends JPanel {
      if (ds == null) return;
 
      OpenDatasetTask openTask = new OpenDatasetTask(ds);
-     thredds.ui.ProgressMonitor pm = new thredds.ui.ProgressMonitor(openTask);
+     ProgressMonitor pm = new ProgressMonitor(openTask);
      pm.addActionListener( new ActionListener() {
        public void actionPerformed(ActionEvent e) {
          if (e.getActionCommand().equals("success")) {
@@ -688,7 +690,7 @@ public class GridUI extends JPanel {
     // top tool panel
     toolPanel = new JPanel();
     toolPanel.setBorder(new EtchedBorder());
-    toolPanel.setLayout(new thredds.ui.MFlowLayout(FlowLayout.LEFT, 0, 0));
+    toolPanel.setLayout(new MFlowLayout(FlowLayout.LEFT, 0, 0));
 
     // menus
     JMenu dataMenu = new JMenu("Dataset");

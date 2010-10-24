@@ -35,6 +35,7 @@ package thredds.viewer.gis.shapefile;
 
 import ucar.nc2.ui.util.Resource;
 import thredds.viewer.ui.Renderer;
+import ucar.nc2.ui.widget.BAMutil;
 
 /** Wraps shapefile maps into a MapBean
  *
@@ -75,7 +76,7 @@ public class ShapeFileBean extends thredds.viewer.gis.MapBean {
   }
 
   public javax.swing.ImageIcon getIcon() {
-    return thredds.ui.BAMutil.getIcon(iconName, true);
+    return BAMutil.getIcon(iconName, true);
   }
   public String getActionName() { return name; }
   public String getActionDesc() { return desc; }

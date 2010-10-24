@@ -38,11 +38,9 @@ package ucar.nc2.ui.point;
  * @author caron
  */
 
-import thredds.ui.FontUtil;
+import ucar.nc2.ui.widget.FontUtil;
 import thredds.viewer.gis.SpatialGrid;
 import ucar.unidata.geoloc.*;
-
-import ucar.unidata.geoloc.Station;
 
 import java.awt.*;
 import java.awt.geom.*;

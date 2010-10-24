@@ -33,12 +33,14 @@
 
 package ucar.nc2.ui;
 
-import thredds.ui.FileManager;
+import ucar.nc2.ui.widget.FileManager;
 import ucar.grib.GribPds;
 import ucar.grib.NoValidGribException;
 import ucar.grib.grib1.*;
 import ucar.ma2.DataType;
 import ucar.nc2.iosp.grib.tables.GribTemplate;
+import ucar.nc2.ui.widget.*;
+import ucar.nc2.ui.widget.PopupMenu;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.util.Misc;
 import ucar.unidata.io.KMPMatch;
@@ -51,9 +53,8 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import thredds.ui.TextHistoryPane;
-import thredds.ui.IndependentWindow;
-import thredds.ui.BAMutil;
+import ucar.nc2.ui.widget.IndependentWindow;
+import ucar.nc2.ui.widget.BAMutil;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -88,7 +89,7 @@ public class GribRawPanel extends JPanel {
   public GribRawPanel(PreferencesExt prefs) {
     this.prefs = prefs;
 
-    thredds.ui.PopupMenu varPopup;
+    PopupMenu varPopup;
 
     ////////////////
     param2BeanTable = new BeanTableSorted(Grib2ParameterBean.class, (PreferencesExt) prefs.node("Param2Bean"), false, "Grib2PDSVariables", "from Grib2Input.getRecords()");
@@ -100,7 +101,7 @@ public class GribRawPanel extends JPanel {
       }
     });
 
-    varPopup = new thredds.ui.PopupMenu(param2BeanTable.getJTable(), "Options");
+    varPopup = new ucar.nc2.ui.widget.PopupMenu(param2BeanTable.getJTable(), "Options");
     varPopup.addAction("Show raw PDS", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Grib2ParameterBean pb = (Grib2ParameterBean) param2BeanTable.getSelectedBean();
@@ -133,7 +134,7 @@ public class GribRawPanel extends JPanel {
     });
 
     record2BeanTable = new BeanTableSorted(Grib2RecordBean.class, (PreferencesExt) prefs.node("Record2Bean"), false, "Grib2Record", "from Grib2Input.getRecords()");
-    varPopup = new thredds.ui.PopupMenu(record2BeanTable.getJTable(), "Options");
+    varPopup = new PopupMenu(record2BeanTable.getJTable(), "Options");
 
     varPopup.addAction("Compare GridRecord", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
@@ -213,7 +214,7 @@ public class GribRawPanel extends JPanel {
       }
     });
 
-    varPopup = new thredds.ui.PopupMenu(param1BeanTable.getJTable(), "Options");
+    varPopup = new PopupMenu(param1BeanTable.getJTable(), "Options");
     varPopup.addAction("Show raw PDS", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Grib1ParameterBean pb = (Grib1ParameterBean) param1BeanTable.getSelectedBean();
@@ -236,7 +237,7 @@ public class GribRawPanel extends JPanel {
     });
 
     record1BeanTable = new BeanTableSorted(Grib1RecordBean.class, (PreferencesExt) prefs.node("Record1Bean"), false, "Grib1Record", "from Grib1Input.getRecords()");
-    varPopup = new thredds.ui.PopupMenu(record1BeanTable.getJTable(), "Options");
+    varPopup = new PopupMenu(record1BeanTable.getJTable(), "Options");
 
     varPopup.addAction("Show raw PDS bytes", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {

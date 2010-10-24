@@ -38,12 +38,12 @@ import ucar.nc2.dataset.*;
 import ucar.nc2.dt.*;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.grid.*;
+import ucar.nc2.ui.widget.BAMutil;
 import ucar.unidata.geoloc.*;
 
 import thredds.viewer.ui.*;
 import thredds.viewer.ui.event.*;
 import thredds.viewer.ui.geoloc.*;
-import thredds.ui.BAMutil;
 
 import ucar.nc2.util.NamedObject;
 import ucar.nc2.ncml.NcMLWriter;

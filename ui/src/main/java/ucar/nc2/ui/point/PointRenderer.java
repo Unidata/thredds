@@ -43,7 +43,7 @@ import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
 import java.io.IOException;
 
-import thredds.ui.FontUtil;
+import ucar.nc2.ui.widget.FontUtil;
 
 /**
  * Describe

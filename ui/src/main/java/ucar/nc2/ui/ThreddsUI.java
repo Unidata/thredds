@@ -32,11 +32,15 @@
  */
 package ucar.nc2.ui;
 
-import thredds.catalog.ui.query.QueryChooser;
-import thredds.ui.*;
+import thredds.catalog.catalog.ui.CatalogChooser;
+import thredds.catalog.catalog.ui.ThreddsDatasetChooser;
+import thredds.catalog.catalog.ui.query.QueryChooser;
+import thredds.catalog.catalog.ui.tools.CatalogEnhancer;
+import thredds.catalog.catalog.ui.tools.DLCrawler;
 import thredds.catalog.*;
-import thredds.catalog.ui.*;
+import thredds.catalog.catalog.ui.tools.TDServerConfigurator;
 
+import ucar.nc2.ui.widget.*;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.*;
 import ucar.nc2.util.IO;
@@ -69,9 +73,9 @@ public class ThreddsUI extends JPanel {
 
   // the main components
   private ThreddsDatasetChooser datasetChooser = null;
-  private thredds.catalog.ui.tools.CatalogEnhancer catEditor = null;
-  private thredds.catalog.ui.tools.DLCrawler catCrawler = null;
-  private thredds.catalog.ui.tools.TDServerConfigurator serverConfigure = null;
+  private CatalogEnhancer catEditor = null;
+  private DLCrawler catCrawler = null;
+  private TDServerConfigurator serverConfigure = null;
 
   // UI components that need global scope
   private TextGetPutPane sourcePane;
@@ -262,15 +266,15 @@ public class ThreddsUI extends JPanel {
 
     Component c;
     if (title.equals("catCrawler")) {
-      catCrawler = new thredds.catalog.ui.tools.DLCrawler((PreferencesExt) store.node("catCrawler"), parent);
+      catCrawler = new DLCrawler((PreferencesExt) store.node("catCrawler"), parent);
       c = catCrawler;
 
     } else if (title.equals("TDS Configure")) {
-      serverConfigure = new thredds.catalog.ui.tools.TDServerConfigurator((PreferencesExt) store.node("serverConfigure"), parent);
+      serverConfigure = new TDServerConfigurator((PreferencesExt) store.node("serverConfigure"), parent);
       c = serverConfigure;
 
     } else if (title.equals("Catalog Enhancer")) {
-      catEditor = new thredds.catalog.ui.tools.CatalogEnhancer((PreferencesExt) store.node("catEditor"), parent);
+      catEditor = new CatalogEnhancer((PreferencesExt) store.node("catEditor"), parent);
       c = catEditor;
 
      } else {
