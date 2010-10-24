@@ -587,7 +587,7 @@ public class GridVariable {
         if ((p instanceof GribGridRecord) && !sentMessage && warnOk && !oneSent) {
           GribGridRecord gp = (GribGridRecord) p;
           GribGridRecord qp = (GribGridRecord) recordTracker[recno];
-          log.warn("Duplicate record for "+filename + "\n "+gp.toString2() + "\n " + qp.toString2());
+          log.warn("Duplicate record for "+filename + "\n "+gp.toString() + "\n " + qp.toString());
         }
         if ((!sendAll)) oneSent = true;
         recordTracker[recno] = p;  // replace it with latest one

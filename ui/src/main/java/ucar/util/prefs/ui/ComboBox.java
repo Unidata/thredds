@@ -1,4 +1,3 @@
-// $Id: ComboBox.java,v 1.6 2005/08/22 01:12:28 caron Exp $
 /*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
@@ -78,7 +77,6 @@ import javax.swing.event.ListSelectionListener;
  * @see PrefPanel#addTextComboField
  *
  * @author John Caron
- * @version $Id: ComboBox.java,v 1.6 2005/08/22 01:12:28 caron Exp $
  */
 
 public class ComboBox extends JComboBox {

@@ -1,4 +1,3 @@
-// $Id: Debug.java,v 1.3 2004/08/26 17:55:17 caron Exp $
 /*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
@@ -90,7 +89,6 @@ import javax.swing.event.*;
  *
  * @see java.util.prefs.Preferences
  * @author John Caron
- * @version $Revision: 1.3 $ $Date: 2004/08/26 17:55:17 $
  */
 
 public class Debug {
@@ -246,19 +244,3 @@ public class Debug {
   }
 
 }
-
-/* Change History:
-   $Log: Debug.java,v $
-   Revision 1.3  2004/08/26 17:55:17  caron
-   no message
-
-   Revision 1.2  2003/05/29 23:33:28  john
-   latest release
-
-   Revision 1.1.1.1  2002/12/20 16:40:25  john
-   start new cvs root: prefs
-
-   Revision 1.1.1.1  2001/11/10 16:01:23  caron
-   checkin prefs
-
-*/

@@ -6,6 +6,8 @@ package thredds.ui.monitor;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.util.*;
+import java.util.List;
 import javax.swing.*;
 
 import ucar.nc2.ui.widget.StopButton;
@@ -14,6 +16,7 @@ import ucar.nc2.ui.widget.StopButton;
  * @author John Caron
  */
 public class ManageForm extends JPanel {
+  java.util.List<String> servers = new ArrayList<String>();
 
   public class Data {
     public String server;
@@ -27,6 +30,12 @@ public class ManageForm extends JPanel {
     }
   }
 
+  public ManageForm(List<String> servers) {
+    this.servers = servers;
+    initComponents();
+    serverCB.setModel( new DefaultComboBoxModel(servers.toArray()));
+  }
+
   public JTextArea getTextArea() {
     return textArea1;
   }
@@ -35,8 +44,12 @@ public class ManageForm extends JPanel {
     return stopButton;
   }
 
-  public JComboBox getServers() {
-    return server;
+  public ComboBoxModel getServersCB() {
+    return serverCB.getModel();
+  }
+
+  public void setServers(java.util.List servers) {
+    serverCB.setModel( new DefaultComboBoxModel(servers.toArray()));
   }
 
   public ManageForm() {
@@ -47,15 +60,15 @@ public class ManageForm extends JPanel {
     // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
     // Generated using JFormDesigner non-commercial license
     label1 = new JLabel();
-    server = new JComboBox();
+    serverCB = new JComboBox();
     wantAccess = new JRadioButton();
     wantServlet = new JRadioButton();
     acceptButton = new JButton();
     label2 = new JLabel();
     scrollPane1 = new JScrollPane();
     textArea1 = new JTextArea();
-    stopButton = new StopButton();
     wantRoots = new JRadioButton();
+    stopButton = new StopButton();
     downloadAction = new DownloadAction();
 
     //======== this ========
@@ -64,14 +77,11 @@ public class ManageForm extends JPanel {
     label1.setText("server:");
     label1.setFont(label1.getFont().deriveFont(Font.BOLD|Font.ITALIC));
 
-    //---- server ----
-    server.setModel(new DefaultComboBoxModel(new String[] {
-      "motherlode.ucar.edu:8080",
-      "motherlode.ucar.edu:8081",
-      "motherlode.ucar.edu:9080",
+    //---- serverCB ----
+    serverCB.setModel(new DefaultComboBoxModel(new String[] {
       "localhost:8080"
     }));
-    server.setEditable(true);
+    serverCB.setEditable(true);
 
     //---- wantAccess ----
     wantAccess.setText("access logs");
@@ -96,13 +106,12 @@ public class ManageForm extends JPanel {
       scrollPane1.setViewportView(textArea1);
     }
 
-    //---- stopButton ----
-    stopButton.setToolTipText("stop download");
-
     //---- wantRoots ----
     wantRoots.setText("data roots");
-    wantRoots.setSelected(true);
     wantRoots.setFont(wantRoots.getFont().deriveFont(wantRoots.getFont().getStyle() | Font.BOLD));
+
+    //---- stopButton ----
+    stopButton.setText("Stop");
 
     GroupLayout layout = new GroupLayout(this);
     setLayout(layout);
@@ -115,14 +124,14 @@ public class ManageForm extends JPanel {
               .addGroup(layout.createParallelGroup()
                 .addGroup(layout.createSequentialGroup()
                   .addComponent(acceptButton)
-                  .addGap(18, 18, 18)
+                  .addGap(64, 64, 64)
                   .addComponent(stopButton, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
                 .addComponent(label2)
                 .addGroup(layout.createSequentialGroup()
                   .addComponent(label1, GroupLayout.PREFERRED_SIZE, 55, GroupLayout.PREFERRED_SIZE)
                   .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                   .addGroup(layout.createParallelGroup()
-                    .addComponent(server, GroupLayout.PREFERRED_SIZE, 294, GroupLayout.PREFERRED_SIZE)
+                    .addComponent(serverCB, GroupLayout.PREFERRED_SIZE, 294, GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
                       .addComponent(wantAccess)
                       .addGap(77, 77, 77)
@@ -140,7 +149,7 @@ public class ManageForm extends JPanel {
           .addComponent(label2)
           .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
           .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-            .addComponent(server, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+            .addComponent(serverCB, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
             .addComponent(label1))
           .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
           .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
@@ -162,15 +171,15 @@ public class ManageForm extends JPanel {
   // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables
   // Generated using JFormDesigner non-commercial license
   private JLabel label1;
-  private JComboBox server;
+  private JComboBox serverCB;
   private JRadioButton wantAccess;
   private JRadioButton wantServlet;
   private JButton acceptButton;
   private JLabel label2;
   private JScrollPane scrollPane1;
   private JTextArea textArea1;
-  private StopButton stopButton;
   private JRadioButton wantRoots;
+  private StopButton stopButton;
   private DownloadAction downloadAction;
   // JFormDesigner - End of variables declaration  //GEN-END:variables
 
@@ -183,7 +192,8 @@ public class ManageForm extends JPanel {
     }
 
     public void actionPerformed(ActionEvent e) {
-      Data data =  new Data((String) server.getSelectedItem(), wantAccess.isSelected(), wantServlet.isSelected(),
+      String server = (String) serverCB.getSelectedItem();
+      Data data =  new Data(server, wantAccess.isSelected(), wantServlet.isSelected(),
               wantRoots.isSelected());
       ManageForm.this.firePropertyChange("Download", null, data);
     }

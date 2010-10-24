@@ -1,4 +1,3 @@
-// $Id: LayoutM.java,v 1.5 2005/08/22 17:13:58 caron Exp $
 /*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
@@ -333,25 +332,3 @@ class LayoutM implements LayoutManager2 {
     f2.revalidate();
   }
 }
-
-/* Change History:
-   $Log: LayoutM.java,v $
-   Revision 1.5  2005/08/22 17:13:58  caron
-   minor fixes from intelliJ analysis
-
-   Revision 1.4  2005/08/18 14:30:36  caron
-   bug fixes from intellij inspect
-
-   Revision 1.3  2004/08/26 17:55:18  caron
-   no message
-
-   Revision 1.2  2002/12/24 22:04:50  john
-   add bean, beanObject methods
-
-   Revision 1.1.1.1  2002/12/20 16:40:26  john
-   start new cvs root: prefs
-
-   Revision 1.2  2002/03/09 01:51:56  caron
-   add BeanTable, fix FieldResizable
-
-*/

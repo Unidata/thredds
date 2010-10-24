@@ -51,6 +51,7 @@ import java.beans.PropertyChangeListener;
 import java.io.*;
 import java.awt.*;
 import java.util.*;
+import java.util.List;
 
 import javax.swing.*;
 
@@ -187,8 +188,10 @@ public class TdsMonitor extends JPanel {
   /////////////////////////
 
   private class ManagePanel extends JPanel {
+    PreferencesExt prefs;
 
     ManagePanel(PreferencesExt p) {
+      this.prefs = p;
       manage = new ManageForm();
       setLayout(new BorderLayout());
       add(manage, BorderLayout.CENTER);
@@ -231,10 +234,17 @@ public class TdsMonitor extends JPanel {
             manage.getTextArea().append("\nDownload canceled by user");
         }
       });
+
+      List servers = this.prefs.getList("serverList", null);
+      if (servers != null) manage.setServers(servers);
     }
 
     void save() {
-
+      ComboBoxModel servers = manage.getServersCB();
+      List serverList = new ArrayList();
+      for (int i=0; i<servers.getSize(); i++)
+        serverList.add( servers.getElementAt(i));
+      prefs.putList("serverList", serverList);
     }
   }
 
@@ -263,7 +273,7 @@ public class TdsMonitor extends JPanel {
 
       // which server
       serverCB = new JComboBox();
-      serverCB.setModel(manage.getServers().getModel());
+      serverCB.setModel(manage.getServersCB());
       serverCB.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           String server = (String) serverCB.getSelectedItem();
@@ -462,7 +472,7 @@ public class TdsMonitor extends JPanel {
   //////////////////////////////////////////////////////////////
 
 
-  /**
+  /*
    * Finds all files matching
    * a glob pattern.  This method recursively searches directories, allowing
    * for glob expressions like {@code "c:\\data\\200[6-7]\\*\\1*\\A*.nc"}.

@@ -13,11 +13,11 @@
        <class>org.jdesktop.layout.GroupLayout</class> 
        <void method="setProperty"> 
         <string>$horizontalGroup</string> 
-        <string>par l {seq {par l {seq {space :p:39:p, par l {seq l {comp acceptButton:::p::p, space s:::p, comp stopButton:::p::p}, comp label2::l:p::p, seq l {comp label1:::p:55:p, space :::p, par l {comp server::l:p:294:p, seq l {comp wantAccess:::p::p, space :p:77:p, comp wantRoots:::p::p}, comp wantServlet::l:p::p}}}}, seq l {space :p:15:p, comp scrollPane1::::649:x}}, space :::p}}</string> 
+        <string>par l {seq {par l {seq {space :p:39:p, par l {seq l {comp acceptButton:::p::p, space :p:64:p, comp stopButton:::p::p}, comp label2::l:p::p, seq l {comp label1:::p:55:p, space :::p, par l {comp serverCB::l:p:294:p, seq l {comp wantAccess:::p::p, space :p:77:p, comp wantRoots:::p::p}, comp wantServlet::l:p::p}}}}, seq l {space :p:15:p, comp scrollPane1::::649:x}}, space :::p}}</string> 
        </void> 
        <void method="setProperty"> 
         <string>$verticalGroup</string> 
-        <string>par l {seq l {space :p:21:p, comp label2:::p::p, space :::p, par b {comp server::b:p::p, comp label1::b:p::p}, space :::p, par b {comp wantAccess::b:p::p, comp wantRoots::b:p::p}, space :::p, comp wantServlet:::p::p, space s:::p, par b {comp acceptButton::b:p::p, comp stopButton::b:p::p}, space s:::p, comp scrollPane1::::430:x, space :::p}}</string> 
+        <string>par l {seq l {space :p:21:p, comp label2:::p::p, space :::p, par b {comp serverCB::b:p::p, comp label1::b:p::p}, space :::p, par b {comp wantAccess::b:p::p, comp wantRoots::b:p::p}, space :::p, comp wantServlet:::p::p, space s:::p, par b {comp acceptButton::b:p::p, comp stopButton::b:p::p}, space s:::p, comp scrollPane1::::430:x, space :::p}}</string> 
        </void> 
       </object> 
       <void property="name"> 
@@ -51,16 +51,7 @@
          <string>model</string> 
          <object class="javax.swing.DefaultComboBoxModel"> 
           <void property="selectedItem"> 
-           <string>motherlode.ucar.edu:8080</string> 
-          </void> 
-          <void method="addElement"> 
-           <string>motherlode.ucar.edu:8080</string> 
-          </void> 
-          <void method="addElement"> 
-           <string>motherlode.ucar.edu:8081</string> 
-          </void> 
-          <void method="addElement"> 
-           <string>motherlode.ucar.edu:9080</string> 
+           <string>localhost:8080</string> 
           </void> 
           <void method="addElement"> 
            <string>localhost:8080</string> 
@@ -72,7 +63,7 @@
          <boolean>true</boolean> 
         </void> 
         <void property="name"> 
-         <string>server</string> 
+         <string>serverCB</string> 
         </void> 
        </object> 
       </void> 
@@ -182,26 +173,10 @@
       </void> 
       <void method="add"> 
        <object class="com.jformdesigner.model.FormComponent"> 
-        <string>ucar.nc2.ui.StopButton</string> 
-        <void method="setProperty"> 
-         <string>toolTipText</string> 
-         <string>stop download</string> 
-        </void> 
-        <void property="name"> 
-         <string>stopButton</string> 
-        </void> 
-       </object> 
-      </void> 
-      <void method="add"> 
-       <object class="com.jformdesigner.model.FormComponent"> 
         <string>javax.swing.JRadioButton</string> 
         <void method="setProperty"> 
          <string>text</string> 
          <string>data roots</string> 
-        </void> 
-        <void method="setProperty"> 
-         <string>selected</string> 
-         <boolean>true</boolean> 
         </void> 
         <void method="setProperty"> 
          <string>font</string> 
@@ -214,6 +189,18 @@
         </void> 
         <void property="name"> 
          <string>wantRoots</string> 
+        </void> 
+       </object> 
+      </void> 
+      <void method="add"> 
+       <object class="com.jformdesigner.model.FormComponent"> 
+        <string>ucar.nc2.ui.widget.StopButton</string> 
+        <void method="setProperty"> 
+         <string>text</string> 
+         <string>Stop</string> 
+        </void> 
+        <void property="name"> 
+         <string>stopButton</string> 
         </void> 
        </object> 
       </void> 

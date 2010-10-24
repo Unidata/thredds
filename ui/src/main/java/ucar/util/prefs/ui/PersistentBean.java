@@ -1,4 +1,3 @@
-// $Id: PersistentBean.java,v 1.3 2006/05/08 02:47:23 caron Exp $
 /*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
@@ -34,9 +33,6 @@
 
 package ucar.util.prefs.ui;
 
-import java.util.prefs.*;
-import ucar.util.prefs.*;
-
 import java.beans.*;
 import java.lang.reflect.*;
 import java.util.*;
@@ -45,7 +41,6 @@ import java.util.*;
  * Manages mapping of PrefPanel fields to java beans.
  *
  * @author John Caron
- * @version $Revision: 1.3 $ $Date: 2006/05/08 02:47:23 $
  */
 
 public class PersistentBean implements PersistenceManager {
@@ -354,20 +349,3 @@ public class PersistentBean implements PersistenceManager {
  }
 
 }
-
-/* Change History:
-   $Log: PersistentBean.java,v $
-   Revision 1.3  2006/05/08 02:47:23  caron
-   cleanup code for 1.5 compile
-   modest performance improvements
-   dapper reading, deal with coordinate axes as structure members
-   improve DL writing
-   TDS unit testing
-
-   Revision 1.2  2005/09/13 15:51:19  caron
-   *** empty log message ***
-
-   Revision 1.1  2004/11/04 00:45:27  caron
-   no message
-
-*/

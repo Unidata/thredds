@@ -1,4 +1,3 @@
-// $Id: PrefPanel.java,v 1.15 2006/07/06 21:35:46 caron Exp $
 /*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
@@ -100,7 +99,6 @@ import javax.swing.event.EventListenerList;
  * A heading takes up an entire row, spanning all columns
  *
  * @author John Caron
- * @version $Id: PrefPanel.java,v 1.15 2006/07/06 21:35:46 caron Exp $
  */
 
 public class PrefPanel extends JPanel {

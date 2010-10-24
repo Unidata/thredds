@@ -1,4 +1,3 @@
-// $Id: Field.java,v 1.12 2005/10/11 19:36:56 caron Exp $
 /*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
@@ -79,7 +78,6 @@ import javax.swing.text.*;
  *
  * @see PrefPanel
  * @author John Caron
- * @version $Id: Field.java,v 1.12 2005/10/11 19:36:56 caron Exp $
  */
 
 public abstract class Field {
@@ -1602,64 +1600,3 @@ public abstract class Field {
   }
 
 }
-
-/* Change History:
-   $Log: Field.java,v $
-   Revision 1.12  2005/10/11 19:36:56  caron
-   NcML add Records bug fixes
-   iosp.isValidFile( ) throws IOException
-   release 2.2.11
-
-   Revision 1.11  2005/08/22 21:57:43  caron
-   no message
-
-   Revision 1.10  2005/08/22 17:13:58  caron
-   minor fixes from intelliJ analysis
-
-   Revision 1.9  2005/08/22 01:12:29  caron
-   DatasetEditor
-
-   Revision 1.8  2005/08/17 18:36:27  caron
-   no message
-
-   Revision 1.7  2005/08/17 00:13:58  caron
-   Dataset Editor
-
-   Revision 1.6  2004/08/26 17:55:18  caron
-   no message
-
-   Revision 1.5  2003/05/29 23:33:28  john
-   latest release
-
-   Revision 1.4  2003/01/14 19:32:10  john
-   add Password.getPassword()
-
-   Revision 1.3  2003/01/06 19:37:04  john
-   new tests
-
-   Revision 1.2  2002/12/24 22:04:49  john
-   add bean, beanObject methods
-
-   Revision 1.1.1.1  2002/12/20 16:40:26  john
-   start new cvs root: prefs
-
-   Revision 1.6  2002/03/09 01:51:54  caron
-   add BeanTable, fix FieldResizable
-
-   Revision 1.5  2002/03/01 23:01:38  caron
-   resize Fields; replace LayoutManager for PrefPanel
-
-   Revision 1.4  2002/02/15 21:57:53  caron
-   minor fixes
-
-   Revision 1.3  2001/11/14 19:48:07  caron
-   TextFormatted bug
-
-   Revision 1.2  2001/11/12 19:36:14  caron
-   version 0.3
-
-   Revision 1.1.1.1  2001/11/10 16:01:24  caron
-   checkin prefs
-
-*/
-

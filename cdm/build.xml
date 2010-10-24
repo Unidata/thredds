@@ -72,7 +72,7 @@
   <property name="logging-minimal.jar" value="slf4j-jdk14-1.5.6.jar"/>
   <property name="logging-maximal.jar" value="slf4j-log4j12-1.5.6.jar"/>
   <property name="log4j.jar" value="log4j-1.2.15.jar"/>
-  <property name="lucene.jar" value="lucene.jar"/>
+  <!-- property name="lucene.jar" value="lucene.jar"/ -->
   <property name="opendap.jar" value="opendap-2.2.jar"/>
   <property name="protobuf.jar" value="protobuf-java-2.1.0.jar"/>
   <property name="resourcesOptional.jar" value="resourcesOptional.jar"/>
@@ -114,7 +114,6 @@
     <include name="lib/${visadNoDods.jar}"/>
     <include name="lib/${guiBuilder.jar}"/>
     <include name="lib/${jgoodies.jar}"/>
-    <include name="lib/${lucene.jar}"/>
     <include name="lib/${protobuf.jar}"/>
     <include name="lib/${spring.jar}"/>
     <include name="lib/${stax.jar}"/>
@@ -631,7 +630,6 @@
     <include name="external/${jgoodies.jar}"/>
     <include name="external/${jfreechart.jar}"/>
     <include name="external/${jcommon.jar}"/>
-    <include name="external/${lucene.jar}"/>
     <include name="external/${spring.jar}"/>
   </fileset>
 
@@ -662,7 +660,8 @@
       <patternset refid="sources"/>
       <patternset>
         <include name="ucar/nc2/ui/**/*.java"/>
-        <include name="thredds/monitor/*.java"/>
+        <include name="thredds/ui/**/*.java"/>
+        <exclude name="thredds/ui/catalog/search/*.java"/>
       </patternset>
 
       <classpath refid="compile.classpath"/>

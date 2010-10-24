@@ -3,7 +3,9 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Changes in version 4.2:
- 11: (2010-10-xx)
+ 11: (2010-10-24)
+  put tdsMonitor into ToolsUI, remove lucene
+  reorganize ui packages
   GridVariable : remove check for same data on duplicate record - too expensive.
  10: (2010-10-21)
   Grib2DataSection: handle all missing data case (DS error os=2 nbitsd=0)

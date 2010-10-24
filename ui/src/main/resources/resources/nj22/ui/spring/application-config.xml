@@ -10,7 +10,7 @@
 							http://www.springframework.org/schema/util
 							http://www.springframework.org/schema/util/spring-util-2.5.xsd">
 
-  <bean id="openRAFMonitor" class="thredds.monitor.OpenRAFMonitorImpl"/>
+  <bean id="openRAFMonitor" class="thredds.ui.monitor.OpenRAFMonitorImpl"/>
 
 	<!-- Configuration for JMX exposure in the application -->
 	<bean id="mbeanExporter" class="org.springframework.jmx.export.MBeanExporter" lazy-init="false">
