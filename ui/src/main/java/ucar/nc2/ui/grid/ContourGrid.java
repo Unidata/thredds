@@ -1,4 +1,3 @@
-// $Id: ContourGrid.java 50 2006-07-12 16:30:06Z caron $
 /*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
@@ -189,7 +188,6 @@ import java.util.*;      // for Iterator and ArrayList
  * values for cell corners which fit the case.
  *
  * @author wier
- * @version $Revision: 50 $ $Date: 2006-07-12 16:30:06Z $
  */
 public class ContourGrid {
   private GridDatatype geogrid;

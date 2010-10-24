@@ -1,4 +1,3 @@
-// $Id: NewMapAreaEvent.java 50 2006-07-12 16:30:06Z caron $
 /*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
@@ -35,7 +34,6 @@ package ucar.nc2.ui.geoloc;
 /**
  * Used to notify listeners that there is a new world bounding box.
  * @author John Caron
- * @version $Id: NewMapAreaEvent.java 50 2006-07-12 16:30:06Z caron $
  */
 public class NewMapAreaEvent extends java.util.EventObject {
 
@@ -43,37 +41,3 @@ public class NewMapAreaEvent extends java.util.EventObject {
     super(source);
   }
 }
-
-/* Change History:
-   $Log: NewMapAreaEvent.java,v $
-   Revision 1.2  2004/09/24 03:26:41  caron
-   merge nj22
-
-   Revision 1.1  2002/12/13 00:55:08  caron
-   pass 2
-
-   Revision 1.1.1.1  2002/02/26 17:24:52  caron
-   import sources
-
-   Revision 1.3  2000/08/18 04:16:20  russ
-   Licensed under GNU LGPL.
-
-   Revision 1.2  1999/06/03 01:44:27  caron
-   remove the damn controlMs
-
-   Revision 1.1.1.1  1999/06/02 20:36:01  caron
-   another reorg
-
-   Revision 1.1.1.1  1999/05/21 17:33:49  caron
-   startAgain
-
-# Revision 1.5  1999/03/16  16:57:19  caron
-# fix StationModel editing; add TopLevel
-#
-# Revision 1.4  1999/02/15  23:05:31  caron
-# upgrade to java2D, new ProjectionManager
-#
-# Revision 1.3  1998/12/14  17:10:49  russ
-# Add comment for accumulating change histories.
-#
-*/

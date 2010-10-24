@@ -1,4 +1,3 @@
-// $Id: Navigation.java 50 2006-07-12 16:30:06Z caron $
 /*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
@@ -46,7 +45,6 @@ import java.awt.geom.Rectangle2D;
     setMapArea() trigger a NewMapAreaEvent also.
 
  * @author John Caron
- * @version $Id: Navigation.java 50 2006-07-12 16:30:06Z caron $
  **/
 
 public class Navigation  {
@@ -389,29 +387,3 @@ public class Navigation  {
 
 }
 
-/* Change History:
-   $Log: Navigation.java,v $
-   Revision 1.5  2004/09/24 03:26:41  caron
-   merge nj22
-
-   Revision 1.4  2004/05/21 05:57:36  caron
-   release 2.0b
-
-   Revision 1.3  2004/02/20 05:02:56  caron
-   release 1.3
-
-   Revision 1.2  2003/03/17 21:12:39  john
-   new viewer
-
-   Revision 1.1  2002/12/13 00:55:08  caron
-   pass 2
-
-   Revision 1.3  2002/04/29 22:23:34  caron
-   NP detects seam crossings and throws NewProjectionEvent instead of NewMapAreaEvent
-
-   Revision 1.2  2002/04/29 22:13:16  caron
-   move event handling to NavigatedPanel, also fix bug on startup not calling recalcFromBB
-
-   Revision 1.1.1.1  2002/02/26 17:24:52  caron
-   import sources
-*/

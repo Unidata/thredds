@@ -1,4 +1,3 @@
-// $Id: ActionSourceListener.java 50 2006-07-12 16:30:06Z caron $
 /*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
@@ -43,7 +42,6 @@ import ucar.nc2.ui.util.ListenerManager;
  *
  * @see ActionCoordinator
  * @author John Caron
- * @version $Id: ActionSourceListener.java 50 2006-07-12 16:30:06Z caron $
  */
 
 public abstract class ActionSourceListener implements ActionValueListener {

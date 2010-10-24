@@ -41,18 +41,17 @@ import java.awt.event.ActionEvent;
 import java.awt.*;
 
 /**
- * Describe
+ * Not used ?
  *
  * @author caron
  * @since Sep 8, 2009
  */
 public class DatasetChooser extends FileManager {
-  private ComboBox cb;
 
-  public DatasetChooser(PreferencesExt prefs, String command) {
+  public DatasetChooser(PreferencesExt prefs) {
     super(null, null, null, prefs);
 
-    cb = new ComboBox(prefs);
+    ComboBox cb = new ComboBox(prefs);
     cb.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
           selectedURL = true;
@@ -61,7 +60,7 @@ public class DatasetChooser extends FileManager {
 
     JPanel p = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
     p.add( new JLabel("or a URL:"));
-    p.add( cb);
+    p.add(cb);
 
     main.add(cb, BorderLayout.SOUTH);    
   }

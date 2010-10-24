@@ -32,7 +32,7 @@
  */
 package ucar.nc2.thredds.server;
 
-import ucar.nc2.ui.StopButton;
+import ucar.nc2.ui.widget.StopButton;
 
 import java.io.*;
 import java.awt.event.WindowAdapter;

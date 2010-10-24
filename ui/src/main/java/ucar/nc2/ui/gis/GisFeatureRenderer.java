@@ -1,4 +1,3 @@
-// $Id: GisFeatureRenderer.java 50 2006-07-12 16:30:06Z caron $
 /*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
@@ -33,8 +32,7 @@
  */
 package ucar.nc2.ui.gis;
 
-import ucar.nc2.ui.datamodel.gis.AbstractGisFeature;
-import ucar.nc2.ui.widget.Renderer;
+import ucar.nc2.ui.util.Renderer;
 import ucar.unidata.geoloc.*;
 
 import ucar.util.prefs.ui.Debug;
@@ -52,7 +50,6 @@ import java.util.List;
  * Superclass for rendering collections of GisFeatures.
  *
  * @author: John Caron
- * @version: $Id: GisFeatureRenderer.java 50 2006-07-12 16:30:06Z caron $
  */
 public abstract class GisFeatureRenderer implements Renderer {
   private Color color = Color.blue;                   // default color of polylines
@@ -147,49 +144,3 @@ public abstract class GisFeatureRenderer implements Renderer {
   }
 
 }
-
-/* Change History:
-   $Log: GisFeatureRenderer.java,v $
-   Revision 1.4  2004/09/24 03:26:37  caron
-   merge nj22
-
-   Revision 1.3  2003/04/08 18:16:21  john
-   nc2 v2.1
-
-   Revision 1.2  2003/03/17 21:12:35  john
-   new viewer
-
-   Revision 1.1  2002/12/13 00:53:09  caron
-   pass 2
-
-   Revision 1.1.1.1  2002/02/26 17:24:49  caron
-   import sources
-
-   Revision 1.9  2001/04/30 23:38:22  caron
-   debug
-
-   Revision 1.8  2000/08/18 04:15:24  russ
-   Licensed under GNU LGPL.
-
-   Revision 1.7  2000/05/26 21:19:16  caron
-   new GDV release
-
-   Revision 1.6  2000/05/26 19:54:58  wier
-   minor reformatting
-
-   Revision 1.5  2000/05/16 22:38:01  caron
-   factor GisFeatureRenderer
-
-   Revision 1.4  2000/03/01 19:31:24  caron
-   setProjection bug
-
-   Revision 1.3  2000/02/17 20:18:02  caron
-   make printing work for zoom resolution maps
-
-   Revision 1.2  2000/02/11 01:24:42  caron
-   add getDataProjection()
-
-   Revision 1.1  2000/02/10 17:45:11  caron
-   add GisFeatureRenderer,GisFeatureAdapter
-
-*/

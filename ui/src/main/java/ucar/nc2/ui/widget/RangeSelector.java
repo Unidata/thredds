@@ -1,4 +1,3 @@
-// $Id: RangeSelector.java 50 2006-07-12 16:30:06Z caron $
 /*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
@@ -475,19 +474,3 @@ public class RangeSelector extends JPanel {
   }
 
 }
-
-/* Change History:
-   $Log: RangeSelector.java,v $
-   Revision 1.7  2004/09/30 00:33:38  caron
-   *** empty log message ***
-
-   Revision 1.6  2004/09/25 00:09:43  caron
-   add images, thredds tab
-
-   Revision 1.5  2004/09/24 03:26:34  caron
-   merge nj22
-
-   Revision 1.4  2004/05/21 05:57:35  caron
-   release 2.0b
-
-*/

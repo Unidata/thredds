@@ -1,4 +1,3 @@
-// $Id: CursorMoveEventListener.java 50 2006-07-12 16:30:06Z caron $
 /*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
@@ -35,27 +34,7 @@ package ucar.nc2.ui.geoloc;
 /**
  * Listeners for "Cursor Move" events.
  * @author John Caron
- * @version $Id: CursorMoveEventListener.java 50 2006-07-12 16:30:06Z caron $
  */
 public interface CursorMoveEventListener extends java.util.EventListener {
     public void actionPerformed( CursorMoveEvent e);
 }
-
-/* Change History:
-   $Log: CursorMoveEventListener.java,v $
-   Revision 1.2  2004/09/24 03:26:40  caron
-   merge nj22
-
-   Revision 1.1  2002/12/13 00:55:08  caron
-   pass 2
-
-   Revision 1.1.1.1  2002/02/26 17:24:53  caron
-   import sources
-
-   Revision 1.2  2000/08/18 04:16:18  russ
-   Licensed under GNU LGPL.
-
-   Revision 1.1  2000/02/07 18:06:10  caron
-   NP throws CursorMoveEvent
-
-*/

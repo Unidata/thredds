@@ -1,4 +1,3 @@
-// $Id: ContourFeatureRenderer.java 50 2006-07-12 16:30:06Z caron $
 /*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
@@ -33,10 +32,10 @@
  */
 package ucar.nc2.ui.grid;
 
+import ucar.nc2.ui.gis.GisFeatureAdapter;
 import ucar.nc2.ui.gis.GisFeatureRenderer;
 import ucar.nc2.ui.widget.FontUtil;
 import ucar.unidata.geoloc.*;
-import ucar.nc2.ui.datamodel.gis.GisFeatureAdapter;
 
 import ucar.unidata.util.Format;
 import ucar.util.prefs.ui.Debug;
@@ -55,7 +54,6 @@ import java.awt.geom.Rectangle2D;
  * Contour rendering.
  *
  * @author caron
- * @version $Revision: 50 $ $Date: 2006-07-12 16:30:06Z $
  */
 public class ContourFeatureRenderer extends GisFeatureRenderer {
 
@@ -201,46 +199,3 @@ public class ContourFeatureRenderer extends GisFeatureRenderer {
     }
   }
 }
-
-/* Change History:
-   $Log: ContourFeatureRenderer.java,v $
-   Revision 1.1  2004/09/30 00:33:42  caron
-   *** empty log message ***
-
-   Revision 1.5  2004/09/25 00:09:44  caron
-   add images, thredds tab
-
-   Revision 1.4  2004/09/24 03:26:42  caron
-   merge nj22
-
-   Revision 1.3  2003/04/08 18:16:25  john
-   nc2 v2.1
-
-   Revision 1.2  2003/03/17 21:12:41  john
-   new viewer
-
-   Revision 1.1  2002/12/13 00:55:08  caron
-   pass 2
-
-   Revision 1.1.1.1  2002/02/26 17:24:52  caron
-   import sources
-
-   Revision 1.3  2001/04/30 23:40:22  caron
-   fix event bug
-
-   Revision 1.2  2000/08/18 04:16:25  russ
-   Licensed under GNU LGPL.
-
-   Revision 1.1  2000/06/30 16:31:19  caron
-   minor revs for GDV release
-
-   Revision 1.3  2000/05/26 19:53:26  wier
-   new draw() method renders contout labels
-
-   Revision 1.2  2000/05/25 21:03:25  wier
-   using the new ContourFeature
-
-   Revision 1.1  2000/05/16 22:38:00  caron
-   factor GisFeatureRenderer
-
-*/

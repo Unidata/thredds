@@ -1,4 +1,3 @@
-// $Id: SpinIcon.java 50 2006-07-12 16:30:06Z caron $
 /*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
@@ -100,16 +99,3 @@ public class SpinIcon implements javax.swing.Icon {
   }
 
 }
-
-/* Change History:
-   $Log: SpinIcon.java,v $
-   Revision 1.2  2004/09/24 03:26:34  caron
-   merge nj22
-
-   Revision 1.1.1.1  2002/11/23 17:49:48  caron
-   thredds reorg
-
-   Revision 1.2  2002/04/29 22:26:58  caron
-   minor
-
-*/

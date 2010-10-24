@@ -1,4 +1,3 @@
-// $Id: GridUI.java 70 2006-07-13 15:16:05Z caron $
 /*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
@@ -36,7 +35,7 @@ package ucar.nc2.ui.grid;
 import thredds.catalog.*;
 import ucar.nc2.ui.gis.MapBean;
 import ucar.nc2.ui.geoloc.NavigatedPanel;
-import ucar.nc2.ui.widget.Renderer;
+import ucar.nc2.ui.util.Renderer;
 
 import ucar.nc2.dataset.*;
 
@@ -65,7 +64,6 @@ import javax.swing.border.*;
  * This is the thredds Data Viewer application User Interface for Grids.
  *
  * @author caron
- * @version $Revision: 70 $ $Date: 2006-07-13 15:16:05Z $
  */
 public class GridUI extends JPanel {
   static private final String DATASET_URL = "DatasetURL";

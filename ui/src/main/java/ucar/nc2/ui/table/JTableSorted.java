@@ -1,4 +1,3 @@
-// $Id: JTableSorted.java 50 2006-07-12 16:30:06Z caron $
 /*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *

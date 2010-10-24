@@ -1,4 +1,3 @@
-// $Id: HelpWindow.java 50 2006-07-12 16:30:06Z caron $
 /*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
@@ -97,13 +96,3 @@ public class HelpWindow extends IndependentDialog {
   }
 
 }
-
-/* Change History:
-   $Log: HelpWindow.java,v $
-   Revision 1.2  2004/09/24 03:26:33  caron
-   merge nj22
-
-   Revision 1.1  2004/05/21 05:57:34  caron
-   release 2.0b
-
- */

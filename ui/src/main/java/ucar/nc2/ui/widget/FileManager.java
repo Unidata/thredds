@@ -42,7 +42,7 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowAdapter;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.*;
 
 import javax.swing.*;
 import javax.swing.filechooser.*;
@@ -81,7 +81,6 @@ public class FileManager {
   private IndependentDialog w;
   private ucar.util.prefs.ui.ComboBox dirComboBox;
   private javax.swing.JFileChooser chooser = null;
-  private java.util.List<String> defaultDirs = new ArrayList<String>();
 
   // for override
   protected JPanel main;
@@ -107,6 +106,7 @@ public class FileManager {
     this.prefs = prefs;
 
     // where to start ?
+    java.util.List<String> defaultDirs = new ArrayList<String>();
     if (defDir != null)
       defaultDirs.add(defDir);
     else {

@@ -1,4 +1,3 @@
-// $Id: NewProjectionListener.java 50 2006-07-12 16:30:06Z caron $
 /*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
@@ -34,39 +33,7 @@
 package ucar.nc2.ui.geoloc;
 /** Listeners for new Projection events
  * @author John Caron
- * @version $Id: NewProjectionListener.java 50 2006-07-12 16:30:06Z caron $
  */
 public interface NewProjectionListener extends java.util.EventListener {
     public void actionPerformed( NewProjectionEvent e);
 }
-
-/* Change History:
-   $Log: NewProjectionListener.java,v $
-   Revision 1.2  2004/09/24 03:26:41  caron
-   merge nj22
-
-   Revision 1.1  2002/12/13 00:55:08  caron
-   pass 2
-
-   Revision 1.1.1.1  2002/02/26 17:24:53  caron
-   import sources
-
-   Revision 1.3  2000/08/18 04:16:21  russ
-   Licensed under GNU LGPL.
-
-   Revision 1.2  1999/06/03 01:44:28  caron
-   remove the damn controlMs
-
-   Revision 1.1.1.1  1999/06/02 20:36:02  caron
-   another reorg
-
-   Revision 1.1.1.1  1999/05/21 17:33:49  caron
-   startAgain
-
-# Revision 1.3  1999/03/16  16:57:38  caron
-# fix StationModel editing; add TopLevel
-#
-# Revision 1.2  1998/12/14  17:10:52  russ
-# Add comment for accumulating change histories.
-#
-*/

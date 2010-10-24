@@ -1,4 +1,3 @@
-// $Id:GisFeatureAdapter.java 63 2006-07-12 21:50:51Z edavis $
 /*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
@@ -31,70 +30,28 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package ucar.nc2.ui.datamodel.gis;
 
+package ucar.nc2.ui.geoloc;
+import java.awt.*;
 
-/**
- * This adapts a Gisfeature into a subclass of AbstractGisFeature.
- * Part of te ADT middleware pattern.
- *
+/** Rectangle Rubberbanding.
+ * @author David M. Geary
  * @author John Caron
- * @version $Id:GisFeatureAdapter.java 63 2006-07-12 21:50:51Z edavis $
  */
+public class RubberbandRectangle extends Rubberband {
 
-public class GisFeatureAdapter extends AbstractGisFeature  {
-  private GisFeature gisFeature; // adaptee
-
-  public GisFeatureAdapter( GisFeature gisFeature) {
-    this.gisFeature = gisFeature;
+  public RubberbandRectangle(Component component, boolean listen) {
+    super(component, listen);
   }
+  public void drawLast(Graphics2D graphics) {
+    Rectangle rect = lastBounds();
+    graphics.drawRect(rect.x, rect.y, rect.width, rect.height);
+    // System.out.println("RBR drawLast");
+  }
+  public void drawNext(Graphics2D graphics) {
+    Rectangle rect = getBounds();
+    graphics.drawRect(rect.x, rect.y, rect.width, rect.height);
+    // System.out.println("RBR drawNext");
+  }
+}
 
-    /**
-     * Get the bounding box for this feature.
-     *
-     * @return rectangle bounding this feature
-     */
-    public java.awt.geom.Rectangle2D getBounds2D() { return gisFeature.getBounds2D(); }
-
-    /**
-     * Get total number of points in all parts of this feature.
-     *
-     * @return total number of points in all parts of this feature.
-     */
-    public int getNumPoints(){ return gisFeature.getNumPoints(); }
-
-    /**
-     * Get number of parts comprising this feature.
-     *
-     * @return number of parts comprising this feature.
-     */
-    public int getNumParts(){ return gisFeature.getNumParts(); }
-
-    /**
-     * Get the parts of this feature, in the form of an iterator.
-     *
-     * @return the iterator over the parts of this feature.  Each part
-     * is a GisPart.
-     */
-    public java.util.Iterator getGisParts(){ return gisFeature.getGisParts(); }
-
-} // GisFeatureAdapter
-
-/* Change History:
-   $Log: GisFeatureAdapter.java,v $
-   Revision 1.2  2004/09/24 03:26:32  caron
-   merge nj22
-
-   Revision 1.1  2002/12/13 00:53:09  caron
-   pass 2
-
-   Revision 1.1.1.1  2002/02/26 17:24:46  caron
-   import sources
-
-   Revision 1.2  2000/08/18 04:15:24  russ
-   Licensed under GNU LGPL.
-
-   Revision 1.1  2000/02/10 17:45:10  caron
-   add GisFeatureRenderer,GisFeatureAdapter
-
-*/

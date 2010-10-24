@@ -1,4 +1,3 @@
-// $Id: RowSorterAbstract.java 50 2006-07-12 16:30:06Z caron $
 /*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
@@ -45,7 +44,6 @@ import java.util.*;
  * @see ucar.nc2.ui.table.RowSorter
  *
  * @author John Caron
- * @version $Id: RowSorterAbstract.java 50 2006-07-12 16:30:06Z caron $
  */
 
 public abstract class RowSorterAbstract implements ucar.nc2.ui.table.RowSorter {
@@ -86,7 +84,7 @@ public abstract class RowSorterAbstract implements ucar.nc2.ui.table.RowSorter {
   private PreferencesExt store;
   /**
     Restore the state from the last saved in the PreferencesExt.
-    @param PersistentStore store ok if null or empty
+    @param  store ok if null or empty
   */
   public void restoreState(PreferencesExt store) {
     this.store = store;

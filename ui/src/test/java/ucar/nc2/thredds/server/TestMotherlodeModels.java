@@ -34,7 +34,7 @@ package ucar.nc2.thredds.server;
 
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
-import ucar.nc2.ui.StopButton;
+import ucar.nc2.ui.widget.StopButton;
 import ucar.nc2.thredds.ThreddsDataFactory;
 import ucar.nc2.dataset.NetcdfDataset;
 

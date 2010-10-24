@@ -1,4 +1,3 @@
-// $Id: ContourFeature.java 50 2006-07-12 16:30:06Z caron $
 /*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
@@ -33,8 +32,8 @@
  */
 package ucar.nc2.ui.grid;
 
-import ucar.nc2.ui.datamodel.gis.AbstractGisFeature;
-import ucar.nc2.ui.datamodel.gis.GisPart;
+import ucar.nc2.ui.gis.AbstractGisFeature;
+import ucar.nc2.ui.gis.GisPart;
 
 import java.util.*;      // for Iterator and ArrayList
 import java.awt.geom.*;  // for Point2D.Double
@@ -45,7 +44,6 @@ import java.awt.geom.*;  // for Point2D.Double
  * Created:
  *
  * @author wier
- * @version $Revision: 50 $ $Date: 2006-07-12 16:30:06Z $
  */
 
 public class ContourFeature extends AbstractGisFeature {

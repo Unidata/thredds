@@ -122,28 +122,4 @@ public class IndependentWindow extends JFrame {
     });
   }
 
-
 }
-
-/* Change History:
-   $Log: IndependentWindow.java,v $
-   Revision 1.5  2004/09/30 00:33:38  caron
-   *** empty log message ***
-
-   Revision 1.4  2004/09/24 03:26:34  caron
-   merge nj22
-
-   Revision 1.3  2004/02/21 02:16:16  caron
-   put show in event thread
-
-   Revision 1.2  2003/12/04 22:27:48  caron
-   *** empty log message ***
-
-   Revision 1.1.1.1  2002/11/23 17:49:48  caron
-   thredds reorg
-
-   Revision 1.1.1.1  2002/02/15 00:01:49  caron
-   import sources
-
-*/
-

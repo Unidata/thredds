@@ -1,4 +1,3 @@
-// $Id: Renderer.java 50 2006-07-12 16:30:06Z caron $
 /*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
@@ -31,12 +30,11 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package ucar.nc2.ui.widget;
+package ucar.nc2.ui.util;
 
 /** A Renderer does the actual work of drawing objects.
  *
  * @author John Caron
- * @version $Id: Renderer.java 50 2006-07-12 16:30:06Z caron $
  */
 public interface Renderer {
 
@@ -73,31 +71,3 @@ public interface Renderer {
    */
   public ucar.unidata.geoloc.LatLonRect getPreferredArea();
 }
-
-/* Change History:
-   $Log: Renderer.java,v $
-   Revision 1.6  2004/09/28 21:39:11  caron
-   *** empty log message ***
-
-   Revision 1.5  2004/09/24 03:26:39  caron
-   merge nj22
-
-   Revision 1.4  2003/05/29 23:07:52  john
-   bug fixes
-
-   Revision 1.3  2003/04/08 18:16:23  john
-   nc2 v2.1
-
-   Revision 1.2  2003/03/17 21:12:38  john
-   new viewer
-
-   Revision 1.1  2002/12/13 00:53:09  caron
-   pass 2
-
-   Revision 1.2  2002/04/29 22:26:57  caron
-   minor
-
-   Revision 1.1.1.1  2002/02/26 17:24:50  caron
-   import sources
-*/
-

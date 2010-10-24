@@ -1,4 +1,3 @@
-// $Id: ActionValueListener.java 50 2006-07-12 16:30:06Z caron $
 /*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
@@ -35,7 +34,6 @@ package ucar.nc2.ui.event;
 
 /** Listeners for ActionValueEvents.
  * @author John Caron
- * @version $Id: ActionValueListener.java 50 2006-07-12 16:30:06Z caron $
  */
 public interface ActionValueListener extends java.util.EventListener {
   public void actionPerformed( ActionValueEvent e);

@@ -1,4 +1,3 @@
-// $Id: HtmlBrowser.java 50 2006-07-12 16:30:06Z caron $
 /*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
@@ -54,7 +53,6 @@ import javax.swing.text.html.*;
  * A simple HTML Browser based on JEditPane.
  *
  * @author John Caron
- * @version $Id: HtmlBrowser.java 50 2006-07-12 16:30:06Z caron $
  */
 
 public class HtmlBrowser extends JPanel {
@@ -402,35 +400,3 @@ public class HtmlBrowser extends JPanel {
   }
 
 }
-
-/* Change History:
-   $Log: HtmlBrowser.java,v $
-   Revision 1.9  2004/10/15 19:16:07  caron
-   enum now keyword in 1.5
-   SelectDateRange send ISO date string
-
-   Revision 1.8  2004/09/30 00:33:38  caron
-   *** empty log message ***
-
-   Revision 1.7  2004/09/24 03:26:33  caron
-   merge nj22
-
-   Revision 1.6  2004/06/12 02:07:56  caron
-   special URLs have dataset, catref
-
-   Revision 1.5  2004/05/21 05:57:34  caron
-   release 2.0b
-
-   Revision 1.4  2004/05/11 23:30:35  caron
-   release 2.0a
-
-   Revision 1.3  2004/03/05 23:43:24  caron
-   1.3.1 release
-
-   Revision 1.2  2004/02/20 05:02:53  caron
-   release 1.3
-
-   Revision 1.1  2003/12/04 22:27:47  caron
-   *** empty log message ***
-
- */

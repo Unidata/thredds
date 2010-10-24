@@ -1,4 +1,3 @@
-// $Id: ThreadSorter.java 50 2006-07-12 16:30:06Z caron $
 /*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
@@ -42,7 +41,6 @@ package ucar.nc2.ui.table;
  * @see JTableSorted
  *
  * @author John Caron
- * @version $Id: ThreadSorter.java 50 2006-07-12 16:30:06Z caron $
  */
 
 public interface ThreadSorter extends RowSorter {

@@ -48,7 +48,6 @@ import javax.swing.*;
  *   (ucar.unidata.view.grid.VertScaleSlider) and a bottom axis.
  *
  * @author caron
- * @version $Revision: 50 $ $Date: 2006-07-12 16:30:06Z $
  */
 
 public class VertPanel extends JPanel {

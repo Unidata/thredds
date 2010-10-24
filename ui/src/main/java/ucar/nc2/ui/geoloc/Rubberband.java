@@ -1,4 +1,3 @@
-// $Id: Rubberband.java 50 2006-07-12 16:30:06Z caron $
 /*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
@@ -31,7 +30,7 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package ucar.nc2.ui.widget;
+package ucar.nc2.ui.geoloc;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -40,7 +39,6 @@ import java.awt.event.*;
  * Implements XOR rubberbanding.
  * @author David M. Geary
  * @author John Caron
- * @version $Id: Rubberband.java 50 2006-07-12 16:30:06Z caron $
  */
 abstract public class Rubberband {
   protected Point anchorPt    = new Point(0,0);
@@ -189,21 +187,3 @@ abstract public class Rubberband {
                 Math.abs(lastPt.y - anchorPt.y));
   }
 }
-
-/* Change History:
-   $Log: Rubberband.java,v $
-   Revision 1.3  2004/09/24 03:26:39  caron
-   merge nj22
-
-   Revision 1.2  2004/05/21 05:57:35  caron
-   release 2.0b
-
-   Revision 1.1  2002/12/13 00:53:09  caron
-   pass 2
-
-   Revision 1.2  2002/04/29 22:26:57  caron
-   minor
-
-   Revision 1.1.1.1  2002/02/26 17:24:51  caron
-   import sources
-*/

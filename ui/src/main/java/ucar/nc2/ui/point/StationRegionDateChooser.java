@@ -32,11 +32,12 @@
  */
 package ucar.nc2.ui.point;
 
-import ucar.nc2.ui.widget.RubberbandRectangleHandles;
+import ucar.nc2.ui.geoloc.RubberbandRectangleHandles;
 import ucar.nc2.ui.event.ActionSourceListener;
 import ucar.nc2.ui.event.ActionValueEvent;
 import ucar.nc2.ui.event.ActionValueListener;
 import ucar.nc2.ui.geoloc.*;
+import ucar.nc2.ui.util.Renderer;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.units.DateRange;
 
@@ -472,7 +473,7 @@ public class StationRegionDateChooser extends NPController {
     }
 
     for (int i = 0; i < renderers.size(); i++) {
-      ucar.nc2.ui.widget.Renderer rend = (ucar.nc2.ui.widget.Renderer) renderers.get(i);
+      ucar.nc2.ui.util.Renderer rend = (Renderer) renderers.get(i);
       rend.draw(gNP, atI);
     }
     gNP.dispose();

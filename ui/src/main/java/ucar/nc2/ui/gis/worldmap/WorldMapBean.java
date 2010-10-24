@@ -1,4 +1,3 @@
-// $Id: WorldMapBean.java 50 2006-07-12 16:30:06Z caron $
 /*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
@@ -34,7 +33,7 @@
 package ucar.nc2.ui.gis.worldmap;
 
 import ucar.nc2.ui.gis.MapBean;
-import ucar.nc2.ui.widget.Renderer;
+import ucar.nc2.ui.util.Renderer;
 import ucar.nc2.ui.widget.BAMutil;
 
 /** Wraps the default WorldMap into a MapBean */

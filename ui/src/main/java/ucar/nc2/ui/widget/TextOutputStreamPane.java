@@ -1,4 +1,3 @@
-// $Id: TextOutputStreamPane.java 50 2006-07-12 16:30:06Z caron $
 /*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
@@ -44,7 +43,6 @@ import javax.swing.*;
  * A TextHistoryPane widget connected to a ByteBufferOutputStream for its text.
  *
  * @author John Caron
- * @version $Id: TextOutputStreamPane.java 50 2006-07-12 16:30:06Z caron $
  */
 
 public class TextOutputStreamPane extends TextHistoryPane {
@@ -83,25 +81,3 @@ public class TextOutputStreamPane extends TextHistoryPane {
     public ByteArrayOutputStream getOutputStream() { return bos; }
 
 }
-
-/* Change History:
-   $Log: TextOutputStreamPane.java,v $
-   Revision 1.2  2004/09/30 00:33:38  caron
-   *** empty log message ***
-
-   Revision 1.1  2004/09/24 03:26:35  caron
-   merge nj22
-
-   Revision 1.5  2004/06/12 02:08:40  caron
-   validate dqc or catalog
-
-   Revision 1.4  2004/06/04 00:51:57  caron
-   release 2.0b
-
-   Revision 1.3  2004/05/11 23:30:36  caron
-   release 2.0a
-
-   Revision 1.2  2004/03/05 23:43:25  caron
-   1.3.1 release
-
- */

@@ -1,4 +1,3 @@
-// $Id: RubberbandRectangleHandles.java 50 2006-07-12 16:30:06Z caron $
 /*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
@@ -32,7 +31,7 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package ucar.nc2.ui.widget;
+package ucar.nc2.ui.geoloc;
 
 import java.awt.*;
 import java.awt.geom.*;
@@ -40,7 +39,6 @@ import java.awt.geom.*;
 /** Rectangle Rubberbanding.
  * @author David M. Geary
  * @author John Caron
- * @version $Id: RubberbandRectangleHandles.java 50 2006-07-12 16:30:06Z caron $
  */
 public class RubberbandRectangleHandles extends Rubberband {
   static public double handleSizePixels = 6.0;
@@ -157,21 +155,3 @@ public class RubberbandRectangleHandles extends Rubberband {
   }
 
 }
-
-/* Change History:
-   $Log: RubberbandRectangleHandles.java,v $
-   Revision 1.2  2004/09/24 03:26:39  caron
-   merge nj22
-
-   Revision 1.1  2004/05/21 05:57:35  caron
-   release 2.0b
-
-   Revision 1.1  2002/12/13 00:53:09  caron
-   pass 2
-
-   Revision 1.2  2002/04/29 22:26:57  caron
-   minor
-
-   Revision 1.1.1.1  2002/02/26 17:24:51  caron
-   import sources
-*/

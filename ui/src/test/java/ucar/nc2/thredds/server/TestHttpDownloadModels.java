@@ -2,9 +2,8 @@ package ucar.nc2.thredds.server;
 
 import thredds.catalog.*;
 import thredds.catalog.crawl.CatalogCrawler;
-import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.thredds.ThreddsDataFactory;
-import ucar.nc2.ui.StopButton;
+import ucar.nc2.ui.widget.StopButton;
 import ucar.nc2.util.IO;
 
 import javax.swing.*;
@@ -14,7 +13,6 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.Formatter;
 
 /**
  * Download a sample file from each dataset in idd/models.xml

@@ -1,4 +1,3 @@
-// $Id: GridController.java 70 2006-07-13 15:16:05Z caron $
 /*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
@@ -42,6 +41,7 @@ import ucar.nc2.dataset.*;
 import ucar.nc2.dt.*;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.grid.*;
+import ucar.nc2.ui.util.Renderer;
 import ucar.nc2.ui.widget.*;
 import ucar.unidata.geoloc.*;
 
@@ -64,7 +64,6 @@ import javax.swing.event.ChangeEvent;
  * The controller manages the interactions between GRID data and renderers.
  *
  * @author caron
- * @version $Revision: 70 $ $Date: 2006-07-13 15:16:05Z $
  */
 public class GridController {
   private static final int DELAY_DRAW_AFTER_DATA_EVENT = 250;   // quarter sec
@@ -102,7 +101,7 @@ public class GridController {
   // private MyImageObserver imageObs = new MyImageObserver();
   // private MyPrintable printer = null;
 
-  private ucar.nc2.ui.widget.Renderer renderMap = null;
+  private Renderer renderMap = null;
   private GridRenderer renderGrid;
   //private WindRenderer renderWind;
   private javax.swing.Timer redrawTimer;
@@ -919,7 +918,7 @@ public class GridController {
     redrawLater();
   }
 
-  void setMapRenderer( ucar.nc2.ui.widget.Renderer mapRenderer) {
+  void setMapRenderer( ucar.nc2.ui.util.Renderer mapRenderer) {
     this.renderMap = mapRenderer;
     mapRenderer.setProjection(np.getProjectionImpl());
     mapRenderer.setColor(mapColor);

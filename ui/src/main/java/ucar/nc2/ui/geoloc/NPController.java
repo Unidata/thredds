@@ -35,7 +35,7 @@ package ucar.nc2.ui.geoloc;
 import ucar.nc2.ui.gis.MapBean;
 import ucar.nc2.ui.gis.worldmap.WorldMap;
 import ucar.nc2.ui.widget.*;
-import ucar.nc2.ui.widget.Renderer;
+import ucar.nc2.ui.util.Renderer;
 import ucar.unidata.geoloc.*;
 
 import javax.swing.*;

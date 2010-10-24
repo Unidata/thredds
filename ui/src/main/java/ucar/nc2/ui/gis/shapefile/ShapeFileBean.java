@@ -1,4 +1,3 @@
-// $Id: ShapeFileBean.java 50 2006-07-12 16:30:06Z caron $
 /*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
@@ -34,14 +33,13 @@
 package ucar.nc2.ui.gis.shapefile;
 
 import ucar.nc2.ui.gis.MapBean;
-import ucar.nc2.ui.widget.Renderer;
+import ucar.nc2.ui.util.Renderer;
 import ucar.nc2.ui.util.Resource;
 import ucar.nc2.ui.widget.BAMutil;
 
 /** Wraps shapefile maps into a MapBean
  *
  * @author John Caron
- * @version $Id: ShapeFileBean.java 50 2006-07-12 16:30:06Z caron $
  */
 
 public class ShapeFileBean extends MapBean {
@@ -84,23 +82,3 @@ public class ShapeFileBean extends MapBean {
 
 }
 
-/* Change History:
-   $Log: ShapeFileBean.java,v $
-   Revision 1.4  2004/09/28 21:39:10  caron
-   *** empty log message ***
-
-   Revision 1.3  2004/09/24 03:26:38  caron
-   merge nj22
-
-   Revision 1.2  2004/02/20 05:02:55  caron
-   release 1.3
-
-   Revision 1.1  2002/12/13 00:55:08  caron
-   pass 2
-
-   Revision 1.2  2002/04/29 22:31:01  caron
-   add displayable name
-
-   Revision 1.1.1.1  2002/02/26 17:24:50  caron
-   import sources
-*/

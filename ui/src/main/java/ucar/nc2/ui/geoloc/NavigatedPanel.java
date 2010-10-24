@@ -1,4 +1,3 @@
-// $Id: NavigatedPanel.java 50 2006-07-12 16:30:06Z caron $
 /*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
@@ -33,9 +32,6 @@
  */
 package ucar.nc2.ui.geoloc;
 
-import ucar.nc2.ui.widget.Rubberband;
-import ucar.nc2.ui.widget.RubberbandRectangle;
-import ucar.nc2.ui.widget.RubberbandRectangleHandles;
 import ucar.nc2.ui.widget.BAMutil;
 import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.*;
@@ -94,7 +90,6 @@ import javax.swing.*;
  *
  * @see NPController
  * @author John Caron
- * @version $Id: NavigatedPanel.java 50 2006-07-12 16:30:06Z caron $
  */
 
 public class NavigatedPanel extends JPanel {
@@ -1071,33 +1066,4 @@ public class NavigatedPanel extends JPanel {
 
 } // end NavPanel
 
-/* Change History:
-   $Log: NavigatedPanel.java,v $
-   Revision 1.7  2004/09/25 00:09:44  caron
-   add images, thredds tab
-
-   Revision 1.6  2004/09/24 03:26:40  caron
-   merge nj22
-
-   Revision 1.5  2004/05/21 05:57:36  caron
-   release 2.0b
-
-   Revision 1.4  2004/02/20 05:02:56  caron
-   release 1.3
-
-   Revision 1.3  2003/04/08 18:16:24  john
-   nc2 v2.1
-
-   Revision 1.2  2003/03/17 21:12:39  john
-   new viewer
-
-   Revision 1.1  2002/12/13 00:55:08  caron
-   pass 2
-
-   Revision 1.3  2002/04/29 22:23:34  caron
-   NP detects seam crossings and throws NewProjectionEvent instead of NewMapAreaEvent
-
-   Revision 1.1.1.1  2002/02/26 17:24:52  caron
-   import sources
-*/
 

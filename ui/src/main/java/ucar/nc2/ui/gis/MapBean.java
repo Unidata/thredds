@@ -1,4 +1,3 @@
-// $Id: MapBean.java 50 2006-07-12 16:30:06Z caron $
 /*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
@@ -47,7 +46,6 @@ import javax.swing.*;
 /** Wrap map Renderers as beans.
   *
   * @author John Caron
-  * @version $Id: MapBean.java 50 2006-07-12 16:30:06Z caron $
   **/
 
 
@@ -60,7 +58,7 @@ public abstract class MapBean {
   public abstract String getActionDesc();
 
     /** Each bean has one Renderer, made current when Action is called */
-  public abstract ucar.nc2.ui.widget.Renderer getRenderer();
+  public abstract ucar.nc2.ui.util.Renderer getRenderer();
 
  /** Construct the Action that is called when this bean's menu item/buttcon is selected.
    * Typically this routine is only called once when the bean is added.
@@ -168,26 +166,5 @@ public abstract class MapBean {
 
 }
 
-/* Change History:
-   $Log: MapBean.java,v $
-   Revision 1.5  2005/06/11 19:03:57  caron
-   no message
-
-   Revision 1.4  2004/09/30 00:33:39  caron
-   *** empty log message ***
-
-   Revision 1.3  2004/09/28 21:39:10  caron
-   *** empty log message ***
-
-   Revision 1.2  2004/09/24 03:26:37  caron
-   merge nj22
-
-   Revision 1.1  2002/12/13 00:53:09  caron
-   pass 2
-
-   Revision 1.1.1.1  2002/02/26 17:24:49  caron
-   import sources
-
-*/
 
 

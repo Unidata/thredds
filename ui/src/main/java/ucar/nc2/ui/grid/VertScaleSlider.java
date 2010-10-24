@@ -46,7 +46,6 @@ import javax.swing.event.*;
  * Slider for Vertical scale
  *
  * @author caron
- * @version $Revision: 50 $ $Date: 2006-07-12 16:30:06Z $
  */
 
 public class VertScaleSlider extends JPanel {

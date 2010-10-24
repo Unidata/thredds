@@ -1,4 +1,3 @@
-// $Id:GisFeature.java 63 2006-07-12 21:50:51Z edavis $
 /*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
@@ -31,66 +30,38 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package ucar.nc2.ui.datamodel.gis;
+package ucar.nc2.ui.gis;
 
 
 /**
- * An interface for GIS features, (analogous to ESRI Shapefile shapes).
- *
- * Created: Sat Feb 20 16:44:29 1999
+ * An interface for simple GIS parts, (analogous to ESRI Shapefile parts).
  *
  * @author Russ Rew
- * @version $Id:GisFeature.java 63 2006-07-12 21:50:51Z edavis $
  */
 
-public interface GisFeature  {
+public interface GisPart  {
 
     /**
-     * Get the bounding box for this feature.
+     * Get number of points in this part.
      *
-     * @return rectangle bounding this feature
-     */
-    public java.awt.geom.Rectangle2D getBounds2D();
-
-    /**
-     * Get total number of points in all parts of this feature.
-     *
-     * @return total number of points in all parts of this feature.
+     * @return number of points in this part.
      */
     public int getNumPoints();
 
     /**
-     * Get number of parts comprising this feature.
+     * Get x coordinates for this part.
      *
-     * @return number of parts comprising this feature.
+     * @return array of x coordinates.
      */
-    public int getNumParts();
+    public double[] getX();
+
 
     /**
-     * Get the parts of this feature, in the form of an iterator.
+     * Get y coordinates for this part.
      *
-     * @return the iterator over the parts of this feature.  Each part
-     * is a GisPart.
+     * @return array of y coordinates.
      */
-    public java.util.Iterator getGisParts();
+    public double[] getY();
 
-} // GisFeature
+} // GisPart
 
-/* Change History:
-   $Log: GisFeature.java,v $
-   Revision 1.2  2004/09/24 03:26:32  caron
-   merge nj22
-
-   Revision 1.1  2002/12/13 00:53:09  caron
-   pass 2
-
-   Revision 1.1.1.1  2002/02/26 17:24:46  caron
-   import sources
-
-   Revision 1.8  2000/08/18 04:15:24  russ
-   Licensed under GNU LGPL.
-
-   Revision 1.7  2000/02/10 17:45:10  caron
-   add GisFeatureRenderer,GisFeatureAdapter
-
-*/

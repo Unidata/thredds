@@ -95,13 +95,3 @@ public class MyMouseAdapter extends java.awt.event.MouseAdapter {
     frame.setVisible(true);
   }
 }
-
-/* Change History:
-   $Log: MyMouseAdapter.java,v $
-   Revision 1.1.1.1  2002/11/23 17:49:48  caron
-   thredds reorg
-
-   Revision 1.1.1.1  2002/02/15 00:01:48  caron
-   import sources
-
-*/

@@ -1,4 +1,3 @@
-// $Id: GeoSelectionListener.java 50 2006-07-12 16:30:06Z caron $
 /*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
@@ -35,18 +34,7 @@ package ucar.nc2.ui.geoloc;
 /**
  * Listeners for new geographic area selection events.
  * @author John Caron
- * @version $Id: GeoSelectionListener.java 50 2006-07-12 16:30:06Z caron $
  */
 public interface GeoSelectionListener extends java.util.EventListener {
     public void actionPerformed( GeoSelectionEvent e);
 }
-
-/* Change History:
-   $Log: GeoSelectionListener.java,v $
-   Revision 1.2  2004/09/24 03:26:40  caron
-   merge nj22
-
-   Revision 1.1  2004/05/21 05:57:36  caron
-   release 2.0b
-
-*/

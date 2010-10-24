@@ -41,7 +41,6 @@ package ucar.nc2.ui.table;
  * @see RowSorterAbstract
  *
  * @author John Caron
- * @version $Id: RowSorter.java 50 2006-07-12 16:30:06Z caron $
  */
 
 

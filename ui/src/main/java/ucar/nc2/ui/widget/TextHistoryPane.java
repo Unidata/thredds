@@ -1,4 +1,3 @@
-// $Id: TextHistoryPane.java 50 2006-07-12 16:30:06Z caron $
 /*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
@@ -49,7 +48,6 @@ import javax.swing.*;
  * A popup menu allows the user to change the number of lines to keep, the font
  * size, etc.
  * @author John Caron
- * @version $Id: TextHistoryPane.java 50 2006-07-12 16:30:06Z caron $
  */
 public class TextHistoryPane extends JPanel {
   protected JTextArea ta;
@@ -298,40 +296,3 @@ public class TextHistoryPane extends JPanel {
   }
 
 }
-
-/* Change History:
-   $Log: TextHistoryPane.java,v $
-   Revision 1.9  2005/07/27 23:29:14  caron
-   minor
-
-   Revision 1.8  2004/12/14 15:41:01  caron
-   *** empty log message ***
-
-   Revision 1.7  2004/09/30 00:33:38  caron
-   *** empty log message ***
-
-   Revision 1.6  2004/09/24 03:26:35  caron
-   merge nj22
-
-   Revision 1.5  2004/05/11 23:30:36  caron
-   release 2.0a
-
-   Revision 1.4  2004/03/05 23:43:25  caron
-   1.3.1 release
-
-   Revision 1.3  2004/02/20 05:02:53  caron
-   release 1.3
-
-   Revision 1.2  2003/05/29 23:02:46  john
-   add right-click menu
-
-   Revision 1.1.1.1  2002/11/23 17:49:48  caron
-   thredds reorg
-
-   Revision 1.2  2002/04/29 22:26:58  caron
-   minor
-
-   Revision 1.1.1.1  2002/02/26 17:24:51  caron
-   import sources
-*/
-

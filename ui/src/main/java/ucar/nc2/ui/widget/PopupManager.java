@@ -1,4 +1,3 @@
-// $Id: PopupManager.java 50 2006-07-12 16:30:06Z caron $
 /*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
@@ -91,22 +90,3 @@ public class PopupManager {
     popup.hide();
   }
 }
-
-/* Change History:
-   $Log: PopupManager.java,v $
-   Revision 1.5  2005/08/22 01:12:27  caron
-   DatasetEditor
-
-   Revision 1.4  2004/09/28 21:39:09  caron
-   *** empty log message ***
-
-   Revision 1.3  2004/09/25 00:09:43  caron
-   add images, thredds tab
-
-   Revision 1.2  2004/09/24 03:26:34  caron
-   merge nj22
-
-   Revision 1.1  2004/05/21 05:57:35  caron
-   release 2.0b
-
- */

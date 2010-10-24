@@ -1,4 +1,3 @@
-// $Id: UIChangeEvent.java 50 2006-07-12 16:30:06Z caron $
 /*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
@@ -35,7 +34,6 @@ package ucar.nc2.ui.event;
 
 /** Change events for UI objects.
  * @author John Caron
- * @version $Id: UIChangeEvent.java 50 2006-07-12 16:30:06Z caron $
  */
 public class UIChangeEvent extends java.util.EventObject {
   private String property;
@@ -57,31 +55,3 @@ public class UIChangeEvent extends java.util.EventObject {
     return "UIChangeEvent: "+ property+ " objectChanged: "+ objectChanged+ "  newValue: "+ newValue;
   }
 }
-
-/* Change History:
-   $Log: UIChangeEvent.java,v $
-   Revision 1.2  2004/09/24 03:26:40  caron
-   merge nj22
-
-   Revision 1.1  2002/12/13 00:55:08  caron
-   pass 2
-
-   Revision 1.4  2000/08/18 04:16:03  russ
-   Licensed under GNU LGPL.
-
-   Revision 1.3  1999/06/03 01:44:15  caron
-   remove the damn controlMs
-
-   Revision 1.2  1999/06/03 01:27:09  caron
-   another reorg
-
-   Revision 1.1.1.1  1999/05/21 17:33:49  caron
-   startAgain
-
-# Revision 1.3  1999/03/16  17:00:59  caron
-# fix StationModel editing; add TopLevel
-#
-# Revision 1.2  1998/12/14  17:12:03  russ
-# Add comment for accumulating change histories.
-#
-*/

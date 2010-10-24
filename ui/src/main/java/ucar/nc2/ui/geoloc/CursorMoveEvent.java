@@ -1,4 +1,3 @@
-// $Id: CursorMoveEvent.java 50 2006-07-12 16:30:06Z caron $
 /*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
@@ -38,7 +37,6 @@ import java.awt.geom.Point2D;
 /**
  * Cursor has moved to a new location.
  * @author John Caron
- * @version $Id: CursorMoveEvent.java 50 2006-07-12 16:30:06Z caron $
  */
 public class CursorMoveEvent extends java.util.EventObject {
   private Point2D world;
@@ -50,24 +48,3 @@ public class CursorMoveEvent extends java.util.EventObject {
   public Point2D getLocation() { return world; }
 }
 
-/* Change History:
-   $Log: CursorMoveEvent.java,v $
-   Revision 1.2  2004/09/24 03:26:40  caron
-   merge nj22
-
-   Revision 1.1  2002/12/13 00:55:08  caron
-   pass 2
-
-   Revision 1.1.1.1  2002/02/26 17:24:53  caron
-   import sources
-
-   Revision 1.3  2000/08/18 04:16:18  russ
-   Licensed under GNU LGPL.
-
-   Revision 1.2  2000/05/16 23:00:56  caron
-   return Point2D, not ProjectionPoint
-
-   Revision 1.1  2000/02/07 18:06:08  caron
-   NP throws CursorMoveEvent
-
-*/

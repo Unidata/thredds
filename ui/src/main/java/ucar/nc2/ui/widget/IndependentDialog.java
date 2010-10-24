@@ -1,4 +1,3 @@
-// $Id: IndependentDialog.java 50 2006-07-12 16:30:06Z caron $
 /*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
@@ -52,7 +51,6 @@ import javax.swing.*;
      infoWindow.setLocation(100,100);
  *
  * @author John Caron
- * @version $Id: IndependentDialog.java 50 2006-07-12 16:30:06Z caron $
  */
 public class IndependentDialog extends JDialog {
   protected JFrame parent;
@@ -98,28 +96,5 @@ public class IndependentDialog extends JDialog {
     cp.add(comp, BorderLayout.CENTER);
     pack();
   }
-
 }
-
-/* Change History:
-   $Log: IndependentDialog.java,v $
-   Revision 1.5  2004/09/30 00:33:38  caron
-   *** empty log message ***
-
-   Revision 1.4  2004/09/24 03:26:34  caron
-   merge nj22
-
-   Revision 1.3  2004/05/21 05:57:34  caron
-   release 2.0b
-
-   Revision 1.2  2004/05/11 23:30:35  caron
-   release 2.0a
-
-   Revision 1.1.1.1  2002/11/23 17:49:48  caron
-   thredds reorg
-
-   Revision 1.1.1.1  2002/02/15 00:01:49  caron
-   import sources
-
-*/
 

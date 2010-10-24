@@ -88,7 +88,6 @@ public class BAMutil {
 
   static final private int META_KEY = java.awt.Event.CTRL_MASK;        // ??
 
-  static Class cl = (new BAMutil()).getClass();
   static private boolean debug = false, debugToggle = false;
 
   /** Get the named Icon from the default resource (jar file).

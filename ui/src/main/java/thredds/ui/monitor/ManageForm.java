@@ -7,7 +7,8 @@ package thredds.ui.monitor;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import javax.swing.*;
-import ucar.nc2.ui.*;
+
+import ucar.nc2.ui.widget.StopButton;
 
 /**
  * @author John Caron

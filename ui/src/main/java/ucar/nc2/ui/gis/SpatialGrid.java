@@ -1,4 +1,3 @@
-// $Id: SpatialGrid.java 50 2006-07-12 16:30:06Z caron $
 /*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
@@ -41,7 +40,6 @@ import java.awt.geom.*;
  * (markIfClear) and closest drawn object to a point (findClosest).
  *
  * @author caron, with design help from russ
- * @version $Id: SpatialGrid.java 50 2006-07-12 16:30:06Z caron $
  */
 
 public class SpatialGrid {
@@ -296,17 +294,3 @@ public class SpatialGrid {
   }
 }
 
-/* Change History:
-   $Log: SpatialGrid.java,v $
-   Revision 1.2  2004/09/24 03:26:37  caron
-   merge nj22
-
-   Revision 1.1  2002/12/13 00:53:09  caron
-   pass 2
-
-   Revision 1.2  2002/04/29 22:36:50  caron
-   improve variable naming
-
-   Revision 1.1.1.1  2002/02/26 17:24:49  caron
-   import sources
-*/

@@ -35,14 +35,11 @@ package ucar.nc2.ui;
 
 import ucar.nc2.*;
 import ucar.nc2.dt.image.ImageArrayAdapter;
-import ucar.nc2.ui.widget.IndependentWindow;
-import ucar.nc2.ui.widget.ProgressMonitorTask;
-import ucar.nc2.ui.widget.TextHistoryPane;
+import ucar.nc2.ui.widget.*;
 import ucar.util.prefs.*;
 import ucar.util.prefs.ui.*;
 
 import ucar.nc2.ui.image.ImageViewPanel;
-import ucar.nc2.ui.widget.BAMutil;
 
 import java.awt.*;
 import java.awt.event.*;

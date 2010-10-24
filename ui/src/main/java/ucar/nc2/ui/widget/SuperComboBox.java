@@ -1,4 +1,3 @@
-// $Id: SuperComboBox.java 50 2006-07-12 16:30:06Z caron $
 /*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
@@ -65,7 +64,6 @@ import java.util.*;
  * no event is thrown.
  *
  * @author John Caron
- * @version $Id: SuperComboBox.java 50 2006-07-12 16:30:06Z caron $
  */
 public class SuperComboBox extends JPanel {
 
@@ -774,33 +772,3 @@ public class SuperComboBox extends JPanel {
   }
 
 }
-
-
-/* Change History:
-   $Log: SuperComboBox.java,v $
-   Revision 1.8  2005/10/11 19:43:00  caron
-   release 3.3, uses nj22.11
-   support range bytes, use FileCache
-
-   Revision 1.7  2004/09/30 00:33:38  caron
-   *** empty log message ***
-
-   Revision 1.6  2004/09/24 03:26:34  caron
-   merge nj22
-
-   Revision 1.5  2004/03/05 23:43:24  caron
-   1.3.1 release
-
-   Revision 1.4  2004/02/20 05:02:53  caron
-   release 1.3
-
-   Revision 1.2  2003/01/18 19:53:43  john
-   url authenticator, better logging
-
-   Revision 1.1.1.1  2002/11/23 17:49:48  caron
-   thredds reorg
-
-   Revision 1.2  2002/04/29 22:26:58  caron
-   minor
-
-*/

@@ -1,4 +1,3 @@
-// $Id: PopupMenu.java 50 2006-07-12 16:30:06Z caron $
 /*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
@@ -155,21 +154,3 @@ public class PopupMenu extends JPopupMenu {
     public abstract void showPopup(MouseEvent e);
   }
 }
-/* Change History:
-   $Log: PopupMenu.java,v $
-   Revision 1.4  2004/09/30 00:33:38  caron
-   *** empty log message ***
-
-   Revision 1.3  2004/09/28 21:39:09  caron
-   *** empty log message ***
-
-   Revision 1.2  2004/09/24 03:26:34  caron
-   merge nj22
-
-   Revision 1.1.1.1  2002/11/23 17:49:48  caron
-   thredds reorg
-
-   Revision 1.1.1.1  2002/02/15 00:01:48  caron
-   import sources
-
-*/

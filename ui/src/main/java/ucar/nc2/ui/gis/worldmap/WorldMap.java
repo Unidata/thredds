@@ -1,4 +1,3 @@
-// $Id: WorldMap.java 50 2006-07-12 16:30:06Z caron $
 /*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
@@ -36,8 +35,8 @@ package ucar.nc2.ui.gis.worldmap;
 import java.io.*;
 import java.util.*;
 
-import ucar.nc2.ui.datamodel.gis.AbstractGisFeature;
-import ucar.nc2.ui.datamodel.gis.GisPart;
+import ucar.nc2.ui.gis.AbstractGisFeature;
+import ucar.nc2.ui.gis.GisPart;
 import ucar.nc2.ui.gis.GisFeatureRenderer;
 import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.*;
@@ -45,7 +44,6 @@ import ucar.nc2.ui.util.Resource;
 
 /** A simple "default" world map Renderer.
  * @author John Caron
- * @version $Id: WorldMap.java 50 2006-07-12 16:30:06Z caron $
  */
 
 public class WorldMap extends GisFeatureRenderer {
@@ -320,44 +318,3 @@ public class WorldMap extends GisFeatureRenderer {
   } // inner class latlonShape  */
 }
 
-/* Change History:
-   $Log: WorldMap.java,v $
-   Revision 1.6  2005/02/20 00:36:59  caron
-   reorganize resources
-
-   Revision 1.5  2004/09/24 03:26:38  caron
-   merge nj22
-
-   Revision 1.4  2004/02/20 05:02:55  caron
-   release 1.3
-
-   Revision 1.3  2003/04/08 18:16:22  john
-   nc2 v2.1
-
-   Revision 1.2  2003/03/17 21:12:37  john
-   new viewer
-
-   Revision 1.1  2002/12/13 00:55:08  caron
-   pass 2
-
-   Revision 1.1.1.1  2002/02/26 17:24:49  caron
-   import sources
-
-   Revision 1.10  2000/09/27 19:44:27  caron
-   move to auxdata
-
-   Revision 1.9  2000/08/18 04:15:29  russ
-   Licensed under GNU LGPL.
-
-   Revision 1.8  2000/05/16 22:38:07  caron
-   factor GisFeatureRenderer
-
-   Revision 1.7  2000/02/17 20:16:58  caron
-   expose AbstractGisFeature for visad
-
-   Revision 1.6  2000/02/11 01:24:48  caron
-   add getDataProjection()
-
-   Revision 1.5  2000/02/10 17:45:20  caron
-   add GisFeatureRenderer,GisFeatureAdapter
-*/
