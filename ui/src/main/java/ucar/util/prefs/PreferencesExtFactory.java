@@ -1,4 +1,3 @@
-// $Id: PreferencesExtFactory.java,v 1.2 2004/08/26 17:55:18 caron Exp $
 /*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
@@ -61,15 +60,3 @@ public class PreferencesExtFactory implements java.util.prefs.PreferencesFactory
         return PreferencesExt.systemRoot;
     }
 }
-/* Change History:
-   $Log: PreferencesExtFactory.java,v $
-   Revision 1.2  2004/08/26 17:55:18  caron
-   no message
-
-   Revision 1.1.1.1  2002/12/20 16:40:25  john
-   start new cvs root: prefs
-
-   Revision 1.1.1.1  2001/11/10 16:01:23  caron
-   checkin prefs
-
-*/

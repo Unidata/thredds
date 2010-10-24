@@ -1,4 +1,3 @@
-// $Id: CatalogSearcher.java 50 2006-07-12 16:30:06Z caron $
 /*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
@@ -41,6 +40,7 @@ import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.queryParser.QueryParser;
 
+import ucar.nc2.ui.widget.HtmlBrowser;
 import ucar.util.prefs.*;
 import ucar.util.prefs.ui.*;
 import ucar.nc2.constants.FeatureType;
@@ -56,7 +56,6 @@ import javax.swing.*;
  * GUI interface to catalog search service.
  *
  * @author John Caron
- * @version $Id: CatalogSearcher.java 50 2006-07-12 16:30:06Z caron $
  */
 
 public class CatalogSearcher extends JPanel {

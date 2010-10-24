@@ -1,4 +1,3 @@
-// $Id: PreferencesExt.java,v 1.5 2005/08/22 17:13:58 caron Exp $
 /*
  * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
  *
@@ -54,7 +53,6 @@ import java.io.ByteArrayOutputStream;
  * @see ucar.util.prefs.XMLStore
  * @see java.util.prefs.Preferences
  * @author John Caron
- * @version $Revision: 1.5 $ $Date: 2005/08/22 17:13:58 $
  */
 
 public class PreferencesExt extends java.util.prefs.AbstractPreferences implements ucar.util.prefs.ui.PersistenceManager {
@@ -543,31 +541,3 @@ public class PreferencesExt extends java.util.prefs.AbstractPreferences implemen
     }
 
 }
-
-/* Change History:
-   $Log: PreferencesExt.java,v $
-   Revision 1.5  2005/08/22 17:13:58  caron
-   minor fixes from intelliJ analysis
-
-   Revision 1.4  2004/08/26 17:55:18  caron
-   no message
-
-   Revision 1.3  2003/01/06 23:21:17  john
-   system root
-
-   Revision 1.2  2002/12/24 22:04:48  john
-   add bean, beanObject methods
-
-   Revision 1.1.1.1  2002/12/20 16:40:25  john
-   start new cvs root: prefs
-
-   Revision 1.3  2002/02/26 18:35:49  caron
-   convert to use JAXB
-
-   Revision 1.2  2001/11/12 19:36:11  caron
-   version 0.3
-
-   Revision 1.1.1.1  2001/11/10 16:01:23  caron
-   checkin prefs
-
-*/

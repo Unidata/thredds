@@ -147,6 +147,8 @@
       <file url="file://$PROJECT_DIR$/../../ui/src/main/java/thredds/catalog/catalog/ui/tools/CatalogSearcher.java" />
       <file url="file://$PROJECT_DIR$/../../ui/src/main/java/thredds/catalog/catalog/search/Indexer.java" />
       <file url="file://$PROJECT_DIR$/../../ui/src/main/java/thredds/catalog/catalog/search/ui/CatalogIndexer.java" />
+      <file url="file://$PROJECT_DIR$/../../ui/src/main/java/thredds/ui/catalog/search/Indexer.java" />
+      <file url="file://$PROJECT_DIR$/../../ui/src/main/java/thredds/ui/catalog/search/CatalogSearcher.java" />
     </excludeFromCompile>
     <resourceExtensions>
       <entry name=".+\.(properties|xml|html|dtd|tld)" />
