@@ -34,7 +34,7 @@
 package thredds.ui.catalog;
 
 import thredds.catalog.*;
-import thredds.ui.ProgressMonitorTask;
+import ucar.nc2.ui.widget.*;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -67,7 +67,7 @@ public class CatalogFactoryCancellable extends InvCatalogFactory {
    * @param validate : should CML validation be done?
    *
    * @see thredds.catalog.InvCatalogFactory
-   * @see thredds.ui.ProgressMonitor
+   * @see ucar.nc2.ui.widget.ProgressMonitor
    */
   public CatalogFactoryCancellable(java.awt.Component parent, String name, boolean validate) {
     super(name, validate);
@@ -90,7 +90,7 @@ public class CatalogFactoryCancellable extends InvCatalogFactory {
 
     openTask = new OpenCatalogTask(catalogName);
 
-    thredds.ui.ProgressMonitor pm = new thredds.ui.ProgressMonitor(openTask, 5000, 5000);
+    ProgressMonitor pm = new ProgressMonitor(openTask, 5000, 5000);
     pm.addActionListener( new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         if (debug) System.out.println("ProgressMonitor event  "+e.getActionCommand());

@@ -37,6 +37,7 @@ import thredds.catalog.*;
 
 import thredds.cataloggen.DirectoryScanner;
 
+import ucar.nc2.ui.widget.*;
 import ucar.util.prefs.ui.ComboBox;
 import ucar.util.prefs.PreferencesExt;
 

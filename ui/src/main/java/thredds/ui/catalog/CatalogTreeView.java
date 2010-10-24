@@ -47,7 +47,9 @@ import javax.swing.event.TreeWillExpandListener;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.tree.*;
 
+import ucar.nc2.ui.widget.*;
 import ucar.nc2.constants.FeatureType;
+import ucar.nc2.ui.widget.PopupMenu;
 
 /**
  * A Swing widget for THREDDS clients to display catalogs in a JTree, and allows
@@ -148,7 +150,7 @@ public class CatalogTreeView extends JPanel implements CatalogSetCallback {
     });
 
 
-    thredds.ui.PopupMenu varPopup = new thredds.ui.PopupMenu(tree, "Options");
+    PopupMenu varPopup = new PopupMenu(tree, "Options");
     varPopup.addAction("Open all children", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         InvCatalogTreeNode node = (InvCatalogTreeNode) tree.getLastSelectedPathComponent();
@@ -614,12 +616,12 @@ public class CatalogTreeView extends JPanel implements CatalogSetCallback {
     ImageIcon refIcon, refReadIcon, gridIcon, imageIcon, dqcIcon, dsScanIcon;
 
     public MyTreeCellRenderer() {
-      refIcon = thredds.ui.BAMutil.getIcon( "CatalogRef", true);
-      refReadIcon = thredds.ui.BAMutil.getIcon( "CatalogRefRead", true);
-      gridIcon = thredds.ui.BAMutil.getIcon( "GridData", true);
-      imageIcon = thredds.ui.BAMutil.getIcon( "ImageData", true);
-      dqcIcon = thredds.ui.BAMutil.getIcon( "DQCData", true);
-      dsScanIcon = thredds.ui.BAMutil.getIcon( "DatasetScan", true);
+      refIcon = BAMutil.getIcon( "CatalogRef", true);
+      refReadIcon = BAMutil.getIcon( "CatalogRefRead", true);
+      gridIcon = BAMutil.getIcon( "GridData", true);
+      imageIcon = BAMutil.getIcon( "ImageData", true);
+      dqcIcon = BAMutil.getIcon( "DQCData", true);
+      dsScanIcon = BAMutil.getIcon( "DatasetScan", true);
     }
 
     public Component getTreeCellRendererComponent(JTree tree, Object value,

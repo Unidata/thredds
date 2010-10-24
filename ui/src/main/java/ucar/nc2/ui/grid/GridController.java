@@ -33,18 +33,16 @@
  */
 package ucar.nc2.ui.grid;
 
-import thredds.ui.viewer.ui.*;
-import thredds.ui.viewer.ui.Renderer;
-import thredds.ui.viewer.ui.event.ActionCoordinator;
-import thredds.ui.viewer.ui.event.ActionSourceListener;
-import thredds.ui.viewer.ui.event.ActionValueEvent;
-import thredds.ui.viewer.ui.geoloc.*;
+import ucar.nc2.ui.event.ActionCoordinator;
+import ucar.nc2.ui.event.ActionSourceListener;
+import ucar.nc2.ui.event.ActionValueEvent;
+import ucar.nc2.ui.geoloc.*;
 import ucar.ma2.Array;
 import ucar.nc2.dataset.*;
 import ucar.nc2.dt.*;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.grid.*;
-import ucar.nc2.ui.widget.BAMutil;
+import ucar.nc2.ui.widget.*;
 import ucar.unidata.geoloc.*;
 
 import ucar.nc2.util.NamedObject;
@@ -104,7 +102,7 @@ public class GridController {
   // private MyImageObserver imageObs = new MyImageObserver();
   // private MyPrintable printer = null;
 
-  private Renderer renderMap = null;
+  private ucar.nc2.ui.widget.Renderer renderMap = null;
   private GridRenderer renderGrid;
   //private WindRenderer renderWind;
   private javax.swing.Timer redrawTimer;
@@ -921,7 +919,7 @@ public class GridController {
     redrawLater();
   }
 
-  void setMapRenderer( thredds.ui.viewer.ui.Renderer mapRenderer) {
+  void setMapRenderer( ucar.nc2.ui.widget.Renderer mapRenderer) {
     this.renderMap = mapRenderer;
     mapRenderer.setProjection(np.getProjectionImpl());
     mapRenderer.setColor(mapColor);

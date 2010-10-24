@@ -34,8 +34,8 @@
 package ucar.nc2.ui;
 
 import thredds.inventory.FeatureCollectionConfig;
-import thredds.ui.viewer.gis.shapefile.ShapeFileBean;
-import thredds.ui.viewer.gis.worldmap.WorldMapBean;
+import ucar.nc2.ui.gis.shapefile.ShapeFileBean;
+import ucar.nc2.ui.gis.worldmap.WorldMapBean;
 import ucar.nc2.*;
 import ucar.nc2.FileWriter;
 import ucar.nc2.ft.fmrc.GridDatasetInv;

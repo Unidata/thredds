@@ -33,8 +33,8 @@
  */
 package ucar.nc2.ui.grid;
 
-import thredds.ui.datamodel.gis.AbstractGisFeature;
-import thredds.ui.datamodel.gis.GisPart;
+import ucar.nc2.ui.datamodel.gis.AbstractGisFeature;
+import ucar.nc2.ui.datamodel.gis.GisPart;
 
 import java.util.*;      // for Iterator and ArrayList
 import java.awt.geom.*;  // for Point2D.Double

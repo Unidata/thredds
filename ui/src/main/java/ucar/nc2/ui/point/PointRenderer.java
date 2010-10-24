@@ -32,7 +32,7 @@
 
 package ucar.nc2.ui.point;
 
-import thredds.ui.viewer.ui.Renderer;
+import ucar.nc2.ui.widget.Renderer;
 import ucar.unidata.geoloc.*;
 import ucar.nc2.ft.PointFeature;
 

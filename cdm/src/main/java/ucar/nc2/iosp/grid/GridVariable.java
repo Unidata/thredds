@@ -72,6 +72,8 @@ public class GridVariable {
    */
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GridVariable.class);
   static private boolean warnOk = true;
+  static private boolean compareData = false;
+  static private boolean sendAll = false; // if false, just send once per variable
 
   private final String filename;
 
@@ -514,6 +516,7 @@ public class GridVariable {
     recordTracker = new GridRecord[nrecs];
 
     if (log.isDebugEnabled()) log.debug("Record Assignment for Variable " + getName());
+    boolean oneSent = false;
 
     for (GridRecord p : records) {
       int level = getVertIndex(p);
@@ -565,12 +568,12 @@ public class GridVariable {
 
         if (recordTracker[recno] != null) {
           GribGridRecord ggq = (GribGridRecord) recordTracker[recno];
-          if (warnOk) {
-            boolean sameData = compareData(ggq, ggp, raf);
-            if (!sameData)
+          if (compareData) {
+            if (!compareData(ggq, ggp, raf)) {
               log.warn("GridVariable " + vname + " recno = " + recno + " already has in slot = " + ggq.toString()+
-                    " sameData = "+ sameData+ " for "+filename);
-            sentMessage = true;
+                    " with different data for "+filename);
+              sentMessage = true;
+            }
           }
         }
       }
@@ -581,9 +584,12 @@ public class GridVariable {
                 + p.getLevel1() + "," + p.getLevel2());
 
       } else { // already one in that slot
-
-        if (!sentMessage && warnOk)
-          log.warn(p + "\n already has in slot " + recno + "\n" + recordTracker[recno]);
+        if ((p instanceof GribGridRecord) && !sentMessage && warnOk && !oneSent) {
+          GribGridRecord gp = (GribGridRecord) p;
+          GribGridRecord qp = (GribGridRecord) recordTracker[recno];
+          log.warn("Duplicate record for "+filename + "\n "+gp.toString2() + "\n " + qp.toString2());
+        }
+        if ((!sendAll)) oneSent = true;
         recordTracker[recno] = p;  // replace it with latest one
       }                                                 
     }

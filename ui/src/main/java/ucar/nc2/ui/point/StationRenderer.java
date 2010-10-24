@@ -38,8 +38,8 @@ package ucar.nc2.ui.point;
  * @author caron
  */
 
-import thredds.ui.viewer.gis.SpatialGrid;
-import thredds.ui.viewer.ui.Renderer;
+import ucar.nc2.ui.gis.SpatialGrid;
+import ucar.nc2.ui.widget.Renderer;
 import ucar.nc2.ui.widget.FontUtil;
 import ucar.unidata.geoloc.*;
 

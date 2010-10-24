@@ -34,9 +34,9 @@
 
 package ucar.nc2.ui.widget;
 
-import thredds.ui.viewer.ui.event.ActionSourceListener;
-import thredds.ui.viewer.ui.event.ActionValueEvent;
-import thredds.ui.viewer.ui.event.ActionValueListener;
+import ucar.nc2.ui.event.ActionSourceListener;
+import ucar.nc2.ui.event.ActionValueEvent;
+import ucar.nc2.ui.event.ActionValueListener;
 import ucar.util.prefs.ui.*;
 
 import java.awt.*;

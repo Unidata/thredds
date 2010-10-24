@@ -32,16 +32,12 @@
  */
 package ucar.nc2.ui.point;
 
-import thredds.ui.viewer.ui.RubberbandRectangleHandles;
-import thredds.ui.viewer.ui.event.ActionSourceListener;
-import thredds.ui.viewer.ui.event.ActionValueEvent;
-import thredds.ui.viewer.ui.event.ActionValueListener;
-import thredds.ui.viewer.ui.geoloc.*;
-import thredds.ui.viewer.ui.Renderer;
-import ucar.nc2.ui.widget.PopupManager;
-import ucar.nc2.ui.widget.RangeDateSelector;
-import ucar.nc2.ui.widget.IndependentDialog;
-import ucar.nc2.ui.widget.BAMutil;
+import ucar.nc2.ui.widget.RubberbandRectangleHandles;
+import ucar.nc2.ui.event.ActionSourceListener;
+import ucar.nc2.ui.event.ActionValueEvent;
+import ucar.nc2.ui.event.ActionValueListener;
+import ucar.nc2.ui.geoloc.*;
+import ucar.nc2.ui.widget.*;
 import ucar.nc2.units.DateRange;
 
 import ucar.unidata.geoloc.*;
@@ -476,7 +472,7 @@ public class StationRegionDateChooser extends NPController {
     }
 
     for (int i = 0; i < renderers.size(); i++) {
-      Renderer rend = (Renderer) renderers.get(i);
+      ucar.nc2.ui.widget.Renderer rend = (ucar.nc2.ui.widget.Renderer) renderers.get(i);
       rend.draw(gNP, atI);
     }
     gNP.dispose();

@@ -32,7 +32,7 @@
 
 package ucar.nc2.ui.point;
 
-import thredds.ui.viewer.ui.geoloc.NPController;
+import ucar.nc2.ui.geoloc.NPController;
 import ucar.nc2.ft.PointFeature;
 
 import javax.swing.*;

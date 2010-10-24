@@ -34,9 +34,9 @@
 package ucar.nc2.ui.grid;
 
 import thredds.catalog.*;
-import thredds.ui.viewer.gis.MapBean;
-import thredds.ui.viewer.ui.geoloc.NavigatedPanel;
-import thredds.ui.viewer.ui.Renderer;
+import ucar.nc2.ui.gis.MapBean;
+import ucar.nc2.ui.geoloc.NavigatedPanel;
+import ucar.nc2.ui.widget.Renderer;
 
 import ucar.nc2.dataset.*;
 
