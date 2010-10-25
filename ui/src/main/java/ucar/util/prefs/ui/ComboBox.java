@@ -108,13 +108,16 @@ public class ComboBox extends JComboBox {
     this.prefs = prefs;
     this.nkeep = nkeep;
     setEditable(true);
+    setPreferences(prefs);
+    addContextMenu();
+  }
 
+  public void setPreferences(PersistenceManager prefs) {
+    this.prefs = prefs;
     if (prefs != null) {
       ArrayList list = (ArrayList) prefs.getList(LIST, null);
       setItemList(list);
     }
-
-    addContextMenu();
   }
 
   public JComponent getDeepEditComponent() { 

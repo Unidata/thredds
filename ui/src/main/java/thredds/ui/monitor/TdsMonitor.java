@@ -39,6 +39,7 @@ import thredds.logs.LogCategorizer;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.util.IO;
 import ucar.nc2.util.net.HttpClientManager;
+import ucar.util.prefs.ui.ComboBox;
 import ucar.util.prefs.ui.Debug;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.XMLStore;
@@ -192,7 +193,7 @@ public class TdsMonitor extends JPanel {
 
     ManagePanel(PreferencesExt p) {
       this.prefs = p;
-      manage = new ManageForm();
+      manage = new ManageForm(this.prefs);
       setLayout(new BorderLayout());
       add(manage, BorderLayout.CENTER);
 
@@ -235,16 +236,11 @@ public class TdsMonitor extends JPanel {
         }
       });
 
-      List servers = this.prefs.getList("serverList", null);
-      if (servers != null) manage.setServers(servers);
     }
 
     void save() {
-      ComboBoxModel servers = manage.getServersCB();
-      List serverList = new ArrayList();
-      for (int i=0; i<servers.getSize(); i++)
-        serverList.add( servers.getElementAt(i));
-      prefs.putList("serverList", serverList);
+      ComboBox servers = manage.getServersCB();
+      servers.save();
     }
   }
 
@@ -273,7 +269,7 @@ public class TdsMonitor extends JPanel {
 
       // which server
       serverCB = new JComboBox();
-      serverCB.setModel(manage.getServersCB());
+      serverCB.setModel(manage.getServersCB().getModel());
       serverCB.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           String server = (String) serverCB.getSelectedItem();

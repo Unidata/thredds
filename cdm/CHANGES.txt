@@ -4,6 +4,7 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.2:
  11: (2010-10-24)
+  tdsMonitor: use prefs ComboBox to persist list of servers
   put tdsMonitor into ToolsUI, remove lucene
   reorganize ui packages
   GridVariable : remove check for same data on duplicate record - too expensive.
