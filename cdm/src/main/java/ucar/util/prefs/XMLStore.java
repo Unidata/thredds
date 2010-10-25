@@ -33,8 +33,6 @@
 
 package ucar.util.prefs;
 
-import java.util.prefs.Preferences;
-
 import java.beans.XMLEncoder;
 import java.beans.XMLDecoder;
 import java.beans.ExceptionListener;
@@ -95,6 +93,8 @@ public class XMLStore {
    *
    * @param fileName The XMLStore is stored in this files.
    * @param storedDefaults This contains the "stored defaults", or null if none.
+   * @return new XMLStore object
+   * @throws java.io.IOException on error
    */
   static public XMLStore createFromFile(String fileName, XMLStore storedDefaults) throws java.io.IOException {
     File prefsFile = new File(fileName);
@@ -119,11 +119,12 @@ public class XMLStore {
    * @param is1 the first copy of the input stream.
    * @param is2 the second copy of the input stream.
    * @param storedDefaults This contains the "stored defaults", or null if none.
+   * @return new XMLStore object
+   * @throws java.io.IOException on error
    */
   static public XMLStore createFromInputStream(InputStream is1, InputStream is2, XMLStore storedDefaults) throws java.io.IOException {
     if (debugWhichStore) System.out.println("XMLStore read from input stream "+is1);
-    XMLStore store = new XMLStore( is1, is2, storedDefaults);
-    return store;
+    return new XMLStore( is1, is2, storedDefaults);
   }
 
   /**
@@ -133,7 +134,8 @@ public class XMLStore {
    *
    * @param resourceName The XMLStore is stored in this resource. By convention it has .xml suffix.
    * @param storedDefaults This contains the "stored defaults", or null if none.
-   * @throws java.io.IOException is Resource not found or error reading it
+   * @throws java.io.IOException if Resource not found or error reading it
+   * @return new XMLStore object
    */
   static public XMLStore createFromResource(String resourceName, XMLStore storedDefaults)
          throws java.io.IOException {
@@ -172,7 +174,7 @@ public class XMLStore {
    * @param primIS: store input stream. may be null.
    * @param objIS: store input stream. may be null only if primIS is null.
    * @param storedDefaults: chain to this one.
-   * @throws IOException
+   * @throws IOException on errpr
    */
   private XMLStore(InputStream primIS, InputStream objIS, XMLStore storedDefaults)
     throws java.io.IOException {
@@ -246,6 +248,9 @@ public class XMLStore {
    *   <li> create directory "$(user_home)/appName/" , if not exist, create it
    *   <li> return  "$(user_home)/appName/storeName" for use in createFromFile()
    * </ol>
+   * @param appName application name
+   * @param storeName store name
+   * @return  standard file name
    */
   static public String makeStandardFilename(String appName, String storeName) {
       // the directory
@@ -291,7 +296,7 @@ public class XMLStore {
   // SAX callback handler
   private class MySaxHandler extends org.xml.sax.helpers.DefaultHandler {
     private boolean debug = false, debugDetail = false;
-    private InputMunger im;
+    // private InputMunger im;
     private InputStream objIS;
     private XMLDecoder beanDecoder = null; // defer reading beans in case there arent any
 
@@ -486,6 +491,7 @@ public class XMLStore {
    * original filename. The XMLStore must have been constructed from a
    * writeable XML file.
    * @throws UnsupportedOperationException: if XMLStore was created from createFromResource.
+   * @throws java.io.IOException on read error
    */
   public void save() throws java.io.IOException {
     if (prefsFile == null)
@@ -588,11 +594,9 @@ public class XMLStore {
 
             out.println(m+"  <beanCollection key='"+keys[i]+"' class='"+bean.getBeanClass().getName()+"'>");
 
-            Iterator iter = bean.getCollection().iterator();
-            while (iter.hasNext()) {
-              Object o = iter.next();
-              out.print(m+"    <bean ");
-              bean.writeProperties( out, o);
+            for (Object o : bean.getCollection()) {
+              out.print(m + "    <bean ");
+              bean.writeProperties(out, o);
               out.println("/>");
             }
             out.println(m+"  </beanCollection>");

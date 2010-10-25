@@ -31,7 +31,7 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
- package ucar.util.prefs;
+package ucar.util.prefs;
 
 /**
  *  Implementation of  <tt>PreferencesFactory</tt> to return PreferencesExt objects. Using this

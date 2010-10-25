@@ -33,6 +33,8 @@
 
 package ucar.util.prefs.ui;
 
+import ucar.util.prefs.PersistenceManager;
+
 import java.beans.*;
 import java.lang.reflect.*;
 import java.util.*;

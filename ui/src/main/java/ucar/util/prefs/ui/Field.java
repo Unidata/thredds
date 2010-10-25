@@ -34,16 +34,16 @@
 package ucar.util.prefs.ui;
 
 import java.util.prefs.*;
+
+import ucar.util.prefs.PersistenceManager;
 import ucar.util.prefs.PreferencesExt;
 
-import java.awt.*;
 import java.awt.event.*;
 import java.beans.*;
 import java.text.*;
 import java.util.*;
 
 import javax.swing.*;
-import javax.swing.event.DocumentListener;
 import javax.swing.text.*;
 
 /**

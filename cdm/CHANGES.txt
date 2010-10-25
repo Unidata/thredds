@@ -3,6 +3,8 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Changes in version 4.2:
+ 12: (2010-10-xx)
+  move ucar.utils.prefs into cdm, because used by tds (dqcRedirect) and delete prefsAll.jar
  11: (2010-10-24)
   tdsMonitor: use prefs ComboBox to persist list of servers
   put tdsMonitor into ToolsUI, remove lucene

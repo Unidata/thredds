@@ -35,8 +35,6 @@ package ucar.util.prefs;
 
 import java.util.*;
 import java.util.prefs.*;
-import java.io.ByteArrayOutputStream;
-
 
 /**
  * An extension of java.util.prefs.Preferences (jdk 1.4) that provides a
@@ -55,7 +53,7 @@ import java.io.ByteArrayOutputStream;
  * @author John Caron
  */
 
-public class PreferencesExt extends java.util.prefs.AbstractPreferences implements ucar.util.prefs.ui.PersistenceManager {
+public class PreferencesExt extends java.util.prefs.AbstractPreferences implements ucar.util.prefs.PersistenceManager {
     static Preferences userRoot = new PreferencesExt(null, ""); // ??
     static Preferences systemRoot = new PreferencesExt(null, "");
 

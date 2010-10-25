@@ -6,11 +6,10 @@ package thredds.ui.monitor;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.util.*;
-import java.util.List;
 import javax.swing.*;
 
 import ucar.nc2.ui.widget.StopButton;
+import ucar.util.prefs.PersistenceManager;
 import ucar.util.prefs.ui.*;
 
 /**

@@ -36,7 +36,7 @@ package thredds.ui.datatype.prefs;
 import ucar.nc2.ui.widget.MultilineTooltip;
 import ucar.nc2.units.*;
 
-import ucar.util.prefs.ui.PersistenceManager;
+import ucar.util.prefs.PersistenceManager;
 import ucar.util.prefs.ui.FldInputVerifier;
 
 import javax.swing.*;
