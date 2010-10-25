@@ -39,6 +39,9 @@ import thredds.ui.catalog.CatalogTreeView;
 import thredds.ui.datatype.prefs.DateField;
 import thredds.ui.datatype.prefs.DurationField;
 import ucar.nc2.constants.FeatureType;
+import ucar.nc2.ui.widget.IndependentWindow;
+import ucar.nc2.ui.widget.TextGetPutPane;
+import ucar.nc2.ui.widget.TextHistoryPane;
 import ucar.nc2.units.DateType;
 import thredds.catalog.dl.*;
 
