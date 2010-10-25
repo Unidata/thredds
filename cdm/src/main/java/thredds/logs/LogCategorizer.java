@@ -207,76 +207,82 @@ public class LogCategorizer {
 
   static private PathMatcher pathMatcher = null;
 
-  static public String getDataroot(String path) {
+  static public String getDataroot(String path, int status) {
     if (pathMatcher == null)
       pathMatcher = readRoots();
 
-    String dataRoot = null;
-    if (path.startsWith("/dqcServlet"))
-      dataRoot = "dqcServlet";
-    else if (!path.startsWith("/thredds/"))
-      dataRoot = "root";
-    else {
-      String spath = path.substring(9); // remove /thredds/
-      String service = findService(spath);
-      if (service != null) {
-        if (service.equals("radarServer")) dataRoot = "radarServer";
-          //else if (service.equals("casestudies")) dataRoot = "casestudies";
-        else if (service.equals("dqc")) dataRoot = "dqc";
-        else if (spath.length() > service.length()) {
-          spath = spath.substring(service.length() + 1);
-          PathMatcher.Match match = pathMatcher.match(spath);
-          if (match != null) dataRoot = match.root;
-        }
-      }
-      if (dataRoot == null) {
+    String ss =  getServiceSpecial( path);
+    if (ss != null) return  "service-"+ss;
 
-        if (path.startsWith("/thredds/admin"))
-          dataRoot = "admin";
-        else if (path.startsWith("/thredds/godiva2"))
-          dataRoot = "godiva2";
-        else if (path.startsWith("/thredds/view"))
-          dataRoot = "webstart";
-        else if (path.startsWith("/thredds/catalog/"))
-          dataRoot = "catalog";
-        else {
-          int pos = path.indexOf("?"); // get rid of query
-          if (pos > 0)
-            path = path.substring(0, pos);
-          if (path.endsWith("xml") || path.endsWith("html"))
-            dataRoot = "catalog";
-          else
-            dataRoot = "misc";
-        }
+    if (path.startsWith("//thredds/"))
+      path = path.substring(1);
+
+    if (!path.startsWith("/thredds/"))
+      return "zervice-root";
+
+    String dataRoot = null;
+    String spath = path.substring(9); // remove /thredds/
+    String service = findService(spath);
+    if (service != null) {
+      //if (service.equals("radarServer")) dataRoot = "radarServer";
+        //else if (service.equals("casestudies")) dataRoot = "casestudies";
+     // else if (service.equals("dqc")) dataRoot = "dqc";
+      if (spath.length() > service.length()) {
+        spath = spath.substring(service.length() + 1);
+        PathMatcher.Match match = pathMatcher.match(spath);
+        if (match != null) dataRoot = match.root;
       }
+    }
+
+    if (dataRoot == null) {
+      if (status >= 400)
+        dataRoot = "zBad";
+    }
+
+    if (dataRoot == null) {
+      service = getService(path);
+      dataRoot = (service != null) ? "zervice-"+service : "unknown";
     }
     return dataRoot;
   }
 
+  // the ones that dont start with thredds
+  static public String getServiceSpecial(String path) {
+    String ss = null;
+    if (path.startsWith("/dqcServlet"))
+      ss = "dqcServlet";
+    else if (path.startsWith("/cdmvalidator"))
+      ss = "cdmvalidator";
+    return ss;
+  }
+
   public static String getService(String path) {
-    String service = null;
+    String service =  getServiceSpecial( path);
+    if (service != null) return service;
+
     if (path.startsWith("/thredds/")) {
-      path = path.substring(9);
-      service = findService(path);
-      if ((service == null) && (path.endsWith("xml") || path.endsWith("html")))
+      String spath = path.substring(9);
+      service = findService(spath);
+      if ((service == null) && (spath.endsWith("xml") || spath.endsWith("html")))
         service = "catalog";
 
       if (service == null) {
-        int pos = path.indexOf('?');
+        int pos = spath.indexOf('?');
         if (pos > 0) {
-          String req = path.substring(0, pos);
+          String req = spath.substring(0, pos);
           if (req.endsWith("xml") || req.endsWith("html"))
             service = "catalog";
         }
       }
     }
 
-    if (service == null) service = "unknown";
+    if (service == null)
+      service = "root";
     return service;
   }
 
-  public static String[] services = new String[]{"admin", "catalog", "cdmremote", "dodsC", "dqc", "fileServer", "ncss/grid", "ncstream",
-          "radarServer", "remoteCatalogService", "view", "wcs", "wms"};
+  public static String[] services = new String[]{"admin", "catalog", "cdmremote", "dodsC", "dqc", "fileServer", "godiva2",
+          "ncss/grid", "ncstream", "radarServer", "remoteCatalogService", "view", "wcs", "wms"};
 
   public static String findService(String path) {
     for (String service : services) {

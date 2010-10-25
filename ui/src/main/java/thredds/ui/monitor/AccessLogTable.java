@@ -530,7 +530,7 @@ public class AccessLogTable extends JPanel {
 
     for (LogReader.Log log : logs) {
       String path = log.getPath();
-      String dataRoot = LogCategorizer.getDataroot(path);
+      String dataRoot = LogCategorizer.getDataroot(path, log.getStatus());
       Dataroot accum = map.get(dataRoot);
       if (accum == null) {
         accum = new Dataroot(dataRoot);
