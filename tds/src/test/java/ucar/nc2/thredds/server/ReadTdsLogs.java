@@ -66,7 +66,7 @@ public class ReadTdsLogs {
 
   ///////////////////////////////////////////////////////
   // multithreading
-  final int nthreads = 3;
+  final int nthreads = 4;
 
   ExecutorService executor;
   ExecutorCompletionService<SendRequestTask> completionService;
@@ -680,10 +680,8 @@ public class ReadTdsLogs {
     final ReadTdsLogs reader = new ReadTdsLogs(serverTest);
     long startElapsed = System.nanoTime();
 
-    //String accessLogs = "D:\\logs\\motherlode\\live\\access";
-    //String accessLogs = "C:\\Documents and Settings\\caron.UNIDATA_DOMAIN\\tdsMonitor\\motherlode.ucar.edu%3A8080\\access";
-    //String accessLogs = "C:/Users/caron/tdsMonitor/motherlode.ucar.edu%3A8080/access/"; // "/home/caron/tdsMonitor/motherlode%3A8080/access/";
-    String accessLogs = "C:\\Users\\caron\\tdsMonitor\\motherlode.ucar.edu%3A8080\\access\\temp\\";
+    //String accessLogs = "C:\\Users\\caron\\tdsMonitor\\motherlode.ucar.edu%3A8080\\access\\temp\\";
+    String accessLogs = "C:\\Users\\caron\\tdsMonitor\\motherlode.ucar.edu%3A8081\\access\\";
 
     System.out.printf("server=%s send files from %s %n", serverTest, accessLogs);
 

@@ -1760,7 +1760,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     }
 
     if (spi == null) {
-      throw new IOException("HEY: missing spi: "+v.getName());
+      throw new IOException("BAD: missing spi: "+v.getName());
     }
     Array result = spi.readData(v, ranges);
     result.setUnsigned(v.isUnsigned());

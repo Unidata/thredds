@@ -587,7 +587,7 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
   protected Array convertEnums(Array values) {
     DataType dt = DataType.getType(values.getElementType());
     if (!dt.isNumeric())
-      System.out.println("HEY");
+      System.out.println("HEY !dt.isNumeric()");
 
     Array result = Array.factory(DataType.STRING, values.getShape());
     IndexIterator ii = result.getIndexIterator();

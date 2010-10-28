@@ -672,7 +672,7 @@ public abstract class Aggregation {
 
         Variable v = findVariable(ncd, mainv);
         if ((mainv == null) || (v == null))
-          System.out.println("HEY");
+          System.out.println("HEY (mainv == null)");
         if (debugRead)
           System.out.printf("Agg.read %s from %s in %s%n", mainv.getNameAndDimensions(), v.getNameAndDimensions(), getLocation());
         return v.read();

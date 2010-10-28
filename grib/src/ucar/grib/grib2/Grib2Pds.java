@@ -396,8 +396,6 @@ abstract public class Grib2Pds extends GribPds {
     if (intv != null) return intv;
 
     int timeUnit = getTimeUnit();
-    if (timeUnit == 12)
-      System.out.println("HEY");
     PdsInterval pdsIntv = (PdsInterval) this;
 
     int incr = 0;

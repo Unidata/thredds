@@ -318,7 +318,7 @@ public class H4header {
       }
       Group current = dim.getGroup();
       if (current == null)
-        System.out.println("HEY!");
+        System.out.println("HEY! current == null");
       if (current != lowest) {
         lowest.addDimension(dim);
         current.remove(dim);
@@ -1364,10 +1364,6 @@ public class H4header {
           short tag = sdata.getScalarShort(i, tagM);
           short ref = sdata.getScalarShort(i, refM);
           TagData data = (TagData) tagMap.get(tagid(ref, tag));
-          if (null == data)
-            System.out.println("HEY");
-          //else
-          //System.out.println(i+" origin="+printa(origin)+" data="+data.detail());
           dataChunks.add(new DataChunk(origin, chunk_length, data));
           data.used = true;
           if (data.compress != null) isCompressed = true;

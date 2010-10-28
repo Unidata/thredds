@@ -70,8 +70,6 @@ public class NcSDArray extends SDArray implements HasNetcdfVariable {
   NcSDArray(Variable v, BaseType bt) {
     super(NcDDS.escapeName(v.getShortName()));
     this.ncVar = v;
-    if (v.getDataType() == DataType.CHAR)
-        System.out.println("HEY");
 
     // set dimensions
     for (Dimension dim : v.getDimensions()) {

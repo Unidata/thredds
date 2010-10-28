@@ -357,8 +357,6 @@ public class FmrcInv {
       int ntimes = 0;
       for (FmrInv.GridVariable grid : runs) {  // maybe should use the runseq ???
         TimeCoord exp = grid.getTimeExpected();
-        if (exp == null)
-          System.out.println("HEY");
         ntimes += exp.getNCoords();
       }
       return ntimes * nvert;

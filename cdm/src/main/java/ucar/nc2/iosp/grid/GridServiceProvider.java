@@ -352,7 +352,6 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
    */
   public boolean isMissingXY(Variable v2, int timeIdx, int ensIdx, int levIdx) throws InvalidRangeException {
     GridVariable pv = (GridVariable) v2.getSPobject();
-    if (null == pv) System.out.println("HEY");
     if ((timeIdx < 0) || (timeIdx >= pv.getNTimes())) {
       throw new InvalidRangeException("timeIdx=" + timeIdx);
     }

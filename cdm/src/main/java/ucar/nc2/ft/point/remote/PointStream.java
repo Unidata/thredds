@@ -108,7 +108,7 @@ public class PointStream {
   static public PointStreamProto.PointFeatureCollection encodePointFeatureCollection(String name, PointFeature pf) throws IOException {
     PointStreamProto.PointFeatureCollection.Builder builder = PointStreamProto.PointFeatureCollection.newBuilder();
     if (name == null)
-      System.out.printf("HEY%n");
+      System.out.printf("HEY null pointstream name%n");
     builder.setName(name);
     builder.setTimeUnit(pf.getTimeUnit().getUnitsString());
 

@@ -421,8 +421,6 @@ public class HdfEos {
         Variable v = dataG.findVariable(varname);
         //if (v == null)
         //  v = dataG.findVariable( H4header.createValidObjectName(varname));
-        if (v == null)
-          System.out.println("HEY");
         assert v != null : varname;
 
         Element dimList = elem.getChild("DimList");
