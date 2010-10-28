@@ -157,8 +157,7 @@ public final class Grib2Dump {
           ps.println(
                   "--------------------------------------------------------------------");
           Grib2Data gd = new Grib2Data(raf);
-          data = gd.getData(record.getGdsOffset(),
-                  record.getPdsOffset());
+          data = gd.getData(record.getGdsOffset(), record.getPdsOffset(), id.getRefTime());
           if (data != null) {
             //float missingValue =
             //        record.getDRS().getPrimaryMissingValue();

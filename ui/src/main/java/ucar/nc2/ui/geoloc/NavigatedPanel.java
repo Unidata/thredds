@@ -204,30 +204,29 @@ public class NavigatedPanel extends JPanel {
 
     // manage Event Listener's
     lmPick = new ListenerManager(
-        "thredds.viewer.ui.geoloc.PickEventListener",
-        "thredds.viewer.ui.geoloc.PickEvent",
+        "ucar.nc2.ui.geoloc.PickEventListener",
+        "ucar.nc2.ui.geoloc.PickEvent",
         "actionPerformed");
 
     lmMove = new ListenerManager(
-        "thredds.viewer.ui.geoloc.CursorMoveEventListener",
-        "thredds.viewer.ui.geoloc.CursorMoveEvent",
+        "ucar.nc2.ui.geoloc.CursorMoveEventListener",
+        "ucar.nc2.ui.geoloc.CursorMoveEvent",
         "actionPerformed");
 
     lmMapArea = new ListenerManager(
-        "thredds.viewer.ui.geoloc.NewMapAreaListener",
-        "thredds.viewer.ui.geoloc.NewMapAreaEvent",
+        "ucar.nc2.ui.geoloc.NewMapAreaListener",
+        "ucar.nc2.ui.geoloc.NewMapAreaEvent",
         "actionPerformed");
 
     lmProject = new ListenerManager(
-        "thredds.viewer.ui.geoloc.NewProjectionListener",
-        "thredds.viewer.ui.geoloc.NewProjectionEvent",
+        "ucar.nc2.ui.geoloc.NewProjectionListener",
+        "ucar.nc2.ui.geoloc.NewProjectionEvent",
         "actionPerformed");
 
     lmGeoSelect = new ListenerManager(
-        "thredds.viewer.ui.geoloc.GeoSelectionListener",
-        "thredds.viewer.ui.geoloc.GeoSelectionEvent",
+        "ucar.nc2.ui.geoloc.GeoSelectionListener",
+        "ucar.nc2.ui.geoloc.GeoSelectionEvent",
         "actionPerformed");
-
   }
 
  public LatLonRect getGeoSelectionLL() {

@@ -1222,13 +1222,14 @@ public class Grib1Tables {
   }
 
   /**
-   * tUnit time Unit.
+   * Unit name from Grib1 Table 4.
    *
-   * @param tUnit time Unit
-   * @return tUnit type
+   * @param code time Unit
+   * @param udunits if true, use udunit time unit, assumes you have taken care of the factor
+   * @return Unit name from Grib1 Table 4
    */
-  static public String getTimeUnit(int tUnit) {
-    switch (tUnit) {
+  static public String getTimeUnit(int code, boolean udunits) {
+    switch (code) {
 
       case 0:    // minute
         return "minutes";
@@ -1246,29 +1247,28 @@ public class Grib1Tables {
         return "years";
 
       case 5:    // decade
-        return "decade";
+        return udunits ? "years" : "decade";
 
       case 6:    // normal
-        return "normal";
+        return udunits ? "years" : "30years";
 
       case 7:    // century
-        return "century";
+        return udunits ? "years" : "century";
 
       case 10:   //3 hours
-        return "3hours";
+        return udunits ? "hours" : "3hours";
 
       case 11:   // 6 hours
-        return "6hours";
+        return udunits ? "hours" : "6hours";
 
       case 12:   // 12 hours
-        return "12hours";
+        return udunits ? "hours" : "12hours";
 
       case 254:  // second
         return "seconds";
 
       default:
         return null;
-        // System.err.println("PDS: Time Unit " + tUnit + " is not yet supported");
     }
   }
 

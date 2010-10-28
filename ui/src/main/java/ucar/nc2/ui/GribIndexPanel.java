@@ -254,7 +254,7 @@ public class GribIndexPanel extends JPanel {
     prefs.putBeanObject("InfoWindowBounds2", infoWindow2.getBounds());
     prefs.putBeanObject("InfoWindowBounds3", infoWindow3.getBounds());
     if (split != null) prefs.putInt("splitPos", split.getDividerLocation());
-    if (split != null) prefs.putInt("splitPos2", split2.getDividerLocation());
+    if (split2 != null) prefs.putInt("splitPos2", split2.getDividerLocation());
   }
 
   // new way - uses the index
@@ -336,8 +336,8 @@ public class GribIndexPanel extends JPanel {
     try {
       if (ggr1.getEdition() == 2) {
         Grib2Data g2read = new Grib2Data(raf);
-        data1 =  g2read.getData(ggr1.getGdsOffset(), ggr1.getPdsOffset());
-        data2 =  g2read.getData(ggr2.getGdsOffset(), ggr2.getPdsOffset());
+        data1 =  g2read.getData(ggr1.getGdsOffset(), ggr1.getPdsOffset(), ggr1.getReferenceTimeInMsecs());
+        data2 =  g2read.getData(ggr2.getGdsOffset(), ggr2.getPdsOffset(), ggr2.getReferenceTimeInMsecs());
       } else  {
         Grib1Data g1read = new Grib1Data(raf);
         data1 =  g1read.getData(ggr1.getGdsOffset(), ggr1.getPdsOffset(), ggr1.getDecimalScale(), ggr1.isBmsExists());
@@ -361,7 +361,7 @@ public class GribIndexPanel extends JPanel {
     try {
       if (ggr.getEdition() == 2) {
         Grib2Data g2read = new Grib2Data(raf);
-        data =  g2read.getData(ggr.getGdsOffset(), ggr.getPdsOffset());
+        data =  g2read.getData(ggr.getGdsOffset(), ggr.getPdsOffset(), ggr.getReferenceTimeInMsecs());
       } else  {
         Grib1Data g1read = new Grib1Data(raf);
         data =  g1read.getData(ggr.getGdsOffset(), ggr.getPdsOffset(), ggr.getDecimalScale(), ggr.isBmsExists());
@@ -719,8 +719,8 @@ public class GribIndexPanel extends JPanel {
       this.pds = ggr.getPds();
     }
 
-    public final String getTimeUnit() {
-      return ggr.getTimeUnitName();
+    public final String getTimeUdunit() {
+      return ggr.getTimeUdunitName();
     }
 
     public final String getSurfaceType() {

@@ -200,7 +200,7 @@ public final class TestGrib2GetData{
       String gdsKey = stoke.nextToken();
       GdsOffset = Long.parseLong( stoke.nextToken() );
       PdsOffset = Long.parseLong( stoke.nextToken() );
-            float     data[] = g2d.getData(GdsOffset, PdsOffset);
+            float     data[] = g2d.getData(GdsOffset, PdsOffset, 0);
 
             if (data != null) {
                 System.err.println("OK "+ line );

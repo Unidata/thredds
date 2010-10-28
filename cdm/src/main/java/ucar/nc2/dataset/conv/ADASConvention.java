@@ -35,6 +35,7 @@ package ucar.nc2.dataset.conv;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.nc2.constants.CF;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.units.SimpleUnit;
@@ -83,7 +84,7 @@ public class ADASConvention extends CoordSysBuilder {
     double false_northing = 0.0;
 
     // new way
-    String projName = ds.findAttValueIgnoreCase(null, "grid_mapping_name", null);
+    String projName = ds.findAttValueIgnoreCase(null, CF.GRID_MAPPING_NAME, null);
     if (projName != null) {
       projName = projName.trim();
       lat_origin = findAttributeDouble(ds, "latitude_of_projection_origin", Double.NaN);

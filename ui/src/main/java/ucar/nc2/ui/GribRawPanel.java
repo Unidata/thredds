@@ -313,7 +313,7 @@ public class GribRawPanel extends JPanel {
     prefs.putBeanObject("InfoWindowBounds2", infoWindow2.getBounds());
     prefs.putBeanObject("InfoWindowBounds3", infoWindow3.getBounds());
     if (split != null) prefs.putInt("splitPos", split.getDividerLocation());
-    if (split != null) prefs.putInt("splitPos2", split2.getDividerLocation());
+    if (split2 != null) prefs.putInt("splitPos2", split2.getDividerLocation());
   }
 
   private void writeToFile(Grib2RecordBean bean) {

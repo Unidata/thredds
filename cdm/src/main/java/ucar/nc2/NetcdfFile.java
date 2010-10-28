@@ -118,22 +118,6 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     } catch (Throwable e) {
       if (loadWarnings) log.info("Cant load class: " + e);
     }
-    /* the complete Grib1ServiceProvider needs to be commented out, it's
-    // handled by the GribGridServiceProvider
-    try {
-      NetcdfFile.class.getClassLoader().loadClass("ucar.grib.grib1.Grib1Input"); // only load if grib.jar is present
-      registerIOProvider("ucar.nc2.iosp.grib.Grib1ServiceProvider");
-    } catch (Throwable e) {
-      if (loadWarnings) log.info("Cant load class: " + e);
-    }
-    try {
-      NetcdfFile.class.getClassLoader().loadClass("ucar.grib.grib2.Grib2Input"); // only load if grib.jar is present
-      registerIOProvider("ucar.nc2.iosp.grib.Grib2ServiceProvider");
-      // comment above Grib2ServiceProvider uncomment  below GribGridServiceProvider
-      //registerIOProvider("ucar.nc2.iosp.grib.GribGridServiceProvider");
-    } catch (Throwable e) {
-      if (loadWarnings) log.info("Cant load class: " + e);
-    } */
     try {
       NetcdfFile.class.getClassLoader().loadClass("ucar.grib.grib2.Grib2Input"); // only load if grib.jar is present
       registerIOProvider("ucar.nc2.iosp.grib.GribGridServiceProvider");

@@ -168,13 +168,6 @@ public final class McIDASLookup implements GridTableLookup {
             ((McIDASGridRecord) gr).getLevelUnitName());
     }
 
-    /**
-     * gets the TimeRangeUnitName.
-     * @return TimeRangeUnitName
-     */
-    public final String getFirstTimeRangeUnitName() {
-        return "hour";
-    }
     public final String getTimeRangeUnitName( int tunit ) {
         return "hour";
     }

@@ -185,9 +185,10 @@ public final class Grib2ProductDefinitionSection {
    * Constructs a Grib2ProductDefinitionSection  object from a raf.
    *
    * @param raf RandomAccessFile with PDS content
+   * @param refTime reference time in msecs
    * @throws IOException if raf contains no valid GRIB file
    */
-  public Grib2ProductDefinitionSection(RandomAccessFile raf) throws IOException {
+  public Grib2ProductDefinitionSection(RandomAccessFile raf, long refTime) throws IOException {
     long sectionEnd = raf.getFilePointer();
 
     // octets 1-4 (Length of PDS)
@@ -199,7 +200,7 @@ public final class Grib2ProductDefinitionSection {
     // reset to beginning of section and read data
     raf.skipBytes( -4 );
     raf.read( pdsData);
-    pdsVars = Grib2Pds.factory( pdsData, 0, Calendar.getInstance() );
+    pdsVars = Grib2Pds.factory( pdsData, refTime, Calendar.getInstance() );
 
     // reset for variable section read and set sectionEnd
     raf.seek( sectionEnd +4 );
@@ -964,7 +965,7 @@ public final class Grib2ProductDefinitionSection {
     raf = new RandomAccessFile(infile, "r");
     raf.order(RandomAccessFile.BIG_ENDIAN);
     raf.skipBytes( Integer.parseInt( args[1]));
-    Grib2ProductDefinitionSection pds = new Grib2ProductDefinitionSection( raf );
+    Grib2ProductDefinitionSection pds = new Grib2ProductDefinitionSection( raf, 0 );
     Grib2Pds gpv = pds.pdsVars;
     ps.println( "Section = "+ gpv.getSection());
     ps.println( "Length = "+ gpv.getLength());

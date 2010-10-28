@@ -164,6 +164,7 @@ public final class Grib2Input {
 
     //scan until we run out
     while (raf.getFilePointer() < raf.length()) {
+
       if (startAtHeader) {  // begining of record
         if (!seekHeader(raf, raf.length())) {
           //System.out.println( "Scan seekHeader failed" );
@@ -184,7 +185,6 @@ public final class Grib2Input {
         }
         // Read other SectionsGrib2
         id = new Grib2IdentificationSection(raf);  // Section 1
-
       }  // end startAtHeader
 
       try { // catch all exceptions and seek to EOR
@@ -200,7 +200,8 @@ public final class Grib2Input {
 
         // obtain PDS offset in the file for this record
         pdsOffset = raf.getFilePointer();
-        pds = new Grib2ProductDefinitionSection(raf);  // Section 4
+        long refTime = id == null ? 0 : id.getRefTime();
+        pds = new Grib2ProductDefinitionSection(raf, refTime);  // Section 4
 
         drs = new Grib2DataRepresentationSection(raf);  // Section 5
 // code to test missing value information              

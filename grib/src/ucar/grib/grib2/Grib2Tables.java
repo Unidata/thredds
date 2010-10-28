@@ -439,15 +439,12 @@ public class Grib2Tables {
 
       case 10:
         return "3hours";
-        //return "3hours";
 
       case 11:
         return "6hours";
-        //return "hours";
 
       case 12:
         return "12hours";
-        //return "hours";
 
       case 13:
         return "Second";

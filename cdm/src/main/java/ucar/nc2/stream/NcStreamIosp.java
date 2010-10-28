@@ -9,9 +9,11 @@ import ucar.ma2.*;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Read ncStream file (raf), make into a NetcdfFile.
+ * Read ncStream file (raf), into a NetcdfFile.
  */
 public class NcStreamIosp extends AbstractIOServiceProvider {
   private static final boolean debug = false;
@@ -88,6 +90,15 @@ public class NcStreamIosp extends AbstractIOServiceProvider {
     int size;
     long filePos;
     Section section;
+
+    @Override
+    public String toString() {
+      return "DataSection{" +
+              "size=" + size +
+              ", filePos=" + filePos +
+              ", section=" + section +
+              '}';
+    }
   }
 
   public Array readData(Variable v, Section section) throws IOException, InvalidRangeException {
@@ -122,6 +133,70 @@ public class NcStreamIosp extends AbstractIOServiceProvider {
     for (int i = 0; i < bread.length; i++)
       if (bread[i] != test[i]) return false;
     return true;
+  }
+
+  ///////////////////////////////////////////////////////////////////////////////
+ // lower level interface for debugging
+
+  public List<NcsMess> open(RandomAccessFile raf, NetcdfFile ncfile) throws IOException {
+    this.raf = raf;
+    raf.seek(0);
+    assert readAndTest(raf, NcStream.MAGIC_START);
+
+    // assume for the moment its always starts with one header message
+    assert readAndTest(raf, NcStream.MAGIC_HEADER);
+
+    int msize = readVInt(raf);
+    if (debug) System.out.println("READ header len= " + msize);
+
+    byte[] m = new byte[msize];
+    raf.read(m);
+    NcStreamProto.Header proto = NcStreamProto.Header.parseFrom(m);
+
+    NcStreamProto.Group root = proto.getRoot();
+    NcStream.readGroup(root, ncfile, ncfile.getRootGroup());
+    ncfile.finish();
+
+    List<NcsMess> ncm = new ArrayList<NcsMess>();
+    ncm.add(new NcsMess(msize, proto));
+
+    while (!raf.isAtEndOfFile()) {
+      assert readAndTest(raf, NcStream.MAGIC_DATA);
+
+      int psize = readVInt(raf);
+      if (debug) System.out.println(" dproto len= " + psize);
+      byte[] dp = new byte[psize];
+      raf.read(dp);
+      NcStreamProto.Data dproto = NcStreamProto.Data.parseFrom(dp);
+      if (debug) System.out.println(" dproto = " + dproto);
+      ncm.add(new NcsMess(psize, dproto));
+
+      int dsize = readVInt(raf);
+      if (debug) System.out.println(" data len= " + dsize);
+
+      DataSection dataSection = new DataSection();
+      dataSection.size = dsize;
+      dataSection.filePos = raf.getFilePointer();
+      dataSection.section = NcStream.decodeSection(dproto.getSection());
+
+      ncm.add(new NcsMess(dsize, dataSection));
+
+      Variable v = ncfile.getRootGroup().findVariable(dproto.getVarName());
+      v.setSPobject(dataSection);
+
+      raf.skipBytes(dsize);
+    }
+
+    return ncm;
+  }
+
+  public class NcsMess {
+    public int len;
+    public Object what;
+    public NcsMess(int len, Object what) {
+      this.len = len;
+      this.what = what;
+    }
   }
 
 }

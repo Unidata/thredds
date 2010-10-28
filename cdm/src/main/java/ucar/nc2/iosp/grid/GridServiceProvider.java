@@ -267,25 +267,24 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
     Array dataArray = Array.factory(DataType.FLOAT, section.getShape());
     GridVariable pv = (GridVariable) v2.getSPobject();
 
-    int count = 0;
-    Range timeRange = new Range( 0, 0 ); // kludge for coordinate variables without a timeRange
-    if( section.getRank() > 2 )
-      timeRange = section.getRange(count++);
-    Range ensRange = pv.hasEnsemble() ? section.getRange(count++) : null;
-    Range levRange = pv.hasVert() ? section.getRange(count++) : null;
-    Range yRange = section.getRange(count++);
-    Range xRange = section.getRange(count);
+    // Canonical ordering is ens, time, level, lat, lon
+    int rangeIdx = 0;
+    Range ensRange = pv.hasEnsemble() ? section.getRange(rangeIdx++) : new Range( 0, 0 );
+    Range timeRange = (section.getRank() > 2) ? section.getRange(rangeIdx++) : new Range( 0, 0 );
+    Range levRange = pv.hasVert() ? section.getRange(rangeIdx++) : new Range( 0, 0 );
+    Range yRange = section.getRange(rangeIdx++);
+    Range xRange = section.getRange(rangeIdx);
 
     IndexIterator ii = dataArray.getIndexIterator();
 
-    // loop over time
-    for (int timeIdx = timeRange.first(); timeIdx <= timeRange.last(); timeIdx += timeRange.stride()) {
-      if (pv.hasEnsemble()) {
-        readEnsemble(v2, timeIdx, ensRange, levRange, yRange, xRange, ii);
-      } else if (pv.hasVert()) {
-        readLevel(v2, timeIdx, levRange, yRange, xRange, ii);
-      } else {
-        readXY(v2, timeIdx, 0, 0, yRange, xRange, ii);
+    // loop over ens
+    for (int ensIdx = ensRange.first(); ensIdx <= ensRange.last(); ensIdx += ensRange.stride()) {
+      //loop over time
+      for (int timeIdx = timeRange.first(); timeIdx <= timeRange.last(); timeIdx += timeRange.stride()) {
+        //loop over level
+        for (int levelIdx = levRange.first(); levelIdx <= levRange.last(); levelIdx += levRange.stride()) {
+          readXY(v2, ensIdx, timeIdx, levelIdx, yRange, xRange, ii);
+        }
       }
     }
 
@@ -298,61 +297,11 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
   }
 
   /**
-   * Read a ensemble
-   *
-   * @param v2         variable to put the data into
-   * @param timeIdx    time index
-   * @param ensRange ensemble range
-   * @param levRange level range
-   * @param yRange     x range
-   * @param xRange     y range
-   * @param ii         index iterator
-   * @throws IOException           problem reading the file
-   * @throws InvalidRangeException invalid range
-   */
-  private void readEnsemble(Variable v2, int timeIdx, Range ensRange,  Range levRange, Range yRange, Range xRange, IndexIterator ii)
-          throws IOException, InvalidRangeException {
-
-    for (int ensIdx = ensRange.first(); ensIdx <= ensRange.last(); ensIdx += ensRange.stride()) {
-      if( levRange != null) {
-        for (int levIdx = levRange.first(); levIdx <= levRange.last(); levIdx += levRange.stride()) {
-          readXY(v2, timeIdx, ensIdx, levIdx, yRange, xRange, ii);
-        }
-      } else {
-        readXY(v2, timeIdx, ensIdx, 0, yRange, xRange, ii);
-      }
-    }
-  }
-
-  // loop over level
-
-  /**
-   * Read a level
-   *
-   * @param v2         variable to put the data into
-   * @param timeIdx    time index
-   * @param levelRange level range
-   * @param yRange     x range
-   * @param xRange     y range
-   * @param ii         index iterator
-   * @throws IOException           problem reading the file
-   * @throws InvalidRangeException invalid range
-   */
-  private void readLevel(Variable v2, int timeIdx, Range levelRange, Range yRange, Range xRange, IndexIterator ii)
-          throws IOException, InvalidRangeException {
-
-    for (int levIdx = levelRange.first(); levIdx <= levelRange.last(); levIdx += levelRange.stride()) {
-      readXY(v2, timeIdx, 0, levIdx, yRange, xRange, ii);
-    }
-  }
-
-
-  /**
-   * read one product
+   * read one YX array
    *
    * @param v2      variable to put the data into
-   * @param timeIdx time index
    * @param ensIdx  ensemble index
+   * @param timeIdx time index
    * @param levIdx  level index
    * @param yRange  x range
    * @param xRange  y range
@@ -360,17 +309,18 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
    * @throws IOException           problem reading the file
    * @throws InvalidRangeException invalid range
    */
-  private void readXY(Variable v2, int timeIdx, int ensIdx, int levIdx, Range yRange,  Range xRange, IndexIterator ii)
+  private void readXY(Variable v2, int ensIdx, int timeIdx, int levIdx, Range yRange, Range xRange, IndexIterator ii)
           throws IOException, InvalidRangeException {
-
-    Attribute att = v2.findAttribute("missing_value");
-    float missing_value = (att == null) ? -9999.0f : att.getNumericValue().floatValue();
 
     GridVariable pv = (GridVariable) v2.getSPobject();
     GridHorizCoordSys hsys = pv.getHorizCoordSys();
     int nx = hsys.getNx();
-    GridRecord record = pv.findRecord(timeIdx, ensIdx, levIdx);
+    GridRecord record = pv.findRecord(ensIdx, timeIdx, levIdx);
+
     if (record == null) {
+      Attribute att = v2.findAttribute("missing_value");
+      float missing_value = (att == null) ? -9999.0f : att.getNumericValue().floatValue();
+
       int xyCount = yRange.length() * xRange.length();
       for (int j = 0; j < xyCount; j++) {
         ii.setFloatNext(missing_value);
@@ -381,6 +331,7 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
     // otherwise read it
     float[] data = _readData(record);
 
+    // LOOK can improve with System.copy ??
     for (int y = yRange.first(); y <= yRange.last(); y += yRange.stride()) {
       for (int x = xRange.first(); x <= xRange.last(); x += xRange.stride()) {
         int index = y * nx + x;
@@ -411,7 +362,7 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
     if ((ensIdx < 0) || (ensIdx >= pv.getNEnsembles())) {
       throw new InvalidRangeException("ensIdx=" + ensIdx);
     }
-    return (null == pv.findRecord(timeIdx, ensIdx, levIdx));
+    return (null == pv.findRecord(ensIdx, timeIdx, levIdx));
   }
 
   /*

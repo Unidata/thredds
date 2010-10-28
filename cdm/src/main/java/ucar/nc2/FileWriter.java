@@ -32,11 +32,21 @@
  */
 package ucar.nc2;
 
-import ucar.ma2.*;
-import ucar.nc2.iosp.netcdf3.N3iosp;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import java.io.*;
-import java.util.*;
+import ucar.ma2.Array;
+import ucar.ma2.ArrayChar;
+import ucar.ma2.ArrayObject;
+import ucar.ma2.DataType;
+import ucar.ma2.Index;
+import ucar.ma2.IndexIterator;
+import ucar.ma2.InvalidRangeException;
+import ucar.nc2.iosp.netcdf3.N3iosp;
 
 /**
  * Copy a NetcdfFile to a Netcdf-3 local file. This allows you, for example, to create a "view" of another
@@ -52,6 +62,7 @@ import java.util.*;
  * what gets written to the file.
  *
  * @author caron
+ * @author Steve Ansari
  * @see ucar.nc2.NetcdfFile
  */
 
@@ -69,7 +80,8 @@ public class FileWriter {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FileWriter.class);
 
   static private boolean debug = false, debugWrite = false, debugExtend;
-  static private long maxSize = 1000 * 1000; // 1 MByte
+//  static private boolean debug = true, debugWrite = true, debugExtend = true;
+  static private long maxSize = 1 * 1000 * 1000; // 1 MByte
 
   /**
    * Copy a NetcdfFile to a physical file, using Netcdf-3 file format.
@@ -81,40 +93,49 @@ public class FileWriter {
    * @throws IOException on read or write error
    */
   public static NetcdfFile writeToFile(NetcdfFile fileIn, String fileOutName) throws IOException {
-    return writeToFile(fileIn, fileOutName, false, 0);
+    return writeToFile(fileIn, fileOutName, false, false, null);
   }
+
+  /**
+    * Copy a NetcdfFile to a physical file, using Netcdf-3 file format.
+    * Cannot do groups, etc, until we get a Netcdf-4 file format.
+    *
+    * @param fileIn      write from this NetcdfFile
+    * @param fileOutName write to this local file
+    * @param fill        use fill mode
+    * @return NetcdfFile that was written to. It remains open for reading or writing.
+    * @throws IOException on read or write error
+    */
+   public static NetcdfFile writeToFile(NetcdfFile fileIn, String fileOutName, boolean fill) throws IOException {
+     return writeToFile(fileIn, fileOutName, fill, false, null);
+   }
 
   /**
    * Copy a NetcdfFile to a physical file, using Netcdf-3 file format.
    * Cannot do groups, etc, until we get a Netcdf-4 file format.
    *
-   * @param fileIn      write from this NetcdfFile
-   * @param fileOutName write to this local file
-   * @param fill        use fill mode
+   * @param fileIn            write from this NetcdfFile
+   * @param fileOutName       write to this local file
    * @return NetcdfFile that was written to. It remains open for reading or writing.
    * @throws IOException on read or write error
    */
-  public static NetcdfFile writeToFile(NetcdfFile fileIn, String fileOutName, boolean fill) throws IOException {
-    return writeToFile(fileIn, fileOutName, fill, 0);
-  }
-
-
-  public static NetcdfFile writeToFile(NetcdfFile fileIn, String fileOutName, boolean fill, int delay) throws IOException {
-    return writeToFile(fileIn, fileOutName, fill, delay, false);
+  public static NetcdfFile writeToFile(NetcdfFile fileIn, String fileOutName, boolean fill, boolean isLargeFile) throws IOException {
+    return writeToFile(fileIn, fileOutName, fill, isLargeFile, null);
   }
 
   /**
    * Copy a NetcdfFile to a physical file, using Netcdf-3 file format.
    *
-   * @param fileIn      write from this NetcdfFile
-   * @param fileOutName write to this local file
-   * @param fill        use fill mode
-   * @param delay       if > 0, delay this many millisecs between record writing (debugging - do not use)
-   * @param isLargeFile if true, make large file format (> 2Gb offsets)
+   * @param fileIn            write from this NetcdfFile
+   * @param fileOutName       write to this local file
+   * @param fill              use fill mode
+   * @param isLargeFile       if true, make large file format (> 2Gb offsets)
+   * @param progressListeners List of progress listeners, use null or empty list if there are none.
    * @return NetcdfFile that was written. It remains open for reading or writing.
    * @throws IOException on read or write error
    */
-  public static NetcdfFile writeToFile(NetcdfFile fileIn, String fileOutName, boolean fill, int delay, boolean isLargeFile) throws IOException {
+  public static NetcdfFile writeToFile(NetcdfFile fileIn, String fileOutName, boolean fill, boolean isLargeFile,
+                                       List<FileWriterProgressListener> progressListeners) throws IOException {
 
     NetcdfFileWriteable ncfile = NetcdfFileWriteable.createNew(fileOutName, fill);
     if (debug) {
@@ -213,7 +234,7 @@ public class FileWriter {
     boolean useRecordDimension = hasRecordStructure(fileIn) && hasRecordStructure(ncfile);
     Structure recordVar = useRecordDimension ? (Structure) fileIn.findVariable("record") : null;
 
-    double total = copyVarData(ncfile, varlist, recordVar, delay);
+    double total = copyVarData(ncfile, varlist, recordVar, progressListeners);
     ncfile.flush();
     if (debug) System.out.println("FileWriter done total bytes = " + total);
 
@@ -230,14 +251,16 @@ public class FileWriter {
    * Write data from varList into new file. Read/Write a maximum of  maxSize bytes at a time.
    * When theres a record variable, its much more efficient to use it.
    *
-   * @param ncfile    write tot this file
-   * @param varlist   list of varibles from the original file, with data in them
-   * @param recordVar the record variable from the original file, or null means dont use record variables
-   * @param delay     delay between writing records, for testing
+   * @param ncfile            write tot this file
+   * @param varlist           list of varibles from the original file, with data in them
+   * @param recordVar         the record variable from the original file, or null means dont use record variables
+   * @param progressListeners List of progress event listeners
    * @return total number of bytes written
    * @throws IOException if I/O error
    */
-  public static double copyVarData(NetcdfFileWriteable ncfile, List<Variable> varlist, Structure recordVar, long delay) throws IOException {
+  public static double copyVarData(NetcdfFileWriteable ncfile, List<Variable> varlist, Structure recordVar,
+                                   List<FileWriterProgressListener> progressListeners) throws IOException {
+
     boolean useRecordDimension = (recordVar != null);
 
     // write non-record data
@@ -257,7 +280,7 @@ public class FileWriter {
       if (size <= maxSize) {
         copyAll(ncfile, oldVar);
       } else {
-        copySome(ncfile, oldVar, maxSize);
+        copySome(ncfile, oldVar, maxSize, progressListeners);
       }
     }
 
@@ -277,17 +300,11 @@ public class FileWriter {
           ncfile.write("record", origin, recordData);  // rather magic here - only writes the ones in ncfile !!
           if (debug && (count == 0)) System.out.println("write record size = " + sdataSize);
         } catch (InvalidRangeException e) {
-          throw new IOException(e.getMessage() + " for record Variable ", e);
+          e.printStackTrace();
+          break;
         }
         totalRecordBytes += sdataSize;
 
-        if (delay > 0) {
-          ncfile.flush();
-          try {
-            Thread.sleep(delay);
-          } catch (InterruptedException e) {
-          }
-        }
       }
       total += totalRecordBytes;
       totalRecordBytes /= 1000 * 1000;
@@ -308,7 +325,8 @@ public class FileWriter {
         ncfile.write(newName, data);
 
     } catch (InvalidRangeException e) {
-      throw new IOException(e.getMessage() + " for Variable " + oldVar.getName(), e);
+      e.printStackTrace();
+      throw new IOException(e.getMessage() + " for Variable " + oldVar.getName());
     }
   }
 
@@ -349,15 +367,23 @@ public class FileWriter {
    * Copies data from {@code oldVar} to {@code ncfile}. The writes are done in a series of chunks no larger than
    * {@code maxChunkSize} bytes.
    *
-   *
    * @param ncfile       the NetCDF file to write to.
    * @param oldVar       a variable from the original file to copy data from.
    * @param maxChunkSize the size, <b>in bytes</b>, of the largest chunk to write.
    * @throws IOException if an I/O error occurs.
    */
-  private static void copySome(NetcdfFileWriteable ncfile, Variable oldVar, long maxChunkSize) throws IOException {
+  private static void copySome(NetcdfFileWriteable ncfile, Variable oldVar, long maxChunkSize, List<FileWriterProgressListener> progressListeners) throws IOException {
     String newName = N3iosp.makeValidNetcdfObjectName(oldVar.getName());
     long maxChunkElems = maxChunkSize / oldVar.getElementSize();
+    long byteWriteTotal = 0;
+
+    FileWriterProgressEvent writeProgressEvent = new FileWriterProgressEvent();
+    writeProgressEvent.setStatus("Variable: " + oldVar.getName());
+    if (progressListeners != null) {
+      for (FileWriterProgressListener listener : progressListeners) {
+        listener.writeStatus(writeProgressEvent);
+      }
+    }
 
     ChunkingIndex index = new ChunkingIndex(oldVar.getShape());
     while (index.currentElement() < index.getSize()) {
@@ -365,22 +391,47 @@ public class FileWriter {
         int[] chunkOrigin = index.getCurrentCounter();
         int[] chunkShape = index.computeChunkShape(maxChunkElems);
 
-        Array data = oldVar.read(chunkOrigin, chunkShape);
+        writeProgressEvent.setWriteStatus("Reading chunk from variable: " + oldVar.getName());
+        if (progressListeners != null) {
+          for (FileWriterProgressListener listener : progressListeners) {
+            listener.writeProgress(writeProgressEvent);
+          }
+        }
 
+        Array data = oldVar.read(chunkOrigin, chunkShape);
         if (oldVar.getDataType() == DataType.STRING) {
           data = convertToChar(ncfile.findVariable(newName), data);
         }
 
         if (data.getSize() > 0) {// zero when record dimension = 0
+          writeProgressEvent.setWriteStatus("Writing chunk of variable: " + oldVar.getName());
+          writeProgressEvent.setBytesToWrite(data.getSize());
+          if (progressListeners != null) {
+            for (FileWriterProgressListener listener : progressListeners) {
+              listener.writeProgress(writeProgressEvent);
+            }
+          }
+
           ncfile.write(newName, chunkOrigin, data);
           if (debugWrite) {
             System.out.println("write " + data.getSize() + " bytes");
           }
+          byteWriteTotal += data.getSize();
+
+          writeProgressEvent.setBytesWritten(byteWriteTotal);
+          writeProgressEvent.setProgressPercent(100.0 * byteWriteTotal / oldVar.getSize());
+          if (progressListeners != null) {
+            for (FileWriterProgressListener listener : progressListeners) {
+              listener.writeProgress(writeProgressEvent);
+            }
+          }
+
         }
 
         index.setCurrentCounter(index.currentElement() + (int) Index.computeSize(chunkShape));
       } catch (InvalidRangeException e) {
-        throw new IOException(e.getMessage(), e);
+        e.printStackTrace();
+        throw new IOException(e.getMessage());
       }
     }
   }
@@ -567,6 +618,88 @@ public class FileWriter {
     System.out.println("usage: ucar.nc2.FileWriter -in <fileIn> -out <fileOut> [-delay <millisecs>]");
   }
 
+  public static class FileWriterProgressEvent {
+    private double progressPercent;
+    private long bytesWritten;
+    private long bytesToWrite;
+    private String status;
+    private String writeStatus;
+
+    public void setProgressPercent(double progressPercent) {
+      this.progressPercent = progressPercent;
+    }
+
+    public double getProgressPercent() {
+      return progressPercent;
+    }
+
+    public void setBytesWritten(long bytesWritten) {
+      this.bytesWritten = bytesWritten;
+    }
+
+    public long getBytesWritten() {
+      return bytesWritten;
+    }
+
+    public void setBytesToWrite(long bytesToWrite) {
+      this.bytesToWrite = bytesToWrite;
+    }
+
+    public long getBytesToWrite() {
+      return bytesToWrite;
+    }
+
+    public void setStatus(String status) {
+      this.status = status;
+    }
+
+    public String getStatus() {
+      return status;
+    }
+
+    public void setWriteStatus(String writeStatus) {
+      this.writeStatus = writeStatus;
+    }
+
+    public String getWriteStatus() {
+      return writeStatus;
+    }
+
+  }
+
+  public interface FileWriterProgressListener {
+    void writeProgress(FileWriterProgressEvent event);
+
+    void writeStatus(FileWriterProgressEvent event);
+  }
+
+  ////////////////////
+  // deprecated - dont support  delay anymore
+
+  /**
+   * @deprecated
+   */
+  public static double copyVarData(NetcdfFileWriteable ncfile, List<Variable> varlist, Structure recordVar, long delay) throws IOException {
+    return copyVarData( ncfile, varlist, recordVar, null);
+  }
+
+
+  /**
+   * @deprecated
+   */
+  public static NetcdfFile writeToFile(NetcdfFile fileIn, String fileOutName, boolean fill, int delay) throws IOException {
+    return writeToFile(fileIn, fileOutName, fill, false, null);
+  }
+
+  /**
+   * @deprecated
+   */
+  public static NetcdfFile writeToFile(NetcdfFile fileIn, String fileOutName, boolean fill, int delay, boolean isLargeFile) throws IOException {
+    return writeToFile(fileIn, fileOutName, fill, isLargeFile, null);
+  }
+
+    //////////////////////////////////////
+
   /**
    * Main program.
    * <p><strong>ucar.nc2.FileWriter -in fileIn -out fileOut [-delay millisecs]</strong>.
@@ -577,7 +710,7 @@ public class FileWriter {
    * are growing
    * </ol>
    *
-   * @param arg -in fileIn -out fileOut [-delay millisecs]
+   * @param arg -in fileIn -out fileOut
    * @throws IOException on read or write error
    */
   public static void main(String arg[]) throws IOException {
@@ -592,7 +725,6 @@ public class FileWriter {
       String s = arg[i];
       if (s.equalsIgnoreCase("-in")) datasetIn = arg[i + 1];
       if (s.equalsIgnoreCase("-out")) datasetOut = arg[i + 1];
-      if (s.equalsIgnoreCase("-delay")) delay = Integer.parseInt(arg[i + 1]);
     }
     if ((datasetIn == null) || (datasetOut == null)) {
       usage();
@@ -602,7 +734,7 @@ public class FileWriter {
     debugExtend = true;
     // NetcdfFile ncfileIn = ucar.nc2.dataset.NetcdfDataset.openFile(datasetIn, null);  LOOK was
     NetcdfFile ncfileIn = ucar.nc2.NetcdfFile.open(datasetIn, null);
-    NetcdfFile ncfileOut = ucar.nc2.FileWriter.writeToFile(ncfileIn, datasetOut, false, delay);
+    NetcdfFile ncfileOut = ucar.nc2.FileWriter.writeToFile(ncfileIn, datasetOut, false, false, null);
     ncfileIn.close();
     ncfileOut.close();
     System.out.println("NetcdfFile written = " + ncfileOut);

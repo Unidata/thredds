@@ -206,7 +206,8 @@ public class GribIndexReader {
           ggr.discipline = dis.readInt();
           long refTime = dis.readLong();
           calendar.setTimeInMillis(refTime);
-          ggr.refTime = calendar.getTime(); // ??
+          ggr.refTime = refTime; 
+          ggr.refTimeAsDate = calendar.getTime(); // ??
           ggr.gdsKey = dis.readInt();
           ggr.gdsOffset = dis.readLong();
           ggr.pdsOffset = dis.readLong();

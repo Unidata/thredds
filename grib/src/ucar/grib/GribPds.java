@@ -152,6 +152,7 @@ public abstract class GribPds {
 
   abstract public int getGenProcessId(); 
 
+  // dealing with ensembles
   abstract public boolean isEnsemble();
   abstract public int getPerturbationNumber();
   abstract public int getPerturbationType();

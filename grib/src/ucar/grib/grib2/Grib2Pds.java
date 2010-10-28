@@ -54,6 +54,14 @@ abstract public class Grib2Pds extends GribPds {
   private static final int MISSING = -9999;
   private static final double MISSINGD = -9999.0;
 
+  /**
+   * Factory for Grib2Pds
+   * @param input raw bytes
+   * @param refTime reference time in msecs
+   * @param cal helper object
+   * @return Grib2Pds or null on error
+   * @throws IOException on read error
+   */
   static public Grib2Pds factory(byte[] input, long refTime, Calendar cal) throws IOException {
     int template = GribNumbers.int2(input[7] & 0xff, input[8] & 0xff); // octet 8 and 9
     switch (template) {
@@ -388,6 +396,8 @@ abstract public class Grib2Pds extends GribPds {
     if (intv != null) return intv;
 
     int timeUnit = getTimeUnit();
+    if (timeUnit == 12)
+      System.out.println("HEY");
     PdsInterval pdsIntv = (PdsInterval) this;
 
     int incr = 0;

@@ -59,7 +59,8 @@ public final class GribGridRecord implements GridRecord {
 
   //// from  identification section
 
-  Date refTime;
+  long refTime; // msecs
+  Date refTimeAsDate;
   int center = -1, subCenter = -1, tableVersion = -1;
 
   //// these are from the PDS
@@ -191,6 +192,10 @@ public final class GribGridRecord implements GridRecord {
    */
   @Override
   public Date getReferenceTime() {
+    return refTimeAsDate;
+  }
+
+  public long getReferenceTimeInMsecs() {
     return refTime;
   }
 
@@ -279,11 +284,11 @@ public final class GribGridRecord implements GridRecord {
   }
 
   @Override
-  public String getTimeUnitName() {
+  public String getTimeUdunitName() {
     if (edition == 2)
       return Grib2Tables.getUdunitTimeUnitFromTable4_4(getTimeUnit());
     else
-      return Grib1Tables.getTimeUnit(getTimeUnit());
+      return Grib1Tables.getTimeUnit(getTimeUnit(), true);
   }
 
   public int getTimeUnit() {

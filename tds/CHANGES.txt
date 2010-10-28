@@ -3,7 +3,11 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Release Details 4.2:
- 4.2 release candidate 4 (2010-10-20)
+ 4.2 release candidate 5 (2010-10-xx)
+   catch java.net.SocketException in Thredds.WmsController
+
+ 4.2 release candidate 4 (2010-10-25)
+   GridVariable : remove check for same data on duplicate record - too expensive 
    AggOuterDimension.getNestedJoinRange() getting strides wrong sometimes.
     
  4.2 release candidate 3 (2010-10-13)

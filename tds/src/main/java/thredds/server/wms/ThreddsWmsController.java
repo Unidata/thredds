@@ -175,8 +175,7 @@ public final class ThreddsWmsController extends AbstractWmsController
       }
       else if ( request.equals( "GetFeatureInfo" ) )
       {
-        modelAndView = getFeatureInfo( params, layerFactory, httpServletRequest,
-                               httpServletResponse, usageLogEntry );
+        modelAndView = getFeatureInfo( params, layerFactory, httpServletRequest, httpServletResponse, usageLogEntry );
       }
       // The REQUESTs below are non-standard and could be refactored into
       // a different servlet endpoint
@@ -208,22 +207,27 @@ public final class ThreddsWmsController extends AbstractWmsController
       return modelAndView;
     }
     catch ( LayerNotDefinedException e ) {
-      log.info( "dispatchWmsRequest(): WmsException: " + e.getMessage() );
+      log.debug( "dispatchWmsRequest(): LayerNotDefinedException: " + e.getMessage());
       log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_NOT_FOUND, -1 ) );
       throw e;
     }
     catch ( WmsException e ) {
-      log.info( "dispatchWmsRequest(): WmsException: " + e.getMessage() );
+      log.debug( "dispatchWmsRequest(): WmsException: "  + e.getMessage() );
       log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, -1 ) );
       throw e;
     }
+    catch ( java.net.SocketException e ) {
+      log.debug( "dispatchWmsRequest(): SocketException: ", e );
+      log.info( UsageLog.closingMessageForRequestContext( ServletUtil.STATUS_CLIENT_ABORT, -1 ) );
+      return null;
+    }
     catch ( Exception e ) {
-      log.info( "dispatchWmsRequest(): Exception: " + e.getMessage() );
+      log.error( "dispatchWmsRequest(): Exception: ", e );
       log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, -1 ) );
       throw e;
     }
     catch ( Error e ) {
-      log.info( "dispatchWmsRequest(): Error: " + e.getMessage() );
+      log.error( "dispatchWmsRequest(): Error: ", e );
       log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, -1 ) );
       throw e;
     }

@@ -50,7 +50,8 @@ import ucar.grib.grib2.Grib2Tables;
 import java.util.*;
 
 /**
- * Handles the Ensemble coordinate dimension
+ * Handles the Ensemble coordinate dimension.
+ * Assumes GribGridRecord
  */
 public class GridEnsembleCoord {
   static private org.slf4j.Logger log =  org.slf4j.LoggerFactory.getLogger(GridEnsembleCoord.class);
@@ -181,11 +182,10 @@ public class GridEnsembleCoord {
   /**
    * Get the index of a GridRecord
    *
-   * @param record the record
+   * @param ggr the grib record
    * @return the index or -1 if not found
    */
-  int getIndex(GridRecord record) {
-    GribGridRecord ggr = (GribGridRecord) record;
+  int getIndex(GribGridRecord ggr) {
     int ensNumber = ggr.getPds().getPerturbationNumber();
     int ensType = ggr.getPds().getPerturbationType();
 

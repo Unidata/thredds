@@ -424,7 +424,7 @@ public class GribGridServiceProvider extends GridServiceProvider {
   protected float[] _readData(GridRecord gr) throws IOException {
     GribGridRecord ggr = (GribGridRecord) gr;
     if (saveEdition == 2) {
-      return dataReaderGrib2.getData(ggr.getGdsOffset(), ggr.getPdsOffset());
+      return dataReaderGrib2.getData(ggr.getGdsOffset(), ggr.getPdsOffset(), ggr.getReferenceTimeInMsecs());
     } else if (version >= 8 ) {
       return dataReaderGrib1.getData(ggr.getGdsOffset(), ggr.getPdsOffset(), ggr.getDecimalScale(), ggr.isBmsExists());
     } else {  

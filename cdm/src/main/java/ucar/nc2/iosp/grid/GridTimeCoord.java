@@ -39,7 +39,6 @@ import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.units.DateUnit;
-import ucar.grid.GridTableLookup;
 import ucar.grid.GridRecord;
 import ucar.grib.GribGridRecord;
 
@@ -74,17 +73,18 @@ public class GridTimeCoord implements Comparable<GridTimeCoord> {
     for (GridRecord record : records) {
       if (this.baseDate == null) {
         this.baseDate = record.getReferenceTime();
-        this.timeUnit = record.getTimeUnitName();
-      } else {
-        // make sure that the time units agree
-        if (this.timeUnit != record.getTimeUnitName())
-          log.warn(record + " does not have same time unit= " + this.timeUnit + " != " + record.getTimeUnitName());
-
-        // use earlier reference date
-        Date ref = record.getReferenceTime();
-        if (ref.before(this.baseDate))
-          this.baseDate = ref;
+        this.timeUnit = record.getTimeUdunitName();
+        //System.out.printf("%s%n", record.getParameterDescription());
       }
+
+      // make sure that the time units agree
+      if (this.timeUnit != record.getTimeUdunitName())
+        log.warn(record + " does not have same time unit= " + this.timeUnit + " != " + record.getTimeUdunitName());
+
+      // use earlier reference date
+      Date ref = record.getReferenceTime();
+      if (ref.before(this.baseDate))
+        this.baseDate = ref;
     }
 
     // interval case - only GRIB
@@ -149,7 +149,7 @@ public class GridTimeCoord implements Comparable<GridTimeCoord> {
   boolean matchTimes(List<GridRecord> records) {
     // make sure that the time units agree
     for (GridRecord record : records) {
-      if (!this.timeUnit.equals(record.getTimeUnitName()))
+      if (!this.timeUnit.equals(record.getTimeUdunitName()))
         return false;
     }
 

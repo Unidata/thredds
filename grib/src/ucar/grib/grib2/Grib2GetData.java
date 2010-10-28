@@ -144,7 +144,7 @@ public final class Grib2GetData {
                 new FileOutputStream(args[3], false)));
       }
       Grib2Data g2d = new Grib2Data(raf);
-      float data[] = g2d.getData(GdsOffset, PdsOffset);
+      float data[] = g2d.getData(GdsOffset, PdsOffset, 0);
 
       float min = 9999, max = -9999;
       if (data != null) {

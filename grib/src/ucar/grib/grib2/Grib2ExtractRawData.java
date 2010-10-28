@@ -168,7 +168,8 @@ public final class Grib2ExtractRawData {
 
         }  // end processGDS
 
-        pds = new Grib2ProductDefinitionSection(raf);  // Section 4
+        long refTime = id == null ? 0 : id.getRefTime();
+        pds = new Grib2ProductDefinitionSection(raf, refTime);  // Section 4
         Grib2Pds pdsv = pds.getPdsVars();
         if (pdsv.getForecastTime() < forecast || (discipline == is.getDiscipline() &&
             category == pdsv.getParameterCategory() &&

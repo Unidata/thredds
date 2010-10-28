@@ -395,6 +395,7 @@ public class GridVariable {
    * @param ncfile  netCDF file
    * @param g       group
    * @param useName use this as the variable name
+   * @param raf read from here
    * @return the netcdf variable
    */
   Variable makeVariable(NetcdfFile ncfile, Group g, String useName, RandomAccessFile raf) {
@@ -551,9 +552,9 @@ public class GridVariable {
 
       int recno;
       if (hasEnsemble()) {
-        GribGridRecord ggr = (GribGridRecord) p;
-        int ens = ggr.getPds().getPerturbationNumber(); // LOOK assumes 0 based, dense
-        recno = ens * (ntimes * nlevels) + (time * nlevels) + level;
+        GribGridRecord ggr = (GribGridRecord) p;  // LOOK assumes GribGridRecord
+        int ens = ecs.getIndex((GribGridRecord) p);
+        recno = ens * (ntimes * nlevels) + (time * nlevels) + level;  // order is ens, time, level
       } else {
         recno = time * nlevels + level;
       }
@@ -607,8 +608,8 @@ public class GridVariable {
     try {
       if (ggr1.getEdition() == 2) {
         Grib2Data g2read = new Grib2Data(raf);
-        data1 =  g2read.getData(ggr1.getGdsOffset(), ggr1.getPdsOffset());
-        data2 =  g2read.getData(ggr2.getGdsOffset(), ggr2.getPdsOffset());
+        data1 =  g2read.getData(ggr1.getGdsOffset(), ggr1.getPdsOffset(), ggr1.getReferenceTimeInMsecs());
+        data2 =  g2read.getData(ggr2.getGdsOffset(), ggr2.getPdsOffset(), ggr2.getReferenceTimeInMsecs());
       } else  {
         Grib1Data g1read = new Grib1Data(raf);
         data1 =  g1read.getData(ggr1.getGdsOffset(), ggr1.getPdsOffset(), ggr1.getDecimalScale(), ggr1.isBmsExists());
@@ -715,13 +716,13 @@ public class GridVariable {
 
   /**
    * Find the grid record for the time and level indices
-   *
-   * @param time  time index
+   * Canonical ordering is ens, time, level
    * @param ens   ensemble index
+   * @param time  time index
    * @param level level index
    * @return the record or null
    */
-  public GridRecord findRecord(int time, int ens, int level) {
+  public GridRecord findRecord(int ens, int time, int level) {
     if (hasEnsemble()) {
       return recordTracker[ens * (ntimes * nlevels) + (time * nlevels) + level];
     } else {

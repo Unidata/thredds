@@ -48,7 +48,7 @@ import java.io.IOException;
 /**
  * A georeferencing "gridded" VariableEnhanced, that has a GridCoordSys.
  * In VisAD data model, it is a sampled Field.
- * The dimension are put into canonical order: (t, z, y, x).
+ * The dimension are put into canonical order: (rt, e, t, z, y, x).
  * <p/>
  * <p> Implementation note:
  * If the Horizontal axes are 2D, the x and y dimensions are arbitrarily chosen to be
@@ -143,7 +143,7 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
 
   /**
    * Returns an ArrayList containing the dimensions used by this geoGrid.
-   * The dimension are put into canonical order: (t, z, y, x). Note that the z and t dimensions are optional.
+   * The dimension are put into canonical order: (rt, e, t, z, y, x). Note that the z and t dimensions are optional.
    * If the Horizontal axes are 2D, the x and y dimensions are arbitrarily chosen to be
    * gcs.getXHorizAxis().getDimension(1), gcs.getXHorizAxis().getDimension(0), respectively.
    *

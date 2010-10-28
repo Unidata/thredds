@@ -55,8 +55,8 @@ public abstract class ActionSourceListener implements ActionValueListener {
 
     // manage ActionValueEvent Listeners
     lm = new ListenerManager(
-        "thredds.viewer.ui.event.ActionValueListener",
-        "thredds.viewer.ui.event.ActionValueEvent",
+        "ucar.nc2.ui.event.ActionValueListener",
+        "ucar.nc2.ui.event.ActionValueEvent",
         "actionPerformed");
   }
   public String getEventTypeName() { return eventType; }

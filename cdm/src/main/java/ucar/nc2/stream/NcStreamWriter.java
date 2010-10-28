@@ -32,10 +32,8 @@
  */
 package ucar.nc2.stream;
 
+import ucar.ma2.*;
 import ucar.nc2.*;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Section;
-import ucar.ma2.DataType;
 
 import java.nio.channels.WritableByteChannel;
 import java.nio.ByteBuffer;
@@ -49,11 +47,12 @@ import java.io.OutputStream;
  * @since Feb 7, 2009
  */
 public class NcStreamWriter {
+  static private long maxChunk = 1 * 1000 * 1000; // 1 MByte
   static private int sizeToCache = 100; // when to store a variable's data in the header, ie "immediate" mode
 
   private NetcdfFile ncfile;
   private NcStreamProto.Header header;
-  private boolean show = false;
+  private boolean show = true;
 
   public NcStreamWriter(NetcdfFile ncfile, String location) throws IOException {
     this.ncfile = ncfile;
@@ -85,19 +84,20 @@ public class NcStreamWriter {
   }
 
   public long sendData(Variable v, Section section, WritableByteChannel wbc) throws IOException, InvalidRangeException {
+    if (show) System.out.printf(" %s section=%s%n", v.getName(), section);
+
     long size = 0;
     size += writeBytes(wbc, NcStream.MAGIC_DATA); // magic
     NcStreamProto.Data dataProto = NcStream.encodeDataProto(v, section);
     byte[] datab = dataProto.toByteArray();
     size += NcStream.writeVInt(wbc, datab.length); // proto len
     size += writeBytes(wbc, datab); //proto
-    if (show) System.out.println(v.getName() + " proto len=" + datab.length);
 
     long len = section.computeSize();
     if ((v.getDataType() != DataType.STRING) && (v.getDataType() != DataType.OPAQUE)) // vdataMessage
       len *= v.getElementSize();
     size += NcStream.writeVInt(wbc, (int) len); // data len or number of objects
-    if (show) System.out.println(v.getName() + " vlen=" + len);
+    if (show) System.out.printf("  %s proto=%d data=%d%n", v.getName(), datab.length, len);
 
     size += v.readToByteChannel(section, wbc);
 
@@ -112,12 +112,39 @@ public class NcStreamWriter {
     long size = writeBytes(wbc, NcStream.MAGIC_START);
     size += sendHeader(wbc);
 
-    for (Variable v : ncfile.getVariables())
-      size += sendData(v, v.getShapeAsSection(), wbc);
+    for (Variable v : ncfile.getVariables()) {
+      long vsize = v.getSize() * v.getElementSize();
 
-    if (show) System.out.println(" total size=" + size);
+      if (vsize <= maxChunk) {
+        size += sendData(v, v.getShapeAsSection(), wbc);
+      } else {
+        size += copyChunks(wbc, v, maxChunk);
+      }
+
+    }
+
+    if (show) System.out.printf("total size= %d%n", size);
     return size;
   }
+
+  private long copyChunks(WritableByteChannel wbc, Variable oldVar, long maxChunkSize) throws IOException {
+    long maxChunkElems = maxChunkSize / oldVar.getElementSize();
+    FileWriter.ChunkingIndex index = new FileWriter.ChunkingIndex(oldVar.getShape());
+    long size = 0;
+    while (index.currentElement() < index.getSize()) {
+      try {
+        int[] chunkOrigin = index.getCurrentCounter();
+        int[] chunkShape = index.computeChunkShape(maxChunkElems);
+        size += sendData(oldVar, new Section(chunkOrigin, chunkShape), wbc);
+        index.setCurrentCounter(index.currentElement() + (int) Index.computeSize(chunkShape));
+      } catch (InvalidRangeException e) {
+        e.printStackTrace();
+        throw new IOException(e.getMessage());
+      }
+    }
+    return size;
+  }
+
 
 
 }

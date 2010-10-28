@@ -682,7 +682,7 @@ public class GempakGridReader extends GempakFileReader {
 
         long            start    = getOffset(iiword);
         GempakGrib2Data gemGrib2 = new GempakGrib2Data(rf);
-        float[]         data     = gemGrib2.getData(start);
+        float[]         data     = gemGrib2.getData(start, 0);
         if (((iarray[3] >> 6) & 1) == 0) {  // -y scanning - flip
             data = gb2_ornt(iarray[1], iarray[2], iarray[3], data);
         }

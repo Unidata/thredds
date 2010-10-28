@@ -118,7 +118,7 @@ public class JTreeTable extends JTable {
 
   /**
     Increment or decrement the current selection by one row.
-    @param boolean increment true=increment, false=decrement
+    @param increment true=increment, false=decrement
   */
   public int incrSelected(boolean increment) {
     int rowno = tree.getRowForPath(getSelectionPath());

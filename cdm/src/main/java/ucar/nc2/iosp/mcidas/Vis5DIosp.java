@@ -818,13 +818,6 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
             return null;
         }
 
-        /**
-         * gets the TimeRangeUnitName.
-         * @return TimeRangeUnitName
-         */
-        public final String getFirstTimeRangeUnitName() {
-            return "second";
-        }
         public final String getTimeRangeUnitName( int tunit) {
             return "second";
         }

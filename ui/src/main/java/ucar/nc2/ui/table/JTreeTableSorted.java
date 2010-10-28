@@ -52,22 +52,21 @@ import javax.swing.table.*;
 
 import javax.swing.tree.TreePath;
 
-  /**
-    JTreeTableSorted adds sorting functionality to a JTreeTable.
-    JTreeTable is a class that combines a JTable with a JTree.
-    Note that JTreeTableSorted is a JPanel, and has-a JTreeTable.
-    It throws ListSelectionEvent events when the selection changes.
-    It throws a UIChangeEvent, property = "sort" just before a sort is going to happen.
-  */
-
+/**
+ * JTreeTableSorted adds sorting functionality to a JTreeTable.
+ * JTreeTable is a class that combines a JTable with a JTree.
+ * Note that JTreeTableSorted is a JPanel, and has-a JTreeTable.
+ * It throws ListSelectionEvent events when the selection changes.
+ * It throws a UIChangeEvent, property = "sort" just before a sort is going to happen.
+ */
 public class JTreeTableSorted extends JPanel {
-      // for HeaderRenderer
-  static private Icon sortDownIcon = BAMutil.getIcon( "SortDown", true);
-  static private Icon sortUpIcon = BAMutil.getIcon( "SortUp", true);
-  static private Icon threadSortIcon = BAMutil.getIcon( "ThreadSorted", true);
-  static private Icon threadUnSortIcon = BAMutil.getIcon( "ThreadUnsorted", true);
+  // for HeaderRenderer
+  static private Icon sortDownIcon = BAMutil.getIcon("SortDown", true);
+  static private Icon sortUpIcon = BAMutil.getIcon("SortUp", true);
+  static private Icon threadSortIcon = BAMutil.getIcon("ThreadSorted", true);
+  static private Icon threadUnSortIcon = BAMutil.getIcon("ThreadUnsorted", true);
 
-    // main stuff
+  // main stuff
   private JTreeTable table;
   private TreeTableModelSorted model;
 
@@ -90,57 +89,59 @@ public class JTreeTableSorted extends JPanel {
 
   private boolean debug = false, debugSetPath = false, debugEvent = false;
 
- /**
-    Constructor.
-    @param m TreeTableModelSorted m
-  */
+  /**
+   * Constructor.
+   *
+   * @param m TreeTableModelSorted m
+   */
   public JTreeTableSorted(TreeTableModelSorted m, boolean allowSortColChange) {
 
     this.model = m;
     this.useThreads = model.useThreads();
     this.treeSort = model.isTreeSort();
 
-      // create the ui
+    // create the ui
     table = new JTreeTable(model);
     setLayout(new BorderLayout());
     scrollPane = new JScrollPane(table);
     add(scrollPane, BorderLayout.CENTER);
 
     //table.setSelectionMode( ListSelectionModel.SINGLE_SELECTION);
-    table.setAutoResizeMode( JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
+    table.setAutoResizeMode(JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
     //table.setFont( table.getFont().deriveFont( Font.BOLD));
 
-        // now set the header renderers
+    // now set the header renderers
     TableColumnModel tcm = table.getColumnModel();
-    int ncolwt = useThreads ? table.getColumnCount()-1 : table.getColumnCount();
-    for (int i=0; i<ncolwt; i++) {
+    int ncolwt = useThreads ? table.getColumnCount() - 1 : table.getColumnCount();
+    for (int i = 0; i < ncolwt; i++) {
       TableColumn tc = tcm.getColumn(i);
-      tc.setHeaderRenderer( new SortedHeaderRenderer(model.getColumnName(i), i));
+      tc.setHeaderRenderer(new SortedHeaderRenderer(model.getColumnName(i), i));
     }
     if (useThreads) {
       threadCol = ncolwt;
       threadHeaderRenderer = new ThreadHeaderRenderer(threadCol);
-      tcm.getColumn(threadCol).setHeaderRenderer( threadHeaderRenderer);
+      tcm.getColumn(threadCol).setHeaderRenderer(threadHeaderRenderer);
     }
 
     // popupMenu
     popupMenu = new ucar.nc2.ui.widget.PopupMenu(table.getTableHeader(), "Visible");
     int ncols = model.getColumnCount();
     acts = new PopupAction[ncols];
-    for (int i=0; i<ncols; i++) {
+    for (int i = 0; i < ncols; i++) {
       acts[i] = new PopupAction(model.getColumnName(i));
-      popupMenu.addActionCheckBox( model.getColumnName(i), acts[i], true);
+      popupMenu.addActionCheckBox(model.getColumnName(i), acts[i], true);
     }
 
     // listen for list selection
-    table.getSelectionModel().addListSelectionListener( new ListSelectionListener() {
+    table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         if (!e.getValueIsAdjusting() && lm.hasListeners() && (listSelectionEvent == null)) {
           listSelectionEvent = e;
-          if (debugEvent) System.out.println(" JTreeTableSorted message selected = "+e);
+          if (debugEvent) System.out.println(" JTreeTableSorted message selected = " + e);
           SwingUtilities.invokeLater(new Runnable() {  // gotta do this after the dust settles
+
             public void run() {
-              lm.sendEvent( listSelectionEvent);
+              lm.sendEvent(listSelectionEvent);
               listSelectionEvent = null;  // dont like this
             }
           }); // new Runnable
@@ -155,9 +156,9 @@ public class JTreeTableSorted extends JPanel {
         int colIdx = tcm2.getColumnIndexAtX(e.getX());
         int colNo = table.convertColumnIndexToModel(colIdx);
 
-          // keep track of selection
+        // keep track of selection
         selectedRow = getSelectedRow();
-        if (debug) System.out.println("----selectedRow = "+selectedRow);
+        if (debug) System.out.println("----selectedRow = " + selectedRow);
 
         if (colNo == threadCol) { // toggle threads
           threadHeaderRenderer.setOn(!threadHeaderRenderer.isOn);
@@ -165,74 +166,84 @@ public class JTreeTableSorted extends JPanel {
           model.sort();
         } else {
           boolean reverse = model.sort(colNo);
-          setSortCol( colNo, reverse);
+          setSortCol(colNo, reverse);
         }
 
         table.fireDataChanged();
         invokeSetPath();
       }
     };
-    allowSortColChange( allowSortColChange);
+    allowSortColChange(allowSortColChange);
 
     // event manager for ListSelection
     lm = new ListenerManager(
-        "javax.swing.event.ListSelectionListener",
-        "javax.swing.event.ListSelectionEvent",
-        "valueChanged");
+            "javax.swing.event.ListSelectionListener",
+            "javax.swing.event.ListSelectionEvent",
+            "valueChanged");
 
     // default sort
-    setSortCol( model.getSortCol(), model.getReverse());
-  }
-
-   /** add ListSelectionEvent listener */
-  public void addListSelectionListener( ListSelectionListener l) {
-    lm.addListener(l);
-  }
-  /** remove ListSelectionEvent listener */
-  public void removeListSelectionListener( ListSelectionListener l) {
-    lm.removeListener(l);
-  }
-
-  public void allowSortColChange( boolean allow) {
-    JTableHeader hdr = table.getTableHeader();
-    if (allow && !allowSortColChange)
-      hdr.addMouseListener( allowSortColChangeMouseListener);
-    else if (!allow && allowSortColChange)
-      hdr.removeMouseListener( allowSortColChangeMouseListener);
-    allowSortColChange = allow;
-  }
-
-  public TreeTableModelSorted getModel() { return model; }
-  public JTable getTable() { return table; }
-
-  public TableRow getRow( int row) {
-    return model.getRow( table.getPathForRow(row));
+    setSortCol(model.getSortCol(), model.getReverse());
   }
 
   /**
-    Set the state from the last saved in the PreferencesExt.
-    @param String name  object name
-    @param PersistentStore store ok if null or empty
-  */
-  public void restoreState( PreferencesExt store) {
+   * add ListSelectionEvent listener
+   */
+  public void addListSelectionListener(ListSelectionListener l) {
+    lm.addListener(l);
+  }
+
+  /**
+   * remove ListSelectionEvent listener
+   */
+  public void removeListSelectionListener(ListSelectionListener l) {
+    lm.removeListener(l);
+  }
+
+  public void allowSortColChange(boolean allow) {
+    JTableHeader hdr = table.getTableHeader();
+    if (allow && !allowSortColChange)
+      hdr.addMouseListener(allowSortColChangeMouseListener);
+    else if (!allow && allowSortColChange)
+      hdr.removeMouseListener(allowSortColChangeMouseListener);
+    allowSortColChange = allow;
+  }
+
+  public TreeTableModelSorted getModel() {
+    return model;
+  }
+
+  public JTable getTable() {
+    return table;
+  }
+
+  public TableRow getRow(int row) {
+    return model.getRow(table.getPathForRow(row));
+  }
+
+  /**
+   * Set the state from the last saved in the PreferencesExt.
+   *
+   * @param store ok if null or empty
+   */
+  public void restoreState(PreferencesExt store) {
     if (store == null)
       return;
 
     int ncols = table.getColumnCount();
 
-      // stored column order
-    int [] modelIndex = (int []) store.getBean("ColumnOrder", null);
+    // stored column order
+    int[] modelIndex = (int[]) store.getBean("ColumnOrder", null);
 
     if ((modelIndex != null) && (modelIndex.length == ncols)) { // what about invisible ??
 
       // make invisible any not stored
-      boolean [] visible = new boolean[ncols];
-      for (int i=0; i<modelIndex.length; i++)
+      boolean[] visible = new boolean[ncols];
+      for (int i = 0; i < modelIndex.length; i++)
         if (modelIndex[i] < ncols)
-          visible[ modelIndex[i]] = true;
+          visible[modelIndex[i]] = true;
 
       // modify popup menu
-      for (int i=0; i<ncols; i++)
+      for (int i = 0; i < ncols; i++)
         if (!visible[i]) {
           //System.out.println( colName[i]+" hide "+i);
           acts[i].hideColumn();
@@ -241,8 +252,8 @@ public class JTreeTableSorted extends JPanel {
 
       // now set the header order
       TableColumnModel tcm = table.getColumnModel();
-      int n = Math.min( modelIndex.length, table.getColumnCount());
-      for (int i=0; i<n; i++) {
+      int n = Math.min(modelIndex.length, table.getColumnCount());
+      for (int i = 0; i < n; i++) {
         TableColumn tc = tcm.getColumn(i);
         tc.setModelIndex(modelIndex[i]);
         String name = model.getColumnName(modelIndex[i]);
@@ -250,9 +261,9 @@ public class JTreeTableSorted extends JPanel {
         tc.setIdentifier(name);
         if (useThreads && (modelIndex[i] == threadCol)) {
           threadHeaderRenderer = new ThreadHeaderRenderer(threadCol);
-          tc.setHeaderRenderer( threadHeaderRenderer);
+          tc.setHeaderRenderer(threadHeaderRenderer);
         } else
-          tc.setHeaderRenderer( new SortedHeaderRenderer(name, modelIndex[i]));
+          tc.setHeaderRenderer(new SortedHeaderRenderer(name, modelIndex[i]));
       }
     }
 
@@ -260,28 +271,28 @@ public class JTreeTableSorted extends JPanel {
     Object colWidths = store.getBean("ColumnWidths", null);
     if (colWidths == null)
       return;
-    int [] size = (int [] ) colWidths;
+    int[] size = (int[]) colWidths;
 
     if (size != null)
-      setColumnWidths( size);
+      setColumnWidths(size);
     if (debug) {
       System.out.println(" read widths = ");
-      for (int i=0; i<size.length; i++)
-        System.out.print(" "+size[i]);
+      for (int i = 0; i < size.length; i++)
+        System.out.print(" " + size[i]);
       System.out.println();
     }
 
-    boolean isThreadsOn = store.getBoolean( "isThreadsOn", false);
+    boolean isThreadsOn = store.getBoolean("isThreadsOn", false);
     if (useThreads) {
-      model.setThreadsOn( isThreadsOn);
+      model.setThreadsOn(isThreadsOn);
       threadHeaderRenderer.setOn(isThreadsOn);
     }
 
-    int colNo = store.getInt( "SortOnCol", 0);
-    boolean reverse = store.getBoolean( "SortReverse", false);
-    model.setSortCol( colNo);
-    model.setReverse( reverse);
-    setSortCol( colNo, reverse);
+    int colNo = store.getInt("SortOnCol", 0);
+    boolean reverse = store.getBoolean("SortReverse", false);
+    model.setSortCol(colNo);
+    model.setReverse(reverse);
+    setSortCol(colNo, reverse);
 
     model.sort();
     table.fireDataChanged();
@@ -289,16 +300,16 @@ public class JTreeTableSorted extends JPanel {
 
   private void setColumnWidths(int[] sizes) {
     TableColumnModel tcm = table.getColumnModel();
-    for (int i=0; i< table.getColumnCount(); i++) {
+    for (int i = 0; i < table.getColumnCount(); i++) {
       TableColumn tc = tcm.getColumn(i);
-      int maxw = ((sizes == null) || (i >= sizes.length))  ? 10 : sizes[i];
-   //     model.getPreferredWidthForColumn(tc) : sizes[i];
+      int maxw = ((sizes == null) || (i >= sizes.length)) ? 10 : sizes[i];
+      //     model.getPreferredWidthForColumn(tc) : sizes[i];
       tc.setPreferredWidth(maxw);
     }
     //table.sizeColumnsToFit(0);     //  must be called due to a JTable bug
   }
 
-  public void setColOn( int colno, boolean state, int pos) {
+  public void setColOn(int colno, boolean state, int pos) {
     // System.out.println("setColOn "+colno+" "+state+" "+pos);
     acts[colno].putValue(BAMutil.STATE, new Boolean(state));
     if (state)
@@ -307,12 +318,12 @@ public class JTreeTableSorted extends JPanel {
       acts[colno].hideColumn();
   }
 
-  public void registerKeyboardAction(ActionListener act,  KeyStroke key, int when) {
+  public void registerKeyboardAction(ActionListener act, KeyStroke key, int when) {
     table.registerKeyboardAction(act, key, when);
   }
 
- public void setFontSize( int size) {
-    table.setFont( table.getFont().deriveFont( (float) size));
+  public void setFontSize(int size) {
+    table.setFont(table.getFont().deriveFont((float) size));
   }
 
   /**
@@ -323,38 +334,42 @@ public class JTreeTableSorted extends JPanel {
       return;
 
     int ncols = table.getColumnCount();
-    int [] size = new int[ncols];
-    int [] modelIndex = new int[ncols];
+    int[] size = new int[ncols];
+    int[] modelIndex = new int[ncols];
 
     TableColumnModel tcm = table.getColumnModel();
-    for (int i=0; i<ncols; i++) {
+    for (int i = 0; i < ncols; i++) {
       TableColumn tc = tcm.getColumn(i);
       size[i] = tc.getWidth();
       modelIndex[i] = tc.getModelIndex();
     }
-    store.putBeanObject( "ColumnWidths", size);
-    store.putBeanObject( "ColumnOrder", modelIndex);
+    store.putBeanObject("ColumnWidths", size);
+    store.putBeanObject("ColumnOrder", modelIndex);
 
-    store.putInt( "SortOnCol", model.getSortCol());
-    store.putBoolean( "SortReverse", model.getReverse());
-    store.putBoolean( "isThreadsOn", model.isThreadsOn());
+    store.putInt("SortOnCol", model.getSortCol());
+    store.putBoolean("SortReverse", model.getReverse());
+    store.putBoolean("isThreadsOn", model.isThreadsOn());
 
     if (debug) {
       System.out.println(" store widths = ");
-      for (int i=0; i<size.length; i++)
-        System.out.print(" "+size[i]);
+      for (int i = 0; i < size.length; i++)
+        System.out.print(" " + size[i]);
       System.out.println();
     }
 
   }
 
+  public ArrayList getRows() {
+    return model.getRows();
+  }
+
   /**
-    Replace the rowList with this one.
-    @param ArrayList rowList
-  */
-  public ArrayList getRows( ) { return model.getRows(); }
-  public void setRows( ArrayList rows) {
-    model.setRows( rows);
+   * Replace the rowList with this one.
+   *
+   * @param rows list of rows
+   */
+  public void setRows(ArrayList rows) {
+    model.setRows(rows);
 
 /*    if (rowList.size() > 0)
       table.setRowSelectionInterval(0, 0);
@@ -366,104 +381,111 @@ public class JTreeTableSorted extends JPanel {
   }
 
   /**
-    Remove elem from rowList, update the table.
-    Searches for match using object identity (==)
-    @param Object elem
-  *
-  public void removeRow ( Object elem) {
-    Iterator iter = rowList.iterator();
-    while (iter.hasNext()) {
-      Object row = iter.next();
-      if (row == elem) {
-        iter.remove();
-        break;
-      }
-    }
-    table.revalidate();
-  } */
+   Remove elem from rowList, update the table.
+   Searches for match using object identity (==)
+   @param Object elem
+    *
+   public void removeRow ( Object elem) {
+   Iterator iter = rowList.iterator();
+   while (iter.hasNext()) {
+   Object row = iter.next();
+   if (row == elem) {
+   iter.remove();
+   break;
+   }
+   }
+   table.revalidate();
+   } */
 
-   // public int getRowCount() { return table.getRowCount(); }
+  // public int getRowCount() { return table.getRowCount(); }
   //int getSelectedRowIndex() { return table.getSelectedRow(); }   // for SuperComboBox
   //void setSortOK(boolean sortOK) { this.sortOK = sortOK; }       // for SuperComboBox
 
   /**
-    Get the currently selected row.
-    @return selected TableRow
-  */
+   * Get the currently selected row.
+   *
+   * @return selected TableRow
+   */
   public TableRow getSelectedRow() {
     return model.getRow(table.getSelectionPath());
   }
 
   /**
-    Get the currently selected rows.
-    @return an Iterator whose objects are TableRow
-  */
+   * Get the currently selected rows.
+   *
+   * @return an Iterator whose objects are TableRow
+   */
   public Iterator getSelectedRows() {
     TreePath[] paths = table.getSelectionPaths();
     if ((paths == null) || (paths.length < 1))
       return null;
 
-    HashSet set = new HashSet(2*paths.length);
-    for (int i=0; i< paths.length; i++) {
-      model.addRowsToSetFromPath( table.getTree(), paths[i], set);
+    HashSet set = new HashSet(2 * paths.length);
+    for (int i = 0; i < paths.length; i++) {
+      model.addRowsToSetFromPath(table.getTree(), paths[i], set);
     }
 
     return set.iterator();
   }
 
   /**
-    Set the current selection to this row.
-    @param int row index into rowList
-  */
+   * Set the current selection to this row.
+   *
+   * @param rowno index into rowList
+   */
   public void setSelectedRow(int rowno) {
     if ((rowno < 0) || (rowno >= model.getRowCount()))
       return;
-    if (debugSetPath) System.out.println("TreeTableSorted setSelected "+rowno);
+    if (debugSetPath) System.out.println("TreeTableSorted setSelected " + rowno);
 
     selectedRow = model.getRow(rowno);
-    TreePath path = model.getPath( selectedRow);
-    if (path != null) table.setSelectionPath( path);
+    TreePath path = model.getPath(selectedRow);
+    if (path != null) table.setSelectionPath(path);
 
     // for mysterious reasons, gotta do it again later
     invokeSetPath();
-    ensureRowIsVisible( rowno);
+    ensureRowIsVisible(rowno);
   }
 
   private void invokeSetPath() {
     // gotta do this after the dust settles
     SwingUtilities.invokeLater(new Runnable() {
       public void run() {
-        TreePath path = model.getPath( selectedRow);
+        TreePath path = model.getPath(selectedRow);
         if (path != null) {
-          int rowno = table.setSelectionPath( path);
+          int rowno = table.setSelectionPath(path);
           if (rowno >= 0) ensureRowIsVisible(rowno);
-          if (debugSetPath) System.out.println("----reset selectedRow = "+rowno+" "+path);
+          if (debugSetPath) System.out.println("----reset selectedRow = " + rowno + " " + path);
         }
       }
     });
   }
 
   /**
-    Increment or decrement the current selection by one row.
-    @param boolean increment true=increment, false=decrement
-  */
+   * Increment or decrement the current selection by one row.
+   *
+   * @param increment true=increment, false=decrement
+   */
   public void incrSelected(boolean increment) {
     int rowno = table.incrSelected(increment);
-    if (rowno > 0) ensureRowIsVisible( rowno);
+    if (rowno > 0) ensureRowIsVisible(rowno);
   }
 
   // Get the JTable delegate so you can do nasty things to it
+
   public void setDefaultRenderer(Class columnClass, TableCellRenderer renderer) {
     table.setDefaultRenderer(columnClass, renderer);
   }
 
-  /** this array translates the column index to the model index */
+  /**
+   * this array translates the column index to the model index
+   */
   public int[] getModelIndex() {
-    int [] modelIndex = new int[model.getColumnCount()];
+    int[] modelIndex = new int[model.getColumnCount()];
 
     try {
       TableColumnModel tcm = table.getColumnModel();
-      for (int i=0; i<model.getColumnCount(); i++) {
+      for (int i = 0; i < model.getColumnCount(); i++) {
         TableColumn tc = tcm.getColumn(i);
         modelIndex[i] = tc.getModelIndex();
       }
@@ -476,22 +498,23 @@ public class JTreeTableSorted extends JPanel {
 
 
 /////////////////////////////////////////////////////////////////////////////////
+
   private void ensureRowIsVisible(int nRow) {
     Rectangle visibleRect = table.getCellRect(nRow, 0, true);
-    if (debugSetPath) System.out.println("----ensureRowIsVisible = "+visibleRect);
-    if (visibleRect != null)  {
+    if (debugSetPath) System.out.println("----ensureRowIsVisible = " + visibleRect);
+    if (visibleRect != null) {
       visibleRect.x = scrollPane.getViewport().getViewPosition().x;
       table.scrollRectToVisible(visibleRect);
       table.repaint();
     }
   }
 
- public void setSortCol( int sortCol, boolean reverse) {
+  public void setSortCol(int sortCol, boolean reverse) {
     TableColumnModel tcm = table.getColumnModel();
-    for (int i=0; i<table.getColumnCount(); i++) {
+    for (int i = 0; i < table.getColumnCount(); i++) {
       TableColumn tc = tcm.getColumn(i);
       SortedHeaderRenderer shr = (SortedHeaderRenderer) tc.getHeaderRenderer();
-      shr.setSortCol( sortCol, reverse);
+      shr.setSortCol(sortCol, reverse);
     }
   }
 
@@ -499,7 +522,9 @@ public class JTreeTableSorted extends JPanel {
     private String id;
     private TableColumn tc = null;
 
-    PopupAction(String id) { this.id = id; }
+    PopupAction(String id) {
+      this.id = id;
+    }
 
     public void actionPerformed(ActionEvent e) {
       boolean state = ((Boolean) getValue(BAMutil.STATE)).booleanValue();
@@ -523,9 +548,9 @@ public class JTreeTableSorted extends JPanel {
       try {
         tcm.addColumn(tc);
         int idx = tcm.getColumnIndex(id);
-        tcm.moveColumn( idx, 0);
+        tcm.moveColumn(idx, 0);
       } catch (Exception e) {
-        System.out.println("addAtPos failed"+e);
+        System.out.println("addAtPos failed" + e);
       }
 
     }
@@ -563,18 +588,18 @@ public class JTreeTableSorted extends JPanel {
 
       compPanel = new JPanel(new BorderLayout());
       compPanel.setBorder(new BevelBorder(BevelBorder.RAISED));
-      compPanel.add(new JLabel( name), BorderLayout.CENTER);
+      compPanel.add(new JLabel(name), BorderLayout.CENTER);
       comp = compPanel;
     }
 
-    void setSortCol( int sortCol, boolean reverse) {
+    void setSortCol(int sortCol, boolean reverse) {
       if (sortCol == modelCol) {
 
         if (!hasSortIndicator)
-          compPanel.add(reverse? upLabel : downLabel, BorderLayout.EAST);
+          compPanel.add(reverse ? upLabel : downLabel, BorderLayout.EAST);
         else if (reverse != this.reverse) {
           compPanel.remove(1);
-          compPanel.add(reverse? upLabel : downLabel, BorderLayout.EAST);
+          compPanel.add(reverse ? upLabel : downLabel, BorderLayout.EAST);
         }
 
         this.reverse = reverse;
@@ -589,7 +614,7 @@ public class JTreeTableSorted extends JPanel {
     }
 
     public Component getTableCellRendererComponent(JTable table, Object value,
-      boolean isSelected, boolean hasFocus, int row, int column) {
+                                                   boolean isSelected, boolean hasFocus, int row, int column) {
 
       return comp;
     }
@@ -602,24 +627,24 @@ public class JTreeTableSorted extends JPanel {
     boolean isOn = false;
 
     ThreadHeaderRenderer(int modelCol) {
-      super( modelCol);
+      super(modelCol);
 
       sort = new JPanel(new BorderLayout());
       sort.setBorder(new BevelBorder(BevelBorder.RAISED));
-      sort.add(new JLabel( threadSortIcon), BorderLayout.CENTER);
+      sort.add(new JLabel(threadSortIcon), BorderLayout.CENTER);
 
       unsort = new JPanel(new BorderLayout());
       unsort.setBorder(new BevelBorder(BevelBorder.RAISED));
-      unsort.add(new JLabel( threadUnSortIcon), BorderLayout.CENTER);
+      unsort.add(new JLabel(threadUnSortIcon), BorderLayout.CENTER);
 
       comp = unsort;
     }
 
-    void setOn( boolean setOn) {
+    void setOn(boolean setOn) {
       isOn = setOn;
       comp = (isOn) ? sort : unsort;
     }
 
-    void setSortCol( int sortCol, boolean reverse) { }
+    void setSortCol(int sortCol, boolean reverse) { }
   }
 }

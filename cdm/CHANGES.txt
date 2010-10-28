@@ -3,7 +3,17 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Changes in version 4.2:
- 12: (2010-10-xx)
+ 13: (2010-10-xx)
+  ToolsUI: add IOSP/Cdmremote panel
+  Grib: clarify units and udunits
+  remove GridLookup.getFirstTimeRangeUnitName()
+  Grib2ProductDefinitionSection needs refTime
+  use CF.GRID_MAPPING_NAME where possible
+ 12: (2010-10-26)
+  LatLonProjection uses "latitude_longitude" for grid_mapping_name attribute
+  ToolsUI: remove StationRadial (obs), add IOSP/CDMremote (rough)
+  FileWriter: incorporate   Steve Ansari's changes
+  GridServiceProvider: ensemble dim order was wrong
   move ucar.utils.prefs into cdm, because used by tds (dqcRedirect) and delete prefsAll.jar
  11: (2010-10-24)
   tdsMonitor: use prefs ComboBox to persist list of servers

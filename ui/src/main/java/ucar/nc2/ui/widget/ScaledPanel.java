@@ -121,13 +121,13 @@ public class ScaledPanel extends JPanel {
 
     // manage Event Listener's
     lmPick = new ListenerManager(
-            "thredds.viewer.ui.geoloc.PickEventListener",
-            "thredds.viewer.ui.geoloc.PickEvent",
+            "ucar.nc2.ui.geoloc.PickEventListener",
+            "ucar.nc2.ui.geoloc.PickEvent",
             "actionPerformed");
 
     lmMove = new ListenerManager(
-            "thredds.viewer.ui.geoloc.CursorMoveEventListener",
-            "thredds.viewer.ui.geoloc.CursorMoveEvent",
+            "ucar.nc2.ui.geoloc.CursorMoveEventListener",
+            "ucar.nc2.ui.geoloc.CursorMoveEvent",
             "actionPerformed");
   }
 

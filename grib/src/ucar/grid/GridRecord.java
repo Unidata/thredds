@@ -128,7 +128,7 @@ public interface GridRecord {
    *
    * @return the time unit as a String
    */
-  public String getTimeUnitName();
+  public String getTimeUdunitName();
 
   /**
    * A hash code to group records into a CDM variable

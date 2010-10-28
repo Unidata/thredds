@@ -274,16 +274,6 @@ public final class Grib2GridTableLookup implements GridTableLookup {
   }
 
   /**
-   * gets the TimeRangeUnitName.  Not always correct
-   * @deprecated
-   *
-   * @return TimeRangeUnitName
-   */
-  public final String getFirstTimeRangeUnitName() {
-    return Grib2Tables.getUdunitTimeUnitFromTable4_4(firstPDSV.getTimeUnit());
-  }
-
-  /**
    * gets the CenterName.
    *
    * @return CenterName

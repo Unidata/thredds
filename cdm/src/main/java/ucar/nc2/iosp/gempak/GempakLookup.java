@@ -189,13 +189,6 @@ public final class GempakLookup implements GridTableLookup {
         return "";
     }
 
-    /**
-     * gets the TimeRangeUnitName.
-     * @return TimeRangeUnitName
-     */
-    public final String getFirstTimeRangeUnitName() {
-        return "minute";
-    }
     public final String getTimeRangeUnitName( int tunit ) {
         return "minute";
     }

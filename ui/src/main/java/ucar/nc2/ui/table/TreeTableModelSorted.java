@@ -57,8 +57,8 @@ public class TreeTableModelSorted extends TreeTableModelAbstract {
   /**
    * This uses the mode where the selected column becomes the root of the tree.
    *
-   * @param colName: list of column names, must have length > 0.
-   * @param rowList: array of rows that implement TableRow interface, may be empty but not null.
+   * @param colName  list of column names, must have length > 0.
+   * @param rows array of rows that implement TableRow interface, may be empty but not null.
    */
   public TreeTableModelSorted(String[] colName, ArrayList rows) {
     this(null, colName, rows);
@@ -68,9 +68,9 @@ public class TreeTableModelSorted extends TreeTableModelAbstract {
   /**
    * This is the mode that adds a column for threads.
    *
-   * @param ThreadSorter threadSorter: if non-null, add thread column.
-   * @param colName: list of column names, must have length > 0.
-   * @param rowList: array of rows that implement TableRow interface, may be empty but not null.
+   * @param threadSorter if non-null, add thread column.
+   * @param colName list of column names, must have length > 0.
+   * @param rows array of rows that implement TableRow interface, may be empty but not null.
    *   We make a copy of the Array, but these point to the original objects.
    */
   public TreeTableModelSorted(ThreadSorter threadSorter, String[] colName, ArrayList rows) {
@@ -117,12 +117,13 @@ public class TreeTableModelSorted extends TreeTableModelAbstract {
       return (TableRow) rowList.get( row);
   } */
 
+  public ArrayList getRows( ) { return rowList; }
+  
   /**
    * Set a new rowlist. This will automaticaly sort.
    * We make a copy of the Array, but these point to the original objects.
    * @param rows: array of rows that implement TableRow interface
    */
-  public ArrayList getRows( ) { return rowList; }
   public void setRows( ArrayList rows) {
     this.rowList = new ArrayList(rows);
     sort();

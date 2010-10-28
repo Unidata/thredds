@@ -531,7 +531,7 @@ public final class Grib1Dump {
         calendar.setTimeInMillis(refTime);
         ps.println("                Reference Time : " + dateFormat.format( calendar.getTime()));
         //ps.println("                    Time Units : " + pds.getTimeUnit());
-        ps.println("                    Time Units : " + Grib1Tables.getTimeUnit( pdsv.getTimeUnit()  ));
+        ps.println("                    Time Units : " + Grib1Tables.getTimeUnit( pdsv.getTimeUnit(), false));
         //ps.println("          Time Range Indicator : "
         //           + pds.getTimeRangeString());
         ps.println("          Time Range Indicator : "
@@ -576,7 +576,7 @@ public final class Grib1Dump {
           f.format("               Parameter_table : %d %d %d NOT FOUND%n" , center, subCenter,  pdsv.getParameterTableVersion());
         }
         f.format("                Reference Time : %s%n", dateFormat.format( pdsv.getReferenceDate()));
-        f.format("                    Time Units : %s%n", Grib1Tables.getTimeUnit( pdsv.getTimeUnit()  ));
+        f.format("                    Time Units : %s%n", Grib1Tables.getTimeUnit( pdsv.getTimeUnit(), false));
         f.format("          Time Range Indicator : (%d) %s%n", pdsv.getTimeRangeIndicator(), Grib1Tables.getTimeRange( pdsv.getTimeRangeIndicator() ));
         f.format("                   Time 1 (P1) : %s%n", pdsv.getP1());
         f.format("                   Time 2 (P2) : %s%n", pdsv.getP2());

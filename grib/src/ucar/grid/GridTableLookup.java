@@ -157,7 +157,6 @@ public interface GridTableLookup {
      * Get the first time range unit name
      * @return the first time range unit name
      */
-    public String getFirstTimeRangeUnitName();
     public String getTimeRangeUnitName( int tunit );
 
     /**

@@ -78,9 +78,11 @@ public class TdsDownloader {
 
     String urls = "http://" + server + "/thredds/admin/log/"+type+"/";
     final String contents = HttpClientManager.getContent(urls);
-    if (contents == null) {
-      ta.append(String.format("Failed to access logs at URL = %s%n%n", urls));
+    if ((contents == null) || (contents.length() == 0)) {
+      ta.append(String.format("Failed to get logs at URL = %s%n%n", urls));
       return;
+    } else {
+      ta.append(String.format("Logs at URL = %s%n%s%n", urls, contents));
     }
 
     // update text area in background  http://technobuz.com/2009/05/update-jtextarea-dynamically/

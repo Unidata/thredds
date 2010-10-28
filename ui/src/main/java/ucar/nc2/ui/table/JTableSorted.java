@@ -84,8 +84,8 @@ public class JTableSorted extends JPanel {
   /**
     Constructor.
 
-    @param String [] colName: list of column names
-    @param ArrayList list : list of rows. This must contain objects that implement
+    @param colName list of column names
+    @param listRT list of rows. This must contain objects that implement
       the TableRow interface. May be null or empty.
   */
   public JTableSorted(String[] colName, ArrayList listRT) {
@@ -95,11 +95,11 @@ public class JTableSorted extends JPanel {
   /**
     Constructor.
 
-    @param String [] colName: list of column names
-    @param ArrayList list : list of rows. This must contain objects that implement
+    @param columnName: list of column names
+    @param listRT : list of rows. This must contain objects that implement
       the TableRow interface. May be null or empty.
-    @param boolean enableColumnManipulation : allow columns to be added, deleted via click-right popup
-    @param ucar.unidata.ui.ThreadSorter threadSorter : if not null, add a "thread sorting" column
+    @param enableColumnManipulation : allow columns to be added, deleted via click-right popup
+    @param threadSorter : if not null, add a "thread sorting" column
 
   */
   public JTableSorted(String[] columnName, ArrayList listRT, boolean enableColumnManipulation,
@@ -195,8 +195,8 @@ public class JTableSorted extends JPanel {
 
     // event manager
     lm = new ListenerManager(
-        "thredds.viewer.ui.event.UIChangeListener",
-        "thredds.viewer.ui.event.UIChangeEvent",
+        "ucar.nc2.ui.event.UIChangeListener",
+        "ucar.nc2.ui.event.UIChangeEvent",
         "processChange");
 
   }
@@ -302,8 +302,8 @@ public class JTableSorted extends JPanel {
 
   /**
     Sort the rowList: note rowList changed, not a copy of it.
-    @param int colNo sort on this column
-    @param boolean reverse if true, reverse sort
+    @param colNo sort on this column
+    @param reverse if true, reverse sort
   */
    public void sort(int colNo, boolean reverse) {
     model.sort(colNo, reverse);
@@ -313,7 +313,7 @@ public class JTableSorted extends JPanel {
 
   /**
     Replace the rowList with this one.
-    @param ArrayList rowList
+    @param rowList list of rows
   */
   public void setList ( ArrayList rowList) {
     this.list = rowList;
@@ -329,7 +329,7 @@ public class JTableSorted extends JPanel {
   /**
     Remove elem from rowList, update the table.
     Searches for match using object identity (==)
-    @param Object elem
+    @param elem which element
   */
   public void removeRow ( Object elem) {
     Iterator iter = list.iterator();
@@ -381,7 +381,7 @@ public class JTableSorted extends JPanel {
 
   /**
     Set the current selection to this row.
-    @param int row index into rowList
+    @param row index into rowList
   */
   public void setSelected(int row) {
     if ((row < 0) || (row >= list.size()))
@@ -393,7 +393,7 @@ public class JTableSorted extends JPanel {
 
   /**
     Increment or decrement the current selection by one row.
-    @param boolean increment true=increment, false=decrement
+    @param increment true=increment, false=decrement
   */
   public void incrSelected(boolean increment) {
     if (list.size() == 0)

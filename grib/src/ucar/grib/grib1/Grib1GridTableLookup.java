@@ -224,17 +224,8 @@ public class Grib1GridTableLookup implements GridTableLookup {
     return firstPDSV.getReferenceDate() ;
   }
 
-  /**
-   * gets the TimeRangeUnitName.
-   *
-   * @return TimeRangeUnitName
-   */
-  public final String getFirstTimeRangeUnitName() {
-    return Grib1Tables.getTimeUnit( firstPDSV.getTimeUnit()) ;
-  }
-
   public final String getTimeRangeUnitName( int tunit ) {
-    return Grib1Tables.getTimeUnit( firstPDSV.getTimeUnit()) ;
+    return Grib1Tables.getTimeUnit( firstPDSV.getTimeUnit(), false) ;
   }
 
   /**

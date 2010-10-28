@@ -33,6 +33,8 @@
 
 package ucar.nc2.ui;
 
+import ucar.nc2.ui.event.ActionValueEvent;
+import ucar.nc2.ui.event.ActionValueListener;
 import ucar.nc2.ui.widget.BAMutil;
 import ucar.nc2.ui.widget.SuperComboBox;
 import ucar.unidata.util.StringUtil;
@@ -102,6 +104,16 @@ public class WmsViewer extends JPanel {
     levelChooser = new SuperComboBox(root, "level", false, null);
     chooserPanel.add(new JLabel("Level:"));
     chooserPanel.add(levelChooser);
+
+    // allow time looping
+    timeChooser.addActionValueListener( new ActionValueListener() {
+      public void actionPerformed(ActionValueEvent e) {
+        if (null == timeChooser.getSelectedObject()) return;
+        System.out.printf("%s\n", e);
+        LayerBean ftb = (LayerBean) ftTable.getSelectedBean();
+        getMap(ftb);
+      }
+    });
 
     AbstractButton mapButton = BAMutil.makeButtcon("WorldDetailMap", "getMap", false);
     mapButton.addActionListener(new ActionListener() {
