@@ -101,18 +101,12 @@ public class ThreddsDataset implements Dataset
     // Get the most appropriate data-reading strategy for this dataset
     DataReadingStrategy drStrategy = CdmUtils.getOptimumDataReadingStrategy( ncDataset );
 
-    // Find out if the NetcdfDataset has deferred the application of
-    // scale-offset-missing (meaning that we have to apply these attributes
-    // when the data are read)
-    boolean scaleMissingDeferred = CdmUtils.isScaleMissingDeferred( ncDataset );
-
     // Now load the scalar layers
     CdmUtils.findAndUpdateLayers( gridDataset, THREDDS_LAYER_BUILDER, this.scalarLayers );
     // Set the extra properties of each layer
     for ( ThreddsScalarLayer layer : this.scalarLayers.values() )
     {
       layer.setDataReadingStrategy( drStrategy );
-      layer.setScaleMissingDeferred( scaleMissingDeferred );
       layer.setDataset( this );
       layer.setLayerSettings(wmsConfig.getSettings(layer));
     }

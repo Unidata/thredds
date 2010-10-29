@@ -65,8 +65,7 @@ class ThreddsScalarLayer extends AbstractScalarLayer implements ThreddsLayer
     private ThreddsDataset dataset;
     private List<DateTime> times;
     private DataReadingStrategy dataReadingStrategy;
-    private boolean scaleMissingDeferred;
-    
+
     // Will be set in ThreddsWmsController.ThreddsLayerFactory
     private LayerSettings layerSettings;
 
@@ -106,10 +105,6 @@ class ThreddsScalarLayer extends AbstractScalarLayer implements ThreddsLayer
         this.dataReadingStrategy = dataReadingStrategy;
     }
 
-    public void setScaleMissingDeferred(boolean scaleMissingDeferred) {
-        this.scaleMissingDeferred = scaleMissingDeferred;
-    }
-
     @Override
     public Float readSinglePoint(DateTime time, double elevation, HorizontalPosition xy)
             throws InvalidDimensionValueException, IOException
@@ -130,8 +125,7 @@ class ThreddsScalarLayer extends AbstractScalarLayer implements ThreddsLayer
             tIndex,
             zIndex,
             pointList,
-            this.dataReadingStrategy,
-            this.scaleMissingDeferred
+            this.dataReadingStrategy
         );
     }
 

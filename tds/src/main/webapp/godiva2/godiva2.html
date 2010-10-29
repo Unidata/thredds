@@ -13,7 +13,6 @@
         <link rel="stylesheet" type="text/css" href="css/godiva2.css">
         
         <script type="text/javascript" src="js/OpenLayers-2.8.js"></script>
-        <script type="text/javascript" src="js/MapToolbar.js"></script>
         <script type="text/javascript" src="js/WMS1_1_1.js"></script>
         <script type="text/javascript" src="js/WMS1_3.js"></script>
         <!-- Comment out the line below to stop using Google Maps -->
@@ -28,7 +27,7 @@
         <!-- For the tree control --> 
         <link type="text/css" rel="stylesheet" href="http://yui.yahooapis.com/2.5.2/build/treeview/assets/skins/sam/treeview.css">
         <script type="text/javascript" src="http://yui.yahooapis.com/2.5.2/build/yahoo-dom-event/yahoo-dom-event.js"></script>
-        <script src="http://yui.yahooapis.com/2.5.2/build/treeview/treeview-min.js"></script>
+        <script type="text/javascript" src="http://yui.yahooapis.com/2.5.2/build/treeview/treeview-min.js"></script>
         
         <!-- For the pop-up panel (used in the palette selector) -->
         <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.5.2/build/container/assets/skins/sam/container.css">
@@ -88,8 +87,6 @@
             </div>
             <div id="hideAnimation" class="aboveMap"><a href="#" onclick="javascript:hideAnimation()">Stop animation</a></div>
             <div id="map" class="map"></div>
-            <!-- This holds the "loading animation..." image -->
-            <div class="map" id="loadingAnimationDiv"><img id="loadingAnimation" src="images/loading_animation.png" alt="loading animation"/></div>
             <!-- The mapOverlay will contain the animations -->
             <div class="map" id="mapOverlayDiv"><img id="mapOverlay" alt="map overlay" onload="javascript:animationLoaded();"/></div>
             <!-- Contains the animated gif throbber representing data that are loading -->

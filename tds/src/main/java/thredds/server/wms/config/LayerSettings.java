@@ -50,6 +50,7 @@ public class LayerSettings
 
     LayerSettings(Element parentElement) throws WmsConfigException
     {
+        if (parentElement == null) return; // Create a set of layer settings with all-null fields
         this.allowFeatureInfo = getBoolean(parentElement, "allowFeatureInfo");
         this.defaultColorScaleRange = getRange(parentElement, "defaultColorScaleRange");
         this.defaultPaletteName = parentElement.getChildTextTrim("defaultPaletteName");
