@@ -313,7 +313,7 @@ public final class GribGridRecord implements GridRecord {
       if (edition == 1) {
         result += result * 37 + getLevelType1();
         result += result * 37 + getParameterName().hashCode();
-        String statName = getStatisticalProcessTypeName();
+        String statName = getStatisticalProcessTypeNameShort();
         if (statName != null) result += result * 37 + statName.hashCode();
 
       } else {
@@ -324,7 +324,7 @@ public final class GribGridRecord implements GridRecord {
         result += result * 37 + getLevelType1();
         result += result * 37 + pds2.getParameterCategory();
         result += result * 37 + productTemplate;
-        String statName = getStatisticalProcessTypeName();
+        String statName = getStatisticalProcessTypeNameShort();
         if (statName != null) result += result * 37 + statName.hashCode();
 
         result += result * 37 +  getLevelType2(); // ??
@@ -397,7 +397,7 @@ public final class GribGridRecord implements GridRecord {
     Formatter f = new Formatter();
     boolean disambig = false;
 
-    String statName = getStatisticalProcessTypeName();
+    String statName = getStatisticalProcessTypeNameShort();
     if (statName != null) {
        f.format("_%s", statName);
        disambig = true;
@@ -512,6 +512,10 @@ public final class GribGridRecord implements GridRecord {
   }
 
   public String getStatisticalProcessTypeName() {
+    return Grib2Tables.codeTable4_10( getStatisticalProcessType());
+  }
+
+  public String getStatisticalProcessTypeNameShort() {
     return Grib2Tables.codeTable4_10short( getStatisticalProcessType());
   }
 

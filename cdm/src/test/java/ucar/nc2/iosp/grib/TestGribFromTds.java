@@ -46,9 +46,10 @@ public class TestGribFromTds extends TestCase {
   public int nintVars = 0;
 
   public void testGribFromTds() throws Exception {
-    doDir(TestAll.testdataDir + "cdmUnitTest/formats/grib1");
+   // doDir(TestAll.testdataDir + "cdmUnitTest/formats/grib1");
     //doDir(TestAll.testdataDir + "cdmUnitTest/formats/grib2");
-    doDir(TestAll.testdataDir + "cdmUnitTest/tds/normal");
+    //doDir(TestAll.testdataDir + "cdmUnitTest/tds/normal");
+    doDir(TestAll.testdataDir + "cdmUnitTest/tds/fnmoc");
   }
 
   public void doDir(String dir) throws Exception {
@@ -57,17 +58,18 @@ public class TestGribFromTds extends TestCase {
       @Override
       public int doAct(String filename) throws IOException {
         System.out.printf("%n%s%n", filename);
+        showGrids(filename);
         //showNames(filename);
         //checkProjectionType(filename);
         //checkTemplates(filename);
         //checkStatType(filename, true);
-        checkTableVersion(filename, true);
+        // checkTableVersion(filename, true);
         // checkGenType(filename, false);
         // checkTimeIntervalType(filename);
         //checkTimeInterval(filename);
         return 0;
       }
-    }, false);
+    }, true);
     System.out.printf("%nnfiles = %d %n", nfiles);
     System.out.printf("totvars = %d %n", nvars);
     System.out.printf("intVars = %d %n", nintVars);
@@ -136,6 +138,31 @@ public class TestGribFromTds extends TestCase {
     System.out.printf( "start = %s%n", start1);
     System.out.printf( "end   = %s%n", start2);
 
+  }
+
+  public void showGrids(String filename) throws IOException {
+    Formatter f = new Formatter(System.out);
+    GridDataset ncd = null;
+    boolean first = true;
+
+    try {
+      ncd = GridDataset.open(filename);
+      List<GridDatatype> grids = ncd.getGrids();
+      Collections.sort(grids);
+
+      for (GridDatatype g : grids) {
+        f.format(" %s (", g.getName());
+        Attribute att = g.findAttributeIgnoreCase("GRIB_param_id");
+        if (att != null)
+          f.format("%s/%s,param=%s", att.getNumericValue(1), att.getNumericValue(2), att.getNumericValue(3));
+        f.format(")%n");
+      }
+    } catch (Throwable t) {
+      System.out.printf("Failed on %s = %s%n", filename, t.getMessage());
+      return;
+    } finally {
+      if (ncd != null) ncd.close();
+    }
   }
 
   public void checkGenType(String filename, boolean showVars) throws IOException {

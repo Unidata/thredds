@@ -368,11 +368,11 @@ public class GridVariable {
     return (tcs == null) ? 1 : tcs.getNTimes();
   }
 
-  /**
+  /*
    * is this a time interval variable
    *
    * @return true if uses time intervals
-   */
+   *
   boolean isInterval() {
     if (firstRecord instanceof GribGridRecord) {
       GribGridRecord ggr = (GribGridRecord) firstRecord;
@@ -387,7 +387,7 @@ public class GridVariable {
       return ggr.getStatisticalProcessTypeName();
     }
     return null;
-  }
+  } */
 
   /**
    * Make the netcdf variable. If vname is not already set, use useName as name
@@ -826,8 +826,13 @@ public class GridVariable {
 
       if (ggr.isInterval()) {
         String intervalName = makeIntervalName();
-        if (intervalName.length() != 0)
-          f.format(" (%s for %s)", ggr.getStatisticalProcessTypeName(), intervalName);
+        if (intervalName.length() != 0) {
+          String stat = ggr.getStatisticalProcessTypeNameShort();
+          if (stat != null)
+            f.format(" (%s for %s)", ggr.getStatisticalProcessTypeName(), intervalName);
+          else
+            f.format(" (%s)", intervalName);
+        }
       }
     }
 

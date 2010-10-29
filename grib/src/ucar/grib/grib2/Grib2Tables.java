@@ -1163,7 +1163,7 @@ public class Grib2Tables {
       case 7: return	"Covariance (Temporal variance)";
       case 8: return	"Difference (Value at the start of time range minus value at the end)";
       case 9: return	"Ratio";
-      default: return "UnknownCodeTable4.10="+code;
+      default: return "Unknown Statistical Type="+code;
     }
   }
 
@@ -1187,7 +1187,7 @@ public class Grib2Tables {
       case 7: return	"Covariance"; // (Temporal variance)";
       case 8: return	"Difference"; // (Value at the start of time range minus value at the end)";
       case 9: return	"Ratio";
-     default: return "UnknownCodeTable4.10="+code;
+     default: return null; // unknown
     }
   }
 

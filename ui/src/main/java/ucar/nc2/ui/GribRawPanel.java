@@ -867,7 +867,7 @@ public class GribRawPanel extends JPanel {
 
     public final String getStatType() {
       int code = pdsv.getStatisticalProcessType();
-      return (code >= 0) ? Grib2Tables.codeTable4_10short(pdsv.getStatisticalProcessType()) : "";
+      return (code >= 0) ? Grib2Tables.codeTable4_10(pdsv.getStatisticalProcessType()) : "";
     }
 
     public final boolean isEnsemble() {
@@ -1184,7 +1184,7 @@ public class GribRawPanel extends JPanel {
 
     public final String getStatType() {
       int code = pdsv.getStatisticalProcessType();
-      return (code >= 0) ? Grib2Tables.codeTable4_10short(pdsv.getStatisticalProcessType()) : "";
+      return (code >= 0) ? Grib2Tables.codeTable4_10(pdsv.getStatisticalProcessType()) : "";
     }
 
     public final boolean isEnsemble() {

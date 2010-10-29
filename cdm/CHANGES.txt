@@ -4,6 +4,8 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.2:
  13: (2010-10-xx)
+  GRIB2: if end of interval = 0, use forecast time.
+  GribGridRecord: getStatisticalProcessTypeName, getStatisticalProcessTypeNameShort
   ToolsUI: add IOSP/Cdmremote panel
   Grib: clarify units and udunits
   remove GridLookup.getFirstTimeRangeUnitName()
