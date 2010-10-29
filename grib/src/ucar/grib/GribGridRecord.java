@@ -291,6 +291,14 @@ public final class GribGridRecord implements GridRecord {
       return Grib1Tables.getTimeUnit(getTimeUnit(), true);
   }
 
+  @Override
+  public String getTimeUnitName() {
+    if (edition == 2)
+      return Grib2Tables.codeTable4_4(getTimeUnit());
+    else
+      return Grib1Tables.getTimeUnit(getTimeUnit(), false);
+  }
+
   public int getTimeUnit() {
     return pds.getTimeUnit();
   }

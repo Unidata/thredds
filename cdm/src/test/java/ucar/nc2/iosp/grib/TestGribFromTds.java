@@ -46,30 +46,31 @@ public class TestGribFromTds extends TestCase {
   public int nintVars = 0;
 
   public void testGribFromTds() throws Exception {
-   // doDir(TestAll.testdataDir + "cdmUnitTest/formats/grib1");
-    //doDir(TestAll.testdataDir + "cdmUnitTest/formats/grib2");
-    //doDir(TestAll.testdataDir + "cdmUnitTest/tds/normal");
-    doDir(TestAll.testdataDir + "cdmUnitTest/tds/fnmoc");
+    doDir(TestAll.testdataDir + "cdmUnitTest/formats/grib1", false);
+    doDir(TestAll.testdataDir + "cdmUnitTest/formats/grib2", false);
+    doDir(TestAll.testdataDir + "cdmUnitTest/tds/normal", false);
+    //doDir(TestAll.testdataDir + "cdmUnitTest/tds/fnmoc", true);
   }
 
-  public void doDir(String dir) throws Exception {
+  public void doDir(String dir, boolean recurse) throws Exception {
     //String dir = "E:/work/foster";
     TestAll.actOnAll(dir, new GribFilter(), new TestAll.Act() {
       @Override
       public int doAct(String filename) throws IOException {
         System.out.printf("%n%s%n", filename);
-        showGrids(filename);
+        checkOpen(filename);
+        //showGenType(filename, false);
+        //showGrids(filename);
         //showNames(filename);
-        //checkProjectionType(filename);
-        //checkTemplates(filename);
-        //checkStatType(filename, true);
-        // checkTableVersion(filename, true);
-        // checkGenType(filename, false);
-        // checkTimeIntervalType(filename);
-        //checkTimeInterval(filename);
+        //showProjectionType(filename);
+        //showStatType(filename, true);
+        //showTableVersion(filename, true);
+        //showTemplates(filename);
+        //showTimeIntervalType(filename);
+        //showTimeInterval(filename);
         return 0;
       }
-    }, true);
+    }, recurse);
     System.out.printf("%nnfiles = %d %n", nfiles);
     System.out.printf("totvars = %d %n", nvars);
     System.out.printf("intVars = %d %n", nintVars);
@@ -85,65 +86,31 @@ public class TestGribFromTds extends TestCase {
 
   public void testOne() throws IOException {
     //checkTimeInterval("Q:/cdmUnitTest/tds/grib/ndfd/NDFD_CONUS_5km_conduit_20100913_0000.grib2");
-    checkTimeInterval("Q:/cdmUnitTest/tds/normal/NDFD_CONUS_5km_20100912_1800.grib2");
+    showTimeInterval2("Q:/cdmUnitTest/tds/normal/NDFD_CONUS_5km_20100912_1800.grib2");
   }
 
-  public void checkProjectionType(String filename) throws IOException {
-    NetcdfDataset ncd = NetcdfDataset.openDataset(filename);
-    GridDataset gds = new GridDataset(ncd);
-    nfiles++;
-
-    Map<String, HoldEm> map = new HashMap<String, HoldEm>();
-
-    for (ucar.nc2.dt.GridDataset.Gridset g : gds.getGridsets()) {
-      GridCoordSystem gsys = g.getGeoCoordSystem();
-      for (CoordinateTransform t : gsys.getCoordinateTransforms()) {
-        if (t instanceof ProjectionCT) {
-          ncd.findVariable(t.getName());
-          ProjectionImpl p = ((ProjectionCT)t).getProjection();
-          map.put(t.getName()+" "+p.paramsToString(), new HoldEm(gsys, p, ncd.findVariable(t.getName())));
-        }
-      }
-    }
-
-    for (String key : map.keySet()) {
-      System.out.printf("  %s: %n", key);
-      checkProjection( map.get(key));
-    }
-    System.out.printf("%n");
-    ncd.close();
-  }
-
-  private class HoldEm {
-    GridCoordSystem gcs;
-    Variable projVar;
-    ProjectionImpl p;
-
-    private HoldEm(GridCoordSystem gcs, ProjectionImpl p, Variable projVar) {
-      this.gcs = gcs;
-      this.p = p;
-      this.projVar = projVar;
+  ///////////////////////////////////////////////////////////
+  // just open files - see if there are error messages
+  public void checkOpen(String filename) throws IOException {
+    NetcdfFile ncd = null;
+    try {
+      ncd = NetcdfFile.open(filename);
+    } catch (Exception t) {
+      System.out.printf("Failed on %s = %s%n", filename, t.getMessage());
+      return;
+    } catch (Throwable t) {
+      System.out.printf("Failed on %s = %s%n", filename, t.getMessage());
+      return;
+    } finally {
+      if (ncd != null) ncd.close();
     }
   }
 
-  private void checkProjection(HoldEm h) {
-    System.out.printf( "    llbb=%s%n", h.gcs.getLatLonBoundingBox());
-    System.out.printf( "%s%n", h.projVar);
-
-    CoordinateAxis1D xaxis = (CoordinateAxis1D) h.gcs.getXHorizAxis();
-    CoordinateAxis1D yaxis =  (CoordinateAxis1D) h.gcs.getYHorizAxis();
-    h.p.projToLatLon(xaxis.getCoordValue(0), yaxis.getCoordValue(0)  );
-    LatLonPointImpl start1 =  h.p.projToLatLon(xaxis.getCoordValue(0), yaxis.getCoordValue(0));
-    LatLonPointImpl start2 =  h.p.projToLatLon(xaxis.getCoordValue((int)xaxis.getSize()-1), yaxis.getCoordValue((int)yaxis.getSize()-1));
-    System.out.printf( "start = %s%n", start1);
-    System.out.printf( "end   = %s%n", start2);
-
-  }
-
+  ///////////////////////////////////////////////////////////
+  // show grid names and param ids
   public void showGrids(String filename) throws IOException {
     Formatter f = new Formatter(System.out);
     GridDataset ncd = null;
-    boolean first = true;
 
     try {
       ncd = GridDataset.open(filename);
@@ -165,7 +132,9 @@ public class TestGribFromTds extends TestCase {
     }
   }
 
-  public void checkGenType(String filename, boolean showVars) throws IOException {
+  ////////////////////////////////////////////////////////////////////////
+  // show getGenProcessType()
+  public void showGenType(String filename, boolean showVars) throws IOException {
     GridServiceProvider.debugOpen = true;
     NetcdfFile ncd = null;
     try {
@@ -221,7 +190,95 @@ public class TestGribFromTds extends TestCase {
     GridServiceProvider.debugOpen = false;
   }
 
-  public void checkStatType(String filename, boolean showVars) throws IOException {
+  ////////////////////////////////////////////////////////////////////////
+  // show param names. how they relate to level, stat, ens, prob
+  private void showNames(String filename) throws IOException {
+    GridDataset ncd = GridDataset.open(filename);
+    nfiles++;
+
+    String format = "%-50s %-20s %-12s %-12s %-12s %n";
+    System.out.printf(format, " ", "level", "stat", "ens", "prob" );
+
+    List<GridDatatype> grids =  ncd.getGrids();
+    Collections.sort(grids);
+    for (GridDatatype g : grids) {
+      GridCoordSystem gsys = g.getCoordinateSystem();
+      CoordinateAxis t = gsys.getTimeAxis();
+      Variable v = g.getVariable();
+      String level = v.findAttribute("GRIB_level_type_name").getStringValue();
+      Attribute att = v.findAttribute("GRIB_interval_stat_type");
+      String stat = (att == null) ? "" : att.getStringValue();
+      att = v.findAttribute("GRIB_ensemble");
+      String ens = "";
+      if (att != null) ens = att.getStringValue();
+      else {
+        att = v.findAttribute("GRIB_ensemble_derived_type");
+        if (att != null) ens = att.getStringValue();
+      }
+      att = v.findAttribute("GRIB_probability_type");
+      String prob = (att == null) ? "" : att.getStringValue();
+      System.out.printf(format, v.getName(), level, stat, ens, prob);
+    }
+    System.out.printf("%n");
+    ncd.close();
+  }
+
+  //////////////////////////////////////////////////////////////////////////
+  // look for ProjectionImpl name
+  public void showProjectionType(String filename) throws IOException {
+    NetcdfDataset ncd = NetcdfDataset.openDataset(filename);
+    GridDataset gds = new GridDataset(ncd);
+    nfiles++;
+
+    Map<String, HoldEm> map = new HashMap<String, HoldEm>();
+
+    for (ucar.nc2.dt.GridDataset.Gridset g : gds.getGridsets()) {
+      GridCoordSystem gsys = g.getGeoCoordSystem();
+      for (CoordinateTransform t : gsys.getCoordinateTransforms()) {
+        if (t instanceof ProjectionCT) {
+          ncd.findVariable(t.getName());
+          ProjectionImpl p = ((ProjectionCT)t).getProjection();
+          map.put(t.getName()+" "+p.paramsToString(), new HoldEm(gsys, p, ncd.findVariable(t.getName())));
+        }
+      }
+    }
+
+    for (String key : map.keySet()) {
+      System.out.printf("  %s: %n", key);
+      checkProjection( map.get(key));
+    }
+    System.out.printf("%n");
+    ncd.close();
+  }
+
+  private class HoldEm {
+    GridCoordSystem gcs;
+    Variable projVar;
+    ProjectionImpl p;
+
+    private HoldEm(GridCoordSystem gcs, ProjectionImpl p, Variable projVar) {
+      this.gcs = gcs;
+      this.p = p;
+      this.projVar = projVar;
+    }
+  }
+
+  private void checkProjection(HoldEm h) {
+    System.out.printf( "    llbb=%s%n", h.gcs.getLatLonBoundingBox());
+    System.out.printf( "%s%n", h.projVar);
+
+    CoordinateAxis1D xaxis = (CoordinateAxis1D) h.gcs.getXHorizAxis();
+    CoordinateAxis1D yaxis =  (CoordinateAxis1D) h.gcs.getYHorizAxis();
+    h.p.projToLatLon(xaxis.getCoordValue(0), yaxis.getCoordValue(0)  );
+    LatLonPointImpl start1 =  h.p.projToLatLon(xaxis.getCoordValue(0), yaxis.getCoordValue(0));
+    LatLonPointImpl start2 =  h.p.projToLatLon(xaxis.getCoordValue((int)xaxis.getSize()-1), yaxis.getCoordValue((int)yaxis.getSize()-1));
+    System.out.printf( "start = %s%n", start1);
+    System.out.printf( "end   = %s%n", start2);
+  }
+
+  ////////////////////////////////////////////////////////////////////////
+  // show getStatisticalProcessType()
+  public void showStatType(String filename, boolean showVars) throws IOException {
     GridServiceProvider.debugOpen = true;
     NetcdfFile ncd = null;
     try {
@@ -278,7 +335,9 @@ public class TestGribFromTds extends TestCase {
     GridServiceProvider.debugOpen = false;
   }
 
-  public void checkTableVersion(String filename, boolean showVars) throws IOException {
+  ////////////////////////////////////////////////////////////////////////
+  // show getTableVersion()
+  public void showTableVersion(String filename, boolean showVars) throws IOException {
     GridServiceProvider.debugOpen = true;
     NetcdfFile ncd = null;
     try {
@@ -318,9 +377,10 @@ public class TestGribFromTds extends TestCase {
     GridServiceProvider.debugOpen = false;
   }
 
-
-
-  public void checkTimeIntervalType(String filename) throws IOException {
+  ////////////////////////////////////////////////////////////////////////
+  // show timeIncrementType
+  // Grib2 only
+  public void showTimeIntervalType2(String filename) throws IOException {
     GridServiceProvider.debugOpen = true;
     NetcdfFile ncd = NetcdfFile.open(filename);
 
@@ -362,7 +422,10 @@ public class TestGribFromTds extends TestCase {
     GridServiceProvider.debugOpen = false;
   }
 
-  public void checkTimeInterval(String filename) throws IOException {
+  ////////////////////////////////////////////////////////////////////////
+  // show params that are time intervals, how they relate to Grib2Pds.makeDate().
+  // Grib2 only
+  public void showTimeInterval2(String filename) throws IOException {
     GridServiceProvider.debugOpen = true;
     NetcdfFile ncd = NetcdfFile.open(filename);
     DateFormatter df = new DateFormatter();
@@ -404,7 +467,10 @@ public class TestGribFromTds extends TestCase {
     GridServiceProvider.debugOpen = false;
   }
 
-  private int checkTemplateType(String filename) throws IOException {
+  ////////////////////////////////////////////////////////////////////////
+ // show GRIB_product_definition_template attribute value
+  // Grib2 only
+  private int showTemplateType2(String filename) throws IOException {
     GridDataset ncd = GridDataset.open(filename);
     nfiles++;
 
@@ -435,37 +501,6 @@ public class TestGribFromTds extends TestCase {
     System.out.printf("%n");
 
     return 1;
-  }
-
-  private void showNames(String filename) throws IOException {
-    GridDataset ncd = GridDataset.open(filename);
-    nfiles++;
-
-    String format = "%-50s %-20s %-12s %-12s %-12s %n";
-    System.out.printf(format, " ", "level", "stat", "ens", "prob" );
-
-    List<GridDatatype> grids =  ncd.getGrids();
-    Collections.sort(grids);
-    for (GridDatatype g : grids) {
-      GridCoordSystem gsys = g.getCoordinateSystem();
-      CoordinateAxis t = gsys.getTimeAxis();
-      Variable v = g.getVariable();
-      String level = v.findAttribute("GRIB_level_type_name").getStringValue();
-      Attribute att = v.findAttribute("GRIB_interval_stat_type");
-      String stat = (att == null) ? "" : att.getStringValue();
-      att = v.findAttribute("GRIB_ensemble");
-      String ens = "";
-      if (att != null) ens = att.getStringValue();
-      else {
-        att = v.findAttribute("GRIB_ensemble_derived_type");
-        if (att != null) ens = att.getStringValue();
-      }
-      att = v.findAttribute("GRIB_probability_type");
-      String prob = (att == null) ? "" : att.getStringValue();
-      System.out.printf(format, v.getName(), level, stat, ens, prob);
-    }
-    System.out.printf("%n");
-    ncd.close();
   }
 
   /* see if analy code differs
