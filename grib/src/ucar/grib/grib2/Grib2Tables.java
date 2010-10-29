@@ -455,6 +455,56 @@ public class Grib2Tables {
     }
   }
 
+    /**
+   * return Time Range Unit Name from code table 4.4.
+   *
+   * @param code44 code for table 4.4
+   * @return Time Range Unit Name from table 4.4
+   */
+  static public long codeTable4_4_toSecs(int code44) {
+    switch (code44) {
+
+      case 0:
+        return 60;
+
+      case 1:
+        return 3600;
+
+      case 2:
+        return 3600 * 24;
+
+      case 3:
+        return 3600 * 24 * 30; // ??? huh ????
+
+      case 4:
+        return 3600 * 24 * 365; // ??? huh ????
+
+      case 5:
+        return 3600 * 24 * 365 * 10; // ??? huh ????
+
+      case 6:
+        return 3600 * 24 * 365 * 30; // ??? huh ????
+
+      case 7:
+        return 3600L * 24 * 365 * 100; // ??? huh ????
+
+      case 10:
+        return 3600 * 3;
+
+      case 11:
+        return 3600 * 6;
+
+      case 12:
+        return 3600 * 12;
+
+      case 13:
+        return 1;
+
+      default:
+        return 60; // ??
+    }
+  }
+
 
   /**
    * return a udunits time unit

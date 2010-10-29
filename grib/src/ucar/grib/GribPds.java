@@ -149,6 +149,7 @@ public abstract class GribPds {
    * @return interval as int[2], or null if not isInterval()
    */
   abstract public int[] getForecastTimeInterval();
+  abstract public int[] getForecastTimeInterval(int wantUnit);
 
   abstract public int getGenProcessId(); 
 

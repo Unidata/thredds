@@ -400,6 +400,10 @@ public final class Grib1Pds extends GribPds {
     return interval;
   }
 
+  public int[] getForecastTimeInterval(int wantTimeUnit) {
+    return getForecastTimeInterval();
+  }
+
   /**
    * Get Grib-2 Statistic Type (Table 4-10) by converting Grib-1 Table 5
    *

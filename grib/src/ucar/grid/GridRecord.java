@@ -123,11 +123,12 @@ public interface GridRecord {
   public int getDecimalScale();
 
   /**
-   * Get the time unit as a String.
+   * Get the time unit as a code, which should be Grib2 table 4.4.
    *
-   * @return the time unit as a String
+   * @return the time unit as a code
    */
-  public String getTimeUnitName();
+  public int getTimeUnit();
+
 
   /**
    * Get the time unit as a String. Must be able to create a udunit like:

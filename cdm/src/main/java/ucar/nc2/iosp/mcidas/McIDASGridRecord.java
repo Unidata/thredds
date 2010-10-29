@@ -199,10 +199,10 @@ public class McIDASGridRecord extends GridDirectory implements GridRecord {
                    || (gribSection == 0)));
     }
 
-    @Override
-    public String getTimeUnitName() {
-      return "minutes";
-    }
+  @Override
+  public int getTimeUnit() {
+    return 0;
+  }
 
     @Override
     public String getTimeUdunitName() {

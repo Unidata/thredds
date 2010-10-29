@@ -251,8 +251,8 @@ public class GempakGridRecord implements GridRecord {
     }
 
   @Override
-  public String getTimeUnitName() {
-    return "minutes";
+  public int getTimeUnit() {
+    return 0;
   }
 
   @Override

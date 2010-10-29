@@ -799,6 +799,10 @@ public class GribIndexPanel extends JPanel {
         return -1;
     }
 
+    public final int getGenProcId() {
+        return pds.getGenProcessId();
+    }
+
     public final String getStatType() {
       int code = pds.getStatisticalProcessType();
       return (code >= 0) ? Grib2Tables.codeTable4_10(pds.getStatisticalProcessType()) : "";

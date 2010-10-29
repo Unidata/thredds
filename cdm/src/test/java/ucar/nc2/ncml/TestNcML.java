@@ -68,7 +68,7 @@ public class TestNcML {
     suite.addTest(new TestSuite(TestAggMisc.class));
 
     // requires remote (network) access
-    suite.addTest(new TestSuite(TestRemoteAggregation.class));
+    // suite.addTest(new TestSuite(TestRemoteAggregation.class)); not working
 
     // LOOK wait until grids are done - fails when cached
     //suite.addTest(new TestSuite(TestAggSynGrid.class));

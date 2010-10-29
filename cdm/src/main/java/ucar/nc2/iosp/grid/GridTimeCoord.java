@@ -34,6 +34,7 @@
 package ucar.nc2.iosp.grid;
 
 import ucar.grib.GribPds;
+import ucar.grib.grib2.Grib2Tables;
 import ucar.ma2.*;
 
 import ucar.nc2.*;
@@ -54,7 +55,8 @@ public class GridTimeCoord implements Comparable<GridTimeCoord> {
 
   //private GridTableLookup lookup;
   private int seq = 0; // for getting a unique name
-  private String timeUdunit, timeUnit;
+  private String timeUdunit;
+  private int timeUnit;
 
   private Date baseDate;
   private List<Date> times;
@@ -74,13 +76,9 @@ public class GridTimeCoord implements Comparable<GridTimeCoord> {
       if (this.baseDate == null) {
         this.baseDate = record.getReferenceTime();
         this.timeUdunit = record.getTimeUdunitName();
-        this.timeUnit = record.getTimeUnitName();
+        this.timeUnit = record.getTimeUnit();
         //System.out.printf("%s%n", record.getParameterDescription());
       }
-
-      // make sure that the time units agree
-      if (!this.timeUnit.equals(record.getTimeUnitName()))
-        log.warn(record + " does not have same time unit= " + this.timeUnit + " != " + record.getTimeUnitName());
 
       // use earlier reference date
       Date ref = record.getReferenceTime();
@@ -106,8 +104,7 @@ public class GridTimeCoord implements Comparable<GridTimeCoord> {
             log.warn(gr + " does not have same base date= " + baseDate + " != " + ref);
 
           GribPds pds = ggr.getPds();
-          int[] timeInv = pds.getForecastTimeInterval();
-
+          int[] timeInv = pds.getForecastTimeInterval(this.timeUnit);
           int start = timeInv[0];
           int end = timeInv[1];
           int intv2 = end - start;
@@ -172,7 +169,7 @@ public class GridTimeCoord implements Comparable<GridTimeCoord> {
 
         GribGridRecord ggr = (GribGridRecord) record;
         GribPds pds = ggr.getPds();
-        int[] timeInv = pds.getForecastTimeInterval();
+        int[] timeInv = pds.getForecastTimeInterval(this.timeUnit);
 
         int start = timeInv[0];
         int end = timeInv[1];

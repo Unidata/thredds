@@ -185,53 +185,6 @@ abstract public class Grib2Pds extends GribPds {
     // otherwise ??
 
     throw new UnsupportedOperationException();
-
-    /* String timeUnitString;
-    switch (timeUnit) { // code table 4.4
-      case 3:
-        timeUnitString = "month";
-        break;
-      case 4:
-        type = Calendar.YEAR;
-        break;
-      case 5:
-        type = Calendar.YEAR;
-        factor = 10;
-        break;
-      case 6:
-        type = Calendar.YEAR;
-        factor = 30;
-        break;
-      case 7:
-        type = Calendar.YEAR;
-        factor = 100;
-        break;
-      case 10:
-        type = Calendar.HOUR_OF_DAY;
-        factor = 3;
-        break;
-      case 11:
-        type = Calendar.HOUR_OF_DAY;
-        factor = 6;
-        break;
-      case 12:
-        type = Calendar.HOUR_OF_DAY;
-        factor = 12;
-        break;
-      case MISSING: // if there is no time unit / valid time, assume valid time == ref time
-        type = Calendar.HOUR_OF_DAY;
-        factor = 0;
-        break;
-      default:
-        log.warn("Unknown timeUnit= " + timeUnit);
-        factor = 0;
-        break;
-    }
-    // otherwise
-    DateUnit du = new DateUnit(intv, String timeUnitString, new Date(refTime));
-
-
-    */
   }
 
   ////////////////////////
@@ -435,6 +388,23 @@ abstract public class Grib2Pds extends GribPds {
     intv = result;
     return result;
   }
+
+  public int[] getForecastTimeInterval(int wantUnit) {
+    int[] intv = getForecastTimeInterval();
+    int timeUnit = getTimeUnit();
+    if (timeUnit == wantUnit)
+      return intv;
+
+    long facHave = Grib2Tables.codeTable4_4_toSecs(timeUnit);
+    long facWant = Grib2Tables.codeTable4_4_toSecs(wantUnit);
+    double fac = (double) facHave / facWant;
+
+    int[] convertIntv = new int[2];
+    convertIntv[0] = (int) (intv[0] * fac);
+    convertIntv[1] = (int) (intv[1] * fac);
+    return convertIntv;
+  }
+
 
   // forecast time for points, beginning of interval for intervals
 

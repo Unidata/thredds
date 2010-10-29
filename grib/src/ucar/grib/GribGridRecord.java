@@ -291,7 +291,6 @@ public final class GribGridRecord implements GridRecord {
       return Grib1Tables.getTimeUnit(getTimeUnit(), true);
   }
 
-  @Override
   public String getTimeUnitName() {
     if (edition == 2)
       return Grib2Tables.codeTable4_4(getTimeUnit());
@@ -558,10 +557,11 @@ public final class GribGridRecord implements GridRecord {
   @Override
   public String toString() {
     return "GribGridRecord{" +
-        ", param=" + getParameterDescription() +
+        "param=" + getParameterDescription() +
         ", levelType1=" + pds.getLevelType1() +
-        ", levelValue1=" + pds.getLevelType2() +
-        ", forecastDate=" + pds.getForecastDate() +
+        ", levelValue1=" + pds.getLevelValue1() +
+        ", forecastTime=" + pds.getForecastTime() +
+        ", pdsOffset=" + pdsOffset +
         '}';
   }
 
