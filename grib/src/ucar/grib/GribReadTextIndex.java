@@ -219,7 +219,7 @@ public class GribReadTextIndex {
         }
         int pos = line.indexOf(" = ");
         // need to convert long GDSkey to int
-        if ( line.startsWith("GDSkey")) {
+        if ( line.startsWith(GridDefRecord.GDS_KEY)) {
           if( old_index_version ) {
             int hc = line.substring(pos + 3).hashCode();
             sb.append(line.substring(0, pos)).append("\t").append(Integer.toString(hc));

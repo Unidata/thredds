@@ -144,6 +144,10 @@ public class Fmrc {
     return -1;
   }
 
+  public void close() {
+    manager.close();
+  }
+
   // exposed for debugging
 
   public CollectionManager getManager() {

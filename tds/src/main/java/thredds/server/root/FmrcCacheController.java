@@ -43,6 +43,7 @@ import ucar.unidata.util.StringUtil;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
+import java.util.Formatter;
 
 /**
  * Show Fmrc Collection cache
@@ -54,6 +55,7 @@ public class FmrcCacheController extends AbstractController {
   private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
   private static final String PATH = "/admin/fmrcCache";
   private static final String COLLECTION = "collection";
+  private static final String STATISTICS = "cacheStatistics.txt";
   private static final String CMD = "cmd";
   private static final String FILE = "file";
   private final TdsContext tdsContext;
@@ -68,6 +70,8 @@ public class FmrcCacheController extends AbstractController {
     act = new DebugHandler.Action("showFmrcCache", "Show FMRC Cache") {
       public void doAction(DebugHandler.Event e) {
         e.pw.println("<p>cache location = "+monitor.getCacheLocation()+"<p>");
+        String statUrl = tdsContext.getContextPath() + PATH + "/"+STATISTICS;
+        e.pw.println("<p/> <a href='" + statUrl + "'>Show Cache Statistics</a>");
         for (String name : monitor.getCachedCollections()) {
           String ename = StringUtil.escape(name, "");
           String url = tdsContext.getContextPath() + PATH + "?"+COLLECTION+"="+ename;
@@ -85,6 +89,17 @@ public class FmrcCacheController extends AbstractController {
     if (path == null) path = "";
 
     PrintWriter pw = res.getWriter();
+
+    if (path.endsWith(STATISTICS)) {
+      res.setContentType("text/plain");
+      Formatter f = new Formatter();
+      monitor.getCacheStatistics(f);
+      String s = f.toString();
+      pw.println(s);
+      pw.flush();
+      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, s.length()));
+      return null;
+    }
 
     String collectName = req.getParameter(COLLECTION);
     String fileName = req.getParameter(FILE);
@@ -124,10 +139,14 @@ public class FmrcCacheController extends AbstractController {
     }
 
     if (cmd != null && cmd.equals("delete")) {
-      if (monitor.deleteCollection(collectName))
+      try {
+        monitor.deleteCollection(collectName);
         pw.println("<p/>deleted");
-      else
-        pw.println("<p/>no such collection = "+collectName);
+      } catch (Exception e) {
+        pw.println("<pre>delete failed on collection = "+collectName);
+        e.printStackTrace(pw);
+        pw.println("</pre>");
+      }
     }
 
     log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, 0) );

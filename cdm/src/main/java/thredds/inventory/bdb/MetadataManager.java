@@ -34,17 +34,17 @@
 package thredds.inventory.bdb;
 
 import com.sleepycat.je.*;
-import com.sleepycat.persist.StoreConfig;
 
 import java.io.*;
 import java.util.*;
 
 import thredds.inventory.MFile;
-import ucar.nc2.units.DateFormatter;
 
 /**
  * MetadataManager using Berkeley DB Java Edition.
- * Single environment. Each collection is a "database".
+ * Single environment, with multiple databases.
+ * All threads share one environment; multiple processes can only have one writer at a time.
+ * Each collection is a "database".
  * Each database has a set of key/value pairs.
  * default root dir is ${user.home}/.unidata/bdb
  *
@@ -57,9 +57,10 @@ public class MetadataManager {
 
   private static String root = null;
   private static Environment myEnv = null;
-  private static List<Database> openDatabases = new ArrayList<Database>();
-  private static boolean readOnly;
+  private static List<MetadataManager> openDatabases = new ArrayList<MetadataManager>();
+  private static boolean readOnly = false;
   private static boolean debug = false;
+  private static boolean debugDelete = false;
 
   static {
     String home = System.getProperty("user.home");
@@ -73,39 +74,34 @@ public class MetadataManager {
     root = home + "/.unidata/bdb/";
   }
 
-
   static public void setCacheDirectory(String dir) {
     root = dir;
-    setup(root, false);
   }
 
-  static private void setup(String dirName, boolean _readOnly) throws DatabaseException {
-    readOnly = _readOnly;
+  static private void setup() throws DatabaseException {
     EnvironmentConfig myEnvConfig = new EnvironmentConfig();
-    //StoreConfig storeConfig = new StoreConfig();
-
-    myEnvConfig.setReadOnly(readOnly);
-    //storeConfig.setReadOnly(readOnly);
-
-    myEnvConfig.setAllowCreate(!readOnly);
-    //storeConfig.setAllowCreate(!readOnly);
-
+    myEnvConfig.setReadOnly(false);
+    myEnvConfig.setAllowCreate(false);
     myEnvConfig.setSharedCache(true);
 
-    File dir = new File(dirName);
-    dir.mkdirs();
+    File dir = new File(root);
+    if (!dir.mkdirs())
+      logger.warn("MetadataManager failed to make directory " + root);
 
     try {
       myEnv = new Environment(dir, myEnvConfig); // LOOK may want to try multiple Environments
       logger.info("MetadataManager opened bdb in directory=" + dir);
+      readOnly = false;
 
     } catch (com.sleepycat.je.EnvironmentLockedException e) {
-      // try read-only
+      // another process has it open: try read-only
       readOnly = true;
       myEnvConfig.setReadOnly(true);
       myEnvConfig.setAllowCreate(false);
       myEnv = new Environment(dir, myEnvConfig);
     }
+    if (debug) System.out.printf("MetadataManager: open bdb at root %s readOnly = %s%n", root, readOnly);
+
     /* primary
     DatabaseConfig dbConfig = new DatabaseConfig();
     dbConfig.setAllowCreate(true);
@@ -122,33 +118,16 @@ public class MetadataManager {
     secondary = myEnv.openSecondaryDatabase(null, "secDatabase", database, secConfig);  */
   }
 
-  // Close the store and environment
-
+  // Close all databases and environment
+  // this is called on TDS shutdown and reinit
   static public void closeAll() {
     if (debug) System.out.println("close MetadataManager");
 
-    for (Database db : openDatabases) {
-      if (debug) System.out.println("  close database " + db.getDatabaseName());
-      db.close();
+    for (MetadataManager mm : openDatabases) {
+      if (debug) System.out.println("  close database " + mm.collectionName);
+      mm.close();
     }
-
-    /* if (secondary != null) {
-      try {
-        secondary.close();
-      } catch (DatabaseException dbe) {
-        System.err.println("Error closing secondary database: " + dbe.toString());
-        System.exit(-1);
-      }
-    }
-
-    if (database != null) {
-      try {
-        database.close();
-      } catch (DatabaseException dbe) {
-        System.err.println("Error closing database: " + dbe.toString());
-        System.exit(-1);
-      }
-    } */
+   openDatabases = new ArrayList<MetadataManager>();
 
     if (myEnv != null) {
       try {
@@ -158,21 +137,21 @@ public class MetadataManager {
 
       } catch (DatabaseException dbe) {
         logger.error("Error closing MyDbEnv: " + dbe.toString());
-        System.exit(-1);
       }
     }
   }
 
   static public void showEnvStats(Formatter f) {
     if (myEnv == null)
-      setup(root, false);
+      setup();
 
     try {
       EnvironmentStats stats = myEnv.getStats(null);
-      f.format("env stats= %s%n", stats);
+      f.format("EnvironmentStats%n%s%n", stats);
 
+      f.format("%nDatabaseNames%n");
       for (String dbName : myEnv.getDatabaseNames()) {
-        f.format(" collection = %s%n", dbName);
+        f.format(" %s%n", dbName);
       }
     } catch (DatabaseException e) {
       e.printStackTrace();
@@ -185,20 +164,20 @@ public class MetadataManager {
 
   static public List<String> getCollectionNames() {
     if (myEnv == null)
-      setup(root, false);
+      setup();
     return myEnv.getDatabaseNames();
   }
 
-  static public boolean deleteCollection(String collectionName) {
-    try {
-      myEnv.removeDatabase(null, collectionName);
-      return true;
-    } catch (Exception e) {
-      e.printStackTrace();
-      logger.error("BDB failed to delete Collection ", e);
-      return false;
+  static public void deleteCollection(String collectionName) throws Exception {
+    // close any open handles
+    for (MetadataManager mm : openDatabases) {
+      if (mm.collectionName.equals(collectionName)) {
+        if (mm.database != null)
+          mm.database.close();
+      }
     }
-}
+    myEnv.removeDatabase(null, collectionName);
+  }
 
   static public void delete(String collectionName, String key) {
     try {
@@ -214,31 +193,35 @@ public class MetadataManager {
 
   private String collectionName;
   private Database database;
-  private SecondaryDatabase secondary;
-
-  private Calendar cal = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
-  private DateFormatter dateFormatter = new DateFormatter();
-  private boolean showDelete = false;
+  //private SecondaryDatabase secondary;
+  //private Calendar cal = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
+  //private DateFormatter dateFormatter = new DateFormatter();
 
   public MetadataManager(String collectionName) throws DatabaseException, IOException {
     this.collectionName = collectionName;
 
+    // fail fast
     if (myEnv == null) {
-      setup(root, false);
+      setup();
     }
+  }
 
-    // primary
+  // assumes only one open at a time; could have MetadataManagers share open databases
+  private void openDatabase() {
+    if (database != null) return;
     DatabaseConfig dbConfig = new DatabaseConfig();
     dbConfig.setReadOnly(readOnly);
     dbConfig.setAllowCreate(!readOnly);
     if (!readOnly)
       dbConfig.setDeferredWrite(true);
     database = myEnv.openDatabase(null, collectionName, dbConfig);
-    openDatabases.add(database);
+    
+    openDatabases.add(this);
   }
 
   public void put(String key, String value) {
     if (readOnly) return;
+    openDatabase();
     try {
       database.put(null, new DatabaseEntry(key.getBytes(UTF8)), new DatabaseEntry(value.getBytes(UTF8)));
     } catch (UnsupportedEncodingException e) {
@@ -248,10 +231,13 @@ public class MetadataManager {
 
   public void put(byte[] key, byte[] value) {
     if (readOnly) return;
+    openDatabase();
     database.put(null, new DatabaseEntry(key), new DatabaseEntry(value));
   }
 
   public void put(String key, byte[] value) {
+    if (readOnly) return;
+    openDatabase();
     try {
       database.put(null, new DatabaseEntry(key.getBytes(UTF8)), new DatabaseEntry(value));
     } catch (UnsupportedEncodingException e) {
@@ -260,12 +246,14 @@ public class MetadataManager {
   }
 
   public byte[] get(byte[] key) {
+    openDatabase();
     DatabaseEntry value = new DatabaseEntry();
     database.get(null, new DatabaseEntry(key), value, LockMode.DEFAULT);
     return value.getData();
   }
 
   public byte[] getBytes(String key) {
+    openDatabase();
     try {
       DatabaseEntry value = new DatabaseEntry();
       database.get(null, new DatabaseEntry(key.getBytes(UTF8)), value, LockMode.DEFAULT);
@@ -276,6 +264,7 @@ public class MetadataManager {
   }
 
   public String get(String key) {
+    openDatabase();
     try {
       DatabaseEntry value = new DatabaseEntry();
       OperationStatus status = database.get(null, new DatabaseEntry(key.getBytes(UTF8)), value, LockMode.DEFAULT);
@@ -289,6 +278,7 @@ public class MetadataManager {
   }
 
   public void delete(String theKey) {
+    openDatabase();
     try {
       DatabaseEntry entry = new DatabaseEntry(theKey.getBytes("UTF-8"));
       database.delete(null, entry);
@@ -298,6 +288,7 @@ public class MetadataManager {
   }
 
   public void delete(Map<String, MFile> current) {
+    openDatabase();
     List<DatabaseEntry> result = new ArrayList<DatabaseEntry>();
     Cursor myCursor = null;
     try {
@@ -323,7 +314,7 @@ public class MetadataManager {
 
       //System.out.printf("total found to delete = %d%n", count);
 
-      if (showDelete) {
+      if (debugDelete) {
         for (DatabaseEntry entry : result) {
           OperationStatus status = database.delete(null, entry);
           String key = new String(entry.getData(), UTF8);
@@ -332,10 +323,10 @@ public class MetadataManager {
       }
 
     } catch (UnsupportedOperationException e) {
-      logger.error("Trying to delete "+collectionName, e);
+      logger.error("Trying to delete " + collectionName, e);
 
     } catch (UnsupportedEncodingException e) {
-      logger.error("Trying to delete "+collectionName, e);
+      logger.error("Trying to delete " + collectionName, e);
 
     } finally {
       if (null != myCursor)
@@ -345,11 +336,15 @@ public class MetadataManager {
   }
 
   public void close() {
-    database.close();
-    openDatabases.remove(database);
+    if (database != null) {
+      database.close();
+      openDatabases.remove(this);
+      database = null;
+    }
   }
 
   public void showStats(Formatter f) {
+    openDatabase();
     try {
       DatabaseStats dstats = database.getStats(null);
       f.format("primary stats %n%s%n", dstats);
@@ -360,6 +355,7 @@ public class MetadataManager {
   }
 
   public List<KeyValue> getContent() throws DatabaseException, UnsupportedEncodingException {
+    openDatabase();
     List<KeyValue> result = new ArrayList<KeyValue>();
     Cursor myCursor = null;
     try {
@@ -367,13 +363,13 @@ public class MetadataManager {
       DatabaseEntry foundKey = new DatabaseEntry();
       DatabaseEntry foundData = new DatabaseEntry();
 
-      int count = 0;
+      //int count = 0;
       while (myCursor.getNext(foundKey, foundData, LockMode.DEFAULT) == OperationStatus.SUCCESS) {
         String key = new String(foundKey.getData(), UTF8);
         String data = new String(foundData.getData(), UTF8);
         result.add(new KeyValue(key, data));
         //System.out.printf("key = %s; data = %s %n", key, data);
-        count++;
+        //count++;
       }
       //System.out.printf("count = %d %n", count);
     } finally {
@@ -384,16 +380,15 @@ public class MetadataManager {
     return result;
   }
 
-public class KeyValue {
-  public String key;
-  public String value;
+  public class KeyValue {
+    public String key;
+    public String value;
 
-  KeyValue(String key, String value) {
-    this.key = key;
-    this.value = value;
+    KeyValue(String key, String value) {
+      this.key = key;
+      this.value = value;
+    }
   }
-
-}
 
   public static void main(String args[]) throws Exception {
     MetadataManager indexer = new MetadataManager("dummy");

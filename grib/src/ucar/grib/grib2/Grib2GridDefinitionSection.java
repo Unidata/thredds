@@ -1617,7 +1617,6 @@ public final class Grib2GridDefinitionSection {
    * @return gdskey as a int
    */
   public final int getGdsKey() {
-    //return gdskey;
     return gdsVars.getGdsKey();
   }
 

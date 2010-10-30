@@ -36,6 +36,7 @@ import thredds.inventory.bdb.MetadataManager;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Formatter;
 import java.util.List;
 
 /**
@@ -55,6 +56,10 @@ public class FmrcCacheMonitorImpl implements FmrcCacheMonitor {
 
   public String getCacheLocation() {
     return MetadataManager.getCacheLocation();
+  }
+
+  public void getCacheStatistics(Formatter f) {
+    MetadataManager.showEnvStats(f);
   }
 
   public List<String> getFilesInCollection(String collectionName) {
@@ -88,8 +93,8 @@ public class FmrcCacheMonitorImpl implements FmrcCacheMonitor {
     }
   }
 
-  public boolean deleteCollection(String collectionName) {
-    return MetadataManager.deleteCollection(collectionName);
+  public void deleteCollection(String collectionName) throws Exception {
+    MetadataManager.deleteCollection(collectionName);
   }
 
 

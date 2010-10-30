@@ -67,7 +67,7 @@ public class TestMotherlodeModels implements CatalogCrawler.Listener {
   private PrintStream out;
   private int countDatasets, countNoAccess, countNoOpen;
   private boolean verbose = true;
-  private boolean compareCdm = true;
+  private boolean compareCdm = false;
 
   TestMotherlodeModels(String name, String catURL, int type, boolean skipDatasetScan) throws IOException {
     this.catUrl = catURL;

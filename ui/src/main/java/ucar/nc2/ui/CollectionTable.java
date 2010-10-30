@@ -89,7 +89,11 @@ public class CollectionTable extends JPanel {
       public void actionPerformed(ActionEvent e) {
         CollectionBean bean = (CollectionBean) collectionNameTable.getSelectedBean();
         if (bean == null) return;
-        MetadataManager.deleteCollection(bean.name);
+        try {
+          MetadataManager.deleteCollection(bean.name);
+        } catch (Exception e2) {
+          e2.printStackTrace();
+        }
         refresh();
       }
     });

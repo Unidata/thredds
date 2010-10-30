@@ -113,6 +113,11 @@ public interface CollectionManager {
    */
   public Date extractRunDate(MFile mfile);
 
+  /**
+   * release any resources
+   */
+  public void close();
+
   /////////////////////////////////////////////////////////////////////
   // experimental
 

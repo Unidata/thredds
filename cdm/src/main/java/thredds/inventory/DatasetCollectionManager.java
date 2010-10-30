@@ -145,6 +145,10 @@ public class DatasetCollectionManager implements CollectionManager {
 
   }
 
+  public void close() {
+    if (mm != null) mm.close(); 
+  }
+
   // for subclasses
   protected DatasetCollectionManager() {}
 
@@ -421,7 +425,8 @@ public class DatasetCollectionManager implements CollectionManager {
             '}';
   }
 
-  ///////////////////////
+  /////////////////////////////////////////////////////////////////
+  // uses bdb to manage metadata associated with the collection. currently, only DatasetInv.xml files
   private MetadataManager mm;
 
   private void initMM() {

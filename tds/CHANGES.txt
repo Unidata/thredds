@@ -4,6 +4,9 @@ Build Date = @BUILDTIME@
 
 Release Details 4.2:
  4.2 release candidate 5 (2010-10-xx)
+   TDS reinit calls MetadataManager.closeAll
+   add bdb cache statistics in admin
+   Jon Blower's fixes for PixelMap
    catch java.net.SocketException in Thredds.WmsController
 
  4.2 release candidate 4 (2010-10-25)

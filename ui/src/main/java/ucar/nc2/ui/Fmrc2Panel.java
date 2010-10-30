@@ -209,9 +209,8 @@ public class Fmrc2Panel extends JPanel {
   }
 
   public void setFmrc(String collectionSpec) throws IOException {
-    // this.collectionSpec = collectionSpec;
-    //if (!showCollectionInfo(false))
-    //  return;
+    if (fmrc != null)
+      fmrc.close();
 
     long start = System.currentTimeMillis();
 

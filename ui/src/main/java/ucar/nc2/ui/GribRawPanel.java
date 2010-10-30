@@ -194,14 +194,46 @@ public class GribRawPanel extends JPanel {
     });
 
     gds2Table = new BeanTableSorted(Gds2Bean.class, (PreferencesExt) prefs.node("Gds2Bean"), false, "Grib2GridDefinitionSection", "unique from Grib2Records");
-    gds2Table.addListSelectionListener(new ListSelectionListener() {
-      public void valueChanged(ListSelectionEvent e) {
-        Gds2Bean bean = (Gds2Bean) gds2Table.getSelectedBean();
-        infoPopup.setText(bean.gds.toString());
-        infoWindow.setVisible(true);
-        gds2Table.clearSelection();
-      }
-    });
+    varPopup = new PopupMenu(gds2Table.getJTable(), "Options");
+
+    varPopup.addAction("Show processed GDS", new AbstractAction() {
+       public void actionPerformed(ActionEvent e) {
+         Gds2Bean bean = (Gds2Bean) gds2Table.getSelectedBean();
+         infoPopup.setText(bean.gds.toString());
+         infoWindow.setVisible(true);
+       }
+     });
+
+    varPopup.addAction("Compare GDS", new AbstractAction() {
+       public void actionPerformed(ActionEvent e) {
+         List list = gds2Table.getSelectedBeans();
+         if (list.size() == 2) {
+           Gds2Bean bean1 = (Gds2Bean) list.get(0);
+           Gds2Bean bean2 = (Gds2Bean) list.get(1);
+           Formatter f = new Formatter();
+           compare(bean1.gds, bean2.gds, f);
+           infoPopup2.setText(f.toString());
+           infoPopup2.gotoTop();
+           infoWindow2.showIfNotIconified();
+         }
+       }
+     });
+
+    varPopup.addAction("Show Products that use GDS", new AbstractAction() {
+       public void actionPerformed(ActionEvent e) {
+         Gds2Bean bean = (Gds2Bean) gds2Table.getSelectedBean();
+         Formatter f = new Formatter();
+         for (Object o : param2BeanTable.getBeans()) {
+           Grib2ParameterBean p = (Grib2ParameterBean) o;
+           if (p.gdsKey == bean.getKey())
+             f.format(" %s%n", p.getName());
+         }
+         infoPopup2.setText(f.toString());
+         infoWindow.setVisible(true);
+       }
+     });
+
+
 
     ////////////////
 
@@ -561,7 +593,7 @@ public class GribRawPanel extends JPanel {
 
     java.util.List<Gds2Bean> gdsList = new ArrayList<Gds2Bean>();
     for (Grib2GridDefinitionSection gds : gdsSet.values()) {
-      gdsList.add(new Gds2Bean(gds.getGdsKey(), gds));
+      gdsList.add(new Gds2Bean(gds));
     }
     gds2Table.setBeans(gdsList);
   }
@@ -673,6 +705,7 @@ public class GribRawPanel extends JPanel {
     Grib2Pds pdsv;
     List<Grib2RecordBean> records;
     int discipline;
+    int gdsKey;
 
     // no-arg constructor
 
@@ -685,6 +718,7 @@ public class GribRawPanel extends JPanel {
       id = r.getId();
       discipline = r.getIs().getDiscipline();
       records = new ArrayList<Grib2RecordBean>();
+      gdsKey = r.getGDS().getGdsVars().getGdsKey();
     }
 
     void addRecord(Grib2Record r) {
@@ -973,27 +1007,47 @@ public class GribRawPanel extends JPanel {
 
   public class Gds2Bean {
     Grib2GridDefinitionSection gds;
-    int key;
+    Grib2GDSVariables gdsv;
 
     // no-arg constructor
 
     public Gds2Bean() {
     }
 
-    public Gds2Bean(int key, Grib2GridDefinitionSection m) {
-      this.key = key;
+    public Gds2Bean(Grib2GridDefinitionSection m) {
       this.gds = m;
+      this.gdsv = gds.getGdsVars();
     }
 
     public int getKey() {
-      return key;
+      return gds.getGdsKey();
     }
 
-    public int getHashCode() {
-      return gds.hashCode();
+    public float getLa1() {
+      return gdsv.getLa1();
     }
 
-    public int getGridNo() {
+    public float getLo1() {
+      return gdsv.getLo1();
+    }
+
+    public float getLa2() {
+      return gdsv.getLa2();
+    }
+
+    public float getLo2() {
+      return gdsv.getLo2();
+    }
+
+    public float getDx() {
+      return gdsv.getDx();
+    }
+
+    public float getDy() {
+      return gdsv.getDy();
+    }
+
+    public int getGDS() {
       return gds.getGdtn();
     }
 
@@ -1001,14 +1055,17 @@ public class GribRawPanel extends JPanel {
       return Grib2Tables.codeTable3_1( gds.getGdtn());
     }
 
+    public int getNPoints() {
+      return gdsv.getNumberPoints();
+    }
+
     public String getScanMode() {
-      return Long.toBinaryString(gds.getScanMode());
+      return Long.toBinaryString(gdsv.getScanMode());
     }
 
     public String getResolution() {
-      return Long.toBinaryString(gds.getResolution());
+      return Long.toBinaryString(gdsv.getResolution());
     }
-
   }
 
   ////////////////////////////////////////////////////////////////////////////

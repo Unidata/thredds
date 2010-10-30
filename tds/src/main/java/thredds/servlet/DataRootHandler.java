@@ -366,6 +366,10 @@ public class DataRootHandler {
       cl.configStart();
 
     logCatalogInit.info( "\n**************************************\n**************************************\nStarting TDS config catalog reinitialization\n[" + DateUtil.getCurrentSystemTimeAsISO8601() + "]" );
+
+    // cleanup 
+    thredds.inventory.bdb.MetadataManager.closeAll();
+
     // Empty all config catalog information.
     staticCatalogHash = new HashMap<String, InvCatalogImpl>();
     pathMatcher = new PathMatcher();
