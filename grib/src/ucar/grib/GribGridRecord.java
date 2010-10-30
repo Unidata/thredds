@@ -511,13 +511,6 @@ public final class GribGridRecord implements GridRecord {
     return pds.isInterval();
   }
 
-  @Override
-  public int getTimeInterval() {
-    if (!isInterval()) return -1;
-    int[] intv = pds.getForecastTimeInterval();
-    return intv[1] - intv[0];
-  }
-
   public String getStatisticalProcessTypeName() {
     return Grib2Tables.codeTable4_10( getStatisticalProcessType());
   }

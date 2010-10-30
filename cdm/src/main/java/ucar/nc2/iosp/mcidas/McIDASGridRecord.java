@@ -234,8 +234,5 @@ public class McIDASGridRecord extends GridDirectory implements GridRecord {
       return f.toString();
     }
 
-  public int getTimeInterval( ) { 
-    return -1;
-  }
 }
 

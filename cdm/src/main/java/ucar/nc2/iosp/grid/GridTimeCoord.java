@@ -339,7 +339,11 @@ public class GridTimeCoord implements Comparable<GridTimeCoord> {
     else {
       int index = 0;
       for (TimeCoordWithInterval t : timeIntvs) {
-        if (t.coord.equals(validTime) && t.interval == record.getTimeInterval()) return index;
+        GribGridRecord ggr = (GribGridRecord) record;  // only true for Grib      
+        GribPds pds = ggr.getPds();
+        int[] intv = pds.getForecastTimeInterval(timeUnit); // may need to convert units
+        int diff = intv[1] - intv[0];
+        if (t.coord.equals(validTime) && t.interval == diff) return index;
         index++;
       }
       return -1;
@@ -374,7 +378,8 @@ public class GridTimeCoord implements Comparable<GridTimeCoord> {
   }
 
   /**
-   * is this a mixed interval
+   * is this a mixed interval ?
+   * Only true for Grib
    *
    * @return mixed
    */
@@ -421,6 +426,11 @@ public class GridTimeCoord implements Comparable<GridTimeCoord> {
     public boolean equals(Object obj) {
       TimeCoordWithInterval o = (TimeCoordWithInterval) obj;
       return coord.equals(o.coord) && (interval == o.interval);
+    }
+
+    @Override
+    public String toString() {
+      return "start=" + start +", interval=" + interval;
     }
   }
 
