@@ -177,7 +177,7 @@ public class CEEvaluator {
         } catch (TokenMgrError tme) {
             throw new ParseException(tme.getMessage());
         } catch (Throwable t) {
-          t.printStackTrace();
+          // t.printStackTrace();
           throw new ParseException(t.getMessage());
         }
 
