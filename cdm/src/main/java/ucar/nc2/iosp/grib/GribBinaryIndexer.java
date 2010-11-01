@@ -152,9 +152,7 @@ public final class GribBinaryIndexer {
       for (String aChildren : children) {
         if (aChildren.equals("IndexLock"))
           continue;
-        //System.out.println( "children i ="+ children[ i ]);
         File child = new File(dir, aChildren);
-        //System.out.println( "child ="+ child.getName() );
         if (child.isDirectory()) {
           checkDirs(child);
           // skip index *gbx and inventory *xml files
@@ -167,9 +165,7 @@ public final class GribBinaryIndexer {
           checkIndex(dir, child);
         }
       }
-    } else {
     }
-
   }
 
   /*
@@ -180,18 +176,11 @@ public final class GribBinaryIndexer {
       throws IOException {
 
     String[] args = new String[2];
-    //File gbx = new File(dir, grib.getName() + ".gbx");
-    //File gbx = new File( GribIndexName.getNew( dir.getParent() +"/"+ grib.getName() ));
     File gbx = new File( GribIndexName.getCurrentSuffix( grib.getPath() ));
     if (removeGBX && gbx.exists())
         gbx.delete();
-    //System.out.println( "index ="+ gbx.getName() );
-
-    //args[0] = grib.getParent() + "/" + grib.getName();
     args[0] = grib.getPath();
-    //args[1] = grib.getParent() + "/" + gbx.getName();
     args[1] = gbx.getPath();
-    //System.out.println( "args ="+ args[ 0] +" "+ args[ 1 ] );
     if (gbx.exists()) {
       // skip files older than 3 hours
       if ((System.currentTimeMillis() - grib.lastModified()) > 10800000)
@@ -209,20 +198,16 @@ public final class GribBinaryIndexer {
       grib2check(grib, gbx, args);
     } else { // else check file for Grib version
       ucar.unidata.io.RandomAccessFile raf = new ucar.unidata.io.RandomAccessFile(args[0], "r");
-      //System.out.println("Grib "+ args[ 0 ] );
       int result = GribChecker.getEdition(raf);
       if (result == 2) {
-        //System.out.println("Valid Grib Edition 2 File");
         grib2check(grib, gbx, args);
       } else if (result == 1) {
-        //System.out.println("Valid Grib Edition 1 File");
         grib1check(grib, gbx, args);
       } else {
         System.out.println("Not a Grib File " + args[0]);
       }
       raf.close();
     }
-
   }
 
   /*
@@ -242,20 +227,19 @@ public final class GribBinaryIndexer {
         new Grib1WriteIndex().extendGribIndex(grib, gbx, args[0], args[1], false);
         System.out.println("IndexExtending " + grib.getName() +" took "+
         (System.currentTimeMillis() - start) +" ms BufferSize "+ Grib2WriteIndex.indexRafBufferSize);
-        ForecastModelRunInventory.open(null, args[0], ForecastModelRunInventory.OPEN_FORCE_NEW, true);
+        //ForecastModelRunInventory.open(null, args[0], ForecastModelRunInventory.OPEN_FORCE_NEW, true);
       } else {  // create index
         // grib, gribName, gbxName, false(make index)
         long start = System.currentTimeMillis();
         new Grib1WriteIndex().writeGribIndex(grib, args[0], args[1], false);
         System.out.println("Indexing " + grib.getName() +" took "+
         (System.currentTimeMillis() - start) +" ms BufferSize "+ Grib2WriteIndex.indexRafBufferSize);
-        ForecastModelRunInventory.open(null, args[0], ForecastModelRunInventory.OPEN_FORCE_NEW, true);
+        //ForecastModelRunInventory.open(null, args[0], ForecastModelRunInventory.OPEN_FORCE_NEW, true);
       }
     } catch (Exception e) {
       e.printStackTrace();
       System.out.println("Caught Exception doing index or inventory for " + grib.getName());
     }
-
   }
 
   /*
@@ -275,14 +259,14 @@ public final class GribBinaryIndexer {
         new Grib2WriteIndex().extendGribIndex(grib, gbx, args[0], args[1], false);
         System.out.println("IndexExtending " + grib.getName() +" took "+
         (System.currentTimeMillis() - start) +" ms BufferSize "+ Grib2WriteIndex.indexRafBufferSize);
-        ForecastModelRunInventory.open(null, args[0], ForecastModelRunInventory.OPEN_FORCE_NEW, true);
+        //ForecastModelRunInventory.open(null, args[0], ForecastModelRunInventory.OPEN_FORCE_NEW, true);
       } else {  // create index
         // grib, gribName, gbxName, false(make index)
         long start = System.currentTimeMillis();
         new Grib2WriteIndex().writeGribIndex(grib, args[0], args[1], false);
         System.out.println("Indexing " + grib.getName() +" took "+
         (System.currentTimeMillis() - start) +" ms BufferSize "+ Grib2WriteIndex.indexRafBufferSize);
-        ForecastModelRunInventory.open(null, args[0], ForecastModelRunInventory.OPEN_FORCE_NEW, true);
+        //ForecastModelRunInventory.open(null, args[0], ForecastModelRunInventory.OPEN_FORCE_NEW, true);
       }
     } catch (Exception e) {
       e.printStackTrace();
@@ -341,6 +325,5 @@ public final class GribBinaryIndexer {
     }
     // Grib Index files in dirs
     gbi.indexer();
-
   }
 }
