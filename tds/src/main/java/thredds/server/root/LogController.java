@@ -97,7 +97,7 @@ public class LogController extends AbstractController {
     }
 
     File file = null;
-    if (path.equals("/roots")) {
+    if (path.equals("/log/dataroots.txt")) {
       PrintWriter pw = new PrintWriter(res.getOutputStream());
       PathMatcher pathMatcher = DataRootHandler.getInstance().getPathMatcher();
       Iterator iter = pathMatcher.iterator();

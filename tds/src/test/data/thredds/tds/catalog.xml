@@ -16,9 +16,12 @@
 
   <!-- here is the content that gets automatically installed in any TDS -->
   <datasetRoot path="testStandardTds" location="content/testdata/"/>
-  <dataset name="Test Single Dataset" ID="testDataset" serviceName="odap" urlPath="testStandardTds/testData.nc" dataType="Grid"/>
-  <dataset name="Test Single Dataset 2" ID="testDataset2" serviceName="odap" urlPath="testStandardTds/testData2.nc" dataType="Grid"/>
-  <datasetScan name="Test standard TDS content" ID="testStandardTdsScan" path="testStandardTdsScan" location="content/testdata">
+  <dataset name="Test Single Dataset" ID="testDataset" serviceName="odap" urlPath="testStandardTds/testData.nc"
+           dataType="Grid"/>
+  <dataset name="Test Single Dataset 2" ID="testDataset2" serviceName="odap" urlPath="testStandardTds/testData2.nc"
+           dataType="Grid"/>
+  <datasetScan name="Test standard TDS content" ID="testStandardTdsScan" path="testStandardTdsScan"
+               location="content/testdata">
     <metadata inherited="true">
       <serviceName>all</serviceName>
       <dataType>Grid</dataType>
@@ -26,19 +29,20 @@
   </datasetScan>
 
   <!-- a scan on the entire /upc/share/cdmUnitTest/tds directory; not all services will make sense -->
-  <datasetScan name="Test all files in cdmUnitTest/tds" ID="testCdmUnitTest" path="testCdmUnitTest" location="Q:/cdmUnitTest/tds">
+  <datasetScan name="Test all files in cdmUnitTest/tds" ID="testCdmUnitTest" path="testCdmUnitTest"
+               location="Q:/cdmUnitTest/tds">
     <metadata inherited="true">
       <serviceName>all</serviceName>
       <dataType>Grid</dataType>
     </metadata>
 
     <addProxies>
-      <simpleLatest />
+      <simpleLatest/>
     </addProxies>
     <sort>
       <lexigraphicByName increasing="true"/>
     </sort>
-    <addDatasetSize />
+    <addDatasetSize/>
 
   </datasetScan>
 
@@ -55,7 +59,8 @@
   <dataset name="Example NcML Modified" ID="ExampleNcMLModified" urlPath="ExampleNcML/Modified.nc">
     <serviceName>odap</serviceName>
     <dataType>Grid</dataType>
-    <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" location="Q:/cdmUnitTest/tds/example1.nc" addRecords="true">
+    <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" location="Q:/cdmUnitTest/tds/example1.nc"
+            addRecords="true">
       <attribute name="name" value="value"/>
       <variable name="Temperature" orgName="T"/>
       <variable name="ReletiveHumidity" orgName="rh">
@@ -74,7 +79,7 @@
     </metadata>
 
     <filter>
-      <include wildcard="*.nc" collection="false" />
+      <include wildcard="*.nc" collection="false"/>
       <exclude wildcard="/*" collection="true"/>
     </filter>
 
@@ -133,10 +138,10 @@
 
     <!-- inner ncml -->
     <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
-        <variable name="Visibility">
-          <attribute name="ncmlInnerAdded" value="innerTruth"/>
-        </variable>
-     </netcdf>
+      <variable name="Visibility">
+        <attribute name="ncmlInnerAdded" value="innerTruth"/>
+      </variable>
+    </netcdf>
 
     <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets"/>
 

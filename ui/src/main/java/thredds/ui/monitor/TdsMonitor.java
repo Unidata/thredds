@@ -215,8 +215,9 @@ public class TdsMonitor extends JPanel {
             }
 
             if (data.wantRoots) {
-              String urls = "http://" + data.server + "/thredds/admin/roots";
+              String urls = "http://" + data.server + "/thredds/admin/log/dataroots.txt";
               File localDir = LogLocalManager.getDirectory(data.server, "");
+              localDir.mkdirs();
               File file = new File(localDir, "roots.txt");
               HttpClientManager.copyUrlContentsToFile(urls, file);
               String roots = IO.readFile(file.getPath());
