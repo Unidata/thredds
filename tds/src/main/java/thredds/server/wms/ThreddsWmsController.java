@@ -225,11 +225,15 @@ public final class ThreddsWmsController extends AbstractWmsController
     catch ( Exception e ) {
       log.error( "dispatchWmsRequest(): Exception: ", e );
       log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, -1 ) );
+      if ( httpServletResponse.isCommitted() )
+        return null;
       throw e;
     }
     catch ( Error e ) {
       log.error( "dispatchWmsRequest(): Error: ", e );
       log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, -1 ) );
+      if ( httpServletResponse.isCommitted() )
+        return null;
       throw e;
     }
     finally {

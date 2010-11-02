@@ -105,6 +105,10 @@
   </filter-mapping>
   <filter-mapping>
     <filter-name>RequestQueryFilter</filter-name>
+    <servlet-name>serverInfo</servlet-name>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>RequestQueryFilter</filter-name>
     <servlet-name>catalogService</servlet-name>
   </filter-mapping>
   <filter-mapping>
@@ -300,6 +304,12 @@
     <load-on-startup>0</load-on-startup>
   </servlet>
 
+  <servlet>
+    <servlet-name>serverInfo</servlet-name>
+    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+
   <!-- Setup for catalog services. (Catalog subsetting, validation, and translation into HTML.) -->
   <servlet>
     <servlet-name>catalogService</servlet-name>
@@ -473,6 +483,19 @@
   <servlet-mapping>
     <servlet-name>root</servlet-name>
     <url-pattern>*.gif</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>serverInfo</servlet-name>
+    <url-pattern>/serverInfo.html</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>serverInfo</servlet-name>
+    <url-pattern>/serverInfo.xml</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>serverInfo</servlet-name>
+    <url-pattern>/serverVersion.txt</url-pattern>
   </servlet-mapping>
 
   <servlet-mapping>
