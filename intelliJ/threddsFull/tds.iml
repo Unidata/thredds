@@ -83,15 +83,6 @@
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../lib/release/prefsAll.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" exported="">
-      <library>
-        <CLASSES>
           <root url="jar://$MODULE_DIR$/../../lib/external/casclient-2.1.1.jar!/" />
         </CLASSES>
         <JAVADOC />
@@ -302,6 +293,7 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="library" name="jetty" level="project" />
   </component>
   <component name="org.twodividedbyzero.idea.findbugs">
     <option name="_basePreferences">

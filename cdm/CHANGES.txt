@@ -3,7 +3,8 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Changes in version 4.2:
- 13: (2010-10-30)
+ 13: (2010-11-01)
+  CoordinateAxis sets caching to true, VariabelDS propagates to orgVar.
   remove e.printStackTrace() at CEEvaluator line 180
   add Fmrc.close(), CollectionManager.close() to release resources
   manage bdb databases so that they can be deleted when needed to regenerate the metadata

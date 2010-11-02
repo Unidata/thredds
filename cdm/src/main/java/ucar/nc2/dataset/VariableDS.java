@@ -480,6 +480,11 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
     return false;
   }
 
+  @Override
+  public void setCaching(boolean caching) {
+    if (caching && orgVar != null) orgVar.setCaching(caching); // propagate down only if true
+  }
+
     @Override
   protected Array _read() throws IOException {
      Array result;

@@ -85,7 +85,7 @@ public class MetadataManager {
     myEnvConfig.setSharedCache(true);
 
     File dir = new File(root);
-    if (!dir.mkdirs())
+    if (!dir.exists() && !dir.mkdirs())
       logger.warn("MetadataManager failed to make directory " + root);
 
     try {

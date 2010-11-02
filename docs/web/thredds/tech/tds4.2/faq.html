@@ -12,6 +12,10 @@
 
 <hr width="100%">
 
+<h2>Catalogs</h2>
+<ul>
+  <li><a href="#CatalogURLs">How do I construct the URLs I find in a THREDDS Catalog? </a></li>
+</ul>
 <h2>TDS</h2>
 <ul>
   <li><a href="#throttleRequests">How do I keep client requests from overwhelming my server?</a></li>
@@ -36,9 +40,13 @@
 </ul>
 
 <hr width="100%">
-
+<h2>Catalogs</h2>
+<p>Q:<a name="CatalogURLs"></a> How do I construct the URLs I find in a THREDDS Catalog? <br>
+</p>
+<p>A: Heres the general idea in the <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.2/tutorial/BasicConfig.html">tutorial</a> and the <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/catalog/v1.0.2/InvCatalogSpec.html#constructingURLs">reference</a> docs. If you are using the CDM library, you can call </p>
+<pre>InvAccess.getUrlPath()</pre>
+<hr width="100%">
 <h2>TDS</h2>
-
 <h4><a name="throttleRequests"></a>Q: How do I keep client requests from overwhelming my server?</h4>
 
 <blockquote>

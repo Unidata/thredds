@@ -85,7 +85,7 @@ public class CoordinateAxis extends VariableDS {
    */
   static public CoordinateAxis factory(NetcdfDataset ncd, VariableDS vds) {
     if ((vds.getRank() == 1) ||
-        (vds.getRank() == 2 && vds.getDataType() == DataType.CHAR))
+            (vds.getRank() == 2 && vds.getDataType() == DataType.CHAR))
       return new CoordinateAxis1D(ncd, vds);
     else if (vds.getRank() == 2)
       return new CoordinateAxis2D(ncd, vds);
@@ -96,6 +96,7 @@ public class CoordinateAxis extends VariableDS {
   /**
    * Create a coordinate axis from an existing Variable.
    * General case.
+   *
    * @param ncd the containing dataset
    * @param vds an existing Variable
    */
@@ -110,7 +111,7 @@ public class CoordinateAxis extends VariableDS {
       this.isContiguous = axis.isContiguous;
       this.positive = axis.positive;
     }
-    setSizeToCache(axisSizeToCache); 
+    setSizeToCache(axisSizeToCache);
   }
 
   /**
@@ -132,23 +133,25 @@ public class CoordinateAxis extends VariableDS {
 
   /**
    * Make a copy, with an independent cache.
+   *
    * @return copy of this CoordinateAxis
    */
   public CoordinateAxis copyNoCache() {
-    CoordinateAxis axis = new CoordinateAxis( ncd, getParentGroup(), getShortName(), getDataType(), getDimensionsString(),
+    CoordinateAxis axis = new CoordinateAxis(ncd, getParentGroup(), getShortName(), getDataType(), getDimensionsString(),
             getUnitsString(), getDescription());
 
     // other state
     axis.axisType = this.axisType;
     axis.boundaryRef = this.boundaryRef;
     axis.isContiguous = this.isContiguous;
-    axis.positive = this.positive; 
+    axis.positive = this.positive;
 
     axis.cache = new Variable.Cache(); // decouple cache
     return axis;
   }
 
   // for section and slice
+
   @Override
   protected Variable copy() {
     return new CoordinateAxis(this.ncd, this);
@@ -156,6 +159,7 @@ public class CoordinateAxis extends VariableDS {
 
   /**
    * Get type of axis
+   *
    * @return type of axis, or null if none.
    */
   public AxisType getAxisType() {
@@ -179,12 +183,13 @@ public class CoordinateAxis extends VariableDS {
 
   /**
    * Does the axis have numeric values.
+   *
    * @return true if the CoordAxis is numeric, false if its string valued ("nominal").
    */
   public boolean isNumeric() {
     return (getDataType() != DataType.CHAR) &&
-        (getDataType() != DataType.STRING) &&
-        (getDataType() != DataType.STRUCTURE);
+            (getDataType() != DataType.STRING) &&
+            (getDataType() != DataType.STRUCTURE);
   }
 
   /**
@@ -195,6 +200,11 @@ public class CoordinateAxis extends VariableDS {
    */
   public boolean isContiguous() {
     return isContiguous;
+  }
+
+  @Override
+  public boolean isCoordinateVariable() {
+    return true;
   }
 
   /*
@@ -258,6 +268,7 @@ public class CoordinateAxis extends VariableDS {
 
   /**
    * The smallest coordinate value. Only call if isNumeric.
+   *
    * @return the minimum coordinate value
    */
   public double getMinValue() {
@@ -267,6 +278,7 @@ public class CoordinateAxis extends VariableDS {
 
   /**
    * The largest coordinate value. Only call if isNumeric.
+   *
    * @return the maximum coordinate value
    */
   public double getMaxValue() {
@@ -275,8 +287,10 @@ public class CoordinateAxis extends VariableDS {
   }
 
   //////////////////////
+
   /**
    * Get a string representation
+   *
    * @param buf place info here
    */
   public void getInfo(Formatter buf) {
@@ -345,10 +359,10 @@ public class CoordinateAxis extends VariableDS {
     CoordinateAxis o = (CoordinateAxis) oo;
 
     if (getAxisType() != null)
-      if(!getAxisType().equals(o.getAxisType())) return false;
+      if (!getAxisType().equals(o.getAxisType())) return false;
 
     if (getPositive() != null)
-      if(!getPositive().equals(o.getPositive())) return false;
+      if (!getPositive().equals(o.getPositive())) return false;
 
     return true;
   }

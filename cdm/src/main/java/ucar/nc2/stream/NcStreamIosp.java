@@ -61,7 +61,12 @@ public class NcStreamIosp extends AbstractIOServiceProvider {
     //NcStreamProto.Stream proto = NcStreamProto.Stream.parseFrom(cis);
 
     while (!raf.isAtEndOfFile()) {
-      assert readAndTest(raf, NcStream.MAGIC_DATA);
+      byte[] b = new byte[4];
+      raf.read(b);
+      if (test(b, NcStream.MAGIC_END))
+        break;
+      else if (!test(b, NcStream.MAGIC_DATA))
+        throw new IllegalStateException("bad format");
 
       int psize = readVInt(raf);
       if (debug) System.out.println(" dproto len= " + psize);

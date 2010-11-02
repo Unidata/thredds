@@ -68,6 +68,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
   static public boolean showNCfile = false;
   static public boolean debugAttributes = false;
   static public boolean debugCached = false;
+  static public boolean debugOpenTime = false;
 
   /**
    * Set whether to allow sessions by allowing cookies. This only affects requests to the TDS.
@@ -186,6 +187,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
    */
   public DODSNetcdfFile(String datasetURL, CancelTask cancelTask) throws IOException {
     super();
+    long start = System.currentTimeMillis();
 
     // canonicalize name
     String urlName = datasetURL; // actual URL uses http:
@@ -327,6 +329,8 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
 
     finish();
     if (showNCfile) System.out.println("DODS nc file = " + this);
+    long took = System.currentTimeMillis() - start;
+    if (debugOpenTime) System.out.printf(" took %d msecs %n", took);
   }
 
   @Override

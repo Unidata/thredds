@@ -94,6 +94,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
   private final String remoteURI;
 
   public CdmRemote(String _remoteURI) throws IOException {
+    long start = System.currentTimeMillis();
 
     // get http URL
     String temp = _remoteURI;
@@ -131,6 +132,8 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
     } finally {
       if (method != null) method.releaseConnection();
     }
+    long took = System.currentTimeMillis() - start;
+    if (showRequest) System.out.printf(" took %d msecs %n", took);
   }
 
   @Override

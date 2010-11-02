@@ -67,11 +67,19 @@ public class NcStreamWriter {
     header = headerBuilder.build();
   }
 
+  public long sendStart(WritableByteChannel wbc) throws IOException {
+    return writeBytes(wbc, NcStream.MAGIC_START);
+  }
+
+  public long sendEnd(WritableByteChannel wbc) throws IOException {
+    return writeBytes(wbc, NcStream.MAGIC_END);
+  }
+
   public long sendHeader(WritableByteChannel wbc) throws IOException {
     long size = 0;
 
     //// header message
-    size += writeBytes(wbc, NcStream.MAGIC_HEADER); // magic
+    size += writeBytes(wbc, NcStream.MAGIC_HEADER);
     byte[] b = header.toByteArray();
     size += NcStream.writeVInt(wbc, b.length); // len
     if (show) System.out.println("Write Header len=" + b.length);

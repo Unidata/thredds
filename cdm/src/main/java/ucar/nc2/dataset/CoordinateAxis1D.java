@@ -87,6 +87,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
    */
   public CoordinateAxis1D(NetcdfDataset ncd, VariableDS vds) {
     super(ncd, vds);
+    vds.setCaching(true);
   }
 
   CoordinateAxis1D(NetcdfDataset ncd, CoordinateAxis1D org) {
@@ -95,6 +96,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
     super(ncd, org);
     this.orgName = org.orgName;
     this.cache = new Variable.Cache(); // decouple cache
+    org.setCaching(true);    
   }
 
   /**

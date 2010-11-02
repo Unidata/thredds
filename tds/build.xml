@@ -5,6 +5,7 @@
     <format property="build.time" pattern="yyyy-MM-dd HH:mm:ss" timezone="GMT"/>
     <format property="build.time.number" pattern="yyyyMMdd.HHmm" timezone="GMT"/>
   </tstamp>
+
   <!-- TeamCity sets "build.number" property to value of its build counter. -->
   <property name="build.number" value="${build.time.number}" />
   <property name="build.name" value="${build.number}" />
