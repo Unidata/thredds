@@ -3,7 +3,7 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Release Details 4.2:
- 4.2 release candidate 5 (2010-10-xx)
+ 4.2 release candidate 5 (2010-11-02)
    add tdsMonitor role, for /thredds/admin/log/*
    TDS reinit calls MetadataManager.closeAll
    add bdb cache statistics in admin
