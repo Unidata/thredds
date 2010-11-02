@@ -163,7 +163,7 @@ public class DataRootHandler {
       logScan.info(scheduler.getMetaData().toString());
       
     } catch (SchedulerException e) {
-      logCatalogInit.error("cronExecutor failed to initialize", e);
+      logScan.error("cronExecutor failed to initialize", e);
       scheduler = null;
     }
   }
@@ -187,7 +187,7 @@ public class DataRootHandler {
         scheduler.scheduleJob(updateJob, trigger0);
         logScan.info("Schedule startup scan for "+config.spec+" at "+ runTime);
       } catch (SchedulerException e) {
-        logCatalogInit.error("cronExecutor failed to schedule startup Job", e);
+        logScan.error("cronExecutor failed to schedule startup Job", e);
         e.printStackTrace();
       }
     }
@@ -204,9 +204,9 @@ public class DataRootHandler {
         }
         logScan.info("Schedule recurring scan for "+config.spec+" cronExpr="+ update.rescan);
       } catch (ParseException e) {
-        logCatalogInit.error("cronExecutor failed: bad cron expression= "+ update.rescan, e);
+        logScan.error("cronExecutor failed: bad cron expression= "+ update.rescan, e);
       } catch (SchedulerException e) {
-        logCatalogInit.error("cronExecutor failed to schedule cron Job", e);
+        logScan.error("cronExecutor failed to schedule cron Job", e);
         e.printStackTrace();
       }
     }
@@ -223,9 +223,9 @@ public class DataRootHandler {
         scheduler.scheduleJob(protoJob, trigger2);
         logScan.info("Schedule Reread Proto for "+config.spec);
       } catch (ParseException e) {
-        logCatalogInit.error("cronExecutor failed: RereadProto has bad cron expression= "+ pconfig.change, e);
+        logScan.error("cronExecutor failed: RereadProto has bad cron expression= "+ pconfig.change, e);
       } catch (SchedulerException e) {
-        logCatalogInit.error("cronExecutor failed to schedule RereadProtoJob", e);
+        logScan.error("cronExecutor failed to schedule RereadProtoJob", e);
         e.printStackTrace();
       }
     }

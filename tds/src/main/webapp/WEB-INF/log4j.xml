@@ -11,7 +11,7 @@
     <param name="MaxFileSize" value="10MB"/>
     <param name="MaxBackupIndex" value="10"/>
     <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d{yyyy-MM-dd'T'HH:mm:ss.SSS Z} [%10r][%8X{ID}] %-5p - %c - %m%n"/>
+      <param name="ConversionPattern" value="%d{yyyy-MM-dd'T'HH:mm:ss.SSSZ} [%10r][%8X{ID}] %-5p - %c - %m%n"/>
       // <param name="ConversionPattern" value="%d{ISO8601} [%10r - %10X{ID}] %-5p - %c - %m%n"/
     </layout>
   </appender -->
@@ -32,7 +32,7 @@
     <param name="MaxBackupIndex" value="2"/>
     <param name="Append" value="false"/>
     <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="[%d{dd/MMM/yyyy:HH:mm:ss}] %m%n"/>
+      <param name="ConversionPattern" value="[%d{yyyy-MM-dd'T'HH:mm:ss.SSSZ}] %m%n"/>
     </layout>
   </appender>
 
@@ -43,7 +43,7 @@
     <param name="MaxBackupIndex" value="10"/>
     <param name="Append" value="false"/>
     <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="[%d{dd/MMM/yyyy:HH:mm:ss}] %-5p %c: %m%n"/>
+      <param name="ConversionPattern" value="[%d{yyyy-MM-dd'T'HH:mm:ss.SSSZ}] %-5p %c: %m%n"/>
     </layout>
   </appender>
 
@@ -52,7 +52,7 @@
     <param name="File" value="${tds.log.dir}/serverStartup.log"/>
     <param name="Append" value="false"/>
     <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d{yyyy-MM-dd'T'HH:mm:ss.SSS Z} [%10r][%8X{ID}] %c: %m%n"/>
+      <param name="ConversionPattern" value="%d{yyyy-MM-dd'T'HH:mm:ss.SSSZ} [%10r][%8X{ID}] %c: %m%n"/>
       <!--param name="ConversionPattern" value="%d{ISO8601} [%10r - %10X{ID}] %-5p - %c - %m%n"/-->
     </layout>
   </appender>
@@ -71,7 +71,7 @@
     <param name="File" value="${tds.log.dir}/cataloggen.log"/>
     <param name="Append" value="false"/>
     <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d{yyyy-MM-dd'T'HH:mm:ss.SSS Z} [%10r][%8X{ID}] %-5p - %c - %m%n"/>
+      <param name="ConversionPattern" value="%d{yyyy-MM-dd'T'HH:mm:ss.SSSZ} [%10r][%8X{ID}] %-5p - %c - %m%n"/>
     </layout>
   </appender>
 
@@ -81,7 +81,7 @@
     <param name="MaxFileSize" value="5MB"/>
     <param name="MaxBackupIndex" value="5"/>
     <layout class="org.apache.log4j.PatternLayout">
-      <param name="ConversionPattern" value="%d{yyyy-MM-dd'T'HH:mm:ss.SSS Z} [%10r][%8X{ID}] %-5p - %c - %m%n"/>
+      <param name="ConversionPattern" value="%d{yyyy-MM-dd'T'HH:mm:ss.SSSZ} [%10r][%8X{ID}] %-5p - %c - %m%n"/>
     </layout>
   </appender>
 
