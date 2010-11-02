@@ -3,55 +3,30 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
   <link href="../../tds.css" rel="stylesheet" type="text/css"/>
-  <title>THREDDS Reference: TDS Installation Options</title>
+  <title>TDS Reference: Running Multiple TDS</title>
 </head>
 <body>
-<h1><img src="../../images/unidataLogo.png" alt="Unidata" align="middle">THREDDS Reference: TDS Installation Options</h1>
+<h1><img src="../../images/unidataLogo.png" alt="Unidata" align="middle">Running Multiple TDS</h1>
 <hr>
 
-<p>
-  The next few section describe deploying the TDS under Apache Tomcat. If you are using
-  another web application container, please check whether the section on Java system properties
-  <a href="#GlobalJavaSystemProperties">below</a> is relevant to your web application container.
-</p>
+<p>Deploying multiple TDS instances in a single Tomcat container is <strong>NOT recommended</strong>.</p>
 
-<h2><a name="ChangeTdsContentDir">Changing the Configuration Directory Default Location</a></h2>
+<p>Though we have tried to fix reported problems with this configuration, we do not ourselves run any
+  servers in this configuration nor do we thoroughly test this configuration.</p>
 
-<p>The default location for the TDS configuration directory (aka the "content"
-  or "content/thredds" directory) is
-</p>
+<p>The main issue:</p>
+<ul>
+  <li>The TDS uses the values of certain Java system properties for some internal and user
+    configurable settings. However, Tomcat does not support per webapp Java system properties
+    (see <a href="#GlobalJavaSystemProperties">below</a>). This means the settings for one TDS
+    may interfere with the settings of another TDS running in the same Tomcat container.
+  </li>
+</ul>
 
-<pre>${TOMCAT_HOME}/content/thredds</pre>
-
-<p>This location can be changed by setting the "tds.content.root.path" Java
-  system property. For instance, by adding the following to JAVA_OPTS in your
-  startup script:</p>
-
-<pre>-Dtds.content.root.path=/some/absolute/path</pre>
-
-<p>The TDS will use or create (if they don't already exist) the configuration files in:</p>
-
-<pre>/some/absolute/path/thredds</pre>
-
-<p>For more information on the TDS configuration directory, see the
-  "<a href="ConfigDirectory.html">TDS Configuration Directory</a>" page.
-</p>
-
-<p><strong>Note</strong>: If you are running more than one TDS on a single Tomcat instance
-  (see <a href="#MultipleTdsInOneContainer">below</a>), please read the section
-  <a href="#GlobalJavaSystemProperties">below</a> on Java system properties. Rather than
-  setting the "tds.content.root.path" property with a "-D..." Java option as discussed above,
-  you will need to edit the TDS default properties file:
-</p>
-<pre>${TOMCAT_HOME}/webapps/thredds2/WEB-INF/classes/thredds/server/tds.properties</pre>
-<p>
-  and change the value of "<code>tds.content.path</code>" there.
-</p>
-
-<h2><a name="MultipleTdsInOneContainer">Running Multiple TDS on one Tomcat Instance</a></h2>
+<h2>If You Must ...</h2>
 
 <p>
-  Several extra steps are required to run more than one TDS on a single Tomcat instance.
+  If you need to run multiple TDS in a single Tomcat instance, there are several extra steps required
   Two of the steps are the same for all version of the TDS:
 </p>
 <ol>
@@ -104,16 +79,15 @@
 <p>No extra steps are required for TDS 3.17.</p>
 
 <hr width="100%">
-<h2><a name="GlobalJavaSystemProperties">Note on Java System Properties</a></h2>
-<p>
-  Some web application containers (like Tomcat) have a single set of Java system properties
+<h2><a name="GlobalJavaSystemProperties">Web Application Containers and Java System Properties</a></h2>
+
+<p> Some web application containers (like Tomcat) have a single set of Java system properties
   that are shared by all webapps deployed in a single container instance. Other web application
   containers (like Resin) keep separate sets of Java system properties for each webapp deployed
   in a single container instance.
 </p>
 
-<p>
-  If you are using a web application container that keeps Java system properties separate for
+<p> If you are using a web application container that keeps Java system properties separate for
   each webapp deployed, the steps in the above sections that require editing the TDS default
   properties file ("tds.properties") may instead be handled by setting the values of the
   Java system properties. The details of how Java system properties are set will depend on the
@@ -123,7 +97,7 @@
 <hr width="100%">
 <address>
   <img alt="THREDDS" src="../../images/thread.png" height="108" width="110">
-  This document is maintained by Unidata and was last updated January 2010.
+  This document is maintained by Unidata and was last updated November 2010.
   Send comments to
   <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.
 </address>

@@ -1,0 +1,59 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+  <link href="../../tds.css" rel="stylesheet" type="text/css"/>
+  <title>TDS Reference: Location of Various TDS Directories</title>
+</head>
+<body>
+<h1><img src="../../images/unidataLogo.png" alt="Unidata" align="middle">Location of Various TDS Directories</h1>
+<hr>
+
+<p>You may wish to move some of the heavily used TDS directories to larger and more high
+  performance disks. For instance:</p>
+<ul>
+  <li>Data directories</li>
+  <li>The <code>content/thredds</code> directory.</li>
+  <li>The Tomcat <code>logs</code> directory.</li>
+  <li>The TDS <code>logs</code> directory.</li>
+</ul>
+
+<p></p>
+<p>The easiest way to do this is with symbolic links. For instance, if Tomcat is installed on a
+  smaller and/or lower performance disk (say <code>/opt</code>) but <code>/data</code> is a larger
+  and higher performance disk, your <code>${TOMCAT_HOME}</code> directory might look something like
+  this:</p>
+
+<pre>
+my.server.edu: cd /opt/tdsA
+my.server.edu: pwd
+/opt/apache-tomcat-6.0.29-tdsA
+my.server.edu: ll
+total 128
+-rw-r--r--   1 tomcat   tomcat     37950 Jul 19 07:01 LICENSE
+-rw-r--r--   1 tomcat   tomcat       557 Jul 19 07:01 NOTICE
+-rw-r--r--   1 tomcat   tomcat      8669 Jul 19 06:59 RELEASE-NOTES
+-rw-r--r--   1 tomcat   tomcat      6670 Jul 19 07:01 RUNNING.txt
+drwxr-xr-x   3 tomcat   tomcat      1024 Oct 24 06:42 bin/
+drwxr-xr-x   4 tomcat   tomcat       512 Nov  1 18:14 conf/
+lrwxrwxrwx   1 tomcat   tomcat        30 Aug 17 18:15 content -> /data/tds/tdsA/content/
+drwxr-xr-x   2 tomcat   tomcat       512 Aug  9 15:02 lib/
+lrwxrwxrwx   1 tomcat   tomcat        27 Aug 17 18:16 logs -> /data/tds/tdsA/logs/
+drwxr-xr-x   2 tomcat   tomcat       512 Oct 22 12:04 temp/
+drwxr-xr-x   7 tomcat   tomcat       512 Nov  1 18:33 webapps/
+drwxr-xr-x   3 tomcat   tomcat       512 Aug  9 19:38 work/
+my.server.edu:
+</pre>
+
+<p>And your data paths may all point into <code>/data/pub</code>.</p>
+
+<hr width="100%">
+<address>
+  <img alt="THREDDS" src="../../images/thread.png" height="108" width="110">
+  This document is maintained by Unidata and was last updated November 2010.
+  Send comments to
+  <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.
+</address>
+
+</body>
+</html>
