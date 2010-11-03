@@ -1198,6 +1198,7 @@ public class ToolsUI extends JPanel {
 
     } catch (IOException ioe) {
       JOptionPane.showMessageDialog(null, "NetcdfDataset.open cant open " + ioe.getMessage());
+      ioe.printStackTrace();
       return null;
     }
 
@@ -1221,6 +1222,7 @@ public class ToolsUI extends JPanel {
       if ((null == message) && (ioe instanceof EOFException))
         message = "Premature End of File";
       JOptionPane.showMessageDialog(null, "NetcdfDataset.open cant open " + location + "\n" + message);
+      ioe.printStackTrace();
 
       try {
         if (ncfile != null) ncfile.close();
@@ -1231,6 +1233,7 @@ public class ToolsUI extends JPanel {
     } catch (Exception e) {
       JOptionPane.showMessageDialog(null, "NetcdfDataset.open cant open " + location + "\n" + e.getMessage());
       log.error("NetcdfDataset.open cant open " + location, e);
+      e.printStackTrace();
 
       try {
         if (ncfile != null) ncfile.close();
@@ -3749,6 +3752,7 @@ public class ToolsUI extends JPanel {
 
       } catch (FileNotFoundException ioe) {
         JOptionPane.showMessageDialog(null, "NetcdfDataset.open cant open " + command + "\n" + ioe.getMessage());
+        ioe.printStackTrace();
         err = true;
 
       } catch (Throwable ioe) {
@@ -3856,6 +3860,7 @@ public class ToolsUI extends JPanel {
 
       } catch (FileNotFoundException ioe) {
         JOptionPane.showMessageDialog(null, "NetcdfDataset.open cant open " + command + "\n" + ioe.getMessage());
+        ioe.printStackTrace();
         err = true;
 
       } catch (IOException ioe) {

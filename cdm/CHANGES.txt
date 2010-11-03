@@ -3,6 +3,8 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Changes in version 4.2:
+ 14: (2010-11-xx)
+  H5header: clarify GlobalHeap termination condition
  13: (2010-11-01)
   CoordinateAxis sets caching to true, VariabelDS propagates to orgVar.
   remove e.printStackTrace() at CEEvaluator line 180

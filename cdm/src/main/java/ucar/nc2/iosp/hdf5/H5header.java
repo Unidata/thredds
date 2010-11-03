@@ -246,6 +246,7 @@ public class H5header {
       debugOut.println(" baseAddress= 0x" + Long.toHexString(baseAddress));
       debugOut.println(" global free space heap Address= 0x" + Long.toHexString(heapAddress));
       debugOut.println(" eof Address=" + eofAddress);
+      debugOut.println(" raf length= " + raf.length());
       debugOut.println(" driver BlockAddress= 0x" + Long.toHexString(driverBlockAddress));
       debugOut.println();
     }
@@ -4583,7 +4584,7 @@ There is _no_ datatype information stored for these sort of selections currently
   // level 1E
   private class GlobalHeap {
     byte version;
-    int size;
+    int sizeBytes;
     List<HeapObject> hos = new ArrayList<HeapObject>();
     HeapObject freeSpace = null;
 
@@ -4601,13 +4602,14 @@ There is _no_ datatype information stored for these sort of selections currently
 
       version = raf.readByte();
       raf.skipBytes(3);
-      size = raf.readInt();
+      sizeBytes = raf.readInt();
       if (debugDetail)
-        debugOut.println("-- readGlobalHeap address=" + address + " version= " + version + " size = " + size);
+        debugOut.println("-- readGlobalHeap address=" + address + " version= " + version + " size = " + sizeBytes);
       raf.skipBytes(4); // pad to 8
 
       int count = 0;
-      while (count + 16 < size) {  // guess that there must be room for a global heap object and some data.
+      int countBytes = 0;
+      while (countBytes + 16 < sizeBytes) {  // guess that there must be room for a global heap object and some data.
                                   // see globalHeapOverrun in netcdf4 test directory
         long startPos = raf.getFilePointer();
         HeapObject o = new HeapObject();
@@ -4616,20 +4618,28 @@ There is _no_ datatype information stored for these sort of selections currently
         raf.skipBytes(4);
         o.dataSize = readLength();
         o.dataPos = raf.getFilePointer();
+
+        countBytes += o.dataSize + 16;
+
+        //System.out.printf("heapId=%d count=%d countBytes=%d%n", o.id, count, countBytes);
+        if (o.id == 0) break; // ?? look
+        if (o.dataSize < 0) break; // ran off the end, must be done
+        if (countBytes < 0) break; // ran off the end, must be done
+        if (countBytes > sizeBytes) break; // ran off the end, must be done
+
         if (debugDetail)
           debugOut.println("   HeapObject  position=" + startPos + " id=" + o.id + " refCount= " + o.refCount +
-              " dataSize = " + o.dataSize + " dataPos = " + o.dataPos);
-        if (o.id == 0) break;
+              " dataSize = " + o.dataSize + " dataPos = " + o.dataPos + " count= "+count+" countBytes= "+  countBytes);
 
-        int nskip = ((int) o.dataSize) + padding((int) o.dataSize, 8);
-        raf.skipBytes(nskip);
+        int dsize = ((int) o.dataSize) + padding((int) o.dataSize, 8);
+        raf.skipBytes(dsize);
         hos.add(o);
-
-        count += o.dataSize + 16;
+        count++;
+        //countBytes += o.dataSize + 16;
       }
 
       if (debugDetail) debugOut.println("-- endGlobalHeap position=" + raf.getFilePointer());
-      if (debugTracker) memTracker.addByLen("GlobalHeap", address, size);
+      if (debugTracker) memTracker.addByLen("GlobalHeap", address, sizeBytes);
     }
 
     class HeapObject {
@@ -4637,8 +4647,12 @@ There is _no_ datatype information stored for these sort of selections currently
       long dataSize;
       long dataPos;
 
+      @Override
       public String toString() {
-        return "dataPos = " + dataPos + " dataSize = " + dataSize;
+        return  "id=" + id +
+                ", refCount=" + refCount +
+                ", dataSize=" + dataSize +
+                ", dataPos=" + dataPos;
       }
     }
 
