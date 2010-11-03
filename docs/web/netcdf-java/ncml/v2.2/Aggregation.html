@@ -28,7 +28,9 @@ dl {margin: 10px 5px 5px 15px;)
   &lt;/aggregation&gt; 
 &lt;/netcdf&gt;</pre>
 <p>This NcML constructs a dataset by creating the union of two netCDF files (note there is no <em>location</em> attribute in the outer netcdf element). </p>
-<p>Open the nested files in the ToolsUI <strong>NCDump Tab</strong>. They look like the following (details omitted):</p>
+<p>Go to the NcML/Aggregation Tab of ToolsUI and cut and paste the full path of the <strong>aggUnionSimple.ncml</strong> file:</p>
+<p><img src="images/aggUnionSimple.png" width="870" height="416"></p>
+<p>The files that comprise the aggregation are listed in the top table, various information about the aggregation is listed in the lower pane. Select one of the files, and right click to bring up the context menu. Choose &quot;Open as NetCDF File&quot; so that you can look at the contentts of that file. You can open the nested files in the Viewer <strong>NCDump <img src="images/NCDump.png" width="30" height="31"></strong>. They look like the following (details omitted):</p>
 <pre>netcdf cldc.mean.nc {
   dimensions:<br>   time = UNLIMITED;   // (456 currently)<br>   lat = 21;<br>   lon = 360;<br> variables:<br>   float lat(lat=21);<br>   float lon(lon=360);<br>   double time(time=456);<br>   short <strong>cldc</strong>(time=456, lat=21, lon=360);
 }
@@ -63,7 +65,10 @@ netcdf lflx.mean.nc {
     &lt;<strong>netcdf</strong> location=&quot;feb.nc&quot; /&gt;
   &lt;/aggregation&gt;<br>&lt;/netcdf&gt;
 </pre>
-<p> Open the nested files in the ToolsUI <strong>NCDump Tab</strong>. They look like the following (details omitted):</p>
+<p> Go to the NcML/Aggregation Tab of ToolsUI and cut and paste the full path of the <strong>aggExisting.ncml</strong> file:</p>
+<p><img src="images/aggExisting.png" width="870" height="572"></p>
+<p>In the lower pane, you can see the list of variables that will be aggregated (P,T,time) and that the first 31 indices come from <strong>jan.nc</strong>, and the next 28 from <strong>feb.nc</strong>.</p>
+<p>Open the nested files in the ToolsUI <strong>NCDump Tab</strong>. They look like the following (details omitted):</p>
 <pre>netcdf jan.nc {
    dimensions:
      lat = 3;
@@ -147,9 +152,9 @@ netcdf feb.nc {
 &lt;/aggregation&gt;
 </pre>
   <p>The <strong>timeUnitsChange</strong> feature requires that all the aggregation coordinate values will be read in when the dataset is opened.</p>
+  <p><br>
+  </p>
 </blockquote>
-<p><br>
-</p>
 <h2><a name="joinNew"></a>Exercise 3: Aggregation on a new dimension</h2>
 <p>The previous example &quot;joined&quot; variables along their existing outer dimension. Another common case is to aggregate variables by creating a new outer dimension. Each existing variable becomes one &quot;slice&quot; of the compound variable (a <i>slice</i> holds the index of one dimension constant, e.g. <b>humidity(3,:,:,:)</b>). The following NcML joins variables from three separate files into a single variable, by creating a new dimension of length 3:</p>
 <p>Download <a href="examples/aggNew.ncml">aggNew.ncml</a>, <a href="examples/time0.nc">time0.nc,</a> <a href="examples/time1.nc">time1.nc</a> and<a href="examples/time2.nc"> time2.nc</a> and place them together in a single directory. In the ToolsUI <strong>NcML Tab</strong>, open <strong>aggNew.ncml</strong> and examine it:</p>
@@ -167,6 +172,8 @@ netcdf feb.nc {
   <li>The variable named <em><strong>T</strong></em> will be made into aggregation variable; you can list as many variables as needed.</li>
   <li>The list of files to use, in order. Each one has a coordinate value assigned to it, whose type must be compatible with the coordinate variable type, if you have created one. </li>
 </ol>
+<p> Go to the NcML/Aggregation Tab of ToolsUI and cut and paste the full path of the <strong>aggNew.ncml</strong> file:</p>
+<p><img src="images/aggNew.png" width="870" height="572"></p>
 <p>Open the nested files in the ToolsUI <strong>NCDump Tab</strong>. They all look like the following (details omitted):</p>
 <pre>netcdf time0.nc {
  dimensions:
@@ -272,7 +279,7 @@ netcdf feb.nc {
 <p>If the values are evenly spaced, you can use the start/increment form, and you dont need to know the number of files:</p>
 <pre><strong> &lt;values start=&quot;12.0&quot; increment=&quot;25.0&quot;/&gt;</strong></pre>
 <h3>Extracting date coordinates from the filename</h3>
-<p>For the common case that the filename contains date information from which you can derive a time coordinate, you can use the <strong>dateFormatMark</strong> attribute (download <a href="examples/aggDateFormat.ncml">aggDateFormat</a>.ncml and <a href="examples/cg.zip">cg.zip</a>, unzip the latter and place in your data directory). In the ToolsUI <strong>NcML Tab</strong>, open <strong>aggDateFormat.ncml</strong> and change the scan location to point to your data directory:</p>
+<p>For the common case that the filename contains date information from which you can derive a time coordinate, you can use the <strong>dateFormatMark</strong> attribute (download <a href="examples/aggDateFormat.ncml">aggDateFormat</a>.ncml and <a href="examples/cg.zip">cg.zip</a>, unzip the latter and place in your data directory). In the ToolsUI <strong>NcML Tab</strong>, open <strong>aggDateFormat.ncml</strong> and change the scan location to point to your data directory, and then save it <img src="images/saveButt.png" width="31" height="30">:</p>
 <pre>&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;<br>  &lt;aggregation dimName=&quot;time&quot; type=&quot;joinExisting&quot; recheckEvery=&quot;4 sec&quot;&gt;<br>    &lt;scan location=&quot;<strong>CHANGE THIS</strong>&quot; dateFormatMark=&quot;CG#yyyyDDD_HHmmss&quot; suffix=&quot;.nc&quot; subdirs=&quot;false&quot; /&gt;<br>  &lt;/aggregation&gt;<br>&lt;/netcdf&gt;</pre>
 <p>The <em><strong>dateFormatMark</strong></em><a name="dateFormatMark"></a> attribute is used on <strong>joinNew</strong> aggregation, as well as <strong>joinExisting</strong> if there is only one time slice in each file, to create date coordinate values out of the filename. It consists of a section of text, a '#' marking character, then a <a href="AnnotatedSchema.html#SimpleDateFormat"><strong>java.text.SimpleDateFormat</strong></a> string. The number of characters before the # is skipped in the filename, then the next part of the filename must match the SimpleDataFormat string, then it ignores any trailing text. For example: </p>
 <pre>      Filename: CG2006158_120000h_usfc.nc 
@@ -353,7 +360,7 @@ DateFormatMark: CG#yyyyDDD_HHmmss</pre>
 <p>Next: <a href="FmrcAggregation.html">FMRC Aggregation</a> </p>
 <hr WIDTH="100%">
 <address>
-<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated  Sep 2009
+<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated  Nov 2010
 </address>
 <p>&nbsp;</p>
 </body>
