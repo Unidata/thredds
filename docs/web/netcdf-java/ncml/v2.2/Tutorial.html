@@ -61,7 +61,7 @@ Note that the name of the dataset is  the name of the NcML file, not the referen
 <p>Open <strong>exercise1.ncml</strong> in the  in the ToolsUI <strong>Viewer</strong> tab: Select a variable by left clicking on it, then right click to get the context menu.</p>
 <p><img src="images/Viewer.png" alt="Viewer" width="1074" height="297"></p>
 <p>From the context menu, select <strong>NCdump Data</strong>, which brings up a popup window. Click the <strong>NCdump</strong> button to show the variable's data:</p>
-<p><img src="images/NCDump.jpg" alt="NCDump" width="577" height="402"></p>
+<p><img src="images/NCDump.png" alt="NCDump" width="577" height="402"></p>
 <p>The expression <strong>T(0:1:1, 0:2:1, 0:3:1) </strong>shows the limits of the T variable's data array in <a href="http://en.wikipedia.org/wiki/Array_slicing#1992:_Fortran_90_and_above">Fortran 90 notation</a>.  For example, <strong>0:3:1</strong> means that the index starts at 0, ends at 3 (inclusive) with stride 1. You can use a single value to <em><strong>slice</strong></em> at that index, eg <strong>T(1, 0:2:1, 0:3:1)</strong> means to show the T array for index=1 on the first (time) dimension. For large data arrays, it is often useful to edit this expression, especially the stride, to examine  subsets of the data.</p>
 <p>Repeat this for  other variables to familiarize yourself with examing data values. </p>
 <h2><b>Exercise 2. Generate NcML from CDM file</b>
