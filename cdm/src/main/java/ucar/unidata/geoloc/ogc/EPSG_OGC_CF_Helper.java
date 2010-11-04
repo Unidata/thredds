@@ -55,6 +55,7 @@ public class EPSG_OGC_CF_Helper
 
   public enum ProjectionStandardsInfo
   {
+    Unknown( 0, "Unknown", "unknown"),
     // From CF 1.0
     Albers_Conic_Equal_Area( 9822, "Albers Equal Area", "albers_conical_equal_area"),
     Azimuthal_Equidistant( -1, "", "azimuthal_equidistant"), // 9832, "Modified Azimuthal Equidistant" [?]
@@ -106,7 +107,7 @@ public class EPSG_OGC_CF_Helper
         if ( curProjStdInfo.name().equals( ogcName ) )
           return curProjStdInfo;
       }
-      throw new IllegalArgumentException( "No such instance <" + ogcName + ">." );
+      return Unknown;
     }
 
     public static ProjectionStandardsInfo getProjectionByEpsgCode( int epsgCode )
@@ -116,7 +117,7 @@ public class EPSG_OGC_CF_Helper
         if ( curProjStdInfo.getEpsgCode() == epsgCode )
           return curProjStdInfo;
       }
-      throw new IllegalArgumentException( "No such instance <" + epsgCode + ">." );
+      return Unknown;
     }
 
     public static ProjectionStandardsInfo getProjectionByEpsgName( String epsgName )
@@ -126,7 +127,7 @@ public class EPSG_OGC_CF_Helper
         if ( curProjStdInfo.getEpsgName().equals( epsgName ) )
           return curProjStdInfo;
       }
-      throw new IllegalArgumentException( "No such instance <" + epsgName + ">." );
+      return Unknown;
     }
 
     public static ProjectionStandardsInfo getProjectionByCfName( String cfName )
@@ -136,7 +137,7 @@ public class EPSG_OGC_CF_Helper
         if ( curProjStdInfo.getCfName().equals( cfName ) )
           return curProjStdInfo;
       }
-      throw new IllegalArgumentException( "No such instance <" + cfName + ">." );
+      return Unknown;
     }
 
   }
@@ -152,8 +153,10 @@ public class EPSG_OGC_CF_Helper
         if ( curParam.getName().equalsIgnoreCase( ProjectionImpl.ATTR_NAME) && curParam.isString() )
           paramName = curParam.getStringValue();
     }
-    if ( paramName == null )
-      return null;
+    if ( paramName == null ) {
+      log.warn( "getWcs1_0CrsId(): Unknown projection - " + projToString( proj)  );
+      return ProjectionStandardsInfo.Unknown.getOgcName();
+    }
     if ( paramName.equalsIgnoreCase( "LatLon"))
     {
       paramName = "latitude_longitude";
@@ -161,7 +164,24 @@ public class EPSG_OGC_CF_Helper
     }
 
     ProjectionStandardsInfo psi = ProjectionStandardsInfo.getProjectionByCfName( paramName);
-    return "EPSG:" + psi.getEpsgCode() + "[" + psi.name() + "]";
+    String crsId = "EPSG:" + psi.getEpsgCode() + " [" + psi.name();
+    if ( psi.equals( ProjectionStandardsInfo.Unknown)) {
+      log.warn( "getWcs1_0CrsId(): Unknown projection - " + projToString( proj ) );
+      crsId += " - " + paramName;
+    }
+    return crsId + "]";
+  }
+
+  private static String projToString( Projection proj) {
+    StringBuilder sb = new StringBuilder();
+    sb.append( proj.getName() )
+            .append( " [" ).append( proj.getClassName() )
+            .append( "] - parameters=[" );
+    for ( Parameter curProjParam : proj.getProjectionParameters() ) {
+      sb.append( "(" ).append( curProjParam.toString() ).append( ")" );
+    }
+    sb.append( "]" );
+    return sb.toString();
   }
   
   public String getWcs1_0CrsId( GridDatatype gridDatatype, GridDataset gridDataset )
