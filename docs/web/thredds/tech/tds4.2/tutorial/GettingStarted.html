@@ -38,38 +38,38 @@
       <ol>
        <li><a href="http://java.sun.com/javase/downloads/">Download</a> current Java SE Developer Kit (JDK) from Sun.</li>
         <p>We will be using the Linux x32-bit, <i>non-rpm</i>, self-extracting file for this workshop:</p>
-        <p><code>jdk-6u15-linux-i586.bin</code></p>
+        <p><code>jdk-6u22-linux-i586.bin</code></p>
        <li>Install the JDK as per the Sun <a href="http://java.sun.com/javase/6/webnotes/install/">installation instructions</a>.</li>
         <p>Copy the self-extracting file to the installation directory (our home directory is the installation directory in this example):</p>
 
 <pre>
-<b>$</b> cp jdk-6u15-linux-i586.bin ~
+<b>$</b> cp jdk-6u22-linux-i586.bin ~
 <b>$</b> cd
 </pre>
 
         <p>Change the permissions on the file to be executable:</p>  
 
 <pre>
-<b>$</b> ls -l jdk-6u15-linux-i586.bin 
-rw-r--r-- 1 thredds workshop 81771117 2009-08-03 15:56 jdk-6u15-linux-i586.bin
+<b>$</b> ls -l jdk-6u22-linux-i586.bin
+rw-r--r-- 1 thredds workshop 81771117 2009-08-03 15:56 jdk-6u22-linux-i586.bin
 
-<b>$</b> chmod 755 jdk-6u15-linux-i586.bin  
+<b>$</b> chmod 755 jdk-6u22-linux-i586.bin
 
-<b>$</b> ls -l jdk-6u15-linux-i586.bin 
--rwxr-xr-x 1 thredds workshop 81771117 2009-08-03 15:56 jdk-6u15-linux-i586.bin
+<b>$</b> ls -l jdk-6u22-linux-i586.bin
+-rwxr-xr-x 1 thredds workshop 81771117 2009-08-03 15:56 jdk-6u22-linux-i586.bin
 </pre>
 
         <p>Run self-extracting file and agree to the terms of the code license:</p>
 
 <pre>
-<b>$</b> ./jdk-6u15-linux-i586.bin
+<b>$</b> ./jdk-6u22-linux-i586.bin
 </pre>
 
        <li>Set the <code>$JAVA_HOME</code> environment variable.</li>
 <pre>
-<b>$</b> set JAVA_HOME=/home/thredds/jdk1.6.0_15  
+<b>$</b> set JAVA_HOME=/home/thredds/jdk1.6.0_22
 <b>$</b> echo $JAVA_HOME 
-/home/thredds/jdk1.6.0_15 
+/home/thredds/jdk1.6.0_22
 </pre>
 
       </ol>
@@ -94,29 +94,29 @@ rw-r--r-- 1 thredds workshop 81771117 2009-08-03 15:56 jdk-6u15-linux-i586.bin
       <ol>
        <li><a href="http://tomcat.apache.org/">Download</a> current version of the Tomcat servlet container.</li>
         <p>We will be using the core binary tar.gz file for this workshop:</p>
-        <p><code>apache-tomcat-6.0.20.tar.gz</code></p>
+        <p><code>apache-tomcat-6.0.29.tar.gz</code></p>
        <li>Install Tomcat as per the Apache Tomcat <a href="http://tomcat.apache.org/tomcat-6.0-doc/setup.html">installation instructions</a>.</li>
         <p>Copy the binary tar.gz file to the installation directory (our home directory is the installation directory in this example):</p>
 
 <pre>
-<b>$</b> cp apache-tomcat-6.0.20.tar.gz ~
+<b>$</b> cp apache-tomcat-6.0.29.tar.gz ~
 <b>$</b> cd
 </pre>
 
         <p>Unpack the archive to create Tomcat directory:</p>  
 
 <pre>
-<b>$</b> tar xvzf apache-tomcat-6.0.20.tar.gz
+<b>$</b> tar xvzf apache-tomcat-6.0.29.tar.gz
 
-<b>$</b> ls -ld apache-tomcat-6.0.20
-drwxr-xr-x 9 thredds workshop    4096 2009-08-03 16:04 apache-tomcat-6.0.20
+<b>$</b> ls -ld apache-tomcat-6.0.29
+drwxr-xr-x 9 thredds workshop    4096 2009-08-03 16:04 apache-tomcat-6.0.29
 </pre>
 
        <li>Set the <code>$TOMCAT_HOME</code> environment variable.</li>
 <pre>
-<b>$</b> set TOMCAT_HOME=/home/thredds/apache-tomcat-6.0.20
+<b>$</b> set TOMCAT_HOME=/home/thredds/apache-tomcat-6.0.29
 <b>$</b> echo $TOMCAT_HOME
-/home/thredds/apache-tomcat-6.0.20
+/home/thredds/apache-tomcat-6.0.29
 </pre>
 
       </ol>
@@ -153,7 +153,7 @@ drwxr-xr-x 9 thredds workshop    4096 2009-08-03 16:04 apache-tomcat-6.0.20
        <li>Examine the Tomcat directory structure.</li>
         <p>Move into the new Tomcat directory and do a long listing:</p>
 <pre>
-<b>$</b> cd apache-tomcat-6.0.20
+<b>$</b> cd apache-tomcat-6.0.29
 <b>$</b>  ls -l 
 total 88
 drwxr-xr-x 2 thredds workshop  4096 2009-08-03 16:04 bin
@@ -231,7 +231,7 @@ drwxr-xr-x 2 thredds workshop  4096 2009-05-13 17:15 work
 
 <pre>
 <b>$</b> ps -ef | grep tomcat
-thredds   4443     1 21 16:08 pts/0    00:00:03 /usr/bin/java -Djava.util.logging.config.file=/home/thredds/apache-tomcat-6.0.20/conf/logging.properties -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Djava.endorsed.dirs=/home/thredds/apache-tomcat-6.0.20/endorsed -classpath :/home/thredds/apache-tomcat-6.0.20/bin/bootstrap.jar -Dcatalina.base=/home/thredds/apache-tomcat-6.0.20 -Dcatalina.home=/home/thredds/apache-tomcat-6.0.20 -Djava.io.tmpdir=/home/thredds/apache-tomcat-6.0.20/temp org.apache.catalina.startup.Bootstrap start
+thredds   4443     1 21 16:08 pts/0    00:00:03 /usr/bin/java -Djava.util.logging.config.file=/home/thredds/apache-tomcat-6.0.29/conf/logging.properties -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Djava.endorsed.dirs=/home/thredds/apache-tomcat-6.0.29/endorsed -classpath :/home/thredds/apache-tomcat-6.0.29/bin/bootstrap.jar -Dcatalina.base=/home/thredds/apache-tomcat-6.0.29 -Dcatalina.home=/home/thredds/apache-tomcat-6.0.29 -Djava.io.tmpdir=/home/thredds/apache-tomcat-6.0.29/temp org.apache.catalina.startup.Bootstrap start
 </pre>
 
         <p>Open a new browser window/tab and go to <a href="http://localhost:8080/">http://localhost:8080/</a> to verify Tomcat is running:</p>
@@ -283,7 +283,7 @@ thredds   4443     1 21 16:08 pts/0    00:00:03 /usr/bin/java -Djava.util.loggin
 
 <pre>
 <b>$</b>  pwd 
-/home/thredds/apache-tomcat-6.0.20/bin/
+/home/thredds/apache-tomcat-6.0.29/bin/
 <b>$</b> vi setenv.sh
 </pre>
 
@@ -293,11 +293,11 @@ thredds   4443     1 21 16:08 pts/0    00:00:03 /usr/bin/java -Djava.util.loggin
 #
 # ENVARS for Tomcat and TDS environment
 #
-JAVA_HOME="/home/thredds/jdk1.6.0_15"
+JAVA_HOME="/home/thredds/jdk1.6.0_22"
 export JAVA_HOME
 JAVA_OPTS="-Xmx1500m -Xms512m -server -Djava.awt.headless=true"
 export JAVA_OPTS
-CATALINA_HOME="/home/thredds/apache-tomcat-6.0.20"
+CATALINA_HOME="/home/thredds/apache-tomcat-6.0.29"
 export CATALINA_HOME
 </pre>
 
@@ -323,10 +323,10 @@ export CATALINA_HOME
         <p>Restart Tomcat and examine the output generated to the terminal window by the startup script:</p>
 <pre>
 <b>$</b> $TOMCAT_HOME/bin/startup.sh
-sing CATALINA_BASE:   /home/thredds/apache-tomcat-6.0.20
-Using CATALINA_HOME:   /home/thredds/apache-tomcat-6.0.20
-Using CATALINA_TMPDIR: /home/thredds/apache-tomcat-6.0.20/temp
-Using JRE_HOME:       /home/thredds/jdk1.6.0_15
+sing CATALINA_BASE:   /home/thredds/apache-tomcat-6.0.29
+Using CATALINA_HOME:   /home/thredds/apache-tomcat-6.0.29
+Using CATALINA_TMPDIR: /home/thredds/apache-tomcat-6.0.29/temp
+Using JRE_HOME:       /home/thredds/jdk1.6.0_22
 </pre>
       <div id="expanded" class="question">
        <p>Did you notice any difference in the what is being reported to <code><small>STDOUT</small></code> during startup?</p>
@@ -336,7 +336,7 @@ Using JRE_HOME:       /home/thredds/jdk1.6.0_15
 
 <pre>
 <b>$</b> ps -ef | grep tomcat
-dds   4606     1 99 16:15 pts/0    00:00:03 /home/thredds/jdk1.6.0_15/bin/java -Djava.util.logging.config.file=/home/thredds/apache-tomcat-6.0.20/conf/logging.properties <b>-Xmx256m -Xms256m -server -Djava.awt.headless=true</b> -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Djava.endorsed.dirs=/home/thredds/apache-tomcat-6.0.20/endorsed -classpath :/home/thredds/apache-tomcat-6.0.20/bin/bootstrap.jar -Dcatalina.base=/home/thredds/apache-tomcat-6.0.20 -Dcatalina.home=/home/thredds/apache-tomcat-6.0.20 -Djava.io.tmpdir=/home/thredds/apache-tomcat-6.0.20/temp org.apache.catalina.startup.Bootstrap start
+dds   4606     1 99 16:15 pts/0    00:00:03 /home/thredds/jdk1.6.0_22/bin/java -Djava.util.logging.config.file=/home/thredds/apache-tomcat-6.0.29/conf/logging.properties <b>-Xmx256m -Xms256m -server -Djava.awt.headless=true</b> -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Djava.endorsed.dirs=/home/thredds/apache-tomcat-6.0.29/endorsed -classpath :/home/thredds/apache-tomcat-6.0.29/bin/bootstrap.jar -Dcatalina.base=/home/thredds/apache-tomcat-6.0.29 -Dcatalina.home=/home/thredds/apache-tomcat-6.0.29 -Djava.io.tmpdir=/home/thredds/apache-tomcat-6.0.29/temp org.apache.catalina.startup.Bootstrap start
 thredds   4626  4207  0 16:15 pts/0    00:00:00 grep tomcat
 </pre>
 
@@ -510,7 +510,7 @@ total 12
        <li>Examining <code>catalina.out</code>.</li>
         <p>Open another terminal window (hereafter referred to as terminal #2) and run the following command in the new terminal:</p>
 <pre>
-<b>$</b> tail -f /home/thredds/apache-tomcat-6.0.20/logs/catalina.out
+<b>$</b> tail -f /home/thredds/apache-tomcat-6.0.29/logs/catalina.out
 </pre>
 <p>In your original terminal window, start/stop and start Tomcat and watch what is being logged to <code>catalina.out</code> in the terminal #2 window.</p>
       <div id="expanded" class="question">

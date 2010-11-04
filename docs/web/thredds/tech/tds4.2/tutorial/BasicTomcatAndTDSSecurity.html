@@ -524,7 +524,7 @@ drwxr-xr-x  3 thredds workshop     4096 2009-05-13 17:15 ROOT
      <p>Tomcat provides a script (<code><small>$TOMCAT_HOME/bin/digest.sh</small></code>) that will encrypt a password string according to the algorithm specified.  Use this script as follows with the password you made for yourself previously:</p>
 
 <pre>
-<b>$</b> /home/thredds/apache-tomcat-6.0.20/bin/digest.sh -a SHA secret
+<b>$</b> /home/thredds/apache-tomcat-6.0.29/bin/digest.sh -a SHA secret
 secret:e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4
 </pre>  
 
@@ -619,8 +619,8 @@ secret:e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4
         <p>Run the <code><small>$JAVA_HOME/bin/keytool</small></code> command:</p>
 
 <pre>
-<b>$</b> cd /home/thredds/jdk1.6.0_15/bin
-<b>$</b> ./keytool -genkey -alias tomcat -keyalg RSA -keystore /home/thredds/apache-tomcat-6.0.20/conf/keystore
+<b>$</b> cd /home/thredds/jdk1.6.0_22/bin
+<b>$</b> ./keytool -genkey -alias tomcat -keyalg RSA -keystore /home/thredds/apache-tomcat-6.0.29/conf/keystore
 </pre>
         <p>Meaning of the <code><small>keytool</small></code> options:</p>
         <table>
@@ -706,7 +706,7 @@ Enter key password for &lt;tomcat&gt;
 
 
 <pre>
-<b>$</b> cd /home/thredds/apache-tomcat-6.0.20/conf
+<b>$</b> cd /home/thredds/apache-tomcat-6.0.29/conf
 thredds@workshop03 conf]$ ls -l
 total 100
 drwxr-xr-x 3 thredds workshop  4096 2009-08-03 16:08 Catalina
@@ -746,7 +746,7 @@ drwxr-xr-x 3 thredds workshop  4096 2009-08-03 16:08 Catalina
 <pre>
 &lt;Connector port="8443" protocol="HTTP/1.1" SSLEnabled="true"
               maxThreads="150" scheme="https" secure="true"
-              clientAuth="false" sslProtocol="TLS" <b>keystoreFile="/home/thredds/apache-tomcat-6.0.20/conf/keystore"</b> /&gt;
+              clientAuth="false" sslProtocol="TLS" <b>keystoreFile="/home/thredds/apache-tomcat-6.0.29/conf/keystore"</b> /&gt;
 </pre>
 
 
@@ -857,7 +857,7 @@ tcp        0      0 127.0.0.1:<b>8443</b>               0.0.0.0:*               
          <li>Have a look at the deployment descriptor that comes with the TDS.</li>
           <p>Navigate to the unpacked <code><small>thredds</small></code> directory in <code><small>$TOMCAT_HOME/webapps</small></code>, and view the file: </p>
 <pre>
-<b>$</b> cd /home/thredds/apache-tomcat-6.0.20/webapps/thredds
+<b>$</b> cd /home/thredds/apache-tomcat-6.0.29/webapps/thredds
 <b>$</b> less WEB-INF/web.xml
 </pre>  
        <li>Look for a reference to the TDS remote management tool's URL (<code><small>/admin/debug</small></code>).</li>
@@ -912,7 +912,7 @@ tcp        0      0 127.0.0.1:<b>8443</b>               0.0.0.0:*               
        <li>Modify the deployment descriptor of the Tomcat <code>manager</code> application.</li>
         <p>Using your favorite editor, open the deployment descriptor for the Tomcat <code><small>manager</small></code> application:</p>
 <pre>
-<b>$</b> vi /home/thredds/apache-tomcat-6.0.20/webapps/manager/WEB-INF/web.xml
+<b>$</b> vi /home/thredds/apache-tomcat-6.0.29/webapps/manager/WEB-INF/web.xml
 </pre>   
         <p>Locate the <code><small>&lt;security-constraint&gt;</small></code> element (near the bottom of the file):</p>
 <pre>
