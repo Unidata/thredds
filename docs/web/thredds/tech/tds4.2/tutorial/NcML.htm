@@ -146,36 +146,41 @@ dl {margin: 10px 5px 5px 15px;)
     <li>Add a global attribute to each file in the collection.</li>
   </ol>
 <p>Start and restart your TDS and look at those datasets through the HTML interface and through ToolsUI.</p>
-  <h2>Using the <strong>datasetFmrc</strong> element </h2>
-  <p>A <strong><a href="http://www.unidata.ucar.edu/software/netcdf/ncml/v2.2/FmrcAggregation.html">Forecast Model Run Collection</a></strong> is a collection of forecast model  output. A special kind of aggregation, called an <em><strong>FMRC Aggregation</strong></em>, creates a dataset that has two time coordinates, called the <em><strong>run time </strong></em>and the <em><strong>forecast time</strong></em>. This dataset can then be sliced up in various ways to create 1D time views of the model output. A special kind of  dataset, called a <strong>datasetFmrc</strong> makes these 1D datasets available though the TDS.</p>
-  <p>Download <a href="http://www.unidata.ucar.edu/software/netcdf/ncml/v2.2/examples/fmr.ncml">fmrc.ncml</a>. and <a href="files/gfs.zip">gfs.zip</a>, unzip the latter and place in your data directory). In the ToolsUI <strong>NcML Tab</strong>, open <strong>fmrc.ncml</strong> and change the scan location to point to your data directory: </p>
-<pre>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
-&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;
-   &lt;aggregation dimName=&quot;run&quot; type=&quot;forecastModelRunCollection&quot; &gt;
-   &lt;scan location=&quot;/data/working/fmrc/&quot; suffix=&quot;.grib1&quot;
-     dateFormatMark=&quot;GFS_Puerto_Rico_191km_#yyyyMMdd_HHmm&quot; /&gt;
-   &lt;/aggregation&gt;
-&lt;/netcdf&gt;</pre>
-<p>Now download <a href="files/catalogFmrc.xml">catalogFmrc.xml</a>, place it in your TDS <em>content/thredds</em> directory and add a catalogRef to it from your main catalog:</p>
-  <pre>&lt;catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
-            xmlns:xlink="http://www.w3.org/1999/xlink"
-            name="THREDDS Data Server" version="1.0.1"&gt;
-<strong>1)</strong>&lt;service name="ncdods" serviceType="OPENDAP" base="/thredds/dodsC/" /&gt;
-<strong>2)</strong>&lt;<strong>datasetFmrc</strong> name=&quot;GFS_Puerto_Rico_191km&quot; path=&quot;fmrc/NCEP/GFS/Puerto_Rico_191km&quot; &gt;<br><strong>3)</strong>  &lt;<strong>metadata</strong> inherited=&quot;true&quot;&gt;<br>      &lt;serviceName&gt;ncdods&lt;/serviceName&gt;<br>      &lt;dataFormat&gt;GRIB-1&lt;/dataFormat&gt;<br>      &lt;documentation type=&quot;summary&quot;&gt;Specially good GFS_Puerto_Rico_191km&lt;/documentation&gt;<br>    &lt;/metadata&gt;<br>    &lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;<br><strong>4)</strong>    &lt;aggregation dimName=&quot;<strong>run</strong>&quot; type=&quot;forecastModelRunCollection&quot;&gt;<br><strong>5)</strong>      &lt;scan location=&quot;<strong>/workshop/test/gfs/</strong>&quot; suffix=&quot;.<strong>grib1</strong>&quot; 
-<strong>6)</strong>            <strong>dateFormatMark</strong>=&quot;GFS_Puerto_Rico_191km_#yyyyMMdd_HHmm&quot;/&gt;<br>      &lt;/aggregation&gt;<br>    &lt;/netcdf&gt;<br>  &lt;/datasetFmrc&gt;
-<strong></strong>
+  <h2>Using the featureCollection element </h2>
+<p>A <strong><a href="http://www.unidata.ucar.edu/software/netcdf/ncml/v2.2/FmrcAggregation.html">Forecast Model Run Collection</a></strong> is a collection of forecast model  output. A special kind of aggregation, called an <em><strong>FMRC Aggregation</strong></em>, creates a dataset that has two time coordinates, called the <em><strong>run time </strong></em>and the <em><strong>forecast time</strong></em>. This dataset can then be sliced up in various ways to create 1D time views of the model output.</p>
+<p>As of TDS 4.2, you should use the  <strong>featureCollection</strong> element in your configuration catalog. (the previous way of doing this was with a <strong>datasetFmrc</strong> element, which is now deprecated.)</p>
+<p>Download <a href="files/catalogFmrc.xml">catalogFmrc.xml</a>, place it in your TDS <em>content/thredds</em> directory and add a catalogRef to it from your main catalog:</p>
+  <pre>&lt;catalog xmlns=&quot;http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0&quot;
+     xmlns:xlink=&quot;http://www.w3.org/1999/xlink&quot; name=&quot;Unidata THREDDS Data Server&quot; version=&quot;1.0.3&quot;&gt; 
+<strong>1)</strong>&lt;service name=&quot;ncdods&quot; serviceType=&quot;OPENDAP&quot; base=&quot;/thredds/dodsC/&quot;/&gt;
+       
+<strong>2)</strong>&lt;featureCollection featureType=&quot;FMRC&quot; name=&quot;NCEP-GFS-Puerto_Rico_191km&quot; harvest=&quot;true&quot; path=&quot;fmrc/NCEP/GFS/Puerto_Rico_191km&quot;&gt;
+<strong>3)</strong> &lt;metadata inherited=&quot;true&quot;&gt;
+     &lt;serviceName&gt;ncdods&lt;/serviceName&gt;
+     &lt;dataFormat&gt;GRIB-1&lt;/dataFormat&gt;
+     &lt;documentation type=&quot;summary&quot;&gt;Specially good GFS_Puerto_Rico_191km&lt;/documentation&gt;
+   &lt;/metadata&gt;
+   
+4) &lt;collection spec=&quot;/workshop/test/gfs/GFS_Puerto_Rico_191km_#yyyyMMdd_HHmm#\.grib1$&quot;  olderThan=&quot;5 min&quot;/&gt;
+
+5)   &lt;update startup=&quot;true&quot; rescan=&quot;0 5 3 * * ? *&quot; /&gt;
+6)   &lt;protoDataset choice=&quot;Penultimate&quot; change=&quot;0 2 3 * * ? *&quot; /&gt;
+
+  &lt;/featureCollection&gt;
+
 &lt;/catalog&gt;</pre>
 <ol>
     <li>An OPENDAP service is defined called <strong><em>ncdods</em></strong>. </li>
-    <li>A THREDDS <strong>datasetFmrc</strong> is defined, whose contained datasets will all have a path starting with <strong>fmrc/NCEP/GFS/Puerto_Rico_191km</strong>. </li>
+    <li>A THREDDS <strong>featureCollection</strong> is defined, of type FMRC, whose contained datasets will all have a path starting with <strong>fmrc/NCEP/GFS/Puerto_Rico_191km</strong>. </li>
     <li>All the <strong>metadata</strong> contained here will be inherited by the contained datasets.</li>
-    <li>A forecastModelRunCollection aggregation is defined, with runTime dimension <em><strong>run</strong></em>. </li>
-    <li>All the files in the directory <strong>/workshop/test/gfs/</strong><em><strong> </strong></em>that end with <em><strong>.grib1</strong></em> will be scanned to create the aggregation.</li>
-    <li>The  runTime dates will be created from the filenames by matching on the  <strong>dateFormatMark</strong>. </li>
+    <li>The collection of files is defined, using a <em><strong><a href="../reference/collections/CollectionSpecification.html">collection specification string</a></strong></em><a href="../reference/collections/CollectionSpecification.html">.</a> The directory <strong>/workshop/test/gfs/</strong> will be scanned for files that start with &quot;GFS_Puerto_Rico_191km_&quot;, and end with &quot;.grib1&quot;. The   run date is extracted from the filename by applying the template <em>yyyyMMdd_HHmm</em> to the portion of the filename  between the '#' chars. Only files that havent changed for 5 minutes will be included.</li>
+    <li>The collection will be updated upon TDS startup, and periodically using the cron expression &quot;0 5 3 * * ? *&quot;, meaning every day at 3:05 am local time.</li>
+    <li>The  prototypical dataset is chosen to be the &quot;next-to-latest&quot;.  That periodically is changed every day at 3:02 am local time.</li>
   </ol>
-  <p>The contained datasets include the resulting 2D time dimension dataset, as well as the 1D time  views of the <em>ucar.nc2.dt.fmrc.ForecastModelRunCollection</em> dataset described in section 4 above, as seen in the resulting  HTML page for that dataset: </p>
-  <p><img src="/software/netcdf/ncml/v2.2/fmrcWeb.jpg" alt="Fmrc Html" width="816" height="507" border="2"></p>
-  <p>Also see: <a href="http://www.unidata.ucar.edu/staff/caron/presentations/FmrcPoster.pdf">FMRC poster</a></p>
+<p>The contained datasets include the resulting 2D time dimension dataset, as well as the 1D time  views of the <em>ucar.nc2.dt.fmrc.ForecastModelRunCollection</em> dataset described in section 4 above, as seen in the resulting  HTML page for that dataset: </p>
+  <p><img src="../../images/fmrc.png" width="1070" height="639"></p>
+<p>The TDS has created a number of datasets out of the FMRC, and made them available throgh the catalog interface. Explore them through the browser, through ToolsUI or the IDV.</p>
+<p>Also see: <a href="http://www.unidata.ucar.edu/staff/caron/presentations/FmrcPoster.pdf">FMRC poster</a></p>
 <h2><a name="debug"></a>Debugging NcML</h2>
 <p>When things go wrong, its best to first debug the aggregation outside of the TDS: </p>
   <ol>
@@ -201,7 +206,7 @@ dl {margin: 10px 5px 5px 15px;)
   </ul>
 <hr WIDTH="100%">
   <address>
-  <img src="../../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated June 2010
+  <img src="../../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated Nov 2010
 </address>
   <p></p>
 </body>

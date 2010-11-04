@@ -309,15 +309,10 @@ below the defaults.</p>
  <p>You can place a link  to your own <em><strong>Viewer</strong></em>  on the TDS HTML page, by loading a <a href="Viewers.html">viewer</a> at runtime. </p>
 <h3>Loadable Dataset Source </h3>
  <pre>   &lt;<strong>DatasetSource</strong>&gt;my.package.DatasetSourceImpl&lt;/<strong>DatasetSource</strong>&gt;</pre>
- <p>You can add  a <em><strong>DataSource</strong></em> - essentially an IOSP with access to Servlet request parameters, by loading a <a href="DatasetSource.html">dataset source</a> at runtime. </p>
-<h3>FmrcInventory</h3>
- <pre>  &lt;<strong>FmrcInventory</strong>&gt;<br>    &lt;<strong>openType</strong>&gt;XML_ONLY&lt;/<strong>openType</strong>&gt;<br>  &lt;/FmrcInventory&gt;</pre>
- <p>This
-controls how the Forecast Model Run Collection Inventory Servlet opens
-FMRC inventory files. XML_ONLY means to only use the XML if it already
-exists, assuming new files are generated externally. <br>
+ <p>You can add  a <em><strong>DataSource</strong></em> - essentially an IOSP with access to Servlet request parameters, by loading a <a href="DatasetSource.html">dataset source</a> at runtime.</p>
+ <p><br>
  </p>
- <h3>NetCDF-Java runtime Loading </h3>
+<h3>NetCDF-Java runtime Loading </h3>
  <pre>  &lt;<strong>nj22Config</strong>&gt;<br>    &lt;<strong>ioServiceProvider</strong> class="edu.univ.ny.stuff.FooFiles"/&gt;<br>    &lt;<strong>coordSysBuilder</strong> convention="foo" class="test.Foo"/&gt;<br>    &lt;<strong>coordTransBuilder</strong> name="atmos_ln_sigma_coordinates" type="vertical" class="my.stuff.atmosSigmaLog"/&gt;<br>    &lt;<strong>typedDatasetFactory</strong> datatype="Point" class="gov.noaa.obscure.file.Flabulate"/&gt;<br>    &lt;<strong>table</strong> type="GRIB1" filename="/home/rkambic/grib/tables/userlookup.lst"/&gt;<br>    &lt;<strong>table</strong> type="GRIB2" filename="/home/rkambic/grib/tables/grib2userparameters"/&gt;<br>  &lt;/nj22Config&gt;<br> </pre>
  <p>These elements allow you to specify <a href="http://www.unidata.ucar.edu/software/netcdf-java/reference/RuntimeLoading.html">Runtime parameters </a> for the Netcdf-Java library from the threddsConfig file. See the Netcdf-Java <a href="http://www.unidata.ucar.edu/software/netcdf-java/tutorial/index.html">tutorial</a> for an overview. </p>
 
@@ -351,8 +346,8 @@ exists, assuming new files are generated externally. <br>
  <h3>Controlling Ehcache </h3>
 <pre> &lt;eh<strong>cache</strong>&gt;<br>   &lt;<strong>configFile</strong>&gt;/tomcat_home/webapp/WEB-INF/ehcache.xml&lt;/<strong>configFile</strong>&gt;<br>   &lt;<strong>dir</strong>&gt;/tomcat_home/content/thredds/ehcache/&lt;/<strong>dir</strong>&gt;<br> &lt;/ehcache&gt;<br></pre>
 <ul>
-   <li>location of ehcache configuration file. </li>
-   <li>location of ehcache data files.  If not otherwise set, the TDS will use the <strong>${tomcat_home}/content/thredds/cache/ehcache/</strong> directory We recommend that you use this default, by not specifying an <strong>ehcache</strong>.<strong>dir</strong> element.<br>
+   <li>location of <a href="http://ehcache.org/">ehcache</a> configuration file. </li>
+  <li>location of ehcache data files.  If not otherwise set, the TDS will use the <strong>${tomcat_home}/content/thredds/cache/ehcache/</strong> directory We recommend that you use this default, by not specifying an <strong>ehcache</strong>.<strong>dir</strong> element.<br>
    </li>
  </ul>
 <h3><br>
@@ -369,7 +364,7 @@ appropriately.</li>
 <h2>Options in 4.2 </h2>
 <pre> &lt;FeatureCollection<strong></strong>&gt;<br>   &lt;<strong>dir</strong>&gt;/tomcat_home/content/thredds/collectionCache/&lt;/<strong>dir</strong>&gt;<br> &lt;/FeatureCollection&gt;<br></pre>
 <ul>
-  <li>location of Feature Collection cache. If not otherwise set, the TDS will use the <strong>${tomcat_home}/content/thredds/cache/collection/</strong> directory We recommend that you use this default, by not specifying a <strong>FeatureCollection</strong>.<strong>dir</strong> element.<br>
+  <li>location of Feature Collection cache, currently implemented with <a href="http://www.oracle.com/technetwork/database/berkeleydb/overview/index-093405.html">Berkeley DB</a>. If not otherwise set, the TDS will use the <strong>${tomcat_home}/content/thredds/cache/collection/</strong> directory We recommend that you use this default, by not specifying a <strong>FeatureCollection</strong>.<strong>dir</strong> element.<br>
   </li>
 </ul>
 <hr style="width: 100%; height: 2px;">
@@ -430,7 +425,7 @@ appropriately.</li>
     location. </p>
 <hr width="100%">
 <address>
-<img src="../../images/thread.png" height="108" width="110" alt="THREDDS">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated  Oct 2010
+<img src="../../images/thread.png" height="108" width="110" alt="THREDDS">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated  Nov 2010
 </address>
   <p>&nbsp;</p>
 </body></html>
