@@ -222,6 +222,12 @@ public final class ThreddsWmsController extends AbstractWmsController
       httpServletResponse.setStatus(ServletUtil.STATUS_CLIENT_ABORT);
       return null;
     }
+    catch ( org.apache.catalina.connector.ClientAbortException e ) {
+      log.debug( "dispatchWmsRequest(): ClientAbortException: " + e.getMessage());
+      log.info( UsageLog.closingMessageForRequestContext( ServletUtil.STATUS_CLIENT_ABORT, -1 ) );
+      httpServletResponse.setStatus(ServletUtil.STATUS_CLIENT_ABORT);
+      return null;
+    }
     catch ( Exception e ) {
       log.error( "dispatchWmsRequest(): Exception: ", e );
       log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_INTERNAL_SERVER_ERROR, -1 ) );
