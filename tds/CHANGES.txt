@@ -4,6 +4,11 @@ Build Date = @BUILDTIME@
 Build Name = @BUILD.NAME@
 
 Release Details 4.2:
+ 4.2 release candidate 6 (2010-11-05)
+   fix handling of unknown projections by WCS (TDS-138)
+   add support for server information requests (TDS-137)
+   fix WMS handling of ClientAbortExceptions
+
  4.2 release candidate 5 (2010-11-02)
    add tdsMonitor role, for /thredds/admin/log/*
    TDS reinit calls MetadataManager.closeAll
