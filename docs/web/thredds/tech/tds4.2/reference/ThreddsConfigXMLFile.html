@@ -65,7 +65,7 @@ information about the group that hosts the server.<br>
     &lt;/contact&gt;
     &lt;hostInstitution&gt;
       &lt;name&gt;My Group&lt;/name&gt;
-      &lt;webSite&gt;http://www.my.site/&lt;/webSite&gt;
+      &lt;webSite&gt;http://www.my.group/&lt;/webSite&gt;
       &lt;logoUrl&gt;myGroup.gif&lt;/logoUrl&gt;
       &lt;logoAltText&gt;My Group&lt;/logoAltText&gt;
     &lt;/hostInstitution&gt;
@@ -77,8 +77,14 @@ information about the group that hosts the server.<br>
   <li>the headers of all generated HTML pages (they contain the names and logos
     of the server and host institution);</li>
   <li>the Server section of the WMS GetCapabilities response; and</li>
-  <li>the Server section of the WCS GetCapabilities response.</li>
+  <li>the server information documents (see the <a href="ServerInfo.html">ServerInfo page</a>)</li>
 </ul>
+ <p>Coming soon, it will also be used in:</p>
+ <ul>
+   <li>the Server section of the WCS GetCapabilities response.</li>
+   <li>all generated THREDDS catalogs that don't override this information.</li>
+ </ul>
+
 <p>Some of the information provided in the <code>serverInformation</code> element
   supersedes information in the <code>htmlSetup</code> element (described below).
   The superseded information is listed as deprecated in the description of the
