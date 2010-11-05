@@ -270,6 +270,7 @@
         <filter token="VERSION" value="${release.version}"/>
         <filter token="VERSION.MINOR" value="${release.version.minor}"/>
         <filter token="BUILDTIME" value="${build.time.number}"/>
+        <filter token="BUILD.NAME" value="${build.name}"/>
         <filter token="HEADER" value="${tds.properties.header}" />
       </filterset>
     </copy>
@@ -303,6 +304,7 @@
     <copy file="README.TEMPLATE" tofile="${readme.file}" overwrite="true">
       <filterset>
         <filter token="BUILDTIME" value="${build.time}"/>
+        <filter token="BUILD.NAME" value="${build.name}"/>
         <filter token="VERSION" value="${release.version.minor}"/>
         <filter token="VERSION.MINOR" value="${release.version.minor}"/>
       </filterset>
@@ -311,6 +313,7 @@
     <copy file="CHANGES.txt" tofile="${changeLog.file}" overwrite="true">
       <filterset>
         <filter token="BUILDTIME" value="${build.time}"/>
+        <filter token="BUILD.NAME" value="${build.name}"/>
         <filter token="VERSION" value="${release.version}"/>
         <filter token="VERSION.MINOR" value="${release.version.minor}"/>
       </filterset>

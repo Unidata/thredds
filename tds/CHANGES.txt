@@ -1,6 +1,7 @@
 CHANGES for THREDDS Data Server (TDS)
 Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
+Build Name = @BUILD.NAME@
 
 Release Details 4.2:
  4.2 release candidate 5 (2010-11-02)
