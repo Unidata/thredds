@@ -53,6 +53,7 @@ message Variable {
   optional bool unsigned = 5;  // default false
   optional bytes data = 6;    // "immediate" - store small data in header
   optional string enumType = 7;  // only for enum types
+  optional CoordType coordType = 8;
 }
 
 message Structure {
@@ -88,6 +89,7 @@ message Header {
   optional string title = 2;
   optional string id = 3;
   required Group root = 4;
+  optional FeatureType featureType = 5;
 }
 
 //////////////////////////////////
@@ -113,4 +115,51 @@ message Section {
 
 message Error {
   required string message = 1;
+}
+
+///////////////////////////////////
+
+enum CoordType {
+  TIME = 0;
+  LAT = 1;
+  LON = 2;
+  HEIGHT = 3;
+  PRESSURE = 4;
+  GEOX = 5;
+  GEOY = 6;
+  GEOZ = 7;
+  RUNTIME = 8;
+  ENSEMBLE = 9;
+  AZIMUTH = 10;
+  ELEVATION = 11;
+  DISTANCE = 12;
+}
+
+message CoordTransform {
+  enum Type {
+    HORIZ = 0;
+    VERT = 1;
+  }
+  required Type type = 1;
+  required string name = 2;
+  repeated Attribute params = 3;
+}
+
+message CoordSys {
+  required string name = 1;
+  repeated string coordVar = 2;
+  repeated CoordTransform transforms = 3;
+  repeated CoordSys components = 3;
+}
+
+enum FeatureType {
+  GRID = 0;
+  SWATH = 1;
+  POINT = 2;
+  STATION = 3;
+  PROFILE = 4;
+  TRAJECTORY = 5;
+  STATION_PROFILE = 6;
+  TRAJECTORY_PROFILE = 7;
+  RADIAL = 8;
 }

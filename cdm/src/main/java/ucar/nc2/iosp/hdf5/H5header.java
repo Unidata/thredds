@@ -4605,12 +4605,12 @@ There is _no_ datatype information stored for these sort of selections currently
       sizeBytes = raf.readInt();
       if (debugDetail)
         debugOut.println("-- readGlobalHeap address=" + address + " version= " + version + " size = " + sizeBytes);
+      //System.out.println("-- readGlobalHeap address=" + address + " version= " + version + " size = " + sizeBytes);
       raf.skipBytes(4); // pad to 8
 
       int count = 0;
       int countBytes = 0;
-      while (countBytes + 16 < sizeBytes) {  // guess that there must be room for a global heap object and some data.
-                                  // see globalHeapOverrun in netcdf4 test directory
+      while (true) {
         long startPos = raf.getFilePointer();
         HeapObject o = new HeapObject();
         o.id = raf.readShort();
@@ -4619,23 +4619,22 @@ There is _no_ datatype information stored for these sort of selections currently
         o.dataSize = readLength();
         o.dataPos = raf.getFilePointer();
 
-        countBytes += o.dataSize + 16;
+        int dsize = ((int) o.dataSize) + padding((int) o.dataSize, 8);
+        countBytes += dsize + 16;
 
-        //System.out.printf("heapId=%d count=%d countBytes=%d%n", o.id, count, countBytes);
+        //System.out.printf("%d heapId=%d dataSize=%d countBytes=%d%n", count, o.id, o.dataSize, countBytes);
         if (o.id == 0) break; // ?? look
         if (o.dataSize < 0) break; // ran off the end, must be done
         if (countBytes < 0) break; // ran off the end, must be done
-        if (countBytes > sizeBytes) break; // ran off the end, must be done
+        if (countBytes+16 >= sizeBytes) break; // ran off the end, must be done
 
         if (debugDetail)
           debugOut.println("   HeapObject  position=" + startPos + " id=" + o.id + " refCount= " + o.refCount +
               " dataSize = " + o.dataSize + " dataPos = " + o.dataPos + " count= "+count+" countBytes= "+  countBytes);
 
-        int dsize = ((int) o.dataSize) + padding((int) o.dataSize, 8);
         raf.skipBytes(dsize);
         hos.add(o);
         count++;
-        //countBytes += o.dataSize + 16;
       }
 
       if (debugDetail) debugOut.println("-- endGlobalHeap position=" + raf.getFilePointer());
