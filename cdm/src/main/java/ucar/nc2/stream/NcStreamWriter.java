@@ -52,7 +52,7 @@ public class NcStreamWriter {
 
   private NetcdfFile ncfile;
   private NcStreamProto.Header header;
-  private boolean show = false;
+  private boolean show = true;
 
   public NcStreamWriter(NetcdfFile ncfile, String location) throws IOException {
     this.ncfile = ncfile;
@@ -119,16 +119,20 @@ public class NcStreamWriter {
   public long streamAll(WritableByteChannel wbc) throws IOException, InvalidRangeException {
     long size = writeBytes(wbc, NcStream.MAGIC_START);
     size += sendHeader(wbc);
+    if (show) System.out.printf(" data starts at= %d%n", size);
 
     for (Variable v : ncfile.getVariables()) {
       long vsize = v.getSize() * v.getElementSize();
+      //if (vsize < sizeToCache) continue; // in the header
 
+      if (vsize == 1)
+        System.out.println("HEY");
+      if (show) System.out.printf(" var %s len=%d starts at= %d%n", v.getName(), vsize, size);
       if (vsize <= maxChunk) {
         size += sendData(v, v.getShapeAsSection(), wbc);
       } else {
         size += copyChunks(wbc, v, maxChunk);
       }
-
     }
 
     if (show) System.out.printf("total size= %d%n", size);

@@ -16,7 +16,7 @@ import java.util.List;
  * Read ncStream file (raf), into a NetcdfFile.
  */
 public class NcStreamIosp extends AbstractIOServiceProvider {
-  private static final boolean debug = false;
+  private static final boolean debug = true;
 
   public boolean isValidFile(RandomAccessFile raf) throws IOException {
     raf.seek(0);
@@ -45,7 +45,7 @@ public class NcStreamIosp extends AbstractIOServiceProvider {
     assert readAndTest(raf, NcStream.MAGIC_HEADER);
 
     int msize = readVInt(raf);
-    if (debug) System.out.println("READ header len= " + msize);
+    if (debug) System.out.printf("READ header len= %d%n", msize);
 
     byte[] m = new byte[msize];
     raf.read(m);
@@ -61,6 +61,7 @@ public class NcStreamIosp extends AbstractIOServiceProvider {
     //NcStreamProto.Stream proto = NcStreamProto.Stream.parseFrom(cis);
 
     while (!raf.isAtEndOfFile()) {
+      if (debug) System.out.printf("READ message at = %d%n", raf.getFilePointer());
       byte[] b = new byte[4];
       raf.read(b);
       if (test(b, NcStream.MAGIC_END))
@@ -166,18 +167,25 @@ public class NcStreamIosp extends AbstractIOServiceProvider {
     ncm.add(new NcsMess(msize, proto));
 
     while (!raf.isAtEndOfFile()) {
-      assert readAndTest(raf, NcStream.MAGIC_DATA);
+      if (debug) System.out.printf("READ message at = %d%n", raf.getFilePointer());
+      byte[] b = new byte[4];
+      raf.read(b);
+      if (test(b,NcStream.MAGIC_END)) break;
+      if (!test(b, NcStream.MAGIC_DATA))
+        System.out.println("HEY");
 
       int psize = readVInt(raf);
-      if (debug) System.out.println(" dproto len= " + psize);
+      if (debug) System.out.printf(" dproto len= %d%n", psize);
       byte[] dp = new byte[psize];
       raf.read(dp);
       NcStreamProto.Data dproto = NcStreamProto.Data.parseFrom(dp);
-      if (debug) System.out.println(" dproto = " + dproto);
+      if (debug) System.out.printf("%s", dproto);
       ncm.add(new NcsMess(psize, dproto));
 
       int dsize = readVInt(raf);
       if (debug) System.out.println(" data len= " + dsize);
+      if (dsize == 1)
+        System.out.println("HEY");
 
       DataSection dataSection = new DataSection();
       dataSection.size = dsize;

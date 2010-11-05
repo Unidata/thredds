@@ -428,9 +428,9 @@ public class IospHelper {
       while (iterA.hasNext())
         outStream.writeShort(iterA.getShortNext());
 
-    } else if (classType == char.class) {
-      while (iterA.hasNext())
-        outStream.writeChar(iterA.getCharNext());
+    } else if (classType == char.class) {  // LOOK why are we using chars anyway ?
+      byte[] pa = convertCharToByte((char[]) data.get1DJavaArray(char.class));
+      outStream.write(pa, 0 , pa.length);
 
     } else if (classType == byte.class) {
       while (iterA.hasNext())

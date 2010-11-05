@@ -237,7 +237,7 @@ public class ToolsUI extends JPanel {
     iospTabPane.addTab("GRIB", gribTabPane);
     iospTabPane.addTab("HDF5", new JLabel("HDF5"));
     iospTabPane.addTab("HDF4", new JLabel("HDF4"));
-    iospTabPane.addTab("CDMremote", new JLabel("CDMremote"));
+    iospTabPane.addTab("NCS", new JLabel("NCS"));
     iospTabPane.addChangeListener(new ChangeListener() {
       public void stateChanged(ChangeEvent e) {
         Component c = iospTabPane.getSelectedComponent();
@@ -437,7 +437,7 @@ public class ToolsUI extends JPanel {
       bufrTableDPanel = new BufrTableDPanel((PreferencesExt) mainPrefs.node("bufrD"));
       c = bufrTableDPanel;
 
-    } else if (title.equals("CDMremote")) {
+    } else if (title.equals("NCS")) {
       cdmremotePanel = new CdmremotePanel((PreferencesExt) mainPrefs.node("cdmremote"));
       c = cdmremotePanel;
 

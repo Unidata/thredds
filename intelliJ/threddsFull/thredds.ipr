@@ -132,17 +132,17 @@
   <component name="CompilerConfiguration">
     <option name="DEFAULT_COMPILER" value="Javac" />
     <excludeFromCompile>
-      <file url="file://$PROJECT_DIR$/../../ui/src/main/java/thredds/catalog/ui/tools/CatalogSearcher.java" />
-      <file url="file://$PROJECT_DIR$/../../ui/src/main/java/thredds/catalog/search/Indexer.java" />
-      <file url="file://$PROJECT_DIR$/../../ui/src/main/java/thredds/catalog/search/ui/CatalogIndexer.java" />
+      <file url="file://$PROJECT_DIR$/../../ui/src/main/java/thredds/catalog/catalog/ui/tools/CatalogSearcher.java" />
+      <file url="file://$PROJECT_DIR$/../../ui/src/main/java/thredds/catalog/catalog/search/Indexer.java" />
+      <file url="file://$PROJECT_DIR$/../../ui/src/main/java/thredds/catalog/catalog/search/ui/CatalogIndexer.java" />
       <file url="file://$PROJECT_DIR$/../../tds/src/main/java/thredds/servlet/tomcat/UsageValve.java" />
       <file url="file://$PROJECT_DIR$/../../ldm/src/main/thredds/db/TestBabu.java" />
       <file url="file://$PROJECT_DIR$/../../cdm/src/test/java/ucar/nc2/jni/netcdf/TestJni.java" />
       <file url="file://$PROJECT_DIR$/../../ldm/src/main/thredds/ldm/BerkeleyDBIndexer.java" />
       <file url="file://$PROJECT_DIR$/../../tds/src/main/java/thredds/servlet/MyWebDavServlet.java" />
-      <file url="file://$PROJECT_DIR$/../../ui/src/main/java/thredds/catalog/catalog/ui/tools/CatalogSearcher.java" />
-      <file url="file://$PROJECT_DIR$/../../ui/src/main/java/thredds/catalog/catalog/search/Indexer.java" />
-      <file url="file://$PROJECT_DIR$/../../ui/src/main/java/thredds/catalog/catalog/search/ui/CatalogIndexer.java" />
+      <file url="file://$PROJECT_DIR$/../../ui/src/main/java/thredds/catalog/ui/tools/CatalogSearcher.java" />
+      <file url="file://$PROJECT_DIR$/../../ui/src/main/java/thredds/catalog/search/Indexer.java" />
+      <file url="file://$PROJECT_DIR$/../../ui/src/main/java/thredds/catalog/search/ui/CatalogIndexer.java" />
       <file url="file://$PROJECT_DIR$/../../ui/src/main/java/thredds/ui/catalog/search/Indexer.java" />
       <file url="file://$PROJECT_DIR$/../../ui/src/main/java/thredds/ui/catalog/search/CatalogSearcher.java" />
       <file url="file://$PROJECT_DIR$/../../ui/src/main/java/thredds/ui/catalog/search/CatalogIndexer.java" />
