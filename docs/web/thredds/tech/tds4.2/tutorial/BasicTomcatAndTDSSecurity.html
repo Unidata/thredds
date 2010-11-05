@@ -430,7 +430,7 @@ drwxr-xr-x  3 thredds workshop     4096 2009-05-13 17:15 ROOT
 
       <p>The dreaded <code><small>java.lang.OutOfMemoryError: PermGen space failure</small></code> error:</p>
       <ul>
-        <li><b>The issue: </b> The "PermGen" error happens when the JVM runs out of memory in the permanent generation.</li>
+        <li><b>The issue: </b> The "PermGen" error happens when the JVM runs out of memory in the permanent generation. (Default PermGen size differs among Sun JDK versions, but the upper limit is typically 64MB.)</li>
         <li><b>The cause: </b> Objects in the permanent generation are never garbage collected.  When redeploying your web application using the Tomcat <code><small>manager</small></code>  application, your WAR file is unpacked and parts of the class file definition are loaded into PermGen space, like string constants.</li>
         <li><b>The symptom:</b> The PermGen error will manifest itself in a sluggish Tomcat <code><small>manager</small></code>  application that never completes a task, and the <code><small>java.lang.OutOfMemoryError: PermGen space failure</small></code>  error being displayed in <code><small>$TOMCAT_HOME/logs/catalina.out</small></code> </li>
          <li><b>A temporary fix:</b> You can add the <code><small>-XX:MaxPermSize</small></code>  switch to <code><small>$JAVA_OPTS</small></code>  to increase the amount of memory allocated for the permanent generation,  However this is only postponed the inevitable, as even an increased memory in permanent generation will eventually fill up.  When this happens, you will need to stop/start Tomcat at this point. For this reason, you may want to restart Tomcat whenever you redeploy TDS or another webapp.</li>
@@ -461,7 +461,7 @@ drwxr-xr-x  3 thredds workshop     4096 2009-05-13 17:15 ROOT
 
        <ul>
         <li>Passwords stored in clear text are a vulnerability if the host is compromised.</li>
-        <li>Worse yet, these passwords are being sent from the client to the server (Tomcat) in clear text.  Anyone eavesdropping on the electronic conversation has easy access to the passwords.</li>
+        <li>Worse yet, these passwords are being sent from the client to the server (Tomcat) in clear text.  Anyone eavesdropping on the electronic conversation has easy access to the passwords. (We address this issue by enabling SSL.)</li>
         <li>Better to have the passwords encrypted using a cryptographic hash functions (SHA, MD2, or MD5) and then stored in <code><small>tomcat-users.xml</small></code>. </li>
         <li>Tomcat can be configured to support digested passwords (this is not the default setting). </li>
         <li>How it works: When a client makes a request Tomcat will tell the client that a digested password is required. Based on this dialog, the client will automatically digest the password entered by the user.</li>
@@ -470,11 +470,50 @@ drwxr-xr-x  3 thredds workshop     4096 2009-05-13 17:15 ROOT
      </div> <!-- end subsection -->
 
 
-
      <div id="subsection">
       <h3>Configure Tomcat to use digested passwords</h3>
+
        <ol>
-        <li>First we need to enable digest passwords support in Tomcat by modifying <code>server.xml</code>.</li>
+        <li>First we need to enable digest passwords support in Tomcat by modifying a couple of Tomcat Realms in <code>server.xml</code>.</li>
+         <div id="note" class="info">
+         <h4>Tomcat Realms</h4>
+         <p>Read more about <a href="http://tomcat.apache.org/tomcat-6.0-doc/config/realm.html">Tomcat Realms</a> for further information.</p>
+        </div>
+
+
+
+          <p>A <a href="http://tomcat.apache.org/tomcat-6.0-doc/config/realm.html">Tomcat Realm</a> represents a "database" of usernames, passwords, and roles (similar to Unix groups) assigned to those users.  Read more about Tomcat Realms</a> for further information.</p>
+          <table>
+           <tr>
+            <th>  
+             Realm Name
+            </th>
+            <th> 
+             Purpose
+            </th>
+           </tr>
+
+           <tr>
+            <td> 
+             <code>UserDatabaseRealm</code> 
+            </td>
+            <td> 
+              The <code>UserDatabaseRealm</code> is enabled by default and reads clear text user password information stored in <code>$TOMCAT_HOME/conf/tomcat-users.xml</code>.
+            </td>
+           </tr>
+
+
+           <tr>
+            <td> 
+             <code>MemoryRealm</code> 
+            </td>
+            <td> 
+              The <code>MemoryRealm</code> reads the user password information stored in <code>$TOMCAT_HOME/conf/tomcat-users.xml</code> in a specified encrypted format.
+            </td>
+           </tr>
+          </table>
+
+      
          <p>Open <code><small>$TOMCAT_HOME/conf/server.xml</small></code> with your favorite editor:</p>
 <pre>
 <b>$</b> vi server.xml
