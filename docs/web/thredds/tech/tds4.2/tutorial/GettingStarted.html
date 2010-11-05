@@ -51,12 +51,12 @@
 
 <pre>
 <b>$</b> ls -l jdk-6u22-linux-i586.bin
-rw-r--r-- 1 thredds workshop 81771117 2009-08-03 15:56 jdk-6u22-linux-i586.bin
+-rw-r--r-- 1 thredds workshop 83761756 Nov  5 14:34 jdk-6u22-linux-i586.bin
 
 <b>$</b> chmod 755 jdk-6u22-linux-i586.bin
 
 <b>$</b> ls -l jdk-6u22-linux-i586.bin
--rwxr-xr-x 1 thredds workshop 81771117 2009-08-03 15:56 jdk-6u22-linux-i586.bin
+-rwxr-xr-x 1 thredds workshop 83761756 Nov  5 14:34 jdk-6u22-linux-i586.bin
 </pre>
 
         <p>Run self-extracting file and agree to the terms of the code license:</p>
@@ -65,9 +65,9 @@ rw-r--r-- 1 thredds workshop 81771117 2009-08-03 15:56 jdk-6u22-linux-i586.bin
 <b>$</b> ./jdk-6u22-linux-i586.bin
 </pre>
 
-       <li>Set the <code>$JAVA_HOME</code> environment variable.</li>
+       <li>Set the <code>$JAVA_HOME</code> environment variable (default shell on workshop systems is <code>bash</code>).</li>
 <pre>
-<b>$</b> set JAVA_HOME=/home/thredds/jdk1.6.0_22
+<b>$</b> JAVA_HOME=/home/thredds/jdk1.6.0_22
 <b>$</b> echo $JAVA_HOME 
 /home/thredds/jdk1.6.0_22
 </pre>
@@ -109,12 +109,12 @@ rw-r--r-- 1 thredds workshop 81771117 2009-08-03 15:56 jdk-6u22-linux-i586.bin
 <b>$</b> tar xvzf apache-tomcat-6.0.29.tar.gz
 
 <b>$</b> ls -ld apache-tomcat-6.0.29
-drwxr-xr-x 9 thredds workshop    4096 2009-08-03 16:04 apache-tomcat-6.0.29
+drwxr-xr-x 9 thredds workshop 4096 Nov  5 14:40 apache-tomcat-6.0.29
 </pre>
 
        <li>Set the <code>$TOMCAT_HOME</code> environment variable.</li>
 <pre>
-<b>$</b> set TOMCAT_HOME=/home/thredds/apache-tomcat-6.0.29
+<b>$</b> TOMCAT_HOME=/home/thredds/apache-tomcat-6.0.29
 <b>$</b> echo $TOMCAT_HOME
 /home/thredds/apache-tomcat-6.0.29
 </pre>
@@ -155,18 +155,18 @@ drwxr-xr-x 9 thredds workshop    4096 2009-08-03 16:04 apache-tomcat-6.0.29
 <pre>
 <b>$</b> cd apache-tomcat-6.0.29
 <b>$</b>  ls -l 
-total 88
-drwxr-xr-x 2 thredds workshop  4096 2009-08-03 16:04 bin
-drwxr-xr-x 2 thredds workshop  4096 2009-05-13 17:15 conf
-drwxr-xr-x 2 thredds workshop  4096 2009-08-03 16:04 lib
--rw-r--r-- 1 thredds workshop 37951 2009-05-13 17:15 LICENSE
-drwxr-xr-x 2 thredds workshop  4096 2009-05-13 17:15 logs
--rw-r--r-- 1 thredds workshop   556 2009-05-13 17:15 NOTICE
--rw-r--r-- 1 thredds workshop  7317 2009-05-13 17:15 RELEASE-NOTES
--rw-r--r-- 1 thredds workshop  6368 2009-05-13 17:15 RUNNING.txt
-drwxr-xr-x 2 thredds workshop  4096 2009-08-03 16:04 temp
-drwxr-xr-x 7 thredds workshop  4096 2009-05-13 17:15 webapps
-drwxr-xr-x 2 thredds workshop  4096 2009-05-13 17:15 work
+total 92
+drwxr-xr-x 2 thredds workshop  4096 Nov  5 14:40 bin
+drwxr-xr-x 2 thredds workshop  4096 Jul 19 07:01 conf
+drwxr-xr-x 2 thredds workshop  4096 Nov  5 14:40 lib
+-rw-r--r-- 1 thredds workshop 37950 Jul 19 07:01 LICENSE
+drwxr-xr-x 2 thredds workshop  4096 Jul 19 06:59 logs
+-rw-r--r-- 1 thredds workshop   557 Jul 19 07:01 NOTICE
+-rw-r--r-- 1 thredds workshop  8669 Jul 19 06:59 RELEASE-NOTES
+-rw-r--r-- 1 thredds workshop  6670 Jul 19 07:01 RUNNING.txt
+drwxr-xr-x 2 thredds workshop  4096 Nov  5 14:40 temp
+drwxr-xr-x 7 thredds workshop  4096 Jul 19 06:59 webapps
+drwxr-xr-x 2 thredds workshop  4096 Jul 19 06:59 work
 </pre>
 
        <li>Familiarize yourself with the following important directories.</li>
@@ -231,7 +231,8 @@ drwxr-xr-x 2 thredds workshop  4096 2009-05-13 17:15 work
 
 <pre>
 <b>$</b> ps -ef | grep tomcat
-thredds   4443     1 21 16:08 pts/0    00:00:03 /usr/bin/java -Djava.util.logging.config.file=/home/thredds/apache-tomcat-6.0.29/conf/logging.properties -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Djava.endorsed.dirs=/home/thredds/apache-tomcat-6.0.29/endorsed -classpath :/home/thredds/apache-tomcat-6.0.29/bin/bootstrap.jar -Dcatalina.base=/home/thredds/apache-tomcat-6.0.29 -Dcatalina.home=/home/thredds/apache-tomcat-6.0.29 -Djava.io.tmpdir=/home/thredds/apache-tomcat-6.0.29/temp org.apache.catalina.startup.Bootstrap start
+thredds  15275     1 37 14:41 pts/5    00:00:02 /usr/bin/java -Djava.util.logging.config.file=/home/thredds/apache-tomcat-6.0.29/conf/logging.properties -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Djava.endorsed.dirs=/home/thredds/apache-tomcat-6.0.29/endorsed -classpath /home/thredds/apache-tomcat-6.0.29/bin/bootstrap.jar -Dcatalina.base=/home/thredds/apache-tomcat-6.0.29 -Dcatalina.home=/home/thredds/apache-tomcat-6.0.29 -Djava.io.tmpdir=/home/thredds/apache-tomcat-6.0.29/temp org.apache.catalina.startup.Bootstrap start
+thredds  15327  2658  0 14:41 pts/5    00:00:00 grep tomcat
 </pre>
 
         <p>Open a new browser window/tab and go to <a href="http://localhost:8080/">http://localhost:8080/</a> to verify Tomcat is running:</p>
@@ -323,10 +324,11 @@ export CATALINA_HOME
         <p>Restart Tomcat and examine the output generated to the terminal window by the startup script:</p>
 <pre>
 <b>$</b> $TOMCAT_HOME/bin/startup.sh
-sing CATALINA_BASE:   /home/thredds/apache-tomcat-6.0.29
+Using CATALINA_BASE:   /home/thredds/apache-tomcat-6.0.29
 Using CATALINA_HOME:   /home/thredds/apache-tomcat-6.0.29
 Using CATALINA_TMPDIR: /home/thredds/apache-tomcat-6.0.29/temp
-Using JRE_HOME:       /home/thredds/jdk1.6.0_22
+Using JRE_HOME:        /home/thredds/jdk1.6.0_22
+Using CLASSPATH:       /home/thredds/apache-tomcat-6.0.29/bin/bootstrap.jar
 </pre>
       <div id="expanded" class="question">
        <p>Did you notice any difference in the what is being reported to <code><small>STDOUT</small></code> during startup?</p>
@@ -336,8 +338,8 @@ Using JRE_HOME:       /home/thredds/jdk1.6.0_22
 
 <pre>
 <b>$</b> ps -ef | grep tomcat
-dds   4606     1 99 16:15 pts/0    00:00:03 /home/thredds/jdk1.6.0_22/bin/java -Djava.util.logging.config.file=/home/thredds/apache-tomcat-6.0.29/conf/logging.properties <b>-Xmx256m -Xms256m -server -Djava.awt.headless=true</b> -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Djava.endorsed.dirs=/home/thredds/apache-tomcat-6.0.29/endorsed -classpath :/home/thredds/apache-tomcat-6.0.29/bin/bootstrap.jar -Dcatalina.base=/home/thredds/apache-tomcat-6.0.29 -Dcatalina.home=/home/thredds/apache-tomcat-6.0.29 -Djava.io.tmpdir=/home/thredds/apache-tomcat-6.0.29/temp org.apache.catalina.startup.Bootstrap start
-thredds   4626  4207  0 16:15 pts/0    00:00:00 grep tomcat
+thredds  16014     1  7 14:43 pts/5    00:00:02 /home/thredds/jdk1.6.0_22/bin/java -Djava.util.logging.config.file=/home/thredds/apache-tomcat-6.0.29/conf/logging.properties <b>-Xmx1500m -Xms512m -server -Djava.awt.headless=true</b> -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Djava.endorsed.dirs=/home/thredds/apache-tomcat-6.0.29/endorsed -classpath /home/thredds/apache-tomcat-6.0.29/bin/bootstrap.jar -Dcatalina.base=/home/thredds/apache-tomcat-6.0.29 -Dcatalina.home=/home/thredds/apache-tomcat-6.0.29 -Djava.io.tmpdir=/home/thredds/apache-tomcat-6.0.29/temp org.apache.catalina.startup.Bootstrap start
+thredds  16252  2658  0 14:43 pts/5    00:00:00 grep tomcat
 </pre>
 
       <div id="expanded" class="question">
@@ -415,13 +417,13 @@ Incompatible minimum and maximum heap sizes specified
 <b>$</b> cd $TOMCAT_HOME/webapps
 
 <b>$</b> ls -l
-total 22820
-drwxr-xr-x 10 thredds workshop     4096 2009-08-03 16:04 docs
-drwxr-xr-x  5 thredds workshop     4096 2009-08-03 16:04 examples
-drwxr-xr-x  5 thredds workshop     4096 2009-08-03 16:04 host-manager
-drwxr-xr-x  5 thredds workshop     4096 2009-08-03 16:04 manager
-drwxr-xr-x  3 thredds workshop     4096 2009-08-03 16:04 ROOT
--rw-r--r--  1 thredds workshop 23317222 2009-08-03 16:22 thredds.war
+total 24072
+drwxr-xr-x 10 thredds workshop     4096 Nov  5 14:40 docs
+drwxr-xr-x  5 thredds workshop     4096 Nov  5 14:40 examples
+drwxr-xr-x  5 thredds workshop     4096 Nov  5 14:40 host-manager
+drwxr-xr-x  5 thredds workshop     4096 Nov  5 14:40 manager
+drwxr-xr-x  3 thredds workshop     4096 Nov  5 14:40 ROOT
+-rw-r--r--  1 thredds workshop 24625766 Nov  5 14:45 thredds.war
 </pre>
 
        <li>Confirm the TDS has been deployed.</li>
@@ -431,14 +433,14 @@ drwxr-xr-x  3 thredds workshop     4096 2009-08-03 16:04 ROOT
 <b>$</b> $TOMCAT_HOME/bin/startup.sh
 
 <b>$</b> ls -l
-total 22824
-drwxr-xr-x 10 thredds workshop     4096 2009-08-03 16:04 docs
-drwxr-xr-x  5 thredds workshop     4096 2009-08-03 16:04 examples
-drwxr-xr-x  5 thredds workshop     4096 2009-08-03 16:04 host-manager
-drwxr-xr-x  5 thredds workshop     4096 2009-08-03 16:04 manager
-drwxr-xr-x  3 thredds workshop     4096 2009-08-03 16:04 ROOT
-drwxr-xr-x  5 thredds workshop     4096 2009-08-03 16:23 thredds
--rw-r--r--  1 thredds workshop 23317222 2009-08-03 16:22 thredds.war
+total 24076
+drwxr-xr-x 10 thredds workshop     4096 Nov  5 14:40 docs
+drwxr-xr-x  5 thredds workshop     4096 Nov  5 14:40 examples
+drwxr-xr-x  5 thredds workshop     4096 Nov  5 14:40 host-manager
+drwxr-xr-x  5 thredds workshop     4096 Nov  5 14:40 manager
+drwxr-xr-x  3 thredds workshop     4096 Nov  5 14:40 ROOT
+drwxr-xr-x  6 thredds workshop     4096 Nov  5 14:46 thredds
+-rw-r--r--  1 thredds workshop 24625766 Nov  5 14:45 thredds.war
 </pre>
 
  <p>Go to <a href="http://localhost:8080/thredds/">http://localhost:8080/thredds/</a> in your browser to verify the TDS has been deployed:</p>
@@ -489,12 +491,12 @@ drwxr-xr-x  5 thredds workshop     4096 2009-08-03 16:23 thredds
 <pre>
 <b>$</b> cd $TOMCAT_HOME/logs
 <b>$</b> ls -l
-total 12
--rw-r--r-- 1 thredds workshop 2952 2009-08-03 16:23 catalina.2009-08-03.log
--rw-r--r-- 1 thredds workshop 3331 2009-08-03 16:23 catalina.out
--rw-r--r-- 1 thredds workshop    0 2009-08-03 16:08 host-manager.2009-08-03.log
--rw-r--r-- 1 thredds workshop 2030 2009-08-03 16:23 localhost.2009-08-03.log
--rw-r--r-- 1 thredds workshop    0 2009-08-03 16:08 manager.2009-08-03.log
+total 20
+-rw-r--r-- 1 thredds workshop 5930 Nov  5 14:46 catalina.2010-11-05.log
+-rw-r--r-- 1 thredds workshop 6129 Nov  5 14:46 catalina.out
+-rw-r--r-- 1 thredds workshop    0 Nov  5 14:41 host-manager.2010-11-05.log
+-rw-r--r-- 1 thredds workshop 1833 Nov  5 14:46 localhost.2010-11-05.log
+-rw-r--r-- 1 thredds workshop    0 Nov  5 14:41 manager.2010-11-05.log
 </pre>
 
       <div id="expanded" class="question">
@@ -537,7 +539,7 @@ total 12
         <li>Tomcat <code><small>System.out</small></code> and <code><small>System.err</small></code> gets appended to <code><small>catalina.out</small></code>.  </li>
         <li><code><small>catalina.out</small></code> can quickly grow large if the hosted web applications are not specifically catching and logging <code><small>System.out</small></code> and <code><small>System.err</small></code> to designated files.</li>
         <li><code><small>catalina.out</small></code> is not automatically rotated in Tomcat.</li>
-        <li>You will need to employ an outside log rotation program (e.g., <code><small>logadm</small></code> or <code><small>logrotate</small></code>) to rotate <code><small>catalina.out</small></code>.</li>
+        <li>You should employ an outside log rotation program (e.g., <code><small>logadm</small></code> or <code><small>logrotate</small></code>) to rotate <code><small>catalina.out</small></code> and the other log files.</li>
 
         </ul>
      </div> <!-- end subsection -->
