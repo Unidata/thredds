@@ -29,7 +29,7 @@
   &lt;catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
            xmlns:xlink="http://www.w3.org/1999/xlink"
            version="1.0.2"&gt;
-<span style="font-weight: bold;">1)</span>    &lt;service name="<span style="font-weight: bold;">odap</span>" serviceType="OPENDAP" <span style="font-weight: bold;">base="/thredds/dodsC/"</span> /&gt;
+<span style="font-weight: bold;">1)</span>    &lt;service name="<span style="font-weight: bold;">odap</span>" serviceType="OPENDAP" base="/thredds/dodsC/" /&gt;
       &lt;dataset name="TDS Tutorial: example 1"&gt;
 
 <span style="font-weight: bold;">3)</span>        &lt;dataset name="TDS Tutorial: example data 1" <span style="font-weight: bold;">urlPath="test/example1.nc"</span> &gt;
@@ -65,21 +65,21 @@
     <h4>Constructing an access URL</h4>
     <ol>
       <li>Find the service element referenced by the dataset:
-<pre>&lt;service name="odap" serviceType="OPENDAP" base="/thredds/dodsC/" /&gt;</pre>
+<pre>&lt;service name="odap" serviceType="OPENDAP" base="<strong>/thredds/dodsC/</strong>" /&gt;</pre>
       </li>
       <li>Get the base URL of the service element:
 <pre>/thredds/dodsC/</pre>
       </li>
       <li>If it is a relative URL, resolve against the catalog's URL:
-<pre>http://my.server/thredds/catalog.xml      <var>// Catalog URL</var></pre>
+<pre><strong>http://my.server</strong>/thredds/catalog.xml      <var>// Catalog URL</var></pre>
 <pre>http://my.server/thredds/dodsC/           <var>// Service base URL</var></pre>
       </li>
       <li>Find the urlPath attribute for the accessible dataset:
-<pre>urlPath="test/example3.nc"</pre>
+<pre>&lt;dataset name="TDS Tutorial: example data 3" urlPath="<strong>test/example3.nc</strong>" &gt;</pre>        
       </li>
       <li>Append the value of the urlPath attribute to the base
         service URL:
-<pre>http://my.server/thredds/dodsC/test/example3.nc</pre>
+<pre><strong>http://my.server/thredds/dodsC/test/example3.nc</strong></pre>
       </li>
     </ol>
     <p>More information is available on
@@ -247,6 +247,13 @@ etc. We will go into more detail on this later.</p>
     </ul>
 
   </div>
+  <div id="subsection" class="exercise">
+    <h3>Exercise: Look at config dir and logs</h3>
+    <p>cd to config directory</p>
+    <p>look at catalogInit.log</p>
+    <p>look at threddsServlet.log</p>
+  </div>
+
   <div id="subsection"><h3>TDS Root Catalog</h3>
 
     <p>The main TDS configuration catalog is at <code>${TOMCAT_HOME}/content/thredds/catalog.xml</code>.
