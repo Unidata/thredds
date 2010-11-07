@@ -41,6 +41,7 @@
 <b>$</b> less server.xml
 </pre>  
 
+
          <p>Reference the table below to see how the <code><small>server.xml</small></code> elements relate to configuring TDS (mouse-over the element for a description):</p>
           <table>
            <tr>
@@ -454,14 +455,12 @@ drwxr-xr-x  3 thredds workshop 4096 Nov  5 14:40 ROOT
       <h3>The problem of passwords in clear text</h3>
 
       <div id="note" class="info">
-       <h4>Due diligence</h4>
-       <p>For added incentive to use encrypted passwords, read about the <a href="http://en.wikipedia.org/wiki/Man-in-the-middle_attack">man-in-the-middle attack</a>.</p>
+       <h4>Tomcat Realms</h4>
+       <p>The Tomcat documentation contains a wealth of information about the different <a href="http://tomcat.apache.org/tomcat-6.0-doc/config/realm.html">Tomcat Realms</a>.</p>
       </div>
-
 
        <ul>
         <li>Passwords stored in clear text are a vulnerability if the host is compromised.</li>
-        <li>Worse yet, these passwords are being sent from the client to the server (Tomcat) in clear text.  Anyone eavesdropping on the electronic conversation has easy access to the passwords. (We address this issue by enabling SSL.)</li>
         <li>Better to have the passwords encrypted using a cryptographic hash functions (SHA, MD2, or MD5) and then stored in <code><small>tomcat-users.xml</small></code>. </li>
         <li>Tomcat can be configured to support digested passwords (this is not the default setting). </li>
         <li>How it works: When a client makes a request Tomcat will tell the client that a digested password is required. Based on this dialog, the client will automatically digest the password entered by the user.</li>
@@ -475,14 +474,10 @@ drwxr-xr-x  3 thredds workshop 4096 Nov  5 14:40 ROOT
 
        <ol>
         <li>First we need to enable digest passwords support in Tomcat by modifying a couple of Tomcat Realms in <code>server.xml</code>.</li>
-         <div id="note" class="info">
-         <h4>Tomcat Realms</h4>
-         <p>Read more about <a href="http://tomcat.apache.org/tomcat-6.0-doc/config/realm.html">Tomcat Realms</a> for further information.</p>
-        </div>
 
 
+          <p>A <a href="http://tomcat.apache.org/tomcat-6.0-doc/config/realm.html">Tomcat Realm</a> represents a "database" of usernames, passwords, and roles assigned to tomcat users.</p>
 
-          <p>A <a href="http://tomcat.apache.org/tomcat-6.0-doc/config/realm.html">Tomcat Realm</a> represents a "database" of usernames, passwords, and roles (similar to Unix groups) assigned to those users.  Read more about Tomcat Realms</a> for further information.</p>
           <table>
            <tr>
             <th>  
