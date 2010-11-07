@@ -99,24 +99,39 @@
 <blockquote>
   <p>If you allow and use the TDS WMS service, you may be seeing warning messages in your
     Tomcat <code>catalina.out</code> log file that look something like this:</p>
-  <pre style="margin-left: 40px;">May 25, 2010 6:28:22 PM java.util.prefs.FileSystemPreferences syncWorld<br>WARNING: Couldn't flush system prefs: java.util.prefs.BackingStoreException: /etc/.java/.systemPrefs/org create failed.</pre>
+<pre>
+May 25, 2010 6:28:22 PM java.util.prefs.FileSystemPreferences syncWorld
+WARNING: Couldn't flush system prefs: java.util.prefs.BackingStoreException: /etc/.java/.systemPrefs/org create failed.
+</pre>
 
   <p>You can get rid of these messages by setting the "java.util.prefs.systemRoot"
     system property to a location that is writable by the user that Tomcat runs under.
-    We have done this on our server by adding the following to <code>JAVA_OPTS</code>
-    in the <code>${TOMCAT_HOME}/bin/setenv.sh</code> file:</p>
+  </p>
+  <p>Here is what we do on our servers:</p>
+  <ul>
+    <li>Create a directory at <code>${TOMCAT_HOME}/content/thredds/javaUtilPrefs/.systemPrefs</code>, e.g.,
+<pre>
+cd $TOMCAT_HOME/content/thredds
+mkdir javaUtilPrefs
+mkdir javaUtilPrefs/.systemPrefs
+</pre>
+    </li>
+    <li>Make sure that the <code>.systemPrefs</code> directory is writable by the user under which
+      Tomcat runs</li>
+    <li>
+      Add the following to <code>JAVA_OPTS</code>
+      in the <code>${TOMCAT_HOME}/bin/setenv.sh</code> file:
+      <pre>-Djava.util.prefs.systemRoot=$CATALINA_HOME/content/thredds/javaUtilPrefs</pre>
+    </li>
+  </ul>
 
-  <pre>-Djava.util.prefs.systemRoot=$CATALINA_HOME/content/thredds/javaUtilPrefs<br></pre>
-
-  <p>You must make sure that the <code>javaUtilPrefs</code> directory exists and that
-    <code>javaUtilPrefs/.systemPrefs</code> directory exists and is writable (again, by
-    the user under which Tomcat is run).</p>
   <p>If you are interested in more details of the problem, here are two useful links:</p>
   <ul>
     <li>Sun bug # <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4751177">4751177</a>
       ("Preferences storage placed unavailable to non-root users")</li>
     <li>"<a href="http://allaboutbalance.com/articles/disableprefs/">Disabling Sun's Java 1.4.x Preferences Subsystem</a>"</li>
   </ul>
+  <p>We have this TDS issue in our bug tracking system and plan to address it in TDS 4.3.</p>
 </blockquote>
 
 <hr width="50%" align="left">

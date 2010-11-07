@@ -16,6 +16,7 @@
   <li><a href="#configWms">Changes to WMS Options in threddsConfig.xml</a></li>
   <li><a href="#wmsConfigFile">Additional WMS Configuration File</a></li>
   <li><a href="#configFmrc">Change in How FMRC Datasets Are Configured</a></li>
+  <li><a href="#javaUtilPrefs">Avoid <code>java.util.prefs</code> warnings in the <code>catalina.out</code> log</a></li>
 </ul>
 
 <hr>
@@ -107,6 +108,13 @@ section for that information is now deprecated (though still supported, for now)
   <code>featureCollection</code> element and converting <code>datasetFmrc</code>
   elements to <code>featureCollection</code> elements can be found
   <a href="reference/collections/FeatureCollections.html">here</a>.
+</p>
+
+<h2><a name="javaUtilPrefs">Avoid <code>java.util.prefs</code> warnings in the <code>catalina.out</code> log</a></h2>
+<p>This is only an issue if you have enabled WMS and those services are being accessed.
+</p>
+<p>You can avoid getting <code>java.util.prefs</code> warning in your catalina.out log file by
+  following the configuration steps given in the <a href="faq.html#javaUtilPrefs">TDS FAQ on this issue</a>.
 </p>
 
 <hr>
