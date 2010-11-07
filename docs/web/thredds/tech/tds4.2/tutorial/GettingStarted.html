@@ -26,7 +26,7 @@
 
        <ul>        
         <li>Sun Java 1.6</li>       
-        <li>Apache Tomcat 5.5 or above         (we recommend the latest version of Tomcat 6.0)</li>  
+        <li>Apache Tomcat 5.5 or above (we recommend the latest version of Tomcat 6.0)</li>  
        </ul>
        <p>While there are different distributors of Java and servlet containers, Unidata develops, uses and tests the THREDDS Data Server using <i>Sun Java</i> and the <i>Apache Tomcat</i> servlet container.</p>
      </div> <!-- end subsection -->
@@ -43,7 +43,7 @@
         <p>Copy the self-extracting file to the installation directory (our home directory is the installation directory in this example):</p>
 
 <pre>
-<b>$</b> cp jdk-6u22-linux-i586.bin ~
+<b>$</b> cp ~/Downloads/jdk-6u22-linux-i586.bin ~
 <b>$</b> cd
 </pre>
 
@@ -64,6 +64,25 @@
 <pre>
 <b>$</b> ./jdk-6u22-linux-i586.bin
 </pre>
+
+        <p>This will extract the JDK in your home directory:</p>
+
+<pre>
+<b>$</b> ls -l
+total 81840
+drwxr-xr-x  4 thredds workshop     4096 Nov  5 16:46 Conferencing
+drwxr-xr-x  2 thredds workshop     4096 Sep 17 12:54 Desktop
+drwxr-xr-x  2 thredds workshop     4096 Sep 17 12:54 Documents
+drwxr-xr-x  2 thredds workshop     4096 Nov  5 16:58 Downloads
+drwxr-xr-x 10 thredds workshop     4096 Nov  5 14:39 jdk1.6.0_22
+-rwxr-xr-x  1 thredds workshop 83761756 Nov  5 14:34 jdk-6u22-linux-i586.bin
+drwxr-xr-x  2 thredds workshop     4096 Sep 17 12:54 Music
+drwxr-xr-x  2 thredds workshop     4096 Sep 17 12:54 Pictures
+drwxr-xr-x  2 thredds workshop     4096 Sep 17 12:54 Public
+drwxr-xr-x  2 thredds workshop     4096 Sep 17 12:54 Templates
+drwxr-xr-x  2 thredds workshop     4096 Sep 17 12:54 Videos
+</pre>
+
 
        <li>Set the <code>$JAVA_HOME</code> environment variable (default shell on workshop systems is <code>bash</code>).</li>
 <pre>
@@ -99,7 +118,7 @@
         <p>Copy the binary tar.gz file to the installation directory (our home directory is the installation directory in this example):</p>
 
 <pre>
-<b>$</b> cp apache-tomcat-6.0.29.tar.gz ~
+<b>$</b> cp ~/Downloads/apache-tomcat-6.0.29.tar.gz ~
 <b>$</b> cd
 </pre>
 
@@ -413,7 +432,7 @@ Incompatible minimum and maximum heap sizes specified
         <p>Put <code><small>thredds.war</small></code> in the Tomcat <code><small>webapps/</small></code> directory:</p>
 
 <pre>
-<b>$</b> cp thredds.war $TOMCAT_HOME/webapps
+<b>$</b> cp ~/Downloads/thredds.war $TOMCAT_HOME/webapps
 <b>$</b> cd $TOMCAT_HOME/webapps
 
 <b>$</b> ls -l
@@ -539,8 +558,8 @@ total 20
         <li>Tomcat <code><small>System.out</small></code> and <code><small>System.err</small></code> gets appended to <code><small>catalina.out</small></code>.  </li>
         <li><code><small>catalina.out</small></code> can quickly grow large if the hosted web applications are not specifically catching and logging <code><small>System.out</small></code> and <code><small>System.err</small></code> to designated files.</li>
         <li><code><small>catalina.out</small></code> is not automatically rotated in Tomcat.</li>
-        <li>You should employ an outside log rotation program (e.g., <code><small>logadm</small></code> or <code><small>logrotate</small></code>) to rotate <code><small>catalina.out</small></code> and the other log files.</li>
-
+        <li>You should employ an outside log rotation program (e.g., <code><small>logadm</small></code> or <code><small>logrotate</small></code>) to rotate <code><small>catalina.out</small></code>.</li>
+        <li>Archive and remove old <code><small>catalina.out</small></code> files and other log files out of the <code><small>$TOMCAT_HOME/logs</small></code> on a regular basis.</li>
         </ul>
      </div> <!-- end subsection -->
 
