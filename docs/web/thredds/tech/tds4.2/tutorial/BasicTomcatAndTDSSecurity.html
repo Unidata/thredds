@@ -808,7 +808,7 @@ tcp        0      0 127.0.0.1:<b>8443</b>               0.0.0.0:*               
        <h4>Troubleshooting tips</h4>
        <ul>
         <li>Check the XML syntax in <code><small>server.xml</small></code> to make sure it is well-formed and without error.</li>
-        <li>When generating the self-signed certificate, the last password (the <code><small>key password</small></code>) and <code><small>keystore password</small></code> should be the same (<code><small>changeit</small></code>). If they differ, Tomcat cannot open the keystore and you will get this error: <code><small>java.io.IOException: Cannot recover key</small>.</li>
+        <li>When generating the self-signed certificate, the last password (the <code><small>key password</small></code>) and <code><small>keystore password</small></code> should be the same (<code><small>changeit</small></code>). If they differ, Tomcat cannot open the keystore and you will get this error: <code><small>java.io.IOException: Cannot recover key</small></code>.</li>
         <li>Did you restart Tomcat after you made your changes to <code><small>server.xml</small></code>?</li>
         <li>Did you specify the full path to the <code><small>keystore</small></code> file in <code><small>server.xml</small></code>?</li>
        </ul>
