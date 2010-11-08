@@ -14,13 +14,12 @@
 
 <div id="section"><h2><a name="Setup">Setting  up WCS and WMS</a></h2>
 
-  <div id="subsection"><h3>Allowing WCS and WMS</h3>
+  <div id="subsection"><h3>Configure TDS to Allow WCS and WMS Access</h3>
 
     <p>Out of the box, the TDS distribution will have both WCS and WMS disabled. They both
-      must be explicitly allowed in the threddsConfig.xml file. The threddsConfig.xml file
-      that is distributed with the TDS (and should now be in your
-      <code>${TOMCAT_HOME}/content/thredds</code> directory) has the WCS and WMS sections
-      commented out.
+      must be explicitly allowed in the threddsConfig.xml file. The WCS and WMS sections are
+      commented out of the threddsConfig.xml file that is distributed with the TDS (and should now
+      be in your <code>${TOMCAT_HOME}/content/thredds</code> directory).
     </p>
 
     <h4>WCS Configuration</h4>
@@ -28,11 +27,11 @@
     <p>To enable the WCS service for locally served datasets, you will want the following
       in your threddsConfig.xml file:
     </p>
-    <pre>
+<pre>
 &lt;WCS&gt;
-    &lt;allow&gt;true &lt;/allow&gt;
+  &lt;allow&gt;true &lt;/allow&gt;
 &lt;/WCS&gt;
-    </pre>
+</pre>
 
     <p>
       Additional WCS configuration options can be set in the <code>threddsConfig.xml</code>
@@ -46,11 +45,11 @@
     <p>To enable the WMS service for locally served datasets, you will want the following
       in your threddsConfig.xml file:
     </p>
-    <pre>
+<pre>
 &lt;WMS&gt;
-    &lt;allow&gt;true &lt;/allow&gt;
+  &lt;allow&gt;true &lt;/allow&gt;
 &lt;/WMS&gt;
-    </pre>
+</pre>
 
     <p>
       Additional WMS configuration options can be set in the <code>threddsConfig.xml</code>
@@ -60,12 +59,7 @@
     </p>
 
   </div>
-  <div id="subsection" class="exercise"><h3>Exercise: Allow WCS and WMS Services</h3>
-    <ol>
-      <li>Edit the <strong>threddsConfig.xml</strong> file and allow WCS and
-        WMS services as discussed above.</li>
-    </ol>
-  </div>
+
   <div id="subsection"><h3>Adding WCS and WMS Services</h3>
 
     <p>Once the WCS and WMS services are enabled, all that is required for the
@@ -85,71 +79,124 @@
 
   </div>
 
-  <div id="subsection" class="exercise"><h3>Exercise: Add WCS and WMS Services to NAM data</h3>
-
+  <div id="subsection" class="exercise"><h3>Exercise: Setup WCS and WMS Access for NAM Data</h3>
     <ol>
-      <li>Open a NAM dataset in ToolsUI
-        [<a href="http://www.unidata.ucar.edu/software/netcdf-java/v4.0/webstart/netCDFtools.jnlp">webstart</a>]
-        and make sure it is recognized as gridded data.</li>
+      <li>Edit the TDS configuration file and allow WCS and
+        WMS services as discussed above
+<pre>
+<strong>[thredds@workshop00 ~]$</strong> cd ${TOMCAT_HOME}/content/thredds
+<strong>[thredds@workshop00 ~]$</strong> vi threddsConfig.xml
+</pre>
+        and add/replace the WCS and WMS elements (as described above)
+<pre>
+&lt;WCS&gt;
+  &lt;allow&gt;true &lt;/allow&gt;
+&lt;/WCS&gt;
+&lt;WMS&gt;
+  &lt;allow&gt;true &lt;/allow&gt;
+&lt;/WMS&gt;
+</pre>
+      </li>
       <li>Edit the <strong>catalog.xml</strong> file and add WCS and
-        WMS services to the NAM dataset.</li>
+        WMS services to the NAM dataset
+<pre>
+&lt;service name="wcs" serviceType="WCS" base="/thredds/wcs/" /&gt;
+&lt;service name="wms" serviceType="WMS" base="/thredds/wms/" /&gt;
+</pre>
+      </li>
+      <li>Restart Tomcat so the TDS is reinitialized:
+<pre>
+<strong>[thredds@workshop00 ~]$</strong> cd ${TOMCAT_HOME}/bin
+<strong>[thredds@workshop00 ~]$</strong> ./shutdown.sh
+<strong>[thredds@workshop00 ~]$</strong> ./startup.sh
+</pre>
+      </li>
+      <li>Test that WCS and WMS are working:
+        <ol>
+          <li>Bring the catalog up in a browser:
+            <code><a href="http://localhost:8080/thredds/catalog.html">http://localhost:8080/thredds/catalog.html</a></code>
+          </li>
+          <li>Click down to one of the NAM dataset pages.</li>
+          <li>Select the WCS Access link</li>
+          <li>Go back, select the WMS Access link</li>
+        </ol>
+      </li>
     </ol>
-
   </div>
-
 
 </div>
-<div id="section"><h2><a name="Using">Using WCS and WMS</a></h2>
-  <div id="subsection"><h3>WMS Clients</h3>
-    <ul>
-      <li>NASA WorldWind</li>
-      <li>GoogleEarth</li>
-      <li>IDV</li>
-      <li>ToolsUI</li>
-    </ul>
 
-  </div>
-  <div id="subsection"><h3>WCS Clients</h3>
+<div id="section"><h2><a name="Using">Using WCS and WMS</a></h2>
+  <div id="subsection">
     <ul>
-      <li>OWSlib [free] -
+      <li>GoogleEarth (WMS) [free]</li>
+      <li>Godiva2 (WMS) [free - distributed with TDS]</li>
+      <li>NASA WorldWind (WMS) [free] - <a href="http://worldwind.arc.nasa.gov/">http://worldwind.arc.nasa.gov/</a> </li>
+      <li>IDV (WMS) [free]</li>
+      <li>ToolsUI (WMS) [free]</li>
+      <li>OWSlib (WMS and WCS) [free] -
         <a href="http://pypi.python.org/pypi/OWSLib/">http://pypi.python.org/pypi/OWSLib/</a>
       </li>
-      <li>GI-go [free]
+      <li>GI-go (WMS and WCS) [free]
         - <a href="http://zeus.pin.unifi.it/cgi-bin/twiki/view/GIgo/WebHome">http://zeus.pin.unifi.it/cgi-bin/twiki/view/GIgo/WebHome</a>
       </li>
-      <li>CADCorp [commercial]
+      <li>CADCorp (WMS and WCS [commercial]
         - <a href="http://www.cadcorp.com/">http://www.cadcorp.com/</a>
         - has a "no cost" product called
         <a href="http://www.cadcorp.com/products_geographical_information_systems/map_browser.htm">Map Browser</a>
       </li>
-      <li>IDL [commercial]
+      <li>IDL (WCS) [commercial]
         - <a href="http://www.ittvis.com/ProductServices/IDL.aspx">http://www.ittvis.com/ProductServices/IDL.aspx</a>
       </li>
-      <li>gvSIG [free] - <a href="http://www.gvsig.gva.es/">http://www.gvsig.gva.es/</a>
+      <li>gvSIG (WMS and WCS) [free] - <a href="http://www.gvsig.gva.es/">http://www.gvsig.gva.es/</a>
         [<a href="http://www.gvsig.gva.es/index.php?id=gvsig&L=2">en</a>]
       </li>
     </ul>
   </div>
-  <div id="subsection" class="exercise"><h3>Exercise: Look at WMS and WCS</h3>
 
-    <ol>
-      <li>Browse to a NAM dataset</li>
-      <li>Click on the WMS access URL.</li>
-      <li>Click on the WCS access URL.</li>
-      <li>Try WMS access in the IDV:
-        <ol>
-          <li>Open IDV
-            [<a href="http://www.unidata.ucar.edu/software/idv/release/nightly/webstart/IDV/idv.jnlp">webstart</a>]
-          </li>
-          <li>In the Dashboard "Data Chooser" tab, select "Catalogs"</li>
-          <li>Cut and Paste the GetCapabilities URL into the selector</li>
-          <li>Browse to the layers, select, and "Add Source"</li>
-        </ol>
-      </li>
-    </ol>
-
+  <div id="subsection"><h3>Godiva2 WMS Client</h3>
+    <p>The Godiva2 WMS client is part of the ncWMS code base and as such is included in the TDS
+      distribution. It is a web application written in JavaScript using the OpenLayers library.
+    </p>
+    <p>In the TDS, you can access the Godiva2 client from the "Viewers" section of all WMS
+      accessible datasets. The <a href="http://www.resc.rdg.ac.uk/trac/ncWMS/wiki/GodivaTwoUserGuide">Godiva2 User Guide</a>
+      is available from the ncWMS site.</p>
+    <img src="Godiva2_screenshot.png" alt="Godiva2" height="400" width="480" />
   </div>
+</div>
 
+<div id="section"><h2><a name="wmsConfig">More WMS Configuration</a></h2>
+  <div id="subsection">
+    <p>Besides the basic WMS configuration available in the <code>threddsConfig.xml</code> file,
+      there are additional configuration settings for default image styling in the
+      <code>wmsConfig.xml</code> file. This additional configuration includes settings for the
+      default values of color scale range, palette name, and number of color bands as well as
+      whether to use a linear or logarithmic scale. These settings can be applied globally, by
+      dataset, or by variable in a dataset, or to variables in any dataset by CF standard name.
+    </p>
+    <p>Detailed information is available from the ncWMS/MyOcean
+      <a href="http://www.resc.reading.ac.uk/trac/myocean-tools/wiki/WmsDetailedConfiguration">
+        WMS Detailed Configuration</a> web page.
+    </p>
+  </div>
+  <div id="subsection" class="exercise"><h3>Exercise: Try Modifying the <code>wmsConfig.xml</code> File</h3>
+    <ol>
+      <li>Open a NAM dataset in Godiva2 and plot a parameter.</li>
+      <li>Notice the default color scale range is [-50,50]. Decide on a better color scale range.</li>
+      <li>Open the
+        "<a href="http://www.resc.reading.ac.uk/trac/myocean-tools/wiki/WmsDetailedConfiguration">
+          WMS Detailed Configuration</a>" page in your browser.</li>
+      <li>Edit the wmsConfig.xml file
+<pre>
+<strong>[thredds@workshop00 ~]$</strong> cd ${TOMCAT_HOME}/content/thredds
+<strong>[thredds@workshop00 ~]$</strong> vi wmsConfig.xml
+</pre>
+        and change the color scale range for the target parameter in the NAM datasets.
+      </li>
+      <li>Reopen Godiva2 on another NAM dataset and plot the target parameter. Check the new
+        default color scale range.</li>
+    </ol>
+  </div>
 </div>
 
 <p>

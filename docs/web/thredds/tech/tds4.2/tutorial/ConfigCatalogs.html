@@ -139,8 +139,7 @@
     <p>Notes: These base URLs are relative the the server so your catalogs are independent of your
       servers hostname or port.</p>
 
-    <div id="expanded" class="troubleshooting">
-      <h4>Data Requirement for Each Service</h4>
+    <div id="expanded" class="troubleshooting"><h4>Data Requirement for Each Service</h4>
       <ul class="little">
         <li>The <strong>"HTTPServer"</strong> service can serve any file.</li>
         <li>The <strong>"OPeNDAP"</strong> service can serve any data file that the
@@ -154,12 +153,29 @@
           files.
         </li>
       </ul>
-      <p>You can check that a data file is recognized as "gridded" with netCDF-Java ToolsUI.
-        (ToolsUI can be found on the
-        <a href="http://www.unidata.ucar.edu/software/netcdf-java/">netCDF-Java home page</a>.)</p>
     </div>
-
+    <p>You can check that a data file is recognized as "gridded" with netCDF-Java ToolsUI (available
+      for download from the
+        <a href="http://www.unidata.ucar.edu/software/netcdf-java/">netCDF-Java home page</a> or you can use
+        <a href="http://www.unidata.ucar.edu/software/netcdf-java/v4.2/webstart/netCDFtools.jnlp">webstart</a>).
+    </p>
   </div>
+
+  <div id="subsection" class="exercise"><h3>Exercise: Check that the NAM Dataset is Gridded Data</h3>
+    <ol>
+      <li>Open the netCDF-Java ToolsUI application
+        [<a href="http://www.unidata.ucar.edu/software/netcdf-java/v4.2/webstart/netCDFtools.jnlp">webstart</a>].
+      </li>
+      <li>In the "FeatureTypes" - "Grids" tab, browse to the <code>/data/ldm/nam_12km</code>
+        directory and open a dataset file.</li>
+      <li>If variables are listed in the top section of the window, the netCDF-Java library has
+        recognized the dataset as gridded data.</li>
+    </ol>
+    <br>
+    <p style="margin-left: -100px"><strong>Note</strong>: While we are here, lets look at the
+      "Viewer" tab and the "THREDDS" tab.</p>
+  </div>
+
   <div id="subsection"><h3>TDS Configuration Catalogs and Metadata</h3>
 
     <p>The datasetScan element is an extension of the dataset element and so can contain metadata.</p>

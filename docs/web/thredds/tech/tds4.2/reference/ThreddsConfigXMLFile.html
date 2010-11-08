@@ -131,7 +131,7 @@ as a number of basic icons.<br>
 <h2>Elements in <strong>threddsConfig.xml</strong></h2>
 
  <h3><strong>  Catalog Roots</strong></h3>
-<pre style="margin-left: 40px;">&lt;<strong>catalogRoot</strong>&gt;tempCatalog.xml&lt;/catalogRoot&gt;<br>&lt;<strong>catalogRoot</strong>&gt;idd/catalog.xml&lt;/catalogRoot&gt;<br>&lt;<strong>catalogRoot</strong>&gt;catgen/subdir/enhancedCatalog-1.0.xml&lt;/catalogRoot&gt;<br></pre>
+<pre style="margin-left: 40px;">&lt;<strong>catalogRoot</strong>&gt;tempCatalog.xml&lt;/catalogRoot&gt;<br>&lt;<strong>catalogRoot</strong>&gt;idd/catalog.xml&lt;/catalogRoot&gt;<br>&lt;<strong>catalogRoot</strong>&gt;catgen/subdir/enhancedCatalog-1.0.xml&lt;/catalogRoot&gt;</pre>
  <p>These elements name your root catalogs that are not referenced from your main catalog ( <strong>${tomcat_home}/content/thredds/catalog.xml</strong>).
 On startup, the TDS reads the main catalog and any root catalogs you
 list here, plus any catalogs that are referenced by them in a <strong>catalogRef</strong>. Data roots and other needed information are found and cached. All the catalogs found in this way are called <em>static catalogs</em>, and all static catalogs must live under the <strong>${tomcat_home}/content/thredds</strong> directory. When you do a <strong>Debug/Reinit</strong>, the static  catalogs are reread. </p>
@@ -140,10 +140,10 @@ list here, plus any catalogs that are referenced by them in a <strong>catalogRef
  <p>Catalog services are available by default for catalogs served by the local
    TDS. But for remote catalogs these services must be explicitly enabled in
    threddsConfig.xml:</p>
-<pre style="margin-left: 40px;">&lt;CatalogServices&gt;<br>    &lt;allowRemote&gt;true&lt;/allowRemote&gt;<br>&lt;/CatalogServices&gt;<br></pre>
+<pre style="margin-left: 40px;">&lt;CatalogServices&gt;<br>    &lt;allowRemote&gt;true&lt;/allowRemote&gt;<br>&lt;/CatalogServices&gt;</pre>
  
 <h3><a name="DiskCache"></a>CDM library Disk cache </h3>
-<pre>  &lt;<strong>DiskCache</strong>&gt;<br>    &lt;<strong>alwaysUse</strong>&gt;false&lt;/alwaysUse&gt;<br>    &lt;<strong>dir</strong>&gt;/temp/cache/&lt;/dir&gt;<br>    &lt;<strong>scour</strong>&gt;1 hour&lt;/scour&gt;<br>    &lt;<strong>maxSize</strong>&gt;10 Gb&lt;/maxSize&gt;<br>  &lt;/DiskCache&gt;<br></pre>
+<pre>  &lt;<strong>DiskCache</strong>&gt;<br>    &lt;<strong>alwaysUse</strong>&gt;false&lt;/alwaysUse&gt;<br>    &lt;<strong>dir</strong>&gt;/temp/cache/&lt;/dir&gt;<br>    &lt;<strong>scour</strong>&gt;1 hour&lt;/scour&gt;<br>    &lt;<strong>maxSize</strong>&gt;10 Gb&lt;/maxSize&gt;<br>  &lt;/DiskCache&gt;</pre>
  <p>These elements control where the <em><strong>CDM/NetCDF-Java</strong></em> library writes temporary files, for example when it needs to unzip files, or write GRIB index files, etc. If <strong>alwaysUse</strong> is true, these temporary files will always be written to the <em>cache directory</em> specified by <strong>dir</strong> (<a href="#Cache_Locations">choosing a cache directory</a>). If <strong>alwaysUse</strong>
 is false, TDS will try to write them to the same directory as the
 original file, and if the TDS doesnt have write permission it will then
@@ -159,10 +159,10 @@ cache.</p>
  <p>If not otherwise set, the TDS will use the <strong>${tomcat_home}/content/thredds/cache/cdm</strong> directory. We recommend that you use this default, by not specifying the DiskCache.dir.</p>
  <h3>THREDDS <strong>NetcdfFile<a name="NetcdfFileCache"></a></strong> Object / File Handle<a name="FileHandles"></a> Caching </h3>
 <pre>  &lt;<strong>NetcdfFileCache</strong>&gt;<br>    &lt;<strong>minFiles</strong>&gt;200&lt;/minFiles&gt;<br>    &lt;<strong>maxFiles</strong>&gt;400&lt;/maxFiles&gt;<br>    &lt;<strong>scour</strong>&gt;10 min&lt;/scour&gt;<br>  &lt;/NetcdfFileCache&gt;</pre>
-<pre>  &lt;<strong>HTTPFileCache</strong>&gt;<br>    &lt;<strong>minFiles</strong>&gt;25&lt;/minFiles&gt;<br>    &lt;<strong>maxFiles</strong>&gt;40&lt;/maxFiles&gt;<br>    &lt;<strong>scour</strong>&gt;10 min&lt;/scour&gt;<br>  &lt;/HTTPFileCache&gt;<br></pre>
+<pre>  &lt;<strong>HTTPFileCache</strong>&gt;<br>    &lt;<strong>minFiles</strong>&gt;25&lt;/minFiles&gt;<br>    &lt;<strong>maxFiles</strong>&gt;40&lt;/maxFiles&gt;<br>    &lt;<strong>scour</strong>&gt;10 min&lt;/scour&gt;<br>  &lt;/HTTPFileCache&gt;</pre>
  <p>These elements control the size of the TDS cache for objects/open file handles for <strong>NetcdfFile</strong> objects, and files served through <strong>HTTP Range-Byte</strong> requests, respectively. Up to <strong>maxFiles</strong> objects will be cached, and every <strong>scour</strong> amount of time, older items in the cache will be released, until only <strong>minFiles</strong> objects are left. The amount of time specified by scour uses any valid <strong><em>udunits</em></strong> time string, such as <em><strong>sec, min, hour, day</strong></em>. To disable the cache, set <strong>maxFiles</strong> to 0.</p>
 <h3>GRIB indexing </h3>
- <pre>  &lt;<strong>GribIndexing</strong>&gt;<br>    &lt;<strong>setExtendIndex</strong>&gt;false&lt;/setExtendIndex&gt;<br>    &lt;<strong>alwaysUseCache</strong>&gt;false&lt;/alwaysUseCache&gt;<br>  &lt;/GribIndexing&gt;<br></pre>
+ <pre>  &lt;<strong>GribIndexing</strong>&gt;<br>    &lt;<strong>setExtendIndex</strong>&gt;false&lt;/setExtendIndex&gt;<br>    &lt;<strong>alwaysUseCache</strong>&gt;false&lt;/alwaysUseCache&gt;<br>  &lt;/GribIndexing&gt;</pre>
  <p>This
 is for servers that have dynamically growing GRIB files (such as
 TDS/IDD servers). New GRIB records may be appended to a GRIB file.
@@ -170,7 +170,7 @@ Normally the library will detect this and auomaticallly extend the GRIB
 index. When GRIB indexing is being done by an external process, its
 best to turn off automatic index extension, by setting <strong>setExtendIndex</strong> to false, so there is no possibility of a collision by the GRIB indexing process and the TDS. If you  have <strong>setExtendIndex</strong> true, you should also set <strong>alwaysUseCache</strong> to true, to avoid collisions with an external indexer.</p>
  <h3>Aggregation Cache<a name="AggregationCache"></a> </h3>
- <pre>  &lt;<strong>AggregationCache</strong>&gt;<br>    &lt;<strong>dir</strong>&gt;/temp/acache/&lt;/dir&gt;<br>    &lt;<strong>scour</strong>&gt;24 hours&lt;/scour&gt;<br>    &lt;<strong>maxAge</strong>&gt;90 days&lt;/maxAge&gt;<br>  &lt;/AggregationCache&gt;<br></pre>
+ <pre>  &lt;<strong>AggregationCache</strong>&gt;<br>    &lt;<strong>dir</strong>&gt;/temp/acache/&lt;/dir&gt;<br>    &lt;<strong>scour</strong>&gt;24 hours&lt;/scour&gt;<br>    &lt;<strong>maxAge</strong>&gt;90 days&lt;/maxAge&gt;<br>  &lt;/AggregationCache&gt;</pre>
  <p> If you have <strong>joinExisting</strong> Aggregations, coordinate information will be written to a cache directory specified by <strong>dir</strong> (<a href="#Cache_Locations">choosing a cache directory</a>). If not otherwise set, the TDS will use the <strong>${tomcat_home}/content/thredds/cache/agg/</strong> directory. We recommend that you use this default, by not specifying a <strong>AggregationCache</strong>.<strong>dir</strong> element.</p>
 <p>Every <strong>scour</strong> amount of time, any item that hasnt been changed since <em>maxAge</em> time will be deleted. Set scour to -1 to not scour at all. </p>
  <p>This
@@ -182,7 +182,7 @@ pronounced difference with and without this cache. Unless you have
 special needs, you can just accept the defaults for this element.</p>
  <p>The cache information is updated based on the <strong>recheckEvery</strong> field in the <strong>joinExisting</strong> aggregation element.</p>
 <h3>Aggregation<a name="Aggregation"></a></h3>
- <pre>  &lt;<strong>Aggregation</strong>&gt;<br>    &lt;<strong>typicalDataset</strong>&gt;latest&lt;/typicalDataset&gt;<br>  &lt;/Aggregation&gt;<br></pre>
+ <pre>  &lt;<strong>Aggregation</strong>&gt;<br>    &lt;<strong>typicalDataset</strong>&gt;latest&lt;/typicalDataset&gt;<br>  &lt;/Aggregation&gt;</pre>
  <p>You
 can control how NcML Aggregation chooses its typical / template
 dataset, the one it uses to populate the metadata for the resulting
@@ -208,22 +208,22 @@ below the defaults.</p>
    <a href="WCS.html">here</a>. By default this service is disabled in the TDS.
    It can be enabled by including the following in the <code>threddsConfig.xml</code>
    file: </p>
- <pre>
- &lt;WCS&gt;
-   &lt;allow&gt;false&lt;/allow&gt;
- &lt;/WCS&gt;
- </pre>
+<pre>
+&lt;WCS&gt;
+  &lt;allow&gt;false&lt;/allow&gt;
+&lt;/WCS&gt;
+</pre>
 
  <p>The following shows all the configuration options available in the WCS section of the
    <code>threddsConfig.xml</code> file with the default values shown: </p>
- <pre>
+<pre>
 &lt;<strong>WCS</strong>&gt;
-    &lt;<strong>allow</strong>&gt;false&lt;/allow&gt;
-    &lt;<strong>dir</strong>&gt;(see the note below)&lt;/dir&gt;
-    &lt;<strong>scour</strong>&gt;15 min&lt;/scour&gt;
-    &lt;<strong>maxAge</strong>&gt;30 min&lt;/maxAge&gt;
+  &lt;<strong>allow</strong>&gt;false&lt;/allow&gt;
+  &lt;<strong>dir</strong>&gt;(see the note below)&lt;/dir&gt;
+  &lt;<strong>scour</strong>&gt;15 min&lt;/scour&gt;
+  &lt;<strong>maxAge</strong>&gt;30 min&lt;/maxAge&gt;
 &lt;/WCS&gt;
- </pre>
+</pre>
 
  <p>We recommend that you include in the <code>threddsConfig.xml</code>
    file only the options you want to change. Here is the description of the
@@ -248,23 +248,24 @@ below the defaults.</p>
    <a href="WMS.html">here</a>. By default this service is disabled in the TDS.
    It can be enabled by including the following in the <code>threddsConfig.xml</code>
    file: </p>
- <pre>
- &lt;WMS&gt;
-   &lt;allow&gt;false&lt;/allow&gt;
- &lt;/WMS&gt;
- </pre>
+<pre>
+&lt;WMS&gt;
+  &lt;allow&gt;false&lt;/allow&gt;
+&lt;/WMS&gt;
+</pre>
 
  <p>The following shows all the configuration options available in the WMS section of the
    <code>threddsConfig.xml</code> file with the default values shown: </p>
 
- <pre>
+<pre>
 &lt;<strong>WMS</strong>&gt;
-    &lt;<strong>allow</strong>&gt;false&lt;/allow&gt;
-    &lt;<strong>allowRemote</strong>&gt;false&lt;/allowRemote&gt;
-    &lt;<strong>paletteLocationDir</strong>&gt;/WEB-INF/palettes&lt;/paletteLocationDir&gt;
-    &lt;<strong>maxImageWidth</strong>&gt;2048&lt;/maxImageWidth&gt;
-    &lt;<strong>maxImageHeight</strong>&gt;2048&lt;/maxImageHeight&gt;
-&lt;/WMS&gt;</pre>
+  &lt;<strong>allow</strong>&gt;false&lt;/allow&gt;
+  &lt;<strong>allowRemote</strong>&gt;false&lt;/allowRemote&gt;
+  &lt;<strong>paletteLocationDir</strong>&gt;/WEB-INF/palettes&lt;/paletteLocationDir&gt;
+  &lt;<strong>maxImageWidth</strong>&gt;2048&lt;/maxImageWidth&gt;
+  &lt;<strong>maxImageHeight</strong>&gt;2048&lt;/maxImageHeight&gt;
+&lt;/WMS&gt;
+</pre>
 
  <p>We recommend that you include in the <code>threddsConfig.xml</code>
    file only the options you want to change. Here is the description of the
@@ -319,7 +320,7 @@ below the defaults.</p>
  <p><br>
  </p>
 <h3>NetCDF-Java runtime Loading </h3>
- <pre>  &lt;<strong>nj22Config</strong>&gt;<br>    &lt;<strong>ioServiceProvider</strong> class="edu.univ.ny.stuff.FooFiles"/&gt;<br>    &lt;<strong>coordSysBuilder</strong> convention="foo" class="test.Foo"/&gt;<br>    &lt;<strong>coordTransBuilder</strong> name="atmos_ln_sigma_coordinates" type="vertical" class="my.stuff.atmosSigmaLog"/&gt;<br>    &lt;<strong>typedDatasetFactory</strong> datatype="Point" class="gov.noaa.obscure.file.Flabulate"/&gt;<br>    &lt;<strong>table</strong> type="GRIB1" filename="/home/rkambic/grib/tables/userlookup.lst"/&gt;<br>    &lt;<strong>table</strong> type="GRIB2" filename="/home/rkambic/grib/tables/grib2userparameters"/&gt;<br>  &lt;/nj22Config&gt;<br> </pre>
+ <pre>  &lt;<strong>nj22Config</strong>&gt;<br>    &lt;<strong>ioServiceProvider</strong> class="edu.univ.ny.stuff.FooFiles"/&gt;<br>    &lt;<strong>coordSysBuilder</strong> convention="foo" class="test.Foo"/&gt;<br>    &lt;<strong>coordTransBuilder</strong> name="atmos_ln_sigma_coordinates" type="vertical" class="my.stuff.atmosSigmaLog"/&gt;<br>    &lt;<strong>typedDatasetFactory</strong> datatype="Point" class="gov.noaa.obscure.file.Flabulate"/&gt;<br>    &lt;<strong>table</strong> type="GRIB1" filename="/home/rkambic/grib/tables/userlookup.lst"/&gt;<br>    &lt;<strong>table</strong> type="GRIB2" filename="/home/rkambic/grib/tables/grib2userparameters"/&gt;<br>  &lt;/nj22Config&gt;</pre>
  <p>These elements allow you to specify <a href="http://www.unidata.ucar.edu/software/netcdf-java/reference/RuntimeLoading.html">Runtime parameters </a> for the Netcdf-Java library from the threddsConfig file. See the Netcdf-Java <a href="http://www.unidata.ucar.edu/software/netcdf-java/tutorial/index.html">tutorial</a> for an overview. </p>
 
  <hr style="width: 100%; height: 2px;">
@@ -328,7 +329,7 @@ below the defaults.</p>
 
  <p><strong>DO NOT USE</strong></p>
  <p>Intended to chain together multiple "content" directories. For instance, the following:</p>
- <pre> &lt;contentRoots&gt;<br>   &lt;contentRoot&gt;motherlode&lt;/contentRoot&gt;<br>   &lt;contentRoot&gt;idd&lt;/contentRoot&gt;<br> &lt;/contentRoots&gt;<br> </pre>
+ <pre> &lt;contentRoots&gt;<br>   &lt;contentRoot&gt;motherlode&lt;/contentRoot&gt;<br>   &lt;contentRoot&gt;idd&lt;/contentRoot&gt;<br> &lt;/contentRoots&gt;</pre>
 
  <p>chains together:</p>
  <ul>
@@ -342,15 +343,15 @@ below the defaults.</p>
  <p>Eventually will provide macro-replacment in datasetScan location attributes.
    For instance:</p>
 
- <pre> &lt;DataRoots&gt;<br>   &lt;idd&gt;/data/ldm/pub&lt;/idd&gt;<br> &lt;/DataRoots&gt;<br> </pre>
+ <pre> &lt;DataRoots&gt;<br>   &lt;idd&gt;/data/ldm/pub&lt;/idd&gt;<br> &lt;/DataRoots&gt;</pre>
  <p>Could be used with:</p>
-<pre>&lt;datasetScan ... location="@iddDataRoot@/fsl"&gt;...&lt;/datasetScan&gt;<br></pre>
+<pre>&lt;datasetScan ... location="@iddDataRoot@/fsl"&gt;...&lt;/datasetScan&gt;</pre>
  
  <hr style="width: 100%; height: 2px;">
 
  <h2>Options in 4.1 </h2>
  <h3>Controlling Ehcache </h3>
-<pre> &lt;eh<strong>cache</strong>&gt;<br>   &lt;<strong>configFile</strong>&gt;/tomcat_home/webapp/WEB-INF/ehcache.xml&lt;/<strong>configFile</strong>&gt;<br>   &lt;<strong>dir</strong>&gt;/tomcat_home/content/thredds/ehcache/&lt;/<strong>dir</strong>&gt;<br> &lt;/ehcache&gt;<br></pre>
+<pre> &lt;eh<strong>cache</strong>&gt;<br>   &lt;<strong>configFile</strong>&gt;/tomcat_home/webapp/WEB-INF/ehcache.xml&lt;/<strong>configFile</strong>&gt;<br>   &lt;<strong>dir</strong>&gt;/tomcat_home/content/thredds/ehcache/&lt;/<strong>dir</strong>&gt;<br> &lt;/ehcache&gt;</pre>
 <ul>
    <li>location of <a href="http://ehcache.org/">ehcache</a> configuration file. </li>
   <li>location of ehcache data files.  If not otherwise set, the TDS will use the <strong>${tomcat_home}/content/thredds/cache/ehcache/</strong> directory We recommend that you use this default, by not specifying an <strong>ehcache</strong>.<strong>dir</strong> element.<br>
@@ -359,7 +360,7 @@ below the defaults.</p>
 <h3><br>
    Controlling THREDDS catalog output<br>
  </h3>
- <pre>&lt;catalogWriting&gt;<br>  &lt;<strong>useBytesForDataSize</strong>&gt;false&lt;useBytesForDataSize/&gt;<br>&lt;/catalogWriting&gt;<br></pre>
+ <pre>&lt;catalogWriting&gt;<br>  &lt;<strong>useBytesForDataSize</strong>&gt;false&lt;useBytesForDataSize/&gt;<br>&lt;/catalogWriting&gt;</pre>
  <ul>
    <li>
 if true, in a TDS catalog, output the Data Size with exact byte count.
@@ -368,7 +369,7 @@ appropriately.</li>
  </ul>
 <hr style="width: 100%; height: 2px;">
 <h2>Options in 4.2 </h2>
-<pre> &lt;FeatureCollection<strong></strong>&gt;<br>   &lt;<strong>dir</strong>&gt;/tomcat_home/content/thredds/collectionCache/&lt;/<strong>dir</strong>&gt;<br> &lt;/FeatureCollection&gt;<br></pre>
+<pre> &lt;FeatureCollection<strong></strong>&gt;<br>   &lt;<strong>dir</strong>&gt;/tomcat_home/content/thredds/collectionCache/&lt;/<strong>dir</strong>&gt;<br> &lt;/FeatureCollection&gt;</pre>
 <ul>
   <li>location of Feature Collection cache, currently implemented with <a href="http://www.oracle.com/technetwork/database/berkeleydb/overview/index-093405.html">Berkeley DB</a>. If not otherwise set, the TDS will use the <strong>${tomcat_home}/content/thredds/cache/collection/</strong> directory We recommend that you use this default, by not specifying a <strong>FeatureCollection</strong>.<strong>dir</strong> element.<br>
   </li>
