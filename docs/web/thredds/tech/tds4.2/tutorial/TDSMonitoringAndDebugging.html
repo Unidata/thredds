@@ -51,11 +51,7 @@
 
 &lt;/Host&gt;
 </pre>  
-         <p>Uncomment the <code><small>AccessLogValve</small></code> and change the <code><small>prefix</small></code> and <code><small>suffix</small></code> attributes to customize the access log name:</p>
-<pre>
-prefix="access." 
-suffix=".log"
-</pre> 
+
          
         <p>To provide more useful information about who is accessing the TDS, change the <code><small>pattern</small></code> element to customize the format of each log entry:</p>
 <pre>
@@ -66,17 +62,23 @@ pattern="%h %l %u %t &amp;quot;%r&amp;quot; %s %b &amp;quot;%{Referer}i&amp;quot
 <pre>
 &lt;Valve className="org.apache.catalina.valves.AccessLogValve"
    directory="logs"  
-   prefix="access." 
-   suffix=".log"
+   prefix="localhost_access_log." 
+   suffix=".txt"
    pattern="%h %l %u %t &amp;quot;%r&amp;quot; %s %b &amp;quot;%{Referer}i&amp;quot; &amp;quot;%{User-Agent}i&amp;quot; %D"
    resolveHosts="false" /&gt;
 </pre> 
 
         <li>Verify the access log has been enabled.</li>
-         <p>Restart Tomcat and verify an access log with a name format of  <code><small>access.yyyy-mm-dd.log</small></code> has been generated in the <code><small>$TOMCAT_HOME/logs/</small></code> directory:</li>
+         <p>Restart Tomcat and verify an access log has been generated in the <code><small>$TOMCAT_HOME/logs/</small></code> directory:</li>
 <pre>
-<b>$</b> ls -l /home/thredds/apache-tomcat-6.0.20/logs/access*
--rw-r--r-- 1 thredds workshop 0 2009-08-04 13:22 access.2009-08-04.log
+<b>$</b> ls -l /home/thredds/apache-tomcat-6.0.29/logs
+total 52
+-rw-r--r-- 1 thredds workshop 20034 Nov  7 16:38 catalina.2010-11-07.log
+-rw-r--r-- 1 thredds workshop 20551 Nov  7 16:38 catalina.out
+-rw-r--r-- 1 thredds workshop     0 Nov  7 16:31 host-manager.2010-11-07.log
+-rw-r--r-- 1 thredds workshop  4537 Nov  7 16:38 localhost.2010-11-07.log
+-rw-r--r-- 1 thredds workshop     0 Nov  7 16:38 localhost_access_log.2010-11-07.txt
+-rw-r--r-- 1 thredds workshop     0 Nov  7 16:31 manager.2010-11-07.log
 </pre>  
       </ol>
      </div> <!-- end  subsection -->
@@ -125,8 +127,7 @@ pattern="%h %l %u %t &amp;quot;%r&amp;quot; %s %b &amp;quot;%{Referer}i&amp;quot
          </ul>
   <p>The above pattern translates into:</p>
 <pre>
-128.117.140.183 - oxelson [09/Jul/2009:20:23:46 -0700] "GET /manager/html HTTP/1.1" 200 13022 "http://localhost:8080/" 
-"Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3" 325
+127.0.0.1 - admin [07/Nov/2010:16:44:31 -0700] "GET /manager/html/ HTTP/1.1" 200 13740 "http://localhost:8080/" "Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.2.7) Gecko/20100723 Fedora/3.6.7-1.fc13 Firefox/3.6.7" 25
 </pre>
 
 
@@ -138,7 +139,7 @@ pattern="%h %l %u %t &amp;quot;%r&amp;quot; %s %b &amp;quot;%{Referer}i&amp;quot
       Remote host
     </td>
      <td>
-       <code><small>128.117.140.183</small></code> 
+       <code><small>127.0.0.1</small></code> 
      </td>
     </tr>
     <tr>
@@ -154,7 +155,7 @@ pattern="%h %l %u %t &amp;quot;%r&amp;quot; %s %b &amp;quot;%{Referer}i&amp;quot
       Authenticated user
     </td>
      <td>
-       <code><small>oxelson</small></code>
+       <code><small>admin</small></code>
      </td>
     </tr>
     <tr>
@@ -162,7 +163,7 @@ pattern="%h %l %u %t &amp;quot;%r&amp;quot; %s %b &amp;quot;%{Referer}i&amp;quot
        Time and date of request
     </td>
      <td>
-       <code><small>[09/Jul/2009:20:23:46 -0700]</small></code>
+       <code><small>[07/Nov/2010:16:44:31 -0700]</small></code>
      </td>
     </tr>
     <tr>
@@ -170,7 +171,7 @@ pattern="%h %l %u %t &amp;quot;%r&amp;quot; %s %b &amp;quot;%{Referer}i&amp;quot
       HTTP request method
     </td>
      <td>
-      <code><small> GET</small></code>
+      <code><small>GET</small></code>
      </td>
     </tr>
     <tr>
@@ -178,7 +179,7 @@ pattern="%h %l %u %t &amp;quot;%r&amp;quot; %s %b &amp;quot;%{Referer}i&amp;quot
       Request URI
     </td>
      <td>
-      <code><small> /manager/html </small></code>
+      <code><small>/manager/html </small></code>
      </td>
     </tr>
     <tr>
@@ -202,7 +203,7 @@ pattern="%h %l %u %t &amp;quot;%r&amp;quot; %s %b &amp;quot;%{Referer}i&amp;quot
       Bytes transferred
     </td>
      <td>
-      <code><small> 13022</small></code>
+      <code><small>13740</small></code>
      </td>
     </tr>
     <tr>
@@ -218,7 +219,7 @@ pattern="%h %l %u %t &amp;quot;%r&amp;quot; %s %b &amp;quot;%{Referer}i&amp;quot
       User Agent
     </td>
      <td>
-       <code><small>Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3</small></code>
+       <code><small>Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.2.7) Gecko/20100723 Fedora/3.6.7-1.fc13 Firefox/3.6.7</small></code>
      </td>
     </tr>
     <tr>
@@ -226,7 +227,7 @@ pattern="%h %l %u %t &amp;quot;%r&amp;quot; %s %b &amp;quot;%{Referer}i&amp;quot
       Response time (in millis)
     </td>
      <td>
-     <code><small>  325</small></code>
+     <code><small>25</small></code>
      </td>
     </tr>
    </table>
@@ -244,101 +245,70 @@ pattern="%h %l %u %t &amp;quot;%r&amp;quot; %s %b &amp;quot;%{Referer}i&amp;quot
        <p>Storing the information in the access log is only the start of log management. The next step is to analyze this information to produce useful statistics.</p>
        <ol>
         <li>Looking at raw access log data.</li>
-         <p>Locate the <code><small>access.2009.07.27.log</small></code> file in your home directory which contains an access log file taken from one of our production servers.</p>
+         <p>Locate the <code><small>access.2010.10.25.log</small></code> file in your home directory which contains an access log file taken from one of our production servers.</p>
 <pre>
 <b>$</b> cd
 <b>$</b> ls -l access* 
--rw-r--r--  1 thredds workshop 350361 2009-08-04 13:14 access.2009-07-27.log
+-rw-r--r-- 1 thredds workshop 993235 Nov  8 15:25 access.2010-10-25.log
 </pre>  
          <p>Have a look at the log file and try to examine the data stored there.  (Kind of hard to sort through it all, isn't it)?</p>
 <pre>
-<b>$</b> less access.2009-07-27.log
+<b>$</b> less access.2010-10-25.log
 </pre>  
         <li>Analyzing data subsets with  <code>awk</code> and <code>dig</code>.</li>
          <p>Sometimes we don't need to see the "whole picture" and just need some quick statistics.  E.g., we need to find the host that has made the most requests to the server.</p>
          <p>Run the following command:</p>
 <pre>
-<b>$</b> cat access.2009-07-27.log | awk '{print $1}' | sort | uniq -c | sort -n
-   6 198.181.231.27
- 168 128.117.140.75
- 927 192.12.209.93
-1115 192.12.209.57
+<b>$</b> cat access.2010-10-25.log | awk '{print $1}' | sort | uniq -c | sort -n
 </pre>  
           <p>The output of the access log file is piped into <code><small>awk</small></code>, which prints the first "field variable" <code><small>$1</small></code>.  The result is sorted, identical lines are counted, and finally sorted again in descending order.</p>
 
-        <p><code><small>192.12.209.57</small></code> is the host that has made the most requests to the server during this particular access log's period. </p>
+        <p><code><small>192.12.209.243</small></code> is the host that has made the most requests to the server during this particular access log's period. </p>
 
         <div id="expanded" class="question">
-         <p>But who is <code><small>192.12.209.57</small></code>?  (IPs are not too meaningful by themselves.) </p>
+         <p>But who is <code><small>192.12.209.243</small></code>?  (IPs are not too meaningful by themselves.) </p>
         </div>
-         <p>Run <code><small>dig</small></code> to find out the host information for <code><small>192.12.209.57</small></code>:</p>
+         <p>Run <code><small>dig</small></code> to find out the host information for <code><small>192.12.209.243</small></code>:</p>
 <pre>
-<b>$</b>  dig +short -x 192.12.209.57
-atm.cise-nsf.gov.
+<b>$</b>  dig +short -x 192.12.209.243
+harper1.cise-nsf.gov.
 </pre>  
 
-         <p><code><small>atm.cise-nsf.gov</small></code> is the host name for <code><small>192.12.209.57</small></code> (a bit more meaningful).</p>
+         <p><code><small>harper1.cise-nsf.gov</small></code> is the host name for <code><small>192.12.209.243</small></code> (a bit more meaningful).</p>
 
 
         <div id="expanded" class="question">
-         <p>Looking at the other IP addresses from the <code><small>awk</small></code> output.  Without running <code><small>dig</small></code>, what do you think the domain of <code><small>192.12.209.93</small></code> is going to be?  </p>
+         <p>Looking at the other IP addresses from the <code><small>awk</small></code> output.  Without running <code><small>dig</small></code>, what do you think the domain of <code><small>192.12.209.63</small></code> is going to be?  </p>
         </div>
          <p>See if your assumption is correct:</p>
 <pre>
-<b>$</b>  dig +short -x 192.12.209.93
-cise093.cise-nsf.gov.
+<b>$</b>  dig +short -x 192.12.209.63
+cise63.cise-nsf.gov.
 </pre>  
 
-       
-          <p>Run <code><small>dig</small></code> on the other addresses to get the host names for the other two remaining IPs:          <p>
+        <p>You can use the <code><small>awk</small></code> command sequence to find out if any authenticated users were responsible for making these requests.</p>
 <pre>
-<b>$</b>  dig +short -x 128.117.140.75
-newhart.unidata.ucar.edu.
-<b>$</b>  dig +short -x 198.181.231.27
-hirudo.nsf.gov.
-</pre>  
-
- 
+<b>$</b> cat access.2010-10-25.log | awk '{print $3}' | sort | uniq -c | sort -n
+</pre>    
       </ol>
-
      </div> <!-- end  subsection -->
 
-
       <div id="subsection" class="exercise">
-       <h3>Exercise Two: Find out if any of the requests were made by authenticated users.</h3>
-       <ol>
-        <li>Use the <code><small>awk</small></code> command sequence to find out if any authenticated users were responsible for making these requests.</li>
-<pre>
-<b>$</b> cat access.2009-07-27.log | awk '{print $3}' | sort | uniq -c | sort -n
-</pre>    
-       <div class="exercise_question">
-          <p>What did you find?</p>
-
-         </div>
-
-       </ol>
-      </div> <!-- end exercise -->
-
-
-
-
-
-      <div id="subsection" class="exercise">
-      <h3>Exercise Three: Using parsed access log data.</h3>       
+      <h3>Exercise Two: Using parsed access log data.</h3>       
        <ol>
         <li>Parse log data.</li>
-         <p>Run <code>/usr/bin/parse_logs.pl</code> to parse the <code><small>access.2009.07.30.log</small></code> file:</p> 
+         <p>Run <code>parse_logs.pl</code> file in the thredds home directory to parse the <code><small>access.2010.10.25.log</small></code> file:</p> 
 <pre>
-<b>$</b> /usr/bin/parse_logs.pl
+<b>$</b> cd
+<b>$</b> ./parse_logs.pl
 </pre> 
-         <p>The resulting file <code><small>logdata.csv</small></code> will contain the log data in <i>tab-delimited format</i> that will have a <code>.txt</code> extension:</p>
+         <p>The resulting file <code><small>parsed_access_log.txt</small></code> will contain the log data in <i>tab-delimited format</i>:</p>
 <pre>
-<b>$</b> ls -l *log* 
--rw-r--r-- 1 thredds workshop 350361 2009-08-04 13:14 access.2009-07-27.log
--rw-r--r-- 1 thredds workshop 339731 2009-08-04 13:28 logdata.csv
+<b>$</b> ls -l *.txt 
+-rw-r--r-- 1 thredds workshop 966112 Nov  8 16:35 parsed_access_log.txt
 </pre>  
        <li>Examine the log data.</li>
-        <p>Open the <code><small>logdata.csv</small></code> file in the OpenOffice spreadsheet utility.</p> 
+        <p>Open the <code><small>parsed_access_log.txt</small></code> file in the OpenOffice spreadsheet utility.</p> 
 
         <div id="expanded" class="question">
          <p>What Requested URL took the most time to process?</p>
@@ -468,7 +438,7 @@ hirudo.nsf.gov.
         <li>Look at the logging configurations for <code><small>threddsServlet.log</small></code>.</li>
          <p>Navigate to the unpacked <code><small>thredds</small></code> directory in <code><small>$TOMCAT_HOME/webapps</small></code>, and view the <code><small>WEB-INF/log4j.xml</small></code>: </p>
 <pre>
-<b>$</b> cd /home/thredds/apache-tomcat-6.0.20/webapps/thredds
+<b>$</b> cd /home/thredds/apache-tomcat-6.0.29/webapps/thredds
 <b>$</b> less WEB-INF/log4j.xml
 </pre>
          <p>The TDS uses the OpenSource Apache <code><small>Log4J</small></code> library (hence, the name of the file: <code><small>WEB-INF/log4j.xml</small></code>). </p>
@@ -671,7 +641,7 @@ java.io.IOException: Cant read /data/ldm/pub/native/radar/level2/KFTG/20090602/L
        <ol>
         <li>Use the <code><small>grep</small></code> command to find out which <code><small>threddsServlet.log</small></code> file contains the error message:</li>
 <pre>
-<b>$</b> cd /home/thredds/apache-tomcat-6.0.20/content/thredds/logs
+<b>$</b> cd /home/thredds/apache-tomcat-6.0.29/content/thredds/logs
 <b>$</b> grep ERROR threddsServlet.log*
 </pre>   
        <li>Open the <code><small>threddsServlet.log</small></code> file which contains the error message and find all the message transaction entries that correspond to that error.</li>
@@ -768,7 +738,7 @@ java.io.IOException: Cant read /data/ldm/pub/native/radar/level2/KFTG/20090602/L
         <p>If you happen to be running more than one JVM on your machine, look to see what Process ID # for the JVM running Tomcat:</p>
 <pre>
 <b>$</b> ps -ef | grep tomcat
-thredds   <b>5168</b>     1  5 14:01 pts/2    00:00:12 /home/thredds/jdk1.6.0_14/bin/java -Djava.util.logging.config.file=/home/thredds/apache-tomcat-6.0.20/conf/logging.properties -Xmx256m -Xms256m -server -Djava.awt.headless=true -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Djava.endorsed.dirs=/home/thredds/apache-tomcat-6.0.20/endorsed -classpath :/home/thredds/apache-tomcat-6.0.20/bin/bootstrap.jar -Dcatalina.base=/home/thredds/apache-tomcat-6.0.20 -Dcatalina.home=/home/thredds/apache-tomcat-6.0.20 -Djava.io.tmpdir=/home/thredds/apache-tomcat-6.0.20/temp org.apache.catalina.startup.Bootstrap start
+thredds   <b>5168</b>     1  5 14:01 pts/2    00:00:12 /home/thredds/jdk1.6.0_14/bin/java -Djava.util.logging.config.file=/home/thredds/apache-tomcat-6.0.29/conf/logging.properties -Xmx256m -Xms256m -server -Djava.awt.headless=true -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Djava.endorsed.dirs=/home/thredds/apache-tomcat-6.0.29/endorsed -classpath :/home/thredds/apache-tomcat-6.0.29/bin/bootstrap.jar -Dcatalina.base=/home/thredds/apache-tomcat-6.0.29 -Dcatalina.home=/home/thredds/apache-tomcat-6.0.29 -Djava.io.tmpdir=/home/thredds/apache-tomcat-6.0.29/temp org.apache.catalina.startup.Bootstrap start
 thredds   5451  4285  0 14:05 pts/2    00:00:00 grep tomcat
 </pre>
           <p>Select the local JVM process corresponding to Tomcat and connect:</p>
