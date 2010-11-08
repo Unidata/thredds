@@ -49,11 +49,13 @@
   <li>Add metadata to one or more of the <code>datasetScan</code> elements. Perhaps some items similar to the following:
     <pre style="margin-left: 40px;">&lt;metadata xlink:title="some XML metadata"<br>          xlink:href="http://motherlode.ucar.edu:8080/thredds/catalog.xml" /&gt;<br>&lt;documentation xlink:title="some html info" xlink:href="http://motherlode.ucar.edu:8080/thredds/catalog.html" /&gt;<br>&lt;keyword&gt;good stuff&lt;/keyword&gt;<br>&lt;publisher&gt;&lt;name&gt;you&lt;/name&gt;&lt;/publisher&gt;<br>&lt;variables&gt;<br>    &lt;variable name="Z" units="gp m"&gt;Geopotential Height&lt;/variable&gt;<br>&lt;/variables&gt;</pre>
   </li>
-  <li>Reinitialize the TDS configuration catalogs from the Remote Management page  - <a href="http://localhost:8080/thredds/debug">http://localhost:8080/thredds/debug</a>
+  <li>Restart Tomcat so the TDS is reinitialized:
+<pre>
+<strong>-bash-3.2$</strong> cd ${TOMCAT_HOME}/bin
+<strong>-bash-3.2$</strong> ./shutdown.sh
+<strong>-bash-3.2$</strong> ./startup.sh
+</pre>
   </li>
-  <ul>
-    <li>Click on the "Reinitialize" link</li>
-  </ul>
   <li>Check the catalogErrors.log&nbsp;-&nbsp;<a href="http://localhost:8080/thredds/debug">http://localhost:8080/thredds/debug</a>
   </li>
   <li>Check the list of dataset roots -&nbsp;<a href="http://localhost:8080/thredds/debug">http://localhost:8080/thredds/debug</a>

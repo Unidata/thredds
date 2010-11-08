@@ -430,16 +430,13 @@ http://hostname:port/thredds/dodsC/model/run0023/mydata.nc
 </pre>
       </li>
       <li>And similarly for MADIS and Suomi data</li>
-      <li><strong>Reinitialize the TDS configuration catalogs</strong>:
-        <ol>
-          <li>
-            Go to the TDS Remote Management page:
-            <code>
-              <a href="http://localhost:8080/thredds/admin/debug">http://localhost:8080/thredds/admin/debug</a>
-            </code>
-          </li>
-          <li>Click on the "Reinitialize" link</li>  
-        </ol>
+      <li>Restart Tomcat so the TDS is reinitialized:
+<pre>
+<strong>[thredds@workshop00 ~]$</strong> cd ${TOMCAT_HOME}/bin
+<strong>[thredds@workshop00 ~]$</strong> ./shutdown.sh
+<strong>[thredds@workshop00 ~]$</strong> ./startup.sh
+</pre>
+      </li>
       </li>
       <li>Test that the new <code>datasetScan</code> elements are working:
         <ol>
@@ -489,8 +486,12 @@ http://hostname:port/thredds/dodsC/model/run0023/mydata.nc
 <strong>[thredds@workshop00 ~]$</strong> vi catalog.xml     <var>// Use the editor of your choice</var>
 </pre>
       </li>
-      <li>Reinitialize the TDS
-        [<a href="http://localhost:8080/thredds/admin/debug">http://localhost:8080/thredds/admin/debug</a>].
+      <li>Restart Tomcat so the TDS is reinitialized:
+<pre>
+<strong>[thredds@workshop00 ~]$</strong> cd ${TOMCAT_HOME}/bin
+<strong>[thredds@workshop00 ~]$</strong> ./shutdown.sh
+<strong>[thredds@workshop00 ~]$</strong> ./startup.sh
+</pre>
       </li>
       <li>What happens with duplicate data roots:
         <ol>
@@ -567,8 +568,12 @@ Error {
 &lt;/filter&gt;
 </pre>
       </li>
-      <li>Reinitialize the TDS
-        [<a href="http://localhost:8080/thredds/admin/debug">http://localhost:8080/thredds/admin/debug</a>].
+      <li>Restart Tomcat so the TDS is reinitialized:
+<pre>
+<strong>[thredds@workshop00 ~]$</strong> cd ${TOMCAT_HOME}/bin
+<strong>[thredds@workshop00 ~]$</strong> ./shutdown.sh
+<strong>[thredds@workshop00 ~]$</strong> ./startup.sh
+</pre>
       </li>
       <li>
         Are the filters working?
@@ -586,8 +591,12 @@ Error {
 &lt;exclude wildcard="<strong>06min</strong>" atomic="false" collection="true" /&gt;
 </pre>
       </li>
-      <li>Reinitialize the TDS
-        [<a href="http://localhost:8080/thredds/admin/debug">http://localhost:8080/thredds/admin/debug</a>].
+      <li>Restart Tomcat so the TDS is reinitialized:
+<pre>
+<strong>[thredds@workshop00 ~]$</strong> cd ${TOMCAT_HOME}/bin
+<strong>[thredds@workshop00 ~]$</strong> ./shutdown.sh
+<strong>[thredds@workshop00 ~]$</strong> ./startup.sh
+</pre>
       </li>
       <li>
         Are the filters working?
