@@ -335,7 +335,7 @@
 <pre>
 &lt;tomcat-users&gt;
     &lt;role rolename="manager"/&gt;
-    &lt;user name="admin" password="secret" roles="manager"/&gt;   
+    &lt;user username="admin" password="secret" roles="manager"/&gt;   
 &lt;/tomcat-users&gt;
 </pre>  
         <li>Restart Tomcat and log into the <code>manager</code> application.</li>
@@ -526,7 +526,7 @@ drwxr-xr-x  3 thredds workshop 4096 Nov  5 14:40 ROOT
       xmlValidation="false" xmlNamespaceAware="false"&gt;
 </pre>  
 
-     <p>Now add the flowing <code><small>MemoryRealm</small></code> information inside the <code><small>Host</small></code> element:</p>
+     <p>Now add the following <code><small>MemoryRealm</small></code> information inside the <code><small>Host</small></code> element:</p>
 
 
 <pre>
@@ -562,7 +562,7 @@ secret:e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4
 <pre>
 &lt;tomcat-users&gt;
     &lt;role rolename="manager"/&gt;
-    &lt;user name="admin" password="<b>e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4</b>" roles="manager"/&gt;
+    &lt;user username="admin" password="<b>e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4</b>" roles="manager"/&gt;
 &lt;/tomcat-users&gt;
 </pre>  
      <li>Verify digest passwords have been successfully enabled in Tomcat.</li>
@@ -826,7 +826,7 @@ tcp        0      0 127.0.0.1:<b>8443</b>               0.0.0.0:*               
 &lt;tomcat-users&gt;
     &lt;role rolename="manager"/&gt;
     &lt;role rolename="tdsConfig"/&gt;
-    &lt;user name="admin" password="e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4" roles="manager,tdsConfig"/&gt;
+    &lt;user username="admin" password="e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4" roles="manager,tdsConfig"/&gt;
 &lt;/tomcat-users&gt;
 </pre>  
         <li>Restart Tomcat and try to access the TDS remote management tool: <a href="http://localhost:8080/thredds/admin/debug">http://localhost:8080/thredds/admin/debug/</a></li>
