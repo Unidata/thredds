@@ -107,8 +107,8 @@ dl {margin: 10px 5px 5px 15px;)
   </ol>
   <h4>DatasetScan vs Aggregation Scan </h4>
   <p>The <strong>scan</strong> element in the NcML aggregation is similar in purpose to the <strong>datasetScan</strong> element, but be careful not to confuse the two. The <strong>datasetScan</strong> element is more powerful, and has more options for filtering etc. Its job is to create nested <strong>dataset</strong> elements inside the datasetScan, and so has various options to  add information to those nested datasets. It has a generalized framework (CrawlableDataset) for crawling other things besides file directories. The <strong>scan</strong> element's job is to easily specify what files go into an NcML aggregation, and those individual files are hidden inside the aggregation dataset. It can only scan file directories. In the future, some of the capabilities of <strong>datasetScan</strong> will migrate into NcML <strong>scan</strong>. </p>
-  <h4>Exercise: DatasetScan vs Aggregation Scan </h4>
-  <p>Lets look at using a DatasetScan and an Aggregation scan on the same collection of files. Download <a href="files/catalogScan.xml">catalogScan.xml</a>, place it in your TDS <em>content/thredds</em> directory and add a catalogRef to it from your main catalog.</p>
+  <h3>Exercise: DatasetScan vs Aggregation Scan </h3>
+<p>Lets look at using a DatasetScan and an Aggregation scan on the same collection of files. Download <a href="files/catalogScan.xml">catalogScan.xml</a>, place it in your TDS <em>content/thredds</em> directory and add a catalogRef to it from your main catalog.</p>
   <pre>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
 &lt;catalog xmlns=&quot;http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0&quot;
      xmlns:xlink=&quot;http://www.w3.org/1999/xlink&quot;
@@ -146,45 +146,45 @@ dl {margin: 10px 5px 5px 15px;)
     <li>Add a global attribute to each file in the collection.</li>
   </ol>
 <p>Start and restart your TDS and look at those datasets through the HTML interface and through ToolsUI.</p>
-  <h2>Using the featureCollection element </h2>
-<p>A <strong><a href="http://www.unidata.ucar.edu/software/netcdf/ncml/v2.2/FmrcAggregation.html">Forecast Model Run Collection</a></strong> is a collection of forecast model  output. A special kind of aggregation, called an <em><strong>FMRC Aggregation</strong></em>, creates a dataset that has two time coordinates, called the <em><strong>run time </strong></em>and the <em><strong>forecast time</strong></em>. This dataset can then be sliced up in various ways to create 1D time views of the model output.</p>
-<p>As of TDS 4.2, you should use the  <strong>featureCollection</strong> element in your configuration catalog. (the previous way of doing this was with a <strong>datasetFmrc</strong> element, which is now deprecated.)</p>
-<p>Download <a href="files/catalogFmrc.xml">catalogFmrc.xml</a>, place it in your TDS <em>content/thredds</em> directory and add a catalogRef to it from your main catalog:</p>
-  <pre>&lt;catalog xmlns=&quot;http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0&quot;
-     xmlns:xlink=&quot;http://www.w3.org/1999/xlink&quot; name=&quot;Unidata THREDDS Data Server&quot; version=&quot;1.0.3&quot;&gt; 
-<strong>1)</strong>&lt;service name=&quot;ncdods&quot; serviceType=&quot;OPENDAP&quot; base=&quot;/thredds/dodsC/&quot;/&gt;
-       
-<strong>2)</strong>&lt;featureCollection featureType=&quot;FMRC&quot; name=&quot;NCEP-GFS-Puerto_Rico_191km&quot; harvest=&quot;true&quot; path=&quot;fmrc/NCEP/GFS/Puerto_Rico_191km&quot;&gt;
-<strong>3)</strong> &lt;metadata inherited=&quot;true&quot;&gt;
-     &lt;serviceName&gt;ncdods&lt;/serviceName&gt;
-     &lt;dataFormat&gt;GRIB-1&lt;/dataFormat&gt;
-     &lt;documentation type=&quot;summary&quot;&gt;Specially good GFS_Puerto_Rico_191km&lt;/documentation&gt;
+  <h2>Using NcML in a featureCollection element </h2>
+  <p>Previously we showed the <a href="FeatureCollectionsTutorial.html">use of the featureCollection</a> element. Here we show a brief example of modifying files with NcML in a featureCollection element.</p>
+<p>Download <a href="files/catalogFmrcNcml.xml">catalogFmrcNcml.xml</a>, place it in your TDS <em>content/thredds</em> directory and add a catalogRef to it from your main catalog:</p>
+<pre>
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;catalog xmlns=&quot;http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0&quot;
+   xmlns:xlink=&quot;http://www.w3.org/1999/xlink&quot; name=&quot;Unidata THREDDS Data Server&quot; version=&quot;1.0.3&quot;&gt;
+
+ &lt;service name=&quot;ncdods&quot; serviceType=&quot;OPENDAP&quot; base=&quot;/thredds/dodsC/&quot;/&gt;
+
+ &lt;featureCollection featureType=&quot;FMRC&quot; name=&quot;GOMOOS&quot; harvest=&quot;true&quot; path=&quot;fmrc/USGS/GOMOOS&quot;&gt;
+   &lt;metadata inherited=&quot;true&quot;&gt;
+   &lt;serviceName&gt;ncdods&lt;/serviceName&gt;
+   &lt;dataFormat&gt;NETCDF&lt;/dataFormat&gt;
+   &lt;documentation type=&quot;summary&quot;&gt;Munge this with NcML&lt;/documentation&gt;
    &lt;/metadata&gt;
-   
-4) &lt;collection spec=&quot;/workshop/test/gfs/GFS_Puerto_Rico_191km_#yyyyMMdd_HHmm#\.grib1$&quot;  olderThan=&quot;5 min&quot;/&gt;
 
-5)   &lt;update startup=&quot;true&quot; rescan=&quot;0 5 3 * * ? *&quot; /&gt;
-6)   &lt;protoDataset choice=&quot;Penultimate&quot; change=&quot;0 2 3 * * ? *&quot; /&gt;
-
+   &lt;collection spec=&quot;Q:/2010TdsTW/gomoos/gomoos.#yyyyMMdd#.cdf$&quot;/&gt;
+   &lt;protoDataset&gt;
+1)   &lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;
+       &lt;attribute name=&quot;History&quot; value=&quot;Processed by Kraft&quot;/&gt;
+     &lt;/netcdf&gt;
+   &lt;/protoDataset&gt;
+ 
+2) &lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;
+    &lt;variable name=&quot;time&quot;&gt;
+      &lt;attribute name=&quot;units&quot; value=&quot;days since 2006-11-01 00:00 UTC&quot;/&gt;
+    &lt;/variable&gt;
+    &lt;attribute name=&quot;Conventions&quot; value=&quot;CF-1.0&quot;/&gt;
+   &lt;/netcdf&gt;
+    
   &lt;/featureCollection&gt;
-
-&lt;/catalog&gt;</pre>
+&lt;/catalog&gt;
+   </pre>
 <ol>
-    <li>An OPENDAP service is defined called <strong><em>ncdods</em></strong>. </li>
-    <li>A THREDDS <strong>featureCollection</strong> is defined, of type FMRC, whose contained datasets will all have a path starting with <strong>fmrc/NCEP/GFS/Puerto_Rico_191km</strong>. </li>
-    <li>All the <strong>metadata</strong> contained here will be inherited by the contained datasets.</li>
-    <li>The collection of files is defined, using a <em><strong><a href="../reference/collections/CollectionSpecification.html">collection specification string</a></strong></em><a href="../reference/collections/CollectionSpecification.html">.</a> The directory <strong>/workshop/test/gfs/</strong> will be scanned for files that start with &quot;GFS_Puerto_Rico_191km_&quot;, and end with &quot;.grib1&quot;. The   run date is extracted from the filename by applying the template <em>yyyyMMdd_HHmm</em> to the portion of the filename  between the '#' chars. Only files that havent changed for 5 minutes will be included.</li>
-    <li>The collection will be updated upon TDS startup, and periodically using the cron expression &quot;0 5 3 * * ? *&quot;, meaning every day at 3:05 am local time.</li>
-    <li>The  prototypical dataset is chosen to be the &quot;next-to-latest&quot;.  That periodically is changed every day at 3:02 am local time.</li>
-  </ol>
-<p>The contained datasets include the resulting 2D time dimension dataset, as well as the 1D time  views of the <em>ucar.nc2.dt.fmrc.ForecastModelRunCollection</em> dataset described in section 4 above, as seen in the resulting  HTML page for that dataset: </p>
-  <p><img src="../../images/fmrc.png" width="1070" height="639"></p>
-<p>The TDS has created a number of datasets out of the FMRC, and made them available throgh the catalog interface. Explore them through the browser, through ToolsUI or the IDV.</p>
-<p>Also see: </p>
-<ul>
-  <li><a href="../reference/collections/FeatureCollections.html">Feature Collections Reference </a></li>
-  <li><a href="http://www.unidata.ucar.edu/staff/caron/presentations/FmrcPoster.pdf">FMRC poster</a></li>
-</ul>
+    <li>The protoDataset is modified by adding a global attribute <strong>History=&quot;Processed by Kraft&quot;</strong></li>
+    <li><em>Each</em> component file is changed by  modifying the time variables's units attribute and adding a global attribute <strong>Conventions=&quot;CF-1.0&quot;</strong></li>
+</ol>
+<p>You might wonder why not put the <a href="http://www.unidata.ucar.edu/staff/caron/presentations/FmrcPoster.pdf"></a> global attribute <strong>Conventions=&quot;CF-1.0&quot;</strong> on the protoDataset instead of on each individual dataset? The reason is because in an FMRC, each dataset is converted into a GridDataset, and then combined into the FMRC. So the modifications in 2) are whats needed to make the individual datasets be correctly interpreted as a Grid dataset. The modifications to the protodataset are then applied to the resulting  FMRC 2D dataset.</p>
 <h2><a name="debug"></a>Debugging NcML</h2>
 <p>When things go wrong, its best to first debug the aggregation outside of the TDS: </p>
   <ol>

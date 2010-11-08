@@ -4,19 +4,15 @@
 
   <service name="ncdods" serviceType="OPENDAP" base="/thredds/dodsC/"/>
   
+  <dataset>
   <featureCollection featureType="FMRC" name="NCEP-GFS-Puerto_Rico_191km" harvest="true" path="fmrc/NCEP/GFS/Puerto_Rico_191km">
     <metadata inherited="true">
       <serviceName>ncdods</serviceName>
       <dataFormat>GRIB-1</dataFormat>
       <documentation type="summary">Specially good GFS_Puerto_Rico_191km</documentation>
-    </metadata>
-  
-    <collection spec="/workshop/test/gfs/GFS_Puerto_Rico_191km_#yyyyMMdd_HHmm#.grib1"
-               recheckAfter="15 min"
-               olderThan="5 min"/>
-    <update startup="true" rescan="0 5 3 * * ? *" />
-    <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
-    <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
+    </metadata> 
+    <collection spec="/data/testdata/2010TdsTW/fmrc/GFS_Puerto_Rico_191km.*grib1$" />
   </featureCollection>
+  </dataset>
 
 </catalog>

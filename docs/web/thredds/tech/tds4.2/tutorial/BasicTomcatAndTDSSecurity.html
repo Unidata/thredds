@@ -470,9 +470,9 @@ drwxr-xr-x  3 thredds workshop 4096 Nov  5 14:40 ROOT
 
 
      <div id="subsection">
-      <h3>Configure Tomcat to use digested passwords</h3>
+      <h3><a name="useDigest"></a>Configure Tomcat to use digested passwords</h3>
 
-       <ol>
+<ol>
         <li>First we need to enable digest passwords support in Tomcat by modifying a couple of Tomcat Realms in <code>server.xml</code>.</li>
 
 
@@ -481,30 +481,24 @@ drwxr-xr-x  3 thredds workshop 4096 Nov  5 14:40 ROOT
           <table>
            <tr>
             <th>  
-             Realm Name
-            </th>
+             Realm Name            </th>
             <th> 
-             Purpose
-            </th>
+             Purpose            </th>
            </tr>
 
            <tr>
             <td> 
-             <code>UserDatabaseRealm</code> 
-            </td>
+             <code>UserDatabaseRealm</code>            </td>
             <td> 
-              The <code>UserDatabaseRealm</code> is enabled by default and reads clear text user password information stored in <code>$TOMCAT_HOME/conf/tomcat-users.xml</code>.
-            </td>
+              The <code>UserDatabaseRealm</code> is enabled by default and reads clear text user password information stored in <code>$TOMCAT_HOME/conf/tomcat-users.xml</code>.            </td>
            </tr>
 
 
            <tr>
             <td> 
-             <code>MemoryRealm</code> 
-            </td>
+             <code>MemoryRealm</code>            </td>
             <td> 
-              The <code>MemoryRealm</code> reads the user password information stored in <code>$TOMCAT_HOME/conf/tomcat-users.xml</code> in a specified encrypted format.
-            </td>
+              The <code>MemoryRealm</code> reads the user password information stored in <code>$TOMCAT_HOME/conf/tomcat-users.xml</code> in a specified encrypted format.            </td>
            </tr>
           </table>
 
@@ -554,7 +548,7 @@ drwxr-xr-x  3 thredds workshop 4096 Nov  5 14:40 ROOT
 <b>&lt;Realm className="org.apache.catalina.realm.MemoryRealm" 
        digest="SHA" /&gt;</b>
 </pre>  
-    <li>Create a SHA encrypted version of your password.</li>
+    <li><a name="makeDigest"></a>Create a SHA encrypted version of your password.</li>
      <p>Tomcat provides a script (<code><small>$TOMCAT_HOME/bin/digest.sh</small></code>) that will encrypt a password string according to the algorithm specified.  Use this script as follows with the password you made for yourself previously:</p>
 
 <pre>
@@ -580,7 +574,7 @@ secret:e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4
       </div>
 
 
-     <p>Restart Tomcat and verify digest passwords have been successfully enabled by logging into the Tomcat <code><small>manager</small></code> application using your password in clear text: <a href="http://localhost:8080/manager/html/">http://localhost:8080/manager/html/</a></p>
+  <p>Restart Tomcat and verify digest passwords have been successfully enabled by logging into the Tomcat <code><small>manager</small></code> application using your password in clear text: <a href="http://localhost:8080/manager/html/">http://localhost:8080/manager/html/</a></p>
 
 
       <div id="expanded" class="troubleshooting">
@@ -627,9 +621,6 @@ secret:e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4
        <li>SSL uses a cryptographic system that uses two keys to encrypt data: a public key known to everyone and a private or secret key known only to the recipient of the message.</li>
        <li>By convention, URLs that require an SSL connection start with <code>https</code> instead of <code>http</code>.</li>
       </ul>
-
-
-
      </div> <!-- end subsection -->
 
 
@@ -649,7 +640,7 @@ secret:e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4
        <p>Other than the compelling security reasons, you will want to enable SSL to take advantage of the TDS remote management tool which (out-of-the-box) requires SSL in order to access:
       <a href="http://localhost:8080/thredds/admin/debug">http://localhost:8080/thredds/admin/debug</a></p>
       <ol>
-       <li>Create a self-signed certificate and store it in <code>$TOMCAT_HOME/conf/keystore</code>.</li>
+       <li><a name="createCert"></a>Create a self-signed certificate and store it in <code>$TOMCAT_HOME/conf/keystore</code>.</li>
         <p>Run the <code><small>$JAVA_HOME/bin/keytool</small></code> command:</p>
 
 <pre>
@@ -660,51 +651,39 @@ secret:e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4
         <table>
          <tr>
           <th>  
-           Command
-          </th>
+           Command          </th>
           <th> 
-           Purpose
-          </th> 
+           Purpose          </th> 
          </tr>
          <tr>
           <td>  
-           <code><small>$JAVA_HOME/bin/keytool</small></code>
-          </td>
+           <code><small>$JAVA_HOME/bin/keytool</small></code>          </td>
           <td> 
-           Java provides a tool, called <code><small>keytool</small></code>, that generates a self-signed certificate and puts in a keystore file.
-          </td> 
+           Java provides a tool, called <code><small>keytool</small></code>, that generates a self-signed certificate and puts in a keystore file.          </td> 
          </tr>
          <tr>
           <td>  
-           <code><small>-genkey</small></code>
-          </td>
+           <code><small>-genkey</small></code>          </td>
           <td> 
-           The <code><small>-genkey</small></code> option specifies that a key pair (private key and public key) needs to be created.  This key pair will be enclosed in the self-signed certificate.
-          </td> 
+           The <code><small>-genkey</small></code> option specifies that a key pair (private key and public key) needs to be created.  This key pair will be enclosed in the self-signed certificate.          </td> 
          </tr>
          <tr>
           <td>  
-           <code><small>-alias tomcat</small></code>
-          </td>
+           <code><small>-alias tomcat</small></code>          </td>
           <td>  
-           The <code><small>-alias tomcat</small></code> option creates an entry in the keystore file identified by the alias "tomcat" (which Tomcat will use to find your entry).
-          </td> 
+           The <code><small>-alias tomcat</small></code> option creates an entry in the keystore file identified by the alias "tomcat" (which Tomcat will use to find your entry).          </td> 
          </tr>
          <tr>
           <td>  
-           <code><small>-keyalg RSA</small></code>
-          </td>
+           <code><small>-keyalg RSA</small></code>          </td>
           <td> 
-           The <code><small>-keyalg RSA</small></code> option specifies the algorithm (in this case is RSA) to be used for the creation the key pair. 
-          </td> 
+           The <code><small>-keyalg RSA</small></code> option specifies the algorithm (in this case is RSA) to be used for the creation the key pair.          </td> 
          </tr>
          <tr>
           <td>  
-           <code><small>-keystore $TOMCAT_HOME/conf/keystore</small></code>
-          </td>
+           <code><small>-keystore $TOMCAT_HOME/conf/keystore</small></code>          </td>
           <td> 
-           <code><small>-keystore $TOMCAT_HOME/conf/keystore</small></code> is location of where want to put our keystore.  Otherwise, the default keystore is <code><small>$user_home/.keystore</small></code>. 
-          </td> 
+           <code><small>-keystore $TOMCAT_HOME/conf/keystore</small></code> is location of where want to put our keystore.  Otherwise, the default keystore is <code><small>$user_home/.keystore</small></code>.          </td> 
          </tr>
         </table>
 
@@ -755,7 +734,7 @@ drwxr-xr-x 3 thredds workshop  4096 2009-08-03 16:08 Catalina
 </pre>
 
     
-       <li>Configure Tomcat to enable SSL and use the self-signed certificate.</li>
+       <li><a name="enableSSL"></a>Configure Tomcat to enable SSL and use the self-signed certificate.</li>
        <div id="expanded" class="question">
         <p>Based on what we know about Tomcat configuration, which file in <code><small>$TOMCAT_HOME/conf</small></code> should we edit to to enable SSL?</p>
        </div>
@@ -834,14 +813,12 @@ tcp        0      0 127.0.0.1:<b>8443</b>               0.0.0.0:*               
         <li>Did you specify the full path to the <code><small>keystore</small></code> file in <code><small>server.xml</small></code>?</li>
        </ul>
       </div>
-
-        
       </ol>
      </div> <!-- end subsection -->
 
 
       <div id="subsection" class="exercise">
-       <h3>Exercise Four: Grant yourself access to the TDS remote management tool</h3>
+       <h3>Exercise Four: <a name="grantAccess"></a>Grant yourself access to the TDS remote management tool</h3>
        <ol>
         <li>Using the steps outlined above, create a self-signed certificate and enable SSL in Tomcat.</li>
         <li>Modify <code><small>$TOMCAT_HOME/conf/tomcat-users.xml</small></code> to add a new role with the rolename attribute of <code><small>tdsConfig</small></code>, and add this role to your list of roles:</li>
@@ -866,8 +843,6 @@ tcp        0      0 127.0.0.1:<b>8443</b>               0.0.0.0:*               
       <div id="expanded" class="question">
        <p>Where, in any of the configuration changes you made to <code><small>$TOMCAT_HOME/conf/server.xml</small></code> or <code><small>$TOMCAT_HOME/conf/tomcat-users.xml</small></code>, did you explicitly specify that TDS remote management tool <i>must</i> be accessed via SSL?</p>       
       </div>
-
-
      </div> <!-- end subsection -->
 
      <div id="subsection">
@@ -941,7 +916,7 @@ tcp        0      0 127.0.0.1:<b>8443</b>               0.0.0.0:*               
 
 
      <div id="subsection">
-      <h3>Enabling SSL for the Tomcat <code>manager</code> application</h3>
+      <h3><a name="managerSSL"></a>Enabling SSL for the Tomcat <code>manager</code> application</h3>
       <ol>
        <li>Modify the deployment descriptor of the Tomcat <code>manager</code> application.</li>
         <p>Using your favorite editor, open the deployment descriptor for the Tomcat <code><small>manager</small></code> application:</p>
@@ -1017,7 +992,6 @@ tcp        0      0 127.0.0.1:<b>8443</b>               0.0.0.0:*               
     &lt;/user-data-constraint&gt;</b>
   &lt;/security-constraint&gt;
 </pre>
-
       </ul>
      <li>Verify SSL has been enabled for the Tomcat <code>manager</code> application.</li>
       <p>Restart Tomcat and verify SSL has been enabled for the Tomcat <code>manager</code> application: <a href="http://localhost:8080/manager/html/">http://localhost:8080/manager/html/</a></li></p>
@@ -1033,12 +1007,10 @@ tcp        0      0 127.0.0.1:<b>8443</b>               0.0.0.0:*               
         <li>Did you restart Tomcat after you made your changes to <code><small>web.xml</small></code>?</li>
        </ul>
       </div>
- 
-
      </ol>
 
 
-     </div> <!-- end subsection -->
+</div> <!-- end subsection -->
 
 
 

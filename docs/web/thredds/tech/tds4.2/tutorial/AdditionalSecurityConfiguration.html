@@ -58,7 +58,7 @@
    </dl>
     <dl>
 
-    <dt><h3>Removing the default Tomcat web applications</h3></dt>
+    <dt><h3><a name="removeApps"></a>Removing the default Tomcat web applications</h3></dt>
      <p>It is generally good practice to remove any un-used web applications out of <code>$TOMCAT_HOME/webapps</code>.  Tomcat ships with several default web applications, that you may want to consider removing if they are not being utilized:</p>
      <ul>
       <li>The <code>ROOT</code> application is Tomcat's <code>DocumentRoot</code> and contains the server's main web page.  Give thought tot he content that is placed in <code>ROOT/</code>, as it will be readily available.  (Note: if you want to utilize a <code>robots.txt</code> file to restrict crawler activity, <code>ROOT/</code> is the place it will go.)</li>
@@ -67,10 +67,8 @@
       <li>The <code>examples</code> application should probably be removed from a production server to minimize security exposure.</li>
       <li>The <code>docs</code> are a copy of the <a href="http://tomcat.apache.org/tomcat-6.0-doc/">Tomcat documentation found online</a>.  Unless you have need for a local copy, removing <code>docs</code>  would help to tidy-up <code>$TOMCAT_HOME/webapps</code>.</li>
       </ul>
-
-
    </dl>
-    <dl>
+  <dl>
 
 
     <dt><h3>Denying access to the TDS by remote IP address or host</h3></dt>
@@ -110,7 +108,7 @@
    </dl>
     <dl>
 
-    <dt><h3>Blocking TDS content from being indexed by web crawlers</h3></dt>
+    <dt><h3><a name="restrictCrawlers"></a>Blocking TDS content from being indexed by web crawlers</h3></dt>
      <p>Use a <code>robots.txt</code> file to prevent crawlers from indexing content.</p>
      <p>The TDS provides a basic and very restrictive <code>robots.txt</code> file for you to use:</p>
 <pre>
@@ -130,10 +128,8 @@ Disallow: /
 
     <p class="note"><i>Note</i>: not all crawlers obey the <code>robots.txt</code> file.  </p>
      <p class="note">For more information, see: <a href="http://www.robotstxt.org/robotstxt.html">http://www.robotstxt.org/robotstxt.html</a>.</p>
-
-
    </dl>
-    <dl>
+  <dl>
 
     <dt><h3>Running Tomcat as a user other than <code>root</code></h3></dt>
 

@@ -58,7 +58,7 @@
 <h2>Tomcat</h2>
 <h3>Version</h3>
 <p>We recommend the latest stable version of Tomcat 6, which  has better stability and performance than Tomcat 5.x. This requires JDK 1.5 or above. </p>
-<h3>Compression</h3>
+<h3><a name="enableCompression"></a>Compression</h3>
 <p>Tomcat can be configured to automatically compress the responses, whenever the client allows that. Compression is usually a big win, especially for bandwidth-limited sites. Deciding when and what to compress depends on a lot of factors, however. We use the following settings in  <strong>server.xml</strong>:</p>
 <pre>    &lt;!-- non-SSL HTTP/1.1 Connector on port 8080 --&gt;<br>    &lt;Connector port=&quot;8080&quot;<br>               protocol=&quot;HTTP/1.1&quot;<br>               maxThreads=&quot;50&quot;<br>               connectionTimeout=&quot;20000&quot;<br>               redirectPort=&quot;8443&quot;<br>               <strong>compression=&quot;1000&quot;<br>               compressableMimeType=&quot;text/html,text/xml,text/plain,application/octet-stream&quot;</strong> /&gt;
 <br></pre>

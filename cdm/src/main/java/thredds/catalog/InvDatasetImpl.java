@@ -282,6 +282,7 @@ public class InvDatasetImpl extends InvDataset {
    * @param fromDs transfer from here
    */
   public void transferMetadata(InvDatasetImpl fromDs, boolean copyInheritedMetadataFromParents) {
+    if (fromDs == null) return;
     if (debugInherit2) System.out.println(" transferMetadata= " + fromDs.getName());
 
     if (this != fromDs)
