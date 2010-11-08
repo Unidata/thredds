@@ -690,13 +690,12 @@ secret:e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4
         <p>Create the self-signed certificate identity.  While you are filling out the identity fields for your certificate, keep in mind:</p>
         <ul class="little"> 
          <li>Although it is not obvious, the <code><small>first and last name</small></code>, or <code><small>CN</small></code>, should be the host name</li>
-         <li>The <code><small>keystore password</small></code> (the first password you are prompted to enter) is always <code><small>changeit</small></code></li>
-         <li>The last password (the <code><small>key password</small></code>) and <code><small>keystore password</small></code> need to be the same (<code><small>changeit</small></code>). </li>
+         <li>The <code><small>keystore password</small></code> (the first password you are prompted to enter) needs to be the same as the last password (the <code><small>key password</small></code>). </li>
         </ul>
 
 <pre>
-Enter keystore password: changeit
-Re-enter new password: changeit
+Enter keystore password: foobar
+Re-enter new password: foobar
 What is your first and last name?
   [Unknown]:  localhost
 What is the name of your organizational unit?
