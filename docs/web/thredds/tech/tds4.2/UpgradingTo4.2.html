@@ -13,8 +13,7 @@
 
 <ul>
   <li><a href="#configServerInfo">Addition of Server Description in threddsConfig.xml</a></li>
-  <li><a href="#configWms">Changes to WMS Options in threddsConfig.xml</a></li>
-  <li><a href="#wmsConfigFile">Additional WMS Configuration File</a></li>
+  <li><a href="#wmsConfigChanges">Changes to WMS Configuration</a></li>
   <li><a href="#configFmrc">Change in How FMRC Datasets Are Configured</a></li>
   <li><a href="#javaUtilPrefs">Avoid <code>java.util.prefs</code> warnings in the <code>catalina.out</code> log</a></li>
 </ul>
@@ -58,7 +57,13 @@ previously (TDS 4.0 and 4.1) provided in the htmlSetup section. Use of the htmlS
 section for that information is now deprecated (though still supported, for now).<br>
 </p>
 
-<h2><a name="configWms">Changes to WMS Options in threddsConfig.xml</a></h2>
+<h2><a name="wmsConfigChanges">Changes to WMS Configuration</a></h2>
+
+<h3><a name="replacedOgcMeta_xml"></a>Replaced OGCMeta.xml</h3>
+<p>The OGCMeta.xml file has been replaced by some of the informatino in the <code>serverInfo</code>
+  element in the <code>threddsConfig.xml</code> file.</p>
+
+<h3>WMS Options in threddsConfig.xml</h3>
 
 <p>The following shows all the configuration options available in the WMS section of the
   <code>threddsConfig.xml</code> file with the default values shown (more details
@@ -84,7 +89,7 @@ section for that information is now deprecated (though still supported, for now)
 &lt;/WMS&gt;
 </pre>
 
-<h2><a name="wmsConfigFile"></a>Additional WMS Configuration File</h2>
+<h3><a name="wmsConfigFile"></a>Additional WMS Configuration File</h3>
 <p>The WMS service now uses a new configuration file for a number of more detailed
   WMS configuration options, mainly focused on the styling of WMS images. Similar
   to the <code>threddsConfig.xml</code> file, the WMS configuration file
