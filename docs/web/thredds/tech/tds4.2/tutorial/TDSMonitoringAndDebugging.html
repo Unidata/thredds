@@ -480,7 +480,7 @@ value="%d{yyyy-MM-dd'T'HH:mm:ss.SSS Z} [%10r][%8X{ID}] %-5p - %c - %m%n"
 
   <p>The above pattern translates into:</p>
 <pre>
-2009-08-03T14:02:28.184 -0600 [1044713597][  214877] INFO  - thredds.server.catalogservice.LocalCatalogServiceController - handleRequestInternal(): Remote host: 192.87.16.142 - Request: "GET /thredds/catalog/nexrad/level3/NVL/VAX/20090619/catalog.xml HTTP/1.1"
+2010-11-08T16:03:29.055 -0700 [     30146][      13] INFO  - thredds.server.catalogservice.LocalCatalogServiceController - handleRequestInternal(): Remote host: 127.0.0.1 - Request: "GET /thredds/catalog/fmrc/NCEP/GFS/Puerto_Rico_191km/catalog.html HTTP/1.1"
 </pre>
 
 
@@ -492,7 +492,7 @@ value="%d{yyyy-MM-dd'T'HH:mm:ss.SSS Z} [%10r][%8X{ID}] %-5p - %c - %m%n"
        Time and date 
      </td>
      <td>
-       <code><small>2009-08-03T14:02:28.184 -0600</small></code>
+       <code><small>2010-11-08T16:03:29.055 -0700</small></code>
     </td>
     </tr>
     <tr>
@@ -500,7 +500,7 @@ value="%d{yyyy-MM-dd'T'HH:mm:ss.SSS Z} [%10r][%8X{ID}] %-5p - %c - %m%n"
        The number of milliseconds since the server was started
      </td>
      <td>
-      <code><small>[1044713597]</small></code>
+      <code><small>[     30146]</small></code>
     </td>
     </tr>
     <tr>
@@ -508,7 +508,7 @@ value="%d{yyyy-MM-dd'T'HH:mm:ss.SSS Z} [%10r][%8X{ID}] %-5p - %c - %m%n"
        Request ID
      </td>
      <td>
-      <code><small>[  214877]</small></code>
+      <code><small>[     13]</small></code>
      </td>
     </tr>
     <tr>
@@ -532,7 +532,7 @@ value="%d{yyyy-MM-dd'T'HH:mm:ss.SSS Z} [%10r][%8X{ID}] %-5p - %c - %m%n"
        Content of the log message
      </td>
      <td>
-      <code><small>Remote host: 192.87.16.142 - Request: "GET /thredds/catalog/nexrad/level3/NVL/VAX/20090619/catalog.xml HTTP/1.1</small></code>
+      <code><small>Remote host: 127.0.0.1 - Request: "GET /thredds/catalog/fmrc/NCEP/GFS/Puerto_Rico_191km/catalog.html HTTP/1.1"</small></code>
     </td>
     </tr>
 
@@ -605,17 +605,17 @@ connection or a request is forwarded to another TDS internal service, one of thr
       <h3>Looking at <code>threddsServlet.log</code> data</h3>  
       <p>Here is an example of some log messages from a request that resulted in error messages:</p>
 <pre>
-2009-06-03T21:49:07.147 -0600 [ 104481318][   <b>27031</b>] INFO  - thredds.server.opendap.OpendapServlet - Remote host: 128.117.140.75 - Request: "GET /thredds/dodsC/nexrad/level2/KFTG/20090602/Level2_KFTG_20090602_0346.ar2v.dds HTTP/1.1"
-2009-06-03T21:49:07.415 -0600 [ 104481586][   <b>27031</b>] ERROR - thredds.server.opendap.OpendapServlet - path= /nexrad/level2/KFTG/20090602/Level2_KFTG_20090602_0346.ar2v.dds
-java.io.IOException: Cant read /data/ldm/pub/native/radar/level2/KFTG/20090602/Level2_KFTG_20090602_0346.ar2v: not a valid NetCDF file.
-        at ucar.nc2.NetcdfFile.open(NetcdfFile.java:716)
-        at ucar.nc2.NetcdfFile.open(NetcdfFile.java:381)
+2010-11-08T15:05:41.886 -0700 [    131421][      16] INFO  - thredds.server.opendap.OpendapServlet - doGet(): Remote host: 127.
+0.0.1 - Request: "GET /thredds/dodsC/fsl/.scour*.html HTTP/1.1"
+2010-11-08T15:05:41.981 -0700 [    131516][      16] ERROR - thredds.server.opendap.OpendapServlet - path= /fsl/.scour*.html
+java.io.IOException: Cant read /data/ldm/fsl/.scour*: not a valid CDM file.
+        at ucar.nc2.NetcdfFile.open(NetcdfFile.java:743)
+        at ucar.nc2.NetcdfFile.open(NetcdfFile.java:387)
  ...
-        at org.apache.tomcat.util.net.JIoEndpoint$Worker.run(JIoEndpoint.java:447)
-        at java.lang.Thread.run(Thread.java:619)
-2009-06-03T21:49:07.416 -0600 [ 104481587][   <b>27031</b>] INFO  - thredds.server.opendap.OpendapServlet - Request Completed - <b>500</b> - -1 - 269
+        at org.apache.tomcat.util.net.JIoEndpoint$Worker.run(JIoEndpoint.java:489)
+        at java.lang.Thread.run(Thread.java:662)
+2010-11-08T15:05:41.982 -0700 [    131517][      16] INFO  - thredds.server.opendap.OpendapServlet - Request Completed - 500 - -1 - 96
 </pre>
-
 
       <div id="note" class="reminder">
        <h4>Keep in Mind</h4>
@@ -624,7 +624,7 @@ java.io.IOException: Cant read /data/ldm/pub/native/radar/level2/KFTG/20090602/L
 
       <p>In the above example, note:<p>
       <ul>
-       <li>the request ID (<b>27031</b>) matches in all messages;</li>
+       <li>the request ID (<b>16</b>) matches in all messages;</li>
        <li>the ERROR message contains a stack trace; and </li>
        <li>the status code in the end of transaction message is <code><small>500 (Internal Server Error)</small></code> .</li>
       </ul>
@@ -634,7 +634,7 @@ java.io.IOException: Cant read /data/ldm/pub/native/radar/level2/KFTG/20090602/L
 
 
       <div id="subsection" class="exercise">
-       <h3>Exercise Four: Find an example of error transition bracketing in your own <code>threddsServlet.log</code>.</h3>
+       <h3>Exercise Three: Find an example of error transition bracketing in your own <code>threddsServlet.log</code>.</h3>
         <ul>
         <li>Yesterday afternoon you performed an exercise specify which datasets are to be included in the generated catalogs (via the <code><small>filter</small></code> element in the <code><small>datasetscan</small></code> element).  During the exercise, errors were generated and logged to the <code><small>threddsServlet.log</small></code>.</li>
        </ul>
@@ -696,7 +696,7 @@ java.io.IOException: Cant read /data/ldm/pub/native/radar/level2/KFTG/20090602/L
 
 
       <div id="subsection" class="exercise">
-       <h3>Exercise Five: Use Live HTTP Headers.</h3>
+       <h3>Exercise Four: Use Live HTTP Headers.</h3>
  
 
        <ol>
@@ -776,7 +776,7 @@ Exception in thread "RMI TCP Connection(idle)" java.lang.OutOfMemoryError: PermG
 
 
       <div id="subsection" class="exercise">
-       <h3>Exercise Six: Use <code><small>JConsole</small></code> to monitor the JVM during a <code><small>manager</small></code>-induced  <code><small>PermGen</small></code> error.</h3>
+       <h3>Exercise Five: Use <code><small>JConsole</small></code> to monitor the JVM during a <code><small>manager</small></code>-induced  <code><small>PermGen</small></code> error.</h3>
        <ol>
         <li>Using the steps outlined above, try to induce a <code><small>PermGen</small></code> error using the <code><small>manager</small></code> application and monitor it via <code><small>JConsole</small></code>.</li>
     
