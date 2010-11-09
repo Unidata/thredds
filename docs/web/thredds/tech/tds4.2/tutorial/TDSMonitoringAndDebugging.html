@@ -738,7 +738,7 @@ java.io.IOException: Cant read /data/ldm/fsl/.scour*: not a valid CDM file.
         <p>If you happen to be running more than one JVM on your machine, look to see what Process ID # for the JVM running Tomcat:</p>
 <pre>
 <b>$</b> ps -ef | grep tomcat
-thredds   <b>5168</b>     1  5 14:01 pts/2    00:00:12 /home/thredds/jdk1.6.0_14/bin/java -Djava.util.logging.config.file=/home/thredds/apache-tomcat-6.0.29/conf/logging.properties -Xmx256m -Xms256m -server -Djava.awt.headless=true -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Djava.endorsed.dirs=/home/thredds/apache-tomcat-6.0.29/endorsed -classpath :/home/thredds/apache-tomcat-6.0.29/bin/bootstrap.jar -Dcatalina.base=/home/thredds/apache-tomcat-6.0.29 -Dcatalina.home=/home/thredds/apache-tomcat-6.0.29 -Djava.io.tmpdir=/home/thredds/apache-tomcat-6.0.29/temp org.apache.catalina.startup.Bootstrap start
+thredds   <b>5168</b>     1  5 14:01 pts/2    00:00:12 /home/thredds/jdk1.6.0_22/bin/java -Djava.util.logging.config.file=/home/thredds/apache-tomcat-6.0.29/conf/logging.properties -Xmx256m -Xms256m -server -Djava.awt.headless=true -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Djava.endorsed.dirs=/home/thredds/apache-tomcat-6.0.29/endorsed -classpath :/home/thredds/apache-tomcat-6.0.29/bin/bootstrap.jar -Dcatalina.base=/home/thredds/apache-tomcat-6.0.29 -Dcatalina.home=/home/thredds/apache-tomcat-6.0.29 -Djava.io.tmpdir=/home/thredds/apache-tomcat-6.0.29/temp org.apache.catalina.startup.Bootstrap start
 thredds   5451  4285  0 14:05 pts/2    00:00:00 grep tomcat
 </pre>
           <p>Select the local JVM process corresponding to Tomcat and connect:</p>
@@ -768,6 +768,21 @@ Exception in thread "RMI TCP Connection(idle)" java.lang.OutOfMemoryError: PermG
           <p><a href="../../images/permgen3.png"><img src="../../images/permgen3.png" width="300" height="413" alt="PermGen Error" /></a></p>
 
          </ol>
+       <li>Please Note:  you will most likely have to forcefully kill the running tomcat process, as the <code>$TOMCAT_HOME/bin/shutdown.sh</code> will be unresponsive.</li>
+        <ol>
+        <li>Find the Tomcat process running and get the process ID number:</li>
+<pre>
+<b>$</b> ps -ef | grep tomcat
+thredds   <b>5168</b>     1  5 14:01 pts/2    00:00:12 /home/thredds/jdk1.6.0_22/bin/java -Djava.util.logging.config.file=/home/thredds/apache-tomcat-6.0.29/conf/logging.properties -Xmx256m -Xms256m -server -Djava.awt.headless=true -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Djava.endorsed.dirs=/home/thredds/apache-tomcat-6.0.29/endorsed -classpath :/home/thredds/apache-tomcat-6.0.29/bin/bootstrap.jar -Dcatalina.base=/home/thredds/apache-tomcat-6.0.29 -Dcatalina.home=/home/thredds/apache-tomcat-6.0.29 -Djava.io.tmpdir=/home/thredds/apache-tomcat-6.0.29/temp org.apache.catalina.startup.Bootstrap start
+thredds   5451  4285  0 14:05 pts/2    00:00:00 grep tomcat
+</pre>
+        <li>Kill it!</li>
+<pre>
+<b>$</b> kill -9 5168
+<b>$</b> ps -ef | grep tomcat
+thredds   5694  4285  0 14:20 pts/2    00:00:00 grep tomcat
+</pre>
+      </ol>
      </ol>
 
 
