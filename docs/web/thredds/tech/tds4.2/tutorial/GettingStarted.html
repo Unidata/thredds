@@ -336,7 +336,7 @@ export CATALINA_HOME
          <li><code><small>-Xms</small></code> is the initial allocated memory of the JVM (for performance).</li>
          <li><code><small>-Xmx</small></code> the maximum allocated memory of the JVM (for performance).</li>
          <li><code><small>-server</small></code> tells the Hostspot compiler to run the JVM in "server" mode.</li>
-         <li><code><small>-Djava.awt.headless=true</small></code> is needed to prevent graphics rendering code to assume that a graphics console exists. Without this, WMS code will crash the server in some circumstances.</li>
+         <li><code><small>-Djava.awt.headless=true</small></code> is needed to prevent graphics rendering code from assuming a graphics console exists. Without this, WMS code will crash the server in some circumstances.</li>
         </ul>
  
        <li>Restart Tomcat to implement your changes.</li>
