@@ -52,7 +52,12 @@
 &lt;/Host&gt;
 </pre>  
 
-         
+        <p>Change the <code><small>prefix</small></code> and  <code><small>suffix</small></code> attributes to customize the access log name. (We are customizing the name of the access log for the sake of a future exercise that requires the log files to begin with <code><small>access</small></code>.  In reality, you can modify these attributes to your own chosen values or leave defaults when you configure Tomcat at your home institution.)</p> 
+<pre>
+prefix="access." 
+suffix=".log"
+</pre>  
+
         <p>To provide more useful information about who is accessing the TDS, change the <code><small>pattern</small></code> element to customize the format of each log entry:</p>
 <pre>
 pattern="%h %l %u %t &amp;quot;%r&amp;quot; %s %b &amp;quot;%{Referer}i&amp;quot; &amp;quot;%{User-Agent}i&amp;quot; %D"
@@ -62,8 +67,8 @@ pattern="%h %l %u %t &amp;quot;%r&amp;quot; %s %b &amp;quot;%{Referer}i&amp;quot
 <pre>
 &lt;Valve className="org.apache.catalina.valves.AccessLogValve"
    directory="logs"  
-   prefix="localhost_access_log." 
-   suffix=".txt"
+   prefix="access." 
+   suffix=".log"
    pattern="%h %l %u %t &amp;quot;%r&amp;quot; %s %b &amp;quot;%{Referer}i&amp;quot; &amp;quot;%{User-Agent}i&amp;quot; %D"
    resolveHosts="false" /&gt;
 </pre> 
@@ -77,7 +82,7 @@ total 52
 -rw-r--r-- 1 thredds workshop 20551 Nov  7 16:38 catalina.out
 -rw-r--r-- 1 thredds workshop     0 Nov  7 16:31 host-manager.2010-11-07.log
 -rw-r--r-- 1 thredds workshop  4537 Nov  7 16:38 localhost.2010-11-07.log
--rw-r--r-- 1 thredds workshop     0 Nov  7 16:38 localhost_access_log.2010-11-07.txt
+-rw-r--r-- 1 thredds workshop     0 Nov  7 16:38 access.2010-11-07.log
 -rw-r--r-- 1 thredds workshop     0 Nov  7 16:31 manager.2010-11-07.log
 </pre>  
       </ol>
@@ -593,7 +598,7 @@ connection or a request is forwarded to another TDS internal service, one of thr
         <li><code><small>"1002 (Forward Failed)"</small></code>  - an attempt was made but failed to forward the request to another TDS internal service.</li>
       </ul>
 
-        <p>If the request is forwarded successfully, another set of transaction messages should be initiated with the ending message containing a standard HTTP status code. If forwarding the request fails, another set of transaction message may or may not be initiated and the entry in the access log will probably either log a <code><small>400 (Not Found)</small></code> or a <code><small>500 (Internal Server Error)</small></code> HTTP status code.</p>
+        <p>If the request is forwarded successfully, another set of transaction messages should be initiated with the ending message containing a standard HTTP status code. If forwarding the request fails, another set of transaction message may or may not be initiated and the entry in the access log will probably either log a <code><small>404 (File Not Found)</small></code> or a <code><small>500 (Internal Server Error)</small></code> HTTP status code.</p>
 
 
      </div> <!-- end  subsection -->
