@@ -691,6 +691,7 @@ secret:e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4
         <ul class="little"> 
          <li>Although it is not obvious, the <code><small>first and last name</small></code>, or <code><small>CN</small></code>, should be the host name</li>
          <li>The <code><small>keystore password</small></code> (the first password you are prompted to enter) needs to be the same as the last password (the <code><small>key password</small></code>). </li>
+         <li>The default  <code><small>keystore password</small></code> is <code><small>changeit</small></code>. If you choose to modify this password, you will need to specify the modified password when configuring Tomcat for SSL (steps to do this are shown below).</li>
         </ul>
 
 <pre>
@@ -759,6 +760,13 @@ drwxr-xr-x 3 thredds workshop  4096 2009-08-03 16:08 Catalina
 &lt;Connector port="8443" protocol="HTTP/1.1" SSLEnabled="true"
               maxThreads="150" scheme="https" secure="true"
               clientAuth="false" sslProtocol="TLS" <b>keystoreFile="/home/thredds/apache-tomcat-6.0.29/conf/keystore"</b> /&gt;
+</pre>
+
+        <p>Since we opted to not use the default <code><small>keystore password</small></code>, we need to specify the new password so Tomcat can open the file:</p>
+<pre>
+&lt;Connector port="8443" protocol="HTTP/1.1" SSLEnabled="true"
+              maxThreads="150" scheme="https" secure="true"
+              clientAuth="false" sslProtocol="TLS" keystoreFile="/home/thredds/apache-tomcat-6.0.29/conf/keystore" <b>keystorePass="foobar"</b> /&gt;
 </pre>
 
 
