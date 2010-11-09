@@ -10,11 +10,11 @@
    <h1>TDS Tutorial: TDS Monitoring and Debugging</h1>
 
    <div id="section">
-    <h2><a name="access">Access Logs</a></h2>
+    <h2><a name="access">Tomcat Access Logs</a></h2>
      <div id="subsection">
       <h3>The Tomcat access log</h3>
        <ul>
-        <li>The access log records all requests processed by the server.</li>
+        <li>The access log records <i><b>all</b></i> requests processed by the server.</li>
         <li>Not enabled in Tomcat by default - must be enabled in <code>$TOMCAT_HOME/conf/server.xml</code>.</li>
         <li>Information it contains is different from other logs in <code>$TOMCAT_HOME/logs</code>.</li>
         <li>Used for monitoring who is using your server and as a way of obtaining "feedback" about the activity and performance of the server.</li>
@@ -420,7 +420,7 @@ cise63.cise-nsf.gov.
      <div id="subsection">
       <h3>About the <code>threddsServlet.log</code></h3>    
        <ul>
-        <li>Already enabled.</li>
+        <li>Enabled by default.</li>
         <li>Log messages for all requests handled by the TDS.</li>
         <li>By default is configured to rotate every hour.  Old log files are re-named with the <code><small>threddsServlet.log.&lt;yyyy-mm-dd-HH&gt;</small></code> pattern.</li>
         <li>Used for debugging and troubleshooting issues with the TDS.</li>
@@ -746,7 +746,7 @@ thredds   5451  4285  0 14:05 pts/2    00:00:00 grep tomcat
 
        <li>Try to create a <code>PermGen</code> error via the Tomcat <code>manager</code> application.</li>
           <p>In your browser window, continually <code><small>Start</small></code>, <code><small>Stop</small></code> and <code><small>reload</small></code> the TDS and other web applications using the <code><small>manager</small></code> application.</p>
-          <p>In the meantime, chart the <b>Memory Pool "PS Perm Gen"</b> in the <code><small>JConsole</small></code><b>Memory</b> tab.  Also monitor the <b>Heap Memory Usage</b> and <b>Class Loading</b> displays in the <b>Overview</b> tab.  </p>
+          <p>In the meantime, chart the <b>Memory Pool "PS Perm Gen"</b> in the <code><small>JConsole</small></code> <b>Memory</b> tab.  Also monitor the <b>Heap Memory Usage</b> and <b>Class Loading</b> displays in the <b>Overview</b> tab.  </p>
         <li>Try to create a <code><small>PermGen</small></code> error via the Tomcat <code><small>manager</small></code> application.</li>
 
        <li>Identify <code>PermGen</code> as it happens.</li>
