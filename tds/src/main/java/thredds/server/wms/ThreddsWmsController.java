@@ -55,8 +55,7 @@ import uk.ac.rdg.resc.ncwms.wms.Layer;
 
 /**
  * <p>WmsController for THREDDS</p>
- * @todo get rid of System.out.println
- * @todo Find better way to locate wmsStyleConfig file
+ *
  * @author Jon Blower
  */
 public final class ThreddsWmsController extends AbstractWmsController
@@ -92,20 +91,22 @@ public final class ThreddsWmsController extends AbstractWmsController
   @Override
   public void init() throws Exception
   {
-      super.init();
-      ThreddsServerConfig tdsServerConfig = (ThreddsServerConfig)this.serverConfig;
-      logServerStartup.error("WMS:allow= "+tdsServerConfig.isAllow());
-      //if (!tdsServerConfig.isAllow()) return;
-
-      File wmsConfigFile = tdsServerConfig.getTdsContext().getConfigFileSource().getFile("wmsConfig.xml");
-      if (wmsConfigFile == null || !wmsConfigFile.exists() || !wmsConfigFile.isFile())
+    super.init();
+    ThreddsServerConfig tdsWmsServerConfig = (ThreddsServerConfig) this.serverConfig;
+    logServerStartup.error( "WMS:allow= " + tdsWmsServerConfig.isAllow() );
+    if ( tdsWmsServerConfig.isAllow() )
+    {
+      logServerStartup.error( "WMS:allowRemote= " + tdsWmsServerConfig.isAllowRemote() );
+      File wmsConfigFile = tdsWmsServerConfig.getTdsContext().getConfigFileSource().getFile( "wmsConfig.xml" );
+      if ( wmsConfigFile == null || !wmsConfigFile.exists() || !wmsConfigFile.isFile() )
       {
-        ((ThreddsServerConfig) this.serverConfig).getTdsContext().getWmsConfig().setAllow( false );
+        tdsWmsServerConfig.setAllow( false );
         logServerStartup.error( "init(): Disabling WMS: Could not find wmsConfig.xml. [Default version available at ${TOMCAT_HOME}/webapps/thredds/WEB-INF/altContent/startup/wmsConfig.xml." );
         return;
       }
-      this.wmsConfig = WmsDetailedConfig.fromFile(wmsConfigFile);
-      logServerStartup.info("init(): Loaded WMS configuration from wmsConfig.xml");
+      this.wmsConfig = WmsDetailedConfig.fromFile( wmsConfigFile );
+      logServerStartup.info( "init(): Loaded WMS configuration from wmsConfig.xml" );
+    }
   }
 
   @Override
@@ -118,8 +119,8 @@ public final class ThreddsWmsController extends AbstractWmsController
   {
     log.info( UsageLog.setupRequestContext( httpServletRequest ) );
 
-    ThreddsServerConfig threddsServerConfig = (ThreddsServerConfig) this.serverConfig;
-    if ( ! threddsServerConfig.isAllow() )
+    ThreddsServerConfig tdsWmsServerConfig = (ThreddsServerConfig) this.serverConfig;
+    if ( ! tdsWmsServerConfig.isAllow() )
     {
       log.info( "dispatchWmsRequest(): WMS service not supported." );
       log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_FORBIDDEN, -1 ) );
@@ -131,7 +132,7 @@ public final class ThreddsWmsController extends AbstractWmsController
     try
     {
       RequestedDataset reqDataset = new RequestedDataset( httpServletRequest );
-      if ( reqDataset.isRemote() && ! threddsServerConfig.isAllowRemote() )
+      if ( reqDataset.isRemote() && ! tdsWmsServerConfig.isAllowRemote() )
       {
         log.info( "dispatchWmsRequest(): WMS service not supported for remote datasets." );
         throw new WmsException( "WMS service not supported for remote (non-server-resident) datasets.", "LayerNotDefined");
@@ -185,7 +186,7 @@ public final class ThreddsWmsController extends AbstractWmsController
       else if (request.equals("GetMetadata"))
       {
         ThreddsMetadataController tms =
-            new ThreddsMetadataController(layerFactory, threddsServerConfig, ds);
+            new ThreddsMetadataController(layerFactory, tdsWmsServerConfig, ds);
         // This is a request for non-standard metadata.  (This will one
         // day be replaced by queries to Capabilities fragments, if possible.)
         // Delegate to the ThreddsMetadataController

@@ -104,8 +104,8 @@ public class ThreddsServerConfig implements ServerConfig
         return defaultPaletteDir;
     }
 
-    this.tdsContext.getWmsConfig().setAllow( false);
-    this.tdsContext.getWmsConfig().setAllowRemote( false);
+    this.setAllow( false);
+    this.setAllowRemote( false);
     logServerStartup.error( "Default palette location not available.\n**** Disabling WMS - Check palette configuration: "
                             + UsageLog.closingMessageNonRequestContext() );
     return null;
@@ -115,8 +115,16 @@ public class ThreddsServerConfig implements ServerConfig
     return this.tdsContext.getWmsConfig().isAllow();
   }
 
+  public void setAllow( boolean allow) {
+    this.tdsContext.getWmsConfig().setAllow( allow );
+  }
+
   public boolean isAllowRemote() {
     return this.tdsContext.getWmsConfig().isAllowRemote();
+  }
+
+  public void setAllowRemote( boolean allowRemote) {
+    this.tdsContext.getWmsConfig().setAllowRemote( allowRemote );
   }
 
   private String getUserConfigPaletteLocationDir() {
