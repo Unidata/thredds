@@ -264,8 +264,8 @@
 
     <h4>Tools to Manage Configuration Catalogs </h4>
 
-    <p>First, the TDS catalog errors log</p>
-    <pre>${TOMCAT_HOME}/content/thredds/logs/catalogErrors.log </pre>
+    <p>First, the TDS catalog initialization log</p>
+    <pre>${TOMCAT_HOME}/content/thredds/logs/catalogInit.log </pre>
 
     <p>contains all warning and error messages from parsing the
       configuration catalogs. As such, it is a great place to look for
@@ -319,7 +319,7 @@
             Note: Because the TDS uses the set of all given path values
             to map URLs to datasets, each path value MUST be unique across all
             config catalogs on a given TDS installation. Duplicates will cause
-            warning messages in the <code>catalogErrors.log</code> file.
+            warning messages in the <code>catalogInit.log</code> file.
           </p>
         </li>
         <li>The directory pointed to by <strong>location</strong> should be absolute</li>

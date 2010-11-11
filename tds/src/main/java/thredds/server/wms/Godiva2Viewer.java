@@ -54,7 +54,7 @@ public class Godiva2Viewer implements Viewer
     public boolean isViewable(InvDatasetImpl ds)
     {
         InvAccess access = ds.getAccess(ServiceType.WMS);
-        return (access != null) && (ds.getDataType() == FeatureType.GRID);
+        return access != null;
     }
 
     @Override
@@ -62,18 +62,14 @@ public class Godiva2Viewer implements Viewer
     {
       InvAccess access = ds.getAccess(ServiceType.WMS);
       URI dataURI = access.getStandardUri();
-      try
-      {
-         URI base = new URI( req.getRequestURL().toString());
+      try {
+        URI base = new URI( req.getRequestURL().toString());
          dataURI = base.resolve( dataURI);
-      }
-      catch (URISyntaxException e)
-      {
-         return "Error generating viewer link";
+      } catch (URISyntaxException e) {
+        return "Error generating viewer link";
       }
 
       // ToDo Switch to use TdsContext.getContextPath()
       return "<a href='" + ServletUtil.getContextPath() + "/godiva2/godiva2.html?server="+dataURI.toString()+"'>Godiva2 (browser-based)</a>";
     }
-
 }

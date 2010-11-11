@@ -91,7 +91,7 @@ If this option is not specified, it defaults to <strong>${user_home}/.keystore</
 <p>&nbsp;</p>
 <h2>TDS Remote Debugging<a name="RemoteDebugging" id="RemoteDebugging"></a></h2>
 <p>Once SSL is enabled, you can remotely debug and configure the TDS.</p>
-<p>Debugging information is available at <strong><a href="http://localhost:8080/thredds/debug">http://localhost:8080/thredds/debug</a>. </strong>Some features of particular interest are:</p>
+<p>Debugging information is available at <strong><a href="http://localhost:8080/thredds/admin/debug">http://localhost:8080/thredds/admin/debug</a>. </strong>Some features of particular interest are:</p>
 <ol>
   <li><strong>Show Log</strong>s allows you to look at the TDS access logs, to see who is using your server.</li>
   <li><strong>Reinitialize</strong> will reread in the TDS catalogs and reinitialize itself, without having to restart the server. Use this whenever you make changes to the TDS catalogs.</li>
@@ -105,7 +105,7 @@ If this option is not specified, it defaults to <strong>${user_home}/.keystore</
   <li><strong>sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested target</strong> : A 3rd party security system like CAS is trying to establish an SSL connection. <a href="#JRE_keystore">Install</a> the remote host's certificate into the JRE certificate store. </li>
   <li><strong>What's in the keystore? </strong>
     <ul>
-      <li>Look at the <a href="https://localhost:8443/thredds/debug?General/showServerInfo">Tomcat Server Status</a> page and check  the JVM Version.</li>
+      <li>Look at the <a href="https://localhost:8443/thredds/admin/debug?General/showServerInfo">Tomcat Server Status</a> page and check  the JVM Version.</li>
       <li> From command line, make sure that this matches the results of <strong>'java -version'. </strong>If not, then your Tomcat server is starting up with a different JVM. </li>
       <li>From command line, <strong>'keytool -list' </strong>will show you what's in the default keystore. Standard is to have password <em>changeit</em>. You need an entry named <em>tomcat</em>. </li>
     </ul>

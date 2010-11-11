@@ -121,9 +121,37 @@
           <li>Go back, select the WMS Access link</li>
         </ol>
       </li>
+      <li>Check Dataset Viewer Links for Godiva2
+        <br><br>ToolsUI and Godiva2 are there but IDV is not.
+      </li>
     </ol>
   </div>
+  <div id="subsection"><h3>Adding "Grid" DataType to Datasets</h3>
+    <p>Once datasets are accessible over the WMS and WCS services, a quick look at the dataset
+      pages shows several "Viewer" links available for each dataset (ToolsUI and Godiva2). The IDV
+      "Viewer" link is only added for datasets with a "Grid" data type. This is not whether the
+      dataset is recognized by the CDM as gridded but rather if the metadata in the catalog
+      indicates that the dataset is a "Grid". This is accomplished with the <code>dataType</code>
+      metadata element:
+    </p>
+    <pre>&lt;dataType&gt;Grid&lt;/dataType&gt;</pre>
+  </div>
 
+  <div id="subsection" class="exercise"><h3>Exercise: Add "Grid" DataType to the NAM Data</h3>
+    <ol>
+      <li>Edit the <strong>catalog.xml</strong> file and add a Grid <code>dataType</code> element
+        (as above) to the NAM dataset.
+      </li>
+      <li>Restart Tomcat so the TDS is reinitialized:
+  <pre>
+  <strong>[thredds@workshop00 ~]$</strong> cd ${TOMCAT_HOME}/bin
+  <strong>[thredds@workshop00 ~]$</strong> ./shutdown.sh
+  <strong>[thredds@workshop00 ~]$</strong> ./startup.sh
+  </pre>
+      </li>
+      <li>Check the dataset pages for the IDV Viewer link.</li>
+    </ol>
+  </div>
 </div>
 
 <div id="section"><h2><a name="Using">Using WCS and WMS</a></h2>
