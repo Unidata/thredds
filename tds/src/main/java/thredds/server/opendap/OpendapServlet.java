@@ -93,6 +93,7 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
     this.binLimit = ThreddsConfig.getInt( "Opendap.binLimit", binLimit);
 
     this.odapVersionString = ThreddsConfig.get( "Opendap.serverVersion", odapVersionString);
+    logServerStartup.info(getClass().getName() + " version= "+odapVersionString+" ascLimit = "+ascLimit+" binLimit = "+binLimit);
 
     // debugging actions
     makeDebugActions();

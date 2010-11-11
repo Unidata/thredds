@@ -98,6 +98,7 @@ public class CdmInit {
 
     boolean useBytesForDataSize = ThreddsConfig.getBoolean("catalogWriting.useBytesForDataSize", false);    
     InvCatalogFactory10.useBytesForDataSize(useBytesForDataSize);
+    startupLog.info("CdmInit: catalogWriting.useBytesForDataSize= "+useBytesForDataSize);
 
     ////////////////////////////////////
     //AggregationFmrc.setDefinitionDirectory(new File(tdsContext.getRootDirectory(), fmrcDefinitionDirectory));
@@ -109,6 +110,7 @@ public class CdmInit {
     int secs = ThreddsConfig.getSeconds("NetcdfFileCache.scour", 10 * 60);
     if (max > 0) {
       NetcdfDataset.initNetcdfFileCache(min, max, secs);
+      startupLog.info("CdmInit: NetcdfDataset.initNetcdfFileCache= ["+min+","+max+"] scour = "+secs);
     }
 
     // HTTP file access : // allow 20 - 40 open datasets, cleanup every 10 minutes
@@ -117,6 +119,7 @@ public class CdmInit {
     secs = ThreddsConfig.getSeconds("HTTPFileCache.scour", 10 * 60);
     if (max > 0) {
       ServletUtil.setFileCache( new FileCacheRaf(min, max, secs));
+      startupLog.info("CdmInit: HTTPFileCache.initCache= ["+min+","+max+"] scour = "+secs);
     }
 
     // for backwards compatibility - should be replaced by direct specifying of the IndexExtendMode
@@ -125,9 +128,11 @@ public class CdmInit {
     GridServiceProvider.IndexExtendMode mode = extendIndex ? GridServiceProvider.IndexExtendMode.extendwrite : GridServiceProvider.IndexExtendMode.readonly;
     ucar.nc2.iosp.grid.GridServiceProvider.setIndexFileModeOnOpen( mode);
     ucar.nc2.iosp.grid.GridServiceProvider.setIndexFileModeOnSync( mode);
+    startupLog.info("CdmInit: GridServiceProvider.IndexExtendMode= "+mode);
 
     boolean alwaysUseCache = ThreddsConfig.getBoolean("GribIndexing.alwaysUseCache", false);
     ucar.nc2.iosp.grid.GridServiceProvider.setIndexAlwaysInCache( alwaysUseCache );
+    startupLog.info("CdmInit: GribIndexing.alwaysUseCache= "+alwaysUseCache);
 
     // optimization: netcdf-3 files can only grow, not have metadata changes
     ucar.nc2.NetcdfFile.setProperty("syncExtendOnly", "true");
@@ -138,10 +143,12 @@ public class CdmInit {
     int maxAgeSecs = ThreddsConfig.getSeconds("AggregationCache.maxAge", 90 * 24 * 60 * 60);
     aggCache = new DiskCache2(dir, false, maxAgeSecs / 60, scourSecs / 60);
     Aggregation.setPersistenceCache(aggCache);
+    startupLog.info("CdmInit:  AggregationCache= "+dir+" scour = "+scourSecs+" maxAgeSecs = "+maxAgeSecs);
 
     // how to choose the typical dataset ?
     String typicalDataset = ThreddsConfig.get("Aggregation.typicalDataset", "penultimate");
     Aggregation.setTypicalDatasetMode(typicalDataset);
+    startupLog.info("CdmInit: Aggregation.setTypicalDatasetMode= "+typicalDataset);
 
     // Nj22 disk cache
     dir = ThreddsConfig.get("DiskCache.dir", new File( tdsContext.getContentDirectory(), "/cache/cdm/" ).getPath());
@@ -150,6 +157,7 @@ public class CdmInit {
     long maxSize = ThreddsConfig.getBytes("DiskCache.maxSize", (long) 1000 * 1000 * 1000);
     DiskCache.setRootDirectory(dir);
     DiskCache.setCachePolicy(alwaysUse);
+    startupLog.info("CdmInit:  CdmCache= "+dir+" scour = "+scourSecs+" maxSize = "+maxSize);
 
     Calendar c = Calendar.getInstance(); // contains current startup time
     c.add(Calendar.SECOND, scourSecs / 2); // starting in half the scour time

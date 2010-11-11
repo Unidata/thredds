@@ -60,8 +60,6 @@ import ucar.nc2.util.xml.RuntimeConfigParser;
  */
 public class ThreddsConfig {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( ThreddsConfig.class );
-
-
   private static String _filename;
   private static Element rootElem;
 
@@ -248,7 +246,8 @@ public class ThreddsConfig {
       if (null == elem)
         return null;
     }
-    return elem.getText();
+    String text =  elem.getText();
+    return (text == null) ? null : text.trim();
   }
 
 }

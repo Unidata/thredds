@@ -83,6 +83,7 @@ public class GridServlet extends AbstractServlet {
   </NetcdfSubsetService> */
 
     allow = ThreddsConfig.getBoolean("NetcdfSubsetService.allow", false);
+    logServerStartup.error("NetcdfSubsetService:allow= "+allow);
     if (!allow) return;
 
     //maxFileDownloadSize = ThreddsConfig.getBytes("NetcdfSubsetService.maxFileDownloadSize", (long) 1000 * 1000 * 1000);
@@ -102,6 +103,7 @@ public class GridServlet extends AbstractServlet {
 
     // LOOK: what happens if we are still downloading when the disk scour starts?
     diskCache = new DiskCache2(cache, false, maxAgeSecs / 60, scourSecs / 60);
+    logServerStartup.info(getClass().getName() + "Ncss.Cache= "+cache+" scour = "+scourSecs+" maxAgeSecs = "+maxAgeSecs);
 
     logServerStartup.info( getClass().getName() + " initialization done -  " + UsageLog.closingMessageNonRequestContext() );
   }

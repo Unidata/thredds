@@ -94,6 +94,9 @@ public final class ThreddsWmsController extends AbstractWmsController
   {
       super.init();
       ThreddsServerConfig tdsServerConfig = (ThreddsServerConfig)this.serverConfig;
+      logServerStartup.error("WMS:allow= "+tdsServerConfig.isAllow());
+      //if (!tdsServerConfig.isAllow()) return;
+
       File wmsConfigFile = tdsServerConfig.getTdsContext().getConfigFileSource().getFile("wmsConfig.xml");
       if (wmsConfigFile == null || !wmsConfigFile.exists() || !wmsConfigFile.isFile())
       {
