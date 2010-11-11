@@ -68,18 +68,26 @@
       <li>Get the base URL of the service element:
 <pre>/thredds/dodsC/</pre>
       </li>
-      <li>If it is a relative URL, resolve against the catalog's URL:
-<pre><strong>http://my.server</strong>/thredds/catalog.xml      <var>// Catalog URL</var></pre>
-<pre>http://my.server/thredds/dodsC/           <var>// Service base URL</var></pre>
+      <li>If it is a relative URL, use the catalog's URL:
+<pre><strong>http://hostname:port</strong>/thredds/catalog.xml      <var>// Catalog URL</var></pre>
+        to resolve the base URL:
+<pre>http://hostname:port/thredds/dodsC/           <var>// Service base URL</var></pre>
       </li>
       <li>Find the urlPath attribute for the accessible dataset:
 <pre>&lt;dataset name="TDS Tutorial: example data 3" urlPath="<strong>test/example3.nc</strong>" &gt;</pre>        
       </li>
       <li>Append the value of the urlPath attribute to the base
         service URL:
-<pre><strong>http://my.server/thredds/dodsC/test/example3.nc</strong></pre>
+<pre>
+http://hostname:port/thredds/dodsC/model/run0023/mydata.nc
+|                   |             |                      |
+|&lt;---  server   ---&gt;|&lt;-----------&gt;|&lt;--------------------&gt;|
+                            |               |
+          service basePath -|               |- dataset urlPath
+</pre>
       </li>
     </ol>
+
     <p>More information is available on
       <a href="../../catalog/v1.0.2/InvCatalogSpec.html#constructingURLs">constructing access URLs</a>.
     </p>
@@ -180,8 +188,8 @@ grib/
       the datasets (2 &amp; 3) are</p>
 
 <pre>
-http://my.server/thredds/dodsC/<strong>my/test</strong>/testData.nc
-http://my.server/thredds/dodsC/<strong>my/test</strong>/grib/data1.grib2
+http://hostname:port/thredds/dodsC/<strong>my/test</strong>/testData.nc
+http://hostname:port/thredds/dodsC/<strong>my/test</strong>/grib/data1.grib2
 </pre>
 
     <p>When the server receives a request for one of the above URLs, it uses the URL path to
@@ -290,7 +298,8 @@ etc. We will go into more detail on this later.</p>
               <li><code>catalogInit.log</code> - log file for messages generated while reading TDS
                 configuration catalogs during TDS initialization and reinitialization.
               </li>
-              <li><code>threddsServlet.log</code> - TDS error log file.</li>
+              <li><code>threddsServlet.log</code> - log messages about individual TDS requests,
+                including any error messages. Useful for debugging problems.</li>
             </ul>
           </li>
           <li><code>cache/</code> - various cache directories
