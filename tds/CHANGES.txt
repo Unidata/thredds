@@ -4,6 +4,9 @@ Build Date = @BUILDTIME@
 Build Name = @BUILD.NAME@
 
 Release Details 4.2:
+ 4.2 release candidate 7 (2010-11-??)
+   next major release (4.3) will require Tomcat 6 (Servlet 2.5)
+   
  4.2 release candidate 6 (2010-11-05)
    fix handling of unknown projections by WCS (TDS-138)
    add support for server information requests (TDS-137)
