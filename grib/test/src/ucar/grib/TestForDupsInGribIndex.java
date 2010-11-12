@@ -47,12 +47,27 @@ import ucar.grid.GridIndex;
 import java.io.IOException;
 import java.io.File;
 
+/*
+ * junit test for checking for duplicate records in a index by comparing a newly
+ * created index against a known index that has the duplicates removed.
+ */
 public final class TestForDupsInGribIndex extends TestCase {
-
+  /*
+   * what dir to index
+   */
   private String testPath;
+  /*
+   * Grib1 Index Writer
+   */
   private Grib1WriteIndex g1wi;
+  /*
+   * Grib2 Index Writer
+   */
   private Grib2WriteIndex g2wi;
 
+  /*
+   * init
+   */
   protected final void setUp() {
     testPath = TestAll.testdataDir + "grid/grib/duplicates/";
     g1wi = new Grib1WriteIndex();
@@ -61,7 +76,7 @@ public final class TestForDupsInGribIndex extends TestCase {
 
   /**
    *
-   * @return
+   * @return TestSuite results
    */
   public static Test suite() {
     return new TestSuite(TestForDupsInGribIndex.class);
@@ -70,9 +85,6 @@ public final class TestForDupsInGribIndex extends TestCase {
 
   /*
    * indexes grib files and check for duplicate records against known chk file.
-   * @param sDir what dir to index
-   * @param g1wi Grib1 Index Writer
-   * @param g2wi Grib2 Index Writer
    */
   public final void testIndexer() {
 
@@ -121,6 +133,7 @@ public final class TestForDupsInGribIndex extends TestCase {
    * Reads in newly created index and checks it against know index that has the
    * duplicate records removed.
    * @param args  Grib file name and index name
+   * @param sb  log message storage
    */
   private boolean checkForDuplicates( String[] args, StringBuilder sb )
       throws IOException {
