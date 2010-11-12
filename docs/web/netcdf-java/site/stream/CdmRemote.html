@@ -15,7 +15,7 @@ dl {margin: 10px 5px 5px 15px;)
 <h1>CDM Remote Web Service (Experimental)</h1>
 <p>CDM Remote is an experimental web service implemented in the CDM library (client) and TDS (server), providing remote access to CDM datasets, using <a href="NcStream.html">ncstream</a> as the on-the-wire protocol. It provides access at the  NetcdfFile and FeatureDataset  levels of the CDM API., so there are two levels of services: </p>
 <ol>
-  <li><em><strong>CdmRemote</strong> </em>provides  index subsetting on remote CDM datasets, with the same functionality that <strong>NetcdfFile</strong> provides for CDM local datasets and <strong>DODSNetcdfFile</strong> provides for remote OPeNDAP datasets.</li>
+  <li><em><strong>CdmRemote</strong> </em>provides  index subsetting on remote CDM datasets, with the same functionality that <strong>NetcdfFile</strong> provides for CDM local datasets and <strong>DODSNetcdfFile</strong> provides for remote OPeNDAP datasets. <em><strong>CdmRemote</strong></em> supports the full CDM data model.</li>
   <li><em><strong>CdmRemoteFeatureDataset</strong></em> provides coordinate subsetting on remote CDM Feature Datasets, with similar functionality to <em>WCS</em> and Unidata's experimental <em>NetCDF Subset Service (NCSS)</em>. Currently (version 4.1) it provides a remote API for <strong><em>Point</em></strong> and <strong><em>StationTimeSeries</em></strong> Feature Datasets.</li>
 </ol>
 <p>The CDM Remote services and protocol are  experimental and should not be used outside of the CDM stack for now.</p>
