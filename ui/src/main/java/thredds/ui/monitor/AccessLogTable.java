@@ -273,27 +273,33 @@ public class AccessLogTable extends JPanel {
     Date endDate = manager.getEndDate();
     if (startDate != null)
       startDateField.setText(df.format(startDate));
+    else
+      startDateField.setText(df.format(new Date()));
+
     if (endDate != null)
       endDateField.setText(df.format(endDate));
+    else
+      endDateField.setText(df.format(new Date()));
 
     LogCategorizer.setRoots( manager.getRoots());
   }
 
   void showLogs(LogReader.LogFilter filter) {
-    Date start, end;
+    Date start = null, end = null;
     try {
       start = df.parse(startDateField.getText());
       end = df.parse(endDateField.getText());
       accessLogFiles = manager.getLocalFiles(start, end);
     } catch (Exception e) {
       e.printStackTrace();
-      return;
+      accessLogFiles = manager.getLocalFiles(null, null);
     }
 
     LogReader reader = new LogReader(new AccessLogParser());
     completeLogs = new ArrayList<LogReader.Log>(30000);
 
-    filter = new LogReader.DateFilter(start.getTime(), end.getTime(), filter);
+    if ((start != null) && (end != null))
+      filter = new LogReader.DateFilter(start.getTime(), end.getTime(), filter);
 
     try {
       long startElapsed = System.nanoTime();

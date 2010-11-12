@@ -139,4 +139,11 @@ public class CollectionManager {
     if (ncd != null) ncd.close();
     return null;
   }
+
+  public void show(Formatter f) {
+    for (CollectionBean bean : collectionDatasets.values()) {
+      f.format(" %s == %s%n", bean.getPath(), bean.getSpec());
+    }    
+  }
+
 }

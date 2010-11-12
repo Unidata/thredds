@@ -639,6 +639,100 @@ public class IO {
     return count;
   }
 
+  /**
+   * get input stream from URL
+   *
+   * @param urlString URL
+   * @return input stream, unzipped if needed
+   * @throws java.io.IOException on io error
+   */
+  static public InputStream getInputStreamFromUrl(String urlString) throws IOException {
+    long count;
+    URL url;
+    java.io.InputStream is = null;
+    try {
+      url = new URL(urlString);
+    } catch (MalformedURLException e) {
+      throw new IOException("** MalformedURLException on URL <" + urlString + ">\n" + e.getMessage() + "\n");
+    }
+
+    try {
+      java.net.URLConnection connection = url.openConnection();
+      java.net.HttpURLConnection httpConnection = null;
+      if (connection instanceof java.net.HttpURLConnection) {
+        httpConnection = (java.net.HttpURLConnection) connection;
+        httpConnection.addRequestProperty("Accept-Encoding", "gzip");
+      }
+
+      if (showHeaders) {
+        System.out.println("\nREQUEST Properties for " + urlString + ": ");
+        Map reqs = connection.getRequestProperties();
+        Iterator reqIter = reqs.keySet().iterator();
+        while (reqIter.hasNext()) {
+          String key = (String) reqIter.next();
+          java.util.List values = (java.util.List) reqs.get(key);
+          System.out.print(" " + key + ": ");
+          for (int i = 0; i < values.size(); i++) {
+            String v = (String) values.get(i);
+            System.out.print(v + " ");
+          }
+          System.out.println("");
+        }
+      }
+
+      // get response
+      if (httpConnection != null) {
+        int responseCode = httpConnection.getResponseCode();
+        if (responseCode / 100 != 2)
+          throw new IOException("** Cant open URL <" + urlString + ">\n Response code = " + responseCode
+              + "\n" + httpConnection.getResponseMessage() + "\n");
+      }
+
+      if (showHeaders && (httpConnection != null)) {
+        int code = httpConnection.getResponseCode();
+        String response = httpConnection.getResponseMessage();
+
+        // response headers
+        System.out.println("\nRESPONSE for " + urlString + ": ");
+        System.out.println(" HTTP/1.x " + code + " " + response);
+        System.out.println("Headers: ");
+
+        for (int j = 1; ; j++) {
+          String header = connection.getHeaderField(j);
+          String key = connection.getHeaderFieldKey(j);
+          if (header == null || key == null) break;
+          System.out.println(" " + key + ": " + header);
+        }
+      }
+
+      // read it
+      is = connection.getInputStream();
+
+      // check if its gzipped
+      if ("gzip".equalsIgnoreCase(connection.getContentEncoding())) {
+        //is = new GZIPInputStream( new BufferedInputStream(is, 1024));
+        //is = new GZIPInputStream(is);
+        is = new BufferedInputStream(new GZIPInputStream(is), 1000);
+      }
+      return is;
+
+    } catch (java.net.ConnectException e) {
+      if (showStackTrace) e.printStackTrace();
+      throw new IOException("** ConnectException on URL: <" + urlString + ">\n" +
+          e.getMessage() + "\nServer probably not running");
+
+    } catch (java.net.UnknownHostException e) {
+      if (showStackTrace) e.printStackTrace();
+      throw new IOException("** UnknownHostException on URL: <" + urlString + ">\n");
+
+    } catch (Exception e) {
+      if (showStackTrace) e.printStackTrace();
+      throw new IOException("** Exception on URL: <" + urlString + ">\n" + e);
+
+    }
+  }
+
+
 
   /**
    * read the contents from the named URL, write to a file.

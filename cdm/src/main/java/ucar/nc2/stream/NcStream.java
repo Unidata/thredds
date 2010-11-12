@@ -27,10 +27,10 @@ import com.google.protobuf.InvalidProtocolBufferException;
  */
 public class NcStream {
   //  must start with this "CDFS"
-  static final byte[] MAGIC_START = new byte[]{0x43, 0x44, 0x46, 0x53};
+  static public final byte[] MAGIC_START = new byte[]{0x43, 0x44, 0x46, 0x53};
 
-  static final byte[] MAGIC_HEADER = new byte[]{(byte) 0xad, (byte) 0xec, (byte) 0xce, (byte) 0xda};
-  static final byte[] MAGIC_DATA = new byte[]{(byte) 0xab, (byte) 0xec, (byte) 0xce, (byte) 0xba};
+  static public final byte[] MAGIC_HEADER = new byte[]{(byte) 0xad, (byte) 0xec, (byte) 0xce, (byte) 0xda};
+  static public final byte[] MAGIC_DATA = new byte[]{(byte) 0xab, (byte) 0xec, (byte) 0xce, (byte) 0xba};
 
   static public final byte[] MAGIC_ERR = new byte[]{(byte) 0xab, (byte) 0xad, (byte) 0xba, (byte) 0xda};
   static public final byte[] MAGIC_END = new byte[]{(byte) 0xed, (byte) 0xed, (byte) 0xde, (byte) 0xde};

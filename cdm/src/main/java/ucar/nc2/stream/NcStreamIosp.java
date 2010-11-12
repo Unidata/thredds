@@ -203,7 +203,7 @@ public class NcStreamIosp extends AbstractIOServiceProvider {
     return ncm;
   }
 
-  public class NcsMess {
+  static public class NcsMess {
     public int len;
     public Object what;
     public NcsMess(int len, Object what) {

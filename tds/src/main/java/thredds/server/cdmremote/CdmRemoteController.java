@@ -32,6 +32,7 @@
 
 package thredds.server.cdmremote;
 
+import org.slf4j.Logger;
 import org.springframework.web.servlet.mvc.AbstractCommandController;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.validation.BindException;
@@ -48,6 +49,7 @@ import thredds.servlet.DatasetHandler;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.util.Formatter;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.Arrays;
@@ -77,8 +79,9 @@ import ucar.unidata.util.StringUtil;
  * @since May 28, 2009
  */
 public class CdmRemoteController extends AbstractCommandController { // implements LastModified {
-  private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(getClass());
-  private boolean debug = false, showTime = false;
+  private static final Logger logServerStartup = org.slf4j.LoggerFactory.getLogger( "serverStartup" );
+  private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(getClass());
+  private static boolean debug = false, showTime = true, showReq=true;
 
   private TdsContext tdsContext;
   private boolean allow = true;
@@ -104,6 +107,10 @@ public class CdmRemoteController extends AbstractCommandController { // implemen
 
   public void setCollections(CollectionManager collectionManager) {
     this.collectionManager = collectionManager;
+    Formatter f = new Formatter();
+    f.format("CdmRemoteController collections%n");
+    collectionManager.show(f);
+    logServerStartup.info(f.toString());
   }
 
 
@@ -133,6 +140,8 @@ public class CdmRemoteController extends AbstractCommandController { // implemen
       ft = FeatureType.STATION;
       path = path.substring(0, path.length() - "station".length() - 1);
     }
+    if (showReq)
+      System.out.printf("CdmRemoteController req=%s%n", req.getRequestURI()+"?"+req.getQueryString());
     if (debug)
       System.out.printf("CdmRemoteController absPath= %s%n path=%s%n query=%s ft=%s%n", absPath, path, req.getQueryString(), ft);
 
@@ -188,6 +197,8 @@ public class CdmRemoteController extends AbstractCommandController { // implemen
       return null;
 
     } finally {
+      if (showReq)
+        System.out.printf(" done%n");
       if (null != fd)
         try {
           fd.close();
@@ -233,7 +244,7 @@ public class CdmRemoteController extends AbstractCommandController { // implemen
     long start = 0;
     if (showTime) {
       start = System.currentTimeMillis();
-      ucar.unidata.io.RandomAccessFile.setDebugAccess(true);
+      ucar.unidata.io.RandomAccessFile.setDebugAccess(true);  // LOOK !!
     }
 
     List<FeatureCollection> coll = fdp.getPointFeatureCollectionList();

@@ -1,84 +1,197 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tdsConfig xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v2.0"
-           xmlns:xlink="http://www.w3.org/1999/xlink" name="Version 2 Catalog PointObs"
-           version="2">
+<catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
+         xmlns:xlink="http://www.w3.org/1999/xlink" name="THREDDS-IDD OPeNDAP Data Server - Station Data"
+         version="1.0.3">
 
-  <service name="pointServices" serviceType="Compound" base="">
-    <service name="opendap" serviceType="OPENDAP" base="/thredds/dodsC/"/>
-    <service name="fileServer" serviceType="HTTPServer" base="/thredds/fileServer/"/>
-    <service name="cdm" serviceType="CdmRemote" base="/thredds/cdmremote/"/>
+  <service name="latest" serviceType="Resolver" base=""/>
+
+  <service name="all" serviceType="Compound" base="">
+    <service name="cdmremote" serviceType="CdmRemote" base="/thredds/cdmremote/"/>
+    <service name="ncdods" serviceType="OPENDAP" base="/thredds/dodsC/"/>
+    <service name="HTTPServer" serviceType="HTTPServer" base="/thredds/fileServer/"/>
   </service>
 
+  <service name="forBufr" serviceType="Compound" base="">
+    <service name="cdmremote" serviceType="CdmRemote" base="/thredds/cdmremote/"/>
+    <service name="HTTPServer" serviceType="HTTPServer" base="/thredds/fileServer/"/>
+  </service>
 
-  <dataset name="Motherlode IDD PointObs Data">
-
+  <dataset name="Station Data">
     <metadata inherited="true">
+      <serviceName>all</serviceName>
       <authority>edu.ucar.unidata</authority>
-      <documentation xlink:type="rights">Freely available</documentation>
-      <documentation xlink:type="processing_level">Transmitted through Unidata Internet Data Distribution.
-      </documentation>
+      <dataType>Station</dataType>
+      <documentation type="rights">Freely available</documentation>
       <creator>
-        <name vocabulary="DIF">DOC/NOAA/NWS/NCEP</name>
-        <contact url="http://www.ncep.noaa.gov/" email="http://www.ncep.noaa.gov/mail_liaison.shtml"/>
+        <name vocabulary="DIF">DOC/NOAA/NWS</name>
+        <contact url="http://www.noaa.gov/" email="answers@noaa.gov"/>
       </creator>
       <publisher>
         <name vocabulary="DIF">UCAR/UNIDATA</name>
         <contact url="http://www.unidata.ucar.edu/" email="support@unidata.ucar.edu"/>
       </publisher>
-      <creator>
-        <name vocabulary="ADN">National Oceanic and Atmospheric Administration (NOAA)/National Weather Service (NWS)
-          National Center for Environmental Prediction (NCEP)
-        </name>
-        <contact url="http://www.ncep.noaa.gov/" email="http://www.ncep.noaa.gov/mail_liaison.shtml"/>
-      </creator>
-      <publisher>
-        <name vocabulary="ADN">University Corporation for Atmospheric Research (UCAR)/Unidata</name>
-        <contact url="http://www.unidata.ucar.edu/" email="support@unidata.ucar.edu"/>
-      </publisher>
-      <timeCoverage>
-        <end>present</end>
-        <duration>30 days</duration>
-      </timeCoverage>
     </metadata>
 
-     <!-- Point -->
-    <dataset name="Station Data">
-
+    <featureCollection name="Metar Station Data" harvest="true" featureType="Station" path="nws/metar/ncdecoded">
       <metadata inherited="true">
-        <serviceName>pointServices</serviceName>
+        <dataFormat>NetCDF</dataFormat>
+        <documentation xlink:href="http://metar.noaa.gov/" xlink:title="NWS/NOAA information"/>
+        <documentation>In the U.S., METAR reports are taken once an hour between 50 minutes past the hour and the top of
+          the (next) hour. All the observations taken within this time are considered to be for the same cycle. For
+          example, observations taken between 1150Z and 1200Z are all considered to be 12Z observations. In reality,
+          observations may be taken a little earlier or a little later. In addition, observations taken due to changing
+          conditions, known as SPECI reports, are also considered to occur for a given cycle. Our rule of thumb is that
+          all reports taken between (hh-1)45Z to hh44Z are considered to be for the hh cycle.
+        </documentation>
+
+        <keyword>metar</keyword>
+        <keyword>surface observations</keyword>
       </metadata>
 
-      <dataset name="Metars">
+      <property name="raw" value="report"/>
+      <property name="resolution" value="20 min"/>
 
-        <metadata inherited="true">
-          <documentation xlink:type="summary">Metars: hourly surface weather observations</documentation>
-          <documentation xlink:href="http://metar.noaa.gov/" xlink:title="NWS/NOAA information"/>
-          <keyword>metar</keyword>
-          <keyword>surface observations</keyword>
-        </metadata>
+      <collection spec="/data/ldm/pub/decoded/netcdf/surface/metar/Surface_METAR_#yyyyMMdd_HHmm#.nc$"
+                    recheckAfter="15 min"
+                    olderThan="5 min"/>
+      <manage deleteAfter="45 days" check="0 0 3 * * ? *" />
+      <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
+      <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
+    </featureCollection>
 
-        <datasetCollection name="Metar Station Data" featureType="Station" harvest="true" path="station/metar">
-          <dataFormat>NetCDF</dataFormat>
-
-          <collection  spec="/data/ldm/pub/decoded/netcdf/surface/metar/**/Surface_METAR_#yyyyMMdd_HHmm#.nc"
-                      recheckEvery="15 min"
-                      olderThan="5 min" />
-
-        </datasetCollection>
-
-        <datasetCollection name="Realtime surface Data" featureType="Station" harvest="true" path="gempak/surface">
-          <dataFormat>GEMPAK</dataFormat>
-
-          <collection spec="/data/ldm/gempak/surface/**/#yyyyMMdd#.gem"
-                      recheckEvery="15 min"
-                      olderThan="5 min">
-          </collection>
-
-        </datasetCollection>
+    <dataset name="NOAA Profiler Network">
+      <metadata inherited="true">
+        <documentation type="summary">The NOAA Profiler Network (NPN), consisting of 35 unmanned Doppler Radar sites
+          located in 18 central US states and Alaska, provides vertical wind profile data. Some of the sites are also
+          equipped with RASS temperature profilers.
+        </documentation>
+        <documentation xlink:href="http://www.arm.gov/xds/static/wpdn.stm" xlink:title="NWS/NOAA information"/>
+        <keyword>profiler</keyword>
+        <keyword>WPDN</keyword>
+        <timeCoverage>
+          <end>present</end>
+          <duration>7 days</duration>
+        </timeCoverage>
+      </metadata>
+      <dataset name="Wind Profilers">
+        <datasetScan name="6 minute" collectionType="TimeSeries" harvest="true" ID="NWS/NPN/6min"
+                     path="station/profiler/wind/06min" location="/data/ldm/pub/native/profiler/wind/06min/">
+          <metadata inherited="true">
+            <documentation type="summary">Six minute average data.</documentation>
+          </metadata>
+          <filter>
+            <include wildcard="*.nc" atomic="true" collection="false"/>
+          </filter>
+          <addID/>
+          <sort>
+            <lexigraphicByName increasing="false"/>
+          </sort>
+          <addLatest/>
+          <addDatasetSize/>
+          <addTimeCoverage
+                  datasetNameMatchPattern="PROFILER_wind_06min_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})([0-9]{2}).nc$"
+                  startTimeSubstitutionPattern="$1-$2-$3T$4:$5:00" duration="1 hour"/>
+        </datasetScan>
+        <datasetScan name="1 hour" collectionType="TimeSeries" harvest="true" ID="NWS/NPN/1hour"
+                     path="station/profiler/wind/1hr" location="/data/ldm/pub/native/profiler/wind/01hr/">
+          <documentation type="summary">Hourly average data</documentation>
+          <filter>
+            <include wildcard="*.nc" atomic="true" collection="false"/>
+          </filter>
+          <addID/>
+          <sort>
+            <lexigraphicByName increasing="false"/>
+          </sort>
+          <addLatest/>
+          <addDatasetSize/>
+          <addTimeCoverage
+                  datasetNameMatchPattern="PROFILER_wind_01hr_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})([0-9]{2}).nc$"
+                  startTimeSubstitutionPattern="$1-$2-$3T$4:$5:00" duration="1 hour"/>
+        </datasetScan>
       </dataset>
-
+      <dataset name="RASS (Radio Acoustic Sounding System)">
+        <metadata inherited="true">
+          <documentation type="summary">Eleven NOAA Profiler sites equipped with RASS (Radio Acoustic Sounding System),
+            which measure vertical temperature profiles.
+          </documentation>
+        </metadata>
+        <datasetScan name="6 minute" collectionType="TimeSeries" harvest="true" ID="NWS/RASS/6min"
+                     path="station/profiler/RASS/06min" location="/data/ldm/pub/native/profiler/RASS/06min/">
+          <metadata inherited="true">
+            <documentation type="summary">Six minute average data.</documentation>
+          </metadata>
+          <filter>
+            <include wildcard="*.nc" atomic="true" collection="false"/>
+          </filter>
+          <addID/>
+          <sort>
+            <lexigraphicByName increasing="false"/>
+          </sort>
+          <addLatest/>
+          <addDatasetSize/>
+          <addTimeCoverage
+                  datasetNameMatchPattern="PROFILER_RASS_06min_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})([0-9]{2}).nc$"
+                  startTimeSubstitutionPattern="$1-$2-$3T$4:$5:00" duration="1 hour"/>
+        </datasetScan>
+        <datasetScan name="1 hour" collectionType="TimeSeries" harvest="true" ID="NWS/RASS/1hour"
+                     path="station/profiler/RASS/1hr" location="/data/ldm/pub/native/profiler/RASS/01hr/">
+          <documentation type="summary">Hourly average data</documentation>
+          <filter>
+            <include wildcard="*.nc" atomic="true" collection="false"/>
+          </filter>
+          <addID/>
+          <sort>
+            <lexigraphicByName increasing="false"/>
+          </sort>
+          <addLatest/>
+          <addDatasetSize/>
+          <addTimeCoverage
+                  datasetNameMatchPattern="PROFILER_RASS_01hr_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})([0-9]{2}).nc$"
+                  startTimeSubstitutionPattern="$1-$2-$3T$4:$5:00" duration="1 hour"/>
+        </datasetScan>
+      </dataset>
     </dataset>
-  </dataset>
+    <datasetScan name="Soundings Vertical Data" collectionType="TimeSeries" harvest="true" ID="NWS/Sounding/Vertical"
+                 path="station/soundings" location="/data/ldm/pub/native/profiler/bufr/profiler3/">
 
-</tdsConfig>
+      <metadata inherited="true">
+        <serviceName>forBufr</serviceName>
+        <documentation type="summary">Vertical Soundings from a station</documentation>
+        <documentation xlink:href="http://metar.noaa.gov/" xlink:title="NWS/NOAA information"/>
+        <documentation>Vertical Soundings</documentation>
+        <keyword>soundings</keyword>
+        <keyword>vertical soundings</keyword>
+        <geospatialCoverage>
+          <northsouth>
+            <start>-90.0</start>
+            <size>180.0</size>
+            <units>degrees_north</units>
+          </northsouth>
+          <eastwest>
+            <start>0.0</start>
+            <size>360.0</size>
+            <units>degrees_east</units>
+          </eastwest>
+        </geospatialCoverage>
+        <timeCoverage>
+          <end>present</end>
+          <duration>7 days</duration>
+        </timeCoverage>
+        <variables vocabulary="CF-1"/>
+      </metadata>
+
+      <filter>
+        <include wildcard="*.bufr" atomic="true" collection="false"/>
+      </filter>
+      <addID/>
+      <sort>
+        <lexigraphicByName increasing="false"/>
+      </sort>
+      <addLatest/>
+      <addDatasetSize/>
+      <addTimeCoverage datasetNameMatchPattern="PROFILER_([0-9]{4})([0-9]{2})([0-9]{2})_0000.bufr$"
+                       startTimeSubstitutionPattern="$1-$2-$3T00:00:00" duration="1 day"/>
+    </datasetScan>
+  </dataset>
+</catalog>
 

@@ -89,7 +89,7 @@
 
   <bean id="ncMetarsLocalHome" class="thredds.server.cdmremote.CollectionBean">
     <property name="path" value="/idd/metar/ncdecodedLocalHome"/>
-    <property name="spec" value="C:/data/datasets/metars/Surface_METAR_#yyyyMMdd_HHmm#.nc"/>
+    <property name="spec" value="E:/datasets/metars/Surface_METAR_#yyyyMMdd_HHmm#.nc"/>
     <property name="recheck" value="15 min"/>
     <property name="featureType" value="STATION"/>
     <property name="raw" value="report"/>

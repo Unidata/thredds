@@ -207,7 +207,7 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
 
         PointStream.MessageType mtype = PointStream.readMagic(in);
         if (mtype != PointStream.MessageType.PointFeatureCollection) {
-          throw new RuntimeException("Station Request: bad response");
+           throw new RuntimeException("Station Request: bad response = "+mtype);
         }
 
         int len = NcStream.readVInt(in);
@@ -221,7 +221,7 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
 
       } catch (Throwable t) {
         if (method != null) method.releaseConnection();
-        throw new IOException(t.getMessage());
+        throw new IOException(t.getMessage(), t);
       } 
     }
   }

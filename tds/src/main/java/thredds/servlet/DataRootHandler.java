@@ -188,7 +188,7 @@ public class DataRootHandler {
         logScan.info("Schedule startup scan for "+config.spec+" at "+ runTime);
       } catch (SchedulerException e) {
         logScan.error("cronExecutor failed to schedule startup Job", e);
-        e.printStackTrace();
+        //e.printStackTrace();
       }
     }
 

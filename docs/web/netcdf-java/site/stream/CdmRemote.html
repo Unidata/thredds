@@ -251,9 +251,10 @@ where:
 <p></p>
 <hr width="100%" />
 <h2>Current notes on motherlode dev</h2>
-<p>cdmremote:http://localhost:8080/thredds/cdmremote/idd/metar/gempakLocal/collection</p>
-<p>cdmremote:http://motherlode.ucar.edu:9080/thredds/cdmremote/idd/metar/gempak/collection</p>
-<h3>August-10-2009</h3>
+<ul>
+  <li>List of cdm datasets: <a href="http://motherlode.ucar.edu:8081/thredds/cdmremoteCatalog.xml">http://motherlode.ucar.edu:8081/thredds/cdmremoteCatalog.xml</a></li>
+</ul>
+<h3>Nov-11-2010</h3>
 <p>1) web.xml has a <strong>org.springframework.web.servlet.DispatcherServlet</strong> cdmRemote with a mapping:<br />
 </p>
 <pre>
@@ -261,27 +262,50 @@ where:
    &lt;servlet-name&gt;<strong>cdmRemote</strong>&lt;/servlet-name&gt;
    &lt;url-pattern&gt;/cdmremote/*&lt;/url-pattern&gt;
  &lt;/servlet-mapping&gt;</pre>
-<p>2) Temporarily, we have the configuration of the datasets  in <strong>thredds\tds\src\main\webapp\WEB-INF\cdmRemote-servlet.xml</strong>: which configures the collectionController. We will replacce this with pure catalog configuration in 4.2.<br />
+<p>2) Temporarily, we have the configuration of the datasets  in <strong>thredds\tds\src\main\webapp\WEB-INF\cdmRemote-servlet.xml</strong>: which configures the collectionController. We will replacce this with pure catalog configuration in 4.2+. This is now being shown in serverStartup.log<br />
 </p>
-<pre>  &lt;bean id=&quot;<strong>collectionController</strong>&quot; class=&quot;thredds.server.cdmremote.CollectionController&quot;&gt;<br />    &lt;property name=&quot;tdsContext&quot; ref=&quot;tdsContext&quot;/&gt;<br />    &lt;property name=&quot;allow&quot; value=&quot;true&quot;/&gt;<br />    &lt;property name=&quot;supportedMethods&quot; value=&quot;GET&quot;/&gt;<br />    &lt;property name=&quot;configDirectory&quot; value=&quot;GET&quot;/&gt;<br />    &lt;property name=&quot;collections&quot;&gt;<br />      &lt;list&gt;<br />        &lt;ref bean=&quot;ncMetars&quot; /&gt;<br />        &lt;ref bean=&quot;<strong>gempakMetars</strong>&quot; /&gt;<br />        &lt;ref bean=&quot;quickScatWinds&quot; /&gt;<br />        &lt;ref bean=&quot;localMetars&quot; /&gt;<br />      &lt;/list&gt;<br />    &lt;/property&gt;<br />  &lt;/bean&gt;
-  
-  &lt;bean id=&quot;<strong>gempakMetars</strong>&quot; class=&quot;thredds.server.cdmremote.CollectionBean&quot;&gt;
-   &lt;property name=&quot;path&quot; value=&quot;/idd/metar/gempak&quot;/&gt;
-    &lt;property name=&quot;spec&quot; value=&quot;/data/ldm/gempak/surface/**/#yyyyMMdd#.gem&quot;/&gt;
+<pre> &lt;bean id=&quot;collectionManager&quot; class=&quot;thredds.server.cdmremote.CollectionManager&quot;&gt;
+ &lt;property name=&quot;collections&quot;&gt;
+  &lt;list&gt;
+   &lt;ref bean=&quot;ncMetars&quot; /&gt;
+   &lt;ref bean=&quot;gempakMetars&quot; /&gt;
+   &lt;ref bean=&quot;quickScatWinds&quot; /&gt;
+   &lt;ref bean=&quot;ncMetarsLocal&quot; /&gt;
+   &lt;ref bean=&quot;ncMetarsLocalHome&quot; /&gt;
+   &lt;ref bean=&quot;gempakMetarsLocal&quot; /&gt;
+   &lt;ref bean=&quot;gempakMetarsLocalHome&quot; /&gt;
+  &lt;/list&gt;
+ &lt;/property&gt;
+&lt;/bean&gt;</pre>
+<pre> &lt;bean id=&quot;ncMetars&quot; class=&quot;thredds.server.cdmremote.CollectionBean&quot;&gt;
+   &lt;property name=&quot;path&quot; value=&quot;/idd/metar/ncdecoded&quot;/&gt;
+   &lt;property name=&quot;spec&quot; value=&quot;/data/ldm/pub/decoded/netcdf/surface/metar/Surface_METAR_#yyyyMMdd_HHmm#.nc&quot;/&gt;
    &lt;property name=&quot;recheck&quot; value=&quot;15 min&quot;/&gt;
    &lt;property name=&quot;featureType&quot; value=&quot;STATION&quot;/&gt;
+   &lt;property name=&quot;raw&quot; value=&quot;report&quot;/&gt;
+   &lt;property name=&quot;resolution&quot; value=&quot;20 min&quot;/&gt;
  &lt;/bean&gt;
-</pre>
-<p>and the mapping:</p>
-<pre> /**/collection=collectionController
-</pre>
-<p>So the URL is </p>
-<pre> http://motherlode.ucar.edu:9080/thredds/cdmremote/<strong><em>path</em></strong>/collection
 
+etc</pre>
+<p>This is now being shown in serverStartup.log:  </p>
+
+<pre>serverStartup: CdmRemoteController collections
+   /idd/metar/gempak == /data/ldm/gempak/surface/#yyyyMMdd#_sao.gem
+   /idd/bufr/quickScat == /data/ldm/gempak/surface/**/#yyyyMMdd#.gem
+   /idd/metar/ncdecodedLocalHome == C:/data/datasets/metars/Surface_METAR_#yyyyMMdd_HHmm#.nc
+   /idd/metar/ncdecoded == /data/ldm/pub/decoded/netcdf/surface/metar/Surface_METAR_#yyyyMMdd_HHmm#.nc
+   /idd/metar/gempakLocalHome == C:/data/formats/gempak/surface/#yyyyMMdd#_sao.gem
+   /idd/metar/gempakLocal == D:/formats/gempak/surface2/#yyyyMMdd#_sao.gem
+   /idd/metar/ncdecodedLocal == Q:/station/ldm/metar/Surface_METAR_#yyyyMMdd_HHmm#.nc</pre>
+
+<p>So the URLs are</p>
+<pre> http://server:port/thredds/cdmremote/<strong><em>path</em></strong>?req
 eg:
- http://motherlode.ucar.edu:9080/thredds/cdmremote/idd/metar/gempak/collection
- http://localhost:8080/thredds/cdmremote/local/metars/collection
-</pre>
+ http://motherlode.ucar.edu:8081/thredds/cdmremote/idd/metar/gempak
+ http://motherlode.ucar.edu:8081/thredds/cdmremote/idd/metar/ncdecoded
+ http://motherlode.ucar.edu:8081/thredds/cdmremote/idd/bufr/quickScat
+ http://localhost:8080/thredds/cdmremote/idd/metar/ncdecodedLocal
+ http://localhost:8080/thredds/cdmremote/idd/metar/ncdecodedLocalHome?req=form</pre>
 <p><strong>3) The default output is the dataset description: should be getCapabilities ????</strong><br />
 </p>
 <pre>

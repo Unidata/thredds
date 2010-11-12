@@ -63,7 +63,8 @@ import com.google.protobuf.InvalidProtocolBufferException;
  */
 public class PointStream {
   public enum MessageType {
-    StationList, PointFeatureCollection, PointFeature, End, Error
+    Start, Header, Data, End, Error, Eos,
+    StationList, PointFeatureCollection, PointFeature
   }
 
   static private final byte[] MAGIC_StationList = new byte[]{(byte) 0xfe, (byte) 0xfe, (byte) 0xef, (byte) 0xef};
@@ -72,11 +73,15 @@ public class PointStream {
 
   static public MessageType readMagic(InputStream is) throws IOException {
     byte[] b = new byte[4];
-    NcStream.readFully(is, b);
+    int done = NcStream.readFully(is, b);
+    if (done != 4) return MessageType.Eos;
 
     if (test(b, MAGIC_PointFeature)) return MessageType.PointFeature;
     if (test(b, MAGIC_PointFeatureCollection)) return MessageType.PointFeatureCollection;
     if (test(b, MAGIC_StationList)) return MessageType.StationList;
+    if (test(b, NcStream.MAGIC_START)) return MessageType.Start;
+    if (test(b, NcStream.MAGIC_HEADER)) return MessageType.Header;
+    if (test(b, NcStream.MAGIC_DATA)) return MessageType.Data;
     if (test(b, NcStream.MAGIC_END)) return MessageType.End;
     if (test(b, NcStream.MAGIC_ERR)) return MessageType.Error;
     return null;
@@ -250,6 +255,7 @@ public class PointStream {
       }
     }
   }
+
 
 
 }

@@ -280,18 +280,21 @@ public class ServletLogTable extends JPanel {
   private MergeFilter currFilter = null;
 
   public void showLogs(MergeFilter filter) {
-    Date start, end;
+    Date start = null, end = null;
      try {
        start = df.parse(startDateField.getText());
        end = df.parse(endDateField.getText());
        logFiles = manager.getLocalFiles(start, end);
      } catch (Exception e) {
-        e.printStackTrace();
-       return;
+       e.printStackTrace();
+       logFiles = manager.getLocalFiles(null, null);
      }
 
-    currFilter = new DateFilter(start.getTime(), end.getTime(), filter);
-
+    if ((start != null) && (end != null))
+      currFilter = new DateFilter(start.getTime(), end.getTime(), filter);
+    else
+      currFilter = filter;
+    
     LogReader reader = new LogReader(new ServletLogParser());
 
     long startElapsed = System.nanoTime();
