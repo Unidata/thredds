@@ -1918,7 +1918,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
       f.format("  has no IOSP%n");
     } else {
       f.format("  iosp= %s%n%n", spi.getClass());
-      f.format( spi.getDetailInfo());
+      f.format( "%s", spi.getDetailInfo());
     }
     showCached(f);
     showProxies(f);

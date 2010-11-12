@@ -678,8 +678,7 @@ public class BufrMessageViewer extends JPanel {
         } else if (val.equals("0-1-2") && (wmo_id < 0)) {
           wmo_id = sdata.convertScalarInt(v.getShortName());
 
-        } else if ((stn == null) &&
-                (val.equals("0-1-7") || val.equals("0-1-194") || val.equals("0-1-11") || val.equals("0-1-18"))) {
+        } else if ((stn == null) && val.equals("0-1-18")) {
           if (v.getDataType().isString())
             stn = sdata.getScalarString(v.getShortName());
           else
@@ -700,6 +699,11 @@ public class BufrMessageViewer extends JPanel {
           alt = sdata.convertScalarDouble(v.getShortName());
         } else if ((val.equals("0-4-7")) && (sec < 0)) {
           sec = sdata.convertScalarInt(v.getShortName());
+        } else if ((stn == null) && (val.equals("0-1-15") || val.equals("0-1-19"))) {
+          if (v.getDataType().isString())
+            stn = sdata.getScalarString(v.getShortName());
+          else
+            stn = Integer.toString(sdata.convertScalarInt(v.getShortName()));
         }
       }
 
@@ -712,10 +716,28 @@ public class BufrMessageViewer extends JPanel {
           alt = sdata.convertScalarDouble(v.getShortName());
         } else if (val.equals("0-7-2") && Double.isNaN(alt)) {
           alt = sdata.convertScalarDouble(v.getShortName());
-        }
 
+        } else if ((stn == null) && (val.equals("0-1-2"))) {
+          if (v.getDataType().isString())
+            stn = sdata.getScalarString(v.getShortName());
+          else
+            stn = Integer.toString(sdata.convertScalarInt(v.getShortName()));
+        }
       }
 
+      // 4th choice
+      if (stn == null)
+        for (Variable v : obs.getVariables()) {
+          Attribute att = v.findAttribute("BUFR:TableB_descriptor");
+          if (att == null) continue;
+          String val = att.getStringValue();
+          if (val.equals("0-1-5") || val.equals("0-1-6") || val.equals("0-1-7") || val.equals("0-1-8") || val.equals("0-1-10") || val.equals("0-1-11")) {
+            if (v.getDataType().isString())
+              stn = sdata.getScalarString(v.getShortName());
+            else
+              stn = Integer.toString(sdata.convertScalarInt(v.getShortName()));
+          }
+        }
     }
 
     public double getLat() {

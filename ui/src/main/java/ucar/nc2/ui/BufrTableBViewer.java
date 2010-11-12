@@ -121,6 +121,19 @@ public class BufrTableBViewer extends JPanel {
       }
     });
 
+
+    AbstractButton standardButton = BAMutil.makeButtcon("Select", "Show standard table", false);
+    standardButton.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        try {
+          setBufrTableB(BufrTables.getWmoTableB(14));
+        } catch (IOException e1) {
+          e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+      }
+    });
+    buttPanel.add(standardButton);
+
     AbstractButton compareButton = BAMutil.makeButtcon("Select", "Compare to standard table", false);
     compareButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
@@ -238,17 +251,22 @@ public class BufrTableBViewer extends JPanel {
 
   public void setBufrTableB(String filename, String mode) throws IOException {
     TableB tableB = BufrTables.readTableB(filename, mode, true); // force read
-    int pos = filename.lastIndexOf("/");
-    String src = (pos > 0) ? filename.substring(pos + 1) : filename;
+    setBufrTableB(tableB);
+  }
 
-    List<TableB.Descriptor> listDesc = new ArrayList<TableB.Descriptor>(tableB.getDescriptors());
+  private void setBufrTableB(TableB tb) throws IOException {
+    String location = tb.getLocation();
+    int pos = location.lastIndexOf("/");
+    String src = (pos > 0) ? location.substring(pos + 1) : location;
+
+    List<TableB.Descriptor> listDesc = new ArrayList<TableB.Descriptor>(tb.getDescriptors());
     Collections.sort(listDesc);
     List<DdsBean> dds = new ArrayList<DdsBean>(listDesc.size());
     for (TableB.Descriptor d : listDesc) {
       dds.add(new DdsBean(src, d));
     }
     ddsTable.setBeans(dds);
-    currTable = tableB;
+    currTable = tb;
   }
 
   private String checkDiff(TableB.Descriptor want) {
@@ -463,7 +481,7 @@ Class,FXY,enElementName,BUFR_Unit,BUFR_Scale,BUFR_ReferenceValue,BUFR_DataWidth_
     standardTables.put("ours-v13", BufrTables.getWmoTableB(13));
     standardTables.put("ncep-v13", BufrTables.readTableB("resource:/resources/bufrTables/reference/bufrtab.TableB_STD_0_13", "ncep", false));
     standardTables.put("ncep-v14", BufrTables.readTableB("resource:/resources/bufrTables/reference/bufrtab.TableB_STD_0_14", "ncep", false));
-    standardTables.put("ecmwf-v13", BufrTables.readTableB("resource:/resources/bufrTables/local/ecmwf-B0000000000098013001.TXT", "ecmwf", false));
+    //standardTables.put("ecmwf-v13", BufrTables.readTableB("resource:/resources/bufrTables/local/ecmwf-B0000000000098013001.TXT", "ecmwf", false));
     standardTables.put("ukmet-v13", BufrTables.readTableB("resource:/resources/bufrTables/reference/BUFR_B_080731.xml", "ukmet", false));
   }
 
