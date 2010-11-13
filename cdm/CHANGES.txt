@@ -3,7 +3,10 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Changes in version 4.2:
- 14: (2010-11-xx)
+ 14: (2010-11-13)
+  NetcdfFile.getDetailInfo() had a bug, showed up in BUFR
+  cdmremote improvemnets
+  NetcdfFile: unescape string in getRaf() (from erussell@ngs.org)
   H5header: clarify GlobalHeap termination condition
  13: (2010-11-01)
   CoordinateAxis sets caching to true, VariabelDS propagates to orgVar.

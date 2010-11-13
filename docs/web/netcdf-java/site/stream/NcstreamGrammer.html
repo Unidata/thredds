@@ -3,6 +3,12 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Untitled Document</title>
+<style type="text/css">
+pre {font-size: 9pt; padding: 10px; background-color: #E7E7E7; border: 1px solid #CFCFCF; width: 85%;}
+code {font-size: 11pt;}
+dl {margin: 10px 5px 5px 15px;)
+.style1 {font-style: italic}
+</style>
 </head>
 
 <body>
@@ -10,7 +16,7 @@
 <p><em>last update Sep 25, 2010</em></p>
 <p>An <em><strong>ncstream</strong></em> is a sequence of one or more messages:</p>
 <pre>
-   <strong>ncstream</strong> = <strong></strong>{message}
+   <strong>ncstream</strong> = <strong>MAGIC_START</strong>, <strong></strong>{message}, <strong>MAGIC_END</strong>
    <strong>message</strong> = headerMessage | dataMessage | vdataMessage | errorMessage
    <strong>headerMessage</strong> = MAGIC_HEADER, vlen, NcStreamProto.Header
    <strong>dataMessage</strong> = MAGIC_DATA, vlen, NcStreamProto.Data, vlen, (byte)*vlen
@@ -25,11 +31,18 @@
 
 primitives:
 
+   <strong>MAGIC_START</strong> = 0x43, 0x44, 0x46, 0x53 
    <strong>MAGIC_HEADER</strong>= 0xad, 0xec, 0xce, 0xda 
-   <strong>MAGIC_DATA</strong> =  0xab, 0xec, 0xce, 0xba 
+   <strong>MAGIC_DATA</strong> =  0xab, 0xec, 0xce, 0xba <br />
    <strong>MAGIC_ERR</strong>   = 0xab, 0xad, 0xba, 0xda 
-</pre>
-<p>The protobuf messages are defined by <strong>thredds\cdm\src\main\java\ucar\nc2\stream\ncStream.proto </strong>(on Unidata's SVN server). These are compiled into code that does the actual encoding/decoding from the stream. <strong>thredds\cdm\src\main\java\ucar\nc2\stream\ncStream.</strong><strong>java</strong> converts between protobuf objects and CDM objects and is hand-coded. Similar code will be written for the NetCDF C library.</p>
+   <strong>MAGIC_END</strong> =   0xed, 0xed, 0xde, 0xde;</pre>
+<p>The protobuf messages are defined by </p>
+<ul>
+  <li><strong>thredds\cdm\src\main\java\ucar\nc2\stream\ncStream.proto</strong></li>
+  <li><strong>thredds\cdm\src\main\java\ucar\nc2\ft\point\remote\pointStream.proto</strong><br />
+  </li>
+</ul>
+<p>(these are files on Unidata's SVN server). These are compiled by the protobuf compiler into Java and C code that does the actual encoding/decoding from the stream. </p>
 <p><strong>Rules</strong></p>
 <ul>
   <li>A dimension must  be defined first in a header message before it can be used in a variable. Its ok if the dimension is in the same header as the variable.</li>
@@ -62,7 +75,7 @@ primitives:
 </ul>
 <hr width="100%" />
 <address>
-<img src="../nc.gif" alt="" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated Sep 2010
+<img src="../nc.gif" alt="" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated Nov 2010
 </address>
 <p>&nbsp;</p>
 </body>

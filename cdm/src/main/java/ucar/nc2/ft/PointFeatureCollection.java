@@ -127,7 +127,7 @@ public interface PointFeatureCollection extends FeatureCollection {
   public void calcBounds() throws java.io.IOException;
 
   /**
-   * Get an iterator over the PointFeatures of this collection
+   * Get an iterator over the PointFeatures of this collection. call PointFeatureIterator.finish() when done
    * @param bufferSize how many bytes can be used to buffer data, use -1 to use default.
    * @return iterator over the PointFeatures of this collection
    * @throws IOException on read error

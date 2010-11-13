@@ -633,7 +633,7 @@ public class PointFeatureDatasetViewer extends JPanel {
     }
   }
 
-  private void setObservations(PointFeatureCollection pointCollection) throws IOException {
+  private int setObservations(PointFeatureCollection pointCollection) throws IOException {
     PointFeatureIterator iter = pointCollection.getPointFeatureIterator(-1);
     //iter.setCalculateBounds(pointCollection);
     List<PointFeature> obsList = new ArrayList<PointFeature>();
@@ -645,6 +645,7 @@ public class PointFeatureDatasetViewer extends JPanel {
       iter.finish();
     }
     setObservations(obsList);
+    return obsList.size();
   }
 
   private void setStnProfileObservations(NestedPointFeatureCollection nestedPointCollection) throws IOException {

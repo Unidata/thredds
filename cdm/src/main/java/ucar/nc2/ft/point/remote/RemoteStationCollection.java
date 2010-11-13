@@ -206,6 +206,11 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
         InputStream in = method.getResponseBodyAsStream();
 
         PointStream.MessageType mtype = PointStream.readMagic(in);
+        if (mtype == PointStream.MessageType.End) {  // no obs were found
+           method.releaseConnection();
+           return new PointIteratorEmpty(); // return empty iterator
+        }
+
         if (mtype != PointStream.MessageType.PointFeatureCollection) {
            throw new RuntimeException("Station Request: bad response = "+mtype);
         }

@@ -4626,7 +4626,6 @@ There is _no_ datatype information stored for these sort of selections currently
         if (o.id == 0) break; // ?? look
         if (o.dataSize < 0) break; // ran off the end, must be done
         if (countBytes < 0) break; // ran off the end, must be done
-        if (countBytes+16 >= sizeBytes) break; // ran off the end, must be done
 
         if (debugDetail)
           debugOut.println("   HeapObject  position=" + startPos + " id=" + o.id + " refCount= " + o.refCount +
@@ -4635,6 +4634,8 @@ There is _no_ datatype information stored for these sort of selections currently
         raf.skipBytes(dsize);
         hos.add(o);
         count++;
+        
+        if (countBytes+16 >= sizeBytes) break; // ran off the end, must be done
       }
 
       if (debugDetail) debugOut.println("-- endGlobalHeap position=" + raf.getFilePointer());

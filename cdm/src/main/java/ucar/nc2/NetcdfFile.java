@@ -491,14 +491,8 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
       uriString = StringUtil.replace(uriString, '\\', "/");
 
       if (uriString.startsWith("file:")) {
-        uriString = uriString.substring(5);
-        /* File file;
-        try {
-          file = new File( new URI(uriString));
-        } catch (Exception e) {
-          throw new IOException(e.getMessage()+" uri= "+uriString);
-        }
-        uriString = file.getAbsolutePath(); */
+        // uriString = uriString.substring(5);
+        uriString = StringUtil.unescape(uriString.substring(5));  // 11/10/2010 from erussell@ngs.org
       }
 
       String uncompressedFileName = null;

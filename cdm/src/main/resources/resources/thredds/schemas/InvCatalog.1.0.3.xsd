@@ -312,12 +312,23 @@
             <xsd:element type="fmrcConfigType" name="fmrcConfig" minOccurs="0"/>
             <xsd:element ref="ncml:netcdf" minOccurs="0"/>
           </xsd:sequence>
-          <xsd:attribute name="featureType" type="xsd:string" use="required"/>
+          <xsd:attribute name="featureType" type="featureTypeChoice" use="required"/>
           <xsd:attribute name="path" type="xsd:string" use="required"/>
         </xsd:extension>
       </xsd:complexContent>
     </xsd:complexType>
   </xsd:element>
+
+  <xsd:simpleType name="featureTypeChoice">
+   <xsd:union memberTypes="xsd:token">
+     <xsd:simpleType>
+       <xsd:restriction base="xsd:token">
+         <xsd:enumeration value="FMRC"/>
+         <xsd:enumeration value="Station"/>
+       </xsd:restriction>
+     </xsd:simpleType>
+   </xsd:union>
+ </xsd:simpleType>
 
   <xsd:complexType name="collectionType">
     <xsd:attribute name="spec" type="xsd:string" use="required"/>
@@ -795,8 +806,7 @@
           <xsd:enumeration value="File"/>
 
           <xsd:enumeration value="NetcdfSubset"/>
-          <xsd:enumeration value="NetcdfStream"/>
-          <xsd:enumeration value="RemotePointFeature"/>
+          <xsd:enumeration value="CdmRemote"/>
 
           <!-- web services -->
           <xsd:enumeration value="LAS"/>
