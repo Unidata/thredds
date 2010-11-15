@@ -40,6 +40,7 @@ import ucar.unidata.io.RandomAccessFile;
 
 import java.io.*;
 import java.util.*;
+import java.util.zip.CRC32;
 
 /**
  * Creates an index for a Grib1 file; optionally makes an in-memory one.
@@ -49,7 +50,16 @@ public class Grib1WriteIndex {
 
   private static boolean debugTiming = false;
   private static boolean verbose = false;
+  /*
+   * set true to check for duplicate records in file by comparing PDSs
+   */
+  private static boolean checkPDS = false;
+  /*
+   *  Control the type of duplicate record logging
+   */
+  private static Grib2WriteIndex.pdsLogType logPDS = Grib2WriteIndex.pdsLogType.logger;
 
+  private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
   ////////////////////////////////////////////////////////////////////
   public Grib1WriteIndex() {
   }
@@ -67,6 +77,9 @@ public class Grib1WriteIndex {
   public final GridIndex writeGribIndex(File grib, String gribName, String gbxName, boolean makeIndex) throws IOException {
 
     RandomAccessFile raf = null;
+    // default from standalone indexer, check for duplicate records and log to System.out
+    checkPDS = true;
+    logPDS = Grib2WriteIndex.pdsLogType.systemout;
     try {
       raf = new RandomAccessFile(gribName, "r");
       raf.order(RandomAccessFile.BIG_ENDIAN);
@@ -160,6 +173,46 @@ public class Grib1WriteIndex {
 
       // section 2 grib records
       ArrayList<Grib1Product> products = g1i.getProducts();
+
+      // check all the products for duplicates by comparing PDSs
+      if( checkPDS ) {
+        HashMap<String, Integer> pdsMap = new HashMap<String, Integer>();
+        ArrayList<Integer> duplicate = new ArrayList<Integer>();
+        CRC32 csc32 = new CRC32();
+        for (int i = 0; i < products.size(); i++) {
+          Grib1Product product = products.get( i );
+          csc32.reset();
+          csc32.update(product.getPDS().getPdsVars().getPDSBytes());
+          String csc = Long.toString( csc32.getValue() );
+          if ( verbose )
+            System.out.println(  "csc32="+ csc );
+          // duplicate found
+          if ( pdsMap.containsKey( csc )) {
+            StringBuilder str = new StringBuilder();
+            str.append( "Duplicate " );
+            str.append( product.getHeader() );
+            // keep products if PDS don't match
+            if ( check2Products( inputRaf, products.get( pdsMap.get( csc ) ), product, str)) {
+              duplicate.add( i );
+              str.append( " at file position "+ i +" verses "+ pdsMap.get( csc ));
+              if ( logPDS.equals( Grib2WriteIndex.pdsLogType.systemout ))
+                System.out.println( str.toString() );
+              else if ( logPDS.equals( Grib2WriteIndex.pdsLogType.logger ))
+                log.info( str.toString());
+            }
+          } else {
+            pdsMap.put( csc, i);
+          }
+        }
+        if( duplicate.size() > 0 ) {
+          //Collections.sort(duplicate, new CompareKeyDescend());
+          Collections.sort(duplicate, new CompareKeyDescend());
+          // remove duplicates from products, highest first
+          for( int idx : duplicate ) {
+            products.remove( idx );
+          }
+        }
+      }
       for (int i = 0; i < products.size(); i++) {
         Grib1Product product = products.get(i);
         Grib1ProductDefinitionSection pds = product.getPDS();
@@ -239,6 +292,9 @@ public class Grib1WriteIndex {
     String gribName, String gbxName, boolean makeIndex) throws IOException {
 
     RandomAccessFile raf = null;
+    // default from standalone indexer, check for duplicate records and log to System.out
+    checkPDS = true;
+    logPDS = Grib2WriteIndex.pdsLogType.systemout;
     try {
       raf = new RandomAccessFile(gribName, "r");
       raf.order(RandomAccessFile.BIG_ENDIAN);
@@ -359,6 +415,66 @@ public class Grib1WriteIndex {
       if (products.size() == 0) {
         return false;
       }
+
+      // check all the products for duplicates by comparing PDSs
+      if( checkPDS ) {
+        HashMap<String, Integer> pdsMap = new HashMap<String, Integer>();
+        ArrayList<Integer> duplicate = new ArrayList<Integer>();
+        CRC32 csc32 = new CRC32();
+        // initialize pdsMap with already indexed records
+        int originalSize = recordList.size();
+        for (int i = 0; i < recordList.size(); i++) {
+          Grib2WriteIndex.RawRecord rr = recordList.get( i );
+          csc32.reset();
+          csc32.update( rr.pdsData );
+          String csc = Long.toString( csc32.getValue() );
+          pdsMap.put( csc, i );
+        }
+        // now check new records for duplicates, assumes original index has no duplicates
+        for (int i = 0; i < products.size(); i++) {
+          Grib1Product product = products.get( i );
+          csc32.reset();
+          csc32.update(product.getPDS().getPdsVars().getPDSBytes());
+          String csc = Long.toString( csc32.getValue() );
+          if ( verbose )
+            System.out.println(  "csc32="+ csc );
+          // duplicate found
+          if ( pdsMap.containsKey( csc )) {
+            StringBuilder str = new StringBuilder();
+            str.append( "Duplicate " );
+            str.append( product.getHeader() );
+            // keep products if PDS don't match
+            int idx = pdsMap.get( csc );
+            boolean pdsMatch;
+            if ( idx < originalSize )
+              pdsMatch = checkRawRecordProduct( inputRaf, recordList.get( idx ), product, str);
+            else
+             pdsMatch = check2Products( inputRaf, products.get( idx-originalSize ), product,str);
+
+            if ( pdsMatch ) {
+              duplicate.add( i );
+              str.append( " at file position "+ (i + originalSize) +" verses "+ idx);
+              if ( logPDS.equals( Grib2WriteIndex.pdsLogType.systemout ))
+                System.out.println( str.toString() );
+              else if ( logPDS.equals( Grib2WriteIndex.pdsLogType.logger ))
+                log.info( str.toString());
+            }  
+          } else {
+            pdsMap.put( csc, i + originalSize );
+          }
+        }
+        if( duplicate.size() > 0 ) {
+          Collections.sort(duplicate, new CompareKeyDescend());
+          // remove duplicates from products, highest first
+          for( int idx : duplicate ) {
+            products.remove( idx );
+          }
+        }
+        // no new data, just return
+        if (products.size() == 0) {
+          return false;
+        }
+      }
       for (int i = 0; i < products.size(); i++) {
         Grib1Product product = products.get(i);
         Grib1ProductDefinitionSection pds = product.getPDS();
@@ -442,10 +558,111 @@ public class Grib1WriteIndex {
     return true;
   }  // end extendGribIndex
 
+  /*
+    Check for a raw record object and product object has equal pds's and same data.
+   */
+  private boolean checkRawRecordProduct( RandomAccessFile inputRaf, Grib2WriteIndex.RawRecord raw, Grib1Product product,
+                    StringBuilder str ) throws IOException  {
+
+    Grib1Pds pdsv1 = new Grib1Pds( raw.pdsData );
+    Grib1Pds pdsv2 = product.getPDS().getPdsVars();
+
+    return checkPdsAndData( inputRaf, raw.offset1, raw.offset2, pdsv1,
+      product.getOffset1(), product.getOffset2(),  pdsv2, str );
+  }
+  /*
+    Check for 2 product objects has equal pds's and same data.
+   */
+  private boolean check2Products( RandomAccessFile inputRaf, Grib1Product product1, Grib1Product product2,
+                    StringBuilder str ) throws IOException {
+
+    Grib1Pds pdsv1 = product1.getPDS().getPdsVars();
+    Grib1Pds pdsv2 = product2.getPDS().getPdsVars();
+
+    return checkPdsAndData( inputRaf,
+      product1.getOffset1(), product1.getOffset2(), pdsv1,
+      product2.getOffset1(), product2.getOffset2(),  pdsv2, str );
+  }
+  /*
+    Check for equal pds's and same data.
+   */
+  private boolean checkPdsAndData( RandomAccessFile inputRaf,
+    long p1Offset1, long p1Offset2, Grib1Pds pdsv1,
+    long p2Offset1, long p2Offset2, Grib1Pds pdsv2, StringBuilder str )
+    throws IOException {
+
+    byte[] pds1 = pdsv1.getPDSBytes();
+    byte[] pds2 = pdsv2.getPDSBytes();
+
+    // check pds bytes are the same
+    boolean same = true;
+    if ( pds1.length != pds2.length)
+      same = false;
+    else
+      for( int j = 0; j < pds1.length; j++ )
+        if( pds1[ j ] != pds2[ j ]) {
+          same = false;
+          break;
+        }
+    if ( ! same ) {
+      str.append( " and PDSs didn't match" );
+      return false;
+    }
+    // Add parameter information
+    /*
+    str.append( " Center " );
+    str.append( pdsv1.getCenter() );
+    str.append( " Sub-Center " );
+    str.append( pdsv1.getSubCenter() );
+    str.append( " Version " );
+    str.append( pdsv1.getParameterTableVersion()  );
+    */
+    str.append( " Parameter " );
+    str.append( pdsv1.getParameterNumber() );
+    str.append( " Level1 ");
+    str.append( pdsv1.getLevelType1() );
+    str.append( " value ");
+    str.append( pdsv1.getLevelValue1() );
+    str.append( " valid at ");
+    str.append( pdsv1.getForecastTime() );
+    
+    // check if the data is the same
+    Grib1Data g1d = new Grib1Data( inputRaf );
+    float[] data1 = g1d.getData
+      ( p1Offset1, p1Offset2, pdsv1.getDecimalScale(), pdsv1.bmsExists());
+    float[] data2 = g1d.getData
+      ( p2Offset1, p2Offset2, pdsv2.getDecimalScale(), pdsv2.bmsExists());
+    boolean datasame = true;
+    for ( int i = 0; i < data1.length; i++ ) {
+      if ( data1[ i ] != data2[ i ]) {
+        datasame = false;
+        break;
+      }
+    }
+    if (! datasame )
+      str.append( " and Data didn't match");
+
+    return same;
+  }
+
+  /*
+   * set the duplicate record checking flag
+   */
+  public void setCheckPDS( boolean flag ) {
+    checkPDS = flag;
+  }
+
+  /*
+   * set the logging type for duplicate record checking
+   */
+  public void setLogPDS( Grib2WriteIndex.pdsLogType flag ) {
+    logPDS = flag;
+  }
 
   public void setDebug( boolean flag ) {
     debugTiming = flag;
   }
+
   public void setVerbose( boolean flag ) {
     verbose = flag;
   }
@@ -477,7 +694,7 @@ public class Grib1WriteIndex {
   public static void main(String args[]) throws IOException {
 
     Grib1WriteIndex indexer = new Grib1WriteIndex();
-    debugTiming = true;
+    debugTiming = false;
 
     // Test usage
     if (args.length < 1) {
@@ -506,5 +723,19 @@ public class Grib1WriteIndex {
     } else if (args.length == 1) {
       indexer.writeGribIndex(grib, gribName, gbxName , false);
     }
+  }
+
+  /*
+   * Used to sort duplicate record numbers
+   */
+  protected class CompareKeyDescend implements Comparator<Object> {
+
+    public int compare(Object o1, Object o2) {
+      int i1 = (Integer) o1;
+      int i2 = (Integer) o2;
+
+      return i2 - i1;
+    }
+
   }
 }

@@ -87,11 +87,12 @@ public final class Grib1Product {
         this.offset2 = size;
     }
 
-    // --Commented out by Inspection START (11/17/05 2:15 PM):
-    //   public final String getHeader(){
-    //      return header;
-    //   }
-    // --Commented out by Inspection STOP (11/17/05 2:15 PM)
+    /*
+     * Header of product
+     */
+    public final String getHeader(){
+      return header;
+    }
 
     /**
      * get the discipline of product as int.
