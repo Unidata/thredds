@@ -1180,7 +1180,7 @@ public class GribIndexReader {
     }
 
     //debugTiming = true;
-    debugParse = true;
+    debugParse = false;
     GridIndex index;
     if (args.length < 1) {
       index = new GribIndexReader().open(gbx.getPath());

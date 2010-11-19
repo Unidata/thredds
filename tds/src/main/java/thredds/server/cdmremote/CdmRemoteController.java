@@ -81,7 +81,7 @@ import ucar.unidata.util.StringUtil;
 public class CdmRemoteController extends AbstractCommandController { // implements LastModified {
   private static final Logger logServerStartup = org.slf4j.LoggerFactory.getLogger( "serverStartup" );
   private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(getClass());
-  private static boolean debug = false, showTime = true, showReq=true;
+  private static boolean debug = false, showTime = false, showReq=false;
 
   private TdsContext tdsContext;
   private boolean allow = true;

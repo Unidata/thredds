@@ -53,7 +53,7 @@ import java.text.SimpleDateFormat;
 public class RadarDatasetCollection {
 
   public static final Pattern p_yyyymmdd_hhmm = Pattern.compile("\\d{8}_(\\d{4})");
-  public static boolean debug = true;
+  public static boolean debug = false;
 
   static Calendar cal;
   static SimpleDateFormat dateFormat;

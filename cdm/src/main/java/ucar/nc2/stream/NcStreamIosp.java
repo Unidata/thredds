@@ -16,7 +16,7 @@ import java.util.List;
  * Read ncStream file (raf), into a NetcdfFile.
  */
 public class NcStreamIosp extends AbstractIOServiceProvider {
-  private static final boolean debug = true;
+  private static final boolean debug = false;
 
   public boolean isValidFile(RandomAccessFile raf) throws IOException {
     raf.seek(0);

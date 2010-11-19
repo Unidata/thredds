@@ -59,7 +59,7 @@ import org.apache.commons.httpclient.HttpMethod;
  * @since May 19, 2009
  */
 public class CdmRemoteFeatureDataset {
-  static private boolean debug = true;
+  static private boolean debug = false;
   static private boolean showXML = false;
 
   static public FeatureDataset factory(FeatureType wantFeatureType, String endpoint) throws IOException {
