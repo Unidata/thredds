@@ -39,7 +39,7 @@ dl {margin: 10px 5px 5px 15px;)
   <p>&quot;Protocol buffers are a flexible, efficient, automated mechanism for  serializing structured data – think XML, but smaller, faster, and  simpler. You define how you want your data to be structured once, then  you can use special generated source code to easily write and read your  structured data to and from a variety of data streams and using a  variety of languages. You can even update your data structure without  breaking deployed programs that are compiled against the &quot;old&quot; format.&quot;</p>
 </blockquote>
 <p>The main advantage of protobuf over XML is performance, since both message size and parsing speed is improved. A very important feature of protobuf is the ability to evolve the message structure in a way that doesnt break previous code.</p>
-<p>We dont use protobuf messages for the data, since protobuf messages are built in memory, and we need to be able to stream (write data directly from its source onto the output stream, eg socket). The data is simply linearized in the usual netCDF way, and written to the stream. A data message identifying the variable and the section that the data represents is part of every data message.</p>
+<p>We dont use protobuf messages for the data, since protobuf messages are built in memory, and we need to be able to stream (write data directly from its source onto the output stream, eg socket). The multidimensional data is written to the stream in row-major order, with reader-makes-right byte ordering. A data message identifying the variable and the section that the data represents is part of every data message.</p>
 <p>Variable length datatypes like  String and Opaque use the vdataMessage for data transfer. First the number of objects is written, then each object, preceeded by its length in bytes as a vlen. Strings are encoded as UTF-8 bytes. Opaque is just a bag of bytes.</p>
 <p>TDS 4.2 implements the classic and extended data model.</p>
 <p>See also:</p>
@@ -48,7 +48,7 @@ dl {margin: 10px 5px 5px 15px;)
 </ul>
 <hr width="100%" />
 <address>
-<img src="../nc.gif" alt="" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated Sep 2010
+<img src="../nc.gif" alt="" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated Nov 2010
 </address>
 <p>&nbsp;</p>
 </body>

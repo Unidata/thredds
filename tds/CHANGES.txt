@@ -4,6 +4,9 @@ Build Date = @BUILDTIME@
 Build Name = @BUILD.NAME@
 
 Release Details 4.2:
+ 4.2 release candidate 8 (2010-11-18)
+   bug in BDB create permission
+ 
  4.2 release candidate 7 (2010-11-16)
    improve logging of threddsConfig.xml configuration settings
    improve WMS initialization

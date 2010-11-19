@@ -81,7 +81,7 @@ public class MetadataManager {
   static private void setup() throws DatabaseException {
     EnvironmentConfig myEnvConfig = new EnvironmentConfig();
     myEnvConfig.setReadOnly(false);
-    myEnvConfig.setAllowCreate(false);
+    myEnvConfig.setAllowCreate(true);
     myEnvConfig.setSharedCache(true);
 
     File dir = new File(root);
