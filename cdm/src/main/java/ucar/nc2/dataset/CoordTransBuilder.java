@@ -75,6 +75,7 @@ public class CoordTransBuilder {
     registerTransform("vertical_perspective", VerticalPerspective.class);
     registerTransform("UTM", UTM.class);
 
+    // registerTransform("atmosphere_ln_pressure_coordinate", VAtmLnPressure.class); // DO NOT USE: see CF1Convention.makeAtmLnCoordinate()
     registerTransform("atmosphere_hybrid_height_coordinate", VAtmHybridHeight.class);
     registerTransform("atmosphere_hybrid_sigma_pressure_coordinate", VAtmHybridSigmaPressure.class);
     registerTransform("atmosphere_sigma_coordinate", VAtmSigma.class);

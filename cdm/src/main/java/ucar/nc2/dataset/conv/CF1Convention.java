@@ -174,6 +174,7 @@ public class CF1Convention extends CSMConvention {
   private boolean avhrr_oiv2 = false;
 
 
+  // this is here because it doesnt fit into 3D array thing.
   private void makeAtmLnCoordinate(NetcdfDataset ds, Variable v) {
     // get the formula attribute
     String formula = ds.findAttValueIgnoreCase(v, "formula_terms", null);

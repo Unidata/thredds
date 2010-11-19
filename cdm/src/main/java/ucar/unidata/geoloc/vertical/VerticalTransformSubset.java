@@ -62,8 +62,7 @@ public class VerticalTransformSubset extends VerticalTransformImpl {
      * @param x_range subset the x dimension, or null if you want all of it
      */
     public VerticalTransformSubset(VerticalTransform original, Range t_range,
-                                   Range z_range, Range y_range,
-                                   Range x_range) {
+                                   Range z_range, Range y_range, Range x_range) {
         super(null);  // timeDim not used in this class
 
         this.original = original;

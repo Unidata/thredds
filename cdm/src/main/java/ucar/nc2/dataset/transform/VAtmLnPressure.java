@@ -44,6 +44,7 @@ import ucar.unidata.util.Parameter;
 
 /**
  * implementation for CF vertical coordinate "atmosphere_ln_pressure_coordinate".
+ * DO NOT USE: see CF1Convention.makeAtmLnCoordinate()
  * @author caron
  * @since May 6, 2008
  */

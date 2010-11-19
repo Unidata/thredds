@@ -54,8 +54,7 @@ public interface VerticalTransform {
      * @throws java.io.IOException problem reading the data
      * @throws ucar.ma2.InvalidRangeException timeIndex out of bounds
      */
-    public ucar.ma2.ArrayDouble.D3 getCoordinateArray(int timeIndex)
-     throws java.io.IOException, ucar.ma2.InvalidRangeException;
+    public ucar.ma2.ArrayDouble.D3 getCoordinateArray(int timeIndex) throws java.io.IOException, ucar.ma2.InvalidRangeException;
 
     /**
      * Get the unit string for the vertical coordinate.
@@ -79,8 +78,6 @@ public interface VerticalTransform {
      *  @return a new VerticalTransform for the given subset
      *  @throws ucar.ma2.InvalidRangeException if any Range is incompatible with the existing VerticalTransform
      */
-    public VerticalTransform subset(Range t_range, Range z_range,
-                                    Range y_range, Range x_range)
-     throws ucar.ma2.InvalidRangeException;
+    public VerticalTransform subset(Range t_range, Range z_range, Range y_range, Range x_range) throws ucar.ma2.InvalidRangeException;
 }
 

@@ -47,6 +47,7 @@ import java.io.IOException;
  * pressure(z) = p0 * exp(-lev(k))" .
  *
  * Theres a problem here, since its not 3D, we dont know what the 2D extent is.
+ * DO NOT USE: see CF1Convention.makeAtmLnCoordinate()
 
  * @author caron
  * @see <a href="http://cf-pcmdi.llnl.gov/">http://cf-pcmdi.llnl.gov/</a>
@@ -57,7 +58,6 @@ public class AtmosLnPressure extends VerticalTransformImpl {
   public static final String LEV = "VerticalCoordinateVariableName";
 
   private Array pressure;
-  private double p0;
 
   /**
    * Create a new vertical transform for Ocean S coordinates
@@ -71,8 +71,9 @@ public class AtmosLnPressure extends VerticalTransformImpl {
 
     String p0name = getParameterStringValue(params, P0);
     Variable p0var = ds.findVariable(p0name);
+    double p0;
     try {
-      this.p0 = p0var.readScalarDouble();
+      p0 = p0var.readScalarDouble();
     } catch (IOException e) {
       throw new IllegalArgumentException("AtmosLnPressure failed to read "
           + p0name + " err= " + e.getMessage());
@@ -84,7 +85,7 @@ public class AtmosLnPressure extends VerticalTransformImpl {
     try {
       Array lev = levVar.read();
       assert lev.getRank() == 1;
-      ArrayDouble.D1 pressure = new ArrayDouble.D1( (int) lev.getSize());
+      pressure = new ArrayDouble.D1( (int) lev.getSize());
       IndexIterator ii = pressure.getIndexIterator();
       while (lev.hasNext()) {
         double result = p0 * Math.exp(-lev.nextDouble());
@@ -121,10 +122,10 @@ public class AtmosLnPressure extends VerticalTransformImpl {
 
     IndexIterator ii = pressure.getIndexIterator();
     for (int z = 0; z < nz; z++) {
-      double zcoord = ii.getDoubleNext();
+      double p = ii.getDoubleNext();
       for (int y = 0; y < ny; y++) {
         for (int x = 0; x < nx; x++) {
-          result.set(z, y, x, zcoord);
+          result.set(z, y, x, p);
         }
       }
     }
