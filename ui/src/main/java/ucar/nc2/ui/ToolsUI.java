@@ -34,6 +34,7 @@
 package ucar.nc2.ui;
 
 import thredds.inventory.FeatureCollectionConfig;
+import ucar.nc2.dt.grid.NetcdfCFWriter;
 import ucar.nc2.stream.NcStreamWriter;
 import ucar.nc2.ui.gis.shapefile.ShapeFileBean;
 import ucar.nc2.ui.gis.worldmap.WorldMapBean;
@@ -72,6 +73,7 @@ import ucar.nc2.ui.grid.GridUI;
 import ucar.nc2.ui.image.ImageViewPanel;
 import ucar.nc2.ui.util.*;
 
+import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.io.http.HTTPRandomAccessFile;
 
 import ucar.util.prefs.*;
@@ -3713,6 +3715,36 @@ public class ToolsUI extends JPanel {
         }
       });
       buttPanel.add(invButton);
+
+      AbstractAction writeAction = new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+          ucar.nc2.dt.GridDataset gds = dsTable.getGridDataset();
+          if (gds == null) return;
+          List<String> gridList = dsTable.getSelectedGrids();
+          if (gridList.size() == 0) {
+            JOptionPane.showMessageDialog(GeoGridPanel.this, "No Grids are selected");
+            return;
+          }
+          String location = gds.getLocationURI();
+          if (location == null) location = "test";
+          String suffix = (location.endsWith(".nc") ? ".sub.nc" : ".nc");
+          int pos = location.lastIndexOf(".");
+          if (pos > 0)
+            location = location.substring(0, pos);
+          String filename = fileChooser.chooseFilenameToSave(location + suffix);
+          if (filename == null) return;
+
+          try {
+            NetcdfCFWriter.makeFile(filename, gds, gridList, null, null);
+            JOptionPane.showMessageDialog(GeoGridPanel.this, "File successfully written");
+          } catch (Exception ioe) {
+            JOptionPane.showMessageDialog(GeoGridPanel.this, "ERROR: " + ioe.getMessage());
+            ioe.printStackTrace();
+          }
+        }
+      };
+      BAMutil.setActionProperties(writeAction, "netcdf", "Write netCDF-CF file", false, 'W', -1);
+      BAMutil.addActionToContainer(buttPanel, writeAction);
 
     }
 

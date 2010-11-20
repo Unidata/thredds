@@ -39,13 +39,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import ucar.ma2.Array;
-import ucar.ma2.ArrayChar;
-import ucar.ma2.ArrayObject;
-import ucar.ma2.DataType;
-import ucar.ma2.Index;
-import ucar.ma2.IndexIterator;
-import ucar.ma2.InvalidRangeException;
+import ucar.ma2.*;
 import ucar.nc2.iosp.netcdf3.N3iosp;
 
 /**
@@ -74,14 +68,12 @@ public class FileWriter {
    */
   public static void setDebugFlags(ucar.nc2.util.DebugFlags debugFlags) {
     debug = debugFlags.isSet("ncfileWriter/debug");
-    debugExtend = debugFlags.isSet("ncfileWriter/debugExtend");
+    debugWrite = debugFlags.isSet("ncfileWriter/debugWrite");
   }
 
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FileWriter.class);
 
-  static private boolean debug = false, debugWrite = false, debugExtend;
-//  static private boolean debug = true, debugWrite = true, debugExtend = true;
-  static private long maxSize = 1 * 1000 * 1000; // 1 MByte
+  static private boolean debug = false, debugWrite = false;
 
   /**
    * Copy a NetcdfFile to a physical file, using Netcdf-3 file format.
@@ -116,6 +108,8 @@ public class FileWriter {
    *
    * @param fileIn            write from this NetcdfFile
    * @param fileOutName       write to this local file
+   * @param fill              use fill mode
+   * @param isLargeFile       if true, make large file format (> 2Gb offsets)
    * @return NetcdfFile that was written to. It remains open for reading or writing.
    * @throws IOException on read or write error
    */
@@ -254,7 +248,7 @@ public class FileWriter {
    * @param ncfile            write tot this file
    * @param varlist           list of varibles from the original file, with data in them
    * @param recordVar         the record variable from the original file, or null means dont use record variables
-   * @param progressListeners List of progress event listeners
+   * @param progressListeners List of progress event listeners, may be null
    * @return total number of bytes written
    * @throws IOException if I/O error
    */
@@ -277,6 +271,7 @@ public class FileWriter {
       long size = oldVar.getSize() * oldVar.getElementSize();
       total += size;
 
+      long maxSize = 50 * 1000 * 1000; // 50 Mbytes
       if (size <= maxSize) {
         copyAll(ncfile, oldVar);
       } else {
@@ -414,7 +409,7 @@ public class FileWriter {
 
           ncfile.write(newName, chunkOrigin, data);
           if (debugWrite) {
-            System.out.println("write " + data.getSize() + " bytes");
+            System.out.println(" write " + data.getSize() + " bytes at "+ new Section(chunkOrigin, chunkShape));
           }
           byteWriteTotal += data.getSize();
 
@@ -462,9 +457,29 @@ public class FileWriter {
    *
    * @param fileOutName file name to write to.
    * @param fill        use fill mode or not
+   * @throws java.io.IOException on bad
    */
   public FileWriter(String fileOutName, boolean fill) throws IOException {
+    this(fileOutName, fill, false, -1);
+  }
+
+  /**
+   * For writing parts of a NetcdfFile to a new Netcdf-3 local file.
+   * To copy all the contents, the static method FileWriter.writeToFile() is preferred.
+   * These are mostly convenience methods on top of NetcdfFileWriteable.
+   *
+   * @param fileOutName file name to write to.
+   * @param fill        use fill mode or not
+   * @param isLargeFile true if large file format
+   * @param extraHeaderBytes add extra bytes in the header, or -1
+   * @throws java.io.IOException on bad
+   */
+  public FileWriter(String fileOutName, boolean fill, boolean isLargeFile, int extraHeaderBytes) throws IOException {
     ncfile = NetcdfFileWriteable.createNew(fileOutName, fill);
+    if (isLargeFile)
+      ncfile.setLargeFile(isLargeFile);
+    if (extraHeaderBytes > 0)
+      ncfile.setExtraHeaderBytes(extraHeaderBytes);
   }
 
   /**
@@ -607,7 +622,7 @@ public class FileWriter {
   public void finish() throws IOException {
     ncfile.create();
 
-    double total = copyVarData(ncfile, varList, recordVar, 0);
+    double total = copyVarData(ncfile, varList, recordVar, null);
     ncfile.close();
     if (debug) System.out.println("FileWriter finish total bytes = " + total);
   }
@@ -731,7 +746,6 @@ public class FileWriter {
       System.exit(0);
     }
 
-    debugExtend = true;
     // NetcdfFile ncfileIn = ucar.nc2.dataset.NetcdfDataset.openFile(datasetIn, null);  LOOK was
     NetcdfFile ncfileIn = ucar.nc2.NetcdfFile.open(datasetIn, null);
     NetcdfFile ncfileOut = ucar.nc2.FileWriter.writeToFile(ncfileIn, datasetOut, false, false, null);

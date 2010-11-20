@@ -3,13 +3,18 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Changes in version 4.2:
+ 15: (2010-11-19)
+  NetcdfCFWriter : set large file if needed
+  FileWriter: allow largeFiles. also use much larger buffer
+  H5header: message sizes are unsigned
+  bug in BDB create permission
  14: (2010-11-13)
   NetcdfFile.getDetailInfo() had a bug, showed up in BUFR
   cdmremote improvemnets
   NetcdfFile: unescape string in getRaf() (from erussell@ngs.org)
   H5header: clarify GlobalHeap termination condition
  13: (2010-11-01)
-  CoordinateAxis sets caching to true, VariabelDS propagates to orgVar.
+  CoordinateAxis sets caching to true, VariableDS propagates to orgVar.
   remove e.printStackTrace() at CEEvaluator line 180
   add Fmrc.close(), CollectionManager.close() to release resources
   manage bdb databases so that they can be deleted when needed to regenerate the metadata

@@ -241,7 +241,7 @@ public class Hdf5Table extends JPanel {
       return m.getName();
     }
 
-    public short getSize() {
+    public int getSize() {
       return m.getSize();
     }
 

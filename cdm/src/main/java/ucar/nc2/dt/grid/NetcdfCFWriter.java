@@ -62,9 +62,13 @@ import java.text.ParseException;
  * @author caron
  */
 public class NetcdfCFWriter {
-  static private long maxSize = 2 * 1000 * 1000 * 1000; // 2 Gb
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NetcdfCFWriter.class);
 
+  static public void makeFile(String location, ucar.nc2.dt.GridDataset gds, List<String> gridList, LatLonRect llbb, DateRange range)
+          throws IOException, InvalidRangeException {
+    NetcdfCFWriter writer = new NetcdfCFWriter();
+    writer.makeFile(location, gds, gridList, llbb, range, false, 1, 1, 1);
+  }
 
   /**
    * Write a CF compliant Netcdf-3 file from any gridded dataset.
@@ -74,7 +78,7 @@ public class NetcdfCFWriter {
    * @param gridList    the list of grid names to be written, must not be empty. Full name (not short).
    * @param llbb        optional lat/lon bounding box
    * @param range       optional time range
-   * @param addLatLon   should 2D lat/lon variables be added, if its a projection coordainte system?
+   * @param addLatLon   should 2D lat/lon variables be added, if its a projection coordinate system?
    * @param horizStride x,y stride
    * @param stride_z    not implemented yet
    * @param stride_time not implemented yet
@@ -96,17 +100,7 @@ public class NetcdfCFWriter {
           boolean addLatLon)
           throws IOException, InvalidRangeException {
 
-    FileWriter writer = new FileWriter(location, false);
     NetcdfDataset ncd = (NetcdfDataset) gds.getNetcdfFile();
-
-    // global attributes
-    for (Attribute att : gds.getGlobalAttributes())
-      writer.writeGlobalAttribute(att);
-
-    writer.writeGlobalAttribute(new Attribute("Conventions", "CF-1.0"));
-    writer.writeGlobalAttribute(new Attribute("History",
-            "Translated to CF-1.0 Conventions by Netcdf-Java CDM (NetcdfCFWriter)\n" +
-                    "Original Dataset = " + gds.getLocationURI() + "; Translation Date = " + new Date()));
 
     ArrayList<Variable> varList = new ArrayList<Variable>();
     ArrayList<String> varNameList = new ArrayList<String>();
@@ -174,10 +168,23 @@ public class NetcdfCFWriter {
     }
 
     // check size is ok
+    boolean isLargeFile = false;
+    long maxSize = 2 * 1000 * 1000 * 1000;
     if (total_size > maxSize) {
-      log.info("Reject request size = {} Mbytes", total_size);
-      throw new IllegalArgumentException("Request too big=" + total_size+" Mbytes, max="+maxSize);
+      log.info("Request size = {} Mbytes", total_size / 1000 / 1000);
+      isLargeFile = true;
     }
+
+    FileWriter writer = new FileWriter(location, false, isLargeFile, -1);
+    // global attributes
+    for (Attribute att : gds.getGlobalAttributes())
+      writer.writeGlobalAttribute(att);
+
+    writer.writeGlobalAttribute(new Attribute("Conventions", "CF-1.0"));
+    writer.writeGlobalAttribute(new Attribute("History",
+            "Translated to CF-1.0 Conventions by Netcdf-Java CDM (NetcdfCFWriter)\n" +
+                    "Original Dataset = " + gds.getLocationURI() + "; Translation Date = " + new Date()));
+
 
     writer.writeVariables(varList);
 

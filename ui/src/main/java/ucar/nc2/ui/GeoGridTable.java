@@ -231,6 +231,18 @@ public class GeoGridTable extends JPanel {
   }
 
   public GridDataset getGridDataset() { return gridDataset; }
+
+  public List<String> getSelectedGrids() {
+    ArrayList grids = varTable.getSelectedBeans();
+    List<String> result = new ArrayList<String>();
+    for (Object bean : grids) {
+      GeogridBean gbean = (GeogridBean) bean;
+      result.add( gbean.getName());
+    }
+    return result;
+  }
+
+
   public GridDatatype getGrid() {
     GeogridBean vb = (GeogridBean) varTable.getSelectedBean();
     if (vb == null) {

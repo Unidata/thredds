@@ -2169,7 +2169,8 @@ public class H5header {
   public class HeaderMessage implements Comparable {
     long start;
     byte headerMessageFlags;
-    short type, size, header_length;
+    int size;
+    short type, header_length;
     Named messData; // header message data
 
     public MessageType getMtype() {
@@ -2180,7 +2181,7 @@ public class H5header {
       return messData.getName();
     }
 
-    public short getSize() {
+    public int getSize() {
       return size;
     }
 
@@ -2216,14 +2217,17 @@ public class H5header {
 
       if (version == 1) {
         type = raf.readShort();
-        size = raf.readShort();
+        size = DataType.unsignedShortToInt(raf.readShort());
         headerMessageFlags = raf.readByte();
         raf.skipBytes(3);
         header_length = 8;
 
       } else {
         type = (short) raf.readByte();
-        size = raf.readShort();
+        size = DataType.unsignedShortToInt(raf.readShort());
+        //if (size > Short.MAX_VALUE)
+        //  System.out.println("HEY");
+
         headerMessageFlags = raf.readByte();
         header_length = 4;
         if (creationOrderPresent) {
