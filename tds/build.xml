@@ -778,14 +778,14 @@
   </target>
 
   <!-- Clean, make source, make war, make checksums, and copy to snapshot directory on FTP site. -->
-  <target name="cleanReleaseSnapshot" depends="makeSrcAndWar">
+  <target name="cleanReleaseSnapshot" depends="cleanMakeSrcAndWar">
     <antcall target="doNotUseDirectly-release">
       <param name="target.release.directory" value="${releaseSnapshot.dir}" />
     </antcall>
   </target>
 
   <!-- Clean, make source, make war, make checksums, and copy to release directory on FTP site. -->
-  <target name="cleanRelease" depends="makeSrcAndWar, release">
+  <target name="cleanRelease" depends="cleanMakeSrcAndWar, release">
   </target>
 
   <!-- Copy already built distribution to release directory on FTP site.
