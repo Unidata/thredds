@@ -79,11 +79,9 @@ public class Tiling {
    */
   public int[] tile(int[] pt) {
 //    assert pt.length == rank;
-    int[] tile = new int[rank];
-    for (int i = 0; i < rank; i++) {
-      if (shape[i] < pt[i])
-        System.out.println("HEY shape[i] < pt[i]");
-
+    int useRank = Math.min(rank, pt.length); // eg varlen (datatype 9) has mismatch
+    int[] tile = new int[useRank];
+    for (int i = 0; i < useRank; i++) {
       assert shape[i] >= pt[i];
       tile[i] = pt[i] / tileSize[i];
     }
@@ -98,7 +96,8 @@ public class Tiling {
   public int order(int[] pt) {
     int[] tile = tile(pt);
     int order = 0;
-    for (int i = 0; i < rank; i++)
+    int useRank = Math.min(rank, pt.length); // eg varlen (datatype 9) has mismatch
+    for (int i = 0; i < useRank; i++)
       order += stride[i] * tile[i];
     return order;
   }
@@ -107,7 +106,7 @@ public class Tiling {
    * Create an ordering of index points based on which tile the point is in.
    * @param p1 index point 1
    * @param p2 index point 2
-   * @return order(p1) - order(p2) : negetive if p1 < p2, positive if p1 > p2 , 0 if equal
+   * @return order(p1) - order(p2) : negative if p1 < p2, positive if p1 > p2 , 0 if equal
    */
   public int compare(int[] p1, int[] p2) {
     return order(p1) - order(p2);

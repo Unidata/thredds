@@ -529,7 +529,7 @@ public class GridVariable {
       int time = tcs.findIndex(p);
       // System.out.println("time="+time+" level="+level);
       if (level < 0) {
-        log.warn("NOT FOUND record; level=" + level + " time= "
+        log.warn("LEVEL NOT FOUND record; level=" + level + " time= "
                 + time + " for " + getName() + " file="
                 + ncfile.getLocation() + "\n" + "   "
                 + getVertLevelName() + " (type=" + p.getLevelType1()
@@ -541,7 +541,7 @@ public class GridVariable {
       }
 
       if (time < 0) {
-        log.warn("NOT FOUND record; level=" + level + " time= "
+        log.warn("TIME NOT FOUND record; level=" + level + " time= "
                 + time + " for " + getName() + " file="
                 + ncfile.getLocation() + "\n" + " validTime= "
                 + p.getValidTime() + "\n");
@@ -553,8 +553,23 @@ public class GridVariable {
       int recno;
       if (hasEnsemble()) {
         GribGridRecord ggr = (GribGridRecord) p;  // LOOK assumes GribGridRecord
-        int ens = ecs.getIndex((GribGridRecord) p);
+        int ens = ecs.getIndex(ggr);
+        if (ens < 0) {
+          int ensNumber = ggr.getPds().getPerturbationNumber();
+          int ensType = ggr.getPds().getPerturbationType();
+
+          log.warn("ENS NOT FOUND record; level=" + level + " time= "+ time +
+                  " for " + getName() + " file="+ ncfile.getLocation() +
+                  "\n ensNumber= "+ ensNumber + " ensType= "+ ensType + "\n");
+
+          ecs.getIndex(ggr); // allow breakpoint
+          continue; // skip
+        }
         recno = ens * (ntimes * nlevels) + (time * nlevels) + level;  // order is ens, time, level
+        if (recno < 0) {
+          System.out.println("HEY");
+          ecs.getIndex(ggr);
+        }
       } else {
         recno = time * nlevels + level;
       }

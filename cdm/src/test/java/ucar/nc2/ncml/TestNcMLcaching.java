@@ -33,7 +33,6 @@
 package ucar.nc2.ncml;
 
 import ucar.nc2.TestAll;
-import ucar.nc2.ft.point.collection.TimedCollectionImpl;
 import junit.framework.TestSuite;
 import junit.extensions.TestSetup;
 import thredds.inventory.MController;

@@ -8,123 +8,15 @@
   <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
     <property name="mappings">
       <value>
-        /**=cdmremoteController
+        /**=cdmRemoteController
       </value>
     </property>
   </bean>
 
-  <bean id="cdmremoteController" class="thredds.server.cdmremote.CdmRemoteController">
+  <bean id="cdmRemoteController" class="thredds.server.cdmremote.CdmRemoteController">
     <property name="tdsContext" ref="tdsContext"/>
     <property name="allow" value="true"/>
     <property name="supportedMethods" value="GET"/>
-    <property name="diskCache" ref="diskCache"/>
-    <property name="collections" ref="collectionManager"/>
-  </bean>
-
-  <bean id="diskCache" class="ucar.nc2.util.DiskCache2"  destroy-method="exit">
-    <constructor-arg value="/data/tmp/thredds4/cdm/working/"/>
-    <constructor-arg value="false"/>
-    <constructor-arg value="30"/>
-    <constructor-arg value="60"/>
-  </bean>
-
-  <!-- bean id="pointController" class="thredds.server.cdmremote.PointStreamController">
-    <property name="tdsContext" ref="tdsContext"/>
-    <property name="allow" value="true"/>
-    <property name="supportedMethods" value="GET"/>
-  </bean>
-
-  <bean id="stationController" class="thredds.server.cdmremote.StationStreamController">
-    <property name="tdsContext" ref="tdsContext"/>
-    <property name="allow" value="true"/>
-    <property name="supportedMethods" value="GET"/>
-  </bean>
-
-  <bean id="collectionController" class="thredds.server.cdmremote.CdmRemoteController">
-    <property name="tdsContext" ref="tdsContext"/>
-    <property name="allow" value="true"/>
-    <property name="supportedMethods" value="GET"/>
-    <property name="configDirectory" value="GET"/>
-    <property name="collections" ref="collectionManager"/>
-  </bean -->
-
-  <!-- bean id="formsController" class="thredds.server.cdmremote.FormsController">
-    <property name="tdsContext" ref="tdsContext"/>
-    <property name="allow" value="true"/>
-    <property name="supportedMethods" value="GET"/>
-    <property name="collections" ref="collectionManager"/>
-  </bean -->
-
-  <bean id="collectionManager" class="thredds.server.cdmremote.CollectionManager">
-    <property name="collections">
-      <list>
-        <ref bean="ncMetars" />
-        <ref bean="gempakMetars" />
-        <ref bean="quickScatWinds" />
-        <ref bean="ncMetarsLocal" />
-        <ref bean="ncMetarsLocalHome" />
-        <ref bean="gempakMetarsLocal" />
-        <ref bean="gempakMetarsLocalHome" />
-      </list>
-    </property>
-  </bean>
-
-  <bean id="ncMetars" class="thredds.server.cdmremote.CollectionBean">
-    <property name="path" value="/idd/metar/ncdecoded"/>
-    <property name="spec" value="/data/ldm/pub/decoded/netcdf/surface/metar/Surface_METAR_#yyyyMMdd_HHmm#.nc"/>
-    <property name="recheck" value="15 min"/>
-    <property name="featureType" value="STATION"/>
-    <property name="raw" value="report"/>
-    <property name="resolution" value="20 min"/>
-  </bean>
-
-  <bean id="ncMetarsLocal" class="thredds.server.cdmremote.CollectionBean">
-    <property name="path" value="/idd/metar/ncdecodedLocal"/>
-    <property name="spec" value="Q:/station/ldm/metar/Surface_METAR_#yyyyMMdd_HHmm#.nc" />
-    <property name="recheck" value="15 min"/>
-    <property name="featureType" value="STATION"/>
-    <property name="raw" value="report"/>
-    <property name="resolution" value="20 min"/>
-  </bean>
-
-  <bean id="ncMetarsLocalHome" class="thredds.server.cdmremote.CollectionBean">
-    <property name="path" value="/idd/metar/ncdecodedLocalHome"/>
-    <property name="spec" value="E:/datasets/metars/Surface_METAR_#yyyyMMdd_HHmm#.nc"/>
-    <property name="recheck" value="15 min"/>
-    <property name="featureType" value="STATION"/>
-    <property name="raw" value="report"/>
-    <property name="resolution" value="20 min"/>
-  </bean>
-
-  <bean id="gempakMetars" class="thredds.server.cdmremote.CollectionBean">
-    <property name="path" value="/idd/metar/gempak"/>
-    <property name="spec" value="/data/ldm/gempak/surface/#yyyyMMdd#_sao.gem"/>
-    <property name="recheck" value="15 min"/>
-    <property name="featureType" value="STATION"/>
-    <property name="resolution" value="20 min"/>
-  </bean>
-
-  <bean id="gempakMetarsLocal" class="thredds.server.cdmremote.CollectionBean">
-    <property name="path" value="/idd/metar/gempakLocal"/>
-    <property name="spec" value="D:/formats/gempak/surface2/#yyyyMMdd#_sao.gem"/>
-    <property name="recheck" value="15 min"/>
-    <property name="featureType" value="STATION"/>
-    <property name="resolution" value="20 min"/>
-  </bean>
-
-  <bean id="gempakMetarsLocalHome" class="thredds.server.cdmremote.CollectionBean">
-    <property name="path" value="/idd/metar/gempakLocalHome"/>
-    <property name="spec" value="C:/data/formats/gempak/surface/#yyyyMMdd#_sao.gem"/>
-    <property name="recheck" value="15 min"/>
-    <property name="featureType" value="STATION"/>
-    <property name="resolution" value="20 min"/>
-  </bean>
-
-  <bean id="quickScatWinds" class="thredds.server.cdmremote.CollectionBean">
-    <property name="path" value="/idd/bufr/quickScat"/>
-    <property name="spec" value="/data/ldm/gempak/surface/**/#yyyyMMdd#.gem"/>
-    <property name="recheck" value="15 min"/>
-    <property name="featureType" value="STATION"/>
   </bean>
 
 </beans>

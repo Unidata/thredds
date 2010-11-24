@@ -64,15 +64,15 @@ import java.nio.channels.Channels;
  * @author caron
  * @since Feb 16, 2009
  */
-public class PointStreamController extends AbstractCommandController implements LastModified {
+public class PointStreamControllerOld extends AbstractCommandController implements LastModified {
   private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(getClass());
   private boolean debug = false;
 
   private String prefix = "/point"; // LOOK how do we obtain this?
   private TdsContext tdsContext;
 
-  public PointStreamController() {
-    setCommandClass(PointQueryBean.class);
+  public PointStreamControllerOld() {
+    setCommandClass(CdmRemoteQueryBean.class);
     setCommandName("PointQueryBean");
   }
 
@@ -106,7 +106,7 @@ public class PointStreamController extends AbstractCommandController implements 
     String path = pathInfo.substring(0, pathInfo.length() - prefix.length());
     if (debug) System.out.printf("PointStreamController path= %s query= %s %n", path, req.getQueryString());
 
-    PointQueryBean query = (PointQueryBean) command;
+    CdmRemoteQueryBean query = (CdmRemoteQueryBean) command;
     if (debug) System.out.printf(" query= %s %n", query);
     if (!query.validate()) {
       res.sendError(HttpServletResponse.SC_BAD_REQUEST, query.getErrorMessage());
@@ -147,7 +147,7 @@ public class PointStreamController extends AbstractCommandController implements 
         out.flush();
 
       } else if (queryS.equalsIgnoreCase("getCapabilities")) {
-        CdmRemoteControllerOld.sendCapabilities(req, out, fd.getFeatureType(), true);
+        // CdmRemoteControllerOld.sendCapabilities(req, out, fd.getFeatureType(), true);
         res.flushBuffer();
         out.flush();
 

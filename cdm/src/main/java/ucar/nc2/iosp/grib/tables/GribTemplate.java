@@ -60,6 +60,7 @@ public class GribTemplate implements Comparable<GribTemplate> {
     convertMap.put("Indicator of unit of time for the increment between the successive fields used", "4.4");
     convertMap.put("Type of first fixed surface", "4.5");
     convertMap.put("Type of second fixed surface", "4.5");
+    convertMap.put("Type of ensemble forecast", "4.6");
     convertMap.put("Derived forecast", "4.7");
     convertMap.put("Probability type", "4.9");
     convertMap.put("Statistical process used to calculate the processed field from the field at each time increment during the time range", "4.10");

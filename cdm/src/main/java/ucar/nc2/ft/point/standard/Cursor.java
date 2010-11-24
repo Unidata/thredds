@@ -36,13 +36,15 @@ import ucar.ma2.StructureData;
 
 /**
  * Keeps track of the iteration through nested tables
+ * 0 is always innermost nested table, 1 is parent of 0, 2 is parent of 1, etc
+ *
  * @author caron
  * @since Jan 24, 2009
  */
 public class Cursor {
-  StructureData[] tableData;
-  int[] recnum;
-  int currentIndex;
+  StructureData[] tableData; //current struct data
+  int[] recnum;              // current recnum
+  int currentIndex;          // seems to be the "parent index", current iteration is over its children.
 
   Cursor(int nlevels) {
     tableData = new StructureData[nlevels];

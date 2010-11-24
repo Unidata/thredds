@@ -71,7 +71,8 @@ public class GridEnsembleCoord {
       GribGridRecord ggr = (GribGridRecord) record;
       int ensNumber = ggr.getPds().getPerturbationNumber();
       int ensType = ggr.getPds().getPerturbationType();
-      map.put(ensNumber, new EnsCoord(ensNumber, ensType));
+      int h = 1000 * ensNumber + ensType; // unique perturbation number and type
+      map.put(h, new EnsCoord(ensNumber, ensType));
     }
 
     ensCoords = new ArrayList<EnsCoord>(map.values());
@@ -88,7 +89,8 @@ public class GridEnsembleCoord {
 
     @Override
     public int compareTo(EnsCoord o) {
-      return number - o.number;
+      int r = number - o.number;
+      return (r == 0) ? type - o.type : r;
     }
 
     @Override
@@ -106,9 +108,12 @@ public class GridEnsembleCoord {
 
     @Override
     public int hashCode() {
-      int result = number;
-      result = 31 * result + type;
-      return result;
+      return 1000 * number + type;
+    }
+
+    @Override
+    public String toString() {
+      return "number=" + number +", type=" + type;
     }
   }
 

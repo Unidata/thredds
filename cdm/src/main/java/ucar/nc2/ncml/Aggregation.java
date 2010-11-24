@@ -476,7 +476,7 @@ public abstract class Aggregation {
     }
 
     if (datasets.size() == 0) {
-      throw new IllegalStateException("There are no datasets in the aggregation");
+      throw new IllegalStateException("There are no datasets in the aggregation " + datasetManager);
     }
   }
 

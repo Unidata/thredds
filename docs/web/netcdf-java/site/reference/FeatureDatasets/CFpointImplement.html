@@ -1,0 +1,141 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>CF point implement</title>
+<style type="text/css">
+pre {font-size: 9pt; padding: 10px; background-color: #E7E7E7; border: 1px solid #CFCFCF; width: 85%;}
+code {font-size: 11pt;}
+dl {margin: 10px 5px 5px 15px;)
+.style1 {font-style: italic}
+</style>
+</head>
+
+<body>
+<h1>CDM implementation of CF discrete sampling  features </h1>
+<p>These notes refer to the current stable release of CDM 4.2. Section headers referrence the CF proposal.</p>
+<h3>9.1.1 <span lang="en" xml:lang="en">Feature types</span></h3>
+<p>A. CDM has stricter requirements for mandatory coordinates (Table 9.2)</p>
+  <table border="1" cellpadding="0" width="848">
+    <tbody>
+      <tr>
+        <td width="148"><p><strong>featureType</strong></p></td>
+        <td width="94"><p><strong>Data<br />
+          variables</strong></p></td>
+        <td width="83" valign="top"><p><strong>Instance<br />
+          variables</strong></p></td>
+        <td width="195"><p><strong>CF mandatory coordinates</strong></p></td>
+        <td width="316" valign="top"><p><strong>CDM Mandatory coordinates</strong></p></td>
+      </tr>
+      <tr>
+        <td width="148"><p><strong>point</strong></p></td>
+        <td width="94"><p>data(i)</p></td>
+        <td width="83" valign="top"><p>meta(i)</p></td>
+        <td width="195"><p>x(i) y(i) z(i)  t(i)</p></td>
+        <td width="316" valign="top"><p>mandatory: x,y,t</p></td>
+      </tr>
+      <tr>
+        <td width="148"><p><strong>timeSeries</strong></p></td>
+        <td width="94"><p>data(i,o)</p></td>
+        <td width="83" valign="top"><p>meta(i)</p></td>
+        <td width="195"><p>x(i) y(i) z(i) t(i,o)</p></td>
+        <td width="316" valign="top"><p>mandatory: x,y,t</p></td>
+      </tr>
+      <tr>
+        <td width="148"><p><strong>trajectory</strong></p></td>
+        <td width="94"><p>data(i,o)</p></td>
+        <td width="83" valign="top"><p><span lang="it" xml:lang="it">meta(i)</span></p></td>
+        <td width="195"><p><span lang="it" xml:lang="it">x(i,o) y(i,o) z(i,o) t(i,o)</span></p></td>
+        <td width="316" valign="top"><p>mandatory: x,y,t</p></td>
+      </tr>
+      <tr>
+        <td width="148"><p><strong>profile</strong></p></td>
+        <td width="94"><p>data(i,o)</p></td>
+        <td width="83" valign="top"><p>meta(i)</p></td>
+        <td width="195"><p>x(i) y(i) z(i,o) t(i)</p></td>
+        <td width="316" valign="top"><p>mandatory: x,y,z,t</p></td>
+      </tr>
+      <tr>
+        <td width="148"><p><strong>timeSeriesProfile</strong></p></td>
+        <td width="94"><p>data(i,p,o)</p></td>
+        <td width="83" valign="top"><p><span lang="it" xml:lang="it">meta(i)</span></p></td>
+        <td width="195"><p><span lang="it" xml:lang="it">x(i) y(i) z(i,p) t(i,p,o)</span></p></td>
+        <td width="316" valign="top"><p>mandatory: x,y,z,t</p></td>
+      </tr>
+      <tr>
+        <td width="148"><p><strong>trajectoryProfile</strong></p></td>
+        <td width="94"><p>data(i,p,o)</p></td>
+        <td width="83" valign="top"><p><span lang="it" xml:lang="it">meta(i)</span></p></td>
+        <td width="195"><p><span lang="it" xml:lang="it">x(i,o) y(i,o) z(i,p,o) t(i,o)</span></p></td>
+        <td width="316" valign="top"><p>mandatory: x,y,z,t</p></td>
+      </tr>
+    </tbody>
+  </table>
+<p align="center">&nbsp;</p>
+<table border="1" cellpadding="0" width="848">
+  <tbody>
+    <tr>
+      <td width="148"><p><strong>featureType</strong></p></td>
+      <td width="94"><p><strong>Data<br />
+        variables</strong></p></td>
+      <td width="83" valign="top"><p><strong>Instance<br />
+        variables</strong></p></td>
+      <td width="195"><p><strong>Space-time coordinates</strong></p></td>
+      <td width="316" valign="top"><p><strong>CF Mandatory coordinates</strong></p></td>
+    </tr>
+    <tr>
+      <td width="148"><p><strong>point</strong></p></td>
+      <td width="94"><p>data(i)</p></td>
+      <td width="83" valign="top"><p>meta(i)</p></td>
+      <td width="195"><p>x(i) y(i) z(i)  t(i)</p></td>
+      <td width="316" valign="top"><p>mandatory: at least one coordinate</p></td>
+    </tr>
+    <tr>
+      <td width="148"><p><strong>timeSeries</strong></p></td>
+      <td width="94"><p>data(i,o)</p></td>
+      <td width="83" valign="top"><p>meta(i)</p></td>
+      <td width="195"><p>x(i) y(i) z(i) t(i,o)</p></td>
+      <td width="316" valign="top"><p>mandatory: t coordinate</p></td>
+    </tr>
+    <tr>
+      <td width="148"><p><strong>trajectory</strong></p></td>
+      <td width="94"><p>data(i,o)</p></td>
+      <td width="83" valign="top"><p><span lang="it" xml:lang="it">meta(i)</span></p></td>
+      <td width="195"><p><span lang="it" xml:lang="it">x(i,o) y(i,o) z(i,o) t(i,o)</span></p></td>
+      <td width="316" valign="top"><p>mandatory: at least two spatial coordinates</p></td>
+    </tr>
+    <tr>
+      <td width="148"><p><strong>profile</strong></p></td>
+      <td width="94"><p>data(i,o)</p></td>
+      <td width="83" valign="top"><p>meta(i)</p></td>
+      <td width="195"><p>x(i) y(i) z(i,o) t(i)</p></td>
+      <td width="316" valign="top"><p>mandatory: z coordinate</p></td>
+    </tr>
+    <tr>
+      <td width="148"><p><strong>timeSeriesProfile</strong></p></td>
+      <td width="94"><p>data(i,p,o)</p></td>
+      <td width="83" valign="top"><p><span lang="it" xml:lang="it">meta(i)</span></p></td>
+      <td width="195"><p><span lang="it" xml:lang="it">x(i) y(i) z(i,p) t(i,p,o)</span></p></td>
+      <td width="316" valign="top"><p>mandatory: z and t coordinates</p></td>
+    </tr>
+    <tr>
+      <td width="148"><p><strong>trajectoryProfile</strong></p></td>
+      <td width="94"><p>data(i,p,o)</p></td>
+      <td width="83" valign="top"><p><span lang="it" xml:lang="it">meta(i)</span></p></td>
+      <td width="195"><p><span lang="it" xml:lang="it">x(i,o) y(i,o) z(i,p,o) t(i,o)</span></p></td>
+      <td width="316" valign="top"><p>mandatory: x, y and z coordinates</p></td>
+    </tr>
+  </tbody>
+</table>
+<p>&nbsp;</p>
+<p> B. The global attribute <strong>featureType</strong> is required.</p>
+<h3>9.1.2 <span lang="en" xml:lang="en">Representations</span></h3>
+<p wrap="">For compatibility with earlier versions:</p>
+<ul>
+  <li><strong>ragged_row_count</strong> is an alias for <strong>sample_dimension</strong> standard name</li>
+  <li> <strong>ragged_row_index</strong> is an alias for <strong>feature_dimension</strong> standard name</li>
+  <li>all attributes can optionally be prefixed by &quot;CF:&quot;</li>
+</ul>
+<p>&nbsp;</p>
+</body>
+</html>

@@ -218,6 +218,27 @@ public class DatasetHandler {
     return ncfile;
   }
 
+  // return null means request has been handled, and calling routine should exit without further processing
+  static public InvDatasetFeatureCollection getFeatureCollection(HttpServletRequest req, HttpServletResponse res) throws IOException {
+    String reqPath = req.getPathInfo();
+    if (reqPath == null)
+      return null;
+
+    if (reqPath.startsWith("/"))
+      reqPath = reqPath.substring(1);
+
+    // see if its under resource control
+    if (!resourceControlOk( req, res, reqPath))
+      return null;
+
+    // look for a feature collection dataset
+    DataRootHandler.DataRootMatch match = DataRootHandler.getInstance().findDataRootMatch(reqPath);
+    if ((match != null) && (match.dataRoot.featCollection != null)) {
+      return match.dataRoot.featCollection;
+    }
+
+    return null;
+  }
 
   // used only for the case of Dataset (not DatasetScan) that have an NcML element inside.
   // This makes the NcML dataset the target of the server.

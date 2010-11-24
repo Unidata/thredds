@@ -33,6 +33,9 @@
 package thredds.inventory;
 
 import net.jcip.annotations.Immutable;
+import thredds.inventory.filter.Composite;
+
+import java.util.List;
 
 /**
  * Configuration object for a collection of managed files.
@@ -45,7 +48,6 @@ public class MCollection {
   private final String dirName;
   private final boolean wantSubdirs;
   private final MFileFilter ff;
-  //private final DateExtractor dateExtractor;
   private final Object auxInfo;
 
   /**
@@ -53,8 +55,23 @@ public class MCollection {
    * @param name name of collection
    * @param dirName top directory name
    * @param wantSubdirs if want subdirectories
+   * @param filters optional list of MFileFilter (may be null) - applies only to non-directories
+   * @param auxInfo optional info added to each MFile
+   */
+  public MCollection(String name, String dirName, boolean wantSubdirs, List<MFileFilter> filters, Object auxInfo) {
+    this.name = name;
+    this.dirName = dirName;
+    this.wantSubdirs = wantSubdirs;
+    ff = (filters == null || filters.size() == 0) ? null : ((filters.size() == 1) ? filters.get(0) : new Composite(filters));
+    this.auxInfo = auxInfo;
+  }
+
+  /**
+   * Constructor
+   * @param name name of collection
+   * @param dirName top directory name
+   * @param wantSubdirs if want subdirectories
    * @param ff optional FilenameFilter (may be null) - applies only to non-directories
-   // * @param dateExtractor optional DateExtractor (may be null) - applies only to non-directories
    * @param auxInfo optional info added to each MFile
    */
   public MCollection(String name, String dirName, boolean wantSubdirs, MFileFilter ff, Object auxInfo) {
@@ -62,7 +79,6 @@ public class MCollection {
     this.dirName = dirName;
     this.wantSubdirs = wantSubdirs;
     this.ff = ff;
-    //this.dateExtractor = dateExtractor;
     this.auxInfo = auxInfo;
   }
 

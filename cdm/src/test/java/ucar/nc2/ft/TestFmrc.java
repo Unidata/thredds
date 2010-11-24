@@ -104,7 +104,7 @@ public class TestFmrc extends TestCase {
       // doOne(datadir + "rtofs/rtofs.ncml", -1, -1, -1, -1, "Temperature", -1, -1, -1);     //*/
 
     } finally {
-      MetadataManager.closeAll();
+//      MetadataManager.closeAll();
     }
   }
 

@@ -167,6 +167,10 @@
     <filter-name>RequestQueryFilter</filter-name>
     <servlet-name>cdmRemote</servlet-name>
   </filter-mapping>
+  <filter-mapping>
+    <filter-name>RequestQueryFilter</filter-name>
+    <servlet-name>cdmrFeature</servlet-name>
+  </filter-mapping>
 
   <!--
   Filter:
@@ -380,9 +384,14 @@
     <load-on-startup>4</load-on-startup>
   </servlet>
 
-  <!-- Experimental - first implementation is pointFeature service -->
   <servlet>
     <servlet-name>cdmRemote</servlet-name>
+    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+    <load-on-startup>4</load-on-startup>
+  </servlet>
+
+  <servlet>
+    <servlet-name>cdmrFeature</servlet-name>
     <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
     <load-on-startup>4</load-on-startup>
   </servlet>
@@ -568,6 +577,11 @@
   <servlet-mapping>
     <servlet-name>cdmRemote</servlet-name>
     <url-pattern>/cdmremote/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>cdmrFeature</servlet-name>
+    <url-pattern>/cdmrfeature/*</url-pattern>
   </servlet-mapping>
 
   <servlet-mapping>

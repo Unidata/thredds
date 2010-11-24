@@ -34,7 +34,7 @@ package ucar.nc2.thredds;
 
 import ucar.nc2.*;
 import ucar.nc2.stream.CdmRemote;
-import ucar.nc2.stream.CdmRemoteFeatureDataset;
+import ucar.nc2.stream.CdmrFeatureDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.constants.FeatureType;
 
@@ -209,7 +209,7 @@ public class ThreddsDataFactory {
 
     // look for remote FeatureDataset
     if ((result.featureType != null) && result.featureType.isPointFeatureType()) {
-      InvAccess access = findAccessByServiceType(invDataset.getAccess(), ServiceType.CdmRemote);
+      InvAccess access = findAccessByServiceType(invDataset.getAccess(), ServiceType.CdmrFeature);
       if (access != null)
         return openFeatureDataset(result.featureType, access, task, result);
     }
@@ -296,8 +296,8 @@ public class ThreddsDataFactory {
       return result;
     }
 
-    if (access.getService().getServiceType() == ServiceType.CdmRemote) {
-      result.featureDataset = CdmRemoteFeatureDataset.factory(wantFeatureType, access.getStandardUrlName());
+    if (access.getService().getServiceType() == ServiceType.CdmrFeature) {
+      result.featureDataset = CdmrFeatureDataset.factory(wantFeatureType, access.getStandardUrlName());
 
     } else {
 

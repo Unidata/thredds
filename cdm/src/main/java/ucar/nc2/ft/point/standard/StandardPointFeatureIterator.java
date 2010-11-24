@@ -85,6 +85,7 @@ public class StandardPointFeatureIterator extends PointIteratorFromStructureData
     public StandardPointFeature(Cursor cursor, DateUnit timeUnit, double obsTime) {
       super( timeUnit);
       this.cursor = cursor;
+      cursor.currentIndex = 1; // LOOK ????
 
       this.obsTime = obsTime;
       nomTime = ft.getNomTime( this.cursor);

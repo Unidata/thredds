@@ -39,6 +39,7 @@ import thredds.cataloggen.inserter.SimpleLatestProxyDsHandler;
 import thredds.crawlabledataset.*;
 import thredds.crawlabledataset.sorter.LexigraphicByNameSorter;
 import thredds.crawlabledataset.filter.*;
+import thredds.inventory.DatasetCollectionManager;
 
 import java.net.URI;
 import java.io.IOException;

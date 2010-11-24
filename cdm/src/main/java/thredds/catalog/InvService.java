@@ -56,7 +56,7 @@ public class InvService {
   private StringBuilder log = new StringBuilder();
 
   /**
-   * Constructor, use when serviceTypeName alreaddy converted to ServiceType.
+   * Constructor, use when serviceTypeName already converted to ServiceType.
    *
    * @param name            : name to show to the user
    * @param serviceTypeName : ServiceType

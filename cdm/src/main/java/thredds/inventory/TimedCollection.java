@@ -29,43 +29,43 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package ucar.nc2.ft.point.collection;
+
+package thredds.inventory;
 
 import ucar.nc2.units.DateRange;
-import ucar.nc2.units.DateFromString;
 
-import java.util.*;
 import java.io.IOException;
-
-import thredds.inventory.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Formatter;
+import java.util.List;
 
 /**
- * Manages feature dataset collections. Do not cache, just recreate each time. Not updating the list of datasets.
+ * Manage collections of files that we can assign date ranges to.
+ * The dataset location can be passed to FeatureDatasetFactoryManager.open().
+ * A wrap of DatasetCollectionManager.
  *
  * @author caron
- * @since May 20, 2009
+ * @since May 19, 2009
  */
 
-
-public class TimedCollectionImpl implements TimedCollection {
+public class TimedCollection {
   private static final boolean debug = false;
-  
-  private CollectionSpecParser sp;
+
+  private DatasetCollectionManager manager;
   private List<TimedCollection.Dataset> datasets;
   private DateRange dateRange;
 
   /**
-   * * The idea is that you can cut and paste an actual file path, then edit it:
-   * spec="/data/ldm/pub/decoded/netcdf/surface/metar/** /Surface_METAR_#yyyyMMdd_HHmm#.nc
+   * Manage collections of files that we can assign date ranges to
    *
-   * @param collectionSpec the collection spec
+   * @param manager the collection manager
    * @param errlog         put error messsages here
    * @see CollectionSpecParser
    * @throws java.io.IOException on read error
    */
-  public TimedCollectionImpl(String collectionSpec, Formatter errlog) throws IOException {
-    sp = new CollectionSpecParser(collectionSpec, errlog);
-    CollectionManager manager = new DatasetCollectionManager(sp, errlog);
+  public TimedCollection(DatasetCollectionManager manager, Formatter errlog) throws IOException {
+    this.manager = manager;
 
     // get the inventory, sorted by path
     manager.scan(null);
@@ -74,12 +74,12 @@ public class TimedCollectionImpl implements TimedCollection {
     for (MFile f : fileList)
       datasets.add(new Dataset(f));
 
-    if (sp.getDateFormatMark() != null) {
+    if (manager.hasDateExtractor()) {
       for (int i = 0; i < datasets.size() - 1; i++) {
         Dataset d1 = (Dataset) datasets.get(i);
         Dataset d2 = (Dataset) datasets.get(i + 1);
         d1.setDateRange(new DateRange(d1.start, d2.start));
-        if (i == datasets.size() - 2)
+        if (i == datasets.size() - 2) // last one
           d2.setDateRange(new DateRange(d2.start, d1.getDateRange().getDuration()));
       }
       if (datasets.size() > 0) {
@@ -90,7 +90,7 @@ public class TimedCollectionImpl implements TimedCollection {
     }
 
     if (debug) {
-      System.out.printf("Datasets in collection for spec=%s%n", sp);
+      System.out.printf("Datasets in collection=%s%n", manager.getCollectionName());
       for (TimedCollection.Dataset d: datasets) {
         System.out.printf(" %s %n",d);
       }
@@ -99,7 +99,29 @@ public class TimedCollectionImpl implements TimedCollection {
 
   }
 
-  private TimedCollectionImpl(TimedCollectionImpl from, DateRange want) {
+  public void update() {
+    List<MFile> fileList = manager.getFiles();
+    datasets = new ArrayList<TimedCollection.Dataset>(fileList.size());
+    for (MFile f : fileList)
+      datasets.add(new Dataset(f));
+
+    if (manager.hasDateExtractor()) {
+      for (int i = 0; i < datasets.size() - 1; i++) {
+        Dataset d1 = (Dataset) datasets.get(i);
+        Dataset d2 = (Dataset) datasets.get(i + 1);
+        d1.setDateRange(new DateRange(d1.start, d2.start));
+        if (i == datasets.size() - 2) // last one
+          d2.setDateRange(new DateRange(d2.start, d1.getDateRange().getDuration()));
+      }
+      if (datasets.size() > 0) {
+        Dataset first = (Dataset) datasets.get(0);
+        Dataset last = (Dataset) datasets.get(datasets.size() - 1);
+        dateRange = new DateRange(first.getDateRange().getStart().getDate(), last.getDateRange().getEnd().getDate());
+      }
+    }
+  }
+
+  private TimedCollection(TimedCollection from, DateRange want) {
     datasets = new ArrayList<TimedCollection.Dataset>(from.datasets.size());
     for (TimedCollection.Dataset d : from.datasets)
       if (want.intersects(d.getDateRange()))
@@ -107,7 +129,8 @@ public class TimedCollectionImpl implements TimedCollection {
   }
 
   public TimedCollection.Dataset getPrototype() {
-    return (datasets.size() > 0 ) ? datasets.get(0) : null;
+    int idx = manager.getProtoIndex();
+    return datasets.get(idx);
   }
 
   public List<TimedCollection.Dataset> getDatasets() {
@@ -115,7 +138,7 @@ public class TimedCollectionImpl implements TimedCollection {
   }
 
   public TimedCollection subset(DateRange range) {
-    return new TimedCollectionImpl(this, range);
+    return new TimedCollection(this, range);
   }
 
   public DateRange getDateRange() {
@@ -132,15 +155,14 @@ public class TimedCollectionImpl implements TimedCollection {
     return f.toString();
   }
 
-  private class Dataset implements TimedCollection.Dataset {
+  public class Dataset {
     String location;
     DateRange dateRange;
     Date start;
 
     Dataset(MFile f) {
       this.location = f.getPath();
-      if (sp.getDateFormatMark() != null)
-        start = DateFromString.getDateUsingDemarkatedCount(f.getName(), sp.getDateFormatMark(), '#');
+      this.start = manager.extractRunDate(f);
     }
 
     public String getLocation() {
@@ -164,8 +186,11 @@ public class TimedCollectionImpl implements TimedCollection {
     }
   }
 
-  public static void doit(String spec, Formatter errlog) throws IOException {
-    TimedCollectionImpl specp = new TimedCollectionImpl(spec, errlog);
+  //////////////////////////////////////////////////////////////////////////
+  // debugging
+  private static void doit(String spec, Formatter errlog) throws IOException {
+    DatasetCollectionManager dcm = DatasetCollectionManager.open(spec, null, errlog);
+    TimedCollection specp = new TimedCollection(dcm, errlog);
     System.out.printf("spec= %s%n%s%n", spec, specp);
     String err = errlog.toString();
     if (err.length() > 0)
@@ -180,3 +205,4 @@ public class TimedCollectionImpl implements TimedCollection {
   }
 
 }
+

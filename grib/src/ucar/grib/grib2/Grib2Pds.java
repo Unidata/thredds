@@ -812,11 +812,11 @@ abstract public class Grib2Pds extends GribPds {
    */
   static private class Grib2Pds11 extends Grib2Pds1 implements PdsInterval {
     private long endInterval; // Date msecs
-    private int ft; // forecasst time in units of time intv
+    private int ft; // forecast time in units of time intv
 
     Grib2Pds11(byte[] input, long refTime, Calendar cal) throws IOException {
       super(input, refTime, cal);
-      endInterval = calcTime(refTime, cal, 37);
+      endInterval = calcTime(refTime, cal, 38);
       ft = makeForecastTime(refTime, endInterval, getTimeUnit());
     }
 

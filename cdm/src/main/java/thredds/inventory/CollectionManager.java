@@ -78,6 +78,8 @@ public interface CollectionManager {
    */
   public boolean rescan() throws IOException;
 
+  public void resetProto();  
+
   /**
    * Get how often to rescan
    *
@@ -91,6 +93,13 @@ public interface CollectionManager {
    * @return msecs since 1970
    */
   public long getLastScanned();
+
+  /**
+   * Get the last time files changed
+   *
+   * @return msecs since 1970
+   */
+  public long getLastChanged();
 
   /**
    * Get common root of all MFiles in the collection - may be null

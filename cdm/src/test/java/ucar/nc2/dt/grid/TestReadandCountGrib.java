@@ -73,7 +73,8 @@ public class TestReadandCountGrib extends TestCase {
     doOne("grib2/","LMPEF_CLM_050518_1200.grb", 1, 1, 3, 0);
     doOne("grib2/","AVOR_000.grb", 1, 2, 4, 1); //
     doOne("grib2/","AVN.5deg.wmo", 117, 17, 18, 14);  // */
-    //TestReadandCount.doOne(TestAll.testdataDir+"ncml/nc/narr/", "narr-a_221_20070411_0600_000.grb", 48, 13, 15, 12);
+    
+    doOne("grib2/","gribdecoder-20101101.enspost.t00z.prcp.grib", 2, 3, 5, 0); // ensemble
   }
 
   private void doOne(String dir, String filename, int ngrids, int ncoordSys, int ncoordAxes, int nVertCooordAxes) throws Exception {
@@ -82,7 +83,7 @@ public class TestReadandCountGrib extends TestCase {
   }
 
   public void testProblem() throws Exception {
-    doOne("grib2/","AVOR_000.grb", 1, 2, 4, 1); 
+    doOne("grib2/","gribdecoder-20101101.enspost.t00z.prcp.grib", 2, 3, 5, 0); // ensemble
   }
 
    public static void main( String arg[]) throws Exception {

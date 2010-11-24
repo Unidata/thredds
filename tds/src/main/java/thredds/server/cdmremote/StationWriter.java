@@ -70,7 +70,7 @@ public class StationWriter {
 
   private FeatureDatasetPoint fd;
   private StationTimeSeriesFeatureCollection sfc;
-  private PointQueryBean qb;
+  private CdmRemoteQueryBean qb;
 
   private Date start, end;
 
@@ -79,7 +79,7 @@ public class StationWriter {
   private PointFeatureCollection pfc;
   private ucar.nc2.util.DiskCache2 diskCache;
 
-  public StationWriter(FeatureDatasetPoint fd, StationTimeSeriesFeatureCollection sfc, PointQueryBean qb, ucar.nc2.util.DiskCache2 diskCache) throws IOException {
+  public StationWriter(FeatureDatasetPoint fd, StationTimeSeriesFeatureCollection sfc, CdmRemoteQueryBean qb, ucar.nc2.util.DiskCache2 diskCache) throws IOException {
     this.fd = fd;
     this.sfc = sfc;
     this.qb = qb;
@@ -92,7 +92,7 @@ public class StationWriter {
   boolean validate(HttpServletResponse res) throws IOException {
 
     // verify TemporalSelection intersects
-    if (qb.getTemporalSelection() == PointQueryBean.TemporalSelection.range) {
+    if (qb.getTemporalSelection() == CdmRemoteQueryBean.TemporalSelection.range) {
       wantRange = qb.getDateRange();
       DateRange haveRange = fd.getDateRange();
       if (!haveRange.intersects(wantRange)) {
@@ -117,7 +117,7 @@ public class StationWriter {
     }
 
     // verify SpatialSelection has some stations
-    if (qb.getSpatialSelection() == PointQueryBean.SpatialSelection.bb) {
+    if (qb.getSpatialSelection() == CdmRemoteQueryBean.SpatialSelection.bb) {
       LatLonRect bb = sfc.getBoundingBox();
       if ((bb != null) && (bb.intersect(qb.getLatLonRect()) == null)) {
         res.sendError(HttpServletResponse.SC_BAD_REQUEST, "ERROR: Bounding Box contains no stations; bb= " + qb.getLatLonRect());
@@ -126,7 +126,7 @@ public class StationWriter {
       //System.out.printf("sfc.flatten0 wantRange= %s on %s %n", wantRange, fd.getLocation());
       pfc = sfc.flatten(qb.getLatLonRect(), wantRange);
 
-    } else if (qb.getSpatialSelection() == PointQueryBean.SpatialSelection.stns) {
+    } else if (qb.getSpatialSelection() == CdmRemoteQueryBean.SpatialSelection.stns) {
       if (!contains(sfc, qb.getStnNames())) {
         res.sendError(HttpServletResponse.SC_BAD_REQUEST, "ERROR: No valid stations specified = " + qb.getStn());
         return false;
@@ -165,15 +165,15 @@ public class StationWriter {
     //counter.limit = 150;
 
     // which writer, based on desired response
-    PointQueryBean.ResponseType resType = qb.getResponseType();
+    CdmRemoteQueryBean.ResponseType resType = qb.getResponseType();
     Writer w;
-    if (resType == PointQueryBean.ResponseType.xml) {
+    if (resType == CdmRemoteQueryBean.ResponseType.xml) {
       w = new WriterXML(res.getWriter());
-    } else if (resType == PointQueryBean.ResponseType.csv) {
+    } else if (resType == CdmRemoteQueryBean.ResponseType.csv) {
       w = new WriterCSV(res.getWriter());
-    } else if (resType == PointQueryBean.ResponseType.netcdf) {
+    } else if (resType == CdmRemoteQueryBean.ResponseType.netcdf) {
       w = new WriterNetcdf();
-    } else if (resType == PointQueryBean.ResponseType.ncstream) {
+    } else if (resType == CdmRemoteQueryBean.ResponseType.ncstream) {
       w = new WriterNcstream(res.getOutputStream());
     } else {
       log.error("Unknown result type = " + resType);
@@ -634,10 +634,10 @@ public class StationWriter {
       cfWriter = new WriterCFStationDataset(netcdfResult.getAbsolutePath(), "Extracted data from TDS using CDM remote subsetting");
 
       // verify SpatialSelection has some stations
-      if (qb.getSpatialSelection() == PointQueryBean.SpatialSelection.bb) {
+      if (qb.getSpatialSelection() == CdmRemoteQueryBean.SpatialSelection.bb) {
         wantStations = sfc.getStations(qb.getLatLonRect());
 
-      } else if (qb.getSpatialSelection() == PointQueryBean.SpatialSelection.stns) {
+      } else if (qb.getSpatialSelection() == CdmRemoteQueryBean.SpatialSelection.stns) {
         List<String> stnNames = Arrays.asList(qb.getStnNames());
         wantStations = sfc.getStations(stnNames);
 

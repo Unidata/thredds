@@ -33,7 +33,6 @@
 package ucar.nc2.ft.fmrc;
 
 import net.jcip.annotations.ThreadSafe;
-import org.jdom.Element;
 import thredds.inventory.FeatureCollectionConfig;
 import ucar.nc2.*;
 import ucar.nc2.constants.CF;
@@ -72,7 +71,7 @@ class FmrcDataset {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(FmrcDataset.class);
   static private final boolean debugEnhance = false, debugRead = false;
 
-  private final FeatureCollectionConfig.Config config;
+  private final FeatureCollectionConfig config;
   // private final Element ncmlOuter, ncmlInner;
 
   //private List<String> protoList; // the list of datasets in the proto that have proxy reader, so these need to exist. not implemented yet
@@ -90,7 +89,7 @@ class FmrcDataset {
   private State state;
   private Object lock= new Object();
 
-  FmrcDataset(FeatureCollectionConfig.Config config) { // }, Element ncmlInner, Element ncmlOuter) {
+  FmrcDataset(FeatureCollectionConfig config) { // }, Element ncmlInner, Element ncmlOuter) {
     this.config = config;
     //this.ncmlInner = ncmlInner;
     //this.ncmlOuter = ncmlOuter;

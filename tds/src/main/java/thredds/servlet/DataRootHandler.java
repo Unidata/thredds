@@ -38,7 +38,7 @@ import thredds.crawlabledataset.CrawlableDataset;
 import thredds.crawlabledataset.CrawlableDatasetFile;
 import thredds.crawlabledataset.CrawlableDatasetDods;
 import thredds.cataloggen.ProxyDatasetHandler;
-import thredds.inventory.FeatureCollectionConfig;
+import thredds.inventory.CollectionUpdater;
 import thredds.server.config.TdsContext;
 import thredds.util.PathAliasReplacement;
 import thredds.util.StartsWithPathAliasReplacement;
@@ -50,7 +50,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.ServletException;
-import java.text.ParseException;
 import java.util.*;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -76,7 +75,6 @@ import ucar.unidata.util.StringUtil;
 public class DataRootHandler {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DataRootHandler.class);
   static private org.slf4j.Logger logCatalogInit = org.slf4j.LoggerFactory.getLogger(DataRootHandler.class.getName() + ".catalogInit");
-  static private org.slf4j.Logger logScan = org.slf4j.LoggerFactory.getLogger(DataRootHandler.class.getName() + ".fcScan");
 
   // dont need to Guard/synchronize singleton, since creation and publication is only done by a servlet init() and therefore only in one thread (per ClassLoader).
   static private DataRootHandler singleton = null;
@@ -134,7 +132,7 @@ public class DataRootHandler {
   public DataRootHandler(TdsContext tdsContext) {
     this.tdsContext = tdsContext;
     this.staticCatalogHash = new HashMap<String, InvCatalogImpl>();
-    initScheduler();
+    //initScheduler();
   }
 
   private PathAliasReplacement contentPathAliasReplacement = null;
@@ -154,6 +152,7 @@ public class DataRootHandler {
 
   /////////////////////
   // could use Spring DI
+  /*
   private org.quartz.Scheduler scheduler = null;
   public void initScheduler() {
     SchedulerFactory schedFact = new org.quartz.impl.StdSchedulerFactory();
@@ -171,9 +170,9 @@ public class DataRootHandler {
   private static final String FC_NAME= "fc";
   private void scheduleTasks(InvDatasetFeatureCollection invFeatCollection) {
     if (scheduler == null) return;
-    FeatureCollectionConfig.Config config = invFeatCollection.getConfig();
+    FeatureCollectionConfig config = invFeatCollection.getConfig();
 
-    JobDetail updateJob = new JobDetail(config.spec, "FMRC", ScanFmrcJob.class);
+    JobDetail updateJob = new JobDetail(config.spec, "FeatureCollection", ScanFmrcJob.class);
     org.quartz.JobDataMap map = new org.quartz.JobDataMap();
     map.put(FC_NAME, invFeatCollection);
     updateJob.setJobDataMap(map);
@@ -213,7 +212,7 @@ public class DataRootHandler {
 
    FeatureCollectionConfig.ProtoConfig pconfig = config.protoConfig;
     if (pconfig.change != null) {
-      JobDetail protoJob = new JobDetail(config.spec, "FMRCproto", RereadProtoJob.class);
+      JobDetail protoJob = new JobDetail(config.spec, "fcProto", RereadProtoJob.class);
       org.quartz.JobDataMap pmap = new org.quartz.JobDataMap();
       pmap.put(FC_NAME, invFeatCollection);
       protoJob.setJobDataMap(pmap);
@@ -269,7 +268,7 @@ public class DataRootHandler {
         logScan.error("RereadProtoJob failed", e);
       }
     }
-  }
+  } */
 
   //////////////////////////////////////////////
 
@@ -583,9 +582,9 @@ public class DataRootHandler {
         addRoot(fmrc);
 
       } else if (invDataset instanceof InvDatasetFeatureCollection) {
-        InvDatasetFeatureCollection fmrc = (InvDatasetFeatureCollection) invDataset;
-        addRoot(fmrc);
-        scheduleTasks(fmrc);
+        InvDatasetFeatureCollection fc = (InvDatasetFeatureCollection) invDataset;
+        addRoot(fc);
+        //scheduleTasks(fc);
 
         // not a DatasetScan or InvDatasetFmrc
       } else if (invDataset.getNcmlElement() != null) {
@@ -714,7 +713,7 @@ public class DataRootHandler {
     return true;
   }
 
-  public List<InvDatasetFeatureCollection> getFmrc() {
+  public List<InvDatasetFeatureCollection> getFeatureCollections() {
     List<InvDatasetFeatureCollection> result = new ArrayList<InvDatasetFeatureCollection>();
     Iterator iter =  pathMatcher.iterator();
     while (iter.hasNext()) {
@@ -725,7 +724,7 @@ public class DataRootHandler {
     return result;
   }
 
-  public InvDatasetFeatureCollection getFmrc(String want) {
+  public InvDatasetFeatureCollection getFeatureCollection(String want) {
     Iterator iter =  pathMatcher.iterator();
     while (iter.hasNext()) {
       DataRoot droot = (DataRoot) iter.next();
@@ -738,24 +737,24 @@ public class DataRootHandler {
 
 
   // Only called by synchronized methods
-  private boolean addRoot(InvDatasetFeatureCollection fmrc) {
+  private boolean addRoot(InvDatasetFeatureCollection fc) {
     // check for duplicates
-    String path = fmrc.getPath();
+    String path = fc.getPath();
 
     if (path == null) {
-      logCatalogInit.error(fmrc.getFullName() + " missing a path attribute.");
+      logCatalogInit.error(fc.getFullName() + " missing a path attribute.");
       return false;
     }
 
     DataRoot droot = (DataRoot) pathMatcher.get(path);
     if (droot != null) {
       logCatalogInit.error("**Error: already have dataRoot =<" + path + ">  mapped to directory= <" + droot.dirLocation + ">" +
-              " wanted to use by FMRC Dataset =<" + fmrc.getFullName() + ">");
+              " wanted to use by FeatureCollection Dataset =<" + fc.getFullName() + ">");
       return false;
     }
 
     // add it
-    droot = new DataRoot(fmrc);
+    droot = new DataRoot(fc);
 
     if (droot.dirLocation != null) {
       File file = new File(droot.dirLocation);
@@ -767,7 +766,7 @@ public class DataRootHandler {
 
     pathMatcher.put(path, droot);
 
-    logCatalogInit.debug(" added rootPath=<" + path + ">  for fmrc= <" + fmrc.getFullName() + ">");
+    logCatalogInit.debug(" added rootPath=<" + path + ">  for feature collection= <" + fc.getFullName() + ">");
     return true;
   }
 
@@ -1890,6 +1889,9 @@ public class DataRootHandler {
 
     act = new DebugHandler.Action("sched", "Show scheduler") {
       public void doAction(DebugHandler.Event e) {
+        org.quartz.Scheduler scheduler = CollectionUpdater.INSTANCE.getScheduler();
+        if (scheduler == null) return;
+
         try {
            e.pw.println(scheduler.getMetaData());
           String[] groups = scheduler.getJobGroupNames();

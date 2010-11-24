@@ -47,6 +47,7 @@ import thredds.inventory.MFile;
  * Each collection is a "database".
  * Each database has a set of key/value pairs.
  * default root dir is ${user.home}/.unidata/bdb
+ * default TDS uses {tomcat_home}/content/thredds/cache/collection
  *
  * @author caron
  * @since Aug 20, 2008
@@ -78,7 +79,9 @@ public class MetadataManager {
     root = dir;
   }
 
-  static private void setup() throws DatabaseException {
+  static private synchronized void setup() throws DatabaseException {
+    if (myEnv != null) return; // someone else did it
+
     EnvironmentConfig myEnvConfig = new EnvironmentConfig();
     myEnvConfig.setReadOnly(false);
     myEnvConfig.setAllowCreate(true);
@@ -95,13 +98,13 @@ public class MetadataManager {
 
     } catch (com.sleepycat.je.EnvironmentLockedException e) {
       // another process has it open: try read-only
+      logger.warn("MetadataManager failed to open directory, try read-only");
       readOnly = true;
       myEnvConfig.setReadOnly(true);
       myEnvConfig.setAllowCreate(false);
       myEnv = new Environment(dir, myEnvConfig);
     }
     if (debug) System.out.printf("MetadataManager: open bdb at root %s readOnly = %s%n", root, readOnly);
-
     /* primary
     DatabaseConfig dbConfig = new DatabaseConfig();
     dbConfig.setAllowCreate(true);
@@ -123,11 +126,13 @@ public class MetadataManager {
   static public void closeAll() {
     if (debug) System.out.println("close MetadataManager");
 
-    for (MetadataManager mm : openDatabases) {
+    Iterator<MetadataManager> iter = openDatabases.iterator();
+    while (iter.hasNext()) {
+      MetadataManager mm = iter.next();
       if (debug) System.out.println("  close database " + mm.collectionName);
       mm.close();
     }
-   openDatabases = new ArrayList<MetadataManager>();
+    openDatabases = new ArrayList<MetadataManager>(); // empty
 
     if (myEnv != null) {
       try {

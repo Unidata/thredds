@@ -36,8 +36,8 @@
     </layout>
   </appender>
 
-  <!-- keep track of FMRC messages in a seperate file. -->
-  <appender name="fcScan" class="org.apache.log4j.RollingFileAppender">
+  <!-- keep track of feature collection scanning messages in a seperate file. -->
+  <appender name="fcScan" class="org.apache.log4j.FileAppender">
     <param name="File" value="${tds.log.dir}/featureCollectionScan.log"/>
     <param name="MaxFileSize" value="10MB"/>
     <param name="MaxBackupIndex" value="10"/>

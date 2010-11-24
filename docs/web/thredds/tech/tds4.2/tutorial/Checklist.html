@@ -22,7 +22,7 @@ dl {margin: 10px 5px 5px 15px;)
 </ol>
 <h2>Tomcat Install</h2>
 <ol>
-  <li>Create a user named <em>tomcat</em>, who does not have root privileges. Do all your work as that user.</li>
+  <li>Create a user named <em>tomcat</em>, who does not have root privileges. <em>Do all your work as user tomcat.</em></li>
   <li>Download and install the latest version of Tomcat 6.</li>
   <li>In  $TOMCAT_HOME/bin
     <ol>
@@ -65,7 +65,7 @@ compressableMimeType=&quot;text/html,text/xml,text/plain,application/octet-strea
 <h2>TDS Install</h2>
 <ol>
   <li>Download the latest thredds.war file, and put it into $TOMCAT_HOME/webapps.</li>
-  <li>Start/restart Tomcat so that it has a chance to create initial files.</li>
+  <li>Start/restart Tomcat so that it has a chance to create initial files. <em>Make sure you run as  user tomcat.</em></li>
   <li>Modify $TOMCAT_HOME/content/thredds/catalog.xml for your site, as in this <a href="BasicConfig.html#exampleCatalog">example</a>.</li>
   <li>Modify  $TOMCAT_HOME/content/thredds/threddsConfig.xml for your site
     <ol>
@@ -76,6 +76,27 @@ compressableMimeType=&quot;text/html,text/xml,text/plain,application/octet-strea
   <li><a href="AdditionalSecurityConfiguration.html#restrictCrawlers">Restrict web crawlers</a></li>
 </ol>
 <p>&nbsp;</p>
+<hr width="100%" />
+<h2>Maintainence</h2>
+<h3>Monthly</h3>
+<ul>
+  <li>If you have access logging on (and you should), zip up the access logs: <strong>{tomcat_home}/logs/access.* </strong>and copy them to an archive.</li>
+  <li>Zip up the servlet logs: <strong>{tomcat_home}/content/thredds/logs/threddsServlet.* </strong>and copy them to an archive.</li>
+</ul>
+<h3>Every 3-6 months</h3>
+<ul>
+  <li>Upgrade to latest Java </li>
+  <li>Upgrade to latest Tomcat</li>
+  <li>Upgrade to latest stable TDS</li>
+  <li>Delete or save all the logs in  <strong>{tomcat_home}/logs/</strong></li>
+</ul>
+<hr width="100%" />
+<h2>TroubleShooting</h2>
+<ul>
+  <li>make sure all files are owned by tomcat.</li>
+  <li>examine  <strong>{tomcat_home}/logs/catalina.out</strong> for unexpected errors</li>
+  <li>use tdsMonitor to examine failed requests. report any 500 status errors to Unidata.</li>
+</ul>
 <hr width="100%" />
 <address>
 <img src="../../images/thread.png" alt="" width="57" height="51" />This document is maintained by Unidata.  Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.

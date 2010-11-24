@@ -32,7 +32,7 @@
  */
 package ucar.nc2.ui.event;
 
-import ucar.nc2.ui.util.ListenerManager;
+import ucar.nc2.util.ListenerManager;
 
 /** An ActionCoordinator helps manage the set of objects that send and receive
  *  an ActionValueEvent. It is assumed that each event generator is also

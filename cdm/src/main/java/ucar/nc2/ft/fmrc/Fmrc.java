@@ -91,7 +91,7 @@ public class Fmrc {
     return new Fmrc(collection, errlog);
   }
 
-  public static Fmrc open(FeatureCollectionConfig.Config config, Formatter errlog) throws IOException {
+  public static Fmrc open(FeatureCollectionConfig config, Formatter errlog) throws IOException {
     if (config.spec.startsWith(DatasetCollectionManager.CATALOG)) {
       DatasetCollectionFromCatalog manager = new DatasetCollectionFromCatalog(config.spec);
       return new Fmrc(manager);
@@ -101,8 +101,8 @@ public class Fmrc {
   }
 
   ////////////////////////////////////////////////////////////////////////
-  private final CollectionManager manager;
-  private final FeatureCollectionConfig.Config config;
+  private final DatasetCollectionManager manager;
+  private final FeatureCollectionConfig config;
 
   // should be final
   // private Element ncmlOuter, ncmlInner;
@@ -111,37 +111,28 @@ public class Fmrc {
   private Object lock = new Object();
   private FmrcDataset fmrcDataset;
   private volatile boolean forceProto = false;
-  private volatile Date lastInvChanged;
-  private volatile Date lastProtoChanged;
+  private volatile long lastInvChanged;
+  private volatile long lastProtoChanged;
 
-  private Fmrc(String collectionSpec, Formatter errlog) {
-    manager = new DatasetCollectionManager(collectionSpec, errlog);
-    config = new FeatureCollectionConfig.Config();
+  private Fmrc(String collectionSpec, Formatter errlog) throws IOException {
+    this.manager = DatasetCollectionManager.open(collectionSpec, null, errlog);
+    this.config = new FeatureCollectionConfig();
   }
 
-  private Fmrc(FeatureCollectionConfig.Config config, Formatter errlog) {
-    DatasetCollectionManager dcm = new DatasetCollectionManager(config, errlog);
-    dcm.setRecheck(config.recheckAfter);
- 
-    this.manager = dcm;
+  private Fmrc(FeatureCollectionConfig config, Formatter errlog) {
+    this.manager = new DatasetCollectionManager(config, errlog);
     this.config = config;
   }
 
   // from AggregationFmrc
-  public Fmrc(CollectionManager manager) {
+  public Fmrc(DatasetCollectionManager manager) {
     this.manager = manager;
-    this.config = new FeatureCollectionConfig.Config();
+    this.config = new FeatureCollectionConfig();
   }
 
   public void setNcml(Element outerNcml, Element innerNcml) {
     config.protoConfig.outerNcml = outerNcml;
     config.innerNcml = innerNcml;
-  }
-
-  public double getOlderThanFilterInSecs() {
-    if (manager instanceof DatasetCollectionManager)
-      return ((DatasetCollectionManager)manager).getOlderThanFilterInSecs();
-    return -1;
   }
 
   public void close() {
@@ -164,7 +155,7 @@ public class Fmrc {
     forceProto = true;
   }
 
-  public void triggerRescan() throws IOException {
+  public void triggerRescan() {
     checkNeeded( true);
   }
 
@@ -222,17 +213,17 @@ public class Fmrc {
   }
 
   // true if things have changed since given time
-  public boolean checkInvState(Date lastInvChange) throws IOException {
+  public boolean checkInvState(long lastInvChange) throws IOException {
     checkNeeded(false);
-    return !this.lastInvChanged.before(lastInvChange);
+    return this.lastInvChanged > lastInvChange;
   }
   // true if things have changed since given time
-  public boolean checkProtoState(Date lastProtoChanged) throws IOException {
+  public boolean checkProtoState(long lastProtoChanged) throws IOException {
     checkNeeded(false);
-    return !this.lastProtoChanged.before(lastProtoChanged);
+    return this.lastProtoChanged > lastProtoChanged;
   }
 
-  private void checkNeeded(boolean force) throws IOException {
+  private void checkNeeded(boolean force) {
     synchronized (lock) {
       boolean forceProtoLocal = forceProto;
 
@@ -243,8 +234,8 @@ public class Fmrc {
           FmrcInv fmrcInv = makeFmrcInv(null);
           fmrcDataset.setInventory(fmrcInv, forceProtoLocal);
           if (forceProtoLocal) forceProto = false;
-          this.lastInvChanged = new Date();
-          this.lastProtoChanged = new Date();
+          this.lastInvChanged = System.currentTimeMillis();
+          this.lastProtoChanged = this.lastInvChanged;
           return;
         } catch (Throwable t) {
           logger.error(config.spec+": initial fmrcDataset creation failed", t);
@@ -254,18 +245,23 @@ public class Fmrc {
 
       if (!force && !manager.isRescanNeeded()) return;
       
-      if (!manager.rescan()) return;
+       try {
+         if (!manager.rescan()) return;
+       } catch (Throwable t) {
+        logger.error(config.spec+": rescan failed");
+        throw new RuntimeException(t);
+      }
 
       try {
         FmrcInv fmrcInv = makeFmrcInv(null);
         fmrcDataset.setInventory(fmrcInv, forceProtoLocal);
         if (logger.isInfoEnabled()) logger.info(config.spec+": make new Dataset, new proto = "+forceProtoLocal);
         if (forceProtoLocal) forceProto = false;
-        this.lastInvChanged = new Date();
-        if (forceProtoLocal) this.lastProtoChanged = new Date();
+        this.lastInvChanged = System.currentTimeMillis();
+        if (forceProtoLocal) this.lastProtoChanged = this.lastInvChanged;
 
       } catch (Throwable t) {
-        logger.error(config.spec+": rescan failed");
+        logger.error(config.spec+": makeFmrcInv failed");
         throw new RuntimeException(t);
       }
     }
@@ -313,7 +309,7 @@ public class Fmrc {
           logger.debug("Fmrc: "+config.spec+": fmr "+fmr.getRunDate()+" nfiles= "+fmr.getFiles().size());
       }
 
-      return new FmrcInv(manager.getCollectionName(), fmrList, config.fmrcConfig.regularize);
+      return new FmrcInv("fmrc:"+manager.getCollectionName(), fmrList, config.fmrcConfig.regularize);
 
     } catch (Throwable t) {
       logger.error("makeFmrcInv", t);

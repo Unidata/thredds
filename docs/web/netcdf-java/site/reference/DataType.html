@@ -8,7 +8,6 @@ pre {font-size: 9pt; padding: 10px; background-color: #E7E7E7; border: 1px solid
 code {font-size: 11pt;}
 dl {margin: 10px 5px 5px 15px;)
 .style1 {font-style: italic}
-.style1 {font-weight: bold}
 </style>
 </head>
 
@@ -22,7 +21,31 @@ dl {margin: 10px 5px 5px 15px;)
 <p>The one exception to this is <strong>Sequences</strong>, which musty be accessed through  <strong>Sequence.getStructureIterator()</strong> which returns <strong>StructureData</strong> objects. </p>
 <p>For Variables that are members of a Structure, data is accessed generally through the method</p>
 <pre>    <strong>Array data = StructureData</strong>.<strong>getArray( memberName);</strong></pre>
-<p>When a Variable has a variable length dimension, <strong>Variable.isVariableLength()</strong> is true and a <strong>ArrayObject</strong> with the appropriate element type is returned. Otherwise the Array is rectangular, and  the following is returned from  <strong>Variable.read()</strong> or <strong>StructureData</strong>.<strong>getArray</strong>():</p>
+<p>When a Variable has a variable length dimension, <strong>Variable.isVariableLength()</strong> is true and a <strong>ArrayObject</strong> with the appropriate element type is returned. You cannot subset on the variable length dimension, all of it is always read. For example:</p>
+<pre>CDL:
+  short levels(acqtime=10, *);
+
+Java:
+  Variable v = ncfile.findVariable(&quot;levels&quot;);
+  Array data = v.read();
+  NCdumpW.printArray(data, &quot;read()&quot;,  new PrintWriter( System.out), null);
+ 
+  // loop over outer dimension
+  while (data.hasNext()) {
+    Array as = (Array) data.next(); // inner variable length array of short
+    NCdumpW.printArray(as, &quot;&quot;,  new PrintWriter( System.out), null);
+  }
+  
+  // subset ok on outer dimension
+  data = v.read(&quot;0:9:2,:&quot;);
+  NCdumpW.printArray(data, &quot;read(0:9:2,:)&quot;,  new PrintWriter( System.out), null); // ok
+    
+  data = v.read(new Section().appendRange(0,9,2).appendRange(null));
+  NCdumpW.printArray(data, &quot;read(Section)&quot;,  new PrintWriter( System.out), null); // ok
+ </pre>
+ You cannot use the older style <strong>read(origin, shape)</strong> interface:
+<pre>  // fail<br />  int[] origin = new int[] {0, 0};<br />  int[] size = new int[] {3, -1};<br />  data = v.read(origin, size);</pre>
+ <p>Otherwise the Array is rectangular, and  the following is returned from <strong>Variable.read()</strong> or <strong>StructureData</strong>.<strong>getArray</strong>():</p>
 <table width="452" border="1">
   <tr>
     <th width="109" scope="col">DataType</th>

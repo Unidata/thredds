@@ -360,7 +360,7 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     }
     String collName = (specName != null) ? specName : name;
     Element innerNcml = dsElem.getChild( "netcdf", ncmlNS );
-    FeatureCollectionConfig.Config config = new FeatureCollectionConfig.Config(collName, spec, olderThan, recheckAfter, innerNcml);
+    FeatureCollectionConfig config = new FeatureCollectionConfig(collName, spec, olderThan, recheckAfter, innerNcml);
 
     // update element optional
     Element updateElem = dsElem.getChild( "update", defNS );
@@ -398,10 +398,22 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
         double off = Double.parseDouble(offs);
         config.fmrcConfig.addBestDataset(bestName, off);
       }
-
     }
 
-    InvDatasetFeatureCollection ds = new InvDatasetFeatureCollection( parent, name, path, featureType, config);
+    // fmrcConfig element optional
+    Element pointElem = dsElem.getChild( "pointConfig", defNS );
+    if (pointElem != null) {
+      String datasetTypes = pointElem.getAttributeValue("datasetTypes");
+      if (null != datasetTypes)
+        config.pointConfig.addDatasetType(datasetTypes);
+    }
+
+    FeatureType ft = FeatureType.getType(featureType);
+    InvDatasetFeatureCollection ds = InvDatasetFeatureCollection.factory( parent, name, path, ft, config);
+    if (ds == null) {
+      logger.error( "featureCollection "+name+" must have a valid featureType attribute, found "+featureType);
+      return null;
+    }
 
     // regular dataset elements
     readDatasetInfo( catalog, ds, dsElem, base);

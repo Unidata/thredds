@@ -53,12 +53,12 @@ import org.jdom.input.SAXBuilder;
 import org.apache.commons.httpclient.HttpMethod;
 
 /**
- * Factory for CdmRemoteFeatureDataset. GRID, POINT, STATION so far
+ * Factory for CdmrFeature protocol. GRID, POINT, STATION so far
  *
  * @author caron
  * @since May 19, 2009
  */
-public class CdmRemoteFeatureDataset {
+public class CdmrFeatureDataset {
   static private boolean debug = false;
   static private boolean showXML = false;
 
@@ -72,7 +72,7 @@ public class CdmRemoteFeatureDataset {
     String fType = elem.getAttribute("type").getValue();  // LOOK, may be multiple types
     String uri = elem.getAttribute("url").getValue();
 
-    if (debug) System.out.printf("CdmRemoteFeatureDataset endpoint %s%n ftype= %s uri=%s%n", endpoint, fType, uri);
+    if (debug) System.out.printf("CdmrFeatureDataset endpoint %s%n ftype= %s uri=%s%n", endpoint, fType, uri);
 
     FeatureType ft = FeatureType.getType(fType);
 
@@ -109,15 +109,15 @@ public class CdmRemoteFeatureDataset {
     if (showXML) {
       System.out.printf("*** endpoint = %s %n", endpoint);
       XMLOutputter xmlOut = new XMLOutputter();
-      System.out.printf("*** CdmRemoteFeatureDataset/showParsedXML = %n %s %n", xmlOut.outputString(doc));
+      System.out.printf("*** CdmrFeatureDataset/showParsedXML = %n %s %n", xmlOut.outputString(doc));
     }
 
     return doc;
   }
 
   public static void main(String args[]) throws IOException {
-    String endpoint = "http://localhost:8080/thredds/cdmremote/idd/metar/ncdecodedLocalHome";
-    FeatureDatasetPoint fd = (FeatureDatasetPoint) CdmRemoteFeatureDataset.factory(FeatureType.ANY, endpoint);
+    String endpoint = "http://localhost:8080/thredds/cdmrfeature/idd/metar/ncdecodedLocalHome";
+    FeatureDatasetPoint fd = (FeatureDatasetPoint) CdmrFeatureDataset.factory(FeatureType.ANY, endpoint);
     FeatureCollection fc = fd.getPointFeatureCollectionList().get(0);
     System.out.printf("Result= %s %n %s %n", fd, fc);
 

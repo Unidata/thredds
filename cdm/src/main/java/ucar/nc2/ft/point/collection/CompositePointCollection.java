@@ -31,6 +31,7 @@
  */
 package ucar.nc2.ft.point.collection;
 
+import thredds.inventory.TimedCollection;
 import ucar.nc2.ft.point.PointCollectionImpl;
 import ucar.nc2.ft.point.PointIteratorAbstract;
 import ucar.nc2.ft.*;
@@ -50,7 +51,7 @@ import java.util.Formatter;
  * @author caron
  * @since May 19, 2009
  */
-public class CompositePointCollection extends PointCollectionImpl {
+public class CompositePointCollection extends PointCollectionImpl implements UpdateableCollection {
   private TimedCollection pointCollections;
   protected List<VariableSimpleIF> dataVariables;
 
@@ -103,6 +104,11 @@ public class CompositePointCollection extends PointCollectionImpl {
     return iter;
   }
 
+  @Override
+  public void update() {
+    //To change body of implemented methods use File | Settings | File Templates.
+  }
+
   private class CompositePointFeatureIterator extends PointIteratorAbstract {
     private boolean finished = false;
     private int bufferSize = -1;
@@ -128,7 +134,7 @@ public class CompositePointCollection extends PointCollectionImpl {
 
     public boolean hasNext() throws IOException {
         
-        if (pfIter == null) {
+      if (pfIter == null) {
         pfIter = getNextIterator();
         if (pfIter == null) {
           finish();

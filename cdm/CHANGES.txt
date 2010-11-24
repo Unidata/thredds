@@ -3,6 +3,11 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Changes in version 4.2:
+ 16: (2010-11-24)
+  Improve diagnostic on Aggregation / no datasets found
+  H5/N4 non-string vlen bug.
+  GridVariable ensemble coordinate - use perturbation number and enseble type
+  Grib2 Template 11 bug reading forecast time
  15: (2010-11-19)
   NetcdfCFWriter : set large file if needed
   FileWriter: allow largeFiles. also use much larger buffer

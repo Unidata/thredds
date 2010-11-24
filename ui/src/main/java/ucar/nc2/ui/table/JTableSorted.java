@@ -35,7 +35,7 @@ package ucar.nc2.ui.table;
 import ucar.nc2.ui.event.UIChangeEvent;
 import ucar.nc2.ui.event.UIChangeListener;
 import ucar.nc2.ui.widget.BAMutil;
-import ucar.nc2.ui.util.ListenerManager;
+import ucar.nc2.util.ListenerManager;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.nc2.util.NamedObject;
 

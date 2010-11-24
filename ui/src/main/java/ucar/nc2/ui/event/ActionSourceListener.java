@@ -32,7 +32,7 @@
  */
 package ucar.nc2.ui.event;
 
-import ucar.nc2.ui.util.ListenerManager;
+import ucar.nc2.util.ListenerManager;
 
 /** ActionSourceListeners are used by objects that are both source and listener for
  *  a particular type of ActionValue events. They register themselves with the

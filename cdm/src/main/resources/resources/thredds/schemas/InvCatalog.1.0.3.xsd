@@ -310,6 +310,7 @@
             <xsd:element type="updateType" name="update" minOccurs="0"/>
             <xsd:element type="protoDatasetType" name="protoDataset" minOccurs="0"/>
             <xsd:element type="fmrcConfigType" name="fmrcConfig" minOccurs="0"/>
+            <xsd:element type="pointConfigType" name="pointConfig" minOccurs="0"/>
             <xsd:element ref="ncml:netcdf" minOccurs="0"/>
           </xsd:sequence>
           <xsd:attribute name="featureType" type="featureTypeChoice" use="required"/>
@@ -390,6 +391,10 @@
       </xsd:simpleType>
     </xsd:union>
   </xsd:simpleType>
+
+  <xsd:complexType name="pointConfigType">
+    <xsd:attribute name="datasetTypes" type="xsd:string"/>
+  </xsd:complexType>
 
   <!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx -->
   <!-- DatasetFmrc element DEPRECATED - use featureCollection -->

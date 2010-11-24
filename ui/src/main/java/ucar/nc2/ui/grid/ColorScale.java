@@ -35,7 +35,7 @@ package ucar.nc2.ui.grid;
 import ucar.nc2.ui.widget.FontUtil;
 
 import ucar.nc2.dt.GridDatatype;
-import ucar.nc2.ui.util.ListenerManager;
+import ucar.nc2.util.ListenerManager;
 import ucar.unidata.util.Format;
 
 import java.awt.*;

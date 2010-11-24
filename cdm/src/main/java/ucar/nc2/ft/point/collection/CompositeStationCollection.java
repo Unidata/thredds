@@ -31,6 +31,7 @@
  */
 package ucar.nc2.ft.point.collection;
 
+import thredds.inventory.TimedCollection;
 import ucar.nc2.ft.point.*;
 import ucar.nc2.ft.*;
 import ucar.nc2.units.DateRange;
@@ -51,7 +52,7 @@ import java.util.List;
  * @author caron
  * @since May 19, 2009
  */
-public class CompositeStationCollection extends StationTimeSeriesCollectionImpl {
+public class CompositeStationCollection extends StationTimeSeriesCollectionImpl implements UpdateableCollection {
   private TimedCollection dataCollection;
   protected List<VariableSimpleIF> dataVariables;
 
@@ -107,6 +108,11 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
       initStationHelper();
 
     return dataVariables;
+  }
+
+    @Override
+  public void update() {
+    //To change body of implemented methods use File | Settings | File Templates.
   }
 
   // Must override default subsetting implementation for efficiency

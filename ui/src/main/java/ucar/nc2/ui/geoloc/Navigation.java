@@ -32,8 +32,8 @@
  */
 package ucar.nc2.ui.geoloc;
 
+import ucar.nc2.util.ListenerManager;
 import ucar.unidata.geoloc.*;
-import ucar.nc2.ui.util.ListenerManager;
 
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;

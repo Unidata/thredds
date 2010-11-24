@@ -53,6 +53,10 @@ public class FeatureCollectionConfig {
     TwoD, Best, Files, Runs, ConstantForecasts, ConstantOffsets
   }
 
+  static public enum PointDatasetType {
+    cdmrFeature, Files
+  }
+
   public static void setRegularizeDefault(boolean t) {
     regularizeDefault = t;
   }
@@ -64,36 +68,37 @@ public class FeatureCollectionConfig {
   static private boolean regularizeDefault = false;
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FeatureCollectionConfig.class);
 
-  static public class Config {
-    public String name, spec, olderThan, recheckAfter;
-    public UpdateConfig updateConfig = new UpdateConfig();
-    public ProtoConfig protoConfig = new ProtoConfig();
-    public FmrcConfig fmrcConfig = new FmrcConfig();
-    public Element innerNcml = null;
+  //////////////////////////////////////////////
 
-    public Config() {
-    }
+  public String name, spec, olderThan, recheckAfter;
+  public UpdateConfig updateConfig = new UpdateConfig();
+  public ProtoConfig protoConfig = new ProtoConfig();
+  public FmrcConfig fmrcConfig = new FmrcConfig();
+  public PointConfig pointConfig = new PointConfig();
+  public Element innerNcml = null;
 
-    public Config(String name, String spec, String olderThan, String recheckAfter, Element innerNcml) {
-      this.name = name;
-      this.spec = spec.trim();
-      this.olderThan = olderThan;
-      this.recheckAfter = recheckAfter;
-      this.innerNcml = innerNcml;
-    }
+  public FeatureCollectionConfig() {
+  }
 
-    @Override
-    public String toString() {
-      return "Config{" +
-              "name='" + name + '\'' +
-              "spec='" + spec + '\'' +
-              ", olderThan='" + olderThan + '\'' +
-              ", recheckAfter='" + recheckAfter + '\'' +
-              "\n " + updateConfig +
-              "\n " + protoConfig +
-              "\n " + fmrcConfig +
-              '}';
-    }
+  public FeatureCollectionConfig(String name, String spec, String olderThan, String recheckAfter, Element innerNcml) {
+    this.name = name;
+    this.spec = spec.trim();
+    this.olderThan = olderThan;
+    this.recheckAfter = recheckAfter;
+    this.innerNcml = innerNcml;
+  }
+
+  @Override
+  public String toString() {
+    return "Config{" +
+            "name='" + name + '\'' +
+            "spec='" + spec + '\'' +
+            ", olderThan='" + olderThan + '\'' +
+            ", recheckAfter='" + recheckAfter + '\'' +
+            "\n " + updateConfig +
+            "\n " + protoConfig +
+            "\n " + fmrcConfig +
+            '}';
   }
 
   static public class UpdateConfig {
@@ -158,12 +163,12 @@ public class FeatureCollectionConfig {
     }
   }
 
-  static private Set<FmrcDatasetType> defaultDatasetTypes =
+  static private Set<FmrcDatasetType> defaultFmrcDatasetTypes =
           Collections.unmodifiableSet(EnumSet.of(FmrcDatasetType.TwoD, FmrcDatasetType.Best, FmrcDatasetType.Files, FmrcDatasetType.Runs));
 
   static public class FmrcConfig {
     public boolean regularize = regularizeDefault;
-    public Set<FmrcDatasetType> datasets = defaultDatasetTypes;
+    public Set<FmrcDatasetType> datasets = defaultFmrcDatasetTypes;
     private boolean explicit = false;
     private List<BestDataset> bestDatasets = null;
 
@@ -219,6 +224,40 @@ public class FeatureCollectionConfig {
       this.greaterThan = greaterThan;
     }
 
+  }
+
+  static private Set<PointDatasetType> defaultPointDatasetTypes =
+          Collections.unmodifiableSet(EnumSet.of(PointDatasetType.cdmrFeature, PointDatasetType.Files));
+
+  static public class PointConfig {
+    public Set<PointDatasetType> datasets = defaultPointDatasetTypes;
+    private boolean explicit = false;
+
+    public PointConfig() { // defaults
+    }
+
+    public void addDatasetType(String datasetTypes) {
+      // if they list datasetType explicitly, remove defaults
+      if (!explicit) datasets = EnumSet.noneOf(PointDatasetType.class);
+      explicit = true;
+
+      String[] types = StringUtil.splitString(datasetTypes);
+      for (String type : types) {
+        try {
+          PointDatasetType fdt = PointDatasetType.valueOf(type);
+          datasets.add(fdt);
+        } catch (Exception e) {
+          log.warn("Dont recognize PointDatasetType " + type);
+        }
+      }
+    }
+
+    @Override
+    public String toString() {
+      Formatter f = new Formatter();
+      f.format("PointConfig: datasetTypes=%s", datasets);
+      return f.toString();
+    }
   }
 
 }

@@ -36,8 +36,8 @@ package ucar.nc2.ui.table;
 import ucar.nc2.ui.widget.BAMutil;
 import ucar.nc2.ui.widget.MyMouseAdapter;
 import ucar.nc2.ui.widget.PopupMenu;
+import ucar.nc2.util.ListenerManager;
 import ucar.util.prefs.PreferencesExt;
-import ucar.nc2.ui.util.ListenerManager;
 
 import java.util.ArrayList;
 import java.util.HashSet;

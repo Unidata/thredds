@@ -94,6 +94,7 @@ public class DatasetCollectionFromCatalog extends DatasetCollectionManager imple
     }
   }
 
+  @Override
   public void getDataset(InvDataset ds, Object context) {
 
     if (ds.hasAccess()) {
@@ -108,6 +109,7 @@ public class DatasetCollectionFromCatalog extends DatasetCollectionManager imple
 
   }
 
+  @Override
   public boolean getCatalogRef(InvCatalogRef dd, Object context) {
     return true;
   }

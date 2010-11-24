@@ -25,7 +25,7 @@
     <constructor-arg ref="tdsContext"/>
   </bean>
 
-  <bean id="triggerController" class="thredds.server.root.CollectionTriggerController">
+  <bean id="collectionController" class="thredds.server.root.CollectionController">
     <constructor-arg ref="tdsContext"/>
   </bean>
 
@@ -38,7 +38,7 @@
         /fmrcCache/*=fmrcCacheController
         /log/**=logController
         /roots=logController
-        /trigger=triggerController
+        /collection=collectionController
         /*=dirDisplayController
       </value>
     </property>

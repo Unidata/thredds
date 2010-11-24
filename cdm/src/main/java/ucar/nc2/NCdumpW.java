@@ -418,6 +418,9 @@ public class NCdumpW {
     } else if (array instanceof ArraySequence) {
       printSequence(out, (ArraySequence) array, ilev, ct);
 
+    } else if (array instanceof ArrayObject) {
+      printVariableArray(out, (ArrayObject) array, ilev, ct);
+
     } else if (array.getElementType() == ByteBuffer.class) {
       array.resetLocalIterator();
       while (array.hasNext()) {

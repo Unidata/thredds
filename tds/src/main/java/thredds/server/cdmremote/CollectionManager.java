@@ -80,7 +80,7 @@ public class CollectionManager {
       if (config == null) return null;
 
       Formatter errlog = new Formatter();
-      FeatureDatasetPoint fd = (FeatureDatasetPoint) CompositeDatasetFactory.factory(uri, FeatureType.getType(config.getFeatureType()), config.getSpec(), errlog);
+      FeatureDatasetPoint fd = (FeatureDatasetPoint) CompositeDatasetFactory.factory(uri, FeatureType.getType(config.getFeatureType()), null, errlog);
       if (fd == null) {
         log.error("Error opening CompositeDataset path = "+path+"  errlog = ", errlog);
         return null;

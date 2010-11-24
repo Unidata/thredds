@@ -71,6 +71,7 @@ public final class ServiceType {
   // experimental
   public final static ServiceType NetcdfSubset = new ServiceType( "NetcdfSubset" );
   public final static ServiceType CdmRemote = new ServiceType( "CdmRemote" );
+  public final static ServiceType CdmrFeature = new ServiceType( "CdmrFeature" );
 
   // deprecated - do not use
   public final static ServiceType NETCDF = new ServiceType( "NetCDF" ); // deprecated - use dataFormatType = NetCDF

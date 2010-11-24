@@ -33,6 +33,8 @@
 package ucar.nc2.iosp.hdf5;
 
 import junit.framework.*;
+import ucar.ma2.InvalidRangeException;
+import ucar.ma2.Section;
 import ucar.nc2.*;
 import ucar.ma2.Array;
 import ucar.nc2.dt.GridDatatype;
@@ -113,7 +115,7 @@ public class TestN4 extends TestCase {
     Variable v = ncfile.findVariable("primary_cloud");                        
     Array data = v.read();
     System.out.println("\n**** testReadNetcdf4 done\n\n" + ncfile);
-    NCdump.printArray(data, "primary_cloud", System.out, null);
+    NCdumpW.printArray(data, "primary_cloud", new PrintWriter( System.out), null);
     ncfile.close();
   }
 
@@ -124,7 +126,38 @@ public class TestN4 extends TestCase {
     System.out.println("\n**** testReadNetcdf4 done\n\n" + ncfile);
     Variable v = ncfile.findVariable("measure_for_measure_var");
     Array data = v.read();
-    NCdump.printArray(data, "measure_for_measure_var", System.out, null);
+    NCdumpW.printArray(data, "measure_for_measure_var",  new PrintWriter( System.out), null);
+    ncfile.close();
+  }
+
+  public void testVlen() throws IOException, InvalidRangeException {
+    //H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
+    String filename = testDir+"vlen/fpcs_1dwave_2.nc";
+    NetcdfFile ncfile = TestNC2.open(filename);
+    System.out.println("\n**** testReadNetcdf4 done\n\n" + ncfile);
+    Variable v = ncfile.findVariable("levels");
+    Array data = v.read();
+    NCdumpW.printArray(data, "read()",  new PrintWriter( System.out), null);
+
+    int  count = 0;
+    while (data.hasNext()) {
+      Array as = (Array) data.next();
+      NCdumpW.printArray(as, " "+count,  new PrintWriter( System.out), null);
+      count++;
+    }
+
+    // try subset
+    data = v.read("0:9:2, :");
+    NCdumpW.printArray(data, "read(0:9:2,:)",  new PrintWriter( System.out), null);
+
+    data = v.read(new Section().appendRange(0,9,2).appendRange(null));
+    NCdumpW.printArray(data, "read(Section)",  new PrintWriter( System.out), null);
+
+    // fail
+    //int[] origin = new int[] {0, 0};
+    //int[] size = new int[] {3, -1};
+    //data = v.read(origin, size);
+
     ncfile.close();
   }
 
@@ -136,7 +169,7 @@ public class TestN4 extends TestCase {
     System.out.println("\n**** testReadNetcdf4 done\n\n" + ncfile);
     Variable v = ncfile.findVariable("fun_soundings");
     Array data = v.read();
-    NCdump.printArray(data, "fun_soundings", System.out, null);
+    NCdumpW.printArray(data, "fun_soundings",  new PrintWriter( System.out), null);
     ncfile.close();
   }
 
@@ -150,7 +183,7 @@ public class TestN4 extends TestCase {
     String s = H5header.showBytes(attValue.getBytes());
     System.out.println(" d:c= ("+attValue+") = "+s);
     //Array data = v.read();
-    //NCdump.printArray(data, "cr", System.out, null);
+    //NCdumpW.printArray(data, "cr", System.out, null);
     ncfile.close();
   }
 

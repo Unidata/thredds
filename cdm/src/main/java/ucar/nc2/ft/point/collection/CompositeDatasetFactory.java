@@ -31,26 +31,20 @@
  */
 package ucar.nc2.ft.point.collection;
 
+import thredds.inventory.DatasetCollectionManager;
+import thredds.inventory.TimedCollection;
 import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.PointDatasetImpl;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.units.DateRange;
-import ucar.nc2.units.DateType;
-import ucar.nc2.units.TimeDuration;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.VariableSimpleIF;
 import ucar.unidata.geoloc.LatLonRect;
-import ucar.unidata.geoloc.LatLonPointImpl;
 
 import java.io.IOException;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Formatter;
 import java.util.List;
-import java.util.ArrayList;
-
-import org.jdom.input.SAXBuilder;
-import org.jdom.*;
 
 /**
  * Factory for feature dataset collections (CompositePointDataset).
@@ -66,7 +60,7 @@ public class CompositeDatasetFactory {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CompositeDatasetFactory.class);
   static boolean debug = false;
 
-  static public FeatureDataset factory(String locationURI, File configFile, Formatter errlog) throws IOException {
+  /* static public FeatureDataset factory(String locationURI, File configFile, Formatter errlog) throws IOException {
     SAXBuilder builder = new SAXBuilder();
     Document configDoc;
     try {
@@ -149,27 +143,32 @@ public class CompositeDatasetFactory {
       errlog.format(" ** Parse error: Bad duration format = %s%n", text);
       return null;
     }
-  }
+  }  */
 
-  static public FeatureDataset factory(String location, FeatureType wantFeatureType, String spec, Formatter errlog) throws IOException {
-    if (spec.startsWith(SCHEME))
-      spec = spec.substring(SCHEME.length());
+  static public FeatureDataset factory(String location, FeatureType wantFeatureType, DatasetCollectionManager dcm, Formatter errlog) throws IOException {
 
-    TimedCollection collection = new TimedCollectionImpl(spec, errlog);
+    TimedCollection collection = new TimedCollection(dcm, errlog);
     if (collection.getDatasets().size() == 0) {
-      throw new FileNotFoundException("Collection is empty; spec="+spec);
+      throw new FileNotFoundException("Collection is empty; spec="+dcm);
+    }
+
+    if (wantFeatureType == FeatureType.ANY_POINT) {
+      TimedCollection.Dataset d = collection.getPrototype();
+      FeatureDatasetPoint proto = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(FeatureType.ANY_POINT, d.getLocation(), null, errlog);
+      wantFeatureType = proto.getFeatureType();
+      proto.close(); // LOOK - try to use
     }
 
     LatLonRect bb = null;
     FeatureCollection fc = null;
     switch (wantFeatureType) {
       case POINT:
-        CompositePointCollection pfc = new CompositePointCollection(spec, collection);
+        CompositePointCollection pfc = new CompositePointCollection(dcm.getCollectionName(), collection);
         bb = pfc.getBoundingBox();
         fc = pfc;
         break;
       case STATION:
-        CompositeStationCollection sfc = new CompositeStationCollection(spec, collection, null, null);
+        CompositeStationCollection sfc = new CompositeStationCollection(dcm.getCollectionName(), collection, null, null);
         bb = sfc.getBoundingBox();
         fc = sfc;
         break;

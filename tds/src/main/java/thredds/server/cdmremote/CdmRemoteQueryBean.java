@@ -48,7 +48,7 @@ import java.util.Formatter;
  * @author caron
  * @since May 11, 2009
  */
-public class PointQueryBean {
+public class CdmRemoteQueryBean {
 
   public enum RequestType {
     capabilities, cdl, data, dataForm, form, header, ncml, stations
@@ -438,7 +438,7 @@ public class PointQueryBean {
   @Override
   public String toString() {
     Formatter f = new Formatter();
-    f.format("PointQueryBean req=%s res=%s", getRequestType(), getResponseType());
+    f.format("QueryBean: reqType=%s resType=%s", getRequestType(), getResponseType());
 
     if (spatialSelection == SpatialSelection.all)
       f.format(" spatialSelection=all;");
@@ -455,7 +455,6 @@ public class PointQueryBean {
     if (var != null)
       f.format(" vars=%s", var);
 
-    f.format(" %n");
     return f.toString();
   }
 }

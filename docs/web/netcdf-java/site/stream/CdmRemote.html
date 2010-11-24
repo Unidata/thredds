@@ -16,10 +16,10 @@ dl {margin: 10px 5px 5px 15px;)
 <p>CDM Remote is an experimental web service implemented in the CDM library (client) and TDS (server), providing remote access to CDM datasets, using <a href="NcStream.html">ncstream</a> as the on-the-wire protocol. It provides access at the  NetcdfFile and FeatureDataset  levels of the CDM API., so there are two levels of services: </p>
 <ol>
   <li><em><strong>CdmRemote</strong> </em>provides  index subsetting on remote CDM datasets, with the same functionality that <strong>NetcdfFile</strong> provides for CDM local datasets and <strong>DODSNetcdfFile</strong> provides for remote OPeNDAP datasets. <em><strong>CdmRemote</strong></em> supports the full CDM data model.</li>
-  <li><em><strong>CdmRemoteFeatureDataset</strong></em> provides coordinate subsetting on remote CDM Feature Datasets, with similar functionality to <em>WCS</em> and Unidata's experimental <em>NetCDF Subset Service (NCSS)</em>. Currently (version 4.1) it provides a remote API for <strong><em>Point</em></strong> and <strong><em>StationTimeSeries</em></strong> Feature Datasets.</li>
+  <li><em><strong>CdmrFeature</strong></em> provides coordinate subsetting on remote CDM Feature Datasets, with similar functionality to <em>WCS</em> and Unidata's experimental <em>NetCDF Subset Service (NCSS)</em>. Currently (version 4.2) it provides a remote API for <strong><em>Point</em></strong> and <strong><em>StationTimeSeries</em></strong> Feature Datasets.</li>
 </ol>
 <p>The CDM Remote services and protocol are  experimental and should not be used outside of the CDM stack for now.</p>
-<h2>CdmRemote Protocol (Data Access and Coordinate Systems) </h2>
+<h2><a name="cdmremote" id="cdmremote"></a>CdmRemote Protocol (Data Access and Coordinate Systems) </h2>
 <p>The client forms requests of the form <strong>endpoint?query</strong>. The possible query parameters are:</p>
 <pre>  <strong>req</strong>=( <strong>CDL</strong> | <strong>NcML</strong> | <strong>capabilities</strong> | <strong>header</strong> | <strong>data</strong>)
   <strong>var</strong>=vars
@@ -77,8 +77,12 @@ where:
 </ul>
 <h3>Client implementation</h3>
 <p><strong>ucar.nc2.stream.CdmRemote</strong> is a subclass of NetcdfFile which provides  index subsetting on remote CDM datasets. <strong>NetcdfDataset.openOrAcquireFile()</strong> looks for <em><strong>cdmremote:url</strong></em> prefix, and calls <strong>new</strong> <strong>CdmRemote(url)</strong> if found. The url must be an endpoint for a cdmremote service.</p>
+<ul>
+  <li>upon opening, <strong>req=header</strong> is called and the NetcdfFile objects are read from the response</li>
+  <li>when data is requested, and the data is not already stored (immediate mode). then <strong>req=data</strong> is called</li>
+</ul>
 <p></p>
-<h2><strong>CdmRemoteFeatureDataset</strong> Protocol (Point Feature API) </h2>
+<h2><strong><a name="cdmrfeature" id="cdmrfeature"></a>CdmrFeature</strong> Protocol (Point Feature API) </h2>
 <p>The client forms requests of the form <strong>endpoint?query</strong>. The possible query parameters are:</p>
 <pre>  <strong>req</strong>=( <strong></strong><strong>capabilities</strong> | <strong>data</strong> | <strong>form | stations</strong>)
   <strong>accept= </strong>(<strong>csv</strong> | <strong>xml</strong> | <strong>ncstream</strong> | <strong>netcdf</strong> )
@@ -111,32 +115,32 @@ where:
     <th width="181" scope="col">Meaning</th>
   </tr>
   <tr>
-    <td>http://server:8080/thredds/cdmremote/data.nc/point?<strong>req=form</strong></td>
+    <td>http://server:8080/thredds/cdmrfeature/data.nc/point?<strong>req=form</strong></td>
     <td>HTML form</td>
     <td>form interface</td>
   </tr>
   <tr>
-    <td>http://server:8080/thredds/cdmremote/data.nc/point?<strong>req=capabilities</strong></td>
+    <td>http://server:8080/thredds/cdmrfeature/data.nc/point?<strong>req=capabilities</strong></td>
     <td>capabilities XML</td>
     <td>describe dataset</td>
   </tr>
   <tr>
-    <td>http://server:8080/thredds/cdmremote/data.nc/point?<strong>req=data</strong></td>
+    <td>http://server:8080/thredds/cdmrfeature/data.nc/point?<strong>req=data</strong></td>
     <td>pointFeatureList message</td>
     <td>get all the data</td>
   </tr>
   <tr>
-    <td>http://server:8080/thredds/cdmremote/data.nc/point?<strong>req=data&amp;north=40.3&amp;south=22.8&amp;east=-80&amp;west=-105</strong></td>
+    <td>http://server:8080/thredds/cdmrfeature/data.nc/point?<strong>req=data&amp;north=40.3&amp;south=22.8&amp;east=-80&amp;west=-105</strong></td>
     <td>pointFeatureList message</td>
     <td>get data in bounding box</td>
   </tr>
   <tr>
-    <td>http://server:8080/thredds/cdmremote/data.nc/point?<strong>req=data&amp;</strong><strong>time_start=&amp;time_end=</strong></td>
+    <td>http://server:8080/thredds/cdmrfeature/data.nc/point?<strong>req=data&amp;</strong><strong>time_start=&amp;time_end=</strong></td>
     <td>pointFeatureList message</td>
     <td>get data in time range</td>
   </tr>
   <tr>
-    <td>http://server:8080/thredds/cdmremote/data.nc/point?<strong>req=data&amp;var=Temp,lat,lon</strong></td>
+    <td>http://server:8080/thredds/cdmfeature/data.nc/point?<strong>req=data&amp;var=Temp,lat,lon</strong></td>
     <td>pointFeatureList message</td>
     <td>get data for listed variables</td>
   </tr>
@@ -155,47 +159,47 @@ where:
     <th width="195" scope="col">Meaning</th>
   </tr>
   <tr>
-    <td>http://server:8080/thredds/cdmremote/data.nc/station?<strong>req=form</strong></td>
+    <td>http://server:8080/thredds/cdmrfeature/data.nc/station?<strong>req=form</strong></td>
     <td>HTML form</td>
     <td>form interface</td>
   </tr>
   <tr>
-    <td>http://server:8080/thredds/cdmremote/data.nc/station?<strong>req=capabilities</strong></td>
+    <td>http://server:8080/thredds/cdmrfeature/data.nc/station?<strong>req=capabilities</strong></td>
     <td>capabilities XML</td>
     <td>describe dataset</td>
   </tr>
   <tr>
-    <td>http://server:8080/thredds/cdmremote/data.nc/station?<strong>req=stations</strong></td>
+    <td>http://server:8080/thredds/cdmrfeature/data.nc/station?<strong>req=stations</strong></td>
     <td>stationListMessage</td>
     <td>get all stations</td>
   </tr>
   <tr>
-    <td>http://server:8080/thredds/cdmremote/data.nc/station?<strong>req=stations&amp;north=40.3&amp;south=22.8&amp;east=-80&amp;west=-105</strong></td>
+    <td>http://server:8080/thredds/cdmrfeature/data.nc/station?<strong>req=stations&amp;north=40.3&amp;south=22.8&amp;east=-80&amp;west=-105</strong></td>
     <td>stationListMessage</td>
     <td>get stations in bounding box</td>
   </tr>
   <tr>
-    <td>http://server:8080/thredds/cdmremote/data.nc/station?<strong>req=stations&amp;stn=KDEN,KLOG,MOAS</strong></td>
+    <td>http://server:8080/thredds/cdmrfeature/data.nc/station?<strong>req=stations&amp;stn=KDEN,KLOG,MOAS</strong></td>
     <td>stationListMessage</td>
     <td>get stations in list</td>
   </tr>
   <tr>
-    <td>http://server:8080/thredds/cdmremote/data.nc/station?<strong>req=data&amp;time_start=&amp;time_end=&amp;</strong><strong>stn=KDEN</strong></td>
+    <td>http://server:8080/thredds/cdmrfeature/data.nc/station?<strong>req=data&amp;time_start=&amp;time_end=&amp;</strong><strong>stn=KDEN</strong></td>
     <td>pointFeatureList message</td>
     <td>get data in time range</td>
   </tr>
   <tr>
-    <td>http://server:8080/thredds/cdmremote/data.nc/station?<strong>req=data&amp;</strong><strong>stn=KDEN,KLOG,MOAS</strong></td>
+    <td>http://server:8080/thredds/cdmrfeature/data.nc/station?<strong>req=data&amp;</strong><strong>stn=KDEN,KLOG,MOAS</strong></td>
     <td>pointFeatureList message</td>
     <td>get data for station list</td>
   </tr>
   <tr>
-    <td>http://server:8080/thredds/cdmremote/data.nc/station?<strong>req=data&amp;</strong><strong>north=40.3&amp;south=22.8&amp;east=-80&amp;west=-105</strong></td>
+    <td>http://server:8080/thredds/cdmrfeature/data.nc/station?<strong>req=data&amp;</strong><strong>north=40.3&amp;south=22.8&amp;east=-80&amp;west=-105</strong></td>
     <td>pointFeatureList message</td>
     <td>get data in bounding box</td>
   </tr>
   <tr>
-    <td>http://server:8080/thredds/cdmremote/data.nc/station?<strong>req=data&amp;</strong><strong>var=Temp,lat,lon&amp;</strong><strong>stn=KDEN</strong></td>
+    <td>http://server:8080/thredds/cdmrfeature/data.nc/station?<strong>req=data&amp;</strong><strong>var=Temp,lat,lon&amp;</strong><strong>stn=KDEN</strong></td>
     <td>pointFeatureList message</td>
     <td>get data for listed variables</td>
   </tr>
@@ -400,7 +404,7 @@ CompositeStationFeatureIterator open datasetQ:\station\ldm/metar/Surface_METAR_2
 </p>
 <hr width="100%" />
 <address>
-<img src="../nc.gif" alt="" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated August 18, 2009
+<img src="../nc.gif" alt="" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated Nov 2010
 </address>
 <p>&nbsp;</p>
 </body>

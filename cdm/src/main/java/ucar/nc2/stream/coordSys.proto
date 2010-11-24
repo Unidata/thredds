@@ -21,15 +21,21 @@ enum AxisType {
   DISTANCE = 12;
 }
 
-enum ProjectionType {
-  HORIZ = 0;
-  VERT = 1;
+message CoordTransform {
+  enum Type {
+    HORIZ = 0;
+    VERT = 1;
+  }
+  required Type type = 1;
+  required string name = 2;
+  repeated Attribute params = 3;
 }
 
-message Projection {
-  required ProjectionType type = 1;
-  required string name = 2;
-  required map params;
+message CoordSys {
+  required string name = 1;
+  repeated string coordVar = 2;
+  repeated CoordTransform transforms = 3;
+  repeated CoordSys components = 3;
 }
 
 enum FeatureType {
