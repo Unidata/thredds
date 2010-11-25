@@ -80,6 +80,7 @@ public class TestTdsLocal extends TestCase {
     DODSNetcdfFile.debugServerCall = true;
 
     TestSuite suite= new TestSuite();
+    suite.addTest(new TestSuite(TestCdmRemoteServer.class));
     suite.addTest(new TestSuite(TestTdsDodsServer.class));
     suite.addTest(new TestSuite(TestTdsNcml.class));
     suite.addTest(new TestSuite(TestTdsDatasetScan.class));

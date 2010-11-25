@@ -59,6 +59,7 @@ import java.util.Formatter;
 /**
  * Write point obs data in CF obs format.
  *
+ * @deprecated use WriterCFPointCollection
  * @author caron
  * @since Oct 22, 2008
  */

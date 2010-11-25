@@ -376,9 +376,9 @@ public class TestAll {
     int doAct( String filename) throws IOException;
   }
 
-  public static class FileFilterImpl implements FileFilter {
+  public static class FileFilterWant implements FileFilter {
     String[] suffixes;
-    public FileFilterImpl(String suffixes) {
+    public FileFilterWant(String suffixes) {
       this.suffixes = suffixes.split(" ");
     }
 
@@ -387,6 +387,20 @@ public class TestAll {
       for (String s: suffixes)
         if (file.getPath().endsWith(s)) return true;
       return false;
+    }
+  }
+
+  public static class FileFilterNoWant implements FileFilter {
+    String[] suffixes;
+    public FileFilterNoWant(String suffixes) {
+      this.suffixes = suffixes.split(" ");
+    }
+
+    @Override
+    public boolean accept(File file) {
+      for (String s: suffixes)
+        if (file.getPath().endsWith(s)) return false;
+      return true;
     }
   }
 

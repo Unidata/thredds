@@ -361,6 +361,10 @@ public class DatasetCollectionManager implements CollectionManager {
   @Override
   public boolean rescan() throws IOException {
     if (logger.isInfoEnabled()) logger.info(collectionName+": rescan at " + new Date());
+    if (map == null) {
+      scan(null);
+      return true;
+    }
 
     // rescan
     Map<String, MFile> oldMap = map;

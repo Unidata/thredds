@@ -58,6 +58,7 @@ import java.io.*;
  * Write point data in CF point convention.
  * Also experiment with streaming netcdf.
  *
+ * @deprecated use WriterCFPointCollection
  * @see "http://cf-pcmdi.llnl.gov/trac/wiki/PointObservationConventions"
  * @author caron
  */

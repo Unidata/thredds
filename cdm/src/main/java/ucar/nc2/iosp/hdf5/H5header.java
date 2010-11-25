@@ -4976,7 +4976,7 @@ Where startingBlockSize is from the header, ie the same for all indirect blocks.
         int block = 0;
         for (DataBlock db : blockList) {
           if (db.address < 0) continue;
-          if ((offset >= db.offset) && (offset < db.offset + db.size)) {
+          if ((offset >= db.offset) && (offset <= db.offset + db.size)) {
             long localOffset = offset - db.offset;
             //System.out.println("   heap ID find block= "+block+" db.dataPos " + db.dataPos+" localOffset= "+localOffset);
             return db.dataPos + localOffset;
@@ -5065,6 +5065,16 @@ Where startingBlockSize is from the header, ie the same for all indirect blocks.
       long offset;
       long size;
       int extraBytes;
+
+
+      @Override
+      public String toString() {
+        return "DataBlock{" +
+                "offset=" + offset +
+                ", size=" + size +
+                ", dataPos=" + dataPos +
+                '}';
+      }
     }
 
     void readIndirectBlock(IndirectBlock iblock, long pos, long heapAddress, boolean hasFilter) throws IOException {

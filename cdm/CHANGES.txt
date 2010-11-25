@@ -2,6 +2,9 @@ CHANGES for Netcdf-Java library
 Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
+Changes in version 4.2.1:
+ 1: (2011-11-xx)
+  H5: Off by 1 error in DoublingTable
 Changes in version 4.2:
  16: (2010-11-24)
   Improve diagnostic on Aggregation / no datasets found

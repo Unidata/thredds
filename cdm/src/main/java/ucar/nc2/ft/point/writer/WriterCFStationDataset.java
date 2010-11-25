@@ -45,8 +45,8 @@ import java.util.*;
 import java.io.IOException;
 
 /**
- * Write a CF-4 Conventions station file. not streaming
- * 
+ * Write a CF "Discrete Sample" station file. LOOK
+ *
  * @author caron
  * @since Aug 19, 2009
  */
@@ -61,6 +61,7 @@ public class WriterCFStationDataset {
   private static final String descName = "station_description";
   private static final String wmoName = "wmo_id";
   private static final String stationIndexName = "stationIndex";
+  private static final boolean debug = false;
 
   private DateFormatter dateFormatter = new DateFormatter();
   private int name_strlen = 1, desc_strlen = 1, wmo_strlen = 1;
@@ -76,7 +77,6 @@ public class WriterCFStationDataset {
   private boolean useAlt = false;
   private boolean useWmoId = false;
 
-  private boolean debug = false;
 
   public WriterCFStationDataset(String fileOut, String title) throws IOException {
     ncfile = NetcdfFileWriteable.createNew(fileOut, false);

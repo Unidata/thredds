@@ -58,7 +58,113 @@ import java.util.List;
 public class CompositeDatasetFactory {
   static public final String SCHEME = "collection:";
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CompositeDatasetFactory.class);
-  static boolean debug = false;
+  static boolean debug = true;
+
+  static public FeatureDataset factory(String location, FeatureType wantFeatureType, DatasetCollectionManager dcm, Formatter errlog) throws IOException {
+
+    TimedCollection collection = new TimedCollection(dcm, errlog);
+    if (collection.getDatasets().size() == 0) {
+      throw new FileNotFoundException("Collection is empty; spec="+dcm);
+    }
+
+    if (wantFeatureType == FeatureType.ANY_POINT) {
+      TimedCollection.Dataset d = collection.getPrototype();
+      FeatureDatasetPoint proto = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(FeatureType.ANY_POINT, d.getLocation(), null, errlog);
+      wantFeatureType = proto.getFeatureType();
+      proto.close(); // LOOK - try to use
+    }
+
+    LatLonRect bb = null;
+    FeatureCollection fc = null;
+    switch (wantFeatureType) {
+      case POINT:
+        CompositePointCollection pfc = new CompositePointCollection(dcm.getCollectionName(), collection);
+        bb = pfc.getBoundingBox();
+        fc = pfc;
+        break;
+      case STATION:
+        CompositeStationCollection sfc = new CompositeStationCollection(dcm.getCollectionName(), collection, null, null);
+        bb = sfc.getBoundingBox();
+        fc = sfc;
+        break;
+      default:
+        return null;
+    }
+
+    return new CompositePointDataset(location, wantFeatureType, fc, collection, bb);
+  }
+
+  private static class CompositePointDataset extends PointDatasetImpl implements UpdateableCollection  {
+    private TimedCollection datasets;
+    private FeatureCollection pfc;
+
+    public CompositePointDataset(String location, FeatureType featureType, FeatureCollection pfc,
+                                 TimedCollection datasets, LatLonRect bb) {
+      super(featureType);
+      setLocationURI(location);
+      setPointFeatureCollection(pfc);
+
+      this.pfc = pfc;
+      this.datasets = datasets;
+
+      if (datasets.getDateRange() != null)
+         setDateRange(datasets.getDateRange());
+
+      if (bb != null)
+         setBoundingBox(bb);
+
+    }
+
+    // deffer this is possible
+   public List<VariableSimpleIF> getDataVariables() {
+      if (dataVariables == null) {
+        if (pfc instanceof CompositePointCollection)
+          dataVariables = ((CompositePointCollection) pfc).getDataVariables();
+        else if (pfc instanceof CompositeStationCollection)
+          dataVariables = ((CompositeStationCollection) pfc).getDataVariables();
+      }
+
+    return dataVariables;
+  }
+
+    @Override
+    protected void setDateRange(DateRange dateRange) {
+      super.setDateRange(dateRange);
+    }
+
+    @Override
+    protected void setBoundingBox(LatLonRect boundingBox) {
+      super.setBoundingBox(boundingBox);
+    }
+
+
+    @Override
+    public void update() {
+      ((UpdateableCollection)pfc).update();
+    }    
+
+    @Override
+    public NetcdfFile getNetcdfFile() {
+      FeatureDatasetPoint proto;
+
+      TimedCollection.Dataset td = datasets.getPrototype();
+      if (td == null) return null;
+
+      String loc = td.getLocation();
+      Formatter errlog = new Formatter();
+      try {
+        proto = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(FeatureType.ANY_POINT, loc, null, errlog); // LOOK kludge
+        return proto.getNetcdfFile();
+      } catch (IOException e) {
+        log.error(errlog.toString());
+        e.printStackTrace();
+      }
+      return null;
+    }
+
+  }
+
+}
 
   /* static public FeatureDataset factory(String locationURI, File configFile, Formatter errlog) throws IOException {
     SAXBuilder builder = new SAXBuilder();
@@ -144,107 +250,3 @@ public class CompositeDatasetFactory {
       return null;
     }
   }  */
-
-  static public FeatureDataset factory(String location, FeatureType wantFeatureType, DatasetCollectionManager dcm, Formatter errlog) throws IOException {
-
-    TimedCollection collection = new TimedCollection(dcm, errlog);
-    if (collection.getDatasets().size() == 0) {
-      throw new FileNotFoundException("Collection is empty; spec="+dcm);
-    }
-
-    if (wantFeatureType == FeatureType.ANY_POINT) {
-      TimedCollection.Dataset d = collection.getPrototype();
-      FeatureDatasetPoint proto = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(FeatureType.ANY_POINT, d.getLocation(), null, errlog);
-      wantFeatureType = proto.getFeatureType();
-      proto.close(); // LOOK - try to use
-    }
-
-    LatLonRect bb = null;
-    FeatureCollection fc = null;
-    switch (wantFeatureType) {
-      case POINT:
-        CompositePointCollection pfc = new CompositePointCollection(dcm.getCollectionName(), collection);
-        bb = pfc.getBoundingBox();
-        fc = pfc;
-        break;
-      case STATION:
-        CompositeStationCollection sfc = new CompositeStationCollection(dcm.getCollectionName(), collection, null, null);
-        bb = sfc.getBoundingBox();
-        fc = sfc;
-        break;
-      default:
-        return null;
-    }
-
-    return new CompositePointDataset(location, wantFeatureType, fc, collection, bb);
-  }
-
-
-  private static class CompositePointDataset extends PointDatasetImpl {
-    private TimedCollection datasets;
-    private FeatureCollection pfc;
-
-    public CompositePointDataset(String location, FeatureType featureType, FeatureCollection pfc,
-                                 TimedCollection datasets, LatLonRect bb) {
-      super(featureType);
-      setLocationURI(location);
-      setPointFeatureCollection(pfc);
-
-      this.pfc = pfc;
-      this.datasets = datasets;
-
-      if (datasets.getDateRange() != null)
-         setDateRange(datasets.getDateRange());
-
-      if (bb != null)
-         setBoundingBox(bb);
-
-    }
-
-    // deffer this is possible
-   public List<VariableSimpleIF> getDataVariables() {
-      if (dataVariables == null) {
-        if (pfc instanceof CompositePointCollection)
-          dataVariables = ((CompositePointCollection) pfc).getDataVariables();
-        else if (pfc instanceof CompositeStationCollection)
-          dataVariables = ((CompositeStationCollection) pfc).getDataVariables();
-
-
-      }
-
-    return dataVariables;
-  }
-
-    @Override
-    protected void setDateRange(DateRange dateRange) {
-      super.setDateRange(dateRange);
-    }
-
-    @Override
-    protected void setBoundingBox(LatLonRect boundingBox) {
-      super.setBoundingBox(boundingBox);
-    }
-
-    @Override
-    public NetcdfFile getNetcdfFile() {
-      FeatureDatasetPoint proto;
-
-      TimedCollection.Dataset td = datasets.getPrototype();
-      if (td == null) return null;
-
-      String loc = td.getLocation();
-      Formatter errlog = new Formatter();
-      try {
-        proto = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(FeatureType.ANY_POINT, loc, null, errlog); // LOOK kludge
-        return proto.getNetcdfFile();
-      } catch (IOException e) {
-        log.error(errlog.toString());
-        e.printStackTrace();
-      }
-      return null;
-    }
-
-  }
-
-}
-

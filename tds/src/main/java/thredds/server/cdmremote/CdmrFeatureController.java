@@ -76,11 +76,10 @@ import ucar.unidata.util.StringUtil;
 public class CdmrFeatureController extends AbstractCommandController { // implements LastModified {
   private static final Logger logServerStartup = org.slf4j.LoggerFactory.getLogger( "serverStartup" );
   private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(getClass());
-  private static boolean debug = true, showTime = false, showReq=true;
+  private static boolean debug = true, showTime = true, showReq=true;
 
   private TdsContext tdsContext;
   private boolean allow = true;
-  //private CollectionManager collectionManager;
   private DiskCache2 diskCache;
 
   public CdmrFeatureController() {
@@ -99,22 +98,6 @@ public class CdmrFeatureController extends AbstractCommandController { // implem
   public void setDiskCache(DiskCache2 diskCache) {
     this.diskCache = diskCache;
   }
-
-  /* public void setCollections(CollectionManager collectionManager) {
-    this.collectionManager = collectionManager;
-    Formatter f = new Formatter();
-    f.format("CdmRemoteController collections%n");
-    collectionManager.show(f);
-    logServerStartup.info(f.toString());
-  }
-
-
-  /* public long getLastModified(HttpServletRequest req) {
-    File file = DataRootHandler.getInstance().getCrawlableDatasetAsFile(req.getPathInfo()); // LOOK
-    if ((file != null) && file.exists())
-      return file.lastModified();
-    return -1;
-  } */
 
   protected ModelAndView handle(HttpServletRequest req, HttpServletResponse res, Object command, BindException errors) throws Exception {
     log.info(UsageLog.setupRequestContext(req));
@@ -244,10 +227,69 @@ public class CdmrFeatureController extends AbstractCommandController { // implem
 
   private ModelAndView processData(HttpServletRequest req, HttpServletResponse res, FeatureDatasetPoint fdp, String path, CdmRemoteQueryBean qb) throws IOException {
     long start = 0;
+
+    switch (fdp.getFeatureType()) {
+      case POINT:
+        return processPointData(req, res, fdp, path, qb);
+      case STATION:
+        return processStationData(req, res, fdp, path, qb);
+    }
+
+    return null;
+  }
+
+  private ModelAndView processPointData(HttpServletRequest req, HttpServletResponse res, FeatureDatasetPoint fdp, String path, CdmRemoteQueryBean qb) throws IOException {
+    long start = 0;
     if (showTime) {
       start = System.currentTimeMillis();
       ucar.unidata.io.RandomAccessFile.setDebugAccess(true);  // LOOK !!
     }
+
+    List<FeatureCollection> coll = fdp.getPointFeatureCollectionList();
+    PointFeatureCollection pfc = (PointFeatureCollection) coll.get(0);
+    PointWriter pointWriter = new PointWriter(fdp, pfc, qb, diskCache);
+
+    // set content type, description
+    res.setContentType(getContentType(qb));
+    if (null != getContentDescription(qb))
+      res.setHeader("Content-Description", getContentDescription(qb));
+
+    // special handling for netcdf files
+    CdmRemoteQueryBean.ResponseType resType = qb.getResponseType();
+    if (resType == CdmRemoteQueryBean.ResponseType.netcdf) {
+      if (path.startsWith("/")) path = path.substring(1);
+      path = StringUtil.replace(path, "/", "-");
+      res.setHeader("Content-Disposition", "attachment; filename=" + path + ".nc");
+
+      File file = pointWriter.writeNetcdf();
+      ServletUtil.returnFile(req, res, file, getContentType(qb));
+      if (!file.delete()) {
+        log.warn("file delete failed =" + file.getPath());
+      }
+
+      if (showTime) {
+        long took = System.currentTimeMillis() - start;
+        System.out.println("\ntotal response took = " + took + " msecs");
+      }
+
+      return null;
+    }
+
+    // otherwise stream it out
+    PointWriter.Writer w = pointWriter.write(res);
+    log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
+
+    if (showTime) {
+      long took = System.currentTimeMillis() - start;
+      System.out.printf("%ntotal response took %d msecs nobs = %d%n  seeks= %d nbytes read= %d%n", took, w.count,
+              ucar.unidata.io.RandomAccessFile.getDebugNseeks(), ucar.unidata.io.RandomAccessFile.getDebugNbytes());
+    }
+
+    return null;
+  }
+
+  private ModelAndView processStationData(HttpServletRequest req, HttpServletResponse res, FeatureDatasetPoint fdp, String path, CdmRemoteQueryBean qb) throws IOException {
+    long start = 0;
 
     List<FeatureCollection> coll = fdp.getPointFeatureCollectionList();
     StationTimeSeriesFeatureCollection sfc = (StationTimeSeriesFeatureCollection) coll.get(0);
@@ -413,85 +455,3 @@ public class CdmrFeatureController extends AbstractCommandController { // implem
   }
 
 }
-
-
-/* create it each time for thread safety, and so that collection is updated
-private FeatureDatasetPoint getFeatureCollectionDataset(String uri, String path) throws IOException {
-
-//FeatureDatasetPoint fd = fdmap.get(path);
-//if (fd == null) {
-  CollectionBean config = collectionDatasets.get(path);
-  if (config == null) return null;
-
-  Formatter errlog = new Formatter();
-  FeatureDatasetPoint fd = (FeatureDatasetPoint) CompositeDatasetFactory.factory(uri, FeatureType.getType(config.getFeatureType()), config.getSpec(), errlog);
-  if (fd == null) {
-    log.error("Error opening CompositeDataset path = "+path+"  errlog = ", errlog);
-    return null;
-  }
-  //fdmap.put(path, fd);
-//}
-return fd;
-}
-
-/* private FeatureDatasetPoint getFeatureCollectionDatasetOld(String path) throws IOException {
-
-FeatureDatasetPoint fd = fdmap.get(path);
-if (fd == null) {
-  File content = tdsContext.getContentDirectory();
-  File config = new File(content, path);
-  if (!config.exists()) {
-    log.error("Config file %s doesnt exists %n", config);
-    return null;
-  }
-  //fd = (FeatureDatasetPoint) CompositeDatasetFactory.factory(FeatureType.STATION, "D:/formats/gempak/surface/*.gem?#yyyyMMdd");
-  Formatter errlog = new Formatter();
-  fd = (FeatureDatasetPoint) CompositeDatasetFactory.factory(path, config, errlog);
-  if (fd == null) {
-    log.error("Error opening dataset error =", errlog);
-    return null;
-  }
-  fdmap.put(path, fd);
-}
-return fd;
-}
-
-
-// one could use this for non-collection datasets
-private FeatureDatasetPoint getFeatureDataset(HttpServletRequest req, HttpServletResponse res, String path) throws IOException {
-NetcdfDataset ncd = null;
-try {
-  NetcdfFile ncfile = DatasetHandler.getNetcdfFile(req, res, path);
-  if (ncfile == null) {
-    log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, -1));
-    res.setStatus(HttpServletResponse.SC_NOT_FOUND);
-    return null;
-  }
-
-  ncd = NetcdfDataset.wrap(ncfile, NetcdfDataset.getEnhanceAll());
-  Formatter errlog = new Formatter();
-  FeatureDatasetPoint fd = (FeatureDatasetPoint) FeatureDatasetFactoryManager.wrap(FeatureType.STATION, ncd, null, errlog);
-  if (fd == null) {
-    log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_BAD_REQUEST, -1));
-    res.sendError(HttpServletResponse.SC_BAD_REQUEST, errlog.toString());
-    if (ncd != null) ncd.close();
-    return null;
-  }
-
-  return fd;
-
-} catch (FileNotFoundException e) {
-  log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
-  res.sendError(HttpServletResponse.SC_NOT_FOUND, e.getMessage());
-
-} catch (Throwable e) {
-  e.printStackTrace();
-  log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
-  res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
-}
-
-if (ncd != null) ncd.close();
-return null;
-}  */
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
