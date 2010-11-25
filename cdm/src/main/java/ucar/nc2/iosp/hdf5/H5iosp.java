@@ -224,7 +224,7 @@ public class H5iosp extends AbstractIOServiceProvider {
       return Array.factory(dataType.getPrimitiveClassType(), shape, data);
     }
 
-    if ((typeInfo.hdfType == 9) && !typeInfo.isVString) { // vlen (not string)  LOOK NOT TESTED!!!
+    if ((typeInfo.hdfType == 9) && !typeInfo.isVString) { // vlen (not string)
       DataType readType = dataType;
       if (typeInfo.isVString) // string
         readType = DataType.BYTE;
@@ -233,7 +233,7 @@ public class H5iosp extends AbstractIOServiceProvider {
 
       // general case is to read an array of vlen objects
       // each vlen generates an Array - so return ArrayObject of Array
-      boolean scalar = layout.getTotalNelems() == 1; // if scalar, return just the len Array
+      boolean scalar = false; // layout.getTotalNelems() == 1; // if scalar, return just the len Array // remove 12/25/10 jcaron
       Object[] data = new Object[(int) layout.getTotalNelems()];
       int count = 0;
       while (layout.hasNext()) {

@@ -132,7 +132,8 @@ public class TestN4 extends TestCase {
 
   public void testVlen() throws IOException, InvalidRangeException {
     //H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
-    String filename = testDir+"vlen/fpcs_1dwave_2.nc";
+    String filename = "C:/data/work/bruno/fpsc_d1wave_24-11.nc";
+    //String filename = testDir+"vlen/fpcs_1dwave_2.nc";
     NetcdfFile ncfile = TestNC2.open(filename);
     System.out.println("\n**** testReadNetcdf4 done\n\n" + ncfile);
     Variable v = ncfile.findVariable("levels");
@@ -157,6 +158,25 @@ public class TestN4 extends TestCase {
     //int[] origin = new int[] {0, 0};
     //int[] size = new int[] {3, -1};
     //data = v.read(origin, size);
+
+    // from bruno
+    int initialIndex = 5;
+    int finalIndex = 5;
+    data = v.read(initialIndex + ":" + finalIndex + ",:");
+    //NCdumpW.printArray(data, "read()",  new PrintWriter(System.out), null);
+
+    System.out.println("Size: " + data.getSize());
+    System.out.println("Data: " + data);
+    System.out.println("Class: " + data.getClass().getName());
+    // loop over outer dimension
+
+    int x = 0;
+    while (data.hasNext()) {
+      Array as = (Array) data.next(); // inner variable length array of short
+      System.out.println("Shape: " + new Section(as.getShape()));
+      System.out.println(as);
+    }
+
 
     ncfile.close();
   }
