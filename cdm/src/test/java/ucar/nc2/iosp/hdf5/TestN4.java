@@ -132,8 +132,8 @@ public class TestN4 extends TestCase {
 
   public void testVlen() throws IOException, InvalidRangeException {
     //H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
-    String filename = "C:/data/work/bruno/fpsc_d1wave_24-11.nc";
-    //String filename = testDir+"vlen/fpcs_1dwave_2.nc";
+    //String filename = "C:/data/work/bruno/fpsc_d1wave_24-11.nc";
+    String filename = testDir+"vlen/fpcs_1dwave_2.nc";
     NetcdfFile ncfile = TestNC2.open(filename);
     System.out.println("\n**** testReadNetcdf4 done\n\n" + ncfile);
     Variable v = ncfile.findVariable("levels");
