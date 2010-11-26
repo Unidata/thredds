@@ -59,7 +59,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
 
   static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CdmRemote.class);
   static private HttpClient httpClient;
-  static private boolean showRequest = true;
+  static private boolean showRequest = false;
 
   /**
    * Create the canonical form of the URL.

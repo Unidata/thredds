@@ -57,6 +57,16 @@ public class Cursor {
     return indx;
   }
 
+  /* t.kunicki 11/25/10
+  // Flattened data can now accurately access parent structure
+  private int getParentIndex() {
+    int maxIndex = tableData.length - 1;
+    int parentIndex = currentIndex < maxIndex ? currentIndex + 1 : currentIndex;
+    while (tableData[parentIndex] == null && parentIndex < maxIndex) parentIndex++;
+    return parentIndex;
+   }
+  // end t.kunicki 11/25/10 */
+
   StructureData getParentStructure() {
     return tableData[getParentIndex()];
   }

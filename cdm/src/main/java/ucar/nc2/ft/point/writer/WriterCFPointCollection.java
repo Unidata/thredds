@@ -103,6 +103,8 @@ public class WriterCFPointCollection {
   }
 
   private void createCoordinates(DateUnit timeUnit) throws IOException {
+    ncfile.addUnlimitedDimension(recordDimName);
+
     // time variable
     Variable timeVar = ncfile.addVariable(timeName, DataType.DOUBLE, recordDimName);
     ncfile.addVariableAttribute(timeVar, new Attribute("units", timeUnit.getUnitsString()));
@@ -209,10 +211,10 @@ public class WriterCFPointCollection {
   }
 
   public void finish() throws IOException {
-    ncfile.addGlobalAttribute("geospatial_lat_min", Double.toString(llbb.getLowerLeftPoint().getLatitude()));
-    ncfile.addGlobalAttribute("geospatial_lat_max", Double.toString(llbb.getUpperRightPoint().getLatitude()));
-    ncfile.addGlobalAttribute("geospatial_lon_min", Double.toString(llbb.getLowerLeftPoint().getLongitude()));
-    ncfile.addGlobalAttribute("geospatial_lon_max", Double.toString(llbb.getUpperRightPoint().getLongitude()));
+    ncfile.updateAttribute(null, new Attribute("geospatial_lat_min", llbb.getLowerLeftPoint().getLatitude()));
+    ncfile.updateAttribute(null, new Attribute("geospatial_lat_max", llbb.getUpperRightPoint().getLatitude()));
+    ncfile.updateAttribute(null, new Attribute("geospatial_lon_min", llbb.getLowerLeftPoint().getLongitude()));
+    ncfile.updateAttribute(null, new Attribute("geospatial_lon_max", llbb.getUpperRightPoint().getLongitude()));
 
     // if there is no data
     if (minDate == null) minDate = new Date();

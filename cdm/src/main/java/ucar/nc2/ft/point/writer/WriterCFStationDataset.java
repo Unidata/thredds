@@ -45,7 +45,7 @@ import java.util.*;
 import java.io.IOException;
 
 /**
- * Write a CF "Discrete Sample" station file. LOOK
+ * Write a CF "Discrete Sample" station file.
  *
  * @author caron
  * @since Aug 19, 2009
@@ -109,15 +109,10 @@ public class WriterCFStationDataset {
   }
 
   private void createGlobalAttributes() {
-    ncfile.addGlobalAttribute("Conventions", "CF-1.4");
-    ncfile.addGlobalAttribute("CF:featureType", "stationTimeSeries");
+    ncfile.addGlobalAttribute("Conventions", "CF-1.6");
+    ncfile.addGlobalAttribute("featureType", "timeSeries");
     ncfile.addGlobalAttribute("title", title);
-    ncfile.addGlobalAttribute("desc", "Written by THREDDS/CDM Remote Subset Service");
-    /* ncfile.addGlobalAttribute("observationDimension", recordDimName);
-    ncfile.addGlobalAttribute("stationDimension", stationDimName);
-    ncfile.addGlobalAttribute("latitude_coordinate", latName);
-    ncfile.addGlobalAttribute("longitude_coordinate", lonName);
-    ncfile.addGlobalAttribute("time_coordinate", timeName); */
+    ncfile.addGlobalAttribute("desc", "Written by TDS/CDM Remote Feature subset service");
   }
 
   private void createStations(List<ucar.unidata.geoloc.Station> stnList) throws IOException {
@@ -193,7 +188,6 @@ public class WriterCFStationDataset {
     Variable v = ncfile.addVariable(stationIndexName, DataType.INT, recordDimName);
     ncfile.addVariableAttribute(v, new Attribute("long_name", "station index for this observation record"));
     ncfile.addVariableAttribute(v, new Attribute("standard_name", "ragged_parentIndex"));
-
   }
 
   private void createDataVariables(List<VariableSimpleIF> dataVars) throws IOException {

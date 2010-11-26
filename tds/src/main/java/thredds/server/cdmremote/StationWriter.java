@@ -94,7 +94,7 @@ public class StationWriter {
     if (qb.getTemporalSelection() == CdmRemoteQueryBean.TemporalSelection.range) {
       wantRange = qb.getDateRange();
       DateRange haveRange = fd.getDateRange();
-      if (!haveRange.intersects(wantRange)) {
+      if ((haveRange != null) && !haveRange.intersects(wantRange)) {
         res.sendError(HttpServletResponse.SC_BAD_REQUEST, "ERROR: This dataset does not include the requested time range= " + wantRange +
                 "\ndataset time range = " + haveRange);
         return false;

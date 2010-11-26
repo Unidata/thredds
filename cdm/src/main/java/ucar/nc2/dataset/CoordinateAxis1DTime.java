@@ -322,4 +322,15 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
     return false;
   }
 
+  @Override
+  public CoordinateAxis1D section(Range r) throws InvalidRangeException {
+    CoordinateAxis1D s = super.section(r);
+    Date[] d = new Date[r.length()];
+    for (int i = r.first(), j = 0; i <= r.last(); i += r.stride(), ++j) {
+      d[j] = timeDates[i];
+    }
+    ((CoordinateAxis1DTime)s).timeDates = d;
+    return s;
+  }
+
 }

@@ -136,8 +136,10 @@ public class PointFeatureDatasetViewer extends JPanel {
         try {
           if (selectedStation != null) {
             setStation(selectedStation, dateRange);
-          } else if (useRegion) {
+          } else if (useRegion || (dateRange != null)) {
             subset(geoRegion, dateRange);
+          } else {
+            JOptionPane.showMessageDialog(null, "You must subset in space and/or time ");            
           }
 
         } catch (IOException e1) {
