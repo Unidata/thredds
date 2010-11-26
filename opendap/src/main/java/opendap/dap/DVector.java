@@ -250,8 +250,10 @@ abstract public class DVector extends BaseType implements ClientIO {
           System.out.println("  array type = : "+vals.getClass().getName());
         } */
 
-        if (length < 0)
-            throw new DataReadException("Negative array length read.");
+      if (length < 0)
+          throw new DataReadException("Negative array length read.");
+      //if (length > 1000 * 1000 * 100)
+      //    throw new DataReadException("Bad array length read.");
         if (statusUI != null)
             statusUI.incrementByteCount(8);
         vals.setLength(length);

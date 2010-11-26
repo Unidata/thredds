@@ -113,7 +113,7 @@ public class DataDDS extends DDS {
             if (statusUI != null && statusUI.userCancelled()) throw new DataReadException("User cancelled");
             ClientIO bt = (ClientIO) e.nextElement();
           
-            //System.out.printf("Deserializing: %s (%s) start = %s %n", ((BaseType)bt).getTypeName(), ((BaseType)bt).getName(), counter);
+            //System.out.printf("Deserializing: %s (%s) start = %s %n", ((BaseType)bt).getTypeName(), ((BaseType)bt).getName(), 0);
             bt.deserialize(dataIS, ver, statusUI);
         }
         //System.out.printf("Deserializing: total size = %s %n", counter);
