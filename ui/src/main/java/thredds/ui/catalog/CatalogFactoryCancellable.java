@@ -183,6 +183,7 @@ public class CatalogFactoryCancellable extends InvCatalogFactory {
         catalog = new InvCatalogImpl(catalogName, null, null);
         catalog.appendErrorMessage("**Fatal:  InvCatalogFactory.readXML IOException on URL (" +
                 catalogName + ") " + e.getMessage() + "\n", true);
+        error = "InvCatalogFactory.readXML IOException on URL (" + catalogName + ") " + e.getMessage() + "\n";
         success = false;
         done = true;
         taskDone = true;

@@ -44,6 +44,7 @@ import ucar.nc2.units.DateRange;
 import ucar.unidata.geoloc.EarthLocation;
 import ucar.ma2.StructureData;
 import ucar.ma2.Array;
+import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.util.Format;
 
 import java.util.*;
@@ -68,28 +69,21 @@ public class PointWriter {
 
   private final FeatureDatasetPoint fd;
   private final CdmRemoteQueryBean qb;
-  private final PointFeatureCollection pfc;
-  // private final Date start, end;
-  private List<VariableSimpleIF> wantVars;
+  private PointFeatureCollection pfc;
+
+  private LatLonRect wantBB;
   private DateRange wantRange;
+  private List<VariableSimpleIF> wantVars;
   private ucar.nc2.util.DiskCache2 diskCache;
 
   public PointWriter(FeatureDatasetPoint fd, PointFeatureCollection pfc, CdmRemoteQueryBean qb, ucar.nc2.util.DiskCache2 diskCache) throws IOException {
     this.fd = fd;
+    this.pfc = pfc;
     this.qb = qb;
     this.diskCache = diskCache;
-
-    // let the PointFeatureCollection do the subsetting, then we only have to scan
-    this.pfc = ((qb.getLatLonRect() != null) || (qb.getDateRange() != null)) ?
-      pfc.subset(qb.getLatLonRect(), qb.getDateRange()) : pfc;
-
-    //this.wantVars = qb.getVarNames();
-
-    //start = fd.getStartDate();
-    //end = fd.getEndDate();
   }
 
-  /* boolean validate(HttpServletResponse res) throws IOException {
+  boolean validate(HttpServletResponse res) throws IOException {
 
     // verify TemporalSelection intersects
     if (qb.getTemporalSelection() == CdmRemoteQueryBean.TemporalSelection.range) {
@@ -114,42 +108,29 @@ public class PointWriter {
         if ((varNames == null) || varNames.contains(v.getShortName())) // LOOK N**2
           wantVars.add(v);
       }
+       if (wantVars.size() == 0) {
+        res.sendError(HttpServletResponse.SC_BAD_REQUEST, "ERROR: This dataset does not include the requested variables= " + qb.getVar());
+        return false;
+      }
     }
 
     // verify SpatialSelection has some stations
     if (qb.getSpatialSelection() == CdmRemoteQueryBean.SpatialSelection.bb) {
-      LatLonRect bb = sfc.getBoundingBox();
-      if ((bb != null) && (bb.intersect(qb.getLatLonRect()) == null)) {
-        res.sendError(HttpServletResponse.SC_BAD_REQUEST, "ERROR: Bounding Box contains no stations; bb= " + qb.getLatLonRect());
+      wantBB = qb.getLatLonRect();
+      LatLonRect haveBB = pfc.getBoundingBox();
+      if ((wantBB != null) && (haveBB != null) && (wantBB.intersect(haveBB) == null)) {
+        res.sendError(HttpServletResponse.SC_BAD_REQUEST, "ERROR: This dataset does not include the requested bb= " + wantBB);
         return false;
       }
-      //System.out.printf("sfc.flatten0 wantRange= %s on %s %n", wantRange, fd.getLocation());
-      pfc = sfc.flatten(qb.getLatLonRect(), wantRange);
 
-    } else if (qb.getSpatialSelection() == CdmRemoteQueryBean.SpatialSelection.stns) {
-      if (!contains(sfc, qb.getStnNames())) {
-        res.sendError(HttpServletResponse.SC_BAD_REQUEST, "ERROR: No valid stations specified = " + qb.getStn());
-        return false;
-      }
-      //System.out.printf("sfc.flatten1 wantRange= %s on %s %n", wantRange, fd.getLocation());
-      List<String> wantStns = Arrays.asList(qb.getStnNames());
-      pfc = sfc.flatten(wantStns, wantRange, null);
-
-    } else {
-      //System.out.printf("sfc.flatten2 wantRange= %s on %s %n", wantRange, fd.getLocation());
-      pfc = sfc.flatten(null, wantRange, null);
     }
+
+    // let the PointFeatureCollection do the subsetting, then we only have to scan
+    this.pfc = ((wantBB != null) || (wantRange != null)) ?
+      pfc.subset(wantBB, wantRange) : pfc;
 
     return true;
   }
-
-  private boolean contains(StationTimeSeriesFeatureCollection sfc, String[] stnNames) {
-    for (String name : stnNames) {
-      if (sfc.getStation(name) != null) return true;
-    }
-    return false;
-  }  */
-
 
   ////////////////////////////////////////////////////////////////
   // writing

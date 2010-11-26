@@ -34,7 +34,7 @@
 
     <featureCollection name="Metar Station Data" harvest="true" featureType="Station" path="nws/metar/ncdecoded">
       <metadata inherited="true">
-        <dataFormat>NetCDF</dataFormat>
+        <documentation type="summary">Metars: hourly surface weather observations</documentation>
         <documentation xlink:href="http://metar.noaa.gov/" xlink:title="NWS/NOAA information"/>
         <documentation>In the U.S., METAR reports are taken once an hour between 50 minutes past the hour and the top of
           the (next) hour. All the observations taken within this time are considered to be for the same cycle. For
@@ -43,7 +43,6 @@
           conditions, known as SPECI reports, are also considered to occur for a given cycle. Our rule of thumb is that
           all reports taken between (hh-1)45Z to hh44Z are considered to be for the hh cycle.
         </documentation>
-
         <keyword>metar</keyword>
         <keyword>surface observations</keyword>
       </metadata>
@@ -51,12 +50,10 @@
       <property name="raw" value="report"/>
       <property name="resolution" value="20 min"/>
 
-      <collection spec="/data/ldm/pub/decoded/netcdf/surface/metar/Surface_METAR_#yyyyMMdd_HHmm#.nc$"
-                    recheckAfter="15 min"
-                    olderThan="5 min"/>
-      <manage deleteAfter="45 days" check="0 0 3 * * ? *" />
-      <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
-      <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
+      <collection spec="/data/ldm/pub/decoded/netcdf/surface/metar/Surface_METAR_#yyyyMMdd_HHmm#.nc$" />
+      <update startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+      <protoDataset choice="Penultimate" />
+      <pointConfig datasetTypes="cdmrFeature Files"/>
     </featureCollection>
 
     <dataset name="NOAA Profiler Network">

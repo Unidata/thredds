@@ -120,7 +120,7 @@ public class CdmrFeatureController extends AbstractCommandController { // implem
     } */
 
     if (showReq)
-      System.out.printf("CdmRemoteController req=%s%n", absPath+"?"+req.getQueryString());
+      System.out.printf("CdmFeatureController req=%s%n", absPath+"?"+req.getQueryString());
     if (debug) {
       System.out.printf(" path=%s%n query=%s%n", path, req.getQueryString());
     }
@@ -249,6 +249,12 @@ public class CdmrFeatureController extends AbstractCommandController { // implem
     PointFeatureCollection pfc = (PointFeatureCollection) coll.get(0);
     PointWriter pointWriter = new PointWriter(fdp, pfc, qb, diskCache);
 
+    // query validation - second pass
+    if (!pointWriter.validate(res)) {
+      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_BAD_REQUEST, -1));
+      return null;
+    }
+
     // set content type, description
     res.setContentType(getContentType(qb));
     if (null != getContentDescription(qb))
@@ -272,19 +278,18 @@ public class CdmrFeatureController extends AbstractCommandController { // implem
         System.out.println("\ntotal response took = " + took + " msecs");
       }
 
-      return null;
+    } else {
+
+      // otherwise stream it out
+      PointWriter.Writer w = pointWriter.write(res);
+      if (showTime) {
+        long took = System.currentTimeMillis() - start;
+        System.out.printf("%ntotal response took %d msecs nobs = %d%n  seeks= %d nbytes read= %d%n", took, w.count,
+                ucar.unidata.io.RandomAccessFile.getDebugNseeks(), ucar.unidata.io.RandomAccessFile.getDebugNbytes());
+      }
     }
 
-    // otherwise stream it out
-    PointWriter.Writer w = pointWriter.write(res);
     log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
-
-    if (showTime) {
-      long took = System.currentTimeMillis() - start;
-      System.out.printf("%ntotal response took %d msecs nobs = %d%n  seeks= %d nbytes read= %d%n", took, w.count,
-              ucar.unidata.io.RandomAccessFile.getDebugNseeks(), ucar.unidata.io.RandomAccessFile.getDebugNbytes());
-    }
-
     return null;
   }
 

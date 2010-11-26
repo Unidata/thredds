@@ -292,7 +292,7 @@ public class FileCache {
     // see if its in the cache
     CacheElement elem = cache.get(hashKey);
     if (elem != null) {
-      synchronized (elem) { // synch in order to travers the list
+      synchronized (elem) { // synch in order to traverse the list
         for (CacheElement.CacheFile file : elem.list) {
           if (file.isLocked.compareAndSet(false, true)) {
             ncfile = file.ncfile;

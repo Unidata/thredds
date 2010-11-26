@@ -103,7 +103,7 @@ class RemotePointCollection extends PointCollectionImpl implements QueryMaker {
 
     } catch (Throwable t) {
       if (method != null) method.releaseConnection();
-      throw new RuntimeException(t);
+      throw new IOException(t);
     }
 
     if (errMessage != null)
