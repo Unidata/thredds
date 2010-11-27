@@ -46,7 +46,7 @@ import ucar.nc2.util.IO;
 import ucar.unidata.util.StringUtil;
 
 /**
- * Cache filesystem info.
+ * Handles caching using ehcache.
  * Must be thread safe.
  * Uses ehcache underneath.
  *

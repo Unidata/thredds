@@ -351,7 +351,7 @@ public class DatasetCollectionManager implements CollectionManager {
   }
 
   /**
-   * Rescan directories. Files may be deleted or added.
+   * Rescan the collection. Files may have been deleted or added.
    * If the MFile already exists in the current list, leave it in the list.
    * If returns true, get the results from getFiles(), otherwise nothing has changed.
    *

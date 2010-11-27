@@ -52,8 +52,8 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 /**
- * Feature Collection (experimental).
- * Like InvDatasetFmrc, this is a InvCatalogRef subclass. So the reference is placed in the parent, but
+ * Feature Collection Dataset.
+ * This is a InvCatalogRef subclass. So the reference is placed in the parent, but
  * the catalog itself isnt constructed until the following call from DataRootHandler.makeDynamicCatalog():
  *       match.dataRoot.featCollection.makeCatalog(match.remaining, path, baseURI);
  *
@@ -256,7 +256,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
       id = getPath();
     top.setID(id);
 
-    // add Variables, GeospatialCoverage, TimeCoverage LOOK" doesnt seem to work
+    // add Variables, GeospatialCoverage, TimeCoverage LOOK doesnt seem to work
     ThreddsMetadata tmi = top.getLocalMetadataInheritable();
     if (localState.vars != null) tmi.addVariables(localState.vars);
     if (localState.gc != null) tmi.setGeospatialCoverage(localState.gc);
@@ -279,11 +279,6 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
 
   /////////////////////////////////////////////////////////////////////////
 
-
-  // called by DatasetHandler.getNetcdfFile()
-
-  // called by DatasetHandler.openGridDataset()
-
   /**
    * Get the associated Grid Dataset, if any. called by DatasetHandler.openGridDataset()
    * @param matchPath match.remaining
@@ -303,7 +298,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
 
   /**
    * Get the dataset named by the path. called by DatasetHandler.getNetcdfFile()
-   *
+   * called by DatasetHandler.getNetcdfFile()
    * @param matchPath remaining path from match
    * @return requested dataset
    * @throws IOException if read error

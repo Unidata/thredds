@@ -35,7 +35,7 @@ import java.io.*;
 import java.util.HashMap;
 
 /**
- * Class Description
+ * Externalizable representation of a java.io.File using protobuf for serialization.
  *
  * @author caron
  * @since Jul 6, 2009

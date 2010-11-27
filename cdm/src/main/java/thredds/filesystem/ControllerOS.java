@@ -40,7 +40,8 @@ import java.util.*;
 import java.io.File;
 
 /**
- * Inventory Management Controller directly reading OS Files, no caching. recheck is ignored (always true)
+ * Implements an MController without caching, reading from OS each time.
+ * recheck is ignored (always true)
  *
  * @author caron
  * @since Jun 25, 2009

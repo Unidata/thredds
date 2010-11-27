@@ -1,7 +1,7 @@
 package ucar.nc2.ft.point.collection;
 
 /**
- * Describe
+ * Mixin for update() method.
  *
  * @author caron
  * @since Nov 22, 2010

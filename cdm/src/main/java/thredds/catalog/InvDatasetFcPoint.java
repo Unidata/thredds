@@ -46,7 +46,10 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
   @Override
   public void triggerRescan() {
     try {
-      dcm.rescan();
+      if (dcm.rescan()) {
+        ((UpdateableCollection)fd).update();
+      }
+
     } catch (IOException e) {
       logger.error("rescan", e);
     }

@@ -37,7 +37,7 @@ import thredds.inventory.MFile;
 import ucar.unidata.util.StringUtil;
 
 /**
- * Inventory "Managed File" using regular OS files.
+ * Implements thredds.inventory.MFile using regular OS files.
  *
  * @author caron
  * @since Jun 30, 2009

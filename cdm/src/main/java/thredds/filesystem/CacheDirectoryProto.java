@@ -37,7 +37,7 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * Lightweight, serializable representation of a java.io.File directory
+ * Externalizable representation of a java.io.File directory using protobuf for serialization.
  * @author caron
  * @since Mar 21, 2009
  */

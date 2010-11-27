@@ -35,7 +35,7 @@ import net.jcip.annotations.ThreadSafe;
 import thredds.inventory.MFile;
 
 /**
- * Inventory "Managed File" using cached OS files.
+ * Implements thredds.inventory.MFile using cached OS files.
  *
  * @author caron
  * @since Jun 25, 2009

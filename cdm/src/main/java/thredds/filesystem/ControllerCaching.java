@@ -41,7 +41,6 @@ import java.io.IOException;
 import net.jcip.annotations.ThreadSafe;
 
 /**
- * Inventory File Management Controller, with caching.
  * Implements an MController using a CacheManager.
  *
  * @author caron

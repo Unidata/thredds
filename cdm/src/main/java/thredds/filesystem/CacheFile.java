@@ -37,7 +37,7 @@ import java.util.HashMap;
 import java.util.Formatter;
 
 /**
- * Lightweight, serializable representation of a java.io.File with arbitrary attributes
+ * Lightweight, serializable representation of a java.io.File with arbitrary attributes.
  * @author caron
  * @since Mar 21, 2009
  */
