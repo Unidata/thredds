@@ -117,9 +117,11 @@ public final class Grib1ExtractRawData {
 
     //System.out.println("file position =" + raf.getFilePointer());
     long SOR = raf.getFilePointer();
+    int count = -1;
     while (raf.getFilePointer() < raf.length()) {
       SOR = raf.getFilePointer();
       if (seekHeader(raf, raf.length())) {
+        count++;
         // Read Section 0 Indicator Section
         Grib1IndicatorSection is = new Grib1IndicatorSection(raf);
         //System.out.println( "Grib record length=" + is.getGribLength());
@@ -142,6 +144,18 @@ public final class Grib1ExtractRawData {
           dos.write(oneRecord, 0, oneRecord.length);
           dos.flush();
           break;
+        } else if( parm[1] == -1 ) {
+          if( count == parm[0]) {
+            raf.seek(SOR);
+            byte[] oneRecord = new byte[(int) is.getGribLength()];
+            raf.read(oneRecord);
+            dos.write(oneRecord, 0, oneRecord.length);
+            dos.flush();
+            break;
+          } else {
+            raf.seek(EOR);
+          }
+          continue;
         }
         long dataOffset = 0;
         try { // catch all exceptions and seek to EOR
@@ -265,12 +279,17 @@ public final class Grib1ExtractRawData {
 
     int[] number = new int[2];
     number[0] = -1;
+    number[1] = -1;
+    // Writes out first record in Grib file
     if (args.length == 1) {
       fileName = args[0];
+      getParameter = false;
+    // write out record number in Grib file
     } else if (args.length == 2) {
       fileName = args[0];
       number[0] = Integer.parseInt(args[1]);
       getParameter = true;
+    // write out records between forecast times in Grib file  
     } else if (args.length == 3) {
       fileName = args[0];
       number[0] = Integer.parseInt(args[1]);

@@ -100,8 +100,8 @@ public final class Grib2ExtractRawData {
    * @throws NotSupportedException NotSupportedException
    * @throws IOException on data read
    */
-  public final boolean scan(int discipline, int category, int number, int forecast)
-      throws IOException {
+  public final boolean scan(int discipline, int category, int number, int forecast,
+                            long gOffset, long pOffset ) throws IOException {
 
     Grib2IndicatorSection is = null;
     Grib2IdentificationSection id = null;
@@ -116,14 +116,18 @@ public final class Grib2ExtractRawData {
     }
     long EOR = 0;
     long SOR = 0;
+    long gdsOffset = 0;     // GDS offset from start of file
+    long pdsOffset = 0;
     boolean startAtHeader = true;  // otherwise skip to GDS
     boolean processGDS = true;
     Grib2ProductDefinitionSection pds = null;
     //DataOutputStream dos = new DataOutputStream(System.out);
+    int count = -1;
     DataOutputStream dos = new DataOutputStream(
         new FileOutputStream( raf.getLocation() +".extract"));
     while (raf.getFilePointer() < raf.length()) {
       if (startAtHeader) {  // begining of record
+        count++;
         if (!seekHeader(raf, raf.length())) {
           //System.out.println( "Scan seekHeader failed" );
           return false;  // not valid Grib file
@@ -161,7 +165,8 @@ public final class Grib2ExtractRawData {
         if (processGDS) {
           // check for Local Use Section 2
           lus = new Grib2LocalUseSection(raf);
-
+          // obtain GDS offset in the file for this record
+          gdsOffset = raf.getFilePointer();
           // Section 3
           gds = new Grib2GridDefinitionSection(raf, true);
           //System.out.println( "GDS length=" + gds.getLength() );
@@ -169,9 +174,20 @@ public final class Grib2ExtractRawData {
         }  // end processGDS
 
         long refTime = id == null ? 0 : id.getRefTime();
+        // obtain PDS offset in the file for this record
+        pdsOffset = raf.getFilePointer();
+        if ( gdsOffset == gOffset && pdsOffset == pOffset) {
+          raf.seek(SOR);
+          byte[] oneRecord = new byte[(int) is.getGribLength()];
+          raf.read(oneRecord);
+          dos.write(oneRecord, 0, oneRecord.length);
+          dos.flush();
+          break;
+        }
         pds = new Grib2ProductDefinitionSection(raf, refTime);  // Section 4
         Grib2Pds pdsv = pds.getPdsVars();
-        if (pdsv.getForecastTime() < forecast || (discipline == is.getDiscipline() &&
+        //if (pdsv._getForecastTime() == forecast || (discipline == is.getDiscipline() &&
+        if (pdsv._getForecastTime() == forecast && (discipline == is.getDiscipline() &&
             category == pdsv.getParameterCategory() &&
             number == pdsv.getParameterNumber())) {
           raf.seek(SOR);
@@ -250,25 +266,41 @@ public final class Grib2ExtractRawData {
 
     String fileName;
     int discipline = -1, category = -1, number = -1, forecast = -1;
+    long gOffset = -1L, pOffset = -1L;
+    // Writes out first record in file
     if (args.length == 1) {
       fileName = args[0];
+    // Writes out records with given forecast time
     } else if (args.length == 2) {
       fileName = args[0];
       forecast = Integer.parseInt(args[1]);
-
+    // writes out record with given GDS & PDS offsets
+    } else if (args.length == 3) {
+      fileName = args[0];
+      discipline = 1000;
+      gOffset = Integer.parseInt(args[1]);
+      pOffset = Integer.parseInt(args[2]);
+    // writes out records with given Discipline, Category, and Parameter number
     } else if (args.length == 4) {
       fileName = args[0];
       discipline = Integer.parseInt(args[1]);
       category = Integer.parseInt(args[2]);
       number = Integer.parseInt(args[3]);
-
+    // writes out record with given Discipline, Category, and Parameter number
+    // including forecast time
+    } else if (args.length == 5) {
+      fileName = args[0];
+      discipline = Integer.parseInt(args[1]);
+      category = Integer.parseInt(args[2]);
+      number = Integer.parseInt(args[3]);
+      forecast = Integer.parseInt(args[4]);
     } else {
       System.out.println("Not correct number of parms, either 1 or 4");
       return;
     }
     RandomAccessFile raf = new RandomAccessFile(fileName, "r");
     Grib2ExtractRawData erd = new Grib2ExtractRawData(raf);
-    erd.scan(discipline, category, number, forecast);
+    erd.scan(discipline, category, number, forecast, gOffset, pOffset);
   }
 
 }  // end Grib2ExtractRawData

@@ -171,6 +171,7 @@ public class Grib2WriteIndex {
       System.out.println(now.toString() + " ... Start of Grib2WriteIndex");
     long start = System.currentTimeMillis();
     int count = 0;
+    int numberDups = 0;
     // set buffer size for performance
     int rafBufferSize = inputRaf.getBufferSize();
     inputRaf.setBufferSize(indexRafBufferSize);
@@ -205,7 +206,8 @@ public class Grib2WriteIndex {
           Grib2Product product = products.get( i );
           csc32.reset();
           csc32.update(product.getPDS().getPdsVars().getPDSBytes());
-          String csc = Long.toString( csc32.getValue() );
+          //Discipline is part of Parameter identification
+          String csc = Long.toString( csc32.getValue() + product.getDiscipline());
           if ( verbose )
             System.out.println(  "csc32="+ csc );
           // duplicate found
@@ -230,6 +232,7 @@ public class Grib2WriteIndex {
           }
         }
         if( duplicate.size() > 0 ) {
+          numberDups = duplicate.size();
           Collections.sort(duplicate, new CompareKeyDescend());
           // remove duplicates from products, highest first
           for( int idx : duplicate ) {
@@ -292,7 +295,12 @@ public class Grib2WriteIndex {
 
     if (debugTiming)
       System.out.println(" " + count + " products took " + (System.currentTimeMillis() - start) + " msec");
-
+    if( numberDups > 0 ) {
+      count += numberDups;
+      System.out.println( " has Percentage of duplicates "+
+          (int)((((double)numberDups/(double)count) * 100) +.5)
+          +"%  duplicates ="+ numberDups +" out of "+ count +" records." );
+    }
     return true;
   }  // end writeGribIndex
 
@@ -399,6 +407,7 @@ public class Grib2WriteIndex {
       System.out.println(now.toString() + " ... Start of Grib2ExtendIndex");
     long start = System.currentTimeMillis();
     int count = 0;
+    int numberDups = 0;
     // set buffer size for performance
     int rafBufferSize = inputRaf.getBufferSize();
     inputRaf.setBufferSize(indexRafBufferSize);
@@ -449,7 +458,8 @@ public class Grib2WriteIndex {
           Grib2WriteIndex.RawRecord rr = recordList.get( i );
           csc32.reset();
           csc32.update( rr.pdsData );
-          String csc = Long.toString( csc32.getValue() );
+          // Discipline is part of Parameter identification
+          String csc = Long.toString( csc32.getValue() + rr.discipline );
           pdsMap.put( csc, i );
         }
         Calendar cal = Calendar.getInstance();
@@ -458,7 +468,8 @@ public class Grib2WriteIndex {
           Grib2Product product = products.get( i );
           csc32.reset();
           csc32.update(product.getPDS().getPdsVars().getPDSBytes());
-          String csc = Long.toString( csc32.getValue() );
+          //Discipline is part of Parameter identification
+          String csc = Long.toString( csc32.getValue() + product.getDiscipline());
           if ( verbose )
             System.out.println(  "csc32="+ csc );
           // duplicate found
@@ -490,6 +501,7 @@ public class Grib2WriteIndex {
           }
         }
         if( duplicate.size() > 0 ) {
+          numberDups = duplicate.size();
           Collections.sort(duplicate, new CompareKeyDescend());
           // remove duplicates here from products, highest first
           for( int idx : duplicate ) {
@@ -575,7 +587,12 @@ public class Grib2WriteIndex {
 
     if (debugTiming)
       System.out.println(" " + count + " products took " + (System.currentTimeMillis() - start) + " msec");
-
+    if( numberDups > 0 ) {
+      count += numberDups;
+      System.out.println( " has Percentage of duplicates "+
+          (int)((((double)numberDups/(double)count) * 100) +.5)
+          +"%  duplicates ="+ numberDups +" out of "+ count +" records." );
+    } 
     return true;
   }  // end extendGribIndex
 
@@ -693,15 +710,26 @@ public class Grib2WriteIndex {
       return false;
     }
     // add category and parameter number
-    str.append( " Category ");
+    str.append( " Category 1=");
     str.append( pdsv1.getParameterCategory() );
-    str.append( " Parameter ");
+    //str.append( " Category 2=");
+    //str.append( pdsv2.getParameterCategory() );
+    str.append( " Parameter 1=");
     str.append( pdsv1.getParameterNumber() );
-    str.append( " Level1 ");
-    str.append( pdsv1.getLevelType1() );
-    str.append( " value ");
-    str.append( pdsv1.getLevelValue1()  );
-    
+    //str.append( " Parameter 2=");
+    //str.append( pdsv2.getParameterNumber() );
+    //str.append( " Level1 ");
+    //str.append( pdsv1.getLevelType1() );
+    //str.append( " value ");
+    //str.append( pdsv1.getLevelValue1()  );
+    str.append( " time 1=");
+    str.append( pdsv1._getForecastTime()  );
+    //str.append( " time 2=");
+    //str.append( pdsv2._getForecastTime()  );
+
+    str.append( " p1offsets="+ p1Offset1 +" "+ p1Offset2 );
+    str.append( " p2offsets="+ p2Offset1 +" "+ p2Offset2 );
+
     // check if the data is the same
     Grib2Data g1d = new Grib2Data( inputRaf );
     float[] data1 = g1d.getData(p1Offset1, p1Offset2, 0L);
@@ -709,6 +737,9 @@ public class Grib2WriteIndex {
     boolean datasame = true;
     for ( int i = 0; i < data1.length; i++ ) {
       if ( data1[ i ] != data2[ i ]) {
+        if( Float.valueOf( data1[ i ]).isNaN() && Float.valueOf( data2[ i ]).isNaN() )
+          continue;
+        
         datasame = false;
         break;
       }

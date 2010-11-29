@@ -149,6 +149,7 @@ public class Grib1WriteIndex {
       System.out.println(now.toString() + " ... Start of Grib1WriteIndex");
     long start = System.currentTimeMillis();
     int count = 0;
+    int numberDups = 0;
     // set buffer size for performance
     int rafBufferSize = inputRaf.getBufferSize();
     inputRaf.setBufferSize( Grib2WriteIndex.indexRafBufferSize );
@@ -205,7 +206,7 @@ public class Grib1WriteIndex {
           }
         }
         if( duplicate.size() > 0 ) {
-          //Collections.sort(duplicate, new CompareKeyDescend());
+          numberDups = duplicate.size();
           Collections.sort(duplicate, new CompareKeyDescend());
           // remove duplicates from products, highest first
           for( int idx : duplicate ) {
@@ -273,6 +274,12 @@ public class Grib1WriteIndex {
 
     if (debugTiming)
       System.out.println(" " + count + " products took " + (System.currentTimeMillis() - start) + " msec");
+    if( numberDups > 0 ) {
+      count += numberDups;
+      System.out.println( " has Percentage of duplicates "+
+          (int)((((double)numberDups/(double)count) * 100) +.5)
+          +"% duplicates ="+ numberDups +" out of "+ count +" records." );
+    }
 
     return true;
   }  // end writeGribIndex
@@ -378,6 +385,7 @@ public class Grib1WriteIndex {
       System.out.println(now.toString() + " ... Start of Grib2ExtendIndex");
     long start = System.currentTimeMillis();
     int count = 0;
+    int numberDups = 0;
     // set buffer size for performance
     int rafBufferSize = inputRaf.getBufferSize();
     inputRaf.setBufferSize( Grib2WriteIndex.indexRafBufferSize );
@@ -464,6 +472,7 @@ public class Grib1WriteIndex {
           }
         }
         if( duplicate.size() > 0 ) {
+          numberDups = duplicate.size();
           Collections.sort(duplicate, new CompareKeyDescend());
           // remove duplicates from products, highest first
           for( int idx : duplicate ) {
@@ -554,7 +563,12 @@ public class Grib1WriteIndex {
 
     if (debugTiming)
       System.out.println(" " + count + " products took " + (System.currentTimeMillis() - start) + " msec");
-
+    if( numberDups > 0 ) {
+      count += numberDups;
+      System.out.println( " has Percentage of duplicates "+
+          (int)((((double)numberDups/(double)count) * 100) +.5)
+          +"% duplicates ="+ numberDups +" out of "+ count +" records." );
+    }
     return true;
   }  // end extendGribIndex
 
@@ -635,6 +649,8 @@ public class Grib1WriteIndex {
     boolean datasame = true;
     for ( int i = 0; i < data1.length; i++ ) {
       if ( data1[ i ] != data2[ i ]) {
+        if( Float.valueOf( data1[ i ]).isNaN() && Float.valueOf( data2[ i ]).isNaN() )
+          continue;
         datasame = false;
         break;
       }
