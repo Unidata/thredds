@@ -3,21 +3,20 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
   
-  <title>THREDDS WMS Server</title>
+  <title>TDS Web Map Service (WMS)</title>
   <link href="../../tds.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
 
-<h1><img src="../../images/unidataLogo.png" alt="Unidata" align="middle" height="75" width="75"> THREDDS Web Map Service</h1>
+<h1><img src="../../images/unidataLogo.png" alt="Unidata" align="middle" height="75" width="75"> TDS Web Map Service (WMS)</h1>
 <hr>
 
-<p>The THREDDS WMS Server implements the <a href="http://www.opengeospatial.org/">OGC</a> Web
-Map Service (<a href="http://www.opengeospatial.org/standards/wms">WMS</a>)
-1.3.0 specification.
+<p>The TDS WMS implementation uses the <a href="http://www.resc.rdg.ac.uk/trac/ncWMS/">ncWMS software</a>
+  developed by Jon Blower (Reading E-Science Center at the University of Reading). 
 </p>
-
-<h2>Status</h2>
-The THREDDS WMS server is beta, please report any problems you have.
+<p>It supports <a href="http://www.opengeospatial.org/">OGC</a> Web Map Service
+  (<a href="http://www.opengeospatial.org/standards/wms">WMS</a>) versions 1.3.0 and 1.1.1.
+</p>
 
 <h2><a name="Which_files_can_be_served_through_the"></a>Which files can be served through the WMS server?</h2>
 
@@ -85,6 +84,12 @@ The THREDDS WMS server is beta, please report any problems you have.
   deploy the TDS. If you are upgrading from a TDS version before version <code>4.2.20100615.*</code>,
   you will have to copy the default file from
   <code>TOMCAT_HOME/webapps/thredds/WEB-INF/altContent/startup/wmsConfig.xml</code>.
+</p>
+
+<h2>Change to CRS List in WMS GetCapabilities Documents</h2>
+
+<p>The number of CRS listed in the WMS GetCapabilities documents has been reduced between TDS 4.1
+  and 4.2. More information is available at <a href="../faq.html#wmsLimitedCRS">this FAQ entry</a>.
 </p>
 
 <h2>Add a JVM Option to Avoid an X Server Bug</h2>

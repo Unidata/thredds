@@ -27,11 +27,13 @@
   <li><a href="#proxyServerAndGeneratedURLs">My TDS server is behind a proxy server.
     Why do some TDS generated URLs point to my TDS server instead of my proxy server?</a></li>
 
-  <li><a href="#JoinExisting">I have modified my configuration of a JoinExisting Aggregation dataset, but nothing has changed.</a></li>
+  <li><a href="#JoinExisting">I have modified my configuration of a JoinExisting Aggregation dataset,
+    but nothing has changed.</a></li>
+  <li><a href="#wmsLimitedCRS">What happened to the long list of CRSs in my WMS GetCapabilities documents?</a></li>
 </ul>
 <h2>Tomcat</h2>
 <ul>
-  <li><a href="#permGenOutOfMemoryError">I'm getting the error "java.lang.OutOfMemoryError: PermGen<a name="PermGen"></a> space". Whats up?</a></li>
+  <li><a href="#permGenOutOfMemoryError">I'm getting the error "java.lang.OutOfMemoryError: PermGen space". Whats up?</a></li>
   <li><a href="#whoIsAccessing">Who is accessing my server?</a></li>
   <li><a href="#controlWebCrawlers">How can I control whether I want Web crawlers to access my server?</a></li>
   <li><a href="#preventAccess">How can I prevent someone from accessing my server?</a></li>
@@ -153,16 +155,35 @@ mkdir javaUtilPrefs/.systemPrefs
 </blockquote>
 
 <hr width="50%" align="left">
-<h4><a name="JoinExisting"></a><a>Q: I have modified my configuration of a JoinExisting Aggregation</a> dataset, but nothing has changed.</h4>
+<h4><a name="JoinExisting"></a>Q: I have modified my configuration of a JoinExisting Aggregation dataset, but nothing has changed.</h4>
 <blockquote>
-  <p> The files and coordinates in a JoinExisting Aggregations are cached, and   in some circumstances wont get updated. The default location for the   cache is <strong>${tomcat_home}/content/thredds/cacheAged/</strong> unless you change it   in the<a href="reference/ThreddsConfigXMLFile.html#AggregationCache"> threddsConfig.xml </a>file.
-Go to that directory, there will be files with the name of the cached   dataset(s). Delete the file for the dataset that needs updating and   restart Tomcat.</p>
-  <p>&nbsp;</p>
+  <p>The files and coordinates in a JoinExisting Aggregations are cached, and   in some circumstances
+    wont get updated. The default location for the   cache is <strong>${tomcat_home}/content/thredds/cacheAged/</strong>
+    unless you change it in the <a href="reference/ThreddsConfigXMLFile.html#AggregationCache">threddsConfig.xml</a>
+    file. Go to that directory, there will be files with the name of the cached dataset(s). Delete
+    the file for the dataset that needs updating and restart Tomcat.
+  </p>
 </blockquote>
+
+<hr width="50%" align="left">
+<h4><a name="wmsLimitedCRS"></a>Q: What happened to the long list of CRSs in my WMS GetCapabilities documents?</h4>
+<blockquote>
+  <p>In TDS 4.1, each WMS GetCapabilities document listed 100s of available CRS. This made for very
+    large GetCapabilities documents. As of TDS 4.2, this list is limited to a select few CRSs. We
+    hope to make this list configurable in a future release. 
+  </p>
+  <p>In the mean time if you need a CRS that isn't listed, try specifying it in the GetMap request.
+    The underlying library that handles CRS (<a href="http://www.geotoolkit.org/">Geotoolkit</a>)
+    still supports a large number of CRS and the TDS WMS should still support any of those CRS
+    when requested.
+  </p>
+</blockquote>
+
 <hr width="100%">
+
 <h2>Tomcat<a name="tomcat"></a></h2>
 
-<h4>Q: <a name="permGenOutOfMemoryError">Im getting the error "java.lang.OutOfMemoryError: PermGen<a name="PermGen"></a> space". Whats up?</a></h4>
+<h4>Q: <a name="permGenOutOfMemoryError">Im getting the error "java.lang.OutOfMemoryError: PermGen space". Whats up?</a></h4>
   <blockquote>
     <p>If you reload the <strong>thredds.war</strong> webapp enough times without restarting Tomcat, you will eventually run into "<strong>java.lang.OutOfMemoryError: PermGen space</strong>". This is a known bug in  JDK/Tomcat. The only thing to do is to stop and restart Tomcat. </p>
     <p>You can increase PermGen using this JVM option:     </p>

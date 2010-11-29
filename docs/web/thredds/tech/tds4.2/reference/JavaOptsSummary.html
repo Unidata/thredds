@@ -68,7 +68,7 @@ export JAVA_OPT
 
 <p>If you start getting <code>java.lang.OutOfMemoryError: PermGen space</code> error messages. You
   may want to include a "-XX:MaxPermSize" option in your JAVA_OPTS. See the
-  <a href="../faq.html#PermGen">PermGen FAQ entry</a> for more information on this problem.
+  <a href="../faq.html#permGenOutOfMemoryError">PermGen FAQ entry</a> for more information on this problem.
 </p>
 
 <pre>
@@ -84,8 +84,14 @@ export JAVA_OPT
 <h2><a name="headless"></a>If Using WMS, Tell Graphics Engine There is No Console</h2>
 
 <p>
-  An obscure bug concerning X servers and graphics rendering code can crash Tomcat. In some situations,
-  some part of the WMS code can run into this bug and cause Tomcat to crash. To avoid this situation,
+  An obscure bug concerning X servers and graphics rendering code can cause WMS requests to fail
+  or, in certain situations, cause Tomcat to crash. You may see error messages like the following:
+</p>
+<pre>
+"java.lang.NoClassDefFoundError: Could not initialize class sun.awt.X11GraphicsEnvironment"
+</pre>
+<p>
+  To avoid this situation,
   the graphics code needs to be told that there is no graphics console available. This can be done by
   setting the <code>java.awt.headless</code> system property to <code>true</code> which can be done
   using JAVA_OPTS:
