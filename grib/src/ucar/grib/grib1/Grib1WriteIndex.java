@@ -276,9 +276,17 @@ public class Grib1WriteIndex {
       System.out.println(" " + count + " products took " + (System.currentTimeMillis() - start) + " msec");
     if( numberDups > 0 ) {
       count += numberDups;
-      System.out.println( " has Percentage of duplicates "+
-          (int)((((double)numberDups/(double)count) * 100) +.5)
-          +"% duplicates ="+ numberDups +" out of "+ count +" records." );
+      StringBuilder str = new StringBuilder( " has Percentage of duplicates " );
+      str.append( (int)((((double)numberDups/(double)count) * 100) +.5));
+      str.append( "% duplicates =" );
+      str.append( numberDups );
+      str.append( " out of ");
+      str.append( count );
+      str.append( " records." );
+      if ( logPDS.equals( Grib2WriteIndex.pdsLogType.systemout ))
+         System.out.println( str.toString() );
+      else if ( logPDS.equals( Grib2WriteIndex.pdsLogType.logger ))
+         log.info( str.toString());
     }
 
     return true;
@@ -565,9 +573,17 @@ public class Grib1WriteIndex {
       System.out.println(" " + count + " products took " + (System.currentTimeMillis() - start) + " msec");
     if( numberDups > 0 ) {
       count += numberDups;
-      System.out.println( " has Percentage of duplicates "+
-          (int)((((double)numberDups/(double)count) * 100) +.5)
-          +"% duplicates ="+ numberDups +" out of "+ count +" records." );
+      StringBuilder str = new StringBuilder( " has Percentage of duplicates " );
+      str.append( (int)((((double)numberDups/(double)count) * 100) +.5));
+      str.append( "% duplicates =" );
+      str.append( numberDups );
+      str.append( " out of ");
+      str.append( count );
+      str.append( " records." );
+      if ( logPDS.equals( Grib2WriteIndex.pdsLogType.systemout ))
+         System.out.println( str.toString() );
+      else if ( logPDS.equals( Grib2WriteIndex.pdsLogType.logger ))
+         log.info( str.toString());
     }
     return true;
   }  // end extendGribIndex
@@ -647,12 +663,18 @@ public class Grib1WriteIndex {
     float[] data2 = g1d.getData
       ( p2Offset1, p2Offset2, pdsv2.getDecimalScale(), pdsv2.bmsExists());
     boolean datasame = true;
-    for ( int i = 0; i < data1.length; i++ ) {
-      if ( data1[ i ] != data2[ i ]) {
-        if( Float.valueOf( data1[ i ]).isNaN() && Float.valueOf( data2[ i ]).isNaN() )
-          continue;
-        datasame = false;
-        break;
+    if ( data1 == null && data2 == null )
+      datasame = true;
+    else if ( (data1 != null && data2 == null) || (data1 == null && data2 != null))
+      datasame = false;
+    else {
+      for ( int i = 0; i < data1.length; i++ ) {
+        if ( data1[ i ] != data2[ i ]) {
+          if( Float.valueOf( data1[ i ]).isNaN() && Float.valueOf( data2[ i ]).isNaN() )
+            continue;
+          datasame = false;
+          break;
+        }
       }
     }
     if (! datasame )
