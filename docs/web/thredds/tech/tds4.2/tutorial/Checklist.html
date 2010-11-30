@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>Untitled Document</title>
+<title>Checklist</title>
 <style type="text/css">
 pre {font-size: 9pt; padding: 10px; background-color: #E7E7E7; border: 1px solid #CFCFCF; width: 85%;}
 code {font-size: 11pt;}
@@ -75,12 +75,32 @@ compressableMimeType=&quot;text/html,text/xml,text/plain,application/octet-strea
   </li>
   <li><a href="AdditionalSecurityConfiguration.html#restrictCrawlers">Restrict web crawlers</a></li>
 </ol>
-<p>&nbsp;</p>
+<h2>TDS Reinstall<a name="Reinstall" id="Reinstall"></a></h2>
+<p>When installing a new thredds.war, everything in<em> {tomcat_home}/webapps/</em> is overwritten. However, nothing  in<em> {tomcat_home}/content/</em> is overwritten.</p>
+<h3>Using the   Tomcat Web Application <a href="BasicTomcatAndTDSSecurity.html#manager">Manager</a></h3>
+<ol>
+  <li><strong>Undeploy</strong> the thredds application. This will delete<em> {tomcat_home}/webapps/thredds.war</em>    and everything in the expanded directory <em>{tomcat_home}/webapps/thredds/*</em>.</li>
+  <li><strong>Deploy</strong> the new thredds.war file, either 1) from a file already on the server or 2) by uploading from your local machine. This will recreate  thredds.war and the expanded directory and restart thredds..</li>
+  <li>Shutdown tomcat.</li>
+  <li>Clean up <em>{tomcat_home}/logs </em>and<em> {tomcat_home}/content/thredds/logs</em> as needed.</li>
+  <li>Make any changes to <em>web.xml </em>or anything under  <em>{tomcat_home}/webapps/thredds/</em></li>
+  <li>Restart tomcat.</li>
+</ol>
+<h3>Manually</h3>
+<ol>
+  <li> Shutdown tomcat, </li>
+  <li>Delete<em> {tomcat_home}/webapps/thredds.war</em>      and everything in the expanded directory <em>{tomcat_home}/webapps/thredds/*</em>.</li>
+  <li> Put the new war file into the webapps directory </li>
+  <li>Restart tomcat</li>
+  <li>thredds.war is now expanded into webapps/thredds   directory, so now change web.xml if needed.</li>
+  <li>Stop and restart tomcat again.<br />
+  </li>
+</ol>
 <hr width="100%" />
 <h2>Maintainence</h2>
 <h3>Monthly</h3>
 <ul>
-  <li>If you have access logging on (and you should), zip up the access logs: <strong>{tomcat_home}/logs/access.* </strong>and copy them to an archive.</li>
+  <li>If you have<a href="TDSMonitoringAndDebugging.html"> access logging</a> on (and you should), zip up the access logs: <strong>{tomcat_home}/logs/access.* </strong>and copy them to an archive directory.</li>
   <li>Zip up the servlet logs: <strong>{tomcat_home}/content/thredds/logs/threddsServlet.* </strong>and copy them to an archive.</li>
 </ul>
 <h3>Every 3-6 months</h3>
@@ -95,11 +115,11 @@ compressableMimeType=&quot;text/html,text/xml,text/plain,application/octet-strea
 <ul>
   <li>make sure all files are owned by tomcat.</li>
   <li>examine  <strong>{tomcat_home}/logs/catalina.out</strong> for unexpected errors</li>
-  <li>use tdsMonitor to examine failed requests. report any 500 status errors to Unidata.</li>
+  <li>use <a href="tdsMonitor.html">tdsMonitor</a> to examine failed requests. report any 500 status errors to Unidata.</li>
 </ul>
 <hr width="100%" />
 <address>
-<img src="../../images/thread.png" alt="" width="57" height="51" />This document is maintained by Unidata.  Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.
+<img src="../../images/thread.png" alt="" width="57" height="51" />Last changed Nov 29, 2010.  Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.
 </address>
 <h3></h3>
 </body>

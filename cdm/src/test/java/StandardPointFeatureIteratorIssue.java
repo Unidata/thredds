@@ -36,6 +36,8 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Formatter;
+
+import ucar.nc2.TestAll;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.FeatureCollection;
 import ucar.nc2.ft.FeatureDataset;
@@ -64,8 +66,7 @@ public class StandardPointFeatureIteratorIssue {
         FeatureDataset fd = null;
         try {
             Formatter formatter = new Formatter(System.err);
-            fd = FeatureDatasetFactoryManager.open(
-                FeatureType.STATION, "/machine/dev/tdsAgg/cdm/src/test/java/StandardPointFeatureIteratorIssue.ncml", null, formatter);
+            fd = FeatureDatasetFactoryManager.open( FeatureType.STATION, "test/java/StandardPointFeatureIteratorIssue.ncml", null, formatter);
             if (fd != null && fd instanceof FeatureDatasetPoint) {
                 FeatureDatasetPoint fdp = (FeatureDatasetPoint)fd;
                 FeatureCollection fc = fdp.getPointFeatureCollectionList().get(0);
@@ -90,7 +91,7 @@ public class StandardPointFeatureIteratorIssue {
                             // is returning the observation structure, not the
                             // station structure since Cursor.currentIndex = 0
                             Station s = stsfc.getStation(pf);
-                            System.out.println(s);
+                            System.out.println("stn= "+s);
                         }
                     } finally {
                         pfi.finish();

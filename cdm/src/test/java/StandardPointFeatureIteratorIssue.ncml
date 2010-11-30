@@ -14,9 +14,9 @@
   <attribute name="zaxis_coordinate" value="elev" />
   <attribute name="time_coordinate" value="time" />
 
-  <variable name="station_id" shape="station station_id_len" type="char">
+  <variable name="station_id" shape="station" type="string">
     <attribute name="standard_name" value="station_id" />
-    <values>"station 1" "station2"</values>
+    <values>"station1" "station2"</values>
   </variable>
   <variable name="lon" shape="station" type="float">
     <attribute name="units" value="degrees_east" />

@@ -53,7 +53,7 @@ import java.io.IOException;
  */
 
 
-public class CompositeStationCollectionFlattened extends PointCollectionImpl implements UpdateableCollection {
+public class CompositeStationCollectionFlattened extends PointCollectionImpl {
   static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CompositeStationCollectionFlattened.class);
 
   private TimedCollection stnCollections;
@@ -79,11 +79,6 @@ public class CompositeStationCollectionFlattened extends PointCollectionImpl imp
     this.bbSubset = bbSubset;
     this.dateRange = dateRange;
     this.stnCollections = stnCollections;
-  }
-
-  @Override
-  public void update() {
-    //To change body of implemented methods use File | Settings | File Templates.
   }
 
   public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {

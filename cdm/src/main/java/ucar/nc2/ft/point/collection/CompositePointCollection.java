@@ -106,7 +106,7 @@ public class CompositePointCollection extends PointCollectionImpl implements Upd
 
   @Override
   public void update() {
-    //To change body of implemented methods use File | Settings | File Templates.
+    pointCollections.update();
   }
 
   private class CompositePointFeatureIterator extends PointIteratorAbstract {

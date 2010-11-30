@@ -42,7 +42,6 @@ import java.util.List;
 
 /**
  * Manage collections of files that we can assign date ranges to.
- * The dataset location can be passed to FeatureDatasetFactoryManager.open().
  * A wrap of DatasetCollectionManager.
  *
  * @author caron
@@ -52,7 +51,7 @@ import java.util.List;
 public class TimedCollection {
   private static final boolean debug = false;
 
-  private DatasetCollectionManager manager;
+  private final DatasetCollectionManager manager;
   private List<TimedCollection.Dataset> datasets;
   private DateRange dateRange;
 
@@ -69,25 +68,7 @@ public class TimedCollection {
 
     // get the inventory, sorted by path
     manager.scan(null);
-    List<MFile> fileList = manager.getFiles();
-    datasets = new ArrayList<TimedCollection.Dataset>(fileList.size());
-    for (MFile f : fileList)
-      datasets.add(new Dataset(f));
-
-    if (manager.hasDateExtractor()) {
-      for (int i = 0; i < datasets.size() - 1; i++) {
-        Dataset d1 = (Dataset) datasets.get(i);
-        Dataset d2 = (Dataset) datasets.get(i + 1);
-        d1.setDateRange(new DateRange(d1.start, d2.start));
-        if (i == datasets.size() - 2) // last one
-          d2.setDateRange(new DateRange(d2.start, d1.getDateRange().getDuration()));
-      }
-      if (datasets.size() > 0) {
-        Dataset first = (Dataset) datasets.get(0);
-        Dataset last = (Dataset) datasets.get(datasets.size() - 1);
-        dateRange = new DateRange(first.getDateRange().getStart().getDate(), last.getDateRange().getEnd().getDate());
-      }
-    }
+    update();
 
     if (debug) {
       System.out.printf("Datasets in collection=%s%n", manager.getCollectionName());
@@ -122,10 +103,12 @@ public class TimedCollection {
   }
 
   private TimedCollection(TimedCollection from, DateRange want) {
+    this.manager = from.manager;
     datasets = new ArrayList<TimedCollection.Dataset>(from.datasets.size());
     for (TimedCollection.Dataset d : from.datasets)
       if (want.intersects(d.getDateRange()))
         datasets.add(d);
+    this.dateRange = want;
   }
 
   public TimedCollection.Dataset getPrototype() {
@@ -155,6 +138,9 @@ public class TimedCollection {
     return f.toString();
   }
 
+  /**
+   ** The Dataset.getLocation() can be passed to FeatureDatasetFactoryManager.open().
+   */
   public class Dataset {
     String location;
     DateRange dateRange;

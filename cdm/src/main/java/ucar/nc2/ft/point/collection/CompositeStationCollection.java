@@ -112,7 +112,7 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
 
     @Override
   public void update() {
-    //To change body of implemented methods use File | Settings | File Templates.
+      dataCollection.update();
   }
 
   // Must override default subsetting implementation for efficiency
