@@ -4,6 +4,9 @@ Build Date = @BUILDTIME@
 Build Name = @BUILD.NAME@
 
 Release Details 4.2:
+ 4.2.x (2010-12-01)
+   Fix ThreddsConfig logging.
+
  4.2.0 (2010-11-19)
    Turn off debug messages
    Improve large file handling in FileWriter and NetcdfCFWriter

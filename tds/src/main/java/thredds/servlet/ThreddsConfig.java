@@ -78,7 +78,7 @@ public class ThreddsConfig {
 
     File file = new File(_filename);
     if (!file.exists()) return;
-    log.debug("ThreddsConfig: reading xml file = " + _filename);
+    System.out.println( "ThreddsConfig:INFO: reading xml file = " + _filename);
 
     org.jdom.Document doc;
     try {
@@ -86,10 +86,10 @@ public class ThreddsConfig {
       SAXBuilder builder = new SAXBuilder();
       doc = builder.build(is);
     } catch (IOException e) {
-      log.error("ThreddsConfig: incorrectly formed xml file " + _filename, e);
+      System.out.println( "ThreddsConfig:ERROR: incorrectly formed xml file [" + _filename + "]: " + e.getMessage());
       return;
     } catch (JDOMException e) {
-      log.error("ThreddsConfig: incorrectly formed xml file " + _filename, e);
+      System.out.println( "ThreddsConfig:ERROR: incorrectly formed xml file [" + _filename + "]: " + e.getMessage() );
       return;
     }
     rootElem = doc.getRootElement();
@@ -99,7 +99,7 @@ public class ThreddsConfig {
       String location = StringUtils.cleanPath( catrootElem.getTextNormalize() );
       if (location.length() > 0) {
         catalogRoots.add( location );
-        log.debug("ThreddsConfig: adding catalogRoot = " + location);
+        System.out.println( "ThreddsConfig:INFO: adding catalogRoot = " + location);
       }
     }
 
@@ -113,7 +113,7 @@ public class ThreddsConfig {
         if ( ! location.isEmpty() )
         {
           contentRootList.add( location );
-          log.debug( "ThreddsConfig: adding contentRoot [" + location + "]." );
+          System.out.println( "ThreddsConfig:INFO: adding contentRoot [" + location + "]." );
         }
       }
     }
@@ -138,11 +138,9 @@ public class ThreddsConfig {
       StringBuilder errlog = new StringBuilder();
       RuntimeConfigParser.read( elem, errlog);
       if (errlog.length() > 0)
-        log.warn(errlog.toString());
+        System.out.println( "ThreddsConfig:WARN: " + errlog.toString());
     }
-
   }
-
 
   static void getCatalogRoots(List<String> extraList) {
     extraList.addAll( catalogRoots);

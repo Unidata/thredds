@@ -53,7 +53,7 @@ public class TdsConfigContextListener implements ServletContextListener {
   private org.slf4j.Logger logServerStartup = org.slf4j.LoggerFactory.getLogger( "serverStartup" );
 
   public void contextInitialized( ServletContextEvent event ) {
-    // ToDo Instead of stdout, use servletContext.log( "...").
+    // ToDo Instead of stdout, use servletContext.log( "...")  [NOTE: it writes to localhost.*.log rather than catalina.out].
     System.out.println( "TdsConfigContextListener.contextInitialized(): start." );
 
     // Get webapp context.

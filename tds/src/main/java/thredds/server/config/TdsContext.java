@@ -151,6 +151,7 @@ public class TdsContext
 
   public void init( ServletContext servletContext )
   {
+    // ToDo Instead of stdout, use servletContext.log( "...") [NOTE: it writes to localhost.*.log rather than catalina.out].
     if ( servletContext == null )
       throw new IllegalArgumentException( "ServletContext must not be null.");
 
