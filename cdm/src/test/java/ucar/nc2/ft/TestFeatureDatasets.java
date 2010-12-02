@@ -36,7 +36,7 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 /**
- * Test Point Feature Types
+ * Test  Point Feature Types
  * @author caron
  * @since Feb 25, 2009
  */
