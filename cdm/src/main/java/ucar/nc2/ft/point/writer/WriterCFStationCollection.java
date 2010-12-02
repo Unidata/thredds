@@ -50,7 +50,7 @@ import java.io.IOException;
  * @author caron
  * @since Aug 19, 2009
  */
-public class WriterCFStationDataset {
+public class WriterCFStationCollection {
   private static final String recordDimName = "record";
   private static final String stationDimName = "station";
   private static final String latName = "latitude";
@@ -78,7 +78,7 @@ public class WriterCFStationDataset {
   private boolean useWmoId = false;
 
 
-  public WriterCFStationDataset(String fileOut, String title) throws IOException {
+  public WriterCFStationCollection(String fileOut, String title) throws IOException {
     ncfile = NetcdfFileWriteable.createNew(fileOut, false);
     ncfile.setFill( false);
     this.title = title;

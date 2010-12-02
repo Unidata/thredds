@@ -1,0 +1,44 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>CDM man pages</title>
+</head>
+
+<body>
+<h1>CDM  man pages</h1>
+<hr />
+<h2>NCDumpW</h2>
+<p>Approximate  functionality to <em>ncdump</em> c utility, but with different arguments.</p>
+<p><em><strong>ucar.nc2.NCdumpW</strong> filepath [-cdl | -ncml] [-c | -vall] [-v varName1;varName2;..] [-v varName(0:1,:,12)]</em></p>
+<p>eg: <em>java -classpath netcdfAll-4.2.jar ucar.nc2.NCdumpW Q:/cdmUnitTest/ncml/nc/test_7.nc</em></p>
+<p>where:</p>
+<ul>
+  <li> <em>filepath</em> : pathname of any CDM file. </li>
+  <li><em> -cdl </em> : show CDL (strict mode)</li>
+  <li><em>-ncml</em> : show  NcML (default)</li>
+  <li><em>-c </em> : show data for coordinate variables only </li>
+  <li><em> -vall</em> : show data for  all variables</li>
+  <li><em>-v varName1;varName2;..</em> : show data for these variables, using long names with ';' seperators</li>
+  <li><em>-v varName(0:1,:,12)</em>  : show data for a section of this variable only, using F90 section specificiation</li>
+</ul>
+<hr />
+<h2>FileWriter</h2>
+<p>Writes  CDM classic files into netcdf-3 format. Cannot write extended data model, eg Groups, Structures, multiple unlimited dimensions, etc.</p>
+<p><em><strong>ucar.nc2.FileWriter</strong> -in fileIn -out fileOut </em></p>
+<hr />
+<h2>CompareNetcdf2</h2>
+<p>Compare 2 CDM files for semantic equivilence..</p>
+<p><em><strong>ucar.nc2.util.CompareNetcdf2</strong> filepath1 filepath2 </em></p>
+<hr />
+<h2><strong>FeatureScan</strong></h2>
+<p>Scans all the files in a directory to see if they are CDM files and can be identified as a particular feature type</p>
+<p><em><strong>ucar.nc2.ft.scan.FeatureScan</strong> directory</em></p>
+<p>&nbsp;</p>
+<p></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<h2>&nbsp; </h2>
+</body>
+</html>

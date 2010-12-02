@@ -75,6 +75,7 @@
   <!-- property name="lucene.jar" value="lucene.jar"/ -->
   <property name="opendap.jar" value="opendap-2.2.jar"/>
   <property name="protobuf.jar" value="protobuf-java-2.1.0.jar"/>
+  <property name="quartz.jar" value="quartz-1.7.3.jar"/>
   <property name="resourcesOptional.jar" value="resourcesOptional.jar"/>
   <property name="spring.jar" value="spring-2.5.jar"/>
   <property name="stax.jar" value="stax-api-1.0.1.jar"/>
@@ -97,6 +98,7 @@
     <include name="external/${jdom.jar}"/>
     <include name="external/${loggingAPI.jar}"/>
     <include name="external/${protobuf.jar}"/>
+    <include name="external/${quartz.jar}"/>
     <include name="release/${unidatacommon.jar}"/>
     <include name="release/${visadNoDods.jar}"/>
     <include name="external/${stax.jar}"/>
@@ -115,6 +117,7 @@
     <include name="lib/${guiBuilder.jar}"/>
     <include name="lib/${jgoodies.jar}"/>
     <include name="lib/${protobuf.jar}"/>
+    <include name="lib/${quartz.jar}"/>
     <include name="lib/${spring.jar}"/>
     <include name="lib/${stax.jar}"/>
   </fileset>
@@ -336,6 +339,7 @@
         <include name="external/${logging-minimal.jar}"/>
         <include name="release/${opendap.jar}"/>
         <include name="release/${protobuf.jar}"/>
+        <include name="release/${quartz.jar}"/>
         <include name="release/${visadNoDods.jar}"/>
       </fileset>
     </unzip>
@@ -912,6 +916,8 @@
              signedjar="${webstart_dir}/opendap.jar" storepass="${keystore.password}"/>
     <signjar alias="idv" jar="${lib.dir}/external/${protobuf.jar}" keystore="${keystore}"
              signedjar="${webstart_dir}/protobuf.jar" storepass="${keystore.password}"/>
+    <signjar alias="idv" jar="${lib.dir}/external/${quartz.jar}" keystore="${keystore}"
+             signedjar="${webstart_dir}/quartz.jar" storepass="${keystore.password}"/>
     <signjar alias="idv" jar="${lib.dir}/release/${resourcesOptional.jar}" keystore="${keystore}"
              signedjar="${webstart_dir}/resourcesOptional.jar" storepass="${keystore.password}"/>
     <signjar alias="idv" jar="${lib.dir}/release/${visadNoDods.jar}" keystore="${keystore}"

@@ -36,6 +36,7 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 /**
+ * Test Point Feature Types
  * @author caron
  * @since Feb 25, 2009
  */
@@ -46,7 +47,8 @@ public class TestFeatureDatasets {
 
     suite.addTestSuite( TestPointFeatureTypes.class);
     suite.addTestSuite( TestFmrc.class);
-    // suite.addTestSuite( TestPointFeatureSubset.class);
+    suite.addTestSuite( TestMiscPointFeature.class);
+    suite.addTestSuite( TestCdmrFeatureCollectionPoint.class);
 
     return suite;
   }

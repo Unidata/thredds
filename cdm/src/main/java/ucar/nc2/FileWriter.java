@@ -717,7 +717,7 @@ public class FileWriter {
 
   /**
    * Main program.
-   * <p><strong>ucar.nc2.FileWriter -in fileIn -out fileOut [-delay millisecs]</strong>.
+   * <p><strong>ucar.nc2.FileWriter -in fileIn -out fileOut</strong>.
    * <p>where: <ul>
    * <li> fileIn : path of any CDM readable file
    * <li> fileOut: local pathname where netdf-3 file will be written

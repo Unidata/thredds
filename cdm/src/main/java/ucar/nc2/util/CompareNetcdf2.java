@@ -325,6 +325,7 @@ public class CompareNetcdf2 {
       }
 
     } catch (Throwable t) {
+      t.printStackTrace();
       f.format(" *** Throwable= %s %n", t.getMessage());
     }
 

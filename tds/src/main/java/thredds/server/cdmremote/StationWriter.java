@@ -33,10 +33,10 @@
 package thredds.server.cdmremote;
 
 import ucar.nc2.VariableSimpleIF;
+import ucar.nc2.ft.point.writer.WriterCFStationCollection;
 import ucar.nc2.stream.NcStream;
 import ucar.nc2.stream.NcStreamProto;
 import ucar.nc2.ft.*;
-import ucar.nc2.ft.point.writer.WriterCFStationDataset;
 import ucar.nc2.ft.point.remote.PointStreamProto;
 import ucar.nc2.ft.point.remote.PointStream;
 import ucar.nc2.units.DateFormatter;
@@ -623,7 +623,7 @@ public class StationWriter {
 
   class WriterNetcdf extends Writer {
     File netcdfResult;
-    WriterCFStationDataset cfWriter;
+    WriterCFStationCollection cfWriter;
     boolean headerWritten = false;
     private List<Station> wantStations;
 
@@ -631,7 +631,7 @@ public class StationWriter {
       super(null);
 
       netcdfResult = diskCache.createUniqueFile("cdmSW", ".nc");
-      cfWriter = new WriterCFStationDataset(netcdfResult.getAbsolutePath(), "Extracted data from TDS using CDM remote subsetting");
+      cfWriter = new WriterCFStationCollection(netcdfResult.getAbsolutePath(), "Extracted data from TDS using CDM remote subsetting");
 
       // verify SpatialSelection has some stations
       if (qb.getSpatialSelection() == CdmRemoteQueryBean.SpatialSelection.bb) {

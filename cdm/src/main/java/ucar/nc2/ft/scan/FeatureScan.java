@@ -54,7 +54,6 @@ import java.util.Collections;
  * @since Aug 15, 2009
  */
 
-
 public class FeatureScan {
   private String top;
   private boolean subdirs;
@@ -146,7 +145,7 @@ public class FeatureScan {
     return (pos > 0) ? name.substring(0, pos) : name;
   }
 
-  private boolean debug = true;
+  private boolean debug = false;
   public class Bean {
     public File f;
     String fileType;
@@ -251,12 +250,12 @@ public class FeatureScan {
   }
 
   public static void main(String arg[]) {
-    FeatureScan scanner = new FeatureScan("C:/data/datasets/modis", true);
+    FeatureScan scanner = new FeatureScan(arg[0], true);
 
-    System.out.printf("Beans found %n");
+    System.out.printf(" %-60s %-20s %-10s %-10s%n", "name", "fileType", "featureType", "featureImpl");
     List<FeatureScan.Bean> beans = scanner.scan(new Formatter());
     for (Bean b : beans)
-      System.out.printf(" %40s %20s %10s %10s%n", b.getName(), b.getFileType(), b.getFeatureType(), b.getFeatureImpl());
+      System.out.printf(" %-60s %-20s %-10s %-10s%n", b.getName(), b.getFileType(), b.getFeatureType(), b.getFeatureImpl());
 
   }
 

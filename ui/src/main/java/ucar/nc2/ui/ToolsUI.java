@@ -1490,7 +1490,7 @@ public class ToolsUI extends JPanel {
       task = new GetDataTask(this, filename, null);
       stopButton.startProgressMonitorTask(task);
 
-      defer = true;
+      //defer = true;
       return true;
     }
 

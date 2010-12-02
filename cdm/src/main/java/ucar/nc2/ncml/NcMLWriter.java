@@ -246,14 +246,13 @@ public class NcMLWriter {
 
     if (att.isString()) {
       String value = att.getStringValue();
-      /* String err = org.jdom.Verifier.checkCharacterData(value);
-      if (err != null) {
-        value = "NcMLWriter invalid attribute value, err= " + err;
-        System.out.println(value);
-      } */
-      attElem.setAttribute("value", value);
-    } else {
+      if (value != null)
+        attElem.setAttribute("value", value);
+      else  {
+        log.debug("attribute has null value= "+att);
+      }
 
+    } else {
       StringBuilder buff = new StringBuilder();
       for (int i = 0; i < att.getLength(); i++) {
         Number val = att.getNumericValue(i);

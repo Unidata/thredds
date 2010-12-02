@@ -128,6 +128,7 @@ public class Attribute {
 
   /**
    * Get the value as an Object.
+   *
    * @param index which index
    * @return ith value as an Object.
    */
@@ -265,6 +266,7 @@ public class Attribute {
 
   /**
    * CDL representation, not strict
+   *
    * @return CDL representation
    */
   @Override
@@ -274,19 +276,20 @@ public class Attribute {
 
   /**
    * CDL representation
+   *
    * @param strict if true, create strict CDL, escaping names
    * @return CDL representation
    */
   public String toString(boolean strict) {
     StringBuilder buff = new StringBuilder();
-    buff.append(  strict ? NetcdfFile.escapeName(getName()) : getName());
+    buff.append(strict ? NetcdfFile.escapeName(getName()) : getName());
     if (isString()) {
       buff.append(" = ");
       for (int i = 0; i < getLength(); i++) {
         if (i != 0) buff.append(", ");
         String val = getStringValue(i);
         if (val != null)
-          buff.append("\"").append( NCdumpW.encodeString(val) ).append("\"");
+          buff.append("\"").append(NCdumpW.encodeString(val)).append("\"");
       }
     } else {
       buff.append(" = ");
@@ -296,11 +299,14 @@ public class Attribute {
         if (dataType == DataType.FLOAT)
           buff.append("f");
         else if (dataType == DataType.SHORT) {
-          if (isUnsigned()) buff.append("US"); else  buff.append("S");
+          if (isUnsigned()) buff.append("US");
+          else buff.append("S");
         } else if (dataType == DataType.BYTE) {
-          if (isUnsigned()) buff.append("UB"); else  buff.append("B");
+          if (isUnsigned()) buff.append("UB");
+          else buff.append("B");
         } else if (dataType == DataType.LONG) {
-          if (isUnsigned()) buff.append("UL"); else  buff.append("L");
+          if (isUnsigned()) buff.append("UL");
+          else buff.append("L");
         } else if (dataType == DataType.INT) {
           if (isUnsigned()) buff.append("U");
         }
@@ -368,7 +374,7 @@ public class Attribute {
   /**
    * Construct an empty attribute with no values
    *
-   * @param name   name of attribute
+   * @param name     name of attribute
    * @param dataType type of Attribute.
    */
   public Attribute(String name, DataType dataType) {
@@ -390,38 +396,45 @@ public class Attribute {
 
     Class c = values.get(0).getClass();
     if (c == String.class) {
-      String[] va = new String[n]; pa = va;
-      for (int i=0; i<n; i++) va[i] = (String) values.get(i);
+      String[] va = new String[n];
+      pa = va;
+      for (int i = 0; i < n; i++) va[i] = (String) values.get(i);
 
     } else if (c == Integer.class) {
-      int[] va = new int[n]; pa = va;
-      for (int i=0; i<n; i++) va[i] = (Integer) values.get(i);
+      int[] va = new int[n];
+      pa = va;
+      for (int i = 0; i < n; i++) va[i] = (Integer) values.get(i);
 
     } else if (c == Double.class) {
-      double[] va = new double[n]; pa = va;
-      for (int i=0; i<n; i++) va[i] = (Double) values.get(i);
+      double[] va = new double[n];
+      pa = va;
+      for (int i = 0; i < n; i++) va[i] = (Double) values.get(i);
 
     } else if (c == Float.class) {
-      float[] va = new float[n]; pa = va;
-      for (int i=0; i<n; i++) va[i] = (Float) values.get(i);
+      float[] va = new float[n];
+      pa = va;
+      for (int i = 0; i < n; i++) va[i] = (Float) values.get(i);
 
     } else if (c == Short.class) {
-      short[] va = new short[n]; pa = va;
-      for (int i=0; i<n; i++) va[i] = (Short) values.get(i);
+      short[] va = new short[n];
+      pa = va;
+      for (int i = 0; i < n; i++) va[i] = (Short) values.get(i);
 
     } else if (c == Byte.class) {
-      byte[] va = new byte[n]; pa = va;
-      for (int i=0; i<n; i++) va[i] = (Byte) values.get(i);
+      byte[] va = new byte[n];
+      pa = va;
+      for (int i = 0; i < n; i++) va[i] = (Byte) values.get(i);
 
     } else if (c == Long.class) {
-      long[] va = new long[n]; pa = va;
-      for (int i=0; i<n; i++) va[i] = (Long) values.get(i);
+      long[] va = new long[n];
+      pa = va;
+      for (int i = 0; i < n; i++) va[i] = (Long) values.get(i);
 
     } else {
-      throw new IllegalArgumentException("unknown type for Attribute = "+c.getName());
+      throw new IllegalArgumentException("unknown type for Attribute = " + c.getName());
     }
 
-    setValues( Array.factory(c, new int[] {n}, pa));
+    setValues(Array.factory(c, new int[]{n}, pa));
   }
 
 
@@ -489,6 +502,11 @@ public class Attribute {
    * @param arr value of Attribute
    */
   protected void setValues(Array arr) {
+    if (arr == null) {
+      dataType = DataType.STRING;
+      return;
+    }
+    
     if (DataType.getType(arr.getElementType()) == null)
       throw new IllegalArgumentException("Cant set Attribute with type " + arr.getElementType());
 
@@ -520,7 +538,7 @@ public class Attribute {
         System.arraycopy(bb.array(), 0, ba, pos, bb.limit());
         pos += bb.limit();
       }
-      arr = Array.factory(DataType.BYTE, new int[] {totalLen}, ba);
+      arr = Array.factory(DataType.BYTE, new int[]{totalLen}, ba);
     }
 
     if (arr.getRank() > 1)
@@ -528,7 +546,7 @@ public class Attribute {
 
     this.values = arr;
     this.nelems = (int) arr.getSize();
-    this.dataType = DataType.getType( arr.getElementType());
+    this.dataType = DataType.getType(arr.getElementType());
     hashCode = 0;
   }
 

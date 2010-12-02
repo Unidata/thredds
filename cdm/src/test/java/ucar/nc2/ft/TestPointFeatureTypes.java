@@ -317,9 +317,9 @@ public class TestPointFeatureTypes extends TestCase {
     //testPointDataset("collection:D:/datasets/metars/Surface_METAR_#yyyyMMdd_HHmm#.nc", FeatureType.STATION, true);
   }
 
-  public void utestCdmRemote() throws IOException {
-    //testPointDataset("cdmremote:http://motherlode.ucar.edu:8081/thredds/cdmremote/idd/metar/gempak", FeatureType.STATION, true);
-    checkPointDataset("cdmremote:http://localhost:8080/thredds/cdmremote/idd/metar/ncdecodedLocal", FeatureType.STATION, true);
+  public void testCdmRemote() throws IOException {
+    checkPointDataset("cdmremote:http://motherlode.ucar.edu:8081/thredds/cdmremote/idd/metar/gempak", FeatureType.STATION, true);
+    //checkPointDataset("cdmremote:http://localhost:8080/thredds/cdmremote/idd/metar/ncdecodedLocal", FeatureType.STATION, true);
   }
 
   public void utestCdmRemoteCollection() throws Exception {
@@ -366,7 +366,7 @@ public class TestPointFeatureTypes extends TestCase {
   }
   
 
-  private int checkPointDataset(String location, FeatureType type, boolean show) throws IOException {
+  int checkPointDataset(String location, FeatureType type, boolean show) throws IOException {
     System.out.printf("================ TestPointFeatureCollection read %s %n", location);
     long start = System.currentTimeMillis();
 

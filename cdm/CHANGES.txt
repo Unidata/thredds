@@ -4,8 +4,13 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.2.1:
  1: (2011-11-xx)
-  H5: Off by 1 error in DoublingTable
+  FeatureCollection for Points
+
 Changes in version 4.2:
+ 17: (2010-11-xx)
+  Attribute tolerate null value
+  NcMLWriter check for null attribute
+  H5: Off by 1 error in DoublingTable
  16: (2010-11-24)
   Improve diagnostic on Aggregation / no datasets found
   H5/N4 non-string vlen bug.
