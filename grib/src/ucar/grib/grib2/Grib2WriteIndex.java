@@ -63,11 +63,11 @@ public class Grib2WriteIndex {
   /*
    * set true to check for duplicate records in file by comparing PDSs
    */
-  private static boolean checkPDS = false;
+  private static boolean checkPDS = true;
   /*
    *  Control the type of duplicate record logging
    */
-  private pdsLogType logPDS = pdsLogType.logger;
+  private static pdsLogType logPDS = pdsLogType.logger;
 
   private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
 
@@ -171,7 +171,6 @@ public class Grib2WriteIndex {
       System.out.println(now.toString() + " ... Start of Grib2WriteIndex");
     long start = System.currentTimeMillis();
     int count = 0;
-    int numberDups = 0;
     // set buffer size for performance
     int rafBufferSize = inputRaf.getBufferSize();
     inputRaf.setBufferSize(indexRafBufferSize);
@@ -212,16 +211,17 @@ public class Grib2WriteIndex {
             System.out.println(  "csc32="+ csc );
           // duplicate found
           if ( pdsMap.containsKey( csc )) {
-            StringBuilder str = new StringBuilder();
-            str.append( "Duplicate record" );
-            //str.append( product.getHeader() );
-            str.append( " with Discipline " );
+            StringBuilder str = new StringBuilder( "Duplicate record with Discipline " );
             str.append( product.getDiscipline() );
 
             // keep products if PDS don't match
-            if ( check2Products( inputRaf, products.get( pdsMap.get( csc ) ), product, str )) {
-              duplicate.add( i );
-              str.append( " at file position "+ i +" verses "+ pdsMap.get( csc ));
+            int recNum = pdsMap.get( csc );
+            if ( check2Products( inputRaf, products.get( recNum ), product, str )) {
+              duplicate.add( recNum );
+              //duplicate.add( i );  // remove second match
+              // save second match, remove first by overwrite
+              pdsMap.put( csc, i);
+              str.append( " at file position "+ i +" verses "+ recNum );
               if ( logPDS.equals( pdsLogType.systemout ))
                 System.out.println( str.toString() );
               else if ( logPDS.equals( pdsLogType.logger ))
@@ -232,7 +232,19 @@ public class Grib2WriteIndex {
           }
         }
         if( duplicate.size() > 0 ) {
-          numberDups = duplicate.size();
+          StringBuilder str = new StringBuilder( inputRaf.getLocation() );
+          str.append( " has Percentage of duplicates " );
+          str.append( (int)((((double)duplicate.size()/(double)products.size()) * 100) +.5));
+          str.append( "%, duplicates =" );
+          str.append( duplicate.size() );
+          str.append( " out of ");
+          str.append( products.size() );
+          str.append( " records." );
+          if ( logPDS.equals( Grib2WriteIndex.pdsLogType.systemout ))
+             System.out.println( str.toString() );
+          else if ( logPDS.equals( Grib2WriteIndex.pdsLogType.logger ))
+             log.info( str.toString());
+
           Collections.sort(duplicate, new CompareKeyDescend());
           // remove duplicates from products, highest first
           for( int idx : duplicate ) {
@@ -295,20 +307,6 @@ public class Grib2WriteIndex {
 
     if (debugTiming)
       System.out.println(" " + count + " products took " + (System.currentTimeMillis() - start) + " msec");
-    if( numberDups > 0 ) {
-      count += numberDups;
-      StringBuilder str = new StringBuilder( " has Percentage of duplicates " );
-      str.append( (int)((((double)numberDups/(double)count) * 100) +.5));
-      str.append( "% duplicates =" );
-      str.append( numberDups );
-      str.append( " out of ");
-      str.append( count );
-      str.append( " records." );
-      if ( logPDS.equals( Grib2WriteIndex.pdsLogType.systemout ))
-         System.out.println( str.toString() );
-      else if ( logPDS.equals( Grib2WriteIndex.pdsLogType.logger ))
-         log.info( str.toString());
-    }
     return true;
   }  // end writeGribIndex
 
@@ -415,7 +413,6 @@ public class Grib2WriteIndex {
       System.out.println(now.toString() + " ... Start of Grib2ExtendIndex");
     long start = System.currentTimeMillis();
     int count = 0;
-    int numberDups = 0;
     // set buffer size for performance
     int rafBufferSize = inputRaf.getBufferSize();
     inputRaf.setBufferSize(indexRafBufferSize);
@@ -458,7 +455,8 @@ public class Grib2WriteIndex {
       // check all the products for duplicates by comparing PDSs
       if( checkPDS ) {
         HashMap<String, Integer> pdsMap = new HashMap<String, Integer>();
-        ArrayList<Integer> duplicate = new ArrayList<Integer>();
+        ArrayList<Integer> duplicate1 = new ArrayList<Integer>();
+        ArrayList<Integer> duplicate2 = new ArrayList<Integer>();
         CRC32 csc32 = new CRC32();
         // initialize pdsMap with already indexed records
         int originalSize = recordList.size();
@@ -482,10 +480,7 @@ public class Grib2WriteIndex {
             System.out.println(  "csc32="+ csc );
           // duplicate found
           if ( pdsMap.containsKey( csc )) {
-            StringBuilder str = new StringBuilder();
-            str.append( "Duplicate record" );
-            //str.append( product.getHeader() );
-            str.append( " with Discipline " );
+            StringBuilder str = new StringBuilder( "Duplicate record with Discipline " );
             str.append( product.getDiscipline() );
 
             // keep products if PDS don't match
@@ -497,7 +492,14 @@ public class Grib2WriteIndex {
              pdsMatch = check2Products( inputRaf, products.get( idx-originalSize ), product, str);
 
             if ( pdsMatch ) {
-              duplicate.add( i );
+              if ( idx < originalSize ) {
+                duplicate1.add( idx );
+                //duplicate2.add( i ); // remove second match
+                pdsMap.put( csc, i + originalSize );
+              } else {
+                duplicate2.add( idx-originalSize );
+                pdsMap.put( csc, i + originalSize );
+              }
               str.append( " at file position "+ (i + originalSize) +" verses "+ idx);
               if ( logPDS.equals( pdsLogType.systemout ))
                 System.out.println( str.toString() );
@@ -508,11 +510,33 @@ public class Grib2WriteIndex {
             pdsMap.put( csc, i + originalSize );
           }
         }
-        if( duplicate.size() > 0 ) {
-          numberDups = duplicate.size();
-          Collections.sort(duplicate, new CompareKeyDescend());
-          // remove duplicates here from products, highest first
-          for( int idx : duplicate ) {
+        if( duplicate1.size() > 0 || duplicate2.size() > 0) {
+          StringBuilder str = new StringBuilder( inputRaf.getLocation() );
+          str.append( " has Percentage of duplicates " );
+          int dups =  duplicate1.size() + duplicate2.size();
+          int recs =  recordList.size() + products.size();
+          str.append( (int)((((double)dups/(double)recs) * 100) +.5));
+          str.append( "%, duplicates =" );
+          str.append( dups );
+          str.append( " out of ");
+          str.append( recs );
+          str.append( " records." );
+          if ( logPDS.equals( Grib2WriteIndex.pdsLogType.systemout ))
+             System.out.println( str.toString() );
+          else if ( logPDS.equals( Grib2WriteIndex.pdsLogType.logger ))
+             log.info( str.toString());
+        }
+        if( duplicate1.size() > 0 ) {
+          Collections.sort(duplicate1, new CompareKeyDescend());
+          // remove duplicates from recordList, highest first
+          for( int idx : duplicate1 ) {
+            recordList.remove( idx );
+          }
+        }
+        if( duplicate2.size() > 0 ) {
+          Collections.sort(duplicate2, new CompareKeyDescend());
+          // remove duplicates from products, highest first
+          for( int idx : duplicate2 ) {
             products.remove( idx );
           }
         }
@@ -595,20 +619,6 @@ public class Grib2WriteIndex {
 
     if (debugTiming)
       System.out.println(" " + count + " products took " + (System.currentTimeMillis() - start) + " msec");
-    if( numberDups > 0 ) {
-      count += numberDups;
-      StringBuilder str = new StringBuilder( " has Percentage of duplicates " );
-      str.append( (int)((((double)numberDups/(double)count) * 100) +.5));
-      str.append( "% duplicates =" );
-      str.append( numberDups );
-      str.append( " out of ");
-      str.append( count );
-      str.append( " records." );
-      if ( logPDS.equals( Grib2WriteIndex.pdsLogType.systemout ))
-         System.out.println( str.toString() );
-      else if ( logPDS.equals( Grib2WriteIndex.pdsLogType.logger ))
-         log.info( str.toString());
-    } 
     return true;
   }  // end extendGribIndex
 
@@ -681,7 +691,8 @@ public class Grib2WriteIndex {
   private boolean checkRawRecordProduct( RandomAccessFile inputRaf, Grib2WriteIndex.RawRecord raw, Calendar cal,
                     Grib2Product product, StringBuilder str) throws IOException  {
 
-    Grib2Pds pdsv1 = Grib2Pds.factory( raw.pdsData, product.getRefTime(), cal );
+    //Grib2Pds pdsv1 = Grib2Pds.factory( raw.pdsData, product.getRefTime(), cal );
+    Grib2Pds pdsv1 = Grib2Pds.factory( raw.pdsData, raw.refTime, cal );
     Grib2Pds pdsv2 = product.getPDS().getPdsVars();
 
     return checkPdsAndData( inputRaf, raw.offset1, raw.offset2, pdsv1,
@@ -726,22 +737,16 @@ public class Grib2WriteIndex {
       return false;
     }
     // add category and parameter number
-    str.append( " Category 1=");
+    str.append( " Category ");
     str.append( pdsv1.getParameterCategory() );
-    //str.append( " Category 2=");
-    //str.append( pdsv2.getParameterCategory() );
-    str.append( " Parameter 1=");
+    str.append( " Parameter ");
     str.append( pdsv1.getParameterNumber() );
-    //str.append( " Parameter 2=");
-    //str.append( pdsv2.getParameterNumber() );
     //str.append( " Level1 ");
     //str.append( pdsv1.getLevelType1() );
     //str.append( " value ");
     //str.append( pdsv1.getLevelValue1()  );
-    str.append( " time 1=");
+    str.append( " time ");
     str.append( pdsv1._getForecastTime()  );
-    //str.append( " time 2=");
-    //str.append( pdsv2._getForecastTime()  );
 
     str.append( " p1offsets="+ p1Offset1 +" "+ p1Offset2 );
     str.append( " p2offsets="+ p2Offset1 +" "+ p2Offset2 );

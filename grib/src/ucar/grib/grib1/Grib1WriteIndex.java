@@ -53,7 +53,7 @@ public class Grib1WriteIndex {
   /*
    * set true to check for duplicate records in file by comparing PDSs
    */
-  private static boolean checkPDS = false;
+  private static boolean checkPDS = true;
   /*
    *  Control the type of duplicate record logging
    */
@@ -149,7 +149,6 @@ public class Grib1WriteIndex {
       System.out.println(now.toString() + " ... Start of Grib1WriteIndex");
     long start = System.currentTimeMillis();
     int count = 0;
-    int numberDups = 0;
     // set buffer size for performance
     int rafBufferSize = inputRaf.getBufferSize();
     inputRaf.setBufferSize( Grib2WriteIndex.indexRafBufferSize );
@@ -189,13 +188,16 @@ public class Grib1WriteIndex {
             System.out.println(  "csc32="+ csc );
           // duplicate found
           if ( pdsMap.containsKey( csc )) {
-            StringBuilder str = new StringBuilder();
-            str.append( "Duplicate " );
+            StringBuilder str = new StringBuilder( "Duplicate " );
             str.append( product.getHeader() );
             // keep products if PDS don't match
-            if ( check2Products( inputRaf, products.get( pdsMap.get( csc ) ), product, str)) {
-              duplicate.add( i );
-              str.append( " at file position "+ i +" verses "+ pdsMap.get( csc ));
+            int recNum = pdsMap.get( csc );
+            if ( check2Products( inputRaf, products.get( recNum ), product, str)) {
+              duplicate.add( recNum );
+              //duplicate.add( i ); // remove second match
+              // save second match, remove first by overwrite
+              pdsMap.put( csc, i);
+              str.append( " at file position "+ i +" verses "+ recNum );
               if ( logPDS.equals( Grib2WriteIndex.pdsLogType.systemout ))
                 System.out.println( str.toString() );
               else if ( logPDS.equals( Grib2WriteIndex.pdsLogType.logger ))
@@ -206,7 +208,19 @@ public class Grib1WriteIndex {
           }
         }
         if( duplicate.size() > 0 ) {
-          numberDups = duplicate.size();
+          StringBuilder str = new StringBuilder( inputRaf.getLocation() );
+          str.append( " has Percentage of duplicates " );
+          str.append( (int)((((double)duplicate.size()/(double)products.size()) * 100) +.5));
+          str.append( "%, duplicates =" );
+          str.append( duplicate.size() );
+          str.append( " out of ");
+          str.append( products.size() );
+          str.append( " records." );
+          if ( logPDS.equals( Grib2WriteIndex.pdsLogType.systemout ))
+             System.out.println( str.toString() );
+          else if ( logPDS.equals( Grib2WriteIndex.pdsLogType.logger ))
+             log.info( str.toString());
+
           Collections.sort(duplicate, new CompareKeyDescend());
           // remove duplicates from products, highest first
           for( int idx : duplicate ) {
@@ -274,20 +288,6 @@ public class Grib1WriteIndex {
 
     if (debugTiming)
       System.out.println(" " + count + " products took " + (System.currentTimeMillis() - start) + " msec");
-    if( numberDups > 0 ) {
-      count += numberDups;
-      StringBuilder str = new StringBuilder( " has Percentage of duplicates " );
-      str.append( (int)((((double)numberDups/(double)count) * 100) +.5));
-      str.append( "% duplicates =" );
-      str.append( numberDups );
-      str.append( " out of ");
-      str.append( count );
-      str.append( " records." );
-      if ( logPDS.equals( Grib2WriteIndex.pdsLogType.systemout ))
-         System.out.println( str.toString() );
-      else if ( logPDS.equals( Grib2WriteIndex.pdsLogType.logger ))
-         log.info( str.toString());
-    }
 
     return true;
   }  // end writeGribIndex
@@ -393,7 +393,6 @@ public class Grib1WriteIndex {
       System.out.println(now.toString() + " ... Start of Grib2ExtendIndex");
     long start = System.currentTimeMillis();
     int count = 0;
-    int numberDups = 0;
     // set buffer size for performance
     int rafBufferSize = inputRaf.getBufferSize();
     inputRaf.setBufferSize( Grib2WriteIndex.indexRafBufferSize );
@@ -435,7 +434,8 @@ public class Grib1WriteIndex {
       // check all the products for duplicates by comparing PDSs
       if( checkPDS ) {
         HashMap<String, Integer> pdsMap = new HashMap<String, Integer>();
-        ArrayList<Integer> duplicate = new ArrayList<Integer>();
+        ArrayList<Integer> duplicate1 = new ArrayList<Integer>();
+        ArrayList<Integer> duplicate2 = new ArrayList<Integer>();
         CRC32 csc32 = new CRC32();
         // initialize pdsMap with already indexed records
         int originalSize = recordList.size();
@@ -456,8 +456,7 @@ public class Grib1WriteIndex {
             System.out.println(  "csc32="+ csc );
           // duplicate found
           if ( pdsMap.containsKey( csc )) {
-            StringBuilder str = new StringBuilder();
-            str.append( "Duplicate " );
+            StringBuilder str = new StringBuilder( "Duplicate " );
             str.append( product.getHeader() );
             // keep products if PDS don't match
             int idx = pdsMap.get( csc );
@@ -468,7 +467,14 @@ public class Grib1WriteIndex {
              pdsMatch = check2Products( inputRaf, products.get( idx-originalSize ), product,str);
 
             if ( pdsMatch ) {
-              duplicate.add( i );
+              if ( idx < originalSize ) {
+                duplicate1.add( idx );
+                //duplicate2.add( i );  // remove second match
+                pdsMap.put( csc, i + originalSize );
+              } else {
+                duplicate2.add( idx-originalSize );
+                pdsMap.put( csc, i + originalSize );
+              }
               str.append( " at file position "+ (i + originalSize) +" verses "+ idx);
               if ( logPDS.equals( Grib2WriteIndex.pdsLogType.systemout ))
                 System.out.println( str.toString() );
@@ -479,11 +485,33 @@ public class Grib1WriteIndex {
             pdsMap.put( csc, i + originalSize );
           }
         }
-        if( duplicate.size() > 0 ) {
-          numberDups = duplicate.size();
-          Collections.sort(duplicate, new CompareKeyDescend());
+        if( duplicate1.size() > 0 || duplicate2.size() > 0) {
+          StringBuilder str = new StringBuilder( inputRaf.getLocation() );
+          str.append( " has Percentage of duplicates " );
+          int dups =  duplicate1.size() + duplicate2.size();
+          int recs =  recordList.size() + products.size();
+          str.append( (int)((((double)dups/(double)recs) * 100) +.5));
+          str.append( "%, duplicates =" );
+          str.append( dups );
+          str.append( " out of ");
+          str.append( recs );
+          str.append( " records." );
+          if ( logPDS.equals( Grib2WriteIndex.pdsLogType.systemout ))
+             System.out.println( str.toString() );
+          else if ( logPDS.equals( Grib2WriteIndex.pdsLogType.logger ))
+             log.info( str.toString());
+        }
+        if( duplicate1.size() > 0 ) {
+          Collections.sort(duplicate1, new CompareKeyDescend());
+          // remove duplicates from recordList, highest first
+          for( int idx : duplicate1 ) {
+            recordList.remove( idx );
+          }
+        }
+        if( duplicate2.size() > 0 ) {
+          Collections.sort(duplicate2, new CompareKeyDescend());
           // remove duplicates from products, highest first
-          for( int idx : duplicate ) {
+          for( int idx : duplicate2 ) {
             products.remove( idx );
           }
         }
@@ -571,20 +599,7 @@ public class Grib1WriteIndex {
 
     if (debugTiming)
       System.out.println(" " + count + " products took " + (System.currentTimeMillis() - start) + " msec");
-    if( numberDups > 0 ) {
-      count += numberDups;
-      StringBuilder str = new StringBuilder( " has Percentage of duplicates " );
-      str.append( (int)((((double)numberDups/(double)count) * 100) +.5));
-      str.append( "% duplicates =" );
-      str.append( numberDups );
-      str.append( " out of ");
-      str.append( count );
-      str.append( " records." );
-      if ( logPDS.equals( Grib2WriteIndex.pdsLogType.systemout ))
-         System.out.println( str.toString() );
-      else if ( logPDS.equals( Grib2WriteIndex.pdsLogType.logger ))
-         log.info( str.toString());
-    }
+
     return true;
   }  // end extendGribIndex
 
