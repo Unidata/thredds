@@ -20,20 +20,21 @@ dl {margin: 10px 5px 5px 15px;)
    <strong>message</strong> = headerMessage | dataMessage | vdataMessage | errorMessage
    <strong>headerMessage</strong> = MAGIC_HEADER, vlen, NcStreamProto.Header
    <strong>dataMessage</strong> = MAGIC_DATA, vlen, NcStreamProto.Data, vlen, (byte)*vlen
-   <strong>vdataMessage</strong> = MAGIC_DATA, vlen, NcStreamProto.Data, vn, (vlen, bytes)*vn
+   <strong>vdataMessage</strong> = MAGIC_VDATA, vlen, NcStreamProto.Data, vn, (vlen, (byte)*vlen)*vn
    <strong>errorMessage</strong> = MAGIC_ERR, vlen, NcStreamProto.Error
    
    <strong>vlen</strong> = variable length encoded positive integer == length of the following object in bytes
    <strong>vn</strong> = variable length encoded positive integer == number of objects that follow
    <strong>NcStreamProto.Header</strong> = Header message encoded by protobuf
    <strong>NcStreamProto.Data</strong> = Data message encoded by protobuf
-   <strong>data</strong> = actual bytes of data, encoding described by the NcStreamProto.Data message
+   <strong>byte</strong> = actual bytes of data, encoding described by the NcStreamProto.Data message
 
 primitives:
 
    <strong>MAGIC_START</strong> = 0x43, 0x44, 0x46, 0x53 
    <strong>MAGIC_HEADER</strong>= 0xad, 0xec, 0xce, 0xda 
    <strong>MAGIC_DATA</strong> =  0xab, 0xec, 0xce, 0xba <br />
+   <strong>MAGIC_VDATA</strong> = 0xab, 0xef, 0xfe, 0xba <br />
    <strong>MAGIC_ERR</strong>   = 0xab, 0xad, 0xba, 0xda 
    <strong>MAGIC_END</strong> =   0xed, 0xed, 0xde, 0xde;</pre>
 <p>The protobuf messages are defined by </p>

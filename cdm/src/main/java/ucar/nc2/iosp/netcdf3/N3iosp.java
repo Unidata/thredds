@@ -581,6 +581,7 @@ public String NC_check_name(String name) {
        count += raf.readBytes( out, chunk.getFilePos(), chunk.getNelems() * s.getElementSize());
      }  */
 
+    // LOOK this is the OTW layout based on netcdf-3
     // not sure this works but should give an idea of timing
     Range recordRange = section.getRange(0);
     int stride = recordRange.stride();

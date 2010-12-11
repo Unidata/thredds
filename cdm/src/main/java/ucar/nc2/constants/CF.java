@@ -48,9 +48,12 @@ public class CF {
   public static final String featureTypeAtt4 = "featureType";
 
   // standard attributes
+  public static final String ADD_OFFSET = "add_offset";
   public final static String COORDINATES = "coordinates";
   public static final String GRID_MAPPING = "grid_mapping";
   public static final String GRID_MAPPING_NAME = "grid_mapping_name";
+  public static final String MISSING_VALUE = "missing_value";
+  public static final String SCALE_FACTOR = "scale_factor";
   public static final String STANDARD_NAME = "standard_name";
   public static final String UNITS = "units";
 

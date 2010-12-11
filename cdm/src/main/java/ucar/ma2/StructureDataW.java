@@ -39,7 +39,7 @@ import java.util.Map;
 /**
  * A StructureData implementation that has its data self-contained.
  * This is often the easiest to construct, but not very efficient for large arrays of Structures.
- *  *
+ *
  * @author caron
  */
 

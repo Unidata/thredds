@@ -395,6 +395,7 @@ public class IospHelper {
 
     // ArrayStructureBB can be optimised
     // LOOK not actually right until we define the on-the-wire protocol
+    // LOOK not handling Structure/Sequence in a general way
     if (data instanceof ArrayStructureBB) {
       ArrayStructureBB dataBB = (ArrayStructureBB) data;
       ByteBuffer bb = dataBB.getByteBuffer();
@@ -503,6 +504,99 @@ public class IospHelper {
 
     } else
       throw new IllegalStateException();
+  }
+
+  static public ByteBuffer copyToByteBuffer(StructureData sdata) {
+    StructureMembers sm = sdata.getStructureMembers();
+    int size = sm.getStructureSize();
+    //System.out.printf("size = %d%n", size);
+
+    ByteBuffer bb = ByteBuffer.allocate(size); // default in big endian
+    for (StructureMembers.Member m : sm.getMembers()) {
+      DataType dtype = m.getDataType();
+      //System.out.printf("do %s (%s) = %d%n", m.getName(), m.getDataType(), bb.position());
+      if (m.isScalar()) {
+        switch (dtype) {
+          case STRING:
+            bb.putInt( 0); // fake
+            break;
+          case FLOAT:
+            bb.putFloat( sdata.getScalarFloat(m));
+            break;
+           case DOUBLE:
+            bb.putDouble( sdata.getScalarDouble(m));
+            break;
+          case INT:
+          case ENUM4:
+            bb.putInt( sdata.getScalarInt(m));
+            break;
+          case SHORT:
+          case ENUM2:
+            bb.putShort( sdata.getScalarShort(m));
+            break;
+          case BYTE:
+          case ENUM1:
+            bb.put( sdata.getScalarByte(m));
+            break;
+          case CHAR:
+            bb.put( (byte) sdata.getScalarChar(m));
+            break;
+          case LONG:
+            bb.putLong( sdata.getScalarLong(m));
+            break;
+          default:
+            throw new IllegalStateException("scalar "+dtype.toString());
+        }
+      } else {
+        int n = m.getSize();
+        switch (dtype) {
+          case STRING:
+            for (int i=0; i<n; i++)
+              bb.putInt( 0); // fake
+            break;
+          case FLOAT:
+            float[] fdata = sdata.getJavaArrayFloat(m);
+            for (int i=0; i<n; i++)
+              bb.putFloat( fdata[i]);
+            break;
+          case DOUBLE:
+            double[] ddata = sdata.getJavaArrayDouble(m);
+            for (int i=0; i<n; i++)
+              bb.putDouble( ddata[i]);
+            break;
+          case INT:
+          case ENUM4:
+            int[] idata = sdata.getJavaArrayInt(m);
+            for (int i=0; i<n; i++)
+              bb.putInt( idata[i]);
+            break;
+          case SHORT:
+          case ENUM2:
+            short[] shdata = sdata.getJavaArrayShort(m);
+            for (int i=0; i<n; i++)
+              bb.putShort( shdata[i]);
+            break;
+          case BYTE:
+          case ENUM1:
+            byte[] bdata = sdata.getJavaArrayByte(m);
+            for (int i=0; i<n; i++)
+              bb.put( bdata[i]);
+            break;
+          case CHAR:
+            char[] cdata = sdata.getJavaArrayChar(m);
+            bb.put(IospHelper.convertCharToByte(cdata));
+            break;
+          case LONG:
+            long[] ldata = sdata.getJavaArrayLong(m);
+            for (int i=0; i<n; i++)
+              bb.putLong( ldata[i]);
+            break;
+          default:
+            throw new IllegalStateException(dtype.toString());
+        }
+      }
+    }
+    return bb;
   }
 
   /**

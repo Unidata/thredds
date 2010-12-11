@@ -407,6 +407,8 @@ public class NCdumpW {
       printStringArray(out, (ArrayChar) array, ilev, ct);
 
     } else if (array.getElementType() == String.class) {
+      if (!(array instanceof ArrayObject))
+        System.out.printf("HEY!%n");
       printStringArray(out, (ArrayObject) array, ilev, ct);
 
     } else if (array instanceof ArrayStructure) {

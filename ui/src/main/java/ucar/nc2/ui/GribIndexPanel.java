@@ -291,7 +291,7 @@ public class GribIndexPanel extends JPanel {
       p.sort();
 
     GridServiceProvider.debugOpen = false;
-    System.out.printf("Products = %d GridRecords = %d%n", sortList.size(), grList.size());
+    System.out.printf("GribIndexPanel Products = %d GridRecords = %d%n", sortList.size(), grList.size());
 
     productTable.setBeans(products);
     recordTable.setBeans(new ArrayList());

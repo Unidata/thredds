@@ -42,39 +42,39 @@ import java.net.URL;
 /**
  * Utility class to read and parse a fixed length table.
  * Each line of the table becomes a "Record". Each Record has a set of Fields described by the format string.
- *
- <pre>
-    List<TableParser.Record> recs = TableParser.readTable(is, "3,15,46,54,60d,67d,73d", 50000);
-    for (TableParser.Record record : recs) {
-      Station s = new Station();
-      s.id = "K" + record.get(0);
-      s.name = record.get(2) + " " + record.get(3);
-      s.lat = (Double) record.get(4) * .01;
-      s.lon = (Double) record.get(5) * .01;
-      s.elev = (Double) record.get(6);
-
-      stationTableHash.put(s.id, s);
-      if (showStations) System.out.println(" station= " + s);
-    }
-
-Example Table:
-TLX      000001 OKLAHOMA_CITY/Norman             OK US  3532  -9727   370  0 NWS
-AMA      000313 AMARILLO/Amarillo                TX US  3523 -10170  1093  0 NWS
-HGX      000378 HOUSTON/GALVESTON/Dickinson      TX US  2947  -9507     5  0 NWS
-MLB      000302 MELBOURNE/Melbourne              FL US  2810  -8065    11  0 NWS
-
- format:
- "3,15,54,60d,67d,73d"
-
- grammer:
-  format = {field,}
-  field = endPos type
-  endPos = ending pos in the line, 0 based, exclusive, ie String.substring(start, end)
-  type = i=integer, d=double else String
-  field[0] goes from [0, endPos[0])
-  field[i] goes from [endPos[i-1] to endPos[i])
-
-</pre>
+ * <p/>
+ * <pre>
+ * List<TableParser.Record> recs = TableParser.readTable(is, "3,15,46,54,60d,67d,73d", 50000);
+ * for (TableParser.Record record : recs) {
+ * Station s = new Station();
+ * s.id = "K" + record.get(0);
+ * s.name = record.get(2) + " " + record.get(3);
+ * s.lat = (Double) record.get(4) * .01;
+ * s.lon = (Double) record.get(5) * .01;
+ * s.elev = (Double) record.get(6);
+ * <p/>
+ * stationTableHash.put(s.id, s);
+ * if (showStations) System.out.println(" station= " + s);
+ * }
+ * <p/>
+ * Example Table:
+ * TLX      000001 OKLAHOMA_CITY/Norman             OK US  3532  -9727   370  0 NWS
+ * AMA      000313 AMARILLO/Amarillo                TX US  3523 -10170  1093  0 NWS
+ * HGX      000378 HOUSTON/GALVESTON/Dickinson      TX US  2947  -9507     5  0 NWS
+ * MLB      000302 MELBOURNE/Melbourne              FL US  2810  -8065    11  0 NWS
+ * <p/>
+ * format:
+ * "3,15,54,60d,67d,73d"
+ * <p/>
+ * grammer:
+ * format = {field,}
+ * field = endPos type
+ * endPos = ending pos in the line, 0 based, exclusive, ie String.substring(start, end)
+ * type = i=integer, d=double, L=long else String
+ * field[0] goes from [0, endPos[0])
+ * field[i] goes from [endPos[i-1] to endPos[i])
+ * <p/>
+ * </pre>
  *
  * @author caron
  */
@@ -84,12 +84,12 @@ public class TableParser {
    * Reads a URL or file in as a table.
    *
    * @param urlString starts with http, read URL contenets, else read file.
-   * @see #readTable(InputStream ios, String format, int maxLines)
-   * @param format describe format of each line.
-   * @param maxLines maximum number of lines to parse, set to < 0 to read all
+   * @param format    describe format of each line.
+   * @param maxLines  maximum number of lines to parse, set to < 0 to read all
    * @return List of TableParser.Record
-   * @throws IOException on read error
-   * @throws NumberFormatException  on parse number error
+   * @throws IOException           on read error
+   * @throws NumberFormatException on parse number error
+   * @see #readTable(InputStream ios, String format, int maxLines)
    */
   static public List<Record> readTable(String urlString, String format, int maxLines) throws IOException, NumberFormatException {
 
@@ -99,40 +99,56 @@ public class TableParser {
       ios = url.openStream();
     } else {
       ios = new FileInputStream(urlString);
-     }
-    
-    return readTable( ios, format, maxLines);
+    }
+
+    return readTable(ios, format, maxLines);
   }
 
   /**
    * Reads an input stream, containing lines of ascii in fixed width format.
    * Breaks each line into a set of Fields (space or comma delimited) which may be String, integer or double.
    *
-   * @param ios the input stream
-   * @param format describe format of each line.
+   * @param ios      the input stream
+   * @param format   describe format of each line.
    * @param maxLines maximum number of lines to parse, set to < 0 to read all
    * @return List of TableParser.Record
-   * @throws IOException on read error
-   * @throws NumberFormatException  on parse number error
+   * @throws IOException           on read error
+   * @throws NumberFormatException on parse number error
    */
   static public List<Record> readTable(InputStream ios, String format, int maxLines) throws IOException, NumberFormatException {
-    List<Field> fields = new ArrayList<Field>();
+    TableParser parser = new TableParser(format);
+    List<Record> result = parser.readAllRecords(ios, maxLines);
+    ios.close();
+    return result;
+  }
 
+  /////////////////////////////////////////////////////////////////////////////////////////////////
+
+  private List<Field> fields = new ArrayList<Field>();
+  public TableParser(String format) throws IOException, NumberFormatException {
     int start = 0;
-    StringTokenizer stoker = new StringTokenizer( format, " ,");
+    StringTokenizer stoker = new StringTokenizer(format, " ,");
     while (stoker.hasMoreTokens()) {
       String tok = stoker.nextToken();
       // see what type
       Class type = String.class;
-      char last = tok.charAt(tok.length()-1);
+      char last = tok.charAt(tok.length() - 1);
       if (last == 'i') type = int.class;
       if (last == 'd') type = double.class;
-      if (type != String.class) tok = tok.substring(0, tok.length()-1);
+      if (last == 'L') type = long.class;
+      if (type != String.class) tok = tok.substring(0, tok.length() - 1);
 
-      int end = Integer.parseInt( tok);
-      fields.add( new Field( start, end, type));
+      int end = Integer.parseInt(tok);
+      fields.add(new Field(start, end, type));
       start = end;
     }
+  }
+
+  public Field getField(int fldno) {
+    return fields.get(fldno);
+  }
+
+  public List<Record> readAllRecords(InputStream ios, int maxLines) throws IOException, NumberFormatException {
 
     List<Record> records = new ArrayList<Record>();
 
@@ -143,30 +159,42 @@ public class TableParser {
       if (line == null) break;
       if (line.startsWith("#")) continue;
       if (line.trim().length() == 0) continue;
-      Record r = Record.make( line, fields);
+      //System.out.printf("%s%n", line);
+      Record r = Record.make(line, fields);
       if (r != null)
         records.add(r);
       count++;
     }
 
-    dataIS.close();
     return records;
   }
+
+  public Record readRecord(String line) throws IOException, NumberFormatException {
+      if (line == null) return null;
+      if (line.startsWith("#")) return null;
+      if (line.trim().length() == 0) return null;
+      //System.out.printf("%s%n", line);
+      return Record.make(line, fields);
+  }
+
 
   /**
    * Describes one field in the record.
    */
-  static private class Field {
+  public class Field {
     int start, end;
     Class type;
 
-    Field (int start, int end, Class type) {
+    boolean hasScale = false;
+    float scale;
+
+    Field(int start, int end, Class type) {
       this.start = start;
       this.end = end;
       this.type = type;
     }
 
-    Object parse( String line) throws NumberFormatException {
+    public Object parse(String line) throws NumberFormatException {
       String svalue = (end > line.length()) ? line.substring(start) : line.substring(start, end);
       //System.out.printf("  [%d,%d) = %s %n",start, end, svalue);
 
@@ -174,18 +202,31 @@ public class TableParser {
         return svalue;
 
       try {
-        svalue = StringUtil.remove(svalue,' ');
+        svalue = StringUtil.remove(svalue, ' ');
+        boolean isBlank = (svalue.trim().length() == 0);
         if (type == double.class)
-          return new Double( svalue);
-        if (type == int.class)
-          return new Integer( svalue);
+          return isBlank ? 0.0 : new Double(svalue);
+        if (type == int.class) {
+          Integer result = isBlank ? 0 : new Integer(svalue);
+          if (hasScale)
+            return new Float(result.intValue() * scale);
+          else
+            return result;
+        }
+        if (type == long.class)
+          return isBlank ? 0 : new Long(svalue);
 
       } catch (NumberFormatException e) {
-        System.out.printf("  [%d,%d) = <%s> %n",start, end, svalue);
+        System.out.printf("  [%d,%d) = <%s> %n", start, end, svalue);
         throw e;
       }
 
       return null;
+    }
+
+    public void setScale(float scale) {
+      this.scale = scale;
+      hasScale = true;
     }
 
   }
@@ -196,7 +237,7 @@ public class TableParser {
   static public class Record {
     private List<Object> values = new ArrayList<Object>();
 
-    static Record make( String line, List fields) {
+    static Record make(String line, List fields) {
       try {
         Record r = new Record();
         for (Object field : fields) {
@@ -205,19 +246,32 @@ public class TableParser {
         }
         return r;
       } catch (NumberFormatException e) {
-        System.out.printf("Bad line=%s %n",line);
+        System.out.printf("Bad line=%s %n", line);
         return null;
       }
     }
 
-    public int nfields() { return values.size(); }
+    public int nfields() {
+      return values.size();
+    }
 
     /**
-     * Get the kth value of this record. Will be a String, Double, or Integer. 
+     * Get the kth value of this record. Will be a String, Double, or Integer.
+     *
      * @param k which one
      * @return object
      */
-    public Object get(int k) { return values.get(k); }
+    public Object get(int k) {
+      return values.get(k);
+    }
+
+    public void toString(Formatter f) {
+      for (int j = 0; j < values.size(); j++) {
+        Object s = values.get(j);
+        f.format(" %s,", s.toString());
+      }
+      f.format("%n");
+    }
   }
 
   ////////////////////////////////////////////////////////////////////////////////////
@@ -226,15 +280,20 @@ public class TableParser {
   static String testName2 = "http://localhost:8080/test/STNDB.TXT";
   static String testName3 = "C:/dev/thredds/cdm/src/main/resources/resources/nj22/tables/nexrad.tbl";
 
-  static public void main( String[] args) throws IOException {
+  static public void main2(String[] args) throws IOException {
     List recs = TableParser.readTable(testName3, "3,15,54,60d,67d,73d", 50000);
     for (int i = 0; i < recs.size(); i++) {
       Record record = (Record) recs.get(i);
       for (int j = 0; j < record.values.size(); j++) {
         Object s = record.values.get(j);
-        System.out.print(" "+s.toString());
+        System.out.print(" " + s.toString());
       }
       System.out.println();
     }
+  }
+
+  static public void main(String[] args) throws IOException {
+    System.out.printf("%s%n", new Integer(" "));
+    System.out.printf("%s%n", new Integer(""));
   }
 }

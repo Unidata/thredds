@@ -304,15 +304,20 @@ public class GribRawPanel extends JPanel {
     });
 
     gds1Table = new BeanTableSorted(Gds1Bean.class, (PreferencesExt) prefs.node("Gds1Bean"), false, "Grib1GridDefinitionSection", "unique from Grib1Records");
-    gds1Table.addListSelectionListener(new ListSelectionListener() {
-      public void valueChanged(ListSelectionEvent e) {
+
+    varPopup = new PopupMenu(gds1Table.getJTable(), "Options");
+    varPopup.addAction("Show GDS", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
         Gds1Bean bean = (Gds1Bean) gds1Table.getSelectedBean();
-        infoPopup.setText(bean.gds.toString());
-        infoWindow.setVisible(true);
-        gds2Table.clearSelection();
+        if (bean != null) {
+          ByteArrayOutputStream os = new ByteArrayOutputStream();
+          PrintStream ps = new PrintStream(os);
+          Grib1Dump.printGDS(bean.gds, null, ps);
+          infoPopup.setText(os.toString());
+          infoWindow.setVisible(true);
+        }
       }
     });
-
 
     /////////////////////////////////////////
     // the info windows
@@ -531,7 +536,7 @@ public class GribRawPanel extends JPanel {
     }
     param1BeanTable.setBeans(products);
     record1BeanTable.setBeans(new ArrayList());
-    System.out.printf("products = %d records = %d%n", products.size(), reader.getRecords().size());
+    System.out.printf("GribRawPanel products = %d records = %d%n", products.size(), reader.getRecords().size());
 
     java.util.List<Gds1Bean> gdsList = new ArrayList<Gds1Bean>();
     for (Grib1GridDefinitionSection gds : gdsSet.values()) {
@@ -589,7 +594,7 @@ public class GribRawPanel extends JPanel {
     }
     param2BeanTable.setBeans(products);
     record2BeanTable.setBeans(new ArrayList());
-    System.out.printf("products = %d records = %d%n", products.size(), reader.getRecords().size());
+    System.out.printf("GribRawPanel products = %d records = %d%n", products.size(), reader.getRecords().size());
 
     java.util.List<Gds2Bean> gdsList = new ArrayList<Gds2Bean>();
     for (Grib2GridDefinitionSection gds : gdsSet.values()) {

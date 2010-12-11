@@ -20,17 +20,19 @@ import com.google.protobuf.InvalidProtocolBufferException;
  * Defines the ncstream format, along with ncStream.proto.
  * <pre>
  * To regenerate ncStreamProto.java from ncStream.proto:
- * cd /dev/tds/thredds/cdm/src/main/java
+ * cd c:/dev/tds4.2/thredds/cdm/src/main/java
  * protoc --proto_path=. --java_out=. ucar/nc2/stream/ncStream.proto
  * </pre>
  * @see "http://www.unidata.ucar.edu/software/netcdf-java/stream/NcStream.html"
+ * @see "http://www.unidata.ucar.edu/software/netcdf-java/stream/NcstreamGrammer.html"
  */
 public class NcStream {
   //  must start with this "CDFS"
   static public final byte[] MAGIC_START = new byte[]{0x43, 0x44, 0x46, 0x53};
 
   static public final byte[] MAGIC_HEADER = new byte[]{(byte) 0xad, (byte) 0xec, (byte) 0xce, (byte) 0xda};
-  static public final byte[] MAGIC_DATA = new byte[]{(byte) 0xab, (byte) 0xec, (byte) 0xce, (byte) 0xba};
+  static public final byte[] MAGIC_DATA =   new byte[]{(byte) 0xab, (byte) 0xec, (byte) 0xce, (byte) 0xba};
+  static public final byte[] MAGIC_VDATA =  new byte[]{(byte) 0xab, (byte) 0xef, (byte) 0xfe, (byte) 0xba};    
 
   static public final byte[] MAGIC_ERR = new byte[]{(byte) 0xab, (byte) 0xad, (byte) 0xba, (byte) 0xda};
   static public final byte[] MAGIC_END = new byte[]{(byte) 0xed, (byte) 0xed, (byte) 0xde, (byte) 0xde};
@@ -421,7 +423,7 @@ public class NcStream {
 
     List<Dimension> dims = new ArrayList<Dimension>(6);
     for (ucar.nc2.stream.NcStreamProto.Dimension dim : s.getShapeList()) {
-      if (dim.getIsPrivate())
+      if (dim.getIsPrivate() || dim.getIsVlen())
         dims.add(new Dimension(dim.getName(), (int) dim.getLength(), false, dim.getIsUnlimited(), dim.getIsVlen()));
       else {
         Dimension d = g.findDimension(dim.getName());

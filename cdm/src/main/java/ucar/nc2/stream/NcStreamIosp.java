@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Read ncStream file (raf), into a NetcdfFile.
+ * IOSP to read ncStream file (RandomAccessFile), into a NetcdfFile.
  */
 public class NcStreamIosp extends AbstractIOServiceProvider {
   private static final boolean debug = false;

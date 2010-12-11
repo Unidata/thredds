@@ -34,6 +34,7 @@ package ucar.nc2.stream;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.nc2.iosp.IospHelper;
 
 import java.nio.channels.WritableByteChannel;
 import java.nio.ByteBuffer;
@@ -107,8 +108,18 @@ public class NcStreamWriter {
     size += NcStream.writeVInt(wbc, (int) len); // data len or number of objects
     if (show) System.out.printf("  %s proto=%d data=%d%n", v.getName(), datab.length, len);
 
-    size += v.readToByteChannel(section, wbc);
+    size += v.readToByteChannel(section, wbc); // try to do a direct transfer
 
+    return size;
+  }
+
+  public long sendData(WritableByteChannel wbc, StructureData sdata) throws IOException {
+    long size = 0;
+    ByteBuffer bb = IospHelper.copyToByteBuffer(sdata);
+    byte[] datab = bb.array();
+    size += writeBytes(wbc, NcStream.MAGIC_DATA); // magic
+    size += NcStream.writeVInt(wbc, datab.length); // data len
+    size += writeBytes(wbc, datab); // data
     return size;
   }
 

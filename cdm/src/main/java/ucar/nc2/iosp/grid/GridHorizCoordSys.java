@@ -436,7 +436,8 @@ public class GridHorizCoordSys {
         bestEndIndex = i;
       }
     }
-    assert Math.abs(bestEndIndex - bestStartIndex + 1) == gds.getInt(GridDefRecord.NY);
+    int ny = gds.getInt(GridDefRecord.NY);
+    assert Math.abs(bestEndIndex - bestStartIndex + 1) == ny;
     boolean goesUp = bestEndIndex > bestStartIndex;
 
     Variable v = new Variable(ncfile, g, null, name);

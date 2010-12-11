@@ -1,0 +1,16 @@
+package ghcnm;
+
+option java_package = "ucar.nc2.iosp.noaa";
+option java_outer_classname = "GhcnmProto";
+
+message StationIndex {
+  required uint64 stnid = 1;
+  required uint64 stnPos = 2;
+  required uint64 dataPos = 3;
+  required uint32 dataCount = 4;
+}
+
+message StationIndexList {
+  repeated StationIndex list = 1;
+}
+

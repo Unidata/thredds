@@ -32,6 +32,8 @@
  */
 package ucar.ma2;
 
+import ucar.nc2.iosp.IospHelper;
+
 import java.util.List;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
@@ -113,6 +115,13 @@ public class ArrayChar extends Array {
       storage = data;
     else
       storage = new char[(int) ima.getSize()];
+  }
+
+  public ArrayChar(String s) {
+    super(new int[] {s.length()});
+    storage = new char[s.length()];
+    for (int i=0; i<s.length(); i++)
+      storage[i] = s.charAt(i);
   }
 
   /**
