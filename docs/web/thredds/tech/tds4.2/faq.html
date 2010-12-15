@@ -34,6 +34,7 @@
 <h2>Tomcat</h2>
 <ul>
   <li><a href="#permGenOutOfMemoryError">I'm getting the error "java.lang.OutOfMemoryError: PermGen space". Whats up?</a></li>
+  <li><a href="#shutdownUnstoppedThreads">During shutdown I'm getting messages about threads (ThreadLocal) having to be shut down to prevent memory leaks. Whats up?</a></li>
   <li><a href="#whoIsAccessing">Who is accessing my server?</a></li>
   <li><a href="#controlWebCrawlers">How can I control whether I want Web crawlers to access my server?</a></li>
   <li><a href="#preventAccess">How can I prevent someone from accessing my server?</a></li>
@@ -201,6 +202,34 @@ whenever we redeploy. Lots of redeploys only happen on our test server.</p>
       <li>"<a href="http://my.opera.com/karmazilla/blog/2007/03/15/permgen-strikes-back">PermGen Strikes Back</a>" (2007-03-15)</li>
       <li>"<a href="http://my.opera.com/karmazilla/blog/2007/03/13/good-riddance-permgen-outofmemoryerror">Good Riddance PermGen OutOfMemoryError</a>" (2007-03-13)</li>
     </ul>
+  </blockquote>
+
+<hr width="50%" align="left">
+
+<h4>Q: <a name="shutdownUnstoppedThreads">During shutdown I'm getting messages about threads (ThreadLocal) having to be shut down to prevent memory leaks. Whats up?</a></h4>
+
+  <blockquote>
+    <p>Tomcat memory leak detection code started logging these messages as of Tomcat 6.0.24. From
+      various posts (see Spring Forum:
+        <a href="http://forum.springsource.org/showpost.php?p=282738&postcount=3">
+          "ThreadLocal forcefully removed" comment #3</a> e.g.)
+      it appears that these messages are not a problem but instead a matter of Tomcat finding these
+      objects before they get garbage collected.
+    </p>
+    <p>Here are a number of related links:</p>
+    <ul>
+      <li>Spring Forum: <a href="http://forum.springsource.org/showthread.php?p=282738#post282738">"ThreadLocal forcefully removed"</a>.
+        Comment #3 provides an answer to the post.
+      </li>
+      <li><a href="http://wiki.apache.org/tomcat/MemoryLeakProtection">Tomcat Memory Leak Prevention page</a>
+        (in particular, see the <a href="http://wiki.apache.org/tomcat/MemoryLeakProtection#customThreadLocal">"Custom ThreadLocal" section</a>)
+      </li>
+      <li>A Tomcat 7 issue on <a href="https://issues.apache.org/bugzilla/show_bug.cgi?id=%2049159">
+        "Improving ThreadLocal memory leak clean-up"</a>
+      </li>
+    </ul>
+    <p>NOTE: We will monitor the status of this Tomcat issue. For now, we do not consider this a
+      TDS bug and will not be working to fix this issue in TDS.</p>
   </blockquote>
 
 <hr width="50%" align="left">
