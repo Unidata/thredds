@@ -41,6 +41,7 @@ import ucar.grib.grib1.Grib1GDSVariables;
 
 import java.io.*;
 import java.lang.*;
+import java.nio.ByteBuffer;
 import java.util.*;
 import java.util.zip.CRC32;
 
@@ -101,7 +102,7 @@ public class Grib2WriteIndex {
 
     RandomAccessFile raf = null;
     // default from standalone indexer, check for duplicate records and log to System.out
-    checkPDS = true;
+    //checkPDS = true;
     logPDS = pdsLogType.systemout;
     try {
       raf = new RandomAccessFile(gribName, "r");
@@ -198,39 +199,48 @@ public class Grib2WriteIndex {
 
       // check all the products for duplicates by comparing PDSs
       if( checkPDS ) {
-        HashMap<String, Integer> pdsMap = new HashMap<String, Integer>();
+        HashMap<Long, Integer> pdsMap = new HashMap<Long, Integer>();
         ArrayList<Integer> duplicate = new ArrayList<Integer>();
-        CRC32 csc32 = new CRC32();
+        CRC32 crc32 = new CRC32();
         for (int i = 0; i < products.size(); i++) {
           Grib2Product product = products.get( i );
-          csc32.reset();
-          csc32.update(product.getPDS().getPdsVars().getPDSBytes());
+          crc32.reset();
+          crc32.update(product.getPDS().getPdsVars().getPDSBytes());
+
+          // heres a way to get a byte array for CRC from other values we need for duplicate checking
+          ByteBuffer bb = ByteBuffer.allocate(12);
+          bb.putInt( product.getDiscipline());
+          bb.putLong( product.getRefTime());
+          crc32.update(bb.array());
+
           //Discipline is part of Parameter identification
-          String csc = Long.toString( csc32.getValue() + product.getDiscipline());
-          if ( verbose )
-            System.out.println(  "csc32="+ csc );
+          //String csc = Long.toString( csc32.getValue() + product.getDiscipline());
+          //if ( verbose )
+          //  System.out.println(  "csc32="+ csc );
           // duplicate found
-          if ( pdsMap.containsKey( csc )) {
+          long crcv = crc32.getValue();
+          Integer recnum = pdsMap.get(crcv);
+          if ( recnum != null) {
             StringBuilder str = new StringBuilder( "Duplicate record with Discipline " );
             str.append( product.getDiscipline() );
 
             // keep products if PDS don't match
-            int recNum = pdsMap.get( csc );
-            if ( check2Products( inputRaf, products.get( recNum ), product, str )) {
-              duplicate.add( recNum );
+            if ( check2Products( inputRaf, products.get( recnum ), product, str )) {
+              duplicate.add( recnum );
               //duplicate.add( i );  // remove second match
               // save second match, remove first by overwrite
-              pdsMap.put( csc, i);
-              str.append( " at file position "+ i +" verses "+ recNum );
+              pdsMap.put( crcv, i);
+              str.append( " at file position "+ i +" verses "+ recnum );
               if ( logPDS.equals( pdsLogType.systemout ))
                 System.out.println( str.toString() );
               else if ( logPDS.equals( pdsLogType.logger ))
                 log.info( str.toString());
             }
           } else {
-            pdsMap.put( csc, i);
+            pdsMap.put( crcv, i);
           }
         }
+
         if( duplicate.size() > 0 ) {
           StringBuilder str = new StringBuilder( inputRaf.getLocation() );
           str.append( " has Percentage of duplicates " );
@@ -327,7 +337,7 @@ public class Grib2WriteIndex {
 
     RandomAccessFile raf = null;
     // default from standalone indexer, check for duplicate records and log to System.out
-    checkPDS = true;
+    //checkPDS = true;
     logPDS = pdsLogType.systemout;
     try {
       raf = new RandomAccessFile(gribName, "r");

@@ -400,7 +400,7 @@ public class FmrcInv {
         if (vc_union == null)
           vc_union = new VertCoord(vc);
         else if (!vc_union.equalsData(vc)) {
-          log.warn(name+" Grid "+ gridName +" has different vert coords in run " + grid.getRunDate());
+//          log.warn(name+" Grid "+ gridName +" has different vert coords in run " + grid.getRunDate());
           vertList.add(vc);
         }
       }

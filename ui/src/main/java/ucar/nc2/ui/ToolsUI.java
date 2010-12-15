@@ -143,6 +143,7 @@ public class ToolsUI extends JPanel {
   private GeoGridPanel gridPanel;
   private GribRawPanel gribRawPanel;
   private GribIndexPanel gribIndexPanel;
+  private GribReportPanel gribReportPanel;
   private GribCodePanel gribCodePanel;
   private GribTemplatePanel gribTemplatePanel;
   private Grib1TablePanel grib1TablePanel;
@@ -289,6 +290,7 @@ public class ToolsUI extends JPanel {
     // nested-2 tab - grib
     gribTabPane.addTab("GRIB-RAW", new JLabel("GRIB-RAW"));
     gribTabPane.addTab("GRIB-INDEX", new JLabel("GRIB-INDEX"));
+    gribTabPane.addTab("GRIB-REPORT", new JLabel("GRIB-REPORT"));
     gribTabPane.addTab("WMO-CODES", new JLabel("WMO-CODES"));
     gribTabPane.addTab("WMO-TEMPLATES", new JLabel("WMO-TEMPLATES"));
     gribTabPane.addTab("GRIB1-TABLES", new JLabel("GRIB1-TABLES"));
@@ -450,6 +452,10 @@ public class ToolsUI extends JPanel {
     } else if (title.equals("GRIB-INDEX")) {
       gribIndexPanel = new GribIndexPanel((PreferencesExt) mainPrefs.node("grib2"));
       c = gribIndexPanel;
+
+    } else if (title.equals("GRIB-REPORT")) {
+      gribReportPanel = new GribReportPanel((PreferencesExt) mainPrefs.node("gribReport"));
+      c = gribReportPanel;
 
     } else if (title.equals("WMO-CODES")) {
       gribCodePanel = new GribCodePanel((PreferencesExt) mainPrefs.node("grib-codes"));
@@ -922,6 +928,7 @@ public class ToolsUI extends JPanel {
     if (geotiffPanel != null) geotiffPanel.save();
     if (gribRawPanel != null) gribRawPanel.save();
     if (gribIndexPanel != null) gribIndexPanel.save();
+    if (gribReportPanel != null) gribReportPanel.save();
     if (gribCodePanel != null) gribCodePanel.save();
     if (gribTemplatePanel != null) gribTemplatePanel.save();
     if (grib1TablePanel != null) grib1TablePanel.save();
@@ -2356,6 +2363,70 @@ public class ToolsUI extends JPanel {
 
     void save() {
       gribTable.save();
+      super.save();
+    }
+
+  }
+
+   /////////////////////////////////////////////////////////////////////
+ // Indexed GRIB, using the IOSP
+  private class GribReportPanel extends OpPanel {
+    // ucar.unidata.io.RandomAccessFile raf = null;
+    ucar.nc2.ui.GribReportPanel gribReport;
+    //boolean useIndex = true;
+
+    GribReportPanel(PreferencesExt p) {
+      super(p, "file:", true, false);
+      gribReport = new ucar.nc2.ui.GribReportPanel(prefs, buttPanel);
+      add(gribReport, BorderLayout.CENTER);
+
+      AbstractAction infoAction = new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+          Formatter f = new Formatter();
+          try {
+            gribReport.showInfo(f);
+
+          } catch (Exception ioe) {
+            ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
+            ioe.printStackTrace();
+            ioe.printStackTrace(new PrintStream(bos));
+            ta.appendLine(bos.toString());
+          }
+          detailTA.setText(f.toString());
+          detailTA.gotoTop();
+          detailWindow.show();
+        }
+      };
+      BAMutil.setActionProperties(infoAction, "Information", "show Info", false, 'I', -1);
+      BAMutil.addActionToContainer(buttPanel, infoAction);
+    }
+
+    boolean process(Object o) {
+      String command = (String) o;
+      boolean err = false;
+
+      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
+      try {
+        gribReport.setCollection(command);
+
+      } catch (IOException ioe) {
+        JOptionPane.showMessageDialog(null, "GribReportPanel cant open " + command + "\n" + ioe.getMessage());
+        ta.setText("Failed to open <" + command + ">\n" + ioe.getMessage());
+        err = true;
+
+      } catch (Exception e) {
+        e.printStackTrace();
+        e.printStackTrace(new PrintStream(bos));
+        detailTA.setText(bos.toString());
+        detailWindow.show();
+        err = true;
+      }
+
+      return !err;
+    }
+
+    void save() {
+      gribReport.save();
       super.save();
     }
 

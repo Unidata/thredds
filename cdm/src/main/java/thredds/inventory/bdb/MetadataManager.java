@@ -96,7 +96,7 @@ public class MetadataManager {
       logger.info("MetadataManager opened bdb in directory=" + dir);
       readOnly = false;
 
-    } catch (com.sleepycat.je.EnvironmentLockedException e) {
+     } catch (com.sleepycat.je.EnvironmentLockedException e) {
       // another process has it open: try read-only
       logger.warn("MetadataManager failed to open directory, try read-only");
       readOnly = true;
@@ -283,6 +283,11 @@ public class MetadataManager {
   }
 
   public void delete(String theKey) {
+    if (readOnly) {
+      logger.warn("Cant dekete - readOnly mode");
+      return;
+    }
+
     openDatabase();
     try {
       DatabaseEntry entry = new DatabaseEntry(theKey.getBytes("UTF-8"));
@@ -293,6 +298,11 @@ public class MetadataManager {
   }
 
   public void delete(Map<String, MFile> current) {
+    if (readOnly) {
+      logger.warn("Cant dekete - readOnly mode");
+      return;
+    }
+    
     openDatabase();
     List<DatabaseEntry> result = new ArrayList<DatabaseEntry>();
     Cursor myCursor = null;

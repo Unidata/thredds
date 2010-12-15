@@ -42,6 +42,7 @@ import ucar.grib.GribNumbers;
 import ucar.grib.GribGDSVariablesIF;
 
 import java.io.IOException;
+import java.util.zip.CRC32;
 
 /**
  * Representing the grid definition section (GDS) of a GRIB record as variables are
@@ -98,6 +99,12 @@ public class Grib2GDSVariables implements GribGDSVariablesIF {
    */
   public byte[] getGDSBytes() {
     return input;
+  }
+
+  public long calcCRC() {
+    CRC32 crc32 = new CRC32();
+    crc32.update(input);
+    return crc32.getValue();
   }
 
   // getters  Covers ProductDefinitions 0-14 first

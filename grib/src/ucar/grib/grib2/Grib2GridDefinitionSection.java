@@ -1629,6 +1629,10 @@ public final class Grib2GridDefinitionSection {
     return gdsVars;
   }
 
+  public int getLength() {
+    return length;
+  }
+
   @Override
   public String toString() {
     return "Grib2GridDefinitionSection{" +
@@ -1698,6 +1702,7 @@ public final class Grib2GridDefinitionSection {
             "\n   gdsVars=" + gdsVars +
             '}';
   }
-}  // end Grib2GridDefinitionSection
+
+}
 
 

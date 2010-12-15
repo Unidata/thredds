@@ -36,6 +36,7 @@ import thredds.ui.catalog.*;
 import thredds.catalog.*;
 
 import thredds.ui.catalog.query.QueryChooser;
+import thredds.ui.catalog.tools.CatalogCopier;
 import thredds.ui.catalog.tools.CatalogEnhancer;
 import thredds.ui.catalog.tools.DLCrawler;
 import thredds.ui.catalog.tools.TDServerConfigurator;
@@ -60,7 +61,7 @@ import javax.swing.filechooser.FileFilter;
  * @author caron
  */
 public class ThreddsUI extends JPanel {
-    // store keys
+  // store keys
   static private final String VIEWER_SIZE = "ViewerSize";
   static private final String SOURCE_WINDOW_SIZE = "SourceWindowSize";
   static private final String XML_WINDOW_SIZE = "XmlWindowSize";
@@ -73,6 +74,7 @@ public class ThreddsUI extends JPanel {
   // the main components
   private ThreddsDatasetChooser datasetChooser = null;
   private CatalogEnhancer catEditor = null;
+  private CatalogCopier catCopier = null;
   private DLCrawler catCrawler = null;
   private TDServerConfigurator serverConfigure = null;
 
@@ -102,12 +104,12 @@ public class ThreddsUI extends JPanel {
     //parent = topLevel.getRootPaneContainer().getRootPane();
 
     enableEvents(AWTEvent.WINDOW_EVENT_MASK);
-    Dimension d = (Dimension) store.getBean( VIEWER_SIZE, null);
+    Dimension d = (Dimension) store.getBean(VIEWER_SIZE, null);
     int defaultWidth = 700;
     int defaultHeight = 350;
     setPreferredSize((d != null) ? d : new Dimension(defaultWidth, defaultHeight));
 
-    try  {
+    try {
       makeActionsSystem();
       makeActionsDataset();
 
@@ -121,19 +123,20 @@ public class ThreddsUI extends JPanel {
 
     // other components
     PreferencesExt fcPrefs = (PreferencesExt) store.node("FileManager");
-    FileFilter[] filters = new FileFilter[] {new FileManager.NetcdfExtFilter()};
+    FileFilter[] filters = new FileFilter[]{new FileManager.NetcdfExtFilter()};
     fileChooser = new FileManager(parent, null, filters, fcPrefs);
   }
 
-  private void makeUI() throws Exception  {
+  private void makeUI() throws Exception {
     tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 
     /// catalog, DQC, query choosers
     datasetChooser = makeDatasetChooser(); // adds itself to the JTabbedPane
 
     // all the other component are defferred for fast startup
-    tabbedPane.addTab("catCrawler", new JLabel("catCrawler"));
+    tabbedPane.addTab("Catalog Crawler", new JLabel("Catalog Crawler"));
     tabbedPane.addTab("Catalog Enhancer", new JLabel("Catalog Enhancer"));
+    tabbedPane.addTab("Catalog Copier", new JLabel("Catalog Copier"));
     tabbedPane.addTab("TDS Configure", new JLabel("TDS Configure"));
     tabbedPane.setSelectedIndex(0);
     tabbedPane.addChangeListener(new ChangeListener() {
@@ -147,69 +150,69 @@ public class ThreddsUI extends JPanel {
       }
     });
 
-     // panel to show source
-    sourcePane = new TextGetPutPane( (PreferencesExt) store.node("getputPane"));
-    sourceWindow = new IndependentWindow( "Source", BAMutil.getImage( "thredds"), sourcePane);
-    sourceWindow.setBounds((Rectangle)store.getBean(SOURCE_WINDOW_SIZE, new Rectangle(50, 50, 725, 450)));
+    // panel to show source
+    sourcePane = new TextGetPutPane((PreferencesExt) store.node("getputPane"));
+    sourceWindow = new IndependentWindow("Source", BAMutil.getImage("thredds"), sourcePane);
+    sourceWindow.setBounds((Rectangle) store.getBean(SOURCE_WINDOW_SIZE, new Rectangle(50, 50, 725, 450)));
 
-     // panel to show xml data
-    xmlPane = new TextHistoryPane( false);
-    xmlWindow = new IndependentDialog( null, false, "XML data", xmlPane);
-    xmlWindow.setBounds((Rectangle)store.getBean(XML_WINDOW_SIZE, new Rectangle(50, 50, 725, 450)));
+    // panel to show xml data
+    xmlPane = new TextHistoryPane(false);
+    xmlWindow = new IndependentDialog(null, false, "XML data", xmlPane);
+    xmlWindow.setBounds((Rectangle) store.getBean(XML_WINDOW_SIZE, new Rectangle(50, 50, 725, 450)));
 
-      //catIndexer = new thredds.catalog.search.ui.CatalogIndexer((PreferencesExt) store.node("catIndexer"), topLevel.getJFrame());
-      // tabbedPane.addTab("Indexer", catIndexer);
+    //catIndexer = new thredds.catalog.search.ui.CatalogIndexer((PreferencesExt) store.node("catIndexer"), topLevel.getJFrame());
+    // tabbedPane.addTab("Indexer", catIndexer);
 
-    setLayout( new BorderLayout());
+    setLayout(new BorderLayout());
     add(tabbedPane, BorderLayout.CENTER);
   }
 
   private ThreddsDatasetChooser makeDatasetChooser() {
 
-    datasetChooser = new ThreddsDatasetChooser( (PreferencesExt) store.node("ThreddsDatasetChooser"), tabbedPane);
+    datasetChooser = new ThreddsDatasetChooser((PreferencesExt) store.node("ThreddsDatasetChooser"), tabbedPane);
 
     if (Debug.isSet("System/filterDataset"))
-      datasetChooser.setDatasetFilter( new DatasetFilter.ByServiceType( ServiceType.DODS));
+      datasetChooser.setDatasetFilter(new DatasetFilter.ByServiceType(ServiceType.DODS));
 
-    datasetChooser.addPropertyChangeListener(  new java.beans.PropertyChangeListener() {
+    datasetChooser.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
 
-      public void propertyChange( java.beans.PropertyChangeEvent e) {
+      public void propertyChange(java.beans.PropertyChangeEvent e) {
         if (e.getPropertyName().equals("InvAccess")) {
-          firePropertyChangeEvent( e);
+          firePropertyChangeEvent(e);
           return;
         }
 
         if (e.getPropertyName().equals("Dataset") || e.getPropertyName().equals("CoordSys") || e.getPropertyName().equals("File")) {
           // intercept XML, ASCII return types
           InvDataset ds = (InvDataset) e.getNewValue();
-          InvAccess access = ds.getAccess( ServiceType.HTTPServer);
+          InvAccess access = ds.getAccess(ServiceType.HTTPServer);
           if (access != null) {
             DataFormatType format = access.getDataFormatType();
             if (format == DataFormatType.PLAIN || format == DataFormatType.XML) {
               String urlString = access.getStandardUrlName();
               //System.out.println("got station XML data access = "+urlString);
               IO.readURLcontents(urlString);
-              xmlPane.setText( IO.readURLcontents(urlString));
+              xmlPane.setText(IO.readURLcontents(urlString));
               xmlPane.gotoTop();
               xmlWindow.setVisible(true);
               return;
             }
           }
-          firePropertyChangeEvent( e);
+          firePropertyChangeEvent(e);
         }
       }
     });
 
     // add a show source button to catalog chooser
     JButton catSource = new JButton("Source");
-    catSource.addActionListener( new ActionListener() {
+    catSource.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent evt) {
         CatalogChooser cc = datasetChooser.getCatalogChooser();
         String catURL = cc.getCurrentURL();
         //InvCatalogImpl cat = (InvCatalogImpl) datasetChooser.getCatalogChooser().getCurrentCatalog();
         //String catURL = cat.getUriString();
-        if (debugSelection) System.out.println("Catalog Source: url = "+catURL);
-        sourcePane.setURL( catURL);
+        if (debugSelection) System.out.println("Catalog Source: url = " + catURL);
+        sourcePane.setURL(catURL);
         sourcePane.gotoTop();
         sourceWindow.show();
       }
@@ -220,10 +223,10 @@ public class ThreddsUI extends JPanel {
     if (queryChooser != null) {
       // add a show source button to dqc chooser
       JButton dcqSource = new JButton("Source");
-      dcqSource.addActionListener( new ActionListener() {
+      dcqSource.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent evt) {
           String catURL = datasetChooser.getQueryChooser().getCurrentURL();
-          sourcePane.setURL( catURL);
+          sourcePane.setURL(catURL);
           sourcePane.gotoTop();
           sourceWindow.show();
         }
@@ -232,11 +235,11 @@ public class ThreddsUI extends JPanel {
 
       // add a show source button to dqc catalog chooser
       JButton dqcCatSource = new JButton("Source");
-      dqcCatSource.addActionListener( new ActionListener() {
+      dqcCatSource.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent evt) {
           String catURL = datasetChooser.getQueryChooser().getCatalogChooser().getCurrentURL();
-          System.out.println("DQC Catalog Source: url = "+catURL);
-          sourcePane.setURL( catURL);
+          System.out.println("DQC Catalog Source: url = " + catURL);
+          sourcePane.setURL(catURL);
           sourcePane.gotoTop();
           sourceWindow.show();
         }
@@ -248,6 +251,7 @@ public class ThreddsUI extends JPanel {
   }
 
   // deferred creation of components to minimize startup
+
   private void makeComponent(JTabbedPane parent, String title) {
     if (parent == null) parent = tabbedPane;
 
@@ -264,19 +268,23 @@ public class ThreddsUI extends JPanel {
     }
 
     Component c;
-    if (title.equals("catCrawler")) {
+    if (title.equals("Catalog Crawler")) {
       catCrawler = new DLCrawler((PreferencesExt) store.node("catCrawler"), parent);
       c = catCrawler;
-
-    } else if (title.equals("TDS Configure")) {
-      serverConfigure = new TDServerConfigurator((PreferencesExt) store.node("serverConfigure"), parent);
-      c = serverConfigure;
 
     } else if (title.equals("Catalog Enhancer")) {
       catEditor = new CatalogEnhancer((PreferencesExt) store.node("catEditor"), parent);
       c = catEditor;
 
-     } else {
+    } else if (title.equals("Catalog Copier")) {
+      catCopier = new CatalogCopier((PreferencesExt) store.node("catCopier"), parent);
+      c = catCopier;
+
+    } else if (title.equals("TDS Configure")) {
+      serverConfigure = new TDServerConfigurator((PreferencesExt) store.node("serverConfigure"), parent);
+      c = serverConfigure;
+
+    } else {
       System.out.println("tabbedPane unknown component " + title);
       return;
     }
@@ -286,46 +294,38 @@ public class ThreddsUI extends JPanel {
   }
 
 
-      /** save all data in the PersistentStore */
+  /**
+   * save all data in the PersistentStore
+   */
   public void storePersistentData() {
     store.putBeanObject(VIEWER_SIZE, getSize());
     store.putBeanObject(SOURCE_WINDOW_SIZE, (Rectangle) sourceWindow.getBounds());
 
-    if (fileChooser != null)
-      fileChooser.save();
-
-    if (datasetChooser != null)
-      datasetChooser.save();
-
-    if (sourcePane != null)
-      sourcePane.save();
-
-    if (catEditor != null)
-      catEditor.save();
-
-    if (catCrawler != null)
-      catCrawler.save();
-
-    if (serverConfigure != null)
-      serverConfigure.save();
+    if (fileChooser != null)  fileChooser.save();
+    if (datasetChooser != null) datasetChooser.save();
+    if (sourcePane != null)  sourcePane.save();
+    if (catEditor != null) catEditor.save();
+    if (catCrawler != null) catCrawler.save();
+    if (serverConfigure != null) serverConfigure.save();
+    if (catCopier != null) catCopier.save();
   }
 
-   /**
+  /**
    * Add a PropertyChangeEvent Listener. Throws a PropertyChangeEvent:
    * <ul>
    * <li>  propertyName = "Dataset" or "File", getNewValue() = InvDataset chosen.
    * <li>  propertyName = "Datasets", getNewValue() = InvDataset[] chosen. This can only happen if
-   *  you have set doResolve = true, and the resolved dataset is a list of datasets.
+   * you have set doResolve = true, and the resolved dataset is a list of datasets.
    * </ul>
    */
-  public void addPropertyChangeListener( PropertyChangeListener l) {
+  public void addPropertyChangeListener(PropertyChangeListener l) {
     listenerList.add(PropertyChangeListener.class, l);
   }
 
   /**
    * Remove a PropertyChangeEvent Listener.
    */
-  public void removePropertyChangeListener( PropertyChangeListener l) {
+  public void removePropertyChangeListener(PropertyChangeListener l) {
     listenerList.remove(PropertyChangeListener.class, l);
   }
 
@@ -333,59 +333,59 @@ public class ThreddsUI extends JPanel {
 
     // Process the listeners last to first
     Object[] listeners = listenerList.getListenerList();
-    for (int i = listeners.length-2; i>=0; i-=2) {
+    for (int i = listeners.length - 2; i >= 0; i -= 2) {
       if (listeners[i] == PropertyChangeListener.class) {
-        ((PropertyChangeListener)listeners[i+1]).propertyChange(event);
+        ((PropertyChangeListener) listeners[i + 1]).propertyChange(event);
       }
     }
   }
 
-  public void setDataset( String location) {
-    datasetChooser.getCatalogChooser().setCatalog( location);
-    tabbedPane.setSelectedComponent( datasetChooser.getCatalogChooser());
+  public void setDataset(String location) {
+    datasetChooser.getCatalogChooser().setCatalog(location);
+    tabbedPane.setSelectedComponent(datasetChooser.getCatalogChooser());
   }
 
- /* private boolean chooseDataset(String url) {
-    InvDataset invDs = new InvDatasetImpl( fname, ServerType.NETCDF);
-    return chooseDataset( invDs);
-  }
+  /* private boolean chooseDataset(String url) {
+   InvDataset invDs = new InvDatasetImpl( fname, ServerType.NETCDF);
+   return chooseDataset( invDs);
+ }
 
-  void setDataset(InvDataset ds) {
-    if (ds == null) return;
+ void setDataset(InvDataset ds) {
+   if (ds == null) return;
 
-    InvAccess access = ds.getAccess( ServiceType.HTTPServer);
-    if (access != null) {
-      if ((access.getDataFormatType() == DataFormatType.PLAIN) ||
-        (access.getDataFormatType() == DataFormatType.XML)) {
-        String urlString = access.getStandardUrlName();
-        System.out.println("got station XML data access = "+urlString);
-        thredds.util.IO.readURLcontents(urlString);
-        xmlPane.setText( thredds.util.IO.readURLcontents(urlString));
-        xmlPane.gotoTop();
-        xmlWindow.show();
-        return;
-      }
-    }
+   InvAccess access = ds.getAccess( ServiceType.HTTPServer);
+   if (access != null) {
+     if ((access.getDataFormatType() == DataFormatType.PLAIN) ||
+       (access.getDataFormatType() == DataFormatType.XML)) {
+       String urlString = access.getStandardUrlName();
+       System.out.println("got station XML data access = "+urlString);
+       thredds.util.IO.readURLcontents(urlString);
+       xmlPane.setText( thredds.util.IO.readURLcontents(urlString));
+       xmlPane.gotoTop();
+       xmlWindow.show();
+       return;
+     }
+   }
 
-    if (ds.getDataType() == DataType.IMAGE) {
-      //setImageAccess( ds);
-      //setTab(TAB_IMAGE);
-      return;
-    }
+   if (ds.getDataType() == DataType.IMAGE) {
+     //setImageAccess( ds);
+     //setTab(TAB_IMAGE);
+     return;
+   }
 
-    else { // !! if (ds.getDataType() == DataType.GRID) {
-      // LOOK what to do with dataset ??
-      // gridViewer.setDataset( ds);
+   else { // !! if (ds.getDataType() == DataType.GRID) {
+     // LOOK what to do with dataset ??
+     // gridViewer.setDataset( ds);
 
-      //setTab(TAB_GRID);
-      return;
-    }
+     //setTab(TAB_GRID);
+     return;
+   }
 
-    /* JOptionPane.showMessageDialog(UI.this, ds.getName()+": unknown data type= "+ds.getDataType(),
-        "Error opening dataset", JOptionPane.ERROR_MESSAGE);
+   /* JOptionPane.showMessageDialog(UI.this, ds.getName()+": unknown data type= "+ds.getDataType(),
+       "Error opening dataset", JOptionPane.ERROR_MESSAGE);
 
-    return;
-  } */
+   return;
+ } */
 
   /* private boolean setImageAccess(InvDataset ds) {
     if (ds == null) return false;
@@ -442,6 +442,7 @@ public class ThreddsUI extends JPanel {
   } */
 
   // actions that are system-wide
+
   private void makeActionsSystem() {
 
     /* aboutAction = new AbstractAction() {
@@ -530,30 +531,31 @@ public class ThreddsUI extends JPanel {
   }
 
   // actions that control the dataset
+
   private void makeActionsDataset() {
 
-      /* choose local dataset
-    chooseLocalDatasetAction = new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        if ( null == fileChooser) {
-          String dirName = store.get(FILECHOOSER_DEFAULTDIR, null);
-          fileChooser = new FileManager(parent, dirName, new FileManager.NetcdfExtFilter());
-        }
-        java.io.File file = fileChooser.chooseFile();
-        if (file == null) return;
+    /* choose local dataset
+chooseLocalDatasetAction = new AbstractAction() {
+public void actionPerformed(ActionEvent e) {
+if ( null == fileChooser) {
+ String dirName = store.get(FILECHOOSER_DEFAULTDIR, null);
+ fileChooser = new FileManager(parent, dirName, new FileManager.NetcdfExtFilter());
+}
+java.io.File file = fileChooser.chooseFile();
+if (file == null) return;
 
-        InvDataset invDs;
-        try {
-          invDs = new InvDatasetImpl( file.toURI().toString(), DataType.GRID, ServiceType.NETCDF);
-        } catch (Exception ue) {
-          javax.swing.JOptionPane.showMessageDialog(UI.this, "Invalid filename = <"+file+">\n"+ue.getMessage());
-          ue.printStackTrace();
-          return;
-        }
-        setDataset( invDs);
-      }
-    };
-    BAMutil.setActionProperties( chooseLocalDatasetAction, "Choose", "open Local dataset...", false, 'L', -1); */
+InvDataset invDs;
+try {
+ invDs = new InvDatasetImpl( file.toURI().toString(), DataType.GRID, ServiceType.NETCDF);
+} catch (Exception ue) {
+ javax.swing.JOptionPane.showMessageDialog(UI.this, "Invalid filename = <"+file+">\n"+ue.getMessage());
+ ue.printStackTrace();
+ return;
+}
+setDataset( invDs);
+}
+};
+BAMutil.setActionProperties( chooseLocalDatasetAction, "Choose", "open Local dataset...", false, 'L', -1); */
 
     /*choose THREDDS dataset
     chooseThreddsDatasetAction = new AbstractAction() {
@@ -563,7 +565,7 @@ public class ThreddsUI extends JPanel {
     };
     BAMutil.setActionProperties( chooseThreddsDatasetAction, "Choose", "open THREDDS dataset...", false, 'R', -1);
     */
-      /* enter dataset URL
+    /* enter dataset URL
     datasetURLAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         if (datasetURLDialog == null) {
@@ -668,31 +670,31 @@ public class ThreddsUI extends JPanel {
       } else
         savedDatasetList = new ArrayList(); */
 
-        // Info
-    /* JMenu infoMenu = new JMenu("Info");
-    infoMenu.setMnemonic('I');
-    mb.add(infoMenu);
+  // Info
+  /* JMenu infoMenu = new JMenu("Info");
+   infoMenu.setMnemonic('I');
+   mb.add(infoMenu);
 
-    /// Configure
-    configMenu = new JMenu("Configure");
-    configMenu.setMnemonic('C');
-    mb.add(configMenu);
+   /// Configure
+   configMenu = new JMenu("Configure");
+   configMenu.setMnemonic('C');
+   mb.add(configMenu);
 
-    //// tools menu
-    JMenu toolMenu = new JMenu("Tools");
-    toolMenu.setMnemonic( 'T');
-    mb.add(toolMenu);
+   //// tools menu
+   JMenu toolMenu = new JMenu("Tools");
+   toolMenu.setMnemonic( 'T');
+   mb.add(toolMenu);
 
-   // Help
-    JMenu helpMenu = new JMenu("Help");
-    helpMenu.setMnemonic('H');
-    mb.add(helpMenu);
-    // BAMutil.addActionToMenu( helpMenu, controller.helpAction);
-    BAMutil.addActionToMenu( helpMenu, aboutAction);
+  // Help
+   JMenu helpMenu = new JMenu("Help");
+   helpMenu.setMnemonic('H');
+   mb.add(helpMenu);
+   // BAMutil.addActionToMenu( helpMenu, controller.helpAction);
+   BAMutil.addActionToMenu( helpMenu, aboutAction);
 
-    // other UI's add their actions to menu
-    //gridViewer.addActionsToMenus(dataMenu, configMenu, toolMenu);
-  } */
+   // other UI's add their actions to menu
+   //gridViewer.addActionsToMenus(dataMenu, configMenu, toolMenu);
+ } */
 }
 
 

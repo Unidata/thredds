@@ -352,6 +352,8 @@ public final class Grib2IdentificationSection {
     }
   }
 
-
+  public int getLength() {
+    return length;
+  }
 }
 

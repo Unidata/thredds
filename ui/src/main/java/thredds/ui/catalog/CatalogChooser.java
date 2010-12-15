@@ -488,6 +488,10 @@ public class CatalogChooser extends JPanel {
     showDatasetInfo(ds);
   }
 
+  public InvDataset getSelectedDataset() {
+    return tree.getSelectedDataset();
+  }
+
   /**
    * Get the current catalog being shown.
    * @return current catalog, or null.

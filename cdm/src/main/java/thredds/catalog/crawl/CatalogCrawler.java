@@ -155,9 +155,9 @@ public class CatalogCrawler {
 
     for (InvDataset ds : cat.getDatasets()) {
       if (type == USE_ALL)
-        crawlDataset(ds, task, out, context);
+        crawlDataset(ds, task, out, context, true);
       else
-        crawlDirectDatasets(ds, task, out, context);
+        crawlDirectDatasets(ds, task, out, context, true);
       if ((task != null) && task.isCancel()) break;
     }
 
@@ -172,7 +172,7 @@ public class CatalogCrawler {
    * @param out  send status messages to here (may be null)
    * @param context caller can pass this object in (used for thread safety)
    */
-  public void crawlDataset(InvDataset ds, CancelTask task, PrintStream out, Object context) {
+  public void crawlDataset(InvDataset ds, CancelTask task, PrintStream out, Object context, boolean release) {
     boolean isCatRef = (ds instanceof InvCatalogRef);
     boolean isDataScan = ds.findProperty("DatasetScan") != null;
     boolean skipScanChildren = skipDatasetScan && (ds instanceof InvCatalogRef) && isDataScan;
@@ -184,7 +184,7 @@ public class CatalogCrawler {
       countCatrefs++;
 
       if (!listen.getCatalogRef( catref, context)) {
-        catref.release();
+        if (release) catref.release();
         return;
       }
     }
@@ -203,13 +203,13 @@ public class CatalogCrawler {
       }
 
       for (InvDataset dds : dlist) {
-        crawlDataset(dds, task, out, context);
+        crawlDataset(dds, task, out, context, release);
         if ((task != null) && task.isCancel())
           break;
       }
     }
 
-    if (isCatRef) {
+    if (isCatRef && release) {
       InvCatalogRef catref = (InvCatalogRef) ds;
       catref.release();
     }
@@ -224,7 +224,7 @@ public class CatalogCrawler {
    * @param out  send status messages to here (may be null)
    * @param context caller can pass this object in (used for thread safety)
    */
-  public void crawlDirectDatasets(InvDataset ds, CancelTask task, PrintStream out, Object context) {
+  public void crawlDirectDatasets(InvDataset ds, CancelTask task, PrintStream out, Object context, boolean release) {
     boolean isCatRef = (ds instanceof InvCatalogRef);
     boolean skipScanChildren = skipDatasetScan && (ds instanceof InvCatalogRef) && (ds.findProperty("DatasetScan") != null);
 
@@ -235,7 +235,7 @@ public class CatalogCrawler {
       countCatrefs++;
       
       if (!listen.getCatalogRef( catref, context)) {
-        catref.release();
+        if (release) catref.release();
         return;
       }
     }
@@ -271,7 +271,7 @@ public class CatalogCrawler {
     if (!skipScanChildren) {
       for (InvDataset dds : dlist) {
         if (dds.hasNestedDatasets())
-          crawlDirectDatasets(dds, task, out, context);
+          crawlDirectDatasets(dds, task, out, context, release);
         if ((task != null) && task.isCancel())
           break;
       }
@@ -282,7 +282,7 @@ public class CatalogCrawler {
      out.println(" ** " + ds.getName() + " took " + took + " msecs\n");
    } */
 
-    if (ds instanceof InvCatalogRef) {
+    if (ds instanceof InvCatalogRef && release) {
       InvCatalogRef catref = (InvCatalogRef) ds;
       catref.release();
     }

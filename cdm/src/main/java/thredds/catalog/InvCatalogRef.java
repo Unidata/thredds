@@ -145,6 +145,7 @@ public class InvCatalogRef extends InvDatasetImpl {
   public void release() {
     datasets = new java.util.ArrayList<InvDataset>();
     proxy = null;
+    useProxy = false;
     init = false;
   }
 
@@ -467,7 +468,10 @@ public class InvCatalogRef extends InvDatasetImpl {
 
   @Override
   public java.lang.String getName() {
-    return !useProxy ? super.getName() : proxy.getName();
+    if (!useProxy) return super.getName();
+    if (proxy == null)
+      System.out.println("HEY");
+    return (proxy == null) ? "N/A" : proxy.getName();
   }
 
   @Override

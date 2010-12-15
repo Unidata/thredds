@@ -216,7 +216,7 @@ public abstract class InvDataset {
 
   /**
    * Get access element that matches the given access standard URL.
-   * Mathc on a.getStandardUrlName().
+   * Match on a.getStandardUrlName().
    *
    * @param accessURL find theis access URL string
    * @return InvAccess or null if no match.

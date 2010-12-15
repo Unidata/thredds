@@ -127,11 +127,31 @@ public class FmrInv implements Comparable<FmrInv> {
       grid.finish();
     }
 
-    // assign sequence number
+    // assign sequence number for time
     int seqno = 0;
-    for (TimeCoord tc : timeCoords) {
+    for (TimeCoord tc : timeCoords)
       tc.setId(seqno++);
+
+    // assign sequence number for vertical coords with same name
+    HashMap<String, List<VertCoord>> map = new HashMap<String, List<VertCoord>>();
+    for (VertCoord vc : vertCoords) {
+      List<VertCoord> list = map.get(vc.getName());
+      if (list == null) {
+        list = new ArrayList<VertCoord>();
+        map.put(vc.getName(), list);
+      }
+      list.add(vc);
     }
+    for (List<VertCoord> list : map.values()) {
+      if (list.size() > 0) {
+        int count = 0;
+        for (VertCoord vc : list) {
+          if (count > 0) vc.setName(vc.getName()+count);
+          count++;
+        }
+      }
+    }
+
   }
 
   @Override
@@ -228,7 +248,7 @@ public class FmrInv implements Comparable<FmrInv> {
         if (vc_union == null)
           vc_union = new VertCoord(vc);
         else if (!vc_union.equalsData(vc)) {
-          System.out.printf("GridVariable %s has different vert coords in file %s %n", grid.getName(), grid.getFile());
+//          System.out.printf("GridVariable %s has different vert coords in file %s %n", grid.getName(), grid.getFile());
           vertList.add(vc);
         }
       }
