@@ -62,7 +62,7 @@ public class Ghcnm extends AbstractIOServiceProvider {
        Variable Definitions:
 
        ID: 11 digit identifier, digits 1-3=Country Code, digits 4-8 represent
-           the WMO id if the station is a WMO station.  It is a WMO station if
+           the WMO stnId if the station is a WMO station.  It is a WMO station if
            digits 9-11="000".
 
        LATITUDE: latitude of station in decimal degrees
@@ -187,7 +187,7 @@ public class Ghcnm extends AbstractIOServiceProvider {
           Variable Definitions:
 
           ID: 11 digit identifier, digits 1-3=Country Code, digits 4-8 represent
-              the WMO id if the station is a WMO station.  It is a WMO station if
+              the WMO stnId if the station is a WMO station.  It is a WMO station if
               digits 9-11="000".
 
           YEAR: 4 digit year of the station record.
@@ -369,21 +369,46 @@ public class Ghcnm extends AbstractIOServiceProvider {
   private static final String GRVEG = "vegType";
   private static final String POPCSS = "popClassFromLights";
 
+  private static final String STN_DATA = "stn_data";
+
   private NetcdfFile ncfile;
-  RandomAccessFile stnRaf;
+  private RandomAccessFile stnRaf, idxRaf;
 
   public void close() throws java.io.IOException {
     if (raf != null)
       raf.close();
     if (stnRaf != null)
       stnRaf.close();
+    if (idxRaf != null)
+      idxRaf.close();
+
     raf = null;
     stnRaf = null;
+    idxRaf = null;
   }
 
   public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
-    this.raf = raf;
     this.ncfile = ncfile;
+
+    String dataFile = raf.getLocation();
+    int pos = dataFile.lastIndexOf(".");
+    String base = dataFile.substring(0, pos);
+
+    // did the index file get passed in ?
+    boolean isIndexFile = isValidFile(raf);
+    if (isIndexFile) {
+      this.idxRaf = raf;
+      // must be in the same directory
+      this.raf = new RandomAccessFile(base+".dat", "r");
+      this.stnRaf = new RandomAccessFile(base+".inv", "r");
+
+    } else {
+      this.raf = raf;
+      this.stnRaf = new RandomAccessFile(base+".inv", "r");
+
+      makeIndex(base+".ncsx");
+
+    }
 
     /*
           ID                 1-11        Integer
@@ -395,7 +420,7 @@ public class Ghcnm extends AbstractIOServiceProvider {
           DSFLAG1           27-27        Character
 
           ID: 11 digit identifier, digits 1-3=Country Code, digits 4-8 represent
-              the WMO id if the station is a WMO station.  It is a WMO station if
+              the WMO stnId if the station is a WMO station.  It is a WMO station if
               digits 9-11="000".
      */
 
@@ -405,7 +430,7 @@ public class Ghcnm extends AbstractIOServiceProvider {
     ncfile.addDimension(null, new Dimension(DIM_NAME, 12));
     Variable v;
 
-    makeMember(dataSeq, STNID, DataType.LONG, null, "station id", null, null, null);
+    makeMember(dataSeq, STNID, DataType.LONG, null, "station stnId", null, null, null);
     makeMember(dataSeq, YEAR, DataType.INT, null, "year of the station record", null, null, null);
     v = makeMember(dataSeq, VALUE, DataType.FLOAT, DIM_NAME, "monthly mean temperature", "Celsius", null, null);
     v.addAttribute(new Attribute(CF.MISSING_VALUE, -9999));
@@ -422,7 +447,7 @@ public class Ghcnm extends AbstractIOServiceProvider {
     dataSm.findMember(DMFLAG).setDataObject(parser.getField(4));
     dataSm.findMember(QCFLAG).setDataObject(parser.getField(5));
     dataSm.findMember(DSFLAG).setDataObject(parser.getField(6));
-    dataSeq.setSPobject(new Vinfo(raf, dataSm));
+    dataSeq.setSPobject(new Vinfo(this.raf, dataSm));
 
     /*
        ID                 1-11        Integer
@@ -447,7 +472,7 @@ public class Ghcnm extends AbstractIOServiceProvider {
     Structure stnSeq = new Sequence(ncfile, null, null, STNS);
     ncfile.addVariable(null, stnSeq);
 
-    makeMember(stnSeq, STNID, DataType.LONG, null, "station id", null, null, null);
+    makeMember(stnSeq, STNID, DataType.LONG, null, "station stnId", null, null, null);
     makeMember(stnSeq, LAT, DataType.FLOAT, null, "latitude", "degrees_north", null, null);
     makeMember(stnSeq, LON, DataType.FLOAT, null, "longitude", "degrees_east", null, null);
     makeMember(stnSeq, STELEV, DataType.FLOAT, null, "elevation", "m", null, null);
@@ -472,20 +497,27 @@ public class Ghcnm extends AbstractIOServiceProvider {
     for (StructureMembers.Member m : stnSm.getMembers()) {
       m.setDataObject(parser.getField(count++));
     }
-
-    String dataFile = raf.getLocation();
-    int pos = dataFile.lastIndexOf(".");
-    String base = dataFile.substring(0, pos);
-    String stnFile = base + ".inv";
-    RandomAccessFile stnRaf = new RandomAccessFile(stnFile, "r");
     stnSeq.setSPobject(new Vinfo(stnRaf, stnSm));
+
+    /* Structure nestedSeq = new Sequence(ncfile, null, null, STN_DATA);
+    stnSeq.addMemberVariable(nestedSeq);
+
+    makeMember(nestedSeq, STNID, DataType.LONG, null, "station stnId", null, null, null);
+    makeMember(nestedSeq, YEAR, DataType.INT, null, "year of the station record", null, null, null);
+    v = makeMember(nestedSeq, VALUE, DataType.FLOAT, DIM_NAME, "monthly mean temperature", "Celsius", null, null);
+    v.addAttribute(new Attribute(CF.MISSING_VALUE, -9999));
+    parser.getField(3).setScale(.01f);
+    //v.addAttribute(new Attribute(CF.SCALE_FACTOR, .01f));
+    makeMember(nestedSeq, DMFLAG, DataType.CHAR, DIM_NAME, "data management flag", null, null, null);
+    makeMember(nestedSeq, QCFLAG, DataType.CHAR, DIM_NAME, "quality control flag", null, null, null);
+    makeMember(nestedSeq, DSFLAG, DataType.CHAR, DIM_NAME, "data source flag", null, null, null);   */
+
 
     ncfile.addAttribute(null, new Attribute("title", "Version 3 of the GHCN-Monthly dataset of land surface mean temperatures"));
     ncfile.addAttribute(null, new Attribute("Conventions", "CF-1.6"));
     ncfile.addAttribute(null, new Attribute("see", "http://www.ncdc.noaa.gov/ghcnm, ftp://ftp.ncdc.noaa.gov/pub/data/ghcn/v3"));
     ncfile.finish();
 
-    makeIndex(base+".ncsx");
   }
 
   private Variable makeMember(Structure s, String shortName, DataType dataType, String dims, String longName, String units, String cfName,
@@ -544,7 +576,7 @@ public class Ghcnm extends AbstractIOServiceProvider {
   }
 
   private void makeIndex(String indexFilename) throws IOException {
-    HashMap<Long, Station> map = new HashMap<Long, Station>(10000);
+    HashMap<Long, StationIndex> map = new HashMap<Long, StationIndex>(10000);
 
     // get map of Stations
     Sequence stnSeq = (Sequence) ncfile.findVariable(STNS);
@@ -559,20 +591,20 @@ public class Ghcnm extends AbstractIOServiceProvider {
       long stnPos = stnInfo.raf.getFilePointer();
       String line = stnInfo.raf.readLine();
       if (line == null) break;
-      Station s = new Station();
+      StationIndex s = new StationIndex();
       Long id = (Long) f.parse(line);
       map.put(id, s);
-      s.id = id;
+      s.stnId = id;
       s.stnPos = stnPos;
       stnCount++;
     }
 
-    // assumes that the stn data is in order by id
+    // assumes that the stn data is in order by stnId
     Sequence dataSeq = (Sequence) ncfile.findVariable(RECORD);
     Vinfo dataInfo = (Vinfo) dataSeq.getSPobject();
     m = dataInfo.sm.findMember(STNID);
     f = (TableParser.Field) m.getDataObject();
-    Station currStn = null;
+    StationIndex currStn = null;
     int totalCount = 0;
 
     // read through entire file
@@ -583,8 +615,8 @@ public class Ghcnm extends AbstractIOServiceProvider {
       if (line == null) break;
 
       Long id = (Long) f.parse(line);
-      if ((currStn == null) || (currStn.id != id)) {
-        Station s = map.get(id);
+      if ((currStn == null) || (currStn.stnId != id)) {
+        StationIndex s = map.get(id);
         if (s == null)
           System.out.printf("Cant find %d%n", id);
         else if (s.dataCount != 0)
@@ -613,7 +645,7 @@ public class Ghcnm extends AbstractIOServiceProvider {
     size += pb.length;
     fout.write(pb); */
 
-    for (Station s : map.values()) {
+    for (StationIndex s : map.values()) {
       byte[] pb = encodeStationProto(s);
       size += NcStream.writeVInt(fout, pb.length);
       size += pb.length;
@@ -624,16 +656,16 @@ public class Ghcnm extends AbstractIOServiceProvider {
     System.out.println(" index size=" + size);
   }
 
-  private class Station {
-    long id;
+  private class StationIndex {
+    long stnId;
     long stnPos; // file pos in inv file
     long dataPos; // file pos of first data line in the data file
     int dataCount; // number of data records
   }
 
-  private byte[] encodeStationProto(Station s)  {
+  private byte[] encodeStationProto(StationIndex s)  {
     GhcnmProto.StationIndex.Builder builder = GhcnmProto.StationIndex.newBuilder();
-    builder.setStnid(s.id);
+    builder.setStnid(s.stnId);
     builder.setStnPos(s.stnPos);
     builder.setDataPos(s.dataPos);
     builder.setDataCount(s.dataCount);
@@ -641,11 +673,11 @@ public class Ghcnm extends AbstractIOServiceProvider {
     return proto.toByteArray();
   }
 
-  private byte[] encodeStationListProto(Collection<Station> stns)  {
+  private byte[] encodeStationListProto(Collection<StationIndex> stns)  {
     GhcnmProto.StationIndexList.Builder listBuilder = GhcnmProto.StationIndexList.newBuilder();
-    for (Station s : stns) {
+    for (StationIndex s : stns) {
       GhcnmProto.StationIndex.Builder builder = GhcnmProto.StationIndex.newBuilder();
-      builder.setStnid(s.id);
+      builder.setStnid(s.stnId);
       builder.setStnPos(s.stnPos);
       builder.setDataPos(s.dataPos);
       builder.setDataCount(s.dataCount);
@@ -665,13 +697,17 @@ public class Ghcnm extends AbstractIOServiceProvider {
    * @throws java.io.IOException if read error
    */
   public boolean isValidFile(RandomAccessFile raf) throws IOException {
-    return false;
+     raf.seek(0);
+     byte[] b = new byte[MAGIC_START.length()];
+     raf.read(b);
+     String test = new String(b, "UTF-8");
+     return test.equals(MAGIC_START);
   }
 
   /**
-   * Get a unique id for this file type.
+   * Get a unique stnId for this file type.
    *
-   * @return registered id of the file type
+   * @return registered stnId of the file type
    * @see "http://www.unidata.ucar.edu/software/netcdf-java/formats/FileTypes.html"
    */
   public String getFileTypeId() {
@@ -703,7 +739,6 @@ public class Ghcnm extends AbstractIOServiceProvider {
     Vinfo vinfo = (Vinfo) v2.getSPobject();
     return new ArraySequence( vinfo.sm, new SeqIter(vinfo), vinfo.nelems);
   }
-
 
   /**
    * Get the structure iterator

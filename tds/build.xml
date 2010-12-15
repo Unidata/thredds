@@ -96,7 +96,7 @@
   <property name="jcommon.jar" value="external/jcommon-1.0.15.jar"/>
   <property name="jfreechart.jar" value="external/jfreechart-1.0.12.jar"/>
   <property name="joda.jar" value="external/joda-time-1.6.jar"/>
-  <property name="protobuf.jar" value="external/protobuf-java-2.1.0.jar"/>
+  <property name="protobuf.jar" value="external/protobuf-java-2.3.0.jar"/>
   <property name="slf4jAPI.jar" value="external/slf4j-api-1.5.6.jar"/>
   <property name="slf4jImpl.jar" value="external/slf4j-log4j12-1.5.6.jar"/>
   <property name="log4j.jar" value="external/log4j-1.2.15.jar"/>

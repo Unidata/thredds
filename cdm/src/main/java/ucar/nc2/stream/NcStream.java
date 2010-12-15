@@ -20,8 +20,8 @@ import com.google.protobuf.InvalidProtocolBufferException;
  * Defines the ncstream format, along with ncStream.proto.
  * <pre>
  * To regenerate ncStreamProto.java from ncStream.proto:
- * cd c:/dev/tds4.2/thredds/cdm/src/main/java
- * protoc --proto_path=. --java_out=. ucar/nc2/stream/ncStream.proto
+ cd c:/dev/tds4.2/thredds/cdm/src/main/java
+ protoc --proto_path=. --java_out=. ucar/nc2/stream/ncStream.proto
  * </pre>
  * @see "http://www.unidata.ucar.edu/software/netcdf-java/stream/NcStream.html"
  * @see "http://www.unidata.ucar.edu/software/netcdf-java/stream/NcstreamGrammer.html"

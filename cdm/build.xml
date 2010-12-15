@@ -74,7 +74,7 @@
   <property name="log4j.jar" value="log4j-1.2.15.jar"/>
   <!-- property name="lucene.jar" value="lucene.jar"/ -->
   <property name="opendap.jar" value="opendap-2.2.jar"/>
-  <property name="protobuf.jar" value="protobuf-java-2.1.0.jar"/>
+  <property name="protobuf.jar" value="protobuf-java-2.3.0.jar"/>
   <property name="quartz.jar" value="quartz-1.7.3.jar"/>
   <property name="resourcesOptional.jar" value="resourcesOptional.jar"/>
   <property name="spring.jar" value="spring-2.5.jar"/>

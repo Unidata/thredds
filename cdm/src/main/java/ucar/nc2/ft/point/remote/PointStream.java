@@ -55,8 +55,9 @@ import com.google.protobuf.InvalidProtocolBufferException;
 
 /**
  * Defines the point stream format, along with pointStream.proto.
- * cd /dev/tds/thredds/cdm/src/main/java
- * protoc --proto_path=. --java_out=. ucar/nc2/ft/point/remote/pointStream.proto
+ *
+ cd c:/dev/tds4.2/thredds/cdm/src/main/java
+ protoc --proto_path=. --java_out=. ucar/nc2/ft/point/remote/pointStream.proto
  *
  * @author caron
  * @since Feb 16, 2009
