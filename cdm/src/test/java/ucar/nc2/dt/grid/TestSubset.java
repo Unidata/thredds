@@ -871,7 +871,7 @@ public class TestSubset extends TestCase {
   }
 
   public void testScaleOffset2() throws Exception {
-    GridDataset dataset = GridDataset.open("http://nomads.ncdc.noaa.gov/thredds/dodsC/cr20sixhr/air.1936.nc");
+    GridDataset dataset = GridDataset.open("dods://nomads.ncdc.noaa.gov/thredds/dodsC/cr20sixhr/air.1936.nc");
     GeoGrid grid = dataset.findGridByName("air");
     assert null != grid;
     GridCoordSystem gcs = grid.getCoordinateSystem();

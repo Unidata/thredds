@@ -260,15 +260,27 @@ public class Fmrc {
 
   public void checkNeeded(boolean force) {
     synchronized (lock) {
+      if (fmrcDataset == null) {
+        try {
+          manager.rescan();
+          update();
+          return;
+        } catch (Throwable t) {
+          logger.error(config.spec+": rescan failed");
+          throw new RuntimeException(t);
+        }
+      }
+
       if (!force && !manager.isRescanNeeded()) return;
       try {
         if (!manager.rescan()) return;
+        update();
       } catch (Throwable t) {
         logger.error(config.spec+": rescan failed");
         throw new RuntimeException(t);
       }
       // needs updating
-      update();
+
     }
   }
 
