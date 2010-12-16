@@ -213,13 +213,9 @@ public class Grib2WriteIndex {
           bb.putLong( product.getRefTime());
           crc32.update(bb.array());
 
-          //Discipline is part of Parameter identification
-          //String csc = Long.toString( csc32.getValue() + product.getDiscipline());
-          //if ( verbose )
-          //  System.out.println(  "csc32="+ csc );
-          // duplicate found
           long crcv = crc32.getValue();
           Integer recnum = pdsMap.get(crcv);
+          // duplicate found
           if ( recnum != null) {
             StringBuilder str = new StringBuilder( "Duplicate record with Discipline " );
             str.append( product.getDiscipline() );
@@ -227,7 +223,6 @@ public class Grib2WriteIndex {
             // keep products if PDS don't match
             if ( check2Products( inputRaf, products.get( recnum ), product, str )) {
               duplicate.add( recnum );
-              //duplicate.add( i );  // remove second match
               // save second match, remove first by overwrite
               pdsMap.put( crcv, i);
               str.append( " at file position "+ i +" verses "+ recnum );
@@ -237,7 +232,7 @@ public class Grib2WriteIndex {
                 log.info( str.toString());
             }
           } else {
-            pdsMap.put( crcv, i);
+            pdsMap.put( crcv, i );
           }
         }
 
@@ -464,60 +459,63 @@ public class Grib2WriteIndex {
 
       // check all the products for duplicates by comparing PDSs
       if( checkPDS ) {
-        HashMap<String, Integer> pdsMap = new HashMap<String, Integer>();
+        HashMap<Long, Integer> pdsMap = new HashMap<Long, Integer>();
         ArrayList<Integer> duplicate1 = new ArrayList<Integer>();
         ArrayList<Integer> duplicate2 = new ArrayList<Integer>();
-        CRC32 csc32 = new CRC32();
+        CRC32 crc32 = new CRC32();
         // initialize pdsMap with already indexed records
         int originalSize = recordList.size();
         for (int i = 0; i < recordList.size(); i++) {
           Grib2WriteIndex.RawRecord rr = recordList.get( i );
-          csc32.reset();
-          csc32.update( rr.pdsData );
-          // Discipline is part of Parameter identification
-          String csc = Long.toString( csc32.getValue() + rr.discipline );
-          pdsMap.put( csc, i );
+          crc32.reset();
+          crc32.update( rr.pdsData );
+          ByteBuffer bb = ByteBuffer.allocate(12);
+          bb.putInt( rr.discipline );
+          bb.putLong( rr.refTime );
+          crc32.update(bb.array());
+          pdsMap.put( crc32.getValue(), i );
         }
         Calendar cal = Calendar.getInstance();
         // now check new records for duplicates, assumes original index has no duplicates
         for (int i = 0; i < products.size(); i++) {
           Grib2Product product = products.get( i );
-          csc32.reset();
-          csc32.update(product.getPDS().getPdsVars().getPDSBytes());
-          //Discipline is part of Parameter identification
-          String csc = Long.toString( csc32.getValue() + product.getDiscipline());
-          if ( verbose )
-            System.out.println(  "csc32="+ csc );
+          crc32.reset();
+          crc32.update(product.getPDS().getPdsVars().getPDSBytes());
+          ByteBuffer bb = ByteBuffer.allocate(12);
+          bb.putInt( product.getDiscipline());
+          bb.putLong( product.getRefTime());
+          crc32.update(bb.array());
+
+          long crcv = crc32.getValue();
+          Integer recnum = pdsMap.get(crcv);
           // duplicate found
-          if ( pdsMap.containsKey( csc )) {
+          if ( recnum != null) {
             StringBuilder str = new StringBuilder( "Duplicate record with Discipline " );
             str.append( product.getDiscipline() );
 
             // keep products if PDS don't match
-            int idx = pdsMap.get( csc );
             boolean pdsMatch;
-            if ( idx < originalSize )
-              pdsMatch = checkRawRecordProduct( inputRaf, recordList.get( idx ), cal, product, str);
+            if ( recnum < originalSize )
+              pdsMatch = checkRawRecordProduct( inputRaf, recordList.get( recnum ), cal, product, str);
             else
-             pdsMatch = check2Products( inputRaf, products.get( idx-originalSize ), product, str);
+              pdsMatch = check2Products( inputRaf, products.get( recnum-originalSize ), product, str);
 
             if ( pdsMatch ) {
-              if ( idx < originalSize ) {
-                duplicate1.add( idx );
-                //duplicate2.add( i ); // remove second match
-                pdsMap.put( csc, i + originalSize );
+              if ( recnum < originalSize ) {
+                duplicate1.add( recnum );
+                pdsMap.put( crcv, i + originalSize );
               } else {
-                duplicate2.add( idx-originalSize );
-                pdsMap.put( csc, i + originalSize );
+                duplicate2.add( recnum-originalSize );
+                pdsMap.put( crcv, i + originalSize );
               }
-              str.append( " at file position "+ (i + originalSize) +" verses "+ idx);
+              str.append( " at file position "+ (i + originalSize) +" verses "+ recnum);
               if ( logPDS.equals( pdsLogType.systemout ))
                 System.out.println( str.toString() );
               else if ( logPDS.equals( pdsLogType.logger ))
                 log.info( str.toString());
             }  
           } else {
-            pdsMap.put( csc, i + originalSize );
+            pdsMap.put( crcv, i + originalSize );
           }
         }
         if( duplicate1.size() > 0 || duplicate2.size() > 0) {
@@ -701,7 +699,6 @@ public class Grib2WriteIndex {
   private boolean checkRawRecordProduct( RandomAccessFile inputRaf, Grib2WriteIndex.RawRecord raw, Calendar cal,
                     Grib2Product product, StringBuilder str) throws IOException  {
 
-    //Grib2Pds pdsv1 = Grib2Pds.factory( raw.pdsData, product.getRefTime(), cal );
     Grib2Pds pdsv1 = Grib2Pds.factory( raw.pdsData, raw.refTime, cal );
     Grib2Pds pdsv2 = product.getPDS().getPdsVars();
 

@@ -39,6 +39,7 @@ import ucar.grid.GridIndex;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.*;
+import java.nio.ByteBuffer;
 import java.util.*;
 import java.util.zip.CRC32;
 
@@ -176,35 +177,36 @@ public class Grib1WriteIndex {
 
       // check all the products for duplicates by comparing PDSs
       if( checkPDS ) {
-        HashMap<String, Integer> pdsMap = new HashMap<String, Integer>();
+        HashMap<Long, Integer> pdsMap = new HashMap<Long, Integer>();
         ArrayList<Integer> duplicate = new ArrayList<Integer>();
-        CRC32 csc32 = new CRC32();
+        CRC32 crc32 = new CRC32();
         for (int i = 0; i < products.size(); i++) {
           Grib1Product product = products.get( i );
-          csc32.reset();
-          csc32.update(product.getPDS().getPdsVars().getPDSBytes());
-          String csc = Long.toString( csc32.getValue() );
-          if ( verbose )
-            System.out.println(  "csc32="+ csc );
+          crc32.reset();
+          crc32.update(product.getPDS().getPdsVars().getPDSBytes());
+          ByteBuffer bb = ByteBuffer.allocate(8);
+          bb.putLong( product.getPDS().getPdsVars().getReferenceTime());
+          crc32.update(bb.array());
+
+          long crcv = crc32.getValue();
+          Integer recnum = pdsMap.get(crcv);
           // duplicate found
-          if ( pdsMap.containsKey( csc )) {
+          if ( recnum != null ) {
             StringBuilder str = new StringBuilder( "Duplicate " );
             str.append( product.getHeader() );
             // keep products if PDS don't match
-            int recNum = pdsMap.get( csc );
-            if ( check2Products( inputRaf, products.get( recNum ), product, str)) {
-              duplicate.add( recNum );
-              //duplicate.add( i ); // remove second match
+            if ( check2Products( inputRaf, products.get( recnum ), product, str)) {
+              duplicate.add( recnum );
               // save second match, remove first by overwrite
-              pdsMap.put( csc, i);
-              str.append( " at file position "+ i +" verses "+ recNum );
+              pdsMap.put( crcv, i);
+              str.append( " at file position "+ i +" verses "+ recnum );
               if ( logPDS.equals( Grib2WriteIndex.pdsLogType.systemout ))
                 System.out.println( str.toString() );
               else if ( logPDS.equals( Grib2WriteIndex.pdsLogType.logger ))
                 log.info( str.toString());
             }
           } else {
-            pdsMap.put( csc, i);
+            pdsMap.put( crcv, i);
           }
         }
         if( duplicate.size() > 0 ) {
@@ -433,56 +435,58 @@ public class Grib1WriteIndex {
 
       // check all the products for duplicates by comparing PDSs
       if( checkPDS ) {
-        HashMap<String, Integer> pdsMap = new HashMap<String, Integer>();
+        HashMap<Long, Integer> pdsMap = new HashMap<Long, Integer>();
         ArrayList<Integer> duplicate1 = new ArrayList<Integer>();
         ArrayList<Integer> duplicate2 = new ArrayList<Integer>();
-        CRC32 csc32 = new CRC32();
+        CRC32 crc32 = new CRC32();
         // initialize pdsMap with already indexed records
         int originalSize = recordList.size();
         for (int i = 0; i < recordList.size(); i++) {
           Grib2WriteIndex.RawRecord rr = recordList.get( i );
-          csc32.reset();
-          csc32.update( rr.pdsData );
-          String csc = Long.toString( csc32.getValue() );
-          pdsMap.put( csc, i );
+          crc32.reset();
+          crc32.update( rr.pdsData );
+          ByteBuffer bb = ByteBuffer.allocate(8);
+          bb.putLong( rr.refTime );
+          crc32.update(bb.array());
+          pdsMap.put( crc32.getValue(), i );
         }
         // now check new records for duplicates, assumes original index has no duplicates
         for (int i = 0; i < products.size(); i++) {
           Grib1Product product = products.get( i );
-          csc32.reset();
-          csc32.update(product.getPDS().getPdsVars().getPDSBytes());
-          String csc = Long.toString( csc32.getValue() );
-          if ( verbose )
-            System.out.println(  "csc32="+ csc );
+          crc32.reset();
+          crc32.update(product.getPDS().getPdsVars().getPDSBytes());
+          ByteBuffer bb = ByteBuffer.allocate(8);
+          bb.putLong( product.getPDS().getPdsVars().getReferenceTime() );
+          crc32.update(bb.array());
+          long crcv = crc32.getValue();
+          Integer recnum = pdsMap.get(crcv);
           // duplicate found
-          if ( pdsMap.containsKey( csc )) {
+          if ( recnum != null) {
             StringBuilder str = new StringBuilder( "Duplicate " );
             str.append( product.getHeader() );
             // keep products if PDS don't match
-            int idx = pdsMap.get( csc );
             boolean pdsMatch;
-            if ( idx < originalSize )
-              pdsMatch = checkRawRecordProduct( inputRaf, recordList.get( idx ), product, str);
+            if ( recnum < originalSize )
+              pdsMatch = checkRawRecordProduct( inputRaf, recordList.get( recnum ), product, str);
             else
-             pdsMatch = check2Products( inputRaf, products.get( idx-originalSize ), product,str);
+              pdsMatch = check2Products( inputRaf, products.get( recnum-originalSize ), product, str);
 
             if ( pdsMatch ) {
-              if ( idx < originalSize ) {
-                duplicate1.add( idx );
-                //duplicate2.add( i );  // remove second match
-                pdsMap.put( csc, i + originalSize );
+              if ( recnum < originalSize ) {
+                duplicate1.add( recnum );
+                pdsMap.put( crcv, i + originalSize );
               } else {
-                duplicate2.add( idx-originalSize );
-                pdsMap.put( csc, i + originalSize );
+                duplicate2.add( recnum-originalSize );
+                pdsMap.put( crcv, i + originalSize );
               }
-              str.append( " at file position "+ (i + originalSize) +" verses "+ idx);
+              str.append( " at file position "+ (i + originalSize) +" verses "+ recnum);
               if ( logPDS.equals( Grib2WriteIndex.pdsLogType.systemout ))
                 System.out.println( str.toString() );
               else if ( logPDS.equals( Grib2WriteIndex.pdsLogType.logger ))
                 log.info( str.toString());
             }  
           } else {
-            pdsMap.put( csc, i + originalSize );
+            pdsMap.put( crcv, i + originalSize );
           }
         }
         if( duplicate1.size() > 0 || duplicate2.size() > 0) {
