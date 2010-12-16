@@ -51,7 +51,7 @@ import java.io.IOException;
 public class TestMotherlodeLatest extends TimerTask {
   static private final String server1 = "http://motherlode.ucar.edu:8080/";
   //static private final String server1 = "http://thredds.cise-nsf.gov:8080/";
-  static private final String server2 = "http://motherlode.ucar.edu:8081/";
+  static private final String server2 = "http://motherlode.ucar.edu:9080/";
 
   // fmrc
   static private final String latestPrefix = "thredds/catalog/fmrc/";
@@ -125,7 +125,7 @@ public class TestMotherlodeLatest extends TimerTask {
     Formatter errlog = new Formatter();
     FeatureDataset result = FeatureDatasetFactoryManager.open(FeatureType.GRID, ds, null, errlog);
     //System.out.printf(" %s result errlog= %s%n", ds, errlog);
-    assert result != null;
+    assert result != null : ds;
     assert result instanceof GridDataset;
 
     GridDataset dataset = (GridDataset) result;

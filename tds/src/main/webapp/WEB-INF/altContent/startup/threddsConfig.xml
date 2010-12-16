@@ -145,8 +145,6 @@
     <allow>false</allow>
     <scour>10 min</scour>
     <maxAge>-1 min</maxAge>
-    <metarDataDir>/opt/tomcat/content/thredds/public/stn/</metarDataDir>
-    <metarRawDir>/data/ldm/pub/decoded/netcdf/surface/metar/</metarRawDir>
   </NetcdfSubsetService>
   -->
 

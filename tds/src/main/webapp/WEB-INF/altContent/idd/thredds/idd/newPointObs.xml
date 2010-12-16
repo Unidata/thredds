@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
-         xmlns:xlink="http://www.w3.org/1999/xlink" name="THREDDS-IDD OPeNDAP Data Server - Station Data"
+         xmlns:xlink="http://www.w3.org/1999/xlink" name="THREDDS-IDD OPeNDAP Data Server - New Station Data"
          version="1.0.3">
 
   <service name="latest" serviceType="Resolver" base=""/>
@@ -16,7 +16,7 @@
     <service name="HTTPServer" serviceType="HTTPServer" base="/thredds/fileServer/"/>
   </service>
 
-  <dataset name="Station Data">
+  <dataset name="New Point Data">
     <metadata inherited="true">
       <serviceName>all</serviceName>
       <authority>edu.ucar.unidata</authority>

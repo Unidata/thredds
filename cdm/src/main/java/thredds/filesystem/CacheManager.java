@@ -145,9 +145,8 @@ public class CacheManager {
         }
 
         boolean modified = (f.lastModified() > m.lastModified);
-        if (cacheLog.isDebugEnabled()) cacheLog.debug("thredds.filesystem.CacheManager modified diff = "+
-                (f.lastModified() - m.lastModified) +
-                "; path=" + path);
+        if (modified && cacheLog.isDebugEnabled())
+          cacheLog.debug("thredds.filesystem.CacheManager modified diff = "+ (f.lastModified() - m.lastModified) + "; path=" + path);
 
         if (!modified) {
           hits.incrementAndGet();

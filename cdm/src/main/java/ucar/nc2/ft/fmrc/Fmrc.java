@@ -117,6 +117,7 @@ public class Fmrc {
   private Fmrc(String collectionSpec, Formatter errlog) throws IOException {
     this.manager = DatasetCollectionManager.open(collectionSpec, null, errlog);
     this.config = new FeatureCollectionConfig();
+    this.config.spec = collectionSpec;
   }
 
   private Fmrc(FeatureCollectionConfig config, Formatter errlog) {
@@ -150,14 +151,6 @@ public class Fmrc {
   }
 
   /////////////////////////////////////////////////////////////////////////////////////////
-
-  public void triggerProto() {
-    forceProto = true;
-  }
-
-  public void triggerRescan() {
-    checkNeeded( true);
-  }
 
   public List<Date> getRunDates() throws IOException {
     checkNeeded( false); // ??
@@ -212,44 +205,23 @@ public class Fmrc {
     return gds;
   }
 
-  // true if things have changed since given time
-  public boolean checkInvState(long lastInvChange) throws IOException {
-    checkNeeded(false);
-    return this.lastInvChanged > lastInvChange;
-  }
-  // true if things have changed since given time
-  public boolean checkProtoState(long lastProtoChanged) throws IOException {
-    checkNeeded(false);
-    return this.lastProtoChanged > lastProtoChanged;
+  /////////////////////////////////////////
+
+  public void updateProto() {
+    forceProto = true;
   }
 
-  private void checkNeeded(boolean force) {
-    synchronized (lock) {
+  public void update() {
+     synchronized (lock) {
       boolean forceProtoLocal = forceProto;
 
       if (fmrcDataset == null) {
         try {
           fmrcDataset = new FmrcDataset(config);
-          manager.scan(null);
-          FmrcInv fmrcInv = makeFmrcInv(null);
-          fmrcDataset.setInventory(fmrcInv, forceProtoLocal);
-          if (forceProtoLocal) forceProto = false;
-          this.lastInvChanged = System.currentTimeMillis();
-          this.lastProtoChanged = this.lastInvChanged;
-          return;
         } catch (Throwable t) {
           logger.error(config.spec+": initial fmrcDataset creation failed", t);
           throw new RuntimeException(t);
         }
-      }
-
-      if (!force && !manager.isRescanNeeded()) return;
-      
-       try {
-         if (!manager.rescan()) return;
-       } catch (Throwable t) {
-        logger.error(config.spec+": rescan failed");
-        throw new RuntimeException(t);
       }
 
       try {
@@ -264,6 +236,30 @@ public class Fmrc {
         logger.error(config.spec+": makeFmrcInv failed");
         throw new RuntimeException(t);
       }
+    }
+
+  }
+
+  // true if things have changed since given time
+  public boolean checkInvState(long lastInvChange) throws IOException {
+    return this.lastInvChanged > lastInvChange;
+  }
+  // true if things have changed since given time
+  public boolean checkProtoState(long lastProtoChanged) throws IOException {
+    return this.lastProtoChanged > lastProtoChanged;
+  }
+
+  public void checkNeeded(boolean force) {
+    synchronized (lock) {
+      if (!force && !manager.isRescanNeeded()) return;
+      try {
+        if (!manager.rescan()) return;
+      } catch (Throwable t) {
+        logger.error(config.spec+": rescan failed");
+        throw new RuntimeException(t);
+      }
+      // needs updating
+      update();
     }
   }
 
@@ -306,7 +302,7 @@ public class Fmrc {
       for (FmrInv fmr : fmrList) {
         fmr.finish();
         if (logger.isDebugEnabled())
-          logger.debug("Fmrc: "+config.spec+": fmr "+fmr.getRunDate()+" nfiles= "+fmr.getFiles().size());
+          logger.debug("Fmrc: spec="+config.spec+": fmr rundate="+fmr.getRunDate()+" nfiles= "+fmr.getFiles().size());
       }
 
       return new FmrcInv("fmrc:"+manager.getCollectionName(), fmrList, config.fmrcConfig.regularize);

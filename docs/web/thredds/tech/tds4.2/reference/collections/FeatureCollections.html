@@ -113,7 +113,7 @@ dl {margin: 10px 5px 5px 15px;}
     </ul>
   </ol>
 </blockquote>
-<p>On rolling datsets, you will want to change the prototype, otherwise it will get deleted eventually.</p>
+<p>On rolling datsets, you need to change the prototype periodically, otherwise it will get deleted eventually. The change will occur when the next collection update occurs.</p>
 <h3>update element</h3>
 <p>For collections that change, provides options to update the collection in a background task. New collections are built in the background, so that requests do not wait.</p>
 <pre>&lt;update startup=&quot;true&quot; <strong>rescan</strong>=&quot;cron expr&quot;<strong> </strong>trigger=&quot;allow&quot; <strong></strong>/&gt;

@@ -92,7 +92,7 @@
   </logger>
 
   <logger name="thredds.filesystem.CacheManager" additivity="false">
-    <level value="INFO"/>
+    <level value="DEBUG"/>
     <appender-ref ref="cacheLog"/>
   </logger>
 
@@ -144,7 +144,6 @@
     <level value="INFO"/>
     <appender-ref ref="fcScan"/>
   </logger>
-
 
   <logger name="ucar.nc2.ft.fmrc.Fmrc" additivity="false">
     <level value="INFO"/>

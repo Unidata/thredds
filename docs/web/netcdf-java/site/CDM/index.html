@@ -134,6 +134,10 @@ connecting the adjacent coordinates do not intersect each other. </p>
 <p>The <strong>ucar.nc2.dataset</strong> layer reads various Conventions and extracts the Coordinate Systems using the CoordSysBuilder framework. We often use a set of internal attributes called the <a href="../reference/CoordinateAttributes.html">underscore Coordinate</a> attributes as a way to standardize the Coordinate Systems infomation. Although these may work when working with Unidata software, we do not recommend them as a substitute for conventions such as CF.</p>
 <hr WIDTH="100%">
 <h2>Scientific Feature Types<a name="ScientificFeatureTypes"></a></h2>
+<p>Scientific Feature Types are a way to categorize scientific data. The   CDM Feature Type layer turns CDM datasets into collections of Feature   Type objects, and allows a user to extract subsets of the Feature Types   "in coordinate space" i.e. using spatial and temporal bounding boxes. In   contrast, the CDM Data Access layer provides array index space   subsetting, and the client application must know how to map array   indices into coordinate values.<br>
+  <br>
+With these Feature Types objects, mapping into other data models like ISO/OGC becomes possible.</p>
+<p>Feature Type definitions, APIU, and encodings are still being developed, so applications using these must be able to evolve along with the APIs.</p>
 <ul>
   <li><a href="../reference/FeatureDatasets/Overview.html">FeatureDataset APIs</a></li>
   <li><a href="../reference/FeatureDatasets/PointFeatures.html">Point Feature APIs</a></li>
@@ -143,7 +147,7 @@ connecting the adjacent coordinates do not intersect each other. </p>
 </ul>
 <hr WIDTH="100%">
 <address>
-<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Jan 25, 2009
+<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated Dec 2010
 </address>
 <p>&nbsp;</p>
 </body>

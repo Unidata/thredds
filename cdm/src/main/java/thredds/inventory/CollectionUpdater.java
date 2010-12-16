@@ -50,6 +50,7 @@ public enum CollectionUpdater {
       }
     }
 
+    // updating the collection
     JobDetail updateJob = new JobDetail(config.spec, "UpdateCollection", UpdateCollectionJob.class);
     org.quartz.JobDataMap map = new org.quartz.JobDataMap();
     map.put(FC_NAME, manager);
@@ -87,9 +88,10 @@ public enum CollectionUpdater {
       }
     }
 
+    // updating the proto dataset
     FeatureCollectionConfig.ProtoConfig pconfig = config.protoConfig;
     if (pconfig.change != null) {
-      JobDetail protoJob = new JobDetail(config.spec, "fcProto", ChangeProtoJob.class);
+      JobDetail protoJob = new JobDetail(config.spec, "UpdateProto", ChangeProtoJob.class);
       org.quartz.JobDataMap pmap = new org.quartz.JobDataMap();
       pmap.put(FC_NAME, manager);
       protoJob.setJobDataMap(pmap);

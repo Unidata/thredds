@@ -1928,7 +1928,7 @@ public class DataRootHandler {
   }
 
   /**
-   * To recieve notice of TDS configuration events, implement this interface
+   * To receive notice of TDS configuration events, implement this interface
    * and use the DataRootHandler.registerConfigListener() method to register
    * an instance with a DataRootHandler instance.
    * <p/>

@@ -90,18 +90,21 @@ public class DatasetCollectionManager implements CollectionManager {
 
   ////////////////////////////////////////////////////////////////////
 
+  // these actually dont change
   protected String collectionName;
-  private CollectionSpecParser sp;
   protected DateExtractor dateExtractor;
 
+  // these are final
+  private final CollectionSpecParser sp;
   private final List<MCollection> scanList = new ArrayList<MCollection>(); // an MCollection is a collection of managed files
-  protected TimeUnit recheck = null; // how often to recheck
-  private double olderThanFilterInSecs = -1;
+  private final TimeUnit recheck; // how often to recheck
+  private final double olderThanFilterInSecs;
+  private final FeatureCollectionConfig.ProtoChoice protoChoice;
 
+  // this can change
   private Map<String, MFile> map; // current map of MFile in the collection
   private long lastScanned; // last time scanned
   private long lastChanged; // last time the set of files changed
-  private FeatureCollectionConfig.ProtoChoice protoChoice = FeatureCollectionConfig.ProtoChoice.Penultimate; // default
 
   private ListenerManager lm;
 
@@ -109,11 +112,13 @@ public class DatasetCollectionManager implements CollectionManager {
   private DatasetCollectionManager(String collectionSpec, String olderThan, Formatter errlog) {
     this.sp = new CollectionSpecParser(collectionSpec, errlog);
     this.collectionName = collectionSpec; // StringUtil.escape(collectionSpec, "");
+    this.recheck = null;
+    this.protoChoice = FeatureCollectionConfig.ProtoChoice.Penultimate; // default
 
     List<MFileFilter> filters = new ArrayList<MFileFilter>(2);
     if (null != sp.getFilter())
       filters.add(new WildcardMatchOnName(sp.getFilter()));
-    setOlderThanFilter(filters, olderThan);
+    olderThanFilterInSecs = getOlderThanFilter(filters, olderThan);
 
     dateExtractor = (sp.getDateFormatMark() == null) ? new DateExtractorNone() : new DateExtractorFromName(sp.getDateFormatMark(), true);
     scanList.add(new MCollection(sp.getTopDir(), sp.getTopDir(), sp.wantSubdirs(), filters, null));
@@ -135,37 +140,39 @@ public class DatasetCollectionManager implements CollectionManager {
     List<MFileFilter> filters = new ArrayList<MFileFilter>(3);
     if (null != sp.getFilter())
       filters.add( new WildcardMatchOnName(sp.getFilter()));
-    setOlderThanFilter(filters, config.olderThan);
+    olderThanFilterInSecs = getOlderThanFilter(filters, config.olderThan);
 
     dateExtractor = (sp.getDateFormatMark() == null) ? new DateExtractorNone() : new DateExtractorFromName(sp.getDateFormatMark(), true);
     scanList.add(new MCollection(sp.getTopDir(), sp.getTopDir(), sp.wantSubdirs(), filters, null));
 
-    setRecheck(config.recheckAfter);
+    this.recheck = makeRecheck(config.recheckAfter);
     protoChoice = config.protoConfig.choice;
     createListenerManager();
   }
 
-  private void setOlderThanFilter(List<MFileFilter> filters, String olderThan) {
-    if (olderThan == null) return;
-    try {
-      TimeUnit tu = new TimeUnit(olderThan);
-      olderThanFilterInSecs = tu.getValueInSeconds();
-      filters.add( new LastModifiedLimit((long) (1000 * olderThanFilterInSecs)));
-    } catch (Exception e) {
-      logger.error(collectionName + ": Invalid time unit for olderThan = {}", olderThan);
+  private double getOlderThanFilter(List<MFileFilter> filters, String olderThan) {
+    if (olderThan != null) {
+      try {
+        TimeUnit tu = new TimeUnit(olderThan);
+        double olderThanV = tu.getValueInSeconds();
+        filters.add( new LastModifiedLimit((long) (1000 * olderThanV)));
+        return olderThanV;
+      } catch (Exception e) {
+        logger.error(collectionName + ": Invalid time unit for olderThan = {}", olderThan);
+      }
     }
+    return -1;
   }
 
-  private void setRecheck(String recheckS) {
+  private TimeUnit makeRecheck(String recheckS) {
     if (recheckS != null) {
       try {
-        this.recheck = new TimeUnit(recheckS);
-        //this.changes = FeatureCollection.CollectionChange.True;
-
+        return new TimeUnit(recheckS);
       } catch (Exception e) {
         logger.error(collectionName+": Invalid time unit for recheckEvery = {}", recheckS);
       }
     }
+    return null;
   }
 
   public void close() {
@@ -174,6 +181,10 @@ public class DatasetCollectionManager implements CollectionManager {
 
   // for subclasses
   protected DatasetCollectionManager() {
+    this.recheck = null;
+    this.olderThanFilterInSecs = -1;
+    this.protoChoice = FeatureCollectionConfig.ProtoChoice.Penultimate; // default
+    this.sp = null;
     createListenerManager();
   }
 
@@ -184,7 +195,10 @@ public class DatasetCollectionManager implements CollectionManager {
    * @param recheckS a undunit time unit, specifying how often to rscan
    */
   public DatasetCollectionManager(String recheckS) {
-    setRecheck(recheckS);
+    this.recheck = makeRecheck(recheckS);
+    this.olderThanFilterInSecs = -1;
+    this.protoChoice = FeatureCollectionConfig.ProtoChoice.Penultimate;
+    this.sp = null;
     createListenerManager();
   }
 
@@ -321,7 +335,7 @@ public class DatasetCollectionManager implements CollectionManager {
 
 
   /**
-   * Compute if rescan is needed.
+   * Compute if rescan is needed, based on the recheckEvery parameter.
    * True if scanList not empty, recheckEvery not null, and recheckEvery time has passed since last scan
    *
    * @return true if rescan is needed
@@ -360,7 +374,6 @@ public class DatasetCollectionManager implements CollectionManager {
    */
   @Override
   public boolean rescan() throws IOException {
-    if (logger.isInfoEnabled()) logger.info(collectionName+": rescan at " + new Date());
     if (map == null) {
       scan(null);
       return true;
@@ -399,7 +412,7 @@ public class DatasetCollectionManager implements CollectionManager {
     boolean changed = (nnew > 0) || (ndelete > 0);
 
     if (changed) {
-      if (logger.isInfoEnabled()) logger.info(collectionName+": rescan found changes new = "+nnew+" delete= "+ndelete);
+      //if (logger.isInfoEnabled()) logger.info(collectionName+": rescan found changes new = "+nnew+" delete= "+ndelete);
       synchronized (this) {
         map = newMap;
         this.lastScanned = System.currentTimeMillis();
@@ -414,6 +427,7 @@ public class DatasetCollectionManager implements CollectionManager {
     if (changed)
       lm.sendEvent(new TriggerEvent(RESCAN));  // LOOK watch out for infinite loop
 
+    if (logger.isInfoEnabled()) logger.info(collectionName+": rescan at " + new Date()+": nnew = "+nnew+" ndelete = "+ndelete);
     return changed;
   }
 
@@ -509,7 +523,7 @@ public class DatasetCollectionManager implements CollectionManager {
     lm = new ListenerManager(
             "thredds.inventory.DatasetCollectionManager$TriggerListener",
             "thredds.inventory.DatasetCollectionManager$TriggerEvent",
-            "trigger");
+            "handleCollectionEvent");
   }
 
   public void addEventListener(TriggerListener l) {
@@ -534,7 +548,7 @@ public class DatasetCollectionManager implements CollectionManager {
   }
 
   public static interface TriggerListener {
-    public void trigger(TriggerEvent event);
+    public void handleCollectionEvent(TriggerEvent event);
   }
 
   /////////////////////////////////////////////////////////////////

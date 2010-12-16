@@ -97,4 +97,8 @@ public enum FeatureType {
           (this == FeatureType.PROFILE) || (this == FeatureType.STATION_PROFILE) || (this == FeatureType.SECTION);
   }
 
+  public boolean isGridFeatureType() {
+    return (this == FeatureType.GRID) || (this == FeatureType.FMRC);
+  }
+
 }

@@ -152,15 +152,30 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
 
   @Override
   // DatasetCollectionManager was changed asynchronously
-  public void trigger(DatasetCollectionManager.TriggerEvent event) {
+  public void handleCollectionEvent(DatasetCollectionManager.TriggerEvent event) {
     if (event.getMessage().equals(DatasetCollectionManager.RESCAN))
-      triggerRescan();
+      update();
     else if (event.getMessage().equals(DatasetCollectionManager.PROTO))
-      triggerProto();
+      updateProto();
    }
 
-  abstract public void triggerRescan();
-  abstract public void triggerProto();
+  // external trigger was called to rescan the collection
+  // if collection changed, then getCollectionEvent() is called
+  public boolean triggerRescan() {
+    try {
+      dcm.rescan();
+      return true;
+    } catch (IOException e) {
+      logger.error("DatasetCollectionManager rescan error", e);
+      return false;
+    }
+  }
+
+  // collection was changed, update
+  abstract public void update();
+  // update the proto dataset used
+  abstract public void updateProto();
+  // a request has come in, check that the state is up-to-date
   abstract protected State checkState() throws IOException;
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -199,7 +214,6 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
     }
     return state.datasets;
   }
-
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////
   protected InvService makeVirtualService(InvService org) {

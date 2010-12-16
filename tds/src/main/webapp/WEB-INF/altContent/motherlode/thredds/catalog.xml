@@ -7,6 +7,7 @@
     <catalogRef xlink:href="idd/models.xml" xlink:title="NCEP Model Data" name="" />
     <catalogRef xlink:href="idd/radars.xml" xlink:title="Radar Data" name="" />
     <catalogRef xlink:href="idd/obsData.xml" xlink:title="Station Data" name="" />
+    <catalogRef xlink:href="idd/newPointObs.xml" xlink:title="Point Feature Collections" name="" />
     <catalogRef xlink:href="idd/satellite.xml" xlink:title="Satellite Data" name="" />
   </dataset>
   <dataset name="Other Unidata Data">

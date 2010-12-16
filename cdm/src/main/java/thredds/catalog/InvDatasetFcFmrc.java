@@ -50,6 +50,8 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
 
   public InvDatasetFcFmrc(InvDatasetImpl parent, String name, String path, FeatureType featureType, FeatureCollectionConfig config) {
     super(parent, name, path, featureType, config);
+    tmi.setDataType( FeatureType.GRID); // override FMRC
+    finish(); // ??
 
     Formatter errlog = new Formatter();
     try {
@@ -62,16 +64,57 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
   }
 
   @Override
-  public void triggerRescan() {
-    fmrc.triggerRescan();
+  public void update() {
+    fmrc.update();
   }
 
   @Override
-  public void triggerProto() {
-    fmrc.triggerProto();
+  public void updateProto() {
+    fmrc.updateProto();
   }
 
-  ///////////////////////////////////////////////////////////////////////////////////////////////////
+  @Override
+  protected State checkState() throws IOException {
+
+    synchronized (lock) {
+      boolean checkInv = true;
+      boolean checkProto = true;
+
+      if (state == null) {
+        orgService = getServiceDefault();
+        virtualService = makeVirtualService(orgService);
+      } else {
+        fmrc.checkNeeded(false);
+        checkInv = fmrc.checkInvState(state.lastInvChange);
+        checkProto = fmrc.checkProtoState(state.lastProtoChange);
+        if (!checkInv && !checkProto) return state;
+      }
+
+      // copy on write
+      State localState = new State(state);
+
+      if (checkProto) {
+         // add Variables, GeospatialCoverage, TimeCoverage
+        GridDataset gds = getGridDataset(FMRC);
+        if (null != gds) {
+          localState.vars = MetadataExtractor.extractVariables(this, gds);
+          localState.gc = MetadataExtractor.extractGeospatial(gds);
+          localState.dateRange = MetadataExtractor.extractDateRange(gds);
+        }
+        localState.lastProtoChange = System.currentTimeMillis();
+      }
+
+      if (checkInv) {
+        makeDatasets(localState);
+        localState.lastInvChange = System.currentTimeMillis();
+      }
+
+      state = localState;
+      return state;
+    }
+  }
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////
 
   // called by DataRootHandler.makeDynamicCatalog() when the catref is requested
 
@@ -270,46 +313,6 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
 
 
   /////////////////////////////////////////////////////////////////////////
-
-  @Override
-  protected State checkState() throws IOException {
-
-    synchronized (lock) {
-      boolean checkInv = true;
-      boolean checkProto = true;
-
-      if (state == null) {
-        orgService = getServiceDefault();
-        virtualService = makeVirtualService(orgService);
-      } else {
-        checkInv = fmrc.checkInvState(state.lastInvChange);
-        checkProto = fmrc.checkProtoState(state.lastProtoChange);
-        if (!checkInv && !checkProto) return state;
-      }
-
-      // copy on write
-      State localState = new State(state);
-
-      if (checkProto) {
-         // add Variables, GeospatialCoverage, TimeCoverage
-        GridDataset gds = getGridDataset(FMRC);
-        if (null != gds) {
-          localState.vars = MetadataExtractor.extractVariables(this, gds);
-          localState.gc = MetadataExtractor.extractGeospatial(gds);
-          localState.dateRange = MetadataExtractor.extractDateRange(gds);
-        }
-        localState.lastProtoChange = System.currentTimeMillis();
-      }
-
-      if (checkInv) {
-        makeDatasets(localState);
-        localState.lastInvChange = System.currentTimeMillis();
-      }
-
-      state = localState;
-      return state;
-    }
-  }
 
   private void makeDatasets(State localState) {
      List<InvDataset> datasets = new ArrayList<InvDataset>();

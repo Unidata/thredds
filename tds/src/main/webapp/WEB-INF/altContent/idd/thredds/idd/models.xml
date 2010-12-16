@@ -18,7 +18,7 @@
     <metadata inherited="true">
       <serviceName>fmrcServices</serviceName>
       <authority>edu.ucar.unidata</authority>
-      <dataType>Grid</dataType>
+      <dataType>GRID</dataType>
       <dataFormat>GRIB-1</dataFormat>
       <documentation xlink:href="http://www.emc.ncep.noaa.gov/modelinfo/index.html"
                      xlink:title="NCEP Model documentation"/>

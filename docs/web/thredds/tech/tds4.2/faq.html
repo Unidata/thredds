@@ -14,7 +14,8 @@
 
 <h2>Catalogs</h2>
 <ul>
-  <li><a href="#CatalogURLs">How do I construct the URLs I find in a THREDDS Catalog? </a></li>
+  <li><a href="#CatalogURLs">How do I construct the URLs I find in a THREDDS Catalog?</a></li>
+  <li><a href="#extraDataset">How do I eliminate the extra dataset level when using a Catalog Reference?</a></li>
 </ul>
 <h2>TDS</h2>
 <ul>
@@ -40,14 +41,31 @@
   <li><a href="#preventAccess">How can I prevent someone from accessing my server?</a></li>
   <li><a href="#removeServletAutodeploy">How do I remove Servlet Autodeploy?</a></li>
   <li><a href="#howRemovePort8009">How do I remove port 8009 when using tomcat in standalone mode?</a></li>
+  <li><a href="#log4jAppender">What does this error mean: &quot;log4j:ERROR Attempted to append to closed appender named [foobar]&quot; ?</a></li>
 </ul>
 
 <hr width="100%">
 <h2>Catalogs</h2>
-<p>Q:<a name="CatalogURLs"></a> How do I construct the URLs I find in a THREDDS Catalog? <br>
+<p><strong>Q:<a name="CatalogURLs"></a> How do I construct the URLs I find in a THREDDS Catalog? </strong><br>
 </p>
 <p>A: Heres the general idea in the <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.2/tutorial/BasicConfig.html">tutorial</a> and the <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/catalog/v1.0.2/InvCatalogSpec.html#constructingURLs">reference</a> docs. If you are using the CDM library, you can call </p>
 <pre>InvAccess.getUrlPath()</pre>
+<hr width="100%">
+<p><strong><a name="extraDataset"></a>Q: How do I eliminate the extra dataset when using a Catalog Reference?</strong></p>
+<p>Make the name of the catalogRef the same as the &quot;top&quot; dataset in the referenced catalog. In the following example the name is &quot;&quot;<strong>New Point Data</strong>&quot;.</p>
+<p>In the referencing catalog:</p>
+<pre> &lt;catalogRef xlink:href=&quot;idd/newPointObs.xml&quot; xlink:title=&quot;<strong>New Point Data</strong>&quot; name=&quot;&quot; /&gt;
+</pre>
+<p>In the referenced catalog:</p>
+<pre>&lt;catalog xmlns=&quot;http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0&quot; 
+ xmlns:xlink=&quot;http://www.w3.org/1999/xlink&quot; name=&quot;THREDDS-IDD OPeNDAP Data Server - New Station Data&quot;
+ version=&quot;1.0.3&quot;&gt;
+
+  &lt;service name=&quot;ncdods&quot; serviceType=&quot;OPENDAP&quot; base=&quot;/thredds/dodsC/&quot;/&gt;
+  &lt;dataset name=&quot;<strong>New Point Data</strong>&quot;&gt;
+    ...
+  &lt;/dataset&gt;
+&lt;/catalog&gt;</pre>
 <hr width="100%">
 <h2>TDS</h2>
 <h4><a name="throttleRequests"></a>Q: How do I keep client requests from overwhelming my server?</h4>
@@ -58,8 +76,7 @@
     many resources. One can limit the size of opendap responses, which tends to be the
     main problem on our server anyway. See the
     <a href="./reference/ThreddsConfigXMLFile.html#opendap">OPeNDAP section</a>
-    of the threddsConfig.xml page for details.
-  </p>
+    of the threddsConfig.xml page for details.  </p>
 </blockquote>
 
 <hr width="50%" align="left">
@@ -108,8 +125,7 @@ WARNING: Couldn't flush system prefs: java.util.prefs.BackingStoreException: /et
 </pre>
 
   <p>You can get rid of these messages by setting the "java.util.prefs.systemRoot"
-    system property to a location that is writable by the user that Tomcat runs under.
-  </p>
+    system property to a location that is writable by the user that Tomcat runs under.  </p>
   <p>Here is what we do on our servers:</p>
   <ul>
     <li>Create a directory at <code>${TOMCAT_HOME}/content/thredds/javaUtilPrefs/.systemPrefs</code>, e.g.,
@@ -162,8 +178,7 @@ mkdir javaUtilPrefs/.systemPrefs
     wont get updated. The default location for the   cache is <strong>${tomcat_home}/content/thredds/cacheAged/</strong>
     unless you change it in the <a href="reference/ThreddsConfigXMLFile.html#AggregationCache">threddsConfig.xml</a>
     file. Go to that directory, there will be files with the name of the cached dataset(s). Delete
-    the file for the dataset that needs updating and restart Tomcat.
-  </p>
+    the file for the dataset that needs updating and restart Tomcat.  </p>
 </blockquote>
 
 <hr width="50%" align="left">
@@ -171,13 +186,11 @@ mkdir javaUtilPrefs/.systemPrefs
 <blockquote>
   <p>In TDS 4.1, each WMS GetCapabilities document listed 100s of available CRS. This made for very
     large GetCapabilities documents. As of TDS 4.2, this list is limited to a select few CRSs. We
-    hope to make this list configurable in a future release. 
-  </p>
+    hope to make this list configurable in a future release.  </p>
   <p>In the mean time if you need a CRS that isn't listed, try specifying it in the GetMap request.
     The underlying library that handles CRS (<a href="http://www.geotoolkit.org/">Geotoolkit</a>)
     still supports a large number of CRS and the TDS WMS should still support any of those CRS
-    when requested.
-  </p>
+    when requested.  </p>
 </blockquote>
 
 <hr width="100%">
@@ -214,19 +227,15 @@ whenever we redeploy. Lots of redeploys only happen on our test server.</p>
         <a href="http://forum.springsource.org/showpost.php?p=282738&postcount=3">
           "ThreadLocal forcefully removed" comment #3</a> e.g.)
       it appears that these messages are not a problem but instead a matter of Tomcat finding these
-      objects before they get garbage collected.
-    </p>
+      objects before they get garbage collected.    </p>
     <p>Here are a number of related links:</p>
     <ul>
       <li>Spring Forum: <a href="http://forum.springsource.org/showthread.php?p=282738#post282738">"ThreadLocal forcefully removed"</a>.
-        Comment #3 provides an answer to the post.
-      </li>
+        Comment #3 provides an answer to the post.      </li>
       <li><a href="http://wiki.apache.org/tomcat/MemoryLeakProtection">Tomcat Memory Leak Prevention page</a>
-        (in particular, see the <a href="http://wiki.apache.org/tomcat/MemoryLeakProtection#customThreadLocal">"Custom ThreadLocal" section</a>)
-      </li>
+        (in particular, see the <a href="http://wiki.apache.org/tomcat/MemoryLeakProtection#customThreadLocal">"Custom ThreadLocal" section</a>)      </li>
       <li>A Tomcat 7 issue on <a href="https://issues.apache.org/bugzilla/show_bug.cgi?id=%2049159">
-        "Improving ThreadLocal memory leak clean-up"</a>
-      </li>
+        "Improving ThreadLocal memory leak clean-up"</a>      </li>
     </ul>
     <p>NOTE: We will monitor the status of this Tomcat issue. For now, we do not consider this a
       TDS bug and will not be working to fix this issue in TDS.</p>
@@ -256,8 +265,7 @@ file that excludes web crawlers from crawling your server, follow <a href="./ref
     them using their IP address rather than their hostname (this avoids having to perform a DNS lookup for
     each request). To do so, edit the <strong>${tomcat_home}/conf/server.xml</strong> file and find the
     "localhost" <strong>Host</strong> element. Add a RemoteAddrValve <strong>Valve</strong> element as
-    follows:
-  </p>
+    follows:  </p>
 
   <blockquote>
   <pre>
@@ -299,12 +307,18 @@ better to explicitly redeploy the application: </p>
   <blockquote>
     <p>Unless you are using Tomcat with the Apache server, comment out this line in <strong>server.xml:</strong> </p>
     <pre>  &lt;Connector port="8009" enableLookups="false" redirectPort="8443" protocol="AJP/1.3" /&gt;<br>
-  </pre>
+    </pre>
 </blockquote>
 
 <hr>
+<p><strong>Q: <a name="log4jAppender"></a>What does this error mean: &quot;log4j:ERROR Attempted to append to closed appender named [foobar]&quot; ?</strong></p>
+<blockquote>
+  <p>The log4j.xml file has 2 loggers with the same name, that uses the appender foobar. You must delete one of the loggers.</p>
+</blockquote>
+<hr>
+  <h3>&nbsp;</h3>
   <h3>Tomcat Resources</h3>
-  <ul>
+<ul>
     <li><a href="http://jakarta.apache.org/tomcat/faq/">Tomcat FAQ (Apache site)</a> </li>
     <li><a href="http://tomcat.apache.org/tomcat-5.5-doc/index.html">Tomcat 5.5 documentation</a></li>
     <li><a href="http://www.coreservlets.com/Apache-Tomcat-Tutorial/">tutorial</a></li>
@@ -316,5 +330,5 @@ better to explicitly redeploy the application: </p>
   This document is maintained by Unidata and was last updated May 2010.
   Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.
 </address>
-
-</body></html>
+</body>
+</html>

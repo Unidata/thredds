@@ -3,11 +3,9 @@ package thredds.catalog;
 import org.slf4j.Logger;
 import thredds.inventory.FeatureCollectionConfig;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.dt.GridDataset;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.point.collection.CompositeDatasetFactory;
 import ucar.nc2.ft.point.collection.UpdateableCollection;
-import ucar.nc2.thredds.MetadataExtractor;
 import ucar.unidata.util.StringUtil;
 
 import java.io.IOException;
@@ -44,20 +42,13 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
   public FeatureDatasetPoint getFeatureDatasetPoint() { return fd; }
 
   @Override
-  public void triggerRescan() {
-    try {
-      if (dcm.rescan()) {
-        ((UpdateableCollection)fd).update();
-      }
-
-    } catch (IOException e) {
-      logger.error("rescan", e);
-    }
+  public void update() {
+    ((UpdateableCollection)fd).update();
   }
 
   @Override
-  public void triggerProto() {
-    //To change body of implemented methods use File | Settings | File Templates.
+  public void updateProto() {
+    // probably dont need this
   }
 
   // called when a request comes in, see if everything is ready to go
@@ -66,38 +57,19 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
   protected State checkState() throws IOException {
 
     synchronized (lock) {
-      boolean hasNewInv = true;
-      boolean checkProto = false;
-      long lastInvChange = dcm.getLastChanged();
-
       if (state == null) {
         orgService = getServiceDefault();
         virtualService = makeVirtualService(orgService);
+
       } else {
-        hasNewInv = (lastInvChange > state.lastInvChange) || dcm.rescanIfNeeded();
-        //checkProto = dcm.isNewProto();
-        if (!hasNewInv && !checkProto) return state;
+        if (!dcm.rescanIfNeeded())
+          return state;
       }
 
       // copy on write
       State localState = new State(state);
-
-      if (checkProto) {
-         /* add Variables, GeospatialCoverage, TimeCoverage
-        GridDataset gds = getGridDataset(FMRC);
-        if (null != gds) {
-          localState.vars = MetadataExtractor.extractVariables(this, gds);
-          localState.gc = MetadataExtractor.extractGeospatial(gds);
-          localState.dateRange = MetadataExtractor.extractDateRange(gds);
-        } */
-        //localState.lastProtoChange = new Date();
-      }
-
-      if (hasNewInv) {
-        makeDatasets(localState); // LOOK needed?
-        ((UpdateableCollection)fd).update();
-        localState.lastInvChange = lastInvChange;
-      }
+      makeDatasets(localState); // LOOK whats really needed is just the time range metadata updated
+      update();
 
       state = localState;
       return state;

@@ -344,6 +344,10 @@ public class FeatureDatasetFactoryManager {
       return want.isPointFeatureType();
     }
 
+    if (want == FeatureType.GRID) {
+      return facType.isGridFeatureType();
+    }
+
     return false;
   }
 

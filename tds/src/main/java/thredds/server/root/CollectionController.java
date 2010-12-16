@@ -84,23 +84,25 @@ public class CollectionController extends AbstractController {
       }
 
       fc.triggerRescan();
-    }
 
-    // show whats in the collection
-    res.setContentType("text/html");
-    DateFormatter df = new DateFormatter();
-    PrintWriter pw = res.getWriter();
-    DatasetCollectionManager dcm = fc.getDatasetCollectionManager();
-    pw.printf("<h3>Collection Name %s</h3>%n", dcm.getCollectionName()+"");
-    pw.printf("%n<pre>Last Scanned %-20s%n", df.toDateTimeStringISO(new Date(dcm.getLastScanned())));
-    pw.printf("%n%-60s %-20s %7s %s%n", "Path", "Last Modified", "KB", "Aux");
-    if (null != dcm.getFiles()) {
-      for (MFile mfile : dcm.getFiles())
-        pw.printf("%-60s %-20s %7d %s%n", mfile.getPath(), df.toDateTimeStringISO(new Date(mfile.getLastModified())),
-                mfile.getLength()/1000, mfile.getAuxInfo());
+    } else {
+
+      // show whats in the collection
+      res.setContentType("text/html");
+      DateFormatter df = new DateFormatter();
+      PrintWriter pw = res.getWriter();
+      DatasetCollectionManager dcm = fc.getDatasetCollectionManager();
+      pw.printf("<h3>Collection Name %s</h3>%n", dcm.getCollectionName()+"");
+      pw.printf("%n<pre>Last Scanned %-20s%n", df.toDateTimeStringISO(new Date(dcm.getLastScanned())));
+      pw.printf("%n%-60s %-20s %7s %s%n", "Path", "Last Modified", "KB", "Aux");
+      if (null != dcm.getFiles()) {
+        for (MFile mfile : dcm.getFiles())
+          pw.printf("%-60s %-20s %7d %s%n", mfile.getPath(), df.toDateTimeStringISO(new Date(mfile.getLastModified())),
+                  mfile.getLength()/1000, mfile.getAuxInfo());
+      }
+      pw.printf("</pre>%n");
+      pw.flush();
     }
-    pw.printf("</pre>%n");
-    pw.flush();
 
     log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_OK, 0) );
     return null;
