@@ -265,7 +265,8 @@ public class CollectionLevelScanner
     // @todo Remove alias until sure how to handle things like ".scour*" being a regular file.
 //    if ( CrawlableDatasetAlias.isAlias( collectionLevel.getPath() ) ) throw new IllegalArgumentException( "The collection root <" + collectionLevel.getPath() + "> must not be a CrawlableDatasetAlias.");
     if ( catalogLevel == null ) throw new IllegalArgumentException( "The catalog root must not be null.");
-    if ( service == null ) throw new IllegalArgumentException( "The service must not be null.");
+    if ( service == null )
+      throw new IllegalArgumentException( "The service must not be null.");
 
     if ( ! catalogLevel.getPath().startsWith( collectionLevel.getPath() ) )
       throw new IllegalArgumentException( "The catalog root <" + catalogLevel.getPath() + "> must be under the collection root <" + collectionLevel.getPath() + ">." );

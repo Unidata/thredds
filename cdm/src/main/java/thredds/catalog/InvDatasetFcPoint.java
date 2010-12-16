@@ -21,6 +21,15 @@ import java.util.*;
 public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
   static private final Logger logger = org.slf4j.LoggerFactory.getLogger(InvDatasetFcPoint.class);
   static private final String FC = "fc.cdmr";
+  static private final InvService collectionService = new InvService("collectionService", ServiceType.COMPOUND.toString(), "", "", "");
+  static private final InvService fileService = new InvService("fileService", ServiceType.COMPOUND.toString(), "", "", "");
+  static {
+    collectionService.addService( InvService.cdmrfeature);
+
+    fileService.addService( InvService.cdmremote);
+    fileService.addService( InvService.fileServer);
+    fileService.addService( InvService.opendap);
+  }
 
   private final FeatureDatasetPoint fd;
   private final Set<FeatureCollectionConfig.PointDatasetType> wantDatasets;
@@ -58,8 +67,8 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
 
     synchronized (lock) {
       if (state == null) {
-        orgService = getServiceDefault();
-        virtualService = makeVirtualService(orgService);
+        //orgService = getServiceDefault();
+        //virtualService = makeVirtualService(orgService);
 
       } else {
         if (!dcm.rescanIfNeeded())
@@ -88,11 +97,20 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
     }
 
     try {
-      if ((match == null) || (match.length() == 0))
-        return makeCatalogTop(baseURI, localState);
+      if ((match == null) || (match.length() == 0)) {
+        InvCatalogImpl main = makeCatalogTop(baseURI, localState);
+        main.addService(collectionService);
+        main.getDataset().getLocalMetadataInheritable().setServiceName(collectionService.getName());
+        main.finish();
+        return main;
 
-      else if (match.startsWith(FILES) && wantDatasets.contains(FeatureCollectionConfig.PointDatasetType.Files)) {
-        return localState.scan.makeCatalogForDirectory(orgPath, baseURI);
+      } else if (match.startsWith(FILES) && wantDatasets.contains(FeatureCollectionConfig.PointDatasetType.Files)) {
+        InvCatalogImpl files = localState.scan.makeCatalogForDirectory(orgPath, baseURI);
+        files.addService(InvService.latest);
+        files.addService(fileService);
+        files.getDataset().getLocalMetadataInheritable().setServiceName(fileService.getName());
+        files.finish();
+        return files;
       }
 
     } catch (Exception e) {
@@ -117,7 +135,7 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
        ds.setID(id + "/" + name);
        ThreddsMetadata tm = ds.getLocalMetadata();
        tm.addDocumentation("summary", "Feature Collection. 'Nuff said");
-       ds.getLocalMetadataInheritable().setServiceName(cdmrService.getName());
+       ds.getLocalMetadataInheritable().setServiceName(collectionService.getName());
        ds.finish();
        datasets.add(ds);
      }
@@ -130,14 +148,14 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
        InvDatasetScan scanDataset = new InvDatasetScan((InvCatalogImpl) this.getParentCatalog(), this, "File_Access", path + "/" + FILES,
                topDirectory, scanFilter, true, "true", false, null, null, null);
 
-       scanDataset.addService(orgService);
+       //scanDataset.addService(fileService);
 
        ThreddsMetadata tmi = scanDataset.getLocalMetadataInheritable();
-       tmi.setServiceName(orgService.getName());
+       tmi.setServiceName(fileService.getName());
        tmi.addDocumentation("summary", "Individual data file, which comprise the Forecast Model Run Collection.");
        tmi.setGeospatialCoverage(null);
        tmi.setTimeCoverage(null);
-       scanDataset.setServiceName(orgService.getName());
+       scanDataset.setServiceName(fileService.getName());
        scanDataset.finish();
        datasets.add(scanDataset);
 

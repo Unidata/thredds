@@ -286,6 +286,12 @@ public class FmrcInv {
     return diff / 1000.0 / 60.0 / 60.0;
   }
 
+  /**
+   * Create a date from base and hour offset
+   * @param base base date
+   * @param offset hourss
+   * @return base + offset as a Date
+   */
   public static Date makeOffsetDate(Date base, double offset) {
     long time = base.getTime() + (long) (offset * 60 * 60 * 1000);
     return new Date(time);

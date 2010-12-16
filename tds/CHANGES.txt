@@ -4,7 +4,13 @@ Build Date = @BUILDTIME@
 Build Name = @BUILD.NAME@
 
 Release Details 4.2:
- 4.2.x (2010-12-01)
+ 4.2.2 (2010-12-xx)
+   CdmrFeature service for point collections
+   FeatureCollection type=POINT, STATION
+   FMRC bug in constant offset datasets when offset didnt start at 0.
+   FMRC now has vars, bounding box, and date range metadata.
+
+ 4.2.1 (2010-12-01)
    Fix ThreddsConfig logging.
 
  4.2.0 (2010-11-19)

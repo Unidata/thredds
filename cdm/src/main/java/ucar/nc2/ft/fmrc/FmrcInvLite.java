@@ -95,6 +95,31 @@ public class FmrcInvLite implements java.io.Serializable {
       gridSets.add(new Gridset(runseq));
     }
 
+    // calc the offsets
+    TreeSet<Double> tree = new TreeSet<Double>();
+    for (Gridset gridset : gridSets) {
+      for (int run = 0; run < nruns; run++) {
+        double baseOffset = runOffset[run];
+        for (int time = 0; time < gridset.noffsets; time++) {
+          double offset = gridset.timeOffset[run * gridset.noffsets + time];
+          if (!Double.isNaN(offset))
+            tree.add(offset - baseOffset);
+        }
+      }
+    }
+    offsets = new double[tree.size()];
+    Iterator<Double> iter = tree.iterator();
+    for (int i = 0; i < tree.size(); i++) {
+      offsets[i] = iter.next();
+    }
+
+  }
+
+  public int findRunIndex(Date want) {
+    for (int i=0; i<runOffset.length; i++)
+      if (want.equals(FmrcInv.makeOffsetDate(base, runOffset[i])))
+        return i;
+    return -1;
   }
 
   public List<Date> getRunDates() {
@@ -113,24 +138,6 @@ public class FmrcInvLite implements java.io.Serializable {
 
   // for making constant offset datasets
   public double[] getForecastOffsets() {
-    if (offsets == null) {
-      TreeSet<Double> tree = new TreeSet<Double>();
-      for (Gridset gridset : gridSets) {
-        for (int run = 0; run < nruns; run++) {
-          double baseOffset = gridset.timeOffset[run * gridset.noffsets];
-          for (int time = 0; time < gridset.noffsets; time++) {
-            double offset = gridset.timeOffset[run * gridset.noffsets + time];
-            if (!Double.isNaN(offset))
-              tree.add(offset - baseOffset);
-          }
-        }
-      }
-      offsets = new double[tree.size()];
-      Iterator<Double> iter = tree.iterator();
-      for (int i = 0; i < tree.size(); i++) {
-        offsets[i] = iter.next();
-      }
-    }
     return offsets;
   }
 
@@ -371,8 +378,8 @@ public class FmrcInvLite implements java.io.Serializable {
         for (int time = 0; time < noffsets; time++) { // search for all offsets that match - presumably 0 or 1 per run
           double baseOffset = getTimeCoord(run, time);
           if (Double.isNaN(baseOffset)) continue;
-          double runOffset = baseOffset - getTimeCoord(run, 0);
-          if (!Double.isNaN(baseOffset) && Misc.closeEnough(runOffset, offset))
+          double runOffset = baseOffset - FmrcInvLite.this.runOffset[run]; // subtract the base offset for this run
+          if (Misc.closeEnough(runOffset, offset))
             result.add(new TimeInv(run, time, baseOffset));
         }
       }

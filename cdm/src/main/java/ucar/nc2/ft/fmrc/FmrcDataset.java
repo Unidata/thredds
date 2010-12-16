@@ -40,6 +40,7 @@ import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.ncml.NcMLReader;
+import ucar.nc2.units.DateRange;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.constants._Coordinate;
@@ -118,6 +119,37 @@ class FmrcDataset {
       localState = state;
     }
     return localState.lite.getForecastOffsets();
+  }
+
+  public DateRange getDateRangeForRun(Date run) {
+    State localState;
+    synchronized (lock) {
+      localState = state;
+    }
+    int runidx = localState.lite.findRunIndex(run);
+    if (runidx < 0) return null;
+
+    double min = Double.MAX_VALUE;
+    double max = Double.MIN_VALUE;
+    for (FmrcInvLite.Gridset gs : localState.lite.gridSets) {
+      for (int i=0; i<gs.noffsets; i++) {
+        double time = gs.getTimeCoord(runidx, i);
+        if (Double.isNaN(time)) continue;
+        min = Math.min(min, time);
+        max = Math.max(max, time);
+      }
+    }
+    return new DateRange(FmrcInv.makeOffsetDate(localState.lite.base, min), FmrcInv.makeOffsetDate(localState.lite.base, max));
+  }
+
+  public DateRange getDateRangeForOffset(double offset) {
+    State localState;
+    synchronized (lock) {
+      localState = state;
+    }
+    List<Date> runs = localState.lite.getRunDates();
+    int n = runs.size();
+    return new DateRange(FmrcInv.makeOffsetDate(runs.get(0), offset), FmrcInv.makeOffsetDate(runs.get(n-1), offset));
   }
 
   /**

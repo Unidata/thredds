@@ -87,7 +87,7 @@ public abstract class InvCatalog {
    * @return top-level InvDataset. May not be null.
    * @deprecated use getDatasets()
    */
-  public InvDataset getDataset() {
+  public InvDatasetImpl getDataset() {
     return topDataset;
   }
 

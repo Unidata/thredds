@@ -42,6 +42,17 @@ import java.util.*;
  */
 
 public class InvService {
+  // standard TDS services
+  public static final InvService cdmremote = new InvService("cdmremote", ServiceType.CdmRemote.toString(), "/thredds/cdmremote/", "", "");
+  public static final InvService cdmrfeature = new InvService("cdmrfeature", ServiceType.CdmrFeature.toString(), "/thredds/cdmrfeature/", "", "");
+  public static final InvService fileServer = new InvService("fileServer", ServiceType.HTTPServer.toString(), "/thredds/fileServer/", "", "");
+  public static final InvService latest = new InvService("latest", ServiceType.RESOLVER.toString(), "", "", "");
+  public static final InvService ncss = new InvService("opendap", ServiceType.NetcdfSubset.toString(), "/thredds/ncss/grid/", "", "");
+  public static final InvService opendap = new InvService("opendap", ServiceType.OPENDAP.toString(), "/thredds/dodsC/", "", "");
+  public static final InvService wcs = new InvService("wcs", ServiceType.WCS.toString(), "/thredds/wcs/", "", "");
+  public static final InvService wms = new InvService("wms", ServiceType.WMS.toString(), "/thredds/wms/", "", "");
+
+  //////////////////////////////////
   private String name;
   private String base;
   private String suffix;
@@ -56,7 +67,7 @@ public class InvService {
   private StringBuilder log = new StringBuilder();
 
   /**
-   * Constructor, use when serviceTypeName already converted to ServiceType.
+   * Constructor.
    *
    * @param name            : name to show to the user
    * @param serviceTypeName : ServiceType

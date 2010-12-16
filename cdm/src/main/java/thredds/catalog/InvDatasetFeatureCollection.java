@@ -93,7 +93,6 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
 
   protected final String topDirectory;
   protected final Pattern filter;
-  protected InvService orgService, virtualService;
 
   @GuardedBy("lock")
   protected State state;
@@ -235,7 +234,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
   // called by DataRootHandler.makeDynamicCatalog() when the catref is requested
 
   /**
-   * Make the containing catalog for this dataset
+   * Get one one of the catalogs contained in this dataset,
    * called by DataRootHandler.makeDynamicCatalog()
    * @param match match.remaining
    * @param orgPath    the path for the request.
@@ -246,7 +245,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
   abstract public InvCatalogImpl makeCatalog(String match, String orgPath, URI baseURI);
 
   /**
-   * Make the top catalog of this catref.
+   * Make the containing catalog for this dataset
    *
    * @param baseURI base URI of the request
    * @param localState current state to use
@@ -265,10 +264,10 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
     if (parent != null)
       top.transferMetadata(parent, true); // make all inherited metadata local
 
-    String id = getID();
+    /* String id = getID();
     if (id == null)
       id = getPath();
-    top.setID(id);
+    top.setID(id);  */
 
     // add Variables, GeospatialCoverage, TimeCoverage LOOK doesnt seem to work
     ThreddsMetadata tmi = top.getLocalMetadataInheritable();
@@ -280,8 +279,8 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
 
     // any referenced services need to be local
     // remove http service for virtual datasets
-    mainCatalog.addService(virtualService);
-    top.getLocalMetadataInheritable().setServiceName(virtualService.getName());
+    //mainCatalog.addService(virtualService);
+    //top.getLocalMetadataInheritable().setServiceName(virtualService.getName());
 
     for (InvDataset ds : getDatasets())
       top.addDataset((InvDatasetImpl) ds);

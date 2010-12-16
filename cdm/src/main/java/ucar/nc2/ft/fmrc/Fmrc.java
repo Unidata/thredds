@@ -37,6 +37,7 @@ import org.jdom.Element;
 import thredds.inventory.*;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridDataset;
+import ucar.nc2.units.DateRange;
 
 import java.util.*;
 import java.io.IOException;
@@ -151,6 +152,14 @@ public class Fmrc {
   }
 
   /////////////////////////////////////////////////////////////////////////////////////////
+
+  public DateRange getDateRangeForRun(Date run) {
+    return fmrcDataset.getDateRangeForRun( run);
+  }
+
+  public DateRange getDateRangeForOffset(double offset) {
+    return fmrcDataset.getDateRangeForOffset( offset);
+  }
 
   public List<Date> getRunDates() throws IOException {
     checkNeeded( false); // ??

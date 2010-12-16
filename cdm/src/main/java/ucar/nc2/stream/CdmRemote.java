@@ -40,6 +40,8 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import ucar.ma2.Array;
 import ucar.ma2.Section;
 import ucar.ma2.InvalidRangeException;
+import ucar.ma2.StructureDataIterator;
+import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.util.IO;
 
@@ -183,6 +185,10 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
     } finally {
       if (method != null) method.releaseConnection();
     }
+  }
+
+  protected StructureDataIterator getStructureIterator(Structure s, int bufferSize) throws java.io.IOException {
+    return spi.getStructureIterator(s, bufferSize);
   }
 
   public static HttpMethod sendQuery(String remoteURI, String query) throws IOException {

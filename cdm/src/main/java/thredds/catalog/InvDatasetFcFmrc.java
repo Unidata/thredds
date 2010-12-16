@@ -9,6 +9,7 @@ import ucar.nc2.dt.GridDataset;
 import ucar.nc2.ft.fmrc.Fmrc;
 import ucar.nc2.thredds.MetadataExtractor;
 import ucar.nc2.units.DateFormatter;
+import ucar.nc2.units.DateRange;
 import ucar.unidata.util.StringUtil;
 
 import java.io.FileNotFoundException;
@@ -47,6 +48,7 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
 
   private final Fmrc fmrc;
   private final Set<FeatureCollectionConfig.FmrcDatasetType> wantDatasets;
+  private InvService orgService, virtualService;
 
   public InvDatasetFcFmrc(InvDatasetImpl parent, String name, String path, FeatureType featureType, FeatureCollectionConfig config) {
     super(parent, name, path, featureType, config);
@@ -95,7 +97,7 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
 
       if (checkProto) {
          // add Variables, GeospatialCoverage, TimeCoverage
-        GridDataset gds = getGridDataset(FMRC);
+        GridDataset gds = fmrc.getDataset2D(null);
         if (null != gds) {
           localState.vars = MetadataExtractor.extractVariables(this, gds);
           localState.gc = MetadataExtractor.extractGeospatial(gds);
@@ -130,8 +132,13 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
     }
 
     try {
-      if ((match == null) || (match.length() == 0))
-        return makeCatalogTop(baseURI, localState);
+      if ((match == null) || (match.length() == 0)) {
+        InvCatalogImpl main  = makeCatalogTop(baseURI, localState);
+        main.addService(virtualService);
+        main.getDataset().getLocalMetadataInheritable().setServiceName(virtualService.getName());
+        main.finish();
+        return main;
+      }
 
       else if (match.equals(RUNS) && wantDatasets.contains(FeatureCollectionConfig.FmrcDatasetType.Runs))
         return makeCatalogRuns(baseURI, localState);
@@ -143,7 +150,12 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
         return makeCatalogForecasts(baseURI, localState);
 
       else if (match.startsWith(FILES) && wantDatasets.contains(FeatureCollectionConfig.FmrcDatasetType.Files)) {
-        return localState.scan.makeCatalogForDirectory(orgPath, baseURI);
+        InvCatalogImpl files   = localState.scan.makeCatalogForDirectory(orgPath, baseURI);
+        files.addService(InvService.latest);
+        files.addService(orgService);
+        files.getDataset().getLocalMetadataInheritable().setServiceName(orgService.getName());
+        files.finish();
+        return files;
       }
 
     } catch (Exception e) {
@@ -166,9 +178,9 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
     ThreddsMetadata tmi = top.getLocalMetadataInheritable();
     if (localState.vars != null) tmi.addVariables(localState.vars);
     if (localState.gc != null) tmi.setGeospatialCoverage(localState.gc);
-    if (localState.dateRange != null) tmi.setTimeCoverage(localState.dateRange);
+    //if (localState.dateRange != null) tmi.setTimeCoverage(localState.dateRange);
 
-     runCatalog.addDataset(top);
+    runCatalog.addDataset(top);
 
     // services need to be local
     runCatalog.addService(virtualService);
@@ -259,6 +271,9 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
       nested.setID(id + "/" + RUNS + "/" + name);
       ThreddsMetadata tm = nested.getLocalMetadata();
       tm.addDocumentation("summary", "Data from Run " + name);
+      DateRange dr = fmrc.getDateRangeForRun(runDate);
+      if (dr != null)
+        tm.setTimeCoverage(dr);
       datasets.add(nested);
     }
 
@@ -282,6 +297,9 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
       nested.setID(id + "/" + OFFSET + "/" + name);
       ThreddsMetadata tm = nested.getLocalMetadata();
       tm.addDocumentation("summary", "Data from the " + offset + " hour forecasts, across different model runs.");
+      DateRange dr = fmrc.getDateRangeForOffset(offset);
+      if (dr != null)
+        tm.setTimeCoverage(dr);
       datasets.add(nested);
     }
 
@@ -305,6 +323,7 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
       nested.setID(id + "/" + FORECAST + "/" + name);
       ThreddsMetadata tm = nested.getLocalMetadata();
       tm.addDocumentation("summary", "Data with the same forecast date, " + name + ", across different model runs.");
+      tm.setTimeCoverage( new DateRange(forecastDate, forecastDate));
       datasets.add(nested);
     }
 
@@ -329,7 +348,7 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
        ds.setID(id + "/" + name);
        ThreddsMetadata tm = ds.getLocalMetadata();
        tm.addDocumentation("summary", "Forecast Model Run Collection (2D time coordinates).");
-       ds.getLocalMetadataInheritable().setServiceName(virtualService.getName());
+       //ds.getLocalMetadataInheritable().setServiceName(virtualService.getName());
        ds.finish();
        datasets.add(ds);
      }
@@ -343,7 +362,7 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
       ds.setID(id + "/" + name);
       ThreddsMetadata tm = ds.getLocalMetadata();
       tm.addDocumentation("summary", "Best time series, taking the data from the most recent run available.");
-      ds.getLocalMetadataInheritable().setServiceName(virtualService.getName());
+      //ds.getLocalMetadataInheritable().setServiceName(virtualService.getName());
       ds.finish();
       datasets.add(ds);
     }
@@ -357,7 +376,7 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
         ds.setID(id + "/" + name);
         ThreddsMetadata tm = ds.getLocalMetadata();
         tm.addDocumentation("summary", "Best time series, excluding offset hours less than "+bd.greaterThan);
-        ds.getLocalMetadataInheritable().setServiceName(virtualService.getName());
+        //ds.getLocalMetadataInheritable().setServiceName(virtualService.getName());
         ds.finish();
         datasets.add(ds);
       }
