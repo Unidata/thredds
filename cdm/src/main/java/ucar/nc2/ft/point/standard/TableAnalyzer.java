@@ -62,6 +62,7 @@ public class TableAnalyzer {
   static private List<Configurator> conventionList = new ArrayList<Configurator>();
   static private boolean userMode = false;
   static private boolean debug = false;
+  static private boolean loadWarnings = false;
 
   // search in the order added
   static {
@@ -71,7 +72,15 @@ public class TableAnalyzer {
         return convName.startsWith(wantName); //  && !convName.equals("CF-1.0"); // throw 1.0 to default analyser
       }
     });
-    registerAnalyzer("BUFR/CDM", BufrCdm.class, null);
+
+    // reflection is used to decouple optional jars
+    try {
+      Class c = TableAnalyzer.class.getClassLoader().loadClass("ucar.nc2.ft.point.standard.plug.BufrCdm"); // only load if bufr.jar is present
+      registerAnalyzer("BUFR/CDM", c, null);
+    } catch (Throwable e) {
+      if (loadWarnings) log.info("Cant load class: " + e);
+    }
+
     registerAnalyzer("GEMPAK/CDM", GempakCdm.class, null);
     registerAnalyzer("Unidata Observation Dataset v1.0", UnidataPointObs.class, null);
 

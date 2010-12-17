@@ -36,9 +36,12 @@ package ucar.nc2.util.xml;
 import org.jdom.*;
 import org.jdom.input.*;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Method;
 import java.util.List;
+import java.util.ListIterator;
 
 import ucar.nc2.constants.FeatureType;
 
@@ -153,12 +156,31 @@ public class RuntimeConfigParser {
           }
 
         } else if (elem.getName().equals("bufrtable")) {
+
           String filename = elem.getAttributeValue("filename");
-          try {
-            ucar.nc2.iosp.bufr.tables.BufrTables.addLookupFile( filename);
-          } catch (Exception e) {
-            errlog.append("bufrtable read failed on  "+filename+" = "+e.getMessage()+"\n");
+          if (filename == null) {
+            errlog.append("bufrtable must have filename attribute\n");
+            continue;
           }
+
+          // reflection is used to decouple optional jars
+          Class bufrTablesClass;
+          try {
+            bufrTablesClass = RuntimeConfigParser.class.getClassLoader().loadClass("ucar.nc2.iosp.bufr.tables.BufrTables"); // only load if bufr.jar is present
+            java.lang.Class[] params = new Class[1];
+            params[0] = String.class;
+            Method method = bufrTablesClass.getMethod("addLookupFile", params);
+            Object[] args = new Object[1];
+            args[0] = filename;
+            method.invoke(null, args); // static method has null for object
+
+          } catch (Throwable e) {
+            if (e instanceof FileNotFoundException)
+              errlog.append("bufrtable read failed on  "+filename+" = "+e.getMessage()+"\n");
+            else
+              errlog.append("bufr.jar is not on classpath\n");
+          }
+
         }
 
       }

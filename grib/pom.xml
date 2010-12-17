@@ -79,19 +79,10 @@
     </dependency>
   </dependencies>
 
-
   <!-- ===========================================================
            Build configuration
        =========================================================== -->
   <build>
-    <sourceDirectory>src</sourceDirectory>
-    <testSourceDirectory>test</testSourceDirectory>
-    <resources>
-      <resource>
-        <directory>resources</directory>
-      </resource>
-    </resources>
-
     <!-- Skip tests, because they require the /share/testdata/cdmUnitTest/ directory. -->
     <plugins>
       <plugin>

@@ -5,8 +5,8 @@
     <output-test url="file://$MODULE_DIR$/../../grib/target/test/classes" />
     <exclude-output />
     <content url="file://$MODULE_DIR$/../../grib">
-      <sourceFolder url="file://$MODULE_DIR$/../../grib/src" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/../../grib/test/src" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../grib/src/main/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/../../grib/src/test/java" isTestSource="true" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
