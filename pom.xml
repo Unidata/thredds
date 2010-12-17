@@ -1,0 +1,320 @@
+<!-- =======================================================================
+        Parent Maven Configuration File for UCAR NetCDF library
+     ======================================================================= -->
+  <project xmlns="http://maven.apache.org/POM/4.0.0"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                               http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <prerequisites>
+    <maven>2.0.9</maven>
+  </prerequisites>
+
+  <!-- ====================================================
+           Project description (including license)
+       ==================================================== -->
+  <groupId>edu.ucar</groupId>
+  <artifactId>netcdf-parent</artifactId>
+  <packaging>pom</packaging>
+  <version>4.2.5</version>
+  <name>Unidata parent</name>
+  <description>
+    The NetCDF-Java Library is a Java interface to NetCDF files,
+    as well as to many other types of scientific data formats.
+  </description>
+  <url>http://www.unidata.ucar.edu/software/netcdf-java/</url>
+
+  <organization>
+    <name>UCAR/Unidata</name>
+    <url>http://www.ucar.edu/</url>
+  </organization>
+  <inceptionYear>1999</inceptionYear>
+
+  <licenses>
+    <license>
+      <name>(MIT-style) netCDF C library license</name>
+      <url>http://www.unidata.ucar.edu/software/netcdf/copyright.html</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <mailingLists>
+    <mailingList>
+      <name>netcdf-java</name>
+      <subscribe>http://www.unidata.ucar.edu/support/mailinglist/mailing-list-form.html</subscribe>
+      <post>netcdf-java@unidata.ucar.edu</post>
+    </mailingList>
+  </mailingLists>
+
+  <scm>
+    <url>http://svn.unidata.ucar.edu/repos/thredds/trunk</url>
+    <connection>http://svn.unidata.ucar.edu/repos/thredds/trunk</connection>
+  </scm>
+
+
+  <!-- ===========================================================
+           Developers and Contributors
+       =========================================================== -->
+ <developers>
+    <developer>
+      <id>caron</id>
+      <name>John Caron</name>
+      <email>caron@unidata.ucar.edu</email>
+      <organization>UCAR/UNIDATA</organization>
+      <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
+      <roles>
+        <role>Java Developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <id>chastang</id>
+      <name>Julien Chastang</name>
+      <email>chastang@unidata.ucar.edu</email>
+      <organization>UCAR/UNIDATA</organization>
+      <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
+      <roles>
+        <role>Java Developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <id>edavis</id>
+      <name>Ethan Davis</name>
+      <email>edavis@unidata.ucar.edu</email>
+      <organization>UCAR/UNIDATA</organization>
+      <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
+      <roles>
+        <role>Java Developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <id>ed</id>
+      <name>Ed Hartnett</name>
+      <email>ed@unidata.ucar.edu</email>
+      <organization>UCAR/UNIDATA</organization>
+      <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
+      <roles>
+        <role>C Developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <id>dmh</id>
+      <name>Dennis Heimbigner</name>
+      <email>dmh@unidata.ucar.edu</email>
+      <organization>UCAR/UNIDATA</organization>
+      <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
+      <roles>
+        <role>Java Developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <id>yuanho</id>
+      <name>Ho Yuan</name>
+      <email>yuanho@unidata.ucar.edu</email>
+      <organization>UCAR/UNIDATA</organization>
+      <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
+      <roles>
+        <role>Java Developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <id>rkambic</id>
+      <name>Robb Kambic</name>
+      <email>rkambic@unidata.ucar.edu</email>
+      <organization>UCAR/UNIDATA</organization>
+      <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
+      <roles>
+        <role>Java Developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <id>oxelson</id>
+      <name>Jennifer Ganter Oxelson</name>
+      <email>oxelson@unidata.ucar.edu</email>
+      <organization>UCAR/UNIDATA</organization>
+      <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
+      <roles>
+        <role>Java Developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <id>russ</id>
+      <name>Russel Rew</name>
+      <email>russ@unidata.ucar.edu</email>
+      <organization>UCAR/UNIDATA</organization>
+      <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
+      <roles>
+        <role>C Developer</role>
+      </roles>
+    </developer>
+  </developers>
+
+  <!-- ===========================================================
+           Dependency Management
+           If a POM declares one of those dependencies, then it
+           will use the version specified here. Otherwise, those
+           dependencies are ignored.
+
+           Reference: http://repo1.maven.org/maven2/
+       =========================================================== -->
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>javax.servlet</groupId>
+        <artifactId>servlet-api</artifactId>
+        <version>2.5</version>
+      </dependency>
+      <dependency>
+        <groupId>net.jcip</groupId>
+        <artifactId>jcip-annotations</artifactId>
+        <version>1.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.quartz-scheduler</groupId>
+        <artifactId>quartz</artifactId>
+        <version>1.7.3</version>
+      </dependency>
+      <dependency>
+        <groupId>gnu-regexp</groupId>
+        <artifactId>gnu-regexp</artifactId>
+        <version>1.1.4</version>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>1.6.1</version>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-jdk14</artifactId>
+        <version>1.6.1</version>
+        <scope>runtime</scope> <!-- Should never be needed at compile time. -->
+      </dependency>
+      <dependency>
+        <groupId>org.jdom</groupId>
+        <artifactId>jdom</artifactId>
+        <version>1.1</version> <!-- Actually 1.1.1, but it doesn't seem to be on Maven repo. -->
+      </dependency>
+      <dependency>
+        <groupId>commons-httpclient</groupId>
+        <artifactId>commons-httpclient</artifactId>
+        <version>3.1</version>
+        <!-- Transitive dependencies: commons-codec 1.2 and commons-logging 1.0.4 -->
+      </dependency>
+      <dependency>
+        <groupId>commons-fileupload</groupId>
+        <artifactId>commons-fileupload</artifactId>
+        <version>1.2.2</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-webmvc</artifactId>
+        <version>2.5.6</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.protobuf</groupId>
+        <artifactId>protobuf-java</artifactId>
+        <version>2.1.0</version>
+      </dependency>
+      <dependency>
+        <groupId>net.sf.ehcache</groupId>
+        <artifactId>ehcache</artifactId>
+        <version>1.6.0</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <artifactId>je</artifactId>
+        <groupId>com.sleepycat</groupId> <!-- Requires Oracle repository (see cdm/pom.xml) -->
+        <version>4.0.92</version>
+      </dependency>
+      <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>4.8.2</version>
+        <scope>test</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <!-- All modules use JUnit for their test. -->
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+
+  <!-- ===========================================================
+           Build configuration
+       =========================================================== -->
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.5</source>
+          <target>1.6</target>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <archive>
+            <index>true</index> <!-- Archive will contain an INDEX.LIST file. -->
+            <manifest>
+              <addClasspath>true</addClasspath>
+              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+            </manifest>
+            <manifestEntries>
+              <Built-On>${maven.build.timestamp}</Built-On>
+            </manifestEntries>
+          </archive>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+
+
+  <!-- ====================================================
+           Deployment to public servers
+       ==================================================== -->
+  <distributionManagement>
+    <repository>
+       <id>sonatype-nexus-staging</id>
+       <name>Sonatype OSS Hosting, synced to Maven Central</name>
+       <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+    </repository>
+  </distributionManagement>
+
+
+
+  <!-- ===========================================================
+           Modules for the build in approximate dependency order
+       =========================================================== -->
+  <modules>
+    <module>common</module>
+    <module>grib</module>
+    <module>opendap</module>
+    <!-- module>visad</module -->
+    <module>cdm</module> <!-- Actually "netcdf" -->
+    <module>bufr</module>
+  </modules>
+
+  <properties>
+    <common.version>4.2.5</common.version>
+    <netcdf.version>4.2.5</netcdf.version>
+    <grib.version>8.0.27</grib.version>
+    <bufr.version>2.0.1</bufr.version>
+    <opendap.version>2.2</opendap.version>
+    <visad.version>2010-08-09</visad.version>
+    <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <!-- TODO: Use <sourceEncoding>UTF-8</sourceEncoding> with Maven 3 -->
+  </properties>
+
+</project>
