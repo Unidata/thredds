@@ -104,7 +104,8 @@ public class MetadataManager {
       myEnvConfig.setAllowCreate(false);
       myEnv = new Environment(dir, myEnvConfig);
     }
-    if (debug) System.out.printf("MetadataManager: open bdb at root %s readOnly = %s%n", root, readOnly);
+    logger.info("MetadataManager: open bdb at root "+root+" readOnly = " +readOnly);
+
     /* primary
     DatabaseConfig dbConfig = new DatabaseConfig();
     dbConfig.setAllowCreate(true);
@@ -124,7 +125,6 @@ public class MetadataManager {
   // Close all databases and environment
   // this is called on TDS shutdown and reinit
   static public void closeAll() {
-    if (debug) System.out.println("close MetadataManager");
 
     Iterator<MetadataManager> iter = openDatabases.iterator();
     while (iter.hasNext()) {
@@ -139,9 +139,10 @@ public class MetadataManager {
         // Finally, close the store and environment.
         myEnv.close();
         myEnv = null;
+        logger.info("closed bdb caching");
 
       } catch (DatabaseException dbe) {
-        logger.error("Error closing MyDbEnv: " + dbe.toString());
+        logger.error("Error closing bdb: ", dbe);
       }
     }
   }

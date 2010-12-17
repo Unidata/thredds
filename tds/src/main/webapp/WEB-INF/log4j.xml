@@ -39,8 +39,8 @@
   <!-- keep track of feature collection scanning messages in a seperate file. -->
   <appender name="fcScan" class="org.apache.log4j.FileAppender">
     <param name="File" value="${tds.log.dir}/featureCollectionScan.log"/>
-    <param name="MaxFileSize" value="10MB"/>
-    <param name="MaxBackupIndex" value="10"/>
+    <!-- param name="MaxFileSize" value="10MB"/>
+    <param name="MaxBackupIndex" value="10"/ -->
     <param name="Append" value="false"/>
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="[%d{yyyy-MM-dd'T'HH:mm:ss.SSSZ}] %-5p %c: %m%n"/>
@@ -141,6 +141,16 @@
   <!-- fmrc debugging -->
 
   <logger name="thredds.inventory.DatasetCollectionManager" additivity="false">
+    <level value="INFO"/>
+    <appender-ref ref="fcScan"/>
+  </logger>
+
+  <logger name="thredds.inventory.CollectionUpdater" additivity="false">
+    <level value="INFO"/>
+    <appender-ref ref="fcScan"/>
+  </logger>
+
+  <logger name="thredds.inventory.bdb.MetadataManager" additivity="false">
     <level value="INFO"/>
     <appender-ref ref="fcScan"/>
   </logger>

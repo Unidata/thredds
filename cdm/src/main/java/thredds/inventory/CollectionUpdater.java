@@ -17,7 +17,7 @@ import java.util.Date;
 public enum CollectionUpdater {
   INSTANCE;   // cf Bloch p 18
 
-  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CollectionUpdater.class.getName() + ".fcScan");
+  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CollectionUpdater.class);
   static private final String FC_NAME= "fc";
   static private final long startupWait = 30 * 1000; // 30 secs
 
