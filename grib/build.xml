@@ -30,10 +30,10 @@
     <property name="base" value="."/>
     <property name="root.dir" location="${base}"/>
 
-    <property name="src.dir" value="./src"/>
-    <condition property="src.raf" value="../common/src/java">
+    <property name="src.dir" value="./src/main/java"/>
+    <condition property="src.raf" value="../common/src/main/java">
       <and>
-        <available file="../common/src/java" type="dir"/>
+        <available file="../common/src/main/java" type="dir"/>
       </and>
     </condition>
 
@@ -54,7 +54,7 @@
     <property name="build.dest.dir" value="./target/classes"/>
     <property name="classpath" value="${build.dest.dir}:${lib.dir}/junit-4.5.jar:${lib.dir}/slf4j-jdk14.jar"/>
     <property name="dist.dir" value="./dist"/>
-    <property name="gribtab.src" value="./resources/resources/grib/"/>
+    <property name="gribtab.src" value="./src/main/resources/resources/grib/"/>
     <property name="gribtab.dst" value="${build.dest.dir}/resources/grib/"/>
 
     <property name="apidocs.dir" value="./apidocs"/>
@@ -101,8 +101,7 @@
 
   <!-- Compile -->
   <target name="compile" depends="prepare-compile">
-    <javac target="1.5" source="1.5"
-           destdir="${build.dest.dir}"
+    <javac destdir="${build.dest.dir}"
            debug="${debug}" optimize="${optimize}"
            classpath="${classpath}">
       <src path="${src.raf}"/>

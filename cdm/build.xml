@@ -27,9 +27,9 @@
   <property name="root.dir" location="${basedir}"/>
   <property name="src.dir" location="${root.dir}/src/main/java"/>
   <property name="timingSrc.dir" location="${root.dir}/src/timing/java"/>
-  <property name="commonSrc.dir" location="${root.dir}/../common/src/java"/>
+  <property name="commonSrc.dir" location="${root.dir}/../common/src/main/java"/>
   <property name="resources.dir" location="${root.dir}/src/main/resources"/>
-  <property name="bufrTables.dir" location="${root.dir}/../bufrTables/src/main/resources/"/>
+  <property name="bufrTables.dir" location="${root.dir}/../bufr/src/main/resources/"/>
   <property name="doc.dir" location="${root.dir}/doc"/>
   <property name="lib.dir" location="${root.dir}/../lib"/>
 
@@ -175,8 +175,7 @@
     <delete dir="${build.classes.dir}" failonerror="false"/>
     <mkdir dir="${build.classes.dir}"/>
 
-    <javac destdir="${build.classes.dir}" debug="${build.debug}" debuglevel="${build.debuglevel}"
-           includeAntRuntime="false" source="1.5" target="1.5">
+    <javac destdir="${build.classes.dir}" debug="${build.debug}" debuglevel="${build.debuglevel}" includeAntRuntime="false">
       <src refid="sourcepath"/>
       <patternset refid="sources-core"/>
       <classpath refid="compile.classpath"/>
@@ -254,8 +253,7 @@
     <delete dir="${build.classes.dir}" failonerror="false"/>
     <mkdir dir="${build.classes.dir}"/>
 
-    <javac destdir="${build.classes.dir}" debug="${build.debug}" debuglevel="${build.debuglevel}"
-           includeAntRuntime="false" source="1.5" target="1.5">
+    <javac destdir="${build.classes.dir}" debug="${build.debug}" debuglevel="${build.debuglevel}" includeAntRuntime="false">
       <src refid="sourcepath"/>
       <patternset refid="sources"/>
       <classpath refid="compile.classpath"/>
@@ -646,8 +644,7 @@
     <pathconvert property="sourcepath.prop" refid="sourcepath" targetos="windows"/>
     <echo>sourcepath=${sourcepath.prop}</echo>
 
-    <javac destdir="${build.classes.dir}" debug="${build.debug}" debuglevel="${build.debuglevel}"
-           includeAntRuntime="false" source="1.5" target="1.5">
+    <javac destdir="${build.classes.dir}" debug="${build.debug}" debuglevel="${build.debuglevel}" includeAntRuntime="false">
       <src refid="sourcepathUI"/>
 
       <patternset refid="sources"/>
@@ -972,8 +969,7 @@
     <property name="test.classpath" refid="test.classpath"/>
     <echo>test.classpath=${test.classpath}</echo>
     <javac srcdir="${test.src.dir}" destdir="${test.classes.dir}"
-           debug="${build.debug}" debuglevel="${build.debuglevel}" includeAntRuntime="false"
-           source="1.5" target="1.5">
+           debug="${build.debug}" debuglevel="${build.debuglevel}" includeAntRuntime="false">
       <exclude name="examples/**"/>
       <exclude name="ucar/nc2/jni/**"/>
       <classpath refid="test.classpath"/>

@@ -236,7 +236,7 @@
                debug="${compile.debug}"
                debuglevel="${compile.debuglevel}"
                deprecation="${compile.deprecation}"
-               includeAntRuntime="false" source="1.5" target="1.5">
+               includeAntRuntime="false" >
             <classpath refid="dap.compile.classpath"/>
             <src path="${src.java.dir}"/>
             <include name="opendap/dap/**/*.java"/>
@@ -258,7 +258,7 @@
                debug="${compile.debug}"
                debuglevel="${compile.debuglevel}"
                deprecation="${compile.deprecation}"
-               includeAntRuntime="false" source="1.5" target="1.5">
+               includeAntRuntime="false">
             <classpath refid="servers.compile.classpath"/>
             <src path="${src.java.dir}"/>
             <include name="opendap/servlet/**/*.java"/>

@@ -103,7 +103,7 @@ public class DateUnit { // extends SimpleUnit {
 
   static public DateUnit getUnixDateUnit() {
     try {
-      return new DateUnit("secs since 1970-00-00:00.00");
+      return new DateUnit("s since 1970-01-01 00:00:00");
     } catch (Exception e) {
       e.printStackTrace();
       return null;
