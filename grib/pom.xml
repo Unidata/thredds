@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- =======================================================================
+        Maven Project Configuration File
+     ======================================================================= -->
+  <project xmlns="http://maven.apache.org/POM/4.0.0"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                               http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>edu.ucar</groupId>
+    <artifactId>netcdf-parent</artifactId>
+    <version>4.2.5</version>
+  </parent>
+
+
+  <!-- ===========================================================
+           Module Description
+       =========================================================== -->
+  <groupId>edu.ucar</groupId>
+  <artifactId>grib</artifactId>
+  <packaging>jar</packaging>
+  <version>${grib.version}</version>
+  <name>GRIB Decoder API</name>
+  <description>
+    Decoder for the GRIB format.
+  </description>
+  <url>http://www.unidata.ucar.edu/software/decoders/</url>
+
+  <scm>
+    <url>http://svn.unidata.ucar.edu/repos/thredds/trunk/grib</url>
+    <connection>http://svn.unidata.ucar.edu/repos/thredds/trunk/grib</connection>
+  </scm>
+
+
+  <!-- ===========================================================
+           Developers and Contributors
+       =========================================================== -->
+  <developers>
+    <developer>
+      <id>caron</id>
+      <name>John Caron</name>
+      <email>caron@unidata.ucar.edu</email>
+      <organization>UCAR/UNIDATA</organization>
+      <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
+      <roles>
+        <role>Java Developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <name>Robb Kambic</name>
+      <organization>UCAR/UNIDATA</organization>
+      <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
+      <roles>
+        <role>Java Developer</role>
+      </roles>
+    </developer>
+  </developers>
+
+
+  <!-- ===========================================================
+           Dependencies
+       =========================================================== -->
+  <dependencies>
+    <dependency>
+      <groupId>edu.ucar</groupId>
+      <artifactId>unidataCommon</artifactId>
+      <version>${common.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-jdk14</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+
+  <!-- ===========================================================
+           Build configuration
+       =========================================================== -->
+  <build>
+    <sourceDirectory>src</sourceDirectory>
+    <testSourceDirectory>test</testSourceDirectory>
+    <resources>
+      <resource>
+        <directory>resources</directory>
+      </resource>
+    </resources>
+
+    <!-- Skip tests, because they require the /share/testdata/cdmUnitTest/ directory. -->
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <skipTests>true</skipTests>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>

@@ -38,19 +38,12 @@
   <property name="javadoc.dir" value="${build.dir}/javadoc"/>
   <property name="javadocAll.dir" value="${build.dir}/javadocAll"/>
 
-  <!-- Relative path to other dir -->
-  <property name="opendap.relpath" value="../opendap"/>
-  <property name="grib.relpath" value="../grib"/>
-  <property name="common.relpath" value="../../unidataCommon"/>
-
   <property name="release.library.dir" value="${uni.ftp.dir}/pub/netcdf-java/v${release.version}/"/>
   <property name="release.doc.dir" value="${uni.ftp.dir}/pub/netcdf-java/v${release.version}/"/>
   <property name="release.html.dir" value="${uni.www.dir}/content/software/netcdf-java/v${release.version}/"/>
   <property name="release.schema.dir" value="${uni.www.dir}/schema"/>
-  <property name="release.javadoc.dir"
-            value="${uni.www.dir}/content/software/netcdf-java/v${release.version}/javadoc/"/>
-  <property name="release.javadocAll.dir"
-            value="${uni.www.dir}/content/software/netcdf-java/v${release.version}/javadocAll/"/>
+  <property name="release.javadoc.dir" value="${uni.www.dir}/content/software/netcdf-java/v${release.version}/javadoc/"/>
+  <property name="release.javadocAll.dir" value="${uni.www.dir}/content/software/netcdf-java/v${release.version}/javadocAll/"/>
   <property name="webstart_dir" value="${uni.www.dir}/content/software/netcdf-java/v${release.version}/webstart"/>
 
   <property name="bdb.jar" value="je-4.0.71.jar"/>
@@ -147,7 +140,7 @@
             value="${jgoodies.jar} ${grib.jar} ${jdom.jar} ${opendap.jar} ${http-codec.jar} ${httclient3.jar} ${http-logging.jar} ${loggingAPI.jar}
             ${logging-minimal.jar} ${protobuf.jar} ${resourcesOptional.jar} ${spring.jar} ${visadNoDods.jar}"/ -->
   <property name="ClassPath-CommandLine"
-            value="lib/${grib.jar}:lib/${jdom.jar}:lib/${httpclient3.jar}:lib/${http-codec.jar}:lib/${http-logging.jar}:lib/${loggingAPI.jar}:lib/${logging-minimal.jar}:lib/${jgoodies.jar}:lib/${spring.jar}:lib/${unidatacommon.jar}:lib/${visadNoDods.jar}"/>
+            value="lib/${grib.jar}:lib/${jdom.jar}:lib/${httpclient3.jar}:lib/${http-codec.jar}:lib/${http-logging.jar}:lib/${loggingAPI.jar}:lib/${logging-minimal.jar}:lib/${jgoodies.jar}:lib/${spring.jar}:lib/${visadNoDods.jar}"/>
 
   <!-- targets -->
   <target name="init">
@@ -400,12 +393,12 @@
 
   <property name="jarIdv" value="ncIdv.jar"/>
   <property name="idv.dir" value="${build.dir}/idv"/>
-  <target name="makeIDVjar" depends="makeMain, opendap" description="create jar for idv">
+  <target name="makeIDVjar" depends="makeMain" description="create jar for idv">
     <mkdir dir="${idv.dir}"/>
     <unzip dest="${idv.dir}">
       <fileset dir="${lib.dir}">
         <include name="release/${bufrTables.jar}"/>
-        <!-- include name="release/${unidatacommon.jar}"/ -->
+        <include name="release/${unidatacommon.jar}"/>
         <include name="release/${grib.jar}"/>
         <include name="external/${jdom.jar}"/>
         <include name="external/${httpclient3.jar}"/>
@@ -459,10 +452,6 @@
         <include name="lib/external/**"/>
         <include name="lib/release/**"/>
         <include name="ui/src/main/**"/>
-      </fileset>
-
-      <fileset dir="${root.dir}/../..">
-        <include name="unidataCommon/src/main/**"/>
       </fileset>
 
       <manifest>
@@ -1074,14 +1063,19 @@
   <!-- -->
 
   <!-- Build other jars and copy to release dir -->
-  <!-- target name="common">
+
+  <!-- Relative path to other dir
+  <property name="opendap.relpath" value="../opendap"/>
+  <property name="grib.relpath" value="../grib"/>
+  <property name="common.relpath" value="../../unidataCommon"/>
+  < target name="common">
 	  <ant dir="${common.relpath}" target="thredds" inheritAll="false"/>
-  </target -->
+  </target
   <target name="grib">
 	  <ant dir="${grib.relpath}" target="thredds" inheritAll="false"/>
   </target>
   <target name="opendap">
 	  <ant dir="${opendap.relpath}" target="thredds" inheritAll="false"/>
-  </target>
+  </target>  -->
 
 </project>

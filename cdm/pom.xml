@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- =======================================================================
+        Maven Project Configuration File
+     ======================================================================= -->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                               http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>edu.ucar</groupId>
+    <artifactId>netcdf-parent</artifactId>
+    <version>4.2.5</version>
+  </parent>
+
+
+  <!-- ===========================================================
+           Module Description
+       =========================================================== -->
+  <groupId>edu.ucar</groupId>
+  <artifactId>netcdf</artifactId>
+  <packaging>jar</packaging>
+  <version>${netcdf.version}</version>
+  <name>NetCDF-Java Library</name>
+  <description>
+    The NetCDF-Java Library is a Java interface to NetCDF files,
+    as well as to many other types of scientific data formats.
+  </description>
+  <url>http://www.unidata.ucar.edu/software/netcdf-java/</url>
+
+  <scm>
+    <url>http://svn.unidata.ucar.edu/repos/thredds/trunk/cdm</url>
+    <connection>http://svn.unidata.ucar.edu/repos/thredds/trunk/cdm</connection>
+  </scm>
+
+
+  <!-- ===========================================================
+           Developers and Contributors
+       =========================================================== -->
+  <developers>
+    <developer>
+      <id>caron</id>
+      <name>John Caron</name>
+      <email>caron@unidata.ucar.edu</email>
+      <organization>UCAR/UNIDATA</organization>
+      <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
+      <roles>
+        <role>Java Developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <id>chastang</id>
+      <name>Julien Chastang</name>
+      <email>chastang@unidata.ucar.edu</email>
+      <organization>UCAR/UNIDATA</organization>
+      <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
+      <roles>
+        <role>Java Developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <id>edavis</id>
+      <name>Ethan Davis</name>
+      <email>edavis@unidata.ucar.edu</email>
+      <organization>UCAR/UNIDATA</organization>
+      <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
+      <roles>
+        <role>Java Developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <id>ed</id>
+      <name>Ed Hartnett</name>
+      <email>ed@unidata.ucar.edu</email>
+      <organization>UCAR/UNIDATA</organization>
+      <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
+      <roles>
+        <role>C Developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <id>dmh</id>
+      <name>Dennis Heimbigner</name>
+      <email>dmh@unidata.ucar.edu</email>
+      <organization>UCAR/UNIDATA</organization>
+      <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
+      <roles>
+        <role>Java Developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <id>yuanho</id>
+      <name>Ho Yuan</name>
+      <email>yuanho@unidata.ucar.edu</email>
+      <organization>UCAR/UNIDATA</organization>
+      <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
+      <roles>
+        <role>Java Developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <id>rkambic</id>
+      <name>Robb Kambic</name>
+      <email>rkambic@unidata.ucar.edu</email>
+      <organization>UCAR/UNIDATA</organization>
+      <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
+      <roles>
+        <role>Java Developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <id>oxelson</id>
+      <name>Jennifer Ganter Oxelson</name>
+      <email>oxelson@unidata.ucar.edu</email>
+      <organization>UCAR/UNIDATA</organization>
+      <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
+      <roles>
+        <role>Java Developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <id>russ</id>
+      <name>Russel Rew</name>
+      <email>russ@unidata.ucar.edu</email>
+      <organization>UCAR/UNIDATA</organization>
+      <organizationUrl>http://www.unidata.ucar.edu/</organizationUrl>
+      <roles>
+        <role>C Developer</role>
+      </roles>
+    </developer>
+  </developers>
+
+
+  <!-- ===========================================================
+           Dependencies
+
+           Mandatory dependencies are listed first. Then everything
+           else is declared with the "provided" scope, meaning that
+           the user have to declare those dependencies himself in
+           his own pom.xml file if we want to read some formats.
+       =========================================================== -->
+  <dependencies>
+    <dependency>
+      <groupId>edu.ucar</groupId>
+      <artifactId>unidataCommon</artifactId>
+      <version>${common.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-httpclient</groupId>
+      <artifactId>commons-httpclient</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+    </dependency>
+
+    <!-- Extensions to the NetCDF core. The "bufrTables" extension
+         is not declared here in order to avoid cyclic dependency.
+         Extensions require additional dependencies (listed below),
+         but users should inherit them through the Maven transitive
+         dependencies mechanism. -->
+
+    <dependency>
+      <groupId>edu.ucar</groupId>
+      <!-- Reading GRIB files. -->
+      <artifactId>grib</artifactId>
+      <version>${grib.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>edu.ucar</groupId>
+      <artifactId>opendap</artifactId>
+      <!-- Using OPeNDAP protocol. -->
+      <version>${opendap.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <artifactId>visad</artifactId>
+      <!-- Reading McIDAS AREA files. -->
+      <groupId>edu.wisc</groupId>
+      <version>${visad.version}</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- Required for reading THREDDS, NcML, BUFR, HDF-EOS, NEXRAD2, OPeNDAP files. -->
+    <dependency>
+      <groupId>org.jdom</groupId>
+      <artifactId>jdom</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- Required for reading THREDDS files. -->
+    <dependency>
+      <groupId>org.quartz-scheduler</groupId>
+      <artifactId>quartz</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- Required for ncstream, cdmRemote. -->
+    <dependency>
+      <groupId>com.google.protobuf</groupId>
+      <artifactId>protobuf-java</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- Required for object caching. -->
+    <dependency>
+      <groupId>net.sf.ehcache</groupId>
+      <artifactId>ehcache</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- Required for using aggregations. -->
+    <dependency>
+      <artifactId>je</artifactId>
+      <groupId>com.sleepycat</groupId>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+
+
+  <!-- ================================================================== -->
+  <!--     Repositories. This is where Maven looks for dependencies. The  -->
+  <!--     Maven repository is implicit and doesn't need to be specified. -->
+  <!-- ================================================================== -->
+  <repositories>
+    <!-- Needed for com.sleepycat.je -->
+    <repository>
+      <id>Oracle</id>
+      <name>Oracle Maven repository</name>
+      <url>http://download.oracle.com/maven</url>
+    </repository>
+  </repositories>
+
+
+  <!-- ===========================================================
+           Build configuration
+
+           We declare a non-existant test directory as a dirty trick
+           for skiping completly the tests, including compilation.
+       =========================================================== -->
+  <build>
+    <testSourceDirectory>void</testSourceDirectory>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <exclude>thredds/logs/**</exclude>
+            <exclude>ucar/nc2/dataset/grid/**</exclude>
+            <exclude>ucar/nc2/jni/**</exclude>
+            <exclude>ucar/nc2/util/reflect/**</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+    </plugins>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <includes>
+          <include>resources/nj22/**</include>
+          <include>resources/thredds/**</include>
+        </includes>
+      </resource>
+    </resources>
+  </build>
+
+</project>

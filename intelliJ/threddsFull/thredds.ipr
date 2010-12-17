@@ -563,6 +563,7 @@
   </component>
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/../../bufr/bufr.iml" filepath="$PROJECT_DIR$/../../bufr/bufr.iml" />
       <module fileurl="file://$PROJECT_DIR$/bufrTables.iml" filepath="$PROJECT_DIR$/bufrTables.iml" />
       <module fileurl="file://$PROJECT_DIR$/cdm.iml" filepath="$PROJECT_DIR$/cdm.iml" />
       <module fileurl="file://$PROJECT_DIR$/common.iml" filepath="$PROJECT_DIR$/common.iml" />
@@ -575,7 +576,6 @@
       <module fileurl="file://$PROJECT_DIR$/../../rcdm/rcdm.iml" filepath="$PROJECT_DIR$/../../rcdm/rcdm.iml" />
       <module fileurl="file://$PROJECT_DIR$/tds.iml" filepath="$PROJECT_DIR$/tds.iml" />
       <module fileurl="file://$PROJECT_DIR$/ui.iml" filepath="$PROJECT_DIR$/ui.iml" />
-      <module fileurl="file://$PROJECT_DIR$/unidataCommon.iml" filepath="$PROJECT_DIR$/unidataCommon.iml" />
     </modules>
   </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_1_6" assert-keyword="true" jdk-15="true" project-jdk-name="1.6" project-jdk-type="JavaSDK">
@@ -951,7 +951,6 @@
     <mapping directory="" vcs="svn" />
     <mapping directory="$PROJECT_DIR$/../../../grib" vcs="svn" />
     <mapping directory="$PROJECT_DIR$/../../../ncwms" vcs="svn" />
-    <mapping directory="$PROJECT_DIR$/../../../unidataCommon" vcs="svn" />
   </component>
   <component name="WebServicesPlugin" addRequiredLibraries="true" />
   <component name="com.intellij.jsf.UserDefinedFacesConfigs">
