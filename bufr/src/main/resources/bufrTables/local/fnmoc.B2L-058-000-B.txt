@@ -1,0 +1,782 @@
+#
+# B2L-058-000-B - Special local BUFR Table B for center 058 (FNMOC) for those
+# cases when an FNOC-generated BUFR message uses local descriptors but has a
+# value of 0 in Section 1, Octet 12 (thus indicating that it does not use
+# local descriptors).
+#
+#					Data
+#F	X	Y	Scale	RefVal	Width	Units	Element Name
+0	0	1	0	0	24	CCITT_IA5	Table A: entry
+0	0	2	0	0	256	CCITT_IA5	Table A: data category description, line 1
+0	0	3	0	0	256	CCITT_IA5	Table A: data category description, line 2
+0	0	5	0	0	24	CCITT_IA5	BUFR edition number
+0	0	10	0	0	8	CCITT_IA5	F descriptor to be added or defined
+0	0	11	0	0	16	CCITT_IA5	X descriptor to be added or defined
+0	0	12	0	0	24	CCITT_IA5	Y descriptor to be added or defined
+0	0	13	0	0	256	CCITT_IA5	Element name, line 1
+0	0	14	0	0	256	CCITT_IA5	Element name, line 2
+0	0	15	0	0	192	CCITT_IA5	Units name
+0	0	16	0	0	8	CCITT_IA5	Units scale sign
+0	0	17	0	0	24	CCITT_IA5	Units scale (u)
+0	0	18	0	0	8	CCITT_IA5	Units reference sign
+0	0	19	0	0	80	CCITT_IA5	Units reference value
+0	0	20	0	0	24	CCITT_IA5	Element data width
+0	0	30	0	0	40	CCITT_IA5	Descriptor defining sequence
+0	1	1	0	0	7	Numeric	WMO block number (II)
+0	1	2	0	0	10	Numeric	WMO station number (iii)
+0	1	3	0	0	3	Numeric	WMO region number
+0	1	4	0	0	3	Numeric	WMO region sub-area
+0	1	5	0	0	17	Numeric	Buoy/platform identifier
+0	1	6	0	0	64	CCITT_IA5	Aircraft identifier (flight number) (Ia...Ia)
+0	1	7	0	0	10	Code_Table	Satellite identifier (I1I2I2)
+0	1	8	0	0	64	CCITT_IA5	Aircraft registration number (tail number)
+0	1	9	0	0	64	CCITT_IA5	Type of commerical aircraft
+0	1	10	0	0	64	CCITT_IA5	Stationary buoy platform identifier
+0	1	11	0	0	72	CCITT_IA5	Ship call sign (D...D)
+0	1	12	0	0	9	deg_true	Direction of motion of moving observing platform (dBdB)
+0	1	13	0	0	10	m/s	Speed of motion of moving observing platform
+0	1	14	2	0	10	m/s	Platform drift speed (high precision) (VBVB)
+0	1	21	0	0	14	Numeric	Synoptic feature identifier
+0	1	25	0	0	24	CCITT_IA5	Storm identifier
+0	1	26	0	0	64	CCITT_IA5	WMO storm name
+0	1	31	0	0	16	Numeric	Generating center
+0	1	50	0	0	48	CCITT_IA5	NMC report identifier
+0	1	62	0	0	40	CCITT_IA5	National assigned station identifier
+0	1	63	0	0	64	CCITT_IA5	ICAO location indicator (CCCC)
+0	1	192	0	0	24	CCITT_IA5	Receiving circuit
+0	1	193	0	0	4	Code_Table	global octant
+0	1	195	0	0	10	Numeric	Marsden square number
+0	1	197	0	0	6	Numeric	Runway number
+0	1	198	0	0	16	Code_Table	Sea station type
+0	1	200	0	0	2	Code_Table	Radar Capability indicator (XXX)
+0	1	201	0	0	8	Code_Table	Country or agency that operates the satellite
+0	1	203	0	0	16	CCITT_IA5	Satellite name
+0	1	204	0	0	16	CCITT_IA5	Satellite series
+0	1	206	0	0	32	CCITT_IA5	TOVS generating center name
+0	1	207	0	0	72	CCITT_IA5	File name
+0	1	208	0	0	4	Code_Table	Satellite data type
+0	1	209	0	0	8	Code_Table	Observation type for MCSST
+0	1	210	0	0	7	Code_Table	Observation source
+0	1	211	0	0	4	Numeric	Beam position
+0	1	212	0	0	24	Numeric	Data processing block number
+0	1	213	0	0	3	Code_Table	Tip source type identifier
+0	1	214	0	0	32	CCITT_IA5	Header originator
+0	1	215	0	0	48	CCITT_IA5	Bulletin header update or correction indicator
+0	1	216	0	0	14	Numeric	Engineering status
+0	1	217	0	0	5	Numeric	Satellite number
+0	1	218	0	0	176	CCITT_IA5	Sequence (report) type
+0	1	219	0	0	40	CCITT_IA5	Mission number
+0	1	220	0	0	7	Numeric	Observation number
+0	1	221	0	0	8	Code_Table	Surface type
+0	1	222	0	0	32	CCITT_IA5	Report modifier
+0	1	223	0	0	3	Code_Table	Runway parallel indicator
+0	1	224	0	0	5	Code_Table	Terrain code identifier
+0	2	1	0	0	2	Code_Table	Type of station (ix)
+0	2	2	0	0	4	Flag_Table	Type of instrumentation for wind measurement (ewew)
+0	2	3	0	0	4	Code_Table	Type of measuring instrumentation used (a4, I3, or I4)
+0	2	4	0	0	4	Code_Table	Type of instrumentation for evaporation measur
+0	2	5	2	0	7	deg_K	Precision of temperature observed (s3)
+0	2	11	0	0	8	Code_Table	Radiosonde type (rara)
+0	2	12	0	0	4	Code_Table	Radiosonde computational method
+0	2	13	0	0	4	Code_Table	Solar and infrared radiation correction (Sr)
+0	2	14	0	0	7	Code_Table	Tracking technique/status of system (sasa)
+0	2	15	0	0	4	Code_Table	Radiosonde completeness
+0	2	21	0	0	9	Flag_Table	Satellite instrumentation data used in processing
+0	2	22	0	0	8	Flag_Table	Satellite data processing technique used
+0	2	23	0	0	4	Code_Table	Cloud motion computational method
+0	2	24	0	0	4	Code_Table	Integrated mean humidity computational method
+0	2	25	0	0	25	Flag_Table	Satellite channel(s) used in computation
+0	2	26	2	0	12	m	Cross track resolution
+0	2	27	2	0	12	m	Along track resolution
+0	2	28	0	0	32	Flag_Table	Geostationary sounder satellite channels used
+0	2	29	0	0	8	Flag_Table	Geostationary sounder satellite channels used
+0	2	30	0	0	3	Code_Table	Method of current measurement (k5)
+0	2	31	0	0	5	Code_Table	Duration and time of current measurement
+0	2	32	0	0	2	Code_Table	Indicator for digitization (k1)
+0	2	33	0	0	3	Code_Table	Method of salinity/depth measurement (k2)
+0	2	34	0	0	5	Code_Table	Drogue type (id)
+0	2	35	0	0	9	m	Cable length (ZdZdZd)
+0	2	36	0	0	2	Code_Table	Buoy type (Ip or Vi...Vi)
+0	2	38	0	0	4	Code_Table	Sea surface temperature method indicator
+0	2	39	0	0	3	Code_Table	Wet bulb temperature method indicator
+0	2	40	0	0	4	Code_Table	Method of removing velocity and motion
+0	2	41	0	0	6	Code_Table	Method for estimating reports related to synoptic features
+0	2	42	0	0	6	Code_Table	Method of report construction (Qn)
+0	2	43	0	0	6	Code_Table	Precision of latitude/longitude report (At or QL)
+0	2	47	0	0	4	Code_Table	Method of removing ship velocity
+0	2	51	0	0	4	Code_Table	Indicator to specify observing method for extreme temperatures
+0	2	61	0	0	3	Code_Table	Aircraft navigation system (s1)
+0	2	62	0	0	4	Code_Table	Type of aircraft data relay system
+0	2	63	2	-18000	16	deg	Aircraft roll angle
+0	2	70	0	0	4	Code_Table	Original specification of latitude/longitude
+0	2	101	0	0	4	Code_Table	Type of antenna
+0	2	102	0	0	8	m	Antenna height above tower
+0	2	103	0	0	2	Flag_Table	Radome
+0	2	104	0	0	4	Code_Table	Antenna polarisation
+0	2	105	0	0	6	dB	Maximum antenna gain
+0	2	106	1	0	6	deg	3-dB bandwidth
+0	2	107	0	0	6	dB	Sidelobe suppression
+0	2	108	0	0	6	dB	Crosspol discrimination (on axis)
+0	2	109	2	0	12	deg/s	Antenna speed (azimuth)
+0	2	110	2	0	12	deg/s	Antenna speed (elevation)
+0	2	111	1	0	10	deg	Radar incidence angle
+0	2	112	1	0	12	deg	Radar azimuth angle
+0	2	113	0	0	4	Numeric	Number of azimuth looks
+0	2	114	0	0	15	m**2	Antenna effective surface area
+0	2	121	-8	0	7	Hz	Mean frequency
+0	2	122	-6	-128	8	Hz	Frequency agility range
+0	2	123	-4	0	7	W	Peak power
+0	2	124	-1	0	7	W	Average power
+0	2	125	-1	0	8	Hz	Pulse repetition frequency
+0	2	126	7	0	6	s	Pulse width
+0	2	127	-6	0	7	Hz	Receiver intermediate frequency
+0	2	128	-5	0	6	Hz	Intermediate frequency bandwidth
+0	2	129	0	-150	5	dB	Minimum detectable signal
+0	2	130	0	0	7	dB	Dynamic range
+0	2	131	0	0	2	Flag_Table	Sensitivity time control
+0	2	132	2	0	6	deg	Azimuth pointing accuracy
+0	2	133	2	0	6	deg	Elevation pointing accuracy
+0	2	134	2	0	16	deg	Antenna beam azimuth
+0	2	135	2	-9000	15	deg	Antenna elevation
+0	2	141	0	0	24	CCITT_IA5	Measurement type serial number/identifier
+0	2	142	0	0	8	Code_Table	Ozone instrument
+0	2	143	0	0	7	Numeric	Instrument type
+0	2	190	0	0	8	Code_Table	U, v quality indicator
+0	2	191	0	0	4	Code_Table	W quality indicator
+0	2	192	0	0	6	CODE_TABLE	RADIOSONDE CORRECTION TYPE APPLIE
+0	2	194	0	0	8	Code_Table	Spectral calculation method
+0	2	199	0	0	4	Numeric	grp_pos_ind
+0	2	203	0	0	3	Code_Table	Method of determining direction of moving platform
+0	2	204	0	0	3	Code_Table	Method of determining speed of moving platform
+0	2	205	0	0	3	Code_Table	Ozone flag
+0	2	206	0	0	4	Code_Table	Algorithm identifier
+0	2	207	0	0	5	Code_Table	Equation identifier
+0	2	208	0	0	2	Code_Table	Type of method for measuring pressure
+0	2	209	0	0	10	Code_Table	Xbt instrument type (IxIxIx)
+0	2	210	0	0	7	Code_Table	Recorder type (XRXR)
+0	2	211	0	0	8	Flag_Table	Sensor status flag
+0	2	212	0	0	2	Flag_Table	Maintenance Check flag
+0	4	1	0	0	12	yr	Year (4-digit)
+0	4	2	0	0	4	mo	Month
+0	4	3	0	0	6	day	Day
+0	4	4	0	0	5	hr	Hour
+0	4	5	0	0	6	min	Minute
+0	4	6	0	0	6	s	Second
+0	4	11	0	-1024	11	yr	Time increment - year
+0	4	12	0	-1024	11	mo	Time increment - month
+0	4	13	0	-1024	11	day	Time increment - day
+0	4	14	0	-1024	11	hr	Time increment - hour
+0	4	15	0	-2048	12	min	Time increment - minutes
+0	4	16	0	-4096	13	s	Time increment - seconds
+0	4	21	0	-1024	11	yr	Time period or displacement - year
+0	4	22	0	-1024	11	mo	Time period or displacement - month
+0	4	23	0	-1024	11	day	Time period or displacement - month
+0	4	24	0	-2048	12	hr	Time period or displacement - hour
+0	4	25	0	-2048	12	min	Time period or displacement - minutes
+0	4	26	0	-4096	13	s	Time period or displacement - seconds
+0	4	31	0	0	8	hr	Duration of time relative to following value (TT)
+0	4	41	0	-1440	12	min	Time difference, UTC - LMT
+0	4	43	0	0	9	day	Day of the year
+0	4	44	0	0	3	Code_Table	Day of the week (Y)
+0	4	53	0	0	6	Numeric	Number of days with precipitation equal or more than 1 mm
+0	4	70	0	0	8	Numeric	Sample number
+0	4	192	0	0	4	Code_Table	Precipitation time period (tR)
+0	4	193	0	0	31	Code_Table	Last time that this observation record was updated
+0	4	200	0	0	12	yr	Time of receipt - year
+0	4	201	0	0	4	mo	Time of receipt - month
+0	4	202	0	0	6	day	Time of receipt - day
+0	4	203	0	0	5	hr	Time of receipt - hour
+0	4	204	0	0	6	min	Time of receipt - minute
+0	4	206	3	0	27	s	GMT seconds
+0	5	1	5	-9000000	25	deg	Latitude (high accuracy)
+0	5	2	2	-9000	15	deg	Latitude (coarse accuracy) (La...La)
+0	5	3	2	-9000	15	deg	Alternate latitude
+0	5	11	5	-9000000	25	deg	Latitude increment (high accuracy)
+0	5	12	2	-9000	15	deg	Latitude increment (coarse accuracy)
+0	5	21	2	0	16	deg_true	Bearing or azimuth
+0	5	22	2	0	16	deg_true	Solar azimuth
+0	5	30	0	0	12	deg	Direction (spectral)
+0	5	31	0	0	12	Numeric	Row number
+0	5	33	-1	0	16	m	Pixel size on horizontal - 1
+0	5	40	0	0	24	Numeric	Orbit number
+0	5	41	0	0	8	Numeric	Scan line number
+0	5	42	0	0	6	Numeric	Channel number
+0	5	43	0	0	8	Numeric	Field of view number
+0	5	50	5	0	17	Numeric	Sigma level
+0	5	52	0	0	5	Numeric	Channel number increment
+0	5	53	0	0	5	Numeric	Field of view number increment
+0	5	192	0	0	3	Numeric	Image line number
+0	5	193	0	0	4	Numeric	Image sample number
+0	5	194	0	0	14	Numeric	Orbit number
+0	5	196	0	0	16	Numeric	Orbit number
+0	5	197	0	0	8	Numeric	Frame number
+0	5	199	0	0	20	Numeric	Orbit number
+0	6	1	5	-18000000	26	deg	Longtiude (high accuracy)
+0	6	2	2	-18000	16	deg	Longtiude (coarse accuracy) (Lo...Lo)
+0	6	3	2	-18000	16	deg	Alternate longtiude
+0	6	11	5	-18000000	26	deg	Longtiude increment (high accuracy)
+0	6	12	2	-18000	16	deg	Longtiude increment (coarse accuracy)
+0	6	21	-1	0	13	m	Distance
+0	6	30	5	0	13	rad/m	Wavenumber (spectral)
+0	6	31	0	0	12	Numeric	Column number
+0	6	33	-1	0	16	m	Pixel size on horizontal - 2
+0	7	1	0	-400	15	m	Height of station (hohohoho)
+0	7	2	-1	-40	16	m	Height or altitude (hahaha, hIhIhI, HmHmHm, HH, tnu2, or tnu3)
+0	7	3	-1	-400	17	m**2/s**2	Geopotential
+0	7	4	-1	0	14	Pa	Pressure (Pa...Pa, Paob...Paob, Po...Po, PtPtPt, or PAPA)
+0	7	5	0	-400	12	m	Height increment
+0	7	6	0	0	15	m	Height above station
+0	7	7	0	-1000	17	m	Geopotential height
+0	7	21	2	-9000	15	deg	Elevation
+0	7	22	2	-9000	15	deg	Solar elevation
+0	7	61	2	0	14	m	Depth below land surface
+0	7	62	1	0	17	m	Depth below sea surface
+0	7	190	0	0	12	m	Height increment
+0	7	192	2	0	13	deg	Local zenith angle
+0	7	196	0	0	4	Code_Table	Station height precision
+0	7	197	1	0	11	deg	Solar zenith angle
+0	7	198	2	-6000	14	deg	Satellite zenith angle
+0	7	199	1	0	11	deg	Solar azimuth angle
+0	7	223	2	0	14	deg	Solar zenith angle
+0	7	224	1	0	14	m	Surface elevation
+0	8	0	0	0	4	Code_Table	Vertical significance (forecast soundings)
+0	8	1	0	0	7	Flag_Table	Vertical sounding significance
+0	8	2	0	0	6	Code_Table	Vertical significance (surface observations)
+0	8	3	0	0	6	Code_Table	Vertical significance (satellite observations)
+0	8	4	0	0	3	Code_Table	Phase of aircraft flight (ipipip)
+0	8	5	0	0	4	Code_Table	Surface synoptic features significance
+0	8	11	0	0	6	Code_Table	Horizontal significance
+0	8	12	0	0	2	Code_Table	land/sea qualifier
+0	8	13	0	0	2	Code_Table	Day/night qualifier
+0	8	21	0	0	5	Code_Table	Time significance
+0	8	22	0	0	16	Numeric	Total number (with respect to accumulation or average)
+0	8	24	0	0	8	Code_Table	Type of difference
+0	8	31	0	0	8	CCITT_IA5	Data category
+0	8	32	0	0	14	Code_Table	Data significance for simulated forecast
+0	8	33	0	0	3	Code_Table	Data significance for corrected forecast
+0	8	34	0	0	3	Code_Table	Data significance for simulated retrievals
+0	8	35	0	0	3	Code_Table	Data significance for corrected retrievals
+0	8	36	0	0	3	Code_Table	Data significance for simulated analysis
+0	8	37	0	0	3	Code_Table	Data significance for corrected analysis
+0	8	38	0	0	3	Code_Table	Data significance for sigma level data
+0	8	51	0	0	3	Code_Table	Qualifier for number of missing values in calculation of statistic
+0	8	52	0	0	5	Code_Table	Condition for which number of days of occurrence follows
+0	8	53	0	0	2	Code_Table	Day of occurrence qualifier
+0	8	70	0	0	8	Code_Table	Surface Type Code ID
+0	8	194	0	0	4	Code_Table	Flight condition (fc)
+0	10	1	0	-400	15	m	Height of land surface
+0	10	2	-1	-40	16	m	Height (HHH)
+0	10	3	-1	-400	17	m**2/s**2	Geopotential
+0	10	4	-1	0	14	Pa	Pressure
+0	10	7	0	-1000	17	m	Geopotential height
+0	10	50	2	0	16	m	Standard deviation altitude
+0	10	51	-1	0	14	Pa	Pressure reduced to mean sea level (PPPP)
+0	10	52	-1	0	14	Pa	Altimeter setting (QNH) (PH...PH)
+0	10	60	-1	-1024	11	Pa	Pressure change (ppp)
+0	10	61	-1	-500	10	Pa	3 hour pressure change
+0	10	62	-1	-1000	11	Pa	24 hour pressure change
+0	10	63	0	0	4	Code_Table	Characteristic of pressure tendency (a, w, or w'w')
+0	10	103	0	0	4	Code_Table	Geopotential thickness QC ID
+0	10	197	0	0	4	Code_Table	Index pertaining to geopotential height (j)
+0	10	199	0	-1024	16	m	Geopotential height difference
+0	10	200	0	-1024	16	m	Geopotental height correction
+0	10	201	0	0	14	Code_Table	Pressure tendency QC ID
+0	10	203	0	0	4	Code_Table	Geopotential height quality control flag
+0	10	213	0	-1024	16	m	Geopotential height
+0	10	224	0	0	4	Code_Table	Station level pressure QC ID
+0	10	251	0	0	4	Code_Table	Mean sea level pressure QC ID
+0	11	1	0	0	9	deg_true	Wind direction (dd, dodo>dndn, dmagdmag)
+0	11	2	1	0	12	m/s	Wind speed (ff, fff, or fofofo>fnfnfn)
+0	11	3	1	-4096	13	m/s	U-component
+0	11	4	1	-4096	13	m/s	V-component
+0	11	5	1	-512	10	Pa/s	W-component
+0	11	6	2	-4096	13	m/s	W-component
+0	11	11	0	0	9	deg_true	Wind direction at 10 m
+0	11	12	1	0	12	m/s	Wind speed at 10 m
+0	11	13	0	0	9	deg_true	Wind direction at 5 m
+0	11	14	1	0	12	m/s	Wind speed at 5 m
+0	11	21	9	-65536	17	1/s	Relative vorticity
+0	11	22	9	-65536	17	1/s	Divergence
+0	11	23	-2	-65536	17	m**2/s	Velocity potential
+0	11	31	0	0	4	Code_Table	Degree of turbulence (B...B or BA)
+0	11	32	-1	-40	16	m	Height of base of turbulence (BabBabBab or B1B1B1)
+0	11	33	-1	-40	16	m	Height of top of turbulence (BatBatBat or B1B1B1)
+0	11	34	1	-1024	11	m/s	Vertical gust velocity
+0	11	35	2	-8192	14	m/s**2	Vertical gust acceleration
+0	11	36	1	0	10	m/s	Maximum derived equivalent vertical gust
+0	11	41	1	0	12	m/s	Maximum wind speed (gusts) (fm...fm)
+0	11	42	1	0	12	m/s	Maximum wind speed (10 minute mean wind)
+0	11	43	1	0	12	m/s	Surface - 5000 feet mean LYR wind speed (dmdm)
+0	11	44	0	0	9	deg_true	Surface - 5000 feet mean LYR wind direction
+0	11	45	0	0	9	deg_true	Maximum wind (gust) direction
+0	11	50	1	0	12	m/s	Standard deviation horizontal wind speed
+0	11	51	1	0	8	m/s	Standard deviation vertical wind component
+0	11	61	1	0	12	m/s	Absolute wind shear (1 kilometer layer below)
+0	11	62	1	0	12	m/s	Absolute wind shear (1 kilometer layer above)
+0	11	195	0	0	2	Code_Table	Wind type at flight altitude (dt)
+0	11	200	0	0	4	Code_Table	Wind QC ID
+0	11	203	1	-4096	13	m/s	Wind u-component difference
+0	11	204	1	-4096	13	m/s	Wind v-component difference
+0	11	205	0	0	4	Code_Table	Turbulence (B) (WMO code table 0300)
+0	11	206	0	0	2	Code_Table	Flight level wind method (da)
+0	11	207	0	0	2	Code_Table	Extreme wind speed ID
+0	11	213	1	-4096	13	m/s	Wind u-component correction
+0	11	214	1	-4096	13	m/s	Wind v-component correction
+0	11	244	0	0	16	deg_true	Direction of wind
+0	11	245	2	0	16	m/s	wnd_spd
+0	11	246	1	0	8	m/s	Ocean surface wind speed
+0	12	1	1	0	12	deg_K	Temperature/dry bulb temperature (Ta, TsTsTs, TtTt, or TxTxTx)
+0	12	2	1	0	12	deg_K	Wet bulb temperature (TbTbTb)
+0	12	3	1	0	12	deg_K	Dewpoint (TdTdTd or T'dT'd)
+0	12	4	1	0	12	deg_K	Dry bulb temperature at 2 meters (Tao>Tan, ToTo>tnTn, or TT)
+0	12	5	1	0	12	deg_K	Wet bulb temperature at 2 meters
+0	12	6	1	0	12	deg_K	Dewpoint temperature at 2 meters
+0	12	7	1	0	12	deg_K	Virtual temperature
+0	12	11	1	0	12	deg_K	Maximum temperature
+0	12	12	1	0	12	deg_K	Minimum temperature (TnTnTn)
+0	12	13	1	0	12	deg_K	Ground minimum temperature past 12 hours
+0	12	14	1	0	12	deg_K	Maximum temperature at 2 meters, past 12 hours
+0	12	15	1	0	12	deg_K	Minimum temperature at 2 meters, past 12 hours
+0	12	16	1	0	12	deg_K	Maximum temperature at 2 meters, past 24 hours
+0	12	17	1	0	12	deg_K	Minimum temperature at 2 meters, past 24 hours
+0	12	20	2	-2000	12	deg_K/day	Radiative heating profile
+0	12	30	1	0	12	deg_K	Soil temperature (ToTo)
+0	12	40	-3	-2048	12	W/m**2	Sensible heat flux
+0	12	48	0	-200	8	deg_K	Land/snow surface temperature
+0	12	51	1	0	10	deg_K	Standard deviation temperature
+0	12	52	1	0	12	deg_K	Highest daily mean temperature
+0	12	53	1	0	12	deg_K	Lowest daily mean temperature
+0	12	61	1	0	12	deg_K	Skin temperature
+0	12	62	1	0	12	deg_K	Equivalent black body temperature
+0	12	63	1	0	12	deg_K	Brightness temperature
+0	12	70	2	0	16	deg_K	Vertical polarization 19GHz brightness temperature
+0	12	71	2	0	16	deg_K	Horizontal polarization 19GHz brightness temperature
+0	12	72	2	0	16	deg_K	Vertical polarization 22GHz brightness temperature
+0	12	73	2	0	16	deg_K	Vertical polarization 37GHz brightness temperature
+0	12	74	2	0	16	deg_K	Horizontal polarization 37GHz brightness temperature
+0	12	75	2	0	16	deg_K	Vertical polarization 85GHz brightness temperature
+0	12	76	2	0	16	deg_K	Horizontal polarization 85GHz brightness temperature
+0	12	192	0	0	4	Code_Table	Wet bulb temperature indicator
+0	12	193	2	0	16	deg_K	SSU brightness temperature
+0	12	194	2	0	16	deg_K	Dewpoint
+0	12	195	0	0	4	Code_Table	Dewpoint, aircraft altitude, air temperature indicator (id)
+0	12	196	2	0	16	deg_K	Dewpoint difference
+0	12	201	0	0	4	Code_Table	Air temperature QC ID
+0	12	213	0	0	4	Code_Table	Dewpoint QC ID
+0	12	215	0	0	2	Code_Table	Temperature precision flag
+0	12	220	2	0	16	deg_K	HIRS brightness temperature
+0	12	221	2	0	16	deg_K	MSU brightness temperature
+0	13	1	5	0	14	kg/kg	Specific humidity
+0	13	2	5	0	14	kg/kg	Mixing ratio
+0	13	3	0	0	7	percent	Relative humidity (U1>Un or U...U)
+0	13	4	-1	0	10	Pa	Vapor pressure
+0	13	5	3	0	7	kg/m**3	Vapor density (p1p1p1)
+0	13	6	-1	-40	16	m	Mixing heights
+0	13	11	1	-1	14	kg/m**2	Total precipitation/total water equivalent (Aw or R...R)
+0	13	12	2	-2	12	m	Depth of fresh snow
+0	13	13	2	-2	16	m	Total snow depth (sss)
+0	13	14	4	0	12	kg/m**2/s	Rainfall/water equivalent of snow (average rate)
+0	13	15	7	0	12	m/s	Snowfall (averaged rate)
+0	13	16	0	0	7	kg/m**2	Precipitable water (www)
+0	13	19	1	-1	14	kg/m**2	Total precipitation past 1 hour
+0	13	20	1	-1	14	kg/m**2	Total precipitation past 3 hours
+0	13	21	1	-1	14	kg/m**2	Total precipitation past 6 hours
+0	13	22	1	-1	14	kg/m**2	Total precipitation past 12 hours
+0	13	23	1	-1	14	kg/m**2	Total precipitation past 24 hours (R24...R24)
+0	13	31	0	0	7	kg/m**2	Evapotranspiration
+0	13	32	1	0	8	kg/m**2	Evaporation/evapotranspiration
+0	13	40	-3	-2048	12	W/m**2	Latent heat flux
+0	13	41	0	0	4	Code_Table	Pasquill-Gifford stability category
+0	13	42	0	-20	6	deg_K	Parcel lifted index (to 500 hPa)
+0	13	43	0	-20	6	deg_K	Best lifted index (to 500 hPa)
+0	13	51	0	0	4	Code_Table	Frequency group, precipitation
+0	13	52	1	-1	14	kg/m**2	Highest daily amount of precipiation
+0	13	71	1	0	7	kg/m**2	Liquid water
+0	13	75	0	0	8	percent	Land snow cloud
+0	13	76	2	0	6	m	Snow-water equivalent
+0	13	176	0	0	7	Code_Table	Precipitable water precision flag
+0	13	192	0	0	4	Code_Table	Precipitation identifier (iR)
+0	13	193	0	0	10	Code_Table	Precipitation amount
+0	13	194	3	0	16	g/kg	First guess mixing ratios
+0	13	197	0	0	3	Code_Table	Rain indicator
+0	13	203	0	0	4	Code_Table	Relative hunidity QC ID
+0	13	217	0	0	8	Numeric	Precipitation flag (SSM/T)
+0	13	218	2	0	11	kg/(m**2)	Cloud water
+0	13	219	2	0	10	cm	Total precipitable water
+0	13	220	1	0	9	mm/hr	Rain rate
+0	13	221	2	0	14	kg/(m**2)	Cloud Liquid Water
+0	14	1	-3	-2048	12	J/m**2	Longwave radiation, integrated over 24 hours (FLFLFL)
+0	14	3	-3	-2048	12	J/m**2	Shortwave radiation, integrated over 24 hours (FiFiFi)
+0	14	4	-3	-2048	12	J/m**2	Shortwave radiation, integrated over period specified (FsFsFs)
+0	14	11	-3	-2048	12	J/m**2	Net longwave radiation, integrated over 24 hours
+0	14	12	-3	-2048	12	J/m**2	Net longwave radiation, integrated over period specified
+0	14	13	-3	-2048	12	J/m**2	Net shortwave radiation, integrated over 24 hours
+0	14	14	-3	-2048	12	J/m**2	Net shortwave radiation, integrated over period specified
+0	14	15	-4	-16384	15	J/m**2	Net radiation, integrated over 24 hours
+0	14	16	-4	-16384	15	J/m**2	Net radiation, integrated over period specified
+0	14	17	-3	-2048	12	W/m**2	Instantaneous long wave radiation
+0	14	18	-3	-2048	12	W/m**2	Instantaneous short wave radiation
+0	14	19	0	0	7	percent	Surface albedo
+0	14	20	-4	0	15	J/m**2	Global solar radiation, integrated over 24 hours
+0	14	21	-4	0	15	J/m**2	Global radiation, integrated over period specified
+0	14	22	-4	0	15	J/m**2	Diffuse solar radiation, integrated over 24 hours
+0	14	23	-4	0	15	J/m**2	Diffuse solar radiation, integratedi over period specified
+0	14	24	-4	0	15	J/m**2	Direct solar radiation, integrated over 24 hours
+0	14	25	-4	0	15	J/m**2	Direct solar radiation, integrated over period specified
+0	14	31	0	0	11	min	Total sunshine
+0	14	32	0	0	10	hr	Total sunshine
+0	14	33	0	0	9	percent	Total sunshine (precentage)
+0	14	41	0	0	7	percent	Short wave albedo
+0	14	42	0	0	7	percent	Bi-directional reflectance
+0	15	1	0	0	10	dobson_unit	Ozone
+0	15	2	2	0	10	Numeric	Air-mass (slant path at 22 km)
+0	19	1	0	0	6	Code_Table	Type of synoptic features
+0	19	2	-2	0	12	m	Effective radius of feature
+0	19	3	0	0	8	m/s	Wind speed threshold
+0	19	4	-2	0	12	m	Effective radius of feature with respect to wind speeds above threshold
+0	19	5	0	0	9	deg_true	Direction of motion of features (dsds)
+0	19	6	2	0	14	m/s	Speed of motion of features
+0	19	7	-3	0	12	m	Effective radius of features
+0	19	8	0	0	3	Code_Table	Vertical extent of circulation
+0	19	9	-3	0	12	m	Effective radiation with respect to FFF above threshold
+0	20	1	-1	0	13	m	Horizontal visibility (Dv, Vi, V...V, or VxVxVxVx)
+0	20	2	-1	0	7	m	Vertical visibility
+0	20	3	0	0	9	Code_Table	Present weather (ww or w'w')
+0	20	4	0	0	5	Code_Table	Past weather (1) (Wa1Wa2 or W1W2)
+0	20	5	0	0	5	Code_Table	Past weather (2) (wawa)
+0	20	9	-1	-40	11	m	Ceiling
+0	20	10	0	0	7	percent	Cloud cover (total) (N, NcNc, or Ns...Ns)
+0	20	11	0	0	4	Code_Table	Cloud amount (N or Ns...Ns)
+0	20	12	0	0	6	Code_Table	Cloud type (C, Ct, CH, CL, or CM)
+0	20	13	-1	-40	11	m	Height of base of cloud (h, hshs, hshshs, or H'H')
+0	20	14	-1	-40	11	m	Height of top of cloud (HfHfHf or HtHt)
+0	20	15	-1	0	14	Pa	Pressure at the base of cloud
+0	20	16	-1	0	14	Pa	Pressure at the top of cloud (PcPcPc)
+0	20	17	0	0	4	Code_Table	Cloud top description
+0	20	18	-1	40	11	m	Low estimated height of cloud top
+0	20	19	-1	40	11	m	High estimated height of cloud top (H1>Hn)
+0	20	21	0	0	4	Code_Table	Middle cloud amount
+0	20	22	0	0	4	Code_Table	High cloud amount
+0	20	23	0	0	7	percent	Satellite sensed effective cloud amount
+0	20	30	0	0	4	Code_Table	Total ice concentration
+0	20	31	2	0	7	m	Ice deposit (thickness) (EsEs)
+0	20	32	0	0	3	Code_Table	Rate of ice accretion (Rs)
+0	20	33	0	0	4	Flag_Table	Cause of ice accretion (Is)
+0	20	34	0	0	5	Code_Table	Sea ice concentration (Ci)
+0	20	35	0	0	4	Code_Table	Amount and type of ice (zii...zii)
+0	20	36	0	0	5	Code_Table	Ice situation
+0	20	37	0	0	5	Code_Table	Ice development (bi)
+0	20	38	0	0	12	deg_true	Bearing of ice edge
+0	20	39	-1	0	13	m	Ice distance
+0	20	41	0	0	4	Code_Table	Rate of icing (Ir)
+0	20	49	0	0	10	Code_Table	Type of stability measure
+0	20	50	0	0	10	Numeric	Value of stability
+0	20	51	0	0	7	percent	Amount of low clouds
+0	20	52	0	0	7	percent	Amount of middle clouds
+0	20	53	0	0	7	percent	Amount of high clouds
+0	20	61	0	0	12	m	Runway visual range (RVR) (VR...VR)
+0	20	62	0	0	5	Code_Table	State of the ground (with or without snow) (E')
+0	20	63	0	0	10	Code_Table	Special phenomena
+0	20	71	0	0	2	Code_Table	Ice age code ID
+0	20	72	0	0	2	Code_Table	Ice edge code ID
+0	20	196	0	0	8	CCITT_IA5	Runway visibility tendency
+0	20	197	0	0	2	Flag_Table	Landing wind shear indicator
+0	20	199	0	0	8	deg_true	Visibility direction
+0	20	205	0	0	24	CCITT_IA5	Cloud significant convection
+0	20	206	0	0	64	CCITT_IA5	Significant present weather conditions
+0	20	207	0	0	4	Code_Table	Pressure and altitude significance
+0	20	208	0	0	4	Code_Table	Significant weather changes (Ws)
+0	20	209	0	0	4	Code_Table	Distance of weather changes (Ss)
+0	20	210	0	0	4	Code_Table	Distant weather (Wd)
+0	20	211	0	0	4	Code_Table	Bearing of distant weather (dw)
+0	20	213	0	0	4	Code_Table	Icing and contrail types (It)
+0	20	216	0	0	7	Code_Table	Altitude of layer base where icing occurred (hihi)
+0	20	219	0	0	4	Code_Table	Distance to center or line midpoint
+0	20	220	0	0	4	Code_Table	Orientation of ellipse (Sr)
+0	20	221	-3	0	16	m	Echo width or diameter (Ew)
+0	20	222	-3	0	16	m	Echo axis length (El)
+0	20	223	0	0	8	Code_Table	Echo character (ce)
+0	20	224	0	0	4	Code_Table	Intensity of echo (Ie)
+0	20	225	0	0	3	Code_Table	In flight horizontal visibility (Vi)
+0	20	236	0	0	8	CCITT_IA5	Cloud base height
+0	20	237	0	0	7	Code_Table	Horizontal visbility
+0	20	240	0	0	4	Code_Table	Present weather (w)
+0	20	242	0	0	5	Code_Table	Bearing of ice edge
+0	20	244	0	0	4	Code_Table	cloud base height
+0	20	245	0	0	640	CCITT_IA5	Remarks in plain language
+0	20	246	0	0	7	percent	Ice coverage
+0	20	247	0	0	1656	CCITT_IA5	Ice plain language text remarks
+0	20	248	0	0	7	Code_Table	Height of base of cloud (hshs)
+0	20	249	0	0	7	Code_Table	Height of top of cloud (HtHt)
+0	20	254	0	0	8	CCITT_IA5	Extreme value indicator
+0	20	255	0	0	2040	CCITT_IA5	Plain language text remarks
+0	21	1	0	-64	7	dB	Horizontal reflectivity
+0	21	2	0	-64	7	dB	Vertical reflectivity
+0	21	3	1	-5	7	dB	Differential reflectivity
+0	21	5	0	-65	6	dB	Linear depolarization ratio
+0	21	6	0	-65	6	dB	Circular depolarization ratio
+0	21	11	0	-128	8	m/s	Doppler mean velocity in X direction
+0	21	12	0	-128	8	m/s	Doppler mean velocity in Y direction
+0	21	13	0	-128	8	m/s	Doppler mean velocity in Z direction
+0	21	14	1	-4096	13	m/s	Doppler mean velocity (radiational)
+0	21	17	1	-4096	8	m/s	Doppler velocity spectral width
+0	21	21	-3	0	4	m	Echo tops
+0	21	30	0	-32	8	dB	Signal to noise ratio
+0	21	31	0	0	7	kg/m**2	Vertical integrated liquid water content
+0	21	36	7	0	12	m/s	Radar rainfall intensity
+0	21	41	-2	0	8	m	Bright band height
+0	21	51	0	-256	8	dB	Signal power above 1 MW
+0	21	192	0	0	14	m	Heave sensor spectral peak length
+0	21	193	1	0	14	s	Heave sensor spectral peak period
+0	21	194	2	0	14	percent	AVHRR channel average
+0	21	195	2	0	14	percent	Space view channel standard deviation
+0	21	196	2	0	15	deg_K	Algorithm identifier
+0	21	197	2	0	15	deg_K	AVHRR channel average
+0	21	198	2	-5000	13	dB	Backscatter
+0	21	199	1	0	10	percent	Noise figure percentage
+0	22	1	0	0	9	deg_true	Direction of waves (dddd, da1da1, or d1d1>dndn)
+0	22	2	0	0	9	deg_true	Direction of wind waves
+0	22	3	0	0	9	deg_true	Direction of swell waves (dw1dw1 or dw2dw2)
+0	22	4	0	0	9	deg_true	Direction of current (dodo>dndn or DcDc))
+0	22	11	0	0	6	s	Period of waves (D'D'D'D', PaPaPaPa, or PwPw)
+0	22	12	0	0	6	s	Period of wind waves
+0	22	13	0	0	6	s	Period of swell waves (Pw1Pw1 or Pw2Pw2)
+0	22	21	1	0	10	m	Height of waves (D'D'D'D' or HsHsHsHs)
+0	22	22	1	0	10	m	Height of wind waves (HwHw)
+0	22	23	1	0	10	m	Height of swell waves (Hw1Hw1 or Hw2Hw2)
+0	22	25	2	0	10	m	Standard deviation wave
+0	22	31	2	0	13	m/s	Speed of current (cococo>cncncn or VcVc)
+0	22	41	1	0	12	deg_K	Sea surface temperature (15 day running mean)
+0	22	42	1	0	12	deg_K	Sea temperature (T1T1T1>TnTnTn)
+0	22	43	2	0	15	deg_K	Sea temperature (ToToToTo>TnTnTnTn)
+0	22	44	1	0	14	m/s	Sound velocity
+0	22	50	2	0	8	deg_K	Standard deviation sea surface temperature
+0	22	61	0	0	4	Code_Table	State of sea
+0	22	62	2	0	14	ppt	Salinity (SoSoSoSo>SnSnSnSn)
+0	22	63	0	0	14	m	Total water depth (hhh or ZdZdZdZd)
+0	22	105	-1	0	6	deg_true	Direction of waves (da2da2)
+0	22	143	2	0	13	deg_K	Sea temperature
+0	22	192	0	0	14	m	Wave length
+0	22	193	2	0	14	m	Slope sensor significant wave height
+0	22	194	0	0	14	m	Slope sensor spectral peak length
+0	22	195	1	0	14	s	Slope sensor spectral peak period
+0	22	196	1	0	14	s	Slope sensor mean wave period
+0	22	197	0	0	14	m	Slope sensor mean wave length
+0	22	198	0	0	7	deg_true	Wave directional spread
+0	22	199	1	0	14	s	Time sample interval
+0	22	200	0	0	14	m	Distance sample interval
+0	22	201	1	0	14	s	Recorded wave duration
+0	22	202	0	0	14	m	Recorded wave length
+0	22	203	0	0	7	Numeric	Count of bands described
+0	22	204	0	0	4	Code_Table	Wave expiration
+0	22	205	3	0	20	m**2/(Hz*rad)	Wave spectra
+0	22	206	4	0	10	Numeric	Drag coefficient
+0	22	207	2	0	16	m	Maximum wave height
+0	22	208	2	0	16	m	Significant wave height
+0	22	209	0	0	7	Code_Table	directional spread
+0	22	211	0	0	8	Code_Table	Bogus water mass classification
+0	22	212	0	0	8	Code_Table	Discriminant water mass classification
+0	22	213	1	0	10	percent	Classification probability
+0	22	214	0	0	10	m**2/Hz	Heave sensor spectral density frequency
+0	22	215	0	0	10	m**3	Heave sensor spectral density number
+0	22	216	0	0	7	Numeric	Heave sensor band number
+0	22	217	0	0	7	percent	Heave sensor ratio
+0	22	218	0	0	7	Numeric	Slope sensor band number
+0	22	219	0	0	7	percent	Slope sensor ratio
+0	22	220	0	0	8	Code_Table	Front number
+0	22	224	-2	0	14	m	Distance to front
+0	22	229	0	0	7	Code_Table	Wave direction
+0	22	232	0	0	4	Code_Table	Sea surface temperature method indicator
+0	22	233	0	0	3	Code_Table	Sea temperature averaging period
+0	22	236	0	0	8	Code_Table	Swell wave direction
+0	22	237	-2	0	14	m	Significant wave height
+0	22	238	-2	0	14	m	Maximum wave height
+0	22	239	0	0	6	Numeric	Wave spectra direction count
+0	22	240	0	0	6	Numeric	Wave spectra frequency count
+0	22	241	3	-32768	16	Nt/m**2	Wave stress u-component
+0	22	242	3	-32768	16	Nt/m**2	Wave stress v-component
+0	22	243	0	0	7	percent	Whitecap probability
+0	22	244	0	0	7	Code_Table	Estimated wave direction of spectral wave
+0	22	245	2	0	16	deg_K	Surface temperature
+0	22	246	3	-32768	16	Nt/m**2	Wind stress u-component
+0	22	247	3	-32768	16	Nt/m**2	Wind stress v-component
+0	22	248	0	0	16	deg_true	Wind wave direction
+0	22	249	2	0	16	m	Height of wind wave
+0	22	250	1	0	16	s	Period of wind waves
+0	22	251	0	0	6	Numeric	Wave spectra direction
+0	22	252	0	0	6	Numeric	Wave spectra frequency
+0	22	253	0	0	16	deg_true	Direction of swell waves
+0	22	254	2	0	16	m	Height of swell waves
+0	22	255	1	0	16	s	Period of swell waves
+0	23	1	0	0	3	Code_Table	Accident early notification - article applicable
+0	23	2	0	0	5	Code_Table	Activity or facility involved in incident
+0	23	3	0	0	3	Code_Table	Type of release
+0	23	4	0	0	3	Code_Table	Countermeasures taken near border
+0	23	5	0	0	2	Code_Table	Cause of incident
+0	23	6	0	0	3	Code_Table	Incident situation
+0	23	7	0	0	3	Code_Table	Characteristic of release
+0	23	8	0	0	2	Code_Table	State of current release
+0	23	9	0	0	2	Code_Table	State of expected release
+0	23	16	0	0	2	Code_Table	Possibility of significant chemical toxic health effect
+0	23	17	6	0	20	m**3/s	Flow discharge of major recipient
+0	23	18	0	0	3	Code_Table	release behavior over time
+0	23	19	0	-15000	17	m	Actual release height
+0	23	21	0	-15000	17	m	Effective release height
+0	23	22	0	0	24	m	Distance of relative point or site of incident
+0	23	23	1	0	12	m/s	Main transport speed in atmosphere
+0	23	24	2	0	13	m/s	Main transport speed in water
+0	23	25	2	0	13	m/s	Main transport speed in ground water
+0	23	27	0	0	9	deg_true	Main transport direction in atmosphere
+0	23	28	0	0	9	deg_true	Main transport direction in water
+0	23	29	0	0	9	deg_true	Main transport direction in ground water
+0	23	31	0	0	2	Code_Table	Possibility that plume will encounter precip
+0	23	32	0	0	2	Code_Table	Plume will encounter change in wind direction and/or speed flag
+0	24	1	-11	0	28	Bq	Estimate of radioactivity released up to specified time
+0	24	2	-11	0	28	Bq	Estimated maximum potential release
+0	24	3	0	0	5	Code_Table	Composition of release
+0	24	4	0	0	16	CCITT_IA5	Element name
+0	24	5	0	0	9	Numeric	Isotope mass
+0	24	11	2	0	32	mSv	Dose
+0	24	12	2	0	32	mSv	Trajectory dose (defined location and expected time of arrival)
+0	24	13	2	0	32	mSv	Gamma dose in air along the main transport path
+0	24	21	2	0	32	Bq/m**3	Air concentration (named isotope type including gross beta)
+0	24	22	2	0	32	Bq/l	Concentration in precipitation (of named isotope type)
+0	25	1	-1	0	6	m	Range gate length
+0	25	2	0	0	4	Numeric	Number of gates averaged
+0	25	3	0	0	8	Numeric	Number of integrated pulses
+0	25	4	0	0	2	Code_Table	Echo processing
+0	25	5	0	0	2	Code_Table	Echo integration
+0	25	6	0	0	3	Code_Table	Z to R conversion
+0	25	7	0	0	12	Numeric	Z to R conversion factor
+0	25	8	2	0	9	Numeric	Z to R conversion exponent
+0	25	9	0	0	4	Flag_Table	Calibration method
+0	25	10	0	0	4	Code_Table	Clutter treatment
+0	25	11	0	0	2	Code_Table	Ground occultation correction (screening)
+0	25	12	0	0	2	Code_Table	Range attenuation correction
+0	25	13	0	0	2	Flag_Table	Bright band correction
+0	25	15	0	0	2	Flag_Table	Radome attenuation correction
+0	25	16	5	0	6	dB/m	Clear air attenuation correction
+0	25	17	0	0	2	Flag_Table	Precipitation attenuation correction
+0	25	18	7	0	6	Numeric	A to Z law for attenuation factor
+0	25	19	2	0	7	Numeric	A to Z law for attenuation exponent
+0	25	20	0	0	2	Code_Table	Mean speed estimation
+0	25	21	0	0	8	Flag_Table	Wind computation enhancement
+0	25	30	0	0	2	Code_Table	SST usage
+0	25	31	0	0	2	Code_Table	15 day SST availability
+0	25	32	0	0	2	Code_Table	NOAA wind profiler high/low mode data
+0	25	33	0	0	2	Code_Table	NOAA wind profiler submode
+0	25	34	0	0	4	Code_Table	NOAA wind profiler Q/C test results
+0	25	35	0	0	3	Code_Table	First guess adjustment
+0	25	36	3	-5000	14	Numeric	NSTAR average value
+0	25	37	0	0	2	Code_Table	HIRS-8 surface air temperature
+0	25	38	0	0	3	Code_Table	TOVS filter flags
+0	25	41	0	0	3	Code_Table	Method of determining direction of moving platform
+0	25	42	0	0	3	Code_Table	Method of determining speed of moving platform
+0	25	192	0	0	8	Code_Table	Type of correction
+0	25	193	0	0	3	Code_Table	Land/sea flag
+0	25	194	0	0	2	Code_Table	Day/night flag
+0	25	195	0	0	6	Numeric	Surface model pressure
+0	25	196	0	0	16	Numeric	Scan line count
+0	25	197	0	0	5	Numeric	Box counter
+0	25	198	0	0	3	Numeric	Minibox counter
+0	25	199	0	0	3	Code_Table	Water vapor flag
+0	25	200	0	0	3	Code_Table	TOVS retrieval low 20
+0	25	201	0	0	3	Code_Table	TOVS retrieval temps high 20
+0	25	202	0	0	2	Code_Table	TOVS super adiabatic flag
+0	25	203	0	0	2	Code_Table	TOVS skin temperature flag
+0	25	204	0	0	2	Code_Table	Stratospheric sounding unit flag
+0	25	205	0	0	4	Code_Table	Latitude zones
+0	25	206	0	0	4	Code_Table	TOVS instrument combinations
+0	25	208	0	0	8	Code_Table	TARM flag
+0	25	209	0	0	4	Code_Table	DMSP flag
+0	25	211	0	0	17	Numeric	B-scan start time
+0	25	212	0	0	7	Numeric	Counter (1-64)
+0	25	213	0	0	5	Code_Table	Calculated surface type
+0	25	214	0	0	3	Code_Table	Season flag
+0	25	215	0	-127	8	Numeric	Missing packet counter
+0	25	216	0	0	3	Code_Table	Observation Quality Code
+0	26	1	1	0	12	hr	Principle time of daily reading in UTC of maximum temperature
+0	26	2	1	0	12	hr	Principle time of daily reading in UTC of minimum temperature
+0	27	1	5	-9000000	25	deg	Latitude (high accuracy)
+0	27	2	2	-9000	15	deg	Latitude (coarse accuracy)
+0	27	3	2	-9000	15	deg	Alternate latitude
+0	27	20	0	0	16	Numeric	Satellite location counter
+0	27	21	0	0	16	Numeric	Satellite sub-location dimensions
+0	28	1	5	-18000000	26	deg	Longtiude (high accuracy)
+0	28	2	2	-18000	16	deg	Longtiude (coarse accuracy)
+0	28	3	2	-18000	16	deg	Alternate longtiude
+0	29	1	0	0	3	Code_Table	Projection type
+0	29	2	0	0	2	Code_Table	Coordinate grid type (Wr)
+0	30	1	0	0	4	Numeric	Pixel value (4 bits)
+0	30	21	0	0	12	Numeric	Number of pixels per row
+0	30	22	0	0	12	Numeric	Number of pixels per column
+0	30	31	0	0	4	Code_Table	Picture type
+0	30	32	0	0	16	Flag_Table	Combined picture
+0	31	0	0	0	1	Flag_Table	Delayed descriptor replication switch (1 bit)
+0	31	1	0	0	8	Numeric	Delayed descriptor replication factor (255 or less)
+0	31	2	0	0	16	Numeric	Extended delayed descriptor replication factor (65536 or less)
+0	31	11	0	0	8	Numeric	Delayed descriptor and data replication factor
+0	31	12	0	0	16	Numeric	Extended delayed descriptor and data replication factor
+0	31	21	0	0	6	Code_Table	Associated field significance
+0	31	192	0	0	8	Code_Table	Associated QC indicator
+0	31	193	0	0	8	Code_Table	QC description identifier, indicates why a value is bad
+0	31	194	2	0	7	Numeric	Associated correlation
+0	31	195	2	0	7	Numeric	Associated probability of error
+0	31	196	0	0	13	Flag_Table	UWI product confidence flag
+0	31	197	0	0	12	Numeric	Solution probability
+0	31	201	0	0	10	Numeric	Delayed replication factor (1023 or less)
+0	31	211	0	0	3	Numeric	Delayed replication factor (15 or less)
+0	31	221	0	0	5	Numeric	Delayed replication count (31 or less)
+0	31	231	0	0	6	Numeric	Delayed replication factor (63 or less)
+0	31	241	0	0	4	Numeric	Delayed replication factor (15 or less)
+0	48	1	0	0	128	CCITT_IA5	Classification
+0	48	2	0	0	128	CCITT_IA5	Classification modifier
+0	48	3	0	0	552	CCITT_IA5	Release as
+0	48	4	0	0	12	yr	Declassification - year
+0	48	5	0	0	4	mo	Declassification - month
+0	48	6	0	0	6	day	Declassification - day
+0	48	7	0	0	552	CCITT_IA5	Release not
+0	48	8	0	0	64	CCITT_IA5	Sender of original observation data
+0	48	9	0	0	80	CCITT_IA5	Declassification instructions
+0	48	10	0	0	12	yr	Send - year
+0	48	11	0	0	4	mo	Send - month
+0	48	12	0	0	6	day	Send - day
+0	48	13	0	0	4	hr	Send - hour
+0	48	14	0	0	6	min	Send - minutes
+0	48	15	0	0	552	CCITT_IA5	Release to information
+0	48	16	0	0	5	hr	Send - hour
+0	48	17	0	0	1104	CCITT_IA5	Release to
+0	48	18	0	0	552	CCITT_IA5	Release not
+0	48	19	0	0	552	CCITT_IA5	Declassification instructions
+0	48	20	0	0	552	CCITT_IA5	Classification modifier
+0	48	21	0	0	552	CCITT_IA5	Sender of observational data
+0	48	22	0	0	160	CCITT_IA5	Classification
+0	48	27	0	0	12	yr	Receipt - year
+0	48	28	0	0	4	mo	Receipt - month
+0	48	29	0	0	6	day	Receipt - day
+0	48	30	0	0	5	hr	Receipt - hour
+0	48	31	0	0	6	min	Receipt - minutes
+0	48	32	0	0	48	CCITT_IA5	Bulletin header update or correction indicator
+0	48	33	0	0	24	CCITT_IA5	Receiving circuit
+0	48	34	0	0	6	Numeric	Near-duplicate combination count
+0	50	1	0	0	2	Code_Table	Quality of measurement of pressure, sst,
+0	50	2	0	0	2	Code_Table	Quality of buoy satellite transmission (QN)
+0	50	3	0	0	4	Code_Table	IGOSS quality codes (Qd, Qd1, Qd2, Q1, Qt)
+0	50	6	0	0	3	Code_Table	Location quality codes (QL)
+0	50	10	2	0	15	deg_K	GDEM temperature
+0	50	14	2	0	15	deg_K	Feature model temperature
+0	50	18	0	0	16	Numeric	Reliability
+0	50	33	0	0	8	Numeric	Count of boundary points
+0	50	34	3	0	16	Numeric	Frequency ratio
+0	50	35	0	0	12	s	Time step of data (time increment)
+0	50	42	2	0	12	Numeric	Mean wave direction
+0	50	43	3	0	12	Numeric	Mean wave frequency
+0	50	44	4	0	12	Numeric	First frequency
+0	50	100	0	0	12	yr	Analysis DTG - year
+0	50	101	0	0	4	mo	Analysis DTG - month
+0	50	102	0	0	6	day	Analysis DTG - day
+0	50	103	0	0	5	hr	Analysis DTG - hour
+0	50	104	0	0	6	Numeric	Last observed sea depth
+0	51	3	0	0	5	Flag_Table	Processing status
+0	51	6	0	0	6	Numeric	Combination count
+0	51	7	0	0	2	Code_Table	Quality control process status

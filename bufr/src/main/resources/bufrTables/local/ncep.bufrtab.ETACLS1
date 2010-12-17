@@ -1,0 +1,187 @@
+.------------------------------------------------------------------------------.
+| ------------   USER DEFINITIONS FOR TABLE-A TABLE-B TABLE D   -------------- |
+|------------------------------------------------------------------------------|
+| MNEMONIC | NUMBER | DESCRIPTION                                              |
+|----------|--------|----------------------------------------------------------|
+|          |        |                                                          |
+| ETACLS1  | A60241 | TABLE A ENTRY - ETAMODEL MESSAGES                        |
+|          |        |                                                          |
+| HEADR    | 362001 | TABLE D ENTRY - PROFILE COORDINATES                      |
+| PROFILE  | 362002 | TABLE D ENTRY - PROFILE DATA                             |
+|          |        |                                                          |
+| SURF     | 362101 | TABLE D ENTRY - NEAR SURFACE SUBGROUP OF SFC DATA        |
+| D10M     | 362102 | TABLE D ENTRY - SHELTER LEVEL SUBGROUP OF SFC DATA       |
+| FLUX     | 362103 | TABLE D ENTRY - FLUX SUBGROUP OF SFC DATA                |
+| HYDR     | 362104 | TABLE D ENTRY - HYDROLOGY SUBGROUP OF SFC DATA           |
+| SLYR     | 362110 | TABLE D ENTRY - MULTI-LAYER SOIL DATA                    |
+| XTRA     | 362105 | TABLE D ENTRY - MISCELLANEOUS SUBGROUP OF SFC DATA       |
+|          |        |                                                          |
+| FTIM     | 004194 | TABLE B ENTRY - FORECAST TIME                            |
+| STNM     | 001205 | TABLE B ENTRY - STATION NUMBER -- 6 DIGITS               |
+| RPID     | 001198 | REPORT IDENTIFIER                                        |
+| CLAT     | 005002 | TABLE B ENTRY - GRID-POINT LATITUDE                      |
+| CLON     | 006002 | TABLE B ENTRY - GRID-POINT LONGITUDE                     |
+| GELV     | 010194 | TABLE B ENTRY - GRID-POINT ELEVATION                     |
+| CLSS     | 002196 | TABLE B ENTRY - CLASS OF PROFILE OUTPUT                  |
+|          |        |                                                          |
+| PRES     | 010004 | TABLE B ENTRY - PRESSURE                                 |
+| TMDB     | 012001 | TABLE B ENTRY - TEMPERATURE                              |
+| UWND     | 011003 | TABLE B ENTRY - U WIND                                   |
+| VWND     | 011004 | TABLE B ENTRY - V WIND                                   |
+| SPFH     | 013001 | TABLE B ENTRY - SPECIFIC HUMIDITY                        |
+| OMEG     | 011229 | TABLE B ENTRY - OMEGA                                    |
+| CWTR     | 013239 | TABLE B ENTRY - CLOUD WATER MIXING RATIO                 |
+| DTCP     | 012221 | TABLE B ENTRY - CONVECTIVE LATENT HEATING RATE           |
+| DTGP     | 012222 | TABLE B ENTRY - STABLE LATENT HEATING RATE               |
+| DTSW     | 014194 | TABLE B ENTRY - SHORT-WAVE HEATING RATE                  |
+| DTLW     | 014195 | TABLE B ENTRY - LONG-WAVE HEATING RATE                   |
+| CFRL     | 020198 | TABLE B ENTRY - CLOUD COVER IN A LAYER                   |
+| TKEL     | 011193 | TABLE B ENTRY - TURBULENT KIN ENERGY IN A LAYER          |
+| IMXR     | 013244 | TABLE B ENTRY - ICE MIXING RATIO                         |
+|          |        |                                                          |
+| PMSL     | 010051 | TABLE B ENTRY - PRESSURE AT MEAN SEA LEVEL               |
+| PRSS     | 010195 | TABLE B ENTRY - SURFACE PRESSURE                         |
+| TMSK     | 012061 | TABLE B ENTRY - SKIN TEMPERATURE                         |
+| TMIN     | 012196 | TABLE B ENTRY - 1-HR MIN TEMPERATURE AT LOWEST MODEL LVL |
+| TMAX     | 012197 | TABLE B ENTRY - 1-HR MAX TEMPERATURE AT LOWEST MODEL LVL |
+| WTNS     | 013220 | TABLE B ENTRY - SOIL MOISTURE AVAILABILITY               |
+| TP01     | 013019 | TABLE B ENTRY - 1-HR ACCUMULATED TOTAL PRECIP            |
+| C01M     | 013208 | TABLE B ENTRY - 1-HR ACCUMULATED  CONVECTIVE PRECIP      |
+| FXLH     | 012199 | TABLE B ENTRY - 1-HR AVERAGE FLUX OF LATENT HEAT         |
+| FXLP     | 012200 | TABLE B ENTRY - 1-HR AVG POTENTIAL FLUX OF LATENT HEAT   |
+| FXSH     | 012201 | TABLE B ENTRY - 1-HR AVERAGE FLUX OF SENSIBLE HEAT       |
+| FXSS     | 012202 | TABLE B ENTRY - 1-HR AVERAGE FLUX OF SUB-SURFACE HEAT    |
+| FXSN     | 012203 | TABLE B ENTRY - 1-HR AVG FLUX OF SNOW PHASE CHANGE HEAT  |
+| SWRD     | 014198 | TABLE B ENTRY - 1-HR AVERAGE SHORTWAVE DOWNWARD FLUX     |
+| SWRU     | 014199 | TABLE B ENTRY - 1-HR AVERAGE SHORTWAVE UPWARD FLUX       |
+| LWRD     | 014200 | TABLE B ENTRY - 1-HR AVERAGE LONGWAVE DOWNWARD FLUX      |
+| LWRU     | 014201 | TABLE B ENTRY - 1-HR AVERAGE LONGWAVE UPWARD FLUX        |
+| LWRT     | 014202 | TABLE B ENTRY - 1-HR AVERAGE NET LONGWAVE FLUX AT TOP    |
+| SWRT     | 014203 | TABLE B ENTRY - 1-HR AVERAGE NET SHORTWAVE FLUX AT TOP   |
+| SNFL     | 013216 | TABLE B ENTRY - 1-HR ACCUMULATED SNOW FALL               |
+| SMOI     | 013197 | TABLE B ENTRY - TOTAL SOIL MOISTURE                      |
+| SWEM     | 013210 | TABLE B ENTRY - SNOW WATER EQUIVALENT                    |
+| N01M     | 013218 | TABLE B ENTRY - 1-HR ACCUMULATED SNOW MELT               |
+| R01M     | 013222 | TABLE B ENTRY - 1-HR ACCUMULATED SURFACE RUNOFF          |
+| BFGR     | 013224 | TABLE B ENTRY - 1-HR ACCUMU BASEFLOW-GROUNDWATER RUNOFF  |
+| SLTB     | 012204 | TABLE B ENTRY - BOTTOM SOIL TEMPERATURE                  |
+| SRLM     | 011206 | TABLE B ENTRY - ROUGHNESS LENGTH                         |
+| U10M     | 011196 | TABLE B ENTRY - U-COMPONENT AT 10 M                      |
+| V10M     | 011197 | TABLE B ENTRY - V_COMPONENT AT 10 M                      |
+| TH10     | 012205 | TABLE B ENTRY - POTENTIAL TEMPERATURE AT 10 M            |
+| Q10M     | 013240 | TABLE B ENTRY - SPECIFIC HUMIDITY AT 10 M                |
+| T2MS     | 012004 | TABLE B ENTRY - 2-METER TEMPERATURE                      |
+| Q2MS     | 013198 | TABLE B ENTRY - 2-METER SPECIFIC HUMIDITY                |
+| SFEX     | 011208 | TABLE B ENTRY - SURFACE EXCHANGE COEFFICIENT             |
+| VEGF     | 020231 | TABLE B ENTRY - GREEN VEGETATION COVER                   |
+| CNPW     | 013212 | TABLE B ENTRY - CANOPY WATER                             |
+| SMC1     | 013226 | TABLE B ENTRY - LAYER VOLUMETRIC SOIL MOISTURE           |
+| STC1     | 012198 | TABLE B ENTRY - LAYER SOIL TEMPERATURE                   |
+| LSQL     | 008012 | TABLE B ENTRY - STATION LAND/SEA MASK                    |
+| LCLD     | 020051 | TABLE B ENTRY - AMOUNT OF LOW CLOUD                      |
+| MCLD     | 020052 | TABLE B ENTRY - AMOUNT OF MIDDLE CLOUD                   |
+| HCLD     | 020053 | TABLE B ENTRY - AMOUNT OF HIGH CLOUD                     |
+| SNRA     | 013231 | TABLE B ENTRY - SNOW RATIO FROM EXPLICITY CLOUD SCHEME   |
+| WXTS     | 013232 | TABLE B ENTRY - SNOW PRECIP TYPE                         |
+| WXTP     | 013233 | TABLE B ENTRY - ICE PELLET PRECIP TYPE                   |
+| WXTZ     | 013234 | TABLE B ENTRY - FREEZING RAIN PRECIP TYPE                |
+| WXTR     | 013235 | TABLE B ENTRY - RAIN PRECIP TYPE                         |
+| USTM     | 011231 | TABLE B ENTRY - U-COMPONENT OF STORM MOTION              |
+| VSTM     | 011232 | TABLE B ENTRY - V_COMPONENT OF STORM MOTION              |
+| HLCY     | 011233 | TABLE B ENTRY - STORM RELATIVE HELICITY                  |
+| CDBP     | 020015 | TABLE B ENTRY - PRESSURE AT THE BASE OF CLOUD            |
+| HOVI     | 020001 | TABLE B ENTRY - HORIZONTAL VISIBILITY                    |
+|------------------------------------------------------------------------------|
+| MNEMONIC | SEQUENCE                                                          |
+|----------|-------------------------------------------------------------------|
+|          |                                                                   |
+| ETACLS1  | HEADR {PROFILE} SURF FLUX HYDR D10M {SLYR} XTRA                   |
+| HEADR    | FTIM STNM RPID CLAT CLON GELV CLSS                                |
+| PROFILE  | PRES TMDB UWND VWND SPFH OMEG CWTR DTCP DTGP DTSW DTLW CFRL TKEL  |
+| PROFILE  | IMXR                                                              |
+| SURF     | PMSL PRSS TMSK TMIN TMAX WTNS TP01 C01M                           |
+| FLUX     | FXLH FXLP FXSH FXSS FXSN SWRD SWRU LWRD LWRU LWRT SWRT            |
+| HYDR     | SNFL SMOI SWEM N01M R01M BFGR SLTB                                |
+| D10M     | SRLM U10M V10M TH10 Q10M T2MS Q2MS SFEX VEGF CNPW                 |
+| SLYR     | SMC1 STC1                                                         |
+| XTRA     | LSQL LCLD MCLD HCLD SNRA WXTS WXTP WXTZ WXTR USTM VSTM HLCY       |
+| XTRA     | CDBP HOVI                                                         |
+|          |                                                                   |
+|------------------------------------------------------------------------------|
+| MNEMONIC | SCAL | REFERENCE   | BIT | UNITS                    |-------------|
+|----------|------|-------------|-----|--------------------------|-------------|
+|          |      |             |     |                          |-------------|
+| FTIM     |    0 |           0 |  24 | SECONDS                  |-------------|
+| STNM     |    0 |           0 |  20 | NUMERIC ID               |-------------|
+| RPID     |    0 |           0 |  64 | CCITT IA5                |-------------|
+| CLAT     |    2 |       -9000 |  15 | DEGREE  (+:NORTH)        |-------------|
+| CLON     |    2 |      -18000 |  16 | DEGREE  (+:EAST)         |-------------|
+| GELV     |    0 |        -400 |  15 | M                        |-------------|
+| CLSS     |    0 |           0 |   2 | 0 or 1                   |-------------|
+| PRES     |   -1 |           0 |  14 | PA                       |-------------|
+| TMDB     |    1 |           0 |  12 | K                        |-------------|
+| UWND     |    1 |       -4096 |  13 | M/S                      |-------------|
+| VWND     |    1 |       -4096 |  13 | M/S                      |-------------|
+| SPFH     |    5 |           0 |  14 | KG/KG                    |-------------|
+| OMEG     |    1 |        -512 |  10 | PA/S                     |-------------|
+| CWTR     |    5 |           0 |  16 | KG/KG                    |-------------|
+| DTCP     |    6 |       -6000 |  14 | K/S                      |-------------|
+| DTGP     |    6 |       -6000 |  14 | K/S                      |-------------|
+| DTSW     |    7 |      -12000 |  15 | K/S                      |-------------|
+| DTLW     |    7 |      -12000 |  15 | K/S                      |-------------|
+| CFRL     |    0 |           0 |   7 | %                        |-------------|
+| TKEL     |    2 |       -1024 |  13 | M**2/S**2                |-------------|
+| IMXR     |    5 |           0 |  16 | KG/KG                    |-------------|
+| PMSL     |   -1 |           0 |  14 | PA                       |-------------|
+| PRSS     |   -1 |           0 |  14 | PA                       |-------------|
+| TMSK     |    1 |           0 |  12 | K                        |-------------|
+| TMIN     |    1 |           0 |  12 | K                        |-------------|
+| TMAX     |    1 |           0 |  12 | K                        |-------------|
+| WTNS     |    0 |           0 |   8 | %                        |-------------|
+| TP01     |    2 |          -1 |  14 | KG/M**2                  |-------------|
+| C01M     |    2 |          -1 |  14 | KG/M**2                  |-------------|
+| FXLH     |    1 |      -10000 |  15 | W/M**2 (+:DOWNWARD)      |-------------|
+| FXLP     |    1 |      -10000 |  15 | W/M**2 (+:DOWNWARD)      |-------------|
+| FXSH     |    1 |      -10000 |  15 | W/M**2 (+:DOWNWARD)      |-------------|
+| FXSS     |    1 |       -5000 |  14 | W/M**2 (+:DOWNWARD)      |-------------|
+| FXSN     |    1 |      -10000 |  14 | W/M**2 (+:DOWNWARD)      |-------------|
+| SWRD     |    1 |           0 |  14 | W/M**2 (+:DOWNWARD)      |-------------|
+| SWRU     |    1 |      -15000 |  14 | W/M**2 (+:DOWNWARD)      |-------------|
+| LWRD     |    1 |           0 |  13 | W/M**2 (+:DOWNWARD)      |-------------|
+| LWRU     |    1 |       -8192 |  13 | W/M**2 (+:DOWNWARD)      |-------------|
+| LWRT     |    1 |       -8192 |  13 | W/M**2 (+:DOWNWARD)      |-------------|
+| SWRT     |    1 |      -15000 |  15 | W/M**2 (+:DOWNWARD)      |-------------|
+| SNFL     |    1 |          -1 |  14 | KG/M**2                  |-------------|
+| SMOI     |    2 |           0 |  18 | KG/M**2                  |-------------|
+| SWEM     |    2 |           0 |  18 | KG/M**2                  |-------------|
+| N01M     |    2 |           0 |  14 | KG/M**2                  |-------------|
+| R01M     |    2 |           0 |  15 | KG/M**2                  |-------------|
+| BFGR     |    2 |           0 |  15 | KG/M**2                  |-------------|
+| SLTB     |    1 |           0 |  12 | K                        |-------------|
+| SRLM     |    2 |           0 |  10 | M                        |-------------|
+| U10M     |    1 |       -4096 |  13 | M/S                      |-------------|
+| V10M     |    1 |       -4096 |  13 | M/S                      |-------------|
+| TH10     |    1 |           0 |  12 | K                        |-------------|
+| Q10M     |    5 |           0 |  14 | KG/KG                    |-------------|
+| T2MS     |    1 |           0 |  12 | K                        |-------------|
+| Q2MS     |    5 |           0 |  14 | KG/KG                    |-------------|
+| SFEX     |    3 |           0 |  10 | M/S                      |-------------|
+| VEGF     |    0 |           0 |   7 | %                        |-------------|
+| CNPW     |    3 |           0 |  11 | KG/M**2                  |-------------|
+| SMC1     |    3 |           0 |  10 | NONE                     |-------------|
+| STC1     |    1 |           0 |  12 | K                        |-------------|
+| LSQL     |    0 |           0 |   2 | 0(LAND) or 1 (SEA)       |-------------|
+| LCLD     |    0 |           0 |   7 | %                        |-------------|
+| MCLD     |    0 |           0 |   7 | %                        |-------------|
+| HCLD     |    0 |           0 |   7 | %                        |-------------|
+| SNRA     |    0 |           0 |   7 | %                        |-------------|
+| WXTS     |    0 |           0 |   2 | 1=SNOW                   |-------------|
+| WXTP     |    0 |           0 |   2 | 1=ICE PELLETS            |-------------|
+| WXTZ     |    0 |           0 |   2 | 1=FREEZING RAIN          |-------------|
+| WXTR     |    0 |           0 |   2 | 1=RAIN                   |-------------|
+| USTM     |    1 |       -4096 |  13 | M/S                      |-------------|
+| VSTM     |    1 |       -4096 |  13 | M/S                      |-------------|
+| HLCY     |    1 |      -10000 |  15 | M**2/S**2                |-------------|
+| CDBP     |   -1 |           0 |  14 | PA                       |-------------|
+| HOVI     |   -1 |           0 |  13 | M                        |-------------|
+`------------------------------------------------------------------------------'

@@ -1,0 +1,18 @@
+#
+# BUFR diff written from C:/dev/tds/thredds/bufrTables/src/main/resources/resources/bufrTables/local/B4M-000-013-B against wmo version 14 table B 
+#
+Class,FXY,enElementName,BUFR_Unit,BUFR_Scale,BUFR_ReferenceValue,BUFR_DataWidth_Bits
+14,14001,Long-wave radiation  integrated over 24 hours,J m-2,-3,-2048,12
+14,14002,Long-wave radiation  integrated over period specified,J m-2,-3,-2048,12
+14,14003,Short-wave radiation  integrated over 24 hours,J m-2,-3,-2048,12
+14,14004,Short-wave radiation  integrated over period specified,J m-2,-3,-2048,12
+14,14011,Net long-wave radiation  integrated over 24 hours,J m-2,-3,-2048,12
+14,14012,Net long-wave radiation  integrated over period specified,J m-2,-3,-2048,12
+14,14013,Net short-wave radiation  integrated over 24 hours,J m-2,-3,-2048,12
+14,14014,Net short-wave radiation  integrated over period specified,J m-2,-3,-2048,12
+14,14017,Instantaneous long-wave radiation,W m-2,-3,-2048,12
+14,14018,Instantaneous short-wave radiation,W m-2,-3,-2048,12
+14,14028,Global solar radiation (high accuracy)  integrated over period specified,J m-2,-2,0,16
+14,14029,Diffuse solar radiation (high accuracy)  integrated over period specified,J m-2,-2,0,16
+14,14030,Direct solar radiation (high accuracy)  integrated over period specified,J m-2,-2,0,16
+22,22039,Meteorological residual tidal elevation (surge or offset) (see Note 4),m,3,-5000,12

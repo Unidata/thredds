@@ -1,0 +1,842 @@
+#
+# BUFR local only from C:/dev/tds/bufr/resources/resources/bufr/tables/B4L-007-013-B.diff 
+#
+Class,FXY,enElementName,BUFR_Unit,BUFR_Scale,BUFR_ReferenceValue,BUFR_DataWidth_Bits
+1,1192,"Radiosonde part name",CCITT IA5,0,0,32
+1,1193,"Direction of motion of ship during last 3 hours",Code table,0,0,4
+1,1194,"PREPBUFR: Station identification",CCITT IA5,0,0,64
+1,1195,"Country/agency operating satellite",Code table,0,0,8
+1,1196,"Indicator figure for satellite name",CCITT IA5,0,0,16
+1,1197,"Radiosonde ship, drop, or mobile land station id",CCITT IA5,0,0,64
+1,1198,"Report identifier",CCITT IA5,0,0,64
+1,1199,"Type of hourly report",Code table,0,0,2
+1,1200,"Average speed of motion of ship during last 3 hours",Code table,0,0,4
+1,1203,"Ship call sign (8 characters)",CCITT IA5,0,0,64
+1,1204,"Satellite wind producer",Code table,0,0,8
+1,1205,"Station number (holds up to 6 digits)",Numeric,0,0,20
+1,1208,"IGS station identifier",CCITT IA5,0,0,32
+1,1209,"Name of quality control parameter",CCITT IA5,0,0,32
+1,1211,"Station number (holds up to 6 digits)",Numeric,0,0,20
+1,1212,"Radar volume id (in the form DDHHMM)",Numeric,0,0,19
+1,1213,"Radar scan id (range 1-21)",Numeric,0,0,5
+2,2192,"Detector instrument number",Numeric,0,0,6
+2,2193,"Indicator for type of station operation and past/ present weather",Code table,0,0,3
+2,2194,"Automated station type",Code table,0,0,4
+2,2195,"PREPBUFR: Instrument type",Code table,0,0,8
+2,2196,"Class of profile output",Code table,0,0,2
+2,2197,"GOES-I/M soundings parameter characteristics",Flag table,0,0,8
+2,2198,"GOES-I/M brightness temperature characteristics",Flag table,0,0,8
+2,2199,"FSL aircraft roll angle flag",Code table,0,0,3
+2,2200,"Objective forecast technique used",Code table,0,0,4
+2,2201,"NESDIS satellite wind type",Code table,0,0,8
+2,2202,"USGS wind direction sensor type",Numeric,0,0,7
+2,2203,"USGS wind speed sensor type",Numeric,0,0,7
+2,2204,"USGS river stage height sensor type",Numeric,0,0,7
+2,2205,"USGS river stage discharge sensor type",Numeric,0,0,7
+2,2206,"USGS river stage precipitation sensor type",Numeric,0,0,7
+2,2207,"Platform type for NWS Cooperative Observer sites",Code table,0,0,3
+2,2223,"Satellite derived wind computation method",Code table,0,0,8
+2,2226,"Cross track resolution (coarse)",m,-2,0,12
+2,2227,"Along track resolution (coarse)",m,-2,0,12
+2,2231,"Radar incidence angle (high accuracy)",Degree,2,0,13
+2,2232,"Radar look angle (high accuracy)",Degree,2,0,16
+4,4193,"Day of the week",Code table,0,0,3
+4,4194,"Forecast time",Second,0,0,24
+4,4195,"Time of last known position of buoy",Year,0,0,12
+4,4196,"Time of last known position of buoy",Month,0,0,4
+4,4197,"Time of last known position of buoy",Day,0,0,6
+4,4198,"Time of last known position of buoy",Hour,0,0,5
+4,4199,"Time of last known position of buoy",Minute,0,0,6
+4,4200,"Receipt time",Year,0,0,12
+4,4201,"Receipt time",Month,0,0,4
+4,4202,"Receipt time",Day,0,0,6
+4,4203,"Receipt time",Hour,0,0,5
+4,4204,"Receipt time",Minute,0,0,6
+4,4205,"Receipt time",Second,0,0,6
+4,4206,"Second (extended)",Second,0,0,14
+4,4208,"Millisecond (fractional)",Millisecond,0,0,10
+4,4210,"Radiosonde launch time",Hour,0,0,5
+4,4211,"Radiosonde launch time",Minute,0,0,6
+4,4212,"Time of occurrence of wind shift",Hour,0,0,5
+4,4213,"Time of occurrence of wind shift",Minute,0,0,6
+4,4214,"PREPBUFR: Reported observation time",Hour,5,0,22
+4,4215,"PREPBUFR: Observation time minus cycle time",Hour,5,-2400000,23
+4,4216,"PREPBUFR: Correction indicator for reported observation time",Code table,0,0,3
+4,4217,"PREPBUFR: Receipt time",Hour,2,0,12
+4,4218,"PREPBUFR: Radiosonde balloon drift time minus cycle time",Hour,3,-24000,16
+4,4219,"PREPBUFR: Forecast hour",Hour,1,0,12
+5,5197,"Latitude of superob (coarse accuracy)",Degree,2,-9000,15
+5,5201,"Scan number",Numeric,0,0,14
+5,5202,"Position number",Numeric,0,0,10
+5,5203,"Latitude for SSM/I 85 GHz brightness temperature data (course accuracy)",Degree,2,-9000,15
+5,5204,"Channel number for SSM/I 85 GHz brightness temperature data",Numeric,0,0,6
+5,5205,"Position number for SSM/I 85 GHz brightness temperature data",Numeric,0,0,10
+5,5241,"PREPBUFR: Radiosonde balloon drift latitude",Degree,2,-9000,15
+6,6193,"SST obs type",Code table,0,0,8
+6,6194,"SST obs source",Code table,0,0,7
+6,6196,"Longitude at which satellite track crosses equator",Degree,2,-18000,16
+6,6197,"Longitude of superob (coarse accuracy)",Degree,2,-18000,16
+6,6203,"Longitude for SSM/I 85 GHz brightness temperature",Degree,2,-18000,16
+6,6210,"Distance in eighths of a kilometer",125*m,0,0,12
+6,6240,"PREPBUFR: Longitude (coarse accuracy)",Degree (East),2,-18000,16
+6,6241,"PREPBUFR: Radiosonde balloon drift longitude",Degree (East),2,-18000,16
+7,7192,"Satellite-sun glint angle",Degree,1,0,11
+7,7195,"Extrapolated mandatory level pressure",Pa,-1,0,14
+7,7196,"Pressure altitude relative to mean sea level pressure",m,1,-4000,20
+7,7197,"Flight level",m,1,-4000,20
+7,7198,"River stage height",m,3,0,15
+7,7199,"River stage height above NGVD 1929",m,3,0,15
+7,7204,"Anemometer height",m,2,0,12
+7,7244,"PREPBUFR: Pressure coordinate",mb,1,0,14
+7,7245,"PREPBUFR: Pressure observation",mb,1,0,14
+7,7246,"PREPBUFR: Pressure (quality) marker",Code table,0,0,5
+7,7247,"PREPBUFR: Pressure event program code",Code table,0,0,5
+7,7248,"PREPBUFR: Pressure event reason code",Code table,0,0,10
+7,7249,"PREPBUFR: Global forecast (background) pressure value",mb,1,0,14
+7,7250,"PREPBUFR: Pressure observation error",mb,2,0,14
+7,7251,"PREPBUFR: Analyzed pressure value",mb,1,0,14
+7,7252,"PREPBUFR: Climatological pressure value",mb,1,0,14
+7,7253,"PREPBUFR: Standard deviation of climatological pressure value",mb,1,0,14
+7,7254,"PREPBUFR: Analysis-tuned pressure observation error",mb,2,0,14
+7,7255,"PREPBUFR: Model forecast (background) pressure value",mb,1,0,14
+8,8193,"PREPBUFR: Data level category",Code table,0,0,6
+8,8199,"Indicator for source and units of wind speed",Code table,0,0,3
+8,8201,"Relationship to following value",Code table,0,0,3
+8,8202,"Receipt time significance",Code table,0,0,6
+8,8220,"Qualifier as to whether first guess information was used in calculation of quality information for EUMETSAT winds",Code table,0,0,2
+8,8222,"Type of NESDIS cloud detection",Code table,0,0,6
+10,10194,"Grid-point elevation",m,0,-400,15
+10,10195,"Surface pressure",Pa,-1,0,14
+10,10196,"Extrapolated mandatory level geopotential",m**2/s**2,0,-10000,20
+10,10197,"Height of the planetary boundary layer",m,0,0,13
+10,10199,"PREPBUFR: Station elevation",m,0,-1000,17
+10,10243,"PREPBUFR: Mean sea-level pressure observation",mb,1,0,14
+10,10244,"PREPBUFR: Mean sea-level pressure (quality) marker",Code table,0,0,5
+10,10246,"PREPBUFR: Height (quality) marker",Code table,0,0,5
+10,10247,"PREPBUFR: Height event program code",Code table,0,0,5
+10,10248,"PREPBUFR: Height event reason code",Code table,0,0,10
+10,10249,"PREPBUFR: Global forecast (background) height value",m,0,-1000,17
+10,10250,"PREPBUFR: Height observation error",m,0,0,10
+10,10251,"PREPBUFR: Analyzed height value",m,0,-1000,17
+10,10252,"PREPBUFR: Climatological height value",m,0,-1000,17
+10,10253,"PREPBUFR: Standard deviation of climatological height value",m,0,0,10
+10,10255,"PREPBUFR: Model forecast (background) height value",m,0,-1000,17
+11,11193,"Turbulent kinetic energy in a layer",m**2/s**2,2,-1024,13
+11,11196,"u-component at 10 m",m/s,1,-4096,13
+11,11197,"v-component at 10 m",m/s,1,-4096,13
+11,11200,"Inflated wind speed",m/s,1,0,12
+11,11201,"Mean wind speed over past 12 hours",m/s,1,0,12
+11,11202,"Peak wind direction",Degree true,0,0,9
+11,11203,"Peak wind speed",m/s,1,0,12
+11,11206,"Roughness length",m,2,0,10
+11,11208,"Surface exchange coefficient",m/s,3,0,10
+11,11210,"Root mean square vector wind error",m/s,1,0,12
+11,11211,"Wind direction at 10 m",Degree true,2,0,16
+11,11212,"Wind speed at 10 m",m/s,2,0,14
+11,11217,"PREPBUFR: Wind speed (SOB) (quality) marker",Code table,0,0,5
+11,11218,"PREPBUFR: Wind direction/speed (DDO/FFO) (quality) marker",Code table,0,0,5
+11,11219,"PREPBUFR: Wind direction/speed (DDO/FFO) event program code",Code table,0,0,5
+11,11220,"PREPBUFR: Wind direction/speed (DDO/FFO) event reason code",Code table,0,0,10
+11,11221,"Mean wind direction for 1500 - 3000 m",Degree true,0,0,9
+11,11222,"Mean wind speed for 1500 - 3000 m",m/s,1,0,12
+11,11223,"10 m extrapolated wind speed",m/s,1,0,12
+11,11224,"20 m extrapolated wind speed",m/s,1,0,12
+11,11225,"10 meter wind reduction factor",Numeric,4,0,16
+11,11227,"Continuous wind direction",Degree true,0,0,9
+11,11228,"Continuous wind speed",m/s,1,0,12
+11,11229,"w-component",Pa/s,1,-512,10
+11,11230,"Ocean surface wind speed",m/s,1,0,12
+11,11231,"u-component of storm motion",m/s,1,-4096,13
+11,11232,"v-component of storm motion",m/s,1,-4096,13
+11,11233,"Storm relative helicity",m**2/s**2,1,-10000,15
+11,11235,"Turbulence index",Code table,0,0,6
+11,11236,"Turbulence index for period from 1 minute prior to observation time to observation time",Code table,0,0,6
+11,11237,"Turbulence index for period from 2 minutes prior to observation time to 1 minute prior to observation time",Code table,0,0,6
+11,11238,"Turbulence index for period from 3 minutes prior to observation time to 2 minutes prior to observation time",Code table,0,0,6
+11,11239,"Turbulence index for period from 4 minutes prior to observation time to 3 minutes prior to observation time",Code table,0,0,6
+11,11240,"PREPBUFR: u-, v-component wind (UOB/VOB) (quality) marker",Code table,0,0,5
+11,11241,"PREPBUFR: u-, v-component wind (UOB/VOB) event program code",Code table,0,0,5
+11,11242,"PREPBUFR: u-, v-component wind (UOB/VOB) event reason code",Code table,0,0,10
+11,11243,"PREPBUFR: Global forecast (background) u-component wind value",m/s,1,-4096,13
+11,11244,"PREPBUFR: Global forecast (background) v-component wind value",m/s,1,-4096,13
+11,11245,"PREPBUFR: Wind observation error",m/s,1,0,10
+11,11246,"PREPBUFR: Analyzed u-component wind value",m/s,1,-4096,13
+11,11247,"PREPBUFR: Analyzed v-component wind value",m/s,1,-4096,13
+11,11248,"PREPBUFR: Climatological u-component wind value",m/s,1,-4096,13
+11,11249,"PREPBUFR: Climatological v-component wind value",m/s,1,-4096,13
+11,11250,"PREPBUFR: Standard deviation of climatological u-component wind value",m/s,1,0,10
+11,11251,"PREPBUFR: Standard deviation of climatological v-component wind value",m/s,1,0,10
+11,11252,"PREPBUFR: Wind speed observation",kt,0,0,9
+11,11253,"PREPBUFR: Analysis-tuned wind observation error",m/s,1,0,10
+11,11254,"PREPBUFR: Model forecast (background) u-component wind value",m/s,1,-4096,13
+11,11255,"PREPBUFR: Model forecast (background) v-component wind value",m/s,1,-4096,13
+12,12193,"Temperature (city)",K,2,0,16
+12,12194,"Maximum temperature (city)",K,2,0,16
+12,12195,"Minimum temperature (city)",K,2,0,16
+12,12196,"1-hour minimum temperature at lowest model level",K,1,0,12
+12,12197,"1-hour maximum temperature at lowest model level",K,1,0,12
+12,12198,"Layer soil temperature",K,1,0,12
+12,12199,"1-hour average latent heat flux",W/m**2,1,-10000,15
+12,12200,"Daytime maximum temperature",K,1,0,12
+12,12201,"Nighttime minimum temperature",K,1,0,12
+12,12202,"1-hour average sub-surface heat flux",W/m**2,1,-5000,14
+12,12203,"1-hour average snow phase change heat flux",W/m**2,1,-10000,14
+12,12204,"Bottom soil temperature",K,1,0,12
+12,12205,"Potential temperature at 10 m",K,1,0,12
+12,12206,"Cold space temperature correction",K,2,0,10
+12,12210,"Cloud top temperature",K,2,0,16
+12,12211,"Maximum soil temperature",K,2,0,16
+12,12212,"Minimum soil temperature",K,2,0,16
+12,12213,"Road temperature",K,2,0,16
+12,12214,"Road liquid freeze temperature",K,2,0,16
+12,12221,"Convective latent heating rate",K/s,6,-6000,14
+12,12222,"Stable latent heating rate",K/s,6,-6000,14
+12,12233,"Brightness temperature for SSM/I 85 GHz channels",K,2,0,19
+12,12243,"PREPBUFR: Virtual temperature observation",oC,1,-2732,14
+12,12244,"PREPBUFR: Dew-point temperature observation",oC,1,-2732,14
+12,12245,"PREPBUFR: Temperature observation (dry-bulb or virtual)",oC,1,-2732,14
+12,12246,"PREPBUFR: Temperature (TOB) (quality) marker",Code table,0,0,5
+12,12247,"PREPBUFR: Temperature (TOB) event program code",Code table,0,0,5
+12,12248,"PREPBUFR: Temperature (TOB) event reason code",Code table,0,0,10
+12,12249,"PREPBUFR: Global forecast (background) temperature value",oC,1,-2732,14
+12,12250,"PREPBUFR: Temperature observation error",oC,1,0,10
+12,12251,"PREPBUFR: Analyzed temperature value",oC,1,-2732,14
+12,12252,"PREPBUFR: Climatological temperature value",oC,1,-2732,14
+12,12253,"PREPBUFR: Standard deviation of climatological temperature value",oC,1,0,10
+12,12254,"PREPBUFR: Analysis-tuned temperature observation error",oC,1,0,10
+12,12255,"PREPBUFR: Model forecast (background) temperature value",oC,1,-2732,14
+13,13192,"Cloud water",kg/m**2,2,0,12
+13,13193,"Total column precipitable water",kg/m**2,1,0,11
+13,13194,"Indicator for inclusion/omission of precipitation data",Code table,0,0,3
+13,13195,"Modified Showalter stability index",Numeric,0,-40,8
+13,13197,"Soil moisture",m,3,0,8
+13,13198,"Specific humidity at 2 m",kg/kg,5,0,14
+13,13199,"Total precipitation past 5 minutes",kg/m**2,1,-1,14
+13,13201,"Lifted index",K,2,-5000,14
+13,13202,"Precipitable water in layer bounded by 1.0 to 0.9 simga",kg/m**2,1,0,11
+13,13203,"Precipitable water in layer bounded by 0.9 to 0.7 simga",kg/m**2,1,0,11
+13,13204,"Precipitable water in layer bounded by 0.7 to 0.3 simga",kg/m**2,1,0,11
+13,13205,"Total rain rate",mm/hour,2,0,12
+13,13207,"Rain plus cloud water",mm,2,0,12
+13,13208,"Convective precipitation in past 1 hour",kg/m**2,2,-1,14
+13,13209,"Convective precipitation in past 3 hours",kg/m**2,2,-1,14
+13,13210,"Snow water equivalent",kg/m**2,2,0,18
+13,13212,"Canopy water",kg/m**2,3,0,11
+13,13213,"Stream velocity",m/s,2,-500,10
+13,13214,"Discharge",m**3/s,2,-8450000,25
+13,13215,"Convective rain rate",mm/hour,2,0,12
+13,13216,"1-hour accumulated snowfall",kg/m**2,1,-1,14
+13,13217,"Convective precipitation in past 1 hour",kg/m**2,1,-1,14
+13,13218,"1-hour accumulated snow melt",kg/m**2,2,0,14
+13,13219,"Convective precipitation in past 3 hours",kg/m**2,1,-1,14
+13,13220,"Soil moisture availability",%,0,0,8
+13,13222,"1-hour accumulated surface runoff",kg/m**2,2,0,15
+13,13224,"1-hour accumulated baseflow-groundwater runoff",kg/m**2,2,0,15
+13,13226,"Layer volumetric soil moisture",Numeric,3,0,10
+13,13227,"City total precipitation past 24 hours",kg/m**2,1,-1,14
+13,13228,"Snow report remarks",Code table,0,0,3
+13,13231,"Snow ratio from explicit cloud scheme",%,0,0,7
+13,13232,"Snow precipitation type",Code table,0,0,2
+13,13233,"Ice pellet precipitation type",Code table,0,0,2
+13,13234,"Freezing rain precipitation type",Code table,0,0,2
+13,13235,"Rain precipitation type",Code table,0,0,2
+13,13239,"Cloud water mixing ratio",kg/kg,5,0,16
+13,13240,"Specific humidity at 10 m",kg/kg,5,0,14
+13,13242,"PREPBUFR: Global forecast (background) saturation specific humidity value",mg/kg,0,0,16
+13,13243,"PREPBUFR: Lifted index",K,1,-50,10
+13,13244,"Ice mixing ratio",kg/kg,5,0,16
+13,13245,"PREPBUFR: Specific humidity observation",mg/kg,0,0,16
+13,13246,"PREPBUFR: Specific humidity (quality) marker",Code table,0,0,5
+13,13247,"PREPBUFR: Specific humidity event program code",Code table,0,0,5
+13,13248,"PREPBUFR: Specific humidity event reason code",Code table,0,0,10
+13,13249,"PREPBUFR: Global forecast (background) specific humidity value",mg/kg,0,0,16
+13,13250,"PREPBUFR: Relative humidity observation error",%*0.1,1,0,10
+13,13251,"PREPBUFR: Analyzed Specific humidity value",mg/kg,0,0,16
+13,13252,"PREPBUFR: Climatological Specific humidity value",mg/kg,0,0,16
+13,13253,"PREPBUFR: Standard deviation of climatological specific humidity value",mg/kg,0,0,16
+13,13254,"PREPBUFR: Analysis-tuned relative humidity observation error",%*0.1,1,0,10
+13,13255,"PREPBUFR: Model forecast (background) specific humidity value",mg/kg,0,0,16
+14,14194,"Short-wave heating rate",K/s,7,-12000,15
+14,14195,"Long-wave heating rate",K/s,7,-12000,15
+14,14198,"1-hour average downward short-wave flux",W/m**2,1,0,14
+14,14199,"1-hour average upward short-wave flux",W/m**2,1,-15000,14
+14,14200,"Percent of possible sunshine",%,0,0,7
+14,14201,"1-hour average upward long-wave flux",W/m**2,1,-8192,13
+14,14202,"1-hour average net long-wave flux at top",W/m**2,1,-8192,13
+14,14203,"1-hour average net short-wave flux at top",W/m**2,1,-15000,15
+14,14204,"Log 10 of cloud test results",Numeric,2,-300,10
+14,14226,"Net radiative heating rate",K/s,7,-12000,15
+15,15192,"Ozone mixing ratio",cm**3/m**3,4,0,17
+15,15193,"Aerosol optical thickness",m,2,-100,16
+15,15194,"Scattering angle",Degree,2,0,16
+15,15195,"Aerosol type land",Code table,0,0,4
+15,15196,"Algorithm flag for best ozone",Code table,0,0,16
+15,15202,"Log 10 of integrated electron density",log(1/m**2),3,13000,12
+20,20193,"Second runway visual range (RVR)",m,0,0,12
+20,20194,"Height of base of icing",m,-1,-40,16
+20,20195,"Height of top of icing",m,-1,-40,16
+20,20196,"Height of base of present weather",m,-1,-40,16
+20,20197,"Height of top of present weather",m,-1,-40,16
+20,20198,"Cloud cover in a layer",%,0,0,7
+20,20199,"Clouds from AVHRR (CLAVR) cloud mask",Code table,0,0,3
+20,20200,"Mean cloud cover (opaque), past 12 hours",%,0,0,7
+20,20201,"Height above surface of the base of the lowest cloud seen",Code table,0,0,4
+20,20208,"Ice concentration",%,0,0,7
+20,20209,"SSM/I ice age",Code table,0,0,2
+20,20210,"SSM/I ice edge",Code table,0,0,2
+20,20216,"SSM/I calculated surface type",Code table,0,0,5
+20,20217,"SSM/I surface tag",Code table,0,0,3
+20,20218,"Surface tag for SSM/I 85 GHz brightness temperature data",Code table,0,0,3
+20,20219,"WindSat surface type",Code table,0,0,3
+20,20220,"Road liquid ice percent",%,0,0,7
+20,20221,"Road liquid ice depth",m,2,0,12
+20,20222,"Road state",Code table,0,0,5
+20,20226,"Low cloud pressure",Pa,-1,0,14
+20,20227,"Middle cloud pressure",Pa,-1,0,14
+20,20228,"High cloud pressure",Pa,-1,0,14
+20,20231,"Green vegetation cover",%,0,0,7
+20,20246,"PREPBUFR: Cloud top pressure (quality) marker",Code table,0,0,5
+20,20247,"PREPBUFR: Cloud top pressure event program code",Code table,0,0,5
+20,20248,"PREPBUFR: Cloud top pressure event reason code",Code table,0,0,10
+20,20249,"PREPBUFR: Global forecast (background) cloud top pressure value",Pa,-1,0,14
+20,20250,"PREPBUFR: Cloud top pressure observation error",Pa,-1,0,10
+20,20251,"PREPBUFR: Analyzed cloud top pressure value",Pa,-1,0,14
+21,21194,"Radial wind superob radial wind speed",m/s,1,-4096,13
+21,21195,"Radial wind superob azimuth",Degree,2,0,16
+21,21196,"Standard deviation of radial wind superob wind speed",m/s,1,0,12
+21,21197,"Volume coverage pattern",Numeric,0,0,10
+21,21226,"PREPBUFR: ERS incident angle number 1",Degree,1,0,12
+21,21227,"PREPBUFR: ERS incident angle number 2",Degree,1,0,12
+21,21228,"PREPBUFR: ERS incident angle number 3",Degree,1,0,12
+21,21231,"PREPBUFR: ERS azimuth angle number 1",Degree,1,0,12
+21,21232,"PREPBUFR: ERS azimuth angle number 2",Degree,1,0,12
+21,21233,"PREPBUFR: ERS azimuth angle number 3",Degree,1,0,12
+21,21236,"PREPBUFR: ERS backscatter number 1",dB,2,-5000,13
+21,21237,"PREPBUFR: ERS backscatter number 2",dB,2,-5000,13
+21,21238,"PREPBUFR: ERS backscatter number 3",dB,2,-5000,13
+21,21241,"PREPBUFR: ERS error estimate number 1",%,0,0,7
+21,21242,"PREPBUFR: ERS error estimate number 2",%,0,0,7
+21,21243,"PREPBUFR: ERS error estimate number 3",%,0,0,7
+22,22193,"Sea temperature at specified depth",K,2,0,15
+22,22194,"Averaging period for TRACKOB parameters",Code table,0,0,4
+22,22196,"Indicator for units of sea-surface current speed",Code table,0,0,2
+22,22197,"Sea-level height deviation from 3-year mean of 1993-1995",m,4,-30000,16
+22,22198,"Number of altimeter records averaged to obtain sea-level height deviation from 3-year mean of 1993-1995",Numeric,0,0,6
+22,22199,"Sea-level height deviation from 8-year mean of 1993-2000",m,6,-4200000,23
+22,22211,"NGDR satellite pass time",Second,0,0,31
+22,22212,"NGDR satellite cycle number",Numeric,0,0,32
+22,22214,"NGDR SSH corrected",m,3,-1000000,24
+22,22216,"NGDR sigma-0",dB,2,0,12
+22,22217,"NGDR inverse barometer",m,3,-500,12
+22,22218,"NGDR geiod height",m,3,-1500000,22
+22,22219,"NGDR mean sea surface I",m,3,-1500000,22
+22,22220,"NGDR mean sea surface II",m,3,-1500000,22
+22,22222,"NGDR net SHW corrected",m,2,-16767,17
+22,22224,"NGDR brightness temperature at 22GHz",K,2,0,15
+22,22225,"NGDR brightness temperature at 37GHz",K,2,0,15
+22,22226,"Tide elevation with respect to mean lower low water",m,3,-9999,15
+22,22227,"Reliability of sea-surface temperature retrieval (higher number means more reliable)",Numeric,0,0,15
+22,22228,"Internal RMS error of sea-surface temperature retrieval",K,0,0,15
+22,22246,"PREPBUFR: Sea temperature (quality) marker",Code table,0,0,5
+22,22247,"PREPBUFR: Sea temperature event program code",Code table,0,0,5
+22,22248,"PREPBUFR: Sea temperature event reason code",Code table,0,0,10
+22,22249,"PREPBUFR: Global forecast (background) sea temperature value",K,2,0,15
+22,22250,"PREPBUFR: Sea temperature observation error",K,1,0,10
+22,22251,"PREPBUFR: Analyzed sea temperature value",K,2,0,15
+25,25193,"NMC 15 day sea-surface temperature availability",Code table,0,0,2
+25,25194,"HIRS channel 8/surface air temperature difference",Code table,0,0,2
+25,25201,"Satellite wind deep layer moisture flag",Code table,0,0,2
+25,25203,"GOES I/M temperature (skin) channel selection flag",Flag table,0,0,4
+25,25204,"NSTAR average value",Numeric,3,-5000,14
+25,25205,"RTOVS filter flag",Code table,0,0,3
+25,25220,"Total delay",m,4,0,16
+25,25221,"Error in total delay",m,4,0,9
+25,25222,"Hydrostatic delay",m,4,0,16
+25,25223,"Error in hydrostatic delay",m,4,0,9
+25,25224,"Weighted mean temperature",K,2,0,16
+25,25225,"Wet delay mapping function",Numeric,3,0,13
+33,33192,"SDMEDIT quality mark for geopotential",Code table,0,0,4
+33,33193,"SDMEDIT/QUIPS quality mark for air temperature",Code table,0,0,4
+33,33194,"SDMEDIT/QUIPS quality mark for moisture",Code table,0,0,4
+33,33195,"SDMEDIT/QUIPS quality mark for wind (does not include NESDIS produced satellite winds)",Code table,0,0,4
+33,33196,"Per cent confidence based on NESDIS recursive filter function (satellite winds)",%,0,0,8
+33,33197,"Per cent confidence based on EUMETSAT quality index with forecast consistency test (satellite winds)",%,0,0,8
+33,33198,"Per cent confidence based on EUMETSAT quality index without forecast consistency test (satellite winds)",%,0,0,8
+33,33199,"Chi-squared",Numeric,2,0,17
+33,33200,"WindSat EDR quality flag-1",Flag table,0,0,31
+33,33201,"Estimated error covariance for wind direction retrieval",Degree true,1,0,12
+33,33202,"Radiosonde report diagnostic code",Code table,0,0,8
+33,33203,"Per cent confidence based on NESDIS expected error (satellite winds)",%,0,0,8
+33,33204,"PREPBUFR: Analysis variational qc weight on  pressure observation based on guess",%,0,0,7
+33,33205,"PREPBUFR: Analysis variational qc weight on pressure observation based on analysis",%,0,0,7
+33,33206,"PREPBUFR: Analysis variational qc weight on temperature observation based on guess",%,0,0,7
+33,33207,"SDMEDIT/QUIPS quality mark for pressure",Code table,0,0,4
+33,33208,"SDMEDIT/QUIPS quality mark for wave height",Code table,0,0,4
+33,33209,"PREPBUFR: Analysis variational qc weight on temperature observation based on analysis",%,0,0,7
+33,33210,"PREPBUFR: Analysis variational qc weight on moisture observation based on guess",%,0,0,7
+33,33211,"PREPBUFR: Analysis variational qc weight on moisture observation based on analysis",%,0,0,7
+33,33212,"PREPBUFR: Analysis variational qc weight on wind observation based on guess",%,0,0,7
+33,33213,"PREPBUFR: Analysis variational qc weight on wind observation based on analysis",%,0,0,7
+33,33214,"PREPBUFR: Analysis variational qc weight on total precipitable water observation based on guess",%,0,0,7
+33,33215,"Corrected report indicator",Code table,0,0,3
+33,33216,"SDMEDIT quality mark for NESDIS produced satellite winds",Code table,0,0,4
+33,33217,"SSM/I rain flag (derived wind product quality indicator)",Code table,0,0,3
+33,33218,"SDMEDIT quality mark for sea-surface temperature",Code table,0,0,4
+33,33219,"MODS QC results flag",Flag table,0,0,8
+33,33220,"FSL QC data flag",CCITT IA5,0,0,8
+33,33221,"FSL QC applied flag for surface data (surface, hydro, satellite winds)",Flag table,0,0,11
+33,33222,"FSL QC results flag for surface data (surface, hydro, satellite winds)",Flag table,0,0,11
+33,33223,"FSL QC applied flag for upper air data (radiosonde, NPN and CAP profiler, ACARS, ACARSP, radiometer, TAMDAR)",Flag table,0,0,13
+33,33224,"FSL QC results flag for upper air data (radiosonde, NPN and CAP profiler, ACARS, ACARSP, radiometer, TAMDAR)",Flag table,0,0,13
+33,33225,"FSL decoding correction indicator",Code table,0,0,4
+33,33226,"FSL location interpolation indicator",Code table,0,0,2
+33,33227,"FSL time interpolation indicator",Code table,0,0,2
+33,33228,"PREPBUFR: Analysis variational qc weight on total precipitable water observation based on analysis",%,0,0,7
+33,33230,"SHEF data revision flag",Code table,0,0,2
+33,33231,"SHEF data qualifier flag",Code table,0,0,5
+33,33233,"AMSR-E Level 2 ocean summary quality code",Code table,0,0,3
+33,33234,"AMSR-E Level 2 ocean product quality flag",Flag table,0,0,24
+33,33238,"Data quality check indicator",Same as code table for 0-33-015,0,0,6
+33,33239,"Quality control indicator for temperature/ salinity profile",Same as code table for 0-33-020,0,0,3
+33,33240,"Quality control indicator for current profile",Same as code table for 0-33-020,0,0,3
+33,33245,"Estimated error covariance for sea surface temperature retrieval",K,2,0,16
+33,33246,"Estimated error covariance for wind speed retrieval",m/s,2,0,15
+33,33247,"Estimated error covariance for total water vapor retrieval",kg/m**2,2,0,14
+33,33248,"Estimated error covariance for total cloud liquid water retrieval",kg/m**2,3,0,14
+33,33249,"NRL aircraft quality mark",CCITT IA5,0,0,8
+33,33250,"Quality mark for reflectivities along radial line",Code table,0,0,3
+33,33251,"Quality mark for winds along radial line",Code table,0,0,3
+33,33254,"2-bit indicator of quality",Code table,0,0,2
+33,33255,"1-bit indicator of quality",Code table,0,0,1
+35,35194,"Bulletin being monitored (BBB)",CCITT IA5,0,0,48
+35,35195,"Channel sequence number",CCITT IA5,0,0,32
+35,35200,"Restrictions on redistribution",Flag table,0,0,9
+35,35201,"Expiration of restrictions on redistribution",Hour,0,0,8
+49,49001,"Record id",Numeric,0,0,10
+49,49002,"Sequence number",Numeric,0,0,8
+49,49003,"Subsatellite latitude",Degree,2,-9000,15
+49,49004,"Subsatellite longitude",Degree,2,-18000,16
+49,49005,"View latitude total ozone",Degree,2,-9000,15
+49,49006,"View longitude total ozone",Degree,2,-18000,16
+49,49007,"Solar zenith angle",Degree,2,-18000,16
+49,49008,"N-value CCR 339.8 nm",Numeric,0,0,10
+49,49009,"N-value CCR 331.2 nm",Numeric,0,0,10
+49,49010,"N-value CCR 317.5 nm",Numeric,0,0,10
+49,49011,"N-value CCR 312.5 nm",Numeric,0,0,10
+49,49012,"N-value MONO 339.8 nm",Numeric,0,0,10
+49,49013,"N-value MONO 331.2 nm",Numeric,0,0,10
+49,49014,"N-value MONO 317.5 nm",Numeric,0,0,10
+49,49015,"N-value MONO 312.5 nm",Numeric,0,0,10
+49,49016,"Gain sel code 4 wavelengths + 305 nm",Numeric,0,0,16
+49,49017,"Grating differences channels 1-6",Code table,1,0,24
+49,49018,"Total ozone best estimated TOVS cloud height",m ATM cm,2,0,17
+49,49019,"Field-of-view averaged cloud top pressure",ATM,2,0,7
+49,49020,"Pressure of reflected surface estimated using TOVS",ATM,2,0,7
+49,49021,"Reflectivity average for TOVS",Numeric,2,0,7
+49,49022,"Per cent cloud from CCR",%,0,0,7
+49,49023,"Ozone error flag for TOVS total ozone",Code table,0,0,5
+49,49024,"Total ozone A-pair",m ATM cm,2,0,17
+49,49025,"Ozone A-pair sensitivity",(m ATM cm)**-1,2,0,7
+49,49026,"Reflectivity average for A-pair",Numeric,2,0,7
+49,49027,"Ozone weight A-pair",Numeric,2,0,7
+49,49028,"Total B-pair ozone",m ATM cm,2,0,17
+49,49029,"Ozone B-pair sensitivity",(m ATM cm)**-1,2,0,7
+49,49030,"Reflectivity average for B-pair",Numeric,2,0,7
+49,49031,"Ozone weight B-pair",Numeric,2,0,7
+49,49032,"Total ozone best estimate based on climatological cloud height",m ATM cm,2,0,17
+49,49033,"Total C-pair ozone",m ATM cm,2,0,17
+49,49034,"Pressure of reflected surface estimated without TOVS",ATM,2,0,7
+49,49035,"Reflectivity average",Numeric,2,0,7
+49,49036,"Ozone C-pair sensitivity",(m ATM cm)**-1,2,0,7
+49,49037,"Ozone error flag for best ozone",Code table,0,0,5
+49,49038,"Table selection index",Code table,2,-1000,12
+49,49039,"Grating differences channels 7-12",Code table,1,0,24
+49,49040,"Reflectivity differences (photo/mono)",Numeric,2,-10,10
+49,49041,"Terrain/surface pressure",ATM,2,0,7
+49,49042,"Total D-pair ozone",m ATM cm,2,0,17
+49,49043,"Sulfur dioxide index (provides a measure of SO2 contamination)",Numeric,2,-100000,18
+49,49044,"0 total B ozone",m ATM cm,2,0,17
+49,49045,"View latitude profile ozone",Degree,2,-9000,15
+49,49046,"View longitude profile ozone",Degree,2,-18000,16
+49,49047,"Solar zenith angle for profile ozone",Degree,2,-18000,16
+49,49048,"N-value CCR 252.2 nm",Numeric,0,0,10
+49,49049,"N-value CCR 275.3 nm",Numeric,0,0,10
+49,49050,"N-value CCR 283.0 nm",Numeric,0,0,10
+49,49051,"N-value CCR 287.6 nm",Numeric,0,0,10
+49,49052,"N-value CCR 292.2 nm",Numeric,0,0,10
+49,49053,"N-value CCR 297.5 nm",Numeric,0,0,10
+49,49054,"N-value CCR 301.9 nm",Numeric,0,0,10
+49,49055,"N-value CCR 305.8 nm",Numeric,0,0,10
+49,49056,"N-value MONO 252.2 nm",Numeric,0,0,10
+49,49057,"N-value MONO 275.3 nm",Numeric,0,0,10
+49,49058,"N-value MONO 283.0 nm",Numeric,0,0,10
+49,49059,"N-value MONO 287.6 nm",Numeric,0,0,10
+49,49060,"N-value MONO 292.2 nm",Numeric,0,0,10
+49,49061,"N-value MONO 297.5 nm",Numeric,0,0,10
+49,49062,"N-value MONO 301.9 nm",Numeric,0,0,10
+49,49063,"N-value MONO 305.8 nm",Numeric,0,0,10
+49,49064,"Gain sel code first 4 wavelengths",Numeric,0,0,16
+49,49065,"Gain sel code last 4 wavelengths",Numeric,0,0,16
+49,49066,"First guess layer ozone 12 .25-.12 mb",m ATM cm,2,0,16
+49,49067,"First guess layer ozone 11 .5-.25 mb",m ATM cm,2,0,16
+49,49068,"First guess layer ozone 10 1-.5 mb",m ATM cm,2,0,16
+49,49069,"First guess layer ozone 9 2-1 mb",m ATM cm,2,0,16
+49,49070,"First guess layer ozone 8 4-2 mb",m ATM cm,2,0,16
+49,49071,"First guess layer ozone 7 8-4 mb",m ATM cm,2,0,16
+49,49072,"First guess layer ozone 6 16-8 mb",m ATM cm,2,0,16
+49,49073,"First guess layer ozone 5 32-16 mb",m ATM cm,2,0,16
+49,49074,"First guess layer ozone 4 64-32 mb",m ATM cm,2,0,16
+49,49075,"First guess layer ozone 3 127-64 mb",m ATM cm,2,0,16
+49,49076,"First guess layer ozone 2 250-127 mb",m ATM cm,2,0,16
+49,49077,"First guess layer ozone 1 1013-250 mb",m ATM cm,2,0,16
+49,49078,"Total ozone a-priori profile",m ATM cm,2,0,17
+49,49079,"Q-vals corrected for multi-scat/refl 252.2 nm",Numeric,2,0,24
+49,49080,"Q-vals corrected for multi-scat/refl 275.3 nm",Numeric,2,0,24
+49,49081,"Q-vals corrected for multi-scat/refl 283.0 nm",Numeric,2,0,24
+49,49082,"Q-vals corrected for multi-scat/refl 287.6 nm",Numeric,2,0,24
+49,49083,"Q-vals corrected for multi-scat/refl 292.2 nm",Numeric,2,0,24
+49,49084,"Q-vals corrected for multi-scat/refl 297.5 nm",Numeric,2,0,24
+49,49085,"Q-vals corrected for multi-scat/refl 301.9 nm",Numeric,2,0,24
+49,49086,"Q-vals corrected for multi-scat/refl 305.8 nm",Numeric,2,0,24
+49,49087,"Q-vals corrected for multi-scat/refl 312.5 nm",Numeric,2,0,24
+49,49088,"Q-vals corrected for multi-scat/refl 317.5 nm",Numeric,2,0,24
+49,49089,"Initial residue 252.2 nm",%,0,0,7
+49,49090,"Initial residue 275.3 nm",%,0,0,7
+49,49091,"Initial residue 283.0 nm",%,0,0,7
+49,49092,"Initial residue 287.6 nm",%,0,0,7
+49,49093,"Initial residue 292.2 nm",%,0,0,7
+49,49094,"Initial residue 297.5 nm",%,0,0,7
+49,49095,"Initial residue 301.9 nm",%,0,0,7
+49,49096,"Initial residue 308.8 nm",%,0,0,7
+49,49097,"Initial residue 312.5 nm",%,0,0,7
+49,49098,"Initial residue 317.5 nm",%,0,0,7
+49,49099,"Multi scat corrected to Q 297.5 nm",Numeric,2,0,7
+49,49100,"Multi scat corrected to Q 301.9 nm",Numeric,2,0,7
+49,49101,"Multi scat corrected to Q 305.8 nm",Numeric,2,0,7
+49,49102,"Multi scat corrected to Q 312.5 nm",Numeric,2,0,7
+49,49103,"Multi scat corrected to Q 317.5 nm",Numeric,2,0,7
+49,49104,"Reflectivities 297.5 nm",Numeric,2,0,7
+49,49105,"Reflectivities 301.9 nm",Numeric,2,0,7
+49,49106,"Reflectivities 305.8 nm",Numeric,2,0,7
+49,49107,"Reflectivities 312.5 nm",Numeric,2,0,7
+49,49108,"Reflectivities 317.5 nm",Numeric,2,0,7
+49,49109,"Multi scat sensitivity 297.5 nm",(m ATM cm)**-1,2,0,7
+49,49110,"Multi scat sensitivity 301.9 nm",(m ATM cm)**-1,2,0,7
+49,49111,"Multi scat sensitivity 305.8 nm",(m ATM cm)**-1,2,0,7
+49,49112,"Multi scat sensitivity 312.5 nm",(m ATM cm)**-1,2,0,7
+49,49113,"Multi scat sensitivity 317.5 nm",(m ATM cm)**-1,2,0,7
+49,49114,"Multi scat mix. fract. 297.5 nm",Numeric,2,0,11
+49,49115,"Multi scat mix. fract. 301.9 nm",Numeric,2,0,11
+49,49116,"Multi scat mix. fract. 305.8 nm",Numeric,2,0,11
+49,49117,"Multi scat mix. fract. 312.5 nm",Numeric,2,0,11
+49,49118,"Multi scat mix. fract. 317.5 nm",Numeric,2,0,11
+49,49119,"Final residues 252.2 nm",%,0,0,7
+49,49120,"Final residues 275.3 nm",%,0,0,7
+49,49121,"Final residues 283.0 nm",%,0,0,7
+49,49122,"Final residues 287.6 nm",%,0,0,7
+49,49123,"Final residues 292.2 nm",%,0,0,7
+49,49124,"Final residues 297.5 nm",%,0,0,7
+49,49125,"Final residues 301.9 nm",%,0,0,7
+49,49126,"Final residues 305.8 nm",%,0,0,7
+49,49127,"Final residues 312.5 nm",%,0,0,7
+49,49128,"Final residues 317.5 nm",%,0,0,7
+49,49129,"Solution profile layer ozone 12  .25-.12 mb",m ATM cm,2,0,16
+49,49130,"Solution profile layer ozone 11  .5-.25 mb",m ATM cm,2,0,16
+49,49131,"Solution profile layer ozone 10  1-.5 mb",m ATM cm,2,0,16
+49,49132,"Solution profile layer ozone 9  2-1 mb",m ATM cm,2,0,16
+49,49133,"Solution profile layer ozone 8  4-2 mb",m ATM cm,2,0,16
+49,49134,"Solution profile layer ozone 7  8-4 mb",m ATM cm,2,0,16
+49,49135,"Solution profile layer ozone 6  16-8 mb",m ATM cm,2,0,16
+49,49136,"Solution profile layer ozone 5  32-16 mb",m ATM cm,2,0,16
+49,49137,"Solution profile layer ozone 4  64-32 mb",m ATM cm,2,0,16
+49,49138,"Solution profile layer ozone 3  127-64 mb",m ATM cm,2,0,16
+49,49139,"Solution profile layer ozone 2  250-127 mb",m ATM cm,2,0,16
+49,49140,"Solution profile layer ozone 1  1013-250 mb",m ATM cm,2,0,16
+49,49141,"Solution profile standard deviation layer ozone 12 .25-.12 mb",%,0,0,7
+49,49142,"Solution profile standard deviation layer ozone 11 .5-.25 mb",%,0,0,7
+49,49143,"Solution profile standard deviation layer ozone 10 1-.5 mb",%,0,0,7
+49,49144,"Solution profile standard deviation layer ozone 9 2-1 mb",%,0,0,7
+49,49145,"Solution profile standard deviation layer ozone 8 4-2 mb",%,0,0,7
+49,49146,"Solution profile standard deviation layer ozone 7 8-4 mb",%,0,0,7
+49,49147,"Solution profile standard deviation layer ozone 6 16-8 mb",%,0,0,7
+49,49148,"Solution profile standard deviation layer ozone 5 32-16 mb",%,0,0,7
+49,49149,"Solution profile standard deviation layer ozone 4 64-32 mb",%,0,0,7
+49,49150,"Solution profile standard deviation layer ozone 3 127-64 mb",%,0,0,7
+49,49151,"Solution profile standard deviation layer ozone 2 250-127 mb",%,0,0,7
+49,49152,"Solution profile standard deviation layer ozone 1 1013-250 mb",%,0,0,7
+49,49153,"Total ozone for solution profile",m ATM cm,2,0,17
+49,49154,"Ozone error flag for profile",Code table,0,0,4
+49,49155,"Upper-level profile parameter c",m ATM cm,2,0,17
+49,49156,"Upper-level profile parameter sigma",m ATM cm,2,0,17
+49,49157,"Ozone mixing ratio level 1 .3 mb",mg/g,2,0,13
+49,49158,"Ozone mixing ratio level 2 .4 mb",mg/g,2,0,13
+49,49159,"Ozone mixing ratio level 3 .5 mb",mg/g,2,0,13
+49,49160,"Ozone mixing ratio level 4 .7 mb",mg/g,2,0,13
+49,49161,"Ozone mixing ratio level 5 1.0 mb",mg/g,2,0,13
+49,49162,"Ozone mixing ratio level 6 1.5 mb",mg/g,2,0,13
+49,49163,"Ozone mixing ratio level 7 2.0 mb",mg/g,2,0,13
+49,49164,"Ozone mixing ratio level 8 3.0 mb",mg/g,2,0,13
+49,49165,"Ozone mixing ratio level 9 4.0 mb",mg/g,2,0,13
+49,49166,"Ozone mixing ratio level 10 5.0 mb",mg/g,2,0,13
+49,49167,"Ozone mixing ratio level 11 7.0 mb",mg/g,2,0,13
+49,49168,"Ozone mixing ratio level 12 10.0 mb",mg/g,2,0,13
+49,49169,"Ozone mixing ratio level 13 15.0 mb",mg/g,2,0,13
+49,49170,"Ozone mixing ratio level 14 20.0 mb",mg/g,2,0,13
+49,49171,"Ozone mixing ratio level 15 30.0 mb",mg/g,2,0,13
+49,49172,"Ozone mixing ratio level 16 40.0 mb",mg/g,2,0,13
+49,49173,"Ozone mixing ratio level 17 50.0 mb",mg/g,2,0,13
+49,49174,"Ozone mixing ratio level 18 70.0 mb",mg/g,2,0,13
+49,49175,"Ozone mixing ratio level 19 100.0 mb",mg/g,2,0,13
+49,49176,"Layer ozone standard deviation 1st guess layer 12",%,0,0,7
+49,49177,"Layer ozone standard deviation 1st guess layer 11",%,0,0,7
+49,49178,"Layer ozone standard deviation 1st guess layer 10",%,0,0,7
+49,49179,"Layer ozone standard deviation 1st guess layer 9",%,0,0,7
+49,49180,"Layer ozone standard deviation 1st guess layer 8",%,0,0,7
+49,49181,"Layer ozone standard deviation 1st guess layer 7",%,0,0,7
+49,49182,"Layer ozone standard deviation 1st guess layer 6",%,0,0,7
+49,49183,"Layer ozone standard deviation 1st guess layer 5",%,0,0,7
+49,49184,"Layer ozone standard deviation 1st guess layer 4",%,0,0,7
+49,49185,"Layer ozone standard deviation 1st guess layer 3",%,0,0,7
+49,49186,"Layer ozone standard deviation 1st guess layer 2",%,0,0,7
+49,49187,"Layer ozone standard deviation 1st guess layer 1",%,0,0,7
+49,49188,"Standard deviation q-vals mult scat and refl 252.2 nm",%,0,0,7
+49,49189,"Standard deviation q-vals mult scat and refl 275.3 nm",%,0,0,7
+49,49190,"Standard deviation q-vals mult scat and refl 283.0 nm",%,0,0,7
+49,49191,"Standard deviation q-vals mult scat and refl 287.6 nm",%,0,0,7
+49,49192,"Standard deviation q-vals mult scat and refl 292.2 nm",%,0,0,7
+49,49193,"Standard deviation q-vals mult scat and refl 297.5 nm",%,0,0,7
+49,49194,"Standard deviation q-vals mult scat and refl 301.9 nm",%,0,0,7
+49,49195,"Standard deviation q-vals mult scat and refl 305.8 nm",%,0,0,7
+49,49196,"Standard deviation q-vals mult scat and refl 312.5 nm",%,0,0,7
+49,49197,"Standard deviation q-vals mult scat and refl 317.5 nm",%,0,0,7
+49,49198,"Number of iterations for profile solution",Numeric,0,0,7
+49,49199,"Volcano contamination index",Numeric,2,-1000,12
+49,49200,"Solar azimuth angle at field-of-view start of scan",Degree,2,-18000,16
+49,49201,"Ozone sensitivity D-pair",(m ATM cm)**-1,2,0,7
+49,49202,"Ozone sensitivity B'",(m ATM cm)**-1,2,0,7
+49,49203,"Solar zenith angle at start of scan",rad,4,0,29
+49,49204,"Solar zenith angle at start of scan",rad,4,0,29
+50,50001,"PREPBUFR: Report sequence number",Numeric,0,0,19
+50,50002,"File name string",CCITT IA5,0,0,64
+50,50003,"PREPBUFR: Process number for this MPI run",Numeric,0,0,7
+50,50004,"BUFR message number",Numeric,0,0,7
+50,50005,"PREPBUFR: File name of data source",CCITT IA5,0,0,24
+50,50192,"PREPBUFR: Convective available potential energy",J/kg,0,0,14
+50,50193,"PREPBUFR: Convective inhibition",J/kg,0,-3890,12
+51,51001,"PREPBUFR: Rainfall (average rate) (quality) marker",Code table,0,0,5
+51,51002,"PREPBUFR: Rainfall (average rate) event program code",Code table,0,0,5
+51,51003,"PREPBUFR: Rainfall (average rate) event reason code",Code table,0,0,10
+51,51004,"PREPBUFR: Global forecast (background) rainfall (average rate) value",kg m**-2 s**-1,6,0,18
+51,51005,"PREPBUFR: Rainfall (average rate) observation error",kg m**-2 s**-1,6,0,18
+51,51006,"PREPBUFR: Analyzed rainfall (average rate) value",kg m**-2 s**-1,6,0,18
+51,51021,"PREPBUFR: Total precipitable water (quality) marker",Code table,0,0,5
+51,51022,"PREPBUFR: Total precipitable water event program code",Code table,0,0,5
+51,51023,"PREPBUFR: Total precipitable water event reason code",Code table,0,0,10
+51,51024,"PREPBUFR: Global forecast (background) total precipitable water value",kg/m**2,1,0,11
+51,51025,"PREPBUFR: Total precipitable water observation error",kg/m**2,1,0,10
+51,51026,"PREPBUFR: Analyzed total precipitable water value",kg/m**2,1,0,11
+51,51027,"PREPBUFR: Analysis-tuned total precipitable water observation error",kg/m**2,1,0,10
+51,51030,"PREPBUFR: Model forecast (background) total precipitable water value",kg/m**2,1,0,11
+51,51032,"PREPBUFR: Precipitable water in layer bounded by 1.0 to 0.9 sigma (quality) marker",Code table,0,0,5
+51,51033,"PREPBUFR: Precipitable water in layer bounded by 1.0 to 0.9 sigma event program code",Code table,0,0,5
+51,51034,"PREPBUFR: Precipitable water in layer bounded by 1.0 to 0.9 sigma event reason code",Code table,0,0,10
+51,51035,"PREPBUFR: Global forecast (background) precipitable water value in layer bounded by 1.0 to 0.9 sigma",kg/m**2,1,0,11
+51,51036,"PREPBUFR: Precipitable water in layer bounded by 1.0 to 0.9 sigma observation error",kg/m**2,1,0,10
+51,51037,"PREPBUFR: Analyzed precipitable water value in layer bounded by 1.0 to 0.9 sigma",kg/m**2,1,0,11
+51,51040,"PREPBUFR: Model forecast (background) precipitable water value in layer bounded by 1.0 to 0.9 sigma",kg/m**2,1,0,11
+51,51042,"PREPBUFR: Precipitable water in layer bounded by 0.9 to 0.7 sigma (quality) marker",Code table,0,0,5
+51,51043,"PREPBUFR: Precipitable water in layer bounded by 0.9 to 0.7 sigma event program code",Code table,0,0,5
+51,51044,"PREPBUFR: Precipitable water in layer bounded by 0.9 to 0.7 sigma event reason code",Code table,0,0,10
+51,51045,"PREPBUFR: Global forecast (background) precipitable water value in layer bounded by 0.9 to 0.7 sigma",kg/m**2,1,0,11
+51,51046,"PREPBUFR: Precipitable water in layer bounded by 0.9 to 0.7 sigma observation error",kg/m**2,1,0,10
+51,51047,"PREPBUFR: Analyzed precipitable water value in layer bounded by 0.9 to 0.7 sigma",kg/m**2,1,0,11
+51,51050,"PREPBUFR: Model forecast (background) precipitable water value in layer bounded by 0.9 to 0.7 sigma",kg/m**2,1,0,11
+51,51052,"PREPBUFR: Precipitable water in layer bounded by 0.7 to 0.3 sigma (quality) marker",Code table,0,0,5
+51,51053,"PREPBUFR: Precipitable water in layer bounded by 0.7 to 0.3 sigma event program code",Code table,0,0,5
+51,51054,"PREPBUFR: Precipitable water in layer bounded by 0.7 to 0.3 sigma event reason code",Code table,0,0,10
+51,51055,"PREPBUFR: Global forecast (background) precipitable water value in layer bounded by 0.7 to 0.3 sigma",kg/m**2,1,0,11
+51,51056,"PREPBUFR: Precipitable water in layer bounded by 0.7 to 0.3 sigma observation error",kg/m**2,1,0,10
+51,51057,"PREPBUFR: Analyzed precipitable water value in layer bounded by 0.7 to 0.3 sigma",kg/m**2,1,0,11
+51,51060,"PREPBUFR: Model forecast (background) precipitable water value in layer bounded by 0.7 to 0.3 sigma",kg/m**2,1,0,11
+51,51061,"PREPBUFR: Precipitable water observation in layer bounded by 0.3 to 0.0 simga",kg/m**2,1,0,11
+51,51062,"PREPBUFR: Precipitable water in layer bounded by 0.3 to 0.0 sigma (quality) marker",Code table,0,0,5
+51,51063,"PREPBUFR: Precipitable water in layer bounded by 0.3 to 0.0 sigma event program code",Code table,0,0,5
+51,51064,"PREPBUFR: Precipitable water in layer bounded by 0.3 to 0.0 sigma event reason code",Code table,0,0,10
+51,51065,"PREPBUFR: Global forecast (background) precipitable water value in layer bounded by 0.3 to 0.0 sigma",kg/m**2,1,0,11
+51,51066,"PREPBUFR: Precipitable water in layer bounded by 0.3 to 0.0 sigma observation error",kg/m**2,1,0,10
+51,51067,"PREPBUFR: Analyzed precipitable water value in layer bounded by 0.3 to 0.0 sigma",kg/m**2,1,0,11
+51,51070,"PREPBUFR: Model forecast (background) precipitable water value in layer bounded by 0.3 to 0.0 sigma",kg/m**2,1,0,11
+55,55006,"NMC (now NCEP) report type",Code table,0,0,10
+55,55007,"PREPBUFR: PREPBUFR report type",Code table: GFS/GDAS Code table: CDAS/Reanalysis Code table: NAM/NDAS Code table: RUC,0,0,9
+55,55008,"PREPBUFR: Data dump report type",Code table,0,0,10
+55,55009,"PREPBUFR: Report subtype",Code table,0,0,10
+58,58008,"Raw report string",CCITT IA5,0,0,64
+58,58009,"MESONET provider id string",CCITT IA5,0,0,64
+58,58010,"MESONET subprovider id string",CCITT IA5,0,0,64
+60,60001,"Probability of liquid equivalent precipitation > 0.01 inch, past 6 hours",%,0,0,7
+60,60002,"Probability of liquid equivalent precipitation > 0.01 inch, past 12 hours",%,0,0,7
+60,60003,"Probability of liquid equivalent precipitation > 0.01 inch, past 24 hours",%,0,0,7
+60,60004,"Probability of liquid equivalent precipitation > 0.10 inch, past 6 hours",%,0,0,7
+60,60005,"Probability of liquid equivalent precipitation > 0.10 inch, past 12 hours",%,0,0,7
+60,60006,"Probability of liquid equivalent precipitation > 0.10 inch, past 24 hours",%,0,0,7
+60,60007,"Probability of liquid equivalent precipitation > 0.25 inch, past 6 hours",%,0,0,7
+60,60008,"Probability of liquid equivalent precipitation > 0.25 inch, past 12 hours",%,0,0,7
+60,60009,"Probability of liquid equivalent precipitation > 0.25 inch, past 24 hours",%,0,0,7
+60,60010,"Probability of liquid equivalent precipitation > 0.50 inch, past 6 hours",%,0,0,7
+60,60011,"Probability of liquid equivalent precipitation > 0.50 inch, past 12 hours",%,0,0,7
+60,60012,"Probability of liquid equivalent precipitation > 0.50 inch, past 24 hours",%,0,0,7
+60,60013,"Probability of liquid equivalent precipitation > 1.00 inch, past 6 hours",%,0,0,7
+60,60014,"Probability of liquid equivalent precipitation > 1.00 inch, past 12 hours",%,0,0,7
+60,60015,"Probability of liquid equivalent precipitation > 1.00 inch, past 24 hours",%,0,0,7
+60,60016,"Probability of liquid equivalent precipitation > 2.00 inches, past 12 hours",%,0,0,7
+60,60017,"Probability of liquid equivalent precipitation > 2.00 inches, past 24 hours",%,0,0,7
+60,60018,"Relative frequency of > 0.01 inch liquid equivalent precipitation, past 12 hours (climatic)",%,0,0,7
+60,60019,"Relative frequency of > 0.01 inch liquid equivalent precipitation, past 24 hours (climatic)",%,0,0,7
+60,60020,"Conditional probability of precipitation type - freezing",%,0,0,7
+60,60021,"Conditional probability of precipitation type - snow",%,0,0,7
+60,60022,"Conditional probability of precipitation type - liquid",%,0,0,7
+60,60023,"Conditional probability of precipitation type - drizzle",%,0,0,7
+60,60024,"Conditional probability of precipitation type - continuous",%,0,0,7
+60,60025,"Conditional probability of precipitation type - showers",%,0,0,7
+60,60026,"Probability of snow amount > trace, past 6 hours",%,0,0,7
+60,60027,"Probability of snow amount > trace, past 12 hours",%,0,0,7
+60,60028,"Probability of snow amount > trace, past 24 hours",%,0,0,7
+60,60029,"Probability of snow amount > 2 inches, past 6 hours",%,0,0,7
+60,60030,"Probability of snow amount > 2 inches, past 12 hours",%,0,0,7
+60,60031,"Probability of snow amount > 2 inches, past 24 hours",%,0,0,7
+60,60032,"Probability of snow amount > 4 inches, past 12 hours",%,0,0,7
+60,60033,"Probability of snow amount > 4 inches, past 24 hours",%,0,0,7
+60,60034,"Probability of snow amount > 6 inches, past 12 hours",%,0,0,7
+60,60035,"Probability of snow amount > 6 inches, past 24 hours",%,0,0,7
+60,60036,"Conditional probability of snow, past 12 hours",%,0,0,7
+60,60037,"Conditional relative frequency of snow, past 12 hours (climatic)",%,0,0,7
+60,60038,"Probability of opaque sky cover - clear",%,0,0,7
+60,60039,"Probability of opaque sky cover - scattered",%,0,0,7
+60,60040,"Probability of opaque sky cover - broken",%,0,0,7
+60,60041,"Probability of opaque sky cover - overcast",%,0,0,7
+60,60042,"Probability of ceiling height < 200 feet",%,0,0,7
+60,60043,"Probability of ceiling height 200 to 400 feet",%,0,0,7
+60,60044,"Probability of ceiling height 500 to 900 feet",%,0,0,7
+60,60045,"Probability of ceiling height 1000 to 3000 feet",%,0,0,7
+60,60046,"Probability of ceiling height 3100 to 6500 feet",%,0,0,7
+60,60047,"Probability of ceiling height 6600 to 12000 feet",%,0,0,7
+60,60048,"Probability of ceiling height > 12000 feet",%,0,0,7
+60,60049,"Probability of visibility < 1/2 mile",%,0,0,7
+60,60050,"Probability of visibility 1/2 to 7/8 miles",%,0,0,7
+60,60051,"Probability of visibility 1 to 2+3/4 miles",%,0,0,7
+60,60052,"Probability of visibility 3 to 5 miles",%,0,0,7
+60,60053,"Probability of visibility > 5 miles",%,0,0,7
+60,60054,"Probability of obstruction to vision - blowing phenomena",%,0,0,7
+60,60055,"Probability of obstruction to vision - haze",%,0,0,7
+60,60056,"Probability of obstruction to vision - fog",%,0,0,7
+60,60057,"Probability of obstruction to vision - none",%,0,0,7
+60,60058,"Probability of thunderstorm, past 6 hours",%,0,0,7
+60,60059,"Probability of thunderstorm, past 12 hours",%,0,0,7
+60,60060,"Probability of thunderstorm, past 24 hours",%,0,0,7
+60,60061,"Probability of severe weather, past 6 hours",%,0,0,7
+60,60062,"Probability of severe weather, past 12 hours",%,0,0,7
+60,60063,"Probability of severe weather, past 24 hours",%,0,0,7
+60,60064,"Climatic average cloud cover (opaque) during past 12 hours",%,0,0,7
+60,60065,"Climatic wind speed during past 12 hours",m/s,1,0,12
+60,60066,"Climatic (normal) day maximum temperature",K,1,0,12
+60,60067,"Climatic (normal) night minimum temperature",K,1,0,12
+60,60068,"Cond. 25% Prcp. Amt. Fractile, past 24 hrs",kg/m2,1,-1,14
+60,60069,"Cond. 50% Prcp. Amt. Fractile, past 24 hrs",kg/m2,1,-1,14
+60,60070,"Cond. 75% Prcp. Amt. Fractile, past 24 hrs",kg/m2,1,-1,14
+60,60071,"Probability of precipitation amount > 0.01 inch, during the past 6 hours",%,0,0,7
+60,60072,"Probability of precipitation amount > 0.01 inch, during the past 12 hours",%,0,0,7
+60,60073,"Pct Precip in 1st 6-h period past 24 hrs (NGM)",%,0,0,7
+60,60074,"Pct Precip in 2nd 6-h period past 24 hrs (NGM)",%,0,0,7
+60,60075,"Pct Precip in 3rd 6-h period past 24 hrs (NGM)",%,0,0,7
+60,60076,"Pct Precip in 4th 6-h period past 24 hrs (NGM)",%,0,0,7
+60,60079,"Probability of thunderstorm, past 2 hours",%,0,0,7
+60,60080,"Probability of ceiling height 1000 to 1900 feet",%,0,0,7
+60,60081,"Probability of ceiling height 2000 to 3000 feet",%,0,0,7
+60,60082,"Conditional probability of ceiling height < 200 feet",%,0,0,7
+60,60083,"Conditional probability of ceiling height 200 to 400 feet",%,0,0,7
+60,60084,"Conditional probability of ceiling height 500 to 900 feet",%,0,0,7
+60,60085,"Conditional probability of ceiling height 1000 to 1900 feet",%,0,0,7
+60,60086,"Conditional probability of ceiling height 2000 to 3000 feet",%,0,0,7
+60,60087,"Conditional probability of ceiling height 3100 to 6500 feet",%,0,0,7
+60,60088,"Conditional probability of ceiling height 6600 to 12000 feet",%,0,0,7
+60,60089,"Conditional probability of ceiling height > 12000 feet",%,0,0,7
+60,60090,"Quantitative precipitation forecast (categories)",Code table,0,0,4
+60,60091,"Conditional precipitation type forecast (categories)",Code table,0,0,3
+60,60092,"Conditional precipitation character forecast (categories)",Code table,0,0,3
+60,60093,"Quantitative snow amount forecast (categories)",Code table,0,0,4
+60,60094,"Ceiling height forecast (categories)",Code table,0,0,4
+60,60095,"Visibility forecast (categories)",Code table,0,0,3
+60,60096,"Obstruction to vision forecast (categories)",Code table,0,0,3
+60,60097,"Thunderstorm forecast (categories)",Code table,0,0,2
+60,60098,"Severe weather forecast (categories)",Code table,0,0,2
+60,60099,"Combined ceiling/visibility forecast (categories)",Code table,0,0,3
+60,60100,"Probability of 0/8 of sky covered with clouds",%,0,0,7
+60,60101,"Probability of 1/8 to 4/8 of sky covered with clouds",%,0,0,7
+60,60103,"Probability of 5/8 to 7/8 of sky covered with clouds",%,0,0,7
+60,60104,"Probability of 8/8 of sky covered with clouds",%,0,0,7
+60,60105,"Probability of sky cover mostly clear",%,0,0,7
+60,60106,"Probability of sky cover partly cloudy",%,0,0,7
+60,60107,"Probability of sky cover mostly cloudy",%,0,0,7
+60,60108,"Probability of 1/8 to 2/8 of sky covered with clouds",%,0,0,7
+60,60109,"Probability of 3/8 to 4/8 of sky covered with clouds",%,0,0,7
+60,60110,"Probability of visibility < 1/4 mile",%,0,0,7
+60,60111,"Probability of visibility < 1/2 mile",%,0,0,7
+60,60112,"Probability of visibility < 1 mile",%,0,0,7
+60,60113,"Probability of visibility < 3 miles",%,0,0,7
+60,60114,"Probability of visibility < 5 miles",%,0,0,7
+60,60115,"Probability of visibility < 6 miles",%,0,0,7
+60,60116,"Probability of obstruction to vision - mist",%,0,0,7
+60,60117,"Probability of obstruction to vision - fog",%,0,0,7
+60,60118,"Probability of visibility < 2 miles",%,0,0,7
+60,60140,"Probability of precipitation type freezing",%,0,0,7
+60,60141,"Probability of precipitation type snow",%,0,0,7
+60,60142,"Probability of precipitation type mixed",%,0,0,7
+60,60143,"Probability of precipitation type liquid",%,0,0,7
+60,60144,"Probability of snow amount = 0.1" (> trace) during past 24 hours",%,0,0,7
+60,60145,"Probability of snow amount = 8" during past 24 hours",%,0,0,7
+60,60146,"Probability of liquid equivalent precipitation > 3.00 inches, past 24 hours",%,0,0,7
+60,60147,"Conditional expected precipitation amount",kg/m³,1,-1,14
+60,60148,"Probability of precipitation occurrence",%,0,0,7
+60,60149,"Probability of precipitation occurrence last 3 hrs",%,0,0,7
+60,60150,"Unconditional probability of severe weather during past 6 hrs",%,0,0,7
+60,60151,"Unconditional probability of severe weather during past 12 hrs",%,0,0,7
+60,60152,"Unconditional probability of severe weather during past 24 hrs",%,0,0,7
+60,60160,"Probability of liquid equivalent precipitation = 0.01", past 1 hr %,0,0,7
+60,60161,"Probability of liquid equivalent precipitation = 0.01", past 3 hrs %,0,0,7
+60,60162,"Probability of liquid equivalent precipitation = 0.10", past 3 hrs %,0,0,7
+60,60163,"Probability of liquid equivalent precipitation = 0.25", past 3 hrs %,0,0,7
+60,60164,"Probability of liquid equivalent precipitation = 0.50", past 3 hrs %,0,0,7
+60,60165,"Probability of liquid equivalent precipitation = 1.00", past 3 hrs %,0,0,7
+60,60170,"Conditional probability of precip type - ice pellets",%,0,0,7
+60,60171,"Conditional probability of precip type - mixed snow/rain",%,0,0,7
+60,60172,"Conditional probability of freezing, past 3 hrs",%,0,0,7
+60,60173,"Conditional probability of ice pellets, past 3 hrs",%,0,0,7
+60,60174,"Conditional probability of snow, past 3 hrs",%,0,0,7
+60,60175,"Conditional probability of mixed snow/rain, past 3 hrs",%,0,0,7
+60,60176,"Conditional probability of rain, past 3 hrs",%,0,0,7
+60,60180,"Percent -- predominant opaque sky cover, past 3 hrs",%,0,0,7
+60,60181,"Probability of clear (predominant opaque sky cover, past 3 hrs)",%,0,0,7
+60,60182,"Prob. of mostly clear (predominant opaque sky cover, past 3 hrs)",%,0,0,7
+60,60183,"Prob. of partly cloudy (predominant opaque sky cover, past 3 hrs)",%,0,0,7
+60,60184,"Prob. of mostly cloudy (predominant opaque sky cover, past 3 hrs)",%,0,0,7
+60,60185,"Prob. of considerably cloudy (pred. opaque sky cover, past 3 hrs)",%,0,0,7
+60,60186,"Probability of cloudy (predominant opaque sky cover, past 3 hrs)",%,0,0,7
+60,60190,"Visibility Forecast (categories)",CODE,0,0,4
+60,60191,"Combined CIG/VIS 4-category",CODE,0,0,3
+60,60192,"Sky Cover Forecast (categories)",CODE,0,0,4
+60,60193,"Conditional visibility forecast (categories)",Code table,0,0,4
+60,60194,"Conditional ceiling height forecast (categories)",Code table,0,0,4
+60,60195,"Probability of precipitation occurrence forecast (categories)",Code table,0,0,2
+60,60200,"Conditional probability of visibility < 1/2 mile",%,0,0,7
+60,60201,"Conditional probability of visibility < 1 mile",%,0,0,7
+60,60202,"Conditional probability of visibility < 2 miles",%,0,0,7
+60,60203,"Conditional probability of visibility < 3 miles",%,0,0,7
+60,60204,"Conditional probability of visibility < 5 miles",%,0,0,7
+60,60205,"Conditional probability of visibility < 6 miles",%,0,0,7
+60,60210,"Probability of fog with visibility = ¼ mile, past 3 hrs",%,0,0,7
+60,60220,"Conditional probability of thunderstorm, past 3 hrs",%,0,0,7
+60,60221,"Conditional probability of severe weather, past 3 hrs",%,0,0,7
+60,60222,"Unconditional probability of thunderstorm, past 3 hrs",%,0,0,7
+60,60223,"Unconditional probability of severe weather, past 3 hrs",%,0,0,7
+63,63000,"Byte count",Numeric,0,0,16
+63,63255,"Fill bit",Numeric,0,0,1

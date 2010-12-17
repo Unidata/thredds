@@ -1,0 +1,229 @@
+#
+# cut-and-paste from http://www.wmo.int/pages/prog/www/WMOCodes/Operational/CommonTables/BufrCommon-11-2008.doc
+# 12/15/2009
+#
+#1234567890123
+00  000   0  WMO Secretariat
+01  001   1  Melbourne
+02  002   2  Melbourne
+03  003   3  )
+04  004   4  Moscow     
+05  005   5  Moscow
+06  006   6  )
+07  007   7  US National Weather Service (NCEP)
+08  008   8  US National Weather Service Telecommunications Gateway (NWSTG)
+09  009   9  US National Weather Service - Other
+10  010  10  Cairo (RSMC)
+11  011  11  )     
+12  012  12  Dakar (RSMC)     
+13  013  13  )     
+14  014  14  Nairobi (RSMC)     
+15  015  15  )     
+16  016  16  Casablanca (RSMC)     
+17  017  17  Tunis (RSMC)     
+18  018  18  Tunis Casablanca (RSMC)     
+19  019  19  )     
+20  020  20  Las Palmas     
+21  021  21  Algiers (RSMC)     
+22  022  22  ACMAD     
+23  023  23  Mozambique NMC     
+24  024  24  Pretoria (RSMC)     
+25  025  25  La Réunion (RSMC)     
+26  026  26  Khabarovsk (RSMC)
+27  027  27  )     
+28  028  28  New Delhi (RSMC)     
+29  029  29  )     
+30  030  30  Novosibirsk (RSMC)     
+31  031  31  )     
+32  032  32  Tashkent (RSMC)     
+33  033  33  Jeddah (RSMC)     
+34  034  34  Tokyo (RSMC), Japan Meteorological Agency     
+35  035  35  )     
+36  036  36  Bangkok     
+37  037  37  Ulan Bator     
+38  038  38  Beijing (RSMC)     
+39  039  39  )     
+40  040  40  Seoul     
+41  041  41  Buenos Aires (RSMC)
+42  042  42  )     
+43  043  43  Brasilia (RSMC)   
+44  044  44  )
+45  045  45  Santiago     
+46  046  46  Brazilian Space Agency ­ INPE     
+47  047  47  Colombia NMC     
+48  048  48  Ecuador NMC     
+49  049  49  Peru NMC     
+50  050  50  Venezuela NMC     
+51  051  51  Miami (RSMC)
+52  052  52  Miami RSMC, National Hurricane Center     
+53  053  53  Montreal (RSMC)     
+54  054  54  )     
+55  055  55  San Francisco     
+56  056  56  ARINC Centre     
+57  057  57  U.S. Air Force Air Force Global Weather Central      
+58  058  58  Fleet Numerical Meteorology and Oceanography Center, Monterey, CA     
+59  059  59  The NOAA Forecast Systems Laboratory, Boulder, CO, USA     
+60  060  60  United States National Centre for Atmospheric Research (NCAR)     
+61  061  61  Service ARGOS - Landover     
+62  062  62  U.S. Naval Oceanographic Office     
+63  063  63  IRI (International Research Institute for Climate and Society)     
+64  064  64  Honolulu (RSMC)
+65  065  65  Darwin (RSMC)     
+66  066  66  )     
+67  067  67  Melbourne (RSMC)     
+68  068  68  Reserved     
+69  069  69  Wellington (RSMC)     
+70  070  70  )     
+71  071  71  Nadi (RSMC)     
+72  072  72  Singapore     
+73  073  73  Malaysia NMC     
+74  074  74  UK Meteorological Office ­ Exeter (RSMC)
+75  075  75  )     
+76  076  76  Moscow (RSMC)     
+77  077  77  Reserved     
+78  078  78  Offenbach (RSMC)     
+79  079  79  )     
+80  080  80  Rome (RSMC)     
+81  081  81  )     
+82  082  82  Norrköping     
+83  083  83  )     
+84  084  84  Toulouse (RSMC)     
+85  085  85  Toulouse (RSMC)     
+86  086  86  Helsinki     
+87  087  87  Belgrade     
+88  088  88  Oslo     
+89  089  89  Prague     
+90  090  90  Episkopi     
+91  091  91  Ankara     
+92  092  92  Frankfurt/Main)     
+93  093  93  London (WAFC)     
+94  094  94  Copenhagen     
+95  095  95  Rota     
+96  096  96  Athens     
+97  097  97  European Space Agency (ESA)     
+98  098  98  European Centre for Medium-range Weather Forecast (ECMWF), (RSMC)     
+99  099  99  De Bilt   
+    100 100  Brazzaville
+    101 101  Abidjan
+    102 102  Libyan Arab Jamahiriya NMC
+    103 103  Madagascar NMC
+    104 104  Mauritius NMC
+    105 105  Niger NMC
+    106 106  Seychelles NMC
+    107 107  Uganda NMC
+    108 108  Tanzania NMC
+    109 109  Zimbabwe NMC
+    110 110  Hong-Kong, China
+    111 111  Afghanistan NMC
+    112 112  Bahrain NMC
+    113 113  Bangladesh NMC
+    114 114  Bhutan NMC
+    115 115  Cambodia NMC
+    116 116  Democratic People's Republic of Korea NMC
+    117 117  Islamic Republic of Iran NMC
+    118 118  Iraq NMC
+    119 119  Kazakhstan NMC
+    120 120  Kuwait NMC
+    121 121  Kyrgyz Republic NMC
+    122 122  Lao People's Democratic Republic NMC
+    123 123  Macao, China
+    124 124  Maldives NMC
+    125 125  Myanmar NMC
+    126 126  Nepal NMC
+    127 127  Oman NMC
+    128 128  Pakistan NMC
+    129 129  Qatar NMC
+    130 130  Republic of Yemen NMC
+    131 131  Sri Lanka NMC
+    132 132  Tajikistan NMC
+    133 133  Turkmenistan NMC
+    134 134  United Arab Emirates NMC
+    135 135  Uzbekistan NMC
+    136 136  Socialist Republic of Viet Nam NMC
+    140 140  Bolivia NMC
+    141 141  Guyana NMC
+    142 142  Paraguay NMC
+    143 143  Suriname NMC
+    144 144  Uruguay NMC
+    145 145  French Guyana
+    146 146  Brazilian Navy Hydrographic Centre
+    147 147  COmision Nacional de Actividades Espaciales (CONAE) - Argentina
+    150 150  Antigua and Barbuda NMC
+    151 151  Bahamas NMC
+    152 152  Barbados NMC
+    153 153  Belize NMC
+    154 154  British Caribbean Territories Centre
+    155 155  San Jose
+    156 156  Cuba NMC
+    157 157  Dominica NMC
+    158 158  Dominican Republic NMC
+    159 159  El Salvador NMC
+    160 160  US NOAA/NESDIS
+    161 161  US NOAA Office of Oceanic and Atmospheric Research
+    162 162  Guatemala NMC
+    163 163  Haiti NMC
+    164 164  Honduras NMC
+    165 165  Jamaica NMC
+    166 166  Mexico
+    167 167  Netherlands Antilles and Aruba NMC
+    168 168  Nicaragua NMC
+    169 169  Panama NMC
+    170 170  Saint Lucia NMC
+    171 171  Trinidad and Tobago NMC
+    172 172  French Departments in RA IV
+    173 173  US National Aeronautics and Space Administration (NASA)
+    174 174  Integrated System Data Management/Marine Environmental Data Service (ISDM/MEDS - Canada)
+    190 190  Cook Islands NMC
+    191 191  French Polynesia NMC
+    192 192  Tonga NMC
+    193 193  Vanuatu NMC
+    194 194  Brunei Darussalam NMC
+    195 195  Indonesia NMC
+    196 196  Kiribati NMC
+    197 197  Federated States of Micronesia NMC
+    198 198  New Caledonia NMC
+    199 199  Niue
+    200 200  Papua New Guinea NMC
+    201 201  Philippines NMC
+    202 202  Samoa NMC
+    203 203  Solomon Islands NMC
+    210 210  Frascati (ESA/ESRIN)
+    211 211  Lannion
+    212 212  Lisboa
+    213 213  Reykjavik
+    214 214  Madrid
+    215 215  Zürich
+    216 216  Service ARGOS Toulouse
+    217 217  Bratislava
+    218 218  Budapest
+    219 219  Ljubljana
+    220 220  Warsaw
+    221 221  Zagreb
+    222 222  Albania NMC
+    223 223  Armenia NMC
+    224 224  Austria NMC
+    225 225  Azerbaijan NMC
+    226 226  Belarus NMC
+    227 227  Belgium NMC
+    228 228  Bosnia and Herzegovina NMC
+    229 229  Bulgaria NMC
+    230 230  Cyprus NMC
+    231 231  Estonia NMC
+    232 232  Georgia NMC
+    233 233  Dublin
+    234 234  Israel NMC
+    235 235  Jordan NMC
+    236 236  Latvia NMC
+    237 237  Lebanon NMC
+    238 238  Lithuania NMC
+    239 239  Luxembourg
+    240 240  Malta NMC
+    241 241  Monaco
+    242 242  Romania NMC
+    243 243  Syrian Arab Republic NMC
+    244 244  The former Yugoslav Republic of Macedonia NMC
+    245 245  Ukraine NMC
+    246 246  Republic of Moldova NMC
+    247 247  Operational Programme for the Exchange of weather RAdar information (OPERA) - EUMETNET
+    254 254  EUMETSAT Operation Centre
+    255 255  Missing value

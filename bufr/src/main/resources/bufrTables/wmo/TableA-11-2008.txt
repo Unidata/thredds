@@ -1,0 +1,49 @@
+#
+# BUFR Table A - Data Category
+# http://www.wmo.int/pages/prog/www/WMOCodes/Operational/BUFR/BufrTabA-11-2008.doc
+#
+#123456
+  0  Surface data - land
+  1  Surface data - sea
+  2  Vertical soundings (other than satellite)
+  3  Vertical soundings (satellite)
+  4  Single level upper-air data (other than satellite)
+  5  Single level upper-air data (satellite)
+  6  Radar data
+  7  Synoptic features
+  8  Physical/chemical constituents
+  9  Dispersal and transport
+ 10  Radiological data
+ 11  BUFR tables, complete replacement or update
+ 12  Surface data (satellite)
+ 13  Forecasts
+ 14  Warnings
+ 20  Status information
+ 21  Radiances (satellite measured)
+ 22  Radar (satellite) but not altimeter and scatterometer
+ 23  Lidar (satellite)
+ 24  Scatterometry (satellite)
+ 25  Altimetry (satellite)
+ 26  Spectrometry (satellite)
+ 27  Gravity measurement (satellite)
+ 28  Precision orbit (satellite)
+ 29  Space environment (satellite)
+ 30  Calibration datasets (satellite)
+ 31  Oceanographic data
+101  Image data (satellite)
+240  FOR EXPERIMENTAL USE
+241  FOR EXPERIMENTAL USE
+242  FOR EXPERIMENTAL USE
+243  FOR EXPERIMENTAL USE
+244  FOR EXPERIMENTAL USE
+245  FOR EXPERIMENTAL USE
+246  FOR EXPERIMENTAL USE
+247  FOR EXPERIMENTAL USE
+248  FOR EXPERIMENTAL USE
+249  FOR EXPERIMENTAL USE
+250  FOR EXPERIMENTAL USE
+251  FOR EXPERIMENTAL USE
+252  FOR EXPERIMENTAL USE
+253  FOR EXPERIMENTAL USE
+254  FOR EXPERIMENTAL USE
+255  Indicator for local use, with sub-category (ed 3), Other (ed 4)

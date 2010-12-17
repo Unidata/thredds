@@ -1,0 +1,33 @@
+#
+# Local BUFR Table B Version 3 for Center 59
+#
+#                         Data
+#F    X     Y     Scale   RefVal  Width   Units            Element Name
+0;    1;    194;  0;      0;      32;     CCITT_IA5;       Station
+0;    25;   193;  0;      0;      8;      Numeric;         Number of records processed in consensus
+0;    25;   194;  0;      0;      8;      Numeric;         Minimum passing consensus
+0;    25;   195;  0;      0;      8;      m/s;             Consensus Window
+0;    25;   196;  0;      0;      8;      Numeric;         Number of coherent integrations
+0;    25;   197;  0;      0;      8;      Numeric;         Number of incoherent integrations
+0;    25;   198;  9;      0;      12;     s;               Pulse width
+0;    25;   199;  9;      0;      9;      s;               Pulse repetition period
+0;    25;   200;  1;      0;      10;     m/s;             Maximum measurable velocity
+0;    25;   201;  0;      0;      2;      Flag_table;      Vertical correction table
+0;    25;   203;  0;      0;      8;      kelvins;         Consensus Window
+0;    25;   220;  4;      0;      16;     meters;          Total Delay (GPS)
+0;    25;   221;  4;      0;      9;      meters;          Error in total delay
+0;    25;   222;  4;      0;      16;     meters;          Hydrostatic delay
+0;    25;   223;  4;      0;      9;      meters;          Error in Hydrostatic delay
+0;    25;   224;  2;      0;      16;     K;               Weighted mean temp
+0;    25;   225;  3;      0;      13;     n/a;             Wet Delay mapping func
+0;    21;   192;  0;      0;      7;      dB;              Spectral peak power (0th moment)
+0;    33;   193;  0;      0;      8;      Numeric;         Number of records processed in consensus
+0;    33;   194;  0;      0;      8;      Numeric;         Minimum passing consensus
+0;    33;   195;  0;      0;      8;      m/s;             Consensus Window
+0;    33;   196;  0;      0;      8;      Numeric;         Number of coherent integrations
+0;    33;   197;  0;      0;      8;      Numeric;         Number of incoherent integrations
+0;    33;   198;  0;      0;      16;     ns;              Pulse width
+0;    33;   199;  0;      0;      4;      ns;              Pulse repetition period
+0;    33;   200;  1;      0;      10;     m/s;             Maximum measurable velocity
+0;    33;   201;  0;      0;      2;      Flag_table;      Vertical correction table
+

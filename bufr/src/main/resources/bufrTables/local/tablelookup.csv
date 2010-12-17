@@ -1,0 +1,49 @@
+#
+# BUFR TableLookup
+#
+# ids = Identification Section. bytes refer to editions 3 or 4. -1 means dont match
+#
+# center = originating/generating centre  (ed3=ids bytes 6, ed4=ids byte 5,6)
+# subcenter = originating/generating sub-centre  (ed3=ids byte 5, ed4=ids byte 7,8)
+# master = Version number of master tables used (ed3=ids byte 11, ed4=ids byte 14)
+# local = Version number of local tables used to augment the master table (ed3=ids byte 12, ed4=ids byte 15)
+# cat = data category (ed3=ids byte 9, ed4=ids byte 11)
+# tableB,tableD = file name or resource name
+# format = "csv", "ncep, "ecmwf", "ukmet", or "mel-bufr"
+# mode = "wmoOnly", "wmoLocal", "localWmo"  (default "wmoOnly")
+#
+# center,subcenter,master,local,cat,tableB,tableBformat,                                           tableD,tableDformat, mode
+#0,     0,        14,    0,    -1,  /export/home/bert/docs/dataFormats/bufr/wmo/BUFR14_1_0_CREX_6_1_0_xml/BC_TableB_BUFR14_1_0_CREX_6_1_0.xml, wmo-xml, /export/home/bert/docs/dataFormats/bufr/wmo/BUFR14_1_0_CREX_6_1_0_xml/B_TableD_BUFR14_1_0_CREX_6_1_0.xml, wmo-xml
+0,     0,        14,    0,    -1,   resource:/resources/bufrTables/wmo/TableB-121109.v14.csv, csv, resource:/resources/bufrTables/wmo/TableD-121509.csv, csv
+0,     0,        13,    0,    -1,   resource:/resources/bufrTables/wmo/TableB.v13.csv, csv    , , ,
+#
+# NCEP
+# see http://www.emc.ncep.noaa.gov/mmb/data_processing/bufrtab_tablea.htm#1
+# also http://www.emc.ncep.noaa.gov/mmb/data_processing/bufrtab_tabled.htm
+# also http://www.nco.ncep.noaa.gov/pmb/codes/nwprod/parm/
+7,    3,       -1,    -1,    241, resource:/resources/bufrTables/local/ncep.bufrtab.ETACLS1, ncep-nm, , ,
+7,    3,       -1,    -1,    242, resource:/resources/bufrTables/local/ncep.bufrtab.NGMCLS1, ncep-nm, , ,
+7,    3,       -1,    -1,    243, resource:/resources/bufrTables/local/ncep.bufrtab.GFSCLS1, ncep-nm, , ,
+7,    8,       12,    -1,    -1, resource:/resources/bufrTables/local/ncepAwc.v12.override.csv, csv, , , localWmo
+7,   -1,       14,    -1,    -1, resource:/resources/bufrTables/local/ncep.B07.14.local.csv, csv, resource:/resources/bufrTables/local/ncep.B4L-007-013-D.diff, mel-bufr
+7,   -1,       -1,    -1,    -1, resource:/resources/bufrTables/local/ncep.B07.local.csv, csv, resource:/resources/bufrTables/local/ncep.B4L-007-013-D.diff, mel-bufr
+#
+# Brasil
+# B table from http://downloads.cptec.inpe.br/publicacoes/distribuicao.jsp (MBUFRTOOLS), diffed
+46,    -1,     13,    -1,   -1, resource:/resources/bufrTables/local/brasil.B46.13.diff.csv, csv, , , localWmo
+#255,   -1,    -1,    -1,   -1, C:/dev/tds4.1/thredds/bufrTables/src/main/sources/brazil/B0000461300.txt, ecmwf, C:/dev/tds4.1/thredds/bufrTables/src/main/sources/brazil/D0000461300.txt, ecmwf, localWmo
+#
+# FNMOC trasnmitted from Roy.Mendelssohn@noaa.gov group
+58,  -1,    -1,    0,   -1, resource:/resources/bufrTables/local/fnmoc.B2L-058-000-B.txt, mel-tabs, , , localWmo
+58,  -1,    -1,    1,   -1, resource:/resources/bufrTables/local/fnmoc.B2L-058-001-B.txt, mel-tabs, resource:/resources/bufrTables/local/fnmoc.B2L-058-001-D.txt, mel-tabs, localWmo
+128, -1,    -1,    1,   -1, resource:/resources/bufrTables/local/fnmoc.B2L-128-001-B.txt, mel-tabs, resource:/resources/bufrTables/local/fnmoc.B2L-058-001-D.txt, mel-tabs, localWmo
+#
+# FSL
+# B table from Paul Hamer, unknown provenence on the D table
+59,    -1,       -1,    -1,   -1, resource:/resources/bufrTables/local/fsl.B3L-059000-003003-B.txt, mel-bufr, resource:/resources/bufrTables/local/fsl.B3L-059-003-D.diff, mel-bufr
+#
+# ECMWF
+98,    -1,       -1,    -1,   -1, resource:/resources/bufrTables/local/ecmwf.B0000000000098013001.TXT, ecmwf, resource:/resources/bufrTables/local/ecmwf.D0000000000098013001.TXT, ecmwf
+#
+# EUMETSAT
+254,    -1,       -1,    -1,   -1, resource:/resources/bufrTables/local/eumetsat.B3L-254-011-B.diff, mel-bufr, , ,

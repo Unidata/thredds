@@ -1,0 +1,120 @@
+#
+# cut-and-paste from http://www.wmo.int/pages/prog/www/WMOCodes/Operational/CommonTables/BufrCommon-11-2008.doc
+# 12/15/2009
+#  
+000  Surface data — land  
+000  Hourly synoptic observations from fixed-land stations (SYNOP)     
+      001  Intermediate synoptic observations from fixed-land stations (SYNOP)     
+      002  Main synoptic observations from fixed-land stations (SYNOP)     
+      003  Hourly synoptic observations from mobile-land stations (SYNOP MOBIL)     
+      004  Intermediate synoptic observations from mobile-land stations (SYNOP MOBIL)     
+      005  Main synoptic observations from mobile land stations (SYNOP MOBIL)     
+      006  One-hour observations from automated stations     
+      007  n-minute observations from AWS stations     
+      010  Routine aeronautical observations (METAR)     
+      011  Special aeronautical observations (SPECI)     
+      020  Climatological observations (CLIMAT)     
+      030  Spherics locations (SFLOC)     
+      040  Hydrologic reports     
+      050  Hourly synoptic observations with supplementary one-hour data     
+      051  Intermediate synoptic observations with supplementary one-hour data     
+      052  Main synoptic observations with supplementary one-hour data     
+001  Surface data — sea
+      000  Synoptic observations (SHIP)     
+      006  One-hour observations from automated stations     
+      007  n-minute observations from AWS stations     
+      020  Climatological observations (CLIMAT SHIP)     
+      025  Buoy observation (BUOY)     
+      030  Tide gauge     
+      031  Observed water level time series   
+002  Vertical soundings (other than satellite)
+      001  Upper-wind reports from fixed-land stations (PILOT)     
+      002  Upper-wind reports from ships (PILOT SHIP)     
+      003  Upper-wind reports from mobile-land stations (PILOT MOBIL)     
+      004  Upper-level temperature/humidity/wind reports from fixed-land stations (TEMP)     
+      005  Upper-level temperature/humidity/wind reports from ships (TEMP SHIP)     
+      006  Upper-level temperature/humidity/wind report from mobile-land stations (TEMPMOBIL)     
+      007  Upper-level temperature/humidity/wind reports from dropwinsondes (TEMP DROP)     
+      010  Wind profiler reports     
+      011  RASS temperature profiles     
+      020  ASDAR/ACARS profiles (AMDAR)     
+      025  Climatological observations from fixed-land stations (CLIMAT TEMP)     
+      026  Climatological observations from ships (CLIMAT TEMP SHIP)     
+003  Vertical soundings (satellite)
+      000  Temperature (SATEM)     
+      001  TIROS (TOVS)     
+      002  ATOVS     
+      003  AMSU-A     
+      004  AMSU-B     
+      005  HIRS     
+      006  MHS     
+      007  IASI     
+      020   IR temperature/humidity sounding     
+      030   Hyperspectral temperature/humidity sounding     
+      040   MW temperature/humidity sounding     
+      050   Radio occultation sounding     
+004  Single level upper-air data (other than satellite)
+    000  ASDAR/ACARS (AMDAR)     
+    001  Manual (AIREP, PIREP)     
+005  Single level upper-air data (satellite)
+    000  Cloud wind data (SATOB)     
+006  Radar data
+    000  Reflectivity data      
+    001  Doppler wind profiles     
+    002  Derived products     
+    003  Ground radar weather (RADOB)     
+007  Synoptic features
+    000  Forecast Tropical cyclone tracks from EPS     
+    001  Squall Line     
+008  Physical/chemical constituents
+    000  Ozone measurement at surface     
+    001  Ozone vertical sounding     
+009  Dispersal and transport
+    000  Trajectories, analysis or forecast     
+010  Radiological data
+    001  Observation (RADREP)     
+    002  Forecast (RADOF)     
+012  Surface data (satellite)
+    000  ERS-uwa     
+    001  ERS-uwi     
+    002  ERS-ura     
+    003  ERS-uat     
+    004  SSM/I radiometer     
+    005  Quickscat     
+    006  Surface temp./radiation (SATOB)     
+    007  SCAT data     
+021   Radiances (satellite measured)
+    000   Earth radiation budget     
+022   Radar (satellite) but not altimeter and scatterometer 
+    000   Cloud and precipitation radar     
+    001   Synthetic Aperture Radar     
+023   Lidar (satellite)
+    000   Lidar based missions (for wind, for cloud/aerosol, for water vapour, for altimetry)     
+024   Scatterometry (satellite)
+    000   Wind scatterometry     
+025   Altimetry (satellite)
+    000   Radar altimetry     
+026   Spectrometry (satellite)
+    000   Cross nadir shortwave spectrometry (for chemistry)     
+    001   Cross nadir IR spectrometry (for chemistry)     
+    002   Limb sounding shortwave spectrometry     
+    003   Limb sounding IR spectrometry     
+    004   Limb sounding sub-millimetre wave spectrometry     
+031  Oceanographic data
+    000  Surface observation      
+    001  Surface observation along track (TRACKOB)     
+    002  Spectral wave observation (WAVEOB)     
+    003  Bathythermal observation (BATHY)     
+    004  Sub surface floats (profile)     
+    005  XBT/XCTD profiles (TESAC)     
+    006  Waves reports     
+    007  Tsunameter data     
+101  Image data (satellite)
+    000   Multi-purpose VIS/IR imagery     
+    001   Conical scanning MW imagery (intermediate frequencies)     
+    002   Low frequency MW imagery     
+    003   Ocean colour imagery     
+    004   Imagery with special viewing geometry     
+    005   Lightning imagery     
+    006   High resolution shortwave imagery for land observation     
+    007  SMOS data   
