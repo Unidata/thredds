@@ -62,15 +62,7 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="file://$MODULE_DIR$/../../tds/src/main/webapp-cdmValidator/WEB-INF/classes" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
+    <orderEntry type="module" module-name="bufr" exported="" />
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
@@ -107,19 +99,19 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module-library" exported="">
+    <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../lib/external/joda-time-1.6.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../lib/external/httpunit.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module-library">
+    <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../lib/external/httpunit.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../lib/external/je-4.0.71.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -148,18 +140,12 @@
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
-      <library name="Spring">
+      <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../lib/external/spring-webmvc-2.5.jar!/" />
-          <root url="jar://$MODULE_DIR$/../../lib/external/spring-2.5.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../lib/external/protobuf-java-2.3.0.jar!/" />
         </CLASSES>
-        <JAVADOC>
-          <root url="http://static.springframework.org/spring/docs/2.5.x/api" />
-        </JAVADOC>
-        <SOURCES>
-          <root url="jar://$MODULE_DIR$/../../lib/external/source/spring-sources-2.5.jar!/" />
-          <root url="jar://$MODULE_DIR$/../../lib/external/source/spring-webmvc-sources-2.5.jar!/" />
-        </SOURCES>
+        <JAVADOC />
+        <SOURCES />
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
@@ -183,6 +169,21 @@
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
+      <library name="Spring">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../lib/external/spring-webmvc-2.5.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../lib/external/spring-2.5.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="http://static.springframework.org/spring/docs/2.5.x/api" />
+        </JAVADOC>
+        <SOURCES>
+          <root url="jar://$MODULE_DIR$/../../lib/external/source/spring-sources-2.5.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../lib/external/source/spring-webmvc-sources-2.5.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
       <library name="JSTL">
         <CLASSES>
           <root url="jar://$MODULE_DIR$/../../lib/external/standard.jar!/" />
@@ -194,19 +195,10 @@
         </SOURCES>
       </library>
     </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../lib/external/servlet-api.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../lib/external/je-4.0.71.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../lib/external/joda-time-1.6.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -293,7 +285,15 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="library" name="jetty" level="project" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../lib/external/servlet-api.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
     <orderEntry type="module-library">
       <library>
         <CLASSES>
@@ -303,7 +303,6 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module" module-name="bufr" exported="" />
   </component>
   <component name="org.twodividedbyzero.idea.findbugs">
     <option name="_basePreferences">

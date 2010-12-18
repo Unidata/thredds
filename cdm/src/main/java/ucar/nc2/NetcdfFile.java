@@ -100,8 +100,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
 
   static private boolean userLoads = false;
 
-  // this is so that we can run without specialized IOServiceProviders, but they will
-  // still get automatically loaded if they are present.
+  // IOSPs are loaded by reflection
   static {
     try {
       registerIOProvider("ucar.nc2.stream.NcStreamIosp");
@@ -132,18 +131,10 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
       if (loadWarnings) log.info("Cant load class: " + e);
     }
     try {
-      URL url = NetcdfFile.class.getResource("/resources/bufrTables/local/tablelookup.csv"); // only load if bufrTables.jar is present
-      //log.info("load BUFR URL= "+url);
-      if (null != url)
-        registerIOProvider("ucar.nc2.iosp.bufr.BufrIosp");
+      Class iosp = NetcdfFile.class.getClassLoader().loadClass("ucar.nc2.iosp.bufr.BufrIosp"); // only load if bufr.jar is present
+      registerIOProvider(iosp);
     } catch (Throwable e) {
       if (loadWarnings) log.info("Cant load resource: " + e);
-    }
-    try {
-      NetcdfFile.class.getClassLoader().loadClass("edu.wisc.ssec.mcidas.AreaFile"); // only load if visad.jar is present
-      registerIOProvider("ucar.nc2.iosp.mcidas.AreaServiceProvider");
-    } catch (Throwable e) {
-      if (loadWarnings) log.info("Cant load class: " + e);
     }
     try {
       registerIOProvider("ucar.nc2.iosp.nexrad2.Nexrad2IOServiceProvider");
@@ -211,19 +202,20 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
       if (loadWarnings) log.info("Cant load class: " + e);
     }
     try {
+      registerIOProvider("ucar.nc2.iosp.uamiv.UAMIVServiceProvider");
+    } catch (Throwable e) {
+      if (loadWarnings) log.info("Cant load class: " + e);
+    }
+    try {
+      NetcdfFile.class.getClassLoader().loadClass("edu.wisc.ssec.mcidas.AreaFile"); // only load if visad.jar is present
+      registerIOProvider("ucar.nc2.iosp.mcidas.AreaServiceProvider");
+    } catch (Throwable e) {
+      if (loadWarnings) log.info("Cant load class: " + e);
+    }
+    try {
       NetcdfFile.class.getClassLoader().loadClass("visad.util.Trace"); // only load if visad.jar is present
       registerIOProvider("ucar.nc2.iosp.gempak.GempakSurfaceIOSP");
-    } catch (Throwable e) {
-      if (loadWarnings) log.info("Cant load class: " + e);
-    }
-    try {
-      NetcdfFile.class.getClassLoader().loadClass("visad.util.Trace"); // only load if visad.jar is present
       registerIOProvider("ucar.nc2.iosp.gempak.GempakSoundingIOSP");
-    } catch (Throwable e) {
-      if (loadWarnings) log.info("Cant load class: " + e);
-    }
-    try {
-      registerIOProvider("ucar.nc2.iosp.uamiv.UAMIVServiceProvider");
     } catch (Throwable e) {
       if (loadWarnings) log.info("Cant load class: " + e);
     }

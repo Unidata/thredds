@@ -209,7 +209,7 @@ public class TestMotherlodeModels implements CatalogCrawler.Listener {
   public static JPanel main;
 
   public static void main(String args[]) throws IOException {
-    String server = "http://motherlode.ucar.edu:8081/thredds";
+    String server = "http://motherlode.ucar.edu:9080/thredds";
 
     String catalog = "/idd/models.xml";
     String problemCat = "http://localhost:8080/thredds/catalog/aggorama/catalog.xml";   //  http://localhost:8080/thredds/catalog/aggorama/catalog.html

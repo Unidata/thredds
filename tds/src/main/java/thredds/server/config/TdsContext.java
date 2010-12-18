@@ -291,12 +291,22 @@ public class TdsContext
         String msg = "Couldn't create TDS log directory [" + logDir.getPath() + "].";
         System.out.println( "ERROR - TdsContext.init(): " + msg);
         //logServerStartup.error( "TdsContext.init(): " + msg  );
-        // ToDo thow an IllegalStateException() ????
+        throw new IllegalStateException(msg);
       }
     }
     System.setProperty( "tds.log.dir", logDir.getPath() ); // variable substitution
 
     this.publicContentDirectory = new File( this.contentDirectory, "public");
+    if ( ! publicContentDirectory.exists())
+    {
+      if ( ! publicContentDirectory.mkdirs())
+      {
+        String msg = "Couldn't create TDS public directory [" + publicContentDirectory.getPath() + "].";
+        System.out.println( "ERROR - TdsContext.init(): " + msg);
+        //logServerStartup.error( "TdsContext.init(): " + msg  );
+        throw new IllegalStateException(msg);
+      }
+    }
     this.publicContentDirSource = new BasicDescendantFileSource( this.publicContentDirectory);
 
     this.iddContentDirectory = new File( this.rootDirectory, this.iddContentPath);

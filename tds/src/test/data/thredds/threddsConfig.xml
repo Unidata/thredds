@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<threddsConfig>
+
+  <serverInformation>
+    <name>Test TDS</name>
+    <logoUrl>threddsIcon.gif</logoUrl>
+    <logoAltText>Motherlode TDS</logoAltText>
+
+    <abstract>Scientific Data</abstract>
+    <keywords>meteorology, atmosphere, climate, ocean, earth science</keywords>
+
+    <contact>
+      <name>THREDDS Support</name>
+      <organization>Unidata</organization>
+      <email>support-thredds@unidata.ucar.edu</email>
+      <!--phone></phone-->
+    </contact>
+    <hostInstitution>
+      <name>Unidata</name>
+      <webSite>http://www.unidata.ucar.edu/</webSite>
+      <logoUrl>unidataIcon.gif</logoUrl>
+      <logoAltText>Unidata</logoAltText>
+    </hostInstitution>
+  </serverInformation>
+
+  <!--
+   * Setup for generated HTML pages.
+   *
+   * NOTE: URLs may be absolute or relative, relative URLs must be relative
+   * to the webapp URL, i.e., http://server:port/thredds/.
+   * -->
+  <htmlSetup>
+    <!--
+     * CSS documents used in generated HTML pages.
+     * The CSS document given in the "catalogCssUrl" element is used for all pages
+     * that are HTML catalog views. The CSS document given in the "standardCssUrl"
+     * element is used in all other generated HTML pages.
+     * -->
+    <standardCssUrl>tds.css</standardCssUrl>
+    <catalogCssUrl>tdsCat.css</catalogCssUrl>
+
+    <!--
+     * The URLs (relative to "/thredds/") and alternate text for both
+     * folder and dataset icons used in HTML catalog views.
+     * -->
+    <folderIconUrl>folder.gif</folderIconUrl>
+    <folderIconAlt>Folder</folderIconAlt>
+    <datasetIconUrl>dataset.gif</datasetIconUrl>
+    <datasetIconAlt>Dataset</datasetIconAlt>
+  </htmlSetup>
+
+  <!--
+   The <CatalogServices> element:
+   -->
+  <CatalogServices>
+    <allowRemote>true</allowRemote>
+  </CatalogServices>
+
+  <NetcdfFileCache>
+    <minFiles>50</minFiles>
+    <maxFiles>100</maxFiles>
+    <scour>5 min</scour>
+  </NetcdfFileCache>
+
+  <HTTPFileCache>
+    <minFiles>5</minFiles>
+    <maxFiles>20</maxFiles>
+    <scour>10 min</scour>
+  </HTTPFileCache>
+
+  <NetcdfSubsetService>
+    <allow>true</allow>
+    <scour>15 min</scour>
+    <maxAge>30 min</maxAge>
+  </NetcdfSubsetService>
+
+  <WCS>
+    <allow>true</allow>
+    <allowRemote>false</allowRemote>
+    <scour>15 min</scour>
+    <maxAge>30 min</maxAge>
+  </WCS>
+
+  <WMS>
+    <allow>true</allow>
+    <allowRemote>false</allowRemote>
+    <allowFeatureInfo>true</allowFeatureInfo>
+    <maxImageWidth>5000</maxImageWidth>
+    <maxImageHeight>5000</maxImageHeight>
+  </WMS>
+
+  <!-- Enable CatalogGen service.
+   -->
+  <CatalogGen>
+    <allow>true</allow>
+  </CatalogGen>
+
+  <!-- Enable DLwriter service but disable on remote catalogs.
+       -->
+  <DLwriter>
+    <allow>false</allow>
+    <allowRemote>false</allowRemote>
+  </DLwriter>
+
+  <!-- Enable DqcService.
+   -->
+  <DqcService>
+    <allow>false</allow>
+  </DqcService>
+
+  <!-- Viewer>my.package.MyViewer</Viewer -->
+
+  <FmrcInventory>
+    <openType>XML_ONLY</openType>
+  </FmrcInventory>
+
+  <!-- nj22Config
+    <ioServiceProvider class="edu.univ.ny.stuff.FooFiles"/>
+    <coordSysBuilder convention="foo" class="test.Foo"/>
+    <coordTransBuilder name="atmos_ln_sigma_coordinates" type="vertical" class="my.stuff.atmosSigmaLog"/>
+    <typedDatasetFactory datatype="Point" class="gov.noaa.obscure.file.Flabulate"/>
+    <table type="GRIB1" filename="/home/rkambic/grib/tables/userlookup.lst"/>
+    <table type="GRIB2" filename="/home/rkambic/grib/tables/grib2userparameters"/>
+  </nj22Config -->
+
+  <DiskCache>
+    <alwaysUse>false</alwaysUse>
+    <scour>1 hour</scour>
+    <maxSize>1 Gb</maxSize>
+  </DiskCache>
+
+  <GribIndexing>
+    <setExtendIndex>false</setExtendIndex>
+    <alwaysUseCache>false</alwaysUseCache>
+  </GribIndexing>
+
+  <AggregationCache>
+    <scour>24 hours</scour>
+    <maxAge>90 days</maxAge>
+  </AggregationCache>
+
+
+</threddsConfig>
