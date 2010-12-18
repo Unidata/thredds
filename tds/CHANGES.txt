@@ -5,6 +5,7 @@ Build Name = @BUILD.NAME@
 
 Release Details 4.2:
  4.2.2 (2010-12-xx)
+   fix default cache dir for WCS, ncss
    CdmrFeature service for point collections
    FeatureCollection type=POINT, STATION
    FMRC bug in constant offset datasets when offset didnt start at 0.

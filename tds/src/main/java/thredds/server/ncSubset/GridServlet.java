@@ -87,7 +87,7 @@ public class GridServlet extends AbstractServlet {
     if (!allow) return;
 
     //maxFileDownloadSize = ThreddsConfig.getBytes("NetcdfSubsetService.maxFileDownloadSize", (long) 1000 * 1000 * 1000);
-    String cache = ThreddsConfig.get("NetcdfSubsetService.dir", contentPath + "/cache/ncss/");
+    String cache = ThreddsConfig.get("NetcdfSubsetService.dir", ServletUtil.getContentPath() + "cache/ncss/");
     File cacheDir = new File(cache);
     if (!cacheDir.exists())  {
       if (!cacheDir.mkdirs()) {
