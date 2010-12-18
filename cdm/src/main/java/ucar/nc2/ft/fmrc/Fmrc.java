@@ -79,12 +79,12 @@ public class Fmrc {
   public static Fmrc open(String collection, Formatter errlog) throws IOException {
     if (collection.startsWith(DatasetCollectionManager.CATALOG)) {
       DatasetCollectionFromCatalog manager = new DatasetCollectionFromCatalog(collection);
-      return new Fmrc(manager);
+      return new Fmrc(manager, new FeatureCollectionConfig());
 
     } else if (collection.endsWith(".ncml")) {
       NcmlCollectionReader ncmlCollection = NcmlCollectionReader.open(collection, errlog);
       if (ncmlCollection == null) return null;
-      Fmrc fmrc = new Fmrc(ncmlCollection.getDatasetManager());
+      Fmrc fmrc = new Fmrc(ncmlCollection.getDatasetManager(), new FeatureCollectionConfig());
       fmrc.setNcml(ncmlCollection.getNcmlOuter(), ncmlCollection.getNcmlInner());
       return fmrc;
     }
@@ -95,7 +95,7 @@ public class Fmrc {
   public static Fmrc open(FeatureCollectionConfig config, Formatter errlog) throws IOException {
     if (config.spec.startsWith(DatasetCollectionManager.CATALOG)) {
       DatasetCollectionFromCatalog manager = new DatasetCollectionFromCatalog(config.spec);
-      return new Fmrc(manager);
+      return new Fmrc(manager, config);
     }
 
     return new Fmrc(config, errlog);
@@ -127,9 +127,9 @@ public class Fmrc {
   }
 
   // from AggregationFmrc
-  public Fmrc(DatasetCollectionManager manager) {
+  public Fmrc(DatasetCollectionManager manager, FeatureCollectionConfig config) {
     this.manager = manager;
-    this.config = new FeatureCollectionConfig();
+    this.config = config;
   }
 
   public void setNcml(Element outerNcml, Element innerNcml) {

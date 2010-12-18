@@ -166,5 +166,6 @@
 
   </featureCollection>
 
+  <catalogRef xlink:title="Test FMRC with inner and outer NcML" xlink:href="wav_mod.xml" name=""/>
 
 </catalog>

@@ -84,6 +84,8 @@ public class TestTdsLocal extends TestCase {
     suite.addTest(new TestSuite(TestTdsDodsServer.class));
     suite.addTest(new TestSuite(TestTdsNcml.class));
     suite.addTest(new TestSuite(TestTdsDatasetScan.class));
+    suite.addTest(new TestSuite(TestTdsFmrc.class));
+    suite.addTest(new TestSuite(TestWaveModel.class));
     //suite.addTest(new TestSuite(TestTdsNetcdfSubsetService.class));
     //suite.addTest(new TestSuite(TestTdsWxs.class));
 

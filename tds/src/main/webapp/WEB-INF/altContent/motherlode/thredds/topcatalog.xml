@@ -3,8 +3,12 @@
          xmlns:xlink="http://www.w3.org/1999/xlink"
          name="THREDDS Top Catalog, points to other THREDDS catalogs"
          version="1.0.1">
+
   <dataset name="List of THREDDS catalogs">
-    <dataset name="Fleet Numerical Meteorology">
+
+    <!-- catalogRef xlink:title="Asia-Pacific Data-Research Center (APDRC) - University of Hawaii" xlink:href="http://apdrc.soest.hawaii.edu/thredds/catalog.xml" name=""/ -->
+
+    <!-- dataset name="Fleet Numerical Meteorology">
       <catalogRef xlink:href="http://usgodae1.usgodae.org/catalog.xml"
                   xlink:title="Fleet Numerical Meteorology and Oceanography Center server 1" name="" />
       <catalogRef xlink:href="http://usgodae2.usgodae.org/catalog.xml"
@@ -13,53 +17,53 @@
                   xlink:title="Fleet Numerical Meteorology and Oceanography Center ARGO server 1" name="" />
       <catalogRef xlink:href="http://usgodae2.usgodae.org/argo_catalog.xml"
                   xlink:title="Fleet Numerical Meteorology and Oceanography Center ARGO server 2" name="" />
-    </dataset>
-    <catalogRef xlink:href="http://iridl.ldeo.columbia.edu/SOURCES/thredds.xml"
-                xlink:title="IRI/LDEO Climate Data Library" name="" />
-    <catalogRef xlink:href="http://dataportal.ucar.edu/metadata/ucar.thredds"
-                xlink:title="NCAR Data Portal" name="" />
+    </dataset -->
+
+    <catalogRef xlink:title="Coastal Observing Research and Development Center, Scripps Institution of Oceanography" xlink:href="http://hfrnet.ucsd.edu:8080/thredds/catalog.xml" name="" />
+    <catalogRef xlink:title="Great Lakes Observing System (GLOS)" xlink:href="http://michigan.glin.net/thredds/catalog.xml" name="" />
+    <catalogRef xlink:title="Hawaii Ocean Observing System (HiOOS)" xlink:href="http://oos.soest.hawaii.edu/thredds/catalog.xml" name="" />
+    <catalogRef xlink:title="IFREMER - L'Institut Français de Recherche pour l'Exploitation de la Mer" xlink:href="http://www.ifremer.fr/thredds/catalog.xml" name="" />
+
+    <catalogRef xlink:title="IRI/LDEO Climate Data Library" xlink:href="http://iridl.ldeo.columbia.edu/SOURCES/thredds.xml" name="" />
+    <catalogRef xlink:title="Mersea - Marine Environment and Security for the European Area" xlink:href="http://mersea.jrc.ec.europa.eu/thredds/catalog.xml" name="" />
+
+    <catalogRef xlink:title="NCAR Data Portal" xlink:href="http://dataportal.ucar.edu/metadata/ucar.thredds" name="" />
+
     <dataset name="NOAA NOMADS">
-      <catalogRef xlink:href="http://nomads.ncdc.noaa.gov/thredds/catalog.xml"
-                  xlink:title="NCDC NOMADS Data Server (TDS)" name="" />
-      <catalogRef xlink:href="http://nomads.ncdc.noaa.gov/dods/thredds"
-                  xlink:title="NCDC NOMADS Data Server (GDS)" name="" />
-      <catalogRef xlink:href="http://nomads.ncep.noaa.gov:9090/dods/thredds"
-                  xlink:title="NCEP NOMADS Data Server" name="" />
+      <catalogRef xlink:href="http://nomads.ncdc.noaa.gov/thredds/catalog.xml" xlink:title="NCDC NOMADS THREDDS Data Server" name="" />
+      <catalogRef xlink:href="http://nomads.ncep.noaa.gov:9090/dods/thredds"   xlink:title="NCDC NOMADS GrADS Server" name="" />
+      <catalogRef xlink:href="http://nomads.ncdc.noaa.gov/dods/thredds"        xlink:title="NCDC NOMADS GrADS Server 2" name="" />
     </dataset>
 
-    <catalogRef xlink:href="http://coast-enviro.er.usgs.gov/thredds/bathy_catalog.xml"
-                xlink:title="Global and Regional Topography/Bathymetry Grids" name="" />
+    <catalogRef xlink:title="Oak Ridge National Laboratory Distributed Active Archive Center" xlink:href="http://thredds.daac.ornl.gov/thredds/ornl_catalog/daac.xml" name="" />
+    <catalogRef xlink:title="Ocean Watch SWFSC/Environmental Research Division)" xlink:href="http://oceanwatch.pfeg.noaa.gov/thredds/catalog.xml" name="" />
 
-    <catalogRef xlink:href="http://oceanwatch.pfeg.noaa.gov/thredds/catalog.xml"
-                xlink:title="Ocean Watch SWFSC/Environmental Research Division)" name="" />
-    <catalogRef xlink:href="http://dodsdev.gso.uri.edu:8080/thredds/catalog.xml"
-                xlink:title="Satellite-Derived Oceanographic Data Sets" name="" />
+    <!-- catalogRef xlink:href="http://dodsdev.gso.uri.edu:8080/thredds/catalog.xml"
+                xlink:title="Satellite-Derived Oceanographic Data Sets" name="" / -->
 
-    <catalogRef xlink:href="http://moby.itsc.uah.edu/outgoing/thredds/datapool_cat.xml"
-                xlink:title="Global Hydrology Resource Center Data Pool" name="" />
+    <!-- catalogRef xlink:href="http://moby.itsc.uah.edu/outgoing/thredds/datapool_cat.xml"
+                xlink:title="Global Hydrology Resource Center Data Pool" name="" / -->
 
-    <catalogRef xlink:href="http://apdrc.soest.hawaii.edu/thredds/catalog.xml"
-                xlink:title="Asia-Pacific Data-Research Center (APDRC) - University of Hawaii" name=""/>
-    <catalogRef xlink:href=" http://133.11.64.144/thredds/catalog.xml"
-                xlink:title="Waseda Research Lab at University of Tokyo" name=""/>
+    <!-- catalogRef xlink:href="http://ngportal.sf.utas.edu.au/opendap/catalog.xml"
+                xlink:title="TPAC Ocean and Climate Digital Library Portal" name="" / -->
 
-    <catalogRef xlink:href="http://ngportal.sf.utas.edu.au/opendap/catalog.xml"
-                xlink:title="TPAC Ocean and Climate Digital Library Portal" name="" />
+    <!-- catalogRef xlink:href="http://monsoondata.org:9090/dods/thredds"
+                xlink:title="COLA GrADS Data Server" name="" / -->
 
-    <catalogRef xlink:href="http://monsoondata.org:9090/dods/thredds"
-                xlink:title="COLA GrADS Data Server" name="" />
+    <!-- catalogRef xlink:href="http://cdp.ucar.edu:9191/dods/thredds"
+                xlink:title="Community Data Portal GDS - COLA Climate Modeling Data Sets" name="" / -->
 
-    <catalogRef xlink:href="http://cdp.ucar.edu:9191/dods/thredds"
-                xlink:title="Community Data Portal GDS - COLA Climate Modeling Data Sets" name="" />
+    <catalogRef xlink:title="Unidata THREDDS/IDD Server (motherlode)" name="" xlink:href="http://motherlode.ucar.edu:8080/thredds/catalog.xml" />
 
-    <catalogRef xlink:href="http://motherlode.ucar.edu:8080/thredds/catalog.xml"
-                xlink:title="Unidata THREDDS/IDD Server (motherlode)" name="" />
     <dataset name="Unidata LEAD catalogs">
-      <catalogRef xlink:href="http://lead.unidata.ucar.edu:8080/thredds/catalog.xml"
-                  xlink:title="IDD Data" name="" />
-      <catalogRef xlink:href="http://lead.unidata.ucar.edu:8080/thredds/topcatalog.xml"
-                  xlink:title="LEAD Data" name="" />
+      <catalogRef xlink:href="http://lead.unidata.ucar.edu:8080/thredds/catalog.xml" xlink:title="IDD Data" name="" />
+      <catalogRef xlink:href="http://lead.unidata.ucar.edu:8080/thredds/topcatalog.xml" xlink:title="LEAD Data" name="" />
     </dataset>
+
+    <catalogRef xlink:title="USGS Woods Hole Science Center THREDDS catalogs" xlink:href="http://coast-enviro.er.usgs.gov/thredds/catalog.xml" name="" />
+
+    <!-- catalogRef xlink:title="Waseda Research Lab at University of Tokyo" xlink:href=" http://133.11.64.144/thredds/catalog.xml" name=""/ -->
+
   </dataset>
 </catalog>
 

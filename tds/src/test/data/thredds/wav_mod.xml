@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<catalog name="Wave Model Output"
+         xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
+         xmlns:xlink="http://www.w3.org/1999/xlink" >
+
+  <service name="fmrcServices" serviceType="Compound" base="">
+    <service name="opendap"   serviceType="OpenDAP"      base="/thredds/dodsC/"     />
+    <service name="wcs"       serviceType="WCS"          base="/thredds/wcs/"       />
+    <service name="wms"       serviceType="WMS"          base="/thredds/wms/"       />
+    <service name="ncss"      serviceType="NetcdfSubset" base="/thredds/ncss/grid/" />
+  </service>
+
+  <!-- SWAN-Oahu: -->
+
+  <featureCollection name="SWAN Oahu Regional Wave Model (500m)"
+                     featureType="FMRC"
+                     ID="swan_oahu"
+                     path="hioos/model/wav/swan/oahu">
+
+    <metadata inherited="true">
+      <serviceName>fmrcServices</serviceName>
+      <authority>org.hioos</authority>
+      <dataType>Grid</dataType>
+      <dataFormat>NetCDF</dataFormat>
+      <contributor role="Principal Investigator">Dr. Kwok Fai Cheung</contributor>
+      <contributor role="Data Manager">Dr. Jim Potemra</contributor>
+      <creator>
+        <name>Dr. Kwok Fai Cheung</name>
+        <contact url="http://www.ore.hawaii.edu/OE/ore_cheung.htm"
+                 email="cheung@hawaii.edu" />
+      </creator>
+      <publisher>
+        <name>Hawaii Ocean Observing System (HiOOS)</name>
+        <contact url="http://hioos.org" email="jimp@hawaii.edu" />
+      </publisher> 
+
+      <project>Hawaii Ocean Observing System (HiOOS)</project>
+      <project>Pacific Ocean Observing System (PacIOOS)</project>
+      <project>U.S. Integrated Ocean Observing System (IOOS)</project>
+
+      <keyword vocabulary="DIF">Oceans &gt; Ocean Waves &gt; Significant Wave Height</keyword>
+      <keyword vocabulary="DIF">Oceans &gt; Ocean Waves &gt; Wave Period</keyword>
+      <keyword vocabulary="DIF">Oceans &gt; Ocean Waves &gt; Wave Speed/Direction</keyword>
+
+      <variables vocabulary="CF-1.4">
+        <variable name="lat" vocabulary_name="latitude" units="degrees_north">latitude</variable>
+        <variable name="lon" vocabulary_name="longitude" units="degrees_east">longitude</variable>
+        <variable name="mdir" vocabulary_name="sea_surface_wave_to_direction" units="degrees">mean wave direction</variable>
+        <variable name="mper" vocabulary_name="sea_surface_wave_mean_period_from_variance_spectral_density_second_frequency_moment" units="seconds">mean wave period</variable>
+        <variable name="pdir" vocabulary_name="sea_surface_wave_to_direction" units="degrees">peak wave direction</variable>
+        <variable name="pper" vocabulary_name="sea_surface_wave_period_at_variance_spectral_density_maximum" units="seconds">peak wave period</variable>
+        <variable name="shgt" vocabulary_name="sea_surface_wave_significant_height" units="meters">significant wave height</variable>
+      </variables>
+
+      <property name="institution" value="University of Hawaii at Manoa, School of Ocean and Earth Science and Technology (SOEST), Department of Ocean and Resources Engineering (ORE)"/>
+      <property name="viewer" value="http://oos.soest.hawaii.edu/las/getUI.do?dsid=swan_oahu&amp;catid=swan_oahu&amp;varid=shgt-swan_oahu&amp;plot=Plot_2D_XY_zoom&amp;view=xy,Live Access Server (LAS)" />
+      <property name="viewer2" value="http://oos.soest.hawaii.edu/erddap/griddap/SWAN_Oahu_Best.graph,ERDDAP" />
+      <property name="viewer3" value="http://oos.soest.hawaii.edu/dchart/index.html?dsetid=42f715e5fdb8d3c71e8b2c4bf146eb,DChart" />
+ 
+      <documentation type="summary">Simulating WAves Nearshore (SWAN) regional wave model 7.5-day hourly forecast for the
+        Hawaiian island of Oahu at approximately 500-m resolution. This high-resolution model is utilized to capture
+        shallow water effects and nearshore coastal dynamics such as refracting, shoaling, and smaller scale shadowing.
+        It is run directly after the Hawaii regional WaveWatch III (WW3) wave model has completed. Please note that this
+        nested model setup is in the testing and validation phase. While considerable effort has been
+        made to implement all model components in a thorough, correct, and accurate manner, numerous
+        sources of error are possible. As such, please use these data with the caution appropriate for
+        any ocean related activity.</documentation>
+
+      <documentation type="rights">These model data were generated as part of an academic research
+        project, and the principal investigator, Kwok Fai Cheung (cheung@hawaii.edu), asks to be
+        informed of intent for scientific use and appropriate acknowledgment given in any
+        publications arising therefrom. The data are provided free of charge, without warranty of any
+        kind.</documentation>
+
+      <documentation type="funding">The Hawaii Ocean Observing System (HiOOS) is the Hawaiian Islands component of the Pacific Islands Ocean Observing System (PacIOOS), funded through the National Oceanic and Atmospheric Administration (NOAA) as a Regional Association within the U.S. Integrated Ocean Observing System (IOOS). PacIOOS is coordinated by the University of Hawaii School of Ocean and Earth Science and Technology (SOEST) in partnership with the University of Hawaii Sea Grant College Program.</documentation>
+
+      <documentation xlink:href="http://endeavor.soest.hawaii.edu:8080/forecast/model.html"
+                     xlink:title="University of Hawaii Ocean and Resources Engineering Forecast Models" />
+
+      <documentation xlink:href="http://www.wldelft.nl/soft/swan/"
+                     xlink:title="Simulating WAves Nearshore (SWAN)" />
+
+      <documentation xlink:href="http://hioos.org"
+                     xlink:title="Hawaii Ocean Observing System (HiOOS)" />
+
+      <geospatialCoverage>
+        <northsouth>
+          <start>21.2</start>
+          <size>0.55</size>
+          <resolution>0.004954955</resolution>
+          <units>degrees_north</units>
+        </northsouth>
+        <eastwest>
+          <start>-158.35</start>
+          <size>0.75</size>
+          <resolution>0.004966887</resolution>
+          <units>degrees_east</units>
+        </eastwest>
+        <updown>
+          <start>0</start>
+          <size>0</size>
+          <resolution>0</resolution>
+          <units>m</units>
+        </updown>
+        <name vocabulary="DIF">Continent &gt; North America &gt; United States Of America &gt; Hawaii</name>
+        <name vocabulary="DIF">Ocean &gt; Pacific Ocean &gt; Central Pacific Ocean &gt; Hawaiian Islands</name>
+        <name vocabulary="none">Hawaii &gt; Oahu</name>
+      </geospatialCoverage>
+ 
+    </metadata>
+
+    <metadata inherited="true">
+      <timeCoverage>
+        <start>2010-06-20T21:00:00Z</start>
+        <end>present</end>
+        <resolution>1 hour</resolution>
+      </timeCoverage>
+    </metadata>
+
+    <collection spec="Q:/cdmUnitTest/tds/fmrc/swan_oahu_#yyyyMMdd#\.nc$" olderThan="5 min" />
+        
+    <update startup="true" rescan="0 5 13 * * ? *" trigger="allow" /> <!-- 13:05:00 everyday -->
+
+    <protoDataset>
+      <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
+        <!-- Metadata Reference -->
+        <attribute name="id" value="HIOOS-SWAN-Oahu"/>
+        <attribute name="naming_authority" value="org.hioos"/>
+        <attribute name="Metadata_Conventions" value="Unidata Dataset Discovery v1.0, CF-1.4"/>
+        <attribute name="Conventions" value="Unidata Dataset Discovery v1.0, CF-1.4"/>
+        <!--<attribute name="Metadata_Link" value="URL for full metadata record"/>-->
+        <!-- Text Search -->
+        <attribute name="title" value="Simulating WAves Nearshore (SWAN) Regional Wave Model: Oahu"/>
+        <attribute name="summary" value="Simulating WAves Nearshore (SWAN) regional wave model 7.5-day hourly forecast for the Hawaiian island of Oahu at approximately 500-m resolution. This high-resolution model is utilized to capture shallow water effects and nearshore coastal dynamics such as refracting, shoaling, and smaller scale shadowing. It is run directly after the Hawaii regional WaveWatch III (WW3) wave model has completed. Please note that this nested model setup is in the testing and validation phase. While considerable effort has been made to implement all model components in a thorough, correct, and accurate manner, numerous sources of error are possible. As such, please use these data with the caution appropriate for any ocean related activity."/>
+        <attribute name="keywords" value="Oceans &gt; Ocean Waves &gt; Significant Wave Height, Oceans &gt; Ocean Waves &gt; Wave Period, Oceans &gt; Ocean Waves &gt; Wave Speed/Direction"/>
+        <attribute name="keywords_vocabulary" value="GCMD Science Keywords"/>
+        <attribute name="standard_name_vocabulary" value="CF-1.4"/>
+        <attribute name="comment" value="Model runs produced by Dr. Kwok Fai Cheung (cheung@hawaii.edu)."/>
+        <!-- Extent Search -->
+        <attribute name="geospatial_lat_min" value="21.2" type="double"/>
+        <attribute name="geospatial_lat_max" value="21.75" type="double"/>
+        <attribute name="geospatial_lon_min" value="201.65" type="double"/>
+        <attribute name="geospatial_lon_max" value="202.4" type="double"/>
+        <attribute name="geospatial_vertical_min" value="0" type="double"/>
+        <attribute name="geospatial_vertical_max" value="0" type="double"/>
+        <!-- Other Extent Information -->
+        <attribute name="geospatial_lat_units" value="degrees_north"/>
+        <attribute name="geospatial_lon_units" value="degrees_east"/>
+        <attribute name="geospatial_vertical_units" value="meters"/>
+        <attribute name="time_coverage_resolution" value="PT1H"/>
+        <!-- Creator Search -->
+        <attribute name="acknowledgement" value="UH/SOEST, HiOOS"/>
+        <attribute name="creator_email" value="cheung@hawaii.edu"/>
+        <attribute name="creator_name" value="Kwok Fai Cheung"/>
+        <attribute name="creator_url" value="http://www.ore.hawaii.edu/OE/ore_cheung.htm"/>
+        <attribute name="date_created" value="2010-06-20"/>
+        <attribute name="date_issued" value="2010-06-20"/>
+        <attribute name="date_modified" value="2010-07-22"/>
+        <attribute name="institution" value="University of Hawaii"/>
+        <attribute name="project" value="Hawaii Ocean Observing System (HiOOS) (http://hioos.org)"/>
+        <!-- Contributor Search -->
+        <attribute name="contributor_name" value="Jim Potemra"/>
+        <attribute name="contributor_role" value="Data Manager"/>
+        <!-- Publisher Search -->
+        <attribute name="publisher_email" value="jimp@hawaii.edu"/>
+        <attribute name="publisher_name" value="University of Hawaii/SOEST, HiOOS"/>
+        <attribute name="publisher_url" value="http://hioos.org"/>
+        <!-- Other Attributes -->
+        <attribute name="license" value="The data may be used and redistributed for free but is not intended for legal use, since it may contain inaccuracies. Neither the data Contributor, University of Hawaii, HiOOS, NOAA, State of Hawaii nor the United States Government, nor any of their employees or contractors, makes any warranty, express or implied, including warranties of merchantability and fitness for a particular purpose, or assumes any legal liability for the accuracy, completeness, or usefulness, of this information."/>            <attribute name="acknowledgment" value="The Hawaii Ocean Observing System (HiOOS) is the Hawaiian Islands component of the Pacific Islands Ocean Observing System (PacIOOS), funded through the National Oceanic and Atmospheric Administration (NOAA) as a Regional Association within the U.S. Integrated Ocean Observing System (IOOS). PacIOOS is coordinated by the University of Hawaii School of Ocean and Earth Science and Technology (SOEST) in partnership with the University of Hawaii Sea Grant College Program."/>
+        <attribute name="cdm_data_type" value="Grid"/>
+        <!-- CF Attributes -->
+        <attribute name="source" value="Simulating WAves Nearshore (SWAN) numerical wave model" />
+        <attribute name="references" value="http://endeavor.soest.hawaii.edu:8080/forecast/model.html, http://www.wldelft.nl/soft/swan/" />
+
+        <!--
+        FRMC changes _FillValue to NaN (bug in TDS <4.2), so change variables
+        accordingly here; this needs to happen *before* the aggregation so that
+        the change is made to the individual files, otherwise the aggregation
+        will output NaN but the data will still have their original _FillValue
+        setting (-999 in our case). This fixes a problem in LAS >7 that was
+        not able to produce plots because of the _FillValue discrepency. These
+        same changes may not be necessary once TDS 4.2 becomes the new stable
+        release.
+        -jmaurer
+        -->
+
+        <variable name="shgt">
+          <attribute name="_FillValue" type="float" value="NaN" />
+        </variable>
+        <variable name="mper">
+          <attribute name="_FillValue" type="float" value="NaN" />
+          <attribute name="standard_name" value="sea_surface_wave_mean_period_from_variance_spectral_density_second_frequency_moment" />
+        </variable>
+        <variable name="mdir">
+          <attribute name="_FillValue" type="float" value="NaN" />
+          <attribute name="standard_name" value="sea_surface_wave_to_direction" />
+        </variable>
+        <variable name="pper">
+          <attribute name="_FillValue" type="float" value="NaN" />
+          <attribute name="standard_name" value="sea_surface_wave_period_at_variance_spectral_density_maximum" />
+        </variable>
+        <variable name="pdir">
+          <attribute name="_FillValue" type="float" value="NaN" />
+          <attribute name="long_name" value="peak wave direction" />
+          <attribute name="standard_name" value="sea_surface_wave_to_direction" />
+        </variable>
+      </netcdf>
+    </protoDataset>
+ 
+    <fmrcConfig regularize="false" datasetTypes="TwoD Best Runs ConstantForecasts ConstantOffsets" />`
+
+  </featureCollection>
+
+</catalog>

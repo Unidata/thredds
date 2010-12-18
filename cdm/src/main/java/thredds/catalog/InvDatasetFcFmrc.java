@@ -57,7 +57,7 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
 
     Formatter errlog = new Formatter();
     try {
-      fmrc = new Fmrc(dcm);
+      fmrc = new Fmrc(dcm, config);
     } catch (Exception e) {
       throw new RuntimeException(errlog.toString());
     }

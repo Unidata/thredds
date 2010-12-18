@@ -34,6 +34,7 @@ package ucar.nc2.ncml;
 
 import thredds.inventory.DateExtractor;
 import thredds.inventory.DateExtractorFromName;
+import thredds.inventory.FeatureCollectionConfig;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.ft.fmrc.Fmrc;
@@ -109,7 +110,7 @@ public class AggregationFmrc extends AggregationOuterDimension {
       dateExtractor = new DateExtractorFromName(runMatcher, false); // uses path
     if (dateExtractor == null && dateFormatMark != null)
       dateExtractor = new DateExtractorFromName(dateFormatMark, true);
-    fmrc = new Fmrc(datasetManager);
+    fmrc = new Fmrc(datasetManager, new FeatureCollectionConfig());
 
     // fill in the ncDataset
     fmrc.getDataset2D( ncDataset);
