@@ -291,7 +291,7 @@ public interface GridCoordSystem {
   public boolean hasTimeAxis1D();
 
   /**
-   * Get the Time axis, if it exists, and its 1-dimensional.
+   * Get the Time axis, if it exists, and if its 1-dimensional.
    * @return the time coordinate axis, may be null.
    */
   public CoordinateAxis1DTime getTimeAxis1D();
@@ -300,7 +300,7 @@ public interface GridCoordSystem {
    * This is the case of a 2D time axis, which depends on the run index.
    * A time coordinate must be a udunit date or ISO String, so it can always be converted to a Date.
    * @param run_index which run?
-   * @return 1D time axis for that run.
+   * @return 1D time axis for that run. Null if not 2D time
    */
   public CoordinateAxis1DTime getTimeAxisForRun(int run_index);
 

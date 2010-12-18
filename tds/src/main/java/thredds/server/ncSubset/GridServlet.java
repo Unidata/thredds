@@ -161,7 +161,7 @@ public class GridServlet extends AbstractServlet {
         log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
         if (!res.isCommitted()) res.sendError(HttpServletResponse.SC_NOT_FOUND);
 
-      } catch (Exception e) {
+      } catch (Throwable e) {
         log.error("GridServlet.showForm", e);
         log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
         if (!res.isCommitted()) res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -330,10 +330,10 @@ public class GridServlet extends AbstractServlet {
       PrintWriter pw = !qp.acceptType.equals(QueryParams.NETCDF) ? res.getWriter() : null;
       result = writer.write(qp, pw);
 
-    } catch (IOException ioe) {
+    } catch (Throwable ioe) {
       log.error("Writing to " + cacheFilename, ioe);
       log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
-      res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ioe.getMessage());
+      if (!res.isCommitted()) res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ioe.getMessage());
       return;
     }
 
@@ -471,10 +471,10 @@ public class GridServlet extends AbstractServlet {
       res.sendError(HttpServletResponse.SC_FORBIDDEN, e.getMessage());
       return;
 
-    } catch (Exception ioe) {
+    } catch (Throwable ioe) {
       log.error("Writing to " + cacheFilename, ioe);
       log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
-      res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ioe.getMessage());
+      if (!res.isCommitted()) res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ioe.getMessage());
       return;
     }
 
@@ -504,10 +504,10 @@ public class GridServlet extends AbstractServlet {
         XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
         infoString = fmt.outputString(html);
 
-      } catch (Exception e) {
+      } catch (Throwable e) {
         log.error("ForecastModelRunServlet internal error", e);
         log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
-        res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "ForecastModelRunServlet internal error");
+        if (!res.isCommitted()) res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "ForecastModelRunServlet internal error");
         return;
       }
     }

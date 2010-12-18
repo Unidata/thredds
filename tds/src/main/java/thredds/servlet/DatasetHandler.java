@@ -218,9 +218,12 @@ public class DatasetHandler {
     return ncfile;
   }
 
-  // return null means request has been handled, and calling routine should exit without further processing
   static public InvDatasetFeatureCollection getFeatureCollection(HttpServletRequest req, HttpServletResponse res) throws IOException {
-    String reqPath = req.getPathInfo();
+	  return getFeatureCollection(req, res, req.getPathInfo());
+  }
+
+  // return null means request has been handled, and calling routine should exit without further processing
+  static public InvDatasetFeatureCollection getFeatureCollection(HttpServletRequest req, HttpServletResponse res, String reqPath) throws IOException {
     if (reqPath == null)
       return null;
 

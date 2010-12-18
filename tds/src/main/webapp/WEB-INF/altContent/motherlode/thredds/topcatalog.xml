@@ -20,6 +20,7 @@
     </dataset -->
 
     <catalogRef xlink:title="Coastal Observing Research and Development Center, Scripps Institution of Oceanography" xlink:href="http://hfrnet.ucsd.edu:8080/thredds/catalog.xml" name="" />
+    <catalogRef xlink:title="EUMETSAT" xlink:href="http://gsics.eumetsat.int/thredds/catalog.xml" name="" />
     <catalogRef xlink:title="Great Lakes Observing System (GLOS)" xlink:href="http://michigan.glin.net/thredds/catalog.xml" name="" />
     <catalogRef xlink:title="Hawaii Ocean Observing System (HiOOS)" xlink:href="http://oos.soest.hawaii.edu/thredds/catalog.xml" name="" />
     <catalogRef xlink:title="IFREMER - L'Institut Français de Recherche pour l'Exploitation de la Mer" xlink:href="http://www.ifremer.fr/thredds/catalog.xml" name="" />

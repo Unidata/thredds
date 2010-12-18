@@ -5,6 +5,7 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.2:
  18: (2011-12-xx)
+  GridCoordSys.getDateRange() now works for 2D time coord. get<NamedObject> deprecated.
   mavenized: combine common, unidataCommon; split bufr, bufrTables
   FMRC bug in constant offset datasets when offset didnt start at 0.
  17: (2010-11-30)

@@ -53,6 +53,7 @@ import java.util.List;
 import java.util.Arrays;
 import java.nio.channels.WritableByteChannel;
 import java.nio.channels.Channels;
+import java.util.Formatter;
 
 import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.remote.PointStreamProto;
@@ -62,6 +63,8 @@ import ucar.nc2.stream.NcStream;
 import ucar.nc2.stream.NcStreamWriter;
 import ucar.nc2.stream.NcStreamProto;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.constants.FeatureType;
+import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.util.DiskCache2;
 import ucar.unidata.geoloc.Station;
 import ucar.unidata.util.StringUtil;
@@ -74,9 +77,9 @@ import ucar.unidata.util.StringUtil;
  * @since May 28, 2009
  */
 public class CdmrFeatureController extends AbstractCommandController { // implements LastModified {
-  private static final Logger logServerStartup = org.slf4j.LoggerFactory.getLogger( "serverStartup" );
+  private static final Logger logServerStartup = org.slf4j.LoggerFactory.getLogger("serverStartup");
   private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(getClass());
-  private static boolean debug = true, showTime = true, showReq=true;
+  private static boolean debug = true, showTime = true, showReq = true;
 
   private TdsContext tdsContext;
   private boolean allow = true;
@@ -112,15 +115,8 @@ public class CdmrFeatureController extends AbstractCommandController { // implem
     String absPath = ServletUtil.getRequestServer(req) + req.getContextPath() + req.getServletPath() + req.getPathInfo();
     String path = req.getPathInfo();
 
-    /*
-    FeatureType ft = null;
-    if (path.endsWith("station")) {
-      ft = FeatureType.STATION;
-      path = path.substring(0, path.length() - "station".length() - 1);
-    } */
-
     if (showReq)
-      System.out.printf("CdmFeatureController req=%s%n", absPath+"?"+req.getQueryString());
+      System.out.printf("CdmFeatureController req=%s%n", absPath + "?" + req.getQueryString());
     if (debug) {
       System.out.printf(" path=%s%n query=%s%n", path, req.getQueryString());
     }
@@ -135,18 +131,46 @@ public class CdmrFeatureController extends AbstractCommandController { // implem
     }
     if (debug) System.out.printf(" %s%n", query);
 
-    InvDatasetFeatureCollection fc = DatasetHandler.getFeatureCollection(req, res);
-    if (fc == null) {
-      res.sendError(HttpServletResponse.SC_NOT_FOUND);
+    FeatureDatasetPoint fdp = null;
+
+    // this looks for a featureCollection
+    InvDatasetFeatureCollection fc = DatasetHandler.getFeatureCollection(req, res, path);
+    if (fc != null) {
+      fdp = fc.getFeatureDatasetPoint();
+    } else {
+      // tom kunicki 12/18/10
+      // allows a single NetcdfFile to be turned into a FeatureDataset
+      NetcdfFile ncfile = DatasetHandler.getNetcdfFile(req, res, path);
+      if (ncfile != null) {
+        FeatureDataset fd = FeatureDatasetFactoryManager.wrap(
+                FeatureType.ANY,                  // will check FeatureType below if needed...
+                NetcdfDataset.wrap(ncfile, null),
+                null,
+                new Formatter(System.err));       // better way to do this?
+        if (fd instanceof FeatureDatasetPoint) {
+          fdp = (FeatureDatasetPoint) fd;
+        }
+      }
+    }
+
+    if (fdp == null) {
+      res.sendError(HttpServletResponse.SC_NOT_FOUND, "not a point or station dataset");
       log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, -1));
       return null;
     }
 
-    FeatureDatasetPoint fd = fc.getFeatureDatasetPoint();
-    if (fd == null) {
-      res.sendError(HttpServletResponse.SC_NOT_FOUND, "not a point dataset");
-      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, -1));
-      return null;
+    // check on feature type, using suffix convention LOOK
+    FeatureType ft = null;
+    if (path.endsWith("/station")) {
+      ft = FeatureType.STATION;
+      path = path.substring(0, path.lastIndexOf('/'));
+    } else if (path.endsWith("/point")) {
+      ft = FeatureType.POINT;
+      path = path.substring(0, path.lastIndexOf('/'));
+    }
+
+    if (ft != null && ft != fdp.getFeatureType()) {
+      res.sendError(HttpServletResponse.SC_NOT_FOUND, "feature type mismatch:  expetected " + ft + " found" + fdp.getFeatureType());
     }
 
     try {
@@ -155,20 +179,20 @@ public class CdmrFeatureController extends AbstractCommandController { // implem
       switch (reqType) {
         case capabilities:
         case form:
-          return processXml(req, res, fd, absPath, query);
+          return processXml(req, res, fdp, absPath, query);
 
         case header:
-          return processHeader(absPath, res, fd, query);
+          return processHeader(absPath, res, fdp, query);
 
         case dataForm:
         case data:
-          return processData(req, res, fd, path, query);
+          return processData(req, res, fdp, path, query);
 
         case stations:
           if (resType == CdmRemoteQueryBean.ResponseType.xml)
-            return processXml(req, res, fd, absPath, query);
+            return processXml(req, res, fdp, absPath, query);
           else
-            return processStations(res, fd, query);
+            return processStations(res, fdp, query);
       }
 
     } catch (FileNotFoundException e) {
@@ -184,9 +208,9 @@ public class CdmrFeatureController extends AbstractCommandController { // implem
 
     } finally {
       if (showReq) System.out.printf(" done%n");
-      if (null != fd)
+      if (null != fdp)
         try {
-          fd.close();
+          fdp.close();
         } catch (IOException ioe) {
           log.error("Failed to close = " + path);
         }
@@ -370,7 +394,7 @@ public class CdmrFeatureController extends AbstractCommandController { // implem
       out.write(b);
 
     } catch (Throwable t) {
-      NcStreamProto.Error err = NcStream.encodeErrorMessage( t.getMessage());
+      NcStreamProto.Error err = NcStream.encodeErrorMessage(t.getMessage());
       byte[] b = err.toByteArray();
       PointStream.writeMagic(out, PointStream.MessageType.Error);
       NcStream.writeVInt(out, b.length);
@@ -402,7 +426,7 @@ public class CdmrFeatureController extends AbstractCommandController { // implem
     out.flush();
     res.flushBuffer();
 
-    log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, size+1));
+    log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, size + 1));
     return null;
   }
 
