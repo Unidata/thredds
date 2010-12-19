@@ -524,6 +524,14 @@ public class FmrcInvLite implements java.io.Serializable {
     public int getDatasetIndex() {
       return index;
     }
+
+    @Override
+    public String toString() {
+      return "TimeInstance{" +
+              "location='" + location + '\'' +
+              ", index=" + index +
+              '}';
+    }
   }
 
   // represents 1 time coord in a 2d time matrix, point or interval

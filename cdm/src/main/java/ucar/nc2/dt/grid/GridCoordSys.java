@@ -1356,7 +1356,8 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
   private void makeTimes() {
     if ((timeTaxis != null) && (timeTaxis.getSize() > 0)) {
       timeDates = timeTaxis.getTimeDates();
-      //if (makeTimes1D()) return;
+      isDate = true;
+      return;
 
     } else if ((tAxis != null) && (tAxis.getSize() > 0))  {
       if (makeTimes2D()) return;

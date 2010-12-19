@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module relativePaths="true" type="JAVA_MODULE" version="4">
   <component name="NewModuleRootManager" inherit-compiler-output="false">
-    <output url="file://$MODULE_DIR$/../../../bufr/target/classes" />
-    <output-test url="file://$MODULE_DIR$/../../../bufr/target/test/classes" />
+    <output url="file://$MODULE_DIR$/../../bufr/target/classes" />
+    <output-test url="file://$MODULE_DIR$/../../bufr/target/test/classes" />
     <exclude-output />
     <content url="file://$MODULE_DIR$/../../bufr">
       <sourceFolder url="file://$MODULE_DIR$/../../bufr/src/main/java" isTestSource="false" />

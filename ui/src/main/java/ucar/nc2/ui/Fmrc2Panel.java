@@ -295,6 +295,7 @@ public class Fmrc2Panel extends JPanel {
       for (MFile mfile : files) {
         infoTA.appendLine(" "+mfile.getPath()+" "+ new Date(mfile.getLastModified())+" "+ mfile.getLength());
       }
+      infoTA.appendLine("total files="+files.size());
       status = true;
     }
 

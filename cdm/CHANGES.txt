@@ -2,12 +2,18 @@ CHANGES for Netcdf-Java library
 Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
-
 Changes in version 4.2:
  18: (2011-12-xx)
+  GridDatasetInv looks for run time inside file if needed.
+  TdsMonitor : put dns cache directory under home/tdsMonitor; add reverse hostname to access/user table
+  fix close bug in MetadataManager (bdb closing)
   GridCoordSys.getDateRange() now works for 2D time coord. get<NamedObject> deprecated.
   mavenized: combine common, unidataCommon; split bufr, bufrTables
   FMRC bug in constant offset datasets when offset didnt start at 0.
+  protobuf-2.3.0
+  UI: CatalogCopier, GribReportPanel
+  ucar.ma2.ArrayScalar
+  ucar.nc2.iosp.noaa.Ghcnm IOSP: StructureDataAscii, improve TableParser
  17: (2010-11-30)
   Attribute tolerate null value
   NcMLWriter check for null attribute

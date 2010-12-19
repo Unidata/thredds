@@ -70,6 +70,7 @@ import thredds.inventory.CollectionManager;
  * Should be immutable, once the file is finished writing.
  *
  * TODO: staggered grids, other dimensions
+ * TODO: this assumes a single run date !!
  *
  * @author caron
  * @since Jan 11, 2010
@@ -151,28 +152,32 @@ public class GridDatasetInv {
 
   public GridDatasetInv(ucar.nc2.dt.GridDataset gds, Date runDate) {
     this.location = gds.getLocationURI();
+    this.runDate = runDate;
 
     NetcdfFile ncfile = gds.getNetcdfFile();
-    if (runDate == null) {
+    if (this.runDate == null) {
       runTime = ncfile.findAttValueIgnoreCase(null, _Coordinate.ModelBaseDate, null);
       if (runTime == null)
         runTime = ncfile.findAttValueIgnoreCase(null, _Coordinate.ModelRunDate, null);
-      if (runTime == null) {
-        log.error("GridDatasetInv missing rundate in file=" + location);
-        throw new IllegalArgumentException("File must have " + _Coordinate.ModelBaseDate + " or " + _Coordinate.ModelRunDate + " attribute ");
+
+      if (runTime != null) {
+        this.runDate = DateUnit.getStandardOrISO(runTime);
+         if (this.runDate == null) {
+           log.warn("GridDatasetInv rundate not ISO date string (%s) file=%s", runTime, location);
+           //throw new IllegalArgumentException(_Coordinate.ModelRunDate + " must be ISO date string " + runTime);
+         }
       }
-      this.runDate = DateUnit.getStandardOrISO(runTime);
+
       if (this.runDate == null) {
-        log.error("GridDatasetInv rundate not ISO date string (%s) file=%s", runTime, location);
-        throw new IllegalArgumentException(_Coordinate.ModelRunDate + " must be ISO date string " + runTime);
+        this.runDate = gds.getStartDate(); // LOOK not really right
+        log.warn("GridDatasetInv using gds.getStartDate() for run date =%s", runTime, location);
+        //log.error("GridDatasetInv missing rundate in file=" + location);
+        //throw new IllegalArgumentException("File must have " + _Coordinate.ModelBaseDate + " or " + _Coordinate.ModelRunDate + " attribute ");
       }
-
-    } else {
-
-      this.runDate = runDate;
-      DateFormatter df = new DateFormatter();
-      this.runTime = df.toDateTimeStringISO(runDate);
     }
+
+    DateFormatter df = new DateFormatter();
+    this.runTime = df.toDateTimeStringISO(this.runDate);
 
     // add each variable, collect unique time and vertical axes
     for (GridDatatype gg : gds.getGrids()) {

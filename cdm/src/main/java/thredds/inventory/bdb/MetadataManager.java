@@ -124,11 +124,10 @@ public class MetadataManager {
 
   // Close all databases and environment
   // this is called on TDS shutdown and reinit
-  static public void closeAll() {
+  static synchronized public void closeAll() {
 
-    Iterator<MetadataManager> iter = openDatabases.iterator();
-    while (iter.hasNext()) {
-      MetadataManager mm = iter.next();
+    List<MetadataManager> closeDatabases = new ArrayList<MetadataManager>(openDatabases);
+    for (MetadataManager mm : closeDatabases) {
       if (debug) System.out.println("  close database " + mm.collectionName);
       mm.close();
     }

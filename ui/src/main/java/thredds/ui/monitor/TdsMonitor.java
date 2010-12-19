@@ -149,11 +149,13 @@ public class TdsMonitor extends JPanel {
   static private TdsMonitor ui;
   static private boolean done = false;
 
-  private static String ehLocation = "C:\\data\\ehcache";
+  static private File ehLocation = LogLocalManager.getDirectory("cache", "dns");
+
+  //private static String ehLocation = "C:\\data\\ehcache";
   //private static String ehLocation = "/machine/data/thredds/ehcache/";
   private static String config =
           "<ehcache>\n" +
-                  "    <diskStore path='" + ehLocation + "'/>\n" +
+                  "    <diskStore path='" + ehLocation.getPath() + "'/>\n" +
                   "    <defaultCache\n" +
                   "              maxElementsInMemory='10000'\n" +
                   "              eternal='false'\n" +

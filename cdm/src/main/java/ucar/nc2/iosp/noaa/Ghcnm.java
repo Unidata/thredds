@@ -18,8 +18,21 @@ import java.nio.channels.WritableByteChannel;
 import java.util.*;
 
 /**
+ * Nomads GLOBAL HISTORICAL CLIMATOLOGY NETWORK MONTHLY (GHCNM) v3 Beta.
+ * Ascii file. Write index into .ncsx using protobug (experimental)
+ * IOSP can then recognize the ncsx file, so it can be passed into NetdfFile.open() instead of the ascii file.
+ * Otherwise you have to explicitly specify the iosp, eg:
+ * <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" location="filname" iosp="ucar.nc2.iosp.noaa.Ghcnm" />
+ *
+ * The index has list of stations and offsets into station file and data file.
+ * since the data file has one station's data grouped together, this efficiently answers "get all data for station".
+ * One could sort datafile by time, and add time index, to answer "get all data for time range".
+ *
+ * <pre>
+ * Protobuf generation:
  * cd c:/dev/tds4.2/thredds/cdm/src/main/java
  * protoc --proto_path=. --java_out=. ucar/nc2/iosp/noaa/GhcnmIndex.proto
+ * </pre>
  *
  * User: caron
  * Date: Dec 8, 2010

@@ -11,14 +11,14 @@ Release Details 4.2:
    GridCoordSys.getDateRange() now works for 2D time coord: WCS failed on FMRC 2D datase 
    fix default cache dir for WCS, ncss
    FMRC bug in constant offset datasets when offset didnt start at 0.
-   FMRC now has vars, bounding box, and date range metadata.
+   FMRC now has vars, bounding box, and date range metadata correct.
    CdmrFeature service for point collections
-   FeatureCollection type=POINT, STATION
+   InvFeatureCollection type=POINT, STATION
 
  4.2.2 (2010-12-16)
-  TDS running under Tomcat 5.5 no longer throws errors on WMS requests.
-  ncWMS improve the performance of PixelMap.
-  Fix idv, toolsui jnlp files.
+   Fold in ncWMS PixelMap fix (TDS-147)
+   Fix problem where TDS running in Tomcat 5.5 throws errors on WMS requests: NoClassDefFoundError for ClientAbortException (TDS-146).
+   Fix idv, toolsui jnlp files for viewer links
 
  4.2.1 (2010-12-01)
    Fix ThreddsConfig logging.

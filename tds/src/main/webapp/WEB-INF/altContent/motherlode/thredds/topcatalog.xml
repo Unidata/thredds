@@ -23,6 +23,7 @@
     <catalogRef xlink:title="EUMETSAT" xlink:href="http://gsics.eumetsat.int/thredds/catalog.xml" name="" />
     <catalogRef xlink:title="Great Lakes Observing System (GLOS)" xlink:href="http://michigan.glin.net/thredds/catalog.xml" name="" />
     <catalogRef xlink:title="Hawaii Ocean Observing System (HiOOS)" xlink:href="http://oos.soest.hawaii.edu/thredds/catalog.xml" name="" />
+    <catalogRef xlink:title="HYCOM / NOPP/ GODAE" xlink:href="http://tds.hycom.org/thredds/catalog.xml" name="" />
     <catalogRef xlink:title="IFREMER - L'Institut Français de Recherche pour l'Exploitation de la Mer" xlink:href="http://www.ifremer.fr/thredds/catalog.xml" name="" />
 
     <catalogRef xlink:title="IRI/LDEO Climate Data Library" xlink:href="http://iridl.ldeo.columbia.edu/SOURCES/thredds.xml" name="" />

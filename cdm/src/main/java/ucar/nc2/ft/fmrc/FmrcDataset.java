@@ -1039,7 +1039,7 @@ class FmrcDataset {
             logger.error("Missing Inventory timeInx="+timeIdx+ " for "+ mainv.getName()+" in "+state.lite.collectionName);
           
           else if (timeInv.getDatasetLocation() != null) {
-            if (debugRead) System.out.printf("HIT %d ", timeIdx);
+            if (debugRead) System.out.printf("HIT %s%n", timeInv);
             result = read(timeInv, mainv.getName(), innerSection, openFilesRead); // may return null
             result = MAMath.convert(result, dtype); // just in case it need to be converted
           }

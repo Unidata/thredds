@@ -33,7 +33,7 @@
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="file://$MODULE_DIR$/../../grib/resources" />
+          <root url="file://$MODULE_DIR$/../../grib/src/main/resources" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

@@ -437,10 +437,23 @@ public class AccessLogTable extends JPanel {
 
 
   public class User extends Accum implements Runnable {
-    String ip;
+    String ip, namer;
 
     public String getIp() {
       return ip;
+    }
+
+    public String getNameReverse() {
+      if (name != null && namer == null) {
+        StringBuffer sbuff = new StringBuffer();
+        String[] p = name.split("\\.");
+        for (int i=p.length-1; i>=0; i--) {
+          sbuff.append(p[i]);
+          if (i != 0) sbuff.append('.');
+        }
+        namer = sbuff.toString();
+      }
+      return namer;
     }
 
     public User() {
@@ -696,6 +709,24 @@ public class AccessLogTable extends JPanel {
     //timeTookData.add(new Minute(date), (latency > 10*1000) ? 0 : latency); // note latency limited to 10 secs.
     timeTookData.add(new Minute(date), latency); 
     nreqData.add(new Minute(date), (double) count);
+  }
+
+  static private void test(String ip) {
+        StringBuffer sbuff = new StringBuffer();
+        String[] p = ip.split("\\.");
+        for (int i=p.length-1; i>=0; i--) {
+          sbuff.append(p[i]);
+          if (i != 0) sbuff.append('.');
+        }
+        String ipr = sbuff.toString();
+    System.out.printf("%s == %s%n",ip,ipr);
+  }
+
+  static public void main(String args[]) {
+    test("1.2.3.4");
+    test("..1.2");
+    test("..1.2..");
+
   }
 
 }
