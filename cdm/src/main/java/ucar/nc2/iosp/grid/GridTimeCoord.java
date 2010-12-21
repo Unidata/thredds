@@ -34,7 +34,6 @@
 package ucar.nc2.iosp.grid;
 
 import ucar.grib.GribPds;
-import ucar.grib.grib2.Grib2Tables;
 import ucar.ma2.*;
 
 import ucar.nc2.*;
@@ -68,8 +67,9 @@ public class GridTimeCoord implements Comparable<GridTimeCoord> {
    * Create a new GridTimeCoord from the list of GridRecord
    *
    * @param records records to use
+   * @param where file location for warn message
    */
-  GridTimeCoord(List<GridRecord> records) {
+  GridTimeCoord(List<GridRecord> records, String where) {
 
     // check time units, get earliest reference date
     for (GridRecord record : records) {
@@ -101,7 +101,7 @@ public class GridTimeCoord implements Comparable<GridTimeCoord> {
           // make sure that the reference date agrees
           Date ref = gr.getReferenceTime();
           if (!baseDate.equals(ref))
-            log.warn(gr + " does not have same base date= " + baseDate + " != " + ref);
+            log.warn(gr + " does not have same base date= " + baseDate + " != " + ref+ " for " + where);
 
           GribPds pds = ggr.getPds();
           int[] timeInv = pds.getForecastTimeInterval(this.timeUnit);

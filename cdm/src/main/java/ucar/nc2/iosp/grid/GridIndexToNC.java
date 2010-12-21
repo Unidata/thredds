@@ -348,7 +348,7 @@ public class GridIndexToNC {
           }
         }
         if (useTimeCoord == null) {  // nope, got to create it
-          useTimeCoord = new GridTimeCoord(recordList);
+          useTimeCoord = new GridTimeCoord(recordList, raf.getLocation());
           timeCoords.add(useTimeCoord);
         }
         gv.setTimeCoord(useTimeCoord);
