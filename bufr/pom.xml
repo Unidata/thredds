@@ -11,7 +11,7 @@
   <parent>
     <groupId>edu.ucar</groupId>
     <artifactId>netcdf-parent</artifactId>
-    <version>4.2.5</version>
+    <version>4.2.19</version>
   </parent>
 
   <!-- ===========================================================
@@ -53,7 +53,12 @@
       <artifactId>jdom</artifactId>
       <scope>provided</scope>
     </dependency>
-   </dependencies>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>1.6.1</version>
+      </dependency>
+  </dependencies>
 
   <build>
     <resources>

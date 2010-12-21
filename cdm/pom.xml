@@ -11,7 +11,7 @@
   <parent>
     <groupId>edu.ucar</groupId>
     <artifactId>netcdf-parent</artifactId>
-    <version>4.2.5</version>
+    <version>4.2.19</version>
   </parent>
 
 
@@ -231,8 +231,13 @@
       <name>Oracle Maven repository</name>
       <url>http://download.oracle.com/maven</url>
     </repository>
-  </repositories>
-
+    <!-- Temporary repository for edu.wisc.visad -->
+    <repository>
+       <id>geotoolkit</id>
+       <name>Geotoolkit binaries</name>
+       <url>dav:http://maven.geotoolkit.org/</url>
+    </repository>
+</repositories>
 
   <!-- ===========================================================
            Build configuration

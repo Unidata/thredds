@@ -29,7 +29,6 @@
   <property name="timingSrc.dir" location="${root.dir}/src/timing/java"/>
   <property name="commonSrc.dir" location="${root.dir}/../common/src/main/java"/>
   <property name="resources.dir" location="${root.dir}/src/main/resources"/>
-  <property name="bufrTables.dir" location="${root.dir}/../bufr/src/main/resources/"/>
   <property name="doc.dir" location="${root.dir}/doc"/>
   <property name="lib.dir" location="${root.dir}/../lib"/>
 
@@ -48,7 +47,7 @@
 
   <property name="bdb.jar" value="je-4.0.71.jar"/>
   <property name="bounce.jar" value="bounce-0.14.jar"/>
-  <property name="bufrTables.jar" value="bufrTables-2.0.jar"/>
+  <property name="bufr.jar" value="bufr-3.0.jar"/>
   <property name="ehcache.jar" value="ehcache-1.6.0.jar"/>
   <property name="grib.jar" value="grib-8.0.jar"/>
   <property name="httpclient3.jar" value="commons-httpclient-3.1.jar"/>
@@ -124,7 +123,7 @@
   </path>
 
   <fileset id="runtime.libraries" dir="${lib.dir}">
-    <include name="release/${bufrTables.jar}"/>
+    <include name="release/${bufr.jar}"/>
     <include name="external/${http-codec.jar}"/>
     <include name="external/${http-logging.jar}"/>
     <include name="external/${logging-minimal.jar}"/>
@@ -260,13 +259,6 @@
     </javac>
   </target>
 
-  <!-- make bufr Tables jar -->
-  <target name="makeBufrTables" description="make BUFR Tables jar">
-    <jar jarfile="${lib.dir}/release/${bufrTables.jar}" duplicate="preserve">
-      <zipfileset dir="${bufrTables.dir}/resources" prefix="resources"/>
-    </jar>
-  </target>
-
   <!-- make library jars -->
   <property name="jarMain" value="netcdf-${release.version}.jar"/>
   <target name="makeMain" depends="compile" description="make library jars">
@@ -319,7 +311,7 @@
     <mkdir dir="${main.dir}"/>
     <unzip dest="${main.dir}">
       <fileset dir="${lib.dir}">
-        <include name="release/${bufrTables.jar}"/>
+        <include name="release/${bufr.jar}"/>
         <include name="release/${unidatacommon.jar}"/>
         <include name="release/${grib.jar}"/>
         <include name="external/${jdom.jar}"/>
@@ -395,7 +387,7 @@
     <mkdir dir="${idv.dir}"/>
     <unzip dest="${idv.dir}">
       <fileset dir="${lib.dir}">
-        <include name="release/${bufrTables.jar}"/>
+        <include name="release/${bufr.jar}"/>
         <include name="release/${unidatacommon.jar}"/>
         <include name="release/${grib.jar}"/>
         <include name="external/${jdom.jar}"/>
@@ -617,6 +609,7 @@
   <property name="resourcesUI.dir" location="${root.dir}/../ui/src/main/resources"/>
 
   <fileset id="compileUI.libraries" dir="${lib.dir}">
+    <include name="release/${bufr.jar}"/>
     <include name="external/${bounce.jar}"/>
     <include name="external/${jgoodies.jar}"/>
     <include name="external/${jfreechart.jar}"/>
@@ -778,7 +771,7 @@
 
   </target>
 
-  <target name="makeAll" depends="makeCore, makeMain, makeBufrTables, makeMainComplete, makeUI, makeAllzip, makeToolsUI"
+  <target name="makeAll" depends="makeCore, makeMain, makeMainComplete, makeUI, makeAllzip, makeToolsUI"
           description="create all files"/>
 
   <property name="jarResourcesOptional" value="resourcesOptional-${release.version}.jar"/>
@@ -874,8 +867,8 @@
              storepass="${keystore.password}"/>
     <signjar alias="idv" jar="${lib.dir}/external/${bounce.jar}" keystore="${keystore}"
              signedjar="${webstart_dir}/bounce.jar" storepass="${keystore.password}"/>
-    <signjar alias="idv" jar="${lib.dir}/release/${bufrTables.jar}" keystore="${keystore}"
-             signedjar="${webstart_dir}/bufrTables.jar" storepass="${keystore.password}"/>
+    <signjar alias="idv" jar="${lib.dir}/release/${bufr.jar}" keystore="${keystore}"
+             signedjar="${webstart_dir}/bufr.jar" storepass="${keystore.password}"/>
     <signjar alias="idv" jar="${lib.dir}/release/${unidatacommon.jar}" keystore="${keystore}"
              signedjar="${webstart_dir}/unidatacommon.jar" storepass="${keystore.password}"/>
     <signjar alias="idv" jar="${lib.dir}/external/${ehcache.jar}" keystore="${keystore}"

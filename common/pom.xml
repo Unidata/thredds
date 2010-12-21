@@ -11,7 +11,7 @@
   <parent>
     <groupId>edu.ucar</groupId>
     <artifactId>netcdf-parent</artifactId>
-    <version>4.2.5</version>
+    <version>4.2.19</version>
   </parent>
 
   <!-- ===========================================================
@@ -69,9 +69,7 @@
 
   <!-- ===========================================================
            Build configuration
-
-           This configuration merges the content of the common/src
-           directory with unidataCommon, then exclude JCIP.
+           This configuration excludes the JCIP code.
        =========================================================== -->
   <build>
     <plugins>

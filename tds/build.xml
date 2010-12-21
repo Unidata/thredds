@@ -75,7 +75,7 @@
   </patternset>
 
   <!-- Project libraries needed for compile. -->
-  <property name="bufrTables.jar" value="release/bufrTables-2.0.jar"/>
+  <property name="bufr.jar" value="release/bufr-3.0.jar"/>
   <property name="grib.jar" value="release/grib-8.0.jar"/>
   <property name="ncwms.jar" value="release/ncwms.jar" />
   <property name="netcdf.jar" value="release/netcdf-4.2.jar"/>
@@ -132,7 +132,7 @@
     <patternset id="compile.libs">
       <include name="${netcdf.jar}"/>
 
-      <include name="${bufrTables.jar}"/>
+      <include name="${bufr.jar}"/>
       <include name="${grib.jar}"/>
       <include name="${opendap.jar}"/>
       <include name="${ncwms.jar}"/>
@@ -697,14 +697,6 @@
     <antcall target="deploy">
       <param name="server_url" value="http://motherlode.ucar.edu:9080"/>
       <param name="tomcat.password" value="${motherlode.password}"/>
-    </antcall>
-  </target>
-
-
-  <target name="deploy-dataportal" description="Deploy web application to dataportal dev/test server">
-    <antcall target="deploy">
-      <param name="server_url" value="http://dataportal.ucar.edu:3481"/>
-      <param name="tomcat.password" value="${dataportal.password}"/>
     </antcall>
   </target>
 
