@@ -17,7 +17,7 @@
   <groupId>edu.ucar</groupId>
   <artifactId>netcdf-parent</artifactId>
   <packaging>pom</packaging>
-  <version>4.2.5</version>
+  <version>4.2.19</version>
   <name>Unidata parent</name>
   <description>
     The NetCDF-Java Library is a Java interface to NetCDF files,
@@ -175,11 +175,6 @@
         <version>1.7.3</version>
       </dependency>
       <dependency>
-        <groupId>gnu-regexp</groupId>
-        <artifactId>gnu-regexp</artifactId>
-        <version>1.1.4</version>
-      </dependency>
-      <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
         <version>1.6.1</version>
@@ -202,11 +197,6 @@
         <!-- Transitive dependencies: commons-codec 1.2 and commons-logging 1.0.4 -->
       </dependency>
       <dependency>
-        <groupId>commons-fileupload</groupId>
-        <artifactId>commons-fileupload</artifactId>
-        <version>1.2.2</version>
-      </dependency>
-      <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-webmvc</artifactId>
         <version>2.5.6</version>
@@ -214,7 +204,7 @@
       <dependency>
         <groupId>com.google.protobuf</groupId>
         <artifactId>protobuf-java</artifactId>
-        <version>2.1.0</version>
+        <version>2.3.0</version>
       </dependency>
       <dependency>
         <groupId>net.sf.ehcache</groupId>
@@ -292,7 +282,6 @@
   </distributionManagement>
 
 
-
   <!-- ===========================================================
            Modules for the build in approximate dependency order
        =========================================================== -->
@@ -300,17 +289,17 @@
     <module>common</module>
     <module>grib</module>
     <module>opendap</module>
-    <!-- module>visad</module -->
-    <module>cdm</module> <!-- Actually "netcdf" -->
+    <module>cdm</module>
     <module>bufr</module>
+    <!-- module>visad</module -->
   </modules>
 
   <properties>
-    <common.version>4.2.5</common.version>
-    <netcdf.version>4.2.5</netcdf.version>
-    <grib.version>8.0.27</grib.version>
-    <bufr.version>2.0.1</bufr.version>
-    <opendap.version>2.2</opendap.version>
+    <common.version>4.2.19</common.version>
+    <netcdf.version>4.2.19</netcdf.version>
+    <grib.version>8.0.28</grib.version>
+    <bufr.version>3.0</bufr.version>
+    <opendap.version>2.2.1</opendap.version>
     <visad.version>2010-08-09</visad.version>
     <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
