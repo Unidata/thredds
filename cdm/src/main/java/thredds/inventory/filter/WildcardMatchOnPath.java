@@ -44,7 +44,7 @@ import java.util.regex.Pattern;
  * @since Jun 26, 2009
  */
 public class WildcardMatchOnPath implements MFileFilter {
-  private static final boolean debug = true;
+  private static final boolean debug = false;
   protected String wildcardString;
   protected java.util.regex.Pattern pattern;
 
@@ -66,7 +66,7 @@ public class WildcardMatchOnPath implements MFileFilter {
   public boolean accept(MFile file) {
     java.util.regex.Matcher matcher = this.pattern.matcher(file.getPath());
     if (debug)
-      System.out.printf(" regexp %s on %s match=%s%n", pattern, file.getPath(), matcher.matches());
+      System.out.printf(" WildcardMatchOnPath regexp %s on %s match=%s%n", pattern, file.getPath(), matcher.matches());
     return matcher.matches();
   }
 

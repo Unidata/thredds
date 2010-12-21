@@ -163,7 +163,7 @@ public class ServletLogParser implements LogReader.LogParser {
           log.reqTime = parseLong(m.group(2));
           log.reqSeq = parseLong(m.group(3));
           log.level = m.group(4).intern();
-          log.where = m.group(5).intern();
+          log.where = m.group(5);
 
           String rest = m.group(6);
           if (rest.indexOf("Request Completed") >= 0) {
@@ -185,9 +185,9 @@ public class ServletLogParser implements LogReader.LogParser {
             int pos = rest.indexOf("Remote host");
             Matcher m2 = startPattern.matcher(rest.substring(pos));
             if (m2.matches()) {
-              log.ip = m2.group(1).intern();
+              log.ip = m2.group(1);
               log.verb = m2.group(2).intern();
-              log.path = URLDecoder.decode(m2.group(3)).intern();
+              log.path = URLDecoder.decode(m2.group(3));
               log.http = m2.group(4).intern();
               log.isStart = true;
 

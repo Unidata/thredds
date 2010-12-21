@@ -69,7 +69,6 @@ public class RadarServer extends AbstractServlet {
     nexrad, terminal
   }
 
-  ;
   static public InvCatalogImpl cat;
   static public final String catName = "radarCollections.xml";
   static public URI catURI;
@@ -152,8 +151,7 @@ public class RadarServer extends AbstractServlet {
 
       if (cat == null || rm.nexradList == null) { // something major wrong
         log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, -1));
-        res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-            "radarServer Radar Station/Catalog initialization problem");
+        res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "radarServer Radar Station/Catalog initialization problem");
         return;
       }
       // setup
@@ -172,9 +170,9 @@ public class RadarServer extends AbstractServlet {
       // radar  query
       if (req.getQueryString() != null) {
         //log.debug("RadarServer query ="+ req.getQueryString() );
-        log.debug("<documentation>\n" + req.getQueryString() + "</documentation>\n");
+        if (log.isDebugEnabled()) log.debug("<documentation>\n" + req.getQueryString() + "</documentation>\n");
         rm.radarQuery(radarType, req, res, pw);
-        log.debug("after doGet " + (System.currentTimeMillis() - startms));
+        if (log.isDebugEnabled()) log.debug("after doGet " + (System.currentTimeMillis() - startms));
         pw.flush();
         log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
         return;
@@ -193,8 +191,9 @@ public class RadarServer extends AbstractServlet {
           int i = HtmlWriter.getInstance().writeCatalog(req, res, cat, true); // show catalog as HTML
           log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, i));
         } catch (Exception e) {
-          res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "radarServer HtmlWriter error " + pathInfo);
+          log.error("Radar HtmlWriter failed ", e);
           log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, -1));
+          res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "radarServer HtmlWriter error " + pathInfo);
           return;
         }
         log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
@@ -241,9 +240,9 @@ public class RadarServer extends AbstractServlet {
       if ( ! res.isCommitted() ) res.sendError(HttpServletResponse.SC_NOT_FOUND);
 
     } catch (Throwable e) {
-      log.info("RadarServer.doGet", e);
-      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_FORBIDDEN, 0));
-      if ( ! res.isCommitted() ) res.sendError(HttpServletResponse.SC_FORBIDDEN);
+      log.error("RadarServer.doGet failed", e);
+      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
+      if ( ! res.isCommitted() ) res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     }
 
   } // end doGet
@@ -295,9 +294,9 @@ public class RadarServer extends AbstractServlet {
         log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, i));
       }
     } catch (Throwable e) {
-      log.info("RadarServer.level2level3catalog", e);
-      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_FORBIDDEN, 0));
-      if ( ! res.isCommitted() ) res.sendError(HttpServletResponse.SC_FORBIDDEN);
+      log.error("RadarServer.level2level3catalog failed", e);
+      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
+      if ( ! res.isCommitted() ) res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     }
     return;
   }
@@ -371,7 +370,7 @@ public class RadarServer extends AbstractServlet {
       pw.println("</catalog>");
       pw.flush();
     } catch (Throwable e) {
-      log.info("RadarServer.datasetInfoXml", e);
+      log.error("RadarServer.datasetInfoXml", e);
     }
     return;
   }
@@ -461,7 +460,7 @@ public class RadarServer extends AbstractServlet {
 
     } catch (Exception e) {
       log.error("radarServer reading " + contentPath + getPath() + "radar.xsl");
-      log.error("radarServer XSLTransformer problem for web form ");
+      log.error("radarServer XSLTransformer problem for web form ", e);
     }
     finally {
       if (xslt != null) {
@@ -503,7 +502,7 @@ public class RadarServer extends AbstractServlet {
       ios = new FileInputStream(catalogFullPath);
       acat = factory.readXML(ios, catURI);
     } catch (Throwable t) {
-      log.info("radarServer readCatalog(): Exception on catalog=" +
+      log.error("radarServer readCatalog(): Exception on catalog=" +
           catalogFullPath + " " + t.getMessage()); //+"\n log="+cat.getLog(), t);
       return null;
     }

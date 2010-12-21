@@ -546,7 +546,7 @@ public class InvDatasetScan extends InvCatalogRef {
     String dsDirPath = translatePathToLocation( orgPath );
     if ( dsDirPath == null )
     {
-      String tmpMsg = "makeCatalogForDirectory(): Requsting path <" + orgPath + "> must start with \"" + rootPath + "\".";
+      String tmpMsg = "makeCatalogForDirectory(): Requesting path <" + orgPath + "> must start with \"" + rootPath + "\".";
       log.error( tmpMsg );
       return null;
     }

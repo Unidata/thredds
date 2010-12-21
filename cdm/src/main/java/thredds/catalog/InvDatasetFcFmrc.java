@@ -151,6 +151,7 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
 
       else if (match.startsWith(FILES) && wantDatasets.contains(FeatureCollectionConfig.FmrcDatasetType.Files)) {
         InvCatalogImpl files   = localState.scan.makeCatalogForDirectory(orgPath, baseURI);
+        if (files == null) return null;
         files.addService(InvService.latest);
         files.addService(orgService);
         files.getDataset().getLocalMetadataInheritable().setServiceName(orgService.getName());

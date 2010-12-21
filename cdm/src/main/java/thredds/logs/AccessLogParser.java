@@ -72,9 +72,9 @@ public class AccessLogParser implements LogReader.LogParser {
       Matcher m = regPattern.matcher(line);
       if (m.matches()) {
         LogReader.Log log = new LogReader.Log();
-        log.ip = m.group(1).intern();
+        log.ip = m.group(1);
         log.date = convertDate( m.group(3));
-        String request = m.group(4).intern();
+        String request = m.group(4);
         log.returnCode = parse(m.group(5));
         log.sizeBytes = parseLong(m.group(6));
         log.referrer = m.group(7);
@@ -84,7 +84,7 @@ public class AccessLogParser implements LogReader.LogParser {
         String[] reqss = request.split(" ");
         if (reqss.length == 3) {
           log.verb = reqss[0].intern();
-          log.path = reqss[1].intern();
+          log.path = reqss[1];
           log.http = reqss[2].intern();
         }
 

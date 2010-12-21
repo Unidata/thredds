@@ -43,11 +43,20 @@ import java.io.IOException;
  * Alternative to IOSP when you need the HttpServletRequest to create the file.
  *
  * @author caron
+ * @see "http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.2/reference/DatasetSource.html"
  */
 public interface DatasetSource {
 
   public boolean isMine( HttpServletRequest req);
-  
+
+  /**
+   *
+   * @param req the servlet request
+   * @param res the servlet response
+   * @return NetcdfFile or null if the source handles the response itself
+   * @throws java.io.FileNotFoundException is the
+   * @throws IOException
+   */
   public NetcdfFile getNetcdfFile( HttpServletRequest req, HttpServletResponse res) throws IOException;
 
 }

@@ -106,6 +106,7 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
 
       } else if (match.startsWith(FILES) && wantDatasets.contains(FeatureCollectionConfig.PointDatasetType.Files)) {
         InvCatalogImpl files = localState.scan.makeCatalogForDirectory(orgPath, baseURI);
+        if (files == null) return null;
         files.addService(InvService.latest);
         files.addService(fileService);
         files.getDataset().getLocalMetadataInheritable().setServiceName(fileService.getName());
