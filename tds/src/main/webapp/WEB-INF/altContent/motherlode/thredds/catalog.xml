@@ -3,6 +3,8 @@
          xmlns:xlink="http://www.w3.org/1999/xlink"
          name="Unidata THREDDS Data Server"
          version="1.0.2">
+  <service name="thisDODS" serviceType="OPENDAP" base="/thredds/dodsC/" />
+  <datasetRoot path="restrict" location="content/" />
   <dataset name="Realtime data from IDD">
     <catalogRef xlink:href="idd/models.xml" xlink:title="NCEP Model Data" name="" />
     <catalogRef xlink:href="idd/radars.xml" xlink:title="Radar Data" name="" />
@@ -13,6 +15,10 @@
   <dataset name="Other Unidata Data">
     <catalogRef xlink:href="idd/rtmodel.xml" xlink:title="Unidata Real-time Regional Model" name="" />
     <catalogRef xlink:href="galeon/catalog.xml" xlink:title="Unidata GALEON Experimental Web Coverage Service (WCS) datasets" name="" />
+    <dataset name="Test Restricted Dataset" ID="testRestrictedDataset" urlPath="restrict/testdata/testData.nc" restrictAccess="tiggeData">
+      <serviceName>thisDODS</serviceName>
+      <dataType>Grid</dataType>
+    </dataset>
   </dataset>
 </catalog>
 

@@ -5263,7 +5263,7 @@ public class ToolsUI extends JPanel {
     // use HTTPClient - could use bean wiring here
     CredentialsProvider provider = new UrlAuthenticatorDialog(frame);
     HttpClient client = HttpClientManager.init(provider, "ToolsUI");
-    //opendap.dap.DConnect2.setHttpClient(client);
+    opendap.dap.DConnect2.setHttpClient(client);
     HTTPRandomAccessFile.setHttpClient(client);
     CdmRemote.setHttpClient(client);
     NetcdfDataset.setHttpClient(client);
