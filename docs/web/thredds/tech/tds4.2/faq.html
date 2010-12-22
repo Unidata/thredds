@@ -31,6 +31,7 @@
   <li><a href="#JoinExisting">I have modified my configuration of a JoinExisting Aggregation dataset,
     but nothing has changed.</a></li>
   <li><a href="#wmsLimitedCRS">What happened to the long list of CRSs in my WMS GetCapabilities documents?</a></li>
+  <li><a href="#forms">Why are  TDS web forms not working?</a></li>
 </ul>
 <h2>Tomcat</h2>
 <ul>
@@ -193,6 +194,16 @@ mkdir javaUtilPrefs/.systemPrefs
     when requested.  </p>
 </blockquote>
 
+<hr>
+<h3></h3>
+<p><strong>Q: <a name="forms"></a>Why are TDS web forms not working?</strong></p>
+<blockquote>
+  <p>Look in {$TOMCAT}/logs/localhost.logs for error messages like:</p>
+  <pre>     SEVERE: Servlet.service() for servlet GridSubsetService threw exception
+   javax.xml.transform.TransformerFactoryConfigurationError: Provider net.sf.saxon.TransformerFactoryImpl not found</pre>
+  <p>If you find these, the likely problem is that another webapp running in the same Tomcat container has set the XSLT parser with      javax.xml.transform.TransformerFactory, which is global for the JVM. The above example shows that the Saxon parser has been set, but is not being found by the TDS. We saw this happening with the OOSTethys webapp. </p>
+  <p>The solution is to move the other webapp to its own Tomcat instance, or to move the required jar (eg saxon.jar) into Tomcat's lib directory, where it is available to all webapps. TDS does very simple XSLT to create its web forms, so its likely that it can work with any decent parser. By default it uses the JDK's built in parser.</p>
+</blockquote>
 <hr width="100%">
 
 <h2>Tomcat<a name="tomcat"></a></h2>
@@ -310,14 +321,16 @@ better to explicitly redeploy the application: </p>
     </pre>
 </blockquote>
 
-<hr>
-<p><strong>Q: <a name="log4jAppender"></a>What does this error mean: &quot;log4j:ERROR Attempted to append to closed appender named [foobar]&quot; ?</strong></p>
-<blockquote>
-  <p>The log4j.xml file has 2 loggers with the same name, that uses the appender foobar. You must delete one of the loggers.</p>
-</blockquote>
-<hr>
-  <h3>&nbsp;</h3>
-  <h3>Tomcat Resources</h3>
+  <hr>
+  <p><strong>Q: <a name="log4jAppender"></a>What does this error mean: &quot;log4j:ERROR Attempted to append to closed appender named [foobar]&quot; ?</strong></p>
+  <blockquote>
+    <p>The log4j.xml file has 2 loggers with the same name, that uses the appender foobar. You must delete one of the loggers.</p>
+  </blockquote>
+<blockquote>&nbsp;</blockquote>
+  <hr>
+  <h3></h3>
+<h3>&nbsp;</h3>
+<h3>Tomcat Resources</h3>
 <ul>
     <li><a href="http://jakarta.apache.org/tomcat/faq/">Tomcat FAQ (Apache site)</a> </li>
     <li><a href="http://tomcat.apache.org/tomcat-5.5-doc/index.html">Tomcat 5.5 documentation</a></li>

@@ -5,6 +5,7 @@ Build Name = @BUILD.NAME@
 
 Release Details 4.2:
  4.2.3 (2010-12-xx)
+   TomcatAuthorizer is appending "auth" to redirected URL, not sure why but it breaks opendap
    GridServlet (ncss) traps Throwable, not just Exception
    tom kunicki's patch on CdmrFeatureController
    change 404.jsp 500.jsp from 4.0 to 4.2

@@ -51,7 +51,6 @@ import thredds.servlet.UsageLog;
 public class TomcatAuthorizer implements Authorizer {
   private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
 
-
   private boolean useSSL = false;
   private String sslPort = "8443";
 
@@ -102,10 +101,11 @@ public class TomcatAuthorizer implements Authorizer {
       if (req.isUserInRole(role)) {
 
         if (origURI != null) {
-          if (debugResourceControl) System.out.println("redirect to origRequest = "+origURI);
           res.setStatus(HttpServletResponse.SC_TEMPORARY_REDIRECT);
-          String frag = (origURI.indexOf("?") > 0) ? "&auth" : "?auth";
-          res.addHeader("Location", origURI+frag);
+          String frag = (origURI.indexOf("?") > 0) ? "&auth" : "?auth";  // WTF ?? breaks simple authentication, eg on opendap
+          //res.addHeader("Location", origURI+frag); // comment out for now 12/22/2010 - needed for CAS or CAMS or ESG ?
+          res.addHeader("Location", origURI);
+          if (debugResourceControl) System.out.println("redirect to origRequest = "+origURI); // +frag);
           log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_TEMPORARY_REDIRECT, -1 ) );
           return;
 

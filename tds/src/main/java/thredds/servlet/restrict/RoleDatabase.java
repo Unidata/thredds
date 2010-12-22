@@ -44,7 +44,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
- * Class Description.
+ * Implements RoleSource by reading XML in format of tomcat-users.xml.
+ * see PluggableRestrictedAccess.html 
  *
  * @author caron
  */
