@@ -51,16 +51,17 @@ public class FmrcInvLite implements java.io.Serializable {
 
   // public for debugging
   public String collectionName;
-  public Date base;
+  public Date base; // offsets are from here
   public int nruns; // runOffset[nruns]
   public double[] runOffset; // run time in offset hours since base
   public double[] forecastOffset; // all forecast times in offset hours since base, for "constant forecast" datasets
   public double[] offsets; // all the offset values, for "constant offset" datasets
 
-  public List<String> locationList = new ArrayList<String>();
-  public Map<String,Integer> locationMap = new HashMap<String,Integer>();
-  public List<Gridset> gridSets = new ArrayList<Gridset>();
-  public List<Gridset.GridInventory> invList = new ArrayList<Gridset.GridInventory>(); // share these, they are expensive!
+  public List<String> locationList = new ArrayList<String>(); // dataset location, can be used in NetcdfDataset.acquireDataset()
+  public Map<String,Integer> locationMap = new HashMap<String,Integer>(); // quick lookup of dataset location in locationList
+  public List<Gridset> gridSets = new ArrayList<Gridset>(); // All Grids in Gridset have same time coordinate
+  public List<Gridset.GridInventory> invList = new ArrayList<Gridset.GridInventory>(); // the actual inventory
+                                                                                       // share these, they are expensive!
 
   public FmrcInvLite(FmrcInv fmrcInv) {
     this.collectionName = fmrcInv.getName();
@@ -171,7 +172,7 @@ public class FmrcInvLite implements java.io.Serializable {
     Gridset gridset = grid.getGridset();
     out.format("%n=======================================%nFmrcLite.Grid%n");
 
-    // show the 2D    
+    // show the 2D
     out.format("2D%n   run%n time  ");
     for (int i=0; i< gridset.noffsets; i++)
       out.format("%6d ", i);
@@ -185,8 +186,28 @@ public class FmrcInvLite implements java.io.Serializable {
     }
     out.format("%n");
 
+    Gridset.GridInventory gridInv = grid.inv;
+    out.format("%n=======================================%nFmrcLite.GridInventory Missing Data%n");
 
-    out.format("Best%n");
+    // show missing inventory only   
+    for (int run = 0; run < nruns; run++) {
+      boolean hasMissing = false;
+      for (int time = 0; time < gridset.noffsets; time++)
+        if (gridInv.getLocation(run, time) == 0)
+          hasMissing = true;
+
+      if (hasMissing) {
+        out.format("run %6d timeIdx=", run);
+        for (int time = 0; time < gridset.noffsets; time++) {
+          if (gridInv.getLocation(run, time) == 0)
+            out.format(" %6d", time);
+        }
+        out.format("%n");
+      }
+    }
+    out.format("%n");
+
+    out.format("%n=======================================%nFmrcLite.TimeInv Best%n");
     BestDatasetInventory best = new BestDatasetInventory( null);
     List<TimeInv> bestInv = gridset.timeCoordMap.get(BEST);
     if (bestInv == null) bestInv = gridset.makeBest(null);
@@ -616,6 +637,12 @@ public class FmrcInvLite implements java.io.Serializable {
     return new ConstantOffsetDataset(hour);
   }
 
+  /* The best dataset is based on the Gridset time coordinates, rather than the GridInventory. This means that
+     one can have missing values, instead of using the "next best" runtime.
+     The reason for this is so that all the fields come from the same runtime.
+     If we did implement NextBest, we would need to have different run_time coordinates whenever there were missing values,
+     possible one for each variable, to accurately reflect where the data came from.
+   */
   class BestDatasetInventory implements TimeInventory {
     FeatureCollectionConfig.BestDataset bd; // parameterized for offsets >= p. null means want all offsets
 
