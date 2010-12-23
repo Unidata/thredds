@@ -71,7 +71,7 @@ public class TestOffAggFmrcScan2 extends TestCase {
     System.out.println(" TestAggForecastModel.open "+ filename);
     System.out.println("file="+ncfile);
     
-    TestAll.readAll(ncfile);
+    TestAll.readAllData(ncfile);
 
     ncfile.close();
   }
@@ -93,7 +93,7 @@ public class TestOffAggFmrcScan2 extends TestCase {
     System.out.println(" TestAggForecastModel.open "+ filename);
     System.out.println("file="+ncfile);
 
-    TestAll.readAll(ncfile);
+    TestAll.readAllData(ncfile);
 
     ncfile.close();
   }
@@ -115,7 +115,7 @@ public class TestOffAggFmrcScan2 extends TestCase {
   public static void main(String[] args) throws IOException {
     String fname = "D:/work/signell/rtofs/rtofs.ncml";
     NetcdfFile ncfile = NetcdfDataset.openDataset(fname);
-    TestAll.readAll(ncfile);
+    TestAll.readAllData(ncfile);
     ncfile.close();
   }
 

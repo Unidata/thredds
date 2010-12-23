@@ -686,7 +686,6 @@ public class H5header {
           hasStrings = true;
       }
 
-
       int recsize = matt.mdt.byteSize;
       Layout layout = new LayoutRegular(matt.dataPos, recsize, shape, new Section(shape));
       sm.setStructureSize(recsize);
@@ -734,10 +733,12 @@ public class H5header {
 
     // Vlen (non-String)
     if (vinfo.typeInfo.hdfType == 9) { // vlen
+      int endian = vinfo.typeInfo.endian;
       DataType readType = dataType;
-      if (vinfo.typeInfo.base.hdfType == 7) // reference
+      if (vinfo.typeInfo.base.hdfType == 7) { // reference
         readType = DataType.LONG;
-      // LOOK: other cases tested ???
+        endian = 1; // apparently always LE
+      }
 
       Layout layout = new LayoutRegular(matt.dataPos, matt.mdt.byteSize, shape, new Section(shape));
 
@@ -751,7 +752,7 @@ public class H5header {
         if (chunk == null) continue;
         for (int i = 0; i < chunk.getNelems(); i++) {
           long address = chunk.getSrcPos() + layout.getElemSize() * i;
-          Array vlenArray = getHeapDataArray(address, readType, vinfo.typeInfo.byteOrder);
+          Array vlenArray = getHeapDataArray(address, readType, endian);
           if (vinfo.typeInfo.base.hdfType == 7)
             data[count++] = h5iosp.convertReference(vlenArray);
           else
@@ -764,7 +765,7 @@ public class H5header {
     // NON-STRUCTURE CASE
     DataType readDtype = dataType;
     int elemSize = dataType.getSize();
-    int byteOrder = vinfo.typeInfo.byteOrder;
+    int endian = vinfo.typeInfo.endian;
 
     if (vinfo.typeInfo.hdfType == 2) { // time
       readDtype = vinfo.mdt.timeType;
@@ -785,11 +786,11 @@ public class H5header {
       H5header.TypeInfo baseInfo = vinfo.typeInfo.base;
       readDtype = baseInfo.dataType;
       elemSize = readDtype.getSize();
-      byteOrder = baseInfo.byteOrder;
+      endian = baseInfo.endian;
     }
 
     Layout layout = new LayoutRegular(matt.dataPos, elemSize, shape, new Section(shape));
-    Object data = h5iosp.readDataPrimitive(layout, dataType, shape, null, byteOrder, false);
+    Object data = h5iosp.readDataPrimitive(layout, dataType, shape, null, endian, false);
     Array dataArray = null;
 
     if ((dataType == DataType.CHAR)) {
@@ -1387,16 +1388,16 @@ public class H5header {
 
       if (hdfType == 0) { // int, long, short, byte
         tinfo.dataType = getNCtype(hdfType, byteSize);
-        tinfo.byteOrder = ((flags[0] & 1) == 0) ? RandomAccessFile.LITTLE_ENDIAN : RandomAccessFile.BIG_ENDIAN;
+        tinfo.endian = ((flags[0] & 1) == 0) ? RandomAccessFile.LITTLE_ENDIAN : RandomAccessFile.BIG_ENDIAN;
         tinfo.unsigned = ((flags[0] & 8) == 0);
 
       } else if (hdfType == 1) { // floats, doubles
         tinfo.dataType = getNCtype(hdfType, byteSize);
-        tinfo.byteOrder = ((flags[0] & 1) == 0) ? RandomAccessFile.LITTLE_ENDIAN : RandomAccessFile.BIG_ENDIAN;
+        tinfo.endian = ((flags[0] & 1) == 0) ? RandomAccessFile.LITTLE_ENDIAN : RandomAccessFile.BIG_ENDIAN;
 
       } else if (hdfType == 2) { // time
         tinfo.dataType = DataType.STRING;
-        tinfo.byteOrder = ((flags[0] & 1) == 0) ? RandomAccessFile.LITTLE_ENDIAN : RandomAccessFile.BIG_ENDIAN;
+        tinfo.endian = ((flags[0] & 1) == 0) ? RandomAccessFile.LITTLE_ENDIAN : RandomAccessFile.BIG_ENDIAN;
 
       } else if (hdfType == 3) { // fixed length strings map to CHAR. String is used for Vlen type = 1.
         tinfo.dataType = DataType.CHAR;
@@ -1414,7 +1415,7 @@ public class H5header {
         tinfo.dataType = DataType.STRUCTURE;
 
       } else if (hdfType == 7) { // reference
-        tinfo.byteOrder = RandomAccessFile.LITTLE_ENDIAN;
+        tinfo.endian = RandomAccessFile.LITTLE_ENDIAN;
         tinfo.dataType = DataType.LONG;  // file offset of the referenced object
         // LOOK - should get the object, and change type to whatever it is (?)
 
@@ -1439,9 +1440,10 @@ public class H5header {
           tinfo.dataType = DataType.STRING;
         } else {
           tinfo.dataType = getNCtype(mdt.getBaseType(), mdt.getBaseSize());
+          tinfo.endian =  mdt.byteOrder == 0 ? RandomAccessFile.LITTLE_ENDIAN : RandomAccessFile.BIG_ENDIAN;
         }
       } else if (hdfType == 10) { // array : used for structure members
-        tinfo.byteOrder = (mdt.getFlags()[0] & 1) == 0 ? RandomAccessFile.LITTLE_ENDIAN : RandomAccessFile.BIG_ENDIAN;
+        tinfo.endian = (mdt.getFlags()[0] & 1) == 0 ? RandomAccessFile.LITTLE_ENDIAN : RandomAccessFile.BIG_ENDIAN;
         if ((mdt.base.type == 9) && mdt.base.isVString) {
           tinfo.dataType = DataType.STRING;
         } else
@@ -1516,8 +1518,8 @@ public class H5header {
       StringBuilder buff = new StringBuilder();
       if ((typeInfo.dataType != DataType.CHAR) && (typeInfo.dataType != DataType.STRING))
         buff.append(typeInfo.unsigned ? " unsigned" : " signed");
-      if (typeInfo.byteOrder >= 0)
-        buff.append((typeInfo.byteOrder == RandomAccessFile.LITTLE_ENDIAN) ? " LittleEndian" : " BigEndian");
+      if (typeInfo.endian >= 0)
+        buff.append((typeInfo.endian == RandomAccessFile.LITTLE_ENDIAN) ? " LittleEndian" : " BigEndian");
       if (useFillValue)
         buff.append(" useFillValue");
       return buff.toString();
@@ -1554,8 +1556,8 @@ public class H5header {
         return fillValue[0];
 
       ByteBuffer bbuff = ByteBuffer.wrap(fillValue);
-      if (typeInfo.byteOrder >= 0)
-        bbuff.order(typeInfo.byteOrder == RandomAccessFile.LITTLE_ENDIAN ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN);
+      if (typeInfo.endian >= 0)
+        bbuff.order(typeInfo.endian == RandomAccessFile.LITTLE_ENDIAN ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN);
 
       if ((typeInfo.dataType == DataType.SHORT) || (typeInfo.dataType == DataType.ENUM2))  {
         ShortBuffer tbuff = bbuff.asShortBuffer();
@@ -1582,8 +1584,6 @@ public class H5header {
     }
 
   }
-
-
 
   private DataType getNCtype(int hdfType, int size) {
     if ((hdfType == 0) || (hdfType == 4)) { // integer, bit field
@@ -1628,7 +1628,7 @@ public class H5header {
   class TypeInfo {
     int hdfType, byteSize;
     DataType dataType;
-    int byteOrder = -1; // RandomAccessFile.LITTLE_ENDIAN || RandomAccessFile.BIG_ENDIAN
+    int endian = -1; // 1 = RandomAccessFile.LITTLE_ENDIAN || 0 = RandomAccessFile.BIG_ENDIAN
     boolean unsigned;
     boolean isVString; // is it a vlen string ?
     int vpad;          // string padding
@@ -1642,7 +1642,7 @@ public class H5header {
     public String toString() {
       StringBuilder buff = new StringBuilder();
       buff.append("hdfType=").append(hdfType).append(" byteSize=").append(byteSize).append(" dataType=").append(dataType);
-      buff.append(" unsigned=").append(unsigned).append(" isVString=").append(isVString).append(" vpad=").append(vpad).append(" byteOrder=").append(byteOrder);
+      buff.append(" unsigned=").append(unsigned).append(" isVString=").append(isVString).append(" vpad=").append(vpad).append(" endian=").append(endian);
       if (base != null)
         buff.append("\n   base=").append(base);
       return buff.toString();
@@ -4385,16 +4385,16 @@ public class H5header {
    *
    * @param globalHeapIdAddress address of the heapId, used to get the String out of the heap
    * @param dataType type of data
-   * @param byteOrder byteOrder of the data
+   * @param endian byteOrder of the data (0 = BE, 1 = LE)
    * @return String the String read from the heap
    * @throws IOException on read error
    */
-  Array getHeapDataArray(long globalHeapIdAddress, DataType dataType, int byteOrder) throws IOException {
+  Array getHeapDataArray(long globalHeapIdAddress, DataType dataType, int endian) throws IOException {
     HeapIdentifier heapId = new HeapIdentifier(globalHeapIdAddress);
     if (debugHeap) debugOut.println(" heapId= " + heapId);
     GlobalHeap.HeapObject ho = heapId.getHeapObject();
     if (debugHeap) debugOut.println(" HeapObject= " + ho);
-    if (byteOrder >= 0) raf.order(byteOrder);
+    if (endian >= 0) raf.order(endian);
 
     if (DataType.FLOAT == dataType) {
       float[] pa = new float[heapId.nelems];

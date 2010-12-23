@@ -37,6 +37,7 @@ import ucar.ma2.*;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Attribute;
 import ucar.nc2.Variable;
+import ucar.nc2.dataset.NetcdfDataset;
 
 import java.io.*;
 
@@ -143,6 +144,35 @@ public class TestH5Vlength extends TestCase {
     catch (InvalidRangeException e) { assert false; }
 
     ncfile.close();
-  } // */
+  }
+
+  public void testVlenBigendian() throws IOException {
+    NetcdfFile ncfile = NetcdfDataset.openFile(TestN4.testDir+"vlenBigendian.nc", null);
+
+    Variable v = ncfile.findVariable("levels");
+    assert( null != v);
+    assert( v.getDataType() == DataType.INT);
+    assert( v.getRank() == 2);
+    assert( v.getShape()[0] == 10);
+
+    try {
+      Array data = v.read();
+      // assert(data.getElementType() instanceof ucar.ma2.ArrayInt.class) : data.getElementType();
+      assert (data instanceof ArrayObject);
+      IndexIterator iter = data.getIndexIterator();
+      while (iter.hasNext()) {
+        Array inner = (Array) iter.next();
+        assert (inner instanceof ArrayInt.D1);
+        int firstVal = inner.getInt(0);
+        System.out.printf("%d (%d) = %s%n", firstVal, inner.getSize(), inner);
+        assert (firstVal < Short.MAX_VALUE) : firstVal;
+      }
+
+    } catch (IOException e) {
+      assert false;
+    }
+
+    ncfile.close();
+  }
 
 }

@@ -40,7 +40,6 @@ import ucar.nc2.Variable;
 import ucar.nc2.NCdumpW;
 
 import java.io.IOException;
-import java.io.File;
 import java.io.StringReader;
 
 import junit.framework.TestCase;
@@ -82,7 +81,7 @@ public class TestAggMisc extends TestCase {
     //System.out.println(" testNestedValues=\n"+ ncml);
     NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(ncml), location, null);
 
-    TestAll.readAll(ncfile);
+    TestAll.readAllData(ncfile);
 
      Variable v = ncfile.findVariable("time");
      Array data = v.read();
@@ -97,7 +96,7 @@ public class TestAggMisc extends TestCase {
 
    NetcdfFile ncfile = NetcdfDataset.openFile(filename, null);
 
-   TestAll.readAll(ncfile);
+   TestAll.readAllData(ncfile);
 
     Variable v = ncfile.findVariable("time");
     Array data = v.read();

@@ -320,8 +320,9 @@ public class TestAll {
 
   static public int readAll( String filename) {
     System.out.println("\n------Reading filename "+filename);
+    NetcdfFile ncfile = null;
     try {
-      NetcdfFile ncfile = NetcdfFile.open(filename);
+      ncfile = NetcdfFile.open(filename);
 
       for (Variable v : ncfile.getVariables()) {
         if (v.getSize() > max_size) {
@@ -333,16 +334,20 @@ public class TestAll {
           v.read();
         }
       }
-      ncfile.close();
     } catch (Exception e) {
       e.printStackTrace();
       assert false;
+
+    } finally {
+      if (ncfile != null)
+        try { ncfile.close(); }
+        catch (IOException e) { }
     }
 
     return 1;
   }
 
-  static public int readAll( NetcdfFile ncfile) {
+  static public int readAllData( NetcdfFile ncfile) {
     System.out.println("\n------Reading ncfile "+ncfile.location);
     try {
 

@@ -138,7 +138,7 @@ public class H5iosp extends AbstractIOServiceProvider {
     if (vinfo.mfp != null) { // filtered
       if (debugFilter) System.out.println("read variable filtered " + v2.getName() + " vinfo = " + vinfo);
       assert vinfo.isChunked;
-      ByteOrder bo = (vinfo.typeInfo.byteOrder == 0) ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN;
+      ByteOrder bo = (vinfo.typeInfo.endian == 0) ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN;
       layout = new H5tiledLayoutBB(v2, wantSection, myRaf, vinfo.mfp.getFilters(), bo);
       data = IospHelper.readDataFill((LayoutBB) layout, v2.getDataType(), vinfo.getFillValue());
 
@@ -148,7 +148,7 @@ public class H5iosp extends AbstractIOServiceProvider {
       DataType readDtype = v2.getDataType();
       int elemSize = v2.getElementSize();
       Object fillValue = vinfo.getFillValue();
-      int byteOrder = vinfo.typeInfo.byteOrder;
+      int endian = vinfo.typeInfo.endian;
 
       // fill in the wantSection
       wantSection = Section.fill(wantSection, v2.getShape());
@@ -163,11 +163,11 @@ public class H5iosp extends AbstractIOServiceProvider {
         readDtype = baseInfo.dataType;
         elemSize = readDtype.getSize();
         fillValue = vinfo.getFillValueDefault(readDtype);
-        byteOrder = baseInfo.byteOrder;
+        endian = baseInfo.endian;
 
       } else if (vinfo.typeInfo.hdfType == 9) { // vlen
         elemSize = vinfo.typeInfo.byteSize;
-        byteOrder = vinfo.typeInfo.byteOrder;
+        endian = vinfo.typeInfo.endian;
         wantSection = wantSection.removeVlen(); // remove vlen dimension
       }
 
@@ -176,7 +176,7 @@ public class H5iosp extends AbstractIOServiceProvider {
       } else {
         layout = new LayoutRegular(dataPos, elemSize, v2.getShape(), wantSection);
       }
-      data = readData(vinfo, v2, layout, readDtype, wantSection.getShape(), fillValue, byteOrder);
+      data = readData(vinfo, v2, layout, readDtype, wantSection.getShape(), fillValue, endian);
     }
 
     if (data instanceof Array)
@@ -200,13 +200,13 @@ public class H5iosp extends AbstractIOServiceProvider {
    * @throws ucar.ma2.InvalidRangeException if invalid section
    */
   private Object readData(H5header.Vinfo vinfo, Variable v, Layout layout, DataType dataType, int[] shape,
-                          Object fillValue, int byteOrder) throws java.io.IOException, InvalidRangeException {
+                          Object fillValue, int endian) throws java.io.IOException, InvalidRangeException {
 
     H5header.TypeInfo typeInfo = vinfo.typeInfo;
 
     // special processing
     if (typeInfo.hdfType == 2) { // time
-      Object data = IospHelper.readDataFill(myRaf, layout, dataType, fillValue, byteOrder, true);
+      Object data = IospHelper.readDataFill(myRaf, layout, dataType, fillValue, endian, true);
       Array timeArray = Array.factory(dataType.getPrimitiveClassType(), shape, data);
 
       // now transform into an ISO Date String
@@ -220,7 +220,7 @@ public class H5iosp extends AbstractIOServiceProvider {
     }
 
     if (typeInfo.hdfType == 8) { // enum
-      Object data = IospHelper.readDataFill(myRaf, layout, dataType, fillValue, byteOrder);
+      Object data = IospHelper.readDataFill(myRaf, layout, dataType, fillValue, endian);
       return Array.factory(dataType.getPrimitiveClassType(), shape, data);
     }
 
@@ -241,7 +241,7 @@ public class H5iosp extends AbstractIOServiceProvider {
         if (chunk == null) continue;
         for (int i = 0; i < chunk.getNelems(); i++) {
           long address = chunk.getSrcPos() + layout.getElemSize() * i;
-          Array vlenArray = headerParser.getHeapDataArray(address, readType, byteOrder);
+          Array vlenArray = headerParser.getHeapDataArray(address, readType, endian);
           data[count++] = (typeInfo.base.hdfType == 7) ? convertReference(vlenArray) : vlenArray;
         }
       }
@@ -310,7 +310,7 @@ public class H5iosp extends AbstractIOServiceProvider {
     }
 
     // normal case
-    return readDataPrimitive(layout, dataType, shape, fillValue, byteOrder, true);
+    return readDataPrimitive(layout, dataType, shape, fillValue, endian, true);
   }
 
   Array convertReference(Array refArray) throws java.io.IOException {
@@ -333,8 +333,8 @@ public class H5iosp extends AbstractIOServiceProvider {
     for (StructureMembers.Member m : sm.getMembers()) {
       Variable v2 = s.findVariable(m.getName());
       H5header.Vinfo vm = (H5header.Vinfo) v2.getSPobject();
-      if (vm.typeInfo.byteOrder >= 0) // apparently each member may have seperate byte order (!!!??)
-        m.setDataObject(vm.typeInfo.byteOrder == RandomAccessFile.LITTLE_ENDIAN ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN);
+      if (vm.typeInfo.endian >= 0) // apparently each member may have seperate byte order (!!!??)
+        m.setDataObject(vm.typeInfo.endian == RandomAccessFile.LITTLE_ENDIAN ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN);
       m.setDataParam((int) (vm.dataPos)); // offset since start of Structure
       if (v2.getDataType() == DataType.STRING)
         hasStrings = true;
@@ -382,12 +382,12 @@ public class H5iosp extends AbstractIOServiceProvider {
    * @param dataType  dataType of the variable
    * @param shape     the shape of the output
    * @param fillValue fill value as a wrapped primitive
-   * @param byteOrder byte order
+   * @param endian byte order
    * @return primitive array with data read in
    * @throws java.io.IOException            if read error
    * @throws ucar.ma2.InvalidRangeException if invalid section
    */
-  Object readDataPrimitive(Layout layout, DataType dataType, int[] shape, Object fillValue, int byteOrder, boolean convertChar) throws java.io.IOException, InvalidRangeException {
+  Object readDataPrimitive(Layout layout, DataType dataType, int[] shape, Object fillValue, int endian, boolean convertChar) throws java.io.IOException, InvalidRangeException {
 
     if (dataType == DataType.STRING) {
       int size = (int) layout.getTotalNelems();
@@ -423,7 +423,7 @@ public class H5iosp extends AbstractIOServiceProvider {
     }
 
     // normal case
-    return IospHelper.readDataFill(myRaf, layout, dataType, fillValue, byteOrder, convertChar);
+    return IospHelper.readDataFill(myRaf, layout, dataType, fillValue, endian, convertChar);
   }
 
   // old way

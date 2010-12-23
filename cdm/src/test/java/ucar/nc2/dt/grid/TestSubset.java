@@ -836,7 +836,7 @@ public class TestSubset extends TestCase {
   }
 
   public void testScaleOffset() throws Exception {
-    GridDataset dataset = GridDataset.open("http://www.esrl.noaa.gov/psd/thredds/dodsC/Datasets/noaa.oisst.v2/sst.wkmean.1990-present.nc");
+    GridDataset dataset = GridDataset.open("http://esrl.noaa.gov/psd/thredds/dodsC/Datasets/noaa.oisst.v2/sst.wkmean.1990-present.nc");
     GeoGrid grid = dataset.findGridByName("sst");
     assert null != grid;
     GridCoordSystem gcs = grid.getCoordinateSystem();

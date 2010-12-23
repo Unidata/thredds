@@ -3,7 +3,10 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Changes in version 4.2:
- 18: (2011-12-xx)
+ 18: (2011-12-23)
+  N4: vlen not setting byteOrder
+  ncss bug when time subsetting FMRC datasets - time_run axis was not getting subsetted.
+  MetadataManager.closeAll() bug
   GridDatasetInv looks for run time inside file if needed.
   TdsMonitor : put dns cache directory under home/tdsMonitor; add reverse hostname to access/user table
   fix close bug in MetadataManager (bdb closing)
