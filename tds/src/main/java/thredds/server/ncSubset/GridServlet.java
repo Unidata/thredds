@@ -41,6 +41,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.util.Random;
 
+import ucar.nc2.units.DateRange;
 import ucar.nc2.util.DiskCache2;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.grid.GridDatasetInfo;
@@ -395,6 +396,24 @@ public class GridServlet extends AbstractServlet {
         }
       }
 
+      if (qp.hasDateRange) {
+        DateRange dr = qp.getDateRange();
+
+        if (dr.getStart().getDate().after(dr.getEnd().getDate())) {
+          qp.errs.append("Request Time range start > end\n" +
+                  "Request Time range = " + dr.toString() + "\n");
+          qp.writeErr(req, res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
+          return;
+        }
+
+        if (dr.getStart().getDate().after(gds.getEndDate()) || dr.getEnd().getDate().before(gds.getStartDate())) {
+          qp.errs.append("RequestTime range does not intersect the Data\n" +
+                  "Data Time Range = " + gds.getStartDate() + " to " + gds.getEndDate() + "\n");
+          qp.writeErr(req, res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
+          return;
+        }
+      }
+
       boolean hasBB = false;
       if (qp.hasBB) {
         LatLonRect maxBB = gds.getBoundingBox();
@@ -411,7 +430,7 @@ public class GridServlet extends AbstractServlet {
         }
       }
 
-      boolean addLatLon = ServletUtil.getParameterIgnoreCase(req, "addLatLon") != null;
+       boolean addLatLon = ServletUtil.getParameterIgnoreCase(req, "addLatLon") != null;
 
       try {
         sendFile(req, res, gds, qp, hasBB, addLatLon);

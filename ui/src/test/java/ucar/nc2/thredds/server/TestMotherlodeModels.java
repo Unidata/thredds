@@ -165,7 +165,7 @@ public class TestMotherlodeModels implements CatalogCrawler.Listener {
   private void compareCdm(InvDataset ds, NetcdfDataset dods) {
     NetcdfDataset cdm = null;
     try {
-      ThreddsDataFactory.preferCdm = true;
+      ThreddsDataFactory.setPreferCdm(true);
       Formatter log = new Formatter();
       cdm = tdataFactory.openDataset(ds, false, null, log);
 
@@ -185,7 +185,7 @@ public class TestMotherlodeModels implements CatalogCrawler.Listener {
 
       countNoOpen++;
     } finally {
-      ThreddsDataFactory.preferCdm = false;
+      ThreddsDataFactory.setPreferCdm(false);
       if (cdm != null) try {
         cdm.close();
       } catch (IOException e) {

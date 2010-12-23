@@ -38,6 +38,7 @@ import thredds.servlet.ServletUtil;
 import thredds.servlet.FmrcInventoryServlet;
 import thredds.catalog.parser.jdom.InvCatalogFactory10;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.thredds.ThreddsDataFactory;
 import ucar.nc2.util.cache.FileCacheRaf;
 import ucar.nc2.util.DiskCache2;
 import ucar.nc2.util.DiskCache;
@@ -71,6 +72,9 @@ public class CdmInit {
   }
 
   void init(TdsContext tdsContext) {
+    // prefer cdmRemote when available
+    //ThreddsDataFactory.setPreferCdm( true);
+
     // new for 4.2 - feature collection caching
     String fcCache = ThreddsConfig.get("FeatureCollection.dir", null);
     if (fcCache == null)

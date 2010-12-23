@@ -473,7 +473,7 @@ public class QueryParams {
    *
    * @return true if there is a valid date range, false if not. If an invalid date range, append error message in errs.
    */
-  boolean hasValidDateRange() {
+  private boolean hasValidDateRange() {
     // no range
     if ((null == time_start) && (null == time_end) && (null == time_duration))
       return false;

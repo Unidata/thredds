@@ -552,12 +552,6 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
       vCT = from.getVerticalCT();
     }
 
-    CoordinateAxis1DTime rtaxis = from.getRunTimeAxis();
-    if (rtaxis != null) {
-      runTimeAxis = (rt_range == null) ? rtaxis : (CoordinateAxis1DTime) rtaxis.section(rt_range);
-      coordAxes.add(runTimeAxis);
-    }
-
     CoordinateAxis1D eaxis = from.getEnsembleAxis();
     if (eaxis != null) {
       ensembleAxis = (e_range == null) ? eaxis : (CoordinateAxis1D) eaxis.section(e_range);
@@ -565,9 +559,10 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
     }
 
     CoordinateAxis taxis = from.getTimeAxis();
+    CoordinateAxis1DTime taxis1D = null;
     if (taxis != null) {
       if (taxis instanceof CoordinateAxis1DTime) {
-        CoordinateAxis1DTime taxis1D = (CoordinateAxis1DTime) taxis;
+        taxis1D = (CoordinateAxis1DTime) taxis;
         tAxis = timeTaxis = (t_range == null) ? taxis1D : (CoordinateAxis1DTime) taxis1D.section(t_range);
         coordAxes.add(timeTaxis);
         timeDim = timeTaxis.getDimension(0);
@@ -581,6 +576,22 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
         coordAxes.add(tAxis);
       }
     }
+
+    CoordinateAxis1DTime rtaxis = from.getRunTimeAxis();
+    if (rtaxis != null) {
+      if (taxis1D != null) {
+        Dimension tDim = taxis1D.getDimension(0);
+        Dimension rtDim = rtaxis.getDimension(0);
+        if (tDim.getName().equals(rtDim.getName())) { // must usetime subset range if dims match - FMRC 1D has this a lot
+          runTimeAxis = (t_range == null) ? rtaxis : (CoordinateAxis1DTime) rtaxis.section(t_range);
+        }
+      }
+      if (runTimeAxis == null)  // regular case of a run tim axis
+        runTimeAxis = (rt_range == null) ? rtaxis : (CoordinateAxis1DTime) rtaxis.section(rt_range);
+
+      coordAxes.add(runTimeAxis);
+    }
+
 
     // make name based on coordinate
     Collections.sort(coordAxes, new CoordinateAxis.AxisComparator()); // canonical ordering of axes

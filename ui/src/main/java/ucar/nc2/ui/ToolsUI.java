@@ -900,13 +900,13 @@ public class ToolsUI extends JPanel {
     a = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Boolean state = (Boolean) getValue(BAMutil.STATE);
-        ThreddsDataFactory.preferCdm = state;
+        ThreddsDataFactory.setPreferCdm( state);
       }
     };
     // ToolsUI default is to use cdmRemote access
-    ThreddsDataFactory.preferCdm = true;
-    a.putValue(BAMutil.STATE, new Boolean(ThreddsDataFactory.preferCdm));
-    BAMutil.setActionPropertiesToggle(a, null, "preferCdm", ThreddsDataFactory.preferCdm, 'P', -1);
+    ThreddsDataFactory.setPreferCdm( true);
+    a.putValue(BAMutil.STATE, new Boolean(true));
+    BAMutil.setActionPropertiesToggle(a, null, "preferCdm", true, 'P', -1);
     BAMutil.addActionToMenu(ncMenu, a);
   }
 

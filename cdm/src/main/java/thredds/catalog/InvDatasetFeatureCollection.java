@@ -139,8 +139,13 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
     }
 
     CollectionSpecParser sp = dcm.getCollectionSpecParser();
-    topDirectory = sp.getTopDir();
-    filter = sp.getFilter();
+    if (sp != null) {
+      topDirectory = sp.getTopDir();
+      filter = sp.getFilter();
+    } else {
+      topDirectory = null;
+      filter = null;
+    }
   }
 
   // stuff that shouldnt be done in a constructor - eg dont let 'this' escape

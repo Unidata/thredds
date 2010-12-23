@@ -5,11 +5,16 @@ Build Name = @BUILD.NAME@
 
 Release Details 4.2:
  4.2.3 (2010-12-xx)
+   sync bdb from TDS admin/debug
+   remote fmrc collections
+   ncss validate time range better
+   ncss bug when time subsetting FMRC datasets - time_run axis was not getting subsetted.
    TomcatAuthorizer is appending "auth" to redirected URL, not sure why but it breaks opendap
    GridServlet (ncss) traps Throwable, not just Exception
    tom kunicki's patch on CdmrFeatureController
    change 404.jsp 500.jsp from 4.0 to 4.2
    GridCoordSys.getDateRange() now works for 2D time coord: WCS failed on FMRC 2D datase 
+   MetadataManager.closeAll() bug
    fix default cache dir for WCS, ncss
    FMRC bug in constant offset datasets when offset didnt start at 0.
    FMRC now has vars, bounding box, and date range metadata correct.

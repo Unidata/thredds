@@ -167,6 +167,11 @@ public class MetadataManager {
     return root;
   }
 
+  static public void sync() {
+    if (myEnv != null)
+      myEnv.sync();
+  }
+
   static public List<String> getCollectionNames() {
     if (myEnv == null)
       setup();

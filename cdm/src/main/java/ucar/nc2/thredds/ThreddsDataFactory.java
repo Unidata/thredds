@@ -70,7 +70,12 @@ import java.io.IOException;
  */
 public class ThreddsDataFactory {
   static public final String SCHEME = "thredds:";
-  static public boolean preferCdm = false; // temp debugging
+  static private boolean preferCdm = false; // temp debugging
+
+  static public void setPreferCdm(boolean prefer) {
+    preferCdm = prefer;
+  }
+
 
   static public void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
     debugOpen = debugFlag.isSet("thredds/debugOpen");

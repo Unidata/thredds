@@ -97,5 +97,9 @@ public class FmrcCacheMonitorImpl implements FmrcCacheMonitor {
     MetadataManager.deleteCollection(collectionName);
   }
 
+  public void sync() {
+    MetadataManager.sync();
+  }
+
 
 }

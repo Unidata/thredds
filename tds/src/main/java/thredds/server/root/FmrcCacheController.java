@@ -80,6 +80,14 @@ public class FmrcCacheController extends AbstractController {
       }
     };
     debugHandler.addAction(act);
+
+    act = new DebugHandler.Action("syncFmrcCache", "Flush FMRC Cache to disk") {
+      public void doAction(DebugHandler.Event e) {
+        monitor.sync();
+        e.pw.println("<p>bdb cache location = "+monitor.getCacheLocation()+"<p> flushed to disk");
+      }
+    };
+    debugHandler.addAction(act);
   }
 
   protected ModelAndView handleRequestInternal(HttpServletRequest req, HttpServletResponse res) throws Exception {
