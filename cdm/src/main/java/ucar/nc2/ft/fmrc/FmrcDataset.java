@@ -1036,8 +1036,11 @@ class FmrcDataset {
 
           // find the inventory for this grid, runtime, and hour
           TimeInventory.Instance timeInv =  vstate.timeInv.getInstance(vstate.gridLite, timeIdx);
-          if (timeInv == null)
-            logger.error("Missing Inventory timeInx="+timeIdx+ " for "+ mainv.getName()+" in "+state.lite.collectionName);
+          if (timeInv == null) {
+            if (logger.isDebugEnabled())
+              logger.debug("Missing Inventory timeInx="+timeIdx+ " for "+ mainv.getName()+" in "+state.lite.collectionName);
+            // vstate.timeInv.getInstance(vstate.gridLite, timeIdx); // allow debugger
+          }
           
           else if (timeInv.getDatasetLocation() != null) {
             if (debugRead) System.out.printf("HIT %s%n", timeInv);

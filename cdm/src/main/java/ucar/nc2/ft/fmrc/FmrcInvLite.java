@@ -47,6 +47,7 @@ import java.util.*;
  */
 public class FmrcInvLite implements java.io.Serializable {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FmrcInvLite.class);
+  static private final String BEST = "Best";
 
   // public for debugging
   public String collectionName;
@@ -187,7 +188,7 @@ public class FmrcInvLite implements java.io.Serializable {
 
     out.format("Best%n");
     BestDatasetInventory best = new BestDatasetInventory( null);
-    List<TimeInv> bestInv = gridset.timeCoordMap.get("Best");
+    List<TimeInv> bestInv = gridset.timeCoordMap.get(BEST);
     if (bestInv == null) bestInv = gridset.makeBest(null);
     FmrcInvLite.ValueB coords = best.getTimeCoords( gridset); // must call this to be sure data is there
 
@@ -337,7 +338,7 @@ public class FmrcInvLite implements java.io.Serializable {
       int n = values.size();
       List<TimeInv> best = Arrays.asList((TimeInv[]) values.toArray(new TimeInv[n]));
       Collections.sort(best);
-      timeCoordMap.put("best", best);
+      timeCoordMap.put(BEST, best);
       return best;
     }
 
@@ -624,7 +625,7 @@ public class FmrcInvLite implements java.io.Serializable {
  
     @Override
     public String getName() {
-      return (bd == null) ? "Best" : bd.name;
+      return (bd == null) ? BEST : bd.name;
     }
 
     @Override
