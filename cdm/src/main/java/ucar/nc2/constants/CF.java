@@ -94,6 +94,35 @@ public class CF {
       return null;
     }
 
+    /*
+1) The CF discrete sampling proposal will be the recommended one for point data when thats finalized. Unfortunately, it will be somewhat different from whats gone before. The CF: prefix is dropped until the namespace proposal can be completed. So those feature types are now proposed to be:
+
+    * point: one or more parameters measured at a set of points in time and space
+    * timeSeries: a time-series of data points at the same location, with varying time
+    * trajectory: a connected set of data points along a 1D curve in time and space
+    * profile: a set of data points along a vertical line
+    * timeSeriesProfile: a time-series of profiles at a named location
+    * trajectoryProfile: a collection of profiles which originate along a trajectory
+
+The CDM will be backwards compatible, including:
+
+    *   accepting the CF: prefix
+    *   being case insensitive
+    *   "station" and "stationTimeSeries"as aliases for "timeSeries"
+    *   "stationProfile" as alias for "timeSeriesProfile"
+    *   "section" as alias for "trajectoryProfile"
+
+I know that CF wants to standardize on other feature types also. Its hard to anticipate what they will come with, but its likely:
+
+    * grid
+    * swath
+
+maybe:
+
+    * image
+    * radial
+    * unstructuredGrid    
+     */
     public static FeatureType getFeatureType(String s) {
       if (s.equalsIgnoreCase("point")) return FeatureType.point;
       if (s.equalsIgnoreCase("timeSeries")) return FeatureType.timeSeries;
