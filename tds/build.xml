@@ -771,7 +771,7 @@
 
   <!-- Clean, make source, make war, make checksums, and copy to snapshot directory on FTP site. -->
   <target name="cleanReleaseSnapshot" depends="cleanMakeSrcAndWar"
-          description="clean, build (including checksums), and copy files to the thredds/4.2/snapshot/4.2.<build.name>/ directory">
+          description="clean, build (including checksums), and copy files to the thredds/4.2/snapshot/4.2.{build.name}/ directory">
     <antcall target="doNotUseDirectly-release">
       <param name="target.release.directory" value="${releaseSnapshot.dir}" />
     </antcall>
@@ -779,7 +779,7 @@
 
   <!-- Clean, make source, make war, make checksums, and copy to release directory on FTP site. -->
   <target name="cleanRelease" depends="cleanMakeSrcAndWar, release"
-          description="clean, build (including checksums), and copy files to the ftp/pub/thredds/4.2/4.2.<build.name>/ directory">
+          description="clean, build (including checksums), and copy files to the ftp/pub/thredds/4.2/4.2.{build.name}/ directory">
   </target>
 
   <!-- Copy already built distribution to release directory on FTP site.
@@ -788,7 +788,7 @@
      'ant -Dbuild.number=X -Dbuild.name=Y makeSrcAnsWar'
      'ant -Dbuild.number=X -Dbuild.name=Y release'
     -->
-  <target name="release" description="copies existing distribution files to the ftp/pub/thredds/4.2/4.2.<build.name>/ directory.">
+  <target name="release" description="copies existing distribution files to the ftp/pub/thredds/4.2/4.2.{build.name}/ directory.">
     <antcall target="doNotUseDirectly-release">
       <param name="target.release.directory" value="${release.dir}" />
     </antcall>

@@ -57,7 +57,7 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
   protected List<VariableSimpleIF> dataVariables;
 
   protected CompositeStationCollection(String name, TimedCollection dataCollection,
-        List<Station> stns, List<VariableSimpleIF> dataVariables) throws IOException {
+                                       List<Station> stns, List<VariableSimpleIF> dataVariables) throws IOException {
     super(name);
     this.dataCollection = dataCollection;
     TimedCollection.Dataset td = dataCollection.getPrototype();
@@ -99,7 +99,8 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
     } finally {
       try {
         if (openDataset != null) openDataset.close();
-      } catch (Throwable t) {}
+      } catch (Throwable t) {
+      }
     }
   }
 
@@ -110,9 +111,9 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
     return dataVariables;
   }
 
-    @Override
+  @Override
   public void update() {
-      dataCollection.update();
+    dataCollection.update();
   }
 
   // Must override default subsetting implementation for efficiency
@@ -179,6 +180,7 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
   }
 
   // the StationTimeSeriesFeature
+
   private class CompositeStationFeature extends StationFeatureImpl {
     private TimedCollection collForFeature;
 
@@ -189,6 +191,7 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
     }
 
     // an iterator over the observations for this station
+
     public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
       CompositeStationFeatureIterator iter = new CompositeStationFeatureIterator();
       if ((boundingBox == null) || (dateRange == null) || (npts < 0))
@@ -213,6 +216,7 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
     }
 
     // the iterator over PointFeature - an iterator over iterators, one for each dataset
+
     private class CompositeStationFeatureIterator extends PointIteratorAbstract {
       private int bufferSize = -1;
       private Iterator<TimedCollection.Dataset> iter;
@@ -234,7 +238,7 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
         Station s = stnCollection.getStation(getName());
         if (s == null) {
           System.out.printf("CompositeStationFeatureIterator dataset: %s missing station %s%n",
-              td.getLocation(), getName());
+                  td.getLocation(), getName());
           return getNextIterator();
         }
 
@@ -245,15 +249,13 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
       }
 
       public boolean hasNext() throws IOException {
-
-
-          if (pfIter == null) {
+        if (pfIter == null) {
           pfIter = getNextIterator();
           if (pfIter == null) {
             finish();
             return false;
           }
-          }
+        }
 
         if (!pfIter.hasNext()) {
           pfIter.finish();

@@ -178,8 +178,14 @@ public final class Grib2Input {
         is.setPos(startPos, endPos);
 
         // TODO: delete is.getDiscipline from if when 40 beta released
-        if (is.getGribEdition() == 1 || is.getDiscipline() == 255) {
-          logger.warn( "Grib1 record in Grib2 file "+raf.getLocation()) ;
+        // LOOK this filter should be moved to the indexing code, so we can see the raw data
+        if (is.getGribEdition() == 1) {
+          logger.warn( "Grib1 record in Grib2 file at="+raf.getLocation()) ;
+          raf.seek(endPos);
+          continue;
+        }
+        if (is.getDiscipline() == 255) {
+          logger.warn( "Missing Discipline in header at= "+raf.getLocation()) ;
           raf.seek(endPos);
           continue;
         }

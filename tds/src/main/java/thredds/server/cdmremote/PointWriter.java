@@ -65,7 +65,7 @@ import javax.xml.stream.XMLStreamException;
 public class PointWriter {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(StationWriter.class);
 
-  private static final boolean debug = true, debugDetail = true;
+  private static final boolean debug = false, debugDetail = false;
 
   private final FeatureDatasetPoint fd;
   private final CdmRemoteQueryBean qb;
@@ -165,7 +165,6 @@ public class PointWriter {
     w.header();
     scan(pfc, wantRange, null, act, counter);
 
-
     w.trailer();
 
     if (debug) {
@@ -209,6 +208,7 @@ public class PointWriter {
       }
       if (debugDetail && (limit.matches % 50 == 0)) System.out.println(" matches " + limit.matches);
     }
+    collection.finish();
 
   }
 

@@ -60,7 +60,7 @@ public class CompositePointCollection extends PointCollectionImpl implements Upd
     this.pointCollections = pointCollections;
   }
 
-  public List<VariableSimpleIF> getDataVariables()  {
+  public List<VariableSimpleIF> getDataVariables() {
     if (dataVariables == null) {
       // must open a prototype in order to get the data variable
       TimedCollection.Dataset td = pointCollections.getPrototype();
@@ -133,7 +133,7 @@ public class CompositePointCollection extends PointCollectionImpl implements Upd
     }
 
     public boolean hasNext() throws IOException {
-        
+
       if (pfIter == null) {
         pfIter = getNextIterator();
         if (pfIter == null) {
@@ -144,11 +144,14 @@ public class CompositePointCollection extends PointCollectionImpl implements Upd
 
       if (!pfIter.hasNext()) {
         pfIter.finish();
+        if (CompositeDatasetFactory.debug)
+          System.out.printf("CompositePointFeatureIterator open dataset %s%n", currentDataset.getLocation());
         currentDataset.close();
+
         pfIter = getNextIterator();
         return hasNext();
       }
-;
+
       return true;
     }
 
@@ -202,8 +205,8 @@ public class CompositePointCollection extends PointCollectionImpl implements Upd
     }
 
     public boolean hasNext() throws IOException {
-        
-        if (pfIter == null) {
+
+      if (pfIter == null) {
         pfIter = getNextIterator();
         if (pfIter == null) {
           finish();
@@ -217,7 +220,6 @@ public class CompositePointCollection extends PointCollectionImpl implements Upd
         pfIter = getNextIterator();
         return hasNext();
       }
-;
 
       return true;
     }

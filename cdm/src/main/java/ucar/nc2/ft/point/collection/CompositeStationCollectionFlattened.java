@@ -64,8 +64,8 @@ public class CompositeStationCollectionFlattened extends PointCollectionImpl {
   private boolean wantStationsubset = false;
 
   protected CompositeStationCollectionFlattened(String name, List<String> stations, DateRange dateRange,
-                List<VariableSimpleIF> varList, TimedCollection stnCollections) throws IOException {
-    super( name);
+                                                List<VariableSimpleIF> varList, TimedCollection stnCollections) throws IOException {
+    super(name);
     this.stationsSubset = stations; // note these will be from the original collection, must transfer
     this.dateRange = dateRange;
     this.varList = varList;
@@ -75,7 +75,7 @@ public class CompositeStationCollectionFlattened extends PointCollectionImpl {
   }
 
   protected CompositeStationCollectionFlattened(String name, LatLonRect bbSubset, DateRange dateRange, TimedCollection stnCollections) throws IOException {
-    super( name);
+    super(name);
     this.bbSubset = bbSubset;
     this.dateRange = dateRange;
     this.stnCollections = stnCollections;
@@ -107,7 +107,7 @@ public class CompositeStationCollectionFlattened extends PointCollectionImpl {
       // open the next dataset
       currentDataset = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(FeatureType.STATION, td.getLocation(), null, errlog);
       if (currentDataset == null) {
-        logger.error("FeatureDatasetFactoryManager failed to open: "+td.getLocation()+" \nerrlog = " + errlog);
+        logger.error("FeatureDatasetFactoryManager failed to open: " + td.getLocation() + " \nerrlog = " + errlog);
         return getNextIterator();
       }
 
@@ -128,8 +128,8 @@ public class CompositeStationCollectionFlattened extends PointCollectionImpl {
     }
 
     public boolean hasNext() throws IOException {
-      
-        if (pfIter == null) {
+
+      if (pfIter == null) {
         pfIter = getNextIterator();
         if (pfIter == null) {
           finish();
@@ -141,11 +141,10 @@ public class CompositeStationCollectionFlattened extends PointCollectionImpl {
         pfIter.finish();
         currentDataset.close();
         if (CompositeDatasetFactory.debug)
-           System.out.printf("CompositeStationCollectionFlattened.Iterator close dataset: %s%n", currentDataset.getLocation());
+          System.out.printf("CompositeStationCollectionFlattened.Iterator close dataset: %s%n", currentDataset.getLocation());
         pfIter = getNextIterator();
         return hasNext();
       }
-;
       return true;
     }
 
@@ -164,7 +163,7 @@ public class CompositeStationCollectionFlattened extends PointCollectionImpl {
         try {
           currentDataset.close();
           if (CompositeDatasetFactory.debug)
-              System.out.printf("CompositeStationCollectionFlattened close dataset: %s%n", currentDataset.getLocation());
+            System.out.printf("CompositeStationCollectionFlattened close dataset: %s%n", currentDataset.getLocation());
         } catch (IOException e) {
           throw new RuntimeException(e);
         }

@@ -205,8 +205,8 @@ public class FeatureDatasetFactoryManager {
       }
       return result.featureDataset;
 
-      // special processing for cdmremote: datasets
-    } else if (location.startsWith(CdmRemote.SCHEME)) {
+      // special processing for cdmrFeature: datasets
+    } else if (location.startsWith(CdmrFeatureDataset.SCHEME)) {
       return CdmrFeatureDataset.factory(wantFeatureType, location);
 
       // special processing for collection: datasets

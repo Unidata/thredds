@@ -59,12 +59,14 @@ import org.apache.commons.httpclient.HttpMethod;
  * @since May 19, 2009
  */
 public class CdmrFeatureDataset {
+  static public final String SCHEME = "cdmrFeature:";
+
   static private boolean debug = false;
   static private boolean showXML = false;
 
   static public FeatureDataset factory(FeatureType wantFeatureType, String endpoint) throws IOException {
-    if (endpoint.startsWith(CdmRemote.SCHEME))
-      endpoint = endpoint.substring(CdmRemote.SCHEME.length());
+    if (endpoint.startsWith(SCHEME))
+      endpoint = endpoint.substring(SCHEME.length());
 
     Document doc = getCapabilities(endpoint);
     Element root = doc.getRootElement();

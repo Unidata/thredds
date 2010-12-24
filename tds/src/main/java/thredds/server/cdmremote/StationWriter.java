@@ -356,6 +356,7 @@ public class StationWriter {
       }
       if (debugDetail && (limit.matches % 50 == 0)) System.out.println(" matches " + limit.matches);
     }
+    collection.finish();
 
   }
 
