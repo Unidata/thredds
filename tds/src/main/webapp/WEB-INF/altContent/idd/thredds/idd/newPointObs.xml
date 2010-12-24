@@ -16,7 +16,7 @@
     <service name="HTTPServer" serviceType="HTTPServer" base="/thredds/fileServer/"/>
   </service>
 
-  <dataset name="New Point Data">
+  <dataset name="Point Feature Collections">
     <metadata inherited="true">
       <serviceName>all</serviceName>
       <authority>edu.ucar.unidata</authority>
@@ -65,6 +65,13 @@
 
     <featureCollection name="Surface Synoptic Point Data" harvest="true" featureType="Point" path="nws/synoptic/ncdecoded">
       <collection spec="/data/ldm/pub/decoded/netcdf/surface/synoptic/Surface_Synoptic_#yyyyMMdd_HHmm#.nc$" />
+      <update startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+      <protoDataset choice="Penultimate" />
+      <pointConfig datasetTypes="cdmrFeature Files"/>
+    </featureCollection>
+
+    <featureCollection name="Upper Air Point Data" harvest="true" featureType="Point" path="nws/upperair/ncdecoded">
+      <collection spec="/data/ldm/pub/decoded/netcdf/surface/upperair/Upperair_#yyyyMMdd_HHmm#.nc$" />
       <update startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
       <protoDataset choice="Penultimate" />
       <pointConfig datasetTypes="cdmrFeature Files"/>
