@@ -117,7 +117,7 @@ public class WriterCFPointDataset {
     ncfileOut.addDimension(null, new Dimension(recordDimName, 0, true, true, false));
 
     // time variable
-    Variable timeVar = ncfileOut.addVariable(null, timeName, DataType.INT, recordDimName);
+    Variable timeVar = ncfileOut.addVariable(null, timeName, DataType.DOUBLE, recordDimName);
     timeVar.addAttribute(new Attribute("units", "secs since 1970-01-01 00:00:00"));
     timeVar.addAttribute(new Attribute("long_name", "date/time of observation"));
     recordVars.add(timeVar);
@@ -215,8 +215,8 @@ public class WriterCFPointDataset {
     int count = 0;
 
     // time
-    ArrayInt.D0 tdata = new ArrayInt.D0();
-    int secs = (int) (time.getTime() / 1000);
+    ArrayDouble.D0 tdata = new ArrayDouble.D0();
+    double secs = (double) (time.getTime() / 1000.);
     tdata.set(secs);
     Variable v = recordVars.get(count++);
     v.setCachedData(tdata, false);
