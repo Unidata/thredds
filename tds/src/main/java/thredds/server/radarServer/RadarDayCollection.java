@@ -150,12 +150,12 @@ public class RadarDayCollection implements Serializable {
 
     ArrayList<String> stations = null;
     if (stnTime) {
-      stations = getStationsFromDir(dir);
+      stations = getStationsFromDir( this.dir );
     }
 
     // get the times for each station
     for (String stn : stations) {
-      populateStationsTimesFromDir(stn, dir + "/" + stn + "/" + yyyymmdd);
+      populateStationsTimesFromDir(stn, this.dir + "/" + stn + "/" + yyyymmdd);
     }
     return true;
   }
@@ -194,14 +194,20 @@ public class RadarDayCollection implements Serializable {
       ArrayList<String> hhmm = new ArrayList<String>();
       String[] children = dir.list();
       if( children.length > 0 ) { // check for standard name
-        if( !children[ 0 ].startsWith( "Level"))
-           standardName = false;
-        int start = children[ 0 ].lastIndexOf( '.');
-        if( start > 0 )
-          suffix = children[ 0 ].substring( start );
+        for (String aChildren : children) {
+          if ( aChildren.startsWith( "."))
+            continue;
+          if( !aChildren.startsWith( "Level"))
+             standardName = false;
+          int start = aChildren.lastIndexOf( '.');
+          if( start > 0 )
+            suffix = aChildren.substring( start );
+        } 
       }
       Matcher m;
       for (String aChildren : children) {
+        if ( aChildren.startsWith( "."))
+          continue;
           // Level2_KFTG_20100108_0654.ar2v
           m = p_yyyymmdd_hhmm.matcher(aChildren);
           if (m.find()) {
@@ -267,19 +273,29 @@ public class RadarDayCollection implements Serializable {
    * @return RadarDayCollection object
    */
   public RadarDayCollection read(String sfile) {
-    RadarDayCollection rdc = null;
-    FileInputStream fis = null;
     ObjectInputStream in = null;
     try {
-      fis = new FileInputStream(sfile);
+      File file = new File( sfile );
+      if( !file.exists() )
+        return null;
+      FileInputStream fis = new FileInputStream( file );
       in = new ObjectInputStream(fis);
-      rdc = (RadarDayCollection) in.readObject();
+      RadarDayCollection rdc = (RadarDayCollection) in.readObject();
       in.close();
       return rdc;
     } catch (IOException ex) {
       ex.printStackTrace();
     } catch (ClassNotFoundException ex) {
       ex.printStackTrace();
+    } finally {
+      if (in != null) {
+        try {
+          in.close();
+        }
+        catch (IOException e) {
+          System.out.println("radarServer reading DayCollection "+ sfile );
+        }
+      }
     }
     return null;
   }

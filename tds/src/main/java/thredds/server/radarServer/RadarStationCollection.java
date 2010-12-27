@@ -48,7 +48,6 @@ import java.io.*;
 
 public class RadarStationCollection {
 
-  public static final Pattern p_yyyymmdd_hhmm = Pattern.compile("\\d{8}_(\\d{4})");
   private static final long serialVersionUID = 20100119L;
 
   /**
@@ -86,7 +85,7 @@ public class RadarStationCollection {
    /**
    * Radar product suffix
    */
-  String suffix = null;
+  String suffix = ".ar2v";
 
   /**
    *  ArrayList of yyyyddmm days
@@ -131,7 +130,7 @@ public class RadarStationCollection {
    *
    * @return times ArrayList
    */
-  public final ArrayList getDays() {
+  public final ArrayList<String> getDays() {
     return yyyymmdd;
   }
 
@@ -140,7 +139,7 @@ public class RadarStationCollection {
    * @param day String
    * @return hhmm's ArrayList
    */
-  public final ArrayList gethhmm( String day ) {
+  public final ArrayList<String> getHourMinute( String day ) {
     return hhmm.get( day );
   }
 
@@ -192,6 +191,50 @@ public class RadarStationCollection {
    */
   public boolean isStandardName() {
     return standardName;
+  }
+
+  public ArrayList<String> getYyyymmdd() {
+    return yyyymmdd;
+  }
+
+  public HashMap<String, ArrayList<String>> getHhmm() {
+    return hhmm;
+  }
+
+  public void setDir(String dir) {
+    this.dir = dir;
+  }
+
+  public void setStnTime(boolean stnTime) {
+    this.stnTime = stnTime;
+  }
+
+  public void setStnProduct(boolean stnProduct) {
+    this.stnProduct = stnProduct;
+  }
+
+  public void setStnName(String stnName) {
+    this.stnName = stnName;
+  }
+
+  public void setProduct(String product) {
+    this.product = product;
+  }
+
+  public void setStandardName(boolean standardName) {
+    this.standardName = standardName;
+  }
+
+  public void setSuffix(String suffix) {
+    this.suffix = suffix;
+  }
+
+  public void setYyyymmdd(ArrayList<String> yyyymmdd) {
+    this.yyyymmdd = yyyymmdd;
+  }
+
+  public void setHhmm(HashMap<String, ArrayList<String>> hhmm) {
+    this.hhmm = hhmm;
   }
 
   /**
