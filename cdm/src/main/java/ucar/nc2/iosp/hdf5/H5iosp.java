@@ -233,7 +233,7 @@ public class H5iosp extends AbstractIOServiceProvider {
 
       // general case is to read an array of vlen objects
       // each vlen generates an Array - so return ArrayObject of Array
-      boolean scalar = false; // layout.getTotalNelems() == 1; // if scalar, return just the len Array // remove 12/25/10 jcaron
+      //boolean scalar = false; // layout.getTotalNelems() == 1; // if scalar, return just the len Array // remove 12/25/10 jcaron
       Object[] data = new Object[(int) layout.getTotalNelems()];
       int count = 0;
       while (layout.hasNext()) {
@@ -245,7 +245,8 @@ public class H5iosp extends AbstractIOServiceProvider {
           data[count++] = (typeInfo.base.hdfType == 7) ? convertReference(vlenArray) : vlenArray;
         }
       }
-      return (scalar) ? data[0] : new ArrayObject(data[0].getClass(), shape, data);
+      //return (scalar) ? data[0] : new ArrayObject(data[0].getClass(), shape, data);
+      return new ArrayObject(data[0].getClass(), shape, data);
 
     }
 

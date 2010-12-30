@@ -679,8 +679,8 @@ public class H5header {
         }
         StructureMembers.Member m = sm.addMember(h5sm.name, null, null, dt, dim);
 
-        if (h5sm.mdt.byteOrder >= 0) // apparently each member may have seperate byte order (!!!??)
-          m.setDataObject(h5sm.mdt.byteOrder == RandomAccessFile.LITTLE_ENDIAN ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN);
+        if (h5sm.mdt.endian >= 0) // apparently each member may have seperate byte order (!!!??)
+          m.setDataObject(h5sm.mdt.endian == RandomAccessFile.LITTLE_ENDIAN ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN);
         m.setDataParam((int) (h5sm.offset)); // offset since start of Structure
         if (dt == DataType.STRING)
           hasStrings = true;
@@ -1440,7 +1440,7 @@ public class H5header {
           tinfo.dataType = DataType.STRING;
         } else {
           tinfo.dataType = getNCtype(mdt.getBaseType(), mdt.getBaseSize());
-          tinfo.endian =  mdt.byteOrder == 0 ? RandomAccessFile.LITTLE_ENDIAN : RandomAccessFile.BIG_ENDIAN;
+          tinfo.endian =  mdt.base.endian;
         }
       } else if (hdfType == 10) { // array : used for structure members
         tinfo.endian = (mdt.getFlags()[0] & 1) == 0 ? RandomAccessFile.LITTLE_ENDIAN : RandomAccessFile.BIG_ENDIAN;
@@ -2640,7 +2640,8 @@ public class H5header {
   public class MessageDatatype implements Named {
     int type, version;
     byte[] flags = new byte[3];
-    int byteSize, byteOrder;
+    int byteSize;
+    int endian; // 0 (LE) or 1 (BE) == RandomAccessFile.XXXXXX_ENDIAN
     boolean isOK = true;
     boolean unsigned;
 
@@ -2676,6 +2677,8 @@ public class H5header {
       sbuff.append(" NCtype= ").append(dtype);
       sbuff.append(" flags= ");
       for (int i=0; i<3; i++) sbuff.append(flags[i]).append(" ");
+      sbuff.append(" endian=").append(endian == RandomAccessFile.BIG_ENDIAN ? "BIG" : "LITTLE");
+
       if (type == 2)
         sbuff.append(" timeType= ").append(timeType);
       else if (type == 6)
@@ -2685,7 +2688,7 @@ public class H5header {
       else if (type == 9)
         sbuff.append(" isVString= ").append(isVString);
       if ((type == 9) || (type == 10))
-        sbuff.append(" parent= ").append(base);
+        sbuff.append(" parent= {").append(base).append("}");
       return sbuff.toString();
     }
 
@@ -2706,11 +2709,11 @@ public class H5header {
 
       raf.read(flags);
       byteSize = raf.readInt();
-      byteOrder = ((flags[0] & 1) == 0) ? RandomAccessFile.LITTLE_ENDIAN : RandomAccessFile.BIG_ENDIAN;
+      endian = ((flags[0] & 1) == 0) ? RandomAccessFile.LITTLE_ENDIAN : RandomAccessFile.BIG_ENDIAN;
 
       if (debug1) debugOut.println("   Datatype type=" + type + " version= " + version + " flags = " +
           flags[0] + " " + flags[1] + " " + flags[2] + " byteSize=" + byteSize
-          + " byteOrder=" + (byteOrder == 0 ? "BIG" : "LITTLE"));
+          + " byteOrder=" + (endian == RandomAccessFile.BIG_ENDIAN ? "BIG" : "LITTLE"));
 
       if (type == 0) {  // fixed point
         unsigned = ((flags[0] & 8) == 0);
@@ -2797,7 +2800,7 @@ public class H5header {
         }
 
         // read the values; must switch to base byte order (!)
-        if (base.byteOrder >= 0) raf.order(base.byteOrder);
+        if (base.endian >= 0) raf.order(base.endian);
         int[] enumValue = new int[nmembers];
         for (int i = 0; i < nmembers; i++)
           enumValue[i] = readVariableSize(base.byteSize); // assume size is 1, 2, or 4
