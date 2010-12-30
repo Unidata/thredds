@@ -88,13 +88,10 @@
       <groupId>commons-httpclient</groupId>
       <artifactId>commons-httpclient</artifactId>
     </dependency>
-    <!-- The main source is not supposed to depend on JUnit. However current code
-         seems to use it (maybe by accident?) Use the 'provided' scope on the
-         assumption that user will not depend on the code using JUnit. -->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <scope>provided</scope>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>
