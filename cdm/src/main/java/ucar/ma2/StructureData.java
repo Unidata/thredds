@@ -275,6 +275,26 @@ abstract public class StructureData {
    */
   abstract public int convertScalarInt(StructureMembers.Member m);
 
+  /**
+   * Get scalar value as a int, with conversion as needed. Underlying type must be convertible to int.
+   * @param memberName name of member Variable. Must be convertible to double.
+   * @return scalar value as a int
+   * @throws ForbiddenConversionException if not convertible to int.
+   */
+  public long convertScalarLong(String memberName) {
+    StructureMembers.Member m = members.findMember(memberName);
+    if (m == null) throw new IllegalArgumentException("illegal member name =" + memberName);
+    return convertScalarLong(m);
+  }
+
+  /**
+   * Get scalar value as a int, with conversion as needed. Underlying type must be convertible to int.
+   * @param m member Variable.
+   * @return scalar value as a int
+   * @throws ForbiddenConversionException if not convertible to int.
+   */
+  abstract public long convertScalarLong(StructureMembers.Member m);
+
   /////////////////////////////////////////////////////////////////////////////////////////////
 
   /**
@@ -654,6 +674,10 @@ abstract public class StructureData {
     f.format("%sStructureData %s class=%s hash=0x%x%n", leadingSpace, members.getName(), this.getClass().getName(), hashCode());
     for (StructureMembers.Member m : getMembers())
       m.showInternal(f, leadingSpace+"  ");
+  }
+
+   public String toString() { 
+    return members.toString();
   }
 
 }

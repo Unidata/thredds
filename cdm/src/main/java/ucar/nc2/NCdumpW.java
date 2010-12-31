@@ -411,14 +411,14 @@ public class NCdumpW {
         System.out.printf("HEY!%n");
       printStringArray(out, (ArrayObject) array, ilev, ct);
 
+    } else if (array instanceof ArraySequence) {
+      printSequence(out, (ArraySequence) array, ilev, ct);
+
     } else if (array instanceof ArrayStructure) {
       if (array.getSize() == 1)
         printStructureData(out, (StructureData) array.getObject(array.getIndex()), ilev, ct);
       else
         printStructureDataArray(out, (ArrayStructure) array, ilev, ct);
-
-    } else if (array instanceof ArraySequence) {
-      printSequence(out, (ArraySequence) array, ilev, ct);
 
     } else if (array instanceof ArrayObject) {
       printVariableArray(out, (ArrayObject) array, ilev, ct);

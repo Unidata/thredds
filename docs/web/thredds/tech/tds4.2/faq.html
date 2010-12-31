@@ -202,7 +202,7 @@ mkdir javaUtilPrefs/.systemPrefs
   <pre>     SEVERE: Servlet.service() for servlet GridSubsetService threw exception
    javax.xml.transform.TransformerFactoryConfigurationError: Provider net.sf.saxon.TransformerFactoryImpl not found</pre>
   <p>If you find these, the likely problem is that another webapp running in the same Tomcat container has set the XSLT parser with      javax.xml.transform.TransformerFactory, which is global for the JVM. The above example shows that the Saxon parser has been set, but is not being found by the TDS. We saw this happening with the OOSTethys webapp. </p>
-  <p>The solution is to move the other webapp to its own Tomcat instance, or to move the required jar (eg saxon.jar) into Tomcat's lib directory, where it is available to all webapps. TDS does very simple XSLT to create its web forms, so its likely that it can work with any decent parser. By default it uses the JDK's built in parser.</p>
+  <p>The solution is to move the other webapp to its own Tomcat instance, or to move the required jar (eg saxon.jar) into Tomcat's lib directory, where it is available to all webapps. TDS does very simple XSLT to create its web forms, so its likely that it can work with any decent XSLT library. By default it uses the JDK's built-in XSLT library.</p>
 </blockquote>
 <hr width="100%">
 
@@ -212,7 +212,7 @@ mkdir javaUtilPrefs/.systemPrefs
   <blockquote>
     <p>If you reload the <strong>thredds.war</strong> webapp enough times without restarting Tomcat, you will eventually run into "<strong>java.lang.OutOfMemoryError: PermGen space</strong>". This is a known bug in  JDK/Tomcat. The only thing to do is to stop and restart Tomcat. </p>
     <p>You can increase PermGen using this JVM option:     </p>
-    <p><strong>-XX:MaxPermSize=128m    </strong></p>
+    <p><strong>-XX:MaxPermSize=180m    </strong></p>
     <p>On
 the JDK1.6 -server JVM, the default seems to be 64m. However, with
 enough redeploys , you will eventually run out of PermGen space no
@@ -324,13 +324,11 @@ better to explicitly redeploy the application: </p>
   <hr>
   <p><strong>Q: <a name="log4jAppender"></a>What does this error mean: &quot;log4j:ERROR Attempted to append to closed appender named [foobar]&quot; ?</strong></p>
   <blockquote>
-    <p>The log4j.xml file has 2 loggers with the same name, that uses the appender foobar. You must delete one of the loggers.</p>
+    <p>The log4j.xml file has 2 loggers with the same name, that uses the appender &quot;foobar&quot;. You must delete one of the loggers.</p>
   </blockquote>
 <blockquote>&nbsp;</blockquote>
   <hr>
-  <h3></h3>
-<h3>&nbsp;</h3>
-<h3>Tomcat Resources</h3>
+  <h3>Tomcat Resources</h3>
 <ul>
     <li><a href="http://jakarta.apache.org/tomcat/faq/">Tomcat FAQ (Apache site)</a> </li>
     <li><a href="http://tomcat.apache.org/tomcat-5.5-doc/index.html">Tomcat 5.5 documentation</a></li>
@@ -340,7 +338,7 @@ better to explicitly redeploy the application: </p>
   <hr>
 <address>
 <img src="../images/thread.png" alt="THREDDS" height="108" width="110">
-  This document is maintained by Unidata and was last updated May 2010.
+  This document is maintained by Unidata and was last updated Dec 2010.
   Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.
 </address>
 </body>

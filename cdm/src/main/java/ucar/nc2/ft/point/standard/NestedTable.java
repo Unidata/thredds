@@ -242,6 +242,14 @@ public class NestedTable {
     public double getCoordValue(StructureData sdata) {
       return sdata.convertScalarDouble(axisName);
     }
+
+    public boolean isInt() {
+      return coordVar.getDataType().isIntegral();
+    }
+
+    public long getCoordValueLong(StructureData sdata) {
+      return sdata.convertScalarLong(axisName);
+    }
   }
 
   // knows how to get specific coordinate data from a table or its parents
@@ -267,6 +275,18 @@ public class NestedTable {
 
     public boolean isString() {
       return varTop.getDataType().isString();
+    }
+
+    public boolean isInt() {
+      return varTop.getDataType().isIntegral();
+    }
+
+    public long getCoordValueLong(StructureData sdata) {
+      try {
+        return varTop.readScalarLong();
+      } catch (IOException e) {
+        throw new RuntimeException(e.getMessage());
+      }
     }
 
     public String getCoordValueString(StructureData sdata) {
@@ -311,6 +331,15 @@ public class NestedTable {
       return m.getDataType().isString();
     }
 
+    public boolean isInt() {
+      StructureMembers.Member m = sdata.findMember(axisName);
+      return m.getDataType().isIntegral();
+    }
+
+    public long getCoordValueLong(StructureData sdata) {
+      return sdata.convertScalarLong(axisName);
+    }
+
     public boolean isMissing(StructureData sdata) {
       return false;
     }
@@ -331,6 +360,10 @@ public class NestedTable {
       return Double.parseDouble(value);
     }
 
+    public long getCoordValueLong(StructureData sdata) {
+      return Long.parseLong(value);
+    }
+
     public String getCoordValueString(StructureData sdata) {
       return value;
     }
@@ -343,6 +376,9 @@ public class NestedTable {
       return true;
     }
 
+    public boolean isInt() {
+      return false;
+    }
 
     public boolean isMissing(StructureData sdata) {
       return false;

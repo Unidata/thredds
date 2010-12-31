@@ -37,57 +37,62 @@ public class NcStreamIosp extends AbstractIOServiceProvider {
   //////////////////////////////////////////////////////////////////////
 
   public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
-    this.raf = raf;
-    raf.seek(0);
-    assert readAndTest(raf, NcStream.MAGIC_START);
+    try {
+      this.raf = raf;
+      raf.seek(0);
+      assert readAndTest(raf, NcStream.MAGIC_START);
 
-    // assume for the moment its always starts with one header message
-    assert readAndTest(raf, NcStream.MAGIC_HEADER);
+      // assume for the moment its always starts with one header message
+      assert readAndTest(raf, NcStream.MAGIC_HEADER);
 
-    int msize = readVInt(raf);
-    if (debug) System.out.printf("READ header len= %d%n", msize);
+      int msize = readVInt(raf);
+      if (debug) System.out.printf("READ header len= %d%n", msize);
 
-    byte[] m = new byte[msize];
-    raf.read(m);
-    NcStreamProto.Header proto = NcStreamProto.Header.parseFrom(m);
+      byte[] m = new byte[msize];
+      raf.read(m);
+      NcStreamProto.Header proto = NcStreamProto.Header.parseFrom(m);
 
-    NcStreamProto.Group root = proto.getRoot();
-    NcStream.readGroup(root, ncfile, ncfile.getRootGroup());
-    ncfile.finish();
+      NcStreamProto.Group root = proto.getRoot();
+      NcStream.readGroup(root, ncfile, ncfile.getRootGroup());
+      ncfile.finish();
 
-    // LOOK why doesnt this work ?
-    //CodedInputStream cis = CodedInputStream.newInstance(is);
-    //cis.setSizeLimit(msize);
-    //NcStreamProto.Stream proto = NcStreamProto.Stream.parseFrom(cis);
+      // LOOK why doesnt this work ?
+      //CodedInputStream cis = CodedInputStream.newInstance(is);
+      //cis.setSizeLimit(msize);
+      //NcStreamProto.Stream proto = NcStreamProto.Stream.parseFrom(cis);
 
-    while (!raf.isAtEndOfFile()) {
-      if (debug) System.out.printf("READ message at = %d%n", raf.getFilePointer());
-      byte[] b = new byte[4];
-      raf.read(b);
-      if (test(b, NcStream.MAGIC_END))
-        break;
-      else if (!test(b, NcStream.MAGIC_DATA))
-        throw new IllegalStateException("bad format");
+      while (!raf.isAtEndOfFile()) {
+        if (debug) System.out.printf("READ message at = %d%n", raf.getFilePointer());
+        byte[] b = new byte[4];
+        raf.read(b);
+        if (test(b, NcStream.MAGIC_END))
+          break;
+        else if (!test(b, NcStream.MAGIC_DATA))
+          throw new IllegalStateException("bad format");
 
-      int psize = readVInt(raf);
-      if (debug) System.out.println(" dproto len= " + psize);
-      byte[] dp = new byte[psize];
-      raf.read(dp);
-      NcStreamProto.Data dproto = NcStreamProto.Data.parseFrom(dp);
-      if (debug) System.out.println(" dproto = " + dproto);
+        int psize = readVInt(raf);
+        if (debug) System.out.println(" dproto len= " + psize);
+        byte[] dp = new byte[psize];
+        raf.read(dp);
+        NcStreamProto.Data dproto = NcStreamProto.Data.parseFrom(dp);
+        if (debug) System.out.println(" dproto = " + dproto);
 
-      int dsize = readVInt(raf);
-      if (debug) System.out.println(" data len= " + dsize);
+        int dsize = readVInt(raf);
+        if (debug) System.out.println(" data len= " + dsize);
 
-      DataSection dataSection = new DataSection();
-      dataSection.size = dsize;
-      dataSection.filePos = raf.getFilePointer();
-      dataSection.section = NcStream.decodeSection(dproto.getSection());
+        DataSection dataSection = new DataSection();
+        dataSection.size = dsize;
+        dataSection.filePos = raf.getFilePointer();
+        dataSection.section = NcStream.decodeSection(dproto.getSection());
 
-      Variable v = ncfile.getRootGroup().findVariable(dproto.getVarName());
-      v.setSPobject(dataSection);
+        Variable v = ncfile.getRootGroup().findVariable(dproto.getVarName());
+        v.setSPobject(dataSection);
 
-      raf.skipBytes(dsize);
+        raf.skipBytes(dsize);
+      }
+
+    } catch (Throwable t) {
+      throw new RuntimeException("NcStreamIosp: "+t.getMessage(), t);
     }
   }
 

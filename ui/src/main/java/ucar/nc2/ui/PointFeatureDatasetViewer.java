@@ -285,6 +285,22 @@ public class PointFeatureDatasetViewer extends JPanel {
     obsTable.saveState();
   }
 
+  public void showCollectionInfo(Formatter f) {
+    /* CollectionSpecParser sp = null;
+    CollectionManager cm = fmrc.getManager();
+    if (cm instanceof DatasetCollectionManager) {
+      sp = ((DatasetCollectionManager) cm).getCollectionSpecParser();
+    }
+    if (sp != null) {
+      infoTA.appendLine("CollectionSpecParser= "+sp);
+      File dir = new File(sp.getTopDir());
+      infoTA.appendLine(" topdir exists = = "+dir.exists());
+    }
+
+    infoTA.appendLine("CollectionManager= ");
+    infoTA.appendLine(cm.toString());   */ 
+  }
+
   public void setDataset(FeatureDatasetPoint dataset) {
     infoTA.clear();
     stnTable.setBeans(new ArrayList());

@@ -186,7 +186,7 @@ public class DefaultConvention extends CoordSysBuilder {
       if (result != null) return result;
 
       Variable v = (Variable) ve;
-      String vname = v.getName();
+      String vname = v.getShortName();
       String unit = v.getUnitsString();
       if (unit == null) unit = "";
       String desc = v.getDescription();

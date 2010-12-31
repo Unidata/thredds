@@ -613,8 +613,19 @@ public abstract class ArrayStructure extends Array {
     if (m.getDataType() == DataType.INT) return getScalarInt(recnum, m);
     if (m.getDataType() == DataType.SHORT) return (int) getScalarShort(recnum, m);
     if (m.getDataType() == DataType.BYTE) return (int) getScalarByte(recnum, m);
+    if (m.getDataType() == DataType.LONG) return (int) getScalarLong(recnum, m);
     Object o = getScalarObject(recnum, m);
     if (o instanceof Number) return ((Number) o).intValue();
+    throw new ForbiddenConversionException("Type is " + m.getDataType() + ", not convertible to int");
+  }
+
+  public long convertScalarLong(int recnum, StructureMembers.Member m) {
+    if (m.getDataType() == DataType.LONG) return getScalarLong(recnum, m);
+    if (m.getDataType() == DataType.INT) return (long) getScalarInt(recnum, m);
+    if (m.getDataType() == DataType.SHORT) return (long) getScalarShort(recnum, m);
+    if (m.getDataType() == DataType.BYTE) return (long) getScalarByte(recnum, m);
+    Object o = getScalarObject(recnum, m);
+    if (o instanceof Number) return ((Number) o).longValue();
     throw new ForbiddenConversionException("Type is " + m.getDataType() + ", not convertible to int");
   }
 

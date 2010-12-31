@@ -69,7 +69,7 @@ import java.net.URL;
  * grammer:
  * format = {field,}
  * field = endPos type
- * endPos = ending pos in the line, 0 based, exclusive, ie String.substring(start, end)
+ * endPos = ending pos in the line, 0 based, exclusive, ie [start, end)
  * type = i=integer, d=double, L=long else String
  * field[0] goes from [0, endPos[0])
  * field[i] goes from [endPos[i-1] to endPos[i])
@@ -148,6 +148,10 @@ public class TableParser {
     return fields.get(fldno);
   }
 
+  public int getNumberOfFields() {
+    return fields.size();
+  }
+
   public List<Record> readAllRecords(InputStream ios, int maxLines) throws IOException, NumberFormatException {
 
     List<Record> records = new ArrayList<Record>();
@@ -195,6 +199,14 @@ public class TableParser {
     }
 
     public Object parse(String line) throws NumberFormatException {
+      return parse(line, this.start, this.end);
+    }
+
+    public Object parse(String line, int offset) throws NumberFormatException {
+      return parse(line, this.start+offset, this.end+offset);      
+    }
+
+    private Object parse(String line, int start, int end) throws NumberFormatException {
       String svalue = (end > line.length()) ? line.substring(start) : line.substring(start, end);
       //System.out.printf("  [%d,%d) = %s %n",start, end, svalue);
 
@@ -275,13 +287,13 @@ public class TableParser {
   }
 
   ////////////////////////////////////////////////////////////////////////////////////
-  static String testName = "C:/data/station/adde/STNDB.TXT";
-  //static String testName = "M:/temp/STNDB.TXT";
-  static String testName2 = "http://localhost:8080/test/STNDB.TXT";
-  static String testName3 = "C:/dev/thredds/cdm/src/main/resources/resources/nj22/tables/nexrad.tbl";
+  static String testName = "/optional/nj22/tables/STNDB.TXT";
+  static String testName3 = "/resources/nj22/tables/nexrad.tbl";
 
   static public void main2(String[] args) throws IOException {
-    List recs = TableParser.readTable(testName3, "3,15,54,60d,67d,73d", 50000);
+    Class c = TableParser.class;
+    InputStream is = c.getResourceAsStream(testName3);
+    List recs = TableParser.readTable(is, "3,15,54,60d,67d,73d", 50000);
     for (int i = 0; i < recs.size(); i++) {
       Record record = (Record) recs.get(i);
       for (int j = 0; j < record.values.size(); j++) {
@@ -292,8 +304,18 @@ public class TableParser {
     }
   }
 
+  static String testRepeat = "C:\\data\\ghcnm\\ghcnm.v3.0.0-beta1.20101207.qae.dat";
+
   static public void main(String[] args) throws IOException {
-    System.out.printf("%s%n", new Integer(" "));
-    System.out.printf("%s%n", new Integer(""));
+    List recs = TableParser.readTable(testRepeat, "11L,15i,19,(24i,25,26,27)*10", 5);
+    //List recs = TableParser.readTable(testRepeat, "11L,15i,19,24i,25,26,27", 5);
+    for (int i = 0; i < recs.size(); i++) {
+      Record record = (Record) recs.get(i);
+      for (int j = 0; j < record.values.size(); j++) {
+        Object s = record.values.get(j);
+        System.out.print("; " + s.toString());
+      }
+      System.out.println();
+    }
   }
 }

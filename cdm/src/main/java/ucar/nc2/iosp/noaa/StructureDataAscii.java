@@ -11,7 +11,7 @@ import ucar.nc2.util.TableParser;
  * Time: 5:23:26 PM
  */
 public class StructureDataAscii extends StructureData {
-  private String line;
+  protected String line;
 
   public StructureDataAscii(StructureMembers members, String line) {
     super(members);
@@ -21,16 +21,34 @@ public class StructureDataAscii extends StructureData {
   @Override
   public Array getArray(StructureMembers.Member m) {
     TableParser.Field f = (TableParser.Field) m.getDataObject();
+
     if (m.getDataType() == DataType.STRING) {
       String result = (String) f.parse(line);
       return new ArrayObject(String.class, new int[] {},  new Object[] {result.trim()});
 
-    } else if (m.getDataType() == DataType.CHAR) {
-      String result = (String) f.parse(line);
-      return new ArrayChar(result);
+    } else if (m.getDataType() == DataType.SEQUENCE) {
+      return getArraySequence(m);
 
-    } else
-      return new ArrayScalar(f.parse(line));
+    } else if (!m.isScalar()) {
+      if (m.getDataType() == DataType.FLOAT) {
+        float[] ja = getJavaArrayFloat(m);
+        return Array.factory(DataType.FLOAT, m.getShape(), ja);
+
+      } else if (m.getDataType() == DataType.CHAR) {
+        char[] ja = getJavaArrayChar(m);
+        return Array.factory(DataType.CHAR, m.getShape(), ja);
+
+      } else if (m.getDataType() == DataType.BYTE) {
+        byte[] ja = getJavaArrayByte(m);
+        return Array.factory(DataType.BYTE, m.getShape(), ja);
+      }
+    }
+
+    Object result = f.parse(line);
+    if (m.getDataType() == DataType.CHAR)
+      return new ArrayChar((String) result);
+    else
+      return new ArrayScalar(result);
   }
 
   @Override
@@ -49,6 +67,12 @@ public class StructureDataAscii extends StructureData {
   public int convertScalarInt(StructureMembers.Member m) {
     TableParser.Field f = (TableParser.Field) m.getDataObject();
     return ((Number) f.parse(line)).intValue();
+  }
+
+  @Override
+  public long convertScalarLong(StructureMembers.Member m) {
+    TableParser.Field f = (TableParser.Field) m.getDataObject();
+    return ((Number) f.parse(line)).longValue();
   }
 
   @Override
@@ -71,7 +95,12 @@ public class StructureDataAscii extends StructureData {
 
   @Override
   public float[] getJavaArrayFloat(StructureMembers.Member m) {
-    return new float[0];  //To change body of implemented methods use File | Settings | File Templates.
+    int n = m.getSize();
+    float[] result = new float[n];
+    TableParser.Field f = (TableParser.Field) m.getDataObject();
+    for (int i=0; i<n; i++)
+      result[i] = (Float) f.parse(line, i*8);
+    return result;
   }
 
   @Override
@@ -82,7 +111,14 @@ public class StructureDataAscii extends StructureData {
 
   @Override
   public byte[] getJavaArrayByte(StructureMembers.Member m) {
-    return new byte[0];  //To change body of implemented methods use File | Settings | File Templates.
+    int n = m.getSize();
+    byte[] result = new byte[n];
+    TableParser.Field f = (TableParser.Field) m.getDataObject();
+    for (int i=0; i<n; i++) {
+      String s = (String) f.parse(line, i*8);
+      result[i] = (byte) s.charAt(0);
+    }
+    return result;
   }
 
   @Override
@@ -110,7 +146,8 @@ public class StructureDataAscii extends StructureData {
   @Override
   public long getScalarLong(StructureMembers.Member m) {
     TableParser.Field f = (TableParser.Field) m.getDataObject();
-    return (Long) f.parse(line);  }
+    return (Long) f.parse(line);
+  }
 
   @Override
   public long[] getJavaArrayLong(StructureMembers.Member m) {
@@ -126,9 +163,14 @@ public class StructureDataAscii extends StructureData {
 
   @Override
   public char[] getJavaArrayChar(StructureMembers.Member m) {
+    int n = m.getSize();
+    char[] result = new char[n];
     TableParser.Field f = (TableParser.Field) m.getDataObject();
-    String result = (String) f.parse(line);
-    return IospHelper.convertByteToChar(result.getBytes()); // kinda lame - well just convert back
+    for (int i=0; i<n; i++) {
+      String s = (String) f.parse(line, i*8);
+      result[i] = s.charAt(0);
+    }
+    return result;
   }
 
   @Override

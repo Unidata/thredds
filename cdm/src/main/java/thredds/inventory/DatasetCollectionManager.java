@@ -450,7 +450,7 @@ public class DatasetCollectionManager implements CollectionManager {
   }
 
   public boolean hasDateExtractor() {
-    return (dateExtractor != null);
+    return (dateExtractor != null) && !(dateExtractor instanceof DateExtractorNone);
   }
 
   protected void scan(java.util.Map<String, MFile> map, CancelTask cancelTask) throws IOException {

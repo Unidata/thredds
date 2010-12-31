@@ -26,40 +26,43 @@ dl {margin: 10px 5px 5px 15px;)
   <li>Download and install the latest version of Tomcat 6.</li>
   <li>In  $TOMCAT_HOME/bin
     <ol>
-      <li><a href="GettingStarted.html#makeSetenv">Create a setenv.sh</a> shell script, and set the Tomcat startup options</li>
-      <li>Call setenv.sh from startup.sh</li>
+      <li><a href="GettingStarted.html#makeSetenv">Create a setenv.sh</a> shell script, and set the Tomcat startup options, with max memory (1500m) for 32-bit systems, and 4096m or more for 64-bit systems:</li>
+      <ul>
+        <li>32-bit JVM: JAVA_OPTS=&quot;-Xmx1500m -Xms512m -XX:MaxPermSize=180m -server -Djava.awt.headless=true&quot;</li>
+        <li>64-bit JVM: JAVA_OPTS=&quot;-Xmx4096m -Xms512m -XX:MaxPermSize=180m -server -Djava.awt.headless=true&quot;</li>
+      </ul>
     </ol>
   </li>
   <li>Buy a real certificate
     from a certificate authority
-      <ol>
-      <li>Otherwise, <a href="BasicTomcatAndTDSSecurity.html#createCert">create a self-signed certificate</a> with <strong>$JAVA_HOME/bin//keytool -genkey -alias tomcat -keyalg RSA -keystore $TOMCAT_HOME/conf/keystore</strong></li>
-    </ol>
   </li>
+  <ol>
+    <li>Otherwise, <a href="BasicTomcatAndTDSSecurity.html#createCert">create a self-signed certificate</a> with <strong>$JAVA_HOME/bin//keytool -genkey -alias tomcat -keyalg RSA -keystore $TOMCAT_HOME/conf/keystore</strong></li>
+  </ol>
   <li>Modify  $TOMCAT_HOME/conf/server.xml
     <ol>
       <li><a href="BasicTomcatAndTDSSecurity.html#useDigest">Use digest</a> passwords by adding <b>&lt;Realm className=&quot;org.apache.catalina.realm.MemoryRealm&quot; 
       digest=&quot;SHA&quot; /&gt;</b> inside the Host element.</li>
       <li><a href="BasicTomcatAndTDSSecurity.html#enableSSL">Enable SSL</a> by uncommenting the <code><small>SSL Connector</small></code> listening on port 8443, and adding <b>keystoreFile=&quot;<strong>$TOMCAT_HOME/conf/keystore</strong>&quot;</b></li>
       <li><a href="../reference/Performance.html#enableCompression">Enable compression</a> by adding                <strong>compression=&quot;1000&quot;
-compressableMimeType=&quot;text/html,text/xml,text/plain,application/octet-stream&quot;</strong> /&gt; to 8080 Connector.</li>
+      compressableMimeType=&quot;text/html,text/xml,text/plain,application/octet-stream&quot;</strong> /&gt; to 8080 Connector.</li>
       <li><a href="TDSMonitoringAndDebugging.html#access">Enable access logging</a> by uncommenting the <code><small>AccessLogValve</small></code> and change the <em>prefix</em> and <em>suffix</em> and <em>pattern</em> attributes.</li>
     </ol>
-  </li>
+      </li>
   <li><a href="BasicTomcatAndTDSSecurity.html#makeDigest">Create a  password digest</a> for yourself with <strong>$TOMCAT_HOME/bin/digest.sh -a SHA yrPassword</strong></li>
   <li>Modify  $TOMCAT_HOME/conf/tomcat-users.xml
     <ol>
       <li>Add roles &quot;manager&quot;, &quot;tdsConfig&quot; and &quot;tdsMonitor&quot;.</li>
       <li><a href="BasicTomcatAndTDSSecurity.html#grantAccess">Add yourself as a user</a> with those three roles, using your password digest.</li>
     </ol>
-  </li>
+      </li>
   <li>Modify  $TOMCAT_HOME//webapps/manager/WEB-INF/web.xml
     <ol>
       <li>Make sure the manager is only<a href="BasicTomcatAndTDSSecurity.html#managerSSL"> run under SSL</a> by adding     <b> &lt;user-data-constraint&gt;
-       &lt;transport-guarantee&gt;CONFIDENTIAL&lt;/transport-guarantee&gt;
-    &lt;/user-data-constraint&gt;</b></li>
+        &lt;transport-guarantee&gt;CONFIDENTIAL&lt;/transport-guarantee&gt;
+      &lt;/user-data-constraint&gt;</b></li>
     </ol>
-  </li>
+      </li>
   <li><a href="AdditionalSecurityConfiguration.html#removeApps">Remove unwanted applications</a></li>
 </ol>
 <h2>TDS Install</h2>

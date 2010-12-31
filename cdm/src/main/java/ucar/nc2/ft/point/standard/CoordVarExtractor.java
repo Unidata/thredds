@@ -36,7 +36,7 @@ package ucar.nc2.ft.point.standard;
 import ucar.ma2.StructureData;
 
 /**
- * Abstract superclass for extracting coordinat values from nested tables.
+ * Abstract superclass for extracting coordinate values from nested tables.
  *
  * @author caron
  * @since Jan 26, 2009
@@ -53,13 +53,15 @@ public abstract class CoordVarExtractor {
 
   public abstract double getCoordValue(StructureData sdata);
 
+  public abstract long getCoordValueLong(StructureData sdata);
+
   public abstract String getCoordValueString(StructureData sdata);
 
   public abstract String getUnitsString();
 
   public abstract boolean isString();
 
-
+  public abstract boolean isInt();
 
   public double getCoordValue(StructureData[] tableData) {
     return getCoordValue(tableData[nestingLevel]);
@@ -71,6 +73,11 @@ public abstract class CoordVarExtractor {
 
   public String getCoordValueAsString(StructureData sdata) {
     if (isString()) return getCoordValueString(sdata);
+    if (isInt()) {
+      long val = getCoordValueLong( sdata);
+      return Long.toString(val);
+    }
+
     double dval = getCoordValue( sdata);
     return Double.toString(dval);
   }

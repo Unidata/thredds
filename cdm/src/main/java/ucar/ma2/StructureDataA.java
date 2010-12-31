@@ -64,6 +64,10 @@ public class StructureDataA extends StructureData {
     return sa.convertScalarInt(recno, m);
   }
 
+  public long convertScalarLong(StructureMembers.Member m) {
+    return sa.convertScalarLong(recno, m);
+  }
+
   public float convertScalarFloat(StructureMembers.Member m) {
     return sa.convertScalarFloat(recno, m);
   }

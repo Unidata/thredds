@@ -353,7 +353,6 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
     // look for ones that dont use Convention attribute, in order added.
     // call isMine() using reflection.
     if (convClass == null) {
-      convName = null;
       for (Convention conv : conventionList) {
         Class c = conv.convClass;
         Method m;
@@ -396,6 +395,8 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
 
     if (convName == null)
       builder.addUserAdvice("No 'Conventions' global attribute.\n");
+    else if (usingDefault)
+      builder.addUserAdvice("No CoordSysBuilder is defined for Conventions= '"+convName+"'\n");
     else
       builder.setConventionUsed(convClass.getName());
 

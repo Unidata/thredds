@@ -60,95 +60,103 @@ public class StructureDataComposite extends StructureData {
 
   public Array getArray(StructureMembers.Member m) {
     StructureData sdata = proxy.get(m);
-    return sdata.getArray(m);
+    return sdata.getArray(m.getName());
   }
 
   public float convertScalarFloat(StructureMembers.Member m) {
-    return proxy.get(m).convertScalarFloat(m);
+    return proxy.get(m).convertScalarFloat(m.getName());
   }
 
   public double convertScalarDouble(StructureMembers.Member m) {
-    return proxy.get(m).convertScalarDouble(m);
+    return proxy.get(m).convertScalarDouble(m.getName());
   }
 
   public int convertScalarInt(StructureMembers.Member m) {
-    return proxy.get(m).convertScalarInt(m);
+    return proxy.get(m).convertScalarInt(m.getName());
+  }
+
+  public long convertScalarLong(StructureMembers.Member m) {
+    return proxy.get(m).convertScalarLong(m.getName());
   }
 
   public double getScalarDouble(StructureMembers.Member m) {
-    return proxy.get(m).getScalarDouble(m);
+    return proxy.get(m).getScalarDouble(m.getName());
   }
 
   public double[] getJavaArrayDouble(StructureMembers.Member m) {
-    return proxy.get(m).getJavaArrayDouble(m);
+    return proxy.get(m).getJavaArrayDouble(m.getName());
   }
 
   public float getScalarFloat(StructureMembers.Member m) {
-    return proxy.get(m).getScalarFloat(m);
+    return proxy.get(m).getScalarFloat(m.getName());
   }
 
   public float[] getJavaArrayFloat(StructureMembers.Member m) {
-    return proxy.get(m).getJavaArrayFloat(m);
+    return proxy.get(m).getJavaArrayFloat(m.getName());
   }
 
   public byte getScalarByte(StructureMembers.Member m) {
-    return proxy.get(m).getScalarByte(m);
+    return proxy.get(m).getScalarByte(m.getName());
   }
 
   public byte[] getJavaArrayByte(StructureMembers.Member m) {
-    return proxy.get(m).getJavaArrayByte(m);
+    return proxy.get(m).getJavaArrayByte(m.getName());
   }
 
   public int getScalarInt(StructureMembers.Member m) {
-    return proxy.get(m).getScalarInt(m);
+    return proxy.get(m).getScalarInt(m.getName());
   }
 
   public int[] getJavaArrayInt(StructureMembers.Member m) {
-    return proxy.get(m).getJavaArrayInt(m);
+    return proxy.get(m).getJavaArrayInt(m.getName());
   }
 
   public short getScalarShort(StructureMembers.Member m) {
-    return proxy.get(m).getScalarShort(m);
+    return proxy.get(m).getScalarShort(m.getName());
   }
 
   public short[] getJavaArrayShort(StructureMembers.Member m) {
-    return proxy.get(m).getJavaArrayShort(m);
+    return proxy.get(m).getJavaArrayShort(m.getName());
   }
 
   public long getScalarLong(StructureMembers.Member m) {
-    return proxy.get(m).getScalarLong(m);
+    return proxy.get(m).getScalarLong(m.getName());
   }
 
   public long[] getJavaArrayLong(StructureMembers.Member m) {
-    return proxy.get(m).getJavaArrayLong(m);
+    return proxy.get(m).getJavaArrayLong(m.getName());
   }
 
   public char getScalarChar(StructureMembers.Member m) {
-    return proxy.get(m).getScalarChar(m);
+    return proxy.get(m).getScalarChar(m.getName());
   }
 
   public char[] getJavaArrayChar(StructureMembers.Member m) {
-    return proxy.get(m).getJavaArrayChar(m);
+    return proxy.get(m).getJavaArrayChar(m.getName());
   }
 
   public String getScalarString(StructureMembers.Member m) {
-    return proxy.get(m).getScalarString(m);
+    return proxy.get(m).getScalarString(m.getName());
   }
 
   public String[] getJavaArrayString(StructureMembers.Member m) {
-    return proxy.get(m).getJavaArrayString(m);
+    return proxy.get(m).getJavaArrayString(m.getName());
   }
 
   public StructureData getScalarStructure(StructureMembers.Member m) {
-    return proxy.get(m).getScalarStructure(m);
+    return proxy.get(m).getScalarStructure(m.getName());
   }
 
   public ArrayStructure getArrayStructure(StructureMembers.Member m) {
-    return proxy.get(m).getArrayStructure(m);
+    return proxy.get(m).getArrayStructure(m.getName());
   }
 
   public ArraySequence getArraySequence(StructureMembers.Member m) {
-    return proxy.get(m).getArraySequence(m);
+    return proxy.get(m).getArraySequence(m.getName());
   }
+
+  public Object getScalarObject( StructureMembers.Member m) {
+    return proxy.get(m).getScalarObject(m.getName());
+  }  
 
 }

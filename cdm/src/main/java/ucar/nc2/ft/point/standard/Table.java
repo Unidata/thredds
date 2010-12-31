@@ -220,7 +220,7 @@ public abstract class Table {
   ///////////////////////////////////////////////////////
 
   /**
-   * A Structure or PsuedoStructure.
+   * A Structure, PsuedoStructure, or Sequence.
    * <p/>
    * Structure: defined by config.structName.
    * if config.vars if not null restricts to list of vars, must be members.
@@ -965,7 +965,7 @@ public abstract class Table {
       super(ds, config);
       this.nestedTableName = config.nestedTableName;
       struct = (Structure) ds.findVariable(config.structName);
-      assert (struct != null);
+      assert (struct != null) : config.structName;
 
       for (Variable v : struct.getVariables())
         cols.add(v);

@@ -3,7 +3,13 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Changes in version 4.2:
- 18: (2011-12-23)
+ 19: (2011-01-xx)
+  TableAnalyser CdmDirect added
+  StructureData.convertScalarLong() added
+  StructureDataComposite use member lookup by name (!)
+  NCdumpW.printArray() had ArrayStructure before ArraySequence (!)
+  DefaultConventions uses short name
+ 18: (2010-12-23)
   N4: vlen not setting byteOrder
   ncss bug when time subsetting FMRC datasets - time_run axis was not getting subsetted.
   MetadataManager.closeAll() bug

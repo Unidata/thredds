@@ -3,11 +3,7 @@ package ucar.ma2;
 import net.jcip.annotations.Immutable;
 
 /**
- * Created by IntelliJ IDEA.
- * User: caron
- * Date: Dec 8, 2010
- * Time: 7:34:23 PM
- * To change this template use File | Settings | File Templates.
+ * Helper class for StructureDataAscii
  */
 @Immutable
 public class ArrayScalar extends Array {

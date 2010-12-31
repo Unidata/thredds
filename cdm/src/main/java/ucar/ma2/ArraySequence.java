@@ -52,6 +52,12 @@ public class ArraySequence extends ArrayStructure {
     super(sm, shape);
   }
 
+  /**
+   * Constructor
+   * @param members the members
+   * @param iter the iterator
+   * @param nelems iterator count, may be missing (<0)
+   */
   public ArraySequence(StructureMembers members, StructureDataIterator iter, int nelems) {
     super(members, new int[] {0});
     this.iter = iter;

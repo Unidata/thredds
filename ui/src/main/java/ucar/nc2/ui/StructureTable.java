@@ -283,6 +283,9 @@ public class StructureTable extends JPanel {
     public void actionPerformed(java.awt.event.ActionEvent e) {
       StructureData sd = getSelectedStructureData();
       StructureMembers.Member m = sd.findMember( s.getShortName());
+      if (m == null)
+       throw new IllegalStateException("cant find member = "+ s.getShortName());
+
       if (m.getDataType() == DataType.STRUCTURE) {
         ArrayStructure as = sd.getArrayStructure( m);
         dataTable.setStructureData( as);

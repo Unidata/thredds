@@ -87,14 +87,22 @@ public class TimedCollection {
       datasets.add(new Dataset(f));
 
     if (manager.hasDateExtractor()) {
-      for (int i = 0; i < datasets.size() - 1; i++) {
-        Dataset d1 = (Dataset) datasets.get(i);
-        Dataset d2 = (Dataset) datasets.get(i + 1);
-        d1.setDateRange(new DateRange(d1.start, d2.start));
-        if (i == datasets.size() - 2) // last one
-          d2.setDateRange(new DateRange(d2.start, d1.getDateRange().getDuration()));
-      }
-      if (datasets.size() > 0) {
+
+      if (datasets.size() == 1) {
+        Dataset ds = (Dataset) datasets.get(0);
+        if (ds.start != null)
+          dateRange = new DateRange(ds.start, ds.start); // LOOK ??
+
+      } else if (datasets.size() > 1) {
+
+        for (int i = 0; i < datasets.size() - 1; i++) {
+          Dataset d1 = (Dataset) datasets.get(i);
+          Dataset d2 = (Dataset) datasets.get(i + 1);
+          d1.setDateRange(new DateRange(d1.start, d2.start));
+          if (i == datasets.size() - 2) // last one
+            d2.setDateRange(new DateRange(d2.start, d1.getDateRange().getDuration()));
+        }
+
         Dataset first = (Dataset) datasets.get(0);
         Dataset last = (Dataset) datasets.get(datasets.size() - 1);
         dateRange = new DateRange(first.getDateRange().getStart().getDate(), last.getDateRange().getEnd().getDate());

@@ -58,6 +58,7 @@ import java.lang.reflect.Method;
  * <p> All point datasets are going through PointDatasetStandardFactory, which uses TableAnalyzer to deal
  * with specific dataset conventions.
  *
+ * @see FeatureDatasetFactory
  * @author caron
  * @since Mar 19, 2008
  */

@@ -41,7 +41,7 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
     try {
       fd = (FeatureDatasetPoint) CompositeDatasetFactory.factory(name, featureType, dcm, errlog);
     } catch (Exception e) {
-      throw new RuntimeException(errlog.toString());
+      throw new RuntimeException("InvDatasetFcPoint", e);
     }
 
     this.wantDatasets = config.pointConfig.datasets;

@@ -1,5 +1,6 @@
 package ucar.nc2.iosp.noaa;
 
+import com.google.protobuf.InvalidProtocolBufferException;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
@@ -7,14 +8,11 @@ import ucar.nc2.constants.CF;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.stream.NcStream;
-import ucar.nc2.stream.NcStreamWriter;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.TableParser;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.*;
-import java.nio.channels.Channels;
-import java.nio.channels.WritableByteChannel;
 import java.util.*;
 
 /**
@@ -355,10 +353,10 @@ public class Ghcnm extends AbstractIOServiceProvider {
   */
 
 
-  private static final String RECORD = "data";
+  private static final String RECORD = "all_data";
   private static final String DIM_NAME = "month";
   private static final String STNID = "stnid";
-  private static final String WMO = "wmo";
+  // private static final String WMO = "wmo";
   private static final String YEAR = "year";
   private static final String VALUE = "value";
   private static final String DMFLAG = "dm";
@@ -385,19 +383,16 @@ public class Ghcnm extends AbstractIOServiceProvider {
   private static final String STN_DATA = "stn_data";
 
   private NetcdfFile ncfile;
-  private RandomAccessFile stnRaf, idxRaf;
+  private RandomAccessFile stnRaf;
 
   public void close() throws java.io.IOException {
     if (raf != null)
       raf.close();
     if (stnRaf != null)
       stnRaf.close();
-    if (idxRaf != null)
-      idxRaf.close();
 
     raf = null;
     stnRaf = null;
-    idxRaf = null;
   }
 
   public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
@@ -410,17 +405,20 @@ public class Ghcnm extends AbstractIOServiceProvider {
     // did the index file get passed in ?
     boolean isIndexFile = isValidFile(raf);
     if (isIndexFile) {
-      this.idxRaf = raf;
       // must be in the same directory
+      assert new File(base+".dat").exists();
+      assert new File(base+".inv").exists();
+
       this.raf = new RandomAccessFile(base+".dat", "r");
       this.stnRaf = new RandomAccessFile(base+".inv", "r");
+      readIndex(raf.getLocation());
+      raf.close();
 
-    } else {
+    } else { // must be the data file, we will write an index LOOK check for index, check for inv file
       this.raf = raf;
       this.stnRaf = new RandomAccessFile(base+".inv", "r");
 
       makeIndex(base+".ncsx");
-
     }
 
     /*
@@ -437,7 +435,7 @@ public class Ghcnm extends AbstractIOServiceProvider {
               digits 9-11="000".
      */
 
-    TableParser parser = new TableParser("11L,15i,19,24i,25,26,27");
+    TableParser dataParser = new TableParser("11L,15i,19,24i,25,26,27");
     Structure dataSeq = new Sequence(ncfile, null, null, RECORD);
     ncfile.addVariable(null, dataSeq);
     ncfile.addDimension(null, new Dimension(DIM_NAME, 12));
@@ -447,20 +445,20 @@ public class Ghcnm extends AbstractIOServiceProvider {
     makeMember(dataSeq, YEAR, DataType.INT, null, "year of the station record", null, null, null);
     v = makeMember(dataSeq, VALUE, DataType.FLOAT, DIM_NAME, "monthly mean temperature", "Celsius", null, null);
     v.addAttribute(new Attribute(CF.MISSING_VALUE, -9999));
-    parser.getField(3).setScale(.01f);
-    //v.addAttribute(new Attribute(CF.SCALE_FACTOR, .01f));
+    dataParser.getField(3).setScale(.01f);
     makeMember(dataSeq, DMFLAG, DataType.CHAR, DIM_NAME, "data management flag", null, null, null);
     makeMember(dataSeq, QCFLAG, DataType.CHAR, DIM_NAME, "quality control flag", null, null, null);
     makeMember(dataSeq, DSFLAG, DataType.CHAR, DIM_NAME, "data source flag", null, null, null);
 
     StructureMembers dataSm = dataSeq.makeStructureMembers();
-    dataSm.findMember(STNID).setDataObject(parser.getField(0));
-    dataSm.findMember(YEAR).setDataObject(parser.getField(1));
-    dataSm.findMember(VALUE).setDataObject(parser.getField(3));
-    dataSm.findMember(DMFLAG).setDataObject(parser.getField(4));
-    dataSm.findMember(QCFLAG).setDataObject(parser.getField(5));
-    dataSm.findMember(DSFLAG).setDataObject(parser.getField(6));
+    dataSm.findMember(STNID).setDataObject(dataParser.getField(0));
+    dataSm.findMember(YEAR).setDataObject(dataParser.getField(1));
+    dataSm.findMember(VALUE).setDataObject(dataParser.getField(3));
+    dataSm.findMember(DMFLAG).setDataObject(dataParser.getField(4));
+    dataSm.findMember(QCFLAG).setDataObject(dataParser.getField(5));
+    dataSm.findMember(DSFLAG).setDataObject(dataParser.getField(6));
     dataSeq.setSPobject(new Vinfo(this.raf, dataSm));
+    stnIdFromData = dataParser.getField(0);
 
     /*
        ID                 1-11        Integer
@@ -481,22 +479,24 @@ public class Ghcnm extends AbstractIOServiceProvider {
        POPCSS            107-107      Character
       */
 
-    parser = new TableParser("11L,20d,30d,37d,68,73i,74,79i,81,83,85,87i,88,90i,106,107");
+    TableParser stnParser = new TableParser("11L,20d,30d,37d,68,73i,74,79i,81,83,85,87i,88,90i,106,107");
     Structure stnSeq = new Sequence(ncfile, null, null, STNS);
     ncfile.addVariable(null, stnSeq);
 
-    makeMember(stnSeq, STNID, DataType.LONG, null, "station stnId", null, null, null);
+    v = makeMember(stnSeq, STNID, DataType.LONG, null, "station id", null, null, null);
+    v.addAttribute(new Attribute(CF.STANDARD_NAME, CF.STATION_ID));
     makeMember(stnSeq, LAT, DataType.FLOAT, null, "latitude", "degrees_north", null, null);
     makeMember(stnSeq, LON, DataType.FLOAT, null, "longitude", "degrees_east", null, null);
     makeMember(stnSeq, STELEV, DataType.FLOAT, null, "elevation", "m", null, null);
-    makeMember(stnSeq, NAME, DataType.STRING, null, "station name", null, null, null);
+    v = makeMember(stnSeq, NAME, DataType.STRING, null, "station name", null, null, null);
+    v.addAttribute(new Attribute(CF.STANDARD_NAME, CF.STATION_DESC));
     makeMember(stnSeq, GRELEV, DataType.INT, null, "elevation estimated from gridded digital terrain data", "m", null, null);
     makeMember(stnSeq, POPCLS, DataType.CHAR, null, "population class", null, null, null);
     v = makeMember(stnSeq, POPSIZ, DataType.INT, null, "population of the city or town the station is located in", "thousands of persons", null, null);
     v.addAttribute(new Attribute(CF.MISSING_VALUE, -9));
-    makeMember(stnSeq, TOPO, DataType.CHAR, "2", "type of topography in the environment surrounding the station", null, null, null);
-    makeMember(stnSeq, STVEG, DataType.CHAR, "2", "type of vegetation in environment of station", null, null, null);
-    makeMember(stnSeq, STLOC, DataType.CHAR, "2", "station is near lake or ocean", null, null, null);
+    makeMember(stnSeq, TOPO, DataType.STRING, null, "type of topography in the environment surrounding the station", null, null, null);
+    makeMember(stnSeq, STVEG, DataType.STRING, null, "type of vegetation in environment of station", null, null, null);
+    makeMember(stnSeq, STLOC, DataType.STRING, null, "station is near lake or ocean", null, null, null);
     v = makeMember(stnSeq, OCNDIS, DataType.INT, null, "distance to nearest ocean/lake", "km", null, null);
     v.addAttribute(new Attribute(CF.MISSING_VALUE, -9));
     makeMember(stnSeq, AIRSTN, DataType.CHAR, null, "airport station indicator", null, null, null);
@@ -505,32 +505,44 @@ public class Ghcnm extends AbstractIOServiceProvider {
     makeMember(stnSeq, GRVEG, DataType.STRING, null, "vegetation type at nearest 0.5 deg x 0.5 deg gridded data point of vegetation dataset", null, null, null);
     makeMember(stnSeq, POPCSS, DataType.CHAR, null, "population class as determined by satellite night lights", null, null, null);
 
+    // nested sequence - just the data for this station
+    Structure nestedSeq = new Sequence(ncfile, null, stnSeq, STN_DATA);
+    stnSeq.addMemberVariable(nestedSeq);
+
+    v = makeMember(nestedSeq, YEAR, DataType.INT, null, "year", null, null, null);
+    v.addAttribute(new Attribute(CF.UNITS, "years since 0000-00-00T00.00"));
+    v = makeMember(nestedSeq, VALUE, DataType.FLOAT, DIM_NAME, "monthly mean temperature", "Celsius", null, null);
+    v.addAttribute(new Attribute(CF.MISSING_VALUE, -9999));
+    dataParser.getField(3).setScale(.01f);
+    makeMember(nestedSeq, DMFLAG, DataType.CHAR, DIM_NAME, "data management flag", null, null, null);
+    makeMember(nestedSeq, QCFLAG, DataType.CHAR, DIM_NAME, "quality control flag", null, null, null);
+    makeMember(nestedSeq, DSFLAG, DataType.CHAR, DIM_NAME, "data source flag", null, null, null);
+
+    StructureMembers nestedSm = nestedSeq.makeStructureMembers();
+    nestedSm.findMember(YEAR).setDataObject(dataParser.getField(1));
+    nestedSm.findMember(VALUE).setDataObject(dataParser.getField(3));
+    nestedSm.findMember(DMFLAG).setDataObject(dataParser.getField(4));
+    nestedSm.findMember(QCFLAG).setDataObject(dataParser.getField(5));
+    nestedSm.findMember(DSFLAG).setDataObject(dataParser.getField(6));
+    nestedSeq.setSPobject(new Vinfo(this.raf, nestedSm));
+    stnDataMembers = nestedSm;
+
+    // finish the stn sequence
     StructureMembers stnSm = stnSeq.makeStructureMembers();
     int count = 0;
+    int n = stnParser.getNumberOfFields();
     for (StructureMembers.Member m : stnSm.getMembers()) {
-      m.setDataObject(parser.getField(count++));
+      if (count < n)
+        m.setDataObject(stnParser.getField(count++));
     }
     stnSeq.setSPobject(new Vinfo(stnRaf, stnSm));
 
-    /* Structure nestedSeq = new Sequence(ncfile, null, null, STN_DATA);
-    stnSeq.addMemberVariable(nestedSeq);
-
-    makeMember(nestedSeq, STNID, DataType.LONG, null, "station stnId", null, null, null);
-    makeMember(nestedSeq, YEAR, DataType.INT, null, "year of the station record", null, null, null);
-    v = makeMember(nestedSeq, VALUE, DataType.FLOAT, DIM_NAME, "monthly mean temperature", "Celsius", null, null);
-    v.addAttribute(new Attribute(CF.MISSING_VALUE, -9999));
-    parser.getField(3).setScale(.01f);
-    //v.addAttribute(new Attribute(CF.SCALE_FACTOR, .01f));
-    makeMember(nestedSeq, DMFLAG, DataType.CHAR, DIM_NAME, "data management flag", null, null, null);
-    makeMember(nestedSeq, QCFLAG, DataType.CHAR, DIM_NAME, "quality control flag", null, null, null);
-    makeMember(nestedSeq, DSFLAG, DataType.CHAR, DIM_NAME, "data source flag", null, null, null);   */
-
-
+    // global attribites
     ncfile.addAttribute(null, new Attribute("title", "Version 3 of the GHCN-Monthly dataset of land surface mean temperatures"));
-    ncfile.addAttribute(null, new Attribute("Conventions", "CF-1.6"));
+    ncfile.addAttribute(null, new Attribute("Conventions", "CDM-direct"));
+    ncfile.addAttribute(null, new Attribute("CF:featureType", "timeSeries"));
     ncfile.addAttribute(null, new Attribute("see", "http://www.ncdc.noaa.gov/ghcnm, ftp://ftp.ncdc.noaa.gov/pub/data/ghcn/v3"));
     ncfile.finish();
-
   }
 
   private Variable makeMember(Structure s, String shortName, DataType dataType, String dims, String longName, String units, String cfName,
@@ -567,30 +579,29 @@ public class Ghcnm extends AbstractIOServiceProvider {
   ////////////////////////////////////////////////////////////////////////////////////////////
 
   private static String MAGIC_START = "GhncmIndex";
+  private HashMap<Long, StationIndex> map = new HashMap<Long, StationIndex>(10000);
+  private TableParser.Field stnIdFromData;
+  private StructureMembers stnDataMembers;
 
-  private void writeIndex(String indexFilename) throws IOException {
-    FileOutputStream fout = new FileOutputStream(indexFilename);
-    WritableByteChannel wbc = Channels.newChannel(fout);
-    NcStreamWriter ncWriter = new NcStreamWriter(ncfile, indexFilename);
-    ncWriter.sendStart(wbc);
-    ncWriter.sendHeader(wbc);
+  private void readIndex(String indexFilename) throws IOException {
+    FileInputStream fin = new FileInputStream(indexFilename);
 
-    int count = 0, total = 0;
-    Sequence seq = (Sequence) ncfile.findVariable(STNS);
-    StructureDataIterator iter = seq.getStructureIterator(-1);
-    while (iter.hasNext()) {
-      count++;
-      StructureData sdata = iter.next();
-      total += ncWriter.sendData(wbc, sdata);
+    assert NcStream.readAndTest(fin, MAGIC_START.getBytes("UTF-8"));
+    int count = NcStream.readVInt(fin);
+
+    for (int i=0; i<count; i++) {
+      int size = NcStream.readVInt(fin);
+      byte[] pb = new byte[size];
+      NcStream.readFully(fin, pb);
+      StationIndex si = decodeStationIndex(pb);
+      map.put(si.stnId, si);
     }
-    System.out.printf("writeIndex stns=%d bytes=%d%n",count, total);
-    ncWriter.sendEnd(wbc);
-    wbc.close();
+    fin.close();
+
+    System.out.println(" read index map size=" + map.values().size());
   }
 
   private void makeIndex(String indexFilename) throws IOException {
-    HashMap<Long, StationIndex> map = new HashMap<Long, StationIndex>(10000);
-
     // get map of Stations
     Sequence stnSeq = (Sequence) ncfile.findVariable(STNS);
     Vinfo stnInfo = (Vinfo) stnSeq.getSPobject();
@@ -659,7 +670,7 @@ public class Ghcnm extends AbstractIOServiceProvider {
     fout.write(pb); */
 
     for (StationIndex s : map.values()) {
-      byte[] pb = encodeStationProto(s);
+      byte[] pb = s.encodeStationProto();
       size += NcStream.writeVInt(fout, pb.length);
       size += pb.length;
       fout.write(pb);
@@ -669,24 +680,39 @@ public class Ghcnm extends AbstractIOServiceProvider {
     System.out.println(" index size=" + size);
   }
 
+  private StationIndex decodeStationIndex(byte[] data) throws InvalidProtocolBufferException {
+    ucar.nc2.iosp.noaa.GhcnmProto.StationIndex proto = GhcnmProto.StationIndex.parseFrom(data);
+    return new StationIndex(proto);
+  }
+
   private class StationIndex {
     long stnId;
     long stnPos; // file pos in inv file
     long dataPos; // file pos of first data line in the data file
     int dataCount; // number of data records
+
+    StationIndex() {
+    }
+
+    StationIndex(ucar.nc2.iosp.noaa.GhcnmProto.StationIndex proto) {
+      this.stnId = proto.getStnid();
+      this.stnPos = proto.getStnPos();
+      this.dataPos = proto.getDataPos();
+      this.dataCount = proto.getDataCount();
+    }
+
+    private byte[] encodeStationProto()  {
+      GhcnmProto.StationIndex.Builder builder = GhcnmProto.StationIndex.newBuilder();
+      builder.setStnid(stnId);
+      builder.setStnPos(stnPos);
+      builder.setDataPos(dataPos);
+      builder.setDataCount(dataCount);
+      ucar.nc2.iosp.noaa.GhcnmProto.StationIndex proto =  builder.build();
+      return proto.toByteArray();
+    }
   }
 
-  private byte[] encodeStationProto(StationIndex s)  {
-    GhcnmProto.StationIndex.Builder builder = GhcnmProto.StationIndex.newBuilder();
-    builder.setStnid(s.stnId);
-    builder.setStnPos(s.stnPos);
-    builder.setDataPos(s.dataPos);
-    builder.setDataCount(s.dataCount);
-    ucar.nc2.iosp.noaa.GhcnmProto.StationIndex proto =  builder.build();
-    return proto.toByteArray();
-  }
-
-  private byte[] encodeStationListProto(Collection<StationIndex> stns)  {
+  /* private byte[] encodeStationListProto(Collection<StationIndex> stns)  {
     GhcnmProto.StationIndexList.Builder listBuilder = GhcnmProto.StationIndexList.newBuilder();
     for (StationIndex s : stns) {
       GhcnmProto.StationIndex.Builder builder = GhcnmProto.StationIndex.newBuilder();
@@ -697,7 +723,7 @@ public class Ghcnm extends AbstractIOServiceProvider {
       listBuilder.addList(builder);
     }
     return listBuilder.build().toByteArray();
-  }
+  } */
 
   ////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -827,7 +853,7 @@ public class Ghcnm extends AbstractIOServiceProvider {
       //System.out.printf("%s%n", line);
       bytesRead = vinfo.raf.getFilePointer();
       recno++;
-      return new StructureDataAscii(vinfo.sm, line);
+      return new StructureDataAsciiGhcnm(vinfo.sm, line);
     }
 
     @Override
@@ -837,6 +863,71 @@ public class Ghcnm extends AbstractIOServiceProvider {
     @Override
     public int getCurrentRecno() {
       return recno - 1;
+    }
+  }
+
+  private class StnDataIter implements StructureDataIterator {
+    private StructureMembers sm;
+    private int countRead;
+    private StationIndex stationIndex;
+
+    StnDataIter(StructureMembers sm, StationIndex stationIndex) {
+      this.sm = sm;
+      this.stationIndex = stationIndex;
+      reset();
+    }
+
+    @Override
+    public StructureDataIterator reset() {
+      countRead = 0;
+      try {
+        raf.seek(stationIndex.dataPos);
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+      return this;
+    }
+
+    @Override
+    public boolean hasNext() throws IOException {
+      return (countRead < stationIndex.dataCount);
+    }
+
+    @Override
+    public StructureData next() throws IOException {
+      String line;
+      while (true) {
+        line = raf.readLine();
+        if (line == null) return null;
+        if (line.startsWith("#")) continue;
+        if (line.trim().length() == 0) continue;
+        break;
+      }
+      //System.out.printf("%s%n", line);
+      countRead++;
+      return new StructureDataAscii(sm, line);
+    }
+
+    @Override
+    public void setBufferSize(int bytes) {
+    }
+
+    @Override
+    public int getCurrentRecno() {
+      return countRead - 1;
+    }
+  }
+
+  private class StructureDataAsciiGhcnm extends StructureDataAscii {
+    public StructureDataAsciiGhcnm(StructureMembers members, String line) {
+      super(members, line);
+    }
+
+    @Override
+    public ArraySequence getArraySequence(StructureMembers.Member m) {
+      Long stnId = (Long) stnIdFromData.parse(line); // extract the station id
+      StationIndex si = map.get(stnId); // find its index
+      return new ArraySequence(stnDataMembers, new StnDataIter(stnDataMembers, si), -1);
     }
   }
 

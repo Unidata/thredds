@@ -104,6 +104,10 @@ public class StructureDataW extends StructureData {
     return getScalarInt(m);
   }
 
+  public long convertScalarLong(StructureMembers.Member m) {
+    return getScalarLong(m);
+  }
+
   /////////////////////////////////////////////////////////////////////////////////////////////
 
   /**
@@ -268,6 +272,8 @@ public class StructureDataW extends StructureData {
   public String getScalarString(StructureMembers.Member m) {
     if (m.getDataType() == DataType.STRING) {
       Array data = getArray(m);
+      if (data == null)
+        data = getArray(m);
       return (String) data.getObject(0);
     } else {
       char[] ba = getJavaArrayChar(m);
@@ -335,6 +341,5 @@ public class StructureDataW extends StructureData {
     }
 
   }
-
 
 }

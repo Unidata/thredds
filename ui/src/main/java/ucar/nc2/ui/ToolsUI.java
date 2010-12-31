@@ -4398,6 +4398,18 @@ public class ToolsUI extends JPanel {
       });
       buttPanel.add(infoButton);
 
+      AbstractButton collectionButton = BAMutil.makeButtcon("Information", "Collection Parsing Info", false);
+      collectionButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          Formatter f = new Formatter();
+          pfViewer.showCollectionInfo(f);
+          detailTA.setText(f.toString());
+          detailTA.gotoTop();
+          detailWindow.show();
+        }
+      });
+      buttPanel.add(collectionButton);
+
       AbstractButton xmlButton = BAMutil.makeButtcon("XML", "pointConfig.xml", false);
       xmlButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {

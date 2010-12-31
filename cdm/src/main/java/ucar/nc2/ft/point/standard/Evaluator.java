@@ -111,6 +111,12 @@ public class Evaluator {
       if ((haveValue != null) && haveValue.equals(attValue))
         return v;
     }
+    for (Variable v : ds.getVariables()) {
+      if (v instanceof Structure) {
+        Variable vn = getVariableWithAttribute((Structure)v, attName, attValue);
+        if (null != vn) return vn;
+      }
+    }
     return null;
   }
 
@@ -133,6 +139,15 @@ public class Evaluator {
       Attribute att = v.findAttributeIgnoreCase(attName);
       if ((att != null) && att.getStringValue().equals(attValue))
         return v.getShortName();
+    }
+    return null;
+  }
+
+  static public Variable getVariableWithAttribute(Structure struct, String attName, String attValue) {
+    for (Variable v : struct.getVariables()) {
+      Attribute att = v.findAttributeIgnoreCase(attName);
+      if ((att != null) && att.getStringValue().equals(attValue))
+        return v;
     }
     return null;
   }

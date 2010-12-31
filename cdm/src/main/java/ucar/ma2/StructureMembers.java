@@ -386,6 +386,10 @@ public class StructureMembers {
       }
       f.format("%n");
     }
+
+    public String toString() { 
+      return name;
+    }
   }
 
 }
