@@ -33,6 +33,7 @@
 
 package ucar.nc2;
 
+import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
 import ucar.ma2.Section;
@@ -133,6 +134,9 @@ public class ParsedSectionSpec {
     }
     if (v == null)
       throw new IllegalArgumentException(" cant find variable: " + varName + " in selector=" + selector);
+    
+    if (v.getDataType() == DataType.SEQUENCE)
+      indexSelect = null; // ignore whatever was sent
 
     // get the selected Ranges, or all, and add to the list
     Section section;
@@ -140,7 +144,7 @@ public class ParsedSectionSpec {
       section = new Section(indexSelect);
       section.setDefaults(v.getShape()); // Check section has no nulls, set from shape array.
     } else {
-      section = new Section(v.getShape()); // all
+      section = v.getShapeAsSection(); // all
     }
 
     return new ParsedSectionSpec(v, section);

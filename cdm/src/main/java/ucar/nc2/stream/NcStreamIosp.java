@@ -40,10 +40,12 @@ public class NcStreamIosp extends AbstractIOServiceProvider {
     try {
       this.raf = raf;
       raf.seek(0);
-      assert readAndTest(raf, NcStream.MAGIC_START);
+      if (!readAndTest(raf, NcStream.MAGIC_START))
+        throw new IOException("Data corrupted on "+ncfile.getLocation());
 
       // assume for the moment its always starts with one header message
-      assert readAndTest(raf, NcStream.MAGIC_HEADER);
+      if(!readAndTest(raf, NcStream.MAGIC_HEADER))
+        throw new IOException("Data corrupted on "+ncfile.getLocation());
 
       int msize = readVInt(raf);
       if (debug) System.out.printf("READ header len= %d%n", msize);
@@ -152,10 +154,12 @@ public class NcStreamIosp extends AbstractIOServiceProvider {
   public List<NcsMess> open(RandomAccessFile raf, NetcdfFile ncfile) throws IOException {
     this.raf = raf;
     raf.seek(0);
-    assert readAndTest(raf, NcStream.MAGIC_START);
+    if (!readAndTest(raf, NcStream.MAGIC_START))
+      throw new IOException("Data corrupted on "+ncfile.getLocation());
 
     // assume for the moment its always starts with one header message
-    assert readAndTest(raf, NcStream.MAGIC_HEADER);
+    if (!readAndTest(raf, NcStream.MAGIC_HEADER))
+      throw new IOException("Data corrupted on "+ncfile.getLocation());
 
     int msize = readVInt(raf);
     if (debug) System.out.println("READ header len= " + msize);

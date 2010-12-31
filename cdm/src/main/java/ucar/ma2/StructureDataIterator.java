@@ -75,7 +75,7 @@ public interface StructureDataIterator {
    * Make sure that the iterator is complete, and recover resources.
    * You must complete the iteration (until hasNext() returns false) or call finish().
    * may be called more than once.
-* You must complete the iteration or call finish() to sensure resources are released.
+* You must complete the iteration or call finish() to ensure resources are released.
  * Best to put in a try/finally block like:
   <pre>
   try {

@@ -37,10 +37,7 @@ import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.methods.GetMethod;
 
-import ucar.ma2.Array;
-import ucar.ma2.Section;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.StructureDataIterator;
+import ucar.ma2.*;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.util.IO;
@@ -61,7 +58,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
 
   static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CdmRemote.class);
   static private HttpClient httpClient;
-  static private boolean showRequest = false;
+  static private boolean showRequest = true;
 
   /**
    * Create the canonical form of the URL.
@@ -143,12 +140,20 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
     if (unlocked)
       throw new IllegalStateException("File is unlocked - cannot use");
 
+    if (v.getDataType() == DataType.SEQUENCE) {
+      Structure s= (Structure) v;
+      StructureDataIterator siter = getStructureIterator(s, -1);
+      return new ArraySequence(s.makeStructureMembers(), siter, -1);
+    }
+
     StringBuilder sbuff = new StringBuilder(remoteURI);
     sbuff.append("?var=");
     sbuff.append(URLEncoder.encode(v.getShortName(), "UTF-8"));
-    sbuff.append("(");
-    sbuff.append(section.toString());
-    sbuff.append(")");
+    if (section != null && v.getDataType() != DataType.SEQUENCE) {
+      sbuff.append("(");
+      sbuff.append(section.toString());
+      sbuff.append(")");
+    }
 
     if (showRequest)
       System.out.println(" CdmRemote data request for variable: " + v.getName() + " section= " + section + " url=" + sbuff);
@@ -165,13 +170,17 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
       if (statusCode >= 300)
         throw new IOException(method.getPath() + " " + method.getStatusLine());
 
-      int wantSize = (int) (v.getElementSize() * section.computeSize());
       Header h = method.getResponseHeader("Content-Length");
       if (h != null) {
         String s = h.getValue();
         int readLen = Integer.parseInt(s);
-        if (readLen != wantSize)
-          throw new IOException("content-length= " + readLen + " not equal expected Size= " + wantSize);
+        if (showRequest)
+          System.out.printf(" content-length = %d%n", readLen);
+        if (v.getDataType() != DataType.SEQUENCE) {
+          int wantSize = (int) (v.getElementSize() * (section == null ? v.getSize() : section.computeSize()));
+          if (readLen != wantSize)
+            throw new IOException("content-length= " + readLen + " not equal expected Size= " + wantSize); // LOOK
+        }
       }
 
       InputStream is = method.getResponseBodyAsStream();
@@ -188,7 +197,16 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
   }
 
   protected StructureDataIterator getStructureIterator(Structure s, int bufferSize) throws java.io.IOException {
-    return spi.getStructureIterator(s, bufferSize);
+    try {
+      HttpMethod m = sendQuery(remoteURI, s.getName());
+      InputStream is = m.getResponseBodyAsStream();
+      NcStreamReader reader = new NcStreamReader();
+      return reader.getStructureIterator(m, is, this);
+
+    } catch (Throwable e) {
+      e.printStackTrace();
+      throw new IllegalStateException(e);
+    }
   }
 
   public static HttpMethod sendQuery(String remoteURI, String query) throws IOException {

@@ -15,6 +15,7 @@ import java.util.Map;
 
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
+import ucar.nc2.iosp.IospHelper;
 
 /**
  * Defines the ncstream format, along with ncStream.proto.
@@ -33,6 +34,7 @@ public class NcStream {
   static public final byte[] MAGIC_HEADER = new byte[]{(byte) 0xad, (byte) 0xec, (byte) 0xce, (byte) 0xda};
   static public final byte[] MAGIC_DATA =   new byte[]{(byte) 0xab, (byte) 0xec, (byte) 0xce, (byte) 0xba};
   static public final byte[] MAGIC_VDATA =  new byte[]{(byte) 0xab, (byte) 0xef, (byte) 0xfe, (byte) 0xba};    
+  static public final byte[] MAGIC_VEND =  new byte[]{(byte) 0xed, (byte) 0xef, (byte) 0xfe, (byte) 0xda};
 
   static public final byte[] MAGIC_ERR = new byte[]{(byte) 0xab, (byte) 0xad, (byte) 0xba, (byte) 0xda};
   static public final byte[] MAGIC_END = new byte[]{(byte) 0xed, (byte) 0xed, (byte) 0xde, (byte) 0xde};
@@ -164,17 +166,18 @@ public class NcStream {
     return builder;
   }
 
-  static public NcStreamProto.Error encodeErrorMessage(String message) throws IOException {
+  static public NcStreamProto.Error encodeErrorMessage(String message) {
     NcStreamProto.Error.Builder builder = NcStreamProto.Error.newBuilder();
     builder.setMessage(message);
     return builder.build();
   }
 
-  static NcStreamProto.Data encodeDataProto(Variable var, Section section) throws IOException, InvalidRangeException {
+  static NcStreamProto.Data encodeDataProto(Variable var, Section section) {
     NcStreamProto.Data.Builder builder = NcStreamProto.Data.newBuilder();
     builder.setVarName(var.getName());
     builder.setDataType(encodeDataType(var.getDataType()));
     builder.setSection(encodeSection(section));
+    builder.setVersion(1);
     return builder.build();
   }
 
@@ -187,6 +190,102 @@ public class NcStream {
     }
     return sbuilder.build();
   }
+
+  public static long encodeArrayStructure(ArrayStructure as, OutputStream os) throws java.io.IOException {
+    long size = 0;
+
+    ArrayStructureBB dataBB = IospHelper.makeArrayBB(as);
+    List<String> ss = new ArrayList<String>();
+    List<Object> heap = dataBB.getHeap();
+    List<Integer> count = new ArrayList<Integer>();
+    if (heap != null) {
+      for (Object ho : heap) {
+        if (ho instanceof String) {
+          count.add(1);
+          ss.add((String) ho);
+        } else if (ho instanceof String[]) {
+          String[] hos = (String[]) ho;
+          count.add(hos.length);
+          for (String s : hos)
+            ss.add(s);
+        }
+      }
+    }
+
+    ByteBuffer bb = dataBB.getByteBuffer();
+    NcStreamProto.StructureData proto = NcStream.encodeStructureDataProto(bb.array(), count, ss);
+    byte[] datab = proto.toByteArray();
+    size += NcStream.writeVInt(os, datab.length); // proto len
+    os.write(datab); // proto
+    size += datab.length;
+    // System.out.printf("encodeArrayStructure write sdata size= %d%n", datab.length);
+
+    return size;
+  }
+
+  static NcStreamProto.StructureData encodeStructureDataProto(byte[] fixed, List<Integer> count, List<String> ss) {
+    NcStreamProto.StructureData.Builder builder = NcStreamProto.StructureData.newBuilder();
+    builder.setData(ByteString.copyFrom(fixed));
+    for (Integer c : count)
+      builder.addHeapCount(c);
+    for (String s : ss)
+      builder.addSdata(s);
+    return builder.build();
+  }
+
+  public static ArrayStructureBB decodeArrayStructure(StructureMembers sm, int shape[], byte[] proto) throws java.io.IOException {
+    NcStreamProto.StructureData.Builder builder = NcStreamProto.StructureData.newBuilder();
+    builder.mergeFrom(proto);
+    long size = 0;
+
+    ByteBuffer bb = ByteBuffer.wrap(builder.getData().toByteArray());
+    ArrayStructureBB dataBB = new ArrayStructureBB(sm, shape, bb, 0);
+
+    List<String> ss = builder.getSdataList();
+    List<Integer> count = builder.getHeapCountList();
+
+    int scount = 0;
+    for (Integer c : count) {
+      if (c == 1) {
+        dataBB.addObjectToHeap(ss.get(scount++));
+      } else {
+        String[] hos = new String[c];
+        for (int i=0; i<c; i++)
+          hos[i] = ss.get(scount++);
+        dataBB.addObjectToHeap(hos);
+      }
+    }
+
+    return dataBB;
+  }
+
+  public static StructureData decodeStructureData(StructureMembers sm, byte[] proto) throws java.io.IOException {
+    NcStreamProto.StructureData.Builder builder = NcStreamProto.StructureData.newBuilder();
+    builder.mergeFrom(proto);
+    long size = 0;
+
+    ByteBuffer bb = ByteBuffer.wrap(builder.getData().toByteArray());
+    ArrayStructureBB dataBB = new ArrayStructureBB(sm, new int[] {1}, bb, 0);
+
+    List<String> ss = builder.getSdataList();
+    List<Integer> count = builder.getHeapCountList();
+
+    int scount = 0;
+    for (Integer c : count) {
+      if (c == 1) {
+        dataBB.addObjectToHeap(ss.get(scount++));
+      } else {
+        String[] hos = new String[c];
+        for (int i=0; i<c; i++)
+          hos[i] = ss.get(scount++);
+        dataBB.addObjectToHeap(hos);
+      }
+    }
+
+    return dataBB.getStructureData(0);
+  }
+
+
 
   static void show(NcStreamProto.Header proto) throws InvalidProtocolBufferException {
     NcStreamProto.Group root = proto.getRoot();

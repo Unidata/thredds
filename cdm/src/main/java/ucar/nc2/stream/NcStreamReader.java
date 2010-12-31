@@ -32,6 +32,7 @@
  */
 package ucar.nc2.stream;
 
+import org.apache.commons.httpclient.HttpMethod;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Structure;
 import ucar.ma2.*;
@@ -57,10 +58,15 @@ public class NcStreamReader {
     byte[] b = new byte[4];
     NcStream.readFully(is, b);
 
-    if (test(b, NcStream.MAGIC_START))
-      assert readAndTest(is, NcStream.MAGIC_HEADER);
-    else
-      assert test(b, NcStream.MAGIC_HEADER);
+    // starts with MAGIC_START, MAGIC_HEADER or just MAGIC_HEADER
+    if (test(b, NcStream.MAGIC_START)) {
+      if (!readAndTest(is, NcStream.MAGIC_HEADER))
+        throw new IOException("Data corrupted on "+ncfile.getLocation());
+
+    } else {
+      if (!test(b, NcStream.MAGIC_HEADER))
+        throw new IOException("Data corrupted on "+ncfile.getLocation());
+    }
 
     // header
     int msize = NcStream.readVInt(is);
@@ -101,8 +107,16 @@ public class NcStreamReader {
     }
   }
 
+  /**
+   * Read the result of a data request. Only one variable at a time.
+   * @param is read from input stream
+   * @param ncfile need the metadata from here to interpret structure data
+   * @return DataResult
+   * @throws IOException on read error
+   */
   public DataResult readData(InputStream is, NetcdfFile ncfile) throws IOException {
-    assert readAndTest(is, NcStream.MAGIC_DATA);
+    if (!readAndTest(is, NcStream.MAGIC_DATA))
+      throw new IOException("Data transfer corrupted on "+ncfile.getLocation());
 
     int psize = NcStream.readVInt(is);
     if (debug) System.out.println("  readData data message len= " + psize);
@@ -111,11 +125,8 @@ public class NcStreamReader {
     NcStreamProto.Data dproto = NcStreamProto.Data.parseFrom(dp);
     // if (debug) System.out.println(" readData proto = " + dproto);
 
-    int dsize = NcStream.readVInt(is);
-    if (debug) System.out.println("  readData data len= " + dsize);
-
     DataType dataType = NcStream.decodeDataType(dproto.getDataType());
-    Section section = NcStream.decodeSection(dproto.getSection());
+    Section section = (dataType == DataType.SEQUENCE) ? new Section() : NcStream.decodeSection(dproto.getSection());
 
     // special cases
     if (dataType == DataType.STRING) {
@@ -128,9 +139,8 @@ public class NcStreamReader {
         ii.setObjectNext( new String(sb, "UTF-8"));
       }
       return new DataResult(dproto.getVarName(), section, data);
-    }
 
-    else if (dataType == DataType.OPAQUE) {
+    } else if (dataType == DataType.OPAQUE) {
       Array data = Array.factory(dataType, section.getShape());
       IndexIterator ii = data.getIndexIterator();
       while(ii.hasNext()) {
@@ -140,26 +150,118 @@ public class NcStreamReader {
         ii.setObjectNext( ByteBuffer.wrap(sb));
       }
       return new DataResult(dproto.getVarName(), section, data);
-    }
 
-    // otherwise read that many bytes
+    } 
+
+    // otherwise read data message
+    int dsize = NcStream.readVInt(is);
+    if (debug) System.out.println("  readData data len= " + dsize);
     byte[] datab = new byte[dsize];
     NcStream.readFully(is, datab);
-
-    ByteBuffer dataBB = ByteBuffer.wrap(datab);
 
     if (dataType == DataType.STRUCTURE) {
       Structure s = (Structure) ncfile.findVariable(dproto.getVarName());
       StructureMembers members = s.makeStructureMembers();
-      ArrayStructureBB.setOffsets(members);
-      ArrayStructureBB data = new ArrayStructureBB(members, section.getShape(), ByteBuffer.wrap(datab), 0);
-      return new DataResult(dproto.getVarName(), section, data);
+
+      if (dproto.getVersion() == 0) {
+        ArrayStructureBB.setOffsets(members); // not setting heap objects for version 0
+        ArrayStructureBB data = new ArrayStructureBB(members, section.getShape(), ByteBuffer.wrap(datab), 0);
+        return new DataResult(dproto.getVarName(), section, data);
+
+      } else { // version > 0 uses a NcStreamProto.StructureData message
+        ArrayStructureBB data = NcStream.decodeArrayStructure(members, section.getShape(), datab);
+        return new DataResult(dproto.getVarName(), section, data);
+      }
 
     } else {
-      Array data = Array.factory(dataType, section.getShape(), dataBB);
+      Array data = Array.factory(dataType, section.getShape(), ByteBuffer.wrap(datab));
       return new DataResult(dproto.getVarName(), section, data);
     }
   }
+
+  public StructureDataIterator getStructureIterator(HttpMethod m, InputStream is, NetcdfFile ncfile) throws IOException {
+    if (!readAndTest(is, NcStream.MAGIC_DATA))
+      throw new IOException("Data transfer corrupted on "+ncfile.getLocation());
+
+    int psize = NcStream.readVInt(is);
+    if (debug) System.out.println("  readData data message len= " + psize);
+    byte[] dp = new byte[psize];
+    NcStream.readFully(is, dp);
+    NcStreamProto.Data dproto = NcStreamProto.Data.parseFrom(dp);
+    // if (debug) System.out.println(" readData proto = " + dproto);
+
+    Structure s = (Structure) ncfile.findVariable(dproto.getVarName());
+    StructureMembers members = s.makeStructureMembers();
+    ArrayStructureBB.setOffsets(members);
+
+    return new StreamDataIterator(m, is, members);
+  }
+
+  private class StreamDataIterator implements StructureDataIterator {
+    private HttpMethod m;
+    private InputStream is;
+    private StructureMembers members;
+    private StructureData curr = null;
+    private int count = 0;
+
+    StreamDataIterator(HttpMethod m, InputStream is, StructureMembers members) {
+      this.m = m;
+      this.is = is;
+      this.members = members;
+    }
+
+    @Override
+    public boolean hasNext() throws IOException {
+      readNext();
+      return (curr != null);
+    }
+
+    @Override
+    public StructureData next() throws IOException {
+      count++;
+      return curr;
+    }
+
+    private void readNext() throws IOException {
+      byte[] b = new byte[4];
+      NcStream.readFully(is, b);
+
+     // starts with MAGIC_START, MAGIC_HEADER or just MAGIC_HEADER
+     if (test(b, NcStream.MAGIC_VDATA)) {
+       int dsize = NcStream.readVInt(is);
+       byte[] datab = new byte[dsize];
+       NcStream.readFully(is, datab);
+       curr = NcStream.decodeStructureData(members, datab);
+       // System.out.printf("StreamDataIterator read sdata size= %d%n", dsize);
+
+     } else if (test(b, NcStream.MAGIC_VEND)) {
+        curr = null;
+
+     } else {
+       throw new IllegalStateException("bad stream");
+     }
+    }
+
+    @Override
+    public void setBufferSize(int bytes) {
+    }
+
+    @Override
+    public StructureDataIterator reset() {
+      return (count == 0) ? this : null;
+    }
+
+    @Override
+    public int getCurrentRecno() {
+      return count;
+    }
+
+    // LOOK !!!
+    public void finish() {
+      if (m != null) m.releaseConnection();
+    }
+  }
+
 
   private boolean readAndTest(InputStream is, byte[] test) throws IOException {
     byte[] b = new byte[test.length];

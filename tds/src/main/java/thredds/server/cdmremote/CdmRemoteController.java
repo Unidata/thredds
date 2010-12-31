@@ -69,7 +69,7 @@ import ucar.nc2.ParsedSectionSpec;
 public class CdmRemoteController extends AbstractCommandController implements LastModified {
   private static final Logger logServerStartup = org.slf4j.LoggerFactory.getLogger( "serverStartup" );
   private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(getClass());
-  private static boolean debug = false, showTime = false, showReq=false;
+  private static boolean debug = false, showTime = false, showReq=true;
 
   private TdsContext tdsContext;
   private boolean allow = true;
@@ -193,6 +193,8 @@ public class CdmRemoteController extends AbstractCommandController implements La
       out.flush();
       res.flushBuffer();
       log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, size));
+      if (showReq)
+        System.out.printf("CdmRemoteController ok, size=%s%n", size);
 
     } catch (FileNotFoundException e) {
       log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));

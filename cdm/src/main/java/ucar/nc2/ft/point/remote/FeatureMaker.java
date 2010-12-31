@@ -4,10 +4,11 @@ import ucar.nc2.ft.PointFeature;
 import com.google.protobuf.InvalidProtocolBufferException;
 
 /**
- * Describe
+ * Interface for deserializing a PointFeature.
  *
  * @author caron
  * @since May 19, 2009
+ * @see RemotePointFeatureIterator
  */
 public interface FeatureMaker {
   PointFeature make(byte[] rawBytes) throws InvalidProtocolBufferException;

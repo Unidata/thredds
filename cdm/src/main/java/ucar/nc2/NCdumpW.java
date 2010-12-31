@@ -400,8 +400,12 @@ public class NCdumpW {
     if (name != null) out.print(ilev + name + " =");
     ilev.incr();
 
-    if (array == null)
-      throw new IllegalArgumentException("null array for " + name);
+    if (array == null) {
+      out.println("null array for " + name);
+      ilev.decr();      
+      // throw new IllegalArgumentException("null array for " + name);
+      return;
+    }
 
     if ((array instanceof ArrayChar) && (array.getRank() > 0)) {
       printStringArray(out, (ArrayChar) array, ilev, ct);

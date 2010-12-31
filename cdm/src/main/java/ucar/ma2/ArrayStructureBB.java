@@ -376,14 +376,16 @@ public class ArrayStructureBB extends ArrayStructure {
       int n = m.getSize();
       int offset = calcOffsetSetOrder(recnum, m);
       int heapIndex = bbuffer.getInt(offset);
-      return (String[]) heap.get( heapIndex);
-
-      /* String[] result = new String[n]; old way - store each string separately
-      for (int i = 0; i < n; i++) {
-        int index = bbuffer.getInt(offset + i*4);
-        result[i] = (String) heap.get(index);
+      Object ho = heap.get( heapIndex);
+      if (ho instanceof String[])
+        return (String[]) ho;
+      else if (ho instanceof String) {
+        String[] result = new String[1];
+        result[0] = (String) ho;
+        return result;
+      } else {
+        throw new IllegalArgumentException("String Type has " + ho + ", on heap");
       }
-      return result; */
     }
 
     if (m.getDataType() == DataType.CHAR) {
@@ -458,7 +460,10 @@ public class ArrayStructureBB extends ArrayStructure {
     }
     if (index > heap.size())
       System.out.println("HEY index "+index);
-    return (ArraySequence) heap.get(index);
+    Object ho = heap.get(index);
+    if (ho instanceof ArraySequence)
+      return (ArraySequence) heap.get(index);
+    return null; // LOOK
   }
 
   /* from the recnum-th structure, copy the member data into result. 
@@ -491,6 +496,14 @@ public class ArrayStructureBB extends ArrayStructure {
     if (null == heap) heap = new ArrayList<Object>();
     heap.add(s);
     return heap.size() - 1;
+  }
+
+  /**
+   * DO NOT MODIFY
+   * @return heap
+   */
+  public List<Object> getHeap() {
+    return heap;
   }
 
   @Override

@@ -36,6 +36,7 @@ package ucar.nc2.ft.point.remote;
 import ucar.nc2.ft.PointFeature;
 import ucar.nc2.ft.PointFeatureCollection;
 import ucar.nc2.ft.point.PointFeatureImpl;
+import ucar.nc2.iosp.IospHelper;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.stream.NcStream;
 import ucar.nc2.stream.NcStreamProto;
@@ -71,6 +72,8 @@ public class PointStream {
   static private final byte[] MAGIC_StationList = new byte[]{(byte) 0xfe, (byte) 0xfe, (byte) 0xef, (byte) 0xef};
   static private final byte[] MAGIC_PointFeatureCollection = new byte[]{(byte) 0xfa, (byte) 0xfa, (byte) 0xaf, (byte) 0xaf};
   static private final byte[] MAGIC_PointFeature = new byte[]{(byte) 0xf0, (byte) 0xf0, (byte) 0x0f, (byte) 0x0f};
+
+  static private final boolean debug = true;
 
   static public MessageType readMagic(InputStream is) throws IOException {
     byte[] b = new byte[4];
@@ -151,34 +154,25 @@ public class PointStream {
     builder.setLoc(locBuilder);
 
     StructureData sdata = pf.getData();
-    StructureMembers sm = sdata.getStructureMembers();
-    int size = sm.getStructureSize();
-    ByteBuffer bb = ByteBuffer.allocate(size);
-    int stringno = 0;
-    for (StructureMembers.Member m : sm.getMembers()) {
-      //System.out.printf("%s offset=%d%n", m.getName(), bb.position());      
-      if (m.getDataType() == DataType.STRING) {
-        builder.addSdata(sdata.getScalarString(m));
-        bb.putInt(stringno++); // 4 bytes for the string num on the object heap. LOOK could optimize this
-      } else if (m.getDataType() == DataType.DOUBLE)
-        bb.putDouble(sdata.getScalarDouble(m));
-      else if (m.getDataType() == DataType.FLOAT)
-        bb.putFloat(sdata.getScalarFloat(m));
-      else if (m.getDataType() == DataType.INT)
-        bb.putInt(sdata.getScalarInt(m));
-      else if (m.getDataType() == DataType.SHORT)
-        bb.putShort(sdata.getScalarShort(m));
-      else if (m.getDataType() == DataType.BYTE)
-        bb.put(sdata.getScalarByte(m));
-      else if (m.getDataType() == DataType.CHAR) {
-        for (char c : sdata.getJavaArrayChar(m))
-          bb.put((byte) c);
-      } else
-        System.out.println(" unimplemented type = " + m.getDataType());
-
+    ArrayStructureBB abb = IospHelper.copyToArrayBB(sdata);
+    ByteBuffer bb = abb.getByteBuffer();
+    if (debug) {
+      StructureMembers sm = sdata.getStructureMembers();
+      int size = sm.getStructureSize();
+      System.out.printf("encodePointFeature size= %d bb=%d%n", size, bb.position());
     }
-    //System.out.println(" size= "+size+" bb="+bb.limit());
     builder.setData(ByteString.copyFrom(bb.array()));
+    List<Object> heap = abb.getHeap();
+    if (heap != null) {
+      for (Object ho : heap) {
+        if (ho instanceof String)
+          builder.addSdata((String) ho);
+        else if (ho instanceof String[])
+          builder.addSdata((String) ho);
+        else
+          throw new IllegalStateException("illegal object on heap = "+ho);
+      }
+    }
     return builder.build();
   }
 

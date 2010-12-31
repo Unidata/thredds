@@ -4,6 +4,10 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.2:
  19: (2011-01-xx)
+  NcStreamGrammer version 1
+  cdmRemote sequences, getStructureIterator
+  IospHelper.makeArrayBB
+  ncstream was relying on assert to be enabled (!)
   TableAnalyser CdmDirect added
   StructureData.convertScalarLong() added
   StructureDataComposite use member lookup by name (!)

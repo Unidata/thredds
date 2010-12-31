@@ -13,14 +13,15 @@ dl {margin: 10px 5px 5px 15px;)
 
 <body>
 <h1>Ncstream Grammer</h1>
-<h2>Provisional - this will change !!!!</h2>
-<p>An <em><strong>ncstream</strong></em> is a sequence of one or more messages:</p>
+<h2>Version 1 (DRAFT)</h2>
+<p>An <em><strong>ncstream</strong></em> is an ordered sequence of one or more messages:</p>
 <pre>
    <strong>ncstream</strong> = <strong>MAGIC_START</strong>, <strong></strong>{message}, <strong>MAGIC_END</strong>
-   <strong>message</strong> = headerMessage | dataMessage | vdataMessage | errorMessage
+   <strong>message</strong> = headerMessage | dataMessage | sdataMessage | seqdataMessage | errorMessage
    <strong>headerMessage</strong> = MAGIC_HEADER, vlen, NcStreamProto.Header
    <strong>dataMessage</strong> = MAGIC_DATA, vlen, NcStreamProto.Data, vlen, (byte)*vlen
-   <strong>vdataMessage</strong> = MAGIC_VDATA, vlen, NcStreamProto.Data, vn, (vlen, (byte)*vlen)*vn
+   <strong>sdataMessage</strong> = MAGIC_DATA, vlen, NcStreamProto.Data, vlen, NcStreamProto.StructureData
+   <strong>seqdataMessage</strong> = MAGIC_DATA, vlen, NcStreamProto.Data, {MAGIC_VDATA, vlen, NcStreamProto.StructureData}, MAGIC_VEND
    <strong>errorMessage</strong> = MAGIC_ERR, vlen, NcStreamProto.Error
    
    <strong>vlen</strong> = variable length encoded positive integer == length of the following object in bytes
@@ -33,10 +34,10 @@ primitives:
 
    <strong>MAGIC_START</strong> = 0x43, 0x44, 0x46, 0x53 
    <strong>MAGIC_HEADER</strong>= 0xad, 0xec, 0xce, 0xda 
-   <strong>MAGIC_DATA</strong> =  0xab, 0xec, 0xce, 0xba <br />
-   <strong>MAGIC_VDATA</strong> = 0xab, 0xef, 0xfe, 0xba <br />
+   <strong>MAGIC_DATA</strong> =  0xab, 0xec, 0xce, 0xba <br />   <strong>MAGIC_VDATA</strong> = 0xab, 0xef, 0xfe, 0xba <br />
+   <strong>MAGIC_VEND </strong> = 0xed, 0xef, 0xfe, 0xda <br />
    <strong>MAGIC_ERR</strong>   = 0xab, 0xad, 0xba, 0xda 
-   <strong>MAGIC_END</strong> =   0xed, 0xed, 0xde, 0xde;</pre>
+   <strong>MAGIC_END</strong> =   0xed, 0xed, 0xde, 0xde</pre>
 <p>The protobuf messages are defined by </p>
 <ul>
   <li><strong>thredds\cdm\src\main\java\ucar\nc2\stream\ncStream.proto</strong></li>
@@ -46,11 +47,13 @@ primitives:
 <p>(these are files on Unidata's SVN server). These are compiled by the protobuf compiler into Java and C code that does the actual encoding/decoding from the stream. </p>
 <p><strong>Rules</strong></p>
 <ul>
-  <li>A dimension must  be defined first in a header message before it can be used in a variable. Its ok if the dimension is in the same header as the variable.</li>
-  <li>A variable must be defined first in a header message before it can be used in a data message</li>
+  <li>Messages are ordered, and the resulting dataset may depend on the order.</li>
+  <li>A shared dimension must  be defined in the same or an earlier header message than a variable that uses it.</li>
+  <li>A variable must be defined first in a header message before it can be used in a data message.</li>
+  <li>A variable may have 0, 1, or many data messages. These are logically unioned, with later data messages taking precedent. Missing data values are taken from the variable's <em>_FillValue</em> attribute if it exists, else the default missing value for the dataType, following netCDF conventions.</li>
 </ul>
 <h3>Data encoding</h3>
-<p>There is just enough information in the stream to break the stream into messages and to know what kind of message it is. To interpret the message correctly, one must have the correct proto file. To interpret the data stream correctly, one must have the header information.<em> (is that really true? maybe only for structs)</em></p>
+<p>There is just enough information in the stream to break the stream into messages and to know what kind of message it is. To interpret the message correctly, one must have the definition of the variable. </p>
 <p>NcStreamProto.Data contains the full variable name the data belongs to, the DataType and Section,<em> if its big-endian or little-endian. ?? Note in Java, DataOutputStream always writes in big-endian order.</em></p>
 <pre> message Data {<br />   required string varName = 1;<br />   required DataType dataType = 2;<br />   required Section section = 3;<br />   optional bool bigend = 4 [default=true];<br /> }</pre>
 <p><strong>Primitive types (byte, char, short, int, long, float, double)</strong>: arrays of primitives are stored in row-major order. The endian-ness is specified in the NcStreamProto.Data message when needed.</p>
@@ -76,7 +79,7 @@ primitives:
 </ul>
 <hr width="100%" />
 <address>
-<img src="../nc.gif" alt="" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated Nov 2010
+<img src="../nc.gif" alt="" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated Dec 2010
 </address>
 <p>&nbsp;</p>
 </body>

@@ -36,6 +36,8 @@ import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.iosp.IospHelper;
 
+import java.io.DataOutputStream;
+import java.nio.channels.Channels;
 import java.nio.channels.WritableByteChannel;
 import java.nio.ByteBuffer;
 import java.io.IOException;
@@ -99,8 +101,24 @@ public class NcStreamWriter {
     size += writeBytes(wbc, NcStream.MAGIC_DATA); // magic
     NcStreamProto.Data dataProto = NcStream.encodeDataProto(v, section);
     byte[] datab = dataProto.toByteArray();
-    size += NcStream.writeVInt(wbc, datab.length); // proto len
-    size += writeBytes(wbc, datab); //proto
+    size += NcStream.writeVInt(wbc, datab.length); // dataProto len
+    size += writeBytes(wbc, datab); // dataProto
+
+    if (v.getDataType() == DataType.SEQUENCE) {
+      int count = 0;
+      DataOutputStream os = new DataOutputStream( Channels.newOutputStream( wbc));
+      Structure seq = (Structure) v; // superclass for Sequence, SequenceDS
+      StructureDataIterator iter = seq.getStructureIterator(-1);
+      while (iter.hasNext()) {
+        size += writeBytes(wbc, NcStream.MAGIC_VDATA); // magic
+        ArrayStructureBB abb = IospHelper.copyToArrayBB(iter.next());
+        size += NcStream.encodeArrayStructure(abb, os);
+        count++;
+      }
+      size += writeBytes(wbc, NcStream.MAGIC_VEND);
+      if (show) System.out.printf(" NcStreamWriter sent %d sdata bytes = %d%n", count, size);
+      return size;
+    }
 
     long len = section.computeSize();
     if ((v.getDataType() != DataType.STRING) && (v.getDataType() != DataType.OPAQUE)) // vdataMessage
@@ -113,7 +131,7 @@ public class NcStreamWriter {
     return size;
   }
 
-  public long sendData(WritableByteChannel wbc, StructureData sdata) throws IOException {
+  /* public long sendData(WritableByteChannel wbc, StructureData sdata) throws IOException {
     long size = 0;
     ByteBuffer bb = IospHelper.copyToByteBuffer(sdata);
     byte[] datab = bb.array();
@@ -121,7 +139,7 @@ public class NcStreamWriter {
     size += NcStream.writeVInt(wbc, datab.length); // data len
     size += writeBytes(wbc, datab); // data
     return size;
-  }
+  } */
 
   private int writeBytes(WritableByteChannel wbc, byte[] b) throws IOException {
     return wbc.write(ByteBuffer.wrap(b));

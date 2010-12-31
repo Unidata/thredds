@@ -94,7 +94,7 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
       dataVariables = openDataset.getDataVariables();
 
     } catch (Exception ioe) {
-      throw new RuntimeException(ioe);
+      throw new RuntimeException(td.getLocation(), ioe);
 
     } finally {
       try {

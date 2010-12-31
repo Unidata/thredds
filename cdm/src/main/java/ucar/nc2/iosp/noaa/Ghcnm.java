@@ -586,7 +586,9 @@ public class Ghcnm extends AbstractIOServiceProvider {
   private void readIndex(String indexFilename) throws IOException {
     FileInputStream fin = new FileInputStream(indexFilename);
 
-    assert NcStream.readAndTest(fin, MAGIC_START.getBytes("UTF-8"));
+    if (!NcStream.readAndTest(fin, MAGIC_START.getBytes("UTF-8")))
+      throw new IllegalStateException("bad index file");
+
     int count = NcStream.readVInt(fin);
 
     for (int i=0; i<count; i++) {

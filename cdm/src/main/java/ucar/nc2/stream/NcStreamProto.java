@@ -99,6 +99,73 @@ public final class NcStreamProto {
     // @@protoc_insertion_point(enum_scope:ncstream.DataType)
   }
   
+  public enum Compress
+      implements com.google.protobuf.ProtocolMessageEnum {
+    NONE(0, 0),
+    DEFLATE(1, 1),
+    ;
+    
+    
+    public final int getNumber() { return value; }
+    
+    public static Compress valueOf(int value) {
+      switch (value) {
+        case 0: return NONE;
+        case 1: return DEFLATE;
+        default: return null;
+      }
+    }
+    
+    public static com.google.protobuf.Internal.EnumLiteMap<Compress>
+        internalGetValueMap() {
+      return internalValueMap;
+    }
+    private static com.google.protobuf.Internal.EnumLiteMap<Compress>
+        internalValueMap =
+          new com.google.protobuf.Internal.EnumLiteMap<Compress>() {
+            public Compress findValueByNumber(int number) {
+              return Compress.valueOf(number)
+    ;        }
+          };
+    
+    public final com.google.protobuf.Descriptors.EnumValueDescriptor
+        getValueDescriptor() {
+      return getDescriptor().getValues().get(index);
+    }
+    public final com.google.protobuf.Descriptors.EnumDescriptor
+        getDescriptorForType() {
+      return getDescriptor();
+    }
+    public static final com.google.protobuf.Descriptors.EnumDescriptor
+        getDescriptor() {
+      return ucar.nc2.stream.NcStreamProto.getDescriptor().getEnumTypes().get(1);
+    }
+    
+    private static final Compress[] VALUES = {
+      NONE, DEFLATE, 
+    };
+    public static Compress valueOf(
+        com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
+      if (desc.getType() != getDescriptor()) {
+        throw new java.lang.IllegalArgumentException(
+          "EnumValueDescriptor is not for this type.");
+      }
+      return VALUES[desc.getIndex()];
+    }
+    private final int index;
+    private final int value;
+    private Compress(int index, int value) {
+      this.index = index;
+      this.value = value;
+    }
+    
+    static {
+      ucar.nc2.stream.NcStreamProto.getDescriptor();
+    }
+    
+    // @@protoc_insertion_point(enum_scope:ncstream.Compress)
+  }
+  
   public static final class Attribute extends
       com.google.protobuf.GeneratedMessage {
     // Use Attribute.newBuilder() to construct.
@@ -715,21 +782,21 @@ public final class NcStreamProto {
     public boolean hasLength() { return hasLength; }
     public long getLength() { return length_; }
     
-    // optional bool isUnlimited = 3;
+    // optional bool isUnlimited = 3 [default = false];
     public static final int ISUNLIMITED_FIELD_NUMBER = 3;
     private boolean hasIsUnlimited;
     private boolean isUnlimited_ = false;
     public boolean hasIsUnlimited() { return hasIsUnlimited; }
     public boolean getIsUnlimited() { return isUnlimited_; }
     
-    // optional bool isVlen = 4;
+    // optional bool isVlen = 4 [default = false];
     public static final int ISVLEN_FIELD_NUMBER = 4;
     private boolean hasIsVlen;
     private boolean isVlen_ = false;
     public boolean hasIsVlen() { return hasIsVlen; }
     public boolean getIsVlen() { return isVlen_; }
     
-    // optional bool isPrivate = 5;
+    // optional bool isPrivate = 5 [default = false];
     public static final int ISPRIVATE_FIELD_NUMBER = 5;
     private boolean hasIsPrivate;
     private boolean isPrivate_ = false;
@@ -1051,7 +1118,7 @@ public final class NcStreamProto {
         return this;
       }
       
-      // optional bool isUnlimited = 3;
+      // optional bool isUnlimited = 3 [default = false];
       public boolean hasIsUnlimited() {
         return result.hasIsUnlimited();
       }
@@ -1069,7 +1136,7 @@ public final class NcStreamProto {
         return this;
       }
       
-      // optional bool isVlen = 4;
+      // optional bool isVlen = 4 [default = false];
       public boolean hasIsVlen() {
         return result.hasIsVlen();
       }
@@ -1087,7 +1154,7 @@ public final class NcStreamProto {
         return this;
       }
       
-      // optional bool isPrivate = 5;
+      // optional bool isPrivate = 5 [default = false];
       public boolean hasIsPrivate() {
         return result.hasIsPrivate();
       }
@@ -1182,7 +1249,7 @@ public final class NcStreamProto {
       return atts_.get(index);
     }
     
-    // optional bool unsigned = 5;
+    // optional bool unsigned = 5 [default = false];
     public static final int UNSIGNED_FIELD_NUMBER = 5;
     private boolean hasUnsigned;
     private boolean unsigned_ = false;
@@ -1202,6 +1269,18 @@ public final class NcStreamProto {
     private java.lang.String enumType_ = "";
     public boolean hasEnumType() { return hasEnumType; }
     public java.lang.String getEnumType() { return enumType_; }
+    
+    // repeated uint32 dimIndex = 8;
+    public static final int DIMINDEX_FIELD_NUMBER = 8;
+    private java.util.List<java.lang.Integer> dimIndex_ =
+      java.util.Collections.emptyList();
+    public java.util.List<java.lang.Integer> getDimIndexList() {
+      return dimIndex_;
+    }
+    public int getDimIndexCount() { return dimIndex_.size(); }
+    public int getDimIndex(int index) {
+      return dimIndex_.get(index);
+    }
     
     private void initFields() {
       dataType_ = ucar.nc2.stream.NcStreamProto.DataType.CHAR;
@@ -1239,6 +1318,9 @@ public final class NcStreamProto {
       if (hasEnumType()) {
         output.writeString(7, getEnumType());
       }
+      for (int element : getDimIndexList()) {
+        output.writeUInt32(8, element);
+      }
       getUnknownFields().writeTo(output);
     }
     
@@ -1275,6 +1357,15 @@ public final class NcStreamProto {
       if (hasEnumType()) {
         size += com.google.protobuf.CodedOutputStream
           .computeStringSize(7, getEnumType());
+      }
+      {
+        int dataSize = 0;
+        for (int element : getDimIndexList()) {
+          dataSize += com.google.protobuf.CodedOutputStream
+            .computeUInt32SizeNoTag(element);
+        }
+        size += dataSize;
+        size += 1 * getDimIndexList().size();
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -1426,6 +1517,10 @@ public final class NcStreamProto {
           result.atts_ =
             java.util.Collections.unmodifiableList(result.atts_);
         }
+        if (result.dimIndex_ != java.util.Collections.EMPTY_LIST) {
+          result.dimIndex_ =
+            java.util.Collections.unmodifiableList(result.dimIndex_);
+        }
         ucar.nc2.stream.NcStreamProto.Variable returnMe = result;
         result = null;
         return returnMe;
@@ -1468,6 +1563,12 @@ public final class NcStreamProto {
         }
         if (other.hasEnumType()) {
           setEnumType(other.getEnumType());
+        }
+        if (!other.dimIndex_.isEmpty()) {
+          if (result.dimIndex_.isEmpty()) {
+            result.dimIndex_ = new java.util.ArrayList<java.lang.Integer>();
+          }
+          result.dimIndex_.addAll(other.dimIndex_);
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -1530,6 +1631,19 @@ public final class NcStreamProto {
             }
             case 58: {
               setEnumType(input.readString());
+              break;
+            }
+            case 64: {
+              addDimIndex(input.readUInt32());
+              break;
+            }
+            case 66: {
+              int length = input.readRawVarint32();
+              int limit = input.pushLimit(length);
+              while (input.getBytesUntilLimit() > 0) {
+                addDimIndex(input.readUInt32());
+              }
+              input.popLimit(limit);
               break;
             }
           }
@@ -1681,7 +1795,7 @@ public final class NcStreamProto {
         return this;
       }
       
-      // optional bool unsigned = 5;
+      // optional bool unsigned = 5 [default = false];
       public boolean hasUnsigned() {
         return result.hasUnsigned();
       }
@@ -1738,6 +1852,40 @@ public final class NcStreamProto {
       public Builder clearEnumType() {
         result.hasEnumType = false;
         result.enumType_ = getDefaultInstance().getEnumType();
+        return this;
+      }
+      
+      // repeated uint32 dimIndex = 8;
+      public java.util.List<java.lang.Integer> getDimIndexList() {
+        return java.util.Collections.unmodifiableList(result.dimIndex_);
+      }
+      public int getDimIndexCount() {
+        return result.getDimIndexCount();
+      }
+      public int getDimIndex(int index) {
+        return result.getDimIndex(index);
+      }
+      public Builder setDimIndex(int index, int value) {
+        result.dimIndex_.set(index, value);
+        return this;
+      }
+      public Builder addDimIndex(int value) {
+        if (result.dimIndex_.isEmpty()) {
+          result.dimIndex_ = new java.util.ArrayList<java.lang.Integer>();
+        }
+        result.dimIndex_.add(value);
+        return this;
+      }
+      public Builder addAllDimIndex(
+          java.lang.Iterable<? extends java.lang.Integer> values) {
+        if (result.dimIndex_.isEmpty()) {
+          result.dimIndex_ = new java.util.ArrayList<java.lang.Integer>();
+        }
+        super.addAll(values, result.dimIndex_);
+        return this;
+      }
+      public Builder clearDimIndex() {
+        result.dimIndex_ = java.util.Collections.emptyList();
         return this;
       }
       
@@ -4023,6 +4171,13 @@ public final class NcStreamProto {
     public boolean hasRoot() { return hasRoot; }
     public ucar.nc2.stream.NcStreamProto.Group getRoot() { return root_; }
     
+    // optional uint32 version = 5 [default = 0];
+    public static final int VERSION_FIELD_NUMBER = 5;
+    private boolean hasVersion;
+    private int version_ = 0;
+    public boolean hasVersion() { return hasVersion; }
+    public int getVersion() { return version_; }
+    
     private void initFields() {
       root_ = ucar.nc2.stream.NcStreamProto.Group.getDefaultInstance();
     }
@@ -4046,6 +4201,9 @@ public final class NcStreamProto {
       }
       if (hasRoot()) {
         output.writeMessage(4, getRoot());
+      }
+      if (hasVersion()) {
+        output.writeUInt32(5, getVersion());
       }
       getUnknownFields().writeTo(output);
     }
@@ -4071,6 +4229,10 @@ public final class NcStreamProto {
       if (hasRoot()) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(4, getRoot());
+      }
+      if (hasVersion()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt32Size(5, getVersion());
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -4242,6 +4404,9 @@ public final class NcStreamProto {
         if (other.hasRoot()) {
           mergeRoot(other.getRoot());
         }
+        if (other.hasVersion()) {
+          setVersion(other.getVersion());
+        }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
@@ -4286,6 +4451,10 @@ public final class NcStreamProto {
               }
               input.readMessage(subBuilder, extensionRegistry);
               setRoot(subBuilder.buildPartial());
+              break;
+            }
+            case 40: {
+              setVersion(input.readUInt32());
               break;
             }
           }
@@ -4393,6 +4562,24 @@ public final class NcStreamProto {
         return this;
       }
       
+      // optional uint32 version = 5 [default = 0];
+      public boolean hasVersion() {
+        return result.hasVersion();
+      }
+      public int getVersion() {
+        return result.getVersion();
+      }
+      public Builder setVersion(int value) {
+        result.hasVersion = true;
+        result.version_ = value;
+        return this;
+      }
+      public Builder clearVersion() {
+        result.hasVersion = false;
+        result.version_ = 0;
+        return this;
+      }
+      
       // @@protoc_insertion_point(builder_scope:ncstream.Header)
     }
     
@@ -4460,9 +4647,31 @@ public final class NcStreamProto {
     public boolean hasBigend() { return hasBigend; }
     public boolean getBigend() { return bigend_; }
     
+    // optional uint32 version = 5 [default = 0];
+    public static final int VERSION_FIELD_NUMBER = 5;
+    private boolean hasVersion;
+    private int version_ = 0;
+    public boolean hasVersion() { return hasVersion; }
+    public int getVersion() { return version_; }
+    
+    // optional .ncstream.Compress compress = 6 [default = NONE];
+    public static final int COMPRESS_FIELD_NUMBER = 6;
+    private boolean hasCompress;
+    private ucar.nc2.stream.NcStreamProto.Compress compress_;
+    public boolean hasCompress() { return hasCompress; }
+    public ucar.nc2.stream.NcStreamProto.Compress getCompress() { return compress_; }
+    
+    // optional fixed32 crc32 = 7;
+    public static final int CRC32_FIELD_NUMBER = 7;
+    private boolean hasCrc32;
+    private int crc32_ = 0;
+    public boolean hasCrc32() { return hasCrc32; }
+    public int getCrc32() { return crc32_; }
+    
     private void initFields() {
       dataType_ = ucar.nc2.stream.NcStreamProto.DataType.CHAR;
       section_ = ucar.nc2.stream.NcStreamProto.Section.getDefaultInstance();
+      compress_ = ucar.nc2.stream.NcStreamProto.Compress.NONE;
     }
     public final boolean isInitialized() {
       if (!hasVarName) return false;
@@ -4486,6 +4695,15 @@ public final class NcStreamProto {
       }
       if (hasBigend()) {
         output.writeBool(4, getBigend());
+      }
+      if (hasVersion()) {
+        output.writeUInt32(5, getVersion());
+      }
+      if (hasCompress()) {
+        output.writeEnum(6, getCompress().getNumber());
+      }
+      if (hasCrc32()) {
+        output.writeFixed32(7, getCrc32());
       }
       getUnknownFields().writeTo(output);
     }
@@ -4511,6 +4729,18 @@ public final class NcStreamProto {
       if (hasBigend()) {
         size += com.google.protobuf.CodedOutputStream
           .computeBoolSize(4, getBigend());
+      }
+      if (hasVersion()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt32Size(5, getVersion());
+      }
+      if (hasCompress()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeEnumSize(6, getCompress().getNumber());
+      }
+      if (hasCrc32()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeFixed32Size(7, getCrc32());
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -4682,6 +4912,15 @@ public final class NcStreamProto {
         if (other.hasBigend()) {
           setBigend(other.getBigend());
         }
+        if (other.hasVersion()) {
+          setVersion(other.getVersion());
+        }
+        if (other.hasCompress()) {
+          setCompress(other.getCompress());
+        }
+        if (other.hasCrc32()) {
+          setCrc32(other.getCrc32());
+        }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
@@ -4732,6 +4971,24 @@ public final class NcStreamProto {
             }
             case 32: {
               setBigend(input.readBool());
+              break;
+            }
+            case 40: {
+              setVersion(input.readUInt32());
+              break;
+            }
+            case 48: {
+              int rawValue = input.readEnum();
+              ucar.nc2.stream.NcStreamProto.Compress value = ucar.nc2.stream.NcStreamProto.Compress.valueOf(rawValue);
+              if (value == null) {
+                unknownFields.mergeVarintField(6, rawValue);
+              } else {
+                setCompress(value);
+              }
+              break;
+            }
+            case 61: {
+              setCrc32(input.readFixed32());
               break;
             }
           }
@@ -4836,6 +5093,63 @@ public final class NcStreamProto {
         return this;
       }
       
+      // optional uint32 version = 5 [default = 0];
+      public boolean hasVersion() {
+        return result.hasVersion();
+      }
+      public int getVersion() {
+        return result.getVersion();
+      }
+      public Builder setVersion(int value) {
+        result.hasVersion = true;
+        result.version_ = value;
+        return this;
+      }
+      public Builder clearVersion() {
+        result.hasVersion = false;
+        result.version_ = 0;
+        return this;
+      }
+      
+      // optional .ncstream.Compress compress = 6 [default = NONE];
+      public boolean hasCompress() {
+        return result.hasCompress();
+      }
+      public ucar.nc2.stream.NcStreamProto.Compress getCompress() {
+        return result.getCompress();
+      }
+      public Builder setCompress(ucar.nc2.stream.NcStreamProto.Compress value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        result.hasCompress = true;
+        result.compress_ = value;
+        return this;
+      }
+      public Builder clearCompress() {
+        result.hasCompress = false;
+        result.compress_ = ucar.nc2.stream.NcStreamProto.Compress.NONE;
+        return this;
+      }
+      
+      // optional fixed32 crc32 = 7;
+      public boolean hasCrc32() {
+        return result.hasCrc32();
+      }
+      public int getCrc32() {
+        return result.getCrc32();
+      }
+      public Builder setCrc32(int value) {
+        result.hasCrc32 = true;
+        result.crc32_ = value;
+        return this;
+      }
+      public Builder clearCrc32() {
+        result.hasCrc32 = false;
+        result.crc32_ = 0;
+        return this;
+      }
+      
       // @@protoc_insertion_point(builder_scope:ncstream.Data)
     }
     
@@ -4875,7 +5189,7 @@ public final class NcStreamProto {
       return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_Range_fieldAccessorTable;
     }
     
-    // optional uint64 start = 1;
+    // optional uint64 start = 1 [default = 0];
     public static final int START_FIELD_NUMBER = 1;
     private boolean hasStart;
     private long start_ = 0L;
@@ -4889,10 +5203,10 @@ public final class NcStreamProto {
     public boolean hasSize() { return hasSize; }
     public long getSize() { return size_; }
     
-    // optional uint64 stride = 3;
+    // optional uint64 stride = 3 [default = 1];
     public static final int STRIDE_FIELD_NUMBER = 3;
     private boolean hasStride;
-    private long stride_ = 0L;
+    private long stride_ = 1L;
     public boolean hasStride() { return hasStride; }
     public long getStride() { return stride_; }
     
@@ -5145,7 +5459,7 @@ public final class NcStreamProto {
       }
       
       
-      // optional uint64 start = 1;
+      // optional uint64 start = 1 [default = 0];
       public boolean hasStart() {
         return result.hasStart();
       }
@@ -5181,7 +5495,7 @@ public final class NcStreamProto {
         return this;
       }
       
-      // optional uint64 stride = 3;
+      // optional uint64 stride = 3 [default = 1];
       public boolean hasStride() {
         return result.hasStride();
       }
@@ -5195,7 +5509,7 @@ public final class NcStreamProto {
       }
       public Builder clearStride() {
         result.hasStride = false;
-        result.stride_ = 0L;
+        result.stride_ = 1L;
         return this;
       }
       
@@ -5545,6 +5859,573 @@ public final class NcStreamProto {
     // @@protoc_insertion_point(class_scope:ncstream.Section)
   }
   
+  public static final class StructureData extends
+      com.google.protobuf.GeneratedMessage {
+    // Use StructureData.newBuilder() to construct.
+    private StructureData() {
+      initFields();
+    }
+    private StructureData(boolean noInit) {}
+    
+    private static final StructureData defaultInstance;
+    public static StructureData getDefaultInstance() {
+      return defaultInstance;
+    }
+    
+    public StructureData getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+    
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_StructureData_descriptor;
+    }
+    
+    protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return ucar.nc2.stream.NcStreamProto.internal_static_ncstream_StructureData_fieldAccessorTable;
+    }
+    
+    // repeated uint32 member = 1;
+    public static final int MEMBER_FIELD_NUMBER = 1;
+    private java.util.List<java.lang.Integer> member_ =
+      java.util.Collections.emptyList();
+    public java.util.List<java.lang.Integer> getMemberList() {
+      return member_;
+    }
+    public int getMemberCount() { return member_.size(); }
+    public int getMember(int index) {
+      return member_.get(index);
+    }
+    
+    // required bytes data = 2;
+    public static final int DATA_FIELD_NUMBER = 2;
+    private boolean hasData;
+    private com.google.protobuf.ByteString data_ = com.google.protobuf.ByteString.EMPTY;
+    public boolean hasData() { return hasData; }
+    public com.google.protobuf.ByteString getData() { return data_; }
+    
+    // repeated uint32 heapCount = 3;
+    public static final int HEAPCOUNT_FIELD_NUMBER = 3;
+    private java.util.List<java.lang.Integer> heapCount_ =
+      java.util.Collections.emptyList();
+    public java.util.List<java.lang.Integer> getHeapCountList() {
+      return heapCount_;
+    }
+    public int getHeapCountCount() { return heapCount_.size(); }
+    public int getHeapCount(int index) {
+      return heapCount_.get(index);
+    }
+    
+    // repeated string sdata = 4;
+    public static final int SDATA_FIELD_NUMBER = 4;
+    private java.util.List<java.lang.String> sdata_ =
+      java.util.Collections.emptyList();
+    public java.util.List<java.lang.String> getSdataList() {
+      return sdata_;
+    }
+    public int getSdataCount() { return sdata_.size(); }
+    public java.lang.String getSdata(int index) {
+      return sdata_.get(index);
+    }
+    
+    // optional uint64 nrows = 5 [default = 1];
+    public static final int NROWS_FIELD_NUMBER = 5;
+    private boolean hasNrows;
+    private long nrows_ = 1L;
+    public boolean hasNrows() { return hasNrows; }
+    public long getNrows() { return nrows_; }
+    
+    private void initFields() {
+    }
+    public final boolean isInitialized() {
+      if (!hasData) return false;
+      return true;
+    }
+    
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      getSerializedSize();
+      for (int element : getMemberList()) {
+        output.writeUInt32(1, element);
+      }
+      if (hasData()) {
+        output.writeBytes(2, getData());
+      }
+      for (int element : getHeapCountList()) {
+        output.writeUInt32(3, element);
+      }
+      for (java.lang.String element : getSdataList()) {
+        output.writeString(4, element);
+      }
+      if (hasNrows()) {
+        output.writeUInt64(5, getNrows());
+      }
+      getUnknownFields().writeTo(output);
+    }
+    
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize() {
+      int size = memoizedSerializedSize;
+      if (size != -1) return size;
+    
+      size = 0;
+      {
+        int dataSize = 0;
+        for (int element : getMemberList()) {
+          dataSize += com.google.protobuf.CodedOutputStream
+            .computeUInt32SizeNoTag(element);
+        }
+        size += dataSize;
+        size += 1 * getMemberList().size();
+      }
+      if (hasData()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(2, getData());
+      }
+      {
+        int dataSize = 0;
+        for (int element : getHeapCountList()) {
+          dataSize += com.google.protobuf.CodedOutputStream
+            .computeUInt32SizeNoTag(element);
+        }
+        size += dataSize;
+        size += 1 * getHeapCountList().size();
+      }
+      {
+        int dataSize = 0;
+        for (java.lang.String element : getSdataList()) {
+          dataSize += com.google.protobuf.CodedOutputStream
+            .computeStringSizeNoTag(element);
+        }
+        size += dataSize;
+        size += 1 * getSdataList().size();
+      }
+      if (hasNrows()) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt64Size(5, getNrows());
+      }
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
+      return size;
+    }
+    
+    public static ucar.nc2.stream.NcStreamProto.StructureData parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static ucar.nc2.stream.NcStreamProto.StructureData parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static ucar.nc2.stream.NcStreamProto.StructureData parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data).buildParsed();
+    }
+    public static ucar.nc2.stream.NcStreamProto.StructureData parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return newBuilder().mergeFrom(data, extensionRegistry)
+               .buildParsed();
+    }
+    public static ucar.nc2.stream.NcStreamProto.StructureData parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static ucar.nc2.stream.NcStreamProto.StructureData parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    public static ucar.nc2.stream.NcStreamProto.StructureData parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      Builder builder = newBuilder();
+      if (builder.mergeDelimitedFrom(input)) {
+        return builder.buildParsed();
+      } else {
+        return null;
+      }
+    }
+    public static ucar.nc2.stream.NcStreamProto.StructureData parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      Builder builder = newBuilder();
+      if (builder.mergeDelimitedFrom(input, extensionRegistry)) {
+        return builder.buildParsed();
+      } else {
+        return null;
+      }
+    }
+    public static ucar.nc2.stream.NcStreamProto.StructureData parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input).buildParsed();
+    }
+    public static ucar.nc2.stream.NcStreamProto.StructureData parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return newBuilder().mergeFrom(input, extensionRegistry)
+               .buildParsed();
+    }
+    
+    public static Builder newBuilder() { return Builder.create(); }
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder(ucar.nc2.stream.NcStreamProto.StructureData prototype) {
+      return newBuilder().mergeFrom(prototype);
+    }
+    public Builder toBuilder() { return newBuilder(this); }
+    
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessage.Builder<Builder> {
+      private ucar.nc2.stream.NcStreamProto.StructureData result;
+      
+      // Construct using ucar.nc2.stream.NcStreamProto.StructureData.newBuilder()
+      private Builder() {}
+      
+      private static Builder create() {
+        Builder builder = new Builder();
+        builder.result = new ucar.nc2.stream.NcStreamProto.StructureData();
+        return builder;
+      }
+      
+      protected ucar.nc2.stream.NcStreamProto.StructureData internalGetResult() {
+        return result;
+      }
+      
+      public Builder clear() {
+        if (result == null) {
+          throw new IllegalStateException(
+            "Cannot call clear() after build().");
+        }
+        result = new ucar.nc2.stream.NcStreamProto.StructureData();
+        return this;
+      }
+      
+      public Builder clone() {
+        return create().mergeFrom(result);
+      }
+      
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return ucar.nc2.stream.NcStreamProto.StructureData.getDescriptor();
+      }
+      
+      public ucar.nc2.stream.NcStreamProto.StructureData getDefaultInstanceForType() {
+        return ucar.nc2.stream.NcStreamProto.StructureData.getDefaultInstance();
+      }
+      
+      public boolean isInitialized() {
+        return result.isInitialized();
+      }
+      public ucar.nc2.stream.NcStreamProto.StructureData build() {
+        if (result != null && !isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return buildPartial();
+      }
+      
+      private ucar.nc2.stream.NcStreamProto.StructureData buildParsed()
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        if (!isInitialized()) {
+          throw newUninitializedMessageException(
+            result).asInvalidProtocolBufferException();
+        }
+        return buildPartial();
+      }
+      
+      public ucar.nc2.stream.NcStreamProto.StructureData buildPartial() {
+        if (result == null) {
+          throw new IllegalStateException(
+            "build() has already been called on this Builder.");
+        }
+        if (result.member_ != java.util.Collections.EMPTY_LIST) {
+          result.member_ =
+            java.util.Collections.unmodifiableList(result.member_);
+        }
+        if (result.heapCount_ != java.util.Collections.EMPTY_LIST) {
+          result.heapCount_ =
+            java.util.Collections.unmodifiableList(result.heapCount_);
+        }
+        if (result.sdata_ != java.util.Collections.EMPTY_LIST) {
+          result.sdata_ =
+            java.util.Collections.unmodifiableList(result.sdata_);
+        }
+        ucar.nc2.stream.NcStreamProto.StructureData returnMe = result;
+        result = null;
+        return returnMe;
+      }
+      
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof ucar.nc2.stream.NcStreamProto.StructureData) {
+          return mergeFrom((ucar.nc2.stream.NcStreamProto.StructureData)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+      
+      public Builder mergeFrom(ucar.nc2.stream.NcStreamProto.StructureData other) {
+        if (other == ucar.nc2.stream.NcStreamProto.StructureData.getDefaultInstance()) return this;
+        if (!other.member_.isEmpty()) {
+          if (result.member_.isEmpty()) {
+            result.member_ = new java.util.ArrayList<java.lang.Integer>();
+          }
+          result.member_.addAll(other.member_);
+        }
+        if (other.hasData()) {
+          setData(other.getData());
+        }
+        if (!other.heapCount_.isEmpty()) {
+          if (result.heapCount_.isEmpty()) {
+            result.heapCount_ = new java.util.ArrayList<java.lang.Integer>();
+          }
+          result.heapCount_.addAll(other.heapCount_);
+        }
+        if (!other.sdata_.isEmpty()) {
+          if (result.sdata_.isEmpty()) {
+            result.sdata_ = new java.util.ArrayList<java.lang.String>();
+          }
+          result.sdata_.addAll(other.sdata_);
+        }
+        if (other.hasNrows()) {
+          setNrows(other.getNrows());
+        }
+        this.mergeUnknownFields(other.getUnknownFields());
+        return this;
+      }
+      
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder(
+            this.getUnknownFields());
+        while (true) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              this.setUnknownFields(unknownFields.build());
+              return this;
+            default: {
+              if (!parseUnknownField(input, unknownFields,
+                                     extensionRegistry, tag)) {
+                this.setUnknownFields(unknownFields.build());
+                return this;
+              }
+              break;
+            }
+            case 8: {
+              addMember(input.readUInt32());
+              break;
+            }
+            case 10: {
+              int length = input.readRawVarint32();
+              int limit = input.pushLimit(length);
+              while (input.getBytesUntilLimit() > 0) {
+                addMember(input.readUInt32());
+              }
+              input.popLimit(limit);
+              break;
+            }
+            case 18: {
+              setData(input.readBytes());
+              break;
+            }
+            case 24: {
+              addHeapCount(input.readUInt32());
+              break;
+            }
+            case 26: {
+              int length = input.readRawVarint32();
+              int limit = input.pushLimit(length);
+              while (input.getBytesUntilLimit() > 0) {
+                addHeapCount(input.readUInt32());
+              }
+              input.popLimit(limit);
+              break;
+            }
+            case 34: {
+              addSdata(input.readString());
+              break;
+            }
+            case 40: {
+              setNrows(input.readUInt64());
+              break;
+            }
+          }
+        }
+      }
+      
+      
+      // repeated uint32 member = 1;
+      public java.util.List<java.lang.Integer> getMemberList() {
+        return java.util.Collections.unmodifiableList(result.member_);
+      }
+      public int getMemberCount() {
+        return result.getMemberCount();
+      }
+      public int getMember(int index) {
+        return result.getMember(index);
+      }
+      public Builder setMember(int index, int value) {
+        result.member_.set(index, value);
+        return this;
+      }
+      public Builder addMember(int value) {
+        if (result.member_.isEmpty()) {
+          result.member_ = new java.util.ArrayList<java.lang.Integer>();
+        }
+        result.member_.add(value);
+        return this;
+      }
+      public Builder addAllMember(
+          java.lang.Iterable<? extends java.lang.Integer> values) {
+        if (result.member_.isEmpty()) {
+          result.member_ = new java.util.ArrayList<java.lang.Integer>();
+        }
+        super.addAll(values, result.member_);
+        return this;
+      }
+      public Builder clearMember() {
+        result.member_ = java.util.Collections.emptyList();
+        return this;
+      }
+      
+      // required bytes data = 2;
+      public boolean hasData() {
+        return result.hasData();
+      }
+      public com.google.protobuf.ByteString getData() {
+        return result.getData();
+      }
+      public Builder setData(com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  result.hasData = true;
+        result.data_ = value;
+        return this;
+      }
+      public Builder clearData() {
+        result.hasData = false;
+        result.data_ = getDefaultInstance().getData();
+        return this;
+      }
+      
+      // repeated uint32 heapCount = 3;
+      public java.util.List<java.lang.Integer> getHeapCountList() {
+        return java.util.Collections.unmodifiableList(result.heapCount_);
+      }
+      public int getHeapCountCount() {
+        return result.getHeapCountCount();
+      }
+      public int getHeapCount(int index) {
+        return result.getHeapCount(index);
+      }
+      public Builder setHeapCount(int index, int value) {
+        result.heapCount_.set(index, value);
+        return this;
+      }
+      public Builder addHeapCount(int value) {
+        if (result.heapCount_.isEmpty()) {
+          result.heapCount_ = new java.util.ArrayList<java.lang.Integer>();
+        }
+        result.heapCount_.add(value);
+        return this;
+      }
+      public Builder addAllHeapCount(
+          java.lang.Iterable<? extends java.lang.Integer> values) {
+        if (result.heapCount_.isEmpty()) {
+          result.heapCount_ = new java.util.ArrayList<java.lang.Integer>();
+        }
+        super.addAll(values, result.heapCount_);
+        return this;
+      }
+      public Builder clearHeapCount() {
+        result.heapCount_ = java.util.Collections.emptyList();
+        return this;
+      }
+      
+      // repeated string sdata = 4;
+      public java.util.List<java.lang.String> getSdataList() {
+        return java.util.Collections.unmodifiableList(result.sdata_);
+      }
+      public int getSdataCount() {
+        return result.getSdataCount();
+      }
+      public java.lang.String getSdata(int index) {
+        return result.getSdata(index);
+      }
+      public Builder setSdata(int index, java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  result.sdata_.set(index, value);
+        return this;
+      }
+      public Builder addSdata(java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  if (result.sdata_.isEmpty()) {
+          result.sdata_ = new java.util.ArrayList<java.lang.String>();
+        }
+        result.sdata_.add(value);
+        return this;
+      }
+      public Builder addAllSdata(
+          java.lang.Iterable<? extends java.lang.String> values) {
+        if (result.sdata_.isEmpty()) {
+          result.sdata_ = new java.util.ArrayList<java.lang.String>();
+        }
+        super.addAll(values, result.sdata_);
+        return this;
+      }
+      public Builder clearSdata() {
+        result.sdata_ = java.util.Collections.emptyList();
+        return this;
+      }
+      
+      // optional uint64 nrows = 5 [default = 1];
+      public boolean hasNrows() {
+        return result.hasNrows();
+      }
+      public long getNrows() {
+        return result.getNrows();
+      }
+      public Builder setNrows(long value) {
+        result.hasNrows = true;
+        result.nrows_ = value;
+        return this;
+      }
+      public Builder clearNrows() {
+        result.hasNrows = false;
+        result.nrows_ = 1L;
+        return this;
+      }
+      
+      // @@protoc_insertion_point(builder_scope:ncstream.StructureData)
+    }
+    
+    static {
+      defaultInstance = new StructureData(true);
+      ucar.nc2.stream.NcStreamProto.internalForceInit();
+      defaultInstance.initFields();
+    }
+    
+    // @@protoc_insertion_point(class_scope:ncstream.StructureData)
+  }
+  
   public static final class Error extends
       com.google.protobuf.GeneratedMessage {
     // Use Error.newBuilder() to construct.
@@ -5889,6 +6770,11 @@ public final class NcStreamProto {
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_ncstream_Section_fieldAccessorTable;
   private static com.google.protobuf.Descriptors.Descriptor
+    internal_static_ncstream_StructureData_descriptor;
+  private static
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
+      internal_static_ncstream_StructureData_fieldAccessorTable;
+  private static com.google.protobuf.Descriptors.Descriptor
     internal_static_ncstream_Error_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
@@ -5907,42 +6793,49 @@ public final class NcStreamProto {
       " \002(\0162\030.ncstream.Attribute.Type\022\013\n\003len\030\003 " +
       "\002(\r\022\014\n\004data\030\004 \001(\014\022\r\n\005sdata\030\005 \003(\t\"Q\n\004Type" +
       "\022\n\n\006STRING\020\000\022\010\n\004BYTE\020\001\022\t\n\005SHORT\020\002\022\007\n\003INT" +
-      "\020\003\022\010\n\004LONG\020\004\022\t\n\005FLOAT\020\005\022\n\n\006DOUBLE\020\006\"a\n\tD" +
-      "imension\022\014\n\004name\030\001 \001(\t\022\016\n\006length\030\002 \001(\004\022\023" +
-      "\n\013isUnlimited\030\003 \001(\010\022\016\n\006isVlen\030\004 \001(\010\022\021\n\ti" +
-      "sPrivate\030\005 \001(\010\"\267\001\n\010Variable\022\014\n\004name\030\001 \002(" +
-      "\t\022$\n\010dataType\030\002 \002(\0162\022.ncstream.DataType\022",
-      "\"\n\005shape\030\003 \003(\0132\023.ncstream.Dimension\022!\n\004a" +
-      "tts\030\004 \003(\0132\023.ncstream.Attribute\022\020\n\010unsign" +
-      "ed\030\005 \001(\010\022\014\n\004data\030\006 \001(\014\022\020\n\010enumType\030\007 \001(\t" +
-      "\"\316\001\n\tStructure\022\014\n\004name\030\001 \002(\t\022$\n\010dataType" +
-      "\030\002 \002(\0162\022.ncstream.DataType\022\"\n\005shape\030\003 \003(" +
-      "\0132\023.ncstream.Dimension\022!\n\004atts\030\004 \003(\0132\023.n" +
-      "cstream.Attribute\022 \n\004vars\030\005 \003(\0132\022.ncstre" +
-      "am.Variable\022$\n\007structs\030\006 \003(\0132\023.ncstream." +
-      "Structure\"q\n\013EnumTypedef\022\014\n\004name\030\001 \002(\t\022+" +
-      "\n\003map\030\002 \003(\0132\036.ncstream.EnumTypedef.EnumT",
-      "ype\032\'\n\010EnumType\022\014\n\004code\030\001 \002(\r\022\r\n\005value\030\002" +
-      " \002(\t\"\356\001\n\005Group\022\014\n\004name\030\001 \002(\t\022!\n\004dims\030\002 \003" +
-      "(\0132\023.ncstream.Dimension\022 \n\004vars\030\003 \003(\0132\022." +
-      "ncstream.Variable\022$\n\007structs\030\004 \003(\0132\023.ncs" +
-      "tream.Structure\022!\n\004atts\030\005 \003(\0132\023.ncstream" +
-      ".Attribute\022\037\n\006groups\030\006 \003(\0132\017.ncstream.Gr" +
-      "oup\022(\n\tenumTypes\030\007 \003(\0132\025.ncstream.EnumTy" +
-      "pedef\"T\n\006Header\022\020\n\010location\030\001 \001(\t\022\r\n\005tit" +
-      "le\030\002 \001(\t\022\n\n\002id\030\003 \001(\t\022\035\n\004root\030\004 \002(\0132\017.ncs" +
-      "tream.Group\"w\n\004Data\022\017\n\007varName\030\001 \002(\t\022$\n\010",
-      "dataType\030\002 \002(\0162\022.ncstream.DataType\022\"\n\007se" +
-      "ction\030\003 \002(\0132\021.ncstream.Section\022\024\n\006bigend" +
-      "\030\004 \001(\010:\004true\"4\n\005Range\022\r\n\005start\030\001 \001(\004\022\014\n\004" +
-      "size\030\002 \002(\004\022\016\n\006stride\030\003 \001(\004\")\n\007Section\022\036\n" +
-      "\005range\030\001 \003(\0132\017.ncstream.Range\"\030\n\005Error\022\017" +
-      "\n\007message\030\001 \002(\t*\251\001\n\010DataType\022\010\n\004CHAR\020\000\022\010" +
-      "\n\004BYTE\020\001\022\t\n\005SHORT\020\002\022\007\n\003INT\020\003\022\010\n\004LONG\020\004\022\t" +
-      "\n\005FLOAT\020\005\022\n\n\006DOUBLE\020\006\022\n\n\006STRING\020\007\022\r\n\tSTR" +
-      "UCTURE\020\010\022\014\n\010SEQUENCE\020\t\022\t\n\005ENUM1\020\n\022\t\n\005ENU" +
-      "M2\020\013\022\t\n\005ENUM4\020\014\022\n\n\006OPAQUE\020\rB \n\017ucar.nc2.",
-      "streamB\rNcStreamProto"
+      "\020\003\022\010\n\004LONG\020\004\022\t\n\005FLOAT\020\005\022\n\n\006DOUBLE\020\006\"v\n\tD" +
+      "imension\022\014\n\004name\030\001 \001(\t\022\016\n\006length\030\002 \001(\004\022\032" +
+      "\n\013isUnlimited\030\003 \001(\010:\005false\022\025\n\006isVlen\030\004 \001" +
+      "(\010:\005false\022\030\n\tisPrivate\030\005 \001(\010:\005false\"\320\001\n\010" +
+      "Variable\022\014\n\004name\030\001 \002(\t\022$\n\010dataType\030\002 \002(\016",
+      "2\022.ncstream.DataType\022\"\n\005shape\030\003 \003(\0132\023.nc" +
+      "stream.Dimension\022!\n\004atts\030\004 \003(\0132\023.ncstrea" +
+      "m.Attribute\022\027\n\010unsigned\030\005 \001(\010:\005false\022\014\n\004" +
+      "data\030\006 \001(\014\022\020\n\010enumType\030\007 \001(\t\022\020\n\010dimIndex" +
+      "\030\010 \003(\r\"\316\001\n\tStructure\022\014\n\004name\030\001 \002(\t\022$\n\010da" +
+      "taType\030\002 \002(\0162\022.ncstream.DataType\022\"\n\005shap" +
+      "e\030\003 \003(\0132\023.ncstream.Dimension\022!\n\004atts\030\004 \003" +
+      "(\0132\023.ncstream.Attribute\022 \n\004vars\030\005 \003(\0132\022." +
+      "ncstream.Variable\022$\n\007structs\030\006 \003(\0132\023.ncs" +
+      "tream.Structure\"q\n\013EnumTypedef\022\014\n\004name\030\001",
+      " \002(\t\022+\n\003map\030\002 \003(\0132\036.ncstream.EnumTypedef" +
+      ".EnumType\032\'\n\010EnumType\022\014\n\004code\030\001 \002(\r\022\r\n\005v" +
+      "alue\030\002 \002(\t\"\356\001\n\005Group\022\014\n\004name\030\001 \002(\t\022!\n\004di" +
+      "ms\030\002 \003(\0132\023.ncstream.Dimension\022 \n\004vars\030\003 " +
+      "\003(\0132\022.ncstream.Variable\022$\n\007structs\030\004 \003(\013" +
+      "2\023.ncstream.Structure\022!\n\004atts\030\005 \003(\0132\023.nc" +
+      "stream.Attribute\022\037\n\006groups\030\006 \003(\0132\017.ncstr" +
+      "eam.Group\022(\n\tenumTypes\030\007 \003(\0132\025.ncstream." +
+      "EnumTypedef\"h\n\006Header\022\020\n\010location\030\001 \001(\t\022" +
+      "\r\n\005title\030\002 \001(\t\022\n\n\002id\030\003 \001(\t\022\035\n\004root\030\004 \002(\013",
+      "2\017.ncstream.Group\022\022\n\007version\030\005 \001(\r:\0010\"\306\001" +
+      "\n\004Data\022\017\n\007varName\030\001 \002(\t\022$\n\010dataType\030\002 \002(" +
+      "\0162\022.ncstream.DataType\022\"\n\007section\030\003 \002(\0132\021" +
+      ".ncstream.Section\022\024\n\006bigend\030\004 \001(\010:\004true\022" +
+      "\022\n\007version\030\005 \001(\r:\0010\022*\n\010compress\030\006 \001(\0162\022." +
+      "ncstream.Compress:\004NONE\022\r\n\005crc32\030\007 \001(\007\":" +
+      "\n\005Range\022\020\n\005start\030\001 \001(\004:\0010\022\014\n\004size\030\002 \002(\004\022" +
+      "\021\n\006stride\030\003 \001(\004:\0011\")\n\007Section\022\036\n\005range\030\001" +
+      " \003(\0132\017.ncstream.Range\"a\n\rStructureData\022\016" +
+      "\n\006member\030\001 \003(\r\022\014\n\004data\030\002 \002(\014\022\021\n\theapCoun",
+      "t\030\003 \003(\r\022\r\n\005sdata\030\004 \003(\t\022\020\n\005nrows\030\005 \001(\004:\0011" +
+      "\"\030\n\005Error\022\017\n\007message\030\001 \002(\t*\251\001\n\010DataType\022" +
+      "\010\n\004CHAR\020\000\022\010\n\004BYTE\020\001\022\t\n\005SHORT\020\002\022\007\n\003INT\020\003\022" +
+      "\010\n\004LONG\020\004\022\t\n\005FLOAT\020\005\022\n\n\006DOUBLE\020\006\022\n\n\006STRI" +
+      "NG\020\007\022\r\n\tSTRUCTURE\020\010\022\014\n\010SEQUENCE\020\t\022\t\n\005ENU" +
+      "M1\020\n\022\t\n\005ENUM2\020\013\022\t\n\005ENUM4\020\014\022\n\n\006OPAQUE\020\r*!" +
+      "\n\010Compress\022\010\n\004NONE\020\000\022\013\n\007DEFLATE\020\001B \n\017uca" +
+      "r.nc2.streamB\rNcStreamProto"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -5970,7 +6863,7 @@ public final class NcStreamProto {
           internal_static_ncstream_Variable_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_ncstream_Variable_descriptor,
-              new java.lang.String[] { "Name", "DataType", "Shape", "Atts", "Unsigned", "Data", "EnumType", },
+              new java.lang.String[] { "Name", "DataType", "Shape", "Atts", "Unsigned", "Data", "EnumType", "DimIndex", },
               ucar.nc2.stream.NcStreamProto.Variable.class,
               ucar.nc2.stream.NcStreamProto.Variable.Builder.class);
           internal_static_ncstream_Structure_descriptor =
@@ -6010,7 +6903,7 @@ public final class NcStreamProto {
           internal_static_ncstream_Header_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_ncstream_Header_descriptor,
-              new java.lang.String[] { "Location", "Title", "Id", "Root", },
+              new java.lang.String[] { "Location", "Title", "Id", "Root", "Version", },
               ucar.nc2.stream.NcStreamProto.Header.class,
               ucar.nc2.stream.NcStreamProto.Header.Builder.class);
           internal_static_ncstream_Data_descriptor =
@@ -6018,7 +6911,7 @@ public final class NcStreamProto {
           internal_static_ncstream_Data_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_ncstream_Data_descriptor,
-              new java.lang.String[] { "VarName", "DataType", "Section", "Bigend", },
+              new java.lang.String[] { "VarName", "DataType", "Section", "Bigend", "Version", "Compress", "Crc32", },
               ucar.nc2.stream.NcStreamProto.Data.class,
               ucar.nc2.stream.NcStreamProto.Data.Builder.class);
           internal_static_ncstream_Range_descriptor =
@@ -6037,8 +6930,16 @@ public final class NcStreamProto {
               new java.lang.String[] { "Range", },
               ucar.nc2.stream.NcStreamProto.Section.class,
               ucar.nc2.stream.NcStreamProto.Section.Builder.class);
-          internal_static_ncstream_Error_descriptor =
+          internal_static_ncstream_StructureData_descriptor =
             getDescriptor().getMessageTypes().get(10);
+          internal_static_ncstream_StructureData_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_ncstream_StructureData_descriptor,
+              new java.lang.String[] { "Member", "Data", "HeapCount", "Sdata", "Nrows", },
+              ucar.nc2.stream.NcStreamProto.StructureData.class,
+              ucar.nc2.stream.NcStreamProto.StructureData.Builder.class);
+          internal_static_ncstream_Error_descriptor =
+            getDescriptor().getMessageTypes().get(11);
           internal_static_ncstream_Error_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_ncstream_Error_descriptor,

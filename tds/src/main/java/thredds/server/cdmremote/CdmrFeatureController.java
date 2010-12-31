@@ -310,6 +310,7 @@ public class CdmrFeatureController extends AbstractCommandController { // implem
         long took = System.currentTimeMillis() - start;
         System.out.printf("%ntotal response took %d msecs nobs = %d%n  seeks= %d nbytes read= %d%n", took, w.count,
                 ucar.unidata.io.RandomAccessFile.getDebugNseeks(), ucar.unidata.io.RandomAccessFile.getDebugNbytes());
+        ucar.unidata.io.RandomAccessFile.setDebugAccess(false);  // LOOK !!
       }
     }
 
@@ -319,6 +320,10 @@ public class CdmrFeatureController extends AbstractCommandController { // implem
 
   private ModelAndView processStationData(HttpServletRequest req, HttpServletResponse res, FeatureDatasetPoint fdp, String path, CdmRemoteQueryBean qb) throws IOException {
     long start = 0;
+    if (showTime) {
+      start = System.currentTimeMillis();
+      ucar.unidata.io.RandomAccessFile.setDebugAccess(true);  // LOOK !!
+    }
 
     List<FeatureCollection> coll = fdp.getPointFeatureCollectionList();
     StationTimeSeriesFeatureCollection sfc = (StationTimeSeriesFeatureCollection) coll.get(0);
@@ -363,6 +368,7 @@ public class CdmrFeatureController extends AbstractCommandController { // implem
       long took = System.currentTimeMillis() - start;
       System.out.printf("%ntotal response took %d msecs nobs = %d%n  seeks= %d nbytes read= %d%n", took, w.count,
               ucar.unidata.io.RandomAccessFile.getDebugNseeks(), ucar.unidata.io.RandomAccessFile.getDebugNbytes());
+      ucar.unidata.io.RandomAccessFile.setDebugAccess(false);  // LOOK !!
     }
 
     return null;
