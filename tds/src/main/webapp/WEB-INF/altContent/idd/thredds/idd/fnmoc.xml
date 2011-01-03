@@ -61,10 +61,10 @@
 
       <featureCollection name="FNMOC-NOGAPS-Global_1p0deg" featureType="FMRC" harvest="true" path="fmrc/FNMOC/NOGAPS/Global_1p0deg">
         <metadata inherited="true">
-          <documentation type="summary">FNMOC GFS Model : AWIPS 203 (J) Grid. National - Alaska (polar stereographic).
-            Model runs are made at 0, 6, 12, and 18Z, with analysis and forecasts every 6 hours out 5 days.
-            Horizontal = 45 by 39 points, resolution 190.5 km, Polar Stereographic projection.
-            Vertical = 1000 to 100 hPa mandatory pressure levels (10 levels); surface, height above ground, pressure layers.
+          <documentation type="summary">FNMOC NOGAPS Global_1p0deg Model : Global Lat/Lon grid.
+            Model runs are made at 0, 6, 12, and 18Z, with analysis and forecasts every 3 hours out 180 hours.
+            Horizontal = 181 by 360 points, resolution 1 degree, Lat/Lon projection.
+            Vertical = 1013 to 4 hPa mandatory pressure levels (30 levels); surface, height above ground, pressure layers.
           </documentation>
         </metadata>
 
@@ -84,8 +84,8 @@
       <metadata inherited="true">
         <documentation type="summary">FNMOC Fleet Numerical Meteorology and Oceanography Center
         </documentation>
-        <documentation xlink:href="http://gcmd.nasa.gov/records/GCMD_FNMOC_WaveWatchIII.html"
-                       xlink:title="GCMD documentation"/>
+        <documentation xlink:href="https://www.fnmoc.navy.mil/ww3_cgi/index.html"
+                       xlink:title="FNMOC WW3 documentation"/>
       </metadata>
 
       <featureCollection name="FNMOC-WW3-Global_1p0deg" featureType="FMRC" harvest="true" path="fmrc/FNMOC/WW3/Global_1p0deg">
@@ -98,6 +98,23 @@
 
         <collection spec="/data/ldm/pub/native/grid/FNMOC/WW3/Global_1p0deg/FNMOC_WW3_Global_1p0deg_#yyyyMMdd_HHmm#.grib1"
                     name="FNMOC_WW3_Global_1p0deg"
+                    recheckAfter="15 min"
+                    olderThan="5 min"/>
+        <manage deleteAfter="45 days" check="0 0 3 * * ? *" />
+        <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
+        <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
+        <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
+      </featureCollection>
+      <featureCollection name="FNMOC-WW3-Mediterranean" featureType="FMRC" harvest="true" path="fmrc/FNMOC/WW3/Mediterranean">
+        <metadata inherited="true">
+          <documentation type="summary">FNMOC WW3 Mediterranean Model : Global Lat/Lon grid.
+            Model runs are made at 0, and 12Z, with analysis and forecasts every 6 hours out 72 hours.
+            Horizontal= 186 by 301 points, resolution .2 degree, Lat/Lon projection.
+          </documentation>
+        </metadata>
+
+        <collection spec="/data/ldm/pub/native/grid/FNMOC/WW3/Mediterranean/FNMOC_WW3_Mediterranean_#yyyyMMdd_HHmm#.grib1"
+                    name="FNMOC_WW3_Mediterranean"
                     recheckAfter="15 min"
                     olderThan="5 min"/>
         <manage deleteAfter="45 days" check="0 0 3 * * ? *" />
@@ -149,7 +166,7 @@
       <featureCollection name="FNMOC-COAMPS-Western_Atlantic" featureType="FMRC" harvest="true" path="fmrc/FNMOC/COAMPS/Western_Atlantic">
         <metadata inherited="true">
           <documentation type="summary">FNMOC COAMPS Western Atlantic Model : Global Lat/Lon grid.
-            Model runs are made at 0 and 12Z, with analysis and forecasts every 6 hours out 2 days.
+            Model runs are made at 0 and 12Z, with analysis and forecasts every 3 hours out 72 hours.
             Horizontal= 176 by 191 points, resolution .2 degree, Lat/Lon projection.
           </documentation>
         </metadata>
@@ -167,7 +184,7 @@
       <featureCollection name="FNMOC-COAMPS-Central_America" featureType="FMRC" harvest="true" path="fmrc/FNMOC/COAMPS/Central_America">
         <metadata inherited="true">
           <documentation type="summary">FNMOC COAMPS Central America Model : Global Lat/Lon grid.
-            Model runs are made at 0 and 12Z, with analysis and forecasts every 6 hours out 2 days.
+            Model runs are made at 0 and 12Z, with analysis and forecasts every 3 hours out 48 hours.
             Horizontal= 161 by 301 points, resolution .2 degree, Lat/Lon projection.
           </documentation>
         </metadata>
@@ -185,13 +202,30 @@
       <featureCollection name="FNMOC-COAMPS-Eastern_Pacific" featureType="FMRC" harvest="true" path="fmrc/FNMOC/COAMPS/Eastern_Pacific">
         <metadata inherited="true">
           <documentation type="summary">FNMOC COAMPS Eastern Pacific Model : Global Lat/Lon grid.
-            Model runs are made at 0 and 12Z, with analysis and forecasts every 6 hours out 2 days.
+            Model runs are made at 0 and 12Z, with analysis and forecasts every 3 hours out 48 hours.
             Horizontal= 156 by 231 points, resolution .2 degree, Lat/Lon projection.
           </documentation>
         </metadata>
 
         <collection spec="/data/ldm/pub/native/grid/FNMOC/COAMPS/Eastern_Pacific/FNMOC_COAMPS_Eastern_Pacific_#yyyyMMdd_HHmm#.grib1"
                     name="FNMOC_COAMPS_Eastern_Pacific"
+                    recheckAfter="15 min"
+                    olderThan="5 min"/>
+        <manage deleteAfter="45 days" check="0 0 3 * * ? *" />
+        <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
+        <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
+        <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
+      </featureCollection>
+      <featureCollection name="FNMOC-COAMPS-Europe" featureType="FMRC" harvest="true" path="fmrc/FNMOC/COAMPS/Europe">
+        <metadata inherited="true">
+          <documentation type="summary">FNMOC COAMPS Europe Model : Global Lat/Lon grid.
+            Model runs are made at 0 and 12Z, with analysis and forecasts every 6 hours out 72 hours.
+            Horizontal= 186 by 301 points, resolution .2 degree, Lat/Lon projection.
+          </documentation>
+        </metadata>
+
+        <collection spec="/data/ldm/pub/native/grid/FNMOC/COAMPS/Europe/FNMOC_COAMPS_Europe_#yyyyMMdd_HHmm#.grib1"
+                    name="FNMOC_COAMPS_Europe"
                     recheckAfter="15 min"
                     olderThan="5 min"/>
         <manage deleteAfter="45 days" check="0 0 3 * * ? *" />
@@ -212,7 +246,7 @@
       <featureCollection name="FNMOC-NCODA-Global_Ocean" featureType="FMRC" harvest="true" path="fmrc/FNMOC/NCODA/Global_Ocean">
         <metadata inherited="true">
           <documentation type="summary">FNMOC NCODA Model : Global Lat/Lon grid.
-            Model runs are made at 12Z, with analysis and forecasts.
+            Model runs are made at 12Z, with analysis and forecasts at 0Z.
             Horizontal= 721 by 1440 points, resolution .25 degree, Lat/Lon projection.
           </documentation>
         </metadata>
