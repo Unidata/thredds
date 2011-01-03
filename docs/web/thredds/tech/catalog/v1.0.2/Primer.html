@@ -28,17 +28,15 @@ dataset can also be added.</p>
 <pre style="margin-left: 40px;">  &lt;?xml version='1.0' encoding='UTF-8'?&gt;<br>  &lt;catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"<br>           xmlns:xlink="http://www.w3.org/1999/xlink"<br>           version="1.0.2"&gt;<br><span style="font-weight: bold;">1)</span>    &lt;service name="<span style="font-weight: bold;">odap</span>" serviceType="OPENDAP" <span style="font-weight: bold;">base="/thredds/dodsC/"</span> /&gt;<br>      &lt;dataset name="TDS Tutorial: example 1"&gt;<br><br><span style="font-weight: bold;">2)</span>        &lt;dataset name="TDS Tutorial: example data 1" <span style="font-weight: bold;">urlPath="test/example1.nc"</span> &gt;<br><span style="font-weight: bold;">3)</span>            &lt;serviceName&gt;<span style="font-weight: bold;">odap</span>&lt;/serviceName&gt;<br>          &lt;/dataset&gt;<br>          &lt;dataset name="TDS Tutorial: example data 2" urlPath="test/example2.nc" &gt;<br>              &lt;serviceName&gt;<span style="font-weight: bold;">odap</span>&lt;/serviceName&gt;<br>          &lt;/dataset&gt;<br>          &lt;dataset name="TDS Tutorial: example data 3" urlPath="test/example3.nc" &gt;<br>              &lt;serviceName&gt;<span style="font-weight: bold;">odap</span>&lt;/serviceName&gt;<br>          &lt;/dataset&gt;<br>
 <span style="font-weight: bold;">4)</span>        &lt;catalogRef xlink:title="My Other Catalog"<br>                      xlink:href="myOtherCatalog.xml" /&gt;<br>          &lt;catalogRef xlink:title="Far Away Univ catalog"<br>                      xlink:href="http://www.farAwayU.edu/thredds/catalog.xml" /&gt;<br>      &lt;/dataset&gt;<br>  &lt;/catalog&gt;<br></pre>
 <p>Notes:</p>
-<ul>
-<li>The service element (1) defines an OPeNDAP service and has the
-name "odap".
-</li>
-<li>The first dataset is a container dataset.</li>
-<li>Each child dataset has an access method due to
-its urlPath attribute (2) and child serviceName element (3).</li>
-<li>The catalogRef elements (4) link to a relative catalog and a
-remote catalog.</li>
-</ul>
-
+<ol>
+  <li>The service element (1) defines an OPeNDAP service and has the
+    name "odap". </li>
+  <li>The first dataset is a container dataset.</li>
+  <li>Each child dataset has an access method due to
+    its urlPath attribute (2) and child serviceName element (3).</li>
+  <li>The catalogRef elements (4) link to a relative catalog and a
+    remote catalog.</li>
+</ol>
 <h4>Constructing an access URL</h4>
 <ol>
 <li>Find the service element referenced by the dataset:

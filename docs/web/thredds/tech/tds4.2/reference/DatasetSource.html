@@ -9,12 +9,7 @@
 
 <body>
 <h1><img src="../../images/unidataLogo.png" width="75" height="75" align="middle">Dataset Source Plugin </h1>
-<div class="head">
-  <address>
-  </address>
-  <hr>
-  <div class="head"></div>
-</div>
+<hr>
 <p>In order for the TDS to serve data through any of the subsetting protocols like OPenDAP, WCS and the Netcdf Subsetting Service, it must be able to read the data into the Common Data Model. When the data is contained in a file,  this is done with an I/O Service Provider (IOSP). When the dataset depends on request parameters that are passed to the TDS by the client, then a more general interface is needed, since the IOSP does not have access to the HttpServletRequest object. </p>
 <h2>Create a <strong>DatasetSource</strong> implementation class </h2>
 <p>Your class must implement the <strong>thredds.servlet.DatasetSource</strong> interface: </p>
@@ -73,7 +68,7 @@
 <strong><br>
 </strong>
 <address>
-<img src="../../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Dec, 2010
+<img src="../../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated  Dec 2010
 </address>
 <p>&nbsp;</p>
 </body>

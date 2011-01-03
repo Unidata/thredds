@@ -1,63 +1,49 @@
 <!DOCTYPE html PUBLIC "-//w3c//dtd html 4.0 transitional//en">
-<html><head>
-
-  
-  
-  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-
-
-  
-  
-  <meta name="Author" content="John Caron"><title>Server-side InvCatalog Spec v1.0.2</title></head><body>
-<div class="head"> 
-  <h1> <img alt="THREDDS" src="../../images/THREDDSlogo.jpg" height="54" width="67"> Server-side InvCatalog Specification, Version 1.0.2<br>
-</h1>
+<html>
+<head>
+      <link href="../../tds.css" rel="stylesheet" type="text/css"/> 
+      <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="Author" content="John Caron"><title>Server-side InvCatalog Spec v1.0.2</title>
+</head>
+<body>
+ 
+  <h1> <img alt="THREDDS" src="../../images/THREDDSlogo.jpg" height="54" width="67"> Server-side Catalog Specification, Version 1.0.3<br>
+  </h1>
   <address>
-  last update: 03/20/2009<br>
+  last update: 01/03/2010<br>
   Comments to <a href="mailto:thredds@unidata.ucar.edu">THREDDS
   mailgroup</a>
   </address>
   <hr>
   <p>The
-THREDDS Data Server (TDS) uses specialized catalogs as configuration
-documents. Several elements have been added to the InvCatalog schema to
-allow for this server-side usage. </p>
+    THREDDS Data Server (TDS) uses specialized catalogs as configuration
+    documents. Several elements have been added to the InvCatalog schema to
+  allow for this server-side usage. </p>
   <p>This document specifies the semantics and XML representation of the server-side specializations allowed in THREDDS catalogs. </p>
   <h3>Contents:</h3>
-</div>
-
-
-<ol>
-<li><a href="#Server-side_Elements">Server-side Elements</a></li>
+  <ol>
+<li>Server-side Elements
   <ul>
-    <li><a href="#datasetScan_Element">datasetScan</a></li>
     <li><a href="#datasetRoot_Element">datasetRoot</a></li>
-    <li><a href="#datasetFmrc_Element">datasetFmrc</a><br>
+    <li><a href="#datasetScan_Element">datasetScan</a><a href="#datasetRoot_Element"></a></li>
+    <li><a href="#datasetFmrc_Element">datasetFmrc</a> (deprecated)</li>
+    <li><a href="#featureCollection">featureCollection</a><br>
     </li>
   </ul>
-  <li><a href="#index">Index</a></li>
-  <li><a href="Changes.html">Change History</a> </li>
+</li>
+
+    <li><a href="#index">Index</a></li>
+    <li><a href="Changes.html">Change History</a> </li>
 </ol>
 
-
-<div class="head">
-  <h3>Related resources:</h3>
-</div>
-
-
-<ul>
-
-<li><a href="/projects/THREDDS/tech/reference/DatasetScan.html">TDS &lt;datasetScan&gt; documentation</a><br>
-</li><li>InvCatalog XML Schema:</li>
+<h3>Related resources:</h3>
   <ul>
-    <li>Version 1.0.2<br>
-</li><li><a href="http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.1.xsd">Version 1.0.1</a><br>
-    </li>
 
-    <li><a href="http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.xsd">Version
-    1.0</a></li>
+<li><a href="../../tds4.2/reference/DatasetScan.html">TDS &lt;datasetScan&gt; documentation</a><br>
+</li>
+<li><a href="http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.3.xsd">XML Schema version 1.0.3</a><br>
+    </li>
   </ul>
-</ul>
 
 
 <p><strong>Change History:</strong></p>
@@ -72,14 +58,22 @@ attribute to simpleLatest and latestComplete elements.</li>
   <li>Add datasetFMRC element.</li>
 
 </ul>
-
-
 <hr>
-<h2><a name="Server-side_Elements"></a>Server-side Elements</h2>
-
-
-
-<h3><a name="datasetScan_Element"></a><em>datasetScan</em> Element</h3>
+<h3><a name="datasetRoot_Element"></a>The <em>datasetRoot</em> Element<br>
+</h3>
+<pre>  &lt;xsd:element name="datasetRoot"&gt;<br>    &lt;xsd:complexType&gt;<br>      &lt;xsd:attribute name="path" type="xsd:string" use="required"/&gt;<br>      &lt;xsd:attribute name="location" type="xsd:string" use="required"/&gt;<br>    &lt;/xsd:complexType&gt;<br>  &lt;/xsd:element&gt;<br>
+</pre>
+<p>The <i>datasetRoot</i> element, similar to the <i>datasetScan</i> element, maps request URLs to file locations. The
+  difference is that a datasetRoot does not perform any scans or generate
+  any catalogs. It simply allows users to specify individual datasets
+  from the datasetRoot location.<br>
+</p>
+<p>Example:<br>
+</p>
+<pre>&lt;datasetRoot path="dsR1" location="C:/data/mydata/" /&gt;<br>...<br>&lt;dataset name="dataset 1" urlPath="data1.nc" /&gt;<br>
+</pre>
+<hr style="width: 100%; height: 2px;">
+<h3><a name="datasetScan_Element"></a><em>The datasetScan</em> Element</h3>
 
 
 
@@ -218,26 +212,9 @@ string "Hi Fred, how are you?" would capture the strings "Fred" and
 "you". Following that with a capturing group replacement in the string
 "$2 are $1." would result in the string "you are Fred."</p>
 
-
-
-
 <p>Here's an example namer:</p>
-
-
-
-
-
 <pre>&lt;namer&gt;<br>  &lt;regExpOnName regExp="([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})([0-9]{2})"<br>                replaceString="NCEP GFS 191km Alaska $1-$2-$3 $4:$5:00 GMT"/&gt;<br>&lt;/namer</pre>
-
-
-
-
 <p>the regular expression has five capturing groups</p>
-
-
-
-
-
 <ol>
 
 <li>The first capturing group, "([0-9]{4})",&nbsp; captures four digits, in this case the year.<br>
@@ -245,10 +222,6 @@ string "Hi Fred, how are you?" would capture the strings "Fred" and
   </li><li>The third capturing group, "([0-9]{2})", captures two digits, in this case the day of the month.<br>
   </li><li>The fourth capturing group, "([0-9]{2})", captures two digits, in this case the hour of the day.</li><li>The fifth capturing group, "([0-9]{2})", captures two digits, in this case the minutes of the hour.</li>
 </ol>
-
-
-
-
 When applied to the dataset name
 "GFS_Alaska_191km_20051011_0000.grib1",&nbsp; the
 strings
@@ -256,17 +229,7 @@ strings
 capturing group references in the replaceString attribute value, we get
 the name "NCEP GFS 191km Alaska 2005-10-11 00:00:00 GMT".
 So, when cataloged, this dataset would end up as something like this:<br>
-
-
-
-
 <pre>&lt;dataset name="NCEP GFS 191km Alaska 2005-10-11 00:00:00 GMT"<br>        &nbsp;urlPath="models/NCEP/GFS/Alaska_191km/GFS_Alaska_191km_20051011_0000.grib1"/&gt;</pre>
-
-<p>
-</p>
-
-
-
 
 <h3><a name="sort_Element"></a>sort Element<br>
 </h3>
@@ -387,8 +350,8 @@ from the datasetRoot location.<br>
 
 
 <hr style="width: 100%; height: 2px;">
-<h3><a name="datasetFmrc_Element"></a>datasetFmrc Element<br>
-</h3>
+<h3><a name="datasetFmrc_Element"></a>The <em>datasetFmrc</em> Element</h3>
+<p>Note: this element is deprecated in favor of featureCollection</p>
 <pre>
 &lt;!-- Define a Forecast Model Run Collection dataset --&gt;
 &lt;xsd:element name="datasetFmrc" substitutionGroup="dataset"&gt;
@@ -417,11 +380,99 @@ from the datasetRoot location.<br>
 &lt;/xsd:element&gt;
 </pre>
 <p>A <strong>datasetFmrc</strong> is a kind of dataset, and so allows all of the attributes and child elements of the dataset element. </p>
-<h4>Example<br>
+<h4>Example:<br>
 </h4>
 <pre>  &lt;datasetFmrc name="SABGOM Forecast Model Run Collection" <strong>path</strong>="fmrc/sabgom"&gt;<br><br>    &lt;metadata inherited="true"&gt;<br>      &lt;serviceName&gt;dapService&lt;/serviceName&gt;<br>    &lt;/metadata&gt;<br><br>	 &lt;netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2"&gt;<br>      &lt;aggregation dimName="runtime" type="<strong>forecastModelRunCollection</strong>" recheckEvery="10min"&gt;<br>        &lt;scan location="D:/test/signell/big/" suffix=".nc" dateFormatMark="his_#yyyyMMdd" olderThan="5 min"/&gt;<br>      &lt;/aggregation&gt;<br>    &lt;/netcdf&gt;<br><br>  &lt;/datasetFmrc&gt;<br></pre>
-<p><br>
-  Like <em>datasetScan</em>, the <i>path</i> attribute is used to define the URL path that will map to to a given datasetFmrc. </p>
+<p>  Like <em>datasetScan</em>, the <i>path</i> attribute is used to define the URL path that will map to to a given datasetFmrc. </p>
+<hr>
+<h3><a name="featureCollection"></a>The <em>featureCollection</em> Element</h3>
+<pre>&lt;!-- featureCollection element --&gt;
+&lt;xsd:element name=&quot;featureCollection&quot; substitutionGroup=&quot;dataset&quot;&gt;
+  &lt;xsd:complexType&gt;
+   &lt;xsd:complexContent&gt;
+    &lt;xsd:extension base=&quot;DatasetType&quot;&gt;
+     &lt;xsd:sequence&gt;
+       &lt;xsd:element type=&quot;collectionType&quot; name=&quot;collection&quot;/&gt;
+       &lt;xsd:element type=&quot;manageType&quot; name=&quot;manage&quot; minOccurs=&quot;0&quot;/&gt;
+       &lt;xsd:element type=&quot;updateType&quot; name=&quot;update&quot; minOccurs=&quot;0&quot;/&gt;
+       &lt;xsd:element type=&quot;protoDatasetType&quot; name=&quot;protoDataset&quot; minOccurs=&quot;0&quot;/&gt;
+       &lt;xsd:element type=&quot;fmrcConfigType&quot; name=&quot;fmrcConfig&quot; minOccurs=&quot;0&quot;/&gt;
+       &lt;xsd:element type=&quot;pointConfigType&quot; name=&quot;pointConfig&quot; minOccurs=&quot;0&quot;/&gt;
+       &lt;xsd:element ref=&quot;ncml:netcdf&quot; minOccurs=&quot;0&quot;/&gt;
+     &lt;/xsd:sequence&gt;
+     &lt;xsd:attribute name=&quot;featureType&quot; type=&quot;featureTypeChoice&quot; use=&quot;required&quot;/&gt;
+     &lt;xsd:attribute name=&quot;path&quot; type=&quot;xsd:string&quot; use=&quot;required&quot;/&gt;
+    &lt;/xsd:extension&gt;
+   &lt;/xsd:complexContent&gt;
+  &lt;/xsd:complexType&gt;
+&lt;/xsd:element&gt;</pre>
+<pre>&lt;xsd:simpleType name=&quot;featureTypeChoice&quot;&gt;
+  &lt;xsd:union memberTypes=&quot;xsd:token&quot;&gt;
+   &lt;xsd:simpleType&gt;
+    &lt;xsd:restriction base=&quot;xsd:token&quot;&gt;
+     &lt;xsd:enumeration value=&quot;FMRC&quot;/&gt;
+     &lt;xsd:enumeration value=&quot;Station&quot;/&gt;
+    &lt;/xsd:restriction&gt;
+   &lt;/xsd:simpleType&gt;
+  &lt;/xsd:union&gt;
+&lt;/xsd:simpleType&gt;</pre>
+<pre>&lt;xsd:complexType name=&quot;collectionType&quot;&gt;
+   &lt;xsd:attribute name=&quot;spec&quot; type=&quot;xsd:string&quot; use=&quot;required&quot;/&gt;
+   &lt;xsd:attribute name=&quot;name&quot; type=&quot;xsd:token&quot;/&gt;
+   &lt;xsd:attribute name=&quot;olderThan&quot; type=&quot;xsd:string&quot; /&gt;
+   &lt;xsd:attribute name=&quot;recheckAfter&quot; type=&quot;xsd:string&quot; /&gt;
+&lt;/xsd:complexType&gt;</pre>
+<pre>&lt;xsd:complexType name=&quot;manageType&quot;&gt;   &lt;!-- mot implemented yet --&gt;
+   &lt;xsd:attribute name=&quot;deleteAfter&quot; type=&quot;xsd:string&quot; use=&quot;required&quot;/&gt;
+   &lt;xsd:attribute name=&quot;check&quot; type=&quot;xsd:token&quot;/&gt;
+&lt;/xsd:complexType&gt;</pre>
+<pre>&lt;xsd:complexType name=&quot;updateType&quot;&gt;
+   &lt;xsd:attribute name=&quot;startup&quot; type=&quot;xsd:boolean&quot;/&gt;
+   &lt;xsd:attribute name=&quot;rescan&quot; type=&quot;xsd:token&quot;/&gt;
+   &lt;xsd:attribute name=&quot;trigger&quot; type=&quot;xsd:token&quot;/&gt;
+&lt;/xsd:complexType&gt;</pre>
+<pre> &lt;xsd:complexType name=&quot;protoDatasetType&quot;&gt;
+   &lt;xsd:sequence&gt;
+     &lt;xsd:element ref=&quot;ncml:netcdf&quot; minOccurs=&quot;0&quot;/&gt;
+   &lt;/xsd:sequence&gt;
+   &lt;xsd:attribute name=&quot;choice&quot; type=&quot;protoChoices&quot;/&gt;
+   &lt;xsd:attribute name=&quot;change&quot; type=&quot;xsd:string&quot;/&gt;
+   &lt;xsd:attribute name=&quot;param&quot; type=&quot;xsd:string&quot;/&gt;
+ &lt;/xsd:complexType&gt;</pre>
+<pre>&lt;xsd:simpleType name=&quot;protoChoices&quot;&gt;
+  &lt;xsd:union memberTypes=&quot;xsd:token&quot;&gt;
+   &lt;xsd:simpleType&gt;
+    &lt;xsd:restriction base=&quot;xsd:token&quot;&gt;
+     &lt;xsd:enumeration value=&quot;First&quot;/&gt;
+     &lt;xsd:enumeration value=&quot;Random&quot;/&gt;
+     &lt;xsd:enumeration value=&quot;Penultimate&quot;/&gt;
+     &lt;xsd:enumeration value=&quot;Latest&quot;/&gt;
+     &lt;xsd:enumeration value=&quot;Run&quot;/&gt;
+    &lt;/xsd:restriction&gt;
+   &lt;/xsd:simpleType&gt;
+  &lt;/xsd:union&gt;
+&lt;/xsd:simpleType&gt;</pre>
+<pre> &lt;xsd:complexType name=&quot;fmrcConfigType&quot;&gt;
+   &lt;xsd:attribute name=&quot;regularize&quot; type=&quot;xsd:boolean&quot;/&gt;
+   &lt;xsd:attribute name=&quot;datasetTypes&quot; type=&quot;fmrcDatasetTypes&quot;/&gt;
+ &lt;/xsd:complexType&gt;</pre>
+<pre>&lt;xsd:simpleType name=&quot;fmrcDatasetTypes&quot;&gt;
+   &lt;xsd:union memberTypes=&quot;xsd:token&quot;&gt;
+   &lt;xsd:simpleType&gt;
+    &lt;xsd:restriction base=&quot;xsd:token&quot;&gt;
+     &lt;xsd:enumeration value=&quot;TwoD&quot;/&gt;
+     &lt;xsd:enumeration value=&quot;Best&quot;/&gt;
+     &lt;xsd:enumeration value=&quot;Files&quot;/&gt;
+     &lt;xsd:enumeration value=&quot;Runs&quot;/&gt;
+     &lt;xsd:enumeration value=&quot;ConstantForecasts&quot;/&gt;
+     &lt;xsd:enumeration value=&quot;ConstantOffsets&quot;/&gt;
+    &lt;/xsd:restriction&gt;
+   &lt;/xsd:simpleType&gt;
+  &lt;/xsd:union&gt;
+&lt;/xsd:simpleType&gt;</pre>
+<pre> &lt;xsd:complexType name=&quot;pointConfigType&quot;&gt;
+   &lt;xsd:attribute name=&quot;datasetTypes&quot; type=&quot;xsd:string&quot;/&gt;
+ &lt;/xsd:complexType&gt;</pre>
 <hr>
 <h2>Index<a name="index"></a> </h2>
 
@@ -436,7 +487,7 @@ from the datasetRoot location.<br>
   <li><a href="#addTimeCoverage_Element">addTimeCoverage</a>: an element<br>
   </li>
   <li><a href="#datasetScan_Element">datasetScan</a>: an element which creates nested catalogs by scanning directories.</li>
-  <li><a href="#datasetRoot_Element">datasetRoot</a>: an element which <br>
+  <li><a href="#datasetRoot_Element">datasetRoot</a>: an element which associates a local disk directory with a URL path<br>
   </li>
   <li><a href="#filter_Element">filter</a>: an element</li>
   <li><a href="#namer_Element">namer</a>: an element<br>

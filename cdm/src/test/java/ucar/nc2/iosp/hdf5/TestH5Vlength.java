@@ -162,10 +162,10 @@ public class TestH5Vlength extends TestCase {
 
   // from bsantos@ipfn.ist.utl.pt
   public void testVlenEndian() throws IOException {
-    //testVlenEndian(TestN4.testDir+"vlenBigEndian.nc", 10);
-    testVlenEndian("C:/data/work/bruno/test3_p1_d1wave.nc", 10);
-    //testVlenEndian(TestN4.testDir+"vlenLittleEndian.nc", 100);
-    testVlenEndian("C:/data/work/bruno/fpscminicodac_1.nc", 100);
+    testVlenEndian(TestN4.testDir+"vlenBigEndian.nc", 10);
+    //testVlenEndian("C:/data/work/bruno/test3_p1_d1wave.nc", 10);
+    testVlenEndian(TestN4.testDir+"vlenLittleEndian.nc", 100);
+    //testVlenEndian("C:/data/work/bruno/fpscminicodac_1.nc", 100);
   }
 
   private void testVlenEndian(String filename, int n) throws IOException {
