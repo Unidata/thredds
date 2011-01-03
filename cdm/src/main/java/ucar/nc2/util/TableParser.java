@@ -198,6 +198,8 @@ public class TableParser {
       this.type = type;
     }
 
+    protected Field() {}
+
     public Object parse(String line) throws NumberFormatException {
       return parse(line, this.start, this.end);
     }
@@ -206,7 +208,7 @@ public class TableParser {
       return parse(line, this.start+offset, this.end+offset);      
     }
 
-    private Object parse(String line, int start, int end) throws NumberFormatException {
+    protected Object parse(String line, int start, int end) throws NumberFormatException {
       String svalue = (end > line.length()) ? line.substring(start) : line.substring(start, end);
       //System.out.printf("  [%d,%d) = %s %n",start, end, svalue);
 
@@ -241,6 +243,32 @@ public class TableParser {
       hasScale = true;
     }
 
+  }
+
+  public DerivedField addDerivedField(Field from, Transform transform, Class type ) {
+    DerivedField fld =  new DerivedField(from, transform, type);
+    fields.add(fld);
+    return fld;
+  }
+
+  public class DerivedField extends Field {
+    Field from;
+    Transform transform;
+
+    DerivedField(Field from, Transform transform, Class type) {
+      this.from = from;
+      this.transform = transform;
+      this.type = type;
+    }
+
+    protected Object parse(String line, int start, int end) throws NumberFormatException {
+      Object org = from.parse(line);
+      return transform.derive(org);
+    }
+  }
+
+  public interface Transform {
+    Object derive(Object org);
   }
 
   /**

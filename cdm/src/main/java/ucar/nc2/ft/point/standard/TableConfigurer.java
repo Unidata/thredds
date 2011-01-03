@@ -40,9 +40,10 @@ import java.util.Formatter;
 
 /**
  * To analyze specific datasets, implement a TableConfigurer, whose job is to
- *   create TableConfig, used by TableAnalyzer.
+ *   create a TableConfig, used by TableAnalyzer.
  * @author caron
  * @since Apr 23, 2008
+ * @see TableAnalyzer for plugins
  */
 public interface TableConfigurer {
   /**

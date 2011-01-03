@@ -269,10 +269,10 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
     if (parent != null)
       top.transferMetadata(parent, true); // make all inherited metadata local
 
-    /* String id = getID();
+    String id = getID();
     if (id == null)
       id = getPath();
-    top.setID(id);  */
+    top.setID(id);  
 
     // add Variables, GeospatialCoverage, TimeCoverage LOOK doesnt seem to work
     ThreddsMetadata tmi = top.getLocalMetadataInheritable();

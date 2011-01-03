@@ -37,6 +37,7 @@ import ucar.nc2.constants.FeatureType;
 import thredds.catalog.ThreddsMetadata;
 import thredds.catalog.InvDatasetImpl;
 import thredds.catalog.DataFormatType;
+import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.units.DateRange;
 
 import java.io.IOException;
@@ -268,5 +269,36 @@ public class MetadataExtractor {
     return maxDateRange;
   }
 
+  ///////////////////////////////////////////////////////////////////////////////
+  static public ThreddsMetadata.Variables extractVariables(FeatureDatasetPoint fd) {
+    ThreddsMetadata.Variables vars = new ThreddsMetadata.Variables("CF-1.5");
+    for (VariableSimpleIF v : fd.getDataVariables()) {
+      ThreddsMetadata.Variable tv = new ThreddsMetadata.Variable();
+      vars.addVariable(tv);
+
+      tv.setName(v.getName());
+      tv.setDescription(v.getDescription());
+      tv.setUnits(v.getUnitsString());
+
+      ucar.nc2.Attribute att = v.findAttributeIgnoreCase("standard_name");
+      tv.setVocabularyName((att != null) ? att.getStringValue() : "N/A");
+      }
+    vars.sort();
+    return vars;
+  }
+
+  static public ThreddsMetadata.GeospatialCoverage extractGeospatial(FeatureDatasetPoint fd) {
+    LatLonRect llbb = fd.getBoundingBox();
+    if (llbb != null) {
+      ThreddsMetadata.GeospatialCoverage gc = new ThreddsMetadata.GeospatialCoverage();
+      gc.setBoundingBox(llbb);
+      return gc;
+    }
+    return null;
+  }
+
+  static public DateRange extractDateRange(FeatureDatasetPoint fd) {
+    return fd.getDateRange();
+  }
 
 }

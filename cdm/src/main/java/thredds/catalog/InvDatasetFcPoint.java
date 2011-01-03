@@ -6,6 +6,7 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.point.collection.CompositeDatasetFactory;
 import ucar.nc2.ft.point.collection.UpdateableCollection;
+import ucar.nc2.thredds.MetadataExtractor;
 import ucar.unidata.util.StringUtil;
 
 import java.io.IOException;
@@ -79,6 +80,13 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
       State localState = new State(state);
       makeDatasets(localState); // LOOK whats really needed is just the time range metadata updated
       update();
+
+      if (null != fd) {
+        localState.vars = MetadataExtractor.extractVariables(fd);
+        localState.gc = MetadataExtractor.extractGeospatial(fd);
+        localState.dateRange = MetadataExtractor.extractDateRange(fd);
+      }
+      //localState.lastProtoChange = System.currentTimeMillis();
 
       state = localState;
       return state;

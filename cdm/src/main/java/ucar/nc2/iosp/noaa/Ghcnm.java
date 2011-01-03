@@ -32,9 +32,8 @@ import java.util.*;
  * protoc --proto_path=. --java_out=. ucar/nc2/iosp/noaa/GhcnmIndex.proto
  * </pre>
  *
- * User: caron
- * Date: Dec 8, 2010
- * Time: 12:31:03 PM
+ * @author caron
+ * @since Dec 8, 2010
  */
 public class Ghcnm extends AbstractIOServiceProvider {
 
@@ -356,7 +355,8 @@ public class Ghcnm extends AbstractIOServiceProvider {
   private static final String RECORD = "all_data";
   private static final String DIM_NAME = "month";
   private static final String STNID = "stnid";
-  // private static final String WMO = "wmo";
+
+  private static final String TIME = "time";
   private static final String YEAR = "year";
   private static final String VALUE = "value";
   private static final String DMFLAG = "dm";
@@ -379,6 +379,7 @@ public class Ghcnm extends AbstractIOServiceProvider {
   private static final String TOWNDIS = "townDist";
   private static final String GRVEG = "vegType";
   private static final String POPCSS = "popClassFromLights";
+  private static final String WMO = "wmoId";
 
   private static final String STN_DATA = "stn_data";
 
@@ -450,6 +451,10 @@ public class Ghcnm extends AbstractIOServiceProvider {
     makeMember(dataSeq, QCFLAG, DataType.CHAR, DIM_NAME, "quality control flag", null, null, null);
     makeMember(dataSeq, DSFLAG, DataType.CHAR, DIM_NAME, "data source flag", null, null, null);
 
+    // synthetic time variable
+    v = makeMember(dataSeq, TIME, DataType.STRING, null, "starting time of the record", null, null, AxisType.Time);
+    v.addAttribute(new Attribute(CF.MISSING_VALUE, "missing"));
+
     StructureMembers dataSm = dataSeq.makeStructureMembers();
     dataSm.findMember(STNID).setDataObject(dataParser.getField(0));
     dataSm.findMember(YEAR).setDataObject(dataParser.getField(1));
@@ -459,6 +464,17 @@ public class Ghcnm extends AbstractIOServiceProvider {
     dataSm.findMember(DSFLAG).setDataObject(dataParser.getField(6));
     dataSeq.setSPobject(new Vinfo(this.raf, dataSm));
     stnIdFromData = dataParser.getField(0);
+
+    // synthetic time variable
+    TableParser.Field org = dataParser.getField(1); // YEAR
+    TableParser.Field derived = dataParser.addDerivedField(org, new TableParser.Transform() {
+      public Object derive(Object org) {
+        int year = (Integer) org;
+        return year+"-01-01T00:00:00Z";
+      }
+    }, String.class);
+    dataSm.findMember(TIME).setDataObject(derived);
+
 
     /*
        ID                 1-11        Integer
@@ -510,13 +526,17 @@ public class Ghcnm extends AbstractIOServiceProvider {
     stnSeq.addMemberVariable(nestedSeq);
 
     v = makeMember(nestedSeq, YEAR, DataType.INT, null, "year", null, null, null);
-    v.addAttribute(new Attribute(CF.UNITS, "years since 0000-00-00T00.00"));
+    v.addAttribute(new Attribute(CF.UNITS, "years since 0000-01-01T00:00"));
     v = makeMember(nestedSeq, VALUE, DataType.FLOAT, DIM_NAME, "monthly mean temperature", "Celsius", null, null);
     v.addAttribute(new Attribute(CF.MISSING_VALUE, -9999));
     dataParser.getField(3).setScale(.01f);
     makeMember(nestedSeq, DMFLAG, DataType.CHAR, DIM_NAME, "data management flag", null, null, null);
     makeMember(nestedSeq, QCFLAG, DataType.CHAR, DIM_NAME, "quality control flag", null, null, null);
     makeMember(nestedSeq, DSFLAG, DataType.CHAR, DIM_NAME, "data source flag", null, null, null);
+
+    // synthetic time variable in nested seq
+    v = makeMember(nestedSeq, TIME, DataType.STRING, null, "starting time of the record", null, null, AxisType.Time);
+    v.addAttribute(new Attribute(CF.MISSING_VALUE, "missing"));
 
     StructureMembers nestedSm = nestedSeq.makeStructureMembers();
     nestedSm.findMember(YEAR).setDataObject(dataParser.getField(1));
@@ -527,7 +547,23 @@ public class Ghcnm extends AbstractIOServiceProvider {
     nestedSeq.setSPobject(new Vinfo(this.raf, nestedSm));
     stnDataMembers = nestedSm;
 
-    // finish the stn sequence
+    // synthetic time variable in nested seq
+    TableParser.Field org2 = dataParser.getField(1); // YEAR
+    TableParser.Field derived2 = dataParser.addDerivedField(org2, new TableParser.Transform() {
+      public Object derive(Object org) {
+        int year = (Integer) org;
+        return year+"-01-01T00:00:00Z";
+      }
+    }, String.class);
+    nestedSm.findMember(TIME).setDataObject(derived2);
+
+    //// finish the stn sequence
+
+    // synthetic wmo variable in station
+    v = makeMember(stnSeq, WMO, DataType.INT, null, "WMO station id", null, null, null);
+    v.addAttribute(new Attribute(CF.MISSING_VALUE, -9999));
+    v.addAttribute(new Attribute(CF.STANDARD_NAME, CF.STATION_WMOID));
+
     StructureMembers stnSm = stnSeq.makeStructureMembers();
     int count = 0;
     int n = stnParser.getNumberOfFields();
@@ -537,9 +573,22 @@ public class Ghcnm extends AbstractIOServiceProvider {
     }
     stnSeq.setSPobject(new Vinfo(stnRaf, stnSm));
 
-    // global attribites
+    // synthetic wmo variable in station
+    /* ID: 11 digit identifier, digits 1-3=Country Code, digits 4-8 represent
+           the WMO id if the station is a WMO station.  It is a WMO station if
+           digits 9-11="000". */
+    TableParser.Field org3 = stnParser.getField(0); // STNID
+    TableParser.Field derived3 = stnParser.addDerivedField(org3, new TableParser.Transform() {
+      public Object derive(Object org) {
+        long stnid = (Long) org;
+        return (stnid % 1000 == 0) ? new Integer((int)(stnid/1000) % 100000) : new Integer(-9999);
+      }
+    }, int.class);
+    stnSm.findMember(WMO).setDataObject(derived3);
+
+    //// global attribites
     ncfile.addAttribute(null, new Attribute("title", "Version 3 of the GHCN-Monthly dataset of land surface mean temperatures"));
-    ncfile.addAttribute(null, new Attribute("Conventions", "CDM-direct"));
+    ncfile.addAttribute(null, new Attribute("Conventions", "CDM"));
     ncfile.addAttribute(null, new Attribute("CF:featureType", "timeSeries"));
     ncfile.addAttribute(null, new Attribute("see", "http://www.ncdc.noaa.gov/ghcnm, ftp://ftp.ncdc.noaa.gov/pub/data/ghcn/v3"));
     ncfile.finish();
@@ -934,6 +983,8 @@ public class Ghcnm extends AbstractIOServiceProvider {
   }
 
   /////////////////////////////////////////////////////////////////////////////////
+  // debug
+
   static public NetcdfFile open(String filename) throws IOException {
     Ghcnm iosp = new Ghcnm();
     RandomAccessFile raf = new RandomAccessFile(filename, "r");

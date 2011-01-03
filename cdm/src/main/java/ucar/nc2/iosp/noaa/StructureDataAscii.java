@@ -1,14 +1,12 @@
 package ucar.nc2.iosp.noaa;
 
 import ucar.ma2.*;
-import ucar.nc2.iosp.IospHelper;
 import ucar.nc2.util.TableParser;
 
 /**
- * Created by IntelliJ IDEA.
- * User: caron
- * Date: Dec 8, 2010
- * Time: 5:23:26 PM
+ * StructureData whose data is stored in ascii, with a TableParser to extrat the values.
+ * @author caron
+ * @since Dec 8, 2010
  */
 public class StructureDataAscii extends StructureData {
   protected String line;

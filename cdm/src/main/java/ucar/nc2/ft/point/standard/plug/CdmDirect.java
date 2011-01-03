@@ -37,12 +37,8 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.constants.CF;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.StructurePseudoDS;
-import ucar.nc2.dataset.VariableDS;
-import ucar.nc2.dataset.StructureDS;
 import ucar.nc2.ft.point.standard.*;
 import ucar.nc2.*;
-import ucar.ma2.DataType;
 
 import java.util.*;
 import java.io.IOException;
@@ -55,7 +51,7 @@ import java.io.IOException;
  */
 public class CdmDirect extends TableConfigurerImpl {
 
-  private final String Convention = "CDM-direct";
+  private final String Convention = "CDM";
 
   public boolean isMine(FeatureType wantFeatureType, NetcdfDataset ds) {
     boolean ok = false;
@@ -84,19 +80,18 @@ public class CdmDirect extends TableConfigurerImpl {
       case point:
         return null; // use default handler
       case timeSeries:
-        if (wantFeatureType == FeatureType.POINT)
+        /* if (wantFeatureType == FeatureType.POINT)
           return getStationAsPointConfig(ds, errlog);
-        else
+        else  */
           return getStationConfig(ds, errlog);
-      case timeSeriesProfile:
-          return getStationProfileConfig(ds, errlog);
+      //case timeSeriesProfile:
+      //    return getStationProfileConfig(ds, errlog);
       default:
         throw new IllegalStateException("unimplemented feature ftype= " + ftype);
     }
   }
 
   protected TableConfig getStationConfig(NetcdfDataset ds, Formatter errlog) throws IOException {
-    boolean needFinish = false;
 
     // find lat coord
     Variable lat = CoordSysEvaluator.findCoordByType(ds, AxisType.Lat);
@@ -138,17 +133,18 @@ public class CdmDirect extends TableConfigurerImpl {
 
     // other station
     stnTable.stnDesc = Evaluator.getNameOfVariableWithAttribute(ds, CF.STANDARD_NAME, CF.STATION_DESC);
+    stnTable.stnWmoId = Evaluator.getNameOfVariableWithAttribute(ds, CF.STANDARD_NAME, CF.STATION_WMOID);
 
     // obs table
     TableConfig obs = new TableConfig(Table.Type.NestedStructure, "station.stn_data");
     obs.nestedTableName = "stn_data";
-    obs.time = "year";
+    obs.time = "time";
     stnTable.addChild(obs);
 
     return stnTable;
   }
 
-  protected TableConfig getStationAsPointConfig(NetcdfDataset ds, Formatter errlog) throws IOException {
+ /* protected TableConfig getStationAsPointConfig(NetcdfDataset ds, Formatter errlog) throws IOException {
     boolean needFinish = false;
 
     // find lat coord
@@ -170,47 +166,19 @@ public class CdmDirect extends TableConfigurerImpl {
       return null;
     }
 
-    // check dimensions
-    boolean stnIsScalar = (lat.getRank() == 0);
-    boolean stnIsSingle = (lat.getRank() == 1) && (lat.getSize() == 1);
-    Dimension stationDim = null;
-
-    if (!stnIsScalar) {
-      if (lat.getDimension(0) != lon.getDimension(0)) {
-        errlog.format("Lat and Lon coordinate must have same size");
-        return null;
-      }
-      stationDim = lat.getDimension(0);
-    }
-
-    // optional alt coord
-    Variable alt = CoordSysEvaluator.findCoordByType(ds, AxisType.Height);
-
-    // obs table
-    VariableDS time = CoordSysEvaluator.findCoordByType(ds, AxisType.Time);
-    if (time == null) {
-      errlog.format("CdmDirect: Must have a Time coordinate");
-      return null;
-    }
-    Dimension obsDim = time.getDimension(time.getRank()-1); // may be time(time) or time(stn, obs)
-
     Table.Type obsTableType = Table.Type.Structure;
-    Structure multidimStruct = Evaluator.getStructureWithDimensions(ds, stationDim, obsDim);
-
-    if (multidimStruct == null) {
-        errlog.format("CdmDirect: Cannot figure out StationAsPoint table structure");
-        return null;
-    }
-
-    TableConfig obs = new TableConfig(obsTableType, obsDim.getName());
-    obs.dimName = obsDim.getName();
-    obs.structName = multidimStruct.getName();
+    TableConfig obs = new TableConfig(obsTableType, "all_data");
+    obs.dimName = "all_data";
+    obs.structName = "all_data";
     obs.structureType = TableConfig.StructureType.Structure;
     obs.featureType = FeatureType.POINT;
 
     obs.lat= lat.getName();
     obs.lon= lon.getName();
-    obs.time= time.getName();
+    obs.time= "time";
+
+    // optional alt coord
+    Variable alt = CoordSysEvaluator.findCoordByType(ds, AxisType.Height);
     if (alt != null)
        obs.elev = alt.getName();
 
@@ -330,5 +298,5 @@ public class CdmDirect extends TableConfigurerImpl {
       return null;
     }
     return stnTable;
-  }
+  } */
 }

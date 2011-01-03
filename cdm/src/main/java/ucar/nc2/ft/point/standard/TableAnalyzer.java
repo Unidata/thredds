@@ -67,7 +67,7 @@ public class TableAnalyzer {
   // search in the order added
   static {
 
-    registerAnalyzer("CDM-direct", CdmDirect.class, null);
+    registerAnalyzer("CDM", CdmDirect.class, null);
 
     registerAnalyzer("CF-1.", CFpointObs.class, new ConventionNameOk() {
       public boolean isMatch(String convName, String wantName) {
