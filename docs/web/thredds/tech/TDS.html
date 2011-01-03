@@ -14,7 +14,7 @@ supported by Unidata, a division of the University Corporation for
 Atmospheric Research (<a href="http://www.ucar.edu/">UCAR</a>), and is sponsored by the National Science Foundation.</p>
 <p>Some of the technology in the TDS:</p>
 <ol>
-  <li>THREDDS <a href="#Catalogs">Dataset Inventory Catalogs</a>
+  <li>THREDDS <a href="catalog/index.html">Dataset Inventory Catalogs</a>
 are used to provide virtual directories of available data and their
 associated metadata. These catalogs can be generated dynamically or
 statically. </li>
@@ -88,14 +88,7 @@ you need regular access to large amounts of data, please contact <a href="mailto
     [<a href="ftp://ftp.unidata.ucar.edu/pub/thredds/4.1/CHANGES.txt">Change Log</a>]</li>
   <li><a href="tds4.1/reference/index.html">TDS 4.1 Reference Documentation</a></li>
 </ul>
-<h2>Other Documentation</h2>
-<ul>
-  <li><a href="tds4.2/tutorial/workshop2010.html">2010 workshop</a></li>
-  <li><a href="StatusReport.html">THREDDS Status Report </a></li>
-  <li> Fact Sheet
-    [<a href="/publications/factsheets/2007sheets/threddsFactSheet-1.doc">Word Doc</a>]
-    [<a href="/publications/factsheets/2007sheets/threddsFactSheet-1.pdf">PDF</a>]  </li>
-</ul>
+<h2>Other TDS Services</h2>
 <h3>Experimental TDS Services</h3>
 <ul>
   <li><a href="http://www.unidata.ucar.edu/software/netcdf-java/stream/CdmRemote.html">CdmRemote web service</a></li>
@@ -108,33 +101,10 @@ you need regular access to large amounts of data, please contact <a href="mailto
   <li>Radar Subset Service 
     <ul>
         <li><a href="interfaceSpec/RadarLevel2SubsetService.html">NEXRAD Level 2</a></li>
-      <li><a href="interfaceSpec/RadarLevel3SubsetService.html">NEXRAD Level 3 </a></li>
+      <li><a href="interfaceSpec/RadarLevel3SubsetService.html">NEXRAD Level </a></li>
     </ul>
   </li>
 </ul>
-<h3>THREDDS Catalogs<a name="Catalogs" id="Catalogs"></a> </h3>
-<p>THREDDS Catalogs are logical directories of on-line data resources, encoded as <a href="http://www.w3.org/TR/REC-xml/">XML documents</a>,
-which provide a place for annotations and other metadata about the data
-resources to reside. This is how THREDDS-enabled data consumers find
-out what data is available from data providers. </p>
-<p>THREDDS Catalogs were originally designed for <em>client</em>s to
-use to access remote data. They have been extended to allow the TDS to
-use them for its own configuration. In this mode they are called <em><strong>TDS Configuration Catalo</strong></em><strong><em>g</em></strong><em><strong>s, or server-side Catalogs. </strong></em>They contain information needed only on the server, which is removed when the TDS sends the catalog to the client, called the <em><strong>client-side </strong></em>or<em><strong> client-view catalog</strong></em>.</p>
-<p>The TDS dynamically generates THREDDS catalogs based on the TDS configuration catalogs. For more information: </p>
-<ul>
-  <li>
-    <p><a href="tds4.1/tutorial/TDSConfiguration.html">TDS Catalog Configuration Tutorial</a></p>
-  </li>
-</ul>
-<p>For client-side catalogs, the current specifications are: </p>
-<ul>
-  <li>The <a href="catalog/v1.0.2/InvCatalogSpec.html">Catalog specification</a> is an annotated XML Schema that explains the details of THREDDS Catalogs.</li>
-  <li>The <a href="http://www.unidata.ucar.edu/software/netcdf-java/">Java NetCDF library</a> has a complete package (thredds.catalog) to parse client-side catalogs. </li>
-  <li>The XML Schema document: <a href="http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.2.xsd">Online catalog  schema</a>.</li>
-  <li><a href="catalog/v1.0.2/Changes.html">Catalog 1.0.2 changes.</a></li>
-  <li><a href="tds4.1/tutorial/CatalogPrimer.html">Catalog Primer</a></li>
-</ul>
-<h2>Other TDS Services</h2>
 <h3>Show Remote Catalog as HTML</h3>
 <ul>
   
@@ -150,11 +120,23 @@ of the TDS distribution. Instead it comes as a separate distribution.</p><ul>
 <h2>Other ways to use TDS</h2>
 <ul>
   <li>
-    <p class="documentFirstHeading"><a href="http://ferret.pmel.noaa.gov/LAS/documentation/the-ferret-thredds-data-server-f-tds/">The Ferret-THREDDS Data Server</a></p>
+    <a href="http://ferret.pmel.noaa.gov/LAS/documentation/the-ferret-thredds-data-server-f-tds/">The Ferret-THREDDS Data Server (F-TDS)</a>
   </li>
+  <li>
+<a href="http://www.resc.rdg.ac.uk/trac/ncWMS/">Godiva / ncWMS</a>
+  </li>
+</ul>
+<h2>Other Documentation</h2>
+<ul>
+  <li><a href="catalog/index.html">THREDDS Catalogs</a></li>
+  <li><a href="tds4.2/tutorial/workshop2010.html">2010 workshop</a></li>
+  <li><a href="StatusReport.html">THREDDS Status Report </a></li>
+  <li> Fact Sheet
+    [<a href="/publications/factsheets/2007sheets/threddsFactSheet-1.doc">Word Doc</a>]
+    [<a href="/publications/factsheets/2007sheets/threddsFactSheet-1.pdf">PDF</a>]</li>
 </ul>
 <hr width="100%">
 <address>
-<img src="images/thread.png" alt="THREDDS" height="108" width="110">This document  was last updated Nov 2010
+<img src="images/thread.png" alt="THREDDS" height="108" width="110">This document  was last updated Jan 2011
 </address>
 </body></html>

@@ -47,9 +47,8 @@ import java.util.Formatter;
 import java.util.List;
 
 /**
- * Factory for feature dataset collections (CompositePointDataset).
+ * Factory for point feature dataset collections (CompositePointDataset).
  * Uses Composite pattern, more or less.
- * Standard factory uses a "collection specification" string, see thredds.inventory.CollectionSpecParser
  *
  * @author caron
  * @since May 20, 2009
@@ -74,24 +73,24 @@ public class CompositeDatasetFactory {
       proto.close(); // LOOK - try to use
     }
 
-    LatLonRect bb = null;
+    //LatLonRect bb = null;
     FeatureCollection fc = null;
     switch (wantFeatureType) {
       case POINT:
         CompositePointCollection pfc = new CompositePointCollection(dcm.getCollectionName(), collection);
-        bb = pfc.getBoundingBox();
+        //bb = pfc.getBoundingBox();
         fc = pfc;
         break;
       case STATION:
         CompositeStationCollection sfc = new CompositeStationCollection(dcm.getCollectionName(), collection, null, null);
-        bb = sfc.getBoundingBox();
+        //bb = sfc.getBoundingBox();
         fc = sfc;
         break;
       default:
         return null;
     }
 
-    return new CompositePointDataset(location, wantFeatureType, fc, collection, bb);
+    return new CompositePointDataset(location, wantFeatureType, fc, collection, null);
   }
 
   private static class CompositePointDataset extends PointDatasetImpl implements UpdateableCollection  {

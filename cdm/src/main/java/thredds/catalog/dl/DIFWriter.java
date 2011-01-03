@@ -53,7 +53,7 @@ public class DIFWriter {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DIFWriter.class);
 
   static private final Namespace defNS = Namespace.getNamespace("http://gcmd.gsfc.nasa.gov/Aboutus/xml/dif/");
-  static private String schemaLocation ="http://gcmd.gsfc.nasa.gov/Aboutus/xml/dif/dif_v9.4.xsd";
+  static private String schemaLocation ="http://gcmd.nasa.gov/Aboutus/xml/dif/dif.xsd";
 
   private String fileDir;
   private StringBuffer messBuffer;
