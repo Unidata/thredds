@@ -13,124 +13,72 @@ dl {margin: 10px 5px 5px 15px;)
 
 <body>
 <h1>CDM implementation of CF discrete sampling  features (DRAFT)</h1>
-<p>These notes refer to the current stable release of CDM 4.2. Section headers referrence the CF proposal.</p>
+<p>These notes refer to the current stable release of CDM 4.2. Section headers referrence the lates (12/21) CF proposal WORD doc.</p>
 <h3>9.1.1 <span lang="en" xml:lang="en">Feature types</span></h3>
-<p>A. CDM has stricter requirements for mandatory coordinates (Table 9.2)</p>
-  <table border="1" cellpadding="0" width="848">
+<p>A. CDM has stricter requirements for mandatory coordinates (Table 9.1)</p>
+  <table border="1" cellpadding="0" width="631">
     <tbody>
       <tr>
         <td width="148"><p><strong>featureType</strong></p></td>
-        <td width="94"><p><strong>Data<br />
-          variables</strong></p></td>
-        <td width="83" valign="top"><p><strong>Instance<br />
-          variables</strong></p></td>
-        <td width="195"><p><strong>CF mandatory coordinates</strong></p></td>
-        <td width="316" valign="top"><p><strong>CDM Mandatory coordinates</strong></p></td>
+        <td width="233"><p><strong>CF mandatory coordinates</strong></p></td>
+        <td width="234" valign="top"><p><strong>CDM Mandatory coordinates</strong></p></td>
       </tr>
       <tr>
         <td width="148"><p><strong>point</strong></p></td>
-        <td width="94"><p>data(i)</p></td>
-        <td width="83" valign="top"><p>meta(i)</p></td>
-        <td width="195"><p>x(i) y(i) z(i)  t(i)</p></td>
-        <td width="316" valign="top"><p>mandatory: x,y,t</p></td>
+        <td width="233"><p>at least one coordinate</p></td>
+        <td width="234" valign="top"><p> lat, lon, t</p></td>
       </tr>
       <tr>
         <td width="148"><p><strong>timeSeries</strong></p></td>
-        <td width="94"><p>data(i,o)</p></td>
-        <td width="83" valign="top"><p>meta(i)</p></td>
-        <td width="195"><p>x(i) y(i) z(i) t(i,o)</p></td>
-        <td width="316" valign="top"><p>mandatory: x,y,t</p></td>
+        <td width="233"><p>t coordinate</p></td>
+        <td width="234" valign="top"><p>lat, lon, t</p></td>
       </tr>
       <tr>
         <td width="148"><p><strong>trajectory</strong></p></td>
-        <td width="94"><p>data(i,o)</p></td>
-        <td width="83" valign="top"><p><span lang="it" xml:lang="it">meta(i)</span></p></td>
-        <td width="195"><p><span lang="it" xml:lang="it">x(i,o) y(i,o) z(i,o) t(i,o)</span></p></td>
-        <td width="316" valign="top"><p>mandatory: x,y,t</p></td>
+        <td width="233"><p>at least two spatial coordinates</p></td>
+        <td width="234" valign="top"><p> lat, lon, t</p></td>
       </tr>
       <tr>
         <td width="148"><p><strong>profile</strong></p></td>
-        <td width="94"><p>data(i,o)</p></td>
-        <td width="83" valign="top"><p>meta(i)</p></td>
-        <td width="195"><p>x(i) y(i) z(i,o) t(i)</p></td>
-        <td width="316" valign="top"><p>mandatory: x,y,z,t</p></td>
+        <td width="233"><p>z coordinate</p></td>
+        <td width="234" valign="top"><p> lat, lon, z, t</p></td>
       </tr>
       <tr>
         <td width="148"><p><strong>timeSeriesProfile</strong></p></td>
-        <td width="94"><p>data(i,p,o)</p></td>
-        <td width="83" valign="top"><p><span lang="it" xml:lang="it">meta(i)</span></p></td>
-        <td width="195"><p><span lang="it" xml:lang="it">x(i) y(i) z(i,p) t(i,p,o)</span></p></td>
-        <td width="316" valign="top"><p>mandatory: x,y,z,t</p></td>
+        <td width="233"><p>z and t coordinates</p></td>
+        <td width="234" valign="top"><p> lat, lon, z, t</p></td>
       </tr>
       <tr>
         <td width="148"><p><strong>trajectoryProfile</strong></p></td>
-        <td width="94"><p>data(i,p,o)</p></td>
-        <td width="83" valign="top"><p><span lang="it" xml:lang="it">meta(i)</span></p></td>
-        <td width="195"><p><span lang="it" xml:lang="it">x(i,o) y(i,o) z(i,p,o) t(i,o)</span></p></td>
-        <td width="316" valign="top"><p>mandatory: x,y,z,t</p></td>
+        <td width="233"><p>x, y and z coordinates</p></td>
+        <td width="234" valign="top"><p> lat, lon, z, t</p></td>
       </tr>
     </tbody>
   </table>
-<p align="center">&nbsp;</p>
-<table border="1" cellpadding="0" width="848">
-  <tbody>
-    <tr>
-      <td width="148"><p><strong>featureType</strong></p></td>
-      <td width="94"><p><strong>Data<br />
-        variables</strong></p></td>
-      <td width="83" valign="top"><p><strong>Instance<br />
-        variables</strong></p></td>
-      <td width="195"><p><strong>Space-time coordinates</strong></p></td>
-      <td width="316" valign="top"><p><strong>CF Mandatory coordinates</strong></p></td>
-    </tr>
-    <tr>
-      <td width="148"><p><strong>point</strong></p></td>
-      <td width="94"><p>data(i)</p></td>
-      <td width="83" valign="top"><p>meta(i)</p></td>
-      <td width="195"><p>x(i) y(i) z(i)  t(i)</p></td>
-      <td width="316" valign="top"><p>mandatory: at least one coordinate</p></td>
-    </tr>
-    <tr>
-      <td width="148"><p><strong>timeSeries</strong></p></td>
-      <td width="94"><p>data(i,o)</p></td>
-      <td width="83" valign="top"><p>meta(i)</p></td>
-      <td width="195"><p>x(i) y(i) z(i) t(i,o)</p></td>
-      <td width="316" valign="top"><p>mandatory: t coordinate</p></td>
-    </tr>
-    <tr>
-      <td width="148"><p><strong>trajectory</strong></p></td>
-      <td width="94"><p>data(i,o)</p></td>
-      <td width="83" valign="top"><p><span lang="it" xml:lang="it">meta(i)</span></p></td>
-      <td width="195"><p><span lang="it" xml:lang="it">x(i,o) y(i,o) z(i,o) t(i,o)</span></p></td>
-      <td width="316" valign="top"><p>mandatory: at least two spatial coordinates</p></td>
-    </tr>
-    <tr>
-      <td width="148"><p><strong>profile</strong></p></td>
-      <td width="94"><p>data(i,o)</p></td>
-      <td width="83" valign="top"><p>meta(i)</p></td>
-      <td width="195"><p>x(i) y(i) z(i,o) t(i)</p></td>
-      <td width="316" valign="top"><p>mandatory: z coordinate</p></td>
-    </tr>
-    <tr>
-      <td width="148"><p><strong>timeSeriesProfile</strong></p></td>
-      <td width="94"><p>data(i,p,o)</p></td>
-      <td width="83" valign="top"><p><span lang="it" xml:lang="it">meta(i)</span></p></td>
-      <td width="195"><p><span lang="it" xml:lang="it">x(i) y(i) z(i,p) t(i,p,o)</span></p></td>
-      <td width="316" valign="top"><p>mandatory: z and t coordinates</p></td>
-    </tr>
-    <tr>
-      <td width="148"><p><strong>trajectoryProfile</strong></p></td>
-      <td width="94"><p>data(i,p,o)</p></td>
-      <td width="83" valign="top"><p><span lang="it" xml:lang="it">meta(i)</span></p></td>
-      <td width="195"><p><span lang="it" xml:lang="it">x(i,o) y(i,o) z(i,p,o) t(i,o)</span></p></td>
-      <td width="316" valign="top"><p>mandatory: x, y and z coordinates</p></td>
-    </tr>
-  </tbody>
-</table>
-<p>&nbsp;</p>
-<p> B. The global attribute <strong>featureType</strong> is required.</p>
-<h3>9.1.2 <span lang="en" xml:lang="en">Representations</span></h3>
-<p wrap="">For compatibility with earlier versions:</p>
+  <p>B. horizontal coordinates</p>
+  <ul>
+    <li>CF: &quot;spatial coordinates x  and y usually refer to longitude and latitude but other horizontal coordinates  could also be used&quot;</li>
+    <li>CDM: only latitude and longitude are allowed.</li>
+  </ul>
+  <p>C. vertical coordinates</p>
+  <ul>
+    <li>CDM: vertical coordinate may be height or pressure. Dimensionless Vertical Coordinates are not supported.</li>
+  </ul>
+  <h3>9.1.3 Representations</h3>
+  <p>A. Dimension ordering</p>
+  <ul>
+    <li>CF: &quot;the data variable has  the instance and element dimensions, which may be in any order&quot;.</li>
+    <li>CDM: the instance dimension must be the outer (slowest varying) dimension</li>
+  </ul>
+<h3>9.1.4 featureType attribute</h3>
+<p>A. Optional attribute</p>
+<ul>
+  <li>CF: not required</li>
+  <li>CDM: The global attribute <strong>featureType</strong> is required.</li>
+</ul>
+<p>9.3 Time Series</p>
+<h3>Other changes wrt CF 1.</h3>
+<p wrap="">For compatibility with earlier versions </p>
 <ul>
   <li><strong>ragged_row_count</strong> is an alias for <strong>sample_dimension</strong> standard name</li>
   <li> <strong>ragged_row_index</strong> is an alias for <strong>feature_dimension</strong> standard name</li>

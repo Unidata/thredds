@@ -4,6 +4,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <title>DatasetSource</title>
+  <link href="../../tds.css" rel="stylesheet" type="text/css"/>
 </head>
 
 <body>
@@ -24,7 +25,12 @@
 }
 </pre>
 <p>The implementor of <strong>DatasetSource</strong> must quickly determine if it can service the request by returning true or false from the <strong>isMine</strong> method. If true, then it must be able to return a NetcdfFile from the <strong>getNetcdfFile</strong>(). Any caching or performance optimizations must be handled by the <strong>DatasetSource</strong> implementor. It is usually important for performance reasons to cache the NetcdfFile object  for subsequent access, since clients typically access a NetcdfFile several or many times, not just once.</p>
-<p>It should handle any errors other than IOException, and send appropriate status responses back in the HttpServletResponse. If it returns null, the calling routine will assume that you have sent the response yourself, and will terminate processing without further action. </p>
+<p>If the <strong>getNetcdfFile</strong> method gets an error processing the request, it should set the return code on the HttpResponse and return null. For example.<br>
+</p>
+<blockquote>
+  <pre> response.sendError(HttpServletResponse.SC_NOT_FOUND, message); </pre>
+</blockquote>
+<p>By returning null, the calling routine  assumes that you have sent the response yourself, and will terminate processing without further action. </p>
 <h2>Example</h2>
 <pre>public class ExampleDataSource  implements thredds.servlet.DatasetSource {<br>  HashMap hash = new HashMap();
 
@@ -54,7 +60,6 @@
 <p>You must place your <strong>DatasetSource</strong> class into <strong>the ${tomcat_home}/webapps/thredds/WEB-INF/lib </strong>or<strong> classes </strong>directory<strong>. </strong></p>
 <p>Then tell the TDS to load it by adding a line to the <strong>${tomcat_home}/content/thredds/threddsConfig.xml</strong> file, for example:</p>
 <pre>  &lt;<strong>datasetSource</strong>&gt;my.package.DatasetSourceImpl&lt;/datasetSource&gt;
-
 </pre>
 <h2>Adding to the Thredds Configuration Catalog</h2>
  <p>In the above example, <strong>ExampleDataSource</strong> will &quot;claim&quot; any request whose path starts with <em><strong>/special/</strong></em>. In the Thredds Configuration Catalog, you will add datasets which have that path. A simple example: </p>
@@ -64,12 +69,11 @@
  <p>The dataset will have a URL of <strong>http://server:port/thredds/dodsC/special/my/testData.foo</strong>. Its path will be <strong>/special/my/testData.foo</strong>, so <strong>ExampleDataSource</strong> will claim it, and will be required to return a <strong>NetcdfFile</strong> object. </p>
  <p>The value that you put into urlPath will be used by  TDS clients. You can use anything you want, as long as your DatasetSource recognizes the path and correctly returns the corresponding NetcdfFile. <br>
  </p>
- <pre>&nbsp;  </pre>
  <hr width="100%">
 <strong><br>
 </strong>
 <address>
-<img src="../../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Feb 15, 2007
+<img src="../../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Dec, 2010
 </address>
 <p>&nbsp;</p>
 </body>

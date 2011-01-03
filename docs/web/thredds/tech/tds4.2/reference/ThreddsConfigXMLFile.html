@@ -172,15 +172,14 @@ best to turn off automatic index extension, by setting <strong>setExtendIndex</s
  <h3>Aggregation Cache<a name="AggregationCache"></a> </h3>
  <pre>  &lt;<strong>AggregationCache</strong>&gt;<br>    &lt;<strong>dir</strong>&gt;/temp/acache/&lt;/dir&gt;<br>    &lt;<strong>scour</strong>&gt;24 hours&lt;/scour&gt;<br>    &lt;<strong>maxAge</strong>&gt;90 days&lt;/maxAge&gt;<br>  &lt;/AggregationCache&gt;</pre>
  <p> If you have <strong>joinExisting</strong> Aggregations, coordinate information will be written to a cache directory specified by <strong>dir</strong> (<a href="#Cache_Locations">choosing a cache directory</a>). If not otherwise set, the TDS will use the <strong>${tomcat_home}/content/thredds/cache/agg/</strong> directory. We recommend that you use this default, by not specifying a <strong>AggregationCache</strong>.<strong>dir</strong> element.</p>
-<p>Every <strong>scour</strong> amount of time, any item that hasnt been changed since <em>maxAge</em> time will be deleted. Set scour to -1 to not scour at all. </p>
- <p>This
+<p>Every <strong>scour</strong> amount of time, any item that hasnt been changed since <em>maxAge</em> time will be deleted. Set scour to -1 to not scour if you have aggregations that never change.  Otherwise, make <strong>maxAge</strong> longer than the longest time between changes. Basically, you dont want to remove active aggregations.</p>
+<p>This
 cache information is intended to be permanent, it stores coordinate
 information from each file in the aggregation, so that the file does
 not have to be opened each time the dataset is opened. If you have
 large <strong>joinExisting</strong> aggregations, there will be a very
-pronounced difference with and without this cache. Unless you have
-special needs, you can just accept the defaults for this element.</p>
- <p>The cache information is updated based on the <strong>recheckEvery</strong> field in the <strong>joinExisting</strong> aggregation element.</p>
+pronounced difference with and without this cache. </p>
+<p>The cache information is updated based on the <strong>recheckEvery</strong> field in the <strong>joinExisting</strong> aggregation element.</p>
 <h3>Aggregation<a name="Aggregation"></a></h3>
  <pre>  &lt;<strong>Aggregation</strong>&gt;<br>    &lt;<strong>typicalDataset</strong>&gt;latest&lt;/typicalDataset&gt;<br>  &lt;/Aggregation&gt;</pre>
  <p>You
