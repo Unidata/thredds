@@ -121,13 +121,19 @@ public class CdmrFeatureController extends AbstractCommandController { // implem
       System.out.printf(" path=%s%n query=%s%n", path, req.getQueryString());
     }
 
-    // query validation - first pass
-    CdmRemoteQueryBean query = (CdmRemoteQueryBean) command;
-    if (!query.validate()) {
-      res.sendError(HttpServletResponse.SC_BAD_REQUEST, query.getErrorMessage());
-      if (debug) System.out.printf(" query error= %s %n", query.getErrorMessage());
+    CdmRemoteQueryBean query = null;
+    try {
+      // query validation - first pass
+      query = (CdmRemoteQueryBean) command;
+      if (!query.validate()) {
+        res.sendError(HttpServletResponse.SC_BAD_REQUEST, query.getErrorMessage());
+        if (debug) System.out.printf(" query error= %s %n", query.getErrorMessage());
+        log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_BAD_REQUEST, -1));
+        return null;
+      }
+    } catch (Throwable t) {
+      res.sendError(HttpServletResponse.SC_BAD_REQUEST, t.getMessage());
       log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_BAD_REQUEST, -1));
-      return null;
     }
     if (debug) System.out.printf(" %s%n", query);
 

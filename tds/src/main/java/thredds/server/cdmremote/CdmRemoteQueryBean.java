@@ -291,7 +291,13 @@ public class CdmRemoteQueryBean {
     else if (temporal.equalsIgnoreCase("point")) temporalSelection = TemporalSelection.point;
 
     if (temporal.equalsIgnoreCase("range")) {
-      parseTimeExtent();
+      try {
+        parseTimeExtent();
+      } catch (Throwable t) {
+        errs.format("badly specified time range");
+        fatal = true;
+        return;
+      }
     } else if (temporal.equalsIgnoreCase("point")) {
       timePoint = parseDate("time", time);
     }

@@ -386,6 +386,7 @@ public class Ghcnm extends AbstractIOServiceProvider {
   private NetcdfFile ncfile;
   private RandomAccessFile stnRaf;
 
+  @Override
   public void close() throws java.io.IOException {
     if (raf != null)
       raf.close();
@@ -396,31 +397,43 @@ public class Ghcnm extends AbstractIOServiceProvider {
     stnRaf = null;
   }
 
+  @Override
   public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
     this.ncfile = ncfile;
 
     String dataFile = raf.getLocation();
     int pos = dataFile.lastIndexOf(".");
     String base = dataFile.substring(0, pos);
+    String ext = dataFile.substring(pos);
 
     // did the index file get passed in ?
-    boolean isIndexFile = isValidFile(raf);
-    if (isIndexFile) {
+    if (ext.equals(IDX_EXT)) {
       // must be in the same directory
-      assert new File(base+".dat").exists();
-      assert new File(base+".inv").exists();
+      File datFile = new File(base+DAT_EXT);
+      if (!datFile.exists())
+         throw new FileNotFoundException(datFile.getPath()+" must exist");
+      File stnFile = new File(base+STN_EXT);
+      if (!stnFile.exists())
+         throw new FileNotFoundException(stnFile.getPath()+" must exist");
 
-      this.raf = new RandomAccessFile(base+".dat", "r");
-      this.stnRaf = new RandomAccessFile(base+".inv", "r");
+      this.raf = new RandomAccessFile(base+DAT_EXT, "r");
+      this.stnRaf = new RandomAccessFile(base+STN_EXT, "r");
       readIndex(raf.getLocation());
       raf.close();
 
-    } else { // must be the data file, we will write an index LOOK check for index, check for inv file
+    } else { // must be the data file, we will write an index if needed below
       this.raf = raf;
-      this.stnRaf = new RandomAccessFile(base+".inv", "r");
+      if (!(ext.equals(DAT_EXT)))
+        throw new FileNotFoundException("Ghcnm: file must end with "+DAT_EXT);
 
-      makeIndex(base+".ncsx");
-    }
+      File stnFile = new File(base+STN_EXT);
+      if (!stnFile.exists())
+        throw new FileNotFoundException(stnFile.getPath()+" must exist");
+      this.stnRaf = new RandomAccessFile(base+STN_EXT, "r");
+   }
+
+    //////////////////////////////////////////////////
+    // LOOK - can we externalize config ??
 
     /*
           ID                 1-11        Integer
@@ -592,6 +605,13 @@ public class Ghcnm extends AbstractIOServiceProvider {
     ncfile.addAttribute(null, new Attribute("CF:featureType", "timeSeries"));
     ncfile.addAttribute(null, new Attribute("see", "http://www.ncdc.noaa.gov/ghcnm, ftp://ftp.ncdc.noaa.gov/pub/data/ghcn/v3"));
     ncfile.finish();
+
+    // make index file if needed
+    File idxFile = new File(base+IDX_EXT);
+    if (!idxFile.exists())
+      makeIndex(idxFile);
+    else
+      readIndex(idxFile.getPath());
   }
 
   private Variable makeMember(Structure s, String shortName, DataType dataType, String dims, String longName, String units, String cfName,
@@ -627,7 +647,12 @@ public class Ghcnm extends AbstractIOServiceProvider {
 
   ////////////////////////////////////////////////////////////////////////////////////////////
 
-  private static String MAGIC_START = "GhncmIndex";
+  private static final String STN_EXT = ".inv";
+  private static final String DAT_EXT = ".dat";
+  private static final String IDX_EXT = ".ncsx";
+  private static final String MAGIC_START = "GhncmIndex";
+  private static final int version = 1;
+
   private HashMap<Long, StationIndex> map = new HashMap<Long, StationIndex>(10000);
   private TableParser.Field stnIdFromData;
   private StructureMembers stnDataMembers;
@@ -637,6 +662,9 @@ public class Ghcnm extends AbstractIOServiceProvider {
 
     if (!NcStream.readAndTest(fin, MAGIC_START.getBytes("UTF-8")))
       throw new IllegalStateException("bad index file");
+    int version = fin.read();
+    if (version != 1)
+      throw new IllegalStateException("Bad version = "+version);
 
     int count = NcStream.readVInt(fin);
 
@@ -652,7 +680,7 @@ public class Ghcnm extends AbstractIOServiceProvider {
     System.out.println(" read index map size=" + map.values().size());
   }
 
-  private void makeIndex(String indexFilename) throws IOException {
+  private void makeIndex(File indexFile) throws IOException {
     // get map of Stations
     Sequence stnSeq = (Sequence) ncfile.findVariable(STNS);
     Vinfo stnInfo = (Vinfo) stnSeq.getSPobject();
@@ -704,15 +732,16 @@ public class Ghcnm extends AbstractIOServiceProvider {
       }
       currStn.dataCount++;
     }
-    System.out.printf("ok stns=%s data=%d%n", stnCount, totalCount);
+    //System.out.printf("ok stns=%s data=%d%n", stnCount, totalCount);
 
     //////////////////////////////
     // write the index file
-    FileOutputStream fout = new FileOutputStream(indexFilename);
+    FileOutputStream fout = new FileOutputStream(indexFile); // LOOK need DiskCache for non-writeable directories
     long size = 0;
 
     //// header message
     fout.write(MAGIC_START.getBytes("UTF-8"));
+    fout.write(version);
     size += NcStream.writeVInt(fout, stnCount);
 
     /* byte[] pb = encodeStationListProto( map.values());
@@ -728,7 +757,7 @@ public class Ghcnm extends AbstractIOServiceProvider {
     }   
     fout.close();
 
-    System.out.println(" index size=" + size);
+    //System.out.println(" index size=" + size);
   }
 
   private StationIndex decodeStationIndex(byte[] data) throws InvalidProtocolBufferException {
@@ -787,11 +816,35 @@ public class Ghcnm extends AbstractIOServiceProvider {
    * @throws java.io.IOException if read error
    */
   public boolean isValidFile(RandomAccessFile raf) throws IOException {
-     raf.seek(0);
-     byte[] b = new byte[MAGIC_START.length()];
-     raf.read(b);
-     String test = new String(b, "UTF-8");
-     return test.equals(MAGIC_START);
+    String dataFile = raf.getLocation();
+    int pos = dataFile.lastIndexOf(".");
+    String base = dataFile.substring(0, pos);
+    String ext = dataFile.substring(pos);
+
+     // must be data file or index file
+    if (!ext.equals(DAT_EXT) && !ext.equals(IDX_EXT))
+      return false;
+
+     if (ext.equals(IDX_EXT)) {
+       // data, stn files must be in the same directory
+       File datFile = new File(base+DAT_EXT);
+       if (!datFile.exists())
+          return false;
+       File stnFile = new File(base+STN_EXT);
+       if (!stnFile.exists())
+         return false;
+
+       raf.seek(0);
+       byte[] b = new byte[MAGIC_START.length()];
+       raf.read(b);
+       String test = new String(b, "UTF-8");
+       return test.equals(MAGIC_START);
+
+     } else {
+       // stn files must be in the same directory
+       File stnFile = new File(base+STN_EXT);
+       return (stnFile.exists()); // LOOK BAD!! NOT GOOD ENOUGH
+     }
   }
 
   /**

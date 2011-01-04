@@ -80,7 +80,7 @@ public class DatasetCollectionManager implements CollectionManager {
     controller = _controller;
   }
 
-  // called from Aggregation
+  // called from Aggregation - deprecated
   static public DatasetCollectionManager open(String collection, String olderThan, Formatter errlog) throws IOException {
     if (collection.startsWith(CATALOG))
       return new DatasetCollectionFromCatalog(collection);

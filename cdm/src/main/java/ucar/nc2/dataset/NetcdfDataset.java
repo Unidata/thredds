@@ -654,9 +654,11 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     if (location.startsWith("dods:")) {
       return acquireDODS(cache, factory, hashKey, location, buffer_size, cancelTask, spiObject);  // open through DODS
 
+      // cdmremote:
     } else if (location.startsWith(CdmRemote.SCHEME)) {
       return acquireRemote(cache, factory, hashKey, location, buffer_size, cancelTask, spiObject);  // open through ncstream
 
+      // thredds:
     } else if (location.startsWith(ThreddsDataFactory.SCHEME)) {
       Formatter log = new Formatter();
       ThreddsDataFactory tdf = new ThreddsDataFactory();
