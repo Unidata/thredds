@@ -32,6 +32,7 @@
  */
 package ucar.nc2.iosp.hdf5;
 
+import ucar.nc2.util.Misc;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.*;
@@ -3339,7 +3340,7 @@ public class H5header {
               f.format(" %-30s", trunc(attMessage.getName(), 30));
             }
             f.format(" heapId=:");
-            showBytes(heapId, f);
+            Misc.showBytes(heapId, f);
             f.format("%n");
           }
 
@@ -4021,7 +4022,7 @@ public class H5header {
         raf.read(heapId);
 
         if (debugBtree2)
-          debugOut.println("  record5 nameHash=" + nameHash + " heapId=" + showBytes(heapId));
+          debugOut.println("  record5 nameHash=" + nameHash + " heapId=" + Misc.showBytes(heapId));
       }
     }
 
@@ -4033,7 +4034,7 @@ public class H5header {
         creationOrder = raf.readLong();
         raf.read(heapId);
         if (debugBtree2)
-          debugOut.println("  record6 creationOrder=" + creationOrder + " heapId=" + showBytes(heapId));
+          debugOut.println("  record6 creationOrder=" + creationOrder + " heapId=" + Misc.showBytes(heapId));
       }
     }
 
@@ -4074,7 +4075,7 @@ public class H5header {
         creationOrder = raf.readInt();
         nameHash = raf.readInt();
         if (debugBtree2)
-          debugOut.println("  record8 creationOrder=" + creationOrder + " heapId=" + showBytes(heapId));
+          debugOut.println("  record8 creationOrder=" + creationOrder + " heapId=" + Misc.showBytes(heapId));
       }
     }
 
@@ -5353,25 +5354,6 @@ Where startingBlockSize is from the header, ie the same for all indirect blocks.
     raf.read(mess);
     printBytes(head, mess, nbytes, false, debugOut);
     raf.seek(savePos);
-  }
-
-  static public String showBytes(byte[] buff) {
-    StringBuilder sbuff = new StringBuilder();
-    for (int i = 0; i < buff.length; i++) {
-      byte b = buff[i];
-      int ub = (b < 0) ? b + 256 : b;
-      if (i > 0) sbuff.append(" ");
-      sbuff.append(ub);
-    }
-    return sbuff.toString();
-  }
-
-  static public void showBytes(byte[] buff, Formatter f) {
-    for (int i = 0; i < buff.length; i++) {
-      byte b = buff[i];
-      int ub = (b < 0) ? b + 256 : b;
-      f.format("%3d ", ub);
-    }
   }
 
   static void printBytes(String head, byte[] buff, int n, boolean count, java.io.PrintStream ps) {

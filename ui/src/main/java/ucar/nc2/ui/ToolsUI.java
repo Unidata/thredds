@@ -2308,9 +2308,7 @@ public class ToolsUI extends JPanel {
  /////////////////////////////////////////////////////////////////////
  // Indexed GRIB, using the IOSP
   private class GribIndexPanel extends OpPanel {
-    // ucar.unidata.io.RandomAccessFile raf = null;
     ucar.nc2.ui.GribIndexPanel gribTable;
-    //boolean useIndex = true;
 
     GribIndexPanel(PreferencesExt p) {
       super(p, "file:", true, false);
@@ -2369,19 +2367,40 @@ public class ToolsUI extends JPanel {
 
   }
 
-   /////////////////////////////////////////////////////////////////////
- // Indexed GRIB, using the IOSP
+  /////////////////////////////////////////////////////////////////////
+
   private class GribReportPanel extends OpPanel {
-    // ucar.unidata.io.RandomAccessFile raf = null;
     ucar.nc2.ui.GribReportPanel gribReport;
-    //boolean useIndex = true;
+    boolean useIndex = true;
+    JComboBox reports;
 
     GribReportPanel(PreferencesExt p) {
       super(p, "file:", true, false);
       gribReport = new ucar.nc2.ui.GribReportPanel(prefs, buttPanel);
       add(gribReport, BorderLayout.CENTER);
 
-      AbstractAction infoAction = new AbstractAction() {
+      reports = new JComboBox(ucar.nc2.ui.GribReportPanel.Report.values());
+      buttPanel.add(reports);
+
+      AbstractAction useIndexButt = new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+          Boolean state = (Boolean) getValue(BAMutil.STATE);
+          useIndex = state.booleanValue();
+        }
+      };
+      useIndexButt.putValue(BAMutil.STATE, useIndex);
+      BAMutil.setActionProperties(useIndexButt, "Doit", "use Index", true, 'C', -1);
+      BAMutil.addActionToContainer(buttPanel, useIndexButt);
+
+      AbstractAction doitButt = new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+          process();
+        }
+      };
+      BAMutil.setActionProperties(doitButt, "alien", "make report", false, 'C', -1);
+      BAMutil.addActionToContainer(buttPanel, doitButt);
+
+      /* AbstractAction infoAction = new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
           Formatter f = new Formatter();
           try {
@@ -2399,16 +2418,20 @@ public class ToolsUI extends JPanel {
         }
       };
       BAMutil.setActionProperties(infoAction, "Information", "show Info", false, 'I', -1);
-      BAMutil.addActionToContainer(buttPanel, infoAction);
+      BAMutil.addActionToContainer(buttPanel, infoAction); */
     }
 
     boolean process(Object o) {
-      String command = (String) o;
+      return true;
+    }
+
+    boolean process() {
       boolean err = false;
+      String command = (String) cb.getSelectedItem();
 
       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
-        gribReport.setCollection(command);
+        gribReport.setCollection(command, useIndex, (ucar.nc2.ui.GribReportPanel.Report) reports.getSelectedItem());
 
       } catch (IOException ioe) {
         JOptionPane.showMessageDialog(null, "GribReportPanel cant open " + command + "\n" + ioe.getMessage());

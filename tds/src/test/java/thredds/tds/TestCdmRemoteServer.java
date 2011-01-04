@@ -75,7 +75,10 @@ public class TestCdmRemoteServer extends TestCase {
     ThreddsDataFactory.Result dataResult = fac.openFeatureDataset( ds, null);
 
     assert dataResult != null;
-    assert !dataResult.fatalError;
+    if (dataResult.fatalError) {
+      System.out.printf("fatalError= %s%n", dataResult.errLog);
+      assert false;
+    }
     assert dataResult.featureDataset != null;
 
     GridDataset gds = (GridDataset) dataResult.featureDataset;

@@ -55,8 +55,6 @@ import java.util.*;
 
 public class CSMConvention extends COARDSConvention {
 
-  protected HashMap ctHash = new HashMap();
-
   public CSMConvention() {
     this.conventionName = "NCAR-CSM";
   }
@@ -105,7 +103,7 @@ public class CSMConvention extends COARDSConvention {
     if (unit == null)
       return null;
 
-    if (SimpleUnit.isTimeUnit(unit))
+    if (SimpleUnit.isDateUnit(unit) || SimpleUnit.isTimeUnit(unit))
       return AxisType.Time;
 
     return null;

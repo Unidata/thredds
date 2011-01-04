@@ -20,7 +20,7 @@
   <groupId>edu.ucar</groupId>
   <artifactId>unidataCommon</artifactId>
   <packaging>jar</packaging>
-  <version>${common.version}</version>
+  <!-- version>${common.version}</version -->
   <name>Unidata Common</name>
   <description>
     The NetCDF-Java Library is a Java interface to NetCDF files,

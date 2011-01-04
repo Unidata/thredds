@@ -13,6 +13,7 @@ import ucar.nc2.iosp.grid.GridServiceProvider;
 import ucar.nc2.ui.widget.BAMutil;
 import ucar.nc2.ui.widget.IndependentWindow;
 import ucar.nc2.ui.widget.TextHistoryPane;
+import ucar.nc2.util.Misc;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
@@ -27,12 +28,18 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 /**
- * Describe
+ * Run through Grib files and make reports
  *
  * @author caron
  * @since Dec 13, 2010
  */
 public class GribReportPanel extends JPanel {
+  public static enum Report {
+    localUseSection, uniqueGds
+  }
+
+  ;
+
   private PreferencesExt prefs;
 
   private BeanTableSorted recordTable, gdsTable, productTable;
@@ -51,61 +58,109 @@ public class GribReportPanel extends JPanel {
     add(reportPane, BorderLayout.CENTER);
   }
 
-  public void setCollection(String spec) throws IOException {
+  public void setCollection(String spec, boolean useIndex, Report which) throws IOException {
     Formatter f = new Formatter();
+    f.format("%s %s %s%n", spec, useIndex, which);
+
+    /* DatasetCollectionManager dc = DatasetCollectionManager.open(spec, null, f);
+  if (dc != null) {
+    dc.scan(null);
+    for (MFile mfile : dc.getFiles()) {
+      f.format(" %s%n", mfile);
+     }
+  }  */
+
     CollectionSpecParser parser = new CollectionSpecParser(spec, f);
 
     f.format("top dir = %s%n", parser.getTopDir());
     f.format("filter = %s%n", parser.getFilter());
+    reportPane.setText(f.toString());
 
     File top = new File(parser.getTopDir());
     if (!top.exists()) {
       f.format("top dir = %s does not exist%n", parser.getTopDir());
     } else {
 
-      Map<Long, GdsList> gdsSet = new HashMap<Long, GdsList>();
-      for (File file : top.listFiles( new GribFilter( parser.getFilter()))) {
-        f.format(" %s%n", file.getPath());
-        doOne(file, f, gdsSet);
-      }
-
-      for (GdsList gdsl : gdsSet.values()) {
-        f.format("%nGDS = %d x %d (%d) %n", gdsl.gds.getNy(), gdsl.gds.getNx(), gdsl.gds.getGdtn());
-        for (FileCount fc : gdsl.fileList)
-          f.format("  %5d %s%n", fc.count, fc.f.getPath());
+      switch (which) {
+        case uniqueGds:
+          doUniqueGds(f, parser, useIndex);
+          break;
+        case localUseSection:
+          doLocalUseSection(f, parser, useIndex);
+          break;
       }
     }
 
-    /* DatasetCollectionManager dc = DatasetCollectionManager.open(spec, null, f);
-    if (dc != null) {
-      dc.scan(null);
-      for (MFile mfile : dc.getFiles()) {
-        f.format(" %s%n", mfile);
-       }
-    } */
     reportPane.setText(f.toString());
     reportPane.gotoTop();
   }
 
-  public void save() {
+  ///////////////////////////////////////////////
+
+  private void doLocalUseSection(Formatter f, CollectionSpecParser parser, boolean useIndex) throws IOException {
+    f.format("Show Local Use Section%n");
+
+    File top = new File(parser.getTopDir());
+    for (File file : top.listFiles(new GribFilter(parser.getFilter()))) {
+      f.format(" %s%n", file.getPath());
+      doLocalUseSection(file, f, useIndex);
+    }
   }
 
-  public void showInfo(Formatter f) {
+  private void doLocalUseSection(File ff, Formatter f, boolean useIndex) throws IOException {
+    f.format("File = %s%n", ff);
 
+    RandomAccessFile raf = new RandomAccessFile(ff.getPath(), "r");
+    Grib2Input reader = new Grib2Input(raf);
+    raf.seek(0);
+    raf.order(RandomAccessFile.BIG_ENDIAN);
+    reader.scan(false, false);
+
+    for (Grib2Record gr : reader.getRecords()) {
+      byte[] lus = gr.getLocalUseSection();
+      if (lus == null)
+        f.format(" %10d == none%n", gr.getPdsOffset());
+      else
+        f.format(" %10d == %s%n", gr.getPdsOffset(), Misc.showBytes(lus));
+    }
+    raf.close();
+  }
+
+  ///////////////////////////////////////////////
+
+  private void doUniqueGds(Formatter f, CollectionSpecParser parser, boolean useIndex) throws IOException {
+    f.format("Show Unique GDS%n");
+
+    File top = new File(parser.getTopDir());
+
+    Map<Long, GdsList> gdsSet = new HashMap<Long, GdsList>();
+    for (File file : top.listFiles(new GribFilter(parser.getFilter()))) {
+      f.format(" %s%n", file.getPath());
+      doUniqueGds(file, useIndex, gdsSet);
+    }
+
+    for (GdsList gdsl : gdsSet.values()) {
+      f.format("%nGDS = %d x %d (%d) %n", gdsl.gds.getNy(), gdsl.gds.getNx(), gdsl.gds.getGdtn());
+      for (FileCount fc : gdsl.fileList)
+        f.format("  %5d %s%n", fc.count, fc.f.getPath());
+    }
   }
 
   private class GribFilter implements FileFilter {
     Pattern pattern;
-    GribFilter( Pattern p) {
+
+    GribFilter(Pattern p) {
       this.pattern = p;
     }
+
     public boolean accept(File file) {
       java.util.regex.Matcher matcher = this.pattern.matcher(file.getName());
       return matcher.matches();
     }
   }
 
-  private void doOne(File ff, Formatter f, Map<Long, GdsList> gdsSet)  throws IOException {
+  private void doUniqueGds(File ff, boolean useIndex, Map<Long, GdsList> gdsSet) throws IOException {
+
     RandomAccessFile raf = new RandomAccessFile(ff.getPath(), "r");
     Grib2Input reader = new Grib2Input(raf);
     raf.seek(0);
@@ -153,5 +208,13 @@ public class GribReportPanel extends JPanel {
 
     File f;
     int count = 0;
+  }
+
+  ///////////////////////////////////////////////
+
+  public void save() {
+  }
+
+  public void showInfo(Formatter f) {
   }
 }

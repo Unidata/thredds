@@ -34,6 +34,7 @@
 package thredds.server.ncSubset;
 
 import ucar.ma2.*;
+import ucar.nc2.Dimension;
 import ucar.nc2.dt.*;
 import ucar.nc2.dt.point.WriterStationObsDataset;
 import ucar.nc2.dt.point.WriterProfileObsDataset;
@@ -225,11 +226,30 @@ public class GridPointWriter {
               continue;
             }
 
+            // patch from dmurray 01/04/11
+            GridAsPointDataset.Point p;
+            Dimension zdim = grid.getZDimension();
+            if (zdim != null && zdim.getLength() >= 0) {
+            	p = gap.readData(grid, date, zCoord, qp.lat, qp.lon);
+            } else {
+            	p = gap.readData(grid, date, qp.lat, qp.lon);
+            }
+
+            latData.set(p.lat);
+            lonData.set(p.lon);
+            if (grid == useForZ) {
+            	zData.set(p.z);
+            } else {
+            	zData.set(0);  // maybe NaN?
+            }
+            mdata.setDouble(mdata.getIndex(), p.dataValue);
+
+          /* org code
             GridAsPointDataset.Point p = gap.readData(grid, date, zCoord, qp.lat, qp.lon);
             latData.set(p.lat);
             lonData.set(p.lon);
             if (grid == useForZ) zData.set(p.z);
-            mdata.setDouble(mdata.getIndex(), p.dataValue);
+            mdata.setDouble(mdata.getIndex(), p.dataValue);  */
           }
           w.write(stnName, date, sdata); // one structure per time step per vertical level
         }

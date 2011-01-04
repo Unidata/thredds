@@ -4,6 +4,12 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.2:
  19: (2011-01-xx)
+  HTTPClient refactor / framework
+  opendap bison parser
+  CSMConvention looks for date and time units
+  H5header.showBytes() -> Misc
+  GridPointWriter fix from Don
+  ToolsUI: GribReportPanel
   NcStreamGrammer version 1
   cdmRemote sequences, getStructureIterator
   IospHelper.makeArrayBB

@@ -111,4 +111,22 @@ public class Misc {
   }
 
 
+  static public String showBytes(byte[] buff) {
+    StringBuilder sbuff = new StringBuilder();
+    for (int i = 0; i < buff.length; i++) {
+      byte b = buff[i];
+      int ub = (b < 0) ? b + 256 : b;
+      if (i > 0) sbuff.append(" ");
+      sbuff.append(ub);
+    }
+    return sbuff.toString();
+  }
+
+  static public void showBytes(byte[] buff, Formatter f) {
+    for (int i = 0; i < buff.length; i++) {
+      byte b = buff[i];
+      int ub = (b < 0) ? b + 256 : b;
+      f.format("%3d ", ub);
+    }
+  }
 }

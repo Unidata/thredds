@@ -171,7 +171,7 @@ public class GribRawPanel extends JPanel {
       public void actionPerformed(ActionEvent e) {
         Grib2RecordBean bean = (Grib2RecordBean) record2BeanTable.getSelectedBean();
         if (bean != null) {
-          infoPopup.setText(bean.toString());
+          infoPopup.setText(bean.showComplete());
           infoPopup.gotoTop();
           infoWindow.showIfNotIconified();
         }
@@ -1014,7 +1014,7 @@ public class GribRawPanel extends JPanel {
       }
     }
 
-    public String toString() {
+    public String showComplete() {
       Formatter f = new Formatter();
       f.format("Grib2IndicatorSection%n");
       f.format(" Discipline = (%d) %s%n",  gr.getIs().getDiscipline(), gr.getIs().getDisciplineName());
@@ -1031,6 +1031,19 @@ public class GribRawPanel extends JPanel {
       f.format(" RefTime       = %s%n", df.toDateTimeStringISO(id.getBaseTime()));
       f.format(" ProductStatus = %s%n", id.getProductStatusName());
       f.format(" ProductType   = %s%n", id.getProductTypeName());
+
+      byte[] lus = gr.getLocalUseSection();
+      if (lus != null) {
+        f.format("%nLocal Use Section (grib section 2)%n");
+        /* try {
+          f.format(" String= %s%n", new String(lus, 0, lus.length, "UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+          e.printStackTrace();
+        } */
+        f.format("bytes (len=%d) =", lus.length);
+        Misc.showBytes(lus, f);
+        f.format("%n");
+      }
 
       f.format("%nGrib2GridDefinitionSection%n");
       f.format(" Length             = %d%n", gds.getLength());

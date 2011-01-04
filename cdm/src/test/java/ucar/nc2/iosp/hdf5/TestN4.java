@@ -39,6 +39,7 @@ import ucar.nc2.*;
 import ucar.ma2.Array;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
+import ucar.nc2.util.Misc;
 
 import java.io.*;
 import java.util.Collections;
@@ -200,7 +201,7 @@ public class TestN4 extends TestCase {
     System.out.println("\n**** testReadNetcdf4 done\n\n" + ncfile);
     Variable v = ncfile.findVariable("d");
     String attValue = ncfile.findAttValueIgnoreCase(v, "c", null);
-    String s = H5header.showBytes(attValue.getBytes());
+    String s = Misc.showBytes(attValue.getBytes());
     System.out.println(" d:c= ("+attValue+") = "+s);
     //Array data = v.read();
     //NCdumpW.printArray(data, "cr", System.out, null);
