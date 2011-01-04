@@ -176,7 +176,7 @@ public class Attribute implements Cloneable, Serializable {
   public Attribute(int type, String name, String value, boolean check)
           throws AttributeBadValueException {
 
-    value = fixnan(value);
+    //value = fixnan(value);
     if (check)
       dispatchCheckValue(type, value);
 
@@ -202,7 +202,7 @@ public class Attribute implements Cloneable, Serializable {
   public Attribute(int type, String name, String value)
           throws AttributeBadValueException {
 
-    value = fixnan(value);
+    //value = fixnan(value);
     dispatchCheckValue(type, value);
 
     this.type = type;
@@ -493,7 +493,7 @@ public class Attribute implements Cloneable, Serializable {
           throws NoSuchAttributeException, AttributeBadValueException {
 
     checkVectorUsage();
-    value = fixnan(value);
+    //value = fixnan(value);
     if(check)
       dispatchCheckValue(type, value);
 

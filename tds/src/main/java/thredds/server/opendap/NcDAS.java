@@ -166,9 +166,10 @@ public class NcDAS extends opendap.dap.DAS {
       try {
         String attName = NcDDS.escapeName(att.getName());
         if (att.isString()) {
-          String value = escapeAttributeStringValues(att.getStringValue());
+          /* FIX String value = escapeAttributeStringValues(att.getStringValue());
           table.appendAttribute(attName, dods_type, "\""+value+"\"");
-
+          */
+          table.appendAttribute(attName, dods_type, att.getStringValue());
         } else {
           // cant send signed bytes
           if (att.getDataType() == DataType.BYTE) {
