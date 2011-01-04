@@ -80,7 +80,7 @@
   <property name="ncwms.jar" value="release/ncwms.jar" />
   <property name="netcdf.jar" value="release/netcdf-4.2.jar"/>
   <property name="opendap.jar" value="release/opendap-2.2.jar"/>
-  <property name="unidatacommon.jar" value="release/unidatacommon.jar"/>
+  <property name="threddsIso.jar" value="release/threddsIso-1.0.jar"/>
   <property name="visadNoDods.jar" value="release/visadNoDods.jar"/>
 
   <!-- Third-party libraries needed for compile. -->
@@ -136,7 +136,7 @@
       <include name="${grib.jar}"/>
       <include name="${opendap.jar}"/>
       <include name="${ncwms.jar}"/>
-      <include name="${unidatacommon.jar}"/>
+      <include name="${threddsIso.jar}"/>
       <include name="${visadNoDods.jar}"/>
 
       <include name="${bdb.jar}"/>

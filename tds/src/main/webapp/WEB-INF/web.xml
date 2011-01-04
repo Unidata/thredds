@@ -113,6 +113,10 @@
   </filter-mapping>
   <filter-mapping>
     <filter-name>RequestQueryFilter</filter-name>
+    <servlet-name>metadata</servlet-name>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>RequestQueryFilter</filter-name>
     <servlet-name>admin</servlet-name>
   </filter-mapping>
   <!--filter-mapping>
@@ -328,6 +332,13 @@
     <load-on-startup>1</load-on-startup>
   </servlet>
 
+  <!-- Metadata services (ncISO) from NGDC -->
+  <servlet>
+    <servlet-name>metadata</servlet-name>
+    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+    <load-on-startup>3</load-on-startup>
+  </servlet>
+
   <servlet>
     <servlet-name>admin</servlet-name>
     <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
@@ -530,6 +541,20 @@
   <servlet-mapping>
     <servlet-name>catalogService</servlet-name>
     <url-pattern>/remoteCatalogValidation.html</url-pattern>
+  </servlet-mapping>
+
+  <!-- Metadata services (ncISO) from NGDC -->
+  <servlet-mapping>
+    <servlet-name>metadata</servlet-name>
+    <url-pattern>/ncml/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>metadata</servlet-name>
+    <url-pattern>/uddc/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>metadata</servlet-name>
+    <url-pattern>/iso/*</url-pattern>
   </servlet-mapping>
 
   <!-- old debug, content handling -->
