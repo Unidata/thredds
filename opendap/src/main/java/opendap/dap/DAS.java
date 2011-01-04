@@ -43,8 +43,7 @@ package opendap.dap;
 import java.util.Enumeration;
 import java.util.Vector;
 
-import opendap.dap.parser.DASParser;
-import opendap.dap.parser.ParseException;
+import opendap.dap.parser.*;
 import opendap.util.Debug;
 
 import java.io.*;
@@ -115,66 +114,79 @@ import java.io.*;
  * @see AttributeTable
  * @see Attribute
  */
-public class DAS extends AttributeTable implements Cloneable {
+public class DAS extends AttributeTable implements Cloneable
+{
 
 
     // Used by resolveAliases() method
     private AttributeTable currentAT = null;
     private Alias currentAlias = null;
 
+    private BaseTypeFactory factory = null;
     /**
      * Create a new empty <code>DAS</code>.
      */
-    public DAS() {
+    public DAS()
+    {
         super("Attributes");
-        //attr = new SortedTable();
+        factory = new DefaultFactory();
     }
 
-
-    public Object clone() {
-        DAS d = (DAS) super.clone();
-        return d;
+    public Object clone()
+    {
+        DAS das = (DAS) super.clone();
+        return das;
     }
 
+    public boolean parse(InputStream stream) throws ParseException,DAP2Exception
+    {
+        DapParser parser = new DapParser(factory);
+	int result = parser.dasparse(stream,this);
+	if(result == Dapparse.DapERR)
+	    throw parser.getERR();
+	return (result == Dapparse.DapDAS ? true : false);
+    }
 
-  /**
-   * Returns the <code>AttributeTable</code> with the given name.
-   *
-   * @param name the name of the <code>AttributeTable</code> to return.
-   * @return the <code>AttributeTable</code> with the specified name, or null
-   *         if there is no matching <code>AttributeTable</code>.
-   * @throws NoSuchAttributeException There is no AttributeTable with the passed name.
-   * @see AttributeTable
-   */
-  public final AttributeTable getAttributeTable(String name) throws NoSuchAttributeException {
-      AttributeTable at = null;
-      Attribute a = getAttribute(name);
-      if (a != null) {
-          if (a.isContainer()) {
-              at = a.getContainer();
-          }
-      }
-      return (at);
-  }
+    /**
+     * Returns the <code>AttributeTable</code> with the given name.
+     *
+     * @param name the name of the <code>AttributeTable</code> to return.
+     * @return the <code>AttributeTable</code> with the specified name, or null
+     *         if there is no matching <code>AttributeTable</code>.
+     * @throws NoSuchAttributeException There is no AttributeTable with the passed name.
+     * @see AttributeTable
+     */
+    public final AttributeTable getAttributeTable(String name) throws NoSuchAttributeException
+    {
+        AttributeTable at = null;
+        Attribute a = getAttribute(name);
+        if (a != null) {
+            if (a.isContainer()) {
+                at = a.getContainer();
+            }
+        }
+        return (at);
+    }
 
-  /**
-   * Returns the <code>AttributeTable</code> with the given name.
-   *
-   * @param name the name of the <code>AttributeTable</code> to return.
-   * @return the <code>AttributeTable</code> with the specified name, or null
-   *         if there is no matching <code>AttributeTable</code>.
-   * @see AttributeTable
-   */
-  public final AttributeTable getAttributeTableN(String name) {
-      AttributeTable at = null;
-      Attribute a = getAttribute(name);
-      if (a != null) {
-          if (a.isContainer()) {
-              at = a.getContainerN();
-          }
-      }
-      return (at);
-  }
+    /**
+     * Returns the <code>AttributeTable</code> with the given name.
+     *
+     * @param name the name of the <code>AttributeTable</code> to return.
+     * @return the <code>AttributeTable</code> with the specified name, or null
+     *         if there is no matching <code>AttributeTable</code>.
+     * @see AttributeTable
+     */
+    public final AttributeTable getAttributeTableN(String name)
+    {
+        AttributeTable at = null;
+        Attribute a = getAttribute(name);
+        if (a != null) {
+            if (a.isContainer()) {
+                at = a.getContainerN();
+            }
+        }
+        return (at);
+    }
 
     /**
      * Adds an <code>AttributeTable</code> to the DAS.
@@ -183,31 +195,10 @@ public class DAS extends AttributeTable implements Cloneable {
      * @param a    the <code>AttributeTable</code> to add.
      * @see AttributeTable
      */
-    public void addAttributeTable(String name, AttributeTable a) throws AttributeExistsException {
+    public void addAttributeTable(String name, AttributeTable a) throws AttributeExistsException
+    {
         addContainer(name, a);
     }
-
-    /**
-     * Reads a <code>DAS</code> from the named <code>InputStream/Reader</code>.  This
-     * method calls a generated parser to interpret an ASCII representation of a
-     * <code>DAS</code>, and regenerate that <code>DAS</code> in memory.
-     *
-     * @param is the <code>InputStream</code> containing the <code>DAS</code> to
-     *           parse.
-     * @throws ParseException error in parser.
-     * @throws DASException   error in constructing <code>DAS</code>.
-     * @throws opendap.dap.parser.TokenMgrError
-     *                        error in token manager
-     *                        (unterminated quote).
-     * @see opendap.dap.parser.DASParser
-     */
-    public void parse(InputStream is) throws ParseException, DASException
-    {
-        DASParser dp = new DASParser(is);
-        dp.Attributes(this);
-        resolveAliases();
-    }
-
 
     /**
      * This method searchs through the <code>DAS</code>
@@ -224,7 +215,8 @@ public class DAS extends AttributeTable implements Cloneable {
      * @see Alias
      * @see DDS#resolveAliases()
      */
-    public void resolveAliases() throws MalformedAliasException, UnresolvedAliasException, NoSuchAttributeException {
+    public void resolveAliases() throws MalformedAliasException, UnresolvedAliasException, NoSuchAttributeException
+    {
 
         resolveAliases(this);
 
@@ -237,7 +229,7 @@ public class DAS extends AttributeTable implements Cloneable {
             if (Debug.isSet("DAS")) System.out.println("DAS.resolveAliases() - aName: " + aName);
 
             Attribute at = getAttribute(aName);
-            if (at==null || !at.isContainer()) {
+            if (at == null || !at.isContainer()) {
 
                 throw new MalformedAliasException("Aliases at the top-level of a DAS MUST reference a container (AttributeTable), not a simple Attribute");
             }
@@ -260,7 +252,8 @@ public class DAS extends AttributeTable implements Cloneable {
      */
 
 
-    private void resolveAliases(AttributeTable at) throws MalformedAliasException, UnresolvedAliasException, NoSuchAttributeException {
+    private void resolveAliases(AttributeTable at) throws MalformedAliasException, UnresolvedAliasException, NoSuchAttributeException
+    {
 
         // Cache the current (parent) Attribute table. This value is
         // null if this method is called from parse();
@@ -318,7 +311,8 @@ public class DAS extends AttributeTable implements Cloneable {
      * @param alias The <code>Alias</code> which needs to be resolved
      */
 
-    private void resolveAlias(Alias alias) throws MalformedAliasException, UnresolvedAliasException {
+    private void resolveAlias(Alias alias) throws MalformedAliasException, UnresolvedAliasException
+    {
 
         //Get the crucial stuff out of the Alias
         String name = alias.getClearName();
@@ -403,7 +397,8 @@ public class DAS extends AttributeTable implements Cloneable {
      */
 
     private opendap.dap.Attribute getAliasAttribute(AttributeTable att, Vector aNames)
-            throws MalformedAliasException, UnresolvedAliasException {
+            throws MalformedAliasException, UnresolvedAliasException
+    {
 
         // Get the first node name form the vector.
         String aName = (String) aNames.get(0);

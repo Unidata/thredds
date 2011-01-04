@@ -62,6 +62,7 @@ abstract public class DVector extends BaseType implements ClientIO {
      */
     private PrimitiveVector vals;
 
+    
     /**
      * Constructs a new <code>DVector</code>.
      */
@@ -86,6 +87,19 @@ abstract public class DVector extends BaseType implements ClientIO {
     public DVector(String n) {
         super(n);
     }
+
+    /**
+            * The variable of which we are the parent
+            */
+           private BaseType containervar;
+
+           public BaseType getContainerVar() {return containervar;}
+
+           public void setContainerVar(BaseType var)
+           {
+           if(containervar != null) throw new RuntimeException("DArray with multiple variables");
+           containervar = var;
+           }
 
     /**
      * Returns a clone of this <code>DVector</code>.  A deep copy is performed on
@@ -134,6 +148,7 @@ abstract public class DVector extends BaseType implements ClientIO {
         vals = v.newPrimitiveVector();
         setName(v.getName());
         v.setParent(this);
+        setContainerVar(v);
     }
 
     /**
@@ -232,7 +247,9 @@ abstract public class DVector extends BaseType implements ClientIO {
         // core as the C++ core does not consume 2 length values for the
         // BaseType vectors. Bummer...
 
-        int length = source.readInt();
+        int length;
+        length = source.readInt();
+
         //System.out.printf("  len=%d%n",length);
 
         if (!(vals instanceof BaseTypePrimitiveVector)) {
@@ -250,10 +267,8 @@ abstract public class DVector extends BaseType implements ClientIO {
           System.out.println("  array type = : "+vals.getClass().getName());
         } */
 
-      if (length < 0)
-          throw new DataReadException("Negative array length read.");
-      //if (length > 1000 * 1000 * 100)
-      //    throw new DataReadException("Bad array length read.");
+        if (length < 0)
+            throw new DataReadException("Negative array length read.");
         if (statusUI != null)
             statusUI.incrementByteCount(8);
         vals.setLength(length);

@@ -557,9 +557,5 @@ public abstract class SDArray extends DArray implements ServerArrayMethods, RelO
 
         super.printXML(pw, pad, constrained);
     }
-
-
 }
-
-
 

@@ -57,6 +57,12 @@ public class ValueClause
         extends AbstractClause
         implements SubClause {
 
+
+
+    protected BaseType value;
+    protected Clause parent;
+
+
     /**
      * Creates a new ValueClause.
      *
@@ -106,18 +112,15 @@ public class ValueClause
      * Prints the original string representation of this clause.
      * For use in debugging.
      */
-    public String toString() {
+    public void printConstraint(PrintWriter os)
+    {
         if (constant) {
             StringWriter w = new StringWriter();
-            value.printVal(new PrintWriter(w), "", false);
-            return w.toString();
+            value.printVal(os, "", false);
         } else {
-            return value.getName();
+            value.printConstraint(os);
         }
     }
-
-    protected BaseType value;
-    protected Clause parent;
 
 }
 

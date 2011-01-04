@@ -426,5 +426,3 @@ public abstract class SDStructure extends DStructure implements ServerMethods, R
 
 
 }
-
-

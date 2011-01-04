@@ -116,6 +116,13 @@ abstract public class DConstructor extends BaseType {
             throws NoSuchVariableException;
 
     /**
+     * Get the number of contained variables (for use with getVar()
+     * @return the number of contained variables
+     */
+    abstract public int getVarCount();
+
+
+    /**
      * Return an Enumeration that can be used to iterate over all of the
      * members of the class. Each implementation must define what this means.
      * The intent of this method is to support operations on all members of a

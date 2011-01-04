@@ -1,5 +1,6 @@
 package ucar.nc2.ft.point.remote;
 
+import opendap.dap.http.HTTPMethod;
 import ucar.nc2.ft.point.*;
 import ucar.nc2.ft.*;
 import ucar.nc2.stream.CdmRemote;
@@ -10,8 +11,6 @@ import ucar.unidata.geoloc.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
-
-import org.apache.commons.httpclient.HttpMethod;
 
 /**
  * Connect to remote Station Collection using cdmremote
@@ -40,11 +39,11 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
   protected void initStationHelper() {
     // read in all the stations with the "stations" query
     stationHelper = new StationHelper();
-    HttpMethod method = null;
+    HTTPMethod method = null;
     try {
       String query = "req=stations";
       method = CdmRemote.sendQuery(uri, query);
-      InputStream in = method.getResponseBodyAsStream();
+      InputStream in = method.getResponseAsStream();
 
       PointStream.MessageType mtype = PointStream.readMagic(in);
       if (mtype != PointStream.MessageType.StationList) {
@@ -64,7 +63,7 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
       throw new RuntimeException(ioe);
 
     } finally {
-      if (method != null) method.releaseConnection();
+      if (method != null) method.close();
     }
   }
 
@@ -200,14 +199,14 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
     public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
       String query = PointDatasetRemote.makeQuery("stn=" + s.getName(), null, dateRange);
 
-      HttpMethod method = null;
+      HTTPMethod method = null;
       try {
         method = CdmRemote.sendQuery(uri, query);
         InputStream in = method.getResponseBodyAsStream();
 
         PointStream.MessageType mtype = PointStream.readMagic(in);
         if (mtype == PointStream.MessageType.End) {  // no obs were found
-           method.releaseConnection();
+           method.close();
            return new PointIteratorEmpty(); // return empty iterator
         }
 
@@ -225,7 +224,7 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
         return riter;
 
       } catch (Throwable t) {
-        if (method != null) method.releaseConnection();
+        if (method != null) method.close();
         throw new IOException(t.getMessage(), t);
       } 
     }

@@ -33,6 +33,9 @@
 
 package ucar.nc2.ui;
 
+import opendap.dap.http.HTTPException;
+import opendap.dap.http.HTTPMethod;
+import opendap.dap.http.HTTPSession;
 import ucar.nc2.ui.event.ActionValueEvent;
 import ucar.nc2.ui.event.ActionValueListener;
 import ucar.nc2.ui.widget.BAMutil;
@@ -194,22 +197,28 @@ public class WmsViewer extends JPanel {
    *
    * @param client the HttpClient object
    */
+  /*ignore
   static public void setHttpClient(HttpClient client) {
     httpClient = client;
   }
+  */
 
-  static private HttpClient httpClient = null;
+  static private HTTPSession httpClient = null;
 
-  private synchronized void initHttpClient() {
+  private synchronized void initHttpClient() throws HTTPException {
     if (httpClient != null) return;
-    MultiThreadedHttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
-    httpClient = new HttpClient(connectionManager);
+    httpClient = new HTTPSession();
   }
 
   //////////////////////////////////////////////////////
 
   private boolean getCapabilities() {
-    initHttpClient();
+    try {
+        initHttpClient();
+    }  catch (HTTPException e) {
+        info.append(e.getMessage());
+        return false;
+    }
 
     Formatter f = new Formatter();
     f.format("%s?request=GetCapabilities&service=WMS&version=%s", endpoint, version);
@@ -217,11 +226,10 @@ public class WmsViewer extends JPanel {
     info.setLength(0);
     info.append(url + "\n");
 
-    HttpMethod method = null;
+    HTTPMethod method = null;
     try {
-      method = new GetMethod(url);
-      method.setFollowRedirects(true);
-      int statusCode = httpClient.executeMethod(method);
+      method = httpClient.newMethodGet(url);
+      int statusCode = method.execute();
 
       info.append(" Status = " + method.getStatusCode() + " " + method.getStatusText() + "\n");
       info.append(" Status Line = " + method.getStatusLine() + "\n");
@@ -248,7 +256,7 @@ public class WmsViewer extends JPanel {
       return false;
 
     } finally {
-      if (method != null) method.releaseConnection();
+      if (method != null) method.close();
     }
 
     return true;
@@ -283,7 +291,12 @@ public class WmsViewer extends JPanel {
   }
 
   private boolean getMap(LayerBean layer) {
-    initHttpClient();
+    try {
+        initHttpClient();
+    } catch (HTTPException e) {
+        info.append(e.getMessage());
+        return false;
+    }
 
     Formatter f = new Formatter();
     f.format("%s?request=GetMap&service=WMS&version=%s&", endpoint, version);
@@ -300,11 +313,10 @@ public class WmsViewer extends JPanel {
     info.setLength(0);
     info.append(url + "\n");
 
-    HttpMethod method = null;
+    HTTPMethod method = null;
     try {
-      method = new GetMethod(url);
-      method.setFollowRedirects(true);
-      int statusCode = httpClient.executeMethod(method);
+      method = httpClient.newMethodGet(url);
+      int statusCode = method.execute();
 
       info.append(" Status = " + method.getStatusCode() + " " + method.getStatusText() + "\n");
       info.append(" Status Line = " + method.getStatusLine() + "\n");
@@ -357,7 +369,7 @@ public class WmsViewer extends JPanel {
       return false;
 
     } finally {
-      if (method != null) method.releaseConnection();
+      if (method != null) method.close();
     }
 
     return true;

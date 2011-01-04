@@ -144,7 +144,7 @@ public class GeturlFrame extends Frame {
             try {
                 // deactivate the other buttons so the user doesn't click them now
                 setButtonsEnabled(false);
-                // run DConnect in a separate thread from AWT event thread
+                // run DConnect2 in a separate thread from AWT event thread
                 Thread runThread = new Thread(this);
                 runThread.start();
             }
@@ -156,7 +156,7 @@ public class GeturlFrame extends Frame {
 
         public void run() {
             try {
-                DConnect url = new DConnect(urlField.getText());
+                DConnect2 url = new DConnect2(urlField.getText());
                 DAS das = url.getDAS();
                 CharArrayWriter aw = new CharArrayWriter();
                 das.print(new PrintWriter(aw));
@@ -176,7 +176,7 @@ public class GeturlFrame extends Frame {
             try {
                 // deactivate the other buttons so the user doesn't click them now
                 setButtonsEnabled(false);
-                // run DConnect in a separate thread from AWT event thread
+                // run DConnect2 in a separate thread from AWT event thread
                 Thread runThread = new Thread(this);
                 runThread.start();
             }
@@ -188,7 +188,7 @@ public class GeturlFrame extends Frame {
 
         public void run() {
             try {
-                DConnect url = new DConnect(urlField.getText());
+                DConnect2 url = new DConnect2(urlField.getText());
                 DDS dds = url.getDDS();
                 CharArrayWriter aw = new CharArrayWriter();
                 dds.print(new PrintWriter(aw));
@@ -208,7 +208,7 @@ public class GeturlFrame extends Frame {
             try {
                 // deactivate the other buttons so the user doesn't click them now
                 setButtonsEnabled(false);
-                // run DConnect in a separate thread from AWT event thread
+                // run DConnect2 in a separate thread from AWT event thread
                 // NOTE: StatusWindow cancel button won't work otherwise!
                 Thread runThread = new Thread(this);
                 runThread.start();
@@ -221,7 +221,7 @@ public class GeturlFrame extends Frame {
 
         public void run() {
             try {
-                DConnect url = new DConnect(urlField.getText());
+                DConnect2 url = new DConnect2(urlField.getText());
                 DataDDS dds = url.getData(new StatusWindow(urlField.getText()));
                 CharArrayWriter aw = new CharArrayWriter();
                 dds.printVal(new PrintWriter(aw));

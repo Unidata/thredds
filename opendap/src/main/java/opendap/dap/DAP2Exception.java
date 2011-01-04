@@ -40,9 +40,12 @@
 
 package opendap.dap;
 
+import opendap.dap.http.*;
+
 import java.io.*;
 
-import opendap.dap.parser.ErrorParser;
+//import opendap.dap.parser.ErrorParser;
+import opendap.dap.parser.DapParser;
 import opendap.dap.parser.ParseException;
 
 /**
@@ -177,6 +180,16 @@ public class DAP2Exception extends Exception {
     }
 
     /**
+         * Construct a <code>DAP2Exception</code> with the given causal exception.
+         *
+         * @param cause the causing exception
+         */
+        public DAP2Exception(Exception cause) {
+            super(cause);
+            errorCode = 0;
+            errorMessage = cause.toString();
+        }
+    /**
      * Returns the error code.
      *
      * @return the error code.
@@ -265,16 +278,14 @@ public class DAP2Exception extends Exception {
      * @param is the InputStream containing the <code>Error</code> to parse.
      * @see opendap.dap.parser.ErrorParser
      */
-    public final void parse(InputStream is) {
-        ErrorParser ep = new ErrorParser(is);
-        try {
-            ep.ErrorObject(this);
-        } catch (ParseException e) {
-            String msg = e.getMessage();
-            if (msg != null)
-		          msg = msg.replace('\"', '\'');
-            errorMessage = "Error parsing server Error object!\n" + msg;
-        }
+    public final boolean parse(InputStream stream) {
+        DapParser parser = new DapParser(new DefaultFactory());
+	try {
+            if(parser.errparse(stream,this) != DapParser.DapERR) return false;
+	} catch (ParseException pe) {
+	    this.initCause(pe);
+	}
+	return true;
     }
 
     /**

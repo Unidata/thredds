@@ -43,10 +43,8 @@ package opendap.dap;
 import java.net.URLConnection;
 import java.io.Serializable;
 
+import opendap.dap.http.HTTPMethod;
 import org.apache.commons.httpclient.*;
-import org.apache.commons.httpclient.methods.*;
-import org.apache.commons.httpclient.util.URIUtil;
-
 
 /**
  * Aprses and holds the Server Version information returned by a DAP server.
@@ -125,7 +123,7 @@ public class ServerVersion implements java.io.Serializable {
      * @throws DAP2Exception When bad things happen (like the headers are
      *                       missing or incorrectly constructed.
      */
-    public ServerVersion(GetMethod method) throws DAP2Exception {
+    public ServerVersion(HTTPMethod method) throws DAP2Exception {
 
         // Did the Server send an XDAP header?
         Header h = method.getResponseHeader("XDAP");

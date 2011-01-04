@@ -32,11 +32,10 @@
  */
 package thredds.util;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpMethod;
+import opendap.dap.http.HTTPException;
+import opendap.dap.http.HTTPMethod;
+import opendap.dap.http.HTTPSession;
 import org.apache.commons.httpclient.Header;
-import org.apache.commons.httpclient.params.HttpClientParams;
-import org.apache.commons.httpclient.methods.GetMethod;
 
 import java.io.*;
 import java.net.URI;
@@ -63,7 +62,8 @@ public class HttpUriResolver
   private boolean allowContentEncoding;
   private boolean followRedirects;
 
-  private HttpMethod method = null;
+  private HTTPMethod method = null;
+    private HTTPSession session = null;
   private Map<String,String> respHeaders;
 
   HttpUriResolver( URI uri, long connectionTimeout, int socketTimeout,
@@ -80,6 +80,11 @@ public class HttpUriResolver
     this.followRedirects = followRedirects;
   }
 
+    public void close()
+    {
+        if(method != null) method.close();
+        if(session != null) session.close();
+    }
   public URI getUri() { return this.uri; }
   public long getConnectionTimeout() { return this.connectionTimeout; }
   public int getSocketTimeout() { return this.socketTimeout; }
@@ -141,7 +146,7 @@ public class HttpUriResolver
     if ( method == null )
       throw new IllegalStateException( "Request has not been made." );
 
-    InputStream is = method.getResponseBodyAsStream();
+    InputStream is = method.getResponseAsStream();
     Header contentEncodingHeader = method.getResponseHeader( "Content-Encoding" );
     if ( contentEncodingHeader != null )
     {
@@ -157,18 +162,18 @@ public class HttpUriResolver
     return is;
   }
 
-  private HttpMethod getHttpResponse( URI uri )
-          throws IOException
+  private HTTPMethod getHttpResponse( URI uri )
+          throws IOException, HTTPException
   {
-    HttpClient client = new HttpClient();
-    HttpClientParams params = client.getParams();
-    params.setConnectionManagerTimeout( this.connectionTimeout );
-    params.setSoTimeout( this.socketTimeout );
-    HttpMethod method = new GetMethod( uri.toString() );
+    if(session == null)
+        session = new HTTPSession();
+    session.setConnectionManagerTimeout( this.connectionTimeout );
+    session.setSoTimeout( this.socketTimeout );
+    HTTPMethod method = session.newMethodGet( uri.toString() );
     method.setFollowRedirects( this.followRedirects );
-    method.addRequestHeader( "Accept-Encoding", this.contentEncoding );
+    method.setRequestHeader( "Accept-Encoding", this.contentEncoding );
 
-    client.executeMethod( method );
+   method.execute();
     int statusCode = method.getStatusCode();
     if ( statusCode == 200 || statusCode == 201 )
     {

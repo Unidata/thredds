@@ -84,7 +84,7 @@ import opendap.dap.NoSuchVariableException;
  */
 
 
-public interface ServerMethods {
+public interface  ServerMethods {
 
     //    FileIO interface
 

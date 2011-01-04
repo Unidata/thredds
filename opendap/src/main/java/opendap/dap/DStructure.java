@@ -187,6 +187,15 @@ public class DStructure extends DConstructor implements ClientIO {
     }
 
     /**
+     * Get the number of contained variables (for use with getVar()
+     * @return the number of contained variables
+     */
+    public int getVarCount()
+    {
+	return vars.size();
+    }
+
+    /**
      * Return an Enumeration that can be used to iterate over the members of
      * a Structure. This implementation provides access to the elements of
      * the Structure. Each Object returned by the Enumeration can be cast to
@@ -196,6 +205,14 @@ public class DStructure extends DConstructor implements ClientIO {
      */
     public Enumeration getVariables() {
         return vars.elements();
+    }
+
+    /**
+     * Return an the Vector of vars for the structure
+     * @return A Vector of BaseType
+     */
+    public Vector getVariableSet() {
+        return vars;
     }
 
     /**

@@ -40,6 +40,7 @@
 package opendap.dap.Server;
 
 import java.util.*;
+import java.io.*;
 
 import opendap.dap.BaseType;
 
@@ -93,8 +94,9 @@ public class DereferenceClause
         throw new DAP2ServerSideException(opendap.dap.DAP2Exception.UNKNOWN_ERROR, "dereferencing not supported");
     }
 
-    public String toString() {
-        return "*\"" + url + "\"";
+    public void printConstraint(PrintWriter os)
+    {
+       os.print("*\"" + url + "\"");
     }
 
     protected String url;

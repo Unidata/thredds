@@ -186,6 +186,7 @@ public class TestAll {
 
     suite.addTest( ucar.nc2.TestIosp.suite());   //  */
 
+
    return new TestSetup(suite) {
 
       protected void setUp() {

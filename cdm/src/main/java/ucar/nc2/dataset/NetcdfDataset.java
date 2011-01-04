@@ -32,6 +32,9 @@
  */
 package ucar.nc2.dataset;
 
+import opendap.dap.http.HTTPException;
+import opendap.dap.http.HTTPMethod;
+import opendap.dap.http.HTTPSession;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
@@ -51,11 +54,7 @@ import ucar.nc2.thredds.ThreddsDataFactory;
 import java.io.*;
 import java.util.*;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
-import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.Header;
-import org.apache.commons.httpclient.methods.HeadMethod;
 import thredds.catalog.ServiceType;
 import ucar.unidata.util.StringUtil;
 
@@ -707,11 +706,11 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     if (result != null)
       return result;
 
-    HttpMethod method = null;
+    HTTPMethod method = null;
     try {
-      method = new HeadMethod(location);
+      method = httpClient.newMethodHead(location);
       method.setFollowRedirects(true);
-      int statusCode = httpClient.executeMethod(method);
+      int statusCode = method.execute();
       if (statusCode >= 300) {
         if (statusCode == 401)
           throw new IOException("Unauthorized to open dataset " + location);
@@ -729,17 +728,17 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
       return null;
 
     } finally {
-      if (method != null) method.releaseConnection();
+      if (method != null) method.close();
     }
   }
 
   // not sure what other opendap servers do, so fall back on check for dds
   static private ServiceType checkIfDods(String location) throws IOException {
-    HttpMethod method = null;
+    HTTPMethod method = null;
     try {
-      method = new HeadMethod(location + ".dds");
+      method = httpClient.newMethodHead(location + ".dds");
       method.setFollowRedirects(true);
-      int status = httpClient.executeMethod(method);
+      int status = method.execute();
       if (status == 200) {
         Header h = method.getResponseHeader("Content-Description");
         if ((h != null) && (h.getValue() != null)) {
@@ -747,7 +746,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
           if (v.equalsIgnoreCase("dods-dds") || v.equalsIgnoreCase("dods_dds"))
             return ServiceType.OPENDAP;
           else
-            throw new IOException("OPeNDAP Server Error= " + method.getResponseBodyAsString());
+            throw new IOException("OPeNDAP Server Error= " + method.getResponseAsString());
         }
       }
       if (status == 401)
@@ -757,7 +756,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
       return null;
 
     } finally {
-      if (method != null) method.releaseConnection();
+      if (method != null) method.close();
     }
   }
 
@@ -766,16 +765,17 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    *
    * @param client the HttpClient object
    */
-  static public void setHttpClient(HttpClient client) {
+  static public void setHttpSession(HTTPSession client) {
     httpClient = client;
+    isexternalclient = true;
   }
 
-  private static HttpClient httpClient = null;
+  private static HTTPSession httpClient = null;   //fix never reclaimed
+  private static boolean isexternalclient = false;
 
   private static synchronized void initHttpClient() {
     if (httpClient != null) return;
-    MultiThreadedHttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
-    httpClient = new HttpClient(connectionManager);
+    try {httpClient = new HTTPSession(); } catch (HTTPException he) {httpClient = null;}
   }
 
   static private NetcdfFile acquireDODS(FileCache cache, FileFactory factory, Object hashKey,

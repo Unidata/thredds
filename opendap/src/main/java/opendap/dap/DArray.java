@@ -92,7 +92,7 @@ public class DArray extends DVector implements Cloneable {
     /**
      * A Vector of DArrayDimension information (i.e. the shape)
      */
-    private Vector<DArrayDimension> dimVector;
+    protected Vector<DArrayDimension> dimVector;
 
     /**
      * Constructs a new <code>DArray</code>.
@@ -127,6 +127,7 @@ public class DArray extends DVector implements Cloneable {
         return a;
     }
 
+   
     /**
      * Returns the OPeNDAP type name of the class instance as a <code>String</code>.
      *
@@ -277,6 +278,7 @@ public class DArray extends DVector implements Cloneable {
     public void appendDim(int size, String name) {
         DArrayDimension newDim = new DArrayDimension(size, name);
         dimVector.addElement(newDim);
+        newDim.setContainer(this);
     }
 
     /**
@@ -292,6 +294,7 @@ public class DArray extends DVector implements Cloneable {
     public void appendDim(int size, String name, boolean decodeName) {
         DArrayDimension newDim = new DArrayDimension(size, name, decodeName);
         dimVector.addElement(newDim);
+        newDim.setContainer(this);        
     }
 
     /**
@@ -314,6 +317,9 @@ public class DArray extends DVector implements Cloneable {
     public final Enumeration getDimensions() {
         return dimVector.elements();
     }
+
+
+
 
     /**
      * Returns the number of dimensions in this array.
@@ -486,6 +492,19 @@ public class DArray extends DVector implements Cloneable {
             }
         }
     }
+
+
+    public void printConstraint(PrintWriter os)
+    {
+	if(getParent() != null) {
+	    getParent().printConstraint(os);
+	    os.print(".");
+	}
+        os.print(getName());
+	for(int i=0;i<dimVector.size();i++) {
+	    DArrayDimension dim = (DArrayDimension)dimVector.get(i);
+	    dim.printConstraint(os);
+	}
+    }
+
 }
-
-

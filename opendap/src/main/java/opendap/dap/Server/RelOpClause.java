@@ -40,6 +40,7 @@
 package opendap.dap.Server;
 
 import java.util.*;
+import java.io.*;
 
 import opendap.dap.parser.ExprParserConstants; // used only for toString()
 import opendap.dap.Server.Operator;
@@ -147,28 +148,26 @@ public class RelOpClause
      * Prints the original string representation of this clause.
      * For use in debugging.
      */
-    public String toString() {
-        StringBuffer buf = new StringBuffer();
-        buf.append(lhs.toString());
-
+    public void printConstraint(PrintWriter os)
+    {
+        lhs.printConstraint(os);
         String op = ExprParserConstants.tokenImage[operator];
         op = op.substring(1, op.length() - 1);
-        buf.append(op);
-        //buf.append(ExprParserConstants.tokenImage[operator].substring(2, 3));
-
+        os.print(op);
+        //os.print(ExprParserConstants.tokenImage[operator].substring(2, 3));
         if (rhs.size() == 1) {
-            buf.append(rhs.get(0).toString());
+            ((ValueClause)rhs.get(0)).printConstraint(os);
         } else {
-            buf.append("{");
+            os.print("{");
             Iterator it = rhs.iterator();
-            buf.append(it.next());
+	    boolean first = true;
             while (it.hasNext()) {
-                buf.append(",");
-                buf.append(it.next().toString());
+                if(!first) os.print(",");
+	        ((ValueClause)it.next()).printConstraint(os);
+		first = false;
             }
-            buf.append("}");
+            os.print("}");
         }
-        return buf.toString();
     }
 
     protected boolean value;
@@ -179,5 +178,3 @@ public class RelOpClause
 
     protected List rhs;
 }
-
-

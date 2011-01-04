@@ -300,6 +300,14 @@ public class DSequence extends DConstructor implements ClientIO {
 
     }
 
+    /**
+     * Get the number of contained variables (for use with getVar()
+     * @return the number of contained variables
+     */
+    public int getVarCount()
+    {
+	return varTemplate.size();
+    }
 
     /**
      * Returns the named variable in the given row of the sequence.

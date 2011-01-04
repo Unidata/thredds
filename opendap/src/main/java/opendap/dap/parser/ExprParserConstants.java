@@ -22,8 +22,21 @@ public interface ExprParserConstants {
   int RBRACE = 20;
   int SEPARATOR = 21;
   int WORD = 22;
+  int STRINGCONST = 23;
+  int INTCONST = 24;
+  int FLOATCONST = 25;
+  int VAR = 26;
+  int FUNCTION = 27;
 
   int DEFAULT = 0;
+
+  // Restricted print set
+  String[] operatorImage = {
+	    null, null, null, null, null,
+	    "=", "!=", ">", ">=", "<", "<=", "=~",
+	    null, null, null, null, null,
+	    null, null, null, null, null,
+	    null, null, null, null, null};
 
   String[] tokenImage = {
     "<EOF>",
@@ -49,6 +62,10 @@ public interface ExprParserConstants {
     "\"}\"",
     "\".\"",
     "<WORD>",
+    "<STRING>",
+    "<NUMBER>",
+    "<VAR>",
+    "<FUNCTION>"
   };
 
 }

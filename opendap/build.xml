@@ -111,9 +111,11 @@
 
     <!-- Project directories -->
     <property name="src.dir"          location="src"/>
-        <property name="src.main.dir"          location="src/main"/>
-        <property name="src.test.dir"          location="src/test"/>
-        <property name="src.java.dir"          location="${src.main.dir}/java"/>
+        <property name="src.main.dir" location="src/main"/>
+        <property name="src.java.dir" location="${src.main.dir}/java"/>
+        <property name="src.test.dir" location="src/test"/>
+        <property name="src.test.java.dir" location="${src.test.dir}/java"/>
+
     <property name="test.dir"         location="${src.test.dir}"/>
     <property name="doc.dir"          location="doc"/>
     <property name="lib.dir"          location="lib"/>
@@ -130,9 +132,11 @@
     <property name="build.doc"        location="${build.dir}/doc"/>
     <property name="build.lib"        location="${build.dir}/lib"/>
 
+    <!-- Where to put test case output -->
+    <property name="results.dir"        location="${build.dir}/results"/>
+
     <!-- Target jar file -->
     <property name="opendap.jar" value="opendap-${VERSION}.jar"/>
-
 
     <!-- Libraries
        - This section creates properties (aliases) for the names of all the
@@ -166,6 +170,7 @@
             <include name="${httpclient.lib}"/>
             <include name="${logging.lib}"/>
             <include name="${unitTest.lib}"/>
+            <include name="${servlet.lib}"/>
         </fileset>
     </path>
 
@@ -182,13 +187,12 @@
       - Basic Targets
       -->
 
-    <target name="all"
-            depends="clean,compile"
-            description="Clean compiles the core OPeNDAP software."/>
+    <target name="all" description="Clean compiles the core OPeNDAP software."
+            depends="clean,compile"/>
 
-    <target name="compile"
-            depends="servers"
-            description="Compiles the core OPeNDAP software."/>
+    <target name="compile" description="Compiles the core OPeNDAP software."
+            depends="servers"/>
+
 
     <!-- Target "clean" cleans up ALL build products -->
     <target name="clean" description="Clean up ALL build products.">
@@ -199,7 +203,8 @@
       - Misc Targets
       -->
 
-    <target name="thredds" depends="opendap-lib" description="make and release thredds jar">
+    <target name="thredds" description="make and release thredds jar"
+	depends="opendap-lib">
         <copy file="${build.lib}/${opendap.jar}" todir="../lib/release/" />
     </target>
 
@@ -212,6 +217,7 @@
         <mkdir dir="${build.lib}"/>
         <mkdir dir="${build.classes}"/>
         <mkdir dir="${build.doc}"/>
+        <mkdir dir="${results.dir}"/>
         <tstamp/>
         <echo level="info" message="time: ${TSTAMP}"/>
     </target>
@@ -222,10 +228,8 @@
       -
       -->
 
-    <target
-            name="dap"
+    <target name="dap" description="Compiles the core software required by OPeNDAP clients."
             depends="init"
-            description="Compiles the core software required by OPeNDAP clients."
             >
         <echo level="info" message="AntFile: ${ant.file} Compiling DAP"/>
         <echo level="info" message="Using the ${build.compiler} javac compiler"/>
@@ -236,19 +240,19 @@
                debug="${compile.debug}"
                debuglevel="${compile.debuglevel}"
                deprecation="${compile.deprecation}"
-               includeAntRuntime="false" >
+               includeAntRuntime="false" source="1.5" target="1.5">
             <classpath refid="dap.compile.classpath"/>
             <src path="${src.java.dir}"/>
             <include name="opendap/dap/**/*.java"/>
             <include name="opendap/Version.java"/>
             <include name="opendap/util/**/*.java"/>
+            <exclude name="opendap/dap/parser/ignore/*.java"/>
+            <exclude name="opendap/dap/test/*.java"/>
         </javac>
     </target>
 
-    <target
-            name="servers"
+    <target name="servers" description="Compiles the all of the core required by OPeNDAP servers."
             depends="dap"
-            description="Compiles the all of the core required by OPeNDAP servers."
             >
         <echo level="info" message="AntFile: ${ant.file} Compiling Servers"/>
         <echo level="info" message="Using the ${build.compiler} javac compiler"/>
@@ -258,7 +262,7 @@
                debug="${compile.debug}"
                debuglevel="${compile.debuglevel}"
                deprecation="${compile.deprecation}"
-               includeAntRuntime="false">
+               includeAntRuntime="false" source="1.5" target="1.5">
             <classpath refid="servers.compile.classpath"/>
             <src path="${src.java.dir}"/>
             <include name="opendap/servlet/**/*.java"/>
@@ -269,16 +273,33 @@
         </javac>
     </target>
 
+    <target name="testcases" description="Compiles the test programs in ${src.java.dir}"
+            depends="dap"
+            >
+        <echo level="info" message="AntFile: ${ant.file} Compiling Test Cases"/>
+        <echo level="info" message="Using the ${build.compiler} javac compiler"/>
+        <echo level="info" message=""/>
+        <javac compiler="${build.compiler}"
+               destdir="${build.classes}"
+               debug="${compile.debug}"
+               debuglevel="${compile.debuglevel}"
+               deprecation="${compile.deprecation}"
+               includeAntRuntime="false" source="1.5" target="1.5">
+            <!--classpath refid="servers.compile.classpath"/-->
+            <classpath refid="dap.compile.classpath"/>
+            <src path="${src.test.java.dir}"/>
+            <include name="opendap/test/*.java"/>
+        </javac>
+    </target>
+
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
       -
       - Documentation Targets
       -
       -->
-    <target
-            name="doc"
-            depends="init,IsJavaDocUpToDate"
-            description="Builds JavaDoc for the core OPeNDAP
+    <target name="doc" description="Builds JavaDoc for the core OPeNDAP
                          software packages, if missing or out of date."
+            depends="init,IsJavaDocUpToDate"
             unless="JavaDocIsUpToDate"
             >
 
@@ -306,9 +327,7 @@
         </copy>
     </target>
 
-    <target
-            name="IsJavaDocUpToDate"
-            description="Checks to see if the JavaDoc is out of date."
+    <target name="IsJavaDocUpToDate" description="Checks to see if the JavaDoc is out of date."
             >
         <uptodate property="JavaDocIsUpToDate" targetfile="${build.doc}/javadoc/index.html">
             <srcfiles dir="${src.java.dir}">
@@ -330,7 +349,8 @@
       -
       -->
 
-    <target name="lib-dist" depends="opendap-lib">
+    <target name="lib-dist"
+	depends="opendap-lib">
         <jar destfile="${build.dist}/${opendap.jar}">
             <zipfileset dir="${build.lib}" prefix="opendap-${VERSION}-lib"/>
             <zipfileset dir="${lib.dir}" prefix="opendap-${VERSION}-lib">
@@ -343,77 +363,15 @@
 
     </target>
 
-    <target name="opendap-lib" depends="clean,servers">
+    <target name="opendap-lib"
+	depends="clean,servers">
         <jar destfile="${build.lib}/${opendap.jar}">
             <fileset dir="${build.classes}"/>
         </jar>
     </target>
 
-    <!-- - - - - - - - - - - - - - - - - - -  Parsers  - - - - - - - - - - - - - - - - - - -
-        Parsers:
-        The following properties and targets are concerned with configuring ANT to use
-        the JavaCC compiler and using the <javacc> task to build the DDS, DAS, Error, and
-        Constraint Expression parsers. We expect that virtually no users and only a very
-        few developers will using these targets. The JavaCC program generates Java source
-        code from grammar files (.jj) these resulting Java files are checked into CVS and
-        are part of every project checkout. Thus, the only time that the content of the Java
-        source changes is in response to changes in the grammar (.jj) files.
-    -->
-
-    <!-- JavaCC.config:
-        JavaCC config properties file. This file must contain the property JavaCC.home
-        set to an absolute path to the local installation of JavaCC's jar file.
-        For example:
-        JavaCC.home=/usr/JavaCC/bin/lib
-    -->
-    <property name="JavaCC.config" location="${buildfiles.dir}/javacc-config"/>
-
-    <!-- checkForJavaCC:  Check to see if a JavaCC configuration properties file is available. -->
-    <target
-            name="checkForJavaCC"
-            description="Check to see if a JavaCC configuration properties file is available."
-            >
-        <available
-                property="JavaCC.available"
-                file="${JavaCC.config}"
-                />
-
-        <fail
-                message="Missing 'javacc-config' file. See 'Java-OPeNDAP/doc/developerInfo.html' for instructions."
-                unless="JavaCC.available"
-                />
-    </target>
-
-    <!-- configJavaCC:  Load the JavaCC configuration properties file -->
-    <target
-            name="configJavaCC"
-            description="Load the JavaCC properties file"
-            depends="checkForJavaCC"
-            if="JavaCC.available">
-
-        <loadproperties srcFile="${JavaCC.config}"/>
-        <echo level="info" message="JavaCC.home: ${JavaCC.home}"/>
-
-    </target>
-
-    <!-- parsers: Uses the JavaCC task to build the CE parsers. -->
-    <target
-            name="parsers"
-            depends="init,configJavaCC"
-            description="Uses the JavaCC task to build the DDS, DAS, Error, and CE parsers."
-            if="JavaCC.available"
-            >
-        <echo level="info" message="JavaCC.home: ${JavaCC.home}"/>
-        <javacc javacchome="${JavaCC.home}"
-                target="${src.java.dir}/opendap/dap/parser/ExprParser.jj"/>
-    </target>
-
-    <!-- - - - - - - - - - - - - - - - - - END Parsers - - - - - - - - - - - - - - - - - - - -->
-
-    <target
-            name="xmltest"
+    <target name="xmltest" description="Runs the XmlTest application on the primary DDX test file."
             depends="dap"
-            description="Runs the XmlTest application on the primary DDX test file."
             >
         <java classname="opendap.dap.XMLparser.XmlTest">
             <classpath refid="dap.compile.classpath"/>
@@ -422,20 +380,35 @@
         </java>
     </target>
 
-    <target
-            name="test"
-            depends="dap"
-            description="Runs various tests"
-            >
-        <java classname="opendap.dap.test.TestHttpWrap">
+    <target name="generateconstraints"
+            depends="testcases">
+        <java classname="opendap.test.GenerateConstraints">
             <classpath refid="dap.compile.classpath"/>
-            <arg value="${test.dir}"/>
-        </java>
-        <java classname="opendap.dap.test.TestDConnect2">
-            <classpath refid="dap.compile.classpath"/>
-            <arg value="${test.dir}"/>
         </java>
     </target>
+
+    <target name="test" description="Runs various tests"
+            depends="init,testcases"
+            >
+        <delete dir="${results.dir}"/>
+	<mkdir  dir="${results.dir}"/>
+
+        <java classname="opendap.test.TestCeParser">
+            <classpath refid="dap.compile.classpath"/>
+        </java>
+<!--
+        <java classname="opendap.test.TestCeParser">
+            <classpath refid="dap.compile.classpath"/>
+        </java>
+        <java classname="opendap.test.TestDDS">
+            <classpath refid="dap.compile.classpath"/>
+        </java>
+        <java classname="opendap.test.TestDConnect2">
+            <classpath refid="dap.compile.classpath"/>
+        </java>
+-->
+    </target>
+
 
     <target name="show" description="Show build settings.">
         <echo level="info" message="Project Name:       ${ant.project.name}"/>

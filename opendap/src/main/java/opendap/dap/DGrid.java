@@ -266,6 +266,14 @@ public class DGrid extends DConstructor implements ClientIO {
         }
     }
 
+    /**
+     * Get the number of contained variables (for use with getVar()
+     * @return the number of contained variables
+     */
+    public int getVarCount()
+    {
+	return mapVars.size() + 1;
+    }
 
     /**
      * Private class for implemantation of the Enumeration. Because
@@ -307,7 +315,6 @@ public class DGrid extends DConstructor implements ClientIO {
     public Enumeration getVariables() {
         return new EnumerateDGrid();
     }
-
     /**
      * Checks for internal consistency.  For <code>DGrid</code>, verify that
      * the map variables have unique names and match the number of dimensions
@@ -521,6 +528,10 @@ public class DGrid extends DConstructor implements ClientIO {
 
         pw.println(pad + "</Grid>");
     }
+
+    // Export for testing
+    public DArray getArray() {return arrayVar;}
+    public Vector<DArrayDimension> getArrayDims() {return arrayVar.dimVector;}
 
 
 }

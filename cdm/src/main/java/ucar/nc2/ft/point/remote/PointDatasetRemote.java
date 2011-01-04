@@ -128,7 +128,7 @@ RemotePointCollection() {
 }
 
 public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
-  HttpMethod method = null;
+  HTTPMethod method = null;
 
   try {
     method = ncremote.sendQuery(makeRequest());

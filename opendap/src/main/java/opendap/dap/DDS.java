@@ -45,9 +45,8 @@ import java.util.Vector;
 import java.util.Stack;
 import java.io.*;
 
-import opendap.dap.parser.DDSParser;
+import opendap.dap.parser.*;
 import opendap.dap.XMLparser.DDSXMLParser;
-import opendap.dap.parser.ParseException;
 import opendap.util.Debug;
 import org.jdom.Document;
 
@@ -271,16 +270,17 @@ import org.jdom.Document;
  *
  * @author ndp
  * @version $Revision: 22951 $
+ * @opendap.ddx.experimental Many parts of this class have been modified to support
+ * the DDX functionality. This API is going to change!
  * @see BaseType
  * @see BaseTypeFactory
  * @see DAS
  * @see opendap.dap.XMLparser.DDSXMLParser
  * @see #checkForAttributeNameConflict
  * @see #resolveAliases
- * @opendap.ddx.experimental Many parts of this class have been modified to support
- * the DDX functionality. This API is going to change!
  */
-public class DDS extends DStructure {
+public class DDS extends DStructure
+{
 
     private static final boolean _Debug = false;
 
@@ -306,10 +306,12 @@ public class DDS extends DStructure {
 
 
     private String _dataBlobID = null;
+
     /**
      * Creates an empty <code>DDS</code>.
      */
-    public DDS() {
+    public DDS()
+    {
         this(null, new DefaultFactory());
     }
 
@@ -318,7 +320,8 @@ public class DDS extends DStructure {
      *
      * @param n the dataset name
      */
-    public DDS(String n) {
+    public DDS(String n)
+    {
         this(n, new DefaultFactory());
     }
 
@@ -330,7 +333,8 @@ public class DDS extends DStructure {
      *
      * @param factory the server <code>BaseTypeFactory</code> object.
      */
-    public DDS(BaseTypeFactory factory) {
+    public DDS(BaseTypeFactory factory)
+    {
         this("", factory);
     }
 
@@ -343,7 +347,8 @@ public class DDS extends DStructure {
      * @param n       the dataset name
      * @param factory the server <code>BaseTypeFactory</code> object.
      */
-    public DDS(String n, BaseTypeFactory factory) {
+    public DDS(String n, BaseTypeFactory factory)
+    {
         this(n, factory, defaultSchemaLocation);
     }
 
@@ -359,7 +364,8 @@ public class DDS extends DStructure {
      *                OPeNDAP namespace schema.
      * @opendap.ddx.experimental
      */
-    public DDS(String n, BaseTypeFactory factory, String schema) {
+    public DDS(String n, BaseTypeFactory factory, String schema)
+    {
         super(n);
         vars = new Vector();
         this.factory = factory;
@@ -372,7 +378,8 @@ public class DDS extends DStructure {
      *
      * @return a clone of this <code>DDS</code>.
      */
-    public Object clone() {
+    public Object clone()
+    {
         try {
             DDS d = (DDS) super.clone();
             d.vars = new Vector();
@@ -403,13 +410,24 @@ public class DDS extends DStructure {
         }
     }
 
+    public boolean parse(InputStream stream) throws ParseException, DAP2Exception
+    {
+        DapParser parser = new DapParser(factory);
+	int result = parser.ddsparse(stream,this);
+	if(result == Dapparse.DapERR)
+	    throw parser.getERR();
+	return (result == Dapparse.DapDDS ? true : false);
+    }
+
+
     /**
      * Get the Class factory.  This is the machine that builds classes
      * for the internal representation of the data set.
      *
      * @return the BaseTypeFactory.
      */
-    public final BaseTypeFactory getFactory() {
+    public final BaseTypeFactory getFactory()
+    {
         return factory;
     }
 
@@ -417,7 +435,8 @@ public class DDS extends DStructure {
      * Get the Class factory.  This is the machine that builds classes
      * for the internal representation of the data set.
      */
-    public final void setFactory(BaseTypeFactory btf) {
+    public final void setFactory(BaseTypeFactory btf)
+    {
         factory = btf;
     }
 
@@ -429,10 +448,11 @@ public class DDS extends DStructure {
      * data described by the DDX document.
      *
      * @param contentID A <code>String</code> containing the Content-ID of the MIME part that contains
-     * the binary encoded data represented by this DDS.
+     *                  the binary encoded data represented by this DDS.
      * @opendap.ddx.experimental
      */
-    public void setBlobContentID(String contentID) {
+    public void setBlobContentID(String contentID)
+    {
         _dataBlobID = contentID;
     }
 
@@ -446,7 +466,8 @@ public class DDS extends DStructure {
      *         this DDS.
      * @opendap.ddx.experimental
      */
-    public String getBlobContentID() {
+    public String getBlobContentID()
+    {
         return (_dataBlobID);
     }
 
@@ -456,11 +477,12 @@ public class DDS extends DStructure {
      * specification) for this DDS.
      *
      * @return A correctly formed <code>DAS</code> object for this DDS.
+     * @throws DASException
      * @see DAS
      * @see BaseType
-     * @throws DASException
      */
-    public DAS getDAS() throws DASException {
+    public DAS getDAS() throws DASException
+    {
 
         DAS myDAS = new DAS();
 
@@ -562,7 +584,8 @@ public class DDS extends DStructure {
      * @return
      * @throws MalformedAliasException
      */
-    private String convertDDSAliasFieldsToDASAliasFields(String attribute) throws MalformedAliasException {
+    private String convertDDSAliasFieldsToDASAliasFields(String attribute) throws MalformedAliasException
+    {
 
         String prefix = "";
 
@@ -602,10 +625,10 @@ public class DDS extends DStructure {
      * place any loose attributes at the top level.
      *
      * @return
-     *
      * @see #getDAS
      */
-    private String getLooseEndsTableName() {
+    private String getLooseEndsTableName()
+    {
 
         return (checkLooseEndsTableNameConflict(this.getName(), 0));
     }
@@ -618,12 +641,11 @@ public class DDS extends DStructure {
      * @param name
      * @param attempt
      * @return
-     *
-     *
      * @see #getLooseEndsTableName
      * @see #getDAS
      */
-    private String checkLooseEndsTableNameConflict(String name, int attempt) {
+    private String checkLooseEndsTableNameConflict(String name, int attempt)
+    {
         Enumeration e = getVariables();
         while (e.hasMoreElements()) {
             BaseType bt = (BaseType) e.nextElement();
@@ -658,13 +680,12 @@ public class DDS extends DStructure {
      * @param badName
      * @param attempt
      * @return
-     *
-     *
      * @see #checkLooseEndsTableNameConflict
      * @see #getLooseEndsTableName
      * @see #getDAS
      */
-    private String repairLooseEndsTableConflict(String badName, int attempt) {
+    private String repairLooseEndsTableConflict(String badName, int attempt)
+    {
 
         System.out.println("Repairing toplevel attribute table name conflict. Attempt: " + attempt);
 
@@ -672,13 +693,13 @@ public class DDS extends DStructure {
 
         switch (attempt) {
 
-            case 0:
-                name = badName + "_DatasetAttributes_0";
-                break;
-            default:
-                int last_ = badName.lastIndexOf("_");
-                name = badName.substring(0, last_) + "_" + attempt;
-                break;
+        case 0:
+            name = badName + "_DatasetAttributes_0";
+            break;
+        default:
+            int last_ = badName.lastIndexOf("_");
+            name = badName.substring(0, last_) + "_" + attempt;
+            break;
         }
 
         return (name);
@@ -690,15 +711,14 @@ public class DDS extends DStructure {
      * Builds AttributeTables (from BaseType variables) for us in
      * a DAS created by getDAS()
      *
-     *
      * @param bt
      * @param atbl
      * @throws DASException
-     *
      * @see #getDAS()
      */
     private void buildDASAttributeTable(BaseType bt, AttributeTable atbl)
-            throws DASException {
+            throws DASException
+    {
 
         // Get this BaseType's AttributeTable. Since we are using the AttributeTable
         // interface to build the DAS (which will have a different structure than the
@@ -744,12 +764,12 @@ public class DDS extends DStructure {
      * @param atTable
      * @param attr
      * @throws DASException
-     *
      * @see #buildDASAttributeTable(BaseType, AttributeTable)
      * @see #getDAS()
      */
     private void populateAttributeTable(AttributeTable atTable, Attribute attr)
-            throws DASException {
+            throws DASException
+    {
         // Always check for Aliases first! They return the values for their targets
         // when asked if they are containers!
         if (attr.isAlias()) {
@@ -802,7 +822,8 @@ public class DDS extends DStructure {
      *
      * @param os The <code>OutputStream</code> to print to.
      */
-    public void printDAS(OutputStream os) {
+    public void printDAS(OutputStream os)
+    {
         PrintWriter pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(os)));
         printDAS(pw);
         pw.flush();
@@ -814,7 +835,8 @@ public class DDS extends DStructure {
      *
      * @param pw The <code>PrintWriter</code> to print to.
      */
-    public void printDAS(PrintWriter pw) {
+    public void printDAS(PrintWriter pw)
+    {
 
         DAS myDAS = null;
 
@@ -839,7 +861,8 @@ public class DDS extends DStructure {
      * @param name the name of the variable to remove.
      * @see DDS#checkSemantics(boolean)
      */
-    public void delVariable(String name) {
+    public void delVariable(String name)
+    {
         try {
             BaseType bt = getVariable(name);
             vars.removeElement(bt);
@@ -857,7 +880,8 @@ public class DDS extends DStructure {
      * <p/>
      * Note that the List type modifier may only appear once.
      */
-    private DConstructor isVectorOfDConstructor(BaseType var) {
+    private DConstructor isVectorOfDConstructor(BaseType var)
+    {
         if (!(var instanceof DVector))
             return null;
         if (!(((DVector) var).getPrimitiveVector()
@@ -880,7 +904,8 @@ public class DDS extends DStructure {
      * @return the variable named <code>name</code>.
      * @throws NoSuchVariableException if the variable isn't found.
      */
-    public BaseType getVariable(String name) throws NoSuchVariableException {
+    public BaseType getVariable(String name) throws NoSuchVariableException
+    {
         Stack s = new Stack();
         s = search(name, s);
         return (BaseType) s.pop();
@@ -900,7 +925,8 @@ public class DDS extends DStructure {
      * @param v    the variable to add.
      * @param part ignored for <code>DSequence</code>.
      */
-    public void addVariable(BaseType v, int part) {
+    public void addVariable(BaseType v, int part)
+    {
         // v.setParent(this);
         vars.addElement(v);
     }
@@ -935,27 +961,33 @@ public class DDS extends DStructure {
      *         of the DDS to the named variable.
      * @throws NoSuchVariableException
      */
-    public Stack search(String name, Stack compStack) throws NoSuchVariableException {
+    public Stack search(String name, Stack compStack)
+            throws NoSuchVariableException
+    {
         DDSSearch ddsSearch = new DDSSearch(compStack);
 
         if (ddsSearch.deepSearch(name))
             return ddsSearch.components;
         else
-            throw new NoSuchVariableException("The variable `" + name + "' was not found in the dataset.");
+            throw new NoSuchVariableException("The variable `" + name
+                    + "' was not found in the dataset.");
     }
 
     /**
      * Find variables in the DDS when users name them with either fully- or
      * partially-qualified names.
      */
-    private final class DDSSearch {
+    private final class DDSSearch
+    {
         Stack components;
 
-        DDSSearch(Stack c) {
+        DDSSearch(Stack c)
+        {
             components = c;
         }
 
-        BaseType simpleSearch(String name, BaseType start) {
+        BaseType simpleSearch(String name, BaseType start)
+        {
             Enumeration e = null;
             DConstructor dcv;
             if (start == null)
@@ -986,7 +1018,8 @@ public class DDS extends DStructure {
          * Note that this method uses the return value to indicate whether a
          * particular invocation found <code>name</code>.
          */
-        boolean deepSearch(String name) throws NoSuchVariableException {
+        boolean deepSearch(String name) throws NoSuchVariableException
+        {
 
             BaseType start = components.empty() ? null
                     : (BaseType) components.peek();
@@ -1033,7 +1066,8 @@ public class DDS extends DStructure {
      *
      * @return an <code>Enumeration</code> of <code>BaseType</code>.
      */
-    public final Enumeration getVariables() {
+    public final Enumeration getVariables()
+    {
         return vars.elements();
     }
 
@@ -1042,39 +1076,9 @@ public class DDS extends DStructure {
      *
      * @return the number of variables in the dataset.
      */
-    public final int numVariables() {
-        return vars.size();
-    }
-
-    /**
-     * Reads a <code>DDS</code> from the named <code>InputStream</code>
-     * or Reader. This
-     * method calls a generated parser to interpret an ASCII representation of a
-     * <code>DDS</code>, and regenerate that <code>DDS</code> in memory.
-     * This method does the following:
-     * <ul>
-     * <li> Gets a new <code>DDSParser</code> using the <code>BaseTypeFactory</code>
-     * held in this (the <code>DDS</code>) class. </li>
-     * <li> Uses the <code>DDSParser</code> to parse the DDS waiting
-     * in the <code>InputStream/Reader</code> <i>is</i>. </li>
-     * </ul>
-     * <p/>
-     * This method does <b>NOT</b> need to call <code>DDS.checkForAttributeNameConflict()</code>
-     * or <code>DDS.resolveAliases()</code> as the syntax of the DDS
-     * does not support the inclusion of <code>Attribute</code> or
-     * <code>Alias</code> members.
-     *
-     * @param is the InputStream containing the <code>DDS</code> to parse.
-     * @throws ParseException thrown on a parser error.
-     * @throws DDSException   thrown on an error constructing the
-     *                        <code>DDS</code>.
-     * @see opendap.dap.parser.DDSParser
-     * @see opendap.dap.XMLparser.DDSXMLParser
-     */
-    public void parse(InputStream is) throws ParseException, DDSException
+    public final int numVariables()
     {
-        DDSParser dp = new DDSParser(is);
-        dp.Dataset(this, factory);
+        return vars.size();
     }
 
     /**
@@ -1103,12 +1107,13 @@ public class DDS extends DStructure {
      *                   document from a server that has already done so.)
      * @throws DDSException thrown on an error constructing the
      *                      <code>DDS</code>.
+     * @opendap.ddx.experimental
      * @see opendap.dap.XMLparser.DDSXMLParser
      * @see #checkForAttributeNameConflict
      * @see #resolveAliases
-     * @opendap.ddx.experimental
      */
-    public void parseXML(InputStream is, boolean validation) throws DAP2Exception {
+    public void parseXML(InputStream is, boolean validation) throws DAP2Exception
+    {
 
         DDSXMLParser dp = new DDSXMLParser(opendapNameSpace);
 
@@ -1152,7 +1157,7 @@ public class DDS extends DStructure {
      * <li> Calls <code>DDS.checkForAttributeNameConflict()</code></li>
      * <li> Calls <code>DDS.resolveAliases()</code></li>
      * </ul>
-     *
+     * <p/>
      * <p/>
      * The last two items should be called EVERY time a <code>DDS</code>
      * is populated with variables ( by a parser, or through the <code>DDS</code> API)
@@ -1166,12 +1171,13 @@ public class DDS extends DStructure {
      *                   document from a server that has already done so.)
      * @throws DDSException thrown on an error constructing the
      *                      <code>DDS</code>.
+     * @opendap.ddx.experimental
      * @see opendap.dap.XMLparser.DDSXMLParser
      * @see #checkForAttributeNameConflict
      * @see #resolveAliases
-     * @opendap.ddx.experimental
      */
-    public void parseXML(Document ddxDoc, boolean validation) throws DAP2Exception {
+    public void parseXML(Document ddxDoc, boolean validation) throws DAP2Exception
+    {
 
         DDSXMLParser dp = new DDSXMLParser(opendapNameSpace);
 
@@ -1213,7 +1219,8 @@ public class DDS extends DStructure {
      * @throws BadSemanticsException if semantics are bad
      */
     public void checkSemantics(boolean all)
-            throws BadSemanticsException {
+            throws BadSemanticsException
+    {
         if (getName() == null) {
             System.err.println("A dataset must have a name");
             throw new BadSemanticsException("DDS.checkSemantics(): A dataset must have a name");
@@ -1234,7 +1241,8 @@ public class DDS extends DStructure {
      *
      * @param os the <code>PrintWriter</code> to use for output.
      */
-    public void print(PrintWriter os) {
+    public void print(PrintWriter os)
+    {
         os.println("Dataset {");
         for (Enumeration e = vars.elements(); e.hasMoreElements();) {
             BaseType bt = (BaseType) e.nextElement();
@@ -1252,7 +1260,8 @@ public class DDS extends DStructure {
      * @param os the <code>OutputStream</code> to use for output.
      * @see DDS#print(PrintWriter)
      */
-    public final void print(OutputStream os) {
+    public final void print(OutputStream os)
+    {
         PrintWriter pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(os)));
         print(pw);
         pw.flush();
@@ -1279,7 +1288,8 @@ public class DDS extends DStructure {
      * This method manipulates the global (private) variable <code>currentBT</code>.
      * This method manipulates the global (private) variable <code>currentAT</code>.
      */
-    public void resolveAliases() throws MalformedAliasException, UnresolvedAliasException, NoSuchAttributeException {
+    public void resolveAliases() throws MalformedAliasException, UnresolvedAliasException, NoSuchAttributeException
+    {
         currentBT = null;
         currentAT = null;
         resolveAliases(this);
@@ -1308,7 +1318,8 @@ public class DDS extends DStructure {
      * @param bt The <code>BaseType</code> in which to search for and resolve Alias members
      */
 
-    private void resolveAliases(BaseType bt) throws MalformedAliasException, UnresolvedAliasException, NoSuchAttributeException {
+    private void resolveAliases(BaseType bt) throws MalformedAliasException, UnresolvedAliasException, NoSuchAttributeException
+    {
 
         // cache the current/parent BaseType (a container)
         BaseType cacheBT = currentBT;
@@ -1362,7 +1373,8 @@ public class DDS extends DStructure {
      */
 
 
-    private void resolveAliases(AttributeTable at) throws MalformedAliasException, UnresolvedAliasException, NoSuchAttributeException {
+    private void resolveAliases(AttributeTable at) throws MalformedAliasException, UnresolvedAliasException, NoSuchAttributeException
+    {
 
         // Cache the current (parent) Attribute table. This value is
         // null if this method is call from resolveAliases(BasetType bt)
@@ -1413,7 +1425,8 @@ public class DDS extends DStructure {
      * @param alias The <code>Alias</code> which needs to be resolved
      */
 
-    private void resolveAlias(Alias alias) throws MalformedAliasException, UnresolvedAliasException {
+    private void resolveAlias(Alias alias) throws MalformedAliasException, UnresolvedAliasException
+    {
 
         //Get the crucial stuff out of the Alias
         String name = alias.getName();
@@ -1521,7 +1534,8 @@ public class DDS extends DStructure {
      */
 
     private opendap.dap.Attribute getAttribute(AttributeTable at, Vector aNames)
-            throws MalformedAliasException, UnresolvedAliasException {
+            throws MalformedAliasException, UnresolvedAliasException
+    {
 
         // Get the first node name form the vector.
         String aName = (String) aNames.get(0);
@@ -1597,7 +1611,8 @@ public class DDS extends DStructure {
      * @param vNames The <code>Vector</code> of names to match to the nodes of <b>at</b>
      */
 
-    private BaseType getDeepestMatchingVariable(DConstructor dcBT, Vector vNames) {
+    private BaseType getDeepestMatchingVariable(DConstructor dcBT, Vector vNames)
+    {
 
         // Get the first name from the Vector
         String vName = (String) vNames.get(0);
@@ -1660,7 +1675,8 @@ public class DDS extends DStructure {
      * @param field The string to be normalized.
      * @return The "normalized" string.
      */
-    public static String normalize(String field) {
+    public static String normalize(String field)
+    {
         boolean Debug = false;
         StringBuffer sb = new StringBuffer(field);
 
@@ -1705,7 +1721,8 @@ public class DDS extends DStructure {
      * @return The tokenized string.
      * @throws MalformedAliasException
      */
-    public static Vector tokenizeAliasField(String field) throws MalformedAliasException {
+    public static Vector tokenizeAliasField(String field) throws MalformedAliasException
+    {
 
         boolean Debug = false;
 
@@ -1881,7 +1898,8 @@ public class DDS extends DStructure {
      * @param pw The <code>PrintWriter</code> to print to.
      * @opendap.ddx.experimental
      */
-    public void printXML(PrintWriter pw) {
+    public void printXML(PrintWriter pw)
+    {
         printXML(pw, "", false);
     }
 
@@ -1898,7 +1916,8 @@ public class DDS extends DStructure {
      *                    only the projected variables of the DDX to be printed .
      * @opendap.ddx.experimental
      */
-    public void printXML(PrintWriter pw, String pad, boolean constrained) {
+    public void printXML(PrintWriter pw, String pad, boolean constrained)
+    {
 
         pw.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
 
@@ -1918,7 +1937,7 @@ public class DDS extends DStructure {
 
 
             Attribute a = getAttribute(aName);
-            if(a!=null)
+            if (a != null)
                 a.printXML(pw, pad + "\t", constrained);
 
         }
@@ -1952,7 +1971,8 @@ public class DDS extends DStructure {
      * @param das The <code>DAS</code> to ingest.
      * @opendap.ddx.experimental
      */
-    public void ingestDAS(DAS das) {
+    public void ingestDAS(DAS das)
+    {
         try {
 
             ingestAttributeTable(das, this);
@@ -1977,7 +1997,8 @@ public class DDS extends DStructure {
      * @see #ingestAttributeTable(AttributeTable, BaseType)
      * @see #ingestAttributeTable(AttributeTable, DConstructor)
      */
-    private void ingestAttribute(Attribute a, BaseType bt) throws DASException {
+    private void ingestAttribute(Attribute a, BaseType bt) throws DASException
+    {
 
 
         if (a.isAlias()) { // copy an alias.
@@ -2017,7 +2038,8 @@ public class DDS extends DStructure {
      * @see #ingestAttribute(Attribute, BaseType)
      * @see #ingestAttributeTable(AttributeTable, BaseType)
      */
-    private void ingestAttributeTable(AttributeTable at, DConstructor dc) throws DASException {
+    private void ingestAttributeTable(AttributeTable at, DConstructor dc) throws DASException
+    {
 
 
         Enumeration ate = at.getNames();
@@ -2060,7 +2082,8 @@ public class DDS extends DStructure {
      * @see #ingestAttribute(Attribute, BaseType)
      * @see #ingestAttributeTable(AttributeTable, DConstructor)
      */
-    private void ingestAttributeTable(AttributeTable at, BaseType bt) throws DASException {
+    private void ingestAttributeTable(AttributeTable at, BaseType bt) throws DASException
+    {
 
 
         try {
@@ -2106,7 +2129,8 @@ public class DDS extends DStructure {
      * variable's member variables. That's a NO-NO!.
      * Check for it here and throw a nice fat exception if we find it.
      */
-    public void checkForAttributeNameConflict() throws BadSemanticsException {
+    public void checkForAttributeNameConflict() throws BadSemanticsException
+    {
         checkForAttributeNameConflict(this);
     }
 
@@ -2121,7 +2145,8 @@ public class DDS extends DStructure {
      *
      * @param dc The <code>DConstructor</code> to search for name conflicts.
      */
-    private void checkForAttributeNameConflict(DConstructor dc) throws BadSemanticsException {
+    private void checkForAttributeNameConflict(DConstructor dc) throws BadSemanticsException
+    {
 
         //System.out.println("Checking "+dc.getTypeName()+" "+dc.getName()+" for name conflicts.");
 
@@ -2163,7 +2188,8 @@ public class DDS extends DStructure {
      *         <code>String</code>
      * @see #print(PrintWriter)
      */
-    public String getDDSText() {
+    public String getDDSText()
+    {
         StringWriter sw = new StringWriter();
         this.print(new PrintWriter(sw));
         return sw.toString();
@@ -2174,10 +2200,11 @@ public class DDS extends DStructure {
      *
      * @return The output of <code>DDS.printXML()</code> as
      *         <code>String</code>
-     * @see #printXML(PrintWriter)
      * @opendap.ddx.experimental
+     * @see #printXML(PrintWriter)
      */
-    public String getDDXText() {
+    public String getDDXText()
+    {
         StringWriter sw = new StringWriter();
         this.printXML(new PrintWriter(sw));
         return sw.toString();

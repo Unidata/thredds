@@ -40,6 +40,7 @@
 package opendap.dap.Server;
 
 import java.util.*;
+import java.io.*;
 
 /**
  * Represents a clause which invokes a function that returns a boolean value.
@@ -108,20 +109,18 @@ public class BoolFunctionClause
      * Prints the original string representation of this clause.
      * For use in debugging.
      */
-    public String toString() {
-        StringBuffer buf = new StringBuffer();
-        buf.append(function.getName());
-        buf.append("(");
+    public void printConstraint(PrintWriter os)
+    {
+        os.print(function.getName()+"(");
         Iterator it = children.iterator();
-        if (it.hasNext()) {
-            buf.append(it.next().toString());
-        }
+	boolean first = true;
         while (it.hasNext()) {
-            buf.append(",");
-            buf.append(it.next().toString());
+	    ValueClause vc = (ValueClause)it.next();
+            if(!first) os.print(",");
+	    vc.printConstraint(os);
+	    first = false;
         }
-        buf.append(")");
-        return buf.toString();
+        os.print(")");
     }
 
     protected BoolFunction function;

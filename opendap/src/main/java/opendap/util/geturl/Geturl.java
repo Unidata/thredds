@@ -80,7 +80,7 @@ public class Geturl {
         System.err.println("       Without D, d or a, print the URL.");
     }
 
-    public static void main(String args[]) {
+    public static void main(String args[]) throws Exception {
         boolean get_das = false;
         boolean get_dds = false;
         boolean get_ddx = false;
@@ -141,7 +141,7 @@ public class Geturl {
                 if (verbose)
                     System.err.println("Assuming standard input is a OPeNDAP DAP2 data stream.");
 
-                DConnect url = new DConnect(System.in);
+                DConnect2 url = new DConnect2(System.in);
                 try {
                     StatusUI ui = null;
                     if (gui)
@@ -162,9 +162,9 @@ public class Geturl {
                 String nextURL = argp[i];
                 if (verbose)
                     System.err.println("Fetching: " + nextURL);
-                DConnect url = null;
+                DConnect2 url = null;
                 try {
-                    url = new DConnect(nextURL, accept_deflate);
+                    url = new DConnect2(nextURL, accept_deflate);
                     //url.setServerVersion("dods/3.7");
                 } catch (java.io.FileNotFoundException e) {
                     System.err.println(nextURL + " is neither a valid URL nor a filename.");
@@ -276,7 +276,7 @@ public class Geturl {
                             if (gui)
                                 ui = new StatusWindow(nextURL);
                             DataDDS dds = url.getData(expr, ui);
-                            //System.out.println("DConnect returned: "+dds);
+                            //System.out.println("DConnect2 returned: "+dds);
                             processData(url, dds, verbose, dump_data, accept_deflate);
                         } catch (DAP2Exception e) {
                             System.err.println(e);
@@ -293,6 +293,7 @@ public class Geturl {
                 }
 
 
+/* FIX
                 if (get_dataX) {
                     if ((cexpr == false) && (nextURL.indexOf('?') == -1)) {
                         System.err.println("Must supply a constraint expression with -D.");
@@ -321,7 +322,7 @@ public class Geturl {
                         }
                     }
                 }
-
+*/
 
             }
         } catch (InvalidSwitch e) {
@@ -333,7 +334,7 @@ public class Geturl {
         System.exit(0);
     }
 
-    private static void processData(DConnect url, DataDDS dds, boolean verbose,
+    private static void processData(DConnect2 url, DataDDS dds, boolean verbose,
                                     boolean dump_data, boolean compress) {
         if (verbose)
             System.err.println("Server version: " + url.getServerVersion());
@@ -351,7 +352,7 @@ public class Geturl {
         }
     }
 
-    private static void processDDXData(DConnect url, DataDDS dds, boolean verbose,
+    private static void processDDXData(DConnect2 url, DataDDS dds, boolean verbose,
                                        boolean dump_data, boolean compress) {
         if (verbose)
             System.err.println("Server version: " + url.getServerVersion());

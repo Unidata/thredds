@@ -33,6 +33,8 @@
 
 package ucar.nc2.ui.widget;
 
+import opendap.dap.http.HTTPMethod;
+import opendap.dap.http.HTTPSession;
 import ucar.nc2.util.IO;
 import ucar.nc2.util.URLnaming;
 import ucar.nc2.util.net.HttpClientManager;
@@ -254,8 +256,8 @@ public class URLDumpPane extends TextHistoryPane {
 
   private void openURL2(String urlString, Command cmd) {
 
-    HttpClient httpclient = HttpClientManager.getHttpClient();
-    HttpMethodBase m = null;
+    HTTPSession httpclient = null;
+    HTTPMethod m = null;
 
     try {
       /* you might think this works, but it doesnt:
@@ -273,42 +275,39 @@ public class URLDumpPane extends TextHistoryPane {
               */
 
       urlString = URLnaming.escapeQuery(urlString);
-
+      httpclient = new HTTPSession();
       if (cmd == Command.GET)
-        m = new GetMethod(urlString);
+        m = httpclient.newMethodGet(urlString);
       else if (cmd == Command.HEAD)
-        m = new HeadMethod(urlString);
+        m = httpclient.newMethodHead(urlString);
       else if (cmd == Command.OPTIONS)
-        m = new OptionsMethod(urlString);
+        m = httpclient.newMethodOptions(urlString);
       else if (cmd == Command.PUT) {
-        PutMethod p = new PutMethod(urlString);
-        try {
-          p.setRequestEntity(new StringRequestEntity(ta.getText(), "application/text", "UTF-8"));
-        } catch (UnsupportedEncodingException e) {
-          ByteArrayOutputStream bos = new ByteArrayOutputStream(5000);
-          e.printStackTrace(new PrintStream(bos));
-          appendLine(bos.toString());
-          return;
-        }
-        m = p;
+        m = httpclient.newMethodPut(urlString);
+
+          m.setRequestContentAsString(ta.getText());
+
+       
       }
 
       m.setRequestHeader("Accept-Encoding", "gzip,deflate");
 
+      /* FIX
       appendLine("HttpClient " + m.getName() + " " + urlString);
+
       appendLine("   do Authentication= " + m.getDoAuthentication());
       appendLine("   follow Redirects= " + m.getFollowRedirects());
 
-      HttpMethodParams p = m.getParams();
+
       appendLine("   cookie policy= " + p.getCookiePolicy());
       appendLine("   http version= " + p.getVersion().toString());
       appendLine("   timeout (msecs)= " + p.getSoTimeout());
       appendLine("   virtual host= " + p.getVirtualHost());
-
+      */
       printHeaders("Request Headers = ", m.getRequestHeaders());
       appendLine(" ");
 
-      httpclient.executeMethod(m);
+      m.execute();
 
       printHeaders("Request Headers2 = ", m.getRequestHeaders());
       appendLine(" ");
@@ -328,21 +327,21 @@ public class URLDumpPane extends TextHistoryPane {
         String encoding = (h == null) ? null : h.getValue();
 
         if (encoding != null && encoding.equals("deflate")) {
-          byte[] body = m.getResponseBody();
+          byte[] body = m.getResponseAsBytes();
           InputStream is = new BufferedInputStream(new InflaterInputStream(new ByteArrayInputStream(body)), 10000);
           contents = IO.readContents(is, charset);
           double ratio = (double) contents.length() / body.length;
           appendLine("  deflate encoded=" + body.length + " decoded=" + contents.length() + " ratio= " + ratio);
 
         } else if (encoding != null && encoding.equals("gzip")) {
-          byte[] body = m.getResponseBody();
+          byte[] body = m.getResponseAsBytes();
           InputStream is = new BufferedInputStream(new GZIPInputStream(new ByteArrayInputStream(body)), 10000);
           contents = IO.readContents(is, charset);
           double ratio = (double) contents.length() / body.length;
           appendLine("  gzip encoded=" + body.length + " decoded=" + contents.length() + " ratio= " + ratio);
 
         } else {
-          byte[] body = m.getResponseBody(50 * 1000); // max 50 Kbytes
+          byte[] body = m.getResponseAsBytes(50 * 1000); // max 50 Kbytes
           contents = new String(body, charset);
         }
 
@@ -351,7 +350,7 @@ public class URLDumpPane extends TextHistoryPane {
         appendLine(contents);
 
       } else if (cmd == Command.OPTIONS)
-        printEnum("AllowedMethods = ", ((OptionsMethod) m).getAllowedMethods());
+        printEnum("AllowedMethods = ", m.getAllowedMethods());
 
       printHeaders("Response Footers = ", m.getResponseFooters());
 
@@ -361,7 +360,7 @@ public class URLDumpPane extends TextHistoryPane {
       appendLine(bos.toString());
 
     } finally {
-      if (m != null) m.releaseConnection();
+      if (m != null) m.close();
     }
   }
 

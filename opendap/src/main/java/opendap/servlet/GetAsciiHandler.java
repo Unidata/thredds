@@ -88,7 +88,7 @@ public class GetAsciiHandler {
 
 
         String requestURL, ce;
-        DConnect url;
+        DConnect2 url;
         DataDDS dds;
 
         if (request.getQueryString() == null) {
@@ -109,7 +109,7 @@ public class GetAsciiHandler {
         try {
 
             if (_Debug) System.out.println("Making connection to .dods service...");
-            url = new DConnect(requestURL, true);
+            url = new DConnect2(requestURL, true);
 
             if (_Debug) System.out.println("Requesting data...");
             dds = url.getData(ce, null, new asciiFactory());

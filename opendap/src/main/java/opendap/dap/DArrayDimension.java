@@ -42,6 +42,8 @@ package opendap.dap;
 import opendap.dap.Server.InvalidParameterException;
 import opendap.util.EscapeStrings;
 
+import java.io.*;
+
 /**
  * This class holds information about each dimension in a <code>DArray</code>.
  * Each array dimension carries with it its own projection information, as
@@ -67,7 +69,9 @@ public final class DArrayDimension implements Cloneable, java.io.Serializable {
     private int start;
     private int stride;
     private int stop;
-
+    private boolean constrained = false; // true if start/stride/stop set
+    private DArray container = null;
+    private int truesize; // as opposed to the projected size
 
     /**
      * Construct a new DArrayDimension.
@@ -94,7 +98,7 @@ public final class DArrayDimension implements Cloneable, java.io.Serializable {
             setClearName(name);
 
 
-        this.size = size;
+        setSize(size);
         this.start = 0;
         this.stride = 1;
         this.stop = size - 1;
@@ -118,7 +122,7 @@ public final class DArrayDimension implements Cloneable, java.io.Serializable {
      * Get the dimension name.
      */
     public String getName() {
-        return EscapeStrings.id2www(name);
+        return nameEncoded;
     }
 
     /**
@@ -126,7 +130,7 @@ public final class DArrayDimension implements Cloneable, java.io.Serializable {
      */
     public void setName(String name) {
         this.name = EscapeStrings.www2id(name);
-	this.nameEncoded = name;
+        this.nameEncoded = name;
     }
 
     /**
@@ -141,7 +145,7 @@ public final class DArrayDimension implements Cloneable, java.io.Serializable {
      */
     public void setClearName(String name) {
         this.name = name;
-	this.nameEncoded = EscapeStrings.id2www(name);
+        this.nameEncoded = EscapeStrings.id2www(name);
     }
 
     /**
@@ -156,44 +160,7 @@ public final class DArrayDimension implements Cloneable, java.io.Serializable {
      */
     public void setSize(int size) {
         this.size = size;
-    }
-
-    /**
-     * Set the projection information for this dimension.
-     * The parameters <code>start</code> <code>stride</code> and <code>stop</code>
-     * are checked to verify that they make sense relative to each other and to
-     * the size of this dimension. If not an Invalid ParameterException is thrown.
-     * The general rule is: 0&lt;=start&lt;size, 0&lt;stride, 0&lt;=stop<size, start&lt;=stop.
-     *
-     * @param start  The starting point for the projection of this <code>DArrayDimension</code>.
-     * @param stride The size of the stride for the projection of this <code>DArrayDimension</code>.
-     * @param stop   The stopping point for the projection of this <code>DArrayDimension</code>.
-     */
-    public void setProjection(int start, int stride, int stop) throws InvalidParameterException {
-        String msg = "DArrayDimension.setProjection: Bad Projection Request: ";
-
-        if (start >= size)
-            throw new InvalidParameterException(msg + "start (" + start + ") >= size (" + size + ") for " + name);
-
-        if (start < 0)
-            throw new InvalidParameterException(msg + "start < 0");
-
-        if (stride <= 0)
-            throw new InvalidParameterException(msg + "stride <= 0");
-
-        if (stop >= size)
-            throw new InvalidParameterException(msg + "stop >= size");
-
-        if (stop < 0)
-            throw new InvalidParameterException(msg + "stop < 0");
-
-        if (stop < start)
-            throw new InvalidParameterException(msg + "stop < start");
-
-        this.start = start;
-        this.stride = stride;
-        this.stop = stop;
-        this.size = 1 + (stop - start) / stride;
+        this.truesize = size;
     }
 
     /**
@@ -218,6 +185,87 @@ public final class DArrayDimension implements Cloneable, java.io.Serializable {
     }
 
 
+    public void setContainer(DArray da)
+    {
+        container = da;
+    }
+
+    public DArray getContainer() {return container;}
+
+    public void printConstraint(PrintWriter os)
+    {
+	String buf = "[";
+	if(stride == 1 && start == stop) 
+	    buf += ""+start;
+	else if(stride == 1)
+	    buf += start + ":" + stop;
+	else
+	    buf += start + ":" + stride + ":" + stop;
+	buf += "]";
+	os.print(buf);
+    }
+
+
+    /**
+     * Set the projection information for this dimension.
+     * The parameters <code>start</code> <code>stride</code> and <code>stop</code>
+     * are checked to verify that they make sense relative to each other and to
+     * the size of this dimension. If not an Invalid ParameterException is thrown.
+     * The general rule is: 0&lt;=start&lt;size, 0&lt;stride, 0&lt;=stop&lt;size, start&lt;=stop.
+     *
+     * @param start  The starting point for the projection of this <code>DArrayDimension</code>.
+     * @param stride The size of the stride for the projection of this <code>DArrayDimension</code>.
+     * @param stop   The stopping point for the projection of this <code>DArrayDimension</code>.
+     */
+    public void setProjection(int start, int stride, int stop) throws InvalidParameterException {
+        markDimension(start,stride,stop,true);
+    }
+
+    /**
+     * Set the projection information for this dimension.
+     * (see comments for setProjection).
+     *
+     * @param start  The starting point for the projection of this <code>DArrayDimension</code>.
+     * @param stride The size of the stride for the projection of this <code>DArrayDimension</code>.
+     * @param stop   The stopping point for the projection of this <code>DArrayDimension</code>.
+     * @param constraining  true if we are doing a constraint, false if we are just marking the projection.
+     */
+    public void markDimension(int start, int stride, int stop, boolean constraining) throws InvalidParameterException {
+        String msg = "DArrayDimension.setProjection: Bad Projection Request: ";
+
+	// Check for projection conflict
+	if(constraining && constrained) {
+	    // See if we are changing start/stride/stop
+	    if(this.start != start || this.stride != stride || this.stop != stop  || size != truesize)
+		throw new ConstraintException("Conflicting constraint dimensions for: "+container.getLongName());
+	}
+        // avoid the constraint conflict problenm
+        if (start >= truesize)
+            throw new InvalidParameterException(msg + "start (" + start + ") >= size (" + truesize + ") for " + name);
+
+        if (start < 0)
+            throw new InvalidParameterException(msg + "start < 0");
+
+        if (stride <= 0)
+            throw new InvalidParameterException(msg + "stride <= 0");
+
+        if (stop >= truesize)
+            throw new InvalidParameterException(msg + "stop >= size");
+
+        if (stop < 0)
+            throw new InvalidParameterException(msg + "stop < 0");
+
+        if (stop < start)
+            throw new InvalidParameterException(msg + "stop < start");
+
+        this.start = start;
+        this.stride = stride;
+        this.stop = stop;
+        this.size = 1 + (stop - start) / stride;
+	this.constrained = constraining || this.constrained;
+    }
+
 }
+
 
 

@@ -168,7 +168,6 @@ public class EscapeStrings {
     public static String escapeString(String in, String allowable, char esc) throws Exception {
         String out = "";
 
-
         if (in == null) return null;
 
         if (allowable.indexOf(esc) >= 0) {//isEscAllowed(allowable, esc)) 

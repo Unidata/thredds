@@ -1,4 +1,4 @@
-////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 // This file is part of the "Java-DAP" project, a Java implementation
 // of the OPeNDAP Data Access Protocol.
 //
@@ -35,7 +35,9 @@
 // LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+
+
 
 package opendap.servlet;
 
@@ -46,7 +48,7 @@ import java.nio.charset.Charset;
 
 import opendap.servers.www.*;
 import opendap.dap.*;
-import opendap.dap.parser.ParseException;
+import opendap.dap.parser.*;
 import opendap.dap.Server.ServerDDS;
 
 /**
@@ -221,10 +223,6 @@ public class GetHTMLInterfaceHandler {
         // for this particular server
         // ServerDDS sDDS = dServ.getDDS(dataSet);
 
-        // Make a new DDS using the web form (www interface) class factory
-        wwwFactory wfactory = new wwwFactory();
-        DDS wwwDDS = new DDS(dataSet, wfactory);
-
         // Make a special print writer to catch the ServerDDS's
         // persistent representation in a String.
         StringWriter ddsSW = new StringWriter();
@@ -242,8 +240,11 @@ public class GetHTMLInterfaceHandler {
 	} catch (UnsupportedEncodingException uee) {
 	    throw new DAP2Exception("UTF-8 encoding not supported");
 	}
-        wwwDDS.parse(bai);
 
+        // Make a new DDS parser using the web form (www interface) class factory
+        wwwFactory wfactory = new wwwFactory();
+        DDS wwwDDS = new DDS(dataSet,wfactory);
+        wwwDDS.parse(bai);
         return (wwwDDS);
 
 
@@ -251,3 +252,7 @@ public class GetHTMLInterfaceHandler {
 
 
 }
+
+
+
+

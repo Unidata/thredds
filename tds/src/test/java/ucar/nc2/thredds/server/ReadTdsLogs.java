@@ -33,6 +33,10 @@
 
 package ucar.nc2.thredds.server;
 
+import opendap.dap.http.HTTPException;
+import opendap.dap.http.HTTPMethod;
+import opendap.dap.http.HTTPSession;
+import ucar.nc2.util.net.HttpClientManager;
 import ucar.nc2.util.IO;
 import ucar.nc2.util.URLnaming;
 import ucar.nc2.util.net.HttpClientManager;
@@ -62,7 +66,7 @@ public class ReadTdsLogs {
   private static AtomicInteger reqno = new AtomicInteger(0);
   private static Formatter out, out2;
 
-  private HttpClient httpClient;
+  private HTTPSession httpClient;
 
   ///////////////////////////////////////////////////////
   // multithreading
@@ -81,12 +85,9 @@ public class ReadTdsLogs {
   final String server;
   boolean dump = false;
 
-  ReadTdsLogs(String server) throws FileNotFoundException {
+  ReadTdsLogs(String server) throws FileNotFoundException, HTTPException {
     this.server = server;
-
     httpClient = HttpClientManager.init(null, "ReadTdsLogs");
-    MultiThreadedHttpConnectionManager cm = (MultiThreadedHttpConnectionManager) httpClient.getHttpConnectionManager();
-    cm.setMaxConnectionsPerHost(nthreads);
 
     executor = Executors.newFixedThreadPool(nthreads); // number of threads
     //completionQ = new ArrayBlockingQueue<Future<SendRequestTask>>(30); // bounded, threadsafe
@@ -138,13 +139,11 @@ public class ReadTdsLogs {
 
     void send() throws IOException {
 
-      HttpMethod method = null;
+      HTTPMethod method = null;
       try {
-        method = new GetMethod(server + URLnaming.escapeQuery(log.path));
+        method = httpClient.newMethodGet(server + URLnaming.escapeQuery(log.path));
         // out2.format("send %s %n", method.getPath());
-
-        method.setFollowRedirects(true);
-        statusCode = httpClient.executeMethod(method);
+        statusCode = method.execute();
 
         InputStream is = method.getResponseBodyAsStream();
         if (is != null)
@@ -154,7 +153,7 @@ public class ReadTdsLogs {
         e.printStackTrace();
         
       } finally {
-        if (method != null) method.releaseConnection();
+        if (method != null) method.close();
       }
 
     }
@@ -210,13 +209,13 @@ public class ReadTdsLogs {
     private boolean compareAgainstLive(SendRequestTask itask) throws IOException {
       if (serverLive == null) return true;
 
-      HttpMethod method = null;
+      HTTPMethod method = null;
       try {
-        method = new GetMethod(serverLive + itask.log.path);
+        method = httpClient.newMethodGet(serverLive + itask.log.path);
         // out2.format("send %s %n", method.getPath());
 
         method.setFollowRedirects(true);
-        int statusCode = httpClient.executeMethod(method);
+        int statusCode = method.execute();
 
         InputStream is = method.getResponseBodyAsStream();
         if (is != null)
@@ -226,7 +225,7 @@ public class ReadTdsLogs {
         return statusCode == itask.statusCode;
 
       } finally {
-        if (method != null) method.releaseConnection();
+        if (method != null) method.close();
       }
 
     }
@@ -668,13 +667,6 @@ public class ReadTdsLogs {
   public static void main(String args[]) throws IOException {
     out = null; // new Formatter(new FileOutputStream("C:/TEMP/readTdsLogs.txt"));
     out2 = new Formatter(System.out);
-
-    /* why ?
-    HttpClient client = HttpClientManager.init(null, "ReadTdsLogs");       
-    DConnect2.setHttpClient(client);                                                      
-    HTTPRandomAccessFile.setHttpClient(client);
-    NcStreamRemote.setHttpClient(client);
-    NetcdfDataset.setHttpClient(client);  */
 
     // sendRequests
     final ReadTdsLogs reader = new ReadTdsLogs(serverTest);

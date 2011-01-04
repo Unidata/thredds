@@ -50,12 +50,15 @@ import java.io.*;
  * @see BaseType
  */
 public class DString extends BaseType implements ClientIO {
+
+    // Track if a value has been set
+    private boolean hasValue = false;
+
     /**
      * Constructs a new <code>DString</code>.
      */
     public DString() {
         super();
-        val = "String value has not been set.";
     }
 
     /**
@@ -65,7 +68,6 @@ public class DString extends BaseType implements ClientIO {
      */
     public DString(String n) {
         super(n);
-        val = "String value has not been set.";
     }
 
     /**
@@ -79,7 +81,7 @@ public class DString extends BaseType implements ClientIO {
      * @return the current value.
      */
     public final String getValue() {
-        return val;
+        return (hasValue?val:null);
     }
 
     /**
@@ -89,6 +91,7 @@ public class DString extends BaseType implements ClientIO {
      */
     public final void setValue(String newVal) {
         val = newVal;
+	hasValue = true;
     }
 
     /**
@@ -176,6 +179,7 @@ public class DString extends BaseType implements ClientIO {
         // with no translation (the first 256 glyphs in Unicode are ISO8859_1)
         try {
             val = new String(byteArray, 0, dap_len, "ISO8859_1");
+            hasValue = true;
         }
         catch (UnsupportedEncodingException e) {
             // this should never happen
@@ -213,6 +217,17 @@ public class DString extends BaseType implements ClientIO {
             throw new UnsupportedEncodingException("ISO8859_1 encoding not supported by this VM!");
         }
     }
+
+    public void printConstraint(PrintWriter os)
+    {
+	if(hasValue) {
+            String s = String.format("%s",val);
+            s = ('"' +  Util.escattr(s) + '"');
+	    os.print(s);
+	} else
+	    super.printConstraint(os);
+    }
+
 }
 
 

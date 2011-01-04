@@ -32,6 +32,7 @@
 
 package ucar.nc2.stream;
 
+import opendap.dap.http.HTTPMethod;
 import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.remote.PointDatasetRemote;
 import ucar.nc2.ft.point.writer.FeatureDatasetPointXML;
@@ -50,7 +51,6 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.output.XMLOutputter;
 import org.jdom.input.SAXBuilder;
-import org.apache.commons.httpclient.HttpMethod;
 
 /**
  * Factory for CdmrFeature protocol. GRID, POINT, STATION so far
@@ -94,7 +94,7 @@ public class CdmrFeatureDataset {
 
   static private org.jdom.Document getCapabilities(String endpoint) throws IOException {
     org.jdom.Document doc;
-    HttpMethod method = null;
+    HTTPMethod method = null;
     try {
       method = CdmRemote.sendQuery(endpoint, "req=capabilities");
       InputStream in = method.getResponseBodyAsStream();
@@ -105,7 +105,7 @@ public class CdmrFeatureDataset {
       throw new IOException(t);
 
     } finally {
-      if (method != null) method.releaseConnection();
+      if (method != null) method.close();
     }
 
     if (showXML) {

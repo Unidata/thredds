@@ -33,6 +33,7 @@
 
 package thredds.ui.monitor;
 
+import opendap.dap.http.HTTPException;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.net.HttpClientManager;
 
@@ -119,7 +120,7 @@ public class TdsDownloader {
     long size;
     File localFile;
 
-    RemoteLog(String line)  {
+    RemoteLog(String line) throws HTTPException {
       String[] tokes = line.split(" ");
       name = tokes[0];
       size = Long.parseLong(tokes[1]);
@@ -138,13 +139,13 @@ public class TdsDownloader {
 
     }
 
-    void read()  {
+    void read() throws HTTPException {
       String urls = "http://" + server + "/thredds/admin/log/"+type+"/" + name;
       ta.append(String.format(" reading %s to %s%n", urls, localFile.getPath()));
       HttpClientManager.copyUrlContentsToFile(urls, localFile);
     }
 
-    void append()  {
+    void append() throws HTTPException {
       String urls = "http://" + server + "/thredds/admin/log/"+type+"/" + name;
       long start = localFile.length();
       long want = size - start;

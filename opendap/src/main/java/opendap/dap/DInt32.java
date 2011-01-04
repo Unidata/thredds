@@ -162,6 +162,7 @@ public class DInt32 extends BaseType implements ClientIO {
     public void externalize(DataOutputStream sink) throws IOException {
         sink.writeInt(val);
     }
+
 }
 
 

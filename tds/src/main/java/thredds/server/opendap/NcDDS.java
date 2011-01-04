@@ -59,7 +59,7 @@ public class NcDDS extends ServerDDS implements Cloneable {
    * @param name name of the dataset, at bottom of DDS
    * @param ncfile  create DDS from this
    */
-  NcDDS( String name, NetcdfFile ncfile) {
+  public NcDDS( String name, NetcdfFile ncfile) {
     super( StringUtil.escape( name, ""));
 
     // get coordinate variables

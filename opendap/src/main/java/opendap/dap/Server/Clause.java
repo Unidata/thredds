@@ -40,6 +40,7 @@
 package opendap.dap.Server;
 
 import java.util.List;
+import java.io.PrintWriter;
 
 /**
  * Represents the common interface of the two types of clause used by the
@@ -71,6 +72,11 @@ public interface Clause {
      * and SubClause interfaces.
      */
     public boolean isDefined();
+
+    /**
+     * Dump clause as in constraint form
+     */
+    public void printConstraint(PrintWriter os);
 }
 
 

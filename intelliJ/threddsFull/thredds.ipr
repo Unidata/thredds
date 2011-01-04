@@ -98,6 +98,7 @@
           <option name="SMART_TABS" value="false" />
           <option name="LABEL_INDENT_SIZE" value="0" />
           <option name="LABEL_INDENT_ABSOLUTE" value="false" />
+          <option name="USE_RELATIVE_INDENTS" value="false" />
         </ADDITIONAL_INDENT_OPTIONS>
         <ADDITIONAL_INDENT_OPTIONS fileType="jsp">
           <option name="INDENT_SIZE" value="4" />
@@ -107,6 +108,7 @@
           <option name="SMART_TABS" value="false" />
           <option name="LABEL_INDENT_SIZE" value="0" />
           <option name="LABEL_INDENT_ABSOLUTE" value="false" />
+          <option name="USE_RELATIVE_INDENTS" value="false" />
         </ADDITIONAL_INDENT_OPTIONS>
         <ADDITIONAL_INDENT_OPTIONS fileType="txt">
           <option name="INDENT_SIZE" value="4" />
@@ -116,6 +118,7 @@
           <option name="SMART_TABS" value="false" />
           <option name="LABEL_INDENT_SIZE" value="0" />
           <option name="LABEL_INDENT_ABSOLUTE" value="false" />
+          <option name="USE_RELATIVE_INDENTS" value="false" />
         </ADDITIONAL_INDENT_OPTIONS>
         <ADDITIONAL_INDENT_OPTIONS fileType="xml">
           <option name="INDENT_SIZE" value="4" />
@@ -125,6 +128,7 @@
           <option name="SMART_TABS" value="false" />
           <option name="LABEL_INDENT_SIZE" value="0" />
           <option name="LABEL_INDENT_ABSOLUTE" value="false" />
+          <option name="USE_RELATIVE_INDENTS" value="false" />
         </ADDITIONAL_INDENT_OPTIONS>
       </value>
     </option>
@@ -973,10 +977,40 @@
     <option name="shortCycleTableSpecificationString" value="" />
   </component>
   <component name="libraryTable">
+    <library name="ehcache">
+      <CLASSES>
+        <root url="jar://$PROJECT_DIR$/../../lib/external/ehcache-1.6.0.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$PROJECT_DIR$/../../lib/external/source/ehcache-1.6.0-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$PROJECT_DIR$/../../lib/external/source/ehcache-1.6.0-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="jetty">
+      <CLASSES>
+        <root url="file://F:/lib/jetty/jetty-distribution-7.2.0.v20101020/lib" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="file://F:/lib/jetty/jetty-distribution-7.2.0.v20101020/jetty-server/src/main/java" />
+      </SOURCES>
+      <jarDirectory url="file://F:/lib/jetty/jetty-distribution-7.2.0.v20101020/lib" recursive="false" />
+    </library>
     <library name="JSTL">
       <CLASSES>
         <root url="jar://$PROJECT_DIR$/../../lib/external/standard.jar!/" />
         <root url="jar://$PROJECT_DIR$/../../lib/external/jstl.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES />
+    </library>
+    <library name="Logging">
+      <CLASSES>
+        <root url="jar://$PROJECT_DIR$/../../lib/external/slf4j-api-1.5.6.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../../lib/external/slf4j-log4j12-1.5.6.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../../lib/external/log4j-1.2.15.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES />
@@ -991,36 +1025,6 @@
         <root url="jar://$PROJECT_DIR$/../../lib/external/source/spring-sources-2.5.jar!/" />
         <root url="jar://$PROJECT_DIR$/../../lib/external/source/spring-webmvc-sources-2.5.jar!/" />
       </SOURCES>
-    </library>
-    <library name="ehcache">
-      <CLASSES>
-        <root url="jar://$PROJECT_DIR$/../../lib/external/ehcache-1.6.0.jar!/" />
-      </CLASSES>
-      <JAVADOC>
-        <root url="jar://$PROJECT_DIR$/../../lib/external/source/ehcache-1.6.0-javadoc.jar!/" />
-      </JAVADOC>
-      <SOURCES>
-        <root url="jar://$PROJECT_DIR$/../../lib/external/source/ehcache-1.6.0-sources.jar!/" />
-      </SOURCES>
-    </library>
-    <library name="Logging">
-      <CLASSES>
-        <root url="jar://$PROJECT_DIR$/../../lib/external/slf4j-api-1.5.6.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../lib/external/slf4j-log4j12-1.5.6.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../lib/external/log4j-1.2.15.jar!/" />
-      </CLASSES>
-      <JAVADOC />
-      <SOURCES />
-    </library>
-    <library name="jetty">
-      <CLASSES>
-        <root url="file://$PROJECT_DIR$/../../../../lib/jetty/jetty-distribution-7.2.0.v20101020/lib" />
-      </CLASSES>
-      <JAVADOC />
-      <SOURCES>
-        <root url="file://$PROJECT_DIR$/../../../../lib/jetty/jetty-distribution-7.2.0.v20101020/jetty-server/src/main/java" />
-      </SOURCES>
-      <jarDirectory url="file://$PROJECT_DIR$/../../../../lib/jetty/jetty-distribution-7.2.0.v20101020/lib" recursive="false" />
     </library>
   </component>
   <component name="org.twodividedbyzero.idea.findbugs">

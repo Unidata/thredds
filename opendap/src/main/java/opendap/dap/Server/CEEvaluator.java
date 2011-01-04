@@ -48,6 +48,8 @@ import opendap.dap.BaseType;
 import opendap.dap.DArrayDimension;
 import opendap.dap.NoSuchVariableException;
 import opendap.dap.NoSuchFunctionException;
+import opendap.dap.ConstraintException;
+import opendap.dap.DAP2Exception;
 import opendap.util.Debug;
 
 /**
@@ -162,7 +164,7 @@ public class CEEvaluator {
      * as such in the CEEvaluator's ServerDDS instance. The selection
      * subexpression is then parsed and a list of Clause objects is built.
      * <p/>
-     * The parser is located in opendap.dap.parser.ExprParser.
+     * The parser is located in opendap.dap.parser.CeParser.
      *
      * @param expression The constraint expression to parse.
      * @throws ParseException
@@ -178,25 +180,23 @@ public class CEEvaluator {
             InvalidParameterException, SBHException, WrongTypeException {
 
         StringReader sExpr = new StringReader(expression);
-        ExprParser exp = new ExprParser(sExpr);
-
-
         if (clauseFactory == null) {
             clauseFactory = new ClauseFactory();
         }
 
-        try {
-            // Parses constraint expression (duh...) and sets the
-            // projection flag for each member of the CE's ServerDDS
-            // instance. This also builds the list of clauses.
-            exp.constraint_expression(this, _dds.getFactory(), clauseFactory);
-        } catch (TokenMgrError tme) {
-            throw new ParseException(tme.getMessage());
-        } catch (Throwable t) {
-          // t.printStackTrace();
-          throw new ParseException(t.getMessage());
-        }
-
+        // Parses constraint expression (duh...) and sets the
+        // projection flag for each member of the CE's ServerDDS
+        // instance. This also builds the list of clauses.
+	
+	try {
+        CeParser.constraint_expression(this,
+                                       _dds.getFactory(),
+                                       clauseFactory,
+                                       sExpr);
+	} catch (ConstraintException ce) {
+	    // convert to a DAP2Exception
+	    throw new DAP2Exception((int)('C'+'E'), ce.getMessage());
+	}
 
         if (_Debug) {
             int it = 0;
@@ -362,7 +362,7 @@ public class CEEvaluator {
                     while (eSDA.hasMoreElements()) {
                         DArrayDimension dad = (DArrayDimension) eSDA.nextElement();
                         // Tweak it's projection state
-                        dad.setProjection(0, 1, dad.getSize() - 1);
+                        dad.markDimension(0, 1, dad.getSize() - 1, false);  // mark without constraints
                     }
                 } else if (o instanceof SDGrid) {  // Is this thing a SDGrid?
                     SDGrid SDG = (SDGrid) o;
@@ -373,7 +373,7 @@ public class CEEvaluator {
                     while (eSDA.hasMoreElements()) {
                         DArrayDimension dad = (DArrayDimension) eSDA.nextElement();
                         // Tweak it's projection state
-                        dad.setProjection(0, 1, dad.getSize() - 1);
+                        dad.markDimension(0, 1, dad.getSize() - 1, false);
                     }
                 }
             }
@@ -383,6 +383,5 @@ public class CEEvaluator {
             s.setProject(state);
         }
     }
+
 }
-
-

@@ -32,6 +32,7 @@
 
 package ucar.nc2.ft.point.remote;
 
+import opendap.dap.http.HTTPMethod;
 import ucar.nc2.ft.point.PointCollectionImpl;
 import ucar.nc2.ft.point.PointIteratorAbstract;
 import ucar.nc2.ft.point.PointIteratorEmpty;
@@ -47,7 +48,6 @@ import ucar.unidata.geoloc.LatLonRect;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.apache.commons.httpclient.HttpMethod;
 
 /**
  * PointCollection over cdmRemote protocol
@@ -70,12 +70,12 @@ class RemotePointCollection extends PointCollectionImpl implements QueryMaker {
   }
 
   public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
-    HttpMethod method = null;
+    HTTPMethod method = null;
     String errMessage = null;
 
     try {
       method = CdmRemote.sendQuery(uri, queryMaker.makeQuery());
-      InputStream in = method.getResponseBodyAsStream();
+      InputStream in = method.getResponseAsStream();
 
       PointStream.MessageType mtype = PointStream.readMagic(in);
       if (mtype == PointStream.MessageType.PointFeatureCollection) {
@@ -102,8 +102,8 @@ class RemotePointCollection extends PointCollectionImpl implements QueryMaker {
       }
 
     } catch (Throwable t) {
-      if (method != null) method.releaseConnection();
-      throw new IOException(t);
+      if (method != null) method.close();
+      throw new RuntimeException(t);
     }
 
     if (errMessage != null)

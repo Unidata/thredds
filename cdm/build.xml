@@ -423,9 +423,12 @@
   </target>
 
     <target name="copyidvjar" depends="makeIDVjar">
-     <copy file="c:/Users/dmh/IdeaProjects/tds4.2/thredds/cdm/target/ncIdv.jar"
+     <copy file="c:/Users/dmh/IdeaProjects/tds4.2/dmh/cdm/target/ncIdv.jar"
+            tofile="c:/Users/dmh/IdeaProjects/idv3/lib/ncIdv.jar" />
+     <copy file="c:/Users/dmh/IdeaProjects/tds4.2/dmh/cdm/target/ncIdv.jar"
             tofile="c:/Users/dmh/IdeaProjects/idv/lib/ncIdv.jar" />
   </target>
+
         <!-- $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$  -->
   <!-- source release -->
 
@@ -1063,8 +1066,9 @@
   <target name="grib">
 	  <ant dir="${grib.relpath}" target="thredds" inheritAll="false"/>
   </target>
+
   <target name="opendap">
 	  <ant dir="${opendap.relpath}" target="thredds" inheritAll="false"/>
-  </target>  -->
+  </target> -->
 
 </project>

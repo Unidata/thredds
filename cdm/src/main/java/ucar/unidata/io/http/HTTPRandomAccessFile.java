@@ -38,6 +38,9 @@
 
 package ucar.unidata.io.http;
 
+import opendap.dap.http.HTTPException;
+import opendap.dap.http.HTTPMethod;
+import opendap.dap.http.HTTPSession;
 import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.methods.*;
 
@@ -59,37 +62,34 @@ import java.nio.ByteBuffer;
 public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
   static public int defaultHTTPBufferSize = 20000;
 
-  static private HttpClient _client;
+  static private HTTPSession globalsession = null;
+
 
   /**
    * Set the HttpClient object - a single instance is used.
    * @param client the HttpClient object
    */
-  static public void setHttpClient(HttpClient client) {
-    _client = client;
+  static public void setHttpSession(HTTPSession client) {
+    globalsession = client;
   }
 
   /**
    * Get the HttpClient object - a single instance is used.
    * @return client the HttpClient object
    */
-  static public HttpClient getHttpClient() {
-    return _client;
+  static public HTTPSession getHttpSession() {
+    return globalsession;
   }
 
-  // default HttpClient
-  private synchronized void initHttpClient() {
-    if (_client != null) return;
-    MultiThreadedHttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
-    _client = new HttpClient(connectionManager);
-  }
-
-  ///////////////////////////////////////////////////////////////////////////////////
+  
+    ///////////////////////////////////////////////////////////////////////////////////
 
   private String url;
   private long total_length = 0;
 
   private boolean debug = false, debugDetails = false;
+
+  HTTPSession _client = null;
 
   public HTTPRandomAccessFile(String url) throws IOException {
     this(url, defaultHTTPBufferSize);
@@ -106,10 +106,9 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
 
     boolean needtest = true;
 
-    HttpMethod method = null;
+    HTTPMethod method = null;
     try {
-      method = new HeadMethod(url);
-      method.setFollowRedirects(true);
+      method = _client.newMethodHead(url);
 
       doConnect(method);
 
@@ -136,7 +135,7 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
       }
 
     } finally {
-      if (method != null) method.releaseConnection();
+      if (method != null) method.close();
     }
 
     if (needtest && !rangeOk(url))
@@ -145,10 +144,23 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
     if (debugLeaks) openFiles.add(location);
   }
 
+    // default HttpClient
+    private synchronized void initHttpClient() {
+      if (_client != null) return;
+      if(globalsession != null) _client = globalsession;
+      else
+          try { _client = new HTTPSession(); } catch (HTTPException he) {_client=null;}
+    }
+
+    public void  close() {
+       if(_client != null && _client != globalsession) {_client.close(); _client = null;}
+    }
+
+
   private boolean rangeOk(String url) {
-    HttpMethod method = null;
+    HTTPMethod method = null;
     try {
-      method = new GetMethod(url);
+      method = _client.newMethodGet(url);
       method.setFollowRedirects(true);
       method.setRequestHeader("Range", "bytes=" + 0 + "-" + 1);
       doConnect(method);
@@ -158,21 +170,21 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
         throw new IOException("Server does not support Range requests, code= " + code);
 
       // clear stream
-      method.getResponseBody();
+      method.close();
       return true;
 
     } catch (IOException e) {
       return false;
 
     } finally {
-      if (method != null) method.releaseConnection();
+      if (method != null) method.close();
     }
   }
 
-  private void doConnect(HttpMethod method) throws IOException {
+  private void doConnect(HTTPMethod method) throws IOException {
 
     // Execute the method.
-    int statusCode = _client.executeMethod(method);
+    int statusCode = method.execute();
 
     if (statusCode == 404)
       throw new FileNotFoundException(url + " " + method.getStatusLine());
@@ -213,9 +225,9 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
 
     if (debug) System.out.println(" HTTPRandomAccessFile bytes=" + pos + "-" + end + ": ");
 
-    HttpMethod method = null;
+    HTTPMethod method = null;
     try {
-      method = new GetMethod(url);
+      method = _client.newMethodGet(url);
       method.setFollowRedirects(true);
       method.setRequestHeader("Range", "bytes=" + pos + "-" + end);
       doConnect(method);
@@ -231,12 +243,12 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
       int readLen = Integer.parseInt(s);
       readLen = Math.min(len, readLen);
 
-      InputStream is = method.getResponseBodyAsStream();
+      InputStream is = method.getResponseAsStream();
       readLen = copy(is, buff, offset, readLen);
       return readLen;
 
     } finally {
-      if (method != null) method.releaseConnection();
+      if (method != null) method.close();
     }
   }
 

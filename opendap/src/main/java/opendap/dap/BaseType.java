@@ -71,18 +71,16 @@ import opendap.util.EscapeStrings;
  * @see DDS
  * @see ClientIO
  */
-public abstract class BaseType implements Cloneable, Serializable {
+public abstract class BaseType implements Cloneable, Serializable
+{
 
     static final long serialVersionUID = 1;
 
     /**
-     * The name of this variable.
+     * The name of this variable - not www enccoded
      */
     private String _name;
-    /**
-     * The name of this variable encoded
-     */
-    private String _nameEncoded;
+    private String _nameEncoded; // www encoded form
 
     /**
      * The parent (container class) of this object, if one exists
@@ -123,7 +121,7 @@ public abstract class BaseType implements Cloneable, Serializable {
 
         if (decodeName)
             _name = EscapeStrings.www2id(n);
-        else 
+        else
             _name = n;
         _nameEncoded = EscapeStrings.www2id(_name);
 
@@ -142,6 +140,7 @@ public abstract class BaseType implements Cloneable, Serializable {
         try {
             BaseType bt = (BaseType) super.clone();
             bt._name = _name;
+            bt._nameEncoded = _nameEncoded;
             bt._attrTbl = (AttributeTable) this._attrTbl.clone();
             bt._attr = new Attribute(getName(), bt._attrTbl);
             return bt;
@@ -665,6 +664,26 @@ public abstract class BaseType implements Cloneable, Serializable {
 
     }
 
+    public void printConstraint(PrintWriter os)
+    {
+        BaseType parent = getParent();
+        BaseType array =  null;
+	if(parent != null) {
+	    if(parent instanceof DArray) {
+		array = parent;	
+		parent = parent.getParent();
+	    }
+	}	   
+	if(array != null)
+	    array.printConstraint(os);
+        else  {
+            if(parent != null) {
+	        parent.printConstraint(os);
+	        os.print(".");
+	    }
+            os.print(getName());
+        }
+    }
 
 }
 

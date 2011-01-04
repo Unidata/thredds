@@ -33,15 +33,14 @@
 
 package ucar.nc2.util.net;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
+import opendap.dap.http.HTTPException;
+import opendap.dap.http.HTTPMethod;
+import opendap.dap.http.HTTPSession;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpMethodBase;
 import org.apache.commons.httpclient.cookie.CookiePolicy;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.methods.PutMethod;
-import org.apache.commons.httpclient.methods.StringRequestEntity;
-import org.apache.commons.httpclient.protocol.Protocol;
+import org.apache.commons.httpclient.params.DefaultHttpParams;
+import org.apache.commons.httpclient.params.HttpParams;
 import org.apache.commons.httpclient.params.HttpClientParams;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.httpclient.auth.CredentialsProvider;
@@ -68,8 +67,9 @@ import ucar.nc2.util.IO;
  */
 public class HttpClientManager {
   static private boolean debug = false;
-  static private HttpClient _client;
+  static private HTTPSession session;
   static private int timeout = 0;
+  static HttpParams globalparams = new DefaultHttpParams();
 
   /**
    * initialize the HttpClient layer.
@@ -77,47 +77,42 @@ public class HttpClientManager {
    * @param provider  CredentialsProvider.
    * @param userAgent Content of User-Agent header, may be null
    */
-  static public org.apache.commons.httpclient.HttpClient init(CredentialsProvider provider, String userAgent) {
-    initHttpClient();
+  static public HTTPSession init(CredentialsProvider provider, String userAgent) {
+    initSession();
     
     if (provider != null)
-      _client.getParams().setParameter(CredentialsProvider.PROVIDER, provider);
+      globalparams.setParameter(CredentialsProvider.PROVIDER, provider);
 
     if (userAgent != null)
-      _client.getParams().setParameter(HttpMethodParams.USER_AGENT, userAgent + "/NetcdfJava/HttpClient");
+      globalparams.setParameter(HttpMethodParams.USER_AGENT, userAgent + "/NetcdfJava/HttpClient");
     else
-      _client.getParams().setParameter(HttpMethodParams.USER_AGENT, "NetcdfJava/HttpClient");
+      globalparams.setParameter(HttpMethodParams.USER_AGENT, "NetcdfJava/HttpClient");
 
     // nick.bower@metoceanengineers.com
     String proxyHost = System.getProperty("http.proxyHost");
     String proxyPort = System.getProperty("http.proxyPort");
     if ((proxyHost != null) && (proxyPort != null) && !proxyPort.trim().equals("")) {
-        _client.getHostConfiguration().setProxy(proxyHost, Integer.parseInt(proxyPort));
+        session.setProxy(proxyHost, Integer.parseInt(proxyPort));
     }
 
-    return _client;
+    return session;
   }
 
   /**
    * Get the HttpClient object - a single instance is used.
    * @return the  HttpClient object
    */
-  static public HttpClient getHttpClient() {
-    return _client;
+  static public HTTPSession getHttpSession() {
+    return session;
   }
 
-  private static synchronized void initHttpClient() {
-    if (_client != null) return;
-    MultiThreadedHttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
-    _client = new HttpClient(connectionManager);
+  private static synchronized void initSession() {
+    if (session != null) return;
+    try { session = new HTTPSession();  } catch (HTTPException he) {session = null; return;}
 
-    HttpClientParams params = _client.getParams();
-    params.setParameter(HttpMethodParams.SO_TIMEOUT, timeout);
-    params.setParameter(HttpClientParams.ALLOW_CIRCULAR_REDIRECTS, Boolean.TRUE);
-    params.setParameter(HttpClientParams.COOKIE_POLICY, CookiePolicy.RFC_2109);
-
-    // allow self-signed certificates
-    Protocol.registerProtocol("https", new Protocol("https", new EasySSLProtocolSocketFactory(), 8443));
+    session.setMethodParameter(HttpMethodParams.SO_TIMEOUT, timeout);
+    session.setMethodParameter(HttpClientParams.ALLOW_CIRCULAR_REDIRECTS, Boolean.TRUE);
+    session.setMethodParameter(HttpClientParams.COOKIE_POLICY, CookiePolicy.RFC_2109);
 
     // LOOK need default CredentialsProvider ??
     // _client.getParams().setParameter(CredentialsProvider.PROVIDER, provider);
@@ -125,8 +120,7 @@ public class HttpClientManager {
   }
 
   public static void clearState() {
-    _client.getState().clearCookies();
-    _client.getState().clearCredentials();
+    session.clearState();
   }
 
   /**
@@ -136,15 +130,15 @@ public class HttpClientManager {
    * @throws java.io.IOException on error
    */
   public static String getContent(String urlString) throws IOException {
-    GetMethod m = new GetMethod(urlString);
+    HTTPSession session = new HTTPSession();
+    HTTPMethod m = session.newMethodGet(urlString);
     m.setFollowRedirects(true);
 
     try {
-      _client.executeMethod(m);
-      return m.getResponseBodyAsString();
-
+      m.execute();
+      return m.getResponseAsString();
     } finally {
-      m.releaseConnection();
+      session.close();
     }
   }
 
@@ -156,13 +150,13 @@ public class HttpClientManager {
    * @throws java.io.IOException on error
    */
   public static int putContent(String urlString, String content) throws IOException {
-    PutMethod m = new PutMethod(urlString);
-    m.setDoAuthentication( true );
+    HTTPMethod m = session.newMethodPut(urlString);
+    //fix m.setDoAuthentication( true );
 
     try {
-      m.setRequestEntity(new StringRequestEntity(content));
+      m.setRequestContentAsString(content);
 
-      _client.executeMethod(m);
+      m.execute();
 
       int resultCode = m.getStatusCode();
 
@@ -180,19 +174,21 @@ public class HttpClientManager {
       return resultCode;
 
     } finally {
-      m.releaseConnection();
+      if(m != null) m.close();
     }
   }
 
   //////////////////////
 
    static public String getUrlContents(String urlString, int maxKbytes) {
-     HttpMethodBase m = new GetMethod(urlString);
-     m.setFollowRedirects(true);
-     m.setRequestHeader("Accept-Encoding", "gzip,deflate");
-
+     HTTPSession session = null;
      try {
-       int status = _client.executeMethod(m);
+       session = new HTTPSession();
+       HTTPMethod m = session.newMethodGet(urlString);
+       m.setFollowRedirects(true);
+       m.setRequestHeader("Accept-Encoding", "gzip,deflate");
+
+       int status = m.execute();
        if (status != 200) {
          throw new RuntimeException("failed status = "+status);
        }
@@ -205,17 +201,17 @@ public class HttpClientManager {
        String encoding = (h == null) ? null : h.getValue();
 
        if (encoding != null && encoding.equals("deflate")) {
-         byte[] body = m.getResponseBody();
+         byte[] body = m.getResponseAsBytes();
          InputStream is = new BufferedInputStream(new InflaterInputStream(new ByteArrayInputStream(body)), 10000);
          return readContents(is, charset, maxKbytes);
 
        } else if (encoding != null && encoding.equals("gzip")) {
-         byte[] body = m.getResponseBody();
+         byte[] body = m.getResponseAsBytes();
          InputStream is = new BufferedInputStream(new GZIPInputStream(new ByteArrayInputStream(body)), 10000);
          return readContents(is, charset, maxKbytes);
 
        } else {
-         byte[] body = m.getResponseBody(maxKbytes * 1000);
+         byte[] body = m.getResponseAsBytes(maxKbytes * 1000);
          return new String(body, charset);
        }
 
@@ -224,7 +220,7 @@ public class HttpClientManager {
        return null;
 
      } finally {
-       m.releaseConnection();
+       if(session != null) session.close();
      }
    }
 
@@ -234,13 +230,12 @@ public class HttpClientManager {
      return bout.toString(charset);
    }
 
-   static public  void copyUrlContentsToFile(String urlString, File file) {
-     HttpMethodBase m = new GetMethod(urlString);
-     m.setFollowRedirects(true);
+   static public  void copyUrlContentsToFile(String urlString, File file) throws HTTPException {
+     HTTPMethod m = session.newMethodGet(urlString);
      m.setRequestHeader("Accept-Encoding", "gzip,deflate");
 
      try {
-       int status = _client.executeMethod(m);
+       int status = m.execute();
 
        if (status != 200) {
          throw new RuntimeException("failed status = "+status);
@@ -254,35 +249,34 @@ public class HttpClientManager {
        String encoding = (h == null) ? null : h.getValue();
 
        if (encoding != null && encoding.equals("deflate")) {
-         InputStream is = new BufferedInputStream(new InflaterInputStream(m.getResponseBodyAsStream()), 10000);
+         InputStream is = new BufferedInputStream(new InflaterInputStream(m.getResponseAsStream()), 10000);
          IO.writeToFile(is, file.getPath());
 
        } else if (encoding != null && encoding.equals("gzip")) {
-         InputStream is = new BufferedInputStream(new GZIPInputStream(m.getResponseBodyAsStream()), 10000);
+         InputStream is = new BufferedInputStream(new GZIPInputStream(m.getResponseAsStream()), 10000);
          IO.writeToFile(is, file.getPath());
 
        } else {
-         IO.writeToFile(m.getResponseBodyAsStream(), file.getPath());
+         IO.writeToFile(m.getResponseAsStream(), file.getPath());
        }
 
      } catch (Exception e) {
        e.printStackTrace();
 
      } finally {
-       m.releaseConnection();
+       if(m != null) m.close();
      }
    }
 
-   static public long appendUrlContentsToFile(String urlString, File file, long start, long end) {
+   static public long appendUrlContentsToFile(String urlString, File file, long start, long end) throws HTTPException {
      long nbytes = 0;
 
-     HttpMethodBase m = new GetMethod(urlString);
+     HTTPMethod m = session.newMethodGet(urlString);
      m.setRequestHeader("Accept-Encoding", "gzip,deflate");
-     m.setFollowRedirects(true);
      m.setRequestHeader("Range", "bytes=" + start + "-" + end);
 
      try {
-       int status = _client.executeMethod(m);
+       int status = m.execute();
        if ((status != 200) && (status != 206)) {
          throw new RuntimeException("failed status = "+status);
        }
@@ -295,22 +289,22 @@ public class HttpClientManager {
        String encoding = (h == null) ? null : h.getValue();
 
        if (encoding != null && encoding.equals("deflate")) {
-         InputStream is = new BufferedInputStream(new InflaterInputStream(m.getResponseBodyAsStream()), 10000);
+         InputStream is = new BufferedInputStream(new InflaterInputStream(m.getResponseAsStream()), 10000);
          nbytes = IO.appendToFile(is, file.getPath());
 
        } else if (encoding != null && encoding.equals("gzip")) {
-         InputStream is = new BufferedInputStream(new GZIPInputStream(m.getResponseBodyAsStream()), 10000);
+         InputStream is = new BufferedInputStream(new GZIPInputStream(m.getResponseAsStream()), 10000);
          nbytes = IO.appendToFile(is, file.getPath());
 
        } else {
-         nbytes = IO.appendToFile(m.getResponseBodyAsStream(), file.getPath());
+         nbytes = IO.appendToFile(m.getResponseAsStream(), file.getPath());
        }
 
      } catch (Exception e) {
        e.printStackTrace();
 
      } finally {
-       m.releaseConnection();
+       if(m !=null) m.close();
      }
 
      return nbytes;

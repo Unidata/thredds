@@ -1,7 +1,7 @@
 /* Copyright 2009, UCAR/Unidata and OPeNDAP, Inc.
    See the COPYRIGHT file for more information. */
 
-%parse-param {InputStream stream}
+%error-verbose
 
 %define public
 %define package "opendap.dap.parser"
@@ -22,18 +22,24 @@ import java.io.*;
      * @param yylexer The scanner that will supply tokens to the parser.
      */
 
-    public DapParser(InputStream stream)
-    {
-	this(stream,(BaseTypeFactory)null);
-    }
-
-    public DapParser(InputStream stream, BaseTypeFactory factory)
+    public DapParser(BaseTypeFactory factory)
     {
 	super(factory);
-	this.yylexer = new Daplex(stream,this);
-	this.stream = stream;
+	this.yylexer = new Daplex(this);
 	super.lexstate = (Daplex)this.yylexer;
     }
+
+    /* the parse function allows the specification of a
+       new stream in case one is reusing the parser
+    */
+
+    public boolean parse(InputStream stream) throws ParseException
+    {
+	((Daplex)yylexer).reset(parsestate);
+	((Daplex)yylexer).setStream(stream);
+	return parse();
+    }
+
 }
 
 %token SCAN_ALIAS 
@@ -68,12 +74,24 @@ import java.io.*;
 %%
 
 start:
-	  SCAN_DATASET datasetbody
-	| SCAN_DATASET datasetbody SCAN_DATA
-	| SCAN_ATTR dassetup attributebody
-	| SCAN_ERROR errorbody
-        | error
-            {$$=unrecognizedresponse(parsestate);}
+	  dataset datasetbody
+	| dataset datasetbody SCAN_DATA {return YYACCEPT;}
+	| attr attributebody
+	| err errorbody
+        | error {unrecognizedresponse(parsestate);}
+	;
+
+dataset:
+	SCAN_DATASET
+	    {tagparse(parsestate,SCAN_DATASET);}
+	;
+attr:
+	SCAN_ATTR
+	    {tagparse(parsestate,SCAN_ATTR);}
+	;
+err:
+	SCAN_ERROR
+	    {tagparse(parsestate,SCAN_ERROR);}
 	;
 
 datasetbody:
@@ -135,8 +153,6 @@ datasetname:
 	;
 
 var_name: name {$$=$1;};
-
-dassetup: {dassetup(parsestate);}
 
 attributebody:
 	  '{' attr_list '}' {attributebody(parsestate,$2);}
@@ -236,7 +252,7 @@ alias:
 
 errorbody:
 	'{' errorcode errormsg errorptype errorprog '}' ';'
-		{$$=errorbody(parsestate,$2,$3,$4,$5);}
+		{errorbody(parsestate,$2,$3,$4,$5);}
 	;
 
 errorcode:  /*empty*/ {$$=null;} | SCAN_CODE    '=' SCAN_WORD ';' {$$=$3;}

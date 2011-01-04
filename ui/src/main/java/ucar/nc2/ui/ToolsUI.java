@@ -33,6 +33,7 @@
 
 package ucar.nc2.ui;
 
+import opendap.dap.http.HTTPSession;
 import thredds.inventory.FeatureCollectionConfig;
 import ucar.nc2.dt.grid.NetcdfCFWriter;
 import ucar.nc2.stream.NcStreamWriter;
@@ -5274,12 +5275,15 @@ public class ToolsUI extends JPanel {
 
     // use HTTPClient - could use bean wiring here
     CredentialsProvider provider = new UrlAuthenticatorDialog(frame);
+      HTTPSession.setGlobalCredentialsProvider(provider);
+    /* No longer needed
     HttpClient client = HttpClientManager.init(provider, "ToolsUI");
     opendap.dap.DConnect2.setHttpClient(client);
     HTTPRandomAccessFile.setHttpClient(client);
     CdmRemote.setHttpClient(client);
     NetcdfDataset.setHttpClient(client);
     WmsViewer.setHttpClient(client);
+    */
 
     // in case a dataset was on the command line
     if (wantDataset != null)

@@ -571,7 +571,6 @@ public abstract class SDGrid extends DGrid implements ServerArrayMethods, RelOps
             DArray map = (DArray) getVar(dimension + 1);
             DArrayDimension mapD = map.getDimension(0);
             mapD.setProjection(start, stride, stop);
-
         }
         catch (NoSuchVariableException e) {
             throw new InvalidParameterException("SDGrid.setProjection(): Bad Value for dimension!: "
@@ -807,9 +806,4 @@ public abstract class SDGrid extends DGrid implements ServerArrayMethods, RelOps
 
 */
 
-
-
-
 }
-
-

@@ -102,6 +102,7 @@ public class AttributeTable implements Cloneable, Serializable {
      * What's the name of this table?
      */
     private String _name;
+    private String _nameEncoded;
 
     /**
      * Create a new empty <code>AttributeTable</code>.
@@ -149,7 +150,7 @@ public class AttributeTable implements Cloneable, Serializable {
      * Returns the name of this AttributeTable.
      */
     public final String getName() {
-        return EscapeStrings.id2www(_name);
+        return _nameEncoded;
     }
 
     /**
@@ -157,6 +158,7 @@ public class AttributeTable implements Cloneable, Serializable {
      */
     public final void setName(String n) {
         _name = EscapeStrings.www2id(n);
+        _nameEncoded = n;
     }
 
     /**
@@ -171,6 +173,7 @@ public class AttributeTable implements Cloneable, Serializable {
      */
     public final void setClearName(String n) {
         _name = n;
+        _nameEncoded = EscapeStrings.id2www(n);
     }
 
     /**

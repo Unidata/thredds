@@ -34,6 +34,7 @@ package ucar.nc2;
 
 import junit.framework.*;
 
+import opendap.dap.http.HTTPSession;
 import ucar.ma2.*;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
@@ -50,7 +51,7 @@ public class TestHTTP extends TestCase {
   public TestHTTP( String name) {
     super(name);
   }
-
+   
   public void testNC2() throws IOException {
     NetcdfFile ncfile = NetcdfFile.open(testDir+"mydata1.nc");
     assert ncfile != null;
@@ -142,14 +143,17 @@ public class TestHTTP extends TestCase {
     long totalBytes = 0;
 
     List locs = makeList();
+    List<NetcdfFile> files = new ArrayList<NetcdfFile>();
     for (Iterator iter = locs.iterator(); iter.hasNext(); ) {
       String loc = (String) iter.next();
       System.out.printf("open %s%n", loc);
-      ucar.nc2.dataset.NetcdfDataset.open( loc);
+      files.add(ucar.nc2.dataset.NetcdfDataset.open( loc));
     }
 
     totalBytes /= 1000;
     System.out.println("**testOpenDataset took= "+(System.currentTimeMillis()-start)+" msec ");
+
+    for(NetcdfFile ncf: files) ncf.close(); // reclaimh
   }
 
   public void testOpenGrid() throws IOException {

@@ -33,6 +33,8 @@
 
 package thredds.ui.catalog;
 
+import opendap.dap.http.HTTPMethod;
+import opendap.dap.http.HTTPSession;
 import thredds.catalog.*;
 import ucar.nc2.ui.widget.*;
 
@@ -161,14 +163,14 @@ public class CatalogFactoryCancellable extends InvCatalogFactory {
         return;
       }
 
-      GetMethod m = null;
+      HTTPSession client = null;
+      HTTPMethod m = null;
       try {
-        m = new GetMethod(catalogName);
-        m.setFollowRedirects(true);
+        client = new HTTPSession();
+        m = client.newMethodGet(catalogName);
 
-        HttpClient client = HttpClientManager.getHttpClient();
 
-        int statusCode = client.executeMethod(m);
+        int statusCode = m.execute();
 
         if (statusCode == 404)
           throw new FileNotFoundException(m.getPath() + " " + m.getStatusLine());
@@ -190,7 +192,8 @@ public class CatalogFactoryCancellable extends InvCatalogFactory {
         return;
 
       } finally {
-        if (null != m) m.releaseConnection();
+        if (null != m) m.close();
+          if(client != null) client.close();
       }
 
       success = !cancel;

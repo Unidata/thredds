@@ -32,7 +32,7 @@
  */
 package ucar.nc2.stream;
 
-import org.apache.commons.httpclient.HttpMethod;
+import opendap.dap.http.HTTPMethod;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Structure;
 import ucar.ma2.*;
@@ -179,7 +179,7 @@ public class NcStreamReader {
     }
   }
 
-  public StructureDataIterator getStructureIterator(HttpMethod m, InputStream is, NetcdfFile ncfile) throws IOException {
+  public StructureDataIterator getStructureIterator(HTTPMethod m, InputStream is, NetcdfFile ncfile) throws IOException {
     if (!readAndTest(is, NcStream.MAGIC_DATA))
       throw new IOException("Data transfer corrupted on "+ncfile.getLocation());
 
@@ -198,13 +198,13 @@ public class NcStreamReader {
   }
 
   private class StreamDataIterator implements StructureDataIterator {
-    private HttpMethod m;
+    private HTTPMethod m;
     private InputStream is;
     private StructureMembers members;
     private StructureData curr = null;
     private int count = 0;
 
-    StreamDataIterator(HttpMethod m, InputStream is, StructureMembers members) {
+    StreamDataIterator(HTTPMethod m, InputStream is, StructureMembers members) {
       this.m = m;
       this.is = is;
       this.members = members;
@@ -258,7 +258,7 @@ public class NcStreamReader {
 
     // LOOK !!!
     public void finish() {
-      if (m != null) m.releaseConnection();
+      if (m != null) m.close();
     }
   }
 

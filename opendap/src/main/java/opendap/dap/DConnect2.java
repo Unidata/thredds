@@ -42,14 +42,17 @@ package opendap.dap;
 
 import java.net.*;
 import java.io.*;
+import java.util.*;
 
-import opendap.dap.parser.ParseException;
+import opendap.dap.parser.*;
+import opendap.dap.http.*;
 
 import java.util.zip.InflaterInputStream;
 import java.util.zip.GZIPInputStream;
 import java.util.Formatter;
 
 import org.apache.commons.httpclient.*;
+import org.apache.commons.httpclient.auth.*;
 import org.apache.commons.httpclient.methods.*;
 import  org.apache.commons.httpclient.util.URIUtil;
 
@@ -70,34 +73,23 @@ import  org.apache.commons.httpclient.util.URIUtil;
 public class DConnect2 {
   static private boolean allowSessions = false;
 
-  static public void setAllowSessions(boolean b) {
+  static public synchronized void setAllowSessions(boolean b) {
     allowSessions = b;
   }
 
-  static private HttpClient _httpClient;
+  private HTTPSession _session = null;
 
-  /**
-   * Set the HttpClient object - a single instance is used.
-   */
-  static public void setHttpClient(HttpClient client) {
-    _httpClient = client;
-  }
-
-  /**
-   * Get the HttpClient object - a single instance is used.
-   */
-  static public HttpClient getHttpClient() {
-    return _httpClient;
-  }
-
-  // default HttpClient
-  private synchronized void initHttpClient() {
-    if (_httpClient != null) return;
-    MultiThreadedHttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
-    _httpClient = new HttpClient(connectionManager);
+  // default session
+  private void initSession() throws HTTPException
+  {
+    if (_session != null) return;
+    _session = new HTTPSession();
   }
 
   private String urlString; // The current DODS URL without Constraint Expression
+  private String filePath=null; // if url is file://
+  private InputStream stream = null; //if reading from a stream
+
   private String projString;
   /**
    * The projection portion of the current DODS CE (including leading "?").
@@ -148,8 +140,7 @@ public class DConnect2 {
    * then HTTP Request headers will indicate to servers that this client can
    * accept compressed documents.
    *
-   * @param urlString      Connect to this URL.  If urlString is not a valid URL,
-   *                       it is assumed to be a filename, which is opened.
+   * @param urlString      Connect to this URL.
    * @param acceptCompress true if this client will accept compressed responses
    * @throws FileNotFoundException thrown if <code>urlString</code> is not
    *                               a valid URL, or a filename which exists on the system.
@@ -172,6 +163,49 @@ public class DConnect2 {
       this.projString = this.selString = "";
     }
     this.acceptCompress = acceptCompress;
+
+    // Check out the URL to see if it is file://
+    try {
+        URL testURL = new URL(urlString);
+	if("file".equals(testURL.getProtocol())) {
+	    filePath = testURL.getPath();
+	    // See if .dds and .dods files exist
+	    File f = new File(filePath+".dds");
+	    if(!f.canRead()) {
+		throw new FileNotFoundException("file .dds not readable: "+urlString);
+	    }
+	    f = new File(filePath+".dods");
+	    if(!f.canRead()) {
+		throw new FileNotFoundException("file .dods not readable: "+urlString);
+	    }
+	}
+        /* Set the server version cause we won't get it from anywhere */
+	ver = new ServerVersion(ServerVersion.DAP2_PROTOCOL_VERSION, ServerVersion.XDAP);
+    } catch (DAP2Exception ex) {
+	throw new FileNotFoundException("Cannot set server version");
+    } catch (MalformedURLException e) {
+	throw new FileNotFoundException("Malformed URL: "+urlString);
+    }
+  }
+
+  /*
+   * Creates an instance bound to an Inputstream.
+   * @param stream   to get data from
+   * @throws IOException  thrown if <code>stream</code> read fails.
+   */
+  public DConnect2(InputStream stream) throws DAP2Exception {
+    this.stream = stream;
+    /* Set the server version cause we won't get it from anywhere */
+    ver = new ServerVersion(ServerVersion.DAP2_PROTOCOL_VERSION, ServerVersion.XDAP);
+  }
+
+  /*
+   * 
+   * @return  if reading from file:// or stream
+   */
+  public boolean isLocal()
+  {
+    return (stream != null || filePath != null);
   }
 
   /**
@@ -208,44 +242,45 @@ public class DConnect2 {
    * @throws DAP2Exception  if the DODS server returned an error.
    * @throws ParseException is cant parse the return
    */
-  private void openConnection(String urlString, Command command) throws IOException, DAP2Exception, ParseException {
-
-    initHttpClient();
-    GetMethod method = new GetMethod(urlString);
-    method.setFollowRedirects(true);
-
-    if (acceptCompress)
-      method.setRequestHeader(new Header("Accept-Encoding", "deflate,gzip"));
-
-    // enable sessions
-    if (allowSessions)
-      method.setRequestHeader(new Header("X-Accept-Session", "true"));
-
-    // Formatter f = new Formatter(System.out);
-
+  private void openConnection(String urlString, Command command) throws IOException, DAP2Exception, ParseException
+  {
+    HTTPMethod method = null;
     InputStream is = null;
-    try {
-      // Execute the method.
 
-      int statusCode = _httpClient.executeMethod(method);
+    initSession();
+    //fix method.setFollowRedirects(true);
+    
+    try {
+
+      method = _session.newMethodGet(urlString);
+
+      if (acceptCompress)
+        method.setRequestHeader("Accept-Encoding", "deflate,gzip");
+
+      // enable sessions
+      if (allowSessions)
+        method.setRequestHeader("X-Accept-Session", "true");
+
+      // Execute the method.
+      int statusCode = method.execute();
 
       // debug
       // if (debugHeaders) ucar.nc2.util.net.HttpClientManager.showHttpRequestInfo(f, method);
 
-      if (statusCode == HttpStatus.SC_NOT_FOUND) {
-        throw new DAP2Exception(DAP2Exception.NO_SUCH_FILE, method.getStatusLine().toString());
+      if (statusCode == HTTPSession.SC_NOT_FOUND) {
+        throw new DAP2Exception(DAP2Exception.NO_SUCH_FILE, method.getStatusText());
       }
 
-      if (statusCode == HttpStatus.SC_UNAUTHORIZED) {
-        throw new org.apache.commons.httpclient.auth.CredentialsNotAvailableException(method.getStatusLine().toString());
+      if (statusCode == HTTPSession.SC_UNAUTHORIZED) {
+        throw new InvalidCredentialsException(method.getStatusText());
       }
 
-      if (statusCode != HttpStatus.SC_OK) {
-        throw new DAP2Exception("Method failed:" + method.getStatusLine());
+      if (statusCode != HTTPSession.SC_OK) {
+        throw new DAP2Exception("Method failed:" + method.getStatusText());
       }
 
       // Get the response body.
-      is = method.getResponseBodyAsStream();
+      is = method.getResponseAsStream();
 
       // check if its an error
       Header header = method.getResponseHeader("Content-Description");
@@ -259,9 +294,6 @@ public class DConnect2 {
       }
 
       ver = new ServerVersion(method);
-
-      // debug
-      //if (debugHeaders) ucar.nc2.util.net.HttpClientManager.showHttpResponseInfo(f, method);
 
       checkHeaders(method);
 
@@ -277,19 +309,15 @@ public class DConnect2 {
         is = new BufferedInputStream(new GZIPInputStream(is), 1000);
       }
 
-      // is = dumpStream(is);
       command.process(is);
-
-    } catch (org.apache.commons.httpclient.auth.CredentialsNotAvailableException e) {
-      throw e; // LOOK why are we catching ??
-
-    } catch (HttpException e) {
-      throw new DAP2Exception("Fatal protocol violation: " + e.getMessage());
+        
+    } catch (Exception e) {
+      e.printStackTrace();
+      throw new DAP2Exception(e);
 
     } finally {
       // Release the connection.
-      if (is != null) is.close();
-      method.releaseConnection();
+      if (method != null) method.close();
     }
   }
 
@@ -306,6 +334,7 @@ public class DConnect2 {
           }
         });
       }
+       if(_session != null) _session.close();
     } catch (Throwable t) {
       // ignore
     }
@@ -348,7 +377,7 @@ is =  new StringBufferInputStream (contents); */
     return lastExtended;
   }
 
-  private void checkHeaders(GetMethod method) {
+  private void checkHeaders(HTTPMethod method) {
     if (debugHeaders) {
       System.out.println("\nOpenConnection Headers for " + method.getPath());
       System.out.println("Status Line: " + method.getStatusLine());
@@ -381,8 +410,7 @@ is =  new StringBufferInputStream (contents); */
     if (debugHeaders)
       System.out.println("OpenConnection Headers for " + method.getPath());
 
-    HttpState state = _httpClient.getState();
-    Cookie[] cookies = state.getCookies();
+    Cookie[] cookies = _session.getCookies();
 
     if (cookies.length > 0) {
       if (debugHeaders) System.out.println("Cookies= ");
@@ -416,14 +444,22 @@ is =  new StringBufferInputStream (contents); */
    */
   public DAS getDAS() throws IOException, ParseException, DAP2Exception {
     DASCommand command = new DASCommand();
-    openConnection(urlString + ".das" + projString + selString, command);
+    if(filePath != null) { // url was file:
+	File daspath = new File(filePath + ".das");
+	// See if the das file exists
+	if(daspath.canRead()) {
+            command.process(new FileInputStream(daspath));
+	}
+    } else if(stream != null) {
+        command.process(stream);
+    } else { // assume url is remote
+        openConnection(urlString + ".das" + projString + selString, command);
+    }
     return command.das;
   }
-
   private class DASCommand implements Command {
     DAS das = new DAS();
-
-    public void process(InputStream is) throws DASException, ParseException {
+    public void process(InputStream is) throws ParseException, DAP2Exception {
       das.parse(is);
     }
   }
@@ -462,14 +498,19 @@ is =  new StringBufferInputStream (contents); */
    */
   public DDS getDDS(String CE) throws IOException, ParseException, DAP2Exception {
     DDSCommand command = new DDSCommand();
-    openConnection(urlString + ".dds" + getCompleteCE(CE), command);
+    if(filePath != null) {
+        command.process(new FileInputStream(filePath+".dds"));
+    } else if(stream != null) {
+        command.process(stream);
+    } else { // must be a remote url
+        openConnection(urlString + ".dds" + getCompleteCE(CE), command);
+    }
     return command.dds;
-  }
+ }
 
   private class DDSCommand implements Command {
     DDS dds = new DDS();
-
-    public void process(InputStream is) throws DDSException, ParseException {
+    public void process(InputStream is) throws ParseException, DAP2Exception {
       dds.parse(is);
     }
   }
@@ -717,17 +758,26 @@ is =  new StringBufferInputStream (contents); */
   public DataDDS getData(String CE, StatusUI statusUI, BaseTypeFactory btf) throws MalformedURLException, IOException,
           ParseException, DDSException, DAP2Exception {
 
-    String urls = urlString + ".dods" + getCompleteCE(CE);
-
     DataDDS dds = new DataDDS(ver, btf);
     DataDDSCommand command = new DataDDSCommand(dds, statusUI);
-    openConnection(urls, command);
-
+    if(filePath != null) { // url is file:
+	File dodspath = new File(filePath + ".dods");
+	// See if the dods file exists
+	if(dodspath.canRead()) {
+            /* WARNING: any constraints are ignored in reading the file */
+            command.process(new FileInputStream(dodspath));
+	}
+    } else if(stream != null) {
+        command.process(stream);
+    } else {
+        String urls = urlString + ".dods" + getCompleteCE(CE);
+        openConnection(urls, command);
+    }
     return command.dds;
   }
 
   private class DataDDSCommand implements Command {
-    DataDDS dds;
+    DataDDS dds = null;
     StatusUI statusUI;
 
     DataDDSCommand(DataDDS dds, StatusUI statusUI) {
@@ -735,8 +785,8 @@ is =  new StringBufferInputStream (contents); */
       this.statusUI = statusUI;
     }
 
-    public void process(InputStream is) throws DAP2Exception, ParseException, IOException {
-      dds.parse(new HeaderInputStream(is));
+    public void process(InputStream is) throws ParseException, DAP2Exception, IOException {
+      dds.parse(is);
       dds.readData(is, statusUI);
     }
   }
@@ -1154,11 +1204,6 @@ is =  new StringBufferInputStream (contents); */
         }
 
     }
-
-
-
-
-
 }
 
 
