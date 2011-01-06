@@ -51,7 +51,7 @@ public class HTTPSession
     protected static MultiThreadedHttpConnectionManager connmgr;
     //fix: protected static SchemeRegistry schemes;
     protected static CredentialsProvider globalProvider;
-    protected static String globalAgent = "/NetcdfJava/HttpClient4";
+    protected static String globalAgent = "/NetcdfJava/HttpClient3";
     protected static int threadcount = DFALTTHREADCOUNT;
     protected static List<HTTPSession> sessionList; // see kill function
 
@@ -108,7 +108,7 @@ public class HTTPSession
 
 
     // Provide a way to kill everything at the end of a Test
-  static private  synchronized void kill()
+  static private synchronized void kill()
     {
         for (HTTPSession session : sessionList) {
             session.close();
@@ -143,9 +143,11 @@ public class HTTPSession
         this.identifier = id;
         try {
             sessionClient = new HttpClient(new HttpClientParams(), connmgr);
-            if (globalProvider != null)
-                sessionClient.getParams().setParameter(CredentialsProvider.PROVIDER, globalProvider);
-         sessionList.add(this);
+          if (globalProvider != null)
+              sessionClient.getParams().setParameter(CredentialsProvider.PROVIDER, globalProvider);
+          if (globalAgent != null)
+              sessionClient.getParams().setParameter(USER_AGENT, globalAgent);
+          sessionList.add(this);
         } catch (Exception e) {
             throw new opendap.dap.http.HTTPException(e);
         }

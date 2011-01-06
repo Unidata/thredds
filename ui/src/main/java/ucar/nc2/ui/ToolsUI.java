@@ -42,7 +42,6 @@ import ucar.nc2.ui.gis.worldmap.WorldMapBean;
 import ucar.nc2.*;
 import ucar.nc2.FileWriter;
 import ucar.nc2.ft.fmrc.GridDatasetInv;
-import ucar.nc2.stream.CdmRemote;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft.FeatureDataset;
@@ -74,14 +73,10 @@ import ucar.nc2.ui.grid.GridUI;
 import ucar.nc2.ui.image.ImageViewPanel;
 import ucar.nc2.ui.util.*;
 
-import ucar.unidata.geoloc.LatLonRect;
-import ucar.unidata.io.http.HTTPRandomAccessFile;
-
 import ucar.util.prefs.*;
 import ucar.util.prefs.ui.*;
 import ucar.grib.grib2.Grib2Dump;
 
-import thredds.catalog.query.DqcFactory;
 import thredds.wcs.v1_0_0_1.GetCapabilities;
 import thredds.wcs.v1_0_0_1.WcsException;
 import thredds.inventory.MController;
@@ -101,7 +96,6 @@ import javax.swing.text.PlainDocument;
 import javax.swing.event.*;
 
 import org.apache.commons.httpclient.auth.CredentialsProvider;
-import org.apache.commons.httpclient.HttpClient;
 
 import org.springframework.context.*;
 import org.springframework.context.support.*;
@@ -1940,11 +1934,6 @@ public class ToolsUI extends JPanel {
     AggTable aggTable;
     NetcdfDataset ncd;
 
-    boolean useDefinition = false;
-    JComboBox defComboBox;
-    IndependentWindow defWindow;
-    AbstractButton defButt;
-
     AggPanel(PreferencesExt p) {
       super(p, "file:", true, false);
       aggTable = new AggTable(prefs, buttPanel);
@@ -2027,11 +2016,6 @@ public class ToolsUI extends JPanel {
     ucar.unidata.io.RandomAccessFile raf = null;
     BufrMessageViewer bufrTable;
 
-    boolean useDefinition = false;
-    JComboBox defComboBox;
-    IndependentWindow defWindow;
-    AbstractButton defButt;
-
     BufrPanel(PreferencesExt p) {
       super(p, "file:", true, false);
       bufrTable = new BufrMessageViewer(prefs, buttPanel);
@@ -2081,11 +2065,6 @@ public class ToolsUI extends JPanel {
 
   private class BufrTableBPanel extends OpPanel {
     BufrTableBViewer bufrTable;
-
-    boolean useDefinition = false;
-    JComboBox defComboBox;
-    IndependentWindow defWindow;
-    AbstractButton defButt;
     JComboBox modes;
 
     BufrTableBPanel(PreferencesExt p) {
@@ -2153,11 +2132,6 @@ public class ToolsUI extends JPanel {
   /////////////////////////////////////////////////////////////////////
   private class BufrTableDPanel extends OpPanel {
     BufrTableDViewer bufrTable;
-
-    boolean useDefinition = false;
-    JComboBox defComboBox;
-    IndependentWindow defWindow;
-    AbstractButton defButt;
     JComboBox modes;
 
     BufrTableDPanel(PreferencesExt p) {
@@ -2460,12 +2434,6 @@ public class ToolsUI extends JPanel {
 
   private class GribCodePanel extends OpPanel {
     GribWmoCodesPanel codeTable;
-
-    boolean useDefinition = false;
-    JComboBox defComboBox;
-    IndependentWindow defWindow;
-    AbstractButton defButt;
-    JComboBox modes;
 
     GribCodePanel(PreferencesExt p) {
       super(p, "table:", false, false);
@@ -3939,7 +3907,6 @@ public class ToolsUI extends JPanel {
   private class RadialPanel extends OpPanel {
     RadialDatasetTable dsTable;
     JSplitPane split;
-    IndependentWindow viewerWindow;
 
     RadialDatasetSweep ds = null;
 
@@ -4325,14 +4292,8 @@ public class ToolsUI extends JPanel {
 
   /////////////////////////////////////////////////////////////////////
   private class FeatureScanPanel extends OpPanel {
-    ucar.unidata.io.RandomAccessFile raf = null;
     ucar.nc2.ui.FeatureScanPanel ftTable;
     final FileManager dirChooser = new FileManager(parentFrame);
-
-    boolean useDefinition = false;
-    JComboBox defComboBox;
-    IndependentWindow defWindow;
-    AbstractButton defButt;
 
     FeatureScanPanel(PreferencesExt p) {
       super(p, "dir:", false, false);
@@ -4585,7 +4546,6 @@ public class ToolsUI extends JPanel {
   private class WmsPanel extends OpPanel {
     WmsViewer wmsViewer;
     JSplitPane split;
-    FeatureDatasetPoint pfDataset = null;
     JComboBox types;
 
     WmsPanel(PreferencesExt dbPrefs) {
@@ -5299,6 +5259,7 @@ public class ToolsUI extends JPanel {
     // use HTTPClient - could use bean wiring here
     CredentialsProvider provider = new UrlAuthenticatorDialog(frame);
     HTTPSession.setGlobalCredentialsProvider(provider);
+    HTTPSession.setGlobalUserAgent("ToolsUI");
     /* No longer needed
     HttpClient client = HttpClientManager.init(provider, "ToolsUI");
     opendap.dap.DConnect2.setHttpClient(client);

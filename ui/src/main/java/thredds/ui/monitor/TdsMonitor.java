@@ -569,8 +569,8 @@ public class TdsMonitor extends JPanel {
     BAMutil.setResourcePath("/resources/nj22/ui/icons/");
 
     CredentialsProvider provider = new UrlAuthenticatorDialog(null);
-    //HttpClientManager.init(provider, "TdsMonitor"); old way
     HTTPSession.setGlobalCredentialsProvider(provider);
+    HTTPSession.setGlobalUserAgent("TdsMonitor");
 
     // put UI in a JFrame
     frame = new JFrame("TDS Monitor");
