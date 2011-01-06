@@ -33,6 +33,7 @@
 
 package thredds.ui.monitor;
 
+import opendap.dap.http.HTTPSession;
 import org.apache.commons.httpclient.auth.CredentialsProvider;
 import thredds.logs.LogReader;
 import thredds.logs.LogCategorizer;
@@ -568,7 +569,8 @@ public class TdsMonitor extends JPanel {
     BAMutil.setResourcePath("/resources/nj22/ui/icons/");
 
     CredentialsProvider provider = new UrlAuthenticatorDialog(null);
-    HttpClientManager.init(provider, "TdsMonitor");
+    //HttpClientManager.init(provider, "TdsMonitor"); old way
+    HTTPSession.setGlobalCredentialsProvider(provider);
 
     // put UI in a JFrame
     frame = new JFrame("TDS Monitor");

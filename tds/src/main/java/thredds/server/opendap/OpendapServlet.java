@@ -37,7 +37,6 @@ import opendap.servlet.*;
 import opendap.dap.DAP2Exception;
 import opendap.dap.DAS;
 import opendap.dap.BaseType;
-import opendap.dap.NoSuchVariableException;
 import opendap.dap.Server.*;
 import opendap.dap.parser.ParseException;
 
@@ -56,7 +55,6 @@ import thredds.servlet.filter.CookieFilter;
 import ucar.ma2.DataType;
 import ucar.ma2.Range;
 import ucar.ma2.Section;
-import ucar.ma2.InvalidRangeException;
 import ucar.nc2.dods.DODSNetcdfFile;
 import ucar.nc2.NetcdfFile;
 
@@ -726,8 +724,8 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
   ///////////////////////////////////////////////////////
   // utils
 
-  private void checkSize(ServerDDS dds, boolean isAscii) {
-    try {
+  private void checkSize(ServerDDS dds, boolean isAscii) throws Exception {
+    //try {
 
       long size = 0;
       Enumeration vars = dds.getVariables();
@@ -774,13 +772,13 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
         throw new UnsupportedOperationException("Request too big=" + dsize + " Mbytes, max=" + maxSize);
       }
 
-    } catch (InvalidRangeException e) {
+    /* } catch (InvalidRangeException e) {
       e.printStackTrace();
     } catch (InvalidParameterException e) {
       e.printStackTrace();
     } catch (NoSuchVariableException e) {
       e.printStackTrace();
-    }
+    }   */
   }
 
   /*

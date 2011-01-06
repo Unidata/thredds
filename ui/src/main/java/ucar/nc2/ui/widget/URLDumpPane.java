@@ -35,9 +35,9 @@ package ucar.nc2.ui.widget;
 
 import opendap.dap.http.HTTPMethod;
 import opendap.dap.http.HTTPSession;
+import org.apache.commons.httpclient.Header;
 import ucar.nc2.util.IO;
 import ucar.nc2.util.URLnaming;
-import ucar.nc2.util.net.HttpClientManager;
 import ucar.util.prefs.*;
 import ucar.util.prefs.ui.*;
 
@@ -51,10 +51,6 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.InflaterInputStream;
 import javax.swing.*;
 
-import org.apache.commons.httpclient.*;
-import org.apache.commons.httpclient.params.HttpMethodParams;
-import org.apache.commons.httpclient.methods.*;
-
 
 /**
  * A text widget to dump a web URL.
@@ -65,8 +61,17 @@ import org.apache.commons.httpclient.methods.*;
  */
 
 public class URLDumpPane extends TextHistoryPane {
-  private enum Library {Commons, java};
-  private enum Command {GET, PUT, HEAD, OPTIONS};
+  private enum Library {
+    Commons, java
+  }
+
+  ;
+
+  private enum Command {
+    GET, PUT, HEAD, OPTIONS
+  }
+
+  ;
 
   private ComboBox cb;
   private JComboBox implCB;
@@ -80,7 +85,7 @@ public class URLDumpPane extends TextHistoryPane {
 
     // holds Library impl enum
     implCB = new JComboBox();
-    for (Library e: Library.values())
+    for (Library e : Library.values())
       implCB.addItem(e);
 
     JButton buttHead = new JButton("Head");
@@ -149,10 +154,10 @@ public class URLDumpPane extends TextHistoryPane {
 
     Library impl = (Library) implCB.getSelectedItem();
     //if (impl == Library.HttpClient) {
-       // openClient(urlString, cmd);
+    // openClient(urlString, cmd);
     // } else 
     if (impl == Library.Commons) {
-       openURL2(urlString, cmd);
+      openURL2(urlString, cmd);
     } else if (impl == Library.java) {
       if (cmd == Command.GET)
         readURL(urlString);
@@ -284,10 +289,7 @@ public class URLDumpPane extends TextHistoryPane {
         m = httpclient.newMethodOptions(urlString);
       else if (cmd == Command.PUT) {
         m = httpclient.newMethodPut(urlString);
-
-          m.setRequestContentAsString(ta.getText());
-
-       
+        m.setRequestContentAsString(ta.getText());
       }
 
       m.setRequestHeader("Accept-Encoding", "gzip,deflate");

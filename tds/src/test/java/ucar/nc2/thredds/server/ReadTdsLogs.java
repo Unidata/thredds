@@ -36,10 +36,8 @@ package ucar.nc2.thredds.server;
 import opendap.dap.http.HTTPException;
 import opendap.dap.http.HTTPMethod;
 import opendap.dap.http.HTTPSession;
-import ucar.nc2.util.net.HttpClientManager;
 import ucar.nc2.util.IO;
 import ucar.nc2.util.URLnaming;
-import ucar.nc2.util.net.HttpClientManager;
 
 import java.io.BufferedReader;
 import java.io.*;
@@ -49,11 +47,6 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.*;
-
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
-import org.apache.commons.httpclient.methods.GetMethod;
 
 /**
  * Read TDS access logs
@@ -66,7 +59,7 @@ public class ReadTdsLogs {
   private static AtomicInteger reqno = new AtomicInteger(0);
   private static Formatter out, out2;
 
-  private HTTPSession httpClient;
+  private HTTPSession httpClient = new HTTPSession();
 
   ///////////////////////////////////////////////////////
   // multithreading
@@ -87,7 +80,7 @@ public class ReadTdsLogs {
 
   ReadTdsLogs(String server) throws FileNotFoundException, HTTPException {
     this.server = server;
-    httpClient = HttpClientManager.init(null, "ReadTdsLogs");
+    // httpClient = HttpClientManager.init(null, "ReadTdsLogs");
 
     executor = Executors.newFixedThreadPool(nthreads); // number of threads
     //completionQ = new ArrayBlockingQueue<Future<SendRequestTask>>(30); // bounded, threadsafe
@@ -147,7 +140,7 @@ public class ReadTdsLogs {
 
         InputStream is = method.getResponseBodyAsStream();
         if (is != null)
-          bytesRead = IO.copy2null(method.getResponseBodyAsStream(), 10 * 1000); // read data and throw away
+          bytesRead = IO.copy2null(is, 10 * 1000); // read data and throw away
 
       } catch (URISyntaxException e) {
         e.printStackTrace();
@@ -219,7 +212,7 @@ public class ReadTdsLogs {
 
         InputStream is = method.getResponseBodyAsStream();
         if (is != null)
-          IO.copy2null(method.getResponseBodyAsStream(), 10 * 1000); // read data and throw away
+          IO.copy2null(is, 10 * 1000); // read data and throw away
 
         // out2.format("%5d: test status=%d live=%d %n", itask.reqnum, itask.statusCode, statusCode);
         return statusCode == itask.statusCode;

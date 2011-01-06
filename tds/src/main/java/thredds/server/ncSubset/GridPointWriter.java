@@ -229,7 +229,7 @@ public class GridPointWriter {
             // patch from dmurray 01/04/11
             GridAsPointDataset.Point p;
             Dimension zdim = grid.getZDimension();
-            if (zdim != null && zdim.getLength() >= 0) {
+            if (zdim != null) {
             	p = gap.readData(grid, date, zCoord, qp.lat, qp.lon);
             } else {
             	p = gap.readData(grid, date, qp.lat, qp.lon);

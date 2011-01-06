@@ -46,13 +46,10 @@ import java.net.URISyntaxException;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.HttpClient;
-import ucar.nc2.util.net.HttpClientManager;
-
 /**
  * A subclass of InvCatalogFactory that allows the reading of a catalog to be cancelled by the user.
  * Pops up a ProgressMonitor widget.
+ *
  * @author John Caron
  */
 
@@ -64,10 +61,9 @@ public class CatalogFactoryCancellable extends InvCatalogFactory {
   /**
    * Constructor.
    *
-   * @param parent : put ProgressMonotpr on top of his component; may be null.
-   * @param name : name of the InvCatalogFactory
+   * @param parent   : put ProgressMonotpr on top of his component; may be null.
+   * @param name     : name of the InvCatalogFactory
    * @param validate : should CML validation be done?
-   *
    * @see thredds.catalog.InvCatalogFactory
    * @see ucar.nc2.ui.widget.ProgressMonitor
    */
@@ -83,9 +79,9 @@ public class CatalogFactoryCancellable extends InvCatalogFactory {
    * If failure, the user will be given a popup error message, and callback.failure() is called..
    *
    * @param catalogName : the URI name that the XML doc is at.
-   * @param callbacker : this will be called (from AWT thread) if catalog was successfully called.
+   * @param callbacker  : this will be called (from AWT thread) if catalog was successfully called.
    */
-  public void readXMLasynch( String catalogName, CatalogSetCallback callbacker) {
+  public void readXMLasynch(String catalogName, CatalogSetCallback callbacker) {
     this.callback = callbacker;
     callbackDone = false;
     taskDone = false;
@@ -93,9 +89,9 @@ public class CatalogFactoryCancellable extends InvCatalogFactory {
     openTask = new OpenCatalogTask(catalogName);
 
     ProgressMonitor pm = new ProgressMonitor(openTask, 5000, 5000);
-    pm.addActionListener( new ActionListener() {
+    pm.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        if (debug) System.out.println("ProgressMonitor event  "+e.getActionCommand());
+        if (debug) System.out.println("ProgressMonitor event  " + e.getActionCommand());
         if (e.getActionCommand().equals("success")) {
           checkFailure();
         } else
@@ -103,30 +99,33 @@ public class CatalogFactoryCancellable extends InvCatalogFactory {
         callbackDone = true;
       }
     });
-    pm.start( parent, "Open catalog "+catalogName, 20);
+    pm.start(parent, "Open catalog " + catalogName, 20);
   }
 
 
   private void checkFailure() {
     StringBuilder buff = new StringBuilder();
-    openTask.catalog.check( buff);
+    openTask.catalog.check(buff);
 
     if (openTask.catalog.hasFatalError()) {
       String catalogName = openTask.catalog.getName();
-      javax.swing.JOptionPane.showMessageDialog(null, "Catalog Read Failed on "+ catalogName+
-         "\n"+buff.toString());
+      javax.swing.JOptionPane.showMessageDialog(null, "Catalog Read Failed on " + catalogName +
+              "\n" + buff.toString());
       callback.failed();
       return;
     }
 
-    callback.setCatalog( openTask.catalog);
+    callback.setCatalog(openTask.catalog);
   }
 
   /**
    * See if this object can be reused.
+   *
    * @return true if not completed last task.
    */
-  public boolean isBusy() { return !taskDone || !callbackDone; }
+  public boolean isBusy() {
+    return !taskDone || !callbackDone;
+  }
 
   private OpenCatalogTask openTask;
   private CatalogSetCallback callback;
@@ -156,7 +155,7 @@ public class CatalogFactoryCancellable extends InvCatalogFactory {
       if (debug) System.out.println("CatalogFactoryCancellable run task on " + catalogName);
 
       if (catalogURI.getScheme().equals("file")) {
-        catalog = CatalogFactoryCancellable.super.readXML( catalogURI);
+        catalog = CatalogFactoryCancellable.super.readXML(catalogURI);
         success = !cancel;
         done = true;
         taskDone = true;
@@ -169,7 +168,6 @@ public class CatalogFactoryCancellable extends InvCatalogFactory {
         client = new HTTPSession();
         m = client.newMethodGet(catalogName);
 
-
         int statusCode = m.execute();
 
         if (statusCode == 404)
@@ -177,9 +175,9 @@ public class CatalogFactoryCancellable extends InvCatalogFactory {
 
         if (statusCode >= 300)
           throw new IOException(m.getPath() + " " + m.getStatusLine());
-        
-        InputStream stream =  m.getResponseBodyAsStream();
-        catalog = CatalogFactoryCancellable.super.readXML( stream, catalogURI);
+
+        InputStream stream = m.getResponseBodyAsStream();
+        catalog = CatalogFactoryCancellable.super.readXML(stream, catalogURI);
 
       } catch (IOException e) {
         catalog = new InvCatalogImpl(catalogName, null, null);
@@ -193,7 +191,7 @@ public class CatalogFactoryCancellable extends InvCatalogFactory {
 
       } finally {
         if (null != m) m.close();
-          if(client != null) client.close();
+        if (client != null) client.close();
       }
 
       success = !cancel;

@@ -67,6 +67,7 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
 
   /**
    * Set the HttpClient object - a single instance is used.
+   *
    * @param client the HttpClient object
    */
   static public void setHttpSession(HTTPSession client) {
@@ -75,21 +76,22 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
 
   /**
    * Get the HttpClient object - a single instance is used.
+   *
    * @return client the HttpClient object
    */
   static public HTTPSession getHttpSession() {
     return globalsession;
   }
 
-  
-    ///////////////////////////////////////////////////////////////////////////////////
+
+  ///////////////////////////////////////////////////////////////////////////////////
 
   private String url;
   private long total_length = 0;
 
   private boolean debug = false, debugDetails = false;
 
-  HTTPSession _client = null;
+  private HTTPSession _client = null;
 
   public HTTPRandomAccessFile(String url) throws IOException {
     this(url, defaultHTTPBufferSize);
@@ -144,17 +146,25 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
     if (debugLeaks) openFiles.add(location);
   }
 
-    // default HttpClient
-    private synchronized void initHttpClient() {
-      if (_client != null) return;
-      if(globalsession != null) _client = globalsession;
-      else
-          try { _client = new HTTPSession(); } catch (HTTPException he) {_client=null;}
-    }
+  // default HttpClient
 
-    public void  close() {
-       if(_client != null && _client != globalsession) {_client.close(); _client = null;}
+  private synchronized void initHttpClient() {
+    if (_client != null) return;
+    if (globalsession != null) _client = globalsession;
+    else
+      try {
+        _client = new HTTPSession();
+      } catch (HTTPException he) {
+        _client = null;
+      }
+  }
+
+  public void close() {
+    if (_client != null && _client != globalsession) {
+      _client.close();
+      _client = null;
     }
+  }
 
 
   private boolean rangeOk(String url) {
@@ -188,7 +198,7 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
 
     if (statusCode == 404)
       throw new FileNotFoundException(url + " " + method.getStatusLine());
-    
+
     if (statusCode >= 300)
       throw new IOException(url + " " + method.getStatusLine());
 
@@ -211,7 +221,7 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
    * All reading goes through here or readToByteChannel;
    *
    * @param pos    start here in the file
-   * @param buff      put data into this buffer
+   * @param buff   put data into this buffer
    * @param offset buffer offset
    * @param len    this number of bytes
    * @return actual number of bytes read
@@ -273,6 +283,7 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
   }
 
   // override selected RandomAccessFile public methods
+
   @Override
   public long length() throws IOException {
     long fileLength = total_length;

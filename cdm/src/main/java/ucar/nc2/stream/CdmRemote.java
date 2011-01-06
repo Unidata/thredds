@@ -72,18 +72,19 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
     return urlName;
   }
 
-   static private HTTPSession httpClient;
+  static private HTTPSession httpClient;
 
-
-    static synchronized void initHttpClient() {
-      if (httpClient != null) return;
-        try { httpClient = new HTTPSession(); } catch (HTTPException he) {httpClient=null;}
-
+  static synchronized void initHttpClient() {
+    if (httpClient != null) return;
+    try {
+      httpClient = new HTTPSession();
+    } catch (HTTPException he) {
+      httpClient = null;
     }
+  }
 
   //////////////////////////////////////////////////////
   private final String remoteURI;
-
 
   public CdmRemote(String _remoteURI) throws IOException {
     long start = System.currentTimeMillis();
@@ -134,7 +135,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
       throw new IllegalStateException("File is unlocked - cannot use");
 
     if (v.getDataType() == DataType.SEQUENCE) {
-      Structure s= (Structure) v;
+      Structure s = (Structure) v;
       StructureDataIterator siter = getStructureIterator(s, -1);
       return new ArraySequence(s.makeStructureMembers(), siter, -1);
     }
@@ -304,11 +305,13 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
     fos.flush();
     fos.close();
   }
-    protected void finalize() throws Throwable {
-       try {
-          if(httpClient != null) httpClient.close();
-            httpClient = null;
-        } catch (Throwable t) {}
+
+  /* protected void finalize() throws Throwable {
+    try {
+      if (httpClient != null) httpClient.close();
+      httpClient = null;
+    } catch (Throwable t) {
     }
+  } */
 
 }

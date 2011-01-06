@@ -71,7 +71,7 @@
     </featureCollection>
 
     <featureCollection name="Upper Air Point Data" harvest="true" featureType="Point" path="nws/upperair/ncdecoded">
-      <collection spec="/data/ldm/pub/decoded/netcdf/surface/upperair/Upperair_#yyyyMMdd_HHmm#.nc$" />
+      <collection spec="/data/ldm/pub/decoded/netcdf/upperair/Upperair_#yyyyMMdd_HHmm#.nc$" />  
       <update startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
       <protoDataset choice="Penultimate" />
       <pointConfig datasetTypes="cdmrFeature Files"/>

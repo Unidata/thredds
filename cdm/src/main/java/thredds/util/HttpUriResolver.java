@@ -63,7 +63,7 @@ public class HttpUriResolver
   private boolean followRedirects;
 
   private HTTPMethod method = null;
-    private HTTPSession session = null;
+  private HTTPSession session = null;
   private Map<String,String> respHeaders;
 
   HttpUriResolver( URI uri, long connectionTimeout, int socketTimeout,

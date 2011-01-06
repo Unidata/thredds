@@ -91,13 +91,17 @@ public class TdsDownloader {
 
       @Override
       protected String doInBackground() throws Exception {
-        ta.append(String.format("Local log files stored in = %s%n%n", localDir));
-        String[] lines = contents.split("\n");
-        for (String line : lines) {
-          new RemoteLog(line.trim());
-          if (cancel.isCancel()) {
-            break;
+        try {
+          ta.append(String.format("Local log files stored in = %s%n%n", localDir));
+          String[] lines = contents.split("\n");
+          for (String line : lines) {
+            new RemoteLog(line.trim());
+            if (cancel.isCancel()) {
+              break;
+            }
           }
+        } catch (Throwable t) {
+          t.printStackTrace();
         }
 
         return null;

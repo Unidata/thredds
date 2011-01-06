@@ -64,6 +64,7 @@ import ucar.nc2.util.IO;
  * </pre>
  *
  * @author caron
+ * @deprecated use HTTPSession
  */
 public class HttpClientManager {
   static private boolean debug = false;
@@ -120,7 +121,8 @@ public class HttpClientManager {
   }
 
   public static void clearState() {
-    session.clearState();
+    if (session != null)
+      session.clearState();
   }
 
   /**
@@ -150,6 +152,7 @@ public class HttpClientManager {
    * @throws java.io.IOException on error
    */
   public static int putContent(String urlString, String content) throws IOException {
+    initSession();
     HTTPMethod m = session.newMethodPut(urlString);
     //fix m.setDoAuthentication( true );
 
@@ -231,6 +234,7 @@ public class HttpClientManager {
    }
 
    static public  void copyUrlContentsToFile(String urlString, File file) throws HTTPException {
+     initSession();
      HTTPMethod m = session.newMethodGet(urlString);
      m.setRequestHeader("Accept-Encoding", "gzip,deflate");
 
@@ -271,6 +275,7 @@ public class HttpClientManager {
    static public long appendUrlContentsToFile(String urlString, File file, long start, long end) throws HTTPException {
      long nbytes = 0;
 
+     initSession();
      HTTPMethod m = session.newMethodGet(urlString);
      m.setRequestHeader("Accept-Encoding", "gzip,deflate");
      m.setRequestHeader("Range", "bytes=" + start + "-" + end);
@@ -304,7 +309,7 @@ public class HttpClientManager {
        e.printStackTrace();
 
      } finally {
-       if(m !=null) m.close();
+       if (m !=null) m.close();
      }
 
      return nbytes;

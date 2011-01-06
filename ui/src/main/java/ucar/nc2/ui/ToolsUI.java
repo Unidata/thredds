@@ -5298,7 +5298,7 @@ public class ToolsUI extends JPanel {
 
     // use HTTPClient - could use bean wiring here
     CredentialsProvider provider = new UrlAuthenticatorDialog(frame);
-      HTTPSession.setGlobalCredentialsProvider(provider);
+    HTTPSession.setGlobalCredentialsProvider(provider);
     /* No longer needed
     HttpClient client = HttpClientManager.init(provider, "ToolsUI");
     opendap.dap.DConnect2.setHttpClient(client);
