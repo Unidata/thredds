@@ -238,6 +238,66 @@
         <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
       </featureCollection>
 
+      <featureCollection name="NCEP-GFS-N_Hemisphere_381km_grib2" featureType="FMRC" harvest="true"
+                         path="fmrc/NCEP/GFS/N_Hemisphere_381km_grib2">
+        <metadata inherited="true">
+          <documentation type="summary">NCEP GFS Model : AWIPS 201 (A) Grid. Northern Hemisphere (polar stereographic).
+            Model runs are made at 0, 6, 12, and 18Z, with analysis and forecasts every 6 hours out 10 days.
+            Horizontal = 65 by 65 points, resolution 381.0 km, Polar Stereographic projection.
+            Vertical = 1000 to 100 hPa mandatory pressure levels (10 levels); surface, height above ground, pressure layers.
+          </documentation>
+        </metadata>
+
+        <collection
+            spec="/data/ldm/pub/native/grid/NCEP/GFS/N_Hemisphere_381km_grib2/GFS_N_Hemisphere_381km_#yyyyMMdd_HHmm#.grib2"
+            name="GFS_N_Hemisphere_381km"
+            recheckAfter="15 min"
+            olderThan="5 min"/>
+        <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
+        <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
+        <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
+      </featureCollection>
+      <featureCollection name="NCEP-GFS-Pacific_40km" featureType="FMRC" harvest="true"
+                         path="fmrc/NCEP/GFS/Pacific_40km">
+        <metadata inherited="true">
+          <documentation type="summary">NCEP GFS Model : Mercator Grid.
+            Model runs are made at 0, 6, 12, and 18Z, with analysis and forecasts every 6 hours out 10 days.
+            Horizontal = 300 by 369 points, resolution 40 km, Mercator projection.
+            Vertical = 1000 to 100 hPa mandatory pressure levels (29 levels); surface, height above ground, pressure layers.
+          </documentation>
+        </metadata>
+
+        <collection
+            spec="/data/ldm/pub/native/grid/NCEP/GFS/Pacific_40km/GFS_Pacific_40km_#yyyyMMdd_HHmm#.grib2"
+            name="GFS_Pacific_40km"
+            recheckAfter="15 min"
+            olderThan="5 min"/>
+        <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
+        <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
+        <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
+      </featureCollection>
+
+      <featureCollection name="NCEP-GFS-Puerto_Rico_0p5deg" featureType="FMRC" harvest="true"
+                         path="fmrc/NCEP/GFS/Puerto_Rico_0p5deg">
+        <metadata inherited="true">
+          <documentation type="summary">NCEP GFS Model : 
+            Puerto_Rico 0.5 degree Lat/Lon grid.
+            Model runs are made at 0, 6, 12, 18 hours out to 10 days.
+            Horizontal = 102 by 107 points, resolution .5 degree, Lat/Lon projection.
+            Vertical = 1000 to 100 hPa mandatory pressure levels (29 levels); surface, height above ground, pressure layers.
+          </documentation>
+        </metadata>
+
+        <collection
+            spec="/data/ldm/pub/native/grid/NCEP/GFS/Puerto_Rico_0p5deg/GFS_Puerto_Rico_0p5deg_#yyyyMMdd_HHmm#.grib2"
+            name="GFS_Puerto_Rico_0p5deg"
+            recheckAfter="15 min"
+            olderThan="5 min"/>
+        <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
+        <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
+        <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
+      </featureCollection>
+
       <featureCollection name="NCEP-GFS-Puerto_Rico_191km" featureType="FMRC" harvest="true"
                          path="fmrc/NCEP/GFS/Puerto_Rico_191km">
         <metadata inherited="true">
@@ -561,6 +621,26 @@
                        xlink:title="COMET MetEd (Meteorology Education and Training) documentation"/>
         <dataFormat>GRIB-2</dataFormat>
       </metadata>
+
+      <featureCollection name="NCEP-RUC2-CONUS_13km" featureType="FMRC" harvest="true" path="fmrc/NCEP/RUC2/CONUS_13km">
+        <metadata inherited="true">
+          <dataFormat>GRIB-2</dataFormat>
+          <documentation type="summary">NCEP Model output Rapid Update Cycle (RUC2).
+            Model runs are made hourly, with analysis and hourly forecasts out to 12 hours; on the 0, 3, 6, 9, 12, 15,
+            18, and 21Z runs. The other forecast are out to 9 hours.
+            Horizontal = 337 by 451 points, resolution 13.55 km, LambertConformal projection.
+          </documentation>
+        </metadata>
+
+        <collection
+            spec="/data/ldm/pub/native/grid/NCEP/RUC2/CONUS_13km/RUC2_CONUS_13km_#yyyyMMdd_HHmm#.grib2"
+            name="RUC2_CONUS_13km"
+            recheckAfter="15 min"
+            olderThan="5 min"/>
+        <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
+        <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
+        <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
+      </featureCollection>
 
       <dataset ID="FMRC/NCEP/RUC2" name="NCEP-RUC2-CONUS_20km">
         <metadata inherited="true">
