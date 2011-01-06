@@ -241,6 +241,7 @@
       <featureCollection name="NCEP-GFS-N_Hemisphere_381km_grib2" featureType="FMRC" harvest="true"
                          path="fmrc/NCEP/GFS/N_Hemisphere_381km_grib2">
         <metadata inherited="true">
+          <dataFormat>GRIB-2</dataFormat>
           <documentation type="summary">NCEP GFS Model : AWIPS 201 (A) Grid. Northern Hemisphere (polar stereographic).
             Model runs are made at 0, 6, 12, and 18Z, with analysis and forecasts every 6 hours out 10 days.
             Horizontal = 65 by 65 points, resolution 381.0 km, Polar Stereographic projection.
@@ -260,6 +261,7 @@
       <featureCollection name="NCEP-GFS-Pacific_40km" featureType="FMRC" harvest="true"
                          path="fmrc/NCEP/GFS/Pacific_40km">
         <metadata inherited="true">
+          <dataFormat>GRIB-2</dataFormat>
           <documentation type="summary">NCEP GFS Model : Mercator Grid.
             Model runs are made at 0, 6, 12, and 18Z, with analysis and forecasts every 6 hours out 10 days.
             Horizontal = 300 by 369 points, resolution 40 km, Mercator projection.
@@ -280,6 +282,7 @@
       <featureCollection name="NCEP-GFS-Puerto_Rico_0p5deg" featureType="FMRC" harvest="true"
                          path="fmrc/NCEP/GFS/Puerto_Rico_0p5deg">
         <metadata inherited="true">
+          <dataFormat>GRIB-2</dataFormat>
           <documentation type="summary">NCEP GFS Model : 
             Puerto_Rico 0.5 degree Lat/Lon grid.
             Model runs are made at 0, 6, 12, 18 hours out to 10 days.
