@@ -89,17 +89,17 @@ abstract public class DVector extends BaseType implements ClientIO {
     }
 
     /**
-            * The variable of which we are the parent
-            */
-           private BaseType containervar;
+    * The variable of which we are the parent
+    */
+   private BaseType containedvar;
 
-           public BaseType getContainerVar() {return containervar;}
+   public BaseType getContainerVar() {return containedvar;}
 
-           public void setContainerVar(BaseType var)
-           {
-           if(containervar != null) throw new RuntimeException("DArray with multiple variables");
-           containervar = var;
-           }
+   public void setContainerVar(BaseType var)
+   {
+   if(containedvar != null) throw new RuntimeException("DArray with multiple variables");
+   containedvar = var;
+   }
 
     /**
      * Returns a clone of this <code>DVector</code>.  A deep copy is performed on
@@ -110,7 +110,9 @@ abstract public class DVector extends BaseType implements ClientIO {
     public Object clone() {
         DVector v = (DVector) super.clone();
         v.vals = (PrimitiveVector) vals.clone();
-	containervar.setParent(v);
+	    // clone the container variable
+        containedvar = (BaseType) containedvar.clone();
+        containedvar.setParent(v);
         return v;
     }
 

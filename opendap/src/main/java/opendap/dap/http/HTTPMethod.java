@@ -82,6 +82,11 @@ public class HTTPMethod
         default:
             this.method = null;
         }
+        // Force some actions
+        if(method != null) {
+            method.setFollowRedirects(true);
+            method.setDoAuthentication(true);
+        }
     }
 
     void setcontent()
@@ -458,7 +463,7 @@ public class HTTPMethod
 
     public void setFollowRedirects(boolean tf)
     {
-        return; //ignore
+        return; //ignore ; always done
     }
 
     public String getResponseCharSet()
