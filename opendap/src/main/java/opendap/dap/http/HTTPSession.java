@@ -175,10 +175,8 @@ public class HTTPSession
          sessionClient.getParams().setSoTimeout(timeout);
 
     }
-    public void setMethodParameter(String name, Object value)
-    {
-        methodparams.setParameter(name,value);
-    }
+
+
 
     //fix: public void setStateX(HttpState cxt) {sessionState = cxt;}
 

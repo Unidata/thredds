@@ -144,6 +144,7 @@ public class HTTPMethod
             method.abort();
         method.releaseConnection();
         closed = true;
+        session.removeMethod(this);
     }
 
     public void consumeContent()
@@ -368,6 +369,12 @@ public class HTTPMethod
         return method.getParams().getParameter(key);
     }
 
+    public HttpMethodParams getMethodParameters()
+    {
+        if (method == null)
+            return null;
+        return method.getParams();
+    }
     public Object getResponseParameter(String name)
     {
         if (method == null)
@@ -388,7 +395,6 @@ public class HTTPMethod
        multiparts = new Part[parts.length];
        for(int i=0;i<parts.length;i++) multiparts[i] = parts[i];
      }
-
 
     public String getCharSet()
     {
