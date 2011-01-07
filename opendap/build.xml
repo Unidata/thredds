@@ -107,8 +107,6 @@
          <property name="build.sysclasspath" value="ignore"/>
 
 
-    <property name="thredds.version" value="4.2"/>
-
     <!-- Project directories -->
     <property name="src.dir"          location="src"/>
         <property name="src.main.dir" location="src/main"/>

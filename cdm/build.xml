@@ -383,7 +383,7 @@
 
   <property name="jarIdv" value="ncIdv.jar"/>
   <property name="idv.dir" value="${build.dir}/idv"/>
-  <target name="makeIDVjar" depends="makeMain" description="create jar for idv">
+  <target name="makeIDVjar" depends="opendap,makeMain" description="create jar for idv">
     <mkdir dir="${idv.dir}"/>
     <unzip dest="${idv.dir}">
       <fileset dir="${lib.dir}">
@@ -422,11 +422,9 @@
     </jar>
   </target>
 
-    <target name="copyidvjar" depends="makeIDVjar">
-     <copy file="c:/Users/dmh/IdeaProjects/tds4.2/dmh/cdm/target/ncIdv.jar"
-            tofile="c:/Users/dmh/IdeaProjects/idv3/lib/ncIdv.jar" />
-     <copy file="c:/Users/dmh/IdeaProjects/tds4.2/dmh/cdm/target/ncIdv.jar"
-            tofile="c:/Users/dmh/IdeaProjects/idv/lib/ncIdv.jar" />
+    <target name="copyidvjar">
+     <copy file="./target/ncIdv.jar"
+            tofile="c:/Users/dmh/IdeaProjects/idv/xcheck/lib/ncIdv.jar" />
   </target>
 
         <!-- $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$  -->
@@ -1054,21 +1052,12 @@
 
   <!-- -->
 
-  <!-- Build other jars and copy to release dir -->
+  <!-- Build opendap jar and copy to release dir -->
 
-  <!-- Relative path to other dir
+  <!-- Relative path to other dir -->
   <property name="opendap.relpath" value="../opendap"/>
-  <property name="grib.relpath" value="../grib"/>
-  <property name="common.relpath" value="../../unidataCommon"/>
-  < target name="common">
-	  <ant dir="${common.relpath}" target="thredds" inheritAll="false"/>
-  </target
-  <target name="grib">
-	  <ant dir="${grib.relpath}" target="thredds" inheritAll="false"/>
-  </target>
-
   <target name="opendap">
 	  <ant dir="${opendap.relpath}" target="thredds" inheritAll="false"/>
-  </target> -->
+  </target>
 
 </project>

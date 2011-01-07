@@ -122,7 +122,9 @@ public class DArray extends DVector implements Cloneable {
         a.dimVector = new Vector<DArrayDimension>();
         for (int i = 0; i < dimVector.size(); i++) {
             DArrayDimension d =  dimVector.elementAt(i);
-            a.dimVector.addElement((DArrayDimension)d.clone());
+            DArrayDimension dclone = (DArrayDimension)d.clone();
+            dclone.setContainer(a);
+            a.dimVector.addElement(dclone);
         }
         return a;
     }

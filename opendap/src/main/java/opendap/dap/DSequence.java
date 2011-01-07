@@ -124,7 +124,9 @@ public class DSequence extends DConstructor implements ClientIO {
 
         for (int i = 0; i < varTemplate.size(); i++) {
             BaseType bt = (BaseType) varTemplate.elementAt(i);
-            s.varTemplate.addElement(bt.clone());
+	    BaseType btclone = (BaseType)bt.clone();
+	    btclone.setParent(s);
+            s.varTemplate.addElement(btclone);
         }
 
         s.allValues = new Vector();

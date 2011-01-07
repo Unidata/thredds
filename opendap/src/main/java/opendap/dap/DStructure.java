@@ -88,7 +88,9 @@ public class DStructure extends DConstructor implements ClientIO {
         s.vars = new Vector();
         for (int i = 0; i < vars.size(); i++) {
             BaseType bt = (BaseType) vars.elementAt(i);
-            s.vars.addElement(bt.clone());
+	    BaseType btclone = (BaseType)bt.clone();	
+	    btclone.setParent(s);
+            s.vars.addElement(btclone);
         }
         return s;
     }

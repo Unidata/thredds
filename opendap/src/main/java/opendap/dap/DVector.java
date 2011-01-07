@@ -110,6 +110,7 @@ abstract public class DVector extends BaseType implements ClientIO {
     public Object clone() {
         DVector v = (DVector) super.clone();
         v.vals = (PrimitiveVector) vals.clone();
+	containervar.setParent(v);
         return v;
     }
 
@@ -148,7 +149,7 @@ abstract public class DVector extends BaseType implements ClientIO {
         vals = v.newPrimitiveVector();
         setName(v.getName());
         v.setParent(this);
-        setContainerVar(v);
+        setContainerVar(v); // save v for cloning
     }
 
     /**

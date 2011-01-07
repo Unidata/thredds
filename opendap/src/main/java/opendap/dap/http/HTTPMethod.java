@@ -14,6 +14,7 @@ import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
 import org.apache.commons.httpclient.methods.multipart.Part;
 import org.apache.commons.httpclient.methods.multipart.StringPart;
 import org.apache.commons.httpclient.params.HttpMethodParams;
+import org.apache.commons.httpclient.util.URIUtil;
 
 import javax.servlet.http.HttpSession;
 
@@ -31,6 +32,7 @@ public class HTTPMethod
      HTTPSession session = null;
      HttpMethodBase method = null; // Current method
      String uri = null;
+     String uriEscaped = null;
      List<Header> headers = new ArrayList<Header>();
      HttpMethodParams params = new HttpMethodParams();
     HttpState context = null;
@@ -48,22 +50,34 @@ public class HTTPMethod
             throw new HTTPException("newMethod: no uri specified");
         this.session = session;
         this.uri = uri;
+        // Break off the query part
+        int i = uri.indexOf('?');
+        if(i >= 0) {
+            String query = uri.substring(i+1,uri.length());
+            try {
+                query = URIUtil.encodeQuery(query);
+            } catch (URIException ue) {
+                throw new HTTPException(ue);
+            }
+            uriEscaped = uri.substring(0,i) + '?' + query;
+        }  else
+            this.uriEscaped = uri;
         this.methodclass = m;
         switch (this.methodclass) {
         case Put:
-            this.method = new PutMethod(uri);
+            this.method = new PutMethod(uriEscaped);
             break;
         case Post:
-            this.method = new PostMethod(uri);
+            this.method = new PostMethod(uriEscaped);
             break;
         case Get:
-            this.method = new GetMethod(uri);
+            this.method = new GetMethod(uriEscaped);
               break;
         case Head:
-            this.method = new HeadMethod(uri);
+            this.method = new HeadMethod(uriEscaped);
                 break;
         case Options:
-            this.method = new OptionsMethod(uri);
+            this.method = new OptionsMethod(uriEscaped);
                break;
         default:
             this.method = null;

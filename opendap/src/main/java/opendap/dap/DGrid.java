@@ -136,10 +136,13 @@ public class DGrid extends DConstructor implements ClientIO {
     public Object clone() {
         DGrid g = (DGrid) super.clone();
         g.arrayVar = (DArray) arrayVar.clone();
+        g.arrayVar.setParent(g);
         g.mapVars = new Vector();
         for (int i = 0; i < mapVars.size(); i++) {
             BaseType bt = (BaseType) mapVars.elementAt(i);
-            g.mapVars.addElement(bt.clone());
+	    BaseType btclone = (BaseType)bt.clone();
+	    btclone.setParent(g);
+            g.mapVars.addElement(btclone);
         }
         return g;
     }

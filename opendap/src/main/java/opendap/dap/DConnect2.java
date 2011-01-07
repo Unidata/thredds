@@ -248,8 +248,7 @@ public class DConnect2 {
     InputStream is = null;
 
     initSession();
-    //fix method.setFollowRedirects(true);
-    
+
     try {
 
       method = _session.newMethodGet(urlString);
@@ -334,7 +333,9 @@ public class DConnect2 {
           }
         });
       }
-       if(_session != null) _session.close();
+       if(_session != null)
+           _session.close();
+        _session = null;
     } catch (Throwable t) {
       // ignore
     }
