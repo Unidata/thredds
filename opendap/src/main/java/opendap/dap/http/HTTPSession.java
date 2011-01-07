@@ -176,6 +176,12 @@ public class HTTPSession
 
     }
 
+    public void setMethodParameter(String name, Object value)
+        {
+            if (methodparams == null)
+                methodparams = new HttpMethodParams();
+            methodparams.setParameter(name, value);
+        }
 
 
     //fix: public void setStateX(HttpState cxt) {sessionState = cxt;}
