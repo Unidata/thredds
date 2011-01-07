@@ -65,19 +65,19 @@ public class HTTPMethod
         this.methodclass = m;
         switch (this.methodclass) {
         case Put:
-            this.method = new PutMethod(uriEscaped);
+            this.method = new PutMethod(uri);
             break;
         case Post:
-            this.method = new PostMethod(uriEscaped);
+            this.method = new PostMethod(uri);
             break;
         case Get:
-            this.method = new GetMethod(uriEscaped);
+            this.method = new GetMethod(uri);
               break;
         case Head:
-            this.method = new HeadMethod(uriEscaped);
+            this.method = new HeadMethod(uri);
                 break;
         case Options:
-            this.method = new OptionsMethod(uriEscaped);
+            this.method = new OptionsMethod(uri);
                break;
         default:
             this.method = null;
