@@ -111,10 +111,11 @@
     <filter-name>RequestQueryFilter</filter-name>
     <servlet-name>catalogService</servlet-name>
   </filter-mapping>
-  <filter-mapping>
+  <!-- To allow the ncISO service, uncomment this filter mapping. -->
+  <!--filter-mapping>
     <filter-name>RequestQueryFilter</filter-name>
     <servlet-name>metadata</servlet-name>
-  </filter-mapping>
+  </filter-mapping-->
   <filter-mapping>
     <filter-name>RequestQueryFilter</filter-name>
     <servlet-name>admin</servlet-name>
@@ -333,11 +334,12 @@
   </servlet>
 
   <!-- Metadata services (ncISO) from NGDC -->
-  <servlet>
+  <!-- To allow the ncISO service, uncomment this servlet element. -->
+  <!-- servlet>
     <servlet-name>metadata</servlet-name>
     <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
     <load-on-startup>3</load-on-startup>
-  </servlet>
+  </servlet -->
 
   <servlet>
     <servlet-name>admin</servlet-name>
@@ -544,7 +546,8 @@
   </servlet-mapping>
 
   <!-- Metadata services (ncISO) from NGDC -->
-  <servlet-mapping>
+  <!-- To allow the ncISO service, uncomment these servlet mappings. -->
+  <!--servlet-mapping>
     <servlet-name>metadata</servlet-name>
     <url-pattern>/ncml/*</url-pattern>
   </servlet-mapping>
@@ -555,7 +558,7 @@
   <servlet-mapping>
     <servlet-name>metadata</servlet-name>
     <url-pattern>/iso/*</url-pattern>
-  </servlet-mapping>
+  </servlet-mapping -->
 
   <!-- old debug, content handling -->
   <servlet-mapping>
