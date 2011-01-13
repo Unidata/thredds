@@ -5,12 +5,14 @@ response.setHeader("Cache-Control","no-cache"); //HTTP 1.1
 response.setHeader("Pragma","no-cache"); //HTTP 1.0
 response.setDateHeader ("Expires", 0); //prevents caching at the proxy server
 %>
-<c:when test="${exception.code == 'LayerNotDefined'}">
-    <% response.setStatus( HttpServletResponse.SC_NOT_FOUND ); %>
-</c:when>
-<c:otherwise>
-    <% response.setStatus( HttpServletResponse.SC_BAD_REQUEST ); %>
-</c:otherwise>
+<c:choose>
+    <c:when test="${exception.code == 'LayerNotDefined'}">
+        <% response.setStatus( HttpServletResponse.SC_NOT_FOUND ); %>
+    </c:when>
+    <c:otherwise>
+        <% response.setStatus( HttpServletResponse.SC_BAD_REQUEST ); %>
+    </c:otherwise>
+</c:choose>
 
 <%-- Displays a WmsException in the correct format --%>
 <!DOCTYPE ServiceExceptionReport SYSTEM "http://schemas.opengis.net/wms/1.1.1/exception_1_1_1.dtd">

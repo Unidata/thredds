@@ -4,7 +4,7 @@ Build Date = @BUILDTIME@
 Build Name = @BUILD.NAME@
 
 Release Details 4.2:
- 4.2.3 (2011-01-xx)
+ 4.2.x (2011-01-xx)
    HTTPClient refactor / framework
    opendap bison parser
    Point FeatureCollection adds metadata to catalog
@@ -23,6 +23,14 @@ Release Details 4.2:
    FMRC now has vars, bounding box, and date range metadata correct.
    CdmrFeature service for point collections
    InvFeatureCollection type=POINT, STATION
+
+ 4.2.3 (2010-01-13)
+   Fix for ArrayIndexOutOfBoundsException during WMS GetFeatureInfo requests on datasets without a time dimension (TDS-152)
+   Fix for ArrayIndexOutOfBoundsException during some WMS GetMap requests (TDS-154)
+   Fix for IllegalArgumentException during GetMap requests with invalid TIME values, not ISO8601 (TDS-153)
+   Fix exception handling in WMS 1.1.1 (TDS-155)
+   Fix to WriterCFPointDataset
+   Fix to DateUnit
 
  4.2.2 (2010-12-16)
    Fold in ncWMS PixelMap fix (TDS-147)
