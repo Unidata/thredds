@@ -111,39 +111,6 @@ public class DSequence extends DConstructor implements ClientIO {
     }
 
     /**
-     * Returns a clone of this <code>DSequence</code>.  A deep copy is performed
-     * on all data inside the variable.
-     *
-     * @return a clone of this <code>DSequence</code>.
-     */
-    public Object clone() {
-
-        DSequence s = (DSequence) super.clone();
-
-        s.varTemplate = new Vector();
-
-        for (int i = 0; i < varTemplate.size(); i++) {
-            BaseType bt = (BaseType) varTemplate.elementAt(i);
-	    BaseType btclone = (BaseType)bt.clone();
-	    btclone.setParent(s);
-            s.varTemplate.addElement(btclone);
-        }
-
-        s.allValues = new Vector();
-
-        for (int i = 0; i < allValues.size(); i++) {
-            Vector rowVec = (Vector) allValues.elementAt(i);
-            Vector newVec = new Vector();
-            for (int j = 0; j < rowVec.size(); j++) {
-                BaseType bt = (BaseType) rowVec.elementAt(j);
-                newVec.addElement(bt.clone());
-            }
-            s.allValues.addElement(newVec);
-        }
-        return s;
-    }
-
-    /**
      * Returns the OPeNDAP type name of the class instance as a <code>String</code>.
      *
      * @return the OPeNDAP type name of the class instance as a <code>String</code>.
@@ -626,6 +593,41 @@ public class DSequence extends DConstructor implements ClientIO {
 //        if (getLevel() == 0)
         writeMarker(sink, END_OF_SEQUENCE);
     }
+
+    /**
+     * Returns a clone of this <code>Sequence</code>.
+     * See DAPNode.cloneDag()
+     *
+     * @param map track previously cloned nodes
+     * @return a clone of this object.
+     */
+    public DAPNode cloneDAG(CloneMap map)
+        throws CloneNotSupportedException
+    {
+        DSequence s = (DSequence) super.cloneDAG(map);
+
+        s.varTemplate = new Vector();
+
+        for (int i = 0; i < varTemplate.size(); i++) {
+            BaseType bt = (BaseType) varTemplate.elementAt(i);
+	        BaseType btclone = (BaseType)cloneDAG(map,bt);
+            s.varTemplate.addElement(btclone);
+        }
+
+        s.allValues = new Vector();
+
+        for (int i = 0; i < allValues.size(); i++) {
+            Vector rowVec = (Vector) allValues.elementAt(i);
+            Vector newVec = new Vector();
+            for (int j = 0; j < rowVec.size(); j++) {
+                BaseType bt = (BaseType) rowVec.elementAt(j);
+                newVec.addElement((BaseType)cloneDAG(map,bt));
+            }
+            s.allValues.addElement(newVec);
+        }
+        return s;
+    }
+
+
+
 }
-
-

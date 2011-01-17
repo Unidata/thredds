@@ -48,7 +48,8 @@ import java.io.*;
  * @version $Revision: 15901 $
  * @see PrimitiveVector
  */
-public class BaseTypePrimitiveVector extends PrimitiveVector implements Cloneable {
+public class BaseTypePrimitiveVector extends PrimitiveVector
+{
     /**
      * the array of <code>BaseType</code> values.
      */
@@ -120,7 +121,7 @@ public class BaseTypePrimitiveVector extends PrimitiveVector implements Cloneabl
      */
     public final void setValue(int i, BaseType newVal) {
         vals[i] = newVal;
-        BaseType parent = getTemplate().getParent();
+        BaseType parent = (BaseType)getTemplate().getParent();
         vals[i].setParent(parent);
     }
 
@@ -134,7 +135,7 @@ public class BaseTypePrimitiveVector extends PrimitiveVector implements Cloneabl
      *              and controls the leading spaces of the output.
      * @see BaseType#printVal(PrintWriter, String, boolean)
      */
-    public void printVal(PrintWriter os, String space) {
+    public final void printVal(PrintWriter os, String space) {
         int len = vals.length;
         for (int i = 0; i < len - 1; i++) {
             vals[i].printVal(os, "", false);
@@ -249,8 +250,29 @@ public class BaseTypePrimitiveVector extends PrimitiveVector implements Cloneabl
     public void setInternalStorage(Object o) {
         vals = (BaseType []) o;
     }
+     /**
+     * Returns the OPeNDAP type name of the class instance as a <code>String</code>.
+     *
+     * @return the OPeNDAP type name of the class instance as a <code>String</code>.
+     */
+    public String getTypeName() {
+        return "BaseTypePrimitiveVector";
+    }
+/**
+     * Prints the value of the variable, with its declaration.  This
+     * function is primarily intended for debugging OPeNDAP applications and
+     * text-based clients such as geturl.
+     *
+     * @param os           the <code>PrintWriter</code> on which to print the value.
+     * @param space        this value is passed to the <code>printDecl</code> method,
+     *                     and controls the leading spaces of the output.
+     * @param print_decl_p a boolean value controlling whether the
+     *                     variable declaration is printed as well as the value.
+     */
+     public void printVal(PrintWriter os, String space,
+                                  boolean print_decl_p) {}
 
-    /**
+     /**
      * Create a new primitive vector using a subset of the data.
      *
      * @param start  starting index (i=start)

@@ -130,7 +130,7 @@ public abstract class Ceparse implements ExprParserConstants
             throws ParseException
     {
         ASTprojection p = new ASTprojection();
-	if(varorfcn instanceof ASTvar)
+	    if(varorfcn instanceof ASTvar)
             p.var = (ASTvar)varorfcn;
         else
             p.fcn = (ASTfcn)varorfcn;

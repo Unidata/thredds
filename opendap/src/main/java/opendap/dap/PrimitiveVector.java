@@ -56,10 +56,8 @@ import java.io.*;
  * @see BaseType
  * @see DVector
  */
-abstract public class PrimitiveVector implements ClientIO, Cloneable, Serializable {
-
-    static final long serialVersionUID = 1;
-
+abstract public class PrimitiveVector extends DAPNode implements ClientIO
+{
     /**
      * Template variable to use for <code>printDecl</code> and
      * <code>deserialize</code> (<code>BaseTypePrimitiveVector</code> only).
@@ -73,24 +71,6 @@ abstract public class PrimitiveVector implements ClientIO, Cloneable, Serializab
      */
     public PrimitiveVector(BaseType var) {
         this.var = var;
-    }
-
-    /**
-     * Returns a clone of this <code>PrimitiveVector</code>.  A deep copy is
-     * performed on all data inside the variable.
-     *
-     * @return a clone of this <code>PrimitiveVector</code>.
-     */
-    public Object clone() {
-        try {
-            PrimitiveVector v = (PrimitiveVector) super.clone();
-            v.var = (BaseType) var.clone();
-            return v;
-        }
-        catch (CloneNotSupportedException e) {
-            // this shouldn't happen, since we are Cloneable
-            throw new InternalError();
-        }
     }
 
     /**
@@ -208,7 +188,16 @@ abstract public class PrimitiveVector implements ClientIO, Cloneable, Serializab
         printDecl(os, space, print_semi, false);
     }
 
-    /**
+ /**
+     * Returns the OPeNDAP type name of the class instance as a <code>String</code>.
+     *
+     * @return the OPeNDAP type name of the class instance as a <code>String</code>.
+     */
+    public String getTypeName() {
+        return "PrimitiveVector";
+    }
+
+/**
      * Prints the value of all variables in this vector.  This
      * method is primarily intended for debugging OPeNDAP applications and
      * text-based clients such as geturl.
@@ -264,6 +253,21 @@ abstract public class PrimitiveVector implements ClientIO, Cloneable, Serializab
      * @return new primitive vector
      */
     abstract public PrimitiveVector subset(int start, int stop, int stride);
+
+    /**
+     * Returns a clone of this <code>PrimitiveVector</code>.
+     * See DAPNode.cloneDag()
+     *
+     * @param map track previously cloned nodes
+     * @return a clone of this <code>PrimitiveVector</code>.
+     */
+    public DAPNode cloneDAG(CloneMap map)
+        throws CloneNotSupportedException
+    {
+            PrimitiveVector v = (PrimitiveVector) super.cloneDAG(map);
+            v.var = (BaseType) cloneDAG(map,var);
+            return v;
+    }
 
 }
 

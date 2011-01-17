@@ -40,7 +40,6 @@
 package opendap.dap;
 
 import opendap.dap.Server.InvalidParameterException;
-import opendap.util.EscapeStrings;
 
 import java.io.*;
 
@@ -59,12 +58,8 @@ import java.io.*;
  *
  * @see DArray
  */
-public final class DArrayDimension implements Cloneable, java.io.Serializable {
-
-    static final long serialVersionUID = 1;
-
-    private String name;
-    private String nameEncoded;
+public final class DArrayDimension extends DAPNode
+{
     private int size;
     private int start;
     private int stride;
@@ -91,61 +86,11 @@ public final class DArrayDimension implements Cloneable, java.io.Serializable {
      * @param name The dimension's name, or null if no name.
      */
     public DArrayDimension(int size, String name, boolean decodeName) {
-
-        if (decodeName)
-            setName(name);
-        else
-            setClearName(name);
-
-
+        super(name,decodeName);
         setSize(size);
         this.start = 0;
         this.stride = 1;
         this.stop = size - 1;
-    }
-
-    /**
-     * Clone this object
-     */
-    public Object clone() {
-        try {
-            DArrayDimension d = (DArrayDimension) super.clone();
-            return d;
-        }
-        catch (CloneNotSupportedException e) {
-            // this shouldn't happen, since we are Cloneable
-            throw new InternalError();
-        }
-    }
-
-    /**
-     * Get the dimension name.
-     */
-    public String getName() {
-        return nameEncoded;
-    }
-
-    /**
-     * Set the dimension name.
-     */
-    public void setName(String name) {
-        this.name = EscapeStrings.www2id(name);
-        this.nameEncoded = name;
-    }
-
-    /**
-     * Get the dimension name.
-     */
-    public String getClearName() {
-        return name;
-    }
-
-    /**
-     * Set the dimension name.
-     */
-    public void setClearName(String name) {
-        this.name = name;
-        this.nameEncoded = EscapeStrings.id2www(name);
     }
 
     /**
@@ -241,7 +186,7 @@ public final class DArrayDimension implements Cloneable, java.io.Serializable {
 	}
         // avoid the constraint conflict problenm
         if (start >= truesize)
-            throw new InvalidParameterException(msg + "start (" + start + ") >= size (" + truesize + ") for " + name);
+            throw new InvalidParameterException(msg + "start (" + start + ") >= size (" + truesize + ") for " + _name);
 
         if (start < 0)
             throw new InvalidParameterException(msg + "start < 0");
@@ -263,6 +208,21 @@ public final class DArrayDimension implements Cloneable, java.io.Serializable {
         this.stop = stop;
         this.size = 1 + (stop - start) / stride;
 	this.constrained = constraining || this.constrained;
+    }
+
+    /**
+     * Returns a clone of this <code>Array</code>.
+     * See DAPNode.cloneDag()
+     *
+     * @param map track previously cloned nodes
+     * @return a clone of this object.
+     */
+    public DAPNode cloneDAG(CloneMap map)
+        throws CloneNotSupportedException
+    {
+        DArrayDimension d = (DArrayDimension) super.cloneDAG(map);
+        if(container != null) d.container = (DArray)cloneDAG(map,container);
+        return d;
     }
 
 }

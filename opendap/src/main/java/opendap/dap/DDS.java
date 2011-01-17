@@ -372,44 +372,6 @@ public class DDS extends DStructure
         schemaLocation = schema;
     }
 
-    /**
-     * Returns a clone of this <code>DDS</code>.  A deep copy is performed on
-     * all variables inside the <code>DDS</code>.
-     *
-     * @return a clone of this <code>DDS</code>.
-     */
-    public Object clone()
-    {
-        try {
-            DDS d = (DDS) super.clone();
-            d.vars = new Vector();
-            for (int i = 0; i < vars.size(); i++) {
-                BaseType element = (BaseType) vars.elementAt(i);
-                d.vars.addElement(element.clone());
-            }
-            d.setName(this.getName());
-
-            // Question:
-            // What about copying the BaseTypeFactory?
-            // Do we want a reference to the same one? Or another instance?
-            // Is there a difference? Should we be building the clone
-            // using "new DDS(getFactory())"??
-
-            // Answer:
-            // Yes. Use the same type factory!
-
-            d.factory = this.factory;
-
-
-            return d;
-        }
-//	catch (CloneNotSupportedException e) {
-        catch (Exception e) {
-            // this shouldn't happen, since we are Cloneable
-            throw new InternalError();
-        }
-    }
-
     public boolean parse(InputStream stream) throws ParseException, DAP2Exception
     {
         DapParser parser = new DapParser(factory);
@@ -2210,5 +2172,34 @@ public class DDS extends DStructure
         return sw.toString();
     }
 
+    /**
+     * Returns a clone of this <code>DDS</code>.
+     * See DAPNode.cloneDag()
+     *
+     * @param map track previously cloned nodes
+     * @return a clone of this DDS.
+     */
+    public DAPNode cloneDAG(CloneMap map)
+        throws CloneNotSupportedException
+    {
+            DDS d = (DDS) super.cloneDAG(map);
+            d.vars = new Vector();
+            for (int i = 0; i < vars.size(); i++) {
+                BaseType element = (BaseType) vars.elementAt(i);
+                d.vars.addElement(cloneDAG(map,element));
+            }
+            d.setName(this.getName());
+
+            // Question:
+            // What about copying the BaseTypeFactory?
+            // Do we want a reference to the same one? Or another             // Is there a difference? Should we be building the clone
+            // using "new DDS(getFactory())"??
+
+            // Answer:
+            // Yes. Use the same type factory!
+
+            d.factory = this.factory;
+            return d;
+    }
 
 }

@@ -78,24 +78,6 @@ public class DStructure extends DConstructor implements ClientIO {
     }
 
     /**
-     * Returns a clone of this <code>DSequence</code>.  A deep copy is performed
-     * on all data inside the variable.
-     *
-     * @return a clone of this <code>DSequence</code>.
-     */
-    public Object clone() {
-        DStructure s = (DStructure) super.clone();
-        s.vars = new Vector();
-        for (int i = 0; i < vars.size(); i++) {
-            BaseType bt = (BaseType) vars.elementAt(i);
-	    BaseType btclone = (BaseType)bt.clone();	
-	    btclone.setParent(s);
-            s.vars.addElement(btclone);
-        }
-        return s;
-    }
-
-    /**
      * Returns the OPeNDAP type name of the class instance as a <code>String</code>.
      *
      * @return the OPeNDAP type name of the class instance as a <code>String</code>.
@@ -350,6 +332,26 @@ public class DStructure extends DConstructor implements ClientIO {
         }
     }
 
+
+    /**
+     * Returns a clone of this <code>Structure</code>.
+     * See DAPNode.cloneDag()
+     *
+     * @param map track previously cloned nodes
+     * @return a clone of this object.
+     */
+    public DAPNode cloneDAG(CloneMap map)
+        throws CloneNotSupportedException
+    {
+        DStructure s = (DStructure) super.cloneDAG(map);
+        s.vars = new Vector();
+        for (int i = 0; i < vars.size(); i++) {
+            BaseType bt = (BaseType) vars.elementAt(i);
+	        BaseType btclone = (BaseType)cloneDAG(map,bt);
+            s.vars.addElement(btclone);
+        }
+        return s;
+    }
 
 }
 

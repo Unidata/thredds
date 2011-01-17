@@ -204,6 +204,25 @@ public interface  ServerMethods {
     public boolean isProject();
 
     /**
+      * Access the ctorProjected field.
+      *
+      * @return <code>true</code> if the variable was projected
+      * as a result of constructor recursions
+      * <code>false</code> otherwise.
+      * @see opendap.dap.Server.CEEvaluator
+      */
+     public boolean isCtorProjected();
+
+      /**
+       * Set the state of this variable's ctorProjected fiel
+       *
+       * @param state <code>true</code> if the variable was recursively projected,
+       *              <code>false</code> otherwise.
+       * @see opendap.dap.Server.CEEvaluator
+       */
+      public void setCtorProjected(boolean state);
+
+    /**
      * The <code>Operator</code> class contains a generalized implementation
      * of this method. It should be used unless a localized
      * architecture/implementation requires otherwise.

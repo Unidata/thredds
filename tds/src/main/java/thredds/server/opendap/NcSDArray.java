@@ -59,7 +59,7 @@ public class NcSDArray extends SDArray implements HasNetcdfVariable {
 
   private boolean debug = false, debugRead = false;
   private Variable ncVar = null;
-  protected BaseType elemType;
+  //ignore protected BaseType elemType;
 
   /**
    * Constructor: Wraps a netcdf variable in a DODS SDArray.
@@ -79,7 +79,7 @@ public class NcSDArray extends SDArray implements HasNetcdfVariable {
     // this seems to be how you set the type
     // it creates the "primitive vector"
     addVariable(bt);
-    this.elemType = bt;
+    // ignore this.elemType = bt;
   }
 
   public Variable getVariable() {

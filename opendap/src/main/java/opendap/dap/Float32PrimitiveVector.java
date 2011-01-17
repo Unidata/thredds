@@ -48,7 +48,8 @@ import java.io.*;
  * @version $Revision: 20918 $
  * @see PrimitiveVector
  */
-public class Float32PrimitiveVector extends PrimitiveVector implements Cloneable, Serializable {
+public class Float32PrimitiveVector extends PrimitiveVector
+{
 
     static final long serialVersionUID = 1;
 
@@ -64,21 +65,6 @@ public class Float32PrimitiveVector extends PrimitiveVector implements Cloneable
      */
     public Float32PrimitiveVector(BaseType var) {
         super(var);
-    }
-
-    /**
-     * Returns a clone of this <code>Float32PrimitiveVector</code>.  A deep
-     * copy is performed on all data inside the variable.
-     *
-     * @return a clone of this <code>Float32PrimitiveVector</code>.
-     */
-    public Object clone() {
-        Float32PrimitiveVector v = (Float32PrimitiveVector) super.clone();
-        if (vals != null) {
-            v.vals = new float[vals.length];
-            System.arraycopy(vals, 0, v.vals, 0, vals.length);
-        }
-        return v;
     }
 
     /**
@@ -274,6 +260,38 @@ public class Float32PrimitiveVector extends PrimitiveVector implements Cloneable
         return n;
     }
 
+/**
+   * Prints the value of the variable, with its declaration.  This
+   * function is primarily intended for debugging OPeNDAP applications and
+   * text-based clients such as geturl.
+   *
+   * @param os           the <code>PrintWriter</code> on which to print the value.
+   * @param space        this value is passed to the <code>printDecl</code> method,
+   *                     and controls the leading spaces of the output.
+   * @param print_decl_p a boolean value controlling whether the
+   *                     variable declaration is printed as well as the value.
+   */
+   public void printVal(PrintWriter os, String space,
+                                boolean print_decl_p) {}
+
+
+    /**
+     * Returns a clone of this <code>PrimitiveVector</code>.
+     * See DAPNode.cloneDag()
+     *
+     * @param map track previously cloned nodes
+     * @return a clone of this <code>Float32PrimitiveVector</code>.
+     */
+    public DAPNode cloneDAG(CloneMap map)
+        throws CloneNotSupportedException
+    {
+        Float32PrimitiveVector v = (Float32PrimitiveVector) super.cloneDAG(map);
+        if (vals != null) {
+            v.vals = new float[vals.length];
+            System.arraycopy(vals, 0, v.vals, 0, vals.length);
+        }
+        return v;
+    }
 
 }
 

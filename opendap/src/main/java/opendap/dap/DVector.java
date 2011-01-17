@@ -102,21 +102,6 @@ abstract public class DVector extends BaseType implements ClientIO {
    }
 
     /**
-     * Returns a clone of this <code>DVector</code>.  A deep copy is performed on
-     * all variables inside the <code>DVector</code>.
-     *
-     * @return a clone of this <code>DVector</code>.
-     */
-    public Object clone() {
-        DVector v = (DVector) super.clone();
-        v.vals = (PrimitiveVector) vals.clone();
-	    // clone the container variable
-        containedvar = (BaseType) containedvar.clone();
-        containedvar.setParent(v);
-        return v;
-    }
-
-    /**
      * Returns the number of elements in the vector.
      *
      * @return the number of elements in the vector.
@@ -304,6 +289,23 @@ abstract public class DVector extends BaseType implements ClientIO {
         }
 
         vals.externalize(sink);
+    }
+
+    /**
+     * Returns a clone of this <code>Vector</code>.
+     * See DAPNode.cloneDag()
+     *
+     * @param map track previously cloned nodes
+     * @return a clone of this object.
+     */
+    public DAPNode cloneDAG(CloneMap map)
+        throws CloneNotSupportedException
+    {
+        DVector v = (DVector) super.cloneDAG(map);
+        v.vals = (PrimitiveVector) cloneDAG(map,vals);
+        // clone the container variable
+        v.containedvar = (BaseType) cloneDAG(map,containedvar);
+        return v;
     }
 
 }

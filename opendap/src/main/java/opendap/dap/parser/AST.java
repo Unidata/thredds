@@ -36,7 +36,8 @@ abstract public class AST
     Stack collect(Stack components)// collect returns a stack of variables
 	throws DAP2ServerSideException, DAP2Exception, NoSuchFunctionException, NoSuchVariableException
 	{return null;}
-    void walk() // walk operates by side effect
+
+        void walk() // walk operates by side effect
 	throws DAP2ServerSideException, DAP2Exception, NoSuchFunctionException, NoSuchVariableException
 	{return;}
 }
@@ -81,6 +82,8 @@ class ASTconstraint extends AST
         } else
 	    ceEval.markAll(true);
 
+
+
         if(selections != null)
             for(ASTclause cl: selections) {
            ceEval.appendClause(cl.translate());
@@ -123,32 +126,44 @@ class ASTprojection extends AST
      * Ctor type variable, all of its members are to be projected. Also
      * assume  all variables under the TOS are Ctor variables and
      * only the ctor itself is to be projected; the member within the Ctor
-     * that is part of the projection will be on the stack, too. */
+     * that is part of the projection will be on the stack, too.
+     */
+
+     /**
+      * CEEValuator.markstackedvariables()
+      * automatically marks all fields of a constructor as projected.
+      * This causes problems with printDecl, which automatically recurses
+      * on it fields. This means that constructor fields end up printed twice.
+      * The original code, with the bad cloning, did not do this for some reason.
+      * The solution taken here is mark which nodes were marked by constructor
+      * recursion and which were marked directly. This info is then used in
+      * printDecl to properly print the fields once and only once.
+      */
     private void markStackedVariables(Stack s) {
-	// Reverse the stack.
-	Stack bts = new Stack();
-	// System.err.println("Variables to be marked:");
-	while (!s.empty()) {
-	    //System.err.println(((BaseType)s.peek()).getName());
-	    bts.push(s.pop());
-	}
+        // Reverse the stack.
+        Stack bts = new Stack();
+        // System.err.println("Variables to be marked:");
+        while (!s.empty()) {
+            //System.err.println(((BaseType)s.peek()).getName());
+            bts.push(s.pop());
+        }
 
-	// For each but the last stack element, set the projection.
-	// setProject(true, false) for a ctor type sets the projection for
-	// the ctor itself but *does not* set the projection for all its
-	// children. Thus, if a user wants the variable S.X, and S contains Y
-	// and Z too, S's projection will be set (so serialize will descend
-	// into S) but X, Y and Z's projection remain clear. In this example,
-	// X's projection is set by the code that follows the while loop.
-	// 1/28/2000 jhrg
-	while (bts.size() > 1) {
-	    ServerMethods ct = (ServerMethods)bts.pop();
-	    ct.setProject(true, false);
-	}
+        // For each but the last stack element, set the projection.
+        // setProject(true, false) for a ctor type sets the projection for
+        // the ctor itself but *does not* set the projection for all its
+        // children. Thus, if a user wants the variable S.X, and S contains Y
+        // and Z too, S's projection will be set (so serialize will descend
+        // into S) but X, Y and Z's projection remain clear. In this example,
+        // X's projection is set by the code that follows the while loop.
+        // 1/28/2000 jhrg
+        while (bts.size() > 1) {
+            ServerMethods ct = (ServerMethods)bts.pop();
+            ct.setProject(true, false);
+        }
+        // For the last element, project the entire variable.
+        ServerMethods bt = (ServerMethods)bts.pop();
+        bt.setProject(true, true);
 
-	// For the last element, project the entire variable.
-	ServerMethods bt = (ServerMethods)bts.pop();
-	bt.setProject(true, true);
     }
 
 

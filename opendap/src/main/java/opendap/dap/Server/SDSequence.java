@@ -61,7 +61,6 @@ public abstract class SDSequence extends DSequence implements ServerMethods, Rel
 
     private boolean _Debug;
 
-    private boolean Project;
     private boolean Synthesized;
     private boolean ReadMe;
 
@@ -70,7 +69,6 @@ public abstract class SDSequence extends DSequence implements ServerMethods, Rel
      */
     public SDSequence() {
         super();
-        Project = false;
         Synthesized = false;
         ReadMe = false;
         _Debug = Debug.isSet("SDSequence");
@@ -83,7 +81,6 @@ public abstract class SDSequence extends DSequence implements ServerMethods, Rel
      */
     public SDSequence(String n) {
         super(n);
-        Project = false;
         Synthesized = false;
         ReadMe = false;
 
@@ -157,7 +154,7 @@ public abstract class SDSequence extends DSequence implements ServerMethods, Rel
         // otherwise, we will create an infinte call loop. OOPS!
 
         // If we are constrained, make sure some part of this thing is projected
-        if (constrained && !Project)
+        if (constrained && !isProject())
             return;
 
         super.printDecl(os, space, print_semi, constrained);
@@ -200,7 +197,7 @@ public abstract class SDSequence extends DSequence implements ServerMethods, Rel
     public void printVal(PrintWriter os, String space, boolean print_decl_p) {
 
 
-        if (!Project)
+        if (!isProject())
             return;
 
         if (print_decl_p) {
@@ -250,47 +247,19 @@ public abstract class SDSequence extends DSequence implements ServerMethods, Rel
      *              members (and their children, and so on).
      * @see CEEvaluator
      */
+    @Override
     public void setProject(boolean state, boolean all) {
-        Project = state;
+        setProjected(state);
         if (all)
             for (Enumeration e = varTemplate.elements(); e.hasMoreElements();) {
                 ServerMethods sm = (ServerMethods) e.nextElement();
                 sm.setProject(state);
+                // Mark this as a ctor projection
+                sm.setCtorProjected(state);
             }
     }
 
-    /**
-     * Set the state of this variable's projection. <code>true</code> means
-     * that this variable is part of the current projection as defined by
-     * the current constraint expression, otherwise the current projection
-     * for this variable should be <code>false</code>. <p>
-     * This is equivalent to setProjection(<code>state</code>,
-     * <code>true</code>).
-     *
-     * @param state <code>true</code> if the variable is part of the current
-     *              projection, <code>false</code> otherwise.
-     * @see CEEvaluator
-     */
-    public void setProject(boolean state) {
-        setProject(state, true);
-    }
 
-    /**
-     * Check the projection state of this variable.
-     * Is the given variable marked as projected? If the variable is listed
-     * in the projection part of a constraint expression, then the CE parser
-     * should mark it as <em>projected</em>. When this method is called on
-     * such a variable it should return <code>true</code>, otherwise it
-     * should return <code>false</code>.
-     *
-     * @return <code>true</code> if the variable is part of the current
-     *         projections, <code>false</code> otherwise.
-     * @see CEEvaluator
-     * @see #setProject(boolean)
-     */
-    public boolean isProject() {
-        return (Project);
-    }
 
 // --------------- RelOps Interface
 
@@ -530,7 +499,7 @@ public abstract class SDSequence extends DSequence implements ServerMethods, Rel
 
         // System.out.println("SDSequence.printXML(pw,pad,"+constrained+") Project:"+Project);
 
-        if (constrained && !Project)
+        if (constrained && !isProject())
             return;
 
         super.printXML(pw, pad, constrained);

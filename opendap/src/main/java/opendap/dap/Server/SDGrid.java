@@ -56,7 +56,6 @@ import opendap.dap.Server.SBHException;
  * @see BaseType
  */
 public abstract class SDGrid extends DGrid implements ServerArrayMethods, RelOps {
-    private boolean Project;
     private boolean Synthesized;
     private boolean ReadMe;
     Vector AP;
@@ -66,7 +65,6 @@ public abstract class SDGrid extends DGrid implements ServerArrayMethods, RelOps
      */
     public SDGrid() {
         super();
-        Project = false;
         Synthesized = false;
         ReadMe = false;
     }
@@ -78,7 +76,6 @@ public abstract class SDGrid extends DGrid implements ServerArrayMethods, RelOps
      */
     public SDGrid(String n) {
         super(n);
-        Project = false;
         Synthesized = false;
         ReadMe = false;
     }
@@ -351,8 +348,9 @@ public abstract class SDGrid extends DGrid implements ServerArrayMethods, RelOps
      *              members (and their children, and so on).
      * @see CEEvaluator
      */
+    @Override
     public void setProject(boolean state, boolean all) {
-        Project = state;
+        setProjected(state);
         if (all) {
             // System.out.println("SDGrid:setProject: Blindly setting Project");
             ((SDArray) arrayVar).setProject(state);
@@ -360,43 +358,12 @@ public abstract class SDGrid extends DGrid implements ServerArrayMethods, RelOps
             for (Enumeration e = mapVars.elements(); e.hasMoreElements();) {
                 ServerMethods sm = (ServerMethods) e.nextElement();
                 sm.setProject(state);
+                // Mark as ctor projected
+                sm.setCtorProjected(state);
             }
         }
     }
 
-    /**
-     * Set the state of this variable's projection. <code>true</code> means
-     * that this variable is part of the current projection as defined by
-     * the current constraint expression, otherwise the current projection
-     * for this variable should be <code>false</code>. <p>
-     * This is equivalent to setProjection(<code>state</code>,
-     * <code>true</code>).
-     *
-     * @param state <code>true</code> if the variable is part of the current
-     *              projection, <code>false</code> otherwise.
-     * @see CEEvaluator
-     */
-    public void setProject(boolean state) {
-        setProject(state, true);
-    }
-
-    /**
-     * Check the projection state of this variable.
-     * Is the given variable marked as projected? If the variable is listed
-     * in the projection part of a constraint expression, then the CE parser
-     * should mark it as <em>projected</em>. When this method is called on
-     * such a variable it should return <code>true</code>, otherwise it
-     * should return <code>false</code>.
-     *
-     * @return <code>true</code> if the variable is part of the current
-     *         projections, <code>false</code> otherwise.
-     * @see CEEvaluator
-     * @see #setProject(boolean)
-     * @see #setProjection(int,int,int,int)
-     */
-    public boolean isProject() {
-        return (Project);
-    }
 
 // --------------- RelOps Interface
 

@@ -128,26 +128,6 @@ public class DGrid extends DConstructor implements ClientIO {
     }
 
     /**
-     * Returns a clone of this <code>DGrid</code>.  A deep copy is performed
-     * on all data inside the variable.
-     *
-     * @return a clone of this <code>DGrid</code>.
-     */
-    public Object clone() {
-        DGrid g = (DGrid) super.clone();
-        g.arrayVar = (DArray) arrayVar.clone();
-        g.arrayVar.setParent(g);
-        g.mapVars = new Vector();
-        for (int i = 0; i < mapVars.size(); i++) {
-            BaseType bt = (BaseType) mapVars.elementAt(i);
-	    BaseType btclone = (BaseType)bt.clone();
-	    btclone.setParent(g);
-            g.mapVars.addElement(btclone);
-        }
-        return g;
-    }
-
-    /**
      * Returns the OPeNDAP type name of the class instance as a <code>String</code>.
      *
      * @return the OPeNDAP type name of the class instance as a <code>String</code>.
@@ -257,7 +237,8 @@ public class DGrid extends DConstructor implements ClientIO {
      *                                 exist in this container.
      */
     public BaseType getVar(int index)
-            throws NoSuchVariableException {
+            throws NoSuchVariableException
+    {
         if (index == 0) {
             return (arrayVar);
         } else {
@@ -265,9 +246,10 @@ public class DGrid extends DConstructor implements ClientIO {
             if (i < mapVars.size())
                 return ((BaseType) mapVars.elementAt(i));
             else
-                throw new NoSuchVariableException("DGrid.getVariable() No Such variable: " + index + " - 1)");
+                throw new NoSuchVariableException("DGrid.getVariable() No Such variable: " + index + " - 1");
         }
     }
+    
 
     /**
      * Get the number of contained variables (for use with getVar()
@@ -536,6 +518,27 @@ public class DGrid extends DConstructor implements ClientIO {
     public DArray getArray() {return arrayVar;}
     public Vector<DArrayDimension> getArrayDims() {return arrayVar.dimVector;}
 
+
+    /**
+     * Returns a clone of this <code>DGrid</code>.
+     * See DAPNode.cloneDag()
+     *
+     * @param map track previously cloned nodes
+     * @return a clone of this object.
+     */
+    public DAPNode cloneDAG(CloneMap map)
+        throws CloneNotSupportedException
+    {
+        DGrid g = (DGrid) super.cloneDAG(map);
+        g.arrayVar = (DArray) cloneDAG(map,arrayVar);
+        g.mapVars = new Vector();
+        for (int i = 0; i < mapVars.size(); i++) {
+            BaseType bt = (BaseType) mapVars.elementAt(i);
+	        BaseType btclone = (BaseType)cloneDAG(map,bt);
+            g.mapVars.addElement(btclone);
+        }
+        return g;
+    }
 
 }
 

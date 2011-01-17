@@ -43,9 +43,6 @@ package opendap.dap;
 import java.io.*;
 import java.util.Enumeration;
 
-import org.xml.sax.ContentHandler;
-import opendap.util.EscapeStrings;
-
 /**
  * This abstract class defines the basic data type features for the OPeNDAP data
  * access protocol (DAP) data types. All of the DAP type classes
@@ -71,21 +68,8 @@ import opendap.util.EscapeStrings;
  * @see DDS
  * @see ClientIO
  */
-public abstract class BaseType implements Cloneable, Serializable
+public abstract class BaseType extends DAPNode
 {
-
-    static final long serialVersionUID = 1;
-
-    /**
-     * The name of this variable - not www enccoded
-     */
-    private String _name;
-    private String _nameEncoded; // www encoded form
-
-    /**
-     * The parent (container class) of this object, if one exists
-     */
-    private BaseType _myParent;
 
     /**
      * The Attribute Table used to contain attributes specific to this
@@ -109,7 +93,6 @@ public abstract class BaseType implements Cloneable, Serializable
      */
     public BaseType(String n) {
         this(n, true);
-
     }
 
     /**
@@ -117,68 +100,11 @@ public abstract class BaseType implements Cloneable, Serializable
      *
      * @param n the name of the variable.
      */
-    public BaseType(String n, boolean decodeName) {
-
-        if (decodeName)
-            _name = EscapeStrings.www2id(n);
-        else
-            _name = n;
-        _nameEncoded = EscapeStrings.www2id(_name);
-
-        _myParent = null;
+    public BaseType(String n, boolean decodeName)
+    {
+	super(n,decodeName);
         _attrTbl = new AttributeTable(_name);
         _attr = new Attribute(_name, _attrTbl);
-    }
-
-    /**
-     * Returns a clone of this <code>BaseType</code>.  A deep copy is performed
-     * on all data inside the variable.
-     *
-     * @return a clone of this <code>BaseType</code>.
-     */
-    public Object clone() {
-        try {
-            BaseType bt = (BaseType) super.clone();
-            bt._name = _name;
-            bt._nameEncoded = _nameEncoded;
-            bt._attrTbl = (AttributeTable) this._attrTbl.clone();
-            bt._attr = new Attribute(getName(), bt._attrTbl);
-            return bt;
-        } catch (CloneNotSupportedException e) {
-            // this shouldn't happen, since we are Cloneable
-            throw new InternalError();
-        }
-    }
-
-
-    /**
-     * Returns the unencoded name of the class instance.
-     *
-     * @return the name of the class instance.
-     */
-    public final String getClearName() {
-        return _name;
-    }
-
-
-    /**
-     * Returns the WWW encoded name of the class instance.
-     *
-     * @return the name of the class instance.
-     */
-    public final String getName() {
-        return _nameEncoded;
-    }
-
-    /**
-     * Sets the name of the class instance.
-     *
-     * @param n the name of the class instance.
-     */
-    public final void setName(String n) {
-
-        setClearName(EscapeStrings.www2id(n));
-
     }
 
     /**
@@ -186,12 +112,13 @@ public abstract class BaseType implements Cloneable, Serializable
      *
      * @param n the unencoded name of the class instance.
      */
-    public final void setClearName(String n) {
-        _name = n;
-        _attr.setClearName(n);
-        _attrTbl.setClearName(n);
-        _nameEncoded = EscapeStrings.id2www(n);
+    @Override
+    public void setClearName(String n) {
+	super.setClearName(n);
+        if(_attr != null) _attr.setClearName(n);
+        if(_attrTbl !=  null) _attrTbl.setClearName(n);
     }
+
 
     /**
      * Returns the OPeNDAP type name of the class instance as a <code>String</code>.
@@ -356,7 +283,7 @@ public abstract class BaseType implements Cloneable, Serializable
      *           declaration.
      * @see DDS#print(PrintWriter)
      */
-    public final void printDecl(OutputStream os) {
+    public  void printDecl(OutputStream os) {
         PrintWriter pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(os)));
         printDecl(pw);
         pw.flush();
@@ -386,7 +313,7 @@ public abstract class BaseType implements Cloneable, Serializable
      *              and controls the leading spaces of the output.
      * @see DataDDS#printVal(PrintWriter)
      */
-    public final void printVal(PrintWriter os, String space) {
+    public  void printVal(PrintWriter os, String space) {
         printVal(os, space, true);
     }
 
@@ -400,7 +327,7 @@ public abstract class BaseType implements Cloneable, Serializable
      *                     variable declaration is printed as well as the value.
      * @see DataDDS#printVal(PrintWriter)
      */
-    public final void printVal(OutputStream os, String space,
+    public  void printVal(OutputStream os, String space,
                                boolean print_decl_p) {
         PrintWriter pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(os)));
         printVal(pw, space, print_decl_p);
@@ -415,7 +342,7 @@ public abstract class BaseType implements Cloneable, Serializable
      *              and controls the leading spaces of the output.
      * @see DataDDS#printVal(PrintWriter)
      */
-    public final void printVal(OutputStream os, String space) {
+    public void printVal(OutputStream os, String space) {
         PrintWriter pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(os)));
         printVal(pw, space);
         pw.flush();
@@ -476,26 +403,19 @@ public abstract class BaseType implements Cloneable, Serializable
     }
 
 
-    public void setParent(BaseType bt) {
-        _myParent = bt;
-    }
-
-    public BaseType getParent() {
-        return (_myParent);
-    }
 
     public String getLongName() {
 
         boolean done = false;
 
-        BaseType parent = _myParent;
+        BaseType parent = (BaseType)getParent();
 
         String longName = _name;
 
 
         while (parent != null) {
             longName = parent.getName() + "." + longName;
-            parent = parent.getParent();
+            parent = (BaseType)parent.getParent();
         }
         return (longName);
     }
@@ -666,12 +586,12 @@ public abstract class BaseType implements Cloneable, Serializable
 
     public void printConstraint(PrintWriter os)
     {
-        BaseType parent = getParent();
+        BaseType parent = (BaseType)getParent();
         BaseType array =  null;
 	if(parent != null) {
 	    if(parent instanceof DArray) {
 		array = parent;	
-		parent = parent.getParent();
+		parent = (BaseType)parent.getParent();
 	    }
 	}	   
 	if(array != null)
@@ -684,6 +604,26 @@ public abstract class BaseType implements Cloneable, Serializable
             os.print(getName());
         }
     }
+
+
+    /**
+     * Returns a clone of this <code>BaseType</code>.
+     * See DAPNode.cloneDAG.
+     *
+     * @param map The set of already cloned nodes.
+     * @return a clone of this <code>BaseType</code>.
+     */
+    public DAPNode cloneDAG(CloneMap map)
+        throws CloneNotSupportedException
+    {
+        BaseType bt = (BaseType)super.cloneDAG(map);
+        if(this._attrTbl != null)
+  	        bt._attrTbl = (AttributeTable) cloneDAG(map,this._attrTbl);
+        if(this._attr != null)
+	        bt._attr = new Attribute(getName(), bt._attrTbl);
+        return bt;
+    }
+
 
 }
 

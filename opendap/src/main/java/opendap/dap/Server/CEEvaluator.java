@@ -339,8 +339,8 @@ public class CEEvaluator {
      *              no variable should be projected.
      */
     public void markAll(boolean state)
-            throws InvalidParameterException, NoSuchVariableException,
-            SBHException {
+            throws InvalidParameterException, NoSuchVariableException, SBHException
+    {
         // For all the Variables in the DDS
         Enumeration e = _dds.getVariables();
         while (e.hasMoreElements()) {
@@ -384,4 +384,20 @@ public class CEEvaluator {
         }
     }
 
+    /**
+         * Print all of the Clauses in the Clause vector.
+         *
+         */
+        public void printConstraint(PrintWriter pw)
+        {
+            Enumeration ec = getClauses();
+            boolean first = true;
+            while (ec.hasMoreElements()) {
+                Clause cl = (Clause)ec.nextElement();
+                if(!first) pw.print(" & ");
+                cl.printConstraint(pw);
+                first = false;
+            }
+            pw.flush();
+        }
 }

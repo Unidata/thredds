@@ -61,7 +61,8 @@ import opendap.dap.*;
  * @see DDS
  * @see CEEvaluator
  */
-public class ServerDDS extends DDS implements Cloneable {
+public class ServerDDS extends DDS
+{
 
     protected ServerDDS() {
         super();
@@ -118,18 +119,6 @@ public class ServerDDS extends DDS implements Cloneable {
         super(n, factory, schema);
     }
 
-
-    /**
-     * Return a clone of the <code>ServerDDS</code>. A deep copy is
-     * performed on this object and those it contains.
-     *
-     * @return a ServerDDS object.
-     */
-    public Object clone() {
-        ServerDDS d = (ServerDDS) super.clone();
-        return (d);
-    }
-
     /**
      * Set the filename of the dataset. This must be passed to the
      * <code>read()</code> method of the FileIO interface. The filename of
@@ -166,8 +155,11 @@ public class ServerDDS extends DDS implements Cloneable {
         os.println("Dataset {");
         for (Enumeration e = getVariables(); e.hasMoreElements();) {
             BaseType bt = (BaseType) e.nextElement();
-            if (((ServerMethods) bt).isProject())
+            System.err.println("check: "+bt.getLongName()+" = "+((ServerMethods) bt).isProject());
+            ServerMethods sm = (ServerMethods) bt;
+            if(sm.isProject() && !sm.isCtorProjected()) {
                 bt.printDecl(os, "    ", true, true);
+            }
         }
         os.print("} ");
         if (getName() != null)
@@ -213,7 +205,6 @@ public class ServerDDS extends DDS implements Cloneable {
     public void printConstrainedXML(PrintWriter pw) {
         printXML(pw, "", true);
     }
-
 }
 
 

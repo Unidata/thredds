@@ -39,8 +39,6 @@
 
 package opendap.dap;
 
-import opendap.util.EscapeStrings;
-
 import java.util.Enumeration;
 import java.util.Vector;
 import java.util.Iterator;
@@ -48,7 +46,6 @@ import java.io.PrintWriter;
 import java.io.OutputStream;
 import java.io.BufferedWriter;
 import java.io.OutputStreamWriter;
-import java.io.Serializable;
 
 /**
  * An <code>Attribute</code> holds information about a single attribute in an
@@ -63,9 +60,8 @@ import java.io.Serializable;
  * @version $Revision: 22638 $
  * @see AttributeTable
  */
-public class Attribute implements Cloneable, Serializable {
-
-  static final long serialVersionUID = 1;
+public class Attribute extends DAPNode
+{
 
   private static final boolean _Debug = false;
   private static final boolean DebugValueChecking = false;
@@ -137,12 +133,6 @@ public class Attribute implements Cloneable, Serializable {
   private int type;
 
   /**
-   * The name of the attribute.
-   */
-  private String name;
-  private String nameEncoded;
-
-  /**
    * Either an AttributeTable or a Vector of String.
    */
   private Object attr;
@@ -176,12 +166,12 @@ public class Attribute implements Cloneable, Serializable {
   public Attribute(int type, String name, String value, boolean check)
           throws AttributeBadValueException {
 
+    super(name);
     //value = fixnan(value);
     if (check)
       dispatchCheckValue(type, value);
 
     this.type = type;
-    setName(name);
     attr = new Vector();
     ((Vector) attr).addElement(value);
   }
@@ -202,11 +192,11 @@ public class Attribute implements Cloneable, Serializable {
   public Attribute(int type, String name, String value)
           throws AttributeBadValueException {
 
+    super(name);
     //value = fixnan(value);
     dispatchCheckValue(type, value);
 
     this.type = type;
-    setName(name);
     attr = new Vector();
     ((Vector) attr).addElement(value);
   }
@@ -217,9 +207,8 @@ public class Attribute implements Cloneable, Serializable {
    * @param container the <code>AttributeTable</code> container.
    */
   public Attribute(String name, AttributeTable container) {
-
-      type = CONTAINER;
-    setName(name);
+    super(name);
+    type = CONTAINER;
     attr = container;
   }
 
@@ -235,34 +224,12 @@ public class Attribute implements Cloneable, Serializable {
    *                                  use that to construct the Attribute.
    */
   public Attribute(String name, int type) throws IllegalArgumentException {
+    super(name);
     this.type = type;
-    setName(name);
     if (type == CONTAINER)
       throw new IllegalArgumentException("Can't construct an Attribute(CONTAINER)");
     else
       attr = new Vector();
-  }
-
-  /**
-   * Returns a clone of this <code>Attribute</code>.  A deep copy is performed
-   * on all attribute values.
-   *
-   * @return a clone of this <code>Attribute</code>.
-   */
-  public Object clone() {
-    try {
-      Attribute a = (Attribute) super.clone();
-      a.name = name;
-      // assume type, is_alias, and aliased_to have been cloned already
-      if (type == CONTAINER)
-        a.attr = ((AttributeTable) attr).clone();
-      else
-        a.attr = ((Vector) attr).clone();
-      return a;
-    } catch (CloneNotSupportedException e) {
-      // this shouldn't happen, since we are Cloneable
-      throw new InternalError();
-    }
   }
 
   /**
@@ -338,40 +305,6 @@ public class Attribute implements Cloneable, Serializable {
    */
   public int getType() {
     return type;
-  }
-
-  /**
-   * Returns the attribute's name.
-   *
-   * @return the attribute name.
-   */
-  public String getName() {
-    return nameEncoded;
-  }
-
-  /**
-   * Sets the attribute's name.
-   */
-  public void setName(String n) {
-    nameEncoded=n;
-    setClearName(EscapeStrings.www2id(n));
-  }                                                           
-
-  /**
-   * Returns the attribute's name.
-   *
-   * @return the attribute name.
-   */
-  public String getClearName() {
-    return name;
-  }
-
-  /**
-   * Sets the attribute's name.
-   */
-  public void setClearName(String n) {
-    name = n;
-    nameEncoded = EscapeStrings.id2www(n);
   }
 
   /**
@@ -761,12 +694,12 @@ public class Attribute implements Cloneable, Serializable {
 
     if (this.attr instanceof AttributeTable) {
 
-      if (_Debug) os.println("  Attribute \"" + name + "\" is a Container.");
+      if (_Debug) os.println("  Attribute \"" + _name + "\" is a Container.");
 
       ((AttributeTable) this.attr).print(os, pad);
 
     } else {
-      if (_Debug) os.println("    Printing Attribute \"" + name + "\".");
+      if (_Debug) os.println("    Printing Attribute \"" + _name + "\".");
 
       os.print(pad + getTypeString() + " " + getName() + " ");
 
@@ -893,12 +826,12 @@ public class Attribute implements Cloneable, Serializable {
 
     if (this.attr instanceof AttributeTable) {
 
-      if (_Debug) pw.println("  Attribute \"" + name + "\" is a Container.");
+      if (_Debug) pw.println("  Attribute \"" + _name + "\" is a Container.");
 
       ((AttributeTable) this.attr).printXML(pw, pad, constrained);
 
     } else {
-      if (_Debug) pw.println("    Printing Attribute \"" + name + "\".");
+      if (_Debug) pw.println("    Printing Attribute \"" + _name + "\".");
 
       pw.println(pad + "<Attribute name=\"" +
               opendap.dap.XMLparser.DDSXMLParser.normalizeToXML(getName()) +
@@ -956,6 +889,26 @@ static String escapify(String s)
     return buf.toString();
 }
 
+
+  /**
+   * Returns a clone of this <code>Attribute</code>.
+   * See DAPNode.cloneDag()
+   *
+   * @param map track previously cloned nodes
+   * @return a clone of this <code>Attribute</code>.
+   */
+  public DAPNode cloneDAG(CloneMap map)
+    throws CloneNotSupportedException
+  {
+      Attribute a = (Attribute) super.cloneDAG(map);
+      // assume type, is_alias, and aliased_to have been cloned already
+      if (type == CONTAINER)
+        a.attr = (Attribute)cloneDAG(map,((AttributeTable) attr));
+      else
+        a.attr = ((Vector) attr).clone(); // ok, attr is a vector of strings
+      return a;
+  }
+
 }
 
 // $Log: Attribute.java,v $
@@ -964,6 +917,9 @@ static String escapify(String s)
 //
 // Revision 1.1  2003/08/12 23:51:25  ndp
 // Mass check in to begin Java-OPeNDAP development work
+//
+// Revision 1.11 2011/01/09 Dennis Heimbigner
+//  - Make subclass of BaseType for uniformity
 //
 // Revision 1.10  2003/04/16 21:50:53  caron
 // turn off debug flag

@@ -34,6 +34,7 @@
 package opendap.test;
 
 import junit.framework.TestCase;
+import opendap.dap.BaseType;
 import opendap.dap.Server.*;
 import opendap.servlet.AsciiWriter;
 import opendap.servlet.GuardedDataset;
@@ -47,6 +48,8 @@ import ucar.nc2.dataset.NetcdfDataset;
 
 import java.io.*;
 import java.io.FileWriter;
+import java.util.Enumeration;
+import java.util.Vector;
 
 // Test that the Constraint parsing is correct
 
@@ -63,9 +66,8 @@ public class TestCEEvaluator extends TestCase
     //static final String testdir = "//fileserver/share/testdata/cdmUnitTest/conventions/mars";
     static final String DFALTTESTDIR = "src/test/data/testdata2";
 
-
     // Test case list
-    static final String[][] testsets = new String[][]{
+    static final String[][] testsetsx = new String[][]{
             new String[]{
                     "temp_air_01082000.nc",
                     "?time",
@@ -80,12 +82,19 @@ public class TestCEEvaluator extends TestCase
             },
     };
 
+    static final String[][] testsets = new String[][]{
+            new String[]{
+                    "temp_air_01082000.nc",
+                    "?t[0:2:3][3:4][4:5][0:2:6]",
+            }
+    };
+
     //////////////////////////////////////////////////
 
     static final String TITLE = "DAP CEEvaluator Tests";
 
     //////////////////////////////////////////////////
-    boolean debug = false;
+    boolean debug = true;
 
     boolean generate = false;
 
@@ -153,15 +162,52 @@ public class TestCEEvaluator extends TestCase
 
                     CEEvaluator ce = new CEEvaluator(dds);
                     ce.parseConstraint(constraint);
+                    if(debug) {
+                        PrintWriter w = new PrintWriter(System.err);
+                        Enumeration venum = dds.getVariables();
+                        boolean first = true;
+                        w.print("projections: ");
+                        while(venum.hasMoreElements()) {
+                            ServerMethods sm = (ServerMethods)venum.nextElement();
+                            if(!sm.isProject()) continue;
+                            if(!first) w.print(",");
+                            w.print(((BaseType)sm).getLongName());
+                            first = false;
+                        }
+                        w.print("selections: ");
+                        ce.printConstraint(w);
+                        w.println();
+                        w.flush();
+                        System.err.flush();
+                    }
                     content = new StringWriter();
                     pw = new PrintWriter(content);
                     dds.printConstrained(pw);
                     writer.toASCII(pw, dds, null);
                     pw.close();
                     String result = content.toString();
-
+                    String expectedfile = String.format("%s.%02d.asc", path, j);
+                    if(debug) {
+                        try {
+                            StringReader dresult = new StringReader(result);
+                            FileReader dfile = new FileReader(expectedfile);
+                            BufferedReader lnf = new BufferedReader(dfile);
+                            BufferedReader lns = new BufferedReader(dresult);
+                            System.err.println("-----\nresult:\n-----\n"+result);
+                            String line = null;
+                            System.err.println("-----\nexpected:\n-----");
+                            System.err.flush();
+                            while( (line = lnf.readLine()) != null) {
+                                System.err.println(line);
+                                System.err.flush();
+                            }
+                            System.err.flush();
+                            lnf.close(); lns.close(); dfile.close(); dresult.close();
+                        } catch (IOException ioe) {
+                            System.err.println("debug failure:"+ioe);
+                        }
+                    }   else {
                         // Compare with expected result
-                        String expectedfile = String.format("%s.%02d.asc", path, j);
                         Diff diff = new Diff(basename + constraint);
                         StringReader resultrdr = new StringReader(result);
                         FileReader expectedrdr = new FileReader(expectedfile);
@@ -173,8 +219,9 @@ public class TestCEEvaluator extends TestCase
                             // ignore
                         }
                         junit.framework.Assert.assertTrue(testname, pass);
+                    }
                 } catch(Exception e) {
-                    System.out.println("FAIL: TestCEEvaluator: " + e.toString());
+                    System.out.println("Fail: TestCEEvaluator: " + e.toString());
                     pass = false;
                 }
                 if(!pass) {

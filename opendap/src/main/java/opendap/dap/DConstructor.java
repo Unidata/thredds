@@ -56,9 +56,6 @@ import java.io.PrintWriter;
  */
 abstract public class DConstructor extends BaseType {
 
-//    /** A <code>Vector</code> of OPeNDAP BaseTypes to be used by my children */
-//    protected Vector vars;
-
     /**
      * Constructs a new <code>DConstructor</code>.
      */

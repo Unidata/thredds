@@ -33,6 +33,7 @@
 
 package thredds.server.opendap;
 
+import opendap.dap.DAPNode;
 import ucar.nc2.*;
 import ucar.ma2.DataType;
 
@@ -49,7 +50,8 @@ import java.util.*;
  *   @author jcaron
  */
 
-public class NcDDS extends ServerDDS implements Cloneable {
+public class NcDDS extends ServerDDS
+{
   static protected org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NcDDS.class);
   static String DODScharset = "_!~*'-\"";
 
@@ -184,5 +186,27 @@ public class NcDDS extends ServerDDS implements Cloneable {
     // vname = StringUtil.replace(vname, '-', "_"); // LOOK Temporary workaround until opendap code fixed
     return StringUtil.escape(vname, NcDDS.DODScharset);
   }
+
+    // I think we need to clone the dimHash
+    /**
+     * Returns a clone of this <code>?</code>.
+     * See BaseType.cloneDAG()
+     *
+     * @param map track previously cloned nodes
+     * @return a clone of this object.
+     */
+    public DAPNode cloneDAG(CloneMap map)
+        throws CloneNotSupportedException
+    {
+        NcDDS d = (NcDDS) super.cloneDAG(map);
+	    HashMap<String,BaseType> clone = new HashMap<String,BaseType>(50);
+	    Set<String> keys = dimHash.keySet();
+        for(String k: keys) {
+	    BaseType bt = dimHash.get(k);
+	    clone.put(k,(BaseType)cloneDAG(map,bt));
+        }
+        d.dimHash = clone;
+        return d;
+    }
 
 }

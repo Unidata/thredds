@@ -48,7 +48,8 @@ import java.io.*;
  * @version $Revision: 15901 $
  * @see PrimitiveVector
  */
-public class BytePrimitiveVector extends PrimitiveVector implements Cloneable {
+public class BytePrimitiveVector extends PrimitiveVector
+{
     /**
      * the array of <code>byte</code> values.
      */
@@ -61,21 +62,6 @@ public class BytePrimitiveVector extends PrimitiveVector implements Cloneable {
      */
     public BytePrimitiveVector(BaseType var) {
         super(var);
-    }
-
-    /**
-     * Returns a clone of this <code>BytePrimitiveVector</code>.  A deep
-     * copy is performed on all data inside the variable.
-     *
-     * @return a clone of this <code>BytePrimitiveVector</code>.
-     */
-    public Object clone() {
-        BytePrimitiveVector v = (BytePrimitiveVector) super.clone();
-        if (vals != null) {
-            v.vals = new byte[vals.length];
-            System.arraycopy(vals, 0, v.vals, 0, vals.length);
-        }
-        return v;
     }
 
     /**
@@ -132,7 +118,7 @@ public class BytePrimitiveVector extends PrimitiveVector implements Cloneable {
      *              and controls the leading spaces of the output.
      * @see BaseType#printVal(PrintWriter, String, boolean)
      */
-    public void printVal(PrintWriter os, String space) {
+    public final void printVal(PrintWriter os, String space) {
         int len = vals.length;
         for (int i = 0; i < len - 1; i++) {
             // convert to unsigned and print
@@ -297,6 +283,24 @@ public class BytePrimitiveVector extends PrimitiveVector implements Cloneable {
      */
     public void setInternalStorage(Object o) {
         vals = (byte []) o;
+    }
+
+    /**
+     * Returns a clone of this <code>Attribute</code>.
+     * See DAPNode.cloneDag()
+     *
+     * @param map track previously cloned nodes
+     * @return a clone of this <code>Attribute</code>.
+     */
+    public DAPNode cloneDAG(CloneMap map)
+        throws CloneNotSupportedException
+    {
+        BytePrimitiveVector v = (BytePrimitiveVector) super.cloneDAG(map);
+        if (vals != null) {
+            v.vals = new byte[vals.length];
+            System.arraycopy(vals, 0, v.vals, 0, vals.length);
+        }
+        return v;
     }
 
 

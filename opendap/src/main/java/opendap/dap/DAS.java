@@ -114,9 +114,8 @@ import java.io.*;
  * @see AttributeTable
  * @see Attribute
  */
-public class DAS extends AttributeTable implements Cloneable
+public class DAS extends AttributeTable
 {
-
 
     // Used by resolveAliases() method
     private AttributeTable currentAT = null;
@@ -130,12 +129,6 @@ public class DAS extends AttributeTable implements Cloneable
     {
         super("Attributes");
         factory = new DefaultFactory();
-    }
-
-    public Object clone()
-    {
-        DAS das = (DAS) super.clone();
-        return das;
     }
 
     public boolean parse(InputStream stream) throws ParseException,DAP2Exception
@@ -460,6 +453,19 @@ public class DAS extends AttributeTable implements Cloneable
 
     }
 
+    /**
+     * Returns a clone of this <code>Attribute</code>.
+     * See DAPNode.cloneDag()
+     *
+     * @param map track previously cloned nodes
+     * @return a clone of this <code>Attribute</code>.
+     */
+    public DAPNode cloneDAG(CloneMap map)
+        throws CloneNotSupportedException
+    {
+        DAS das = (DAS) super.cloneDAG(map);
+        return das;
+    }
 
 }
 

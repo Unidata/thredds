@@ -55,7 +55,6 @@ import opendap.dap.parser.ExprParserConstants;
  * @see BaseType
  */
 public abstract class SDFloat32 extends DFloat32 implements ServerMethods, RelOps, ExprParserConstants {
-    private boolean Project;
     private boolean Synthesized;
     private boolean ReadMe;
 
@@ -64,7 +63,6 @@ public abstract class SDFloat32 extends DFloat32 implements ServerMethods, RelOp
      */
     public SDFloat32() {
         super();
-        Project = false;
         Synthesized = false;
         ReadMe = false;
     }
@@ -76,7 +74,6 @@ public abstract class SDFloat32 extends DFloat32 implements ServerMethods, RelOp
      */
     public SDFloat32(String n) {
         super(n);
-        Project = false;
         Synthesized = false;
         ReadMe = false;
     }
@@ -100,7 +97,7 @@ public abstract class SDFloat32 extends DFloat32 implements ServerMethods, RelOp
      */
     public void printDecl(PrintWriter os, String space,
                           boolean print_semi, boolean constrained) {
-        if (constrained && !Project)
+        if (constrained && !isProject())
             return;
 
         // BEWARE! Since printDecl()is (multiple) overloaded in BaseType
@@ -152,7 +149,7 @@ public abstract class SDFloat32 extends DFloat32 implements ServerMethods, RelOp
      * @see ServerMethods#isProject()
      */
     public void printVal(PrintWriter os, String space, boolean print_decl_p) {
-        if (!Project)
+        if (!isProject())
             return;
         super.printVal(os, space, print_decl_p);
     }
@@ -171,39 +168,9 @@ public abstract class SDFloat32 extends DFloat32 implements ServerMethods, RelOp
      * @see CEEvaluator
      */
     public void setProject(boolean state, boolean all) {
-        Project = state;
+        setProjected(state);
     }
 
-    /**
-     * Set the state of this variable's projection. <code>true</code> means
-     * that this variable is part of the current projection as defined by
-     * the current constraint expression, otherwise the current projection
-     * for this variable should be <code>false</code>.
-     *
-     * @param state <code>true</code> if the variable is part of the current
-     *              projection, <code>false</code> otherwise.
-     * @see CEEvaluator
-     */
-    public void setProject(boolean state) {
-        setProject(state, true);
-    }
-
-    /**
-     * Check the projection state of this variable.
-     * Is the given variable marked as projected? If the variable is listed
-     * in the projection part of a constraint expression, then the CE parser
-     * should mark it as <em>projected</em>. When this method is called on
-     * such a variable it should return <code>true</code>, otherwise it
-     * should return <code>false</code>.
-     *
-     * @return <code>true</code> if the variable is part of the current
-     *         projections, <code>false</code> otherwise.
-     * @see CEEvaluator
-     * @see #setProject(boolean)
-     */
-    public boolean isProject() {
-        return (Project);
-    }
 
 // --------------- RelOps Interface
 
@@ -362,7 +329,7 @@ public abstract class SDFloat32 extends DFloat32 implements ServerMethods, RelOp
      * @opendap.ddx.experimental
      */
     public void printXML(PrintWriter pw, String pad, boolean constrained) {
-        if (constrained && !Project)
+        if (constrained && !isProject())
             return;
 
         // BEWARE! Since printXML()is (multiple) overloaded in BaseType

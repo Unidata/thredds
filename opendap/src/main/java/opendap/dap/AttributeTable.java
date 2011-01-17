@@ -43,7 +43,6 @@ package opendap.dap;
 import java.util.Enumeration;
 
 import opendap.util.SortedTable;
-import opendap.util.EscapeStrings;
 import opendap.util.Debug;
 
 import java.io.*;
@@ -86,23 +85,17 @@ import java.io.*;
  * @version $Revision: 15901 $
  * @see DAS
  * @see Attribute
+ *
+ * Modified 1/9/2011 Dennis Heimbigner
+ * - Make subclass of BaseType for uniformity
  */
-public class AttributeTable implements Cloneable, Serializable {
 
-    static final long serialVersionUID = 1;
-
-    //private static final boolean _Debug = false;
-
+public class AttributeTable extends DAPNode
+{
     /**
      * A table of Attributes with their names as a key
      */
     private SortedTable _attr;
-
-    /**
-     * What's the name of this table?
-     */
-    private String _name;
-    private String _nameEncoded;
 
     /**
      * Create a new empty <code>AttributeTable</code>.
@@ -117,64 +110,10 @@ public class AttributeTable implements Cloneable, Serializable {
      * Create a new empty <code>AttributeTable</code>.
      */
     public AttributeTable(String name) {
-        setName(name);
+        super(name);
         _attr = new SortedTable();
     }
 
-    /**
-     * Returns a clone of this <code>AttributeTable</code>.  A deep copy is
-     * performed on all <code>Attribute</code> and <code>AttributeTable</code>
-     * objects inside the <code>AttributeTable</code>.
-     *
-     * @return a clone of this <code>AttributeTable</code>.
-     */
-    public Object clone() {
-        try {
-            AttributeTable at = (AttributeTable) super.clone();
-            at._name = _name;
-            at._attr = new SortedTable();
-            for (int i = 0; i < _attr.size(); i++) {
-                String key = (String) _attr.getKey(i);
-                Attribute element = (Attribute) _attr.elementAt(i);
-                // clone element (don't clone key because it's a read-only String)
-                at._attr.put(key, element.clone());
-            }
-            return at;
-        } catch (CloneNotSupportedException e) {
-            // this shouldn't happen, since we are Cloneable
-            throw new InternalError();
-        }
-    }
-
-    /**
-     * Returns the name of this AttributeTable.
-     */
-    public final String getName() {
-        return _nameEncoded;
-    }
-
-    /**
-     * Returns the name of this AttributeTable.
-     */
-    public final void setName(String n) {
-        _name = EscapeStrings.www2id(n);
-        _nameEncoded = n;
-    }
-
-    /**
-     * Returns the name of this AttributeTable.
-     */
-    public final String getClearName() {
-        return _name;
-    }
-
-    /**
-     * Returns the name of this AttributeTable.
-     */
-    public final void setClearName(String n) {
-        _name = n;
-        _nameEncoded = EscapeStrings.id2www(n);
-    }
 
     /**
      * Returns an <code>Enumeration</code> of the attribute names in this
@@ -545,6 +484,26 @@ public class AttributeTable implements Cloneable, Serializable {
 
     }
 
+    /**
+     * Returns a clone of this <code>AttributeTable</code>.
+     * See DAPNode.cloneDag()
+     *
+     * @param map track previously cloned nodes
+     * @return a clone of this <code>Attribute</code>.
+     */
+    public DAPNode cloneDAG(CloneMap map)
+        throws CloneNotSupportedException
+    {
+            AttributeTable at = (AttributeTable) super.cloneDAG(map);
+            at._attr = new SortedTable();
+            for (int i = 0; i < _attr.size(); i++) {
+                String key = (String) _attr.getKey(i);
+                Attribute element = (Attribute) _attr.elementAt(i);
+                // clone element (don't clone key because it's a read-only String)
+                at._attr.put(key, (Attribute)cloneDAG(map,element));
+            }
+            return at;
+    }
 
 }
 
@@ -557,6 +516,9 @@ public class AttributeTable implements Cloneable, Serializable {
 //
 // Revision 1.1  2003/08/12 23:51:25  ndp
 // Mass check in to begin Java-OPeNDAP development work
+//
+// Revision 1.12 2011/01/09 Dennis Heimbigner
+//  - Make subclass of BaseType for uniformity
 //
 // Revision 1.11  2003/04/07 22:12:32  jchamber
 // added serialization

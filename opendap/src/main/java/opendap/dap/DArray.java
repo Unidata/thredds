@@ -42,7 +42,6 @@ package opendap.dap;
 import java.io.PrintWriter;
 import java.util.Enumeration;
 import java.util.Vector;
-import java.util.Iterator;
 
 import opendap.dap.Server.InvalidParameterException;
 
@@ -88,7 +87,8 @@ import opendap.dap.Server.InvalidParameterException;
  * @see DVector
  * @see BaseType
  */
-public class DArray extends DVector implements Cloneable {
+public class DArray extends DVector
+{
     /**
      * A Vector of DArrayDimension information (i.e. the shape)
      */
@@ -111,25 +111,6 @@ public class DArray extends DVector implements Cloneable {
         dimVector = new Vector<DArrayDimension>();
     }
 
-    /**
-     * Returns a clone of this <code>DArray</code>.  A deep copy is performed
-     * on all data inside the variable.
-     *
-     * @return a clone of this <code>DArray</code>.
-     */
-    public Object clone() {
-        DArray a = (DArray) super.clone();
-        a.dimVector = new Vector<DArrayDimension>();
-        for (int i = 0; i < dimVector.size(); i++) {
-            DArrayDimension d =  dimVector.elementAt(i);
-            DArrayDimension dclone = (DArrayDimension)d.clone();
-            dclone.setContainer(a);
-            a.dimVector.addElement(dclone);
-        }
-        return a;
-    }
-
-   
     /**
      * Returns the OPeNDAP type name of the class instance as a <code>String</code>.
      *
@@ -206,7 +187,7 @@ public class DArray extends DVector implements Cloneable {
      *                     variable declaration is printed as well as the value.
      * @see BaseType#printVal(PrintWriter, String, boolean)
      */
-    public void printVal(PrintWriter pw, String space, boolean print_decl_p) {
+    public  void printVal(PrintWriter pw, String space, boolean print_decl_p) {
         // print the declaration if print decl is true.
         // for each dimension,
         //   for each element,
@@ -499,7 +480,7 @@ public class DArray extends DVector implements Cloneable {
     public void printConstraint(PrintWriter os)
     {
 	if(getParent() != null) {
-	    getParent().printConstraint(os);
+	    ((BaseType)getParent()).printConstraint(os);
 	    os.print(".");
 	}
         os.print(getName());
@@ -509,4 +490,26 @@ public class DArray extends DVector implements Cloneable {
 	}
     }
 
+    /**
+     * Returns a clone of this <code>Array</code>.
+     * See DAPNode.cloneDag()
+     *
+     * @param map track previously cloned nodes
+     * @return a clone of this object.
+     */
+    public DAPNode cloneDAG(CloneMap map)
+        throws CloneNotSupportedException
+    {
+        DArray a = (DArray) super.cloneDAG(map);
+        a.dimVector = new Vector<DArrayDimension>();
+        for (int i = 0; i < dimVector.size(); i++) {
+            DArrayDimension d =  dimVector.elementAt(i);
+            DArrayDimension dclone = (DArrayDimension)cloneDAG(map,d);
+            dclone.setContainer(a);
+            a.dimVector.addElement(dclone);
+        }
+        return a;
+    }
+
+   
 }

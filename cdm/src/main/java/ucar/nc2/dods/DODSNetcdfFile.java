@@ -766,7 +766,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
   // make a structure into a group if its scalar and all parents are groups
 
   private boolean isGroup(DStructure dstruct) {
-    BaseType parent = dstruct.getParent();
+    BaseType parent = (BaseType)dstruct.getParent();
     if (parent == null) return true;
     if (parent instanceof DStructure)
       return isGroup((DStructure) parent);

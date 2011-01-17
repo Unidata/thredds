@@ -358,9 +358,9 @@ public class TestCeParser extends TestCase
 	BaseType parent = bt;
         while(parent != null) {
 	    path.add(0,parent);
-	    parent = parent.getParent();
+	    parent = (BaseType)parent.getParent();
 	    if(parent != null && parent instanceof DArray)
-		parent = parent.getParent(); 
+		parent = (BaseType)parent.getParent(); 
 	}
 	return path;
     }
@@ -368,8 +368,8 @@ public class TestCeParser extends TestCase
     BaseType getTrueParent(BaseType bt)
     {
 	if(bt.getParent() instanceof DArray)
-	    return bt.getParent().getParent();
-	return bt.getParent();
+	    return (BaseType)bt.getParent().getParent();
+	return (BaseType)bt.getParent();
     }
 
     // Sort a list of BaseType by getLongName()
