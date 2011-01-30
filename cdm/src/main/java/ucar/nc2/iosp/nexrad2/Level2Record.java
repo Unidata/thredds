@@ -974,9 +974,9 @@ public class Level2Record {
       case REFLECTIVITY_HIGH : return reflectHR_offset;
       case VELOCITY_HIGH : return velocityHR_offset;
       case SPECTRUM_WIDTH_HIGH : return spectrumHR_offset;
-      case DIFF_REFLECTIVITY_HIGH : return (short)dbp7;
-      case DIFF_PHASE : return (short)dbp8;
-      case CORRELATION_COEFFICIENT : return (short)dbp9;
+      case DIFF_REFLECTIVITY_HIGH : return zdrHR_offset;
+      case DIFF_PHASE : return phiHR_offset;
+      case CORRELATION_COEFFICIENT : return (short)rhoHR_offset;
     }
     return Short.MIN_VALUE;
   }
