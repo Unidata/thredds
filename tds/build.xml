@@ -349,6 +349,7 @@
   <target  name="makeSrcAndWar" depends="makeSrc-TDS, makeWar, makeChecksums"/>
 
   <target name="cleanMakeWar" depends="clean, makeWar" />
+
   <target name="makeWar" depends="war-setup" description="create a war file from the distribution directory">
     <jar destfile="${build.dir}/${warfile}">
       <fileset dir="${war.dir}"/>
@@ -1129,5 +1130,15 @@
     <delete file="${test.reports.dir}/${test.id}/failed"/>
     <echo message="SUCCESS! Unit tests succeeded.  Look at ${test.reports.dir}/${test.id}/index.html for details."/>
   </target>
+
+  <!-- Add some tasks to help automate war building -->
+  <target name="allwar">
+	  <ant dir="../opendap" target="clean" inheritAll="false"/>
+	  <ant dir="../opendap" target="thredds" inheritAll="false"/>
+	  <ant dir="../cdm" target="clean" inheritAll="false"/>
+	  <ant dir="../cdm" target="thredds" inheritAll="false"/>
+	  <ant dir="." target="cleanMakeWar" inheritAll="false"/>
+  </target>
+
 
 </project>

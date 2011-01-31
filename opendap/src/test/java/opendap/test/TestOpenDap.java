@@ -47,12 +47,15 @@ public class TestOpenDap {
   public static junit.framework.Test suite ( ) {
 
     TestSuite suite= new TestSuite();
+    // Note: these tests are all infrastructure tests, they do not access external data
     suite.addTest(new TestSuite(opendap.test.TestDDS.class));
     suite.addTest(new TestSuite(opendap.test.TestDAS.class));
     suite.addTest(new TestSuite(opendap.test.TestERR.class));
     suite.addTest(new TestSuite(opendap.test.TestCeParser.class));
     suite.addTest(new TestSuite(opendap.test.TestCEEvaluator.class));
-    suite.addTest(new TestSuite(opendap.test.TestDConnect2.class));
+
+   // TestDConnect2 does access external data
+   //suite.addTest(new TestSuite(opendap.test.TestDConnect2.class));
 
     TestSetup wrapper = new TestSetup(suite) {
 

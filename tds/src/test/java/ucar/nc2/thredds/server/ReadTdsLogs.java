@@ -230,7 +230,7 @@ public class ReadTdsLogs {
     try {
       // Wait for existing tasks to terminate
       if (!executor.awaitTermination(secs, TimeUnit.SECONDS)) {
-        executor.shutdownNow(); // Cancel currently executing tasks
+        executor.shutdownNow(); // Cancel currently executing tasks                       
         // Wait a while for tasks to respond to being cancelled
         if (!executor.awaitTermination(secs, TimeUnit.SECONDS))
           System.err.println("Pool did not terminate");
@@ -666,8 +666,9 @@ public class ReadTdsLogs {
     long startElapsed = System.nanoTime();
 
     //String accessLogs = "C:\\Users\\edavis\\tdsMonitor\\motherlode.ucar.edu%3A8080\\access\\tmp\\";
-    String accessLogs = "C:\\Users\\caron\\tdsMonitor\\motherlode.ucar.edu%3A8080\\access\\temp\\";
+    //String accessLogs = "C:\\Users\\caron\\tdsMonitor\\motherlode.ucar.edu%3A8080\\access\\temp\\";
     //String accessLogs = "C:\\Users\\caron\\tdsMonitor\\motherlode.ucar.edu%3A8081\\access\\";
+      String accessLogs = "Q:/cdmUnitTest/tds/logs";
 
     System.out.printf("server=%s send files from %s %n", serverTest, accessLogs);
 
