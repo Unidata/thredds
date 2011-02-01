@@ -1022,18 +1022,29 @@ public class Level2Record {
     }
 
     int dataCount = getGateCount( datatype);
-    byte[] data = new byte[dataCount];
-    raf.readFully(data);
-    short [] ds = convertunsignedByte2Short(data);
-    for (int i = gateRange.first(); i <= gateRange.last(); i += gateRange.stride()) {
-      if (i >= dataCount)
-        ii.setByteNext(MISSING_DATA);
-      else
-        ii.setByteNext(data[i]);
-    }
+    if( datatype == DIFF_PHASE) {
+        short[] data = new short[dataCount];
+        raf.readShort(data, 0, dataCount);
 
+        for (int i = gateRange.first(); i <= gateRange.last(); i += gateRange.stride()) {
+          if (i >= dataCount)
+            ii.setShortNext(MISSING_DATA);
+          else
+            ii.setShortNext(data[i]);
+        }
+    } else {
+        byte[] data = new byte[dataCount];
+        raf.readFully(data);
+        //short [] ds = convertunsignedByte2Short(data);
+        for (int i = gateRange.first(); i <= gateRange.last(); i += gateRange.stride()) {
+          if (i >= dataCount)
+            ii.setByteNext(MISSING_DATA);
+          else
+            ii.setByteNext(data[i]);
+        }
+
+      }
   }
-
  /**
    * Instances which have same content are equal.
    *
