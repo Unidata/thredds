@@ -63,7 +63,7 @@ public class ReadTdsLogs {
 
   ///////////////////////////////////////////////////////
   // multithreading
-  final int nthreads = 4;
+  final int nthreads = 1;
 
   ExecutorService executor;
   ExecutorCompletionService<SendRequestTask> completionService;
@@ -420,10 +420,10 @@ public class ReadTdsLogs {
         continue;
       }
 
-      /* if (log.path.indexOf("dodsC") < 0) {
+      if (log.path.indexOf("dodsC") < 0) {
         skip++;
         continue;
-      } */
+      }
 
       /* if (log.path.indexOf("fmrc") > 0)  {
         // System.out.println(" *** skip fmrc " + log);

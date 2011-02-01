@@ -64,10 +64,10 @@ public enum <strong>ucar.nc2.constants.FeatureType</strong> {
 
     FeatureDataset fdataset = null;
     try {
-      Formatter out = new Formatter();
-      fdataset = FeatureDatasetFactoryManager.open(wantType, location, null, out);
+      Formatter errlog = new Formatter();
+      fdataset = FeatureDatasetFactoryManager.open(wantType, location, null, errlog);
       if (fdataset == null) {
-        System.out.printf("**failed on %s %n --> %s %n", location, out);
+        System.out.printf("**failed on %s %n --> %s %n", location, errlog);
         return;
       }
 

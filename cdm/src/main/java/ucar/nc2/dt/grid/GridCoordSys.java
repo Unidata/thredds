@@ -1589,5 +1589,17 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
   }
 
 
-
+  public static void main(String[] args) throws IOException {
+    GridDataset gds = ucar.nc2.dt.grid.GridDataset.open(args[0]);
+    ucar.nc2.dt.GridDatatype grid = gds.findGridDatatype( args[1]);
+    ucar.nc2.dt.GridCoordSystem gcs = grid.getCoordinateSystem();
+    CoordinateAxis xAxis = gcs.getXHorizAxis();
+    CoordinateAxis yAxis = gcs.getXHorizAxis();
+    CoordinateAxis1D zAxis = gcs.getVerticalAxis(); // may be null
+    if (gcs.hasTimeAxis1D()) {
+      CoordinateAxis1D tAxis = gcs.getTimeAxis1D();
+    } else if (gcs.hasTimeAxis()) {
+      CoordinateAxis tAxis = gcs.getTimeAxis();
+    }
+  }
 }

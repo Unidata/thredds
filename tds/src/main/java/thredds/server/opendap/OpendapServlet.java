@@ -70,6 +70,7 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
   static final String GDATASET = "guarded_dataset";
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(OpendapServlet.class);
 
+  private boolean allowSessions = false;
   private boolean allowDeflate = false; // handled by Tomcat
 
   private String odapVersionString = "opendap/3.7";
@@ -794,7 +795,7 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
     // see if the client wants sessions
     boolean acceptSession = false;
     String s = req.getHeader("X-Accept-Session");
-    if (s != null && s.equalsIgnoreCase("true"))
+    if (s != null && s.equalsIgnoreCase("true") && allowSessions)
       acceptSession = true;
 
     HttpSession session = null;
