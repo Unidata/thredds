@@ -71,7 +71,6 @@
   <property name="resourcesOptional.jar" value="resourcesOptional.jar"/>
   <property name="spring.jar" value="spring-2.5.jar"/>
   <property name="stax.jar" value="stax-api-1.0.1.jar"/>
-  <property name="unidatacommon.jar" value="unidatacommon.jar"/>
   <property name="visadNoDods.jar" value="visadNoDods.jar"/>
 
   <!-- source -->
@@ -91,7 +90,6 @@
     <include name="external/${loggingAPI.jar}"/>
     <include name="external/${protobuf.jar}"/>
     <include name="external/${quartz.jar}"/>
-    <include name="release/${unidatacommon.jar}"/>
     <include name="release/${visadNoDods.jar}"/>
     <include name="external/${stax.jar}"/>
   </fileset>
@@ -312,7 +310,6 @@
     <unzip dest="${main.dir}">
       <fileset dir="${lib.dir}">
         <include name="release/${bufr.jar}"/>
-        <include name="release/${unidatacommon.jar}"/>
         <include name="release/${grib.jar}"/>
         <include name="external/${jdom.jar}"/>
         <include name="external/${httpclient3.jar}"/>
@@ -388,7 +385,6 @@
     <unzip dest="${idv.dir}">
       <fileset dir="${lib.dir}">
         <include name="release/${bufr.jar}"/>
-        <include name="release/${unidatacommon.jar}"/>
         <include name="release/${grib.jar}"/>
         <include name="external/${jdom.jar}"/>
         <include name="external/${httpclient3.jar}"/>
@@ -870,8 +866,6 @@
              signedjar="${webstart_dir}/bounce.jar" storepass="${keystore.password}"/>
     <signjar alias="idv" jar="${lib.dir}/release/${bufr.jar}" keystore="${keystore}"
              signedjar="${webstart_dir}/bufr.jar" storepass="${keystore.password}"/>
-    <signjar alias="idv" jar="${lib.dir}/release/${unidatacommon.jar}" keystore="${keystore}"
-             signedjar="${webstart_dir}/unidatacommon.jar" storepass="${keystore.password}"/>
     <signjar alias="idv" jar="${lib.dir}/external/${ehcache.jar}" keystore="${keystore}"
              signedjar="${webstart_dir}/ehcache.jar" storepass="${keystore.password}"/>
     <signjar alias="idv" jar="${lib.dir}/release/${grib.jar}" keystore="${keystore}"
@@ -882,6 +876,8 @@
              signedjar="${webstart_dir}/jgoodies.jar" storepass="${keystore.password}"/>
     <signjar alias="idv" jar="${lib.dir}/external/${http-codec.jar}" keystore="${keystore}"
              signedjar="${webstart_dir}/codec.jar" storepass="${keystore.password}"/>
+    <signjar alias="idv" jar="${lib.dir}/external/${httpclient3.jar}" keystore="${keystore}"
+             signedjar="${webstart_dir}/httpclient.jar" storepass="${keystore.password}"/>
     <signjar alias="idv" jar="${lib.dir}/external/${http-logging.jar}" keystore="${keystore}"
              signedjar="${webstart_dir}/httplogging.jar" storepass="${keystore.password}"/>
     <signjar alias="idv" jar="${lib.dir}/external/${loggingAPI.jar}" keystore="${keystore}"

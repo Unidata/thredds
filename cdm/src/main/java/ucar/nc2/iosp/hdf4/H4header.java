@@ -609,7 +609,10 @@ public class H4header {
     // use the list of elements in the group to find the other tags
     for (int i = 0; i < group.nelems; i++) {
       Tag tag = tagMap.get(tagid(group.elem_ref[i], group.elem_tag[i]));
-      if (tag == null) throw new IllegalStateException();
+      if (tag == null) {
+        log.warn("Image Group "+group.tag()+" has missing tag="+group.elem_ref[i]+"/"+group.elem_tag[i]);
+        return null;
+      }
 
       vinfo.tags.add(tag);
       tag.vinfo = vinfo; // track which variable this tag belongs to
@@ -622,12 +625,21 @@ public class H4header {
       if (tag.code == 301)
         palette = (TagRIPalette) tag;
     }
-    if ((dimTag == null) || (data == null))
-      throw new IllegalStateException();
+    if (dimTag == null) {
+      log.warn("Image Group "+group.tag()+" missing dimension tag");
+      return null;
+    }
+    if (data == null)  {
+      log.warn("Image Group "+group.tag()+" missing data tag");
+      return null;
+    }
 
-    // get the NT tag, refered to from the dimension tag
+    // get the NT tag, referred to from the dimension tag
     Tag tag = tagMap.get(tagid(dimTag.nt_ref, TagEnum.NT.getCode()));
-    if (tag == null) throw new IllegalStateException();
+    if (tag == null)   {
+      log.warn("Image Group "+group.tag()+" missing NT tag");
+      return null;
+    }
     ntag = (TagNumberType) tag;
 
     if (debugConstruct) System.out.println("construct image " + group.refno);
@@ -1199,6 +1211,10 @@ public class H4header {
 
     public String toString() {
       return (used ? " " : "*") + "refno=" + refno + " tag= " + t + (extended ? " EXTENDED" : "" + " length=" + length);
+    }
+
+    public String tag() {
+      return refno + "/" + code;
     }
 
     public short getCode() {

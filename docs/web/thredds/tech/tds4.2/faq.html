@@ -43,9 +43,13 @@
   <li><a href="#preventAccess">How can I prevent someone from accessing my server?</a></li>
   <li><a href="#removeServletAutodeploy">How do I remove Servlet Autodeploy?</a></li>
   <li><a href="#howRemovePort8009">How do I remove port 8009 when using tomcat in standalone mode?</a></li>
-  <li><a href="#log4jAppender">What does this error mean: &quot;log4j:ERROR Attempted to append to closed appender named [foobar]&quot; ?</a></li>
 </ul>
 
+<h2>Tomcat Install Errors</h2>
+<ul>
+  <li> <a href="#contentCreate">ERROR - TdsContext.init(): Content directory does not exist and could not be created</a>&nbsp; </li>
+  <li><a href="#log4jAppender">What does this error mean: &quot;log4j:ERROR Attempted to append to closed appender named [foobar]&quot; ?</a></li>
+</ul>
 <hr width="100%">
 <h2>Catalogs</h2>
 <p><strong>Q:<a name="CatalogURLs"></a> How do I construct the URLs I find in a THREDDS Catalog? </strong><br>
@@ -328,23 +332,29 @@ better to explicitly redeploy the application: </p>
 </blockquote>
 
   <hr>
-  <p><strong>Q: <a name="log4jAppender"></a>What does this error mean: &quot;log4j:ERROR Attempted to append to closed appender named [foobar]&quot; ?</strong></p>
-  <blockquote>
-    <p>The log4j.xml file has 2 loggers with the same name, that uses the appender &quot;foobar&quot;. You must delete one of the loggers.</p>
-  </blockquote>
-<blockquote>&nbsp;</blockquote>
-  <hr>
-  <h3>Tomcat Resources</h3>
+  <h2><strong>Tomcat Install Errors</strong></h2>
+  <p><strong>Q: <a name="contentCreate"></a>ERROR - TdsContext.init(): Content directory does not exist and could not be created</strong>&nbsp;</p>
+<blockquote>
+  <p>The TDS needs to create the directory  <strong>${tomcat_home}/content</strong> but it does not have permission, typically because   <strong>${tomcat_home}</strong> is owned by root. Make    <strong>${tomcat_home}</strong> owned by the tomcat user, or manually create   <strong>${tomcat_home}/content</strong> and make it owned by the tomcat user.<br>
+  </p>
+</blockquote>
+<hr>
+<p><strong>Q: <a name="log4jAppender"></a>What does this error mean: &quot;log4j:ERROR Attempted to append to closed appender named [foobar]&quot; ?</strong></p>
+<blockquote>
+  <p>The log4j.xml file has 2 loggers with the same name, that uses the appender &quot;foobar&quot;. You must delete one of the loggers.</p>
+</blockquote>
+<hr>
+<h2>Tomcat Resources</h2>
 <ul>
     <li><a href="http://jakarta.apache.org/tomcat/faq/">Tomcat FAQ (Apache site)</a> </li>
-    <li><a href="http://tomcat.apache.org/tomcat-5.5-doc/index.html">Tomcat 5.5 documentation</a></li>
-    <li><a href="http://www.coreservlets.com/Apache-Tomcat-Tutorial/">tutorial</a></li>
+    <li><a href="http://tomcat.apache.org/tomcat-6.0-doc/index.html">Tomcat  documentation</a></li>
+  <li><a href="http://www.coreservlets.com/Apache-Tomcat-Tutorial/">coreservlets.com tutorial</a></li>
   </ul>
 
-  <hr>
+<hr>
 <address>
 <img src="../images/thread.png" alt="THREDDS" height="108" width="110">
-  This document is maintained by Unidata and was last updated Jan 2011.
+  This document is maintained by Unidata and was last updated Feb 2011.
   Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.
 </address>
 </body>

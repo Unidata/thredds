@@ -317,7 +317,7 @@ public class TestPointFeatureTypes extends TestCase {
     //testPointDataset("collection:D:/datasets/metars/Surface_METAR_#yyyyMMdd_HHmm#.nc", FeatureType.STATION, true);
   }
 
-  public void testCdmRemote() throws IOException {
+  public void utestCdmRemote() throws IOException {
     checkPointDataset("cdmremote:http://motherlode.ucar.edu:8081/thredds/cdmremote/idd/metar/gempak", FeatureType.STATION, true);
     //checkPointDataset("cdmremote:http://localhost:8080/thredds/cdmremote/idd/metar/ncdecodedLocal", FeatureType.STATION, true);
   }

@@ -3,7 +3,9 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Changes in version 4.2:
- 19: (2011-01-xx)
+ 19: (2011-02-01)
+  Nexrad2: dual pole radar offset bug
+  H4header: workaround for bad hdf4 
   HTTPClient refactor / framework
   opendap bison parser
   CSMConvention looks for date and time units
