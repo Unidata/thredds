@@ -699,16 +699,17 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * Look for the header "Content-Description" = "ncstream" or "dods".
    */
   static private ServiceType disambiguateHttp(String location) throws IOException {
-    initHttpClient();
+
+    HTTPSession session = new HTTPSession();
 
     // have to do dods first
-    ServiceType result = checkIfDods(location);
+    ServiceType result = checkIfDods(session,location);
     if (result != null)
       return result;
 
     HTTPMethod method = null;
     try {
-      method = httpClient.newMethodHead(location);
+      method = session.newMethodHead(location);
       method.setFollowRedirects(true);
       int statusCode = method.execute();
       if (statusCode >= 300) {
@@ -728,15 +729,15 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
       return null;
 
     } finally {
-      if (method != null) method.close();
+      if (session != null) session.close();
     }
   }
 
   // not sure what other opendap servers do, so fall back on check for dds
-  static private ServiceType checkIfDods(String location) throws IOException {
+  static private ServiceType checkIfDods(HTTPSession session, String location) throws IOException {
     HTTPMethod method = null;
     try {
-      method = httpClient.newMethodHead(location + ".dds");
+      method = session.newMethodHead(location + ".dds");
       method.setFollowRedirects(true);
       int status = method.execute();
       if (status == 200) {
@@ -765,6 +766,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    *
    * @param client the HttpClient object
    */
+/* IGNORE
   static public void setHttpSession(HTTPSession client) {
     httpClient = client;
     isexternalclient = true;
@@ -777,6 +779,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     if (httpClient != null) return;
     try {httpClient = new HTTPSession(); } catch (HTTPException he) {httpClient = null;}
   }
+*/
 
   static private NetcdfFile acquireDODS(FileCache cache, FileFactory factory, Object hashKey,
                                         String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {

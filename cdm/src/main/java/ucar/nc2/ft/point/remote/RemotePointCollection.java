@@ -70,12 +70,11 @@ class RemotePointCollection extends PointCollectionImpl implements QueryMaker {
   }
 
   public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
-    HTTPMethod method = null;
+    InputStream in = null;
     String errMessage = null;
 
     try {
-      method = CdmRemote.sendQuery(uri, queryMaker.makeQuery());
-      InputStream in = method.getResponseAsStream();
+      in = CdmRemote.sendQuery(uri, queryMaker.makeQuery());
 
       PointStream.MessageType mtype = PointStream.readMagic(in);
       if (mtype == PointStream.MessageType.PointFeatureCollection) {
@@ -83,7 +82,7 @@ class RemotePointCollection extends PointCollectionImpl implements QueryMaker {
         byte[] b = new byte[len];
         NcStream.readFully(in, b);
         PointStreamProto.PointFeatureCollection pfc = PointStreamProto.PointFeatureCollection.parseFrom(b);
-        PointFeatureIterator iter = new RemotePointFeatureIterator(method, in, new PointStream.ProtobufPointFeatureMaker(pfc));
+        PointFeatureIterator iter = new RemotePointFeatureIterator(in, new PointStream.ProtobufPointFeatureMaker(pfc));
         iter.setCalculateBounds(this);
         return iter;
 
@@ -102,7 +101,7 @@ class RemotePointCollection extends PointCollectionImpl implements QueryMaker {
       }
 
     } catch (Throwable t) {
-      if (method != null) method.close();
+      if (in != null) in.close();
       throw new RuntimeException(t);
     }
 

@@ -33,11 +33,11 @@
 
 package ucar.nc2.ui.widget;
 
+import opendap.dap.http.HTTPSession;
 import thredds.catalog.*;
 import thredds.catalog.query.*;
 
 import ucar.util.prefs.*;
-import ucar.nc2.util.net.HttpClientManager;
 import ucar.nc2.util.IO;
 
 import java.awt.*;
@@ -276,7 +276,7 @@ public class TextGetPutPane extends TextHistoryPane {
 
       } else {
 
-        int status = HttpClientManager.putContent(uriString, contents);
+        int status = HTTPSession.putContent(uriString, contents);
         javax.swing.JOptionPane.showMessageDialog(this, "Status code= " + status);
       }
     }
@@ -327,7 +327,7 @@ public class TextGetPutPane extends TextHistoryPane {
 
     public void run() {
       try {
-        contents = HttpClientManager.getContent(urlString);
+        contents = HTTPSession.getContentAsString(urlString);
 
       } catch (Exception e) {
         setError(e.getMessage());

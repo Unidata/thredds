@@ -39,11 +39,10 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
   protected void initStationHelper() {
     // read in all the stations with the "stations" query
     stationHelper = new StationHelper();
-    HTTPMethod method = null;
+      InputStream in = null;
     try {
       String query = "req=stations";
-      method = CdmRemote.sendQuery(uri, query);
-      InputStream in = method.getResponseAsStream();
+      in = CdmRemote.sendQuery(uri, query);
 
       PointStream.MessageType mtype = PointStream.readMagic(in);
       if (mtype != PointStream.MessageType.StationList) {
@@ -63,7 +62,7 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
       throw new RuntimeException(ioe);
 
     } finally {
-      if (method != null) method.close();
+      if (in != null) try {in.close();  } catch(IOException ioe) {}
     }
   }
 
@@ -199,14 +198,13 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
     public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
       String query = PointDatasetRemote.makeQuery("stn=" + s.getName(), null, dateRange);
 
-      HTTPMethod method = null;
+        InputStream in = null;
       try {
-        method = CdmRemote.sendQuery(uri, query);
-        InputStream in = method.getResponseBodyAsStream();
+        in = CdmRemote.sendQuery(uri, query);
 
         PointStream.MessageType mtype = PointStream.readMagic(in);
         if (mtype == PointStream.MessageType.End) {  // no obs were found
-           method.close();
+           in.close();
            return new PointIteratorEmpty(); // return empty iterator
         }
 
@@ -219,12 +217,12 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
         NcStream.readFully(in, b);
         PointStreamProto.PointFeatureCollection pfc = PointStreamProto.PointFeatureCollection.parseFrom(b);
 
-        riter = new RemotePointFeatureIterator(method, in, new PointStream.ProtobufPointFeatureMaker(pfc));
+        riter = new RemotePointFeatureIterator( in, new PointStream.ProtobufPointFeatureMaker(pfc));
         riter.setCalculateBounds(this);
         return riter;
 
       } catch (Throwable t) {
-        if (method != null) method.close();
+        if (in != null) in.close();
         throw new IOException(t.getMessage(), t);
       } 
     }

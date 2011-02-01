@@ -32,12 +32,12 @@
  */
 package thredds.ui.catalog.tools;
 
+import opendap.dap.http.HTTPSession;
 import thredds.ui.catalog.CatalogTreeView;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.unidata.util.StringUtil;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.*;
-import ucar.nc2.util.net.HttpClientManager;
 
 import javax.swing.*;
 import java.awt.*;
@@ -298,8 +298,11 @@ public class TDServerConfigurator extends JPanel {
         String catalogPath = (String) catalogCB.getSelectedItem();
         int pos = catalogPath.indexOf("/thredds/");
         String serverURL = catalogPath.substring(0,pos+9);
+        HTTPSession session = null;
         try {
-          String result = HttpClientManager.getContent( serverURL+"debug?catalogs/reinit");
+          session = new HTTPSession();
+          String result = session.getContentAsString( serverURL+"debug?catalogs/reinit");
+          session.close();
           savePane.setText(result);
         } catch (Exception e) {
           savePane.setText( e.getMessage());

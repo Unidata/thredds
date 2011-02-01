@@ -68,8 +68,8 @@ import ucar.nc2.util.IO;
  */
 public class HttpClientManager {
   static private boolean debug = false;
-  static private HTTPSession session;
   static private int timeout = 0;
+  static private HTTPSession session;
   static HttpParams globalparams = new DefaultHttpParams();
 
   /**
@@ -111,9 +111,9 @@ public class HttpClientManager {
     if (session != null) return;
     try { session = new HTTPSession();  } catch (HTTPException he) {session = null; return;}
 
-    session.setMethodParameter(HttpMethodParams.SO_TIMEOUT, timeout);
-    session.setMethodParameter(HttpClientParams.ALLOW_CIRCULAR_REDIRECTS, Boolean.TRUE);
-    session.setMethodParameter(HttpClientParams.COOKIE_POLICY, CookiePolicy.RFC_2109);
+    session.setGlobalMethodParameter(HttpMethodParams.SO_TIMEOUT, timeout);
+    session.setGlobalMethodParameter(HttpClientParams.ALLOW_CIRCULAR_REDIRECTS, Boolean.TRUE);
+    session.setGlobalMethodParameter(HttpClientParams.COOKIE_POLICY, CookiePolicy.RFC_2109);
 
     // LOOK need default CredentialsProvider ??
     // _client.getParams().setParameter(CredentialsProvider.PROVIDER, provider);

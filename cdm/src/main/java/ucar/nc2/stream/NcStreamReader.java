@@ -179,7 +179,7 @@ public class NcStreamReader {
     }
   }
 
-  public StructureDataIterator getStructureIterator(HTTPMethod m, InputStream is, NetcdfFile ncfile) throws IOException {
+  public StructureDataIterator getStructureIterator(InputStream is, NetcdfFile ncfile) throws IOException {
     if (!readAndTest(is, NcStream.MAGIC_DATA))
       throw new IOException("Data transfer corrupted on "+ncfile.getLocation());
 
@@ -194,18 +194,16 @@ public class NcStreamReader {
     StructureMembers members = s.makeStructureMembers();
     ArrayStructureBB.setOffsets(members);
 
-    return new StreamDataIterator(m, is, members);
+    return new StreamDataIterator(is, members);
   }
 
   private class StreamDataIterator implements StructureDataIterator {
-    private HTTPMethod m;
     private InputStream is;
     private StructureMembers members;
     private StructureData curr = null;
     private int count = 0;
 
-    StreamDataIterator(HTTPMethod m, InputStream is, StructureMembers members) {
-      this.m = m;
+    StreamDataIterator(InputStream is, StructureMembers members) {
       this.is = is;
       this.members = members;
     }
@@ -258,7 +256,9 @@ public class NcStreamReader {
 
     // LOOK !!!
     public void finish() {
-      if (m != null) m.close();
+      if (is != null) {
+          try { is.close(); }catch (IOException ioe) {};
+      }
     }
   }
 

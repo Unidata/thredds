@@ -65,7 +65,6 @@ import ucar.nc2.geotiff.GeoTiff;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.ProgressMonitor;
 import ucar.nc2.util.*;
-import ucar.nc2.util.net.HttpClientManager;
 import ucar.nc2.util.xml.RuntimeConfigParser;
 import ucar.nc2.units.*;
 
@@ -606,7 +605,7 @@ public class ToolsUI extends JPanel {
 
     AbstractAction clearHttpStateAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        HttpClientManager.clearState();
+       // IGNORE HttpClientManager.clearState();
       }
     };
     BAMutil.setActionProperties(clearHttpStateAction, null, "Clear Http State", false, 'S', -1);

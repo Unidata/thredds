@@ -62,27 +62,7 @@ import java.nio.ByteBuffer;
 public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
   static public int defaultHTTPBufferSize = 20000;
 
-  static private HTTPSession globalsession = null;
-
-
-  /**
-   * Set the HttpClient object - a single instance is used.
-   *
-   * @param client the HttpClient object
-   */
-  static public void setHttpSession(HTTPSession client) {
-    globalsession = client;
-  }
-
-  /**
-   * Get the HttpClient object - a single instance is used.
-   *
-   * @return client the HttpClient object
-   */
-  static public HTTPSession getHttpSession() {
-    return globalsession;
-  }
-
+  
 
   ///////////////////////////////////////////////////////////////////////////////////
 
@@ -150,9 +130,7 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
 
   private synchronized void initHttpClient() {
     if (_client != null) return;
-    if (globalsession != null) _client = globalsession;
-    else
-      try {
+    try {
         _client = new HTTPSession();
       } catch (HTTPException he) {
         _client = null;
@@ -160,7 +138,7 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
   }
 
   public void close() {
-    if (_client != null && _client != globalsession) {
+    if (_client != null) {
       _client.close();
       _client = null;
     }

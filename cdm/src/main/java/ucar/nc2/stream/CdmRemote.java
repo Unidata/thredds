@@ -33,6 +33,7 @@ package ucar.nc2.stream;
 
 import opendap.dap.http.HTTPException;
 import opendap.dap.http.HTTPMethod;
+import opendap.dap.http.HTTPMethodStream;
 import opendap.dap.http.HTTPSession;
 import org.apache.commons.httpclient.Header;
 
@@ -72,8 +73,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
     return urlName;
   }
 
-  static private HTTPSession httpClient;
-
+  /* IGNORE
   static synchronized void initHttpClient() {
     if (httpClient != null) return;
     try {
@@ -82,8 +82,12 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
       httpClient = null;
     }
   }
+  */
 
   //////////////////////////////////////////////////////
+
+  private HTTPSession httpClient;
+
   private final String remoteURI;
 
   public CdmRemote(String _remoteURI) throws IOException {
@@ -100,7 +104,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
     }
     remoteURI = temp;
 
-    initHttpClient(); // make sure the httpClient has been set
+    httpClient = new HTTPSession();
 
     // get the header
     HTTPMethod method = null;
@@ -191,10 +195,9 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
 
   protected StructureDataIterator getStructureIterator(Structure s, int bufferSize) throws java.io.IOException {
     try {
-      HTTPMethod m = sendQuery(remoteURI, s.getName());
-      InputStream is = m.getResponseBodyAsStream();
+      InputStream is = sendQuery(remoteURI, s.getName());
       NcStreamReader reader = new NcStreamReader();
-      return reader.getStructureIterator(m, is, this);
+      return reader.getStructureIterator(is, this);
 
     } catch (Throwable e) {
       e.printStackTrace();
@@ -202,8 +205,15 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
     }
   }
 
-  public static HTTPMethod sendQuery(String remoteURI, String query) throws IOException {
-    initHttpClient();
+  public static InputStream sendQuery(String remoteURI, String query)
+          throws IOException
+  {
+
+    HTTPSession session = null;
+    HTTPMethod method = null;
+    HTTPMethodStream hmstream = null;
+    InputStream stream = null;
+    int statusCode = 0;
 
     StringBuilder sbuff = new StringBuilder(remoteURI);
     sbuff.append("?");
@@ -212,10 +222,15 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
     if (showRequest)
       System.out.println(" CdmRemote sendQuery=" + sbuff);
 
-    HTTPMethod method = httpClient.newMethodGet(sbuff.toString());
+    try {
 
-    method.setFollowRedirects(true);
-    int statusCode = method.execute();
+    try {
+    session = new HTTPSession();
+    method = session.newMethodGet(sbuff.toString());
+    statusCode = method.execute();
+    } catch (HTTPException he) {
+        throw new IOException(he);
+    }
 
     if (statusCode == 404)
       throw new FileNotFoundException(method.getPath() + " " + method.getStatusLine());
@@ -223,7 +238,14 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
     if (statusCode >= 300)
       throw new IOException(method.getPath() + " " + method.getStatusLine());
 
-    return method;
+    stream = method.getResponseBodyAsStream();
+    hmstream = new HTTPMethodStream(session,method,stream);
+    return hmstream;
+
+    } catch (IOException ioe) {
+        if(session != null) session.close();
+       throw ioe;
+    }
   }
 
   @Override
@@ -306,12 +328,10 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
     fos.close();
   }
 
-  /* protected void finalize() throws Throwable {
-    try {
-      if (httpClient != null) httpClient.close();
-      httpClient = null;
-    } catch (Throwable t) {
-    }
-  } */
+  @Override
+  public  void close() throws java.io.IOException
+  {
+      if(httpClient != null) httpClient.close();
+  }
 
 }

@@ -18,24 +18,22 @@ import java.io.IOException;
 public class RemotePointFeatureIterator extends PointIteratorAbstract {
   private static final boolean debug = false;
 
-  private HTTPMethod method;
   private InputStream in;
   private FeatureMaker featureMaker;
 
   private PointFeature pf;
   private boolean finished = false;
 
-  RemotePointFeatureIterator(HTTPMethod method, InputStream in, FeatureMaker featureMaker) throws IOException {
-    this.method = method;
+  RemotePointFeatureIterator(InputStream in, FeatureMaker featureMaker) throws IOException {
     this.in = in;
     this.featureMaker = featureMaker;
   }
 
   public void finish() {
     if (finished) return;
-    if (method != null)
-      method.close();
-    method = null;
+    if (in != null)
+      try { in.close(); } catch (IOException ioe) {}
+    in = null;
     finishCalcBounds();
     finished = true;
   }

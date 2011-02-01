@@ -7,16 +7,11 @@ import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpMethodBase;
 import org.apache.commons.httpclient.HttpState;
 import org.apache.commons.httpclient.URIException;
-import org.apache.commons.httpclient.auth.CredentialsProvider;
 import org.apache.commons.httpclient.methods.*;
-import org.apache.commons.httpclient.methods.multipart.FilePart;
 import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
 import org.apache.commons.httpclient.methods.multipart.Part;
-import org.apache.commons.httpclient.methods.multipart.StringPart;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.httpclient.util.URIUtil;
-
-import javax.servlet.http.HttpSession;
 
 /**
  * Created by IntelliJ IDEA.
@@ -125,7 +120,7 @@ public class HTTPMethod
                 for (Header h : headers)
                     method.addRequestHeader(h);
             }
-            if(session.methodparams != null) method.setParams(session.methodparams);
+            if(session.globalmethodparams != null) method.setParams(session.globalmethodparams);
             if(params != null) method.setParams(params);
             setcontent();
             session.sessionClient.executeMethod(method);

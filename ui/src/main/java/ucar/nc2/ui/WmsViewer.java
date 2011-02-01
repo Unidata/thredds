@@ -192,33 +192,9 @@ public class WmsViewer extends JPanel {
 
   }
 
-  /**
-   * Set the HttpClient object - so that a single, shared instance is used within the application.
-   *
-   * @param client the HttpClient object
-   */
-  /*ignore
-  static public void setHttpClient(HttpClient client) {
-    httpClient = client;
-  }
-  */
-
-  static private HTTPSession httpClient = null;
-
-  private synchronized void initHttpClient() throws HTTPException {
-    if (httpClient != null) return;
-    httpClient = new HTTPSession();
-  }
-
   //////////////////////////////////////////////////////
 
   private boolean getCapabilities() {
-    try {
-        initHttpClient();
-    }  catch (HTTPException e) {
-        info.append(e.getMessage());
-        return false;
-    }
 
     Formatter f = new Formatter();
     f.format("%s?request=GetCapabilities&service=WMS&version=%s", endpoint, version);
@@ -226,9 +202,11 @@ public class WmsViewer extends JPanel {
     info.setLength(0);
     info.append(url + "\n");
 
+    HTTPSession session = null;
     HTTPMethod method = null;
     try {
-      method = httpClient.newMethodGet(url);
+      session = new HTTPSession();
+      method = session.newMethodGet(url);
       int statusCode = method.execute();
 
       info.append(" Status = " + method.getStatusCode() + " " + method.getStatusText() + "\n");
@@ -256,7 +234,7 @@ public class WmsViewer extends JPanel {
       return false;
 
     } finally {
-      if (method != null) method.close();
+      if (session != null) session.close();
     }
 
     return true;
@@ -291,12 +269,6 @@ public class WmsViewer extends JPanel {
   }
 
   private boolean getMap(LayerBean layer) {
-    try {
-        initHttpClient();
-    } catch (HTTPException e) {
-        info.append(e.getMessage());
-        return false;
-    }
 
     Formatter f = new Formatter();
     f.format("%s?request=GetMap&service=WMS&version=%s&", endpoint, version);
@@ -313,9 +285,11 @@ public class WmsViewer extends JPanel {
     info.setLength(0);
     info.append(url + "\n");
 
+    HTTPSession session = null;
     HTTPMethod method = null;
     try {
-      method = httpClient.newMethodGet(url);
+      session = new HTTPSession();
+      method = session.newMethodGet(url);
       int statusCode = method.execute();
 
       info.append(" Status = " + method.getStatusCode() + " " + method.getStatusText() + "\n");
@@ -369,7 +343,7 @@ public class WmsViewer extends JPanel {
       return false;
 
     } finally {
-      if (method != null) method.close();
+      if (session != null) session.close();
     }
 
     return true;
