@@ -275,7 +275,12 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
     dims.add( gateDim);
 
     Variable v = new Variable(ncfile, null, null, shortName);
-    v.setDataType(DataType.BYTE);
+    if(datatype == DIFF_PHASE){
+        v.setDataType(DataType.SHORT);
+    } else {
+        v.setDataType(DataType.BYTE);
+    }
+
     v.setDimensions(dims);
     ncfile.addVariable(null, v);
 
