@@ -58,7 +58,7 @@ public class HTTPSession
     protected static CredentialsProvider globalProvider;
     protected static String globalAgent = "/NetcdfJava/HttpClient3";
     protected static int threadcount = DFALTTHREADCOUNT;
-    protected static List<HTTPSession> sessionList; // see kill function
+    protected static List<HTTPSession> sessionList; // List of all HTTPSession instances
 
     static {
         //fix: schemes = new SchemeRegistry();
@@ -88,11 +88,21 @@ public class HTTPSession
     public static synchronized void setGlobalCredentialsProvider(CredentialsProvider p)
     {
         globalProvider = p;
+        if(globalProvider != null) {
+	    for(HTTPSession session: sessionList) {
+		session.setCredentialsProvider(globalProvider);
+	    }
+	}
     }
 
     public static synchronized void setGlobalUserAgent(String _userAgent)
     {
         globalAgent = _userAgent;
+        if(globalAgent != null) {
+	    for(HTTPSession session: sessionList) {
+		session.setUserAgent(globalAgent);
+	    }
+	}
     }
 
     public static String getGlobalUserAgent()
@@ -148,17 +158,16 @@ public class HTTPSession
         this.identifier = id;
         try {
             sessionClient = new HttpClient(new HttpClientParams(), connmgr);
-          if (globalProvider != null)
-              sessionClient.getParams().setParameter(CredentialsProvider.PROVIDER, globalProvider);
-          if (globalAgent != null)
-              sessionClient.getParams().setParameter(USER_AGENT, globalAgent);
-          sessionList.add(this);
-          // nick.bower@metoceanengineers.com
+
+          // H/T: nick.bower@metoceanengineers.com
           String proxyHost = System.getProperty("http.proxyHost");
-          String proxyPort = System.getProperty("http.proxyPort");
-          if ((proxyHost != null) && (proxyPort != null) && !proxyPort.trim().equals("")) {
+          String proxyPort = System.getProperty("http.proxyPort").trim();
+	  if(proxyPort.length() == 0) proxyPort = null; // canonical form
+          if(proxyHost != null && proxyPort != null) {
               this.setProxy(proxyHost, Integer.parseInt(proxyPort));
           }
+
+          sessionList.add(this);
 
         } catch (Exception e) {
             throw new opendap.dap.http.HTTPException(e);
@@ -175,6 +184,8 @@ public class HTTPSession
     public void setUserAgent(String agent)
     {
         useragent = agent;
+        if (useragent != null)
+            sessionClient.getParams().setParameter(USER_AGENT, useragent);
     }
 
     public void setConnectionManagerTimeout(long timeout)

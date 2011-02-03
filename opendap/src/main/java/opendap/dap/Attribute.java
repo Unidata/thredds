@@ -903,7 +903,7 @@ static String escapify(String s)
       Attribute a = (Attribute) super.cloneDAG(map);
       // assume type, is_alias, and aliased_to have been cloned already
       if (type == CONTAINER)
-        a.attr = (Attribute)cloneDAG(map,((AttributeTable) attr));
+        a.attr = (AttributeTable)cloneDAG(map,((AttributeTable) attr));
       else
         a.attr = ((Vector) attr).clone(); // ok, attr is a vector of strings
       return a;
