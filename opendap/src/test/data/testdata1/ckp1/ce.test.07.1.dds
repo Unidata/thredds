@@ -1,0 +1,5 @@
+Dataset {
+  Sequence {
+    Int32 age;
+  } person;
+} SimpleSequences;

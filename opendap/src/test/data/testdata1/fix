@@ -1,0 +1,84 @@
+F="123.nc.das \
+123bears.nc.das \
+1990-S1700101.HDF.WVC_Lat.das \
+1998-6-avhrr.dat.das \
+D1.das \
+Drifters.das \
+EOSDB.das \
+NestedSeq.das \
+NestedSeq2.das \
+OverideExample.das \
+SimpleDrdsExample.das \
+b31.das \
+b31a.das \
+bears.nc.das \
+ber-2002-10-01.nc.das \
+ce.NAM_CONUS_12km_20100628_1200.grib2.01.das \
+ceopL2AIRS2-2.nc.das \
+ceopL2AIRS2.nc.das \
+ingrid.das \
+nestedDAS.das \
+pbug0001b.das \
+synth1.das \
+synth3.das \
+synth4.das \
+synth5.das \
+test.01.das \
+test.02.das \
+test.03.das \
+test.04.das \
+test.05.das \
+test.06.das \
+test.06a.das \
+test.07.das \
+test.07a.das \
+test.21.das \
+test.22.das \
+test.23.das \
+test.31.das \
+test.32.das \
+test.50.das \
+test.53.das \
+test.55.das \
+test.56.das \
+test.57.das \
+test.66.das \
+test.67.das \
+test.68.das \
+test.69.das \
+test.PointFile.das \
+test.SwathFile.das \
+test.an1.das \
+test.dfp1.das \
+test.dfr1.das \
+test.dfr2.das \
+test.dfr3.das \
+test.gr1.das \
+test.gr2.das \
+test.gr3.das \
+test.gr4.das \
+test.gr5.das \
+test.sds1.das \
+test.sds2.das \
+test.sds3.das \
+test.sds4.das \
+test.sds5.das \
+test.sds6.das \
+test.sds7.das \
+test.vs1.das \
+test.vs2.das \
+test.vs3.das \
+test.vs4.das \
+test.vs5.das \
+test1.das \
+test2.das \
+test3.das \
+whoi.das"
+
+for f in $F ; do
+  rm -f ./$f
+  sed -e 's/\\\\/\\/g' <ckp1/$f >./$f    
+done
+exit
+
+ 

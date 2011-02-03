@@ -1,0 +1,16 @@
+Float64 /b31[0]/id 1000
+String /b31[0]/class "This is a data test string (pass 0)."
+String /b31[0]/text "This is a data test string (pass 1)."
+Float64 /b31[1]/id 999.95
+String /b31[1]/class "This is a data test string (pass 2)."
+String /b31[1]/text "This is a data test string (pass 3)."
+Float64 /b31[2]/id 999.8
+String /b31[2]/class "This is a data test string (pass 4)."
+String /b31[2]/text "This is a data test string (pass 5)."
+Float64 /b31[3]/id 999.55
+String /b31[3]/class "This is a data test string (pass 6)."
+String /b31[3]/text "This is a data test string (pass 7)."
+Float64 /b31[4]/id 999.2
+String /b31[4]/class "This is a data test string (pass 8)."
+String /b31[4]/text "This is a data test string (pass 9)."
+Int32 /b32 1

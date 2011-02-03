@@ -1,0 +1,5 @@
+Dataset {
+  Structure {
+    Int32 i32;
+  } types;
+} SimpleStructure;

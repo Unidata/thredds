@@ -1,0 +1,4 @@
+String /person1/name "This is a data test string (pass 0)."
+Int32 /person1/age 1
+String /person2/name "This is a data test string (pass 1)."
+Int32 /person2/age 2

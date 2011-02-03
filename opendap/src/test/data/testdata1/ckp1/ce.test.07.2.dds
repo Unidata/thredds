@@ -1,0 +1,6 @@
+  Dataset {
+      Sequence {
+          String name;
+          Int32 age;
+      } person;
+  } SimpleSequences;
