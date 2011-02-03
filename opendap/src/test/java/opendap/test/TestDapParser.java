@@ -152,17 +152,18 @@ public class TestDapParser extends TestFiles
 	    try {
 	        resultstream.close();
 	        // Diff the two files
-                Diff diff = new Diff(test);
+            Diff diff = new Diff(test);
 	        FileReader resultrdr = new FileReader(resultfile);
 	        FileReader testrdr = new FileReader(testfile);
-                boolean pass = !diff.doDiff(resultrdr, testrdr);
+                boolean pass = !diff.doDiff(testrdr,resultrdr);
                 if(isxfail) {
                     pass = true;
                     System.err.println("***XFAIL: "+test);
                 }
 		        testrdr.close(); resultrdr.close();
-                if(!pass)
+                if(!pass) {
                     junit.framework.Assert.assertTrue(testname, pass);
+                }
             } catch (IOException ioe) {
 	        System.err.println("Close failure");
         }

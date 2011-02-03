@@ -51,6 +51,7 @@ public class TestOpenDap {
     suite.addTest(new TestSuite(opendap.test.TestDDS.class));
     suite.addTest(new TestSuite(opendap.test.TestDAS.class));
     suite.addTest(new TestSuite(opendap.test.TestERR.class));
+    suite.addTest(new TestSuite(opendap.test.TestClone.class));
     suite.addTest(new TestSuite(opendap.test.TestCeParser.class));
     suite.addTest(new TestSuite(opendap.test.TestCEEvaluator.class));
 

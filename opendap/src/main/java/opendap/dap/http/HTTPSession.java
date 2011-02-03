@@ -156,16 +156,18 @@ public class HTTPSession
           // H/T: nick.bower@metoceanengineers.com
           String proxyHost = System.getProperty("http.proxyHost");
           String proxyPort = System.getProperty("http.proxyPort");
-	  if(proxyport != null) proxyPort = proxyPort.trim();
-	  if(proxyPort.length() == 0) proxyPort = null; // canonical form
-          if(proxyHost != null && proxyPort != null) {
-              this.setProxy(proxyHost, Integer.parseInt(proxyPort));
-          }
+	  if(proxyPort != null) {
+          proxyPort = proxyPort.trim();
+	      if(proxyPort.length() == 0) proxyPort = null; // canonical form
+      }
+      if(proxyHost != null && proxyPort != null) {
+          this.setProxy(proxyHost, Integer.parseInt(proxyPort));
+      }
 
-	  if(globalProvider) != null && sessionClient != null) {
-	     sessionClient.getParams().setParameter(CredentialsProvider.PROVIDER, globalprovider);
+	  if(globalProvider != null && sessionClient != null) {
+	     sessionClient.getParams().setParameter(CredentialsProvider.PROVIDER, globalProvider);
           }
-	  if(useragent) != null && sessionClient != null) {
+	  if(useragent != null && sessionClient != null) {
 	     sessionClient.getParams().setParameter(USER_AGENT, useragent);
           }
 
