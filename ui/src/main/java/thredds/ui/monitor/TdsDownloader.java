@@ -36,6 +36,7 @@ package thredds.ui.monitor;
 import opendap.dap.http.HTTPException;
 import opendap.dap.http.HTTPSession;
 import ucar.nc2.util.CancelTask;
+import ucar.nc2.util.net.HttpClientManager;
 
 import java.io.*;
 
@@ -79,7 +80,7 @@ public class TdsDownloader {
 
     String urls = "http://" + server + "/thredds/admin/log/"+type+"/";
 
-    final String contents = HTTPSession.getContentAsString(urls);
+    final String contents = HttpClientManager.getContentAsString(urls);
     if ((contents == null) || (contents.length() == 0)) {
       ta.append(String.format("Failed to get logs at URL = %s%n%n", urls));
       return;
@@ -147,14 +148,14 @@ public class TdsDownloader {
     void read() throws HTTPException {
       String urls = "http://" + server + "/thredds/admin/log/"+type+"/" + name;
       ta.append(String.format(" reading %s to %s%n", urls, localFile.getPath()));
-      HTTPSession.copyUrlContentsToFile(urls, localFile);
+      HttpClientManager.copyUrlContentsToFile(urls, localFile);
     }
 
     void append() throws HTTPException {
       String urls = "http://" + server + "/thredds/admin/log/"+type+"/" + name;
       long start = localFile.length();
       long want = size - start;
-      long got = HTTPSession.appendUrlContentsToFile(urls, localFile, start, size);
+      long got = HttpClientManager.appendUrlContentsToFile(urls, localFile, start, size);
       if (want == got)
         ta.append(String.format(" append %d bytes to %s %n", got, localFile.getPath()));
       else
