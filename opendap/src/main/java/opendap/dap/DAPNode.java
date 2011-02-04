@@ -139,7 +139,7 @@ public class DAPNode implements Cloneable, Serializable
             _name = EscapeStrings.www2id(n);
         else
             _name = n;
-        _nameEncoded = EscapeStrings.www2id(_name);
+        _nameEncoded = EscapeStrings.id2www(_name);
     }
 
     public void setProjected(boolean tf)
