@@ -33,6 +33,7 @@
 
 package thredds.ui.monitor;
 
+import opendap.dap.http.HTTPException;
 import opendap.dap.http.HTTPSession;
 import org.apache.commons.httpclient.auth.CredentialsProvider;
 import thredds.logs.LogReader;
@@ -85,7 +86,9 @@ public class TdsMonitor extends JPanel {
   private FileManager fileChooser;
   private ManageForm manage;
 
-  public TdsMonitor(ucar.util.prefs.PreferencesExt prefs, JFrame parentFrame) {
+  private HTTPSession session;
+
+  public TdsMonitor(ucar.util.prefs.PreferencesExt prefs, JFrame parentFrame) throws HTTPException {
     this.mainPrefs = prefs;
     this.parentFrame = parentFrame;
 
@@ -108,9 +111,16 @@ public class TdsMonitor extends JPanel {
 
     setLayout(new BorderLayout());
     add(tabbedPane, BorderLayout.CENTER);
+
+    CredentialsProvider provider = new UrlAuthenticatorDialog(null);
+    session = new HTTPSession("TdsMonitor");
+    session.setCredentialsProvider(provider);
+    session.setUserAgent("TdsMonitor");
   }
 
   public void exit() {
+    session.close();
+
     if (dnsCache != null) {
       System.out.printf(" cache= %s%n", dnsCache.toString());
       System.out.printf(" cache.size= %d%n", dnsCache.getSize());
@@ -209,11 +219,11 @@ public class TdsMonitor extends JPanel {
             manage.getStopButton().setCancel(false); // clear the cancel state
 
             if (data.wantAccess) {
-              TdsDownloader logManager = new TdsDownloader(manage.getTextArea(), data.server, TdsDownloader.Type.access);
+              TdsDownloader logManager = new TdsDownloader(manage.getTextArea(), data.server, TdsDownloader.Type.access, session);
               logManager.getRemoteFiles(manage.getStopButton());
             }
             if (data.wantServlet) {
-              TdsDownloader logManager = new TdsDownloader(manage.getTextArea(), data.server, TdsDownloader.Type.thredds);
+              TdsDownloader logManager = new TdsDownloader(manage.getTextArea(), data.server, TdsDownloader.Type.thredds, session);
               logManager.getRemoteFiles(manage.getStopButton());
             }
 
@@ -222,7 +232,7 @@ public class TdsMonitor extends JPanel {
               File localDir = LogLocalManager.getDirectory(data.server, "");
               localDir.mkdirs();
               File file = new File(localDir, "roots.txt");
-              HttpClientManager.copyUrlContentsToFile(urls, file);
+              HttpClientManager.copyUrlContentsToFile(session, urls, file);
               String roots = IO.readFile(file.getPath());
 
               JTextArea ta = manage.getTextArea();
@@ -553,7 +563,7 @@ public class TdsMonitor extends JPanel {
 
   //////////////////////////////////////////////
 
-  public static void main(String args[]) {
+  public static void main(String args[]) throws HTTPException {
 
     // prefs storage
     try {
@@ -567,10 +577,6 @@ public class TdsMonitor extends JPanel {
 
     // initializations
     BAMutil.setResourcePath("/resources/nj22/ui/icons/");
-
-    CredentialsProvider provider = new UrlAuthenticatorDialog(null);
-    HTTPSession.setGlobalCredentialsProvider(provider);
-    HTTPSession.setGlobalUserAgent("TdsMonitor");
 
     // put UI in a JFrame
     frame = new JFrame("TDS Monitor");

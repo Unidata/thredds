@@ -328,7 +328,7 @@ public class TextGetPutPane extends TextHistoryPane {
 
     public void run() {
       try {
-        contents = HttpClientManager.getContentAsString(urlString);
+        contents = HttpClientManager.getContentAsString(null, urlString);
 
       } catch (Exception e) {
         setError(e.getMessage());

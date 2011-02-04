@@ -47,12 +47,12 @@ import java.io.IOException;
 import junit.framework.TestCase;
 
 
-public class TestHybridData extends TestCase {
-  public TestHybridData(String name) {
+public class TestMiscCoordinates extends TestCase {
+  public TestMiscCoordinates(String name) {
     super(name);
   }
 
-  public void testCompare() throws IOException {
+  public void testHybridVertCOord() throws IOException {
     doOne(TestAll.cdmUnitTestDir + "formats/grib1/ECMWF.hybrid.grib1");
     doOne(TestAll.cdmUnitTestDir + "formats/grib1/07010418_arw_d01.GrbF01500");
   }
@@ -80,9 +80,22 @@ public class TestHybridData extends TestCase {
     ncfile.close();
   }
 
+  public void testGaussianLats() throws IOException {
+    String filename = TestAll.cdmUnitTestDir + "formats/grib1/CCCma_SRES_A2_HGT500_1-10.grb";
+    System.out.println("\n\nReading File " + filename);
+
+    NetcdfFile ncfile = NetcdfFile.open(filename);
+
+    Variable lat = ncfile.findVariable("lat");
+    assert lat.getSize() == 48;
+    ncfile.close();
+  }
+
+
+
   static public void main(String args[]) throws IOException {
-    TestHybridData ggi = new TestHybridData("");
-    ggi.testCompare();
+    TestMiscCoordinates ggi = new TestMiscCoordinates("");
+    ggi.testHybridVertCOord();
   }
 
 

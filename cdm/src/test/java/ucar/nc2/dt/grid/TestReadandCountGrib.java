@@ -65,6 +65,7 @@ public class TestReadandCountGrib extends TestCase {
     doOne("grib1/","RUC.wmo", 27, 7, 10, 5);
     doOne("grib1/","RUC2.wmo", 44, 10, 13, 5);
     doOne("grib1/","WAVE.wmo", 28, 12, 24, 4); //
+
     doOne("grib2/","eta2.wmo", 35, 9, 11, 7);
     doOne("grib2/","ndfd.wmo", 1, 1, 3, 0); //
     //doOne("grib2/","eta218.wmo", 57, 13, 29, 20); // multiple horiz coords == groups

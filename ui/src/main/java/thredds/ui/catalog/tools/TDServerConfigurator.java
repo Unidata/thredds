@@ -300,7 +300,7 @@ public class TDServerConfigurator extends JPanel {
         int pos = catalogPath.indexOf("/thredds/");
         String serverURL = catalogPath.substring(0,pos+9);
         try {
-          String result = HttpClientManager.getContentAsString(serverURL + "debug?catalogs/reinit");
+          String result = HttpClientManager.getContentAsString(null, serverURL + "debug?catalogs/reinit");
           savePane.setText(result);
         } catch (Exception e) {
           savePane.setText( e.getMessage());

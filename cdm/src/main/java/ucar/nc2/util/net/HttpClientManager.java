@@ -35,14 +35,9 @@ package ucar.nc2.util.net;
 
 import opendap.dap.http.HTTPException;
 import opendap.dap.http.HTTPMethod;
-import opendap.dap.http.HTTPMethodStream;
 import opendap.dap.http.HTTPSession;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpMethodBase;
-import org.apache.commons.httpclient.cookie.CookiePolicy;
-import org.apache.commons.httpclient.params.DefaultHttpParams;
-import org.apache.commons.httpclient.params.HttpParams;
-import org.apache.commons.httpclient.params.HttpClientParams;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.httpclient.auth.CredentialsProvider;
 
@@ -54,12 +49,7 @@ import java.util.Formatter;
 import ucar.nc2.util.IO;
 
 /**
- * Manage Http Client protocol settings.
- * <pre>
- * Example:
- *   org.apache.commons.httpclient.auth.CredentialsProvider provider = new thredds.ui.UrlAuthenticatorDialog(frame);
- * ucar.nc2.util.net.HttpClientManager.init(provider, "ToolsUI");
- * </pre>
+ * Convenience routines that wrap HTTPSession.
  *
  * @author caron
  */
@@ -73,8 +63,7 @@ public class HttpClientManager {
    * @param provider  CredentialsProvider.
    * @param userAgent Content of User-Agent header, may be null
    */
-  static public void init(CredentialsProvider provider, String userAgent)
-  {
+  static public void init(CredentialsProvider provider, String userAgent) {
     if (provider != null)
       HTTPSession.setGlobalCredentialsProvider(provider);
 
@@ -90,243 +79,239 @@ public class HttpClientManager {
 
   /**
    * Get the content from a url. For large returns, its better to use getResponseAsStream.
+   *
+   * @param session   use this session, if null, create a new one
    * @param urlString url as a String
    * @return contents of url as a String
    * @throws java.io.IOException on error
    */
-  public static String getContentAsString(String urlString)
-	throws IOException
-  {
-    HTTPSession session = new HTTPSession();
-    HTTPMethod m = session.newMethodGet(urlString);
-    m.execute();
-    String result =  m.getResponseAsString();
-    session.close();
-    return result;
-  }
-
-        /**
-     * Define a method to combine making the method, executing it, and returning
-     * a result as a stream
-     */
-
-    public static InputStream getContentAsStream(String url) throws HTTPException
-    {
-        HTTPSession session = new HTTPSession();
-        HTTPMethod method = session.newMethodGet(url);
-        method.execute();
-        InputStream in = method.getResponseAsStream();
-        HTTPMethodStream result = new HTTPMethodStream(null,method,in);
-        return result;
+  public static String getContentAsString(HTTPSession session, String urlString) throws IOException {
+    HTTPSession useSession = session;
+    try {
+      if (useSession == null)
+        useSession = new HTTPSession();
+      HTTPMethod m = useSession.newMethodGet(urlString);
+      m.execute();
+      return m.getResponseAsString();
+    } finally {
+      if ((session == null) && (useSession != null))
+        useSession.close();
     }
+  }
 
   /**
    * Put content to a url, using HTTP PUT. Handles one level of 302 redirection.
+   *
    * @param urlString url as a String
-   * @param content PUT this content at the given url.
+   * @param content   PUT this content at the given url.
    * @return the HTTP status return code
    * @throws java.io.IOException on error
    */
-  public static int putContent(String urlString, String content)
-	throws IOException
-  {
-        HTTPSession session = null;
+  public static int putContent(String urlString, String content) throws IOException {
+    HTTPSession session = null;
 
-        try {
+    try {
 
-        session = new HTTPSession();
-        HTTPMethod m = session.newMethodPut(urlString);
-        //fix m.setDoAuthentication( true );
+      session = new HTTPSession();
+      HTTPMethod m = session.newMethodPut(urlString);
+      //fix m.setDoAuthentication( true );
 
-          m.setRequestContentAsString(content);
+      m.setRequestContentAsString(content);
 
-          m.execute();
+      m.execute();
 
-          int resultCode = m.getStatusCode();
+      int resultCode = m.getStatusCode();
 
-           // followRedirect wont work for PUT
-           if (resultCode == 302) {
-             String redirectLocation;
-             Header locationHeader = m.getResponseHeader("location");
-             if (locationHeader != null) {
-               redirectLocation = locationHeader.getValue();
-               resultCode = putContent(redirectLocation, content);
-             }
-           }
-
-          return resultCode;
-
-        } finally {
-          if(session != null) session.close();
+      // followRedirect wont work for PUT
+      if (resultCode == 302) {
+        String redirectLocation;
+        Header locationHeader = m.getResponseHeader("location");
+        if (locationHeader != null) {
+          redirectLocation = locationHeader.getValue();
+          resultCode = putContent(redirectLocation, content);
         }
+      }
+
+      return resultCode;
+
+    } finally {
+      if (session != null) session.close();
+    }
   }
 
   //////////////////////
 
-       static public String getUrlContentsAsString(String urlString, int maxKbytes) {
-         HTTPSession session = null;
-         try {
-           session = new HTTPSession();
-           HTTPMethod m = session.newMethodGet(urlString);
-           m.setFollowRedirects(true);
-           m.setRequestHeader("Accept-Encoding", "gzip,deflate");
+  static public String getUrlContentsAsString(HTTPSession session, String urlString, int maxKbytes) {
+    HTTPSession useSession = session;
+    try {
+      if (useSession == null)
+        useSession = new HTTPSession();
 
-           int status = m.execute();
-           if (status != 200) {
-             throw new RuntimeException("failed status = "+status);
-           }
+      HTTPMethod m = useSession.newMethodGet(urlString);
+      m.setFollowRedirects(true);
+      m.setRequestHeader("Accept-Encoding", "gzip,deflate");
 
-           String charset = m.getResponseCharSet();
-           if (charset == null) charset = "UTF-8";
-
-           // check for deflate and gzip compression
-           Header h = m.getResponseHeader("content-encoding");
-           String encoding = (h == null) ? null : h.getValue();
-
-           if (encoding != null && encoding.equals("deflate")) {
-             byte[] body = m.getResponseAsBytes();
-             InputStream is = new BufferedInputStream(new InflaterInputStream(new ByteArrayInputStream(body)), 10000);
-             return readContents(is, charset, maxKbytes);
-
-           } else if (encoding != null && encoding.equals("gzip")) {
-             byte[] body = m.getResponseAsBytes();
-             InputStream is = new BufferedInputStream(new GZIPInputStream(new ByteArrayInputStream(body)), 10000);
-             return readContents(is, charset, maxKbytes);
-
-           } else {
-             byte[] body = m.getResponseAsBytes(maxKbytes * 1000);
-             return new String(body, charset);
-           }
-
-         } catch (Exception e) {
-           e.printStackTrace();
-           return null;
-
-         } finally {
-           if(session != null) session.close();
-         }
-       }
-
-       static private String readContents(InputStream is, String charset, int maxKbytes) throws IOException {
-         ByteArrayOutputStream bout = new ByteArrayOutputStream(1000 * maxKbytes);
-         IO.copy(is, bout, 1000 * maxKbytes);
-         return bout.toString(charset);
-       }
-
-       static public  void copyUrlContentsToFile(String urlString, File file) throws HTTPException {
-         HTTPSession session = null;
-
-         try {
-         session = new HTTPSession();
-         HTTPMethod m = session.newMethodGet(urlString);
-         m.setRequestHeader("Accept-Encoding", "gzip,deflate");
-
-           int status = m.execute();
-
-           if (status != 200) {
-             throw new RuntimeException("failed status = "+status);
-           }
-
-           String charset = m.getResponseCharSet();
-           if (charset == null) charset = "UTF-8";
-
-           // check for deflate and gzip compression
-           Header h = m.getResponseHeader("content-encoding");
-           String encoding = (h == null) ? null : h.getValue();
-
-           if (encoding != null && encoding.equals("deflate")) {
-             InputStream is = new BufferedInputStream(new InflaterInputStream(m.getResponseAsStream()), 10000);
-             IO.writeToFile(is, file.getPath());
-
-           } else if (encoding != null && encoding.equals("gzip")) {
-             InputStream is = new BufferedInputStream(new GZIPInputStream(m.getResponseAsStream()), 10000);
-             IO.writeToFile(is, file.getPath());
-
-           } else {
-             IO.writeToFile(m.getResponseAsStream(), file.getPath());
-           }
-
-         } catch (Exception e) {
-           e.printStackTrace();
-
-         } finally {
-           if(session != null) session.close();
-         }
-       }
-
-       static public long appendUrlContentsToFile(String urlString, File file, long start, long end) throws HTTPException {
-         long nbytes = 0;
-
-         HTTPSession session = null;
-         try {
-         session = new HTTPSession();
-         HTTPMethod m = session.newMethodGet(urlString);
-         m.setRequestHeader("Accept-Encoding", "gzip,deflate");
-         m.setRequestHeader("Range", "bytes=" + start + "-" + end);
-
-
-           int status = m.execute();
-           if ((status != 200) && (status != 206)) {
-             throw new RuntimeException("failed status = "+status);
-           }
-
-           String charset = m.getResponseCharSet();
-           if (charset == null) charset = "UTF-8";
-
-           // check for deflate and gzip compression
-           Header h = m.getResponseHeader("content-encoding");
-           String encoding = (h == null) ? null : h.getValue();
-
-           if (encoding != null && encoding.equals("deflate")) {
-             InputStream is = new BufferedInputStream(new InflaterInputStream(m.getResponseAsStream()), 10000);
-             nbytes = IO.appendToFile(is, file.getPath());
-
-           } else if (encoding != null && encoding.equals("gzip")) {
-             InputStream is = new BufferedInputStream(new GZIPInputStream(m.getResponseAsStream()), 10000);
-             nbytes = IO.appendToFile(is, file.getPath());
-
-           } else {
-             nbytes = IO.appendToFile(m.getResponseAsStream(), file.getPath());
-           }
-
-         } catch (Exception e) {
-           e.printStackTrace();
-
-         } finally {
-           if (session!=null) session.close();
-         }
-
-         return nbytes;
-         }
-
-      static public void showHttpRequestInfo(Formatter f, HttpMethodBase m) {
-        f.format("HttpClient request %s %s %n", m.getName(), m.getPath());
-        f.format("   do Authentication=%s%n", m.getDoAuthentication());
-        f.format("   follow Redirects =%s%n", m.getFollowRedirects());
-        f.format("   effectiveVersion =%s%n", m.getEffectiveVersion());
-        f.format("   hostAuthState    =%s%n", m.getHostAuthState());
-
-        HttpMethodParams p = m.getParams();
-        f.format("   cookie policy    =%s%n", p.getCookiePolicy());
-        f.format("   http version     =%s%n", p.getVersion());
-        f.format("   timeout (msecs)  =%d%n", p.getSoTimeout());
-        f.format("   virtual host     =%s%n", p.getVirtualHost());
-
-        f.format("Request Headers = %n");
-        Header[] heads = m.getRequestHeaders();
-        for (int i = 0; i < heads.length; i++)
-          f.format("  %s", heads[i]);
-
-        f.format("%n");
+      int status = m.execute();
+      if (status != 200) {
+        throw new RuntimeException("failed status = " + status);
       }
 
-      static public void showHttpResponseInfo(Formatter f, HttpMethodBase m) {
-        f.format("HttpClient response status = %s%n", m.getStatusLine());
-        f.format("Reponse Headers = %n");
-        Header[] heads = m.getResponseHeaders();
-        for (int i = 0; i < heads.length; i++)
-          f.format("  %s", heads[i]);
-        f.format("%n");
+      String charset = m.getResponseCharSet();
+      if (charset == null) charset = "UTF-8";
+
+      // check for deflate and gzip compression
+      Header h = m.getResponseHeader("content-encoding");
+      String encoding = (h == null) ? null : h.getValue();
+
+      if (encoding != null && encoding.equals("deflate")) {
+        byte[] body = m.getResponseAsBytes();
+        InputStream is = new BufferedInputStream(new InflaterInputStream(new ByteArrayInputStream(body)), 10000);
+        return readContents(is, charset, maxKbytes);
+
+      } else if (encoding != null && encoding.equals("gzip")) {
+        byte[] body = m.getResponseAsBytes();
+        InputStream is = new BufferedInputStream(new GZIPInputStream(new ByteArrayInputStream(body)), 10000);
+        return readContents(is, charset, maxKbytes);
+
+      } else {
+        byte[] body = m.getResponseAsBytes(maxKbytes * 1000);
+        return new String(body, charset);
       }
+
+    } catch (Exception e) {
+      e.printStackTrace();
+      return null;
+
+    } finally {
+      if ((session == null) && (useSession != null))
+        useSession.close();
+    }
+  }
+
+  static private String readContents(InputStream is, String charset, int maxKbytes) throws IOException {
+    ByteArrayOutputStream bout = new ByteArrayOutputStream(1000 * maxKbytes);
+    IO.copy(is, bout, 1000 * maxKbytes);
+    return bout.toString(charset);
+  }
+
+  static public void copyUrlContentsToFile(HTTPSession session, String urlString, File file) throws HTTPException {
+    HTTPSession useSession = session;
+    try {
+      if (useSession == null)
+        useSession = new HTTPSession();
+
+      HTTPMethod m = useSession.newMethodGet(urlString);
+      m.setRequestHeader("Accept-Encoding", "gzip,deflate");
+
+      int status = m.execute();
+
+      if (status != 200) {
+        throw new RuntimeException("failed status = " + status);
+      }
+
+      String charset = m.getResponseCharSet();
+      if (charset == null) charset = "UTF-8";
+
+      // check for deflate and gzip compression
+      Header h = m.getResponseHeader("content-encoding");
+      String encoding = (h == null) ? null : h.getValue();
+
+      if (encoding != null && encoding.equals("deflate")) {
+        InputStream is = new BufferedInputStream(new InflaterInputStream(m.getResponseAsStream()), 10000);
+        IO.writeToFile(is, file.getPath());
+
+      } else if (encoding != null && encoding.equals("gzip")) {
+        InputStream is = new BufferedInputStream(new GZIPInputStream(m.getResponseAsStream()), 10000);
+        IO.writeToFile(is, file.getPath());
+
+      } else {
+        IO.writeToFile(m.getResponseAsStream(), file.getPath());
+      }
+
+    } catch (Exception e) {
+      e.printStackTrace();
+
+    } finally {
+      if ((session == null) && (useSession != null))
+        useSession.close();
+    }
+  }
+
+  static public long appendUrlContentsToFile(HTTPSession session, String urlString, File file, long start, long end) throws HTTPException {
+    HTTPSession useSession = session;
+    long nbytes = 0;
+
+    try {
+      if (useSession == null)
+        useSession = new HTTPSession();
+
+      HTTPMethod m = useSession.newMethodGet(urlString);
+      m.setRequestHeader("Accept-Encoding", "gzip,deflate");
+      m.setRequestHeader("Range", "bytes=" + start + "-" + end);
+
+      int status = m.execute();
+      if ((status != 200) && (status != 206)) {
+        throw new RuntimeException("failed status = " + status);
+      }
+
+      String charset = m.getResponseCharSet();
+      if (charset == null) charset = "UTF-8";
+
+      // check for deflate and gzip compression
+      Header h = m.getResponseHeader("content-encoding");
+      String encoding = (h == null) ? null : h.getValue();
+
+      if (encoding != null && encoding.equals("deflate")) {
+        InputStream is = new BufferedInputStream(new InflaterInputStream(m.getResponseAsStream()), 10000);
+        nbytes = IO.appendToFile(is, file.getPath());
+
+      } else if (encoding != null && encoding.equals("gzip")) {
+        InputStream is = new BufferedInputStream(new GZIPInputStream(m.getResponseAsStream()), 10000);
+        nbytes = IO.appendToFile(is, file.getPath());
+
+      } else {
+        nbytes = IO.appendToFile(m.getResponseAsStream(), file.getPath());
+      }
+
+    } catch (Exception e) {
+      e.printStackTrace();
+
+    } finally {
+      if ((session == null) && (useSession != null))
+        session.close();
+    }
+
+    return nbytes;
+  }
+
+  static public void showHttpRequestInfo(Formatter f, HttpMethodBase m) {
+    f.format("HttpClient request %s %s %n", m.getName(), m.getPath());
+    f.format("   do Authentication=%s%n", m.getDoAuthentication());
+    f.format("   follow Redirects =%s%n", m.getFollowRedirects());
+    f.format("   effectiveVersion =%s%n", m.getEffectiveVersion());
+    f.format("   hostAuthState    =%s%n", m.getHostAuthState());
+
+    HttpMethodParams p = m.getParams();
+    f.format("   cookie policy    =%s%n", p.getCookiePolicy());
+    f.format("   http version     =%s%n", p.getVersion());
+    f.format("   timeout (msecs)  =%d%n", p.getSoTimeout());
+    f.format("   virtual host     =%s%n", p.getVirtualHost());
+
+    f.format("Request Headers = %n");
+    Header[] heads = m.getRequestHeaders();
+    for (int i = 0; i < heads.length; i++)
+      f.format("  %s", heads[i]);
+
+    f.format("%n");
+  }
+
+  static public void showHttpResponseInfo(Formatter f, HttpMethodBase m) {
+    f.format("HttpClient response status = %s%n", m.getStatusLine());
+    f.format("Reponse Headers = %n");
+    Header[] heads = m.getResponseHeaders();
+    for (int i = 0; i < heads.length; i++)
+      f.format("  %s", heads[i]);
+    f.format("%n");
+  }
 
 }

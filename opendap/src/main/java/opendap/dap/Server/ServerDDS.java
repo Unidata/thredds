@@ -155,7 +155,7 @@ public class ServerDDS extends DDS
         os.println("Dataset {");
         for (Enumeration e = getVariables(); e.hasMoreElements();) {
             BaseType bt = (BaseType) e.nextElement();
-            System.err.println("check: "+bt.getLongName()+" = "+((ServerMethods) bt).isProject());
+            // System.err.println("check: "+bt.getLongName()+" = "+((ServerMethods) bt).isProject());
             ServerMethods sm = (ServerMethods) bt;
             if(sm.isProject() && !sm.isCtorProjected()) {
                 bt.printDecl(os, "    ", true, true);

@@ -7,20 +7,16 @@ import org.apache.commons.httpclient.params.HttpConnectionParams;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.httpclient.protocol.Protocol;
 
-import java.io.*;
 import java.util.ArrayList;
-import java.util.Formatter;
 import java.util.List;
 import java.util.Vector;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.InflaterInputStream;
 
 /**
  * Created by IntelliJ IDEA.
  * User: dmh
  * Date:June 15, 2010
  * Time: 4:24 PM
- * container around org.apache.commons.
+ * container around org.apache.commons.httpclient
  */
 
 public class HTTPSession
@@ -244,7 +240,8 @@ public class HTTPSession
         HTTPMethod method = new HTTPMethod(m, uri, this);
         addMethod(method);
 
-        //method.setState(sessionState);
+        // method.setState(sessionState);
+        method.setFollowRedirects(true);
         return method;
     }
 

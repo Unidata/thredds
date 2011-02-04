@@ -21,6 +21,8 @@ import java.awt.geom.*;
 /**
  * Taken from com.jhlabs.map.proj
  *
+ * Also see "http://search.cpan.org/src/DSTAHLKE/Cartography-Projection-GCTP-0.03/gctpc/" for C code
+ *
  * @see "http://www.jhlabs.com/java/maps/proj/index.html"
  * @see "http://trac.osgeo.org/proj/"
  *

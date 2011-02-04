@@ -33,6 +33,7 @@
 
 package thredds.ui.monitor;
 
+//import opendap.dap.http.HTTPException;
 import opendap.dap.http.HTTPException;
 import opendap.dap.http.HTTPSession;
 import ucar.nc2.util.CancelTask;
@@ -58,14 +59,17 @@ public class TdsDownloader {
 
   private String server;
   private Type type;
+  private HTTPSession session;
+
   private File localDir;
   private JTextArea ta;
   private CancelTask cancel;
 
-  TdsDownloader(JTextArea ta, String server, Type type) throws IOException {
+  TdsDownloader(JTextArea ta, String server, Type type, HTTPSession session) throws IOException {
     this.ta = ta;
     this.server = server.trim();
     this.type = type;
+    this.session = session;
 
     localDir = LogLocalManager.getDirectory(server, type.toString());
     if (!localDir.exists() && !localDir.mkdirs()) {
@@ -80,7 +84,7 @@ public class TdsDownloader {
 
     String urls = "http://" + server + "/thredds/admin/log/"+type+"/";
 
-    final String contents = HttpClientManager.getContentAsString(urls);
+    final String contents = HttpClientManager.getContentAsString(session, urls);
     if ((contents == null) || (contents.length() == 0)) {
       ta.append(String.format("Failed to get logs at URL = %s%n%n", urls));
       return;
@@ -148,14 +152,14 @@ public class TdsDownloader {
     void read() throws HTTPException {
       String urls = "http://" + server + "/thredds/admin/log/"+type+"/" + name;
       ta.append(String.format(" reading %s to %s%n", urls, localFile.getPath()));
-      HttpClientManager.copyUrlContentsToFile(urls, localFile);
+      HttpClientManager.copyUrlContentsToFile(session, urls, localFile);
     }
 
     void append() throws HTTPException {
       String urls = "http://" + server + "/thredds/admin/log/"+type+"/" + name;
       long start = localFile.length();
       long want = size - start;
-      long got = HttpClientManager.appendUrlContentsToFile(urls, localFile, start, size);
+      long got = HttpClientManager.appendUrlContentsToFile(session, urls, localFile, start, size);
       if (want == got)
         ta.append(String.format(" append %d bytes to %s %n", got, localFile.getPath()));
       else

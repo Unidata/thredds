@@ -437,7 +437,13 @@ public class GridHorizCoordSys {
       }
     }
     int ny = gds.getInt(GridDefRecord.NY);
-    assert Math.abs(bestEndIndex - bestStartIndex + 1) == ny;
+    if (Math.abs(bestEndIndex - bestStartIndex + 1) != ny) {
+      log.warn("GRIB gaussian lats: NP != NY, use NY");  // see email from Toussaint@dkrz.de datafil:
+      nlats = ny;
+      gaussLats = new GaussianLatitudes(nlats);
+      bestStartIndex = 0;
+      bestEndIndex = ny-1;
+    }
     boolean goesUp = bestEndIndex > bestStartIndex;
 
     Variable v = new Variable(ncfile, g, null, name);
@@ -445,11 +451,10 @@ public class GridHorizCoordSys {
     v.setDimensions(name);
 
     // create the data
-    int n = (int) gds.getInt(GridDefRecord.NY);
     int useIndex = bestStartIndex;
-    double[] data = new double[n];
-    double[] gaussw = new double[n];
-    for (int i = 0; i < n; i++) {
+    double[] data = new double[ny];
+    double[] gaussw = new double[ny];
+    for (int i = 0; i < ny; i++) {
       data[i] = gaussLats.latd[useIndex];
       gaussw[i] = gaussLats.gaussw[useIndex];
       if (goesUp) {
@@ -458,7 +463,7 @@ public class GridHorizCoordSys {
         useIndex--;
       }
     }
-    Array dataArray = Array.factory(DataType.DOUBLE, new int[]{n}, data);
+    Array dataArray = Array.factory(DataType.DOUBLE, new int[]{ny}, data);
     v.setCachedData(dataArray, false);
 
     v.addAttribute(new Attribute("units", units));
@@ -472,7 +477,7 @@ public class GridHorizCoordSys {
     v.setDataType(DataType.DOUBLE);
     v.setDimensions(name);
     v.addAttribute(new Attribute("long_name", "gaussian weights (unnormalized)"));
-    dataArray = Array.factory(DataType.DOUBLE, new int[]{n}, gaussw);
+    dataArray = Array.factory(DataType.DOUBLE, new int[]{ny}, gaussw);
     v.setCachedData(dataArray, false);
     ncfile.addVariable(g, v);
 
