@@ -518,7 +518,7 @@ public class NCdump {
   }
 
   static private void printArray(Array ma, PrintStream out, Indent indent, CancelTask ct) {
-     if (ct != null && ct.isCancel()) return;
+    if (ct != null && ct.isCancel()) return;
 
     int rank = ma.getRank();
     Index ima = ma.getIndex();

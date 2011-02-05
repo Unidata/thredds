@@ -125,7 +125,7 @@ public class UncompressInputStream extends FilterInputStream {
   private byte[] one = new byte[1];
 
   @Override
-  public synchronized int read() throws IOException {
+  public int read() throws IOException {
     int b = read(one, 0, 1);
     if (b == 1)
       return (one[0] & 0xff);
@@ -134,7 +134,7 @@ public class UncompressInputStream extends FilterInputStream {
   }
 
   @Override
-  public synchronized int read(byte[] buf, int off, int len)
+  public int read(byte[] buf, int off, int len)
       throws IOException {
     if (eof) return -1;
     int start = off;
@@ -363,7 +363,7 @@ public class UncompressInputStream extends FilterInputStream {
 
 
   @Override
-  public synchronized long skip(long num) throws IOException {
+  public long skip(long num) throws IOException {
     byte[] tmp = new byte[(int) num];
     int got = read(tmp, 0, (int) num);
 
@@ -375,7 +375,7 @@ public class UncompressInputStream extends FilterInputStream {
 
 
   @Override
-  public synchronized int available() throws IOException {
+  public int available() throws IOException {
     if (eof) return 0;
 
     // Fred Hansen, 2008

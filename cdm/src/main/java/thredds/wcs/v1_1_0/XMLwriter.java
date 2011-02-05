@@ -84,10 +84,10 @@ public class XMLwriter
 
     Element exceptionElem = new Element( "Exception", owsNS);
     exceptionElem.setAttribute( "code", code.toString());
-    if ( locator != null && ! locator.equals( ""))
+    if ( locator != null && locator.length() != 0)
       exceptionElem.setAttribute( "locator", locator);
 
-    if ( message != null && ! message.equals( ""))
+    if ( message != null && message.length() != 0)
     {
       Element excTextElem = new Element( "ExceptionText", owsNS);
       excTextElem.addContent( message);

@@ -56,9 +56,9 @@ class DoradeSSWB extends DoradeDescriptor {
         //
         // legal values for type
         //
-        public final int KEYED_BY_TIME = 1;
-        public final int KEYED_BY_ROT_ANG = 2;
-        public final int SOLO_EDIT_SUMMARY = 3;
+        public static final int KEYED_BY_TIME = 1;
+        public static final int KEYED_BY_ROT_ANG = 2;
+        public static final int SOLO_EDIT_SUMMARY = 3;
 
         public KeyTable(int offset, int size, int type) {
             this.offset = offset;

@@ -72,7 +72,7 @@ public abstract class WcsRequestBuilder
                      GridDataset dataset,
                      String datasetPath )
   {
-    if ( versionString == null || versionString.equals( "" ) )
+    if ( versionString == null || versionString.length() == 0 )
       throw new IllegalArgumentException( "Versions string may not be null or empty string." );
     if ( operation == null )
       throw new IllegalArgumentException( "Operation may not be null." );

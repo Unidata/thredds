@@ -38,7 +38,7 @@ package ucar.nc2.constants;
  * @author caron
  * @since Jan 21, 2009
  */
-public class CF {
+public interface CF {
   public final static String POSITIVE_UP = "up";
   public final static String POSITIVE_DOWN = "down";
 

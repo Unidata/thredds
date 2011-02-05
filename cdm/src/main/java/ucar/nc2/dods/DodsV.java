@@ -206,7 +206,7 @@ class DodsV implements Comparable {
         parseDataVariables(dodsV, enumerate2);
 
       } else if (bt instanceof DConstructor) {
-        DStructure dcon = (DStructure) bt;
+        DStructure dcon = (DStructure) bt; // LOOK DConstructor != DStructure?
         dodsV.makeAllDimensions();
         java.util.Enumeration enumerate2 = dcon.getVariables();
         parseDataVariables(dodsV, enumerate2);

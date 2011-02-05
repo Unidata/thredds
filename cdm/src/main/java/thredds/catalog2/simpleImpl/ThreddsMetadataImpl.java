@@ -926,7 +926,7 @@ class ThreddsMetadataImpl
 
     KeyphraseImpl( String authority, String phrase)
     {
-        if ( phrase == null || phrase.equals( "" ))
+        if ( phrase == null || phrase.length() == 0)
             throw new IllegalArgumentException( "Phrase may not be null.");
         this.authority = authority;
         this.phrase = phrase;
@@ -949,7 +949,7 @@ class ThreddsMetadataImpl
     }
 
     public BuilderIssues getIssues() {
-      if ( phrase == null || phrase.equals( "" ) )
+      if ( phrase == null || phrase.length() == 0 )
         return new BuilderIssues( BuilderIssue.Severity.WARNING, "Phrase may not be null or empty.", this, null );
       return new BuilderIssues();
     }
@@ -969,7 +969,7 @@ class ThreddsMetadataImpl
 
     ProjectNameImpl( String namingAuthority, String projectName )
     {
-        if ( projectName == null || projectName.equals( "" ))
+        if ( projectName == null || projectName.length() == 0)
             throw new IllegalArgumentException( "Phrase may not be null.");
         this.namingAuthority = namingAuthority;
         this.projectName = projectName;
@@ -989,7 +989,7 @@ class ThreddsMetadataImpl
     }
 
     public BuilderIssues getIssues() {
-      if ( projectName == null || projectName.equals( "" ) )
+      if ( projectName == null || projectName.length() == 0 )
         return new BuilderIssues( BuilderIssue.Severity.WARNING, "Phrase may not be null or empty.", this, null );
       return new BuilderIssues();
     }
@@ -1028,7 +1028,7 @@ class ThreddsMetadataImpl
         }
 
         public boolean isTyped() {
-            return this.type != null || this.type.equals(  "" );
+            return this.type != null || this.type.length() == 0;
         }
 
         public String getType() {
@@ -1158,11 +1158,11 @@ class ThreddsMetadataImpl
         public BuilderIssues getIssues()
         {
             int specified = 3;
-            if ( this.startDate == null || this.startDate.equals( "" ) )
+            if ( this.startDate == null || this.startDate.length() == 0 )
                 specified--;
-            if ( this.endDate == null || this.endDate.equals( "" ) )
+            if ( this.endDate == null || this.endDate.length() == 0 )
                 specified--;
-            if ( this.duration == null || this.duration.equals( "" ) )
+            if ( this.duration == null || this.duration.length() == 0 )
                 specified--;
 
             if ( specified == 2 )

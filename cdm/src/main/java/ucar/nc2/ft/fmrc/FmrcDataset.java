@@ -88,7 +88,7 @@ class FmrcDataset {
     }
   }
   private State state;
-  private Object lock= new Object();
+  private final Object lock= new Object();
 
   FmrcDataset(FeatureCollectionConfig config) { // }, Element ncmlInner, Element ncmlOuter) {
     this.config = config;
@@ -383,13 +383,13 @@ class FmrcDataset {
       // more troublesome attributes, use pure CF
       for (Variable v : result.getVariables()) {
         Attribute att = null;
-        if (null != (att = v.findAttribute(_Coordinate.Axes.toString())))
+        if (null != (att = v.findAttribute(_Coordinate.Axes)))
            v.remove(att);
-        if (null != (att = v.findAttribute(_Coordinate.Systems.toString())))
+        if (null != (att = v.findAttribute(_Coordinate.Systems)))
            v.remove(att);
-        if (null != (att = v.findAttribute(_Coordinate.SystemFor.toString())))
+        if (null != (att = v.findAttribute(_Coordinate.SystemFor)))
           v.remove(att);
-        if (null != (att = v.findAttribute(_Coordinate.Transforms.toString())))
+        if (null != (att = v.findAttribute(_Coordinate.Transforms)))
           v.remove(att);
       }
 

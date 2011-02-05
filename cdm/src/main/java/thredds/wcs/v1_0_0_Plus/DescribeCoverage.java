@@ -258,7 +258,7 @@ public class DescribeCoverage extends WcsRequest
 
   private String genIntegerListString( int[] values)
   {
-    StringBuffer buf = new StringBuffer();
+    StringBuilder buf = new StringBuilder();
     for ( int intValue : values )
     {
       if ( buf.length() > 0 )

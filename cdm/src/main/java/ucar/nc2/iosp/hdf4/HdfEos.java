@@ -91,7 +91,7 @@ public class HdfEos {
     }
     f.format("raw = %n%s%n", smeta);
     ODLparser parser = new ODLparser();
-    parser.parseFromString(smeta.toString()); // now we have the ODL in JDOM elements
+    parser.parseFromString(smeta); // now we have the ODL in JDOM elements
     ByteArrayOutputStream bos = new ByteArrayOutputStream(1000 * 1000);
     parser.showDoc(bos);
     f.format("parsed = %n%s%n", bos.toString());

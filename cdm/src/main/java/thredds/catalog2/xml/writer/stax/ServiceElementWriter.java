@@ -86,12 +86,12 @@ public class ServiceElementWriter implements AbstractElementWriter
       writer.writeAttribute( ServiceElementNames.ServiceElement_Base.getLocalPart(),
                              service.getBaseUri().toString() );
 
-      if ( service.getSuffix() != null && ! service.getSuffix().equals( ""))
+      if ( service.getSuffix() != null && service.getSuffix().length() != 0)
       {
         writer.writeAttribute( ServiceElementNames.ServiceElement_Suffix.getLocalPart(),
                                service.getSuffix() );
       }
-      if ( service.getDescription() != null && ! service.getDescription().equals( "" ) )
+      if ( service.getDescription() != null && service.getDescription().length() != 0 )
       {
         writer.writeAttribute( ServiceElementNames.ServiceElement_Description.getLocalPart(),
                                service.getDescription() );

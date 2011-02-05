@@ -641,7 +641,7 @@ public class InvDatasetScan extends InvCatalogRef {
     }
 
     // Split into parent path and dataset name.
-    int pos = dsDirPath.lastIndexOf( "/" );
+    int pos = dsDirPath.lastIndexOf('/');
     if ( pos == -1 )
     {
       log.error( "makeProxyDsResolverCatalog(): Requsting path <" + path + "> must contain a slash (\"/\")." );
@@ -748,7 +748,7 @@ public class InvDatasetScan extends InvCatalogRef {
      }
    } );
    String baseName = topDs.getName();
-   String latestName = baseName.equals( "" ) ? "Latest" : "Latest " + baseName;
+   String latestName = baseName.length() == 0 ? "Latest" : "Latest " + baseName;
    latestDs.setName( latestName );
 
    InvCatalog subsetCat = DeepCopyUtils.subsetCatalogOnDataset( cat, latestDs );

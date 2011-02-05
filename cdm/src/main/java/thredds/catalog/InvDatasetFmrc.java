@@ -564,7 +564,7 @@ public class InvDatasetFmrc extends InvCatalogRef {
    * @throws IOException if read error
    */
   public NetcdfDataset getDataset(String path) throws IOException {
-    int pos = path.indexOf("/");
+    int pos = path.indexOf('/');
     String type = (pos > -1) ? path.substring(0, pos) : path;
     String name = (pos > -1) ? path.substring(pos+1) : "";
 

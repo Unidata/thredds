@@ -154,7 +154,7 @@ public abstract class WcsRequest
     // <CoverageOfferingBrief>/description [0..1]
     // <CoverageOfferingBrief>/name [1]
     // <CoverageOfferingBrief>/label [1]
-    if ( covDescription != null && ! covDescription.equals( ""))
+    if ( covDescription != null && covDescription.length() != 0)
       briefElem.addContent( new Element( "description", wcsNS ).addContent( covDescription ) );
     briefElem.addContent( new Element( "name", wcsNS ).addContent( covName ) );
     briefElem.addContent( new Element( "label", wcsNS ).addContent( covLabel ) );

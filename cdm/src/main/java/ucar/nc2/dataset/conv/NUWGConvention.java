@@ -61,7 +61,7 @@ public class NUWGConvention extends CoordSysBuilder {
   private String xaxisName = "", yaxisName = "";
   private Grib1 grib;
 
-  private final boolean dumpNav = false;
+  private static final boolean dumpNav = false;
 
   public NUWGConvention() {
     this.conventionName = "NUWG";

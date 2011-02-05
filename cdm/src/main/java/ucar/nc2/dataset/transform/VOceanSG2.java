@@ -52,7 +52,7 @@ public class VOceanSG2 extends AbstractCoordTransBuilder {
     if (null == formula_terms) return null;
 
     // :formula_terms = "s: s_rho c: Cs_r eta: zeta depth: h  depth_c: hc";
-     String[] values = parseFormula(formula_terms, "s C eta depth depth_c");
+    String[] values = parseFormula(formula_terms, "s C eta depth depth_c");
     if (values == null) return null;
 
     s = values[0];
@@ -62,10 +62,10 @@ public class VOceanSG2 extends AbstractCoordTransBuilder {
     depth_c = values[4];
 
 
-    CoordinateTransform rs = new VerticalCT("OceanSG2_Transform_"+ctv.getName(), getTransformName(), VerticalCT.Type.OceanSG2, this);
+    CoordinateTransform rs = new VerticalCT("OceanSG2_Transform_" + ctv.getName(), getTransformName(), VerticalCT.Type.OceanSG2, this);
     rs.addParameter(new Parameter("standard_name", getTransformName()));
     rs.addParameter(new Parameter("formula_terms", formula_terms));
-    rs.addParameter((new Parameter("height_formula", "height(x,y,z) = eta(x,y) + (eta(x,y) + depth([n],x,y)) * ((depth_c*s(z) + depth([n],x,y)*C(z))/(depth_c+depth([n],x,y)))"))) ;
+    rs.addParameter((new Parameter("height_formula", "height(x,y,z) = eta(x,y) + (eta(x,y) + depth([n],x,y)) * ((depth_c*s(z) + depth([n],x,y)*C(z))/(depth_c+depth([n],x,y)))")));
     if (!addParameter(rs, OceanSG2.ETA, ds, eta)) return null;
     if (!addParameter(rs, OceanSG2.S, ds, s)) return null;
     if (!addParameter(rs, OceanSG2.DEPTH, ds, depth)) return null;
@@ -77,7 +77,7 @@ public class VOceanSG2 extends AbstractCoordTransBuilder {
   }
 
   public String toString() {
-     return "OceanSG2:" + " s:"+s + " c:"+c + " eta:"+eta + " depth:"+depth + " depth_c:"+depth_c;
+    return "OceanSG2:" + " s:" + s + " c:" + c + " eta:" + eta + " depth:" + depth + " depth_c:" + depth_c;
   }
 
   public ucar.unidata.geoloc.vertical.VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim, VerticalCT vCT) {

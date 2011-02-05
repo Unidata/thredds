@@ -296,7 +296,7 @@ public class Netcdf2Dataset extends RadialDatasetSweepAdapter implements TypedDa
     }
 
     public String getInfo() {
-      StringBuffer sbuff = new StringBuffer();
+      StringBuilder sbuff = new StringBuilder();
       sbuff.append("Netcdfs2Dataset\n");
       sbuff.append(super.getDetailInfo());
       sbuff.append("\n\n");

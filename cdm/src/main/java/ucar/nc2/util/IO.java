@@ -66,7 +66,7 @@ public class IO {
    * @return InputStream or null on failure
   */
   public static InputStream getFileResource( String resourcePath) {
-    if (cl == null) cl = (new IO()).getClass();
+    if (cl == null) cl = IO.class; // (new IO()).getClass();
 
     InputStream is = cl.getResourceAsStream(resourcePath);
     if (is != null) {

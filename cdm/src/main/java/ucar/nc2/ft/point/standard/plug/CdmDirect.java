@@ -51,7 +51,7 @@ import java.io.IOException;
  */
 public class CdmDirect extends TableConfigurerImpl {
 
-  private final String Convention = "CDM";
+  private static final String Convention = "CDM";
 
   public boolean isMine(FeatureType wantFeatureType, NetcdfDataset ds) {
     boolean ok = false;

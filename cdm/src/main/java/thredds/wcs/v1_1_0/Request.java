@@ -186,7 +186,7 @@ public class Request
 
   public String getDatasetName()
   {
-    int pos = datasetPath.lastIndexOf( "/");
+    int pos = datasetPath.lastIndexOf('/');
     return pos == -1 ? datasetPath : datasetPath.substring( pos + 1 );
   }
 

@@ -243,7 +243,7 @@ public class Nids2Dataset extends RadialDatasetSweepAdapter implements TypedData
   }
 
   public String getInfo() {
-    StringBuffer sbuff = new StringBuffer();
+    StringBuilder sbuff = new StringBuilder();
     sbuff.append("Nids2Dataset\n");
     sbuff.append(super.getDetailInfo());
     sbuff.append("\n\n");

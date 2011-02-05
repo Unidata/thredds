@@ -109,7 +109,7 @@ public class Fmrc {
   // private Element ncmlOuter, ncmlInner;
 
   // the current state - changing must be thread safe
-  private Object lock = new Object();
+  private final Object lock = new Object();
   private FmrcDataset fmrcDataset;
   private volatile boolean forceProto = false;
   private volatile long lastInvChanged;

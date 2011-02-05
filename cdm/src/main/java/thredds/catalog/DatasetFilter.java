@@ -42,7 +42,7 @@ import ucar.nc2.constants.FeatureType;
  * @author john caron
  */
 
-public abstract class DatasetFilter {
+public interface DatasetFilter {
 
   /**
    * Decision function as to whether to accept this dataset or not.
@@ -54,7 +54,7 @@ public abstract class DatasetFilter {
   /**
    * Filter a Catalog by the access service type.
    */
-  static public class ByServiceType extends DatasetFilter {
+  static public class ByServiceType implements DatasetFilter {
     private ServiceType type;
     public ByServiceType( ServiceType type) { this.type = type; }
 
@@ -77,7 +77,7 @@ public abstract class DatasetFilter {
   /**
    * Filter a Catalog by the dataset data type.
    */
-  static public class ByDataType extends DatasetFilter {
+  static public class ByDataType implements DatasetFilter {
     private FeatureType type;
     public ByDataType( FeatureType type) { this.type = type; }
 

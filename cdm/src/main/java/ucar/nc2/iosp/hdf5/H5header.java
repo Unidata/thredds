@@ -507,7 +507,7 @@ public class H5header {
   }  */
 
   private String addDimension(ucar.nc2.Group g, H5Group h5group, String name, int length, boolean isUnlimited) {
-    int pos = name.lastIndexOf("/");
+    int pos = name.lastIndexOf('/');
     String dimName = (pos > 0) ? name.substring(pos + 1) : name;
 
     Dimension d = h5group.dimMap.get(dimName); // first look in current group
@@ -527,7 +527,7 @@ public class H5header {
   }
 
   private String extendDimension(ucar.nc2.Group g, H5Group h5group, String name, int length) {
-    int pos = name.lastIndexOf("/");
+    int pos = name.lastIndexOf('/');
     String dimName = (pos > 0) ? name.substring(pos + 1) : name;
 
     Dimension d = h5group.dimMap.get(dimName); // first look in current group
@@ -1932,7 +1932,7 @@ public class H5header {
         long posMess = raf.getFilePointer();
         int count = readMessagesVersion2(posMess, sizeOfChunk, (flags & 4) != 0, this.who);
         if (debugContinueMessage) debugOut.println(" nmessages read = " + count);
-        if (debugPos) debugOut.println("<--done reading messages for <" + name + ">; position=" + raf.getFilePointer());
+        if (debugPos) debugOut.println("<--done reading messages for <" + who + ">; position=" + raf.getFilePointer());
       }
 
       // look for group or a datatype/dataspace/layout message

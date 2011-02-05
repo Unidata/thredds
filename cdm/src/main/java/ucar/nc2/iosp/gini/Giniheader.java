@@ -757,27 +757,27 @@ class Giniheader {
         int calcod = convertunsignedByte2Short(nv);
 
         if ( unitStr.contains("INCH") ) {
-            iname = new String( "RAIN" );
-            iunit = new String( "IN  ");
+            iname = "RAIN" ;
+            iunit = "IN  ";
 
         } else if ( unitStr.contains("dBz" ) ) {
-            iname = new String( "ECHO" );
-            iunit = new String( "dBz " );
+            iname = "ECHO" ;
+            iunit = "dBz " ;
 
         } else if (unitStr.contains("KFT" ) ) {
 
-            iname = new String( "TOPS");
-            iunit = new String( "KFT ");
+            iname = "TOPS";
+            iunit = "KFT ";
 
         } else if ( unitStr.contains("KG/M" ) ) {
 
-            iname = new String( "VIL " );
-            iunit = new String( "mm  " );
+            iname = "VIL ";
+            iunit = "mm  " ;
 
         } else {
 
-            iname = new String( "    " );
-            iunit = new String( "    " );
+            iname = "    " ;
+            iunit = "    " ;
         }
 
         if ( calcod > 0 ) {

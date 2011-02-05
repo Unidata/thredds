@@ -106,7 +106,7 @@ public abstract class InvDataset {
   public String getFullName() {
     return (parent == null)
         ? name
-        : (parent.getFullName() == null || parent.getFullName().equals(""))
+        : (parent.getFullName() == null || parent.getFullName().length() == 0)
         ? name
         : parent.getFullName() + "/" + name;
   }

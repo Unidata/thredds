@@ -517,7 +517,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
 
   static private String makeUncompressed(String filename) throws Exception {
     // see if its a compressed file
-    int pos = filename.lastIndexOf(".");
+    int pos = filename.lastIndexOf('.');
     if (pos < 0) return null;
 
     String suffix = filename.substring(pos + 1);
@@ -923,7 +923,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     String vars = fullNameEscaped;
 
     // break into group/group and var.var
-    int pos = fullNameEscaped.lastIndexOf("/");
+    int pos = fullNameEscaped.lastIndexOf('/');
     if (pos >= 0) {
       String groups = fullNameEscaped.substring(0,pos);
       vars = fullNameEscaped.substring(pos+1);

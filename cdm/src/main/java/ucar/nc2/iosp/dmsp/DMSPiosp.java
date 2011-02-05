@@ -749,7 +749,7 @@ public class DMSPiosp extends AbstractIOServiceProvider {
 
     public String toString()
     {
-      StringBuffer retVal = new StringBuffer();
+      StringBuilder retVal = new StringBuilder();
       retVal.append( "Variable(").append( this.getName()).append(",")
               .append( this.getLongName()).append( ",")
               .append( this.getUnits()).append( ",")

@@ -110,7 +110,7 @@ public class StandardCatalogBuilder implements CatalogBuilder
     // Check if it is a proxy dataset request.
     String dsName;
     String parentPath;
-    int indexLastSlash = path.lastIndexOf( "/" );
+    int indexLastSlash = path.lastIndexOf('/');
     if ( indexLastSlash != -1 )
     {
       dsName = path.substring( indexLastSlash + 1 );

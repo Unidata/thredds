@@ -35,9 +35,6 @@ package ucar.atd.dorade;
 import java.io.RandomAccessFile;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
@@ -45,14 +42,12 @@ import java.util.HashMap;
 
 /**
  * <p>Title: DoradeDescriptor</p>
- * <p>Description: Absract class to hold one of the many types of
+ * <p>Description: Abstract class to hold one of the many types of
  *    DORADE descriptors</p>
  * <p>Copyright: Copyright (c) 2003</p>
  * <p>Company: University Corporation for Atmospheric Research</p>
  * @author Chris Burghart
- * @version $Revision:51 $ $Date:2006-07-12 17:13:13Z $
  */
-/* $Id:DoradeDescriptor.java 51 2006-07-12 17:13:13Z caron $ */
 
 abstract class DoradeDescriptor {
 
@@ -65,7 +60,7 @@ abstract class DoradeDescriptor {
     protected static final TimeZone TZ_UTC = TimeZone.getTimeZone("UTC");
     private static boolean defaultVerboseState = false;
     // map from descriptor names to per-class default verbose states
-    private static HashMap classVerboseStates = new HashMap();
+    private static HashMap<String,Boolean> classVerboseStates = new HashMap<String,Boolean>();
 
     /**
      * <p>Title: DescriptorException</p>
@@ -397,10 +392,9 @@ abstract class DoradeDescriptor {
      * verbose state will apply
      */
     public static boolean getDefaultVerboseState(String descriptorName) {
-        Boolean classVerboseState =
-                (Boolean)classVerboseStates.get(descriptorName.toUpperCase());
+        Boolean classVerboseState = classVerboseStates.get(descriptorName.toUpperCase());
         if (classVerboseState != null)
-            return classVerboseState.booleanValue();
+            return classVerboseState;
         else
             return defaultVerboseState;
     }
@@ -414,7 +408,6 @@ abstract class DoradeDescriptor {
      */
     public static void setDefaultVerboseState(String descriptorName,
                                               boolean verbose) {
-        classVerboseStates.put(descriptorName.toUpperCase(),
-                               new Boolean(verbose));
+        classVerboseStates.put(descriptorName.toUpperCase(), verbose);
     }
 }

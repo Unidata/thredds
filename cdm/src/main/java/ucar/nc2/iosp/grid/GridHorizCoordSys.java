@@ -245,7 +245,7 @@ public class GridHorizCoordSys {
     String gridUnit = gds.getParam(GridDefRecord.GRID_UNITS);
     SimpleUnit unit = null;
 
-    if (gridUnit == null || gridUnit.equals("")) {
+    if (gridUnit == null || gridUnit.length() == 0) {
       unit = SimpleUnit.meterUnit;
     } else {
       unit = SimpleUnit.factory(gridUnit);

@@ -1677,7 +1677,7 @@ public class MetarParseReport {
         if (m.find()) {
             remark = m.replaceFirst("");
         }
-        if( ! remark.equals( "" )) {
+        if( remark.length() != 0) {
             field.put("Extra_fields", remark );
             unit.put("Extra_fields", "");
         }

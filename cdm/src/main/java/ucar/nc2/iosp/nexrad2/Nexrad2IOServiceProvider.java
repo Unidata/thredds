@@ -93,8 +93,8 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
             makeVariable2( ncfile, Level2Record.VELOCITY_HIGH, "RadialVelocity", "Radial Velocity", "V", volScan);
 
         if( volScan.getHighResSpectrumGroups() != null) {
-            List<Level2Record> gps = volScan.getHighResSpectrumGroups();
-            List<Level2Record> gp = (List)gps.get(0);
+            List<List<Level2Record>> gps = volScan.getHighResSpectrumGroups();
+            List<Level2Record> gp = gps.get(0);
             Level2Record record = gp.get(0);
             if(v1 != null)
                 makeVariableNoCoords( ncfile, Level2Record.SPECTRUM_WIDTH_HIGH, "SpectrumWidth_HI", "Radial Spectrum_HI", v1, record);
@@ -103,7 +103,7 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
         }
     }
 
-    List<Level2Record> gps = volScan.getHighResDiffReflectGroups();
+    List<List<Level2Record>> gps = volScan.getHighResDiffReflectGroups();
     if( gps != null) {
         makeVariable2( ncfile, Level2Record.DIFF_REFLECTIVITY_HIGH, "DifferentialReflectivity", "Differential Reflectivity", "D", volScan);
     }
@@ -124,7 +124,7 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
         int velocity_type =  (volScan.getDopplarResolution() == Level2Record.DOPPLER_RESOLUTION_HIGH_CODE) ? Level2Record.VELOCITY_HI : Level2Record.VELOCITY_LOW;
         Variable v = makeVariable( ncfile, velocity_type, "RadialVelocity", "Radial Velocity", "V", volScan.getVelocityGroups(), 0);
         gps = volScan.getVelocityGroups();
-        List<Level2Record> gp = (List)gps.get(0);
+        List<Level2Record> gp = gps.get(0);
         Level2Record record = gp.get(0);
         makeVariableNoCoords( ncfile, Level2Record.SPECTRUM_WIDTH, "SpectrumWidth", "Spectrum Width", v, record);
     }
@@ -195,7 +195,7 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
   }
 
   public void makeVariable2(NetcdfFile ncfile, int datatype, String shortName, String longName, String abbrev, Level2VolumeScan vScan) throws IOException {
-      List groups = null;
+      List<List<Level2Record>> groups = null;
 
       if( shortName.startsWith("Reflectivity"))
         groups = vScan.getHighResReflectivityGroups();
@@ -214,12 +214,12 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
       throw new IllegalStateException("No data for "+shortName);
     }
 
-    ArrayList firstGroup = new ArrayList(groups.size());
-    ArrayList secondGroup = new ArrayList(groups.size());
+    List<List<Level2Record>> firstGroup = new ArrayList<List<Level2Record>>(groups.size());
+    List<List<Level2Record>> secondGroup = new ArrayList<List<Level2Record>>(groups.size());
 
     for(int i = 0; i < nscans; i++) {
-        List o = (List) groups.get(i);
-        Level2Record firstRecord = (Level2Record)o.get(0);
+        List<Level2Record> o = groups.get(i);
+        Level2Record firstRecord = (Level2Record) o.get(0);
         int ol = o.size();
         
         if(ol >= 720 )
@@ -247,7 +247,7 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
       return maxRadials;
   }
 
-  public Variable makeVariable(NetcdfFile ncfile, int datatype, String shortName, String longName, String abbrev, List groups, int rd) throws IOException {
+  public Variable makeVariable(NetcdfFile ncfile, int datatype, String shortName, String longName, String abbrev, List<List<Level2Record>> groups, int rd) throws IOException {
     int nscans = groups.size();
 
     if (nscans == 0) {
@@ -255,7 +255,7 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
     }
 
     // get representative record
-    List<Level2Record> firstGroup = (List)groups.get(0);
+    List<Level2Record> firstGroup = groups.get(0);
     Level2Record firstRecord = firstGroup.get(0);
     int ngates = firstRecord.getGateCount(datatype);
 
@@ -391,7 +391,7 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
     Level2Record[][] map = new Level2Record[nscans][nradials];
     for (int i = 0; i < groups.size(); i++) {
       Level2Record[] mapScan = map[i];
-      List<Level2Record> group = (List) groups.get(i);
+      List<Level2Record> group = groups.get(i);
       for (Level2Record r : group) {
         int radial = r.radial_num - 1;
         mapScan[radial] = r;

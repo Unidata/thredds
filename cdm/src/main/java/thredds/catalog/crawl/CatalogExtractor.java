@@ -219,7 +219,7 @@ public class CatalogExtractor implements CatalogCrawler.Listener {
 
   private void transfer(String url, String copyToDir) {
     String new_url = StringUtil.substitute(url, "dodsC", "fileServer");
-    int pos = url.lastIndexOf("/");
+    int pos = url.lastIndexOf('/');
     String filename = url.substring(pos + 1);
     File file = new File(copyToDir, filename);
     IO.readURLtoFile(new_url, file);

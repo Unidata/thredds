@@ -191,7 +191,7 @@ public class WKTParser {
      * @throws ParseException _more_
      */
     private double eatReal() throws ParseException {
-        StringBuffer b = new StringBuffer();
+        StringBuilder b = new StringBuilder();
         for (;;) {
             char t = peek();
             if (Character.isDigit(t) || (t == 'e') || (t == 'E')
@@ -216,7 +216,7 @@ public class WKTParser {
      * @throws ParseException _more_
      */
     private String eatString() throws ParseException {
-        StringBuffer b = new StringBuffer();
+        StringBuilder b = new StringBuilder();
         if (getChar() != '"') {
             throw new ParseException("expected string", position);
         }
@@ -239,7 +239,7 @@ public class WKTParser {
      * @throws ParseException _more_
      */
     private String eatTerm() throws ParseException {
-        StringBuffer b = new StringBuffer();
+        StringBuilder b = new StringBuilder();
         for (;;) {
             char val = peek();
             if ( !Character.isJavaIdentifierPart(val)) {

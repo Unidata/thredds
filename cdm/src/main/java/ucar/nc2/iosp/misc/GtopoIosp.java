@@ -59,7 +59,7 @@ public class GtopoIosp extends AbstractIOServiceProvider {
     String location = raf.getLocation();
     if (!location.endsWith(".DEM")) return false;
 
-    int pos = location.lastIndexOf(".");
+    int pos = location.lastIndexOf('.');
     String stub = location.substring(0, pos);
     File hdrFile = new File(stub + ".HDR");
     return hdrFile.exists();
@@ -124,7 +124,7 @@ public class GtopoIosp extends AbstractIOServiceProvider {
 
   private void readHDR() throws IOException {
     String location = raf.getLocation();
-    int pos = location.lastIndexOf(".");
+    int pos = location.lastIndexOf('.');
     String HDRname = location.substring(0, pos) + ".HDR";
     String HDRcontents = IO.readFile(HDRname);
     StringTokenizer stoke = new StringTokenizer(HDRcontents);

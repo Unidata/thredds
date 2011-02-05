@@ -254,7 +254,7 @@ public class UF2Dataset extends RadialDatasetSweepAdapter implements TypedDatase
   }
 
   public String getInfo() {
-    StringBuffer sbuff = new StringBuffer();
+    StringBuilder sbuff = new StringBuilder();
     sbuff.append("UF2Dataset\n");
     sbuff.append(super.getDetailInfo());
     sbuff.append("\n\n");

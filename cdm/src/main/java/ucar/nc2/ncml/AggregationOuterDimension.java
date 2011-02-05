@@ -556,7 +556,7 @@ public abstract class AggregationOuterDimension extends Aggregation implements P
 
       if ((type == Type.joinNew) || (type == Type.joinExistingOne) || (type == Type.forecastModelRunCollection)) {
         if (coordValueS == null) {
-          int pos = this.location.lastIndexOf("/");
+          int pos = this.location.lastIndexOf('/');
           this.coordValue = (pos < 0) ? this.location : this.location.substring(pos + 1);
           this.isStringValued = true;
         } else {
@@ -585,7 +585,7 @@ public abstract class AggregationOuterDimension extends Aggregation implements P
       // default is that the coordinates are just the filenames
       // this can be overriden by an explicit declaration, which will replace the variable afte ther agg is processed in NcMLReader
       if ((type == Type.joinNew) || (type == Type.joinExistingOne) || (type == Type.forecastModelRunCollection)) {
-        int pos = this.location.lastIndexOf("/");
+        int pos = this.location.lastIndexOf('/');
         this.coordValue = (pos < 0) ? this.location : this.location.substring(pos + 1);
         this.isStringValued = true;
       }

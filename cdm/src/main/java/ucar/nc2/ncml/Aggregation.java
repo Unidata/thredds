@@ -559,7 +559,7 @@ public abstract class Aggregation {
    * Encapsolates a NetcdfFile that is a component of the aggregation.
    */
   public class Dataset implements Comparable {
-    protected String location; // location attribute on the netcdf element
+    protected final String location; // location attribute on the netcdf element
     protected String id; // id attribute on the netcdf element
 
     // deferred opening

@@ -206,8 +206,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
   }
 
   public static InputStream sendQuery(String remoteURI, String query)
-          throws IOException
-  {
+          throws IOException {
 
     HTTPSession session = null;
     HTTPMethod method = null;
@@ -224,27 +223,27 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
 
     try {
 
-    try {
-    session = new HTTPSession();
-    method = session.newMethodGet(sbuff.toString());
-    statusCode = method.execute();
-    } catch (HTTPException he) {
+      try {
+        session = new HTTPSession();
+        method = session.newMethodGet(sbuff.toString());
+        statusCode = method.execute();
+      } catch (HTTPException he) {
         throw new IOException(he);
-    }
+      }
 
-    if (statusCode == 404)
-      throw new FileNotFoundException(method.getPath() + " " + method.getStatusLine());
+      if (statusCode == 404)
+        throw new FileNotFoundException(method.getPath() + " " + method.getStatusLine());
 
-    if (statusCode >= 300)
-      throw new IOException(method.getPath() + " " + method.getStatusLine());
+      if (statusCode >= 300)
+        throw new IOException(method.getPath() + " " + method.getStatusLine());
 
-    stream = method.getResponseBodyAsStream();
-    hmstream = new HTTPMethodStream(session,method,stream);
-    return hmstream;
+      stream = method.getResponseBodyAsStream();
+      hmstream = new HTTPMethodStream(session, method, stream);
+      return hmstream;
 
     } catch (IOException ioe) {
-        if(session != null) session.close();
-       throw ioe;
+      if (session != null) session.close();
+      throw ioe;
     }
   }
 
@@ -329,9 +328,8 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
   }
 
   @Override
-  public  void close() throws java.io.IOException
-  {
-      if(httpClient != null) httpClient.close();
+  public synchronized void close() throws java.io.IOException {
+    if (httpClient != null) httpClient.close();
   }
 
 }

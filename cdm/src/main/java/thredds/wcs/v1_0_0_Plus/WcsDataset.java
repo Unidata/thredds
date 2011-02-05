@@ -59,7 +59,7 @@ public class WcsDataset
   public WcsDataset( GridDataset dataset, String datasetPath )
   {
     this.datasetPath = datasetPath;
-    int pos = datasetPath.lastIndexOf( "/" );
+    int pos = datasetPath.lastIndexOf('/');
     this.datasetName = ( pos > 0 ) ? datasetPath.substring( pos + 1 ) : datasetPath;
     this.dataset = dataset;
 

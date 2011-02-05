@@ -338,7 +338,7 @@ public class ADNWriter {
     contributor.addContent( organization);
 
     String name = p.getNameVocab().getText();
-    int pos = name.indexOf("/");
+    int pos = name.indexOf('/');
     if (pos > 0) {
       organization.addContent( new Element("instName", defNS).addContent(name.substring(0,pos)));
       organization.addContent( new Element("instDept", defNS).addContent(name.substring(pos+1)));

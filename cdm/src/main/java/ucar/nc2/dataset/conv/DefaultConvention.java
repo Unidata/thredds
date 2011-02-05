@@ -87,7 +87,7 @@ public class DefaultConvention extends CoordSysBuilder {
         if (!(ncvar instanceof VariableDS)) continue; // cant be a structure
 
         String dimName = findAlias(ds, ncvar);
-        if (dimName.equals("")) // none
+        if (dimName.length() == 0) // none
           continue;
         Dimension dim = ds.findDimension(dimName);
         if (null != dim) {

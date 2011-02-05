@@ -34,12 +34,10 @@
 package ucar.nc2.ft.point.remote;
 
 import ucar.nc2.ft.PointFeature;
-import ucar.nc2.ft.PointFeatureCollection;
 import ucar.nc2.ft.point.PointFeatureImpl;
 import ucar.nc2.iosp.IospHelper;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.stream.NcStream;
-import ucar.nc2.stream.NcStreamProto;
 import ucar.unidata.geoloc.EarthLocation;
 import ucar.unidata.geoloc.EarthLocationImpl;
 import ucar.unidata.geoloc.Station;
@@ -168,7 +166,7 @@ public class PointStream {
         if (ho instanceof String)
           builder.addSdata((String) ho);
         else if (ho instanceof String[])
-          builder.addSdata((String) ho);
+          builder.addSdata((String) ho);  // LOOK cast != instance
         else
           throw new IllegalStateException("illegal object on heap = "+ho);
       }

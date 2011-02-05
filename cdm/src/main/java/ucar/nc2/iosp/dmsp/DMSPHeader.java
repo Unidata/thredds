@@ -644,7 +644,7 @@ public class DMSPHeader
    */
   protected String headerInfoDump()
   {
-    StringBuffer retVal = new StringBuffer( );
+    StringBuilder retVal = new StringBuilder( );
 
     Iterator it = this.headerInfo.keySet().iterator();
     String curHeaderTitle = null;

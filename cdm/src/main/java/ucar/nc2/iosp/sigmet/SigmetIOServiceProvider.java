@@ -893,7 +893,7 @@ public class SigmetIOServiceProvider  extends AbstractIOServiceProvider {
      * @return time as string "hh:mm:ss"
      */
     static String calcTime(int t, int t0) {
-        StringBuffer tim=new StringBuffer();
+        StringBuilder tim=new StringBuilder();
         int[] tt=new int[3];
         int mmh=(t+t0)/60;
         tt[2]=(t+t0)%60;                  // Define SEC

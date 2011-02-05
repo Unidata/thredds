@@ -60,15 +60,15 @@ public class AWIPSConvention extends CoordSysBuilder {
    * @param ncfile the NetcdfFile to test
    * @return true if we think this is a AWIPS file.
    */
-  public static boolean isMine( NetcdfFile ncfile) {
+  public static boolean isMine(NetcdfFile ncfile) {
     return (null != ncfile.findGlobalAttribute("projName")) &&
-       (null != ncfile.findDimension("charsPerLevel")) &&
-       (null != ncfile.findDimension("x")) &&
-       (null != ncfile.findDimension("y"));
+            (null != ncfile.findDimension("charsPerLevel")) &&
+            (null != ncfile.findDimension("x")) &&
+            (null != ncfile.findDimension("y"));
   }
 
-  private final boolean debugProj = false;
-  private final boolean debugBreakup = false;
+  private static final boolean debugProj = false;
+  private static final boolean debugBreakup = false;
 
   private List<Variable> mungedList = new ArrayList<Variable>();
   private ProjectionCT projCT = null;
@@ -78,7 +78,7 @@ public class AWIPSConvention extends CoordSysBuilder {
     this.conventionName = "AWIPS";
   }
 
-  public void augmentDataset( NetcdfDataset ds, CancelTask cancelTask) {
+  public void augmentDataset(NetcdfDataset ds, CancelTask cancelTask) {
     if (null != ds.findVariable("x")) return; // check if its already been done - aggregating enhanced datasets.
 
     Dimension dimx = ds.findDimension("x");
@@ -89,25 +89,25 @@ public class AWIPSConvention extends CoordSysBuilder {
 
     String projName = ds.findAttValueIgnoreCase(null, "projName", "none");
     if (projName.equalsIgnoreCase("LATLON")) {
-      ds.addCoordinateAxis( makeLonCoordAxis( ds, nx, "x"));
-      ds.addCoordinateAxis( makeLatCoordAxis( ds, ny, "y"));
+      ds.addCoordinateAxis(makeLonCoordAxis(ds, nx, "x"));
+      ds.addCoordinateAxis(makeLatCoordAxis(ds, ny, "y"));
     } else if (projName.equalsIgnoreCase("LAMBERT_CONFORMAL")) {
       projCT = makeLCProjection(ds, projName);
-      ds.addCoordinateAxis( makeXCoordAxis( ds, nx, "x"));
-      ds.addCoordinateAxis( makeYCoordAxis( ds, ny, "y"));
+      ds.addCoordinateAxis(makeXCoordAxis(ds, nx, "x"));
+      ds.addCoordinateAxis(makeYCoordAxis(ds, ny, "y"));
     } else if (projName.equalsIgnoreCase("STEREOGRAPHIC")) {
       projCT = makeStereoProjection(ds, projName);
-      ds.addCoordinateAxis( makeXCoordAxis( ds, nx, "x"));
-      ds.addCoordinateAxis( makeYCoordAxis( ds, ny, "y"));
+      ds.addCoordinateAxis(makeXCoordAxis(ds, nx, "x"));
+      ds.addCoordinateAxis(makeYCoordAxis(ds, ny, "y"));
     }
 
 
-    CoordinateAxis timeCoord = makeTimeCoordAxis( ds);
+    CoordinateAxis timeCoord = makeTimeCoordAxis(ds);
     if (timeCoord != null) {
-      ds.addCoordinateAxis( timeCoord);
-      Dimension d =  timeCoord.getDimension(0);
-      if (!d.getName().equals( timeCoord.getShortName()) )
-        timeCoord.addAttribute( new Attribute(_Coordinate.AliasForDimension, d.getName()));
+      ds.addCoordinateAxis(timeCoord);
+      Dimension d = timeCoord.getDimension(0);
+      if (!d.getName().equals(timeCoord.getShortName()))
+        timeCoord.addAttribute(new Attribute(_Coordinate.AliasForDimension, d.getName()));
     }
 
     // AWIPS cleverly combines multiple z levels into a single variable (!!)
@@ -130,15 +130,15 @@ public class AWIPSConvention extends CoordSysBuilder {
     }
 
     if (projCT != null) {
-        VariableDS v = makeCoordinateTransformVariable(ds, projCT);
-        v.addAttribute( new Attribute(_Coordinate.Axes, "x y"));
-        ds.addVariable(null, v);
+      VariableDS v = makeCoordinateTransformVariable(ds, projCT);
+      v.addAttribute(new Attribute(_Coordinate.Axes, "x y"));
+      ds.addVariable(null, v);
     }
 
 
     ds.finish();
 
-      // kludge in fixing the units
+    // kludge in fixing the units
     List<Variable> vlist = ds.getVariables();
     for (Variable v : vlist) {
       Attribute att = v.findAttributeIgnoreCase("units");
@@ -151,13 +151,14 @@ public class AWIPSConvention extends CoordSysBuilder {
   }
 
   // pretty much WRF specific
-  private String normalize( String units) {
-    if (units.equals("/second")) units="1/sec";
-    if (units.equals("degrees K")) units="K";
+
+  private String normalize(String units) {
+    if (units.equals("/second")) units = "1/sec";
+    if (units.equals("degrees K")) units = "K";
     else {
-      units = StringUtil.substitute( units, "**", "^");
-      units = StringUtil.remove( units, ')');
-      units = StringUtil.remove( units, '(');
+      units = StringUtil.substitute(units, "**", "^");
+      units = StringUtil.remove(units, ')');
+      units = StringUtil.remove(units, '(');
     }
     return units;
   }
@@ -165,7 +166,8 @@ public class AWIPSConvention extends CoordSysBuilder {
   // LOOK not dealing with "FHAG 0 10 ", "FHAG 0 30 "
   // take a combined level variable and create multiple levels out of it
   // return the list of Dimensions that were created
-  private List<Dimension> breakupLevels( NetcdfDataset ds, Variable levelVar) throws IOException {
+
+  private List<Dimension> breakupLevels(NetcdfDataset ds, Variable levelVar) throws IOException {
     if (debugBreakup) parseInfo.format("breakupLevels = %s\n", levelVar.getName());
     List<Dimension> dimList = new ArrayList<Dimension>();
 
@@ -198,7 +200,7 @@ public class AWIPSConvention extends CoordSysBuilder {
       String units = stoke.nextToken().trim();
       if (!units.equals(currentUnits)) {
         if (values != null)
-          dimList.add( makeZCoordAxis(ds, values, currentUnits));
+          dimList.add(makeZCoordAxis(ds, values, currentUnits));
         values = new ArrayList<String>();
         currentUnits = units;
       }
@@ -218,14 +220,15 @@ public class AWIPSConvention extends CoordSysBuilder {
   }
 
   // make a new variable out of the list in "values"
-  private Dimension makeZCoordAxis( NetcdfDataset ds, List<String> values, String units) throws IOException {
+
+  private Dimension makeZCoordAxis(NetcdfDataset ds, List<String> values, String units) throws IOException {
     int len = values.size();
-    String name = makeZCoordName( units);
+    String name = makeZCoordName(units);
     if (len > 1)
       name = name + Integer.toString(len);
     else
       name = name + values.get(0);
-    StringUtil.replace(  name, ' ', "-");
+    StringUtil.replace(name, ' ', "-");
 
     Dimension dim;
     if (null != (dim = ds.getRootGroup().findDimension(name))) {
@@ -244,13 +247,13 @@ public class AWIPSConvention extends CoordSysBuilder {
     String orgName = name;
     int count = 1;
     while (ds.getRootGroup().findDimension(name) != null) {
-      name = orgName + "-"+count;
+      name = orgName + "-" + count;
       count++;
     }
 
     // create new one
     dim = new Dimension(name, len);
-    ds.addDimension( null, dim);
+    ds.addDimension(null, dim);
     if (debugBreakup) parseInfo.format("  make Dimension = %s length = %d\n", name, len);
 
     // if (len < 2) return dim; // skip 1D
@@ -259,13 +262,13 @@ public class AWIPSConvention extends CoordSysBuilder {
       parseInfo.format("  make ZCoordAxis = = %s length = %d\n", name, len);
     }
 
-    CoordinateAxis v = new CoordinateAxis1D( ds, null, name, DataType.DOUBLE, name,
-       makeUnitsName( units), makeLongName(name));
-    String positive = getZisPositive( ds, v);
+    CoordinateAxis v = new CoordinateAxis1D(ds, null, name, DataType.DOUBLE, name,
+            makeUnitsName(units), makeLongName(name));
+    String positive = getZisPositive(ds, v);
     if (null != positive)
-      v.addAttribute( new Attribute(_Coordinate.ZisPositive, positive));
+      v.addAttribute(new Attribute(_Coordinate.ZisPositive, positive));
 
-    ds.setValues( v, values);
+    ds.setValues(v, values);
     ds.addCoordinateAxis(v);
 
     parseInfo.format("Created Z Coordinate Axis = ");
@@ -305,8 +308,9 @@ public class AWIPSConvention extends CoordSysBuilder {
   }
 
   // create new variables as sections of ncVar
-  private void createNewVariables( NetcdfDataset ds, Variable ncVar, List<Dimension> newDims,
-     Dimension levelDim) throws InvalidRangeException {
+
+  private void createNewVariables(NetcdfDataset ds, Variable ncVar, List<Dimension> newDims,
+                                  Dimension levelDim) throws InvalidRangeException {
 
     List<Dimension> dims = ncVar.getDimensions();
     int newDimIndex = dims.indexOf(levelDim);
@@ -344,11 +348,11 @@ public class AWIPSConvention extends CoordSysBuilder {
   /////////////////////////////////////////////////////////////////////////
 
 
-  protected AxisType getAxisType( NetcdfDataset ds, VariableEnhanced ve) {
+  protected AxisType getAxisType(NetcdfDataset ds, VariableEnhanced ve) {
     Variable v = (Variable) ve;
     String vname = v.getName();
 
-   if (vname.equalsIgnoreCase("x"))
+    if (vname.equalsIgnoreCase("x"))
       return AxisType.GeoX;
 
     if (vname.equalsIgnoreCase("lon"))
@@ -368,10 +372,10 @@ public class AWIPSConvention extends CoordSysBuilder {
 
     String unit = ve.getUnitsString();
     if (unit != null) {
-      if ( SimpleUnit.isCompatible("millibar", unit))
+      if (SimpleUnit.isCompatible("millibar", unit))
         return AxisType.Pressure;
 
-      if ( SimpleUnit.isCompatible("m", unit))
+      if (SimpleUnit.isCompatible("m", unit))
         return AxisType.Height;
     }
 
@@ -379,16 +383,16 @@ public class AWIPSConvention extends CoordSysBuilder {
     return AxisType.GeoZ;
   }
 
-  protected void makeCoordinateTransforms( NetcdfDataset ds) {
+  protected void makeCoordinateTransforms(NetcdfDataset ds) {
     if (projCT != null) {
       VarProcess vp = findVarProcess(projCT.getName());
       vp.isCoordinateTransform = true;
       vp.ct = projCT;
     }
-    super.makeCoordinateTransforms( ds);
+    super.makeCoordinateTransforms(ds);
   }
 
-  private String getZisPositive( NetcdfDataset ds, CoordinateAxis v) {
+  private String getZisPositive(NetcdfDataset ds, CoordinateAxis v) {
 
     String attValue = ds.findAttValueIgnoreCase(v, "positive", null);
     if (null != attValue)
@@ -400,21 +404,21 @@ public class AWIPSConvention extends CoordSysBuilder {
     if ((unit != null) && SimpleUnit.isCompatible("m", unit))
       return "up";
 
-      // dunno
+    // dunno
     return null;
   }
 
   private ProjectionCT makeLCProjection(NetcdfDataset ds, String name) throws NoSuchElementException {
-    double centralLat = findAttributeDouble( ds, "centralLat");
-    double centralLon = findAttributeDouble( ds, "centralLon");
-    double rotation = findAttributeDouble( ds, "rotation");
+    double centralLat = findAttributeDouble(ds, "centralLat");
+    double centralLon = findAttributeDouble(ds, "centralLon");
+    double rotation = findAttributeDouble(ds, "rotation");
 
     // we have to project in order to find the origin
     LambertConformal lc = new LambertConformal(rotation, centralLon, centralLat, centralLat);
-    double lat0 = findAttributeDouble( ds, "lat00");
-    double lon0 = findAttributeDouble( ds, "lon00");
-    ProjectionPointImpl start = (ProjectionPointImpl) lc.latLonToProj( new LatLonPointImpl( lat0, lon0));
-    if (debugProj) parseInfo.format("getLCProjection start at proj coord %s\n",start);
+    double lat0 = findAttributeDouble(ds, "lat00");
+    double lon0 = findAttributeDouble(ds, "lon00");
+    ProjectionPointImpl start = (ProjectionPointImpl) lc.latLonToProj(new LatLonPointImpl(lat0, lon0));
+    if (debugProj) parseInfo.format("getLCProjection start at proj coord %s\n", start);
     startx = start.getX();
     starty = start.getY();
 
@@ -422,32 +426,32 @@ public class AWIPSConvention extends CoordSysBuilder {
   }
 
   private ProjectionCT makeStereoProjection(NetcdfDataset ds, String name) throws NoSuchElementException {
-    double centralLat = findAttributeDouble( ds, "centralLat");
-    double centralLon = findAttributeDouble( ds, "centralLon");
-    double rotation = findAttributeDouble( ds, "rotation");
+    double centralLat = findAttributeDouble(ds, "centralLat");
+    double centralLon = findAttributeDouble(ds, "centralLon");
+    double rotation = findAttributeDouble(ds, "rotation");
 
     // scale factor at lat = k = 2*k0/(1+sin(lat))  [Snyder,Working Manual p157]
     // then to make scale = 1 at lat, k0 = (1+sin(lat))/2
-    double latDxDy = findAttributeDouble( ds, "latDxDy");
-    double latR = Math.toRadians( latDxDy);
-    double scale = (1.0 + Math.abs(Math.sin( latR))) / 2;  // thanks to R Schmunk
+    double latDxDy = findAttributeDouble(ds, "latDxDy");
+    double latR = Math.toRadians(latDxDy);
+    double scale = (1.0 + Math.abs(Math.sin(latR))) / 2;  // thanks to R Schmunk
 
     // Stereographic(double latt, double lont, double scale)
 
     Stereographic proj = new Stereographic(centralLat, centralLon, scale);
     // we have to project in order to find the origin
-    double lat0 = findAttributeDouble( ds, "lat00");
-    double lon0 = findAttributeDouble( ds, "lon00");
-    ProjectionPointImpl start = (ProjectionPointImpl) proj.latLonToProj( new LatLonPointImpl( lat0, lon0));
+    double lat0 = findAttributeDouble(ds, "lat00");
+    double lon0 = findAttributeDouble(ds, "lon00");
+    ProjectionPointImpl start = (ProjectionPointImpl) proj.latLonToProj(new LatLonPointImpl(lat0, lon0));
     startx = start.getX();
     starty = start.getY();
 
     // projection info
     parseInfo.format("---makeStereoProjection start at proj coord %s\n", start);
 
-    double latN = findAttributeDouble( ds, "latNxNy");
-    double lonN = findAttributeDouble( ds, "lonNxNy");
-    ProjectionPointImpl pt = (ProjectionPointImpl) proj.latLonToProj( new LatLonPointImpl( latN, lonN));
+    double latN = findAttributeDouble(ds, "latNxNy");
+    double lonN = findAttributeDouble(ds, "lonNxNy");
+    ProjectionPointImpl pt = (ProjectionPointImpl) proj.latLonToProj(new LatLonPointImpl(latN, lonN));
     parseInfo.format("                        end at proj coord %s\n", pt);
     parseInfo.format("                        scale= %f\n", scale);
 
@@ -466,10 +470,10 @@ public class AWIPSConvention extends CoordSysBuilder {
     return v;
   }
 
-  private CoordinateAxis makeYCoordAxis( NetcdfDataset ds, int ny, String yname) {
-    double dy = findAttributeDouble( ds, "dyKm");
-    CoordinateAxis v = new CoordinateAxis1D( ds, null, yname, DataType.DOUBLE, yname, "km", "y on projection");
-    ds.setValues( v, ny, starty, dy);
+  private CoordinateAxis makeYCoordAxis(NetcdfDataset ds, int ny, String yname) {
+    double dy = findAttributeDouble(ds, "dyKm");
+    CoordinateAxis v = new CoordinateAxis1D(ds, null, yname, DataType.DOUBLE, yname, "km", "y on projection");
+    ds.setValues(v, ny, starty, dy);
 
     parseInfo.format("Created Y Coordinate Axis = ");
     v.getNameAndDimensions(parseInfo, true, false);
@@ -486,7 +490,7 @@ public class AWIPSConvention extends CoordSysBuilder {
 
     CoordinateAxis v = new CoordinateAxis1D(ds, null, xname, DataType.DOUBLE, xname, "degrees_east", "longitude");
     ds.setValues(v, n, min, d);
-    v.addAttribute( new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
+    v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
 
     double maxCalc = min + d * n;
     parseInfo.format("Created Lon Coordinate Axis (max calc= %f shoule be = %f)\n", maxCalc, max);
@@ -504,7 +508,7 @@ public class AWIPSConvention extends CoordSysBuilder {
 
     CoordinateAxis v = new CoordinateAxis1D(ds, null, xname, DataType.DOUBLE, xname, "degrees_north", "latitude");
     ds.setValues(v, n, min, d);
-    v.addAttribute( new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
+    v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
 
     double maxCalc = min + d * n;
     parseInfo.format("Created Lat Coordinate Axis (max calc= %f should be = %f)\n", maxCalc, max);
@@ -514,7 +518,7 @@ public class AWIPSConvention extends CoordSysBuilder {
     return v;
   }
 
-  private CoordinateAxis makeTimeCoordAxis( NetcdfDataset ds) {
+  private CoordinateAxis makeTimeCoordAxis(NetcdfDataset ds) {
     Variable timeVar = ds.findVariable("valtimeMINUSreftime");
     Dimension recordDim = ds.findDimension("record");
     Array vals;
@@ -531,7 +535,7 @@ public class AWIPSConvention extends CoordSysBuilder {
     int valLen = (int) vals.getSize();
     if (recLen != valLen) {
       try {
-        vals = vals.sectionNoReduce(new int[] {0}, new int[] {recordDim.getLength()}, null);
+        vals = vals.sectionNoReduce(new int[]{0}, new int[]{recordDim.getLength()}, null);
         parseInfo.format(" corrected the TimeCoordAxis length\n");
       } catch (InvalidRangeException e) {
         parseInfo.format("makeTimeCoordAxis InvalidRangeException\n");
@@ -545,9 +549,9 @@ public class AWIPSConvention extends CoordSysBuilder {
 
     // create the coord axis
     String desc = "synthesized time coordinate from valtimeMINUSreftime and filename YYYYMMDD_HHMM";
-    CoordinateAxis1D timeCoord = new CoordinateAxis1D( ds, null, "timeCoord", DataType.INT, "record", units, desc);
+    CoordinateAxis1D timeCoord = new CoordinateAxis1D(ds, null, "timeCoord", DataType.INT, "record", units, desc);
 
-    timeCoord.setCachedData( vals, true);
+    timeCoord.setCachedData(vals, true);
 
     parseInfo.format("Created Time Coordinate Axis = ");
     timeCoord.getNameAndDimensions(parseInfo, true, false);
@@ -556,35 +560,36 @@ public class AWIPSConvention extends CoordSysBuilder {
     return timeCoord;
   }
 
-  private String makeTimeUnitFromFilename( String dsName) {
-    dsName = dsName.replace('\\','/');
+  private String makeTimeUnitFromFilename(String dsName) {
+    dsName = dsName.replace('\\', '/');
 
     // posFirst: last '/' if it exists
     int posFirst = dsName.lastIndexOf('/');
     if (posFirst < 0) posFirst = 0;
 
-     // posLast: next '.' if it exists
-     int posLast = dsName.indexOf(".", posFirst);
-     if (posLast < 0)
-       dsName = dsName.substring(posFirst+1);
+    // posLast: next '.' if it exists
+    int posLast = dsName.indexOf('.', posFirst);
+    if (posLast < 0)
+      dsName = dsName.substring(posFirst + 1);
     else
-       dsName = dsName.substring(posFirst+1, posLast);
+      dsName = dsName.substring(posFirst + 1, posLast);
 
     // gotta be YYYYMMDD_HHMM
     if (dsName.length() != 13)
       return null;
 
-    String year = dsName.substring(0,4);
-    String mon = dsName.substring(4,6);
-    String day = dsName.substring(6,8);
-    String hour = dsName.substring(9,11);
-    String min = dsName.substring(11,13);
+    String year = dsName.substring(0, 4);
+    String mon = dsName.substring(4, 6);
+    String day = dsName.substring(6, 8);
+    String hour = dsName.substring(9, 11);
+    String min = dsName.substring(11, 13);
 
-    return "seconds since "+year+"-"+mon+"-"+day+" "+hour+":"+min+":0";
+    return "seconds since " + year + "-" + mon + "-" + day + " " + hour + ":" + min + ":0";
   }
 
   // construct time coordinate from reftime variable
-  private CoordinateAxis makeTimeCoordAxisFromReference( NetcdfDataset ds, Variable timeVar, Array vals) {
+
+  private CoordinateAxis makeTimeCoordAxisFromReference(NetcdfDataset ds, Variable timeVar, Array vals) {
     Variable refVar = ds.findVariable("reftime");
     if (refVar == null) return null;
     double refValue;
@@ -599,14 +604,14 @@ public class AWIPSConvention extends CoordSysBuilder {
     IndexIterator diter = dvals.getIndexIterator();
     IndexIterator iiter = vals.getIndexIterator();
     while (iiter.hasNext())
-      diter.setDoubleNext( iiter.getDoubleNext() + refValue); // add reftime to each of the values
+      diter.setDoubleNext(iiter.getDoubleNext() + refValue); // add reftime to each of the values
 
     String units = ds.findAttValueIgnoreCase(refVar, "units", "seconds since 1970-1-1 00:00:00");
     units = normalize(units);
     String desc = "synthesized time coordinate from reftime, valtimeMINUSreftime";
-    CoordinateAxis1D timeCoord = new CoordinateAxis1D( ds, null, "timeCoord", DataType.DOUBLE, "record", units, desc);
+    CoordinateAxis1D timeCoord = new CoordinateAxis1D(ds, null, "timeCoord", DataType.DOUBLE, "record", units, desc);
 
-    timeCoord.setCachedData( dvals, true);
+    timeCoord.setCachedData(dvals, true);
 
     parseInfo.format("Created Time Coordinate Axis From Reference = ");
     timeCoord.getNameAndDimensions(parseInfo, true, false);
@@ -615,7 +620,7 @@ public class AWIPSConvention extends CoordSysBuilder {
     return timeCoord;
   }
 
-  private double findAttributeDouble( NetcdfDataset ds, String attname) {
+  private double findAttributeDouble(NetcdfDataset ds, String attname) {
     Attribute att = ds.findGlobalAttributeIgnoreCase(attname);
     if (att == null) {
       parseInfo.format("ERROR cant find attribute= %s\n", attname);

@@ -234,7 +234,7 @@ public class WriterStationObsDataset {
     // add the data variables all using the record dimension
     for (VariableSimpleIF oldVar : dataVars) {
       List<Dimension> dims = oldVar.getDimensions();
-      StringBuffer dimNames = new StringBuffer(recordDimName);
+      StringBuilder dimNames = new StringBuilder(recordDimName);
       for (Dimension d : dims) {
         if (!d.isUnlimited())
           dimNames.append(" ").append(d.getName());

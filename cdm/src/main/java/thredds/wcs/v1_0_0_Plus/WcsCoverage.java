@@ -104,12 +104,12 @@ public class WcsCoverage
     this.label = this.coordSys.getName();
 
     this.range = new HashMap<String, WcsRangeField>();
-    StringBuffer descripSB = new StringBuffer( "All parameters on the \"")
+    StringBuilder descripSB = new StringBuilder( "All parameters on the \"")
             .append( this.name).append( "\" coordinate system: ");
     for ( GridDatatype curField : this.coverage.getGrids() )
     {
       String stdName = curField.findAttValueIgnoreCase( "standard_name", "" );
-      descripSB.append( stdName.equals( "" ) ? curField.getName() : stdName )
+      descripSB.append( stdName.length() == 0 ? curField.getName() : stdName )
               .append( "," );
 
       WcsRangeField field = new WcsRangeField( curField );

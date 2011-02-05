@@ -6,7 +6,7 @@
     <netcdf location="file:test/data/ncml/nc/lflx.mean.nc"/>
   </aggregation>
 
-  <!---------------------->
+  <!-- ================== ->
 
   <dimension name="time" length="0"/>
   <variable name="time" type="int" shape="time">
@@ -21,7 +21,7 @@
     <fileScan dirLocation="file:test/data/ncml/nc/" filter="*.nc" coordValue="pattern" sort="coordinate" />
   </aggregation>
 
-    <!---------------------->
+    <!- ==================== -->
 
   <aggregation type="JoinNew" coordName="time" coordType="int" units="months since 2000-6-16 6:00" dateFormat="yyyy/M/d:HH:mm:ss">
     <variableAgg name="T"/>
@@ -31,7 +31,7 @@
     <fileScan dirLocation="file:test/data/ncml/nc/" filter="*.nc" coordValue="pattern"/>
   </aggregation>
 
-    <!---------------------->
+    <!-- =================== -->
 
   <aggregation type="StationObsDataset" >
     <fileScan dirLocation="file:test/data/ncml/nc/" filter="*.nc" time="pattern"/>

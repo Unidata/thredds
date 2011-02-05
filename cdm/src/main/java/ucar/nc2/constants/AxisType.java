@@ -110,11 +110,12 @@ public enum AxisType {
 
   /**
    * Find the AxisType that matches this name.
+   *
    * @param name match this name
    * @return AxisType or null if no match.
    */
   public static AxisType getType(String name) {
-   if (name == null) return null;
+    if (name == null) return null;
     try {
       return valueOf(name);
     } catch (IllegalArgumentException e) { // lame!
@@ -124,8 +125,11 @@ public enum AxisType {
 
   /**
    * axis ordering: runTime - ensemble - time - z - y - x  or elev - azimuth - distance
+   *
    * @return order
    */
-  public int axisOrder() { return order; }
+  public int axisOrder() {
+    return order;
+  }
 
 }

@@ -302,7 +302,7 @@ public class LocalDatasetSource extends DatasetSource
       String dsName = relativePath.endsWith( "/")
                       ? relativePath.substring( 0, relativePath.length() - 1)
                       : relativePath;
-      int index = dsName.lastIndexOf( "/");
+      int index = dsName.lastIndexOf('/');
       if ( index != -1 ) dsName = dsName.substring( index + 1);
       this.setName( dsName);
     }

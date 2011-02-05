@@ -100,17 +100,15 @@ public class Level2VolumeScan {
   private boolean hasHighResolutionZDR;
   private boolean hasHighResolutionPHI;
   private boolean hasHighResolutionRHO;
-  // List of List of Level2Record
+
   private List<List<Level2Record>> reflectivityGroups, dopplerGroups;
-
-  //private ArrayList reflectivityGroups, dopplerGroups;
-
   private List<List<Level2Record>> reflectivityHighResGroups;
   private List<List<Level2Record>> velocityHighResGroups;
   private List<List<Level2Record>> spectrumHighResGroups;
-  private ArrayList diffReflectHighResGroups;
-  private ArrayList diffPhaseHighResGroups;
-  private ArrayList coefficientHighResGroups;
+
+  private List<List<Level2Record>> diffReflectHighResGroups;
+  private List<List<Level2Record>> diffPhaseHighResGroups;
+  private List<List<Level2Record>> coefficientHighResGroups;
 
   private boolean showMessages = false, showData = false, debugScans = false, debugGroups2 = false, debugRadials = false, debugStats = false;
   private boolean runCheck = false;
@@ -286,7 +284,7 @@ public class Level2VolumeScan {
 
   }
 
-  private ArrayList sortScans(String name, List<Level2Record> scans, int siz) {
+  private List<List<Level2Record>> sortScans(String name, List<Level2Record> scans, int siz) {
 
     // now group by elevation_num
     Map<Short, List<Level2Record>> groupHash = new HashMap<Short, List<Level2Record>>(siz);
@@ -300,7 +298,7 @@ public class Level2VolumeScan {
     }
 
     // sort the groups by elevation_num
-    ArrayList groups = new ArrayList(groupHash.values());
+    List<List<Level2Record>> groups = new ArrayList<List<Level2Record>>(groupHash.values());
     Collections.sort(groups, new GroupComparator());
 
     // use the maximum radials
@@ -457,9 +455,9 @@ public class Level2VolumeScan {
       }
     }
 
-    double avg = sum / n;
+    /* double avg = sum / n;
     double sd = Math.sqrt((n * sum2 - sum * sum) / (n * (n - 1)));
-    // System.out.println(" avg elev="+avg+" std.dev="+sd);
+    System.out.println(" avg elev="+avg+" std.dev="+sd); */
 
     return ok;
   }
@@ -536,7 +534,7 @@ public class Level2VolumeScan {
    *
    * @return List of type List of type Level2Record
    */
-  public List getReflectivityGroups() {
+  public List<List<Level2Record>> getReflectivityGroups() {
     return reflectivityGroups;
   }
 
@@ -546,31 +544,31 @@ public class Level2VolumeScan {
    *
    * @return List of type List of type Level2Record
    */
-  public List getVelocityGroups() {
+  public List<List<Level2Record>> getVelocityGroups() {
     return dopplerGroups;
   }
 
-  public List getHighResVelocityGroups() {
+  public List<List<Level2Record>> getHighResVelocityGroups() {
     return velocityHighResGroups;
   }
 
-  public List getHighResReflectivityGroups() {
+  public List<List<Level2Record>> getHighResReflectivityGroups() {
     return reflectivityHighResGroups;
   }
 
-  public List getHighResSpectrumGroups() {
+  public List<List<Level2Record>> getHighResSpectrumGroups() {
     return spectrumHighResGroups;
   }
 
-  public List getHighResDiffReflectGroups() {
+  public List<List<Level2Record>> getHighResDiffReflectGroups() {
     return diffReflectHighResGroups;
   }
 
-  public List getHighResDiffPhaseGroups() {
+  public List<List<Level2Record>> getHighResDiffPhaseGroups() {
     return diffPhaseHighResGroups;
   }
 
-  public List getHighResCoeffocientGroups() {
+  public List<List<Level2Record>> getHighResCoeffocientGroups() {
     return coefficientHighResGroups;
   }
 

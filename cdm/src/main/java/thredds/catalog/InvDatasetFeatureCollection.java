@@ -96,7 +96,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
 
   @GuardedBy("lock")
   protected State state;
-  protected Object lock = new Object();
+  protected final Object lock = new Object();
 
   protected class State {
     ThreddsMetadata.Variables vars;
@@ -322,7 +322,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
    * @throws IOException if read error
    */
   public NetcdfDataset getNetcdfDataset(String matchPath) throws IOException {
-    int pos = matchPath.indexOf("/");
+    int pos = matchPath.indexOf('/');
     String type = (pos > -1) ? matchPath.substring(0, pos) : matchPath;
     String name = (pos > -1) ? matchPath.substring(pos + 1) : "";
 

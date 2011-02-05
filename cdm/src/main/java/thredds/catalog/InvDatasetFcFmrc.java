@@ -432,7 +432,7 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
 
   @Override
   public GridDataset getGridDataset(String matchPath) throws IOException {
-    int pos = matchPath.indexOf("/");
+    int pos = matchPath.indexOf('/');
     String wantType = (pos > -1) ? matchPath.substring(0, pos) : matchPath;
     String wantName = (pos > -1) ? matchPath.substring(pos + 1) : matchPath;
     String hasName = StringUtil.replace(name, ' ', "_") + "_";

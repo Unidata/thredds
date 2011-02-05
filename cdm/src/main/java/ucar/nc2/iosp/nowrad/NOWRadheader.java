@@ -350,7 +350,7 @@ public class NOWRadheader {
 
     String trim(String str) {
         int          len  = str.length();
-        StringBuffer ostr = new StringBuffer();
+        StringBuilder ostr = new StringBuilder();
 
         for (int i = 0; i < len; i++) {
             char sc = str.charAt(i);

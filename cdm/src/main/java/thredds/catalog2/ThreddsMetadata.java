@@ -122,7 +122,7 @@ public interface ThreddsMetadata
         }
 
         public static DatePointType getTypeForLabel( String label) {
-            if ( label == null || label.equals( "" ))
+            if ( label == null || label.length() == 0)
                 return Untyped;
             for ( DatePointType dpt : DatePointType.values())
                 if ( dpt.label.equalsIgnoreCase( label ))

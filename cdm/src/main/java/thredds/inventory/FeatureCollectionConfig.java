@@ -209,8 +209,8 @@ public class FeatureCollectionConfig {
       Formatter f = new Formatter();
       f.format("FmrcConfig: regularize=%s datasetTypes=%s", regularize, datasets);
       if (bestDatasets != null)
-      for (BestDataset bd : bestDatasets)
-        f.format("best = (%s, %f) ", bd.name, bd.greaterThan);
+        for (BestDataset bd : bestDatasets)
+          f.format("best = (%s, %f) ", bd.name, bd.greaterThan);
       return f.toString();
     }
   }

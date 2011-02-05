@@ -55,7 +55,7 @@ import java.io.IOException;
  */
 public class GempakCdm extends TableConfigurerImpl {
 
-  private final String Convention = "GEMPAK/CDM";
+  private static final String Convention = "GEMPAK/CDM";
 
   public boolean isMine(FeatureType wantFeatureType, NetcdfDataset ds) {
     boolean ok = false;

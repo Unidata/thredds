@@ -89,7 +89,7 @@ public class DatasetNamer {
   public DatasetNamer( InvDataset parentDs, String name, String addLevelBoolean, String typeName,
                        String matchPattern, String substitutePattern, String attribContainer, String attribName)
   {
-    this( parentDs, name, ( new Boolean(addLevelBoolean)).booleanValue(), DatasetNamerType.getType(typeName),
+    this( parentDs, name, Boolean.parseBoolean(addLevelBoolean), DatasetNamerType.getType(typeName),
           matchPattern, substitutePattern, attribContainer, attribName);
     // Check that type is not null.
     if ( this.getType() == null ) {

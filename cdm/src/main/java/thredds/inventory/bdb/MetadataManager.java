@@ -319,7 +319,7 @@ public class MetadataManager {
       int count = 0;
       while (myCursor.getNext(foundKey, foundData, LockMode.DEFAULT) == OperationStatus.SUCCESS) {
         String key = new String(foundKey.getData(), UTF8);
-        int pos = key.indexOf("#");
+        int pos = key.indexOf('#');
         if (pos > 0) {
           String filename = key.substring(0, pos);
           if (null == current.get(filename)) {

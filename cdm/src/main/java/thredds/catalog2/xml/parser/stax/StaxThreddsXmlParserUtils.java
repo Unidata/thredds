@@ -256,7 +256,7 @@ class StaxThreddsXmlParserUtils
     }
 
     String result = writerUsingWriteAsEncodedUnicode.toString();
-    if ( result == null || result.equals( "" ))
+    if ( result == null || result.length() == 0)
       result = writerUsingToString.toString();
 
     return result;

@@ -166,7 +166,7 @@ public class WriterCFPointDataset {
     for (VariableSimpleIF oldVar : dataVars) {
       if (ncfileOut.findVariable(oldVar.getShortName()) != null) continue;
       List<Dimension> dims = oldVar.getDimensions();
-      StringBuffer dimNames = new StringBuffer(recordDimName);
+      StringBuilder dimNames = new StringBuilder(recordDimName);
       for (Dimension d : dims) {
         if (isExtraDimension(d))
           dimNames.append(" ").append(d.getName());

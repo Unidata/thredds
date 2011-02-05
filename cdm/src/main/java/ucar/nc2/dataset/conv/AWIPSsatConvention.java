@@ -75,7 +75,7 @@ public class AWIPSsatConvention extends CoordSysBuilder {
        (null != ncfile.findVariable("image"));
   }
 
-  private final boolean debugProj = false;
+  private static final boolean debugProj = false;
 
   private ProjectionCT projCT = null;
   private double startx, starty, dx, dy;

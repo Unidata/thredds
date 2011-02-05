@@ -200,7 +200,7 @@ public class NavigationBlock extends GridDefRecord {
      * @return  a String representation of this.
      */
     public String toString() {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         buf.append("\n    PROJECTION:         ");
         buf.append(proj);
         buf.append("\n    ANGLES:             ");

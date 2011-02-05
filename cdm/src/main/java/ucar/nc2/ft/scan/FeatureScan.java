@@ -141,7 +141,7 @@ public class FeatureScan {
   }
 
   private String stem(String name) {
-    int pos = name.lastIndexOf(".");
+    int pos = name.lastIndexOf('.');
     return (pos > 0) ? name.substring(0, pos) : name;
   }
 
