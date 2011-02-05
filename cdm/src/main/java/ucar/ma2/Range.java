@@ -420,7 +420,7 @@ public final class Range {
    * @param i index of the element
    * @return the i-th element of a range, no check
    */
-  protected int elementNC(int i) {
+  private int elementNC(int i) {
     return first + i * stride;
   }
 

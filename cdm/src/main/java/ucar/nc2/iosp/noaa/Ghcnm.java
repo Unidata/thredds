@@ -1023,7 +1023,7 @@ public class Ghcnm extends AbstractIOServiceProvider {
   }
 
   private class StructureDataAsciiGhcnm extends StructureDataAscii {
-    public StructureDataAsciiGhcnm(StructureMembers members, String line) {
+    StructureDataAsciiGhcnm(StructureMembers members, String line) {
       super(members, line);
     }
 

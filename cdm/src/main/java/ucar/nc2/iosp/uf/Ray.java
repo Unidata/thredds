@@ -326,7 +326,7 @@ public class Ray {
 
 
 
-        public UF_mandatory_header2(byte[] data){
+        UF_mandatory_header2(byte[] data){
             // data is of length 90 bytes
             textUF = new String(data, 0, 2);
             if (debug){
@@ -386,7 +386,7 @@ public class Ray {
         String    sFieldTapeName;  // char[8]
         short     iFlag;
 
-        public UF_optional_header(byte[] data){
+        UF_optional_header(byte[] data){
             sProjectName = new String(data, 0, 8);
             iBaselineAzimuth = getShort(data, 8);
             iBaselineelevation = getShort(data, 10);
@@ -423,7 +423,7 @@ public class Ray {
         short   bits; // per bin, must be 16
        //         38         12      <uf_fsi2>
 
-        public UF_field_header2(byte[] data){
+        UF_field_header2(byte[] data){
             dataOffset = getShort(data, 0);
             scaleFactor = getShort(data, 2);
             startRange = getShort(data, 4);

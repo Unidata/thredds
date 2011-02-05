@@ -39,7 +39,7 @@ package ucar.ma2;
  * @author caron
  */
 
-public final class InvalidRangeException extends Exception {
+public class InvalidRangeException extends Exception {
   public InvalidRangeException() { super(); }
   public InvalidRangeException(String s) { super(s); }
 }

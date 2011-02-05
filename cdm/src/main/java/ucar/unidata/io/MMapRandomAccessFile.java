@@ -51,7 +51,7 @@ class MMapRandomAccessFile extends RandomAccessFile {
     * @param mode the open mode
     * @throws java.io.IOException on error
     */
-  public MMapRandomAccessFile(String location, String mode ) throws IOException {
+  MMapRandomAccessFile(String location, String mode ) throws IOException {
     super(location, mode, 1);
     FileChannel channel = file.getChannel();
     source = channel.map( readonly ? FileChannel.MapMode.READ_ONLY : FileChannel.MapMode.READ_WRITE, (long) 0, channel.size());

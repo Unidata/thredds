@@ -393,7 +393,7 @@ public class RecordDatasetHelper {
     protected int recno;
     protected StructureData sdata;
 
-    public RecordPointObs(int recno) {
+    RecordPointObs(int recno) {
       super(RecordDatasetHelper.this.timeUnit);
       this.recno = recno;
     }
@@ -405,7 +405,7 @@ public class RecordDatasetHelper {
     }
 
     // Constructor for when you already have the StructureData and want to wrap it in a StationObsDatatype
-    public RecordPointObs(StructureData sdata, int recno) {
+    protected RecordPointObs(StructureData sdata, int recno) {
       super(RecordDatasetHelper.this.timeUnit);
       this.sdata = sdata;
       this.recno = recno;

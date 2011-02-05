@@ -249,7 +249,7 @@ class GeoKey  {
       map.put( new Integer(code), this);
     }
 
-    public Tag( int code) {
+    Tag( int code) {
       this.code = code;
       //map.put( new Integer(code), this);
     }

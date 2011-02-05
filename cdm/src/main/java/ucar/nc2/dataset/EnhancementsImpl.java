@@ -54,7 +54,7 @@ class EnhancementsImpl implements Enhancements {
    * @param units set unit string.
    * @param desc set description.
    */
-  public EnhancementsImpl( Variable forVar, String units, String desc) {
+  EnhancementsImpl( Variable forVar, String units, String desc) {
     this.forVar = forVar;
     this.units = units;
     this.desc = desc;
@@ -64,7 +64,7 @@ class EnhancementsImpl implements Enhancements {
    * Constructor.
    * @param forVar the Variable to decorate.
    */
-  public EnhancementsImpl( Variable forVar) {
+  EnhancementsImpl( Variable forVar) {
     this.forVar = forVar;
   }
 

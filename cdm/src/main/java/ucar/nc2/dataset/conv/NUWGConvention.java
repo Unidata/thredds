@@ -403,7 +403,7 @@ public class NUWGConvention extends CoordSysBuilder {
     int ivalue;
     double dvalue;
 
-    public NavInfo( Variable ncvar) throws IOException {
+    NavInfo( Variable ncvar) throws IOException {
       this.ncvar = ncvar;
       valueType = ncvar.getDataType();
       try {

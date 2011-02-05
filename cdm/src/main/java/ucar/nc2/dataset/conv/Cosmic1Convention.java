@@ -786,7 +786,7 @@ public class Cosmic1Convention extends CoordSysBuilder {
      *
      * @return _more_
      */
-    public final static double[] ECFtoLLA(double x, double y, double z,
+    public static double[] ECFtoLLA(double x, double y, double z,
                                           double a, double b) {
 
         double longitude     = Math.atan2(y, x);

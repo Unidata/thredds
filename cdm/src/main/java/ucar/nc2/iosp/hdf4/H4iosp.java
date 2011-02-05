@@ -434,7 +434,7 @@ public class H4iosp extends AbstractIOServiceProvider {
     private H4header.SpecialComp compress;
     private ByteBuffer bb;  // the data is placed into here
 
-    public DataChunk(int[] offset, H4header.SpecialComp compress) {
+    DataChunk(int[] offset, H4header.SpecialComp compress) {
       this.offset = offset;
       this.compress = compress;
     }

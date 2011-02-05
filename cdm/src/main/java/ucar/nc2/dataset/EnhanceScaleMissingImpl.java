@@ -82,7 +82,7 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
   /**
    * Constructor, when you dont want anything done.
    */
-  public EnhanceScaleMissingImpl() {
+  EnhanceScaleMissingImpl() {
   }
 
   /**
@@ -90,7 +90,7 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
    *
    * @param forVar the Variable to decorate.
    */
-  public EnhanceScaleMissingImpl(VariableDS forVar) {
+  EnhanceScaleMissingImpl(VariableDS forVar) {
     this(forVar, NetcdfDataset.useNaNs, NetcdfDataset.fillValueIsMissing,
         NetcdfDataset.invalidDataIsMissing, NetcdfDataset.missingDataIsMissing);
   }
@@ -105,7 +105,7 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
    * @param invalidDataIsMissing use valid_range for isMissing()
    * @param missingDataIsMissing use missing_value for isMissing()
    */
-  public EnhanceScaleMissingImpl(VariableDS forVar, boolean useNaNs, boolean fillValueIsMissing,
+  EnhanceScaleMissingImpl(VariableDS forVar, boolean useNaNs, boolean fillValueIsMissing,
                                  boolean invalidDataIsMissing, boolean missingDataIsMissing) {
 
     this.fillValueIsMissing = fillValueIsMissing;
@@ -498,7 +498,7 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
         (missingDataIsMissing && isMissingValue(val));
   } */
 
-  private final  boolean isMissing_(double val) {
+  private boolean isMissing_(double val) {
     if (missingDataIsMissing && hasMissingValue && isMissingValue(val))
       return true;
     if (fillValueIsMissing && hasFillValue && isFillValue(val))

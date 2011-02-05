@@ -50,13 +50,13 @@ class IFDEntry implements Comparable {
 
   protected ArrayList geokeys = null;
 
-  public IFDEntry( Tag tag, FieldType type) {
+  IFDEntry( Tag tag, FieldType type) {
     this.tag = tag;
     this.type = type;
     this.count = 1;
   }
 
-  public IFDEntry( Tag tag, FieldType type, int count) {
+  IFDEntry( Tag tag, FieldType type, int count) {
     this.tag = tag;
     this.type = type;
     this.count = count;

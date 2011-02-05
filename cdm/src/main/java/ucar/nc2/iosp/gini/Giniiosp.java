@@ -475,7 +475,7 @@ public class Giniiosp extends AbstractIOServiceProvider {
   }
 
   // get this to inline for performance
-  private final short convertUnsignedByte2Short(byte b) {
+  private short convertUnsignedByte2Short(byte b) {
     return (short) ((b < 0) ? (short) b + 256 : (short) b);
   }
 

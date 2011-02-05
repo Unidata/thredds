@@ -2088,7 +2088,7 @@ public class H4header {
       public String name;
       public long start, end;
 
-      public Mem(String name, long start, long end) {
+      Mem(String name, long start, long end) {
         this.name = name;
         this.start = start;
         this.end = end;

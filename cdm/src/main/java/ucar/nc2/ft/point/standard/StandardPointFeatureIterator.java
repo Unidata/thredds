@@ -82,7 +82,7 @@ public class StandardPointFeatureIterator extends PointIteratorFromStructureData
   private class StandardPointFeature extends PointFeatureImpl implements StationPointFeature {
     protected Cursor cursor;
 
-    public StandardPointFeature(Cursor cursor, DateUnit timeUnit, double obsTime) {
+    StandardPointFeature(Cursor cursor, DateUnit timeUnit, double obsTime) {
       super( timeUnit);
       this.cursor = cursor;
       cursor.currentIndex = 1; // LOOK ????

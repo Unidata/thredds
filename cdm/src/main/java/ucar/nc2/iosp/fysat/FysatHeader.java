@@ -74,8 +74,7 @@ public final class FysatHeader {
   byte DEF_WBITS = 15;
   private long actualSize;
   private long calcSize;
-  protected int Z_type = 0;
-
+  private int Z_type = 0;
 
   private AwxFileFirstHeader firstHeader;
   private AwxFileSecondHeader secondHeader;

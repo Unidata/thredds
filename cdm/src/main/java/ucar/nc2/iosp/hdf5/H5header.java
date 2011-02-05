@@ -5438,7 +5438,7 @@ Where startingBlockSize is from the header, ie the same for all indirect blocks.
       public String name;
       public long start, end;
 
-      public Mem(String name, long start, long end) {
+      Mem(String name, long start, long end) {
         this.name = name;
         this.start = start;
         this.end = end;

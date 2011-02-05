@@ -190,7 +190,7 @@ public class LayoutBBTiled implements LayoutBB {
     private FloatBuffer fb;
     private DoubleBuffer db;
 
-    public Chunk(ByteBuffer bb) {
+    Chunk(ByteBuffer bb) {
       this.bb = bb;
     }
 
