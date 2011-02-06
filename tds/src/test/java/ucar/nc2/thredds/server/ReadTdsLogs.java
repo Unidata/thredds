@@ -63,7 +63,7 @@ public class ReadTdsLogs {
 
   ///////////////////////////////////////////////////////
   // multithreading
-  final int nthreads = 1;
+  final int nthreads = 4;
 
   ExecutorService executor;
   ExecutorCompletionService<SendRequestTask> completionService;
@@ -205,9 +205,8 @@ public class ReadTdsLogs {
       HTTPMethod method = null;
       try {
         method = httpClient.newMethodGet(serverLive + itask.log.path);
-        // out2.format("send %s %n", method.getPath());
+        out2.format("send %s %n", method.getPath());
 
-        method.setFollowRedirects(true);
         int statusCode = method.execute();
 
         InputStream is = method.getResponseBodyAsStream();
@@ -655,7 +654,7 @@ public class ReadTdsLogs {
   }
 
   static String serverLive = null; // "http://motherlode.ucar.edu:8080";
-  static String serverTest = "http://motherlode.ucar.edu:9080";
+  static String serverTest = "http://motherlode.ucar.edu:8081";
 
   public static void main(String args[]) throws IOException {
     out = null; // new Formatter(new FileOutputStream("C:/TEMP/readTdsLogs.txt"));

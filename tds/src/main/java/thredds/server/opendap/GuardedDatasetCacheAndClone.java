@@ -32,25 +32,55 @@
  */
 package thredds.server.opendap;
 
+import net.jcip.annotations.Immutable;
 import opendap.servlet.GuardedDataset;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.dataset.NetcdfDataset;
 
-import javax.servlet.http.HttpSessionAttributeListener;
-import javax.servlet.http.HttpSessionBindingEvent;
+import java.io.IOException;
 
-public class OpendapSessionAttributeListener implements HttpSessionAttributeListener {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(OpendapSessionAttributeListener.class);
+/**
+ * This creates and caches DDS, DAS, then clones them when they are needed.
+ */
+@Immutable
+public class GuardedDatasetCacheAndClone implements GuardedDataset {
+  static protected org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GuardedDataset.class);
 
-   // HttpSessionAttributeListener
-    public void attributeRemoved(HttpSessionBindingEvent e) {
+  private final boolean hasSession;
+  private final NetcdfFile org_file;
+  private final NcDDS dds;
+  private final NcDAS das;
 
-      if (e.getValue() instanceof GuardedDataset) {
-        GuardedDataset gdataset = (GuardedDataset) e.getValue();
-        gdataset.close();
-        //System.out.printf(" close gdataset %s in session %s %n", gdataset, e.getSession().getId());
-        if (log.isDebugEnabled()) log.debug(" close gdataset " + gdataset + " in session " + e.getSession().getId());
-      }
+  public void release() {
+    if (!hasSession)
+      close();
+  }
+
+  public void close() {
+    try {
+      org_file.close();
+    } catch (IOException e) {
+      log.error("GuardedDatasetImpl close", e);
     }
+  }
 
-    public void attributeAdded(HttpSessionBindingEvent httpSessionBindingEvent) { }
-    public void attributeReplaced(HttpSessionBindingEvent httpSessionBindingEvent) { }
+  public GuardedDatasetCacheAndClone(String reqPath, NetcdfFile ncfile, boolean hasSession) {
+    this.org_file = ncfile;
+    this.dds = new NcDDS(reqPath, ncfile);
+    this.das = new NcDAS(ncfile);
+    this.hasSession = hasSession;
+  }
+
+  public opendap.dap.Server.ServerDDS getDDS() {
+    return (opendap.dap.Server.ServerDDS) dds.clone();
+  }
+
+  public opendap.dap.DAS getDAS() {
+    return (opendap.dap.DAS) das.clone();
+  }
+
+  public String toString() {
+    String name = org_file.getLocation();
+    return name == null ? org_file.getCacheName() : name;
+  }
 }

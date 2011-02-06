@@ -32,6 +32,7 @@
  */
 package thredds.server.opendap;
 
+import net.jcip.annotations.Immutable;
 import opendap.servlet.GuardedDataset;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -39,27 +40,21 @@ import ucar.nc2.dataset.NetcdfDataset;
 import java.io.IOException;
 
 /**
- * This uses NetcdfFileCache to implement a GuardedDataset, caching the underlying files
- * in NetcdfFileCache for performance.
+ * Regenerate DDS, DAS each time
  */
-public class GuardedDatasetImpl implements GuardedDataset  {
-  static protected org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GuardedDatasetImpl.class);
+@Immutable
+public class GuardedDatasetImpl implements GuardedDataset {
+  static protected org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GuardedDataset.class);
 
-  private boolean hasSession;
-  private NetcdfFile org_file;
-  private NcDDS dds;
-  private NcDAS das;
-
-  public GuardedDatasetImpl( String reqPath, String location) throws IOException {
-    NetcdfFile ncfile = NetcdfDataset.acquireFile(location, null);
-    this.org_file = ncfile;
-    this.dds = new NcDDS( reqPath, ncfile);
-    this.das = new NcDAS( ncfile);
-  }
+  private final boolean hasSession;
+  private final NetcdfFile org_file;
+  private final String reqPath;
+  private boolean closed = false;
 
   public void release() {
     if (!hasSession)
       close();
+    closed = true;
   }
 
   public void close() {
@@ -70,15 +65,21 @@ public class GuardedDatasetImpl implements GuardedDataset  {
     }
   }
 
-  public GuardedDatasetImpl( String reqPath, NetcdfFile ncfile, boolean hasSession) {
+  public GuardedDatasetImpl(String reqPath, NetcdfFile ncfile, boolean hasSession) {
     this.org_file = ncfile;
-    this.dds = new NcDDS( reqPath, ncfile);
-    this.das = new NcDAS( ncfile);
+    this.reqPath = reqPath;
     this.hasSession = hasSession;
   }
 
-  public opendap.dap.Server.ServerDDS getDDS() { return (opendap.dap.Server.ServerDDS) dds.clone(); }
-  public opendap.dap.DAS getDAS() { return (opendap.dap.DAS) das.clone(); }
+  public opendap.dap.Server.ServerDDS getDDS() {
+    if (closed) throw new IllegalStateException("getDDS(): "+this + " closed");
+    return new NcDDS(reqPath, org_file);
+  }
+
+  public opendap.dap.DAS getDAS() {
+    if (closed) throw new IllegalStateException("getDAS(): "+this + " closed");
+    return new NcDAS(org_file);
+  }
 
   public String toString() {
     String name = org_file.getLocation();

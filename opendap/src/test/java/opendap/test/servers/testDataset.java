@@ -77,8 +77,11 @@ public class testDataset implements GuardedDataset {
     private Exception DDSfailure;
 
 
-    public void release() {
-    } // noop
+  public void release() {
+  } // noop
+
+  public void close() {
+  } // noop
 
 
     /**

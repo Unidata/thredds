@@ -125,6 +125,9 @@ public interface GuardedDataset {
      */
     public void release();
 
+    public void close();
+
+
 }
 
 

@@ -803,7 +803,7 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
       // see if theres already a session established, create one if not
       session = req.getSession();
       if (!session.isNew()) {
-        GuardedDatasetImpl gdataset = (GuardedDatasetImpl) session.getAttribute(reqPath);
+        GuardedDataset gdataset = (GuardedDataset) session.getAttribute(reqPath);
         if (null != gdataset) {
           if (debugSession) System.out.printf(" found gdataset %s in session %s %n", reqPath, session.getId());
           if (log.isDebugEnabled()) log.debug(" found gdataset " + gdataset + " in session " + session.getId());
@@ -815,7 +815,8 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
     NetcdfFile ncd = DatasetHandler.getNetcdfFile(req, preq.getResponse(), reqPath);
     if (null == ncd) return null;
 
-    GuardedDatasetImpl gdataset = new GuardedDatasetImpl(reqPath, ncd, acceptSession);
+    GuardedDataset gdataset = new GuardedDatasetCacheAndClone(reqPath, ncd, acceptSession);
+    //GuardedDataset gdataset = new GuardedDatasetImpl(reqPath, ncd, acceptSession);
 
     if (acceptSession) {
       String cookiePath = req.getRequestURI();

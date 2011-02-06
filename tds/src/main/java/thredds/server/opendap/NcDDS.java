@@ -47,22 +47,23 @@ import java.util.*;
  * NcDDS is a specialization of ServerDDS for netcdf files.
  * This creates a ServerDDS from the netcdf file.
  *
- *   @author jcaron
+ * @author jcaron
  */
 
-public class NcDDS extends ServerDDS
-{
-  static protected org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NcDDS.class);
-  static String DODScharset = "_!~*'-\"";
+public class NcDDS extends ServerDDS {
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NcDDS.class);
+  static private String DODScharset = "_!~*'-\"";
 
-  private HashMap<String,BaseType> dimHash = new HashMap<String,BaseType>(50); // not copied on clone operation
+  private HashMap<String, BaseType> dimHash = new HashMap<String, BaseType>(50);
 
-  /** Constructor
-   * @param name name of the dataset, at bottom of DDS
-   * @param ncfile  create DDS from this
+  /**
+   * Constructor
+   *
+   * @param name   name of the dataset, at bottom of DDS
+   * @param ncfile create DDS from this
    */
-  public NcDDS( String name, NetcdfFile ncfile) {
-    super( StringUtil.escape( name, ""));
+  public NcDDS(String name, NetcdfFile ncfile) {
+    super(StringUtil.escape(name, ""));
 
     // get coordinate variables
     // LOOK: this should get optimized to store data once
@@ -100,6 +101,7 @@ public class NcDDS extends ServerDDS
   }
 
   // turn Variable into opendap variable
+
   private BaseType createVariable(NetcdfFile ncfile, Variable v) {
     BaseType bt;
 
@@ -125,10 +127,10 @@ public class NcDDS extends ServerDDS
 
   }
 
-  private BaseType createScalarVariable( NetcdfFile ncfile, Variable v) {
+  private BaseType createScalarVariable(NetcdfFile ncfile, Variable v) {
     DataType dt = v.getDataType();
     if (dt == DataType.DOUBLE)
-       return new NcSDFloat64(v);
+      return new NcSDFloat64(v);
     else if (dt == DataType.FLOAT)
       return new NcSDFloat32(v);
     else if (dt == DataType.INT)
@@ -138,16 +140,16 @@ public class NcDDS extends ServerDDS
     else if (dt == DataType.BYTE)
       return new NcSDByte(v);
     else if (dt == DataType.CHAR)
-        return new NcSDString(v);
+      return new NcSDString(v);
     else if (dt == DataType.STRING)
       return new NcSDString(v);
     else if (dt == DataType.STRUCTURE)
       return createStructure(ncfile, (Structure) v);
     else
-      throw new UnsupportedOperationException("NcDDS Variable data type = "+dt);
+      throw new UnsupportedOperationException("NcDDS Variable data type = " + dt);
   }
 
-  private BaseType createArray( NetcdfFile ncfile, Variable v) {
+  private BaseType createArray(NetcdfFile ncfile, Variable v) {
     // all dimensions must have coord vars to be a grid, also must have the same name
     boolean isGrid = (v.getRank() > 1) && (v.getDataType() != DataType.STRUCTURE) && (v.getParentStructure() == null);
     Iterator iter = v.getDimensions().iterator();
@@ -158,28 +160,28 @@ public class NcDDS extends ServerDDS
         isGrid = false;
     }
 
-    NcSDArray arr = new NcSDArray( v, createScalarVariable(ncfile, v));
+    NcSDArray arr = new NcSDArray(v, createScalarVariable(ncfile, v));
     if (!isGrid)
       return arr;
 
     ArrayList<BaseType> list = new ArrayList<BaseType>();
-    list.add( arr);
+    list.add(arr);
     iter = v.getDimensions().iterator();
     while (iter.hasNext()) {
       Dimension dim = (Dimension) iter.next();
-      list.add (dimHash.get( dim.getName()));
+      list.add(dimHash.get(dim.getName()));
     }
 
-    return new NcSDGrid( v.getShortName(), list);
+    return new NcSDGrid(v.getShortName(), list);
   }
 
-  private BaseType createStructure( NetcdfFile ncfile, Structure s) {
+  private BaseType createStructure(NetcdfFile ncfile, Structure s) {
     ArrayList<BaseType> list = new ArrayList<BaseType>();
     for (Object o : s.getVariables()) {
       Variable nested = (Variable) o;
       list.add(createVariable(ncfile, nested));
     }
-    return new NcSDStructure( s, list);
+    return new NcSDStructure(s, list);
   }
 
   public static String escapeName(String vname) {
@@ -187,26 +189,24 @@ public class NcDDS extends ServerDDS
     return StringUtil.escape(vname, NcDDS.DODScharset);
   }
 
-    // I think we need to clone the dimHash
-    /**
-     * Returns a clone of this <code>?</code>.
-     * See BaseType.cloneDAG()
-     *
-     * @param map track previously cloned nodes
-     * @return a clone of this object.
-     */
-    public DAPNode cloneDAG(CloneMap map)
-        throws CloneNotSupportedException
-    {
-        NcDDS d = (NcDDS) super.cloneDAG(map);
-	    HashMap<String,BaseType> clone = new HashMap<String,BaseType>(50);
-	    Set<String> keys = dimHash.keySet();
-        for(String k: keys) {
-	    BaseType bt = dimHash.get(k);
-	    clone.put(k,(BaseType)cloneDAG(map,bt));
-        }
-        d.dimHash = clone;
-        return d;
+  /**
+   * Returns a clone of this <code>?</code>.
+   * See BaseType.cloneDAG()
+   *
+   * @param map track previously cloned nodes
+   * @return a clone of this object.
+   */
+  public DAPNode cloneDAG(CloneMap map)
+          throws CloneNotSupportedException {
+    NcDDS d = (NcDDS) super.cloneDAG(map);
+    HashMap<String, BaseType> clone = new HashMap<String, BaseType>(50);
+    Set<String> keys = dimHash.keySet();
+    for (String k : keys) {
+      BaseType bt = dimHash.get(k);
+      clone.put(k, (BaseType) cloneDAG(map, bt));
     }
+    d.dimHash = clone;
+    return d;
+  }
 
 }

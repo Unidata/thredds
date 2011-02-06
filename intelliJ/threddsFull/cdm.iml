@@ -22,8 +22,9 @@
       </library>
     </orderEntry>
     <orderEntry type="module" module-name="common" exported="" />
-    <orderEntry type="module" module-name="grib" exported="" />
     <orderEntry type="module" module-name="opendap" exported="" />
+    <orderEntry type="module" module-name="grib" exported="" />
+    <orderEntry type="module" module-name="bufr" exported="" />
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
@@ -154,7 +155,6 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module" module-name="bufr" />
   </component>
   <component name="org.twodividedbyzero.idea.findbugs">
     <option name="_basePreferences">
