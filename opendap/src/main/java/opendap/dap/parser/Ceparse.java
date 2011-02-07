@@ -41,6 +41,9 @@ public abstract class Ceparse implements ExprParserConstants
 
     protected int cedebug = 0;
 
+    List<AST> astnodeset = new ArrayList<AST>();
+
+
     /**
      * **********************************************
      */
@@ -53,7 +56,7 @@ public abstract class Ceparse implements ExprParserConstants
     public Ceparse(BaseTypeFactory factory)
     {
         parsestate = this;
-        ast = new ASTconstraint();
+        ast = new ASTconstraint(astnodeset);
 	if(factory == null) {
 	    throw new RuntimeException("Ceparse: no factory specified");
 	}
@@ -95,6 +98,11 @@ public abstract class Ceparse implements ExprParserConstants
         return ast;
     }
 
+    public List<AST> getASTnodeset()
+    {
+        return astnodeset;
+    }
+
 
     /**
      * **********************************************
@@ -129,7 +137,7 @@ public abstract class Ceparse implements ExprParserConstants
     projection(Ceparse state, Object varorfcn)
             throws ParseException
     {
-        ASTprojection p = new ASTprojection();
+        ASTprojection p = new ASTprojection(astnodeset);
 	    if(varorfcn instanceof ASTvar)
             p.var = (ASTvar)varorfcn;
         else
@@ -142,7 +150,7 @@ public abstract class Ceparse implements ExprParserConstants
             throws ParseException
     {
 	ASTvar var = (ASTvar)var0;
-        if(var == null) var = new ASTvar();
+        if(var == null) var = new ASTvar(astnodeset);
         var.segments.add((ASTsegment) decl);
         return var;
     }
@@ -151,7 +159,7 @@ public abstract class Ceparse implements ExprParserConstants
     segment(Ceparse state, Object name, Object slices0)
             throws ParseException
     {
-        ASTsegment segment = new ASTsegment();
+        ASTsegment segment = new ASTsegment(astnodeset);
         segment.name = (String) name;
         segment.slices = (List<ASTslice>) slices0;
         return segment;
@@ -171,7 +179,7 @@ public abstract class Ceparse implements ExprParserConstants
     range(Ceparse state, Object sfirst, Object sstride, Object slast)
             throws ParseException
     {
-        ASTslice slice = new ASTslice();
+        ASTslice slice = new ASTslice(astnodeset);
         long first = -1;
         long stride = -1;
         long last = -1;
@@ -245,7 +253,7 @@ public abstract class Ceparse implements ExprParserConstants
                Object lhs, Object relop0, Object values)
             throws ParseException
     {
-        ASTclause sel = new ASTclause();
+        ASTclause sel = new ASTclause(astnodeset);
         sel.lhs =  (ASTvalue)lhs;
         sel.operator = (Integer) relop0;
         sel.lhs = (ASTvalue)lhs;
@@ -275,7 +283,7 @@ public abstract class Ceparse implements ExprParserConstants
         if (list == null) list = new ArrayList<ASTslice>();
 	long start = 0;
 	try {start = Long.parseLong((String)indexno);} catch (NumberFormatException nfe) {/*already checked*/};
-	ASTslice slice = new ASTslice();
+	ASTslice slice = new ASTslice(astnodeset);
 	slice.first = start;
 	slice.stride = 1;
 	slice.last = start;
@@ -287,7 +295,7 @@ public abstract class Ceparse implements ExprParserConstants
     index(Ceparse state, Object name, Object indices)
             throws ParseException
     {
-        ASTsegment segment = new ASTsegment();
+        ASTsegment segment = new ASTsegment(astnodeset);
         segment.name = (String) name;
         segment.slices = (List<ASTslice>)indices;
         return segment;
@@ -297,7 +305,7 @@ public abstract class Ceparse implements ExprParserConstants
     function(Ceparse state, Object fcnname, Object args)
             throws ParseException
     {
-        ASTfcn fcn = new ASTfcn();
+        ASTfcn fcn = new ASTfcn(astnodeset);
         fcn.fcnname = (String)fcnname;
         fcn.args = (List<ASTvalue>)args;
         return fcn;
@@ -327,7 +335,7 @@ public abstract class Ceparse implements ExprParserConstants
     value(Ceparse state, Object o)
             throws ParseException
     {
-        ASTvalue value = new ASTvalue();
+        ASTvalue value = new ASTvalue(astnodeset);
 	if(o instanceof ASTvar) value.var = (ASTvar)o;
 	else if(o instanceof ASTfcn) value.fcn = (ASTfcn)o;
 	else if(o instanceof ASTconstant) value.constant = (ASTconstant)o;
@@ -338,7 +346,7 @@ public abstract class Ceparse implements ExprParserConstants
     var(Ceparse state, Object indexpath)
             throws ParseException
     {
-        ASTvar var = new ASTvar();
+        ASTvar var = new ASTvar(astnodeset);
         var.segments = (List<ASTsegment>) indexpath;
         return var;
     }
@@ -347,7 +355,7 @@ public abstract class Ceparse implements ExprParserConstants
     constant(Ceparse state, Object path, int tag)
             throws ParseException
     {
-        ASTconstant value = new ASTconstant();
+        ASTconstant value = new ASTconstant(astnodeset);
         switch (tag) {
         case SCAN_STRINGCONST:
             value.text = (String) path;
@@ -454,7 +462,8 @@ public abstract class Ceparse implements ExprParserConstants
     {
         ServerDDS sdds = ceEval.getDDS();
         if (!parse()) return false;
-        ast.constraint(ceEval,factory,clauseFactory,sdds);
+        ast.init(ceEval,factory,clauseFactory,sdds,getASTnodeset());
+	ast.walkConstraint();
         return true;
     }
 

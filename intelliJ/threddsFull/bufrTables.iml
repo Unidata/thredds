@@ -1,22 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module relativePaths="true" type="JAVA_MODULE" version="4">
-  <component name="FacetManager">
-    <facet type="Spring" name="Spring">
-      <configuration />
-    </facet>
-    <facet type="web" name="bufrTables">
-      <configuration>
-        <descriptors>
-          <deploymentDescriptor name="web.xml" url="file://$MODULE_DIR$/../../bufrTables/src/main/webapp/WEB-INF/web.xml" />
-        </descriptors>
-        <webroots>
-          <root url="file://$MODULE_DIR$/../../bufrTables/src/main/webapp" relative="/" />
-          <root url="file://$MODULE_DIR$/../../bufrTables/src/main/resources" relative="/WEB-INF/classes" />
-        </webroots>
-        <sourceRoots />
-      </configuration>
-    </facet>
-  </component>
   <component name="NewModuleRootManager" inherit-compiler-output="false">
     <output url="file://$MODULE_DIR$/../../bufrTables/target/WEB-INF/classes" />
     <output-test url="file://$MODULE_DIR$/../../bufrTables/target/test/classes" />

@@ -55,7 +55,9 @@ import java.io.*;
 	CeParser parser = new CeParser(factory);
         ServerDDS sdds = ceEval.getDDS();
         if(!parser.parse(sreader)) return false;
-        parser.getAST().constraint(ceEval,factory,clauseFactory,sdds);
+        AST root = parser.getAST();
+	root.init(ceEval,factory,clauseFactory,sdds,parser.getASTnodeset());
+	root.walkConstraint();
         return true;
     }
 }

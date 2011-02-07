@@ -156,6 +156,9 @@ public class TestCeParser extends TestCase
 	"v2[0][0],v1[0]",
 	"sq.f3[1:9][1:9][1:9]&sq.f2[2][2]>=101&g.m2[9]>g.m3[9]"
     };
+static final String[] constraintsx = {
+"&g.a[0][0][2]={sq.f3[2][2][0],37.0}&st.f1[0]!=101"
+};
 
     static final String[] expected = {
 "v3[0:9][0:9][0:9],v2[0:9][0:9],v1[0:9],v0,st.f3[0:9][0:9][0:9],st.f2[0:9][0:9],st.f1[0],st.f0,st,sq.f3[2][2][0],sq.f2[0:9][0:9],sq.f1[0:9],sq.f0,sq,g.m3[0:9],g.m2[0:9],g.m1[0:9],g.a[0][0][2],g&g.a[0][0][2]={sq.f3[2][2][0],37.0}&st.f1[0]!=101",

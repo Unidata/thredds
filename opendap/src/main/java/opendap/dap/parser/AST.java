@@ -11,21 +11,41 @@ import java.util.*;
 
 abstract public class AST
 {
-    static CEEvaluator ceEval = null;
-    static ClauseFactory clauseFactory = null;
-    static BaseTypeFactory factory = null;
-    static ServerDDS sdds = null;
+    CEEvaluator ceEval;
+    ClauseFactory clauseFactory;
+    BaseTypeFactory factory;
+    ServerDDS sdds;
 
-    public void constraint(CEEvaluator ceEval,
+    AST root = null;
+
+    void setRoot(AST root) {this.root = root;}
+
+    CEEvaluator getCeEval() {return root.ceEval;}
+    ClauseFactory getClauseFactory() {return root.clauseFactory;}
+    BaseTypeFactory getFactory() {return root.factory;}
+    ServerDDS getSdds() {return root.sdds;}
+
+
+    public AST(List<AST> nodes)
+    {
+        if(nodes == null) return;
+        if(!nodes.contains(this)) nodes.add(this);
+    }
+
+
+    /* Only call on the root node */
+    public void init(CEEvaluator ceEval,
 	                    BaseTypeFactory factory,
 			    ClauseFactory clauseFactory,
-			    ServerDDS sdds)
-	throws DAP2ServerSideException, DAP2Exception
+			    ServerDDS sdds,
+			    List<AST> nodes)
     {
         this.ceEval = ceEval;
         this.clauseFactory = clauseFactory;
         this.factory = factory;
         this.sdds = sdds;
+	this.root = this;
+	for(AST node: nodes) node.setRoot(this);
     }
 
     // abstract public String toString();
@@ -47,6 +67,8 @@ class ASTconstraint extends AST
     List<ASTprojection> projections = null;
     List<ASTclause> selections = null;
 
+    public ASTconstraint(List<AST> nodes) {super(nodes);}
+
 /*
     public String toString()
     {
@@ -67,26 +89,17 @@ class ASTconstraint extends AST
     }
 */
 
-    @Override
-    public void constraint(CEEvaluator ceEval,
-	                    BaseTypeFactory factory,
-			    ClauseFactory clauseFactory,
-			    ServerDDS sdds)
+    public void walkConstraint()
 	throws DAP2ServerSideException, DAP2Exception
     {
-	super.constraint(ceEval,factory,clauseFactory,sdds);
-
         if(projections != null)
             for(ASTprojection proj: projections) {
            proj.walk(ceEval);
         } else
-	    ceEval.markAll(true);
-
-
-
+	    getCeEval().markAll(true);
         if(selections != null)
             for(ASTclause cl: selections) {
-           ceEval.appendClause(cl.translate());
+           getCeEval().appendClause(cl.translate());
         }
     }
 }
@@ -95,6 +108,8 @@ class ASTprojection extends AST
 {
     ASTvar var = null;
     ASTfcn fcn = null;
+
+    public ASTprojection(List<AST> nodes) {super(nodes);}
 
 /*
     public String toString()
@@ -112,7 +127,7 @@ class ASTprojection extends AST
     {
         if(fcn != null) {
 	    SubClause subclause = fcn.translate();
-	    ceEval.appendClause(subclause);
+	    getCeEval().appendClause(subclause);
 	} else {
 	    Stack components = new Stack();
 	    components = var.collect(components);
@@ -174,6 +189,8 @@ class ASTfcn extends ASTvalue
     String fcnname = null;
     List<ASTvalue> args = null;     
 
+    public ASTfcn(List<AST> nodes) {super(nodes);}
+
 /*
     public String toString()
     {
@@ -200,7 +217,7 @@ class ASTfcn extends ASTvalue
         if(args != null)
             for(ASTvalue arg: args)
                 cvtargs.addElement(arg.translate());
-        subclause = clauseFactory.newBTFunctionClause(fcnname,cvtargs);
+        subclause = getClauseFactory().newBTFunctionClause(fcnname,cvtargs);
 	return subclause;
     }
 
@@ -209,6 +226,8 @@ class ASTfcn extends ASTvalue
 class ASTvar extends ASTvalue
 {
     List<ASTsegment> segments = new ArrayList<ASTsegment>();
+
+    public ASTvar(List<AST> nodes) {super(nodes);}
 
 /*
     public String toString()
@@ -240,6 +259,8 @@ class ASTsegment extends AST
     String name = null;
     List<ASTslice> slices = new ArrayList<ASTslice>();
 
+    public ASTsegment(List<AST> nodes) {super(nodes);}
+
 /*
     public String toString()
     {
@@ -258,7 +279,7 @@ class ASTsegment extends AST
 	       NoSuchFunctionException, NoSuchVariableException
     {
         ServerArrayMethods sam = null;
-        components = sdds.search(name,components);
+        components = getSdds().search(name,components);
         if(slices != null && slices.size() > 0) {
             try {
                 sam = (ServerArrayMethods)components.peek();
@@ -283,6 +304,8 @@ class ASTslice extends AST
     long last = 0;
     long stride = 1;
     
+    public ASTslice(List<AST> nodes) {super(nodes);}
+
 /*
     public String toString()
     {
@@ -310,6 +333,8 @@ class ASTvalue extends AST
     ASTvar var = null; // tag == VAR
     ASTfcn fcn = null; // tag == FUNCTION
 
+    public ASTvalue(List<AST> nodes) {super(nodes);}
+
 /*
     public String toString()
     {
@@ -336,7 +361,7 @@ class ASTvalue extends AST
 	} else if(var != null) {
 	    Stack components = new Stack();
 	    components = var.collect(components);
-	    subclause = clauseFactory.newValueClause((BaseType)components.pop(), false);
+	    subclause = getClauseFactory().newValueClause((BaseType)components.pop(), false);
 	} else if(fcn != null) {
 	    subclause = fcn.translate();
 	} else
@@ -351,6 +376,8 @@ class ASTconstant extends ASTvalue
     String text = null; // tag == STRINGCONST
     long intvalue = 0; // tag == INTCONST
     double floatvalue = 0.0; // tag == FLOATCONST
+
+    public ASTconstant(List<AST> nodes) {super(nodes);}
 
 /*
     public String toString()
@@ -381,24 +408,24 @@ class ASTconstant extends ASTvalue
         switch (tag) {
         case INTCONST: {
             String s = String.format("%d",intvalue);
-            DInt32 i = factory.newDInt32(s);
+            DInt32 i = getFactory().newDInt32(s);
             i.setValue((int)intvalue);
             ((ServerMethods)i).setRead(true);
             ((ServerMethods)i).setProject(true);
-            subclause = clauseFactory.newValueClause(i,false);
+            subclause = getClauseFactory().newValueClause(i,false);
         } break;
         case FLOATCONST: {
             String s = String.format("%.1f",floatvalue);
-            DFloat64 f = factory.newDFloat64(s);
+            DFloat64 f = getFactory().newDFloat64(s);
             f.setValue(floatvalue);
-            subclause = clauseFactory.newValueClause(f,false);
+            subclause = getClauseFactory().newValueClause(f,false);
         } break;
         case STRINGCONST: {
-            DString s = factory.newDString(text);
+            DString s = getFactory().newDString(text);
             s.setValue(text);
             ((ServerMethods)s).setRead(true);
             ((ServerMethods)s).setProject(true);
-            subclause = clauseFactory.newValueClause(s,false);
+            subclause = getClauseFactory().newValueClause(s,false);
         } break;
         default:
             assert(false);
@@ -413,6 +440,8 @@ class ASTclause extends AST
     ASTvalue lhs = null;
     List<ASTvalue> rhs = null;
     ASTfcn boolfcn = null;
+
+    public ASTclause(List<AST> nodes) {super(nodes);}
 
 /*
     public String toString()
@@ -447,7 +476,7 @@ class ASTclause extends AST
 	    Vector<SubClause> cvtrhs = new Vector<SubClause>();
 	    for(ASTvalue v: rhs) cvtrhs.addElement(v.translate());
             SubClause lhsclause = lhs.translate();
-	    clause = clauseFactory.newRelOpClause(operator, lhsclause, cvtrhs);
+	    clause = getClauseFactory().newRelOpClause(operator, lhsclause, cvtrhs);
 	}
 	return clause;
     }
