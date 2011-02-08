@@ -7,6 +7,8 @@ import org.apache.commons.httpclient.params.HttpConnectionParams;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.httpclient.protocol.Protocol;
 
+import java.net.Authenticator;
+import java.net.PasswordAuthentication;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
@@ -150,15 +152,7 @@ public class HTTPSession
             sessionClient = new HttpClient(new HttpClientParams(), connmgr);
 
           // H/T: nick.bower@metoceanengineers.com
-          String proxyHost = System.getProperty("http.proxyHost");
-          String proxyPort = System.getProperty("http.proxyPort");
-	  if(proxyPort != null) {
-          proxyPort = proxyPort.trim();
-	      if(proxyPort.length() == 0) proxyPort = null; // canonical form
-      }
-      if(proxyHost != null && proxyPort != null) {
-          this.setProxy(proxyHost, Integer.parseInt(proxyPort));
-      }
+	  setProxy();
 
 	  if(globalProvider != null && sessionClient != null) {
 	     sessionClient.getParams().setParameter(CredentialsProvider.PROVIDER, globalProvider);
@@ -245,10 +239,6 @@ public class HTTPSession
         return method;
     }
 
-    public void setProxy(String proxyHost, int port)
-    {
-        sessionClient.getHostConfiguration().setProxy(proxyHost,port);
-    }
 
     public String getCookiePolicy() {
             return sessionClient == null ? null : sessionClient.getParams().getCookiePolicy();
@@ -288,5 +278,38 @@ public class HTTPSession
         sessionClient.getState().clearCookies();
         sessionClient.getState().clearCredentials();
       }
+
+    // H/T: nick.bower@metoceanengineers.com
+
+    public void setProxy()
+    {
+	if(sessionClient == null) return;
+
+        String host = System.getProperty("http.proxyHost");
+        String port = System.getProperty("http.proxyPort");
+
+        if(host != null) {host = host.trim(); if(host.length() == 0) {host = null;}}
+        int portno = 0;
+        if(port != null) {port = port.trim(); if(port.length() > 0) {portno = Integer.parseInt(port);}}
+        if(host != null && portno > 0) {
+            sessionClient.getHostConfiguration().setProxy(host,portno);
+        }
+    }
+
+    protected Authenticator globalAuthenticator = null;
+
+    public void setGlobalAuthenticator(String user, String password)
+    {
+      if(password != null) {password = password.trim(); if(password.length() == 0) {password = null;}}
+      if(user != null) {user = user.trim(); if(user.length() == 0) {user = null;}}
+      if(user != null && password != null) {
+          final PasswordAuthentication pa = new PasswordAuthentication(user,password.toCharArray());
+          globalAuthenticator = new Authenticator() {
+              public PasswordAuthentication getPasswordAuthentication() {return pa;}
+          };
+          Authenticator.setDefault(globalAuthenticator);
+      }
+
+    }
 
 }
