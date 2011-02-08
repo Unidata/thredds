@@ -273,6 +273,23 @@ public class N3header {
     if (uvars.size() == 0) // if there are no record variables
       recStart = 0;
 
+    // Check if file affected by bug CDM-52 (netCDF-Java library used incorrect padding when
+    // the file contained only one record variable and it was of type byte, char, or short).
+    if ( uvars.size() == 1 ) {
+      Variable uvar = uvars.get( 0);
+      DataType dtype = uvar.getDataType();
+      if ( ( dtype == DataType.CHAR ) || ( dtype == DataType.BYTE ) || ( dtype == DataType.SHORT ) )
+      {
+        long vsize = uvar.getDataType().getSize(); // works for all netcdf-3 data types
+        for ( Dimension curDim : uvar.getDimensions() ) {
+          if ( !curDim.isUnlimited() )
+            vsize *= curDim.getLength();
+        }
+        if ( vsize != ((Vinfo) uvar.getSPobject()).vsize )
+          throw new IOException( "Misformed netCDF file - file written with incorrect padding for record variable (CDM-52)." );
+      }
+    }
+
     if (debugHeaderSize) {
       System.out.println("  filePointer = " + pos + " dataStart=" + dataStart);
       System.out.println("  recStart = " + recStart + " dataStart+nonRecordDataSize =" + (dataStart + nonRecordDataSize));
