@@ -474,6 +474,7 @@ public class DataRootHandler {
     initSpecialDatasets(cat.getDatasets());
 
     // add catalog to hash tables
+    cat.setStatic(true);
     staticCatalogHash.put(path, cat); // This method only called by synchronized methods.
     if (logCatalogInit.isDebugEnabled()) logCatalogInit.debug("  add static catalog=" + path);
 
@@ -1451,6 +1452,7 @@ public class DataRootHandler {
 
             if (reReadCat != null) {
               synchronized (this) {
+                reReadCat.setStatic(true);
                 staticCatalogHash.put(workPath, reReadCat);
               }
               catalog = reReadCat;

@@ -550,7 +550,10 @@ public class HtmlWriter {
     sb.append("<head>\r\n");
     sb.append("<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>");
     sb.append("<title>");
-    sb.append("Catalog ").append(catname);
+    if (cat.isStatic())
+      sb.append("TdsStaticCatalog ").append(catname); // for searching
+    else
+      sb.append("Catalog ").append(catname);
     sb.append("</title>\r\n");
     sb.append(this.getTdsCatalogCssLink()).append("\n");
     sb.append("</head>\r\n");

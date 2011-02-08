@@ -385,6 +385,7 @@ public class ReadTdsLogs {
       if (line == null) break;
       Log log = parseLine(regPattern, line);
       if (log == null) continue;
+      if (log.path == null) continue;
       total++;
 
       if ((total + total_submit < skip_submit) || (total + total_submit > max_submit)) {
@@ -392,7 +393,7 @@ public class ReadTdsLogs {
         continue;
       }
 
-      if (log.verb.equals("POST")) {
+      if (log.verb != null && log.verb.equals("POST")) {
         skip++;
         // System.out.println(" *** skip POST " + log);
         continue;
@@ -419,12 +420,12 @@ public class ReadTdsLogs {
         continue;
       }
 
-      if (log.path.indexOf("dodsC") < 0) {
+      /* if (log.path.indexOf("dodsC") < 0) {  // only dods
         skip++;
         continue;
-      }
+      }  */
 
-      /* if (log.path.indexOf("fmrc") > 0)  {
+      /* if (log.path.indexOf("fmrc") > 0)  {  // exclude fmrc
         // System.out.println(" *** skip fmrc " + log);
         skip++;
         continue;
@@ -665,9 +666,9 @@ public class ReadTdsLogs {
     long startElapsed = System.nanoTime();
 
     //String accessLogs = "C:\\Users\\edavis\\tdsMonitor\\motherlode.ucar.edu%3A8080\\access\\tmp\\";
-    //String accessLogs = "C:\\Users\\caron\\tdsMonitor\\motherlode.ucar.edu%3A8080\\access\\temp\\";
+    String accessLogs = "C:\\Users\\caron\\tdsMonitor\\motherlode.ucar.edu%3A8080\\access\\temp\\";
     //String accessLogs = "C:\\Users\\caron\\tdsMonitor\\motherlode.ucar.edu%3A8081\\access\\";
-      String accessLogs = "Q:/cdmUnitTest/tds/logs";
+    //  String accessLogs = "Q:/cdmUnitTest/tds/logs";
 
     System.out.printf("server=%s send files from %s %n", serverTest, accessLogs);
 

@@ -63,6 +63,7 @@ public abstract class InvCatalog {
   protected InvCatalog() {
   }
 
+
   /**
    * Get the name of the catalog
    *

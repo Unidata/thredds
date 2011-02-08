@@ -51,12 +51,13 @@ import javax.swing.event.EventListenerList;
 
 public class InvCatalogImpl extends InvCatalog {
   private String createFrom;
-  // private String dtdID; // keep track of how read, so can write XML
   private List<DataRootConfig> roots = new ArrayList<DataRootConfig>();
 
   // validation
   private StringBuilder log = new StringBuilder();
   private boolean hasError = false;
+  private boolean isStatic = false;
+
 
   /**
    * Munge this catalog so the given dataset is the top catalog.
@@ -678,4 +679,11 @@ public class InvCatalogImpl extends InvCatalog {
 
   private volatile int hashCode = 0; // Bloch, item 8
 
+  public boolean isStatic() {
+    return isStatic;
+  }
+
+  public void setStatic(boolean aStatic) {
+    isStatic = aStatic;
+  }
 }
