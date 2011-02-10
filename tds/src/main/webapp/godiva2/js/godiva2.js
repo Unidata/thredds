@@ -1444,7 +1444,8 @@ function setPermalinkURL()
             '&elevation=' + getZValue() +
             '&time=' + isoTValue +
             '&scale=' + scaleMinVal + ',' + scaleMaxVal +
-            '&bbox=' + map.getExtent().toBBOX();
+            '&bbox=' + map.getExtent().toBBOX() +
+            '&server=' + activeLayer.server;
         $('permalink').innerHTML = '<a target="_blank" href="' + url +
             '">Permalink</a>&nbsp;|&nbsp;<a href="mailto:?subject=Godiva2%20link&body='
             + escape(url) + '">email</a>';

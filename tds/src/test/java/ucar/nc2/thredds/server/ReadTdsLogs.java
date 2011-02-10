@@ -64,7 +64,7 @@ public class ReadTdsLogs {
 
   ///////////////////////////////////////////////////////
   // multithreading
-  final int nthreads = 4;
+  final int nthreads = 5;
 
   ExecutorService executor;
   ExecutorCompletionService<SendRequestTask> completionService;
@@ -666,8 +666,8 @@ public class ReadTdsLogs {
     final ReadTdsLogs reader = new ReadTdsLogs(serverTest);
     long startElapsed = System.nanoTime();
 
-    //String accessLogs = "C:\\Users\\edavis\\tdsMonitor\\motherlode.ucar.edu%3A8080\\access\\tmp\\";
-    String accessLogs = "C:\\Users\\caron\\tdsMonitor\\motherlode.ucar.edu%3A8080\\access\\temp\\";
+    String accessLogs = "C:\\Users\\edavis\\tdsMonitor\\motherlode.ucar.edu%3A8080\\access\\tmp\\";
+    //String accessLogs = "C:\\Users\\caron\\tdsMonitor\\motherlode.ucar.edu%3A8080\\access\\temp\\";
     //String accessLogs = "C:\\Users\\caron\\tdsMonitor\\motherlode.ucar.edu%3A8081\\access\\";
     //  String accessLogs = "Q:/cdmUnitTest/tds/logs";
 
