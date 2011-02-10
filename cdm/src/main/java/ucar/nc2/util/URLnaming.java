@@ -48,9 +48,8 @@ public class URLnaming {
 
   public static String escapeQuery(String urlString) throws URISyntaxException {
     urlString = urlString.trim();
-      URI uri = new URI(urlString);
-      return uri.toASCIIString();
-
+    URI uri = new URI(urlString);
+    return uri.toASCIIString();
   }
 
   /* old way

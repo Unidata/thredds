@@ -36,6 +36,7 @@ package ucar.nc2.thredds.server;
 import opendap.dap.http.HTTPException;
 import opendap.dap.http.HTTPMethod;
 import opendap.dap.http.HTTPSession;
+import org.apache.commons.httpclient.URIException;
 import ucar.nc2.util.IO;
 import ucar.nc2.util.URLnaming;
 

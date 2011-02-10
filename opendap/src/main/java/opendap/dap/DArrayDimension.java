@@ -42,6 +42,7 @@ package opendap.dap;
 import opendap.dap.Server.InvalidParameterException;
 
 import java.io.*;
+import java.util.Formatter;
 
 /**
  * This class holds information about each dimension in a <code>DArray</code>.
@@ -178,12 +179,16 @@ public final class DArrayDimension extends DAPNode
     public void markDimension(int start, int stride, int stop, boolean constraining) throws InvalidParameterException {
         String msg = "DArrayDimension.setProjection: Bad Projection Request: ";
 
-	// Check for projection conflict
-	if(constraining && constrained) {
-	    // See if we are changing start/stride/stop
-	    if(this.start != start || this.stride != stride || this.stop != stop  || size != truesize)
-		throw new ConstraintException("Conflicting constraint dimensions for: "+container.getLongName());
-	}
+        // Check for projection conflict
+        if(constraining && constrained) {
+            // See if we are changing start/stride/stop
+          if(this.start != start || this.stride != stride || this.stop != stop  || size != truesize) {
+            Formatter f = new Formatter();
+            f.format(" [%d,%d,%d,%d] != [%d,%d,%d,%d]", start, stride, stop, size, this.start, this.stride, this.stop, truesize);
+            throw new ConstraintException("Conflicting constraint dimensions for: "+container.getLongName()+f.toString());
+          }
+        }
+
         // avoid the constraint conflict problenm
         if (start >= truesize)
             throw new InvalidParameterException(msg + "start (" + start + ") >= size (" + truesize + ") for " + _name);
@@ -207,7 +212,7 @@ public final class DArrayDimension extends DAPNode
         this.stride = stride;
         this.stop = stop;
         this.size = 1 + (stop - start) / stride;
-	this.constrained = constraining || this.constrained;
+	      this.constrained = constraining || this.constrained;
     }
 
     /**

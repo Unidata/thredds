@@ -241,7 +241,7 @@ public class AccessLogTable extends JPanel {
         if (title.equals("Service"))
           initServiceLogs(useBeans);
         if (title.equals("TimeSeries"))
-          showTimeSeriesAll( useBeans);
+          showTimeSeriesAll(useBeans);
       }
     });
 
@@ -266,7 +266,7 @@ public class AccessLogTable extends JPanel {
   private LogLocalManager manager;
   private java.util.List<LogLocalManager.FileDateRange> accessLogFiles = null;
 
-  public void setLocalManager( LogLocalManager manager) {
+  public void setLocalManager(LogLocalManager manager) {
     this.manager = manager;
 
     Date startDate = manager.getStartDate();
@@ -281,7 +281,7 @@ public class AccessLogTable extends JPanel {
     else
       endDateField.setText(df.format(new Date()));
 
-    LogCategorizer.setRoots( manager.getRoots());
+    LogCategorizer.setRoots(manager.getRoots());
   }
 
   void showLogs(LogReader.LogFilter filter) {
@@ -309,8 +309,8 @@ public class AccessLogTable extends JPanel {
         reader.scanLogFile(fdr.f, new MyClosure(completeLogs), filter, stats);
 
       long elapsedTime = System.nanoTime() - startElapsed;
-       System.out.printf(" setLogFile total= %d passed=%d%n", stats.total, stats.passed);
-       System.out.printf(" elapsed=%f msecs %n", elapsedTime / (1000 * 1000.0));
+      System.out.printf(" setLogFile total= %d passed=%d%n", stats.total, stats.passed);
+      System.out.printf(" elapsed=%f msecs %n", elapsedTime / (1000 * 1000.0));
 
     } catch (IOException ioe) {
       ioe.printStackTrace();
@@ -328,7 +328,7 @@ public class AccessLogTable extends JPanel {
       n = completeLogs.size();
       f.format("Complete logs n=%d%n", n);
       f.format("  first log date= %s%n", completeLogs.get(0).getDate());
-      f.format("   last log date= %s%n", completeLogs.get(n-1).getDate());
+      f.format("   last log date= %s%n", completeLogs.get(n - 1).getDate());
     }
     List restrict = logTable.getBeans();
     if (restrict != null && (restrict.size() != n)) {
@@ -336,9 +336,9 @@ public class AccessLogTable extends JPanel {
     }
     if (accessLogFiles != null)
       f.format("%nFiles used%n");
-      for (LogLocalManager.FileDateRange fdr : accessLogFiles) {
-        f.format(" %s [%s,%s]%n", fdr.f.getName(), fdr.start, fdr.end);
-      }
+    for (LogLocalManager.FileDateRange fdr : accessLogFiles) {
+      f.format(" %s [%s,%s]%n", fdr.f.getName(), fdr.start, fdr.end);
+    }
   }
 
   void resetLogs() {
@@ -370,7 +370,7 @@ public class AccessLogTable extends JPanel {
 
     logTable.setBeans(restrictLogs);
     tabbedPanel.setSelectedIndex(0);
-    
+
     userTable.setBeans(new ArrayList());
     datarootTable.setBeans(new ArrayList());
     calcUser = true;
@@ -379,6 +379,7 @@ public class AccessLogTable extends JPanel {
   }
 
   ////////////////////////////////////////////////////////
+
   class MyClosure implements LogReader.Closure {
     ArrayList<LogReader.Log> logs;
 
@@ -447,7 +448,7 @@ public class AccessLogTable extends JPanel {
       if (name != null && namer == null) {
         StringBuffer sbuff = new StringBuffer();
         String[] p = name.split("\\.");
-        for (int i=p.length-1; i>=0; i--) {
+        for (int i = p.length - 1; i >= 0; i--) {
           sbuff.append(p[i]);
           if (i != 0) sbuff.append('.');
         }
@@ -549,6 +550,7 @@ public class AccessLogTable extends JPanel {
 
     for (LogReader.Log log : logs) {
       String path = log.getPath();
+      if (path == null) continue;
       String dataRoot = LogCategorizer.getDataroot(path, log.getStatus());
       Dataroot accum = map.get(dataRoot);
       if (accum == null) {
@@ -583,13 +585,17 @@ public class AccessLogTable extends JPanel {
 
     for (LogReader.Log log : logs) {
       String path = log.getPath();
-        String service = LogCategorizer.getService(path);
-        Service accum = map.get(service);
-        if (accum == null) {
-          accum = new Service(service);
-          map.put(service, accum);
-        }
-        accum.add(log);
+      if (path == null) {
+        System.out.printf("FAIL %s%n", log);
+        continue;
+      }
+      String service = LogCategorizer.getService(path);
+      Service accum = map.get(service);
+      if (accum == null) {
+        accum = new Service(service);
+        map.put(service, accum);
+      }
+      accum.add(log);
     }
 
     serviceTable.setBeans(new ArrayList(map.values()));
@@ -648,6 +654,7 @@ public class AccessLogTable extends JPanel {
   }
 
   // construct the TImeSeries plot for the list of logs passed in
+
   private void showTimeSeriesAll(java.util.List<LogReader.Log> logs) {
     TimeSeries bytesSentData = new TimeSeries("Bytes Sent", Minute.class);
     TimeSeries timeTookData = new TimeSeries("Average Latency", Minute.class);
@@ -702,24 +709,24 @@ public class AccessLogTable extends JPanel {
   }
 
   void addPoint(TimeSeries bytesSentData, TimeSeries timeTookData, TimeSeries nreqData,
-          Date date, long bytes, long count, long timeTook) {
+                Date date, long bytes, long count, long timeTook) {
 
     bytesSentData.add(new Minute(date), bytes / 1000. / 1000.);
     double latency = (double) timeTook / count / 1000.;
     //timeTookData.add(new Minute(date), (latency > 10*1000) ? 0 : latency); // note latency limited to 10 secs.
-    timeTookData.add(new Minute(date), latency); 
+    timeTookData.add(new Minute(date), latency);
     nreqData.add(new Minute(date), (double) count);
   }
 
   static private void test(String ip) {
-        StringBuffer sbuff = new StringBuffer();
-        String[] p = ip.split("\\.");
-        for (int i=p.length-1; i>=0; i--) {
-          sbuff.append(p[i]);
-          if (i != 0) sbuff.append('.');
-        }
-        String ipr = sbuff.toString();
-    System.out.printf("%s == %s%n",ip,ipr);
+    StringBuffer sbuff = new StringBuffer();
+    String[] p = ip.split("\\.");
+    for (int i = p.length - 1; i >= 0; i--) {
+      sbuff.append(p[i]);
+      if (i != 0) sbuff.append('.');
+    }
+    String ipr = sbuff.toString();
+    System.out.printf("%s == %s%n", ip, ipr);
   }
 
   static public void main(String args[]) {

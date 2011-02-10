@@ -188,7 +188,8 @@ public class ServletLogParser implements LogReader.LogParser {
               log.ip = m2.group(1);
               log.verb = m2.group(2).intern();
               log.path = URLDecoder.decode(m2.group(3));
-              log.http = m2.group(4).intern();
+              if (m2.groupCount() > 4)
+                log.http = m2.group(4).intern();
               log.isStart = true;
 
             } else {
