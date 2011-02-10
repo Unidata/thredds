@@ -4,6 +4,7 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.2:
  20: (2011-02-xx)
+  Variable: null unit string bug
   GridHorizCoordSys: allow gaussian lats NP != NY
  19: (2011-02-01)
   Nexrad2: dual pole radar offset bug

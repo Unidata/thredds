@@ -378,8 +378,10 @@ public class Variable implements VariableIF, ProxyReader {
   public String getUnitsString() {
     String units = null;
     Attribute att = findAttributeIgnoreCase("units");
-    if ((att != null) && att.isString())
-      units = att.getStringValue().trim();
+    if ((att != null) && att.isString()) {
+      units = att.getStringValue();
+      if (units != null) units = units.trim();
+    }
     return units;
   }
 
