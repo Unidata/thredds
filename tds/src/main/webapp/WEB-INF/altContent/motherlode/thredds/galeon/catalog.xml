@@ -5,6 +5,7 @@
   <service name="all" serviceType="Compound" base="">
     <service name="wcs" serviceType="WCS" base="/thredds/wcs/" />
     <service name="HTTPServer" serviceType="HTTPServer" base="/thredds/fileServer/" />
+    <service name="odap" serviceType="OPENDAP" base="/thredds/dodsC/"/>
   </service>
   <dataset name="Unidata GALEON Experimental Web Coverage Service (WCS) datasets">
     <metadata inherited="true">
