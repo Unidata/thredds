@@ -248,9 +248,9 @@ public class ServerVersion implements java.io.Serializable {
 
         this.subminor = -1;
 
-        System.out.println("Server Version String: " + ver);
+        // System.out.println("Server Version String: " + ver);
 
-
+      
         switch (headerType) {
             case XDAP:
                 processXDAPVersion(ver);

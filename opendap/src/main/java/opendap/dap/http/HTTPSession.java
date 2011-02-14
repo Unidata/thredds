@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Vector;
 
 /**
- * Created by IntelliJ IDEA.
+ * wrapper for org.apache.commons.httpclient
  * User: dmh
  * Date:June 15, 2010
  * Time: 4:24 PM

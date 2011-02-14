@@ -104,6 +104,7 @@
           <option name="SMART_TABS" value="false" />
           <option name="LABEL_INDENT_SIZE" value="0" />
           <option name="LABEL_INDENT_ABSOLUTE" value="false" />
+          <option name="USE_RELATIVE_INDENTS" value="false" />
         </ADDITIONAL_INDENT_OPTIONS>
         <ADDITIONAL_INDENT_OPTIONS fileType="jsp">
           <option name="INDENT_SIZE" value="4" />
@@ -113,6 +114,7 @@
           <option name="SMART_TABS" value="false" />
           <option name="LABEL_INDENT_SIZE" value="0" />
           <option name="LABEL_INDENT_ABSOLUTE" value="false" />
+          <option name="USE_RELATIVE_INDENTS" value="false" />
         </ADDITIONAL_INDENT_OPTIONS>
         <ADDITIONAL_INDENT_OPTIONS fileType="txt">
           <option name="INDENT_SIZE" value="4" />
@@ -122,6 +124,7 @@
           <option name="SMART_TABS" value="false" />
           <option name="LABEL_INDENT_SIZE" value="0" />
           <option name="LABEL_INDENT_ABSOLUTE" value="false" />
+          <option name="USE_RELATIVE_INDENTS" value="false" />
         </ADDITIONAL_INDENT_OPTIONS>
         <ADDITIONAL_INDENT_OPTIONS fileType="xml">
           <option name="INDENT_SIZE" value="4" />
@@ -131,6 +134,7 @@
           <option name="SMART_TABS" value="false" />
           <option name="LABEL_INDENT_SIZE" value="0" />
           <option name="LABEL_INDENT_ABSOLUTE" value="false" />
+          <option name="USE_RELATIVE_INDENTS" value="false" />
         </ADDITIONAL_INDENT_OPTIONS>
       </value>
     </option>
@@ -181,17 +185,6 @@
     <module2copyright />
     <LanguageOptions name="XML">
       <option name="fileTypeOverride" value="1" />
-      <option name="relativeBefore" value="true" />
-      <option name="addBlankAfter" value="true" />
-      <option name="fileLocation" value="1" />
-      <option name="block" value="true" />
-      <option name="separateBefore" value="false" />
-      <option name="separateAfter" value="false" />
-      <option name="prefixLines" value="true" />
-      <option name="lenBefore" value="80" />
-      <option name="lenAfter" value="80" />
-      <option name="box" value="false" />
-      <option name="filler" value=" " />
     </LanguageOptions>
   </component>
   <component name="DependencyValidationManager">
@@ -217,41 +210,17 @@
   </component>
   <component name="FacetAutodetectingManager">
     <autodetection-disabled>
-      <facet-type id="web">
-        <modules>
-          <module name="tds">
-            <files>
-              <file url="file://$PROJECT_DIR$/../../tds/src/main/webapp-cdmValidator/WEB-INF/web.xml" />
-              <file url="file://$PROJECT_DIR$/../../tds/src/main/webapp-dqcServletRedirect/WEB-INF/web.xml" />
-              <file url="file://$PROJECT_DIR$/../../tds/src/main/webapp-expThredds/WEB-INF/web.xml" />
-              <file url="file://$PROJECT_DIR$/../../tds/src/main/webapp/WEB-INF/web.xml" />
-              <file url="file://$PROJECT_DIR$/../../tds/threddsFull/target/CdmValidator/WEB-INF/web.xml" />
-            </files>
-          </module>
-          <module name="bufrTables">
-            <files>
-              <file url="file://$PROJECT_DIR$/../../bufrTables/src/main/webapp/WEB-INF/web.xml" />
-              <file url="file://$PROJECT_DIR$/../../bufrTables/target/WEB-INF/web.xml" />
-            </files>
-          </module>
-          <module name="opendap">
-            <files>
-              <file url="file://$PROJECT_DIR$/../../../Java-OPeNDAP/resources/WEB-INF/web.xml" />
-            </files>
-          </module>
-          <module name="rcdm">
-            <files>
-              <file url="file://$PROJECT_DIR$/../../rcdm/web/WEB-INF/web.xml" />
-            </files>
-          </module>
-        </modules>
-      </facet-type>
       <facet-type id="Spring">
         <modules>
           <module name="bufrTables">
             <files>
               <file url="file://$PROJECT_DIR$/../../bufrTables/src/main/webapp/WEB-INF/applicationContext.xml" />
               <file url="file://$PROJECT_DIR$/../../bufrTables/src/main/webapp/WEB-INF/bufrTables-servlet.xml" />
+            </files>
+          </module>
+          <module name="rcdm">
+            <files>
+              <file url="file://$PROJECT_DIR$/../../rcdm/web/WEB-INF/embedded-jetty-context.xml" />
             </files>
           </module>
           <module name="tds">
@@ -282,9 +251,33 @@
               <file url="file://$PROJECT_DIR$/../../ui/src/main/resources/resources/nj22/ui/spring/application-config.xml" />
             </files>
           </module>
+        </modules>
+      </facet-type>
+      <facet-type id="web">
+        <modules>
+          <module name="bufrTables">
+            <files>
+              <file url="file://$PROJECT_DIR$/../../bufrTables/src/main/webapp/WEB-INF/web.xml" />
+              <file url="file://$PROJECT_DIR$/../../bufrTables/target/WEB-INF/web.xml" />
+            </files>
+          </module>
+          <module name="opendap">
+            <files>
+              <file url="file://$PROJECT_DIR$/../../../Java-OPeNDAP/resources/WEB-INF/web.xml" />
+            </files>
+          </module>
           <module name="rcdm">
             <files>
-              <file url="file://$PROJECT_DIR$/../../rcdm/web/WEB-INF/embedded-jetty-context.xml" />
+              <file url="file://$PROJECT_DIR$/../../rcdm/web/WEB-INF/web.xml" />
+            </files>
+          </module>
+          <module name="tds">
+            <files>
+              <file url="file://$PROJECT_DIR$/../../tds/src/main/webapp-cdmValidator/WEB-INF/web.xml" />
+              <file url="file://$PROJECT_DIR$/../../tds/src/main/webapp-dqcServletRedirect/WEB-INF/web.xml" />
+              <file url="file://$PROJECT_DIR$/../../tds/src/main/webapp-expThredds/WEB-INF/web.xml" />
+              <file url="file://$PROJECT_DIR$/../../tds/src/main/webapp/WEB-INF/web.xml" />
+              <file url="file://$PROJECT_DIR$/../../tds/threddsFull/target/CdmValidator/WEB-INF/web.xml" />
             </files>
           </module>
         </modules>
@@ -384,12 +377,13 @@
     <option name="PROJECT_PROFILE" value="Project Default" />
     <option name="USE_PROJECT_PROFILE" value="true" />
     <version value="1.0" />
-    <list size="5">
+    <list size="6">
       <item index="0" class="java.lang.String" itemvalue="SERVER PROBLEM" />
-      <item index="1" class="java.lang.String" itemvalue="INFO" />
-      <item index="2" class="java.lang.String" itemvalue="TYPO" />
-      <item index="3" class="java.lang.String" itemvalue="WARNING" />
-      <item index="4" class="java.lang.String" itemvalue="ERROR" />
+      <item index="1" class="java.lang.String" itemvalue="WEAK WARNING" />
+      <item index="2" class="java.lang.String" itemvalue="INFO" />
+      <item index="3" class="java.lang.String" itemvalue="TYPO" />
+      <item index="4" class="java.lang.String" itemvalue="WARNING" />
+      <item index="5" class="java.lang.String" itemvalue="ERROR" />
     </list>
   </component>
   <component name="IssueNavigationConfiguration">

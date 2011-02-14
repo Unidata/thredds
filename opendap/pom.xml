@@ -94,4 +94,14 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+
+  <!-- ===========================================================
+            Build configuration
+
+            We declare a non-existant test directory as a dirty trick
+            for skiping completly the tests, including compilation.
+        =========================================================== -->
+   <build>
+     <testSourceDirectory>void</testSourceDirectory>
+   </build>  
 </project>

@@ -235,7 +235,7 @@
     <repository>
        <id>geotoolkit</id>
        <name>Geotoolkit binaries</name>
-       <url>dav:http://maven.geotoolkit.org/</url>
+       <url>http://maven.geotoolkit.org/</url>
     </repository>
 </repositories>
 
