@@ -34,6 +34,9 @@ package ucar.nc2.util;
 
 
 
+import org.apache.commons.httpclient.URIException;
+import org.apache.commons.httpclient.util.URIUtil;
+
 import java.net.URI;
 import java.net.URL;
 import java.net.URISyntaxException;
@@ -46,15 +49,13 @@ import java.io.File;
  */
 public class URLnaming {
 
-  public static String escapeQuery(String urlString) throws URISyntaxException {
+  public static String escapeQueryNew(String urlString) throws URISyntaxException {
     urlString = urlString.trim();
     URI uri = new URI(urlString);
     return uri.toASCIIString();
   }
 
-  /* old way
-
-    public static String escapeQuery(String urlString) {
+  public static String escapeQuery(String urlString) {
     urlString = urlString.trim();
     int posQ = urlString.indexOf("?");
     if ((posQ > 0) && (posQ < urlString.length() - 2)) {
@@ -70,7 +71,6 @@ public class URLnaming {
     }
     return urlString;
   }
-   */
 
   /**
    * This augments URI.resolve(), by also dealing with file: URIs.
@@ -192,7 +192,7 @@ public class URLnaming {
     System.out.println();
   }
 
-  public static void main(String args[]) {
+  public static void main1(String args[]) {
     testResolve("file:/test/me/", "blank in dir", "file:/test/me/blank in dir");
   }
 
@@ -241,6 +241,15 @@ public class URLnaming {
   public static void main5(String args[]) throws URISyntaxException {
     String uriString = "http://test.opendap.org:8080/dods/dts/test.53.dods?types[0:1:9]";
     URI uri = new URI(uriString);
+  }
+
+  public static void main(String args[]) throws URISyntaxException {
+    String uriString = "http://test.opendap.org:8080/dods/dts/test.53.dods?types[0:1:9]";
+    URI uri = new URI(uriString);
+    System.out.printf("uri = %s%n", uri);
+    System.out.printf("uri.toASCIIString = %s%n", uri.toASCIIString());
+    System.out.printf("escapeQueryNew = %s%n", escapeQueryNew(uriString));
+    System.out.printf("escapeQueryOld = %s%n", escapeQuery(uriString));
   }
 
 

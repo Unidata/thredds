@@ -71,7 +71,8 @@ public class CompositePointCollection extends PointCollectionImpl implements Upd
       FeatureDatasetPoint openDataset = null;
       try {
         openDataset = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(FeatureType.POINT, td.getLocation(), null, errlog);
-        dataVariables = openDataset.getDataVariables();
+        if (openDataset != null)
+          dataVariables = openDataset.getDataVariables();
       } catch (IOException ioe) {
         throw new RuntimeException(ioe);
 

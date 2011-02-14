@@ -55,6 +55,7 @@ import java.nio.channels.WritableByteChannel;
 import java.nio.channels.Channels;
 import java.net.URLDecoder;
 
+import ucar.ma2.InvalidRangeException;
 import ucar.nc2.stream.NcStreamWriter;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.NetcdfFile;
@@ -204,8 +205,12 @@ public class CdmRemoteController extends AbstractCommandController implements La
       log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_BAD_REQUEST, 0));
       res.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
 
+    } catch (InvalidRangeException e) { // ParsedSectionSpec failed
+      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_BAD_REQUEST, 0));
+      res.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
+
     } catch (Throwable e) {
-      e.printStackTrace();
+      log.error(e.getMessage(), e);
       log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
       res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
 

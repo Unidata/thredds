@@ -4,6 +4,9 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.2:
  20: (2011-02-xx)
+  URLnaming.escapeQuery() reverted to old way of checking for query string
+  CompositePointCollection.getDataVariables() : check for null
+  ParsedSectionSpec: check for illegal ranges
   Variable: null unit string bug
   GridHorizCoordSys: allow gaussian lats NP != NY
  19: (2011-02-01)

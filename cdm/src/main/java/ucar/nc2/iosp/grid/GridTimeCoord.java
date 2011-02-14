@@ -80,7 +80,7 @@ public class GridTimeCoord implements Comparable<GridTimeCoord> {
         //System.out.printf("%s%n", record.getParameterDescription());
       }
 
-      // use earlier reference date
+      // use earlier reference date LOOK WHY?
       Date ref = record.getReferenceTime();
       if (ref.before(this.baseDate))
         this.baseDate = ref;
@@ -100,8 +100,10 @@ public class GridTimeCoord implements Comparable<GridTimeCoord> {
 
           // make sure that the reference date agrees
           Date ref = gr.getReferenceTime();
-          if (!baseDate.equals(ref))
+          if (!baseDate.equals(ref)) {
             log.warn(gr + " does not have same base date= " + baseDate + " != " + ref+ " for " + where);
+            // continue; LOOK
+          }
 
           GribPds pds = ggr.getPds();
           int[] timeInv = pds.getForecastTimeInterval(this.timeUnit);

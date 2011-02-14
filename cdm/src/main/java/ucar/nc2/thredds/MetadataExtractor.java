@@ -42,6 +42,7 @@ import ucar.nc2.units.DateRange;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.CoordinateAxis;
@@ -272,7 +273,11 @@ public class MetadataExtractor {
   ///////////////////////////////////////////////////////////////////////////////
   static public ThreddsMetadata.Variables extractVariables(FeatureDatasetPoint fd) {
     ThreddsMetadata.Variables vars = new ThreddsMetadata.Variables("CF-1.5");
-    for (VariableSimpleIF v : fd.getDataVariables()) {
+    List<VariableSimpleIF> dataVars =  fd.getDataVariables();
+    if (dataVars == null)
+      return vars;
+
+    for (VariableSimpleIF v : dataVars) {
       ThreddsMetadata.Variable tv = new ThreddsMetadata.Variable();
       vars.addVariable(tv);
 

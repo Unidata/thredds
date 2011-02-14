@@ -31,25 +31,21 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package opendap.test;
+package thredds.server.opendap;
 
 import junit.framework.TestCase;
 import opendap.dap.BaseType;
 import opendap.dap.Server.*;
 import opendap.servlet.AsciiWriter;
 import opendap.servlet.GuardedDataset;
-import thredds.server.opendap.GuardedDatasetImpl;
-import thredds.server.opendap.NcDDS;
-import thredds.servlet.DataRootHandler;
-import thredds.servlet.DatasetHandler;
-import ucar.nc2.*;
+import opendap.test.Diff;
+import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
 
 
 import java.io.*;
 import java.io.FileWriter;
 import java.util.Enumeration;
-import java.util.Vector;
 
 // Test that the Constraint parsing is correct
 
@@ -155,7 +151,7 @@ public class TestCEEvaluator extends TestCase
                     ncfile = NetcdfDataset.openFile(file.getPath(), null);
                     if(ncfile == null) throw new FileNotFoundException(path);
 
-                    ds = new GuardedDatasetImpl(path, ncfile, false);
+                    ds = new GuardedDatasetCacheAndClone(path, ncfile, false);
                     dds = ds.getDDS();
                     // force the name
                     dds.setName(basename);
@@ -257,7 +253,7 @@ public class TestCEEvaluator extends TestCase
             file = new File(path);
             ncfile = NetcdfDataset.openFile(file.getPath(), null);
             if(ncfile == null) throw new FileNotFoundException(path);
-            ds = new GuardedDatasetImpl(path, ncfile, false);
+            ds = new GuardedDatasetCacheAndClone(path, ncfile, false);
             dds = ds.getDDS();
             // force the name
             dds.setName(basename);

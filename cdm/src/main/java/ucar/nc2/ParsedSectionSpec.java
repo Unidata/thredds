@@ -50,7 +50,7 @@ import java.util.List;
  */
 public class ParsedSectionSpec {
   public Variable v; // the variable
-  public Section section; // section for this variable
+  public Section section; // section for this variable, filled in from variable if needed
   public ParsedSectionSpec child;
 
   private ParsedSectionSpec(Variable v, Section section) {
@@ -142,7 +142,7 @@ public class ParsedSectionSpec {
     Section section;
     if (indexSelect != null) {
       section = new Section(indexSelect);
-      section.setDefaults(v.getShape()); // Check section has no nulls, set from shape array.
+      section = Section.fill(section, v.getShape()); // Check section has no nulls, set from shape array.
     } else {
       section = v.getShapeAsSection(); // all
     }

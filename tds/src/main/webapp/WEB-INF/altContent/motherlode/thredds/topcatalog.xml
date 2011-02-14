@@ -29,7 +29,7 @@
     <catalogRef xlink:title="IRI/LDEO Climate Data Library" xlink:href="http://iridl.ldeo.columbia.edu/SOURCES/thredds.xml" name="" />
     <catalogRef xlink:title="Mersea - Marine Environment and Security for the European Area" xlink:href="http://mersea.jrc.ec.europa.eu/thredds/catalog.xml" name="" />
 
-    <catalogRef xlink:title="NCAR Data Portal" xlink:href="http://dataportal.ucar.edu/metadata/ucar.thredds" name="" />
+    <!-- catalogRef xlink:title="NCAR Data Portal" xlink:href="http://dataportal.ucar.edu/metadata/ucar.thredds" name="" / -->
 
     <dataset name="NOAA NOMADS">
       <catalogRef xlink:href="http://nomads.ncdc.noaa.gov/thredds/catalog.xml" xlink:title="NCDC NOMADS THREDDS Data Server" name="" />
@@ -62,6 +62,7 @@
       <catalogRef xlink:href="http://lead.unidata.ucar.edu:8080/thredds/topcatalog.xml" xlink:title="LEAD Data" name="" />
     </dataset>
 
+    <catalogRef xlink:title="University of Twente (Nederland) THREDDS catalogs" xlink:href="http://thredds.itc.nl:8180/thredds/catalog.html" name="" />
     <catalogRef xlink:title="USGS Woods Hole Science Center THREDDS catalogs" xlink:href="http://coast-enviro.er.usgs.gov/thredds/catalog.xml" name="" />
 
     <!-- catalogRef xlink:title="Waseda Research Lab at University of Tokyo" xlink:href=" http://133.11.64.144/thredds/catalog.xml" name=""/ -->

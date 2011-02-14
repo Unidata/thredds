@@ -143,9 +143,6 @@ public class ReadTdsLogs {
         if (is != null)
           bytesRead = IO.copy2null(is, 10 * 1000); // read data and throw away
 
-      } catch (URISyntaxException e) {
-        e.printStackTrace();
-        
       } finally {
         if (method != null) method.close();
       }
@@ -666,8 +663,8 @@ public class ReadTdsLogs {
     final ReadTdsLogs reader = new ReadTdsLogs(serverTest);
     long startElapsed = System.nanoTime();
 
-    String accessLogs = "C:\\Users\\edavis\\tdsMonitor\\motherlode.ucar.edu%3A8080\\access\\tmp\\";
-    //String accessLogs = "C:\\Users\\caron\\tdsMonitor\\motherlode.ucar.edu%3A8080\\access\\temp\\";
+    //String accessLogs = "C:\\Users\\edavis\\tdsMonitor\\motherlode.ucar.edu%3A8080\\access\\t   mp\\";
+    String accessLogs = "C:\\Users\\caron\\tdsMonitor\\motherlode.ucar.edu%3A8080\\access\\temp\\";
     //String accessLogs = "C:\\Users\\caron\\tdsMonitor\\motherlode.ucar.edu%3A8081\\access\\";
     //  String accessLogs = "Q:/cdmUnitTest/tds/logs";
 
