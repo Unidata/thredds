@@ -6,6 +6,9 @@
     <service name="wms" serviceType="WMS" base="/thredds/wms/" />
     <service name="ncss" serviceType="NetcdfSubset" base="/thredds/ncss/grid/" />
     <service name="http" serviceType="HTTPServer" base="/thredds/fileServer/"/>
+    <service name="ncml" serviceType="NCML" base="/thredds/ncml/"/>
+    <service name="uddc" serviceType="UDDC" base="/thredds/uddc/"/>
+    <service name="iso" serviceType="ISO" base="/thredds/iso/"/>
   </service>
   <dataset name="Unidata Real-Time Regional Model" ID="Unidata-Regional-Model">
 

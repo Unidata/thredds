@@ -2,7 +2,22 @@
 <catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" xmlns:xlink="http://www.w3.org/1999/xlink" name="THREDDS-IDD OPeNDAP Data Server" version="1.0.2">
   <service name="all" serviceType="Compound" base="">
     <service name="ncdods" serviceType="OPENDAP" base="/thredds/dodsC/" />
+    <service name="wcs" serviceType="WCS" base="/thredds/wcs/"/>
+    <service name="wms" serviceType="WMS" base="/thredds/wms/"/>
+    <service name="ncss" serviceType="NetcdfSubset" base="/thredds/ncss/grid/"/>
     <service name="HTTPServer" serviceType="HTTPServer" base="/thredds/fileServer/" />
+    <service name="ncml" serviceType="NCML" base="/thredds/ncml/"/>
+    <service name="uddc" serviceType="UDDC" base="/thredds/uddc/"/>
+    <service name="iso" serviceType="ISO" base="/thredds/iso/"/>
+  </service>
+  <service name="all2" serviceType="Compound" base="">
+    <service name="ncdods2" serviceType="OPENDAP" base="/thredds/dodsC/" />
+    <service name="wcs2" serviceType="WCS" base="/thredds/wcs/"/>
+    <service name="wms2" serviceType="WMS" base="/thredds/wms/"/>
+    <service name="ncss2" serviceType="NetcdfSubset" base="/thredds/ncss/grid/"/>
+    <service name="ncml2" serviceType="NCML" base="/thredds/ncml/"/>
+    <service name="uddc2" serviceType="UDDC" base="/thredds/uddc/"/>
+    <service name="iso2" serviceType="ISO" base="/thredds/iso/"/>
   </service>
   <service name="latest" serviceType="Resolver" base="" />
   <dataset name="Satellite Data">
@@ -41,7 +56,7 @@
           <addDatasetSize/>
         </datasetScan>
         <dataset name="WEST-CONUS_4km Aggregation" ID="SSEC/IDD-Satellite/3.9/WEST-CONUS_4km-Agg" urlPath="satellite/3.9/WEST-CONUS_4km">
-          <serviceName>ncdods</serviceName>
+          <serviceName>all2</serviceName>
           <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
             <aggregation dimName="time" type="joinExisting">
               <scan dateFormatMark="WEST-CONUS_4km_3.9_#yyyyMMdd_HHmm" location="/data/ldm/pub/native/satellite/3.9/WEST-CONUS_4km/" suffix=".gini" />
@@ -289,7 +304,7 @@
         </datasetScan>
 
         <dataset name="SUPER-NATIONAL_1km Aggregation" ID="SSEC/IDD-Satellite/SFC-T/SUPER-NATIONAL_1km-Agg" urlPath="satellite/SFC-T/SUPER-NATIONAL_1km">
-          <serviceName>ncdods</serviceName>
+          <serviceName>all2</serviceName>
           <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
             <aggregation dimName="time" type="joinExisting">
               <scan dateFormatMark="SUPER-NATIONAL_1km_SFC-T_#yyyyMMdd_HHmm" location="/data/ldm/pub/native/satellite/SFC-T/SUPER-NATIONAL_1km/" suffix=".gini" />
