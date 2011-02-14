@@ -5,6 +5,7 @@ Build Name = @BUILD.NAME@
 
 Release Details 4.2:
  4.2.4 (2011-02-xx)
+   Add latest ncISO to TDS distribution and update IDD and motherlode catalogs with ncISO services.
    static catalogs: google search intitle:TdsStaticCatalog
    HTTPClient refactor / framework
    opendap bison parser
