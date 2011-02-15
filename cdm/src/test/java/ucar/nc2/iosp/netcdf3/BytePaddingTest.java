@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 
 import ucar.ma2.Array;
+import ucar.ma2.ArrayChar;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.*;
@@ -23,17 +24,55 @@ public class BytePaddingTest
 {
   @Test
   public void checkReadOfFileWrittenWithIncorrectPaddingOfOneDimByteArrayOnlyRecordVar()
+          throws IOException, InvalidRangeException
   {
     File testDataDir = new File( TestAll.cdmLocalTestDataDir, "ucar/nc2/iosp/netcdf3" );
     File testFile = new File( testDataDir, "byteArrayRecordVarPaddingTest-bad.nc" );
     assertTrue( testFile.exists());
     assertTrue( testFile.canRead());
 
+    NetcdfFile ncf = NetcdfFile.open( testFile.getPath() );
+    Variable readVar = ncf.findVariable( "V" );
+    assertEquals( readVar.getDataType(), DataType.BYTE );
+    assertEquals( 1, readVar.getElementSize() );
+
+    N3header.Vinfo vinfo = (N3header.Vinfo) readVar.getSPobject();
+    assertTrue( vinfo.isRecord );
+    assertEquals( 1, vinfo.vsize );
+
+    Array byteData = readVar.read();
+
+    // File was created with the following data
+    //     byte[] data = {1, 2, 3, 4, 5, 6, 7, 8, 9, -1, -2, -3, -4, -5, -6, -7, -8, -9};
+    // But extra padding (see issue CDM-52) caused each byte to be padded out to 4 bytes.
+    assertEquals( 1, byteData.getByte( 0 ));
+    assertEquals( 0, byteData.getByte( 1 ));
+    assertEquals( 0, byteData.getByte( 2 ));
+    assertEquals( 0, byteData.getByte( 3 ));
+    assertEquals( 2, byteData.getByte( 4 ));
+    assertEquals( 0, byteData.getByte( 5 ));
+    assertEquals( 0, byteData.getByte( 6 ));
+    assertEquals( 0, byteData.getByte( 7 ));
+    assertEquals( 3, byteData.getByte( 8 ));
+    assertEquals( 0, byteData.getByte( 9 ));
+    assertEquals( 0, byteData.getByte( 10 ));
+    assertEquals( 0, byteData.getByte( 11 ));
+    assertEquals( 4, byteData.getByte( 12 ));
+    assertEquals( 0, byteData.getByte( 13 ));
+    assertEquals( 0, byteData.getByte( 14 ));
+    assertEquals( 0, byteData.getByte( 15 ));
+    assertEquals( 5, byteData.getByte( 16 ));
+    assertEquals( 0, byteData.getByte( 17 ));
+
     try {
-      NetcdfFile ncf = NetcdfFile.open( testFile.getPath() );
-    } catch ( IOException e ) {
-      assertTrue( e.getMessage().contains( "file written with incorrect padding for record variable (CDM-52)" ));
+      byteData.getByte( 18 );
+    } catch ( ArrayIndexOutOfBoundsException e ) {
+      return;
+    } catch ( Exception e) {
+      fail( "Unexpected exception: " + e.getMessage());
+      return;
     }
+    fail( "Failed to throw expected ArrayIndexOutOfBoundsException.");
   }
 
   @Test
@@ -466,5 +505,38 @@ public class BytePaddingTest
     byte[] readdata = (byte[]) inv.read( org, inv.getShape() ).copyTo1DJavaArray();
 
     assertArrayEquals( data, readdata );
+  }
+
+  @Test
+  public void checkReadWithPaddingInVsize() throws IOException, InvalidRangeException
+  {
+    File dataFile = new File( TestAll.testdataDir, "netcdf4/files/tst_small.nc");
+    NetcdfFile ncFile = NetcdfFile.open( dataFile.getPath(), null );
+    Variable readVar = ncFile.findVariable( "Times" );
+
+    assertDataAsExpected( readVar );
+
+    ncFile.close();
+  }
+
+  @Test
+  public void checkReadWithoutPaddingInVsize() throws IOException, InvalidRangeException
+  {
+    File dataFile = new File( TestAll.testdataDir, "netcdf4/files/tst_small_withoutPaddingInVsize.nc");
+    NetcdfFile ncFile = NetcdfFile.open( dataFile.getPath(), null );
+    Variable readVar = ncFile.findVariable( "Times" );
+
+    assertDataAsExpected( readVar );
+
+    ncFile.close();
+  }
+
+  private void assertDataAsExpected( Variable var )
+          throws IOException
+  {
+    ArrayChar cdata = (ArrayChar) var.read();
+
+    assert cdata.getString( 0 ).equals( "2005-04-11_12:00:00" );
+    assert cdata.getString( 1 ).equals( "2005-04-11_13:00:00" );
   }
 }

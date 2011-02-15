@@ -37,8 +37,6 @@ import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Array;
 import ucar.ma2.Section;
 import ucar.ma2.Range;
-import ucar.nc2.iosp.grib.TestIntervalsTimeCoords;
-import ucar.nc2.iosp.grib.TestMiscCoordinates;
 import ucar.nc2.util.CompareNetcdf;
 
 import java.io.IOException;
@@ -52,7 +50,9 @@ public class TestIosp {
 
   public static junit.framework.Test suite ( ) {
     TestSuite suite= new TestSuite();
-    suite.addTest( new TestSuite(TestMiscCoordinates.class));
+    suite.addTest( new JUnit4TestAdapter( ucar.nc2.iosp.netcdf3.BytePaddingTest.class ) );
+
+    suite.addTest( new TestSuite( ucar.nc2.iosp.grib.TestMiscCoordinates.class));
     suite.addTest( new TestSuite(ucar.nc2.iosp.grib.TestOfsData.class));
     suite.addTest( new TestSuite( ucar.nc2.iosp.grib.TestGridGribIosp.class));
     
@@ -65,7 +65,7 @@ public class TestIosp {
     suite.addTest( new TestSuite( ucar.nc2.iosp.nids.TestNids.class));
     suite.addTest( new TestSuite( ucar.nc2.iosp.dorade.TestDorade.class));
 
-    suite.addTest( new TestSuite( TestIntervalsTimeCoords.class));
+    suite.addTest( new TestSuite( ucar.nc2.iosp.grib.TestIntervalsTimeCoords.class));
     suite.addTest( new TestSuite( ucar.nc2.iosp.gempak.TestReadingGempak.class));
     suite.addTest( new TestSuite( ucar.nc2.iosp.TestMiscIosp.class));
     //suite.addTest( new TestSuite( ucar.nc2.iosp.bufr.TestBufrRead.class));
