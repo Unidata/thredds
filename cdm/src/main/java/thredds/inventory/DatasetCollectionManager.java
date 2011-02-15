@@ -314,8 +314,12 @@ public class DatasetCollectionManager implements CollectionManager {
    */
   public void scan(CancelTask cancelTask) throws IOException {
     Map<String, MFile> newMap = new HashMap<String, MFile>();
-    scan(newMap, cancelTask);
+    if (!hasScans()) {
+      map = newMap;
+      return;
+    }
 
+    scan(newMap, cancelTask);
     deleteOld(newMap);
 
     // LOOK how often ??
@@ -333,6 +337,9 @@ public class DatasetCollectionManager implements CollectionManager {
     return false;
   }
 
+  protected boolean hasScans() {
+    return !scanList.isEmpty();
+  }
 
   /**
    * Compute if rescan is needed, based on the recheckEvery parameter.
@@ -342,7 +349,7 @@ public class DatasetCollectionManager implements CollectionManager {
    */
   @Override
   public boolean isRescanNeeded() {
-    if (scanList.isEmpty()) {
+    if (!hasScans()) {
       if (logger.isDebugEnabled()) logger.debug(collectionName+": rescan not needed, no scanners");
       return false;
     }
@@ -376,7 +383,7 @@ public class DatasetCollectionManager implements CollectionManager {
   public boolean rescan() throws IOException {
     if (map == null) {
       scan(null);
-      return true;
+      return hasScans();
     }
 
     // rescan
@@ -433,12 +440,12 @@ public class DatasetCollectionManager implements CollectionManager {
 
   /**
    * Get the current collection of MFile, since last scan or rescan.
-   *
+   * Must call scan() or rescan() at least once
    * @return current list of MFile, sorted by name
    */
   @Override
   public List<MFile> getFiles() {
-    if (map == null) return null; // never been scanned
+    if (map == null) return null; // never scanned
     List<MFile> result = new ArrayList<MFile>(map.values());
     Collections.sort(result);
     return result;

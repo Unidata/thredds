@@ -48,7 +48,7 @@ public class TestFeatureDatasets {
     suite.addTestSuite( TestPointFeatureTypes.class);
     suite.addTestSuite( TestFmrc.class);
     suite.addTestSuite( TestMiscPointFeature.class);
-    suite.addTestSuite( TestCdmrFeatureCollectionPoint.class);
+    //suite.addTestSuite( TestCdmrFeatureCollectionPoint.class);
 
     return suite;
   }

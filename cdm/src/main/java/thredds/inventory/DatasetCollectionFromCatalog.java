@@ -73,6 +73,10 @@ public class DatasetCollectionFromCatalog extends DatasetCollectionManager imple
     this.catalogUrl = collection;
   }
 
+  protected boolean hasScans() {
+    return true;
+  }
+
   @Override
   protected void scan(java.util.Map<String, MFile> map, CancelTask cancelTask) throws IOException {
     InvCatalogFactory catFactory = InvCatalogFactory.getDefaultFactory(true);
