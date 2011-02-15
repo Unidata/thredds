@@ -17,7 +17,7 @@
   <groupId>edu.ucar</groupId>
   <artifactId>netcdf-parent</artifactId>
   <packaging>pom</packaging>
-  <version>4.2.19</version>
+  <version>4.2.20</version>
   <name>Unidata parent</name>
   <description>
     The NetCDF-Java Library is a Java interface to NetCDF files,
@@ -295,11 +295,11 @@
   </modules>
 
   <properties>
-    <common.version>4.2.19</common.version>
-    <netcdf.version>4.2.19</netcdf.version>
-    <grib.version>8.0.28</grib.version>
+    <common.version>4.2.20</common.version>
+    <netcdf.version>4.2.20</netcdf.version>
+    <grib.version>8.0.29</grib.version>
     <bufr.version>3.0</bufr.version>
-    <opendap.version>2.2.1</opendap.version>
+    <opendap.version>2.2.2</opendap.version>
     <visad.version>2010-08-09</visad.version>
     <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
