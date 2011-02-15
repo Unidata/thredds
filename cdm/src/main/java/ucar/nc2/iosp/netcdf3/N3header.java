@@ -190,7 +190,7 @@ public class N3header {
       String name = readString();
       Variable var = new Variable(ncfile, ncfile.getRootGroup(), null, name);
 
-      // get dimensions
+      // get element count in non-record dimensions
       long velems = 1;
       boolean isRecord = false;
       int rank = raf.readInt();
@@ -285,7 +285,7 @@ public class N3header {
         }
         Vinfo vinfo = (Vinfo) uvar.getSPobject();
         if ( vsize != vinfo.vsize ) {
-          log.info( "Misformed netCDF file - file written with incorrect padding for record variable (CDM-52): fvsize=" + vinfo.vsize+"!= calc size =" + vsize );
+          // log.info( "Misformed netCDF file - file written with incorrect padding for record variable (CDM-52): fvsize=" + vinfo.vsize+"!= calc size =" + vsize );
           recsize =  vsize;
           vinfo.vsize = vsize;
         }
@@ -301,7 +301,7 @@ public class N3header {
       System.out.println("  actualSize= " + actualSize);
     }
 
-    // check for streaming file - numrecs must be caclulated
+    // check for streaming file - numrecs must be calculated
     if (isStreaming) {
       long recordSpace = actualSize - recStart;
       numrecs = (int) (recordSpace / recsize);
@@ -326,7 +326,7 @@ public class N3header {
       if (disallowFileTruncation)
         throw new IOException("File is truncated calculated size= " + calcSize + " actual = " + actualSize);
       else {
-        //System.out.println("File is truncated calculated size= "+calcSize+" actual = "+actualSize);
+        //log.info("File is truncated calculated size= "+calcSize+" actual = "+actualSize);
         raf.setExtendMode();
       }
     }
@@ -924,26 +924,16 @@ public class N3header {
         if (!dim.isUnlimited())
           vsize *= dim.getLength();
       }
-
-      // From nc3 file format specification
-      // (http://www.unidata.ucar.edu/software/netcdf/docs/netcdf.html#NetCDF-Classic-Format):
-      //     Note on padding: In the special case of only a single record variable of character,
-      //     byte, or short type, no padding is used between data values.
-      boolean padRecordVariableSlabs = true;
-      DataType dtype = var.getDataType();
-      if ( uvars.size() == 1 && uvars.get(0) == var )
-        if ( ( dtype == DataType.CHAR ) || ( dtype == DataType.BYTE ) || ( dtype == DataType.SHORT ) )
-          padRecordVariableSlabs = false;
-
-      if ( padRecordVariableSlabs)
-        vsize += padding(vsize);
+      long unpaddedVsize = vsize;
+      vsize += padding(vsize);
 
       // variable attributes
       long varAttsPos = raf.getFilePointer();
       writeAtts(var.getAttributes(), fout);
 
       // data type, variable size, beginning file position
-      int type = getType(var.getDataType());
+      DataType dtype = var.getDataType();
+      int type = getType(dtype);
       raf.writeInt(type);
 
       int vsizeWrite = (vsize < MAX_UNSIGNED_INT) ? (int) vsize : -1;
@@ -954,7 +944,15 @@ public class N3header {
       else
         raf.writeInt(0); // come back to this later
 
-      //if (debug) out.println(" name= "+name+" type="+type+" vsize="+vsize+" begin= "+begin+" isRecord="+isRecord+"\n");
+      // From nc3 file format specification
+      // (http://www.unidata.ucar.edu/software/netcdf/docs/netcdf.html#NetCDF-Classic-Format):
+      //     Note on padding: In the special case of only a single record variable of character,
+      //     byte, or short type, no padding is used between data values.
+      // 2/15/2011: we will continue to write the (incorrect) padded vsize into the header, but we will use the unpadded size to read/write
+      if ( uvars.size() == 1 && uvars.get(0) == var )
+        if ( ( dtype == DataType.CHAR ) || ( dtype == DataType.BYTE ) || ( dtype == DataType.SHORT ) )
+          vsize = unpaddedVsize;
+
       var.setSPobject(new Vinfo(vsize, pos, var.isUnlimited(), varAttsPos));
     }
   }
