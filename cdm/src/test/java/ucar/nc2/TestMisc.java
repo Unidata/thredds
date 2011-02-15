@@ -56,13 +56,19 @@ import java.util.Date;
 public class TestMisc extends TestCase {
 
 
-  public void utestPadding() throws IOException, InvalidRangeException {
+  public void testPadding() throws IOException, InvalidRangeException {
     NetcdfFile nc = NetcdfFile.open("H:/edavis/tmp/file.nc", null);
     Variable readVar = nc.findVariable("Times");
     int[] org = new int[2];
     char[] readdata = (char[]) readVar.read(org, readVar.getShape()).copyTo1DJavaArray();
     System.out.println("[["+String.valueOf(readdata)+"]]");
 
+    ArrayChar cdata = (ArrayChar) readVar.read();
+    for (int i=0; i<readVar.getShape()[0]; i++)
+      System.out.printf("%s%n", cdata.getString(i));
+
+    assert cdata.getString(0).equals("2005-04-11_12:00:00");
+    assert cdata.getString(1).equals("2005-04-11_13:00:00");
 
     nc.close();
   }
