@@ -46,10 +46,9 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.List;
 
 /**
- * Class Description
+ * misc testing
  *
  * @author caron
  * @since May 13, 2009
@@ -57,58 +56,69 @@ import java.util.List;
 public class TestMisc extends TestCase {
 
 
-    public void testCompareLongs() {
-
-        try {
-
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            Date[] dateList = new Date[] {
-                sdf.parse("2002-01-01"),
-                sdf.parse("2002-01-02"),
-                sdf.parse("2002-01-03"),
-                sdf.parse("2002-01-04"),
-                sdf.parse("2002-02-05"),
-                sdf.parse("2002-03-06")
-            };
-
-            Arrays.sort(dateList, new DateComparator1());
-
-            System.out.println("sort error: " + Arrays.toString(dateList));
-
-            Arrays.sort(dateList, new DateComparator2());
-
-            System.out.println("sort fix:   "+Arrays.toString(dateList));
+  public void utestPadding() throws IOException, InvalidRangeException {
+    NetcdfFile nc = NetcdfFile.open("H:/edavis/tmp/file.nc", null);
+    Variable readVar = nc.findVariable("Times");
+    int[] org = new int[2];
+    char[] readdata = (char[]) readVar.read(org, readVar.getShape()).copyTo1DJavaArray();
+    System.out.println("[["+String.valueOf(readdata)+"]]");
 
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    nc.close();
+  }
 
-      Long.toString(0);
 
+  public void testCompareLongs() {
+
+    try {
+
+      SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+      Date[] dateList = new Date[]{
+              sdf.parse("2002-01-01"),
+              sdf.parse("2002-01-02"),
+              sdf.parse("2002-01-03"),
+              sdf.parse("2002-01-04"),
+              sdf.parse("2002-02-05"),
+              sdf.parse("2002-03-06")
+      };
+
+      Arrays.sort(dateList, new DateComparator1());
+
+      System.out.println("sort error: " + Arrays.toString(dateList));
+
+      Arrays.sort(dateList, new DateComparator2());
+
+      System.out.println("sort fix:   " + Arrays.toString(dateList));
+
+
+    } catch (Exception e) {
+      e.printStackTrace();
     }
 
+    Long.toString(0);
 
-    // reverse sort - latest come first
-    private class DateComparator1 implements Comparator<Date> {
-        public int compare(Date f1, Date f2) {
-            System.out.print(f2+"-"+f1+" ="+f2.getTime()+"-"+f1.getTime()+" =  int: "+(int) (f2.getTime() - f1.getTime()));
-            System.out.println("  long: "+(f2.getTime() - f1.getTime()));
+  }
 
-            return (int) (f2.getTime() - f1.getTime());
-        }
+
+  // reverse sort - latest come first
+  private class DateComparator1 implements Comparator<Date> {
+    public int compare(Date f1, Date f2) {
+      System.out.print(f2 + "-" + f1 + " =" + f2.getTime() + "-" + f1.getTime() + " =  int: " + (int) (f2.getTime() - f1.getTime()));
+      System.out.println("  long: " + (f2.getTime() - f1.getTime()));
+
+      return (int) (f2.getTime() - f1.getTime());
     }
+  }
 
-    // reverse sort - latest come first
-    private class DateComparator2 implements Comparator<Date> {
-        public int compare(Date f1, Date f2) {
-          // return (thisVal<anotherVal ? -1 : (thisVal==anotherVal ? 0 : 1));
+  // reverse sort - latest come first
+  private class DateComparator2 implements Comparator<Date> {
+    public int compare(Date f1, Date f2) {
+      // return (thisVal<anotherVal ? -1 : (thisVal==anotherVal ? 0 : 1));
 
-          if (f2.getTime() == f1.getTime()) return 0;
-          return  (f2.getTime() > f1.getTime()) ? 1 : -1;
-        }
+      if (f2.getTime() == f1.getTime()) return 0;
+      return (f2.getTime() > f1.getTime()) ? 1 : -1;
     }
-
+  }
 
 
 /*  The 3D coordinate array does not return correct shape and values. Just
@@ -175,36 +185,36 @@ z is of shape 20x2x87, it should be 20x87x193.
 
 
   // Xiaoshen.Li@noaa.gov
-    public void utestModifyNCfile() throws IOException, InvalidRangeException {
-        final String inputFileName = "C:/tmp/input.nc";
+  public void utestModifyNCfile() throws IOException, InvalidRangeException {
+    final String inputFileName = "C:/tmp/input.nc";
 
-        final String outputFileName = "C:/tmp/output.nc";
+    final String outputFileName = "C:/tmp/output.nc";
 
-        final NetcdfFileWriteable writableFile = NetcdfFileWriteable.openExisting(inputFileName);
+    final NetcdfFileWriteable writableFile = NetcdfFileWriteable.openExisting(inputFileName);
 
-        writableFile.setRedefineMode(true);
+    writableFile.setRedefineMode(true);
 
-        final Variable ffgVariable = writableFile.findVariable("FFG");
-        final Array ffgVarArray = ffgVariable.read();
-        final Index ffgIndex = ffgVarArray.getIndex();
+    final Variable ffgVariable = writableFile.findVariable("FFG");
+    final Array ffgVarArray = ffgVariable.read();
+    final Index ffgIndex = ffgVarArray.getIndex();
 
-        writableFile.setName(outputFileName);
+    writableFile.setName(outputFileName);
 //setName() is deprecated. If commented out this method, "input.nc" will be overwritten
-        writableFile.create();
+    writableFile.create();
 
-        //re-set variable FFG values
-        ffgVarArray.setDouble(ffgIndex.set(0), 10.1);
-        ffgVarArray.setDouble(ffgIndex.set(1), 10.2);
-        ffgVarArray.setDouble(ffgIndex.set(2), 10.3);
-        ffgVarArray.setDouble(ffgIndex.set(3), 10.4);
+    //re-set variable FFG values
+    ffgVarArray.setDouble(ffgIndex.set(0), 10.1);
+    ffgVarArray.setDouble(ffgIndex.set(1), 10.2);
+    ffgVarArray.setDouble(ffgIndex.set(2), 10.3);
+    ffgVarArray.setDouble(ffgIndex.set(3), 10.4);
 
-        // writableFile.write("FFG", ffgVarArray);
+    // writableFile.write("FFG", ffgVarArray);
 
-        writableFile.flush();
+    writableFile.flush();
 
-        writableFile.close();
+    writableFile.close();
 
-    }
+  }
 
   public static void main(String[] args) {
     String s1 = "CoastWatch/MODSCW/closest_chlora/Mean/CB05/P2009190";

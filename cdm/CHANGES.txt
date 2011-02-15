@@ -4,6 +4,7 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.2:
  20: (2011-02-xx)
+  N3header: check for one record variable, no-padding case.
   URLnaming.escapeQuery() reverted to old way of checking for query string
   CompositePointCollection.getDataVariables() : check for null
   ParsedSectionSpec: check for illegal ranges

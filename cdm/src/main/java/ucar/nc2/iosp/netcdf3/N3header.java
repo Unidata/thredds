@@ -71,6 +71,9 @@ public class N3header {
   static public boolean disallowFileTruncation = false;  // see NetcdfFile.setDebugFlags
   static public boolean debugHeaderSize = false;  // see NetcdfFile.setDebugFlags
 
+  private static boolean debugVariablePos = false;
+  private static boolean debugStreaming = false;
+
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   private ucar.unidata.io.RandomAccessFile raf;
@@ -90,15 +93,11 @@ public class N3header {
 
   private long globalAttsPos = 0; // global attributes start here - used for update
 
-  private boolean debugVariablePos = false;
-  private boolean debugStreaming = false;
-
   /* Notes
     - dimensions are signed or unsigned ? in java, must be signed, so are limited to 2^31, not 2^32
     " Each fixed-size variable and the data for one record's worth of a single record variable are limited in size to a little less
      that 4 GiB, which is twice the size limit in versions earlier than netCDF 3.6."
    */
-
 
   /**
    * Read the header and populate the ncfile
@@ -278,15 +277,18 @@ public class N3header {
     if ( uvars.size() == 1 ) {
       Variable uvar = uvars.get( 0);
       DataType dtype = uvar.getDataType();
-      if ( ( dtype == DataType.CHAR ) || ( dtype == DataType.BYTE ) || ( dtype == DataType.SHORT ) )
-      {
+      if ( ( dtype == DataType.CHAR ) || ( dtype == DataType.BYTE ) || ( dtype == DataType.SHORT ) ) {
         long vsize = uvar.getDataType().getSize(); // works for all netcdf-3 data types
         for ( Dimension curDim : uvar.getDimensions() ) {
           if ( !curDim.isUnlimited() )
             vsize *= curDim.getLength();
         }
-        if ( vsize != ((Vinfo) uvar.getSPobject()).vsize )
-          throw new IOException( "Misformed netCDF file - file written with incorrect padding for record variable (CDM-52)." );
+        Vinfo vinfo = (Vinfo) uvar.getSPobject();
+        if ( vsize != vinfo.vsize ) {
+          log.info( "Misformed netCDF file - file written with incorrect padding for record variable (CDM-52): fvsize=" + vinfo.vsize+"!= calc size =" + vsize );
+          recsize =  vsize;
+          vinfo.vsize = vsize;
+        }
       }
     }
 
@@ -877,6 +879,7 @@ public class N3header {
   }
 
   private int sizeAttributeValue(Number numValue) {
+
     if (numValue instanceof Byte) {
       return 1;
 
