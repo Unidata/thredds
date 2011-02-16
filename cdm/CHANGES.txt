@@ -3,7 +3,8 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Changes in version 4.2:
- 20: (2011-02-15)
+ 20: (2011-02-16)
+  Default TableAnalyser: turn into trajectory if there is trajectory metadata
   DatasetCollectionManager is not activated if there is no scan
   N3header: check for one record variable, no-padding case.
   URLnaming.escapeQuery() reverted to old way of checking for query string

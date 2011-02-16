@@ -479,6 +479,17 @@ public class TableAnalyzer {
         st.time = time.getShortName();
       }
       addTable( st);
+
+      // deal with possible trajectory - only do this if dataset has metadata
+      FeatureType ft = FeatureDatasetFactoryManager.findFeatureType(ds);
+      if (ft == FeatureType.TRAJECTORY) {
+        st.featureType = FeatureType.TRAJECTORY;
+        TableConfig pc = new TableConfig(Table.Type.Top, "single");
+        st.parent = pc;
+        pc.addChild(st);
+      } else
+        st.featureType = FeatureType.POINT;
+
     }
 
     if (tableSet.size() > 0) return;
