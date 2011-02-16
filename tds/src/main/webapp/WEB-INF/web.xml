@@ -335,11 +335,11 @@
 
   <!-- Metadata services (ncISO) from NGDC -->
   <!-- To allow the ncISO service, uncomment this servlet element. -->
-  <!-- servlet>
+  <!--servlet>
     <servlet-name>metadata</servlet-name>
     <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
     <load-on-startup>3</load-on-startup>
-  </servlet -->
+  </servlet-->
 
   <servlet>
     <servlet-name>admin</servlet-name>
@@ -558,7 +558,7 @@
   <servlet-mapping>
     <servlet-name>metadata</servlet-name>
     <url-pattern>/iso/*</url-pattern>
-  </servlet-mapping -->
+  </servlet-mapping-->
 
   <!-- old debug, content handling -->
   <servlet-mapping>
