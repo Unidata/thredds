@@ -42,6 +42,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import thredds.catalog.InvDatasetFeatureCollection;
 import thredds.util.filesource.*;
 import thredds.servlet.ThreddsConfig;
 import thredds.servlet.ServletUtil;
@@ -346,6 +347,7 @@ public class TdsContext
     // ToDo LOOK Find a better way once thredds.catalog2 is used.
     InvDatasetScan.setContext( contextPath );
     InvDatasetScan.setCatalogServletName( "/catalog" );
+    InvDatasetFeatureCollection.setContext( contextPath );
 
     jspRequestDispatcher = servletContext.getNamedDispatcher( "jsp" );
     defaultRequestDispatcher = servletContext.getNamedDispatcher( "default" );
@@ -372,8 +374,7 @@ public class TdsContext
    *
    * @return the context path.
    */
-  public String getContextPath()
-  {
+  public String getContextPath() {
     return contextPath;
   }
 

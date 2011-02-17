@@ -68,7 +68,33 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
 
   static protected final String FILES = "files";
   static protected final String Virtual_Services = "VirtualServices"; // exclude HTTPServer
-  static protected final InvService cdmrService = new InvService("cdmrFeature", "cdmrFeature", "/thredds/cdmrFeature", null, null);
+
+  static private String context = "/thredds";
+  static public void setContext( String c ) {
+    context = c;
+  }
+
+  static private String catalogServletName = "/catalog";
+  static public void setCatalogServletName( String catServletName ) {
+    catalogServletName = catServletName;
+  }
+
+  static private String buildCatalogServiceHref( String path ) {
+    return context + ( catalogServletName == null ? "" : catalogServletName ) + "/" + path + "/catalog.xml";
+  }
+
+  static private String cdmrFeatureServiceUrlPath = "/cdmrFeature";
+  static public void setCdmrFeatureServiceUrlPath( String urlPath) {
+    cdmrFeatureServiceUrlPath = urlPath;
+  }
+
+  private InvService getCdmrFeatureService() {
+    return new InvService( "cdmrFeature","cdmrFeature", context + cdmrFeatureServiceUrlPath, null,null );
+  }
+
+  protected String getCatalogHref( String what) {
+    return buildCatalogServiceHref( path + "/" + what );
+  }
 
   static public InvDatasetFeatureCollection factory(InvDatasetImpl parent, String name, String path, FeatureType featureType, FeatureCollectionConfig config) {
     InvDatasetFeatureCollection result = null;
@@ -88,6 +114,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
   protected final String path;
   protected final FeatureType featureType;
   protected final FeatureCollectionConfig config;
+  protected InvService cdmrService;
 
   protected final DatasetCollectionManager dcm;
 
@@ -123,10 +150,11 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
   }
 
   protected InvDatasetFeatureCollection(InvDatasetImpl parent, String name, String path, FeatureType featureType, FeatureCollectionConfig config) {
-    super(parent, name, "/thredds/catalog/" + path + "/catalog.xml");
+    super(parent, name, buildCatalogServiceHref( path) );
     this.path = path;
     this.featureType = featureType;
     this.getLocalMetadataInheritable().setDataType(featureType);
+    this.cdmrService = getCdmrFeatureService();
 
     this.config = config;
 
@@ -231,12 +259,6 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
      }
     return result;
    }
-
-  protected String getCatalogHref(String what) {
-    return "/thredds/catalog/" + path + "/" + what + "/catalog.xml";
-  }
-
-  // called by DataRootHandler.makeDynamicCatalog() when the catref is requested
 
   /**
    * Get one one of the catalogs contained in this dataset,

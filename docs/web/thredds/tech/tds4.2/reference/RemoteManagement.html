@@ -13,9 +13,19 @@
   <hr>
   <div class="head"></div>
   <h2>Introduction</h2>
-  <p>It's very convenient to be able to remotely manage and administer the Tomcat web server, and to remotely configure and debug the Thredds Data Server, for example from a web browser running on your desktop. However, remote access to the server introduces potential security problems, so by default these capabilities are not turned on. You can run Tomcat and TDS quite successfully by editing the configuration files on the server, and restarting when needed. </p>
-  <p>Managing a server is difficult and we recommend that you  enable remote  management. By following the procedures here, you can do so without opening any big security holes. However, you must decide this yourself, based on your organization's security policies, and a risk assessment for your server. In what follows we try to explain what risks the various options have, as well as we understand them. A good compromise may be to do all the work to enable remote management, then turn it on only while actively configuring the server, and turn it off when in production mode. </p>
-  <p>In any case, we strongly recommend that you also read and follow the <a href="TomcatSecurity.html">Tomcat/TDS Security guidelines</a>. </p>
+  <p>It's very convenient to be able to remotely manage and administer the Tomcat web server, and to remotely
+    configure and debug the Thredds Data Server, for example from a web browser running on your desktop.
+    However, remote access to the server introduces potential security problems, so by default these
+    capabilities are not turned on. You can run Tomcat and TDS quite successfully by editing the
+    configuration files on the server, and restarting when needed. </p>
+  <p>Managing a server is difficult and we recommend that you  enable remote  management. By following the
+    procedures here, you can do so without opening any big security holes. However, you must decide this
+    yourself, based on your organization's security policies, and a risk assessment for your server. In what
+    follows we try to explain what risks the various options have, as well as we understand them. A good
+    compromise may be to do all the work to enable remote management, then turn it on only while actively
+    configuring the server, and turn it off when in production mode. </p>
+  <p>In any case, we strongly recommend that you also read and follow the
+    <a href="TomcatSecurity.html">Tomcat/TDS Security guidelines</a>. </p>
 </div>
 <h2>Configuring Tomcat Users </h2>
 <p>Special permissions (like remote management) are done in Tomcat by creating <em><strong>users</strong></em> with special <em><strong>roles</strong></em>. As long as you also follow the <a href="TomcatSecurity.html">Tomcat/TDS Security guidelines</a>, using the simplest Tomcat mechanism to do this should be safe. </p>
