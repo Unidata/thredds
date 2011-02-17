@@ -135,7 +135,6 @@ public class QueryRadarServerController extends AbstractController  {
          mav.addObject(MODEL_KEY, MSG_CODE);
          return mav;
       } else {
-        //return new ModelAndView( "stringXmlView", "xmlString", sb.toString() );
         return new ModelAndView( "queryXml", model );
       }
     }
@@ -220,13 +219,13 @@ public class QueryRadarServerController extends AbstractController  {
       }
       // save entries
       model.put( "datasets", entries );
-          if ( dataFound ) {
-            model.put( "documentation", Integer.toString( entries.size()) +" datasets found for query");
-          } else if( qp.errs.length() > 0){
-            model.put( "documentation",  qp.errs.toString() );
-          } else {
-            model.put( "documentation", "No data available for station(s) and time range");
-          }
+      if ( dataFound ) {
+        model.put( "documentation", Integer.toString( entries.size()) +" datasets found for query");
+      } else if( qp.errs.length() > 0){
+        model.put( "documentation",  qp.errs.toString() );
+      } else {
+        model.put( "documentation", "No data available for station(s) and time range");
+      }
 
 //      endms = System.currentTimeMillis();
 //      System.out.println( "after radarQuery "+ (endms - startms));
@@ -360,16 +359,22 @@ public class QueryRadarServerController extends AbstractController  {
     return true;
   }
 
-  // create parts of catalog Header
+  // create catalog Header
   private Boolean createHeader(DatasetRepository.RadarType radarType, QueryParams qp,
                     String pathInfo, Map<String, Object> model) throws IOException {
       Boolean level2 = pathInfo.contains( "level2");
       int level = (level2) ? 2 : 3;
-      StringBuilder str = new StringBuilder();
-        model.put( "name", "Radar Level"+ level +" datasets in near real time" );
-        model.put( "base", "/thredds/dodsC/"+ pathInfo +"/");
-        model.put( "dname", "RadarLevel"+ level +" datasets for available stations and times");
-        str.append( "accept=" + qp.acceptType + "&");
+      StringBuffer str = new StringBuffer();
+      str.append("Radar Level").append( level ).append( " datasets in near real time" );
+      model.put( "name", str.toString() );
+      str.setLength( 0 );
+      str.append("/thredds/dodsC/").append( pathInfo ).append("/");
+      model.put( "base", str.toString() );
+      str.setLength( 0 );
+      str.append("RadarLevel").append( level ).append(" datasets for available stations and times");
+      model.put( "dname", str.toString() );
+      str.setLength( 0 );
+        str.append( "accept=" ).append( qp.acceptType ).append( "&");
         if( ! level2 && qp.vars != null ) { // add vars
             str.append("var=");
             for (int i = 0; i < qp.vars.size(); i++ ) {
@@ -385,33 +390,33 @@ public class QueryRadarServerController extends AbstractController  {
             str.append("stn=ALL&");
         } else if (qp.hasStns ) {
             for (String station : qp.stns) {
-                str.append("stn=" + station +"&");
+                str.append("stn=").append( station ).append( "&");
             }
         } else if (qp.hasBB) {
-            str.append("south="+ qp.south +"&north="+ qp.north +"&" );
-            str.append("west="+ qp.west +"&east="+ qp.east +"&" );
+            str.append("south=").append(qp.south).append( "&north=").append(qp.north).append("&" );
+            str.append("west=").append( qp.west).append( "&east=").append(qp.east).append("&");
         }
 
         if( qp.hasDateRange ) {
           if( qp.time_start.getDate() == null || qp.time_start.isBlank() ||
             qp.time_end.getDate() == null || qp.time_end.isBlank() ) {
-            str.append("time_start=" + qp.time_start.toString()
-                    +"&time_end=" + qp.time_end.toString() );
+            str.append("time_start=").append( qp.time_start.toString());
+            str.append( "&time_end=").append( qp.time_end.toString() );
             qp.errs.append( "need ISO time format " );
             return false;
           } else {
-            str.append("time_start=" + qp.time_start.toDateTimeStringISO()
-                    +"&time_end=" + qp.time_end.toDateTimeStringISO() );
+            str.append("time_start=").append( qp.time_start.toDateTimeStringISO());
+            str.append( "&time_end=").append( qp.time_end.toDateTimeStringISO() );
           }
         } else if( qp.time.isPresent() ) {
             str.append("time=present");
         } else if( qp.hasTimePoint ) {
           if( qp.time.getDate() == null || qp.time.isBlank()) {
-            str.append("time=" + qp.time.toString() );
+            str.append("time=").append( qp.time.toString() );
             qp.errs.append( "need ISO time format " );
             return false;
           } else {
-            str.append( "time=" + qp.time.toDateTimeStringISO() );
+            str.append( "time=").append( qp.time.toDateTimeStringISO() );
           }
         } else {
         }
@@ -467,6 +472,9 @@ public class QueryRadarServerController extends AbstractController  {
     boolean isLevel2 = ( dataset.contains( "level2") ? true : false);
     String type = ( isLevel2 ? "Level2" : "Level3");
     String suffix = ( isLevel2 ? ".ar2v" : ".nids");
+    StringBuffer time = new StringBuffer();
+    StringBuffer product = new StringBuffer();
+    StringBuffer url = new StringBuffer();
     for( String stn : qp.stns ) {
       RadarStationCollection rsc =  rdc.queryStation( stn );
       for ( String day : rsc.getDays() ) {
@@ -474,30 +482,35 @@ public class QueryRadarServerController extends AbstractController  {
         if( ! getAllTimes &&
             ! RadarServerUtil.isValidDay( day,  yyyymmddStart, yyyymmddEnd ) )
           continue;
+
         ArrayList<String> tal = rsc.getHourMinute( day );
         for ( String hm : tal ) {
-          String time = day +"_"+ hm;
-          if( ! getAllTimes && ! RadarServerUtil.isValidDate( time, dateStart, dateEnd ) )
+          time.setLength( 0 );
+          time.append( day ).append( "_" ).append( hm );
+          if( ! getAllTimes &&
+              ! RadarServerUtil.isValidDate( time.toString(), dateStart, dateEnd ) )
               continue;
 
           // save this entry
           DatasetEntry de = new DatasetEntry();
           
-          StringBuilder product = new StringBuilder( type +"_"+ rsc.getStnName() +"_" );
+          product.setLength( 0 );
+          product.append( type ).append( "_" ).append( rsc.getStnName() ).append( "_" );
           if( ! isLevel2 )
-            product.append( var +"_" );
+            product.append( var ).append( "_" );
           product.append( day +"_"+ hm + suffix );
+          product.append( day ).append( "_" ).append( hm ).append( suffix );
           String productStr = product.toString();
 
-          de.setName( productStr );
-          de.setID( Integer.toString( product.hashCode() ));
-          StringBuilder url = new StringBuilder();
+          de.setName( product.toString() );
+          de.setID( Integer.toString( product.toString().hashCode() ));
+          url.setLength( 0 );
           if( ! isLevel2 ) {
-            url.append( var +"/" );
+            url.append( var ).append( "/" );
           }
-          url.append( rsc.getStnName() +"/"+ day +"/"+ productStr );
+          url.append(rsc.getStnName()).append("/").append(day).append("/").append(product.toString());
           de.setUrlPath( url.toString() );
-          de.setDate( RadarServerUtil.getObTimeISO( productStr ) );
+          de.setDate( RadarServerUtil.getObTimeISO( product.toString() ) );
           entries.add( de );
           if( qp.hasTimePoint )
             break;

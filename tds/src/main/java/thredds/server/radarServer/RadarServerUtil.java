@@ -51,9 +51,9 @@ import java.util.regex.Pattern;
 
 public class RadarServerUtil {
 
-  public static final Pattern p_ascii_i = Pattern.compile("ascii", Pattern.CASE_INSENSITIVE);
-  public static final Pattern p_html_i = Pattern.compile("html", Pattern.CASE_INSENSITIVE);
-  public static final Pattern p_xml_i = Pattern.compile("xml", Pattern.CASE_INSENSITIVE);
+  //public static final Pattern p_ascii_i = Pattern.compile("ascii", Pattern.CASE_INSENSITIVE);
+  //public static final Pattern p_html_i = Pattern.compile("html", Pattern.CASE_INSENSITIVE);
+  //public static final Pattern p_xml_i = Pattern.compile("xml", Pattern.CASE_INSENSITIVE);
   public static final Pattern p_yymmdd_hhmm = Pattern.compile("(\\d{2})(\\d{4}_\\d{4})");
   public static final Pattern p_yyyymmdd_hhmm = Pattern.compile("(\\d{8}_\\d{4})");
   public static final String epic = "1970-01-01T00:00:00";
@@ -158,7 +158,8 @@ public class RadarServerUtil {
         return true;
 
     Station stn = null;
-    if( station.length() == 3 && radarType.equals( DatasetRepository.RadarType.terminal ) ) { // terminal level3 station
+    // terminal level3 station
+    if( station.length() == 3 && radarType.equals( DatasetRepository.RadarType.terminal ) ) {
       stn = DatasetRepository.terminalMap.get( "T"+ station );
     } else if( station.length() == 3 ) {
       for( Station stn3 : DatasetRepository.nexradList ) {
@@ -186,7 +187,8 @@ public class RadarServerUtil {
   public static Station getStation( String station, DatasetRepository.RadarType radarType ) {
 
     Station stn = null;
-    if( station.length() == 3 && radarType.equals( DatasetRepository.RadarType.terminal ) ) { // terminal level3 station
+    // terminal level3 station
+    if( station.length() == 3 && radarType.equals( DatasetRepository.RadarType.terminal ) ) {
       stn = DatasetRepository.terminalMap.get( "T"+ station );
     } else if( station.length() == 3 ) {
       for( Station stn3 : DatasetRepository.nexradList ) {
@@ -210,28 +212,34 @@ public class RadarServerUtil {
      Matcher m;
      m = p_yyyymmdd_hhmm.matcher( product );
      String date;
+     StringBuffer dsb = new StringBuffer();
      if( m.find() ) {
          date = m.group( 1 );
      } else { // try date w/o century
          m = p_yymmdd_hhmm.matcher( product );
          if( m.find() ) { // add century, fails 2070
              if( Integer.parseInt(m.group( 1 )) > 69 ) {
-                 date = "19" + m.group( 1 ) + m.group( 2 );
+                 dsb.append("19").append( m.group( 1 )).append( m.group( 2 ));
              } else {
-                 date = "20" + m.group( 1 ) + m.group( 2 );
+                 dsb.append("20").append( m.group( 1 )).append( m.group( 2 ));
              }
+             date = dsb.toString();
          } else {
              return epic;
          }
      }
-     return date.substring(0,4) +"-"+ date.substring(4,6)
-         +"-"+ date.substring(6,8) +"T"+ date.substring(9, 11)
-         +":"+ date.substring(11,13) +":00";
+    dsb.setLength( 0 );
+    dsb.append( date.substring(0,4)).append( "-" ).append(date.substring(4,6));
+    dsb.append("-").append(date.substring(6,8)).append("T").append(date.substring(9, 11));
+    dsb.append(":").append( date.substring(11,13) ).append(":00");
+    return dsb.toString();
   }
 
   // returns hhmm of datetime string
   public static String hhmm( String dateTime ) {
-     return dateTime.substring( 11, 13 ) + dateTime.substring( 14, 16 );
+     StringBuffer sb = new StringBuffer( dateTime.substring( 11, 13 ) );
+     sb.append( dateTime.substring( 14, 16 ));
+     return sb.toString();
   }
 
   // returns if day is between dayStart and dayEnd
@@ -257,11 +265,13 @@ public class RadarServerUtil {
      } else { // try date w/o century
          m = p_yymmdd_hhmm.matcher( dateReport );
          if( m.find() ) { // add century, fails 2070
+             StringBuffer dsb = new StringBuffer();
              if( Integer.parseInt(m.group( 1 )) > 69 ) {
-                 date = "19" + m.group( 1 ) + m.group( 2 );
+                 dsb.append("19").append( m.group( 1 )).append( m.group( 2 ));
              } else {
-                 date = "20" + m.group( 1 ) + m.group( 2 );
+                 dsb.append("20").append( m.group( 1 )).append( m.group( 2 ));
              }
+             date = dsb.toString();
          } else {
              return false;
          }

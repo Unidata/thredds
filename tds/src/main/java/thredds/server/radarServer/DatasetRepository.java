@@ -49,7 +49,6 @@ import thredds.catalog.query.Location;
 import thredds.catalog.query.SelectStation;
 import thredds.catalog.query.Station;
 import thredds.server.config.TdsContext;
-import thredds.servlet.ServletUtil;
 import thredds.servlet.UsageLog;
 import ucar.unidata.util.StringUtil;
 
@@ -75,7 +74,6 @@ public class DatasetRepository {
   static public InvCatalogImpl cat;
   static public final String catName = "radarCollections.xml";
   static public URI catURI;
-  static public List datasets;
   static public HashMap<String, RadarDatasetCollection> datasetMap = new HashMap<String, RadarDatasetCollection>();
   static public HashMap<String, String> dataLocation = new HashMap<String, String>();
   static public final String nexradStations = "RadarNexradStations.xml";
@@ -84,8 +82,6 @@ public class DatasetRepository {
   static public List<Station> terminalList = new ArrayList<Station>();
   static public HashMap<String, Station> nexradMap;
   static public HashMap<String, Station> terminalMap;
-  //static public final String serviceName = "OPENDAP";
-  //static public final String serviceType = "OPENDAP";
 
   static private TdsContext tdsContext;
 
@@ -95,27 +91,21 @@ public class DatasetRepository {
 
   // must start and end with "/"
   public static String getPath() {
-    //return "servers/";
     return "/servers/";
   }
 
   /*
-   * Reads the Radar Server catalog and Radar Station information
+   * Reads the Radar Server catalog and Radar Station information, called by bean
    */
   public static boolean init() {
 
     if( datasetMap.size() > 0 )
         return true;
 
-//    Object sync = new Object();
-//    synchronized( sync ) {
-//
-//      if( datasetMap.size() > 0 )
-//          return true;
       String contentPath = tdsContext.getContentDirectory().getPath();
 
-      // read in radarCollections.xml catalog
-      InvCatalogFactory factory = InvCatalogFactory.getDefaultFactory(false); // no validation
+      // read in radarCollections.xml catalog no validation
+      InvCatalogFactory factory = InvCatalogFactory.getDefaultFactory(false);
       cat = readCatalog(factory, getPath() + catName, contentPath + getPath() + catName);
       if (cat == null) {
         log.info("cat initialization failed" + UsageLog.closingMessageNonRequestContext());
@@ -126,7 +116,7 @@ public class DatasetRepository {
       List parents = cat.getDatasets();
       for (int i = 0; i < parents.size(); i++) {
         InvDataset top = (InvDataset) parents.get(i);
-        datasets = top.getDatasets(); // dataset scans
+        List datasets = top.getDatasets(); // dataset scans
 
         for (int j = 0; j < datasets.size(); j++) {
           InvDatasetScan ds = (InvDatasetScan) datasets.get(j);
@@ -152,14 +142,13 @@ public class DatasetRepository {
       log.info( "DatasetRepository initialization done -  " + UsageLog.closingMessageNonRequestContext());
       return true;
     }
-  //}
 
   public static RadarDatasetCollection getRadarDatasetCollection( String key, String var ) {
     String dmkey = key;
     if( var != null)
       dmkey = key + var;
     RadarDatasetCollection rdc = datasetMap.get( dmkey );
-    if( rdc == null ) {
+    if( rdc == null ) { // need to read dataset
       Object sync = new Object();
       synchronized( sync ) {
         rdc = datasetMap.get( dmkey );

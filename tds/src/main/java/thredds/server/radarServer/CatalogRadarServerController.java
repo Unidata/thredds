@@ -53,7 +53,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -104,8 +103,7 @@ public class CatalogRadarServerController extends AbstractController {
 
   @Override
   protected ModelAndView handleRequestInternal( HttpServletRequest request,
-                                                HttpServletResponse response )
-          throws Exception
+          HttpServletResponse response ) throws Exception
   {
     try
     {
@@ -154,7 +152,7 @@ public class CatalogRadarServerController extends AbstractController {
             throws RadarServerException, IOException {
     InvCatalogImpl tCat = null;
     try {
-      StringBuilder aDs = new StringBuilder( pathInfo.substring(1) );
+      StringBuffer aDs = new StringBuffer( pathInfo.substring(1) );
       int i = aDs.indexOf( "/catalog");
       if ( i > 0)
           aDs.delete( i, aDs.length());

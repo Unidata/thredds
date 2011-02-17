@@ -99,8 +99,7 @@ public class StationRadarServerController extends AbstractController {
 
   @Override
   protected ModelAndView handleRequestInternal( HttpServletRequest request,
-                                                HttpServletResponse response )
-          throws Exception
+          HttpServletResponse response ) throws Exception
   {
     try
     {
@@ -216,7 +215,7 @@ public class StationRadarServerController extends AbstractController {
         stations = (String[]) tmp.toArray( stations );
       }
     }
-    // no stations found return all know stations for RadarType
+    // no stations found return all known stations for RadarType
     if( stations ==  null || stations.length == 0 ) {
       if( radarType.equals( DatasetRepository.RadarType.nexrad ))
         stations =  DatasetRepository.nexradMap.keySet().toArray( stations );
@@ -302,7 +301,7 @@ public class StationRadarServerController extends AbstractController {
   }
 
   /*
-    StationEntry provides the necessary values for a station entry below.
+    StationEntry provides the necessary information for a station entry below.
 
     <station id="KTYX" state="NY" country="US">
       <name>MONTAGUE/Fort_Drum</name>

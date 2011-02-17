@@ -105,6 +105,7 @@ public class RadarStationCollection {
 
   public RadarStationCollection(String dir, String stnName, boolean type, String product) {
 
+    StringBuffer sb = new StringBuffer( dir );
     this.stnTime = type;
     this.stnName = stnName;
     this.product = product;
@@ -113,13 +114,13 @@ public class RadarStationCollection {
       if (product == null) {
         this.dir = dir;
       } else {
-        this.dir = dir + "/" + product;
+        this.dir = sb.append( "/" ).append( product ).toString();
       }
-    } else { //
+    } else { //  TODO: need test case
       if (product == null) {
         this.dir = dir;
       } else {
-        this.dir = dir + "/"+ product +"/"; // product/station type directory
+        this.dir = sb.append( "/" ).append( product ).append( "/" ).toString();
       }
     }
 
@@ -240,15 +241,12 @@ public class RadarStationCollection {
   /**
    * write out this object
    *
-   * @return String filename of write.
+   * @return success of write.
    */
   public boolean write( PrintStream ps ) {
 
-    //String filename = dir + "/."+ day;
-    //FileOutputStream fos = null;
     ObjectOutputStream out = null;
     try {
-      //fos = new FileOutputStream(filename);
       out = new ObjectOutputStream( ps );
       out.writeObject(this);
       out.close();

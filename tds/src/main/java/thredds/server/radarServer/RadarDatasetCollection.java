@@ -47,7 +47,7 @@ import java.text.SimpleDateFormat;
 
 /**
  * Maintains the Radar collection of stations and days for a Radar Dataset.  The
- * purpose is to permit quering the collection by station verses time.
+ * purpose is to permit querying the collection by station verses time.
  * 
  */
 public class RadarDatasetCollection {
@@ -120,26 +120,28 @@ public class RadarDatasetCollection {
 
   public RadarDatasetCollection(String tdir,  String product) {
 
+    StringBuffer sb = new StringBuffer( tdir );
     this.product = product;
-    // TODO: check
     if( stnTime ) {
       if (product == null) {
         this.tdir = tdir;
       } else {
-        this.tdir = tdir + "/" + product;
+        this.tdir = sb.append( "/" ).append( product ).toString();
       }
-    } else { //
+    } else { // TODO: need test case
       if (product == null) {
         this.tdir = tdir;
       } else {
-        this.tdir = tdir + "/"+ product +"/"; // product/station type directory
+        this.tdir = sb.append( "/" ).append( product ).append( "/" ).toString();
       }
     }
     // Read in RadarDayCollections for this dataset
     File dir = new File(this.tdir);
     if (dir.exists() && dir.isDirectory()) {
       ArrayList<String> rdc = new ArrayList<String>();
-      log.info("In directory " + dir.getParent() + "/" + dir.getName());
+      sb.setLength( 0 );
+      sb.append("In directory ").append(dir.getParent()).append("/").append(dir.getName());
+      log.info( sb.toString() );
       String[] children = dir.list();
       for (String child : children) {
         if ( ! child.startsWith( ".2"))
@@ -159,8 +161,9 @@ public class RadarDatasetCollection {
    *
    */
   private Boolean readRadarDayCollection( String child ) {
-    child = tdir +"/"+ child;
-    RadarDayCollection rdc = new RadarDayCollection().read( child );
+    StringBuffer sb = new StringBuffer( tdir );
+    sb.append( "/").append( child );
+    RadarDayCollection rdc = new RadarDayCollection().read( sb.toString() );
     if( rdc == null )
       return false ;
     this.standardName = rdc.standardName;
@@ -171,7 +174,9 @@ public class RadarDatasetCollection {
         days = new ArrayList<String>();
       days.add( rdc.yyyymmdd );
       yyyymmdd.put( station, days );
-      hhmm.put( station + rdc.yyyymmdd, rdc.getTimes( station ) );
+      sb.setLength( 0 );
+      sb.append( station ).append(rdc.yyyymmdd );
+      hhmm.put( sb.toString(), rdc.getTimes( station ) );
     }
     return true;
   }
@@ -183,26 +188,29 @@ public class RadarDatasetCollection {
   public boolean getStationTimes( RadarStationCollection rsc ) {
 
     // get today's times for station
-    //Calendar cal = Calendar.getInstance( java.util.TimeZone.getTimeZone("GMT"));
     Date now =  cal.getTime();
     String currentDay = dateFormat.format( now );
-    String stnDir = tdir +"/"+ rsc.stnName +"/"+ currentDay;
-    File dir = new File(stnDir);
+    StringBuffer sb = new StringBuffer( tdir );
+    sb.append( "/" ).append( rsc.stnName ).append( "/" ).append( currentDay );
+    File dir = new File( sb.toString() );
     if (dir.exists() && dir.isDirectory()) {
+      // TODO: make a log message / comment out
       System.out.println("In directory " + dir.getParent() + "/" + dir.getName());
+      sb.insert( 0, "In directory ");
+      System.out.println( sb.toString() );
       ArrayList<String> currenthhmm = new ArrayList<String>();
       String[] children = dir.list();
       Matcher m;
-      for (String aChildren : children) {
-        if ( aChildren.startsWith( "."))
+      for (String child : children) {
+        if ( child.startsWith( "."))
           continue;
         // Level2_KFTG_20100108_0654.ar2v
-        m = p_yyyymmdd_hhmm.matcher(aChildren);
+        m = p_yyyymmdd_hhmm.matcher(child);
         if (m.find()) {
           if (standardName )
             currenthhmm.add(m.group(1));
           else
-            currenthhmm.add(aChildren);
+            currenthhmm.add(child);
         }
       }
       if( currenthhmm.size() > 0 ) {
@@ -212,7 +220,9 @@ public class RadarDatasetCollection {
       }
       if ( debug ) {
         for ( String hm : currenthhmm ) {
-          System.out.println( currentDay +"_"+ hm );
+          sb.setLength( 0 );
+          sb.append( currentDay ).append( "_" ).append( hm );
+          System.out.println( sb.toString() );
         }
       }
     }
@@ -224,26 +234,34 @@ public class RadarDatasetCollection {
     String previousDay = dateFormat.format( now );
     // check if new day data is available and remove older data
     if( ! previousDay.equals( dal.get( 0 ))) {
-      if( readRadarDayCollection( "."+ previousDay ) ) {
+      sb.setLength( 0 );
+      sb.append( ".").append( previousDay );
+      if( readRadarDayCollection( sb.toString() ) ) {
         Collections.sort(dal, new CompareKeyDescend());
         if( dal.size() > daysToRead ) {
           String day = dal.get( dal.size() -1);
           if( dal.remove( day ) ) {
             for( String stn : yyyymmdd.keySet() ) {
-              if( hhmm.containsKey( stn + day))
-                hhmm.remove( stn + day );
-            }  
+              sb.setLength( 0 );
+              sb.append( stn ).append( day );
+              if( hhmm.containsKey( sb.toString() ))
+                hhmm.remove( sb.toString() );
+            }
           }
         }
       }
     }
     rsc.yyyymmdd.addAll( dal );
     for ( String day : dal ) {
-      ArrayList<String> tal = hhmm.get( rsc.stnName + day );
+      sb.setLength( 0 );
+      sb.append( rsc.stnName ).append( day );
+      ArrayList<String> tal = hhmm.get( sb.toString() );
       rsc.hhmm.put( day, tal );
       if ( debug ) {
         for ( String hm : tal ) {
-          System.out.println( day +"_"+ hm );
+          sb.setLength( 0 );
+          sb.append( day ).append( "_" ).append( hm );
+          System.out.println( sb.toString() );
         }
       }
     }
