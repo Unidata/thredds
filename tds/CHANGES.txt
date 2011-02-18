@@ -4,9 +4,12 @@ Build Date = @BUILDTIME@
 Build Name = @BUILD.NAME@
 
 Release Details 4.2:
- 4.2.4 (2011-02-xx)
+ 4.2.4 (2011-02-18)
+   fix context path usage in InvDatasetFeatureCollection (TDS-144)
    ThreddsConfig uses serverStartup log
    Add latest ncISO to TDS distribution and update IDD and motherlode catalogs with ncISO services.
+   Fix Godiva2 "permalink" and "email" links so they include dataset URL in "dataset" parameter (TDS-134)
+   Add projection EPSG:3857 (used by GoogleMaps) to default CRS list used in WMS GetCapabilities documents (TDS-157)
    static catalogs: google search intitle:TdsStaticCatalog
    HTTPClient refactor / framework
    opendap bison parser
