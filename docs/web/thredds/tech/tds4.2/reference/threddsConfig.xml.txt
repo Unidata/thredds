@@ -76,7 +76,7 @@
   Configuring the CDM (netcdf-java library)
   see http://www.unidata.ucar.edu/software/netcdf-java/reference/RuntimeLoading.html
 
-  <nj22Config
+  <nj22Config>
     <ioServiceProvider class="edu.univ.ny.stuff.FooFiles"/>
     <coordSysBuilder convention="foo" class="test.Foo"/>
     <coordTransBuilder name="atmos_ln_sigma_coordinates" type="vertical" class="my.stuff.atmosSigmaLog"/>
@@ -206,7 +206,7 @@
 
    <!--
    Add a DataSource - essentially an IOSP with access to Servlet request parameters
-   <DatsetSource>my.package.DatsetSourceImpl</DatsetSource>
+   <datasetSource>my.package.DatsetSourceImpl</datasetSource>
    -->
 
   <!--

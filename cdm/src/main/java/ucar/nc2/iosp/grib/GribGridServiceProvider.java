@@ -251,40 +251,43 @@ public class GribGridServiceProvider extends GridServiceProvider {
     if (!forceNewIndex && indexFile.exists()) {
       try {
         index = new GribIndexReader().open(indexFile.getPath());
-        log.debug("  opened index = " + indexFile.getPath());
+        if (index != null) {
+          log.debug("  opened index = " + indexFile.getPath());
 
-        // deal with possiblity that the grib file has changed, and the index should be extended or rewritten.
-        if ((indexFileModeOnOpen != IndexExtendMode.readonly)) {
+          // deal with possiblity that the grib file has changed, and the index should be extended or rewritten.
+          if ((indexFileModeOnOpen != IndexExtendMode.readonly)) {
 
-          String lengthS = index.getGlobalAttributes().get("length");
-          long indexRafLength = (lengthS == null) ? 0 : Long.parseLong(lengthS);
-          if (indexRafLength != rafLength) {
-            if (log.isDebugEnabled())
-              log.debug("  dataFile " + dataLocation + " length has changed: indexRafLength= " + indexRafLength + " rafLength= " + rafLength);
+            String lengthS = index.getGlobalAttributes().get("length");
+            long indexRafLength = (lengthS == null) ? 0 : Long.parseLong(lengthS);
+            if (indexRafLength != rafLength) {
+              if (log.isDebugEnabled())
+                log.debug("  dataFile " + dataLocation + " length has changed: indexRafLength= " + indexRafLength + " rafLength= " + rafLength);
 
-            if (indexFileModeOnOpen == IndexExtendMode.extendwrite) {
-              if (indexRafLength < rafLength) {
-                if (log.isDebugEnabled()) log.debug("  extend Index = " + indexFile.getPath());
-                index = extendIndex(new File(raf.getLocation()), indexFile, raf);
-              } else {
+              if (indexFileModeOnOpen == IndexExtendMode.extendwrite) {
+                if (indexRafLength < rafLength) {
+                  if (log.isDebugEnabled()) log.debug("  extend Index = " + indexFile.getPath());
+                  index = extendIndex(new File(raf.getLocation()), indexFile, raf);
+                } else {
+                  if (log.isDebugEnabled()) log.debug("  rewrite index = " + indexFile.getPath());
+                  index = writeIndex(indexFile, raf);
+                }
+
+              } else if (indexFileModeOnOpen == IndexExtendMode.rewrite) {
                 if (log.isDebugEnabled()) log.debug("  rewrite index = " + indexFile.getPath());
                 index = writeIndex(indexFile, raf);
               }
-
-            } else if (indexFileModeOnOpen == IndexExtendMode.rewrite) {
-              if (log.isDebugEnabled()) log.debug("  rewrite index = " + indexFile.getPath());
-              index = writeIndex(indexFile, raf);
             }
           }
         }
 
       } catch (Exception e) {
         log.warn("GribReadIndex() failed, will try to rewrite at " + indexFile.getPath(), e);
-        index = writeIndex(indexFile, raf);
+        // fall through
       }
+    }
 
       // doesnt exist (or is being forced), create it
-    } else {
+    if (index == null){
       log.debug("  write index = " + indexFile.getPath());
       index = writeIndex(indexFile, raf);
     }

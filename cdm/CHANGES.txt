@@ -4,6 +4,7 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.2:
  20: (2011-02-16)
+  GRIB: Deal with zero length index better
   Default TableAnalyser: turn into trajectory if there is trajectory metadata
   DatasetCollectionManager is not activated if there is no scan
   N3header: check for one record variable, no-padding case.

@@ -45,13 +45,23 @@ or <a href="http://www.unidata.ucar.edu/mailing_lists/archives/netcdf-java/">bro
   <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.2/netcdfUI-4.2.jar">unbundled GUI.jar</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.2/netcdfUI-4.2.jar.MD5">MD5</a>) for GUI applications that want to choose   which other jars are needed</li>
   <li>The<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.2/ncSrc-4.2.zip"> source code </a>(<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.2/ncSrc-4.2.zip.MD5">MD5</a>) (unzip and follow the <a href="v4.2/README">README</a>)</li>
   <li>See <a href="v4.2/CHANGES">CHANGES</a> for version changes.</li>
-  <li>Try out the <strong> 4.2</strong> version of ToolsUI application: <a href="v4.2/webstart/netCDFtools.jnlp">launch from webstart</a>. </li>
+  <li>Try out the stable<strong> 4.2</strong> version of ToolsUI application: <a href="v4.2/webstart/netCDFtools.jnlp">launch from webstart</a>. </li>
 </ul>
 <ul>
   <li> <a href="v4.2/javadoc/index.html">Public javadoc</a>, downloadable <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.2/javadoc-4.2.jar">jar file</a>. This is the public interface. Future changes to the API will remain backwards compatible with this API. </li>
   <li><a href="v4.2/javadocAll/index.html">All javadoc, </a>downloadable<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.2/javadocAll-4.2.jar"> jar file. </a>This is the javadoc for all packages and all methods except private.  CAREFUL, some of this may change.</li>
 </ul>
-<h3><strong><a name="v4"></a> Last version for Java 5 (4.0.49) </strong></h3>
+<blockquote>
+  <h4><strong><a name="maven" id="v"></a>Building from source </strong>with maven</h4>
+  <p>The currently supported way to build from source with maven:</p>
+  <blockquote>
+    <pre>svn co http://svn.unidata.ucar.edu/repos/thredds/trunk/ thredds
+cd thredds
+mvn install</pre>
+    </blockquote>
+  <p>We expect to have netCDF-Java available on one of the <a href="http://maven.apache.org/guides/introduction/introduction-to-repositories.html">maven central</a> sites soon, and possibly on a git repository.</p>
+</blockquote>
+<p><strong><a name="v4"></a> Last version for Java 5 (4.0.49) </strong></p>
 <ul>
   <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/netcdf-4.0.jar">unbundled netCDF library</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/netcdf-4.0.jar.MD5">MD5</a>) allows you to choose which other jars you need.</li>
   <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/netcdfAll-4.0.jar">complete netCDF library</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.0/netcdfAll-4.0.jar.MD5">MD5</a>) implements the full CDM model, with all dependent jars included.</li>
@@ -85,16 +95,8 @@ or <a href="http://www.unidata.ucar.edu/mailing_lists/archives/netcdf-java/">bro
 <ul>
   <li> <a href="v2.2.20/javadoc/index.html">Public javadoc</a>: This is the public interface. </li>
   <li><a href="v2.2.20/javadocAll/index.html">All javadoc: </a>Javadoc for all packages and all methods except private. CAREFUL, some of this may change.</li>
-  <li> User's documentation (incomplete): <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2/NetcdfJavaUserManual-2.2.doc">doc</a> <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2/NetcdfJavaUserManual-2.2.pdf">pdf</a>  </li>
+  <li> User's documentation (incomplete): <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2/NetcdfJavaUserManual-2.2.doc">doc</a> <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v2.2/NetcdfJavaUserManual-2.2.pdf">pdf</a></li>
 </ul>
-<h3><strong><a name="maven" id="v2"></a>Building from source </strong>with maven</h3>
-<p>The curently supported way to build from source with maven:</p>
-<blockquote>
-  <pre>svn co http://svn.unidata.ucar.edu/repos/thredds/trunk/ thredds
-cd thredds
-mvn install</pre>
-</blockquote>
-<p>We expect to have netCDF-Java available on one of the <a href="http://maven.apache.org/guides/introduction/introduction-to-repositories.html">maven central</a> sites soon, and possibly on a git repository.</p>
 <h3>File format<a name="formats"></a> types</h3>
 <p>The NetCDF-Java library   can read these <a href="formats/FileTypes.html">file types and remote access protocols</a>.</p>
 <h3><strong>Caveats and not-so-stable APIs</strong>:</h3>
@@ -182,7 +184,7 @@ mvn install</pre>
 <ul>
   <li>Talk at netCDF workshop 2010 (<a href="http://www.unidata.ucar.edu/staff/caron/presentations/DataSummit2010.pptx">pptx</a>)</li>
   <li>Talk at netCDF workshop 2009 (<a href="talks/NetCDFworkshop2009.ppt">ppt</a>)</li>
-  <li>Unidata public<a href="http://svn.unidata.ucar.edu/repos/thredds/trunk/cdm/"> svn repository</a></li>
+  <li>Unidata public<a href="http://svn.unidata.ucar.edu/repos/thredds/"> svn repository</a></li>
   <li>NetCDF-Java <a href="ring2.jpg">logo</a></li>
 </ul>
 <hr WIDTH="100%">
