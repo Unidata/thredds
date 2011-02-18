@@ -104,7 +104,7 @@ public class FeatureScan {
         if (prev != null) {
           String name = f.getName();
           String stem = stem(name);
-          if (name.endsWith(".gbx") || name.endsWith(".gbx8")) {
+          if (name.endsWith(".gbx") || name.endsWith(".gbx8")|| name.endsWith(".pdf")) {
             files2.remove(f);
           } else if (name.endsWith(".ncml")) {
             if (prev.getName().equals(stem+".nc"))

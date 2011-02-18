@@ -818,6 +818,7 @@ public class Ghcnm extends AbstractIOServiceProvider {
   public boolean isValidFile(RandomAccessFile raf) throws IOException {
     String dataFile = raf.getLocation();
     int pos = dataFile.lastIndexOf(".");
+    if (pos <= 0) return false;
     String base = dataFile.substring(0, pos);
     String ext = dataFile.substring(pos);
 
