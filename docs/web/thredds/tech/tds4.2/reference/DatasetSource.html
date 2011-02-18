@@ -27,30 +27,39 @@
 </blockquote>
 <p>By returning null, the calling routine  assumes that you have sent the response yourself, and will terminate processing without further action. </p>
 <h2>Example</h2>
-<pre>public class ExampleDataSource  implements thredds.servlet.DatasetSource {<br>  HashMap hash = new HashMap();
-
-  init() {
-    ...
-  }</pre>
-<pre> public boolean <strong>isMine</strong>(HttpServletRequest req) {
-   String path = req.getPathInfo();
-   return path.startsWith(&quot;/special/&quot;);
- }</pre>
-<pre> public NetcdfFile <strong>getNetcdfFile</strong>(HttpServletRequest req, HttpServletResponse res) throws IOException {
-   String path = req.getPathInfo();
-   path = path.substring(&quot;/special/&quot;.length());</pre>
-<pre>   String specialMap = (String) hash.get(path);
-   if (specialMap == null) {
-    res.sendError(HttpServletResponse.SC_NOT_FOUND);
-    return null;
-   }  
-   return new MyNetcdfFile(req.getRequestURI(), specialMap);
- }</pre>
-<pre> public class <strong>MyNetcdfFile</strong> extends NetcdfFile {
-   MyNetcdfFile(String location, String specialMap) throws IOException {
-   super( new MyIOSP(specialMap), null, location, null);
+<pre>
+ public class DatasetSourceExample implements thredds.servlet.DatasetSource {
+   static final String prefix =  &quot;/special/&quot;;
+   static final int prefixLen =  prefix.length();
+       
+   public boolean isMine(HttpServletRequest req) {
+     String path = req.getPathInfo();
+     return path.startsWith(prefix);
+   }
+   
+   public NetcdfFile getNetcdfFile(HttpServletRequest req, HttpServletResponse res) throws IOException {
+     String path = req.getPathInfo().substring(prefixLen);
+     DataRootHandler.DataRootMatch match = DataRootHandler.getInstance().findDataRootMatch(path);
+     if (match == null) {
+       res.sendError(HttpServletResponse.SC_NOT_FOUND, path);
+       return null;
+     }
+       
+     int pos = match.remaining.lastIndexOf('.');
+     String filename = match.remaining.substring(0, pos);
+     File file = new File(match.dirLocation+filename);
+     if (!file.exists()) {
+       res.sendError(HttpServletResponse.SC_NOT_FOUND, match.dirLocation+filename);
+       return null;
+     }
+       
+     NetcdfFile ncfile = NetcdfDataset.openFile(file.getPath(), null);
+     ncfile.addAttribute(null, new Attribute(&quot;Special&quot;, req.getRequestURI()));
+     ncfile.finish();
+     return ncfile;
+   }
  }
-}</pre>
+</pre>
 <h2> Loading your class at runtime</h2>
 <p>You must place your <strong>DatasetSource</strong> class into <strong>the ${tomcat_home}/webapps/thredds/WEB-INF/lib </strong>or<strong> classes </strong>directory<strong>. </strong></p>
 <p>Then tell the TDS to load it by adding a line to the <strong>${tomcat_home}/content/thredds/threddsConfig.xml</strong> file, for example:</p>
@@ -68,7 +77,7 @@
 <strong><br>
 </strong>
 <address>
-<img src="../../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated  Dec 2010
+<img src="../../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated Feb 2011
 </address>
 <p>&nbsp;</p>
 </body>
