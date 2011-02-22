@@ -48,11 +48,11 @@ public class TestCompareFileWriter extends TestCase {
 
   public ArrayList files;
   public void testCompare() throws IOException {
-    doOne(TestAll.testdataDir +"satellite/gini/n0r_20041013_1852-compress", TestAll.temporaryLocalDataDir +"n0r_20041013_1852.nc");
+    doOne(TestAll.cdmUnitTestDir +"formats/gini/SUPER-NATIONAL_8km_WV_20051128_2100.gini", TestAll.temporaryLocalDataDir +"SUPER-NATIONAL_8km_WV_20051128_2100.gini");
   }
 
   public void utestCompareAll() throws IOException {
-    readAllDir(TestAll.testdataDir +"satellite/gini/");
+    readAllDir(TestAll.cdmUnitTestDir +"formats/gini/");
   }
 
   void readAllDir(String dirName) throws IOException {
@@ -64,8 +64,8 @@ public class TestCompareFileWriter extends TestCase {
       File f = allFiles[i];
       if (f.isDirectory()) continue;
 
-      String name = f.getAbsolutePath();
-      doOne(name, "C:/temp/data/temp.nc");
+      String path = f.getAbsolutePath();
+      doOne(path, TestAll.temporaryLocalDataDir +"/"+f.getName());
     }
 
     for (int i = 0; i < allFiles.length; i++) {

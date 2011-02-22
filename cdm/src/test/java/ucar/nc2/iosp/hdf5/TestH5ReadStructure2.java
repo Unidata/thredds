@@ -131,7 +131,7 @@ public class TestH5ReadStructure2 extends TestCase {
     String c_name = "Hello!";
 
     //H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
-    NetcdfDataset ncfile = NetcdfDataset.openDataset(TestAll.testdataDir + "hdf5/complex/compound_complex.h5");
+    NetcdfDataset ncfile = NetcdfDataset.openDataset(TestH5.testDir + "complex/compound_complex.h5");
 
     Variable dset = null;
     assert (null != (dset = ncfile.findVariable("CompoundComplex")));

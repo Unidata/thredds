@@ -3,6 +3,7 @@ package ucar.nc2.stream;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.TestAll;
+import ucar.nc2.iosp.hdf5.TestN4;
 import ucar.nc2.util.CompareNetcdf2;
 
 import java.io.*;
@@ -21,7 +22,7 @@ public class TestNetcdfStream extends TestCase {
   }
 
   public void testProblem() throws IOException {
-    doOne("C:/data/formats/netcdf4/tst_enums.nc");
+    doOne(TestN4.testDir+"tst_enums.nc");
   }
 
   public void testScan() throws IOException {

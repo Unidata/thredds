@@ -94,7 +94,7 @@ public class TestAggExisting extends TestCase {
 
   public void testNcmlDatasetNoCoords() throws IOException, InvalidRangeException {
     String filename = "file:./"+TestNcML.topDir + "aggExistingNoCoords.xml";
-    NetcdfDataset ncd;
+    NetcdfDataset ncd = null;
 
     try {
       ncd = NetcdfDataset.openDataset( filename, true, null);
@@ -102,6 +102,8 @@ public class TestAggExisting extends TestCase {
       //e.printStackTrace();
       assert true;
       return;
+    } finally {
+      if (ncd != null) ncd.close();
     }
     assert false;
     /*System.out.println(" TestNcmlAggExisting.open "+ filename);

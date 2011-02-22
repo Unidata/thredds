@@ -48,7 +48,7 @@ public class TestGribFromTds extends TestCase {
   public void testGribFromTds() throws Exception {
     //doDir(TestAll.testdataDir + "cdmUnitTest/formats/grib1", false);
     //doDir(TestAll.testdataDir + "cdmUnitTest/formats/grib2", false);
-    doDir(TestAll.testdataDir + "cdmUnitTest/tds/normal", false);
+    doDir(TestAll.cdmUnitTestDir + "tds/normal", false);
     //doDir(TestAll.testdataDir + "cdmUnitTest/tds/fnmoc", true);
   }
 

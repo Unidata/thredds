@@ -57,7 +57,7 @@ public class TestARMTrajectoryObsDataset extends TestCase
 {
   private TrajectoryObsDataset me;
 
-  private String testFilePath = TestTrajectoryObsDataset.getRemoteTestDataDir() + "/trajectory/sonde";
+  private String testFilePath = TestTrajectoryObsDataset.getRemoteTestDataDir() + "sounding";
   private String testDataFileName = "sgpsondewnpnC1.a1.20020507.112400.cdf";
 
   public TestARMTrajectoryObsDataset( String name )

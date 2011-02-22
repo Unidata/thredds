@@ -212,7 +212,8 @@ public class TestWriteMiscProblems extends TestCase {
 
       NetcdfDataset ncdnew2 = NetcdfDataset.acquireDataset(outName, null);
       assert ncdnew2.findVariable("temperature") == null;
-
+      ncdnew2.close();
+      
     } catch (IOException e) {
       e.printStackTrace();
     }

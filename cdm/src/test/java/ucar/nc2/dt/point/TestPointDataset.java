@@ -50,9 +50,35 @@ import java.util.Iterator;
 /** Test PointObsDataset adapters in the JUnit framework. */
 
 public class TestPointDataset extends TestCase {
-  String topDir = ucar.nc2.TestAll.testdataDir + "point/netcdf/";
+  String topDir = ucar.nc2.TestAll.cdmUnitTestDir + "ft/point/netcdf/";
   public TestPointDataset( String name) {
     super(name);
+  }
+
+  public void testMadis() throws IOException {
+    String filename = topDir +"madis.nc";
+    StringBuilder sbuff = new StringBuilder();
+    long start = System.currentTimeMillis();
+    PointObsDataset pods = (PointObsDataset) TypedDatasetFactory.open( FeatureType.POINT, filename, null, sbuff);
+    long took = System.currentTimeMillis() - start;
+    System.out.println(" open madis as point dataset "+filename+" "+sbuff+" took "+took);
+
+    start = System.currentTimeMillis();
+    int bufferSize = 163840;
+    Iterator  dataIterator = pods.getDataIterator(bufferSize);
+    while (dataIterator.hasNext()) {
+      dataIterator.next();
+    }
+    took = System.currentTimeMillis() - start;
+    System.out.println(" first ok took "+took+" with bufferSize "+bufferSize);
+
+    start = System.currentTimeMillis();
+    dataIterator = pods.getDataIterator(bufferSize);
+    while (dataIterator.hasNext()) {
+      dataIterator.next();
+    }
+    took = System.currentTimeMillis() - start;
+    System.out.println(" second ok took "+took);
   }
 
   public void testNetcdfDataset() throws IOException {

@@ -48,8 +48,7 @@ import ucar.unidata.util.StringUtil;
  * @author caron
  */
 public class TestH5ReadAndCount extends TestCase {
-  static public String testDir = TestAll.testdataDir + "hdf5/";
-  //static public String testDir = "R:/testdata2/hdf5/";
+  static public String testDir = TestH5.testDir;
 
   public TestH5ReadAndCount(String name) {
     super(name);

@@ -62,7 +62,7 @@ import ucar.unidata.geoloc.LatLonPointImpl;
  * @since Dec 16, 2008
  */
 public class TestPointFeatureTypes extends TestCase {
-  private static String topdir = TestAll.testdataDir + "cdmUnitTest/";
+  private static String topdir = TestAll.cdmUnitTestDir;
   private static boolean showStructureData = false;
 
   public TestPointFeatureTypes(String name) {
@@ -237,7 +237,7 @@ public class TestPointFeatureTypes extends TestCase {
     assert 2088 == checkPointDataset(topdir + "ft/station_profile/PROFILER_wind_06min_20091030_2330.nc", FeatureType.STATION_PROFILE, false);
 
     //gempack sounding
-    assert 8769 == checkPointDataset(TestAll.testdataDir+"sounding/gempak/19580807_upa.ncml", FeatureType.STATION_PROFILE, false);
+    assert 8769 == checkPointDataset(TestAll.cdmUnitTestDir+"ft/sounding/19580807_upa.ncml", FeatureType.STATION_PROFILE, false);
 
     // gempak surface
     assert 3337 == checkPointDataset(topdir + "ft/point/2009103008_sb.gem", FeatureType.POINT, false);
@@ -256,28 +256,28 @@ public class TestPointFeatureTypes extends TestCase {
 
     // Madis
     assert 5063 == checkPointDataset(topdir + "ft/trajectory/acars/acars_20091109_0800.nc", FeatureType.TRAJECTORY, false);
-    assert 2499 == checkPointDataset(TestAll.testdataDir + "point/netcdf/19981110_1200", FeatureType.POINT, false);
-    assert 1374 == checkPointDataset(TestAll.testdataDir + "station/madis2/hydro/20050729_1200", FeatureType.STATION, false);
-    assert 1788 == checkPointDataset(TestAll.testdataDir + "sounding/netcdf/20070612_1200", FeatureType.STATION_PROFILE, false);
+    assert 2499 == checkPointDataset(topdir + "ft/point/19981110_1200", FeatureType.POINT, false);
+    assert 1374 == checkPointDataset(topdir + "ft/station/madis2/hydro/20050729_1200", FeatureType.STATION, false);
+    assert 1788 == checkPointDataset(topdir + "ft/sounding/20070612_1200", FeatureType.STATION_PROFILE, false);
 
     // FslRaob
     // assert 63 == checkPointDataset(TestAll.testdataDir + "sounding/netcdf/raob_soundings20216.cdf", FeatureType.STATION_PROFILE, false);
     //assert 4638 == checkPointDataset(TestAll.testdataDir + "sounding/netcdf/Upperair_20060621_0000.nc", FeatureType.STATION_PROFILE, false);
 
     // unidata point obs
-    assert 5023 == checkPointDataset(TestAll.testdataDir + "point/netcdf/200501q3h-gr.nc", FeatureType.STATION, false);
-    assert 277477 == checkPointDataset(TestAll.testdataDir + "point/netcdf/20080814_LMA.ncml", FeatureType.POINT, false);
+    assert 5023 == checkPointDataset(topdir + "ft/point/netcdf/200501q3h-gr.nc", FeatureType.STATION, false);
+    assert 277477 == checkPointDataset(topdir + "ft/point/netcdf/20080814_LMA.ncml", FeatureType.POINT, false);
 
     // nldn
-    assert 1165 == checkPointDataset(TestAll.testdataDir + "lightning/nldn/200929100.ingest", FeatureType.POINT, false);
+    assert 1165 == checkPointDataset(topdir + "ft/point/200929100.ingest", FeatureType.POINT, false);
 
     // uspln
-    assert 3483 == checkPointDataset(TestAll.testdataDir + "lightning/uspln/uspln_20061023.18", FeatureType.POINT, false);
+    assert 3483 == checkPointDataset(topdir + "ft/point/uspln_20061023.18", FeatureType.POINT, false);
 
   }
 
   public void testGempak() throws IOException {
-    assert 8769 == checkPointDataset(TestAll.testdataDir+"sounding/gempak/19580807_upa.ncml", FeatureType.STATION_PROFILE, false);
+    assert 8769 == checkPointDataset(topdir+"ft/sounding/19580807_upa.ncml", FeatureType.STATION_PROFILE, false);
     
     // (GEMPAK IOSP) stn = psuedoStruct, obs = multidim Structure, time(time) as extraJoin
     checkPointDataset(TestAll.cdmUnitTestDir + "formats/gempak/surface/19580807_sao.gem", FeatureType.STATION, true);

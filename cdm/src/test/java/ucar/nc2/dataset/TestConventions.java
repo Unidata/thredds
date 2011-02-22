@@ -58,6 +58,7 @@ public class TestConventions extends TestCase {
 
   private void testWRF(String location) throws IOException {
     NetcdfDataset ds = NetcdfDataset.openDataset(location);
+    ds.close();
   }
 
   public void testCF() throws IOException {

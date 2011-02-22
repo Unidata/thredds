@@ -51,7 +51,7 @@ public class TestH5read extends TestCase {
     super(name);
   }
 
-  String testDir = TestAll.testdataDir + "hdf5/";
+  String testDir = TestAll.cdmUnitTestDir + "hdf5/";
 
 
  public void testH5data() {
@@ -70,7 +70,7 @@ public class TestH5read extends TestCase {
 
   public void problemV() throws IOException {
     H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
-    String filename = TestAll.testdataDir + "hdf5/ssec-h5/MYD04_L2.A2006188.1830.005.2006194121515.hdf";
+    String filename = testDir + "ssec-h5/MYD04_L2.A2006188.1830.005.2006194121515.hdf";
     NetcdfFile ncfile = NetcdfFile.open(filename);
     Variable v = ncfile.findVariable("/U-MARF/EPS/IASI_xxx_1C/DATA/SPECT_LAT_ARRAY");
     Array data = v.read();

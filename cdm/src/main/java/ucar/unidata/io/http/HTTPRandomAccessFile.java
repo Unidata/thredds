@@ -62,8 +62,6 @@ import java.nio.ByteBuffer;
 public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
   static public int defaultHTTPBufferSize = 20000;
 
-  
-
   ///////////////////////////////////////////////////////////////////////////////////
 
   private String url;
@@ -83,6 +81,8 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
     file = null;
     this.url = url;
     location = url;
+    if (debugLeaks)
+      allFiles.add(location);
 
     initHttpClient();
 
@@ -131,13 +131,16 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
   private synchronized void initHttpClient() {
     if (_client != null) return;
     try {
-        _client = new HTTPSession();
-      } catch (HTTPException he) {
-        _client = null;
-      }
+      _client = new HTTPSession();
+    } catch (HTTPException he) {
+      _client = null;
+    }
   }
 
   public void close() {
+    if (debugLeaks)
+      openFiles.remove(location);
+
     if (_client != null) {
       _client.close();
       _client = null;

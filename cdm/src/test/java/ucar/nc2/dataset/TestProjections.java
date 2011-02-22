@@ -59,7 +59,7 @@ import junit.framework.TestCase;
  * @author caron
  */
 public class TestProjections extends TestCase {
-  private String testDir="cdmUnitTest/transforms/";
+  private String testDir= TestAll.cdmUnitTestDir + "transforms/";
 
   public TestProjections(String name) {
     super(name);
@@ -68,37 +68,37 @@ public class TestProjections extends TestCase {
   public void testProjections() throws IOException, InvalidRangeException {
     Projection p;
 
-    p = test(TestAll.testdataDir + testDir+ "Sigma_LC.nc",
+    p = test(testDir + "Sigma_LC.nc",
         "Lambert_Conformal",
         "Temperature",
         LambertConformal.class);
 
-    p = test(TestAll.testdataDir + testDir+ "LambertAzimuth.nc",
+    p = test(testDir + "LambertAzimuth.nc",
         "grid_mapping0",
         "VIL",
         LambertAzimuthalEqualArea.class);
 
-    p = test(TestAll.testdataDir + testDir+ "PolarStereographic.nc",
+    p = test(testDir+ "PolarStereographic.nc",
         "Polar_Stereographic",
         "D2_O3",
         Stereographic.class);
 
-    p = test(TestAll.testdataDir + testDir+ "Polar_Stereographic2.nc",
+    p = test(testDir+ "Polar_Stereographic2.nc",
         null,
         "dpd-Surface0",
         Stereographic.class);
 
-    p = test(TestAll.testdataDir + "grid/netcdf/cf/Base_month.nc",
+    p = test("grid/netcdf/cf/Base_month.nc",
         null,
         "D2_SO4",
         Stereographic.class);
 
-    p = test(TestAll.testdataDir + testDir+ "Mercator.grib1",
+    p = test(testDir+ "Mercator.grib1",
         "Mercator",
         "Temperature",
         Mercator.class);
 
-    p = test(TestAll.testdataDir + testDir+ "Eumetsat.VerticalPerspective.grb",
+    p = test(testDir+ "Eumetsat.VerticalPerspective.grb",
         "Space_View_Perspective_or_Orthographic",
         "Pixel_scene_type",
         MSGnavigation.class);
@@ -106,7 +106,7 @@ public class TestProjections extends TestCase {
 
   public void testProjectionsHeiko() throws IOException, InvalidRangeException {
     Projection p;
-    String dir = TestAll.testdataDir + testDir + "heiko/";
+    String dir = testDir + "heiko/";
 
     p = test(dir+ "topo_stere_sphere.nc",
         "projection_stere",
@@ -179,7 +179,7 @@ public class TestProjections extends TestCase {
   }
 
   public void testPSscaleFactor() throws IOException {
-    String filename = TestAll.testdataDir + testDir+ "stereographic/foster.grib2";
+    String filename = testDir+ "stereographic/foster.grib2";
     NetcdfDataset ncd = NetcdfDataset.openDataset(filename);
     GridDataset gds = new GridDataset(ncd);
     GridCoordSystem gsys = null;
@@ -217,5 +217,7 @@ public class TestProjections extends TestCase {
 
     assert TestAll.closeEnough(start2.getLatitude(), 41.527360,  2.0E-4) :  TestAll.howClose(start2.getLatitude(), 41.527360);
     assert TestAll.closeEnough(start2.getLongitude(), 270.784605 - 360.0, 2.0E-4) : TestAll.howClose(start2.getLongitude(), 270.784605- 360.0);
+
+    ncd.close();
   }
 }

@@ -476,7 +476,7 @@ public class TestDmspIosp extends TestCase
     // Open test DMSP file as NetCDF file.
     try
     {
-      meNcf = NetcdfFile.open( testFile.getAbsolutePath() );
+      meNcf = NetcdfFile.open( testFilePath + "/" + testDataFileName );
     }
     catch ( IOException e )
     {

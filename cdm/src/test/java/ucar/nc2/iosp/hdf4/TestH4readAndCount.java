@@ -45,7 +45,7 @@ import java.io.File;
  * @since Jan 1, 2008
  */
 public class TestH4readAndCount extends TestCase {
-  static public String testDir = TestAll.testdataDir + "hdf4/";
+  static public String testDir = TestAll.cdmUnitTestDir + "formats/hdf4/";
   //static public String testDir = "C:/data/hdf4/";
 
   public TestH4readAndCount(String name) {

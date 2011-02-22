@@ -50,7 +50,7 @@ import java.util.Date;
 
 public class TestRadialDataset extends TestCase {
   // private RadialDatasetSweepFactory datasetFactory = new RadialDatasetSweepFactory();
-  private String topDir = ucar.nc2.TestAll.testdataDir + "radar/";
+  private String topDir = ucar.nc2.TestAll.cdmUnitTestDir + "formats/";
   private boolean show = false, showTime = false, doQuick = true;
 
   public TestRadialDataset( String name) {
@@ -66,7 +66,7 @@ public class TestRadialDataset extends TestCase {
     // doDirectory(TestAll.testdataDir + "radar/nexrad/level2/VCP11", false);
     //DiskCache.setCachePolicy( true);
     //DiskCache.setRootDirectory( System.getProperty( "java.io.tmpdir" ) + "/cache/");
-    doDirectory(TestAll.testdataDir + "radar/nexrad/level2/", false, 10, ".raw");
+    doDirectory(topDir + "nexrad/level2/", false, 10, ".raw");
     long took = System.currentTimeMillis() - start;
     System.out.println("that took = "+took+" msec");
   }

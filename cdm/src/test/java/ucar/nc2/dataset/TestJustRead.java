@@ -48,7 +48,7 @@ public class TestJustRead extends TestCase {
   }
 
   public void testReadConventionFiles() throws Exception {
-    readAllDir( TestAll.testdataDir + "grid/netcdf");
+    readAllDir( TestAll.cdmUnitTestDir + "ft/grid/netcdf");
   }
 
   void readAllDir(String dirName) throws Exception {

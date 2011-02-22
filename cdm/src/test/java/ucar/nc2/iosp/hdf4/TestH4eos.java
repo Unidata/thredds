@@ -63,7 +63,7 @@ public class TestH4eos extends TestCase {
     }
   }
 
-  String testDir = TestAll.testdataDir + "hdf4/";
+  String testDir = TestAll.cdmUnitTestDir + "formats/hdf4/";
   public void testReadAll() throws IOException {
     int count = 0;
     count = TestAll.actOnAll(testDir, new MyFileFilter(), new MyAct());

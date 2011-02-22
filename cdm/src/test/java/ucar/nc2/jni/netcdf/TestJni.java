@@ -34,6 +34,7 @@
 package ucar.nc2.jni.netcdf;
 
 import ucar.nc2.*;
+import ucar.nc2.iosp.hdf5.TestN4;
 import ucar.nc2.util.CompareNetcdf;
 import ucar.ma2.Section;
 import ucar.ma2.InvalidRangeException;
@@ -163,7 +164,7 @@ netcdf R:/testdata2/netcdf4/nc4/tst_enums.nc {
    */
 
   public void testAttEnum() throws IOException {
-    new ReadAllData().doClosure("R:/testdata/netcdf4/nc4/tst_enums.nc");
+    new ReadAllData().doClosure(TestN4.testDir+"tst_enums.nc");
   }
 
   /////////////////////////////////////////////////////////////////////////////

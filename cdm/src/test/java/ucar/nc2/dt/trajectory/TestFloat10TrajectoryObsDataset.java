@@ -53,7 +53,7 @@ public class TestFloat10TrajectoryObsDataset extends TestCase
 {
   private TrajectoryObsDataset me;
 
-  private String testFilePath = TestTrajectoryObsDataset.getRemoteTestDataDir() + "/trajectory/buoy";
+  private String testFilePath = TestTrajectoryObsDataset.getRemoteTestDataDir() + "buoy";
   private String testDataFileName = "testfloat10.nc";
 
   public TestFloat10TrajectoryObsDataset( String name )

@@ -50,6 +50,7 @@ import java.nio.ByteBuffer;
  * @since Jul 17, 2007
  */
 public class TestOddTypes extends TestCase {
+  static public String testDir = TestH5.testDir;
 
   public void testOpaque() throws InvalidRangeException, IOException {
     H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
@@ -107,8 +108,8 @@ public class TestOddTypes extends TestCase {
 
   public void testTime() throws IOException {
     H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
-    String filename = TestAll.testdataDir + "hdf5/support/time.h5";
-    NetcdfFile ncfile = TestNC2.open( filename);
+    NetcdfFile ncfile = TestH5.openH5("support/time.h5");
+
     Variable v = ncfile.findVariable("dset");
     Array data = v.read();
     NCdump.printArray(data, "dset", System.out, null);
@@ -139,13 +140,12 @@ public class TestOddTypes extends TestCase {
 
   public void testCompoundString() throws InvalidRangeException, IOException {
     H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
-    TestH5read.readAllData(TestAll.testdataDir + "hdf5/support/cstr.h5");
+    TestH5read.readAllData(TestH5.testDir + "support/cstr.h5");
   }
 
   public void testCompoundEnum() throws IOException {
     H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
-    String filename = TestAll.testdataDir + "hdf5/support/cenum.h5";
-    NetcdfFile ncfile = TestNC2.open( filename);
+    NetcdfFile ncfile = TestH5.openH5("support/cenum.h5");
     Variable v = ncfile.findVariable("enum");
     Array data = v.read();
     NCdump.printArray(data, "enum", System.out, null);
@@ -179,7 +179,7 @@ public class TestOddTypes extends TestCase {
   }
 
   public void testAttStruct() throws IOException {
-    NetcdfFile ncfile = NetcdfFile.open(TestAll.testdataDir + "netcdf4/attributeStruct.nc");
+    NetcdfFile ncfile = NetcdfFile.open(TestN4.testDir + "attributeStruct.nc");
     Variable v = ncfile.findVariable("observations");
     assert v != null;
     assert v instanceof Structure;
@@ -199,7 +199,7 @@ public class TestOddTypes extends TestCase {
   }
 
   public void testAttStruct2() throws IOException {
-    NetcdfFile ncfile = NetcdfFile.open(TestAll.testdataDir + "netcdf4/compound-attribute-test.nc");
+    NetcdfFile ncfile = NetcdfFile.open(TestN4.testDir + "compound-attribute-test.nc");
     Variable v = ncfile.findVariable("compound_test");
     assert v != null;
     assert v instanceof Structure;
@@ -223,7 +223,7 @@ public class TestOddTypes extends TestCase {
   }
 
   public void testEmptyAtts() throws IOException {
-    NetcdfFile ncfile = NetcdfFile.open(TestAll.testdataDir + "netcdf4/testEmptyAtts.nc");
+    NetcdfFile ncfile = NetcdfFile.open(TestN4.testDir + "testEmptyAtts.nc");
     System.out.printf("%s%n", ncfile);
     ncfile.close();
   }

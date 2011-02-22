@@ -55,8 +55,10 @@ public class TestSlice extends TestCase {
   private static final int DIM_LAT = 123;
   private static final int DIM_LON = 234;
 
+  private NetcdfFileWriteable file;
+
   public void setUp() throws IOException {
-    NetcdfFileWriteable file = NetcdfFileWriteable.createNew(NETCDF_FILE);
+     file = NetcdfFileWriteable.createNew(NETCDF_FILE);
 
     Dimension t = new Dimension("t", DIM_T, true);
     Dimension alt = new Dimension("alt", DIM_ALT, true);
@@ -72,7 +74,8 @@ public class TestSlice extends TestCase {
     file.create();
   }
 
-  public void tearDown() {
+  public void tearDown() throws IOException {
+    file.close();
   }
 
   private Array createData() {

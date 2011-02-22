@@ -58,10 +58,10 @@ public class TestGridGribIosp extends TestCase {
     super(name);
   }
 
-  public void testCompare() throws IOException {
+  public void utestCompare() throws IOException {
 
-    String dirB1 = TestAll.testdataDir + "test/motherlode/grid/grib/binary";
-    String dirB2 = TestAll.testdataDir + "test/motherlode/grid/grib/text";
+    String dirB1 = TestAll.cdmUnitTestDir + "test/motherlode/grid/grib/binary";
+    String dirB2 = TestAll.cdmUnitTestDir + "test/motherlode/grid/grib/text";
     File dir = new File(dirB1);
 
     System.out.println("In directory " + dir.getParent() + "/" + dir.getName());
@@ -146,6 +146,6 @@ public class TestGridGribIosp extends TestCase {
 
   static public void main(String args[]) throws IOException {
     TestGridGribIosp ggi = new TestGridGribIosp("");
-    ggi.testCompare();
+    ggi.utestCompare();
   }
 }

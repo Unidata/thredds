@@ -101,14 +101,15 @@ public class FeatureScan {
 
       File prev = null;
       for (File f : files) {
-        if (prev != null) {
-          String name = f.getName();
-          String stem = stem(name);
-          if (name.endsWith(".gbx") || name.endsWith(".gbx8")|| name.endsWith(".pdf")) {
-            files2.remove(f);
-          } else if (name.endsWith(".ncml")) {
-            if (prev.getName().equals(stem+".nc"))
-              files2.remove(prev);
+        String name = f.getName();
+        String stem = stem(name);
+        if (name.endsWith(".gbx") || name.endsWith(".gbx8") || name.endsWith(".pdf") || name.endsWith(".xml")) {
+          files2.remove(f);
+
+        } else if (prev != null) {
+
+          if (name.endsWith(".ncml") && prev.getName().equals(stem + ".nc")) {
+            files2.remove(prev);
           } else if (name.endsWith(".bz2")) {
             if (prev.getName().equals(stem)) files2.remove(f);
           } else if (name.endsWith(".gz")) {
@@ -146,6 +147,7 @@ public class FeatureScan {
   }
 
   private boolean debug = false;
+
   public class Bean {
     public File f;
     String fileType;
@@ -157,6 +159,7 @@ public class FeatureScan {
     Throwable problem;
 
     // no-arg constructor
+
     public Bean() {
     }
 

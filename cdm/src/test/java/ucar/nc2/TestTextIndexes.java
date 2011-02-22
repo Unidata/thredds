@@ -111,8 +111,8 @@ public class TestTextIndexes extends TestCase {
 
     String dirB, dirT;
     if ( args == null || args.length < 1 ) {
-      dirB = TestAll.testdataDir +"test/motherlode/grid/grib/binary";
-      dirT = TestAll.testdataDir +"test/motherlode/grid/grib/text";
+      dirB = TestAll.cdmUnitTestDir +"test/motherlode/grid/grib/binary";
+      dirT = TestAll.cdmUnitTestDir +"test/motherlode/grid/grib/text";
     } else {
       dirB = args[ 0 ] +"/text3_17"; // "/local/robb/data/grib/idd/binary";
       dirT = args[ 0 ] +"/text"; // "/local/robb/data/grib/idd/text";

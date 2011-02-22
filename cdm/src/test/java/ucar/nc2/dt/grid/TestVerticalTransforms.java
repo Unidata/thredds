@@ -51,8 +51,8 @@ public class TestVerticalTransforms extends TestCase {
   }
 
   public void testWRF() throws Exception {
-    testDataset( TestAll.testdataDir + "grid/netcdf/wrf/wrfout_v2_Lambert.nc");
-    testDataset( TestAll.testdataDir + "grid/netcdf/wrf/wrfout_d01_2006-03-08_21-00-00");
+    testDataset( TestAll.cdmUnitTestDir + "conventions/wrf/wrfout_v2_Lambert.nc");
+    testDataset( TestAll.cdmUnitTestDir + "conventions/wrf/wrfout_d01_2006-03-08_21-00-00");
   }
 
   private void testDataset( String location) throws IOException, InvalidRangeException {

@@ -50,7 +50,7 @@ import java.util.List;
  */
 
 public class TestN4 extends TestCase {
-  public static String testDir = TestAll.testdataDir + "netcdf4/";
+  public static String testDir = TestAll.cdmUnitTestDir + "formats/netcdf4/";
   public TestN4(String name) {
     super(name);
   }

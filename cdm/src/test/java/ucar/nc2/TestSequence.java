@@ -57,7 +57,7 @@ public class TestSequence extends TestCase {
   NetcdfFile ncfile;
 
   protected void setUp() throws Exception {
-    ncfile = NetcdfFile.open(TestAll.testdataDir + "lightning/nldn/200929100.ingest");
+    ncfile = NetcdfFile.open(TestAll.cdmUnitTestDir + "ft/point/200929100.ingest");
   }
 
   protected void tearDown() throws Exception {

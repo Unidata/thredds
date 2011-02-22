@@ -67,7 +67,7 @@ public class TestReadingGempak extends TestCase {
 
     String dirB1;
     if (args == null || args.length < 1) {
-      dirB1 = TestAll.testdataDir + "grid/gempak";
+      dirB1 = TestAll.cdmUnitTestDir + "formats/gempak";
     } else {
       dirB1 = args[0] + "/gempak";
     }

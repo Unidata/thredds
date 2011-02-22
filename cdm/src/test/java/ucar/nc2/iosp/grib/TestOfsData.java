@@ -66,7 +66,7 @@ public class TestOfsData extends TestCase {
 
     String dirB1;
     if (args == null || args.length < 1) {
-      dirB1 = TestAll.testdataDir + "grid/grib/grib2/section/20091122";
+      dirB1 = TestAll.cdmUnitTestDir + "grid/grib/grib2/section/20091122";
     } else {
       dirB1 = args[0] + "/section";
     }

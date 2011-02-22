@@ -34,11 +34,8 @@ package ucar.nc2;
 
 import junit.framework.*;
 
-import opendap.dap.http.HTTPSession;
 import ucar.ma2.*;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.Variable;
-import ucar.nc2.Attribute;
+import ucar.nc2.dt.grid.GridDataset;
 
 import java.io.IOException;
 import java.util.*;
@@ -62,7 +59,7 @@ public class TestHTTP extends TestCase {
     assert("face".equals(ncfile.findAttValueIgnoreCase(null, "yo", "barf")));
 
     Variable temp = null;
-    assert(null != (temp = ncfile.findVariable("temperature")));
+    assert (null != (temp = ncfile.findVariable("temperature")));
     assert("K".equals(ncfile.findAttValueIgnoreCase(temp, "units", "barf")));
 
     Attribute att = temp.findAttribute("scale");
@@ -117,8 +114,8 @@ public class TestHTTP extends TestCase {
     }
 
     //System.out.println( "ncfile = "+ ncfile);
+    ncfile.close();
     System.out.println( "*****************  Test HTTP done");
-
   }
 
   boolean close( double d1, double d2) {
@@ -126,8 +123,8 @@ public class TestHTTP extends TestCase {
     return Math.abs((d1-d2)/d1) < 1.0e-5;
   }
 
-  public List makeList() throws IOException {
-    ArrayList list = new ArrayList();
+  public List<String> makeList() throws IOException {
+    ArrayList<String> list = new ArrayList<String>();
     list.add("http://motherlode.ucar.edu/dods/casestudies/2004Aug03/2004080301_metar.nc");
     list.add("http://motherlode.ucar.edu/dods/casestudies/2004Aug03/2004080302_metar.nc");
     list.add("http://motherlode.ucar.edu/dods/casestudies/2004Aug03/2004080303_metar.nc");
@@ -142,10 +139,9 @@ public class TestHTTP extends TestCase {
     long start = System.currentTimeMillis();
     long totalBytes = 0;
 
-    List locs = makeList();
+    List<String> locs = makeList();
     List<NetcdfFile> files = new ArrayList<NetcdfFile>();
-    for (Iterator iter = locs.iterator(); iter.hasNext(); ) {
-      String loc = (String) iter.next();
+    for (String loc : locs) {
       System.out.printf("open %s%n", loc);
       files.add(ucar.nc2.dataset.NetcdfDataset.open( loc));
     }
@@ -153,21 +149,25 @@ public class TestHTTP extends TestCase {
     totalBytes /= 1000;
     System.out.println("**testOpenDataset took= "+(System.currentTimeMillis()-start)+" msec ");
 
-    for(NetcdfFile ncf: files) ncf.close(); // reclaimh
+    for(NetcdfFile ncf: files)
+      ncf.close(); // reclaimh
   }
 
   public void testOpenGrid() throws IOException {
     long start = System.currentTimeMillis();
     long totalBytes = 0;
 
-    List locs = makeList();
-    for (Iterator iter = locs.iterator(); iter.hasNext(); ) {
-      String loc = (String) iter.next();
-      ucar.nc2.dt.grid.GridDataset.open( loc);
+    List<String> locs = makeList();
+    List<GridDataset> files = new ArrayList<GridDataset>();
+    for (String loc : locs) {
+      files.add(ucar.nc2.dt.grid.GridDataset.open( loc));
     }
 
     totalBytes /= 1000;
     System.out.println("**testOpenGrid took= "+(System.currentTimeMillis()-start)+" msec ");
+
+    for(GridDataset ncf: files) 
+      ncf.close(); // reclaimh
   }
 
   public void utestReadAll() throws IOException {

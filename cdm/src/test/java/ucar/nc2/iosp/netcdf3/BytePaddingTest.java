@@ -9,6 +9,7 @@ import ucar.ma2.ArrayChar;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.*;
+import ucar.nc2.iosp.hdf5.TestN4;
 import ucar.unidata.util.TestFileDirUtils;
 
 import java.io.File;
@@ -22,6 +23,9 @@ import java.io.IOException;
  */
 public class BytePaddingTest
 {
+
+  String testdir = TestN4.testDir;
+
   @Test
   public void checkReadOfFileWrittenWithIncorrectPaddingOfOneDimByteArrayOnlyRecordVar()
           throws IOException, InvalidRangeException
@@ -114,6 +118,7 @@ public class BytePaddingTest
     byte[] readdata = (byte[]) readVar.read( org, readVar.getShape() ).copyTo1DJavaArray();
 
     assertArrayEquals( data, readdata );
+    ncf.close();
   }
 
   @Test
@@ -168,6 +173,7 @@ public class BytePaddingTest
     byte[] readdata = (byte[]) readVar.read( org, readVar.getShape() ).copyTo1DJavaArray();
 
     assertArrayEquals( data, readdata );
+    ncf.close();
   }
 
   @Test
@@ -210,6 +216,7 @@ public class BytePaddingTest
     byte[] readdata = (byte[]) readVar.read( org, readVar.getShape() ).copyTo1DJavaArray();
 
     assertArrayEquals( data, readdata );
+    ncf.close();
   }
 
   @Test
@@ -264,6 +271,7 @@ public class BytePaddingTest
     byte[] readdata = (byte[]) readVar.read( org, readVar.getShape() ).copyTo1DJavaArray();
 
     assertArrayEquals( data, readdata );
+    ncf.close();
   }
 
   @Test
@@ -306,6 +314,7 @@ public class BytePaddingTest
     char[] readdata = (char[]) readVar.read( org, readVar.getShape() ).copyTo1DJavaArray();
 
     assertArrayEquals( data, readdata );
+    ncf.close();
   }
 
   @Test
@@ -363,6 +372,7 @@ public class BytePaddingTest
     char[] readdata = (char[]) readVar.read( org, readVar.getShape() ).copyTo1DJavaArray();
 
     assertArrayEquals( data, readdata );
+    ncf.close();
   }
 
   @Test
@@ -405,6 +415,7 @@ public class BytePaddingTest
     short[] readdata = (short[]) readVar.read( org, readVar.getShape() ).copyTo1DJavaArray();
 
     assertArrayEquals( data, readdata );
+    ncf.close();
   }
 
   @Test
@@ -462,6 +473,7 @@ public class BytePaddingTest
     short[] readdata = (short[]) readVar.read( org, readVar.getShape() ).copyTo1DJavaArray();
 
     assertArrayEquals( data, readdata );
+    ncf.close();
   }
 
   @Test
@@ -505,12 +517,13 @@ public class BytePaddingTest
     byte[] readdata = (byte[]) inv.read( org, inv.getShape() ).copyTo1DJavaArray();
 
     assertArrayEquals( data, readdata );
+    ncf.close();
   }
 
   @Test
   public void checkReadWithPaddingInVsize() throws IOException, InvalidRangeException
   {
-    File dataFile = new File( TestAll.testdataDir, "netcdf4/files/tst_small.nc");
+    File dataFile = new File( testdir, "files/tst_small.nc");
     NetcdfFile ncFile = NetcdfFile.open( dataFile.getPath(), null );
     Variable readVar = ncFile.findVariable( "Times" );
 
@@ -522,7 +535,7 @@ public class BytePaddingTest
   @Test
   public void checkReadWithoutPaddingInVsize() throws IOException, InvalidRangeException
   {
-    File dataFile = new File( TestAll.testdataDir, "netcdf4/files/tst_small_withoutPaddingInVsize.nc");
+    File dataFile = new File( testdir, "files/tst_small_withoutPaddingInVsize.nc");
     NetcdfFile ncFile = NetcdfFile.open( dataFile.getPath(), null );
     Variable readVar = ncFile.findVariable( "Times" );
 

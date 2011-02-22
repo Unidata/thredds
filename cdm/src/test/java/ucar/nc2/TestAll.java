@@ -62,7 +62,7 @@ public class TestAll {
    * Old test data directory. may have cruft in it
    * Unidata "//fileserver/data/testdata2" directory.
    */
-  public static String testdataDir = null;
+  private static String testdataDir = null;
 
   /**
    * New test data directory. do not put temprory files in here. migrate all test data here eventually

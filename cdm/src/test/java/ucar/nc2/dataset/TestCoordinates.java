@@ -72,6 +72,7 @@ public class TestCoordinates extends TestCase {
     assert v instanceof CoordinateAxis1D;
     assert null != ncd.findDimension("ensemble");
     assert v.getDimension(0) == ncd.findDimension("ensemble");
+    ncd.close();
   }
 
 
@@ -92,6 +93,7 @@ public class TestCoordinates extends TestCase {
     while (ii.hasNext()) {
       assert Math.abs(ii.getDoubleNext()) < 180 : ii.getDoubleCurrent();
     }
+    ncd.close();
   }
 
   // from tom kunicki 1/3/11

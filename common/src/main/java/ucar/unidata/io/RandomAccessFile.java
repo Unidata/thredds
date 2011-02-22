@@ -77,6 +77,14 @@ public class RandomAccessFile implements DataInput, DataOutput {
 
   // debug leaks - keep track of open files
 
+
+  static protected boolean debugLeaks = false;
+  static protected boolean debugAccess = false;
+  static protected Set<String> allFiles = new HashSet<String>();
+  static protected List<String> openFiles = Collections.synchronizedList(new ArrayList<String>());
+  static private AtomicInteger debug_nseeks = new AtomicInteger();
+  static private AtomicLong debug_nbytes = new AtomicLong();
+
   /**
    * Debugging, do not use.
    *
@@ -135,13 +143,6 @@ public class RandomAccessFile implements DataInput, DataOutput {
   static public long getDebugNbytes() {
     return (debug_nbytes == null) ? 0 : debug_nbytes.longValue();
   }
-
-  static protected boolean debugLeaks = false;
-  static protected boolean debugAccess = false;
-  static protected Set<String> allFiles = new HashSet<String>();
-  static protected List<String> openFiles = Collections.synchronizedList(new ArrayList<String>());
-  static private AtomicInteger debug_nseeks = new AtomicInteger();
-  static private AtomicLong debug_nbytes = new AtomicLong();
 
   static protected boolean showOpen = false;
   static protected boolean showRead = false;
@@ -257,14 +258,19 @@ public class RandomAccessFile implements DataInput, DataOutput {
    */
   public RandomAccessFile(String location, String mode, int bufferSize) throws IOException {
     this.location = location;
+    if (debugLeaks) {
+      allFiles.add(location);
+      if ((location.indexOf("01janN") >= 0) || (location.indexOf("02febN") >= 0))
+        System.out.printf("HEY!%n");
+    }
+
     this.file = new java.io.RandomAccessFile(location, mode);
     this.readonly = mode.equals("r");
     init(bufferSize);
+
     if (debugLeaks) {
       openFiles.add(location);
-      allFiles.add(location);
-      if (showOpen)
-        System.out.println("  open " + location);
+      if (showOpen) System.out.println("  open " + location);
     }
   }
 

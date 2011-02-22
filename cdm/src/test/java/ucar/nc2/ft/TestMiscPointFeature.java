@@ -171,5 +171,7 @@ public class TestMiscPointFeature extends TestCase {
         System.out.println("el = " + el);
       }
     }
+    pods.close();
   }
+
 }

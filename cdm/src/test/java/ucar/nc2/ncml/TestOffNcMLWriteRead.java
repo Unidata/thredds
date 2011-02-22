@@ -55,7 +55,7 @@ public class TestOffNcMLWriteRead extends TestCase {
   }
 
   private ArrayList<String> files;
-  private String datadir = TestAll.testdataDir + "grid/netcdf/";
+  private String datadir = TestAll.cdmUnitTestDir + "conventions/";
 
   public void setUp() {
     files = new ArrayList<String>();

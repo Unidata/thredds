@@ -54,7 +54,7 @@ public class TestOffNcMLWriteReadwithCoords extends TestCase {
   }
 
   private ArrayList<String> files;
-  private String griddir = TestAll.testdataDir + "grid/netcdf/";
+  private String griddir = TestAll.cdmUnitTestDir + "conventions/";
 
   public void setUp() {
     files = new ArrayList<String>();
@@ -71,15 +71,15 @@ public class TestOffNcMLWriteReadwithCoords extends TestCase {
     files.add( griddir+"wrf/wrfout_v2_Lambert.nc");
     files.add( griddir+"atd-radar/SPOL_3Volumes.nc"); // 
 
-    files.add( TestAll.testdataDir + "grid/grib/grib2/data/eta2.wmo"); //
-    files.add( TestAll.testdataDir + "grid/grib/grib2/data/ndfd.wmo"); //
+    files.add( TestAll.cdmUnitTestDir + "formats/grib2/eta2.wmo"); //
+    files.add( TestAll.cdmUnitTestDir + "formats/grib2/ndfd.wmo"); //
 
-    files.add( TestAll.testdataDir + "satellite/gini/n0r_20041013_1852-compress"); //
-    files.add( TestAll.testdataDir + "satellite/gini/ntp_20041206_2154"); //
-    files.add( TestAll.testdataDir + "satellite/dmsp/F14200307192230.n.OIS"); //
+    files.add( TestAll.cdmUnitTestDir + "formats/gini/n0r_20041013_1852-compress"); //
+    files.add( TestAll.cdmUnitTestDir + "formats/gini/ntp_20041206_2154"); //
+    files.add( TestAll.cdmUnitTestDir + "formats/dmsp/F14200307192230.n.OIS"); //
 
-    files.add( TestAll.testdataDir + "radar/nexrad/level2/6500KHGX20000610_000110"); // */
-    files.add( TestAll.testdataDir + "radar/nexrad/level2/Level2_KYUX_20060527_2335.ar2v");
+    files.add( TestAll.cdmUnitTestDir + "formats/nexrad/level2/6500KHGX20000610_000110"); // */
+    files.add( TestAll.cdmUnitTestDir + "formats/nexrad/level2/Level2_KYUX_20060527_2335.ar2v");
   }
 
 
@@ -90,7 +90,7 @@ public class TestOffNcMLWriteReadwithCoords extends TestCase {
   }
 
   public void testOne() throws Exception  {
-    convertAsNcdataset(TestAll.testdataDir + "radar/nexrad/level2/6500KHGX20000610_000110");
+    convertAsNcdataset(TestAll.cdmUnitTestDir + "formats/nexrad/level2/6500KHGX20000610_000110");
   }
 
   private void convertAsNcdataset(String location) throws IOException {

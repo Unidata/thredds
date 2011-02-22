@@ -48,9 +48,7 @@ import java.io.File;
  * @author edavis
  * @since Feb 22, 2005T22:33:51 PM
  */
-public class TestSimpleTrajectoryObsDataset extends TestCase
-{
-  private TrajectoryObsDataset me;
+public class TestSimpleTrajectoryObsDataset extends TestCase {
 
   private String testFilePath = TestTrajectoryObsDataset.getTestDataDir() + "/trajectory/aircraft";
   private String testDataFileName = "uw_kingair-2005-01-19-113957.nc";
@@ -72,6 +70,9 @@ public class TestSimpleTrajectoryObsDataset extends TestCase
     String location = testFilePath + "/" + testDataFileName;
     assertTrue( "Test file <" + location + "> does not exist.",
                 new File( location).exists());
+
+    TrajectoryObsDataset me = null;
+
     try
     {
       StringBuilder errlog = new StringBuilder();
@@ -111,12 +112,17 @@ public class TestSimpleTrajectoryObsDataset extends TestCase
                                                    expStartLon, expEndLon,
                                                    expStartElev, expEndElev );
     TestTrajectoryObsDataset.testTrajInfo( me, trajDsInfo );
+
+    me.close();
   }
 
   public void testSimple_WMI_Lear() throws IOException {
     String location = testFilePath + "/" + test_WMI_Lear_FileName;
     assertTrue( "Test file <" + location + "> does not exist.",
                 new File( location ).exists() );
+
+    TrajectoryObsDataset me = null;
+
     try
     {
       StringBuilder errlog = new StringBuilder();
@@ -156,6 +162,8 @@ public class TestSimpleTrajectoryObsDataset extends TestCase
                                                           expStartLon, expEndLon,
                                                           expStartElev, expEndElev );
     TestTrajectoryObsDataset.testTrajInfo( me, trajDsInfo );
+
+    me.close();
   }
 }
 

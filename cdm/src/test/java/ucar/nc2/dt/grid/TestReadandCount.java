@@ -49,8 +49,6 @@ import java.io.IOException;
 /** Count geogrid objects - sanity check when anything changes. */
 
 public class TestReadandCount extends TestCase {
-  public final String grib1dir = "cdmUnitTest/formats/grib1/";
-  public final String grib2dir = "cdmUnitTest/formats/grib2/";
 
   private static boolean show = false, showCount = true;
 
@@ -58,7 +56,9 @@ public class TestReadandCount extends TestCase {
     super(name);
   }
 
-  private String griddir = TestAll.testdataDir +"grid/netcdf/";
+  private String griddir = TestAll.cdmUnitTestDir +"conventions/";
+  private String grib1dir = TestAll.cdmUnitTestDir +"formats/grib1/";
+  private String grib2dir = TestAll.cdmUnitTestDir +"formats/grib2/";
 
   public void testRead1() throws Exception {
     doOne(griddir+"avhrr/","amsr-avhrr-v2.20040729.nc", 0, 1, 4, 0);
@@ -120,23 +120,23 @@ public class TestReadandCount extends TestCase {
     doOne(griddir+"ifps/","HUNGrids.netcdf", 26, 26, 29, 0); // *
 
     // our grib reader */
-    doOne(TestAll.testdataDir + grib1dir ,"AVN.wmo", 22, -1, -1, -1);
-    doOne(TestAll.testdataDir + grib1dir,"RUC_W.wmo", 44,-1, -1, -1);
-    doOne(TestAll.testdataDir  + grib1dir,"NOGAPS-Temp-Regional.grib", 1, -1, -1, -1);  // */
+    doOne( grib1dir ,"AVN.wmo", 22, -1, -1, -1);
+    doOne( grib1dir,"RUC_W.wmo", 44,-1, -1, -1);
+    doOne( grib1dir,"NOGAPS-Temp-Regional.grib", 1, -1, -1, -1);  // */
 
-    doOne(TestAll.testdataDir  + grib1dir,"eta.Y.Q.wmo", 25, -1, -1, -1);
-    doOne(TestAll.testdataDir + grib2dir,"ndfd.wmo", 1, -1, -1, -1);
+    doOne( grib1dir,"eta.Y.Q.wmo", 25, -1, -1, -1);
+    doOne( grib2dir,"ndfd.wmo", 1, -1, -1, -1);
 
       // radar mosaic
-    doOne(TestAll.testdataDir + grib1dir,"radar_national.grib", 1, 1, 3, 0);
-    doOne(TestAll.testdataDir + grib1dir,"radar_regional.grib", 1, 1, 3, 0);
+    doOne( grib1dir,"radar_national.grib", 1, 1, 3, 0);
+    doOne( grib1dir,"radar_regional.grib", 1, 1, 3, 0);
 
     // redo grib files, forcing new index
     GribGridServiceProvider.forceNewIndex( true );
-    doOne(TestAll.testdataDir + grib1dir,"AVN.wmo", 22, -1, -1, -1);
-    doOne(TestAll.testdataDir + grib1dir,"RUC_W.wmo", 44, -1, -1, -1);
-    doOne(TestAll.testdataDir + grib1dir,"eta.Y.Q.wmo", 25, -1, -1, -1);
-    doOne(TestAll.testdataDir + grib2dir,"ndfd.wmo", 1, -1, -1, -1);
+    doOne( grib1dir,"AVN.wmo", 22, -1, -1, -1);
+    doOne( grib1dir,"RUC_W.wmo", 44, -1, -1, -1);
+    doOne( grib1dir,"eta.Y.Q.wmo", 25, -1, -1, -1);
+    doOne( grib2dir,"ndfd.wmo", 1, -1, -1, -1);
     GribGridServiceProvider.forceNewIndex( false );
   }
 
@@ -186,8 +186,8 @@ public class TestReadandCount extends TestCase {
   }
 
   public void utestProblem() throws Exception {
-    doOne(TestAll.testdataDir  + grib1dir,"eta.Y.Q.wmo", 25, -1, -1, -1);
-    doOne(TestAll.testdataDir + grib2dir,"ndfd.wmo", 1, -1, -1, -1);
+    doOne( grib1dir,"eta.Y.Q.wmo", 25, -1, -1, -1);
+    doOne( grib2dir,"ndfd.wmo", 1, -1, -1, -1);
   }
 
   public void utestReadNcMLInputStream() throws Exception {
@@ -218,7 +218,7 @@ public class TestReadandCount extends TestCase {
    public static void main( String arg[]) throws Exception {
      // new TestReadandCount("dummy").doOne("C:/data/conventions/wrf/","wrf.nc", 33, 5, 7, 7);  // missing TSLB
      //new TestReadandCount("dummy").testRead();  // missing TSLB
-     doOne(TestAll.testdataDir + "grid/grib/grib1/data/","AVN.wmo", 22, -1, -1, -1);
+     //doOne(TestAll.testdataDir + "grid/grib/grib1/data/","AVN.wmo", 22, -1, -1, -1);
 
   }
 
