@@ -454,7 +454,12 @@ is =  new StringBufferInputStream (contents); */
     } else if (stream != null) {
       command.process(stream);
     } else { // assume url is remote
-      openConnection(urlString + ".das" + projString + selString, command);
+      try {
+          openConnection(urlString + ".das" + projString + selString, command);
+      } catch (DAP2Exception de) {
+          if(de.getErrorCode() != DAP2Exception.NO_SUCH_FILE)
+              throw de;  // rethrow
+      }
     }
     return command.das;
   }

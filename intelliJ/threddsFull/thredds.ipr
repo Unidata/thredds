@@ -744,7 +744,7 @@
         <inspection_tool class="ObjectNotify" enabled="true" level="WARNING" enabled_by_default="true" />
         <inspection_tool class="ObjectToString" enabled="true" level="WARNING" enabled_by_default="true" />
         <inspection_tool class="ObsoleteCollection" enabled="true" level="WARNING" enabled_by_default="true">
-          <option name="ignoreRequiredObsoleteCollectionTypes" value="false" />
+          <option name="ignoreLibraryArguments" value="false" />
         </inspection_tool>
         <inspection_tool class="OctalAndDecimalIntegersMixed" enabled="true" level="WARNING" enabled_by_default="true" />
         <inspection_tool class="OneButtonGroup" enabled="false" level="WARNING" enabled_by_default="false" />
@@ -1129,9 +1129,6 @@
       <module fileurl="file://$PROJECT_DIR$/tds.iml" filepath="$PROJECT_DIR$/tds.iml" />
       <module fileurl="file://$PROJECT_DIR$/ui.iml" filepath="$PROJECT_DIR$/ui.iml" />
     </modules>
-  </component>
-  <component name="ProjectResources">
-    <default-html-doctype>http://www.w3.org/1999/xhtml</default-html-doctype>
   </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_1_6" assert-keyword="true" jdk-15="true" project-jdk-name="1.6" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/../../../target/classes" />

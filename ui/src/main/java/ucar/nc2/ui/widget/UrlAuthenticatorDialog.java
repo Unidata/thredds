@@ -110,7 +110,7 @@ public class UrlAuthenticatorDialog extends Authenticator implements Credentials
       return provider.getCredentials(scope);
   } */
 
-    // java.net calls this:
+    // java.net calls this:                           g
   protected PasswordAuthentication getPasswordAuthentication() {
 
     if (debug) {

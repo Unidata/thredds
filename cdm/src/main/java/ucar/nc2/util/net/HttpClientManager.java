@@ -114,7 +114,6 @@ public class HttpClientManager {
 
       session = new HTTPSession();
       HTTPMethod m = session.newMethodPut(urlString);
-      //fix m.setDoAuthentication( true );
 
       m.setRequestContentAsString(content);
 

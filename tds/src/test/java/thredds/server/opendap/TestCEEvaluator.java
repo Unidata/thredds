@@ -90,7 +90,7 @@ public class TestCEEvaluator extends TestCase
     static final String TITLE = "DAP CEEvaluator Tests";
 
     //////////////////////////////////////////////////
-    boolean debug = true;
+    boolean debug = false;
 
     boolean generate = false;
 

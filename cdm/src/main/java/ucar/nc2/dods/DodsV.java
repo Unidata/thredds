@@ -123,6 +123,12 @@ class DodsV implements Comparable {
       } else if (bt instanceof DArray) {
         DArray da = (DArray) bt;
 
+        // Check to see if the array has any zero-length dimension; if so then ignore
+        for(Enumeration e = da.getDimensions();e.hasMoreElements();) {
+            DArrayDimension dim = (DArrayDimension)e.nextElement();
+            if(dim.getSize() <= 0) return;
+        }
+
         BaseType elemType = da.getPrimitiveVector().getTemplate();
         dodsV.bt = elemType;
         dodsV.darray = da;

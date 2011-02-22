@@ -297,7 +297,6 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
 
       try {
         method = httpClient.newMethodGet(sbuff.toString());
-        method.setFollowRedirects(true);
         int statusCode = method.execute();
 
         if (statusCode == 404)

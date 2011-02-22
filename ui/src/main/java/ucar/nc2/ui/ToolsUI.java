@@ -34,6 +34,7 @@
 package ucar.nc2.ui;
 
 import opendap.dap.http.HTTPSession;
+import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import thredds.inventory.FeatureCollectionConfig;
 import ucar.nc2.dt.grid.NetcdfCFWriter;
 import ucar.nc2.stream.NcStreamWriter;
@@ -84,6 +85,7 @@ import thredds.inventory.bdb.MetadataManager;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
+import java.net.Authenticator;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.channels.WritableByteChannel;
@@ -5248,17 +5250,19 @@ public class ToolsUI extends JPanel {
     frame.setBounds(bounds);
     frame.setVisible(true);
 
+    UrlAuthenticatorDialog provider = new UrlAuthenticatorDialog(frame);
+    HTTPSession.setGlobalCredentialsProvider(provider);
+    HTTPSession.setGlobalUserAgent("ToolsUI");
+
     // set Authentication for accessing passsword protected services like TDS PUT
-    java.net.Authenticator.setDefault(new UrlAuthenticatorDialog(frame));
+      //java.net.Authenticator.setDefault(new UrlAuthenticatorDialog(frame));
+      java.net.Authenticator.setDefault(provider);
 
     // open dap initializations
     ucar.nc2.dods.DODSNetcdfFile.setAllowCompression(true);
     ucar.nc2.dods.DODSNetcdfFile.setAllowSessions(true);
 
-    // use HTTPClient - could use bean wiring here
-    CredentialsProvider provider = new UrlAuthenticatorDialog(frame);
-    HTTPSession.setGlobalCredentialsProvider(provider);
-    HTTPSession.setGlobalUserAgent("ToolsUI");
+
     /* No longer needed
     HttpClient client = HttpClientManager.init(provider, "ToolsUI");
     opendap.dap.DConnect2.setHttpClient(client);

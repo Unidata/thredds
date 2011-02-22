@@ -125,13 +125,12 @@ public Socket createSocket(
         int clientPort)
         throws IOException, UnknownHostException
 {
-
-    return getSSLContext().getSocketFactory().createSocket(
+    return createSocket(
             host,
             port,
             clientHost,
-            clientPort
-                                                          );
+            clientPort,
+            new HttpConnectionParams());
 }
 
 /**
@@ -161,16 +160,17 @@ public Socket createSocket(
         final HttpConnectionParams params
                           ) throws IOException, UnknownHostException, ConnectTimeoutException
 {
+
     if (params == null) {
         throw new IllegalArgumentException("Parameters may not be null");
     }
     int timeout = params.getConnectionTimeout();
     if (timeout == 0) {
-        return createSocket(host, port, localAddress, localPort);
+        //return createSocket(host, port, localAddress, localPort);
+        return createSocket(host, port);
     } else {
         // To be eventually deprecated when migrated to Java 1.4 or above
-        return ControllerThreadSocketFactory.createSocket(
-                this, host, port, localAddress, localPort, timeout);
+        return ControllerThreadSocketFactory.createSocket(this, host, port, localAddress, localPort, timeout);
     }
 }
 
@@ -182,8 +182,7 @@ public Socket createSocket(String host, int port)
 {
     return getSSLContext().getSocketFactory().createSocket(
             host,
-            port
-                                                          );
+            port);
 }
 
 /**
@@ -196,12 +195,12 @@ public Socket createSocket(
         boolean autoClose)
         throws IOException, UnknownHostException
 {
-    return getSSLContext().getSocketFactory().createSocket(
+
+       return getSSLContext().getSocketFactory().createSocket(
             socket,
             host,
             port,
-            autoClose
-                                                          );
+            autoClose);
 }
 
 /**
@@ -222,59 +221,33 @@ private static KeyStore createKeyStore(final File keystorefile, final String pas
     return keystore;
 }
 
-private static KeyManager[] createKeyManagers(final KeyStore keystore, final String password)
-        throws KeyStoreException, NoSuchAlgorithmException, UnrecoverableKeyException
-{
-    KeyManagerFactory kmfactory = KeyManagerFactory.getInstance(
-            KeyManagerFactory.getDefaultAlgorithm());
-    kmfactory.init(keystore, password != null ? password.toCharArray() : null);
-    return kmfactory.getKeyManagers();
-}
-
-private static TrustManager[] createTrustManagers(final KeyStore keystore)
-        throws KeyStoreException, NoSuchAlgorithmException
-{
-    return new TrustManager[]{new EasyX509TrustManager(keystore)};
-}
-
 private SSLContext createSSLContext()  throws HTTPException
 {
-    boolean orig = true;
-    boolean esg = true;
     try {
         KeyManager[] keymanagers = null;
         KeyStore keystore = null;
+        KeyStore truststore = null;
         TrustManager[] trustmanagers = null;
-        String keystorepath = null;
-        String keystorepassword = null;
 
-        if(!orig) {
-            keystorepath = System.getProperty("keystore");
-            keystorepassword = System.getProperty("keystorepassword");
-        }
-        if(keystorepassword != null) {
-            keystorepassword = keystorepassword.trim();
-            if(keystorepassword.length() == 0) keystorepassword = null;
-        }
+        String keypassword = getpassword("key");
+        String keypath = getstorepath("key");
+        String trustpassword = getpassword("trust");
+        String trustpath = getstorepath("trust");
 
-        if(keystorepath != null && keystorepassword != null) {
-            File keystorefile = new File(keystorepath);
-            if(!keystorefile.canRead())
-                throw new HTTPException("Cannot read specified keystore:"+keystorefile.getAbsolutePath());
-            keystore = KeyStore.getInstance("JKS");
-            InputStream is = null;
-            try {
-                is = new FileInputStream(keystorefile);
-                keystore.load(is, keystorepassword.toCharArray());
-            } finally {
-                if (is != null) is.close();
-            }
+        keystore = buildstore(keypath, keypassword, "key");
+        if(keystore != null) {
             KeyManagerFactory kmfactory = KeyManagerFactory.getInstance("SunX509");
-            kmfactory.init(keystore, keystorepassword.toCharArray());
+            kmfactory.init(keystore, keypassword.toCharArray());
             keymanagers = kmfactory.getKeyManagers();
         }
-        trustmanagers = new TrustManager[]{new EasyX509TrustManager(keystore)};
 
+        truststore = buildstore(trustpath, trustpassword,"trust");
+        if(truststore != null) {
+            //TrustManagerFactory trfactory = TrustManagerFactory.getInstance("SunX509");
+            //trfactory.init(truststore, trustpassword.toCharArray());
+            //trustmanagers = trfactory.getTrustManagers();
+            trustmanagers = new TrustManager[]{new EasyX509TrustManager(truststore)};
+        }
         SSLContext sslcontext = SSLContext.getInstance("SSL");
         sslcontext.init(keymanagers, trustmanagers, null);
         return sslcontext;
@@ -289,8 +262,47 @@ private SSLContext createSSLContext()  throws HTTPException
         throw new HTTPException("I/O error reading keystore/truststore file: " + e.getMessage());
     }
 }
+    static String
+        getpassword(String prefix)
+        {
+            String password = System.getProperty(prefix + "storepassword");
+            if(password != null) {
+                password = password.trim();
+                if(password.length() == 0) password = null;
+            }
+                 return password;
+        }
 
-private SSLContext getSSLContext() throws HTTPException
+    static String
+        getstorepath(String prefix)
+        {
+                String path = System.getProperty(prefix + "store");
+           return path;
+        }
+
+    static KeyStore
+    buildstore(String path, String password, String prefix) throws HTTPException
+    {
+        KeyStore store = null;
+        try {
+            if(path != null && password != null) {
+            File storefile = new File(path);
+            if(!storefile.canRead())
+                throw new HTTPException("Cannot read specified "+prefix+"store:"+storefile.getAbsolutePath());
+            store = KeyStore.getInstance("JKS");
+            InputStream is = null;
+            try {
+                is = new FileInputStream(storefile);
+                store.load(is, password.toCharArray());
+            } finally {
+                if (is != null) is.close();
+            }
+            }
+        } catch (Exception e) {throw new HTTPException(e);}
+        return store;
+    }
+
+    private SSLContext getSSLContext() throws HTTPException
 {
     if (this.sslcontext == null) {
         this.sslcontext = createSSLContext();

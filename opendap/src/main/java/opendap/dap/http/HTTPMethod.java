@@ -29,7 +29,7 @@ public class HTTPMethod
      String uri = null;
      String uriEscaped = null;
      List<Header> headers = new ArrayList<Header>();
-     HttpMethodParams params = new HttpMethodParams();
+     HashMap<String,Object> params = new HashMap<String,Object>();
     HttpState context = null;
      boolean executed = false;
     protected boolean closed = false;
@@ -98,8 +98,8 @@ public class HTTPMethod
             } else if(this.content != null)
                 ((PostMethod)method).setRequestEntity(this.content);
             break;
-        case Get:
         case Head:
+        case Get:
         case Options:
         default:
             break;
@@ -120,8 +120,16 @@ public class HTTPMethod
                 for (Header h : headers)
                     method.addRequestHeader(h);
             }
-            if(session.globalmethodparams != null) method.setParams(session.globalmethodparams);
-            if(params != null) method.setParams(params);
+            if (session.globalmethodparams != null) {
+                HttpMethodParams hmp = method.getParams();
+                for (String key : session.globalmethodparams.keySet())
+                    hmp.setParameter(key,session.globalmethodparams.get(key));
+            }
+            if (params != null) {
+                HttpMethodParams hmp = method.getParams();
+                for (String key : params.keySet())
+                    hmp.setParameter(key,params.get(key));
+            }
             setcontent();
             session.sessionClient.executeMethod(method);
             return getStatusCode();
@@ -357,9 +365,7 @@ public class HTTPMethod
 
     public void setRequestParameter(String name, Object value)
     {
-        if (params == null)
-            params = new HttpMethodParams();
-        params.setParameter(name, value);
+        params.put(name, value);
     }
 
     public Object getMethodParameter(String key)
@@ -451,10 +457,7 @@ public class HTTPMethod
        return e;
     }
 
-
-
     // Convenience methods to minimize changes elsewhere
-
 
     public void setFollowRedirects(boolean tf)
     {

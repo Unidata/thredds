@@ -710,7 +710,6 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     HTTPMethod method = null;
     try {
       method = session.newMethodHead(location);
-      method.setFollowRedirects(true);
       int statusCode = method.execute();
       if (statusCode >= 300) {
         if (statusCode == 401)
@@ -737,8 +736,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   static private ServiceType checkIfDods(HTTPSession session, String location) throws IOException {
     HTTPMethod method = null;
     try {
-      method = session.newMethodHead(location + ".dds");
-      method.setFollowRedirects(true);
+      // For some reason, the head method is not using credentials
+        // method = session.newMethodHead(location + ".dds");
+      method = session.newMethodGet(location + ".dds");
       int status = method.execute();
       if (status == 200) {
         Header h = method.getResponseHeader("Content-Description");

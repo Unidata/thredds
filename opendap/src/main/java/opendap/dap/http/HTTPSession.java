@@ -10,6 +10,7 @@ import org.apache.commons.httpclient.protocol.Protocol;
 import java.net.Authenticator;
 import java.net.PasswordAuthentication;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 
@@ -65,7 +66,7 @@ public class HTTPSession
         connmgr = new MultiThreadedHttpConnectionManager();
         setThreadCount(DFALTTHREADCOUNT);
         // allow self-signed certificates
-        Protocol.registerProtocol("https", new Protocol("https", new EasySSLProtocolSocketFactory(), 8443));
+        Protocol.registerProtocol("https", new Protocol("https", new EasySSLProtocolSocketFactory(), 443));
         sessionList = new ArrayList<HTTPSession>(); // see kill function
     }
 
@@ -74,7 +75,7 @@ public class HTTPSession
         Get("get"), Head("head"), Put("put"), Post("post"), Options("options");
         private final String name;
         Methods(String name) {this.name = name;}
-        public String getName() {return name;}
+        public String getName() {return name;}                                              
     }
 
     public static synchronized CredentialsProvider getGlobalCredentialsProvider()
@@ -90,11 +91,6 @@ public class HTTPSession
     public static synchronized void setGlobalUserAgent(String _userAgent)
     {
         globalAgent = _userAgent;
-        if(globalAgent != null) {
-	    for(HTTPSession session: sessionList) {
-		session.setUserAgent(globalAgent);
-	    }
-	}
     }
 
     public static String getGlobalUserAgent()
@@ -137,7 +133,7 @@ public class HTTPSession
     boolean closed = false;
     // Track Method sets
     String useragent = null;
-    HttpMethodParams globalmethodparams = new HttpMethodParams();
+    HashMap<String,Object> globalmethodparams = new HashMap<String,Object>();
     String identifier = "Session";
 
     public HTTPSession() throws opendap.dap.http.HTTPException
@@ -156,7 +152,8 @@ public class HTTPSession
 
 	  if(globalProvider != null && sessionClient != null) {
 	     sessionClient.getParams().setParameter(CredentialsProvider.PROVIDER, globalProvider);
-          }
+         //sessionClient.getParams().setAuthenticationPreemptive(true);
+      }
 	  if(useragent != null && sessionClient != null) {
 	     sessionClient.getParams().setParameter(USER_AGENT, useragent);
           }
@@ -195,9 +192,7 @@ public class HTTPSession
 
     public void setGlobalMethodParameter(String name, Object value)
         {
-            if (globalmethodparams == null)
-                globalmethodparams = new HttpMethodParams();
-            globalmethodparams.setParameter(name, value);
+            globalmethodparams.put(name, value);
         }
 
 
@@ -235,7 +230,6 @@ public class HTTPSession
         addMethod(method);
 
         // method.setState(sessionState);
-        method.setFollowRedirects(true);
         return method;
     }
 
@@ -283,7 +277,7 @@ public class HTTPSession
 
     public void setProxy()
     {
-	if(sessionClient == null) return;
+	    if(sessionClient == null) return;
 
         String host = System.getProperty("http.proxyHost");
         String port = System.getProperty("http.proxyPort");
