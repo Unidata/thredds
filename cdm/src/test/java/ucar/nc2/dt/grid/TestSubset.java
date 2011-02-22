@@ -60,7 +60,7 @@ public class TestSubset extends TestCase {
   }
 
   public void testRegular() throws Exception {
-    ucar.nc2.dt.grid.GridDataset dataset = GridDataset.open(TestAll.cdmUnitTestDir + "grid/03061219_ruc.nc");
+    ucar.nc2.dt.grid.GridDataset dataset = GridDataset.open(TestAll.cdmUnitTestDir + "conventions/nuwg/03061219_ruc.nc");
 
     GeoGrid grid = dataset.findGridByName("T");
     assert null != grid;

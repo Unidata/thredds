@@ -49,7 +49,7 @@ public class TestOffAggDirectory extends TestCase {
   }
 
   public void testNcmlDirect() throws IOException {
-    String filename = "file:" + TestAll.cdmUnitTestDir + "ncml/nc/seawifs/aggDirectory.xml";
+    String filename = "file:" + TestAll.cdmUnitTestDir + "ncml/nc/seawifs/aggDirectory.ncml";
 
     NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
     System.out.println(" TestNcmlAggDirectory.open "+ filename);
@@ -63,7 +63,7 @@ public class TestOffAggDirectory extends TestCase {
   }
 
   public void testNcmlDataset() throws IOException {
-    String filename = "file:" + TestAll.cdmUnitTestDir + "ncml/nc/seawifs/aggDirectory.xml";
+    String filename = "file:" + TestAll.cdmUnitTestDir + "ncml/nc/seawifs/aggDirectory.ncml";
 
     NetcdfFile ncfile = NetcdfDataset.openDataset( filename, true, null);
     System.out.println(" TestNcmlAggExisting.openDataset "+ filename);
@@ -77,7 +77,7 @@ public class TestOffAggDirectory extends TestCase {
   }
 
   public void testNcmlGrid() throws IOException {
-    String filename = "file:" + TestAll.cdmUnitTestDir + "ncml/nc/seawifs/aggDirectory.xml";
+    String filename = "file:" + TestAll.cdmUnitTestDir + "ncml/nc/seawifs/aggDirectory.ncml";
 
     GridDataset gds = GridDataset.open( filename);
     System.out.println(" TestNcmlAggExisting.openGrid "+ filename);

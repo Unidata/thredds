@@ -51,7 +51,7 @@ public class TestOffAggDirDateFormat extends TestCase {
   }
 
   public void testNcmlGrid() throws IOException {
-    String filename = "file:"+TestAll.cdmUnitTestDir + "formats/gini/aggDateFormat.xml";
+    String filename = "file:"+TestAll.cdmUnitTestDir + "formats/gini/aggDateFormat.ncml";
 
     GridDataset gds = ucar.nc2.dt.grid.GridDataset.open( filename);
     System.out.println(" TestNcmlAggDirDateFormat.openGrid "+ filename);
@@ -80,7 +80,7 @@ public class TestOffAggDirDateFormat extends TestCase {
     Dimension timeDim = ncfile.findDimension("time");
     assert null != timeDim;
     assert timeDim.getName().equals("time");
-    assert timeDim.getLength() == 12 : timeDim.getLength() +"!="+ 12;
+    assert timeDim.getLength() == 15 : timeDim.getLength() +"!="+ 15;
   }
 
 

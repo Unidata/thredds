@@ -106,10 +106,10 @@ public class TestStationDataset extends TestCase {
     testAllMethods( topDir+"madis/metar.20040604_1600.nc");
     testAllMethods( topDir+"madis/sao.20040604_2100.nc");
     testAllMethods( topDir+"madis/mesonet1.20050502_2300");
-    testAllMethods( topDir+"madis/coop.20040824_0900.gz");
-    testAllMethods( topDir+"madis/hydro.20040824_0400.gz");
-    testAllMethods( topDir+"madis/maritime.20040824_1000.gz");
-    testAllMethods( topDir+"madis/radiometer.20040824_1000.gz");
+    testAllMethods( topDir+"madis/coop.20040824_0900");
+    testAllMethods( topDir+"madis/hydro.20040824_0400");
+    testAllMethods( topDir+"madis/maritime.20040824_1000");
+    testAllMethods( topDir+"madis/radiometer.20040824_1000");
   }
 
   public void utestMadisAll() throws IOException {

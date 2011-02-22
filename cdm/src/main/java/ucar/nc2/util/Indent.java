@@ -69,7 +69,7 @@ public class Indent {
   public void setIndentLevel(int level) {
     this.level = level;
     if (level * nspaces >= blanks.length())
-      System.out.printf("HEY!%n");
+      System.out.printf("HEY setIndentLevel!%n");
     int end = Math.min(level * nspaces, blanks.length());
     indent = blanks.substring(0, end);
   }

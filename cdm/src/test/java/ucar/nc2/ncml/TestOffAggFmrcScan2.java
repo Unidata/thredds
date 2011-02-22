@@ -76,8 +76,8 @@ public class TestOffAggFmrcScan2 extends TestCase {
     ncfile.close();
   }
 
-  public void testOpenNomads() throws Exception {
-    String dataDir = TestAll.cdmUnitTestDir + "fmrc/nomads/";
+  public void utestOpenNomads() throws Exception {
+    String dataDir = TestAll.cdmUnitTestDir + "ft/fmrc/nomads/";
     String ncml =
       "<?xml version='1.0' encoding='UTF-8'?>\n" +
       "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n" +
@@ -113,7 +113,7 @@ public class TestOffAggFmrcScan2 extends TestCase {
   }
 
   public static void main(String[] args) throws IOException {
-    String fname = "D:/work/signell/rtofs/rtofs.ncml";
+    String fname = TestAll.cdmUnitTestDir + "ft/fmrc/rtofs/rtofs.ncml";
     NetcdfFile ncfile = NetcdfDataset.openDataset(fname);
     TestAll.readAllData(ncfile);
     ncfile.close();

@@ -53,7 +53,7 @@ public class TestConventions extends TestCase {
   }
 
   public void testWRF() throws IOException {
-    testWRF(TestAll.cdmUnitTestDir + "conventions/wrf/wrf2.nc");
+    testWRF(TestAll.cdmUnitTestDir + "conventions/wrf/wrf-ver1.3.nc");
   }
 
   private void testWRF(String location) throws IOException {

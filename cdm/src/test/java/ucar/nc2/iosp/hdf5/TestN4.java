@@ -82,7 +82,7 @@ public class TestN4 extends TestCase {
 
   public void testOpen() throws IOException {
     //H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
-    String filename = testDir+"nc4/tst_enums.nc";
+    String filename = testDir+"tst/tst_enums.nc";
     NetcdfFile ncfile = TestNC2.open(filename);
     System.out.println("\n**** testReadNetcdf4 done\n\n" + ncfile);
     List<Variable> vars = ncfile.getVariables();
@@ -122,7 +122,7 @@ public class TestN4 extends TestCase {
 
   public void testVlenStrings() throws IOException {
     //H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
-    String filename = testDir+"nc4/tst_strings.nc";
+    String filename = testDir+"tst/tst_strings.nc";
     NetcdfFile ncfile = TestNC2.open(filename);
     System.out.println("\n**** testReadNetcdf4 done\n\n" + ncfile);
     Variable v = ncfile.findVariable("measure_for_measure_var");

@@ -178,7 +178,7 @@ public class TestPointFeatureTypes extends TestCase {
     //int n = checkPointDataset(topdir + "cfPoint/station/kunicki.nc4", FeatureType.STATION, true);
     //System.out.printf("n=%d%n", n);
 
-    assert 1516 == checkPointDataset(topdir + "ft/point/Surface_Synoptic_20090921_0000.nc", FeatureType.POINT, false);
+    assert 1516 == checkPointDataset(topdir + "ft/point/netcdf/Surface_Synoptic_20090921_0000.nc", FeatureType.POINT, false);
     //System.out.printf("n=%d%n", n);
 
   }
@@ -224,31 +224,31 @@ public class TestPointFeatureTypes extends TestCase {
     assert 383 == checkPointDataset(topdir + "ft/trajectory/cosmic/wetPrf_C005.2007.294.16.22.G17_0001.0002_nc", FeatureType.TRAJECTORY, true);
 
     // ndbc
-    assert 1405 == checkPointDataset(topdir + "ft/station/nbdc/41001h1976.nc", FeatureType.STATION, false);
+    assert 1405 == checkPointDataset(topdir + "ft/station/ndbc/41001h1976.nc", FeatureType.STATION, false);
 
     // suomi
     assert 124 == checkPointDataset(topdir + "ft/station/suomi/suoHWV_2006.105.00.00.0060_nc", FeatureType.STATION, false);
     assert 4848 == checkPointDataset(topdir + "ft/station/suomi/gsuPWV_2006.105.00.00.1440_nc", FeatureType.STATION, false);
 
     // fsl wind profilers
-    assert 198 == checkPointDataset(topdir + "ft/station_profile/PROFILER_RASS_01hr_20091027_1500.nc", FeatureType.STATION_PROFILE, false);
-    assert 198 == checkPointDataset(topdir + "ft/station_profile/PROFILER_RASS_06min_20091028_2318.nc", FeatureType.STATION_PROFILE, false);
-    assert 1728 == checkPointDataset(topdir + "ft/station_profile/PROFILER_wind_01hr_20091024_1200.nc", FeatureType.STATION_PROFILE, false);
-    assert 2088 == checkPointDataset(topdir + "ft/station_profile/PROFILER_wind_06min_20091030_2330.nc", FeatureType.STATION_PROFILE, false);
+    assert 198 == checkPointDataset(topdir + "ft/stationProfile/PROFILER_RASS_01hr_20091027_1500.nc", FeatureType.STATION_PROFILE, false);
+    assert 198 == checkPointDataset(topdir + "ft/stationProfile/PROFILER_RASS_06min_20091028_2318.nc", FeatureType.STATION_PROFILE, false);
+    assert 1728 == checkPointDataset(topdir + "ft/stationProfile/PROFILER_wind_01hr_20091024_1200.nc", FeatureType.STATION_PROFILE, false);
+    assert 2088 == checkPointDataset(topdir + "ft/stationProfile/PROFILER_wind_06min_20091030_2330.nc", FeatureType.STATION_PROFILE, false);
 
     //gempack sounding
-    assert 8769 == checkPointDataset(TestAll.cdmUnitTestDir+"ft/sounding/19580807_upa.ncml", FeatureType.STATION_PROFILE, false);
+    assert 8769 == checkPointDataset(TestAll.cdmUnitTestDir+"ft/sounding/gempak/19580807_upa.ncml", FeatureType.STATION_PROFILE, false);
 
     // gempak surface
-    assert 3337 == checkPointDataset(topdir + "ft/point/2009103008_sb.gem", FeatureType.POINT, false);
-    assert 938 == checkPointDataset(topdir + "ft/point/2009110100_ship.gem", FeatureType.POINT, false);
-    assert 55856 == checkPointDataset(topdir + "ft/point/20091030_syn.gem", FeatureType.POINT, false);
-    assert 28328 == checkPointDataset(topdir + "ft/point/20091030_syn.gem", FeatureType.STATION, false);
+    assert 3337 == checkPointDataset(topdir + "ft/point/gempak/2009103008_sb.gem", FeatureType.POINT, false);
+    assert 938 == checkPointDataset(topdir + "ft/point/gempak/2009110100_ship.gem", FeatureType.POINT, false);
+    assert 55856 == checkPointDataset(topdir + "ft/point/gempak/20091030_syn.gem", FeatureType.POINT, false);
+    assert 28328 == checkPointDataset(topdir + "ft/point/gempak/20091030_syn.gem", FeatureType.STATION, false);
 
     // netcdf buoy / synoptic / metars ( robb's perl decoder output)
-    assert 7 == checkPointDataset(topdir + "ft/point/Surface_METAR_latest.nc", FeatureType.POINT, false);
-    assert 32452 == checkPointDataset(topdir + "ft/point/Surface_Buoy_20090921_0000.nc", FeatureType.POINT, false);
-    assert 1516 == checkPointDataset(topdir + "ft/point/Surface_Synoptic_20090921_0000.nc", FeatureType.POINT, false);
+    assert 7 == checkPointDataset(topdir + "ft/point/netcdf/Surface_METAR_latest.nc", FeatureType.POINT, false);
+    assert 32452 == checkPointDataset(topdir + "ft/point/netcdf/Surface_Buoy_20090921_0000.nc", FeatureType.POINT, false);
+    assert 1516 == checkPointDataset(topdir + "ft/point/netcdf/Surface_Synoptic_20090921_0000.nc", FeatureType.POINT, false);
 
     //RAF-Nimbus
     assert 7741 == checkPointDataset(topdir + "ft/trajectory/raf/135_ordrd.nc", FeatureType.TRAJECTORY, false);
@@ -256,9 +256,9 @@ public class TestPointFeatureTypes extends TestCase {
 
     // Madis
     assert 5063 == checkPointDataset(topdir + "ft/trajectory/acars/acars_20091109_0800.nc", FeatureType.TRAJECTORY, false);
-    assert 2499 == checkPointDataset(topdir + "ft/point/19981110_1200", FeatureType.POINT, false);
+    assert 2499 == checkPointDataset(topdir + "ft/point/netcdf/19981110_1200", FeatureType.POINT, false);
     assert 1374 == checkPointDataset(topdir + "ft/station/madis2/hydro/20050729_1200", FeatureType.STATION, false);
-    assert 1788 == checkPointDataset(topdir + "ft/sounding/20070612_1200", FeatureType.STATION_PROFILE, false);
+    assert 1788 == checkPointDataset(topdir + "ft/sounding/netcdf/20070612_1200", FeatureType.STATION_PROFILE, false);
 
     // FslRaob
     // assert 63 == checkPointDataset(TestAll.testdataDir + "sounding/netcdf/raob_soundings20216.cdf", FeatureType.STATION_PROFILE, false);
@@ -277,7 +277,7 @@ public class TestPointFeatureTypes extends TestCase {
   }
 
   public void testGempak() throws IOException {
-    assert 8769 == checkPointDataset(topdir+"ft/sounding/19580807_upa.ncml", FeatureType.STATION_PROFILE, false);
+    assert 8769 == checkPointDataset(topdir+"ft/sounding/gempak/19580807_upa.ncml", FeatureType.STATION_PROFILE, false);
     
     // (GEMPAK IOSP) stn = psuedoStruct, obs = multidim Structure, time(time) as extraJoin
     checkPointDataset(TestAll.cdmUnitTestDir + "formats/gempak/surface/19580807_sao.gem", FeatureType.STATION, true);

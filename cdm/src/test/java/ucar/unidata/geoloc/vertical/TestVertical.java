@@ -52,7 +52,7 @@ public class TestVertical extends TestCase {
   }
 
   public void testOceanS() throws java.io.IOException, InvalidRangeException {
-    GridDataset gds = ucar.nc2.dt.grid.GridDataset.open(TestAll.cdmUnitTestDir + "conventions/cf/roms_ocean_s_coordinate.nc");
+    GridDataset gds = ucar.nc2.dt.grid.GridDataset.open(TestAll.cdmUnitTestDir + "transforms/roms_ocean_s_coordinate.nc");
 
     GridDatatype grid = gds.findGridDatatype("temp");
     assert grid != null;
@@ -106,7 +106,7 @@ public class TestVertical extends TestCase {
   }
 
   public void testAtmSigma() throws java.io.IOException, InvalidRangeException {
-    GridDataset gds = ucar.nc2.dt.grid.GridDataset.open( TestAll.cdmUnitTestDir + "conventions/cf/temperature.nc");
+    GridDataset gds = ucar.nc2.dt.grid.GridDataset.open( TestAll.cdmUnitTestDir + "transforms/temperature.nc");
 
     GridDatatype grid = gds.findGridDatatype("Temperature");
     assert grid != null;

@@ -104,7 +104,7 @@ public class TestH5filter extends TestCase {
 
   public void testMissing() throws IOException {
     //H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
-    NetcdfFile ncfile = TestH5.openH5("eos/HIRDLS/HIRDLS2-AFGL_b027_na.he5");
+    NetcdfFile ncfile = TestH5.openH5("HIRDLS/HIRDLS2-AFGL_b027_na.he5");
 
     // picture looks ok in ToolsUI
     Variable v = ncfile.findVariable("HDFEOS/SWATHS/HIRDLS/Data Fields/Altitude");

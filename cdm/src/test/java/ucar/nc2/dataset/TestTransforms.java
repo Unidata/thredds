@@ -68,7 +68,7 @@ public class TestTransforms extends TestCase {
   }
 
   public void testHybridSigmaPressure2() throws IOException, InvalidRangeException {
-    String filename = TestAll.cdmUnitTestDir + "ft/grid/netcdf/cf/climo.cam2.h0.0000-09.nc";
+    String filename = testDir +  "climo.cam2.h0.0000-09.nc";
     NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset(filename);
     VerticalTransform vt = test(ncd, "lev", "T", "time", VerticalCT.Type.HybridSigmaPressure, HybridSigmaPressure.class, SimpleUnit.pressureUnit);
 
@@ -85,7 +85,7 @@ public class TestTransforms extends TestCase {
   }
 
   public void testHybridSigmaPressure3() throws IOException, InvalidRangeException {
-    String filename = TestAll.cdmUnitTestDir + "ft/grid/grib/grib1/ecmwf/HIRLAMhybrid.ncml";
+    String filename = testDir +  "HIRLAMhybrid.ncml";
     //String filename =   "/local/robb/data/grib/hybrid/HIRLAMhybrid.ncml";
     NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset(filename);
     VerticalTransform vt = test(ncd, "hybrid", "Relative_humidity", "time", VerticalCT.Type.HybridSigmaPressure, HybridSigmaPressure.class,
@@ -129,7 +129,7 @@ public class TestTransforms extends TestCase {
   }
 
   public void testWrf() throws IOException, InvalidRangeException {
-    String filename = TestAll.cdmUnitTestDir + "wrf/global.nc";
+    String filename = TestAll.cdmUnitTestDir + "conventions/wrf/global.nc";
     test(filename, "z", "T", "Time", VerticalCT.Type.WRFEta, WRFEta.class, SimpleUnit.pressureUnit);
     test(filename, "z", "U", "Time", VerticalCT.Type.WRFEta, WRFEta.class, SimpleUnit.pressureUnit);
     test(filename, "z", "V", "Time", VerticalCT.Type.WRFEta, WRFEta.class, SimpleUnit.pressureUnit);
@@ -137,7 +137,7 @@ public class TestTransforms extends TestCase {
   }
 
   public void testWrf2() throws IOException, InvalidRangeException {
-    String filename = TestAll.cdmUnitTestDir + "wrf/wrfout_mercator.nc";
+    String filename = TestAll.cdmUnitTestDir + "conventions/wrf/wrfout_mercator.nc";
     test(filename, "z", "T", "Time", VerticalCT.Type.WRFEta, WRFEta.class, SimpleUnit.pressureUnit);
     test(filename, "z", "U", "Time", VerticalCT.Type.WRFEta, WRFEta.class, SimpleUnit.pressureUnit);
     test(filename, "z", "V", "Time", VerticalCT.Type.WRFEta, WRFEta.class, SimpleUnit.pressureUnit);

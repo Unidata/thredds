@@ -62,7 +62,7 @@ public class TestOffAggReadGridDataset extends TestCase {
   }
 
   protected void tearDown() throws IOException {
-    gds.close();
+    if (gds != null) gds.close();
   }
 
   public void testStructure() {

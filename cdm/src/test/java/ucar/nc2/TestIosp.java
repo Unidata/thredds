@@ -54,7 +54,7 @@ public class TestIosp {
 
     suite.addTest( new TestSuite( ucar.nc2.iosp.grib.TestMiscCoordinates.class));
     suite.addTest( new TestSuite(ucar.nc2.iosp.grib.TestOfsData.class));
-    suite.addTest( new TestSuite( ucar.nc2.iosp.grib.TestGridGribIosp.class));
+    // suite.addTest( new TestSuite( ucar.nc2.iosp.grib.TestGridGribIosp.class));
     
     //suite.addTest( new TestSuite( ucar.nc2.iosp.grib.TestIndexUpdating.class));
 

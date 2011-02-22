@@ -53,6 +53,7 @@ public interface EarthLocation {
 
   /**
    * altitude in meters;  missing = NaN.
+   * LOOK: what is the reference surface ? for now assume mean sea level ???
    * @return altitude in meters;  missing = NaN.
    */
   public double getAltitude();

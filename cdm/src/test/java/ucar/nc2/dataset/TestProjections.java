@@ -88,7 +88,7 @@ public class TestProjections extends TestCase {
         "dpd-Surface0",
         Stereographic.class);
 
-    p = test("grid/netcdf/cf/Base_month.nc",
+    p = test(testDir+ "Base_month.nc",
         null,
         "D2_SO4",
         Stereographic.class);

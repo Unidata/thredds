@@ -53,7 +53,7 @@ public class TestCFWriter extends TestCase {
   }
 
   public void testSubset() throws Exception {
-    String fileIn = TestAll.cdmUnitTestDir + "grid/testCFwriter.nc";
+    String fileIn = TestAll.cdmUnitTestDir + "ft/grid/testCFwriter.nc";
     String fileOut = TestAll.temporaryLocalDataDir + "testCFwriter.nc";
     String varName = "Temperature";
 

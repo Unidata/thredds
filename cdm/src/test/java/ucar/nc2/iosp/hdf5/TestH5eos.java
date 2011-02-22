@@ -55,7 +55,7 @@ public class TestH5eos extends TestCase {
 
   public void testStructMetadata() throws IOException {
     //NetcdfFile ncfile = TestH5.open("c:/data/hdf5/HIRDLS/HIRDLS2_v0.3.1-aIrix-c3_2003d106.h5");
-    NetcdfFile ncfile = TestH5.openH5("eos/HIRDLS/HIRDLS2-Aura73p_b029_2000d275.he5");
+    NetcdfFile ncfile = TestH5.openH5("HIRDLS/HIRDLS2-Aura73p_b029_2000d275.he5");
 
     Group root = ncfile.getRootGroup();
     Group g = root.findGroup("HDFEOS INFORMATION");
@@ -85,7 +85,7 @@ public class TestH5eos extends TestCase {
   }
 
   public void test1() throws IOException {
-    NetcdfFile ncfile = TestH5.openH5("eos/HIRDLS/HIR2ARSP_c3_na.he5");
+    NetcdfFile ncfile = TestH5.openH5("HIRDLS/HIR2ARSP_c3_na.he5");
     Variable v =  ncfile.findVariable("HDFEOS/SWATHS/H2SO4_H2O_Tisdale/Data Fields/Wavenumber");
     assert v != null;
     Dimension dim = v.getDimension(0);
@@ -97,7 +97,7 @@ public class TestH5eos extends TestCase {
   }
 
   public void test2() throws IOException {
-    NetcdfFile ncfile = TestH5.openH5("eos/HIRDLS/HIRDLS1_v4.0.2a-aIrix-c2_2003d106.he5");
+    NetcdfFile ncfile = TestH5.openH5("HIRDLS/HIRDLS1_v4.0.2a-aIrix-c2_2003d106.he5");
 
     Variable v =  ncfile.findVariable("HDFEOS/SWATHS/HIRDLS_L1_Swath/Data Fields/Elevation Angle");
     assert v != null;

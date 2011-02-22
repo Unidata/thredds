@@ -131,26 +131,26 @@ public class TestH5ReadAndCount extends TestCase {
     read(testDir + "IASI/IASI_xxx_1C_M02_20070704193256Z_20070704211159Z_N_O_20070704211805Z.h5", 0, 28, 0, 790, 674, 10);
     read(testDir + "IASI/IASI.h5", 0, 28, 0, 777, 661, 10);
 
-    read(testDir + "eos/aura/OMI-Aura_L3-OMTO3e_2005m1214_v002-2006m0929t143855.he5", 2, 4, 20, 28, 0, 7);
-    read(testDir + "eos/aura/MLS-Aura_L2GP-BrO_v01-52-c01_2007d029.he5", 5, 27, 7, 162, 0, 11); // */
+    read(testDir + "aura/OMI-Aura_L3-OMTO3e_2005m1214_v002-2006m0929t143855.he5", 2, 4, 20, 28, 0, 7);
+    read(testDir + "aura/MLS-Aura_L2GP-BrO_v01-52-c01_2007d029.he5", 5, 27, 7, 162, 0, 11); // */
 
     // EOS Grids
     System.out.println("  dims  vars gatts  atts strFlds groups");
-    read(testDir + "eos/aura/MLS-Aura_L3DM-O3_v02-00-c01_2005d026.he5", 33, 83, 40, 512, 0, 30);
-    read(testDir + "eos/aura/TES-Aura_L3-CH4-M2007m07_F01_04.he5", 3, 15, 27, 80, 0, 7);
-    read(testDir + "eos/aura/TES-Aura_L3-CH4-M2007m08_F01_04.he5", 3, 15, 27, 80, 0, 7);
+    read(testDir + "aura/MLS-Aura_L3DM-O3_v02-00-c01_2005d026.he5", 33, 83, 40, 512, 0, 30);
+    read(testDir + "aura/TES-Aura_L3-CH4-M2007m07_F01_04.he5", 3, 15, 27, 80, 0, 7);
+    read(testDir + "aura/TES-Aura_L3-CH4-M2007m08_F01_04.he5", 3, 15, 27, 80, 0, 7);
 
     // EOS Swaths
-    read(testDir + "eos/aura/OMI-Aura_L2-OMTO3_2007m0624t1616-o15646_v002-2007m0625t152428.he5", 5, 44, 21, 342, 0, 8);
+    read(testDir + "aura/OMI-Aura_L2-OMTO3_2007m0624t1616-o15646_v002-2007m0625t152428.he5", 5, 44, 21, 342, 0, 8);
 
-    read(testDir + "eos/HIRDLS/HIR2ARSP_c3_na.he5", 4, 6, 8, 6, 0, 9);
-    read(testDir + "eos/HIRDLS/HIRDLS1_v4.0.2a-aIrix-c2_2003d106.he5", 9, 77, 2, 158, 0, 8);
-    read(testDir + "eos/HIRDLS/HIRDLS2-AFGL_b027_na.he5", 3, 72, 12, 357, 0, 9);
-    read(testDir + "eos/HIRDLS/HIRDLS2-Aura73p_b029_2000d275.he5", 3, 102, 12, 523, 0, 9);
-    read(testDir + "eos/HIRDLS/HIRPROF-AFGL_b038_na.he5", 4, 214, 11, 1072, 0, 8);
-    read(testDir + "eos/HIRDLS/HIRPROF-Aura73p_b038_2000d275.he5", 4, 214, 11, 1072, 0, 8);
-    read(testDir + "eos/HIRDLS/HIRPROF_v582v2.he5", 3, 71, 11, 356, 0, 9);
-    read(testDir + "eos/HIRDLS/HIRRAD-Wells-10scans.he5", 5, 38, 10, 45, 0, 9);
+    read(testDir + "HIRDLS/HIR2ARSP_c3_na.he5", 4, 6, 8, 6, 0, 9);
+    read(testDir + "HIRDLS/HIRDLS1_v4.0.2a-aIrix-c2_2003d106.he5", 9, 77, 2, 158, 0, 8);
+    read(testDir + "HIRDLS/HIRDLS2-AFGL_b027_na.he5", 3, 72, 12, 357, 0, 9);
+    read(testDir + "HIRDLS/HIRDLS2-Aura73p_b029_2000d275.he5", 3, 102, 12, 523, 0, 9);
+    read(testDir + "HIRDLS/HIRPROF-AFGL_b038_na.he5", 4, 214, 11, 1072, 0, 8);
+    read(testDir + "HIRDLS/HIRPROF-Aura73p_b038_2000d275.he5", 4, 214, 11, 1072, 0, 8);
+    read(testDir + "HIRDLS/HIRPROF_v582v2.he5", 3, 71, 11, 356, 0, 9);
+    read(testDir + "HIRDLS/HIRRAD-Wells-10scans.he5", 5, 38, 10, 45, 0, 9);
   }
 
   private void read(String filename, int ndims, int nvars, int ngatts, int natts, int nstructFields, int ngroups) throws IOException {

@@ -535,7 +535,7 @@ public class BytePaddingTest
   @Test
   public void checkReadWithoutPaddingInVsize() throws IOException, InvalidRangeException
   {
-    File dataFile = new File( testdir, "files/tst_small_withoutPaddingInVsize.nc");
+    File dataFile = new File( testdir, "tst_small_withoutPaddingInVsize.nc");
     NetcdfFile ncFile = NetcdfFile.open( dataFile.getPath(), null );
     Variable readVar = ncFile.findVariable( "Times" );
 
