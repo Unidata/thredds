@@ -44,13 +44,13 @@ import ucar.nc2.*;
 import ucar.nc2.units.DateFormatter;
 
 public class TestOffAggForecastModel extends TestCase {
-  private int nruns = 15;
+  private int nruns = 14;
   private int nfore = 11;
   public TestOffAggForecastModel( String name) {
     super(name);
   }
 
-  static String dataDir = TestAll.cdmUnitTestDir + "ncmodels/";
+  static String dataDir = TestAll.cdmUnitTestDir + "ncml/nc/ncmodels/";
   static String ncml =
     "<?xml version='1.0' encoding='UTF-8'?>\n" +
     "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n" +

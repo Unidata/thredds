@@ -84,6 +84,7 @@ public class FeatureScan {
   }
 
   private void scanDirectory(File dir, java.util.List<FeatureScan.Bean> result, Formatter errlog) {
+    if ((dir.getName().equals("exclude")) || (dir.getName().equals("problem")))return;
 
     // get list of files
     List<File> files = new ArrayList<File>();
