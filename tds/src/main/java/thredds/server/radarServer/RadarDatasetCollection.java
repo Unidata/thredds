@@ -56,10 +56,10 @@ public class RadarDatasetCollection {
   public static final Pattern p_yyyymmdd_hhmm = Pattern.compile("\\d{8}_(\\d{4})");
   public static boolean debug = false;
 
-  static Calendar cal;
+  //static Calendar cal;
   static SimpleDateFormat dateFormat;
   static {
-    cal = Calendar.getInstance( java.util.TimeZone.getTimeZone("GMT"));
+    //cal = Calendar.getInstance( java.util.TimeZone.getTimeZone("GMT"));
     dateFormat = new SimpleDateFormat( "yyyyMMdd", Locale.US );
     dateFormat.setTimeZone( TimeZone.getTimeZone( "GMT" ) );
   }
@@ -188,6 +188,7 @@ public class RadarDatasetCollection {
   public boolean getStationTimes( RadarStationCollection rsc ) {
 
     // get today's times for station
+    Calendar cal = Calendar.getInstance( java.util.TimeZone.getTimeZone("GMT"));
     Date now =  cal.getTime();
     String currentDay = dateFormat.format( now );
     StringBuffer sb = new StringBuffer( tdir );

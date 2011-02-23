@@ -484,6 +484,8 @@ public class QueryRadarServerController extends AbstractController  {
           continue;
 
         ArrayList<String> tal = rsc.getHourMinute( day );
+        if (tal == null)
+          continue;
         for ( String hm : tal ) {
           time.setLength( 0 );
           time.append( day ).append( "_" ).append( hm );
@@ -498,9 +500,7 @@ public class QueryRadarServerController extends AbstractController  {
           product.append( type ).append( "_" ).append( rsc.getStnName() ).append( "_" );
           if( ! isLevel2 )
             product.append( var ).append( "_" );
-          product.append( day +"_"+ hm + suffix );
           product.append( day ).append( "_" ).append( hm ).append( suffix );
-          String productStr = product.toString();
 
           de.setName( product.toString() );
           de.setID( Integer.toString( product.toString().hashCode() ));
