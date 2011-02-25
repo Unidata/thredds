@@ -45,7 +45,7 @@ import ucar.ma2.Array;
 import ucar.ma2.IndexIterator;
 
 public class TestOffAggDirDateFormat extends TestCase {
-
+  private int ntimes = 15;
   public TestOffAggDirDateFormat( String name) {
     super(name);
   }
@@ -89,16 +89,16 @@ public class TestOffAggDirDateFormat extends TestCase {
     assert null != time;
     assert time.getName().equals("time");
     assert time.getRank() == 1;
-    assert time.getSize() == 12;
-    assert time.getShape()[0] == 12;
+    assert time.getSize() == ntimes;
+    assert time.getShape()[0] == ntimes;
     assert time.getDataType() == DataType.DOUBLE;
 
     assert time.getDimension(0) == ncfile.findDimension("time");
 
     Array data = time.read();
     assert data.getRank() == 1;
-    assert data.getSize() == 12;
-    assert data.getShape()[0] == 12;
+    assert data.getSize() == ntimes;
+    assert data.getShape()[0] == ntimes;
     assert data.getElementType() == double.class;
 
     IndexIterator dataI = data.getIndexIterator();
@@ -111,7 +111,7 @@ public class TestOffAggDirDateFormat extends TestCase {
     assert null != g;
     assert g.getName().equals("IR_WV");
     assert g.getRank() == 3;
-    assert g.getShape()[0] == 12;
+    assert g.getShape()[0] == ntimes;
     assert g.getShape()[1] == 1008;
     assert g.getShape()[2] == 1536;
     assert g.getDataType() == DataType.SHORT;
