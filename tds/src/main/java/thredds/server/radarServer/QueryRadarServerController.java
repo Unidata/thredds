@@ -469,14 +469,41 @@ public class QueryRadarServerController extends AbstractController  {
       qp.errs.append( "Invalid dataset ="+ dataset +" or var ="+ var );
       return false;
     }
-    boolean isLevel2 = ( dataset.contains( "level2") ? true : false);
-    String type = ( isLevel2 ? "Level2" : "Level3");
-    String suffix = ( isLevel2 ? ".ar2v" : ".nids");
     StringBuffer time = new StringBuffer();
     StringBuffer product = new StringBuffer();
     StringBuffer url = new StringBuffer();
-    for( String stn : qp.stns ) {
+    boolean isLevel2 = ( dataset.contains( "level2") ? true : false);
+    String type = ( isLevel2 ? "Level2" : "Level3");
+    String suffix = ( isLevel2 ? ".ar2v" : ".nids");
+
+    for ( String stn : qp.stns ) {
       RadarStationCollection rsc =  rdc.queryStation( stn );
+      if ( rsc == null)
+        continue;
+      if (rdc.isCaseStudy() ) { // return all data
+        ArrayList<String> tal = rsc.getHourMinute( "all" );
+        for ( String prod : tal ) {
+          // save this entry
+          DatasetEntry de = new DatasetEntry();
+          int idx = prod.indexOf( '/');
+          if ( idx > 0 ) {
+            de.setName( prod.substring( idx +1));
+          } else {
+            de.setName( prod  );
+          }
+          de.setID( Integer.toString( prod.hashCode() ));
+          url.setLength( 0 );
+          url.append( stn).append("/");
+          if( var != null ) {
+            url.append( var ).append( "/" );
+          }
+          url.append( prod );
+          de.setUrlPath( url.toString() );
+          de.setDate( RadarServerUtil.getObTimeISO( prod ) );
+          entries.add( de );
+        }
+        continue;
+      }
       for ( String day : rsc.getDays() ) {
         // check for valid day
         if( ! getAllTimes &&

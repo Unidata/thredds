@@ -47,7 +47,7 @@ import java.text.SimpleDateFormat;
 
 /**
  * Maintains the Radar collection of stations and days for a Radar Dataset.  The
- * purpose is to permit querying the collection by station verses time.
+ * purpose is to permit querying the collection by station.
  * 
  */
 public class RadarDatasetCollection {
@@ -93,12 +93,22 @@ public class RadarDatasetCollection {
   boolean standardName = true;
 
   /**
+   * isCasestudycollection
+   */
+  boolean caseStudy = false;
+
+  /**
+   * directory in between station and products
+   */
+  String inbetween = null;
+
+  /**
    * Map of all the stations, ArrayList of yyyyddmm times
    */
   HashMap<String, ArrayList<String>> yyyymmdd = new HashMap<String, ArrayList<String>>();
 
   /**
-   *  Map of key = stn + yyyymmdd, times or full unstandard names
+   *  Map  key = stn + yyyymmdd, times or full unstandard names
    */
   HashMap<String, ArrayList<String>> hhmm = new HashMap<String, ArrayList<String>>();
 
@@ -120,6 +130,8 @@ public class RadarDatasetCollection {
 
   public RadarDatasetCollection(String tdir,  String product) {
 
+    caseStudy = tdir.contains( "casestudies");
+    
     StringBuffer sb = new StringBuffer( tdir );
     this.product = product;
     if( stnTime ) {
@@ -137,7 +149,7 @@ public class RadarDatasetCollection {
     }
     // Read in RadarDayCollections for this dataset
     File dir = new File(this.tdir);
-    if (dir.exists() && dir.isDirectory()) {
+    if ( !caseStudy && dir.exists() && dir.isDirectory()) {
       ArrayList<String> rdc = new ArrayList<String>();
       sb.setLength( 0 );
       sb.append("In directory ").append(dir.getParent()).append("/").append(dir.getName());
@@ -152,7 +164,82 @@ public class RadarDatasetCollection {
       for (int i = 0; i < rdc.size() && i < daysToRead; i++) {
          readRadarDayCollection( rdc.get( i ) );
       }
+    } else { // casestudy collection adhoc   station or station/product or
+      this.tdir = tdir;
+      ArrayList<String> stations = getStationsFromDir( tdir );
+      for (String stn : stations) {
+        sb.setLength( 0 );
+        dir = new File( sb.append( tdir).append( "/").append( stn).toString());
+        if (dir.exists() && dir.isDirectory()) {
+
+          //sb.setLength( 0 );
+          //sb.append("In directory ").append(dir.getParent()).append("/").append(dir.getName());
+          //log.info( sb.toString() );
+          File pdir = null;
+          if( product != null ) {
+            pdir = new File( sb.append("/").append(product).toString());
+          } else {
+            pdir = new File( sb.toString());
+            // it's possible to have an extra directory in between the data
+            String[] children = pdir.list();
+            if ( children.length > 0 ) {
+              File btwn = new File( sb.append( "/").append( children[0]).toString());
+              if (btwn.exists() && btwn.isDirectory()) {
+                pdir = btwn;
+                inbetween = btwn.getName() +"/";
+              }
+            }
+          }
+          if (pdir != null && pdir.exists() && pdir.isDirectory()) {
+            String[] children = pdir.list();
+            ArrayList<String> times = new ArrayList<String>();
+            for (String child : children) {
+              if ( child.startsWith( "."))
+                continue;
+              if ( inbetween != null) {
+                sb.setLength( 0 );
+                sb.append( inbetween ).append( child );
+                times.add( sb.toString() );
+              }  else {
+                times.add( child );
+              }  
+            }
+            ArrayList<String> days = yyyymmdd.get( stn );
+            if ( days == null )
+              days = new ArrayList<String>();
+            days.add( "all" );
+            yyyymmdd.put( stn, days );
+            sb.setLength( 0 );
+            sb.append( stn ).append("all" );
+            Collections.sort(times, new CompareKeyDescend());
+            hhmm.put( sb.toString(), times );
+          }
+        }
+      }
     }
+  }
+
+  /*
+  * returns and ArrayList of stations from a directory
+  */
+  private ArrayList<String> getStationsFromDir(String stnDir) {
+
+    ArrayList<String> stations = new ArrayList<String>();
+    File dir = new File(stnDir);
+    if (dir.exists() && dir.isDirectory()) {
+      System.out.println("In directory " + dir.getParent() + "/" + dir.getName());
+      String[] children = dir.list();
+      for (String aChild : children) {
+        File child = new File(dir, aChild);
+        if (child.isDirectory()) {
+          stations.add(aChild);
+        }
+      }
+    } else {
+      return null;
+    }
+    return stations;
+
   }
 
   /*
@@ -228,6 +315,8 @@ public class RadarDatasetCollection {
       }
     }
     ArrayList<String> dal = yyyymmdd.get( rsc.stnName );
+    if ( dal == null)
+      return false;
     Collections.sort(dal, new CompareKeyDescend());
     // check for previous day
     cal.add( Calendar.DAY_OF_MONTH, -1 );
@@ -271,9 +360,10 @@ public class RadarDatasetCollection {
 
   public RadarStationCollection queryStation( String stnName ) {
     RadarStationCollection rsc =  new RadarStationCollection( tdir, stnName, stnTime, product );
-    getStationTimes( rsc );
-
-    return rsc;
+    if (getStationTimes( rsc ) )
+      return rsc;
+    else
+      return null;
   }
 
   public RadarStationCollection queryStation( String dir, String stnName, String product ) {
@@ -305,6 +395,10 @@ public class RadarDatasetCollection {
 
   public HashMap<String, ArrayList<String>> getYyyymmdd() {
     return yyyymmdd;
+  }
+
+  public boolean isCaseStudy() {
+    return caseStudy;
   }
 
   public HashMap<String, ArrayList<String>> getHhmm() {

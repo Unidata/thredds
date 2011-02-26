@@ -209,19 +209,19 @@ public class RadarServerUtil {
 
   // returns ISO time extracted from a product
   public static String getObTimeISO( String product ) {
-     Matcher m;
-     m = p_yyyymmdd_hhmm.matcher( product );
+
      String date;
      StringBuffer dsb = new StringBuffer();
-     if( m.find() ) {
+     Matcher m = p_yyyymmdd_hhmm.matcher( product );
+     if( m.find(0) ) {
          date = m.group( 1 );
      } else { // try date w/o century
-         m = p_yymmdd_hhmm.matcher( product );
-         if( m.find() ) { // add century, fails 2070
-             if( Integer.parseInt(m.group( 1 )) > 69 ) {
-                 dsb.append("19").append( m.group( 1 )).append( m.group( 2 ));
+         Matcher mm = p_yymmdd_hhmm.matcher( product );
+         if( mm.find(0) ) { // add century, fails 2070
+             if( Integer.parseInt(mm.group( 1 )) > 69 ) {
+                 dsb.append("19").append( mm.group( 1 )).append( mm.group( 2 ));
              } else {
-                 dsb.append("20").append( m.group( 1 )).append( m.group( 2 ));
+                 dsb.append("20").append( mm.group( 1 )).append( mm.group( 2 ));
              }
              date = dsb.toString();
          } else {
