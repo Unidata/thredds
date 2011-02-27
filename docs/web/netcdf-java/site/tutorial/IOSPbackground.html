@@ -3,6 +3,11 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <title>IOSP Other Classes</title>
+<style type="text/css">
+pre {font-size: 9pt; padding: 10px; background-color: #E7E7E7; border: 1px solid #CFCFCF; width: 85%;}
+code {font-size: 11pt;}
+dl {margin: 10px 5px 5px 15px;}
+</style>
 </head>
 
 <body>
@@ -35,7 +40,9 @@
     public final int <strong>readUnsignedShort</strong>() throws IOException;
     public final int <strong>readUnsignedByte</strong>() throws IOException;
 
-    // read Strings<br />    public final String <strong>readLine</strong>() throws IOException;<br />    public final String <strong>readUTF</strong>() throws IOException;<br />    public String <strong>readString</strong>(int <strong>nbytes</strong>) throws IOException;<br /><br />}</pre>
+    // read Strings<br />    public final String <strong>readLine</strong>() throws IOException;<br />    public final String <strong>readUTF</strong>() throws IOException;<br />    public String <strong>readString</strong>(int <strong>nbytes</strong>) throws IOException;<br /><br />}
+
+</pre>
 <h2>Array</h2>
 <p>An <strong>Array</strong> is a way to work with multidimensional arrays in a type and rank general way. </p>
 <pre>public abstract class <strong>Array</strong> {
@@ -55,6 +62,13 @@
    readData(jarray);
    return <strong>Array.factory(v2.getDataType().getPrimitiveClassType(), v2.getShape(), jarray)</strong>;
  }</pre>
+<p>A <strong>Section</strong> is a container for a <strong>List</strong> of <strong>Range</strong> objects:</p>
+<pre> public class <strong>ucar.ma2.Section</strong> {
+   public List&lt;Range&gt; <strong>getRanges</strong>();
+   public int[] <strong>getOrigin</strong>();<br />   public int[] <strong>getShape</strong>();<br />   public int[] <strong>getStride</strong>();
+   ...
+ }
+</pre>
 <p>When you do end up working with an Array, you will get an Index or IndexIterator from the Array  to access individual elements of the Array. An IndexIterator iterates over each element of the Array in canonical order. </p>
 <pre>  Array data = Array.factory(v2.getDataType().getPrimitiveClassType(), v2.getShape());
   <strong>IndexIterator ii = data.getIndexIterator();</strong>
@@ -68,7 +82,7 @@ or:
 <pre><strong>  ArrayDouble.D2 data3 =  new ArrayDouble.D2)(128, 256);</strong><br />  for (int j=0; j&lt; 128; j++) <br />    for (int i=0; i&lt; 128; i++) <br />      <strong>data3.set( j, i, raf.readDouble());</strong></pre>
 <p>The type specific Arrays are: <strong>ArrayBoolean, ArrayByte, ArrayChar, ArrayDouble, ArrayFloat, ArrayInt, ArrayLong, ArrayObject and ArrayShort. </strong>ArrayObject is used for the String DataType. </p>
 <p>Each of these have rank specific subtypes rank 0 through rank 7, so for example <strong>ArrayDouble.D0, ArrayDouble.D1, ArrayDouble.D2, ArrayDouble.D3, ArrayDouble.D4, ArrayDouble.D5, ArrayDouble.D6, ArrayDouble.D7.</strong></p>
-<p>There is also ArrayStructure, but this is handled different from the numeric and String types. The API may be undergoing  changes in Netcdf Java 4.0, so its best to wait until that stabalizes before using. <br>
+<p>There is also ArrayStructure, but this is handled different from the numeric and String types. See <a href="../reference/StructureData.html">ArrayStructures</a>.<br>
 </p>
 <h2>  ucar.ma2.DataType</h2>
 <p>This is a type-safe enumeration of data types for the CDM. Since Java has no unsigned types, the unsignedXToY methods convert an unsigned type to a wider signed type. </p>
@@ -77,7 +91,7 @@ or:
 <br />    public static long <strong>unsignedIntToLong</strong>(int);<br />    public static int <strong>unsignedShortToInt</strong>(short);<br />    public static short <strong>unsignedByteToShort</strong>(byte);<br />}</pre>
 <hr width="100%" />
 <address>
-<img src="../nc.gif" width="64" height="64" /> This document is maintained by John Caron and was last updated on Aug 3, 2007
+<img src="../nc.gif" width="64" height="64" /> This document is maintained by John Caron and was last updated on Feb 2011.
 </address>
 <p>&nbsp; </p>
 </body>

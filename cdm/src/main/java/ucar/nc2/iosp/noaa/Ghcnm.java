@@ -14,6 +14,8 @@ import ucar.unidata.io.RandomAccessFile;
 
 import java.io.*;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Nomads GLOBAL HISTORICAL CLIMATOLOGY NETWORK MONTHLY (GHCNM) v3 Beta.
@@ -224,10 +226,10 @@ public class Ghcnm extends AbstractIOServiceProvider {
                           evaluated.
 
                   D = monthly value is part of an annual series of values that
-                      are exactly the same (e.g. duplicated) within another
+                      are exactly the same (e.fldno. duplicated) within another
                       year in the station's record.
 
-                  K = monthly value is part of a consecutive run (e.g. streak)
+                  K = monthly value is part of a consecutive run (e.fldno. streak)
                       of values that are identical.  The streak must be >= 4
                       months of the same value.
 
@@ -305,7 +307,7 @@ public class Ghcnm extends AbstractIOServiceProvider {
           The GHCNM v2 contained several thousand stations that had multiple
           time series of monthly mean temperature data.  The 12th digit of
           each data record, indicated the time series number, and thus there
-          was a potential maximum of 10 time series (e.g. 0 through 9).  These
+          was a potential maximum of 10 time series (e.fldno. 0 through 9).  These
           same stations in v3 beta have undergone a merge process, to reduce
           the station time series to one single series, based upon these
           original and at most 10 time series.
@@ -346,11 +348,50 @@ public class Ghcnm extends AbstractIOServiceProvider {
         datasets are corrected and/or updated the inclusion into GHCNM v3
         beta is seemless.  The following sources (more fully described in
         section 2.2.1) have the following overwrite precedance within the
-        daily reprocessing of GHCNM v3 (e.g. source K overwrites source P)
+        daily reprocessing of GHCNM v3 (e.fldno. source K overwrites source P)
 
         P,K,G,U,0-9,C,N,M,W
   */
 
+
+  /*
+  data
+          1         2         3         4         5         6         7         8         9         10        11        12
+0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890
+101603550001878TAVG  890  1  950  1 1110  1 1610  1 1980  1 2240  1 2490  1 2680  1 2320  1 2057E   1370  1 1150  1
+101603550001932TAVG 1010  1  980  1-9999    1420  1 1840  1-9999    2290  1-9999    2440  1-9999   -9999   -9999
+
+ matches = true
+ group 1 == 101603550001932
+ group 2 ==  1010
+ group 3 ==   1
+ group 4 ==   980
+ group 5 ==   1
+ group 6 == -9999
+ group 7 ==
+ group 8 ==  1420
+ group 9 ==   1
+ group 10 ==  1840
+ group 11 ==   1
+ group 12 == -9999
+ group 13 ==
+ group 14 ==  2290
+ group 15 ==   1
+ group 16 == -9999
+ group 17 ==
+ group 18 ==  2440
+ group 19 ==   1
+ group 20 == -9999
+ group 21 ==
+ group 22 == -9999
+ group 23 ==
+ group 24 == -9999
+ group 25 == null
+
+ see testRegexp.testGhcnm()
+*/
+  private static final String p = "(\\d{11})(\\d{4})TAVG([ \\-\\d]{5})(...)([ \\-\\d]{5})(...)([ \\-\\d]{5})(...)([ \\-\\d]{5})(...)([ \\-\\d]{5})(...)([ \\-\\d]{5})(...)([ \\-\\d]{5})(...)([ \\-\\d]{5})(...)([ \\-\\d]{5})(...)([ \\-\\d]{5})(...)([ \\-\\d]{5})(...)([ \\-\\d]{5})(...)?.*";
+  private static final Pattern dataPattern = Pattern.compile(p);
 
   private static final String RECORD = "all_data";
   private static final String DIM_NAME = "month";
@@ -385,6 +426,39 @@ public class Ghcnm extends AbstractIOServiceProvider {
 
   private NetcdfFile ncfile;
   private RandomAccessFile stnRaf;
+
+  public boolean isValidFile(RandomAccessFile raf) throws IOException {
+    String dataFile = raf.getLocation();
+    int pos = dataFile.lastIndexOf(".");
+    if (pos <= 0) return false;
+    String base = dataFile.substring(0, pos);
+    String ext = dataFile.substring(pos);
+
+     // must be data file or index file
+    if (!ext.equals(DAT_EXT) && !ext.equals(IDX_EXT))
+      return false;
+
+     if (ext.equals(IDX_EXT)) {
+       // data, stn files must be in the same directory
+       File datFile = new File(base+DAT_EXT);
+       if (!datFile.exists())
+          return false;
+       File stnFile = new File(base+STN_EXT);
+       if (!stnFile.exists())
+         return false;
+
+       raf.seek(0);
+       byte[] b = new byte[MAGIC_START.length()];
+       raf.read(b);
+       String test = new String(b, "UTF-8");
+       return test.equals(MAGIC_START);
+
+     } else {
+       // stn files must be in the same directory
+       File stnFile = new File(base+STN_EXT);
+       return (stnFile.exists()); // LOOK BAD!! NOT GOOD ENOUGH
+     }
+  }
 
   @Override
   public void close() throws java.io.IOException {
@@ -807,47 +881,6 @@ public class Ghcnm extends AbstractIOServiceProvider {
 
   ////////////////////////////////////////////////////////////////////////////////////////////
 
-   /**
-   * Check if this is a valid file for this IOServiceProvider.
-   * You must make this method thread safe, ie dont keep any state.
-   *
-   * @param raf RandomAccessFile
-   * @return true if valid.
-   * @throws java.io.IOException if read error
-   */
-  public boolean isValidFile(RandomAccessFile raf) throws IOException {
-    String dataFile = raf.getLocation();
-    int pos = dataFile.lastIndexOf(".");
-    if (pos <= 0) return false;
-    String base = dataFile.substring(0, pos);
-    String ext = dataFile.substring(pos);
-
-     // must be data file or index file
-    if (!ext.equals(DAT_EXT) && !ext.equals(IDX_EXT))
-      return false;
-
-     if (ext.equals(IDX_EXT)) {
-       // data, stn files must be in the same directory
-       File datFile = new File(base+DAT_EXT);
-       if (!datFile.exists())
-          return false;
-       File stnFile = new File(base+STN_EXT);
-       if (!stnFile.exists())
-         return false;
-
-       raf.seek(0);
-       byte[] b = new byte[MAGIC_START.length()];
-       raf.read(b);
-       String test = new String(b, "UTF-8");
-       return test.equals(MAGIC_START);
-
-     } else {
-       // stn files must be in the same directory
-       File stnFile = new File(base+STN_EXT);
-       return (stnFile.exists()); // LOOK BAD!! NOT GOOD ENOUGH
-     }
-  }
-
   /**
    * Get a unique stnId for this file type.
    *
@@ -1039,7 +1072,7 @@ public class Ghcnm extends AbstractIOServiceProvider {
   /////////////////////////////////////////////////////////////////////////////////
   // debug
 
-  static public NetcdfFile open(String filename) throws IOException {
+  static private NetcdfFile open(String filename) throws IOException {
     Ghcnm iosp = new Ghcnm();
     RandomAccessFile raf = new RandomAccessFile(filename, "r");
     MyNetcdfFile ncfile = new MyNetcdfFile(iosp);
@@ -1053,7 +1086,7 @@ public class Ghcnm extends AbstractIOServiceProvider {
     }
   }
 
-  static public void doOne(String filename, Set<Integer> stns, boolean wantDups) throws IOException {
+  static private void stnDuplicates(String filename, Set<Integer> stns, boolean wantDups) throws IOException {
     System.out.printf("%s%n",filename);
     int count = 0;
     int countDups = 0;
@@ -1077,12 +1110,79 @@ public class Ghcnm extends AbstractIOServiceProvider {
   }
 
 
-  static public void main(String args[]) throws IOException {
+  static public void main2(String args[]) throws IOException {
     Set<Integer> stns = new HashSet<Integer>(10 * 1000);
-    doOne("C:/data/ghcnm/ghcnm.v3.0.0-beta1.20101207.qae.inv", stns, false);
-    doOne("C:/data/ghcnm/ghcnm.v3.0.0-beta1.20101207.qca.inv", stns, true);
-    doOne("C:/data/ghcnm/ghcnm.v3.0.0-beta1.20101207.qcu.inv", stns, true);
+    stnDuplicates("C:/data/ghcnm/ghcnm.v3.0.0-beta1.20101207.qae.inv", stns, false);
+    stnDuplicates("C:/data/ghcnm/ghcnm.v3.0.0-beta1.20101207.qca.inv", stns, true);
+    stnDuplicates("C:/data/ghcnm/ghcnm.v3.0.0-beta1.20101207.qcu.inv", stns, true);
   }
+
+  ////////////////////////////////////
+
+  static private int parseLine(String line) throws IOException {
+    int balony = 0;
+    Matcher matcher = dataPattern.matcher(line);
+    if (matcher.matches()) {
+      for (int i=1; i<=matcher.groupCount(); i++) {
+        String r = matcher.group(i);
+        if (r == null) continue;
+        int value = (int) Long.parseLong(r.trim());
+        balony += value;
+      }
+    } else {
+      System.out.printf("Fail on %s%n", line);
+    }
+    return balony;
+  }
+
+
+  static private void readDataRegexp(String filename) throws IOException {
+    int balony = 0;
+    long start = System.currentTimeMillis();
+    System.out.printf("regexp %s%n",filename);
+    RandomAccessFile raf = new RandomAccessFile(filename, "r");
+    String line;
+    while (true) {
+      line = raf.readLine();
+      if (line == null) break;
+      if (line.startsWith("#")) continue;
+      if (line.trim().length() == 0) continue;
+      balony += parseLine(line);
+    }
+
+    long took = System.currentTimeMillis() - start;
+    System.out.printf("DONE %d == %d msecs%n", balony, took);
+  }
+
+  static private void readData(String filename) throws IOException {
+    long start = System.currentTimeMillis();
+    System.out.printf("%s%n",filename);
+    int balony = 0;
+    NetcdfFile ncfile = open(filename);
+    Sequence seq = (Sequence) ncfile.findVariable(RECORD);
+    StructureDataIterator iter = seq.getStructureIterator(-1);
+    while (iter.hasNext()) {
+      StructureData sdata = iter.next();
+      StructureMembers.Member m = sdata.findMember(YEAR);
+      balony += sdata.getScalarInt(m);
+
+      /* StructureMembers sm = sdata.getStructureMembers();
+      for (StructureMembers.Member m : sm.getMembers()) {
+        Array data = sdata.getArray(m);
+        balony += data.getSize();
+      } */
+    }
+    long took = System.currentTimeMillis() - start;
+    System.out.printf("DONE %d == %d msecs%n", balony, took);
+  }
+
+
+
+  static public void main(String args[]) throws IOException {
+    readData("C:/data/ghcnm/ghcnm.v3.0.0-beta1.20101207.qcu.dat");
+    readDataRegexp("C:/data/ghcnm/ghcnm.v3.0.0-beta1.20101207.qcu.dat");
+  }
+
 }
 
 /*

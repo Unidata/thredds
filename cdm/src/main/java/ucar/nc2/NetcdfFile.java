@@ -226,7 +226,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
       if (loadWarnings) log.info("Cant load class: " + e);
     }
     try {
-      registerIOProvider("ucar.nc2.iosp.noaa.Ghcnm");
+      registerIOProvider("ucar.nc2.iosp.noaa.Ghcnm2");
     } catch (Throwable e) {
       if (loadWarnings) log.info("Cant load class: " + e);
     }
@@ -850,6 +850,14 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
    */
   public Group getRootGroup() {
     return rootGroup;
+  }
+
+  /**
+   * Set the root group.
+   * @param g root group
+   */
+  public void setRootGroup(Group g) {
+    rootGroup = g;
   }
 
   /**
@@ -1727,7 +1735,6 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     }
     sbuff.append( escapeName(v.getShortName()));
   }
-
 
   //////////////////////////////////////////////////////////////////////////////////////
   // Service Provider calls

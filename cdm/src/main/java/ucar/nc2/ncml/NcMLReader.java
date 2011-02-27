@@ -870,7 +870,10 @@ public class NcMLReader {
       if (refv instanceof Structure) {
         v = new StructureDS(ds, g, null, name, (Structure) refv);
         v.setDimensions(shape);
-      } else {
+      } else if (refv instanceof Sequence) {
+          v = new StructureDS(ds, g, null, name, (Structure) refv);
+          v.setDimensions(shape);
+       } else {
         v = new VariableDS(g, null, name, refv);
         v.setDataType(dtype);
         v.setDimensions(shape);
@@ -1022,6 +1025,16 @@ public class NcMLReader {
       for (Element vElem : varList) {
         readVariableNested(ds, s, s, vElem);
       }
+
+    } else if (dtype == DataType.SEQUENCE) {
+        Sequence org = new Sequence(ds, g, parentS, name);
+        SequenceDS s = new SequenceDS(g, org); // barf
+        v = s;
+        // look for nested variables
+        java.util.List<Element> varList = varElem.getChildren("variable", ncNS);
+        for (Element vElem : varList) {
+          readVariableNested(ds, s, s, vElem);
+        }
 
     } else {
       v = new VariableDS(ds, g, parentS, name, dtype, shape, null, null);

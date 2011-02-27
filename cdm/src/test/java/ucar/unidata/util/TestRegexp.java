@@ -95,13 +95,34 @@ public class TestRegexp extends TestCase {
     assert matcher.matches() == expect;
   }
 
+  public void testGhcnm() {
+    String m = "101603550001932TAVG 1010  1  980  1-9999    1420  1 1840  1-9999    2290  1-9999    2440  1-9999   -9999   -9999";
+    String p = "(\\d{11})(\\d{4})TAVG([ \\-\\d]{5})(.)(.)(.)([ \\-\\d]{5})(.)(.)(.)([ \\-\\d]{5})(.)(.)(.)([ \\-\\d]{5})(.)(.)(.)"+
+            "([ \\-\\d]{5})(.)(.)(.)([ \\-\\d]{5})(.)(.)(.)([ \\-\\d]{5})(.)(.)(.)([ \\-\\d]{5})(.)(.)(.)([ \\-\\d]{5})(.)(.)(.)"+
+            "([ \\-\\d]{5})(.)(.)(.)([ \\-\\d]{5})(.)(.)(.)([ \\-\\d]{5})(.)?(.)?(.)?.*";
+    //String p = "(\\d{15})TAVG.*";
+    testMatch(p, m, true);
+  }
+
   // test pattern ps against match, show result
   private void testMatch(String ps, String match, boolean expect) {
+    System.out.printf("match %s against %s%n%n", ps, match);
+
     Pattern pattern = Pattern.compile(ps);
     Matcher matcher = pattern.matcher(match);
-    System.out.printf(" match %s against %s = %s %n", ps, match, matcher.matches());
+
+    /* boolean found = false;
+    while (matcher.find()) {
+        System.out.printf(" found the text \"%s\" starting at index %d and ending at index %d.%n",
+            matcher.group(), matcher.start(), matcher.end());
+        found = true;
+    }
+    if(!found)
+        System.out.printf("No match found.%n"); */
+
+    System.out.printf("%n matches = %s %n", matcher.matches());
     for (int i=1; i<=matcher.groupCount(); i++)
-      System.out.println(" "+i+ " "+matcher.group(i));
+      System.out.println(" group "+i+ " == "+matcher.group(i));
   }
 
 }

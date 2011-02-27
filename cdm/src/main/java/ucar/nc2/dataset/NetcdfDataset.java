@@ -1429,6 +1429,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * @param npts  number of values, must = v.getSize()
    * @param start starting value
    * @param incr  increment
+   * @deprecated use Variable.setValues()
    */
   public void setValues(Variable v, int npts, double start, double incr) {
     if (npts != v.getSize())
@@ -1445,6 +1446,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * @param v      for this variable
    * @param values list of Strings
    * @throws IllegalArgumentException if values array not correct size, or values wont parse to the correct type
+   * @deprecated use Variable.setValues()
    */
   public void setValues(Variable v, List<String> values) throws IllegalArgumentException {
     Array data = Array.makeArray(v.getDataType(), values);

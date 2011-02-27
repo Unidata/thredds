@@ -1527,6 +1527,45 @@ public class Variable implements VariableIF, ProxyReader {
     }
   }
 
+  ///////////////////////////////////////////////////////////////////////
+  // setting variable data values
+
+  /**
+   * Generate the list of values from a starting value and an increment.
+   * Will reshape to variable if needed.
+   *
+   * @param npts  number of values, must = v.getSize()
+   * @param start starting value
+   * @param incr  increment
+   */
+  public void setValues(int npts, double start, double incr) {
+    if (npts != getSize())
+      throw new IllegalArgumentException("bad npts = " + npts + " should be " + getSize());
+    Array data = Array.makeArray(getDataType(), npts, start, incr);
+    if (getRank() != 1)
+      data = data.reshape(getShape());
+    setCachedData(data, true);
+  }
+
+  /**
+   * Set the data values from a list of Strings.
+   *
+   * @param values list of Strings
+   * @throws IllegalArgumentException if values array not correct size, or values wont parse to the correct type
+   */
+  public void setValues(List<String> values) throws IllegalArgumentException {
+    Array data = Array.makeArray(getDataType(), values);
+
+    if (data.getSize() != getSize())
+      throw new IllegalArgumentException("Incorrect number of values specified for the Variable " + getName() +
+              " needed= " + getSize() + " given=" + data.getSize());
+
+    if (getRank() != 1) // dont have to reshape for rank 1
+      data = data.reshape(getShape());
+
+    setCachedData(data, true);
+  }
+
   ////////////////////////////////////////////////////////////////////////
   // StructureMember - could be a subclass, but that has problems
 
