@@ -217,6 +217,8 @@ public class StationRadarServerController extends AbstractController {
     }
     // no stations found return all known stations for RadarType
     if( stations ==  null || stations.length == 0 ) {
+      if ( stations ==  null )
+        stations = new String[ 1 ];
       if( radarType.equals( DatasetRepository.RadarType.nexrad ))
         stations =  DatasetRepository.nexradMap.keySet().toArray( stations );
       else

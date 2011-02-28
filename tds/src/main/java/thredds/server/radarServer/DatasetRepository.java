@@ -148,10 +148,18 @@ public class DatasetRepository {
     if( var != null)
       dmkey = key + var;
     RadarDatasetCollection rdc = datasetMap.get( dmkey );
-    if( rdc == null ) { // need to read dataset
+    boolean reread = false;
+    if ( rdc != null )
+      reread = rdc.previousDayNowAvailable();
+    if( rdc == null ||  reread ) { // need to read or reread dataset
       Object sync = new Object();
       synchronized( sync ) {
-        rdc = datasetMap.get( dmkey );
+        if ( reread ) {   // remove dataset
+          datasetMap.remove( dmkey );
+          rdc = null;
+        } else {
+          rdc = datasetMap.get( dmkey );
+        }
         if( rdc != null )
           return rdc;
         rdc = new RadarDatasetCollection( dataLocation.get( key ), var );

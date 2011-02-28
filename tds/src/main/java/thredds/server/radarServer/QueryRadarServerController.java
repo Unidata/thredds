@@ -52,15 +52,38 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /*
  * Processes Queries for the RadarServer
  */
 public class QueryRadarServerController extends AbstractController  {
+
+  private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
+
+  private TdsContext tdsContext;
+  private HtmlWriter htmlWriter;
+
+  private boolean htmlView;
+
+  public void setTdsContext( TdsContext tdsContext ) {
+    this.tdsContext = tdsContext;
+  }
+
+  public void setHtmlWriter( HtmlWriter htmlWriter ) {
+    this.htmlWriter = htmlWriter;
+  }
+
+  public boolean isHtmlView()
+  {
+    return htmlView;
+  }
+
+  public void setHtmlView( boolean htmlView )
+  {
+    this.htmlView = htmlView;
+  }
 
   /**
     * The view to forward to in case a bad query.
@@ -89,29 +112,10 @@ public class QueryRadarServerController extends AbstractController  {
      }
   }
 
-  private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
-
-  private TdsContext tdsContext;
-  private HtmlWriter htmlWriter;
-
-  private boolean htmlView;
-
-  public void setTdsContext( TdsContext tdsContext ) {
-    this.tdsContext = tdsContext;
-  }
-
-  public void setHtmlWriter( HtmlWriter htmlWriter ) {
-    this.htmlWriter = htmlWriter;
-  }
-
-  public boolean isHtmlView()
-  {
-    return htmlView;
-  }
-
-  public void setHtmlView( boolean htmlView )
-  {
-    this.htmlView = htmlView;
+  static SimpleDateFormat dateFormat;
+  static {
+    dateFormat = new SimpleDateFormat( "yyyyMMdd", Locale.US );
+    dateFormat.setTimeZone( TimeZone.getTimeZone( "GMT" ) );
   }
 
   protected ModelAndView handleRequestInternal( HttpServletRequest request,
@@ -475,9 +479,12 @@ public class QueryRadarServerController extends AbstractController  {
     boolean isLevel2 = ( dataset.contains( "level2") ? true : false);
     String type = ( isLevel2 ? "Level2" : "Level3");
     String suffix = ( isLevel2 ? ".ar2v" : ".nids");
+    Calendar cal = Calendar.getInstance( java.util.TimeZone.getTimeZone("GMT"));
+    Date now =  cal.getTime();
+    String currentDay = dateFormat.format( now );
 
     for ( String stn : qp.stns ) {
-      RadarStationCollection rsc =  rdc.queryStation( stn );
+      RadarStationCollection rsc =  rdc.queryStation( stn, currentDay );
       if ( rsc == null)
         continue;
       if (rdc.isCaseStudy() ) { // return all data

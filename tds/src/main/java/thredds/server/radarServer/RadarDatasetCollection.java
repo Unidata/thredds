@@ -140,7 +140,7 @@ public class RadarDatasetCollection {
       } else {
         this.tdir = sb.append( "/" ).append( product ).toString();
       }
-    } else { // TODO: need test case
+    } else {  
       if (product == null) {
         this.tdir = tdir;
       } else {
@@ -267,17 +267,53 @@ public class RadarDatasetCollection {
     }
     return true;
   }
+
+  /*
+   returns true if previous days data is now available, causes dataset reread
+   */
+  public boolean previousDayNowAvailable() {
+
+    if ( caseStudy )  // casestudy data is static
+      return false;
+
+    Calendar cal = Calendar.getInstance( java.util.TimeZone.getTimeZone("GMT"));
+    // check for previous day
+    cal.add( Calendar.DAY_OF_MONTH, -1 );
+    Date now =  cal.getTime();
+    String previousDay = dateFormat.format( now );
+    StringBuffer sb = new StringBuffer();
+    // check if new day data is available
+    java.util.Set<String> stations = yyyymmdd.keySet();
+    int count = 0;
+    for( String station : stations ) {
+      if( ++count == 10 ) // at most check 10 stations for previous day
+        return false;
+      ArrayList<String> days = yyyymmdd.get( station );
+      if( previousDay.equals( days.get( 0 ))) {
+        return false;
+      } else { // check if previous day available
+        sb.setLength( 0 );
+        sb.append( tdir ).append( "/").append( '.' ).append( previousDay );
+        File dir = new File( sb.toString() );
+        if (dir.exists()) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
   /**
    * returns times for this station in the RadarStationCollection object
    * @param rsc RadarStationCollection
    * @return success boolean
    */
-  public boolean getStationTimes( RadarStationCollection rsc ) {
+  public boolean getStationTimes( RadarStationCollection rsc, String currentDay ) {
 
     // get today's times for station
-    Calendar cal = Calendar.getInstance( java.util.TimeZone.getTimeZone("GMT"));
-    Date now =  cal.getTime();
-    String currentDay = dateFormat.format( now );
+    //Calendar cal = Calendar.getInstance( java.util.TimeZone.getTimeZone("GMT"));
+    //Date now =  cal.getTime();
+    //String currentDay = dateFormat.format( now );
     StringBuffer sb = new StringBuffer( tdir );
     sb.append( "/" ).append( rsc.stnName ).append( "/" ).append( currentDay );
     File dir = new File( sb.toString() );
@@ -318,29 +354,7 @@ public class RadarDatasetCollection {
     if ( dal == null)
       return false;
     Collections.sort(dal, new CompareKeyDescend());
-    // check for previous day
-    cal.add( Calendar.DAY_OF_MONTH, -1 );
-    now =  cal.getTime();
-    String previousDay = dateFormat.format( now );
-    // check if new day data is available and remove older data
-    if( ! previousDay.equals( dal.get( 0 ))) {
-      sb.setLength( 0 );
-      sb.append( ".").append( previousDay );
-      if( readRadarDayCollection( sb.toString() ) ) {
-        Collections.sort(dal, new CompareKeyDescend());
-        if( dal.size() > daysToRead ) {
-          String day = dal.get( dal.size() -1);
-          if( dal.remove( day ) ) {
-            for( String stn : yyyymmdd.keySet() ) {
-              sb.setLength( 0 );
-              sb.append( stn ).append( day );
-              if( hhmm.containsKey( sb.toString() ))
-                hhmm.remove( sb.toString() );
-            }
-          }
-        }
-      }
-    }
+
     rsc.yyyymmdd.addAll( dal );
     for ( String day : dal ) {
       sb.setLength( 0 );
@@ -358,17 +372,17 @@ public class RadarDatasetCollection {
     return true;
   }
 
-  public RadarStationCollection queryStation( String stnName ) {
+  public RadarStationCollection queryStation( String stnName, String currentDay ) {
     RadarStationCollection rsc =  new RadarStationCollection( tdir, stnName, stnTime, product );
-    if (getStationTimes( rsc ) )
+    if (getStationTimes( rsc, currentDay ) )
       return rsc;
     else
       return null;
   }
 
-  public RadarStationCollection queryStation( String dir, String stnName, String product ) {
+  public RadarStationCollection queryStation( String dir, String stnName, String product, String currentDay ) {
     RadarStationCollection rsc =  new RadarStationCollection( dir, stnName, stnTime,  product);
-    getStationTimes( rsc );
+    getStationTimes( rsc, currentDay  );
 
     return rsc;
   }
@@ -419,7 +433,10 @@ public class RadarDatasetCollection {
     // create/populate dataset
     RadarDatasetCollection rdc = new RadarDatasetCollection( tdir, product );
     System.out.println( "Dates for station KFTG" );
-    RadarStationCollection rsc =  rdc.queryStation( tdir,  "KFTG",  product);
+    Calendar cal = Calendar.getInstance( java.util.TimeZone.getTimeZone("GMT"));
+    Date now =  cal.getTime();
+    String currentDay = dateFormat.format( now );
+    RadarStationCollection rsc =  rdc.queryStation( tdir,  "KFTG",  product, currentDay);
     //RadarStationCollection rsc =  new RadarStationCollection( tdir,  "KFTG", true,  product);
     //rdc.getStationTimes( rsc );
     //rdc.populate(tdir, type, day, product);
