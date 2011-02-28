@@ -10,6 +10,7 @@ import ucar.nc2.dataset.*;
 import ucar.nc2.util.CancelTask;
 
 import java.io.ByteArrayInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -19,7 +20,8 @@ import java.util.StringTokenizer;
 
 /**
  * Populate a NetcdfFile directly from NcML, can be used by IOSPs.
- *
+ * All ncml elements are new, not modified.
+ * 
  * @author caron
  * @since Feb 26, 2011
  */
@@ -32,6 +34,21 @@ public class NcmlConstructor {
 
   public Formatter getErrlog() {
     return errlog;
+  }
+
+  /**
+   *
+   * @param resourceLocation eg "resources/nj22/iosp/ghcnm.ncml"
+   * @param target populate this file
+   * @return true if success
+   * @throws IOException on error
+   */
+  public boolean populateFromResource(String resourceLocation, NetcdfFile target) throws IOException {
+    ClassLoader cl = this.getClass().getClassLoader();
+    InputStream is = cl.getResourceAsStream(resourceLocation);
+    if (is == null)
+      throw new FileNotFoundException(resourceLocation);
+    return populate(is, target);
   }
 
   public boolean populate(String ncml, NetcdfFile target) throws IOException {
@@ -52,27 +69,25 @@ public class NcmlConstructor {
     }
 
     Element netcdfElem = doc.getRootElement();
-    readGroup(target, null, netcdfElem);
+    readGroup(target, target.getRootGroup(), netcdfElem);
     return errlog.toString().length() == 0;
   }
 
   private void readGroup(NetcdfFile ncfile, Group parent, Element groupElem) throws IOException {
 
     String name = groupElem.getAttributeValue("name");
-    if (name == null) {
-      if (parent == null) {
-        name = ""; // root group
-      } else {
+
+    Group g;
+    if (parent == ncfile.getRootGroup()) { // special handling
+      g = parent;
+      
+    } else {
+      if (name == null) {
         errlog.format("NcML Group name is required (%s)%n", groupElem);
         return;
       }
-    }
-
-    Group g = new Group(ncfile, parent, name);
-    if (parent != null)
+      g = new Group(ncfile, parent, name);
       parent.addGroup(g);
-    else {
-      ncfile.setRootGroup(g);
     }
 
     // look for attributes

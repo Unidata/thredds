@@ -100,7 +100,21 @@ public class TestRegexp extends TestCase {
     String p = "(\\d{11})(\\d{4})TAVG([ \\-\\d]{5})(.)(.)(.)([ \\-\\d]{5})(.)(.)(.)([ \\-\\d]{5})(.)(.)(.)([ \\-\\d]{5})(.)(.)(.)"+
             "([ \\-\\d]{5})(.)(.)(.)([ \\-\\d]{5})(.)(.)(.)([ \\-\\d]{5})(.)(.)(.)([ \\-\\d]{5})(.)(.)(.)([ \\-\\d]{5})(.)(.)(.)"+
             "([ \\-\\d]{5})(.)(.)(.)([ \\-\\d]{5})(.)(.)(.)([ \\-\\d]{5})(.)?(.)?(.)?.*";
-    //String p = "(\\d{15})TAVG.*";
+    testMatch(p, m, true);
+  }
+
+  public void testGhcnm2() {
+    String m = "101603550001932TAVG 1010  1  980  1-9999    1420  1 1840  1-9999    2290  1-9999    2440  1-9999   -9999   -9999";
+    String p = "(\\d{11})(\\d{4})TAVG(([ \\-\\d]{5})(.)(.)(.)){3}.*";
+    testMatch(p, m, true);
+  }
+
+  public void testGhcnmStn() {
+//              1         2         3         4         5         6         7         8         9         10        11        12
+//              0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890
+    //String m = "10160490000  35.6000   -0.6000   90.0 ORAN/ES SENIA       ALGERIA      98U  492HIxxCO10A 6WARM CROPS      B";
+    String m = "20558362000  31.2000  121.4000    7.0 SHANGHAI            CHINA        23U10980FLxxCO25A 1PADDYLANDS      C";
+    String p = "(\\d{11}) ([ \\.\\-\\d]{8}) ([ \\.\\-\\d]{9}) ([ \\.\\-\\d]{6}) (.{30}) ([ \\-\\d]{4})(.)([ \\-\\d]{5})(..)(..)(..)([ \\-\\d]{2})(.)(..)(.{16})(.).*";
     testMatch(p, m, true);
   }
 
@@ -122,7 +136,7 @@ public class TestRegexp extends TestCase {
 
     System.out.printf("%n matches = %s %n", matcher.matches());
     for (int i=1; i<=matcher.groupCount(); i++)
-      System.out.println(" group "+i+ " == "+matcher.group(i));
+      System.out.printf(" group %d == '%s'%n",i,matcher.group(i));
   }
 
 }

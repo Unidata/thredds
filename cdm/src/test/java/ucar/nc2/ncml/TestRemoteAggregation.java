@@ -46,7 +46,7 @@ public class TestRemoteAggregation extends TestCase {
   }
 
   public void testAggExisting() throws IOException {
-    String filename = "file:"+TestAll.cdmUnitTestDir + "fmrc/remote.ncml";
+    String filename = "file:"+TestAll.cdmUnitTestDir + "ncml/remote.ncml";
 
     System.out.println(" testAggExisting.try "+ filename);
     NetcdfDataset ncd = NetcdfDataset.openDataset(filename);

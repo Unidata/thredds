@@ -853,14 +853,6 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
   }
 
   /**
-   * Set the root group.
-   * @param g root group
-   */
-  public void setRootGroup(Group g) {
-    rootGroup = g;
-  }
-
-  /**
    * Get all of the variables in the file, in all groups.
    * This is part of "version 3 compatibility" interface.
    * Alternatively, use groups.

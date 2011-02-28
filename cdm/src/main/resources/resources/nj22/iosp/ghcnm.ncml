@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2"
+        location="C:/data/ghcnm/ghcnm.v3.0.0-beta1.20101207.qcu.dat">
+  <dimension name="month" length="12"/>
+
+  <attribute name="title" value="Version 3 of the GHCN-Monthly dataset of land surface mean temperatures"/>
+  <attribute name="Conventions" value="CDM"/>
+  <attribute name="featureType" value="timeSeries"/>
+  <attribute name="history" value="direct read of ascii files into CDM"/>
+  <attribute name="see" value="http://www.ncdc.noaa.gov/ghcnm, ftp://ftp.ncdc.noaa.gov/pub/data/ghcn/v3"/>
+
+  <variable name="all_data" shape="*" type="Sequence">
+    <variable name="stnid" shape="" type="long">
+      <attribute name="long_name" value="station stnId"/>
+    </variable>
+    <variable name="year" shape="" type="int">
+      <attribute name="long_name" value="year of the station record"/>
+    </variable>
+    <variable name="value" shape="month" type="float">
+      <attribute name="long_name" value="monthly mean temperature"/>
+      <attribute name="units" value="Celsius"/>
+      <attribute name="missing_value" type="float" value="-99.99"/>
+    </variable>
+    <variable name="dm" shape="month" type="char">
+      <attribute name="long_name" value="data management flag"/>
+    </variable>
+    <variable name="qc" shape="month" type="char">
+      <attribute name="long_name" value="quality control flag"/>
+    </variable>
+    <variable name="ds" shape="month" type="char">
+      <attribute name="long_name" value="data source flag"/>
+    </variable>
+  </variable>
+
+  <variable name="station" shape="*" type="Sequence">
+    <variable name="stnid" shape="" type="long">
+      <attribute name="long_name" value="station id"/>
+      <attribute name="standard_name" value="station_id"/>
+    </variable>
+    <variable name="lat" shape="" type="float">
+      <attribute name="long_name" value="latitude"/>
+      <attribute name="units" value="degrees_north"/>
+    </variable>
+    <variable name="lon" shape="" type="float">
+      <attribute name="long_name" value="longitude"/>
+      <attribute name="units" value="degrees_east"/>
+    </variable>
+    <variable name="elevation" shape="" type="float">
+      <attribute name="long_name" value="elevation"/>
+      <attribute name="units" value="m"/>
+    </variable>
+    <variable name="name" shape="" type="String">
+      <attribute name="long_name" value="station name"/>
+      <attribute name="standard_name" value="station_desc"/>
+    </variable>
+
+    <variable name="grelev" shape="" type="int">
+      <attribute name="long_name" value="elevation estimated from gridded digital terrain data"/>
+      <attribute name="units" value="m"/>
+    </variable>
+    <variable name="popClass" shape="" type="char">
+      <attribute name="long_name" value="population class"/>
+    </variable>
+    <variable name="popSize" shape="" type="int">
+      <attribute name="long_name" value="population of the city or town the station is located in"/>
+      <attribute name="units" value="thousands of persons"/>
+      <attribute name="missing_value" type="int" value="-9"/>
+    </variable>
+    <variable name="topoType" shape="" type="String">
+      <attribute name="long_name" value="type of topography in the environment surrounding the station"/>
+    </variable>
+    <variable name="vegType" shape="" type="String">
+      <attribute name="long_name" value="type of vegetation in environment of station"/>
+    </variable>
+    <variable name="ocean" shape="" type="String">
+      <attribute name="long_name" value="station is near lake or ocean"/>
+    </variable>
+    <variable name="oceanDist" shape="" type="int">
+      <attribute name="long_name" value="distance to nearest ocean/lake"/>
+      <attribute name="units" value="km"/>
+      <attribute name="missing_value" type="int" value="-9"/>
+    </variable>
+    <variable name="airportId" shape="" type="char">
+      <attribute name="long_name" value="airport station indicator"/>
+    </variable>
+    <variable name="townDist" shape="" type="int">
+      <attribute name="long_name" value="distance from airport to center of associated city or town"/>
+      <attribute name="units" value="km"/>
+      <attribute name="missing_value" type="int" value="-9"/>
+    </variable>
+    <variable name="vegType" shape="" type="String">
+      <attribute name="long_name" value="vegetation type at nearest 0.5 deg x 0.5 deg gridded data point of vegetation dataset"/>
+    </variable>
+    <variable name="popClassFromLights" shape="" type="char">
+      <attribute name="long_name" value="population class as determined by satellite night lights"/>
+    </variable>
+
+    <variable name="stn_data" shape="*" type="Sequence">
+      <variable name="stnid" shape="" type="long">
+        <attribute name="long_name" value="station stnId"/>
+      </variable>
+      <variable name="year" shape="" type="int">
+        <attribute name="long_name" value="year of the station record"/>
+      </variable>
+      <variable name="value" shape="month" type="float">
+        <attribute name="long_name" value="monthly mean temperature"/>
+        <attribute name="units" value="Celsius"/>
+        <attribute name="missing_value" type="float" value="-99.99"/>
+      </variable>
+      <variable name="dm" shape="month" type="char">
+        <attribute name="long_name" value="data management flag"/>
+      </variable>
+      <variable name="qc" shape="month" type="char">
+        <attribute name="long_name" value="quality control flag"/>
+      </variable>
+      <variable name="ds" shape="month" type="char">
+        <attribute name="long_name" value="data source flag"/>
+      </variable>
+    </variable>
+
+  </variable>
+</netcdf>
