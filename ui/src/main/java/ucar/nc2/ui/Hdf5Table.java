@@ -156,7 +156,14 @@ public class Hdf5Table extends JPanel {
   private H5iosp iosp;
   private String location;
 
+  public void closeOpenFiles() throws IOException {
+    if (iosp != null) iosp.close();
+    iosp = null;
+  }
+
   public void setHdf5File(RandomAccessFile raf) throws IOException {
+    closeOpenFiles();
+
     this.location = raf.getLocation();
     long start = System.nanoTime();
     java.util.List<ObjectBean> beanList = new ArrayList<ObjectBean>();

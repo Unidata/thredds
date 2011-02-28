@@ -208,9 +208,13 @@ public class Fmrc2Panel extends JPanel {
     prefs.putInt("splitPosV", splitV.getDividerLocation());
   }
 
+  public void closeOpenFiles() throws IOException {
+    if (fmrc != null) fmrc.close();
+    fmrc = null;
+  }
+
   public void setFmrc(String collectionSpec) throws IOException {
-    if (fmrc != null)
-      fmrc.close();
+    closeOpenFiles();
 
     long start = System.currentTimeMillis();
 

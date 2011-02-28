@@ -50,12 +50,12 @@ import java.util.Iterator;
 /** Test PointObsDataset adapters in the JUnit framework. */
 
 public class TestPointDataset extends TestCase {
-  String topDir = ucar.nc2.TestAll.cdmUnitTestDir + "ft/point/netcdf/";
   public TestPointDataset( String name) {
     super(name);
   }
 
   public void testMadis() throws IOException {
+    String topDir = ucar.nc2.TestAll.cdmUnitTestDir + "ft/station/madis/";
     String filename = topDir +"madis.nc";
     StringBuilder sbuff = new StringBuilder();
     long start = System.currentTimeMillis();
@@ -82,9 +82,17 @@ public class TestPointDataset extends TestCase {
   }
 
   public void testNetcdfDataset() throws IOException {
+    String topDir = ucar.nc2.TestAll.cdmUnitTestDir + "ft/point/netcdf/";
     testPointMethods( topDir+"Compilation_eq.nc");
     testPointMethods( topDir+"Earthquake_Mag4_Up_eq.nc");
     testPointMethods( topDir+"mags_compilation_eq.nc");
+  }
+
+  public void testOldUnidataStationObsDataset() throws IOException {
+    String topDir = ucar.nc2.TestAll.cdmUnitTestDir + "ft/point/ldm/";
+    testPointMethods( topDir+"04061912_buoy.nc");
+    testPointMethods( topDir+"04061900_syn.nc");
+    testPointMethods( topDir+"2005120800_sao.nc");
   }
 
   public void utestDapperDataset() throws IOException {

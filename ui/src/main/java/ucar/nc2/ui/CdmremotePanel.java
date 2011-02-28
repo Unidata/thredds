@@ -176,8 +176,13 @@ public class CdmremotePanel extends JPanel {
     Object obj;
   }
 
-  public void setFile(String filename) throws IOException {
+  public void closeOpenFiles() throws IOException {
     if (ncd != null) ncd.close();
+    ncd = null;
+  }
+
+  public void setFile(String filename) throws IOException {
+    closeOpenFiles();
 
     List<MessBean> messages = new ArrayList<MessBean>();
     ncd = new MyNetcdfFile();

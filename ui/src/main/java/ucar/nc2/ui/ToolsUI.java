@@ -133,8 +133,8 @@ public class ToolsUI extends JPanel {
   private CoordSysPanel coordSysPanel;
   private CollectionPanel collectionPanel;
   private FeatureScanPanel ftPanel;
-  private FmrcInvPanel fmrcInvPanel;
-  private FmrcImplPanel fmrcImplPanel;
+ // private FmrcInvPanel fmrcInvPanel;
+ // private FmrcImplPanel fmrcImplPanel;
   private FmrcPanel fmrcPanel;
   private GeoGridPanel gridPanel;
   private GribRawPanel gribRawPanel;
@@ -148,8 +148,8 @@ public class ToolsUI extends JPanel {
   private ImagePanel imagePanel;
   private NCdumpPanel ncdumpPanel;
   private OpPanel ncmlEditorPanel, geotiffPanel;
-  private PointObsPanel pointObsPanel;
-  private StationObsPanel stationObsPanel;
+  // private PointObsPanel pointObsPanel;
+  // private StationObsPanel stationObsPanel;
   private PointFeaturePanel pointFeaturePanel;
   private StationRadialPanel stationRadialPanel;
   private RadialPanel radialPanel;
@@ -469,9 +469,9 @@ public class ToolsUI extends JPanel {
       coordSysPanel = new CoordSysPanel((PreferencesExt) mainPrefs.node("CoordSys"));
       c = coordSysPanel;
 
-    } else if (title.equals("FmrcImpl")) {
+    /* } else if (title.equals("FmrcImpl")) {
       fmrcImplPanel = new FmrcImplPanel((PreferencesExt) mainPrefs.node("fmrcImpl"));
-      c = fmrcImplPanel;
+      c = fmrcImplPanel;  */
 
     } else if (title.equals("FeatureScan")) {
       ftPanel = new FeatureScanPanel((PreferencesExt) mainPrefs.node("ftPanel"));
@@ -505,9 +505,9 @@ public class ToolsUI extends JPanel {
       collectionPanel = new CollectionPanel((PreferencesExt) mainPrefs.node("collections"));
       c = collectionPanel;
 
-     } else if (title.equals("Inventory")) {
+     /* } else if (title.equals("Inventory")) {
       fmrcInvPanel = new FmrcInvPanel((PreferencesExt) mainPrefs.node("fmrc"));
-      c = fmrcInvPanel;
+      c = fmrcInvPanel;  */
 
     } else if (title.equals("NCDump")) {
       ncdumpPanel = new NCdumpPanel((PreferencesExt) mainPrefs.node("NCDump"));
@@ -521,9 +521,9 @@ public class ToolsUI extends JPanel {
       ncmlEditorPanel = new NcmlEditorPanel((PreferencesExt) mainPrefs.node("NcmlEditor"));
       c = ncmlEditorPanel;
 
-    } else if (title.equals("PointObs")) {
+    /* } else if (title.equals("PointObs")) {
       pointObsPanel = new PointObsPanel((PreferencesExt) mainPrefs.node("points"));
-      c = pointObsPanel;
+      c = pointObsPanel; */
 
     } else if (title.equals("PointFeature")) {
       pointFeaturePanel = new PointFeaturePanel((PreferencesExt) mainPrefs.node("pointFeature"));
@@ -533,9 +533,9 @@ public class ToolsUI extends JPanel {
       radialPanel = new RadialPanel((PreferencesExt) mainPrefs.node("radial"));
       c = radialPanel;
 
-    } else if (title.equals("StationObs")) {
+    /* } else if (title.equals("StationObs")) {
       stationObsPanel = new StationObsPanel((PreferencesExt) mainPrefs.node("stations"));
-      c = stationObsPanel;
+      c = stationObsPanel; */
 
     } else if (title.equals("StationRadial")) {
       stationRadialPanel = new StationRadialPanel((PreferencesExt) mainPrefs.node("stationRadar"));
@@ -919,8 +919,8 @@ public class ToolsUI extends JPanel {
     if (ftPanel != null) ftPanel.save();
     if (fmrcPanel != null) fmrcPanel.save();
     if (collectionPanel != null) collectionPanel.save();
-    if (fmrcImplPanel != null) fmrcImplPanel.save();
-    if (fmrcInvPanel != null) fmrcInvPanel.save();
+    //if (fmrcImplPanel != null) fmrcImplPanel.save();
+    //if (fmrcInvPanel != null) fmrcInvPanel.save();
     if (geotiffPanel != null) geotiffPanel.save();
     if (gribRawPanel != null) gribRawPanel.save();
     if (gribIndexPanel != null) gribIndexPanel.save();
@@ -936,9 +936,9 @@ public class ToolsUI extends JPanel {
     //if (ncmlPanel != null) ncmlPanel.save();
     if (ncmlEditorPanel != null) ncmlEditorPanel.save();
     if (pointFeaturePanel != null) pointFeaturePanel.save();
-    if (pointObsPanel != null) pointObsPanel.save();
+    //if (pointObsPanel != null) pointObsPanel.save();
     if (radialPanel != null) radialPanel.save();
-    if (stationObsPanel != null) stationObsPanel.save();
+    // if (stationObsPanel != null) stationObsPanel.save();
     if (stationRadialPanel != null) stationRadialPanel.save();
     if (trajTablePanel != null) trajTablePanel.save();
     if (threddsUI != null) threddsUI.storePersistentData();
@@ -1345,6 +1345,18 @@ public class ToolsUI extends JPanel {
 
       buttPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
 
+      AbstractAction closeAction = new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+          try {
+            closeOpenFiles();
+          } catch (IOException e1) {
+            System.out.printf("close failed");
+          }
+        }
+      };
+      BAMutil.setActionProperties(closeAction, "Close", "release files", false, 'L', -1);
+      BAMutil.addActionToContainer(buttPanel, closeAction);
+
       if (addFileButton) {
         AbstractAction fileAction = new AbstractAction() {
           public void actionPerformed(ActionEvent e) {
@@ -1356,20 +1368,6 @@ public class ToolsUI extends JPanel {
         BAMutil.setActionProperties(fileAction, "FileChooser", "open Local dataset...", false, 'L', -1);
         BAMutil.addActionToContainer(buttPanel, fileAction);
       }
-
-      /* AbstractAction v3Action =  new AbstractAction() {
-        public void actionPerformed(ActionEvent e) {
-          Boolean state = (Boolean) getValue( BAMutil.STATE);
-          nc3useRecords = state.booleanValue();
-          String tooltip = nc3useRecords ? "nc3 use Records" : "nc3 dont use Records";
-          v3Butt.setToolTipText(tooltip);
-          doit( cb.getSelectedItem());
-        }
-      };
-      nc3useRecords = prefs.getBoolean( "nc3useRecords", false);
-      String tooltip = nc3useRecords ? "nc3 use Records" : "nc3 dont use Records";
-      BAMutil.setActionProperties( v3Action, "V3", tooltip, true, 'V', -1);
-      v3Action.putValue(BAMutil.STATE, new Boolean(nc3useRecords)); */
 
       if (addCoordButton) {
         AbstractAction coordAction = new AbstractAction() {
@@ -1424,6 +1422,7 @@ public class ToolsUI extends JPanel {
     }
 
     abstract boolean process(Object command);
+    abstract void closeOpenFiles() throws IOException;
 
     void save() {
       cb.save();
@@ -1465,6 +1464,12 @@ public class ToolsUI extends JPanel {
         }
       });
     }
+
+    void closeOpenFiles() throws IOException {
+      if (ncfile != null) ncfile.close();
+      ncfile = null;
+    }
+
 
     boolean process(Object o) {
       int pos;
@@ -1568,6 +1573,8 @@ public class ToolsUI extends JPanel {
 
 
   private class UnitDatasetCheck extends OpPanel {
+    NetcdfFile ncfile = null;
+
     UnitDatasetCheck(PreferencesExt p) {
       super(p, "dataset:");
     }
@@ -1576,7 +1583,6 @@ public class ToolsUI extends JPanel {
       String command = (String) o;
       boolean err = false;
 
-      NetcdfFile ncfile = null;
       try {
         ncfile = NetcdfDataset.openDataset(command, addCoords, null);
 
@@ -1613,13 +1619,22 @@ public class ToolsUI extends JPanel {
       } finally {
         try {
           if (ncfile != null) ncfile.close();
+          ncfile = null;
         } catch (IOException ioe) {
         }
       }
 
       return !err;
     }
+
+    void closeOpenFiles() throws IOException {
+      if (ncfile != null) ncfile.close();
+      ncfile = null;
+    }
+
   }
+
+
 
   private class UnitConvert extends OpPanel {
     UnitConvert(PreferencesExt prefs) {
@@ -1666,6 +1681,8 @@ public class ToolsUI extends JPanel {
         return false;
       }
     }
+
+    void closeOpenFiles() {}
 
     void compare(Object o) {
       String command = (String) o;
@@ -1764,6 +1781,8 @@ public class ToolsUI extends JPanel {
       return false;
     }
 
+    void closeOpenFiles() {}
+
     void apply(Object mark, Object testo) {
       String dateFormatMark = (String) mark;
       String filename = (String) testo;
@@ -1790,6 +1809,13 @@ public class ToolsUI extends JPanel {
     JComboBox defComboBox;
     IndependentWindow defWindow;
     AbstractButton defButt;
+
+
+    void closeOpenFiles() throws IOException {
+      if (ds != null) ds.close();
+      ds = null;
+    }
+
 
     CoordSysPanel(PreferencesExt p) {
       super(p, "dataset:", true, false);
@@ -1935,6 +1961,11 @@ public class ToolsUI extends JPanel {
     AggTable aggTable;
     NetcdfDataset ncd;
 
+    void closeOpenFiles() throws IOException {
+      if (ncd != null) ncd.close();
+      ncd = null;
+    }
+
     AggPanel(PreferencesExt p) {
       super(p, "file:", true, false);
       aggTable = new AggTable(prefs, buttPanel);
@@ -2016,6 +2047,11 @@ public class ToolsUI extends JPanel {
   private class BufrPanel extends OpPanel {
     ucar.unidata.io.RandomAccessFile raf = null;
     BufrMessageViewer bufrTable;
+
+    void closeOpenFiles() throws IOException {
+      if (raf != null) raf.close();
+      raf = null;
+    }
 
     BufrPanel(PreferencesExt p) {
       super(p, "file:", true, false);
@@ -2101,6 +2137,8 @@ public class ToolsUI extends JPanel {
       return true;
     }
 
+    void closeOpenFiles() {}
+
     void accept() {
       String command = (String) cb.getSelectedItem();
 
@@ -2168,6 +2206,8 @@ public class ToolsUI extends JPanel {
       return true;
     }
 
+    void closeOpenFiles() {}
+
     void accept() {
       String command = (String) cb.getSelectedItem();
       boolean err = false;
@@ -2205,6 +2245,11 @@ public class ToolsUI extends JPanel {
   private class GribRawPanel extends OpPanel {
     ucar.unidata.io.RandomAccessFile raf = null;
     ucar.nc2.ui.GribRawPanel gribTable;
+
+    void closeOpenFiles() throws IOException {
+      if (raf != null) raf.close();
+      raf = null;
+    }
 
     GribRawPanel(PreferencesExt p) {
       super(p, "file:", true, false);
@@ -2340,6 +2385,10 @@ public class ToolsUI extends JPanel {
       super.save();
     }
 
+    void closeOpenFiles() throws IOException {
+      gribTable.closeOpenFiles();
+    }
+
   }
 
   /////////////////////////////////////////////////////////////////////
@@ -2395,6 +2444,8 @@ public class ToolsUI extends JPanel {
       BAMutil.setActionProperties(infoAction, "Information", "show Info", false, 'I', -1);
       BAMutil.addActionToContainer(buttPanel, infoAction); */
     }
+
+    void closeOpenFiles() {}
 
     boolean process(Object o) {
       return true;
@@ -2452,6 +2503,7 @@ public class ToolsUI extends JPanel {
       super.save();
     }
 
+    void closeOpenFiles() {}
   }
 
   /////////////////////////////////////////////////////////////////////
@@ -2473,6 +2525,8 @@ public class ToolsUI extends JPanel {
       codeTable.save();
       super.save();
     }
+
+    void closeOpenFiles() {}
 
   }
 
@@ -2496,6 +2550,8 @@ public class ToolsUI extends JPanel {
       super.save();
     }
 
+    void closeOpenFiles() {}
+
   }
 
 
@@ -2503,6 +2559,10 @@ public class ToolsUI extends JPanel {
   private class Hdf5Panel extends OpPanel {
     ucar.unidata.io.RandomAccessFile raf = null;
     Hdf5Table hdf5Table;
+
+    void closeOpenFiles() throws IOException {
+      hdf5Table.closeOpenFiles();
+    }
 
     Hdf5Panel(PreferencesExt p) {
       super(p, "file:", true, false);
@@ -2569,6 +2629,10 @@ public class ToolsUI extends JPanel {
     ucar.unidata.io.RandomAccessFile raf = null;
     Hdf4Table hdf4Table;
 
+    void closeOpenFiles() throws IOException {
+      hdf4Table.closeOpenFiles();
+    }
+
     Hdf4Panel(PreferencesExt p) {
       super(p, "file:", true, false);
       hdf4Table = new Hdf4Table(prefs);
@@ -2633,6 +2697,11 @@ public class ToolsUI extends JPanel {
     String ncmlLocation = null;
     AbstractButton gButt = null;
     boolean useG;
+
+    void closeOpenFiles() throws IOException {
+      if (ds != null) ds.close();
+      ds = null;
+    }
 
     NcmlPanel(PreferencesExt p) {
       super(p, "dataset:");
@@ -2809,6 +2878,11 @@ public class ToolsUI extends JPanel {
     JEditorPane editor;
     Map<String, String> protoMap = new HashMap<String, String>(10);
     ComboBox protoChooser;
+
+    void closeOpenFiles() throws IOException {
+      if (ds != null) ds.close();
+      ds = null;
+    }
 
     NcmlEditorPanel(PreferencesExt p) {
       super(p, "dataset:");
@@ -3131,12 +3205,16 @@ public class ToolsUI extends JPanel {
        super.save();
      }
 
+    void closeOpenFiles() throws IOException {
+      panel.closeOpenFiles();
+    }
+
    }
 
    /////////////////////////////////////////////////////////////////////
 
 
-  // the old inventory stuff
+  /* the old inventory stuff
   private class FmrcInvPanel extends OpPanel {
     private boolean useDefinition = false;
     private JComboBox defComboBox, catComboBox, dirComboBox, suffixCB;
@@ -3388,9 +3466,9 @@ public class ToolsUI extends JPanel {
       }
     }
 
-  }
+  }  */
 
-  // the old Fmrc Impl stuff
+  /* the old Fmrc Impl stuff
   private class FmrcImplPanel extends OpPanel {
     FmrcImpl fmrc;
     FmrcTable table;
@@ -3464,7 +3542,7 @@ public class ToolsUI extends JPanel {
 
       return false;
     }
-  }
+  }  */
 
   // new ucar.nc2.ft.fmrc stuff
   private class FmrcPanel extends OpPanel {
@@ -3573,6 +3651,10 @@ public class ToolsUI extends JPanel {
       table.save();
       super.save();
     }
+
+    void closeOpenFiles() throws IOException {
+      table.closeOpenFiles();
+    }
   }
 
   // new Fmrc
@@ -3665,6 +3747,8 @@ public class ToolsUI extends JPanel {
 
       return false;
     }
+
+    void closeOpenFiles() {}
 
     void save() {
       table.save();
@@ -3861,6 +3945,11 @@ public class ToolsUI extends JPanel {
       return !err;
     }
 
+    void closeOpenFiles() throws IOException {
+      if (ds != null) ds.close();
+      ds = null;
+    }
+
     void setDataset(NetcdfDataset newds) {
       if (newds == null) return;
       try {
@@ -3980,6 +4069,11 @@ public class ToolsUI extends JPanel {
       setSelectedItem(newds.getLocationURI());
     }
 
+    void closeOpenFiles() throws IOException {
+      if (ds != null) ds.close();
+      ds = null;
+    }
+
     void save() {
       super.save();
       dsTable.save();
@@ -4084,6 +4178,11 @@ public class ToolsUI extends JPanel {
       return !err;
     }
 
+    void closeOpenFiles() throws IOException {
+      if (ncfile != null) ncfile.close();
+      ncfile = null;
+    }
+
     void setDataset(NetcdfFile nc) {
       try {
         if (ncfile != null) ncfile.close();
@@ -4129,7 +4228,7 @@ public class ToolsUI extends JPanel {
 
   }
 
-  private class PointObsPanel extends OpPanel {
+  /* private class PointObsPanel extends OpPanel {
     PointObsViewer povTable;
     JSplitPane split;
     PointObsDataset pobsDataset = null;
@@ -4239,6 +4338,11 @@ public class ToolsUI extends JPanel {
       return setStationObsDataset(location);
     }
 
+    void closeOpenFiles() throws IOException {
+      if (sobsDataset != null) sobsDataset.close();
+      sobsDataset = null;
+    }
+
     void save() {
       super.save();
       povTable.save();
@@ -4289,7 +4393,7 @@ public class ToolsUI extends JPanel {
       setSelectedItem(sobsDataset.getLocationURI());
       return true;
     }
-  }
+  } */
 
   /////////////////////////////////////////////////////////////////////
   private class FeatureScanPanel extends OpPanel {
@@ -4341,6 +4445,8 @@ public class ToolsUI extends JPanel {
       String command = (String) o;
       return ftTable.setScanDirectory(command);
     }
+
+    void closeOpenFiles() {}
 
     void save() {
       ftTable.save();
@@ -4451,6 +4557,11 @@ public class ToolsUI extends JPanel {
     boolean process(Object o) {
       String location = (String) o;
       return setPointFeatureDataset((FeatureType) types.getSelectedItem(), location);
+    }
+
+    void closeOpenFiles() throws IOException {
+      if (pfDataset != null) pfDataset.close();
+      pfDataset = null;
     }
 
     void save() {
@@ -4577,6 +4688,9 @@ public class ToolsUI extends JPanel {
       return wmsViewer.setDataset((String) types.getSelectedItem(), location);
     }
 
+    void closeOpenFiles() {
+    }
+
     void save() {
       super.save();
       wmsViewer.save();
@@ -4610,6 +4724,11 @@ public class ToolsUI extends JPanel {
     boolean process(Object o) {
       String location = (String) o;
       return setStationRadialDataset(location);
+    }
+
+    void closeOpenFiles() throws IOException {
+      if (radarCollectionDataset != null) radarCollectionDataset.close();
+      radarCollectionDataset = null;
     }
 
     void save() {
@@ -4699,6 +4818,11 @@ public class ToolsUI extends JPanel {
       viewer.save();
     }
 
+    void closeOpenFiles() throws IOException {
+      if (ds != null) ds.close();
+      ds = null;
+    }
+
     boolean setStationObsDataset(String location) {
       if (location == null) return false;
 
@@ -4778,6 +4902,9 @@ public class ToolsUI extends JPanel {
       setSelectedItem(location);
     }
 
+     void closeOpenFiles() throws IOException {
+    }
+
   }
 
   private class GeotiffPanel extends OpPanel {
@@ -4847,6 +4974,9 @@ public class ToolsUI extends JPanel {
         } catch (IOException ioe) {
         }
       }
+    }
+
+    void closeOpenFiles() throws IOException {
     }
 
   }

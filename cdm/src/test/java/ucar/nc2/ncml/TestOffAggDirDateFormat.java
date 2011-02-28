@@ -68,7 +68,7 @@ public class TestOffAggDirDateFormat extends TestCase {
     Dimension latDim = ncfile.findDimension("y");
     assert null != latDim;
     assert latDim.getName().equals("y");
-    assert latDim.getLength() == 1008;
+    assert latDim.getLength() == 1008 : latDim.getLength() +"!="+ 1008;
     assert !latDim.isUnlimited();
 
     Dimension lonDim = ncfile.findDimension("x");

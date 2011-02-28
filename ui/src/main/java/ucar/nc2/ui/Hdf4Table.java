@@ -141,15 +141,23 @@ public class Hdf4Table extends JPanel {
     //prefs.putInt("splitPosH", splitH.getDividerLocation());
   }
 
+  private H4iosp iosp = null;
   private H4header header;
   private String location;
 
+  public void closeOpenFiles() throws IOException {
+    if (iosp != null) iosp.close();
+    iosp = null;
+  }
+
   public void setHdf4File(RandomAccessFile raf) throws IOException {
+    closeOpenFiles();
+
     this.location = raf.getLocation();
     long start = System.nanoTime();
     java.util.List<TagBean> beanList = new ArrayList<TagBean>();
 
-    H4iosp iosp = new H4iosp();
+    iosp = new H4iosp();
     NetcdfFile ncfile = new MyNetcdfFile(iosp);
     try {
       iosp.open(raf, ncfile, null);

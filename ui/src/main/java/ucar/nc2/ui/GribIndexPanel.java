@@ -257,6 +257,11 @@ public class GribIndexPanel extends JPanel {
     if (split2 != null) prefs.putInt("splitPos2", split2.getDividerLocation());
   }
 
+  public void closeOpenFiles() throws IOException {
+    if (ncd != null) ncd.close();
+    ncd = null;
+  }
+
   // new way - uses the index
 
   public void setGribFile(String filename) throws IOException {

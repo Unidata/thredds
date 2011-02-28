@@ -63,7 +63,7 @@ public class TestStationDataset extends TestCase {
   }
 
   public void testUnidataStationObsDataset() throws IOException {
-    testAllMethods( topDir+"ldm/metar/Surface_METAR_20060325_0000.nc");
+    testAllMethods( topDir+"ldm-metar/Surface_METAR_20060325_0000.nc");
   }
 
   public void utestMetarDataset() throws IOException {
@@ -109,7 +109,6 @@ public class TestStationDataset extends TestCase {
     testAllMethods( topDir+"madis/coop.20040824_0900");
     testAllMethods( topDir+"madis/hydro.20040824_0400");
     testAllMethods( topDir+"madis/maritime.20040824_1000");
-    testAllMethods( topDir+"madis/radiometer.20040824_1000");
   }
 
   public void utestMadisAll() throws IOException {
@@ -140,15 +139,13 @@ public class TestStationDataset extends TestCase {
  }
 
 
-  public void utestUnidataStationObsDataset2() throws IOException {
-    testAllMethods( topDir+"ldm/20050626_metar.nc");
-    testAllMethods( topDir+"ldm/20050727_metar.nc");
+  public void testUnidataStationObsDataset2() throws IOException {
+    testAllMethods( topDir+"ldm-metar/Surface_METAR_20060325_0000.nc");
   }
 
   public void testOldUnidataStationObsDataset() throws IOException {
-    testAllMethods( topDir+"ldm-old/04061912_buoy.nc");
     testAllMethods( topDir+"ldm-old/2004061915_metar.nc");
-    testAllMethods( topDir+"ldm-old/04061900_syn.nc");
+    testAllMethods( topDir+"ldm-old/98063012_metar.nc");
   }
 
   private void testAllMethods(String location) throws IOException {

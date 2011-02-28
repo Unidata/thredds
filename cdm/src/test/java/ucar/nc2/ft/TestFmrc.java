@@ -81,7 +81,7 @@ public class TestFmrc extends TestCase {
       doOne("catalog:http://motherlode.ucar.edu:8080/thredds/catalog/fmrc/NCEP/GFS/Hawaii_160km/files/catalog.xml", 15, 8, 11, 6, "Temperature", -1, 21, 111);
 
       // from an ncml aggregation
-      doOne(datadir + "bom/BoM_test.ncml", 1, 3, 8, 0, "eta_t", 2, 7, 10);
+      doOne(datadir + "bom/BoM_test.ncml", 1, 3, 8, 0, "eta_t", 2, 7, 14);
       doOne(datadir + "ncom/ncom_fmrc.ncml", 1, 1, 5, 1, "surf_el", 3, 25, 41);
       doOne(datadir + "rtofs/rtofs.ncml", 9, 6, 10, 1, "N3-D_Temperature", 2, 3, 4);
 
@@ -266,7 +266,7 @@ public class TestFmrc extends TestCase {
     if (nVertCooordAxes >= 0)
       assert nVertCooordAxes == countVertCooordAxes : "VertAxes" + nVertCooordAxes + " != " + countVertCooordAxes;  */
     if (ntimes >= 0)
-      assert time.getDimension(0).getLength() == ntimes : " ntimes should be "+ ntimes;
+      assert time.getDimension(0).getLength() == ntimes : " ntimes should be "+ ntimes+ "instead = "+ time.getDimension(0).getLength();
 
 
     gridDs.close();

@@ -242,8 +242,8 @@ public class TestPointFeatureTypes extends TestCase {
     // gempak surface
     assert 3337 == checkPointDataset(topdir + "ft/point/gempak/2009103008_sb.gem", FeatureType.POINT, false);
     assert 938 == checkPointDataset(topdir + "ft/point/gempak/2009110100_ship.gem", FeatureType.POINT, false);
-    assert 55856 == checkPointDataset(topdir + "ft/point/gempak/20091030_syn.gem", FeatureType.POINT, false);
-    assert 28328 == checkPointDataset(topdir + "ft/point/gempak/20091030_syn.gem", FeatureType.STATION, false);
+    assert 55856 == checkPointDataset(topdir + "ft/station/gempak/20091030_syn.gem", FeatureType.POINT, false);
+    assert 28328 == checkPointDataset(topdir + "ft/station/gempak/20091030_syn.gem", FeatureType.STATION, false);
 
     // netcdf buoy / synoptic / metars ( robb's perl decoder output)
     assert 7 == checkPointDataset(topdir + "ft/point/netcdf/Surface_METAR_latest.nc", FeatureType.POINT, false);
@@ -265,7 +265,7 @@ public class TestPointFeatureTypes extends TestCase {
     //assert 4638 == checkPointDataset(TestAll.testdataDir + "sounding/netcdf/Upperair_20060621_0000.nc", FeatureType.STATION_PROFILE, false);
 
     // unidata point obs
-    assert 5023 == checkPointDataset(topdir + "ft/point/netcdf/200501q3h-gr.nc", FeatureType.STATION, false);
+    assert 5023 == checkPointDataset(topdir + "ft/station/netcdf/200501q3h-gr.nc", FeatureType.STATION, false);
     assert 277477 == checkPointDataset(topdir + "ft/point/netcdf/20080814_LMA.ncml", FeatureType.POINT, false);
 
     // nldn

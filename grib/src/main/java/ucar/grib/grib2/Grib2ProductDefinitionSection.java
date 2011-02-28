@@ -193,7 +193,7 @@ public final class Grib2ProductDefinitionSection {
 
     // octets 1-4 (Length of PDS)
     length = GribNumbers.int4(raf);
-    System.out.println( "PDS length=" + length );
+    //System.out.println( "PDS length=" + length );
 
     // read in whole PDS as byte[]
     byte[] pdsData = new byte[ length ];

@@ -346,7 +346,7 @@ public abstract class GempakStationFileIOSP extends AbstractIOServiceProvider {
         ncfile.addAttribute(null,
                             new Attribute("history",
                                           "Direct read of " + fileType
-                                          + " into NetCDF-Java 4.1 API"));  //  at " + dateFormat.toDateTimeStringISO(new Date())));
+                                          + " into NetCDF-Java 4.2 API"));  //  at " + dateFormat.toDateTimeStringISO(new Date())));
         ncfile.addAttribute(null, new Attribute(CF.featureTypeAtt, getCFFeatureType()));
     }
 
