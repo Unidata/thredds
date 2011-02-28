@@ -263,6 +263,8 @@ public class LogCategorizer {
     if (path.startsWith("/thredds/")) {
       String spath = path.substring(9);
       service = findService(spath);
+      if ((service == null) && (spath.startsWith("ncml") || spath.endsWith("uddc") || spath.endsWith("iso")))
+        service = "ncIso";
       if ((service == null) && (spath.endsWith("xml") || spath.endsWith("html")))
         service = "catalog";
 
