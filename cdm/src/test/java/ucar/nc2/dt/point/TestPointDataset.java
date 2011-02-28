@@ -47,7 +47,9 @@ import java.util.List;
 import java.util.Date;
 import java.util.Iterator;
 
-/** Test PointObsDataset adapters in the JUnit framework. */
+/** Test PointObsDataset adapters in the JUnit framework.
+ * @deprecated use ft
+ * */
 
 public class TestPointDataset extends TestCase {
   public TestPointDataset( String name) {

@@ -49,7 +49,9 @@ import java.util.List;
 import java.util.Date;
 import java.util.Iterator;
 
-/** Test StationObsDataset adapters in the JUnit framework. */
+/** Test StationObsDataset adapters in the JUnit framework.
+ *  * @deprecated use ft
+*/
 
 public class TestStationDataset extends TestCase {
   String topDir = ucar.nc2.TestAll.cdmUnitTestDir + "ft/station/";
@@ -60,10 +62,6 @@ public class TestStationDataset extends TestCase {
 
   public void utestMultidimStationObsDataset() throws IOException {
     testAllMethods( topDir+"misc/multidim.nc");
-  }
-
-  public void testUnidataStationObsDataset() throws IOException {
-    testAllMethods( topDir+"ldm-metar/Surface_METAR_20060325_0000.nc");
   }
 
   public void utestMetarDataset() throws IOException {
@@ -139,7 +137,7 @@ public class TestStationDataset extends TestCase {
  }
 
 
-  public void testUnidataStationObsDataset2() throws IOException {
+  public void testUnidataStationObsDataset() throws IOException {
     testAllMethods( topDir+"ldm-metar/Surface_METAR_20060325_0000.nc");
   }
 

@@ -265,7 +265,7 @@ public class TestPointFeatureTypes extends TestCase {
     //assert 4638 == checkPointDataset(TestAll.testdataDir + "sounding/netcdf/Upperair_20060621_0000.nc", FeatureType.STATION_PROFILE, false);
 
     // unidata point obs
-    assert 5023 == checkPointDataset(topdir + "ft/station/netcdf/200501q3h-gr.nc", FeatureType.STATION, false);
+    assert 5023 == checkPointDataset(topdir + "ft/station/200501q3h-gr.nc", FeatureType.STATION, false);
     assert 277477 == checkPointDataset(topdir + "ft/point/netcdf/20080814_LMA.ncml", FeatureType.POINT, false);
 
     // nldn

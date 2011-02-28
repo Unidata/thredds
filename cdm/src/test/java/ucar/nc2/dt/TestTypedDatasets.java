@@ -43,8 +43,8 @@ public class TestTypedDatasets {
   public static Test suite ( ) {
     TestSuite suite= new TestSuite();
 
-    suite.addTestSuite( ucar.nc2.dt.point.TestPointDataset.class);
-    suite.addTestSuite( ucar.nc2.dt.point.TestStationDataset.class);
+    //suite.addTestSuite( ucar.nc2.dt.point.TestPointDataset.class);
+    //suite.addTestSuite( ucar.nc2.dt.point.TestStationDataset.class);
     //suite.addTest( ucar.nc2.dt.trajectory.TestTrajectoryObsDataset.suite());
 
     suite.addTestSuite( ucar.nc2.dt.radial.TestRadialDataset.class);
