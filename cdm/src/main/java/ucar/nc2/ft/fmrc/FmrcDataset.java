@@ -308,7 +308,7 @@ class FmrcDataset {
         if (grid == null) { // only non-agg vars need to be cached
           Variable orgV = (Variable) v.getSPobject();
           if (orgV.getSize() > 10 * 1000 * 1000)
-            logger.info("FMRCDataset build Proto cache >10M var= "+orgV.getName());
+            logger.info("FMRCDataset build Proto cache >10M var= "+orgV.getNameAndDimensions());
           v.setCachedData(orgV.read()); // read from original - store in proto
         }
 
