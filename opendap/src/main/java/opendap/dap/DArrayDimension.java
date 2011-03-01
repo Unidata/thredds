@@ -67,7 +67,6 @@ public final class DArrayDimension extends DAPNode
     private int stop;
     private boolean constrained = false; // true if start/stride/stop set
     private DArray container = null;
-    private int truesize; // as opposed to the projected size
 
     /**
      * Construct a new DArrayDimension.
@@ -106,7 +105,6 @@ public final class DArrayDimension extends DAPNode
      */
     public void setSize(int size) {
         this.size = size;
-        this.truesize = size;
     }
 
     /**
@@ -163,35 +161,22 @@ public final class DArrayDimension extends DAPNode
      * @param stride The size of the stride for the projection of this <code>DArrayDimension</code>.
      * @param stop   The stopping point for the projection of this <code>DArrayDimension</code>.
      */
-    public void setProjection(int start, int stride, int stop) throws InvalidParameterException {
-        markDimension(start,stride,stop,true);
-    }
-
-    /**
-     * Set the projection information for this dimension.
-     * (see comments for setProjection).
-     *
-     * @param start  The starting point for the projection of this <code>DArrayDimension</code>.
-     * @param stride The size of the stride for the projection of this <code>DArrayDimension</code>.
-     * @param stop   The stopping point for the projection of this <code>DArrayDimension</code>.
-     * @param constraining  true if we are doing a constraint, false if we are just marking the projection.
-     */
-    public void markDimension(int start, int stride, int stop, boolean constraining) throws InvalidParameterException {
+     public void setProjection(int start, int stride, int stop) throws InvalidParameterException {
         String msg = "DArrayDimension.setProjection: Bad Projection Request: ";
 
         // Check for projection conflict
-        if(constraining && constrained) {
+        if(constrained) {
             // See if we are changing start/stride/stop
-          if(this.start != start || this.stride != stride || this.stop != stop  || size != truesize) {
+          if(this.start != start || this.stride != stride || this.stop != stop) {
             Formatter f = new Formatter();
-            f.format(" [%d,%d,%d,%d] != [%d,%d,%d,%d]", start, stride, stop, size, this.start, this.stride, this.stop, truesize);
+            f.format(" [%d,%d,%d,%d] != [%d,%d,%d,%d]", start, stride, stop, size, this.start, this.stride, this.stop, size);
             throw new ConstraintException("Conflicting constraint dimensions for: "+container.getLongName()+f.toString());
           }
         }
 
-        // avoid the constraint conflict problenm
-        if (start >= truesize)
-            throw new InvalidParameterException(msg + "start (" + start + ") >= size (" + truesize + ") for " + _name);
+        // validate the arguments
+        if (start >= size)
+            throw new InvalidParameterException(msg + "start (" + start + ") >= size (" + size + ") for " + _name);
 
         if (start < 0)
             throw new InvalidParameterException(msg + "start < 0");
@@ -199,8 +184,8 @@ public final class DArrayDimension extends DAPNode
         if (stride <= 0)
             throw new InvalidParameterException(msg + "stride <= 0");
 
-        if (stop >= truesize)
-            throw new InvalidParameterException(msg + "stop >= size");
+        if (stop >= size)
+            throw new InvalidParameterException(msg + "stop >= size: "+stop+":"+size);
 
         if (stop < 0)
             throw new InvalidParameterException(msg + "stop < 0");
@@ -212,7 +197,7 @@ public final class DArrayDimension extends DAPNode
         this.stride = stride;
         this.stop = stop;
         this.size = 1 + (stop - start) / stride;
-	      this.constrained = constraining || this.constrained;
+	this.constrained = true;
     }
 
     /**

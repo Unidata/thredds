@@ -412,8 +412,7 @@ public abstract class BaseType extends DAPNode
 
         String longName = _name;
 
-
-        while (parent != null) {
+        while (parent != null && !(parent instanceof DDS)) {
             longName = parent.getName() + "." + longName;
             parent = (BaseType)parent.getParent();
         }

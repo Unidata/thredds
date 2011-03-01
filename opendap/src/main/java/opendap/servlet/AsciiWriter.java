@@ -22,6 +22,7 @@
 package opendap.servlet;
 
 import opendap.dap.*;
+import opendap.dap.Server.SDGrid;
 import opendap.dap.Server.ServerMethods;
 
 import java.io.PrintWriter;
@@ -234,7 +235,7 @@ public class AsciiWriter {
         Enumeration e = dstruct.getVariables();
         while (e.hasMoreElements()) {
             BaseType ta = (BaseType) e.nextElement();
-
+            if(!ta.isProject()) continue;
             if (!newLine && !firstPass)
                 pw.print(", ");
             firstPass = false;
@@ -248,16 +249,20 @@ public class AsciiWriter {
 
     private void showGrid(DGrid dgrid, PrintWriter pw, boolean addName, String rootName, boolean newLine) {
 
+        int subprojections = dgrid.projectedComponents(true);
+
         if (rootName != null)
             rootName += "." + dgrid.getName();
-        else
+        else if(subprojections > 1)
             rootName = dgrid.getName();
-
+        else
+            rootName = null;
+       
         boolean firstPass = true;
         Enumeration e = dgrid.getVariables();
         while (e.hasMoreElements()) {
             BaseType ta = (BaseType) e.nextElement();
-
+            if(!ta.isProject()) continue;
             if (!newLine && !firstPass)
                 pw.print(", ");
             firstPass = false;
@@ -284,7 +289,6 @@ public class AsciiWriter {
             int j = 0;
             for (Enumeration e2 = v.elements(); e2.hasMoreElements();) {
                 BaseType ta = (BaseType) e2.nextElement();
-
                 if (j > 0) pw.print(", ");
                 toASCII(ta, pw, false, rootName, false);
                 j++;

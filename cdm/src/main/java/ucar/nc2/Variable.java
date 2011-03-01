@@ -80,6 +80,7 @@ public class Variable implements VariableIF, ProxyReader {
   protected Structure parent = null; // for variables inside a Structure, aka "structure members"
   protected ProxyReader proxyReader = this;
 
+
   /**
    * Get the full name of this Variable, starting from rootGroup. The name is unique within the
    * entire NetcdfFile.
@@ -1763,6 +1764,21 @@ public class Variable implements VariableIF, ProxyReader {
 
     return false;
   }
+
+  public Object clone()  throws CloneNotSupportedException
+  {
+      Variable clone = (Variable)super.clone();
+
+      // Do we need to clone these?
+      // protected Cache cache = new Cache();
+      // protected int sizeToCache = -1; // bytes
+
+      clone.setParentGroup(group);
+      clone.setParentStructure(parent);
+      clone.setProxyReader(clone);
+      return clone;
+  }
+
 
   ///////////////////////////////////////////////////////////////////////
   // deprecated

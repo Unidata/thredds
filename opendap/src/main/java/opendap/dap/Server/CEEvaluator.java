@@ -362,7 +362,7 @@ public class CEEvaluator {
                     while (eSDA.hasMoreElements()) {
                         DArrayDimension dad = (DArrayDimension) eSDA.nextElement();
                         // Tweak it's projection state
-                        dad.markDimension(0, 1, dad.getSize() - 1, false);  // mark without constraints
+                        dad.setProjection(0, 1, dad.getSize() - 1);
                     }
                 } else if (o instanceof SDGrid) {  // Is this thing a SDGrid?
                     SDGrid SDG = (SDGrid) o;
@@ -373,7 +373,7 @@ public class CEEvaluator {
                     while (eSDA.hasMoreElements()) {
                         DArrayDimension dad = (DArrayDimension) eSDA.nextElement();
                         // Tweak it's projection state
-                        dad.markDimension(0, 1, dad.getSize() - 1, false);
+                        dad.setProjection(0, 1, dad.getSize() - 1);
                     }
                 }
             }

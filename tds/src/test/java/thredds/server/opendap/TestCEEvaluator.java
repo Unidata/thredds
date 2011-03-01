@@ -51,6 +51,10 @@ import java.util.Enumeration;
 
 public class TestCEEvaluator extends TestCase
 {
+    static boolean debug = false;
+
+    static  boolean generate = false;
+
     // Location on motherlode of the .nc files of interest:
     //  /data/ldm/pub/decoded/netcdf/grid/NCEP/NAM
     //  /opt/webroot/htdocs/motherlode/threddsCats/8088/dodsC
@@ -62,26 +66,26 @@ public class TestCEEvaluator extends TestCase
     //static final String testdir = "//fileserver/share/testdata/cdmUnitTest/conventions/mars";
     static final String DFALTTESTDIR = "src/test/data/testdata2";
 
-    // Test case list
-    static final String[][] testsetsx = new String[][]{
-            new String[]{
-                    "temp_air_01082000.nc",
-                    "?time",
-                    "?longitude,latitude",
-                    "?time[1:2]",
-                    "?t[0:2:3][3:4][4:5][0:2:6]",
-            },
-            new String[]{
-		    "tst-PROFILER.nc",
-		    "?wmoStaNum",
-		    "staName"
-            },
-    };
 
     static final String[][] testsets = new String[][]{
             new String[]{
-                    "temp_air_01082000.nc",
-                    "?t[0:2:3][3:4][4:5][0:2:6]",
+                    "0","temp_air_01082000.nc",
+                    "1","?time",
+                    "2","?longitude,latitude",
+                    "3","?time[1:2]",
+                    "4","?t[0:2:3][3:4][4:5][0:2:6]",
+            },
+            new String[]{
+		    "0","tst-PROFILER.nc",
+		    "1","?wmoStaNum",
+		    "2","staName"
+            },
+    };
+
+    static final String[][] testsetsx = new String[][]{
+            new String[]{
+                    "0","temp_air_01082000.nc",
+                    "4","?t[0:2:3][3:4][4:5][0:2:6]",
             }
     };
 
@@ -90,9 +94,6 @@ public class TestCEEvaluator extends TestCase
     static final String TITLE = "DAP CEEvaluator Tests";
 
     //////////////////////////////////////////////////
-    boolean debug = false;
-
-    boolean generate = false;
 
     String testdir = DFALTTESTDIR;
 
@@ -134,17 +135,20 @@ public class TestCEEvaluator extends TestCase
         int ntestsets = testsets.length;
         AsciiWriter writer = new AsciiWriter(); // could be static
         boolean pass = true;
+        String expectedfile = null;
 
-        for(int i = 0; i < ntestsets && pass; i++) {
+loop:        for(int i = 0; i < ntestsets && pass; i++) {
             String[] testset = testsets[i];
-            int ntests = testset.length;
-            String basename = testset[0];
+            int ntests = (testset.length);
+            String basename = testset[1];
             String path = testdir + "/" + basename;
 
-            for(int j = 1; j < ntests && pass; j++) {
-                String constraint = testset[j];
+            for(int j = 2; j < ntests && pass; j+=2) {
+                String constraint = testset[j+1];
                 String testname = path + constraint;
-                System.out.println("Testing (" + i + "): " + testname);
+                System.err.println("Testing (" + i + "): " + testname);
+                int caseno = 0;
+                caseno = Integer.parseInt(testset[j]);
 
                 try {
                     file = new File(path);
@@ -155,6 +159,7 @@ public class TestCEEvaluator extends TestCase
                     dds = ds.getDDS();
                     // force the name
                     dds.setName(basename);
+                    if(debug) {System.err.println("initial dds:\n");dds.printDecl(System.err);}
 
                     CEEvaluator ce = new CEEvaluator(dds);
                     ce.parseConstraint(constraint);
@@ -170,6 +175,7 @@ public class TestCEEvaluator extends TestCase
                             w.print(((BaseType)sm).getLongName());
                             first = false;
                         }
+                        w.println();
                         w.print("selections: ");
                         ce.printConstraint(w);
                         w.println();
@@ -182,48 +188,35 @@ public class TestCEEvaluator extends TestCase
                     writer.toASCII(pw, dds, null);
                     pw.close();
                     String result = content.toString();
-                    String expectedfile = String.format("%s.%02d.asc", path, j);
+                    expectedfile = String.format("%s.%02d.asc", path, caseno);
+                    System.err.println("expected file: "+expectedfile);
                     if(debug) {
-                        try {
                             StringReader dresult = new StringReader(result);
-                            FileReader dfile = new FileReader(expectedfile);
-                            BufferedReader lnf = new BufferedReader(dfile);
                             BufferedReader lns = new BufferedReader(dresult);
                             System.err.println("-----\nresult:\n-----\n"+result);
-                            String line = null;
-                            System.err.println("-----\nexpected:\n-----");
+                            System.err.println("-----");
                             System.err.flush();
-                            while( (line = lnf.readLine()) != null) {
-                                System.err.println(line);
-                                System.err.flush();
-                            }
-                            System.err.flush();
-                            lnf.close(); lns.close(); dfile.close(); dresult.close();
-                        } catch (IOException ioe) {
-                            System.err.println("debug failure:"+ioe);
-                        }
-                    }   else {
-                        // Compare with expected result
-                        Diff diff = new Diff(basename + constraint);
-                        StringReader resultrdr = new StringReader(result);
-                        FileReader expectedrdr = new FileReader(expectedfile);
-                        pass = !diff.doDiff(resultrdr, expectedrdr);
-                        try {
-                            resultrdr.close();
-                            expectedrdr.close();
-                        } catch(IOException ioe) {
-                            // ignore
-                        }
-                        junit.framework.Assert.assertTrue(testname, pass);
+                    }
+                    // Compare with expected result
+                    Diff diff = new Diff(basename + constraint);
+                    StringReader resultrdr = new StringReader(result);
+                    FileReader expectedrdr = new FileReader(expectedfile);
+                    pass = !diff.doDiff(resultrdr, expectedrdr, System.err);
+
+                    try {
+                        resultrdr.close();
+                        expectedrdr.close();
+                    } catch(IOException ioe) {
+                        // ignore
                     }
                 } catch(Exception e) {
-                    System.out.println("Fail: TestCEEvaluator: " + e.toString());
+                    System.err.println("Fail: TestCEEvaluator: " + e.toString());
                     pass = false;
                 }
-                if(!pass) {
-                    System.out.println("***Fail: " + path + constraint);
-                } else
-                    System.out.println("***Pass: " + path + constraint);
+                String passmark = (pass?"PASS":"FAIL");
+                System.err.printf("***%s: %s%s  (%s)", passmark, path, constraint, expectedfile);
+                System.err.flush();
+                if(!pass) break loop;
             }
         }
         if(!pass)

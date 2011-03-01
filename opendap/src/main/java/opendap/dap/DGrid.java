@@ -40,6 +40,8 @@
 
 package opendap.dap;
 
+import opendap.dap.Server.SDArray;
+
 import java.io.*;
 import java.util.Vector;
 import java.util.Enumeration;
@@ -517,6 +519,101 @@ public class DGrid extends DConstructor implements ClientIO {
     // Export for testing
     public DArray getArray() {return arrayVar;}
     public Vector<DArrayDimension> getArrayDims() {return arrayVar.dimVector;}
+
+    /**
+         * How many prohected components of this Grid object?
+         *
+         * @return The number of projected components.
+         */
+        public int projectedComponents(boolean constrained) {
+            int comp;
+
+            if (constrained) {
+                comp = ((DArray)arrayVar).isProject() ? 1 : 0;
+
+                Enumeration e = mapVars.elements();
+
+                while (e.hasMoreElements()) {
+                    if (((DArray) e.nextElement()).isProject())
+                        comp++;
+                }
+            } else {
+                comp = 1 + mapVars.size();
+            }
+
+            return comp;
+        }
+
+
+    /**
+     * When projected (using whatever the current constraint provides in the way
+     * of a projection) am I still a Grid?
+     *
+     * @return True if projected grid is still a grid. False otherwise.
+     */
+
+    public boolean projectionYieldsGrid(boolean constrained) {
+
+        if(!constrained) return true;
+        
+        // For each dimension in the Array part, check the corresponding Map
+        // vector to make sure it is present in the projected Grid. If for each
+        // projected dimension in the Array component, there is a matching Map
+        // vector, then the Grid is valid.
+        boolean valid = true;
+
+        // Don't bother checking if the Array component is not included.
+        if (!((SDArray) arrayVar).isProject())
+            return false;
+
+        int nadims = arrayVar.numDimensions();
+        int nmaps =  getVarCount()-1;
+        //Enumeration aDims = arrayVar.getDimensions();
+        //Enumeration e = mapVars.elements();
+        //while (valid && e.hasMoreElements() && aDims.hasMoreElements()) {
+
+        if(nadims != nmaps)
+            valid = false;
+        else for(int d=0;d<nadims;d++) {
+            try {
+
+            DArrayDimension thisDim = arrayVar.getDimension(d); //(DArrayDimension) aDims.nextElement();
+            SDArray mapArray = (SDArray)getVar(d+1); //e.nextElement();
+            DArrayDimension mapDim = mapArray.getFirstDimension();
+
+            if (thisDim.getSize() > 0) {
+                // System.out.println("Dimension Contains Data.");
+
+                if (mapArray.isProject()) { // This map vector better be projected!
+                    // System.out.println("Map Vector Projected, checking projection image...");
+
+                    // Check the matching Map vector; the Map projection must equal
+                    // the Array dimension projection
+
+                    valid = true;
+                    valid = valid && mapDim.getStart() == thisDim.getStart();
+                    valid = valid && mapDim.getStop() == thisDim.getStop();
+                    valid = valid && mapDim.getStride() == thisDim.getStride();
+                } else {
+                    // System.out.println("Map Vector not Projected.");
+                    valid = false;
+                }
+
+            } else {
+                // System.out.println("Dimension empty. Verifing cooresponding Map vector not projected...");
+                // Corresponding Map vector must be excluded from the
+                // projection or it's not a grid.
+                valid = !mapArray.isProject();
+            }
+
+            }  catch(Exception e) {valid=false; break;}
+
+        }
+
+        //if (e.hasMoreElements() != aDims.hasMoreElements()) valid = false;
+
+        return valid;
+    }
 
 
     /**

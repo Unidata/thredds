@@ -208,8 +208,6 @@ public abstract class SDStructure extends DStructure implements ServerMethods, R
             for (Enumeration e = vars.elements(); e.hasMoreElements();) {
                 ServerMethods sm = (ServerMethods) e.nextElement();
                 sm.setProject(state, all);
-                // Mark as ctor projected
-                sm.setCtorProjected(state);
             }
     }
 

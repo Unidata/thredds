@@ -90,18 +90,7 @@ public class DAPNode implements Cloneable, Serializable
      */
     private boolean projected = false;
 
-    /**
-      * CEEValuator.markstackedvariables()
-      * automatically marks all fields of a constructor as projected.
-      * This causes problems with printDecl, which automatically recurses
-      * on it fields. This means that constructor fields end up printed twice.
-      * The original code, with the bad cloning, did not do this for some reason.
-      * The solution taken here is mark which nodes were marked by constructor
-      * recursion and which were marked directly. This info is then used in
-      * printDecl to properly print the fields once and only once.
-      */
-    private boolean ctorProjected = false;
-       
+
     /**
      * The Attribute Table used to contain attributes specific to this
      * instance of a BaseType variable. This is the repository for
@@ -164,7 +153,7 @@ public class DAPNode implements Cloneable, Serializable
         return (projected);
     }
 
-     /**
+    /**
       * Set the state of this variable's projection. <code>true</code> means
       * that this variable is part of the current projection as defined by
       * the current constraint expression, otherwise the current projection
@@ -194,30 +183,6 @@ public class DAPNode implements Cloneable, Serializable
       */
      public void setProject(boolean state) {
          setProject(state, true);
-     }
-
-
-    /**
-     * Access the ctorProjected field.
-     *
-     * @return <code>true</code> if the variable was projected
-     * as a result of constructor recursions
-     * <code>false</code> otherwise.
-     * @see opendap.dap.Server.CEEvaluator
-     */
-    public boolean isCtorProjected() {
-        return (ctorProjected);
-    }
-
-     /**
-      * Set the state of this variable's ctorProjected fiel
-      *
-      * @param state <code>true</code> if the variable was recursively projected,
-      *              <code>false</code> otherwise.
-      * @see opendap.dap.Server.CEEvaluator
-      */
-     public void setCtorProjected(boolean state) {
-         ctorProjected = (state);
      }
 
 

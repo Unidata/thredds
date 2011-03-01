@@ -889,7 +889,7 @@ public class DDS extends DStructure
      */
     public void addVariable(BaseType v, int part)
     {
-        // v.setParent(this);
+        v.setParent(this);
         vars.addElement(v);
     }
 

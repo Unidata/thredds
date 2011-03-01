@@ -157,7 +157,7 @@ public class ServerDDS extends DDS
             BaseType bt = (BaseType) e.nextElement();
             // System.err.println("check: "+bt.getLongName()+" = "+((ServerMethods) bt).isProject());
             ServerMethods sm = (ServerMethods) bt;
-            if(sm.isProject() && !sm.isCtorProjected()) {
+            if(sm.isProject()) {
                 bt.printDecl(os, "    ", true, true);
             }
         }

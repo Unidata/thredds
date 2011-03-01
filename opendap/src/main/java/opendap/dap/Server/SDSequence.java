@@ -254,8 +254,6 @@ public abstract class SDSequence extends DSequence implements ServerMethods, Rel
             for (Enumeration e = varTemplate.elements(); e.hasMoreElements();) {
                 ServerMethods sm = (ServerMethods) e.nextElement();
                 sm.setProject(state);
-                // Mark this as a ctor projection
-                sm.setCtorProjected(state);
             }
     }
 

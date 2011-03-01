@@ -288,6 +288,16 @@ public class Diff {
         return printout();
     }
 
+    static boolean isBlankLine(String s)
+    {
+        int index = 0;
+        int len = s.length();
+        for(index=len-1;index>=0;index--) {
+            if(" \t\r".indexOf(s.charAt(index)) < 0) return false;
+        }
+        return true;
+    }
+
     /**
      * inputscan    Reads the file specified by pinfo.file.
      * ---------    Places the lines of that file in the symbol table.
@@ -295,10 +305,10 @@ public class Diff {
      */
     void inputscan(fileInfo pinfo) throws IOException {
         String linebuffer;
-
         pinfo.maxLine = 0;
         while ((linebuffer = pinfo.file.readLine()) != null) {
-            storeline(linebuffer, pinfo);
+            if(!isBlankLine(linebuffer))
+                storeline(linebuffer, pinfo);
         }
     }
 

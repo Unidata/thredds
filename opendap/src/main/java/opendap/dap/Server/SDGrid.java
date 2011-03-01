@@ -82,91 +82,6 @@ public abstract class SDGrid extends DGrid implements ServerArrayMethods, RelOps
 
 
     /**
-     * When projected (using whatever the current constraint provides in the way
-     * of a projection) am I still a Grid?
-     *
-     * @return True if projected grid is still a grid. False otherwise.
-     */
-
-    public boolean projectionYieldsGrid() {
-
-        // For each dimension in the Array part, check the corresponding Map
-        // vector to make sure it is present in the projected Grid. If for each
-        // projected dimension in the Array component, there is a matching Map
-        // vector, then the Grid is valid.
-        boolean valid = true;
-
-        // Don't bother checking if the Array component is not included.
-        if (!((SDArray) arrayVar).isProject())
-            return false;
-
-        Enumeration aDims = arrayVar.getDimensions();
-        Enumeration e = mapVars.elements();
-
-        while (valid && e.hasMoreElements() && aDims.hasMoreElements()) {
-
-            DArrayDimension thisDim = (DArrayDimension) aDims.nextElement();
-            SDArray mapArray = (SDArray) e.nextElement();
-            DArrayDimension thisMap = mapArray.getFirstDimension();
-
-            if (thisDim.getSize() > 0) {
-                // System.out.println("Dimension Contains Data.");
-
-                if (mapArray.isProject()) { // This map vector better be projected!
-                    // System.out.println("Map Vector Projected, checking projection image...");
-
-                    // Check the matching Map vector; the Map projection must equal
-                    // the Array dimension projection
-
-                    valid = thisMap.getStart() == thisDim.getStart() &&
-                            thisMap.getStop() == thisDim.getStop() &&
-                            thisMap.getStride() == thisDim.getStride();
-                } else {
-                    // System.out.println("Map Vector not Projected.");
-                    valid = false;
-                }
-
-            } else {
-                // System.out.println("Dimension empty. Verifing cooresponding Map vector not projected...");
-                // Corresponding Map vector must be excluded from the
-                // projection or it's not a grid.
-                valid = !mapArray.isProject();
-            }
-
-        }
-
-        if (e.hasMoreElements() != aDims.hasMoreElements())
-            valid = false;
-
-        return valid;
-    }
-
-    /**
-     * How many prohected components of this Grid object?
-     *
-     * @return The number of projected components.
-     */
-    public int projectedComponents(boolean constrained) {
-        int comp;
-
-        if (constrained) {
-            comp = ((SDArray) arrayVar).isProject() ? 1 : 0;
-
-            Enumeration e = mapVars.elements();
-
-            while (e.hasMoreElements()) {
-                if (((SDArray) e.nextElement()).isProject())
-                    comp++;
-            }
-        } else {
-            comp = 1 + mapVars.size();
-        }
-
-        return comp;
-    }
-
-
-    /**
      * Write the variable's declaration in a C-style syntax. This
      * function is used to create textual representation of the Data
      * Descriptor Structure (DDS).  See <em>The OPeNDAP User Manual</em> for
@@ -212,7 +127,7 @@ public abstract class SDGrid extends DGrid implements ServerArrayMethods, RelOps
         // component Grid, send the M components as elements of a Struture.
         // This will preserve the grouping without violating the rules for a
         // Grid.
-        else if (constrained && !projectionYieldsGrid()) {
+        else if (constrained && !projectionYieldsGrid(true)) {
             //os.println("It's a Structure.");
             isStructure = true;
         } else {
@@ -289,7 +204,7 @@ public abstract class SDGrid extends DGrid implements ServerArrayMethods, RelOps
             os.print(" = ");
         }
 
-        boolean isStillGrid = projectionYieldsGrid();
+        boolean isStillGrid = projectionYieldsGrid(true);
 
         os.print("{ ");
         if (isStillGrid) os.print("ARRAY: ");
@@ -358,8 +273,6 @@ public abstract class SDGrid extends DGrid implements ServerArrayMethods, RelOps
             for (Enumeration e = mapVars.elements(); e.hasMoreElements();) {
                 ServerMethods sm = (ServerMethods) e.nextElement();
                 sm.setProject(state);
-                // Mark as ctor projected
-                sm.setCtorProjected(state);
             }
         }
     }
@@ -652,7 +565,7 @@ public abstract class SDGrid extends DGrid implements ServerArrayMethods, RelOps
         // component Grid, send the M components as elements of a Struture.
         // This will preserve the grouping without violating the rules for a
         // Grid.
-        else if (constrained && !projectionYieldsGrid()) {
+        else if (constrained && !projectionYieldsGrid(true)) {
             //os.println("It's a Structure.");
             isStructure = true;
         } else {

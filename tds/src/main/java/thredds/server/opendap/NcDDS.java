@@ -54,8 +54,20 @@ public class NcDDS extends ServerDDS {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NcDDS.class);
   static private String DODScharset = "_!~*'-\"";
 
-  private HashMap<String, BaseType> dimHash = new HashMap<String, BaseType>(50);
+  //private HashMap<String, BaseType> coordHash = new HashMap<String, BaseType>(50); // non grid coordiinate variables
+  // Track various subsets of the variables
+  private HashMap<String, Variable> coordvars = new HashMap<String, Variable>(50);
+  private Vector<Variable> ddsvars = new Vector<Variable>(50);   // list of currently active variables
+  private HashMap<String, Variable> gridarrays = new HashMap<String, Variable>(50);
+  private HashMap<String, Variable> used = new HashMap<String, Variable>(50);
 
+  private Variable findvariable(String name)
+  {
+      for (Variable v: ddsvars) {
+          if(v.getName().equals(name)) return v;
+      }
+      return null;
+  }
   /**
    * Constructor
    *
@@ -65,37 +77,61 @@ public class NcDDS extends ServerDDS {
   public NcDDS(String name, NetcdfFile ncfile) {
     super(StringUtil.escape(name, ""));
 
+    // dup the variable set
+    for (Object o : ncfile.getVariables()) {
+      Variable v = (Variable) o;
+      ddsvars.add(v);
+    }
+
     // get coordinate variables
-    // LOOK: this should get optimized to store data once
     for (Object o : ncfile.getDimensions()) {
       Dimension dim = (Dimension) o;
-      Variable cv = ncfile.findVariable(dim.getName()); // LOOK WRONG
+      Variable cv = findvariable(dim.getName());
       if ((cv != null) && cv.isCoordinateVariable()) {
-        BaseType bt = null;
-        if ((cv.getDataType() == DataType.CHAR))
-          bt = (cv.getRank() > 1) ? new NcSDCharArray(cv) : new NcSDString(cv);
-        else
-          bt = new NcSDArray(cv, createScalarVariable(ncfile, cv));
-
-        dimHash.put(dim.getName(), bt);
+        coordvars.put(dim.getName(),cv);
         if (log.isDebugEnabled())
           log.debug(" NcDDS adding coordinate variable " + cv.getName() + " for dimension " + dim.getName());
       }
     }
 
-    // add variables
-    for (Object o1 : ncfile.getVariables()) {
-      Variable v = (Variable) o1;
+     // collect grid array variables and set of used (in grids) coordinate variables
+     for (Variable v : ddsvars) {
+            boolean isgridarray = (v.getRank() > 1) && (v.getDataType() != DataType.STRUCTURE) && (v.getParentStructure() == null);
+            if(!isgridarray) continue;
+            Iterator iter = v.getDimensions().iterator();
+            while (isgridarray && iter.hasNext()) {
+                Dimension dim = (Dimension) iter.next();
+                Variable gv = coordvars.get(dim.getName());
+                if (gv == null)
+                   isgridarray = false;
+            }
+            if(isgridarray)   {
+                gridarrays.put(v.getName(),v);
+                for(iter=v.getDimensions().iterator();iter.hasNext();) {
+                    Dimension dim = (Dimension) iter.next();
+                    Variable gv = coordvars.get(dim.getName());
+                    if (gv != null)
+                        used.put(gv.getName(),gv);
+                }
+            }
+     }
+      // remove the used coord vars from ddsvars
+      for(Variable v: used.values())
+          ddsvars.remove(v);
+
+    // Create the set of variables
+    for (Object o1 : ddsvars) {
+      Variable cv = (Variable) o1;
       BaseType bt = null;
 
-      if (v.isCoordinateVariable()) {
-        bt = dimHash.get(v.getName());
-        if (bt == null)
-          log.error("NcDDS: Variable " + v.getName() + " missing coordinate variable in hash; dataset=" + name);
+      if (false && cv.isCoordinateVariable()) {
+        if ((cv.getDataType() == DataType.CHAR))
+          bt = (cv.getRank() > 1) ? new NcSDCharArray(cv) : new NcSDString(cv);
+        else
+          bt = new NcSDArray(cv, createScalarVariable(ncfile, cv));
       }
-
-      if (bt == null)
-        bt = createVariable(ncfile, v);
+      //if (bt == null)
+        bt = createVariable(ncfile, cv);
       addVariable(bt);
     }
   }
@@ -151,27 +187,26 @@ public class NcDDS extends ServerDDS {
 
   private BaseType createArray(NetcdfFile ncfile, Variable v) {
     // all dimensions must have coord vars to be a grid, also must have the same name
-    boolean isGrid = (v.getRank() > 1) && (v.getDataType() != DataType.STRUCTURE) && (v.getParentStructure() == null);
-    Iterator iter = v.getDimensions().iterator();
-    while (isGrid && iter.hasNext()) {
-      Dimension dim = (Dimension) iter.next();
-      Variable cv = ncfile.findVariable(dim.getName());  // LOOK WRONG
-      if ((cv == null) || !cv.isCoordinateVariable())
-        isGrid = false;
-    }
-
+    boolean isGrid = (gridarrays.get(v.getName()) != null);
     NcSDArray arr = new NcSDArray(v, createScalarVariable(ncfile, v));
     if (!isGrid)
-      return arr;
+        return arr;
 
+     // isgrid == true
     ArrayList<BaseType> list = new ArrayList<BaseType>();
-    list.add(arr);
-    iter = v.getDimensions().iterator();
-    while (iter.hasNext()) {
+    list.add(arr); // Array is first element in the list
+    for(Iterator iter = v.getDimensions().iterator();iter.hasNext();) {
       Dimension dim = (Dimension) iter.next();
-      list.add(dimHash.get(dim.getName()));
+      Variable v1 = used.get(dim.getName());
+      assert(v1 != null);
+      BaseType bt = null;
+      if ((v1.getDataType() == DataType.CHAR))
+        bt = (v1.getRank() > 1) ? new NcSDCharArray(v1) : new NcSDString(v1);
+      else
+        bt = new NcSDArray(v1, createScalarVariable(ncfile, v1));
+      assert(bt != null);
+      list.add(bt) ;
     }
-
     return new NcSDGrid(v.getShortName(), list);
   }
 
@@ -199,13 +234,7 @@ public class NcDDS extends ServerDDS {
   public DAPNode cloneDAG(CloneMap map)
           throws CloneNotSupportedException {
     NcDDS d = (NcDDS) super.cloneDAG(map);
-    HashMap<String, BaseType> clone = new HashMap<String, BaseType>(50);
-    Set<String> keys = dimHash.keySet();
-    for (String k : keys) {
-      BaseType bt = dimHash.get(k);
-      clone.put(k, (BaseType) cloneDAG(map, bt));
-    }
-    d.dimHash = clone;
+    d.coordvars = coordvars;
     return d;
   }
 

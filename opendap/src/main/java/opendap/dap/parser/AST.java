@@ -172,13 +172,16 @@ class ASTprojection extends AST
         // X's projection is set by the code that follows the while loop.
         // 1/28/2000 jhrg
         while (bts.size() > 1) {
-            ServerMethods ct = (ServerMethods)bts.pop();
+            DAPNode dn = (DAPNode)bts.pop();
+            ServerMethods ct = (ServerMethods)dn;
             ct.setProject(true, false);
+            //System.err.println("mark singleton: " + dn.getName());
         }
+        DAPNode dn = (DAPNode)bts.pop();
         // For the last element, project the entire variable.
-        ServerMethods bt = (ServerMethods)bts.pop();
+        ServerMethods bt = (ServerMethods)dn;
         bt.setProject(true, true);
-
+        //System.err.println("mark all: " + dn.getName()); System.err.flush();
     }
 
 
@@ -278,19 +281,38 @@ class ASTsegment extends AST
 	throws DAP2ServerSideException, DAP2Exception,
 	       NoSuchFunctionException, NoSuchVariableException
     {
+        BaseType bt = null;
         ServerArrayMethods sam = null;
         components = getSdds().search(name,components);
         if(slices != null && slices.size() > 0) {
             try {
-                sam = (ServerArrayMethods)components.peek();
+                bt = (BaseType)components.peek();
             } catch (ClassCastException cce) {
                     String msg = "Attempt to treat the variable `" + name
                                  + "' as if it is an array.";
                     throw new DAP2Exception(DAP2Exception.MALFORMED_EXPR, msg);
             }
-            for(int i=0;i<slices.size();i++) {
-                ASTslice slice = slices.get(i);
-		        slice.walk(sam,i);
+            if(bt instanceof DGrid) {// project the grid and the coordinate variable
+                DGrid grid = ((DGrid) bt);
+                bt = grid.getArray();
+                sam = (ServerArrayMethods)bt;
+                for(int i=0;i<slices.size();i++) {
+                    ASTslice slice = slices.get(i);
+		            slice.walk(sam,i);
+                }
+                // walk the coordinate variables also
+                for(int i=0;i<slices.size();i++) {
+                    ASTslice slice = slices.get(i);
+                    bt = grid.getVar(i+1);
+                    sam = (ServerArrayMethods)bt;
+		            slice.walk(sam,0);
+                }
+            } else {
+                sam = (ServerArrayMethods)bt;
+                for(int i=0;i<slices.size();i++) {
+                    ASTslice slice = slices.get(i);
+		            slice.walk(sam,i);
+                }
 	        }
         }
 	    return components;
