@@ -2,6 +2,7 @@
 <html>
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <link href="../../tds.css" rel="stylesheet" type="text/css"/>
   <title>Running Tomcat Behind a Proxy Server</title>
 </head>
 <body>
@@ -9,26 +10,76 @@
 
 <hr>
 
-<p>Two issues can arise when running the TDS behind a proxy server. First, you must get the proxy configuration
-  correct so that Tomcat and the TDS know the correct <code>server:port</code> and context path. Second, if your
-  proxy changes the TDS context path (e.g., changing the default "/thredds" to something more project specific
-  like "/projX/thredds").</p>
+<p>There are a number of ways to proxy requests to your TDS installation. The following sections
+  provide some references and other information to help get you started.
+</p>
 
-<h2>Proxy Configuration</h2>
-<p>See the sections below for <a href="#tomcatProxyDocs">links to some Tomcat documentation on proxying</a> and
-  some <a href="#modProxy">contributed documentation from several users</a>.</p>
+<h2><a name="tomcatProxyDocs"></a>Tomcat Proxy Documentation</h2>
+<p>The following are good proxying resources.</p>
+<ul>
+  <li><a href="http://tomcat.apache.org/tomcat-6.0-doc/proxy-howto.html">
+    Tomcat 6.0 Proxy Support HOW-TO</a> (mod_proxy)</li>
+  <li><a href="http://tomcat.apache.org/connectors-doc/webserver_howto/apache.html">
+    Apache Tomcat Connector - Webserver HowTo</a> (mod_jk)
+  </li>
+  <li><a href="http://oreilly.com/catalog/9780596101060/chapter/ch04.pdf">Tomcat Tuning</a> free online chapter in
+    <a href="http://oreilly.com/catalog/9780596101060/index.html"> Tomcat: The Definitive Guide</a> (2007) has
+    some timing comparisons between Tomcat and Apache http. You might be surprised at the results.
+  </li>
+</ul>
 
-<p>You can check the <code>server:port</code> and context path that TDS is being handed by Tomcat for each
-  request if you have <a href="RemoteManagement.html">TDS Remote Management</a> set up. From the debug page
-  the TDS Remote Management enables ("<code>/thredds/admin/debug</code>"), follow the "Show Http Request
-  Info" link and look for the values of <code>req.getServerName()</code>, <code>req.getServerPort()</code>,
-  and <code>req.getContextPath()</code>.</p>
+<h2><a name="chgContextPath"></a>Changing the TDS Context Path ("/thredds")</h2>
 
-<h2><a name="chgContextPath"></a>Changing the TDS Context Path</h2>
-<p>The second issue only comes up if your proxy changes the TDS webapps contextPath (e.g., from the default
-  "/thredds" to a project specific one like "/projX/thredds"). In this case, you must edit the TDS web.xml
-  file (located in <code>$TOMCAT_HOME/webapps/thredds/WEB-INF/web.xml</code>).
-  Near the very top of the web.xml file, you must change the following section:
+<p>If your proxy configuration changes the TDS context path (the "/thredds" part of the URL path),
+  a few more changes will be needed:
+</p>
+<ol>
+  <li>Rename the <code>thredds.war</code> file to match the desired context path before you deploy
+    it to Tomcat.</li>
+  <li>Edit the TDS <code>web.xml</code> file and change the value of the "ContextPath" parameter to
+    match the desired context path.</li>
+  <li>Edit your TDS configuration catalogs and change the service base URLs to start with the
+    desired context path </li>
+</ol>
+
+<h3>Step 1: Rename the <code>thredds.war</code> File</h3>
+
+<p>Tomcat and other servlet engines direct incoming requests to a particular web application when
+  the beginning of the request URL path matches the context path of that particular webapp. The
+  easiest way to let Tomcat (or any other servlet engine) know what context path to use for a given
+  webapp is to rename that webapp's <code>.war</code> file before deploying it to Tomcat.
+</p>
+
+<p>For instance, if you want all URLs starting with "/thredds2" to be handled by your TDS install,
+  rename the <code>thredds.war</code> file to <code>thredds2.war</code> before you deploy it to
+  Tomcat.
+</p>
+
+<p>If the desired context path is a <strong>multi-level context path (e.g., "/my/thredds")</strong>,
+  you must use a pound sign ("#") in the <code>.war</code> filename to encode the slash ("/"). In
+  this case, the <code>thredds.war</code> file would need to be renamed to
+  <code>my#thredds.war</code>.
+</p>
+
+<h3>Step 2: Edit the TDS <code>web.xml</code> File and Change the Value of the "ContextPath" Parameter</h3>
+
+<p>The TDS uses the value of the "ContextPath" context parameter (as defined in the TDS
+  <code>web.xml</code> file) when generating TDS URLs in certain situations. To make sure all
+  generated URLs are consistent, you must change the value of the "ContextPath" parameter to match
+  the desired context path.
+</p>
+<p><strong>Notes</strong>:</p>
+<ul>
+  <li>Changing the value of "ContextPath" will no longer be necessary in a future release once
+    we require Tomcat 6.0 (Servlet 2.5).</li>
+  <li>The web.xml file is overwritten during deployment which means <code>this edit must be done
+    every time the TDS is re-deployed</code>.</li>
+</ul>
+
+<p> The TDS <code>web.xml</code> file is located in
+  <code>$TOMCAT_HOME/webapps/&lt;contextPath&gt;/WEB-INF/web.xml</code>, where
+  <code>&lt;contextPath&gt;</code> is the value of the desired context path. The "ContextPath"
+  context parameter is defined in the <code>web.xml</code> file (starting at line 12):
 </p>
 <pre>
 &lt;context-param&gt;
@@ -36,85 +87,62 @@
   &lt;param-value&gt;thredds&lt;/param-value&gt;
 &lt;/context-param&gt;
 </pre>
-<p>to, using the above example:</p>
+<p>For the "/thredds2" example, it should be changed to:</p>
 <pre>
 &lt;context-param&gt;
   &lt;param-name&gt;ContextPath&lt;/param-name&gt;
-  &lt;param-value&gt;projX/thredds&lt;/param-value&gt;
+  &lt;param-value&gt;thredds2&lt;/param-value&gt;
 &lt;/context-param&gt;
 </pre>
-<p><strong>NOTE</strong>: This requirement will go away in a future release once we start requiring Tomcat 6.0.</p>
+<p>And for the "/my/thredds" example, it should be changed to:</p>
+<pre>
+&lt;context-param&gt;
+  &lt;param-name&gt;ContextPath&lt;/param-name&gt;
+  &lt;param-value&gt;my/thredds&lt;/param-value&gt;
+&lt;/context-param&gt;
+</pre>
+
+<h3>Step 3: Edit Your TDS Configuration Catalogs and Change the Service Base URLs</h3>
+
+<p>So that users will receive the correct data access URLs for datasets served by your TDS, the
+  base URLs given by the service elements in your TDS configuration catalogs must match the desired
+  context path.</p>
+<p>An OPeNDAP service element on a TDS with the context path of "/thredds2" would need to look
+  similar to this:
+</p>
+<pre>&lt;service name="odap" serviceType="OPeNDAP" base="<strong>/thredds2/dodsC/</strong>"/&gt;</pre>
+<p>and similarly, an OPeNDAP service element on a TDS with the context path of "/my/thredds" would
+  need to look similar to this:
+</p>
+<pre>&lt;service name="odap" serviceType="OPeNDAP" base="<strong>/my/thredds/dodsC/</strong>"/&gt;</pre>
+
+<h2>Debugging changes to your URL (server, port, and/or context path)</h2>
+
+<p>There are a few places you can check to see that the TDS knows that your server name, port,
+  and/or context path have changed. You can:</p>
+<ol>
+  <li>Check that the catalog URL in the title of the HTML view of catalogs matches the requested
+    URL.</li>
+  <li>Check that the Data Access URL in the OPeNDAP Data Access Form matches the requested URL
+    (minus the ".html" suffix).</li>
+  <li>If you have <a href="RemoteManagement.html">TDS Remote Management</a> configured, go to the
+    TDS debug page (e.g., <code>http://localhost:8080/thredds/admin/debug</code>) and  follow the
+    "Show HTTP Request info" link. Once there, check that the values listed for server name and port
+    and the context path all match the appropriate values from the request URL. E.g., for the URL
+    <code>http://localhost:8080/thredds/admin/debug?General/showRequest</code>, the values should be
+    <ul>
+      <li><code>req.getServerName()</code>: localhost</li>
+      <li><code>req.getServerPort()</code>: 8080</li>
+      <li><code>req.getContextPath()</code>: /thredds</li>
+    </ul>
+  </li>
+</ol>
 
 <hr>
 
-<h2><a name="tomcatProxyDocs"></a>Tomcat Documentation</h2>
-<ul>
-  <li>mod_proxy
-    <ul>
-      <li><a href="http://tomcat.apache.org/tomcat-6.0-doc/proxy-howto.html">Tomcat 6.0 Proxy Support HOW-TO</a></li>
-      <li><a href="http://tomcat.apache.org/tomcat-5.5-doc/proxy-howto.html">Tomcat 5.5 Proxy Support HOW-TO</a></li>
-    </ul>
-  </li>
-  <li>mod_jk
-    <ul>
-      <li><a href="http://tomcat.apache.org/connectors-doc/webserver_howto/apache.html">Apache Tomcat Connector - Webserver HowTo</a></li>
-      <li><a href="http://tomcat.apache.org/connectors-doc/">Apache Tomcat Connector</a></li>
-    </ul>
-  </li>
-  <li>
-    <a href="http://oreilly.com/catalog/9780596101060/chapter/ch04.pdf">Tomcat Tuning</a> free online chapter in
-    <a href="http://oreilly.com/catalog/9780596101060/index.html"> Tomcat: The Definitive Guide</a> (2007) has
-    some timing comparisions between Tomcat and Apache http. You might be surprised at the results.
-  </li>
-</ul>
-
-<h2><a name="modProxy"></a>Tomcat and Apache mod_proxy</h2>
-<p>[Thanks to Michael Godin (MBARI) and Greg Keith and Ernie Joynt (NOAA) for the following documentation.]</p>
-
-<p>If you are using Tomcat on port 8080 (for example) and Apache on the
-default port 80, you can use the Apache proxy module to hide the Tomcat
-port in the URLs used to connect to THREDDS.&nbsp; This may be critical
-if your server is behind a firewall that only allows port 80
-access.&nbsp; It is also important if THREDDS is running on a machine
-that is completely behind a firewall, but you have a server running
-Apache that can talk to the machine.</p>
-<p>You will need to edit the Apache httpd.conf file (on Linux, it is stored in /etc/httpd/conf/).</p>
-<p>Find the lines that start with "&lt;IfModule mod_proxy.c&gt;" and
-end with "&lt;/IfModule&gt;".&nbsp; These lines may need to be
-uncommented.&nbsp; Between these lines, make sure the following line
-exists and is uncommented:</p>
-<pre>    ProxyRequests On<br></pre>
-<p>Then add the following lines:</p>
-<pre>    ProxyPreserveHost On<br>    &lt;Location /thredds&gt;<br>        ProxyPass <a class="moz-txt-link-freetext" href="http://myhost.mydomain:8080/thredds">http://myhost.mydomain:8080/thredds</a><br>        ProxyPassReverse <a class="moz-txt-link-freetext" href="http://myhost.mydomain:8080/thredds">http://myhost.mydomain:8080/thredds</a><br>    &lt;/Location&gt;<br>    &lt;Proxy <a class="moz-txt-link-freetext" href="http://myhost.mydomain:8080/thredds">http://myhost.mydomain:8080/thredds</a>&gt;<br>        AllowOverride None<br>        Order allow,deny<br>        Allow from All<br>    &lt;/Proxy&gt;<br></pre>
-<p>You of course need to replace "http://myhost.mydomain:8080/thredds" with the full URL of the THREDDS web application.</p>
-<p>The section between &lt;Proxy... And &lt;/Proxy&gt; can usually be
-omitted, but in some cases a server is sufficiently locked down that
-you need to explicitly allow access to resources.&nbsp; It can also be
-edited to restrict access to registered users via Apache authentication
-mechanisms.</p>
-<p>You can also add additional proxy directives to mask the THREDDS URL  and port in any TDS-generated file access pages. The above ProxyPass  and ProxyPassReverse directives mask the machine name and port using  mod_proxy during an initial THREDDS URL request, but leave this  information visible on the data access page generated by TDS.    </p>
-<p>If you add the following directives BEFORE the directives above,  Apache will use mod_proxy_ajp in addition to the mod_proxy directives,  so that any TDS-generated access pages will use the same URL as shown  in the initial THREDDS request (example shown for Apache 2.2):    </p>
-<pre>  LoadModule proxy_ajp_module modules/mod_proxy_ajp.so
-  ProxyPass /thredds         ajp://localhost:8009/thredds
-  ProxyPassReverse /thredds  ajp://localhost:8009/thredds    </pre>
-<p>This also requires uncommenting the AJP connector (port 8009) in the  Tomcat server.xml file.</p>
-<p>Finally, on the server command line (as a super/admin user), execute:</p>
-<pre>    apachectl graceful<br></pre>
-<p>In my configuration, I initially failed to add the line
-"ProxyPreserveHost On", which caused me many headaches as links
-generated by THREDDS kept directing the client back to port 8080 (which
-was blocked by a firewall).</p>
-
-<h2><a name="modJk"></a>Tomcat and Apache mod_jk</h2>
-<p>Sounds like mod_jk is more powerful than mod_proxy. If anyone has experience using
-  mod_jk and could contribute some text here, please let us know at
-  <a href="mailto:thredds@unidata.ucar.edu">thredds@unidata.ucar.edu</a>.</p>
-
-<hr width="100%">
-
 <address>
 <img src="../../images/thread.png" alt="THREDDS" height="108" width="110">
-  This document is maintained by Unidata and was last updated September 2010.
+  This document is maintained by Unidata and was last updated March 2011.
   Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.
 </address>
 
