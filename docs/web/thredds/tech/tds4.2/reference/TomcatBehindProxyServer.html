@@ -6,7 +6,8 @@
   <title>Running Tomcat Behind a Proxy Server</title>
 </head>
 <body>
-<h1><img src="../../images/unidataLogo.png" width="75" height="75" align="middle" alt="Unidata">Running Tomcat Behind a Proxy Server</h1>
+<h1><img src="../../images/unidataLogo.png" width="75" height="75" align="middle" alt="Unidata">
+  Running Tomcat Behind a Proxy Server</h1>
 
 <hr>
 
@@ -14,13 +15,35 @@
   provide some references and other information to help get you started.
 </p>
 
-<h2><a name="tomcatProxyDocs"></a>Tomcat Proxy Documentation</h2>
-<p>The following are good proxying resources.</p>
+<h2>Proxying and URL Rewriting</h2>
+
+<p>It is important to carefully configure your proxy so that the existence of the proxy is
+  transparent to the end-user/client. For instance, when a web application (e.g., the TDS) on the
+  backend server includes a self-referential URL in some response content, it should use the proxy
+  server's name and port rather than those of the backend server.
+</p>
+<p>The Apache Tomcat Connector (mod_jk) and the Tomcat Proxy (mod_proxy), see documentation links
+  <a href="#tomcatProxyDocs">below</a>, both attempt to (and for most cases succeed) handle proxies
+  in a transparent manner. See the link below for the "Tomcat Connector - Generic HowTo" document
+  for a good discussion of the issues including details on more complex situations and some
+  solutions for them.
+</p>
+
+<h3><a name="tomcatProxyDocs"></a>Tomcat Proxy Documentation</h3>
 <ul>
-  <li><a href="http://tomcat.apache.org/tomcat-6.0-doc/proxy-howto.html">
-    Tomcat 6.0 Proxy Support HOW-TO</a> (mod_proxy)</li>
-  <li><a href="http://tomcat.apache.org/connectors-doc/webserver_howto/apache.html">
-    Apache Tomcat Connector - Webserver HowTo</a> (mod_jk)
+  <li>Tomcat 6.0 Proxy Support (mod_proxy)
+    <ul>
+      <li><a href="http://tomcat.apache.org/tomcat-6.0-doc/proxy-howto.html">
+        Tomcat 6.0 Proxy Support - HOW-TO</a></li>
+    </ul>
+  </li>
+  <li>Apache Tomcat Connector (mod_jk):
+    <ul>
+      <li><a href="http://tomcat.apache.org/connectors-doc/webserver_howto/apache.html">
+        Apache Tomcat Connector - Webserver HowTo</a></li>
+      <li><a href="http://tomcat.apache.org/connectors-doc/generic_howto/proxy.html">
+        Apache Tomcat Connector - Generic HowTo</a></li>
+    </ul>
   </li>
   <li><a href="http://oreilly.com/catalog/9780596101060/chapter/ch04.pdf">Tomcat Tuning</a> free online chapter in
     <a href="http://oreilly.com/catalog/9780596101060/index.html"> Tomcat: The Definitive Guide</a> (2007) has
@@ -30,9 +53,13 @@
 
 <h2><a name="chgContextPath"></a>Changing the TDS Context Path ("/thredds")</h2>
 
-<p>If your proxy configuration changes the TDS context path (the "/thredds" part of the URL path),
-  a few more changes will be needed:
+<p><strong>We do not recommend</strong> changing the TDS context path (the "/thredds" part of the
+  URL path). However, if your network configuration requires that you use a different context path
+  (e.g., "/my/thredds") or you are proxying two TDS installations and need to differentiate them
+  with different context paths (e.g., "/thredds1" and "/thredds2"), you will need to make the
+  following changes:
 </p>
+
 <ol>
   <li>Rename the <code>thredds.war</code> file to match the desired context path before you deploy
     it to Tomcat.</li>
@@ -55,7 +82,7 @@
   Tomcat.
 </p>
 
-<p>If the desired context path is a <strong>multi-level context path (e.g., "/my/thredds")</strong>,
+<p>If the desired context path is a <strong>multi-level context path</strong> (e.g., "/my/thredds"),
   you must use a pound sign ("#") in the <code>.war</code> filename to encode the slash ("/"). In
   this case, the <code>thredds.war</code> file would need to be renamed to
   <code>my#thredds.war</code>.
@@ -115,6 +142,8 @@
   need to look similar to this:
 </p>
 <pre>&lt;service name="odap" serviceType="OPeNDAP" base="<strong>/my/thredds/dodsC/</strong>"/&gt;</pre>
+
+<hr>
 
 <h2>Debugging changes to your URL (server, port, and/or context path)</h2>
 

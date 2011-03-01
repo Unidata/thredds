@@ -6,13 +6,24 @@
   <title>TDS Reference: Running Multiple TDS</title>
 </head>
 <body>
-<h1><img src="../../images/unidataLogo.png" alt="Unidata" align="middle">Running Multiple TDS</h1>
+<h1><img src="../../images/unidataLogo.png" alt="Unidata" align="middle">
+  Running Multiple TDS in a Single Tomcat Installation</h1>
+
 <hr>
 
-<p>Deploying multiple TDS instances in a single Tomcat container is <strong>NOT recommended</strong>.</p>
+<p>Deploying multiple TDS instances in a single Tomcat container is
+  <strong>NOT recommended</strong>.</p>
+<p><strong>Note</strong>: A better solution may be to run two Tomcat instances each running a TDS
+  and then run a proxy server in front of both TDS instances (see our
+  "<a href="TomcatBehindProxyServer.html">Running Tomcat Behind a Proxy Server</a>" documentation
+  for more information on proxy configuration).
+</p>
 
-<p>Though we have tried to fix reported problems with this configuration, we do not ourselves run any
-  servers in this configuration nor do we thoroughly test this configuration.</p>
+<hr>
+
+<p>Though we have tried to fix reported problems with a setup that involves multiple TDS in a
+  single Tomcat instance, we do not ourselves run any servers in this configuration nor do we
+  thoroughly test this setup.</p>
 
 <p>The main issue:</p>
 <ul>
@@ -22,10 +33,6 @@
     may interfere with the settings of another TDS running in the same Tomcat container.
   </li>
 </ul>
-
-<p><strong>Note</strong>: Some related information can be found in our
-  <a href="TomcatBehindProxyServer.html">Tomcat Proxy document</a>.
-</p>
 
 <h2>If You Must ...</h2>
 
