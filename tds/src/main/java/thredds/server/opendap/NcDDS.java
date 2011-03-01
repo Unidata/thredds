@@ -115,9 +115,8 @@ public class NcDDS extends ServerDDS {
                 }
             }
      }
-      // remove the used coord vars from ddsvars
-      for(Variable v: used.values())
-          ddsvars.remove(v);
+      // remove the used coord vars from ddsvars (wrong for now; keep so that coord vars are top-level also)
+     // for(Variable v: used.values()) ddsvars.remove(v);
 
     // Create the set of variables
     for (Object o1 : ddsvars) {
