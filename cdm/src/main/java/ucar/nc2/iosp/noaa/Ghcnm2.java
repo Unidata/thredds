@@ -525,6 +525,7 @@ public class Ghcnm2 extends AbstractIOServiceProvider {
   private RandomAccessFile stnRaf, dataRaf;
   private HashMap<Long, StationIndex> map = new HashMap<Long, StationIndex>(10000);
   private int stn_fldno;
+  private Vinfo dataVinfo, stnVinfo;
 
   @Override
   public void open(RandomAccessFile raff, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
@@ -552,8 +553,8 @@ public class Ghcnm2 extends AbstractIOServiceProvider {
     }
     ncfile.finish();
 
-    Vinfo dataVinfo = setVinfo(dataRaf, ncfile, dataPattern, "all_data");
-    Vinfo stnVinfo = setVinfo(stnRaf, ncfile, stnPattern, "station");
+    dataVinfo = setVinfo(dataRaf, ncfile, dataPattern, "all_data");
+    stnVinfo = setVinfo(stnRaf, ncfile, stnPattern, "station");
 
     StructureMembers.Member m = stnVinfo.sm.findMember(STNID);
     VinfoField f = (VinfoField) m.getDataObject();
@@ -575,15 +576,15 @@ public class Ghcnm2 extends AbstractIOServiceProvider {
 
     int fldno = 1;
     for (StructureMembers.Member m : sm.getMembers()) {
-      VinfoField vinfo = new VinfoField(fldno++);
+      VinfoField vf = new VinfoField(fldno++);
       Variable v = seq.findVariable(m.getName());
       Attribute att = v.findAttribute("scale_factor");
       if (att != null) {
-        vinfo.hasScale = true;
-        vinfo.scale = att.getNumericValue().floatValue();
+        vf.hasScale = true;
+        vf.scale = att.getNumericValue().floatValue();
         v.remove(att);
       }
-      m.setDataObject( vinfo);
+      m.setDataObject( vf);
     }
 
     return result;
@@ -727,7 +728,7 @@ public class Ghcnm2 extends AbstractIOServiceProvider {
       String svalue = matcher.group(stn_fldno).trim();
       Long stnId = Long.parseLong(svalue); // extract the station id
       StationIndex si = map.get(stnId); // find its index
-      return new ArraySequence(members, new StnDataIter(members, si), -1);
+      return new ArraySequence(dataVinfo.sm, new StnDataIter(dataVinfo.sm, si), -1);
     }
   }
 

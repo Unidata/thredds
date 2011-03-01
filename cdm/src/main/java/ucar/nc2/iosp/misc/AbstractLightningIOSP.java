@@ -133,12 +133,8 @@ public abstract class AbstractLightningIOSP extends AbstractIOServiceProvider {
      * @param ncfile  the file to add to
      */
     protected void addLightningGlobalAttributes(NetcdfFile ncfile) {
-        ncfile.addAttribute(null,
-                            new Attribute(CF.featureTypeAtt,
-                                          CF.FeatureType.point.toString()));
-        ncfile.addAttribute(
-            null,
-            new Attribute("history", "Read directly by Netcdf Java IOSP"));
+        ncfile.addAttribute(null, new Attribute(CF.featureTypeAtt, CF.FeatureType.point.toString()));
+        ncfile.addAttribute( null, new Attribute("history", "Read directly by Netcdf Java IOSP"));
     }
 
     /**

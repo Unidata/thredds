@@ -78,22 +78,8 @@ public class CFpointObs extends TableConfigurerImpl {
   public TableConfig getConfig(FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) throws IOException {
 
     // figure out the actual feature type of the dataset
-    String ftypeS = ds.findAttValueIgnoreCase(null, CF.featureTypeAtt, null);
-    if (ftypeS == null)
-      ftypeS = ds.findAttValueIgnoreCase(null, CF.featureTypeAtt2, null);
-    if (ftypeS == null)
-      ftypeS = ds.findAttValueIgnoreCase(null, CF.featureTypeAtt3, null);
-    if (ftypeS == null)
-      ftypeS = ds.findAttValueIgnoreCase(null, CF.featureTypeAtt4, null);
-
-    CF.FeatureType ftype;
-    if (ftypeS == null)
-      ftype = CF.FeatureType.point;
-    else {
-      ftype = CF.FeatureType.getFeatureType(ftypeS);
-      if (ftypeS == null)
-        ftype = CF.FeatureType.point;
-    }
+    CF.FeatureType ftype = CF.FeatureType.getFeatureTypeFromGlobalAttribute(ds);
+    if (ftype == null) ftype = CF.FeatureType.point;
 
     // make sure lat, lon, time coordinates exist
     if (!checkCoordinates(ds, errlog)) return null;

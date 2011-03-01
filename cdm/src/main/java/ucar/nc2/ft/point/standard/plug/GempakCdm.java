@@ -71,15 +71,17 @@ public class GempakCdm extends TableConfigurerImpl {
     }
     if (!ok) return false;
 
-    String ftypeS = ds.findAttValueIgnoreCase(null, CF.featureTypeAtt, null);
-    CF.FeatureType ftype = (ftypeS == null) ? CF.FeatureType.point : CF.FeatureType.getFeatureType(ftypeS);
+    CF.FeatureType ftype = CF.FeatureType.getFeatureTypeFromGlobalAttribute(ds);
+    if (ftype == null) ftype = CF.FeatureType.point;
+
     return (ftype == CF.FeatureType.timeSeries) || (ftype == CF.FeatureType.timeSeriesProfile);
   }
 
   public TableConfig getConfig(FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) throws IOException {
 
-    String ftypeS = ds.findAttValueIgnoreCase(null, CF.featureTypeAtt, null);
-    CF.FeatureType ftype = (ftypeS == null) ? CF.FeatureType.point : CF.FeatureType.getFeatureType(ftypeS);
+    CF.FeatureType ftype = CF.FeatureType.getFeatureTypeFromGlobalAttribute(ds);
+    if (ftype == null) ftype = CF.FeatureType.point;
+
     switch (ftype) {
       case point:
         return null; // use default handler

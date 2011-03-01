@@ -67,15 +67,17 @@ public class CdmDirect extends TableConfigurerImpl {
     }
     if (!ok) return false;
 
-    String ftypeS = ds.findAttValueIgnoreCase(null, CF.featureTypeAtt, null);
-    CF.FeatureType ftype = (ftypeS == null) ? CF.FeatureType.point : CF.FeatureType.getFeatureType(ftypeS);
+    CF.FeatureType ftype = CF.FeatureType.getFeatureTypeFromGlobalAttribute(ds);
+    if (ftype == null) ftype = CF.FeatureType.point;
+
     return (ftype == CF.FeatureType.timeSeries) || (ftype == CF.FeatureType.timeSeriesProfile);
   }
 
   public TableConfig getConfig(FeatureType wantFeatureType, NetcdfDataset ds, Formatter errlog) throws IOException {
 
-    String ftypeS = ds.findAttValueIgnoreCase(null, CF.featureTypeAtt, null);
-    CF.FeatureType ftype = (ftypeS == null) ? CF.FeatureType.point : CF.FeatureType.getFeatureType(ftypeS);
+    CF.FeatureType ftype = CF.FeatureType.getFeatureTypeFromGlobalAttribute(ds);
+    if (ftype == null) ftype = CF.FeatureType.point;
+
     switch (ftype) {
       case point:
         return null; // use default handler
@@ -138,7 +140,7 @@ public class CdmDirect extends TableConfigurerImpl {
     // obs table
     TableConfig obs = new TableConfig(Table.Type.NestedStructure, "station.stn_data");
     obs.nestedTableName = "stn_data";
-    obs.time = "time";
+    obs.time = CoordSysEvaluator.findCoordShortNameByType(ds, AxisType.Time);
     stnTable.addChild(obs);
 
     return stnTable;

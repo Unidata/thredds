@@ -105,9 +105,14 @@ public class CoordSysEvaluator {
    * @param atype look for this type of CoordinateAxis. takes the first one it finds.
     * @return the found CoordinateAxis name, or null if none
    */
-  static public String findCoordNameByType(NetcdfDataset ds, AxisType atype) {
+   static public String findCoordNameByType(NetcdfDataset ds, AxisType atype) {
+     CoordinateAxis coordAxis = findCoordByType(ds, atype);
+     return coordAxis == null ? null : coordAxis.getName();
+   }
+
+  static public String findCoordShortNameByType(NetcdfDataset ds, AxisType atype) {
     CoordinateAxis coordAxis = findCoordByType(ds, atype);
-    return coordAxis == null ? null : coordAxis.getName();
+    return coordAxis == null ? null : coordAxis.getShortName();
   }
 
   /**

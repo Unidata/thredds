@@ -32,6 +32,8 @@
  */
 package ucar.nc2.constants;
 
+import ucar.nc2.NetcdfFile;
+
 /**
  * Constants used in CF Conventions.
  *
@@ -42,10 +44,10 @@ public interface CF {
   public final static String POSITIVE_UP = "up";
   public final static String POSITIVE_DOWN = "down";
 
-  public static final String featureTypeAtt = "CF:featureType";
+  public static final String featureTypeAtt4 = "CF:featureType";
   public static final String featureTypeAtt2 = "CF-featureType";
   public static final String featureTypeAtt3 = "CFfeatureType";
-  public static final String featureTypeAtt4 = "featureType";
+  public static final String featureTypeAtt = "featureType";
 
   // standard attributes
   public static final String ADD_OFFSET = "add_offset";
@@ -137,6 +139,22 @@ maybe:
       if (s.equalsIgnoreCase("section")) return FeatureType.trajectoryProfile;
       return null;
     }
+
+    public static FeatureType getFeatureTypeFromGlobalAttribute(NetcdfFile ds) {
+      String ftypeS = ds.findAttValueIgnoreCase(null, CF.featureTypeAtt, null);
+      if (ftypeS == null)
+        ftypeS = ds.findAttValueIgnoreCase(null, CF.featureTypeAtt2, null);
+      if (ftypeS == null)
+        ftypeS = ds.findAttValueIgnoreCase(null, CF.featureTypeAtt3, null);
+      if (ftypeS == null)
+        ftypeS = ds.findAttValueIgnoreCase(null, CF.featureTypeAtt4, null);
+
+      if (ftypeS == null)
+        return null;
+
+      return CF.FeatureType.getFeatureType(ftypeS);
+    }
+
   }
 
   public enum CellMethods {
