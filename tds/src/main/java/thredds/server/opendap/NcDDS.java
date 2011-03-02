@@ -56,10 +56,10 @@ public class NcDDS extends ServerDDS {
 
   //private HashMap<String, BaseType> coordHash = new HashMap<String, BaseType>(50); // non grid coordiinate variables
   // Track various subsets of the variables
-  private HashMap<String, Variable> coordvars = new HashMap<String, Variable>(50);
+  private Hashtable<String, Variable> coordvars = new Hashtable<String, Variable>(50);
   private Vector<Variable> ddsvars = new Vector<Variable>(50);   // list of currently active variables
-  private HashMap<String, Variable> gridarrays = new HashMap<String, Variable>(50);
-  private HashMap<String, Variable> used = new HashMap<String, Variable>(50);
+  private Hashtable<String, Variable> gridarrays = new Hashtable<String, Variable>(50);
+  private Hashtable<String, Variable> used = new Hashtable<String, Variable>(50);
 
   private Variable findvariable(String name)
   {
