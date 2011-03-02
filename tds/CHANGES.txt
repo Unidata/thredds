@@ -4,7 +4,7 @@ Build Date = @BUILDTIME@
 Build Name = @BUILD.NAME@
 
 Release Details 4.2:
- 4.2.5 (2011-03-01)
+ 4.2.5 (2011-03-02)
    various opendap problems are fixed
    opendap ESG access control
 

@@ -3,6 +3,10 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Changes in version 4.2:
+ 21: (2011-02-16)
+  various opendap problems are fixed
+  ghcnm iosp (beta)
+
  20: (2011-02-16)
   GRIB: Deal with zero length index better
   Default TableAnalyser: turn into trajectory if there is trajectory metadata

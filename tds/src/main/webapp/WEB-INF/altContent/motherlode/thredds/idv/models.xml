@@ -3,6 +3,7 @@
     <dataset name="NCEP Model Data">
       <catalogRef xlink:href="dgex_model.xml" xlink:title="DGEX Model" name="" />
       <catalogRef xlink:href="gfs_model.xml" xlink:title="Global Forecast System Model" name="" />
+      <catalogRef xlink:href="gefs_model.xml" xlink:title="Global Ensemble Forecast System Model" name="" />
       <catalogRef xlink:href="nam_model.xml" xlink:title="North American Model" name="" />
       <catalogRef xlink:href="ruc_model.xml" xlink:title="Rapid Update Cycle Model" name="" />
       <catalogRef xlink:href="sref_model.xml" xlink:title="Short Range Ensemble Forecasting" name="" />

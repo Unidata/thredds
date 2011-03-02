@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2"
-        location="C:/data/ghcnm/ghcnm.v3.0.0-beta1.20101207.qcu.dat">
+<netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
   <dimension name="month" length="12"/>
 
   <attribute name="title" value="Version 3 of the GHCN-Monthly dataset of land surface mean temperatures"/>
@@ -17,11 +16,12 @@
       <attribute name="long_name" value="year of the station record"/>
       <attribute name="units" value="years since 0001-01-01 00:00:00.000 UTC"/>
     </variable>
-    <variable name="value" shape="month" type="float">
+    <variable name="temperature" shape="month" type="int">
       <attribute name="long_name" value="monthly mean temperature"/>
+      <attribute name="standard_name" value="surface_temperature"/>
       <attribute name="units" value="Celsius"/>
       <attribute name="scale_factor" type="float" value=".01"/>
-      <attribute name="missing_value" type="float" value="-99.99"/>
+      <attribute name="missing_value" type="int" value="-9999"/>
     </variable>
     <variable name="dm" shape="month" type="char">
       <attribute name="long_name" value="data management flag"/>
@@ -37,7 +37,7 @@
   <variable name="station" shape="*" type="Sequence">
     <variable name="stnid" shape="" type="long">
       <attribute name="long_name" value="station id"/>
-      <attribute name="standard_name" value="station_id"/>
+      <attribute name="cf_role" value="station_id"/>
     </variable>
     <variable name="lat" shape="" type="float">
       <attribute name="long_name" value="latitude"/>
@@ -99,17 +99,18 @@
 
     <variable name="stn_data" shape="*" type="Sequence">
       <variable name="stnid" shape="" type="long">
-        <attribute name="long_name" value="station stnId"/>
+        <attribute name="long_name" value="station id"/>
       </variable>
       <variable name="year" shape="" type="int">
         <attribute name="long_name" value="year of the station record"/>
         <attribute name="units" value="years since 0001-01-01 00:00:00.000 UTC"/>
       </variable>
-      <variable name="value" shape="month" type="float">
+      <variable name="temperature" shape="month" type="int">
+        <attribute name="standard_name" value="surface_temperature"/>
         <attribute name="long_name" value="monthly mean temperature"/>
         <attribute name="units" value="Celsius"/>
         <attribute name="scale_factor" type="float" value=".01"/>
-        <attribute name="missing_value" type="float" value="-99.99"/>
+        <attribute name="missing_value" type="int" value="-9999"/>
       </variable>
       <variable name="dm" shape="month" type="char">
         <attribute name="long_name" value="data management flag"/>
