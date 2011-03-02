@@ -229,7 +229,7 @@ public class Fmrc {
           fmrcDataset = new FmrcDataset(config);
         } catch (Throwable t) {
           logger.error(config.spec+": initial fmrcDataset creation failed", t);
-          throw new RuntimeException(t);
+          //throw new RuntimeException(t);
         }
       }
 
@@ -243,7 +243,7 @@ public class Fmrc {
 
       } catch (Throwable t) {
         logger.error(config.spec+": makeFmrcInv failed");
-        throw new RuntimeException(t);
+        //throw new RuntimeException(t);
       }
     }
 
