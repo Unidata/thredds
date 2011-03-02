@@ -128,6 +128,7 @@ public class TestTdsNcml extends TestCase {
 
   public void testAggExisting() throws IOException, InvalidRangeException {
     NetcdfFile ncfile = NetcdfDataset.openFile("http://localhost:8080/thredds/dodsC/ExampleNcML/Agg.nc", null);
+    System.out.printf("%s%n", ncfile);
 
     Variable v = ncfile.findVariable("time");
     assert v != null;

@@ -57,7 +57,7 @@ public class TdsDownloader {
 
   public enum Type {access, thredds}
 
-  private String server;
+  private ManageForm.Data config;
   private Type type;
   private HTTPSession session;
 
@@ -65,13 +65,13 @@ public class TdsDownloader {
   private JTextArea ta;
   private CancelTask cancel;
 
-  TdsDownloader(JTextArea ta, String server, Type type, HTTPSession session) throws IOException {
+  TdsDownloader(JTextArea ta, ManageForm.Data config, Type type, HTTPSession session) throws IOException {
     this.ta = ta;
-    this.server = server.trim();
+    this.config = config;
     this.type = type;
     this.session = session;
 
-    localDir = LogLocalManager.getDirectory(server, type.toString());
+    localDir = LogLocalManager.getDirectory(config.server, type.toString());
     if (!localDir.exists() && !localDir.mkdirs()) {
       ta.setText(String.format("Failed to create local directory in = %s%n%n", localDir));
       return;
@@ -79,17 +79,24 @@ public class TdsDownloader {
   }
 
   // copy remote files to localDir
-  public void getRemoteFiles(final CancelTask _cancel) throws IOException {
+  public void getRemoteFiles(final CancelTask _cancel) {
     this.cancel = _cancel;
 
-    String urls = "http://" + server + "/thredds/admin/log/"+type+"/";
+    String urls = config.getServerPrefix() + "/thredds/admin/log/"+type+"/";
 
-    final String contents = HttpClientManager.getContentAsString(session, urls);
-    if ((contents == null) || (contents.length() == 0)) {
-      ta.append(String.format("Failed to get logs at URL = %s%n%n", urls));
+    final String contents;
+    try {
+      contents = HttpClientManager.getContentAsString(session, urls);
+      if ((contents == null) || (contents.length() == 0)) {
+        ta.append(String.format("Failed to get logs at URL = %s%n%n", urls));
+        return;
+      } else {
+        ta.append(String.format("Logs at URL = %s%n%s%n", urls, contents));
+      }
+    } catch (Throwable t) {
+      ta.append(String.format("Failed to get logs at URL = %s error = %s%n%n", urls, t.getMessage()));
+      t.printStackTrace();
       return;
-    } else {
-      ta.append(String.format("Logs at URL = %s%n%s%n", urls, contents));
     }
 
     // update text area in background  http://technobuz.com/2009/05/update-jtextarea-dynamically/
@@ -150,13 +157,13 @@ public class TdsDownloader {
     }
 
     void read() throws HTTPException {
-      String urls = "http://" + server + "/thredds/admin/log/"+type+"/" + name;
+      String urls = config.getServerPrefix() + "/thredds/admin/log/"+type+"/" + name;
       ta.append(String.format(" reading %s to %s%n", urls, localFile.getPath()));
       HttpClientManager.copyUrlContentsToFile(session, urls, localFile);
     }
 
     void append() throws HTTPException {
-      String urls = "http://" + server + "/thredds/admin/log/"+type+"/" + name;
+      String urls = config.getServerPrefix() + "/thredds/admin/log/"+type+"/" + name;
       long start = localFile.length();
       long want = size - start;
       long got = HttpClientManager.appendUrlContentsToFile(session, urls, localFile, start, size);

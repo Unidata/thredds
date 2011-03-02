@@ -328,7 +328,7 @@ public class DatasetCollectionManager implements CollectionManager {
       this.lastScanned = System.currentTimeMillis();
       this.lastChanged = this.lastScanned;
     }
-    if (logger.isInfoEnabled()) logger.info(collectionName+": initial scan found n datasets = "+map.keySet().size());
+    if (logger.isDebugEnabled()) logger.debug(collectionName+": initial scan found n datasets = "+map.keySet().size());
   }
 
   public boolean rescanIfNeeded() throws IOException {

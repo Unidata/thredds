@@ -219,16 +219,16 @@ public class TdsMonitor extends JPanel {
             manage.getStopButton().setCancel(false); // clear the cancel state
 
             if (data.wantAccess) {
-              TdsDownloader logManager = new TdsDownloader(manage.getTextArea(), data.server, TdsDownloader.Type.access, session);
+              TdsDownloader logManager = new TdsDownloader(manage.getTextArea(), data, TdsDownloader.Type.access, session);
               logManager.getRemoteFiles(manage.getStopButton());
             }
             if (data.wantServlet) {
-              TdsDownloader logManager = new TdsDownloader(manage.getTextArea(), data.server, TdsDownloader.Type.thredds, session);
+              TdsDownloader logManager = new TdsDownloader(manage.getTextArea(), data, TdsDownloader.Type.thredds, session);
               logManager.getRemoteFiles(manage.getStopButton());
             }
 
             if (data.wantRoots) {
-              String urls = "http://" + data.server + "/thredds/admin/log/dataroots.txt";
+              String urls = data.getServerPrefix() + "/thredds/admin/log/dataroots.txt";
               File localDir = LogLocalManager.getDirectory(data.server, "");
               localDir.mkdirs();
               File file = new File(localDir, "roots.txt");

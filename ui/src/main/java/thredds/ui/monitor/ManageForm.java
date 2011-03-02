@@ -19,13 +19,18 @@ public class ManageForm extends JPanel {
 
   public class Data {
     public String server;
-    public boolean wantAccess, wantServlet, wantRoots;
+    public boolean wantAccess, wantServlet, wantRoots, useHttps;
 
-    private Data(String server, boolean access, boolean servlet, boolean roots) {
-      this.server = server;
+    private Data(String server, boolean access, boolean servlet, boolean roots, boolean useHttps) {
+      this.server = server == null ? "" : server.trim();
       this.wantAccess = access;
       this.wantServlet = servlet;
       this.wantRoots = roots;
+      this.useHttps = useHttps;
+    }
+
+    public String getServerPrefix() {
+      return useHttps ? "https://" : "http://" + server;
     }
   }
 
@@ -63,6 +68,7 @@ public class ManageForm extends JPanel {
     wantRoots = new JRadioButton();
     stopButton = new StopButton();
     serverCB = new ComboBox();
+    useHttps = new JToggleButton();
     downloadAction = new DownloadAction();
 
     //======== this ========
@@ -101,6 +107,9 @@ public class ManageForm extends JPanel {
     //---- stopButton ----
     stopButton.setText("Stop");
 
+    //---- useHttps ----
+    useHttps.setText("Use https:");
+
     GroupLayout layout = new GroupLayout(this);
     setLayout(layout);
     layout.setHorizontalGroup(
@@ -119,17 +128,20 @@ public class ManageForm extends JPanel {
                   .addComponent(label1, GroupLayout.PREFERRED_SIZE, 55, GroupLayout.PREFERRED_SIZE)
                   .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                   .addGroup(layout.createParallelGroup()
-                    .addComponent(serverCB, GroupLayout.PREFERRED_SIZE, 283, GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                      .addComponent(serverCB, GroupLayout.PREFERRED_SIZE, 283, GroupLayout.PREFERRED_SIZE)
+                      .addGap(18, 18, 18)
+                      .addComponent(useHttps))
                     .addGroup(layout.createSequentialGroup()
                       .addGroup(layout.createParallelGroup()
                         .addComponent(wantServlet)
                         .addComponent(wantAccess))
                       .addGap(30, 30, 30)
                       .addComponent(wantRoots)))))
-              .addGap(195, 195, 195))
+              .addGap(223, 223, 223))
             .addGroup(layout.createSequentialGroup()
               .addGap(15, 15, 15)
-              .addComponent(scrollPane1, GroupLayout.DEFAULT_SIZE, 649, Short.MAX_VALUE)))
+              .addComponent(scrollPane1, GroupLayout.DEFAULT_SIZE, 696, Short.MAX_VALUE)))
           .addContainerGap())
     );
     layout.setVerticalGroup(
@@ -140,7 +152,8 @@ public class ManageForm extends JPanel {
           .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
           .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
             .addComponent(label1)
-            .addComponent(serverCB, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+            .addComponent(serverCB, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+            .addComponent(useHttps))
           .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
           .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
             .addComponent(wantRoots)
@@ -152,7 +165,7 @@ public class ManageForm extends JPanel {
             .addComponent(acceptButton)
             .addComponent(stopButton, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
           .addGap(18, 18, 18)
-          .addComponent(scrollPane1, GroupLayout.DEFAULT_SIZE, 430, Short.MAX_VALUE)
+          .addComponent(scrollPane1, GroupLayout.DEFAULT_SIZE, 428, Short.MAX_VALUE)
           .addContainerGap())
     );
     // JFormDesigner - End of component initialization  //GEN-END:initComponents
@@ -170,6 +183,7 @@ public class ManageForm extends JPanel {
   private JRadioButton wantRoots;
   private StopButton stopButton;
   private ComboBox serverCB;
+  private JToggleButton useHttps;
   private DownloadAction downloadAction;
   // JFormDesigner - End of variables declaration  //GEN-END:variables
 
@@ -184,7 +198,7 @@ public class ManageForm extends JPanel {
     public void actionPerformed(ActionEvent e) {
       String server = (String) serverCB.getSelectedItem();
       serverCB.addItem(server);
-      Data data =  new Data(server, wantAccess.isSelected(), wantServlet.isSelected(), wantRoots.isSelected());
+      Data data =  new Data(server, wantAccess.isSelected(), wantServlet.isSelected(), wantRoots.isSelected(), useHttps.isSelected());
       ManageForm.this.firePropertyChange("Download", null, data);
     }
   }

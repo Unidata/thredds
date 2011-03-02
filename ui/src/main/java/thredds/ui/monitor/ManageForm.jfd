@@ -13,11 +13,11 @@
        <class>org.jdesktop.layout.GroupLayout</class> 
        <void method="setProperty"> 
         <string>$horizontalGroup</string> 
-        <string>par l {seq {par l {seq {space :p:39:p, par l {seq l {comp acceptButton:::p::p, space :p:64:p, comp stopButton:::p::p}, comp label2::l:p::p, seq l {comp label1:::p:55:p, space :::p, par l {comp serverCB:::p:283:p, seq l {par l {comp wantServlet:::p::p, comp wantAccess:::p::p}, space :p:30:p, comp wantRoots:::p::p}}}}, space :p:195:p}, seq l {space :p:15:p, comp scrollPane1::::649:x}}, space :::p}}</string> 
+        <string>par l {seq {par l {seq {space :p:39:p, par l {seq l {comp acceptButton:::p::p, space :p:64:p, comp stopButton:::p::p}, comp label2::l:p::p, seq l {comp label1:::p:55:p, space :::p, par l {seq l {comp serverCB:::p:283:p, space s:::p, comp useHttps:::p::p}, seq l {par l {comp wantServlet:::p::p, comp wantAccess:::p::p}, space :p:30:p, comp wantRoots:::p::p}}}}, space :p:223:p}, seq l {space :p:15:p, comp scrollPane1::::696:x}}, space :::p}}</string> 
        </void> 
        <void method="setProperty"> 
         <string>$verticalGroup</string> 
-        <string>par l {seq l {space :p:21:p, comp label2:::p::p, space :::p, par b {comp label1::b:p::p, comp serverCB::b:p::p}, space :::p, par b {comp wantRoots::b:p::p, comp wantAccess::b:p::p}, space :::p, comp wantServlet:::p::p, space s:::p, par b {comp acceptButton::b:p::p, comp stopButton::b:p::p}, space s:::p, comp scrollPane1::::430:x, space :::p}}</string> 
+        <string>par l {seq l {space :p:21:p, comp label2:::p::p, space :::p, par b {comp label1::b:p::p, comp serverCB::b:p::p, comp useHttps::b:p::p}, space :::p, par b {comp wantRoots::b:p::p, comp wantAccess::b:p::p}, space :::p, comp wantServlet:::p::p, space s:::p, par b {comp acceptButton::b:p::p, comp stopButton::b:p::p}, space s:::p, comp scrollPane1::::428:x, space :::p}}</string> 
        </void> 
       </object> 
       <void property="name"> 
@@ -186,6 +186,18 @@
         <string>ucar.util.prefs.ui.ComboBox</string> 
         <void property="name"> 
          <string>serverCB</string> 
+        </void> 
+       </object> 
+      </void> 
+      <void method="add"> 
+       <object class="com.jformdesigner.model.FormComponent"> 
+        <string>javax.swing.JToggleButton</string> 
+        <void method="setProperty"> 
+         <string>text</string> 
+         <string>Use https:</string> 
+        </void> 
+        <void property="name"> 
+         <string>useHttps</string> 
         </void> 
        </object> 
       </void> 

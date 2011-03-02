@@ -60,21 +60,31 @@ public class TestTdsDodsServer extends TestCase {
     super(name);
   }
 
-  String dataset = "http://localhost:8080/thredds/dodsC/testCdmUnitTest/grib/nam/c20s/NAM_CONUS_20km_surface_20060317_0000.grib1";
+  //                http://localhost:8080/thredds/dodsC/testCdmUnitTest/grib/nam/c20s/NAM_CONUS_20km_surface_20060315_1200.grib1.ascii?Visibility[0:1:0][10:21:0][0:10:0]
+  //                http://localhost:8080/thredds/dodsC/testCdmUnitTest/grib/nam/c20s/NAM_CONUS_20km_surface_20060315_1200.grib1.ascii?Visibility[0:1:0][0:1:0][0:1:0]
+  String dataset = "http://localhost:8080/thredds/dodsC/testCdmUnitTest/grib/nam/c20s/NAM_CONUS_20km_surface_20060315_1200.grib1";
   public void testGrid() {
     String grid = dataset + ".ascii?Visibility[0:1:0][0:1:0][0:1:0]";
     System.out.println(" request= "+grid);
-    String result = IO.readURLcontents(grid);
-    System.out.println(" result= "+result);
-    assert result.indexOf("Error") < 0;  // not an error message
+    try {
+      String result = IO.readURLcontentsWithException(grid);
+      System.out.println(" result= "+result);
+    } catch (IOException ioe) {
+      System.out.printf("FAIL %s%n", ioe.getMessage());
+      assert false;
+    }
   }
 
   public void testGridArray() {
     String array = dataset + ".asc?Visibility.Visibility[0:1:0][0:1:0][0:1:0]";
     System.out.println(" request= "+array);
-    String result = IO.readURLcontents(array);
-    System.out.println(" result= "+result);
-    assert result.indexOf("Error") < 0;  // not an error message
+    try {
+      String result = IO.readURLcontentsWithException(array);
+      System.out.println(" result= "+result);
+    } catch (IOException ioe) {
+      System.out.printf("FAIL %s%n", ioe.getMessage());
+      assert false;
+    }
   }
 
   public void testSingleDataset() throws IOException {

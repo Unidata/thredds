@@ -4,6 +4,10 @@ Build Date = @BUILDTIME@
 Build Name = @BUILD.NAME@
 
 Release Details 4.2:
+ 4.2.5 (2011-03-01)
+   various opendap problems are fixed
+   opendap ESG access control
+
  4.2.4 (2011-02-18)
    fix context path usage in InvDatasetFeatureCollection (TDS-144)
    ThreddsConfig uses serverStartup log
