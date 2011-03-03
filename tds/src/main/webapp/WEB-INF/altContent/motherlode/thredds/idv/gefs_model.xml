@@ -142,10 +142,10 @@
         </datasetScan>
   </dataset>
 
-  <dataset ID="FMRC/NCEP/GEFS" name="NCEP Global Ensemble Forecasting System (Derived)">
+  <dataset ID="FMRC/NCEP/GEFS/Derived" name="NCEP Global Ensemble Forecasting System (Derived)">
          <metadata inherited="true">
            <dataFormat>GRIB-2</dataFormat>
-           <documentation type="summary">NCEP Global Ensemble Forecasting System Derived (GEFS)
+           <documentation type="summary">NCEP Global Ensemble Forecasting System (Derived)
              Global one degree Lat/Lon grid.
              Model runs are made at 0, 6, 12, 18 ... hours out to 378 hours (16 days).
              Horizontal = 181 by 360 points, resolution 1 degree, Lat/Lon projection.
