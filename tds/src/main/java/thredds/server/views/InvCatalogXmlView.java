@@ -67,7 +67,7 @@ public class InvCatalogXmlView extends AbstractView
     InvCatalogImpl cat = (InvCatalogImpl) o;
 
     res.setContentType( "application/xml" );
-    // FIX res.setCharacterEncoding( "UTF-8" );
+    res.setCharacterEncoding( "UTF-8" );
     OutputStream os = null;
     if ( ! req.getMethod().equals( "HEAD" ) )
     {

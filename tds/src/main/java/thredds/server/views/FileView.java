@@ -159,10 +159,8 @@ public class FileView extends AbstractView
 
     // Set content type and character encoding as given/determined.
     res.setContentType( contentType );
-    /* FIX:
     if ( characterEncoding != null )
       res.setCharacterEncoding( characterEncoding );
-      */
 
     // The rest of this is from John's thredds.servlet.ServletUtil.returnFile(...)
     // see if its a Range Request
