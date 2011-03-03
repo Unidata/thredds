@@ -6,13 +6,14 @@
 <BODY bgcolor="#FFFFFF">
   I/O Service Provider for GrADS Binary Grid Files.  This IOSP handles:
   <ul>
-  <li> raw binary grid files (DTYPE not defined)
+  <li> raw lat/lon binary grid files (DTYPE not defined)
   <li> ensembles defined by NAMES in one file or as a template
   </ul>
 
   It does not yet handle:
   <ul>
   <li> other DTYPEs since these are readable through other IOSPs
+  <li> projected data (has PDEF)
   <li> cross-sections since there isn't enough metadata to define the
        single x or y dimension
   <li> ensembles defined by EDEF/ENDEDEF

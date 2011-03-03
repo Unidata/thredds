@@ -90,6 +90,9 @@ public class GradsDataDescriptorFile {
     /** EDEF identifier */
     public static final String EDEF = "EDEF";
 
+    /** EDEF identifier */
+    public static final String PDEF = "PDEF";
+
     /** ENDEDEF identifier */
     public static final String ENDEDEF = "ENDEDEF";
 
@@ -176,6 +179,9 @@ public class GradsDataDescriptorFile {
 
     /** the list of filenames that this ctl points to */
     List<String> fileNames;
+    
+    /** defines a projection */
+    private boolean hasProjection = false;
 
     /**
      * Create a GradsDataDescriptorFile from the file
@@ -343,6 +349,9 @@ public class GradsDataDescriptorFile {
                             curDim       = null;
                             inEnsSection = true;
                         }
+                    } else if (label.equalsIgnoreCase(PDEF)) {
+                    	curDim = null;
+                    	hasProjection = true;
                     } else if (label.equalsIgnoreCase(VARS)) {
                         curDim       = null;
                         inVarSection = true;
@@ -491,6 +500,15 @@ public class GradsDataDescriptorFile {
      */
     public boolean isTemplate() {
         return isTemplate;
+    }
+
+    /**
+     * Get whether this is using a projection or no
+     *
+     * @return whether this is using a projection or not
+     */
+    public boolean hasProjection() {
+        return hasProjection;
     }
 
     /**

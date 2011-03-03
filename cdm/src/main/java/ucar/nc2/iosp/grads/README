@@ -1,10 +1,11 @@
 The GradsBinaryGridServiceProvider currently handles:
 
-- raw binary grid files (DTYPE not defined)
+- raw lat/lon binary grid files (DTYPE not defined)
 - ensembles defined by NAMES in one file or as a template
 
 It does not handle:
 - other DTYPEs since these are readable through other IOSPs
+- projected data (PDEF)
 - cross-sections since there isn't enough metadata to define the
   single x or y dimension
 - ensembles defined by EDEF/ENDEDEF

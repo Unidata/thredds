@@ -142,7 +142,8 @@ public class GradsBinaryGridServiceProvider extends AbstractIOServiceProvider {
 
             //J-
             return  gradsDDF.getDataType() == null && // only handle raw binary
-                    gradsDDF.getDataFile() != null && //
+                    gradsDDF.getDataFile() != null && 
+                    !gradsDDF.hasProjection() &&  // can't handle projections
                     // can't handle non-ensemble templates
                     !(gradsDDF.isTemplate() && gradsDDF.getEnsembleDimension() == null) &&
                     !gradsDDF.getVariables().isEmpty() &&  // must have valid entries
