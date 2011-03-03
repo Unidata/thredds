@@ -1,0 +1,33 @@
+<HTML>
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+<TITLE>package ucar.nc2.iosp.grads</TITLE>
+</HEAD>
+<BODY bgcolor="#FFFFFF">
+  I/O Service Provider for GrADS Binary Grid Files.  This IOSP handles:
+  <ul>
+  <li> raw binary grid files (DTYPE not defined)
+  <li> ensembles defined by NAMES in one file or as a template
+  </ul>
+
+  It does not yet handle:
+  <ul>
+  <li> other DTYPEs since these are readable through other IOSPs
+  <li> cross-sections since there isn't enough metadata to define the
+       single x or y dimension
+  <li> ensembles defined by EDEF/ENDEDEF
+  <li> time templates
+  <li> some miscellaneous options:
+       <ul>
+       <li><b>zrev</b> - no examples
+       <li><b>365_day_calendar</b> - no support in netCDF-Java for imaginary times
+       <li><b>byteswapped</b> - no examples, bad way to do it
+       <li><b>cray_32bit_ieee</b> - no examples
+       </ul>
+  </ul>
+  
+  See <a href="http://www.iges.org/grads/gadoc/descriptorfile.html">
+  http://www.iges.org/grads/gadoc/descriptorfile.html</a> for more information.
+  
+</BODY>
+</HTML>
