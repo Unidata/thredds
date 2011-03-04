@@ -310,7 +310,7 @@ public class TestAll {
       }
     } catch (Exception e) {
       e.printStackTrace();
-      assert false;
+      //assert false;
 
     } finally {
       if (ncfile != null)

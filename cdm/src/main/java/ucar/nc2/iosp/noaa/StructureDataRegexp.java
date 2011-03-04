@@ -37,8 +37,8 @@ public class StructureDataRegexp extends StructureData {
       if (dt == DataType.DOUBLE)
         return isBlank ? 0.0 : new Double(svalue);
       else if (dt == DataType.FLOAT) {
-        float result = isBlank ? 0.0f : new Float(svalue);
-        return (vinfo.hasScale) ? result * vinfo.scale : result;
+        return isBlank ? 0.0f : new Float(svalue);
+        // return (vinfo.hasScale) ? result * vinfo.scale : result;
       } else if (dt == DataType.INT) {
         return isBlank ? 0 : new Integer(svalue);
       }

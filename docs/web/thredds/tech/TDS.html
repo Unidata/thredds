@@ -3,7 +3,8 @@
 
 
 
-  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><title>TDS</title></head><body>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><title>TDS</title>
+</head><body>
     <h1 align="left"> <img src="images/unidataLogo.png" alt="Unidata" align="middle" height="75" width="75"><strong>THREDDS Data Server</strong></h1>
     <hr>
 <h2> Overview</h2>
@@ -31,6 +32,7 @@ read through the Netcdf-Java library are called <em>CDM datasets</em>.</li>
 protocol, for any "gridded" dataset whose coordinate system information
 is complete. This software was developed by Jon Blower (University of
 Reading (UK) E-Science Center) as part of the <a href="http://behemoth.nerc-essc.ac.uk/ncWMS/godiva2.html">ESSC Web Map Service for environmental data</a> (aka Godiva2).</li>
+  <li>The integrated <a href="tds4.2/reference/ncISO.html">ncISO server</a> provides  automated metadata analysis and ISO metadata generation.</li>
 </ol>
 <p>The THREDDS Data Server is implemented in 100% Java, and is
 contained in a single war file, which allows very easy installation
@@ -44,7 +46,7 @@ You are welcome to browse and access these meteorological datasets. If
 you need regular access to large amounts of data, please contact <a href="mailto:support-idd@unidata.ucar.edu.">support-idd@unidata.ucar.edu.</a></p>
 <h3>System Requirements</h3>
 <ul>
-  <li><a href="http://java.sun.com/">Java</a> 1.6 or above.</li>
+  <li><a href="http://java.sun.com/">Java</a> 1.6 or above, we recommend 6u24+.</li>
   <li><a href="http://tomcat.apache.org/">Tomcat</a> 5.5 or above, we recommend the latest version of Tomcat 6.x </li>
 </ul>
 
@@ -78,18 +80,15 @@ you need regular access to large amounts of data, please contact <a href="mailto
       <li><a href="tds4.2/SourceCodeBuild.html">Building TDS 4.2 from Source Code</a></li>
     </ul>
   </li>
-  <li>Download the TDS 4.2 nightly snapshot release (<strong>WARNING - unsupported release, use at
-    your own risk</strong>)
-    <ul>
-      [<a href="ftp://ftp.unidata.ucar.edu/pub/thredds/4.2/snapshot/CHANGES.txt">Change Log</a>]
-      [<a href="ftp://ftp.unidata.ucar.edu/pub/thredds/4.2/snapshot/thredds.war">thredds.war</a>
-      (<a href="ftp://ftp.unidata.ucar.edu/pub/thredds/4.2/snapshot/thredds.war.MD5">MD5</a>)]
-      [<a href="ftp://ftp.unidata.ucar.edu/pub/thredds/4.2/snapshot/tdsSrc-4.2.jar">tdsSrc-4.2.jar</a>
-      (<a href="ftp://ftp.unidata.ucar.edu/pub/thredds/4.2/snapshot/tdsSrc-4.2.jar.MD5">MD5</a>)]
-    </ul>
-  </li>
-</ul>
+  </ul>
 
+<p><strong>TDS 4.2 nightly snapshot release (WARNING - unsupported release, use at
+your own risk) </strong></p>
+<ul>
+  <li>Download the nightly snapshot [<a href="ftp://ftp.unidata.ucar.edu/pub/thredds/4.2/snapshot/CHANGES.txt">Change Log</a>]
+    [<a href="ftp://ftp.unidata.ucar.edu/pub/thredds/4.2/snapshot/thredds.war">thredds.war</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/thredds/4.2/snapshot/thredds.war.MD5">MD5</a>)]
+    [<a href="ftp://ftp.unidata.ucar.edu/pub/thredds/4.2/snapshot/tdsSrc-4.2.jar">tdsSrc-4.2.jar</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/thredds/4.2/snapshot/tdsSrc-4.2.jar.MD5">MD5</a>)]  </li>
+</ul>
 <p><strong>TDS version 4.1 is  the previous stable release.</strong></p>
 <ul>
   <li>Download the latest TDS 4.1 release
@@ -150,6 +149,6 @@ of the TDS distribution. Instead it comes as a separate distribution.</p><ul>
 </ul>
 <hr width="100%">
 <address>
-<img src="images/thread.png" alt="THREDDS" height="108" width="110">This document  was last updated Jan 2011
+<img src="images/thread.png" alt="THREDDS" height="108" width="110">This document  was last updated March 2011
 </address>
 </body></html>

@@ -70,8 +70,8 @@ public class H5header {
   static private boolean debugEnum = false, debugVlen = false;
   static private boolean debug1 = false, debugDetail = false, debugPos = false, debugHeap = false, debugV = false;
   static private boolean debugGroupBtree = false, debugDataBtree = false, debugDataChunk = false, debugBtree2 = false;
-  static private boolean debugContinueMessage = false, debugTracker = false, debugSoftLink = false, debugSymbolTable = false;
-  static private boolean warnings = false, debugReference = false, debugRegionReference = false, debugCreationOrder = false, debugFractalHeap = false;
+  static private boolean debugContinueMessage = false, debugTracker = false, debugSoftLink = true, debugSymbolTable = false;
+  static private boolean warnings = true, debugReference = false, debugRegionReference = false, debugCreationOrder = false, debugFractalHeap = false;
   static private boolean debugDimensionScales = false;
 
   static public void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
@@ -348,7 +348,13 @@ public class H5header {
           }
         }
 
-        objList.set(count, link);
+        // dont allow in the same group. better would be to replicate the group with the new name
+        if (dof.parent == link.parent) {
+          objList.remove(dof);
+          count--; // negate the incr
+        } else  // replace
+          objList.set(count, link);
+
         if (debugSoftLink) debugOut.println("  Found symbolic link=" + dof.linkName);
       }
 
@@ -3548,7 +3554,7 @@ public class H5header {
 
       if (s.cacheType == 2) {
         String linkName = nameHeap.getString(s.linkOffset);
-        if (debugSoftLink) debugOut.println("   Symbolic link name=" + linkName);
+        if (debugSoftLink) debugOut.println("   Symbolic link name=" + linkName+" symbolName=" + sname);
         group.nestedObjects.add(new DataObjectFacade(group, sname, linkName));
       } else {
         group.nestedObjects.add(new DataObjectFacade(group, sname, s.getObjectAddress()));

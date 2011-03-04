@@ -577,13 +577,13 @@ public class Ghcnm2 extends AbstractIOServiceProvider {
     int fldno = 1;
     for (StructureMembers.Member m : sm.getMembers()) {
       VinfoField vf = new VinfoField(fldno++);
-      Variable v = seq.findVariable(m.getName());
+      /* Variable v = seq.findVariable(m.getName());
       Attribute att = v.findAttribute("scale_factor");
       if (att != null) {
         vf.hasScale = true;
         vf.scale = att.getNumericValue().floatValue();
         v.remove(att);
-      }
+      } */
       m.setDataObject( vf);
     }
 
@@ -611,8 +611,8 @@ public class Ghcnm2 extends AbstractIOServiceProvider {
   class VinfoField {
     int fldno;
     int stride = 4;
-    float scale;
-    boolean hasScale;
+    //float scale;
+    //boolean hasScale;
 
     private VinfoField(int fldno) {
       this.fldno = fldno;

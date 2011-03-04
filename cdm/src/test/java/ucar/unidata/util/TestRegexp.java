@@ -118,6 +118,24 @@ public class TestRegexp extends TestCase {
     testMatch(p, m, true);
   }
 
+  public void testIgraStn() {
+    String m = "ID  96845  SURAKARTA PANASAN                    -7.87  110.92  104      1973 1993";
+    String p = "([A-Z]{2})  (\\d{5})  (.{35}) ([ \\.\\-\\d]{6}) ([ \\.\\-\\d]{7}) ([ \\-\\d]{4}) (.)(.)(.)  ([ \\d]{4}) ([ \\d]{4})$";
+    testMatch(p, m, true);
+  }
+
+  public void testIgraPorHead() {
+    String m = "#0309119891109069999  11";
+    String p = "#(\\d{5})(\\d{4})(\\d{2})(\\d{2})(\\d{2})(\\d{4})([ \\d]{4})$";
+    testMatch(p, m, true);
+  }
+
+  public void testIgraPor() {
+    String m = "20 99200 -9999    44    48-9999-9999";
+    String p = "(\\d{2})([ \\-\\d]{6})(.)([ \\-\\d]{5})(.)([ \\-\\d]{5})(.)([ \\-\\d]{5})([ \\-\\d]{5})([ \\-\\d]{5})$";
+    testMatch(p, m, true);
+  }
+
   // test pattern ps against match, show result
   private void testMatch(String ps, String match, boolean expect) {
     System.out.printf("match %s against %s%n%n", ps, match);

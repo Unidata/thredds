@@ -3,10 +3,15 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Changes in version 4.2:
- 21: (2011-02-16)
+ 22: (2011-03-xx)
+  Default TableAnalyser: turn into trajectory if there is trajectory metadata (record dimension case)
+  igra iosp
+  H5header: remove symbolic links in same dir as regular object
+  GradsBinaryGridServiceProvider (don)
+
+ 21: (2011-03-02)
   various opendap problems are fixed
   ghcnm iosp (beta)
-
  20: (2011-02-16)
   GRIB: Deal with zero length index better
   Default TableAnalyser: turn into trajectory if there is trajectory metadata

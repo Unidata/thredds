@@ -446,6 +446,8 @@ public class TableAnalyzer {
         st.nestedTableName = v.getShortName();
 
         addTable(st);
+        checkIfTrajectory(st);
+
         iter.remove();
         findNestedStructures((Structure) v, st); // look for nested structures
 
@@ -479,17 +481,7 @@ public class TableAnalyzer {
         st.time = time.getShortName();
       }
       addTable( st);
-
-      // deal with possible trajectory - only do this if dataset has metadata
-      FeatureType ft = FeatureDatasetFactoryManager.findFeatureType(ds);
-      if (ft == FeatureType.TRAJECTORY) {
-        st.featureType = FeatureType.TRAJECTORY;
-        TableConfig pc = new TableConfig(Table.Type.Top, "single");
-        st.parent = pc;
-        pc.addChild(st);
-      } else
-        st.featureType = FeatureType.POINT;
-
+      checkIfTrajectory(st);
     }
 
     if (tableSet.size() > 0) return;
@@ -512,6 +504,18 @@ public class TableAnalyzer {
       addTable( st);
     }
 
+  }
+
+  private void checkIfTrajectory(TableConfig st) {
+    // deal with possible trajectory - only do this if dataset has metadata
+    FeatureType ft = FeatureDatasetFactoryManager.findFeatureType(ds);
+    if (ft == FeatureType.TRAJECTORY) {
+      st.featureType = FeatureType.TRAJECTORY;
+      TableConfig pc = new TableConfig(Table.Type.Top, "single");
+      st.parent = pc;
+      pc.addChild(st);
+    } else
+      st.featureType = FeatureType.POINT;
   }
 
   private void findNestedStructures(Structure s, TableConfig parent) {
