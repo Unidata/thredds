@@ -43,7 +43,8 @@ import java.io.IOException;
 public interface StructureDataIterator {
 
   /**
-   * See if theres more StructureData in the iteration
+   * See if theres more StructureData in the iteration.
+   * You must always call this before calling next().
    * @return true if more records are available
    * @throws java.io.IOException on read error
    */

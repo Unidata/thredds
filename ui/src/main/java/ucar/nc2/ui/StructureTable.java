@@ -574,7 +574,7 @@ public class StructureTable extends JPanel {
       try {
         StructureDataIterator iter = seq.getStructureDataIterator();
         while (iter.hasNext())
-          sdataList.add( iter.next());
+          sdataList.add( iter.next());  // LOOK lame -read at all once
 
       } catch (IOException e) {
         e.printStackTrace();
