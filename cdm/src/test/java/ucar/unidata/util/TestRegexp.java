@@ -119,7 +119,8 @@ public class TestRegexp extends TestCase {
   }
 
   public void testIgraStn() {
-    String m = "ID  96845  SURAKARTA PANASAN                    -7.87  110.92  104      1973 1993";
+    String m = "JN  01001  JAN MAYEN                            70.93   -8.67    9 GL   1963 2007";
+    //String m = "ID  96845  SURAKARTA PANASAN                    -7.87  110.92  104      1973 1993";
     String p = "([A-Z]{2})  (\\d{5})  (.{35}) ([ \\.\\-\\d]{6}) ([ \\.\\-\\d]{7}) ([ \\-\\d]{4}) (.)(.)(.)  ([ \\d]{4}) ([ \\d]{4})$";
     testMatch(p, m, true);
   }

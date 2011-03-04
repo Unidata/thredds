@@ -1,23 +1,15 @@
 package ucar.nc2.iosp.noaa;
 
-import com.google.protobuf.InvalidProtocolBufferException;
 import ucar.ma2.*;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.Sequence;
-import ucar.nc2.Structure;
-import ucar.nc2.Variable;
+import ucar.nc2.*;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.ncml.NcmlConstructor;
-import ucar.nc2.stream.NcStream;
 import ucar.nc2.util.CancelTask;
-import ucar.nc2.util.URLnaming;
 import ucar.unidata.io.RandomAccessFile;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.HashMap;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -51,11 +43,11 @@ public class IgraPor extends AbstractIOServiceProvider {
 
   @Override
   public boolean isValidFile(RandomAccessFile raf) throws IOException {
-    String dataFile = raf.getLocation();
-    int pos = dataFile.lastIndexOf(".");
+    String location = raf.getLocation();
+    int pos = location.lastIndexOf(".");
     if (pos <= 0) return false;
-    String base = dataFile.substring(0, pos);
-    String ext = dataFile.substring(pos);
+    String base = location.substring(0, pos);
+    String ext = location.substring(pos);
 
     // must be data file or station or index file
     if (!ext.equals(DAT_EXT) && !ext.equals(IDX_EXT))
@@ -66,7 +58,7 @@ public class IgraPor extends AbstractIOServiceProvider {
       File datFile = new File(base + DAT_EXT);
       if (!datFile.exists())
         return false;
-      File stnFile = getStnFile(base);
+      File stnFile = getStnFile(location);
       if (!stnFile.exists())
         return false;
 
@@ -78,7 +70,7 @@ public class IgraPor extends AbstractIOServiceProvider {
 
     } else if (ext.equals(DAT_EXT)) {
       // stn file must be in the same directory
-      File stnFile = getStnFile(base);
+      File stnFile = getStnFile(location);
       if (!stnFile.exists())
         return false;
       return isValidFile(raf, dataHeaderPattern);
@@ -92,7 +84,7 @@ public class IgraPor extends AbstractIOServiceProvider {
 
   private File getStnFile(String location) {
     File f = new File(location);
-    File p = f.getParentFile();
+    File p = f.getParentFile().getParentFile();
     return new File(p, STN_FILE);
   }
 
@@ -102,7 +94,6 @@ public class IgraPor extends AbstractIOServiceProvider {
     while (true) {
       line = raf.readLine();
       if (line == null) break;
-      if (line.startsWith("#")) continue;
       if (line.trim().length() == 0) continue;
       Matcher matcher = p.matcher(line);
       return matcher.matches();
@@ -126,29 +117,30 @@ public class IgraPor extends AbstractIOServiceProvider {
   }
 
   /////////////////////////////////////////////////////////////////////////
-  private RandomAccessFile stnRaf, dataRaf;
-  private HashMap<Long, StationIndex> map = new HashMap<Long, StationIndex>(10000);
+  private RandomAccessFile stnRaf;
+  private File baseDir;
+  //private HashMap<Long, StationIndex> map = new HashMap<Long, StationIndex>(10000);
   private int stn_fldno;
-  private Vinfo dataVinfo, stnVinfo;
+  private StructureDataRegexp.Vinfo stnVinfo, seriesVinfo, profileVinfo;
 
   @Override
   public void open(RandomAccessFile raff, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
-    String dataFile = raff.getLocation();
-    int pos = dataFile.lastIndexOf(".");
-    String base = dataFile.substring(0, pos);
-    String ext = dataFile.substring(pos);
+    String location = raff.getLocation();
+    int pos = location.lastIndexOf(".");
+    String ext = location.substring(pos);
+
+    File file = new File(location);
+    baseDir = file.getParentFile();
+    File stnFile = new File(baseDir.getParentFile(), STN_FILE);
 
     if (ext.equals(IDX_EXT)) {
-      dataRaf = new RandomAccessFile(base + DAT_EXT, "r");
-      stnRaf = new RandomAccessFile(getStnFile(base).getPath(), "r");
+      stnRaf = new RandomAccessFile(stnFile.getPath(), "r");
 
     } else if (ext.equals(DAT_EXT)) {
-      dataRaf = raff;
-      stnRaf = new RandomAccessFile(getStnFile(base).getPath(), "r");
+      stnRaf = new RandomAccessFile(stnFile.getPath(), "r");
 
     } else {
       stnRaf = raff;
-      dataRaf = new RandomAccessFile(base + DAT_EXT, "r");
     }
 
     NcmlConstructor ncmlc = new NcmlConstructor();
@@ -157,37 +149,39 @@ public class IgraPor extends AbstractIOServiceProvider {
     }
     ncfile.finish();
 
-    dataVinfo = setVinfo(dataRaf, ncfile, dataPattern, "all_data");
+    //dataVinfo = setVinfo(dataRaf, ncfile, dataPattern, "all_data");
     stnVinfo = setVinfo(stnRaf, ncfile, stnPattern, "station");
+    seriesVinfo = setVinfo(stnRaf, ncfile, dataHeaderPattern, "station.time_series");
+    profileVinfo = setVinfo(stnRaf, ncfile, dataPattern, "station.time_series.levels");
 
     StructureMembers.Member m = stnVinfo.sm.findMember(STNID);
-    VinfoField f = (VinfoField) m.getDataObject();
+    StructureDataRegexp.VinfoField f = (StructureDataRegexp.VinfoField) m.getDataObject();
     stn_fldno = f.fldno;
 
-    // make index file if needed
+    /* make index file if needed
     File idxFile = new File(base + IDX_EXT);
     if (!idxFile.exists())
       makeIndex(stnVinfo, dataVinfo, idxFile);
     else
-      readIndex(idxFile.getPath());
+      readIndex(idxFile.getPath());  */
   }
 
-  private Vinfo setVinfo(RandomAccessFile raff, NetcdfFile ncfile, Pattern p, String seqName) {
+  private StructureDataRegexp.Vinfo setVinfo(RandomAccessFile raff, NetcdfFile ncfile, Pattern p, String seqName) {
     Sequence seq = (Sequence) ncfile.findVariable(seqName);
     StructureMembers sm = seq.makeStructureMembers();
-    Vinfo result = new Vinfo(raff, sm, p);
+    StructureDataRegexp.Vinfo result = new StructureDataRegexp.Vinfo(raff, sm, p);
     seq.setSPobject(result);
 
     int fldno = 1;
     for (StructureMembers.Member m : sm.getMembers()) {
-      VinfoField vf = new VinfoField(fldno++);
-      /* Variable v = seq.findVariable(m.getName());
-     Attribute att = v.findAttribute("scale_factor");
-     if (att != null) {
-       vf.hasScale = true;
-       vf.scale = att.getNumericValue().floatValue();
-       v.remove(att);
-     } */
+      StructureDataRegexp.VinfoField vf = new StructureDataRegexp.VinfoField(fldno++);
+      Variable v = seq.findVariable(m.getName());
+      Attribute att = v.findAttribute("iosp_scale");
+      if (att != null) {
+        vf.hasScale = true;
+        vf.scale = att.getNumericValue().floatValue();
+        //v.remove(att);
+      }
       m.setDataObject(vf);
     }
 
@@ -196,55 +190,31 @@ public class IgraPor extends AbstractIOServiceProvider {
 
   public void close() throws java.io.IOException {
     stnRaf.close();
-    dataRaf.close();
-  }
-
-  class Vinfo {
-    RandomAccessFile rafile;
-    StructureMembers sm;
-    Pattern p;
-    int nelems = -1;
-
-    private Vinfo(RandomAccessFile raff, StructureMembers sm, Pattern p) {
-      this.sm = sm;
-      this.rafile = raff;
-      this.p = p;
-    }
-  }
-
-  class VinfoField {
-    int fldno;
-    int stride = 4;
-    //float scale;
-    //boolean hasScale;
-
-    private VinfoField(int fldno) {
-      this.fldno = fldno;
-    }
+    // LOOK dataRaf.close();
   }
 
   ////////////////////////////////////////////////////////////////////
 
   @Override
   public Array readData(Variable v2, Section section) throws IOException, InvalidRangeException {
-    Vinfo vinfo = (Vinfo) v2.getSPobject();
-    return new ArraySequence(vinfo.sm, new SeqIter(vinfo), vinfo.nelems);
+    StructureDataRegexp.Vinfo vinfo = (StructureDataRegexp.Vinfo) v2.getSPobject();
+    return new ArraySequence(vinfo.sm, new StationSeqIter(vinfo), vinfo.nelems);
   }
 
   @Override
   public StructureDataIterator getStructureIterator(Structure s, int bufferSize) throws java.io.IOException {
-    Vinfo vinfo = (Vinfo) s.getSPobject();
-    return new SeqIter(vinfo);
+    StructureDataRegexp.Vinfo vinfo = (StructureDataRegexp.Vinfo) s.getSPobject();
+    return new StationSeqIter(vinfo);
   }
 
-  private class SeqIter implements StructureDataIterator {
-    private Vinfo vinfo;
-    private long bytesRead;
+  // sequence of stations
+  private class StationSeqIter implements StructureDataIterator {
+    private StructureDataRegexp.Vinfo vinfo;
     private long totalBytes;
     private int recno;
     private StructureData curr;
 
-    SeqIter(Vinfo vinfo) throws IOException {
+    StationSeqIter(StructureDataRegexp.Vinfo vinfo) throws IOException {
       this.vinfo = vinfo;
       totalBytes = (int) vinfo.rafile.length();
       vinfo.rafile.seek(0);
@@ -252,7 +222,6 @@ public class IgraPor extends AbstractIOServiceProvider {
 
     @Override
     public StructureDataIterator reset() {
-      bytesRead = 0;
       recno = 0;
 
       try {
@@ -265,7 +234,7 @@ public class IgraPor extends AbstractIOServiceProvider {
 
     @Override
     public boolean hasNext() throws IOException {
-      boolean more = (bytesRead < totalBytes); // && (recno < 10);
+      boolean more = (vinfo.rafile.getFilePointer() < totalBytes); // && (recno < 10);
       if (!more) {
         vinfo.nelems = recno;
         //System.out.printf("nelems=%d%n", recno);
@@ -293,15 +262,14 @@ public class IgraPor extends AbstractIOServiceProvider {
         if (line == null) return null;
         if (line.startsWith("#")) continue;
         if (line.trim().length() == 0) continue;
+        //System.out.printf("line %s%n", line);
         matcher = vinfo.p.matcher(line);
         if (matcher.matches())
           break;
         System.out.printf("FAIL %s%n", line);
       }
-      //System.out.printf("%s%n", line);
-      bytesRead = vinfo.rafile.getFilePointer();
       recno++;
-      return new StructureDataRegexpGhcnm(vinfo.sm, matcher);
+      return new StationData(vinfo.sm, matcher);
     }
 
     @Override
@@ -312,46 +280,55 @@ public class IgraPor extends AbstractIOServiceProvider {
     public int getCurrentRecno() {
       return recno - 1;
     }
+
+    private class StationData extends StructureDataRegexp {
+      StructureMembers members;
+      Matcher matcher;          // matcher on the station ascii
+
+      StationData(StructureMembers members, Matcher matcher) {
+        super(members, matcher);
+        this.members = members;
+        this.matcher = matcher;
+      }
+
+      @Override
+      // nested array sequence must be the stn_data
+      public ArraySequence getArraySequence(StructureMembers.Member m) {
+        String stnid = matcher.group(stn_fldno).trim();
+        return new ArraySequence(seriesVinfo.sm, new TimeSeriesIter(stnid), -1);
+      }
+    }
   }
 
   //////////////////////////////////////////////////////
+  // sequence of time series for one station
+  private class TimeSeriesIter implements StructureDataIterator {
+    private int countRead = 0;
+    private long totalBytes;
+    private File file;
+    private RandomAccessFile timeSeriesRaf = null;
 
-  private class StructureDataRegexpGhcnm extends StructureDataRegexp {
-    StructureMembers members;
-    Matcher matcher;          // matcher on the station ascii
-
-    StructureDataRegexpGhcnm(StructureMembers members, Matcher matcher) {
-      super(members, matcher);
-      this.members = members;
-      this.matcher = matcher;
+    TimeSeriesIter(String stnid) {
+      this.file = new File(baseDir, stnid+DAT_EXT);
     }
 
-    @Override
-    // nested array sequence must be the stn_data
-    public ArraySequence getArraySequence(StructureMembers.Member m) {
-      String svalue = matcher.group(stn_fldno).trim();
-      Long stnId = Long.parseLong(svalue); // extract the station id
-      StationIndex si = map.get(stnId); // find its index
-      return new ArraySequence(dataVinfo.sm, new StnDataIter(dataVinfo.sm, si), -1);
-    }
-  }
-
-  private class StnDataIter implements StructureDataIterator {
-    private StructureMembers sm;
-    private int countRead;
-    private StationIndex stationIndex;
-
-    StnDataIter(StructureMembers sm, StationIndex stationIndex) {
-      this.sm = sm;
-      this.stationIndex = stationIndex;
-      reset();
+    private void init() {
+      try {
+        this.timeSeriesRaf = new RandomAccessFile( file.getPath(), "r");// LOOK check exists
+        totalBytes = timeSeriesRaf.length();
+        timeSeriesRaf.seek(0);
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
     }
 
     @Override
     public StructureDataIterator reset() {
+      if (timeSeriesRaf == null) init();
+
       countRead = 0;
       try {
-        dataRaf.seek(stationIndex.dataPos);
+        timeSeriesRaf.seek(0);
       } catch (IOException e) {
         throw new RuntimeException(e);
       }
@@ -360,7 +337,8 @@ public class IgraPor extends AbstractIOServiceProvider {
 
     @Override
     public boolean hasNext() throws IOException {
-      return (countRead < stationIndex.dataCount);
+      if (timeSeriesRaf == null) init();
+      return (timeSeriesRaf.getFilePointer() < totalBytes); // && (recno < 10);   LOOK not perfect, eg trailing blanks
     }
 
     @Override
@@ -368,17 +346,16 @@ public class IgraPor extends AbstractIOServiceProvider {
       Matcher matcher;
       String line;
       while (true) {
-        line = dataRaf.readLine();
-        if (line == null) return null;
-        if (line.startsWith("#")) continue;
+        line = timeSeriesRaf.readLine();
+        if (line == null) return null;  // only on EOF
         if (line.trim().length() == 0) continue;
-        matcher = dataPattern.matcher(line);
+        matcher = seriesVinfo.p.matcher(line);
         if (matcher.matches())
           break;
+        System.out.printf("FAIL TimeSeriesIter <%s>%n", line);
       }
-      //System.out.printf("%s%n", line);
       countRead++;
-      return new StructureDataRegexp(sm, matcher);
+      return new TimeSeriesData(matcher);
     }
 
     @Override
@@ -389,10 +366,88 @@ public class IgraPor extends AbstractIOServiceProvider {
     public int getCurrentRecno() {
       return countRead - 1;
     }
+
+    private class TimeSeriesData extends StructureDataRegexp {
+      Matcher matcher;          // matcher on the station ascii
+      List<String> lines = new ArrayList<String>(30);
+
+      TimeSeriesData(Matcher matcher) throws IOException {
+        super(seriesVinfo.sm, matcher);
+        this.matcher = matcher;
+
+        String line;
+        long pos;
+        while (true) {
+          pos = timeSeriesRaf.getFilePointer();
+          line = timeSeriesRaf.readLine();
+          if (line == null) break;
+          if (line.trim().length() == 0) continue;
+          matcher = profileVinfo.p.matcher(line);
+          if (matcher.matches())
+            lines.add(line);
+          else  {
+            timeSeriesRaf.seek(pos); // put the line back
+            break;
+          }
+        }
+      }
+
+      @Override
+      // nested array sequence must be the stn_data
+      public ArraySequence getArraySequence(StructureMembers.Member m) {
+        return new ArraySequence(profileVinfo.sm, new ProfileIter(), -1);
+      }
+
+      //////////////////////////////////////////////////////
+      // sequence of levels for one profile = station-timeSeries
+      private class ProfileIter implements StructureDataIterator {
+        private int countRead;
+
+        ProfileIter() {
+          countRead = 0;
+        }
+
+        @Override
+        public StructureDataIterator reset() {
+          countRead = 0;
+          return this;
+        }
+
+        @Override
+        public boolean hasNext() throws IOException {
+          return countRead < lines.size();
+        }
+
+        @Override
+        public StructureData next() throws IOException {
+          if (!hasNext()) return null;
+          Matcher matcher = profileVinfo.p.matcher(lines.get(countRead));
+          StructureData sd;
+          if (matcher.matches())
+            sd = new StructureDataRegexp(profileVinfo.sm, matcher);
+          else
+            throw new IllegalStateException("line = "+lines.get(countRead)+ "pattern = "+profileVinfo.p );
+          countRead++;
+          return sd;
+        }
+
+        @Override
+        public void setBufferSize(int bytes) {
+        }
+
+        @Override
+        public int getCurrentRecno() {
+          return countRead - 1;
+        }
+
+      }
+    }
+
   }
 
-  ///////////////////////////////////////////
 
+  ///////////////////////////////////////////
+  /*
   private void readIndex(String indexFilename) throws IOException {
     FileInputStream fin = new FileInputStream(indexFilename);
 
@@ -416,10 +471,10 @@ public class IgraPor extends AbstractIOServiceProvider {
     System.out.println(" read index map size=" + map.values().size());
   }
 
-  private void makeIndex(Vinfo stnInfo, Vinfo dataInfo, File indexFile) throws IOException {
+  private void makeIndex(StructureDataRegexp.Vinfo stnInfo, StructureDataRegexp.Vinfo dataInfo, File indexFile) throws IOException {
     // get map of Stations
     StructureMembers.Member m = stnInfo.sm.findMember(STNID);
-    VinfoField f = (VinfoField) m.getDataObject();
+    StructureDataRegexp.VinfoField f = (StructureDataRegexp.VinfoField) m.getDataObject();
     int stnCount = 0;
 
     // read through entire file LOOK: could use SeqIter
@@ -446,7 +501,7 @@ public class IgraPor extends AbstractIOServiceProvider {
 
     // assumes that the stn data is in order by stnId
     m = dataInfo.sm.findMember(STNID);
-    f = (VinfoField) m.getDataObject();
+    f = (StructureDataRegexp.VinfoField) m.getDataObject();
     StationIndex currStn = null;
     int totalCount = 0;
 
@@ -495,7 +550,7 @@ public class IgraPor extends AbstractIOServiceProvider {
     /* byte[] pb = encodeStationListProto( map.values());
    size += NcStream.writeVInt(fout, pb.length);
    size += pb.length;
-   fout.write(pb); */
+   fout.write(pb);
 
     for (StationIndex s : map.values()) {
       byte[] pb = s.encodeStationProto();
@@ -538,7 +593,7 @@ public class IgraPor extends AbstractIOServiceProvider {
       ucar.nc2.iosp.noaa.GhcnmProto.StationIndex proto = builder.build();
       return proto.toByteArray();
     }
-  }
+  } */
 
 }
 

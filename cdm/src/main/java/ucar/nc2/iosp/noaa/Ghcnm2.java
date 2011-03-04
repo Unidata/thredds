@@ -525,7 +525,7 @@ public class Ghcnm2 extends AbstractIOServiceProvider {
   private RandomAccessFile stnRaf, dataRaf;
   private HashMap<Long, StationIndex> map = new HashMap<Long, StationIndex>(10000);
   private int stn_fldno;
-  private Vinfo dataVinfo, stnVinfo;
+  private StructureDataRegexp.Vinfo dataVinfo, stnVinfo;
 
   @Override
   public void open(RandomAccessFile raff, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
@@ -557,7 +557,7 @@ public class Ghcnm2 extends AbstractIOServiceProvider {
     stnVinfo = setVinfo(stnRaf, ncfile, stnPattern, "station");
 
     StructureMembers.Member m = stnVinfo.sm.findMember(STNID);
-    VinfoField f = (VinfoField) m.getDataObject();
+    StructureDataRegexp.VinfoField f = (StructureDataRegexp.VinfoField) m.getDataObject();
     stn_fldno = f.fldno;
 
      // make index file if needed
@@ -568,22 +568,22 @@ public class Ghcnm2 extends AbstractIOServiceProvider {
       readIndex(idxFile.getPath());
   }
 
-  private Vinfo setVinfo(RandomAccessFile raff, NetcdfFile ncfile, Pattern p, String seqName) {
+  private StructureDataRegexp.Vinfo setVinfo(RandomAccessFile raff, NetcdfFile ncfile, Pattern p, String seqName) {
     Sequence seq = (Sequence) ncfile.findVariable(seqName);
     StructureMembers sm = seq.makeStructureMembers();
-    Vinfo result = new Vinfo(raff, sm, p);
+    StructureDataRegexp.Vinfo result = new StructureDataRegexp.Vinfo(raff, sm, p);
     seq.setSPobject(result);
 
     int fldno = 1;
     for (StructureMembers.Member m : sm.getMembers()) {
-      VinfoField vf = new VinfoField(fldno++);
-      /* Variable v = seq.findVariable(m.getName());
-      Attribute att = v.findAttribute("scale_factor");
+      StructureDataRegexp.VinfoField vf = new StructureDataRegexp.VinfoField(fldno++);
+      Variable v = seq.findVariable(m.getName());
+      Attribute att = v.findAttribute("iosp_scale");
       if (att != null) {
         vf.hasScale = true;
         vf.scale = att.getNumericValue().floatValue();
         v.remove(att);
-      } */
+      }
       m.setDataObject( vf);
     }
 
@@ -595,52 +595,28 @@ public class Ghcnm2 extends AbstractIOServiceProvider {
     dataRaf.close();
   }
      
-  class Vinfo {
-    RandomAccessFile rafile;
-    StructureMembers sm;
-    Pattern p;
-    int nelems = -1;
-
-    private Vinfo(RandomAccessFile raff, StructureMembers sm, Pattern p) {
-      this.sm = sm;
-      this.rafile = raff;
-      this.p = p;
-    }
-  }
-
-  class VinfoField {
-    int fldno;
-    int stride = 4;
-    //float scale;
-    //boolean hasScale;
-
-    private VinfoField(int fldno) {
-      this.fldno = fldno;
-    }
-  }
-
   ////////////////////////////////////////////////////////////////////
 
   @Override
   public Array readData(Variable v2, Section section) throws IOException, InvalidRangeException {
-    Vinfo vinfo = (Vinfo) v2.getSPobject();
+    StructureDataRegexp.Vinfo vinfo = (StructureDataRegexp.Vinfo) v2.getSPobject();
     return new ArraySequence( vinfo.sm, new SeqIter(vinfo), vinfo.nelems);
   }
 
   @Override
   public StructureDataIterator getStructureIterator(Structure s, int bufferSize) throws java.io.IOException {
-    Vinfo vinfo = (Vinfo) s.getSPobject();
+    StructureDataRegexp.Vinfo vinfo = (StructureDataRegexp.Vinfo) s.getSPobject();
     return new SeqIter(vinfo);
   }
 
   private class SeqIter implements StructureDataIterator {
-    private Vinfo vinfo;
+    private StructureDataRegexp.Vinfo vinfo;
     private long bytesRead;
     private long totalBytes;
     private int recno;
     private StructureData curr;
 
-    SeqIter(Vinfo vinfo) throws IOException {
+    SeqIter(StructureDataRegexp.Vinfo vinfo) throws IOException {
       this.vinfo = vinfo;
       totalBytes = (int) vinfo.rafile.length();
       vinfo.rafile.seek(0);
@@ -812,10 +788,10 @@ public class Ghcnm2 extends AbstractIOServiceProvider {
     System.out.println(" read index map size=" + map.values().size());
   }
 
- private void makeIndex(Vinfo stnInfo, Vinfo dataInfo, File indexFile ) throws IOException {
+ private void makeIndex(StructureDataRegexp.Vinfo stnInfo, StructureDataRegexp.Vinfo dataInfo, File indexFile ) throws IOException {
     // get map of Stations
     StructureMembers.Member m = stnInfo.sm.findMember(STNID);
-    VinfoField f = (VinfoField) m.getDataObject();
+    StructureDataRegexp.VinfoField f = (StructureDataRegexp.VinfoField) m.getDataObject();
     int stnCount = 0;
 
     // read through entire file LOOK: could use SeqIter
@@ -842,7 +818,7 @@ public class Ghcnm2 extends AbstractIOServiceProvider {
 
     // assumes that the stn data is in order by stnId
     m = dataInfo.sm.findMember(STNID);
-    f = (VinfoField) m.getDataObject();
+    f = (StructureDataRegexp.VinfoField) m.getDataObject();
     StationIndex currStn = null;
     int totalCount = 0;
 

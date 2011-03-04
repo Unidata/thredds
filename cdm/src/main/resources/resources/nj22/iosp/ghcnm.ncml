@@ -16,12 +16,12 @@
       <attribute name="long_name" value="year of the station record"/>
       <attribute name="units" value="years since 0001-01-01 00:00:00.000 UTC"/>
     </variable>
-    <variable name="temperature" shape="month" type="int">
+    <variable name="temperature" shape="month" type="float">
       <attribute name="long_name" value="monthly mean temperature"/>
       <attribute name="standard_name" value="surface_temperature"/>
       <attribute name="units" value="Celsius"/>
-      <attribute name="scale_factor" type="float" value=".01"/>
-      <attribute name="missing_value" type="int" value="-9999"/>
+      <attribute name="iosp_scale" type="float" value=".01"/>
+      <attribute name="missing_value" type="float" value="-99.99"/>
     </variable>
     <variable name="dm" shape="month" type="char">
       <attribute name="long_name" value="data management flag"/>
@@ -105,12 +105,12 @@
         <attribute name="long_name" value="year of the station record"/>
         <attribute name="units" value="years since 0001-01-01 00:00:00.000 UTC"/>
       </variable>
-      <variable name="temperature" shape="month" type="int">
+      <variable name="temperature" shape="month" type="float">
         <attribute name="standard_name" value="surface_temperature"/>
         <attribute name="long_name" value="monthly mean temperature"/>
         <attribute name="units" value="Celsius"/>
-        <attribute name="scale_factor" type="float" value=".01"/>
-        <attribute name="missing_value" type="int" value="-9999"/>
+        <attribute name="iosp_scale" type="float" value=".01"/>
+        <attribute name="missing_value" type="float" value="-99.99"/>
       </variable>
       <variable name="dm" shape="month" type="char">
         <attribute name="long_name" value="data management flag"/>

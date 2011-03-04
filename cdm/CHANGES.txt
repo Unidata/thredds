@@ -5,7 +5,7 @@ Build Date = @BUILDTIME@
 Changes in version 4.2:
  22: (2011-03-xx)
   Default TableAnalyser: turn into trajectory if there is trajectory metadata (record dimension case)
-  igra iosp
+  igra iosp (alpha)
   H5header: remove symbolic links in same dir as regular object
   GradsBinaryGridServiceProvider (don)
 
