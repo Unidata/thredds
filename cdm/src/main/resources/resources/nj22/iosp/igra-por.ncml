@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
-  <dimension name="level" length="13"/>
-
   <attribute name="title" value="Integrated Global Radiosonde Archive (IGRA) - Period of record"/>
   <attribute name="Conventions" value="CDM"/>
   <attribute name="featureType" value="timeSeriesProfile"/>
@@ -59,16 +57,15 @@
         <attribute name="units" value="years since 0001-01-01 00:00:00.000 UTC"/>
       </variable>
       <variable name="month" shape="" type="int">
-        <attribute name="long_name" value="month"/>
       </variable>
       <variable name="day" shape="" type="int">
-        <attribute name="long_name" value="month"/>
       </variable>
       <variable name="hour" shape="" type="int">
-        <attribute name="long_name" value="month"/>
+        <attribute name="long_name" value="observation hour (00-23 UTC)"/>
       </variable>
       <variable name="time" shape="" type="int">
-        <attribute name="long_name" value="month"/>
+        <attribute name="long_name" value="release time (0000-2359 UTC)"/>
+        <attribute name="missing_value" type="int" value="9999"/>
       </variable>
       <variable name="nlevels" shape="" type="int">
         <attribute name="long_name" value="number of levels"/>
@@ -78,7 +75,7 @@
         <variable name="type" shape="" type="int">
           <attribute name="long_name" value="level type"/>
         </variable>
-        <variable name="pressure" shape="level" type="float">
+        <variable name="pressure" shape="" type="float">
           <attribute name="standard_name" value="air_pressure"/>
           <attribute name="long_name" value="pressure level"/>
           <attribute name="units" value="mb"/>
@@ -88,44 +85,44 @@
         <variable name="pressure_flag" shape="" type="char">
           <attribute name="long_name" value="pressure flag"/>
         </variable>
-        <variable name="geopotential_height" shape="level" type="int">
+        <variable name="geopotential_height" shape="" type="int">
           <attribute name="standard_name" value="geopotential height"/>
-          <attribute name="long_name" value="geopotential height - monthly mean value"/>
+          <attribute name="long_name" value="geopotential height"/>
           <attribute name="units" value="meters"/>
           <attribute name="missing_value" type="int" value="-8888 -9999"/>
         </variable>
         <variable name="geopotential_height_flag" shape="" type="char">
-          <attribute name="long_name" value="Composite Station Code"/>
+          <attribute name="long_name" value="geopotential height flag"/>
         </variable>
-        <variable name="temperature" shape="level" type="float">
+        <variable name="temperature" shape="" type="float">
           <attribute name="standard_name" value="air_temperature"/>
           <attribute name="long_name" value="Temperature"/>
           <attribute name="units" value="Celsius"/>
           <attribute name="iosp_scale" type="float" value=".1"/>
-          <attribute name="missing_value" type="float" value="-88.88 -99.99"/>
+          <attribute name="missing_value" type="float" value="-888.8 -999.9"/>
         </variable>
         <variable name="temperature_flag" shape="" type="char">
           <attribute name="long_name" value="temperature flag"/>
         </variable>
-        <variable name="dew_point" shape="level" type="float">
+        <variable name="dew_point" shape="" type="float">
           <attribute name="standard_name" value="dew_point_depression"/>
           <attribute name="long_name" value="Dewpoint Depression"/>
           <attribute name="units" value="Celsius"/>
           <attribute name="iosp_scale" type="float" value=".1"/>
-          <attribute name="missing_value" type="float" value="-88.88 -99.99"/>
+          <attribute name="missing_value" type="float" value="-888.8 -999.9"/>
         </variable>
-        <variable name="wind_direction" shape="level" type="int">
+        <variable name="wind_direction" shape="" type="int">
           <attribute name="standard_name" value="wind_from_direction"/>
           <attribute name="long_name" value="Wind Direction"/>
           <attribute name="units" value="deg"/>
           <attribute name="missing_value" type="int" value="-8888 -9999"/>
         </variable>
-        <variable name="wind_speed" shape="level" type="float">
+        <variable name="wind_speed" shape="" type="float">
           <attribute name="standard_name" value="wind_speed"/>
           <attribute name="long_name" value="Wind Speed"/>
           <attribute name="units" value="m/s"/>
           <attribute name="iosp_scale" type="float" value=".1"/>
-          <attribute name="missing_value" type="float" value="-88.88 -99.99"/>
+          <attribute name="missing_value" type="float" value="-888.8 -999.9"/>
         </variable>
 
       </variable>

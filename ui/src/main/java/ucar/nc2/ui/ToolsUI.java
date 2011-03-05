@@ -34,7 +34,6 @@
 package ucar.nc2.ui;
 
 import opendap.dap.http.HTTPSession;
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import thredds.inventory.FeatureCollectionConfig;
 import ucar.nc2.dt.grid.NetcdfCFWriter;
 import ucar.nc2.stream.NcStreamWriter;
@@ -57,9 +56,6 @@ import ucar.nc2.ncml.Aggregation;
 import ucar.nc2.dt.*;
 import ucar.nc2.dt.radial.StationRadarCollectionImpl;
 import ucar.nc2.dt.fmrc.FmrcDefinition;
-import ucar.nc2.dt.fmrc.ForecastModelRunInventory;
-import ucar.nc2.dt.fmrc.FmrcInventory;
-import ucar.nc2.dt.fmrc.FmrcImpl;
 import ucar.nc2.dataset.*;
 
 import ucar.nc2.geotiff.GeoTiff;
@@ -85,7 +81,6 @@ import thredds.inventory.bdb.MetadataManager;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
-import java.net.Authenticator;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.channels.WritableByteChannel;
@@ -95,8 +90,6 @@ import java.util.List;
 import javax.swing.*;
 import javax.swing.text.PlainDocument;
 import javax.swing.event.*;
-
-import org.apache.commons.httpclient.auth.CredentialsProvider;
 
 import org.springframework.context.*;
 import org.springframework.context.support.*;
@@ -1227,7 +1220,7 @@ public class ToolsUI extends JPanel {
       if ((null == message) && (ioe instanceof EOFException))
         message = "Premature End of File";
       JOptionPane.showMessageDialog(null, "NetcdfDataset.open cant open " + location + "\n" + message);
-      ioe.printStackTrace();
+      //ioe.printStackTrace();
 
       try {
         if (ncfile != null) ncfile.close();

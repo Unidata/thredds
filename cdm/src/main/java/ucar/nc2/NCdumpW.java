@@ -383,18 +383,18 @@ public class NCdumpW {
    * @throws java.io.IOException on read error
    */
   static public void printArray(Array array, String name, PrintWriter out, CancelTask ct) throws IOException {
-    printArray(array, name, null, out, new Indent(2), ct);
+    printArray(array, name, null, out, new Indent(2), ct, true);
     out.flush();
   }
 
   static public String printArray(Array array, String name, CancelTask ct) throws IOException {
     CharArrayWriter carray = new CharArrayWriter(100000);
     PrintWriter pw = new PrintWriter(carray);
-    printArray(array, name, null, pw, new Indent(2), ct);
+    printArray(array, name, null, pw, new Indent(2), ct, true);
     return carray.toString();
   }
 
-  static private void printArray(Array array, String name, String units, PrintWriter out, Indent ilev, CancelTask ct) throws IOException {
+  static private void printArray(Array array, String name, String units, PrintWriter out, Indent ilev, CancelTask ct, boolean printSeq) throws IOException {
     if (ct != null && ct.isCancel()) return;
 
     if (name != null) out.print(ilev + name + " =");
@@ -415,8 +415,8 @@ public class NCdumpW {
         System.out.printf("HEY!%n");
       printStringArray(out, (ArrayObject) array, ilev, ct);
 
-    } else if (array instanceof ArraySequence) {
-      printSequence(out, (ArraySequence) array, ilev, ct);
+    } else if (array instanceof ArraySequence)  {
+      if (printSeq) printSequence(out, (ArraySequence) array, ilev, ct);
 
     } else if (array instanceof ArrayStructure) {
       if (array.getSize() == 1)
@@ -621,7 +621,7 @@ public class NCdumpW {
     indent.incr();
     for (StructureMembers.Member m : sdata.getMembers()) {
       Array sdataArray = sdata.getArray(m);
-      printArray(sdataArray, m.getName(), m.getUnitsString(), out, indent, ct);
+      printArray(sdataArray, m.getName(), m.getUnitsString(), out, indent, ct, false);
       if (ct != null && ct.isCancel()) return;
     }
     indent.decr();

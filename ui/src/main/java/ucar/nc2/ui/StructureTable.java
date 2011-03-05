@@ -321,9 +321,9 @@ public class StructureTable extends JPanel {
         ps.println();
       }
       ps.close();
-        JOptionPane.showMessageDialog(this, "File successfully written");
+      JOptionPane.showMessageDialog(this, "File successfully written");
     } catch (IOException ioe) {
-        JOptionPane.showMessageDialog(this, "ERROR: " + ioe.getMessage());
+      JOptionPane.showMessageDialog(this, "ERROR: " + ioe.getMessage());
       ioe.printStackTrace();
     }
 
@@ -366,6 +366,7 @@ public class StructureTable extends JPanel {
     } catch (InvalidRangeException e) {
       e.printStackTrace();
     } catch (IOException e) {
+      JOptionPane.showMessageDialog(this, "ERROR: " + e.getMessage());
       e.printStackTrace();
     }
     return null;
@@ -378,8 +379,10 @@ public class StructureTable extends JPanel {
     try {
       return dataModel.getRow(modelIdx);
     } catch (InvalidRangeException e) {
+      JOptionPane.showMessageDialog(this, "ERROR: " + e.getMessage());
       e.printStackTrace();
     } catch (IOException e) {
+      JOptionPane.showMessageDialog(this, "ERROR: " + e.getMessage());
       e.printStackTrace();
     }
     return null;
@@ -577,6 +580,7 @@ public class StructureTable extends JPanel {
           sdataList.add( iter.next());  // LOOK lame -read at all once
 
       } catch (IOException e) {
+        JOptionPane.showMessageDialog(null, "ERROR: " + e.getMessage());
         e.printStackTrace();
       }
     }
@@ -661,6 +665,7 @@ public class StructureTable extends JPanel {
           sd = traj.getData(0);
           this.members = sd.getStructureMembers();
         } catch (InvalidRangeException e) {
+          JOptionPane.showMessageDialog(null, "ERROR: " + e.getMessage());
           throw new IOException(e.getMessage());
         }
       }
@@ -719,6 +724,7 @@ public class StructureTable extends JPanel {
         try {
           sd = getStructureData(0);
         } catch (InvalidRangeException e) {
+          JOptionPane.showMessageDialog(null, "ERROR: " + e.getMessage());
           throw new IOException(e.getMessage());
         }
         this.members = sd.getStructureMembers();
@@ -767,6 +773,7 @@ public class StructureTable extends JPanel {
         try {
           sd = getStructureData(0);
         } catch (InvalidRangeException e) {
+          JOptionPane.showMessageDialog(null, "ERROR: " + e.getMessage());
           throw new IOException(e.getMessage());
         }
         this.members = sd.getStructureMembers();

@@ -14,8 +14,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Describe
+ * Nomads IGRA files.
  *
+ * @see "http://www.ncdc.noaa.gov/oa/climate/igra/"
+ * @see "ftp://ftp.ncdc.noaa.gov/pub/data/igra"
+ * 
  * @author caron
  * @since 3/3/11
  */
@@ -44,13 +47,15 @@ public class IgraPor extends AbstractIOServiceProvider {
   @Override
   public boolean isValidFile(RandomAccessFile raf) throws IOException {
     String location = raf.getLocation();
+    File file = new File(location);
+
     int pos = location.lastIndexOf(".");
     if (pos <= 0) return false;
     String base = location.substring(0, pos);
     String ext = location.substring(pos);
 
-    // must be data file or station or index file
-    if (!ext.equals(DAT_EXT) && !ext.equals(IDX_EXT))
+    // must be data file or station file or index file
+    if (!ext.equals(DAT_EXT) && !ext.equals(IDX_EXT) && !file.getName().equals(STN_FILE))
       return false;
 
     if (ext.equals(IDX_EXT)) {
@@ -69,10 +74,9 @@ public class IgraPor extends AbstractIOServiceProvider {
       return test.equals(MAGIC_START_IDX);
 
     } else if (ext.equals(DAT_EXT)) {
-      // stn file must be in the same directory
       File stnFile = getStnFile(location);
-      if (!stnFile.exists())
-        return false;
+      if (stnFile == null)
+          return false;
       return isValidFile(raf, dataHeaderPattern);
 
     } else {
@@ -82,10 +86,16 @@ public class IgraPor extends AbstractIOServiceProvider {
     }
   }
 
+  // stn file must be in the same directory or one up
   private File getStnFile(String location) {
-    File f = new File(location);
-    File p = f.getParentFile().getParentFile();
-    return new File(p, STN_FILE);
+    File file = new File(location);
+    File stnFile = new File(file.getParentFile(), STN_FILE);
+    if (!stnFile.exists()) {
+      if (file.getParentFile() == null) return null;
+      stnFile = new File(file.getParentFile().getParentFile(), STN_FILE);
+      if (!stnFile.exists()) return null;
+    }
+    return stnFile;
   }
 
   private boolean isValidFile(RandomAccessFile raf, Pattern p) throws IOException {
@@ -117,11 +127,12 @@ public class IgraPor extends AbstractIOServiceProvider {
   }
 
   /////////////////////////////////////////////////////////////////////////
-  private RandomAccessFile stnRaf;
+  private RandomAccessFile stnRaf, dataRaf;
   private File baseDir;
   //private HashMap<Long, StationIndex> map = new HashMap<Long, StationIndex>(10000);
   private int stn_fldno;
   private StructureDataRegexp.Vinfo stnVinfo, seriesVinfo, profileVinfo;
+  private String stationId; // if a DAT file
 
   @Override
   public void open(RandomAccessFile raff, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
@@ -129,18 +140,26 @@ public class IgraPor extends AbstractIOServiceProvider {
     int pos = location.lastIndexOf(".");
     String ext = location.substring(pos);
 
+
     File file = new File(location);
     baseDir = file.getParentFile();
-    File stnFile = new File(baseDir.getParentFile(), STN_FILE);
+
+    File stnFile = getStnFile(location);
 
     if (ext.equals(IDX_EXT)) {
       stnRaf = new RandomAccessFile(stnFile.getPath(), "r");
 
     } else if (ext.equals(DAT_EXT)) {
       stnRaf = new RandomAccessFile(stnFile.getPath(), "r");
+      dataRaf = raff;
 
-    } else {
+      //extract the station id
+      String name = file.getName();
+      stationId = name.substring(0, name.length() - DAT_EXT.length());
+
+    } else { // pointed to the station file
       stnRaf = raff;
+
     }
 
     NcmlConstructor ncmlc = new NcmlConstructor();
@@ -189,8 +208,10 @@ public class IgraPor extends AbstractIOServiceProvider {
   }
 
   public void close() throws java.io.IOException {
-    stnRaf.close();
-    // LOOK dataRaf.close();
+    if (stnRaf != null) stnRaf.close();
+    if (dataRaf != null) dataRaf.close();
+    stnRaf = null;
+    dataRaf = null;
   }
 
   ////////////////////////////////////////////////////////////////////
@@ -198,16 +219,72 @@ public class IgraPor extends AbstractIOServiceProvider {
   @Override
   public Array readData(Variable v2, Section section) throws IOException, InvalidRangeException {
     StructureDataRegexp.Vinfo vinfo = (StructureDataRegexp.Vinfo) v2.getSPobject();
-    return new ArraySequence(vinfo.sm, new StationSeqIter(vinfo), vinfo.nelems);
+    if (stationId != null)
+      return new ArraySequence(vinfo.sm, new SingleStationSeqIter(vinfo), vinfo.nelems);
+    else
+      return new ArraySequence(vinfo.sm, new StationSeqIter(vinfo), vinfo.nelems);
   }
 
   @Override
   public StructureDataIterator getStructureIterator(Structure s, int bufferSize) throws java.io.IOException {
     StructureDataRegexp.Vinfo vinfo = (StructureDataRegexp.Vinfo) s.getSPobject();
-    return new StationSeqIter(vinfo);
+    if (stationId != null)
+      return new SingleStationSeqIter(vinfo);
+    else
+      return new StationSeqIter(vinfo);
   }
 
-  // sequence of stations
+  // when theres only one station
+  private class SingleStationSeqIter implements StructureDataIterator {
+    private StructureDataRegexp.Vinfo vinfo;
+    private int recno = 0;
+
+    SingleStationSeqIter(StructureDataRegexp.Vinfo vinfo) throws IOException {
+      this.vinfo = vinfo;
+      vinfo.rafile.seek(0);
+    }
+
+    @Override
+    public StructureDataIterator reset() {
+      recno = 0;
+      return this;
+    }
+
+    @Override
+    public boolean hasNext() throws IOException {
+      return recno == 0;
+    }
+
+    @Override
+    public StructureData next() throws IOException {
+      Matcher matcher;
+      while (true) {
+        String line = vinfo.rafile.readLine();
+        if (line == null) return null;
+        if (line.startsWith("#")) continue;
+        if (line.trim().length() == 0) continue;
+        //System.out.printf("line %s%n", line);
+        matcher = vinfo.p.matcher(line);
+        if (matcher.matches()) {
+          String stnid = matcher.group(stn_fldno).trim();
+          if (stnid.equals(stationId)) break;
+        }
+      }
+      recno++;
+      return new StationData(vinfo.sm, matcher);
+    }
+
+    @Override
+    public void setBufferSize(int bytes) {
+    }
+
+    @Override
+    public int getCurrentRecno() {
+      return recno - 1;
+    }
+  }
+
+    // sequence of stations
   private class StationSeqIter implements StructureDataIterator {
     private StructureDataRegexp.Vinfo vinfo;
     private long totalBytes;
@@ -280,23 +357,23 @@ public class IgraPor extends AbstractIOServiceProvider {
     public int getCurrentRecno() {
       return recno - 1;
     }
+  }
 
-    private class StationData extends StructureDataRegexp {
-      StructureMembers members;
-      Matcher matcher;          // matcher on the station ascii
+  private class StationData extends StructureDataRegexp {
+    StructureMembers members;
+    Matcher matcher;          // matcher on the station ascii
 
-      StationData(StructureMembers members, Matcher matcher) {
-        super(members, matcher);
-        this.members = members;
-        this.matcher = matcher;
-      }
+    StationData(StructureMembers members, Matcher matcher) {
+      super(members, matcher);
+      this.members = members;
+      this.matcher = matcher;
+    }
 
-      @Override
-      // nested array sequence must be the stn_data
-      public ArraySequence getArraySequence(StructureMembers.Member m) {
-        String stnid = matcher.group(stn_fldno).trim();
-        return new ArraySequence(seriesVinfo.sm, new TimeSeriesIter(stnid), -1);
-      }
+    @Override
+    // nested array sequence must be the stn_data
+    public ArraySequence getArraySequence(StructureMembers.Member m) {
+      String stnid = matcher.group(stn_fldno).trim();
+      return new ArraySequence(seriesVinfo.sm, new TimeSeriesIter(stnid), -1);
     }
   }
 
@@ -314,7 +391,11 @@ public class IgraPor extends AbstractIOServiceProvider {
 
     private void init() {
       try {
-        this.timeSeriesRaf = new RandomAccessFile( file.getPath(), "r");// LOOK check exists
+        if (dataRaf != null)
+          this.timeSeriesRaf = dataRaf; // single station case - data file already open
+        else
+          this.timeSeriesRaf = new RandomAccessFile( file.getPath(), "r");// LOOK check exists LOOK who closes?
+
         totalBytes = timeSeriesRaf.length();
         timeSeriesRaf.seek(0);
       } catch (IOException e) {
