@@ -37,6 +37,9 @@
 package ucar.nc2.iosp.grads;
 
 
+import ucar.nc2.units.DateUnit;
+
+
 import java.text.FieldPosition;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
@@ -156,5 +159,70 @@ public class GradsTimeDimension extends GradsDimension {
 
     }
 
-}
+    /**
+     * Make a time struct from the index.
+     *
+     * @param timeIndex  the time value index
+     *
+     * @return the corresponding TimeStruct
+     */
+    public TimeStruct makeTimeStruct(int timeIndex) {
+        double   tVal     = getValues()[timeIndex];
+        Date     d        = DateUnit.getStandardDate(tVal + getUnit());
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
+        calendar.setTime(d);
+        TimeStruct ts = new TimeStruct();
+        ts.year   = calendar.get(Calendar.YEAR);
+        ts.month  = calendar.get(Calendar.MONTH) + 1;  // MONTH is zero based
+        ts.day    = calendar.get(Calendar.DAY_OF_MONTH);
+        ts.hour   = calendar.get(Calendar.HOUR_OF_DAY);
+        ts.minute = calendar.get(Calendar.MINUTE);
+        return ts;
+    }
 
+    /**
+     * A class to hold a GrADS time structure.  The full time spec is:
+     *
+     *        HH:mm'Z'ddMMMyyyy (e.g. 12:04Z05Mar2011)
+     * 
+     * @author   Don Murray CU-CIRES
+     */
+    public class TimeStruct {
+
+        /** year field */
+        int year = 0;
+
+        /** month field (1 based) */
+        int month = 0;
+
+        /** day field */
+        int day = 0;
+
+        /** hour field */
+        int hour = 0;
+
+        /** minute field */
+        int minute = 0;
+
+        /**
+         * Create a new time structure
+         */
+        public TimeStruct() {}
+    }
+
+    /**
+     * Replace the time template parameters in a filename
+     *
+     * @param filespec  the file template
+     * @param ts  the time to use
+     *
+     * @return  the filled in templage
+     */
+    public String replaceFileTemplate(String filespec, TimeStruct ts) {
+        return filespec;
+    }
+    
+    
+
+}

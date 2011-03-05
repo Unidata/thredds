@@ -457,7 +457,7 @@ public class GradsBinaryGridServiceProvider extends AbstractIOServiceProvider {
      */
     public void close() throws IOException {
         if (dataFile != null) {
-           dataFile.close();
+            dataFile.close();
         }
         dataFile = null;
         super.close();

@@ -49,6 +49,9 @@ public class GradsEnsembleDimension extends GradsDimension {
 
     /** ensemble names identifier */
     public static final String NAMES = "NAMES";
+    
+    /** ensemble filename template */
+	public static final String ENS_TEMPLATE = "%e";
 
     /**
      * Create a new ensemble dimension holder
@@ -83,5 +86,17 @@ public class GradsEnsembleDimension extends GradsDimension {
         return vals;
     }
 
+    /**
+     * Replace the ensemble template parameter in a filename
+     *
+     * @param filespec  the file template
+     * @param the ensemble index
+     *
+     * @return  the filled in template
+     */
+    public String replaceFileTemplate(String filespec, int ensIndex) {
+        return filespec.replaceAll(ENS_TEMPLATE, getEnsembleNames().get(ensIndex));
+    }
+    
 }
 

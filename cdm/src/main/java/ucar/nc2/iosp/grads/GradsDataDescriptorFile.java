@@ -35,7 +35,7 @@ import java.util.StringTokenizer;
  * Class to hold information from a GrADS Data Descriptor File
  *
  * @see http://www.iges.org/grads/gadoc/descriptorfile.html
- * 
+ *
  * @author         Don Murray - CU/CIRES
  */
 public class GradsDataDescriptorFile {
@@ -179,7 +179,7 @@ public class GradsDataDescriptorFile {
 
     /** the list of filenames that this ctl points to */
     List<String> fileNames;
-    
+
     /** defines a projection */
     private boolean hasProjection = false;
 
@@ -350,8 +350,8 @@ public class GradsDataDescriptorFile {
                             inEnsSection = true;
                         }
                     } else if (label.equalsIgnoreCase(PDEF)) {
-                    	curDim = null;
-                    	hasProjection = true;
+                        curDim        = null;
+                        hasProjection = true;
                     } else if (label.equalsIgnoreCase(VARS)) {
                         curDim       = null;
                         inVarSection = true;
@@ -613,7 +613,7 @@ public class GradsDataDescriptorFile {
      *
      * @return the filenames
      *
-     * @throws IOException _more_
+     * @throws IOException  file does not exist.
      */
     public List<String> getFileNames() throws IOException {
         if (fileNames == null) {
@@ -622,7 +622,7 @@ public class GradsDataDescriptorFile {
             String path    = getDDFPath();
             if ( !isTemplate()) {
                 fileNames.add(getFullPath(dataFile, path));
-            } else if (dataFile.indexOf("%e") >= 0) {
+            } else if (dataFile.indexOf(GradsEnsembleDimension.ENS_TEMPLATE) >= 0) {
                 List<String> ensNames = eDim.getEnsembleNames();
                 for (String ename : ensNames) {
                     curFile = getFullPath(dataFile.replace("%e", ename),
