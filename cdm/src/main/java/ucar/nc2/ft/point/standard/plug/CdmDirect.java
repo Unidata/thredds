@@ -33,6 +33,7 @@
 
 package ucar.nc2.ft.point.standard.plug;
 
+import ucar.ma2.DataType;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.constants.CF;
 import ucar.nc2.constants.AxisType;
@@ -86,15 +87,14 @@ public class CdmDirect extends TableConfigurerImpl {
           return getStationAsPointConfig(ds, errlog);
         else  */
           return getStationConfig(ds, errlog);
-      //case timeSeriesProfile:
-      //    return getStationProfileConfig(ds, errlog);
+      case timeSeriesProfile:
+          return getStationProfileConfig(ds, errlog);
       default:
         throw new IllegalStateException("unimplemented feature ftype= " + ftype);
     }
   }
 
   protected TableConfig getStationConfig(NetcdfDataset ds, Formatter errlog) throws IOException {
-
     // find lat coord
     Variable lat = CoordSysEvaluator.findCoordByType(ds, AxisType.Lat);
     if (lat == null) {
@@ -114,6 +114,7 @@ public class CdmDirect extends TableConfigurerImpl {
       return null;
     }
 
+    // should be a top level struct or sequence
     TableConfig stnTable = new TableConfig(Table.Type.Structure, "station");
     stnTable.featureType = FeatureType.STATION;
     stnTable.structureType = TableConfig.StructureType.Structure;
@@ -127,7 +128,9 @@ public class CdmDirect extends TableConfigurerImpl {
       stnTable.stnAlt = alt.getShortName();
 
     // station id
-    stnTable.stnId = Evaluator.getNameOfVariableWithAttribute(ds, CF.STANDARD_NAME, CF.STATION_ID);
+    stnTable.stnId = Evaluator.getNameOfVariableWithAttribute(ds, CF.CF_ROLE, CF.STATION_ID);
+    if (stnTable.stnId == null)
+      stnTable.stnId = Evaluator.getNameOfVariableWithAttribute(ds, CF.STANDARD_NAME, CF.STATION_ID); // old way
     if (stnTable.stnId == null) {
       errlog.format("Must have a Station id variable with standard name station_id%n");
       return null;
@@ -138,13 +141,49 @@ public class CdmDirect extends TableConfigurerImpl {
     stnTable.stnWmoId = Evaluator.getNameOfVariableWithAttribute(ds, CF.STANDARD_NAME, CF.STATION_WMOID);
 
     // obs table
-    TableConfig obs = new TableConfig(Table.Type.NestedStructure, "station.stn_data");
-    obs.nestedTableName = "stn_data";
+    Structure stnv = (Structure) ds.findVariable("station");
+    Structure obsv = null;
+    for (Variable v : stnv.getVariables()) {
+      if (v.getDataType() == DataType.SEQUENCE)
+        obsv = (Structure) v;
+    }
+    TableConfig obs = new TableConfig(Table.Type.NestedStructure, obsv.getName());
+    obs.nestedTableName = obsv.getShortName();
     obs.time = CoordSysEvaluator.findCoordShortNameByType(ds, AxisType.Time);
+     if (obs.time == null) {
+      errlog.format("Must have a time coordinate%n");
+      return null;
+    }
     stnTable.addChild(obs);
 
     return stnTable;
   }
+
+  protected TableConfig getStationProfileConfig(NetcdfDataset ds, Formatter errlog) throws IOException {
+    TableConfig stnTable = getStationConfig(ds, errlog);
+    if (stnTable == null) return null;
+
+    stnTable.featureType = FeatureType.STATION_PROFILE;
+    TableConfig timeSeries = stnTable.children.get(0);
+    Structure obsv = (Structure) ds.findVariable(timeSeries.name);
+    Structure profile = null;
+    for (Variable v : obsv.getVariables()) {
+      if (v.getDataType() == DataType.SEQUENCE)
+        profile = (Structure) v;
+    }
+    TableConfig profileTc = new TableConfig(Table.Type.NestedStructure, profile.getName());
+    profileTc.nestedTableName = profile.getShortName();
+    Variable elev = findZAxisNotStationAlt(ds);
+    profileTc.elev = elev.getShortName();
+     if (profileTc.elev == null) {
+      errlog.format("Must have a level coordinate%n");
+      return null;
+    }
+    timeSeries.addChild(profileTc);
+
+    return stnTable;
+  }
+
 
  /* protected TableConfig getStationAsPointConfig(NetcdfDataset ds, Formatter errlog) throws IOException {
     boolean needFinish = false;
@@ -197,56 +236,8 @@ public class CdmDirect extends TableConfigurerImpl {
 
     if (needFinish) ds.finish();
     return obs;
-  }
+  }  
 
-  protected TableConfig getStationProfileConfig(NetcdfDataset ds, Formatter errlog) throws IOException {
-    TableConfig stnTable = makeStationTable(ds, errlog);
-    if (stnTable == null) return null;
-    Dimension stationDim = ds.findDimension( stnTable.dimName);
-    stnTable.featureType = FeatureType.STATION_PROFILE;
-
-    // obs table
-    VariableDS time = CoordSysEvaluator.findCoordByType(ds, AxisType.Time);
-    if (time == null) {
-      errlog.format("CdmDirect: Must have a Time coordinate");
-      return null;
-    }
-    Dimension obsDim = time.getDimension(time.getRank()-1); // may be time(time) or time(stn, obs)
-
-    Structure multidimStruct = Evaluator.getStructureWithDimensions(ds, stationDim, obsDim);
-    if (multidimStruct == null) {
-        errlog.format("CdmDirect: Cannot figure out Station/obs table structure");
-        return null;
-    }
-
-    TableConfig timeTable = new TableConfig(Table.Type.MultidimStructure, obsDim.getName());
-    timeTable.missingVar = "_isMissing";
-    timeTable.structName = multidimStruct.getName();
-    timeTable.structureType = TableConfig.StructureType.Structure;
-    timeTable.addJoin(new JoinArray(time, JoinArray.Type.level, 1));
-    timeTable.time = time.getName();
-    timeTable.feature_id = time.getName();
-    stnTable.addChild(timeTable);
-
-    TableConfig obsTable = new TableConfig(Table.Type.NestedStructure, obsDim.getName());
-    Structure nestedStruct = Evaluator.getNestedStructure(multidimStruct);
-    if (nestedStruct == null) {
-        errlog.format("CdmDirect: Cannot find nested Structure for profile");
-        return null;
-    }
-
-    obsTable.structName = nestedStruct.getName();
-    obsTable.nestedTableName = nestedStruct.getShortName();
-    Variable elev = findZAxisNotStationAlt(ds);
-     if (elev == null) {
-        errlog.format("CdmDirect: Cannot find profile elevation variable");
-        return null;
-    }
-    obsTable.elev = elev.getShortName();
-    timeTable.addChild(obsTable);
-
-    return stnTable;
-  }
 
   protected TableConfig makeStationTable(NetcdfDataset ds, Formatter errlog) throws IOException {
     // find lat coord

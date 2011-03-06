@@ -51,6 +51,7 @@ public interface CF {
 
   // standard attributes
   public static final String ADD_OFFSET = "add_offset";
+  public static final String CF_ROLE = "cf_role";
   public final static String COORDINATES = "coordinates";
   public static final String GRID_MAPPING = "grid_mapping";
   public static final String GRID_MAPPING_NAME = "grid_mapping_name";

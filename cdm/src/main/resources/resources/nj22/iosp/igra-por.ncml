@@ -72,7 +72,7 @@
       </variable>
 
       <variable name="levels" shape="*" type="Sequence">
-        <variable name="type" shape="" type="int">
+        <variable name="levelType" shape="" type="int">
           <attribute name="long_name" value="level type"/>
         </variable>
         <variable name="pressure" shape="" type="float">
