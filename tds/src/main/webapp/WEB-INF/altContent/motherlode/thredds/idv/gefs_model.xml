@@ -20,7 +20,7 @@
           </documentation>
         </metadata>
 
-        <datasetScan name="NCEP GEFS ensembles"
+        <datasetScan name="NCEP-GEFS-Global 1p0deg Ensemble with Ensemble Dimensions"
                      ID="model/NCEP/GEFS/Global_1p0deg_Ensemble/member"
                      path="model/NCEP/GEFS/Global_1p0deg_Ensemble/member"
                      location="/data/ldm/pub/native/grid/NCEP/GEFS/Global_1p0deg_Ensemble/member/"
@@ -143,7 +143,7 @@
               startTimeSubstitutionPattern="$1-$2-$3T$4" duration="16 days"/>
         </datasetScan>
 
-         <datasetScan name="NCEP GEFS derived"
+         <datasetScan name="NCEP-GEFS-Global 1p0deg Ensemble Derived"
                       ID="model/NCEP/GEFS/Global_1p0deg_Ensemble/derived"
                       path="model/NCEP/GEFS/Global_1p0deg_Ensemble/derived"
                       location="/data/ldm/pub/native/grid/NCEP/GEFS/Global_1p0deg_Ensemble/derived/"
