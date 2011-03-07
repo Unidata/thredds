@@ -124,8 +124,7 @@ public class GradsBinaryGridServiceProvider extends AbstractIOServiceProvider {
      * <ul>
      * <li>raw binary grid (not GRIB, netCDF, HDF, etc)
      * <li>not a cross section (x and y > 1)
-     * <li>not an ensemble (need examples)
-     * <li>not use templates
+     * <li>not an ensemble definded by EDEF/ENDEDEF (need examples)
      * </ul>
      *
      * @param raf  RandomAccessFile to check
@@ -144,8 +143,6 @@ public class GradsBinaryGridServiceProvider extends AbstractIOServiceProvider {
             return  gradsDDF.getDataType() == null && // only handle raw binary
                     gradsDDF.getDataFile() != null && 
                     !gradsDDF.hasProjection() &&  // can't handle projections
-                    // can't handle non-ensemble templates
-                    !(gradsDDF.isTemplate() && gradsDDF.getEnsembleDimension() == null) &&
                     !gradsDDF.getVariables().isEmpty() &&  // must have valid entries
                     !gradsDDF.getDimensions().isEmpty() && 
                     (x.getSize() > 1) && (y.getSize() > 1);  // can't handle cross sections
@@ -418,7 +415,7 @@ public class GradsBinaryGridServiceProvider extends AbstractIOServiceProvider {
      * @throws IOException  problem reading stuff
      */
     private float[] readGrid(int index) throws IOException {
-        System.out.println("grid number: " + index);
+        //System.out.println("grid number: " + index);
         dataFile.seek(0);
         // get the first file so we can calculate the sequentialRecordBytes
         dataFile.skipBytes(fileHeaderBytes);
@@ -549,19 +546,31 @@ public class GradsBinaryGridServiceProvider extends AbstractIOServiceProvider {
                         Range yRange, Range xRange, IndexIterator ii)
             throws IOException, InvalidRangeException {
 
-        System.out.println("ens: " + ensIdx + " , time = " + timeIdx + ", lev = "+levIdx);
+        //System.out.println("ens: " + ensIdx + " , time = " + timeIdx
+        //                   + ", lev = " + levIdx);
 
 
         dataFile = getDataFile(ensIdx, timeIdx);
-        List<GradsVariable> vars    = gradsDDF.getVariables();
-        GradsTimeDimension  timeDim = gradsDDF.getTimeDimension();
-        // if it's a template, then all data is in this file
-        int numEns   = gradsDDF.isTemplate() && gradsDDF.getEnsembleDimension() != null
-                       ? 0
-                       : ensIdx;
-        //int numTimes = timeDim.getSize();
-        int numTimes = gradsDDF.getTimeStepsPerFile();
-        int gridNum  = numEns * numTimes * gradsDDF.getGridsPerTimeStep();
+        List<GradsVariable> vars = gradsDDF.getVariables();
+        // if it's an ensemble template, then all data is in this file
+        int numEns =
+            ((gradsDDF.getTemplateType()
+              == GradsDataDescriptorFile.ENS_TEMPLATE) || (gradsDDF
+                  .getTemplateType() == GradsDataDescriptorFile
+                  .ENS_TIME_TEMPLATE))
+            ? 0
+            : ensIdx;
+        // if it's a time template figure out how many previous times we should use
+        int numTimes = gradsDDF.getTimeDimension().getSize();
+        if ((gradsDDF.getTemplateType() == GradsDataDescriptorFile
+                .TIME_TEMPLATE) || (gradsDDF
+                .getTemplateType() == GradsDataDescriptorFile
+                .ENS_TIME_TEMPLATE)) {
+            int[] tpf = gradsDDF.getTimeStepsPerFile(dataFile.getLocation());
+            numTimes = tpf[0];
+            timeIdx  = (timeIdx - tpf[1]) % numTimes;
+        }
+        int gridNum = numEns * numTimes * gradsDDF.getGridsPerTimeStep();
         // loop up to  the last time in the last ensemble
         for (int t = 0; t < timeIdx; t++) {
             for (GradsVariable var : vars) {
@@ -617,18 +626,15 @@ public class GradsBinaryGridServiceProvider extends AbstractIOServiceProvider {
     private RandomAccessFile getDataFile(int eIndex, int tIndex)
             throws IOException {
 
-        String       dataFilePath = gradsDDF.getDataFile();
+        String dataFilePath = gradsDDF.getDataFile();
         //List<String> files = gradsDDF.getFileNames();
         if (gradsDDF.isTemplate()) {
-            if  (gradsDDF.getEnsembleDimension() != null) {
-                dataFilePath = gradsDDF.getEnsembleDimension().replaceFileTemplate(dataFilePath, eIndex);
-            }
-            dataFilePath = gradsDDF.getTimeDimension().replaceFileTemplate(dataFilePath, tIndex);
+            dataFilePath = gradsDDF.getFileName(eIndex, tIndex);
         } else {
             // we only have one file
             if (dataFile != null) {
                 return dataFile;
-            } 
+            }
         }
         if (dataFile != null) {
             String path = dataFile.getLocation();

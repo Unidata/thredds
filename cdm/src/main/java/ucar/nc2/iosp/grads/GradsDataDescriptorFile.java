@@ -109,6 +109,12 @@ public class GradsDataDescriptorFile {
     /** template identifier */
     private static final String TEMPLATE = "TEMPLATE";
 
+    /** chsub identifier */
+    private static final String CHSUB = "CHSUB";
+
+    /** chsub identifier */
+    private static final String CHSUB_TEMPLATE_ID = "%ch";
+
     /** big endian identifier */
     private static final String BIG_ENDIAN = "BIG_ENDIAN";
 
@@ -117,6 +123,18 @@ public class GradsDataDescriptorFile {
 
     /** sequential identifier */
     private static final String SEQUENTIAL = "SEQUENTIAL";
+
+    /** NO template type */
+    public static final int NO_TEMPLATE = 0;
+
+    /** time template type */
+    public static final int TIME_TEMPLATE = 1;
+
+    /** Ensemble template type */
+    public static final int ENS_TEMPLATE = 2;
+
+    /** Ensemble and time template type */
+    public static final int ENS_TIME_TEMPLATE = 3;
 
     /** the file that this relates to */
     private String ddFile;
@@ -175,6 +193,9 @@ public class GradsDataDescriptorFile {
     /** is this a template file */
     private boolean isTemplate = false;
 
+    /** type of template */
+    private int templateType = 0;
+
     /** is this a sequential file */
     private boolean isSequential = false;
 
@@ -186,6 +207,12 @@ public class GradsDataDescriptorFile {
 
     /** defines a projection */
     private boolean hasProjection = false;
+
+    /** list of chsub parameters */
+    private List<Chsub> chsubs = null;
+
+    /** the path to the ddf */
+    private String pathToDDF = null;
 
     /**
      * Create a GradsDataDescriptorFile from the file
@@ -294,10 +321,14 @@ public class GradsDataDescriptorFile {
                                 isSequential = true;
                             }
                         }
+                    } else if (label.equalsIgnoreCase(CHSUB)) {
+                        int    start = Integer.parseInt(st.nextToken());
+                        int    end   = Integer.parseInt(st.nextToken());
+                        String sub   = st.nextToken();
+                        addChsub(new Chsub(start, end, sub));
                     } else if (label.equalsIgnoreCase(DSET)) {
                         curDim   = null;
                         dataFile = st.nextToken();
-                        dataFile = getFullPath(dataFile, getDDFPath());
                     } else if (label.equalsIgnoreCase(UNDEF)) {
                         curDim      = null;
                         missingData = Double.parseDouble(st.nextToken());
@@ -497,14 +528,23 @@ public class GradsDataDescriptorFile {
     public int getGridsPerTimeStep() {
         return gridsPerTimeStep;
     }
-    
+
     /**
-     * Get the number of timesteps per file
+     * Get the number of timesteps per file and the starting offset
      *
-     * @return the number of grids per timestep
+     * @param filename  the filename to check
+     *
+     * @return the starting index and number of times in that file
      */
-    public int getTimeStepsPerFile() {
-        return timeStepsPerFile;
+    public int[] getTimeStepsPerFile(String filename) {
+        if (chsubs != null) {
+            for (Chsub ch : chsubs) {
+                if (filename.indexOf(ch.subString) >= 0) {
+                    return new int[] { ch.numTimes, ch.startTimeIndex };
+                }
+            }
+        }
+        return new int[] { timeStepsPerFile, 0 };
     }
 
 
@@ -515,6 +555,15 @@ public class GradsDataDescriptorFile {
      */
     public boolean isTemplate() {
         return isTemplate;
+    }
+
+    /**
+     * Get the type of template this is
+     *
+     * @return the type of template
+     */
+    public int getTemplateType() {
+        return templateType;
     }
 
     /**
@@ -624,37 +673,90 @@ public class GradsDataDescriptorFile {
     }
 
     /**
+     * Get the file name for the particular time and ensemble index
+     * @param eIndex  ensemble index
+     * @param tIndex  time index
+     * @return  the appropriate filename
+     */
+    public String getFileName(int eIndex, int tIndex) {
+
+        String dataFilePath = dataFile;
+        if ((getTemplateType() == ENS_TEMPLATE)
+                || (getTemplateType() == ENS_TIME_TEMPLATE)) {
+            dataFilePath =
+                getEnsembleDimension().replaceFileTemplate(dataFilePath,
+                    eIndex);
+        }
+        dataFilePath = getTimeDimension().replaceFileTemplate(dataFilePath,
+                tIndex);
+        if ((chsubs != null)
+                && (dataFilePath.indexOf(CHSUB_TEMPLATE_ID) >= 0)) {
+            for (Chsub ch : chsubs) {
+                if ((tIndex >= ch.startTimeIndex)
+                        && (tIndex <= ch.endTimeIndex)) {
+                    dataFilePath.replace(CHSUB_TEMPLATE_ID, ch.subString);
+
+                    break;
+                }
+            }
+        }
+        return getFullPath(dataFilePath);
+    }
+
+    /**
      * Get the list of filenames
      *
      * @return the filenames
      *
      * @throws IOException  file does not exist.
      */
-    public List<String> getFileNames() throws IOException {
+    private List<String> getFileNames() throws IOException {
         if (fileNames == null) {
-            fileNames = new ArrayList<String>();
-            String curFile = null;
-            String path    = getDDFPath();
+            fileNames        = new ArrayList<String>();
             timeStepsPerFile = tDim.getSize();
-            if ( !isTemplate()) {
-                fileNames.add(getFullPath(dataFile, path));
-            } else if (dataFile.indexOf(GradsEnsembleDimension.ENS_TEMPLATE) >= 0) {
-                List<String> ensNames = eDim.getEnsembleNames();
-                for (String ename : ensNames) {
-                    curFile = getFullPath(dataFile.replace("%e", ename),
-                                          path);
-                    fileNames.add(curFile);
+            if ( !isTemplate()) {  // single file
+                fileNames.add(getFullPath(getDataFile()));
+            } else {               // figure out template type
+                List<String> fileSet   = new ArrayList<String>();
+                String       template  = getDataFile();
+                String       firstFile = tDim.replaceFileTemplate(template,
+                                             0);
+                if ( !template.equals(firstFile)) {
+                    if (template.indexOf(
+                            GradsEnsembleDimension.ENS_TEMPLATE_ID) >= 0) {
+                        templateType = ENS_TIME_TEMPLATE;
+                    } else {
+                        templateType = TIME_TEMPLATE;
+                    }
+                } else {  // not time - either ens or chsub
+                    if (template.indexOf(
+                            GradsEnsembleDimension.ENS_TEMPLATE_ID) >= 0) {
+                        templateType = ENS_TEMPLATE;
+                    } else {
+                        templateType = TIME_TEMPLATE;
+                    }
                 }
-            } else {  // time template
-            	List<String> fileSet = new ArrayList<String>();
-            	for (int i = 0; i < tDim.getSize(); i++) {
-            		String file = tDim.replaceFileTemplate(getFullPath(dataFile, path), i);
-            		if (!fileSet.contains(file)) {
-            			fileSet.add(file);
-            		}
-            	}
-            	timeStepsPerFile = tDim.getSize()/fileSet.size();
-            	fileNames.addAll(fileSet);
+                if (templateType == ENS_TEMPLATE) {
+                    for (int e = 0; e < eDim.getSize(); e++) {
+                        fileSet.add(eDim.replaceFileTemplate(template, e));
+                    }
+                } else if ((templateType == TIME_TEMPLATE)
+                           || (templateType == ENS_TIME_TEMPLATE)) {
+                    int numens = (templateType == TIME_TEMPLATE)
+                                 ? 1
+                                 : eDim.getSize();
+                    for (int t = 0; t < tDim.getSize(); t++) {
+                        for (int e = 0; e < numens; e++) {
+                            String file = getFileName(e, t);
+                            if ( !fileSet.contains(file)) {
+                                fileSet.add(file);
+                            }
+                        }
+                    }
+                    timeStepsPerFile = tDim.getSize()
+                                       / (fileSet.size() / numens);
+                }
+                fileNames.addAll(fileSet);
             }
             // now make sure they exist
             for (String file : fileNames) {
@@ -674,15 +776,19 @@ public class GradsDataDescriptorFile {
      * @return the path to the Data Descriptor File
      */
     private String getDDFPath() {
-        int lastSlash = ddFile.lastIndexOf("/");
-        if (lastSlash < 0) {
-            lastSlash = ddFile.lastIndexOf(File.separator);
-        }
-        String path = (lastSlash < 0)
-                      ? ""
-                      : ddFile.substring(0, lastSlash + 1);
+        if (pathToDDF == null) {
+            int lastSlash = ddFile.lastIndexOf("/");
+            if (lastSlash < 0) {
+                lastSlash = ddFile.lastIndexOf(File.separator);
+            }
+            pathToDDF = (lastSlash < 0)
+                        ? ""
+                        : ddFile.substring(0, lastSlash + 1);
 
-        return path;
+
+
+        }
+        return pathToDDF;
     }
 
     /**
@@ -693,9 +799,10 @@ public class GradsDataDescriptorFile {
      *
      * @return  the full filename
      */
-    private String getFullPath(String filename, String ddfPath) {
+    private String getFullPath(String filename) {
 
-        String file = filename;
+        String file    = filename;
+        String ddfPath = getDDFPath();
         if (filename.startsWith("^")) {
             file = filename.replace("^", "");
             file = ddfPath + file;
@@ -709,6 +816,60 @@ public class GradsDataDescriptorFile {
         }
 
         return file;
+    }
+
+    /**
+     * Add a Chsub
+     *
+     * @param sub  the chsub
+     */
+    private void addChsub(Chsub sub) {
+        if (chsubs == null) {
+            chsubs = new ArrayList<Chsub>();
+        }
+        chsubs.add(sub);
+    }
+
+    /**
+     * Class to handle the CHSUB parameters
+     */
+    protected class Chsub {
+
+        /** start time index (0 based) */
+        protected int startTimeIndex = 0;
+
+        /** end time index (0 based) */
+        protected int endTimeIndex = 0;
+
+        /** number of times */
+        protected int numTimes = 0;
+
+        /** substitution string */
+        protected String subString = null;
+
+        /**
+         * Create a new Chsub
+         *
+         * @param start  the start index (1 based)
+         * @param end    the start index (1 based)
+         * @param sub    the subsitution string
+         */
+        Chsub(int start, int end, String sub) {
+            startTimeIndex = start - 1;  // zero based
+            endTimeIndex   = end - 1;    // zero based
+            numTimes       = endTimeIndex - startTimeIndex + 1;
+            subString      = sub;
+        }
+
+        /**
+         * Get a String representation of this CHSUB
+         *
+         * @return a String representation of this CHSUB
+         */
+        public String toString() {
+            return "CHSUB " + startTimeIndex + " " + endTimeIndex + " "
+                   + subString;
+        }
     }
 
 }

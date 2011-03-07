@@ -2,6 +2,7 @@ The GradsBinaryGridServiceProvider currently handles:
 
 - raw lat/lon binary grid files (DTYPE not defined)
 - ensembles defined by NAMES in one file or as a template
+- time templates
 
 It does not handle:
 - other DTYPEs since these are readable through other IOSPs
@@ -9,23 +10,11 @@ It does not handle:
 - cross-sections since there isn't enough metadata to define the
   single x or y dimension
 - ensembles defined by EDEF/ENDEDEF
-- time templates because just thinking about this makes my head hurt.
 - some miscellaneous options:
     - zrev - no examples
     - 365_day_calendar - no support in netCDF-Java for imaginary times
     - byteswapped - no examples, bad way to do it
     - cray_32bit_ieee - no examples
-
-For the time templates, one would need:
-
-- to modify GradsDataDescriptorFile.getFileNames() to get the list of files
-  from the template
-- a mapping of the files to the time indexes
-- using that mapping in GradsBinaryGridServiceProvider.getDataFile
-
-Templates are defined at:
-
-http://www.iges.org/grads/gadoc/templates.html
 
 For the ensemble EDEF/ENDEDEF, one would need:
 
@@ -38,4 +27,4 @@ For the ensemble EDEF/ENDEDEF, one would need:
   time dimensions.
   
   
-  Don Murray - CU/CIRES - 3 March 2011
+Don Murray - CU/CIRES - 7 March 2011
