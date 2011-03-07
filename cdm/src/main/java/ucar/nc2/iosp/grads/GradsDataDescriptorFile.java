@@ -28,6 +28,7 @@ import java.io.IOException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 
@@ -168,6 +169,9 @@ public class GradsDataDescriptorFile {
     /** grids per timestep */
     private int gridsPerTimeStep = 0;
 
+    /** timesteps per file */
+    private int timeStepsPerFile = 0;
+
     /** is this a template file */
     private boolean isTemplate = false;
 
@@ -192,6 +196,7 @@ public class GradsDataDescriptorFile {
         ddFile = filename;
         try {
             parseDDF();
+            getFileNames();
         } catch (Exception e) {
             System.err.println("couldn't parse file: " + e.getMessage());
         }
@@ -492,6 +497,16 @@ public class GradsDataDescriptorFile {
     public int getGridsPerTimeStep() {
         return gridsPerTimeStep;
     }
+    
+    /**
+     * Get the number of timesteps per file
+     *
+     * @return the number of grids per timestep
+     */
+    public int getTimeStepsPerFile() {
+        return timeStepsPerFile;
+    }
+
 
     /**
      * Get whether this is using a template or not
@@ -620,6 +635,7 @@ public class GradsDataDescriptorFile {
             fileNames = new ArrayList<String>();
             String curFile = null;
             String path    = getDDFPath();
+            timeStepsPerFile = tDim.getSize();
             if ( !isTemplate()) {
                 fileNames.add(getFullPath(dataFile, path));
             } else if (dataFile.indexOf(GradsEnsembleDimension.ENS_TEMPLATE) >= 0) {
@@ -629,6 +645,16 @@ public class GradsDataDescriptorFile {
                                           path);
                     fileNames.add(curFile);
                 }
+            } else {  // time template
+            	List<String> fileSet = new ArrayList<String>();
+            	for (int i = 0; i < tDim.getSize(); i++) {
+            		String file = tDim.replaceFileTemplate(getFullPath(dataFile, path), i);
+            		if (!fileSet.contains(file)) {
+            			fileSet.add(file);
+            		}
+            	}
+            	timeStepsPerFile = tDim.getSize()/fileSet.size();
+            	fileNames.addAll(fileSet);
             }
             // now make sure they exist
             for (String file : fileNames) {

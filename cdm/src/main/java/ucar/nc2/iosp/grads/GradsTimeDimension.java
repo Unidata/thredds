@@ -70,6 +70,8 @@ public class GradsTimeDimension extends GradsDimension {
                                            "HH'z'ddMMMyyyy", "ddMMMyyyy",
                                            "MMMyyyy" };
 
+    private GradsTimeStruct initialTime = null;
+    
     /**
      * Create new GradsTimeDimension
      *
@@ -146,6 +148,13 @@ public class GradsTimeDimension extends GradsDimension {
         calendar.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
         calendar.setTime(d);
         vals[0] = 0;
+        GradsTimeStruct initialTime = makeTimeStruct(calendar);
+        initialTime.year   = calendar.get(Calendar.YEAR);
+        initialTime.month  = calendar.get(Calendar.MONTH) + 1;  // MONTH is zero based
+        initialTime.day    = calendar.get(Calendar.DAY_OF_MONTH);
+        initialTime.hour   = calendar.get(Calendar.HOUR_OF_DAY);
+        initialTime.minute = calendar.get(Calendar.MINUTE);
+        //System.out.println("initial time = " + initialTime);
         for (int i = 1; i < getSize(); i++) {
             int amount = inc;
             calendar.add(calIncs[incIndex], amount);
@@ -166,49 +175,24 @@ public class GradsTimeDimension extends GradsDimension {
      *
      * @return the corresponding TimeStruct
      */
-    public TimeStruct makeTimeStruct(int timeIndex) {
+    public GradsTimeStruct makeTimeStruct(int timeIndex) {
         double   tVal     = getValues()[timeIndex];
-        Date     d        = DateUnit.getStandardDate(tVal + getUnit());
+        Date     d        = DateUnit.getStandardDate(tVal + " " + getUnit());
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
         calendar.setTime(d);
-        TimeStruct ts = new TimeStruct();
+        return makeTimeStruct(calendar);
+    }
+    
+    private GradsTimeStruct makeTimeStruct(Calendar calendar) {
+        GradsTimeStruct ts = new GradsTimeStruct();
         ts.year   = calendar.get(Calendar.YEAR);
         ts.month  = calendar.get(Calendar.MONTH) + 1;  // MONTH is zero based
         ts.day    = calendar.get(Calendar.DAY_OF_MONTH);
         ts.hour   = calendar.get(Calendar.HOUR_OF_DAY);
         ts.minute = calendar.get(Calendar.MINUTE);
+        ts.jday = calendar.get(Calendar.DAY_OF_YEAR);
         return ts;
-    }
-
-    /**
-     * A class to hold a GrADS time structure.  The full time spec is:
-     *
-     *        HH:mm'Z'ddMMMyyyy (e.g. 12:04Z05Mar2011)
-     * 
-     * @author   Don Murray CU-CIRES
-     */
-    public class TimeStruct {
-
-        /** year field */
-        int year = 0;
-
-        /** month field (1 based) */
-        int month = 0;
-
-        /** day field */
-        int day = 0;
-
-        /** hour field */
-        int hour = 0;
-
-        /** minute field */
-        int minute = 0;
-
-        /**
-         * Create a new time structure
-         */
-        public TimeStruct() {}
     }
 
     /**
@@ -217,10 +201,159 @@ public class GradsTimeDimension extends GradsDimension {
      * @param filespec  the file template
      * @param ts  the time to use
      *
-     * @return  the filled in templage
+     * @see http://www.iges.org/grads/gadoc/templates.html
+     *
+     * @return  the filled in template
      */
-    public String replaceFileTemplate(String filespec, TimeStruct ts) {
-        return filespec;
+    public String replaceFileTemplate(String filespec, int timeIndex) {
+    	GradsTimeStruct ts = makeTimeStruct(timeIndex);
+    	String retString = filespec;
+    	while (retString.indexOf("%") >= 0) {
+    		// initial time
+    		if (retString.indexOf("%ix1") >=0) {
+    			retString = retString.replace("%ix1", String.format("%d",initialTime.year/10));
+    		} 
+    		if (retString.indexOf("%ix3") >=0) {
+    			retString = retString.replace("%ix3", String.format("%03d",initialTime.year/10));
+    		} 
+    		if (retString.indexOf("%iy2") >=0) {
+    			int cent = initialTime.year/100;
+    			int val = initialTime.year-cent*100;
+    			retString = retString.replace("%iy2", String.format("%02d",val));
+    		} 
+    		if (retString.indexOf("%iy4") >=0) {
+    			retString = retString.replace("%iy4", String.format("%d",initialTime.year));
+    		}
+    		if (retString.indexOf("%im1") >=0) {
+    			retString = retString.replace("%im1", String.format("%d",initialTime.month));
+    		}
+    		if (retString.indexOf("%im2") >=0) {
+    			retString = retString.replace("%im2", String.format("%02d",initialTime.month));
+    		}
+    		if (retString.indexOf("%imc") >=0) {
+    			retString = retString.replace("%imc", GradsTimeStruct.months[initialTime.month-1]);
+    		}
+    		if (retString.indexOf("%id1") >=0) {
+    			retString = retString.replace("%id1", String.format("%d",initialTime.day));
+    		}
+    		if (retString.indexOf("%id2") >=0) {
+    			retString = retString.replace("%id2", String.format("%02d",initialTime.day));
+    		}
+    		if (retString.indexOf("%ih1") >=0) {
+    			retString = retString.replace("%ih1", String.format("%d",initialTime.hour));
+    		}
+    		if (retString.indexOf("%ih2") >=0) {
+    			retString = retString.replace("%ih2", String.format("%02d",initialTime.hour));
+    		}
+    		if (retString.indexOf("%ih3") >=0) {
+    			retString = retString.replace("%ih3", String.format("%03d",initialTime.hour));
+    		}
+    		if (retString.indexOf("%in2") >=0) {
+    			retString = retString.replace("%in2", String.format("%02d",initialTime.minute));
+    		}
+    		// any time
+    		// decade
+    		if (retString.indexOf("%x1") >=0) {
+    			retString = retString.replace("%x1", String.format("%d",ts.year/10));
+    		} 
+    		if (retString.indexOf("%x3") >=0) {
+    			retString = retString.replace("%x3", String.format("%03d",ts.year/10));
+    		} 
+    		// year
+    		if (retString.indexOf("%y2") >=0) {
+    			int cent = ts.year/100;
+    			int val = ts.year-cent*100;
+    			retString = retString.replace("%y2", String.format("%02d",val));
+    		} 
+    		if (retString.indexOf("%y4") >=0) {
+    			retString = retString.replace("%y4", String.format("%d",ts.year));
+    		}
+    		// month
+    		if (retString.indexOf("%m1") >=0) {
+    			retString = retString.replace("%m1", String.format("%d",ts.month));
+    		}
+    		if (retString.indexOf("%m2") >=0) {
+    			retString = retString.replace("%m2", String.format("%02d",ts.month));
+    		}
+    		if (retString.indexOf("%mc") >=0) {
+    			retString = retString.replace("%mc", GradsTimeStruct.months[ts.month-1]);
+    		}
+    		// day
+    		if (retString.indexOf("%d1") >=0) {
+    			retString = retString.replace("%d1", String.format("%d",ts.day));
+    		}
+    		if (retString.indexOf("%d2") >=0) {
+    			retString = retString.replace("%d2", String.format("%02d",ts.day));
+    		}
+    		// hour
+    		if (retString.indexOf("%h1") >=0) {
+    			retString = retString.replace("%h1", String.format("%d",ts.hour));
+    		}
+    		if (retString.indexOf("%h2") >=0) {
+    			retString = retString.replace("%h2", String.format("%02d",ts.hour));
+    		}
+    		if (retString.indexOf("%h3") >=0) {
+    			retString = retString.replace("%h3", String.format("%03d",ts.hour));
+    		}
+    		// minute
+    		if (retString.indexOf("%n2") >=0) {
+    			retString = retString.replace("%n2", String.format("%02d",ts.minute));
+    		}
+    		// julian day
+    		if (retString.indexOf("%j3") >=0) {
+    			retString = retString.replace("%j3", String.format("%03d",ts.jday));
+    		}
+    		// time index (1 based)
+    		if (retString.indexOf("%t1") >=0) {
+    			retString = retString.replace("%t1", String.format("%d",timeIndex+1));
+    		}
+    		if (retString.indexOf("%t2") >=0) {
+    			retString = retString.replace("%t2", String.format("%02d",timeIndex+1));
+    		}
+    		if (retString.indexOf("%t3") >=0) {
+    			retString = retString.replace("%t3", String.format("%03d",timeIndex+1));
+    		}
+    		if (retString.indexOf("%t4") >=0) {
+    			retString = retString.replace("%t4", String.format("%04d",timeIndex+1));
+    		}
+    		if (retString.indexOf("%t5") >=0) {
+    			retString = retString.replace("%t5", String.format("%05d",timeIndex+1));
+    		}
+    		if (retString.indexOf("%t6") >=0) {
+    			retString = retString.replace("%t6", String.format("%06d",timeIndex+1));
+    		}
+    		// time index (0 based)
+    		if (retString.indexOf("%tm1") >=0) {
+    			retString = retString.replace("%tm1", String.format("%d",timeIndex));
+    		}
+    		if (retString.indexOf("%tm2") >=0) {
+    			retString = retString.replace("%tm2", String.format("%02d",timeIndex));
+    		}
+    		if (retString.indexOf("%tm3") >=0) {
+    			retString = retString.replace("%tm3", String.format("%03d",timeIndex));
+    		}
+    		if (retString.indexOf("%tm4") >=0) {
+    			retString = retString.replace("%tm4", String.format("%04d",timeIndex));
+    		}
+    		if (retString.indexOf("%tm5") >=0) {
+    			retString = retString.replace("%tm5", String.format("%05d",timeIndex));
+    		}
+    		if (retString.indexOf("%tm6") >=0) {
+    			retString = retString.replace("%tm6", String.format("%06d",timeIndex));
+    		}
+    		// TODO: forecast hours
+    		//if (retString.indexOf("%f2") >=0) {
+    		//}
+    		//if (retString.indexOf("%f3") >=0) {
+    		//}
+    		//if (retString.indexOf("%fn2") >=0) {
+    		//}
+    		//if (retString.indexOf("%fhn2") >=0) {
+    		//}
+    		//if (retString.indexOf("%fdhn2") >=0) {
+    		//}
+    	}
+        return retString;
     }
     
     
