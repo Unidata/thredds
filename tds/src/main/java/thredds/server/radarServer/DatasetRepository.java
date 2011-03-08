@@ -71,7 +71,7 @@ public class DatasetRepository {
   }
 
   static public org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( DatasetRepository.class );
-  static public InvCatalogImpl cat;
+  static public InvCatalogImpl cat = null;
   static public final String catName = "radarCollections.xml";
   static public URI catURI;
   static public HashMap<String, RadarDatasetCollection> datasetMap = new HashMap<String, RadarDatasetCollection>();
@@ -99,7 +99,7 @@ public class DatasetRepository {
    */
   public static boolean init() {
 
-    if( datasetMap.size() > 0 )
+    if( cat != null )
         return true;
 
       String contentPath = tdsContext.getContentDirectory().getPath();
@@ -143,6 +143,12 @@ public class DatasetRepository {
       return true;
     }
 
+  /**
+   * Reads/stores requested dataset
+   * @param key  dataset location
+   * @param var  if level3, the var dataset
+   * @return   Datset Collection
+   */
   public static RadarDatasetCollection getRadarDatasetCollection( String key, String var ) {
     String dmkey = key;
     if( var != null)
@@ -218,6 +224,11 @@ public class DatasetRepository {
     return acat;
   }
 
+  /**
+   * Returns the stations from a (nexrad|terminal)Stations.xml file
+   * @param stnLocation TDS servers location
+   * @return
+   */
   public static List<Station> readStations( String stnLocation ) {
 
       List<Station> stationList = new ArrayList<Station>();
@@ -299,6 +310,11 @@ public class DatasetRepository {
       return stationList;
   }
 
+  /**
+   * creates a HashMap of Stations from a List
+   * @param list
+   * @return Stations HashMap
+   */
   public static HashMap<String, Station> getStationMap( List<Station> list )  {
     HashMap<String, Station> stationMap = new HashMap<String, Station>();
     for (Station station : list) {

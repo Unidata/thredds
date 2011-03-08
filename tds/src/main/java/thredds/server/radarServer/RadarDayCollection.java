@@ -240,7 +240,7 @@ public class RadarDayCollection implements Serializable {
    * @param station station times
    * @return times ArrayList
    */
-  public final ArrayList getTimes(String station) {
+  public final ArrayList<String> getTimes(String station) {
     return time.get(station);
   }
 

@@ -52,9 +52,11 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-//import java.io.PrintWriter;
 import java.util.*;
 
+/**
+ * Returns catalogs/datasets for the RadarServer data
+ */
 public class CatalogRadarServerController extends AbstractController {
   private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
 
@@ -100,6 +102,13 @@ public class CatalogRadarServerController extends AbstractController {
     this.htmlView = htmlView;
   }
 
+  /**
+   * Spring Framework controller
+   * @param request HttpServletRequest
+   * @param response HttpServletResponse
+   * @return ModelAndView
+   * @throws Exception
+   */
   @Override
   protected ModelAndView handleRequestInternal( HttpServletRequest request,
           HttpServletResponse response ) throws Exception
@@ -113,34 +122,25 @@ public class CatalogRadarServerController extends AbstractController {
       if (pathInfo == null) pathInfo = "";
       if( pathInfo.startsWith( "/"))
               pathInfo = pathInfo.substring( 1 );
-      DatasetRepository.RadarType radarType = DatasetRepository.RadarType.nexrad;
-      try {
-        int idx = pathInfo.indexOf('/', 1);
-        if ( idx > -1 ) {
-          String rt = pathInfo.substring(0, pathInfo.indexOf('/', 1));
-          radarType = DatasetRepository.RadarType.valueOf( rt );
-        }  
-      } catch ( Exception e ) {
-        log.info( "Invalid dataset url reference "+ pathInfo );
-        throw new RadarServerException( "Invalid dataset url reference "+ pathInfo );
-      }
       // default is the complete radarCollection catalog
       InvCatalogImpl catalog = DatasetRepository.cat;
       if (pathInfo.startsWith("dataset.xml") || pathInfo.startsWith("catalog.xml")) {
       // level2 and level3 catalog/dataset
       } else if (pathInfo.contains("level2/catalog.") || pathInfo.contains("level3/catalog.")
           || pathInfo.contains("level2/dataset.") || pathInfo.contains("level3/dataset.")) {
-        catalog = level2level3catalog( radarType, catalog, pathInfo );
+        catalog = level2level3catalog( catalog, pathInfo );
         log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
 
-      // return specific dataset information, ie IDD
+      // returns specific dataset information, ie level2/IDD  used by IDV
       } else if (pathInfo.endsWith("dataset.xml") || pathInfo.endsWith("catalog.xml")) {
-        Map<String,Object> model = datasetInfoXml(radarType, catalog, response, pathInfo);
+        Map<String,Object> model = datasetInfoXml( catalog, pathInfo);
         log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
         if ( model != null )
           return new ModelAndView( "datasetXml", model );
-        else
-          return null;
+        else {
+          log.info( "Dataset problem" );
+          throw new RadarServerException( "Dataset problem" );
+        }
       }
       if ( catalog == null  ) {
          ModelAndView mav = new ModelAndView(CREATE_VIEW);
@@ -156,7 +156,6 @@ public class CatalogRadarServerController extends AbstractController {
         else
          return new ModelAndView( "threddsInvCatXmlView", "catalog", catalog );
       }
-
     }
     catch ( RadarServerException e )
     {
@@ -166,37 +165,36 @@ public class CatalogRadarServerController extends AbstractController {
     {
       log.error( "handleRequestInternal(): Problem handling request.", e );
       log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, -1 ) );
-      if ( ! response.isCommitted() ) response.sendError( HttpServletResponse.SC_INTERNAL_SERVER_ERROR );
-      return null;
+      throw new RadarServerException( "handleRequestInternal(): Problem handling request." );
     }
   }
-  private InvCatalogImpl level2level3catalog( DatasetRepository.RadarType radarType, InvCatalogImpl cat, String pathInfo )
+
+  /*
+   * handles level2 and level3 type of catalog requests
+   */
+  private InvCatalogImpl level2level3catalog( InvCatalogImpl cat, String pathInfo )
             throws RadarServerException, IOException {
 
     InvCatalogImpl tCat = null;
     try {
-      /*
-      StringBuffer aDs = new StringBuffer( pathInfo.substring(1) );
-      int i = aDs.indexOf( "/catalog");
-      if ( i > 0)
-          aDs.delete( i, aDs.length());
-      i = aDs.indexOf( "/dataset");
-      if ( i > 0)
-          aDs.delete( i, aDs.length());
-      */
+      // extract dataset path
+      String dsPath;
+      if (pathInfo.indexOf( "/dataset") > 0) {
+        dsPath = pathInfo.substring( 0, pathInfo.indexOf( "/dataset") );
+      } else if (pathInfo.indexOf( "/catalog") > 0) {
+        dsPath = pathInfo.substring( 0, pathInfo.indexOf( "/catalog") );
+      } else {
+        log.error("RadarServer.datasetInfoXml", "Invalid url request" );
+        throw new RadarServerException( "Invalid url request" );
+      }
 
-      String type;
-      if (pathInfo.contains("level2"))
-        type = radarType.toString() + "/level2";
-      else
-        type = radarType.toString() + "/level3";
-
+      // clone catalog
       ByteArrayOutputStream os = new ByteArrayOutputStream(10000);
       InvCatalogFactory factory = InvCatalogFactory.getDefaultFactory(false);
       factory.writeXML(cat, os, true);
       tCat = factory.readXML(
           new ByteArrayInputStream(os.toByteArray()), DatasetRepository.catURI);
-      /*
+      // modify clone for only requested datasets
       Iterator parents = tCat.getDatasets().iterator();
       while (parents.hasNext()) {
         ArrayList<InvDatasetImpl> delete = new ArrayList<InvDatasetImpl>();
@@ -208,31 +206,7 @@ public class CatalogRadarServerController extends AbstractController {
             InvDatasetScan ids = (InvDatasetScan) ds;
             if (ids.getPath() == null)
               continue;
-            if (ids.getPath().contains(aDs)) {
-              ids.setXlinkHref(ids.getPath() + "/dataset.xml");
-            } else {
-              delete.add(ds);
-            }
-          }
-        }
-        // remove datasets
-        for (InvDatasetImpl idi : delete) {
-          top.removeDataset(idi);
-        }
-      }
-      */
-      Iterator parents = tCat.getDatasets().iterator();
-      while (parents.hasNext()) {
-        ArrayList<InvDatasetImpl> delete = new ArrayList<InvDatasetImpl>();
-        InvDatasetImpl top = (InvDatasetImpl) parents.next();
-        Iterator tDatasets = top.getDatasets().iterator();
-        while (tDatasets.hasNext()) {
-          InvDatasetImpl ds = (InvDatasetImpl) tDatasets.next();
-          if (ds instanceof InvDatasetScan) {
-            InvDatasetScan ids = (InvDatasetScan) ds;
-            if (ids.getPath() == null)
-              continue;
-            if (ids.getPath().contains(type)) {
+            if (ids.getPath().contains( dsPath )) {
               ids.setXlinkHref(ids.getPath() + "/dataset.xml");
             } else {
               delete.add(ds);
@@ -251,17 +225,23 @@ public class CatalogRadarServerController extends AbstractController {
     return tCat;
   }
 
-  //private InvCatalogImpl datasetInfoXml(DatasetRepository.RadarType radarType, InvCatalogImpl cat, String pathInfo )
-  private Map<String,Object> datasetInfoXml(DatasetRepository.RadarType radarType, InvCatalogImpl cat, HttpServletResponse res, String pathInfo )
+  /**
+   * @param cat  radarCollections catalog
+   * @param pathInfo  requested dataset by path
+   * @return model dataset object to be used by datasetXml.jsjp
+   * @throws RadarServerException controlled exception with information about failure
+   * @throws IOException  major
+   */
+  private Map<String,Object> datasetInfoXml( InvCatalogImpl cat, String pathInfo )
       throws RadarServerException, IOException {
 
-    // dataset results in model
+    // dataset results are stored in model
     Map<String,Object> model = new HashMap<String,Object>();
 
-    //PrintWriter pw = null;
     InvDatasetScan ds = null;
     boolean found = false;
     try {
+      // extract dataset path
       String dsPath;
       if (pathInfo.indexOf( "/dataset") > 0) {
         dsPath = pathInfo.substring( 0, pathInfo.indexOf( "/dataset") );
@@ -270,9 +250,8 @@ public class CatalogRadarServerController extends AbstractController {
       } else {
         log.error("RadarServer.datasetInfoXml", "Invalid url request" );
         throw new RadarServerException( "Invalid url request" );
-        //return null;
       }
-
+      // search for dataset by dsPath
       Iterator parents = cat.getDatasets().iterator();
       InvDatasetImpl top = (InvDatasetImpl) parents.next();
       Iterator tDatasets = top.getDatasets().iterator();
@@ -297,35 +276,16 @@ public class CatalogRadarServerController extends AbstractController {
     if ( ! found ) {
       log.error("RadarServer.datasetInfoXml", "Invalid url request" );
       throw new RadarServerException( "Invalid url request" );
-      //return null;
     }
 
-    // create dataset
-    //pw = res.getWriter();
-    //res.setContentType("text/xml; charset=iso-8859-1"); //default
-
-    //pw.println("<catalog xmlns=\"http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" name=\"Radar Data\" version=\"1.0.1\">\n");
-    // add service
-    //pw.println("<service name=\"radarServer\" base=\"/thredds/radarServer/\" serviceType=\"DQC\" />\n");
-
-    //pw.println("<dataset ID=\"" + ds.getID() + "\" serviceName=\"radarServer\">");
+    // create dataset by storing necessary information in model object that will
+    // be displayed by datasetXml.jsp
+    // add ID
     model.put( "ID", ds.getID());
-    //pw.println("<urlpath>" + ds.getPath() + "</urlpath>");
     model.put( "urlPath", ds.getPath() );
-    //pw.println("<dataType>" + ds.getDataType() + "</dataType>");
-
-    //pw.println("<dataFormat>" + ds.getDataFormatType() + "</dataFormat>");
     model.put( "dataFormat", ds.getDataFormatType());
-    //pw.println("<serviceName>radarServer</serviceName>");
-
-    //pw.println("<metadata inherited=\"true\">");
-
-    //pw.println("<documentation type=\"summary\">" + ds.getSummary() +
-    //    "</documentation>");
     model.put( "documentation", ds.getSummary());
     DateRange dr = ds.getTimeCoverage();
-    //pw.println("<TimeSpan>");
-    //pw.print("<start>");
     /*
     if (pathInfo.contains("IDD")) {
       pw.print(rm.getStartDateTime(ds.getPath()));
@@ -335,33 +295,20 @@ public class CatalogRadarServerController extends AbstractController {
     */    //TODO: check
     //pw.print(dr.getStart().toDateTimeStringISO());
     model.put( "tstart", dr.getStart().toDateTimeStringISO());
-    //pw.println("</start>");
-    //pw.println("<end>" + dr.getEnd().toDateTimeStringISO() + "</end>");
     model.put( "tend", dr.getEnd().toDateTimeStringISO());
-    //pw.println("</TimeSpan>");
     ThreddsMetadata.GeospatialCoverage gc = ds.getGeospatialCoverage();
     LatLonRect bb = new LatLonRect();
     gc.setBoundingBox(bb);
-    //pw.println("<LatLonBox>");
-    //pw.println("<north>" + gc.getLatNorth() + "</north>");
     model.put( "north", gc.getLatNorth());
-    //pw.println("<south>" + gc.getLatSouth() + "</south>");
     model.put( "south", gc.getLatSouth());
-    //pw.println("<east>" + gc.getLonEast() + "</east>");
     model.put( "east", gc.getLonEast());
-    //pw.println("<west>" + gc.getLonWest() + "</west>");
     model.put( "west", gc.getLonWest());
-    //pw.println("</LatLonBox>");
 
     ThreddsMetadata.Variables cvs = (ThreddsMetadata.Variables) ds.getVariables().get(0);
     List vl = cvs.getVariableList();
-
-    //pw.println("<Variables>");
     ArrayList<RsVar> variables = new ArrayList<RsVar>();
     for (int j = 0; j < vl.size(); j++) {
       ThreddsMetadata.Variable v = (ThreddsMetadata.Variable) vl.get(j);
-      //pw.println("<variable name=\"" + v.getName() + "\" vocabulary_name=\"" +
-      //    v.getVocabularyName() + "\" units=\"" + v.getUnits() + "\" />");
       RsVar rsv = new RsVar();
       rsv.setName( v.getName() );
       rsv.setVname( v.getVocabularyName() );
@@ -369,20 +316,15 @@ public class CatalogRadarServerController extends AbstractController {
       variables.add( rsv );
     }
     model.put( "variables", variables );
-    //pw.println("</Variables>");
+    // not necessary to get stations, IDV does separate request for stations
     //String[] stations = rm.stationsDS(radarType, dataLocation.get(ds.getPath()));
     //rm.printStations(stations, pw, radarType );
-
-    //pw.println("</metadata>");
-    //pw.println("</dataset>");
-    //pw.println("</catalog>");
-    //pw.flush();
 
     return model;
   }
 
   /*
-   * Used to store the information about a Radar Server variable
+   * Used to store the information about a Radar variable from catalog
    */
   public class RsVar {
 

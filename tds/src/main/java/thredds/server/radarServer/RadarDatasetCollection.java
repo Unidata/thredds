@@ -128,7 +128,15 @@ public class RadarDatasetCollection {
   public RadarDatasetCollection() {
   }
 
+  /**
+   * Creates a complete Dataset Collection using the current day and past stored days
+   * @param tdir  Location of dataset on disk
+   * @param product  if level3, then get product dataset
+   */
   public RadarDatasetCollection(String tdir,  String product) {
+
+    if ( tdir == null)
+      return;
 
     caseStudy = tdir.contains( "casestudies");
     

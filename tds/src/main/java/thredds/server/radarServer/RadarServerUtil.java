@@ -51,9 +51,6 @@ import java.util.regex.Pattern;
 
 public class RadarServerUtil {
 
-  //public static final Pattern p_ascii_i = Pattern.compile("ascii", Pattern.CASE_INSENSITIVE);
-  //public static final Pattern p_html_i = Pattern.compile("html", Pattern.CASE_INSENSITIVE);
-  //public static final Pattern p_xml_i = Pattern.compile("xml", Pattern.CASE_INSENSITIVE);
   public static final Pattern p_yymmdd_hhmm = Pattern.compile("(\\d{2})(\\d{4}_\\d{4})");
   public static final Pattern p_yyyymmdd_hhmm = Pattern.compile("(\\d{8}_\\d{4})");
   public static final String epic = "1970-01-01T00:00:00";

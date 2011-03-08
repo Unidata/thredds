@@ -56,7 +56,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 /*
- * Processes Queries for the RadarServer
+ * Processes Queries for the RadarServer  Spring Framework
  */
 public class QueryRadarServerController extends AbstractController  {
 
@@ -118,6 +118,13 @@ public class QueryRadarServerController extends AbstractController  {
     dateFormat.setTimeZone( TimeZone.getTimeZone( "GMT" ) );
   }
 
+  /**
+   * Query RadarServer controller for Spring Framework
+   * @param request
+   * @param response
+   * @return
+   * @throws Exception
+   */
   protected ModelAndView handleRequestInternal( HttpServletRequest request,
                                                 HttpServletResponse response )
           throws Exception
@@ -150,12 +157,11 @@ public class QueryRadarServerController extends AbstractController  {
     {
       log.error( "handleRequestInternal(): Problem handling request.", e );
       log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, -1 ) );
-      if ( ! response.isCommitted() ) response.sendError( HttpServletResponse.SC_INTERNAL_SERVER_ERROR );
-      return null;
+      throw new RadarServerException( "handleRequestInternal(): Problem handling request." );
     }
   }
 
-  // get/check/process query from servlet call
+  // get/check/process query  
   public void radarQuery( HttpServletRequest req, HttpServletResponse res, Map<String,Object> model )
             throws ServletException, IOException, RadarServerException {
 
@@ -365,7 +371,9 @@ public class QueryRadarServerController extends AbstractController  {
 
   // create catalog Header
   private Boolean createHeader(DatasetRepository.RadarType radarType, QueryParams qp,
-                    String pathInfo, Map<String, Object> model) throws IOException {
+                    String pathInfo, Map<String, Object> model)
+      throws IOException {
+
       Boolean level2 = pathInfo.contains( "level2");
       int level = (level2) ? 2 : 3;
       StringBuffer str = new StringBuffer();
@@ -451,13 +459,14 @@ public class QueryRadarServerController extends AbstractController  {
       </dataset>
 */
   private Boolean processQuery( String dataset, QueryParams qp,
-    String var, List<DatasetEntry> entries ) {
+    String var, List<DatasetEntry> entries ) throws RadarServerException {
 
     Boolean getAllTimes = true;
     String yyyymmddStart = null;
     String yyyymmddEnd = null;
     String dateStart = null;
     String dateEnd = null;
+    try {
     if( ! qp.time_start.equals( epicDateType )) {
       getAllTimes = false;
       yyyymmddStart = qp.time_start.toDateString();
@@ -554,6 +563,13 @@ public class QueryRadarServerController extends AbstractController  {
       }
     }
     return true;
+    }
+    catch ( Throwable e )
+    {
+      log.error( "Invalid dataset ="+ dataset +" or var ="+ var, e );
+      log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, -1 ) );
+      throw new RadarServerException( "Invalid dataset ="+ dataset +" or var ="+ var );
+    }
   }
 
   /*

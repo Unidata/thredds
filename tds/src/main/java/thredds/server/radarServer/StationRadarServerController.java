@@ -150,8 +150,7 @@ public class StationRadarServerController extends AbstractController {
     {
       log.error( "handleRequestInternal(): Problem handling request.", e );
       log.info( "handleRequestInternal(): " + UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, -1 ) );
-      if ( ! response.isCommitted() ) response.sendError( HttpServletResponse.SC_INTERNAL_SERVER_ERROR );
-      return null;
+      throw new RadarServerException( "handleRequestInternal(): Problem handling request." );
     }
   }
   /*
