@@ -2,16 +2,13 @@
 <!-- =======================================================================
         Maven Project Configuration File
      ======================================================================= -->
-  <project xmlns="http://maven.apache.org/POM/4.0.0"
-           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-           xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
-                               http://maven.apache.org/maven-v4_0_0.xsd">
+  <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <groupId>edu.ucar</groupId>
     <artifactId>netcdf-parent</artifactId>
-    <version>4.2.20</version>
+    <version>4.2.21-SNAPSHOT</version>
   </parent>
 
   <!-- ===========================================================
@@ -20,7 +17,7 @@
   <groupId>edu.ucar</groupId>
   <artifactId>bufr</artifactId>
   <packaging>jar</packaging>
-  <version>${bufr.version}</version>
+  <version>3.1-SNAPSHOT</version>
   <name>BUFR tables</name>
   <description>
     BUFR tables for the NetCDF library.
@@ -46,7 +43,7 @@
      <dependency>
        <groupId>edu.ucar</groupId>
        <artifactId>netcdf</artifactId>
-       <version>${netcdf.version}</version>
+       <version>4.2.21-SNAPSHOT</version>
      </dependency>
      <dependency>
       <groupId>org.jdom</groupId>

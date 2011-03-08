@@ -2,16 +2,13 @@
 <!-- =======================================================================
         Maven Project Configuration File
      ======================================================================= -->
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
-                               http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <groupId>edu.ucar</groupId>
     <artifactId>netcdf-parent</artifactId>
-    <version>4.2.20</version>
+    <version>4.2.21-SNAPSHOT</version>
   </parent>
 
 
@@ -21,7 +18,7 @@
   <groupId>edu.ucar</groupId>
   <artifactId>netcdf</artifactId>
   <packaging>jar</packaging>
-  <version>${netcdf.version}</version>
+  <version>4.2.21-SNAPSHOT</version>
   <name>NetCDF-Java Library</name>
   <description>
     The NetCDF-Java Library is a Java interface to NetCDF files,
@@ -32,6 +29,7 @@
   <scm>
     <url>http://svn.unidata.ucar.edu/repos/thredds/trunk/cdm</url>
     <connection>http://svn.unidata.ucar.edu/repos/thredds/trunk/cdm</connection>
+    <developerConnection>scm:svn:http://svn.unidata.ucar.edu/repos/thredds/trunk/netcdf</developerConnection>
   </scm>
 
 
@@ -144,7 +142,7 @@
     <dependency>
       <groupId>edu.ucar</groupId>
       <artifactId>unidataCommon</artifactId>
-      <version>${common.version}</version>
+      <version>4.2.21-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>commons-httpclient</groupId>
@@ -165,21 +163,21 @@
       <groupId>edu.ucar</groupId>
       <!-- Reading GRIB files. -->
       <artifactId>grib</artifactId>
-      <version>${grib.version}</version>
+      <version>8.0.30-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>edu.ucar</groupId>
       <artifactId>opendap</artifactId>
       <!-- Using OPeNDAP protocol. -->
-      <version>${opendap.version}</version>
+      <version>2.2.3-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <artifactId>visad</artifactId>
       <!-- Reading McIDAS AREA files. -->
       <groupId>edu.wisc</groupId>
-      <version>${visad.version}</version>
+      <version>2010-08-09</version>
       <scope>provided</scope>
     </dependency>
 

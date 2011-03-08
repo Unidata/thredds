@@ -2,16 +2,13 @@
 <!-- =======================================================================
         Maven Project Configuration File
      ======================================================================= -->
-  <project xmlns="http://maven.apache.org/POM/4.0.0"
-           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-           xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
-                               http://maven.apache.org/maven-v4_0_0.xsd">
+  <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <groupId>edu.ucar</groupId>
     <artifactId>netcdf-parent</artifactId>
-    <version>4.2.20</version>
+    <version>4.2.21-SNAPSHOT</version>
   </parent>
 
 
@@ -21,7 +18,7 @@
   <groupId>edu.ucar</groupId>
   <artifactId>grib</artifactId>
   <packaging>jar</packaging>
-  <version>${grib.version}</version>
+  <version>8.0.30-SNAPSHOT</version>
   <name>GRIB Decoder API</name>
   <description>
     Decoder for the GRIB format.
@@ -29,8 +26,9 @@
   <url>http://www.unidata.ucar.edu/software/decoders/</url>
 
   <scm>
-    <url>http://svn.unidata.ucar.edu/repos/thredds/trunk/grib</url>
-    <connection>http://svn.unidata.ucar.edu/repos/thredds/trunk/grib</connection>
+    <url>http://svn.unidata.ucar.edu/repos/thredds/tags/netcdf-4.2.20/grib</url>
+    <connection>http://svn.unidata.ucar.edu/repos/thredds/tags/netcdf-4.2.20</connection>
+    <developerConnection>scm:svn:http://svn.unidata.ucar.edu/repos/thredds/trunk/grib</developerConnection>
   </scm>
 
 
@@ -66,7 +64,7 @@
     <dependency>
       <groupId>edu.ucar</groupId>
       <artifactId>unidataCommon</artifactId>
-      <version>${common.version}</version>
+      <version>4.2.21-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>

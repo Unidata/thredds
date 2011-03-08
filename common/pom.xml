@@ -2,16 +2,13 @@
 <!-- =======================================================================
         Maven Project Configuration File
      ======================================================================= -->
-  <project xmlns="http://maven.apache.org/POM/4.0.0"
-           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-           xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
-                               http://maven.apache.org/maven-v4_0_0.xsd">
+  <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <groupId>edu.ucar</groupId>
     <artifactId>netcdf-parent</artifactId>
-    <version>4.2.20</version>
+    <version>4.2.21-SNAPSHOT</version>
   </parent>
 
   <!-- ===========================================================
@@ -20,7 +17,7 @@
   <groupId>edu.ucar</groupId>
   <artifactId>unidataCommon</artifactId>
   <packaging>jar</packaging>
-  <!-- version>${common.version}</version -->
+  <version>4.2.21-SNAPSHOT</version>
   <name>Unidata Common</name>
   <description>
     The NetCDF-Java Library is a Java interface to NetCDF files,
@@ -29,8 +26,9 @@
   <url>http://www.unidata.ucar.edu/software/netcdf-java/</url>
 
   <scm>
-    <url>http://svn.unidata.ucar.edu/repos/thredds/trunk/common</url>
-    <connection>http://svn.unidata.ucar.edu/repos/thredds/trunk/common</connection>
+    <url>http://svn.unidata.ucar.edu/repos/thredds/tags/netcdf-4.2.20/common</url>
+    <connection>http://svn.unidata.ucar.edu/repos/thredds/tags/netcdf-4.2.20</connection>
+    <developerConnection>scm:svn:http://svn.unidata.ucar.edu/repos/thredds/trunk/unidataCommon</developerConnection>
   </scm>
 
   <!-- ===========================================================
