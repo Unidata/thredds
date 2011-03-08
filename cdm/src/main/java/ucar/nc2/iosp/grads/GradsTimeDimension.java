@@ -162,7 +162,7 @@ public class GradsTimeDimension extends GradsDimension {
         String   pattern = null;
         if (tstart.indexOf(":") >= 0) {                     // HH:mmZddMMMyyyy
             pattern = dateFormats[0];
-        } else if (tstart.indexOf("Z") >= 0) {              // mmZddMMMyyyy
+        } else if (tstart.indexOf("z") >= 0) {              // mmZddMMMyyyy
             pattern = dateFormats[1];
         } else if (Character.isLetter(tstart.charAt(0))) {  // MMMyyyy
             pattern = dateFormats[3];
@@ -207,7 +207,7 @@ public class GradsTimeDimension extends GradsDimension {
         calendar.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
         calendar.setTime(d);
         vals[0] = 0;
-        GradsTimeStruct initialTime = makeTimeStruct(calendar);
+        initialTime = makeTimeStruct(calendar);
         initialTime.year = calendar.get(Calendar.YEAR);
         initialTime.month = calendar.get(Calendar.MONTH) + 1;  // MONTH is zero based
         initialTime.day    = calendar.get(Calendar.DAY_OF_MONTH);
