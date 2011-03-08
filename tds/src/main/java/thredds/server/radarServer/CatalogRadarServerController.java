@@ -40,21 +40,20 @@ package thredds.server.radarServer;
 
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
-import thredds.catalog.InvCatalogFactory;
-import thredds.catalog.InvCatalogImpl;
-import thredds.catalog.InvDatasetImpl;
-import thredds.catalog.InvDatasetScan;
+import thredds.catalog.*;
 import thredds.server.config.TdsContext;
 import thredds.servlet.HtmlWriter;
 import thredds.servlet.UsageLog;
+import ucar.nc2.units.DateRange;
+import ucar.unidata.geoloc.LatLonRect;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
+//import java.io.PrintWriter;
+import java.util.*;
 
 public class CatalogRadarServerController extends AbstractController {
   private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( getClass() );
@@ -112,13 +111,36 @@ public class CatalogRadarServerController extends AbstractController {
       // setup
       String pathInfo = request.getPathInfo();
       if (pathInfo == null) pathInfo = "";
-
+      if( pathInfo.startsWith( "/"))
+              pathInfo = pathInfo.substring( 1 );
+      DatasetRepository.RadarType radarType = DatasetRepository.RadarType.nexrad;
+      try {
+        int idx = pathInfo.indexOf('/', 1);
+        if ( idx > -1 ) {
+          String rt = pathInfo.substring(0, pathInfo.indexOf('/', 1));
+          radarType = DatasetRepository.RadarType.valueOf( rt );
+        }  
+      } catch ( Exception e ) {
+        log.info( "Invalid dataset url reference "+ pathInfo );
+        throw new RadarServerException( "Invalid dataset url reference "+ pathInfo );
+      }
       // default is the complete radarCollection catalog
       InvCatalogImpl catalog = DatasetRepository.cat;
+      if (pathInfo.startsWith("dataset.xml") || pathInfo.startsWith("catalog.xml")) {
       // level2 and level3 catalog/dataset
-      if (pathInfo.contains("level2") || pathInfo.contains("level3") ) {
-        catalog = level2level3catalog(catalog, pathInfo );
+      } else if (pathInfo.contains("level2/catalog.") || pathInfo.contains("level3/catalog.")
+          || pathInfo.contains("level2/dataset.") || pathInfo.contains("level3/dataset.")) {
+        catalog = level2level3catalog( radarType, catalog, pathInfo );
         log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
+
+      // return specific dataset information, ie IDD
+      } else if (pathInfo.endsWith("dataset.xml") || pathInfo.endsWith("catalog.xml")) {
+        Map<String,Object> model = datasetInfoXml(radarType, catalog, response, pathInfo);
+        log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_OK, -1));
+        if ( model != null )
+          return new ModelAndView( "datasetXml", model );
+        else
+          return null;
       }
       if ( catalog == null  ) {
          ModelAndView mav = new ModelAndView(CREATE_VIEW);
@@ -148,10 +170,12 @@ public class CatalogRadarServerController extends AbstractController {
       return null;
     }
   }
-  private InvCatalogImpl level2level3catalog(InvCatalogImpl cat, String pathInfo )
+  private InvCatalogImpl level2level3catalog( DatasetRepository.RadarType radarType, InvCatalogImpl cat, String pathInfo )
             throws RadarServerException, IOException {
+
     InvCatalogImpl tCat = null;
     try {
+      /*
       StringBuffer aDs = new StringBuffer( pathInfo.substring(1) );
       int i = aDs.indexOf( "/catalog");
       if ( i > 0)
@@ -159,13 +183,20 @@ public class CatalogRadarServerController extends AbstractController {
       i = aDs.indexOf( "/dataset");
       if ( i > 0)
           aDs.delete( i, aDs.length());
+      */
+
+      String type;
+      if (pathInfo.contains("level2"))
+        type = radarType.toString() + "/level2";
+      else
+        type = radarType.toString() + "/level3";
 
       ByteArrayOutputStream os = new ByteArrayOutputStream(10000);
       InvCatalogFactory factory = InvCatalogFactory.getDefaultFactory(false);
       factory.writeXML(cat, os, true);
       tCat = factory.readXML(
           new ByteArrayInputStream(os.toByteArray()), DatasetRepository.catURI);
-
+      /*
       Iterator parents = tCat.getDatasets().iterator();
       while (parents.hasNext()) {
         ArrayList<InvDatasetImpl> delete = new ArrayList<InvDatasetImpl>();
@@ -189,9 +220,200 @@ public class CatalogRadarServerController extends AbstractController {
           top.removeDataset(idi);
         }
       }
+      */
+      Iterator parents = tCat.getDatasets().iterator();
+      while (parents.hasNext()) {
+        ArrayList<InvDatasetImpl> delete = new ArrayList<InvDatasetImpl>();
+        InvDatasetImpl top = (InvDatasetImpl) parents.next();
+        Iterator tDatasets = top.getDatasets().iterator();
+        while (tDatasets.hasNext()) {
+          InvDatasetImpl ds = (InvDatasetImpl) tDatasets.next();
+          if (ds instanceof InvDatasetScan) {
+            InvDatasetScan ids = (InvDatasetScan) ds;
+            if (ids.getPath() == null)
+              continue;
+            if (ids.getPath().contains(type)) {
+              ids.setXlinkHref(ids.getPath() + "/dataset.xml");
+            } else {
+              delete.add(ds);
+            }
+          }
+        }
+        // remove datasets
+        for (InvDatasetImpl idi : delete) {
+          top.removeDataset(idi);
+        }
+      }
     } catch (Throwable e) {
-      throw new RadarServerException( "CatalogRadarServerController.level2level3catalog" );  
+      log.error("RadarServer.level2level3catalog", "Invalid url request" );
+      throw new RadarServerException( "Invalid catalog request" );
     }
     return tCat;
+  }
+
+  //private InvCatalogImpl datasetInfoXml(DatasetRepository.RadarType radarType, InvCatalogImpl cat, String pathInfo )
+  private Map<String,Object> datasetInfoXml(DatasetRepository.RadarType radarType, InvCatalogImpl cat, HttpServletResponse res, String pathInfo )
+      throws RadarServerException, IOException {
+
+    // dataset results in model
+    Map<String,Object> model = new HashMap<String,Object>();
+
+    //PrintWriter pw = null;
+    InvDatasetScan ds = null;
+    boolean found = false;
+    try {
+      String dsPath;
+      if (pathInfo.indexOf( "/dataset") > 0) {
+        dsPath = pathInfo.substring( 0, pathInfo.indexOf( "/dataset") );
+      } else if (pathInfo.indexOf( "/catalog") > 0) {
+        dsPath = pathInfo.substring( 0, pathInfo.indexOf( "/catalog") );
+      } else {
+        log.error("RadarServer.datasetInfoXml", "Invalid url request" );
+        throw new RadarServerException( "Invalid url request" );
+        //return null;
+      }
+
+      Iterator parents = cat.getDatasets().iterator();
+      InvDatasetImpl top = (InvDatasetImpl) parents.next();
+      Iterator tDatasets = top.getDatasets().iterator();
+      while (tDatasets.hasNext()) {
+        InvDatasetImpl idsi = (InvDatasetImpl) tDatasets.next();
+        if (idsi instanceof InvDatasetScan) {
+          ds = (InvDatasetScan) idsi;
+          if (ds.getPath() == null)
+            continue;
+          if ( ds.getPath().contains( dsPath )) {
+            found = true;
+            break;
+          } else {
+            continue;
+          }
+        }
+      }
+    } catch (Throwable e) {
+      log.error("RadarServer.datasetInfoXml", e);
+      throw new RadarServerException( "CatalogRadarServerController.datasetInfoXml" );
+    }
+    if ( ! found ) {
+      log.error("RadarServer.datasetInfoXml", "Invalid url request" );
+      throw new RadarServerException( "Invalid url request" );
+      //return null;
+    }
+
+    // create dataset
+    //pw = res.getWriter();
+    //res.setContentType("text/xml; charset=iso-8859-1"); //default
+
+    //pw.println("<catalog xmlns=\"http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" name=\"Radar Data\" version=\"1.0.1\">\n");
+    // add service
+    //pw.println("<service name=\"radarServer\" base=\"/thredds/radarServer/\" serviceType=\"DQC\" />\n");
+
+    //pw.println("<dataset ID=\"" + ds.getID() + "\" serviceName=\"radarServer\">");
+    model.put( "ID", ds.getID());
+    //pw.println("<urlpath>" + ds.getPath() + "</urlpath>");
+    model.put( "urlPath", ds.getPath() );
+    //pw.println("<dataType>" + ds.getDataType() + "</dataType>");
+
+    //pw.println("<dataFormat>" + ds.getDataFormatType() + "</dataFormat>");
+    model.put( "dataFormat", ds.getDataFormatType());
+    //pw.println("<serviceName>radarServer</serviceName>");
+
+    //pw.println("<metadata inherited=\"true\">");
+
+    //pw.println("<documentation type=\"summary\">" + ds.getSummary() +
+    //    "</documentation>");
+    model.put( "documentation", ds.getSummary());
+    DateRange dr = ds.getTimeCoverage();
+    //pw.println("<TimeSpan>");
+    //pw.print("<start>");
+    /*
+    if (pathInfo.contains("IDD")) {
+      pw.print(rm.getStartDateTime(ds.getPath()));
+    } else {
+      pw.print(dr.getStart().toDateTimeStringISO());
+    }
+    */    //TODO: check
+    //pw.print(dr.getStart().toDateTimeStringISO());
+    model.put( "tstart", dr.getStart().toDateTimeStringISO());
+    //pw.println("</start>");
+    //pw.println("<end>" + dr.getEnd().toDateTimeStringISO() + "</end>");
+    model.put( "tend", dr.getEnd().toDateTimeStringISO());
+    //pw.println("</TimeSpan>");
+    ThreddsMetadata.GeospatialCoverage gc = ds.getGeospatialCoverage();
+    LatLonRect bb = new LatLonRect();
+    gc.setBoundingBox(bb);
+    //pw.println("<LatLonBox>");
+    //pw.println("<north>" + gc.getLatNorth() + "</north>");
+    model.put( "north", gc.getLatNorth());
+    //pw.println("<south>" + gc.getLatSouth() + "</south>");
+    model.put( "south", gc.getLatSouth());
+    //pw.println("<east>" + gc.getLonEast() + "</east>");
+    model.put( "east", gc.getLonEast());
+    //pw.println("<west>" + gc.getLonWest() + "</west>");
+    model.put( "west", gc.getLonWest());
+    //pw.println("</LatLonBox>");
+
+    ThreddsMetadata.Variables cvs = (ThreddsMetadata.Variables) ds.getVariables().get(0);
+    List vl = cvs.getVariableList();
+
+    //pw.println("<Variables>");
+    ArrayList<RsVar> variables = new ArrayList<RsVar>();
+    for (int j = 0; j < vl.size(); j++) {
+      ThreddsMetadata.Variable v = (ThreddsMetadata.Variable) vl.get(j);
+      //pw.println("<variable name=\"" + v.getName() + "\" vocabulary_name=\"" +
+      //    v.getVocabularyName() + "\" units=\"" + v.getUnits() + "\" />");
+      RsVar rsv = new RsVar();
+      rsv.setName( v.getName() );
+      rsv.setVname( v.getVocabularyName() );
+      rsv.setUnits( v.getUnits() );
+      variables.add( rsv );
+    }
+    model.put( "variables", variables );
+    //pw.println("</Variables>");
+    //String[] stations = rm.stationsDS(radarType, dataLocation.get(ds.getPath()));
+    //rm.printStations(stations, pw, radarType );
+
+    //pw.println("</metadata>");
+    //pw.println("</dataset>");
+    //pw.println("</catalog>");
+    //pw.flush();
+
+    return model;
+  }
+
+  /*
+   * Used to store the information about a Radar Server variable
+   */
+  public class RsVar {
+
+    private String name;
+
+    private String vname;
+
+    private String units;
+
+    public String getName() {
+      return name;
+    }
+
+    public void setName(String name) {
+      this.name = name;
+    }
+
+    public String getVname() {
+      return vname;
+    }
+
+    public void setVname(String vname) {
+      this.vname = vname;
+    }
+
+    public String getUnits() {
+      return units;
+    }
+
+    public void setUnits(String units) {
+      this.units = units;
+    }
   }
 }
