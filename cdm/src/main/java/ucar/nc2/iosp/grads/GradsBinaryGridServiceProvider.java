@@ -138,8 +138,8 @@ public class GradsBinaryGridServiceProvider extends AbstractIOServiceProvider {
             gradsDDF = new GradsDataDescriptorFile(raf.getLocation());
             GradsDimension x = gradsDDF.getXDimension();
             GradsDimension y = gradsDDF.getYDimension();
-
             //J-
+            
             return  gradsDDF.getDataType() == null && // only handle raw binary
                     gradsDDF.getDataFile() != null && 
                     !gradsDDF.hasProjection() &&  // can't handle projections

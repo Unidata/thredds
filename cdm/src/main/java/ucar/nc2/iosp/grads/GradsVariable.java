@@ -121,7 +121,7 @@ public class GradsVariable {
 
     /**
      * Get the variable name
-     * 
+     *
      * @return the varName
      */
     public String getName() {
@@ -130,25 +130,25 @@ public class GradsVariable {
 
     /**
      * Get the number of levels
-     * 
+     *
      * @return the numLevs
      */
     public int getNumLevels() {
         return numLevs;
     }
 
-    /**    
+    /**
      * Get the variable description
-     * 
+     *
      * @return the description
      */
     public String getDescription() {
         return description;
     }
 
-    /**    
+    /**
      * Get the unit name
-     * 
+     *
      * @return the unitName
      */
     public String getUnitName() {

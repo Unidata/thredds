@@ -276,255 +276,231 @@ public class GradsTimeDimension extends GradsDimension {
         GradsTimeStruct ts        = makeTimeStruct(timeIndex);
         String          retString = filespec;
         String          format;
-        // initial time
-        if (retString.indexOf("%ix1") >= 0) {
-            retString = retString.replaceAll("%ix1",
-                                             String.format("%d",
-                                                 initialTime.year / 10));
-        }
-        if (retString.indexOf("%ix3") >= 0) {
-            retString = retString.replaceAll("%ix3",
-                                             String.format("%03d",
-                                                 initialTime.year / 10));
-        }
-        if (retString.indexOf("%iy2") >= 0) {
-            int cent = initialTime.year / 100;
-            int val  = initialTime.year - cent * 100;
-            retString = retString.replaceAll("%iy2",
-                                             String.format("%02d", val));
-        }
-        if (retString.indexOf("%iy4") >= 0) {
-            retString = retString.replaceAll("%iy4",
-                                             String.format("%d",
-                                                 initialTime.year));
-        }
-        if (retString.indexOf("%im1") >= 0) {
-            retString = retString.replaceAll("%im1",
-                                             String.format("%d",
-                                                 initialTime.month));
-        }
-        if (retString.indexOf("%im2") >= 0) {
-            retString = retString.replaceAll("%im2",
-                                             String.format("%02d",
-                                                 initialTime.month));
-        }
-        if (retString.indexOf("%imc") >= 0) {
-            retString = retString.replaceAll(
-                "%imc", GradsTimeStruct.months[initialTime.month - 1]);
-        }
-        if (retString.indexOf("%id1") >= 0) {
-            retString = retString.replaceAll("%id1",
-                                             String.format("%d",
-                                                 initialTime.day));
-        }
-        if (retString.indexOf("%id2") >= 0) {
-            retString = retString.replaceAll("%id2",
-                                             String.format("%02d",
-                                                 initialTime.day));
-        }
-        if (retString.indexOf("%ih1") >= 0) {
-            retString = retString.replaceAll("%ih1",
-                                             String.format("%d",
-                                                 initialTime.hour));
-        }
-        if (retString.indexOf("%ih2") >= 0) {
-            retString = retString.replaceAll("%ih2",
-                                             String.format("%02d",
-                                                 initialTime.hour));
-        }
-        if (retString.indexOf("%ih3") >= 0) {
-            retString = retString.replaceAll("%ih3",
-                                             String.format("%03d",
-                                                 initialTime.hour));
-        }
-        if (retString.indexOf("%in2") >= 0) {
-            retString = retString.replaceAll("%in2",
-                                             String.format("%02d",
-                                                 initialTime.minute));
-        }
-        // any time
-        // decade
-        if (retString.indexOf("%x1") >= 0) {
-            retString = retString.replaceAll("%x1",
-                                             String.format("%d",
-                                                 ts.year / 10));
-        }
-        if (retString.indexOf("%x3") >= 0) {
-            retString = retString.replaceAll("%x3",
-                                             String.format("%03d",
-                                                 ts.year / 10));
-        }
-        // year
-        if (retString.indexOf("%y2") >= 0) {
-            int cent = ts.year / 100;
-            int val  = ts.year - cent * 100;
-            retString = retString.replaceAll("%y2",
-                                             String.format("%02d", val));
-        }
-        if (retString.indexOf("%y4") >= 0) {
-            retString = retString.replaceAll("%y4",
-                                             String.format("%d", ts.year));
-        }
-        // month
-        if (retString.indexOf("%m1") >= 0) {
-            retString = retString.replaceAll("%m1",
-                                             String.format("%d", ts.month));
-        }
-        if (retString.indexOf("%m2") >= 0) {
-            retString = retString.replaceAll("%m2",
-                                             String.format("%02d", ts.month));
-        }
-        if (retString.indexOf("%mc") >= 0) {
-            retString =
-                retString.replaceAll("%mc",
-                                     GradsTimeStruct.months[ts.month - 1]);
-        }
-        // day
-        if (retString.indexOf("%d1") >= 0) {
-            retString = retString.replaceAll("%d1",
-                                             String.format("%d", ts.day));
-        }
-        if (retString.indexOf("%d2") >= 0) {
-            retString = retString.replaceAll("%d2",
-                                             String.format("%02d", ts.day));
-        }
-        // hour
-        if (retString.indexOf("%h1") >= 0) {
-            retString = retString.replaceAll("%h1",
-                                             String.format("%d", ts.hour));
-        }
-        if (retString.indexOf("%h2") >= 0) {
-            retString = retString.replaceAll("%h2",
-                                             String.format("%02d", ts.hour));
-        }
-        if (retString.indexOf("%h3") >= 0) {
-            retString = retString.replaceAll("%h3",
-                                             String.format("%03d", ts.hour));
-        }
-        // minute
-        if (retString.indexOf("%n2") >= 0) {
-            retString = retString.replaceAll("%n2",
-                                             String.format("%02d",
-                                                 ts.minute));
-        }
-        // julian day
-        if (retString.indexOf("%j3") >= 0) {
-            retString = retString.replaceAll("%j3",
-                                             String.format("%03d", ts.jday));
-        }
-        // time index (1 based)
-        if (retString.indexOf("%t1") >= 0) {
-            retString = retString.replaceAll("%t1",
-                                             String.format("%d",
-                                                 timeIndex + 1));
-        }
-        if (retString.indexOf("%t2") >= 0) {
-            retString = retString.replaceAll("%t2",
-                                             String.format("%02d",
-                                                 timeIndex + 1));
-        }
-        if (retString.indexOf("%t3") >= 0) {
-            retString = retString.replaceAll("%t3",
-                                             String.format("%03d",
-                                                 timeIndex + 1));
-        }
-        if (retString.indexOf("%t4") >= 0) {
-            retString = retString.replaceAll("%t4",
-                                             String.format("%04d",
-                                                 timeIndex + 1));
-        }
-        if (retString.indexOf("%t5") >= 0) {
-            retString = retString.replaceAll("%t5",
-                                             String.format("%05d",
-                                                 timeIndex + 1));
-        }
-        if (retString.indexOf("%t6") >= 0) {
-            retString = retString.replaceAll("%t6",
-                                             String.format("%06d",
-                                                 timeIndex + 1));
-        }
-        // time index (0 based)
-        if (retString.indexOf("%tm1") >= 0) {
-            retString = retString.replaceAll("%tm1",
-                                             String.format("%d", timeIndex));
-        }
-        if (retString.indexOf("%tm2") >= 0) {
-            retString = retString.replaceAll("%tm2",
-                                             String.format("%02d",
-                                                 timeIndex));
-        }
-        if (retString.indexOf("%tm3") >= 0) {
-            retString = retString.replaceAll("%tm3",
-                                             String.format("%03d",
-                                                 timeIndex));
-        }
-        if (retString.indexOf("%tm4") >= 0) {
-            retString = retString.replaceAll("%tm4",
-                                             String.format("%04d",
-                                                 timeIndex));
-        }
-        if (retString.indexOf("%tm5") >= 0) {
-            retString = retString.replaceAll("%tm5",
-                                             String.format("%05d",
-                                                 timeIndex));
-        }
-        if (retString.indexOf("%tm6") >= 0) {
-            retString = retString.replaceAll("%tm6",
-                                             String.format("%06d",
-                                                 timeIndex));
-        }
-        // forecast hours
-        if (retString.indexOf("%f") >= 0) {
-            int mins = (int) getValues()[timeIndex] * 60;
-            int tdif;
-            if (retString.indexOf("%f2") >= 0) {
-                format = "%02d";
-                tdif   = mins / 60;
-                if (tdif > 99) {
-                    format = "%d";
-                }
-                retString = retString.replaceAll("%f2",
-                        String.format(format, tdif));
+        while (hasTimeTemplate(retString)) {
+            // initial time
+            if (retString.indexOf("%ix1") >= 0) {
+                retString = retString.replaceAll("%ix1",
+                        String.format("%d", initialTime.year / 10));
             }
-            if (retString.indexOf("%f3") >= 0) {
-                format = "%03d";
-                tdif   = mins / 60;
-                if (tdif > 999) {
-                    format = "%d";
-                }
-                retString = retString.replaceAll("%f3",
-                        String.format(format, tdif));
+            if (retString.indexOf("%ix3") >= 0) {
+                retString = retString.replaceAll("%ix3",
+                        String.format("%03d", initialTime.year / 10));
             }
-            if (retString.indexOf("%fn2") >= 0) {
-                format = "%02d";
-                if (mins > 99) {
-                    format = "%d";
-                }
-                retString = retString.replaceAll("%fn2",
-                        String.format(format, mins));
+            if (retString.indexOf("%iy2") >= 0) {
+                int cent = initialTime.year / 100;
+                int val  = initialTime.year - cent * 100;
+                retString = retString.replaceAll("%iy2",
+                        String.format("%02d", val));
             }
-            if (retString.indexOf("%fhn2") >= 0) {
-                tdif = mins;
-                int hrs = tdif / 60;
-                int mns = tdif - (hrs * 60);
-                format = "%02d%02d";
-                if (hrs > 99) {
-                    format = "%d%02d";
-                }
-                retString = retString.replaceAll("%fhn2",
-                        String.format(format, hrs, mns));
+            if (retString.indexOf("%iy4") >= 0) {
+                retString = retString.replaceAll("%iy4",
+                        String.format("%d", initialTime.year));
             }
-            if (retString.indexOf("%fdhn2") >= 0) {
-                tdif = mins;
-                int dys = tdif / 1440;
-                int hrs = (tdif - (dys * 1440)) / 60;
-                int mns = tdif - (dys * 1440) - (hrs * 60);
-                format = "%02d%02d%02d";
-                if (dys > 99) {
-                    format = "%d%02d%02d";
+            if (retString.indexOf("%im1") >= 0) {
+                retString = retString.replaceAll("%im1",
+                        String.format("%d", initialTime.month));
+            }
+            if (retString.indexOf("%im2") >= 0) {
+                retString = retString.replaceAll("%im2",
+                        String.format("%02d", initialTime.month));
+            }
+            if (retString.indexOf("%imc") >= 0) {
+                retString = retString.replaceAll("%imc",
+                        GradsTimeStruct.months[initialTime.month - 1]);
+            }
+            if (retString.indexOf("%id1") >= 0) {
+                retString = retString.replaceAll("%id1",
+                        String.format("%d", initialTime.day));
+            }
+            if (retString.indexOf("%id2") >= 0) {
+                retString = retString.replaceAll("%id2",
+                        String.format("%02d", initialTime.day));
+            }
+            if (retString.indexOf("%ih1") >= 0) {
+                retString = retString.replaceAll("%ih1",
+                        String.format("%d", initialTime.hour));
+            }
+            if (retString.indexOf("%ih2") >= 0) {
+                retString = retString.replaceAll("%ih2",
+                        String.format("%02d", initialTime.hour));
+            }
+            if (retString.indexOf("%ih3") >= 0) {
+                retString = retString.replaceAll("%ih3",
+                        String.format("%03d", initialTime.hour));
+            }
+            if (retString.indexOf("%in2") >= 0) {
+                retString = retString.replaceAll("%in2",
+                        String.format("%02d", initialTime.minute));
+            }
+            // any time
+            // decade
+            if (retString.indexOf("%x1") >= 0) {
+                retString = retString.replaceAll("%x1",
+                        String.format("%d", ts.year / 10));
+            }
+            if (retString.indexOf("%x3") >= 0) {
+                retString = retString.replaceAll("%x3",
+                        String.format("%03d", ts.year / 10));
+            }
+            // year
+            if (retString.indexOf("%y2") >= 0) {
+                int cent = ts.year / 100;
+                int val  = ts.year - cent * 100;
+                retString = retString.replaceAll("%y2",
+                        String.format("%02d", val));
+            }
+            if (retString.indexOf("%y4") >= 0) {
+                retString = retString.replaceAll("%y4",
+                        String.format("%d", ts.year));
+            }
+            // month
+            if (retString.indexOf("%m1") >= 0) {
+                retString = retString.replaceAll("%m1",
+                        String.format("%d", ts.month));
+            }
+            if (retString.indexOf("%m2") >= 0) {
+                retString = retString.replaceAll("%m2",
+                        String.format("%02d", ts.month));
+            }
+            if (retString.indexOf("%mc") >= 0) {
+                retString = retString.replaceAll("%mc",
+                        GradsTimeStruct.months[ts.month - 1]);
+            }
+            // day
+            if (retString.indexOf("%d1") >= 0) {
+                retString = retString.replaceAll("%d1",
+                        String.format("%d", ts.day));
+            }
+            if (retString.indexOf("%d2") >= 0) {
+                retString = retString.replaceAll("%d2",
+                        String.format("%02d", ts.day));
+            }
+            // hour
+            if (retString.indexOf("%h1") >= 0) {
+                retString = retString.replaceAll("%h1",
+                        String.format("%d", ts.hour));
+            }
+            if (retString.indexOf("%h2") >= 0) {
+                retString = retString.replaceAll("%h2",
+                        String.format("%02d", ts.hour));
+            }
+            if (retString.indexOf("%h3") >= 0) {
+                retString = retString.replaceAll("%h3",
+                        String.format("%03d", ts.hour));
+            }
+            // minute
+            if (retString.indexOf("%n2") >= 0) {
+                retString = retString.replaceAll("%n2",
+                        String.format("%02d", ts.minute));
+            }
+            // julian day
+            if (retString.indexOf("%j3") >= 0) {
+                retString = retString.replaceAll("%j3",
+                        String.format("%03d", ts.jday));
+            }
+            // time index (1 based)
+            if (retString.indexOf("%t1") >= 0) {
+                retString = retString.replaceAll("%t1",
+                        String.format("%d", timeIndex + 1));
+            }
+            if (retString.indexOf("%t2") >= 0) {
+                retString = retString.replaceAll("%t2",
+                        String.format("%02d", timeIndex + 1));
+            }
+            if (retString.indexOf("%t3") >= 0) {
+                retString = retString.replaceAll("%t3",
+                        String.format("%03d", timeIndex + 1));
+            }
+            if (retString.indexOf("%t4") >= 0) {
+                retString = retString.replaceAll("%t4",
+                        String.format("%04d", timeIndex + 1));
+            }
+            if (retString.indexOf("%t5") >= 0) {
+                retString = retString.replaceAll("%t5",
+                        String.format("%05d", timeIndex + 1));
+            }
+            if (retString.indexOf("%t6") >= 0) {
+                retString = retString.replaceAll("%t6",
+                        String.format("%06d", timeIndex + 1));
+            }
+            // time index (0 based)
+            if (retString.indexOf("%tm1") >= 0) {
+                retString = retString.replaceAll("%tm1",
+                        String.format("%d", timeIndex));
+            }
+            if (retString.indexOf("%tm2") >= 0) {
+                retString = retString.replaceAll("%tm2",
+                        String.format("%02d", timeIndex));
+            }
+            if (retString.indexOf("%tm3") >= 0) {
+                retString = retString.replaceAll("%tm3",
+                        String.format("%03d", timeIndex));
+            }
+            if (retString.indexOf("%tm4") >= 0) {
+                retString = retString.replaceAll("%tm4",
+                        String.format("%04d", timeIndex));
+            }
+            if (retString.indexOf("%tm5") >= 0) {
+                retString = retString.replaceAll("%tm5",
+                        String.format("%05d", timeIndex));
+            }
+            if (retString.indexOf("%tm6") >= 0) {
+                retString = retString.replaceAll("%tm6",
+                        String.format("%06d", timeIndex));
+            }
+            // forecast hours
+            if (retString.indexOf("%f") >= 0) {
+                int mins = (int) getValues()[timeIndex] * 60;
+                int tdif;
+                if (retString.indexOf("%f2") >= 0) {
+                    format = "%02d";
+                    tdif   = mins / 60;
+                    if (tdif > 99) {
+                        format = "%d";
+                    }
+                    retString = retString.replaceAll("%f2",
+                            String.format(format, tdif));
                 }
-                retString = retString.replaceAll("%fdhn2",
-                        String.format(format, dys, hrs, mns));
+                if (retString.indexOf("%f3") >= 0) {
+                    format = "%03d";
+                    tdif   = mins / 60;
+                    if (tdif > 999) {
+                        format = "%d";
+                    }
+                    retString = retString.replaceAll("%f3",
+                            String.format(format, tdif));
+                }
+                if (retString.indexOf("%fn2") >= 0) {
+                    format = "%02d";
+                    if (mins > 99) {
+                        format = "%d";
+                    }
+                    retString = retString.replaceAll("%fn2",
+                            String.format(format, mins));
+                }
+                if (retString.indexOf("%fhn2") >= 0) {
+                    tdif = mins;
+                    int hrs = tdif / 60;
+                    int mns = tdif - (hrs * 60);
+                    format = "%02d%02d";
+                    if (hrs > 99) {
+                        format = "%d%02d";
+                    }
+                    retString = retString.replaceAll("%fhn2",
+                            String.format(format, hrs, mns));
+                }
+                if (retString.indexOf("%fdhn2") >= 0) {
+                    tdif = mins;
+                    int dys = tdif / 1440;
+                    int hrs = (tdif - (dys * 1440)) / 60;
+                    int mns = tdif - (dys * 1440) - (hrs * 60);
+                    format = "%02d%02d%02d";
+                    if (dys > 99) {
+                        format = "%d%02d%02d";
+                    }
+                    retString = retString.replaceAll("%fdhn2",
+                            String.format(format, dys, hrs, mns));
+                }
             }
         }
         return retString;

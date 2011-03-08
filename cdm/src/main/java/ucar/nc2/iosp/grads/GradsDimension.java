@@ -190,6 +190,10 @@ public class GradsDimension {
             for (int i = 0; i < size; i++) {
                 vals[i] = start + i * inc;
             }
+            // TODO: figure out a better way to do this in case they don't start with gaus (e.g. MOM32)
+        } else if (mapping.toLowerCase().startsWith("gaus")) {
+            vals = GradsUtil.getGaussianLatitudes(mapping,
+                    (int) Double.parseDouble(levels.get(0)), size);
         }
         // sanity check on z units
         if (name.equals(GradsDataDescriptorFile.ZDEF)) {

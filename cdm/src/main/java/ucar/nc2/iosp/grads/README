@@ -2,6 +2,7 @@ The GradsBinaryGridServiceProvider currently handles:
 
 - raw lat/lon binary grid files (DTYPE not defined)
 - ensembles defined by NAMES in one file or as a template
+- gaussian latitudes
 - time templates
 
 It does not handle:

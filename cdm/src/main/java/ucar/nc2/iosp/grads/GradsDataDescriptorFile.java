@@ -230,8 +230,6 @@ public class GradsDataDescriptorFile {
     /**
      * Parse the file
      *
-     * @throws Exception problem parsing the file
-     *
      * @throws IOException  problem reading the file
      */
     private void parseDDF() throws IOException {
@@ -806,7 +804,6 @@ public class GradsDataDescriptorFile {
      * Get the full path for a given filename
      *
      * @param filename   the raw filename
-     * @param ddfPath  the path to the DDF
      *
      * @return  the full filename
      */
