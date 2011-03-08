@@ -105,38 +105,50 @@ public class GradsVariable {
         }
         StringBuffer buf = new StringBuffer();
         for (int i = 3; i < toks.length; i++) {
-            String tok = toks[i];
-            if (tok.startsWith("[")) {
-                unitName = toks[i].substring(1, tok.indexOf("]"));
-            }
-            buf.append(tok);
+            buf.append(toks[i]);
             buf.append(" ");
         }
         description = buf.toString().trim();
+        // see if there is a unit in there
+        int uStart = description.indexOf("[");
+        if (uStart >= 0) {
+            int uEnd = description.indexOf("]");
+            if (uEnd > uStart) {
+                unitName = description.substring(uStart + 1, uEnd);
+            }
+        }
     }
 
     /**
-     *     @return the varName
+     * Get the variable name
+     * 
+     * @return the varName
      */
     public String getName() {
         return varName;
     }
 
     /**
+     * Get the number of levels
+     * 
      * @return the numLevs
      */
     public int getNumLevels() {
         return numLevs;
     }
 
-    /**
+    /**    
+     * Get the variable description
+     * 
      * @return the description
      */
     public String getDescription() {
         return description;
     }
 
-    /**
+    /**    
+     * Get the unit name
+     * 
      * @return the unitName
      */
     public String getUnitName() {

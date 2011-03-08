@@ -206,8 +206,8 @@ public class GradsTimeDimension extends GradsDimension {
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
         calendar.setTime(d);
-        vals[0] = 0;
-        initialTime = makeTimeStruct(calendar);
+        vals[0]          = 0;
+        initialTime      = makeTimeStruct(calendar);
         initialTime.year = calendar.get(Calendar.YEAR);
         initialTime.month = calendar.get(Calendar.MONTH) + 1;  // MONTH is zero based
         initialTime.day    = calendar.get(Calendar.DAY_OF_MONTH);
