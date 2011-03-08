@@ -353,6 +353,7 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter implements TypedD
       Array hrData = null;
       Sweep spn = (Sweep)sweeps.get(sweeps.size()-1);
       Variable v = spn.getsweepVar();
+      float vGateSize = spn.getGateSize();
       try {
         allData = v.read();
       } catch (IOException e) {
@@ -363,6 +364,7 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter implements TypedD
       else {
             Sweep sp0 = (Sweep)sweeps.get(0);
             Variable v0 = sp0.getsweepVar();
+            float v0GateSize = sp0.getGateSize();
             int [] stride;
 
             if(v0.getName().startsWith("Reflect"))
@@ -373,14 +375,20 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter implements TypedD
             int[] shape1 = v.getShape();
             int[] shape2 = v0.getShape();
             int  shp1 = (shape1[1]*stride[1] > shape2[1]) ? shape2[1] : shape1[1]*stride[1];
-            if(shape2[2] == shape1[2]) { //this dual pole
-                stride = new int [] {1, 2, 1};
-            }
+
+
             int shp2 = (shape1[2]*stride[2] > shape2[2]) ? shape2[2] : shape1[2]*stride[2];
             
             int[] shape = {shape2[0], shp1, shp2};
+            // this dual pole  or new high res
+            // where the lower and upper has same gate size, no stride needed
+            if(shape2[2] == shape1[2] || v0GateSize == vGateSize) {
+                stride = new int [] {1, 2, 1};
+                shape[2] = shape1[2];
+            }
+
             int [] origin = {0, 0, 0};
-             Section section = null;
+            Section section = null;
 
             try {
                 section = new Section(origin, shape, stride);
@@ -984,7 +992,7 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter implements TypedD
 
   public static void main(String args[]) throws Exception, IOException, InstantiationException, IllegalAccessException {
    // String fileIn = "/home/yuanho/Download/KCLX_20091019_2021";
-   String fileIn ="C:/Users/yuanho/Downloads/RADAR/KOUN20100405042306V06.raw.uncompress";
+   String fileIn ="C:/Users/yuanho/Downloads/Level2_KCBW_20110307_2351.ar2v";
     //RadialDatasetSweepFactory datasetFactory = new RadialDatasetSweepFactory();
     //RadialDatasetSweep rds = datasetFactory.open(fileIn, null);
   //ucar.unidata.util.Trace.call1("LevelII2Dataset:main dataset");
@@ -1003,7 +1011,7 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter implements TypedD
     testRadialVariable(vDM);
     for (int i = 0; i < rvars.size(); i++) {
       RadialDatasetSweep.RadialVariable rv = (RadialDatasetSweep.RadialVariable) rvars.get(i);
-       testRadialVariable(rv);
+    //   testRadialVariable(rv);
 
       //  RadialCoordSys.makeRadialCoordSys( "desc", CoordinateSystem cs, VariableEnhanced v);
       // ucar.nc2.dt.radial.RadialCoordSys rcsys = rv.getRadialCoordSys();
