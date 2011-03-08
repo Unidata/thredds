@@ -626,12 +626,8 @@ public class GradsBinaryGridServiceProvider extends AbstractIOServiceProvider {
     private RandomAccessFile getDataFile(int eIndex, int tIndex)
             throws IOException {
 
-        String dataFilePath = gradsDDF.getDataFile();
-        //List<String> files = gradsDDF.getFileNames();
-        if (gradsDDF.isTemplate()) {
-            dataFilePath = gradsDDF.getFileName(eIndex, tIndex);
-        } else {
-            // we only have one file
+        String dataFilePath = gradsDDF.getFileName(eIndex, tIndex);
+        if ( !gradsDDF.isTemplate()) {  // we only have one file
             if (dataFile != null) {
                 return dataFile;
             }

@@ -218,25 +218,26 @@ public class GradsDataDescriptorFile {
      * Create a GradsDataDescriptorFile from the file
      *
      * @param filename  the name of the file
+     *
+     * @throws IOException  problem reading/parsing the file
      */
-    public GradsDataDescriptorFile(String filename) {
+    public GradsDataDescriptorFile(String filename) throws IOException {
         ddFile = filename;
-        try {
-            parseDDF();
-            getFileNames();
-        } catch (Exception e) {
-            System.err.println("couldn't parse file: " + e.getMessage());
-        }
+        parseDDF();
+        getFileNames();
     }
 
     /**
      * Parse the file
      *
      * @throws Exception problem parsing the file
+     *
+     * @throws IOException  problem reading the file
      */
-    private void parseDDF() throws Exception {
+    private void parseDDF() throws IOException {
 
-        BufferedReader r = new BufferedReader(new FileReader(ddFile));
+        long           start2 = System.currentTimeMillis();
+        BufferedReader r      = new BufferedReader(new FileReader(ddFile));
 
         //System.err.println("parsing " + ddFile);
 
@@ -268,7 +269,6 @@ public class GradsDataDescriptorFile {
                 }
 
                 // ignore attribute metadata and comments 
-                //if (line.startsWith("@") || line.startsWith("*")) {
                 if (line.startsWith("*")) {
                     continue;
                 }
@@ -410,6 +410,8 @@ public class GradsDataDescriptorFile {
                 }
 
             }  // end parsing loop
+            //System.out.println("Time to parse file = "
+            //                   + (System.currentTimeMillis() - start2));
 
         } catch (IOException ioe) {
             log.error("Error parsing metadata for " + ddFile);
@@ -666,8 +668,10 @@ public class GradsDataDescriptorFile {
      * For testing
      *
      * @param args  the filename
+     *
+     * @throws Exception  problem reading the file
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         GradsDataDescriptorFile gdd = new GradsDataDescriptorFile(args[0]);
         System.out.println(gdd);
     }
@@ -717,11 +721,10 @@ public class GradsDataDescriptorFile {
             if ( !isTemplate()) {  // single file
                 fileNames.add(getFullPath(getDataFile()));
             } else {               // figure out template type
-                List<String> fileSet   = new ArrayList<String>();
-                String       template  = getDataFile();
-                String       firstFile = tDim.replaceFileTemplate(template,
-                                             0);
-                if ( !template.equals(firstFile)) {
+                long         start    = System.currentTimeMillis();
+                List<String> fileSet  = new ArrayList<String>();
+                String       template = getDataFile();
+                if (GradsTimeDimension.hasTimeTemplate(template)) {
                     if (template.indexOf(
                             GradsEnsembleDimension.ENS_TEMPLATE_ID) >= 0) {
                         templateType = ENS_TIME_TEMPLATE;
@@ -738,7 +741,9 @@ public class GradsDataDescriptorFile {
                 }
                 if (templateType == ENS_TEMPLATE) {
                     for (int e = 0; e < eDim.getSize(); e++) {
-                        fileSet.add(eDim.replaceFileTemplate(template, e));
+                        fileSet.add(
+                            getFullPath(
+                                eDim.replaceFileTemplate(template, e)));
                     }
                 } else if ((templateType == TIME_TEMPLATE)
                            || (templateType == ENS_TIME_TEMPLATE)) {
@@ -753,11 +758,15 @@ public class GradsDataDescriptorFile {
                             }
                         }
                     }
+                    // this'll be a bogus number if chsub was used
                     timeStepsPerFile = tDim.getSize()
                                        / (fileSet.size() / numens);
                 }
+                //System.out.println("Time to generate file list = "
+                //                   + (System.currentTimeMillis() - start));
                 fileNames.addAll(fileSet);
             }
+            long start2 = System.currentTimeMillis();
             // now make sure they exist
             for (String file : fileNames) {
                 File f = new File(file);
@@ -766,6 +775,8 @@ public class GradsDataDescriptorFile {
                     throw new IOException("File: " + f + " does not exist");
                 }
             }
+            //System.out.println("Time to check file list = "
+            //                   + (System.currentTimeMillis() - start2));
         }
         return fileNames;
     }
