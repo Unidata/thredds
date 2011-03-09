@@ -70,7 +70,7 @@ public class H5header {
   static private boolean debugEnum = false, debugVlen = false;
   static private boolean debug1 = false, debugDetail = false, debugPos = false, debugHeap = false, debugV = false;
   static private boolean debugGroupBtree = false, debugDataBtree = false, debugDataChunk = false, debugBtree2 = false;
-  static private boolean debugContinueMessage = false, debugTracker = false, debugSoftLink = true, debugSymbolTable = false;
+  static private boolean debugContinueMessage = false, debugTracker = false, debugSoftLink = false, debugSymbolTable = false;
   static private boolean warnings = true, debugReference = false, debugRegionReference = false, debugCreationOrder = false, debugFractalHeap = false;
   static private boolean debugDimensionScales = false;
 

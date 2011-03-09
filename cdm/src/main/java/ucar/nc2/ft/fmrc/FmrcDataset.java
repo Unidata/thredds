@@ -582,7 +582,7 @@ class FmrcDataset {
       for (FmrcInvLite.Gridset.Grid ugrid : gridset.grids) {
         VariableDS aggVar = (VariableDS) result.findVariable(ugrid.name);
         if (aggVar == null) { // a ugrid is not in the proto
-          logger.error("cant find ugrid variable "+ugrid.name+" in collection "+lite.collectionName);
+          logger.error("cant find ugrid variable "+ugrid.name+" in collection "+lite.collectionName+debugMissingVar(proto, result));
           continue; // skip
         }
 
@@ -881,7 +881,7 @@ class FmrcDataset {
 
         VariableDS aggVar = (VariableDS) result.findVariable(ugrid.name);
         if (aggVar == null) { // a ugrid is not in the proto
-          logger.error("cant find ugrid variable "+ugrid.name+" in collection "+lite.collectionName);
+          logger.error("cant find ugrid variable "+ugrid.name+" in collection "+lite.collectionName+debugMissingVar(proto, result));
           continue; // skip
         }
 
@@ -920,6 +920,19 @@ class FmrcDataset {
     if (debugEnhance) System.out.printf("GridDataset1D parseInfo = %s%n", builder.getParseInfo());
 
     return new ucar.nc2.dt.grid.GridDataset(result);
+  }
+
+  private String debugMissingVar(NetcdfFile proto, NetcdfFile result) {
+    Formatter f = new Formatter();
+    f.format("result %s%n", result.getLocation());
+    for (Variable v: result.getVariables())
+      f.format("%s%n", v.getNameAndDimensions());
+    f.format("%n");
+    f.format("proto %s%n", proto.getLocation());
+    for (Variable v: proto.getVariables())
+      f.format("%s%n", v.getNameAndDimensions());
+
+    return f.toString();
   }
 
   private VariableDS makeTimeCoordinate(NetcdfDataset result, Group group, String dimName, Date base, FmrcInvLite.ValueB valueb, DateFormatter dateFormatter) {

@@ -73,7 +73,7 @@ public class CdmRemoteControllerOld extends AbstractController implements LastMo
 
   private TdsContext tdsContext;
   private boolean allow = true;
-  private boolean debug = true;
+  private boolean debug = false;
 
   public void setTdsContext(TdsContext tdsContext) {
     this.tdsContext = tdsContext;

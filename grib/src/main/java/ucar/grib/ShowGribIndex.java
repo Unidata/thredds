@@ -55,15 +55,6 @@ import java.util.*;
  */
 
 public class ShowGribIndex {
-  /**
-   * _more_
-   */
-  static private boolean debugTiming = true;
-
-  /**
-   * _more_
-   */
-  static private boolean debugParse = false;
 
   private java.text.SimpleDateFormat dateFormat;
   private static String divider =
@@ -172,7 +163,7 @@ public class ShowGribIndex {
 
     final String testName = "C:/data/NDFD.grib2" + GribIndexName.currentSuffix;
 
-    debugTiming = false;
+    boolean debugTiming = false;
     String gbxName = null;
     if (args.length < 1) {
       new ShowGribIndex().show(testName);

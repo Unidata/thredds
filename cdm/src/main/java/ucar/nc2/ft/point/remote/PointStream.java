@@ -71,7 +71,7 @@ public class PointStream {
   static private final byte[] MAGIC_PointFeatureCollection = new byte[]{(byte) 0xfa, (byte) 0xfa, (byte) 0xaf, (byte) 0xaf};
   static private final byte[] MAGIC_PointFeature = new byte[]{(byte) 0xf0, (byte) 0xf0, (byte) 0x0f, (byte) 0x0f};
 
-  static private final boolean debug = true;
+  static private final boolean debug = false;
 
   static public MessageType readMagic(InputStream is) throws IOException {
     byte[] b = new byte[4];
