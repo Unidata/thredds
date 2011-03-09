@@ -14,8 +14,8 @@
       <dataType>Radial</dataType>
       <dataFormat><c:out value="${type}"/></dataFormat>
       <serviceName>OPENDAP</serviceName>
+      <documentation><c:out value="${documentation}"/></documentation>
     </metadata>
-    <documentation><c:out value="${documentation}"/></documentation>
     <c:forEach var="dataset" items="${datasets}">
     <dataset name="<c:out value="${dataset.name}"/>"
          ID="<c:out value="${dataset.ID}"/>"
