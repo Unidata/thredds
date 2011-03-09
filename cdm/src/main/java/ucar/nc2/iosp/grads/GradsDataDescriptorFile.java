@@ -28,7 +28,6 @@ import java.io.IOException;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.StringTokenizer;
 
 
@@ -72,6 +71,12 @@ public class GradsDataDescriptorFile {
 
     /** THEADER identifier */
     public static final String THEADER = "THEADER";
+
+    /** HEADERBYTES identifier */
+    public static final String HEADERBYTES = "HEADERBYTES";
+
+    /** TRAILERBYTES identifier */
+    public static final String TRAILERBYTES = "TRAILERBYTES";
 
     /** OPTIONS identifier */
     public static final String OPTIONS = "OPTIONS";
@@ -153,6 +158,12 @@ public class GradsDataDescriptorFile {
 
     /** number of file header bytes */
     private int fileHeaderBytes = 0;
+
+    /** number of time header bytes */
+    private int timeHeaderBytes = 0;
+
+    /** number of time trilobytes */
+    private int timeTrailerBytes = 0;
 
     /** data type */
     private String dataType = null;
@@ -611,6 +622,23 @@ public class GradsDataDescriptorFile {
         return fileHeaderBytes;
     }
 
+    /**
+     * Get the number of time header bytes
+     *
+     * @return the number of time header bytes
+     */
+    public int getTimeHeaderBytes() {
+        return timeHeaderBytes;
+    }
+
+    /**
+     * Get the number of time trailer bytes
+     *
+     * @return the number of time trailer bytes
+     */
+    public int getTimeTrailerBytes() {
+        return timeTrailerBytes;
+    }
 
     /**
      * Is this a big endian file

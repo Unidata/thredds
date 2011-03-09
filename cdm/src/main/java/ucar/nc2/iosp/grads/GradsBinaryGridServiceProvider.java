@@ -90,6 +90,12 @@ public class GradsBinaryGridServiceProvider extends AbstractIOServiceProvider {
     /** the number of file header bytes */
     private int fileHeaderBytes = 0;
 
+    /** the number of time header bytes */
+    private int timeHeaderBytes = 0;
+
+    /** the number of time trailer bytes */
+    private int timeTrailerBytes = 0;
+
     /** The name for the ensemble varaible */
     private static final String ENS_VAR = "ensemble";
 
@@ -187,8 +193,10 @@ public class GradsBinaryGridServiceProvider extends AbstractIOServiceProvider {
         if (gradsDDF == null) {
             gradsDDF = new GradsDataDescriptorFile(raf.getLocation());
         }
-        xyHeaderBytes   = gradsDDF.getXYHeaderBytes();
-        fileHeaderBytes = gradsDDF.getFileHeaderBytes();
+        xyHeaderBytes    = gradsDDF.getXYHeaderBytes();
+        fileHeaderBytes  = gradsDDF.getFileHeaderBytes();
+        timeHeaderBytes  = gradsDDF.getTimeHeaderBytes();
+        timeTrailerBytes = gradsDDF.getTimeTrailerBytes();
         // get the first file so we can calculate the sequentialRecordBytes
         dataFile = getDataFile(0, 0);
         dataFile.order(gradsDDF.isBigEndian()
@@ -209,8 +217,10 @@ public class GradsBinaryGridServiceProvider extends AbstractIOServiceProvider {
             int                ylen     = gradsDDF.getYDimension().getSize();
             long               fileSize = dataFile.length();
             // calculate record indicator length
-            long dataSize = (xlen * ylen * 4l + xyHeaderBytes) * numrecords
-                            + fileHeaderBytes;
+            long dataSize = fileHeaderBytes
+                            + (xlen * ylen * 4l + xyHeaderBytes) * numrecords;
+            // add on the bytes for the time header/trailers
+            dataSize += numtimes * (timeHeaderBytes + timeTrailerBytes);
             int leftovers = (int) (fileSize - dataSize);
             sequentialRecordBytes = (leftovers / numrecords) / 2;
         }
@@ -428,6 +438,12 @@ public class GradsBinaryGridServiceProvider extends AbstractIOServiceProvider {
         // so we have to add 2*sequentialRecordBytes for each record we skip, 
         int offset = (sizeX * sizeY * wordSize + xyHeaderBytes
                       + 2 * sequentialRecordBytes) * index;
+        // TODO: make sure this works - need an example
+        int curTimeStep = index / gradsDDF.getGridsPerTimeStep();
+        // add time headers
+        offset += (curTimeStep + 1) * timeHeaderBytes;
+        // add time trailers
+        offset += curTimeStep * timeTrailerBytes;
         // and then 1 sequentialRecordBytes for the record itself (+ xyHeader)
         offset += (xyHeaderBytes + sequentialRecordBytes);
         dataFile.skipBytes(offset);

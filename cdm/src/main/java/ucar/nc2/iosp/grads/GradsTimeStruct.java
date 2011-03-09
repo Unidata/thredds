@@ -34,6 +34,11 @@
 package ucar.nc2.iosp.grads;
 
 
+import java.util.Calendar;
+import java.util.Date;
+import java.util.TimeZone;
+
+
 /**
  * A class to hold a GrADS time structure.  The full time spec is:
  *
@@ -80,6 +85,23 @@ public class GradsTimeStruct {
     public String toString() {
         return String.format("%02d:%02dZ%02d%s%d", hour, minute, day,
                              months[month - 1], year);
+    }
+
+    /**
+     * Return this as a java Date object
+     *
+     * @return the corresponding Date
+     */
+    public Date getDate() {
+        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+        calendar.set(Calendar.YEAR, year);
+        calendar.set(Calendar.MONTH, month - 1);  // MONTH is zero based
+        calendar.set(Calendar.DAY_OF_MONTH, day);
+        calendar.set(Calendar.HOUR_OF_DAY, hour);
+        calendar.set(Calendar.MINUTE, minute);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        return calendar.getTime();
     }
 }
 

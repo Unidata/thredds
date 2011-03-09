@@ -179,6 +179,11 @@ public class GradsTimeDimension extends GradsDimension {
             d = new Date(0);
         }
         //System.out.println("start = " + d);
+        // set the unit
+        sdf.applyPattern("yyyy-MM-dd HH:mm:ss Z");
+        setUnit("hours since "
+                + sdf.format(d, new StringBuffer(), new FieldPosition(0)));
+        // parse the increment
         // vvkk where
         // vv     =       an integer number, 1 or 2 digits
         // kk     =       mn (minute)
@@ -193,36 +198,25 @@ public class GradsTimeDimension extends GradsDimension {
             if (index < 0) {
                 continue;
             }
-            sdf.applyPattern("yyyy-MM-dd HH:mm:ss Z");
-            setUnit("hours since "
-                    + sdf.format(d, new StringBuffer(),
-                                 new FieldPosition(0)));
             int numOf = Integer.parseInt(tinc.substring(0, index));
             inc      = numOf;
             incIndex = i;
 
             break;
         }
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
+        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
         calendar.setTime(d);
-        vals[0]          = 0;
-        initialTime      = makeTimeStruct(calendar);
-        initialTime.year = calendar.get(Calendar.YEAR);
-        initialTime.month = calendar.get(Calendar.MONTH) + 1;  // MONTH is zero based
-        initialTime.day    = calendar.get(Calendar.DAY_OF_MONTH);
-        initialTime.hour   = calendar.get(Calendar.HOUR_OF_DAY);
-        initialTime.minute = calendar.get(Calendar.MINUTE);
+        vals[0]     = 0;
+        initialTime = makeTimeStruct(calendar);
         //System.out.println("initial time = " + initialTime);
+        int calInc = calIncs[incIndex];
         for (int i = 1; i < getSize(); i++) {
-            int amount = inc;
-            calendar.add(calIncs[incIndex], amount);
+            calendar.add(calInc, inc);
             // subtract from origin, convert to hours
             double offset = (calendar.getTime().getTime() - d.getTime())
                             / (1000 * 60 * 60);  //millis in an hour
             vals[i] = offset;
         }
-
         return vals;
 
     }
@@ -273,9 +267,10 @@ public class GradsTimeDimension extends GradsDimension {
      */
     public String replaceFileTemplate(String filespec, int timeIndex) {
 
-        GradsTimeStruct ts        = makeTimeStruct(timeIndex);
-        String          retString = filespec;
-        String          format;
+        GradsTimeStruct ts = makeTimeStruct(timeIndex);
+        //System.out.println(ts);
+        String retString = filespec;
+        String format;
         while (hasTimeTemplate(retString)) {
             // initial time
             if (retString.indexOf("%ix1") >= 0) {
