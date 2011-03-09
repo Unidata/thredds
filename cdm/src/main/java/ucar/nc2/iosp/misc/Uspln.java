@@ -145,13 +145,13 @@ public class Uspln extends AbstractLightningIOSP {
     */
 
     /** Magic string for determining if this is my type of file. */
-	 private static final String MAGIC = "LIGHTNING-.*[P|G]LN1";
+	 private static final String MAGIC = "LIGHTNING-.*(P|G)LN1";
 
     /** Magic string for determining if this is my type of file. */
     private static final String MAGIC_OLD = "..PLN-LIGHTNING";
 
     /** Magic string for determining if this is and extended type of file. */
-    private static final String MAGIC_EX = ".*PLN1EX.*";
+    private static final String MAGIC_EX = ".*(GLN1|PLN1EX).*";
 
     /** original time format */
     private static final String TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
