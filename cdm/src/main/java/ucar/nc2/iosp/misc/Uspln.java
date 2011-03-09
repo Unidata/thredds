@@ -145,7 +145,7 @@ public class Uspln extends AbstractLightningIOSP {
     */
 
     /** Magic string for determining if this is my type of file. */
-    private static final String MAGIC = "LIGHTNING-..PLN1";
+	 private static final String MAGIC = "LIGHTNING-.*[P|G]LN1";
 
     /** Magic string for determining if this is my type of file. */
     private static final String MAGIC_OLD = "..PLN-LIGHTNING";
