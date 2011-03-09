@@ -40,7 +40,7 @@ package opendap.dap.parser;
 
 import opendap.dap.*;
 import opendap.dap.Server.*;
-import opendap.dap.parser.*;;
+import opendap.dap.parser.*;
 import java.io.*;
 
 
