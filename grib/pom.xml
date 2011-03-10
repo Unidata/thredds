@@ -8,7 +8,7 @@
   <parent>
     <groupId>edu.ucar</groupId>
     <artifactId>netcdf-parent</artifactId>
-    <version>4.2.21-SNAPSHOT</version>
+    <version>4.2.22</version>
   </parent>
 
 
@@ -18,7 +18,7 @@
   <groupId>edu.ucar</groupId>
   <artifactId>grib</artifactId>
   <packaging>jar</packaging>
-  <version>8.0.30-SNAPSHOT</version>
+  <version>4.2.22</version>
   <name>GRIB Decoder API</name>
   <description>
     Decoder for the GRIB format.
@@ -64,7 +64,7 @@
     <dependency>
       <groupId>edu.ucar</groupId>
       <artifactId>unidataCommon</artifactId>
-      <version>4.2.21-SNAPSHOT</version>
+      <version>4.2.22</version>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>

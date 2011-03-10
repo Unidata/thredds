@@ -16,23 +16,25 @@ import java.util.List;
  * @author caron
  * @since 2/28/11
  */
-public class TestAllSlow extends TestCase {
+public class TestReadFormats extends TestCase {
   static int countGood = 0;
   static int countFail = 0;
   static int countTotal = 0;
-  static boolean verbose = true;
+  static boolean verbose = false;
 
-  public TestAllSlow(String name) {
+  public TestReadFormats(String name) {
     super(name);
   }
 
-   class MyFileFilter implements java.io.FileFilter {
+  class MyFileFilter implements java.io.FileFilter {
     public boolean accept(File pathname) {
       countTotal++;
-      if (pathname.getName().endsWith(".gbx8")) return false;
-      if (pathname.getName().endsWith(".ncx")) return false;
-      if (pathname.getName().endsWith(".xml")) return false;
-      if (pathname.getName().endsWith(".java")) return false;
+      String name = pathname.getName();
+      if (name.endsWith(".gbx8")) return false;
+      if (name.endsWith(".ncx")) return false;
+      if (name.endsWith(".xml")) return false;
+      if (name.endsWith(".java")) return false;
+      if (name.endsWith(".unf") && pathname.getPath().contains("grads")) return false;
       return true;
     }
   }
@@ -40,7 +42,7 @@ public class TestAllSlow extends TestCase {
   public void testAllFormat() throws IOException {
     openAllInDir("Q:/cdmUnitTest/formats", new MyFileFilter());
     int countExclude = countTotal - countGood - countFail;
-    System.out.printf("Good=%d File=%d Exclude=%d%n", countGood, countFail, countExclude);
+    System.out.printf("Good=%d Fail=%d Exclude=%d%n", countGood, countFail, countExclude);
   }
 
   // these are fairly complete hdf4 files from nsidc

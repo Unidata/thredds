@@ -8,7 +8,7 @@
   <parent>
     <groupId>edu.ucar</groupId>
     <artifactId>netcdf-parent</artifactId>
-    <version>4.2.21-SNAPSHOT</version>
+    <version>4.2.22</version>
   </parent>
 
   <!-- ===========================================================
@@ -17,7 +17,7 @@
   <groupId>edu.ucar</groupId>
   <artifactId>unidataCommon</artifactId>
   <packaging>jar</packaging>
-  <version>4.2.21-SNAPSHOT</version>
+  <version>4.2.22</version>
   <name>Unidata Common</name>
   <description>
     The NetCDF-Java Library is a Java interface to NetCDF files,

@@ -8,7 +8,7 @@
   <parent>
     <groupId>edu.ucar</groupId>
     <artifactId>netcdf-parent</artifactId>
-    <version>4.2.21-SNAPSHOT</version>
+    <version>4.2.22</version>
   </parent>
 
   <!-- ===========================================================
@@ -17,7 +17,7 @@
   <groupId>edu.ucar</groupId>
   <artifactId>bufr</artifactId>
   <packaging>jar</packaging>
-  <version>3.1-SNAPSHOT</version>
+  <version>4.2.22</version>
   <name>BUFR tables</name>
   <description>
     BUFR tables for the NetCDF library.
@@ -43,7 +43,7 @@
      <dependency>
        <groupId>edu.ucar</groupId>
        <artifactId>netcdf</artifactId>
-       <version>4.2.21-SNAPSHOT</version>
+       <version>4.2.22</version>
      </dependency>
      <dependency>
       <groupId>org.jdom</groupId>

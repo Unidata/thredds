@@ -8,7 +8,7 @@
   <parent>
     <groupId>edu.ucar</groupId>
     <artifactId>netcdf-parent</artifactId>
-    <version>4.2.21-SNAPSHOT</version>
+    <version>4.2.22</version>
   </parent>
 
 
@@ -18,7 +18,7 @@
   <groupId>edu.ucar</groupId>
   <artifactId>netcdf</artifactId>
   <packaging>jar</packaging>
-  <version>4.2.21-SNAPSHOT</version>
+  <version>4.2.22</version>
   <name>NetCDF-Java Library</name>
   <description>
     The NetCDF-Java Library is a Java interface to NetCDF files,
@@ -142,7 +142,7 @@
     <dependency>
       <groupId>edu.ucar</groupId>
       <artifactId>unidataCommon</artifactId>
-      <version>4.2.21-SNAPSHOT</version>
+      <version>4.2.22</version>
     </dependency>
     <dependency>
       <groupId>commons-httpclient</groupId>
@@ -163,14 +163,14 @@
       <groupId>edu.ucar</groupId>
       <!-- Reading GRIB files. -->
       <artifactId>grib</artifactId>
-      <version>8.0.30-SNAPSHOT</version>
+      <version>4.2.22</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>edu.ucar</groupId>
       <artifactId>opendap</artifactId>
       <!-- Using OPeNDAP protocol. -->
-      <version>2.2.3-SNAPSHOT</version>
+      <version>4.2.22</version>
       <scope>provided</scope>
     </dependency>
     <dependency>

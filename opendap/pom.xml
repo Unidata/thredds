@@ -8,7 +8,7 @@
   <parent>
     <groupId>edu.ucar</groupId>
     <artifactId>netcdf-parent</artifactId>
-    <version>4.2.21-SNAPSHOT</version>
+    <version>4.2.22</version>
   </parent>
 
 
@@ -18,7 +18,7 @@
   <groupId>edu.ucar</groupId>
   <artifactId>opendap</artifactId>
   <packaging>jar</packaging>
-  <version>2.2.3-SNAPSHOT</version>
+  <version>4.2.22</version>
   <name>OpenDAP</name>
   <description>
     Open-source Project for a Network Data Access Protocol, modified for NetCDF purpose.
