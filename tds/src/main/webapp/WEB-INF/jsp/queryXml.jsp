@@ -20,7 +20,7 @@
     <dataset name="<c:out value="${dataset.name}"/>"
          ID="<c:out value="${dataset.ID}"/>"
          urlPath="<c:out value="${dataset.urlPath}"/>" >
-         <date type="start of ob"><c:out value="${dataset.date}"/>"</date>
+         <date type="start of ob"><c:out value="${dataset.date}"/></date>
     </dataset>
     </c:forEach>
 

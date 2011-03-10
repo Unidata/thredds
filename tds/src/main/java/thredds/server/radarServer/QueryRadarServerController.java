@@ -343,7 +343,8 @@ public class QueryRadarServerController extends AbstractController  {
           qp.time_start = dr.getStart();
           qp.time_end = dr.getEnd();
       } else {
-         qp.hasDateRange = true;
+         qp.time_latest = 1;
+         //qp.hasDateRange = true;
          try {
              qp.time = new DateType( "present", null, null);
              qp.time_end = new DateType( "present", null, null);
@@ -409,7 +410,11 @@ public class QueryRadarServerController extends AbstractController  {
             str.append("west=").append( qp.west).append( "&east=").append(qp.east).append("&");
         }
 
-        if( qp.hasDateRange ) {
+        // no time given
+        if( qp.time_latest == 1 ) {
+          //str.deleteCharAt( str.length() -1);
+          str.append("time=present");
+        } else if (qp.hasDateRange ) {
           if( qp.time_start.getDate() == null || qp.time_start.isBlank() ||
             qp.time_end.getDate() == null || qp.time_end.isBlank() ) {
             str.append("time_start=").append( qp.time_start.toString());
@@ -496,37 +501,42 @@ public class QueryRadarServerController extends AbstractController  {
       RadarStationCollection rsc =  rdc.queryStation( stn, currentDay );
       if ( rsc == null)
         continue;
-      if (rdc.isCaseStudy() ) { // return all data
-        ArrayList<String> tal = rsc.getHourMinute( "all" );
-        for ( String prod : tal ) {
-          // save this entry
-          DatasetEntry de = new DatasetEntry();
-          int idx = prod.indexOf( '/');
-          if ( idx > 0 ) {
-            de.setName( prod.substring( idx +1));
-          } else {
-            de.setName( prod  );
-          }
-          de.setID( Integer.toString( prod.hashCode() ));
-          url.setLength( 0 );
-          url.append( stn).append("/");
-          if( var != null ) {
-            url.append( var ).append( "/" );
-          }
-          url.append( prod );
-          de.setUrlPath( url.toString() );
-          de.setDate( RadarServerUtil.getObTimeISO( prod ) );
-          entries.add( de );
-        }
-        continue;
-      }
       for ( String day : rsc.getDays() ) {
         // check for valid day
         if( ! getAllTimes &&
             ! RadarServerUtil.isValidDay( day,  yyyymmddStart, yyyymmddEnd ) )
           continue;
-
-        ArrayList<String> tal = rsc.getHourMinute( day );
+        ArrayList<String> tal;
+        if ( rdc.isCaseStudy() ) { //
+          tal = rsc.getHourMinute( "all" );
+          for ( String prod : tal ) {
+            // check times
+            if( ! getAllTimes &&
+              ! RadarServerUtil.isValidDate( prod, dateStart, dateEnd ) )
+              continue;
+            // save this entry
+            DatasetEntry de = new DatasetEntry();
+            int idx = prod.indexOf( '/');
+            if ( idx > 0 ) {
+              de.setName( prod.substring( idx +1 ));
+            } else {
+              de.setName( prod  );
+            }
+            de.setID( Integer.toString( prod.hashCode() ));
+            url.setLength( 0 );
+            url.append( stn).append("/");
+            if( var != null ) {
+              url.append( var ).append( "/" );
+            }
+            url.append( prod );
+            de.setUrlPath( url.toString() );
+            de.setDate( RadarServerUtil.getObTimeISO( prod ) );
+            entries.add( de );
+          }
+          continue;
+        } else {
+           tal = rsc.getHourMinute( day );
+        }
         if (tal == null)
           continue;
         for ( String hm : tal ) {

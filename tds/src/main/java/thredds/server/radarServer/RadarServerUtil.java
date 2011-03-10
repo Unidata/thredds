@@ -242,7 +242,8 @@ public class RadarServerUtil {
   // returns if day is between dayStart and dayEnd
   public static boolean isValidDay( String day, String yyyymmddStart, String yyyymmddEnd )
   {
-
+     if ( day.equals( "all")) // for casestudy data
+       return true;
      if( day.compareTo( yyyymmddStart ) >= 0 &&
          day.compareTo( yyyymmddEnd ) <= 0 )
          return true;
