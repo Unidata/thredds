@@ -205,8 +205,8 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
 
     /// missing_value
     if (null != (att = forVar.findAttribute("missing_value"))) {
-      String svalue = att.getStringValue();
       if (att.isString()) {
+        String svalue = att.getStringValue();
         if (forVar.getDataType() == DataType.CHAR) {
           missingValue = new double[1];
           if (svalue.length() == 0) missingValue[0] = 0;

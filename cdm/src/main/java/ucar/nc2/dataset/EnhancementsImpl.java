@@ -103,27 +103,27 @@ class EnhancementsImpl implements Enhancements {
     if ((desc == null) && (forVar != null)) {
       Attribute att = forVar.findAttributeIgnoreCase( "long_name");
       if ((att != null) && att.isString())
-        desc = att.getStringValue().trim();
+        desc = att.getStringValue();
 
       if (desc == null) {
         att = forVar.findAttributeIgnoreCase( "description");
         if ((att != null) && att.isString())
-          desc = att.getStringValue().trim();
+          desc = att.getStringValue();
       }
 
       if (desc == null) {
         att = forVar.findAttributeIgnoreCase( "title");
         if ((att != null) && att.isString())
-          desc = att.getStringValue().trim();
+          desc = att.getStringValue();
       }
 
       if (desc == null) {
         att = forVar.findAttributeIgnoreCase( "standard_name");
         if ((att != null) && att.isString())
-          desc = att.getStringValue().trim();
+          desc = att.getStringValue();
       }
     }
-    return (desc == null) ? "" : desc;
+    return (desc == null) ? "" : desc.trim();
   }
 
   /** Set the Unit String for this Variable. Default is to use the "units" attribute.
@@ -139,11 +139,12 @@ class EnhancementsImpl implements Enhancements {
    * @return the Unit String for the Variable, or null if none.
    */
   public String getUnitsString() {
-    if ((units == null) && (forVar != null)) {
+    String result = units;
+    if ((result == null) && (forVar != null)) {
       Attribute att = forVar.findAttributeIgnoreCase( "units");
       if ((att != null) && att.isString())
-        return att.getStringValue().trim();
+        result = att.getStringValue();
     }
-    return units;
+    return (result == null) ? null : result.trim();
   }
 }

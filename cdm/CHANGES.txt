@@ -4,6 +4,7 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.2:
  22: (2011-03-10)
+  Attribute.isString() false if value is null.
   All maven versions are 4.2.22
   Uspln iosp: ensure we are correctly interpreting GLN data as extended format.
   Nexrad2 iosp: hi-res bug

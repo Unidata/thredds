@@ -76,15 +76,6 @@ public class Attribute {
   }
 
   /**
-   * True if value is a String or String[].
-   *
-   * @return if its a String.
-   */
-  public boolean isString() {
-    return dataType == DataType.STRING;
-  }
-
-  /**
    * True if value is an array (getLength() > 1)
    *
    * @return if its an array.
@@ -138,13 +129,23 @@ public class Attribute {
   }
 
   /**
+   * True if value is of type String and not null.
+   *
+   * @return if its a String and not null.
+   */
+  public boolean isString() {
+    return (dataType == DataType.STRING) && null != getStringValue();
+  }
+
+  /**
    * Retrieve String value; only call if isString() is true.
    *
    * @return String if this is a String valued attribute, else null.
    * @see Attribute#isString
    */
   public String getStringValue() {
-    return (svalue != null) ? svalue : getStringValue(0);
+    if (dataType != DataType.STRING) return null;
+    return (svalue != null) ? svalue : _getStringValue(0);
   }
 
   /**
@@ -155,11 +156,13 @@ public class Attribute {
    * @see Attribute#isString
    */
   public String getStringValue(int index) {
-    if (!isString() || (index < 0) || (index >= nelems))
-      return null;
-
+    if (dataType != DataType.STRING) return null;
     if ((svalue != null) && (index == 0)) return svalue;
+    return _getStringValue(index);
+  }
 
+  private String _getStringValue(int index) {
+    if ((index < 0) || (index >= nelems)) return null;
     return (String) values.getObject(index);
   }
 
