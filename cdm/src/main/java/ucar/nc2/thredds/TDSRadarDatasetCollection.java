@@ -180,7 +180,7 @@ public class TDSRadarDatasetCollection extends StationRadarCollectionImpl {
         Element metaElem    = readElements(dsElem, "metadata");
         // HashMap stationHMap = readSelectStations(metaElem, ns);
         String sts = dsc_location.replaceFirst("dataset.xml", "stations.xml");
-        HashMap       stationHMap   = readRadarStations(sts);
+        HashMap<String,Station>       stationHMap   = readRadarStations(sts);
         LatLonRect    radarRegion   = readSelectRegion(metaElem, ns);
         List<String>  radarTimeSpan = readSelectTime(metaElem, ns);
         List<Product> productList   = readSelectVariable(metaElem, ns);
@@ -232,13 +232,13 @@ public class TDSRadarDatasetCollection extends StationRadarCollectionImpl {
      *
      * @throws IOException _more_
      */
-    public HashMap readRadarStations(String stsXML_location)
+    public HashMap<String,Station> readRadarStations(String stsXML_location)
             throws IOException {
         SAXBuilder        builder;
         Document          doc  = null;
         XMLEntityResolver jaxp = new XMLEntityResolver(true);
         builder = jaxp.getSAXBuilder();
-        HashMap stations = new HashMap();
+        HashMap<String,Station> stations = new HashMap<String,Station>();
 
         try {
             doc = builder.build(stsXML_location);
@@ -469,7 +469,7 @@ public class TDSRadarDatasetCollection extends StationRadarCollectionImpl {
      *
      * @return _more_
      */
-    public List getRadarTimeSpan() {
+    public List<String> getRadarTimeSpan() {
         return this.radarTimeSpan;
     }
 
@@ -536,7 +536,7 @@ public class TDSRadarDatasetCollection extends StationRadarCollectionImpl {
      * @return List of type Station objects
      */
     public List<Station> getRadarStations() {
-        List<Station> slist = new ArrayList();
+        List<Station> slist = new ArrayList<Station>();
         Iterator      it    = this.stationHMap.values().iterator();
         while (it.hasNext()) {
             slist.add((Station) it.next());
@@ -593,7 +593,7 @@ public class TDSRadarDatasetCollection extends StationRadarCollectionImpl {
                                      ucar.nc2.util.CancelTask cancel)
             throws IOException {
         Collection<Station> sl  = stationHMap.values();
-        List<Station>       dsl = new ArrayList();
+        List<Station>       dsl = new ArrayList<Station>();
 
         if ( !boundingBox.containedIn(radarRegion)) {
             return null;
@@ -1112,7 +1112,7 @@ public class TDSRadarDatasetCollection extends StationRadarCollectionImpl {
         // create a list to hold URIs
         List<DatasetURIInfo> datasetsURIs =
             dateSelect.apply(dri.getURIList());
-        List<URI> uriList = new ArrayList();
+        List<URI> uriList = new ArrayList<URI>();
 
         for (DatasetURIInfo ufo : datasetsURIs) {
             URI u = ufo.uri;
@@ -1288,7 +1288,9 @@ public class TDSRadarDatasetCollection extends StationRadarCollectionImpl {
         List                      stns        = null;
 
         ds_location =
-            "http://motherlode.ucar.edu:9080/thredds/radarServer/nexrad/level3/CCS039/dataset.xml";
+            //"http://localhost:8080/thredds/radarServer/nexrad/level3/CCS039/dataset.xml";
+            //"http://motherlode.ucar.edu:8081/thredds/radarServer/nexrad/level3/CCS039/dataset.xml";
+            "http://motherlode.ucar.edu:8080/thredds/radarServer/nexrad/level3/CCS039/dataset.xml";
         dsc = TDSRadarDatasetCollection.factory("test", ds_location, errlog);
         System.out.println(" errs= " + errlog);
         stns = dsc.getStations();
@@ -1332,6 +1334,7 @@ public class TDSRadarDatasetCollection extends StationRadarCollectionImpl {
             stn = (Station) stns.get(i);
             List<Date> times = dsc.getRadarStationTimes(
                                    stn.getName(),
+                                   "BREF1",
                                    new Date(
                                        System.currentTimeMillis()
                                        - 3600 * 1000 * 24 * 100), new Date(
@@ -1345,23 +1348,12 @@ public class TDSRadarDatasetCollection extends StationRadarCollectionImpl {
             }
         }
 
-
-        List jList = dsc.getDataURIs("KABX", dateS);
-
-        assert null != jList;
-        List mList = dsc.getData("KABX", dateS, null);
-        assert null != mList;
-
-
-
-        //Date ts0 = DateFromString.getDateUsingCompleteDateFormat((String)tlist.get(1),"yyyy-MM-dd'T'HH:mm:ss");
         Date                       ts = (Date) tlist.get(1);
         java.text.SimpleDateFormat isoDateTimeFormat;
         isoDateTimeFormat =
             new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         isoDateTimeFormat.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
         String st = isoDateTimeFormat.format(ts);
-
 
     }
 
