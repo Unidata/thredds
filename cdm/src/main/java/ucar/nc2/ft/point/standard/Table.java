@@ -1199,27 +1199,15 @@ public abstract class Table {
   }
 
   private void showCoords(String indent, Formatter out) {
-    boolean gotSome;
-    gotSome = showCoord(out, lat, indent);
-    gotSome |= showCoord(out, lon, indent);
-    gotSome |= showCoord(out, elev, indent);
-    gotSome |= showCoord(out, time, indent);
-    gotSome |= showCoord(out, timeNominal, indent);
-    gotSome |= showCoord(out, stnId, indent);
-    gotSome |= showCoord(out, stnDesc, indent);
-    gotSome |= showCoord(out, stnNpts, indent);
-    gotSome |= showCoord(out, stnWmoId, indent);
-    gotSome |= showCoord(out, stnAlt, indent);
-    gotSome |= showCoord(out, limit, indent);
-    if (gotSome) out.format("\n");
-  }
-
-  private boolean showCoord(Formatter out, String name, String indent) {
-    if (name != null) {
-      out.format(" %s Coord %s %s\n", indent, name, getKind(name));
-      return true;
+    boolean gotSome = false;
+    for (CoordName coord : CoordName.values()) {
+      String varName = findCoordinateVariableName(coord);
+      if (varName != null) {
+        gotSome = true;
+        out.format(" %s Coord %s [%s]\n", indent, varName, coord);
+      }
     }
-    return false;
+    if (gotSome) out.format("\n");
   }
 
 }

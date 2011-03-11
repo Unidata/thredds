@@ -13,7 +13,7 @@
     <variable name="stnid" shape="" type="int">
       <attribute name="long_name" value="WMO station id"/>
       <attribute name="cf_role" value="station_id"/>
-      <attribute name="standard_name" value="station_wmo_id"/>
+      <attribute name="standard_name" value="station_WMO_id"/>
     </variable>
     <variable name="name" shape="" type="String">
       <attribute name="long_name" value="station name"/>

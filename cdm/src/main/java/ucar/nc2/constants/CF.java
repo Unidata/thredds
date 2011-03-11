@@ -66,7 +66,7 @@ public interface CF {
 
   // proposed standard_names
   public static final String STATION_ID = "station_id";
-  public static final String STATION_DESC = "station_desc";
+  public static final String STATION_DESC = "station_description";
   public static final String STATION_ALTITUDE = "surface_altitude";
   public static final String STATION_WMOID = "station_WMO_id";
   public static final String TRAJ_ID = "trajectory_id";

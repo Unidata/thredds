@@ -15,6 +15,8 @@ import java.util.regex.Pattern;
 
 /**
  * Nomads IGRA files.
+ * Can open all data by opening "igra-stations.txt", with data files in subdir "igra-por".
+ * Can open single station data by opening <staionId>.dat with igra-stations.txt in same or parent directory.
  *
  * @see "http://www.ncdc.noaa.gov/oa/climate/igra/"
  * @see "ftp://ftp.ncdc.noaa.gov/pub/data/igra"
@@ -40,6 +42,7 @@ public class IgraPor extends AbstractIOServiceProvider {
 
   private static final String STN_FILE = "igra-stations.txt";
   private static final String DAT_EXT = ".dat";
+  private static final String DAT_DIR = "igra-por";
   private static final String IDX_EXT = ".ncx";
   private static final String MAGIC_START_IDX = "IgraPorIndex";
   private static final int version = 1;
@@ -80,9 +83,9 @@ public class IgraPor extends AbstractIOServiceProvider {
       return isValidFile(raf, dataHeaderPattern);
 
     } else {
-      // dat file must be in the same directory
-      File stnFile = new File(base + DAT_EXT);
-      return stnFile.exists() && isValidFile(raf, stnPattern);
+      // data directory must exist
+      File dataDir = new File(file.getParentFile(), DAT_DIR);
+      return dataDir.exists() && dataDir.isDirectory() && isValidFile(raf, stnPattern);
     }
   }
 
@@ -128,7 +131,7 @@ public class IgraPor extends AbstractIOServiceProvider {
 
   /////////////////////////////////////////////////////////////////////////
   private RandomAccessFile stnRaf, dataRaf;
-  private File baseDir;
+  private File dataDir;
   //private HashMap<Long, StationIndex> map = new HashMap<Long, StationIndex>(10000);
   private int stn_fldno;
   private StructureDataRegexp.Vinfo stnVinfo, seriesVinfo, profileVinfo;
@@ -140,10 +143,7 @@ public class IgraPor extends AbstractIOServiceProvider {
     int pos = location.lastIndexOf(".");
     String ext = location.substring(pos);
 
-
     File file = new File(location);
-    baseDir = file.getParentFile();
-
     File stnFile = getStnFile(location);
 
     if (ext.equals(IDX_EXT)) {
@@ -159,7 +159,7 @@ public class IgraPor extends AbstractIOServiceProvider {
 
     } else { // pointed to the station file
       stnRaf = raff;
-
+      dataDir = new File(file.getParentFile(), DAT_DIR);
     }
 
     NcmlConstructor ncmlc = new NcmlConstructor();
@@ -384,12 +384,19 @@ public class IgraPor extends AbstractIOServiceProvider {
     private long totalBytes;
     private File file;
     private RandomAccessFile timeSeriesRaf = null;
+    private boolean exists;
 
     TimeSeriesIter(String stnid) {
-      this.file = new File(baseDir, stnid+DAT_EXT);
+      if (dataRaf != null)
+        exists = true;
+      else {
+        this.file = new File(dataDir, stnid+DAT_EXT);
+        exists = file.exists();
+      }
     }
 
     private void init() {
+      if (!exists) return;
       try {
         if (dataRaf != null)
           this.timeSeriesRaf = dataRaf; // single station case - data file already open
@@ -405,6 +412,8 @@ public class IgraPor extends AbstractIOServiceProvider {
 
     @Override
     public StructureDataIterator reset() {
+      if (!exists) return this;
+
       if (timeSeriesRaf == null) init();
 
       countRead = 0;
@@ -418,6 +427,7 @@ public class IgraPor extends AbstractIOServiceProvider {
 
     @Override
     public boolean hasNext() throws IOException {
+      if (!exists) return false;
       if (timeSeriesRaf == null) init();
       return (timeSeriesRaf.getFilePointer() < totalBytes); // && (recno < 10);   LOOK not perfect, eg trailing blanks
     }

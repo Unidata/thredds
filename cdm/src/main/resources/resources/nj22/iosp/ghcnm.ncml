@@ -10,7 +10,7 @@
 
   <variable name="all_data" shape="*" type="Sequence">
     <variable name="stnid" shape="" type="long">
-      <attribute name="long_name" value="station stnId"/>
+      <attribute name="long_name" value="station id"/>
     </variable>
     <variable name="year" shape="" type="int">
       <attribute name="long_name" value="year of the station record"/>
@@ -37,7 +37,7 @@
   <variable name="station" shape="*" type="Sequence">
     <variable name="stnid" shape="" type="long">
       <attribute name="long_name" value="station id"/>
-      <attribute name="cf_role" value="station_id"/>
+      <attribute name="cf_role" value="station id"/>
     </variable>
     <variable name="lat" shape="" type="float">
       <attribute name="long_name" value="latitude"/>
@@ -53,7 +53,7 @@
     </variable>
     <variable name="name" shape="" type="String">
       <attribute name="long_name" value="station name"/>
-      <attribute name="standard_name" value="station_desc"/>
+      <attribute name="standard_name" value="station_description"/>
     </variable>
 
     <variable name="grelev" shape="" type="int">

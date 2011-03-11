@@ -30,7 +30,7 @@ public class StructureDataRegexp extends StructureData {
     //String svalue = matcher.group(field);
 
     if ((dt == DataType.STRING) || (dt == DataType.CHAR))
-      return svalue;
+      return svalue.trim();
 
     try {
       svalue = svalue.trim();
