@@ -120,9 +120,9 @@ public class QueryRadarServerController extends AbstractController  {
 
   /**
    * Query RadarServer controller for Spring Framework
-   * @param request
-   * @param response
-   * @return
+   * @param request HttpServletRequest
+   * @param response HttpServletResponse
+   * @return ModelAndView
    * @throws Exception
    */
   protected ModelAndView handleRequestInternal( HttpServletRequest request,
@@ -435,7 +435,6 @@ public class QueryRadarServerController extends AbstractController  {
           } else {
             str.append( "time=").append( qp.time.toDateTimeStringISO() );
           }
-        } else {
         }
         model.put( "ID", str.toString() );
 
@@ -484,13 +483,14 @@ public class QueryRadarServerController extends AbstractController  {
 
     RadarDatasetCollection rdc = DatasetRepository.getRadarDatasetCollection( dataset, var );
     if ( rdc == null ) {
-      qp.errs.append( "Invalid dataset ="+ dataset +" or var ="+ var );
+      qp.errs.append( "Invalid dataset =" ).append( dataset );
+      qp.errs.append(" or var =").append( var );
       return false;
     }
     StringBuffer time = new StringBuffer();
     StringBuffer product = new StringBuffer();
     StringBuffer url = new StringBuffer();
-    boolean isLevel2 = ( dataset.contains( "level2") ? true : false);
+    boolean isLevel2 = dataset.contains( "level2" );
     String type = ( isLevel2 ? "Level2" : "Level3");
     String suffix = ( isLevel2 ? ".ar2v" : ".nids");
     Calendar cal = Calendar.getInstance( java.util.TimeZone.getTimeZone("GMT"));
