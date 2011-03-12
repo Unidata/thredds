@@ -95,6 +95,7 @@ abstract public class Grib2Pds extends GribPds {
     }
   }
 
+  // public for testing (TestGribFromTds)
   static public long makeDate(long refTime, int timeUnit, int forecastTime, Calendar cal) {
 
     if (cal == null) cal = Calendar.getInstance();
@@ -184,9 +185,9 @@ abstract public class Grib2Pds extends GribPds {
     else if (timeUnit == 13)
       return intv; // sec
 
-    // otherwise ??
+    // LOOK otherwise ??
 
-    throw new UnsupportedOperationException("timeUnit="+timeUnit);
+    throw new UnsupportedOperationException("timeUnit = "+timeUnit);
   }
 
   ////////////////////////
