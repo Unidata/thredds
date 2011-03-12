@@ -173,6 +173,8 @@ abstract public class Grib2Pds extends GribPds {
       return intv / 60; // minute
     else if (timeUnit == 2)
       return intv / 3600 / 24; // day
+    else if (timeUnit == 3)
+      return intv / 3600 / 24 / 30; // month LOOK WRONG
     else if (timeUnit == 10)
       return intv / 3600 / 3; // 3 hour
     else if (timeUnit == 11)
@@ -184,7 +186,7 @@ abstract public class Grib2Pds extends GribPds {
 
     // otherwise ??
 
-    throw new UnsupportedOperationException();
+    throw new UnsupportedOperationException("timeUnit="+timeUnit);
   }
 
   ////////////////////////
