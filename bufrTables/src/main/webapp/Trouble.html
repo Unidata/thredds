@@ -46,61 +46,53 @@
 <p>If master entries are allowed to be overrided locally, then a generic parser MUST have the local table. If they cannot be overriden, then the absence of any local elements means that the master table can be used in confidence.</p>
 <p>If local tables must always be used, then the local center must be contacted and tables obtained. This is akin to reading files written with unformatted binary FORTRAN writes. The only way to read such files is to obtain documentaion or the actual program that made the write. This makes BUFR files effectively NOT self-describing.</p>
 <h3>7. BUFR is too complex without real gain.</h3>
-<p>Some of the complexity of the BUFR format comes from an ad-hoc compression scheme that is out-of-date. The brittleness of the encoding format is partly caused by traying making the record as small as possible. Its likely that using an external compression on a message will acheive the same goal.</p>
-<p>The BUFR &quot;information model&quot; and its encoding have been convolved to make each dependdednt on the other. A more modern solution is to clearly separate the two. </p>
+<p>Some of the complexity of the BUFR format comes from an ad-hoc compression scheme that is out-of-date. The brittleness of the encoding format is partly caused by trying to make the record as small as possible. Its likely that using an external compression on a message will acheive the same goal.</p>
+<p>The BUFR &quot;information model&quot; and its encoding have been convolved to make each dependent on the other. A more modern solution is to clearly separate the two. </p>
 <p>The BUFR &quot;information model&quot; is not constrained enough. If unnecessarily allows the DDS to change in each message. An archival system must read each message and assign it to the correct dataset.</p>
-<p>7.1 Turning on and off Coordinates </p>
+<p><strong>7.1 Turning on and off Coordinates </strong></p>
 <p>Reference Section 3.1.2.2</p>
 <p>Might be useful in an actual streaming environment. In fact, standard messages are being sent, and there are much simpler and less error-prone ways to specify coordinate values. Pre-defined data model vs &quot;on-the-fly&quot; data model. In fact OTF data-model are too hard to use. 1.5M data schemas per day?</p>
-<p>&nbsp;</p>
 <p>With some help from humans, these standard messages ccan be translated into databases, netcdf, XML, etc. and maintain semantics. This implies that there is no need for this kind of streaming data schemas.</p>
 <p>Bandwidth is wasted on this. Makes it much harder to parse.</p>
-<p>&nbsp;</p>
 <p>Meaning of data now depends on the order the variables are in.</p>
 <p>Coordinate ranges defined by &quot;back to back&quot; identical coordinates (see L3-25). &quot;There is not much a general decoder program can do with this coordinate information&quot;.</p>
-<p>&nbsp;</p>
-<p> as if this is a real streaming environment.</p>
-<p>8. lack of name/value attributes </p>
-<p>The 2 05 Y can be used for inclusion of character data. The Y allows var lebgth. Does our hashcode make this into seperate messge type ??</p>
-<p><br />
-  9. multiple fields with same name </p>
-<p><br />
-  10. wrong canonicality of some variables - should be on the schema, not duplicated on the observation </p>
-<p>9.1 C:/data/bufr2/mlodeSorted/ISXAB40KWNO.bufr <br />
+<p>For example (ISXAB40KWNO.bufr):<br />
   <br />
-  ISXA40 KWNO 071800     Category= 7 Synoptic features 7.0 local= 0     Center= NCEP /  Central Operations 7.3   ... <br />
-    
+ISXA40 KWNO 071800     Category= 7 Synoptic features 7.0 local= 0     Center= NCEP /  Central Operations 7.3   ... <br />
+  
   0-5-21: Bearing_or_azimuth units=Degree true scale=2 refVal=0 nbits=16 <br />
-     
+   
   0-5-21: Bearing_or_azimuth units=Degree true scale=2 refVal=0 nbits=16 <br />
-     
+   
   0-19-3: Wind_SPD_threshold units=m s-1 scale=0 refVal=0 nbits=8 <br />
-     
+   
   0-19-9: Effective_radius_with_respect_to_wind_speeds_above_threshold units=m scale=-3 refVal=0 nbits=12 <br />
-     
+   
   0-5-21: Bearing_or_azimuth units=Degree true scale=2 refVal=0 nbits=16 <br />
-     
+   
   0-5-21: Bearing_or_azimuth units=Degree true scale=2 refVal=0 nbits=16 <br />
-     
+   
   0-19-3: Wind_SPD_threshold units=m s-1 scale=0 refVal=0 nbits=8 <br />
-     
+   
   0-19-9: Effective_radius_with_respect_to_wind_speeds_above_threshold units=m scale=-3 refVal=0 nbits=12 <br />
-     
+   
   0-5-21: Bearing_or_azimuth units=Degree true scale=2 refVal=0 nbits=16 <br />
-     
+   
   0-5-21: Bearing_or_azimuth units=Degree true scale=2 refVal=0 nbits=16 <br />
-     
+   
   0-19-3: Wind_SPD_threshold units=m s-1 scale=0 refVal=0 nbits=8 <br />
-     
-  0-19-9: Effective_radius_with_respect_to_wind_speeds_above_threshold units=m scale=-3 refVal=0 nbits=12 <br />
+   
+0-19-9: Effective_radius_with_respect_to_wind_speeds_above_threshold units=m scale=-3 refVal=0 nbits=12 </p>
+<p><strong>7.2. associated variables seem like a kludge</strong><br />
   <br />
-  10. associated variables <br />
-  <br />
-   
-  6 bits of meaning for 1 bit of data. example of (9) <br />
-</p>
-<p>11. Not self-desrcibing</p>
-<p>The ability to read the data should truly be self-describing, not dependent on extrnal tables. theres no goodd reason. The information model could be externalized, in the interest of compact representation. In really always referes to externaal, human readbale descriptions etc.</p>
+ 
+6 bits of meaning for 1 bit of data. example of (9) </p>
+<h3><strong>8. lack of name/value attributes </strong></h3>
+<p>Arbitrary key-values are lacking. The closest are &quot;comments&quot; using 2 05 Y which allows inclusion of arbitrary character data. The Y allows variable length. (Does our hashcode make this into seperate message type ??)</p>
+<p>While one could add key-values on top of this coomect mechanism,i t would be non-standard. </p>
+<p>Users seem to use standard templates without additional commenting, which makes the metadata impoverished.</p>
+<h3><strong>  9. multiple fields with same name </strong></h3>
+<p>The same name can be used in different tables. Im not sure how often this actually happpens.</p>
 <p>&nbsp;</p>
 <h2>Remedies</h2>
 <p> 1. BUFR messages intended for exchange MUST register canonical, versioned, machine-readable instances of their tables with WMO. XML would be a good choice. </p>
@@ -110,6 +102,5 @@
 <p>5. The master table should only add new entries, and correct or clarify names and units in existing elements. Scale/Reference/BitWidth must never change, and elements must never be deleted. This should be explicitly stated in the BUFR spec.</p>
 <p>6. Local tables must never use entries outside the local range. This should be explicitly stated in the BUFR spec.</p>
 <p></p>
-<p wrap="">&nbsp;</p>
 </body>
 </html>

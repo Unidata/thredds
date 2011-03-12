@@ -7,7 +7,7 @@
 
 <body>
 <h1>BUFR Decoding Issues</h1>
-<hr width="100%" />
+<hr />
 <h2>1. Errors in the <a href="http://www.wmo.int/pages/prog/www/WMOCodes/Operational/BUFR/BufrTabB-11-2007.pdf">WMO Master Table  version 13</a></h2>
 <h3><strong>0-22-39</strong> </h3>
 <p>has bit width 13, apparently it should be bit width 12. </p>
@@ -27,7 +27,7 @@
 <hr width="100%" />
 <h2>2. Use of BUFR Tables </h2>
 <h3>1. Use of <strong>standard WMO data descriptor ranges in local tables </strong></h3>
-<p>For both table B and table D, the areas x &lt; 48, and y &lt; 192 are reserved for  standard WMO tables. We sometimes see local tables using descriptors in this range. We assume that this is incorrect, and BUFR records that rely on this kind of <em>local override</em> will fail, at least in the CDM BUFR library, unless  override tables are specificly configured.</p>
+<p>For both table B and table D, the areas x &lt; 48, and y &lt; 192 are reserved for  standard WMO tables. We sometimes see local tables using descriptors in this range. We assume that this is incorrect, and BUFR records that rely on this kind of <em>local override</em> will fail, at least in the CDM BUFR library, unless  override tables are explicitly configured.</p>
 <p>Its appears that national centers sometimes use non-allocated standard data descriptors, probably simultaneously proposing them as standard entries. However, there is no mechanism for recognizing these elements until they are added to the standard table, and if the FXY has to change due to conflicts, these messages become unuseable. </p>
 <p>We also see centers overriding WMO entries in their local tables. The problem with this practice is that a reader no longer can count on having correct entries, even for those in the standard WMO area. Thus reading any message involves contacting the data producer to get their tables.</p>
 <h3>2.  Incorrect use of master table version numbers </h3>
