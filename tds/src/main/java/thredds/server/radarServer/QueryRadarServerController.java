@@ -302,29 +302,6 @@ public class QueryRadarServerController extends AbstractController  {
             qp.stns = RadarServerUtil.convert4to3stations( qp.stns );
       }
 
-      /*
-      if (qp.hasTimePoint && ( sm.filterDataset(qp.time) == null)) {
-        qp.errs.append( "No valid times specified " );
-        return false;
-      }
-      */
-      /*
-      // needs work start and end aren't set, too expensive to set
-      if (qp.hasDateRange) {
-        DateRange dr = qp.getDateRange();
-        if (! sm.intersect(dr, start, end)) {
-          qp.errs.append( "No valid times specified " );
-          return false;
-        }
-      }
-      */
-      /*
-      if (useAllStations && useAllTimes) {
-        qp.errs.append("ERROR: You must subset by space or time ");
-        return false;
-      }
-      */
-      // if time in not set, return all times
       if( qp.hasTimePoint ) {
           if( qp.time.isPresent() ) {
               try {
@@ -342,7 +319,7 @@ public class QueryRadarServerController extends AbstractController  {
           DateRange dr = qp.getDateRange();
           qp.time_start = dr.getStart();
           qp.time_end = dr.getEnd();
-      } else {
+      } else { // get all times
          qp.time_latest = 1;
          //qp.hasDateRange = true;
          try {
