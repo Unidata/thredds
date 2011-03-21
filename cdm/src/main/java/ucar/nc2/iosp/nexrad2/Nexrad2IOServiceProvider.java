@@ -189,7 +189,7 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
     ncfile.addAttribute(null, new Attribute("VolumeCoveragePatternName",
       getVolumeCoveragePatternName(volScan.getVCP())));
     ncfile.addAttribute(null, new Attribute("VolumeCoveragePattern", volScan.getVCP()));
-    ncfile.addAttribute(null, new Attribute("HorizonatalBeamWidthInDegrees", (double) HORIZONTAL_BEAM_WIDTH));
+    ncfile.addAttribute(null, new Attribute("HorizontalBeamWidthInDegrees", (double) HORIZONTAL_BEAM_WIDTH));
 
     ncfile.finish();
   }
