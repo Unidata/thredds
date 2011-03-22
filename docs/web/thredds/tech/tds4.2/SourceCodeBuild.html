@@ -13,18 +13,29 @@
 
 <h2><a name="srcCodeAntBuild">TDS Source Code Build</a></h2>
 
-<p> To build the TDS thredds.war file, you need the <code>tds</code>,
-  <code>lib</code>, and <code>common</code> source code directories. They are
-  available in our source code distribution (see <a href="#srcCodeDistro">below</a>)
-  and from our SVN repository (see <a href="#srcCodeRepository">below</a>).
+<p> To build the TDS thredds.war file, you need the <code>tds</code>, <code>lib</code>, and
+  <code>common</code> source code directories. They are available in our source code distribution
+  (see the <a href="#srcCodeDistro">"Source Code Distribution" section</a>) and from our SVN
+  repository (see the <a href="#srcCodeRepository">"Source Code Repository" section</a>).
 </p>
 
 <p>Once you have a copy of the <code>tds</code>, <code>lib</code>, and
   <code>common</code> source code directories, 'cd' to the <code>tds</code>
-  directory and run '<code>ant clean makeWar</code>'.
+  directory and run '<code>ant clean makeWar</code>' (see <a href="#antDeployTaskNote">note</a>).
 </p>
 <p>This will generate a <code>tds/target</code> directory which will contain
   a <code>thredds.war</code> file and a <code>war</code> directory.</p>
+
+
+<blockquote>
+  <hr width="25%" align="left">
+  <p>
+    <a name="antDeployTaskNote"></a><strong>Note</strong>: For TDS 4.2.5 and before, you must have
+    <code>catalina-ant.jar</code> in your Ant installations <code>lib/</code> directory. It is not
+    required after TDS 4.2.5. (See the related FAQ entry <a href="faq.html#antDeployTask">here</a>.)
+  </p>
+  <hr width="25%" align="left">
+</blockquote>
 
 <h2><a name="srcCodeDistro">TDS Source Code Distribution</a></h2>
 

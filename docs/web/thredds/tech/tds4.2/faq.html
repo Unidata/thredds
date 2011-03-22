@@ -32,7 +32,9 @@
     but nothing has changed.</a></li>
   <li><a href="#wmsLimitedCRS">What happened to the long list of CRSs in my WMS GetCapabilities documents?</a></li>
   <li><a href="#forms">Why are  TDS web forms not working?</a></li>
-  <li><a href="#catalogCaching">What does the TDS do at startup  to read   the configuration catalogs?&nbsp; What gets cached?&nbsp; Does it have a way to   know a referenced catalog is unchanged?&nbsp; When do referenced catalogs get   scanned?&nbsp;</a></li>
+  <li><a href="#catalogCaching">What does the TDS do at startup to read the configuration catalogs? What gets cached? Does it have a way to know a referenced catalog is unchanged? When do referenced catalogs get scanned?</a></li>
+  <li><a href="#antDeployTask">Why do I get a message that "class org.apache.catalina.ant.DeployTask
+    cannot be found" when I try to build the TDS from source using Ant?</a></li>
 </ul>
 <h2>Tomcat</h2>
 <ul>
@@ -209,11 +211,35 @@ mkdir javaUtilPrefs/.systemPrefs
   <p>If you find these, the likely problem is that another webapp running in the same Tomcat container has set the XSLT parser with      javax.xml.transform.TransformerFactory, which is global for the JVM. The above example shows that the Saxon parser has been set, but is not being found by the TDS. We saw this happening with the OOSTethys webapp. </p>
   <p>The solution is to move the other webapp to its own Tomcat instance, or to move the required jar (eg saxon.jar) into Tomcat's lib directory, where it is available to all webapps. TDS does very simple XSLT to create its web forms, so its likely that it can work with any decent XSLT library. By default it uses the JDK's built-in XSLT library.</p>
 </blockquote>
+
 <hr width="50%" align="left">
-<p><a name="catalogCaching" id="catalogCaching"></a><strong>Q: What does the TDS do at startup  to read   the configuration catalogs?&nbsp; What gets cached?&nbsp; Does it have a way to   know a referenced catalog is unchanged?&nbsp; When do referenced catalogs get   scanned?&nbsp;</strong></p>
+
+<p><a name="catalogCaching" id="catalogCaching"></a><strong>Q: What does the TDS do at startup to
+  read the configuration catalogs? What gets cached? Does it have a way to know a referenced
+  catalog is unchanged? When do referenced catalogs get scanned?</strong></p>
 <blockquote>
   <p> The TDS reads in all the config catalogs at startup. It caches   all of them, and uses the "expires" attribute on the catalog to decide   if/when it needs to reread a catalog.&nbsp; It must read all catalogs,   including catalogRefs, because it has to know what the possible dataset   URLs are, and there is no contract that a client has to read a catalog   first. </p>
 </blockquote>
+
+<hr width="50%" align="left">
+
+<p><a name="antDeployTask" id="antDeployTask"></a><strong>Q: Why do I get a message that
+  "class org.apache.catalina.ant.DeployTask cannot be found" when I try to build the TDS from
+  source using Ant?</strong></p>
+<blockquote>
+  <p>The TDS <code>build.xml</code> file uses several external Ant tasks defined in the
+    <code>catalina-ant.jar</code> file. For TDS 4.2.5 and before, you need to have the
+    <code>catalina-ant.jar</code> file in the <code>lib/</code> directory of your Ant installation.
+    If it is not there you will get a message that looks something like:
+  </p>
+  <pre>../tds/build.xml:730: taskdef class org.apache.catalina.ant.DeployTask cannot be found</pre>
+  <p>You can find the <code>catalina-ant.jar</code> file in the <code>lib/</code> directory of a
+    Tomcat distribution.</p>
+  <p>For TDS 4.2.6 and above, you should not see this problem as the <code>build.xml</code> file
+    directly references a copy of the <code>catalina-ant.jar</code> file.
+  </p>
+</blockquote>
+
 <hr width="100%">
 
 <h2>Tomcat<a name="tomcat"></a></h2>

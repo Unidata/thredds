@@ -120,6 +120,10 @@
     by the servlet engine, therefore, it is not needed in the war file. -->
   <property name="servlet.jar" value="external/servlet-api.jar"/>
 
+  <!-- We use some Tomcat deploy tasks that are defined in lib/external/catalina-ant.jar
+      (or in the Tomcat distribution at $TOMCAT_HOME/lib). -->
+  <property name="catalina-ant.jar" value="external/catalina-ant.jar" />
+
   <!-- Some extra project and third-party libraries. -->
   <property name="resourcesOptional.jar" value="release/resourcesOptional.jar"/>
 
@@ -715,43 +719,37 @@
     </antcall>
   </target>
 
-  <!-- ### taken from tomcat deployer ############### -->
   <!-- Configure the custom Ant tasks for the Manager application -->
-  <path id="deployer.classpath">
-    <fileset dir="${ant.home}/lib">
-      <include name="*.jar"/>
-    </fileset>
-	<!-- Try to get this working at some point. -->
-	<!--fileset dir="${tomcat_root}\lib">
-	  <include name="catalina-ant.jar"/>
-	</fileset-->
+  <path id="tomcat.ant.classpath">
+    <pathelement location="${lib.dir}/${catalina-ant.jar}"/>
   </path>
 
   <!-- Configure the custom Ant tasks for the Manager application -->
-  <taskdef name="deploy" classname="org.apache.catalina.ant.DeployTask">
-    <classpath refid="deployer.classpath"/>
-  </taskdef>
-  <taskdef name="list" classname="org.apache.catalina.ant.ListTask">
-    <classpath refid="deployer.classpath"/>
-  </taskdef>
-  <taskdef name="reload" classname="org.apache.catalina.ant.ReloadTask">
-    <classpath refid="deployer.classpath"/>
-  </taskdef>
-  <taskdef name="resources" classname="org.apache.catalina.ant.ResourcesTask">
-    <classpath refid="deployer.classpath"/>
-  </taskdef>
-  <taskdef name="roles" classname="org.apache.catalina.ant.RolesTask">
-    <classpath refid="deployer.classpath"/>
-  </taskdef>
-  <taskdef name="start" classname="org.apache.catalina.ant.StartTask">
-    <classpath refid="deployer.classpath"/>
-  </taskdef>
-  <taskdef name="stop" classname="org.apache.catalina.ant.StopTask">
-    <classpath refid="deployer.classpath"/>
-  </taskdef>
-  <taskdef name="undeploy" classname="org.apache.catalina.ant.UndeployTask">
-    <classpath refid="deployer.classpath"/>
-  </taskdef>
+  <taskdef name="deploy"
+           classname="org.apache.catalina.ant.DeployTask"
+           classpathref="tomcat.ant.classpath" />
+  <taskdef name="list"
+           classname="org.apache.catalina.ant.ListTask"
+           classpathref="tomcat.ant.classpath"/>
+  <taskdef name="reload"
+           classname="org.apache.catalina.ant.ReloadTask"
+           classpathref="tomcat.ant.classpath"/>
+  <taskdef name="resources"
+           classname="org.apache.catalina.ant.ResourcesTask"
+           classpathref="tomcat.ant.classpath"/>
+  <taskdef name="roles"
+           classname="org.apache.catalina.ant.RolesTask"
+           classpathref="tomcat.ant.classpath"/>
+  <taskdef name="start"
+           classname="org.apache.catalina.ant.StartTask"
+           classpathref="tomcat.ant.classpath"/>
+  <taskdef name="stop"
+           classname="org.apache.catalina.ant.StopTask"
+           classpathref="tomcat.ant.classpath"/>
+  <taskdef name="undeploy"
+           classname="org.apache.catalina.ant.UndeployTask"
+           classpathref="tomcat.ant.classpath"/>
+
   <target name="deploy" depends="makeWar" description="Deploy web application">
     <deploy url="${server_url}/manager" username="${username}" password="${tomcat.password}" path="${contextPath}"
             war="${build.dir}/${warfile}" update="true"/>
