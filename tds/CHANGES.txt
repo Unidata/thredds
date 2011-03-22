@@ -4,6 +4,9 @@ Build Date = @BUILDTIME@
 Build Name = @BUILD.NAME@
 
 Release Details 4.2:
+ 4.2.x (2011-03-xx)
+   Fix tds/build.xml to directly reference catalina-ant.jar for Catalina deploy tasks (TDS-165).
+
  4.2.5 (2011-03-02)
    various opendap problems are fixed
    opendap ESG access control
