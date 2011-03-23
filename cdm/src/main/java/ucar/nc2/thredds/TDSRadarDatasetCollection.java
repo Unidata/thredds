@@ -478,7 +478,7 @@ public class TDSRadarDatasetCollection extends StationRadarCollectionImpl {
      *
      * @return _more_
      */
-    public List getRadarProducts() {
+    public List<Product> getRadarProducts() {
         return this.radarProducts;
     }
 
@@ -842,7 +842,7 @@ public class TDSRadarDatasetCollection extends StationRadarCollectionImpl {
         String        baseURI = dsc_location.replaceFirst("/dataset.xml",
                                     "?");
         queryb.append(baseURI);
-        queryb.append("&stn=" + stnName);
+        queryb.append("stn=" + stnName);
         if (productID != null) {
             queryb.append("&var=" + productID);
         }
