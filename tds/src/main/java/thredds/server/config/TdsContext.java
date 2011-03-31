@@ -43,6 +43,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import thredds.catalog.InvDatasetFeatureCollection;
+import thredds.server.ncSubset.GridServlet;
 import thredds.util.filesource.*;
 import thredds.servlet.ThreddsConfig;
 import thredds.servlet.ServletUtil;
@@ -348,6 +349,7 @@ public class TdsContext
     InvDatasetScan.setContext( contextPath );
     InvDatasetScan.setCatalogServletName( "/catalog" );
     InvDatasetFeatureCollection.setContext( contextPath );
+    GridServlet.setContextPath( contextPath ); // Won't need when switch GridServlet to use Swing MVC and TdsContext
 
     jspRequestDispatcher = servletContext.getNamedDispatcher( "jsp" );
     defaultRequestDispatcher = servletContext.getNamedDispatcher( "default" );

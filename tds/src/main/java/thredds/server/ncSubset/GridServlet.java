@@ -65,14 +65,38 @@ public class GridServlet extends AbstractServlet {
   private ucar.nc2.util.DiskCache2 diskCache = null;
   private boolean allow = false, debug = false;
 
-  // must end with "/"
+  static private String context = "/thredds";
+  static public void setContextPath( String c ) {
+    context = c;
+  }
+  protected String getContextPath() {
+    return context;
+  }
+
+  static private String servletPath = "/ncss/grid";
+  static public void setServletPath( String path ) {
+    servletPath = path;
+  }
+  protected String buildDatasetUrl( String path) {
+    return context + servletPath + "/" + path;
+  }
+
+  static private String servletCachePath = "/ncServer/cache";
+  static public void setServletCachePath( String path ) {
+    servletCachePath = path;
+  }
+
+  protected String buildCacheUrl( String path ) {
+    return context + servletCachePath + "/" + path;
+  }
+
+    // must end with "/"
   protected String getPath() {
-    return "ncss/grid/";
+    return servletPath.substring( 1) + "/"; // strip off leading "/" and add trailing "/"
   }
 
   protected void makeDebugActions() {
   }
-
 
   public void init() throws ServletException {
     super.init();
@@ -324,7 +348,7 @@ public class GridServlet extends AbstractServlet {
     String cacheFilename = ncFile.getPath();
     File result;
 
-    String url = "/thredds/ncServer/cache/" + pathname;
+    String url = buildCacheUrl( pathname );
 
     try {
       GridPointWriter writer = new GridPointWriter(gds, diskCache);
@@ -476,7 +500,7 @@ public class GridServlet extends AbstractServlet {
     File ncFile = diskCache.getCacheFile(pathname);
     String cacheFilename = ncFile.getPath();
 
-    String url = "/thredds/ncServer/cache/" + pathname;
+    String url = buildCacheUrl( pathname );
 
     try {
       NetcdfCFWriter writer = new NetcdfCFWriter();
@@ -515,7 +539,7 @@ public class GridServlet extends AbstractServlet {
       InputStream xslt = getXSLT(isPoint ? "ncssGridAsPoint.xsl" : "ncssGrid.xsl");
       Document doc = writer.makeGridForm();
       Element root = doc.getRootElement();
-      root.setAttribute("location", "/thredds/" + getPath() + path);
+      root.setAttribute("location", buildDatasetUrl( path));
 
       try {
         XSLTransformer transformer = new XSLTransformer(xslt);
