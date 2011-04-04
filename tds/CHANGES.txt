@@ -5,6 +5,7 @@ Build Name = @BUILD.NAME@
 
 Release Details 4.2:
  4.2.x (2011-03-xx)
+   Add CRS definitions to EPSG CRS WKT database (epsg.properties) for 3857, 3408, and 3409 (TDS-166).
    Fix tds/build.xml to directly reference catalina-ant.jar for Catalina deploy tasks (TDS-165).
    Fix TDS NCSS service so HTML form does not hardcode "/thredds" as the context path (TDS-167).
 
