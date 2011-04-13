@@ -12,6 +12,10 @@
 
 <hr width="100%">
 
+<h2>General</h2>
+<ul>
+  <li><a href="#strange">I have a strange problem and I need help figuring out whats going on!</a></li>
+</ul>
 <h2>Catalogs</h2>
 <ul>
   <li><a href="#CatalogURLs">How do I construct the URLs I find in a THREDDS Catalog?</a></li>
@@ -53,7 +57,26 @@
   <li><a href="#log4jAppender">What does this error mean: &quot;log4j:ERROR Attempted to append to closed appender named [foobar]&quot; ?</a></li>
 </ul>
 <hr width="100%">
+<h2>General</h2>
+<p><strong>Q: <a name="strange"></a>I have a strange problem and I need help figuring out whats going on.</strong></p>
+<p>A: Here is what we need from you in order to deal with hard problems:</p>
+<ol>
+  <li>Run the latest stable release. Sorry, we dont have the resources to keep older versions running, so we need to deal with just the latest code.</li>
+  <li>Get a clean set of logs that capture the problem:
+    <ol>
+      <li>Stop the tomcat server. </li>
+      <li>Install the latest release if needed.</li>
+      <li>Remove/copy all files from <em>{tomcat}/logs </em>and<em> {tomcat}/content/thredds/logs</em></li>
+      <li>Restart the server</li>
+      <li>Make the problem happen</li>
+      <li>Zip up everything in  <em>{tomcat}/logs</em> and      <em>{tomcat}/content/thredds/logs</em>.</li>
+      <li>Send the logs and a detailed description of what you do to make the problem happen, and what the problem looks like. If it took a while to get the problem to happen, note what time it happened so that we can correlate with the logs.</li>
+    </ol>
+  </li>
+</ol>
+<hr width="100%">
 <h2>Catalogs</h2>
+<p>&nbsp;</p>
 <p><strong>Q:<a name="CatalogURLs"></a> How do I construct the URLs I find in a THREDDS Catalog? </strong><br>
 </p>
 <p>A: Heres the general idea in the <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.2/tutorial/BasicConfig.html">tutorial</a> and the <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/catalog/v1.0.2/InvCatalogSpec.html#constructingURLs">reference</a> docs. If you are using the CDM library, you can call </p>

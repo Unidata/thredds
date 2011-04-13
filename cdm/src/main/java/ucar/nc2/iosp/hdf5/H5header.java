@@ -71,7 +71,7 @@ public class H5header {
   static private boolean debug1 = false, debugDetail = false, debugPos = false, debugHeap = false, debugV = false;
   static private boolean debugGroupBtree = false, debugDataBtree = false, debugDataChunk = false, debugBtree2 = false;
   static private boolean debugContinueMessage = false, debugTracker = false, debugSoftLink = false, debugSymbolTable = false;
-  static private boolean warnings = true, debugReference = false, debugRegionReference = false, debugCreationOrder = false, debugFractalHeap = false;
+  static private boolean warnings = false, debugReference = false, debugRegionReference = false, debugCreationOrder = false, debugFractalHeap = false;
   static private boolean debugDimensionScales = false;
 
   static public void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
@@ -4269,11 +4269,12 @@ public class H5header {
       // so keep skipping until want < offset(i+1)
       void first(int[] wantOrigin) throws IOException {
         if (level == 0) {
-          // note nentries-1 - assume dont skip the last one
+          currentEntry = 0;
+          /* note nentries-1 - assume dont skip the last one
           for (currentEntry = 0; currentEntry < nentries-1; currentEntry++) {
             DataChunk entry = myEntries.get(currentEntry + 1);
             if ((wantOrigin == null) || tiling.compare(wantOrigin, entry.offset) < 0) break;
-          }
+          }   */
 
         } else {
           currentNode = null;

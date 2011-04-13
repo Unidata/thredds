@@ -23,9 +23,54 @@
   force on both the TDS and netCDF-Java development. The ability to read all the IDD data through
   the netCDF-Java library allows the TDS to serve that data and provide services on/for that data.
   There is also a strong tie with the IDV group because they depend to a large degree on the
-  netCDF-java library for access to the data.
-</p>
-
+  netCDF-java library for access to the data.</p>
+<h3><a name="20110407" id="201003012"></a>Status update 7 April 2011</h3>
+<h3>THREDDS Data Server (TDS)</h3>
+<ul>
+  <li>TDS currently at 4.2.5. Some major features since 4.2 first released include:
+      <ul>
+        <li>Distribution now includes the ncISO metadata services (thanks to Dave Neufeld and Ted Habermann, NOAA/NGDC)</li>
+        <li>Add OPeNDAP handling of ESG access control (other access control improvements)</li>
+        <li>Subsetting services for Point Obs data extended to Station data (other improvements as well)</li>
+      </ul>
+  </li>
+  <li>TDS 4.2 became our stable release on 22 November 2010. The main new features were:
+      <ul>
+        <li>Refactor FMRC aggregation to simplify configuration and improve performance.</li>
+        <li>Improved integration with ncWMS code including adding the Godiva2 browser based WMS client.</li>
+        <li>Addition of experimental subsetting services for Point Obs data (Discrete Sampling data)</li>
+      </ul>
+  </li>
+</ul>
+<h3>CDM / netCDF-Java library</h3>
+<ul>
+  <li>CDM 4.2.23 is our current release. The main features since 4.2.0 include:
+      <ul>
+        <li>The Discrete Observations Convention is now complete, should be added to CF-1.6.</li>
+        <li> Nexrad2: dual pole radar</li>
+        <li>GradsBinaryGridServiceProvider (Don Murray)</li>
+        <li>Netcdf-Java can now be built with maven. It will be added to the standard maven repository.</li>
+        <li>Opendap parser now uses the same grammer as the C library.</li>
+      </ul>
+  </li>
+  <li>CDM 4.2 is now our stable release and includes:
+      <ul>
+        <li>FMRC aggregations have been refactored to dynamically adjust to changes in model output, eg from the NCEP IDD feed. The FMRC "Best" dataset can be parameterized by forecast time. The TDS admin can choose which FMRC datasets to expose in the catalogs.</li>
+        <li>A new abstraction was developed for managing large collections of data, which can be used by NcML and other packages.</li>
+        <li>Caching of Grid dataset info.</li>
+        <li>Caching of File System info.</li>
+        <li>GRIB processing now correctly identifies time interval variables such as accumulations, averages, min/max over intervals, etc. This feature was propagated up the CDM stack, eg into FMRC aggregations.</li>
+        <li>OPeNDAP parsing is now done from the same grammar as with the OPeNDAP/netCDF C library.</li>
+        <li>ncstream works for the full netcdf-4 data model. performance tests are very encouraging.</li>
+      </ul>
+  </li>
+  <li>Other CDM related activities
+      <ul>
+        <li>present at 4th&nbsp;Extremely Large Databases Conference (XLDB)</li>
+        <li>present at USGS Community for Data Integration Workshop</li>
+      </ul>
+  </li>
+</ul>
 <h3><a name="20100301" id="20100301"></a>Status update 1 March 2010 </h3>
 
 <p>TDS 4.1 and CDM 4.1 are the current stable releases. The features and enhancements that

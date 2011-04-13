@@ -4,7 +4,7 @@ Build Date = @BUILDTIME@
 Build Name = @BUILD.NAME@
 
 Release Details 4.2:
- 4.2.x (2011-03-xx)
+ 4.2.6 (2011-04-13)
    Add CRS definitions to EPSG CRS WKT database (epsg.properties) for 3857, 3408, and 3409 (TDS-166).
    Fix tds/build.xml to directly reference catalina-ant.jar for Catalina deploy tasks (TDS-165).
    Fix TDS NCSS service so HTML form does not hardcode "/thredds" as the context path (TDS-167).
@@ -31,7 +31,7 @@ Release Details 4.2:
    GridServlet (ncss) traps Throwable, not just Exception
    tom kunicki's patch on CdmrFeatureController
    change 404.jsp 500.jsp from 4.0 to 4.2
-   GridCoordSys.getDateRange() now works for 2D time coord: WCS failed on FMRC 2D datase 
+   GridCoordSys.getDateRange() now works for 2D time coord: WCS failed on FMRC 2D dataset
    MetadataManager.closeAll() bug
    fix default cache dir for WCS, ncss
    FMRC bug in constant offset datasets when offset didnt start at 0.

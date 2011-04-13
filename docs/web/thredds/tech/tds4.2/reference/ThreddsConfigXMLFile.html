@@ -160,7 +160,32 @@ cache.</p>
  <h3>THREDDS <strong>NetcdfFile<a name="NetcdfFileCache"></a></strong> Object / File Handle<a name="FileHandles"></a> Caching </h3>
 <pre>  &lt;<strong>NetcdfFileCache</strong>&gt;<br>    &lt;<strong>minFiles</strong>&gt;200&lt;/minFiles&gt;<br>    &lt;<strong>maxFiles</strong>&gt;400&lt;/maxFiles&gt;<br>    &lt;<strong>scour</strong>&gt;10 min&lt;/scour&gt;<br>  &lt;/NetcdfFileCache&gt;</pre>
 <pre>  &lt;<strong>HTTPFileCache</strong>&gt;<br>    &lt;<strong>minFiles</strong>&gt;25&lt;/minFiles&gt;<br>    &lt;<strong>maxFiles</strong>&gt;40&lt;/maxFiles&gt;<br>    &lt;<strong>scour</strong>&gt;10 min&lt;/scour&gt;<br>  &lt;/HTTPFileCache&gt;</pre>
- <p>These elements control the size of the TDS cache for objects/open file handles for <strong>NetcdfFile</strong> objects, and files served through <strong>HTTP Range-Byte</strong> requests, respectively. Up to <strong>maxFiles</strong> objects will be cached, and every <strong>scour</strong> amount of time, older items in the cache will be released, until only <strong>minFiles</strong> objects are left. The amount of time specified by scour uses any valid <strong><em>udunits</em></strong> time string, such as <em><strong>sec, min, hour, day</strong></em>. To disable the cache, set <strong>maxFiles</strong> to 0.</p>
+ <p>These elements control the size of the TDS cache for objects/open file handles for <strong>NetcdfFile</strong> objects, and files served through <strong>HTTP Range-Byte</strong> requests, respectively. Up to <strong>maxFiles</strong> objects will be cached, and every <strong>scour</strong> amount of time, older items in the cache will be released, until only <strong>minFiles</strong> objects are left. The amount of time specified by scour uses any valid <strong><em>udunits</em></strong> time string, such as <em><strong>sec, min, hour, day</strong></em>. </p>
+ <p>To disable the cache, set <strong>maxFiles</strong> to 0. You may also set <em>cache=false</em> on a <strong>datasetRoot</strong> element. This controls whether a file is put in the NetcdfFile object cache. All files that are found through that datasetRoot are affected. Example:</p>
+ <pre wrap="">&lt;catalog xmlns=<a href="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0">"http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"</a>    
+  xmlns:xlink=<a href="http://www.w3.org/1999/xlink">"http://www.w3.org/1999/xlink"</a> name="THREDDS Catalog for  NetCDF Files" version="1.0.3"&gt;      
+     
+  &lt;service name="ncdods" serviceType="OpenDAP" base="<em>/thredds/dodsC/</em>"/&gt;      
+
+  &lt;datasetRoot path="FVCOM" location="<em>/http/www/CODFISH/Data/COM/</em>" cache="false"/&gt;
+  &lt;datasetRoot path="ZZTOP" location="<em>/http/www/CODFISH/Data/ZCOM/</em>" /&gt;
+      
+  &lt;dataset name="GOM2 Forecast" ID="gom2_nocache" serviceName="ncdods" urlPath="FVCOM/NECOFS/Forecasts/NECOFS_GOM2_FORECAST.nc" dataType="Grid"/&gt;     
+  &lt;dataset name="GOM3 Forecast" ID="gom3_nocache" serviceName="ncdods" urlPath="FVCOM/NECOFS/Forecasts/NECOFS_GOM3_FORECAST.nc" dataType="Grid"/&gt;     
+  &lt;dataset name="MASSBAY Forecast" ID="massbay_nocache"  serviceName="ncdods" urlPath="ZZTOP/NECOFS/Forecasts/NECOFS_FVCOM_OCEAN_MASSBAY_FORECAST.nc"  dataType="Grid"/&gt; 
+   
+
+&lt;/catalog&gt;    
+ </pre>
+ <p>In th above examle, the files </p>
+ <ul>
+   <li><em>/http/www/CODFISH/Data/COM/NECOFS/Forecasts/NECOFS_GOM2_FORECAST.nc</em></li>
+   <li><em>/http/www/CODFISH/Data/COM/NECOFS/Forecasts/NECOFS_GOM3_FORECAST.nc</em></li>
+ </ul>
+ <p>will not be cached, but this one will  be cached:</p>
+ <ul>
+   <li><em>/http/www/CODFISH/Data/ZCOM/NECOFS/Forecasts/NECOFS_FVCOM_OCEAN_MASSBAY_FORECAST.nc</em></li>
+ </ul>
 <h3>GRIB indexing </h3>
  <pre>  &lt;<strong>GribIndexing</strong>&gt;<br>    &lt;<strong>setExtendIndex</strong>&gt;false&lt;/setExtendIndex&gt;<br>    &lt;<strong>alwaysUseCache</strong>&gt;false&lt;/alwaysUseCache&gt;<br>  &lt;/GribIndexing&gt;</pre>
  <p>This
@@ -377,46 +402,47 @@ appropriately.</li>
 <h2><a name="Cache_Locations"></a>Cache Locations</h2>
 <p>As of TDS 4.2 (stable release), the various cache directory locations are now by default are all under <strong>{tomcat_home}/content/thredds/ :</strong></p>
 <blockquote>
-  <table width="443" border="1">
+  <table width="937" border="1">
     <tr>
-      <th width="205" scope="col">cache</th>
-      <th width="113" scope="col">location</th>
-      <th width="113" scope="col">check</th>
+      <th width="190" scope="col">cache</th>
+      <th width="130" scope="col">location</th>
+      <th width="595" scope="col">description</th>
     </tr>
     <tr>
       <td>AggregationCache.dir</td>
       <td><strong>cache/agg/</strong></td>
-      <td>x</td>
+      <td>for joinExisting aggregations only: write XML files here.</td>
     </tr>
     <tr>
       <td>CdmValidatorService.dir</td>
       <td><strong>cache/cdmValidate/</strong></td>
-      <td>&nbsp;</td>
+      <td>temporary files for cdmvalidator (seperate war)</td>
     </tr>
     <tr>
       <td>DiskCache.dir </td>
       <td><strong>cache/cdm/</strong></td>
-      <td>x</td>
+      <td><p>only used when non-writeable data directory or <strong>alwaysUse</strong> = true, puts indexes, decompressed files into this directory</p>
+      </td>
     </tr>
     <tr>
       <td>ehcache.dir</td>
       <td><strong>cache/ehcache/</strong></td>
-      <td>x</td>
+      <td>object cache - only for OS directory information. put ehcache backup file is this directory</td>
     </tr>
     <tr>
       <td>FeatureCollection.dir</td>
       <td><strong>cache/collection/</strong></td>
-      <td>x</td>
+      <td>when we read GridDataset for FMRC, write an XML summary, store in BDB in this directory</td>
     </tr>
     <tr>
       <td>NetcdfSubsetService.dir</td>
       <td><strong>cache/ncss/</strong></td>
-      <td>contentPath</td>
+      <td>temporary files for NCSS</td>
     </tr>
     <tr>
       <td>WCS.dir </td>
       <td><strong>cache/wcs/</strong></td>
-      <td>contentPath</td>
+      <td>temporary files for WCS</td>
     </tr>
   </table>
 </blockquote>
@@ -431,7 +457,7 @@ appropriately.</li>
     location. </p>
 <hr width="100%">
 <address>
-<img src="../../images/thread.png" height="108" width="110" alt="THREDDS">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated  Nov 2010
+<img src="../../images/thread.png" height="108" width="110" alt="THREDDS">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated April 2011
 </address>
   <p>&nbsp;</p>
 </body></html>

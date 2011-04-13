@@ -51,31 +51,33 @@ public class TestH5subset extends TestCase {
 
   private String dirName = TestH5.testDir; // "C:/data/hdf5/";
 
-  public void testSubsetting() throws IOException, InvalidRangeException {
+ public void testSubsetting() throws IOException, InvalidRangeException {
     int ntrials = 37;
 
     // H5tiledLayoutBB
-    TestIosp.testVariableSubset(dirName + "eos/HIRDLS/HIRDLS2-Aura12h_b033_2000d275.he5", "HDFEOS/SWATHS/HIRDLS/Geolocation Fields/CloudContamination", ntrials);
-    TestIosp.testVariableSubset(dirName + "eos/aura/MLS-Aura_L3DM-O3_v02-00-c01_2005d026.he5", "HDFEOS/GRIDS/O3Descending/Data Fields/L3dmValue", ntrials);
-    TestIosp.testVariableSubset(dirName + "eos/aura/MLS-Aura_L3DM-O3_v02-00-c01_2005d026.he5", "HDFEOS/SWATHS/O3AscendingResiduals/Data Fields/L2gpValue", ntrials);
-    TestIosp.testVariableSubset(dirName + "eos/aura/OMI-Aura_L3-OMTO3e_2005m1214_v002-2006m0929t143855.he5", "HDFEOS/GRIDS/OMI Column Amount O3/Data Fields/ColumnAmountO3", ntrials);
-    TestIosp.testVariableSubset(dirName + "eos/HIRDLS/HIRDLS2-Aura73p_b029_2000d275.he5", "HDFEOS/SWATHS/HIRDLS/Geolocation Fields/CloudContamination", ntrials);
-    TestIosp.testVariableSubset(dirName + "eos/HIRDLS/HIRDLS2-Aura73p_b029_2000d275.he5", "HDFEOS/SWATHS/HIRDLS/Geolocation Fields/CloudContamination", ntrials);
-    TestIosp.testVariableSubset(dirName + "ssec/I3A_CCD_13FEB2007_0501_L1B_STD.h5", "CCD/Image Data/CCD_VIS", ntrials);
-    TestIosp.testVariableSubset(dirName + "ssec/K01_VHR_28AUG2007_0000_L02_IND.h5", "VHRR/Image Data/VHRR_WV", ntrials);
-    TestIosp.testVariableSubset(dirName + "eos/HIRDLS/HIRPROF-AFGL_b038_na.he5", "HDFEOS/SWATHS/HIRDLS/Data Fields/Temperature", ntrials); // */
+    TestIosp.testVariableSubset(dirName + "HIRDLS/HIRDLS2-Aura12h_b033_2000d275.he5", "HDFEOS/SWATHS/HIRDLS/Geolocation Fields/CloudContamination", ntrials);
+    TestIosp.testVariableSubset(dirName + "aura/MLS-Aura_L3DM-O3_v02-00-c01_2005d026.he5", "HDFEOS/GRIDS/O3Descending/Data Fields/L3dmValue", ntrials);
+    TestIosp.testVariableSubset(dirName + "aura/MLS-Aura_L3DM-O3_v02-00-c01_2005d026.he5", "HDFEOS/SWATHS/O3AscendingResiduals/Data Fields/L2gpValue", ntrials);
+    TestIosp.testVariableSubset(dirName + "aura/OMI-Aura_L3-OMTO3e_2005m1214_v002-2006m0929t143855.he5", "HDFEOS/GRIDS/OMI Column Amount O3/Data Fields/ColumnAmountO3", ntrials);
+    TestIosp.testVariableSubset(dirName + "HIRDLS/HIRDLS2-Aura73p_b029_2000d275.he5", "HDFEOS/SWATHS/HIRDLS/Geolocation Fields/CloudContamination", ntrials);
+    TestIosp.testVariableSubset(dirName + "HIRDLS/HIRDLS2-Aura73p_b029_2000d275.he5", "HDFEOS/SWATHS/HIRDLS/Geolocation Fields/CloudContamination", ntrials);
+    TestIosp.testVariableSubset(dirName + "ssec-h5/I3A_CCD_13FEB2007_0501_L1B_STD.h5", "CCD/Image Data/CCD_VIS", ntrials);
+    TestIosp.testVariableSubset(dirName + "ssec-h5/K01_VHR_28AUG2007_0000_L02_IND.h5", "VHRR/Image Data/VHRR_WV", ntrials);
+    TestIosp.testVariableSubset(dirName + "HIRDLS/HIRPROF-AFGL_b038_na.he5", "HDFEOS/SWATHS/HIRDLS/Data Fields/Temperature", ntrials); // */
 
     // H5tiledLayout
-    TestIosp.testVariableSubset(dirName + "eos/aura/MLS-Aura_L2GP-BrO_v01-52-c01_2007d029.he5", "HDFEOS/SWATHS/BrO/Data Fields/L2gpValue", ntrials);
-    TestIosp.testVariableSubset(dirName + "eos/aura/MLS-Aura_L2GP-BrO_v01-52-c01_2007d029.he5", "HDFEOS/SWATHS/BrO column/Geolocation Fields/Latitude", ntrials);
+    TestIosp.testVariableSubset(dirName + "aura/MLS-Aura_L2GP-BrO_v01-52-c01_2007d029.he5", "HDFEOS/SWATHS/BrO/Data Fields/L2gpValue", ntrials);
+    TestIosp.testVariableSubset(dirName + "aura/MLS-Aura_L2GP-BrO_v01-52-c01_2007d029.he5", "HDFEOS/SWATHS/BrO column/Geolocation Fields/Latitude", ntrials);
     TestIosp.testVariableSubset(dirName + "IASI/IASI_xxx_1C_M02_20070704193256Z_20070704211159Z_N_O_20070704211805Z.h5","U-MARF/EPS/IASI_xxx_1C/DATA/IMAGE_DATA", ntrials);
 
     // LayoutRegular
-    TestIosp.testVariableSubset(dirName + "eos/HIRDLS/HIR2ARSP_c3_na.he5", "HDFEOS/SWATHS/H2SO4_H2O_Tisdale/Data Fields/EXTC", ntrials);
-    TestIosp.testVariableSubset(dirName + "eos/HIRDLS/HIRPROF-AFGL_b038_na.he5", "HDFEOS/SWATHS/HIRDLS/Data Fields/AERO01", ntrials);
-    TestIosp.testVariableSubset(dirName + "eos/HIRDLS/HIRPROF-Aura73p_b038_2000d275.he5", "HDFEOS/SWATHS/HIRDLS/Data Fields/7%2E10MicronAerosolExtinction", ntrials);
-    TestIosp.testVariableSubset(dirName + "eos/aura/TES-Aura_L3-CH4-M2007m08_F01_04.he5", "HDFEOS/GRIDS/NadirGrid/Data Fields/CH4", ntrials); // */
+    TestIosp.testVariableSubset(dirName + "HIRDLS/HIR2ARSP_c3_na.he5", "HDFEOS/SWATHS/H2SO4_H2O_Tisdale/Data Fields/EXTC", ntrials);
+    TestIosp.testVariableSubset(dirName + "HIRDLS/HIRPROF-AFGL_b038_na.he5", "HDFEOS/SWATHS/HIRDLS/Data Fields/AERO01", ntrials);
+    TestIosp.testVariableSubset(dirName + "HIRDLS/HIRPROF-Aura73p_b038_2000d275.he5", "HDFEOS/SWATHS/HIRDLS/Data Fields/7%2E10MicronAerosolExtinction", ntrials);
+    TestIosp.testVariableSubset(dirName + "aura/TES-Aura_L3-CH4-M2007m08_F01_04.he5", "HDFEOS/GRIDS/NadirGrid/Data Fields/CH4", ntrials); // */
 
+    // netcdf4
+    TestIosp.testVariableSubset(TestAll.cdmUnitTestDir + "formats/netcdf4/ncom_relo_fukushima_1km_tmp_2011040800_t000.nc4", "water_temp", ntrials); // */
  }
 
   public void problemSubset() throws IOException, InvalidRangeException {

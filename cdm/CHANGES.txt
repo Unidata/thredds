@@ -3,9 +3,9 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Changes in version 4.2:
- 23: (2011-03-xx)
+ 23: (2011-04-13)
+  H5: bug in some subsets of chunked data.
   Grib2.PDS: process timeUnit=3 (month)
-
  22: (2011-03-10)
   Attribute.isString() false if value is null.
   All maven versions are 4.2.22

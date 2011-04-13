@@ -110,6 +110,7 @@ public class TestH5 {
 
     suite.addTest(new TestSuite(TestN4.class)); //
     suite.addTest(new TestSuite(TestH5read.class)); //
+    suite.addTest(new TestSuite(TestH5subset.class)); //
     return suite;
   }
 }

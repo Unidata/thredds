@@ -106,7 +106,21 @@ public class TestSimpleUnits extends TestCase  {
     assert !su.isCompatible("m");
     assert !su.isCompatible("sec");
     assert !su.isCompatible("3 days since 1930-07-27 12:00:00-05:00");
-
-
   }
+
+  public void testDates() throws Exception {
+    DateFormatter df = new DateFormatter();
+    String text = "months since 1930-01-01";
+    DateUnit du = new DateUnit(text);
+    for (int i=0; i<12; i++) {
+      System.out.printf("%d %s == %s%n", i, text, df.toDateTimeStringISO(du.makeDate(i)));
+    }
+
+    text = "years since 1850-01-01";
+    du = new DateUnit(text);
+    for (int i=0; i<100; i+=10) {
+      System.out.printf("%d %s == %s%n", i, text, df.toDateTimeStringISO(du.makeDate(i)));
+    }
+  }
+
 }
