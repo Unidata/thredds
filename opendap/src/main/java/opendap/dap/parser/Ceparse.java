@@ -6,7 +6,7 @@
 package opendap.dap.parser;
 
 import opendap.dap.*;
-import opendap.dap.Server.*;
+import opendap.Server.*;
 import opendap.dap.parser.*;
 import static opendap.dap.parser.CeParser.*;
 import static opendap.dap.parser.ExprParserConstants.*;

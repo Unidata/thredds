@@ -39,13 +39,13 @@
 
 
 
-package opendap.dap.Server;
+package opendap.Server;
 
 import java.io.*;
 import java.util.Enumeration;
 
 import opendap.dap.*;
-import opendap.dap.Server.ServerMethods;
+import opendap.Server.ServerMethods;
 
 /**
  * Holds a OPeNDAP Server <code>Structure</code> value.

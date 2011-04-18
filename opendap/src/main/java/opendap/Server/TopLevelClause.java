@@ -37,7 +37,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /////////////////////////////////////////////////////////////////////////////
 
-package opendap.dap.Server;
+package opendap.Server;
 
 /**
  * Represents a top-level clause in the selection portion of a

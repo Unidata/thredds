@@ -38,7 +38,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 
-package opendap.dap.Server;
+package opendap.Server;
 
 /**
  * Thrown by <code>Operator.op</code> when an attempt is made to parse a

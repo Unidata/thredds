@@ -47,7 +47,7 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 
 import opendap.dap.*;
-import opendap.dap.Server.*;
+import opendap.Server.*;
 import opendap.dap.parser.ParseException;
 import opendap.util.*;
 
@@ -169,7 +169,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
    * ************************************************************************
    * This method must be implemented locally for each OPeNDAP server. The
    * local implementation of this method is the key piece for connecting
-   * any localized data types that are derived from the opendap.dap.Server types
+   * any localized data types that are derived from the opendap.Server types
    * back into the running servlet.
    * <p/>
    * This method should do the following:
@@ -185,7 +185,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
    * @throws DAP2Exception
    * @throws IOException
    * @throws ParseException
-   * @see opendap.dap.Server.ServerDDS
+   * @see opendap.Server.ServerDDS
    * @see opendap.servers.test.test_ServerFactory
    */
   protected abstract GuardedDataset getDataset(ReqState rs) throws DAP2Exception, IOException, ParseException;

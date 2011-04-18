@@ -40,7 +40,7 @@
 
 package opendap.dap;
 
-import opendap.dap.Server.SDArray;
+import opendap.Server.SDArray;
 
 import java.io.*;
 import java.util.Vector;

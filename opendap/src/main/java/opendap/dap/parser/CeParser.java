@@ -39,7 +39,7 @@ package opendap.dap.parser;
 /* Line 12 of "ce.y"  */
 
 import opendap.dap.*;
-import opendap.dap.Server.*;
+import opendap.Server.*;
 import opendap.dap.parser.*;
 import java.io.*;
 

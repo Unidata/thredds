@@ -49,7 +49,7 @@ import java.nio.charset.Charset;
 import opendap.servers.www.*;
 import opendap.dap.*;
 import opendap.dap.parser.*;
-import opendap.dap.Server.ServerDDS;
+import opendap.Server.ServerDDS;
 
 /**
  * Default handler for OPeNDAP .html requests. This class is used

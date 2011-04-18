@@ -38,7 +38,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 
-package opendap.dap.Server;
+package opendap.Server;
 
 import java.util.*;
 import java.io.*;

@@ -37,13 +37,13 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /////////////////////////////////////////////////////////////////////////////
 
-package opendap.dap.Server;
+package opendap.Server;
 
 import java.util.*;
 import java.io.*;
 
 import opendap.dap.parser.ExprParserConstants; // used only for toString()
-import opendap.dap.Server.Operator;
+import opendap.Server.Operator;
 
 /**
  * Represents a clause which compares subclauses, using one of the

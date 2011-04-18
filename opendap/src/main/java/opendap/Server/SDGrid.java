@@ -38,15 +38,15 @@
 /////////////////////////////////////////////////////////////////////////////
 
 
-package opendap.dap.Server;
+package opendap.Server;
 
 import java.util.Vector;
 import java.util.Enumeration;
 import java.io.*;
 
 import opendap.dap.*;
-import opendap.dap.Server.ServerMethods;
-import opendap.dap.Server.SBHException;
+import opendap.Server.ServerMethods;
+import opendap.Server.SBHException;
 
 /**
  * Holds a OPeNDAP Server <code>Grid</code> value.

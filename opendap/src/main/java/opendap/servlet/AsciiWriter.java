@@ -22,8 +22,8 @@
 package opendap.servlet;
 
 import opendap.dap.*;
-import opendap.dap.Server.SDGrid;
-import opendap.dap.Server.ServerMethods;
+import opendap.Server.SDGrid;
+import opendap.Server.ServerMethods;
 
 import java.io.PrintWriter;
 import java.io.IOException;

@@ -48,7 +48,7 @@ import java.io.*;
 import opendap.dap.util.Getopts;
 import opendap.dap.util.InvalidSwitch;
 import opendap.dap.*;
-import opendap.dap.Server.*;
+import opendap.Server.*;
 
 
 /**

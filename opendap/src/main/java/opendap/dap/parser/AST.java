@@ -4,7 +4,7 @@
 package opendap.dap.parser;
 
 import opendap.dap.*;
-import opendap.dap.Server.*;
+import opendap.Server.*;
 import static opendap.dap.parser.ExprParserConstants.*;
 
 import java.util.*;

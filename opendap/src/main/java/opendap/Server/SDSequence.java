@@ -39,14 +39,14 @@
 
 
 
-package opendap.dap.Server;
+package opendap.Server;
 
 import java.io.*;
 import java.util.Vector;
 import java.util.Enumeration;
 
 import opendap.dap.*;
-import opendap.dap.Server.SBHException;
+import opendap.Server.SBHException;
 import opendap.util.Debug;
 
 /**

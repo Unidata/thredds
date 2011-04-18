@@ -40,7 +40,7 @@
 
 
 
-package opendap.dap.Server;
+package opendap.Server;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -48,7 +48,7 @@ import java.io.EOFException;
 
 import opendap.dap.BaseType;
 import opendap.dap.InvalidDimensionException;
-import opendap.dap.Server.InvalidParameterException;
+import opendap.Server.InvalidParameterException;
 //import opendap.dap.NoSuchVariableException;
 
 
