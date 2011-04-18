@@ -40,10 +40,9 @@
 
 package opendap.dap;
 
-import opendap.util.EscapeStrings;
+import opendap.dap.util.EscapeStrings;
 
 import java.io.Serializable;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 

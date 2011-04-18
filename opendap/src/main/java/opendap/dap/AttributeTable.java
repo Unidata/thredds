@@ -42,7 +42,7 @@ package opendap.dap;
 
 import java.util.Enumeration;
 
-import opendap.util.SortedTable;
+import opendap.dap.util.SortedTable;
 import opendap.util.Debug;
 
 import java.io.*;

@@ -45,7 +45,8 @@ package opendap.dap.XMLparser;
 import java.io.*;
 
 //import gnu.getopt.Getopt;
-import opendap.util.*;
+import opendap.dap.util.Getopts;
+import opendap.dap.util.InvalidSwitch;
 import opendap.dap.*;
 import opendap.dap.Server.*;
 

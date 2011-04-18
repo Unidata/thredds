@@ -42,11 +42,10 @@
 package opendap.servers.www;
 
 import java.io.*;
-import java.util.Vector;
 import java.util.Enumeration;
 
 import opendap.dap.*;
-import opendap.util.*;
+import opendap.dap.util.dasTools;
 
 /**
  */

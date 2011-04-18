@@ -38,8 +38,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 
-
-package opendap.util;
+package opendap.dap.util;
 
 import java.util.Hashtable;
 import java.util.Enumeration;

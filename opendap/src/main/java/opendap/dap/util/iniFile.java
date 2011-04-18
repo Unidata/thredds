@@ -38,8 +38,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 
-
-package opendap.util;
+package opendap.dap.util;
 
 import java.io.*;
 import java.util.*;

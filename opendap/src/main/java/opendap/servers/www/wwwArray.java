@@ -44,10 +44,9 @@ package opendap.servers.www;
 
 import java.io.PrintWriter;
 import java.util.Enumeration;
-import java.util.Vector;
 
 import opendap.dap.*;
-import opendap.util.*;
+import opendap.dap.util.dasTools;
 
 /**
  */

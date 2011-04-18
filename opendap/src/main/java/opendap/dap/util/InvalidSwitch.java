@@ -38,69 +38,32 @@
 /////////////////////////////////////////////////////////////////////////////
 
 
-
-package opendap.util;
-
-import java.lang.reflect.*;
+package opendap.dap.util;
 
 /**
- * @author Nathan David Potter
+ * Exception throwable by the Getopts class
  */
-
-
-public abstract class Tools {
-
-    //#*******************************************************************************
+public class InvalidSwitch extends Throwable {
+/**
+ *   This is the specific exception that is thrown when an invalid
+ *   switch or another problem occurred in the Getopts class.
+ */
+    /**
+     * Used when no notification string other than the
+     * standard one will be thrown with the exception.
+     */
+    public InvalidSwitch() {
+        super();
+    }
 
     /**
-     * Show me lots of stuff about the passed in object
+     * Used when passing the string that will be thrown.
+     *
+     * @param    s    the error string that is notified
      */
-    public static void probeObject(Object o) {
-
-        Class c = o.getClass();
-
-        Class interfaces[] = c.getInterfaces();
-        Class parent = c.getSuperclass();
-        Method m[] = c.getMethods();
-
-        System.out.println("********* OBJECT PROBE *********");
-        System.out.println("Class Name:  " + c.getName());
-        System.out.println("Super Class: " + parent.getName());
-        System.out.println("Interfaces: ");
-        for (int i = 0; i < interfaces.length; i++) {
-            System.out.println("    " + interfaces[i].getName());
-        }
-
-
-        System.out.println("Methods:");
-        for (int i = 0; i < m.length; i++) {
-
-
-            Class params[] = m[i].getParameterTypes();
-            Class excepts[] = m[i].getExceptionTypes();
-            Class ret = m[i].getReturnType();
-
-            System.out.print("    " + ret.getName() + "  " + m[i].getName() + "(");
-
-            for (int j = 0; j < params.length; j++) {
-                if (j > 0)
-                    System.out.print(", ");
-                System.out.print(params[j].getName());
-            }
-            System.out.print(")  throws ");
-            for (int j = 0; j < excepts.length; j++) {
-                if (j > 0)
-                    System.out.print(", ");
-                System.out.print(excepts[j].getName());
-            }
-            System.out.println("");
-        }
-        System.out.println("******************");
-
+    public InvalidSwitch(String s) {
+        super(s);
     }
-    //#*******************************************************************************
-
-
 }
 
 
