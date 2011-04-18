@@ -39,8 +39,6 @@
 
 package opendap.dap;
 
-import opendap.dap.Server.InvalidParameterException;
-
 import java.io.*;
 import java.util.Formatter;
 

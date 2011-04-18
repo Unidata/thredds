@@ -43,8 +43,6 @@ import java.io.PrintWriter;
 import java.util.Enumeration;
 import java.util.Vector;
 
-import opendap.dap.InvalidParameterException;
-
 /**
  * This class is used to hold arrays of other OPeNDAP data. The elements of the
  * array can be simple or compound data types. There is no limit on the
