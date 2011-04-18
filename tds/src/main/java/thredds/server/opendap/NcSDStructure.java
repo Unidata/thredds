@@ -33,7 +33,7 @@
  */
 package thredds.server.opendap;
 
-import opendap.dap.Server.*;
+import opendap.Server.*;
 import opendap.dap.BaseType;
 import opendap.dap.NoSuchVariableException;
 

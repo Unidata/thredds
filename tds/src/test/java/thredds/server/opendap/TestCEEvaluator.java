@@ -35,7 +35,7 @@ package thredds.server.opendap;
 
 import junit.framework.TestCase;
 import opendap.dap.BaseType;
-import opendap.dap.Server.*;
+import opendap.Server.*;
 import opendap.servlet.AsciiWriter;
 import opendap.servlet.GuardedDataset;
 import opendap.test.Diff;

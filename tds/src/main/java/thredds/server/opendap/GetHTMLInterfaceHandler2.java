@@ -28,7 +28,7 @@ package thredds.server.opendap;
 import opendap.dap.DAP2Exception;
 import opendap.dap.DAS;
 import opendap.dap.DDS;
-import opendap.dap.Server.ServerDDS;
+import opendap.Server.ServerDDS;
 import opendap.dap.parser.ParseException;
 import opendap.servers.www.jscriptCore;
 import opendap.servers.www.wwwFactory;

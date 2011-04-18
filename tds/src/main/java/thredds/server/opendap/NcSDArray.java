@@ -33,10 +33,11 @@
 
 package thredds.server.opendap;
 
+import opendap.dap.InvalidDimensionException;
 import ucar.ma2.*;
 import ucar.nc2.*;
 
-import opendap.dap.Server.*;
+import opendap.Server.*;
 import opendap.dap.BaseType;
 import opendap.dap.DArrayDimension;
 import opendap.dap.PrimitiveVector;
@@ -127,9 +128,9 @@ public class NcSDArray extends SDArray implements HasNetcdfVariable {
         log.debug("NcSDArray read array: " + tookTime * .001 + " seconds");
       }
 
-    } catch (InvalidParameterException e) {
+    } catch (InvalidDimensionException e) {
       log.error(getRequestedRange(), e);
-      throw new IllegalStateException("NcSDArray InvalidParameterException=" + e.getMessage());
+      throw new IllegalStateException("NcSDArray InvalidDimensionException=" + e.getMessage());
 
     } catch (InvalidRangeException e) {
       log.error(getRequestedRange(), e);
@@ -153,7 +154,7 @@ public class NcSDArray extends SDArray implements HasNetcdfVariable {
       }
       return sbuff.toString();
 
-    } catch (InvalidParameterException e) {
+    } catch (InvalidDimensionException e) {
       e.printStackTrace();
       return e.getMessage();
     }

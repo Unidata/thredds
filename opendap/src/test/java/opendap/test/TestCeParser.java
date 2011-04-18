@@ -36,7 +36,7 @@ package opendap.test;
 import junit.framework.TestCase;
 import opendap.dap.*;
 import opendap.dap.parser.*;
-import opendap.dap.Server.*;
+import opendap.Server.*;
 import opendap.test.servers.*;
 
 import java.util.*;
@@ -482,7 +482,7 @@ static final String[] constraintsx = {
             os.print(var.getStop(i));
         }
 
-	} catch (InvalidParameterException ipe) {
+	} catch (InvalidDimensionException ipe) {
 	    os.print('?');
 	}
 

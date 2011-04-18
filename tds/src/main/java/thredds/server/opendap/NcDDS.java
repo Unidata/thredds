@@ -37,7 +37,7 @@ import opendap.dap.DAPNode;
 import ucar.nc2.*;
 import ucar.ma2.DataType;
 
-import opendap.dap.Server.*;
+import opendap.Server.*;
 import opendap.dap.BaseType;
 import ucar.unidata.util.StringUtil;
 

@@ -37,7 +37,7 @@ import opendap.servlet.*;
 import opendap.dap.DAP2Exception;
 import opendap.dap.DAS;
 import opendap.dap.BaseType;
-import opendap.dap.Server.*;
+import opendap.Server.*;
 import opendap.dap.parser.ParseException;
 
 import javax.servlet.ServletException;

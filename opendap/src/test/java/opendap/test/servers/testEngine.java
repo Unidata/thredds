@@ -44,7 +44,7 @@ package opendap.test.servers;
 import java.io.*;
 
 import opendap.dap.*;
-import opendap.dap.Server.*;
+import opendap.Server.*;
 
 /**
  * Used by the test server to reset the server output
@@ -228,7 +228,7 @@ public class testEngine {
     }
 
 
-    private int getLength(test_SDArray ta, int dim, boolean constrained) throws InvalidParameterException {
+    private int getLength(test_SDArray ta, int dim, boolean constrained) throws InvalidDimensionException {
 
 
         int sizeofOtherDims = 1;
@@ -259,7 +259,7 @@ public class testEngine {
     }
 
 
-    private int nuAI(int constrainedIndex, test_SDArray ta) throws InvalidParameterException {
+    private int nuAI(int constrainedIndex, test_SDArray ta) throws InvalidDimensionException {
 
         int  uI, k, dim;
         DArrayDimension dad;
@@ -332,7 +332,7 @@ public class testEngine {
     }
 
 
-    private void newLoadArray(String dataset, test_SDArray ta) throws InvalidParameterException, NoSuchVariableException, EOFException, IOException {
+    private void newLoadArray(String dataset, test_SDArray ta) throws InvalidDimensionException, NoSuchVariableException, EOFException, IOException {
 
 
         PrimitiveVector pv = ta.getPrimitiveVector();
@@ -432,7 +432,7 @@ public class testEngine {
             try {
                 DArrayDimension dad = da.getDimension(i);
             }
-            catch (InvalidParameterException e) {
+            catch (InvalidDimensionException e) {
                 throw new NoSuchVariableException(e.getMessage());
             }
 

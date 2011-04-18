@@ -41,7 +41,7 @@
 
 package opendap.test.servers;
 
-import opendap.dap.Server.*;
+import opendap.Server.*;
 import opendap.dap.*;
 
 import java.io.*;
@@ -85,7 +85,7 @@ public class test_SDArray extends SDArray {
                 origShape[dim] = dad.getSize();
             }
         }
-        catch (InvalidParameterException e) {
+        catch (InvalidDimensionException e) {
             System.out.println("ERROR! Unresolved problem in test_SDArray.cacheShape!");
         }
 

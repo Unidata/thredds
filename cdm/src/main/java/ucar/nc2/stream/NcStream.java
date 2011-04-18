@@ -195,7 +195,7 @@ public class NcStream {
     long size = 0;
 
     ArrayStructureBB dataBB = IospHelper.makeArrayBB(as);
-    List<String> ss = new ArrayList<String>();
+    List<String>  ss = new ArrayList<String>();
     List<Object> heap = dataBB.getHeap();
     List<Integer> count = new ArrayList<Integer>();
     if (heap != null) {

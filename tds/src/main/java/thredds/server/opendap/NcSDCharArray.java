@@ -38,7 +38,7 @@ import ucar.ma2.*;
 import ucar.nc2.*;
 
 import opendap.dap.*;
-import opendap.dap.Server.*;
+import opendap.Server.*;
 
 import java.io.IOException;
 import java.io.EOFException;
@@ -139,9 +139,9 @@ public class NcSDCharArray extends SDArray implements HasNetcdfVariable {
         if (debugRead) System.out.println("   section size " + a.getSize());
       }
 
-    } catch (InvalidParameterException e) {
+    } catch (InvalidDimensionException e) {
       log.error("read char array", e);
-      throw new IllegalStateException("NcSDCharArray InvalidParameterException");
+      throw new IllegalStateException("NcSDCharArray InvalidDimensionException");
     } catch (InvalidRangeException e) {
       log.error("read char array", e);
       throw new IllegalStateException("NcSDCharArray InvalidRangeException");

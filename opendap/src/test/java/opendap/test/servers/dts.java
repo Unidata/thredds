@@ -52,7 +52,7 @@ import opendap.servlet.AbstractServlet;
 
 import opendap.dap.*;
 import opendap.dap.parser.ParseException;
-import opendap.dap.Server.*;
+import opendap.Server.*;
 import opendap.servlet.GuardedDataset;
 import opendap.servlet.ReqState;
 import opendap.servlet.AsciiWriter;

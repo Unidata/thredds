@@ -71,7 +71,7 @@ public class GuardedDatasetImpl implements GuardedDataset {
     this.hasSession = hasSession;
   }
 
-  public opendap.dap.Server.ServerDDS getDDS() {
+  public opendap.Server.ServerDDS getDDS() {
     if (closed) throw new IllegalStateException("getDDS(): "+this + " closed");
     return new NcDDS(reqPath, org_file);
   }

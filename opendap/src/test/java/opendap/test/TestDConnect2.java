@@ -1,11 +1,10 @@
 package opendap.test;
 
 import opendap.dap.*;
-import opendap.dap.parser.*;
-import opendap.util.Getopts;
+import opendap.dap.util.Getopts;
+import opendap.dap.util.InvalidSwitch;
 
 import java.io.*;
-import java.nio.CharBuffer;
 
 public class TestDConnect2 extends TestSources {
 
@@ -208,7 +207,7 @@ public class TestDConnect2 extends TestSources {
             if (opts.getSwitch('d').set) {
                 debug = true;
             }
-        } catch (opendap.util.InvalidSwitch is) {
+        } catch (InvalidSwitch is) {
             throw new Exception(is);
         }
         String testdir = null;
