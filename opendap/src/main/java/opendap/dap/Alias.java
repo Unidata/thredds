@@ -42,7 +42,6 @@ package opendap.dap;
 import java.util.Enumeration;
 import java.io.PrintWriter;
 
-//fix import opendap.dap.Server.ServerMethods;
 import opendap.util.Debug;
 import opendap.util.EscapeStrings;
 
@@ -327,12 +326,9 @@ public class Alias extends Attribute
 
         if (constrained &&
                 targetVariable != null
-//fix                targetVariable instanceof ServerMethods
                 ) {
 
 
-//fix            ServerMethods sm = (ServerMethods) targetVariable;
-//fix            if (!sm.isProject())
               if(!targetVariable.isProject())
                 return;
         }
