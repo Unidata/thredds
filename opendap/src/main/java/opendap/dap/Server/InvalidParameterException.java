@@ -39,7 +39,7 @@
 
 
 
-package opendap.dap;
+package opendap.dap.Server;
 
 /**
  * Used to indicate that one of the passed parameters to a method
@@ -49,7 +49,7 @@ package opendap.dap;
  * @author ndp
  * @version $Revision: 15901 $
  */
-public class InvalidParameterException extends DAP2Exception {
+public class InvalidParameterException extends DAP2ServerSideException {
     /**
      * Construct a <code>InvalidParameterException</code> with the specified
      * detail message.

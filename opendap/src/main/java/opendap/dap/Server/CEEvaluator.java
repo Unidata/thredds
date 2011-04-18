@@ -43,13 +43,8 @@ package opendap.dap.Server;
 import java.util.*;
 import java.io.*;
 
+import opendap.dap.*;
 import opendap.dap.parser.*;
-import opendap.dap.BaseType;
-import opendap.dap.DArrayDimension;
-import opendap.dap.NoSuchVariableException;
-import opendap.dap.NoSuchFunctionException;
-import opendap.dap.ConstraintException;
-import opendap.dap.DAP2Exception;
 import opendap.util.Debug;
 
 /**

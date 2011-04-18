@@ -39,6 +39,8 @@
 
 package opendap.dap.Server;
 
+import opendap.dap.InvalidParameterException;
+
 import java.util.List;
 
 /**

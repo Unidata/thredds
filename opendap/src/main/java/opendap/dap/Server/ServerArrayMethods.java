@@ -47,6 +47,7 @@ import java.io.IOException;
 import java.io.EOFException;
 
 import opendap.dap.BaseType;
+import opendap.dap.InvalidParameterException;
 //import opendap.dap.NoSuchVariableException;
 
 

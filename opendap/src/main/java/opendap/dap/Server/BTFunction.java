@@ -44,6 +44,7 @@ package opendap.dap.Server;
 import java.util.List;
 
 import opendap.dap.BaseType;
+import opendap.dap.InvalidParameterException;
 
 /**
  * Represents a server-side function, which evaluates to a BaseType.
