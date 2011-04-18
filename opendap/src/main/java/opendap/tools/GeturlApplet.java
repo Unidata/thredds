@@ -39,46 +39,49 @@
 
 
 
-package opendap.dap.Server;
+package opendap.util.geturl.gui;
 
-import java.util.List;
+import opendap.tools.GeturlFrame;
 
-import opendap.dap.BaseType;
-import opendap.dap.Server.InvalidParameterException;
+import java.applet.*;
+import java.awt.*;
+import java.awt.event.*;
 
 /**
- * Represents a server-side function, which evaluates to a BaseType.
- * Custom server-side functions which return non-boolean values should
- * implement this interface.  For an efficient implementation, it is
- * suggested, when possible, to use the same BaseType for the getType()
- * method and for each successive invocation of evaluate(), changing only
- * the BaseType's value. This avoids creation of large numbers of
- * BaseTypes during a data request.
- *
- * @author joew
- * @see BTFunctionClause
+ * Java geturl applet.
  */
-public interface BTFunction
-        extends ServerSideFunction {
+public class GeturlApplet extends Applet {
+    /**
+     * The currently open Geturl window.
+     */
+    protected GeturlFrame frame;
 
     /**
-     * A given function must always evaluate to the same class
-     * of BaseType. Only the value held by the BaseType may change.
-     * This method can be used to discover the BaseType class of a
-     * function without actually evaluating it.
+     * Open the frame and add the start button to the layout
      */
-    public BaseType getReturnType(List args)
-            throws InvalidParameterException;
+    public void init() {
+        frame = new GeturlFrame(true);
+        Button restartButton = new Button("Restart");
+        restartButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                frame.dispose();
+                frame = new GeturlFrame(true);
+            }
+        });
+        add(restartButton);
+    }
 
     /**
-     * Evaluates the function using the argument list given.
-     *
-     * @throws DAP2ServerSideException Thrown if the function
-     *                        cannot evaluate successfully. The exact type of exception is up
-     *                        to the author of the server-side function.
+     * Dispose of the frame
      */
-    public BaseType evaluate(List args)
-            throws DAP2ServerSideException;
+    public void dispose() {
+        frame.dispose();
+    }
+
+    /** Main function to call as an application. */
+    public static void main(String args[]) {
+        GeturlFrame frame = new GeturlFrame(false);
+    }
 }
 
 

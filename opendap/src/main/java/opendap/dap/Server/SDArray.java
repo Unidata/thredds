@@ -442,7 +442,7 @@ public abstract class SDArray extends DArray implements ServerArrayMethods, RelO
      * @see DArrayDimension
      */
     public void setProjection(int dimension, int start, int stride, int stop)
-            throws InvalidParameterException {
+            throws InvalidDimensionException {
         DArrayDimension d = getDimension(dimension);
         d.setProjection(start, stride, stop);
     }
@@ -452,7 +452,7 @@ public abstract class SDArray extends DArray implements ServerArrayMethods, RelO
      * <code>dimension</code> is checked against the instance of the
      * <code>SDArray</code> for bounds violation.
      */
-    public int getStart(int dimension) throws InvalidParameterException {
+    public int getStart(int dimension) throws InvalidDimensionException {
         DArrayDimension d = getDimension(dimension);
         return (d.getStart());
     }
@@ -463,7 +463,7 @@ public abstract class SDArray extends DArray implements ServerArrayMethods, RelO
      * <code>dimension</code> is checked against the instance of the
      * <code>SDArray</code> for bounds violation.
      */
-    public int getStride(int dimension) throws InvalidParameterException {
+    public int getStride(int dimension) throws InvalidDimensionException {
         DArrayDimension d = getDimension(dimension);
         return (d.getStride());
     }
@@ -473,7 +473,7 @@ public abstract class SDArray extends DArray implements ServerArrayMethods, RelO
      * <code>dimension</code> is checked against the instance of the
      * <code>SDArray</code> for bounds violation.
      */
-    public int getStop(int dimension) throws InvalidParameterException {
+    public int getStop(int dimension) throws InvalidDimensionException {
         DArrayDimension d = getDimension(dimension);
         return (d.getStop());
     }

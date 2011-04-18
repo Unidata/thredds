@@ -38,8 +38,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 
-
-package opendap.util.geturl.gui;
+package opendap.tools;
 
 import java.awt.*;
 import java.awt.event.*;

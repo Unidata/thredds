@@ -39,7 +39,7 @@
 
 package opendap.dap.Server;
 
-import opendap.dap.InvalidParameterException;
+import opendap.dap.Server.InvalidParameterException;
 
 import java.util.List;
 

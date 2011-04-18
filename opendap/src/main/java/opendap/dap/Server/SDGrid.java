@@ -442,7 +442,7 @@ public abstract class SDGrid extends DGrid implements ServerArrayMethods, RelOps
      * @see DArrayDimension
      */
     public void setProjection(int dimension, int start, int stride, int stop)
-            throws InvalidParameterException, SBHException {
+            throws InvalidDimensionException, SBHException {
         try {
             DArray a = (DArray) getVar(0);
             DArrayDimension d = a.getDimension(dimension);
@@ -453,7 +453,7 @@ public abstract class SDGrid extends DGrid implements ServerArrayMethods, RelOps
             mapD.setProjection(start, stride, stop);
         }
         catch (NoSuchVariableException e) {
-            throw new InvalidParameterException("SDGrid.setProjection(): Bad Value for dimension!: "
+            throw new InvalidDimensionException("SDGrid.setProjection(): Bad Value for dimension!: "
                     + e.getMessage());
         }
     }
@@ -468,14 +468,14 @@ public abstract class SDGrid extends DGrid implements ServerArrayMethods, RelOps
      * @param dimension The dimension from whose projection to retrieve the
      *                  <code>start</code> value.
      */
-    public int getStart(int dimension) throws InvalidParameterException {
+    public int getStart(int dimension) throws InvalidDimensionException {
         try {
             DArray a = (DArray) getVar(0);
             DArrayDimension d = a.getDimension(dimension);
             return (d.getStart());
         }
         catch (NoSuchVariableException e) {
-            throw new InvalidParameterException("SDGrid.getStart(): Bad Value for dimension!: "
+            throw new InvalidDimensionException("SDGrid.getStart(): Bad Value for dimension!: "
                     + e.getMessage());
         }
     }
@@ -490,14 +490,14 @@ public abstract class SDGrid extends DGrid implements ServerArrayMethods, RelOps
      * @param dimension The dimension from whose projection to retrieve the
      *                  <code>stride</code> value.
      */
-    public int getStride(int dimension) throws InvalidParameterException {
+    public int getStride(int dimension) throws InvalidDimensionException {
         try {
             DArray a = (DArray) getVar(0);
             DArrayDimension d = a.getDimension(dimension);
             return (d.getStride());
         }
         catch (NoSuchVariableException e) {
-            throw new InvalidParameterException("SDGrid.getStride(): Bad Value for dimension!: "
+            throw new InvalidDimensionException("SDGrid.getStride(): Bad Value for dimension!: "
                     + e.getMessage());
         }
     }
@@ -512,14 +512,14 @@ public abstract class SDGrid extends DGrid implements ServerArrayMethods, RelOps
      * @param dimension The dimension from whose projection to retrieve the
      *                  <code>stop</code> value.
      */
-    public int getStop(int dimension) throws InvalidParameterException {
+    public int getStop(int dimension) throws InvalidDimensionException {
         try {
             DArray a = (DArray) getVar(0);
             DArrayDimension d = a.getDimension(dimension);
             return (d.getStop());
         }
         catch (NoSuchVariableException e) {
-            throw new InvalidParameterException("SDGrid.getStop(): Bad Value for dimension!: "
+            throw new InvalidDimensionException("SDGrid.getStop(): Bad Value for dimension!: "
                     + e.getMessage());
         }
     }

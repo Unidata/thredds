@@ -38,11 +38,9 @@
 /////////////////////////////////////////////////////////////////////////////
 
 
-
-package opendap.util.geturl;
+package opendap.tools;
 
 import opendap.dap.*;
-import opendap.util.geturl.gui.StatusWindow;
 import opendap.util.Getopts;
 import opendap.util.InvalidSwitch;
 

@@ -47,7 +47,8 @@ import java.io.IOException;
 import java.io.EOFException;
 
 import opendap.dap.BaseType;
-import opendap.dap.InvalidParameterException;
+import opendap.dap.InvalidDimensionException;
+import opendap.dap.Server.InvalidParameterException;
 //import opendap.dap.NoSuchVariableException;
 
 
@@ -75,13 +76,13 @@ import opendap.dap.InvalidParameterException;
 public interface ServerArrayMethods extends ServerMethods {
 
     public void setProjection(int dimension, int start, int stride, int stop)
-            throws InvalidParameterException, SBHException;
+            throws InvalidDimensionException, SBHException;
 
-    public int getStart(int dimension) throws InvalidParameterException;
+    public int getStart(int dimension) throws InvalidDimensionException;
 
-    public int getStride(int dimension) throws InvalidParameterException;
+    public int getStride(int dimension) throws InvalidDimensionException;
 
-    public int getStop(int dimension) throws InvalidParameterException;
+    public int getStop(int dimension) throws InvalidDimensionException;
 
 }
 

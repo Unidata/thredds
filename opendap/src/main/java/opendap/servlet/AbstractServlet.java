@@ -50,7 +50,6 @@ import opendap.dap.*;
 import opendap.dap.Server.*;
 import opendap.dap.parser.ParseException;
 import opendap.util.*;
-import opendap.servers.ascii.toASCII;
 
 /**
  * AbstractServlet is the base servlet class for an OPeNDAP

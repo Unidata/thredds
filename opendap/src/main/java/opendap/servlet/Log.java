@@ -38,48 +38,72 @@
 /////////////////////////////////////////////////////////////////////////////
 
 
+package opendap.servlet;
 
-package opendap.util.geturl.gui;
-
-import java.applet.*;
-import java.awt.*;
-import java.awt.event.*;
+import java.io.*;
 
 /**
- * Java geturl applet.
+ * A minimal implementation of a logging facility.
  */
-public class GeturlApplet extends Applet {
-    /**
-     * The currently open Geturl window.
-     */
-    protected GeturlFrame frame;
 
-    /**
-     * Open the frame and add the start button to the layout
-     */
-    public void init() {
-        frame = new GeturlFrame(true);
-        Button restartButton = new Button("Restart");
-        restartButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                frame.dispose();
-                frame = new GeturlFrame(true);
-            }
-        });
-        add(restartButton);
+public class Log {
+
+    static private PrintStream logger = null;
+    static private ByteArrayOutputStream buff = null;
+
+    static public void println(String s) {
+        if (logger != null)
+            logger.println(s);
     }
 
-    /**
-     * Dispose of the frame
-     */
-    public void dispose() {
-        frame.dispose();
+    static public void printDODSException(opendap.dap.DAP2Exception de) {
+        if (logger != null) {
+            de.print(logger);
+            de.printStackTrace(logger);
+        }
     }
 
-    /** Main function to call as an application. */
-    public static void main(String args[]) {
-        GeturlFrame frame = new GeturlFrame(false);
+    static public void printThrowable(Throwable t) {
+        if (logger != null) {
+            logger.println(t.getMessage());
+            t.printStackTrace(logger);
+        }
     }
+
+    static public void reset() {
+        buff = new ByteArrayOutputStream();
+        logger = new PrintStream(buff);
+    }
+
+    static public boolean isOn() {
+        return (logger != null);
+    }
+
+    static public void close() {
+        logger = null;
+        buff = null;
+    }
+
+    static public String getContents() {
+        if (buff == null)
+            return "null";
+        else {
+            logger.flush();
+            return buff.toString();
+        }
+    }
+
 }
+
+/**
+ * $Log: Log.java,v $
+ * Revision 1.1  2003/08/12 23:51:27  ndp
+ * Mass check in to begin Java-OPeNDAP development work
+ *
+ * Revision 1.1  2002/09/24 18:32:35  caron
+ * add Log.java
+ *
+ *
+ */
 
 

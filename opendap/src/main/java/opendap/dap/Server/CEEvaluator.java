@@ -334,7 +334,7 @@ public class CEEvaluator {
      *              no variable should be projected.
      */
     public void markAll(boolean state)
-            throws InvalidParameterException, NoSuchVariableException, SBHException
+            throws DAP2Exception, NoSuchVariableException, SBHException
     {
         // For all the Variables in the DDS
         Enumeration e = _dds.getVariables();
@@ -369,6 +369,7 @@ public class CEEvaluator {
                         DArrayDimension dad = (DArrayDimension) eSDA.nextElement();
                         // Tweak it's projection state
                         dad.setProjection(0, 1, dad.getSize() - 1);
+
                     }
                 }
             }

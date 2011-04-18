@@ -159,7 +159,7 @@ public final class DArrayDimension extends DAPNode
      * @param stride The size of the stride for the projection of this <code>DArrayDimension</code>.
      * @param stop   The stopping point for the projection of this <code>DArrayDimension</code>.
      */
-     public void setProjection(int start, int stride, int stop) throws InvalidParameterException {
+     public void setProjection(int start, int stride, int stop) throws InvalidDimensionException {
         String msg = "DArrayDimension.setProjection: Bad Projection Request: ";
 
         // Check for projection conflict
@@ -174,22 +174,22 @@ public final class DArrayDimension extends DAPNode
 
         // validate the arguments
         if (start >= size)
-            throw new InvalidParameterException(msg + "start (" + start + ") >= size (" + size + ") for " + _name);
+            throw new InvalidDimensionException(msg + "start (" + start + ") >= size (" + size + ") for " + _name);
 
         if (start < 0)
-            throw new InvalidParameterException(msg + "start < 0");
+            throw new InvalidDimensionException(msg + "start < 0");
 
         if (stride <= 0)
-            throw new InvalidParameterException(msg + "stride <= 0");
+            throw new InvalidDimensionException(msg + "stride <= 0");
 
         if (stop >= size)
-            throw new InvalidParameterException(msg + "stop >= size: "+stop+":"+size);
+            throw new InvalidDimensionException(msg + "stop >= size: "+stop+":"+size);
 
         if (stop < 0)
-            throw new InvalidParameterException(msg + "stop < 0");
+            throw new InvalidDimensionException(msg + "stop < 0");
 
         if (stop < start)
-            throw new InvalidParameterException(msg + "stop < start");
+            throw new InvalidDimensionException(msg + "stop < start");
 
         this.start = start;
         this.stride = stride;

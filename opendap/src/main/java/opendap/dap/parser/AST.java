@@ -342,7 +342,7 @@ class ASTslice extends AST
 */
 
     void walk(ServerArrayMethods sam, int index)
-	throws DAP2ServerSideException
+	throws InvalidDimensionException,SBHException
     {
         sam.setProjection(index,(int)first,(int)stride,(int)last);
     }    

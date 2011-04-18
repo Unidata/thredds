@@ -39,8 +39,6 @@
 
 package opendap.dap.Server;
 
-import opendap.dap.DAP2Exception;
-import opendap.dap.InvalidParameterException;
 
 import java.util.*;
 import java.io.*;
@@ -70,9 +68,7 @@ public class BoolFunctionClause
                                  List children)
             throws DAP2ServerSideException {
 
-        try {
             function.checkArgs(children);
-        }  catch(InvalidParameterException ie) {throw new DAP2ServerSideException(DAP2Exception.MALFORMED_EXPR,ie.getErrorMessage());}
         this.function = function;
         this.children = children;
         this.constant = true;

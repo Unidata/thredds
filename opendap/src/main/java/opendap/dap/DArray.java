@@ -355,13 +355,13 @@ public class DArray extends DVector
      * the dimension requested. It makes sure that the dimension requested
      * exists.
      */
-    public DArrayDimension getDimension(int dimension) throws InvalidParameterException {
+    public DArrayDimension getDimension(int dimension) throws InvalidDimensionException {
 
         // QC the passed dimension
         if (dimension < dimVector.size())
             return  dimVector.get(dimension);
         else
-            throw new InvalidParameterException("DArray.getDimension(): Bad dimension request: dimension > # of dimensions");
+            throw new InvalidDimensionException("DArray.getDimension(): Bad dimension request: dimension > # of dimensions");
     }
 
     /**
