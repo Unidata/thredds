@@ -40,7 +40,6 @@
 
 package opendap.dap;
 
-import opendap.dap.Server.ServerMethods;
 import opendap.util.EscapeStrings;
 
 import java.io.Serializable;

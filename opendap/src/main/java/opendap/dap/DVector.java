@@ -238,7 +238,7 @@ abstract public class DVector extends BaseType implements ClientIO {
         int length;
         length = source.readInt();
 
-        //System.out.printf("  len=%d%n",length);
+        System.out.printf("  len=%d%n",length);
 
         if (!(vals instanceof BaseTypePrimitiveVector)) {
             // because both XDR and OPeNDAP write the length, we must read it twice
