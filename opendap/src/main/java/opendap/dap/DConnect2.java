@@ -914,7 +914,7 @@ is =  new StringBufferInputStream (contents); */
   ParseException, DDSException, DAP2Exception {
 
 
-  /* boolean dumpStreamErr = false; // opendap.util.Debug.isSet("dumpStreamErr");
+  /* boolean dumpStreamErr = false; // opendap.util.util.Debug.isSet("dumpStreamErr");
 
   System.out.println("dds.getBlobURL(): " + dds.getBlobContentID());
 
@@ -996,7 +996,7 @@ is =  new StringBufferInputStream (contents); */
   InputStream is = openConnection(url);
   DataDDS dds = new DataDDS(ver, btf);
 
-  boolean dumpStreamErr = false; // opendap.util.Debug.isSet("dumpStreamErr");
+  boolean dumpStreamErr = false; // opendap.util.util.Debug.isSet("dumpStreamErr");
 
 
   try {

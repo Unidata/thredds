@@ -4,8 +4,8 @@
 %error-verbose
 
 %define public
-%define package "opendap.dap.parser"
-%define extends "opendap.dap.parsers.Dapparse"
+%define package "opendap.dap.parsers"
+%define extends "Dapparse"
 %define throws "ParseException"
 %define lex_throws "ParseException"
 

@@ -43,8 +43,8 @@ import java.util.Enumeration;
 import java.io.PrintWriter;
 
 import opendap.dap.parsers.DDSXMLParser;
-import opendap.util.Debug;
-import opendap.dap.util.EscapeStrings;
+import opendap.util.util.Debug;
+import opendap.util.util.EscapeStrings;
 
 /**
  * The Alias type is a special attribute. It is simply a reference

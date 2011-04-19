@@ -4,12 +4,13 @@
 %error-verbose
 
 %define public
-%define package "opendap.dap.parser"
-%define extends "opendap.dap.parsers.Dapparse"
+%define package "opendap.dap.parsers"
+%define extends "Dapparse"
 %define throws "ParseException"
 %define lex_throws "ParseException"
 
 %code imports {
+import opendap.dap.*;
 import opendap.dap.BaseTypeFactory;
 import opendap.dap.parsers.ParseException;
 import java.io.*;

@@ -38,7 +38,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 
-package opendap.dap.util;
+package opendap.util.util;
 
 /**
  * OptSwitch	- class definition for Switches

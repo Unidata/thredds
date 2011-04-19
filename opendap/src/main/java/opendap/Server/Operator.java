@@ -39,10 +39,10 @@
 
 package opendap.Server;
 
+import opendap.Server.parsers.ExprParserConstants;
 import opendap.dap.*;
 //import gnu.regexp.*;
 import java.util.regex.*;
-import opendap.dap.parsers.ExprParserConstants;
 
 /**
  * This class contains the code for performing relative
@@ -56,7 +56,8 @@ import opendap.dap.parsers.ExprParserConstants;
  */
 
 
-public class Operator implements ExprParserConstants {
+public class Operator implements ExprParserConstants
+{
 
     private static boolean _Debug = false;
 
@@ -70,14 +71,14 @@ public class Operator implements ExprParserConstants {
      * and <code>InvalidOperatorException</code> is thrown.
      *
      * @param oprtr The operatoration to perform as defined in <code>
-     *              opendap.dap.parsers.ExprParserConstants</code>
+     *              opendap.Server.parsers.ExprParserConstants</code>
      * @param lop   A BaseType to be used as the left operand.
      * @param rop   A BaseType to be used as the right operand.
      * @return True is the operation evaluates as true, flase otherwise.
      * @throws InvalidOperatorException
      * @throws RegExpException
      * @throws SBHException
-     * @see opendap.dap.parsers.ExprParserConstants
+     * @see opendap.Server.parsers.ExprParserConstants
      */
     public static boolean op(int oprtr, BaseType lop, BaseType rop) throws InvalidOperatorException,
             RegExpException,

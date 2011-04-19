@@ -46,7 +46,7 @@ import java.util.*;
 import javax.servlet.http.*;
 
 import opendap.dap.*;
-import opendap.util.*;
+import opendap.util.util.Debug;
 import opendap.servers.ascii.*;
 import opendap.dap.parsers.ParseException;
 

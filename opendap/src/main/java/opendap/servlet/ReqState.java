@@ -40,7 +40,7 @@
 
 package opendap.servlet;
 
-import opendap.dap.util.EscapeStrings;
+import opendap.util.util.EscapeStrings;
 
 import java.util.Enumeration;
 import java.util.StringTokenizer;

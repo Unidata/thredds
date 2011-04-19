@@ -46,7 +46,7 @@ import java.io.PrintWriter;
 import java.util.Enumeration;
 
 import opendap.dap.*;
-import opendap.dap.util.dasTools;
+import opendap.util.util.dasTools;
 
 /**
  */

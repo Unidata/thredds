@@ -1,0 +1,8 @@
+2010-04-19	<dmh@unidata.ucar.edu>
+	Convert to using bison 2.4.2, except for constraint parser
+
+2002-06-10    <jimg@dcz.dods.org>
+
+	* DDSParser.jj (TOKEN): Added '*' to the set of chars allowed in a
+	WORD. Same for the DASParser.jj file.
+

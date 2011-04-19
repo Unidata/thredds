@@ -4,15 +4,14 @@
 %error-verbose
 
 %define public
-%define package "opendap.dap.parser"
-%define extends "opendap.dap.parsers.Ceparse"
+%define package "opendap.Server.parsers"
+%define extends "Ceparse"
 %define throws "ParseException"
 %define lex_throws "ParseException"
 
 %code imports {
 import opendap.dap.*;
 import opendap.Server.*;
-import opendap.dap.parsers.*;;
 import java.io.*;
 }
 
@@ -55,7 +54,7 @@ import java.io.*;
 	CeParser parser = new CeParser(factory);
         ServerDDS sdds = ceEval.getDDS();
         if(!parser.parse(sreader)) return false;
-        AST root = parser.getAST();
+        ASTconstraint root = (ASTconstraint)parser.getAST();
 	root.init(ceEval,factory,clauseFactory,sdds,parser.getASTnodeset());
 	root.walkConstraint();
         return true;

@@ -46,8 +46,7 @@ import java.util.Vector;
 import java.util.Enumeration;
 
 import opendap.dap.*;
-import opendap.Server.SBHException;
-import opendap.util.Debug;
+import opendap.util.util.Debug;
 
 /**
  * Holds a OPeNDAP Server <code>Sequence</code> value.

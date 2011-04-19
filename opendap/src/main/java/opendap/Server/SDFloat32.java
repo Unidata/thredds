@@ -45,7 +45,7 @@ import opendap.dap.*;
 
 import java.io.*;
 
-import opendap.dap.parsers.ExprParserConstants;
+import opendap.Server.parsers.ExprParserConstants;
 
 /**
  * Holds a OPeNDAP Server <code>Float32</code> value.

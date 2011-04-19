@@ -5,11 +5,10 @@
 
 package opendap.dap.parsers;
 
-import opendap.dap.*;
-
 import java.io.InputStream;
 import java.util.*;
 
+import opendap.dap.*;
 
 import static opendap.dap.parsers.DapParser.*;
 

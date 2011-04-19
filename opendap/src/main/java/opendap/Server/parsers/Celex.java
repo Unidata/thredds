@@ -35,14 +35,16 @@
    netcdf/libncdap3 ce parser parallel to this one
 */
 
-package opendap.dap.parsers;
+package opendap.Server.parsers;
 
-import static opendap.dap.parsers.CeParser.*;
+import opendap.dap.parsers.ParseException;
+
+import static opendap.Server.parsers.CeParser.*;
 
 import java.io.*;
 
 
-class Celex implements CeParser.Lexer, ExprParserConstants
+class Celex implements Lexer, ExprParserConstants
 {
 
     /* Define 1 and > 1st legal characters */

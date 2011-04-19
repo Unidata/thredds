@@ -39,10 +39,10 @@
 
 package opendap.Server;
 
+import opendap.Server.parsers.ExprParserConstants;
+
 import java.util.*;
 import java.io.*;
-
-import opendap.dap.parsers.ExprParserConstants; // used only for toString()
 
 
 /**
@@ -138,7 +138,7 @@ public class RelOpClause
     /**
      * Returns the type of comparison
      *
-     * @see opendap.dap.parsers.ExprParserConstants
+     * @see opendap.Server.parsers.ExprParserConstants
      */
     public int getOperator() {
         return operator;

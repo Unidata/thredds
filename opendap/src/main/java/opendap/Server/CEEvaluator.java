@@ -43,9 +43,10 @@ package opendap.Server;
 import java.util.*;
 import java.io.*;
 
+import opendap.Server.parsers.CeParser;
 import opendap.dap.*;
 import opendap.dap.parsers.*;
-import opendap.util.Debug;
+import opendap.util.util.Debug;
 
 /**
  * This class is used to parse and evaluate a constraint expression. When
@@ -159,7 +160,7 @@ public class CEEvaluator {
      * as such in the CEEvaluator's ServerDDS instance. The selection
      * subexpression is then parsed and a list of Clause objects is built.
      * <p/>
-     * The parser is located in opendap.dap.parsers.CeParser.
+     * The parser is located in opendap.Server.parsers.CeParser.
      *
      * @param expression The constraint expression to parse.
      * @throws ParseException
@@ -185,9 +186,9 @@ public class CEEvaluator {
 	
 	try {
         CeParser.constraint_expression(this,
-                                       _dds.getFactory(),
-                                       clauseFactory,
-                                       sExpr);
+                _dds.getFactory(),
+                clauseFactory,
+                sExpr);
 	} catch (ConstraintException ce) {
 	    // convert to a DAP2Exception
 	    throw new DAP2Exception((int)('C'+'E'), ce.getMessage());

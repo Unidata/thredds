@@ -47,7 +47,7 @@ import java.io.*;
 
 import opendap.dap.parsers.DDSXMLParser;
 import opendap.dap.parsers.*;
-import opendap.util.Debug;
+import opendap.util.util.Debug;
 import org.jdom.Document;
 
 /**

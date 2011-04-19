@@ -39,7 +39,7 @@ package opendap.dap.parsers;
 /* Line 12 of "dap.y"  */
 
 import opendap.dap.BaseTypeFactory;
-
+import opendap.dap.parsers.ParseException;
 import java.io.*;
 
 
@@ -52,7 +52,7 @@ import java.io.*;
  *
  * @author LALR (1) parser skeleton written by Paolo Bonzini.
  */
-public class DapParser extends opendap.dap.parsers.Dapparse
+public class DapParser extends Dapparse
 {
     /** Version number for the Bison executable that generated this parser.  */
   public static final String bisonVersion = "2.4.2";

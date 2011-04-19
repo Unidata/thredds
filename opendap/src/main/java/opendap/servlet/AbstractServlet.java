@@ -49,7 +49,7 @@ import javax.servlet.http.*;
 import opendap.dap.*;
 import opendap.Server.*;
 import opendap.dap.parsers.ParseException;
-import opendap.util.*;
+import opendap.util.util.Debug;
 
 /**
  * AbstractServlet is the base servlet class for an OPeNDAP
@@ -194,7 +194,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
   /**
    * ************************************************************************
    * Intitializes the servlet. Init (at this time) basically sets up
-   * the object opendap.util.Debug from the debuggery flags in the
+   * the object opendap.util.util.Debug from the debuggery flags in the
    * servlet InitParameters. The Debug object can be referenced (with
    * impunity) from anywhere in the VM.
    */
