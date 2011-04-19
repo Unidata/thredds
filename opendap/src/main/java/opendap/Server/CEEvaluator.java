@@ -191,7 +191,8 @@ public class CEEvaluator {
                 sExpr);
 	} catch (ConstraintException ce) {
 	    // convert to a DAP2Exception
-	    throw new DAP2Exception((int)('C'+'E'), ce.getMessage());
+        ce.printStackTrace();
+	    throw new DAP2Exception(ce);
 	}
 
         if (_Debug) {

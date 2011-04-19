@@ -1422,7 +1422,7 @@ public class CeParser extends Ceparse
 	CeParser parser = new CeParser(factory);
         ServerDDS sdds = ceEval.getDDS();
         if(!parser.parse(sreader)) return false;
-        AST.ASTconstraint root = (AST.ASTconstraint)parser.getAST();
+        ASTconstraint root = (ASTconstraint)parser.getAST();
 	root.init(ceEval,factory,clauseFactory,sdds,parser.getASTnodeset());
 	root.walkConstraint();
         return true;

@@ -242,6 +242,7 @@
             <classpath refid="dap.compile.classpath"/>
             <src path="${src.java.dir}"/>
             <include name="opendap/dap/**/*.java"/>
+            <include name="opendap/Server/**/*.java"/>
             <include name="opendap/Version.java"/>
             <include name="opendap/util/**/*.java"/>
             <exclude name="opendap/dap/parser/ignore/*.java"/>
@@ -329,8 +330,9 @@
             >
         <uptodate property="JavaDocIsUpToDate" targetfile="${build.doc}/javadoc/index.html">
             <srcfiles dir="${src.java.dir}">
-                <include name="opendap/Version.java"/>
+	                <include name="opendap/Version.java"/>
                 <include name="opendap/dap/**/*.java"/>
+                <include name="opendap/Server/**/*.java"/>
                 <include name="opendap/util/**/*.java"/>
                 <include name="opendap/servlet/**/*.java"/>
                 <include name="opendap/servers/www/**/*.java"/>
