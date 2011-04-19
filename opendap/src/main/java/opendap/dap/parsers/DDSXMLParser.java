@@ -49,7 +49,7 @@ import org.jdom.*;
 import org.jdom.input.SAXBuilder;
 
 import opendap.dap.*;
-import opendap.util.util.Debug;
+import opendap.util.Debug;
 
 /**
  * <code>DDSXMLParser</code> is used to parse a DDX (the XML formatted persistent

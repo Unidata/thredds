@@ -41,8 +41,8 @@
 package opendap.tools;
 
 import opendap.dap.*;
-import opendap.util.util.Getopts;
-import opendap.util.util.InvalidSwitch;
+import opendap.util.Getopts;
+import opendap.util.InvalidSwitch;
 
 /**
  * Java port of the geturl command-line client.

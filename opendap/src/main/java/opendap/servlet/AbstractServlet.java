@@ -49,7 +49,7 @@ import javax.servlet.http.*;
 import opendap.dap.*;
 import opendap.Server.*;
 import opendap.dap.parsers.ParseException;
-import opendap.util.util.Debug;
+import opendap.util.Debug;
 
 /**
  * AbstractServlet is the base servlet class for an OPeNDAP

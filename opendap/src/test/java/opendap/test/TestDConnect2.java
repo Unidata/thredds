@@ -1,8 +1,8 @@
 package opendap.test;
 
 import opendap.dap.*;
-import opendap.util.util.Getopts;
-import opendap.util.util.InvalidSwitch;
+import opendap.util.Getopts;
+import opendap.util.InvalidSwitch;
 
 import java.io.*;
 

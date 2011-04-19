@@ -38,7 +38,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 
-package opendap.util.util;
+package opendap.util;
 
 import java.util.Dictionary;
 import java.util.Enumeration;

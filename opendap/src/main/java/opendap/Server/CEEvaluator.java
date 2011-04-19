@@ -46,7 +46,7 @@ import java.io.*;
 import opendap.Server.parsers.CeParser;
 import opendap.dap.*;
 import opendap.dap.parsers.*;
-import opendap.util.util.Debug;
+import opendap.util.Debug;
 
 /**
  * This class is used to parse and evaluate a constraint expression. When

@@ -43,8 +43,8 @@ package opendap.dap;
 import java.util.Enumeration;
 
 import opendap.dap.parsers.DDSXMLParser;
-import opendap.util.util.SortedTable;
-import opendap.util.util.Debug;
+import opendap.util.SortedTable;
+import opendap.util.Debug;
 
 import java.io.*;
 

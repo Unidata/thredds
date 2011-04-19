@@ -44,7 +44,7 @@ import java.util.Enumeration;
 import java.util.Vector;
 
 import opendap.dap.parsers.*;
-import opendap.util.util.Debug;
+import opendap.util.Debug;
 
 import java.io.*;
 

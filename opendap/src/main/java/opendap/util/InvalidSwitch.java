@@ -38,62 +38,32 @@
 /////////////////////////////////////////////////////////////////////////////
 
 
-package opendap.util.util;
-
-import java.util.TreeMap;
+package opendap.util;
 
 /**
- * A minimal implementation of a globally-accessible set of Debug flags.
+ * Exception throwable by the Getopts class
  */
-
-public class Debug {
-    static private TreeMap map = new TreeMap();
-    static private boolean debug = false, changed = true;
-
-    static public boolean isSet(String flagName) {
-        Object val;
-        if (null == (val = map.get(flagName))) {
-            if (debug) System.out.println("Debug.isSet new " + flagName);
-            map.put(flagName, new Boolean(false));
-            changed = true;
-            return false;
-        }
-
-        return ((Boolean) val).booleanValue();
+public class InvalidSwitch extends Throwable {
+/**
+ *   This is the specific exception that is thrown when an invalid
+ *   switch or another problem occurred in the Getopts class.
+ */
+    /**
+     * Used when no notification string other than the
+     * standard one will be thrown with the exception.
+     */
+    public InvalidSwitch() {
+        super();
     }
 
-    static public void set(String flagName, boolean value) {
-        Object val;
-        if (null == (val = map.get(flagName))) {
-            changed = true;
-        }
-        map.put(flagName, new Boolean(value));
-        if (debug) System.out.println("  Debug.set " + flagName + " " + value);
-    }
-
-    static public void clear() {
-        map = new TreeMap();
-    }
-
-    static public java.util.Set keySet() {
-        return map.keySet();
+    /**
+     * Used when passing the string that will be thrown.
+     *
+     * @param    s    the error string that is notified
+     */
+    public InvalidSwitch(String s) {
+        super(s);
     }
 }
-
-/**
- * $Log: Debug.java,v $
- * Revision 1.1  2003/08/12 23:51:27  ndp
- * Mass check in to begin Java-OPeNDAP development work
- *
- * Revision 1.2  2002/09/13 21:12:08  caron
- * add keySet()
- *
- * Revision 1.1  2001/10/24 22:51:42  ndp
- * *** empty log message ***
- *
- * Revision 1.1.1.1  2001/09/26 15:36:47  caron
- * checkin beta1
- *
- */
 
 

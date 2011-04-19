@@ -49,7 +49,7 @@ import opendap.dap.parsers.*;
 import opendap.Server.*;
 import opendap.servlet.GuardedDataset;
 import opendap.servlet.ReqState;
-import opendap.util.util.Debug;
+import opendap.util.Debug;
 
 
 /**
