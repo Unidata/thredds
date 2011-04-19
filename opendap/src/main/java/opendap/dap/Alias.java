@@ -42,6 +42,7 @@ package opendap.dap;
 import java.util.Enumeration;
 import java.io.PrintWriter;
 
+import opendap.dap.parsers.DDSXMLParser;
 import opendap.util.Debug;
 import opendap.dap.util.EscapeStrings;
 
@@ -335,9 +336,9 @@ public class Alias extends Attribute
 
 
         pw.println(pad + "<Alias name=\"" +
-                opendap.dap.XMLparser.DDSXMLParser.normalizeToXML(getClearName()) + "\" " +
+                DDSXMLParser.normalizeToXML(getClearName()) + "\" " +
                 "Attribute=\"" +
-                opendap.dap.XMLparser.DDSXMLParser.normalizeToXML(getAliasedToAttributeFieldAsClearString()) + "\"/>");
+                DDSXMLParser.normalizeToXML(getAliasedToAttributeFieldAsClearString()) + "\"/>");
 
         if (Debug.isSet("Alias")) pw.println("Leaving Alias.print()");
         pw.flush();

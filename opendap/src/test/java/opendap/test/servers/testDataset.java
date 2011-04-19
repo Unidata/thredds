@@ -45,7 +45,7 @@ package opendap.test.servers;
 import java.io.*;
 
 import opendap.dap.*;
-import opendap.dap.parser.*;
+import opendap.dap.parsers.*;
 import opendap.Server.*;
 import opendap.servlet.GuardedDataset;
 import opendap.servlet.ReqState;

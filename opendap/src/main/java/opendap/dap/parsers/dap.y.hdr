@@ -5,13 +5,13 @@
 
 %define public
 %define package "opendap.dap.parser"
-%define extends "opendap.dap.parser.Dapparse"
+%define extends "opendap.dap.parsers.Dapparse"
 %define throws "ParseException"
 %define lex_throws "ParseException"
 
 %code imports {
 import opendap.dap.BaseTypeFactory;
-import opendap.dap.parser.ParseException;
+import opendap.dap.parsers.ParseException;
 import java.io.*;
 }
 

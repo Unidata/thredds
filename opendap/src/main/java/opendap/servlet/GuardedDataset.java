@@ -39,7 +39,7 @@
 
 package opendap.servlet;
 
-import opendap.dap.parser.ParseException;
+import opendap.dap.parsers.ParseException;
 import opendap.Server.ServerDDS;
 import opendap.dap.DAS;
 

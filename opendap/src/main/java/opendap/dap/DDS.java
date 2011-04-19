@@ -45,8 +45,8 @@ import java.util.Vector;
 import java.util.Stack;
 import java.io.*;
 
-import opendap.dap.parser.*;
-import opendap.dap.XMLparser.DDSXMLParser;
+import opendap.dap.parsers.DDSXMLParser;
+import opendap.dap.parsers.*;
 import opendap.util.Debug;
 import org.jdom.Document;
 
@@ -275,7 +275,7 @@ import org.jdom.Document;
  * @see BaseType
  * @see BaseTypeFactory
  * @see DAS
- * @see opendap.dap.XMLparser.DDSXMLParser
+ * @see opendap.dap.parsers.DDSXMLParser
  * @see #checkForAttributeNameConflict
  * @see #resolveAliases
  */
@@ -1070,7 +1070,7 @@ public class DDS extends DStructure
      * @throws DDSException thrown on an error constructing the
      *                      <code>DDS</code>.
      * @opendap.ddx.experimental
-     * @see opendap.dap.XMLparser.DDSXMLParser
+     * @see opendap.dap.parsers.DDSXMLParser
      * @see #checkForAttributeNameConflict
      * @see #resolveAliases
      */
@@ -1134,7 +1134,7 @@ public class DDS extends DStructure
      * @throws DDSException thrown on an error constructing the
      *                      <code>DDS</code>.
      * @opendap.ddx.experimental
-     * @see opendap.dap.XMLparser.DDSXMLParser
+     * @see opendap.dap.parsers.DDSXMLParser
      * @see #checkForAttributeNameConflict
      * @see #resolveAliases
      */
@@ -1884,7 +1884,7 @@ public class DDS extends DStructure
         pw.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
 
         pw.println("<Dataset name=\"" +
-                opendap.dap.XMLparser.DDSXMLParser.normalizeToXML(getName()) + "\"");
+                DDSXMLParser.normalizeToXML(getName()) + "\"");
         pw.println("xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"");
         pw.println("xmlns=\"" + opendapNameSpace + "\"");
         pw.print("xsi:schemaLocation=\"");
@@ -1915,7 +1915,7 @@ public class DDS extends DStructure
         pw.println("");
         if (_dataBlobID != null) {
             pw.println(pad + "\t" + "<dataBLOB href=\"" +
-                    opendap.dap.XMLparser.DDSXMLParser.normalizeToXML(_dataBlobID) + "\"/>");
+                    DDSXMLParser.normalizeToXML(_dataBlobID) + "\"/>");
         }
         pw.println(pad + "</Dataset>");
 

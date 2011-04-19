@@ -40,6 +40,8 @@
 
 package opendap.dap;
 
+import opendap.dap.parsers.DDSXMLParser;
+
 import java.util.Enumeration;
 import java.io.PrintWriter;
 
@@ -179,7 +181,7 @@ abstract public class DConstructor extends BaseType {
         pw.print(pad + "<" + getTypeName());
         if (getName() != null) {
             pw.print(" name=\"" +
-                    opendap.dap.XMLparser.DDSXMLParser.normalizeToXML(getClearName()) + "\"");
+                    DDSXMLParser.normalizeToXML(getClearName()) + "\"");
         }
 
 

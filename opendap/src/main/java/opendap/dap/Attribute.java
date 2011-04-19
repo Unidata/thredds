@@ -39,6 +39,8 @@
 
 package opendap.dap;
 
+import opendap.dap.parsers.DDSXMLParser;
+
 import java.util.Enumeration;
 import java.util.Vector;
 import java.util.Iterator;
@@ -834,7 +836,7 @@ public class Attribute extends DAPNode
       if (_Debug) pw.println("    Printing Attribute \"" + _name + "\".");
 
       pw.println(pad + "<Attribute name=\"" +
-              opendap.dap.XMLparser.DDSXMLParser.normalizeToXML(getName()) +
+              DDSXMLParser.normalizeToXML(getName()) +
               "\" type=\"" + getTypeString() + "\">");
 
       Enumeration es = ((Vector) this.attr).elements();
@@ -842,7 +844,7 @@ public class Attribute extends DAPNode
         String val = (String) es.nextElement();
         pw.println(pad + "\t" +
                 "<value>" +
-                opendap.dap.XMLparser.DDSXMLParser.normalizeToXML(val) +
+                DDSXMLParser.normalizeToXML(val) +
                 "</value>");
       }
       pw.println(pad + "</Attribute>");

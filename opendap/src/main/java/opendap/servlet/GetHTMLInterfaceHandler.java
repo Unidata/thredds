@@ -44,11 +44,10 @@ package opendap.servlet;
 
 import java.io.*;
 import javax.servlet.http.*;
-import java.nio.charset.Charset;
 
 import opendap.servers.www.*;
 import opendap.dap.*;
-import opendap.dap.parser.*;
+import opendap.dap.parsers.*;
 import opendap.Server.ServerDDS;
 
 /**

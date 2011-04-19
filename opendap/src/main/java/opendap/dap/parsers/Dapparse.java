@@ -3,16 +3,15 @@
 
 /****************************************************/
 
-package opendap.dap.parser;
+package opendap.dap.parsers;
 
 import opendap.dap.*;
-import opendap.dap.parser.ParseException;
 
 import java.io.InputStream;
 import java.util.*;
 
 
-import static opendap.dap.parser.DapParser.*;
+import static opendap.dap.parsers.DapParser.*;
 
 public abstract class Dapparse
 {

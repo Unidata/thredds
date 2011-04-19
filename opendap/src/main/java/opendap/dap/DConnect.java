@@ -43,7 +43,7 @@ package opendap.dap;
 import java.net.*;
 import java.io.*;
 
-import opendap.dap.parser.ParseException;
+import opendap.dap.parsers.ParseException;
 
 import java.util.zip.InflaterInputStream;
 

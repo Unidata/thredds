@@ -40,13 +40,11 @@
 
 package opendap.dap;
 
-import opendap.dap.http.*;
-
 import java.io.*;
 
-//import opendap.dap.parser.ErrorParser;
-import opendap.dap.parser.DapParser;
-import opendap.dap.parser.ParseException;
+//import opendap.dap.parsers.ErrorParser;
+import opendap.dap.parsers.DapParser;
+import opendap.dap.parsers.ParseException;
 
 /**
  * Holds an exception thrown by OPeNDAP server to a client.
@@ -276,7 +274,7 @@ public class DAP2Exception extends Exception {
      * <code>Error</code>, and regenerate it as a <code>DAP2Exception</code>.
      *
      * @param is the InputStream containing the <code>Error</code> to parse.
-     * @see opendap.dap.parser.ErrorParser
+     * @see opendap.dap.parsers.ErrorParser
      */
     public final boolean parse(InputStream stream) {
         DapParser parser = new DapParser(new DefaultFactory());

@@ -40,6 +40,8 @@
 
 package opendap.dap;
 
+import opendap.dap.parsers.DDSXMLParser;
+
 import java.io.*;
 import java.util.Enumeration;
 
@@ -561,7 +563,7 @@ public abstract class BaseType extends DAPNode
         pw.print(pad + "<" + getTypeName());
         if (_name != null) {
             pw.print(" name=\"" +
-                    opendap.dap.XMLparser.DDSXMLParser.normalizeToXML(_name) + "\"");
+                    DDSXMLParser.normalizeToXML(_name) + "\"");
         }
 
         Enumeration e = getAttributeNames();

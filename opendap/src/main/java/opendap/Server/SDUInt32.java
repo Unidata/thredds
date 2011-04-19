@@ -45,7 +45,7 @@ import opendap.dap.*;
 
 import java.io.*;
 
-import opendap.dap.parser.ExprParserConstants;
+import opendap.dap.parsers.ExprParserConstants;
 
 /**
  * Holds a OPeNDAP Server <code>Unsigned Int32</code> value.

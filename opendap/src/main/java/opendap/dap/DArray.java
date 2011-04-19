@@ -39,6 +39,8 @@
 
 package opendap.dap;
 
+import opendap.dap.parsers.DDSXMLParser;
+
 import java.io.PrintWriter;
 import java.util.Enumeration;
 import java.util.Vector;
@@ -385,7 +387,7 @@ public class DArray extends DVector
         pw.print(pad + "<Array");
         if (getName() != null) {
             pw.print(" name=\"" +
-                    opendap.dap.XMLparser.DDSXMLParser.normalizeToXML(getClearName()) + "\"");
+                    DDSXMLParser.normalizeToXML(getClearName()) + "\"");
         }
         pw.println(">");
 
@@ -410,7 +412,7 @@ public class DArray extends DVector
         pw.print(pad + "<Map");
         if (getName() != null) {
             pw.print(" name=\"" +
-                    opendap.dap.XMLparser.DDSXMLParser.normalizeToXML(getClearName()) + "\"");
+                    DDSXMLParser.normalizeToXML(getClearName()) + "\"");
         }
         pw.println(">");
 
@@ -468,7 +470,7 @@ public class DArray extends DVector
                 pw.println(pad + "\t" + "<dimension size=\"" + size + "\"/>");
             } else {
                 pw.println(pad + "\t" + "<dimension name=\"" +
-                        opendap.dap.XMLparser.DDSXMLParser.normalizeToXML(name) +
+                        DDSXMLParser.normalizeToXML(name) +
                         "\" size=\"" + size + "\"/>");
             }
         }

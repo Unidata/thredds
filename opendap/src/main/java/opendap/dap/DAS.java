@@ -43,7 +43,7 @@ package opendap.dap;
 import java.util.Enumeration;
 import java.util.Vector;
 
-import opendap.dap.parser.*;
+import opendap.dap.parsers.*;
 import opendap.util.Debug;
 
 import java.io.*;

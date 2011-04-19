@@ -40,7 +40,7 @@
 
 package opendap.servlet;
 
-import opendap.dap.parser.ParseException;
+import opendap.dap.parsers.ParseException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

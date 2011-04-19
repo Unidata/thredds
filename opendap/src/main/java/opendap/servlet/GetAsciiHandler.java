@@ -48,7 +48,7 @@ import javax.servlet.http.*;
 import opendap.dap.*;
 import opendap.util.*;
 import opendap.servers.ascii.*;
-import opendap.dap.parser.ParseException;
+import opendap.dap.parsers.ParseException;
 
 /**
  * Default handler for OPeNDAP ascii requests. This class is used

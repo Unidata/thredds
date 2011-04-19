@@ -33,7 +33,7 @@
 
 package opendap.test;
 
-import opendap.dap.parser.*;
+import opendap.dap.parsers.*;
 import opendap.dap.*;
 
 import java.io.*;

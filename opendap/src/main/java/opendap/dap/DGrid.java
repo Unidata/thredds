@@ -41,6 +41,7 @@
 package opendap.dap;
 
 import opendap.Server.SDArray;
+import opendap.dap.parsers.DDSXMLParser;
 
 import java.io.*;
 import java.util.Vector;
@@ -485,7 +486,7 @@ public class DGrid extends DConstructor implements ClientIO {
         pw.print(pad + "<Grid");
         if (getName() != null) {
             pw.print(" name=\"" +
-                    opendap.dap.XMLparser.DDSXMLParser.normalizeToXML(getClearName()) + "\"");
+                    DDSXMLParser.normalizeToXML(getClearName()) + "\"");
         }
         pw.println(">");
 

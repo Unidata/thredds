@@ -45,8 +45,7 @@ import java.util.Enumeration;
 import java.io.*;
 
 import opendap.dap.*;
-import opendap.Server.ServerMethods;
-import opendap.Server.SBHException;
+import opendap.dap.parsers.DDSXMLParser;
 
 /**
  * Holds a OPeNDAP Server <code>Grid</code> value.
@@ -579,7 +578,7 @@ public abstract class SDGrid extends DGrid implements ServerArrayMethods, RelOps
             pw.print(pad + "<Grid ");
             if (getName() != null) {
                 pw.print(" name=\"" +
-                        opendap.dap.XMLparser.DDSXMLParser.normalizeToXML(getName()) + "\"");
+                        DDSXMLParser.normalizeToXML(getName()) + "\"");
             }
             pw.println(">");
         }
@@ -589,7 +588,7 @@ public abstract class SDGrid extends DGrid implements ServerArrayMethods, RelOps
             pw.print(pad + "<Structure");
             if (getName() != null) {
                 pw.print(" name=\"" +
-                        opendap.dap.XMLparser.DDSXMLParser.normalizeToXML(getName()) + "\"");
+                        DDSXMLParser.normalizeToXML(getName()) + "\"");
             }
             pw.println(">");
 

@@ -46,7 +46,7 @@ import java.util.*;
 import opendap.dap.*;
 import opendap.dap.util.dasTools;
 import opendap.Server.*;
-import opendap.dap.parser.ParseException;
+import opendap.dap.parsers.ParseException;
 
 /**
  * Default handler for OPeNDAP info requests. This class is used

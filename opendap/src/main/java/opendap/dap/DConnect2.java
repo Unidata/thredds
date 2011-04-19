@@ -42,18 +42,15 @@ package opendap.dap;
 
 import java.net.*;
 import java.io.*;
-import java.util.*;
 
-import opendap.dap.parser.*;
+import opendap.dap.parsers.*;
 import opendap.dap.http.*;
 
 import java.util.zip.InflaterInputStream;
 import java.util.zip.GZIPInputStream;
-import java.util.Formatter;
 
 import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.auth.*;
-import org.apache.commons.httpclient.methods.*;
 import org.apache.commons.httpclient.util.URIUtil;
 
 /**

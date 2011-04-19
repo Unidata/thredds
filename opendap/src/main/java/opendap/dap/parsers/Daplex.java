@@ -35,11 +35,9 @@
    parallel to this one
 */
 
-package opendap.dap.parser;
+package opendap.dap.parsers;
 
-import opendap.dap.parser.DapParser.*;
-import static opendap.dap.parser.DapParser.*;
-import opendap.dap.parser.ParseException;
+import static opendap.dap.parsers.DapParser.*;
 
 import java.io.*;
 

@@ -30,7 +30,7 @@
    This special exception was added by the Free Software Foundation in
    version 2.2 of Bison.  */
 
-package opendap.dap.parser;
+package opendap.dap.parsers;
 /* First part of user declarations.  */
 
 /* "%code imports" blocks.  */
@@ -39,7 +39,7 @@ package opendap.dap.parser;
 /* Line 12 of "dap.y"  */
 
 import opendap.dap.BaseTypeFactory;
-import opendap.dap.parser.ParseException;
+
 import java.io.*;
 
 
@@ -52,7 +52,7 @@ import java.io.*;
  *
  * @author LALR (1) parser skeleton written by Paolo Bonzini.
  */
-public class DapParser extends opendap.dap.parser.Dapparse
+public class DapParser extends opendap.dap.parsers.Dapparse
 {
     /** Version number for the Bison executable that generated this parser.  */
   public static final String bisonVersion = "2.4.2";

@@ -42,6 +42,7 @@ package opendap.dap;
 
 import java.util.Enumeration;
 
+import opendap.dap.parsers.DDSXMLParser;
 import opendap.dap.util.SortedTable;
 import opendap.util.Debug;
 
@@ -466,7 +467,7 @@ public class AttributeTable extends DAPNode
         if (Debug.isSet("AttributTable")) pw.println("Entered AttributeTable.print()");
 
         pw.println(pad + "<Attribute name=\"" +
-                opendap.dap.XMLparser.DDSXMLParser.normalizeToXML(getName()) +
+                DDSXMLParser.normalizeToXML(getName()) +
                 "\" type=\"Container\">");
 
         Enumeration e = getNames();

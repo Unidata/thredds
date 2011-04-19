@@ -371,7 +371,7 @@
     <target name="xmltest" description="Runs the XmlTest application on the primary DDX test file."
             depends="dap"
             >
-        <java classname="opendap.dap.XMLparser.XmlTest">
+        <java classname="opendap.dap.parsers.XmlTest">
             <classpath refid="dap.compile.classpath"/>
             <arg value="-v"/>
             <arg value="${testsuites.dir}/sdds-testsuite/ddx/xmltest.01"/>

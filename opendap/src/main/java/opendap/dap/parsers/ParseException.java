@@ -1,4 +1,4 @@
-package opendap.dap.parser;
+package opendap.dap.parsers;
 
 import java.io.IOException;
 

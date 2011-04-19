@@ -35,9 +35,8 @@ package opendap.test;
 
 import junit.framework.TestCase;
 import opendap.dap.*;
-import opendap.dap.parser.*;
+import opendap.dap.parsers.*;
 import opendap.Server.*;
-import opendap.test.servers.*;
 
 import java.util.*;
 import java.io.*;

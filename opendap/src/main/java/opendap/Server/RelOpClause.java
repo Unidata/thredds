@@ -42,8 +42,8 @@ package opendap.Server;
 import java.util.*;
 import java.io.*;
 
-import opendap.dap.parser.ExprParserConstants; // used only for toString()
-import opendap.Server.Operator;
+import opendap.dap.parsers.ExprParserConstants; // used only for toString()
+
 
 /**
  * Represents a clause which compares subclauses, using one of the
@@ -138,7 +138,7 @@ public class RelOpClause
     /**
      * Returns the type of comparison
      *
-     * @see opendap.dap.parser.ExprParserConstants
+     * @see opendap.dap.parsers.ExprParserConstants
      */
     public int getOperator() {
         return operator;

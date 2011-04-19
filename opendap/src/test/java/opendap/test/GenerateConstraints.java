@@ -39,7 +39,7 @@ TODO: add function calls
 package opendap.test;
 
 import opendap.dap.*;
-import opendap.dap.parser.*;
+import opendap.dap.parsers.*;
 import opendap.Server.*;
 import opendap.test.servers.*;
 

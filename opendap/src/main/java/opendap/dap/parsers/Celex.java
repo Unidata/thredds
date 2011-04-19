@@ -35,11 +35,9 @@
    netcdf/libncdap3 ce parser parallel to this one
 */
 
-package opendap.dap.parser;
+package opendap.dap.parsers;
 
-import opendap.dap.parser.CeParser.*;
-import static opendap.dap.parser.CeParser.*;
-import opendap.dap.parser.ParseException;
+import static opendap.dap.parsers.CeParser.*;
 
 import java.io.*;
 
