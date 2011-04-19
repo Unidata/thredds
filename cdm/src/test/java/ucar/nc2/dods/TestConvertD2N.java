@@ -33,7 +33,7 @@
 package ucar.nc2.dods;
 
 import opendap.dap.*;
-import opendap.dap.parser.ParseException;
+import opendap.dap.parsers.ParseException;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -57,7 +57,7 @@ import ucar.nc2.util.IO;
 public class TestConvertD2N {
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // debugging
-  static DataDDS testDataDDSfromServer(String urlName, String CE) throws IOException, opendap.dap.parser.ParseException,
+  static DataDDS testDataDDSfromServer(String urlName, String CE) throws IOException, opendap.dap.parsers.ParseException,
           opendap.dap.DAP2Exception, InvalidRangeException {
 
     System.out.println("--DConnect ="+urlName);
@@ -106,7 +106,7 @@ public class TestConvertD2N {
     return dataDDS;
   }
 
-  static void testArray(String urlName) throws IOException, opendap.dap.parser.ParseException,
+  static void testArray(String urlName) throws IOException, opendap.dap.parsers.ParseException,
           opendap.dap.DAP2Exception {
 
     System.out.println("checkArray ="+urlName);

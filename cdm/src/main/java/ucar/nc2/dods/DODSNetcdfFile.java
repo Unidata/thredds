@@ -40,7 +40,7 @@ import ucar.nc2.constants._Coordinate;
 import ucar.nc2.util.*;
 
 import opendap.dap.*;
-import opendap.dap.parser.*;
+import opendap.dap.parsers.*;
 import ucar.unidata.util.StringUtil;
 
 import java.io.*;
@@ -225,7 +225,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
       if (debugOpenResult)
         System.out.println("dodsVersion = " + dodsConnection.getServerVersion());
 
-    } catch (opendap.dap.parser.ParseException e) {
+    } catch (opendap.dap.parsers.ParseException e) {
       logger.info("DODSNetcdfFile " + datasetURL, e);
       if (debugOpenResult)
         System.out.println("open failure = " + e.getMessage());
@@ -1157,11 +1157,11 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
    * @param CE constraint expression; use empty string if none
    * @return DataDDS
    * @throws java.io.IOException       on io error
-   * @throws opendap.dap.parser.ParseException
+   * @throws opendap.dap.parsers.ParseException
    *                                   if error parsing return
    * @throws opendap.dap.DAP2Exception if you have otherwise been bad
    */
-  DataDDS readDataDDSfromServer(String CE) throws IOException, opendap.dap.parser.ParseException, opendap.dap.DAP2Exception {
+  DataDDS readDataDDSfromServer(String CE) throws IOException, opendap.dap.parsers.ParseException, opendap.dap.DAP2Exception {
     if (debugServerCall) System.out.println("DODSNetcdfFile.readDataDDSfromServer = <" + CE + ">");
 
     long start = 0;

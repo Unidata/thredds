@@ -33,7 +33,7 @@
 package ucar.nc2.dods;
 
 import opendap.dap.*;
-import opendap.dap.parser.ParseException;
+import opendap.dap.parsers.ParseException;
 
 import java.util.ArrayList;
 import java.util.Enumeration;

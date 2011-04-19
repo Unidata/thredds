@@ -402,7 +402,7 @@ public class DatasetNamer {
       logger.error("nameDatasetDodsAttrib(): Failed to get DAS: " + e.getMessage());
       return (false);
     }
-    catch (opendap.dap.parser.ParseException e) {
+    catch (opendap.dap.parsers.ParseException e) {
       logger.error("nameDatasetDodsAttrib(): Failed to get DAS: " + e.getMessage());
       return (false);
     }

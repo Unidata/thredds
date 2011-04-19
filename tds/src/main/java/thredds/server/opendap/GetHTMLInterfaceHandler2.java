@@ -29,7 +29,7 @@ import opendap.dap.DAP2Exception;
 import opendap.dap.DAS;
 import opendap.dap.DDS;
 import opendap.Server.ServerDDS;
-import opendap.dap.parser.ParseException;
+import opendap.dap.parsers.ParseException;
 import opendap.servers.www.jscriptCore;
 import opendap.servers.www.wwwFactory;
 import opendap.servers.www.wwwOutPut;
@@ -72,7 +72,7 @@ public class GetHTMLInterfaceHandler2
      * @param sdds
      * @param myDAS
      * @throws opendap.dap.DAP2Exception
-     * @throws opendap.dap.parser.ParseException
+     * @throws opendap.dap.parsers.ParseException
      * @see opendap.servers.www.wwwFactory
      */
     public void sendDataRequestForm(HttpServletRequest request,
