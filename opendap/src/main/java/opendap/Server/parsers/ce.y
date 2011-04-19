@@ -11,6 +11,7 @@
 
 %code imports {
 import opendap.dap.*;
+import opendap.dap.parsers.*;
 import opendap.Server.*;
 import java.io.*;
 }
@@ -54,7 +55,7 @@ import java.io.*;
 	CeParser parser = new CeParser(factory);
         ServerDDS sdds = ceEval.getDDS();
         if(!parser.parse(sreader)) return false;
-        ASTconstraint root = (ASTconstraint)parser.getAST();
+        AST.ASTconstraint root = (AST.ASTconstraint)parser.getAST();
 	root.init(ceEval,factory,clauseFactory,sdds,parser.getASTnodeset());
 	root.walkConstraint();
         return true;

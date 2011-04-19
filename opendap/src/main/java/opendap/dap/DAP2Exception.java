@@ -295,15 +295,19 @@ public class DAP2Exception extends Exception {
     public void print(PrintWriter os) {
         os.println("Error {");
         os.println("    code = " + errorCode + ";");
-
-        // If the error message is wrapped in double quotes, print it, else,
-        // add wrapping double quotes.
-        if ((errorMessage != null) && (errorMessage.charAt(0) == '"'))
-            os.println("    message = " + errorMessage + ";");
-        else
-            os.println("    message = \"" + errorMessage + "\";");
-
+        if(errorMessage != null) os.println("    message = " + dumpword(errorMessage) + ";");
+        //if(programType > 0) os.println("    program_type = " + programType + ";");
+        if(programSource != null) os.println("    program = " + dumpword(programSource) + ";");
         os.println("};");
+    }
+    private String dumpword(String word)
+    {
+        if (word == null)
+           return "";
+        else if(word.charAt(0) == '"')
+           return word;
+        else
+            return "\"" + word + "\"";
     }
 
     /**

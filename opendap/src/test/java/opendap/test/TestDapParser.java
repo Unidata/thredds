@@ -112,7 +112,7 @@ public class TestDapParser extends TestFiles
 	    File testfile = new File(testfilepath);
 	    File resultfile = new File(resultpath);
 	    if(!testfile.canRead()) {
-		System.err.println("TestDapParser: cannot read: "+testfile.toString());
+		    System.err.println("TestDapParser: cannot read: "+testfile.toString());
 	        continue;
 	    }
 	    teststream = new FileInputStream(testfile);

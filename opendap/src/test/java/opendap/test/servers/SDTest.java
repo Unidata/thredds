@@ -51,8 +51,8 @@ import java.io.*;
 import java.util.Enumeration;
 
 //import gnu.getopt.Getopt;
-import opendap.dap.util.Getopts;
-import opendap.dap.util.InvalidSwitch;
+import opendap.util.util.Getopts;
+import opendap.util.util.InvalidSwitch;
 import opendap.dap.BaseType;
 import opendap.Server.*;
 
