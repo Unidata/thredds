@@ -126,6 +126,9 @@ public class GradsDataDescriptorFile {
     /** little endian identifier */
     private static final String LITTLE_ENDIAN = "LITTLE_ENDIAN";
 
+    /** little endian identifier */
+    private static final String BYTESWAPPED = "BYTESWAPPED";
+
     /** sequential identifier */
     private static final String SEQUENTIAL = "SEQUENTIAL";
 
@@ -322,6 +325,9 @@ public class GradsDataDescriptorFile {
                             } else if (token.equalsIgnoreCase(
                                     LITTLE_ENDIAN)) {
                                 bigEndian = false;
+                            } else if (token.equalsIgnoreCase(
+                                    BYTESWAPPED)) {
+                            	swapByteOrder();
                             } else if (token.equalsIgnoreCase(YREV)) {
                                 yReversed = true;
                             } else if (token.equalsIgnoreCase(TEMPLATE)) {
@@ -432,6 +438,10 @@ public class GradsDataDescriptorFile {
         }
     }
 
+    private void swapByteOrder() {
+    	bigEndian = true;
+    }
+    
     /**
      * Get the dimensions
      *
