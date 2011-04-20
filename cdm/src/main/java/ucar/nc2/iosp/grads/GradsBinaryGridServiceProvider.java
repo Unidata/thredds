@@ -227,12 +227,17 @@ public class GradsBinaryGridServiceProvider extends AbstractIOServiceProvider {
         buildNCFile();
     }
 
+    /**
+     * Get the byte order from the data descriptor file
+     *
+     * @return  the byte order
+     */
     private int getByteOrder() {
-    	return  (gradsDDF.isBigEndian()) 
-    		? RandomAccessFile.BIG_ENDIAN
-    	    : RandomAccessFile.LITTLE_ENDIAN;
+        return (gradsDDF.isBigEndian())
+               ? RandomAccessFile.BIG_ENDIAN
+               : RandomAccessFile.LITTLE_ENDIAN;
     }
-    
+
     /**
      * Build the netCDF file
      *
@@ -271,9 +276,9 @@ public class GradsBinaryGridServiceProvider extends AbstractIOServiceProvider {
         List<GradsVariable>  vars  = gradsDDF.getVariables();
         List<GradsAttribute> attrs = gradsDDF.getAttributes();
         //TODO: ensembles
-        List<GradsDimension> dims = gradsDDF.getDimensions();
-        Variable             v;
-        int numZ = 0;
+        List<GradsDimension>       dims = gradsDDF.getDimensions();
+        Variable                   v;
+        int                        numZ  = 0;
         HashMap<String, Dimension> zDims = new HashMap<String, Dimension>();
         for (GradsDimension dim : dims) {
             String    name  = getVarName(dim);
@@ -318,8 +323,8 @@ public class GradsBinaryGridServiceProvider extends AbstractIOServiceProvider {
                             AxisType.Lon.toString()));
                     sizeX = dim.getSize();
                 } else if (name.equals(Z_VAR)) {
-                	numZ = size;
-                	zDims.put(name, ncDim);
+                    numZ = size;
+                    zDims.put(name, ncDim);
                     v.addAttribute(new Attribute("long_name", "level"));
                     if (dim.getUnit().indexOf("Pa") >= 0) {
                         v.addAttribute(new Attribute("positive", "down"));
@@ -344,39 +349,40 @@ public class GradsBinaryGridServiceProvider extends AbstractIOServiceProvider {
             ncFile.addVariable(null, v);
         }
         if (numZ > 0) {
-        	GradsDimension zDim = gradsDDF.getZDimension();
-            double[] vals = zDim.getValues();
+            GradsDimension zDim = gradsDDF.getZDimension();
+            double[]       vals = zDim.getValues();
             for (GradsVariable var : vars) {
-            	int nl = var.getNumLevels();
-            	if (nl > 0 && nl != numZ) {
-            		String name = Z_VAR+"_"+nl;
-            		if (zDims.get(name) == null) {
-                         Dimension ncDim = new Dimension(name, nl, true);
-                         ncFile.addDimension(null, ncDim);
-                         Variable vz = new Variable(ncFile, null, null, name, DataType.DOUBLE,
-                                 name);
-                         vz.addAttribute(new Attribute("units", zDim.getUnit()));
+                int nl = var.getNumLevels();
+                if ((nl > 0) && (nl != numZ)) {
+                    String name = Z_VAR + "_" + nl;
+                    if (zDims.get(name) == null) {
+                        Dimension ncDim = new Dimension(name, nl, true);
+                        ncFile.addDimension(null, ncDim);
+                        Variable vz = new Variable(ncFile, null, null, name,
+                                          DataType.DOUBLE, name);
+                        vz.addAttribute(new Attribute("units",
+                                zDim.getUnit()));
                         ArrayDouble.D1 varArray = new ArrayDouble.D1(nl);
                         for (int i = 0; i < nl; i++) {
                             varArray.set(i, vals[i]);
                         }
                         vz.setCachedData(varArray, false);
                         ncFile.addVariable(null, vz);
-                         zDims.put(name, ncDim);
-            		}
-            	}
+                        zDims.put(name, ncDim);
+                    }
+                }
             }
         }
         zDims = null;
         for (GradsVariable var : vars) {
             String coords = "latitude longitude";
-            int nl = var.getNumLevels();
+            int    nl     = var.getNumLevels();
             if (nl > 0) {
-            	if (nl == numZ) {
+                if (nl == numZ) {
                     coords = "level " + coords;
-            	} else {
-                    coords = Z_VAR+"_"+nl+" " + coords;
-            	}
+                } else {
+                    coords = Z_VAR + "_" + nl + " " + coords;
+                }
             }
             coords = "time " + coords;
             if (gradsDDF.getEnsembleDimension() != null) {

@@ -34,6 +34,9 @@
 package ucar.nc2.iosp.grads;
 
 
+import ucar.nc2.units.SimpleUnit;
+
+
 /**
  * Hold information about a GrADS variable
  * @author         Don Murray - CU/CIRES
@@ -115,6 +118,22 @@ public class GradsVariable {
             int uEnd = description.indexOf("]");
             if (uEnd > uStart) {
                 unitName = description.substring(uStart + 1, uEnd);
+            }
+        } else {  // see if we can parse (unit)
+            int uEnd = description.lastIndexOf(")");
+            if (uEnd > 0) {
+                uStart = description.lastIndexOf("(");
+                if (uStart >= 0 && uEnd > uStart) {
+                    String possibleUnitName = description.substring(uStart
+                                                  + 1, uEnd);
+                    try {
+                        SimpleUnit u = SimpleUnit.factoryWithExceptions(
+                                           possibleUnitName);
+                        unitName = possibleUnitName;
+                    } catch (Exception e) {
+                        unitName = null;
+                    }
+                }
             }
         }
     }

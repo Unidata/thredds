@@ -256,9 +256,11 @@ public class GempakFileReader implements GempakConstants {
      */
     private void setByteOrder() {
         String arch = System.getProperty("os.arch");
-        if (arch.equals("x86") ||            // Windows, Linux
-                arch.equals("arm") ||        // Window CE
-                    arch.equals("alpha")) {  // Utrix, VAX, DECOS
+        if (arch.equals("x86") ||                    // Windows, Linux
+                arch.equals("arm") ||                // Window CE
+                    arch.equals("x86_64") ||         // Windows64, Mac OS-X
+                        arch.equals("amd64") ||      // Linux64?
+                            arch.equals("alpha")) {  // Utrix, VAX, DECOS
             MTMACH = RandomAccessFile.LITTLE_ENDIAN;
         } else {
             MTMACH = RandomAccessFile.BIG_ENDIAN;

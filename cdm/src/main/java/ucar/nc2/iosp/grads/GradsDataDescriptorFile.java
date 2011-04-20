@@ -21,6 +21,9 @@
 package ucar.nc2.iosp.grads;
 
 
+import ucar.unidata.io.RandomAccessFile;
+
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -325,9 +328,8 @@ public class GradsDataDescriptorFile {
                             } else if (token.equalsIgnoreCase(
                                     LITTLE_ENDIAN)) {
                                 bigEndian = false;
-                            } else if (token.equalsIgnoreCase(
-                                    BYTESWAPPED)) {
-                            	swapByteOrder();
+                            } else if (token.equalsIgnoreCase(BYTESWAPPED)) {
+                                swapByteOrder();
                             } else if (token.equalsIgnoreCase(YREV)) {
                                 yReversed = true;
                             } else if (token.equalsIgnoreCase(TEMPLATE)) {
@@ -438,10 +440,23 @@ public class GradsDataDescriptorFile {
         }
     }
 
+    /**
+     * Swap the byte order from the system default
+     */
     private void swapByteOrder() {
-    	bigEndian = true;
+        // NB: we are setting bigEndian to be opposite the system arch
+        String arch = System.getProperty("os.arch");
+        if (arch.equals("x86") ||                    // Windows, Linux
+                arch.equals("arm") ||                // Window CE
+                    arch.equals("x86_64") ||         // Windows64, Mac OS-X
+                        arch.equals("amd64") ||      // Linux64?
+                            arch.equals("alpha")) {  // Utrix, VAX, DECOS
+            bigEndian = true;
+        } else {
+            bigEndian = false;
+        }
     }
-    
+
     /**
      * Get the dimensions
      *
