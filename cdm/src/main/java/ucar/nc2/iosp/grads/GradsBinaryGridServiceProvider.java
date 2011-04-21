@@ -471,9 +471,13 @@ public class GradsBinaryGridServiceProvider extends AbstractIOServiceProvider {
      */
     private float[] readGrid(int index) throws IOException {
         //System.out.println("grid number: " + index);
-        dataFile.seek(0);
-        // get the first file so we can calculate the sequentialRecordBytes
-        dataFile.skipBytes(fileHeaderBytes);
+        // NB: RandomAccessFile.skipBytes only takes an int.   For files larger than 
+        // 2GB, that is problematic, so we use offset as a long
+        long offset = 0;
+        dataFile.seek(offset);
+        // skip over the file header
+        //dataFile.skipBytes(fileHeaderBytes);
+        offset += fileHeaderBytes;
         // The full record structure of a Fortran sequential binary file is:
         //  [Length] [Record 1 data] [Length]
         //  [Length] [Record 2 data] [Length]
@@ -481,8 +485,10 @@ public class GradsBinaryGridServiceProvider extends AbstractIOServiceProvider {
         //  ...
         //  [End of file] 
         // so we have to add 2*sequentialRecordBytes for each record we skip, 
-        int offset = (sizeX * sizeY * wordSize + xyHeaderBytes
-                      + 2 * sequentialRecordBytes) * index;
+        offset += (sizeX * sizeY * wordSize + xyHeaderBytes
+                   + 2l * sequentialRecordBytes) * (long) index;
+        //System.out.println("offset to grid = " + offset);
+
         // TODO: make sure this works - need an example
         int curTimeStep = index / gradsDDF.getGridsPerTimeStep();
         // add time headers
@@ -491,7 +497,8 @@ public class GradsBinaryGridServiceProvider extends AbstractIOServiceProvider {
         offset += curTimeStep * timeTrailerBytes;
         // and then 1 sequentialRecordBytes for the record itself (+ xyHeader)
         offset += (xyHeaderBytes + sequentialRecordBytes);
-        dataFile.skipBytes(offset);
+        //dataFile.skipBytes(offset);
+        dataFile.seek(offset);
         float[] data = new float[sizeX * sizeY];
         dataFile.readFloat(data, 0, sizeX * sizeY);
         if (gradsDDF.isYReversed()) {
