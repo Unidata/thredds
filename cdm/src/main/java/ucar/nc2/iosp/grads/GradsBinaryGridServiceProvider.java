@@ -326,15 +326,7 @@ public class GradsBinaryGridServiceProvider extends AbstractIOServiceProvider {
                     numZ = size;
                     zDims.put(name, ncDim);
                     v.addAttribute(new Attribute("long_name", "level"));
-                    if (dim.getUnit().indexOf("Pa") >= 0) {
-                        v.addAttribute(new Attribute("positive", "down"));
-                        v.addAttribute(new Attribute(_Coordinate.AxisType,
-                                AxisType.Pressure.toString()));
-                    } else {
-                        v.addAttribute(new Attribute("positive", "up"));
-                        v.addAttribute(new Attribute(_Coordinate.AxisType,
-                                AxisType.Height.toString()));
-                    }
+                    addZAttributes(dim, v);
                 } else if (name.equals(TIME_VAR)) {
                     v.addAttribute(new Attribute("long_name", "time"));
                     v.addAttribute(new Attribute(_Coordinate.AxisType,
@@ -354,14 +346,16 @@ public class GradsBinaryGridServiceProvider extends AbstractIOServiceProvider {
             for (GradsVariable var : vars) {
                 int nl = var.getNumLevels();
                 if ((nl > 0) && (nl != numZ)) {
-                    String name = Z_VAR + "_" + nl;
+                    String name = Z_VAR + nl;
                     if (zDims.get(name) == null) {
                         Dimension ncDim = new Dimension(name, nl, true);
                         ncFile.addDimension(null, ncDim);
                         Variable vz = new Variable(ncFile, null, null, name,
                                           DataType.DOUBLE, name);
+                        vz.addAttribute(new Attribute("long_name", name));
                         vz.addAttribute(new Attribute("units",
                                 zDim.getUnit()));
+                        addZAttributes(zDim, vz);
                         ArrayDouble.D1 varArray = new ArrayDouble.D1(nl);
                         for (int i = 0; i < nl; i++) {
                             varArray.set(i, vals[i]);
@@ -381,7 +375,7 @@ public class GradsBinaryGridServiceProvider extends AbstractIOServiceProvider {
                 if (nl == numZ) {
                     coords = "level " + coords;
                 } else {
-                    coords = Z_VAR + "_" + nl + " " + coords;
+                    coords = Z_VAR + nl + " " + coords;
                 }
             }
             coords = "time " + coords;
@@ -458,6 +452,23 @@ public class GradsBinaryGridServiceProvider extends AbstractIOServiceProvider {
             }
         }
 
+    }
+
+    /**
+     * Add the appropriate attributes for a Z dimension
+     * @param zDim  The GrADS Z dimension
+     * @param v     the variable to augment
+     */
+    private void addZAttributes(GradsDimension zDim, Variable v) {
+        if (zDim.getUnit().indexOf("Pa") >= 0) {
+            v.addAttribute(new Attribute("positive", "down"));
+            v.addAttribute(new Attribute(_Coordinate.AxisType,
+                                         AxisType.Pressure.toString()));
+        } else {
+            v.addAttribute(new Attribute("positive", "up"));
+            v.addAttribute(new Attribute(_Coordinate.AxisType,
+                                         AxisType.Height.toString()));
+        }
     }
 
     /**
