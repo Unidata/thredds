@@ -68,6 +68,7 @@ public class DiskCache2 {
   private int persistMinutes;
   private Timer timer;
   private org.slf4j.Logger cacheLog = org.slf4j.LoggerFactory.getLogger("cacheLogger");
+  private boolean fail = false;
 
   /**
    * Create a cache on disk.
@@ -98,7 +99,7 @@ public class DiskCache2 {
     }
     setRootDirectory(root);
 
-    if (scourEveryMinutes > 0) {
+    if (!fail && scourEveryMinutes > 0) {
       timer = new Timer("DiskCache-"+root);
       Calendar c = Calendar.getInstance(); // contains current startup time
       c.add(Calendar.MINUTE, scourEveryMinutes);
@@ -133,6 +134,7 @@ public class DiskCache2 {
     File dir = new File(root);
     dir.mkdirs();
     if (!dir.exists()) {
+      fail = true;
       cacheLog.error("Failed to create directory "+root);
     }
   }
