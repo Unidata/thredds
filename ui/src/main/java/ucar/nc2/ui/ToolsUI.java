@@ -2292,7 +2292,7 @@ public class ToolsUI extends JPanel {
         if (raf != null)
           raf.close();
         raf = new ucar.unidata.io.RandomAccessFile(command, "r");
-
+        raf.order(ucar.unidata.io.RandomAccessFile.BIG_ENDIAN);
         gribTable.setGribFile(raf);
 
       } catch (FileNotFoundException ioe) {

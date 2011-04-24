@@ -182,7 +182,7 @@ dl {margin: 10px 5px 5px 15px;)
 </pre>
 <p>This uses a spherical earth. See Snyder, p 176.</p>
 <p>TODO: allow  <strong>perspective_point_height</strong> </p>
-<h2>Standard Vertical Transforms</h2>
+<h2><a name="vertTransforms"></a>Standard Vertical Transforms</h2>
 <p>These are examples of placing the Coordinate Transform parameters on the corresponding vertical coordinate (required by CF). If you are using CF Conventions, you do not have to add the <strong>_Coordinate</strong> attributes, as they will be added automatically in the CoordSysBuilder.</p>
 <h3>atmosphere_ln_pressure_coordinate</h3>
 <pre>
@@ -249,9 +249,23 @@ dl {margin: 10px 5px 5px 15px;)
     :<strong>standard_name</strong> = &quot;explicit_field&quot;;  // canonical transform name
     :<strong>existingDataField</strong> = &quot;ght_hybr&quot;;  // must be a 3 or 4D pressure / height / geopotential height field<br>    :<strong>_CoordinateTransformType</strong> = &quot;vertical&quot;; // unambiguouly identifies it as vertical transform<br>    :<strong>_CoordinateAxes</strong> = &quot;hybr&quot;; // attach transform to any coord sys with the &quot;hbyr&quot; axis.</pre>
 <p>This is not part of CF, but a way to mark an existing 3D (4D if time dependent) field as the vertical coordinate.     </p>
+<h2>Using Vertical Transforms</h2>
+<pre> public void testAtmHybrid() throws java.io.IOException, InvalidRangeException {
+  GridDataset gds = ucar.nc2.dt.grid.GridDataset.open( TestAll.cdmUnitTestDir + &quot;conventions/cf/ccsm2.nc&quot;); 
+  GridDatatype grid = gds.findGridDatatype(&quot;T&quot;);
+  GridCoordSystem gcs = grid.getCoordinateSystem();
+  VerticalCT vct = gcs.getVerticalCT();
+
+  CoordinateAxis1DTime taxis = gcs.getTimeAxis1D();
+  for (int t=0; t&lt;taxis.getSize(); t++) {
+    System.out.printf(&quot;vert coord for time = %s%n&quot;, taxis.getTimeDate(t));
+    ArrayDouble.D3 ca = vt.getCoordinateArray(t);
+	   doSomething(ca);
+  }
+}</pre>
 <hr WIDTH="100%">
 <address>
-<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated Nov 2010 
+<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated April 2011 
 </address>
 <p>&nbsp;</p>
 </body>
