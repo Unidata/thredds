@@ -67,13 +67,13 @@ public class CoordinateAxis2D extends CoordinateAxis {
   }
 
   /** Get the coordinate value at the i, j index.
-   *  @param i index 0
+   *  @param i index 0 (fastest varying, right-most)
    *  @param j index 1
-   *  @return coordinate value.
+   *  @return midpoint.get( j,i).
    */
-  public double getCoordValue(int i, int j) {
+  public double getCoordValue(int j, int i) {
     if (midpoint == null) doRead();
-    return midpoint.get( i, j);
+    return midpoint.get( j, i);
   }
 
   private ArrayDouble.D2 midpoint = null;

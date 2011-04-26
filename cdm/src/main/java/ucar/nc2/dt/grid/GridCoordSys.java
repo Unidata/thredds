@@ -1062,7 +1062,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
       x = horiz1D.getCoordValue(xindex);
     } else {
       CoordinateAxis2D horiz2D = (CoordinateAxis2D) horizXaxis;
-      x = horiz2D.getCoordValue(xindex, yindex);
+      x = horiz2D.getCoordValue( yindex, xindex);
     }
 
     if (horizYaxis instanceof CoordinateAxis1D) {
@@ -1070,7 +1070,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
       y = horiz1D.getCoordValue(yindex);
     } else {
       CoordinateAxis2D horiz2D = (CoordinateAxis2D) horizYaxis;
-      y = horiz2D.getCoordValue(xindex, yindex);
+      y = horiz2D.getCoordValue( yindex, xindex);
     }
 
     return isLatLon() ? new LatLonPointImpl(y, x) : getLatLon(x, y);
