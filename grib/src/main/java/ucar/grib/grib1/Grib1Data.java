@@ -58,6 +58,11 @@ public final class Grib1Data {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Grib1Data.class);
 
   /*
+   * should Thin Grids be expanded? Default is true
+   */
+  static private boolean expandGrib1ThinGrids = true;
+
+  /*
   *  used to hold open file descriptor
   */
   private final RandomAccessFile raf;
@@ -118,7 +123,7 @@ public final class Grib1Data {
       // read Binary Data Section 4
       Grib1BinaryDataSection bds =
           new Grib1BinaryDataSection(raf, decimalScale, bms, gdsv.getScanMode(), gdsv.getNx(), gdsv.getNy() );
-      if (isThin) {
+      if (isThin && expandGrib1ThinGrids) {
         QuasiRegular qr = new QuasiRegular(bds.getValues(), gdsv.getParallels(), gdsv.getNx(), gdsv.getNy() );
         return qr.getData();
       } else {
@@ -216,7 +221,7 @@ public final class Grib1Data {
     try {
       // read Binary Data Section 4
       Grib1BinaryDataSection bds = new Grib1BinaryDataSection(raf, decimalScale, bms );
-      if (isThin) {
+      if (isThin  && expandGrib1ThinGrids) {
         QuasiRegular qr = new QuasiRegular(bds.getValues(), (Object) gds);
         return qr.getData();
       } else {
@@ -227,5 +232,12 @@ public final class Grib1Data {
       return null;
     }
   }  // end getData
+
+  /*
+   * Lets client control Thin grid expansion
+   */
+  public static void setExpandGrib1ThinGrids( boolean b ) {
+    expandGrib1ThinGrids = b;
+  }
 
 }  // end Grib1Data
