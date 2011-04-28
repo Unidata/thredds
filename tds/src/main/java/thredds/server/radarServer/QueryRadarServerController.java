@@ -64,8 +64,8 @@ public class QueryRadarServerController extends AbstractController  {
 
   private TdsContext tdsContext;
   private HtmlWriter htmlWriter;
-
   private boolean htmlView;
+  private boolean releaseDataset = false;
 
   public void setTdsContext( TdsContext tdsContext ) {
     this.tdsContext = tdsContext;
@@ -83,6 +83,16 @@ public class QueryRadarServerController extends AbstractController  {
   public void setHtmlView( boolean htmlView )
   {
     this.htmlView = htmlView;
+  }
+
+    public boolean isReleaseDataset()
+  {
+    return releaseDataset;
+  }
+
+  public void setReleaseDataset( boolean releaseDataset )
+  {
+    this.releaseDataset = releaseDataset;
   }
 
   /**
@@ -217,12 +227,16 @@ public class QueryRadarServerController extends AbstractController  {
       List<DatasetEntry> entries = new ArrayList<DatasetEntry>();
       if( qp.vars == null) {
         dataFound = processQuery( pathInfo, qp, null, entries  );
+        if ( releaseDataset )
+          DatasetRepository.removeRadarDatasetCollection( pathInfo, null );
       } else {
         int count = 0;
         for( String var : qp.vars ) {
           dataFound = processQuery( pathInfo, qp, var, entries  );
           if ( dataFound )
             count++;
+          if ( releaseDataset )
+            DatasetRepository.removeRadarDatasetCollection( pathInfo, var );
         }
         if ( count > 0 )
           dataFound = true;

@@ -177,6 +177,21 @@ public class DatasetRepository {
     return rdc;
   }
 
+  /**
+   * Removes dataset
+   * @param key  dataset location
+   * @param var  if level3, the var dataset
+   */
+  public static void removeRadarDatasetCollection( String key, String var ) {
+    Object sync = new Object();
+    synchronized( sync ) {
+      if( var != null)
+        datasetMap.remove( key  + var );
+      else
+        datasetMap.remove( key);
+    }
+  }
+
   public static InvCatalogImpl getRadarCatalog() {
       return cat;
   }

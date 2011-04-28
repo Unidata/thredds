@@ -29,7 +29,8 @@
   <bean id="queryXmlController" class="thredds.server.radarServer.QueryRadarServerController" >
     <property name="tdsContext" ref="tdsContext"/>
     <property name="htmlView" value="false"/>
-    <property name="htmlWriter" ref="htmlWriter"/>  
+    <property name="htmlWriter" ref="htmlWriter"/>
+    <property name="releaseDataset" value="false"/>  
     <property name="supportedMethods" value="GET"/>
   </bean>
 
