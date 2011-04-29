@@ -87,9 +87,53 @@
       </metadata>
       <filter>
         <include wildcard="Level3*.nids" atomic="true" collection="false" />
-        <exclude wildcard="TR*" atomic="false" collection="true" />
-        <exclude wildcard="TV*" atomic="false" collection="true" />
-        <exclude wildcard="TZL" atomic="false" collection="true" />
+        <!-- Exclude TDWR only products -->
+        <exclude wildcard="TR*" atomic="false" collection="true"/>
+        <exclude wildcard="TV*" atomic="false" collection="true"/>
+        <exclude wildcard="TZL" atomic="false" collection="true"/>
+        <!-- Exclude TDWR stations -->
+        <exclude wildcard="ADW" atomic="false" collection="true"/>
+        <exclude wildcard="ATL" atomic="false" collection="true"/>
+        <exclude wildcard="BNA" atomic="false" collection="true"/>
+        <exclude wildcard="BOS" atomic="false" collection="true"/>
+        <exclude wildcard="BWI" atomic="false" collection="true"/>
+        <exclude wildcard="CMH" atomic="false" collection="true"/>
+        <exclude wildcard="CVG" atomic="false" collection="true"/>
+        <exclude wildcard="DAL" atomic="false" collection="true"/>
+        <exclude wildcard="DAY" atomic="false" collection="true"/>
+        <exclude wildcard="DCA" atomic="false" collection="true"/>
+        <exclude wildcard="DEN" atomic="false" collection="true"/>
+        <exclude wildcard="DFW" atomic="false" collection="true"/>
+        <exclude wildcard="DTW" atomic="false" collection="true"/>
+        <exclude wildcard="EWR" atomic="false" collection="true"/>
+        <exclude wildcard="FLL" atomic="false" collection="true"/>
+        <exclude wildcard="HOU" atomic="false" collection="true"/>
+        <exclude wildcard="IAD" atomic="false" collection="true"/>
+        <exclude wildcard="IAH" atomic="false" collection="true"/>
+        <exclude wildcard="ICH" atomic="false" collection="true"/>
+        <exclude wildcard="JFK" atomic="false" collection="true"/>
+        <exclude wildcard="LAS" atomic="false" collection="true"/>
+        <exclude wildcard="LVE" atomic="false" collection="true"/>
+        <exclude wildcard="MCI" atomic="false" collection="true"/>
+        <exclude wildcard="MCO" atomic="false" collection="true"/>
+        <exclude wildcard="MDW" atomic="false" collection="true"/>
+        <exclude wildcard="MEM" atomic="false" collection="true"/>
+        <exclude wildcard="MSP" atomic="false" collection="true"/>
+        <exclude wildcard="MSY" atomic="false" collection="true"/>
+        <exclude wildcard="OKC" atomic="false" collection="true"/>
+        <exclude wildcard="ORD" atomic="false" collection="true"/>
+        <exclude wildcard="PBI" atomic="false" collection="true"/>
+        <exclude wildcard="PHL" atomic="false" collection="true"/>
+        <exclude wildcard="PHX" atomic="false" collection="true"/>
+        <exclude wildcard="PIT" atomic="false" collection="true"/>
+        <exclude wildcard="RDU" atomic="false" collection="true"/>
+        <exclude wildcard="SDF" atomic="false" collection="true"/>
+        <exclude wildcard="SJU" atomic="false" collection="true"/>
+        <exclude wildcard="SLC" atomic="false" collection="true"/>
+        <exclude wildcard="STL" atomic="false" collection="true"/>
+        <exclude wildcard="TPA" atomic="false" collection="true"/>
+        <exclude wildcard="TUL" atomic="false" collection="true"/>
+        <!-- Exclude other stuff -->
         <exclude wildcard=".*" atomic="false" collection="true" />
       </filter>
       <addID />
@@ -155,16 +199,64 @@
       </metadata>
       <filter>
         <include wildcard="Level3*.nids" atomic="true" collection="false" />
-        <exclude wildcard="N0R" atomic="false" collection="true" />
-        <exclude wildcard="N1R" atomic="false" collection="true" />
-        <exclude wildcard="N2R" atomic="false" collection="true" />
-        <exclude wildcard="N3R" atomic="false" collection="true" />
-        <exclude wildcard="N0V" atomic="false" collection="true" />
-        <exclude wildcard="N1V" atomic="false" collection="true" />
-        <exclude wildcard="N0S" atomic="false" collection="true" />
-        <exclude wildcard="N1S" atomic="false" collection="true" />
-        <exclude wildcard="N2S" atomic="false" collection="true" />
-        <exclude wildcard="N3S" atomic="false" collection="true" />
+        <!-- Include TDWR products -->
+        <include wildcard="DHR" atomic="false" collection="true"/>
+        <include wildcard="DPA" atomic="false" collection="true"/>
+        <include wildcard="DSP" atomic="false" collection="true"/>
+        <include wildcard="N1P" atomic="false" collection="true"/>
+        <include wildcard="NCR" atomic="false" collection="true"/>
+        <include wildcard="NET" atomic="false" collection="true"/>
+        <include wildcard="NMD" atomic="false" collection="true"/>
+        <include wildcard="NST" atomic="false" collection="true"/>
+        <include wildcard="NTP" atomic="false" collection="true"/>
+        <include wildcard="NVL" atomic="false" collection="true"/>
+        <include wildcard="NVW" atomic="false" collection="true"/>
+        <include wildcard="TR*" atomic="false" collection="true"/>
+        <include wildcard="TV*" atomic="false" collection="true"/>
+        <include wildcard="TZL" atomic="false" collection="true"/>
+        <!-- Include TDWR stations -->
+        <include wildcard="ADW" atomic="false" collection="true"/>
+        <include wildcard="ATL" atomic="false" collection="true"/>
+        <include wildcard="BNA" atomic="false" collection="true"/>
+        <include wildcard="BOS" atomic="false" collection="true"/>
+        <include wildcard="BWI" atomic="false" collection="true"/>
+        <include wildcard="CMH" atomic="false" collection="true"/>
+        <include wildcard="CVG" atomic="false" collection="true"/>
+        <include wildcard="DAL" atomic="false" collection="true"/>
+        <include wildcard="DAY" atomic="false" collection="true"/>
+        <include wildcard="DCA" atomic="false" collection="true"/>
+        <include wildcard="DEN" atomic="false" collection="true"/>
+        <include wildcard="DFW" atomic="false" collection="true"/>
+        <include wildcard="DTW" atomic="false" collection="true"/>
+        <include wildcard="EWR" atomic="false" collection="true"/>
+        <include wildcard="FLL" atomic="false" collection="true"/>
+        <include wildcard="HOU" atomic="false" collection="true"/>
+        <include wildcard="IAD" atomic="false" collection="true"/>
+        <include wildcard="IAH" atomic="false" collection="true"/>
+        <include wildcard="ICH" atomic="false" collection="true"/>
+        <include wildcard="JFK" atomic="false" collection="true"/>
+        <include wildcard="LAS" atomic="false" collection="true"/>
+        <include wildcard="LVE" atomic="false" collection="true"/>
+        <include wildcard="MCI" atomic="false" collection="true"/>
+        <include wildcard="MCO" atomic="false" collection="true"/>
+        <include wildcard="MDW" atomic="false" collection="true"/>
+        <include wildcard="MEM" atomic="false" collection="true"/>
+        <include wildcard="MSP" atomic="false" collection="true"/>
+        <include wildcard="MSY" atomic="false" collection="true"/>
+        <include wildcard="OKC" atomic="false" collection="true"/>
+        <include wildcard="ORD" atomic="false" collection="true"/>
+        <include wildcard="PBI" atomic="false" collection="true"/>
+        <include wildcard="PHL" atomic="false" collection="true"/>
+        <include wildcard="PHX" atomic="false" collection="true"/>
+        <include wildcard="PIT" atomic="false" collection="true"/>
+        <include wildcard="RDU" atomic="false" collection="true"/>
+        <include wildcard="SDF" atomic="false" collection="true"/>
+        <include wildcard="SJU" atomic="false" collection="true"/>
+        <include wildcard="SLC" atomic="false" collection="true"/>
+        <include wildcard="STL" atomic="false" collection="true"/>
+        <include wildcard="TPA" atomic="false" collection="true"/>
+        <include wildcard="TUL" atomic="false" collection="true"/>
+        <!-- Exclude other stuff -->
         <exclude wildcard=".*" atomic="false" collection="true"/>
       </filter>
       <addID />
