@@ -41,6 +41,7 @@ package opendap.dap;
 
 import java.io.*;
 import java.util.Formatter;
+import java.util.Stack;
 
 /**
  * This class holds information about each dimension in a <code>DArray</code>.
@@ -59,11 +60,29 @@ import java.util.Formatter;
  */
 public final class DArrayDimension extends DAPNode
 {
-    private int size;
-    private int start;
-    private int stride;
-    private int stop;
-    private boolean constrained = false; // true if start/stride/stop set
+    static public class Slice {
+        public int size;
+        public int start;
+        public int stride;
+        public int stop;
+        public Slice(int size, int start, int stride, int stop)
+        {
+            this.size = size;
+            this.start = start;
+            this.stride = stride;
+            this.stop = stop;
+        }
+        public Slice(int start, int stride, int stop)
+        {
+            this(0,start,stride,stop);
+            this.size = 1 + (stop - start) / stride;
+        }
+    };
+
+    // Define two slices for each dimension
+    private Slice decl; // as defined in the original declaration
+    private Slice projection; // as defined in any projection of this dimension
+    private Stack<Slice> projectionstack; // support temporaily replacing the projection set
     private DArray container = null;
 
     /**
@@ -85,47 +104,43 @@ public final class DArrayDimension extends DAPNode
      */
     public DArrayDimension(int size, String name, boolean decodeName) {
         super(name,decodeName);
-        setSize(size);
-        this.start = 0;
-        this.stride = 1;
-        this.stop = size - 1;
+        this.decl = new Slice(size,0,1,size-1);
     }
 
     /**
      * Get the dimension size.
      */
     public int getSize() {
-        return size;
+        return (projection != null?projection.size:decl.size);
     }
 
     /**
      * Set the dimension size.
      */
     public void setSize(int size) {
-        this.size = size;
+        decl.size = size;
     }
 
     /**
      * Get the projection start point for this dimension.
      */
     public int getStart() {
-        return start;
+        return (projection != null?projection.start:decl.start);
     }
 
     /**
      * Get the projection stride size for this dimension.
      */
     public int getStride() {
-        return stride;
+        return (projection != null?projection.stride:decl.stride);
     }
 
     /**
      * Get the projection stop point for this dimension.
      */
     public int getStop() {
-        return stop;
+        return (projection != null?projection.stop:decl.stop);
     }
-
 
     public void setContainer(DArray da)
     {
@@ -137,12 +152,12 @@ public final class DArrayDimension extends DAPNode
     public void printConstraint(PrintWriter os)
     {
 	String buf = "[";
-	if(stride == 1 && start == stop) 
-	    buf += ""+start;
-	else if(stride == 1)
-	    buf += start + ":" + stop;
+	if(getSize() == 1 && getStart() == getStop())
+	    buf += ""+getStart();
+	else if(getStride() == 1)
+	    buf += getStart() + ":" + getStop();
 	else
-	    buf += start + ":" + stride + ":" + stop;
+	    buf += getStart() + ":" + getStride() + ":" + getStop();
 	buf += "]";
 	os.print(buf);
     }
@@ -159,22 +174,25 @@ public final class DArrayDimension extends DAPNode
      * @param stride The size of the stride for the projection of this <code>DArrayDimension</code>.
      * @param stop   The stopping point for the projection of this <code>DArrayDimension</code>.
      */
-     public void setProjection(int start, int stride, int stop) throws InvalidDimensionException {
-        String msg = "DArrayDimension.setProjection: Bad Projection Request: ";
-
-        // Check for projection conflict
-        if(constrained) {
+    public void setProjection(int start, int stride, int stop) throws InvalidDimensionException
+    {
+        if(projection != null) {
             // See if we are changing start/stride/stop
-          if(this.start != start || this.stride != stride || this.stop != stop) {
+          if(getSize() != start || getStride() != stride || getStop() != stop) {
             Formatter f = new Formatter();
-            f.format(" [%d,%d,%d,%d] != [%d,%d,%d,%d]", start, stride, stop, size, this.start, this.stride, this.stop, size);
+            f.format(" [%d:%d:%d (%d)] != [%d:%d:%d (%d)]", start, stride, stop, projection.size, projection.start, projection.stride, projection.stop, projection.size);
             throw new ConstraintException("Conflicting constraint dimensions for: "+container.getLongName()+f.toString());
           }
         }
 
+        String msg = "DArrayDimension.setProjection: Bad Projection Request: ";
+
+        projectionstack.push(projection);
+        projection = null;
+
         // validate the arguments
-        if (start >= size)
-            throw new InvalidDimensionException(msg + "start (" + start + ") >= size (" + size + ") for " + _name);
+        if (start >= decl.start)
+            throw new InvalidDimensionException(msg + "start (" + start + ") >= size (" + decl.size + ") for " + _name);
 
         if (start < 0)
             throw new InvalidDimensionException(msg + "start < 0");
@@ -182,8 +200,8 @@ public final class DArrayDimension extends DAPNode
         if (stride <= 0)
             throw new InvalidDimensionException(msg + "stride <= 0");
 
-        if (stop >= size)
-            throw new InvalidDimensionException(msg + "stop >= size: "+stop+":"+size);
+        if (stop >= decl.size)
+            throw new InvalidDimensionException(msg + "stop >= size: "+stop+":"+decl.size);
 
         if (stop < 0)
             throw new InvalidDimensionException(msg + "stop < 0");
@@ -191,12 +209,17 @@ public final class DArrayDimension extends DAPNode
         if (stop < start)
             throw new InvalidDimensionException(msg + "stop < start");
 
-        this.start = start;
-        this.stride = stride;
-        this.stop = stop;
-        this.size = 1 + (stop - start) / stride;
-	this.constrained = true;
+        projectionstack.push(projection);
+        projection = new Slice(start,stride,stop);
     }
+
+     public void popProjection()
+     {
+         if(projectionstack.empty())
+             projection = null;
+         else
+             projection = projectionstack.pop();
+     }
 
     /**
      * Returns a clone of this <code>Array</code>.

@@ -18,6 +18,8 @@ import java.io.*;
 
 %code {
  
+    private List<AST> nodeset = null;
+
     /**
      * Instantiates the Bison-generated parser.
      * @param yylexer The scanner that will supply tokens to the parser.

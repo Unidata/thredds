@@ -50,8 +50,8 @@ abstract public class AST
         this.clauseFactory = clauseFactory;
         this.factory = factory;
         this.sdds = sdds;
-	this.root = this;
-	for(opendap.Server.parsers.AST node: nodes) node.setRoot(this);
+	    this.root = this;
+	    for(AST node: nodes) node.setRoot(this);
     }
 
     // abstract public String toString();

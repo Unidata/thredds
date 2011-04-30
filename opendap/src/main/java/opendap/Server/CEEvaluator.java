@@ -321,6 +321,10 @@ public class CEEvaluator {
 
         }
 
+        // Hack: pop the projections of all DArrayDimensions that
+        // have been pushed.
+
+
         return (result);
     }
 
