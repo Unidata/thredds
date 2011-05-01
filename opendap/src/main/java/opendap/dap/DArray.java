@@ -479,7 +479,7 @@ public class DArray extends DVector
 
     public void printConstraint(PrintWriter os)
     {
-	if(getParent() != null) {
+	if(getParent() != null && !(getParent() instanceof DDS)) {
 	    ((BaseType)getParent()).printConstraint(os);
 	    os.print(".");
 	}

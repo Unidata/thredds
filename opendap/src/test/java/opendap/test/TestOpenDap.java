@@ -33,6 +33,7 @@
 package opendap.test;
 
 import junit.extensions.TestSetup;
+import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 
@@ -40,7 +41,8 @@ import junit.framework.TestSuite;
  * TestSuite to test Opendap Parsers and DDS/DAS etc builders.
  *
  */
-public class TestOpenDap {
+public class TestOpenDap extends TestCase
+{
 
   public static long startTime;
 

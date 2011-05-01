@@ -330,8 +330,8 @@ class ASTsegment extends AST
 
 class ASTslice extends AST
 {
-    long first = 0;
-    long last = 0;
+    long start = 0;
+    long stop = 0;
     long stride = 1;
 
     public ASTslice(List<AST> nodes) {super(nodes);}
@@ -352,7 +352,7 @@ class ASTslice extends AST
     void walk(ServerArrayMethods sam, int index)
 	throws InvalidDimensionException,SBHException
     {
-        sam.setProjection(index,(int)first,(int)stride,(int)last);
+        sam.setProjection(index,(int)start,(int)stride,(int)stop);
     }
 }
 

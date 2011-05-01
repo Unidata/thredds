@@ -175,51 +175,51 @@ public abstract class Ceparse implements ExprParserConstants
     }
 
     Object
-    range(Ceparse state, Object sfirst, Object sstride, Object slast)
+    range(Ceparse state, Object sstart, Object sstride, Object sstop)
             throws ParseException
     {
         ASTslice slice = new ASTslice(astnodeset);
-        long first = -1;
-        long stride = -1;
-        long last = -1;
+        int start = -1;
+        int stride = -1;
+        int stop = -1;
         /* Note: that incoming arguments are strings; we must convert to long;
            but we do know they are legal integers or null */
         try {
-            first = Long.parseLong((String) sfirst);
+            start = Integer.parseInt((String) sstart);
         } catch (NumberFormatException nfe) {
         }
         ;
-        if (slast != null) {
+        if (sstop != null) {
             try {
-                last = Long.parseLong((String) slast);
+                stop = Integer.parseInt((String) sstop);
             } catch (NumberFormatException nfe) {
             }
             ;
         } else
-            last = first;
+            stop = start;
         if (sstride != null) {
             try {
-                stride = Long.parseLong((String) sstride);
+                stride = Integer.parseInt((String) sstride);
             } catch (NumberFormatException nfe) {
             }
             ;
         } else
             stride = 1; /* default */
 
-        if (first < 0)
+        if (start < 0)
             throw new ParseException("Illegal index for range first index");
-        if (stride < 0)
+        if (stride <= 0)
             throw new ParseException("Illegal index for range stride index");
-        if (last < 0)
+        if (stop < 0)
             throw new ParseException("Illegal index for range last index");
 
-        if (last < first)
+        if (stop < start)
             throw new ParseException("Range last index less than first index");
 
 
-        slice.first = first;
+        slice.start = start;
         slice.stride = stride;
-        slice.last = last;
+        slice.stop = stop;
 
         return slice;
     }
@@ -283,9 +283,9 @@ public abstract class Ceparse implements ExprParserConstants
         long start = 0;
         try {start = Long.parseLong((String)indexno);} catch (NumberFormatException nfe) {/*already checked*/};
         ASTslice slice = new ASTslice(astnodeset);
-        slice.first = start;
+        slice.start = start;
         slice.stride = 1;
-        slice.last = start;
+        slice.stop = start;
         list.add(slice);
         return list;
     }

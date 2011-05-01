@@ -80,9 +80,8 @@ public final class DArrayDimension extends DAPNode
     };
 
     // Define two slices for each dimension
-    private Slice decl; // as defined in the original declaration
-    private Slice projection; // as defined in any projection of this dimension
-    private Stack<Slice> projectionstack; // support temporaily replacing the projection set
+    private Slice decl = null; // as defined in the original declaration
+    private Slice projection = null; // as defined in any projection of this dimension
     private DArray container = null;
 
     /**
@@ -187,12 +186,7 @@ public final class DArrayDimension extends DAPNode
 
         String msg = "DArrayDimension.setProjection: Bad Projection Request: ";
 
-        projectionstack.push(projection);
-        projection = null;
-
         // validate the arguments
-        if (start >= decl.start)
-            throw new InvalidDimensionException(msg + "start (" + start + ") >= size (" + decl.size + ") for " + _name);
 
         if (start < 0)
             throw new InvalidDimensionException(msg + "start < 0");
@@ -200,26 +194,22 @@ public final class DArrayDimension extends DAPNode
         if (stride <= 0)
             throw new InvalidDimensionException(msg + "stride <= 0");
 
+        if (stop < 0)
+             throw new InvalidDimensionException(msg + "stop < 0");
+
+        if (start < decl.start)
+                   throw new InvalidDimensionException(msg + "start (" + start + ") < size (" + decl.size + ") for " + _name);
+
         if (stop >= decl.size)
             throw new InvalidDimensionException(msg + "stop >= size: "+stop+":"+decl.size);
 
-        if (stop < 0)
-            throw new InvalidDimensionException(msg + "stop < 0");
 
         if (stop < start)
             throw new InvalidDimensionException(msg + "stop < start");
 
-        projectionstack.push(projection);
         projection = new Slice(start,stride,stop);
     }
 
-     public void popProjection()
-     {
-         if(projectionstack.empty())
-             projection = null;
-         else
-             projection = projectionstack.pop();
-     }
 
     /**
      * Returns a clone of this <code>Array</code>.
