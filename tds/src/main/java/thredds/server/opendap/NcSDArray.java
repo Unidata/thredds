@@ -109,7 +109,7 @@ public class NcSDArray extends SDArray implements HasNetcdfVariable {
       int n = numDimensions();
       List<Range> ranges = new ArrayList<Range>(n);
       for (int i = 0; i < n; i++)
-        ranges.add(new Range(getProjectionStart(i), getProjectionStop(i), getStride(i)));
+        ranges.add(new Range(getStart(i), getStop(i), getStride(i)));
 
       try {
         a = ncVar.read(ranges);

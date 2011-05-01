@@ -14,6 +14,7 @@ import opendap.dap.*;
 import opendap.dap.parsers.*;
 import opendap.Server.*;
 import java.io.*;
+import java.util.*;
 }
 
 %code {

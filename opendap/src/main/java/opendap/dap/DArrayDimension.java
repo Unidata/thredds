@@ -181,7 +181,7 @@ public final class DArrayDimension extends DAPNode
           if(getSize() != start || getStride() != stride || getStop() != stop) {
             Formatter f = new Formatter();
             f.format(" [%d:%d:%d (%d)] != [%d:%d:%d (%d)]", start, stride, stop, projection.size, projection.start, projection.stride, projection.stop, projection.size);
-            throw new ConstraintException("Conflicting constraint dimensions for: "+container.getLongName()+f.toString());
+            throw new ConstraintException("Implementation limitation: muliple references to same variable in single constraint: "+container.getLongName()+f.toString());
           }
         }
 
