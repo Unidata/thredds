@@ -244,13 +244,20 @@ public class NcMLWriter {
     if ((dt != null) && (dt != DataType.STRING))
       attElem.setAttribute("type", dt.toString());
 
+    if (att.getLength() == 0) {
+      return attElem;
+    }
+
     if (att.isString()) {
-      String value = att.getStringValue();
-      if (value != null)
-        attElem.setAttribute("value", value);
-      else  {
-        log.debug("attribute has null value= "+att);
+      StringBuilder buff = new StringBuilder();
+      for (int i = 0; i < att.getLength(); i++) {
+        String sval = att.getStringValue(i);
+        if (i > 0) buff.append(",");
+        buff.append(sval);
       }
+      attElem.setAttribute("value", buff.toString());
+      if (att.getLength() > 1)
+        attElem.setAttribute("separator", ",");
 
     } else {
       StringBuilder buff = new StringBuilder();

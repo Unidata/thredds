@@ -3,6 +3,11 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Changes in version 4.2:
+ 24: (2011-05-02)
+  Improve Grads, Gempak Iosp (dmurray)
+  GridCoordSys.getLatLon() reversed the indices when calling CoordinateAxis2D.getCoordValue().
+  Ncml writing String attributes when n>1
+  Opendap refactor
  23: (2011-04-13)
   H5: bug in some subsets of chunked data.
   Grib2.PDS: process timeUnit=3 (month)
