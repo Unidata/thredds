@@ -7,10 +7,29 @@
 
 <body>
 <h1>CDM File Types</h1>
-<p>The NetCDF-Java/CDM library provides a uniform API to many different scientific file formats and remote access protocols. Generally, application programmers should respect the encapsolation of these formats. When information is needed about the underlying file type,  <strong>NetcdfFile.getFileTypeId()</strong>, <strong>NetcdfFile.getFileTypeVersion()</strong> and <strong>NetcdfFile.getFileTypeDescription()</strong> methods can be called.</p>
-<p>The <em><strong>Id</strong></em> must be unique and once registered, will never change, so that application code can test against it.  <em><strong>Version</strong></em> information should have a standard form for each file type, but the form may differ between file types. The <em><strong>Description</strong></em> is human-readable and may present variations when appropriate, such as adding  processing history, etc. The <em><strong>Reference URL</strong></em>(s) in this table are informational, and may change as needed.</p>
-<p>To support this functionality, <strong>getFileTypeId()</strong>, <strong>getFileTypeVersion()</strong> and <strong>getFileTypeDescription()</strong> methods have been added to the IOServiceProvider interface as of version 4.0.46. You will need to add these methods to your IOServiceProvider implementations.</p>
-<p>To register your format/IOServiceProvider, or to send corrections and additions to this table, please send email to <a href="mailto:support-netcdf-java@unidata.ucar.edu">support-netcdf-java@unidata.ucar.edu</a>.</p>
+
+<p>The NetCDF-Java/CDM library provides a uniform API to many different scientific file formats
+  and remote access protocols. Generally, application programmers should respect the encapsulation
+  of these formats. When information is needed about the underlying file type,
+  <strong>NetcdfFile.getFileTypeId()</strong>, <strong>NetcdfFile.getFileTypeVersion()</strong> and
+  <strong>NetcdfFile.getFileTypeDescription()</strong> methods can be called.</p>
+
+<p>The <em><strong>Id</strong></em> must be unique and once registered, will never change, so that
+  application code can test against it. <em><strong>Version</strong></em> information should have
+  a standard form for each file type, but the form may differ between file types. The
+  <em><strong>Description</strong></em> is human-readable and may present variations when
+  appropriate, such as adding processing history, etc. The <em><strong>Reference URL</strong></em>(s)
+  in this table are informational, and may change as needed.</p>
+
+<p>To support this functionality, <strong>getFileTypeId()</strong>, <strong>getFileTypeVersion()</strong>
+  and <strong>getFileTypeDescription()</strong> methods have been added to the IOServiceProvider
+  interface as of version 4.0.46. You will need to add these methods to your IOServiceProvider
+  implementations.</p>
+
+<p>To register your format/IOServiceProvider, or to send corrections and additions to this table,
+  please send email to
+  <a href="mailto:support-netcdf-java@unidata.ucar.edu">support-netcdf-java@unidata.ucar.edu</a>.</p>
+
 <table width="990" border="1">
   <tr>
     <th width="162" scope="col">Id</th>
