@@ -121,14 +121,31 @@ public final class Grib1Data {
 
     try {
       // read Binary Data Section 4
-      Grib1BinaryDataSection bds =
+
+//      Grib1BinaryDataSection bds =
+//          new Grib1BinaryDataSection(raf, decimalScale, bms, gdsv.getScanMode(), gdsv.getNx(), gdsv.getNy() );
+//      if (isThin && expandGrib1ThinGrids) {
+//        QuasiRegular qr = new QuasiRegular(bds.getValues(), gdsv.getParallels(), gdsv.getNx(), gdsv.getNy() );
+//        return qr.getData();
+//      } else {
+//        return bds.getValues();
+//      }
+
+      if ( !isThin ) {  // 99% path
+        Grib1BinaryDataSection bds =
           new Grib1BinaryDataSection(raf, decimalScale, bms, gdsv.getScanMode(), gdsv.getNx(), gdsv.getNy() );
-      if (isThin && expandGrib1ThinGrids) {
-        QuasiRegular qr = new QuasiRegular(bds.getValues(), gdsv.getParallels(), gdsv.getNx(), gdsv.getNy() );
-        return qr.getData();
-      } else {
         return bds.getValues();
       }
+      // Process thin grids
+      Grib1BinaryDataSection bds =
+          new Grib1BinaryDataSection(raf, decimalScale, bms, gdsv.getScanMode(), -1, gdsv.getNy() );
+      if (expandGrib1ThinGrids) {
+        QuasiRegular qr = new QuasiRegular(bds.getValues(), gdsv.getParallels(), gdsv.getNx(), gdsv.getNy() );
+        return qr.getData();
+      } else { // return unexpanded values, does not work in CDM stack code
+        return bds.getValues();
+      }
+
     } catch (NotSupportedException notSupport) {
       log.error("Grib1BinaryDataSection exception was caught");
       return null;
@@ -137,6 +154,8 @@ public final class Grib1Data {
 
   
   /**
+   * This code should not be used any more, old code left for old indexes <8
+   *
    * Reads the Grib data
    *
    * @param offset       offset into file.
@@ -220,11 +239,18 @@ public final class Grib1Data {
 
     try {
       // read Binary Data Section 4
-      Grib1BinaryDataSection bds = new Grib1BinaryDataSection(raf, decimalScale, bms );
-      if (isThin  && expandGrib1ThinGrids) {
-        QuasiRegular qr = new QuasiRegular(bds.getValues(), (Object) gds);
+     if ( !isThin ) {  // 99% path
+        Grib1BinaryDataSection bds =
+          new Grib1BinaryDataSection(raf, decimalScale, bms, gdsv.getScanMode(), gdsv.getNx(), gdsv.getNy() );
+        return bds.getValues();
+      }
+      // Process thin grids
+      Grib1BinaryDataSection bds =
+          new Grib1BinaryDataSection(raf, decimalScale, bms, gdsv.getScanMode(), -1, gdsv.getNy() );
+      if (expandGrib1ThinGrids) {
+        QuasiRegular qr = new QuasiRegular(bds.getValues(), gdsv.getParallels(), gdsv.getNx(), gdsv.getNy() );
         return qr.getData();
-      } else {
+      } else { // return unexpanded values, does not work in CDM stack code
         return bds.getValues();
       }
     } catch (NotSupportedException notSupport) {
