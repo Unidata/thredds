@@ -189,7 +189,7 @@ public class ThreddsUI extends JPanel {
           if (access != null) {
             DataFormatType format = access.getDataFormatType();
             if (format == DataFormatType.PLAIN || format == DataFormatType.XML) {
-              String urlString = access.getStandardUrlName();
+              String urlString = access.getWrappedUrlName();
               //System.out.println("got station XML data access = "+urlString);
               IO.readURLcontents(urlString);
               xmlPane.setText(IO.readURLcontents(urlString));

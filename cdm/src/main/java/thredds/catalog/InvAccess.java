@@ -101,6 +101,12 @@ abstract public class InvAccess {
   public String getStandardUrlName() {
     URI uri = getStandardUri();
     if (uri == null) return null;
+    return uri.toString();
+  }
+
+  public String getWrappedUrlName() {
+    URI uri = getStandardUri();
+    if (uri == null) return null;
     return wrap(uri.toString());
   }
 

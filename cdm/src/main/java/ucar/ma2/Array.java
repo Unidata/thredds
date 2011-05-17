@@ -263,7 +263,8 @@ public abstract class Array {
 
   static private void reflectArrayCopyOut(Object jArray, Array aa, IndexIterator aaIter) {
     Class cType = jArray.getClass().getComponentType();
-    if (cType.isPrimitive()) {
+    //if (cType.isPrimitive()) { // Rob Weingruber <weingrub@rap.ucar.edu> May 11, 2011
+    if (!cType.isArray()) {
       aa.copyTo1DJavaArray(aaIter, jArray);  // subclass does type-specific copy
     } else {
       for (int i = 0; i < java.lang.reflect.Array.getLength(jArray); i++)  // recurse

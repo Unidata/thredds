@@ -3,6 +3,9 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Changes in version 4.2:
+ 25: (2011-05-xx)
+  Array.reflectArrayCopyOut vug fix from Rob Weingruber
+  InvAccess.getStandardName() no longer wraps with thredds: or cdmremote: use getWrappedName() intead
  24: (2011-05-02)
   Improve Grads, Gempak Iosp (dmurray)
   GridCoordSys.getLatLon() reversed the indices when calling CoordinateAxis2D.getCoordValue().

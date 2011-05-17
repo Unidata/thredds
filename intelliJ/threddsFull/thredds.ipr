@@ -29,7 +29,7 @@
   </component>
   <component name="ArtifactManager">
     <artifact type="exploded-war" name="tds:war exploded">
-      <output-path>$PROJECT_DIR$/../../../target/classes/artifacts/tds_war_exploded</output-path>
+      <output-path>$PROJECT_DIR$/../../tds/target/war</output-path>
       <root id="root">
         <element id="directory" name="WEB-INF">
           <element id="directory" name="classes">
@@ -79,7 +79,6 @@
             <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/jakarta-oro-2.0.8.jar" />
             <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/jaxen-1.1.2.jar" />
             <element id="file-copy" path="$PROJECT_DIR$/../../lib/release/ncwms.jar" />
-            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/catalina.jar" />
           </element>
         </element>
         <element id="javaee-facet-resources" facet="tds/web/tds" />
