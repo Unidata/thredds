@@ -30,7 +30,7 @@
       </publisher>
     </metadata>
 
-    <featureCollection name="NMM (Primary Domain) FMRC" featureType="FMRC" harvest="true" path="fmrc/Unidata/NMM/Primary">
+    <!-- featureCollection name="NMM (Primary Domain) FMRC" featureType="FMRC" harvest="true" path="fmrc/Unidata/NMM/Primary">
 
       <collection spec="/data/ldm/pub/rtmodel/#yyMMddHH#_nmm.GrbF.*"
                   name="rtmodel_primary"
@@ -40,7 +40,7 @@
       <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
       <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
       <fmrcConfig regularize="true" datasetTypes="Best Files" />
-    </featureCollection>
+    </featureCollection -->
 
     <datasetScan name="NMM (Primary Domain) individual files" ID="Unidata-Regional-Model/nmm/files" path="Unidata/rtmodel/nmm/files" location="/data/ldm/pub/rtmodel/">
       <filter>
@@ -61,7 +61,7 @@
       </netcdf>
     </datasetFmrc -->
 
-    <featureCollection name="NMM (Secondary Domain) FMRC" featureType="FMRC" harvest="true" path="fmrc/Unidata/NMM/Secondary">
+    <!-- featureCollection name="NMM (Secondary Domain) FMRC" featureType="FMRC" harvest="true" path="fmrc/Unidata/NMM/Secondary">
 
       <collection spec="/data/ldm/pub/rtmodel/#yyMMddHH#_nmm_alt1\.GrbF.*"
                   name="rtmodel_alt"
@@ -71,7 +71,7 @@
       <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
       <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
       <fmrcConfig regularize="true" datasetTypes="Best Files" />
-    </featureCollection>
+    </featureCollection -->
 
     <datasetScan name="NMM (Secondary Domain) individual files" ID="Unidata-Regional-Model/nmm-alt/files" path="Unidata/rtmodel/nmm-alt/files" location="/data/ldm/pub/rtmodel/">
       <filter>
