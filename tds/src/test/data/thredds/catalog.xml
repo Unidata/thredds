@@ -18,7 +18,7 @@
   <datasetRoot path="testStandardTds" location="content/testdata/"/>
   <dataset name="Test Single Dataset" ID="testDataset" serviceName="odap" urlPath="testStandardTds/testData.nc"
            dataType="Grid"/>
-  <dataset name="Test Single Dataset 2" ID="testDataset2" serviceName="odap" urlPath="testStandardTds/testData2.nc"
+  <dataset name="Test Single Dataset 2" ID="testDataset2" serviceName="odap" urlPath="testStandardTds/testData2.grib2"
            dataType="Grid"/>
   <datasetScan name="Test standard TDS content" ID="testStandardTdsScan" path="testStandardTdsScan"
                location="content/testdata">
@@ -54,6 +54,11 @@
   </datasetScan>
 
   <catalogRef xlink:title="Test Enhanced Catalog" xlink:href="enhancedCatalog.xml" name=""/>
+
+  <dataset name="Test Restricted Dataset" ID="testRestrictedDataset" urlPath="testStandardTds/testData2.grib2" restrictAccess="tiggeData">
+    <serviceName>odap</serviceName>
+    <dataType>Grid</dataType>
+  </dataset>
 
   <!-- test NcML in dataset -->
   <dataset name="Example NcML Modified" ID="ExampleNcMLModified" urlPath="ExampleNcML/Modified.nc">

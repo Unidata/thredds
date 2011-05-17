@@ -4,7 +4,9 @@ Build Date = @BUILDTIME@
 Build Name = @BUILD.NAME@
 
 Release Details 4.2:
- 4.2.x (2011-04-xx)
+ 4.2.7 (2011-05-xx)
+   Remove testData2.nc from test server, replace with testData2.grib2
+   Fix jnlp files, remove href.
    Fix for WMS on a F-TDS virtual datasets throws a NullPointerException (TDS-172).
 
  4.2.6 (2011-04-13)

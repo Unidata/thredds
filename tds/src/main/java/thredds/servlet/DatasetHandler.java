@@ -390,17 +390,22 @@ public class DatasetHandler {
       if (debugResourceControl)
         System.out.println("putResourceControl " + ds.getRestrictAccess() + " for datasetScan " + scan.getPath());
       resourceControlMatcher.put(scan.getPath(), ds.getRestrictAccess());
+
     } else if (ds instanceof InvDatasetFmrc) {
       InvDatasetFmrc fmrc = (InvDatasetFmrc) ds;
       if (debugResourceControl)
         System.out.println("putResourceControl " + ds.getRestrictAccess() + " for datasetFmrc " + fmrc.getPath());
       resourceControlMatcher.put(fmrc.getPath(), ds.getRestrictAccess());
+
     } else { // dataset
       if (debugResourceControl)
         System.out.println("putResourceControl " + ds.getRestrictAccess() + " for dataset " + ds.getUrlPath());
-      //resourceControlHash.put(ds.getUrlPath(), ds.getRestrictAccess());
+
+      // LOOK: seems like you only need to add if InvAccess.InvService.isReletive
+      // LOOK: seems like we should use resourceControlMatcher to make sure we match .dods, etc
       for (InvAccess access : ds.getAccess()) {
-        resourceControlHash.put(access.getUrlPath(), ds.getRestrictAccess());
+        if (access.getService().isRelativeBase())
+          resourceControlHash.put(access.getUrlPath(), ds.getRestrictAccess());
       }
 
     }

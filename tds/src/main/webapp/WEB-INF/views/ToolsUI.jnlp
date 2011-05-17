@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<jnlp spec="1.0+" codebase="http://www.unidata.ucar.edu/software/netcdf-java/v4.2/webstart" href="netCDFtools.jnlp">
+<jnlp spec="1.0+" codebase="http://www.unidata.ucar.edu/software/netcdf-java/v4.2/webstart">
   <information>
     <title>NetCDF Tools UI 4.2</title>
     <vendor>Unidata</vendor>
