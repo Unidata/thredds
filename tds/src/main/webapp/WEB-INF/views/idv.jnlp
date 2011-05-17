@@ -2,7 +2,7 @@
 <!-- JNLP File for Integrated Data Viewer -->
 <jnlp spec="1.0+" codebase="http://www.unidata.ucar.edu/software/idv/current/webstart/">
   <information>
-    <title>Integrated Data Viewer 2.9 u1</title>
+    <title>Integrated Data Viewer</title>
     <vendor>Unidata</vendor>
     <homepage href="http://www.unidata.ucar.edu/software/idv/index.html"/>
     <description>Integrated Data Viewer (IDV)</description>
