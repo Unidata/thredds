@@ -7,6 +7,7 @@ import static org.junit.Assert.*;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.TestAll;
 import ucar.nc2.Variable;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
@@ -17,21 +18,29 @@ import java.util.Collections;
 import java.util.Date;
 
 /**
- * _more_
+ * Test index to coordinate space mapping for curvilinear grids, e.g., lat(i,j), lon(i,j).
+ *
+ * Initially written in response to JIRA issue TDS-173 (https://www.unidata.ucar.edu/jira/browse/TDS-173).
  *
  * @author edavis
  * @since 4.1
  */
 public class CurvilinearGridPointMappingTest
 {
-  private String datasetLocation = "S:/support/2011-04-21-ncssPointProblem/artabro_20110419.nc";
+  private String datasetLocation = TestAll.cdmUnitTestDir + "/JIRA_TDS-173/curviliniearGrid_artabro_20110419.nc";
   private int i = 170;
   private int j = 62;
   private double lat = 43.58750915527344;
   private double lon = -8.184059143066406;
 
+  /**
+   * Test GridCoordSystem.getLatLon()
+   *
+   * @throws IOException  if ...
+   * @throws InvalidRangeException  if ...
+   */
   @Test
-  public void checkLatLon()
+  public void checkGridCoordSystem_getLatLon()
           throws IOException, InvalidRangeException
   {
     int[] origin = new int[] { j, i};
@@ -57,8 +66,12 @@ public class CurvilinearGridPointMappingTest
     Assert.assertEquals( lon, llPnt.getLongitude(), 0.001 );
   }
 
+  /**
+   * Test GridCoordSystem.findXYindexFromLatLonBounded()
+   * @throws IOException
+   */
   @Test
-  public void stuff()
+  public void checkGridCoordSystem_findXYindexFromLatLonBounded()
           throws IOException
   {
     GridDataset gd = GridDataset.open( datasetLocation );
