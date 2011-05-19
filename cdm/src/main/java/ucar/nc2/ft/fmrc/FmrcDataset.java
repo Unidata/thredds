@@ -846,7 +846,7 @@ class FmrcDataset {
         // remove all variables that are in this gridset
         for (FmrcInvLite.Gridset.Grid ugrid : gridset.grids) {
           result.removeVariable(group, ugrid.name);
-          logger.warn("buildDataset1D "+lite.collectionName+" remove "+ugrid.name);
+          logger.warn("buildDataset1D "+timeInv.getName()+" remove "+ugrid.name);
         }
         continue; // skip the rest
       }
