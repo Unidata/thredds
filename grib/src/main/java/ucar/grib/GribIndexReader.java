@@ -206,7 +206,7 @@ public class GribIndexReader {
           ggr.discipline = dis.readInt();
           long refTime = dis.readLong();
           calendar.setTimeInMillis(refTime);
-          ggr.refTime = refTime; 
+          ggr.refTime = refTime;
           ggr.refTimeAsDate = calendar.getTime(); // ??
           ggr.gdsKey = dis.readInt();
           ggr.gdsOffset = dis.readLong();
@@ -393,60 +393,59 @@ public class GribIndexReader {
             gridIndex.addHorizCoordSys(gds);
           }
         } else { */
-          // new
-          number = dis.readInt();
-          for (int j = 0; j < number; j++) {
-            int gdsSize = dis.readInt();
-            if (gdsSize == 4) { // for Grib1 records with no GDS
-              int gdskey = dis.readInt();
-              GribGridDefRecord ggdr = new GribGridDefRecord();
-              Grib1Grid.populateGDS(ggdr, gdskey);
-              gridIndex.addHorizCoordSys(ggdr);
-              continue;
-            }
-
-            // read GDS as raw bytes
-            byte[] gdsData = new byte[gdsSize];
-            dis.readFully(gdsData);
-            
-            int gdskey;
-            if (grid_edition_1) {
-              Grib1GDSVariables gdsv = new Grib1GDSVariables(gdsData);
-              GribGridDefRecord ggdr = new GribGridDefRecord(gdsv);
-              if (index_version.startsWith("8.0")) {
-                gdskey = gdsv.get80TypeGdsKey();
-              } else {
-                gdskey = gdsv.getGdsKey();
-              }
-              populateGDS1(ggdr, gdsv, gdskey);
-              gridIndex.addHorizCoordSys(ggdr);
-              //System.out.println("GDS length =" + gdsv.getLength());
-              //System.out.println("GDS GdsKey =" + gdsv.getOldTypeGdsKey());
-            } else {
-              Grib2GDSVariables gdsv = new Grib2GDSVariables(gdsData);
-              GribGridDefRecord ggdr = new GribGridDefRecord(gdsv);
-              if (index_version.startsWith("8.0")) {
-                gdskey = gdsv.get80TypeGdsKey();
-              } else {
-                gdskey = gdsv.getGdsKey(); // version higher than 8.0
-              }
-              populateGDS2(ggdr, gdsv, gdskey);
-              gridIndex.addHorizCoordSys(ggdr);
-              //System.out.println("GDS length =" + gdsv.getLength());
-              //System.out.println("GDS GdsKey =" + gdsv.getGdsKey());
-            }
-
+        // new
+        number = dis.readInt();
+        for (int j = 0; j < number; j++) {
+          int gdsSize = dis.readInt();
+          if (gdsSize == 4) { // for Grib1 records with no GDS
+            int gdskey = dis.readInt();
+            GribGridDefRecord ggdr = new GribGridDefRecord();
+            Grib1Grid.populateGDS(ggdr, gdskey);
+            gridIndex.addHorizCoordSys(ggdr);
+            continue;
           }
-          //gridIndex.finish();
+
+          // read GDS as raw bytes
+          byte[] gdsData = new byte[gdsSize];
+          dis.readFully(gdsData);
+
+          int gdskey;
+          if (grid_edition_1) {
+            Grib1GDSVariables gdsv = new Grib1GDSVariables(gdsData);
+            GribGridDefRecord ggdr = new GribGridDefRecord(gdsv);
+            if (index_version.startsWith("8.0")) {
+              gdskey = gdsv.get80TypeGdsKey();
+            } else {
+              gdskey = gdsv.getGdsKey();
+            }
+            populateGDS1(ggdr, gdsv, gdskey);
+            gridIndex.addHorizCoordSys(ggdr);
+            //System.out.println("GDS length =" + gdsv.getLength());
+            //System.out.println("GDS GdsKey =" + gdsv.getOldTypeGdsKey());
+          } else {
+            Grib2GDSVariables gdsv = new Grib2GDSVariables(gdsData);
+            GribGridDefRecord ggdr = new GribGridDefRecord(gdsv);
+            if (index_version.startsWith("8.0")) {
+              gdskey = gdsv.get80TypeGdsKey();
+            } else {
+              gdskey = gdsv.getGdsKey(); // version higher than 8.0
+            }
+            populateGDS2(ggdr, gdsv, gdskey);
+            gridIndex.addHorizCoordSys(ggdr);
+            //System.out.println("GDS length =" + gdsv.getLength());
+            //System.out.println("GDS GdsKey =" + gdsv.getGdsKey());
+          }
+
+        }
+        //gridIndex.finish();
         //}
         if (debugTiming) {
           long took = System.currentTimeMillis() - start;
           System.out.println(" Index read " + location + " count="
                   + gridIndex.getGridCount() + " took=" + took + " msec ");
         }
-        log.debug("Binary index read: " + location);
-        log.debug("Number Records =" + gridIndex.getGridCount() + " at " +
-                dateFormat.format(Calendar.getInstance().getTime()));
+        log.debug("Binary index read: {}", location);
+        log.debug("Number Records = {} at {}", gridIndex.getGridCount(), dateFormat.format(Calendar.getInstance().getTime()));
         return gridIndex;
 
       } catch (IOException e) {
@@ -458,14 +457,14 @@ public class GribIndexReader {
           throw new IOException(message);
         }
         // retry
-        log.info("open(): rereading index [" + location + "]");
+        log.info("open(): rereading index [{}] due to IOException={}", location, e.getMessage());
         try {
           Thread.sleep(1000); // 1 secs to let file system catch up
         } catch (InterruptedException e1) {
         }
 
       } catch (ParseException e) {
-        log.error("open(): ParseException reading index " + e.getMessage(), e);
+        log.error("open(): ParseException reading index ", e);
         throw new RuntimeException(e);
 
       } finally {
@@ -794,7 +793,7 @@ public class GribIndexReader {
         break;
 
       default:
-        log.warn("\tUnknown Grid Type\t" + gdtn);
+        log.warn("Unknown Grid Type " + gdtn);
     }             // end switch gdtn
   }  // end Grib2GDS
 
@@ -1106,7 +1105,7 @@ public class GribIndexReader {
         break;
 
       default:
-        log.error("\tUnknown Grid Type\t" + gdtn);
+        log.error("Unknown Grid Type " + gdtn);
     }             // end switch gdtn
   }  // end Grib1GDS
 

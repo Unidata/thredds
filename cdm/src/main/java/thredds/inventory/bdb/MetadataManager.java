@@ -289,7 +289,7 @@ public class MetadataManager {
 
   public void delete(String theKey) {
     if (readOnly) {
-      logger.warn("Cant dekete - readOnly mode");
+      logger.warn("Cant delete - readOnly mode");
       return;
     }
 
@@ -304,7 +304,7 @@ public class MetadataManager {
 
   public void delete(Map<String, MFile> current) {
     if (readOnly) {
-      logger.warn("Cant dekete - readOnly mode");
+      logger.warn("Cant deleet - readOnly mode");
       return;
     }
     
@@ -323,24 +323,23 @@ public class MetadataManager {
         if (pos > 0) {
           String filename = key.substring(0, pos);
           if (null == current.get(filename)) {
-            //System.out.printf("%s not current %n", filename);
+            logger.debug("{} not in current - want to delete from bdb", filename);
             result.add(new DatabaseEntry(foundKey.getData()));
             count++;
           } else {
-            //System.out.printf("%s is current%n", filename);
+            logger.debug("{} is in current", filename);
           }
         }
       }
 
-      //System.out.printf("total found to delete = %d%n", count);
-
-      if (debugDelete) {
-        for (DatabaseEntry entry : result) {
-          OperationStatus status = database.delete(null, entry);
-          String key = new String(entry.getData(), UTF8);
-          System.out.printf("%s deleted %s%n", status, key);
-        }
+      int countDelete = 0;
+      for (DatabaseEntry entry : result) {
+        OperationStatus status = database.delete(null, entry);
+        String key = new String(entry.getData(), UTF8);
+        logger.debug("{} deleted {}", status, key);
+        countDelete++;
       }
+      logger.info("{} #files deleted = {}", collectionName, countDelete);
 
     } catch (UnsupportedOperationException e) {
       logger.error("Trying to delete " + collectionName, e);

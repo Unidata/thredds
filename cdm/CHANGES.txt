@@ -3,8 +3,9 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Changes in version 4.2:
- 25: (2011-05-xx)
-  GRIB1Write: downgrade messsaages to debug
+ 25: (2011-05-20)
+  MetadataManager delete was turned off
+  GRIB1Write: downgrade messaages to debug
   GRIB2 standard tables: 0-1-52 should be Total_precipitation_rate
   Array.reflectArrayCopyOut vug fix from Rob Weingruber
   InvAccess.getStandardName() no longer wraps with thredds: or cdmremote: use getWrappedName() intead
