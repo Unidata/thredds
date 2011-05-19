@@ -95,7 +95,7 @@ public class TestCdmRemoteServer extends TestCase {
     CoordinateAxis1D time = gcs.getTimeAxis1D();
     assert time != null;
     assert time.getSize() == 1;
-    assert 102864.0 == time.readScalarDouble();
+    assert TestAll.closeEnough(time.readScalarDouble(), 102840.0) : time.readScalarDouble();
 
     dataResult.featureDataset.close();
   }

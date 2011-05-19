@@ -203,7 +203,7 @@ public class Grib1WriteIndex {
               if ( logPDS.equals( Grib2WriteIndex.pdsLogType.systemout ))
                 System.out.println( str.toString() );
               else if ( logPDS.equals( Grib2WriteIndex.pdsLogType.logger ))
-                log.info( str.toString());
+                log.debug( str.toString());
             }
           } else {
             pdsMap.put( crcv, i);
@@ -483,7 +483,7 @@ public class Grib1WriteIndex {
               if ( logPDS.equals( Grib2WriteIndex.pdsLogType.systemout ))
                 System.out.println( str.toString() );
               else if ( logPDS.equals( Grib2WriteIndex.pdsLogType.logger ))
-                log.info( str.toString());
+                log.debug( str.toString());
             }  
           } else {
             pdsMap.put( crcv, i + originalSize );

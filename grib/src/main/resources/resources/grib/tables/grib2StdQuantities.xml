@@ -173,8 +173,8 @@
               description="Total Snow Precipitation" />
             <quantity id="Total_column_water" number="51" unit="kg m-2"
                 description="Total_column_water" />
-            <quantity id="Total_precipitation" number="52" unit="kg m-2"
-                description="Total_precipitation" />
+            <quantity id="Total_precipitation_rate" number="52" unit="kg m-2"
+                description="Total_precipitation_rate" />
             <quantity id="Snow_fall_water_equivalent" number="53" unit="kg m-2"
                 description="Snow_fall_water_equivalent" />
             <quantity id="Large_scale_precipitation_rate" number="54" unit="kg m-2s-1"

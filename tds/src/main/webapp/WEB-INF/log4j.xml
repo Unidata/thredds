@@ -176,7 +176,7 @@
   </logger>
 
   <logger name="ucar.nc2.ft.fmrc.GridDatasetInv" additivity="false">
-    <level value="INFO"/>
+    <level value="DEBUG"/>
     <appender-ref ref="fcScan"/>
   </logger>
 

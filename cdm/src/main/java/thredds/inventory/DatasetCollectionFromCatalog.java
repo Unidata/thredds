@@ -148,7 +148,7 @@ public class DatasetCollectionFromCatalog extends DatasetCollectionManager imple
 
     @Override
     public String getPath() {
-      return access.getStandardUrlName();
+      return access.getWrappedUrlName();
     }
 
     @Override

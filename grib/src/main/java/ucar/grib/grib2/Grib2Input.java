@@ -185,7 +185,7 @@ public final class Grib2Input {
           continue;
         }
         if (is.getDiscipline() == 255) {
-          logger.warn( "Missing Discipline in header at= "+raf.getLocation()) ;
+          logger.debug( "Missing Discipline in header at= "+raf.getLocation()) ;
           raf.seek(endPos);
           continue;
         }

@@ -582,7 +582,7 @@ class FmrcDataset {
       for (FmrcInvLite.Gridset.Grid ugrid : gridset.grids) {
         VariableDS aggVar = (VariableDS) result.findVariable(ugrid.name);
         if (aggVar == null) { // a ugrid is not in the proto
-          logger.error("cant find ugrid variable "+ugrid.name+" in collection "+lite.collectionName+debugMissingVar(proto, result));
+          logger.error("buildDataset2D: cant find ugrid variable "+ugrid.name+" in collection "+lite.collectionName+debugMissingVar(proto, result));
           continue; // skip
         }
 
@@ -837,7 +837,6 @@ class FmrcDataset {
     // make the time coordinate(s) for each runSeq
     List<Variable> nonAggVars = result.getVariables();
     for (FmrcInvLite.Gridset gridset : lite.gridSets) {
-
       Group group = result.getRootGroup(); // can it be different ??
       String timeDimName = gridset.gridsetName;
 
@@ -845,8 +844,10 @@ class FmrcDataset {
       int ntimes = timeInv.getTimeLength(gridset);
       if (ntimes == 0) {   // eg a constant offset dataset for variables that dont have that offset
         // remove all variables that are in this gridset
-        for (FmrcInvLite.Gridset.Grid ugrid : gridset.grids)
-         result.removeVariable(group, ugrid.name);
+        for (FmrcInvLite.Gridset.Grid ugrid : gridset.grids) {
+          result.removeVariable(group, ugrid.name);
+          logger.warn("buildDataset1D "+lite.collectionName+" remove "+ugrid.name);
+        }
         continue; // skip the rest
       }
 
@@ -881,7 +882,7 @@ class FmrcDataset {
 
         VariableDS aggVar = (VariableDS) result.findVariable(ugrid.name);
         if (aggVar == null) { // a ugrid is not in the proto
-          logger.error("cant find ugrid variable "+ugrid.name+" in collection "+lite.collectionName+debugMissingVar(proto, result));
+          logger.error("buildDataset1D "+lite.collectionName+": cant find ugrid variable "+ugrid.name+" in collection "+lite.collectionName+debugMissingVar(proto, result));
           continue; // skip
         }
 
@@ -924,13 +925,13 @@ class FmrcDataset {
 
   private String debugMissingVar(NetcdfFile proto, NetcdfFile result) {
     Formatter f = new Formatter();
-    f.format("result %s%n", result.getLocation());
+    f.format("%nresult dataset %s%n", result.getLocation());
     for (Variable v: result.getVariables())
-      f.format("%s%n", v.getNameAndDimensions());
+      f.format(" %s%n", v.getNameAndDimensions());
     f.format("%n");
-    f.format("proto %s%n", proto.getLocation());
+    f.format("proto dataset %s%n", proto.getLocation());
     for (Variable v: proto.getVariables())
-      f.format("%s%n", v.getNameAndDimensions());
+      f.format(" %s%n", v.getNameAndDimensions());
 
     return f.toString();
   }

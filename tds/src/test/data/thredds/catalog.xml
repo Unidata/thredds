@@ -18,8 +18,9 @@
   <datasetRoot path="testStandardTds" location="content/testdata/"/>
   <dataset name="Test Single Dataset" ID="testDataset" serviceName="odap" urlPath="testStandardTds/testData.nc"
            dataType="Grid"/>
-  <dataset name="Test Single Dataset 2" ID="testDataset2" serviceName="odap" urlPath="testStandardTds/testData2.grib2"
+  <dataset name="Test Single Dataset 2" ID="testDataset2" serviceName="odap" urlPath="testStandardTds/2004050412_eta_211.nc"
            dataType="Grid"/>
+
   <datasetScan name="Test standard TDS content" ID="testStandardTdsScan" path="testStandardTdsScan"
                location="content/testdata">
     <metadata inherited="true">
