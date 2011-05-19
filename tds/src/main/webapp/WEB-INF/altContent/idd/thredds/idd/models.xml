@@ -224,26 +224,6 @@
       <featureCollection name="NCEP-GFS-N_Hemisphere_381km" featureType="FMRC" harvest="true"
                          path="fmrc/NCEP/GFS/N_Hemisphere_381km">
         <metadata inherited="true">
-          <documentation type="summary">NCEP GFS Model : AWIPS 201 (A) Grid. Northern Hemisphere (polar stereographic).
-            Model runs are made at 0, 6, 12, and 18Z, with analysis and forecasts every 6 hours out 5 days.
-            Horizontal = 65 by 65 points, resolution 381.0 km, Polar Stereographic projection.
-            Vertical = 1000 to 100 hPa mandatory pressure levels (10 levels); surface, height above ground, pressure layers.
-          </documentation>
-        </metadata>
-
-        <collection
-            spec="/data/ldm/pub/native/grid/NCEP/GFS/N_Hemisphere_381km/GFS_N_Hemisphere_381km_#yyyyMMdd_HHmm#.grib1"
-            name="GFS_N_Hemisphere_381km"
-            recheckAfter="15 min"
-            olderThan="5 min"/>
-        <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
-        <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
-        <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
-      </featureCollection>
-
-      <featureCollection name="NCEP-GFS-N_Hemisphere_381km_grib2" featureType="FMRC" harvest="true"
-                         path="fmrc/NCEP/GFS/N_Hemisphere_381km_grib2">
-        <metadata inherited="true">
           <dataFormat>GRIB-2</dataFormat>
           <documentation type="summary">NCEP GFS Model : AWIPS 201 (A) Grid. Northern Hemisphere (polar stereographic).
             Model runs are made at 0, 6, 12, and 18Z, with analysis and forecasts every 6 hours out 10 days.
@@ -261,6 +241,7 @@
         <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
         <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
       </featureCollection>
+
       <featureCollection name="NCEP-GFS-Pacific_40km" featureType="FMRC" harvest="true"
                          path="fmrc/NCEP/GFS/Pacific_40km">
         <metadata inherited="true">

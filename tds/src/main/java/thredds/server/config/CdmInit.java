@@ -38,12 +38,10 @@ import thredds.servlet.ServletUtil;
 import thredds.servlet.FmrcInventoryServlet;
 import thredds.catalog.parser.jdom.InvCatalogFactory10;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.thredds.ThreddsDataFactory;
 import ucar.nc2.util.cache.FileCacheRaf;
 import ucar.nc2.util.DiskCache2;
 import ucar.nc2.util.DiskCache;
 import ucar.nc2.ncml.Aggregation;
-import ucar.nc2.ncml.AggregationFmrc;
 import ucar.nc2.iosp.grid.GridServiceProvider;
 
 import java.util.Calendar;
@@ -81,6 +79,7 @@ public class CdmInit {
       fcCache = ThreddsConfig.get("FeatureCollection.cacheDirectory", tdsContext.getContentDirectory().getPath() + "/cache/collection/");  // cacheDirectory is old way
     try {
       thredds.inventory.bdb.MetadataManager.setCacheDirectory(fcCache);
+      thredds.inventory.DatasetCollectionManager.enableMetadataManager();
       startupLog.info("CdmInit: FeatureCollection.cacheDirectory= "+fcCache);
     } catch (Exception e) {
       startupLog.error("CdmInit: Failed to open FeatureCollection.cacheDirectory= "+fcCache, e);

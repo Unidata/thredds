@@ -328,7 +328,9 @@ public class DatasetCollectionManager implements CollectionManager {
       this.lastScanned = System.currentTimeMillis();
       this.lastChanged = this.lastScanned;
     }
-    if (logger.isDebugEnabled()) logger.debug(collectionName+": initial scan found n datasets = "+map.keySet().size());
+
+    if (logger.isInfoEnabled()) logger.debug(collectionName+": initial scan found n datasets = "+map.keySet().size());
+    lm.sendEvent(new TriggerEvent(RESCAN));
   }
 
   public boolean rescanIfNeeded() throws IOException {
@@ -431,10 +433,11 @@ public class DatasetCollectionManager implements CollectionManager {
       }
     }
 
+    if (logger.isInfoEnabled()) logger.info(collectionName+": rescan at " + new Date()+": nnew = "+nnew+" ndelete = "+ndelete);
+
     if (changed)
       lm.sendEvent(new TriggerEvent(RESCAN));  // LOOK watch out for infinite loop
 
-    if (logger.isInfoEnabled()) logger.info(collectionName+": rescan at " + new Date()+": nnew = "+nnew+" ndelete = "+ndelete);
     return changed;
   }
 

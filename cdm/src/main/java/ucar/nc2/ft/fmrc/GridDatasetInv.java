@@ -99,7 +99,7 @@ public class GridDatasetInv {
           long fileModifiedSecs = mfile.getLastModified() / 1000; // ignore msecs
           long xmlModifiedSecs = inv.getLastModified() / 1000; // ignore msecs
           if (xmlModifiedSecs >= fileModifiedSecs) { // LOOK if fileDate is -1, will always succeed
-            if (log.isInfoEnabled()) log.info(" cache ok "+new Date(inv.getLastModified())+" >= "+new Date(mfile.getLastModified())+" for " + mfile.getName());
+            if (log.isDebugEnabled()) log.debug(" cache ok "+new Date(inv.getLastModified())+" >= "+new Date(mfile.getLastModified())+" for " + mfile.getName());
             return inv; // ok, use it
           } else {
             if (log.isInfoEnabled()) log.info(" cache out of date "+new Date(inv.getLastModified())+" < "+new Date(mfile.getLastModified())+" for " + mfile.getName());

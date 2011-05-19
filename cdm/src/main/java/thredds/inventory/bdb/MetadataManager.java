@@ -93,7 +93,6 @@ public class MetadataManager {
 
     try {
       myEnv = new Environment(dir, myEnvConfig); // LOOK may want to try multiple Environments
-      logger.info("MetadataManager opened bdb in directory=" + dir);
       readOnly = false;
 
      } catch (com.sleepycat.je.EnvironmentLockedException e) {
