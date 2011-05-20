@@ -4,6 +4,9 @@ Build Date = @BUILDTIME@
 Build Name = @BUILD.NAME@
 
 Release Details 4.2:
+ 4.2.8 (2011-xx-xx)
+  Remove Upper Air Point Data - its station profile data - delay until 4.3
+
  4.2.7 (2011-05-20)
    Remove empty NCEP-GFS-N_Hemisphere_381km datasets from mlode catalog
    Enable MetadataManager so old files get deleted

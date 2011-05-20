@@ -10,7 +10,7 @@ Changes in version 4.2:
   MetadataManager delete was turned off
   GRIB1Write: downgrade messages to debug
   GRIB2 standard tables: 0-1-52 should be Total_precipitation_rate
-  Array.reflectArrayCopyOut vug fix from Rob Weingruber
+  Array.reflectArrayCopyOut bug fix from Rob Weingruber
   InvAccess.getStandardName() no longer wraps with thredds: or cdmremote: use getWrappedName() intead
  24: (2011-05-02)
   Improve Grads, Gempak Iosp (dmurray)
