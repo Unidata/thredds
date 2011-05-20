@@ -1700,8 +1700,8 @@ public class StringUtil {
    * @param s         source string
    * @param macroName macro name_
    * @param date      date to use
-   * @param date      timezone for format
-   * @reurn formatted string
+   * @param timeZone  timezone for format
+   * @return formatted string
    */
   public static String replaceDate(String s, String macroName, Date date, TimeZone timeZone) {
     return replaceDate(s, macroName, date, "${", "}", timeZone);

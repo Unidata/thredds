@@ -227,7 +227,7 @@ public class Stereographic extends ProjectionImpl {
    * Get the latitude at natural origin
    *
    * @return latitude at natural origin
-   * @author qunhe@unc.edu
+   * author qunhe@unc.edu
    */
   public double getNaturalOriginLat() {
     return Math.toDegrees(latts);

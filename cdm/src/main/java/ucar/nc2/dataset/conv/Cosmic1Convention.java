@@ -518,9 +518,9 @@ public class Cosmic1Convention extends CoordSysBuilder {
      * Outputs:
      * @return theta GAST angle in radians
      *
-     * @author     Bill Schreiner
+     * author     Bill Schreiner
      * @since      May 1995
-     * @version    $URL: svn://ursa.cosmic.ucar.edu/trunk/src/roam/gast.f $ $Id: gast.f 10129 2008-07-30 17:10:52Z dhunt $
+     * version    $URL: svn://ursa.cosmic.ucar.edu/trunk/src/roam/gast.f $ $Id: gast.f 10129 2008-07-30 17:10:52Z dhunt $
      * -----------------------------------------------------------------------
      */
 

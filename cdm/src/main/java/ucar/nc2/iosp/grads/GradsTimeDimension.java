@@ -261,7 +261,7 @@ public class GradsTimeDimension extends GradsDimension {
      * @param filespec  the file template
      * @param timeIndex the time index
      *
-     * @see http://www.iges.org/grads/gadoc/templates.html
+     * @see "http://www.iges.org/grads/gadoc/templates.html"
      *
      * @return  the filled in template
      */

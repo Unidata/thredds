@@ -209,10 +209,10 @@ public class TestMotherlodeModels implements CatalogCrawler.Listener {
   public static JPanel main;
 
   public static void main(String args[]) throws IOException {
-    String server = "http://motherlode.ucar.edu:8080/thredds";
+    String server = "http://motherlode.ucar.edu:8081/thredds";
 
     String catalog = "/idd/models.xml";
-    String problemCat = "http://localhost:8080/thredds/catalog/aggorama/catalog.xml";   //  http://localhost:8080/thredds/catalog/aggorama/catalog.html
+    String catalogFnmoc = "/idd/fnmoc.xml";
 
     //"http://motherlode.ucar.edu:9080/thredds/idd/models_old.xml"
 
@@ -230,7 +230,7 @@ public class TestMotherlodeModels implements CatalogCrawler.Listener {
     main.setLayout(new BoxLayout(main, BoxLayout.Y_AXIS));
 
     // TestMotherlodeModels job = new TestMotherlodeModels("problem", problemCat, CatalogCrawler.USE_ALL, false);
-    TestMotherlodeModels job = new TestMotherlodeModels("problem", server+catalog, CatalogCrawler.USE_RANDOM_DIRECT, false);
+    TestMotherlodeModels job = new TestMotherlodeModels("problem", server+catalogFnmoc, CatalogCrawler.USE_RANDOM_DIRECT, false);
 
     frame.getContentPane().add(main);
     frame.pack();

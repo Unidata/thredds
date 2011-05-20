@@ -818,8 +818,8 @@ public class NOWRadheader {
 
     /**
      * convert unsigned byte to short
-     * @param b
-     * @return
+     * @param b convert this unsigned byte
+     * @return unsigned short
      */
     public short convertunsignedByte2Short(byte b) {
         return (short) ((b < 0)

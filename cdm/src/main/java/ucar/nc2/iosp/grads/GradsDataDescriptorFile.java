@@ -21,9 +21,6 @@
 package ucar.nc2.iosp.grads;
 
 
-import ucar.unidata.io.RandomAccessFile;
-
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -37,7 +34,7 @@ import java.util.StringTokenizer;
 /**
  * Class to hold information from a GrADS Data Descriptor File
  *
- * @see http://www.iges.org/grads/gadoc/descriptorfile.html
+ * @see "http://www.iges.org/grads/gadoc/descriptorfile.html"
  *
  * @author         Don Murray - CU/CIRES
  */

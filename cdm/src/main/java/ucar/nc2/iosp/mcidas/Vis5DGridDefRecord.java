@@ -78,8 +78,6 @@ public class Vis5DGridDefRecord extends GridDefRecord {
     /**
      * Create a new grid nav block with the values
      *
-     * @param words   analysis block values
-     *
      * @param Projection _more_
      * @param projargs _more_
      * @param nr _more_
