@@ -220,7 +220,8 @@ public class NcDDS extends ServerDDS {
 
   public static String escapeName(String vname) {
     // vname = StringUtil.replace(vname, '-', "_"); // LOOK Temporary workaround until opendap code fixed
-    return StringUtil.escape(vname, NcDDS.DODScharset);
+    String newname = StringUtil.escape(vname, NcDDS.DODScharset);
+      return newname;
   }
 
   /**

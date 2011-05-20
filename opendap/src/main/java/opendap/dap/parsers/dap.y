@@ -10,6 +10,7 @@
 %define lex_throws "ParseException"
 
 %code imports {
+import opendap.dap.*;
 import opendap.dap.BaseTypeFactory;
 import opendap.dap.parsers.ParseException;
 import java.io.*;
@@ -264,7 +265,7 @@ errorprog : /*empty*/ {$$=null;} | SCAN_PROG    '=' SCAN_WORD ';' {$$=$3;}
    and are disambiguated by context
 */
 name:
-          SCAN_WORD      {$$=$1;}
+          SCAN_WORD      {$$=dapescapename($1);}
 	| SCAN_ALIAS     {$$=strdup("alias");}
 	| SCAN_ARRAY     {$$=strdup("array");}
 	| SCAN_ATTR      {$$=strdup("attributes");}

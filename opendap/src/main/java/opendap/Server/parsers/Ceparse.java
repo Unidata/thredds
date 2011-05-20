@@ -8,6 +8,8 @@ package opendap.Server.parsers;
 import opendap.dap.*;
 import opendap.Server.*;
 import opendap.dap.parsers.*;
+import opendap.Server.parsers.*;
+
 
 import static opendap.Server.parsers.CeParser.*;
 

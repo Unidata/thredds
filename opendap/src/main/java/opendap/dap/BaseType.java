@@ -94,7 +94,7 @@ public abstract class BaseType extends DAPNode
      * @param n the name of the variable.
      */
     public BaseType(String n) {
-        this(n, true);
+        this(n, false);
     }
 
     /**

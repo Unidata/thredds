@@ -120,6 +120,18 @@ public class EscapeStrings {
     private static String _allowableInURI_CE = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-+_/.\\,";
     private static char _URIEscape = '%';
 
+    static private String
+    complement(String s)
+    {
+        String comp = "";
+        for(char c: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-+_/.\\*,".toCharArray()) {
+            int j = s.indexOf(c);
+            if(j < 0)
+                comp = comp + c;
+        }
+        return comp;
+    }
+
     /**
      * Replace characters that are not allowed in WWW URLs using rules specific
      * to Constraint Expressions. This has canged over time and now the only

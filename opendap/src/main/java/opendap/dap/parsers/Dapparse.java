@@ -591,4 +591,22 @@ public abstract class Dapparse
     }
 
 
+    protected String
+    dapescapename(Object s0)
+    {
+        String name = (String)s0;
+        String newname = "";
+        for(char c: name.toCharArray()) {
+            if(c == '.') {
+            newname = newname + "%2e";
+            } else if(c == '/') {
+            newname = newname + "%2f";
+            } else
+            newname = newname + c;
+        }
+        return newname;
+    }
+
+
+
 }

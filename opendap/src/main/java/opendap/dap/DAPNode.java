@@ -75,8 +75,8 @@ public class DAPNode implements Cloneable, Serializable
     /**
      * The name of this variable - not www enccoded
      */
-    protected String _name;
-    protected String _nameEncoded; // www encoded form
+    protected String _name; /* With disallowed characters escaped  */
+    protected String _nameEncoded; // www encoded form of name
 
     /**
      * The parent (container class) of this object, if one exists
@@ -217,7 +217,7 @@ public class DAPNode implements Cloneable, Serializable
      */
     public final void setName(String n)
     {
-	_nameEncoded = n;
+	    _nameEncoded = n;
         setClearName(EscapeStrings.www2id(n));
     }
 

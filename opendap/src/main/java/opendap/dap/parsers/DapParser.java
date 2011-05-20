@@ -38,6 +38,7 @@ package opendap.dap.parsers;
 /* Line 33 of lalr1.java  */
 /* Line 12 of "dap.y"  */
 
+import opendap.dap.*;
 import opendap.dap.BaseTypeFactory;
 import opendap.dap.parsers.ParseException;
 import java.io.*;
@@ -45,7 +46,7 @@ import java.io.*;
 
 
 /* Line 33 of lalr1.java  */
-/* Line 49 of "DapParser.java"  */
+/* Line 50 of "DapParser.java"  */
 
 /**
  * A Bison parser, automatically generated from <tt>dap.y</tt>.
@@ -336,7 +337,7 @@ public class DapParser extends Dapparse
   if (yyn == 3)
     
 /* Line 354 of lalr1.java  */
-/* Line 78 of "dap.y"  */
+/* Line 79 of "dap.y"  */
     {return YYACCEPT;};
   break;
     
@@ -345,7 +346,7 @@ public class DapParser extends Dapparse
   if (yyn == 6)
     
 /* Line 354 of lalr1.java  */
-/* Line 81 of "dap.y"  */
+/* Line 82 of "dap.y"  */
     {unrecognizedresponse(parsestate);};
   break;
     
@@ -354,7 +355,7 @@ public class DapParser extends Dapparse
   if (yyn == 7)
     
 /* Line 354 of lalr1.java  */
-/* Line 86 of "dap.y"  */
+/* Line 87 of "dap.y"  */
     {tagparse(parsestate,SCAN_DATASET);};
   break;
     
@@ -363,7 +364,7 @@ public class DapParser extends Dapparse
   if (yyn == 8)
     
 /* Line 354 of lalr1.java  */
-/* Line 90 of "dap.y"  */
+/* Line 91 of "dap.y"  */
     {tagparse(parsestate,SCAN_ATTR);};
   break;
     
@@ -372,7 +373,7 @@ public class DapParser extends Dapparse
   if (yyn == 9)
     
 /* Line 354 of lalr1.java  */
-/* Line 94 of "dap.y"  */
+/* Line 95 of "dap.y"  */
     {tagparse(parsestate,SCAN_ERROR);};
   break;
     
@@ -381,7 +382,7 @@ public class DapParser extends Dapparse
   if (yyn == 10)
     
 /* Line 354 of lalr1.java  */
-/* Line 99 of "dap.y"  */
+/* Line 100 of "dap.y"  */
     {datasetbody(parsestate,((yystack.valueAt (5-(4)))),((yystack.valueAt (5-(2)))));};
   break;
     
@@ -390,7 +391,7 @@ public class DapParser extends Dapparse
   if (yyn == 11)
     
 /* Line 354 of lalr1.java  */
-/* Line 104 of "dap.y"  */
+/* Line 105 of "dap.y"  */
     {yyval=declarations(parsestate,null,null);};
   break;
     
@@ -399,7 +400,7 @@ public class DapParser extends Dapparse
   if (yyn == 12)
     
 /* Line 354 of lalr1.java  */
-/* Line 105 of "dap.y"  */
+/* Line 106 of "dap.y"  */
     {yyval=declarations(parsestate,((yystack.valueAt (2-(1)))),((yystack.valueAt (2-(2)))));};
   break;
     
@@ -408,7 +409,7 @@ public class DapParser extends Dapparse
   if (yyn == 13)
     
 /* Line 354 of lalr1.java  */
-/* Line 112 of "dap.y"  */
+/* Line 113 of "dap.y"  */
     {yyval=makebase(parsestate,((yystack.valueAt (4-(2)))),((yystack.valueAt (4-(1)))),((yystack.valueAt (4-(3)))));};
   break;
     
@@ -417,7 +418,7 @@ public class DapParser extends Dapparse
   if (yyn == 14)
     
 /* Line 354 of lalr1.java  */
-/* Line 114 of "dap.y"  */
+/* Line 115 of "dap.y"  */
     {if((yyval = makestructure(parsestate,((yystack.valueAt (7-(5)))),((yystack.valueAt (7-(6)))),((yystack.valueAt (7-(3))))))==null) {return YYABORT;}};
   break;
     
@@ -426,7 +427,7 @@ public class DapParser extends Dapparse
   if (yyn == 15)
     
 /* Line 354 of lalr1.java  */
-/* Line 116 of "dap.y"  */
+/* Line 117 of "dap.y"  */
     {if((yyval = makesequence(parsestate,((yystack.valueAt (6-(5)))),((yystack.valueAt (6-(3))))))==null) {return YYABORT;}};
   break;
     
@@ -435,7 +436,7 @@ public class DapParser extends Dapparse
   if (yyn == 16)
     
 /* Line 354 of lalr1.java  */
-/* Line 119 of "dap.y"  */
+/* Line 120 of "dap.y"  */
     {if((yyval = makegrid(parsestate,((yystack.valueAt (11-(10)))),((yystack.valueAt (11-(5)))),((yystack.valueAt (11-(8))))))==null) {return YYABORT;}};
   break;
     
@@ -444,7 +445,7 @@ public class DapParser extends Dapparse
   if (yyn == 17)
     
 /* Line 354 of lalr1.java  */
-/* Line 121 of "dap.y"  */
+/* Line 122 of "dap.y"  */
     {daperror(parsestate,"Unrecognized type"); return YYABORT;};
   break;
     
@@ -453,7 +454,7 @@ public class DapParser extends Dapparse
   if (yyn == 18)
     
 /* Line 354 of lalr1.java  */
-/* Line 126 of "dap.y"  */
+/* Line 127 of "dap.y"  */
     {yyval=(Object)SCAN_BYTE;};
   break;
     
@@ -462,7 +463,7 @@ public class DapParser extends Dapparse
   if (yyn == 19)
     
 /* Line 354 of lalr1.java  */
-/* Line 127 of "dap.y"  */
+/* Line 128 of "dap.y"  */
     {yyval=(Object)SCAN_INT16;};
   break;
     
@@ -471,7 +472,7 @@ public class DapParser extends Dapparse
   if (yyn == 20)
     
 /* Line 354 of lalr1.java  */
-/* Line 128 of "dap.y"  */
+/* Line 129 of "dap.y"  */
     {yyval=(Object)SCAN_UINT16;};
   break;
     
@@ -480,7 +481,7 @@ public class DapParser extends Dapparse
   if (yyn == 21)
     
 /* Line 354 of lalr1.java  */
-/* Line 129 of "dap.y"  */
+/* Line 130 of "dap.y"  */
     {yyval=(Object)SCAN_INT32;};
   break;
     
@@ -489,7 +490,7 @@ public class DapParser extends Dapparse
   if (yyn == 22)
     
 /* Line 354 of lalr1.java  */
-/* Line 130 of "dap.y"  */
+/* Line 131 of "dap.y"  */
     {yyval=(Object)SCAN_UINT32;};
   break;
     
@@ -498,7 +499,7 @@ public class DapParser extends Dapparse
   if (yyn == 23)
     
 /* Line 354 of lalr1.java  */
-/* Line 131 of "dap.y"  */
+/* Line 132 of "dap.y"  */
     {yyval=(Object)SCAN_FLOAT32;};
   break;
     
@@ -507,7 +508,7 @@ public class DapParser extends Dapparse
   if (yyn == 24)
     
 /* Line 354 of lalr1.java  */
-/* Line 132 of "dap.y"  */
+/* Line 133 of "dap.y"  */
     {yyval=(Object)SCAN_FLOAT64;};
   break;
     
@@ -516,7 +517,7 @@ public class DapParser extends Dapparse
   if (yyn == 25)
     
 /* Line 354 of lalr1.java  */
-/* Line 133 of "dap.y"  */
+/* Line 134 of "dap.y"  */
     {yyval=(Object)SCAN_URL;};
   break;
     
@@ -525,7 +526,7 @@ public class DapParser extends Dapparse
   if (yyn == 26)
     
 /* Line 354 of lalr1.java  */
-/* Line 134 of "dap.y"  */
+/* Line 135 of "dap.y"  */
     {yyval=(Object)SCAN_STRING;};
   break;
     
@@ -534,7 +535,7 @@ public class DapParser extends Dapparse
   if (yyn == 27)
     
 /* Line 354 of lalr1.java  */
-/* Line 138 of "dap.y"  */
+/* Line 139 of "dap.y"  */
     {yyval=arraydecls(parsestate,null,null);};
   break;
     
@@ -543,7 +544,7 @@ public class DapParser extends Dapparse
   if (yyn == 28)
     
 /* Line 354 of lalr1.java  */
-/* Line 139 of "dap.y"  */
+/* Line 140 of "dap.y"  */
     {yyval=arraydecls(parsestate,((yystack.valueAt (2-(1)))),((yystack.valueAt (2-(2)))));};
   break;
     
@@ -552,7 +553,7 @@ public class DapParser extends Dapparse
   if (yyn == 29)
     
 /* Line 354 of lalr1.java  */
-/* Line 143 of "dap.y"  */
+/* Line 144 of "dap.y"  */
     {yyval=arraydecl(parsestate,null,((yystack.valueAt (3-(2)))));};
   break;
     
@@ -561,7 +562,7 @@ public class DapParser extends Dapparse
   if (yyn == 30)
     
 /* Line 354 of lalr1.java  */
-/* Line 144 of "dap.y"  */
+/* Line 145 of "dap.y"  */
     {yyval=arraydecl(parsestate,((yystack.valueAt (5-(2)))),((yystack.valueAt (5-(4)))));};
   break;
     
@@ -570,7 +571,7 @@ public class DapParser extends Dapparse
   if (yyn == 31)
     
 /* Line 354 of lalr1.java  */
-/* Line 146 of "dap.y"  */
+/* Line 147 of "dap.y"  */
     {daperror(parsestate,"Illegal dimension declaration"); return YYABORT;};
   break;
     
@@ -579,7 +580,7 @@ public class DapParser extends Dapparse
   if (yyn == 32)
     
 /* Line 354 of lalr1.java  */
-/* Line 150 of "dap.y"  */
+/* Line 151 of "dap.y"  */
     {yyval=((yystack.valueAt (1-(1))));};
   break;
     
@@ -588,7 +589,7 @@ public class DapParser extends Dapparse
   if (yyn == 33)
     
 /* Line 354 of lalr1.java  */
-/* Line 152 of "dap.y"  */
+/* Line 153 of "dap.y"  */
     {daperror(parsestate,"Illegal dataset declaration"); return YYABORT;};
   break;
     
@@ -597,7 +598,7 @@ public class DapParser extends Dapparse
   if (yyn == 34)
     
 /* Line 354 of lalr1.java  */
-/* Line 155 of "dap.y"  */
+/* Line 156 of "dap.y"  */
     {yyval=((yystack.valueAt (1-(1))));};
   break;
     
@@ -606,7 +607,7 @@ public class DapParser extends Dapparse
   if (yyn == 35)
     
 /* Line 354 of lalr1.java  */
-/* Line 158 of "dap.y"  */
+/* Line 159 of "dap.y"  */
     {attributebody(parsestate,((yystack.valueAt (3-(2)))));};
   break;
     
@@ -615,7 +616,7 @@ public class DapParser extends Dapparse
   if (yyn == 36)
     
 /* Line 354 of lalr1.java  */
-/* Line 160 of "dap.y"  */
+/* Line 161 of "dap.y"  */
     {daperror(parsestate,"Illegal DAS body"); return YYABORT;};
   break;
     
@@ -624,7 +625,7 @@ public class DapParser extends Dapparse
   if (yyn == 37)
     
 /* Line 354 of lalr1.java  */
-/* Line 164 of "dap.y"  */
+/* Line 165 of "dap.y"  */
     {yyval=attrlist(parsestate,null,null);};
   break;
     
@@ -633,7 +634,7 @@ public class DapParser extends Dapparse
   if (yyn == 38)
     
 /* Line 354 of lalr1.java  */
-/* Line 165 of "dap.y"  */
+/* Line 166 of "dap.y"  */
     {yyval=attrlist(parsestate,((yystack.valueAt (2-(1)))),((yystack.valueAt (2-(2)))));};
   break;
     
@@ -642,7 +643,7 @@ public class DapParser extends Dapparse
   if (yyn == 39)
     
 /* Line 354 of lalr1.java  */
-/* Line 169 of "dap.y"  */
+/* Line 170 of "dap.y"  */
     {yyval=null;};
   break;
     
@@ -651,7 +652,7 @@ public class DapParser extends Dapparse
   if (yyn == 40)
     
 /* Line 354 of lalr1.java  */
-/* Line 171 of "dap.y"  */
+/* Line 172 of "dap.y"  */
     {yyval=attribute(parsestate,((yystack.valueAt (4-(2)))),((yystack.valueAt (4-(3)))),(Object)SCAN_BYTE);};
   break;
     
@@ -660,7 +661,7 @@ public class DapParser extends Dapparse
   if (yyn == 41)
     
 /* Line 354 of lalr1.java  */
-/* Line 173 of "dap.y"  */
+/* Line 174 of "dap.y"  */
     {yyval=attribute(parsestate,((yystack.valueAt (4-(2)))),((yystack.valueAt (4-(3)))),(Object)SCAN_INT16);};
   break;
     
@@ -669,7 +670,7 @@ public class DapParser extends Dapparse
   if (yyn == 42)
     
 /* Line 354 of lalr1.java  */
-/* Line 175 of "dap.y"  */
+/* Line 176 of "dap.y"  */
     {yyval=attribute(parsestate,((yystack.valueAt (4-(2)))),((yystack.valueAt (4-(3)))),(Object)SCAN_UINT16);};
   break;
     
@@ -678,7 +679,7 @@ public class DapParser extends Dapparse
   if (yyn == 43)
     
 /* Line 354 of lalr1.java  */
-/* Line 177 of "dap.y"  */
+/* Line 178 of "dap.y"  */
     {yyval=attribute(parsestate,((yystack.valueAt (4-(2)))),((yystack.valueAt (4-(3)))),(Object)SCAN_INT32);};
   break;
     
@@ -687,7 +688,7 @@ public class DapParser extends Dapparse
   if (yyn == 44)
     
 /* Line 354 of lalr1.java  */
-/* Line 179 of "dap.y"  */
+/* Line 180 of "dap.y"  */
     {yyval=attribute(parsestate,((yystack.valueAt (4-(2)))),((yystack.valueAt (4-(3)))),(Object)SCAN_UINT32);};
   break;
     
@@ -696,7 +697,7 @@ public class DapParser extends Dapparse
   if (yyn == 45)
     
 /* Line 354 of lalr1.java  */
-/* Line 181 of "dap.y"  */
+/* Line 182 of "dap.y"  */
     {yyval=attribute(parsestate,((yystack.valueAt (4-(2)))),((yystack.valueAt (4-(3)))),(Object)SCAN_FLOAT32);};
   break;
     
@@ -705,7 +706,7 @@ public class DapParser extends Dapparse
   if (yyn == 46)
     
 /* Line 354 of lalr1.java  */
-/* Line 183 of "dap.y"  */
+/* Line 184 of "dap.y"  */
     {yyval=attribute(parsestate,((yystack.valueAt (4-(2)))),((yystack.valueAt (4-(3)))),(Object)SCAN_FLOAT64);};
   break;
     
@@ -714,7 +715,7 @@ public class DapParser extends Dapparse
   if (yyn == 47)
     
 /* Line 354 of lalr1.java  */
-/* Line 185 of "dap.y"  */
+/* Line 186 of "dap.y"  */
     {yyval=attribute(parsestate,((yystack.valueAt (4-(2)))),((yystack.valueAt (4-(3)))),(Object)SCAN_STRING);};
   break;
     
@@ -723,7 +724,7 @@ public class DapParser extends Dapparse
   if (yyn == 48)
     
 /* Line 354 of lalr1.java  */
-/* Line 187 of "dap.y"  */
+/* Line 188 of "dap.y"  */
     {yyval=attribute(parsestate,((yystack.valueAt (4-(2)))),((yystack.valueAt (4-(3)))),(Object)SCAN_URL);};
   break;
     
@@ -732,7 +733,7 @@ public class DapParser extends Dapparse
   if (yyn == 49)
     
 /* Line 354 of lalr1.java  */
-/* Line 188 of "dap.y"  */
+/* Line 189 of "dap.y"  */
     {yyval=attrset(parsestate,((yystack.valueAt (4-(1)))),((yystack.valueAt (4-(3)))));};
   break;
     
@@ -741,7 +742,7 @@ public class DapParser extends Dapparse
   if (yyn == 50)
     
 /* Line 354 of lalr1.java  */
-/* Line 190 of "dap.y"  */
+/* Line 191 of "dap.y"  */
     {daperror(parsestate,"Illegal attribute"); return YYABORT;};
   break;
     
@@ -750,7 +751,7 @@ public class DapParser extends Dapparse
   if (yyn == 51)
     
 /* Line 354 of lalr1.java  */
-/* Line 194 of "dap.y"  */
+/* Line 195 of "dap.y"  */
     {yyval=attrvalue(parsestate,null,((yystack.valueAt (1-(1)))),(Object)SCAN_BYTE);};
   break;
     
@@ -759,7 +760,7 @@ public class DapParser extends Dapparse
   if (yyn == 52)
     
 /* Line 354 of lalr1.java  */
-/* Line 196 of "dap.y"  */
+/* Line 197 of "dap.y"  */
     {yyval=attrvalue(parsestate,((yystack.valueAt (3-(1)))),((yystack.valueAt (3-(3)))),(Object)SCAN_BYTE);};
   break;
     
@@ -768,7 +769,7 @@ public class DapParser extends Dapparse
   if (yyn == 53)
     
 /* Line 354 of lalr1.java  */
-/* Line 199 of "dap.y"  */
+/* Line 200 of "dap.y"  */
     {yyval=attrvalue(parsestate,null,((yystack.valueAt (1-(1)))),(Object)SCAN_INT16);};
   break;
     
@@ -777,7 +778,7 @@ public class DapParser extends Dapparse
   if (yyn == 54)
     
 /* Line 354 of lalr1.java  */
-/* Line 201 of "dap.y"  */
+/* Line 202 of "dap.y"  */
     {yyval=attrvalue(parsestate,((yystack.valueAt (3-(1)))),((yystack.valueAt (3-(3)))),(Object)SCAN_INT16);};
   break;
     
@@ -786,7 +787,7 @@ public class DapParser extends Dapparse
   if (yyn == 55)
     
 /* Line 354 of lalr1.java  */
-/* Line 204 of "dap.y"  */
+/* Line 205 of "dap.y"  */
     {yyval=attrvalue(parsestate,null,((yystack.valueAt (1-(1)))),(Object)SCAN_UINT16);};
   break;
     
@@ -795,7 +796,7 @@ public class DapParser extends Dapparse
   if (yyn == 56)
     
 /* Line 354 of lalr1.java  */
-/* Line 206 of "dap.y"  */
+/* Line 207 of "dap.y"  */
     {yyval=attrvalue(parsestate,((yystack.valueAt (3-(1)))),((yystack.valueAt (3-(3)))),(Object)SCAN_UINT16);};
   break;
     
@@ -804,7 +805,7 @@ public class DapParser extends Dapparse
   if (yyn == 57)
     
 /* Line 354 of lalr1.java  */
-/* Line 209 of "dap.y"  */
+/* Line 210 of "dap.y"  */
     {yyval=attrvalue(parsestate,null,((yystack.valueAt (1-(1)))),(Object)SCAN_INT32);};
   break;
     
@@ -813,7 +814,7 @@ public class DapParser extends Dapparse
   if (yyn == 58)
     
 /* Line 354 of lalr1.java  */
-/* Line 211 of "dap.y"  */
+/* Line 212 of "dap.y"  */
     {yyval=attrvalue(parsestate,((yystack.valueAt (3-(1)))),((yystack.valueAt (3-(3)))),(Object)SCAN_INT32);};
   break;
     
@@ -822,7 +823,7 @@ public class DapParser extends Dapparse
   if (yyn == 59)
     
 /* Line 354 of lalr1.java  */
-/* Line 214 of "dap.y"  */
+/* Line 215 of "dap.y"  */
     {yyval=attrvalue(parsestate,null,((yystack.valueAt (1-(1)))),(Object)SCAN_UINT32);};
   break;
     
@@ -831,7 +832,7 @@ public class DapParser extends Dapparse
   if (yyn == 60)
     
 /* Line 354 of lalr1.java  */
-/* Line 215 of "dap.y"  */
+/* Line 216 of "dap.y"  */
     {yyval=attrvalue(parsestate,((yystack.valueAt (3-(1)))),((yystack.valueAt (3-(3)))),(Object)SCAN_UINT32);};
   break;
     
@@ -840,7 +841,7 @@ public class DapParser extends Dapparse
   if (yyn == 61)
     
 /* Line 354 of lalr1.java  */
-/* Line 218 of "dap.y"  */
+/* Line 219 of "dap.y"  */
     {yyval=attrvalue(parsestate,null,((yystack.valueAt (1-(1)))),(Object)SCAN_FLOAT32);};
   break;
     
@@ -849,7 +850,7 @@ public class DapParser extends Dapparse
   if (yyn == 62)
     
 /* Line 354 of lalr1.java  */
-/* Line 219 of "dap.y"  */
+/* Line 220 of "dap.y"  */
     {yyval=attrvalue(parsestate,((yystack.valueAt (3-(1)))),((yystack.valueAt (3-(3)))),(Object)SCAN_FLOAT32);};
   break;
     
@@ -858,7 +859,7 @@ public class DapParser extends Dapparse
   if (yyn == 63)
     
 /* Line 354 of lalr1.java  */
-/* Line 222 of "dap.y"  */
+/* Line 223 of "dap.y"  */
     {yyval=attrvalue(parsestate,null,((yystack.valueAt (1-(1)))),(Object)SCAN_FLOAT64);};
   break;
     
@@ -867,7 +868,7 @@ public class DapParser extends Dapparse
   if (yyn == 64)
     
 /* Line 354 of lalr1.java  */
-/* Line 223 of "dap.y"  */
+/* Line 224 of "dap.y"  */
     {yyval=attrvalue(parsestate,((yystack.valueAt (3-(1)))),((yystack.valueAt (3-(3)))),(Object)SCAN_FLOAT64);};
   break;
     
@@ -876,7 +877,7 @@ public class DapParser extends Dapparse
   if (yyn == 65)
     
 /* Line 354 of lalr1.java  */
-/* Line 226 of "dap.y"  */
+/* Line 227 of "dap.y"  */
     {yyval=attrvalue(parsestate,null,((yystack.valueAt (1-(1)))),(Object)SCAN_STRING);};
   break;
     
@@ -885,7 +886,7 @@ public class DapParser extends Dapparse
   if (yyn == 66)
     
 /* Line 354 of lalr1.java  */
-/* Line 227 of "dap.y"  */
+/* Line 228 of "dap.y"  */
     {yyval=attrvalue(parsestate,((yystack.valueAt (3-(1)))),((yystack.valueAt (3-(3)))),(Object)SCAN_STRING);};
   break;
     
@@ -894,7 +895,7 @@ public class DapParser extends Dapparse
   if (yyn == 67)
     
 /* Line 354 of lalr1.java  */
-/* Line 231 of "dap.y"  */
+/* Line 232 of "dap.y"  */
     {yyval=attrvalue(parsestate,null,((yystack.valueAt (1-(1)))),(Object)SCAN_URL);};
   break;
     
@@ -903,7 +904,7 @@ public class DapParser extends Dapparse
   if (yyn == 68)
     
 /* Line 354 of lalr1.java  */
-/* Line 232 of "dap.y"  */
+/* Line 233 of "dap.y"  */
     {yyval=attrvalue(parsestate,((yystack.valueAt (3-(1)))),((yystack.valueAt (3-(3)))),(Object)SCAN_URL);};
   break;
     
@@ -912,7 +913,7 @@ public class DapParser extends Dapparse
   if (yyn == 69)
     
 /* Line 354 of lalr1.java  */
-/* Line 236 of "dap.y"  */
+/* Line 237 of "dap.y"  */
     {yyval=((yystack.valueAt (1-(1))));};
   break;
     
@@ -921,7 +922,7 @@ public class DapParser extends Dapparse
   if (yyn == 70)
     
 /* Line 354 of lalr1.java  */
-/* Line 240 of "dap.y"  */
+/* Line 241 of "dap.y"  */
     {yyval=((yystack.valueAt (1-(1))));};
   break;
     
@@ -930,7 +931,7 @@ public class DapParser extends Dapparse
   if (yyn == 71)
     
 /* Line 354 of lalr1.java  */
-/* Line 250 of "dap.y"  */
+/* Line 251 of "dap.y"  */
     {yyval=((yystack.valueAt (3-(2)))); yyval=((yystack.valueAt (3-(3)))); yyval=null;};
   break;
     
@@ -939,7 +940,7 @@ public class DapParser extends Dapparse
   if (yyn == 72)
     
 /* Line 354 of lalr1.java  */
-/* Line 255 of "dap.y"  */
+/* Line 256 of "dap.y"  */
     {errorbody(parsestate,((yystack.valueAt (7-(2)))),((yystack.valueAt (7-(3)))),((yystack.valueAt (7-(4)))),((yystack.valueAt (7-(5)))));};
   break;
     
@@ -948,7 +949,7 @@ public class DapParser extends Dapparse
   if (yyn == 73)
     
 /* Line 354 of lalr1.java  */
-/* Line 258 of "dap.y"  */
+/* Line 259 of "dap.y"  */
     {yyval=null;};
   break;
     
@@ -957,7 +958,7 @@ public class DapParser extends Dapparse
   if (yyn == 74)
     
 /* Line 354 of lalr1.java  */
-/* Line 258 of "dap.y"  */
+/* Line 259 of "dap.y"  */
     {yyval=((yystack.valueAt (4-(3))));};
   break;
     
@@ -966,7 +967,7 @@ public class DapParser extends Dapparse
   if (yyn == 75)
     
 /* Line 354 of lalr1.java  */
-/* Line 259 of "dap.y"  */
+/* Line 260 of "dap.y"  */
     {yyval=null;};
   break;
     
@@ -975,7 +976,7 @@ public class DapParser extends Dapparse
   if (yyn == 76)
     
 /* Line 354 of lalr1.java  */
-/* Line 259 of "dap.y"  */
+/* Line 260 of "dap.y"  */
     {yyval=((yystack.valueAt (4-(3))));};
   break;
     
@@ -984,7 +985,7 @@ public class DapParser extends Dapparse
   if (yyn == 77)
     
 /* Line 354 of lalr1.java  */
-/* Line 260 of "dap.y"  */
+/* Line 261 of "dap.y"  */
     {yyval=null;};
   break;
     
@@ -993,7 +994,7 @@ public class DapParser extends Dapparse
   if (yyn == 78)
     
 /* Line 354 of lalr1.java  */
-/* Line 260 of "dap.y"  */
+/* Line 261 of "dap.y"  */
     {yyval=((yystack.valueAt (4-(3))));};
   break;
     
@@ -1002,7 +1003,7 @@ public class DapParser extends Dapparse
   if (yyn == 79)
     
 /* Line 354 of lalr1.java  */
-/* Line 261 of "dap.y"  */
+/* Line 262 of "dap.y"  */
     {yyval=null;};
   break;
     
@@ -1011,7 +1012,7 @@ public class DapParser extends Dapparse
   if (yyn == 80)
     
 /* Line 354 of lalr1.java  */
-/* Line 261 of "dap.y"  */
+/* Line 262 of "dap.y"  */
     {yyval=((yystack.valueAt (4-(3))));};
   break;
     
@@ -1020,8 +1021,9 @@ public class DapParser extends Dapparse
   if (yyn == 81)
     
 /* Line 354 of lalr1.java  */
-/* Line 267 of "dap.y"  */
-    {yyval=((yystack.valueAt (1-(1))));};
+/* Line 268 of "dap.y"  */
+    {yyval=
+            dapescapename(((yystack.valueAt (1-(1)))));};
   break;
     
 
@@ -1029,7 +1031,7 @@ public class DapParser extends Dapparse
   if (yyn == 82)
     
 /* Line 354 of lalr1.java  */
-/* Line 268 of "dap.y"  */
+/* Line 269 of "dap.y"  */
     {yyval=strdup("alias");};
   break;
     
@@ -1038,7 +1040,7 @@ public class DapParser extends Dapparse
   if (yyn == 83)
     
 /* Line 354 of lalr1.java  */
-/* Line 269 of "dap.y"  */
+/* Line 270 of "dap.y"  */
     {yyval=strdup("array");};
   break;
     
@@ -1047,7 +1049,7 @@ public class DapParser extends Dapparse
   if (yyn == 84)
     
 /* Line 354 of lalr1.java  */
-/* Line 270 of "dap.y"  */
+/* Line 271 of "dap.y"  */
     {yyval=strdup("attributes");};
   break;
     
@@ -1056,7 +1058,7 @@ public class DapParser extends Dapparse
   if (yyn == 85)
     
 /* Line 354 of lalr1.java  */
-/* Line 271 of "dap.y"  */
+/* Line 272 of "dap.y"  */
     {yyval=strdup("byte");};
   break;
     
@@ -1065,7 +1067,7 @@ public class DapParser extends Dapparse
   if (yyn == 86)
     
 /* Line 354 of lalr1.java  */
-/* Line 272 of "dap.y"  */
+/* Line 273 of "dap.y"  */
     {yyval=strdup("dataset");};
   break;
     
@@ -1074,7 +1076,7 @@ public class DapParser extends Dapparse
   if (yyn == 87)
     
 /* Line 354 of lalr1.java  */
-/* Line 273 of "dap.y"  */
+/* Line 274 of "dap.y"  */
     {yyval=strdup("data");};
   break;
     
@@ -1083,7 +1085,7 @@ public class DapParser extends Dapparse
   if (yyn == 88)
     
 /* Line 354 of lalr1.java  */
-/* Line 274 of "dap.y"  */
+/* Line 275 of "dap.y"  */
     {yyval=strdup("error");};
   break;
     
@@ -1092,7 +1094,7 @@ public class DapParser extends Dapparse
   if (yyn == 89)
     
 /* Line 354 of lalr1.java  */
-/* Line 275 of "dap.y"  */
+/* Line 276 of "dap.y"  */
     {yyval=strdup("float32");};
   break;
     
@@ -1101,7 +1103,7 @@ public class DapParser extends Dapparse
   if (yyn == 90)
     
 /* Line 354 of lalr1.java  */
-/* Line 276 of "dap.y"  */
+/* Line 277 of "dap.y"  */
     {yyval=strdup("float64");};
   break;
     
@@ -1110,7 +1112,7 @@ public class DapParser extends Dapparse
   if (yyn == 91)
     
 /* Line 354 of lalr1.java  */
-/* Line 277 of "dap.y"  */
+/* Line 278 of "dap.y"  */
     {yyval=strdup("grid");};
   break;
     
@@ -1119,7 +1121,7 @@ public class DapParser extends Dapparse
   if (yyn == 92)
     
 /* Line 354 of lalr1.java  */
-/* Line 278 of "dap.y"  */
+/* Line 279 of "dap.y"  */
     {yyval=strdup("int16");};
   break;
     
@@ -1128,7 +1130,7 @@ public class DapParser extends Dapparse
   if (yyn == 93)
     
 /* Line 354 of lalr1.java  */
-/* Line 279 of "dap.y"  */
+/* Line 280 of "dap.y"  */
     {yyval=strdup("int32");};
   break;
     
@@ -1137,7 +1139,7 @@ public class DapParser extends Dapparse
   if (yyn == 94)
     
 /* Line 354 of lalr1.java  */
-/* Line 280 of "dap.y"  */
+/* Line 281 of "dap.y"  */
     {yyval=strdup("maps");};
   break;
     
@@ -1146,7 +1148,7 @@ public class DapParser extends Dapparse
   if (yyn == 95)
     
 /* Line 354 of lalr1.java  */
-/* Line 281 of "dap.y"  */
+/* Line 282 of "dap.y"  */
     {yyval=strdup("sequence");};
   break;
     
@@ -1155,7 +1157,7 @@ public class DapParser extends Dapparse
   if (yyn == 96)
     
 /* Line 354 of lalr1.java  */
-/* Line 282 of "dap.y"  */
+/* Line 283 of "dap.y"  */
     {yyval=strdup("string");};
   break;
     
@@ -1164,7 +1166,7 @@ public class DapParser extends Dapparse
   if (yyn == 97)
     
 /* Line 354 of lalr1.java  */
-/* Line 283 of "dap.y"  */
+/* Line 284 of "dap.y"  */
     {yyval=strdup("structure");};
   break;
     
@@ -1173,7 +1175,7 @@ public class DapParser extends Dapparse
   if (yyn == 98)
     
 /* Line 354 of lalr1.java  */
-/* Line 284 of "dap.y"  */
+/* Line 285 of "dap.y"  */
     {yyval=strdup("uint16");};
   break;
     
@@ -1182,7 +1184,7 @@ public class DapParser extends Dapparse
   if (yyn == 99)
     
 /* Line 354 of lalr1.java  */
-/* Line 285 of "dap.y"  */
+/* Line 286 of "dap.y"  */
     {yyval=strdup("uint32");};
   break;
     
@@ -1191,7 +1193,7 @@ public class DapParser extends Dapparse
   if (yyn == 100)
     
 /* Line 354 of lalr1.java  */
-/* Line 286 of "dap.y"  */
+/* Line 287 of "dap.y"  */
     {yyval=strdup("url");};
   break;
     
@@ -1200,7 +1202,7 @@ public class DapParser extends Dapparse
   if (yyn == 101)
     
 /* Line 354 of lalr1.java  */
-/* Line 287 of "dap.y"  */
+/* Line 288 of "dap.y"  */
     {yyval=strdup("code");};
   break;
     
@@ -1209,7 +1211,7 @@ public class DapParser extends Dapparse
   if (yyn == 102)
     
 /* Line 354 of lalr1.java  */
-/* Line 288 of "dap.y"  */
+/* Line 289 of "dap.y"  */
     {yyval=strdup("message");};
   break;
     
@@ -1217,7 +1219,7 @@ public class DapParser extends Dapparse
 
 
 /* Line 354 of lalr1.java  */
-/* Line 1221 of "DapParser.java"  */
+/* Line 1222 of "DapParser.java"  */
 	default: break;
       }
 
@@ -1863,17 +1865,17 @@ public class DapParser extends Dapparse
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
   private static final short yyrline_[] =
   {
-         0,    77,    77,    78,    79,    80,    81,    85,    89,    93,
-      98,   104,   105,   111,   113,   115,   117,   120,   126,   127,
-     128,   129,   130,   131,   132,   133,   134,   138,   139,   143,
-     144,   145,   150,   151,   155,   158,   159,   164,   165,   169,
-     170,   172,   174,   176,   178,   180,   182,   184,   186,   188,
-     189,   194,   195,   199,   200,   204,   205,   209,   210,   214,
-     215,   218,   219,   222,   223,   226,   227,   231,   232,   236,
-     240,   250,   254,   258,   258,   259,   259,   260,   260,   261,
-     261,   267,   268,   269,   270,   271,   272,   273,   274,   275,
-     276,   277,   278,   279,   280,   281,   282,   283,   284,   285,
-     286,   287,   288
+         0,    78,    78,    79,    80,    81,    82,    86,    90,    94,
+      99,   105,   106,   112,   114,   116,   118,   121,   127,   128,
+     129,   130,   131,   132,   133,   134,   135,   139,   140,   144,
+     145,   146,   151,   152,   156,   159,   160,   165,   166,   170,
+     171,   173,   175,   177,   179,   181,   183,   185,   187,   189,
+     190,   195,   196,   200,   201,   205,   206,   210,   211,   215,
+     216,   219,   220,   223,   224,   227,   228,   232,   233,   237,
+     241,   251,   255,   259,   259,   260,   260,   261,   261,   262,
+     262,   268,   269,   270,   271,   272,   273,   274,   275,   276,
+     277,   278,   279,   280,   281,   282,   283,   284,   285,   286,
+     287,   288,   289
   };
 
   // Report on the debug stream that the rule yyrule is going to be reduced.
@@ -1952,7 +1954,7 @@ public class DapParser extends Dapparse
 /* Unqualified %code blocks.  */
 
 /* Line 876 of lalr1.java  */
-/* Line 18 of "dap.y"  */
+/* Line 19 of "dap.y"  */
 
  
     /**
@@ -1982,12 +1984,12 @@ public class DapParser extends Dapparse
 
 
 /* Line 876 of lalr1.java  */
-/* Line 1986 of "DapParser.java"  */
+/* Line 1987 of "DapParser.java"  */
 
 }
 
 
 /* Line 880 of lalr1.java  */
-/* Line 291 of "dap.y"  */
+/* Line 292 of "dap.y"  */
 
 
