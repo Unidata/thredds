@@ -10,6 +10,7 @@ Release Details 4.2:
    Remove testData2.nc from test server, replace with testData2.grib2
    Fix jnlp files, remove href.
    Fix for WMS on a F-TDS virtual datasets throws a NullPointerException (TDS-172).
+   NCSS point requests on curvilinear grids sometimes throw ArrayIndexOutOfBoundsExceptions (TDS-173).
 
  4.2.6 (2011-04-13)
    Add CRS definitions to EPSG CRS WKT database (epsg.properties) for 3857, 3408, and 3409 (TDS-166).
