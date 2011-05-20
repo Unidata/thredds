@@ -3,6 +3,8 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Changes in version 4.2:
+ 26: (2011-xx-xx)
+  GridCoordSys: 2d time coords may have null dates - skip them in makeTimes2D()
  25: (2011-05-20)
   DatasetCollectionManager: make sure scan triggers event
   MetadataManager delete was turned off

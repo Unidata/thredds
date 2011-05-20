@@ -1431,7 +1431,8 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
         data.resetLocalIterator();
         while (data.hasNext()) {
           Date d = du.makeDate(data.nextDouble());
-          dates.add(d);
+          if (d != null)
+            dates.add(d);
         }
         isDate = true;
 
@@ -1442,7 +1443,8 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
         data.resetLocalIterator();
         while (data.hasNext()) {
           Date d = formatter.getISODate((String) data.next());
-          dates.add(d);
+          if (d != null)
+            dates.add(d);
         }
         isDate = true;
 
@@ -1452,7 +1454,8 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
         ArrayChar.StringIterator iter = data.getStringIterator();
         while (iter.hasNext()) {
           Date d = formatter.getISODate(iter.next());
-          dates.add(d);
+          if (d != null)
+            dates.add(d);
         }
         isDate = true;
 
