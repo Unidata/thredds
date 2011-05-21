@@ -33,8 +33,6 @@
 
 package thredds.servlet;
 
-import thredds.monitor.FmrcCacheMonitorImpl;
-import thredds.server.config.TdsContext;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.util.IO;
 import ucar.nc2.util.cache.FileCacheRaf;

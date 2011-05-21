@@ -35,7 +35,7 @@ package thredds.monitor;
 import java.util.List;
 
 /**
- * interface for monitoring RAF fiels, used by JMX.
+ * interface for monitoring RAF files, used by JMX.
  * @author caron
  * @since Mar 15, 2008
  */

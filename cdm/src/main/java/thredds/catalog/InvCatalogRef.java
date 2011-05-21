@@ -177,7 +177,8 @@ public class InvCatalogRef extends InvDatasetImpl {
       if (debug)
         System.out.println(" InvCatalogRef read " + getFullName() + "  hrefResolved = " + uriResolved);
 
-      InvCatalogFactory factory = ((InvCatalogImpl) getParentCatalog()).getCatalogFactory();
+      InvCatalogFactory factory = InvCatalogFactory.getDefaultFactory(true);
+      // InvCatalogFactory factory = ((InvCatalogImpl) getParentCatalog()).getCatalogFactory();
       InvCatalogImpl cat = factory.readXML(uriResolved.toString());
       finishCatalog(cat);
 

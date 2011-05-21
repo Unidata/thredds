@@ -5,17 +5,55 @@
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <title>TDS Caching</title>
   <link rel='stylesheet' href='../tds.css' type='text/css' />
-
 </head>
 
 <body>
   <h1>TDS Caching</h1>
   <address>
-  last update: Aug 10, 2006 
+  May, 2011
   </address>
+
+  <h2>Catalog caching test</h2>
+  <p>mlode:8081, standard catalogs</p>
+  <h3>1. turn off catalog caching.</h3>
+  <p>TdsMonitor: catalog service 18974 requests, 176 msecs/req, 794 Mbytes total</p>
+  <p>294.8 Mbyte heap</p>
+  <p>Heap use:</p>
+  <ol>
+    <li>FileCache: 68 Mbytes, 208 files
+      <ol>
+        <li>NetcdfDatasets : between 7.8M and 200K (Grib) </li>
+      </ol>
+    </li>
+    <li>Jsp : 16 M</li>
+    <li>DataRootHandler / PathMatcher: 16 M
+      <ol>
+        <li>159 entries, InvDatsetScan (20K each), InvDatsetImpl (1.4M !) but most may be a shared InvCatalogFactory. But why do we have these? Are they really FMRC ?</li>
+        <li><em><strong>remove InvCatalogFactory reference from InvCatalog - done for TDS 4.2.8</strong></em></li>
+        <li>InvDatasestScan is retaining link to its parents</li>
+      </ol>
+    </li>
+    <li>ehcache: 12 M</li>
+    <li>fmrcDatasets : 6 M each. most in FmrcInvLite, 46M total</li>
+    <li>quartz : 5 M</li>
+    <li>bdb : 80 M 
+      <ol>
+        <li>bdb stores n 10M files, n us around 9 or 10. so we dont need 80 M cache (!) at least right now</li>
+        <li>bdb uses percent * JXV max bytes, default appears to be 2 % = 80 Mb. </li>
+        <li><strong>Allow cache size to be set by user</strong></li>
+        <li>Set to maxSize = 20 Mb for motherload (?)</li>
+        <li>nCacheMiss=17,403</li>
+      </ol>
+    </li>
+    <li>org.geotoolkit 7M</li>
+  </ol>
+  <h3>2. turn on catalog caching.</h3>
+  <p>TdsMonitor: catalog serveice 18974 requests, 176 msecs/req 794 Mbytes</p>
+  <p>&nbsp;</p>
   <hr>
+  <em>below this line: update: Aug 10, 2006 </em>
   <h2>Disk Caching</h2>
-  <p>Settings on motherlode 3.12: </p>
+<p>Settings on motherlode 3.12: </p>
   <table width="890" border="1">
     <tr>
       <td width="255"><p><strong>NetcdfFile, Nexrad2</strong> (compress) </p>

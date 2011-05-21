@@ -35,7 +35,7 @@ package thredds.monitor;
 import java.util.List;
 
 /**
- * Describe
+ * interface for monitoring BDB cache files, used by JMX.
  *
  * @author caron
  * @since Apr 19, 2010

@@ -65,6 +65,8 @@ import java.util.*;
  * @since Aug 19, 2009
  */
 public class FeatureDatasetPointXML {
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FeatureDatasetPointXML.class);
+
   private FeatureDatasetPoint fdp;
   private String path;
   //private PointFeatureCollection pfc;
@@ -109,11 +111,11 @@ public class FeatureDatasetPointXML {
   public Document makeStationCollectionDocument(LatLonRect bb, String[] names) throws IOException {
 
     List<FeatureCollection> list = fdp.getPointFeatureCollectionList();
-    FeatureCollection fc = (NestedPointFeatureCollection) list.get(0);
+    FeatureCollection fc = list.get(0);
 
-    if (!(fc instanceof StationTimeSeriesFeatureCollection))
+    if (!(fc instanceof StationTimeSeriesFeatureCollection)) {
       throw new UnsupportedOperationException( fc.getClass().getName()+" not a StationTimeSeriesFeatureCollection");
-
+    }
     StationTimeSeriesFeatureCollection sobs = (StationTimeSeriesFeatureCollection) fc;
 
     Element rootElem = new Element("stationCollection");

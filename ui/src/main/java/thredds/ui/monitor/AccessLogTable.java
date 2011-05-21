@@ -69,7 +69,7 @@ import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.Minute;
 
 /**
- * Class Description.
+ * Access Logs in TdsMonitor.
  *
  * @author caron
  * @since Mar 26, 2009

@@ -32,7 +32,6 @@
 
 package thredds.server.cdmremote;
 
-import org.slf4j.Logger;
 import org.springframework.web.servlet.mvc.AbstractCommandController;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.validation.BindException;
@@ -77,8 +76,7 @@ import ucar.unidata.util.StringUtil;
  * @since May 28, 2009
  */
 public class CdmrFeatureController extends AbstractCommandController { // implements LastModified {
-  private static final Logger logServerStartup = org.slf4j.LoggerFactory.getLogger("serverStartup");
-  private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(getClass());
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CdmrFeatureController.class);
   private static boolean debug = false, showTime = false, showReq = false;
 
   private TdsContext tdsContext;
@@ -143,6 +141,7 @@ public class CdmrFeatureController extends AbstractCommandController { // implem
     InvDatasetFeatureCollection fc = DatasetHandler.getFeatureCollection(req, res, path);
     if (fc != null) {
       fdp = fc.getFeatureDatasetPoint();
+
     } else {
       // tom kunicki 12/18/10
       // allows a single NetcdfFile to be turned into a FeatureDataset
@@ -162,6 +161,13 @@ public class CdmrFeatureController extends AbstractCommandController { // implem
     if (fdp == null) {
       res.sendError(HttpServletResponse.SC_NOT_FOUND, "not a point or station dataset");
       log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, -1));
+      return null;
+    }
+
+    List<FeatureCollection> list = fdp.getPointFeatureCollectionList();
+    if (list.size() == 0) {
+      log.error(fdp.getLocation()+" does not have any PointFeatureCollections");
+      res.sendError(HttpServletResponse.SC_NOT_FOUND, fdp.getLocation()+" does not have any PointFeatureCollections");
       return null;
     }
 
@@ -449,34 +455,35 @@ public class CdmrFeatureController extends AbstractCommandController { // implem
 
     CdmRemoteQueryBean.RequestType reqType = query.getRequestType();
     String infoString;
-    if (reqType == CdmRemoteQueryBean.RequestType.capabilities) {
-      Document doc = xmlWriter.getCapabilitiesDocument();
-      XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
-      infoString = fmt.outputString(doc);
 
-    } else if (reqType == CdmRemoteQueryBean.RequestType.stations) {
-      Document doc = xmlWriter.makeStationCollectionDocument(query.getLatLonRect(), query.getStnNames());
-      XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
-      infoString = fmt.outputString(doc);
+    try {
 
-    } else if (reqType == CdmRemoteQueryBean.RequestType.form) {
-      InputStream xslt = getXSLT("ncssSobs.xsl");
-      Document doc = xmlWriter.getCapabilitiesDocument();
+      if (reqType == CdmRemoteQueryBean.RequestType.capabilities) {
+        Document doc = xmlWriter.getCapabilitiesDocument();
+        XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
+        infoString = fmt.outputString(doc);
 
-      try {
+      } else if (reqType == CdmRemoteQueryBean.RequestType.stations) {
+        Document doc = xmlWriter.makeStationCollectionDocument(query.getLatLonRect(), query.getStnNames());
+        XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
+        infoString = fmt.outputString(doc);
+
+      } else if (reqType == CdmRemoteQueryBean.RequestType.form) {
+        InputStream xslt = getXSLT("ncssSobs.xsl");
+        Document doc = xmlWriter.getCapabilitiesDocument();
         XSLTransformer transformer = new XSLTransformer(xslt);
         Document html = transformer.transform(doc);
         XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
         infoString = fmt.outputString(html);
 
-      } catch (Exception e) {
-        log.error("SobsServlet internal error", e);
-        log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
-        res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "SobsServlet internal error");
+      } else {
         return null;
       }
 
-    } else {
+    } catch (Exception e) {
+      log.error("SobsServlet internal error on "+fdp.getLocation(), e);
+      log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
+      res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "SobsServlet internal error");
       return null;
     }
 

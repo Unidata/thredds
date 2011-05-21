@@ -5,7 +5,6 @@ import org.springframework.web.servlet.mvc.AbstractController;
 import thredds.catalog.InvDatasetFeatureCollection;
 import thredds.inventory.DatasetCollectionManager;
 import thredds.inventory.MFile;
-import thredds.monitor.FmrcCacheMonitorImpl;
 import thredds.server.config.TdsContext;
 import thredds.servlet.DataRootHandler;
 import thredds.servlet.DebugHandler;
@@ -31,7 +30,6 @@ public class CollectionController extends AbstractController {
   private static final String COLLECTION = "collection";
   private static final String TRIGGER = "trigger";
   private final TdsContext tdsContext;
-  private final FmrcCacheMonitorImpl monitor = new FmrcCacheMonitorImpl();
 
   CollectionController( TdsContext _tdsContext) {
     this.tdsContext = _tdsContext;

@@ -20,7 +20,7 @@
     <metadata inherited="true">
       <serviceName>all</serviceName>
       <authority>edu.ucar.unidata</authority>
-      <dataType>Station</dataType>
+      <dataType>Point</dataType>
       <documentation type="rights">Freely available</documentation>
       <creator>
         <name vocabulary="DIF">DOC/NOAA/NWS</name>
@@ -34,6 +34,7 @@
 
     <featureCollection name="Metar Station Data" harvest="true" featureType="Station" path="nws/metar/ncdecoded">
       <metadata inherited="true">
+        <dataType>Station</dataType>
         <documentation type="summary">Metars: hourly surface weather observations</documentation>
         <documentation xlink:href="http://metar.noaa.gov/" xlink:title="NWS/NOAA information"/>
         <documentation>In the U.S., METAR reports are taken once an hour between 50 minutes past the hour and the top of

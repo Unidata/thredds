@@ -283,7 +283,7 @@ public class LogCategorizer {
     return service;
   }
 
-  public static String[] services = new String[]{"admin", "catalog", "cdmremote", "dodsC", "dqc", "fileServer", "godiva2",
+  public static String[] services = new String[]{"admin", "catalog", "cdmremote", "cdmrfeature", "dodsC", "dqc", "fileServer", "godiva2",
           "ncss/grid", "ncstream", "radarServer", "remoteCatalogService", "view", "wcs", "wms"};
 
   public static String findService(String path) {

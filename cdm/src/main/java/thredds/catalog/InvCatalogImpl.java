@@ -583,6 +583,9 @@ public class InvCatalogImpl extends InvCatalog {
 
   private InvCatalogImpl top = null;
 
+  ////////////////////////////////////////////
+  /* private InvCatalogFactory factory = null;
+
   // this is how catalogRefs read their catalogs
   InvCatalogFactory getCatalogFactory() {
     return factory;
@@ -590,9 +593,7 @@ public class InvCatalogImpl extends InvCatalog {
 
   void setCatalogFactory(InvCatalogFactory factory) {
     this.factory = factory;
-  }
-
-  private InvCatalogFactory factory = null;
+  } */
 
   // track converter
   InvCatalogConvertIF getCatalogConverter() {
@@ -605,12 +606,12 @@ public class InvCatalogImpl extends InvCatalog {
 
   private InvCatalogConvertIF converter = null;
 
-  /**
+  /*
    * Set the connverter to 1.0, typically to write a 0.6 out to a 1.0
-   */
+   *
   public void setCatalogConverterToVersion1() {
     setCatalogConverter(factory.getCatalogConverter(XMLEntityResolver.CATALOG_NAMESPACE_10));
-  }
+  } */
 
   /**
    * Get dataset roots.

@@ -40,7 +40,7 @@ import java.util.Formatter;
 import java.util.List;
 
 /**
- * Describe
+ * JMX bean
  *
  * @author caron
  * @since Apr 19, 2010

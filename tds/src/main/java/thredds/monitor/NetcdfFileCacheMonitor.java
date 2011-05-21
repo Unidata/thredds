@@ -36,7 +36,7 @@ package thredds.monitor;
 import java.util.List;
 
 /**
- * Class Description.
+ * interface for monitoring NetcdfFile cache files, used by JMX.
  *
  * @author caron
  * @since Jan 13, 2009

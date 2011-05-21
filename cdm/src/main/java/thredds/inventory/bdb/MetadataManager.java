@@ -57,11 +57,14 @@ public class MetadataManager {
   private static final String UTF8 = "UTF-8";
 
   private static String root = null;
+  private static long maxSizeBytes = 0;
+  private static int jvmPercent = 2;
   private static Environment myEnv = null;
   private static List<MetadataManager> openDatabases = new ArrayList<MetadataManager>();
   private static boolean readOnly = false;
   private static boolean debug = false;
-  private static boolean debugDelete = false;
+
+  //private static boolean debugDelete = false;
 
   static {
     String home = System.getProperty("user.home");
@@ -75,8 +78,10 @@ public class MetadataManager {
     root = home + "/.unidata/bdb/";
   }
 
-  static public void setCacheDirectory(String dir) {
+  static public void setCacheDirectory(String dir, long _maxSizeBytes, int _jvmPercent) {
     root = dir;
+    maxSizeBytes = _maxSizeBytes;
+    jvmPercent = _jvmPercent;
   }
 
   static private synchronized void setup() throws DatabaseException {
@@ -86,6 +91,11 @@ public class MetadataManager {
     myEnvConfig.setReadOnly(false);
     myEnvConfig.setAllowCreate(true);
     myEnvConfig.setSharedCache(true);
+
+    if (maxSizeBytes > 0)
+      myEnvConfig.setCacheSize(maxSizeBytes);
+    else
+      myEnvConfig.setCachePercent(jvmPercent);
 
     File dir = new File(root);
     if (!dir.exists() && !dir.mkdirs())

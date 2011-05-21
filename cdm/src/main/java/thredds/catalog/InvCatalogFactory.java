@@ -449,7 +449,7 @@ public class InvCatalogFactory {
 
     InvCatalogImpl cat = fac.parseXML(this, jdomDoc, uri);
     cat.setCreateFrom(uri.toString());
-    cat.setCatalogFactory(this);
+    // cat.setCatalogFactory(this);
     cat.setCatalogConverter(fac);
     cat.finish();
 

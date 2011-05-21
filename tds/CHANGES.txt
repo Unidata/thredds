@@ -5,6 +5,7 @@ Build Name = @BUILD.NAME@
 
 Release Details 4.2:
  4.2.8 (2011-xx-xx)
+  Allow setting size of BDB cache
   Allow static catalogs to not be cached.
   Remove Upper Air Point Data - its station profile data - delay until 4.3
 
