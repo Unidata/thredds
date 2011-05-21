@@ -75,6 +75,7 @@ import ucar.unidata.util.StringUtil;
 public class DataRootHandler {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DataRootHandler.class);
   static private org.slf4j.Logger logCatalogInit = org.slf4j.LoggerFactory.getLogger(DataRootHandler.class.getName() + ".catalogInit");
+  static private org.slf4j.Logger startupLog = org.slf4j.LoggerFactory.getLogger("serverStartup");
 
   // dont need to Guard/synchronize singleton, since creation and publication is only done by a servlet init() and therefore only in one thread (per ClassLoader).
   static private DataRootHandler singleton = null;
@@ -112,9 +113,11 @@ public class DataRootHandler {
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   private final TdsContext tdsContext;
+  private boolean staticCache;
 
   // @GuardedBy("this") LOOK should be able to access without synchronization
   private HashMap<String, InvCatalogImpl> staticCatalogHash; // Hash of static catalogs, key = path
+  private Set<String> staticCatalogNames; // Hash of static catalogs, key = path
 
   // @GuardedBy("this")
   private HashSet<String> idHash = new HashSet<String>(); // Hash of ids, to look for duplicates
@@ -126,13 +129,12 @@ public class DataRootHandler {
 
   /**
    * Constructor.
+   * Managed bean - dont do nuttin else !!
    *
    * @param tdsContext
    */
   public DataRootHandler(TdsContext tdsContext) {
     this.tdsContext = tdsContext;
-    this.staticCatalogHash = new HashMap<String, InvCatalogImpl>();
-    //initScheduler();
   }
 
   private PathAliasReplacement contentPathAliasReplacement = null;
@@ -341,7 +343,6 @@ public class DataRootHandler {
     }
   }
 
-
   public boolean registerConfigListener(ConfigListener cl) {
     if (cl == null) return false;
     if (configListeners.contains(cl)) return false;
@@ -370,12 +371,10 @@ public class DataRootHandler {
     thredds.inventory.bdb.MetadataManager.closeAll();
 
     // Empty all config catalog information.
-    staticCatalogHash = new HashMap<String, InvCatalogImpl>();
     pathMatcher = new PathMatcher();
     idHash = new HashSet<String>();
 
     DatasetHandler.reinit(); // NcML datasets
-
     initCatalogs();
 
     isReinit = false;
@@ -392,9 +391,16 @@ public class DataRootHandler {
         cl.configStart();
     isReinit = false;
 
+    staticCache = ThreddsConfig.getBoolean("Catalog.cache", true);  // user can turn off static catalog caching
+    startupLog.info("DataRootHandler: staticCache= "+staticCache);
+
+    this.staticCatalogNames = new HashSet<String>();
+    if (staticCache)
+      this.staticCatalogHash = new HashMap<String, InvCatalogImpl>();
+
     for (String catName : configCatalogNames) {
       try {
-        initCatalog(catName);
+        initCatalog(catName, staticCatalogNames);
       } catch (Throwable e) {
         logCatalogInit.error("initCatalogs(): Error initializing catalog " + catName + "; " + e.getMessage(), e);
       }
@@ -413,10 +419,10 @@ public class DataRootHandler {
    * @param path file path of catalog, reletive to contentPath, ie catalog fullpath = contentPath + path.
    * @throws IOException if reading catalog fails
    */
-  private void initCatalog(String path) throws IOException {
+  private void initCatalog(String path, Set<String> catalogNames) throws IOException {
     path = StringUtils.cleanPath(path);
     logCatalogInit.info("\n**************************************\nCatalog init " + path + "\n[" + DateUtil.getCurrentSystemTimeAsISO8601() + "]");
-    initCatalog(path, true);
+    initCatalog(path, true, catalogNames);
   }
 
   /**
@@ -428,7 +434,7 @@ public class DataRootHandler {
    * @param recurse if true, look for catRefs in this catalog
    * @throws IOException if reading catalog fails
    */
-  private void initCatalog(String path, boolean recurse) throws IOException {
+  private void initCatalog(String path, boolean recurse, Set<String> catalogNames) throws IOException {
     path = StringUtils.cleanPath(path);
     File f = this.tdsContext.getConfigFileSource().getFile(path);
 
@@ -438,10 +444,11 @@ public class DataRootHandler {
     }
 
     // make sure we dont already have it
-    if (staticCatalogHash.containsKey(path)) { // This method only called by synchronized methods.
+    if (catalogNames.contains(path)) {
       logCatalogInit.warn("initCatalog(): Catalog [" + path + "] already seen, possible loop (skip).");
       return;
     }
+    catalogNames.add(path);
 
     InvCatalogFactory factory = this.getCatalogFactory(true); // always validate the config catalogs
     InvCatalogImpl cat = readCatalog(factory, path, f.getPath());
@@ -474,12 +481,14 @@ public class DataRootHandler {
     initSpecialDatasets(cat.getDatasets());
 
     // add catalog to hash tables
-    cat.setStatic(true);
-    staticCatalogHash.put(path, cat); // This method only called by synchronized methods.
-    if (logCatalogInit.isDebugEnabled()) logCatalogInit.debug("  add static catalog=" + path);
+    if (staticCache) {
+      cat.setStatic(true);
+      staticCatalogHash.put(path, cat); // This method only called by synchronized methods.
+      if (logCatalogInit.isDebugEnabled()) logCatalogInit.debug("  add static catalog to hash=" + path);
+    }
 
     if (recurse) {
-      initFollowCatrefs(dirPath, cat.getDatasets());
+      initFollowCatrefs(dirPath, cat.getDatasets(), catalogNames);
     }
   }
 
@@ -607,7 +616,7 @@ public class DataRootHandler {
   }
 
   // Only called by synchronized methods
-  private void initFollowCatrefs(String dirPath, List<InvDataset> datasets) throws IOException {
+  private void initFollowCatrefs(String dirPath, List<InvDataset> datasets, Set<String> catalogNames) throws IOException {
     for (InvDataset invDataset : datasets) {
 
       if ((invDataset instanceof InvCatalogRef) && !(invDataset instanceof InvDatasetScan) && !(invDataset instanceof InvDatasetFmrc)
@@ -636,12 +645,12 @@ public class DataRootHandler {
             path = dirPath + href;  // reletive starting from current directory
           }
 
-          initCatalog(path, true);
+          initCatalog(path, true, catalogNames);
         }
 
       } else if (!(invDataset instanceof InvDatasetScan) && !(invDataset instanceof InvDatasetFmrc) && !(invDataset instanceof InvDatasetFeatureCollection)) {
         // recurse through nested datasets
-        initFollowCatrefs(dirPath, invDataset.getDatasets());
+        initFollowCatrefs(dirPath, invDataset.getDatasets(), catalogNames);
       }
     }
   }
@@ -1275,7 +1284,7 @@ public class DataRootHandler {
     }
   }
 
-  /**
+  /*
    * Check whether the given path is a request for a catalog. Before checking,
    * converts paths ending with "/" to end with "/catalog.xml" and converts
    * paths ending with ".html" to end with ".xml".
@@ -1283,7 +1292,7 @@ public class DataRootHandler {
    * @param path the request path
    * @return true if the path is a request for a catalog, false otherwise.
    * @deprecated actually, this is experimental
-   */
+   *
   public boolean isRequestForCatalog(String path) {
     String workPath = path;
     if (workPath == null)
@@ -1359,7 +1368,7 @@ public class DataRootHandler {
 
 
     return hasCatalog;
-  }
+  } */
 
   /**
    * This looks to see if this is a request for a catalog.
@@ -1426,40 +1435,51 @@ public class DataRootHandler {
       workPath = workPath.substring(1);
 
     // Check for static catalog.
-    InvCatalogImpl catalog;
-    synchronized (this) {
-      catalog = staticCatalogHash.get(workPath);
+    InvCatalogImpl catalog = null;
+    boolean reread = false;
+    if (!staticCache) {
+      reread = staticCatalogNames.contains(workPath); // read if we know its a static catalog
+
+    } else {
+      synchronized (this) {
+        catalog = staticCatalogHash.get(workPath);  // LOOK why not use Concurrent HashMap ?
+      }
+      if (catalog != null) { // read if we know its a static catalog that is stale
+        DateType expiresDateType = catalog.getExpires();
+        if ((expiresDateType != null) && expiresDateType.getDate().getTime() < System.currentTimeMillis())
+          reread = true;
+      }
     }
 
-    if (catalog != null) {
-      // Check if the cached catalog is stale.
-      DateType expiresDateType = catalog.getExpires();
-      if (expiresDateType != null) {
-        if (expiresDateType.getDate().getTime() < System.currentTimeMillis())
-        {
-          // If stale, re-read catalog from disk.
-          File catFile = this.tdsContext.getConfigFileSource().getFile(workPath);
-          if (catFile != null)
-          {
-            String catalogFullPath = catFile.getPath();
-            String msg = "Rereading expired catalog [" + catalogFullPath + "].";
-            logCatalogInit.info( "**********\n" + msg + "\n[" + DateUtil.getCurrentSystemTimeAsISO8601() + "]" );
-            if (log.isDebugEnabled())
-              log.debug( "getCatalog(): " + msg );
+    if (reread) {
+      // If stale, re-read catalog from disk.
+      File catFile = this.tdsContext.getConfigFileSource().getFile(workPath);
+      if (catFile != null) {
+        String catalogFullPath = catFile.getPath();
+        String msg = "Rereading expired catalog [" + catalogFullPath + "].";
+        logCatalogInit.info( "**********\n" + msg + "\n[" + DateUtil.getCurrentSystemTimeAsISO8601() + "]" );
+        if (log.isDebugEnabled())
+          log.debug( "getCatalog(): " + msg );
 
-            InvCatalogFactory factory = getCatalogFactory(true);
-            InvCatalogImpl reReadCat = readCatalog(factory, workPath, catalogFullPath);
+        InvCatalogFactory factory = getCatalogFactory(true);
+        InvCatalogImpl reReadCat = readCatalog(factory, workPath, catalogFullPath);
 
-            if (reReadCat != null) {
-              synchronized (this) {
-                reReadCat.setStatic(true);
-                staticCatalogHash.put(workPath, reReadCat);
-              }
-              catalog = reReadCat;
+        if (reReadCat != null) {
+          catalog = reReadCat;
+          if (staticCache) {
+            synchronized (this) {
+              reReadCat.setStatic(true);
+              staticCatalogHash.put(workPath, reReadCat);
             }
           }
         }
+      } else {
+        logCatalogInit.error("Catalog does not exist that we expected = " + workPath);
       }
+    }
+
+    // if ((catalog != null) && catalog.getBaseURI() == null) { for some readon you have to keep setting - someone setting to null ?
+    if (catalog != null) {
       // this is the first time we actually know an absolute, external path for the catalog, so we set it here
       // LOOK however, this causes a possible thread safety problem
       catalog.setBaseURI(baseURI);
@@ -1803,6 +1823,8 @@ public class DataRootHandler {
 
     act = new DebugHandler.Action("showStatic", "Show static catalogs") {
       public void doAction(DebugHandler.Event e) {
+        if (!staticCache) return;
+
         ArrayList<String> list;
         StringBuilder sbuff = new StringBuilder();
         synchronized (DataRootHandler.this) {

@@ -314,7 +314,7 @@ DateFormatMark: CG#yyyyDDD_HHmmss</pre>
 </ol>
 <p>There are situations where you need to indicate  how often the directories should be rescanned.</p>
 <ol>
-  <li>If you have enabled caching (using <strong>NetcdfFileCache</strong> and <strong>NetcdfDatasetCache</strong>), and you are getting the dataset through NetcdfDataset.acquire(), then when the NcML file is acquired, the directories will be re-scanned if <strong>recheckEvery</strong> time has passed since it was last scanned. </li>
+  <li>If you have enabled caching (using <strong>NetcdfFileCache</strong> and <strong>NetcdfDatasetCache</strong>), and you are getting the dataset through NetcdfDataset.acquire(), then when the NcML file is acquired, the directories will be re-scanned if <strong>recheckEvery</strong> time has passed since it was last scanned. <em><strong>The </strong></em><strong>recheckEvery</strong><em><strong> attribute only applies when using a scan element. </strong></em></li>
   <li>The TDS Server uses caching, so when defining aggregations, you should always include a <strong>recheckEvery</strong> time for any dataset that can change. </li>
 </ol>
 <p>You indicate how often the directories should be rescanned using the <strong>recheckEvery</strong> attribute:</p>
@@ -359,7 +359,7 @@ DateFormatMark: CG#yyyyDDD_HHmmss</pre>
 <p>See also: <a href="AnnotatedSchema4.html">Annotated NcML Schema</a></p>
 <hr WIDTH="100%">
 <address>
-<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated  Nov 2010
+<img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated  May 2011
 </address>
 <p>&nbsp;</p>
 </body>
