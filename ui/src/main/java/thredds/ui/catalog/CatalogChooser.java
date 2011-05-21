@@ -205,7 +205,7 @@ public class CatalogChooser extends JPanel {
               } catch (URISyntaxException e1) {
                 e1.printStackTrace();
               }
-              catFactory.setCatalogConverter(cat, XMLEntityResolver.CATALOG_NAMESPACE_10);
+              // catFactory.setCatalogConverter(cat, XMLEntityResolver.CATALOG_NAMESPACE_10);
 
               setCatalog(cat);
 

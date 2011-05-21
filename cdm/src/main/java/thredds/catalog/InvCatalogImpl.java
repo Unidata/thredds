@@ -585,6 +585,7 @@ public class InvCatalogImpl extends InvCatalog {
 
   ////////////////////////////////////////////
   /* private InvCatalogFactory factory = null;
+  // private InvCatalogConvertIF converter = null;
 
   // this is how catalogRefs read their catalogs
   InvCatalogFactory getCatalogFactory() {
@@ -593,7 +594,7 @@ public class InvCatalogImpl extends InvCatalog {
 
   void setCatalogFactory(InvCatalogFactory factory) {
     this.factory = factory;
-  } */
+  }
 
   // track converter
   InvCatalogConvertIF getCatalogConverter() {
@@ -602,9 +603,8 @@ public class InvCatalogImpl extends InvCatalog {
 
   void setCatalogConverter(InvCatalogConvertIF converter) {
     this.converter = converter;
-  }
+  } */
 
-  private InvCatalogConvertIF converter = null;
 
   /*
    * Set the connverter to 1.0, typically to write a 0.6 out to a 1.0
@@ -613,6 +613,30 @@ public class InvCatalogImpl extends InvCatalog {
     setCatalogConverter(factory.getCatalogConverter(XMLEntityResolver.CATALOG_NAMESPACE_10));
   } */
 
+  /**
+   * Write the catalog as an XML document to the specified stream.
+   *
+   * @param os write to this OutputStream
+   * @throws java.io.IOException on an error.
+   */
+  public void writeXML(java.io.OutputStream os) throws java.io.IOException {
+    InvCatalogConvertIF converter = InvCatalogFactory.getDefaultConverter();
+    converter.writeXML(this, os);
+  }
+
+  /**
+   * Write the catalog as an XML document to the specified stream.
+   *
+   * @param os  write to this OutputStream
+   * @param raw if true, write original (server) version, else write client version
+   * @throws java.io.IOException on an error.
+   */
+  public void writeXML(java.io.OutputStream os, boolean raw) throws java.io.IOException {
+    InvCatalogConvertIF converter = InvCatalogFactory.getDefaultConverter();
+    converter.writeXML(this, os, raw);
+  }
+
+  //////////////////////////////////////////////////////////////////////////
   /**
    * Get dataset roots.
    *
@@ -631,28 +655,6 @@ public class InvCatalogImpl extends InvCatalog {
     roots.add(root);
   }
 
-  /**
-   * Write the catalog as an XML document to the specified stream.
-   *
-   * @param os write to this OutputStream
-   * @throws java.io.IOException on an error.
-   */
-  public void writeXML(java.io.OutputStream os) throws java.io.IOException {
-    InvCatalogConvertIF fac = getCatalogConverter();
-    fac.writeXML(this, os);
-  }
-
-  /**
-   * Write the catalog as an XML document to the specified stream.
-   *
-   * @param os  write to this OutputStream
-   * @param raw if true, write original (server) version, else write client version
-   * @throws java.io.IOException on an error.
-   */
-  public void writeXML(java.io.OutputStream os, boolean raw) throws java.io.IOException {
-    InvCatalogConvertIF fac = getCatalogConverter();
-    fac.writeXML(this, os, raw);
-  }
 
   /**
    * InvCatalogImpl elements with same values are equal.

@@ -260,7 +260,7 @@ public class JplQuikSCAT extends DqcHandler
     log.debug( "handleRequest(): successfully built catalog, writing response.");
     PrintWriter out = res.getWriter();
     InvCatalogFactory fac = InvCatalogFactory.getDefaultFactory( true );
-    String catalogAsString = fac.writeXML_1_0( (InvCatalogImpl) resultingCatalog );
+    String catalogAsString = fac.writeXML( (InvCatalogImpl) resultingCatalog );
 
     res.setContentType( "text/xml" );
     res.setStatus( HttpServletResponse.SC_OK );

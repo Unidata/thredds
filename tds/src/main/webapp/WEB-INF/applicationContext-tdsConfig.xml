@@ -64,9 +64,7 @@
   </bean>
 
   <!-- A Singleton class to initialize the CDM -->
-  <bean name="cdmInit" class="thredds.server.config.CdmInit" destroy-method="destroy">
-    <property name="fmrcDefinitionDirectory" value="WEB-INF/altContent/idd/thredds/modelInventory/" />
-  </bean>
+  <bean name="cdmInit" class="thredds.server.config.CdmInit" destroy-method="destroy" />
 
     <!-- JMX -->
   <bean id="openRAFMonitor" class="thredds.monitor.OpenRAFMonitorImpl"/>

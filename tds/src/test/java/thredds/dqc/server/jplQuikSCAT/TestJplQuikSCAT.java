@@ -142,7 +142,7 @@ public class TestJplQuikSCAT extends TestCase
     String catalogAsString = null;
     try
     {
-      catalogAsString = fac.writeXML_1_0( (InvCatalogImpl) resultCat );
+      catalogAsString = fac.writeXML( (InvCatalogImpl) resultCat );
     }
     catch ( IOException e )
     {

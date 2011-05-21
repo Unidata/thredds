@@ -114,6 +114,10 @@ public class InvCatalogFactory {
     return new InvCatalogFactory("default", validate);
   }
 
+  public static InvCatalogConvertIF getDefaultConverter() {
+    return new thredds.catalog.parser.jdom.InvCatalogFactory10();
+  }
+
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
   /**
@@ -216,14 +220,14 @@ public class InvCatalogFactory {
     return converters.get(namespace);
   }
 
-  /**
+  /*
    * Find the InvCatalogConvertIF registered for this namespace, and set it into the catalog.
    * @param cat set InvCatalogConvertIF on this catalog
    * @param namespace find InvCatalogConvertIF for this namespace
-   */
+   *
   public void setCatalogConverter(InvCatalogImpl cat, String namespace) {
     cat.setCatalogConverter(getCatalogConverter(namespace));
-  }
+  } */
 
   /**
    * Register metadata converters for reading metadata objects of a certain type or namespace.
@@ -450,10 +454,10 @@ public class InvCatalogFactory {
     InvCatalogImpl cat = fac.parseXML(this, jdomDoc, uri);
     cat.setCreateFrom(uri.toString());
     // cat.setCatalogFactory(this);
-    cat.setCatalogConverter(fac);
+    //cat.setCatalogConverter(fac);
     cat.finish();
 
-    if (showCatalogXML) {
+    /* if (showCatalogXML) {
       System.out.println("*** catalog/showCatalogXML");
       try {
         writeXML(cat, System.out);
@@ -461,7 +465,7 @@ public class InvCatalogFactory {
       catch (IOException ex) {
         log.warn("Error writing catalog for debugging", ex);
       }
-    }
+    }  */
 
     if (fatalMessages.length() > 0)
       cat.appendErrorMessage(fatalMessages.toString(), true); // makes it invalid
@@ -486,57 +490,33 @@ public class InvCatalogFactory {
     return doc.getDocumentElement();
   } */
 
-  /**
-   * Write the catalog as an XML document to a String.
-   *
-   * @param catalog write this catalog
-   * @return string containing XML representation
-   * @throws IOException on write error
-   */
-  public String writeXML(InvCatalogImpl catalog) throws IOException {
-    ByteArrayOutputStream os = new ByteArrayOutputStream(10000);
-    writeXML(catalog, os);
-    return os.toString();
-  }
 
-  /**
+
+  /*
    * Write the catalog as an XML document to the specified stream.
    *
    * @param catalog write this catalog
    * @param os      write to this OutputStream
    * @throws IOException on an error.
-   */
+   *
   public void writeXML(InvCatalogImpl catalog, OutputStream os) throws IOException {
     InvCatalogConvertIF fac = catalog.getCatalogConverter();
     if (fac == null) fac = defaultConverter;
     fac.writeXML(catalog, os);
   }
 
-  /**
+  /*
    * Write the catalog as an XML document to the specified stream.
    *
    * @param catalog write this catalog
    * @param os      write to this OutputStream
    * @param raw set true for "server side" catalogs, false is default, shows "client side" catalogs
    * @throws IOException on an error.
-   */
+   *
   public void writeXML(InvCatalogImpl catalog, OutputStream os, boolean raw) throws IOException {
     InvCatalogConvertIF fac = catalog.getCatalogConverter();
     if (fac == null) fac = defaultConverter;
     fac.writeXML(catalog, os, raw);
-  }
-
-  /**
-   * Write the catalog as an XML document to the specified filename.
-   *
-   * @param catalog  write this catalog
-   * @param filename write to this filename
-   * @throws IOException on an error.
-   */
-  public void writeXML(InvCatalogImpl catalog, String filename) throws IOException {
-    BufferedOutputStream os = new BufferedOutputStream(new FileOutputStream(filename));
-    writeXML(catalog, os);
-    os.close();
   }
 
   /**
@@ -546,7 +526,7 @@ public class InvCatalogFactory {
    * @return a String containing the XML representation
    * @throws IOException           when the OutputStream can't be written
    * @throws IllegalStateException when the factory doesn't know how to write a 1.0 document.
-   */
+   *
   public String writeXML_1_0(InvCatalogImpl catalog)
       throws IOException {
     ByteArrayOutputStream os = new ByteArrayOutputStream(10000);
@@ -561,12 +541,28 @@ public class InvCatalogFactory {
    * @return a String containing the XML representation
    * @throws IOException           when the OutputStream can't be written
    * @throws IllegalStateException when the factory doesn't know how to write a 0.6 document.
-   */
+   *
   public String writeXML_0_6(InvCatalogImpl catalog)
       throws IOException {
     ByteArrayOutputStream os = new ByteArrayOutputStream(10000);
     writeXML_0_6(catalog, os);
     return os.toString();
+  }
+
+  */
+
+  /**
+   * Write the InvCatalogImpl to the OutputStream as a InvCatalog 1.0 document.
+   *
+   * @param catalog - the catalog to be written
+   * @param os      - the OutputStream to write to
+   * @param raw  if true, write raw, vs converted
+   * @throws IOException           when the OutputStream can't be written
+   * @throws IllegalStateException when the factory doesn't know how to write a 1.0 document.
+   */
+  public void writeXML(InvCatalogImpl catalog, OutputStream os, boolean raw) throws IOException {
+    InvCatalogConvertIF converter = this.getCatalogConverter(XMLEntityResolver.CATALOG_NAMESPACE_10);
+    converter.writeXML(catalog, os, raw);
   }
 
   /**
@@ -577,25 +573,50 @@ public class InvCatalogFactory {
    * @throws IOException           when the OutputStream can't be written
    * @throws IllegalStateException when the factory doesn't know how to write a 1.0 document.
    */
-  public void writeXML_1_0(InvCatalogImpl catalog, OutputStream os)
-      throws IOException {
-    this.writeXML_ver(XMLEntityResolver.CATALOG_NAMESPACE_10, catalog, os);
+  public void writeXML(InvCatalogImpl catalog, OutputStream os) throws IOException {
+    writeXML(catalog, os, false);
   }
 
   /**
+   * Write the catalog as an XML document to the specified filename.
+   *
+   * @param catalog  write this catalog
+   * @param filename write to this filename
+   * @throws IOException on an error.
+   */
+  public void writeXML(InvCatalogImpl catalog, String filename) throws IOException {
+    BufferedOutputStream os = new BufferedOutputStream(new FileOutputStream(filename));
+    writeXML(catalog, os, false);
+    os.close();
+  }
+
+  /**
+   * Write the catalog as an XML document to a String.
+   *
+   * @param catalog write this catalog
+   * @return string containing XML representation
+   * @throws IOException on write error
+   */
+  public String writeXML(InvCatalogImpl catalog) throws IOException {
+    ByteArrayOutputStream os = new ByteArrayOutputStream(10000);
+    writeXML(catalog, os, false);
+    return os.toString();
+  }
+
+  /*
    * Write the InvCatalogImpl to the OutputStream as a InvCatalog 0.6 document.
    *
    * @param catalog - the catalog to be written
    * @param os      - the OutputStream to write to
    * @throws IOException           when the OutputStream can't be written
    * @throws IllegalStateException when the factory doesn't know how to write a 0.6 document.
-   */
+   *
   public void writeXML_0_6(InvCatalogImpl catalog, OutputStream os)
       throws IOException {
     this.writeXML_ver(XMLEntityResolver.CATALOG_NAMESPACE_06, catalog, os);
   }
 
-  /**
+  /*
    * Write an InvCatalogImpl to an OutputStream as an InvCatalog document using the given namespace.
    *
    * @param namespace - the namespace of the version of InvCatalog document to be written
@@ -603,7 +624,7 @@ public class InvCatalogFactory {
    * @param os        - the OutputStream to write to
    * @throws IOException           when the OutputStream can't be written
    * @throws IllegalStateException when the factory doesn't know how to write the version of document requested.
-   */
+   *
   private void writeXML_ver(String namespace, InvCatalogImpl catalog, OutputStream os)
       throws IOException {
     InvCatalogConvertIF converter = this.getCatalogConverter(namespace);
@@ -612,7 +633,7 @@ public class InvCatalogFactory {
       throw new IllegalStateException(tmpMsg);
     }
     converter.writeXML(catalog, os);
-  }
+  } */
 
   /**
    * append an error message. Used by the InvCatalogConvertIF
@@ -660,7 +681,7 @@ public class InvCatalogFactory {
       boolean isValid = cat.check(buff, false);
       System.out.println("catalog <" + cat.getName() + "> " + (isValid ? "is" : "is not") + " valid");
       System.out.println(" validation output=\n" + buff);
-      if (show) System.out.println(" parsed catalog=\n" + fac.writeXML(cat));
+      // if (show) System.out.println(" parsed catalog=\n" + fac.writeXML(cat));
       //System.out.println(" -----\n"+cat.dump());
       return cat;
     } catch (Exception e) {
