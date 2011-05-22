@@ -5,6 +5,7 @@ Build Name = @BUILD.NAME@
 
 Release Details 4.2:
  4.2.8 (2011-xx-xx)
+  FmrcController now uses seperate xslt for point datasets
   motherlode PointCollectionFeatures are Points, except for metars
   Allow setting size of BDB cache
   Allow static catalogs to not be cached.

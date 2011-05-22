@@ -469,9 +469,10 @@ public class CdmrFeatureController extends AbstractCommandController { // implem
         infoString = fmt.outputString(doc);
 
       } else if (reqType == CdmRemoteQueryBean.RequestType.form) {
-        InputStream xslt = getXSLT("ncssSobs.xsl");
+        String xslt = fdp.getFeatureType() == FeatureType.STATION ?  "ncssSobs.xsl" : "fmrcPoint.xsl";
+        InputStream is = getXSLT(xslt);
         Document doc = xmlWriter.getCapabilitiesDocument();
-        XSLTransformer transformer = new XSLTransformer(xslt);
+        XSLTransformer transformer = new XSLTransformer(is);
         Document html = transformer.transform(doc);
         XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
         infoString = fmt.outputString(html);

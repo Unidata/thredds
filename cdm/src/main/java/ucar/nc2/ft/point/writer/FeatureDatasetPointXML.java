@@ -376,21 +376,33 @@ public class FeatureDatasetPointXML {
     }
   }
 
-  // debug
-  public static void main(String args[]) throws IOException {
-    String location = "D:/datasets/metars/Surface_METAR_20070516_0000.nc";
-    String path = "http://motherlode.ucar.edu:9080/thredds/cdmremote/idd/metar/gempak/collection";
-
+  public static void doOne(String location, String path, String result) throws IOException {
     FeatureDataset fd = FeatureDatasetFactoryManager.open(FeatureType.ANY_POINT, location, null, new Formatter(System.out));
     FeatureDatasetPointXML xml = new FeatureDatasetPointXML((FeatureDatasetPoint) fd, path);
     xml.getCapabilities(System.out);
 
-    File f = new File("C:/TEMP/stationCapabilities.xml");
+    File f = new File(result);
     FileOutputStream fos = new FileOutputStream(f);
     xml.getCapabilities(fos);
     fos.close();
+    System.out.printf("%s written%n", f.getPath());
+  }
 
-    /* File f = new File("C:/TEMP/stationCollection.xml");
+  // debug
+  public static void main(String args[]) throws IOException {
+    /* doOne( "Q:/cdmUnitTest/ft/station/Surface_METAR_20080205_0000.nc",
+          "http://motherlode.ucar.edu:9080/thredds/cdmremote/idd/metar/gempak/collection",
+          "C:/tmp/stationCapabilities.xml"
+    ); */
+
+    doOne( "Q:/cdmUnitTest/ft/point/ship/nc/Surface_Buoy_20090920_0000.nc",
+          "http://motherlode.ucar.edu:9080/thredds/cdmremote/idd/buoy/collection",
+          "C:/tmp/pointCapabilities.xml"
+    );
+
+
+    /*
+    File f = new File("C:/TEMP/stationCollection.xml");
     FileOutputStream fos = new FileOutputStream(f);
     xml.writeStationCollectionXML(fos);
     fos.close();

@@ -49,6 +49,7 @@ import thredds.servlet.ThreddsConfig;
 import thredds.servlet.ServletUtil;
 import thredds.catalog.InvDatasetScan;
 import ucar.nc2.util.IO;
+import ucar.unidata.util.StringUtil;
 
 /**
  * _more_
@@ -296,7 +297,8 @@ public class TdsContext
         throw new IllegalStateException(msg);
       }
     }
-    System.setProperty( "tds.log.dir", logDir.getPath() ); // variable substitution
+    String loggingDirectory = StringUtil.substitute(logDir.getPath(),"\\", "/");
+    System.setProperty( "tds.log.dir", loggingDirectory); // variable substitution
 
     this.publicContentDirectory = new File( this.contentDirectory, "public");
     if ( ! publicContentDirectory.exists())
