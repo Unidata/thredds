@@ -13,19 +13,23 @@ dl {margin: 10px 5px 5px 15px;}
 <body>
 <h1><img src="../../../images/unidataLogo.png" alt="" width="73" height="75" align="absbottom" /> Configuring TDS with the FeatureCollection element</h1>
 <hr />
-<p>The <b>featureCollection</b> element is a way to tell the TDS to serve collections of <a href="http://www.unidata.ucar.edu/software/netcdf-java/reference/FeatureDatasets/Overview.html">CDM Feature Datasets</a>. Currently this is used  for gridded and point datasets whose time and spatial coordinates are recognized by the CDM software stack. This allows the TDS to automatically create logical datasets composed of  collections of files, and to allow subsetting in coordinate space  on them.</p>
-<p>The <b>featureCollection</b> element is new in TDS 4.2 and replaces the fmrcDataset element in earlier versions.</p>
+<h2>Overview</h2>
+<p>The <b>featureCollection</b> element is a way to tell the TDS to serve collections of <a href="http://www.unidata.ucar.edu/software/netcdf-java/reference/FeatureDatasets/Overview.html">CDM Feature Datasets</a>. Currently this is used  for gridded and point datasets whose time and spatial coordinates are recognized by the CDM software stack. This allows the TDS to automatically create logical datasets composed of  collections of files, and to allow subsetting in coordinate space  on them, eg through the WMS, WCS, and Netcdf Subsetting Service.</p>
+<p>The <b>featureCollection</b> element is new in TDS 4.2 and replaces the fmrcDataset element in earlier versions. TDS 4.2 allows <strong>featureType</strong> = <em>FMRC, Point, </em>and<em> Station</em>. TDS 4.3 allows <strong>featureType</strong> =<em> GRIB.</em> A fair amount of the complexity of feature collections is managing the collection of files on the server, both in creating indexes for performance, and in managing collections that change. For high-performance servers, its better to let a background process manage indexing, and the THREDDS Data Manager (TDM) is an experimental aaplication for this purpose available in TDS 4.3.</p>
+<h3>Contents:</h3>
 <ul>
-  <li><a href="#example">Example catalog element</a></li>
-  <li><a href="#elements">Element descriptions</a></li>
-  <li><a href="#convert">Conversion of &lt;datasetFmrc&gt; to &lt;featureCollection&gt;</a></li>
+  <li><a href="#example">Example catalog elements</a></li>
+  <li><a href="#elements">Description of elements in TDS Configuration catalogs</a></li>
+  <li><a href="#ncml">NcML Modifications</a></li>
 </ul>
-<p>Also see:</p>
+<p>This document gives an overview of Feature Collections, as well as a complete syntax of allowed elements. For featureType specific information, see:</p>
 <ul>
-  <li><a href="http://www.unidata.ucar.edu/software/netcdf/ncml/v2.2/FmrcAggregation.html">FMRC Aggregation</a> and <a href="http://www.unidata.ucar.edu/staff/caron/presentations/FmrcPoster.pdf">poster</a></li>
-  <li><a href="../../../../../netcdf-java/site/reference/FeatureDatasets/Fmrc.html">FMRC</a></li>
+  <li><a href="FmrcCollection.html">FMRC Collections</a><a href="http://www.unidata.ucar.edu/staff/caron/presentations/FmrcPoster.pdf"></a></li>
+  <li><a href="PointFeatures.html">Point Collections</a></li>
+  <li><a href="GribCollections.html">GRIB Collections</a></li>
+  <li><a href="TDM.html">THREDDS Data Manager</a></li>
 </ul>
-<h3><a name="example" id="example"></a>Example catalog element:</h3>
+<h3><a name="example" id="example"></a>Example catalog elements:</h3>
 <p>Simple case using defaults:</p>
 <pre>&lt;featureCollection name=&quot;NCEP-NAM-Polar_90km&quot; featureType=&quot;FMRC&quot; path=&quot;fmrc/NCEP/NAM/Polar_90km&quot;&gt;
   &lt;collection spec=&quot;/data/ldm/pub/native/grid/NCEP/NAM/Polar_90km/NAM_Polar_90km_#yyyyMMdd_HHmm#.grib2$&quot;
@@ -58,7 +62,7 @@ dl {margin: 10px 5px 5px 15px;}
 
 &lt;/featureCollection&gt;
 </pre>
-<p>&nbsp;</p>
+<hr />
 <h2><a name="elements" id="elements"></a>Description of elements in TDS Configuration catalogs</h2>
 <h3>featureCollection element</h3>
 <p>A <strong>featureCollection</strong> is a kind of <strong>dataset</strong> element, and so can contain the same elements and attributes of those.</p>
@@ -81,8 +85,8 @@ dl {margin: 10px 5px 5px 15px;}
   <li>A featureCollection is declared, using the <em>name</em>, <em>harvest</em>, and <em>path</em> attributes declared by the dataset element. The featureType is a mandatory element defining the type of the feature collection. If an <em>ID</em> attribute is not specified on the <strong>featureCollection</strong>, the <em>path</em> attribute is used as the ID. This is a preferred idiom.</li>
   <li>As is usual with dataset elements, a block of metadata can be delcared that will be inherited by all the children datasets.</li>
   <li>The collection of files is defined.</li>
-  <li>Specify how it is updated, for dnamically changing collections.</li>
-  <li>Define how to pick the prototype datset in the collection.</li>
+  <li>Specify how it is updated, for dynamically changing collections.</li>
+  <li>Define how to pick the prototype dataset in the collection.</li>
   <li>Configuration specific to the feature type.</li>
 </ol>
 <h3>collection element</h3>
@@ -145,133 +149,8 @@ dl {margin: 10px 5px 5px 15px;}
     <li><strong>check</strong>= &quot;cron expr&quot; uses a <a href="http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html">cron expression</a> to specify when the collection should be checked for old files.</li>
   </ol>
 </blockquote>
-<h3>fmrcConfig element</h3>
-<p>Defines options on feature collections with <strong> featureType</strong>=&quot;FMRC&quot;.</p>
-<pre>&lt;fmrcConfig regularize=&quot;true&quot; datasetTypes=&quot;TwoD Best Files Runs&quot; /&gt;
-</pre>
-<pre>
-&lt;fmrcConfig regularize=&quot;true&quot; datasetTypes=&quot;Files&quot;&gt;
-  &lt;dataset name=&quot;Best&quot; offsetsGreaterEqual=&quot;0&quot;/&gt;
-&lt;/fmrcCollection</pre>
-<blockquote>
-  <p>where:</p>
-  <ol>
-    <li>
-      <strong>regularize</strong>: If true, then the runs for a given  hour (from 0Z) are assumed to have the same forecast time coordinates. For example, if you have 4 model runs per day (eg 0, 6, 12, 18Z) and many days of model runs, then all the 6Z runs for all days will have the same time coordiantes, etc. This &quot;regularizes&quot;  time coordinates, and is useful when there may be missing forecast times, instead of creating a new time coordinate. This obviates the need for the FMRC definition files which previously were used on motherlode  for models in the IDD feed. </li>
-    <li><strong>datasetTypes</strong>: list the dataset types that are  exposed in the TDS catalog. The possible values are:
-      <ul>
-        <li><em>TwoD</em>: dataset with two time dimensions (run time and forecast time), which contains all the data in the collection.</li>
-        <li><em>Best</em>: dataset using the latest model data available for each possible forecast hour.</li>
-        <li><em>Files</em>: each component file of the collection is available seperately, as in a datasetScan. A &quot;latest&quot; file will be added if there is a &quot;latest&quot; Resolver service in the catalog.</li>
-        <li><em>Runs</em>:  A<em><strong> model run dataset</strong></em> contains all the data for one run time.</li>
-        <li><em>ConstantForecast</em>s:     A <strong><em>constant forecast dataset</em></strong> is created from 
-all the data that have the same forecast time. This kind of dataset has successively shorter forecasts of the same endpoint. </li>
-        <li><em>ConstantOffsets: </em>A <em><strong>constant offset dataset</strong></em> is created from 
-  all the data that have the same offset from the beginning of the run.</li>
-      </ul>
-    </li>
-    <li><strong>dataset</strong>: you can define your own &quot;best dataset&quot;. This uses the same algorithm as the Best dataset above, but may exclude data based on its offset hour. In the above example, a Best dataset is created with offset hours less than 0  excluded.
-      The only other datasets in the catalog are the component files.
-      <ul>
-        <li><strong>name</strong>: the name of the dataset, must be unique within the fmrcConfig element. Do not use &quot;best.ncd&quot;, &quot;fmrc.ncd&quot;, &quot;runs&quot;, &quot;files&quot;, &quot;forecast&quot;, or &quot;offset&quot;.</li>
-        <li><strong>offsetsGreaterEqual</strong>: forecast offset hours (forecast time - run time) less than this value are excluded.</li>
-      </ul>
-    </li>
-  </ol>
-  <p><strong>Notes</strong>:</p>
-  <p>If there is a serviceType=&quot;HTTPServer&quot; for the Feature Collection, it is removed from the virtual datasets (all except the <em>Files</em> datasets).</p>
-  <p>If an fmrcConfig element is not present, the default is regularize= <em>false</em>, and  datasetTypes= &quot;<em>TwoD Best Files Run</em>s&quot;. Specifying your own fmrcConfig completely overrides the datasetTypes default.</p>
-  <p>Note that for the case when a model run dataset is in a single file, it<em> </em> may be different than the same file as seen through the corresponding <em>Files</em> dataset, if <strong>regularize</strong> is on. In that case, the time coordinates will be regularized across all model run datasets in the collection.</p>
-  <p>If an <em>ID</em> attribute is not specified on the <strong>featureCollection</strong>, the <em>path</em> attribute is used as the ID. This is a preferred idiom.</p>
-  <p>FMRC Homogeneity Requirements:</p>
-  <ul>
-    <li>horizontal coordinates must not change</li>
-    <li>vertical coordinates must not change</li>
-    <li>times and variables can be spread out among files, although things are more efficient when all variable are together, and all forecasst hours arre together.</li>
-  </ul>
-</blockquote>
-<h3>pointConfig element</h3>
-<p>Defines options on feature collections with <strong> featureType</strong>=&quot;POINT&quot; or &quot;STATION&quot;.</p>
-<pre>&lt;pointConfig datasetTypes=&quot;CdmrFeature Files&quot; /&gt;</pre>
-<blockquote>
-  <p>where:</p>
-  <ol><li><strong>datasetTypes</strong>: list the dataset types that are  exposed in the TDS catalog. The possible values are:
-      <ul>
-          <li><em>CdmrFeature</em>: creates a <strong>CdmrFeature</strong> dataset and service. All of the files in the collection are treated as part of the same dataset.</li>
-        <li><em>Files</em>: each component file of the collection is available seperately, as in a datasetScan. A &quot;latest&quot; file will be added if there is a &quot;latest&quot; Resolver service in the catalog.</li>
-      </ul>
-    </li>
-  </ol>
-  <p><strong>Notes</strong>:</p>
-  <p>If there is a serviceType=&quot;HTTPServer&quot; for the Feature Collection, it is removed from the virtual datasets (all except the <em>Files</em> datasets).</p>
-  <p>If an pointConfig element is not present, the default is datasetTypes= &quot;<em>CdmrFeature Run</em>s&quot;. Specifying your own pointConfig completely overrides the datasetTypes default.</p>
-  <p>Point Feature Datasets Homogeneity Requirements:</p>
-  <ul>
-    <li>Data must be partitioned by time, with the starting time encoded into the filename.</li>
-  </ul>
-</blockquote>
-<p>&nbsp;</p>
 <hr />
-<h2>Conversion of &lt;datasetFmrc&gt; to &lt;featureCollection&gt;</h2>
-<p>There is no need to specify <strong>forecastModelRunCollection</strong> vs <strong>forecastModelRunSingleCollection</strong>, nor <strong>timeUnitsChange</strong>. This is detected automatically. </p>
-<p>Old way:</p>
-<pre>1) &lt;<strong>datasetFmrc</strong> name=&quot;NCEP-GFS-CONUS_80km&quot; <strong>collectionType=&quot;ForecastModelRuns&quot;</strong> harvest=&quot;true&quot; path=&quot;fmrc/NCEP/GFS/CONUS_80km&quot;&gt;
-     &lt;metadata inherited=&quot;true&quot;&gt;
-       &lt;documentation type=&quot;summary&quot;&gt;good stuff&lt;/documentation&gt;
-     &lt;/metadata&gt;
-
-2)   &lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot; enhance=&quot;true&quot;&gt;
-       &lt;aggregation <em>dimName</em>=&quot;run&quot; <em>type</em>=&quot;forecastModelRunCollection&quot; <em>fmrcDefinition</em>=&quot;NCEP-GFS-CONUS_80km.fmrcDefinition.xml&quot; recheckEvery=&quot;15 min&quot;&gt;
-         &lt;scan location=&quot;/data/ldm/pub/native/grid/NCEP/GFS/CONUS_80km/&quot; suffix=&quot;.grib1&quot; 
-               dateFormatMark=&quot;GFS_CONUS_80km_#yyyyMMdd_HHmm&quot; subdirs=&quot;true&quot; olderThan=&quot;5 min&quot;/&gt;
-       &lt;/aggregation&gt;
-     &lt;/netcdf&gt;
-3)   &lt;<em>fmrcInventory</em> location=&quot;/data/ldm/pub/native/grid/NCEP/GFS/CONUS_80km/&quot; suffix=&quot;.grib1&quot; fmrcDefinition=&quot;NCEP-GFS-CONUS_80km.fmrcDefinition.xml&quot; /&gt;
-     &lt;<em>addTimeCoverage</em> datasetNameMatchPattern=&quot;GFS_CONUS_80km_([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})00.grib1$&quot; 
-       startTimeSubstitutionPattern=&quot;$1-$2-$3T$4:00:00&quot;
-       duration=&quot;240 hours&quot;/&gt;
-   &lt;/datasetFmrc&gt;
-</pre>
-<ol>
-  <li><strong>datasetFmrc</strong> replaced by<strong> featureCollection </strong>
-      <ul>
-        <li>optional <em>collectionType=&quot;ForecastModelRuns&quot;</em> -&gt; mandatory <em>featureType=&quot;FMRC&quot;</em> </li>
-      </ul>
-  </li>
-  <li>NcML <strong>netcdf</strong> element describing the aggregation is now done by <strong>collection</strong> element
-    <ul>
-        <li><strong>aggregation</strong> <em>dimName</em>, <em>type</em>, and <em>fmrcDefinition</em> are no longer needed</li>
-      <li><strong>netcdf</strong> <strong>scan</strong> <em>location, suffix, subdirs, </em>and<em> dateFormatMark</em> are replaced by <strong>collection</strong> <em>spec</em></li>
-    </ul>
-  </li>
-  <li><strong>fmrcInventory</strong> and <strong>addTimeCoverage</strong> elements are no longer needed</li>
-</ol>
-<p>New way:</p>
-<pre>   &lt;<strong>featureCollection</strong> name=&quot;NCEP-GFS-CONUS_80km&quot; <strong>featureType=&quot;FMRC&quot;</strong> harvest=&quot;true&quot; path=&quot;fmrc/NCEP/GFS/CONUS_80km&quot;&gt;
-     &lt;metadata inherited=&quot;true&quot;&gt;
-       &lt;documentation type=&quot;summary&quot;&gt;good stuff&lt;/documentation&gt;
-     &lt;/metadata&gt;&lt;/metadata&gt;
-  
-1)   &lt;collection spec=&quot;/data/ldm/pub/native/grid/NCEP/GFS/CONUS_80km/GFS_CONUS_80km_#yyyyMMdd_HHmm#.grib1&quot;
-               <strong>recheckAfter</strong>=&quot;15 min&quot;
-               <strong>olderThan</strong>=&quot;5 min&quot;/&gt;
-2)   &lt;update startup=&quot;true&quot; rescan=&quot;0 5 3 * * ? *&quot; /&gt;
-3)   &lt;protoDataset choice=&quot;Penultimate&quot; change=&quot;0 2 3 * * ? *&quot; /&gt;
-4)   &lt;fmrcConfig regularize=&quot;true&quot; datasetTypes=&quot;TwoD Best Files Runs ConstantForecasts ConstantOffsets&quot; /&gt;
-   &lt;/featureCollection&gt;
-</pre>
-<ol>
-  <li><strong>collection spec </strong>element
-    <ul>
-        <li><strong>collection</strong> <em>recheckAfter</em> is the same as <strong>aggregation</strong> <em>recheckEvery</em> </li>
-      <li><strong>collection </strong><em>olderThan</em> is the same as <strong>scan </strong><em>olderThan</em></li>
-    </ul>
-  </li>
-  <li><strong>update</strong> (optional) allows control over when the <strong>featureCollection</strong> is updated</li>
-  <li><strong>protoDataset</strong> (optional) allows control over  the selection of the &quot;prototypical&quot; dataset</li>
-  <li><strong>fmrcConfig</strong> (optional) allows control over which FMRC virtual datasets are made available</li>
-</ol>
-<h2>NcML Modifications </h2>
+<h2>NcML Modifications<a name="ncml" id="ncml"></a> </h2>
 <p>NcML is no longer used to define the collection, but it may still be used to modify the FMRC dataset. </p>
 <p>Old way:</p>
 <pre>&lt;datasetFmrc name=&quot;RTOFS Forecast Model Run Collection&quot; path=&quot;fmrc/rtofs&quot;&gt;
@@ -330,7 +209,7 @@ all the data that have the same forecast time. This kind of dataset has successi
 <p></p>
 <hr width="100%" />
 <address>
-<img src="../../../images/thread.png" width="76" height="67" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated  Nov 2010
+<img src="../../../images/thread.png" width="76" height="67" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated  May 2011
 </address>
 <p>&nbsp; </p>
 </body>
