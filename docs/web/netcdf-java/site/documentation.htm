@@ -59,7 +59,25 @@ or <a href="http://www.unidata.ucar.edu/mailing_lists/archives/netcdf-java/">bro
 cd thredds
 mvn install</pre>
     </blockquote>
-  <p>We expect to have netCDF-Java available on one of the <a href="http://maven.apache.org/guides/introduction/introduction-to-repositories.html">maven central</a> sites soon, and possibly on a git repository.</p>
+We expect to have netCDF-Java available on one of the <a href="http://maven.apache.org/guides/introduction/introduction-to-repositories.html">maven central</a> sites soon, and possibly on a git repository.
+</blockquote>
+<h3><strong><a name="v43" id="v43"></a> Development version (4.3) </strong><strong>(requires  Java 6) </strong></h3>
+<ul>
+  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.3/netcdf-4.3.jar">unbundled netCDF library</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.3/netcdf-4.3.jar.MD5">MD5</a>) allows you to choose which other jars you need.</li>
+  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.3/netcdfAll-4.3.jar">complete netCDF library</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.3/netcdfAll-4.3.jar.MD5">MD5</a>) implements the full CDM model, with all dependent jars included.</li>
+  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.3/netcdfAll-4.3.zip">complete zip file</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.3/netcdfAll-4.3.zip.MD5">MD5</a>) includes all the jar files you might need. </li>
+  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.3/toolsUI-4.3.jar">toolsUI.jar</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.3/toolsUI-4.3.jar.MD5">MD5</a>) allows you to run the netCDF ToolsUI application directly from it. </li>
+  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.3/ncIdv.jar">ncIdv.jar</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.3/ncIdv.jar.MD5">MD5</a>) which you can use in the IDV</li>
+  <li> The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.3/ncCore-4.3.jar">minimal library</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.3/ncCore-4.3.jar.MD5">MD5</a>) just reads netcdf-3  files.</li>
+  <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.3/netcdfUI-4.3.jar">unbundled GUI.jar</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.3/netcdfUI-4.3.jar.MD5">MD5</a>) for GUI applications that want to choose   which other jars are needed</li>
+  <li>The<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.3/ncSrc-4.3.zip"> source code </a>(<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.3/ncSrc-4.3.zip.MD5">MD5</a>) (unzip and follow the <a href="v4.3/README">README</a>)</li>
+  <li>See <a href="v4.3/CHANGES">CHANGES</a> for version changes.</li>
+  <li>Try out the <strong> 4.3</strong> version of ToolsUI application: <a href="v4.3/webstart/netCDFtools.jnlp">launch from webstart</a>. </li>
+  <li><a href="v4.3/javadoc/index.html">Public javadoc</a>, downloadable <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.3/javadoc-4.3.jar">jar file</a>. This is the public interface. Future changes to the API will remain backwards compatible with this API. </li>
+  <li><a href="v4.3/javadocAll/index.html">All javadoc, </a>downloadable<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.3/javadocAll-4.3.jar"> jar file. </a>This is the javadoc for all packages and all methods except private.  CAREFUL, some of this may change.</li>
+</ul>
+<blockquote>
+  <p>&nbsp;</p>
 </blockquote>
 <h3><strong><a name="v4"></a> Last version for Java 5 (4.0.49) </strong></h3>
 <ul>
@@ -122,7 +140,7 @@ mvn install</pre>
 <h3>CF Conventions</h3>
 <ul>
   <li><a href="http://www.cfconventions.org">CF Conventions Home page</a></li>
-  <li><a href="http://cf-pcmdi.llnl.gov/trac/wiki/PointObservationConventions">Proposed CF Convention for Point Observation Data</a></li>
+  <li>CF Discrete Sampling Geometries conventions (final) <a href="http://www.unidata.ucar.edu/staff/caron/public/CFch9-may10.pdf">pdf</a> (May 2011) </li>
   <li><a href="reference/FeatureDatasets/CFencodingTable.html">CF Point Observation Data encoding Table</a></li>
   <li><a href="http://www.ral.ucar.edu/projects/titan/docs/radial_formats/cfradial.html">CF/Radial RADAR/LIDAR Data Format</a></li>
 </ul>
@@ -191,7 +209,7 @@ mvn install</pre>
 <hr WIDTH="100%">
 <address>
 <a href="NetcdfUsers.htm"><img src="nc.gif" width="64" height="64" border="0"></a> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> 
-and was last updated Feb 2011
+and was last updated May 2011
 </address>
 
 </body>
