@@ -62,10 +62,10 @@ public enum CollectionUpdater {
       Trigger trigger0 = new SimpleTrigger(config.spec, "startup", runTime);
       try {
         scheduler.scheduleJob(updateJob, trigger0);
-        logger.info("Schedule startup scan for "+config.spec+" at "+ runTime);
+        logger.info("Schedule startup scan for {} at {}\n" ,config,runTime);
       } catch (SchedulerException e) {
-        logger.error("cronExecutor failed to schedule startup Job", e);
-        //e.printStackTrace();
+        logger.error("cronExecutor failed to schedule startup Job for "+config, e);
+        return;
       }
     }
 
@@ -79,7 +79,7 @@ public enum CollectionUpdater {
         } else {
           scheduler.scheduleJob(updateJob, trigger1);
         }
-        logger.info("Schedule recurring scan for "+config.spec+" cronExpr="+ update.rescan);
+        logger.info("Schedule recurring scan for {} cronExpr={}\n", config.spec, update.rescan);
       } catch (ParseException e) {
         logger.error("cronExecutor failed: bad cron expression= "+ update.rescan, e);
       } catch (SchedulerException e) {
@@ -99,7 +99,7 @@ public enum CollectionUpdater {
       try {
         Trigger trigger2 = new CronTrigger(config.spec, "rereadProto", pconfig.change);
         scheduler.scheduleJob(protoJob, trigger2);
-        logger.info("Schedule Reread Proto for "+config.spec);
+        logger.info("Schedule Reread Proto for {}", config.spec);
       } catch (ParseException e) {
         logger.error("cronExecutor failed: RereadProto has bad cron expression= "+ pconfig.change, e);
       } catch (SchedulerException e) {
