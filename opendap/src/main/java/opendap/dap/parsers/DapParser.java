@@ -1022,8 +1022,7 @@ public class DapParser extends Dapparse
     
 /* Line 354 of lalr1.java  */
 /* Line 268 of "dap.y"  */
-    {yyval=
-            dapescapename(((yystack.valueAt (1-(1)))));};
+    {yyval=((yystack.valueAt (1-(1))));};
   break;
     
 

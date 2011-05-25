@@ -408,7 +408,7 @@ public class DDSXMLParser {
                 // derived element. So, let's go build it!
                 BaseType template = buildArrayTemplate(e, indent);
 
-                // Oddly, in the OPeNDAP implmentation of Array, the Array variable
+                // Oddly, in the OPeNDAP implementation of Array, the Array variable
                 // takes it's name from it's (internal) template variable. This
                 // is probably an artifact of the original DDSParser.
 

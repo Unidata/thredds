@@ -101,10 +101,11 @@ public abstract class BaseType extends DAPNode
      * Constructs a new <code>BaseType</code> with name <code>n</code>.
      *
      * @param n the name of the variable.
+     * @param isencoded is true if the name has been escaped already
      */
-    public BaseType(String n, boolean decodeName)
+    public BaseType(String n, boolean isencoded)
     {
-	super(n,decodeName);
+	    super(n,isencoded);
         _attrTbl = new AttributeTable(_name);
         _attr = new Attribute(_name, _attrTbl);
     }

@@ -56,7 +56,8 @@ public class NcSDGrid extends SDGrid {
    *  @param list of the variables, first data then maps
    */
   public NcSDGrid( String name, ArrayList list) {
-    super(NcDDS.escapeName(name));
+      //super(NcDDS.escapeName(name));
+      super((name));
 
     addVariable( (BaseType) list.get(0), ARRAY);
 

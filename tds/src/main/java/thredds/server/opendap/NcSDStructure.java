@@ -66,7 +66,8 @@ public class NcSDStructure extends SDStructure  {
    *  @param list of the member variables
    */
   public NcSDStructure( Structure s, List<BaseType> list) {
-    super( NcDDS.escapeName(s.getShortName()));
+      //super( NcDDS.escapeName(s.getShortName()));
+      super((s.getShortName()));
     this.ncVar = s;
 
     for (BaseType aList : list) addVariable(aList, 0);

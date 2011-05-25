@@ -75,7 +75,8 @@ public class NcDDS extends ServerDDS {
    * @param ncfile create DDS from this
    */
   public NcDDS(String name, NetcdfFile ncfile) {
-    super(StringUtil.escape(name, ""));
+    //super(StringUtil.escape(name, ""));
+     super(name);
 
     // dup the variable set
     for (Object o : ncfile.getVariables()) {

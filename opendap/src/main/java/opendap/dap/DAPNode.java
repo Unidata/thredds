@@ -117,16 +117,16 @@ public class DAPNode implements Cloneable, Serializable
      * Constructs a new <code>DAPNode</code> with name <code>n</code>.
      *
      * @param n the name of the variable.
-     * @param decodeName true if the name is www encoded
+     * @param isencoded true if the name is www encoded
      */
-    public DAPNode(String n, boolean decodeName)
+    public DAPNode(String n, boolean isencoded)
     {
         _myParent = null;
-        if (decodeName)
-            _name = EscapeStrings.www2id(n);
+        if (isencoded)
+           setName(n);// _name = EscapeStrings.www2id(n);
         else
-            _name = n;
-        _nameEncoded = EscapeStrings.id2www(_name);
+           setClearName(n); // _name = n;
+       // _nameEncoded = EscapeStrings.id2www(_name);
     }
 
     public void setProjected(boolean tf)
@@ -213,12 +213,13 @@ public class DAPNode implements Cloneable, Serializable
     /**
      * Sets the name of the class instance.
      *
-     * @param n the name of the class instance.
+     * @param n the name of the class instance; with escapes
      */
     public final void setName(String n)
     {
 	    _nameEncoded = n;
-        setClearName(EscapeStrings.www2id(n));
+        _name = EscapeStrings.www2id(n);
+        //setClearName(EscapeStrings.www2id(n));
     }
 
     /**

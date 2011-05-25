@@ -116,21 +116,12 @@ public class EscapeStrings {
 
 
     // May need to include/exclude the escape character!
-    private static String _allowableInURI = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-+_/.\\*";
-    private static String _allowableInURI_CE = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-+_/.\\,";
+    // This appears to be incorrect wrt dap spec: private static String _allowableInURI = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-+_/.\\*";
+    private static String _allowableInURI = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-+_\\*!~";  // plus: '"?
+    // This appears to be incorrect wrt dap spec: private static String _allowableInURI_CE = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-+_/.\\,";
+    private static String _allowableInURI_CE = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-+_\\,"; // plus "?
     private static char _URIEscape = '%';
 
-    static private String
-    complement(String s)
-    {
-        String comp = "";
-        for(char c: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-+_/.\\*,".toCharArray()) {
-            int j = s.indexOf(c);
-            if(j < 0)
-                comp = comp + c;
-        }
-        return comp;
-    }
 
     /**
      * Replace characters that are not allowed in WWW URLs using rules specific

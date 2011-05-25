@@ -57,7 +57,8 @@ public class NcSDString extends SDString implements HasNetcdfVariable {
    * @param v : the netcdf Variable
    */
   NcSDString(Variable v) {
-    super(NcDDS.escapeName(v.getShortName()));
+      //super(NcDDS.escapeName(v.getShortName()));
+      super((v.getShortName()));
     this.ncVar = v;
   }
 

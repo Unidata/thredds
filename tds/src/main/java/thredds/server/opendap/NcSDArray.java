@@ -69,7 +69,8 @@ public class NcSDArray extends SDArray implements HasNetcdfVariable {
    * @param bt : DODS element type
    */
   NcSDArray(Variable v, BaseType bt) {
-    super(NcDDS.escapeName(v.getShortName()));
+      //super(NcDDS.escapeName(v.getShortName()));
+      super(v.getShortName());
     this.ncVar = v;
 
     // set dimensions
