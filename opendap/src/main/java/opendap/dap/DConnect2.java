@@ -570,15 +570,8 @@ is =  new StringBufferInputStream (contents); */
       ce += localSelString;
     }
 
-    if (ce.indexOf('?') != 0) {
+    if (ce.length() > 0 && ce.indexOf('?') != 0) {
       ce = "?" + ce;
-    }
-
-    String escCE;
-    try {
-      escCE = URIUtil.encodeQuery(ce);
-    } catch (URIException e) {
-      throw new IllegalStateException(e.getMessage());
     }
 
     if (false) {
@@ -587,9 +580,8 @@ is =  new StringBufferInputStream (contents); */
       System.out.println("selString: '" + selString + "'");
       System.out.println("localSelString: '" + localSelString + "'");
       System.out.println("Complete CE: " + ce);
-      System.out.println("Escaped CE: " + escCE);
     }
-    return escCE;
+    return ce;   // escaping will happen elsewhere
   }
 
   /**

@@ -50,6 +50,7 @@ import java.util.*;
 import java.util.zip.DeflaterOutputStream;
 import java.net.URI;
 
+import opendap.util.EscapeStrings;
 import thredds.servlet.*;
 import thredds.servlet.filter.CookieFilter;
 import ucar.ma2.DataType;
@@ -157,6 +158,7 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
     try {
       path = request.getPathInfo();
       log.debug("doGet path={}", path);
+
       if (thredds.servlet.Debug.isSet("showRequestDetail"))
         log.debug(ServletUtil.showRequestDetail(this, request));
 
@@ -204,6 +206,11 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
       if (rs != null) {
         String dataSet = rs.getDataSet();
         String requestSuffix = rs.getRequestSuffix();
+
+        // The query string will come to us in encoded form, so we need to decode it
+        String query = request.getQueryString();
+        log.debug("doGet query={}", query);
+        query = EscapeStrings.unescapeString(query,'%',"");
 
         if ((dataSet == null) || dataSet.equals("/") || dataSet.equals("")) {
           doGetDIR(request, response, rs);
