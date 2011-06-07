@@ -45,7 +45,7 @@ import ucar.ma2.Array;
 import ucar.ma2.IndexIterator;
 
 public class TestOffAggDirDateFormat extends TestCase {
-  private int ntimes = 15;
+  private int ntimes = 8;
   public TestOffAggDirDateFormat( String name) {
     super(name);
   }
@@ -80,7 +80,7 @@ public class TestOffAggDirDateFormat extends TestCase {
     Dimension timeDim = ncfile.findDimension("time");
     assert null != timeDim;
     assert timeDim.getName().equals("time");
-    assert timeDim.getLength() == 15 : timeDim.getLength() +"!="+ 15;
+    assert timeDim.getLength() == ntimes : timeDim.getLength() +"!="+ ntimes;
   }
 
 
