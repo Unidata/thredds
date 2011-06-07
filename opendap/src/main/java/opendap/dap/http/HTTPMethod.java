@@ -1,6 +1,7 @@
 package opendap.dap.http;
 
 import java.io.*;
+import java.net.URI;
 import java.util.*;
 
 import org.apache.commons.httpclient.Header;
@@ -57,22 +58,23 @@ public class HTTPMethod
             uriEscaped = uri.substring(0,i) + '?' + query;
         }  else
             this.uriEscaped = uri;
+
         this.methodclass = m;
         switch (this.methodclass) {
         case Put:
-            this.method = new PutMethod(uri);
+            this.method = new PutMethod(uriEscaped);
             break;
         case Post:
-            this.method = new PostMethod(uri);
+            this.method = new PostMethod(uriEscaped);
             break;
         case Get:
-            this.method = new GetMethod(uri);
+              this.method = new GetMethod(uriEscaped);
               break;
         case Head:
-            this.method = new HeadMethod(uri);
+            this.method = new HeadMethod(uriEscaped);
                 break;
         case Options:
-            this.method = new OptionsMethod(uri);
+            this.method = new OptionsMethod(uriEscaped);
                break;
         default:
             this.method = null;
