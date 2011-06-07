@@ -165,25 +165,25 @@ abstract public class Grib2Pds extends GribPds {
 
   static public int makeForecastTime(long refTime, long foreDate, int timeUnit) {
 
-    int intv = (int) ((foreDate - refTime) / 1000); // secs
+    double intv = ((foreDate - refTime) / 1000); // secs
 
     // common cases
     if (timeUnit == 1)
-      return intv / 3600; // hour
+      return (int) Math.round(intv / 3600); // hour
     else if (timeUnit == 0)
-      return intv / 60; // minute
+      return (int) Math.round(intv / 60); // minute
     else if (timeUnit == 2)
-      return intv / 3600 / 24; // day
+      return (int) Math.round(intv / 3600 / 24); // day
     else if (timeUnit == 3)
-      return intv / 3600 / 24 / 30; // month LOOK WRONG
+      return (int) Math.round(intv / 3600 / 24 / 30); // month LOOK WRONG
     else if (timeUnit == 10)
-      return intv / 3600 / 3; // 3 hour
+      return (int) Math.round(intv / 3600 / 3); // 3 hour
     else if (timeUnit == 11)
-      return intv / 3600 / 6; // 6 hour
+      return (int) Math.round(intv / 3600 / 6); // 6 hour
     else if (timeUnit == 12)
-      return intv / 3600 / 12; // 12 hour
+      return (int) Math.round(intv / 3600 / 12); // 12 hour
     else if (timeUnit == 13)
-      return intv; // sec
+      return (int) Math.round(intv); // sec
 
     // LOOK otherwise ??
 

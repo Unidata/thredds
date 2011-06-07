@@ -86,7 +86,7 @@ public class TestReadAndCountDods extends TestCase {
     TestReadandCount.doOne(base,"catalog/fmrc/NCEP/NAM/Alaska_11km/files/latest.xml", 59, 16, 18, 13);
     TestReadandCount.doOne(base,"catalog/fmrc/NCEP/NAM/Alaska_22km/files/latest.xml", 25, 8, 10, 6);
     TestReadandCount.doOne(base,"catalog/fmrc/NCEP/NAM/Alaska_45km/noaaport/files/latest.xml", 21, 6, 8, 4);
-    TestReadandCount.doOne(base,"catalog/fmrc/NCEP/NAM/Alaska_45km/conduit/files/latest.xml", 154, 34, 36, 31);
+    TestReadandCount.doOne(base,"catalog/fmrc/NCEP/NAM/Alaska_45km/conduit/files/latest.xml", 154, -1, 36, 31);
     TestReadandCount.doOne(base,"catalog/fmrc/NCEP/NAM/Alaska_95km/files/latest.xml", 29, 12, 14, 9);
     TestReadandCount.doOne(base,"catalog/fmrc/NCEP/NAM/CONUS_12km/files/latest.xml", 59, 16, 18, 13);
     TestReadandCount.doOne(base,"catalog/fmrc/NCEP/NAM/CONUS_20km/surface/files/latest.xml", 54, 16, 18, 12);
@@ -100,7 +100,7 @@ public class TestReadAndCountDods extends TestCase {
     TestReadandCount.doOne(base,"catalog/fmrc/NCEP/RUC2/CONUS_20km/surface/files/latest.xml", 26, 6, 8, 3);
     TestReadandCount.doOne(base,"catalog/fmrc/NCEP/RUC2/CONUS_20km/pressure/files/latest.xml", 74, 12, 14, 9);
     TestReadandCount.doOne(base,"catalog/fmrc/NCEP/RUC2/CONUS_20km/hybrid/files/latest.xml", 55, 10, 12, 8);
-    // TestReadandCount.doOne(base,"catalog/fmrc/NCEP/RUC2/CONUS_40km/files/latest.xml", 48, 12, 13, 6);
+    TestReadandCount.doOne(base,"catalog/fmrc/NCEP/RUC2/CONUS_40km/files/latest.xml", 48, 12, 13, 6);
     TestReadandCount.doOne(base,"catalog/fmrc/NCEP/RUC/CONUS_80km/files/latest.xml", 31, 9, 11, 5);  // */
 
     TestReadandCount.doOne(base,"catalog/fmrc/NCEP/DGEX/CONUS_12km/files/latest.xml", 23, 11, 13, 8);
