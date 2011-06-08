@@ -51,6 +51,10 @@ public class InvService {
   public static final InvService opendap = new InvService("opendap", ServiceType.OPENDAP.toString(), "/thredds/dodsC/", "", "");
   public static final InvService wcs = new InvService("wcs", ServiceType.WCS.toString(), "/thredds/wcs/", "", "");
   public static final InvService wms = new InvService("wms", ServiceType.WMS.toString(), "/thredds/wms/", "", "");
+  //NGDC addition 5/10/2011
+  public static final InvService ncml = new InvService("ncml", ServiceType.NCML.toString(), "/thredds/ncml/", "", "");
+  public static final InvService iso = new InvService("uddc", ServiceType.NCML.toString(), "/thredds/uddc/", "", "");
+  public static final InvService uddc = new InvService("iso", ServiceType.NCML.toString(), "/thredds/iso/", "", "");
 
   //////////////////////////////////
   private String name;

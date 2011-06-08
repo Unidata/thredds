@@ -1057,6 +1057,12 @@ public class InvDatasetImpl extends InvDataset {
             fullUrlString = fullUrlString + "?service=WCS&version=1.0.0&request=GetCapabilities";
           else if (stype == ServiceType.WMS)
             fullUrlString = fullUrlString + "?service=WMS&version=1.3.0&request=GetCapabilities";
+          //NGDC addition 5/10/2011
+          else if (stype == ServiceType.NCML||stype == ServiceType.UDDC||stype == ServiceType.ISO) {
+        	  String catalogUrl = ds.getCatalogUrl();
+              if (catalogUrl.indexOf('#')>0) catalogUrl = catalogUrl.substring(0,catalogUrl.lastIndexOf('#'));
+              fullUrlString = fullUrlString + "?catalog=" + catalogUrl +  "&dataset=" + ds.id;
+          }
           else if (stype == ServiceType.NetcdfSubset)
             fullUrlString = fullUrlString + "/dataset.html";
           else if ((stype == ServiceType.CdmRemote) || (stype == ServiceType.CdmrFeature))

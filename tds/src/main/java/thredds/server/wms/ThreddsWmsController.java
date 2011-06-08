@@ -39,10 +39,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.ModelAndView;
 import thredds.server.wms.config.WmsDetailedConfig;
-import thredds.servlet.DatasetHandler;
 import thredds.servlet.ServletUtil;
 import thredds.servlet.UsageLog;
-import thredds.util.TdsPathUtils;
+import thredds.util.TdsRequestedDataset;
 import ucar.nc2.dt.GridDataset;
 import uk.ac.rdg.resc.ncwms.controller.AbstractWmsController;
 import uk.ac.rdg.resc.ncwms.controller.RequestParams;
@@ -131,7 +130,7 @@ public final class ThreddsWmsController extends AbstractWmsController
     GridDataset gd = null;
     try
     {
-      RequestedDataset reqDataset = new RequestedDataset( httpServletRequest );
+      TdsRequestedDataset reqDataset = new TdsRequestedDataset( httpServletRequest );
       if ( reqDataset.isRemote() && ! tdsWmsServerConfig.isAllowRemote() )
       {
         log.info( "dispatchWmsRequest(): WMS service not supported for remote datasets." );
@@ -220,6 +219,11 @@ public final class ThreddsWmsController extends AbstractWmsController
       log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, -1 ) );
       throw e;
     }
+    catch ( thredds.server.dataset.DatasetException e ) {
+      log.debug( "dispatchWmsRequest(): DatasetException: " + e.getMessage() );
+      log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_BAD_REQUEST, -1 ) );
+      throw new WmsException( e.getMessage() );
+    }
     catch ( java.net.SocketException e ) {
       log.debug( "dispatchWmsRequest(): SocketException: " + e.getMessage());
       log.info( UsageLog.closingMessageForRequestContext( ServletUtil.STATUS_CLIENT_ABORT, -1 ) );
@@ -258,59 +262,4 @@ public final class ThreddsWmsController extends AbstractWmsController
     }
   }
 
-  /**
-   * Extracts the dataset ID from the HttpServletRequest and determines if it is
-   * a local dataset path or a remote dataset URL.
-   *
-   * <p>The requested dataset can be opened by using the
-   * {@link #openAsGridDataset(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)}
-   * method.
-   */
-  private static class RequestedDataset
-  {
-    private boolean isRemote = false;
-    private String path;
-
-    RequestedDataset( HttpServletRequest request) throws WmsException
-    {
-      path = TdsPathUtils.extractPath( request );
-      if ( path == null )
-      {
-        path = ServletUtil.getParameterIgnoreCase( request, "dataset" );
-        isRemote = ( path != null );
-      }
-      if ( path == null )
-      {
-        log.debug( "Request does not specify a dataset." );
-        throw new WmsException( "Request does not specify a dataset." );
-      }
-    }
-
-    /**
-     * Open the requested dataset as a GridDataset. If the request requires an
-     * authentication challenge, a challenge will be sent back to the client using
-     * the response object, and this method will return null.  (This is the only
-     *  circumstance in which this method will return null.)
-     *
-     * @param request the HttpServletRequest
-     * @param response the HttpServletResponse
-     * @return the requested dataset as a GridDataset
-     * @throws IOException if have trouble opening the dataset
-     */
-    public GridDataset openAsGridDataset( HttpServletRequest request,
-                                          HttpServletResponse response )
-            throws IOException
-    {
-      return isRemote ? ucar.nc2.dt.grid.GridDataset.open( path )
-                      : DatasetHandler.openGridDataset( request, response, path );
-    }
-
-    public boolean isRemote() {
-      return isRemote;
-    }
-
-    public String getPath() {
-      return path;
-    }
-  }
 }

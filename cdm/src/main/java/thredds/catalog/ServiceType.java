@@ -60,6 +60,11 @@ public final class ServiceType {
   public final static ServiceType WCS = new ServiceType( "WCS" );
   public final static ServiceType WSDL = new ServiceType( "WSDL" );
 
+  //NGDC addition 5/10/2011
+  public final static ServiceType NCML = new ServiceType( "NCML" );
+  public final static ServiceType UDDC = new ServiceType( "UDDC" );
+  public final static ServiceType ISO = new ServiceType( "ISO" );
+
   public final static ServiceType WebForm = new ServiceType( "WebForm" );
 
   public final static ServiceType CATALOG = new ServiceType( "Catalog" );
