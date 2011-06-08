@@ -4,6 +4,9 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.2:
  26: (2011-xx-xx)
+  opendap escaping of "/,"
+  get earth radius from GRIB GDS (affects LC only)
+  GRIB forecast time roundoff error
   InvCatalogs: no longer support variants of catalogs (eg 0.6 namespace)
   InvCatalogImpl : dont retain the InvCatalogFactory, Converter; just get a new one if needed
   GridCoordSys: 2d time coords may have null dates - skip them in makeTimes2D()

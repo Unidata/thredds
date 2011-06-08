@@ -588,10 +588,8 @@ public class GridHorizCoordSys {
       radius_spherical_earth = gds.getDouble("radius_spherical_earth");
 
     if( ! Double.isNaN(radius_spherical_earth) ) {
-      // TODO: delete if no bug reports
-      //v.addAttribute(new Attribute("spherical_earth_radius_meters",
-      //  new Double(radius_spherical_earth)));
-      v.addAttribute(new Attribute(GridCF.EARTH_RADIUS, new Double(radius_spherical_earth)));
+      //v.addAttribute(new Attribute(GridCF.EARTH_RADIUS, new Double(radius_spherical_earth)));
+      v.addAttribute(new Attribute(GridCF.EARTH_RADIUS, new Double(radius_spherical_earth * 1000.0)));  // nathan.mittler@sensis.com 6/7/11
     } else { // oblate earth
       double major_axis = gds.getDouble( GridDefRecord.MAJOR_AXIS_EARTH );
       if (Double.isNaN( major_axis ))

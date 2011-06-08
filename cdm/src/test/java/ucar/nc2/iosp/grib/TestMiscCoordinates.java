@@ -37,6 +37,9 @@ package ucar.nc2.iosp.grib;
  * LOOK: vert coord transform not getting made!
  */
 
+import ucar.ma2.Array;
+import ucar.ma2.ArrayInt;
+import ucar.ma2.DataType;
 import ucar.nc2.TestAll;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
@@ -45,6 +48,7 @@ import ucar.nc2.Dimension;
 import java.io.IOException;
 
 import junit.framework.TestCase;
+import ucar.nc2.stream.NcStreamProto;
 
 
 public class TestMiscCoordinates extends TestCase {
@@ -91,7 +95,23 @@ public class TestMiscCoordinates extends TestCase {
     ncfile.close();
   }
 
+  // roundoff in calculating forecast time coordinates.
+  public void testTimeRoundoff() throws IOException {
+    String filename = TestAll.cdmUnitTestDir + "formats/grib2/cosmo_de_eps_m001_2010061100.grib2";
+    System.out.println("\n\nReading File " + filename);
 
+    NetcdfFile ncfile = NetcdfFile.open(filename);
+
+    Variable time = ncfile.findVariable("time");
+    assert time.getSize() == 25;
+    assert time.getDataType() == DataType.INT;
+
+    ArrayInt.D1 data = (ArrayInt.D1) time.read();
+    for (int i = 0; i < data.getSize(); i++)
+      assert i == data.get(i);
+
+    ncfile.close();
+  }
 
   static public void main(String args[]) throws IOException {
     TestMiscCoordinates ggi = new TestMiscCoordinates("");

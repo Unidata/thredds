@@ -87,7 +87,7 @@ public class LambertConformal extends ProjectionImpl {
 
   public ProjectionImpl constructCopy() {
     return new LambertConformal(getOriginLat(), getOriginLon(), getParallelOne(), getParallelTwo(),
-        getFalseEasting(), getFalseNorthing());
+        getFalseEasting(), getFalseNorthing(), this.earth_radius);
   }
 
   /**
@@ -163,6 +163,7 @@ public class LambertConformal extends ProjectionImpl {
     addParameter(ATTR_NAME, "lambert_conformal_conic");
     addParameter("latitude_of_projection_origin", lat0);
     addParameter("longitude_of_central_meridian", lon0);
+    addParameter("earth_radius", earth_radius * 1000);// back to m
     if (par2 == par1) {
       addParameter("standard_parallel", par1);
     } else {

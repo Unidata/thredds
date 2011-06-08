@@ -121,6 +121,7 @@ public class LambertAzimuthalEqualArea extends ProjectionImpl {
         addParameter(ATTR_NAME, "lambert_azimuthal_equal_area");
         addParameter("latitude_of_projection_origin", lat0);
         addParameter("longitude_of_projection_origin", lon0);
+        addParameter("earth_radius", R * 1000); // m
         if ((false_easting != 0.0) || (false_northing != 0.0)) {
             addParameter("false_easting", false_easting);  
             addParameter("false_northing", false_northing);

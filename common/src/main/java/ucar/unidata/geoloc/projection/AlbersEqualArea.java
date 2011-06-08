@@ -173,7 +173,7 @@ public class AlbersEqualArea extends ProjectionImpl {
       addParameter("units", "km");
     }
 
-    addParameter("earth_radius", earth_radius);
+    addParameter("earth_radius", earth_radius * 1000); // m
   }
 
   /**
