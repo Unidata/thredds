@@ -1,4 +1,4 @@
-package thredds.servlet.filter;
+package thredds.server;
 
 import thredds.server.TdsServletResponseWrapper;
 import thredds.servlet.UsageLog;

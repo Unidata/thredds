@@ -1,9 +1,10 @@
-package thredds.util;
+package thredds.server.dataset;
 
 import thredds.server.dataset.DatasetException;
 import thredds.server.wms.ThreddsWmsController;
 import thredds.servlet.DatasetHandler;
 import thredds.servlet.ServletUtil;
+import thredds.util.TdsPathUtils;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridDataset;
