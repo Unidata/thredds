@@ -4394,7 +4394,7 @@ public class H5header {
   /**
    * Fetch a Vlen data array.
    *
-   * @param globalHeapIdAddress address of the heapId, used to get the String out of the heap
+   * @param globalHeapIdAddress address of the heapId, used to get the data out of the heap
    * @param dataType type of data
    * @param endian byteOrder of the data (0 = BE, 1 = LE)
    * @return String the String read from the heap
@@ -4403,6 +4403,10 @@ public class H5header {
   Array getHeapDataArray(long globalHeapIdAddress, DataType dataType, int endian) throws IOException {
     HeapIdentifier heapId = new HeapIdentifier(globalHeapIdAddress);
     if (debugHeap) debugOut.println(" heapId= " + heapId);
+    if (heapId.isEmpty()) {
+      return Array.factory(dataType.getPrimitiveClassType(), new int[]{0});
+    }
+
     GlobalHeap.HeapObject ho = heapId.getHeapObject();
     if (debugHeap) debugOut.println(" HeapObject= " + ho);
     if (endian >= 0) raf.order(endian);
@@ -4505,6 +4509,7 @@ public class H5header {
     }
   }
 
+  // see "Global Heap Id" in http://www.hdfgroup.org/HDF5/doc/H5.format.html
   class HeapIdentifier {
     private int nelems; // "number of 'base type' elements in the sequence in the heap"
     private long heapAddress;
@@ -4523,7 +4528,7 @@ public class H5header {
       if (debugHeap) dump("heapIdentifier", getFileOffset(address), 16, true);
     }
 
-    // the heap id is has already beed read into a byte array at given pos
+    // the heap id is has already been read into a byte array at given pos
     HeapIdentifier(ByteBuffer bb, int pos) throws IOException {
       bb.order(ByteOrder.LITTLE_ENDIAN); // header information is in le byte order
       bb.position(pos); // reletive reading
@@ -4538,14 +4543,19 @@ public class H5header {
       return " nelems=" + nelems + " heapAddress=" + heapAddress + " index=" + index;
     }
 
+    public boolean isEmpty() {
+      return (heapAddress == 0);
+    }
+
     GlobalHeap.HeapObject getHeapObject() throws IOException {
+      if (isEmpty()) return null;
       GlobalHeap gheap;
       if (null == (gheap = heapMap.get(heapAddress))) {
         gheap = new GlobalHeap(heapAddress);
         heapMap.put(heapAddress, gheap);
       }
 
-      for (GlobalHeap.HeapObject ho : gheap.hos) {
+      for (GlobalHeap.HeapObject ho : gheap.hos) {// this is pretty lame - linear search !
         if (ho.id == index)
           return ho;
       }

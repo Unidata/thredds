@@ -4,6 +4,7 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.2:
  26: (2011-xx-xx)
+  hdf5: vlen can have null heapId, indicates no data
   opendap escaping of "/,"
   get earth radius from GRIB GDS (affects LC only)
   GRIB forecast time roundoff error
