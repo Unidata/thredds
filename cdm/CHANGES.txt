@@ -11,6 +11,7 @@ Changes in version 4.2:
   InvCatalogs: no longer support variants of catalogs (eg 0.6 namespace)
   InvCatalogImpl : dont retain the InvCatalogFactory, Converter; just get a new one if needed
   GridCoordSys: 2d time coords may have null dates - skip them in makeTimes2D()
+  Opendap: properly escape attribute and variable names.  
  25: (2011-05-20)
   DatasetCollectionManager: make sure scan triggers event
   MetadataManager delete was turned off

@@ -163,8 +163,9 @@ public class NcDAS extends opendap.dap.DAS {
       int dods_type = DODSNetcdfFile.convertToDODSType(att.getDataType(), false);
 
       try {
-          //String attName = NcDDS.escapeName(att.getName());
-          String attName = (att.getName());
+          // IT turns out that the attribute names as taken from the variable,
+          // are not escaped, so we need to make sure that happens.
+          String attName = NcDDS.escapeName(att.getName());
         if (att.isString()) {
           /* FIX String value = escapeAttributeStringValues(att.getStringValue());
           table.appendAttribute(attName, dods_type, "\""+value+"\"");
