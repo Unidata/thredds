@@ -43,7 +43,7 @@ import java.util.*;
 /** Test remote netcdf over HTTP in the JUnit framework. */
 
 public class TestHTTP extends TestCase {
-  String testDir= "http://motherlode.ucar.edu/test/";
+  String testDir= "http://motherlode.ucar.edu:8080/thredds/";
 
   public TestHTTP( String name) {
     super(name);
@@ -135,7 +135,7 @@ public class TestHTTP extends TestCase {
   }
 
   // HTTP = 4300 HTTP2 = 5500 msec 20-25% slower
-  public void testOpenDataset() throws IOException {
+  public void utestOpenDataset() throws IOException {
     long start = System.currentTimeMillis();
     long totalBytes = 0;
 
@@ -153,7 +153,7 @@ public class TestHTTP extends TestCase {
       ncf.close(); // reclaimh
   }
 
-  public void testOpenGrid() throws IOException {
+  public void utestOpenGrid() throws IOException {
     long start = System.currentTimeMillis();
     long totalBytes = 0;
 
