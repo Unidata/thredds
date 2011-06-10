@@ -3,7 +3,8 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Changes in version 4.2:
- 26: (2011-xx-xx)
+ 26: (2011-06-xx)
+  LambertConformal accessor methods added
   hdf5: vlen can have null heapId, indicates no data
   opendap escaping of "/,"
   get earth radius from GRIB GDS (affects LC only)

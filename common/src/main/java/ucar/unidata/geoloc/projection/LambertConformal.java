@@ -179,6 +179,22 @@ public class LambertConformal extends ProjectionImpl {
     }
   }
 
+    public double getN() {
+        return n;
+    }
+
+    public double getF() {
+        return F;
+    }
+
+    public double getRho() {
+        return rho;
+    }
+
+    public double getEarth_radius() {
+        return earth_radius;
+    }
+
   /**
    * Precalculate some stuff
    */
