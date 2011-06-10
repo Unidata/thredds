@@ -52,7 +52,8 @@ import java.util.*;
 
 public class NcDDS extends ServerDDS {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NcDDS.class);
-  static private String DODScharset = "_!~*'-\"";
+  static private String DODScharset = "_!~*'-\""; // Chars (other than alphanum)
+                                                  // that are legal in opendap names
 
   //private HashMap<String, BaseType> coordHash = new HashMap<String, BaseType>(50); // non grid coordiinate variables
   // Track various subsets of the variables

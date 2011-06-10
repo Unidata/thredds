@@ -127,9 +127,11 @@ public class NcDAS extends opendap.dap.DAS {
 
     //if (v.getAttributes().size() == 0) return; // LOOK DAP 2 say must have empty
 
-      //String name = NcDDS.escapeName(v.getShortName());
-      String name = (v.getShortName());
-    opendap.dap.AttributeTable table;
+     // The variable names as taken from the variable,
+     // are not escaped, so we need to make sure that happens.
+     String name = NcDDS.escapeName(v.getShortName());
+
+     opendap.dap.AttributeTable table;
 
     if (parentTable == null) {
       table = new opendap.dap.AttributeTable(name);
@@ -163,7 +165,7 @@ public class NcDAS extends opendap.dap.DAS {
       int dods_type = DODSNetcdfFile.convertToDODSType(att.getDataType(), false);
 
       try {
-          // IT turns out that the attribute names as taken from the variable,
+          // The attribute names as taken from the variable,
           // are not escaped, so we need to make sure that happens.
           String attName = NcDDS.escapeName(att.getName());
         if (att.isString()) {

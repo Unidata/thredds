@@ -231,7 +231,9 @@ public class Alias extends Attribute
      * @return the name of the attribute aliased to.
      */
     public String getAliasedToAttributeField() {
-        return EscapeStrings.id2www(aliasedToAttributeNamed);
+        // Assume that aliased attribute name if escaped
+        //return EscapeStrings.id2www(aliasedToAttributeNamed);
+        return (aliasedToAttributeNamed);
     }
 
     /**

@@ -228,11 +228,10 @@ public class DAPNode implements Cloneable, Serializable
      */
     public  void setClearName(String n) {
         _name = n;
-        _nameEncoded = EscapeStrings.id2www(n);
+       _nameEncoded = EscapeStrings.id2www(n);
         if(_attr != null) _attr.setClearName(n);
         if(_attrTbl !=  null) _attrTbl.setClearName(n);
     }
-
 
     /**
      *  Clone interface. Note that in order to do this properly,
