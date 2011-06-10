@@ -64,6 +64,7 @@
 
     <catalogRef xlink:title="University of Twente (Nederland) THREDDS catalogs" xlink:href="http://thredds.itc.nl:8180/thredds/catalog.html" name="" />
     <catalogRef xlink:title="USGS Woods Hole Science Center THREDDS catalogs" xlink:href="http://coast-enviro.er.usgs.gov/thredds/catalog.xml" name="" />
+    <catalogRef xlink:title="Tasmanian Partnerships for Advanced Computing (TPAC) THREDDS catalogs" xlink:href="http://portal.sf.utas.edu.au/thredds/catalog.html" name="" />
 
     <!-- catalogRef xlink:title="Waseda Research Lab at University of Tokyo" xlink:href=" http://133.11.64.144/thredds/catalog.xml" name=""/ -->
 
