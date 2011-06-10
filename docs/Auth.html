@@ -1,0 +1,130 @@
+<html>
+<head>
+<title>Auth</title>
+</head>
+<body>
+<center>
+<h1>Authorization and Session Control<br>
+for netCDF Opendap</h1>
+<h2>Dennis Heimbigner<br>
+Unidata<br>
+Draft 1: June 9, 2011</h2>
+</center>
+
+<h2><a name="HTTPSession">HTTPSession and Session Semantics</a></h2>
+Along with the <a href="#HTTPAuthStore">authorization support</a>,
+support is now provided for a form of <i>session</i>
+semantics for Java Opendap.
+As discussed below, the support is a bit "loose" in order to support
+handling of redirection, which in turn is needed to support some kinds
+of authorization.
+<p>
+A session is an instance of the class <i>HTTPSession</i>.
+It encapsulates access to a specific dataset.
+This means that once a session is specified, it is tied permanently
+to a specific principal, host, port, and dataset path.
+The term "principal" is another name for user id.
+<p>
+It is important to note that Session objects do NOT
+correspond with the HttpClient objects of the Apache
+httpclient library. Sessions encapulate an instance of
+an HttpClient, but Sessions also wrap and control
+httpclient library methods such as GetMethod via the class
+<i>HTTPMethod</i>. This is so
+it can ensure that the Session - dataset correspondence
+is not violated.
+
+<h2><a name="HTTPAuthStore">HTTPAuthStore</a></h2>
+Access rights are stored in a &ldquo;database&rdquo that is globally accessible to all code within a single operating system process and is independent of any threading.
+<p>
+This database is kept as class level fields in the class <i>HTTPAuthStore</i>.
+The columns of this database are as follows.
+<ol>
+<li> Principal (aka user id).
+<li> Hostname
+<li> Port
+<li> Realm
+<li> Scheme
+<li> Credentials
+</ol>
+The term "realm" is used in the security community, but
+does not seem to have a well defined meaning. So here, it
+is interpreted to mean the file part of a url. For example,
+given the url "http://motherlode.ucar.edu/thredds",
+the realm would be "thredds".
+<p>
+The scheme is a tag indicating the kind of authorization
+to use. Currently, the legal values are as follows.
+<ul>
+<li> BASIC
+<li> DIGEST
+<li> KEYSTORE
+<li> PROXY
+</ul>
+BASIC and DIGEST operate essentially the same and require as credentials
+a principal and a password. The KEYSTORE scheme is to accomodata client
+authentication in an https connection. It requires information
+about a keystore and truststore and their associated passwords.
+The PROXY scheme requires as credentials a principal and password.
+<p>
+The Credentials field is assumed to store an instance of
+<a href="#HTTPCreds">HTTPCreds</a>.
+
+<h2><a name="HTTPCreds">HTTPCreds</a></h2>
+<i>HTTPCreds</i> is a class intended to hold arbitrary credentials information.
+In keeping with the approach used in Apache httpclient code, HTTPCreds
+is primarily a database of (key,value) pairs. Where the key is a string
+and the value is an arbitrary object.
+The specific contents depends on what type of authorization is being
+supported.
+
+<h3>Credential Information for: BASIC, DIGEST, and PROXY</h3>
+For these schemes, which are password based, the HTTPCreds instance
+will store the following.
+<ul>
+<li> The actual credentials (user+password)
+     using the key tag HTTPCreds.CREDENTIALS
+     and the value which is an instance of the class <i>Credentials</i>.
+<li> An instance of <i>CredentialsProvider</i>, stored using the key tag
+     HTTPCreds.CREDENTIALSPROVIDER. At the appropriate time,
+     the credentials provider will be invokd to obtain the necessary
+     credentials. The resulting credentials will then be cached
+     as in #1 above.
+</ul>
+If both a set of credentials and a credential provider are provided, then
+the credentials will take precedence.
+
+<h3>Credential Information for: KEYSTORE</h3>
+For the keystore scheme, the HTTPCreds object must contain
+keys identifying the following items of information.
+<table border=1>
+<tr valign=center><th>Key<th>Value<th>Description
+<tr valign=top><td>KEYSTORE<td>String
+<td>An absolute file path pointing to the keystore file.
+<tr valign=top><td>KEYSTOREPASSWORD<td>String
+<td>The password for the specified keystore
+<tr valign=top><td>TRUSTSTORE<td>String
+<td>(Optional) An absolute file path pointing to the truststore file.
+<tr valign=top><td>TRUSTSTOREPASSWORD<td>String
+<td>The password for the truststore (if specified)
+</table>
+<p>
+If the truststore is not specified then essentially any certificate provided
+by the server will be accepted (including, specifically,
+self-signed certificates).
+
+<h2>Appendices: Session and Authorization APIs</h2>
+
+<h3><a name"HTTPSession.API">HTTPSession API</a></h3>
+
+
+
+<h3><a name"HTTPAuthStore.API">HTTPAuthStore API</a></h3>
+<h3><a name"HTTPCreds.API">HTTPCreds API</a></h3>
+
+
+
+</body>
+</html>
+
+
