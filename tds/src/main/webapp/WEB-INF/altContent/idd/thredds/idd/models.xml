@@ -1226,6 +1226,54 @@
       </featureCollection -->
     </dataset>
 
+    <dataset ID="FMRC/NCEP/SST" name="NCEP Sea Surface Temperature">
+      <metadata inherited="true">
+        <documentation type="summary">NCEP Sea Surface Temperature (SST): US National Weather Service gridded forecasts of sensible weather elements. </documentation>
+        <documentation xlink:href="http://en.wikipedia.org/wiki/Sea_surface_temperature" xlink:title="Wikipedia" />
+        <dataFormat>GRIB-1</dataFormat>
+      </metadata>
+
+      <featureCollection name="NCEP-SST-Global_2x2deg" featureType="FMRC" harvest="true" path="fmrc/NCEP/SST/Global_2x2deg">
+         <metadata inherited="true">
+           <dataFormat>Netcdf</dataFormat>
+           <documentation type="summary">
+             91 by 181 points. Models are run daily at 0Z.
+             Forecasts at 0 hour.
+           </documentation>
+         </metadata>
+
+         <collection
+             spec="/data/ldm/pub/decoded/netcdf/grid/NCEP/SST/Global_2x2deg/SST_Global_2x2deg_#yyyyMMdd_HHmm#.nc"
+             name="SST_Global_2x2deg"
+             recheckAfter="15 min"
+             olderThan="5 min"/>
+         <manage deleteAfter="45 days" check="0 0 3 * * ? *" />
+         <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
+         <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
+         <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
+       </featureCollection>
+
+      <featureCollection name="NCEP-SST-Global_5x2p5deg" featureType="FMRC" harvest="true" path="fmrc/NCEP/SST/Global_5x2p5deg">
+         <metadata inherited="true">
+           <dataFormat>Netcdf</dataFormat>
+           <documentation type="summary">
+             73 by 73 points. Models are run daily at 0Z.
+             Forecasts at 0 hour.
+           </documentation>
+         </metadata>
+
+         <collection
+             spec="/data/ldm/pub/decoded/netcdf/grid/NCEP/SST/Global_5x2p5deg/SST_Global_5x2p5deg_#yyyyMMdd_HHmm#.nc"
+             name="SST_Global_5x2p5deg"
+             recheckAfter="15 min"
+             olderThan="5 min"/>
+         <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>
+         <protoDataset choice="Penultimate" change="0 2 3 * * ? *" />
+         <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets" />
+       </featureCollection>
+
+    </dataset>
+
     <dataset ID="FMRC/NCEP/WW3" name="NCEP Wave Watch III">
       <metadata inherited="true">
         <documentation type="summary">NCEP Wave Watch III (WW3): US National Weather Service gridded forecasts of sensible weather elements. </documentation>
