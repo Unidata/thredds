@@ -104,8 +104,8 @@ public class AggregationExisting extends AggregationOuterDimension {
     for (Variable v : typical.getVariables()) {
       if (v.getRank() < 1)
         continue;
-      Dimension d = v.getDimension(0);
-      if (!dimName.equals(d.getName()))
+      String outerName = v.getDimension(0).makeFullName();
+      if (!dimName.equals(outerName))
         continue;
 
       Group newGroup =  DatasetConstructor.findGroup(ncDataset, v.getParentGroup());
@@ -122,7 +122,7 @@ public class AggregationExisting extends AggregationOuterDimension {
     }
 
     // handle the agg coordinate variable
-    VariableDS joinAggCoord = (VariableDS) ncDataset.getRootGroup().findVariable(dimName);
+    VariableDS joinAggCoord = (VariableDS) ncDataset.findVariable(dimName); // long name of dimension, coord variable
     if ((joinAggCoord == null) && (type == Type.joinExisting)) {
       typicalDataset.close( typical); // clean up
       throw new IllegalArgumentException("No existing coordinate variable for joinExisting on "+getLocation());

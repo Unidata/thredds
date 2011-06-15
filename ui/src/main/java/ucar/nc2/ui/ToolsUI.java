@@ -36,6 +36,7 @@ package ucar.nc2.ui;
 import opendap.dap.http.HTTPSession;
 import thredds.inventory.FeatureCollectionConfig;
 import ucar.nc2.dt.grid.NetcdfCFWriter;
+import ucar.nc2.stream.CdmRemote;
 import ucar.nc2.stream.NcStreamWriter;
 import ucar.nc2.ui.gis.shapefile.ShapeFileBean;
 import ucar.nc2.ui.gis.worldmap.WorldMapBean;
@@ -788,6 +789,7 @@ public class ToolsUI extends JPanel {
     ucar.nc2.iosp.hdf5.H5iosp.setDebugFlags(debugFlags);
     ucar.nc2.ncml.NcMLReader.setDebugFlags(debugFlags);
     ucar.nc2.dods.DODSNetcdfFile.setDebugFlags(debugFlags);
+    ucar.nc2.stream.CdmRemote.setDebugFlags(debugFlags);
     ucar.nc2.iosp.grib.GribGridServiceProvider.setDebugFlags(debugFlags);
     ucar.nc2.thredds.ThreddsDataFactory.setDebugFlags(debugFlags);
 

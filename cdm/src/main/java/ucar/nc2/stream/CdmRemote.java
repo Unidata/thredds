@@ -59,6 +59,10 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
   static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CdmRemote.class);
   static private boolean showRequest = true;
 
+  static public void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
+    showRequest = debugFlag.isSet("CdmRemote/showRequest");
+  }
+
   /**
    * Create the canonical form of the URL.
    * If the urlName starts with "http:", change it to start with "dods:", otherwise

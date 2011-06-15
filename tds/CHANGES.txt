@@ -5,9 +5,13 @@ Build Name = @BUILD.NAME@
 
 Release Details 4.2:
  4.2.8 (2011-xx-xx)
-  FmrcController now uses seperate xslt for point datasets
+  upgrade to NcISO 1.2
+  OPeNDAP: escape "./"
+  CdmRemoteController was looking for ":" instead of "," separating variable names
+  FmrcController now uses separate xslt for point datasets
   motherlode PointCollectionFeatures are Points, except for metars
   Allow setting size of BDB cache
+  Remove InvCatalogFactory reference from InvCatalog
   Allow static catalogs to not be cached.
   Remove Upper Air Point Data - its station profile data - delay until 4.3
 

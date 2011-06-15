@@ -75,19 +75,31 @@ public class TestTdsDodsServer extends TestCase {
     }
   }
 
-  public void testGridArray() {
-    String array = dataset + ".asc?Visibility.Visibility[0:1:0][0:1:0][0:1:0]";
-    System.out.println(" request= "+array);
-    try {
-      String result = IO.readURLcontentsWithException(array);
-      System.out.println(" result= "+result);
-    } catch (IOException ioe) {
-      System.out.printf("FAIL %s%n", ioe.getMessage());
-      assert false;
-    }
-  }
+  public void testGridArrayAsc() {
+     String array = dataset + ".asc?Visibility.Visibility[0:1:0][0:1:0][0:1:0]";
+     System.out.println(" request= "+array);
+     try {
+       String result = IO.readURLcontentsWithException(array);
+       System.out.println(" result= "+result);
+     } catch (IOException ioe) {
+       System.out.printf("FAIL %s%n", ioe.getMessage());
+       assert false;
+     }
+   }
 
-  public void testSingleDataset() throws IOException {
+  public void testGridArray() {
+     String array = dataset + ".dods?Visibility.Visibility[0:1:0][0:1:0][0:1:0]";
+     System.out.println(" request= "+array);
+     try {
+       String result = IO.readURLcontentsWithException(array);
+       System.out.println(" result= "+result);
+     } catch (IOException ioe) {
+       System.out.printf("FAIL %s%n", ioe.getMessage());
+       assert false;
+     }
+   }
+
+   public void testSingleDataset() throws IOException {
     InvCatalogImpl cat = TestTdsLocal.open(null);
 
     InvDataset ds = cat.findDatasetByID("testDataset");

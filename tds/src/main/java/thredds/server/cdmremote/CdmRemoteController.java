@@ -183,7 +183,7 @@ public class CdmRemoteController extends AbstractCommandController implements La
             return null;
           }
           query = URLDecoder.decode(query, "UTF-8");
-          StringTokenizer stoke = new StringTokenizer(query, ";"); // need UTF/%decode
+          StringTokenizer stoke = new StringTokenizer(query, ","); // need UTF/%decode
           while (stoke.hasMoreTokens()) {
             ParsedSectionSpec cer = ParsedSectionSpec.parseVariableSection(ncfile, stoke.nextToken());
             size += ncWriter.sendData(cer.v, cer.section, wbc);

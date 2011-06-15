@@ -646,7 +646,7 @@ public abstract class AggregationOuterDimension extends Aggregation implements P
           ncd = acquireFile(cancelTask);
           if ((cancelTask != null) && cancelTask.isCancel()) return 0;
 
-          Dimension d = ncd.getRootGroup().findDimension(dimName);
+          Dimension d = ncd.findDimension(dimName); // long name of dimension
           if (d != null)
             ncoord = d.getLength();
           else

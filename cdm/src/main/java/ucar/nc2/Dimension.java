@@ -112,6 +112,11 @@ public class Dimension implements Comparable {
    */
   public Group getGroup() { return g; }
 
+  public String makeFullName() {
+    if (((g == null) || g.isRoot())) return getName();
+    return g.getName() +"/" + this.getName();
+  }
+
   /**
    * Instances which have same contents are equal.
    * Careful!! this is not object identity !!
