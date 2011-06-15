@@ -20,7 +20,7 @@
                        xlink:title="COAPS FSU"/>
       </metadata>
 
-      <featureCollection name="NCEP-RTMA-CONUS_2p5km" featureType="FMRC" harvest="true" path="fmrc/NCEP/RTMA/CONUS_2p5km">
+      <featureCollection name="NCEP-RTMA-CONUS_2p5km" featureType="FMRC" harvest="true" path="fmrc/idv/NCEP/RTMA/CONUS_2p5km">
         <metadata inherited="true">
           <dataFormat>GRIB-2</dataFormat>
            <documentation type="summary">
