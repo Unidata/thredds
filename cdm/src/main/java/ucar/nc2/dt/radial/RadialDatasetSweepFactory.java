@@ -66,6 +66,8 @@ public class RadialDatasetSweepFactory {
         return new LevelII2Dataset( ncd);
       if (format.equals("Level3/NIDS") )
         return new Nids2Dataset( ncd);
+    } else if ((null != convention) && convention.startsWith("CF/Radial")) {
+        return new CFnetCDF2Dataset( ncd);
     }
 
     return null;
