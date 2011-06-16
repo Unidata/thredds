@@ -527,7 +527,7 @@ public class CFnetCDF2Dataset extends RadialDatasetSweepAdapter implements Typed
          * @return _more_
          */
         public int getNumRadials() {
-            return 0;
+            return azimuth.length;
         }
 
         // a 3D array nsweep * nradials * ngates
@@ -543,72 +543,50 @@ public class CFnetCDF2Dataset extends RadialDatasetSweepAdapter implements Typed
         public float[] readAllData() throws IOException {
             Array    allData;
             Array    hrData    = null;
-            Sweep    spn       = (Sweep) sweeps.get(sweeps.size() - 1);
+            Sweep    spn       = (Sweep) sweeps.get(0);
             Variable v         = spn.getsweepVar();
-            float    vGateSize = spn.getGateSize();
+
+            int minRadial = getMinRadialNumber();
+            int minRadials = minRadial * nsweeps;
+            int radials = getNumRadials();
+            int gates = range.length;
             try {
                 allData = v.read();
             } catch (IOException e) {
                 throw new IOException(e.getMessage());
             }
-            if ( !isHighResolution(ds)) {
-                return (float[]) allData.get1DJavaArray(float.class);
+            if(minRadials == radials) {
+                return (float []) allData.get1DJavaArray(float.class);
             } else {
-                Sweep    sp0        = (Sweep) sweeps.get(0);
-                Variable v0         = sp0.getsweepVar();
-                float    v0GateSize = sp0.getGateSize();
-                int[]    stride;
 
-                if (v0.getName().startsWith("Reflect")) {
-                    stride = new int[] { 1, 2, 4 };
-                } else {
-                    stride = new int[] { 1, 2, 1 };
-                }
+                float[] fa0 = (float[]) allData.get1DJavaArray(float.class);
+                float[] fa  = new float[minRadials*gates*nsweeps];
+                int pos = 0;
+                for (int i = 0; i < nsweeps; i++) {
 
-                int[] shape1 = v.getShape();
-                int[] shape2 = v0.getShape();
-                int   shp1   = (shape1[1] * stride[1] > shape2[1])
-                               ? shape2[1]
-                               : shape1[1] * stride[1];
-
-
-                int   shp2   = (shape1[2] * stride[2] > shape2[2])
-                               ? shape2[2]
-                               : shape1[2] * stride[2];
-
-                int[] shape  = { shape2[0], shp1, shp2 };
-                // this dual pole  or new high res
-                // where the lower and upper has same gate size, no stride needed
-                if ((shape2[2] == shape1[2]) || (v0GateSize == vGateSize)) {
-                    stride   = new int[] { 1, 2, 1 };
-                    shape[2] = shape1[2];
-                }
-
-                int[]   origin  = { 0, 0, 0 };
-                Section section = null;
-
-                try {
-                    section = new Section(origin, shape, stride);
-                } catch (ucar.ma2.InvalidRangeException e) {
-                    e.printStackTrace();
-                }
-
-                try {
-                    hrData = v0.read(section);
-                } catch (ucar.ma2.InvalidRangeException e) {
-                    e.printStackTrace();
-                }
-                // now append hrData and allData
-                float[] fa1 = (float[]) hrData.get1DJavaArray(float.class);
-                float[] fa2 = (float[]) allData.get1DJavaArray(float.class);
-                float[] fa  = new float[fa1.length + fa2.length];
-                System.arraycopy(fa1, 0, fa, 0, fa1.length);
-                System.arraycopy(fa2, 0, fa, fa1.length, fa2.length);
-
+                    int startIdx = rayStartIdx[i];
+                   // int endIdx = rayEndIdx[i];
+                    int len = (minRadial) * gates;
+                    System.arraycopy(fa0, startIdx*gates, fa, pos, len);
+                    pos = pos + len;
+                }                
                 return fa;
             }
         }
 
+
+        public int getMinRadialNumber(){
+            int minRadialNumber = 1000;
+            for (int i = 0; i < nsweeps; i++) {
+                Sweep swp = (Sweep)this.sweeps.get(i);
+                int radialNumber = swp.getRadialNumber();
+                if(radialNumber < minRadialNumber){
+                    minRadialNumber = radialNumber;
+                }
+            }
+
+            return minRadialNumber;
+        }
         /**
          * _more_
          */
@@ -641,7 +619,7 @@ public class CFnetCDF2Dataset extends RadialDatasetSweepAdapter implements Typed
             int nrays, ngates;
 
             /** _more_          */
-            int startIdx, endIdx;
+            public int startIdx, endIdx;
 
             /** _more_          */
             int sweepno;
@@ -671,6 +649,13 @@ public class CFnetCDF2Dataset extends RadialDatasetSweepAdapter implements Typed
 
             }
 
+            public int getStartIdx(){
+                return startIdx;
+            }
+
+            public int getEndIdx(){
+                return endIdx;
+            }
             /**
              * _more_
              *
@@ -693,7 +678,7 @@ public class CFnetCDF2Dataset extends RadialDatasetSweepAdapter implements Typed
                 return sweepData();
             }
 
-            /* read from the radial variable */
+
 
             /**
              * _more_
@@ -1138,11 +1123,9 @@ public class CFnetCDF2Dataset extends RadialDatasetSweepAdapter implements Typed
             throws Exception, IOException, InstantiationException,
                    IllegalAccessException {
         // String fileIn = "/home/yuanho/Download/KCLX_20091019_2021";
-        String fileIn =
-            "C:/Users/yuanho/Downloads/Level2_KCBW_20110307_2351.ar2v";
-        //RadialDatasetSweepFactory datasetFactory = new RadialDatasetSweepFactory();
-        //RadialDatasetSweep rds = datasetFactory.open(fileIn, null);
-        //ucar.unidata.util.Trace.call1("LevelII2Dataset:main dataset");
+        String fileIn = "C:/Users/yuanho/Desktop/idvData/cfrad.20080604_002217_000_SPOL_v36_SUR.nc";
+           // "C:/Users/yuanho/Downloads/Level2_KCBW_20110307_2351.ar2v";
+
         RadialDatasetSweep rds =
             (RadialDatasetSweep) TypedDatasetFactory.open(FeatureType.RADIAL,
                 fileIn, null, new StringBuilder());
@@ -1158,7 +1141,7 @@ public class CFnetCDF2Dataset extends RadialDatasetSweepAdapter implements Typed
         List rvars = rds.getDataVariables();
         RadialDatasetSweep.RadialVariable vDM =
             (RadialDatasetSweep.RadialVariable) rds.getDataVariable(
-                "Reflectivity");
+                "DBZ");
         float[] adata = vDM.readAllData();
         testRadialVariable(vDM);
         for (int i = 0; i < rvars.size(); i++) {
