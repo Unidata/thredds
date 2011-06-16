@@ -62,6 +62,7 @@ public class RadialDatasetStandardFactory implements FeatureDatasetFactory {
     registerFactory(ucar.nc2.dt.radial.LevelII2Dataset.class);
     registerFactory(ucar.nc2.dt.radial.Nids2Dataset.class);
     registerFactory(ucar.nc2.dt.radial.UF2Dataset.class);
+    registerFactory(ucar.nc2.dt.radial.CFnetCDF2Dataset.class);
   }
 
   static void registerFactory(Class c) {
