@@ -88,6 +88,8 @@ dl {margin: 10px 5px 5px 15px;}
         &lt;collection<br />            spec=&quot;/data/ldm/pub/native/grid/NCEP/SREF/CONUS_40km/pgrb_biasc/.*grib2$&quot;<br />            name=&quot;SREF_CONUS_40km_ensprod_biasc&quot;<br />            dateFormatMark=&quot;yyyyMMdd_HHmm#.grib2#&quot;<br />            timePartition=&quot;day&quot;<br />            olderThan=&quot;5 min&quot;/&gt;<br />
  </pre>
 <p>&nbsp;</p>
+<p>cannot mix ensembles and vertical levels across the partition.</p>
+<p> for each variable, create union of times: for each time track (value, partition, localIndex). merge time coords with same {value}. store {partition, localIndex} cmmon case is that variables will share  {partition, localIndex}, but is it worth merging?</p>
 <p>&nbsp;</p>
 <hr width="100%" />
 <address>

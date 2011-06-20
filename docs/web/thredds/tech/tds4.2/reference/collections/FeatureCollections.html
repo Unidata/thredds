@@ -114,6 +114,7 @@ The XML Schema:
   <li><strong>dateFormatMark</strong>: the collection specification string can only extract dates from the file name, as opposed to the file path, which includes all of the parent directory names. Use the <em>dateFormatMark</em> in order to extract the date from the full path.</li>
   <li><strong>timePartition</strong>: experimental, not complete yet.</li>
 </ol>
+<p>Feature Collections  need to know how to sort the collection of files, so its recommended that you have a date in the filename, and to specify a date extractor in the specification string or include a dateFormatMark attribute. Otherwise, files will be sorted by filename.</p>
 <h3>protoDataset element</h3>
 <p>Provides control over the choice of the <strong><em>prototype dataset</em></strong> for the collection. The protype dataset is used to populate the metadata for the feature collection.</p>
 <pre>&lt;protoDataset <strong>choice</strong>=&quot;Penultimate&quot; param=&quot;0&quot; <strong>change</strong>=&quot;expr&quot;&gt;
@@ -153,6 +154,12 @@ The XML Schema:
     </ul>
   </li>
   <li><strong>param</strong>= (not implemented) used only with choice=&quot;Run&quot;. Names the run to use,  in hours since 0Z. For example,  choice=&quot;Run&quot; param=&quot;0&quot; means to use the latest 0Z dataset run</li>
+</ol>
+<p>The choice of the protoDataset matters when the datasets are not <em>homogenous</em>:</p>
+<ol>
+  <li>Global and variable attributes are taken from the prototype dataset.</li>
+  <li>If a variable appears in the prototype dataset, it will appear in the feature collection dataset. If it doesnt appear in other datasets, it will have missing data for those times.</li>
+  <li>If a variable does not appears in the prototype dataset, it will not appear in the feature collection dataset, even if it appeats in other datasets.</li>
 </ol>
 <h3>update element</h3>
 <p>For collections that change, the <strong>update</strong> element provides options to update the collection in a background task. New collections are built in the background, so that requests do not wait.</p>

@@ -65,7 +65,7 @@ public class UTM extends AbstractCoordTransBuilder {
     double axis = 0.0, f = 0.0;
     if (null != (a = ctv.findAttribute( "semimajor_axis")))
       axis = a.getNumericValue().doubleValue();
-    if (null != (a = ctv.findAttribute( "inverse_flattening ")))
+    if (null != (a = ctv.findAttribute( "inverse_flattening")))
       f = a.getNumericValue().doubleValue();
 
     // double a, double f, int zone, boolean isNorth
