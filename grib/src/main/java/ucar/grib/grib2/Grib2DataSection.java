@@ -948,6 +948,7 @@ public final class Grib2DataSection {
       return;
     }
     scanMode = gds.getGdsVars().getScanMode();
+    Xlength = gds.getGdsVars().getNx();
     scanningModeCheck();
   }  // end jpeg2000Unpacking
 
