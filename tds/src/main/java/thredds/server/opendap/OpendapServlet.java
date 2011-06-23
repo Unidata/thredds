@@ -207,8 +207,10 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
         String dataSet = rs.getDataSet();
         String requestSuffix = rs.getRequestSuffix();
 
-        // The query string will come to us in unencoded form
+        // The query string will come to us in encoded form
+        // (see EscapeStrings.escapeDAPCE).
         String query = request.getQueryString();
+        query = EscapeStrings.unEscapeDAPCE(query);
         log.debug("doGet query={}", query);
 
         if ((dataSet == null) || dataSet.equals("/") || dataSet.equals("")) {

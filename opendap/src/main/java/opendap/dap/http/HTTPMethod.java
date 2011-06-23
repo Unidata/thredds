@@ -28,7 +28,7 @@ public class HTTPMethod
      HTTPSession session = null;
      HttpMethodBase method = null; // Current method
      String uri = null;
-     String uriEscaped = null;
+     String query = null;
      List<Header> headers = new ArrayList<Header>();
      HashMap<String,Object> params = new HashMap<String,Object>();
     HttpState context = null;
@@ -46,19 +46,16 @@ public class HTTPMethod
             throw new HTTPException("newMethod: no uri specified");
         this.session = session;
         this.uri = uri;
-        // Break off the query part
+        // Break off the query part and encode
         int i = uri.indexOf('?');
         if(i >= 0) {
-            String query = uri.substring(i+1,uri.length());
-            try {
+            query = uri.substring(i+1,uri.length());
+            /*try {
                 query = URIUtil.encodeQuery(query);
             } catch (URIException ue) {
                 throw new HTTPException(ue);
-            }
-            uriEscaped = uri.substring(0,i) + '?' + query;
-        }  else
-            this.uriEscaped = uri;
-
+            }  */
+        }
         this.methodclass = m;
         switch (this.methodclass) {
         case Put:

@@ -341,6 +341,52 @@ public class EscapeStrings {
            return s;
        }
 
+    /**
+     * Define the DEFINITIVE opendap constraint expression escape function.
+     * This is required because something like ?x[1] requires specially escaping
+     * the brackets and any interior colons.
+     * For convenience, this function can take a whole url as its argument
+     * and will only encode the contraint expression.
+     * @param urlorce The expression to modify.
+     * @return The escaped expression.
+     */
+    public static String escapeDAPCE(String urlorce)
+    {
+       String s = urlorce;
+       int index = urlorce.indexOf('?');
+       if(index >= 0) {
+           String ce = s.substring(index+1,s.length());
+           String base = s.substring(0,index);
+           try {
+               ce = escapeString(ce, _allowableInURI_CE, _URIEscape);
+           } catch(Exception e) {}
+           s = base + '?' + ce;
+       }
+       return s;
+    }
+
+    /**
+     * Define the DEFINITIVE opendap constraint expression unescape function.
+     * For convenience, this function can take a whole url as its argument
+     * and will only unencode the contraint expression.
+     * @param urlorce The expression to unescape.
+     * @return The unescaped expression.
+     */
+     public static String unEscapeDAPCE(String urlorce)
+     {
+       String s = urlorce;
+       int index = urlorce.indexOf('?');
+       if(index >= 0) {
+           String ce = s.substring(index+1,s.length());
+           String base = s.substring(0,index);
+           try {
+               ce = unescapeString(ce, _URIEscape, "");
+           } catch(Exception e) {}
+           s = base + '?' + ce;
+       }
+       return s;
+     }
+
     public static void main(String[] args) throws Exception {
 
         if (args.length > 0) {

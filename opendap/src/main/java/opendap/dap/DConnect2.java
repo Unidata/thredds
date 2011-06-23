@@ -49,6 +49,7 @@ import opendap.dap.http.*;
 import java.util.zip.InflaterInputStream;
 import java.util.zip.GZIPInputStream;
 
+import opendap.util.EscapeStrings;
 import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.auth.*;
 import org.apache.commons.httpclient.util.URIUtil;
@@ -248,7 +249,12 @@ public class DConnect2 {
 
     try {
 
-      method = _session.newMethodGet(urlString);
+      // Break off the constraint expression and encode using EscapeStrings.encodeDAPCE
+      String encodedurl = urlString;
+      if(urlString.indexOf('?') >= 0)
+          encodedurl = EscapeStrings.escapeDAPCE(encodedurl);
+
+      method = _session.newMethodGet(encodedurl);
 
       if (acceptCompress)
         method.setRequestHeader("Accept-Encoding", "deflate,gzip");
