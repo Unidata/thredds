@@ -48,6 +48,7 @@ import java.io.*;
 import opendap.dap.parsers.DDSXMLParser;
 import opendap.dap.parsers.*;
 import opendap.util.Debug;
+import opendap.util.EscapeStrings;
 import org.jdom.Document;
 
 /**
@@ -376,6 +377,7 @@ public class DDS extends DStructure
     {
         DapParser parser = new DapParser(factory);
 	int result = parser.ddsparse(stream,this);
+
 	if(result == Dapparse.DapERR)
 	    throw parser.getERR();
 	return (result == Dapparse.DapDDS ? true : false);
@@ -961,10 +963,12 @@ public class DDS extends DStructure
             else
                 return null;
 
+            // The name is DAP encoded, the variable name is not, but its bt is;
+            // so compare directly
             while (e.hasMoreElements()) {
-                BaseType v = (BaseType) e.nextElement();
-                if (v.getName().equals(name)) {
-                    return v;
+                BaseType bt = (BaseType) e.nextElement();
+                if (bt.getName().equals(name)) {
+                    return bt;
                 }
             }
 

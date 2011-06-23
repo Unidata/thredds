@@ -247,9 +247,12 @@ private SSLContext createSSLContext()  throws HTTPException
             //trfactory.init(truststore, trustpassword.toCharArray());
             //trustmanagers = trfactory.getTrustManagers();
             trustmanagers = new TrustManager[]{new EasyX509TrustManager(truststore)};
+        }  else  {
+            trustmanagers = new TrustManager[] {new EasyX509TrustManager(null)};
         }
         SSLContext sslcontext = SSLContext.getInstance("SSL");
         sslcontext.init(keymanagers, trustmanagers, null);
+
         return sslcontext;
 
     } catch (NoSuchAlgorithmException e) {

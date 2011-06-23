@@ -94,7 +94,10 @@ class Celex implements Lexer, ExprParserConstants
 
     /* Get/Set */
 
-    void setStream(StringReader stream) {this.stream = stream;}
+    void setStream(StringReader stream)
+    {
+        this.stream = stream;
+    }
 
 
     public String getInput()

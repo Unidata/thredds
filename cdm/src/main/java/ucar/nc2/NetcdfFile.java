@@ -32,6 +32,7 @@
  */
 package ucar.nc2;
 
+import opendap.util.EscapeStrings;
 import ucar.ma2.*;
 import ucar.unidata.io.UncompressInputStream;
 import ucar.unidata.io.InMemoryRandomAccessFile;
@@ -255,7 +256,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
    * @return escaped version of it
    */
   public static String escapeName(String vname) {
-    return StringUtil.escape2(vname, NetcdfFile.reserved);
+      return StringUtil.escape2(vname, NetcdfFile.reserved);
   }
 
   /**

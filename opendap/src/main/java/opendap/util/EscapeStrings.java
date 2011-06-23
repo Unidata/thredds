@@ -122,6 +122,15 @@ public class EscapeStrings {
     private static String _allowableInURI_CE = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-+_\\,"; // plus "?
     private static char _URIEscape = '%';
 
+    // These are the DEFINITIVE set of non-alphanumeric characters that are legal
+    // in opendap identifiers
+    public static String opendap_identifier_special_characters = "_!~*’-\"";
+
+    // The complete set of legal opendap identifier characters
+    public static String opendap_identifier_characters
+        = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+          + opendap_identifier_special_characters;
+
 
     /**
      * Replace characters that are not allowed in WWW URLs using rules specific
@@ -141,7 +150,7 @@ public class EscapeStrings {
      * @param in The string in which to replace characters.
      * @return The modified identifier.
      */
-    public static String id2www_ce(String in) {
+    private static String id2www_ce(String in) {
         String s;
 
         try {
@@ -167,7 +176,7 @@ public class EscapeStrings {
      * @param esc       The escape String (typically "%" for a URI or "\" for a regular expression).
      * @return The modified identifier.
      */
-    public static String escapeString(String in, String allowable, char esc) throws Exception {
+    private static String escapeString(String in, String allowable, char esc) throws Exception {
         String out = "";
 
         if (in == null) return null;
@@ -208,7 +217,7 @@ public class EscapeStrings {
      * @param in The string in which to replace characters.
      * @return The modified identifier.
      */
-    public static String id2www(String in) {
+    private static String id2www(String in) {
         String s;
 
         try {
@@ -234,7 +243,7 @@ public class EscapeStrings {
      *               escapes except that one.
      * @return The modified string.
      */
-    public static String unescapeString(String in, char escape, String except) {
+    private static String unescapeString(String in, char escape, String except) {
         if (in == null) return null;
 
         String esc = String.valueOf(escape);
@@ -276,7 +285,7 @@ public class EscapeStrings {
      * @param in The string to modify.
      * @return The modified string.
      */
-    public static String www2id(String in) {
+    private static String www2id(String in) {
 
         return unescapeString(in, _URIEscape, "");
 
@@ -300,6 +309,37 @@ public class EscapeStrings {
 
     }
 
+    /**
+     * Define the DEFINITIVE opendap identifier escape function.
+     * @param id The identifier to modify.
+     * @return The escaped identifier.
+     */
+    public static String escapeDAPIdentifier(String id)
+    {
+       String s;
+       try {
+           s = escapeString(id, opendap_identifier_characters, _URIEscape);
+       } catch (Exception e) {
+            s = null;
+       }
+       return s;
+    }
+
+        /**
+         * Define the DEFINITIVE opendap identifier unescape function.
+         * @param id The identifier to unescape.
+         * @return The unescaped identifier.
+         */
+       public static String unEscapeDAPIdentifier(String id)
+       {
+           String s;
+           try {
+               s = unescapeString(id, _URIEscape, "");
+           } catch (Exception e) {
+                s = null;
+           }
+           return s;
+       }
 
     public static void main(String[] args) throws Exception {
 

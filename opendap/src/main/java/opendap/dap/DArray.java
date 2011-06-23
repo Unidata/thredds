@@ -248,6 +248,7 @@ public class DArray extends DVector
         }
     }
 
+
     /**
      * Given a size and a name, this function adds a dimension to the
      * array.  For example, if the <code>DArray</code> is already 10 elements
@@ -260,22 +261,6 @@ public class DArray extends DVector
      */
     public void appendDim(int size, String name) {
         DArrayDimension newDim = new DArrayDimension(size, name);
-        dimVector.addElement(newDim);
-        newDim.setContainer(this);
-    }
-
-    /**
-     * Given a size and a name, this function adds a dimension to the
-     * array.  For example, if the <code>DArray</code> is already 10 elements
-     * long, calling <code>appendDim</code> with a size of 5 will transform the
-     * array into a 10x5 matrix.  Calling it again with a size of 2 will
-     * create a 10x5x2 array, and so on.
-     *
-     * @param size the size of the desired new dimension.
-     * @param name the name of the new dimension.
-     */
-    public void appendDim(int size, String name, boolean decodeName) {
-        DArrayDimension newDim = new DArrayDimension(size, name, decodeName);
         dimVector.addElement(newDim);
         newDim.setContainer(this);        
     }

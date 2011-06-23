@@ -34,6 +34,7 @@
 
 package thredds.server.opendap;
 
+import opendap.util.EscapeStrings;
 import ucar.nc2.*;
 import ucar.nc2.dods.*;
 import ucar.ma2.DataType;
@@ -128,8 +129,8 @@ public class NcDAS extends opendap.dap.DAS {
     //if (v.getAttributes().size() == 0) return; // LOOK DAP 2 say must have empty
 
      // The variable names as taken from the variable,
-     // are not escaped, so we need to make sure that happens.
-     String name = NcDDS.escapeName(v.getShortName());
+     // are not dap escaped, so we need to make sure that happens.
+     String name = EscapeStrings.escapeDAPIdentifier(v.getShortName());
 
      opendap.dap.AttributeTable table;
 
@@ -167,7 +168,7 @@ public class NcDAS extends opendap.dap.DAS {
       try {
           // The attribute names as taken from the variable,
           // are not escaped, so we need to make sure that happens.
-          String attName = NcDDS.escapeName(att.getName());
+          String attName = EscapeStrings.escapeDAPIdentifier(att.getName());
         if (att.isString()) {
           /* FIX String value = escapeAttributeStringValues(att.getStringValue());
           table.appendAttribute(attName, dods_type, "\""+value+"\"");

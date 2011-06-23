@@ -91,18 +91,7 @@ public final class DArrayDimension extends DAPNode
      * @param name The dimension's name, or null if no name.
      */
     public DArrayDimension(int size, String name) {
-
-        this(size, name, true);
-    }
-
-    /**
-     * Construct a new DArrayDimension.
-     *
-     * @param size The size of the dimension.
-     * @param name The dimension's name, or null if no name.
-     */
-    public DArrayDimension(int size, String name, boolean decodeName) {
-        super(name,decodeName);
+        super(name);
         this.decl = new Slice(size,0,1,size-1);
     }
 

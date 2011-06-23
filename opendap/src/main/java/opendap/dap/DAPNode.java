@@ -69,7 +69,7 @@ public class DAPNode implements Cloneable, Serializable
     static final long serialVersionUID = 1;
 
     // Define a singleton value for which we can test with ==
-    static DAPNode NULLNODE = new DAPNode("null",false);
+    static DAPNode NULLNODE = new DAPNode("null");
 
 
     /**
@@ -106,26 +106,16 @@ public class DAPNode implements Cloneable, Serializable
 
     /**
      * Constructs a new <code>DAPNode</code> with name <code>n</code>.
-     *
+     * Name is assumed to always be DAP encoded
      * @param n the name of the variable.
      */
-    public DAPNode(String n) {
-        this(n, true);
-    }
-
-    /**
-     * Constructs a new <code>DAPNode</code> with name <code>n</code>.
-     *
-     * @param n the name of the variable.
-     * @param isencoded true if the name is www encoded
-     */
-    public DAPNode(String n, boolean isencoded)
+    public DAPNode(String n)
     {
         _myParent = null;
-        if (isencoded)
-           setName(n);// _name = EscapeStrings.www2id(n);
-        else
-           setClearName(n); // _name = n;
+        if(n != null && n.indexOf('%') >= 0) {
+            int x=1;
+        }
+        setName(n);// _name = EscapeStrings.www2id(n);
     }
 
     public void setProjected(boolean tf)
@@ -217,7 +207,7 @@ public class DAPNode implements Cloneable, Serializable
     public final void setName(String n)
     {
 	    _nameEncoded = n;
-        _name = EscapeStrings.www2id(n);
+        _name = EscapeStrings.unEscapeDAPIdentifier(n);
         //setClearName(EscapeStrings.www2id(n));
     }
 
@@ -228,7 +218,7 @@ public class DAPNode implements Cloneable, Serializable
      */
     public  void setClearName(String n) {
         _name = n;
-       _nameEncoded = EscapeStrings.id2www(n);
+       _nameEncoded = EscapeStrings.escapeDAPIdentifier(n);
         if(_attr != null) _attr.setClearName(n);
         if(_attrTbl !=  null) _attrTbl.setClearName(n);
     }

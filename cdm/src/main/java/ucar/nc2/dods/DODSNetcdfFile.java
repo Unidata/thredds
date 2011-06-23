@@ -32,6 +32,7 @@
  */
 package ucar.nc2.dods;
 
+import opendap.util.EscapeStrings;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.Attribute;
@@ -1028,8 +1029,9 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
     return dodsV.bt.getName();
   }
 
-  static String makeNetcdfName(String name) {
-    return StringUtil.unescape(name);
+  static String
+  makeNetcdfName(String name) {
+    return EscapeStrings.unEscapeDAPIdentifier(name);
   }
 
   /**
@@ -1219,7 +1221,8 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
       for (int i = 0; i < reqDodsVlist.size(); i++) {
         DodsV dodsV = reqDodsVlist.get(i);
         requestString.append(i == 0 ? "?" : ",");
-        requestString.append(makeDODSname(dodsV));
+        // requestString.append(makeDODSname(dodsV));
+        requestString.append(dodsV.getName());
       }
 
       try {

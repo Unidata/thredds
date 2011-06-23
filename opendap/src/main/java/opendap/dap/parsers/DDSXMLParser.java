@@ -45,6 +45,7 @@ import java.io.*;
 import java.util.List;
 import java.util.Iterator;
 
+import opendap.util.EscapeStrings;
 import org.jdom.*;
 import org.jdom.input.SAXBuilder;
 
@@ -395,7 +396,7 @@ public class DDSXMLParser {
                 int size = Integer.parseInt(e.getAttribute("size").getValue());
 
                 // add the dimension to the array.
-                da.appendDim(size, name, false);
+                da.appendDim(size, EscapeStrings.escapeDAPIdentifier(name));
             } else { // otherwise, it must be THE template element.
 
                 // Just to make sure the schema validation didn't fail (because

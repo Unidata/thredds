@@ -93,7 +93,8 @@ public class DODSVariable extends ucar.nc2.Variable {
   DODSVariable( DODSNetcdfFile dodsfile, Group parentGroup, Structure parentStructure, String dodsShortName, DArray dodsArray,
                 opendap.dap.BaseType elemType, DodsV dodsV ) {
 
-    super(dodsfile, parentGroup, parentStructure, DODSNetcdfFile.makeNetcdfName( dodsShortName));
+    // name is already properly decoded: super(dodsfile, parentGroup, parentStructure, DODSNetcdfFile.makeNetcdfName( dodsShortName));
+    super(dodsfile, parentGroup, parentStructure,dodsShortName);
     this.dodsfile = dodsfile;
     this.dodsShortName = dodsShortName;
 

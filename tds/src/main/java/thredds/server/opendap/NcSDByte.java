@@ -39,6 +39,7 @@ import opendap.Server.*;
 import java.io.IOException;
 import java.io.DataOutputStream;
 
+import opendap.util.EscapeStrings;
 import ucar.ma2.*;
 import ucar.nc2.*;
 
@@ -56,9 +57,8 @@ public class NcSDByte extends SDByte implements HasNetcdfVariable {
    * @param ncVar : the netcdf Variable
    */
   NcSDByte(Variable ncVar) {
-      //super(NcDDS.escapeName(ncVar.getShortName()));
-      super((ncVar.getShortName()));
-    this.ncVar = ncVar;
+      super(EscapeStrings.escapeDAPIdentifier(ncVar.getShortName()));
+      this.ncVar = ncVar;
   }
 
   public Variable getVariable() { return ncVar; }

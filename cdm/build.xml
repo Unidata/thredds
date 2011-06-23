@@ -419,10 +419,6 @@
     </jar>
   </target>
 
-    <target name="copyidvjar">
-     <copy file="./target/ncIdv.jar"
-            tofile="c:/Users/dmh/IdeaProjects/idv/xcheck/lib/ncIdv.jar" />
-  </target>
 
         <!-- $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$  -->
   <!-- source release -->
@@ -1056,5 +1052,11 @@
   <target name="opendap">
 	  <ant dir="${opendap.relpath}" target="thredds" inheritAll="false"/>
   </target>
+
+    <!-- temporary convenience target; do not remove -->
+    <target name="copyidvjar">
+        <copy file="./target/ncIdv.jar"
+               tofile="c:/Users/dmh/IdeaProjects/idv/trunk/lib/ncIdv.jar" />
+     </target>
 
 </project>

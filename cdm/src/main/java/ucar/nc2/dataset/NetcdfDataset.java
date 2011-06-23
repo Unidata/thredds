@@ -735,6 +735,17 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   // not sure what other opendap servers do, so fall back on check for dds
   static private ServiceType checkIfDods(HTTPSession session, String location) throws IOException {
     HTTPMethod method = null;
+    // Strip off any trailing constraints
+    if(location.indexOf('?') >= 0) {
+        location = location.substring(0,location.indexOf('?'));
+    }
+    // Strip off any trailing .dds, .das, or .dods
+    if(location.endsWith(".dds"))
+        location = location.substring(0,location.length()-".dds".length());
+    if(location.endsWith(".das"))
+      location = location.substring(0,location.length()-".das".length());
+    if(location.endsWith(".dods"))
+      location = location.substring(0,location.length()-".dods".length());
     try {
       // For some reason, the head method is not using credentials
         // method = session.newMethodHead(location + ".dds");

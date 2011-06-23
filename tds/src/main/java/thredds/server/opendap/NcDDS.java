@@ -34,6 +34,7 @@
 package thredds.server.opendap;
 
 import opendap.dap.DAPNode;
+import opendap.util.EscapeStrings;
 import ucar.nc2.*;
 import ucar.ma2.DataType;
 
@@ -76,8 +77,7 @@ public class NcDDS extends ServerDDS {
    * @param ncfile create DDS from this
    */
   public NcDDS(String name, NetcdfFile ncfile) {
-    //super(StringUtil.escape(name, ""));
-     super(name);
+     super(EscapeStrings.escapeDAPIdentifier(name));
 
     // dup the variable set
     for (Object o : ncfile.getVariables()) {
@@ -220,11 +220,13 @@ public class NcDDS extends ServerDDS {
     return new NcSDStructure(s, list);
   }
 
+  /*
   public static String escapeName(String vname) {
     // vname = StringUtil.replace(vname, '-', "_"); // LOOK Temporary workaround until opendap code fixed
     String newname = StringUtil.escape(vname, NcDDS.DODScharset);
       return newname;
   }
+  */
 
   /**
    * Returns a clone of this <code>?</code>.

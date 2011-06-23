@@ -138,7 +138,8 @@ public class ReqState {
         // convert all those special characters denoted by a % sign
         //this.CE = prepCE(myHttpRequest.getQueryString());
         String query = myHttpRequest.getQueryString();
-        this.CE = (query == null) ? "" : EscapeStrings.www2ce(query);
+        //wrong: the query has already been escaped. this.CE = (query == null) ? "" : EscapeStrings.www2ce(query);
+        this.CE = query;
 
         // If there was simply no constraint then prepCE() should have returned
         // a CE equal "", the empty string. A null return indicates an error.

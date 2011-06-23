@@ -207,10 +207,9 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
         String dataSet = rs.getDataSet();
         String requestSuffix = rs.getRequestSuffix();
 
-        // The query string will come to us in encoded form, so we need to decode it
+        // The query string will come to us in unencoded form
         String query = request.getQueryString();
         log.debug("doGet query={}", query);
-        query = EscapeStrings.unescapeString(query,'%',"");
 
         if ((dataSet == null) || dataSet.equals("/") || dataSet.equals("")) {
           doGetDIR(request, response, rs);
@@ -373,7 +372,6 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
       response.setHeader("Content-Description", "dods-dds");
 
       OutputStream out = new BufferedOutputStream(response.getOutputStream());
-
       ServerDDS myDDS = ds.getDDS();
 
       if (rs.getConstraintExpression().equals("")) { // No Constraint Expression?

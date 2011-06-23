@@ -39,6 +39,7 @@ import opendap.Server.*;
 import java.io.IOException;
 import java.io.DataOutputStream;
 
+import opendap.util.EscapeStrings;
 import ucar.ma2.*;
 import ucar.nc2.*;
 
@@ -56,8 +57,7 @@ public class NcSDUInt16 extends SDUInt16 implements HasNetcdfVariable {
    * @param v : the netcdf Variable
    */
   NcSDUInt16(Variable v) {
-      //super(NcDDS.escapeName(v.getShortName()));
-      super((v.getShortName()));
+      super(EscapeStrings.escapeDAPIdentifier(v.getShortName()));
     this.ncVar = v;
   }
 
