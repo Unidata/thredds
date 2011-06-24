@@ -124,7 +124,7 @@ public class EscapeStrings {
 
     // These are the DEFINITIVE set of non-alphanumeric characters that are legal
     // in opendap identifiers
-    public static String opendap_identifier_special_characters = "_!~*’-\"";
+    public static String opendap_identifier_special_characters = "_!~*-\"";
 
     // The complete set of legal opendap identifier characters
     public static String opendap_identifier_characters
