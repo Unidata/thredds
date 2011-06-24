@@ -175,7 +175,7 @@ The XML Schema definition for the update element:
   <li><strong><a name="trigger" id="trigger"></a>trigger</strong>= if set to &quot;allow&quot;, then external triggering will be allowed. This allows collections to be updated only when needed, by an external program (or person) sending an explicit &quot;trigger&quot; URL to the server. 
     This URL is protected by HTTPS, so you must <a href="http://www.unidata.ucar.edu/staff/caron/bufr/">enable remote access</a> for this to work.
     <ol>
-      <li>The URL is &quot;<strong>https://server:port/thredds/admin/trigger?collection=&lt;name&gt;</strong>&quot;. </li>
+      <li>The URL is &quot;<strong>https://server:port/thredds/admin/collection?trigger=true&amp;collection=&lt;name&gt;</strong>&quot;, where name is the featureCollection name.</li>
       <li>You can see a list of the FMRC datasets (and manually trigger a rescan) on the page &quot;<strong>https://server:port/thredds/admin/debug?Collections/triggerRescan</strong>&quot;.</li>
       <li> You can see what datasets are currently cached in each collection on the page &quot;<strong>https://server:port/thredds/admin/debug?Collections/showFmrcCache&quot;</strong></li>
     </ol>
