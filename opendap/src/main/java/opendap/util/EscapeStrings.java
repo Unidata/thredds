@@ -374,6 +374,7 @@ public class EscapeStrings {
      */
      public static String unEscapeDAPCE(String urlorce)
      {
+       if(urlorce == null) return null;
        String s = urlorce;
        int index = urlorce.indexOf('?');
        if(index >= 0) {
