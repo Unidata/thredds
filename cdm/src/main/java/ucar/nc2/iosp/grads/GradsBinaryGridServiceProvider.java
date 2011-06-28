@@ -391,6 +391,9 @@ public class GradsBinaryGridServiceProvider extends AbstractIOServiceProvider {
             v.addAttribute(
                 new Attribute(
                     "_FillValue", new Float(gradsDDF.getMissingValue())));
+            v.addAttribute(
+                new Attribute(
+                    "missing_value", new Float(gradsDDF.getMissingValue())));
             for (GradsAttribute attr : attrs) {
                 if (attr.getVariable().equalsIgnoreCase(var.getName())) {
                     // TODO: what to do about a UINT16/32
