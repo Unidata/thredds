@@ -268,7 +268,7 @@ public class AttributeTable extends DAPNode
         if (_attr.get(name) != null) {
             throw new AttributeExistsException("The Attribute '" + name +
                     "' already exists in the container '" +
-                    getName() + "'");
+                    getEncodedName() + "'");
         }
 
         Attribute a = new Attribute(name, at);
@@ -365,7 +365,7 @@ public class AttributeTable extends DAPNode
 
         if (Debug.isSet("AttributTable")) os.println("Entered AttributeTable.print()");
 
-        os.println(pad + getName() + " {");
+        os.println(pad + getEncodedName() + " {");
         for (Enumeration e = getNames(); e.hasMoreElements();) {
 
             String name = (String) e.nextElement();
@@ -467,7 +467,7 @@ public class AttributeTable extends DAPNode
         if (Debug.isSet("AttributTable")) pw.println("Entered AttributeTable.print()");
 
         pw.println(pad + "<Attribute name=\"" +
-                DDSXMLParser.normalizeToXML(getName()) +
+                DDSXMLParser.normalizeToXML(getEncodedName()) +
                 "\" type=\"Container\">");
 
         Enumeration e = getNames();

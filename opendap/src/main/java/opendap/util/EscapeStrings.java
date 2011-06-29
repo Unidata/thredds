@@ -345,47 +345,50 @@ public class EscapeStrings {
      * Define the DEFINITIVE opendap constraint expression escape function.
      * This is required because something like ?x[1] requires specially escaping
      * the brackets and any interior colons.
-     * For convenience, this function can take a whole url as its argument
-     * and will only encode the contraint expression.
-     * @param urlorce The expression to modify.
+     *
+     * @param ce The expression to modify.
      * @return The escaped expression.
      */
-    public static String escapeDAPCE(String urlorce)
+    public static String escapeDAPCE(String ce)
     {
-       String s = urlorce;
-       int index = urlorce.indexOf('?');
-       if(index >= 0) {
-           String ce = s.substring(index+1,s.length());
-           String base = s.substring(0,index);
-           try {
-               ce = escapeString(ce, _allowableInURI_CE, _URIEscape);
-           } catch(Exception e) {}
-           s = base + '?' + ce;
-       }
-       return s;
+       try {
+           ce = escapeString(ce, _allowableInURI_CE, _URIEscape);
+       } catch(Exception e) {ce = null;}
+       return ce;
     }
 
     /**
      * Define the DEFINITIVE opendap constraint expression unescape function.
-     * For convenience, this function can take a whole url as its argument
-     * and will only unencode the contraint expression.
-     * @param urlorce The expression to unescape.
+     *
+     * @param ce The expression to unescape.
      * @return The unescaped expression.
      */
-     public static String unEscapeDAPCE(String urlorce)
+     public static String unEscapeDAPCE(String ce)
      {
-       if(urlorce == null) return null;
-       String s = urlorce;
-       int index = urlorce.indexOf('?');
-       if(index >= 0) {
-           String ce = s.substring(index+1,s.length());
-           String base = s.substring(0,index);
-           try {
-               ce = unescapeString(ce, _URIEscape, "");
-           } catch(Exception e) {}
-           s = base + '?' + ce;
-       }
-       return s;
+       try {
+           ce = unescapeString(ce, _URIEscape, "");
+       } catch(Exception e) {ce = null;}
+       return ce;
+     }
+
+    /**
+     * Split a url into the base plus the query
+     *
+     * @param url The expression to unescape.
+     * @return The base and url as a 2 element string array.
+     */
+     public static String[] splitURL(String url)
+     {
+         String[] pair = new String[2];
+         int index = url.indexOf('?');
+         if(index >= 0) {
+             pair[0] = url.substring(0,index);
+             pair[1] = url.substring(index+1,url.length());
+         } else {
+             pair[0] = url;
+             pair[1] = null;
+         }
+         return pair;
      }
 
     public static void main(String[] args) throws Exception {

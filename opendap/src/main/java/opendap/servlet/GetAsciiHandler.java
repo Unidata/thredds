@@ -77,29 +77,27 @@ public class GetAsciiHandler {
      * @throws opendap.dap.DAP2Exception
      * @throws ParseException
      */
-    public void sendASCII(HttpServletRequest request,
-                          HttpServletResponse response,
+    public void sendASCII(ReqState rs,
                           String dataSet)
             throws DAP2Exception, ParseException {
-
         if (Debug.isSet("showResponse"))
             System.out.println("Sending OPeNDAP ASCII Data For: " + dataSet +
-                    "    CE: '" + request.getQueryString() + "'");
+                    "    CE: '" + rs.getQueryString() + "'");
 
 
         String requestURL, ce;
         DConnect2 url;
         DataDDS dds;
 
-        if (request.getQueryString() == null) {
+        if (rs.getQueryString() == null) {
             ce = "";
         } else {
-            ce = "?" + request.getQueryString();
+            ce = "?" + rs.getQueryString();
         }
 
-        int suffixIndex = request.getRequestURL().toString().lastIndexOf(".");
+        int suffixIndex = rs.getRequestURL().toString().lastIndexOf(".");
 
-        requestURL = request.getRequestURL().substring(0, suffixIndex);
+        requestURL = rs.getRequestURL().substring(0, suffixIndex);
 
         if (Debug.isSet("showResponse")) {
             System.out.println("New Request URL Resource: '" + requestURL + "'");
@@ -117,7 +115,7 @@ public class GetAsciiHandler {
             if (_Debug) System.out.println(" ASC DDS: ");
             if (_Debug) dds.print(System.out);
 
-            PrintWriter pw = new PrintWriter(response.getOutputStream());
+            PrintWriter pw = new PrintWriter(rs.getResponse().getOutputStream());
             PrintWriter pwDebug = new PrintWriter(System.out);
 
 
@@ -138,10 +136,8 @@ public class GetAsciiHandler {
             }
             else {
 
-                String betterURL = request.getRequestURL().substring(0, request.getRequestURL().lastIndexOf(".")) +
-                        ".dods?"+ request.getQueryString();
-
-
+                String betterURL = rs.getRequestURL().substring(0, rs.getRequestURL().lastIndexOf(".")) +
+                        ".dods?"+ rs.getQueryString();
 
                 pw.println("-- ASCII RESPONSE HANDLER PROBLEM --");
                 pw.println("");

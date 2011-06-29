@@ -249,12 +249,7 @@ public class DConnect2 {
 
     try {
 
-      // Break off the constraint expression and encode using EscapeStrings.encodeDAPCE
-      String encodedurl = urlString;
-      if(urlString.indexOf('?') >= 0)
-          encodedurl = EscapeStrings.escapeDAPCE(encodedurl);
-
-      method = _session.newMethodGet(encodedurl);
+      method = _session.newMethodGet(urlString);
 
       if (acceptCompress)
         method.setRequestHeader("Accept-Encoding", "deflate,gzip");

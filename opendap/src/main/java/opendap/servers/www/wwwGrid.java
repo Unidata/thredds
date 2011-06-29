@@ -138,14 +138,14 @@ public class wwwGrid extends DGrid implements BrowserForm {
         pw.print(
                 "<script type=\"text/javascript\">\n"
                         + "<!--\n"
-                        + wwwOutPut.nameForJsCode(getName())
+                        + wwwOutPut.nameForJsCode(getEncodedName())
                         + " = new dods_var(\""
-                        + getName()
+                        + getEncodedName()
                         + "\", \""
-                        + wwwOutPut.nameForJsCode(getName())
+                        + wwwOutPut.nameForJsCode(getEncodedName())
                         + "\", 1);\n"
                         + "DODS_URL.add_dods_var("
-                        + wwwOutPut.nameForJsCode(getName())
+                        + wwwOutPut.nameForJsCode(getEncodedName())
                         + ");\n"
                         + "// -->\n"
                         + "</script>\n"
@@ -154,15 +154,15 @@ public class wwwGrid extends DGrid implements BrowserForm {
         pw.print(
                 "<b>"
                         + "<input type=\"checkbox\" name=\"get_"
-                        + wwwOutPut.nameForJsCode(getName())
+                        + wwwOutPut.nameForJsCode(getEncodedName())
                         + "\"\n"
                         + "onclick=\""
-                        + wwwOutPut.nameForJsCode(getName())
+                        + wwwOutPut.nameForJsCode(getEncodedName())
                         + ".handle_projection_change(get_"
-                        + wwwOutPut.nameForJsCode(getName())
+                        + wwwOutPut.nameForJsCode(getEncodedName())
                         + ")\">\n"
                         + "<font size=\"+1\">"
-                        + getName()
+                        + getEncodedName()
                         + "</font>"
                         + ": "
                         + dasTools.fancyTypeName(this)
@@ -176,14 +176,14 @@ public class wwwGrid extends DGrid implements BrowserForm {
             DArray a = (DArray) e.nextElement();
 
             int dimSize = a.numDimensions();
-            String dimName = a.getName();
+            String dimName = a.getEncodedName();
 
             if (dimName != null)
                 pw.print(dimName + ":");
 
             pw.print(
                     "<input type=\"text\" name=\""
-                            + wwwOutPut.nameForJsCode(getName())
+                            + wwwOutPut.nameForJsCode(getEncodedName())
                             + "_"
                             + i
                             + "\" size=8 onfocus=\"describe_index()\""
@@ -193,7 +193,7 @@ public class wwwGrid extends DGrid implements BrowserForm {
             pw.print(
                     "<script type=\"text/javascript\">\n"
                             + "<!--\n"
-                            + wwwOutPut.nameForJsCode(getName())
+                            + wwwOutPut.nameForJsCode(getEncodedName())
                             + ".add_dim("
                             + dimSize
                             + ");\n"

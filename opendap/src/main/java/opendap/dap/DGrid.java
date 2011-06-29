@@ -174,8 +174,8 @@ public class DGrid extends DConstructor implements ClientIO {
     public void addVariable(BaseType v, int part) {
 
         if (!(v instanceof DArray)) throw new IllegalArgumentException(
-                "Grid `" + getName() +
-                        "'s' member `" + arrayVar.getName() +
+                "Grid `" + getEncodedName() +
+                        "'s' member `" + arrayVar.getEncodedName() +
                         "' must be an array");
 
         v.setParent(this);
@@ -218,12 +218,12 @@ public class DGrid extends DConstructor implements ClientIO {
             else
                 ; // fall through to throw statement
         } else {
-            if (arrayVar.getName().equals(name))
+            if (arrayVar.getEncodedName().equals(name))
                 return arrayVar;
 
             for (Enumeration e = mapVars.elements(); e.hasMoreElements();) {
                 BaseType v = (BaseType) e.nextElement();
-                if (v.getName().equals(name))
+                if (v.getEncodedName().equals(name))
                     return v;
             }
         }
@@ -316,11 +316,11 @@ public class DGrid extends DConstructor implements ClientIO {
     public void checkSemantics(boolean all) throws BadSemanticsException {
         super.checkSemantics(all);
 
-        Util.uniqueNames(mapVars, getName(), getTypeName());
+        Util.uniqueNames(mapVars, getEncodedName(), getTypeName());
 
         if (arrayVar == null)
             throw new BadSemanticsException("DGrid.checkSemantics(): Null grid base array in `"
-                    + getName() + "'");
+                    + getEncodedName() + "'");
 
         // check semantics of array variable
         arrayVar.checkSemantics(all);
@@ -328,8 +328,8 @@ public class DGrid extends DConstructor implements ClientIO {
         // enough maps?
         if (mapVars.size() != arrayVar.numDimensions())
             throw new BadSemanticsException("DGrid.checkSemantics(): The number of map variables for grid `"
-                    + getName() + "' does not match the number of dimensions of `"
-                    + arrayVar.getName() + "'");
+                    + getEncodedName() + "' does not match the number of dimensions of `"
+                    + arrayVar.getEncodedName() + "'");
 
         //----- I added this next test 12/3/99. As soon as I did I questioned whether or not
         //----- it adds any value. ie: Can it ever happen that this test fails? I don't think
@@ -351,12 +351,12 @@ public class DGrid extends DConstructor implements ClientIO {
             if (thisMapDim.getSize() != thisArrayDim.getSize()) {
 
                 throw new BadSemanticsException("In grid '" +
-                        getName() +
+                        getEncodedName() +
                         " The size of dimension " +
                         dim + " in the array component '" +
-                        arrayVar.getName() +
+                        arrayVar.getEncodedName() +
                         "is not equal to the size of the coresponding map vector '" +
-                        thisMapArray.getName() + ".");
+                        thisMapArray.getEncodedName() + ".");
             }
             dim++;
         }
@@ -388,7 +388,7 @@ public class DGrid extends DConstructor implements ClientIO {
             BaseType bt = (BaseType) e.nextElement();
             bt.printDecl(os, space + "    ", true);
         }
-        os.print(space + "} " + getName());
+        os.print(space + "} " + getEncodedName());
         if (print_semi)
             os.println(";");
     }
@@ -484,7 +484,7 @@ public class DGrid extends DConstructor implements ClientIO {
 
 
         pw.print(pad + "<Grid");
-        if (getName() != null) {
+        if (getEncodedName() != null) {
             pw.print(" name=\"" +
                     DDSXMLParser.normalizeToXML(getClearName()) + "\"");
         }

@@ -75,7 +75,7 @@ public class NcSDStructure extends SDStructure  {
   }
 
   public NcSDStructure( NcSDStructure org, StructureData sdata) {
-    super( org.getName());
+    super( org.getEncodedName());
     this.org = org;
     this.sdata = sdata;
   }

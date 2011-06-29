@@ -272,7 +272,7 @@ public class wwwOutPut {
 
         try {
 
-            AttributeTable attr = das.getAttributeTable(bt.getName());
+            AttributeTable attr = das.getAttributeTable(bt.getEncodedName());
 
             if (attr != null) {
 
@@ -320,14 +320,14 @@ public class wwwOutPut {
                         + nameForJsCode(name) + ".handle_projection_change(get_"
                         + nameForJsCode(name) + ")\">\n"
                         + "<font size=\"+1\">"
-                        + bt.getName() + "</font>" // this is the Bold faced name of the variable in the form
+                        + bt.getEncodedName() + "</font>" // this is the Bold faced name of the variable in the form
                         + ": " + type + "</b><br>\n\n"
         );
 
 
         pWrt.print(
 
-                bt.getName() //this name is the one used when choosing a constraint relation (=, <, >, etc.)
+                bt.getEncodedName() //this name is the one used when choosing a constraint relation (=, <, >, etc.)
                         + " <select name=\"" + nameForJsCode(name) + "_operator\""
                         + " onfocus=\"describe_operator()\""
                         + " onchange=\"DODS_URL.update_url()\">\n"

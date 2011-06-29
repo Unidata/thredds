@@ -33,6 +33,7 @@
 
 package thredds.server.opendap;
 
+import com.sun.deploy.net.HttpResponse;
 import opendap.servlet.*;
 import opendap.dap.DAP2Exception;
 import opendap.dap.DAS;
@@ -201,44 +202,38 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
         return;
       }
 
-      ReqState rs = new ReqState(request, response, getServletConfig(), getServerName());
+      ReqState rs = getRequestState(request,response);
 
       if (rs != null) {
         String dataSet = rs.getDataSet();
         String requestSuffix = rs.getRequestSuffix();
 
-        // The query string will come to us in encoded form
-        // (see EscapeStrings.escapeDAPCE).
-        String query = request.getQueryString();
-        query = EscapeStrings.unEscapeDAPCE(query);
-        log.debug("doGet query={}", query);
-
         if ((dataSet == null) || dataSet.equals("/") || dataSet.equals("")) {
-          doGetDIR(request, response, rs);
+          doGetDIR(rs);
         } else if (requestSuffix.equalsIgnoreCase("blob")) {
-          doGetBLOB(request, response, rs);
+          doGetBLOB(rs);
         } else if (requestSuffix.equalsIgnoreCase("close")) {
-          doClose(request, response, rs);
+          doClose(rs);
         } else if (requestSuffix.equalsIgnoreCase("dds")) {
-          doGetDDS(request, response, rs);
+          doGetDDS(rs);
         } else if (requestSuffix.equalsIgnoreCase("das")) {
-          doGetDAS(request, response, rs);
+          doGetDAS(rs);
         } else if (requestSuffix.equalsIgnoreCase("ddx")) {
-          doGetDDX(request, response, rs);
+          doGetDDX(rs);
         } else if (requestSuffix.equalsIgnoreCase("dods")) {
-          doGetDAP2Data(request, response, rs);
+          doGetDAP2Data(rs);
         } else if (requestSuffix.equalsIgnoreCase("asc") || requestSuffix.equalsIgnoreCase("ascii")) {
-          doGetASC(request, response, rs);
+          doGetASC(rs);
         } else if (requestSuffix.equalsIgnoreCase("info")) {
-          doGetINFO(request, response, rs);
+          doGetINFO(rs);
         } else if (requestSuffix.equalsIgnoreCase("html") || requestSuffix.equalsIgnoreCase("htm")) {
-          doGetHTML(request, response, rs);
+          doGetHTML(rs);
         } else if (requestSuffix.equalsIgnoreCase("ver") || requestSuffix.equalsIgnoreCase("version") ||
                 dataSet.equalsIgnoreCase("/version") || dataSet.equalsIgnoreCase("/version/")) {
-          doGetVER(request, response, rs);
+          doGetVER(rs);
         } else if (dataSet.equalsIgnoreCase("/help") || dataSet.equalsIgnoreCase("/help/") ||
                 dataSet.equalsIgnoreCase("/" + requestSuffix) || requestSuffix.equalsIgnoreCase("help")) {
-          doGetHELP(request, response);
+          doGetHELP(rs);
         } else {
           sendErrorResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Unrecognized request");
           return;
@@ -303,7 +298,8 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
 
   }
 
-  private void doGetASC(HttpServletRequest request, HttpServletResponse response, ReqState rs) throws Exception {
+  private void doGetASC(ReqState rs) throws Exception {
+      HttpServletResponse response = rs.getResponse();
 
     GuardedDataset ds = null;
     try {
@@ -340,7 +336,8 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
 
   }
 
-  private void doGetDAS(HttpServletRequest request, HttpServletResponse response, ReqState rs) throws Exception {
+  private void doGetDAS(ReqState rs) throws Exception {
+      HttpServletResponse response = rs.getResponse();
 
     GuardedDataset ds = null;
     try {
@@ -362,7 +359,8 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
 
   }
 
-  private void doGetDDS(HttpServletRequest request, HttpServletResponse response, ReqState rs) throws Exception {
+  private void doGetDDS(ReqState rs) throws Exception {
+      HttpServletResponse response = rs.getResponse();
 
     GuardedDataset ds = null;
     try {
@@ -398,7 +396,8 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
 
   }
 
-  private void doGetDDX(HttpServletRequest request, HttpServletResponse response, ReqState rs) throws Exception {
+  private void doGetDDX(ReqState rs) throws Exception {
+      HttpServletResponse response = rs.getResponse();
 
     GuardedDataset ds = null;
     try {
@@ -435,7 +434,8 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
     }
   }
 
-  private void doGetBLOB(HttpServletRequest request, HttpServletResponse response, ReqState rs) throws Exception {
+  private void doGetBLOB(ReqState rs) throws Exception {
+      HttpServletResponse response = rs.getResponse();
 
     GuardedDataset ds = null;
     try {
@@ -464,7 +464,7 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
 
       // Send the binary data back to the client
       DataOutputStream sink = new DataOutputStream(bOut);
-      ce.send(myDDS.getName(), sink, ds);
+      ce.send(myDDS.getEncodedName(), sink, ds);
       sink.flush();
 
       // Finish up sending the compressed stuff, but don't
@@ -479,7 +479,9 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
 
   }
 
-  private void doClose(HttpServletRequest request, HttpServletResponse response, ReqState rs) throws Exception {
+  private void doClose(ReqState rs) throws Exception {
+      HttpServletResponse response = rs.getResponse();
+      HttpServletRequest request = rs.getRequest();
     String reqPath = rs.getDataSet();
     HttpSession session = request.getSession();
     session.removeAttribute(reqPath); // work done in the listener
@@ -498,7 +500,8 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
     session.invalidate();  */
   }
 
-  private void doGetDAP2Data(HttpServletRequest request, HttpServletResponse response, ReqState rs) throws Exception {
+  private void doGetDAP2Data(ReqState rs) throws Exception {
+      HttpServletResponse response = rs.getResponse();
 
     GuardedDataset ds = null;
     try {
@@ -537,7 +540,7 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
 
       // Send the binary data back to the client
       DataOutputStream sink = new DataOutputStream(bOut);
-      ce.send(myDDS.getName(), sink, ds);
+      ce.send(myDDS.getEncodedName(), sink, ds);
       sink.flush();
 
       // Finish up sending the compressed stuff, but don't
@@ -551,7 +554,8 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
     }
   }
 
-  private void doGetVER(HttpServletRequest request, HttpServletResponse response, ReqState rs) throws Exception {
+  private void doGetVER(ReqState rs) throws Exception {
+      HttpServletResponse response = rs.getResponse();
 
     response.setContentType("text/plain");
     response.setHeader("XDODS-Server", getServerVersion());
@@ -563,7 +567,8 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
     pw.flush();
   }
 
-  private void doGetHELP(HttpServletRequest request, HttpServletResponse response) throws Exception {
+  private void doGetHELP(ReqState rs) throws Exception {
+      HttpServletResponse response = rs.getResponse();
 
     response.setContentType("text/html");
     response.setHeader("XDODS-Server", getServerVersion());
@@ -574,19 +579,21 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
     pw.flush();
   }
 
-  private void doGetDIR(HttpServletRequest req, HttpServletResponse res, ReqState rs) throws Exception {
+  private void doGetDIR(ReqState rs) throws Exception {
     // rather dangerous here, since you can go into an infinite loop
     // so we're going to insist that there's  no suffix
+      HttpServletResponse response = rs.getResponse();
+      HttpServletRequest request = rs.getRequest();
     if ((rs.getRequestSuffix() == null) || (rs.getRequestSuffix().length() == 0)) {
-      ServletUtil.forwardToCatalogServices(req, res);
+      ServletUtil.forwardToCatalogServices(request, response);
       return;
     }
 
-    sendErrorResponse(res, 0, "Unrecognized request");
+    sendErrorResponse(response, 0, "Unrecognized request");
   }
 
-  private void doGetINFO(HttpServletRequest request, HttpServletResponse response, ReqState rs) throws Exception {
-
+  private void doGetINFO(ReqState rs) throws Exception {
+    HttpServletResponse response = rs.getResponse();
     GuardedDataset ds = null;
     try {
       ds = getDataset(rs);
@@ -605,8 +612,9 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
     }
   }
 
-  private void doGetHTML(HttpServletRequest request, HttpServletResponse response, ReqState rs) throws Exception {
-
+  private void doGetHTML(ReqState rs) throws Exception {
+    HttpServletResponse response = rs.getResponse();
+    HttpServletRequest request = rs.getRequest();
     GuardedDataset ds = null;
     try {
       ds = getDataset(rs);
@@ -640,7 +648,7 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
     act = new DebugHandler.Action("help", "Show help page") {
       public void doAction(DebugHandler.Event e) {
         try {
-          doGetHELP(e.req, e.res);
+          doGetHELP(getRequestState(e.req, e.res));
         }
         catch (Exception ioe) {
           log.error("ShowHelp", ioe);
@@ -663,6 +671,28 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
   }
 
   /**
+   * @param request
+   * @param response
+   * @return the request state
+   */
+  protected ReqState getRequestState(HttpServletRequest request, HttpServletResponse response) {
+
+    ReqState rs = null;
+    // The query string will come to us in encoded form
+    // (see HTTPmethod.newMethod())
+    String query = request.getQueryString();
+    query = EscapeStrings.unEscapeDAPCE(query);
+    log.debug("doGet query={}", query);
+    try {
+      rs = new ReqState(request, response, getServletConfig(), getServerName(), query);
+    } catch (BadURLException bue) {
+      rs = null;
+    }
+
+    return rs;
+  }
+
+    /**
    * ************************************************************************
    * Prints the OPeNDAP Server help page to the passed PrintWriter
    *

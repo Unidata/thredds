@@ -85,13 +85,13 @@ public class asciiSeq extends DSequence implements toASCII {
                         String rootName,
                         boolean newLine) {
 
-        if (_Debug) System.out.println("asciiSeq.toASCII(" + addName + ",'" + rootName + "')  getName(): " + getName());
+        if (_Debug) System.out.println("asciiSeq.toASCII(" + addName + ",'" + rootName + "')  getName(): " + getEncodedName());
         //System.out.println("this: " + this + " Has "+allValues.size() + " elements.");
 
         if (rootName != null)
-            rootName += "." + getName();
+            rootName += "." + getEncodedName();
         else
-            rootName = getName();
+            rootName = getEncodedName();
 
         pw.print(toASCIIFlatName(rootName));
 

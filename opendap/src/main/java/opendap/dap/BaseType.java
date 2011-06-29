@@ -41,6 +41,7 @@
 package opendap.dap;
 
 import opendap.dap.parsers.DDSXMLParser;
+import opendap.util.EscapeStrings;
 
 import java.io.*;
 import java.util.Enumeration;
@@ -166,7 +167,7 @@ public abstract class BaseType extends DAPNode
                           boolean print_semi, boolean constrained) {
 
         //System.out.println("BaseType.printDecl()...");
-        os.print(space + getTypeName() + " " + getName());
+        os.print(space + getTypeName() + " " + getEncodedName());
         if (print_semi)
             os.println(";");
     }
@@ -406,7 +407,7 @@ public abstract class BaseType extends DAPNode
         String longName = _name;
 
         while (parent != null && !(parent instanceof DDS)) {
-            longName = parent.getName() + "." + longName;
+            longName = parent.getClearName() + "." + longName;
             parent = (BaseType)parent.getParent();
         }
         return (longName);
@@ -458,7 +459,7 @@ public abstract class BaseType extends DAPNode
 
     public void addAttributeContainer(AttributeTable at)
             throws AttributeExistsException {
-        _attrTbl.addContainer(at.getName(), at);
+        _attrTbl.addContainer(at.getClearName(), at);
     }
 
     public AttributeTable appendAttributeContainer(String name) {
@@ -593,7 +594,7 @@ public abstract class BaseType extends DAPNode
 	        parent.printConstraint(os);
 	        os.print(".");
 	    }
-            os.print(getName());
+            os.print(getEncodedName());
         }
     }
 
@@ -612,7 +613,7 @@ public abstract class BaseType extends DAPNode
         if(this._attrTbl != null)
   	        bt._attrTbl = (AttributeTable) cloneDAG(map,this._attrTbl);
         if(this._attr != null)
-	        bt._attr = new Attribute(getName(), bt._attrTbl);
+	        bt._attr = new Attribute(getClearName(), bt._attrTbl);
         return bt;
     }
 

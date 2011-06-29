@@ -167,8 +167,8 @@ public class DArray extends DVector
         for (Enumeration e = dimVector.elements(); e.hasMoreElements();) {
             DArrayDimension d = (DArrayDimension) e.nextElement();
             os.print("[");
-            if (d.getName() != null)
-                os.print(d.getName() + " = ");
+            if (d.getEncodedName() != null)
+                os.print(d.getEncodedName() + " = ");
             os.print(d.getSize() + "]");
         }
         if (print_semi)
@@ -370,7 +370,7 @@ public class DArray extends DVector
     public void printXML(PrintWriter pw, String pad, boolean constrained) {
 
         pw.print(pad + "<Array");
-        if (getName() != null) {
+        if (getEncodedName() != null) {
             pw.print(" name=\"" +
                     DDSXMLParser.normalizeToXML(getClearName()) + "\"");
         }
@@ -395,7 +395,7 @@ public class DArray extends DVector
     public void printAsMapXML(PrintWriter pw, String pad, boolean constrained) {
 
         pw.print(pad + "<Map");
-        if (getName() != null) {
+        if (getEncodedName() != null) {
             pw.print(" name=\"" +
                     DDSXMLParser.normalizeToXML(getClearName()) + "\"");
         }
@@ -438,19 +438,19 @@ public class DArray extends DVector
             bt = pv.getTemplate();
         }
 
-        String nameCache = bt.getName();
+        String nameCache = bt.getEncodedName();
 
-        bt.setName(null);
+        bt.setEncodedName(null);
 
         bt.printXML(pw, pad + "\t", constrained);
 
-        bt.setName(nameCache);
+        bt.setEncodedName(nameCache);
 
         Enumeration dae = getDimensions();
         while (dae.hasMoreElements()) {
             DArrayDimension dad = (DArrayDimension) dae.nextElement();
             int size = dad.getSize();
-            String name = dad.getName();
+            String name = dad.getEncodedName();
             if (name == null) {
                 pw.println(pad + "\t" + "<dimension size=\"" + size + "\"/>");
             } else {
@@ -468,7 +468,7 @@ public class DArray extends DVector
 	    ((BaseType)getParent()).printConstraint(os);
 	    os.print(".");
 	}
-        os.print(getName());
+        os.print(getEncodedName());
 	for(int i=0;i<dimVector.size();i++) {
 	    DArrayDimension dim = (DArrayDimension)dimVector.get(i);
 	    dim.printConstraint(os);

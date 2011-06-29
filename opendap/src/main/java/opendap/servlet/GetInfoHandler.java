@@ -405,13 +405,13 @@ public class GetInfoHandler {
 
         String vOut;
 
-        vOut = "<td align=right valign=top><b>" + bt.getName();
+        vOut = "<td align=right valign=top><b>" + bt.getEncodedName();
         vOut += "</b>:</td>\n";
         vOut += "<td align=left valign=top>" + dasTools.fancyTypeName(bt);
 
 
         try {
-            AttributeTable attr = das.getAttributeTable(bt.getName());
+            AttributeTable attr = das.getAttributeTable(bt.getEncodedName());
 
             // This will display the DAS variables (attributes) as a bulleted list.
             String s = "";

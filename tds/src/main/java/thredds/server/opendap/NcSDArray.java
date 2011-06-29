@@ -34,7 +34,6 @@
 package thredds.server.opendap;
 
 import opendap.dap.InvalidDimensionException;
-import opendap.util.EscapeStrings;
 import ucar.ma2.*;
 import ucar.nc2.*;
 
@@ -70,7 +69,7 @@ public class NcSDArray extends SDArray implements HasNetcdfVariable {
    * @param bt : DODS element type
    */
   NcSDArray(Variable v, BaseType bt) {
-    super(EscapeStrings.escapeDAPIdentifier(v.getShortName()));
+    super((v.getShortName()));
     this.ncVar = v;
 
     // set dimensions
@@ -122,7 +121,7 @@ public class NcSDArray extends SDArray implements HasNetcdfVariable {
       }
 
       if (debug)
-        System.out.println("  NcSDArray Read " + getName() + " " + a.getSize() + " elems of type = " + a.getElementType());
+        System.out.println("  NcSDArray Read " + getEncodedName() + " " + a.getSize() + " elems of type = " + a.getElementType());
       if (debugRead) System.out.println("  Read = " + a.getSize() + " elems of type = " + a.getElementType());
       if (log.isDebugEnabled()) {
         long tookTime = System.currentTimeMillis() - tstart;
@@ -151,7 +150,7 @@ public class NcSDArray extends SDArray implements HasNetcdfVariable {
       sbuff.append("NcSDArray read " + ncVar.getName());
       for (int i = 0; i < numDimensions(); i++) {
         DArrayDimension d = getDimension(i);
-        sbuff.append(" " + d.getName() + "(" + getStart(i) + "," + getStride(i) + "," + getStop(i) + ")");
+        sbuff.append(" " + d.getEncodedName() + "(" + getStart(i) + "," + getStride(i) + "," + getStop(i) + ")");
       }
       return sbuff.toString();
 

@@ -134,7 +134,7 @@ abstract public class DVector extends BaseType implements ClientIO {
      */
     public void addVariable(BaseType v) {
         vals = v.newPrimitiveVector();
-        setName(v.getName());
+        setEncodedName(v.getEncodedName());
         v.setParent(this);
         setContainerVar(v); // save v for cloning
     }

@@ -449,7 +449,7 @@ public class TestCeParser extends TestCase
 	for(int i=0;i<path.size();i++) {
 	    BaseType bt = path.get(i);
 	    if(i > 0) os.print('.');
-	    os.print(bt.getName());
+	    os.print(bt.getEncodedName());
 	    if(bt.getParent() instanceof SDArray
 //		&& !iswholevariable(bt.getParent())
 		) {

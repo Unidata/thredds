@@ -199,7 +199,7 @@ public class testEngine {
 
         try {
             if (_Debug) System.out.println("Loading: " +
-                    ta.getName() +
+                    ta.getEncodedName() +
                     " an SDArray of " +
                     ta.numDimensions() +
                     " dimension(s).");
@@ -356,7 +356,7 @@ public class testEngine {
                 BaseType newBT = (BaseType) bt.clone();
 
                 // Give it a new and appropriate name.
-                newBT.setName(newBT.getName() + "[" + j + "]");
+                newBT.setEncodedName(newBT.getEncodedName() + "[" + j + "]");
 
                 // Populate this Array member with the new object.
                 ((BaseTypePrimitiveVector) pv).setValue(j, newBT);

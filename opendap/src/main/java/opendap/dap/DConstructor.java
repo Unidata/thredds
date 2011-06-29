@@ -179,7 +179,7 @@ abstract public class DConstructor extends BaseType {
         boolean hasVariables = ve.hasMoreElements();
 
         pw.print(pad + "<" + getTypeName());
-        if (getName() != null) {
+        if (getEncodedName() != null) {
             pw.print(" name=\"" +
                     DDSXMLParser.normalizeToXML(getClearName()) + "\"");
         }

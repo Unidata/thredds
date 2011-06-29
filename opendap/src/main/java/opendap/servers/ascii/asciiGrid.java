@@ -42,7 +42,6 @@
 package opendap.servers.ascii;
 
 import java.io.*;
-import java.util.Vector;
 import java.util.Enumeration;
 
 import opendap.dap.*;
@@ -88,12 +87,12 @@ public class asciiGrid extends DGrid implements toASCII {
                         boolean newLine) {
 
         if (_Debug)
-            System.out.println("asciiGrid.toASCII(" + addName + ",'" + rootName + "')  getName(): " + getName());
+            System.out.println("asciiGrid.toASCII(" + addName + ",'" + rootName + "')  getName(): " + getEncodedName());
 
         if (rootName != null)
-            rootName += "." + getName();
+            rootName += "." + getEncodedName();
         else
-            rootName = getName();
+            rootName = getEncodedName();
 
         boolean firstPass = true;
         Enumeration e = getVariables();

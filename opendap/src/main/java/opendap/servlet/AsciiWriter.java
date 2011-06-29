@@ -22,7 +22,6 @@
 package opendap.servlet;
 
 import opendap.dap.*;
-import opendap.Server.SDGrid;
 import opendap.Server.ServerMethods;
 
 import java.io.PrintWriter;
@@ -54,7 +53,7 @@ public class AsciiWriter {
         Enumeration e = dds.getVariables();
         while (e.hasMoreElements()) {
             BaseType bt = (BaseType) e.nextElement();
-            writeAsc(bt, dds.getName(), pw, specialO);
+            writeAsc(bt, dds.getEncodedName(), pw, specialO);
         }
 
     }
@@ -139,7 +138,7 @@ public class AsciiWriter {
         else if (data instanceof DByte)
             pw.print((new Integer(((DByte) data).getValue() & 0xFF)).toString());
         else
-            pw.print("Not implemented type = " + data.getTypeName() + " " + data.getName() + "\n");
+            pw.print("Not implemented type = " + data.getTypeName() + " " + data.getEncodedName() + "\n");
 
         if (newLine)
             pw.print("\n");
@@ -227,9 +226,9 @@ public class AsciiWriter {
     private void showStructure(DStructure dstruct, PrintWriter pw, boolean addName, String rootName, boolean newLine) {
 
         if (rootName != null)
-            rootName += "." + dstruct.getName();
+            rootName += "." + dstruct.getEncodedName();
         else
-            rootName = dstruct.getName();
+            rootName = dstruct.getEncodedName();
 
         boolean firstPass = true;
         Enumeration e = dstruct.getVariables();
@@ -252,9 +251,9 @@ public class AsciiWriter {
         int subprojections = dgrid.projectedComponents(true);
 
         if (rootName != null)
-            rootName += "." + dgrid.getName();
+            rootName += "." + dgrid.getEncodedName();
         else if(subprojections > 1)
-            rootName = dgrid.getName();
+            rootName = dgrid.getEncodedName();
         else
             rootName = null;
        
@@ -277,9 +276,9 @@ public class AsciiWriter {
     private void showSequence(DSequence dseq, PrintWriter pw, boolean addName, String rootName, boolean newLine) {
 
         if (rootName != null)
-            rootName += "." + dseq.getName();
+            rootName += "." + dseq.getEncodedName();
         else
-            rootName = dseq.getName();
+            rootName = dseq.getEncodedName();
 
         pw.println(toASCIIFlatName(dseq, rootName));
 
@@ -306,7 +305,7 @@ public class AsciiWriter {
         StringBuffer s = new StringBuffer();
         if (rootName != null)
             s.append(rootName).append(".");
-        s.append(data.getName());
+        s.append(data.getEncodedName());
 
         if (data instanceof DArray) {
             DArray darray = (DArray) data;

@@ -34,7 +34,6 @@
 
 package thredds.server.opendap;
 
-import opendap.util.EscapeStrings;
 import ucar.ma2.*;
 import ucar.nc2.*;
 
@@ -64,7 +63,7 @@ public class NcSDCharArray extends SDArray implements HasNetcdfVariable {
    * @param v : netcdf Variable
    */
   NcSDCharArray(Variable v) {
-      super(EscapeStrings.escapeDAPIdentifier(v.getShortName()));
+      super((v.getShortName()));
     this.ncVar = v;
     if (v.getRank() < 1)
       throw new IllegalArgumentException("NcSDCharArray: rank must be > 1, var = " + v.getName());
@@ -105,7 +104,7 @@ public class NcSDCharArray extends SDArray implements HasNetcdfVariable {
         System.out.println("NcSDCharArray read " + ncVar.getName());
         for (int i = 0; i < numDimensions(); i++) {
           DArrayDimension d = getDimension(i);
-          System.out.println(" " + d.getName() + " " + getStart(i) + " " + getStop(i) + " " + getStride(i));
+          System.out.println(" " + d.getEncodedName() + " " + getStart(i) + " " + getStop(i) + " " + getStride(i));
         }
       }
 

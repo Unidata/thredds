@@ -95,7 +95,7 @@ public class asciiString extends DString implements toASCII {
         // Get rid of null terminations on strings
         if ((s.length() > 0) && s.charAt(s.length() - 1) == ((char) 0)) { // jc mod
 
-            if (_Debug) System.out.println("Removing null termination from string \"" + getName() + "\".");
+            if (_Debug) System.out.println("Removing null termination from string \"" + getEncodedName() + "\".");
 
             char cArray[] = s.toCharArray();
             s = new String(cArray, 0, cArray.length - 1);
@@ -122,9 +122,9 @@ public class asciiString extends DString implements toASCII {
     public String toASCIIFlatName(String rootName) {
         String s;
         if (rootName != null) {
-            s = rootName + "." + getName();
+            s = rootName + "." + getEncodedName();
         } else {
-            s = getName();
+            s = getEncodedName();
         }
         return (s);
     }

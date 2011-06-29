@@ -43,7 +43,6 @@ package opendap.servers.www;
 
 import java.io.*;
 import java.util.Enumeration;
-import java.util.Vector;
 
 import opendap.dap.*;
 
@@ -88,7 +87,7 @@ public class wwwSequence extends DSequence implements BrowserForm {
 
         pw.print(
                 "<b>Sequence "
-                        + getName()
+                        + getEncodedName()
                         + "</b><br>\n"
                         + "<dl><dd>\n"
         );

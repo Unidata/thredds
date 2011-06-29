@@ -256,7 +256,8 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
    * @return escaped version of it
    */
   public static String escapeName(String vname) {
-      return StringUtil.escape2(vname, NetcdfFile.reserved);
+      // temp: return StringUtil.escape2(vname, NetcdfFile.reserved);
+      return EscapeStrings.escapeDAPIdentifier(vname);
   }
 
   /**
@@ -265,7 +266,8 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
    * @return unescaped version of it
    */
   public static String unescapeName(String vname) {
-    return StringUtil.unescape(vname);
+    //temp return StringUtil.unescape(vname);
+    return EscapeStrings.unEscapeDAPIdentifier(vname);
   }
 
   /**
@@ -927,7 +929,8 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
    * @see NetcdfFile#escapeName
    * @see NetcdfFile#unescapeName
    */
-  public Variable findVariable(String fullNameEscaped) {
+  public Variable findVariable(String fullNameEscaped)
+  {
     if (fullNameEscaped == null || fullNameEscaped.length ( ) == 0) { return null; }
 
     Group g = rootGroup;

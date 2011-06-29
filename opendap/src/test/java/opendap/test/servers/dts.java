@@ -299,7 +299,7 @@ public class dts extends AbstractServlet {
             }
 
             testEngine te = new testEngine(seqLength);
-            ce.send(myDDS.getName(), sink, te);
+            ce.send(myDDS.getEncodedName(), sink, te);
             sink.flush();
 
             // Finish up sending the compressed stuff, but don't
@@ -523,7 +523,7 @@ public class dts extends AbstractServlet {
             }
 
             testEngine te = new testEngine(seqLength);
-            ce.send(myDDS.getName(), sink, te);
+            ce.send(myDDS.getEncodedName(), sink, te);
             sink.flush();
 
             // Finish up sending the compressed stuff, but don't

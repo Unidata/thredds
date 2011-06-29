@@ -277,7 +277,7 @@ public class CEEvaluator {
 
             if (_Debug)
                 System.out.println("Sending variable: " +
-                        ((BaseType) s).getName());
+                        ((BaseType) s).getEncodedName());
 
             if (s.isProject()) {
 
@@ -285,7 +285,7 @@ public class CEEvaluator {
                     System.out.println("Calling "
                             + ((BaseType) s).getTypeName()
                             + ".serialize() (Name: "
-                            + ((BaseType) s).getName()
+                            + ((BaseType) s).getEncodedName()
                             + ")");
 
               //System.out.printf("serialize %s (%s) start=%d%n ", ((BaseType) s).getName(), ((BaseType) s).getTypeName(),

@@ -130,7 +130,7 @@ public class ServerDDS extends DDS
      * @see ServerMethods#read(String, Object) ServerMethods.read()
      */
     public void setDatasetFilename(String n) {
-        setName(n);
+        setClearName(n);
     }
 
     /**
@@ -140,7 +140,7 @@ public class ServerDDS extends DDS
      * @see #setDatasetFilename(String)
      */
     public String getDatasetFilename() {
-        String s = getName();
+        String s = getEncodedName();
         System.out.println(s);
         return (s);
     }
@@ -162,8 +162,8 @@ public class ServerDDS extends DDS
             }
         }
         os.print("} ");
-        if (getName() != null)
-            os.print(getName());
+        if (getEncodedName() != null)
+            os.print(getEncodedName());
         os.println(";");
     }
 

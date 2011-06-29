@@ -67,7 +67,7 @@ public class DODSGrid extends DODSVariable {
     Formatter sbuff = new Formatter();
     for (int i = 1; i < dodsV.children.size(); i++) {
       DodsV map = dodsV.children.get(i);
-      String name = DODSNetcdfFile.makeNetcdfName( map.bt.getName());
+      String name = DODSNetcdfFile.makeNetcdfName( map.bt.getEncodedName());
       Dimension dim = parentGroup.findDimension(name);
       if (dim == null) {
         logger.warn("DODSGrid cant find dimension = <"+name+">");

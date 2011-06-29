@@ -41,11 +41,8 @@
 
 package opendap.servers.ascii;
 
-import java.io.DataInputStream;
 import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.Enumeration;
-import java.util.Vector;
 
 import opendap.dap.*;
 
@@ -89,7 +86,7 @@ public class asciiArray extends DArray implements toASCII {
                         boolean newLine) {
 
         if (_Debug) {
-            System.out.println("asciiArray.toASCII(" + addName + ",'" + rootName + "')  getName(): " + getName());
+            System.out.println("asciiArray.toASCII(" + addName + ",'" + rootName + "')  getName(): " + getEncodedName());
             System.out.println("  PrimitiveVector size = " + getPrimitiveVector().getLength());
         }
 
@@ -118,9 +115,9 @@ public class asciiArray extends DArray implements toASCII {
 
         String s = "";
         if (rootName != null) {
-            s = rootName + "." + getName();
+            s = rootName + "." + getEncodedName();
         } else {
-            s = getName();
+            s = getEncodedName();
         }
 
 

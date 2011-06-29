@@ -292,7 +292,7 @@ class DodsV implements Comparable {
     out.print("(");
     int count = 0;
     for (DArrayDimension dim : dimensionsAll) {
-      String name = dim.getName() == null ? "" : dim.getName() + "=";
+      String name = dim.getEncodedName() == null ? "" : dim.getEncodedName() + "=";
       if (count > 0) out.print(",");
       out.print(name + dim.getSize());
       count++;
@@ -304,7 +304,7 @@ class DodsV implements Comparable {
     }
   }
 
-  String getName() { return bt == null ? " root" : bt.getName(); }
+  String getName() { return bt == null ? " root" : bt.getEncodedName(); }
   String getType() { return bt == null ? "" : bt.getTypeName(); }
 
   DataType getDataType() {
@@ -348,8 +348,8 @@ class DodsV implements Comparable {
 
   String getFullName() {
     if (parent != null && parent.bt != null)
-      return ( parent.getFullName() + "."+bt.getName());
-    return (bt == null) ? "root" : bt.getName();
+      return ( parent.getFullName() + "."+bt.getEncodedName());
+    return (bt == null) ? "root" : bt.getEncodedName();
   }
 
   String getNetcdfShortName() {
@@ -410,7 +410,7 @@ class DodsV implements Comparable {
       String attName = (String) attNames.nextElement();
       opendap.dap.Attribute att = attTable.getAttribute(attName);
       if (att == null) {
-        logger.error("Attribute not found="+attName+" in table="+attTable.getName());
+        logger.error("Attribute not found="+attName+" in table="+attTable.getEncodedName());
         continue;
       }
       addAttribute(dodsV, att, fullName, match);
@@ -419,22 +419,22 @@ class DodsV implements Comparable {
 
   private void addAttribute(DodsV dodsV, opendap.dap.Attribute att, String fullName, boolean match) {
     if (att == null) return;
-    fullName = fullName+"."+att.getName();
+    fullName = fullName+"."+att.getEncodedName();
 
     if (!att.isContainer()) {
-      DODSAttribute ncatt = new DODSAttribute( match ? att.getName() : fullName, att);
+      DODSAttribute ncatt = new DODSAttribute( match ? att.getEncodedName() : fullName, att);
       dodsV.addAttribute( ncatt);
       if (debugAttributes) System.out.println(" addAttribute "+ncatt.getName()+" to "+dodsV.getFullName());
 
-    } else if (att.getName() == null) {
+    } else if (att.getEncodedName() == null) {
       logger.info("DODS attribute name is null = "+att);
     } else {
-      DodsV child = dodsV.findDodsV(att.getName(), false);
+      DodsV child = dodsV.findDodsV(att.getEncodedName(), false);
       if (child != null) {
         addAttributeTable(child, att.getContainerN(), fullName, match);
       } else {
-        if (att.getName().equals("DODS")) return; // special case - DODS info
-        if (debugAttributes) System.out.println(" Cant find nested Variable "+ att.getName()+" in "+dodsV.getFullName());
+        if (att.getEncodedName().equals("DODS")) return; // special case - DODS info
+        if (debugAttributes) System.out.println(" Cant find nested Variable "+ att.getEncodedName()+" in "+dodsV.getFullName());
         addAttributeTable(this, att.getContainerN(), fullName, false);
       }
     }
@@ -453,7 +453,7 @@ class DodsV implements Comparable {
         logger.warn("Corrupted structure");
         continue;
       }
-      if (name.equals(dodsV.bt.getName()))
+      if (name.equals(dodsV.bt.getEncodedName()))
         return dodsV;
     }
     return null;
@@ -487,11 +487,11 @@ class DodsV implements Comparable {
     if (ddsV.parent.bt != null) {
       DodsV parentV = findDataV( ddsV.parent);
       if (parentV == null) // dataDDS may not have the structure wrapper
-        return findDodsV( ddsV.bt.getName(), true);
-      return parentV.findDodsV( ddsV.bt.getName(), true);
+        return findDodsV( ddsV.bt.getEncodedName(), true);
+      return parentV.findDodsV( ddsV.bt.getEncodedName(), true);
     }
 
-    DodsV dataV =  findDodsV( ddsV.bt.getName(), true);
+    DodsV dataV =  findDodsV( ddsV.bt.getEncodedName(), true);
     /* if ((dataV == null) && (ddsV.bt instanceof DGrid)) { // when asking for the Grid array
       DodsV gridArray = (DodsV) ddsV.children.get(0);
       return findDodsV( gridArray.bt.getName(), dataVlist, true);

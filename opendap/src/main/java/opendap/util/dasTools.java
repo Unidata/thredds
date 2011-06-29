@@ -157,7 +157,7 @@ public class dasTools {
             while (e.hasMoreElements()) {
                 DArrayDimension dad = (DArrayDimension) e.nextElement();
 
-                type += "[" + dad.getName() + " = 0.." + (dad.getSize() - 1) + "]";
+                type += "[" + dad.getEncodedName() + " = 0.." + (dad.getSize() - 1) + "]";
 
             }
             type += "\n";

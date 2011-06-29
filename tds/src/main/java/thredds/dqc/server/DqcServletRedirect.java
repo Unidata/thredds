@@ -315,7 +315,7 @@ public class DqcServletRedirect extends HttpServlet
                                                              ? this.testTargetContextPath.length()
                                                              : this.targetContextPath.length() );
 
-    String queryString = req.getQueryString();
+    String queryString = req. getQueryString();
     String reqURL = requestURIPath;
     String targetURL = targetURIPath;
     if ( queryString != null ) reqURL = reqURL + "?" + queryString;

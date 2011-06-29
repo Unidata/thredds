@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.util.*;
 
 import opendap.dap.*;
+import opendap.util.EscapeStrings;
 
 import static opendap.dap.parsers.DapParser.*;
 
@@ -187,7 +188,7 @@ public abstract class Dapparse
     datasetbody(Dapparse state, Object name, Object decls)
             throws ParseException
     {
-        ddsobject.setName((String) name);
+        ddsobject.setClearName((String) name);
         for (Object o : (List<Object>) decls)
             ddsobject.addVariable((BaseType) o);
         if (dapdebug > 0) {
@@ -208,12 +209,12 @@ public abstract class Dapparse
                     Attribute a = (Attribute) o;
                     Iterator it = a.getValuesIterator();
                     while (it.hasNext())
-                        dasobject.appendAttribute(a.getName(),
+                        dasobject.appendAttribute(a.getEncodedName(),
                                 a.getType(),
                                 (String) it.next()); /*UGH*/
                 } else if (o instanceof AttributeTable) {
                     AttributeTable aset = (AttributeTable) o;
-                    dasobject.addAttributeTable(aset.getName(), aset);
+                    dasobject.addAttributeTable(aset.getEncodedName(), aset);
                 } else
                     throw new Exception("attribute body: unknown object: " + o);
             }
@@ -352,10 +353,10 @@ public abstract class Dapparse
                     Attribute a = (Attribute) o;
                     Iterator it = a.getValuesIterator();
                     while (it.hasNext())
-                        attset.appendAttribute(a.getName(), a.getType(), (String) it.next());
+                        attset.appendAttribute(a.getEncodedName(), a.getType(), (String) it.next());
                 } else if (o instanceof AttributeTable) {
                     AttributeTable at = (AttributeTable) o;
-                    attset.addContainer(at.getName(), at);
+                    attset.addContainer(at.getEncodedName(), at);
                 } else
                     throw new ParseException("attrset: unexpected object: " + o);
             }
@@ -391,7 +392,7 @@ public abstract class Dapparse
         /* Interface requires rebuilding the dimensions */
         for (Object o : dimensions) {
             DArrayDimension dim = (DArrayDimension) o;
-            node.appendDim(dim.getSize(), dim.getName());
+            node.appendDim(dim.getSize(), dim.getEncodedName());
         }
     }
 
@@ -406,7 +407,7 @@ public abstract class Dapparse
             dap_parse_error(state, "Duplicate structure field names in same scope: %s.%s", (String) name, dupname);
             return (Object) null;
         }
-        node = factory.newDStructure((String) name);
+        node = factory.newDStructure(clearName((String) name));
         List<Object> list = (List<Object>) fields;
         for (Object o : list)
             ((DStructure) node).addVariable((BaseType) o, NA);
@@ -430,7 +431,7 @@ public abstract class Dapparse
             dap_parse_error(state, "Duplicate sequence member names in same scope: %s.%s", (String) name, dupname);
             return (Object) null;
         }
-        node = factory.newDSequence((String) name);
+        node = factory.newDSequence(clearName((String) name));
         List<Object> list = (List<Object>) members;
         for (Object o : list)
             node.addVariable((BaseType) o, NA);
@@ -450,7 +451,7 @@ public abstract class Dapparse
             dap_parse_error(state, "Duplicate grid map names in same scope: %s.%s", (String) name, dupname);
             return (Object) null;
         }
-        node = factory.newDGrid((String) name);
+        node = factory.newDGrid(clearName((String) name));
         node.addVariable(arraydecl, DGrid.ARRAY);
         for (Object m : mapdecls)
             node.addVariable((BaseType) m, DGrid.MAPS);
@@ -506,23 +507,23 @@ public abstract class Dapparse
     {
         switch (etype) {
         case SCAN_BYTE:
-            return factory.newDByte(name);
+            return factory.newDByte(clearName(name));
         case SCAN_INT16:
-            return factory.newDInt16(name);
+            return factory.newDInt16(clearName(name));
         case SCAN_UINT16:
-            return factory.newDUInt16(name);
+            return factory.newDUInt16(clearName(name));
         case SCAN_INT32:
-            return factory.newDInt32(name);
+            return factory.newDInt32(clearName(name));
         case SCAN_UINT32:
-            return factory.newDUInt32(name);
+            return factory.newDUInt32(clearName(name));
         case SCAN_FLOAT32:
-            return factory.newDFloat32(name);
+            return factory.newDFloat32(clearName(name));
         case SCAN_FLOAT64:
-            return factory.newDFloat64(name);
+            return factory.newDFloat64(clearName(name));
         case SCAN_URL:
-            return factory.newDURL(name);
+            return factory.newDURL(clearName(name));
         case SCAN_STRING:
-            return factory.newDString(name);
+            return factory.newDString(clearName(name));
         default:
             throw new ParseException("basetypefor: illegal type: " + etype);
         }
@@ -582,14 +583,17 @@ public abstract class Dapparse
             throws ParseException
     {
         if (o instanceof BaseType)
-            return ((BaseType) o).getName();
+            return ((BaseType) o).getClearName();
         if (o instanceof Attribute)
-            return ((Attribute) o).getName();
+            return ((Attribute) o).getClearName();
         if (o instanceof AttributeTable)
-            return ((AttributeTable) o).getName();
+            return ((AttributeTable) o).getClearName();
         throw new ParseException("extractname: illegal object class: " + o);
     }
 
-
+    String clearName(String encodedname)
+    {
+        return EscapeStrings.unEscapeDAPIdentifier(encodedname);
+    }
 
 }

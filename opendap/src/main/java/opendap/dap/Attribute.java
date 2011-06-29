@@ -672,7 +672,7 @@ public class Attribute extends DAPNode
 
     if (!(attr instanceof Vector)) {
       throw new NoSuchAttributeException(
-              "The Attribute '" + getName() + "' is a container. " +
+              "The Attribute '" + getEncodedName() + "' is a container. " +
                       "It's contents are Attribues, not values.");
     }
   }
@@ -683,7 +683,7 @@ public class Attribute extends DAPNode
 
     if (!(attr instanceof AttributeTable)) {
       throw new NoSuchAttributeException(
-              "The Attribute '" + getName() + "' is not a container (AttributeTable)." +
+              "The Attribute '" + getEncodedName() + "' is not a container (AttributeTable)." +
                       "It's content is made up of values, not other Attributes.");
     }
     if (_Debug) System.out.println("The Attribute is a container");
@@ -703,7 +703,7 @@ public class Attribute extends DAPNode
     } else {
       if (_Debug) os.println("    Printing Attribute \"" + _name + "\".");
 
-      os.print(pad + getTypeString() + " " + getName() + " ");
+      os.print(pad + getTypeString() + " " + getEncodedName() + " ");
 
       Enumeration es = ((Vector) this.attr).elements();
 
@@ -836,7 +836,7 @@ public class Attribute extends DAPNode
       if (_Debug) pw.println("    Printing Attribute \"" + _name + "\".");
 
       pw.println(pad + "<Attribute name=\"" +
-              DDSXMLParser.normalizeToXML(getName()) +
+              DDSXMLParser.normalizeToXML(getEncodedName()) +
               "\" type=\"" + getTypeString() + "\">");
 
       Enumeration es = ((Vector) this.attr).elements();

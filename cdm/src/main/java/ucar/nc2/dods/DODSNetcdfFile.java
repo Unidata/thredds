@@ -306,7 +306,10 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
           String vname = proj.substring(0, subsetPos);
           String vCE = proj.substring(subsetPos);
           if (debugCE) System.out.println(" vCE = <" + vname + "><" + vCE + ">");
-          DODSVariable dodsVar = (DODSVariable) findVariable(vname); // LOOK must be escaped ??
+          DODSVariable dodsVar = (DODSVariable) findVariable(vname);
+          if(dodsVar == null)
+              throw new IOException("Variable not found: "+vname);
+
           dodsVar.setCE(vCE);
           dodsVar.setCaching(true);
         }
@@ -650,7 +653,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
   private Variable makeVariable(Group parentGroup, Structure parentStructure, DodsV dodsV) throws IOException {
 
     opendap.dap.BaseType dodsBT = dodsV.bt;
-    String dodsShortName = dodsBT.getName();
+    String dodsShortName = dodsBT.getClearName();
     if (debugConstruct) System.out.print("DODSNetcdf makeVariable try to init <" + dodsShortName + "> :");
 
     // Strings
@@ -687,7 +690,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
         // this is how the netccdf servers do it
         for (int i = 1; i < dodsV.children.size(); i++) {
           DodsV map = dodsV.children.get(i);
-          String shortName = DODSNetcdfFile.makeNetcdfName(map.bt.getName());
+          String shortName = DODSNetcdfFile.makeNetcdfName(map.bt.getEncodedName());
           Variable mapV = parentGroup.findVariable(shortName); // LOOK WRONG
           if (mapV == null) {        // if not, add it LOOK need to compare values
             mapV = addVariable(parentGroup, parentStructure, map);
@@ -946,9 +949,9 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
     Enumeration enumerate = dodsArray.getDimensions();
     while (enumerate.hasMoreElements()) {
       opendap.dap.DArrayDimension dad = (opendap.dap.DArrayDimension) enumerate.nextElement();
-      String name = dad.getName();
+      String name = dad.getEncodedName();
       if (name != null)
-        name = StringUtil.unescape(dad.getName());
+        name = StringUtil.unescape(dad.getEncodedName());
 
       Dimension myd;
 
@@ -1025,8 +1028,8 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
   private String makeDODSname(DodsV dodsV) {
     DodsV parent = dodsV.parent;
     if (parent.bt != null)
-      return (makeDODSname(parent) + "." + dodsV.bt.getName());
-    return dodsV.bt.getName();
+      return (makeDODSname(parent) + "." + dodsV.bt.getEncodedName());
+    return dodsV.bt.getEncodedName();
   }
 
   static String

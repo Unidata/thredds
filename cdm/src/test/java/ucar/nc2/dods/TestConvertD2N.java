@@ -143,7 +143,7 @@ public class TestConvertD2N {
   }
 
   static void showDDS( DataDDS dds, PrintWriter out) {
-    out.println("DDS="+dds.getName());
+    out.println("DDS="+dds.getEncodedName());
     Enumeration e = dds.getVariables();
     while (e.hasMoreElements()) {
       BaseType bt  =  (BaseType) e.nextElement();
@@ -198,7 +198,7 @@ public class TestConvertD2N {
       return;
     }
 
-    out.println(space + bt.getName() + " ("+bt.getClass().getName()+")");
+    out.println(space + bt.getEncodedName() + " ("+bt.getClass().getName()+")");
 
     if (bt instanceof DConstructor) {
       Enumeration e = ((DConstructor)bt).getVariables();
@@ -207,14 +207,14 @@ public class TestConvertD2N {
         BaseType nbt  =  (BaseType) e.nextElement();
         showBT( nbt, out, nspace);
       }
-      out.println(space+"-----"+ bt.getName());
+      out.println(space+"-----"+ bt.getEncodedName());
     }
 
   }
 
   static void showSequence( DSequence seq, PrintWriter out, String space) {
     int nrows = seq.getRowCount();
-    out.println(space + seq.getName() + " ("+seq.getClass().getName()+")");
+    out.println(space + seq.getEncodedName() + " ("+seq.getClass().getName()+")");
 
     String nspace = space + " ";
 
@@ -231,14 +231,14 @@ public class TestConvertD2N {
 
   static void showArray( DArray a, PrintWriter out, String space) {
     int nrows = a.getLength();
-    out.print(space + a.getName() + " ("+a.getClass().getName()+") ");
+    out.print(space + a.getEncodedName() + " ("+a.getClass().getName()+") ");
 
     out.print(" (");
     int count = 0;
     Enumeration dims = a.getDimensions();
     while (dims.hasMoreElements()) {
       DArrayDimension dim = (DArrayDimension) dims.nextElement();
-      String name = dim.getName() == null ? "" : dim.getName()+"=";
+      String name = dim.getEncodedName() == null ? "" : dim.getEncodedName()+"=";
       if (count > 0) out.print(",");
       out.print( name+dim.getSize());
       count++;

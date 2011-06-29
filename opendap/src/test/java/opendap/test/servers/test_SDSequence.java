@@ -108,7 +108,7 @@ public class test_SDSequence extends SDSequence {
         testEngine te = (testEngine) specialO;
 
         if (_Debug)
-            System.out.println("\nReading row " + sCount + " of Sequence \"" + getName() + "\" from " + datasetName + ":");
+            System.out.println("\nReading row " + sCount + " of Sequence \"" + getEncodedName() + "\" from " + datasetName + ":");
 
         rv = getRowVector();
 
@@ -117,7 +117,7 @@ public class test_SDSequence extends SDSequence {
             ServerMethods sm = (ServerMethods) rv.get(i);
 
             if (_Debug)
-                System.out.println("Reading variable: " + ((BaseType) sm).getTypeName() + ", " + ((BaseType) sm).getName());
+                System.out.println("Reading variable: " + ((BaseType) sm).getTypeName() + ", " + ((BaseType) sm).getEncodedName());
 
             if (sm.isProject()) {
                 sm.read(datasetName, specialO);

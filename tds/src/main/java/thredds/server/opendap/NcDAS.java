@@ -130,7 +130,7 @@ public class NcDAS extends opendap.dap.DAS {
 
      // The variable names as taken from the variable,
      // are not dap escaped, so we need to make sure that happens.
-     String name = EscapeStrings.escapeDAPIdentifier(v.getShortName());
+     String name = v.getShortName();
 
      opendap.dap.AttributeTable table;
 
@@ -168,7 +168,7 @@ public class NcDAS extends opendap.dap.DAS {
       try {
           // The attribute names as taken from the variable,
           // are not escaped, so we need to make sure that happens.
-          String attName = EscapeStrings.escapeDAPIdentifier(att.getName());
+          String attName = att.getName();
         if (att.isString()) {
           /* FIX String value = escapeAttributeStringValues(att.getStringValue());
           table.appendAttribute(attName, dods_type, "\""+value+"\"");

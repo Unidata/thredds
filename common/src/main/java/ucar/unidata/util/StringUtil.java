@@ -496,7 +496,6 @@ public class StringUtil {
     return sb.toString();
   }
 
-
   /**
    * Escape any char not alphanumeric or in okChars.
    * Escape by replacing char with %xx (hex).

@@ -280,7 +280,7 @@ public class ConvertD2N {
       Vector dv = outerSeq.getRow(row);
       for (int j = 0; j < dv.size(); j++) {
         BaseType bt = (BaseType) dv.elementAt(j);
-        if (bt.getName().equals(name)) {
+        if (bt.getEncodedName().equals(name)) {
           DSequence innerSeq = (DSequence) bt;
           int innerLength = innerSeq.getRowCount();
           aseq.setSequenceLength(row, innerLength);
@@ -324,7 +324,7 @@ public class ConvertD2N {
       Vector dv = dseq.getRow(row);
       for (int j = 0; j < dv.size(); j++) {
         BaseType member_data = (BaseType) dv.elementAt(j);
-        StructureMembers.Member member = members.findMember( member_data.getName());
+        StructureMembers.Member member = members.findMember( member_data.getEncodedName());
         IndexIterator ii = (IndexIterator) member.getDataObject();
         iconvertData( member_data, ii);
       }

@@ -93,7 +93,7 @@ class Util {
         int count = 0;
         for (Enumeration e = v.elements(); e.hasMoreElements();) {
             BaseType bt = (BaseType) e.nextElement();
-            String tempName = bt.getName();
+            String tempName = bt.getEncodedName();
             if (tempName == null)
                 throw new BadSemanticsException(bt.getClass().getName() + " variable with no name");
             names[count++] = tempName;

@@ -158,7 +158,7 @@ loop:        for(int i = 0; i < ntestsets && pass; i++) {
                     ds = new GuardedDatasetCacheAndClone(path, ncfile, false);
                     dds = ds.getDDS();
                     // force the name
-                    dds.setName(basename);
+                    dds.setEncodedName(basename);
                     if(debug) {System.err.println("initial dds:\n");dds.printDecl(System.err);}
 
                     CEEvaluator ce = new CEEvaluator(dds);
@@ -249,7 +249,7 @@ loop:        for(int i = 0; i < ntestsets && pass; i++) {
             ds = new GuardedDatasetCacheAndClone(path, ncfile, false);
             dds = ds.getDDS();
             // force the name
-            dds.setName(basename);
+            dds.setEncodedName(basename);
             CEEvaluator ce = new CEEvaluator(dds);
             ce.parseConstraint("");
             content = new FileWriter(path+".asc");

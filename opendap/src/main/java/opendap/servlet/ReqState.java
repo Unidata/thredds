@@ -127,27 +127,18 @@ public class ReqState {
 
     public ReqState(HttpServletRequest myRequest, HttpServletResponse response,
                     ServletConfig sc,
-                    String serverClassName) throws BadURLException {
+                    String serverClassName, String decodedquery) throws BadURLException {
 
         this.myServletConfig = sc;
         this.myHttpRequest = myRequest;
         this.response = response;
         this.serverClassName = serverClassName;
+        this.CE = decodedquery;
 
-        // Get the constraint expression from the request object and
-        // convert all those special characters denoted by a % sign
-        //this.CE = prepCE(myHttpRequest.getQueryString());
-        String query = myHttpRequest.getQueryString();
-        //wrong: the query has already been escaped. this.CE = (query == null) ? "" : EscapeStrings.www2ce(query);
-        this.CE = query;
-
-        // If there was simply no constraint then prepCE() should have returned
-        // a CE equal "", the empty string. A null return indicates an error.
+        // If there was simply no constraint then getQuery() should have returned null
         if (this.CE == null) {
             this.CE = "";
-            //throw new BadURLException();
         }
-
 
         processDodsURL();
 
@@ -553,7 +544,15 @@ public class ReqState {
         return (ts);
     }
 
+    public StringBuffer getRequestURL()
+    {
+        return myHttpRequest.getRequestURL();
+    }
 
+    public String getQueryString()
+    {
+        return CE;
+    }
 }
 
 

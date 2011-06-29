@@ -171,7 +171,7 @@ public class GenerateConstraints extends TestCeParser
 	    if(bt.getParent() instanceof DArray)
 		rank = ((DArray)(bt.getParent())).numDimensions();
 	    if(i > 0) buf.append('.');
-	    buf.append(bt.getName());
+	    buf.append(bt.getEncodedName());
             for (int j = 0; j < rank; j++) {
                 String dimprojection = dimrangeset[random.nextInt(dimrangeset.length)];
                 buf.append(dimprojection);
@@ -188,7 +188,7 @@ public class GenerateConstraints extends TestCeParser
 	    if(bt.getParent() instanceof DArray)
 		rank = ((DArray)(bt.getParent())).numDimensions();
 	    if(i > 0) buf.append('.');
-	    buf.append(bt.getName());
+	    buf.append(bt.getEncodedName());
             for (int j= 0; j < rank; j++) {
                 String dimprojection = dimset[random.nextInt(dimset.length)];
                 buf.append(dimprojection);

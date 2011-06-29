@@ -150,7 +150,7 @@ public abstract class SDGrid extends DGrid implements ServerArrayMethods, RelOps
         }
 
         if (isStructure || isGrid) {
-            os.print(space + "} " + getName());
+            os.print(space + "} " + getEncodedName());
             if (print_semi)
                 os.println(";");
         }
@@ -576,9 +576,9 @@ public abstract class SDGrid extends DGrid implements ServerArrayMethods, RelOps
 
         if (isGrid) {
             pw.print(pad + "<Grid ");
-            if (getName() != null) {
+            if (getEncodedName() != null) {
                 pw.print(" name=\"" +
-                        DDSXMLParser.normalizeToXML(getName()) + "\"");
+                        DDSXMLParser.normalizeToXML(getEncodedName()) + "\"");
             }
             pw.println(">");
         }
@@ -586,9 +586,9 @@ public abstract class SDGrid extends DGrid implements ServerArrayMethods, RelOps
         if (isStructure) {
 
             pw.print(pad + "<Structure");
-            if (getName() != null) {
+            if (getEncodedName() != null) {
                 pw.print(" name=\"" +
-                        DDSXMLParser.normalizeToXML(getName()) + "\"");
+                        DDSXMLParser.normalizeToXML(getEncodedName()) + "\"");
             }
             pw.println(">");
 

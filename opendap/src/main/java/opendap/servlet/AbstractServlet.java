@@ -715,7 +715,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
 
       // Send the binary data back to the client
       DataOutputStream sink = new DataOutputStream(bOut);
-      ce.send(myDDS.getName(), sink, ds);
+      ce.send(myDDS.getEncodedName(), sink, ds);
       sink.flush();
 
       // Finish up sending the compressed stuff, but don't
@@ -815,7 +815,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
 
       // Send the binary data back to the client
       DataOutputStream sink = new DataOutputStream(bOut);
-      ce.send(myDDS.getName(), sink, ds);
+      ce.send(myDDS.getEncodedName(), sink, ds);
       sink.flush();
 
       // Finish up tsending the compressed stuff, but don't
@@ -1679,12 +1679,12 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
    * @param request
    * @return the request state
    */
-  private ReqState getRequestState(HttpServletRequest request, HttpServletResponse response) {
+  protected ReqState getRequestState(HttpServletRequest request, HttpServletResponse response) {
 
     ReqState rs = null;
 
     try {
-      rs = new ReqState(request, response, getServletConfig(), getServerName());
+      rs = new ReqState(request, response, getServletConfig(), getServerName(), request.getQueryString());
     } catch (BadURLException bue) {
       rs = null;
     }

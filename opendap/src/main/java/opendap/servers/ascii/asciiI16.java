@@ -111,9 +111,9 @@ public class asciiI16 extends DInt16 implements toASCII {
     public String toASCIIFlatName(String rootName) {
         String s;
         if (rootName != null) {
-            s = rootName + "." + getName();
+            s = rootName + "." + getEncodedName();
         } else {
-            s = getName();
+            s = getEncodedName();
         }
         return (s);
     }

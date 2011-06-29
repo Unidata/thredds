@@ -4,6 +4,7 @@ import java.io.*;
 import java.net.URI;
 import java.util.*;
 
+import opendap.util.EscapeStrings;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpMethodBase;
 import org.apache.commons.httpclient.HttpState;
@@ -28,7 +29,7 @@ public class HTTPMethod
      HTTPSession session = null;
      HttpMethodBase method = null; // Current method
      String uri = null;
-     String query = null;
+     String encodeduri = null; // with query in encoded form
      List<Header> headers = new ArrayList<Header>();
      HashMap<String,Object> params = new HashMap<String,Object>();
     HttpState context = null;
@@ -46,32 +47,27 @@ public class HTTPMethod
             throw new HTTPException("newMethod: no uri specified");
         this.session = session;
         this.uri = uri;
-        // Break off the query part and encode
-        int i = uri.indexOf('?');
-        if(i >= 0) {
-            query = uri.substring(i+1,uri.length());
-            /*try {
-                query = URIUtil.encodeQuery(query);
-            } catch (URIException ue) {
-                throw new HTTPException(ue);
-            }  */
-        }
+        // Break off the constraint expression and encode using EscapeStrings.encodeDAPCE
+        String[] split = EscapeStrings.splitURL(uri);
+        this.encodeduri = split[0]
+                            + (split[1] == null ? "" : '?' + EscapeStrings.escapeDAPCE(split[1]));
+
         this.methodclass = m;
         switch (this.methodclass) {
         case Put:
-            this.method = new PutMethod(uri);
+            this.method = new PutMethod(encodeduri);
             break;
         case Post:
-            this.method = new PostMethod(uri);
+            this.method = new PostMethod(encodeduri);
             break;
         case Get:
-              this.method = new GetMethod(uri);
+              this.method = new GetMethod(encodeduri);
               break;
         case Head:
-            this.method = new HeadMethod(uri);
+            this.method = new HeadMethod(encodeduri);
                 break;
         case Options:
-            this.method = new OptionsMethod(uri);
+            this.method = new OptionsMethod(encodeduri);
                break;
         default:
             this.method = null;
@@ -131,7 +127,8 @@ public class HTTPMethod
             }
             setcontent();
             session.sessionClient.executeMethod(method);
-            return getStatusCode();
+            int code = getStatusCode();
+            return code;
         } catch (Exception ie) {
             ie.printStackTrace();
             throw new HTTPException(ie);

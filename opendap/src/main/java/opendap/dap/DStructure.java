@@ -142,7 +142,7 @@ public class DStructure extends DConstructor implements ClientIO {
         } else {
             for (Enumeration e = vars.elements(); e.hasMoreElements();) {
                 BaseType v = (BaseType) e.nextElement();
-                if (v.getName().equals(name))
+                if (v.getEncodedName().equals(name))
                     return v;
             }
         }
@@ -212,7 +212,7 @@ public class DStructure extends DConstructor implements ClientIO {
             throws BadSemanticsException {
         super.checkSemantics(all);
 
-        Util.uniqueNames(vars, getName(), getTypeName());
+        Util.uniqueNames(vars, getEncodedName(), getTypeName());
 
         if (all) {
             for (Enumeration e = vars.elements(); e.hasMoreElements();) {
@@ -252,7 +252,7 @@ public class DStructure extends DConstructor implements ClientIO {
             BaseType bt = (BaseType) e.nextElement();
             bt.printDecl(os, space + "    ", true, constrained);
         }
-        os.print(space + "} " + getName());
+        os.print(space + "} " + getEncodedName());
 
         if (print_semi)
             os.println(";");

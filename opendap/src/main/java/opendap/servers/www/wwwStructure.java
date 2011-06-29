@@ -44,7 +44,6 @@ package opendap.servers.www;
 
 import java.io.*;
 import java.util.Enumeration;
-import java.util.Vector;
 
 import opendap.dap.*;
 
@@ -90,7 +89,7 @@ public class wwwStructure extends DStructure implements BrowserForm {
 
         wwwOutPut wOut = new wwwOutPut(pw);
 
-        pw.println("<b>Structure " + getName() + "</b><br>");
+        pw.println("<b>Structure " + getEncodedName() + "</b><br>");
         pw.println("<dl><dd>");
 
         Enumeration e = getVariables();

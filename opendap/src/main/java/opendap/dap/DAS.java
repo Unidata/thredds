@@ -271,7 +271,7 @@ public class DAS extends AttributeTable
             if (thisA.isAlias()) {
                 //Is Alias? Resolve it!
                 resolveAlias((Alias) thisA);
-                if (Debug.isSet("DAS")) System.out.println("Resolved Alias: '" + thisA.getName() + "'\n");
+                if (Debug.isSet("DAS")) System.out.println("Resolved Alias: '" + thisA.getEncodedName() + "'\n");
             } else if (thisA.isContainer()) {
                 //Is AttributeTable (container)? Search it!
 
@@ -405,7 +405,7 @@ public class DAS extends AttributeTable
             opendap.dap.Attribute a = att.getAttribute(atName);
 
             // Get the Attributes name and Normalize it.
-            String normName = opendap.dap.DDS.normalize(a.getName());
+            String normName = opendap.dap.DDS.normalize(a.getEncodedName());
 
             // Are they the same?
             if (normName.equals(aName)) {
@@ -430,7 +430,7 @@ public class DAS extends AttributeTable
                         return (getAliasAttribute(a.getContainer(), aNames));
 
                     } catch (NoSuchAttributeException nsae) {
-                        throw new MalformedAliasException("Attribute " + a.getName() +
+                        throw new MalformedAliasException("Attribute " + a.getEncodedName() +
                                 " is not an attribute container. (AttributeTable) " +
                                 " It may not contain the attribute: " +
                                 aName);
@@ -438,7 +438,7 @@ public class DAS extends AttributeTable
 
                 } else { // Dead-end, through an exception!
 
-                    throw new MalformedAliasException("Attribute " + a.getName() +
+                    throw new MalformedAliasException("Attribute " + a.getEncodedName() +
                             " is not an attribute container. (AttributeTable) " +
                             " It may not contain the attribute: " +
                             aName);
@@ -447,7 +447,7 @@ public class DAS extends AttributeTable
             }
         }
         // Nothing Matched, so this search failed.
-        throw new UnresolvedAliasException("The alias `" + currentAlias.getName() +
+        throw new UnresolvedAliasException("The alias `" + currentAlias.getEncodedName() +
                 "` references the attribute: `" + aName + "` which cannot be found.");
 
 

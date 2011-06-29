@@ -57,7 +57,7 @@ public class NcSDByte extends SDByte implements HasNetcdfVariable {
    * @param ncVar : the netcdf Variable
    */
   NcSDByte(Variable ncVar) {
-      super(EscapeStrings.escapeDAPIdentifier(ncVar.getShortName()));
+      super((ncVar.getShortName()));
       this.ncVar = ncVar;
   }
 

@@ -107,7 +107,7 @@ public abstract class SDSequence extends DSequence implements ServerMethods, Rel
             Vector rv = new Vector();
 
             for (int i = 0; i < elementCount(false); i++) {
-                if (_Debug) System.out.println("Building variable " + i + ": " + getVar(i).getName());
+                if (_Debug) System.out.println("Building variable " + i + ": " + getVar(i).getEncodedName());
                 rv.add(getVar(i));
             }
             if (_Debug) System.out.println("Adding row to sequence...");
@@ -224,7 +224,7 @@ public abstract class SDSequence extends DSequence implements ServerMethods, Rel
         }
         catch (NoSuchVariableException e) {
             os.println("Very Bad Things Happened When I Tried To Print " +
-                    "A Row Of The Sequence: " + getName());
+                    "A Row Of The Sequence: " + getEncodedName());
         }
         os.print(" }");
 
@@ -445,7 +445,7 @@ public abstract class SDSequence extends DSequence implements ServerMethods, Rel
                 for (Enumeration e = varTemplate.elements(); e.hasMoreElements();) {
                     ServerMethods sm = (ServerMethods) e.nextElement();
                     if (sm.isProject()) {
-                        if (_Debug) System.out.println("Sending variable: " + ((BaseType) sm).getName());
+                        if (_Debug) System.out.println("Sending variable: " + ((BaseType) sm).getEncodedName());
                         sm.serialize(dataset, sink, ce, specialO);
                     }
                 }

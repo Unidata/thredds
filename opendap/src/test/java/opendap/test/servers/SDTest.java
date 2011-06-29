@@ -82,7 +82,7 @@ public class SDTest {
             ServerMethods s = (ServerMethods) o;
             BaseType bt = (BaseType) o;
 
-            System.out.println(bt.getTypeName() + " " + bt.getName() + ":");
+            System.out.println(bt.getTypeName() + " " + bt.getEncodedName() + ":");
             System.out.println("Constrained DDS:");
 
             bt.printDecl(System.out, "    ", true, constrained);
@@ -225,7 +225,7 @@ public class SDTest {
             ce.parseConstraint(ConstraintExpression);
 
             if (Debug) System.out.println("Attempting to send data...");
-            ce.send(myDDS.getName(), sink, null);
+            ce.send(myDDS.getEncodedName(), sink, null);
 
 
             print_SDDS(myDDS, true);

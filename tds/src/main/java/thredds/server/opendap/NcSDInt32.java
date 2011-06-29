@@ -57,7 +57,7 @@ public class NcSDInt32 extends SDInt32 implements HasNetcdfVariable {
    * @param v : the netcdf Variable
    */
   NcSDInt32(Variable v) {
-      super(EscapeStrings.escapeDAPIdentifier(v.getShortName()));
+      super((v.getShortName()));
     this.ncVar = v;
   }
 
