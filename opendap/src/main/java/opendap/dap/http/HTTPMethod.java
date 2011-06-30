@@ -50,7 +50,7 @@ public class HTTPMethod
         // Break off the constraint expression and encode using EscapeStrings.encodeDAPCE
         String[] split = EscapeStrings.splitURL(uri);
         this.encodeduri = split[0]
-                            + (split[1] == null ? "" : '?' + EscapeStrings.escapeDAPCE(split[1]));
+                            + (split[1] == null ? "" : '?' + EscapeStrings.urlEscapeCE(split[1]));
 
         this.methodclass = m;
         switch (this.methodclass) {

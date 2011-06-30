@@ -40,6 +40,10 @@
 
 package opendap.util;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+
 /**
  * User: ndp
  * Date: Jul 7, 2006
@@ -119,7 +123,7 @@ public class EscapeStrings {
     // This appears to be incorrect wrt dap spec: private static String _allowableInURI = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-+_/.\\*";
     private static String _allowableInURI = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-+_\\*!~";  // plus: '"?
     // This appears to be incorrect wrt dap spec: private static String _allowableInURI_CE = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-+_/.\\,";
-    private static String _allowableInURI_CE = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-+_\\,"; // plus "?
+    private static String _allowableInURI_CE = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-+_\\,="; // plus "?
     private static char _URIEscape = '%';
 
     // These are the DEFINITIVE set of non-alphanumeric characters that are legal
@@ -390,6 +394,34 @@ public class EscapeStrings {
          }
          return pair;
      }
+
+    /**
+         * Define the DEFINITIVE URL constraint expression escape function.
+         *
+         * @param ce The expression to modify.
+         * @return The escaped expression.
+         */
+        public static String urlEscapeCE(String ce)
+        {
+           try {
+               ce = escapeString(ce, _allowableInURI_CE, _URIEscape);
+           } catch(Exception e) {ce = null;}
+           return ce;
+        }
+
+        /**
+         * Define the DEFINITIVE URL constraint expression unescape function.
+         *
+         * @param ce The expression to unescape.
+         * @return The unescaped expression.
+         */
+         public static String urlUnescapeCE(String ce)
+         {
+           try {
+               ce = unescapeString(ce, _URIEscape, "");
+           } catch(Exception e) {ce = null;}
+           return ce;
+         }
 
     public static void main(String[] args) throws Exception {
 

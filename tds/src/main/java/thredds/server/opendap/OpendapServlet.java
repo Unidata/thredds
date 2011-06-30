@@ -681,7 +681,7 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
     // The query string will come to us in encoded form
     // (see HTTPmethod.newMethod())
     String query = request.getQueryString();
-    query = EscapeStrings.unEscapeDAPCE(query);
+    query = EscapeStrings.urlUnescapeCE(query);
     log.debug("doGet query={}", query);
     try {
       rs = new ReqState(request, response, getServletConfig(), getServerName(), query);

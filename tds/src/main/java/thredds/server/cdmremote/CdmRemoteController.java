@@ -32,6 +32,7 @@
 
 package thredds.server.cdmremote;
 
+import opendap.util.EscapeStrings;
 import org.slf4j.Logger;
 import org.springframework.web.servlet.mvc.AbstractCommandController;
 import org.springframework.web.servlet.ModelAndView;
@@ -176,13 +177,17 @@ public class CdmRemoteController extends AbstractCommandController implements La
           size = 0;
           WritableByteChannel wbc = Channels.newChannel(out);
           NcStreamWriter ncWriter = new NcStreamWriter(ncfile, ServletUtil.getRequestBase(req));
-          String query = qb.getVar() != null ? qb.getVar() : req.getQueryString();
+          String query;
+          if(qb.getVar() != null)
+              query = qb.getVar();
+          else
+              query = req.getQueryString();
           if ((query == null) || (query.length() == 0)) {
             log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_BAD_REQUEST, 0));
             res.sendError(HttpServletResponse.SC_BAD_REQUEST, "must have query string");
             return null;
           }
-          query = URLDecoder.decode(query, "UTF-8");
+          query = EscapeStrings.urlUnescapeCE(query);
           StringTokenizer stoke = new StringTokenizer(query, ","); // need UTF/%decode
           while (stoke.hasMoreTokens()) {
             ParsedSectionSpec cer = ParsedSectionSpec.parseVariableSection(ncfile, stoke.nextToken());
