@@ -32,6 +32,8 @@
  */
 package ucar.nc2.ui.util;
 
+import opendap.dap.http.HTTPMethod;
+import opendap.dap.http.HTTPSession;
 import ucar.nc2.util.IO;
 import ucar.nc2.util.ListenerManager;
 
@@ -43,7 +45,8 @@ import java.io.*;
  * Sends the contents of the message to anyone who is registered as a listener.
  */
 public class SocketMessage {
-  static private final boolean debug = false, throwAway = false;
+  static private final boolean debug = true, throwAway = false;
+  static private boolean raw = false;
 
   private ServerSocket server;
   private boolean isAlreadyRunning = false;
@@ -149,6 +152,11 @@ public class SocketMessage {
             IO.copy2null(connection.getInputStream(), -1);
             /* long count = IO.writeToFile(connection.getInputStream(), "C:/temp/save");
             if (debug) System.out.println("SocketMessage had length " + count/(1000*1000)+" Mb"); */
+          } else if (raw) {
+            InputStream in = connection.getInputStream();
+            byte[] buffer = new byte[8000];
+            int bytesRead = in.read(buffer);
+            System.out.printf("%s == %s%n", bytesRead, new String(buffer,0,bytesRead));
           } else {
             message = IO.readContents(connection.getInputStream());
             if (debug) System.out.println(" SocketMessage got message= "+message);
@@ -188,8 +196,17 @@ public class SocketMessage {
 
   //////////////////////////////////////////////
   public static void main(String[] args) throws IOException {
-    new SocketMessage( 8080, "no");
-    new SocketMessage( 8080, "testing");
+    if (true) {
+      new SocketMessage( 9999, "startNewServer");
+      raw = true;
+
+    } else {
+      String url = "http://localhost:9999/test/it?what[1,2]&three;four";
+      HTTPSession session = new HTTPSession();
+      HTTPMethod method = session.newMethodHead(url);
+      method.execute();
+      method.getStatusCode();
+    }
   }
 
 }
