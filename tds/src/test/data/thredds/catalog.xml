@@ -50,7 +50,7 @@
   <!-- opendap specific -->
   <datasetScan name="opendapTest" ID="opendapTest" path="opendapTest" location="Q:/cdmUnitTest/tds/opendap">
     <metadata inherited="true">
-      <serviceName>odap</serviceName>
+      <serviceName>all</serviceName>
     </metadata>
   </datasetScan>
 

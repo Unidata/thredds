@@ -553,7 +553,6 @@ public class StringUtil {
   /**
    * Escape any char in reservedChars.
    * Escape by replacing char with %xx (hex).
-   * LOOK: need to check for %, replace with %%
    * @param x             escape this string
    * @param reservedChars these must be replaced
    * @return equivilent escaped string.

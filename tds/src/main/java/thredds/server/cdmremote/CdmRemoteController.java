@@ -182,13 +182,14 @@ public class CdmRemoteController extends AbstractCommandController implements La
               query = qb.getVar();
           else
               query = req.getQueryString();
+
           if ((query == null) || (query.length() == 0)) {
             log.info(UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_BAD_REQUEST, 0));
             res.sendError(HttpServletResponse.SC_BAD_REQUEST, "must have query string");
             return null;
           }
           query = EscapeStrings.urlUnescapeCE(query);
-          StringTokenizer stoke = new StringTokenizer(query, ","); // need UTF/%decode
+          StringTokenizer stoke = new StringTokenizer(query, ";"); // need UTF/%decode
           while (stoke.hasMoreTokens()) {
             ParsedSectionSpec cer = ParsedSectionSpec.parseVariableSection(ncfile, stoke.nextToken());
             size += ncWriter.sendData(cer.v, cer.section, wbc);
