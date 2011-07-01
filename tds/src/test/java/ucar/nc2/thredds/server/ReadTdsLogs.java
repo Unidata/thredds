@@ -64,7 +64,7 @@ public class ReadTdsLogs {
 
   ///////////////////////////////////////////////////////
   // multithreading
-  final int nthreads = 3;
+  final int nthreads = 5;
 
   ExecutorService executor;
   ExecutorCompletionService<SendRequestTask> completionService;

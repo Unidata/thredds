@@ -3,10 +3,11 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Changes in version 4.2:
- 26: (2011-06-xx)
+ 26: (2011-06-30)
+  CF Radial (alpha)
   LambertConformal accessor methods added
   hdf5: vlen can have null heapId, indicates no data
-  opendap escaping of "/,"
+  opendap escaping of "/."
   get earth radius from GRIB GDS (affects LC only)
   GRIB forecast time roundoff error
   InvCatalogs: no longer support variants of catalogs (eg 0.6 namespace)

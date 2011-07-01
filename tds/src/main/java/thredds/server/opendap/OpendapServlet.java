@@ -33,7 +33,6 @@
 
 package thredds.server.opendap;
 
-import com.sun.deploy.net.HttpResponse;
 import opendap.servlet.*;
 import opendap.dap.DAP2Exception;
 import opendap.dap.DAS;
