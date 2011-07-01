@@ -118,23 +118,36 @@ public class EscapeStrings {
 
     }
 
+    // Set of all ascii printable alphanumeric characters
+    private static String asciiAlphaNumeric = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    // Set of all ascii printable non-alphanumeric characters
+    private static String asciiNonAlphaNumeric =
+            " !\"#$%&'()*+,-./0123456789:;<=>?@[\\]^_`{|}~" ;
 
-    // May need to include/exclude the escape character!
-    // This appears to be incorrect wrt dap spec: private static String _allowableInURI = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-+_/.\\*";
-    private static String _allowableInURI = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-+_\\*!~";  // plus: '"?
-    // This appears to be incorrect wrt dap spec: private static String _allowableInURI_CE = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-+_/.\\,";
-    private static String _allowableInURI_CE = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-+_\\,="; // plus "?
+    private static String _disallowedInUrlQuery = "\"<>[\\]^`{|}%";   //Determined by experiment
+
+    // This is set of legal non-alphanumerics that can appear unescaped in a url query.
+    public static String _allowableInUrlQuery = asciiAlphaNumeric
+                                                + " !#$&'()*+,-./:;=?@_~" ; // asciiNonAlphaNumerics - _disallowedInUrlQuery
+
     private static char _URIEscape = '%';
 
+    //<obsolete>
+    // This appears to be incorrect wrt dap spec: private static String _allowableInURI = asciiAlphaNumeric + "-+_/.\\*";
+    private static String _allowableInURI =
+		asciiAlphaNumeric + "-+_\\*!~";  // plus: '"?
+    // This appears to be incorrect wrt dap spec: private static String _allowableInURI_CE = asciiAlphaNumeric + "-+_/.\\,";
+    private static String _allowableInURI_CE = asciiAlphaNumeric + "-+_\\,="; // plus "?
+    //</obsolete>
+
     // These are the DEFINITIVE set of non-alphanumeric characters that are legal
-    // in opendap identifiers
+    // in opendap identifiers (according to DAP2 protocol spec).
     public static String opendap_identifier_special_characters = "_!~*-\"";
 
     // The complete set of legal opendap identifier characters
-    public static String opendap_identifier_characters
-        = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
-          + opendap_identifier_special_characters;
-
+    public static String opendap_identifier_characters =
+		asciiAlphaNumeric
+                + opendap_identifier_special_characters;
 
     /**
      * Replace characters that are not allowed in WWW URLs using rules specific
@@ -313,67 +326,6 @@ public class EscapeStrings {
 
     }
 
-    /**
-     * Define the DEFINITIVE opendap identifier escape function.
-     * @param id The identifier to modify.
-     * @return The escaped identifier.
-     */
-    public static String escapeDAPIdentifier(String id)
-    {
-       String s;
-       try {
-           s = escapeString(id, opendap_identifier_characters, _URIEscape);
-       } catch (Exception e) {
-            s = null;
-       }
-       return s;
-    }
-
-        /**
-         * Define the DEFINITIVE opendap identifier unescape function.
-         * @param id The identifier to unescape.
-         * @return The unescaped identifier.
-         */
-       public static String unEscapeDAPIdentifier(String id)
-       {
-           String s;
-           try {
-               s = unescapeString(id, _URIEscape, "");
-           } catch (Exception e) {
-                s = null;
-           }
-           return s;
-       }
-
-    /**
-     * Define the DEFINITIVE opendap constraint expression escape function.
-     * This is required because something like ?x[1] requires specially escaping
-     * the brackets and any interior colons.
-     *
-     * @param ce The expression to modify.
-     * @return The escaped expression.
-     */
-    public static String escapeDAPCE(String ce)
-    {
-       try {
-           ce = escapeString(ce, _allowableInURI_CE, _URIEscape);
-       } catch(Exception e) {ce = null;}
-       return ce;
-    }
-
-    /**
-     * Define the DEFINITIVE opendap constraint expression unescape function.
-     *
-     * @param ce The expression to unescape.
-     * @return The unescaped expression.
-     */
-     public static String unEscapeDAPCE(String ce)
-     {
-       try {
-           ce = unescapeString(ce, _URIEscape, "");
-       } catch(Exception e) {ce = null;}
-       return ce;
-     }
 
     /**
      * Split a url into the base plus the query
@@ -396,32 +348,64 @@ public class EscapeStrings {
      }
 
     /**
-         * Define the DEFINITIVE URL constraint expression escape function.
-         *
-         * @param ce The expression to modify.
-         * @return The escaped expression.
-         */
-        public static String urlEscapeCE(String ce)
-        {
-           try {
-               ce = escapeString(ce, _allowableInURI_CE, _URIEscape);
-           } catch(Exception e) {ce = null;}
-           return ce;
-        }
+     * Define the DEFINITIVE opendap identifier escape function.
+     * @param id The identifier to modify.
+     * @return The escaped identifier.
+     */
+    public static String escapeDAPIdentifier(String id)
+    {
+       String s;
+       try {
+           s = escapeString(id, opendap_identifier_characters, _URIEscape);
+       } catch (Exception e) {
+            s = null;
+       }
+       return s;
+    }
 
-        /**
-         * Define the DEFINITIVE URL constraint expression unescape function.
-         *
-         * @param ce The expression to unescape.
-         * @return The unescaped expression.
-         */
-         public static String urlUnescapeCE(String ce)
-         {
-           try {
-               ce = unescapeString(ce, _URIEscape, "");
-           } catch(Exception e) {ce = null;}
-           return ce;
-         }
+    /**
+    * Define the DEFINITIVE opendap identifier unescape function.
+    * @param id The identifier to unescape.
+    * @return The unescaped identifier.
+    */
+    public static String unEscapeDAPIdentifier(String id)
+    {
+        String s;
+        try {
+            s = unescapeString(id, _URIEscape, "");
+        } catch (Exception e) {
+            s = null;
+        }
+        return s;
+    }
+
+    /**
+     * Define the DEFINITIVE URL constraint expression escape function.
+     *
+     * @param ce The expression to modify.
+     * @return The escaped expression.
+     */
+     public static String escapeURLQuery(String ce)
+     {
+	try {
+	    ce = escapeString(ce, _allowableInUrlQuery, _URIEscape);
+	} catch(Exception e) {ce = null;}
+        return ce;
+     }
+
+    /**
+     * Define the DEFINITIVE URL constraint expression unescape function.
+     *
+     * @param ce The expression to unescape.
+     * @return The unescaped expression.
+     */
+     public static String unescapeURLQuery(String ce)
+     {
+        try {
+            ce = unescapeString(ce, _URIEscape, "");
+        } catch(Exception e) {ce = null;}
+        return ce;
+     }
 
     public static void main(String[] args) throws Exception {
 

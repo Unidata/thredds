@@ -47,10 +47,10 @@ public class HTTPMethod
             throw new HTTPException("newMethod: no uri specified");
         this.session = session;
         this.uri = uri;
-        // Break off the constraint expre ssion and encode using EscapeStrings.encodeDAPCE
+        // Break off the constraint expression and encode using EscapeStrings.
         String[] split = EscapeStrings.splitURL(uri);
         this.encodeduri = split[0]
-                            + (split[1] == null ? "" : '?' + EscapeStrings.urlEscapeCE(split[1]));
+                            + (split[1] == null ? "" : '?' + EscapeStrings.escapeURLQuery(split[1]));
 
         this.methodclass = m;
         switch (this.methodclass) {
