@@ -124,11 +124,16 @@ public class EscapeStrings {
     private static String asciiNonAlphaNumeric =
             " !\"#$%&'()*+,-./0123456789:;<=>?@[\\]^_`{|}~" ;
 
-    private static String _disallowedInUrlQuery = "\"<>[\\]^`{|}%";   //Determined by experiment
+    private static String _disallowedInUrlQuery = " \"<>[\\]^`{|}%";   //Determined by experiment
+    private static String _disallowedInUrl      = " \"%<>[\\]^`{|}";   //Determined by experiment
 
     // This is set of legal non-alphanumerics that can appear unescaped in a url query.
     public static String _allowableInUrlQuery = asciiAlphaNumeric
-                                                + " !#$&'()*+,-./:;=?@_~" ; // asciiNonAlphaNumerics - _disallowedInUrlQuery
+                                                + "!#$&'()*+,-./:;=?@_~" ; // asciiNonAlphaNumerics - _disallowedInUrlQuery
+
+    // This is set of legal non-alphanumerics that can appear unescaped in a url query.
+    public static String _allowableInUrl = asciiAlphaNumeric
+                                            + "!#$&'()*+,-./:;=?@_~" ; // asciiNonAlphaNumerics - _disallowedInUrl
 
     private static char _URIEscape = '%';
 
@@ -406,6 +411,35 @@ public class EscapeStrings {
         } catch(Exception e) {ce = null;}
         return ce;
      }
+
+    /**
+     * Define the DEFINITIVE URL escape function. Url must not contain query
+     *
+     * @param url The expression to modify.
+     * @return The escaped expression.
+     */
+     public static String escapeURL(String url)
+     {
+    try {
+        url = escapeString(url, _allowableInUrl, _URIEscape);
+    } catch(Exception e) {url = null;}
+        return url;
+     }
+
+    /**
+     * Define the DEFINITIVE URL unescape function.
+     *
+     * @param url The expression to unescape.
+     * @return The unescaped expression.
+     */
+     public static String unescapeURL(String url)
+     {
+        try {
+            url = unescapeString(url, _URIEscape, "");
+        } catch(Exception e) {url = null;}
+        return url;
+     }
+
 
     public static void main(String[] args) throws Exception {
 

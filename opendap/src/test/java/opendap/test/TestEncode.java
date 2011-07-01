@@ -54,7 +54,7 @@ public class TestEncode extends TestCase
     public void testEncode() throws Exception
     {
 	for(char c: " !\"#$%&'()*+,-./0123456789:;<=>?@[\\]^_`{|}~".toCharArray()) {
-	    String url = "http://localhost:8080/thredds?"+c;
+	    String url = "http://localhost:8080/thredds/"+c;
 	    try {
 	    HttpMethodBase cmd = new GetMethod(url);
 	    } catch (Exception e) {

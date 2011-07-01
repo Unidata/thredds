@@ -127,7 +127,7 @@ public class ReqState {
 
     public ReqState(HttpServletRequest myRequest, HttpServletResponse response,
                     ServletConfig sc,
-                    String serverClassName, String decodedquery) throws BadURLException {
+                    String serverClassName, String decodedurl, String decodedquery) throws BadURLException {
 
         this.myServletConfig = sc;
         this.myHttpRequest = myRequest;
@@ -136,9 +136,8 @@ public class ReqState {
         this.CE = decodedquery;
 
         // If there was simply no constraint then getQuery() should have returned null
-        if (this.CE == null) {
-            this.CE = "";
-        }
+        if (this.CE == null) this.CE = "";
+
 
         processDodsURL();
 
@@ -164,8 +163,8 @@ public class ReqState {
         //System.out.println("Schema Location: "+getSchemaLocation());
 
 
-        requestURL = myHttpRequest.getRequestURL().toString();
 
+        requestURL = (decodedurl);
 
     }
 
@@ -546,7 +545,7 @@ public class ReqState {
 
     public StringBuffer getRequestURL()
     {
-        return myHttpRequest.getRequestURL();
+        return new StringBuffer(requestURL);
     }
 
     public String getQueryString()

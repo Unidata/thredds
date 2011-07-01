@@ -677,13 +677,18 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
   protected ReqState getRequestState(HttpServletRequest request, HttpServletResponse response) {
 
     ReqState rs = null;
-    // The query string will come to us in encoded form
+    // The url and query strings will come to us in encoded form
     // (see HTTPmethod.newMethod())
+    String baseurl = request.getQueryString();
+    baseurl = EscapeStrings.unescapeURL(baseurl);
+    log.debug("doGet baseurl={}", baseurl);
+
     String query = request.getQueryString();
     query = EscapeStrings.unescapeURLQuery(query);
     log.debug("doGet query={}", query);
+
     try {
-      rs = new ReqState(request, response, getServletConfig(), getServerName(), query);
+      rs = new ReqState(request, response, getServletConfig(), getServerName(), baseurl, query);
     } catch (BadURLException bue) {
       rs = null;
     }
