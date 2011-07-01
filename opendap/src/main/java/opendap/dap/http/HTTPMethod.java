@@ -51,7 +51,6 @@ public class HTTPMethod
         String[] split = EscapeStrings.splitURL(uri);
         this.encodeduri = split[0]
                             + (split[1] == null ? "" : '?' + EscapeStrings.escapeURLQuery(split[1]));
-
         this.methodclass = m;
         switch (this.methodclass) {
         case Put:
