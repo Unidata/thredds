@@ -29,7 +29,6 @@ public class HTTPMethod
      HTTPSession session = null;
      HttpMethodBase method = null; // Current method
      String uri = null;
-     String encodeduri = null; // with query in encoded form
      List<Header> headers = new ArrayList<Header>();
      HashMap<String,Object> params = new HashMap<String,Object>();
     HttpState context = null;
@@ -47,27 +46,31 @@ public class HTTPMethod
             throw new HTTPException("newMethod: no uri specified");
         this.session = session;
         this.uri = uri;
-        // Break off the constraint expression and encode each piece using EscapeStrings.
+
+        // Assume uri has already been encoded
+        if(false) {// Break off the constraint expression and encode each piece using EscapeStrings.
         String[] split = EscapeStrings.splitURL(uri);
-        this.encodeduri =
-                (split[0] == null ? "" : '?' + EscapeStrings.escapeURL(split[0]))
+        String encodeduri =
+                (split[0] == null ? "" : EscapeStrings.escapeURL(split[0]))
               + (split[1] == null ? "" : '?' + EscapeStrings.escapeURLQuery(split[1]));
+        }
+
         this.methodclass = m;
         switch (this.methodclass) {
         case Put:
-            this.method = new PutMethod(encodeduri);
+            this.method = new PutMethod(uri);
             break;
         case Post:
-            this.method = new PostMethod(encodeduri);
+            this.method = new PostMethod(uri);
             break;
         case Get:
-              this.method = new GetMethod(encodeduri);
+              this.method = new GetMethod(uri);
               break;
         case Head:
-            this.method = new HeadMethod(encodeduri);
+            this.method = new HeadMethod(uri);
                 break;
         case Options:
-            this.method = new OptionsMethod(encodeduri);
+            this.method = new OptionsMethod(uri);
                break;
         default:
             this.method = null;

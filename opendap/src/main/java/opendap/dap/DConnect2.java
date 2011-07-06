@@ -85,6 +85,7 @@ public class DConnect2 {
   }
 
   private String urlString; // The current DODS URL without Constraint Expression
+  private String urlStringEncoded; // encoded form of urlString
   private String filePath = null; // if url is file://
   private InputStream stream = null; //if reading from a stream
 
@@ -161,7 +162,8 @@ public class DConnect2 {
       this.projString = this.selString = "";
     }
     this.acceptCompress = acceptCompress;
-
+    // capture encoded url
+    this.urlStringEncoded = EscapeStrings.escapeURL(this.urlString);
     // Check out the URL to see if it is file://
     try {
       URL testURL = new URL(urlString);
@@ -322,7 +324,7 @@ public class DConnect2 {
   public void closeSession() {
     try {
       if (allowSessions && hasSession) {
-        openConnection(urlString + ".close", new Command() {
+        openConnection(urlStringEncoded + ".close", new Command() {
           public void process(InputStream is) throws IOException {
             byte[] buffer = new byte[4096];  // read the body fully
             while (is.read(buffer) > 0) {
@@ -453,7 +455,7 @@ is =  new StringBufferInputStream (contents); */
       command.process(stream);
     } else { // assume url is remote
       try {
-          openConnection(urlString + ".das" + projString + selString, command);
+          openConnection(urlStringEncoded + ".das" + projString + selString, command);
       } catch (DAP2Exception de) {
           //if(de.getErrorCode() != DAP2Exception.NO_SUCH_FILE)
               //throw de;  // rethrow
@@ -509,7 +511,7 @@ is =  new StringBufferInputStream (contents); */
     } else if (stream != null) {
       command.process(stream);
     } else { // must be a remote url
-      openConnection(urlString + ".dds" + getCompleteCE(CE), command);
+      openConnection(urlStringEncoded + ".dds" + EscapeStrings.escapeURLQuery(getCompleteCE(CE)), command);
     }
     return command.dds;
   }
@@ -533,22 +535,18 @@ is =  new StringBufferInputStream (contents); */
    *         with integrated with the clients)
    */
   private String getCompleteCE(String CE) {
-    String localProjString, localSelString;
+    String localProjString = null;
+    String localSelString = null;
+    //remove any leading '?'
+    if(CE.startsWith("?")) CE = CE.substring(1);
     int selIndex = CE.indexOf('&');
-    if (selIndex != -1) {
-
-      if (CE.indexOf('?') == 0)
-        localProjString = CE.substring(1, selIndex);
-      else
-        localProjString = CE.substring(0, selIndex);
-
+    if(selIndex == 0) {
+        localProjString = "";
+    } else if(selIndex > 0) {
       localSelString = CE.substring(selIndex);
-    } else {
-      if (CE.indexOf('?') == 0)
-        localProjString = CE.substring(1);
-      else
+    } else {// selIndex < 0
         localProjString = CE;
-      localSelString = "";
+        localSelString = "";
     }
 
     String ce = projString;
@@ -571,9 +569,7 @@ is =  new StringBufferInputStream (contents); */
       ce += localSelString;
     }
 
-    if (ce.length() > 0 && ce.indexOf('?') != 0) {
-      ce = "?" + ce;
-    }
+    if (ce.length() > 0) ce = "?" + ce;
 
     if (false) {
       System.out.println("projString: '" + projString + "'");
@@ -626,7 +622,7 @@ is =  new StringBufferInputStream (contents); */
    */
   public DDS getDDX(String CE) throws IOException, ParseException, DDSException, DAP2Exception {
     DDXCommand command = new DDXCommand();
-    openConnection(urlString + ".ddx" + getCompleteCE(CE), command);
+    openConnection(urlStringEncoded + ".ddx" + EscapeStrings.escapeURLQuery(getCompleteCE(CE)), command);
     return command.dds;
   }
 
@@ -708,7 +704,7 @@ is =  new StringBufferInputStream (contents); */
           ParseException, DDSException, DAP2Exception {
 
     DataDDXCommand command = new DataDDXCommand(btf);
-    openConnection(urlString + ".ddx" + getCompleteCE(CE), command);
+    openConnection(urlStringEncoded + ".ddx" + EscapeStrings.escapeURLQuery(getCompleteCE(CE)), command);
     return command.dds;
   }
 
@@ -769,7 +765,7 @@ is =  new StringBufferInputStream (contents); */
     } else if (stream != null) {
       command.process(stream);
     } else {
-      String urls = urlString + ".dods" + getCompleteCE(CE);
+      String urls = urlStringEncoded + ".dods" + EscapeStrings.escapeURLQuery(getCompleteCE(CE));
       openConnection(urls, command);
     }
     return command.dds;

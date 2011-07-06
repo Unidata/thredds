@@ -119,21 +119,33 @@ public class EscapeStrings {
     }
 
     // Set of all ascii printable alphanumeric characters
-    private static String asciiAlphaNumeric = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    public static String asciiAlphaNumeric = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     // Set of all ascii printable non-alphanumeric characters
-    private static String asciiNonAlphaNumeric =
-            " !\"#$%&'()*+,-./0123456789:;<=>?@[\\]^_`{|}~" ;
+    public static String asciiNonAlphaNumeric =
+            " !\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~" ;
 
+    // Non-alphanumeric (nam) allowed lists
+    private static String _namAllowedInURL = "!#$&'()*+,-./:;=?@_~" ;
+    private static String _namAllowedInURLQuery = "!#$&'()*+,-./:;=?@_~" ;
+
+    // Non-alphanumeric disallowed lists
     private static String _disallowedInUrlQuery = " \"<>[\\]^`{|}%";   //Determined by experiment
-    private static String _disallowedInUrl      = " \"%<>[\\]^`{|}";   //Determined by experiment
+    private static String _disallowedInUrl      = " \"<>[\\]^`{|}%";   //Determined by experiment
 
     // This is set of legal non-alphanumerics that can appear unescaped in a url query.
-    public static String _allowableInUrlQuery = asciiAlphaNumeric
-                                                + "!#$&'()*+,-./:;=?@_~" ; // asciiNonAlphaNumerics - _disallowedInUrlQuery
+    public static String _allowableInUrlQuery =   asciiAlphaNumeric +_namAllowedInURLQuery;
+                                                //+ "!#$&'()*+,-./:;=?@_~" ; // asciiNonAlphaNumerics - _disallowedInUrlQuery
 
-    // This is set of legal non-alphanumerics that can appear unescaped in a url query.
-    public static String _allowableInUrl = asciiAlphaNumeric
-                                            + "!#$&'()*+,-./:;=?@_~" ; // asciiNonAlphaNumerics - _disallowedInUrl
+    // This is set of legal characters that can appear unescaped in a url query.
+    public static String _allowableInUrl =   asciiAlphaNumeric + _namAllowedInURL;
+                                            //+ "!#$&'()*+,-./:;=?@_~" ; // asciiNonAlphaNumerics - _disallowedInUrl
+
+    // This is set of legal characters that can appear unescaped in an OGC query.
+    private static String _disallowedInOGC = stringUnion(" ?&=,+", //OGC Web Services Common 2.0.0 section 11.3
+                                                         stringDiff(asciiNonAlphaNumeric,"-_.!~*'()"));
+    private static String _namAllowedInOGC = "-_.!~*'()";
+
+    public static String _allowableInOGC =   asciiAlphaNumeric + _namAllowedInOGC;
 
     private static char _URIEscape = '%';
 
@@ -151,8 +163,33 @@ public class EscapeStrings {
 
     // The complete set of legal opendap identifier characters
     public static String opendap_identifier_characters =
-		asciiAlphaNumeric
+		          asciiAlphaNumeric
                 + opendap_identifier_special_characters;
+
+    /*
+     * s1 union s2
+     */
+    static private String stringUnion(String s1, String s2)
+    {
+        String union = s1;
+        for(char c: s2.toCharArray()) {
+            if(union.indexOf(c) < 0) union += c;
+        }
+        return union;
+    }
+
+    /*
+     * s1 - s2
+     */
+    static private String stringDiff(String s1, String s2)
+    {
+        String diff = "";
+        for(char c: s1.toCharArray()) {
+            if(s2.indexOf(c) < 0) diff += c;
+        }
+        return diff;
+    }
+
 
     /**
      * Replace characters that are not allowed in WWW URLs using rules specific
@@ -176,7 +213,7 @@ public class EscapeStrings {
         String s;
 
         try {
-            s = escapeString(in, _allowableInURI_CE, _URIEscape);
+            s = escapeString(in, _allowableInURI_CE, _URIEscape, false);
         }
         catch (Exception e) {
             s = null;
@@ -196,12 +233,23 @@ public class EscapeStrings {
      * @param in        The string in which to replace characters.
      * @param allowable The set of allowable characters.
      * @param esc       The escape String (typically "%" for a URI or "\" for a regular expression).
+     * @param spaceplus True if spaces should be replaced by '+'.
      * @return The modified identifier.
      */
-    private static String escapeString(String in, String allowable, char esc) throws Exception {
+    private static String escapeString(String in, String allowable, char esc, boolean spaceplus) throws Exception {
         String out = "";
+        int i;
 
         if (in == null) return null;
+
+        StringBuilder buf = new StringBuilder(in);
+        if(spaceplus) {
+            for(i=0;(i=in.indexOf(' ',i)) >= 0; i++) {
+                buf.setCharAt(i,'+');
+                i++;
+            }
+            in = buf.toString();
+        }
 
         if (allowable.indexOf(esc) >= 0) {//isEscAllowed(allowable, esc)) 
             throw new Exception("Escape character MAY NOT be in the list of allowed characters!");
@@ -212,7 +260,7 @@ public class EscapeStrings {
 
         boolean isAllowed;
         for (char candidate : inca) {
-            isAllowed = allowable.indexOf(candidate) >= 0;
+            isAllowed = allowable.indexOf(candidate) >= 0 || (candidate == '+' && spaceplus);
             if (isAllowed) {
                 out += candidate;
             } else {
@@ -243,7 +291,7 @@ public class EscapeStrings {
         String s;
 
         try {
-            s = escapeString(in, _allowableInURI, _URIEscape);
+            s = escapeString(in, _allowableInURI, _URIEscape, false);
         }
         catch (Exception e) {
             s = null;
@@ -263,14 +311,26 @@ public class EscapeStrings {
      *               this call (e.g., you might not want to remove spaces, %20) use this
      *               parameter to specify that code. The function will then transform all
      *               escapes except that one.
+     * @param spaceplus True if spaces should be replaced by '+'.
      * @return The modified string.
      */
-    private static String unescapeString(String in, char escape, String except) {
+    private static String unescapeString(String in, char escape, String except, boolean spaceplus) {
         if (in == null) return null;
 
         String esc = String.valueOf(escape);
-        String out = in, replacement;
-        int i = 0;
+        String replacement;
+        int i;
+
+        if(spaceplus) {
+            StringBuilder escaped = new StringBuilder();
+            for(i=0;(i=in.indexOf('+',i)) >= 0; i++) {
+                escaped.setCharAt(i,' ');
+            }
+            in = escaped.toString();
+        }
+
+        String out = in;
+        i = 0;
         while ((i = out.indexOf(esc, i)) != -1) {
 
             String candidate = out.substring(i, i + 3);
@@ -309,7 +369,7 @@ public class EscapeStrings {
      */
     private static String www2id(String in) {
 
-        return unescapeString(in, _URIEscape, "");
+        return unescapeString(in, _URIEscape, "", false);
 
     }
 
@@ -327,7 +387,7 @@ public class EscapeStrings {
      */
     public static String www2ce(String in) {
 
-        return unescapeString(in, _URIEscape, "%20");
+        return unescapeString(in, _URIEscape, "%20", false);
 
     }
 
@@ -361,7 +421,7 @@ public class EscapeStrings {
     {
        String s;
        try {
-           s = escapeString(id, opendap_identifier_characters, _URIEscape);
+           s = escapeString(id, opendap_identifier_characters, _URIEscape, false);
        } catch (Exception e) {
             s = null;
        }
@@ -377,7 +437,7 @@ public class EscapeStrings {
     {
         String s;
         try {
-            s = unescapeString(id, _URIEscape, "");
+            s = unescapeString(id, _URIEscape, "", false);
         } catch (Exception e) {
             s = null;
         }
@@ -393,7 +453,7 @@ public class EscapeStrings {
      public static String escapeURLQuery(String ce)
      {
 	try {
-	    ce = escapeString(ce, _allowableInUrlQuery, _URIEscape);
+	    ce = escapeString(ce, _allowableInUrlQuery, _URIEscape, false);
 	} catch(Exception e) {ce = null;}
         return ce;
      }
@@ -407,7 +467,7 @@ public class EscapeStrings {
      public static String unescapeURLQuery(String ce)
      {
         try {
-            ce = unescapeString(ce, _URIEscape, "");
+            ce = unescapeString(ce, _URIEscape, "", false);
         } catch(Exception e) {ce = null;}
         return ce;
      }
@@ -421,7 +481,7 @@ public class EscapeStrings {
      public static String escapeURL(String url)
      {
     try {
-        url = escapeString(url, _allowableInUrl, _URIEscape);
+        url = escapeString(url, _allowableInUrl, _URIEscape, false);
     } catch(Exception e) {url = null;}
         return url;
      }
@@ -435,9 +495,37 @@ public class EscapeStrings {
      public static String unescapeURL(String url)
      {
         try {
-            url = unescapeString(url, _URIEscape, "");
+            url = unescapeString(url, _URIEscape, "", false);
         } catch(Exception e) {url = null;}
         return url;
+     }
+
+    /**
+     * Define the OGC Web Services escape function.
+     *
+     * @param s The string to encode.
+     * @return The escaped string.
+     */
+     public static String escapeOGC(String s)
+     {
+        try {
+            s = escapeString(s, _allowableInOGC, _URIEscape, true);
+        } catch(Exception e) {s = null;}
+        return s;
+     }
+
+    /**
+     * Define the OGC unescape function.
+     *
+     * @param s The string to unescape.
+     * @return The unescaped string.
+     */
+     public static String unescapeOGC(String s)
+     {
+        try {
+            s = unescapeString(s, _URIEscape, "", true);
+        } catch(Exception e) {s = null;}
+        return s;
      }
 
 

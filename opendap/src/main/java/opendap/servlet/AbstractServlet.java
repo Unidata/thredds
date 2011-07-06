@@ -1684,7 +1684,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
     ReqState rs = null;
 
     try {
-      rs = new ReqState(request, response, getServletConfig(), getServerName(), request.getQueryString());
+      rs = new ReqState(request, response, getServletConfig(), getServerName(), request.getRequestURI(), request.getQueryString());
     } catch (BadURLException bue) {
       rs = null;
     }

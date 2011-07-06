@@ -35,6 +35,7 @@ package ucar.nc2.dataset;
 import opendap.dap.http.HTTPException;
 import opendap.dap.http.HTTPMethod;
 import opendap.dap.http.HTTPSession;
+import opendap.util.EscapeStrings;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
@@ -746,10 +747,13 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
       location = location.substring(0,location.length()-".das".length());
     if(location.endsWith(".dods"))
       location = location.substring(0,location.length()-".dods".length());
+    // Must encode the URL before sending
+    location = EscapeStrings.escapeURL(location);
     try {
       // For some reason, the head method is not using credentials
-        // method = session.newMethodHead(location + ".dds");
+      // method = session.newMethodHead(location + ".dds");
       method = session.newMethodGet(location + ".dds");
+
       int status = method.execute();
       if (status == 200) {
         Header h = method.getResponseHeader("Content-Description");

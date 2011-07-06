@@ -34,6 +34,7 @@
 package opendap.test;
 
 import junit.framework.TestCase;
+import opendap.util.EscapeStrings;
 import org.apache.commons.httpclient.HttpMethodBase;
 import org.apache.commons.httpclient.methods.GetMethod;
 
@@ -53,18 +54,28 @@ public class TestEncode extends TestCase
 
     public void testEncode() throws Exception
     {
-	for(char c: " !\"#$%&'()*+,-./0123456789:;<=>?@[\\]^_`{|}~".toCharArray()) {
-	    String url = "http://localhost:8080/thredds/"+c;
-	    try {
-	    HttpMethodBase cmd = new GetMethod(url);
-	    } catch (Exception e) {
-	        System.err.printf("fail: c=|%c|\t%s\n",c,e.toString());
-	    }
+        for(char c: " !\"#$%&'()*+,-./0123456789:;<=>?@[\\]^_`{|}~".toCharArray()) {
+            String url = "http://localhost:8080/thredds/"+c;
+            try {
+            HttpMethodBase cmd = new GetMethod(url);
+            } catch (Exception e) {
+                System.err.printf("fail: c=|%c|\t%s\n",c,e.toString());
+            }
+        }
+    }
+
+    public void testOGC() throws Exception
+    {
+        for(char c: (EscapeStrings.asciiAlphaNumeric + " !\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~").toCharArray()) {
+            String encoded = EscapeStrings.escapeOGC(""+c);
+            System.err.printf("|%c|=|%s|\n",c,encoded);
         }
     }
 
     public static void main(String args[]) throws Exception {
-        new TestEncode("TestEncode").testEncode();
+        TestEncode test = new TestEncode("TestEncode");
+        //test.testEncode();
+        test.testOGC();
     }
 
 }
