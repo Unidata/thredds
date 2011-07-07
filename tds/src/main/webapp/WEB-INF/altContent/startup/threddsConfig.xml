@@ -176,6 +176,13 @@
   </WMS>
   -->
 
+  <!--
+  <NCISO>
+    <ncmlAllow>false</ncmlAllow>
+    <uddcAllow>false</uddcAllow>
+    <isoAllow>false</isoAllow>
+  </NCISO>
+  -->
 
   <!-- CatalogGen service is off by default.
   <CatalogGen>

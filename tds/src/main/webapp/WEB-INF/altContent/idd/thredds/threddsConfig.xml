@@ -96,6 +96,11 @@
     <maxImageHeight>2000</maxImageHeight>
   </WMS>
 
+  <NCISO>
+    <ncmlAllow>true</ncmlAllow>
+    <uddcAllow>true</uddcAllow>
+    <isoAllow>true</isoAllow>
+  </NCISO>
 
   <!-- Viewer>my.package.MyViewer</Viewer -->
 

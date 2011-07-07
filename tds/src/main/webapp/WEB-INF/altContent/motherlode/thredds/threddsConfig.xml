@@ -120,6 +120,12 @@
     <maxImageHeight>5000</maxImageHeight>
   </WMS>
 
+  <NCISO>
+    <ncmlAllow>true</ncmlAllow>
+    <uddcAllow>true</uddcAllow>
+    <isoAllow>true</isoAllow>
+  </NCISO>
+
   <!-- Enable CatalogGen service.
    -->
   <CatalogGen>
