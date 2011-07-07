@@ -267,7 +267,7 @@ class ASTvar extends ASTvalue
 
 class ASTsegment extends AST
 {
-    String name = null;
+    String name = null;    // must be DAP decoded
     List<ASTslice> slices = new ArrayList<ASTslice>();
 
     public ASTsegment(List<AST> nodes) {super(nodes);}

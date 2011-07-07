@@ -375,11 +375,11 @@ public class DDS extends DStructure
     public boolean parse(InputStream stream) throws ParseException, DAP2Exception
     {
         DapParser parser = new DapParser(factory);
-	int result = parser.ddsparse(stream,this);
+	    int result = parser.ddsparse(stream,this);
 
-	if(result == Dapparse.DapERR)
-	    throw parser.getERR();
-	return (result == Dapparse.DapDDS ? true : false);
+	    if(result == Dapparse.DapERR)
+	        throw parser.getERR();
+	    return (result == Dapparse.DapDDS ? true : false);
     }
 
 

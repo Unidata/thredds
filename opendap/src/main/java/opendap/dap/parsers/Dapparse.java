@@ -188,7 +188,7 @@ public abstract class Dapparse
     datasetbody(Dapparse state, Object name, Object decls)
             throws ParseException
     {
-        ddsobject.setClearName((String) name);
+        ddsobject.setEncodedName((String) name);
         for (Object o : (List<Object>) decls)
             ddsobject.addVariable((BaseType) o);
         if (dapdebug > 0) {
@@ -288,7 +288,7 @@ public abstract class Dapparse
         } catch (NumberFormatException nfe) {
             throw new ParseException("Dimension " + name + " is not an integer: " + size, nfe);
         }
-        dim = new DArrayDimension(value, (String) name);
+        dim = new DArrayDimension(value, clearName((String)name));
         return dim;
     }
 
@@ -330,7 +330,7 @@ public abstract class Dapparse
             throws ParseException
     {
         Attribute att;
-        att = new Attribute((String) name, attributetypefor((Integer) etype));
+        att = new Attribute(clearName((String)name), attributetypefor((Integer) etype));
         try {
             for (Object o : (List<Object>) values) att.appendValue((String) o, true);
         } catch (Exception e) {
@@ -346,7 +346,7 @@ public abstract class Dapparse
         try {
 
             AttributeTable attset;
-            attset = new AttributeTable((String) name);
+            attset = new AttributeTable(clearName((String)name));
             for (Object o : (List<Object>) attributes) {
                 if (o instanceof Attribute) {
                     /* ugh, Attributetable needs an additional addAttribute fcn*/
@@ -373,7 +373,7 @@ public abstract class Dapparse
     {
         BaseType node;
         List<Object> dims = (List<Object>) dimensions;
-        node = basetypefor((Integer) etype, (String) name);
+        node = basetypefor((Integer) etype, ((String)name));
         if (dims.size() > 0) {
             DArray array = state.factory.newDArray();
             array.addVariable(node);
@@ -392,7 +392,7 @@ public abstract class Dapparse
         /* Interface requires rebuilding the dimensions */
         for (Object o : dimensions) {
             DArrayDimension dim = (DArrayDimension) o;
-            node.appendDim(dim.getSize(), dim.getEncodedName());
+            node.appendDim(dim.getSize(), dim.getClearName());
         }
     }
 
@@ -404,10 +404,10 @@ public abstract class Dapparse
         String dupname;
         List<Object> dimset = (List<Object>) dimensions;
         if ((dupname = scopeduplicates((List<Object>) fields)) != null) {
-            dap_parse_error(state, "Duplicate structure field names in same scope: %s.%s", (String) name, dupname);
+            dap_parse_error(state, "Duplicate structure field names in same scope: %s.%s", ((String)name), dupname);
             return (Object) null;
         }
-        node = factory.newDStructure(clearName((String) name));
+        node = factory.newDStructure(clearName(((String)name)));
         List<Object> list = (List<Object>) fields;
         for (Object o : list)
             ((DStructure) node).addVariable((BaseType) o, NA);
@@ -428,10 +428,10 @@ public abstract class Dapparse
         DSequence node;
         String dupname;
         if ((dupname = scopeduplicates((List<Object>) members)) != null) {
-            dap_parse_error(state, "Duplicate sequence member names in same scope: %s.%s", (String) name, dupname);
+            dap_parse_error(state, "Duplicate sequence member names in same scope: %s.%s", ((String)name), dupname);
             return (Object) null;
         }
-        node = factory.newDSequence(clearName((String) name));
+        node = factory.newDSequence(clearName(((String)name)));
         List<Object> list = (List<Object>) members;
         for (Object o : list)
             node.addVariable((BaseType) o, NA);
@@ -448,10 +448,10 @@ public abstract class Dapparse
         /* Check for duplicate map names */
         String dupname;
         if ((dupname = scopeduplicates(mapdecls)) != null) {
-            dap_parse_error(state, "Duplicate grid map names in same scope: %s.%s", (String) name, dupname);
+            dap_parse_error(state, "Duplicate grid map names in same scope: %s.%s", ((String)name), dupname);
             return (Object) null;
         }
-        node = factory.newDGrid(clearName((String) name));
+        node = factory.newDGrid(clearName(((String)name)));
         node.addVariable(arraydecl, DGrid.ARRAY);
         for (Object m : mapdecls)
             node.addVariable((BaseType) m, DGrid.MAPS);

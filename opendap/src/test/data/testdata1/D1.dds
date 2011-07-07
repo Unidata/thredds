@@ -5,4 +5,4 @@ Dataset {
         Float64 latitude;
         Float64 longitude;
     } Drifters;
-} EOSDB.DBO;
+} EOSDB%2eDBO;

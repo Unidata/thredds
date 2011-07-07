@@ -396,7 +396,7 @@ public class DDSXMLParser {
                 int size = Integer.parseInt(e.getAttribute("size").getValue());
 
                 // add the dimension to the array.
-                da.appendDim(size, EscapeStrings.escapeDAPIdentifier(name));
+                da.appendDim(size, (name));
             } else { // otherwise, it must be THE template element.
 
                 // Just to make sure the schema validation didn't fail (because

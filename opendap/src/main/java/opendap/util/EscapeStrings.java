@@ -509,7 +509,7 @@ public class EscapeStrings {
      public static String escapeOGC(String s)
      {
         try {
-            s = escapeString(s, _allowableInOGC, _URIEscape, true);
+            s = URLEncoder.encode(s,"UTF-8");
         } catch(Exception e) {s = null;}
         return s;
      }
@@ -517,13 +517,13 @@ public class EscapeStrings {
     /**
      * Define the OGC unescape function.
      *
-     * @param s The string to unescape.
+     * @param s The string to unescape.                                                                 b
      * @return The unescaped string.
      */
      public static String unescapeOGC(String s)
      {
         try {
-            s = unescapeString(s, _URIEscape, "", true);
+            s = URLDecoder.decode(s,"UTF-8");
         } catch(Exception e) {s = null;}
         return s;
      }

@@ -51,7 +51,7 @@ public class TestDDS extends TestDapParser
 
     public void testDDS() throws Exception
     {
-	test();
+	parse();
     }
 
 

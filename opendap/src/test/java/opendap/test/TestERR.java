@@ -50,7 +50,7 @@ public class TestERR extends TestDapParser
 
     public void testERR() throws Exception
     {
-	test();
+	parse();
     }
 
     public static void main(String args[]) throws Exception {

@@ -56,120 +56,130 @@ public class TestDapParser extends TestFiles
 
     String[] xfailtests = null;
 
-    public TestDapParser(String name, String testdir, String ext) {
-        super(name, testdir);
-	this.extension = ext;
- 
-    }
-
-    public void test() throws Exception
+    public TestDapParser(String name, String testdir, String ext)
     {
-	// Check that resultsdir exists and is writeable
-	File resultsdir = new File(resultspath);
-        if(!resultsdir.exists() || !resultsdir.canWrite()) {
-	    resultsdir.mkdirs();
-            if(!resultsdir.exists() || !resultsdir.canWrite()) {
-	        System.err.println("TestDapParser: cannot write: "+resultsdir);
-	        return;
-	    }
-	}
+        super(name, testdir);
+        this.extension = ext;
 
-	String[] testfilenames = null;
-
-
-    if(extension.equals(".das")) {
-        testfilenames = dastestfiles;
-        xfailtests = dasxfails;
-        kind = ISDAS;
-    } else if(extension.equals(".dds")) {
-        testfilenames = ddstestfiles;
-        xfailtests = ddsxfails;
-        kind = ISDDS;
-    } else if(extension.equals(".err")) {
-        testfilenames = errtestfiles;
-        xfailtests = errxfails;
-        kind = ISERR;
-    } else
-	    throw new Exception("TestDapParser: Unknown extension: "+extension);
-    // override the test cases
-    if(xtestfiles.length > 0) {
-        testfilenames = xtestfiles;
     }
 
-    for(int i=0;i<testfilenames.length;i++) {
-        String test = testfilenames[i];   System.out.flush();
+    public void parse() throws Exception
+    {
+        // Check that resultsdir exists and is writeable
+        File resultsdir = new File(resultspath);
+        if (!resultsdir.exists() || !resultsdir.canWrite()) {
+            resultsdir.mkdirs();
+            if (!resultsdir.exists() || !resultsdir.canWrite()) {
+                System.err.println("TestDapParser: cannot write: " + resultsdir);
+                return;
+            }
+        }
+
+        String[] testfilenames = null;
+
+        if (extension.equals(".das")) {
+            testfilenames = dastestfiles;
+            xfailtests = dasxfails;
+            kind = ISDAS;
+        } else if (extension.equals(".dds")) {
+            testfilenames = ddstestfiles;
+            xfailtests = ddsxfails;
+            kind = ISDDS;
+        } else if (extension.equals(".err")) {
+            testfilenames = errtestfiles;
+            xfailtests = errxfails;
+            kind = ISERR;
+        } else
+            throw new Exception("TestDapParser: Unknown extension: " + extension);
+        // override the test cases
+        if (xtestfiles.length > 0) {
+            testfilenames = xtestfiles;
+        }
+
+        for (int i = 0; i < testfilenames.length; i++) {
+            String test = testfilenames[i];
+            System.out.flush();
             this.test = test;
             this.testname = test;
-        System.out.println("Testing file: "+test);
-        boolean isxfail = false;
-        for(String s: xfailtests) {
-            if(s.equals(test)) {isxfail = true; break;}
-        }
-	    FileInputStream teststream;
-	    FileOutputStream resultstream;
-	    String testfilepath = testdir     + "/" + test + extension;
-	    String resultpath   = resultspath + "/" + test + extension;
-	    File testfile = new File(testfilepath);
-	    File resultfile = new File(resultpath);
-	    if(!testfile.canRead()) {
-		    System.err.println("TestDapParser: cannot read: "+testfile.toString());
-	        continue;
-	    }
-	    teststream = new FileInputStream(testfile);
-	    resultstream = new FileOutputStream(resultfile);
-
-        DAS das = new DAS();
-        DDS dds = new DDS();
-        DAP2Exception err = new DAP2Exception();
-
-        /* try parsing .dds | .das | error */
-
-        switch (kind) {
-        case ISDAS:
-	        das.parse(teststream);
-            break;
-        case ISDDS:
-	        dds.parse(teststream);
-            break;
-        case ISERR:
-	        err.parse(teststream);
-            break;
-        default:
-            throw new ParseException("Unparseable file: "+testfile);
-        }
-
-
-	    try {teststream.close();} catch (IOException ioe) {};
-
-	    if(extension.equals(".dds")) {
-                dds.print(resultstream);
-	    } else if(extension.equals(".das")) {
-                das.print(resultstream);
-	    } else if(extension.equals(".err")) {
-                err.print(resultstream);	
-	    }
-
-	    try {
-	        resultstream.close();
-	        // Diff the two files
-            Diff diff = new Diff(test);
-	        FileReader resultrdr = new FileReader(resultfile);
-	        FileReader testrdr = new FileReader(testfile);
-                boolean pass = !diff.doDiff(testrdr,resultrdr);
-                if(isxfail) {
-                    pass = true;
-                    System.err.println("***XFAIL: "+test);
+            System.out.println("Testing file: " + test);
+            boolean isxfail = false;
+            for (String s : xfailtests) {
+                if (s.equals(test)) {
+                    isxfail = true;
+                    break;
                 }
-		        testrdr.close(); resultrdr.close();
-                if(!pass) {
+            }
+            FileInputStream teststream;
+            FileOutputStream resultstream;
+            String testfilepath = testdir + "/" + test + extension;
+            String resultpath = resultspath + "/" + test + extension;
+            File testfile = new File(testfilepath);
+            File resultfile = new File(resultpath);
+            if (!testfile.canRead()) {
+                System.err.println("TestDapParser: cannot read: " + testfile.toString());
+                continue;
+            }
+            teststream = new FileInputStream(testfile);
+            resultstream = new FileOutputStream(resultfile);
+
+            DAS das = new DAS();
+            DDS dds = new DDS();
+            DAP2Exception err = new DAP2Exception();
+
+            /* try parsing .dds | .das | error */
+
+            switch (kind) {
+            case ISDAS:
+                das.parse(teststream);
+                break;
+            case ISDDS:
+                dds.parse(teststream);
+                break;
+            case ISERR:
+                err.parse(teststream);
+                break;
+            default:
+                throw new ParseException("Unparseable file: " + testfile);
+            }
+
+
+            try {
+                teststream.close();
+            } catch (IOException ioe) {
+            }
+            ;
+
+            if (extension.equals(".dds")) {
+                dds.print(resultstream);
+            } else if (extension.equals(".das")) {
+                das.print(resultstream);
+            } else if (extension.equals(".err")) {
+                err.print(resultstream);
+            }
+
+            try {
+                resultstream.close();
+                // Diff the two files
+                Diff diff = new Diff(test);
+                FileReader resultrdr = new FileReader(resultfile);
+                FileReader testrdr = new FileReader(testfile);
+                boolean pass = !diff.doDiff(testrdr, resultrdr);
+                if (isxfail) {
+                    pass = true;
+                    System.err.println("***XFAIL: " + test);
+                }
+                testrdr.close();
+                resultrdr.close();
+                if (!pass) {
                     junit.framework.Assert.assertTrue(testname, pass);
                 }
             } catch (IOException ioe) {
-	        System.err.println("Close failure");
+                System.err.println("Close failure");
+            }
+            System.out.flush();
+            System.err.flush();
         }
-    System.out.flush(); System.err.flush();
-    }
-    System.out.flush();
+        System.out.flush();
     }
 }
 

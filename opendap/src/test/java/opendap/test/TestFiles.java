@@ -126,6 +126,7 @@ public class TestFiles extends TestCase
     //////////////////////////////////////////////////
     // Define the test data basenames
     //////////////////////////////////////////////////
+
     static String[] dastestfiles = {
 "123.nc", "123bears.nc", "bears.nc", "1990-S1700101.HDF.WVC_Lat", "1998-6-avhrr.dat", "D1",
 "Drifters", "EOSDB", "NestedSeq", "NestedSeq2", "OverideExample",
@@ -166,6 +167,8 @@ public class TestFiles extends TestCase
 "test4", "whoi"
     };
 
+
+
     static String[] errtestfiles = {
             "test1"
     };
@@ -173,7 +176,7 @@ public class TestFiles extends TestCase
 
     // define the xfails
     static String[] dasxfails = {
-                // These failures come from way Printwriter handles escapes
+                // These failures come from way Printwriter handles backslash escapes
 		        "123.nc", "123bears.nc", "bears.nc",
                 "pbug0001b",
                 "1990-S1700101.HDF.WVC_Lat",                  
@@ -186,13 +189,6 @@ public class TestFiles extends TestCase
     };
 
     static String[] ddsxfails = {
-            // Mostly due to url % escaping
-            "123.nc", "123bears.nc", "bears.nc",
-            "1990-S1700101.HDF.WVC_Lat", "1998-6-avhrr.dat",
-            "test.dfr1", "test.dfr2", "test.dfr3",
-            "test.PointFile",
-            "test.sds6", "test.sds7",
-            "test.SwathFile",
     };
 
     static String[] errxfails = {
