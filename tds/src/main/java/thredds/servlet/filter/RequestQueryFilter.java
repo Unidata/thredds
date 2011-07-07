@@ -32,6 +32,7 @@
  */
 package thredds.servlet.filter;
 
+import opendap.util.EscapeStrings;
 import thredds.util.StringValidateEncodeUtils;
 import thredds.servlet.ServletUtil;
 import thredds.servlet.UsageLog;
@@ -100,6 +101,7 @@ public class RequestQueryFilter
     if ( query != null )
     {
       String decodedQuery = URLDecoder.decode( query, StringValidateEncodeUtils.CHARACTER_ENCODING_UTF_8 );
+      // LOOK ?? String decodedQuery = EscapeStrings.urlUnescapeCE(query);
       boolean badQuery = false;
       if ( ! allowAngleBrackets
              && StringValidateEncodeUtils.containsAngleBracketCharacters( decodedQuery ) )

@@ -21,9 +21,8 @@
   TDS is deployed. It is persistent even when a TDS installation is upgraded or re-deployed. All
   modifications and additions to the TDS configuration should be made in this directory. Do not
   place files containing passwords or anything else with security issues in this directory.
-  Typically you will only be adding and modifying catalogs and configuration files.
-</p>
-
+  Typically you will only be adding and modifying catalogs and configuration files.</p>
+<p>When there are many catalogs, you may want to keep them in seperate subdirectories of the  TDS configuration directory. This is recommended practice. However, do not use a subdirectory <strong>content/thredds/catalog</strong>, as <strong>catalog</strong> is a reserved word in this context.</p>
 <h2><a name="content"></a>Content of Configuration Directory</h2>
   <p>
     When the TDS is first deployed, the TDS configuration directory looks like:
@@ -103,7 +102,7 @@
 <hr width="100%">
 <address>
   <img alt="THREDDS" src="../../images/thread.png" height="108" width="110">
-  This document is maintained by Unidata and was last updated January 2010.
+  This document is maintained by Unidata and was last updated July 2011.
   Send comments to
   <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.
 </address>

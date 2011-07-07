@@ -34,6 +34,7 @@ package ucar.nc2.ui.util;
 
 import opendap.dap.http.HTTPMethod;
 import opendap.dap.http.HTTPSession;
+import opendap.util.EscapeStrings;
 import ucar.nc2.util.IO;
 import ucar.nc2.util.ListenerManager;
 
@@ -196,16 +197,19 @@ public class SocketMessage {
 
   //////////////////////////////////////////////
   public static void main(String[] args) throws IOException {
-    if (true) {
+    if (false) {
       new SocketMessage( 9999, "startNewServer");
       raw = true;
 
     } else {
-      String url = "http://localhost:9999/test/it?what[1,2]&three;four";
+      String url = "http://localhost:8080/thredds/test/it" // + EscapeStrings.escapeOGC("yabba/bad[0]/good")
+               +"?"+EscapeStrings.escapeOGC("quuery[1]");
+      System.out.printf("send '%s'%n", url);
       HTTPSession session = new HTTPSession();
       HTTPMethod method = session.newMethodHead(url);
       method.execute();
-      method.getStatusCode();
+      int status = method.getStatusCode();
+      System.out.printf("%d%n", status);
     }
   }
 

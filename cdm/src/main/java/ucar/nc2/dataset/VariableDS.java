@@ -465,9 +465,9 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
   }
 
   @Override
-  public void setName(String newName) {
+  public String setName(String newName) {
     this.orgName = shortName;
-    super.setName(newName);
+    return super.setName(newName);
   }
 
   public String toStringDebug() {

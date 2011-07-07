@@ -14,6 +14,7 @@ is removed when the TDS sends the catalog to the client. </p>
 element. These catalogs can also contain catalogRef elements, etc. If
 you want to serve other catalogs that are not linked to the root
 catalog, then <a href="../tutorial/ConfigCatalogs.html#rootCatalogs">declare them</a> in <strong>${tomcat_home}/content/thredds/threddsConfig.xml. </strong>The set of  configuration catalogs is found by traversing all the root catalogs. This is the set of <em>configuration catalogs</em>, aka <em>static catalogs</em>. </p>
+<p><em>All catalogs that you want to be seen and indexed (eg by crawlers) should be linked from the root catalog. Only declare catalogs in a catalogRoot element when you want to &quot;hide&quot; the catalog from simple browse access</em>.</p>
 <p>The catalogRef element looks like: </p>
 <blockquote>
   <pre><strong>&lt;catalogRef xlink:href=&quot;idd/models.xml&quot; xlink:title=&quot;NCEP Model Data&quot; name=&quot;&quot; /&gt;</strong></pre>
@@ -25,7 +26,7 @@ catalog, then <a href="../tutorial/ConfigCatalogs.html#rootCatalogs">declare the
 <p>in this example, if the  catalog is <strong>${tomcat_home}/content/thredds/idd/models.xml, </strong>then the referenced catalog is <strong>${tomcat_home}/content/thredds/idv/ncep.xml</strong></p>
 <p>You can also use a relative URL that begins with <code>/</code> (a slash):</p>
 <blockquote>
-  <pre><strong>&lt;catalogRef xlink:href=&quot;/galeon/wcs/test.xml&quot; xlink:title=&quot;GALEON Test Data&quot; name=&quot;&quot; /&gt;</strong></pre>
+  <pre><strong>&lt;catalogRef xlink:href=&quot;/thredds/galeon/wcs/test.xml&quot; xlink:title=&quot;GALEON Test Data&quot; name=&quot;&quot; /&gt;</strong></pre>
 </blockquote>
 <p>which points to the catalog at <strong>${tomcat_home}/content/thredds/galeon/wcs/test.xml </strong>no matter what catalog it appears in. Note that the base directory is <strong>${tomcat_home}/content/thredds/</strong>, and that all configuration catalogs must live under it. </p>
 <h3>Catalog Caching</h3>
@@ -38,7 +39,7 @@ catalog, then <a href="../tutorial/ConfigCatalogs.html#rootCatalogs">declare the
 </p>
 <hr width="100%">
 <address>
-<img src="../../images/thread.png" height="108" width="110">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on July 26, 2007
+<img src="../../images/thread.png" height="108" width="110">This document was last updated  July 2011
 </address>
 <p></p>
 </body></html>

@@ -4,6 +4,8 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.2:
  26: (2011-07-xx)
+  NetcdfFile.esccape/unescape - standard % escaping using URLEncoder.encode/decode
+  NetcdfFile.makeValidCdmObjectName() - dont allow trail.lead spaces or "/"
   Grib2 jpeg2000 decoder : bug when unsigned, nbits > 8
   bug in reading strided subsets of joinExisting aggregations
   CF Radial (alpha)

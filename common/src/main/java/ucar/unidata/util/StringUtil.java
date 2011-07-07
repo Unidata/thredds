@@ -499,23 +499,22 @@ public class StringUtil {
   /**
    * Escape any char not alphanumeric or in okChars.
    * Escape by replacing char with %xx (hex).
-   * LOOK: need to check for %, replace with %
+   *
    * @param x       escape this string
    * @param okChars these are ok.
    * @return equivilent escaped string.
    */
-  static public String escape(String x, String okChars)
-  {
-        String newname = "";
-        for(char c: x.toCharArray()) {
-            if(c == '%') {
-                newname = newname + "%%";
-            } else if(!Character.isLetterOrDigit(c) && okChars.indexOf(c) < 0) {
-                newname = newname + '%' + Integer.toHexString((0xFF&(int)c));
-            } else
-                newname = newname + c;
-        }
-        return newname;
+  static public String escape(String x, String okChars) {
+    String newname = "";
+    for (char c : x.toCharArray()) {
+      if (c == '%') {
+        newname = newname + "%%";
+      } else if (!Character.isLetterOrDigit(c) && okChars.indexOf(c) < 0) {
+        newname = newname + '%' + Integer.toHexString((0xFF & (int) c));
+      } else
+        newname = newname + c;
+    }
+    return newname;
   }
 
   static public String ignoreescape(String x, String okChars) {
@@ -553,24 +552,24 @@ public class StringUtil {
   /**
    * Escape any char in reservedChars.
    * Escape by replacing char with %xx (hex).
+   *
    * @param x             escape this string
    * @param reservedChars these must be replaced
    * @return equivilent escaped string.
    */
 
-  static public String escape2(String x, String reservedChars)
-    {
-        String newname = "";
-        for(char c: x.toCharArray()) {
-            if(c == '%') {
-                newname = newname + "%%";
-            } else if(reservedChars.indexOf(c) >= 0) {
-                newname = newname + '%' + Integer.toHexString((0xFF&(int)c));
-            } else
-                newname = newname + c;
-        }
-        return newname;
+  static public String escape2(String x, String reservedChars) {
+    String newname = "";
+    for (char c : x.toCharArray()) {
+      if (c == '%') {
+        newname = newname + "%%";
+      } else if (reservedChars.indexOf(c) >= 0) {
+        newname = newname + '%' + Integer.toHexString((0xFF & (int) c));
+      } else
+        newname = newname + c;
     }
+    return newname;
+  }
 
   static public String ignoreescape2(String x, String reservedChars) {
     boolean ok = true;
@@ -713,7 +712,7 @@ public class StringUtil {
   /**
    * This finds any '%xx' and converts to the equivilent char. Inverse of escape().
    *
-   * @param x
+   * @param x the string to unescape
    * @return original String.
    */
   static public String unescape(String x) {
@@ -723,7 +722,7 @@ public class StringUtil {
 
     // gotta do it
     char[] b = new char[2];
-    StringBuffer sb = new StringBuffer(x);
+    StringBuilder sb = new StringBuilder(x);
     for (int pos = 0; pos < sb.length(); pos++) {
       char c = sb.charAt(pos);
       if (c != '%') {

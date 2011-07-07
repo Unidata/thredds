@@ -212,9 +212,9 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
   }
 
   @Override
-  public void setName(String newName) {
+  public String setName(String newName) {
     this.orgName = shortName;
-    super.setName(newName);
+    return super.setName(newName);
   }
 
   // regular Variables.

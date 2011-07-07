@@ -3952,10 +3952,16 @@ public class ToolsUI extends JPanel {
       } catch (IOException ioe) {
       }
 
+      Formatter parseInfo = new Formatter();
       this.ds = newds;
       try {
-        dsTable.setDataset(newds);
+        dsTable.setDataset(newds, parseInfo);
       } catch (IOException e) {
+        String info = parseInfo.toString();
+        if (info.length() > 0) {
+          detailTA.setText(info);
+          detailWindow.show();
+        }
         e.printStackTrace();
         return;
       }

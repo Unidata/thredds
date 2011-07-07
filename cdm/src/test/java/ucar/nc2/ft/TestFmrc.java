@@ -108,9 +108,8 @@ public class TestFmrc extends TestCase {
     }
   }
 
-  public void utestProblem() throws Exception {
-    doOne(datadir + "gomoos/grid.ncml", 16, -1, 7, 1, "salt", 2, 21, 29);     //*/
-    doOne(datadir + "rtofs/rtofs.ncml", 9, 6, 10, 1, "N3-D_Temperature", 2, 3, 4);
+  public void testProblem() throws Exception {
+    doOne("catalog:http://motherlode.ucar.edu:8080/thredds/catalog/fmrc/NCEP/GFS/Hawaii_160km/files/catalog.xml", 15, 8, 11, 6, "Temperature", -1, 21, 111);
   }
 
 

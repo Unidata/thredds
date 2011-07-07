@@ -51,7 +51,7 @@ public class EnumTypedef {
   private ArrayList<String> enumStrings;
 
   public EnumTypedef(String name, Map<Integer, String> map) {
-    this.name = name;
+    this.name = NetcdfFile.makeValidCdmObjectName(name);
     this.map = map;
   }
 

@@ -32,8 +32,6 @@
  */
 package ucar.nc2;
 
-import ucar.nc2.iosp.AbstractIOServiceProvider;
-
 import java.util.List;
 import java.util.ArrayList;
 
@@ -280,13 +278,18 @@ public class Dimension implements Comparable {
     hashCode = 0;
   }
 
-  /** rename
-   * @param name new name of Dimension.
+
+  /**
+   * Set the name, converting to valid CDM object name if needed.
+   *
+   * @param name set to this value
+   * @return valid CDM object name
    */
-  public void setName( String name) {
+  public String setName(String name) {
     if (immutable) throw new IllegalStateException("Cant modify");
-    this.name = (name == null) || name.length() == 0 ? null : AbstractIOServiceProvider.createValidNetcdfObjectName(name);
+    this.name = (name == null || name.length() == 0) ? null : NetcdfFile.makeValidCdmObjectName(name);
     hashCode = 0;
+    return this.name;
   }
 
   /**

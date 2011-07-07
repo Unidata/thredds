@@ -41,6 +41,7 @@
 package opendap.servlet;
 
 import java.io.*;
+import java.net.URLDecoder;
 import java.util.*;
 import java.util.zip.DeflaterOutputStream;
 import javax.servlet.*;
@@ -50,6 +51,7 @@ import opendap.dap.*;
 import opendap.Server.*;
 import opendap.dap.parsers.ParseException;
 import opendap.util.Debug;
+import opendap.util.EscapeStrings;
 
 /**
  * AbstractServlet is the base servlet class for an OPeNDAP
@@ -121,7 +123,6 @@ import opendap.util.Debug;
  * @see opendap.servlet.ReqState
  * @see opendap.servlet.ParsedRequest
  * @see opendap.servlet.GuardedDataset
- * @see opendap.servers.test.testDataset
  */
 
 
@@ -186,7 +187,6 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
    * @throws IOException
    * @throws ParseException
    * @see opendap.Server.ServerDDS
-   * @see opendap.servers.test.test_ServerFactory
    */
   protected abstract GuardedDataset getDataset(ReqState rs) throws DAP2Exception, IOException, ParseException;
 

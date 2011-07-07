@@ -510,7 +510,7 @@ public class GridUI extends JPanel {
         NetcdfDataset netcdfDataset = controller.getNetcdfDataset();
         if (null != netcdfDataset) {
           try {
-            dsTable.setDataset(netcdfDataset);
+            dsTable.setDataset(netcdfDataset, null);
           } catch (IOException e1) {
             e1.printStackTrace();
             return;

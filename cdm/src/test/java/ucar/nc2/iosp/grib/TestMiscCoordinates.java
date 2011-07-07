@@ -97,7 +97,7 @@ public class TestMiscCoordinates extends TestCase {
 
   // roundoff in calculating forecast time coordinates.
   public void testTimeRoundoff() throws IOException {
-    String filename = TestAll.cdmUnitTestDir + "formats/grib2/cosmo_de_eps_m001_2010061100.grib2";
+    String filename = TestAll.cdmUnitTestDir + "formats/grib2/cosmo_de_eps_m001_2009051100.grib2"; // cosmo_de_eps_m001_2010061100.grib2";
     System.out.println("\n\nReading File " + filename);
 
     NetcdfFile ncfile = NetcdfFile.open(filename);

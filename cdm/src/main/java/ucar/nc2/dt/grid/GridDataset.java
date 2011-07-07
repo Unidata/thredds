@@ -101,7 +101,7 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, ucar.nc2.ft.Feature
    */
   static public GridDataset open(String location, Set<NetcdfDataset.Enhance> enhanceMode) throws java.io.IOException {
     NetcdfDataset ds = ucar.nc2.dataset.NetcdfDataset.acquireDataset(null, location, enhanceMode, -1, null, null);
-    return new GridDataset(ds);
+    return new GridDataset(ds, null);
   }
 
   /**

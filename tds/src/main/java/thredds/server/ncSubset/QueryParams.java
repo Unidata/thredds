@@ -33,6 +33,7 @@
 
 package thredds.server.ncSubset;
 
+import opendap.util.EscapeStrings;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPoint;
@@ -164,7 +165,7 @@ public class QueryParams {
    * @throws java.io.IOException if I/O error
    */
   public boolean parseQuery(HttpServletRequest req, HttpServletResponse res, String[] acceptOK) throws IOException {
-    queryString = req.getQueryString();
+    queryString = EscapeStrings.unescapeOGC(req.getQueryString());
 
     accept = parseList(req, "accept", QueryParams.validAccept, acceptOK[0]);
     for (String ok : acceptOK) {

@@ -279,7 +279,7 @@ public class URLDumpPane extends TextHistoryPane {
       urlString = uri.toString();
               */
 
-      urlString = URLnaming.escapeQuery(urlString);
+      //urlString = URLnaming.escapeQuery(urlString);
       httpclient = new HTTPSession();
       if (cmd == Command.GET)
         m = httpclient.newMethodGet(urlString);

@@ -47,6 +47,8 @@ import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.iosp.IospHelper;
 import ucar.unidata.util.StringUtil;
 
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.*;
 import java.util.zip.ZipInputStream;
 import java.util.zip.GZIPInputStream;
@@ -245,8 +247,20 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     userLoads = true;
   }
 
+  ///////////////////////////////////////////////////////////////////////
+
   /**
-   * The set of characters in a netcdf object name that must be escaped.
+   * Create a valid CDM object name.
+   * Trailing and leading blanks are not allowed and are stripped off. A forward slash "/" is converted into an underscore "_".
+   * @param name from this name
+   * @return valid CDM object name
+   */
+  static public String makeValidCdmObjectName(String name) {
+    return StringUtil.replace(name.trim(),"/","_");
+  }
+
+  /**
+   * The set of characters in a netcdf object name that are escaped for the "escaped name".
    */
   static public final String reserved = " .!*'();:@&=+$,/?%#[]";
 
@@ -256,8 +270,13 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
    * @return escaped version of it
    */
   public static String escapeName(String vname) {
-      // temp: return StringUtil.escape2(vname, NetcdfFile.reserved);
-      return EscapeStrings.escapeDAPIdentifier(vname);
+    try {
+      return URLEncoder.encode(vname, "UTF-8");
+    } catch (UnsupportedEncodingException e) {
+      throw new RuntimeException(e);
+    }
+    //return StringUtil.escape2(vname, NetcdfFile.reserved);
+    //  return EscapeStrings.escapeDAPIdentifier(vname);
   }
 
   /**
@@ -266,8 +285,13 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
    * @return unescaped version of it
    */
   public static String unescapeName(String vname) {
-    //temp return StringUtil.unescape(vname);
-    return EscapeStrings.unEscapeDAPIdentifier(vname);
+    try {
+      return URLDecoder.decode(vname, "UTF-8");
+    } catch (UnsupportedEncodingException e) {
+      throw new RuntimeException(e);
+    }
+    // return StringUtil.unescape(vname);
+    // return EscapeStrings.unEscapeDAPIdentifier(vname);
   }
 
   /**

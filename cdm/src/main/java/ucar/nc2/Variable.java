@@ -1151,13 +1151,15 @@ public class Variable implements VariableIF, ProxyReader {
   }
 
   /**
-   * Set the short name
+   * Set the short name, converting to valid CDM object name if needed.
    *
    * @param shortName set to this value
+   * @return valid CDM object name
    */
-  public void setName(String shortName) {
+  public String setName(String shortName) {
     if (immutable) throw new IllegalStateException("Cant modify");
-    this.shortName = shortName;
+    this.shortName = NetcdfFile.makeValidCdmObjectName(shortName);
+    return this.shortName;
   }
 
   /**

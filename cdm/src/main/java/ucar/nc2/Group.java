@@ -372,7 +372,7 @@ public class Group {
   public Group(NetcdfFile ncfile, Group parent, String shortName) {
     this.ncfile = ncfile;
     this.parent = parent == null ? ncfile.getRootGroup() : parent ;
-    this.shortName = shortName;
+    setName( shortName);
   }
 
   /** Set the Group's parent Group
@@ -383,12 +383,17 @@ public class Group {
     this.parent = parent == null ? ncfile.getRootGroup() : parent ;
   }
 
-  /** Set the Group short name
-   * @param shortName short name.
+
+  /**
+   * Set the short name, converting to valid CDM object name if needed.
+   *
+   * @param shortName set to this value
+   * @return valid CDM object name
    */
-  public void setName( String shortName) {
+  public String setName(String shortName) {
     if (immutable) throw new IllegalStateException("Cant modify");
-    this.shortName = shortName;
+    this.shortName = NetcdfFile.makeValidCdmObjectName(shortName);
+    return this.shortName;
   }
 
   /**

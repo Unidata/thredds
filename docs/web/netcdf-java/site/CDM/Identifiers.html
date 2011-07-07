@@ -9,71 +9,137 @@ pre {font-size: 9pt; padding: 10px; background-color: #E7E7E7; border: 1px solid
 code {font-size: 11pt;}
 dl {margin: 10px 5px 5px 15px;)
 .style1 {font-style: italic}
-.style1 {font-weight: bold}
 </style>
 </head>
 
 <body>
 <h1>CDM Object Names </h1>
-<p>A<strong> CDM Object name</strong> refers to the name of a Group, Dimension, Variable, Attribute, or Enum. An object name is a String, a variable length array of Unicode characters. We record here the set of allowable characters for different formats.
-</p>
-<p><strong>NetCDF-4 C library Object names</strong> refer to the name of a Group, Dimension,
-Variable, Attribute, user-defined Type, compound type Member, or
-enumeration type Symbol.</p>
-<p>The CDM has not added user-defined types, and &quot;compound type Member&quot; are considered the same as Variables. Otherwise the two models are the same.</p>
+<p>A<strong> CDM Object name</strong> refers to the name of a<em> Group, Dimension, Variable, Attribute, </em>or<em> Enum</em>. A CDM object name abstractly is a variable length sequence of <a href="http://en.wikipedia.org/wiki/Unicode">Unicode</a> characters. Unicode has various encodings which are used in various contexts, for example:</p>
+<ul>
+  <li>netCDF files store them as  a variable length sequence of UTF-8 characters.</li>
+  <li>netCDF-Java library internal format is modified UTF-16 in the <strong>java.lang.String</strong> object type.</li>
+  <li>netCDF C library internal format is a variable length sequence of UTF-8 characters.</li>
+</ul>
+<p>This document summarizes the various encodings. To transform between them, translate from form1 to Unicode with form1 unescaping as needed, then from Unicode to form2 with form2 escaping as needed.</p>
+<ul>
+  <li><a href="#netCDF">netCDF file format</a></li>
+  <li><a href="#CDL">CDL</a></li>
+  <li><a href="#NcML">NcML</a></li>
+  <li><a href="#CDM">CDM</a></li>
+  <li><a href="#OPeNDAP">OPeNDAP</a></li>
+</ul>
 <hr>
-<h2><strong>Proposed for NetCDF-3 and NetCDF-4 Identifiers: </strong></h2>
+<h2><strong><a name="netCDF"></a>netCDF-3 and netCDF-4 file format Identifiers </strong></h2>
+<p wrap=""><strong>NetCDF C library Object names</strong> refer to the name of a <em>Group, Dimension,
+Variable, Attribute, user-defined Type, compound type Member, </em>or<em> enumeration type Symbol</em>.</p>
 <p wrap="">A netCDF identifier is stored in a netCDF file as <a href="http://en.wikipedia.org/wiki/UTF-8">UTF-8</a> <a href="http://en.wikipedia.org/wiki/Unicode">Unicode</a> characters, <a href="http://unicode.org/reports/tr15/">NFC normalized</a>. There are some restrictions on the valid characters used in a netCDF identifier:</p>
 <pre wrap="">
-  ID = ([a-zA-Z0-9_]|{UTF8})([^\x00-\x1F\x7F/]|{UTF8})*
-UTF8 = multibyte UTF8 encoded char</pre>
+  ID = ([a-zA-Z0-9_]|{MUTF8})([^\x00-\x1F/\x7F-\xFF]|{MUTF8})* 
+
+where:
+  MUTF8 = multibyte UTF8 encoded char</pre>
 <p wrap="">  which says:</p>
 <ul>
-  <li> the first char must be alphanumeric, an underscore, or a UTF8 multibyte encoded char. </li>
-  <li>subsequent characters may be anything except  control characters, forward slash '/', and del. A UTF-8 multibyte encoding always has the high order bit set. So the excluded byte values are 0-31, 47, and 127. </li>
+  <li>The first character of a name    must be alphanumeric, a multi-byte UTF-8 character, or '_' (reserved    for special names with meaning to implementations, such as the    &ldquo;_FillValue&rdquo; attribute). </li>
+  <li>Subsequent characters may be anything except  control characters, forward slash '/', and del. A UTF-8 multibyte encoding always has the high order bit set. So the excluded byte values are 0-31, 47, and 127. </li>
+  <li>Names that have trailing space characters are also not    permitted</li>
 </ul>
 <p>Also See:</p>
 <ul>
-  <li><a class="moz-txt-link-freetext" href="http://www.unidata.ucar.edu/software/netcdf/netcdf-4/newdocs/netcdf.html#File-Format">http://www.unidata.ucar.edu/software/netcdf/netcdf-4/newdocs/netcdf.html#File-Format</a>
-      
-</li>
+  <li><a class="moz-txt-link-freetext" href="http://www.unidata.ucar.edu/software/netcdf/netcdf-4/newdocs/netcdf.html#File-Format"> http://www.unidata.ucar.edu/software/netcdf/docs/netcdf/Classic-Format-Spec.html </a></li>
 </ul>
-<h3>CDL</h3>
+<hr>
+<h2>CDL<a name="CDL"></a></h2>
+<p>A <a href="http://www.unidata.ucar.edu/software/netcdf/docs/netcdf/CDL-Syntax.html">CDL</a> (netCDF Definition Language) document is encoded in UTF-8. Certain characters must be escaped. The escape mechanism is to prepend a backslash <strong>&quot;\&quot;</strong> before the character.</p>
 <p>Which characters in an identifier must be escaped in CDL? </p>
 <blockquote>
-  <pre>[^\x00-\x1F\x7F/_.@+-a-zA-Z0-9] </pre>
+  <pre>[^\x00-\x1F\x7F/_.@+-a-zA-Z0-9] 
+</pre>
 </blockquote>
-<p>A CDL document is encoded in UTF-8, and the following characters need to be preceeded by a '\' (92) in an identifier:</p>
-<blockquote>
-  <pre> 32-42,44,58-63,91-96,123-126</pre>
-</blockquote>
-<p>Alternatively, we can enumerate the  escaped characters (using the regular expression syntax accepted by lex or flex):</p>
+  Alternatively, we can enumerate the  escaped characters (using the regular expression syntax accepted by lex or flex):</p>
 <blockquote>
   <pre wrap="">
-idescaped = \\[ !"#$%&amp;'()*,:;&lt;=&gt;?\[\\\]^`{|}~]</pre>
+idescaped =[ !"#$%&amp;'()*,:;&lt;=&gt;?\[\\\]^`{|}~] </pre>
 </blockquote>
-<p wrap="">Then a  CDL representation of an ID can be defined as a combination of regular and escaped chars:</p>
-<blockquote>
-  <pre wrap="">
-ID = ([a-zA-Z_]|{UTF8})([a-zA-Z0-9_.@+-]|{UTF8}|{idescaped})*</pre>
-</blockquote>
-<p><strong>Must vs should ??? </strong></p>
-<blockquote>&nbsp;</blockquote>
-<h3>NcML
-</h3>
-<p>Uses standard XML encoding and escaping. </p>
-<p>The chars '&amp;', '&lt;', '&gt;' must be replaced by these <a href="http://en.wikipedia.org/wiki/XML#Entity_references">entity references</a>: &quot;&amp;amp;&quot;, &quot;&amp;lt;&quot;, &quot;&amp;gt;&quot; In some places the single and double qoute must be replaced by &quot;&amp;apos;&quot; and &quot;&amp;quot;&quot; respectively </p>
+<hr>
+<h2>NcML<a name="NcML"></a></h2>
+<p>A <a href="http://www.unidata.ucar.edu/software/netcdf/ncml/">NcML</a> (netCDF Markup Language) document uses <a href="http://www.w3.org/TR/xml/#charsets">standard XML encoding</a> and escaping. </p>
+<p>The chars '&amp;', '&lt;', '&gt;' must be replaced by these <a href="http://en.wikipedia.org/wiki/XML#Entity_references">entity references</a>: &quot;&amp;amp;&quot;, &quot;&amp;lt;&quot;, &quot;&amp;gt;&quot; In some places the single and double quote must be replaced by &quot;&amp;apos;&quot; and &quot;&amp;quot;&quot; respectively.</p>
 <p>Typically an XML parser/library will handle this transparently. </p>
-<p>&nbsp;</p>
-<h3>CDM Section Specification </h3>
-<ul>
-  <li><a href="http://www.unidata.ucar.edu/software/netcdf-java/reference/SectionSpecification.html">CDM Section Specification</a> </li>
-</ul>
-<p>&nbsp; </p>
-<h3>OPeNDAP</h3>
-<p>It appears that OPeNDAP allows the '/' char in an identifier? The first char can also be one of these:</p>
+<hr>
+<h2>CDM<a name="CDM"></a></h2>
+<p>A CDM object name abstractly is a variable length sequence of <a href="http://en.wikipedia.org/wiki/Unicode">Unicode</a> characters. It can be anything except that trailing and leading blanks are not allowed and are stripped off, and a forward slash <strong>&quot;/&quot;</strong> is converted into an underscore<strong> &quot;_&quot;.</strong> Or maybe it should be %2f ?</p>
+<h3>Object Full Name</h3>
+<p>A CDM object has a <strong>short name</strong> (a String) and a <strong>full name</strong>, consisting of the parent groups and structures that it belongs to. Internally, only short names are used, along with the enclosing Group or Structure objects. So there is generally no problem in comparing or searching for short names. In certain places in the CDM / NetCDF-Java library API (eg <em>NetcdfFile.findVariable()</em>), a full  name can be passed in as a single String, of the form</p>
 <blockquote>
-  <pre>[-+/%.\\*]</pre>
+  <pre>groupName/groupName/varName.memberName.memberName</pre>
+  </blockquote>
+<p>which uses the &quot;/&quot; and &quot;.&quot; as group and structure delimiters, respectively. In this case, those characters must be escaped in the object names. </p>
+<h3>Object Escaped Name</h3>
+<p>Standard practice for escaping names is to use <strong>NetcdfFile.escapeName(), unescapeName().</strong> This uses percent encoding on these characters:</p>
+<blockquote>
+  <pre> NetcdfFile.reserved = &quot; .!*'();:@&amp;=+$,/?%#[]&quot;;</pre>
+</blockquote>
+<p>Technically, the &quot;/&quot; is not needed since that is not an allowed character. Note that in different situations, some of these characters are not needed to be encoded, but it does no harm. It seems likely we could replace with URLencode/decode.</p>
+<p>Utility routines using this are <strong>Variable.getNameEscaped(), GridDatatype..getNameEscaped()</strong></p>
+<h3>cdmremote </h3>
+<p>The client forms requests of the form <strong>endpoint?query</strong>. The possible query parameters are:</p>
+
+<pre>  <strong>req</strong>=( <strong>CDL</strong> | <strong>NcML</strong> | <strong>capabilities</strong> | <strong>header</strong> | <strong>data</strong>)
+  <strong>var</strong>=vars
+where:
+  vars := varspec | varspec[',' varspec]
+  varspec := varname[subsetSpec]
+  varname := valid variable name
+  subsetSpec := '(' fortran-90 arraySpec ')'
+
+  fortran-90 arraySpec := dim | dim ',' dims
+  dim := ':' | slice | start ':' end | start ':' end ':' stride
+  slice := INTEGER
+  start := INTEGER
+  stride := INTEGER
+  end := INTEGER
+</pre>
+<p>So the characters in variable names that need to be escaped are<strong> ',' ':' ')' </strong>and<strong> '('</strong>, along with the structural URL characters: <strong>'?' '&amp;' '=' ',' and '+'</strong></p>
+<h3>cdmrFeature</h3>
+<p>The client forms requests of the form <strong>endpoint?query</strong>. The possible query parameters are:</p>
+<pre>  <strong>req</strong>=( <strong></strong><strong>capabilities</strong> | <strong>data</strong> | <strong>form | stations</strong>)
+  <strong>accept= </strong>(<strong>csv</strong> | <strong>xml</strong> | <strong>ncstream</strong> | <strong>netcdf</strong> )
+  <strong>time_start,time_end</strong>=time range
+  <strong>north,south,east,west</strong>=bounding box
+  <strong>var</strong>=vars
+  <strong>stn</strong>=stns
+
+where:
+  vars := varName | varName[,varName]
+  stns := stnName | stnName[,stnName]
+  varName := valid variable name
+  stnName := valid station name
+</pre>
+<p>Here we just need the comma &quot;,&quot; along with the structural URL characters escaped, in the variable name and in the station names.</p>
+<p><strong>Netcdf Subset Service</strong></p>
+<p>It should suffice to URLencode the variable names and station names , and to URL decode all the query parameters.</p>
+<hr>
+<h2>OPeNDAP<a name="OPeNDAP"></a></h2>
+<p>OPeNDAP has an <a href="http://www.opendap.org/pdf/ESE-RFC-004v1.1.pdf">on-the-wire specification</a> that must be followed in order to ensure interoperability. There are two parts to this:</p>
+<ol>
+  <li>URL encoding</li>
+  <li>Restriction of identifier names. Since these are different from CDM object names, there must be a translation between the two. This applies to identifiers in the URL constraint expression, in the DDS or in the DAS.</li>
+</ol>
+<h3>URL Encoding</h3>
+<p>OPeNDAP (we think) uses standard URL encoding, aka<a href="http://en.wikipedia.org/wiki/Percent-encoding"> percent encoding</a>.</p>
+<h3>OPeNDAP identifiers</h3>
+<p>An OPeNDAP dataset as represented in the CDM library looks like any other CDM dataset, ie it is not restricted to OPeNDAP encoding. When making a request over the OPeNDAP protocol, a translation between CDM and OPeNDAP identifiers must be made.</p>
+<p>From the spec:</p>
+<blockquote>
+  <pre>A DAP variable&rsquo;s name MUST contain ONLY US-ASCII characters with the following additional limitation:
+The characters MUST be either upper or lower case letters, numbers or from the set _ ! ~ * &rsquo; - &quot; .
+Any other characters MUST be escaped.
+
+
+To escape a character in a name, the character is replaced by the sequence %&lt;Character Code&gt; where 
+Character Code is the two hex digit code corresponding to the US-ASCII character.
+</pre>
 </blockquote>
 <p>From the OPeNDAP lexers:</p>
 <pre>1. from dds.lex and ce_expr.lex
@@ -87,10 +153,21 @@ ID = ([a-zA-Z_]|{UTF8})([a-zA-Z0-9_.@+-]|{UTF8}|{idescaped})*</pre>
 <p>  Their note:<br>
   <br>
 <em>"...Note that the DAS allows Identifiers to have parens and colons while the DDS and expr scanners don't. It's too hard to disambiguate functions when IDs have parens in them and adding colons makes parsing the array projections hard..." </em></p>
-<p>In a URL, OpenDAP uses <a href="http://en.wikipedia.org/wiki/Percent-encoding">percent encoding</a> (eg %20 for a space character). <br>
-</p>
-<h3>HDF5
-</h3>
+<h3>Making/receiving OPeNDAP requests</h3>
+<p>Standard practice, then is to translate from CDM identifiers to OPeNDAP identifiers using </p>
+<blockquote>
+  <pre>opendap.util.EscapeStrings.escapeDAPIdentifier()
+</pre>
+</blockquote>
+<p>and to translate from OPeNDAP identifiers to CDM identifiers using </p>
+<blockquote>
+  <pre>opendap.util.EscapeStrings.unescapeDAPIdentifier()
+</pre>
+</blockquote>
+<p>In addition, HTTPMethod(String URI) automatically adds URL encoding. These may create a <strong>double escaped</strong>  URL. On the server, one first unescapes the request, and then parses it. Any identifiers in the request then are unescaped again before comparing with the corresponding CDM object.</p>
+<p>IS THAT RIGHT??</p>
+<hr>
+<h3>HDF5</h3>
 <p>A direct translation of their grammar would appear to be this:</p>
 <blockquote>
       <pre>
@@ -109,47 +186,80 @@ Charx=[ !"#$%&amp;'()*+,-0123456789:;&lt;=&gt;?@\[\\\]^`{|}~\x00-\x1e,\x7f]
 
 </pre>
 </blockquote>
+      <hr>
+      <h2>OGC</h2>
+      <p>&nbsp;</p>
+      <p>The Web Map Service Implementation Specification version 1.3.0 states:</p>
+      <blockquote>
+        <p><strong>6.3.2 Reserved characters in HTTP GET URLs</strong></p>
+      </blockquote>
+      <blockquote>
+        <p>The URL specification (IETF RFC 2396) reserves particular characters as significant and requires that these be escaped when they might conflict with their defined usage. This International Standard explicitly reserves several of those characters for use in the query portion of WMS requests. When the characters '&amp;', '=', ',' and '+' appear in one of the roles defined in Table 1, they shall appear literally in the URL. When those characters appear elsewhere (for example, in the value of a parameter), they shall be encoded as defined in IETF RFC 2396.</p>
+      </blockquote>
+      <blockquote>
+        <p><strong>Table 1 -- Reserved Characters in WMS Query String</strong></p>
+      </blockquote>
+      <blockquote>
+        <table>
+          <tbody>
+            <tr>
+              <td><strong>Character</strong></td>
+              <td><strong>Reserved Usage</strong></td>
+            </tr>
+            <tr>
+              <td>?</td>
+              <td>Separator indicating start of query string.</td>
+            </tr>
+            <tr>
+              <td>&amp;</td>
+              <td>Separator between parameters in query string.</td>
+            </tr>
+            <tr>
+              <td>=</td>
+              <td>Separator between name and value of parameter.</td>
+            </tr>
+            <tr>
+              <td>,</td>
+              <td>Separator between individual values in list-oriented parameters (such as BBOX, LAYERS and STYLES in the GetMap request).</td>
+            </tr>
+            <tr>
+              <td>+</td>
+              <td>Shorthand representation for a space character.</td>
+            </tr>
+          </tbody>
+        </table>
+      </blockquote>
+      <blockquote>
+        <p><strong>6.8.2 Parameter lists</strong></p>
+      </blockquote>
+      <blockquote>
+        <p>Parameters consisting of lists (for example, BBOX, LAYERS and STYLES in WMS GetMap) shall use the comma (",") as the separator between items in the list. Additional white space shall not be used to delimit list items. If a list item value includes a space or comma, it shall be escaped using the URL encoding rules (6.3.2 and IETF RFC 2396).</p>
+      </blockquote>
       <hr WIDTH="100%">
-      <h3>Notes</h3>
-      <p>One version of the manual, apparently out of date (<a href="http://www.unidata.ucar.edu/software/netcdf/guidec/guidec-7.html#HEADING7-4">http://www.unidata.ucar.edu/software/netcdf/guidec/guidec-7.html#HEADING7-4</a>) </p>
-<p><em>The names of dimensions, variables and attributes consist of arbitrary sequences of alphanumeric characters (as well as underscore '<code>_</code>' and hyphen '<code>-</code>'), beginning with a letter or underscore. (However names commencing with underscore are reserved for system use.) Case is significant in netCDF names. </em></p>
-<p>That would be: </p>
-<pre>   [a-zA-Z_][a-zA-Z0-9_-]*
-</pre>
-<p>A more up-to-date-version (<a href="http://www.unidata.ucar.edu/software/netcdf/docs/netcdf.html#The-NetCDF-Data-Model">http://www.unidata.ucar.edu/software/netcdf/docs/netcdf.html#The-NetCDF-Data-Model</a>) documents the addition of the '.' character in names for netCDF version 3.4 in March, 1998</p>
-<p><em>The names of dimensions, variables and attributes consist of arbitrary sequences of alphanumeric characters (as well as underscore '_', period '.' and hyphen '-'), beginning with a letter or underscore. (However names commencing with underscore are reserved for system use.) Case is significant in netCDF names. A zero-length name is not allowed.</em></p>
-<p>That would be: </p>
-<pre>   [a-zA-Z_][a-zA-Z0-9_.-]*</pre>
-<p><strong>CF Convention 1.0:</strong></p>
-<p><em> Variable, dimension and attribute names should begin with a letter and be composed of letters, digits, and underscores:</em></p>
-<pre>   [a-zA-Z][a-zA-Z0-9_]*</pre>
-<p><strong>From the code: </strong></p>
-<pre wrap=""> 1. netcdf.texi:     [a-zA-Z_][a-zA-Z0-9_-.]*
- 2. libsrc/string.c: [a-zA-Z_][a-zA-Z0-9_-.+@:()]*
- 3. ncgen.l:         [a-zA-Z_][a-zA-Z0-9_-.+@#\[\]]*
-</pre>
-<p wrap="">The &quot;extra&quot; chars are: </p>
+<h2>URL encoding</h2>
+<p wrap="">The URL specification [IETF RFC 2396] states that all characters other than:  </p>
 <ol>
-  <li>
-    <pre wrap="">The characters '@', ':', '(', and ')' were the ones added for the
-chemists at the German Institute for Stratospheric Chemistry.  The
-inconsistency between these and what's documented in the User Guide is
-intentional.  We told them we would not disallow these characters but
-would also not document them or support them in ncgen.</pre>
-  </li>
-  <li>
-    <pre>
-The '+' char is also in this undocumented set for the chemists, added later (2004/10/04).</pre>
-  </li>
-  <li>
-    <pre>
-The '#', '[', and ']' are a mystery. They should probably be removed</pre>
-  </li>
+  <li>Reserved characters being used for their defined purpose</li>
+  <li>Alphanumeric characters</li>
+  <li>The characters "-", "_", ".", "!", "~", "*", "'", "(", and ")"  </li>
 </ol>
-<p>&nbsp;</p>
+<p wrap="">shall be encoded as "%xx", where xx is the two hexadecimal digits  &gt; representing the octet code of the character. Within the query string  portion of a URL (i.e., everything after the "?"), the space  character (" ") is an exception, and shall be encoded as a plus sign  ("+"). A server shall be prepared to decode any character encoded in  &gt; this manner.  </p>
+<h3>Clients:</h3>
+      <p>The following chars must be % encoded if they occur in identifiers that are used in URLS:</p>
+      <pre>?&amp;=,+</pre>
+      <h3>Servlets:</h3>
+      <ul>
+        <li>request.getQueryString() returns raw (undecoded).</li>
+        <li>request.getParameter() returns decoded</li>
+      </ul>
+      <hr WIDTH="100%">
+      <p>&nbsp;</p>
+<h2>References</h2>
+<p> <a href="http://www.blooberry.com/indexdot/html/topics/urlencoding.htm">http://www.blooberry.com/indexdot/html/topics/urlencoding.htm</a> </p>
+<p> <a href="http://www.w3schools.com/TAGS/ref_urlencode.asp">http://www.w3schools.com/TAGS/ref_urlencode.asp</a> </p>
 <hr WIDTH="100%">
 <address>
-    <img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on Jun 18, 2008
+    <img src="../nc.gif" width="64" height="64"> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on July 1, 2011
 </address>
 </body>
 </html>

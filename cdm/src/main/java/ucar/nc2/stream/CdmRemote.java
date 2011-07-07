@@ -45,6 +45,7 @@ import ucar.nc2.util.IO;
 import java.io.*;
 import java.net.URLEncoder;
 import java.nio.channels.WritableByteChannel;
+import java.util.Formatter;
 
 /**
  * A remote CDM dataset, using ncstream to communicate.
@@ -150,12 +151,12 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
 
     StringBuilder sbuff = new StringBuilder(remoteURI);
     sbuff.append("?var=");
-    sbuff.append(URLEncoder.encode(v.getShortName(), "UTF-8"));
+    Formatter f = new Formatter();
+    f.format("%s", v.getName()); // full name
     if (section != null && v.getDataType() != DataType.SEQUENCE) {
-      sbuff.append("(");
-      sbuff.append(section.toString());
-      sbuff.append(")");
+      f.format("(%s)", section.toString());
     }
+    sbuff.append( URLEncoder.encode(f.toString(), "UTF-8")); // % escape entire thing varname and section
 
     if (showRequest)
       System.out.println(" CdmRemote data request for variable: " + v.getName() + " section= " + section + " url=" + sbuff);
@@ -209,8 +210,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
     }
   }
 
-  public static InputStream sendQuery(String remoteURI, String query)
-          throws IOException {
+  public static InputStream sendQuery(String remoteURI, String query) throws IOException {
 
     HTTPSession session = null;
     HTTPMethod method = null;

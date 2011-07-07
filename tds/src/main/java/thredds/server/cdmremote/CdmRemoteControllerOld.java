@@ -31,6 +31,7 @@
  */
 package thredds.server.cdmremote;
 
+import opendap.util.EscapeStrings;
 import org.springframework.web.servlet.mvc.AbstractController;
 import org.springframework.web.servlet.mvc.LastModified;
 import org.springframework.web.servlet.ModelAndView;
@@ -110,7 +111,7 @@ public class CdmRemoteControllerOld extends AbstractController implements LastMo
       return null;
     } */
 
-    String query = req.getQueryString();
+    String query = EscapeStrings.unescapeOGC(req.getQueryString());
     //if (query != null) System.out.println(" query=" + query);
 
     String view = ServletUtil.getParameterIgnoreCase(req, "view");

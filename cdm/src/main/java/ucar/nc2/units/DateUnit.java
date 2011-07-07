@@ -190,6 +190,8 @@ public class DateUnit { // extends SimpleUnit {
   public Date makeDate(double val) {
     if (Double.isNaN(val)) return null;
     double secs = timeUnit.getValueInSeconds(val); //
+    if (getDateOrigin() == null)
+      System.out.println("HEY");
     return new Date( getDateOrigin().getTime() + (long)(1000*secs));
   }
 

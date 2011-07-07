@@ -41,6 +41,7 @@ import java.text.SimpleDateFormat;
 import java.text.ParseException;
 import java.net.URL;
 
+import opendap.util.EscapeStrings;
 import thredds.catalog.*;
 import thredds.catalog.parser.jdom.InvCatalogFactory10;
 import thredds.catalog.query.*;
@@ -109,7 +110,7 @@ public class LatestDqcHandler extends DqcHandler {
     }
 
     // Determine what LatestConfig.Item was requested.
-    String reqItemId = req.getQueryString();
+    String reqItemId = EscapeStrings.unescapeOGC(req.getQueryString());
     if ( reqItemId == null )
     {
       // No LatestConfig.Item ID was given in request.

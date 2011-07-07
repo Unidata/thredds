@@ -135,7 +135,7 @@ public class ReadTdsLogs {
 
       HTTPMethod method = null;
       try {
-        method = httpClient.newMethodGet(server + URLnaming.escapeQuery(log.path));
+        method = httpClient.newMethodGet(server + log.path);
         // out2.format("send %s %n", method.getPath());
         statusCode = method.execute();
 

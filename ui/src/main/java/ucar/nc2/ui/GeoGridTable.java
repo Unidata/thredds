@@ -166,8 +166,8 @@ public class GeoGridTable extends JPanel {
     if (axisTable != null) axisTable.saveState(false);
   }
 
-  public void setDataset(NetcdfDataset ds) throws IOException {
-    this.gridDataset = new ucar.nc2.dt.grid.GridDataset(ds);
+  public void setDataset(NetcdfDataset ds, Formatter parseInfo) throws IOException {
+    this.gridDataset = new ucar.nc2.dt.grid.GridDataset(ds, parseInfo);
 
     List<GeogridBean> beanList = new ArrayList<GeogridBean>();
     java.util.List<GridDatatype> list = gridDataset.getGrids();

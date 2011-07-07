@@ -34,12 +34,14 @@
 package thredds.servlet;
 
 import java.io.*;
+import java.net.URLDecoder;
 import java.util.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
+import opendap.util.EscapeStrings;
 import ucar.nc2.util.cache.FileCacheRaf;
 import ucar.nc2.util.IO;
 import thredds.catalog.XMLEntityResolver;
@@ -427,14 +429,14 @@ public class ServletUtil {
     res.addHeader("Location", absolutePath);
 
     String title = "Permanently Moved - 301";
-    String body = new StringBuffer()
+    String body = new StringBuilder()
         .append("<p>")
         .append("The requested URL <").append(req.getRequestURL())
         .append("> has been permanently moved (HTTP status code 301).")
         .append(" Instead, please use the following URL: <a href=\"").append(absolutePath).append("\">").append(absolutePath).append("</a>.")
         .append("</p>")
         .toString();
-    String htmlResp = new StringBuffer()
+    String htmlResp = new StringBuilder()
         .append(HtmlWriter.getInstance().getHtmlDoctypeAndOpenTag())
         .append("<head><title>")
         .append(title)
@@ -1004,7 +1006,7 @@ public class ServletUtil {
    * @return string showing the details of the request.
    */
   static public String showRequestDetail(HttpServlet servlet, HttpServletRequest req) {
-    StringBuffer sbuff = new StringBuffer();
+    StringBuilder sbuff = new StringBuilder();
 
     sbuff.append("Request Info\n");
     sbuff.append(" req.getServerName(): ").append(req.getServerName()).append("\n");
@@ -1013,6 +1015,11 @@ public class ServletUtil {
     sbuff.append(" req.getServletPath:").append(req.getServletPath()).append("\n");
     sbuff.append(" req.getPathInfo:").append(req.getPathInfo()).append("\n");
     sbuff.append(" req.getQueryString:").append(req.getQueryString()).append("\n");
+    try {
+      sbuff.append(" getQueryStringDecoded:").append(URLDecoder.decode(req.getQueryString(), "UTF-8")).append("\n");
+    } catch (UnsupportedEncodingException e1) {
+      e1.printStackTrace();
+    }
     sbuff.append(" req.getRequestURI:").append(req.getRequestURI()).append("\n");
     sbuff.append(" getRequestBase:").append(getRequestBase(req)).append("\n");
     sbuff.append(" getRequestServer:").append(getRequestServer(req)).append("\n");
@@ -1073,7 +1080,7 @@ public class ServletUtil {
   }
 
   static public String showRequestHeaders(HttpServletRequest req) {
-    StringBuffer sbuff = new StringBuffer();
+    StringBuilder sbuff = new StringBuilder();
     sbuff.append("Request Headers:\n");
     Enumeration names = req.getHeaderNames();
     while (names.hasMoreElements()) {
@@ -1179,7 +1186,7 @@ public class ServletUtil {
   }
 
   static public String showSecurity(HttpServletRequest req, String role) {
-    StringBuffer sbuff = new StringBuffer();
+    StringBuilder sbuff = new StringBuilder();
 
     sbuff.append("Security Info\n");
     sbuff.append(" req.getRemoteUser(): ").append(req.getRemoteUser()).append("\n");
