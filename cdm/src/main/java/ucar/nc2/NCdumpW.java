@@ -647,6 +647,10 @@ public class NCdumpW {
     out.flush();
   }
 
+  static public String toString(Array ma) throws IOException {
+    return printArray(ma, "", null);
+  }
+
   //////////////////////////////////////////////////////////////////////////////////////
   // standard NCML writing.
 

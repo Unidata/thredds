@@ -3,7 +3,9 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Changes in version 4.2:
- 26: (2011-06-30)
+ 26: (2011-07-xx)
+  Grib2 jpeg2000 decoder : bug when unsigned, nbits > 8
+  bug in reading strided subsets of joinExisting aggregations
   CF Radial (alpha)
   LambertConformal accessor methods added
   hdf5: vlen can have null heapId, indicates no data

@@ -484,7 +484,8 @@ public final class Range {
   }
 
   /**
-   * Find the smallest element k in the Range, such that <ul>
+   * Find the first element in a strided array after some index start.
+   * Return the smallest element k in the Range, such that <ul>
    * <li>k >= first
    * <li>k >= start
    * <li>k <= last
@@ -494,14 +495,14 @@ public final class Range {
    * @param start starting index
    * @return first in interval, else -1 if there is no such element.
    */
-  public int getFirstInInterval(int start) {  // LOOK is this needed?
+  public int getFirstInInterval(int start) {
     if (start > last()) return -1;
     if (start <= first) return first;
     if (stride == 1) return start;
     int offset = start - first;
-    int incr = offset % stride;
-    int result = start + incr;
-    return (result > last()) ? -1 : result;
+    int i = offset/stride;
+    i = (offset % stride == 0) ? i : i+1; // round up
+    return first + i * stride;
   }
 
   public String toString() {

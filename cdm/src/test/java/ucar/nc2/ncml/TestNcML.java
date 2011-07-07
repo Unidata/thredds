@@ -67,6 +67,8 @@ public class TestNcML {
     suite.addTest(new TestSuite(TestAggExistingPromote.class));
     suite.addTest(new TestSuite(TestAggMisc.class));
 
+    suite.addTest(new TestSuite(TestNcMLStrides.class));
+
     // requires remote (network) access
     // suite.addTest(new TestSuite(TestRemoteAggregation.class)); not working
 
