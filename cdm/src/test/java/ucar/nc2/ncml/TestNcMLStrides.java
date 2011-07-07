@@ -46,7 +46,7 @@ public class TestNcMLStrides extends TestCase {
   }
 
   NetcdfFile ncfile = null;
-  String location = "file:H:/work/upendra/agg_thredds.ncml";
+  String location = "file:"+TestAll.cdmUnitTestDir + "agg/strides/strides.ncml";
 
   public void setUp() {
     try {
