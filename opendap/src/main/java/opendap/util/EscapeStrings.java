@@ -40,11 +40,7 @@
 
 package opendap.util;
 
-import sun.awt.CharsetString;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
+import java.net.*;
 
 /**
  * User: ndp
@@ -287,11 +283,28 @@ public class EscapeStrings {
      * @param spaceplus True if spaces should be replaced by '+'.
      * @return The modified string.
      */
-    private static String unescapeString(String in, char escape, String except, boolean spaceplus) {
+    private static String unescapeString(String in, char escape, boolean spaceplus) throws Exception
+    {
         if (in == null) return null;
 
-        StringBuffer out = new StringBuffer();
+        byte[] utf8 = in.getBytes("UTF-8");
+        byte escape8 = (byte)escape;
+        byte[] out = new byte[utf8.length]; // Should be max we need
 
+        int index8 = 0;
+        for(int i=0;i<utf8.length;) {
+            byte b = utf8[i++];
+            if(b == plus && spaceplus) {
+               out[index8++] = blank;
+            } else if(b == escape8) {
+                // check to see if there are enough characters left
+                if(i+2 <= utf8.length) {
+                    b = (byte)(toHex(utf8[i])<<4 | toHex(utf8[i+1]));
+                    i += 2;
+                }
+            }
+            out[index8++] = b;
+        }
         /*
         String esc = String.valueOf(escape);
         String replacement;
@@ -329,8 +342,25 @@ public class EscapeStrings {
             }
         }
         */
-        return out.toString();
+        return new String(out,0,index8,"UTF-8");
 
+    }
+
+    static final byte hexa = (byte)'a';
+    static final byte hexf = (byte)'f';
+    static final byte hexA = (byte)'A';
+    static final byte hexF = (byte)'F';
+    static final byte hex0 = (byte)'0';
+    static final byte hex9 = (byte)'9';
+    static final byte ten = (byte)10;
+
+
+    private static byte toHex(byte b) throws NumberFormatException
+    {
+        if(b >= hex0 && b <= hex9) return (byte)(b - hex0);
+        if(b >= hexa && b <= hexf) return (byte)(ten + (b - hexa));
+        if(b >= hexA && b <= hexF) return (byte)(ten + (b - hexA));
+        throw new NumberFormatException("Illegal hex character: "+b);
     }
 
     /**
@@ -378,7 +408,7 @@ public class EscapeStrings {
     {
         String s;
         try {
-            s = unescapeString(id, _URIEscape, "", false);
+            s = unescapeString(id, _URIEscape, false);
         } catch (Exception e) {
             s = null;
         }
@@ -408,7 +438,7 @@ public class EscapeStrings {
      public static String unescapeURLQuery(String ce)
      {
         try {
-            ce = unescapeString(ce, _URIEscape, "", false);
+            ce = unescapeString(ce, _URIEscape, false);
         } catch(Exception e) {ce = null;}
         return ce;
      }
@@ -418,32 +448,58 @@ public class EscapeStrings {
      * Note that the whole string is escaped, so
      * be careful what you pass into this procedure.
      *
-     * @param url The expression to modify.
+     * @param s The string to modify.
      * @return The escaped expression.
      */
-     public static String escapeURL(String url)
+     public static String urlEncode(String s)
      {
-    try {
-        //url = escapeString(url, _allowableInUrl, _URIEscape, false);
-        url = URLEncoder.encode(url,"UTF8");
-    } catch(Exception e) {url = null;}
-        return url;
+        try {
+            //s = escapeString(s, _allowableInUrl, _URIEscape, false);
+            s = URLEncoder.encode(s,"UTF-8");
+        } catch(Exception e) {s = null;}
+        return s;
      }
 
     /**
      * Define the DEFINITIVE URL unescape function.
      *
-     * @param url The expression to unescape.
+     * @param s The string to unescape.
      * @return The unescaped expression.
+     */
+     public static String urlDecode(String s)
+     {
+        try {
+            //s = unescapeString(s, _URIEscape, "", false);
+            s = URLDecoder.decode(s,"UTF-8");
+        } catch(Exception e) {s = null;}
+        return s;
+     }
+
+    /**
+     *  Decompose a url and piecemeal encode all of its parts, including query and fragment
+     * @param url  the url to encode
+     */
+     public static String escapeURL(String url)
+     {
+        String newurl = null;
+        try {
+            URI u = new URI(url);
+            newurl = u.toASCIIString();
+        } catch (URISyntaxException mfue) {newurl = url;}
+        return newurl;
+     }
+
+    /**
+     *  Decode all of the parts of the url including query and fragment
+     * @param url  the url to encode
      */
      public static String unescapeURL(String url)
      {
-        try {
-            //url = unescapeString(url, _URIEscape, "", false);
-            url = URLDecoder.decode(url,"UT-8");
-        } catch(Exception e) {url = null;}
-        return url;
+        String newurl = null;
+        newurl = urlDecode(url);
+        return newurl;
      }
+
 
     /**
      * Define the OGC Web Services escape function.
@@ -453,7 +509,7 @@ public class EscapeStrings {
      */
      public static String escapeOGC(String s)
      {
-        return escapeURL(s);
+        return urlEncode(s);
      }
 
     /**
@@ -464,7 +520,7 @@ public class EscapeStrings {
      */
      public static String unescapeOGC(String s)
      {
-        return unescapeURL(s);
+        return urlDecode(s);
      }
 
 

@@ -680,7 +680,7 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
     // The url and query strings will come to us in encoded form
     // (see HTTPmethod.newMethod())
     String baseurl = request.getRequestURL().toString();
-    baseurl = EscapeStrings.unescapeURL(baseurl);
+    baseurl = EscapeStrings.escapeURL(baseurl);
     log.debug("doGet baseurl={}", baseurl);
 
     String query = request.getQueryString();

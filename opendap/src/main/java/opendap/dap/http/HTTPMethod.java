@@ -1,7 +1,6 @@
 package opendap.dap.http;
 
 import java.io.*;
-import java.net.URI;
 import java.util.*;
 
 import opendap.util.EscapeStrings;
@@ -13,7 +12,6 @@ import org.apache.commons.httpclient.methods.*;
 import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
 import org.apache.commons.httpclient.methods.multipart.Part;
 import org.apache.commons.httpclient.params.HttpMethodParams;
-import org.apache.commons.httpclient.util.URIUtil;
 
 /**
  * Created by IntelliJ IDEA.
@@ -49,10 +47,7 @@ public class HTTPMethod
 
         // Assume uri has already been encoded
         if(false) {// Break off the constraint expression and encode each piece using EscapeStrings.
-        String[] split = EscapeStrings.splitURL(uri);
-        String encodeduri =
-                (split[0] == null ? "" : EscapeStrings.escapeURL(split[0]))
-              + (split[1] == null ? "" : '?' + EscapeStrings.escapeURLQuery(split[1]));
+        String encodeduri =  EscapeStrings.unescapeURL(uri);
         }
 
         this.methodclass = m;
@@ -129,7 +124,11 @@ public class HTTPMethod
                     hmp.setParameter(key,params.get(key));
             }
             setcontent();
-            session.sessionClient.executeMethod(method);
+            try {
+                session.sessionClient.executeMethod(method);
+            } catch (IllegalArgumentException iae) {
+                iae.printStackTrace();
+            }
             int code = getStatusCode();
             return code;
         } catch (Exception ie) {

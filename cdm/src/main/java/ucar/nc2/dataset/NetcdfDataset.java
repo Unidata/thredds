@@ -32,7 +32,6 @@
  */
 package ucar.nc2.dataset;
 
-import opendap.dap.http.HTTPException;
 import opendap.dap.http.HTTPMethod;
 import opendap.dap.http.HTTPSession;
 import opendap.util.EscapeStrings;

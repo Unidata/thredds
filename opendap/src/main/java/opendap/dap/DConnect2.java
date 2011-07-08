@@ -52,7 +52,6 @@ import java.util.zip.GZIPInputStream;
 import opendap.util.EscapeStrings;
 import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.auth.*;
-import org.apache.commons.httpclient.util.URIUtil;
 
 /**
  * Rewritten 1/15/07 jcaron to use HttpCLient library instead of jdk UrlConnection class.
