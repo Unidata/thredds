@@ -208,7 +208,14 @@ public class GradsBinaryGridServiceProvider extends AbstractIOServiceProvider {
                          ? ensDim.getSize()
                          : 1;
             GradsTimeDimension timeDim  = gradsDDF.getTimeDimension();
-            int                numtimes = timeDim.getSize();
+            int                numtimes = 0;
+            if (gradsDDF.isTemplate()) {
+                int[] timesPerFile = 
+                	gradsDDF.getTimeStepsPerFile(dataFile.getLocation());
+                numtimes = timesPerFile[0];
+            } else {
+                numtimes = timeDim.getSize();
+            }
             int gridsPerTimeStep        = gradsDDF.getGridsPerTimeStep();
             int numrecords              = numens * numtimes
                                           * gridsPerTimeStep;
@@ -222,6 +229,10 @@ public class GradsBinaryGridServiceProvider extends AbstractIOServiceProvider {
             dataSize += numtimes * (timeHeaderBytes + timeTrailerBytes);
             int leftovers = (int) (fileSize - dataSize);
             sequentialRecordBytes = (leftovers / numrecords) / 2;
+            if (sequentialRecordBytes < 0) {
+            	throw new IOException("Incorrect sequential record byte size: " + 
+            			sequentialRecordBytes);
+            }
         }
 
         buildNCFile();
