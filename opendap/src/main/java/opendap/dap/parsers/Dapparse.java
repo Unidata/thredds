@@ -330,9 +330,16 @@ public abstract class Dapparse
             throws ParseException
     {
         Attribute att;
+        int typ = (Integer)etype;
         att = new Attribute(clearName((String)name), attributetypefor((Integer) etype));
         try {
-            for (Object o : (List<Object>) values) att.appendValue((String) o, true);
+            for (Object o : (List<Object>) values) {
+		// If this is a string, then we need to unescape any backslashes
+		if(typ == SCAN_STRING)
+                    att.appendValue(unescapeAttributeString((String)o), true);
+                else
+		    att.appendValue((String) o, true);
+	    }
         } catch (Exception e) {
             throw new ParseException(e);
         }
@@ -594,6 +601,16 @@ public abstract class Dapparse
     String clearName(String encodedname)
     {
         return EscapeStrings.unEscapeDAPIdentifier(encodedname);
+    }
+
+    String unescapeAttributeString(String s)
+    {
+        String news = "";
+        for(char c: s.toCharArray()) {
+            if(c == '\\') continue;
+            news += c;
+        }
+        return news;
     }
 
 }

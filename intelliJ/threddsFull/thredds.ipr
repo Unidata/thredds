@@ -455,9 +455,7 @@
           <option name="ignoreSimpleAssignmentsAndReturns" value="false" />
         </inspection_tool>
         <inspection_tool class="ConditionalExpressionWithIdenticalBranches" enabled="true" level="WARNING" enabled_by_default="true" />
-        <inspection_tool class="ConfusingElse" enabled="true" level="WARNING" enabled_by_default="true">
-          <option name="reportWhenNoStatementFollow" value="false" />
-        </inspection_tool>
+        <inspection_tool class="ConfusingElse" enabled="true" level="WARNING" enabled_by_default="true" />
         <inspection_tool class="ConfusingFloatingPointLiteral" enabled="true" level="WARNING" enabled_by_default="true" />
         <inspection_tool class="ConstantAssertCondition" enabled="true" level="WARNING" enabled_by_default="true" />
         <inspection_tool class="ConstantDeclaredInAbstractClass" enabled="true" level="WARNING" enabled_by_default="true" />
@@ -641,9 +639,7 @@
         <inspection_tool class="InstantiationOfUtilityClass" enabled="true" level="WARNING" enabled_by_default="true" />
         <inspection_tool class="IntLiteralMayBeLongLiteral" enabled="true" level="WARNING" enabled_by_default="true" />
         <inspection_tool class="IntegerDivisionInFloatingPointContext" enabled="true" level="WARNING" enabled_by_default="true" />
-        <inspection_tool class="IntegerMultiplicationImplicitCastToLong" enabled="true" level="WARNING" enabled_by_default="true">
-          <option name="ignoreNonOverflowingCompileTimeConstants" value="true" />
-        </inspection_tool>
+        <inspection_tool class="IntegerMultiplicationImplicitCastToLong" enabled="true" level="WARNING" enabled_by_default="true" />
         <inspection_tool class="IteratorHasNextCallsIteratorNext" enabled="true" level="WARNING" enabled_by_default="true" />
         <inspection_tool class="IteratorNextDoesNotThrowNoSuchElementException" enabled="true" level="WARNING" enabled_by_default="true" />
         <inspection_tool class="JavaLangReflect" enabled="true" level="WARNING" enabled_by_default="true" />
@@ -779,7 +775,6 @@
           <option name="m_reportObjectMethods" value="true" />
           <option name="m_reportArrayMethods" value="true" />
           <option name="m_reportCollectionMethods" value="true" />
-          <option name="m_ignorePrivateMethods" value="false" />
         </inspection_tool>
         <inspection_tool class="RuntimeExec" enabled="true" level="WARNING" enabled_by_default="true" />
         <inspection_tool class="SafeLock" enabled="true" level="WARNING" enabled_by_default="true" />

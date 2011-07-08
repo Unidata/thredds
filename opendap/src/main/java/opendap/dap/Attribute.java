@@ -169,7 +169,6 @@ public class Attribute extends DAPNode
           throws AttributeBadValueException {
 
     super(name);
-    //value = fixnan(value);
     if (check)
       dispatchCheckValue(type, value);
 
@@ -195,7 +194,6 @@ public class Attribute extends DAPNode
           throws AttributeBadValueException {
 
     super(name);
-    //value = fixnan(value);
     dispatchCheckValue(type, value);
 
     this.type = type;
@@ -428,7 +426,6 @@ public class Attribute extends DAPNode
           throws NoSuchAttributeException, AttributeBadValueException {
 
     checkVectorUsage();
-    //value = fixnan(value);
     if(check)
       dispatchCheckValue(type, value);
 

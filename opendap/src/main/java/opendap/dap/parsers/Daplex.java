@@ -46,7 +46,7 @@ class Daplex implements DapParser.Lexer
 
     static final boolean URLCVT = false;
 
-    static final boolean NONSTDCVT = false;
+    static final boolean DAP2STRING = true;
 
     /* First character in DDS and DAS TOKEN_IDENTifier or number */
     String wordchars1 =
@@ -230,7 +230,18 @@ class Daplex implements DapParser.Lexer
                     boolean more = true;
                     /* We have a string token; will be reported as SCAN_WORD */
                     while (more && (c = read()) > 0) {
-                        if (NONSTDCVT) {
+                        if (DAP2STRING) {/* Implement DAP2 standard */
+                            switch  (c) {
+                            case '"':
+                                more = false;
+                                break;
+                            case '\\':
+                                c = read();
+                                if (c < 0) more = false;
+                                break;
+                            default: break;
+                            }
+                        } else {// Ignore: Implement an alternative for string encoding
                             switch (c) {
                             case '"':
                                 more = false;
@@ -273,14 +284,6 @@ class Daplex implements DapParser.Lexer
                                 break;
                             default:
                                 break;
-                            }
-                        } else {  /* Implement DAP2 standard */
-
-                            if (c == '"')
-                                more = false;
-                            else if (c == '\\') {
-                                c = read();
-                                if (c < 0) more = false;
                             }
                         }
                         if (more) yytext.append((char) c);
