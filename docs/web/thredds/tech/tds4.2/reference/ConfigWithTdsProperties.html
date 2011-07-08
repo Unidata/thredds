@@ -22,12 +22,11 @@
 </p>
 
 <p>The TDS configuration settings that can be set with Java system properties include:</p>
-
-<table border="2" cellpadding="2">
+<table width="1037" border="2" cellpadding="2">
   <tr>
-    <th>Property Name</th>
-    <th>Description</th>
-    <th>Default Value from <code>tds.properties</code> file</th>
+    <th width="159">Property Name</th>
+    <th width="390">Description</th>
+    <th width="398">Default Value from <code>tds.properties</code> file</th>
   </tr>
   <tr>
     <td>tds.version</td>
@@ -40,7 +39,7 @@
     <td>"4.2"</td>
   </tr>
   <tr>
-    <td>tds.builddate</td>
+    <td>tds.version.builddate</td>
     <td>TDS Build Date</td>
     <td>"&lt;yyyyMMdd.hhmm&gt;"</td>
   </tr>
@@ -79,6 +78,26 @@
     <td>Name of TDS configuration file (relative path from content/thredds).</td>
     <td>"threddsConfig.xml"</td>
   </tr>
+  <tr>
+    <td>tds.content.startup.path</td>
+    <td>&nbsp;</td>
+    <td>&quot;WEB-INF/altContent/startup&quot;</td>
+  </tr>
+  <tr>
+    <td>tds.content.idd.path</td>
+    <td>&nbsp;</td>
+    <td>&quot;WEB-INF/altContent/idd/thredd&quot;</td>
+  </tr>
+  <tr>
+    <td>tds.content.motherlode.path</td>
+    <td>&nbsp;</td>
+    <td>&quot;WEB-INF/altContent/motherlode/thredds&quot;</td>
+  </tr>
+  <tr>
+    <td>tds.install.url</td>
+    <td>&nbsp;</td>
+    <td>&quot;catalog.htm&quot;</td>
+  </tr>
 </table>
 <!--
 tds.content.startup.path=WEB-INF/altContent/startup
@@ -90,7 +109,7 @@ tds.install.url=catalog.html
 <hr width="100%">
 <address>
   <img alt="THREDDS" src="../../images/thread.png" height="108" width="110">
-  This document is maintained by Unidata and was last updated January 2010.
+  This document is maintained by Unidata and was last updated July 2011.
   Send comments to
   <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.
 </address>
