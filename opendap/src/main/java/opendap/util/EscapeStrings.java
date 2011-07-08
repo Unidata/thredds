@@ -40,6 +40,8 @@
 
 package opendap.util;
 
+import sun.awt.CharsetString;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -166,6 +168,7 @@ public class EscapeStrings {
 		          asciiAlphaNumeric
                 + opendap_identifier_special_characters;
 
+
     /*
      * s1 union s2
      */
@@ -192,40 +195,8 @@ public class EscapeStrings {
 
 
     /**
-     * Replace characters that are not allowed in WWW URLs using rules specific
-     * to Constraint Expressions. This has canged over time and now the only
-     * differences are:
-     * <ui>
-     * <li>'*' is escaped by this function while it is not
-     * escaped by id2www().</li>
-     * <li> ',' is not escaped by this function and it is by id2www</li>
-     * </ui>
-     * The set of characters that are allowed in a CE are:
-     * "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-+_/.\";
-     * All other characters will replaced with their hexidecimal value preceeded by
-     * the "%" character. Thus a space, " ", character will be represented in the
-     * returned string as "%20".
-     *
-     * @param in The string in which to replace characters.
-     * @return The modified identifier.
-     */
-    private static String id2www_ce(String in) {
-        String s;
-
-        try {
-            s = escapeString(in, _allowableInURI_CE, _URIEscape, false);
-        }
-        catch (Exception e) {
-            s = null;
-
-        }
-        return s;
-    }
-
-
-    /**
      * Replace all characters in the String <code>in</code> not present in the String <code>allowable</code> with
-     * their hexidecimal values (encoded as ASCII) and preceeded by the String <code>esc</code>
+     * their hexidecimal values (encoded as UTF8) and preceeded by the String <code>esc</code>
      * <p/>
      * The <cods>esc</code> character may not appear on the allowable list, as if it did it would break the 1:1
      * and onto mapping between the unescaped character space and the escaped characater space.
@@ -236,12 +207,39 @@ public class EscapeStrings {
      * @param spaceplus True if spaces should be replaced by '+'.
      * @return The modified identifier.
      */
+
+    // Useful constants
+    static byte blank = ((byte)' ');
+    static byte plus = ((byte)'+');
+
     private static String escapeString(String in, String allowable, char esc, boolean spaceplus) throws Exception {
-        String out = "";
+        StringBuffer out = new StringBuffer();
         int i;
 
         if (in == null) return null;
 
+        byte[] utf8 = in.getBytes("UTF-8");
+        byte[] allow8 = allowable.getBytes("UTF-8");
+
+        for(byte b: utf8) {
+            if(b == blank && spaceplus) {
+               out.append('+');
+            } else {
+                // search allow8
+                boolean found = false;
+                for(byte a: allow8) {
+                    if(a == b) {found = true; break;}
+                }
+                if(found) {out.append((char)b);}
+                else {
+                    String c = Integer.toHexString(b);
+                    out.append(esc);
+                    if (c.length() < 2) out.append('0');
+                    out.append(c);
+                }
+            }
+        }
+        /*
         StringBuilder buf = new StringBuilder(in);
         if(spaceplus) {
             for(i=0;(i=in.indexOf(' ',i)) >= 0; i++) {
@@ -271,35 +269,10 @@ public class EscapeStrings {
             }
 
         }
-
-        return out;
+        */
+        return out.toString();
 
     }
-
-    /**
-     * Replace characters that are not allowed in DAP2 identifiers.
-     * The set of characters that are allowed in a URI are:
-     * "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-+_/.\*";
-     * All other characters will replaced with their hexidecimal value preceeded by
-     * the "%" character. Thus a space, " ", character will be represented in the
-     * returned string as "%20".
-     *
-     * @param in The string in which to replace characters.
-     * @return The modified identifier.
-     */
-    private static String id2www(String in) {
-        String s;
-
-        try {
-            s = escapeString(in, _allowableInURI, _URIEscape, false);
-        }
-        catch (Exception e) {
-            s = null;
-
-        }
-        return s;
-    }
-
 
     /**
      * Given a string that contains WWW escape sequences, translate those escape
@@ -317,6 +290,9 @@ public class EscapeStrings {
     private static String unescapeString(String in, char escape, String except, boolean spaceplus) {
         if (in == null) return null;
 
+        StringBuffer out = new StringBuffer();
+
+        /*
         String esc = String.valueOf(escape);
         String replacement;
         int i;
@@ -352,45 +328,10 @@ public class EscapeStrings {
 
             }
         }
-
-        return out;
-
-    }
-
-
-    /**
-     * Given a string that contains WWW escape sequences, translate those escape
-     * sequences back into ASCII characters. Escape sequences are indicted by a
-     * leading "%" character followed by 2 characters indicating the hexidecimal
-     * value of the character that was escaped.
-     *
-     * @param in The string to modify.
-     * @return The modified string.
-     */
-    private static String www2id(String in) {
-
-        return unescapeString(in, _URIEscape, "", false);
+        */
+        return out.toString();
 
     }
-
-
-    /**
-     * Given a string that contains WWW escape sequences, translate those escape
-     * sequences back into ASCII characters, with the exception of the escaped
-     * space (0x20) character which appears as "%20". THe Constraint Expression
-     * Parser will break if there are spaces in the CE. Escape sequences are
-     * indicted by a leading "%" character followed by 2 characters indicating
-     * the hexidecimal value of the character that was escaped.
-     *
-     * @param in The string to modify.
-     * @return The modified string.
-     */
-    public static String www2ce(String in) {
-
-        return unescapeString(in, _URIEscape, "%20", false);
-
-    }
-
 
     /**
      * Split a url into the base plus the query
@@ -473,7 +414,9 @@ public class EscapeStrings {
      }
 
     /**
-     * Define the DEFINITIVE URL escape function. Url must not contain query
+     * Define the DEFINITIVE URL escape function.
+     * Note that the whole string is escaped, so
+     * be careful what you pass into this procedure.
      *
      * @param url The expression to modify.
      * @return The escaped expression.
@@ -481,7 +424,8 @@ public class EscapeStrings {
      public static String escapeURL(String url)
      {
     try {
-        url = escapeString(url, _allowableInUrl, _URIEscape, false);
+        //url = escapeString(url, _allowableInUrl, _URIEscape, false);
+        url = URLEncoder.encode(url,"UTF8");
     } catch(Exception e) {url = null;}
         return url;
      }
@@ -495,7 +439,8 @@ public class EscapeStrings {
      public static String unescapeURL(String url)
      {
         try {
-            url = unescapeString(url, _URIEscape, "", false);
+            //url = unescapeString(url, _URIEscape, "", false);
+            url = URLDecoder.decode(url,"UT-8");
         } catch(Exception e) {url = null;}
         return url;
      }
@@ -508,10 +453,7 @@ public class EscapeStrings {
      */
      public static String escapeOGC(String s)
      {
-        try {
-            s = URLEncoder.encode(s,"UTF-8");
-        } catch(Exception e) {s = null;}
-        return s;
+        return escapeURL(s);
      }
 
     /**
@@ -522,14 +464,13 @@ public class EscapeStrings {
      */
      public static String unescapeOGC(String s)
      {
-        try {
-            s = URLDecoder.decode(s,"UTF-8");
-        } catch(Exception e) {s = null;}
-        return s;
+        return unescapeURL(s);
      }
 
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) throws Exception
+    {
+        /* Ignore
 
         if (args.length > 0) {
             for (String s : args) {
@@ -550,8 +491,8 @@ public class EscapeStrings {
             System.out.println("Input String:      \"" + allChars + "\"");
             System.out.println("Output String:     \"" + id2www(allChars) + "\"");
             System.out.println("Recaptured String: \"" + www2id(id2www(allChars)) + "\" ");
-
         }
+        */
     }
 
 
