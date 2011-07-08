@@ -38,7 +38,6 @@ import ucar.ma2.Array;
 import ucar.ma2.DataType;
 
 import ucar.nc2.*;
-import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.units.SimpleUnit;
@@ -587,8 +586,11 @@ public class GridHorizCoordSys {
       radius_spherical_earth = gds.getDouble("radius_spherical_earth");
 
     if( ! Double.isNaN(radius_spherical_earth) ) {
-      //v.addAttribute(new Attribute(GridCF.EARTH_RADIUS, new Double(radius_spherical_earth)));
-      v.addAttribute(new Attribute(GridCF.EARTH_RADIUS, new Double(radius_spherical_earth * 1000.0)));  // nathan.mittler@sensis.com 6/7/11
+      //inconsistent - sometimes in km, sometimes in m.
+      if (radius_spherical_earth < 10000.00) // then its in km
+        radius_spherical_earth *= 1000.0;    // convert to meters
+      v.addAttribute(new Attribute(GridCF.EARTH_RADIUS, new Double(radius_spherical_earth))); //this attribute needs to be meters
+
     } else { // oblate earth
       double major_axis = gds.getDouble( GridDefRecord.MAJOR_AXIS_EARTH );
       if (Double.isNaN( major_axis ))
