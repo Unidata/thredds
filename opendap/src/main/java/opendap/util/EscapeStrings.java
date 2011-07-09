@@ -299,7 +299,7 @@ public class EscapeStrings {
             } else if(b == escape8) {
                 // check to see if there are enough characters left
                 if(i+2 <= utf8.length) {
-                    b = (byte)(toHex(utf8[i])<<4 | toHex(utf8[i+1]));
+                    b = (byte)(fromHex(utf8[i])<<4 | fromHex(utf8[i + 1]));
                     i += 2;
                 }
             }
@@ -355,7 +355,7 @@ public class EscapeStrings {
     static final byte ten = (byte)10;
 
 
-    private static byte toHex(byte b) throws NumberFormatException
+    private static byte fromHex(byte b) throws NumberFormatException
     {
         if(b >= hex0 && b <= hex9) return (byte)(b - hex0);
         if(b >= hexa && b <= hexf) return (byte)(ten + (b - hexa));
