@@ -41,7 +41,7 @@ package opendap.test;
 import opendap.dap.*;
 import opendap.dap.parsers.*;
 import opendap.Server.*;
-import opendap.test.servers.*;
+import opendap.servers.*;
 
 import java.util.*;
 import java.io.*;

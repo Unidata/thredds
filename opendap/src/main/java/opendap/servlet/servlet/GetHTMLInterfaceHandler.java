@@ -2,42 +2,55 @@
 // This file is part of the "Java-DAP" project, a Java implementation
 // of the OPeNDAP Data Access Protocol.
 //
-// Copyright (c) 2007 OPeNDAP, Inc. 
-//
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License, or (at your option) any later version.
-//
-// This library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//
-// You can contact OPeNDAP, Inc. at PO Box 112, Saunderstown, RI. 02874-0112.
+// Copyright (c) 2010, OPeNDAP, Inc.
+// Copyright (c) 2002,2003 OPeNDAP, Inc.
+// 
+// Author: James Gallagher <jgallagher@opendap.org>
+// 
+// All rights reserved.
+// 
+// Redistribution and use in source and binary forms,
+// with or without modification, are permitted provided
+// that the following conditions are met:
+// 
+// - Redistributions of source code must retain the above copyright
+//   notice, this list of conditions and the following disclaimer.
+// 
+// - Redistributions in binary form must reproduce the above copyright
+//   notice, this list of conditions and the following disclaimer in the
+//   documentation and/or other materials provided with the distribution.
+// 
+// - Neither the name of the OPeNDAP nor the names of its contributors may
+//   be used to endorse or promote products derived from this software
+//   without specific prior written permission.
+// 
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+// IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+// TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+// PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+// HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
+// TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+// PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+// LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+// NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /////////////////////////////////////////////////////////////////////////////
 
 
-package thredds.server.opendap;
+
+package opendap.servlet.servlet;
 
 
-import opendap.dap.DAP2Exception;
-import opendap.dap.DAS;
-import opendap.dap.DDS;
+import java.io.*;
+import javax.servlet.http.*;
+
+import opendap.dap.*;
+import opendap.dap.parsers.*;
 import opendap.Server.ServerDDS;
-import opendap.dap.parsers.ParseException;
 import opendap.servers.www.jscriptCore;
 import opendap.servers.www.wwwFactory;
 import opendap.servers.www.wwwOutPut;
-import thredds.servlet.ThreddsConfig;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.*;
 
 /**
  * Default handler for OPeNDAP .html requests. This class is used
@@ -48,17 +61,12 @@ import java.io.*;
  * @author Nathan David Potter
  */
 
-public class GetHTMLInterfaceHandler2
-{
+public class GetHTMLInterfaceHandler {
 
     private static final boolean _Debug = false;
     private String helpLocation = "http://www.opendap.org/online_help_files/";
 
-    private String serverContactName = ThreddsConfig.get( "serverInformation.contact.name", "UNKNOWN" );
-    private String serverContactEmail = ThreddsConfig.get( "serverInformation.contact.email", "UNKNOWN" );
-    private String odapSupportEmail = "support@opendap.org";
-
-  /**
+    /**
      * ************************************************************************
      * Default handler for OPeNDAP .html requests. Returns an html form
      * and javascript code that allows the user to use their browser
@@ -72,7 +80,7 @@ public class GetHTMLInterfaceHandler2
      * @param sdds
      * @param myDAS
      * @throws opendap.dap.DAP2Exception
-     * @throws opendap.dap.parsers.ParseException
+     * @throws ParseException
      * @see opendap.servers.www.wwwFactory
      */
     public void sendDataRequestForm(HttpServletRequest request,
@@ -165,15 +173,16 @@ public class GetHTMLInterfaceHandler2
             pw.println("</table></form>\n");
             pw.println("<hr>\n");
 
-            pw.println( "<address>");
-            pw.println( "<p>For questions or comments about this dataset, contact the administrator of this server ["
-                      + serverContactName + "] at: <a href='mailto:" + serverContactEmail + "'>"
-                      + serverContactEmail + "</a></p>");
-            pw.println( "<p>For questions or comments about OPeNDAP, email OPeNDAP support at:"
-                        + " <a href='mailto:" + odapSupportEmail + "'>" + odapSupportEmail + "</a></p>" );
-          pw.println( "</address></body></html>" );
 
-          pw.println("<hr>");
+            pw.println(
+                    "<address>Send questions or comments to: "
+                            + "<a href=\"mailto:support@unidata.ucar.edu\">"
+                            + "support@unidata.ucar.edu"
+                            + "</a></address>"
+                            + "</body></html>\n"
+            );
+
+            pw.println("<hr>");
             pw.println("<h2>DDS:</h2>");
 
             pw.println("<pre>");
@@ -215,10 +224,6 @@ public class GetHTMLInterfaceHandler2
         // for this particular server
         // ServerDDS sDDS = dServ.getDDS(dataSet);
 
-        // Make a new DDS using the web form (www interface) class factory
-        wwwFactory wfactory = new wwwFactory();
-        DDS wwwDDS = new DDS(dataSet, wfactory);
-
         // Make a special print writer to catch the ServerDDS's
         // persistent representation in a String.
         StringWriter ddsSW = new StringWriter();
@@ -236,8 +241,11 @@ public class GetHTMLInterfaceHandler2
 	} catch (UnsupportedEncodingException uee) {
 	    throw new DAP2Exception("UTF-8 encoding not supported");
 	}
-        wwwDDS.parse(bai);
 
+        // Make a new DDS parser using the web form (www interface) class factory
+        wwwFactory wfactory = new wwwFactory();
+        DDS wwwDDS = new DDS(dataSet,wfactory);
+        wwwDDS.parse(bai);
         return (wwwDDS);
 
 
