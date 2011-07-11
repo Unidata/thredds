@@ -48,8 +48,6 @@ import javax.servlet.http.*;
 import java.util.zip.DeflaterOutputStream;
 
 
-import opendap.servlet.AbstractServlet;
-
 import opendap.dap.*;
 import opendap.dap.parsers.ParseException;
 import opendap.Server.*;
@@ -150,7 +148,7 @@ import opendap.servlet.AsciiWriter;
  */
 
 
-public class dts extends AbstractServlet {
+public class  dts extends AbstractServlet {
 
 
     private static FunctionLibrary functionLibrary =

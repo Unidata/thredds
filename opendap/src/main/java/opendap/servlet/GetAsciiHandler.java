@@ -43,11 +43,9 @@ package opendap.servlet;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.util.*;
-import javax.servlet.http.*;
 
 import opendap.dap.*;
 import opendap.util.Debug;
-import opendap.servers.ascii.*;
 import opendap.dap.parsers.ParseException;
 
 /**

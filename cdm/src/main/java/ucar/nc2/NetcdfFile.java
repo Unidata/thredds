@@ -1818,7 +1818,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
      }
 
      if (spi == null)
-       return IospHelper.readSection(cer);
+       return  IospHelper.readSection(cer);
      else
        // allow iosp to optimize
        return spi.readSection(cer);

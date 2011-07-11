@@ -45,7 +45,6 @@ package opendap.servlet;
 import java.io.*;
 import javax.servlet.http.*;
 
-import opendap.servers.www.*;
 import opendap.dap.*;
 import opendap.dap.parsers.*;
 import opendap.Server.ServerDDS;
@@ -70,7 +69,7 @@ public class GetHTMLInterfaceHandler {
      * and javascript code that allows the user to use their browser
      * to select variables and build constraints for a data request.
      * The DDS and DAS for the data set are used to build the form. The
-     * types in opendap.servers.www are integral to the form generation.
+     * types in opendap.test.servers.www are integral to the form generation.
      *
      * @param request  The <code>HttpServletRequest</code> from the client.
      * @param response The <code>HttpServletResponse</code> for the client.
@@ -79,7 +78,7 @@ public class GetHTMLInterfaceHandler {
      * @param myDAS
      * @throws opendap.dap.DAP2Exception
      * @throws ParseException
-     * @see opendap.servers.www.wwwFactory
+     * @see opendap.test.servers.www.wwwFactory
      */
     public void sendDataRequestForm(HttpServletRequest request,
                                     HttpServletResponse response,
@@ -203,7 +202,7 @@ public class GetHTMLInterfaceHandler {
     /**
      * ************************************************************************
      * Gets a DDS for the specified data set and builds it using the class
-     * factory in the package <b>opendap.servers.www</b>.
+     * factory in the package <b>opendap.test.servers.www</b>.
      * <p/>
      * Currently this method uses a deprecated API to perform a translation
      * of DDS types. This is a known problem, and as soon as an alternate
@@ -213,7 +212,7 @@ public class GetHTMLInterfaceHandler {
      * @param dataSet A <code>String</code> containing the data set name.
 3     * @return A DDS object built using the www interface class factory.
      * @see opendap.dap.DDS
-     * @see opendap.servers.www.wwwFactory
+     * @see opendap.test.servers.www.wwwFactory
      */
     public DDS getWebFormDDS(String dataSet, ServerDDS sDDS) // changed jc
             throws DAP2Exception, ParseException {
