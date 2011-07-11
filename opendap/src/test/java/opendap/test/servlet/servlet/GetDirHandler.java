@@ -38,7 +38,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 
-package opendap.servlet;
+package opendap.test.servlet.servlet;
 
 import opendap.dap.parsers.ParseException;
 

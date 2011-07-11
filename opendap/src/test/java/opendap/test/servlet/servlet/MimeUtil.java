@@ -37,7 +37,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /////////////////////////////////////////////////////////////////////////////
 
-package opendap.servlet;
+package opendap.test.servlet.servlet;
 
 import java.io.*;
 

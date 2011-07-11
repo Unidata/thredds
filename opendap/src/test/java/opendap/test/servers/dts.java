@@ -51,9 +51,9 @@ import java.util.zip.DeflaterOutputStream;
 import opendap.dap.*;
 import opendap.dap.parsers.ParseException;
 import opendap.Server.*;
-import opendap.servlet.GuardedDataset;
-import opendap.servlet.ReqState;
-import opendap.servlet.AsciiWriter;
+import opendap.test.servlet.servlet.GuardedDataset;
+import opendap.test.servlet.servlet.ReqState;
+import opendap.test.servlet.servlet.AsciiWriter;
 
 
 /**

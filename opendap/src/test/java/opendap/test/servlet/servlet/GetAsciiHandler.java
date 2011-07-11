@@ -38,13 +38,15 @@
 /////////////////////////////////////////////////////////////////////////////
 
 
-package opendap.servlet;
+package opendap.test.servlet.servlet;
 
 import java.io.*;
 import java.net.MalformedURLException;
 import java.util.*;
 
 import opendap.dap.*;
+import opendap.test.servers.ascii.asciiFactory;
+import opendap.test.servers.ascii.toASCII;
 import opendap.util.Debug;
 import opendap.dap.parsers.ParseException;
 

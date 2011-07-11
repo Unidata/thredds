@@ -38,9 +38,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 
-package opendap.servlet;
-
-import opendap.util.EscapeStrings;
+package opendap.test.servlet.servlet;
 
 import java.util.Enumeration;
 import java.util.StringTokenizer;

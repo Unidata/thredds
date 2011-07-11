@@ -33,9 +33,8 @@
 package thredds.server.opendap;
 
 import net.jcip.annotations.Immutable;
-import opendap.servlet.GuardedDataset;
+import opendap.test.servlet.servlet.GuardedDataset;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.dataset.NetcdfDataset;
 
 import java.io.IOException;
 

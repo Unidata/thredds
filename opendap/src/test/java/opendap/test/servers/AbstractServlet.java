@@ -41,7 +41,6 @@
 package opendap.test.servers;
 
 import java.io.*;
-import java.net.URLDecoder;
 import java.util.*;
 import java.util.zip.DeflaterOutputStream;
 import javax.servlet.*;
@@ -50,9 +49,8 @@ import javax.servlet.http.*;
 import opendap.dap.*;
 import opendap.Server.*;
 import opendap.dap.parsers.ParseException;
-import opendap.servlet.*;
+import opendap.test.servlet.servlet.*;
 import opendap.util.Debug;
-import opendap.util.EscapeStrings;
 
 /**
  * AbstractServlet is the base servlet class for an OPeNDAP
@@ -63,7 +61,7 @@ import opendap.util.EscapeStrings;
  * Each of the request handlers appears as an adjunct method to
  * the doGet() method of the base servlet class. In order to
  * reduce the bulk of this file, many of these methods have been
- * in wrapper classes in this package (opendap.servlet).
+ * in wrapper classes in this package (opendap.test.servlet.servlet).
  * <p/>
  * This is an abstract class because it is left to the individual
  * server development efforts to write the getDDS() and
@@ -117,13 +115,13 @@ import opendap.util.EscapeStrings;
  *
  * @author Nathan David Potter
  * @author jcaron 2/7/07 merge changes
- * @see opendap.servlet.GetAsciiHandler
- * @see opendap.servlet.GetDirHandler
- * @see opendap.servlet.GetHTMLInterfaceHandler
- * @see opendap.servlet.GetInfoHandler
- * @see opendap.servlet.ReqState
- * @see opendap.servlet.ParsedRequest
- * @see opendap.servlet.GuardedDataset
+ * @see opendap.test.servlet.servlet.GetAsciiHandler
+ * @see opendap.test.servlet.servlet.GetDirHandler
+ * @see opendap.test.servlet.servlet.GetHTMLInterfaceHandler
+ * @see opendap.test.servlet.servlet.GetInfoHandler
+ * @see opendap.test.servlet.servlet.ReqState
+ * @see opendap.test.servlet.servlet.ParsedRequest
+ * @see opendap.test.servlet.servlet.GuardedDataset
  */
 
 
@@ -850,14 +848,14 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
    * listing of the datasets available on the server in a directory listing
    * format.
    * <p/>
-   * The bulk of this code resides in the class opendap.servlet.GetDirHandler and
+   * The bulk of this code resides in the class opendap.test.servlet.servlet.GetDirHandler and
    * documentation may be found there.
    *
    * @param request  The client's <code> HttpServletRequest</code> request
    *                 object.
    * @param response The server's <code> HttpServletResponse</code> response
    *                 object.
-   * @see opendap.servlet.GetDirHandler
+   * @see opendap.test.servlet.servlet.GetDirHandler
    */
   public void doGetDIR(HttpServletRequest request,
           HttpServletResponse response,
@@ -1068,7 +1066,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
    * Default handler for OPeNDAP info requests. Returns an HTML document
    * describing the contents of the servers datasets.
    * <p/>
-   * The bulk of this code resides in the class opendap.servlet.GetInfoHandler and
+   * The bulk of this code resides in the class opendap.test.servlet.servlet.GetInfoHandler and
    * documentation may be found there.
    *
    * @param request  The client's <code> HttpServletRequest</code> request
@@ -1121,7 +1119,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
    * Interface (aka The Interface From Hell) to the client.
    * <p/>
    * The bulk of this code resides in the class
-   * opendap.servlet.GetHTMLInterfaceHandler and
+   * opendap.test.servlet.servlet.GetHTMLInterfaceHandler and
    * documentation may be found there.
    *
    * @param request  The client's <code> HttpServletRequest</code> request
@@ -1568,7 +1566,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
    *                 object.
    * @param response The server's <code> HttpServletResponse</code> response
    *                 object.
-   * @see opendap.servlet.ReqState
+   * @see opendap.test.servlet.servlet.ReqState
    */
   public void doGet(HttpServletRequest request,
           HttpServletResponse response)

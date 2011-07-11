@@ -38,63 +38,72 @@
 /////////////////////////////////////////////////////////////////////////////
 
 
-package opendap.servlet;
+package opendap.test.servlet.servlet;
 
+import java.io.*;
 
 /**
- * This holds the parsed information from one particular user request.
- * We neeed this to maintain thread-safety.
- * This Object is immutable, except for the "user object".
- *
- * @author jcaron
+ * A minimal implementation of a logging facility.
  */
 
-public class ParsedRequest {
-    private String dataSet;
-    private String requestSuffix;
-    private String CE;
-    private boolean acceptsCompressed;
-    private Object obj = null;
+public class Log {
 
-    public ParsedRequest(String dataSet, String requestSuffix, String CE, boolean acceptsCompressed) {
-//    this.dataSet = (dataSet == null) ? "" : dataSet;
-//    this.requestSuffix = (requestSuffix == null) ? "" : requestSuffix;
-        this.dataSet = dataSet;
-        this.requestSuffix = requestSuffix;
-        this.CE = CE;
-        this.acceptsCompressed = acceptsCompressed;
+    static private PrintStream logger = null;
+    static private ByteArrayOutputStream buff = null;
+
+    static public void println(String s) {
+        if (logger != null)
+            logger.println(s);
     }
 
-    public String getDataSet() {
-        return dataSet;
+    static public void printDODSException(opendap.dap.DAP2Exception de) {
+        if (logger != null) {
+            de.print(logger);
+            de.printStackTrace(logger);
+        }
     }
 
-    public String getRequestSuffix() {
-        return requestSuffix;
+    static public void printThrowable(Throwable t) {
+        if (logger != null) {
+            logger.println(t.getMessage());
+            t.printStackTrace(logger);
+        }
     }
 
-    public String getConstraintExpression() {
-        return CE;
+    static public void reset() {
+        buff = new ByteArrayOutputStream();
+        logger = new PrintStream(buff);
     }
 
-    public boolean getAcceptsCompressed() {
-        return acceptsCompressed;
+    static public boolean isOn() {
+        return (logger != null);
     }
 
-    // for debugging, extra state, etc
-    public Object getUserObject() {
-        return obj;
+    static public void close() {
+        logger = null;
+        buff = null;
     }
 
-    public void setUserObject(Object userObj) {
-        this.obj = userObj;
+    static public String getContents() {
+        if (buff == null)
+            return "null";
+        else {
+            logger.flush();
+            return buff.toString();
+        }
     }
-
-    public String toString() {
-        return " dataset: " + dataSet + " suffix: " + requestSuffix + " CE: '" + CE + "' compressOK: " + acceptsCompressed;
-    }
-
 
 }
+
+/**
+ * $Log: Log.java,v $
+ * Revision 1.1  2003/08/12 23:51:27  ndp
+ * Mass check in to begin Java-OPeNDAP development work
+ *
+ * Revision 1.1  2002/09/24 18:32:35  caron
+ * add Log.java
+ *
+ *
+ */
 
 

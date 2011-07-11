@@ -39,7 +39,7 @@
 
 
 
-package opendap.servlet;
+package opendap.test.servlet.servlet;
 
 
 import java.io.*;
@@ -48,6 +48,9 @@ import javax.servlet.http.*;
 import opendap.dap.*;
 import opendap.dap.parsers.*;
 import opendap.Server.ServerDDS;
+import opendap.test.servers.www.jscriptCore;
+import opendap.test.servers.www.wwwFactory;
+import opendap.test.servers.www.wwwOutPut;
 
 /**
  * Default handler for OPeNDAP .html requests. This class is used

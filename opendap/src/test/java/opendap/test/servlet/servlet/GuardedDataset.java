@@ -37,7 +37,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /////////////////////////////////////////////////////////////////////////////
 
-package opendap.servlet;
+package opendap.test.servlet.servlet;
 
 import opendap.dap.parsers.ParseException;
 import opendap.Server.ServerDDS;

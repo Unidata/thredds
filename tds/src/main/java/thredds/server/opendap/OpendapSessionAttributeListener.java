@@ -32,7 +32,7 @@
  */
 package thredds.server.opendap;
 
-import opendap.servlet.GuardedDataset;
+import opendap.test.servlet.servlet.GuardedDataset;
 
 import javax.servlet.http.HttpSessionAttributeListener;
 import javax.servlet.http.HttpSessionBindingEvent;
