@@ -197,8 +197,10 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
       urlName = "http:" + datasetURL.substring(5);
     } else if (datasetURL.startsWith("http:")) {
       this.location = "dods:" + datasetURL.substring(5);
+    } else if (datasetURL.startsWith("file:")) {
+        this.location = datasetURL;
     } else {
-      throw new java.net.MalformedURLException(datasetURL + " must start with dods: or http:");
+      throw new java.net.MalformedURLException(datasetURL + " must start with dods: or http: or file:");
     }
 
     if (debugServerCall) System.out.println("DConnect to = <" + urlName + ">");

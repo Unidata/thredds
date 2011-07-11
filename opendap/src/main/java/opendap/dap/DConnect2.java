@@ -171,11 +171,11 @@ public class DConnect2 {
         // See if .dds and .dods files exist
         File f = new File(filePath + ".dds");
         if (!f.canRead()) {
-          throw new FileNotFoundException("file .dds not readable: " + urlString);
+          throw new FileNotFoundException("file not readable: " + urlString + ".dds");
         }
         f = new File(filePath + ".dods");
         if (!f.canRead()) {
-          throw new FileNotFoundException("file .dods not readable: " + urlString);
+          throw new FileNotFoundException("file not readable: " + urlString + ".dods");
         }
       }
       /* Set the server version cause we won't get it from anywhere */

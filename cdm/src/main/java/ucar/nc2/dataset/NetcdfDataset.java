@@ -651,7 +651,12 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     location = StringUtil.replace(location, '\\', "/");
 
     if (location.startsWith("dods:")) {
-      return acquireDODS(cache, factory, hashKey, location, buffer_size, cancelTask, spiObject);  // open through DODS
+        return acquireDODS(cache, factory, hashKey, location, buffer_size, cancelTask, spiObject);  // open through DODS
+    } else if ( location.startsWith(".file") && (
+               location.endsWith(".dds")
+               || location.endsWith(".das")
+               || location.endsWith(".dods"))) {
+               return acquireDODS(cache, factory, hashKey, location, buffer_size, cancelTask, spiObject);  // open through DODS
 
       // cdmremote:
     } else if (location.startsWith(CdmRemote.SCHEME)) {
