@@ -51,6 +51,7 @@ import java.util.zip.DeflaterOutputStream;
 import opendap.dap.*;
 import opendap.dap.parsers.ParseException;
 import opendap.Server.*;
+import opendap.servlet.AbstractServlet;
 import opendap.servlet.servlet.GuardedDataset;
 import opendap.servlet.servlet.ReqState;
 import opendap.servlet.servlet.AsciiWriter;
@@ -148,7 +149,8 @@ import opendap.servlet.servlet.AsciiWriter;
  */
 
 
-public class  dts extends AbstractServlet {
+public class  dts extends AbstractServlet
+{
 
 
     private static FunctionLibrary functionLibrary =

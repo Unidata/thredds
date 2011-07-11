@@ -38,7 +38,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 
-package opendap.servers;
+package opendap.servlet;
 
 import java.io.*;
 import java.util.*;
@@ -186,7 +186,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
    * @throws ParseException
    * @see opendap.Server.ServerDDS
    */
-  protected abstract GuardedDataset getDataset(ReqState rs) throws DAP2Exception, IOException, ParseException;
+  protected abstract opendap.servlet.GuardedDataset getDataset(opendap.servlet.servlet.ReqState rs) throws DAP2Exception, IOException, ParseException;
 
 
   /**
