@@ -52,9 +52,9 @@ import opendap.dap.*;
 import opendap.dap.parsers.ParseException;
 import opendap.Server.*;
 import opendap.servlet.AbstractServlet;
-import opendap.servlet.servlet.GuardedDataset;
-import opendap.servlet.servlet.ReqState;
-import opendap.servlet.servlet.AsciiWriter;
+import opendap.servlet.GuardedDataset;
+import opendap.servlet.ReqState;
+import opendap.servlet.AsciiWriter;
 
 
 /**

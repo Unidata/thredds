@@ -39,7 +39,7 @@
 
 
 
-package opendap.servlet.servlet;
+package opendap.servlet;
 
 import java.io.*;
 import java.util.zip.DeflaterOutputStream;

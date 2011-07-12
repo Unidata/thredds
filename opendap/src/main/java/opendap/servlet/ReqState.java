@@ -38,7 +38,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 
-package opendap.servlet.servlet;
+package opendap.servlet;
 
 import java.util.Enumeration;
 import java.util.StringTokenizer;

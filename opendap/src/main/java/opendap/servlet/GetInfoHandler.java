@@ -38,7 +38,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 
-package opendap.servlet.servlet;
+package opendap.servlet;
 
 import java.io.*;
 import java.util.*;
@@ -107,7 +107,7 @@ public class GetInfoHandler {
      */
     public void sendINFO(PrintStream pw, GuardedDataset gds, ReqState rs) throws DAP2Exception, ParseException {
 
-        if (_Debug) System.out.println("opendap.servlet.servlet.GetInfoHandler.sendINFO() reached.");
+        if (_Debug) System.out.println("opendap.servlet.GetInfoHandler.sendINFO() reached.");
 
         String responseDoc = null;
         ServerDDS myDDS = null;

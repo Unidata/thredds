@@ -49,6 +49,7 @@ import java.util.*;
 import java.util.zip.DeflaterOutputStream;
 import java.net.URI;
 
+import opendap.servlet.*;
 import opendap.util.EscapeStrings;
 import thredds.servlet.*;
 import thredds.servlet.filter.CookieFilter;

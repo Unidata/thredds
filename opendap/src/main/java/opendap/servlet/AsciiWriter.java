@@ -19,7 +19,7 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-package opendap.servlet.servlet;
+package opendap.servlet;
 
 import opendap.dap.*;
 import opendap.Server.ServerMethods;
