@@ -32,6 +32,7 @@
  */
 package ucar.nc2.util;
 
+import opendap.util.EscapeStrings;
 import ucar.unidata.util.StringUtil;
 
 import java.io.*;
@@ -262,11 +263,12 @@ public class DiskCache {
     File dir = new File(root);
     for (File file : dir.listFiles()) {
       String org = null;
-      try {
+      org = EscapeStrings.urlDecode(file.getName());
+      /*try {
         org = URLDecoder.decode(file.getName(), "UTF8");
       } catch (UnsupportedEncodingException e) {
         e.printStackTrace();
-      }
+      }*/
 
       pw.println(" " + file.length() + " " + new Date(file.lastModified()) + " " + org);
     }
@@ -362,12 +364,14 @@ public class DiskCache {
       want.createNewFile();
     System.out.println(" canRead= " + want.canRead() + " canWrite = " + want.canWrite() + " lastMod = " + new Date(want.lastModified()));
 
-    try {
-      String enc = java.net.URLEncoder.encode(filename, "UTF8");
-      System.out.println(" original=" + java.net.URLDecoder.decode(enc, "UTF8"));
+    String enc = EscapeStrings.urlEncode(filename);
+    /*try {
+        String enc = java.net.URLEncoder.encode(filename, "UTF8");
     } catch (UnsupportedEncodingException e) {
       e.printStackTrace();
-    }
+    }*/
+    System.out.println(" original=" + EscapeStrings.urlDecode(enc));
+
   }
 
 

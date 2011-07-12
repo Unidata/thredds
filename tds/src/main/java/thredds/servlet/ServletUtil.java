@@ -1015,11 +1015,12 @@ public class ServletUtil {
     sbuff.append(" req.getServletPath:").append(req.getServletPath()).append("\n");
     sbuff.append(" req.getPathInfo:").append(req.getPathInfo()).append("\n");
     sbuff.append(" req.getQueryString:").append(req.getQueryString()).append("\n");
-    try {
+    sbuff.append(" getQueryStringDecoded:").append(EscapeStrings.urlDecode(req.getQueryString())).append("\n");
+    /*try {
       sbuff.append(" getQueryStringDecoded:").append(URLDecoder.decode(req.getQueryString(), "UTF-8")).append("\n");
     } catch (UnsupportedEncodingException e1) {
       e1.printStackTrace();
-    }
+    }*/
     sbuff.append(" req.getRequestURI:").append(req.getRequestURI()).append("\n");
     sbuff.append(" getRequestBase:").append(getRequestBase(req)).append("\n");
     sbuff.append(" getRequestServer:").append(getRequestServer(req)).append("\n");

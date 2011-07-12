@@ -285,11 +285,12 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
    * @return unescaped version of it
    */
   public static String unescapeName(String vname) {
-    try {
-      return URLDecoder.decode(vname, "UTF-8");
+    return EscapeStrings.urlDecode(vname);
+    /*try {
+      old return URLDecoder.decode(vname, "UTF-8");
     } catch (UnsupportedEncodingException e) {
       throw new RuntimeException(e);
-    }
+    } */
     // return StringUtil.unescape(vname);
     // return EscapeStrings.unEscapeDAPIdentifier(vname);
   }

@@ -33,6 +33,8 @@
 
 package thredds.logs;
 
+import opendap.util.EscapeStrings;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.regex.*;
@@ -187,7 +189,7 @@ public class ServletLogParser implements LogReader.LogParser {
             if (m2.matches()) {
               log.ip = m2.group(1);
               log.verb = m2.group(2).intern();
-              log.path = URLDecoder.decode(m2.group(3));
+              log.path = EscapeStrings.urlDecode(m2.group(3)); //old  URLDecoder.decode(m2.group(3));
               if (m2.groupCount() > 4)
                 log.http = m2.group(4).intern();
               log.isStart = true;

@@ -168,7 +168,7 @@ public class CdmRemoteControllerOld extends AbstractController implements LastMo
           ncWriter.sendHeader( wbc);
 
         } else { // they want some data
-          query = URLDecoder.decode(query, "UTF-8");
+          query = EscapeStrings.urlDecode(query);  // old: URLDecoder.decode(query, "UTF-8");
           StringTokenizer stoke = new StringTokenizer(query, ";"); // need UTF/%decode
           while (stoke.hasMoreTokens()) {
             ParsedSectionSpec cer = ParsedSectionSpec.parseVariableSection(ncfile, stoke.nextToken());
