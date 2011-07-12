@@ -39,6 +39,7 @@
   <li><a href="#catalogCaching">What does the TDS do at startup to read the configuration catalogs? What gets cached? Does it have a way to know a referenced catalog is unchanged? When do referenced catalogs get scanned?</a></li>
   <li><a href="#antDeployTask">Why do I get a message that "class org.apache.catalina.ant.DeployTask
     cannot be found" when I try to build the TDS from source using Ant?</a></li>
+  <li><a href="#rh5SymLinksAndContent">Why does the TDS fail to deploy in the Tomcat provided by RedHat 5?</a></li>
 </ul>
 <h2>Caching</h2>
 <ul>
@@ -264,6 +265,43 @@ mkdir javaUtilPrefs/.systemPrefs
   <p>For TDS 4.2.6 and above, you should not see this problem as the <code>build.xml</code> file
     directly references a copy of the <code>catalina-ant.jar</code> file.
   </p>
+</blockquote>
+
+<hr width="50%" align="left">
+
+<p><a name="rh5SymLinksAndContent" id="rh5SymLinksAndContent"></a><strong>
+  Q: Why does the TDS fail to deploy in the Tomcat provided by RedHat 5?</strong>
+</p>
+<blockquote>
+  <p>The Tomcat installation provided with RedHat 5 is run from <code>/usr/share/tomcat5</code>
+    which contains symbolic links that point into <code>/var/lib/tomcat5</code>. The permissions
+    are such that the TDS cannot write the content/thredds directory in the standard location,
+    <code>${TOMCAT_HOME}/content/thredds</code> (in this case
+    <code>/usr/share/tomcat5/content/thredds</code>). The error message in
+    <code>catalina.out</code> looks something like this:
+  </p>
+  <pre>
+Jun 17, 2009 3:44:08 PM org.apache.catalina.startup.HostConfig deployWAR
+INFO: Deploying web application archive thredds.war
+log4j:WARN No appenders could be found for logger (org.apache.commons.digester.Digester.sax).
+log4j:WARN Please initialize the log4j system properly.
+TdsConfigContextListener.contextInitialized(): start.
+Jun 17, 2009 3:44:11 PM org.apache.catalina.core.StandardContext start
+SEVERE: Error listenerStart
+Jun 17, 2009 3:44:11 PM org.apache.catalina.core.StandardContext start
+SEVERE: Context [/thredds] startup failed due to previous errors
+  </pre>
+  <p>And there should be a message in the <code>localhost.*.log</code> file that looks something
+    like this:
+  </p>
+  <pre>ERROR - TdsContext.init(): Content directory does not exist and could not be created [/usr/share/tomcat5/content]</pre>
+  <p>The solution is to:</p>
+  <ul>
+    <li>create the TDS <code>content</code> directory by hand,
+      <code>/var/lib/tomcat5/content</code>;</li>
+    <li>make sure the tomcat user owns the directory and has read/write permission; and </li>
+    <li>create the symlink <code>/usr/share/tomcat5/content</code> that points to that directory.</li>
+  </ul>
 </blockquote>
 
 <hr width="100%">
