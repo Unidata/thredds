@@ -12,30 +12,79 @@ dl {margin: 10px 5px 5px 15px;)
 </head>
 
 <body>
-<h1>CDM DateTime Handling </h1>
-<p>As of CDM version 4.3, DateTimes are no longer handled by the udunits library. This allows handling <a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.5/cf-conventions.html#calendar">non-standard Calendars</a>. Note that for all dimensional units, including time, the udunits package is still used. This change only affects Calendar dates, aka <em><strong>DateTime</strong></em>.</p>
+<h1>CDM Calendar Date Handling </h1>
+<p>As of CDM version 4.3, dates are no longer handled by the udunits library. This allows handling <a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.5/cf-conventions.html#calendar">non-standard Calendars</a>. Note that for all dimensional units, the udunits package is still used. This change only affects time coordinate handling, aka <em><strong>Calendar Dates</strong></em>.</p>
+<h3>W3C profile of ISO 8601</h3>
+<p>The CDM uses the <a href="http://www.w3.org/TR/NOTE-datetime.html">W3C profile of ISO 8601</a>  formatting for reading and writing calendar dates:</p>
+<blockquote>
+  <p>The formats are as follows.
+    Exactly the components shown here must be present, with exactly this
+    punctuation.
+    Note that the &quot;T&quot; appears literally in
+    the string, to indicate the beginning of the time element, as specified in
+    ISO 8601. </p>
+  <pre> 
+   Year:
+      YYYY (eg 1997)
+   Year and month:
+      YYYY-MM (eg 1997-07)
+   Complete date:
+      YYYY-MM-DD (eg 1997-07-16)
+   Complete date plus hours and minutes:
+      YYYY-MM-DDThh:mmTZD (eg 1997-07-16T19:20+01:00)
+   Complete date plus hours, minutes and seconds:
+      YYYY-MM-DDThh:mm:ssTZD (eg 1997-07-16T19:20:30+01:00)
+   Complete date plus hours, minutes, seconds and a decimal fraction of a second
+      YYYY-MM-DDThh:mm:ss.sTZD (eg 1997-07-16T19:20:30.45+01:00)
+  </pre>
+  <p>where:</p>
+  <pre> 
+     YYYY = four-digit year
+     MM   = two-digit month (01=January, etc.)
+     DD   = two-digit day of month (01 through 31)
+     hh   = two digits of hour (00 through 23) (am/pm NOT allowed)
+     mm   = two digits of minute (00 through 59)
+     ss   = two digits of second (00 through 59)
+     s    = one or more digits representing a decimal fraction of a second
+     TZD  = time zone designator (Z or +hh:mm or -hh:mm)
+  </pre>
+</blockquote>
+
+<p>with the following differences:</p>
+<ul>
+  <li>You may use a space instead of the 'T'</li>
+  <li>The year may be preceeded by a '+' (ignored) or a '-' (makes the date  BC)</li>
+  <li>The date part uses a '-' delimiter instead of a fixed number of digits for each field</li>
+  <li>The time part uses a ':' delimiter instead of a fixed number of digits for each field</li>
+</ul>
+<p>&nbsp;</p>
 <h3>CDM udunit date  grammer</h3>
-<p>udunit date grammer has always been a bit fuzzy. This tries to formally specify a valid CDM udunit date grammer:</p>
-<pre>udunitDate = [value] period since date
+<p>The CDM continue to accept udunits for time coordinate units, it just doesnt use the udunit library to process them.</p>
+<p>The <a href="http://www.unidata.ucar.edu/software/udunits/udunits-2/udunits2lib.html#Grammar">udunit date grammer</a> is a bit fuzzy. Heres an approximate regular expression:</p>
+<pre>period SINCE [-]Y[Y[Y[Y]]]-MM-DD[(T| )hh[:mm[:ss[.sss*]]][ [+|-]hh[[:]mm]]]</pre>
+<p>The following  specifies  the CDM udunit date grammer:</p>
+<pre>udunitDate = period <strong>SINCE</strong> reference_date
 
 
 period = &quot;millisec&quot; | &quot;msec&quot; | &quot;second&quot; | &quot;sec&quot; | &quot;s&quot; | &quot;minute&quot; | &quot;min&quot; | &quot;hour&quot; | &quot;hr&quot; | &quot;day&quot; | &quot;week&quot; | &quot;month&quot; | &quot;year&quot; | 
-         &quot;millisecs&quot; |&quot;msecs&quot; | &quot;seconds&quot; | &quot;secs&quot; | &quot;minutes&quot; | &quot;mins&quot; | &quot;hours&quot; | &quot;hrs&quot; | &quot;days&quot; | &quot;weeks&quot; | &quot;months&quot; | &quot;years&quot; </pre>
+         &quot;millisecs&quot; |&quot;msecs&quot; | &quot;seconds&quot; | &quot;secs&quot; | &quot;minutes&quot; | &quot;mins&quot; | &quot;hours&quot; | &quot;hrs&quot; | &quot;days&quot; | &quot;weeks&quot; | &quot;months&quot; | &quot;years&quot; 
+reference_date = cdm/iso formatted date as described above
+SINCE = literal (case insensitive)
+
+</pre>
 <p>where</p>
-<ul><li>msec = milli seconds  (10^-3 secs)</li>
+<ul>
+  <li>msec = millisec = seconds / 1000</li>
 </ul>
-<p>udunits defines these periods as fixed multiples of seconds. the non-obvious ones are:</p>
+<p>udunits defines the periods as fixed multiples of seconds. the non-obvious ones are:</p>
 <ul>
   <li>day = 86400.0 seconds</li>
   <li>week = 7 days = 604800.0 seconds</li>
   <li>month = year/12 = 2629743.831225 seconds</li>
   <li>year =  3.15569259747E7 seconds</li>
 </ul>
-<p>the udunit package has some other periods that are no longer supported by CDM  udunit date, such as &quot;sidereal day&quot;, &quot;lunar month&quot;, &quot;fortnight&quot;, &quot;eon&quot;, etc. We are not supporting these because we think they are not used, but contact us if you are using these with some reason.</p>
-<h3>CDM ISO-8601 Strings</h3>
-<p> This will parse the string produced by <a href="../../javax/time/Instant.html#toString()">toString()</a> which is the ISO-8601 format yyyy-MM-ddTHH:mm:ss.SSSSSSSSSZ. The numbers must be ASCII numerals. The seconds are mandatory, but the fractional seconds are optional. There must be no more than 9 digits after the decimal point. The letters (T and Z) will be accepted in upper or lower case. The decimal point may be either a dot or a comma. </p>
-<h3></h3>
-<p>Problem</p>
+<p>The udunit package has some other periods that are no longer supported by CDM  udunit date, such as &quot;sidereal day&quot;, &quot;lunar month&quot;, &quot;fortnight&quot;, &quot;eon&quot;, etc. We are not supporting these because we think they are not used, but contact us if you are using these with some reason.</p>
+<p>CF and CDM agree that one should not use <em>month</em> or <em>year</em> as the period, in order to avoid the following sort of problem:</p>
 <pre> 0 months since 1930-01-01 == 1930-01-01T00:00:00Z
  1 months since 1930-01-01 == 1930-01-31T10:29:03Z
  2 months since 1930-01-01 == 1930-03-02T20:58:07Z
@@ -59,6 +108,46 @@ period = &quot;millisec&quot; | &quot;msec&quot; | &quot;second&quot; | &quot;se
 70 years since 1850-01-01 == 1920-01-01T22:53:38Z
 80 years since 1850-01-01 == 1930-01-01T09:01:17Z
 90 years since 1850-01-01 == 1940-01-01T19:08:57Z</pre>
+<hr width="100%" />
+<h3>Definitions</h3>
+<ul>
+  <li><strong><em>time</em></strong> is a duration of time (a dimensional unit). udunits handles this using a base unit of &quot;seconds&quot;. All other udunit time units are fixed multiples of a second.</li>
+  <li><em><strong>date</strong></em> is an instant of historical time (not a dimensional unit IMO). udunits represents a date as a fixed number of seconds since a reference date, eg as &quot;12 days since 1990-02-03 12:22&quot;. </li>
+  <li><strong><em>calendar date</em></strong>  (eg Feb 23, 1999 13:33) is a representation of      an instance of time which corresponds to historical time. That is, we want it to correctly represent the same instant of time that, say, is printed in a newspaper or is referenced in a history book. But leap years (and leap seconds), and changes in calendar representations make this complicated.</li>
+</ul>
+<hr width="100%" />
+<h3>Proposal (3/16/2011)</h3>
+<ol>
+  <li>time instants vs time duration 
+  <ul>
+  <li>  one must distinguish between dimensional time (&quot;time duration&quot;,   units=&quot;secs&quot;), and calendar time (&quot;time instant&quot;, or &quot;point on the time   continium&quot;) which is not dimensional.
+  <li>calendar time always references a calendar, default calendar is   gregorian, aka standard 
+  <li>udunits is a good reference library for dimensional time, but not for   calendar time 
+  </ul>
+  <li>calendar time 
+  <ul>
+  <li>time coordinates (CF section 4.4) are calendar times 
+  <li>time coordinate variables are instants in time. A bounds coordinate   (CF section 7.1) should be used to clarify the actual time range of each   coordinate. This is especially important when using cell measures (CF section 7.2) like mean, min, max, etc.
+  <li>calendar time representation needs to be clarified 
+  <li>udunits should no longer be the reference library for calendar time. a new reference library is needed, which handles non-standard calendars.    
+  <li>udunit date representation (&quot;n timeUnit since ISO_date&quot;) must be   retained for backwards compatibility. &quot;month&quot; and &quot;year&quot; timeUnit should   be redefined in CF version 1.x to refer to calendar fields, not fixed   length time durations. For files using versions previous to CF 1.x,   udunit fixed length semantics should be used. 
+     <li>the grammar for udunit date representations should be defined, so   that multiple libraries can implement it 
+    
+  <li>ISO date strings should be allowed 
+   </ul>
+  <li>time resolution 
+     <ul>
+      <li> any calendar fields not specified must be set to 0 </li>
+    </ul>
+  <li> time calculations
+    <ul>
+      <li>standard library functions for calculating time durations from time   ranges (start, end) are needed. these are calendar dependent. </li>
+    </ul>
+  </ol>
+<hr width="100%" />
+<address>
+<img src="../nc.gif" alt="" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated  July 2011
+</address>
 <p>&nbsp;</p>
 </body>
 </html>

@@ -45,6 +45,10 @@
 <ul>
   <li><a href="#compressed">We use compressed netcdf files and the very first access to them are quite slow...</a></li>
 </ul>
+<h2>TDS Install Errors</h2>
+<ul>
+  <li><a href="#listenerStart">SEVERE: Error listenerStart</a></li>
+</ul>
 <h2>Tomcat</h2>
 <ul>
   <li><a href="#permGenOutOfMemoryError">I'm getting the error "java.lang.OutOfMemoryError: PermGen space". Whats up?</a></li>
@@ -325,7 +329,39 @@ SEVERE: Context [/thredds] startup failed due to previous errors
   </p>
 </blockquote>
 <hr>
-<h2>Tomcat<a name="tomcat"></a></h2>
+<h2>TDS Install Errors<a name="listenerStart" id="listenerStart"></a></h2>
+<p><strong> Q: On starting up TDS, I get the error &quot;SEVERE: Error listenerStart&quot; and &quot;SEVERE: Context [/thredds] startup failed due to previous errors&quot;, and TDS wont start.</strong></p>
+<ul><li>
+  <p>Startup output looks something like:</p>
+  <pre>1)
+
+log4j:WARN No appenders could be found for logger (org.apache.commons.digester.Digester.sax).
+log4j:WARN Please initialize the log4j system properly.
+     
+2)
+INFO: HTMLManager: start: Starting web application at '/thredds'
+TdsConfigContextListener.contextInitialized(): start.
+
+
+3)
+Jul 11, 2011 2:22:12 PM org.apache.catalina.core.StandardContext start SEVERE: Error listenerStart
+
+Jul 11, 2011 2:22:12 PM org.apache.catalina.core.StandardContext start SEVERE: Context [/thredds] startup failed due to previous errors
+    </pre>
+  </li>
+</ul>
+<blockquote>
+  <p>where:</p>
+  <ol>
+    <li>Harmless log4j warnings. Someday we'll figure out how to get rid of it.</li>
+    <li>Various initialization info messages</li>
+    <li>This is the problem, but it doesnt actually contain enough information to know whats going on. It usually means theres an error in how you set up Tomcat.</li>
+  </ol>
+  <p>&nbsp;</p>
+</blockquote>
+<hr>
+<h2>Tomcat</h2>
+<h2>&nbsp;</h2>
 <h4>Q: <a name="permGenOutOfMemoryError">Im getting the error "java.lang.OutOfMemoryError: PermGen space". Whats up?</a></h4>
   <blockquote>
     <p>If you reload the <strong>thredds.war</strong> webapp enough times without restarting Tomcat, you will eventually run into "<strong>java.lang.OutOfMemoryError: PermGen space</strong>". This is a known bug in  JDK/Tomcat. The only thing to do is to stop and restart Tomcat. </p>
