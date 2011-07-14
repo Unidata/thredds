@@ -51,7 +51,7 @@ public enum CollectionUpdater {
     }
 
     // updating the collection
-    JobDetail updateJob = new JobDetail(config.spec, "UpdateCollection", UpdateCollectionJob.class);
+    JobDetail updateJob = new JobDetail(config.name, "UpdateCollection", UpdateCollectionJob.class);
     org.quartz.JobDataMap map = new org.quartz.JobDataMap();
     map.put(FC_NAME, manager);
     updateJob.setJobDataMap(map);
@@ -59,10 +59,10 @@ public enum CollectionUpdater {
     if (update.startup) {
       // wait 30 secs to trigger
       Date runTime = new Date(new Date().getTime() + startupWait);
-      Trigger trigger0 = new SimpleTrigger(config.spec, "startup", runTime);
+      Trigger trigger0 = new SimpleTrigger(config.name, "startup", runTime);
       try {
         scheduler.scheduleJob(updateJob, trigger0);
-        logger.info("Schedule startup scan for {} at {}\n" ,config,runTime);
+        logger.info("Schedule startup scan for {} at {}\n" ,config, runTime);
       } catch (SchedulerException e) {
         logger.error("cronExecutor failed to schedule startup Job for "+config, e);
         return;
@@ -71,7 +71,7 @@ public enum CollectionUpdater {
 
     if (update.rescan != null) {
       try {
-        Trigger trigger1 = new CronTrigger(config.spec, "rescan", update.rescan);
+        Trigger trigger1 = new CronTrigger(config.name, "rescan", update.rescan);
         if (update.startup) {
           trigger1.setJobName(updateJob.getName());
           trigger1.setJobGroup(updateJob.getGroup());
@@ -79,7 +79,7 @@ public enum CollectionUpdater {
         } else {
           scheduler.scheduleJob(updateJob, trigger1);
         }
-        logger.info("Schedule recurring scan for {} cronExpr={}\n", config.spec, update.rescan);
+        logger.info("Schedule recurring scan for {} cronExpr={}\n", config.name, update.rescan);
       } catch (ParseException e) {
         logger.error("cronExecutor failed: bad cron expression= "+ update.rescan, e);
       } catch (SchedulerException e) {
@@ -91,15 +91,15 @@ public enum CollectionUpdater {
     // updating the proto dataset
     FeatureCollectionConfig.ProtoConfig pconfig = config.protoConfig;
     if (pconfig.change != null) {
-      JobDetail protoJob = new JobDetail(config.spec, "UpdateProto", ChangeProtoJob.class);
+      JobDetail protoJob = new JobDetail(config.name, "UpdateProto", ChangeProtoJob.class);
       org.quartz.JobDataMap pmap = new org.quartz.JobDataMap();
       pmap.put(FC_NAME, manager);
       protoJob.setJobDataMap(pmap);
 
       try {
-        Trigger trigger2 = new CronTrigger(config.spec, "rereadProto", pconfig.change);
+        Trigger trigger2 = new CronTrigger(config.name, "rereadProto", pconfig.change);
         scheduler.scheduleJob(protoJob, trigger2);
-        logger.info("Schedule Reread Proto for {}", config.spec);
+        logger.info("Schedule Reread Proto for {}", config.name);
       } catch (ParseException e) {
         logger.error("cronExecutor failed: RereadProto has bad cron expression= "+ pconfig.change, e);
       } catch (SchedulerException e) {

@@ -728,6 +728,9 @@ public class StringUtil {
       if (c != '%') {
         continue;
       }
+      if (pos >= sb.length() - 2) { // malformed - should be %xx
+        return x;
+      }
       b[0] = sb.charAt(pos + 1);
       b[1] = sb.charAt(pos + 2);
       int value;

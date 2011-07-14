@@ -34,13 +34,16 @@ package ucar.nc2.util;
 
 
 
+import opendap.util.EscapeStrings;
 import org.apache.commons.httpclient.URIException;
 import org.apache.commons.httpclient.util.URIUtil;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URL;
 import java.net.URISyntaxException;
 import java.io.File;
+import java.net.URLEncoder;
 
 /**
  * Networking utilities.
@@ -49,25 +52,55 @@ import java.io.File;
  */
 public class URLnaming {
 
-  public static String escapeQueryNew(String urlString) throws URISyntaxException {
+  public static String escapeQuery(String urlString) {
     urlString = urlString.trim();
-    URI uri = new URI(urlString);
-    return uri.toASCIIString();
+     String[] split = EscapeStrings.splitURL(urlString);
+     return  (split[0] == null ? "" : EscapeStrings.escapeURL(split[0]))
+              + (split[1] == null ? "" : '?' + EscapeStrings.escapeURLQuery(split[1]));
   }
 
-  public static String escapeQuery(String urlString) {
+  public static String escapeQueryOld(String urlString) {
     urlString = urlString.trim();
     int posQ = urlString.indexOf("?");
     if ((posQ > 0) && (posQ < urlString.length() - 2)) {
-      String query = urlString.substring(posQ);
+      String query = urlString.substring(posQ+1);
       if (query.indexOf("%") < 0) { // assume that its not already encoded...
         String path = urlString.substring(0,posQ);
         try {
-          urlString = path + URIUtil.encodeQuery( query);
+          urlString = path + "?" + URIUtil.encodeQuery( query);
         } catch (URIException e) {
           e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
       }
+    }
+    return urlString;
+  }
+
+  public static String escapeQueryEncoder(String urlString) {
+    urlString = urlString.trim();
+    int posQ = urlString.indexOf("?");
+    if ((posQ > 0) && (posQ < urlString.length() - 2)) {
+      String query = urlString.substring(posQ+1);
+      if (!query.contains("%")) { // skip if already encoded
+        String path = urlString.substring(0,posQ);
+        try {
+          urlString = path + "?" + URLEncoder.encode(query, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+          e.printStackTrace();
+        }
+      }
+    }
+    return urlString;
+  }
+
+  public static String unescapeQueryDODS(String urlString) {
+
+    urlString = urlString.trim();
+    int posQ = urlString.indexOf("?");
+    if ((posQ > 0) && (posQ < urlString.length() - 2)) {
+      String path = urlString.substring(0,posQ);
+      String query = urlString.substring(posQ+1);
+      return path + "?" + EscapeStrings.unescapeURLQuery(query);
     }
     return urlString;
   }
@@ -243,13 +276,34 @@ public class URLnaming {
     URI uri = new URI(uriString);
   }
 
+  private static void check(String s) {
+    System.out.printf("org =            %s%n", s);
+    System.out.printf("escapeQuery    = %s%n", escapeQuery(s));
+    System.out.printf("escapeQueryOld = %s%n", escapeQueryOld(s));
+    System.out.printf("escQueryEncoder= %s%n", escapeQueryEncoder(s));
+    System.out.printf("%n");
+
+    String esc = escapeQuery(s);
+    System.out.printf("esc =            %s%n", esc);
+    System.out.printf("unescQueryDODS = %s%n", unescapeQueryDODS(esc));
+    System.out.printf("%n");
+  }
+
   public static void main(String args[]) throws URISyntaxException {
-    String uriString = "http://test.opendap.org:8080/dods/dts/test.53.dods?types[0:1:9]";
+    /* String uriString = "http://test.opendap.org:8080/dods/dts/test.53.dods?types[0:1:9]";
     URI uri = new URI(uriString);
     System.out.printf("uri = %s%n", uri);
     System.out.printf("uri.toASCIIString = %s%n", uri.toASCIIString());
     System.out.printf("escapeQueryNew = %s%n", escapeQueryNew(uriString));
-    System.out.printf("escapeQueryOld = %s%n", escapeQuery(uriString));
+    System.out.printf("escapeQueryOld = %s%n", escapeQuery(uriString)); */
+
+    check("/thredds/dodsC/fmrc/FNMOC/COAMPS/Europe/FNMOC-COAMPS-Europe_best.ncd.dods?relative_vorticity.relative_vorticity[0:0][0:0][0:185][0:300]");
+    check("path?quesry1,query2");
+
+    String esc = "/thredds/dodsC/satellite/SOUND-VIS/HI-NATIONAL_10km/20110523/HI-NATIONAL_10km_SOUND-VIS_20110523_0024.gini.dods?VIS%5fsounder.VIS%5fsounder[0:0][0:5:1069][0:5:1469]";
+    System.out.printf("esc =            %s%n", esc);
+    System.out.printf("unescQueryDODS = %s%n", unescapeQueryDODS(esc));
+    System.out.printf("%n");
   }
 
 

@@ -31,7 +31,7 @@
 
         <collection
             spec="/data/ldm/pub/native/grid/NCEP/RTMA/CONUS_2p5km/RTMA_CONUS_2p5km_#yyyyMMdd_HHmm#.grib2"
-            name="RTMA_CONUS_2p5km"
+            name="RTMA_CONUS_2p5km-idv"
             recheckAfter="15 min"
             olderThan="5 min"/>
         <update startup="true" rescan="0 5 3 * * ? *" trigger="allow"/>

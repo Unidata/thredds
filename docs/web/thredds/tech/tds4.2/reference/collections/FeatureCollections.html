@@ -108,7 +108,7 @@ The XML Schema:
 <p>where</p>
 <ol>
   <li><strong>spec</strong>: <a href="CollectionSpecification.html">collection specification</a> string (required). In this example, all files in the directory <em>/data/ldm/pub/native/satellite/3.9/WEST-CONUS_4km/ </em>whose filename matches the reqular expression WEST-CONUS_4km_3.9_........_....\.gini$&quot;. Each dataset is assigned a nominal time  by matching <em>yyyyMMdd_HHmm</em> to the portion of the filename following &quot;WEST-CONUS_4km_3.9_&quot;.</li>
-  <li><strong>name</strong>: collection name. This is used for external triggers and  as an easy to read identifier for indexing, logging and debugging. If missing, the spec string is used (not a good idea in the context of the TDS). </li>
+  <li><strong>name</strong>: collection name <em><strong>must be unique in all of your TDS catalogs</strong></em>. This is used for external triggers and  as an easy to read identifier for indexing, logging and debugging. If missing, the spec string is used (not a good idea in the context of the TDS). </li>
   <li><strong>olderThan</strong>: (optional) Only files whose lastModified date is older than this are included. This excludes files that are in the process of being written.</li>
   <li><strong>recheckAfter</strong>: (optional) This will cause a new scan whenever a request comes in and this much time has elapsed since the last scan. The request will wait until the scan is finished and a new collection is built (if needed).</li>
   <li><strong>dateFormatMark</strong>: the collection specification string can only extract dates from the file name, as opposed to the file path, which includes all of the parent directory names. Use the <em>dateFormatMark</em> in order to extract the date from the full path.</li>

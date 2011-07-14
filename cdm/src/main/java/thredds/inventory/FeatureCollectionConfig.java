@@ -92,7 +92,7 @@ public class FeatureCollectionConfig {
   public String toString() {
     return "Config{" +
             "name='" + name + '\'' +
-            "spec='" + spec + '\'' +
+            ", spec='" + spec + '\'' +
             ", olderThan='" + olderThan + '\'' +
             ", recheckAfter='" + recheckAfter + '\'' +
             "\n " + updateConfig +

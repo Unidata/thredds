@@ -244,15 +244,18 @@ Charx=[ !"#$%&amp;'()*+,-0123456789:;&lt;=&gt;?@\[\\\]^`{|}~\x00-\x1e,\x7f]
   <li>The characters "-", "_", ".", "!", "~", "*", "'", "(", and ")"  </li>
 </ol>
 <p wrap="">shall be encoded as "%xx", where xx is the two hexadecimal digits  &gt; representing the octet code of the character. Within the query string  portion of a URL (i.e., everything after the "?"), the space  character (" ") is an exception, and shall be encoded as a plus sign  ("+"). A server shall be prepared to decode any character encoded in  &gt; this manner.  </p>
-<h3>Clients:</h3>
-      <p>The following chars must be % encoded if they occur in identifiers that are used in URLS:</p>
-      <pre>?&amp;=,+</pre>
-      <h3>Servlets:</h3>
+<h3>Browsers:</h3>
+      <p>It appears that neither Firefox or Chrom does standard URL encoding.</p>
+      <h3>Clients:</h3>
+      <p>HTTPClient 3 will not send out a URL with certain chars in it like &quot;[&quot; (possibly the full 2396 set)</p>
+<h3>Servlets:</h3>
       <ul>
         <li>request.getQueryString() returns raw (undecoded).</li>
         <li>request.getParameter() returns decoded</li>
       </ul>
-      <hr WIDTH="100%">
+      <h3>Best Practice:</h3>
+      <p>The query string is always run through URLDecoder.decode() before parsing.</p>
+<hr WIDTH="100%">
       <p>&nbsp;</p>
 <h2>References</h2>
 <p> <a href="http://www.blooberry.com/indexdot/html/topics/urlencoding.htm">http://www.blooberry.com/indexdot/html/topics/urlencoding.htm</a> </p>

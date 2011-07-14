@@ -36,6 +36,7 @@ package ucar.nc2.thredds.server;
 import opendap.dap.http.HTTPException;
 import opendap.dap.http.HTTPMethod;
 import opendap.dap.http.HTTPSession;
+import opendap.util.EscapeStrings;
 import org.apache.commons.httpclient.URIException;
 import ucar.nc2.util.IO;
 import ucar.nc2.util.URLnaming;
@@ -133,10 +134,16 @@ public class ReadTdsLogs {
 
     void send() throws IOException {
 
+      /* HTTP client insists on escaping
+     String[] split = EscapeStrings.splitURL(log.path);
+     String encodedPath =
+                (split[0] == null ? "" : EscapeStrings.escapeURL(split[0]))
+              + (split[1] == null ? "" : '?' + EscapeStrings.escapeURLQuery(split[1]));   */
+
       HTTPMethod method = null;
       try {
-        method = httpClient.newMethodGet(server + log.path);
-        // out2.format("send %s %n", method.getPath());
+        method = httpClient.newMethodGet(server + URLnaming.escapeQuery(log.path));
+        //out2.format("send %s %n", method.getPath());
         statusCode = method.execute();
 
         InputStream is = method.getResponseBodyAsStream();

@@ -3,8 +3,9 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Changes in version 4.2:
- 26: (2011-07-xx)
-  NetcdfFile.esccape/unescape - standard % escaping using URLEncoder.encode/decode
+ 26: (2011-07-14)
+  String.unescape() handle %x at the end of string, eg "/thredds/dodsC/testdods/coads_climatology.nc.dods?SST.SST%5"
+  NetcdfFile.escape/unescape - standard % escaping using URLEncoder.encode/decode
   NetcdfFile.makeValidCdmObjectName() - dont allow trail.lead spaces or "/"
   Grib2 jpeg2000 decoder : bug when unsigned, nbits > 8
   bug in reading strided subsets of joinExisting aggregations

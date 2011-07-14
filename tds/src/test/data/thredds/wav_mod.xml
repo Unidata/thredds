@@ -118,7 +118,7 @@
       </timeCoverage>
     </metadata>
 
-    <collection spec="Q:/cdmUnitTest/tds/fmrc/swan_oahu_#yyyyMMdd#\.nc$" olderThan="5 min" />
+    <collection spec="Q:/cdmUnitTest/tds/hioos/hiig_forec_#yyyyMMdd#\.nc$" olderThan="5 min" />
         
     <update startup="true" rescan="0 5 13 * * ? *" trigger="allow" /> <!-- 13:05:00 everyday -->
 

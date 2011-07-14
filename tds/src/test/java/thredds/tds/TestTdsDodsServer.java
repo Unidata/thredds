@@ -35,6 +35,7 @@ package thredds.tds;
 import junit.framework.*;
 
 import thredds.catalog.*;
+import thredds.servlet.URLEncoder;
 import ucar.nc2.TestAll;
 import ucar.nc2.dods.TestLocalDodsServer;
 import ucar.nc2.thredds.ThreddsDataFactory;
@@ -55,6 +56,7 @@ import java.io.IOException;
 import java.util.List;
 
 public class TestTdsDodsServer extends TestCase {
+  private URLEncoder encoder = new URLEncoder();
 
   public TestTdsDodsServer( String name) {
     super(name);
@@ -89,6 +91,66 @@ public class TestTdsDodsServer extends TestCase {
 
   public void testGridArray() {
      String array = dataset + ".dods?Visibility.Visibility[0:1:0][0:1:0][0:1:0]";
+     System.out.println(" request= "+array);
+     try {
+       String result = IO.readURLcontentsWithException(array);
+       System.out.println(" result= "+result);
+     } catch (IOException ioe) {
+       System.out.printf("FAIL %s%n", ioe.getMessage());
+       assert false;
+     }
+   }
+
+  public void testGridArray2() {
+     String array = dataset + ".dods?Visibility.Visibility[0][0][0]";
+     System.out.println(" request= "+array);
+     try {
+       String result = IO.readURLcontentsWithException(array);
+       System.out.println(" result= "+result);
+     } catch (IOException ioe) {
+       System.out.printf("FAIL %s%n", ioe.getMessage());
+       assert false;
+     }
+   }
+
+  public void testGridArray3() {
+     String array = dataset + ".dods?Visibility.Visibility[0:0][0:0][0:0]";
+     System.out.println(" request= "+array);
+     try {
+       String result = IO.readURLcontentsWithException(array);
+       System.out.println(" result= "+result);
+     } catch (IOException ioe) {
+       System.out.printf("FAIL %s%n", ioe.getMessage());
+       assert false;
+     }
+   }
+
+  public void testGridArrayEsc() {
+     String array = dataset + ".dods?Visibility.Visibility" + encoder.encode("[0:1:0][0:1:0][0:1:0]");
+     System.out.println(" request= "+array);
+     try {
+       String result = IO.readURLcontentsWithException(array);
+       System.out.println(" result= "+result);
+     } catch (IOException ioe) {
+       System.out.printf("FAIL %s%n", ioe.getMessage());
+       assert false;
+     }
+   }
+
+  public void testGridArrayEsc2() {
+     String array = dataset + ".dods?Visibility.Visibility"  + encoder.encode("[0][0][0]");
+     System.out.println(" request= "+array);
+     try {
+       String result = IO.readURLcontentsWithException(array);
+       System.out.println(" result= "+result);
+     } catch (IOException ioe) {
+       System.out.printf("FAIL %s%n", ioe.getMessage());
+       assert false;
+     }
+   }
+
+  public void testGridArrayEsc3() {
+     String array = dataset + ".dods?Visibility.Visibility"  + encoder.encode("[0:0][0:0][0:0]");
      System.out.println(" request= "+array);
      try {
        String result = IO.readURLcontentsWithException(array);

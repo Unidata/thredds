@@ -24,7 +24,7 @@ import java.io.IOException;
 import java.text.ParseException;
 
 /**
- * An featureCOllection FMRC with inner and outer NcML, from John Mauer
+ * An featureCollection FMRC with inner and outer NcML, from John Mauer
  * http://oos.soest.hawaii.edu/thredds/catalog/hioos/roms_forec/hiig/catalog.html?dataset=roms_hiig_forecast/HI-ROMS_Forecast_Model_Run_Collection_best.ncd
  *
  * @author caron
