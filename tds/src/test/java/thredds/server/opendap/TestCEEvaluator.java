@@ -162,7 +162,7 @@ loop:        for(int i = 0; i < ntestsets && pass; i++) {
                     if(debug) {System.err.println("initial dds:\n");dds.printDecl(System.err);}
 
                     CEEvaluator ce = new CEEvaluator(dds);
-                    ce.parseConstraint(constraint);
+                    ce.parseConstraint(constraint,null);
                     if(debug) {
                         PrintWriter w = new PrintWriter(System.err);
                         Enumeration venum = dds.getVariables();
@@ -251,7 +251,7 @@ loop:        for(int i = 0; i < ntestsets && pass; i++) {
             // force the name
             dds.setEncodedName(basename);
             CEEvaluator ce = new CEEvaluator(dds);
-            ce.parseConstraint("");
+            ce.parseConstraint("",null);
             content = new FileWriter(path+".asc");
             pw = new PrintWriter(content);
             dds.print(pw);
@@ -265,7 +265,7 @@ loop:        for(int i = 0; i < ntestsets && pass; i++) {
                 String testname = path + constraint;
                 dds = ds.getDDS();
                 ce = new CEEvaluator(dds);
-                ce.parseConstraint(constraint);
+                ce.parseConstraint(constraint,null);
                 content = new FileWriter(String.format("%s.%02d.asc", path, j));
                 pw = new PrintWriter(content);
                 dds.printConstrained(pw);

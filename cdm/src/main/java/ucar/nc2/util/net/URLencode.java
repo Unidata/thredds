@@ -56,6 +56,7 @@ package ucar.nc2.util.net;
  * [1] http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231
  */
 
+@Deprecated
 public class URLencode {
 
   final static String[] hex = {

@@ -313,7 +313,7 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
 
       ServerDDS dds = ds.getDDS();
       CEEvaluator ce = new CEEvaluator(dds);
-      ce.parseConstraint(rs.getConstraintExpression());
+      ce.parseConstraint(rs);
       checkSize(dds, true);
 
       PrintWriter pw = new PrintWriter(response.getOutputStream());
@@ -381,7 +381,7 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
       } else { // Otherwise, send the constrained DDS
         // Instantiate the CEEvaluator and parse the constraint expression
         CEEvaluator ce = new CEEvaluator(myDDS);
-        ce.parseConstraint(rs.getConstraintExpression());
+        ce.parseConstraint(rs);
 
         // Send the constrained DDS back to the client
         PrintWriter pw = new PrintWriter(new OutputStreamWriter(out));
@@ -420,7 +420,7 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
 
         // Instantiate the CEEvaluator and parse the constraint expression
         CEEvaluator ce = new CEEvaluator(myDDS);
-        ce.parseConstraint(rs.getConstraintExpression());
+        ce.parseConstraint(rs);
 
         // Send the constrained DDS back to the client
         PrintWriter pw = new PrintWriter(new OutputStreamWriter(out));
@@ -458,7 +458,7 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
 
       ServerDDS myDDS = ds.getDDS();
       CEEvaluator ce = new CEEvaluator(myDDS);
-      ce.parseConstraint(rs.getConstraintExpression());
+      ce.parseConstraint(rs);
       checkSize(myDDS, false);
 
       // Send the binary data back to the client
@@ -525,7 +525,7 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
 
       ServerDDS myDDS = ds.getDDS();
       CEEvaluator ce = new CEEvaluator(myDDS);
-      ce.parseConstraint(rs.getConstraintExpression());
+      ce.parseConstraint(rs);
       checkSize(myDDS, false);
 
       // Send the constrained DDS back to the client

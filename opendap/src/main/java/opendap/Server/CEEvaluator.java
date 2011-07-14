@@ -230,7 +230,7 @@ public class CEEvaluator {
             NoSuchFunctionException, InvalidOperatorException,
             InvalidParameterException, SBHException, WrongTypeException
     {
-           parseConstraint(rs);
+           parseConstraint(rs.getConstraintExpression(),rs.getRequestURL().toString());
     }
 
     /**
