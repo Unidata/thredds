@@ -535,7 +535,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
 
         // Instantiate the CEEvaluator and parse the constraint expression
         CEEvaluator ce = new CEEvaluator(myDDS);
-        ce.parseConstraint(rs.getConstraintExpression());
+        ce.parseConstraint(rs);
 
         // Send the constrained DDS back to the client
         PrintWriter pw = new PrintWriter(new OutputStreamWriter(Out));
@@ -619,7 +619,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
 
         // Instantiate the CEEvaluator and parse the constraint expression
         CEEvaluator ce = new CEEvaluator(myDDS);
-        ce.parseConstraint(rs.getConstraintExpression());
+        ce.parseConstraint(rs);
 
         // Send the constrained DDS back to the client
         PrintWriter pw = new PrintWriter(new OutputStreamWriter(Out));
@@ -709,7 +709,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
 
       // Instantiate the CEEvaluator and parse the constraint expression
       CEEvaluator ce = new CEEvaluator(myDDS);
-      ce.parseConstraint(rs.getConstraintExpression());
+      ce.parseConstraint(rs.getConstraintExpression(),rs.getRequestURL().toString());
 
       // Send the binary data back to the client
       DataOutputStream sink = new DataOutputStream(bOut);
@@ -795,7 +795,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
 
       // Instantiate the CEEvaluator and parse the constraint expression
       CEEvaluator ce = new CEEvaluator(myDDS);
-      ce.parseConstraint(rs.getConstraintExpression());
+      ce.parseConstraint(rs);
 
       // debug
       // System.out.println("CE DDS = ");
@@ -1027,7 +1027,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
       CEEvaluator ce = new CEEvaluator(dds);
 
       // i think this makes the dds constrained
-      ce.parseConstraint(rs.getConstraintExpression());
+      ce.parseConstraint(rs);
 
       PrintWriter pw = new PrintWriter(response.getOutputStream());
       dds.printConstrained(pw);

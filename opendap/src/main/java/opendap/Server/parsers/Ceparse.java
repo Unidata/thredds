@@ -74,6 +74,8 @@ public abstract class Ceparse implements ExprParserConstants
 
     abstract void setDebugLevel(int level);
 
+    abstract void setURL(String url);
+
     /**
      * **********************************************
      */

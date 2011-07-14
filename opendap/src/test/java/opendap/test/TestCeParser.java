@@ -540,7 +540,7 @@ public class TestCeParser extends TestCase
             System.out.flush();
             try {
 		CEEvaluator ceEval = new CEEvaluator(sdds);
-		ceEval.parseConstraint(constraint);
+		ceEval.parseConstraint(constraint,null);
 		StringWriter ss = new StringWriter();
 		PrintWriter os = new PrintWriter(ss);
 		dumpEvaluator(ceEval,os);

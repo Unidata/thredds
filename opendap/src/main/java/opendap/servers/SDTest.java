@@ -222,7 +222,7 @@ public class SDTest {
             DataOutputStream sink = new DataOutputStream(fp_out);
 
             if (Debug) System.out.println("Parsing Constraint Expression: " + ConstraintExpression);
-            ce.parseConstraint(ConstraintExpression);
+            ce.parseConstraint(ConstraintExpression,null);
 
             if (Debug) System.out.println("Attempting to send data...");
             ce.send(myDDS.getEncodedName(), sink, null);

@@ -46,6 +46,7 @@ import java.io.*;
 import opendap.Server.parsers.CeParser;
 import opendap.dap.*;
 import opendap.dap.parsers.*;
+import opendap.servlet.ReqState;
 import opendap.util.Debug;
 
 /**
@@ -170,7 +171,7 @@ public class CEEvaluator {
      * @throws InvalidParameterException
      * @throws SBHException
      */
-    public void parseConstraint(String expression)
+    public void parseConstraint(String expression, String url)
             throws ParseException, opendap.dap.DAP2Exception, NoSuchVariableException,
             NoSuchFunctionException, InvalidOperatorException,
             InvalidParameterException, SBHException, WrongTypeException {
@@ -188,7 +189,7 @@ public class CEEvaluator {
         CeParser.constraint_expression(this,
                 _dds.getFactory(),
                 clauseFactory,
-                sExpr);
+                sExpr, url);
 	} catch (ConstraintException ce) {
 	    // convert to a DAP2Exception
         ce.printStackTrace();
@@ -209,6 +210,27 @@ public class CEEvaluator {
             }
         }
 
+    }
+
+    /**
+     * Convenience wrapper for parseConstraint.
+     *
+     * @param rs
+     * @throws ParseException
+     * @throws opendap.dap.DAP2Exception
+     * @throws NoSuchVariableException
+     * @throws NoSuchFunctionException
+     * @throws InvalidOperatorException
+     * @throws InvalidParameterException
+     * @throws SBHException
+     * @throws WrongTypeException
+     */
+    public void parseConstraint(ReqState rs)
+            throws ParseException, opendap.dap.DAP2Exception, NoSuchVariableException,
+            NoSuchFunctionException, InvalidOperatorException,
+            InvalidParameterException, SBHException, WrongTypeException
+    {
+           parseConstraint(rs);
     }
 
     /**

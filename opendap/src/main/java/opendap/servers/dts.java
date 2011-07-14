@@ -275,7 +275,7 @@ public class  dts extends AbstractServlet
                             new ClauseFactory(functionLibrary));
 
             // and parse the constraint expression
-            ce.parseConstraint(rs.getConstraintExpression());
+            ce.parseConstraint(rs);
 
             // Send the constrained DDS back to the client
             PrintWriter pw = new PrintWriter(new OutputStreamWriter(bOut));
@@ -378,7 +378,7 @@ public class  dts extends AbstractServlet
                             new ClauseFactory(functionLibrary));
 
             // and parse the constraint expression
-            ce.parseConstraint(rs.getConstraintExpression());
+            ce.parseConstraint(rs);
 
             int seqLength = 5;
 
@@ -509,7 +509,7 @@ public class  dts extends AbstractServlet
                             new ClauseFactory(functionLibrary));
 
             // and parse the constraint expression
-            ce.parseConstraint(rs.getConstraintExpression());
+            ce.parseConstraint(rs.getConstraintExpression(),rs.getRequestURL().toString());
 
             // Send the binary data back to the client
             DataOutputStream sink = new DataOutputStream(bOut);

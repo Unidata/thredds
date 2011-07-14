@@ -38,13 +38,12 @@ import java.util.*;
        new stream in case one is reusing the parser
     */
 
-    public boolean parse(StringReader sreader) throws ParseException
+    boolean parse(StringReader sreader) throws ParseException
     {
 	((Celex)yylexer).reset(parsestate);
 	((Celex)yylexer).setStream(sreader);
 	return parse();
     }
-
 
     // Static entry point to be called by CEEvaluator
     // This parses, then fills in the evaluator from the AST
@@ -52,16 +51,24 @@ import java.util.*;
     static public boolean constraint_expression(CEEvaluator ceEval,
                                          BaseTypeFactory factory,
 					 ClauseFactory clauseFactory,
-					 StringReader sreader)
+					 StringReader sreader,
+				         String url // for error reporting
+					 )
             throws DAP2Exception, ParseException
     {
 	CeParser parser = new CeParser(factory);
+	parser.setURL(url);
         ServerDDS sdds = ceEval.getDDS();
         if(!parser.parse(sreader)) return false;
         ASTconstraint root = (ASTconstraint)parser.getAST();
 	root.init(ceEval,factory,clauseFactory,sdds,parser.getASTnodeset());
 	root.walkConstraint();
         return true;
+    }
+
+    void setURL(String url)
+    {
+	if(lexstate != null) lexstate.setURL(url);
     }
 }
 
