@@ -66,10 +66,12 @@ import java.util.*;
         return true;
     }
 
-    void setURL(String url)
-    {
-	if(lexstate != null) lexstate.setURL(url);
-    }
+    String url = null;
+
+    void setURL(String url) {this.url = url;}
+
+    String getURL() {return url;}
+
 }
 
 %token  SCAN_WORD

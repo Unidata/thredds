@@ -41,6 +41,11 @@ import java.io.*;
 	return parse();
     }
 
+    String url = null;
+
+    void setURL(String url) {this.url = url;}
+
+    String getURL() {return this.url;}
 }
 
 %token SCAN_ALIAS 

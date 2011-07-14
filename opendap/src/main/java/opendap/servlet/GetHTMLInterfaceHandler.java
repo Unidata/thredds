@@ -245,6 +245,7 @@ public class GetHTMLInterfaceHandler {
         // Make a new DDS parser using the web form (www interface) class factory
         wwwFactory wfactory = new wwwFactory();
         DDS wwwDDS = new DDS(dataSet,wfactory);
+        wwwDDS.setURL(dataSet);
         wwwDDS.parse(bai);
         return (wwwDDS);
 

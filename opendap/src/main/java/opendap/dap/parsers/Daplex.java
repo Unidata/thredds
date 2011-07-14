@@ -483,6 +483,8 @@ class Daplex implements DapParser.Lexer
                 + " near |"
                 + yytext
                 + "|; " + s);
+	if(parsestate.getURL() != null)
+	    System.err.println("\turl="+parsestate.getURL());
     }
 
     public void lexerror(String msg)

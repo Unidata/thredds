@@ -102,6 +102,7 @@ public class TestClone extends TestFiles
 
         DAS das = new DAS();
         DDS dds = new DDS();
+        dds.setURL(testfilepath);
         DAS dasclone = null;
         DDS ddsclone = null;
 

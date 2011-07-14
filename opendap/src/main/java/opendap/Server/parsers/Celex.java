@@ -71,9 +71,6 @@ class Celex implements Lexer, ExprParserConstants
     Object lval = null;
     StringBuilder lookahead = null;
 
-    // Keep extra info for better error reporting
-    String url = null;
-
     /**
      * *********************************************
      */
@@ -96,11 +93,6 @@ class Celex implements Lexer, ExprParserConstants
     }
 
     /* Get/Set */
-
-    void setURL(String url)
-    {
-        this.url = url;
-    }
 
     void setStream(StringReader stream)
     {
@@ -306,7 +298,7 @@ class Celex implements Lexer, ExprParserConstants
             System.err.print(" near |"+ yytext + "|");
         System.err.println();
 	// Add extra info
-	if(url != null) System.err.println("\turl="+url);
+	if(parsestate.getURL() != null) System.err.println("\turl="+parsestate.getURL());
     }
 
     public void lexerror(String msg)

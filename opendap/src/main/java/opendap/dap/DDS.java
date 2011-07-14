@@ -307,6 +307,8 @@ public class DDS extends DStructure
 
     private String _dataBlobID = null;
 
+    private String url = null;
+
     /**
      * Creates an empty <code>DDS</code>.
      */
@@ -372,9 +374,12 @@ public class DDS extends DStructure
         schemaLocation = schema;
     }
 
+    public void setURL(String url) {this.url = url;}
+
     public boolean parse(InputStream stream) throws ParseException, DAP2Exception
     {
         DapParser parser = new DapParser(factory);
+        parser.setURL(url);
 	    int result = parser.ddsparse(stream,this);
 
 	    if(result == Dapparse.DapERR)

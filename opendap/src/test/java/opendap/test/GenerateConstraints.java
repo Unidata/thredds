@@ -296,6 +296,7 @@ public class GenerateConstraints extends TestCeParser
         for (int i=0;i<nconstraints;i++) {
 	    // Parse the DDS to produce a ServerDDS object
 	    ServerDDS sdds = new ServerDDS(new test_ServerFactory());
+
 	    StringBufferInputStream teststream = new StringBufferInputStream(testDDS);
 	    if(!sdds.parse(teststream))
 	        throw new ParseException("Cannot parse DDS");

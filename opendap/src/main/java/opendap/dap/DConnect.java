@@ -405,6 +405,7 @@ public class DConnect {
             //System.out.println("Opened DDS URL: "+url);
         }
         DDS dds = new DDS();
+        dds.setURL(urlString);
         try {
             dds.parse(is);
         } finally {
@@ -702,6 +703,7 @@ public class DConnect {
 
         InputStream is = parseMime(fileStream);
         DataDDS dds = new DataDDS(ver, btf);
+        dds.setURL(urlString);
 
         try {
             dds.parse(new HeaderInputStream(is));    // read the DDS header
@@ -928,6 +930,7 @@ public class DConnect {
 
         InputStream is = openConnection(url);
         DataDDS dds = new DataDDS(ver, btf);
+        dds.setURL(urlString);
 
         boolean dumpStreamErr = false; // opendap.util.util.Debug.isSet("dumpStreamErr");
 

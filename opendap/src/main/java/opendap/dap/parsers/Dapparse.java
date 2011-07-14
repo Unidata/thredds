@@ -69,6 +69,10 @@ public abstract class Dapparse
 
     abstract void setDebugLevel(int level);
 
+    abstract public void setURL(String url);
+
+    abstract public String getURL();
+
     /**
      * **********************************************
      */

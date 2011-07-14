@@ -505,6 +505,7 @@ is =  new StringBufferInputStream (contents); */
    */
   public DDS getDDS(String CE) throws IOException, ParseException, DAP2Exception {
     DDSCommand command = new DDSCommand();
+    command.setURL(urlString+"?"+CE);
     if (filePath != null) {
       command.process(new FileInputStream(filePath + ".dds"));
     } else if (stream != null) {
@@ -517,8 +518,10 @@ is =  new StringBufferInputStream (contents); */
 
   private class DDSCommand implements Command {
     DDS dds = new DDS();
-
+    String url = null;
+    public void setURL(String url) {this.url = url;}
     public void process(InputStream is) throws ParseException, DAP2Exception {
+      dds.setURL(url);
       dds.parse(is);
     }
   }
@@ -754,6 +757,7 @@ is =  new StringBufferInputStream (contents); */
 
     DataDDS dds = new DataDDS(ver, btf);
     DataDDSCommand command = new DataDDSCommand(dds, statusUI);
+    command.setURL(urlString+"?"+CE);
     if (filePath != null) { // url is file:
       File dodspath = new File(filePath + ".dods");
       // See if the dods file exists
@@ -773,12 +777,14 @@ is =  new StringBufferInputStream (contents); */
   private class DataDDSCommand implements Command {
     DataDDS dds = null;
     StatusUI statusUI;
+    String url = null;
 
     DataDDSCommand(DataDDS dds, StatusUI statusUI) {
       this.dds = dds;
       this.statusUI = statusUI;
     }
 
+    public void setURL(String url) {this.url = url;};
     public void process(InputStream is) throws ParseException, DAP2Exception, IOException {
       dds.parse(is);
       dds.readData(is, statusUI);

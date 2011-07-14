@@ -218,6 +218,7 @@ public class GetHTMLInterfaceHandler2
         // Make a new DDS using the web form (www interface) class factory
         wwwFactory wfactory = new wwwFactory();
         DDS wwwDDS = new DDS(dataSet, wfactory);
+        wwwDDS.setURL(dataSet);
 
         // Make a special print writer to catch the ServerDDS's
         // persistent representation in a String.
