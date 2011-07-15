@@ -432,7 +432,8 @@ public class NestedTable {
     Table t = root;
     while (t.child != null) {
       t = t.child;
-      formatter.format("/%s", t.getName());
+      String name = t.getName() != null ? t.getName() : "anon";
+      formatter.format("/%s", name);
     }
     return formatter.toString();
   }

@@ -246,7 +246,7 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, ucar.nc2.ft.Feature
   }
 
   public VariableSimpleIF getDataVariable(String shortName) {
-    return ds.findTopVariable(shortName);
+    return ds.getRootGroup().findVariable(shortName);
   }
 
   public NetcdfFile getNetcdfFile() {

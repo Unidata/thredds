@@ -170,7 +170,7 @@ public class ParsedSectionSpec {
     }
     List<Range> ranges = (orgRanges == null) ? v.getRanges() : orgRanges;
 
-    sb.append( v.isMemberOfStructure() ? NetcdfFile.escapeName(v.getShortName()) : v.getNameEscaped());
+    sb.append( v.isMemberOfStructure() ? NetcdfFile.escapeName(v.getShortName()) : v.getName());
 
     if (!v.isVariableLength() && !v.isScalar()) { // sequences cant be sectioned
       sb.append('(');

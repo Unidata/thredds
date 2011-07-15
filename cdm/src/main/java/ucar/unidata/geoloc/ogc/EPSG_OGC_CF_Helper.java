@@ -194,7 +194,7 @@ public class EPSG_OGC_CF_Helper
 
     Attribute gridMappingAtt = gridDatatype.findAttributeIgnoreCase( "grid_mapping" );
     String gridMapping = gridMappingAtt.getStringValue();
-    Variable gridMapVar = gridDataset.getNetcdfFile().findTopVariable( gridMapping);
+    Variable gridMapVar = gridDataset.getNetcdfFile().getRootGroup().findVariable(gridMapping);
 
     Attribute gridMappingNameAtt = gridMapVar.findAttributeIgnoreCase( "grid_mapping_name" );
     String gridMappingName = gridMappingNameAtt.getStringValue();

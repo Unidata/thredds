@@ -159,7 +159,7 @@ public abstract class FeatureDatasetImpl implements FeatureDataset {
     List<VariableSimpleIF> vars = getDataVariables();
     sf.format("  Data Variables (%d)\n",vars.size());
     for (VariableSimpleIF v : vars)
-      sf.format("    name='%s' desc='%s' units=%s' type='%s'\n",v.getName(),v.getDescription(),v.getUnitsString(),v.getDataType());
+      sf.format("    name='%s' desc='%s' units=%s' type='%s'\n", v.getName(),v.getDescription(),v.getUnitsString(),v.getDataType());
 
     sf.format("\nparseInfo=\n%s\n", parseInfo);
   }

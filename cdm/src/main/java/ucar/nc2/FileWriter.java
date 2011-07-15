@@ -190,7 +190,7 @@ public class FileWriter {
         }
 
         // add last dimension
-        String useName = N3iosp.makeValidNetcdfObjectName(oldVar.getName() + "_strlen");
+        String useName = N3iosp.makeValidNetcdfObjectName(oldVar.getShortName() + "_strlen");
         Dimension newD = ncfile.addDimension(useName, max_len);
         dims.add(newD);
 
@@ -266,7 +266,7 @@ public class FileWriter {
         continue;
 
       if (debug)
-        System.out.println("write var= " + oldVar.getName() + " size = " + oldVar.getSize() + " type=" + oldVar.getDataType());
+        System.out.println("write var= " + oldVar.getShortName() + " size = " + oldVar.getSize() + " type=" + oldVar.getDataType());
 
       long size = oldVar.getSize() * oldVar.getElementSize();
       total += size;
@@ -309,7 +309,7 @@ public class FileWriter {
   }
 
   private static void copyAll(NetcdfFileWriteable ncfile, Variable oldVar) throws IOException {
-    String newName = N3iosp.makeValidNetcdfObjectName(oldVar.getName());
+    String newName = N3iosp.makeValidNetcdfObjectName(oldVar.getShortName());
 
     Array data = oldVar.read();
     try {
@@ -368,12 +368,12 @@ public class FileWriter {
    * @throws IOException if an I/O error occurs.
    */
   private static void copySome(NetcdfFileWriteable ncfile, Variable oldVar, long maxChunkSize, List<FileWriterProgressListener> progressListeners) throws IOException {
-    String newName = N3iosp.makeValidNetcdfObjectName(oldVar.getName());
+    String newName = N3iosp.makeValidNetcdfObjectName(oldVar.getShortName());
     long maxChunkElems = maxChunkSize / oldVar.getElementSize();
     long byteWriteTotal = 0;
 
     FileWriterProgressEvent writeProgressEvent = new FileWriterProgressEvent();
-    writeProgressEvent.setStatus("Variable: " + oldVar.getName());
+    writeProgressEvent.setStatus("Variable: " + oldVar.getShortName());
     if (progressListeners != null) {
       for (FileWriterProgressListener listener : progressListeners) {
         listener.writeStatus(writeProgressEvent);
@@ -386,7 +386,7 @@ public class FileWriter {
         int[] chunkOrigin = index.getCurrentCounter();
         int[] chunkShape = index.computeChunkShape(maxChunkElems);
 
-        writeProgressEvent.setWriteStatus("Reading chunk from variable: " + oldVar.getName());
+        writeProgressEvent.setWriteStatus("Reading chunk from variable: " + oldVar.getShortName());
         if (progressListeners != null) {
           for (FileWriterProgressListener listener : progressListeners) {
             listener.writeProgress(writeProgressEvent);
@@ -399,7 +399,7 @@ public class FileWriter {
         }
 
         if (data.getSize() > 0) {// zero when record dimension = 0
-          writeProgressEvent.setWriteStatus("Writing chunk of variable: " + oldVar.getName());
+          writeProgressEvent.setWriteStatus("Writing chunk of variable: " + oldVar.getShortName());
           writeProgressEvent.setBytesToWrite(data.getSize());
           if (progressListeners != null) {
             for (FileWriterProgressListener listener : progressListeners) {

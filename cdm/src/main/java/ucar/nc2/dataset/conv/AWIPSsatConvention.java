@@ -131,7 +131,7 @@ public class AWIPSsatConvention extends CoordSysBuilder {
 
   protected AxisType getAxisType( NetcdfDataset ds, VariableEnhanced ve) {
     Variable v = (Variable) ve;
-    String vname = v.getName();
+    String vname = v.getShortName();
 
    if (vname.equalsIgnoreCase("x"))
       return AxisType.GeoX;

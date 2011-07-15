@@ -4,6 +4,7 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.2:
  26: (2011-07-xx)
+  Variable.getName() always returns escaped version. Withdraw Variable.getEscapedName()
   NcDDS was assuming a dimension always has a name.
   Switch to backslash escaping for CDM objects. Remove superfluous unescaping.
   NcMLReader has incredible isVariableLength-"false" bug, how did anything work?

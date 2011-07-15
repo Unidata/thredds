@@ -182,7 +182,7 @@ public class TestWriteMiscProblems extends TestCase {
     ncfile.close();
 
     NetcdfFile nc = NetcdfFile.open(filename, null);
-    Variable v = nc.findTopVariable("Times");
+    Variable v = nc.findVariable("Times");
     Array dataRead = v.read();
     assert dataRead instanceof ArrayChar;
     ArrayChar dataC = (ArrayChar) dataRead;

@@ -336,7 +336,7 @@ public class CoordinateAxis extends VariableDS {
       AxisType t2 = c2.getAxisType();
 
       if ((t1 == null) && (t2 == null))
-        return c1.getName().compareTo(c2.getName());
+        return c1.getShortName().compareTo(c2.getShortName());
       if (t1 == null)
         return -1;
       if (t2 == null)

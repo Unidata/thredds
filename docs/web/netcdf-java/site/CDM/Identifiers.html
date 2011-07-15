@@ -93,7 +93,7 @@ where:
   stride := INTEGER
   end := INTEGER
 </pre>
-<p>So the characters in variable names that need to be escaped are<strong> ',' ':' ')' </strong></p>
+<p>So the characters in variable names that need to be escaped are<strong> ',' ':' '(' </strong><strong>')' </strong>in order to not interfere with this grammer.</p>
 <h3>cdmrFeature</h3>
 <p>The client forms requests of the form <strong>endpoint?query</strong>. The possible query parameters are:</p>
 <pre>  <strong>req</strong>=( <strong></strong><strong>capabilities</strong> | <strong>data</strong> | <strong>form | stations</strong>)
@@ -112,14 +112,12 @@ where:
 <p>Here we just need the comma <strong>&quot;,&quot;</strong> in the variable name and in the station names.</p>
 <h3><strong>Netcdf Subset Service</strong></h3>
 <p>It should suffice to URLencode the variable names and station names , and to URL decode all the query parameters.</p>
-<p>&nbsp;</p>
 <h3>Object Escaped Name</h3>
-<p>Standard practice for escaping names is to use <strong>NetcdfFile.escapeName(), unescapeName().</strong> This uses <a href="http://en.wikipedia.org/wiki/Backslash">backslash escaping</a> on the &quot;.&quot; character. The backslash becomes a special char, so those two need to be escaped:</p>
+<p>Standard practice for escaping names is to use <strong>NetcdfFile.escapeName(), unescapeName().</strong> This uses <a href="http://en.wikipedia.org/wiki/Backslash">backslash escaping</a>. The backslash becomes a special char, so it needs to be in the escape set:</p>
 <blockquote>
-  <pre> [\.\\]</pre>
+  <pre> [\(\),:\.\\]</pre>
 </blockquote>
 <p>Utility routines using this include <strong>Variable.getNameEscaped(), </strong>and<strong> GridDatatype.getNameEscaped()</strong>.</p>
-<p>&nbsp;</p>
 <hr>
 <h2>OPeNDAP<a name="OPeNDAP"></a></h2>
 <p>OPeNDAP has an <a href="http://www.opendap.org/pdf/ESE-RFC-004v1.1.pdf">on-the-wire specification</a> that must be followed in order to ensure interoperability. There are two parts to this:</p>

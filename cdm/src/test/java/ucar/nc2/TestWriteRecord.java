@@ -160,7 +160,7 @@ public class TestWriteRecord extends TestCase  {
     }
     if (dumpAfterCreate) System.out.println( "ncfile = "+ ncfile);
 
-    Variable v = ncfile.findTopVariable("rh");
+    Variable v = ncfile.findVariable("rh");
     assert v != null;
     assert v.isUnlimited();
 
@@ -382,7 +382,7 @@ public class TestWriteRecord extends TestCase  {
     System.out.println( "ncfile = "+ ncfile);
 
     // now write one record at a time
-    Variable v = ncfile.findTopVariable("T");
+    Variable v = ncfile.findVariable("T");
     ArrayDouble data = new ArrayDouble.D3(1, latDim.getLength(), lonDim.getLength());
     ArrayInt timeData = new ArrayInt.D1(1);
     int[] origin = new int[v.getRank()];

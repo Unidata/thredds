@@ -217,7 +217,7 @@ public class ADASConvention extends CoordSysBuilder {
 
   protected AxisType getAxisType(NetcdfDataset ds, VariableEnhanced ve) {
     Variable v = (Variable) ve;
-    String vname = v.getName();
+    String vname = v.getShortName();
 
     if (vname.equalsIgnoreCase("x") || vname.equalsIgnoreCase("x_stag"))
       return AxisType.GeoX;

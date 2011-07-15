@@ -64,7 +64,7 @@ public class TestOffAggFmrcMisc extends TestCase {
     NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(xml), "aggFmrcScaling", null);
 
     // make sure that scaling is applied
-    VariableDS vs = (VariableDS) ncfile.findTopVariable("hs");
+    VariableDS vs = (VariableDS) ncfile.findVariable("hs");
     Array data = vs.read("0,1,:,:)");
     while (data.hasNext()) {
       float val = data.nextFloat();
@@ -80,7 +80,7 @@ public class TestOffAggFmrcMisc extends TestCase {
     NetcdfFile ncfile = NetcdfDataset.acquireFile("file:D:/work/signell/efine/fine.ncml", null);
 
     // make sure that scaling is applied
-    VariableDS vs = (VariableDS) ncfile.findTopVariable("hs");
+    VariableDS vs = (VariableDS) ncfile.findVariable("hs");
     Array data = vs.read("0,1,:,:)");
     while (data.hasNext()) {
       float val = data.nextFloat();

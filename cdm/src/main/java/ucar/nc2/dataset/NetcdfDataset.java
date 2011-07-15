@@ -962,14 +962,14 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   /**
    * Retrieve the CoordinateAxis with the specified type.
    *
-   * @param fullName full name of the coordinate axis
+   * @param fullName full escaped name of the coordinate axis
    * @return the CoordinateAxis, or null if not found
    */
   public CoordinateAxis findCoordinateAxis(String fullName) {
     if (fullName == null) return null;
     for (CoordinateAxis v : coordAxes) {
       String n = v.getName();
-      if (fullName.equals(n)) // LOOK WRONG must be escaped !!
+      if (fullName.equals(n))
         return v;
     }
     return null;
@@ -1382,7 +1382,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
     if (v.isMemberOfStructure()) {
       Structure parentOrg = v.getParentStructure();  // gotta be careful to get the wrapping parent
-      Structure parent = (Structure) findVariable(parentOrg.getNameEscaped());
+      Structure parent = (Structure) findVariable(parentOrg.getName());
       parent.replaceMemberVariable(ca);
 
     } else {

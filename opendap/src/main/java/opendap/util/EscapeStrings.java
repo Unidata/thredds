@@ -542,6 +542,8 @@ for (int offset = 0; offset < length; ) {
    * @return escaped string
    */
   static public String backslashEscape(String x, String reservedChars) {
+    if (x == null)
+      System.out.println("HEY");
     boolean ok = true;
     for (int pos = 0; pos < x.length(); pos++) {
       char c = x.charAt(pos);

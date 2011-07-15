@@ -73,18 +73,15 @@ public class TestH5subset extends TestCase {
     // LayoutRegular
     TestIosp.testVariableSubset(dirName + "HIRDLS/HIR2ARSP_c3_na.he5", "HDFEOS/SWATHS/H2SO4_H2O_Tisdale/Data Fields/EXTC", ntrials);
     TestIosp.testVariableSubset(dirName + "HIRDLS/HIRPROF-AFGL_b038_na.he5", "HDFEOS/SWATHS/HIRDLS/Data Fields/AERO01", ntrials);
-    TestIosp.testVariableSubset(dirName + "HIRDLS/HIRPROF-Aura73p_b038_2000d275.he5", "HDFEOS/SWATHS/HIRDLS/Data Fields/7%2E10MicronAerosolExtinction", ntrials);
+    TestIosp.testVariableSubset(dirName + "HIRDLS/HIRPROF-Aura73p_b038_2000d275.he5", "HDFEOS/SWATHS/HIRDLS/Data Fields/7\\.10MicronAerosolExtinction", ntrials);
     TestIosp.testVariableSubset(dirName + "aura/TES-Aura_L3-CH4-M2007m08_F01_04.he5", "HDFEOS/GRIDS/NadirGrid/Data Fields/CH4", ntrials); // */
 
     // netcdf4
     TestIosp.testVariableSubset(TestAll.cdmUnitTestDir + "formats/netcdf4/ncom_relo_fukushima_1km_tmp_2011040800_t000.nc4", "water_temp", ntrials); // */
  }
 
-  public void problemSubset() throws IOException, InvalidRangeException {
-    //H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header"));
-    //H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/dataBtree H5header/dataChunk"));
-    TestIosp.testVariableSubset(dirName + "IASI/IASI_xxx_1C_M02_20070704193256Z_20070704211159Z_N_O_20070704211805Z.h5",
-            "U-MARF/EPS/IASI_xxx_1C/DATA/IMAGE_DATA", 100);
+  public void testProblem() throws IOException, InvalidRangeException {
+    TestIosp.testVariableSubset(dirName + "HIRDLS/HIRPROF-Aura73p_b038_2000d275.he5", "HDFEOS/SWATHS/HIRDLS/Data Fields/7\\.10MicronAerosolExtinction", 1);
   }
 
 }

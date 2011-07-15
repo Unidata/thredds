@@ -470,7 +470,7 @@ public class CoordinateSystem {
 
   /**
     * Do we have the named axis?
-    * @param axisName (full) name of axis
+    * @param axisName (full escaped) name of axis
     * @return true if we have an axis of that name
     */
    public boolean containsAxis(String axisName) {

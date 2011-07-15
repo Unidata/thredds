@@ -170,7 +170,7 @@ public class UnidataTrajectoryObsDataset2
     if ( this.isMultiTrajStructure )
     {
       this.trajVarName = this.trajDimName;
-      this.trajVar = ncd.findTopVariable( this.trajVarName );
+      this.trajVar = ncd.getRootGroup().findVariable(this.trajVarName);
     }
 
 

@@ -42,7 +42,7 @@ import ucar.ma2.Section;
 
 public interface VariableIF extends VariableSimpleIF {
     public java.lang.String getName();
-    public java.lang.String getNameEscaped();
+    // public java.lang.String getNameEscaped();
     public java.lang.String getShortName();
     public void getNameAndDimensions(java.util.Formatter result, boolean useFullName, boolean strict);
 

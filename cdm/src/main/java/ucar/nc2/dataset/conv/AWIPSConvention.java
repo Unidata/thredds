@@ -112,7 +112,7 @@ public class AWIPSConvention extends CoordSysBuilder {
 
     // AWIPS cleverly combines multiple z levels into a single variable (!!)
     for (Variable ncvar : ds.getVariables()) {
-      String levelName = ncvar.getName() + "Levels";
+      String levelName = ncvar.getShortName() + "Levels";
       Variable levelVar = ds.findVariable(levelName);
       if (levelVar == null) continue;
       if (levelVar.getRank() != 2) continue;
@@ -168,7 +168,7 @@ public class AWIPSConvention extends CoordSysBuilder {
   // return the list of Dimensions that were created
 
   private List<Dimension> breakupLevels(NetcdfDataset ds, Variable levelVar) throws IOException {
-    if (debugBreakup) parseInfo.format("breakupLevels = %s\n", levelVar.getName());
+    if (debugBreakup) parseInfo.format("breakupLevels = %s\n", levelVar.getShortName());
     List<Dimension> dimList = new ArrayList<Dimension>();
 
     ArrayChar levelVarData;
@@ -320,7 +320,7 @@ public class AWIPSConvention extends CoordSysBuilder {
     int[] shape = ncVar.getShape();
     int count = 0;
     for (Dimension dim : newDims) {
-      String name = ncVar.getName() + "-" + dim.getName();
+      String name = ncVar.getShortName() + "-" + dim.getName();
 
       origin[newDimIndex] = count;
       shape[newDimIndex] = dim.getLength();
@@ -330,7 +330,7 @@ public class AWIPSConvention extends CoordSysBuilder {
       varNew.setDimension(newDimIndex, dim);
 
       // synthesize long name
-      String long_name = ds.findAttValueIgnoreCase(ncVar, "long_name", ncVar.getName());
+      String long_name = ds.findAttValueIgnoreCase(ncVar, "long_name", ncVar.getShortName());
       long_name = long_name + "-" + dim.getName();
       ds.addVariableAttribute(varNew, new Attribute("long_name", long_name));
 
@@ -350,7 +350,7 @@ public class AWIPSConvention extends CoordSysBuilder {
 
   protected AxisType getAxisType(NetcdfDataset ds, VariableEnhanced ve) {
     Variable v = (Variable) ve;
-    String vname = v.getName();
+    String vname = v.getShortName();
 
     if (vname.equalsIgnoreCase("x"))
       return AxisType.GeoX;

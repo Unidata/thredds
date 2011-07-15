@@ -80,22 +80,22 @@ public class Variable implements VariableIF, ProxyReader {
   protected Structure parent = null; // for variables inside a Structure, aka "structure members"
   protected ProxyReader proxyReader = this;
 
-
   /**
-   * Get the full name of this Variable, starting from rootGroup. The name is unique within the
-   * entire NetcdfFile.
+   * Get the full, escaped name of this Variable, starting from rootGroup.
+   * The name is unique within the entire NetcdfFile.
    */
   public String getName() {
-    return NetcdfFile.makeFullName(this.group, this);
+    return NetcdfFile.makeFullNameEscaped(this.group, this);
+    //return NetcdfFile.makeFullName(this.group, this);
   }
 
-  /**
+  /*
    * Get the full name of this Variable, with special characters escaped.
    * @return the full name of this Variable, with special characters escaped.
-   */
+   *
   public String getNameEscaped() {
     return NetcdfFile.makeFullNameEscaped(this.group, this);
-  }
+  } */
 
   /**
    * Get the short name of this Variable. The name is unique within its parent group.
@@ -1067,7 +1067,7 @@ public class Variable implements VariableIF, ProxyReader {
    * Sort by name
    */
   public int compareTo(VariableSimpleIF o) {
-    return getName().compareTo(o.getName());
+    return getShortName().compareTo(o.getShortName());
   }
 
   /////////////////////////////////////////////////////////////////////////////

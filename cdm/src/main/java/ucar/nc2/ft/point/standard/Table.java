@@ -260,7 +260,8 @@ public abstract class Table {
         case PsuedoStructure:
           this.dim = ds.findDimension(config.dimName);
           assert dim != null;
-          struct = new StructurePseudoDS(ds, dim.getGroup(), config.structName, config.vars, this.dim);
+          String name = config.structName == null ? "anon" : config.structName;
+          struct = new StructurePseudoDS(ds, dim.getGroup(), name, config.vars, this.dim);
           break;
 
         case PsuedoStructure2D:
@@ -306,7 +307,7 @@ public abstract class Table {
 
     @Override
     public String getName() {
-      return stype.toString()+"("+struct.getName()+")";
+      return stype.toString()+"("+struct.getShortName()+")";
     }
   }
 

@@ -261,7 +261,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
   /*
    * The set of characters in a netcdf object name that are escaped for the "escaped name".
    */
-  static public final String reserved = ".\\";
+  static public final String reserved = "();,.\\";
 
   /**
    * Escape any special characters in a netcdf object name.
@@ -300,6 +300,61 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     }
     return result;
   }
+
+  static protected String makeFullName(Group parent, Variable v) {
+    // common case
+    if (((parent == null) || parent.isRoot()) && !v.isMemberOfStructure()) return v.getShortName();
+
+    StringBuilder sbuff = new StringBuilder();
+    appendGroupName(sbuff, parent);
+    appendStructureName(sbuff, v);
+    return sbuff.toString();
+  }
+
+  static private void appendGroupName(StringBuilder sbuff, Group g) {
+    boolean isRoot = g.getParentGroup() == null;
+    if (isRoot) return;
+
+    if (g.getParentGroup() != null)
+      appendGroupName(sbuff, g.getParentGroup());
+    sbuff.append(g.getShortName());
+    sbuff.append("/");
+  }
+
+  static private void appendStructureName(StringBuilder sbuff, Variable v) {
+    if (v.isMemberOfStructure()) {
+      appendStructureName(sbuff, v.getParentStructure());
+      sbuff.append(".");
+    }
+    sbuff.append(v.getShortName());
+  }
+
+  static protected String makeFullNameEscaped(Group parent, Variable v) {
+    StringBuilder sbuff = new StringBuilder();
+    appendGroupNameEscaped(sbuff, parent);
+    appendStructureNameEscaped(sbuff, v);
+    return sbuff.toString();
+  }
+
+  static private void appendGroupNameEscaped(StringBuilder sbuff, Group g) {
+    boolean isRoot = g.getParentGroup() == null;
+    if (isRoot) return;
+
+    if (g.getParentGroup() != null)
+      appendGroupNameEscaped(sbuff, g.getParentGroup());
+    sbuff.append(escapeName(g.getShortName()));
+    sbuff.append("/");
+  }
+
+  static private void appendStructureNameEscaped(StringBuilder sbuff, Variable v) {
+    if (v.isMemberOfStructure()) {
+      appendStructureNameEscaped(sbuff, v.getParentStructure());
+      sbuff.append(".");
+    }
+    sbuff.append(escapeName(v.getShortName()));
+  }
+
+  //////////////////////////////////////////////////////////////////////////////////////////
 
   /**
    * Register an IOServiceProvider, using its class string name.
@@ -918,12 +973,12 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     return variables;
   }
 
-  /**
+  /*
    * Retrieve the Variable with the specified (full) name, which is not a member of a Structure.
    *
    * @param name full name, starting from root group.
    * @return the Variable, or null if not found
-   */
+   *
   public Variable findTopVariable(String name) {
     if (name == null) return null;
 
@@ -932,7 +987,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
         return v;
     }
     return null;
-  }
+  } */
 
   /**
    * Find a Group, with the specified (full) name.
@@ -955,7 +1010,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
   }
 
   /**
-   * Find a Variable, with the specified (full) name.
+   * Find a Variable, with the specified (escaped full) name.
    * It may possibly be nested in multiple groups and/or structures.
    * An embedded "." is interpreted as structure.member.
    * An embedded "/" is interpreted as group/variable.
@@ -1782,59 +1837,6 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     appendGroupName(sbuff, parent);
     sbuff.append(name);
     return sbuff.toString();
-  }
-
-  static protected String makeFullName(Group parent, Variable v) {
-    // common case
-    if (((parent == null) || parent.isRoot()) && !v.isMemberOfStructure()) return v.getShortName();
-
-    StringBuilder sbuff = new StringBuilder();
-    appendGroupName(sbuff, parent);
-    appendStructureName(sbuff, v);
-    return sbuff.toString();
-  }
-
-  static private void appendGroupName(StringBuilder sbuff, Group g) {
-    boolean isRoot = g.getParentGroup() == null;
-    if (isRoot) return;
-
-    if (g.getParentGroup() != null)
-      appendGroupName(sbuff, g.getParentGroup());
-    sbuff.append(g.getShortName());
-    sbuff.append("/");
-  }
-
-  static private void appendStructureName(StringBuilder sbuff, Variable v) {
-    if (v.isMemberOfStructure()) {
-      appendStructureName(sbuff, v.getParentStructure());
-      sbuff.append(".");
-    }
-    sbuff.append(v.getShortName());
-  }
-
-  static protected String makeFullNameEscaped(Group parent, Variable v) {
-    StringBuilder sbuff = new StringBuilder();
-    appendGroupNameEscaped(sbuff, parent);
-    appendStructureNameEscaped(sbuff, v);
-    return sbuff.toString();
-  }
-
-  static private void appendGroupNameEscaped(StringBuilder sbuff, Group g) {
-    boolean isRoot = g.getParentGroup() == null;
-    if (isRoot) return;
-
-    if (g.getParentGroup() != null)
-      appendGroupNameEscaped(sbuff, g.getParentGroup());
-    sbuff.append(escapeName(g.getShortName()));
-    sbuff.append("/");
-  }
-
-  static private void appendStructureNameEscaped(StringBuilder sbuff, Variable v) {
-    if (v.isMemberOfStructure()) {
-      appendStructureNameEscaped(sbuff, v.getParentStructure());
-      sbuff.append(".");
-    }
-    sbuff.append(escapeName(v.getShortName()));
   }
 
   //////////////////////////////////////////////////////////////////////////////////////

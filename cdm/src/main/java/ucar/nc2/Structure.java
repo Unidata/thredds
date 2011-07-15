@@ -281,7 +281,7 @@ public class Structure extends Variable {
    * @return a StructureMembers object that describes this Structure.
    */
   public StructureMembers makeStructureMembers() {
-    StructureMembers smembers = new StructureMembers( getName());
+    StructureMembers smembers = new StructureMembers( getShortName());
     for (Variable v2 : getVariables()) {
       StructureMembers.Member m = smembers.addMember( v2.getShortName(), v2.getDescription(),
           v2.getUnitsString(), v2.getDataType(), v2.getShape());

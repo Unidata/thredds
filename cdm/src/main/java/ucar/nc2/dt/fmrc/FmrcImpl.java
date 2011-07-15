@@ -545,7 +545,7 @@ public class FmrcImpl implements ForecastModelRunCollection { //, ucar.nc2.dt.Gr
       addTime3Coordinates(newds, gridset, invList, type);
 
       for (GridDatatype grid : gridset.gridList) {
-        Variable orgVar = ncd_2dtime.findVariable(grid.getNameEscaped());
+        Variable orgVar = ncd_2dtime.findVariable(grid.getName());
 
         VariableDS v = new VariableDS(target, orgVar, false);
         v.clearCoordinateSystems();
@@ -741,7 +741,7 @@ public class FmrcImpl implements ForecastModelRunCollection { //, ucar.nc2.dt.Gr
     }
 
     public Array reallyRead(CancelTask cancelTask) throws IOException {
-      Variable orgVar = ncd_2dtime.findVariable(mainv.getNameEscaped());
+      Variable orgVar = ncd_2dtime.findVariable(mainv.getName());
       int[] orgVarShape = orgVar.getShape();
 
       // calculate shape - wants it "all"  (we dont seem to have access to the derived variable, so must construct)
@@ -783,7 +783,7 @@ public class FmrcImpl implements ForecastModelRunCollection { //, ucar.nc2.dt.Gr
       if (size == mainv.getSize())
         return reallyRead(cancelTask);
 
-      Variable orgVar = ncd_2dtime.findVariable(mainv.getNameEscaped());
+      Variable orgVar = ncd_2dtime.findVariable(mainv.getName());
 
       Array sectionData = Array.factory(mainv.getDataType(), section.getShape());
       int destPos = 0;
