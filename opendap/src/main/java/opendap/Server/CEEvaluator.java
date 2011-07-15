@@ -176,7 +176,6 @@ public class CEEvaluator {
             NoSuchFunctionException, InvalidOperatorException,
             InvalidParameterException, SBHException, WrongTypeException {
 
-        StringReader sExpr = new StringReader(expression);
         if (clauseFactory == null) {
             clauseFactory = new ClauseFactory();
         }
@@ -189,7 +188,7 @@ public class CEEvaluator {
         CeParser.constraint_expression(this,
                 _dds.getFactory(),
                 clauseFactory,
-                sExpr, url);
+                expression, url);
 	} catch (ConstraintException ce) {
 	    // convert to a DAP2Exception
         ce.printStackTrace();

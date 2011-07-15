@@ -62,6 +62,7 @@ public class Variable implements VariableIF, ProxyReader {
   protected NetcdfFile ncfile; // physical container for this Variable; where the I/O happens. may be null if Variable is self contained.
   protected Group group; // logical container for this Variable. may not be null.
   protected String shortName; // may not be blank
+  protected String fullNameEscaped; // cached fullname escaped
   protected int[] shape;
   protected Section shapeAsSection;  // derived from the shape, immutable; used for every read, deferred creation
 
@@ -85,7 +86,9 @@ public class Variable implements VariableIF, ProxyReader {
    * The name is unique within the entire NetcdfFile.
    */
   public String getName() {
-    return NetcdfFile.makeFullNameEscaped(this.group, this);
+    if(this.fullNameEscaped == null)
+        this.fullNameEscaped = NetcdfFile.makeFullNameEscaped(this.group, this);
+    return this.fullNameEscaped;
     //return NetcdfFile.makeFullName(this.group, this);
   }
 
@@ -1132,6 +1135,7 @@ public class Variable implements VariableIF, ProxyReader {
     this.parent = from.parent;
     this.shape = from.getShape();
     this.shortName = from.shortName;
+    this.fullNameEscaped = null;
     this.sizeToCache = from.sizeToCache;
     this.spiObject = from.spiObject;
   }

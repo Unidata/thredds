@@ -38,9 +38,10 @@ import java.util.*;
        new stream in case one is reusing the parser
     */
 
-    boolean parse(StringReader sreader) throws ParseException
+    boolean parse(String constraint) throws ParseException
     {
-	((Celex)yylexer).reset(parsestate);
+	StringReader sreader = new StringReader(constraint);
+	((Celex)yylexer).reset(parsestate,constraint);
 	((Celex)yylexer).setStream(sreader);
 	return parse();
     }
@@ -51,26 +52,27 @@ import java.util.*;
     static public boolean constraint_expression(CEEvaluator ceEval,
                                          BaseTypeFactory factory,
 					 ClauseFactory clauseFactory,
-					 StringReader sreader,
+					 String constraint,
 				         String url // for error reporting
 					 )
             throws DAP2Exception, ParseException
     {
 	CeParser parser = new CeParser(factory);
 	parser.setURL(url);
+	parser.setConstraint(constraint);
         ServerDDS sdds = ceEval.getDDS();
-        if(!parser.parse(sreader)) return false;
+        if(!parser.parse(constraint)) return false;
         ASTconstraint root = (ASTconstraint)parser.getAST();
 	root.init(ceEval,factory,clauseFactory,sdds,parser.getASTnodeset());
 	root.walkConstraint();
         return true;
     }
 
-    String url = null;
+    public  void setURL(String url) {lexstate.url = url;}
+    public String getURL() {return lexstate.url;}
 
-    void setURL(String url) {this.url = url;}
-
-    String getURL() {return url;}
+    public void setConstraint(String constraint) {lexstate.constraint = constraint;}
+    public String getConstraint() {return lexstate.constraint;}
 
 }
 

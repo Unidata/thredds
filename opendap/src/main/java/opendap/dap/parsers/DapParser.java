@@ -1981,7 +1981,11 @@ public class DapParser extends Dapparse
 
     String url = null;
 
-    public void setURL(String url) {this.url = url;}
+    public void setURL(String url) {
+        this.url = url;
+        if(url != null && url.equals("http://motherlode.ucar.edu:8081/thredds/dodsC/fmrc/NCEP/GFS/Global_0p5deg/runs/NCEP-GFS-Global_0p5deg_RUN_2011-07-07T00:00:00Z.html.dods"))
+            setDebugLevel(1);
+    }
 
     public String getURL() {return this.url;}
 

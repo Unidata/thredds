@@ -70,13 +70,14 @@ public abstract class Ceparse implements ExprParserConstants
     /* Access into the CeParser for otherwise inaccessible fields */
     abstract public boolean parse() throws ParseException;
 
-    abstract int getDebugLevel();
+    abstract public int getDebugLevel();
+    abstract public void setDebugLevel(int level);
 
-    abstract void setDebugLevel(int level);
+    abstract public void setURL(String url);
+    abstract public String getURL();
 
-    abstract void setURL(String url);
-
-    abstract String getURL();
+    abstract public void setConstraint(String constraint);
+    abstract public String getConstraint();
 
     /**
      * **********************************************

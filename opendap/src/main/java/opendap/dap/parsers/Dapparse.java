@@ -65,9 +65,9 @@ public abstract class Dapparse
     /* Access into the DapParser for otherwise inaccessible fiels */
     abstract public boolean parse(InputStream stream) throws ParseException;
 
-    abstract int getDebugLevel();
+    abstract public int getDebugLevel();
 
-    abstract void setDebugLevel(int level);
+    abstract public void setDebugLevel(int level);
 
     abstract public void setURL(String url);
 

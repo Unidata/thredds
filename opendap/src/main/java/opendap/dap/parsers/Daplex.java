@@ -478,13 +478,22 @@ class Daplex implements DapParser.Lexer
      */
     public void yyerror(String s)
     {
-        System.err.println("yyerror: line "
+        String kind = "?";
+        switch (parsestate.parseClass) {
+        case Dapparse.DapDAS: kind = "DAS"; break;
+        case Dapparse.DapDDS: kind = "DDS"; break;
+        case Dapparse.DapERR: kind = "Error"; break;
+        default: kind = "?"; break;
+        }
+        System.err.print("yyerror: "+kind
+                + " line "
                 + lineno
                 + " near |"
                 + yytext
                 + "|; " + s);
-	if(parsestate.getURL() != null)
-	    System.err.println("\turl="+parsestate.getURL());
+	    if(parsestate.getURL() != null)
+	        System.err.println("\turl="+parsestate.getURL());
+        new Exception().printStackTrace(System.err);
     }
 
     public void lexerror(String msg)

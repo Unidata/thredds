@@ -663,7 +663,7 @@ public class CoordSysTable extends JPanel {
     public AxisBean(CoordinateAxis v) {
       this.axis = v;
 
-      setName(v.getNameEscaped());
+      setName(v.getName());
       setCoordVar(v.isCoordinateVariable());
       setDescription(v.getDescription());
       setUnits(v.getUnitsString());

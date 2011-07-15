@@ -71,6 +71,9 @@ class Celex implements Lexer, ExprParserConstants
     Object lval = null;
     StringBuilder lookahead = null;
 
+    String url = null;
+    String constraint = null;
+
     /**
      * *********************************************
      */
@@ -78,10 +81,10 @@ class Celex implements Lexer, ExprParserConstants
     /* Constructor(s) */
     public Celex(Ceparse state)
     {
-        reset(state);
+        reset(state,null);
     }
 
-    public void reset(Ceparse state)
+    public void reset(Ceparse state, String constraint)
     {
         this.parsestate = state;
         input = new StringBuilder(); /* InputStream so far */
@@ -89,16 +92,11 @@ class Celex implements Lexer, ExprParserConstants
         lookahead = new StringBuilder();
         lval = null;
         charno = 0;
-	this.stream = null;
+        this.constraint = constraint;
+	    this.stream = (this.constraint == null ? null : new StringReader(this.constraint));
     }
 
     /* Get/Set */
-
-    void setStream(StringReader stream)
-    {
-        this.stream = stream;
-    }
-
 
     public String getInput()
     {
@@ -293,12 +291,14 @@ class Celex implements Lexer, ExprParserConstants
      */
     public void yyerror(String s)
     {
-        System.err.print("yyerror: " + s + "; char "+ charno);
+        System.err.print("yyerror: constraint parse error:" + s + "; char "+ charno);
         if(yytext.length() > 0)
             System.err.print(" near |"+ yytext + "|");
         System.err.println();
-	// Add extra info
-	if(parsestate.getURL() != null) System.err.println("\turl="+parsestate.getURL());
+	    // Add extra info
+        if(parsestate.getURL() != null) System.err.println("\turl="+parsestate.getURL());
+        System.err.println("\tconstraint="+(constraint==null?"none":constraint));
+        new Exception().printStackTrace(System.err);
     }
 
     public void lexerror(String msg)
