@@ -81,6 +81,15 @@ public class Variable implements VariableIF, ProxyReader {
   protected ProxyReader proxyReader = this;
 
   /**
+   * Get the variable name.
+   * @return full unescaped name
+   * @deprecated use getFullName or getShortName
+   */
+  public String getName() {
+    return getFullName();
+  }
+
+  /**
    * Get the full, unescaped name of this Variable, starting from rootGroup.
    * The name is unique within the entire NetcdfFile.
    * @return  full, unescaped name
@@ -90,8 +99,7 @@ public class Variable implements VariableIF, ProxyReader {
   }
 
   /**
-   * Get the full, escaped name of this Variable, starting from rootGroup.
-   * The name is unique within the entire NetcdfFile.
+   * Get the full, escaped name of this Variable. Use for NetcdfFile.findVariable().
    * @return  full, escaped name
    * @see "http://www.unidata.ucar.edu/software/netcdf-java/CDM/Identifiers.html"
    */

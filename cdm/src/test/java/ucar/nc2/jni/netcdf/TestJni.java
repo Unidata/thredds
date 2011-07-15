@@ -379,7 +379,7 @@ group: group-2 {
               System.out.println("  Try to read variable " + v.getNameAndDimensions() + " size= " + v.getSize());
             Array data = v.read();
             if (showData)
-              NCdumpW.printArray(data, v.getName(), pw, null);
+              NCdumpW.printArray(data, v.getFullName(), pw, null);
           }
         }
 

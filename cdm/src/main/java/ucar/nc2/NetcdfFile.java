@@ -305,24 +305,6 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     return EscapeStrings.backslashUnescape(vname);
   }
 
-  /**
-   * Tokenize an escaped name using "." as delimiter, skipping "\."
-   *
-   * @param escapedName an escaped name
-   * @return list of tokens
-   */
-  public static List<String> tokenizeEscapedName(String escapedName) {
-    String[] sp = escapedName.split("\\.");
-    List<String> result = new ArrayList<String>(sp.length);
-    for (int i = 0; i < sp.length; i++) {
-      if (sp[i].endsWith("\\") && (i < sp.length - 1))  // put back together
-        result.add(sp[i] += "." + sp[++i]);
-      else if (sp[i].length() > 0)
-        result.add(sp[i]);
-    }
-    return result;
-  }
-
   static protected String makeFullName(Variable v) {
     return makeFullName(v, null);
   }
@@ -1024,6 +1006,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
    * An embedded "." is interpreted as structure.member.
    * An embedded "/" is interpreted as group/variable.
    * If the name actually has a ".", you must escape it (call NetcdfFile.escapeName(varname))
+   * Any other chars may also be escaped, as they are removed before testing.
    *
    * @param fullNameEscaped eg "/group/subgroup/name1.name2.name".
    * @return Variable or null if not found.
@@ -1045,14 +1028,14 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
       vars = fullNameEscaped.substring(pos + 1);
       StringTokenizer stoke = new StringTokenizer(groups, "/");
       while (stoke.hasMoreTokens()) {
-        String token = stoke.nextToken();
+        String token = NetcdfFile.unescapeName( stoke.nextToken());
         g = g.findGroup(token);
         if (g == null) return null;
       }
     }
 
     // heres var.var - tokenize respecting the possible escaped '.'
-    List<String> snames = NetcdfFile.tokenizeEscapedName(vars);
+    List<String> snames = EscapeStrings.tokenizeEscapedName(vars);
     if (snames.size() == 0) return null;
 
     String varShortName = NetcdfFile.unescapeName(snames.get(0));

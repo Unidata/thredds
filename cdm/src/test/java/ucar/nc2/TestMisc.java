@@ -33,6 +33,7 @@
 package ucar.nc2;
 
 import junit.framework.TestCase;
+import opendap.util.EscapeStrings;
 import ucar.ma2.*;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.dt.grid.GeoGrid;
@@ -67,7 +68,7 @@ public class TestMisc extends TestCase {
 
   private void testBackslashTokens(String escapedName) {
     System.out.printf("%s%n", escapedName);
-    List<String> result = ucar.nc2.NetcdfFile.tokenizeEscapedName(escapedName);
+    List<String> result = EscapeStrings.tokenizeEscapedName(escapedName);
     for (String r : result)
       System.out.printf("   %s%n", r);
     System.out.printf("%n");

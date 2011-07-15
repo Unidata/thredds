@@ -33,12 +33,12 @@
 
 package ucar.nc2;
 
+import opendap.util.EscapeStrings;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
 import ucar.ma2.Section;
 
-import java.util.StringTokenizer;
 import java.util.List;
 
 /**
@@ -78,7 +78,7 @@ public class ParsedSectionSpec {
    * @see <a href="http://www.unidata.ucar.edu/software/netcdf-java/reference/SectionSpecification.html">SectionSpecification</a>
    */
   public static ParsedSectionSpec parseVariableSection(NetcdfFile ncfile, String variableSection) throws InvalidRangeException {
-    List<String> tokes = NetcdfFile.tokenizeEscapedName(variableSection);
+    List<String> tokes = EscapeStrings.tokenizeEscapedName(variableSection);
     if (tokes.size() == 0)
       throw new IllegalArgumentException("empty sectionSpec = " + variableSection);
 
@@ -96,35 +96,33 @@ public class ParsedSectionSpec {
     return outerV;
   }
 
+  // selector := varFullNameEsc(indexSelect) or memberNameEsc(indexSelect)
   // parse variable name and index selector out of the selector String. variable name must be escaped
   private static ParsedSectionSpec parseVariableSelector(Object parent, String selector) throws InvalidRangeException {
-    String varName, indexSelect = null;
+    String varNameEsc, indexSelect = null;
 
-    // names may be escaped
-    selector = NetcdfFile.unescapeName(selector);
-
-    int pos1 = selector.indexOf('(');
-    if (pos1 < 0) { // no selector
-      varName = selector;
+    int pos1 = EscapeStrings.indexOf(selector, '(');
+    if (pos1 < 0) { // no index
+      varNameEsc = selector;
     } else {
-      varName = selector.substring(0, pos1);
-      int pos2 = selector.indexOf(')');
+      varNameEsc = selector.substring(0, pos1);
+      int pos2 = selector.indexOf(')', pos1+1);
       indexSelect = selector.substring(pos1, pos2);
     }
     if (debugSelector)
-      System.out.println(" parseVariableSection <" + selector + "> = <" + varName + ">, <" + indexSelect + ">");
+      System.out.println(" parseVariableSection <" + selector + "> = <" + varNameEsc + ">, <" + indexSelect + ">");
 
     Variable v = null;
-    if (parent instanceof NetcdfFile) {
+    if (parent instanceof NetcdfFile) { // then varNameEsc = varFullNameEsc (i.e. includes groups)
       NetcdfFile ncfile = (NetcdfFile) parent;
-      v = ncfile.findVariable(varName);
+      v = ncfile.findVariable(varNameEsc);
 
-    } else if (parent instanceof Structure) {
+    } else if (parent instanceof Structure) { // then varNameEsc = memberNameEsc (i.e. includes groups)
       Structure s = (Structure) parent;
-      v = s.findVariable(varName); // LOOK
+      v = s.findVariable( NetcdfFile.unescapeName(varNameEsc) ); // s.findVariable wants unescaped version
     }
     if (v == null)
-      throw new IllegalArgumentException(" cant find variable: " + varName + " in selector=" + selector);
+      throw new IllegalArgumentException(" cant find variable: " + varNameEsc + " in selector=" + selector);
     
     if (v.getDataType() == DataType.SEQUENCE)
       indexSelect = null; // ignore whatever was sent
@@ -160,9 +158,10 @@ public class ParsedSectionSpec {
       orgRanges = makeSpec(sb, v.getParentStructure(), orgRanges);
       sb.append('.');
     }
+
     List<Range> ranges = (orgRanges == null) ? v.getRanges() : orgRanges;
 
-    sb.append( v.isMemberOfStructure() ? NetcdfFile.escapeNameSectionSpec(v.getShortName()) : NetcdfFile.makeFullNameEscapedSectionSpec(v));
+    sb.append(v.isMemberOfStructure() ? NetcdfFile.escapeNameSectionSpec(v.getShortName()) : NetcdfFile.makeFullNameEscapedSectionSpec(v));
 
     if (!v.isVariableLength() && !v.isScalar()) { // sequences cant be sectioned
       sb.append('(');
@@ -184,9 +183,9 @@ public class ParsedSectionSpec {
   }
 
   ///////////////////////////////////////////////////////////////////////////
-  public final Variable v; // the variable
-  public final Section section; // section for this variable, filled in from variable if needed
-  public ParsedSectionSpec child;
+  public final Variable v;        // the variable
+  public final Section section;   // section for this variable, filled in from variable if needed
+  public ParsedSectionSpec child; // if not null, v is a Structure, and this is one of its members
 
   private ParsedSectionSpec(Variable v, Section section) {
     this.v = v;
@@ -194,4 +193,12 @@ public class ParsedSectionSpec {
     this.child = null;
   }
 
+  @Override
+  public String toString() {
+    return "ParsedSectionSpec{" +
+            "v=" + v.getFullName() +
+            ", section=" + section +
+            ", child=" + child +
+            '}';
+  }
 }

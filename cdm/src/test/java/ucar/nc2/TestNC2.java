@@ -68,7 +68,8 @@ public class TestNC2 {
     suite.addTest(new TestSuite(TestStructureArray.class)); //
     suite.addTest(new TestSuite(TestStructureArray2.class)); //
     suite.addTest(new TestSuite(TestCompareFileWriter.class));// */
-    
+    suite.addTest(new TestSuite(TestParsedSectionSpec.class));// */
+
     return suite;
   }
 

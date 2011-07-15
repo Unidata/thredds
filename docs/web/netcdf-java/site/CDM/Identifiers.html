@@ -93,7 +93,7 @@ where:
   stride := INTEGER
   end := INTEGER
 </pre>
-<p>So the characters in variable names that need to be escaped are<strong> ',' ':' '(' </strong><strong>')' </strong>in order to not interfere with this grammer.</p>
+<p>So the characters in variable names that need to be escaped are<strong> ',' ':' '(' ')' </strong>in order to not interfere with this grammer. Actually you could get away with just escaping the<strong> &quot;(&quot;</strong>, since you can use it as a delimiter.</p>
 <h3>cdmrFeature</h3>
 <p>The client forms requests of the form <strong>endpoint?query</strong>. The possible query parameters are:</p>
 <pre>  <strong>req</strong>=( <strong></strong><strong>capabilities</strong> | <strong>data</strong> | <strong>form | stations</strong>)

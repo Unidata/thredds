@@ -40,6 +40,7 @@
 
 package opendap.util;
 
+import javax.naming.ldap.StartTlsRequest;
 import java.net.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -288,7 +289,7 @@ for (int offset = 0; offset < length; ) {
      *
      * @param in     The string to modify.
      * @param escape The character used to signal the begining of an escape sequence.
-     * @param except If there is some escape code that should not be removed by
+     * param except If there is some escape code that should not be removed by
      *               this call (e.g., you might not want to remove spaces, %20) use this
      *               parameter to specify that code. The function will then transform all
      *               escapes except that one.
@@ -535,6 +536,9 @@ for (int offset = 0; offset < length; ) {
         return urlDecode(s);
      }
 
+
+  ///////////////////////////////////////////////////////////////
+
   /**
    * backslash escape a string
    * @param x escape this
@@ -591,6 +595,44 @@ for (int offset = 0; offset < length; ) {
     return sb.toString();
   }
 
+
+  /**
+   * Tokenize an escaped name using "." as delimiter, skipping "\."
+   *
+   * @param escapedName an escaped name
+   * @return list of tokens
+   */
+  public static List<String> tokenizeEscapedName(String escapedName) {
+    List<String> result = new ArrayList<String>();
+    int pos = 0;
+    int start = 0;
+    while (true) {
+      pos = escapedName.indexOf(sep, pos+1);
+      if (pos <= 0) break;
+      if ((pos > 0) && escapedName.charAt(pos-1) != '\\') {
+        result.add(escapedName.substring(start, pos));
+        start = pos+1;
+      }
+    }
+    result.add(escapedName.substring(start, escapedName.length())); // remaining
+    return result;
+  }
+  static private final int sep = '.';
+
+  /**
+   * Find first occurence of char c in escapedName, excluding escaped c.
+   * @param escapedName search in this string
+   * @param c for this char but not \\char
+   * @return  pos in string, or -1
+   */
+  public static int indexOf(String escapedName, char c) {
+    int pos = 0;
+    while (true) {
+      pos = escapedName.indexOf(c, pos+1);
+      if (pos <= 0) return pos;
+      if ((pos > 0) && escapedName.charAt(pos-1) != '\\') return pos;
+    }
+  }
 
     public static void mainOld(String[] args) throws Exception
     {
