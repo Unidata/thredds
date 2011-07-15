@@ -529,7 +529,7 @@ public class TestCeParser extends TestCase
         int nconstraints = constraintlist.length;
         for (int i = 0; i < nconstraints; i++) {
 	    // Parse the DDS to produce a ServerDDS object
-	    ServerDDS sdds = new ServerDDS(new opendap.test.dts.dts.test_ServerFactory());
+	    ServerDDS sdds = new ServerDDS(new opendap.test.dts.test_ServerFactory());
 	    StringBufferInputStream teststream = new StringBufferInputStream(testDDS);
 	    if(!sdds.parse(teststream))
 	        throw new ParseException("Cannot parse DDS");

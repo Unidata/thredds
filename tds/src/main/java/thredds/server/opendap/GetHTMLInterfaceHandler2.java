@@ -30,9 +30,9 @@ import opendap.dap.DAS;
 import opendap.dap.DDS;
 import opendap.Server.ServerDDS;
 import opendap.dap.parsers.ParseException;
-import opendap.servers.www.jscriptCore;
-import opendap.servers.www.wwwFactory;
-import opendap.servers.www.wwwOutPut;
+import opendap.servlet.www.jscriptCore;
+import opendap.servlet.www.wwwFactory;
+import opendap.servlet.www.wwwOutPut;
 import thredds.servlet.ThreddsConfig;
 
 import javax.servlet.http.HttpServletRequest;
@@ -64,7 +64,7 @@ public class GetHTMLInterfaceHandler2
      * and javascript code that allows the user to use their browser
      * to select variables and build constraints for a data request.
      * The DDS and DAS for the data set are used to build the form. The
-     * types in opendap.servers.www are integral to the form generation.
+     * types in opendap.servlet.www are integral to the form generation.
      *
      * @param request  The <code>HttpServletRequest</code> from the client.
      * @param response The <code>HttpServletResponse</code> for the client.
@@ -73,7 +73,7 @@ public class GetHTMLInterfaceHandler2
      * @param myDAS
      * @throws opendap.dap.DAP2Exception
      * @throws opendap.dap.parsers.ParseException
-     * @see opendap.servers.www.wwwFactory
+     * @see opendap.servlet.www.wwwFactory
      */
     public void sendDataRequestForm(HttpServletRequest request,
                                     HttpServletResponse response,
@@ -196,7 +196,7 @@ public class GetHTMLInterfaceHandler2
     /**
      * ************************************************************************
      * Gets a DDS for the specified data set and builds it using the class
-     * factory in the package <b>opendap.servers.www</b>.
+     * factory in the package <b>opendap.servlet.www</b>.
      * <p/>
      * Currently this method uses a deprecated API to perform a translation
      * of DDS types. This is a known problem, and as soon as an alternate
@@ -206,7 +206,7 @@ public class GetHTMLInterfaceHandler2
      * @param dataSet A <code>String</code> containing the data set name.
 3     * @return A DDS object built using the www interface class factory.
      * @see opendap.dap.DDS
-     * @see opendap.servers.www.wwwFactory
+     * @see opendap.servlet.www.wwwFactory
      */
     public DDS getWebFormDDS(String dataSet, ServerDDS sDDS) // changed jc
             throws DAP2Exception, ParseException {
