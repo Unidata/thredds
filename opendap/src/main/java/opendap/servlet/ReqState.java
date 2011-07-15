@@ -125,8 +125,8 @@ public class ReqState {
 
     public ReqState(HttpServletRequest myRequest, HttpServletResponse response,
                     ServletConfig sc,
-                    String serverClassName, String decodedurl, String decodedquery) throws BadURLException {
-
+                    String serverClassName, String decodedurl, String decodedquery) throws BadURLException
+    {
         this.myServletConfig = sc;
         this.myHttpRequest = myRequest;
         this.response = response;
@@ -136,9 +136,7 @@ public class ReqState {
         // If there was simply no constraint then getQuery() should have returned null
         if (this.CE == null) this.CE = "";
 
-
         processDodsURL();
-
 
         String servletPath = myHttpRequest.getServletPath();
         defaultDDXcache = this.myServletConfig.getServletContext().getRealPath("datasets" +

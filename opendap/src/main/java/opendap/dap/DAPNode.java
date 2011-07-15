@@ -203,7 +203,7 @@ public class DAPNode implements Cloneable, Serializable
      */
     public final void setEncodedName(String n)
     {
-	    _nameEncoded = n;
+	 _nameEncoded = n;
         _name = EscapeStrings.unEscapeDAPIdentifier(n);
         //setClearName(EscapeStrings.www2id(n));
     }

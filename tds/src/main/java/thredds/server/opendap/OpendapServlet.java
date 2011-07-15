@@ -763,6 +763,7 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
   // utils
   /**
    * @param request
+   * @param response
    * @return the request state
    */
   protected ReqState getRequestState(HttpServletRequest request, HttpServletResponse response)
@@ -771,7 +772,7 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
       // The url and query strings will come to us in encoded form
       // (see HTTPmethod.newMethod())
       String baseurl = request.getRequestURL().toString();
-      baseurl = EscapeStrings.escapeURL(baseurl);
+      baseurl = EscapeStrings.unescapeURL(baseurl);
 
       String query = request.getQueryString();
       query = EscapeStrings.unescapeURLQuery(query);

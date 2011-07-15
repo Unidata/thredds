@@ -61,7 +61,7 @@ public class Variable implements VariableIF, ProxyReader {
 
   protected NetcdfFile ncfile; // physical container for this Variable; where the I/O happens. may be null if Variable is self contained.
   protected Group group; // logical container for this Variable. may not be null.
-  protected String shortName; // may not be blank
+  protected String shortName; // may not be blank; must not be escaped
   protected int[] shape;
   protected Section shapeAsSection;  // derived from the shape, immutable; used for every read, deferred creation
 

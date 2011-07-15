@@ -953,7 +953,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
       opendap.dap.DArrayDimension dad = (opendap.dap.DArrayDimension) enumerate.nextElement();
       String name = dad.getEncodedName();
       if (name != null)
-        name = StringUtil.unescape(dad.getEncodedName());
+        name = StringUtil.unescape(name);
 
       Dimension myd;
 
