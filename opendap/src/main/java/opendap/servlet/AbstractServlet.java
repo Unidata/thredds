@@ -50,6 +50,7 @@ import opendap.dap.*;
 import opendap.Server.*;
 import opendap.dap.parsers.ParseException;
 import opendap.util.Debug;
+import opendap.util.EscapeStrings;
 
 /**
  * AbstractServlet is the base servlet class for an OPeNDAP
@@ -1677,17 +1678,24 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
    * @param request
    * @return the request state
    */
-  protected ReqState getRequestState(HttpServletRequest request, HttpServletResponse response) {
+  protected ReqState getRequestState(HttpServletRequest request, HttpServletResponse response)
+  {
+      ReqState rs = null;
+      // The url and query strings will come to us in encoded form
+      // (see HTTPmethod.newMethod())
+      String baseurl = request.getRequestURL().toString();
+      baseurl = EscapeStrings.escapeURL(baseurl);
 
-    ReqState rs = null;
+      String query = request.getQueryString();
+      query = EscapeStrings.unescapeURLQuery(query);
 
-    try {
-      rs = new ReqState(request, response, getServletConfig(), getServerName(), request.getRequestURI(), request.getQueryString());
-    } catch (BadURLException bue) {
-      rs = null;
-    }
+      try {
+        rs = new ReqState(request, response, getServletConfig(), getServerName(), baseurl, query);
+      } catch (BadURLException bue) {
+        rs = null;
+      }
 
-    return rs;
+      return rs;
   }
   //**************************************************************************
 

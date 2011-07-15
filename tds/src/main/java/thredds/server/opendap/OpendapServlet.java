@@ -669,12 +669,8 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
     return this.getClass().getName();
   }
 
-  /**
-   * @param request
-   * @param response
-   * @return the request state
-   */
-  protected ReqState getRequestState(HttpServletRequest request, HttpServletResponse response) {
+
+  /*protected ReqState getRequestState(HttpServletRequest request, HttpServletResponse response) {
 
     ReqState rs = null;
     // The url and query strings will come to us in encoded form
@@ -694,7 +690,7 @@ public class OpendapServlet extends javax.servlet.http.HttpServlet {
     }
 
     return rs;
-  }
+  }*/
 
     /**
    * ************************************************************************
