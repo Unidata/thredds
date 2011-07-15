@@ -45,8 +45,8 @@ import java.net.MalformedURLException;
 import java.util.*;
 
 import opendap.dap.*;
-import opendap.servers.ascii.asciiFactory;
-import opendap.servers.ascii.toASCII;
+import opendap.servlet.ascii.asciiFactory;
+import opendap.servlet.ascii.toASCII;
 import opendap.util.Debug;
 import opendap.dap.parsers.ParseException;
 
