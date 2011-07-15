@@ -109,7 +109,7 @@ public class NcDDS extends ServerDDS {
                   Variable gv = coordvars.get(dim.getName());
                   if (gv == null)
                      isgridarray = false;
-                }
+		}
             }
             if(isgridarray)   {
                 gridarrays.put(v.getName(),v);
