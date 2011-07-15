@@ -41,6 +41,8 @@
 package opendap.util;
 
 import java.net.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * User: ndp
@@ -533,8 +535,63 @@ for (int offset = 0; offset < length; ) {
         return urlDecode(s);
      }
 
+  /**
+   * backslash escape a string
+   * @param x escape this
+   * @param reservedChars these chars get a backslash in front of them
+   * @return escaped string
+   */
+  static public String backslashEscape(String x, String reservedChars) {
+    boolean ok = true;
+    for (int pos = 0; pos < x.length(); pos++) {
+      char c = x.charAt(pos);
+      if (reservedChars.indexOf(c) >= 0) {
+        ok = false;
+        break;
+      }
+    }
+    if (ok) return x;
 
-    public static void main(String[] args) throws Exception
+    // gotta do it
+    StringBuilder sb = new StringBuilder(x);
+    for (int pos = 0; pos < sb.length(); pos++) {
+      char c = sb.charAt(pos);
+      if (reservedChars.indexOf(c) < 0) {
+        continue;
+      }
+
+      sb.setCharAt(pos, '\\');
+      pos++;
+      sb.insert(pos, c);
+      pos++;
+    }
+
+    return sb.toString();
+  }
+
+  /**
+   * backslash unescape a string
+   * @param x unescape this
+   * @return string with \c -> c
+   */
+  static public String backslashUnescape(String x) {
+    if (!x.contains("\\")) return x;
+
+    // gotta do it
+    StringBuilder sb = new StringBuilder(x.length());
+    for (int pos = 0; pos < x.length(); pos++) {
+      char c = x.charAt(pos);
+      if (c == '\\') {
+        c = x.charAt(++pos); // skip backslash, get next char
+      }
+      sb.append(c);
+    }
+
+    return sb.toString();
+  }
+
+
+    public static void mainOld(String[] args) throws Exception
     {
         /* Ignore
 

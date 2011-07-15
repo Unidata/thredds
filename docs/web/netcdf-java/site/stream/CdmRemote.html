@@ -13,10 +13,10 @@ dl {margin: 10px 5px 5px 15px;)
 
 <body>
 <h1>CDM Remote Web Service (Experimental)</h1>
-<p>CDM Remote is an experimental web service implemented in the CDM library (client) and TDS (server), providing remote access to CDM datasets, using <a href="NcStream.html">ncstream</a> as the on-the-wire protocol. It provides access at the  NetcdfFile and FeatureDataset  levels of the CDM API., so there are two levels of services: </p>
+<p>CDM Remote is an experimental web service implemented in the CDM library (client) and TDS (server), providing remote access to CDM datasets, using <a href="NcStream.html">ncstream</a> as the on-the-wire protocol. It provides access at the  NetcdfFile and FeatureDataset  levels of the CDM API, so there are two levels of services: </p>
 <ol>
   <li><em><strong>CdmRemote</strong> </em>provides  index subsetting on remote CDM datasets, with the same functionality that <strong>NetcdfFile</strong> provides for CDM local datasets and <strong>DODSNetcdfFile</strong> provides for remote OPeNDAP datasets. <em><strong>CdmRemote</strong></em> supports the full CDM data model.</li>
-  <li><em><strong>CdmrFeature</strong></em> provides coordinate subsetting on remote CDM Feature Datasets, with similar functionality to <em>WCS</em> and Unidata's experimental <em>NetCDF Subset Service (NCSS)</em>. Currently (version 4.2) it provides a remote API for <strong><em>Point</em></strong> and <strong><em>StationTimeSeries</em></strong> Feature Datasets.</li>
+  <li><em><strong>CdmrFeature</strong></em> provides coordinate subsetting on remote CDM Feature Datasets, with similar functionality to WCS and Unidata's experimental <em>NetCDF Subset Service (NCSS)</em>. Currently (version 4.2) it provides a remote API for <strong><em>Point</em></strong> and <strong><em>StationTimeSeries</em></strong> Feature Datasets.</li>
 </ol>
 <p>The CDM Remote services and protocol are  experimental and should not be used outside of the CDM stack for now.</p>
 <h2><a name="cdmremote" id="cdmremote"></a>CdmRemote Protocol (Data Access and Coordinate Systems) </h2>
@@ -26,7 +26,7 @@ dl {margin: 10px 5px 5px 15px;)
 where:
   vars := varspec | varspec[',' varspec]
   varspec := varname[subsetSpec]
-  varname := valid variable name
+  varname := escaped variable name
   subsetSpec := '(' fortran-90 arraySpec ')'
 
   fortran-90 arraySpec := dim | dim ',' dims
@@ -37,10 +37,11 @@ where:
   end := INTEGER
 </pre>
 <ul>
-  <li>request names are case-insensitive</li>
-  <li>var parameter only used for data request</li>
-  <li>varnames are case-sensitive and must be UTF8-escape encoded</li>
-  <li> literals are in bold</li>
+  <li>Request parameter values  are case-insensitive</li>
+  <li>The var parameter is only used for data requests (req=data)</li>
+  <li>The variable names are case-sensitive and must be <a href="../CDM/Identifiers.html#cdmremote">backslash-escaped</a></li>
+  <li>Nonterminals are in lower case, terminals are in upper case, literals are in single quotes. </li>
+  <li>Optional components are enclosed between square braces '[' and ']'.</li>
 </ul>
 <p>Example service requests are:</p>
 <table width="1028" border="1">
@@ -71,7 +72,7 @@ where:
 </table>
 <ul>
   <li>Data request  uses Section specification (same as Fortran-90 array notation) to ask for a subset in index space.</li>
-  <li> Variable names must be UTF8-escape encoded. In Java we use URLEncode.encode() and URLDecode().decode. This creates a <em><strong>application/x-www-form-urlencoded</strong></em> MIME encoding.</li>
+  <li> Variable names are case-sensitive and must be <a href="../CDM/Identifiers.html#cdmremote">backslash-escaped</a></li>
   <li>Capabilities response indicates which (if any) feature types the dataset can be opened as, along with the URLs of those services. TBD.</li>
   <li>The protobuf messages are defined by <strong>thredds\cdm\src\main\java\ucar\nc2\stream\ncStream.proto</strong>.</li>
 </ul>
@@ -404,7 +405,7 @@ CompositeStationFeatureIterator open datasetQ:\station\ldm/metar/Surface_METAR_2
 </p>
 <hr width="100%" />
 <address>
-<img src="../nc.gif" alt="" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated Nov 2010
+<img src="../nc.gif" alt="" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated July 2011
 </address>
 <p>&nbsp;</p>
 </body>

@@ -103,9 +103,13 @@ public class NcDDS extends ServerDDS {
             Iterator iter = v.getDimensions().iterator();
             while (isgridarray && iter.hasNext()) {
                 Dimension dim = (Dimension) iter.next();
-                Variable gv = coordvars.get(dim.getName());
-                if (gv == null)
-                   isgridarray = false;
+                if (dim.getName() == null)
+                  isgridarray = false;
+                else {
+                  Variable gv = coordvars.get(dim.getName());
+                  if (gv == null)
+                     isgridarray = false;
+                }
             }
             if(isgridarray)   {
                 gridarrays.put(v.getName(),v);

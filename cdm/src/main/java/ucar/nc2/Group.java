@@ -145,13 +145,12 @@ public class Group {
 
   /**
    * Retrieve the Group with the specified (short) name.
-   * @param groupShortName short name of the nested group you are looking for. May be escaped.
-   * @see NetcdfFile#unescapeName
+   * @param groupShortName short name of the nested group you are looking for.
    * @return the Group, or null if not found
    */
   public Group findGroup(String groupShortName) {
     if ( groupShortName == null) return null;
-    groupShortName = NetcdfFile.unescapeName(groupShortName);
+    // groupShortName = NetcdfFile.unescapeName(groupShortName);
 
     for (Group group : groups) {
       if (groupShortName.equals(group.getShortName()))
@@ -181,7 +180,7 @@ public class Group {
    */
   public Dimension findDimension(String name) {
     if (name == null) return null;
-    name = NetcdfFile.unescapeName(name);
+    // name = NetcdfFile.unescapeName(name);
     Dimension d = findDimensionLocal( name);
     if (d != null) return d;
 
@@ -198,7 +197,7 @@ public class Group {
    */
   public Dimension findDimensionLocal(String name) {
     if (name == null) return null;
-    name =  NetcdfFile.unescapeName(name);
+    // name =  NetcdfFile.unescapeName(name);
     for (Dimension d : dimensions) {
       if (name.equals(d.getName()))
         return d;
@@ -216,12 +215,12 @@ public class Group {
   /**
    * Find an Attribute in this Group by its name.
    *
-   * @param name the name of the attribute. may be escaped
+   * @param name the name of the attribute.
    * @return the attribute, or null if not found
    */
   public Attribute findAttribute(String name) {
     if (name == null) return null;
-    name =  NetcdfFile.unescapeName(name);
+    // name = NetcdfFile.unescapeName(name);
 
     for (Attribute a : attributes) {
       if (name.equals(a.getName()))
@@ -238,7 +237,7 @@ public class Group {
    */
   public Attribute findAttributeIgnoreCase(String name) {
     if (name == null) return null;
-    name =  NetcdfFile.unescapeName(name);
+    //name =  NetcdfFile.unescapeName(name);
     for (Attribute a : attributes) {
       if (name.equalsIgnoreCase(a.getName()))
         return a;
@@ -255,7 +254,7 @@ public class Group {
    */
   public EnumTypedef findEnumeration(String name) {
     if (name == null) return null;
-    name =  NetcdfFile.unescapeName(name); // LOOK: why ??
+    // name =  NetcdfFile.unescapeName(name);
     for (EnumTypedef d : enumTypedefs) {
       if (name.equals(d.getName()))
         return d;

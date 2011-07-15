@@ -39,11 +39,8 @@ import org.apache.commons.httpclient.URIException;
 import org.apache.commons.httpclient.util.URIUtil;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URL;
-import java.net.URISyntaxException;
+import java.net.*;
 import java.io.File;
-import java.net.URLEncoder;
 
 /**
  * Networking utilities.
@@ -59,7 +56,19 @@ public class URLnaming {
               + (split[1] == null ? "" : '?' + EscapeStrings.escapeURLQuery(split[1]));
   }
 
-  public static String escapeQueryOld(String urlString) {
+  public static String escapeQueryNew(String urlString) {
+    urlString = urlString.trim();
+    URI uri = null;
+    try {
+      uri = new URI(urlString);
+      return uri.toASCIIString();
+    } catch (URISyntaxException e) {
+      e.printStackTrace();
+      return "";
+    }
+  }
+
+  public static String escapeQueryURIUtil(String urlString) {
     urlString = urlString.trim();
     int posQ = urlString.indexOf("?");
     if ((posQ > 0) && (posQ < urlString.length() - 2)) {
@@ -94,13 +103,29 @@ public class URLnaming {
   }
 
   public static String unescapeQueryDODS(String urlString) {
-
     urlString = urlString.trim();
     int posQ = urlString.indexOf("?");
-    if ((posQ > 0) && (posQ < urlString.length() - 2)) {
+    if ((posQ >= 0) && (posQ < urlString.length() - 2)) {
       String path = urlString.substring(0,posQ);
       String query = urlString.substring(posQ+1);
       return path + "?" + EscapeStrings.unescapeURLQuery(query);
+    }
+    return urlString;
+  }
+
+
+  public static String unescapeQueryDecoder(String urlString) {
+
+    urlString = urlString.trim();
+    int posQ = urlString.indexOf("?");
+    if ((posQ >= 0) && (posQ < urlString.length() - 2)) {
+      String path = urlString.substring(0,posQ);
+      String query = urlString.substring(posQ+1);
+      try {
+        return path + "?" + URLDecoder.decode(query, "UTF-8");
+      } catch (UnsupportedEncodingException e) {
+        e.printStackTrace();
+      }
     }
     return urlString;
   }
@@ -276,34 +301,30 @@ public class URLnaming {
     URI uri = new URI(uriString);
   }
 
-  private static void check(String s) {
+  private static void checkEsc(String s) {
     System.out.printf("org =            %s%n", s);
     System.out.printf("escapeQuery    = %s%n", escapeQuery(s));
-    System.out.printf("escapeQueryOld = %s%n", escapeQueryOld(s));
+    System.out.printf("escapeQueryNew = %s%n", escapeQueryNew(s));
+    System.out.printf("escQueryURIUtil= %s%n", escapeQueryURIUtil(s));
     System.out.printf("escQueryEncoder= %s%n", escapeQueryEncoder(s));
+    System.out.printf("unescQueryDODS = %s%n", unescapeQueryDODS(escapeQuery(s)));
     System.out.printf("%n");
+  }
 
-    String esc = escapeQuery(s);
-    System.out.printf("esc =            %s%n", esc);
-    System.out.printf("unescQueryDODS = %s%n", unescapeQueryDODS(esc));
+  private static void checkUnEsc(String esc) {
+    System.out.printf("esc =             %s%n", esc);
+    System.out.printf("unescQueryDODS  = %s%n", unescapeQueryDODS(esc));
+    System.out.printf("unescapeDecoder = %s%n", unescapeQueryDecoder(esc));
+    System.out.printf("escapeQuery     = %s%n", escapeQuery(unescapeQueryDODS(esc)));
     System.out.printf("%n");
   }
 
   public static void main(String args[]) throws URISyntaxException {
-    /* String uriString = "http://test.opendap.org:8080/dods/dts/test.53.dods?types[0:1:9]";
-    URI uri = new URI(uriString);
-    System.out.printf("uri = %s%n", uri);
-    System.out.printf("uri.toASCIIString = %s%n", uri.toASCIIString());
-    System.out.printf("escapeQueryNew = %s%n", escapeQueryNew(uriString));
-    System.out.printf("escapeQueryOld = %s%n", escapeQuery(uriString)); */
+    checkEsc("/thredds/dodsC/fmrc/FNMOC/COAMPS/Europe/FNMOC-COAMPS-Europe_best.ncd.dods?relative_vorticity.relative_vorticity[0:0][0:0][0:185][0:300]");
+    checkEsc("path?quesry1,query2");
 
-    check("/thredds/dodsC/fmrc/FNMOC/COAMPS/Europe/FNMOC-COAMPS-Europe_best.ncd.dods?relative_vorticity.relative_vorticity[0:0][0:0][0:185][0:300]");
-    check("path?quesry1,query2");
-
-    String esc = "/thredds/dodsC/satellite/SOUND-VIS/HI-NATIONAL_10km/20110523/HI-NATIONAL_10km_SOUND-VIS_20110523_0024.gini.dods?VIS%5fsounder.VIS%5fsounder[0:0][0:5:1069][0:5:1469]";
-    System.out.printf("esc =            %s%n", esc);
-    System.out.printf("unescQueryDODS = %s%n", unescapeQueryDODS(esc));
-    System.out.printf("%n");
+    checkUnEsc("?stn%3DKBUF%26time_start%3D2011-07-07T05%3A22%3A39%26time_end%3D2011-07-08T14%3A42%3A39");
+    checkUnEsc("/thredds/dodsC/fmrc/FNMOC/COAMPS/Europe/FNMOC-COAMPS-Europe_best.ncd.dods?relative_vorticity.relative_vorticity%5b0:0%5d%5b0:0%5d%5b0:185%5d%5b0:300%5d");
   }
 
 

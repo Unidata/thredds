@@ -3,7 +3,10 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Changes in version 4.2:
- 26: (2011-07-14)
+ 26: (2011-07-xx)
+  NcDDS was assuming a dimension always has a name.
+  Switch to backslash escaping for CDM objects. Remove superfluous unescaping.
+  NcMLReader has incredible isVariableLength-"false" bug, how did anything work?
   String.unescape() handle %x at the end of string, eg "/thredds/dodsC/testdods/coads_climatology.nc.dods?SST.SST%5"
   NetcdfFile.escape/unescape - standard % escaping using URLEncoder.encode/decode
   NetcdfFile.makeValidCdmObjectName() - dont allow trail.lead spaces or "/"

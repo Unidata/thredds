@@ -46,6 +46,7 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.List;
 
 /**
  * misc testing
@@ -54,6 +55,23 @@ import java.util.Date;
  * @since May 13, 2009
  */
 public class TestMisc extends TestCase {
+
+  public void testBackslashTokens() {
+    testBackslashTokens("group/name.member.mom");
+    testBackslashTokens("var\\.name.member.mom");
+    testBackslashTokens("var\\.name.member.mom\\");
+    testBackslashTokens("var\\.name.member.mom.");
+    testBackslashTokens(".var\\.name.member.mom.");
+    testBackslashTokens("...mom.");
+  }
+
+  private void testBackslashTokens(String escapedName) {
+    System.out.printf("%s%n", escapedName);
+    List<String> result = ucar.nc2.NetcdfFile.tokenizeEscapedName(escapedName);
+    for (String r : result)
+      System.out.printf("   %s%n", r);
+    System.out.printf("%n");
+  }
 
   public void testCompareLongs() {
 

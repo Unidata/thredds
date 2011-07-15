@@ -38,45 +38,60 @@ import opendap.util.EscapeStrings;
 import org.apache.commons.httpclient.HttpMethodBase;
 import org.apache.commons.httpclient.methods.GetMethod;
 
-import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
-public class TestEncode extends TestCase
-{
-    final String TITLE = "URL Encode Tests";
+public class TestEncode extends TestCase {
+  final String TITLE = "URL Encode Tests";
 
-    public TestEncode(String name, String testdir) {
-        super(name);
-    }
-    
-    public TestEncode(String name) {
-        super(name);
-    }
+  public TestEncode(String name, String testdir) {
+    super(name);
+  }
 
-    public void testEncode() throws Exception
-    {
-        for(char c: " !\"#$%&'()*+,-./0123456789:;<=>?@[\\]^_`{|}~".toCharArray()) {
-            String url = "http://localhost:8080/thredds/"+c;
-            try {
-            HttpMethodBase cmd = new GetMethod(url);
-            } catch (Exception e) {
-                System.err.printf("fail: c=|%c|\t%s\n",c,e.toString());
-            }
-        }
-    }
+  public TestEncode(String name) {
+    super(name);
+  }
 
-    public void testOGC() throws Exception
-    {
-        for(char c: (EscapeStrings.asciiAlphaNumeric + " !\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~").toCharArray()) {
-            String encoded = EscapeStrings.escapeOGC(""+c);
-            System.err.printf("|%c|=|%s|\n",c,encoded);
-        }
+  public void testEncode() throws Exception {
+    for (char c : " !\"#$%&'()*+,-./0123456789:;<=>?@[\\]^_`{|}~".toCharArray()) {
+      String url = "http://localhost:8080/thredds/" + c;
+      try {
+        HttpMethodBase cmd = new GetMethod(url);
+      } catch (Exception e) {
+        System.err.printf("fail: c=|%c|\t%s\n", c, e.toString());
+      }
     }
+  }
 
-    public static void main(String args[]) throws Exception {
-        TestEncode test = new TestEncode("TestEncode");
-        //test.testEncode();
-        test.testOGC();
+  public void testOGC() throws Exception {
+    for (char c : (EscapeStrings.asciiAlphaNumeric + " !\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~").toCharArray()) {
+      String encoded = EscapeStrings.escapeOGC("" + c);
+      System.err.printf("|%c|=|%s|\n", c, encoded);
     }
+  }
+
+
+  public static void testB(String x) {
+    System.out.printf("org ==   %s%n", x);
+    System.out.printf("esc ==   %s%n", EscapeStrings.backslashEscape(x, ".\\"));
+    System.out.printf("unesc == %s%n%n", EscapeStrings.backslashUnescape(EscapeStrings.backslashEscape(x, ".\\")));
+    assert x.equals(EscapeStrings.backslashUnescape(EscapeStrings.backslashEscape(x, ".\\")));
+  }
+
+
+  public void testBackslashEscape() {
+    testB("var.name");
+    testB("var..name");
+    testB("var..na\\me");
+    testB(".var..na\\me");
+    testB(".var.\\.na\\me");
+  }
+
+  public static void main(String args[]) throws Exception {
+    TestEncode test = new TestEncode("TestEncode");
+    //test.testEncode();
+    test.testOGC();
+  }
 
 }
 

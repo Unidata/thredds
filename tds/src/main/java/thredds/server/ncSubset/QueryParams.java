@@ -40,6 +40,7 @@ import ucar.unidata.geoloc.LatLonPoint;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.net.URLDecoder;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
@@ -165,7 +166,7 @@ public class QueryParams {
    * @throws java.io.IOException if I/O error
    */
   public boolean parseQuery(HttpServletRequest req, HttpServletResponse res, String[] acceptOK) throws IOException {
-    queryString = EscapeStrings.unescapeOGC(req.getQueryString());
+    queryString = URLDecoder.decode(req.getQueryString(), "UTF-8");
 
     accept = parseList(req, "accept", QueryParams.validAccept, acceptOK[0]);
     for (String ok : acceptOK) {
@@ -499,6 +500,7 @@ public class QueryParams {
   }
 
   public void writeErr(HttpServletRequest req, HttpServletResponse res, String s, int code) throws IOException {
+    log.error( "QueryParams bad request = {}", s);   // LOOK debug only
     log.info( "writeErr(): " + UsageLog.closingMessageForRequestContext(code, 0));
     res.setStatus(code);
     if (s.length() > 0) {

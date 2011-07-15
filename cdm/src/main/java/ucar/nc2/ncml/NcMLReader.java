@@ -666,7 +666,7 @@ public class NcMLReader {
         isShared = false;
 
       int len = Integer.parseInt(lengthS);
-      if ((isUnknownS != null) && isUnknownS.equalsIgnoreCase("false"))
+      if (isUnknown)
         len = Dimension.VLEN.getLength();
 
       if (debugConstruct) System.out.println(" add new dim = " + name);
