@@ -38,7 +38,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 
-package opendap.servers;
+package opendap.dts;
 
 /**
  * Test routine for the SD classes

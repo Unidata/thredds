@@ -39,7 +39,7 @@
 
 
 
-package opendap.servers;
+package opendap.dts;
 
 import opendap.Server.*;
 import opendap.dap.*;
@@ -47,31 +47,31 @@ import opendap.dap.*;
 import java.io.*;
 
 /**
- * Holds a OPeNDAP Server <code>UInt16</code> value.
+ * Holds a OPeNDAP Server <code>Structure</code> value.
  *
  * @author ndp
  * @version $Revision: 15901 $
  * @see BaseType
  */
-public class test_SDUInt16 extends SDUInt16 {
+public class test_SDStructure extends SDStructure {
 
     /**
-     * Constructs a new <code>test_SDUInt16</code>.
+     * Constructs a new <code>test_SDStructure</code>.
      */
-    public test_SDUInt16() {
+    public test_SDStructure() {
         super();
     }
 
     /**
-     * Constructs a new <code>test_SDUInt16</code> with name <code>n</code>.
+     * Constructs a new <code>test_SDStructure</code> with name <code>n</code>.
      *
      * @param n the name of the variable.
      */
-    public test_SDUInt16(String n) {
+    public test_SDStructure(String n) {
         super(n);
     }
 
-    // --------------- FileIO Interface
+// --------------- FileIO Interface
 
     /**
      * Read a value from the named dataset for this variable.
@@ -90,14 +90,17 @@ public class test_SDUInt16 extends SDUInt16 {
     public boolean read(String datasetName, Object specialO)
             throws NoSuchVariableException, IOException, EOFException {
 
-        testEngine te = (testEngine) specialO;
 
-        setValue(te.nextUint16());
+        for (int i = 0; i < elementCount(false); i++) {
+            ServerMethods sm = (ServerMethods) getVar(i);
+            if (sm.isProject())
+                sm.read(datasetName, specialO);
+        }
+
+
         setRead(true);
         return (false);
     }
-
-
 }
 
 

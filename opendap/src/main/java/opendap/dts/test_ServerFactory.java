@@ -39,7 +39,7 @@
 
 
 
-package opendap.servers;
+package opendap.dts;
 
 import opendap.dap.*;
 

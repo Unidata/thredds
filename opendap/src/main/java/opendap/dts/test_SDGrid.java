@@ -39,37 +39,35 @@
 
 
 
-package opendap.servers;
+package opendap.dts;
 
 import opendap.Server.*;
 import opendap.dap.*;
 
 import java.io.*;
 
-//import gnu.regexp.*;
-
 /**
+ * Holds a OPeNDAP Server <code>Grid</code> value.
+ *
  * @author ndp
- * @version $Revision: 22540 $
+ * @version $Revision: 15901 $
  * @see BaseType
  */
-public class test_SDString extends SDString {
-
+public class test_SDGrid extends SDGrid {
 
     /**
-     * Constructs a new <code>test_SDString</code>.
+     * Constructs a new <code>test_SDGrid</code>.
      */
-    public test_SDString() {
+    public test_SDGrid() {
         super();
-
     }
 
     /**
-     * Constructs a new <code>test_SDString</code> with name <code>n</code>.
+     * Constructs a new <code>test_SDGrid</code> with name <code>n</code>.
      *
      * @param n the name of the variable.
      */
-    public test_SDString(String n) {
+    public test_SDGrid(String n) {
         super(n);
     }
 
@@ -94,7 +92,8 @@ public class test_SDString extends SDString {
 
         testEngine te = (testEngine) specialO;
 
-        setValue(te.nextString());
+        te.loadTestGrid(datasetName, this);
+
         setRead(true);
         return (false);
     }

@@ -39,7 +39,7 @@
 
 
 
-package opendap.servers;
+package opendap.dts;
 
 import opendap.Server.*;
 import opendap.dap.*;
@@ -47,56 +47,33 @@ import opendap.dap.*;
 import java.io.*;
 
 /**
- * Holds a OPeNDAP Server <code>Array</code> value.
+ * Holds a OPeNDAP Server <code>Int32</code> value.
  *
  * @author ndp
  * @version $Revision: 15901 $
  * @see BaseType
  */
-public class test_SDArray extends SDArray {
 
-    private boolean Debug = false;
-    private int origShape[];
+public class test_SDInt32 extends SDInt32 {
+
 
     /**
-     * Constructs a new <code>test_SDArray</code>.
+     * Constructs a new <code>test_SDInt32</code>.
      */
-    public test_SDArray() {
+    public test_SDInt32() {
         super();
     }
 
     /**
-     * Constructs a new <code>test_SDArray</code> with name <code>n</code>.
+     * Constructs a new <code>test_SDInt32</code> with name <code>n</code>.
      *
      * @param n the name of the variable.
      */
-    public test_SDArray(String n) {
+    public test_SDInt32(String n) {
         super(n);
     }
 
-
-    public void cacheShape() {
-
-        origShape = new int[numDimensions()];
-
-        try {
-            for (int dim = 0; dim < numDimensions(); dim++) {
-                DArrayDimension dad = getDimension(dim);
-                origShape[dim] = dad.getSize();
-            }
-        }
-        catch (InvalidDimensionException e) {
-            System.out.println("ERROR! Unresolved problem in test_SDArray.cacheShape!");
-        }
-
-    }
-
-    public int getCachedShape(int dim) {
-        if (dim < origShape.length)
-            return (origShape[dim]);
-        else
-            return (-1);
-    }
+    // --------------- FileIO Interface
 
     /**
      * Read a value from the named dataset for this variable.
@@ -117,8 +94,7 @@ public class test_SDArray extends SDArray {
 
         testEngine te = (testEngine) specialO;
 
-        te.newLoadTestArray(datasetName, this);
-
+        setValue(te.nextInt32());
         setRead(true);
         return (false);
     }
