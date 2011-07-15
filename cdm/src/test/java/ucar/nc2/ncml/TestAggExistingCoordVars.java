@@ -38,7 +38,6 @@ import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.DateFormatter;
-import ucar.nc2.ncml.TestNcML;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -63,7 +62,7 @@ public class TestAggExistingCoordVars extends TestCase {
     Variable time = ncfile.findVariable("time");
     assert null != time;
 
-    assert time.getName().equals("time");
+    assert time.getShortName().equals("time");
     assert time.getRank() == 1;
     assert time.getSize() == 59;
     assert time.getShape()[0] == 59;
@@ -117,7 +116,7 @@ public class TestAggExistingCoordVars extends TestCase {
     Variable time = ncfile.findVariable("time");
     assert null != time;
 
-    assert time.getName().equals("time");
+    assert time.getShortName().equals("time");
     assert time.getRank() == 1;
     assert time.getSize() == 3;
     assert time.getShape()[0] == 3;
@@ -162,7 +161,7 @@ public class TestAggExistingCoordVars extends TestCase {
     assert testAtt != null;
     assert testAtt.equals("timeAtt");
 
-    assert time.getName().equals("time");
+    assert time.getShortName().equals("time");
     assert time.getRank() == 1;
     assert time.getSize() == 59;
     assert time.getShape()[0] == 59;
@@ -198,7 +197,7 @@ public class TestAggExistingCoordVars extends TestCase {
     Variable time = ncfile.findVariable("time");
     assert null != time;
 
-    assert time.getName().equals("time");
+    assert time.getShortName().equals("time");
     assert time.getRank() == 1;
     assert time.getSize() == 3;
     assert time.getShape()[0] == 3;
@@ -237,7 +236,7 @@ public class TestAggExistingCoordVars extends TestCase {
     Variable time = ncfile.findVariable("time");
     assert null != time;
 
-    assert time.getName().equals("time");
+    assert time.getShortName().equals("time");
     assert time.getRank() == 1;
     assert time.getSize() == 3;
     assert time.getShape()[0] == 3;
@@ -279,7 +278,7 @@ public class TestAggExistingCoordVars extends TestCase {
     Variable time = ncfile.findVariable("time");
     assert null != time;
 
-    assert time.getName().equals("time");
+    assert time.getShortName().equals("time");
     assert time.getRank() == 1;
     assert time.getSize() == 3;
     assert time.getShape()[0] == 3;
@@ -327,7 +326,7 @@ public class TestAggExistingCoordVars extends TestCase {
     Variable time = ncfile.findVariable("time");
     assert null != time;
 
-    assert time.getName().equals("time");
+    assert time.getShortName().equals("time");
     assert time.getRank() == 1;
     assert time.getSize() == 59;
     assert time.getShape()[0] == 59;

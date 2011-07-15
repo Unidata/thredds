@@ -96,7 +96,7 @@ public abstract class TypedDatasetImpl implements TypedDataset {
     Iterator iter = dataVariables.iterator();
     while (iter.hasNext()) {
       VariableSimpleIF v = (VariableSimpleIF) iter.next();
-      if (v.getName().equals( varName) )
+      if (v.getShortName().equals( varName) )
         iter.remove();
     }
   }

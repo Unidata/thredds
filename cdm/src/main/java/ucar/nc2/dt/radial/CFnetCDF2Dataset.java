@@ -474,10 +474,10 @@ public class CFnetCDF2Dataset extends RadialDatasetSweepAdapter implements Typed
          */
         private CFRadial2Variable(NetcdfDataset nds, VariableSimpleIF v,
                                   Variable v0) {
-            super(v.getName(), v0.getAttributes());
+            super(v.getShortName(), v0.getAttributes());
 
             sweeps = new ArrayList();
-            name   = v.getName();
+            name   = v.getShortName();
 
             int[] shape  = v0.getShape();
             int   count  = v0.getRank() - 1;

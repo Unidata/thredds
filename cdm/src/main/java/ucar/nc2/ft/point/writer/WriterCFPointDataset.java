@@ -340,7 +340,7 @@ public class WriterCFPointDataset {
     } else {
       NetcdfDataset ncd = (NetcdfDataset) ncfile;
       for (VariableSimpleIF vs : pfDataset.getDataVariables()) {
-        if (ncd.findCoordinateAxis(vs.getName()) == null)
+        if (ncd.findCoordinateAxis(vs.getShortName()) == null)
           dataVars.add(vs);
       }
     }

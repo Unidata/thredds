@@ -856,7 +856,7 @@ public class H4header {
     boolean ok = true;
     for (int i = 0; i < dim.shape.length; i++)
       if (dim.shape[i] != v.getDimension(i).getLength()) {
-        if (warnings) log.info(dim.shape[i] + " != " + v.getDimension(i).getLength() + " for " + v.getName());
+        if (warnings) log.info(dim.shape[i] + " != " + v.getDimension(i).getLength() + " for " + v.getFullName());
         ok = false;
       }
 
@@ -1206,7 +1206,7 @@ public class H4header {
 
     public String detail() {
       return (used ? " " : "*") + "refno=" + refno + " tag= " + t + (extended ? " EXTENDED" : "") + " offset=" + offset + " length=" + length +
-          (((vinfo != null) && (vinfo.v != null)) ? " VV=" + vinfo.v.getName() : "");
+          (((vinfo != null) && (vinfo.v != null)) ? " VV=" + vinfo.v.getFullName() : "");
     }
 
     public String toString() {
@@ -1919,7 +1919,7 @@ public class H4header {
       StringBuilder sbuff = new StringBuilder();
       sbuff.append(used ? " " : "*").append("refno=").append(refno).append(" tag= ").append(t).append(extended ? " EXTENDED" : "")
           .append(" offset=").append(offset).append(" length=").append(length)
-          .append(((vinfo != null) && (vinfo.v != null)) ? " VV=" + vinfo.v.getName() : "");
+          .append(((vinfo != null) && (vinfo.v != null)) ? " VV=" + vinfo.v.getFullName() : "");
       sbuff.append(" class= ").append(className);
       sbuff.append(" extag= ").append(extag);
       sbuff.append(" exref= ").append(exref);

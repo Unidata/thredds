@@ -109,7 +109,7 @@ public class WcsCoverage
     for ( GridDatatype curField : this.coverage.getGrids() )
     {
       String stdName = curField.findAttValueIgnoreCase( "standard_name", "" );
-      descripSB.append( stdName.length() == 0 ? curField.getName() : stdName )
+      descripSB.append( stdName.length() == 0 ? curField.getFullName() : stdName )
               .append( "," );
 
       WcsRangeField field = new WcsRangeField( curField );

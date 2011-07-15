@@ -122,10 +122,10 @@ public class UnidataTrajectoryObsDataset extends SingleTrajectoryObsDataset  imp
       throw new IllegalStateException( "Missing height coordinate variable" );
 
     timeDimName = timeVar.getDimension(0).getName();
-    timeVarName = timeVar.getName();
-    latVarName = latVar.getName();
-    lonVarName = lonVar.getName();
-    elevVarName = elevVar.getName();
+    timeVarName = timeVar.getShortName();
+    latVarName = latVar.getShortName();
+    lonVarName = lonVar.getShortName();
+    elevVarName = elevVar.getShortName();
 
 
     Config trajConfig = new Config( "1Hz data",

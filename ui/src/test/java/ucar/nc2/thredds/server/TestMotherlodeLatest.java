@@ -139,14 +139,14 @@ public class TestMotherlodeLatest extends TimerTask {
     for (GridDatatype grid1 : gds1.getGrids()) {
 
       try {
-        GridDatatype grid2 = gds2.findGridDatatype(grid1.getName());
+        GridDatatype grid2 = gds2.findGridDatatype(grid1.getFullName());
         if (grid2 == null) {
-          System.out.printf("%s MISSING%n", grid1.getName());
+          System.out.printf("%s MISSING%n", grid1.getFullName());
           continue;
         }
         if (checkRank) {
           if (grid1.getRank() != grid2.getRank()) {
-            System.out.printf("%s rank mismatch: %s != %s%n", grid1.getName(), show(grid1), show(grid2));
+            System.out.printf("%s rank mismatch: %s != %s%n", grid1.getFullName(), show(grid1), show(grid2));
             continue;
           }
         }
@@ -154,14 +154,14 @@ public class TestMotherlodeLatest extends TimerTask {
           long size1 = new Section(grid1.getShape()).computeSize();
           long size2 = new Section(grid2.getShape()).computeSize();
           if (size1 != size2) {
-            System.out.printf("%s size mismatch: %s != %s%n", grid1.getName(), show(grid1), show(grid2));
+            System.out.printf("%s size mismatch: %s != %s%n", grid1.getFullName(), show(grid1), show(grid2));
             continue;
           }
         }
 
         if (readData) {
           if (grid1.getRank() != grid2.getRank()) {
-            System.out.printf("%s rank mismatch: %s != %s%n", grid1.getName(), show(grid1), show(grid2));
+            System.out.printf("%s rank mismatch: %s != %s%n", grid1.getFullName(), show(grid1), show(grid2));
             continue;
           }
 
@@ -172,9 +172,9 @@ public class TestMotherlodeLatest extends TimerTask {
           Array data2 = grid2.readDataSlice(timeIdx, zIndex, -1, -1);
           try {
             CompareNetcdf2 cn = new CompareNetcdf2( new Formatter(System.out), true, true, true);
-            cn.compareData(grid1.getName(), data1, data2, true);
+            cn.compareData(grid1.getFullName(), data1, data2, true);
           } catch (Throwable t) {
-            System.out.printf("Failed on %s for %s (%d,%d,-1,-1)%n:%s%n", gds1.getLocationURI(), grid1.getName(), timeIdx, zIndex, t.getMessage());
+            System.out.printf("Failed on %s for %s (%d,%d,-1,-1)%n:%s%n", gds1.getLocationURI(), grid1.getFullName(), timeIdx, zIndex, t.getMessage());
           }
         }
         
@@ -204,11 +204,11 @@ public class TestMotherlodeLatest extends TimerTask {
     for (GridDataset.Gridset gset : gds.getGridsets()) {
       GridCoordSystem gsys = gset.getGeoCoordSystem();
       CoordinateAxis1DTime time = gsys.getTimeAxis1D();
-      map.put(time.getName(), time);
+      map.put(time.getFullName(), time);
     }
 
     for (CoordinateAxis1DTime time : map.values()) {
-      System.out.printf(" %s len = %d%n", time.getName(), time.getSize());
+      System.out.printf(" %s len = %d%n", time.getFullName(), time.getSize());
     }
 
     return map;
@@ -218,7 +218,7 @@ public class TestMotherlodeLatest extends TimerTask {
   private void compare(Map<String, CoordinateAxis1DTime> map1, Map<String, CoordinateAxis1DTime> map2) throws Exception {
 
     for (CoordinateAxis1DTime time1 : map1.values()) {
-      CoordinateAxis1DTime time2 = map2.get(time1.getName());
+      CoordinateAxis1DTime time2 = map2.get(time1.getFullName());
       assert time2 != null;
       assert time1.getSize() == time2.getSize();
     }

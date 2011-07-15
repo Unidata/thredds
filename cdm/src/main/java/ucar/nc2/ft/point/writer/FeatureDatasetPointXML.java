@@ -316,10 +316,9 @@ public class FeatureDatasetPointXML {
       }
     }
 
-    @Override
-    public String getName() {
+    /* public String getName() {
       return name;
-    }
+    } */
 
     @Override
     public String getShortName() {
@@ -372,7 +371,7 @@ public class FeatureDatasetPointXML {
 
     @Override
     public int compareTo(VariableSimpleIF o) {
-      return name.compareTo(o.getName()); // ??
+      return name.compareTo(o.getShortName()); // ??
     }
   }
 

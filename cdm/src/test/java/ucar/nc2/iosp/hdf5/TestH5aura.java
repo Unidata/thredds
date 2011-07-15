@@ -90,7 +90,7 @@ public class TestH5aura extends TestCase {
 
     ArrayChar ca = (ArrayChar) A;
     String sval = ca.getString();
-    System.out.println(dset.getName());
+    System.out.println(dset.getFullName());
     System.out.println(" Length = "+sval.length());
     System.out.println(" Value = "+sval);
 
@@ -113,7 +113,7 @@ public class TestH5aura extends TestCase {
 
     ca = (ArrayChar) A;
     sval = ca.getString();
-    System.out.println(dset.getName());
+    System.out.println(dset.getFullName());
     System.out.println(" Length = "+sval.length());
     System.out.println(" Value = "+sval);
   }

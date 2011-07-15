@@ -61,7 +61,7 @@ public class VOceanSG1 extends AbstractCoordTransBuilder {
     depth_c = values[4];
 
 
-    CoordinateTransform rs = new VerticalCT("OceanSG1_Transform_" + ctv.getName(), getTransformName(), VerticalCT.Type.OceanSG1, this);
+    CoordinateTransform rs = new VerticalCT("OceanSG1_Transform_" + ctv.getFullName(), getTransformName(), VerticalCT.Type.OceanSG1, this);
     rs.addParameter(new Parameter("standard_name", getTransformName()));
     rs.addParameter(new Parameter("formula_terms", formula_terms));
     rs.addParameter((new Parameter("height_formula", "height(x,y,z) =  depth_c*s(z) + (depth([n],x,y)-depth_c)*C(z) + eta(x,y)*(1+(depth_c*s(z) + (depth([n],x,y)-depth_c)*C(z))/depth([n],x,y))")));

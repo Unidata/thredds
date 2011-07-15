@@ -136,7 +136,7 @@ public class TestOffAggDirectory extends TestCase {
   public void testAggCoordVar(NetcdfFile ncfile) throws IOException {
     Variable time = ncfile.findVariable("time");
     assert null != time;
-    assert time.getName().equals("time");
+    assert time.getShortName().equals("time");
     assert time.getRank() == 1;
     assert time.getSize() == 6;
     assert time.getShape()[0] == 6;
@@ -160,7 +160,7 @@ public class TestOffAggDirectory extends TestCase {
   public void testReadData(NetcdfFile ncfile) throws IOException {
     Variable v = ncfile.findVariable("chlorophylle_a");
     assert null != v;
-    assert v.getName().equals("chlorophylle_a");
+    assert v.getShortName().equals("chlorophylle_a");
     assert v.getRank() == 3;
     assert v.getShape()[0] == 6;
     assert v.getShape()[1] == 630;
@@ -193,7 +193,7 @@ public class TestOffAggDirectory extends TestCase {
   public void testReadData2(NetcdfFile ncfile) throws IOException {
     Variable v = ncfile.findVariable("chlorophylle_a");
     assert null != v;
-    assert v.getName().equals("chlorophylle_a");
+    assert v.getShortName().equals("chlorophylle_a");
     assert v.getRank() == 3;
     assert v.getShape()[0] == 6;
     assert v.getShape()[1] == 630;

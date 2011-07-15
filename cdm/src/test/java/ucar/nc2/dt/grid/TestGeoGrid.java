@@ -98,7 +98,7 @@ public class TestGeoGrid extends TestCase {
       }
     }
 
-    System.out.println("ok reading "+gg.getName());
+    System.out.println("ok reading "+gg.getFullName());
   }
 
   private int[] getWeights( GeoGrid gg) {
@@ -128,11 +128,11 @@ public class TestGeoGrid extends TestCase {
 
     CoordinateAxis axis = gcs.getXHorizAxis();
     assert axis != null;
-    assert axis.getName().equals("x") : axis.getName();
+    assert axis.getShortName().equals("x") : axis.getShortName();
 
     axis = gcs.getYHorizAxis();
     assert axis != null;
-    assert axis.getName().equals("y") : axis.getName();
+    assert axis.getShortName().equals("y") : axis.getShortName();
 
     dataset.close();
   }

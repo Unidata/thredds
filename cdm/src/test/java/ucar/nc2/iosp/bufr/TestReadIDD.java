@@ -88,7 +88,7 @@ public class TestReadIDD extends TestCase {
       //System.out.println("  check "+v.getName()+" "+v.getDataType());
 
       if (v.getDataType() == DataType.SEQUENCE) {
-        System.out.println("  *** seq "+v.getDataType()+" "+v.getName());
+        System.out.println("  *** seq "+v.getDataType()+" "+v.getFullName());
         for (int recno=0; recno<data.getSize(); recno++) {
           ArraySequence seq = data.getArraySequence(recno, data.findMember(v.getShortName()));
           StructureDataIterator iter = seq.getStructureDataIterator();

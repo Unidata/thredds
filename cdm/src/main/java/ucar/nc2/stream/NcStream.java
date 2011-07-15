@@ -174,7 +174,7 @@ public class NcStream {
 
   static NcStreamProto.Data encodeDataProto(Variable var, Section section) {
     NcStreamProto.Data.Builder builder = NcStreamProto.Data.newBuilder();
-    builder.setVarName(var.getName());
+    builder.setVarName(var.getFullNameEscaped());
     builder.setDataType(encodeDataType(var.getDataType()));
     builder.setSection(encodeSection(section));
     builder.setVersion(1);
@@ -508,7 +508,6 @@ public class NcStream {
       ByteBuffer bb = ByteBuffer.wrap(var.getData().toByteArray());
       Array data = Array.factory(varType, ncvar.getShape(), bb);
       ncvar.setCachedData(data, false);
-      if (false) System.out.println(" read cached data for "+ncvar.getName()+" nbytes= "+bb.limit());
     }
 
     return ncvar;

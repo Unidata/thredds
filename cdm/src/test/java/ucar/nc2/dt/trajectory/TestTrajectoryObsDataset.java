@@ -130,8 +130,8 @@ public class TestTrajectoryObsDataset extends TestCase
     VariableSimpleIF tdv = trajDs.getDataVariable( trajDsInfo.getExampleVarName() );
     assertTrue( "Variable \"" + trajDsInfo.getExampleVarName() + "\" not found.",
                 tdv != null );
-    assertTrue( "Variable name <" + tdv.getName() + "> not as expected <" + trajDsInfo.getExampleVarName() + ">.",
-                tdv.getName().equals( trajDsInfo.getExampleVarName() ) );
+    assertTrue( "Variable name <" + tdv.getShortName() + "> not as expected <" + trajDsInfo.getExampleVarName() + ">.",
+                tdv.getShortName().equals( trajDsInfo.getExampleVarName() ) );
     assertTrue( "Variable description <" + tdv.getDescription() + "> not as expected <" + trajDsInfo.getExampleVarDescription() + ">.",
                 tdv.getDescription().equals( trajDsInfo.getExampleVarDescription() ) );
     assertTrue( "Variable units <" + tdv.getUnitsString() + "> not convertable to <" + trajDsInfo.getExampleVarUnitsString() + ">.",

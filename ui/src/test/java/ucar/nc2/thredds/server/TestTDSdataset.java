@@ -65,13 +65,13 @@ public class TestTDSdataset implements Runnable {
           for (int i = 0; i < vars.size(); i++) {
             Variable v = (Variable) vars.get(i);
             long size = v.getSize() * v.getElementSize();
-            System.out.println(who+" request "+v.getName()+" size = "+size);
+            System.out.println(who+" request "+v.getFullName()+" size = "+size);
             long start = System.currentTimeMillis();
             v.read();
             long took = System.currentTimeMillis() - start;
 
             double rate = (took == 0) ? 0.0 : size/took/1000.0;
-            System.out.println(" ok==="+who+" request "+v.getName()+" size = "+size+" took="+ took+" msec = "+rate+"Mbytes/sec");
+            System.out.println(" ok==="+who+" request "+v.getFullName()+" size = "+size+" took="+ took+" msec = "+rate+"Mbytes/sec");
             total += size;
             time += took;
             if (stop.isCancel()) break;

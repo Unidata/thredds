@@ -137,15 +137,15 @@ public class CFstationObsDataset extends StationObsDatasetImpl implements TypedD
       throw new IllegalStateException("Missing station id variable");
 
     // fire up the record helper - LOOK assumes its the record dimension
-    recordHelper = new RecordDatasetHelper(ds, timeVar.getName(), null, dataVariables, parseInfo);
-    recordHelper.setStationInfo(stationIndexVar.getName(), stationDescVar == null ? null : stationDescVar.getName());
+    recordHelper = new RecordDatasetHelper(ds, timeVar.getShortName(), null, dataVariables, parseInfo);
+    recordHelper.setStationInfo(stationIndexVar.getShortName(), stationDescVar == null ? null : stationDescVar.getShortName());
 
-    removeDataVariable(stationIndexVar.getName());
-    removeDataVariable(timeVar.getName());
+    removeDataVariable(stationIndexVar.getShortName());
+    removeDataVariable(timeVar.getShortName());
     if (prevVar != null)
-      removeDataVariable(prevVar.getName());
+      removeDataVariable(prevVar.getShortName());
     if (nextVar != null)
-      removeDataVariable(nextVar.getName());
+      removeDataVariable(nextVar.getShortName());
 
     recordVar = recordHelper.recordVar;
     timeUnit = recordHelper.timeUnit;
@@ -173,11 +173,11 @@ public class CFstationObsDataset extends StationObsDatasetImpl implements TypedD
       StructureData sdata = stationData.getStructureData(i);
 
       CFStationImpl bean = new CFStationImpl(
-              sdata.getScalarString(stationIdVar.getName()),
-              sdata.getScalarString(stationDescVar.getName()),
-              sdata.convertScalarDouble(latVar.getName()),
-              sdata.convertScalarDouble(lonVar.getName()),
-              sdata.convertScalarDouble(altVar.getName())
+              sdata.getScalarString(stationIdVar.getShortName()),
+              sdata.getScalarString(stationDescVar.getShortName()),
+              sdata.convertScalarDouble(latVar.getShortName()),
+              sdata.convertScalarDouble(lonVar.getShortName()),
+              sdata.convertScalarDouble(altVar.getShortName())
       );
 
       stations.add(bean);
@@ -205,11 +205,11 @@ public class CFstationObsDataset extends StationObsDatasetImpl implements TypedD
       StructureData sdata = stationData.getStructureData(i);
 
       CFStationImpl bean = new CFStationImpl(
-              sdata.getScalarString(stationIdVar.getName()),
-              sdata.getScalarString(stationDescVar.getName()),
-              sdata.convertScalarDouble(latVar.getName()),
-              sdata.convertScalarDouble(lonVar.getName()),
-              sdata.convertScalarDouble(altVar.getName())
+              sdata.getScalarString(stationIdVar.getShortName()),
+              sdata.getScalarString(stationDescVar.getShortName()),
+              sdata.convertScalarDouble(latVar.getShortName()),
+              sdata.convertScalarDouble(lonVar.getShortName()),
+              sdata.convertScalarDouble(altVar.getShortName())
       );
 
       stations.add(bean);

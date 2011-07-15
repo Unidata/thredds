@@ -136,14 +136,14 @@ public class H5iosp extends AbstractIOServiceProvider {
     }
 
     if (vinfo.mfp != null) { // filtered
-      if (debugFilter) System.out.println("read variable filtered " + v2.getName() + " vinfo = " + vinfo);
+      if (debugFilter) System.out.println("read variable filtered " + v2.getFullName() + " vinfo = " + vinfo);
       assert vinfo.isChunked;
       ByteOrder bo = (vinfo.typeInfo.endian == 0) ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN;
       layout = new H5tiledLayoutBB(v2, wantSection, myRaf, vinfo.mfp.getFilters(), bo);
       data = IospHelper.readDataFill((LayoutBB) layout, v2.getDataType(), vinfo.getFillValue());
 
     } else { // normal case
-      if (debug) System.out.println("read variable " + v2.getName() + " vinfo = " + vinfo);
+      if (debug) System.out.println("read variable " + v2.getFullName() + " vinfo = " + vinfo);
 
       DataType readDtype = v2.getDataType();
       int elemSize = v2.getElementSize();
@@ -300,7 +300,7 @@ public class H5iosp extends AbstractIOServiceProvider {
         Layout.Chunk chunk = layout.next();
         if (chunk == null) continue;
         if (debugStructure)
-          System.out.println(" readStructure " + v.getName() + " chunk= " + chunk + " index.getElemSize= " + layout.getElemSize());
+          System.out.println(" readStructure " + v.getFullName() + " chunk= " + chunk + " index.getElemSize= " + layout.getElemSize());
         // copy bytes directly into the underlying byte[] LOOK : assumes contiguous layout ??
         myRaf.seek(chunk.getSrcPos());
         myRaf.read(byteArray, (int) chunk.getDestElem() * recsize, chunk.getNelems() * recsize);
@@ -430,11 +430,11 @@ public class H5iosp extends AbstractIOServiceProvider {
   // old way
   private StructureData readStructure(Structure s, ArrayStructureW asw, long dataPos) throws IOException, InvalidRangeException {
     StructureDataW sdata = new StructureDataW(asw.getStructureMembers());
-    if (debug) System.out.println(" readStructure " + s.getName() + " dataPos = " + dataPos);
+    if (debug) System.out.println(" readStructure " + s.getFullName() + " dataPos = " + dataPos);
 
     for (Variable v2 : s.getVariables()) {
       H5header.Vinfo vinfo = (H5header.Vinfo) v2.getSPobject();
-      if (debug) System.out.println(" readStructureMember " + v2.getName() + " vinfo = " + vinfo);
+      if (debug) System.out.println(" readStructureMember " + v2.getFullName() + " vinfo = " + vinfo);
       Array dataArray = readData(v2, dataPos + vinfo.dataPos, v2.getShapeAsSection());
       sdata.setMemberData(v2.getShortName(), dataArray);
     }

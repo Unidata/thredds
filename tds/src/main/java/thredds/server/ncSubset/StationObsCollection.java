@@ -882,7 +882,7 @@ public class StationObsCollection {
     List<VariableSimpleIF> getVars(List<String> varNames, List<VariableSimpleIF> dataVariables) {
       List<VariableSimpleIF> result = new ArrayList<VariableSimpleIF>();
       for (VariableSimpleIF v : dataVariables) {
-        if ((varNames == null) || varNames.contains(v.getName()))
+        if ((varNames == null) || varNames.contains(v.getShortName()))
           result.add(v);
       }
       return result;
@@ -907,7 +907,7 @@ public class StationObsCollection {
       } else {
         varList = new ArrayList<VariableSimpleIF>(varNames.size());
         for (VariableSimpleIF v : variableList) {
-          if (varNames.contains(v.getName()))
+          if (varNames.contains(v.getShortName()))
             varList.add(v);
         }
       }
@@ -968,7 +968,7 @@ public class StationObsCollection {
       } else {
         varList = new ArrayList<VariableSimpleIF>(varNames.size());
         for (VariableSimpleIF v : variableList) {
-          if (varNames.contains(v.getName()))
+          if (varNames.contains(v.getShortName()))
             varList.add(v);
         }
       }
@@ -1031,7 +1031,7 @@ public class StationObsCollection {
       } else {
         varList = new ArrayList<VariableSimpleIF>(varNames.size());
         for (VariableSimpleIF v : variableList) {
-          if (varNames.contains(v.getName()))
+          if (varNames.contains(v.getShortName()))
             varList.add(v);
         }
       }
@@ -1168,11 +1168,11 @@ public class StationObsCollection {
             for (VariableSimpleIF var : vars) {
               staxWriter.writeCharacters(" ");
               staxWriter.writeStartElement("data");
-              staxWriter.writeAttribute("name", var.getName());
+              staxWriter.writeAttribute("name", var.getShortName());
               if (var.getUnitsString() != null)
                 staxWriter.writeAttribute("units", var.getUnitsString());
 
-              Array sdataArray = sdata.getArray(var.getName());
+              Array sdataArray = sdata.getArray(var.getShortName());
               String ss = sdataArray.toString();
               Class elemType = sdataArray.getElementType();
               if ((elemType == String.class) || (elemType == char.class) || (elemType == StructureData.class))
@@ -1215,7 +1215,7 @@ public class StationObsCollection {
             validVars = getVars(varNames, sod.getDataVariables());
             for (VariableSimpleIF var : validVars) {
               writer.print(",");
-              writer.print(var.getName());
+              writer.print(var.getShortName());
               if (var.getUnitsString() != null)
                 writer.print("[unit=\"" + var.getUnitsString() + "\"]");
             }
@@ -1235,7 +1235,7 @@ public class StationObsCollection {
 
           for (VariableSimpleIF var : validVars) {
             writer.print(',');
-            Array sdataArray = sdata.getArray(var.getName());
+            Array sdataArray = sdata.getArray(var.getShortName());
             writer.print(sdataArray.toString());
           }
           writer.println();

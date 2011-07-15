@@ -96,7 +96,7 @@ public class TestOffExistingSync extends TestCase {
   public void testAggCoordVar(NetcdfFile ncfile, int n) throws IOException {
     Variable time = ncfile.findVariable("time");
     assert null != time;
-    assert time.getName().equals("time");
+    assert time.getShortName().equals("time");
     assert time.getRank() == 1;
     assert time.getSize() == n : time.getSize();
     assert time.getShape()[0] == n;

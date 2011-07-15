@@ -62,7 +62,7 @@ public class TestN4 extends TestCase {
     System.out.println("\n**** testGlobalHeapOverun done\n\n" + ncfile);
     List<Variable> vars = ncfile.getVariables();
     Collections.sort(vars);
-    for (Variable v : vars) System.out.println(" "+v.getName());
+    for (Variable v : vars) System.out.println(" "+v.getFullName());
     System.out.println("nvars = "+ncfile.getVariables().size());
     ncfile.close();
   }
@@ -87,7 +87,7 @@ public class TestN4 extends TestCase {
     System.out.println("\n**** testReadNetcdf4 done\n\n" + ncfile);
     List<Variable> vars = ncfile.getVariables();
     Collections.sort(vars);
-    for (Variable v : vars) System.out.println(" "+v.getName());
+    for (Variable v : vars) System.out.println(" "+v.getFullName());
     System.out.println("nvars = "+ncfile.getVariables().size());
     ncfile.close();
   }

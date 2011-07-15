@@ -108,7 +108,7 @@ public class McIDASAreaTransformBuilder extends AbstractCoordTransBuilder {
         Attribute att = ctv.findAttribute(attName);
         if (att == null) {
             throw new IllegalArgumentException(
-                "McIDASArea coordTransformVariable " + ctv.getName()
+                "McIDASArea coordTransformVariable " + ctv.getFullName()
                 + " must have " + attName + " attribute");
         }
 

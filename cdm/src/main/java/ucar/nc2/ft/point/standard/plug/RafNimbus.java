@@ -67,7 +67,7 @@ public class RafNimbus extends TableConfigurerImpl {
 
     TableConfig obsTable = new TableConfig(Table.Type.Structure, innerDim.getName());
     obsTable.dimName = innerDim.getName();
-    obsTable.time = coordAxis.getName();
+    obsTable.time = coordAxis.getFullName();
     obsTable.structName = obsIsStruct ? "record" : innerDim.getName();
     obsTable.structureType = obsIsStruct ? TableConfig.StructureType.Structure : TableConfig.StructureType.PsuedoStructure;
     CoordSysEvaluator.findCoordWithDimension(obsTable, ds, innerDim); 

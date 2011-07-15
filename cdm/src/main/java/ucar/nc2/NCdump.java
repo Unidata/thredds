@@ -416,7 +416,7 @@ public class NCdump {
     }
     List<Range> ranges = (orgRanges == null) ? v.getRanges() : orgRanges;
 
-    sb.append( v.isMemberOfStructure() ? v.getShortName() : v.getName());
+    sb.append( v.isMemberOfStructure() ? v.getShortName() : v.getFullNameEscaped());
 
     if (!v.isVariableLength() && !v.isScalar()) { // sequences cant be sectioned
       sb.append('(');
@@ -455,7 +455,7 @@ public class NCdump {
     } */
 
     ByteArrayOutputStream bos = new ByteArrayOutputStream();
-    printArray( data, v.getName(), new PrintStream( bos), ct);
+    printArray( data, v.getFullName(), new PrintStream( bos), ct);
     return bos.toString();
   }
 
@@ -472,7 +472,7 @@ public class NCdump {
     Array data = v.read(sectionSpec);
 
     ByteArrayOutputStream bos = new ByteArrayOutputStream();
-    printArray( data, v.getName(), new PrintStream( bos), ct);
+    printArray( data, v.getFullName(), new PrintStream( bos), ct);
     return bos.toString();
   }
 

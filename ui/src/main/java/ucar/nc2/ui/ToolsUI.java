@@ -1591,7 +1591,7 @@ public class ToolsUI extends JPanel {
           VariableEnhanced vs = (VariableEnhanced) iter.next();
           String units = vs.getUnitsString();
           StringBuilder sb = new StringBuilder();
-          sb.append("   ").append(vs.getName()).append(" has unit= <").append(units).append(">");
+          sb.append("   ").append(vs.getShortName()).append(" has unit= <").append(units).append(">");
           if (units != null) {
             try {
               SimpleUnit su = SimpleUnit.factoryWithExceptions(units);

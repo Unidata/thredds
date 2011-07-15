@@ -66,7 +66,7 @@ public class N3channelWriter extends N3streamWriter {
       if (!vinfo.isRecord) {
         Variable v = vinfo.v;
         assert filePos == vinfo.offset;
-        if (debugPos) System.out.println(" writing at "+filePos+" should be "+vinfo.offset+" "+v.getName());
+        if (debugPos) System.out.println(" writing at "+filePos+" should be "+vinfo.offset+" "+v.getFullName());
         int nbytes = (int) v.readToByteChannel(v.getShapeAsSection(), channel);
         filePos += nbytes;
         filePos += pad(channel, nbytes);

@@ -407,7 +407,7 @@ public class H5header {
           }
 
           Vinfo vinfo = (Vinfo) v.getSPobject();
-          if (debugV) debugOut.println("  made Variable " + v.getName() + "  vinfo= " + vinfo + "\n" + v);
+          if (debugV) debugOut.println("  made Variable " + v.getFullName() + "  vinfo= " + vinfo + "\n" + v);
         }
 
       } else if (facadeNested.isTypedef) {
@@ -1093,7 +1093,7 @@ public class H5header {
     }
 
     if (transformReference && (facade.dobj.mdt.type == 7) && (facade.dobj.mdt.referenceType == 1)) { // region reference
-      log.warn("transform region Reference: facade=" + facade.name +" variable name=" + v.getName());
+      log.warn("transform region Reference: facade=" + facade.name +" variable name=" + v.getFullName());
       int nelems = (int) v.getSize();
       int heapIdSize = 12;
       /* doesnt work yet
@@ -1114,7 +1114,7 @@ public class H5header {
       debugOut.println("WARN:  Variable " + facade.name + " is a Reference type");
     if ((vinfo.mfp != null) && (vinfo.mfp.filters[0].id != 1) && warnings)
       debugOut.println("WARN:  Variable " + facade.name + " has a Filter = " + vinfo.mfp);
-    if (debug1) debugOut.println("makeVariable " + v.getName() + "; vinfo= " + vinfo);
+    if (debug1) debugOut.println("makeVariable " + v.getFullName() + "; vinfo= " + vinfo);
 
     return v;
   }
@@ -1145,7 +1145,7 @@ public class H5header {
       Variable v = makeVariableMember(g, s, m.name, m.offset, m.mdt);
       if (v != null) {
         s.addMemberVariable(v);
-        if (debug1) debugOut.println("  made Member Variable " + v.getName() + "\n" + v);
+        if (debug1) debugOut.println("  made Member Variable " + v.getFullName() + "\n" + v);
       }
     }
   }

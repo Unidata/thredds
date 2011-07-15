@@ -310,11 +310,11 @@ public class Netcdf2Dataset extends RadialDatasetSweepAdapter implements TypedDa
       String name;
 
       private Netcdf2Variable(NetcdfDataset nds, VariableSimpleIF v, Variable v0) {
-        super(v.getName(), v0.getAttributes());
+        super(v.getShortName(), v0.getAttributes());
 
         sweeps = new ArrayList();
         nsweeps = 0;
-        name = v.getName();
+        name = v.getShortName();
         int[] shape = v0.getShape();
         int count = v0.getRank() - 1;
 

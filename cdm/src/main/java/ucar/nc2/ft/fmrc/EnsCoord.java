@@ -56,7 +56,7 @@ public class EnsCoord implements Comparable {
   }
 
   EnsCoord(CoordinateAxis1D axis, int[] einfo) {
-    this.name = axis.getName();
+    this.name = axis.getFullName();
     this.ensembles = einfo[0];
     this.pdn = einfo[1];
     this.ensTypes = new int[this.ensembles];

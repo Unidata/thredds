@@ -179,7 +179,7 @@ public class DatasetViewer extends JPanel {
         NestedTable nested = nestedTableList.get(0);
         Variable org = getCurrentVariable(nested.table);
         if (org == null) return;
-        Variable ov = compareFile.findVariable(org.getName());
+        Variable ov = compareFile.findVariable(org.getFullNameEscaped());
         if (ov != null)
           cn.compareVariable(org, ov);
       }      
@@ -430,7 +430,7 @@ public class DatasetViewer extends JPanel {
 
     if (Debug.isSet( "Xdeveloper")) {
       infoTA.appendLine("\n");
-      infoTA.appendLine( "FULL NAME = "+ v.getName());
+      infoTA.appendLine( "FULL NAME = "+ v.getFullName());
       infoTA.appendLine("\n");
       infoTA.appendLine(v.toStringDebug());
     }

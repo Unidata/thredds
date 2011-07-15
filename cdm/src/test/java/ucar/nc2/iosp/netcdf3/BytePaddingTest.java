@@ -102,7 +102,7 @@ public class BytePaddingTest
 
     byte[] data = {1, 2, 3, 4, 5, 6, 7, 8, 9, -1, -2, -3, -4, -5, -6, -7, -8, -9};
     Array dataArray = Array.factory( DataType.BYTE, new int[]{data.length}, data );
-    ncfWriteable.write( var.getName(), dataArray );
+    ncfWriteable.write( var.getFullNameEscaped(), dataArray );
     ncfWriteable.close();
 
     NetcdfFile ncf = NetcdfFile.open( testFile.getPath() );
@@ -149,7 +149,7 @@ public class BytePaddingTest
 
     byte[] data = {1, 2, 3, 4, 5, 6, 7, 8, 9, -1, -2, -3, -4, -5, -6, -7, -8, -9};
     Array dataArray = Array.factory( DataType.BYTE, new int[]{data.length}, data );
-    ncfWriteable.write( var.getName(), dataArray );
+    ncfWriteable.write( var.getFullNameEscaped(), dataArray );
     ncfWriteable.close();
 
     NetcdfFile ncf = NetcdfFile.open( testFile.getPath() );
@@ -200,7 +200,7 @@ public class BytePaddingTest
 
     byte[] data = {1, 2, 3, 11, 12, 13, 21, 22, 23, -1, -2, -3};
     Array dataArray = Array.factory( DataType.BYTE, new int[]{4,3}, data );
-    ncfWriteable.write( var.getName(), dataArray );
+    ncfWriteable.write( var.getFullNameEscaped(), dataArray );
     ncfWriteable.close();
 
     NetcdfFile ncf = NetcdfFile.open( testFile.getPath() );
@@ -248,7 +248,7 @@ public class BytePaddingTest
 
     byte[] data = {1, 2, 3, 11, 12, 13, 21, 22, 23, -1, -2, -3};
     Array dataArray = Array.factory( DataType.BYTE, new int[]{4, 3}, data );
-    ncfWriteable.write( var.getName(), dataArray );
+    ncfWriteable.write( var.getFullNameEscaped(), dataArray );
     ncfWriteable.close();
 
     NetcdfFile ncf = NetcdfFile.open( testFile.getPath() );
@@ -298,7 +298,7 @@ public class BytePaddingTest
 
     char[] data = {1, 2, 3, 4, 5, 6, 7, 8, 9, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50};
     Array dataArray = Array.factory( DataType.CHAR, new int[]{data.length}, data );
-    ncfWriteable.write( var.getName(), dataArray );
+    ncfWriteable.write( var.getFullNameEscaped(), dataArray );
     ncfWriteable.close();
 
     NetcdfFile ncf = NetcdfFile.open( testFile.getPath() );
@@ -348,7 +348,7 @@ public class BytePaddingTest
 
     char[] data = {1, 2, 3, 40, 41, 42, 50, 51, 52, 60, 61, 62};
     Array dataArray = Array.factory( DataType.CHAR, new int[]{4,3}, data );
-    ncfWriteable.write( var.getName(), dataArray );
+    ncfWriteable.write( var.getFullNameEscaped(), dataArray );
     ncfWriteable.close();
 
     NetcdfFile ncf = NetcdfFile.open( testFile.getPath() );
@@ -399,7 +399,7 @@ public class BytePaddingTest
 
     short[] data = {1, 2, 3, 4, 5, 6, 7, 8, 9, -1, -2, -3, -4, -5, -6, -7, -8, -9};
     Array dataArray = Array.factory( DataType.SHORT, new int[]{data.length}, data );
-    ncfWriteable.write( var.getName(), dataArray );
+    ncfWriteable.write( var.getFullNameEscaped(), dataArray );
     ncfWriteable.close();
 
     NetcdfFile ncf = NetcdfFile.open( testFile.getPath() );
@@ -449,7 +449,7 @@ public class BytePaddingTest
 
     short[] data = {1, 2, 3, 10, 11, 12, -1, -2, -3, -7, -8, -9};
     Array dataArray = Array.factory( DataType.SHORT, new int[]{4,3}, data );
-    ncfWriteable.write( var.getName(), dataArray );
+    ncfWriteable.write( var.getFullNameEscaped(), dataArray );
     ncfWriteable.close();
 
     NetcdfFile ncf = NetcdfFile.open( testFile.getPath() );
@@ -501,7 +501,7 @@ public class BytePaddingTest
 
     byte[] data = {1, 2, 3, 4, 5, 6, 7, 8, 9, -1, -2, -3, -4, -5, -6, -7, -8, -9};
     Array arr = Array.factory( DataType.BYTE, new int[]{data.length}, data );
-    ncfWriteable.write( v.getName(), arr );
+    ncfWriteable.write( v.getFullNameEscaped(), arr );
     ncfWriteable.close();
 
     NetcdfFile ncf = NetcdfFile.open( testFile.getPath() );

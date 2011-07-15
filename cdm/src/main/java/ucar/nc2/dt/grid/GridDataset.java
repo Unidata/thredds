@@ -43,8 +43,6 @@ import ucar.nc2.util.cache.FileCache;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.units.DateRange;
 import ucar.unidata.geoloc.LatLonRect;
-import ucar.ma2.IndexIterator;
-import ucar.ma2.Array;
 
 import java.util.*;
 import java.io.IOException;
@@ -305,12 +303,12 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, ucar.nc2.ft.Feature
   /**
    * find the named GeoGrid.
    *
-   * @param name find this GeoGrid by name
+   * @param fullName find this GeoGrid by full name
    * @return the named GeoGrid, or null if not found
    */
-  public GeoGrid findGridByName(String name) {
+  public GeoGrid findGridByName(String fullName) {
     for (GeoGrid ggi : grids) {
-      if (name.equals(ggi.getName()))
+      if (fullName.equals(ggi.getFullName()))
         return ggi;
     }
     return null;

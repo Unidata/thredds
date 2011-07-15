@@ -131,7 +131,7 @@ public class CF1Convention extends CSMConvention {
           if (sname.equalsIgnoreCase(vertical_coord)) {
             v.addAttribute(new Attribute(_Coordinate.TransformType, TransformType.Vertical.toString()));
             if (v.findAttribute(_Coordinate.Axes) == null)
-              v.addAttribute(new Attribute(_Coordinate.Axes, v.getName())); // LOOK: may also be time dependent
+              v.addAttribute(new Attribute(_Coordinate.Axes, v.getFullName())); // LOOK: may also be time dependent
           }
       }
 
@@ -179,7 +179,7 @@ public class CF1Convention extends CSMConvention {
     // get the formula attribute
     String formula = ds.findAttValueIgnoreCase(v, "formula_terms", null);
     if (null == formula) {
-      String msg = " Need attribute 'formula_terms' on Variable " + v.getName() + "\n";
+      String msg = " Need attribute 'formula_terms' on Variable " + v.getFullName() + "\n";
       parseInfo.format(msg);
       userAdvice.format(msg);
       return;
@@ -200,14 +200,14 @@ public class CF1Convention extends CSMConvention {
     }
 
     if (null == p0Var) {
-      String msg = " Need p0:varName on Variable " + v.getName() + " formula_terms\n";
+      String msg = " Need p0:varName on Variable " + v.getFullName() + " formula_terms\n";
       parseInfo.format(msg);
       userAdvice.format(msg);
       return;
     }
 
     if (null == levelVar) {
-      String msg = " Need lev:varName on Variable " + v.getName() + " formula_terms\n";
+      String msg = " Need lev:varName on Variable " + v.getFullName() + " formula_terms\n";
       parseInfo.format(msg);
       userAdvice.format(msg);
       return;
@@ -236,10 +236,10 @@ public class CF1Convention extends CSMConvention {
       ds.addVariable(null, p);
       //Dimension d = p.getDimension(0);
       //d.addCoordinateVariable(p);
-      parseInfo.format(" added Vertical Pressure coordinate %s\n", p.getName());
+      parseInfo.format(" added Vertical Pressure coordinate %s\n", p.getFullName());
 
     } catch (IOException e) {
-      String msg = " Unable to read variables from " + v.getName() + " formula_terms\n";
+      String msg = " Unable to read variables from " + v.getFullName() + " formula_terms\n";
       parseInfo.format(msg);
       userAdvice.format(msg);
     }

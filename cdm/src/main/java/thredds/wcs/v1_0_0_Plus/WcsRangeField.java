@@ -69,7 +69,7 @@ public class WcsRangeField
       throw new IllegalArgumentException( "Range field must be non-null.");
     this.gridDatatype = gridDatatype;
 
-    this.name = this.gridDatatype.getName();
+    this.name = this.gridDatatype.getFullName();
     this.label = this.gridDatatype.getInfo();
     this.description = this.gridDatatype.getDescription();
     this.datatypeString = this.gridDatatype.getDataType().toString();
@@ -111,8 +111,8 @@ public class WcsRangeField
     public Axis( CoordinateAxis1D coordAxis)
     {
       this.coordAxis = coordAxis;
-      this.name = this.coordAxis.getName();
-      this.label = this.coordAxis.getName();
+      this.name = this.coordAxis.getFullName();
+      this.label = this.coordAxis.getFullName();
       this.description = this.coordAxis.getDescription();
       this.isNumeric = this.coordAxis.isNumeric();
 

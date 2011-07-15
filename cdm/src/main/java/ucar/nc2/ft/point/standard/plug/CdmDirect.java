@@ -147,7 +147,7 @@ public class CdmDirect extends TableConfigurerImpl {
       if (v.getDataType() == DataType.SEQUENCE)
         obsv = (Structure) v;
     }
-    TableConfig obs = new TableConfig(Table.Type.NestedStructure, obsv.getName());
+    TableConfig obs = new TableConfig(Table.Type.NestedStructure, obsv.getFullName());
     obs.nestedTableName = obsv.getShortName();
     obs.time = CoordSysEvaluator.findCoordShortNameByType(ds, AxisType.Time);
      if (obs.time == null) {
@@ -171,7 +171,7 @@ public class CdmDirect extends TableConfigurerImpl {
       if (v.getDataType() == DataType.SEQUENCE)
         profile = (Structure) v;
     }
-    TableConfig profileTc = new TableConfig(Table.Type.NestedStructure, profile.getName());
+    TableConfig profileTc = new TableConfig(Table.Type.NestedStructure, profile.getFullName());
     profileTc.nestedTableName = profile.getShortName();
     Variable elev = findZAxisNotStationAlt(ds);
     profileTc.elev = elev.getShortName();

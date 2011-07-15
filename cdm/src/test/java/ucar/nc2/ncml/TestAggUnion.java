@@ -216,7 +216,7 @@ public class TestAggUnion extends TestCase {
 
     Variable lat = ncfile.findVariable("lat");
     assert null != lat;
-    assert lat.getName().equals("lat");
+    assert lat.getShortName().equals("lat");
     assert lat.getRank() == 1;
     assert lat.getSize() == 3;
     assert lat.getShape()[0] == 3;
@@ -255,7 +255,7 @@ public class TestAggUnion extends TestCase {
 
     Variable v = ncfile.findVariable("ReletiveHumidity");
     assert null != v;
-    assert v.getName().equals("ReletiveHumidity");
+    assert v.getShortName().equals("ReletiveHumidity");
     assert v.getRank() == 3;
     assert v.getSize() == 24;
     assert v.getShape()[0] == 2;
@@ -364,7 +364,7 @@ public class TestAggUnion extends TestCase {
 
     v = ncfile.findVariable("Temperature");
     assert null != v;
-    assert v.getName().equals("Temperature");
+    assert v.getShortName().equals("Temperature");
     assert v.getRank() == 3;
     assert v.getSize() == 24;
     assert v.getShape()[0] == 2;

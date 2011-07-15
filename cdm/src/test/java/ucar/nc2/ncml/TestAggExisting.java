@@ -159,7 +159,7 @@ public class TestAggExisting extends TestCase {
 
     Variable lat = ncfile.findVariable("lat");
     assert null != lat;
-    assert lat.getName().equals("lat");
+    assert lat.getShortName().equals("lat");
     assert lat.getRank() == 1;
     assert lat.getSize() == 3;
     assert lat.getShape()[0] == 3;
@@ -198,7 +198,7 @@ public class TestAggExisting extends TestCase {
     assert testAtt != null;
     assert testAtt.equals("timeAtt");
 
-    assert time.getName().equals("time");
+    assert time.getShortName().equals("time");
     assert time.getRank() == 1;
     assert time.getSize() == 59;
     assert time.getShape()[0] == 59;
@@ -228,7 +228,7 @@ public class TestAggExisting extends TestCase {
   public void testReadData(NetcdfFile ncfile) {
     Variable v = ncfile.findVariable("T");
     assert null != v;
-    assert v.getName().equals("T");
+    assert v.getShortName().equals("T");
     assert v.getRank() == 3;
     assert v.getSize() == 708 : v.getSize();
     assert v.getShape()[0] == 59;

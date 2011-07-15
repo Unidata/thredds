@@ -137,7 +137,7 @@ public class ForecastModelRunInventory {
     // add each variable
     for (GridDatatype gg : gds.getGrids()) {
       GridCoordSystem gcs = gg.getCoordinateSystem();
-      Grid grid = new Grid(gg.getName());
+      Grid grid = new Grid(gg.getFullName());
       VariableEnhanced ve = gg.getVariable();
       Variable v = ve.getOriginalVariable();   // LOOK why original variable ??
       addMissing(v, gcs, grid);
@@ -300,9 +300,9 @@ public class ForecastModelRunInventory {
     if (missing.size() > 0) {
       grid.missing = missing;
       if (debugMissing)
-        System.out.println("Missing " + gds.getTitle() + " " + v.getName() + " # =" + missing.size() + "/" + total);
+        System.out.println("Missing " + gds.getTitle() + " " + v.getFullName() + " # =" + missing.size() + "/" + total);
     } else if (debugMissing)
-      System.out.println(" None missing for " + gds.getTitle() + " " + v.getName() + " total = " + total);
+      System.out.println(" None missing for " + gds.getTitle() + " " + v.getFullName() + " total = " + total);
   }
 
   private int[] getEnsInfo( Variable v ) {
@@ -596,7 +596,7 @@ public class ForecastModelRunInventory {
 
     VertCoord(CoordinateAxis1D axis) {
       this.axis = axis;
-      this.name = axis.getName();
+      this.name = axis.getFullName();
       this.units = axis.getUnitsString();
 
       int n = (int) axis.getSize();
@@ -743,7 +743,7 @@ public class ForecastModelRunInventory {
 
     EnsCoord(CoordinateAxis1D axis, int[] einfo) {
       this.axis = axis;
-      this.name = axis.getName();
+      this.name = axis.getFullName();
       this.ensembles = einfo[ 0 ];
       this.pdn = einfo[ 1 ];
       this.ensTypes = new int[ this.ensembles ];

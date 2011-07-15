@@ -290,13 +290,13 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter implements TypedD
     String name;
 
     private LevelII2Variable(NetcdfDataset nds, VariableSimpleIF v, Variable v0) {
-      super(v.getName(), v0.getAttributes());
+      super(v.getShortName(), v0.getAttributes());
 
       nsweepsHR = 0;
       sweeps = new ArrayList();
-      name = v.getName();
+      name = v.getShortName();
       if(isHighResolution(nds)) {
-          String vname = v0.getName();
+          String vname = v0.getFullNameEscaped();
           Variable vehr = nds.findVariable(vname+"_HI");
 
           int [] shape1;
@@ -367,7 +367,7 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter implements TypedD
             float v0GateSize = sp0.getGateSize();
             int [] stride;
 
-            if(v0.getName().startsWith("Reflect"))
+            if(v0.getShortName().startsWith("Reflect"))
                   stride = new int [] {1, 2, 4};
             else
                   stride = new int [] {1, 2, 1};
@@ -522,7 +522,7 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter implements TypedD
 
 
       public void setMeanElevation() {
-         String eleName = getRaidalVarCoordinateName("elevation", sweepVar.getName());
+         String eleName = getRadialVarCoordinateName("elevation", sweepVar.getShortName());
 
          if(!isHighResolution(ds) )  {
               setMeanEle(eleName, sweepno);
@@ -622,7 +622,7 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter implements TypedD
 
 
       public void setMeanAzimuth() {
-        String aziName = getRaidalVarCoordinateName("azimuth", sweepVar.getName());
+        String aziName = getRadialVarCoordinateName("azimuth", sweepVar.getShortName());
 
        if(!isHighResolution(ds) )  {
               setMeanAzi(aziName, sweepno);
@@ -672,7 +672,7 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter implements TypedD
       }
 
       public float getElevation(int ray) throws IOException {
-        String eleName = getRaidalVarCoordinateName("elevation", sweepVar.getName());
+        String eleName = getRadialVarCoordinateName("elevation", sweepVar.getShortName());
 
         if(!isHighResolution(ds) )  {
              return  getEle(eleName, sweepno, ray);
@@ -711,7 +711,7 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter implements TypedD
       }
 
       public float[] getElevation() throws IOException {
-        String eleName = getRaidalVarCoordinateName("elevation", sweepVar.getName());
+        String eleName = getRadialVarCoordinateName("elevation", sweepVar.getShortName());
 
         if(!isHighResolution(ds) )  {
              return  getEle(eleName, sweepno);
@@ -750,7 +750,7 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter implements TypedD
      }
 
      public float[] getAzimuth() throws IOException {
-        String aziName = getRaidalVarCoordinateName("azimuth", sweepVar.getName());
+        String aziName = getRadialVarCoordinateName("azimuth", sweepVar.getShortName());
 
         if(!isHighResolution(ds) )  {
              return  getAzi(aziName, sweepno);
@@ -789,7 +789,7 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter implements TypedD
      }
 
      public float getAzimuth(int ray) throws IOException {
-        String aziName = getRaidalVarCoordinateName("azimuth", sweepVar.getName());
+        String aziName = getRadialVarCoordinateName("azimuth", sweepVar.getShortName());
 
 
         if(!isHighResolution(ds) )  {
@@ -831,7 +831,7 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter implements TypedD
       }
 
       public float getRadialDistance(int gate) throws IOException {
-        String disName = getRaidalVarCoordinateName("distance", sweepVar.getName());
+        String disName = getRadialVarCoordinateName("distance", sweepVar.getShortName());
 
         if(!isHighResolution(ds) )  {
              return  getRadialDist(disName, gate);
@@ -855,7 +855,7 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter implements TypedD
       }
 
       public float getTime(int ray) throws IOException {
-        String tName = getRaidalVarCoordinateName("time", sweepVar.getName());
+        String tName = getRadialVarCoordinateName("time", sweepVar.getShortName());
 
         if(!isHighResolution(ds) )  {
              return  getT(tName, sweepno, ray);
@@ -870,7 +870,7 @@ public class LevelII2Dataset extends RadialDatasetSweepAdapter implements TypedD
         }
       }
 
-      public String getRaidalVarCoordinateName(String coord, String rVar){
+      public String getRadialVarCoordinateName(String coord, String rVar){
         String cName;
         if(rVar.startsWith("Reflectivity"))
             cName = coord + "R";

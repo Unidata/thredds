@@ -107,7 +107,7 @@ public class CoordSysEvaluator {
    */
    static public String findCoordNameByType(NetcdfDataset ds, AxisType atype) {
      CoordinateAxis coordAxis = findCoordByType(ds, atype);
-     return coordAxis == null ? null : coordAxis.getName();
+     return coordAxis == null ? null : coordAxis.getFullName();
    }
 
   static public String findCoordShortNameByType(NetcdfDataset ds, AxisType atype) {

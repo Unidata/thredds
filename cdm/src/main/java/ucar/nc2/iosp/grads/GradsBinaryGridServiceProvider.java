@@ -562,7 +562,7 @@ public class GradsBinaryGridServiceProvider extends AbstractIOServiceProvider {
      */
     private GradsVariable findVar(Variable v2) {
         List<GradsVariable> vars    = gradsDDF.getVariables();
-        String              varName = v2.getName();
+        String              varName = v2.getFullName();
         for (GradsVariable var : vars) {
             if (var.getName().equals(varName)) {
                 return var;
@@ -682,7 +682,7 @@ public class GradsBinaryGridServiceProvider extends AbstractIOServiceProvider {
             if (numVLevels == 0) {
                 numVLevels = 1;
             }
-            if (var.getName().equals(v2.getName())) {
+            if (var.getName().equals(v2.getFullName())) {
                 gridNum += levIdx;
 
                 break;

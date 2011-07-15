@@ -310,6 +310,7 @@ public class FileWriter {
 
   private static void copyAll(NetcdfFileWriteable ncfile, Variable oldVar) throws IOException {
     String newName = N3iosp.makeValidNetcdfObjectName(oldVar.getShortName());
+    newName = NetcdfFile.escapeName(newName);
 
     Array data = oldVar.read();
     try {
@@ -321,7 +322,7 @@ public class FileWriter {
 
     } catch (InvalidRangeException e) {
       e.printStackTrace();
-      throw new IOException(e.getMessage() + " for Variable " + oldVar.getName());
+      throw new IOException(e.getMessage() + " for Variable " + oldVar.getFullName());
     }
   }
 

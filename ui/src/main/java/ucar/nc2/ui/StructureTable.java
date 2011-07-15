@@ -271,10 +271,10 @@ public class StructureTable extends JPanel {
     SubtableAbstractAction(Structure s) {
       this.s = s;
       dataTable = new StructureTable( null);
-      dataWindow = windows.get(s.getName());
+      dataWindow = windows.get(s.getFullName());
       if (dataWindow == null) {
         dataWindow = new IndependentWindow("Data Table", BAMutil.getImage( "netcdfUI"), dataTable);
-        windows.put(s.getName(), dataWindow);
+        windows.put(s.getFullName(), dataWindow);
       } else {
         dataWindow.setComponent(dataTable);
       }

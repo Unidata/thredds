@@ -399,17 +399,17 @@ public class NetcdfFileWriteable extends NetcdfFile {
   /**
    * Add a variable to the file. Must be in define mode.
    *
-   * @param varName  name of Variable, must be unique with the file.
+   * @param shortName  name of Variable, must be unique with the file.
    * @param dataType type of underlying element
    * @param dims     list of Dimensions for the variable, must already have been added. Use a list of length 0
    *                 for a scalar variable.
    * @return the Variable that has been added
    */
-  public Variable addVariable(String varName, DataType dataType, List<Dimension> dims) {
+  public Variable addVariable(String shortName, DataType dataType, List<Dimension> dims) {
     if (!defineMode)
       throw new UnsupportedOperationException("not in define mode");
-    if (!N3iosp.isValidNetcdf3ObjectName(varName))
-      throw new IllegalArgumentException("illegal netCDF-3 variable name: "+varName);
+    if (!N3iosp.isValidNetcdf3ObjectName(shortName))
+      throw new IllegalArgumentException("illegal netCDF-3 variable name: "+shortName);
     if (!valid.contains(dataType))
       throw new IllegalArgumentException("illegal dataType for netcdf-3 format: "+dataType);
 
@@ -422,7 +422,7 @@ public class NetcdfFileWriteable extends NetcdfFile {
       count++;
     }
 
-    Variable v = new Variable(this, rootGroup, null, varName);
+    Variable v = new Variable(this, rootGroup, null, shortName);
     v.setDataType(dataType);
     v.setDimensions(dims);
 
@@ -680,7 +680,7 @@ public class NetcdfFileWriteable extends NetcdfFile {
     // copy old file to new
     List<Variable> oldList = new ArrayList<Variable>(getVariables().size());
     for (Variable v : getVariables()) {
-      Variable oldVar = oldFile.findVariable(v.getName());
+      Variable oldVar = oldFile.findVariable(v.getFullNameEscaped());
       if (oldVar != null)
         oldList.add(oldVar);
     }
@@ -699,30 +699,30 @@ public class NetcdfFileWriteable extends NetcdfFile {
   /**
    * Write data to the named variable, origin assumed to be 0. Must not be in define mode.
    *
-   * @param varName name of variable. IllegalArgumentException if variable name does not exist.
+   * @param fullNameEsc name of variable. IllegalArgumentException if variable name does not exist.
    * @param values  write this array; must be same type and rank as Variable
    * @throws IOException if I/O error
    * @throws ucar.ma2.InvalidRangeException if values Array has illegal shape
    */
-  public void write(String varName, Array values) throws java.io.IOException, InvalidRangeException {
-    write(varName, new int[values.getRank()], values);
+  public void write(String fullNameEsc, Array values) throws java.io.IOException, InvalidRangeException {
+    write(fullNameEsc, new int[values.getRank()], values);
   }
 
   /**
    * Write data to the named variable. Must not be in define mode.
    *
-   * @param varName name of variable. IllegalArgumentException if variable name does not exist.
+   * @param fullNameEsc full, escaped name of variable. IllegalArgumentException if variable name does not exist.
    * @param origin  offset within the variable to start writing.
    * @param values  write this array; must be same type and rank as Variable
    * @throws IOException if I/O error
    * @throws ucar.ma2.InvalidRangeException if values Array has illegal shape
    */
-  public void write(String varName, int[] origin, Array values) throws java.io.IOException, InvalidRangeException {
+  public void write(String fullNameEsc, int[] origin, Array values) throws java.io.IOException, InvalidRangeException {
     if (defineMode)
       throw new UnsupportedOperationException("in define mode");
-    ucar.nc2.Variable v2 = findVariable(varName);
+    ucar.nc2.Variable v2 = findVariable(fullNameEsc);
     if (v2 == null)
-      throw new IllegalArgumentException("NetcdfFileWriteable.write illegal variable name = " + varName);
+      throw new IllegalArgumentException("NetcdfFileWriteable.write illegal variable name = " + fullNameEsc);
 
     spiw.writeData(v2, new Section(origin, values.getShape()), values);
     v2.invalidateCache();
@@ -744,23 +744,23 @@ public class NetcdfFileWriteable extends NetcdfFile {
   /**
    * Write String data to a CHAR variable. Must not be in define mode.
    *
-   * @param varName name of variable, must be of type CHAR.
+   * @param fullNameEsc name of variable, must be of type CHAR.
    * @param origin  offset to start writing, ignore the strlen dimension.
    * @param values  write this array; must be ArrayObject of String
    * @throws IOException if I/O error
    * @throws ucar.ma2.InvalidRangeException if values Array has illegal shape
    */
-  public void writeStringData(String varName, int[] origin, Array values) throws java.io.IOException, InvalidRangeException {
+  public void writeStringData(String fullNameEsc, int[] origin, Array values) throws java.io.IOException, InvalidRangeException {
 
     if (values.getElementType() != String.class)
       throw new IllegalArgumentException("Must be ArrayObject of String ");
 
-    ucar.nc2.Variable v2 = findVariable(varName);
+    ucar.nc2.Variable v2 = findVariable(fullNameEsc);
     if (v2 == null)
-      throw new IllegalArgumentException("illegal variable name = " + varName);
+      throw new IllegalArgumentException("illegal variable name = " + fullNameEsc);
 
     if (v2.getDataType() != DataType.CHAR)
-      throw new IllegalArgumentException("variable " + varName + " is not type CHAR");
+      throw new IllegalArgumentException("variable " + fullNameEsc + " is not type CHAR");
     int rank = v2.getRank();
     int strlen = v2.getShape(rank-1);
 
@@ -770,7 +770,7 @@ public class NetcdfFileWriteable extends NetcdfFile {
     int[] corigin = new int[rank];
     System.arraycopy(origin, 0, corigin, 0, rank - 1);
 
-    write(varName, corigin, cvalues);
+    write(fullNameEsc, corigin, cvalues);
   }
 
   /**

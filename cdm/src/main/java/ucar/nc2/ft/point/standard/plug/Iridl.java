@@ -82,7 +82,7 @@ public class Iridl extends TableConfigurerImpl  {
     stationTable.featureType = FeatureType.STATION;
     stationTable.dimName = stationDim.getName();
 
-    stationTable.stnId = stationVar.getName();
+    stationTable.stnId = stationVar.getShortName();
 
     stationTable.lat = CoordSysEvaluator.findCoordNameByType(ds, AxisType.Lat);
     stationTable.lon = CoordSysEvaluator.findCoordNameByType(ds, AxisType.Lon);

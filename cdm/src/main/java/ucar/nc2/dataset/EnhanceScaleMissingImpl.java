@@ -127,7 +127,7 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
     this.convertedDataType = forVar.getDataType();
 
     DataType scaleType = null, missType = null, validType = null, fillType = null;
-    if (debug) System.out.println("EnhancementsImpl for Variable = " + forVar.getName());
+    if (debug) System.out.println("EnhancementsImpl for Variable = " + forVar.getFullName());
     Attribute att;
 
     // scale and offset

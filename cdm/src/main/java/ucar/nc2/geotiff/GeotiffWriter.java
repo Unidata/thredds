@@ -89,7 +89,7 @@ public class GeotiffWriter {
 
         if ( !gcs.isRegularSpatial()) {
             throw new IllegalArgumentException(
-                "Must have 1D x and y axes for " + grid.getName());
+                "Must have 1D x and y axes for " + grid.getFullName());
         }
 
         CoordinateAxis1D xaxis = (CoordinateAxis1D) gcs.getXHorizAxis();
@@ -120,7 +120,7 @@ public class GeotiffWriter {
 
         if ( !xaxis.isRegular() || !yaxis.isRegular()) {
             throw new IllegalArgumentException(
-                "Must be evenly spaced grid = " + grid.getName());
+                "Must be evenly spaced grid = " + grid.getFullName());
         }
 
         if (pageNumber > 1) {
@@ -165,7 +165,7 @@ public class GeotiffWriter {
                 return;
             } else {
                 throw new IllegalArgumentException(
-                    "Must have 1D x and y axes for " + grid.getName());
+                    "Must have 1D x and y axes for " + grid.getFullName());
             }
 
         }
@@ -174,7 +174,7 @@ public class GeotiffWriter {
         CoordinateAxis1D yaxis = (CoordinateAxis1D) gcs.getYHorizAxis();
         if ( !xaxis.isRegular() || !yaxis.isRegular()) {
             throw new IllegalArgumentException(
-                "Must be evenly spaced grid = " + grid.getName());
+                "Must be evenly spaced grid = " + grid.getFullName());
         }
 
         // read in data

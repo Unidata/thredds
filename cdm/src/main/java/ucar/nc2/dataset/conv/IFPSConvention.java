@@ -95,10 +95,10 @@ public class IFPSConvention extends CoordSysBuilder {
     List<Variable> vars = ds.getVariables();
     for (Variable ncvar : vars) {
         //variables that are used but not displayable or have no data have DIM_0, also don't want history, since those are just how the person edited the grids
-        if ((!ncvar.getDimension(0).getName().equals("DIM_0")) && !ncvar.getName().endsWith("History")
-              && (ncvar.getRank() > 2) && !ncvar.getName().startsWith("Tool")) {
+        if ((!ncvar.getDimension(0).getName().equals("DIM_0")) && !ncvar.getShortName().endsWith("History")
+              && (ncvar.getRank() > 2) && !ncvar.getShortName().startsWith("Tool")) {
             createTimeCoordinate(ds, ncvar);
-        } else if (ncvar.getName().equals("Topo")){
+        } else if (ncvar.getShortName().equals("Topo")){
             //Deal with Topography variable
             ncvar.addAttribute(new Attribute("long_name", "Topography"));
             ncvar.addAttribute(new Attribute("units", "ft"));
@@ -135,18 +135,18 @@ public class IFPSConvention extends CoordSysBuilder {
     Dimension dimTime = ncVar.getDimension(0);
     int nTimesDim = dimTime.getLength();
     if (nTimesDim != nTimesAtt) {
-      parseInfo.format(" **error ntimes in attribute (%d) doesnt match dimension length (%d) for variable %s\n",nTimesAtt, nTimesDim, ncVar.getName());
+      parseInfo.format(" **error ntimes in attribute (%d) doesnt match dimension length (%d) for variable %s\n",nTimesAtt, nTimesDim, ncVar.getFullName());
       return;
     }
 
     // add the dimension
-    String dimName = ncVar.getName()+"_timeCoord";
+    String dimName = ncVar.getFullName()+"_timeCoord";
     Dimension newDim = new Dimension(dimName, nTimesDim);
     ds.addDimension( null, newDim);
 
     // add the coordinate variable
     String units = "seconds since 1970-1-1 00:00:00";
-    String desc = "time coordinate for "+ncVar.getName();
+    String desc = "time coordinate for "+ncVar.getFullName();
 
     CoordinateAxis1D timeCoord = new CoordinateAxis1D( ds, null, dimName, dtype, dimName, units, desc);
     timeCoord.setCachedData(timesArray, true);

@@ -305,24 +305,17 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
     return vs;
   }
 
-  /**
-   * get the full, escaped name of the geoGrid.
-   */
-  public String getName() {
-    return vs.getName();
+  public String getFullName() {
+    return vs.getFullName();
   }
 
-  /*
-   * get the escaped name of the geoGrid.
-   *
-  public String getNameEscaped() {
-    return vs.getNameEscaped();
-  } */
+  public String getName() {
+    return vs.getFullName();
+  }
 
   /**
    * get the GridCoordSys for this GeoGrid.
    */
-  //public GridCoordSys getCoordinateSystem() { return gcs; }
   public GridCoordSystem getCoordinateSystem() {
     return gcs;
   }
@@ -612,7 +605,7 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
     try {
       dataVolume = vs.read(start, shape);
     } catch (Exception ex) {
-      log.error("GeoGrid.getdataSlice() on dataset " + getName()+" "+ dataset.getLocation(), ex);
+      log.error("GeoGrid.getdataSlice() on dataset " + getFullName()+" "+ dataset.getLocation(), ex);
       throw new java.io.IOException(ex.getMessage());
     }
 
@@ -815,7 +808,7 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
       return false;
 
     GeoGrid d = (GeoGrid) oo;
-    if (!getName().equals(d.getName())) return false;
+    if (!getFullName().equals(d.getFullName())) return false;
     if (!getCoordinateSystem().equals(d.getCoordinateSystem())) return false;
 
     return true;
@@ -828,7 +821,7 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
     if (hashCode == 0) {
       int result = 17;
       // result = 37*result + dataset.getName().hashCode();
-      result = 37 * result + getName().hashCode();
+      result = 37 * result + getFullName().hashCode();
       result = 37 * result + getCoordinateSystem().hashCode();
       hashCode = result;
     }
@@ -841,7 +834,7 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
    * string representation
    */
   public String toString() {
-    return getName();
+    return getFullName();
   }
 
   /**
@@ -850,7 +843,7 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
   public String getInfo() {
     StringBuilder buf = new StringBuilder(200);
     buf.setLength(0);
-    buf.append(getName());
+    buf.append(getFullName());
     Format.tab(buf, 30, true);
     buf.append(getUnitsString());
     Format.tab(buf, 60, true);
@@ -861,6 +854,6 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
   }
 
   public int compareTo(GridDatatype g) {
-    return getName().compareTo(g.getName());
+    return getFullName().compareTo(g.getFullName());
   }
 }

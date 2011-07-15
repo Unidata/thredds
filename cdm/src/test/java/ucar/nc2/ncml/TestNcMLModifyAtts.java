@@ -122,7 +122,7 @@ public class TestNcMLModifyAtts extends TestCase {
 
     Variable lat = ncfile.findVariable("lat");
     assert null != lat;
-    assert lat.getName().equals("lat");
+    assert lat.getShortName().equals("lat");
     assert lat.getRank() == 1;
     assert lat.getSize() == 3;
     assert lat.getShape()[0] == 3;
@@ -160,7 +160,7 @@ public class TestNcMLModifyAtts extends TestCase {
 
     Variable v = ncfile.findVariable("rh");
     assert null != v;
-    assert v.getName().equals("rh");
+    assert v.getShortName().equals("rh");
     assert v.getRank() == 3;
     assert v.getSize() == 24;
     assert v.getShape()[0] == 2;
@@ -257,7 +257,7 @@ public class TestNcMLModifyAtts extends TestCase {
 
     v = ncfile.findVariable("T");
     assert null != v;
-    assert v.getName().equals("T");
+    assert v.getShortName().equals("T");
     assert v.getRank() == 3;
     assert v.getSize() == 24;
     assert v.getShape()[0] == 2;

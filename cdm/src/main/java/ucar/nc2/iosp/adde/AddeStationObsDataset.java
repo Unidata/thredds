@@ -399,7 +399,7 @@ public class AddeStationObsDataset extends StationObsDatasetImpl {
     }
 
   public int compareTo(VariableSimpleIF o) {
-    return getName().compareTo(o.getName());
+    return getName().compareTo(o.getShortName());
   }
 
   }

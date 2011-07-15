@@ -87,7 +87,7 @@ public class TestOffAggDirDateFormat extends TestCase {
   public void testAggCoordVar(NetcdfFile ncfile) throws IOException {
     Variable time = ncfile.findVariable("time");
     assert null != time;
-    assert time.getName().equals("time");
+    assert time.getShortName().equals("time");
     assert time.getRank() == 1;
     assert time.getSize() == ntimes;
     assert time.getShape()[0] == ntimes;
@@ -109,7 +109,7 @@ public class TestOffAggDirDateFormat extends TestCase {
   public void testReadData(GridDataset gds) throws IOException {
     GridDatatype g = gds.findGridDatatype("IR_WV");
     assert null != g;
-    assert g.getName().equals("IR_WV");
+    assert g.getFullName().equals("IR_WV");
     assert g.getRank() == 3;
     assert g.getShape()[0] == ntimes;
     assert g.getShape()[1] == 1008;

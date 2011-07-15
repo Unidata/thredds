@@ -299,7 +299,7 @@ public class GridUI extends JPanel {
   }
 
   void setField(GridDatatype field) {
-    int idx = fieldChooser.setSelectedByName(field.getName());
+    int idx = fieldChooser.setSelectedByName(field.getFullName());
     if (idx < 0)
       fieldChooser.setSelectedByIndex(0);
     fieldChooser.setToolTipText( field.getDescription());

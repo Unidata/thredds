@@ -77,7 +77,7 @@ public class TimeCoord implements Comparable {
 
   TimeCoord(Date runDate, CoordinateAxis1DTime axis) {
     this.runDate = runDate;
-    this.axisName = axis.getName();
+    this.axisName = axis.getFullName();
 
     DateUnit unit = null;
     try {

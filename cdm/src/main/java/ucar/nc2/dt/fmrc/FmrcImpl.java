@@ -132,10 +132,10 @@ public class FmrcImpl implements ForecastModelRunCollection { //, ucar.nc2.dt.Gr
         if (gset == null) {
           gset = new Gridset(timeAxis, gcs);
           timeAxisHash.put(timeAxis, gset);
-          coordSet.add(timeAxis.getName());
+          coordSet.add(timeAxis.getFullName());
         }
         gset.gridList.add(grid);
-        gridHash.put(grid.getName(), gset);
+        gridHash.put(grid.getFullName(), gset);
       }
 
       // assume runtimes are always the same
@@ -145,7 +145,7 @@ public class FmrcImpl implements ForecastModelRunCollection { //, ucar.nc2.dt.Gr
         baseDate = runDates[0];
         runtimes = Arrays.asList(runDates);
         runtimeDimName = runtimeCoord.getDimension(0).getName();
-        coordSet.add(runtimeCoord.getName());
+        coordSet.add(runtimeCoord.getFullName());
       }
     }
 
@@ -319,7 +319,7 @@ public class FmrcImpl implements ForecastModelRunCollection { //, ucar.nc2.dt.Gr
       DateFormatter df = new DateFormatter();
       f.format("Gridset timeDimName= %s%n grids= %n", timeDimName);
       for (GridDatatype grid : gridList) {
-        f.format("  %s%n", grid.getName());
+        f.format("  %s%n", grid.getFullName());
       }
 
       f.format("%nRun Dates= %s%n", runtimes.size());
@@ -545,7 +545,7 @@ public class FmrcImpl implements ForecastModelRunCollection { //, ucar.nc2.dt.Gr
       addTime3Coordinates(newds, gridset, invList, type);
 
       for (GridDatatype grid : gridset.gridList) {
-        Variable orgVar = ncd_2dtime.findVariable(grid.getName());
+        Variable orgVar = ncd_2dtime.findVariable(grid.getVariable().getFullNameEscaped());
 
         VariableDS v = new VariableDS(target, orgVar, false);
         v.clearCoordinateSystems();
@@ -562,7 +562,7 @@ public class FmrcImpl implements ForecastModelRunCollection { //, ucar.nc2.dt.Gr
 
     // any non-grid variables
     for (Variable v : src.getVariables()) {
-      if ((null == gridHash.get(v.getName()) && !coordSet.contains(v.getName()))) {
+      if ((null == gridHash.get(v.getFullName()) && !coordSet.contains(v.getFullName()))) {
         VariableDS vds = new VariableDS(newds.getRootGroup(), v, false); // reparent LOOK fishy !!!!
         vds.clearCoordinateSystems();
         vds.remove(vds.findAttribute("coordinates"));
@@ -581,11 +581,11 @@ public class FmrcImpl implements ForecastModelRunCollection { //, ucar.nc2.dt.Gr
   private String makeCoordinatesAttribute(GridCoordSystem gcs, String timeDimName) {
     Formatter sb = new Formatter();
     if (gcs.getXHorizAxis() != null)
-      sb.format("%s ", gcs.getXHorizAxis().getName());
+      sb.format("%s ", gcs.getXHorizAxis().getFullName());
     if (gcs.getYHorizAxis() != null)
-      sb.format("%s ", gcs.getYHorizAxis().getName());
+      sb.format("%s ", gcs.getYHorizAxis().getFullName());
     if (gcs.getVerticalAxis() != null)
-      sb.format("%s ", gcs.getVerticalAxis().getName());
+      sb.format("%s ", gcs.getVerticalAxis().getFullName());
     sb.format("%s ", timeDimName);
 
     return sb.toString();
@@ -741,7 +741,7 @@ public class FmrcImpl implements ForecastModelRunCollection { //, ucar.nc2.dt.Gr
     }
 
     public Array reallyRead(CancelTask cancelTask) throws IOException {
-      Variable orgVar = ncd_2dtime.findVariable(mainv.getName());
+      Variable orgVar = ncd_2dtime.findVariable(mainv.getFullNameEscaped());
       int[] orgVarShape = orgVar.getShape();
 
       // calculate shape - wants it "all"  (we dont seem to have access to the derived variable, so must construct)
@@ -783,7 +783,7 @@ public class FmrcImpl implements ForecastModelRunCollection { //, ucar.nc2.dt.Gr
       if (size == mainv.getSize())
         return reallyRead(cancelTask);
 
-      Variable orgVar = ncd_2dtime.findVariable(mainv.getName());
+      Variable orgVar = ncd_2dtime.findVariable(mainv.getFullNameEscaped());
 
       Array sectionData = Array.factory(mainv.getDataType(), section.getShape());
       int destPos = 0;

@@ -78,7 +78,7 @@ public class TestH5eos extends TestCase {
 
     ArrayChar ca = (ArrayChar) A;
     String sval = ca.getString();
-    System.out.println(dset.getName());
+    System.out.println(dset.getFullName());
     System.out.println(" Length = "+sval.length());
     System.out.println(" Value = "+sval);
     ncfile.close();

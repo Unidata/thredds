@@ -59,7 +59,7 @@ public class TestTDSselect extends TestCase {
 
     // string
     assert(null != (v = dodsfile.findVariable("svar")));
-    assert v.getName().equals("svar");
+    assert v.getFullName().equals("svar");
     assert v.getRank() == 1;
     assert v.getSize() == 80;
     assert v.getDataType() == DataType.CHAR : v.getDataType();
@@ -76,7 +76,7 @@ public class TestTDSselect extends TestCase {
 
     // string array
     assert(null != (v = dodsfile.findVariable("names")));
-    assert v.getName().equals("names");
+    assert v.getFullName().equals("names");
     assert v.getRank() == 2;
     assert v.getSize() == 3 * 80;
     assert v.getDataType() == DataType.CHAR : v.getDataType();

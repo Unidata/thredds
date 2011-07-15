@@ -82,7 +82,7 @@ public class TestNcMLReadOverride extends TestCase {
 
     Variable v = ncfile.findVariable("time");
     assert null != v;
-    assert v.getName().equals("time");
+    assert v.getShortName().equals("time");
     assert v.getRank() == 1;
     assert v.getSize() == 2;
     assert v.getShape()[0] == 2;
@@ -123,7 +123,7 @@ public class TestNcMLReadOverride extends TestCase {
 
     Variable v = ncfile.findVariable("T");
     assert null != v;
-    assert v.getName().equals("T");
+    assert v.getShortName().equals("T");
     assert v.getRank() == 3;
     assert v.getSize() == 24;
     assert v.getShape()[0] == 2;

@@ -81,7 +81,7 @@ public class TestValuesFromAttribute extends TestCase {
     Variable newVar = ncfile.findVariable("titleAsVariable");
     assert null != newVar;
 
-    assert newVar.getName().equals("titleAsVariable");
+    assert newVar.getShortName().equals("titleAsVariable");
     assert newVar.getRank() == 0;
     assert newVar.getSize() == 1;
     assert newVar.getDataType() == DataType.STRING;
@@ -97,7 +97,7 @@ public class TestValuesFromAttribute extends TestCase {
     newVar = ncfile.findVariable("titleAsVariable2");
     assert null != newVar;
 
-    assert newVar.getName().equals("titleAsVariable2");
+    assert newVar.getShortName().equals("titleAsVariable2");
     assert newVar.getRank() == 0;
     assert newVar.getSize() == 1;
     assert newVar.getDataType() == DataType.STRING;
@@ -113,7 +113,7 @@ public class TestValuesFromAttribute extends TestCase {
     newVar = ncfile.findVariable("VariableAttribute");
     assert null != newVar;
 
-    assert newVar.getName().equals("VariableAttribute");
+    assert newVar.getShortName().equals("VariableAttribute");
     assert newVar.getRank() == 1;
     assert newVar.getSize() == 2;
     assert newVar.getDataType() == DataType.DOUBLE;

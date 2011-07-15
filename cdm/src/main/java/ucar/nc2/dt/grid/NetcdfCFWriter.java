@@ -141,8 +141,8 @@ public class NetcdfCFWriter {
       // add coordinate axes
       GridCoordSystem gcs = grid.getCoordinateSystem();
       for (CoordinateAxis axis : gcs.getCoordinateAxes()) {
-        if (!varNameList.contains(axis.getName())) {
-          varNameList.add(axis.getName());
+        if (!varNameList.contains(axis.getFullName())) {
+          varNameList.add(axis.getFullName());
           varList.add(axis); // LOOK dont we have to subset these ??
           axisList.add(axis);
         }
@@ -203,7 +203,7 @@ public class NetcdfCFWriter {
       StringBuilder sbuff = new StringBuilder();
       GridCoordSystem gcs = grid.getCoordinateSystem();
       for (Variable axis : gcs.getCoordinateAxes()) {
-        sbuff.append(axis.getName()).append(" ");
+        sbuff.append(axis.getFullName()).append(" ");
       }
       if (addLatLon)
         sbuff.append("lat lon");
@@ -213,7 +213,7 @@ public class NetcdfCFWriter {
       for (CoordinateTransform ct : gcs.getCoordinateTransforms()) {
         Variable v = ncd.findVariable(ct.getName());
         if (ct.getTransformType() == TransformType.Projection)
-          newV.addAttribute(new Attribute("grid_mapping", v.getName()));
+          newV.addAttribute(new Attribute("grid_mapping", v.getFullName()));
       }
     }
 

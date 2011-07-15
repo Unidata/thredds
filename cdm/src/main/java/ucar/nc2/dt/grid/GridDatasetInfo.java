@@ -265,7 +265,7 @@ public class GridDatasetInfo {
     if (axis == null) return null;
 
     Element varElem = new Element(name);
-    varElem.setAttribute("name", axis.getName());
+    varElem.setAttribute("name", axis.getFullName());
     varElem.setAttribute("shape", getShapeString(axis.getShape())); // axis.getDimensionsString());
 
     DataType dt = axis.getDataType();
@@ -314,7 +314,7 @@ public class GridDatasetInfo {
       ret = compareAxis(vert1, vert2);
       if (ret != 0) return ret;
 
-      return grid1.getName().compareTo(grid2.getName());
+      return grid1.getFullName().compareTo(grid2.getFullName());
     }
 
     private int compareAxis(CoordinateAxis axis1, CoordinateAxis axis2) {
@@ -324,7 +324,7 @@ public class GridDatasetInfo {
       if (axis1 == null) return -1;
       if (axis2 == null) return 1;
 
-      return axis1.getName().compareTo(axis2.getName());
+      return axis1.getFullName().compareTo(axis2.getFullName());
     }
 
   }
@@ -376,7 +376,7 @@ public class GridDatasetInfo {
   private Element writeAxis(CoordinateAxis axis) {
 
     Element varElem = new Element("axis");
-    varElem.setAttribute("name", axis.getName());
+    varElem.setAttribute("name", axis.getFullName());
     varElem.setAttribute("shape", getShapeString(axis.getShape())); // axis.getDimensionsString());
 
     DataType dt = axis.getDataType();
@@ -429,7 +429,7 @@ public class GridDatasetInfo {
     csElem.setAttribute("name", cs.getName());
     for (CoordinateAxis axis : cs.getCoordinateAxes()) {
       Element axisElem = new Element("axisRef");
-      axisElem.setAttribute("name", axis.getName());
+      axisElem.setAttribute("name", axis.getFullName());
       csElem.addContent(axisElem);
     }
 
@@ -484,7 +484,7 @@ public class GridDatasetInfo {
   private Element writeGrid(GridDatatype grid) {
 
     Element varElem = new Element("grid");
-    varElem.setAttribute("name", grid.getName());
+    varElem.setAttribute("name", grid.getFullName());
 
     StringBuilder buff = new StringBuilder();
     List dims = grid.getDimensions();

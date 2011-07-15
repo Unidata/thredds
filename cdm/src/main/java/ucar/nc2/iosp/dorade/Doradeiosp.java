@@ -104,22 +104,22 @@ public class Doradeiosp extends AbstractIOServiceProvider {
     int nSensor = mySweep.getNSensors();
     int nRays = mySweep.getNRays();
 
-    if (v2.getName().equals("elevation")) {
+    if (v2.getShortName().equals("elevation")) {
       float[] elev = mySweep.getElevations();
       outputData = readData1(v2, section, elev);
       //outputData = Array.factory( v2.getDataType().getPrimitiveClassType(), v2.getShape(), elev);
-    } else if (v2.getName().equals("rays_time")) {
+    } else if (v2.getShortName().equals("rays_time")) {
       Date[] dd = mySweep.getTimes();
       double[] d = new double[dd.length];
       for (int i = 0; i < dd.length; i++)
         d[i] = (double) dd[i].getTime();
       outputData = readData2(v2, section, d);
       //outputData = Array.factory( v2.getDataType().getPrimitiveClassType(), v2.getShape(), d);
-    } else if (v2.getName().equals("azimuth")) {
+    } else if (v2.getShortName().equals("azimuth")) {
       float[] azim = mySweep.getAzimuths();
       outputData = readData1(v2, section, azim);
       //outputData = Array.factory( v2.getDataType().getPrimitiveClassType(), v2.getShape(), azim);
-    } else if (v2.getName().startsWith("latitudes_")) {
+    } else if (v2.getShortName().startsWith("latitudes_")) {
       float[] allLats = new float[nSensor * nRays];
       float[] lats;
       for (int i = 0; i < nSensor; i++) {
@@ -128,7 +128,7 @@ public class Doradeiosp extends AbstractIOServiceProvider {
       }
       outputData = readData1(v2, section, allLats);
       //outputData = Array.factory( v2.getDataType().getPrimitiveClassType(), v2.getShape(), allLats);
-    } else if (v2.getName().startsWith("longitudes_")) {
+    } else if (v2.getShortName().startsWith("longitudes_")) {
       float[] allLons = new float[nSensor * nRays];
       float[] lons;
       for (int i = 0; i < nSensor; i++) {
@@ -137,7 +137,7 @@ public class Doradeiosp extends AbstractIOServiceProvider {
       }
       outputData = readData1(v2, section, allLons);
       //outputData = Array.factory( v2.getDataType().getPrimitiveClassType(), v2.getShape(), lons);
-    } else if (v2.getName().startsWith("altitudes_")) {
+    } else if (v2.getShortName().startsWith("altitudes_")) {
       float[] allAlts = new float[nSensor * nRays];
       float[] alts;
       for (int i = 0; i < nSensor; i++) {
@@ -146,12 +146,12 @@ public class Doradeiosp extends AbstractIOServiceProvider {
       }
       outputData = readData1(v2, section, allAlts);
       //outputData = Array.factory( v2.getDataType().getPrimitiveClassType(), v2.getShape(), alts);
-    } else if (v2.getName().startsWith("distance_")) {
+    } else if (v2.getShortName().startsWith("distance_")) {
       float[] dist;
       int j = 0;
       for (int i = 0; i < nSensor; i++) {
         String t = "" + i;
-        if (v2.getName().endsWith(t)) {
+        if (v2.getShortName().endsWith(t)) {
           j = i;
           break;
         }
@@ -166,25 +166,25 @@ public class Doradeiosp extends AbstractIOServiceProvider {
 
       float d = 0.0f;
 
-      if (v2.getName().equals("Range_to_First_Cell")) {
+      if (v2.getShortName().equals("Range_to_First_Cell")) {
         d = mySweep.getRangeToFirstCell(0);
-      } else if (v2.getName().equals("Cell_Spacing")) {
+      } else if (v2.getShortName().equals("Cell_Spacing")) {
         d = mySweep.getCellSpacing(0);
-      } else if (v2.getName().equals("Fixed_Angle")) {
+      } else if (v2.getShortName().equals("Fixed_Angle")) {
         d = mySweep.getFixedAngle();
-      } else if (v2.getName().equals("Nyquist_Velocity")) {
+      } else if (v2.getShortName().equals("Nyquist_Velocity")) {
         d = mySweep.getUnambiguousVelocity(0);
-      } else if (v2.getName().equals("Unambiguous_Range")) {
+      } else if (v2.getShortName().equals("Unambiguous_Range")) {
         d = mySweep.getunambiguousRange(0);
-      } else if (v2.getName().equals("Radar_Constant")) {
+      } else if (v2.getShortName().equals("Radar_Constant")) {
         d = mySweep.getradarConstant(0);
-      } else if (v2.getName().equals("rcvr_gain")) {
+      } else if (v2.getShortName().equals("rcvr_gain")) {
         d = mySweep.getrcvrGain(0);
-      } else if (v2.getName().equals("ant_gain")) {
+      } else if (v2.getShortName().equals("ant_gain")) {
         d = mySweep.getantennaGain(0);
-      } else if (v2.getName().equals("sys_gain")) {
+      } else if (v2.getShortName().equals("sys_gain")) {
         d = mySweep.getsystemGain(0);
-      } else if (v2.getName().equals("bm_width")) {
+      } else if (v2.getShortName().equals("bm_width")) {
         d = mySweep.gethBeamWidth(0);
       }
       float[] dd = new float[1];
@@ -197,7 +197,7 @@ public class Doradeiosp extends AbstractIOServiceProvider {
       Array data = Array.factory(v2.getDataType().getPrimitiveClassType(), section.getShape());
       IndexIterator ii = data.getIndexIterator();
 
-      DoradePARM dp = mySweep.lookupParamIgnoreCase(v2.getName());
+      DoradePARM dp = mySweep.lookupParamIgnoreCase(v2.getShortName());
       int ncells = dp.getNCells();
       float[] rayValues = new float[ncells];
       /*

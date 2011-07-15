@@ -164,7 +164,7 @@ public class GridPointWriter {
 
     // add the grid members
     for (GridDatatype grid : grids) {
-      StructureMembers.Member m = members.addMember(grid.getName(), null, grid.getUnitsString(), grid.getDataType(), scalarShape);
+      StructureMembers.Member m = members.addMember(grid.getVariable().getShortName(), null, grid.getUnitsString(), grid.getDataType(), scalarShape);
       Array data = Array.factory(grid.getDataType(), scalarShape);
       sdata.setMemberData(m, data);
     }
@@ -186,7 +186,7 @@ public class GridPointWriter {
 
     } else if (qp.acceptType.equals(QueryParams.NETCDF)) {
       if (hasZ)
-        w = new WriterNetcdfProfiler(qp, qp.vars, wantDates.size(), zAxis.getName(), pw);
+        w = new WriterNetcdfProfiler(qp, qp.vars, wantDates.size(), zAxis.getFullName(), pw);
       else
         w = new WriterNetcdfStation(qp, qp.vars, pw);
 
@@ -213,7 +213,7 @@ public class GridPointWriter {
 
           // loop over each grid
           for (GridDatatype grid : grids) {
-            Array mdata = sdata.getArray(grid.getName());
+            Array mdata = sdata.getArray(grid.getFullName());
 
             // set missing value if not available at this time, vertCoord
             if (!gap.hasVert(grid, zCoord)) {
@@ -264,7 +264,7 @@ public class GridPointWriter {
 
         // loop over each grid
         for (GridDatatype grid : grids) {
-          Array mdata = sdata.getArray(grid.getName());
+          Array mdata = sdata.getArray(grid.getFullName());
 
           // set missing value if not available at this time
           if (!gap.hasTime(grid, date)) {
@@ -312,7 +312,6 @@ public class GridPointWriter {
     QueryParams qp;
     List<String> varNames;
     java.io.PrintWriter writer;
-    DateFormatter format = new DateFormatter();
     int count = 0;
 
     Writer(QueryParams qp, List<String> varNames, final java.io.PrintWriter writer) {
@@ -321,14 +320,14 @@ public class GridPointWriter {
       this.writer = writer;
     }
 
-    List<VariableSimpleIF> getVars(List<String> varNames, List<VariableSimpleIF> dataVariables) {
+    /* List<VariableSimpleIF> getVars(List<String> varNames, List<VariableSimpleIF> dataVariables) {
       List<VariableSimpleIF> result = new ArrayList<VariableSimpleIF>();
       for (VariableSimpleIF v : dataVariables) {
         if ((varNames == null) || varNames.contains(v.getName()))
           result.add(v);
       }
       return result;
-    }
+    } */
   }
 
   class WriterXML extends Writer {
@@ -430,7 +429,7 @@ public class GridPointWriter {
       varList = new ArrayList<VariableSimpleIF>(varNames.size());
       List<GridDatatype> grids = gds.getGrids();
       for (GridDatatype grid : grids ) {
-        if (varNames.contains(grid.getName())) {
+        if (varNames.contains(grid.getFullName())) {
           VariableEnhanced ve = grid.getVariable();
           String dims = ""; // always scalar ????
           VariableSimpleIF want = new VariableDS( ncfile, null, null, ve.getShortName(),
@@ -490,7 +489,7 @@ public class GridPointWriter {
       varList = new ArrayList<VariableSimpleIF>(varNames.size());
       List<GridDatatype> grids = gds.getGrids();
       for (GridDatatype grid : grids ) {
-        if (varNames.contains(grid.getName())) {
+        if (varNames.contains(grid.getFullName())) {
           VariableEnhanced ve = grid.getVariable();
           String dims = ""; // always scalar ????
           VariableSimpleIF want = new VariableDS( ncfile, null, null, ve.getShortName(),

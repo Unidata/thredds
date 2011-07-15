@@ -440,9 +440,9 @@ public class TableAnalyzer {
     while (iter.hasNext()) {
       Variable v = iter.next();
       if (v instanceof Structure) {  // handles Sequences too
-        TableConfig st = new TableConfig(Table.Type.Structure, v.getName());
+        TableConfig st = new TableConfig(Table.Type.Structure, v.getFullName());
         CoordSysEvaluator.findCoords(st, ds);
-        st.structName = v.getName();
+        st.structName = v.getFullName();
         st.nestedTableName = v.getShortName();
 
         addTable(st);
@@ -521,8 +521,8 @@ public class TableAnalyzer {
   private void findNestedStructures(Structure s, TableConfig parent) {
     for (Variable v : s.getVariables()) {
       if (v instanceof Structure) {  // handles Sequences too
-        TableConfig nestedTable = new TableConfig(Table.Type.NestedStructure, v.getName());
-        nestedTable.structName = v.getName();
+        TableConfig nestedTable = new TableConfig(Table.Type.NestedStructure, v.getFullName());
+        nestedTable.structName = v.getFullName();
         nestedTable.nestedTableName = v.getShortName();
 
         addTable(nestedTable);
@@ -670,7 +670,7 @@ public class TableAnalyzer {
     addCoordinates(tableElem, table);
     for (VariableSimpleIF col : table.cols) {
       if (!table.nondataVars.contains(col.getShortName()))
-        tableElem.addContent( new Element("variable").addContent(col.getName()));
+        tableElem.addContent( new Element("variable").addContent(col.getShortName()));
     }
 
     if (table.extraJoins != null) {
@@ -714,7 +714,7 @@ public class TableAnalyzer {
     if (join.type != null)
       joinElem.setAttribute("type", join.type.toString());
     if (join.v != null)
-      joinElem.addContent( new Element("variable").setAttribute("name", join.v.getName()));
+      joinElem.addContent( new Element("variable").setAttribute("name", join.v.getFullName()));
     joinElem.addContent( new Element("param").setAttribute("value", Integer.toString(join.param)));
     return joinElem;
   }
@@ -723,7 +723,7 @@ public class TableAnalyzer {
     Element joinElem = new Element("join");
     joinElem.setAttribute("class", join.getClass().toString());
     if (join.parentStructure != null)
-      joinElem.addContent( new Element("parentStructure").setAttribute("name", join.parentStructure.getName()));
+      joinElem.addContent( new Element("parentStructure").setAttribute("name", join.parentStructure.getFullName()));
     joinElem.addContent( new Element("dimLength").setAttribute("value", Integer.toString(join.dimLength)));
     return joinElem;
   }
@@ -732,7 +732,7 @@ public class TableAnalyzer {
     Element joinElem = new Element("join");
     joinElem.setAttribute("class", join.getClass().toString());
     if (join.parentStructure != null)
-      joinElem.addContent( new Element("parentStructure").setAttribute("name", join.parentStructure.getName()));
+      joinElem.addContent( new Element("parentStructure").setAttribute("name", join.parentStructure.getFullName()));
     if (join.parentIndex != null)
       joinElem.addContent( new Element("parentIndex").setAttribute("name", join.parentIndex));
     return joinElem;

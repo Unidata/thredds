@@ -713,10 +713,10 @@ public abstract class Aggregation {
     }
 
     protected Variable findVariable(NetcdfFile ncfile, Variable mainV) {
-      Variable v = ncfile.findVariable(mainV.getName());
+      Variable v = ncfile.findVariable(mainV.getFullNameEscaped());
       if (v == null) {  // might be renamed
         VariableEnhanced ve = (VariableEnhanced) mainV;
-        v = ncfile.findVariable(ve.getOriginalName());
+        v = ncfile.findVariable(ve.getOriginalName()); // LOOK not escaped
       }
       return v;
     }
@@ -760,7 +760,7 @@ public abstract class Aggregation {
     for (Variable v : allVars) {
 
       if (v.getProxyReader() != v) {
-        if (debugProxy) System.out.println(" debugProxy: hasProxyReader " + v.getName());
+        if (debugProxy) System.out.println(" debugProxy: hasProxyReader " + v.getFullName());
         continue; // dont mess with agg variables
       }
 
@@ -769,7 +769,7 @@ public abstract class Aggregation {
 
       } else { // put proxy on the rest
         v.setProxyReader(proxy);
-        if (debugProxy) System.out.println(" debugProxy: set proxy on " + v.getName());
+        if (debugProxy) System.out.println(" debugProxy: set proxy on " + v.getFullName());
       }
     }
   }
@@ -808,10 +808,10 @@ public abstract class Aggregation {
     }
   }
   protected Variable findVariable(NetcdfFile ncfile, Variable mainV) {
-    Variable v = ncfile.findVariable(mainV.getName());
+    Variable v = ncfile.findVariable(mainV.getFullNameEscaped());
     if (v == null) {  // might be renamed
       VariableEnhanced ve = (VariableEnhanced) mainV;
-      v = ncfile.findVariable(ve.getOriginalName());
+      v = ncfile.findVariable(ve.getOriginalName()); // LOOK not escaped
     }
     return v;
   }

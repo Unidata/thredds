@@ -50,7 +50,7 @@ public class VertCoord implements Comparable {
 
   VertCoord(CoordinateAxis1D axis) {
     // this.axis = axis;
-    this.name = axis.getName();
+    this.name = axis.getFullName();
     this.units = axis.getUnitsString();
 
     int n = (int) axis.getSize();

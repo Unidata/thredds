@@ -36,7 +36,6 @@ import junit.framework.*;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
-import ucar.nc2.ncml.TestNcML;
 
 import java.io.IOException;
 
@@ -124,7 +123,7 @@ public class TestAggTiled extends TestCase {
 
     Variable lat = ncfile.findVariable(name);
     assert null != lat;
-    assert lat.getName().equals(name);
+    assert lat.getShortName().equals(name);
     assert lat.getRank() == 1;
     assert lat.getSize() == n;
     assert lat.getShape()[0] == n;
@@ -147,7 +146,7 @@ public class TestAggTiled extends TestCase {
   }
 
   public void testReadData(NetcdfFile ncfile, Variable v) {
-    assert v.getName().equals("temperature");
+    assert v.getShortName().equals("temperature");
     assert v.getRank() == 2;
     assert v.getSize() == nlon * nlat : v.getSize();
     assert v.getShape()[0] == nlat;

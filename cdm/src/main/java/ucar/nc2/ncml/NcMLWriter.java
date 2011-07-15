@@ -362,7 +362,7 @@ public class NcMLWriter {
       try {
         elem.addContent(writeVariable((VariableEnhanced) var));
       } catch (ClassCastException e) {
-        log.error("var not instanceof VariableEnhanced = " + var.getName(), e);
+        log.error("var not instanceof VariableEnhanced = " + var.getFullName(), e);
       }
     }
 

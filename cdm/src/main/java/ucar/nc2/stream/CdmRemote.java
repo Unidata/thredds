@@ -152,14 +152,14 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
     StringBuilder sbuff = new StringBuilder(remoteURI);
     sbuff.append("?var=");
     Formatter f = new Formatter();
-    f.format("%s", v.getName()); // full name
+    f.format("%s", v.getFullNameEscaped()); // full name
     if (section != null && v.getDataType() != DataType.SEQUENCE) {
       f.format("(%s)", section.toString());
     }
     sbuff.append( URLEncoder.encode(f.toString(), "UTF-8")); // % escape entire thing varname and section
 
     if (showRequest)
-      System.out.println(" CdmRemote data request for variable: " + v.getName() + " section= " + section + " url=" + sbuff);
+      System.out.println(" CdmRemote data request for variable: " + v.getFullName() + " section= " + section + " url=" + sbuff);
 
     HTTPMethod method = null;
     try {
@@ -189,7 +189,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
       NcStreamReader reader = new NcStreamReader();
       NcStreamReader.DataResult result = reader.readData(is, this);
 
-      assert v.getName().equals(result.varName);
+      assert v.getFullNameEscaped().equals(result.varNameFullEsc);
       result.data.setUnsigned(v.isUnsigned());
       return result.data;
 
@@ -200,7 +200,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
 
   protected StructureDataIterator getStructureIterator(Structure s, int bufferSize) throws java.io.IOException {
     try {
-      InputStream is = sendQuery(remoteURI, s.getName());
+      InputStream is = sendQuery(remoteURI, s.getFullNameEscaped());
       NcStreamReader reader = new NcStreamReader();
       return reader.getStructureIterator(is, this);
 
@@ -297,7 +297,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
       sbuff.append(URLEncoder.encode(v.getShortName(), "UTF-8"));
 
       if (showRequest)
-        System.out.println(" CdmRemote data request for variable: " + v.getName() + " url=" + sbuff);
+        System.out.println(" CdmRemote data request for variable: " + v.getFullName() + " url=" + sbuff);
 
       try {
         method = httpClient.newMethodGet(sbuff.toString());

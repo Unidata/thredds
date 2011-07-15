@@ -285,7 +285,7 @@ public class Attribute {
    */
   public String toString(boolean strict) {
     StringBuilder buff = new StringBuilder();
-    buff.append(strict ? NetcdfFile.escapeName(getName()) : getName());
+    buff.append(strict ? NetcdfFile.escapeNameCDL(getName()) : getName());
     if (isString()) {
       buff.append(" = ");
       for (int i = 0; i < getLength(); i++) {

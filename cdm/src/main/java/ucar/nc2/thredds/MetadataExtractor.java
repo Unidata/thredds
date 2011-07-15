@@ -163,7 +163,7 @@ public class MetadataExtractor {
           ThreddsMetadata.Variable v = new ThreddsMetadata.Variable();
           vars.addVariable( v);
 
-          v.setName( vs.getName());
+          v.setName( vs.getShortName());
           v.setDescription( vs.getDescription());
           v.setUnits( vs.getUnitsString());
 
@@ -195,7 +195,7 @@ public class MetadataExtractor {
       ThreddsMetadata.Variables vars = new ThreddsMetadata.Variables(fileFormat.toString());
       for (GridDatatype grid : gridDataset.getGrids()) {
         ThreddsMetadata.Variable v = new ThreddsMetadata.Variable();
-        v.setName(grid.getName());
+        v.setName(grid.getFullName());
         v.setDescription(grid.getDescription());
         v.setUnits(grid.getUnitsString());
 
@@ -222,7 +222,7 @@ public class MetadataExtractor {
         ThreddsMetadata.Variable v = new ThreddsMetadata.Variable();
         vars.addVariable(v);
 
-        v.setName(grid.getName());
+        v.setName(grid.getFullName());
         v.setDescription(grid.getDescription());
         v.setUnits(grid.getUnitsString());
 
@@ -281,7 +281,7 @@ public class MetadataExtractor {
       ThreddsMetadata.Variable tv = new ThreddsMetadata.Variable();
       vars.addVariable(tv);
 
-      tv.setName(v.getName());
+      tv.setName(v.getShortName());
       tv.setDescription(v.getDescription());
       tv.setUnits(v.getUnitsString());
 

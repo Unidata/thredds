@@ -158,7 +158,7 @@ public class AggregationTiled extends Aggregation implements ProxyReader {
     DataType dtype = (mainv instanceof VariableDS) ? ((VariableDS) mainv).getOriginalDataType() : mainv.getDataType();
     Array allData = Array.factory(dtype, mainv.getShape()); // LOOK need fill
     Section wantSection = mainv.getShapeAsSection();
-    if (debug) System.out.println("wantSection: " + wantSection + " for var " + mainv.getName());
+    if (debug) System.out.println("wantSection: " + wantSection + " for var " + mainv.getFullName());
 
     // make concurrent
     List<Dataset> nestedDatasets = getDatasets();

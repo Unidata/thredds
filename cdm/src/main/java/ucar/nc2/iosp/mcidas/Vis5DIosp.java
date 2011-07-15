@@ -431,7 +431,7 @@ public class Vis5DIosp extends AbstractIOServiceProvider {
                 //range_sets[j] = new Linear1DSet(0.0, 1.0, 255);
             } else if (ranges[0] > ranges[1]) {
                 throw new IOException("Vis5DIosp.readData: bad read "
-                                      + v2.getName());
+                                      + v2.getFullName());
             }
 
             // invert the rows

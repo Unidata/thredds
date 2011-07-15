@@ -541,20 +541,20 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
         Group g = vp.v.getParentGroup();
         Variable v = g.findVariableOrInParent(vname);
         if (v != null)
-          ap = findVarProcess(v.getName());
+          ap = findVarProcess(v.getFullName());
         else {
-          parseInfo.format("***Cant find coordAxis %s referenced from var= %s\n", vname, vp.v.getName());
-          userAdvice.format("***Cant find coordAxis %s referenced from var= %s\n", vname, vp.v.getName());
+          parseInfo.format("***Cant find coordAxis %s referenced from var= %s\n", vname, vp.v.getFullName());
+          userAdvice.format("***Cant find coordAxis %s referenced from var= %s\n", vname, vp.v.getFullName());
         }
       }
 
       if (ap != null) {
         if (!ap.isCoordinateAxis)
-          parseInfo.format(" CoordinateAxis = %s added; referenced from var= %s\n", vname, vp.v.getName());
+          parseInfo.format(" CoordinateAxis = %s added; referenced from var= %s\n", vname, vp.v.getFullName());
         ap.isCoordinateAxis = true;
       } else {
-        parseInfo.format("***Cant find coordAxis %s referenced from var= %s\n", vname, vp.v.getName());
-        userAdvice.format("***Cant find coordAxis %s referenced from var= %s\n", vname, vp.v.getName());
+        parseInfo.format("***Cant find coordAxis %s referenced from var= %s\n", vname, vp.v.getFullName());
+        userAdvice.format("***Cant find coordAxis %s referenced from var= %s\n", vname, vp.v.getFullName());
       }
     }
   }
@@ -574,11 +574,11 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
           VarProcess ap = findVarProcess(vname); // LOOK: full vs short name
           if (ap != null) {
             if (!ap.isCoordinateSystem)
-              parseInfo.format(" CoordinateSystem = %s added; referenced from var= %s\n", vname, vp.v.getName());
+              parseInfo.format(" CoordinateSystem = %s added; referenced from var= %s\n", vname, vp.v.getFullName());
             ap.isCoordinateSystem = true;
           } else {
-            parseInfo.format("***Cant find coordSystem %s referenced from var= %s\n", vname, vp.v.getName());
-            userAdvice.format("***Cant find coordSystem %s referenced from var= %s\n", vname, vp.v.getName());
+            parseInfo.format("***Cant find coordSystem %s referenced from var= %s\n", vname, vp.v.getFullName());
+            userAdvice.format("***Cant find coordSystem %s referenced from var= %s\n", vname, vp.v.getFullName());
           }
         }
       }
@@ -601,11 +601,11 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
           VarProcess ap = findVarProcess(vname); // LOOK: full vs short name
           if (ap != null) {
             if (!ap.isCoordinateTransform)
-              parseInfo.format(" CoordinateTransform = %s added; referenced from var= %s\n", vname, vp.v.getName());
+              parseInfo.format(" CoordinateTransform = %s added; referenced from var= %s\n", vname, vp.v.getFullName());
             ap.isCoordinateTransform = true;
           } else {
-            parseInfo.format("***Cant find CoordinateTransform %s referenced from var= %s\n", vname, vp.v.getName());
-            userAdvice.format("***Cant find CoordinateTransform %s referenced from var= %s\n", vname, vp.v.getName());
+            parseInfo.format("***Cant find CoordinateTransform %s referenced from var= %s\n", vname, vp.v.getFullName());
+            userAdvice.format("***Cant find CoordinateTransform %s referenced from var= %s\n", vname, vp.v.getFullName());
           }
         }
       }
@@ -624,7 +624,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
         if (vp.axisType == null)
           vp.axisType = getAxisType(ncDataset, (VariableEnhanced) vp.v);
         if (vp.axisType == null) {
-          userAdvice.format("Coordinate Axis %s does not have an assigned AxisType\n", vp.v.getName());
+          userAdvice.format("Coordinate Axis %s does not have an assigned AxisType\n", vp.v.getFullName());
         }
         vp.makeIntoCoordinateAxis();
       }
@@ -660,13 +660,13 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
           String vname = stoker.nextToken();
           VarProcess ap = findVarProcess(vname); // LOOK: full vs short name
           if (ap == null) {
-            parseInfo.format("***Cant find Coordinate System variable %s referenced from var= %s\n", vname, vp.v.getName());
-            userAdvice.format("***Cant find Coordinate System variable %s referenced from var= %s\n", vname, vp.v.getName());
+            parseInfo.format("***Cant find Coordinate System variable %s referenced from var= %s\n", vname, vp.v.getFullName());
+            userAdvice.format("***Cant find Coordinate System variable %s referenced from var= %s\n", vname, vp.v.getFullName());
             continue;
           }
           if (ap.cs == null) {
-            parseInfo.format("***Not a Coordinate System variable %s referenced from var= %s\n", vname, vp.v.getName());
-            userAdvice.format("***Not a Coordinate System variable %s referenced from var= %s\n", vname, vp.v.getName());
+            parseInfo.format("***Not a Coordinate System variable %s referenced from var= %s\n", vname, vp.v.getFullName());
+            userAdvice.format("***Not a Coordinate System variable %s referenced from var= %s\n", vname, vp.v.getFullName());
             continue;
           }
 
@@ -688,8 +688,8 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
         String dname = stoker.nextToken();
         Dimension dim = ncDataset.getRootGroup().findDimension(dname);
         if (dim == null) {
-          parseInfo.format("***Cant find Dimension %s referenced from CoordSys var= %s%n", dname, csVar.v.getName());
-          userAdvice.format("***Cant find Dimension %s referenced from CoordSys var= %s%n", dname, csVar.v.getName());
+          parseInfo.format("***Cant find Dimension %s referenced from CoordSys var= %s%n", dname, csVar.v.getFullName());
+          userAdvice.format("***Cant find Dimension %s referenced from CoordSys var= %s%n", dname, csVar.v.getFullName());
         } else
           dimList.add(dim);
       }
@@ -709,18 +709,18 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
       VariableEnhanced ve = (VariableEnhanced) vp.v;
 
       if (!vp.hasCoordinateSystem() && (vp.coordAxes != null) && vp.isData()) {
-        List<CoordinateAxis> dataAxesList = getAxes(vp.coordAxes, vp.v.getName());
+        List<CoordinateAxis> dataAxesList = getAxes(vp.coordAxes, vp.v.getFullName());
         if (dataAxesList.size() > 1) {
           String coordSysName = CoordinateSystem.makeName(dataAxesList);
           CoordinateSystem cs = ncDataset.findCoordinateSystem(coordSysName);
           if (cs != null) {
             ve.addCoordinateSystem(cs);
-            parseInfo.format(" assigned explicit CoordSystem '%s' for var= %s\n", cs.getName(), vp.v.getName());
+            parseInfo.format(" assigned explicit CoordSystem '%s' for var= %s\n", cs.getName(), vp.v.getFullName());
           } else {
             CoordinateSystem csnew = new CoordinateSystem(ncDataset, dataAxesList, null);
             ve.addCoordinateSystem(csnew);
             ncDataset.addCoordinateSystem(csnew);
-            parseInfo.format(" created explicit CoordSystem '%s' for var= %s\n", csnew.getName(), vp.v.getName());
+            parseInfo.format(" created explicit CoordSystem '%s' for var= %s\n", csnew.getName(), vp.v.getFullName());
           }
         }
       }
@@ -732,7 +732,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
     StringTokenizer stoker = new StringTokenizer(names);
     while (stoker.hasMoreTokens()) {
       String vname = stoker.nextToken();
-      VarProcess ap = findVarProcess(vname); // LOOK: full vs short name
+      VarProcess ap = findVarProcess(vname);
       if (ap != null) {
         CoordinateAxis axis = ap.makeIntoCoordinateAxis();
         if (!axesList.contains(axis)) axesList.add(axis);
@@ -766,14 +766,14 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
         CoordinateSystem cs = ncDataset.findCoordinateSystem(csName);
         if ((cs != null) && cs.isComplete(vp.v)) { // DANGER WILL ROGERS!
           ve.addCoordinateSystem(cs);
-          parseInfo.format(" assigned implicit CoordSystem '%s' for var= %s\n", cs.getName(), vp.v.getName());
+          parseInfo.format(" assigned implicit CoordSystem '%s' for var= %s\n", cs.getName(), vp.v.getFullName());
         } else {
           CoordinateSystem csnew = new CoordinateSystem(ncDataset, dataAxesList, null);
           csnew.setImplicit(true);
           if (csnew.isComplete(vp.v)) {
             ve.addCoordinateSystem(csnew);
             ncDataset.addCoordinateSystem(csnew);
-            parseInfo.format(" created implicit CoordSystem '%s' for var= %s\n", csnew.getName(), vp.v.getName());
+            parseInfo.format(" created implicit CoordSystem '%s' for var= %s\n", csnew.getName(), vp.v.getFullName());
           }
         }
       }
@@ -846,14 +846,14 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
       if (cs != null) {
         if (null != implicit) ve.removeCoordinateSystem(implicit);
         ve.addCoordinateSystem(cs);
-        parseInfo.format(" assigned maximal CoordSystem '%s' for var= %s\n", cs.getName(), ve.getName());
+        parseInfo.format(" assigned maximal CoordSystem '%s' for var= %s\n", cs.getName(), ve.getFullName());
       } else {
         CoordinateSystem csnew = new CoordinateSystem(ncDataset, axisList, null);
         csnew.setImplicit(true);
         if (null != implicit) ve.removeCoordinateSystem(implicit);
         ve.addCoordinateSystem(csnew);
         ncDataset.addCoordinateSystem(csnew);
-        parseInfo.format(" created maximal CoordSystem '%s' for var= %s\n", csnew.getName(), ve.getName());
+        parseInfo.format(" created maximal CoordSystem '%s' for var= %s\n", csnew.getName(), ve.getFullName());
       }
 
     }
@@ -942,12 +942,12 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
               vp.addCoordinateTransform(ap.ct);
               parseInfo.format(" assign explicit coordTransform %s to CoordSys= %s\n", ap.ct, vp.cs);
             } else {
-              parseInfo.format("***Cant find coordTransform in %s referenced from var= %s\n", vname, vp.v.getName());
-              userAdvice.format("***Cant find coordTransform in %s referenced from var= %s\n", vname, vp.v.getName());
+              parseInfo.format("***Cant find coordTransform in %s referenced from var= %s\n", vname, vp.v.getFullName());
+              userAdvice.format("***Cant find coordTransform in %s referenced from var= %s\n", vname, vp.v.getFullName());
             }
           } else {
-            parseInfo.format("***Cant find coordTransform variable= %s referenced from var= %s\n", vname, vp.v.getName());
-            userAdvice.format("***Cant find coordTransform variable= %s referenced from var= %s\n", vname, vp.v.getName());
+            parseInfo.format("***Cant find coordTransform variable= %s referenced from var= %s\n", vname, vp.v.getFullName());
+            userAdvice.format("***Cant find coordTransform variable= %s referenced from var= %s\n", vname, vp.v.getFullName());
           }
         }
       }
@@ -961,8 +961,8 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
           String vname = stoker.nextToken();
           VarProcess vcs = findVarProcess(vname); // LOOK: full vs short name
           if (vcs == null) {
-            parseInfo.format("***Cant find coordSystem variable= %s referenced from var= %s\n", vname, vp.v.getName());
-            userAdvice.format("***Cant find coordSystem variable= %s referenced from var= %s\n", vname, vp.v.getName());
+            parseInfo.format("***Cant find coordSystem variable= %s referenced from var= %s\n", vname, vp.v.getFullName());
+            userAdvice.format("***Cant find coordSystem variable= %s referenced from var= %s\n", vname, vp.v.getFullName());
           } else {
             vcs.addCoordinateTransform(vp.ct);
             parseInfo.format("***assign explicit coordTransform %s to CoordSys=  %s\n", vp.ct, vp.cs);
@@ -1015,7 +1015,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
     if (fullName == null) return null;
 
     for (VarProcess vp : varList) {
-      if (fullName.equals(vp.v.getName()))
+      if (fullName.equals(vp.v.getFullName()))
         return vp;
     }
     return null;
@@ -1025,7 +1025,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
     if (name == null) return null;
 
     for (VarProcess vp : varList) {
-      if (name.equals(vp.v.getName()) && (vp.isCoordinateVariable || vp.isCoordinateAxis))
+      if (name.equals(vp.v.getFullName()) && (vp.isCoordinateVariable || vp.isCoordinateAxis))
         return vp;
     }
     return null;
@@ -1083,7 +1083,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
       isCoordinateVariable = v.isCoordinateVariable();
       if (isCoordinateVariable) {
         addCoordinateVariable(v.getDimension(0), this);
-        parseInfo.format(" Coordinate Variable added = %s for dimension %s\n", v.getName(), v.getDimension(0));
+        parseInfo.format(" Coordinate Variable added = %s for dimension %s\n", v.getFullName(), v.getDimension(0));
       }
 
       Attribute att = v.findAttributeIgnoreCase(_Coordinate.AxisType);
@@ -1091,25 +1091,25 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
         String axisName = att.getStringValue();
         axisType = AxisType.getType(axisName);
         isCoordinateAxis = true;
-        parseInfo.format(" Coordinate Axis added = %s type= %s\n", v.getName(), axisName);
+        parseInfo.format(" Coordinate Axis added = %s type= %s\n", v.getFullName(), axisName);
       }
 
       coordVarAlias = ds.findAttValueIgnoreCase(v, _Coordinate.AliasForDimension, null);
       if (coordVarAlias != null) {
         coordVarAlias = coordVarAlias.trim();
         if (v.getRank() != 1) {
-          parseInfo.format("**ERROR Coordinate Variable Alias %s has rank %d\n", v.getName(), v.getRank());
-          userAdvice.format("**ERROR Coordinate Variable Alias %s has rank %d\n", v.getName(), v.getRank());
+          parseInfo.format("**ERROR Coordinate Variable Alias %s has rank %d\n", v.getFullName(), v.getRank());
+          userAdvice.format("**ERROR Coordinate Variable Alias %s has rank %d\n", v.getFullName(), v.getRank());
         } else {
           Dimension coordDim = ds.findDimension(coordVarAlias); // LOOK use groups
           Dimension vDim = v.getDimension(0);
           if (!coordDim.equals(vDim)) {
-            parseInfo.format("**ERROR Coordinate Variable Alias %s names wrong dimension %s\n", v.getName(), coordVarAlias);
-            userAdvice.format("**ERROR Coordinate Variable Alias %s names wrong dimension %s\n", v.getName(), coordVarAlias);
+            parseInfo.format("**ERROR Coordinate Variable Alias %s names wrong dimension %s\n", v.getFullName(), coordVarAlias);
+            userAdvice.format("**ERROR Coordinate Variable Alias %s names wrong dimension %s\n", v.getFullName(), coordVarAlias);
           } else {
             isCoordinateAxis = true;
             addCoordinateVariable(coordDim, this);
-            parseInfo.format(" Coordinate Variable Alias added = %s for dimension= %s\n", v.getName(), coordVarAlias);
+            parseInfo.format(" Coordinate Variable Alias added = %s for dimension= %s\n", v.getFullName(), coordVarAlias);
           }
         }
       }
@@ -1120,7 +1120,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
       else {
         isCoordinateAxis = true;
         positive = positive.trim();
-        parseInfo.format(" Coordinate Axis added(from positive attribute ) = %s for dimension= %s\n", v.getName(), coordVarAlias);
+        parseInfo.format(" Coordinate Axis added(from positive attribute ) = %s for dimension= %s\n", v.getFullName(), coordVarAlias);
       }
 
       coordAxes = ds.findAttValueIgnoreCase(v, _Coordinate.Axes, null);
@@ -1230,15 +1230,15 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
             CoordinateAxis axis = ap.makeIntoCoordinateAxis();
             if (!axesList.contains(axis)) axesList.add(axis);
           } else {
-            parseInfo.format(" Cant find axes %s for Coordinate System %s\n", vname, v.getName());
-            userAdvice.format(" Cant find axes %s for Coordinate System %s\n", vname, v.getName());
+            parseInfo.format(" Cant find axes %s for Coordinate System %s\n", vname, v.getFullName());
+            userAdvice.format(" Cant find axes %s for Coordinate System %s\n", vname, v.getFullName());
           }
         }
       }
 
       if (axesList.size() == 0) {
-        parseInfo.format(" No axes found for Coordinate System %s\n", v.getName());
-        userAdvice.format(" No axes found for Coordinate System %s\n", v.getName());
+        parseInfo.format(" No axes found for Coordinate System %s\n", v.getFullName());
+        userAdvice.format(" No axes found for Coordinate System %s\n", v.getFullName());
         return;
       }
 
@@ -1299,7 +1299,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
 
    void addCoordinateTransform(CoordinateTransform ct) {
      if (cs == null) {
-       parseInfo.format("  %s: no CoordinateSystem for CoordinateTransformVariable: %s\n", v.getName(), ct.getName());
+       parseInfo.format("  %s: no CoordinateSystem for CoordinateTransformVariable: %s\n", v.getFullName(), ct.getName());
        return;
      }
      cs.addCoordinateTransform(ct);

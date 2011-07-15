@@ -246,7 +246,7 @@ public class TestRafTrajectoryObsDataset extends TestCase
     for ( Iterator it = trajDt.getDataVariables().iterator(); it.hasNext(); )
     {
       VariableSimpleIF var = (VariableSimpleIF) it.next();
-      Array a = trajDt.getData( range, var.getName() );
+      Array a = trajDt.getData( range, var.getShortName() );
     }
     endDate = System.currentTimeMillis();
     System.out.println( "Variable-oriented read of record written data: " + ( (endDate - startDate) / 1000.0 ) + " seconds" );
@@ -297,7 +297,7 @@ public class TestRafTrajectoryObsDataset extends TestCase
     for ( Iterator it = trajDt.getDataVariables().iterator(); it.hasNext(); )
     {
       VariableSimpleIF var = (VariableSimpleIF) it.next();
-      Array a = trajDt.getData( range, var.getName() );
+      Array a = trajDt.getData( range, var.getShortName() );
     }
     endDate = System.currentTimeMillis();
     System.out.println( "Variable-oriented read of non-record written data: " + ( ( endDate - startDate ) / 1000.0 ) + " seconds" );

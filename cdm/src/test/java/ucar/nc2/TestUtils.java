@@ -83,7 +83,7 @@ public class TestUtils  {
     for (int i=0; i<data.getRank(); i++)
       assert dataShape[i] == varShape[i];
 
-    if (showStatus) System.out.println( "**** testReadData done on "+v.getName());
+    if (showStatus) System.out.println( "**** testReadData done on "+v.getFullName());
   }
 
   static public boolean close( double d1, double d2) {

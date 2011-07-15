@@ -244,7 +244,7 @@ public class PointConfigXML {
     if (join.type != null)
       joinElem.setAttribute("type", join.type.toString());
     if (join.v != null)
-      joinElem.addContent(new Element("variable").addContent(join.v.getName()));
+      joinElem.addContent(new Element("variable").addContent(join.v.getFullName()));
     joinElem.addContent(new Element("param").addContent(Integer.toString(join.param)));
     return joinElem;
   }
@@ -265,7 +265,7 @@ public class PointConfigXML {
     Element joinElem = new Element("join");
     joinElem.setAttribute("class", join.getClass().toString());
     if (join.parentStructure != null)
-      joinElem.addContent(new Element("parentStructure").addContent(join.parentStructure.getName()));
+      joinElem.addContent(new Element("parentStructure").addContent(join.parentStructure.getFullName()));
     joinElem.addContent(new Element("dimLength").setAttribute("value", Integer.toString(join.dimLength)));
     return joinElem;
   }
@@ -274,7 +274,7 @@ public class PointConfigXML {
     Element joinElem = new Element("join");
     joinElem.setAttribute("class", join.getClass().toString());
     if (join.parentStructure != null)
-      joinElem.addContent(new Element("parentStructure").addContent(join.parentStructure.getName()));
+      joinElem.addContent(new Element("parentStructure").addContent(join.parentStructure.getFullName()));
     if (join.parentIndex != null)
       joinElem.addContent(new Element("parentIndex").addContent(join.parentIndex));
     return joinElem;

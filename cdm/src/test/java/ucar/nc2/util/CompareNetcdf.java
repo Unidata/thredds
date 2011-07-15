@@ -98,7 +98,7 @@ public class CompareNetcdf {
       if (orgV.isCoordinateVariable()) continue;
       Variable copyVar = copy.findVariable(orgV.getShortName());
       if (copyVar == null) {
-        f.format(" MISSING '%s' in 2nd file%n", orgV.getName());
+        f.format(" MISSING '%s' in 2nd file%n", orgV.getFullName());
         ok = false;
       } else {
         List<Dimension> dims1 = orgV.getDimensions();
@@ -116,7 +116,7 @@ public class CompareNetcdf {
       if (orgV.isCoordinateVariable()) continue;
       Variable copyVar = org.findVariable(orgV.getShortName());
       if (copyVar == null) {
-        f.format(" MISSING '%s' in 1st file%n", orgV.getName());
+        f.format(" MISSING '%s' in 1st file%n", orgV.getFullName());
         ok = false;
       }
     }
@@ -157,7 +157,7 @@ public class CompareNetcdf {
     for (Variable orgV : org.getVariables()) {
       Variable copyVar = copy.findVariable(orgV.getShortName());
       if (copyVar == null) {
-        f.format(" ** cant find variable %s in 2nd file%n", orgV.getName());
+        f.format(" ** cant find variable %s in 2nd file%n", orgV.getFullName());
         ok = false;
       } else {
         ok &= compareVariables(orgV, copyVar, compareData, f);
@@ -167,7 +167,7 @@ public class CompareNetcdf {
     for (Variable copyV : copy.getVariables()) {
       Variable orgV = org.findVariable(copyV.getShortName());
       if (orgV == null) {
-        f.format(" ** cant find variable %s in 1st file%n", copyV.getName());
+        f.format(" ** cant find variable %s in 1st file%n", copyV.getFullName());
         ok = false;
       }
     }
@@ -192,9 +192,9 @@ public class CompareNetcdf {
   private boolean compareVariables(Variable org, Variable copy, boolean compareData, Formatter f) {
     boolean ok = true;
 
-    if (showCompare) f.format("compare Variable %s to %s %n", org.getName(), copy.getName());
-    if (!org.getName().equals(copy.getName())) {
-      f.format(" ** names are different %s != %s %n", org.getName(), copy.getName());
+    if (showCompare) f.format("compare Variable %s to %s %n", org.getFullName(), copy.getFullName());
+    if (!org.getFullName().equals(copy.getFullName())) {
+      f.format(" ** names are different %s != %s %n", org.getFullName(), copy.getFullName());
       ok = false;
     }
 

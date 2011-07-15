@@ -65,9 +65,9 @@ public class TestLocalDodsServer {
     List vars = ncd.getVariables();
     for (int i = 0; i < vars.size(); i++) {
       Variable v =  (Variable) vars.get(i);
-      if (!v.getName().equals("record")) {
+      if (!v.getFullName().equals("record")) {
         Array data = v.read();
-        System.out.println(" read "+v.getName()+" size = "+ data.getSize());
+        System.out.println(" read "+v.getFullName()+" size = "+ data.getSize());
       }
     }
 

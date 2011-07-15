@@ -126,13 +126,13 @@ public class TestCompareGrib {
 
 
   static void compareVariables(Variable org, Variable copy, boolean compareData) {
-    if( skipUnknownVar && org.getName().contains( "Unknown")) {
-      System.out.println( "skipping "+ org.getName() );
+    if( skipUnknownVar && org.getFullName().contains( "Unknown")) {
+      System.out.println( "skipping "+ org.getFullName() );
       return;
     }
 
-    if (showCompare) System.out.println("compareVariables  "+org.getName()+" "+copy.getName());
-    assert org.getName().equals( copy.getName());
+    if (showCompare) System.out.println("compareVariables  "+org.getFullName()+" "+copy.getFullName());
+    assert org.getFullName().equals( copy.getFullName());
 
     // dimensions
     checkAll( org.getDimensions(), copy.getDimensions());
@@ -231,7 +231,7 @@ public class TestCompareGrib {
     Array data1 = var1.read();
     Array data2 = var2.read();
 
-    if (showCompare) System.out.print("compareArrays  "+var1.getName()+" "+var1.isUnlimited()+ " size = "+data1.getSize());
+    if (showCompare) System.out.print("compareArrays  "+var1.getFullName()+" "+var1.isUnlimited()+ " size = "+data1.getSize());
     compareData(data1, data2);
     if (showCompare) System.out.println(" ok");
   }

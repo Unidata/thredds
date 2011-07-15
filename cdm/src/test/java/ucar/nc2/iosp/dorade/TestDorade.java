@@ -69,7 +69,7 @@ public class TestDorade extends TestCase {
    List vars =(List) ncfile.getVariables();
     for (int i=0; i < vars.size(); i++) {
       Variable v = (Variable) vars.get(i);
-      System.out.println(" "+v.getShortName()+" == "+v.getName());
+      System.out.println(" "+v.getShortName()+" == "+v.getFullName());
     }
 
     /* test both gate and radial dimension */
@@ -214,7 +214,7 @@ public class TestDorade extends TestCase {
     List vars =(List) ncfile.getVariables();
     for (int i=0; i < vars.size(); i++) {
       Variable v = (Variable) vars.get(i);
-      System.out.println(" "+v.getShortName()+" == "+v.getName());
+      System.out.println(" "+v.getShortName()+" == "+v.getFullName());
     }
 
     Dimension gateDim = ncfile.getRootGroup().findDimension( "gate_1");

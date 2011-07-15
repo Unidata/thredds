@@ -1113,7 +1113,7 @@ public class GridHorizCoordSys {
     List<String> timeDimLL = new ArrayList<String>();
     List<String> timeDimV = new ArrayList<String>();
     for( Variable var : vars ) {
-      if( var.getName().startsWith( "Latitude") ) {
+      if( var.getShortName().startsWith( "Latitude") ) {
         // remove time dependency
         int[] shape = var.getShape();
         if (var.getRank() == 3 && shape[0] == 1) { // remove time dependencies - MAJOR KLUDGE
@@ -1128,15 +1128,15 @@ public class GridHorizCoordSys {
         var.addAttribute(new Attribute("long_name", "latitude coordinate"));
         var.addAttribute(new Attribute("standard_name", "latitude"));
         var.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
-        if( var.getName().contains( "U_Wind_Component")) {
-          latU = var.getName();
-        } else if( var.getName().contains( "V_Wind_Component")) {
-          latV = var.getName();
+        if( var.getShortName().contains( "U_Wind_Component")) {
+          latU = var.getFullName();
+        } else if( var.getShortName().contains( "V_Wind_Component")) {
+          latV = var.getFullName();
         } else {
-          latpp = var.getName();
+          latpp = var.getFullName();
         }
 
-      } else if( var.getName().startsWith( "Longitude" )) {
+      } else if( var.getShortName().startsWith( "Longitude" )) {
         // remove time dependency
         int[] shape = var.getShape();
         if (var.getRank() == 3 && shape[0] == 1) { // remove time dependencies - MAJOR KLUDGE
@@ -1152,12 +1152,12 @@ public class GridHorizCoordSys {
         var.addAttribute(new Attribute("standard_name", "longitude"));
         var.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
 
-        if( var.getName().contains( "U_Wind_Component")) {
-          lonU = var.getName();
-        } else if( var.getName().contains( "V_Wind_Component")) {
-          lonV = var.getName();
+        if( var.getShortName().contains( "U_Wind_Component")) {
+          lonU = var.getFullName();
+        } else if( var.getShortName().contains( "V_Wind_Component")) {
+          lonV = var.getFullName();
         } else {
-          lonpp = var.getName();
+          lonpp = var.getFullName();
         }
       }
    }
@@ -1165,11 +1165,11 @@ public class GridHorizCoordSys {
    // add coordinates attribute to variables
    for( Variable var : vars ) {
      List<Dimension> dims = var.getDimensions();
-     if( var.getName().startsWith( "U-component") ) {
+     if( var.getShortName().startsWith( "U-component") ) {
         var.addAttribute(new Attribute("coordinates", latU +" "+ lonU));
         if( ! timeDimV.contains( dims.get( 0 ).getName() ))
                 timeDimV.add( dims.get( 0 ).getName() );
-      } else if( var.getName().startsWith( "V-component") ) {
+      } else if( var.getShortName().startsWith( "V-component") ) {
         var.addAttribute(new Attribute("coordinates", latV +" "+ lonV));
         if( ! timeDimV.contains( dims.get( 0 ).getName() ))
                 timeDimV.add( dims.get( 0 ).getName() );

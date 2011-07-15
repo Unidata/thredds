@@ -496,7 +496,7 @@ public class SigmetIOServiceProvider  extends AbstractIOServiceProvider {
                 if (number_sweeps > 1) {  distName="distanceR_sweep_"+(i+1); }
                 for  (int ix=0; ix<sz; ix++)  {
                     var=varList.get(ix);
-                    if ((var.getName()).equals(distName.trim())) { distanceR[i]= var; break; }
+                    if ((var.getShortName()).equals(distName.trim())) { distanceR[i]= var; break; }
                 }
                 distArr[i]=(ArrayFloat.D1) Array.factory(DataType.FLOAT, distanceR[i].getShape());
                 distIndex[i]=distArr[i].getIndex();
@@ -525,7 +525,7 @@ public class SigmetIOServiceProvider  extends AbstractIOServiceProvider {
                 if (number_sweeps > 1) { t_n="time_sweep_"+(i+1); }
                 for  (int ix=0; ix<sz; ix++)  {
                     var=varList.get(ix);
-                    if ((var.getName()).equals(t_n.trim())) { time[i]=var;  break; }
+                    if ((var.getShortName()).equals(t_n.trim())) { time[i]=var;  break; }
                 }
 
                 //                if (time[i].getShape().length == 0) {
@@ -551,7 +551,7 @@ public class SigmetIOServiceProvider  extends AbstractIOServiceProvider {
                 if (number_sweeps > 1) {  azimName="azimuthR_sweep_"+(i+1); }
                 for  (int ix=0; ix<sz; ix++)  {
                     var=varList.get(ix);
-                    if ((var.getName()).equals(azimName.trim())) { azimuthR[i]=var; break;  }
+                    if ((var.getShortName()).equals(azimName.trim())) { azimuthR[i]=var; break;  }
                 }
                 azimArr[i]=(ArrayFloat.D1) Array.factory(DataType.FLOAT, azimuthR[i].getShape());
                 azimIndex[i]=azimArr[i].getIndex();
@@ -572,7 +572,7 @@ public class SigmetIOServiceProvider  extends AbstractIOServiceProvider {
                 if (number_sweeps > 1) {  elevName="elevationR_sweep_"+(i+1); }
                 for  (int ix=0; ix<sz; ix++)  {
                     var=varList.get(ix);
-                    if ((var.getName()).equals(elevName.trim())) { elevationR[i]=var; break;  }
+                    if ((var.getShortName()).equals(elevName.trim())) { elevationR[i]=var; break;  }
                 }
                 elevArr[i]=(ArrayFloat.D1) Array.factory(DataType.FLOAT, elevationR[i].getShape());
                 elevIndex[i]=elevArr[i].getIndex();
@@ -589,7 +589,7 @@ public class SigmetIOServiceProvider  extends AbstractIOServiceProvider {
             for (int i=0; i<number_sweeps; i++) {
                 for  (int ix=0; ix<sz; ix++)  {
                     var=varList.get(ix);
-                    if ((var.getName()).equals("numGates")) { numGates=var; break;  }
+                    if ((var.getShortName()).equals("numGates")) { numGates=var; break;  }
                 }
             }
             ArrayInt.D1 gatesArr=(ArrayInt.D1) Array.factory(DataType.INT, numGates.getShape());
@@ -647,7 +647,7 @@ public class SigmetIOServiceProvider  extends AbstractIOServiceProvider {
         long pos0=0;
         // Suppose that the data has LayoutRegular
         LayoutRegular index=new LayoutRegular(pos0, v2.getElementSize(), v2.getShape(), section);
-        if (v2.getName().startsWith("time") | v2.getName().startsWith("numGates")) {
+        if (v2.getShortName().startsWith("time") | v2.getShortName().startsWith("numGates")) {
             temp=readIntData(index, v2);
         } else {   temp=readFloatData(index, v2);    }
         return temp;
@@ -663,7 +663,7 @@ public class SigmetIOServiceProvider  extends AbstractIOServiceProvider {
       IndexIterator ii = data.getIndexIterator();
 
       List groups = null;
-      String shortName = v2.getName();
+      String shortName = v2.getShortName();
       if( shortName.startsWith("Reflectivity"))
         groups = volScan.getReflectivityGroups();
       else if( shortName.startsWith("Velocity"))

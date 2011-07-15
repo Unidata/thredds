@@ -384,7 +384,7 @@ public class AreaReader {
             }
         }
 
-        String varname = v2.getName();
+        String varname = v2.getFullName();
 
         Array dataArray =
             Array.factory(v2.getDataType().getPrimitiveClassType(),

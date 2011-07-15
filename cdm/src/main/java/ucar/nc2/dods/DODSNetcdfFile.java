@@ -892,7 +892,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
    * @return string length dimension, else null
    */
   Dimension getNetcdfStrlenDim(DODSVariable v) {
-    AttributeTable table = das.getAttributeTableN(v.getName()); // LOOK this probably doesnt work for nested variables
+    AttributeTable table = das.getAttributeTableN(v.getFullName()); // LOOK this probably doesnt work for nested variables
     if (table == null) return null;
 
     opendap.dap.Attribute dodsAtt = table.getAttribute("DODS");
@@ -907,13 +907,13 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
 
     opendap.dap.Attribute att2 = dodsTable.getAttribute("dimName");
     String dimName = (att2 == null) ? null : att2.getValueAtN(0);
-    if (debugCharArray) System.out.println(v.getName() + " has strlen= " + strlen + " dimName= " + dimName);
+    if (debugCharArray) System.out.println(v.getFullName() + " has strlen= " + strlen + " dimName= " + dimName);
 
     int dimLength;
     try {
       dimLength = Integer.parseInt(strlen);
     } catch (NumberFormatException e) {
-      logger.warn("DODSNetcdfFile " + location + " var = " + v.getName() + " error on strlen attribute = " + strlen);
+      logger.warn("DODSNetcdfFile " + location + " var = " + v.getFullName() + " error on strlen attribute = " + strlen);
       return null;
     }
 
@@ -1282,13 +1282,13 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
               data = convertD2N.convertTopVariable(var, null, dataV);
 
           } catch (DAP2Exception de) {
-            logger.error("ERROR convertVariable on " + var.getName(), de);
+            logger.error("ERROR convertVariable on " + var.getFullName(), de);
             throw new IOException(de.getMessage());
           }
 
           if (var.isCaching()) {
             var.setCachedData(data);
-            if (debugCached) System.out.println(" cache for <" + var.getName() + "> length =" + data.getSize());
+            if (debugCached) System.out.println(" cache for <" + var.getFullName() + "> length =" + data.getSize());
           }
         }
         result.add(data);

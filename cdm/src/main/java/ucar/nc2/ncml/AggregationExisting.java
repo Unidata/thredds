@@ -180,9 +180,9 @@ public class AggregationExisting extends AggregationOuterDimension {
       NetcdfFile ncfile = null;
       try {
         ncfile = dataset.acquireFile(cancelTask);
-        Variable v = ncfile.findVariable(timeAxis.getName());
+        Variable v = ncfile.findVariable(timeAxis.getFullNameEscaped());
         if (v == null) {
-          logger.warn("readTimeCoordinates: variable = " + timeAxis.getName() + " not found in file " + dataset.getLocation());
+          logger.warn("readTimeCoordinates: variable = " + timeAxis.getFullName() + " not found in file " + dataset.getLocation());
           return;
         }
         VariableDS vds = (v instanceof VariableDS) ? (VariableDS) v : new VariableDS( null, v, true);

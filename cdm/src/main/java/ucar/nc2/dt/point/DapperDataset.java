@@ -99,7 +99,7 @@ public class DapperDataset extends PointObsDatasetImpl implements TypedDatasetFa
   }
 
   static private StructureDS getWrappingParent( NetcdfDataset ds, Variable v) {
-    String name = v.getParentStructure().getName();
+    String name = v.getParentStructure().getFullNameEscaped();
     return (StructureDS) ds.findVariable(name);
   }
 
@@ -234,7 +234,7 @@ public class DapperDataset extends PointObsDatasetImpl implements TypedDatasetFa
   }
 
   public List getData(CancelTask cancel) throws IOException {
-    String CE = outerSequence.getName();
+    String CE = outerSequence.getFullName();
     ArrayStructure as = (ArrayStructure) dodsFile.readWithCE(outerSequence, CE);
     extractMembers(as);
     int n = (int) as.getSize();
@@ -245,7 +245,7 @@ public class DapperDataset extends PointObsDatasetImpl implements TypedDatasetFa
   }
 
   public List getData(LatLonRect boundingBox, CancelTask cancel) throws IOException {
-    String CE = outerSequence.getName() + "&" + makeBB( boundingBox);
+    String CE = outerSequence.getFullName() + "&" + makeBB( boundingBox);
     ArrayStructure as = (ArrayStructure) dodsFile.readWithCE(outerSequence, CE);
     extractMembers(as);
     int n = (int) as.getSize();
@@ -257,7 +257,7 @@ public class DapperDataset extends PointObsDatasetImpl implements TypedDatasetFa
   }
 
   public List getData(LatLonRect boundingBox, Date start, Date end, CancelTask cancel) throws IOException {
-    String CE = outerSequence.getName() + "&" + makeBB( boundingBox) + "&"+ makeTimeRange( start, end);
+    String CE = outerSequence.getFullName() + "&" + makeBB( boundingBox) + "&"+ makeTimeRange( start, end);
     ArrayStructure as = (ArrayStructure) dodsFile.readWithCE(outerSequence, CE);
     extractMembers(as);
 
@@ -269,17 +269,17 @@ public class DapperDataset extends PointObsDatasetImpl implements TypedDatasetFa
   }
 
   private String makeBB( LatLonRect bb) {
-    return latVar.getName()+">="+bb.getLowerLeftPoint().getLatitude()+"&"+
-           latVar.getName()+"<="+bb.getUpperRightPoint().getLatitude()+"&"+
-           lonVar.getName()+">="+bb.getLowerLeftPoint().getLongitude()+"&"+
-           lonVar.getName()+"<="+bb.getUpperRightPoint().getLongitude();
+    return latVar.getFullName()+">="+bb.getLowerLeftPoint().getLatitude()+"&"+
+           latVar.getFullName()+"<="+bb.getUpperRightPoint().getLatitude()+"&"+
+           lonVar.getFullName()+">="+bb.getLowerLeftPoint().getLongitude()+"&"+
+           lonVar.getFullName()+"<="+bb.getUpperRightPoint().getLongitude();
   }
 
   private String makeTimeRange( Date start, Date end) {
     double startValue = timeUnit.makeValue(start);
     double endValue = timeUnit.makeValue(end);
-    return timeVar.getName()+">="+startValue+"&"+   // LOOK
-           timeVar.getName()+"<="+endValue;
+    return timeVar.getFullName()+">="+startValue+"&"+   // LOOK
+           timeVar.getFullName()+"<="+endValue;
   }
 
   private StructureMembers.Member latMember, lonMember, innerMember, altMember, timeMember;

@@ -148,16 +148,16 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
   }
 
   public Array readData(Variable v, Section section) throws IOException, InvalidRangeException {
-    if (v.getName().equals("station"))
+    if (v.getShortName().equals("station"))
       return readStation(v, section);
 
-    else if (v.getName().equals("report"))
+    else if (v.getShortName().equals("report"))
       return readReport(v, section);
 
-    else if (v.getName().equals("reportIndex"))
+    else if (v.getShortName().equals("reportIndex"))
       return readReportIndex(v, section);
 
-    throw new IllegalArgumentException("Unknown variable name= "+v.getName());
+    throw new IllegalArgumentException("Unknown variable name= "+v.getShortName());
   }
 
   ///////////////////////////////////////////////////////////////////////////////////

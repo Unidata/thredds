@@ -99,13 +99,13 @@ public class JoinArray implements Join {
   }
 
   public VariableDS findVariable(String varName) {
-    return (varName.equals(v.getName())) ? v : null;
+    return (varName.equals(v.getFullName())) ? v : null;
   }
 
   @Override
   public String toString() {
     return "JoinArray{" +
-        "v=" + v.getName() +
+        "v=" + v.getFullName() +
         ", type=" + type +
         ", param=" + param +
         '}';

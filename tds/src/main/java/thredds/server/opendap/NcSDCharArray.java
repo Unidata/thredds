@@ -66,7 +66,7 @@ public class NcSDCharArray extends SDArray implements HasNetcdfVariable {
       super((v.getShortName()));
     this.ncVar = v;
     if (v.getRank() < 1)
-      throw new IllegalArgumentException("NcSDCharArray: rank must be > 1, var = " + v.getName());
+      throw new IllegalArgumentException("NcSDCharArray: rank must be > 1, var = " + v.getFullName());
 
     // set dimensions, eliminate last one
     List dims = v.getDimensions();
@@ -101,7 +101,7 @@ public class NcSDCharArray extends SDArray implements HasNetcdfVariable {
     try {
 
       if (debugRead) {
-        System.out.println("NcSDCharArray read " + ncVar.getName());
+        System.out.println("NcSDCharArray read " + ncVar.getFullName());
         for (int i = 0; i < numDimensions(); i++) {
           DArrayDimension d = getDimension(i);
           System.out.println(" " + d.getEncodedName() + " " + getStart(i) + " " + getStop(i) + " " + getStride(i));

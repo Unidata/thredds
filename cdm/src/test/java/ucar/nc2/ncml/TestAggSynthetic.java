@@ -192,7 +192,7 @@ public class TestAggSynthetic extends TestCase {
 
     Variable lat = ncfile.findVariable("lat");
     assert null != lat;
-    assert lat.getName().equals("lat");
+    assert lat.getShortName().equals("lat");
     assert lat.getRank() == 1;
     assert lat.getSize() == 3;
     assert lat.getShape()[0] == 3;
@@ -230,7 +230,7 @@ public class TestAggSynthetic extends TestCase {
 
     Variable time = ncfile.findVariable("time");
     assert null != time;
-    assert time.getName().equals("time");
+    assert time.getShortName().equals("time");
     assert time.getRank() == 1 : time.getRank();
     assert time.getShape()[0] == 3;
     assert time.getDataType() == DataType.INT;
@@ -257,7 +257,7 @@ public class TestAggSynthetic extends TestCase {
 
     Variable time = ncfile.findVariable("time");
     assert null != time;
-    assert time.getName().equals("time");
+    assert time.getShortName().equals("time");
     assert time.getRank() == 1 : time.getRank();
     assert time.getShape()[0] == 3;
     assert time.getDataType() == DataType.INT;
@@ -282,7 +282,7 @@ public class TestAggSynthetic extends TestCase {
   public void testAggCoordVar3(NetcdfFile ncfile) throws IOException {
     Variable time = ncfile.findVariable("time");
     assert null != time;
-    assert time.getName().equals("time");
+    assert time.getShortName().equals("time");
     assert time.getRank() == 1 : time.getRank();
     assert time.getShape()[0] == 3;
     assert time.getDataType() == DataType.DOUBLE : time.getDataType();
@@ -302,7 +302,7 @@ public class TestAggSynthetic extends TestCase {
   public void testAggCoordVarScan(NetcdfFile ncfile) throws IOException {
     Variable time = ncfile.findVariable("time");
     assert null != time;
-    assert time.getName().equals("time");
+    assert time.getShortName().equals("time");
     assert time.getRank() == 1 : time.getRank();
     assert time.getShape()[0] == 3;
     assert time.getDataType() == DataType.INT : time.getDataType();
@@ -322,7 +322,7 @@ public class TestAggSynthetic extends TestCase {
   public void testAggCoordVarNoCoord(NetcdfFile ncfile) throws IOException {
     Variable time = ncfile.findVariable("time");
     assert null != time;
-    assert time.getName().equals("time");
+    assert time.getShortName().equals("time");
     assert time.getRank() == 1 : time.getRank();
     assert time.getShape()[0] == 3;
     assert time.getDataType() == DataType.STRING : time.getDataType();
@@ -344,7 +344,7 @@ public class TestAggSynthetic extends TestCase {
   public void testAggCoordVarNoCoordsDir(NetcdfFile ncfile) throws IOException {
     Variable time = ncfile.findVariable("time");
     assert null != time;
-    assert time.getName().equals("time");
+    assert time.getShortName().equals("time");
     assert time.getRank() == 1 : time.getRank();
     assert time.getShape()[0] == 3;
     assert time.getDataType() == DataType.STRING : time.getDataType();
@@ -367,7 +367,7 @@ public class TestAggSynthetic extends TestCase {
 
     Variable v = ncfile.findVariable(name);
     assert null != v;
-    assert v.getName().equals(name);
+    assert v.getShortName().equals(name);
     assert v.getRank() == 3;
     assert v.getSize() == 36 : v.getSize();
     assert v.getShape()[0] == 3;

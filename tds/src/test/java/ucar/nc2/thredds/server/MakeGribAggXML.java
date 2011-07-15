@@ -113,10 +113,10 @@ public class MakeGribAggXML implements CatalogCrawler.Listener {
 
       TimeCoord tc = getTimeCoordinate(data);
 
-      UberVariable uv = (UberVariable) varHash.get( v.getName());
+      UberVariable uv = (UberVariable) varHash.get( v.getFullName());
       if (uv == null) {
         uv = new UberVariable(v);
-        varHash.put( v.getName(), uv);
+        varHash.put( v.getFullName(), uv);
       }
       uv.addTimeCoord(tc);
     }

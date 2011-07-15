@@ -941,7 +941,7 @@ public abstract class Table {
 
     @Override
     public String getName() {
-      return "MultidimStructure(" + struct.getName() + ")";
+      return "MultidimStructure(" + struct.getFullName() + ")";
     }
 
   }
@@ -1149,7 +1149,7 @@ public abstract class Table {
     StringBuilder sbuff = new StringBuilder();
     sbuff.append("Table on dimension ").append(showDimension()).append("\n");
     for (VariableSimpleIF v : cols) {
-      sbuff.append("  ").append(v.getName()).append("\n");
+      sbuff.append("  ").append(v.getShortName()).append("\n");
     }
     return sbuff.toString();
   }
@@ -1170,7 +1170,7 @@ public abstract class Table {
     showCoords(s, f);
     f.format("  %sVariables:\n", s);
     for (VariableSimpleIF v : cols) {
-      f.format("   %s  %s %s\n", s, v.getName(), getKind(v.getShortName()));
+      f.format("   %s  %s %s\n", s, v.getShortName(), getKind(v.getShortName()));
     }
     return indent + 2;
   }

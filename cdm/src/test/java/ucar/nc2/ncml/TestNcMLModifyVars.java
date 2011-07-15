@@ -97,7 +97,7 @@ public class TestNcMLModifyVars extends TestCase {
 
     Variable lat = ncfile.findVariable("deltaLat");
     assert null != lat;
-    assert lat.getName().equals("deltaLat");
+    assert lat.getShortName().equals("deltaLat");
     assert lat.getRank() == 1;
     assert lat.getSize() == 3;
     assert lat.getShape()[0] == 3;
@@ -127,7 +127,7 @@ public class TestNcMLModifyVars extends TestCase {
 
     Variable lat = ncfile.findVariable("lat");
     assert null != lat;
-    assert lat.getName().equals("lat");
+    assert lat.getShortName().equals("lat");
     assert lat.getRank() == 1;
     assert lat.getSize() == 3;
     assert lat.getShape()[0] == 3;
@@ -168,7 +168,7 @@ public class TestNcMLModifyVars extends TestCase {
 
     v = ncfile.findVariable("ReletiveHumidity");
     assert null != v;
-    assert v.getName().equals("ReletiveHumidity");
+    assert v.getShortName().equals("ReletiveHumidity");
     assert v.getRank() == 3;
     assert v.getSize() == 48;
     assert v.getShape()[0] == 4;
@@ -288,7 +288,7 @@ public class TestNcMLModifyVars extends TestCase {
 
     v = ncfile.findVariable("Temperature");
     assert null != v;
-    assert v.getName().equals("Temperature");
+    assert v.getShortName().equals("Temperature");
     assert v.getRank() == 3;
     assert v.getSize() == 48;
     assert v.getShape()[0] == 4;

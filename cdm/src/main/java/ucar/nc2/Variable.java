@@ -62,7 +62,6 @@ public class Variable implements VariableIF, ProxyReader {
   protected NetcdfFile ncfile; // physical container for this Variable; where the I/O happens. may be null if Variable is self contained.
   protected Group group; // logical container for this Variable. may not be null.
   protected String shortName; // may not be blank
-  protected String fullNameEscaped; // cached fullname escaped
   protected int[] shape;
   protected Section shapeAsSection;  // derived from the shape, immutable; used for every read, deferred creation
 
@@ -82,23 +81,23 @@ public class Variable implements VariableIF, ProxyReader {
   protected ProxyReader proxyReader = this;
 
   /**
-   * Get the full, escaped name of this Variable, starting from rootGroup.
+   * Get the full, unescaped name of this Variable, starting from rootGroup.
    * The name is unique within the entire NetcdfFile.
+   * @return  full, unescaped name
    */
-  public String getName() {
-    if(this.fullNameEscaped == null)
-        this.fullNameEscaped = NetcdfFile.makeFullNameEscaped(this.group, this);
-    return this.fullNameEscaped;
-    //return NetcdfFile.makeFullName(this.group, this);
+  public String getFullName() {
+    return NetcdfFile.makeFullName(this);
   }
 
-  /*
-   * Get the full name of this Variable, with special characters escaped.
-   * @return the full name of this Variable, with special characters escaped.
-   *
-  public String getNameEscaped() {
-    return NetcdfFile.makeFullNameEscaped(this.group, this);
-  } */
+  /**
+   * Get the full, escaped name of this Variable, starting from rootGroup.
+   * The name is unique within the entire NetcdfFile.
+   * @return  full, escaped name
+   * @see "http://www.unidata.ucar.edu/software/netcdf-java/CDM/Identifiers.html"
+   */
+  public String getFullNameEscaped() {
+    return NetcdfFile.makeFullNameEscaped(this);
+  }
 
   /**
    * Get the short name of this Variable. The name is unique within its parent group.
@@ -418,7 +417,7 @@ public class Variable implements VariableIF, ProxyReader {
         shapeAsSection = new Section(list).makeImmutable();
         
       } catch (InvalidRangeException e) {
-        log.error("Bad shape in variable " + getName(), e);
+        log.error("Bad shape in variable " + getFullName(), e);
         throw new IllegalStateException(e.getMessage());
       }
     }
@@ -758,7 +757,7 @@ public class Variable implements VariableIF, ProxyReader {
       ArrayChar dataC = (ArrayChar) data;
       return dataC.getString();
     } else
-      throw new IllegalArgumentException("readScalarString not STRING or CHAR " + getName());
+      throw new IllegalArgumentException("readScalarString not STRING or CHAR " + getFullName());
   }
 
   protected Array getScalarData() throws IOException {
@@ -780,7 +779,7 @@ public class Variable implements VariableIF, ProxyReader {
     // caching overrides the proxyReader
     // check if already cached
     if (cache != null && cache.data != null) {
-      if (debugCaching) System.out.println("got data from cache " + getName());
+      if (debugCaching) System.out.println("got data from cache " + getFullName());
       return cache.data.copy();
     }
 
@@ -789,7 +788,7 @@ public class Variable implements VariableIF, ProxyReader {
     // optionally cache it
     if (isCaching()) {
       setCachedData(data);
-      if (debugCaching) System.out.println("cache " + getName());
+      if (debugCaching) System.out.println("cache " + getFullName());
       return cache.data.copy(); // dont let users get their nasty hands on cached data
     } else {
       return data;
@@ -830,9 +829,9 @@ public class Variable implements VariableIF, ProxyReader {
     if (isCaching()) {
       if (cache.data == null) {
         setCachedData(  _read()); // read and cache entire array
-        if (debugCaching) System.out.println("cache " + getName());
+        if (debugCaching) System.out.println("cache " + getFullName());
       }
-      if (debugCaching) System.out.println("got data from cache " + getName());
+      if (debugCaching) System.out.println("got data from cache " + getFullName());
       return cache.data.sectionNoReduce(section.getRanges()).copy(); // subset it, return copy
     }
 
@@ -847,7 +846,7 @@ public class Variable implements VariableIF, ProxyReader {
   @Override
   public Array reallyRead(Variable client, Section section, CancelTask cancelTask) throws IOException, InvalidRangeException {
     if (isMemberOfStructure()) {
-      throw new UnsupportedOperationException("Cannot directly read section of Member Variable="+getName());
+      throw new UnsupportedOperationException("Cannot directly read section of Member Variable="+getFullName());
     }
     // read just this section
     return ncfile.readData(this, section);
@@ -932,8 +931,8 @@ public class Variable implements VariableIF, ProxyReader {
    */
   public void getNameAndDimensions(Formatter buf, boolean useFullName, boolean strict) {
     useFullName = useFullName && !strict;
-    String name = useFullName ? getName() : getShortName();
-    if (strict) name = NetcdfFile.escapeName( name);
+    String name = useFullName ? getFullName() : getShortName();
+    if (strict) name = NetcdfFile.escapeNameCDL( getShortName());
     buf.format("%s", name);
 
     if (getRank() > 0) buf.format("(");
@@ -941,7 +940,7 @@ public class Variable implements VariableIF, ProxyReader {
       Dimension myd = dimensions.get(i);
       String dimName = myd.getName();
       if ((dimName != null) && strict)
-        dimName = NetcdfFile.escapeName(dimName);
+        dimName = NetcdfFile.escapeNameCDL(dimName);
 
       if (i != 0) buf.format(", ");
 
@@ -990,7 +989,7 @@ public class Variable implements VariableIF, ProxyReader {
       if (enumTypedef == null)
         buf.format("enum UNKNOWN");
       else
-        buf.format("enum %s", enumTypedef.getName());
+        buf.format("enum %s", NetcdfFile.escapeNameCDL(enumTypedef.getName()));
     } else
       buf.format(dataType.toString());
 
@@ -1003,7 +1002,7 @@ public class Variable implements VariableIF, ProxyReader {
 
     for (Attribute att : getAttributes()) {
       buf.format("%s  ", indent);
-      if (strict) buf.format( NetcdfFile.escapeName(getShortName()));
+      if (strict) buf.format( NetcdfFile.escapeNameCDL(getShortName()));
       buf.format(":%s;", att.toString(strict));
       if (!strict && (att.getDataType() != DataType.STRING))
         buf.format(" // %s", att.getDataType());
@@ -1135,7 +1134,6 @@ public class Variable implements VariableIF, ProxyReader {
     this.parent = from.parent;
     this.shape = from.getShape();
     this.shortName = from.shortName;
-    this.fullNameEscaped = null;
     this.sizeToCache = from.sizeToCache;
     this.spiObject = from.spiObject;
   }
@@ -1302,7 +1300,7 @@ public class Variable implements VariableIF, ProxyReader {
           int len = Integer.parseInt(dimName);
           d = new Dimension("", len, false, false, false);
         } catch (Exception e)  {
-          throw new IllegalArgumentException("Variable " + getName() + " setDimensions = " + dimString +
+          throw new IllegalArgumentException("Variable " + getFullName() + " setDimensions = " + dimString +
               " FAILED, dim doesnt exist=" + dimName+ " file = "+ncfile.getLocation());
         }
       }
@@ -1325,7 +1323,7 @@ public class Variable implements VariableIF, ProxyReader {
       if (dim.isShared()) {
         Dimension newD = group.findDimension(dim.getName());
         if (newD == null)
-          throw new IllegalArgumentException("Variable " + getName() + " resetDimensions  FAILED, dim doesnt exist in parent group=" + dim);
+          throw new IllegalArgumentException("Variable " + getFullName() + " resetDimensions  FAILED, dim doesnt exist in parent group=" + dim);
         newDimensions.add(newD);
       } else {
         newDimensions.add( dim);
@@ -1564,7 +1562,7 @@ public class Variable implements VariableIF, ProxyReader {
     Array data = Array.makeArray(getDataType(), values);
 
     if (data.getSize() != getSize())
-      throw new IllegalArgumentException("Incorrect number of values specified for the Variable " + getName() +
+      throw new IllegalArgumentException("Incorrect number of values specified for the Variable " + getFullName() +
               " needed= " + getSize() + " given=" + data.getSize());
 
     if (getRank() != 1) // dont have to reshape for rank 1

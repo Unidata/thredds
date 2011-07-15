@@ -71,7 +71,7 @@ public class GridTable {
         String want = e.getValue().toString();
         int count = 0;
         for (Row row : list) {
-          if (want.equals(row.gg.getName())) {
+          if (want.equals(row.gg.getFullName())) {
             eventOK = false;
             table.setSelected(count);
             eventOK = true;
@@ -89,8 +89,8 @@ public class GridTable {
           // new variable is selected
           Row row = (Row) table.getSelected();
           if (row != null) {
-            if (debug) System.out.println(" GridTable new gg = "+ row.gg.getName());
-            actionSource.fireActionValueEvent(ActionSourceListener.SELECTED, row.gg.getName());
+            if (debug) System.out.println(" GridTable new gg = "+ row.gg.getFullName());
+            actionSource.fireActionValueEvent(ActionSourceListener.SELECTED, row.gg.getFullName());
           }
         }
       }
@@ -127,7 +127,7 @@ public class GridTable {
     public Object getUserObject() { return gg; }
     public Object getValueAt( int col) {
       switch (col) {
-        case 0: return gg.getName();
+        case 0: return gg.getFullName();
         case 1: return dims;
         case 2: return gg.getUnitsString();
         case 3: return gg.getDescription();

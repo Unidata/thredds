@@ -729,7 +729,7 @@ public class TestAll extends TestCase
             if ( verticalAxis != null )
             {
               gcsMsg.append( "    VerticalAxis:\n")
-                    .append( "      Name =").append( verticalAxis.getName()).append( "\n")
+                    .append( "      Name =").append( verticalAxis.getFullName()).append( "\n")
                     .append( "      Description =").append( verticalAxis.getDescription()).append( "\n")
                     .append( "      UnitsString =").append( verticalAxis.getUnitsString()).append( "\n");
             }
@@ -758,7 +758,7 @@ public class TestAll extends TestCase
             String gridMapping = gridMappingAtt.getStringValue();
             VariableSimpleIF gridMapVar = gridDs.getDataVariable( gridMapping );
 
-            gcsMsg.append( "    GridDataset GridMap <" ).append( gridMapVar.getName() ).append( "> Params:\n" );
+            gcsMsg.append( "    GridDataset GridMap <" ).append( gridMapVar.getShortName() ).append( "> Params:\n" );
             for ( Attribute curAtt : gridMapVar.getAttributes() )
             {
               gcsMsg.append( "      " ).append( curAtt.toString() ).append( "\n" );

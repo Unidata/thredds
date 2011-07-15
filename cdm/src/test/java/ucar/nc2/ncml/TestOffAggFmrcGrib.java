@@ -151,7 +151,7 @@ public class TestOffAggFmrcGrib extends TestCase {
 
     Variable lat = ncfile.findVariable("y");
     assert null != lat;
-    assert lat.getName().equals("y");
+    assert lat.getShortName().equals("y");
     assert lat.getRank() == 1;
     assert lat.getSize() == n;
     assert lat.getShape()[0] == n;
@@ -185,7 +185,7 @@ public class TestOffAggFmrcGrib extends TestCase {
   private void testAggCoordVar(NetcdfFile ncfile, int nagg, DateUnit du, int[] runhours) {
     Variable time = ncfile.findVariable("run");
     assert null != time;
-    assert time.getName().equals("run");
+    assert time.getShortName().equals("run");
     assert time.getRank() == 1;
     assert time.getSize() == nagg;
     assert time.getShape()[0] == nagg;
@@ -219,7 +219,7 @@ public class TestOffAggFmrcGrib extends TestCase {
   private void testTimeCoordVar(NetcdfFile ncfile, int nagg, int ntimes, String timeVarName, double[][] timevals) throws Exception {
     Variable time = ncfile.findVariable(timeVarName);
     assert null != time;
-    assert time.getName().equals(timeVarName);
+    assert time.getShortName().equals(timeVarName);
     assert time.getRank() == 2;
     assert time.getSize() == nagg * ntimes;
     assert time.getShape()[0] == nagg;
@@ -262,7 +262,7 @@ public class TestOffAggFmrcGrib extends TestCase {
   private void testReadData(NetcdfFile ncfile, int nagg) throws IOException {
     Variable v = ncfile.findVariable("Pressure_surface");
     assert null != v;
-    assert v.getName().equals("Pressure_surface");  // float Pressure_surface(run=8, time=29, y=257, x=369);
+    assert v.getShortName().equals("Pressure_surface");  // float Pressure_surface(run=8, time=29, y=257, x=369);
     assert v.getRank() == 4;
     int[] shape = v.getShape();
     assert shape[0] == nagg;

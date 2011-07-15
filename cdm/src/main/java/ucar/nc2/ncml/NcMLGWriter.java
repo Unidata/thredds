@@ -263,7 +263,7 @@ public class NcMLGWriter {
   private Element makeCoordinateAxis( CoordinateAxis var, boolean showCoords) {
 
     Element varElem = new Element("coordinateAxis", ncNS);
-    varElem.setAttribute("name", var.getName());
+    varElem.setAttribute("name", var.getFullName());
 
     StringBuffer buff = new StringBuffer();
     List dims = var.getDimensions();
@@ -320,7 +320,7 @@ public class NcMLGWriter {
 
     for (CoordinateAxis axis : cs.getCoordinateAxes()) {
       Element axisElem = new Element("coordinateAxisRef", ncNS);
-      axisElem.setAttribute("ref", axis.getName());
+      axisElem.setAttribute("ref", axis.getFullName());
       csElem.addContent(axisElem);
     }
 
@@ -377,7 +377,7 @@ public class NcMLGWriter {
 
     Element varElem = new Element("variable", ncNS);
 
-    varElem.setAttribute("name", var.getName());
+    varElem.setAttribute("name", var.getFullName());
 
     StringBuffer buff = new StringBuffer();
     List dims = var.getDimensions();

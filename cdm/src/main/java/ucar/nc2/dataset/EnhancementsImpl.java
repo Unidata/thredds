@@ -80,7 +80,7 @@ class EnhancementsImpl implements Enhancements {
   /** Add a CoordinateSystem to the dataset. */
   public void addCoordinateSystem( CoordinateSystem cs){
     if (cs == null)
-      throw new RuntimeException("Attempted to add null CoordinateSystem to var " + forVar.getName());
+      throw new RuntimeException("Attempted to add null CoordinateSystem to var " + forVar.getFullName());
 
     if (coordSys == null) coordSys = new ArrayList<CoordinateSystem>(5);
     coordSys.add(cs);

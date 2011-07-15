@@ -133,7 +133,7 @@ public class NetcdfDatasetInfo {
       Element axisElem = new Element("axis");
       rootElem.addContent(axisElem);
 
-      axisElem.setAttribute("name", axis.getName());
+      axisElem.setAttribute("name", axis.getFullName());
       axisElem.setAttribute("decl", getDecl(axis));
       if (axis.getAxisType() != null)
         axisElem.setAttribute("type", axis.getAxisType().toString());
@@ -155,12 +155,12 @@ public class NetcdfDatasetInfo {
         GridCoordSys gcs = new GridCoordSys(cs, null);
         csElem = new Element("gridCoordSystem");
         csElem.setAttribute("name", cs.getName());
-        csElem.setAttribute("horizX", gcs.getXHorizAxis().getName());
-        csElem.setAttribute("horizY", gcs.getYHorizAxis().getName());
+        csElem.setAttribute("horizX", gcs.getXHorizAxis().getFullName());
+        csElem.setAttribute("horizY", gcs.getYHorizAxis().getFullName());
         if (gcs.hasVerticalAxis())
-          csElem.setAttribute("vertical", gcs.getVerticalAxis().getName());
+          csElem.setAttribute("vertical", gcs.getVerticalAxis().getFullName());
         if (gcs.hasTimeAxis())
-          csElem.setAttribute("time", cs.getTaxis().getName());
+          csElem.setAttribute("time", cs.getTaxis().getFullName());
       } else {
         csElem = new Element("coordSystem");
         csElem.setAttribute("name", cs.getName());
@@ -202,7 +202,7 @@ public class NetcdfDatasetInfo {
         Element gridElem = new Element("grid");
         rootElem.addContent(gridElem);
 
-        gridElem.setAttribute("name", ve.getName());
+        gridElem.setAttribute("name", ve.getFullName());
         gridElem.setAttribute("decl", getDecl(ve));
         if (ve.getUnitsString() != null) {
           gridElem.setAttribute("units", ve.getUnitsString());
@@ -221,7 +221,7 @@ public class NetcdfDatasetInfo {
         Element elem = new Element("variable");
         rootElem.addContent(elem);
 
-        elem.setAttribute("name", ve.getName());
+        elem.setAttribute("name", ve.getFullName());
         elem.setAttribute("decl", getDecl(ve));
         if (ve.getUnitsString() != null) {
           elem.setAttribute("units", ve.getUnitsString());

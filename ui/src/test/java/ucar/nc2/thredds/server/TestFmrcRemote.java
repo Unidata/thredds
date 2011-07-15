@@ -143,15 +143,15 @@ public class TestFmrcRemote extends TimerTask {
     for (GridDatatype grid1 : gds1.getGrids()) {
 
       try {
-        GridDatatype grid2 = gds2.findGridDatatype(grid1.getName());
-        assert grid2 != null : "cant find " + grid1.getName();
+        GridDatatype grid2 = gds2.findGridDatatype(grid1.getFullName());
+        assert grid2 != null : "cant find " + grid1.getFullName();
         long size1 = new Section(grid1.getShape()).computeSize();
         long size2 = new Section(grid2.getShape()).computeSize();
         if (size1 != size2) {
-          System.out.printf("%s size mismatch: %s != %s%n", grid1.getName(), show(grid1), show(grid2));
+          System.out.printf("%s size mismatch: %s != %s%n", grid1.getFullName(), show(grid1), show(grid2));
           throw new RuntimeException();
         } else if (show)
-          System.out.printf("%s %s == %s%n", grid1.getName(), show(grid1), show(grid2));
+          System.out.printf("%s %s == %s%n", grid1.getFullName(), show(grid1), show(grid2));
 
       } catch (Throwable e) {
         // e.printStackTrace();
@@ -173,11 +173,11 @@ public class TestFmrcRemote extends TimerTask {
     for (GridDataset.Gridset gset : gds.getGridsets()) {
       GridCoordSystem gsys = gset.getGeoCoordSystem();
       CoordinateAxis1DTime time = gsys.getTimeAxis1D();
-      map.put(time.getName(), time);
+      map.put(time.getFullName(), time);
     }
 
     for (CoordinateAxis1DTime time : map.values()) {
-      System.out.printf(" %s len = %d%n", time.getName(), time.getSize());
+      System.out.printf(" %s len = %d%n", time.getFullName(), time.getSize());
     }
 
     return map;
@@ -188,7 +188,7 @@ public class TestFmrcRemote extends TimerTask {
           Map<String, CoordinateAxis1DTime> map2) throws Exception {
 
     for (CoordinateAxis1DTime time1 : map1.values()) {
-      CoordinateAxis1DTime time2 = map2.get(time1.getName());
+      CoordinateAxis1DTime time2 = map2.get(time1.getFullName());
       assert time2 != null;
       assert time1.getSize() == time2.getSize();
     }

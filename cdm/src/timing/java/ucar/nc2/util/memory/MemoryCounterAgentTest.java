@@ -105,7 +105,7 @@ public class MemoryCounterAgentTest {
     //measureSize(filename, ncfile, null, true);
 
     Variable vv = ncfile.findVariable("HDFEOS/SWATHS/HIRDLS/Geolocation Fields/SpacecraftAltitude");
-    measureSize(vv.getName(), vv, Group.class, true);
+    measureSize(vv.getFullName(), vv, Group.class, true);
 
     //showAll(ncfile);
     ncfile.close();
@@ -129,7 +129,7 @@ public class MemoryCounterAgentTest {
     measureSize(filename, ncfile, null, false);
 
     Variable vv = ncfile.findVariable("Absolute_vorticity");
-    measureSize(vv.getName(), vv, Group.class, false);
+    measureSize(vv.getFullName(), vv, Group.class, false);
 
     ncfile.close();
   }
@@ -147,7 +147,7 @@ public class MemoryCounterAgentTest {
       measureSize(dim.getName(), dim, Group.class, false);
 
     for (Variable v : ncfile.getVariables()) {
-      measureSize(v.getName(), v, Group.class, false);
+      measureSize(v.getFullName(), v, Group.class, false);
       for (Attribute att : v.getAttributes())
         measureSize(att.getName(), att, null, false);
     }

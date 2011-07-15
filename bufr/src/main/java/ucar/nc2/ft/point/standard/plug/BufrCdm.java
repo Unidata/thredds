@@ -91,7 +91,7 @@ public class BufrCdm extends TableConfigurerImpl {
     // the profile values are the inner sequence
     TableConfig obsTable = new TableConfig(Table.Type.Structure, BufrIosp.obsRecord);
     Structure obsStruct = (Structure) ds.findVariable(BufrIosp.obsRecord);
-    obsTable.structName = obsStruct.getName();
+    obsTable.structName = obsStruct.getFullName();
     obsTable.nestedTableName = obsStruct.getShortName();
     obsTable.lat = Evaluator.getNameOfVariableWithAttribute(obsStruct, _Coordinate.AxisType, AxisType.Lat.toString());
     obsTable.lon = Evaluator.getNameOfVariableWithAttribute(obsStruct, _Coordinate.AxisType, AxisType.Lon.toString());
@@ -134,7 +134,7 @@ public class BufrCdm extends TableConfigurerImpl {
     // the profile values are the inner sequence
     TableConfig obsTable = new TableConfig(Table.Type.Structure, BufrIosp.obsRecord);
     Structure obsStruct = (Structure) ds.findVariable(BufrIosp.obsRecord);
-    obsTable.structName = obsStruct.getName();
+    obsTable.structName = obsStruct.getFullName();
     obsTable.nestedTableName = obsStruct.getShortName();
     obsTable.lat = Evaluator.getNameOfVariableWithAttribute(obsStruct, _Coordinate.AxisType, AxisType.Lat.toString());
     obsTable.lon = Evaluator.getNameOfVariableWithAttribute(obsStruct, _Coordinate.AxisType, AxisType.Lon.toString());
@@ -158,7 +158,7 @@ public class BufrCdm extends TableConfigurerImpl {
      // the time series is just the outer structure
      TableConfig obsTable = new TableConfig(Table.Type.NestedStructure, "struct5");
      Structure obsStruct = (Structure) profileStruct.findVariable("struct5");
-     obsTable.structName = obsStruct.getName();
+     obsTable.structName = obsStruct.getFullName();
      obsTable.nestedTableName = obsStruct.getShortName();
      obsTable.elev = Evaluator.getNameOfVariableWithAttribute(obsStruct, _Coordinate.AxisType, AxisType.Pressure.toString()); // HEY not height
      profileTable.addChild(obsTable);
@@ -195,7 +195,7 @@ public class BufrCdm extends TableConfigurerImpl {
     Structure obsStruct = (Structure) stnStruct.findVariable("seq1"); // kludgerino
     if (obsStruct == null)
       obsStruct = (Structure) stnStruct.findVariable("struct1");
-    obsTable.structName = obsStruct.getName();
+    obsTable.structName = obsStruct.getFullName();
     obsTable.nestedTableName = obsStruct.getShortName();
     obsTable.elev = Evaluator.getNameOfVariableWithAttribute(obsStruct, _Coordinate.AxisType, AxisType.Height.toString());
     timeTable.addChild(obsTable);

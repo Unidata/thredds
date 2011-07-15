@@ -43,11 +43,12 @@ import java.util.List;
  * @see ucar.nc2.ft.FeatureDataset
  */
 public interface VariableSimpleIF extends Comparable<VariableSimpleIF> {
+
   /**
-   * full name of the data Variable
+   * full, escaped name of the data Variable
    * @return full name of the data Variable
-   */
-  public String getName();
+   *
+  public String getFullNameEscaped();  */
 
   /**
    * short name of the data Variable

@@ -97,17 +97,17 @@ public class TestOfsData extends TestCase {
           List<Variable> vars = ncfile.getVariables();
           for (Variable var : vars) {
             List<Dimension> dims = var.getDimensions();
-            if (var.getName().startsWith("Latitude") || var.getName().startsWith("Longitude")) {
+            if (var.getShortName().startsWith("Latitude") || var.getShortName().startsWith("Longitude")) {
               assert (var.getRank() == 2);
-            } else if (var.getName().startsWith("U-component")) {
+            } else if (var.getShortName().startsWith("U-component")) {
               assert (var.getRank() == 4);
               assert (dims.get(0).getName().startsWith("time"));
-            } else if (var.getName().startsWith("V-component")) {
+            } else if (var.getShortName().startsWith("V-component")) {
               assert (var.getRank() == 4);
               assert (dims.get(0).getName().startsWith("time"));
-            } else if (var.getName().startsWith("time") || var.getName().startsWith("depth")) {
+            } else if (var.getShortName().startsWith("time") || var.getShortName().startsWith("depth")) {
               assert (var.getRank() == 1 );
-            } else if (var.getName().startsWith("Curvilinear")) {
+            } else if (var.getShortName().startsWith("Curvilinear")) {
             } else {
               assert (var.getRank() > 2);
               assert (dims.get(0).getName().startsWith("time"));

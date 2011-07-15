@@ -130,7 +130,7 @@ public class TestConvertD2N {
         continue;
       }
       Array data = converter.convertTopVariable(v, null, dodsV);
-      showArray( v.getName(), data, System.out, "");
+      showArray( v.getFullName(), data, System.out, "");
     }
 
     /* for (int i = 0; i < root.children.size(); i++) {
@@ -163,7 +163,7 @@ public class TestConvertD2N {
         Variable v = (Variable) vars.get(i);
         Array data = v.read();
         if (showData)
-          NCdump.printArray(data, v.getName()+data.shapeToString(), System.out, null);
+          NCdump.printArray(data, v.getFullName()+data.shapeToString(), System.out, null);
       }
     }
 
@@ -173,7 +173,7 @@ public class TestConvertD2N {
       DodsV dodsV = (DodsV) root.children.get(i);
       Variable v = dodsfile.findVariable( dodsV.getNetcdfShortName());
       Array data = converter.convertTopVariable(v, null, dodsV);
-      showArray( v.getName(), data, out, "");
+      showArray( v.getFullName(), data, out, "");
 
       if (useNC) {
         Array data2 = v.read();
@@ -181,7 +181,7 @@ public class TestConvertD2N {
       }
 
       if (showData)
-        NCdump.printArray(data, v.getName()+data.shapeToString(), System.out, null);
+        NCdump.printArray(data, v.getFullName()+data.shapeToString(), System.out, null);
     }
 
   }

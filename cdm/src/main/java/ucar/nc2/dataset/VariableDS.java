@@ -120,7 +120,7 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
     setDimensions( getDimensionsString()); // reset the dimensions
 
     if (orgVar instanceof Structure)
-      throw new IllegalArgumentException("VariableDS must not wrap a Structure; name="+orgVar.getName());
+      throw new IllegalArgumentException("VariableDS must not wrap a Structure; name="+orgVar.getFullName());
 
     // dont share cache, iosp : all IO is delegated
     this.ncfile = null;
@@ -154,7 +154,7 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
     setDimensions( getDimensionsString()); // reset the dimensions
 
     if (orgVar instanceof Structure)
-      throw new IllegalArgumentException("VariableDS must not wrap a Structure; name="+orgVar.getName());
+      throw new IllegalArgumentException("VariableDS must not wrap a Structure; name="+orgVar.getFullName());
 
     // dont share cache, iosp : all IO is delegated
     this.ncfile = null;
@@ -438,7 +438,7 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
    */
   public void setOriginalVariable(ucar.nc2.Variable orgVar) {
     if (orgVar instanceof Structure)
-      throw new IllegalArgumentException("VariableDS must not wrap a Structure; name="+orgVar.getName());
+      throw new IllegalArgumentException("VariableDS must not wrap a Structure; name="+orgVar.getFullName());
     this.orgVar = orgVar;
   }
 

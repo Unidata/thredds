@@ -257,7 +257,7 @@ public class NestedTable {
     protected VariableDS varTop;
 
     CoordVarTop(VariableDS v) {
-      super(v.getName(), 0);
+      super(v.getFullName(), 0);
       this.varTop = v;
     }
 

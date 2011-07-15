@@ -75,7 +75,7 @@ public class TestH5npoess extends TestCase {
     Variable dset = ncfile.findVariable("Data_Products/ATMS-SCIENCE-RDR/ATMS-SCIENCE-RDR_Aggr");
     assert (null != dset );
     Array data = dset.read();
-    NCdump.printArray(data, dset.getName(), System.out, null);
+    NCdump.printArray(data, dset.getFullName(), System.out, null);
   }
 
   public void testNPoess() {

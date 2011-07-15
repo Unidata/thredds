@@ -81,7 +81,7 @@ public class AggregationNew extends AggregationOuterDimension {
       joinAggCoord.addAttribute(new ucar.nc2.Attribute(_Coordinate.AxisType, "Time"));
 
     // if speced externally, this variable will get replaced
-    CacheVar cv = new CoordValueVar(joinAggCoord.getName(), joinAggCoord.getDataType(), joinAggCoord.getUnitsString());
+    CacheVar cv = new CoordValueVar(joinAggCoord.getFullName(), joinAggCoord.getDataType(), joinAggCoord.getUnitsString());
     joinAggCoord.setSPobject( cv);
     cacheList.add(cv);
 

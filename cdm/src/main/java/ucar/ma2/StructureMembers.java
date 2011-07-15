@@ -32,6 +32,8 @@
  */
 package ucar.ma2;
 
+import ucar.nc2.NetcdfFile;
+
 import java.util.*;
 
 /**
@@ -225,12 +227,16 @@ public class StructureMembers {
     }
 
     /**
-     * Get the name.
+     * Get the short name.
      *
-     * @return the name.
+     * @return the short name.
      */
     public String getName() {
       return name;
+    }
+
+    public String getFullNameEscaped() {
+      return NetcdfFile.escapeName(StructureMembers.this.getName()) + "." +  NetcdfFile.escapeName(name);
     }
 
     /**

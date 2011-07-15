@@ -69,7 +69,7 @@ public class CSMConvention extends COARDSConvention {
           // both a coordinate axis and transform
           var.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.GeoZ.toString()));
           var.addAttribute(new Attribute(_Coordinate.TransformType, TransformType.Vertical.toString()));
-          var.addAttribute(new Attribute(_Coordinate.Axes, var.getName()));
+          var.addAttribute(new Attribute(_Coordinate.Axes, var.getFullName()));
         }
       }
     }
@@ -139,14 +139,14 @@ public class CSMConvention extends COARDSConvention {
     }
 
     public CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, Variable ctv) {
-      CoordinateTransform rs = new VerticalCT(ctv.getName(), getTransformName(), VerticalCT.Type.HybridSigmaPressure, this);
+      CoordinateTransform rs = new VerticalCT(ctv.getFullName(), getTransformName(), VerticalCT.Type.HybridSigmaPressure, this);
       rs.addParameter(new Parameter("formula", "pressure(x,y,z) = a(z)*p0 + b(z)*surfacePressure(x,y)"));
 
       if (!addParameter2(rs, HybridSigmaPressure.PS, ds, ctv, "PS_var", false)) return null;
       if (!addParameter2(rs, HybridSigmaPressure.A, ds, ctv, "A_var", false)) return null;
       if (!addParameter2(rs, HybridSigmaPressure.B, ds, ctv, "B_var", false)) return null;
       if (!addParameter2(rs, HybridSigmaPressure.P0, ds, ctv, "P0_var", false)) return null;
-      parseInfo.format("CSMConvention made SigmaPressureCT %s\n",ctv.getName());
+      parseInfo.format("CSMConvention made SigmaPressureCT %s\n",ctv.getFullName());
       return rs;
     }
 
@@ -165,13 +165,13 @@ public class CSMConvention extends COARDSConvention {
     }
 
     public CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, Variable ctv) {
-      CoordinateTransform rs = new VerticalCT("sigma-" + ctv.getName(), conventionName, VerticalCT.Type.Sigma, this);
+      CoordinateTransform rs = new VerticalCT("sigma-" + ctv.getFullName(), conventionName, VerticalCT.Type.Sigma, this);
       rs.addParameter(new Parameter("formula", "pressure(x,y,z) = ptop + sigma(z)*(surfacePressure(x,y)-ptop)"));
 
       if (!addParameter2(rs, AtmosSigma.PS, ds, ctv, "PS_var", false)) return null;
       if (!addParameter2(rs, AtmosSigma.SIGMA, ds, ctv, "B_var", false)) return null;
       if (!addParameter2(rs, AtmosSigma.PTOP, ds, ctv, "P0_var", false)) return null;
-      parseInfo.format("CSMConvention made SigmaCT %s\n", ctv.getName());
+      parseInfo.format("CSMConvention made SigmaCT %s\n", ctv.getFullName());
       return rs;
     }
 

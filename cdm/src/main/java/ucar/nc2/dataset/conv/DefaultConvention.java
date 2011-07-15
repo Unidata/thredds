@@ -92,7 +92,7 @@ public class DefaultConvention extends CoordSysBuilder {
         Dimension dim = ds.findDimension(dimName);
         if (null != dim) {
           vp.isCoordinateAxis = true;
-          parseInfo.format(" Coordinate Axis added (alias) = %s for dimension %s\n", vp.v.getName(), dimName);
+          parseInfo.format(" Coordinate Axis added (alias) = %s for dimension %s\n", vp.v.getFullName(), dimName);
         }
       }
 
@@ -131,7 +131,7 @@ public class DefaultConvention extends CoordSysBuilder {
           if (SimpleUnit.isDateUnit(unit)) {
             vp.isCoordinateAxis = true;
             map.put(AxisType.Time, vp);
-            parseInfo.format(" Time Coordinate Axis added (unit) = %s from unit %s\n", vp.v.getName(), unit);
+            parseInfo.format(" Time Coordinate Axis added (unit) = %s from unit %s\n", vp.v.getFullName(), unit);
             //break; // allow multiple time coords
           }
         }
@@ -147,7 +147,7 @@ public class DefaultConvention extends CoordSysBuilder {
         if (atype != null) {
           if (map.get(atype) == null) {
             vp.isCoordinateAxis = true;
-            parseInfo.format(" Coordinate Axis added (Default forced) = %s for axis %s\n", vp.v.getName(), atype);
+            parseInfo.format(" Coordinate Axis added (Default forced) = %s for axis %s\n", vp.v.getFullName(), atype);
             map.put(atype, vp);
           }
         }
@@ -166,7 +166,7 @@ public class DefaultConvention extends CoordSysBuilder {
       for (Variable aVlist : vlist) {
         VariableEnhanced ve = (VariableEnhanced) aVlist;
         if (axisType == getAxisType(ds, ve)) {
-          return ve.getName();
+          return ve.getFullName();
         }
       }
       return null;

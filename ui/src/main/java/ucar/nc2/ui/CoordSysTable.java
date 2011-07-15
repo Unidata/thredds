@@ -368,7 +368,7 @@ public class CoordSysTable extends JPanel {
 
   private String tryGrid(VariableEnhanced v) {
     Formatter buff = new Formatter();
-    buff.format("%s:", v.getName());
+    buff.format("%s:", v.getFullName());
     List<CoordinateSystem> csList = v.getCoordinateSystems();
     if (csList.size() == 0)
       buff.format(" No Coord System found");
@@ -387,7 +387,7 @@ public class CoordSysTable extends JPanel {
 
   private String showMissing(VariableDS v) {
     Formatter buff = new Formatter();
-    buff.format("%s:", v.getName());
+    buff.format("%s:", v.getFullName());
     EnumSet<NetcdfDataset.Enhance> enhanceMode = v.getEnhanceMode();
     buff.format("enhanceMode= %s%n", enhanceMode);
     v.showScaleMissingProxy(buff);
@@ -413,7 +413,7 @@ public class CoordSysTable extends JPanel {
     public VariableBean(VariableEnhanced v) {
       this.ve = v;
 
-      setName(v.getName());
+      setName(v.getFullName());
       setDescription(v.getDescription());
       setUnits(v.getUnitsString());
 
@@ -663,7 +663,7 @@ public class CoordSysTable extends JPanel {
     public AxisBean(CoordinateAxis v) {
       this.axis = v;
 
-      setName(v.getName());
+      setName(v.getFullName());
       setCoordVar(v.isCoordinateVariable());
       setDescription(v.getDescription());
       setUnits(v.getUnitsString());

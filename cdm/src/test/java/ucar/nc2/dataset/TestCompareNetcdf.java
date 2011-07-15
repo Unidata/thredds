@@ -69,9 +69,9 @@ public class TestCompareNetcdf  {
     Iterator vs = subset.getVariables().iterator();
     while (vs.hasNext()) {
       Variable ds = (Variable) vs.next();
-      Variable d = ncfile.findVariable( ds.getName());
+      Variable d = ncfile.findVariable( ds.getFullNameEscaped());
       if (null == d)
-        return "missing Variable "+ds.getName();
+        return "missing Variable "+ds.getFullName();
       String ret = compareVariable( d, ds);
       if ( null != ret)
         return ret;
@@ -88,7 +88,7 @@ public class TestCompareNetcdf  {
       Dimension ds = (Dimension) s.get(i);
       Dimension d = v.getDimension(i);
       if (!ds.equals(d))
-        return "dimension not equals "+ds.getName()+" for variable "+subset.getName();
+        return "dimension not equals "+ds.getName()+" for variable "+subset.getFullName();
     }
 
     Iterator atts = subset.getAttributes().iterator();
@@ -96,11 +96,11 @@ public class TestCompareNetcdf  {
       Attribute ds = (Attribute) atts.next();
       Attribute d = v.findAttribute( ds.getName());
       if (null == d)
-        return "missing attribute "+ds.getName()+" for variable "+subset.getName();;
+        return "missing attribute "+ds.getName()+" for variable "+subset.getFullName();;
       if (!d.getDataType().equals(ds.getDataType()))
-        return "wrong getDataType, attribute "+ds.getName()+" for variable "+subset.getName();
+        return "wrong getDataType, attribute "+ds.getName()+" for variable "+subset.getFullName();
       if (!d.getStringValue().equals(ds.getStringValue()))
-        return "wrong Value, attribute "+ds.getName()+" for variable "+subset.getName();;
+        return "wrong Value, attribute "+ds.getName()+" for variable "+subset.getFullName();;
     }
 
     Array vArray = v.read();
@@ -110,7 +110,7 @@ public class TestCompareNetcdf  {
 
     while (sIter.hasNext()) {
       if (sIter.getDoubleNext() != vIter.getDoubleNext())
-         return "wrong data Value for variable "+subset.getName();
+         return "wrong data Value for variable "+subset.getFullName();
 
     }
 

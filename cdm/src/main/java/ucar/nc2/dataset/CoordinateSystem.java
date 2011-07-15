@@ -87,7 +87,7 @@ public class CoordinateSystem {
     for (int i=0; i<axesSorted.size(); i++) {
       CoordinateAxis axis = axesSorted.get(i);
       if (i>0) buff.append(" ");
-      buff.append( axis.getName());
+      buff.append( axis.getFullNameEscaped());
     }
     return buff.toString();
   }
@@ -462,7 +462,7 @@ public class CoordinateSystem {
     */
    public boolean containsAxes(List<CoordinateAxis> wantAxes) {
     for (CoordinateAxis ca : wantAxes) {
-      if (!containsAxis(ca.getName()))
+      if (!containsAxis(ca.getFullName()))
         return false;
     }
     return true;
@@ -470,12 +470,12 @@ public class CoordinateSystem {
 
   /**
     * Do we have the named axis?
-    * @param axisName (full escaped) name of axis
+    * @param axisName (full unescaped) name of axis
     * @return true if we have an axis of that name
     */
    public boolean containsAxis(String axisName) {
     for (CoordinateAxis ca : coordAxes) {
-      if (ca.getName().equals(axisName))
+      if (ca.getFullName().equals(axisName))
         return true;
     }
     return false;

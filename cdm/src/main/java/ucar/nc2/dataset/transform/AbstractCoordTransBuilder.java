@@ -127,7 +127,7 @@ public abstract class AbstractCoordTransBuilder implements ucar.nc2.dataset.Coor
     String formula = ds.findAttValueIgnoreCase(ctv, "formula_terms", null);
     if (null == formula) {
       if (null != errBuffer)
-        errBuffer.format("CoordTransBuilder %s: needs attribute 'formula_terms' on Variable %s\n", getTransformName(), ctv.getName());
+        errBuffer.format("CoordTransBuilder %s: needs attribute 'formula_terms' on Variable %s\n", getTransformName(), ctv.getFullName());
       return null;
     }
     return formula;

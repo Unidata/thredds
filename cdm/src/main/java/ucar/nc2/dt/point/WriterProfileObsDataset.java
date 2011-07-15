@@ -276,7 +276,7 @@ public class WriterProfileObsDataset {
         if (!d.isUnlimited())
           dimNames.append(" ").append(d.getName());
       }
-      Variable newVar = ncfile.addVariable(oldVar.getName(), oldVar.getDataType(), dimNames.toString());
+      Variable newVar = ncfile.addVariable(oldVar.getShortName(), oldVar.getDataType(), dimNames.toString());
 
       List<Attribute> atts = oldVar.getAttributes();
       for (Attribute att : atts) {

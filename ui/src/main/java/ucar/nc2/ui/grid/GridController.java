@@ -681,7 +681,7 @@ public class GridController {
     eventsOK = false; // dont let this trigger redraw
     renderGrid.setGeoGrid( currentField);
     ui.setFields( gridDataset.getGrids());
-    setField( currentField.getName());
+    setField( currentField.getFullName());
 
     // if possible, change the projection and the map area to one that fits this
     // dataset

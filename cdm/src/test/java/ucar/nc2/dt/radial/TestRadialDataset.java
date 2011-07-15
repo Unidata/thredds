@@ -137,7 +137,7 @@ public class TestRadialDataset extends TestCase {
   }
 
   private void testRadialVariable( RadialDatasetSweep.RadialVariable rv) throws IOException {
-    System.out.println(" radial variable = "+rv.getName());
+    System.out.println(" radial variable = "+rv.getShortName());
 
     int nsweeps = rv.getNumSweeps();
     for (int i = 0; i < nsweeps; i++) {

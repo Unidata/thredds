@@ -118,7 +118,7 @@ public class WcsCoverage
       List<String> vals = new ArrayList<String>();
       for ( int z = 0; z < zaxis.getSize(); z++ )
         vals.add( zaxis.getCoordName( z ).trim() );
-      vertAxis = new WcsRangeField.Axis( "Vertical", zaxis.getName(),
+      vertAxis = new WcsRangeField.Axis( "Vertical", zaxis.getFullName(),
                                          zaxis.getDescription(),
                                          zaxis.isNumeric(), vals );
     }
@@ -131,7 +131,7 @@ public class WcsCoverage
 
   GridDatatype getGridDatatype() { return coverage; }
 
-  public String getName() { return coverage.getName(); }
+  public String getName() { return coverage.getFullName(); }
   public String getLabel() { return coverage.getDescription(); }
   public String getDescription() { return coverage.getInfo(); }
   public GridCoordSystem getCoordinateSystem() { return coordSys; }
@@ -199,8 +199,8 @@ public class WcsCoverage
     }
     catch ( InvalidRangeException e )
     {
-      log.error( "writeCoverageDataToFile(): Failed to subset coverage <" + this.coverage.getName() + "> along vertical range <" + verticalRange + ">: " + e.getMessage() );
-      throw new WcsException( WcsException.Code.CoverageNotDefined, "Vertical", "Failed to subset coverage [" + this.coverage.getName() + "] along vertical range." );
+      log.error( "writeCoverageDataToFile(): Failed to subset coverage <" + this.coverage.getFullName() + "> along vertical range <" + verticalRange + ">: " + e.getMessage() );
+      throw new WcsException( WcsException.Code.CoverageNotDefined, "Vertical", "Failed to subset coverage [" + this.coverage.getFullName() + "] along vertical range." );
     }
 
     // Get the time range.
@@ -229,8 +229,8 @@ public class WcsCoverage
       }
       catch ( InvalidRangeException e )
       {
-        log.error( "writeCoverageDataToFile(): Failed to subset coverage [" + this.coverage.getName() + "] along time axis [" + timeRange + "]: " + e.getMessage() );
-        throw new WcsException( WcsException.Code.CoverageNotDefined, "Time", "Failed to subset coverage [" + this.coverage.getName() + "] along time axis [" + timeRange + "]." );
+        log.error( "writeCoverageDataToFile(): Failed to subset coverage [" + this.coverage.getFullName() + "] along time axis [" + timeRange + "]: " + e.getMessage() );
+        throw new WcsException( WcsException.Code.CoverageNotDefined, "Time", "Failed to subset coverage [" + this.coverage.getFullName() + "] along time axis [" + timeRange + "]." );
       }
     }
 
@@ -256,13 +256,13 @@ public class WcsCoverage
         }
         catch ( InvalidRangeException e )
         {
-          log.error( "writeCoverageDataToFile(): Failed to subset coverage <" + this.coverage.getName() + "> along time axis <" + timeRange + ">: " + e.getMessage() );
-          throw new WcsException( WcsException.Code.CoverageNotDefined, "", "Failed to subset coverage [" + this.coverage.getName() + "]." );
+          log.error( "writeCoverageDataToFile(): Failed to subset coverage <" + this.coverage.getFullName() + "> along time axis <" + timeRange + ">: " + e.getMessage() );
+          throw new WcsException( WcsException.Code.CoverageNotDefined, "", "Failed to subset coverage [" + this.coverage.getFullName() + "]." );
         }
         catch ( IOException e )
         {
-          log.error( "writeCoverageDataToFile(): Failed to write file for requested coverage <" + this.coverage.getName() + ">: " + e.getMessage() );
-          throw new WcsException( WcsException.Code.UNKNOWN, "", "Problem creating coverage [" + this.coverage.getName() + "]." );
+          log.error( "writeCoverageDataToFile(): Failed to write file for requested coverage <" + this.coverage.getFullName() + ">: " + e.getMessage() );
+          throw new WcsException( WcsException.Code.UNKNOWN, "", "Problem creating coverage [" + this.coverage.getFullName() + "]." );
         }
   
         return tifFile;
@@ -278,7 +278,7 @@ public class WcsCoverage
 
         NetcdfCFWriter writer = new NetcdfCFWriter();
         writer.makeFile( ncFile.getPath(), this.dataset.getDataset(),
-                         Collections.singletonList( this.coverage.getName() ),
+                         Collections.singletonList( this.coverage.getFullName() ),
                          bboxLatLonRect, 1,
                          zRange,
                          timeRange, 1,
@@ -293,13 +293,13 @@ public class WcsCoverage
     }
     catch ( InvalidRangeException e )
     {
-      log.error( "writeCoverageDataToFile(): Failed to subset coverage <" + this.coverage.getName() + ">: " + e.getMessage() );
-      throw new WcsException( WcsException.Code.CoverageNotDefined, "", "Failed to subset coverage [" + this.coverage.getName() + "]." );
+      log.error( "writeCoverageDataToFile(): Failed to subset coverage <" + this.coverage.getFullName() + ">: " + e.getMessage() );
+      throw new WcsException( WcsException.Code.CoverageNotDefined, "", "Failed to subset coverage [" + this.coverage.getFullName() + "]." );
     }
     catch ( IOException e )
     {
-      log.error( "writeCoverageDataToFile(): Failed to create or write temporary file for requested coverage <" + this.coverage.getName() + ">: " + e.getMessage() );
-      throw new WcsException( WcsException.Code.UNKNOWN, "", "Problem creating coverage [" + this.coverage.getName() + "]." );
+      log.error( "writeCoverageDataToFile(): Failed to create or write temporary file for requested coverage <" + this.coverage.getFullName() + ">: " + e.getMessage() );
+      throw new WcsException( WcsException.Code.UNKNOWN, "", "Problem creating coverage [" + this.coverage.getFullName() + "]." );
     }
   }
 

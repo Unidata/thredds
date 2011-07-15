@@ -60,7 +60,7 @@ public class TestStructure extends TestCase {
     List vars = ncfile.getVariables();
     for (int i=0; i<vars.size(); i++) {
       Variable v = (Variable) vars.get(i);
-      System.out.println(" "+v.getShortName()+" == "+v.getName());
+      System.out.println(" "+v.getShortName()+" == "+v.getFullName());
     }
 
     Structure record = (Structure) ncfile.findVariable("record");
@@ -69,7 +69,7 @@ public class TestStructure extends TestCase {
     vars = record.getVariables();
     for (int i=0; i<vars.size(); i++) {
       Variable v = (Variable) vars.get(i);
-      System.out.println(" "+v.getShortName()+" == "+v.getName());
+      System.out.println(" "+v.getShortName()+" == "+v.getFullName());
     }
 
     Variable time = ncfile.findVariable("record.time");

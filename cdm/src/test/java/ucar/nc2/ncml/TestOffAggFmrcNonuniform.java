@@ -49,7 +49,7 @@ public class TestOffAggFmrcNonuniform extends TestCase {
     super(name);
   }
 
-  public void testGribNonuniform() throws Exception, InvalidRangeException {
+  public void testGribNonuniform() throws Exception {
     String xml = "<?xml version='1.0' encoding='UTF-8'?>\n" +
       "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n" +
       "  <aggregation dimName='run' type='forecastModelRunCollection' timeUnitsChange='true'>\n" +
@@ -89,7 +89,7 @@ public class TestOffAggFmrcNonuniform extends TestCase {
 
     Variable lat = ncfile.findVariable("y");
     assert null != lat;
-    assert lat.getName().equals("y");
+    assert lat.getShortName().equals("y");
     assert lat.getRank() == 1;
     assert lat.getSize() == n;
     assert lat.getShape()[0] == n;
@@ -120,7 +120,7 @@ public class TestOffAggFmrcNonuniform extends TestCase {
   private void testAggCoordVar(NetcdfFile ncfile, int nagg) {
     Variable time = ncfile.findVariable("run");
     assert null != time;
-    assert time.getName().equals("run");
+    assert time.getShortName().equals("run");
     assert time.getRank() == 1;
     assert time.getSize() == nagg;
     assert time.getShape()[0] == nagg;
@@ -154,7 +154,7 @@ public class TestOffAggFmrcNonuniform extends TestCase {
   private void testTimeCoordVar(NetcdfFile ncfile, String varName, int nagg, int ntimes) throws Exception {
     Variable time = ncfile.findVariable(varName);
     assert null != time;
-    assert time.getName().equals(varName);
+    assert time.getShortName().equals(varName);
     assert time.getRank() == 2;
     assert time.getSize() == nagg * ntimes;
     assert time.getShape()[0] == nagg;

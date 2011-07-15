@@ -62,7 +62,7 @@ public class VariableSimpleAdapter implements VariableSimpleIF {
     this.m = m;
   }
 
-  public String getName() { return m.getName(); }
+  public String getFullNameEscaped() {  return m.getFullNameEscaped(); }
   public String getShortName() { return m.getName(); }
   public DataType getDataType() { return m.getDataType(); }
   public String getDescription() { return m.getDescription(); }
@@ -89,6 +89,6 @@ public class VariableSimpleAdapter implements VariableSimpleIF {
    * Sort by name
    */
   public int compareTo(VariableSimpleIF o) {
-    return getName().compareTo(o.getName());
+    return getShortName().compareTo(o.getShortName());
   }
 }

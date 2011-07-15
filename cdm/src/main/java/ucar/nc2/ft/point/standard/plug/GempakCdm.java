@@ -140,13 +140,13 @@ public class GempakCdm extends TableConfigurerImpl {
     stnTable.structureType = hasStruct ? TableConfig.StructureType.Structure : TableConfig.StructureType.PsuedoStructure;      
     stnTable.dimName = stationDim.getName();
 
-    stnTable.lat= lat.getName();
-    stnTable.lon= lon.getName();
+    stnTable.lat= lat.getFullName();
+    stnTable.lon= lon.getFullName();
 
     // optional alt coord
     Variable alt = CoordSysEvaluator.findCoordByType(ds, AxisType.Height);
     if (alt != null)
-      stnTable.stnAlt = alt.getName();
+      stnTable.stnAlt = alt.getFullName();
 
     // station id
     stnTable.stnId = Evaluator.getNameOfVariableWithAttribute(ds, "standard_name", "station_id");
@@ -196,12 +196,12 @@ public class GempakCdm extends TableConfigurerImpl {
 
     TableConfig obs = new TableConfig(obsTableType, obsDim.getName());
     obs.dimName = obsDim.getName();
-    obs.time = time.getName();
+    obs.time = time.getFullName();
     obs.missingVar = "_isMissing";
     stnTable.addChild(obs);
 
     if (obsTableType == Table.Type.MultidimStructure) {
-      obs.structName = multidimStruct.getName();
+      obs.structName = multidimStruct.getFullName();
       obs.structureType = TableConfig.StructureType.Structure;
       // if time is not in this structure, need to join it
       if (multidimStruct.findVariable( time.getShortName()) == null) {
@@ -273,15 +273,15 @@ public class GempakCdm extends TableConfigurerImpl {
 
     TableConfig obs = new TableConfig(obsTableType, obsDim.getName());
     obs.dimName = obsDim.getName();
-    obs.structName = multidimStruct.getName();
+    obs.structName = multidimStruct.getFullName();
     obs.structureType = TableConfig.StructureType.Structure;
     obs.featureType = FeatureType.POINT;
 
-    obs.lat= lat.getName();
-    obs.lon= lon.getName();
-    obs.time= time.getName();
+    obs.lat= lat.getFullName();
+    obs.lon= lon.getFullName();
+    obs.time= time.getFullName();
     if (alt != null)
-       obs.elev = alt.getName();
+       obs.elev = alt.getFullName();
 
     List<String> vars = new ArrayList<String>(30);
     for (Variable v : ds.getVariables()) {
@@ -320,11 +320,11 @@ public class GempakCdm extends TableConfigurerImpl {
 
     TableConfig timeTable = new TableConfig(Table.Type.MultidimStructure, obsDim.getName());
     timeTable.missingVar = "_isMissing";
-    timeTable.structName = multidimStruct.getName();
+    timeTable.structName = multidimStruct.getFullName();
     timeTable.structureType = TableConfig.StructureType.Structure;
     timeTable.addJoin(new JoinArray(time, JoinArray.Type.level, 1));
-    timeTable.time = time.getName();
-    timeTable.feature_id = time.getName();
+    timeTable.time = time.getFullName();
+    timeTable.feature_id = time.getFullName();
     stnTable.addChild(timeTable);
 
     TableConfig obsTable = new TableConfig(Table.Type.NestedStructure, obsDim.getName());
@@ -334,7 +334,7 @@ public class GempakCdm extends TableConfigurerImpl {
         return null;
     }
 
-    obsTable.structName = nestedStruct.getName();
+    obsTable.structName = nestedStruct.getFullName();
     obsTable.nestedTableName = nestedStruct.getShortName();
     Variable elev = findZAxisNotStationAlt(ds);
      if (elev == null) {
@@ -381,8 +381,8 @@ public class GempakCdm extends TableConfigurerImpl {
     stnTable.structureType = TableConfig.StructureType.PsuedoStructure;
     stnTable.dimName = stationDim.getName();
 
-    stnTable.lat= lat.getName();
-    stnTable.lon= lon.getName();
+    stnTable.lat= lat.getFullName();
+    stnTable.lon= lon.getFullName();
 
     stnTable.stnId = findNameVariableWithStandardNameAndDimension(ds, CF.STATION_ID, stationDim, errlog);
     stnTable.stnDesc = findNameVariableWithStandardNameAndDimension(ds, CF.STATION_DESC, stationDim, errlog);

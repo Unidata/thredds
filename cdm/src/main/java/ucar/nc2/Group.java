@@ -340,7 +340,7 @@ public class Group {
     }
 
     for (Group g : groups) {
-      String gname = strict ? NetcdfFile.escapeName(g.getShortName()) : g.getShortName();
+      String gname = strict ? NetcdfFile.escapeNameCDL(g.getShortName()) : g.getShortName();
       out.print("\n " + indent + "Group " + gname + " {\n");
       g.writeCDL(out, indent + "  ", strict);
       out.print(indent + " }\n");
@@ -352,7 +352,7 @@ public class Group {
     if (hasA && strict)
       out.print(indent + " // global attributes:\n");
     for (Attribute att : attributes) {
-      String name = strict ? NetcdfFile.escapeName(getShortName()) : getShortName();
+      String name = strict ? NetcdfFile.escapeNameCDL(getShortName()) : getShortName();
       out.print(indent + " " + name + ":");
       out.print( att.toString(strict));
       out.print(";");

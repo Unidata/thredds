@@ -968,8 +968,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   public CoordinateAxis findCoordinateAxis(String fullName) {
     if (fullName == null) return null;
     for (CoordinateAxis v : coordAxes) {
-      String n = v.getName();
-      if (fullName.equals(n))
+      if (fullName.equals(v.getFullName()))
         return v;
     }
     return null;
@@ -1286,7 +1285,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
       String cs2 = (list2.size() > 0) ? ((CoordinateSystem) list2.get(0)).getName() : "";
 
       if (cs2.equals(cs1))
-        return v1.getName().compareToIgnoreCase(v2.getName());
+        return v1.getShortName().compareToIgnoreCase(v2.getShortName());
       else
         return cs1.compareToIgnoreCase(cs2);
     }
@@ -1373,7 +1372,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    */
   public CoordinateAxis addCoordinateAxis(VariableDS v) {
     if (v == null) return null;
-    CoordinateAxis oldVar = findCoordinateAxis(v.getName());
+    CoordinateAxis oldVar = findCoordinateAxis(v.getFullName());
     if (oldVar != null)
       coordAxes.remove(oldVar);
 
@@ -1382,7 +1381,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
     if (v.isMemberOfStructure()) {
       Structure parentOrg = v.getParentStructure();  // gotta be careful to get the wrapping parent
-      Structure parent = (Structure) findVariable(parentOrg.getName());
+      Structure parent = (Structure) findVariable(parentOrg.getFullNameEscaped());
       parent.replaceMemberVariable(ca);
 
     } else {
@@ -1471,7 +1470,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     Array data = Array.makeArray(v.getDataType(), values);
 
     if (data.getSize() != v.getSize())
-      throw new IllegalArgumentException("Incorrect number of values specified for the Variable " + v.getName() +
+      throw new IllegalArgumentException("Incorrect number of values specified for the Variable " + v.getFullName() +
               " needed= " + v.getSize() + " given=" + data.getSize());
 
     if (v.getRank() != 1) // dont have to reshape for rank 1
@@ -1561,7 +1560,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
   private void dumpVariables(List<Variable> vars, PrintStream out) {
     for (Variable v : vars) {
-      out.print("  " + v.getName() + " " + v.getClass().getName()); // +" "+Integer.toHexString(v.hashCode()));
+      out.print("  " + v.getFullName() + " " + v.getClass().getName()); // +" "+Integer.toHexString(v.hashCode()));
       if (v instanceof CoordinateAxis)
         out.println("  " + ((CoordinateAxis) v).getAxisType());
       else
@@ -1602,13 +1601,13 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     for (Variable v : getVariables()) {
       VariableDS vds =  (VariableDS) v;
       if (vds.getOriginalDataType() != vds.getDataType()) {
-        f.format("Variable %s has type %s, org = %s%n", vds.getName(), vds.getOriginalDataType(), vds.getDataType());
+        f.format("Variable %s has type %s, org = %s%n", vds.getFullName(), vds.getOriginalDataType(), vds.getDataType());
       }
 
       if (vds.getOriginalVariable() != null) {
         Variable orgVar = vds.getOriginalVariable();
         if (orgVar.getRank() != vds.getRank())
-          f.format("Variable %s has rank %d, org = %d%n", vds.getName(), vds.getRank(), orgVar.getRank());
+          f.format("Variable %s has rank %d, org = %d%n", vds.getFullName(), vds.getRank(), orgVar.getRank());
       }
 
 

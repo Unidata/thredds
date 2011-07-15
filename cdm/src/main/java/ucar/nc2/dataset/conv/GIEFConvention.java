@@ -74,7 +74,7 @@ public class GIEFConvention extends CoordSysBuilder {
     for (Variable v : vlist) {
       if (v.getRank() > 1) {
         v.addAttribute(new Attribute("units", unit_name));
-        v.addAttribute(new Attribute("long_name", v.getName() + " " + parameter_name));
+        v.addAttribute(new Attribute("long_name", v.getShortName() + " " + parameter_name));
         v.addAttribute(new Attribute(_Coordinate.Axes, "time level latitude longitude"));
       }
     }

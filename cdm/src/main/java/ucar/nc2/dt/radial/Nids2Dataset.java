@@ -219,7 +219,7 @@ public class Nids2Dataset extends RadialDatasetSweepAdapter implements TypedData
     String vName = var.getShortName();
     int rnk = var.getRank();
 
-    if (!var.getName().endsWith("RAW") && rnk == 2) {
+    if (!var.getShortName().endsWith("RAW") && rnk == 2) {
       VariableSimpleIF v = new MyRadialVariableAdapter(vName, var.getAttributes());
       rsvar = new Nids2Variable(nds, v, var);
     }
@@ -259,10 +259,10 @@ public class Nids2Dataset extends RadialDatasetSweepAdapter implements TypedData
 
 
     private Nids2Variable(NetcdfDataset nds, VariableSimpleIF v, Variable v0) {
-      super(v.getName(), v0.getAttributes());
+      super(v.getShortName(), v0.getAttributes());
       sweeps = new ArrayList();
       nsweeps = 0;
-      name = v.getName();
+      name = v.getShortName();
 
       int[] shape = v0.getShape();
       int count = v0.getRank() - 1;

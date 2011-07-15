@@ -263,7 +263,7 @@ public class StationObsDatasetInfo {
     for (int i = 0; i < axes.size(); i++) {
       CoordinateAxis axis = (CoordinateAxis) axes.get(i);
       Element axisElem = new Element("axisRef");
-      axisElem.setAttribute("name", axis.getName());
+      axisElem.setAttribute("name", axis.getFullName());
       csElem.addContent(axisElem);
     }
     List cts = cs.getCoordinateTransforms();
@@ -294,7 +294,7 @@ public class StationObsDatasetInfo {
   private Element writeVariable(VariableSimpleIF v) {
 
     Element varElem = new Element("variable");
-    varElem.setAttribute("name", v.getName());
+    varElem.setAttribute("name", v.getShortName());
 
     ucar.ma2.DataType dt = v.getDataType();
     if (dt != null)

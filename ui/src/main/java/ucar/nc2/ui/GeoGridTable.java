@@ -90,7 +90,7 @@ public class GeoGridTable extends JPanel {
         if (v == null)
           infoTA.appendLine( "Cant find variable "+vb.getName()+" escaped= ("+NetcdfFile.escapeName( vb.getName())+")");
         else {
-          infoTA.appendLine( "Variable "+ v.getName()+" :");
+          infoTA.appendLine( "Variable "+ v.getFullName()+" :");
           infoTA.appendLine( v.toString());
         }
         infoTA.gotoTop();
@@ -268,7 +268,7 @@ public class GeoGridTable extends JPanel {
     // create from a dataset
     public GeogridBean( GridDatatype geogrid) {
       this.geogrid = geogrid;
-      setName( geogrid.getName());
+      setName( geogrid.getFullName());
       setDescription( geogrid.getDescription());
       setUnits( geogrid.getUnitsString());
 
@@ -444,7 +444,7 @@ public class GeoGridTable extends JPanel {
     public GeoAxisBean( CoordinateAxis v) {
       this.axis = v;
 
-      setName( v.getName());
+      setName( v.getFullName());
       setCoordVar( v.isCoordinateVariable());
       setDescription( v.getDescription());
       setUnits( v.getUnitsString());

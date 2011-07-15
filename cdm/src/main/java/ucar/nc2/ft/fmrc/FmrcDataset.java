@@ -304,7 +304,7 @@ class FmrcDataset {
       List<Variable> copyList = new ArrayList<Variable>(root.getVariables()); // use copy since we may be removing some variables
       for (Variable v : copyList) {
         // see if its a non-agg variable
-        FmrcInv.UberGrid grid = fmrcInv.findUberGrid(v.getName());
+        FmrcInv.UberGrid grid = fmrcInv.findUberGrid(v.getFullName());
         if (grid == null) { // only non-agg vars need to be cached
           Variable orgV = (Variable) v.getSPobject();
           if (orgV.getSize() > 10 * 1000 * 1000)
@@ -329,9 +329,9 @@ class FmrcDataset {
 
       // now make standard CF metadata for gridded data
       for (GridDatatype grid : gds.getGrids()) {
-        Variable newV = result.findVariable(grid.getName());
+        Variable newV = result.findVariable(grid.getFullName());
         if (newV == null) {
-          logger.warn("FmrcDataset cant find "+grid.getName()+" in proto gds ");
+          logger.warn("FmrcDataset cant find "+grid.getFullName()+" in proto gds ");
           continue;
         }
 
@@ -340,7 +340,7 @@ class FmrcDataset {
         GridCoordSystem gcs = grid.getCoordinateSystem();
         for (CoordinateAxis axis : gcs.getCoordinateAxes()) {
           if ((axis.getAxisType() != AxisType.Time) && (axis.getAxisType() != AxisType.RunTime)) // these are added later
-            sbuff.append(axis.getName()).append(" ");
+            sbuff.append(axis.getFullName()).append(" ");
         }
         newV.addAttribute(new Attribute("coordinates", sbuff.toString())); // LOOK what about adding lat/lon variable
 
@@ -348,12 +348,12 @@ class FmrcDataset {
         for (CoordinateTransform ct : gcs.getCoordinateTransforms()) {
           Variable ctv = result.findVariable(ct.getName());
           if ((ctv != null) && (ct.getTransformType() == TransformType.Projection))
-            newV.addAttribute(new Attribute("grid_mapping", ctv.getName()));
+            newV.addAttribute(new Attribute("grid_mapping", ctv.getFullName()));
         }
 
         // LOOK is this needed ?
         for (CoordinateAxis axis : gcs.getCoordinateAxes()) {
-          Variable coordV = result.findVariable(axis.getName());
+          Variable coordV = result.findVariable(axis.getFullNameEscaped());
           if ((axis.getAxisType() == AxisType.Height) || (axis.getAxisType() == AxisType.Pressure) || (axis.getAxisType() == AxisType.GeoZ)) {
             if (null != axis.getPositive())
               coordV.addAttribute(new Attribute("positive", axis.getPositive()));
@@ -536,7 +536,7 @@ class FmrcDataset {
     runtimeCoordVar.addAttribute(new ucar.nc2.Attribute(_Coordinate.AxisType, AxisType.RunTime.toString()));
     result.removeVariable(null, runtimeCoordVar.getShortName());
     result.addVariable(null, runtimeCoordVar);
-    if (logger.isDebugEnabled()) logger.debug("FmrcDataset: added runtimeCoordVar " + runtimeCoordVar.getName());
+    if (logger.isDebugEnabled()) logger.debug("FmrcDataset: added runtimeCoordVar " + runtimeCoordVar.getFullName());
 
     // make the runtime coordinates
     Array runCoordVals = ArrayDouble.factory(DataType.DOUBLE, new int[] {nruns}, runOffset);
@@ -629,7 +629,7 @@ class FmrcDataset {
 
     List<CoordinateAxis> axes = new ArrayList<CoordinateAxis>();
     for (CoordinateAxis axis : protoCs.getCoordinateAxes()) {
-      Variable v = result.findCoordinateAxis(axis.getName());
+      Variable v = result.findCoordinateAxis(axis.getFullNameEscaped());
       CoordinateAxis ra;
       if (v instanceof CoordinateAxis)
         ra = (CoordinateAxis) v;
@@ -796,7 +796,8 @@ class FmrcDataset {
             }
 
             if (debugRead)
-              System.out.printf("%d %d reallyRead %s %d bytes start at %d total size is %d%n", runIdx, timeIdx, mainv.getName(), result.getSize(), destPos, allData.getSize());
+              System.out.printf("%d %d reallyRead %s %d bytes start at %d total size is %d%n",
+                      runIdx, timeIdx, mainv.getFullName(), result.getSize(), destPos, allData.getSize());
 
             Array.arraycopy(result, 0, allData, destPos, (int) result.getSize());
             destPos += result.getSize();
@@ -909,7 +910,7 @@ class FmrcDataset {
 
     // these are the non-agg variables - get data or ProxyReader from proto
     for (Variable v : nonAggVars) {
-      VariableDS protoV = (VariableDS) proto.findVariable(v.getName());
+      VariableDS protoV = (VariableDS) proto.findVariable(v.getFullNameEscaped());
       if (protoV.hasCachedDataRecurse()) {
         v.setCachedData(protoV.read()); // read from original
       } else {
@@ -1052,13 +1053,13 @@ class FmrcDataset {
           TimeInventory.Instance timeInv =  vstate.timeInv.getInstance(vstate.gridLite, timeIdx);
           if (timeInv == null) {
             if (logger.isDebugEnabled())
-              logger.debug("Missing Inventory timeInx="+timeIdx+ " for "+ mainv.getName()+" in "+state.lite.collectionName);
+              logger.debug("Missing Inventory timeInx="+timeIdx+ " for "+ mainv.getFullName()+" in "+state.lite.collectionName);
             // vstate.timeInv.getInstance(vstate.gridLite, timeIdx); // allow debugger
           }
           
           else if (timeInv.getDatasetLocation() != null) {
             if (debugRead) System.out.printf("HIT %s%n", timeInv);
-            result = read(timeInv, mainv.getName(), innerSection, openFilesRead); // may return null
+            result = read(timeInv, mainv.getFullNameEscaped(), innerSection, openFilesRead); // may return null
             result = MAMath.convert(result, dtype); // just in case it need to be converted
           }
 
@@ -1070,7 +1071,7 @@ class FmrcDataset {
           }
 
           if (debugRead)
-            System.out.printf("%d reallyRead %s %d bytes start at %d total size is %d%n", timeIdx, mainv.getName(), result.getSize(), destPos, allData.getSize());
+            System.out.printf("%d reallyRead %s %d bytes start at %d total size is %d%n", timeIdx, mainv.getFullName(), result.getSize(), destPos, allData.getSize());
 
           Array.arraycopy(result, 0, allData, destPos, (int) result.getSize());
           destPos += result.getSize();
@@ -1143,11 +1144,11 @@ class FmrcDataset {
 
   // the general case is to get only one time per read - probably not too inefficient, eg GRIB, except maybe for remote reads
 
-  private Array read(TimeInventory.Instance timeInstance, String varName, List<Range> innerSection, HashMap<String, NetcdfDataset> openFilesRead) throws IOException, InvalidRangeException {
+  private Array read(TimeInventory.Instance timeInstance, String fullNameEsc, List<Range> innerSection, HashMap<String, NetcdfDataset> openFilesRead) throws IOException, InvalidRangeException {
     NetcdfFile ncfile = open(timeInstance.getDatasetLocation(), openFilesRead);
     if (ncfile == null) return null; // file might be deleted ??
 
-    Variable v = ncfile.findVariable(varName);
+    Variable v = ncfile.findVariable(fullNameEsc);
     if (v == null) return null; // v could be missing, return missing data i think
 
     // assume time is first dimension LOOK: out of-order; ensemble; section different ??
@@ -1265,7 +1266,7 @@ class FmrcDataset {
   }
 
   protected Variable findVariable(NetcdfFile ncfile, Variable client) {
-    Variable v = ncfile.findVariable(client.getName());
+    Variable v = ncfile.findVariable(client.getFullNameEscaped());
     if (v == null) {  // might be renamed
       VariableEnhanced ve = (VariableEnhanced) client;
       v = ncfile.findVariable(ve.getOriginalName());

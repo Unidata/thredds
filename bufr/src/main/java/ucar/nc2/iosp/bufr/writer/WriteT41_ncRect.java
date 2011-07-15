@@ -251,7 +251,7 @@ public class WriteT41_ncRect {
   }
 
   private void copyAll(NetcdfFileWriteable ncfile, Variable oldVar) throws IOException {
-    String newName = N3iosp.makeValidNetcdfObjectName(oldVar.getName());
+    String newName = N3iosp.makeValidNetcdfObjectName(oldVar.getShortName());
 
     Array data = oldVar.read();
     try {
@@ -263,12 +263,12 @@ public class WriteT41_ncRect {
 
     } catch (InvalidRangeException e) {
       e.printStackTrace();
-      throw new IOException(e.getMessage() + " for Variable " + oldVar.getName());
+      throw new IOException(e.getMessage() + " for Variable " + oldVar.getFullName());
     }
   }
 
   private void copySome(NetcdfFileWriteable ncfile, Variable oldVar, int nelems) throws IOException {
-    String newName = N3iosp.makeValidNetcdfObjectName(oldVar.getName());
+    String newName = N3iosp.makeValidNetcdfObjectName(oldVar.getShortName());
 
     int[] shape = oldVar.getShape();
     int[] origin = new int[oldVar.getRank()];

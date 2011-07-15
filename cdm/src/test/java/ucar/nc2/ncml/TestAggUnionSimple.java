@@ -215,7 +215,7 @@ public class TestAggUnionSimple extends TestCase {
 
     Variable lat = ncfile.findVariable("lat");
     assert null != lat;
-    assert lat.getName().equals("lat");
+    assert lat.getShortName().equals("lat");
     assert lat.getRank() == 1;
     assert lat.getSize() == 21;
     assert lat.getShape()[0] == 21;
@@ -255,7 +255,7 @@ public class TestAggUnionSimple extends TestCase {
 
     Variable v = ncfile.findVariable("lflx");
     assert null != v;
-    assert v.getName().equals("lflx");
+    assert v.getShortName().equals("lflx");
     assert v.getRank() == 3;
     assert v.getSize() == 360 * 21 * 456;
     assert v.getShape()[0] == 456;

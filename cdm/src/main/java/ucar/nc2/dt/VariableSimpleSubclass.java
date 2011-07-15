@@ -52,7 +52,7 @@ public class VariableSimpleSubclass implements VariableSimpleIF {
     this.v = v;
   }
 
-  public String getName() { return v.getName(); }
+  //public String getName() { return v.getName(); }
   public String getShortName() { return v.getShortName(); }
   public DataType getDataType() { return v.getDataType(); }
   public String getDescription() { return v.getDescription(); }
@@ -75,6 +75,6 @@ public class VariableSimpleSubclass implements VariableSimpleIF {
    * Sort by name
    */
   public int compareTo(VariableSimpleIF o) {
-    return getName().compareTo(o.getName());
+    return getShortName().compareTo(o.getShortName());
   }
 }

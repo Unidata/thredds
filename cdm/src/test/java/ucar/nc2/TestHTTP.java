@@ -193,7 +193,7 @@ public class TestHTTP extends TestCase {
     for (java.util.Iterator iter = ncfile.getVariables().iterator(); iter.hasNext(); ) {
       Variable v = (Variable) iter.next();
       long nbytes = v.getSize() * v.getElementSize();
-      System.out.println("  Try to read variable "+v.getName()+" "+nbytes);
+      System.out.println("  Try to read variable "+v.getFullName()+" "+nbytes);
       v.read();
       total += v.getSize() * v.getElementSize();
    }

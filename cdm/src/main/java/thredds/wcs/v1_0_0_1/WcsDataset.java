@@ -75,7 +75,7 @@ public class WcsDataset
       GridCoordSystem gcs = curGridDatatype.getCoordinateSystem();
       if ( !gcs.isRegularSpatial() )
         continue;
-      this.availableCoverages.put( curGridDatatype.getName(), new WcsCoverage( curGridDatatype, this) );
+      this.availableCoverages.put( curGridDatatype.getFullName(), new WcsCoverage( curGridDatatype, this) );
     }
     // ToDo WCS 1.0Plus - change FROM coverage for each parameter TO coverage for each coordinate system
     // This is WCS 1.1 style coverage for each coordinate system
@@ -98,14 +98,14 @@ public class WcsDataset
       this.dataset.close();
   }
 
-  public boolean isAvailableCoverageName( String name )
+  public boolean isAvailableCoverageName( String fullName )
   {
-    return availableCoverages.containsKey( name );
+    return availableCoverages.containsKey( fullName );
   }
 
-  public WcsCoverage getAvailableCoverage( String name )
+  public WcsCoverage getAvailableCoverage( String fullName )
   {
-    return availableCoverages.get( name );
+    return availableCoverages.get( fullName );
   }
 
   public Collection<WcsCoverage> getAvailableCoverageCollection()

@@ -140,7 +140,7 @@ public class SequenceHelper {
   } */
 
   public List getData(CancelTask cancel) throws IOException {
-    String CE = sequenceOuter.getName();
+    String CE = sequenceOuter.getShortName();
     ArrayStructure as = (ArrayStructure) dodsFile.readWithCE(sequenceOuter, CE);
     extractMembers(as);
     int n = (int) as.getSize();
@@ -151,7 +151,7 @@ public class SequenceHelper {
   }
 
   public List getData(LatLonRect boundingBox, CancelTask cancel) throws IOException {
-    String CE = sequenceOuter.getName() + "&" + makeBB( boundingBox);
+    String CE = sequenceOuter.getShortName() + "&" + makeBB( boundingBox);
     ArrayStructure as = (ArrayStructure) dodsFile.readWithCE(sequenceOuter, CE);
     extractMembers(as);
     int n = (int) as.getSize();
@@ -163,7 +163,7 @@ public class SequenceHelper {
   }
 
   public List getData(LatLonRect boundingBox, Date start, Date end, CancelTask cancel) throws IOException {
-    String CE = sequenceOuter.getName() + "&" + makeBB( boundingBox) + "&"+ makeTimeRange( start, end);
+    String CE = sequenceOuter.getShortName() + "&" + makeBB( boundingBox) + "&"+ makeTimeRange( start, end);
     ArrayStructure as = (ArrayStructure) dodsFile.readWithCE(sequenceOuter, CE);
     extractMembers(as);
 
@@ -175,17 +175,17 @@ public class SequenceHelper {
   }
 
   private String makeBB( LatLonRect bb) {
-    return latVar.getName()+">="+bb.getLowerLeftPoint().getLatitude()+"&"+
-           latVar.getName()+"<="+bb.getUpperRightPoint().getLatitude()+"&"+
-           lonVar.getName()+">="+bb.getLowerLeftPoint().getLongitude()+"&"+
-           lonVar.getName()+"<="+bb.getUpperRightPoint().getLongitude();
+    return latVar.getShortName()+">="+bb.getLowerLeftPoint().getLatitude()+"&"+
+           latVar.getShortName()+"<="+bb.getUpperRightPoint().getLatitude()+"&"+
+           lonVar.getShortName()+">="+bb.getLowerLeftPoint().getLongitude()+"&"+
+           lonVar.getShortName()+"<="+bb.getUpperRightPoint().getLongitude();
   }
 
   private String makeTimeRange( Date start, Date end) {
     double startValue = timeUnit.makeValue(start);
     double endValue = timeUnit.makeValue(end);
-    return timeVar.getName()+">="+startValue+"&"+   // LOOK
-           timeVar.getName()+"<="+endValue;
+    return timeVar.getShortName()+">="+startValue+"&"+   // LOOK
+           timeVar.getShortName()+"<="+endValue;
   }
 
   private StructureMembers.Member latMember, lonMember, innerMember, altMember, timeMember;

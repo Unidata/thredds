@@ -49,15 +49,7 @@ import java.util.List;
  * @see <a href="http://www.unidata.ucar.edu/software/netcdf-java/reference/SectionSpecification.html">SectionSpecification</a>
  */
 public class ParsedSectionSpec {
-  public Variable v; // the variable
-  public Section section; // section for this variable, filled in from variable if needed
-  public ParsedSectionSpec child;
-
-  private ParsedSectionSpec(Variable v, Section section) {
-    this.v = v;
-    this.section = section;
-    this.child = null;
-  }
+  private static boolean debugSelector = false;
 
   /**
    * Parse a section specification String. These have the form:
@@ -86,24 +78,23 @@ public class ParsedSectionSpec {
    * @see <a href="http://www.unidata.ucar.edu/software/netcdf-java/reference/SectionSpecification.html">SectionSpecification</a>
    */
   public static ParsedSectionSpec parseVariableSection(NetcdfFile ncfile, String variableSection) throws InvalidRangeException {
-    StringTokenizer stoke = new StringTokenizer(variableSection, ".");
-    String selector = stoke.nextToken();
-    if (selector == null)
+    List<String> tokes = NetcdfFile.tokenizeEscapedName(variableSection);
+    if (tokes.size() == 0)
       throw new IllegalArgumentException("empty sectionSpec = " + variableSection);
 
-    // parse each selector, find the inner variable
+    String selector = tokes.get(0);
     ParsedSectionSpec outerV = parseVariableSelector(ncfile, selector);
+
+    // parse each selector, find the inner variable
     ParsedSectionSpec current = outerV;
-    while (stoke.hasMoreTokens()) {
-      selector = stoke.nextToken();
+    for (int i=1; i<tokes.size(); i++) {
+      selector = tokes.get(i);
       current.child = parseVariableSelector( current.v,  selector);
       current = current.child;
     }
 
     return outerV;
   }
-
-  private static boolean debugSelector = false;
 
   // parse variable name and index selector out of the selector String. variable name must be escaped
   private static ParsedSectionSpec parseVariableSelector(Object parent, String selector) throws InvalidRangeException {
@@ -150,7 +141,8 @@ public class ParsedSectionSpec {
     return new ParsedSectionSpec(v, section);
   }
 
-  /** Make section specification String from a range list for a Variable.
+  /**
+   * Make section specification String from a range list for a Variable.
    * @param v for this Variable.
    * @param ranges list of Range. Must includes all parent structures. The list be null, meaning use all.
    *   Individual ranges may be null, meaning all for that dimension.
@@ -170,7 +162,7 @@ public class ParsedSectionSpec {
     }
     List<Range> ranges = (orgRanges == null) ? v.getRanges() : orgRanges;
 
-    sb.append( v.isMemberOfStructure() ? NetcdfFile.escapeName(v.getShortName()) : v.getName());
+    sb.append( v.isMemberOfStructure() ? NetcdfFile.escapeNameSectionSpec(v.getShortName()) : NetcdfFile.makeFullNameEscapedSectionSpec(v));
 
     if (!v.isVariableLength() && !v.isScalar()) { // sequences cant be sectioned
       sb.append('(');
@@ -189,6 +181,17 @@ public class ParsedSectionSpec {
     }
 
     return (orgRanges == null) ? null : ranges.subList(v.getRank(), ranges.size());
+  }
+
+  ///////////////////////////////////////////////////////////////////////////
+  public final Variable v; // the variable
+  public final Section section; // section for this variable, filled in from variable if needed
+  public ParsedSectionSpec child;
+
+  private ParsedSectionSpec(Variable v, Section section) {
+    this.v = v;
+    this.section = section;
+    this.child = null;
   }
 
 }

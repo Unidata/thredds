@@ -140,7 +140,7 @@ public class TestOffAggForecastModel extends TestCase {
 
     Variable lat = ncfile.findVariable("y");
     assert null != lat;
-    assert lat.getName().equals("y");
+    assert lat.getShortName().equals("y");
     assert lat.getRank() == 1;
     assert lat.getSize() == 65;
     assert lat.getShape()[0] == 65;
@@ -174,7 +174,7 @@ public class TestOffAggForecastModel extends TestCase {
   public void testAggCoordVar(NetcdfFile ncfile, int nagg) {
     Variable time = ncfile.findVariable("run");
     assert null != time;
-    assert time.getName().equals("run");
+    assert time.getShortName().equals("run");
     assert time.getRank() == 1;
     assert time.getSize() == nagg;
     assert time.getShape()[0] == nagg;
@@ -209,7 +209,7 @@ public class TestOffAggForecastModel extends TestCase {
   public void testReadData(NetcdfFile ncfile, int nagg, int nfore) throws IOException {
     Variable v = ncfile.findVariable("P_sfc");
     assert null != v;
-    assert v.getName().equals("P_sfc");
+    assert v.getShortName().equals("P_sfc");
     assert v.getRank() == 4;
     assert v.getShape()[0] == nagg;
     assert v.getShape()[1] == nfore : v.getShape()[1];

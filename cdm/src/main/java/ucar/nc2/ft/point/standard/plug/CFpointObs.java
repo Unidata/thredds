@@ -193,7 +193,7 @@ public class CFpointObs extends TableConfigurerImpl {
 
       case flat:
         obsTable = makeStructTable(ds, FeatureType.STATION, new EncodingInfo(Encoding.flat, obsDim), errlog);
-        obsTable.parentIndex = (parentId == null) ? null : parentId.getName();
+        obsTable.parentIndex = (parentId == null) ? null : parentId.getFullName();
         obsTable.stnId = findNameVariableWithStandardNameAndDimension(ds, CF.STATION_ID, obsDim, errlog);
         obsTable.stnDesc = findNameVariableWithStandardNameAndDimension(ds, CF.STATION_DESC, obsDim, errlog);
         obsTable.stnWmoId = findNameVariableWithStandardNameAndDimension(ds, CF.STATION_WMOID, obsDim, errlog);
@@ -425,7 +425,7 @@ public class CFpointObs extends TableConfigurerImpl {
           return null;
         }
         if (stationIndex.getRank() != 1) {
-          errlog.format("timeSeriesProfile stationIndex: %s variable must be rank 1%n", stationIndex.getName());
+          errlog.format("timeSeriesProfile stationIndex: %s variable must be rank 1%n", stationIndex.getFullName());
           return null;
         }
         //profileDim = stationIndex.getDimension(0);
@@ -436,7 +436,7 @@ public class CFpointObs extends TableConfigurerImpl {
           return null;
         }
         if (ragged_rowSize.getRank() != 1) {
-          errlog.format("timeSeriesProfile numObs: %s variable for observations must be rank 1%n", ragged_rowSize.getName());
+          errlog.format("timeSeriesProfile numObs: %s variable for observations must be rank 1%n", ragged_rowSize.getFullName());
           return null;
         }
         if (info.childDim.equals(info.grandChildDim)) {
@@ -610,7 +610,7 @@ public class CFpointObs extends TableConfigurerImpl {
           return null;
         }
         if (sectionIndex.getRank() != 1) {
-          errlog.format("section sectionIndex: %s variable must be rank 1%n", sectionIndex.getName());
+          errlog.format("section sectionIndex: %s variable must be rank 1%n", sectionIndex.getFullName());
           return null;
         }
         //profileDim = sectionIndex.getDimension(0);
@@ -622,7 +622,7 @@ public class CFpointObs extends TableConfigurerImpl {
           return null;
         }
         if (numObs.getRank() != 1) {
-          errlog.format("section numObs: %s variable for observations must be rank 1%n", numObs.getName());
+          errlog.format("section numObs: %s variable for observations must be rank 1%n", numObs.getFullName());
           return null;
         }
         if (info.childDim.equals(info.grandChildDim)) {
@@ -1115,8 +1115,8 @@ public class CFpointObs extends TableConfigurerImpl {
     stnTable.stnDesc = findNameVariableWithStandardNameAndDimension(ds, CF.STATION_DESC, stationDim, errlog);
     stnTable.stnWmoId = findNameVariableWithStandardNameAndDimension(ds, CF.STATION_WMOID, stationDim, errlog);
     stnTable.stnAlt = findNameVariableWithStandardNameAndDimension(ds, CF.STATION_ALTITUDE, stationDim, errlog);
-    stnTable.lat = lat.getName();
-    stnTable.lon = lon.getName();
+    stnTable.lat = lat.getFullName();
+    stnTable.lon = lon.getFullName();
 
     // station id
     if (stnTable.stnId == null) {
@@ -1138,10 +1138,10 @@ public class CFpointObs extends TableConfigurerImpl {
       Variable alt = CoordSysEvaluator.findCoordByType(ds, AxisType.Height);
       if (alt != null) {
         if ((info.encoding == Encoding.single) && alt.getRank() == 0)
-          stnTable.stnAlt = alt.getName();
+          stnTable.stnAlt = alt.getFullName();
 
         if ((info.encoding != Encoding.single) && (lat.getRank() == alt.getRank()) && alt.getDimension(0).equals(stationDim))
-          stnTable.stnAlt = alt.getName();
+          stnTable.stnAlt = alt.getFullName();
       }
     }
 
@@ -1217,7 +1217,7 @@ public class CFpointObs extends TableConfigurerImpl {
       errlog.format("there must be a ragged_row_count variable with outer dimension that matches latitude/longitude dimension %s%n", parentDim.getName());
       return null;
     }
-    obsTable.numRecords = ragged_rowSize.getName();
+    obsTable.numRecords = ragged_rowSize.getFullName();
 
     return obsTable;
   }
@@ -1240,7 +1240,7 @@ public class CFpointObs extends TableConfigurerImpl {
       errlog.format("there must be a ragged_parent_index variable with outer dimension that matches obs dimension %s%n", childDim.getName());
       return null;
     }
-    obsTable.parentIndex = ragged_parentIndex.getName();
+    obsTable.parentIndex = ragged_parentIndex.getFullName();
 
     return obsTable;
   }

@@ -146,7 +146,7 @@ public class TestTDScompareWithFiles extends TestCase {
     for (int i = 0; i < vars.size(); i++) {
       Variable orgV =  (Variable) vars.get(i);
       Variable dodsV =  dods.findVariable( orgV.getShortName());
-      assert dodsV != null : " cant find "+orgV.getName();
+      assert dodsV != null : " cant find "+orgV.getFullName();
 
      // if (orgV.getDataType() != DataType.CHAR)
      //   compareVariables(orgV, dodsV);
@@ -166,8 +166,8 @@ public class TestTDScompareWithFiles extends TestCase {
   }
 
   private void compareStringVariables(Variable org, Variable dods) {
-    if (showCompare) System.out.println("compareStringVariables  "+org.getName()+" "+dods.getName());
-    assert org.getName().equals( dods.getName());
+    if (showCompare) System.out.println("compareStringVariables  "+org.getFullName()+" "+dods.getFullName());
+    assert org.getFullName().equals( dods.getFullName());
     assert org.getDataType() == DataType.CHAR;
     assert dods.getDataType() == DataType.STRING;
 
@@ -205,8 +205,8 @@ public class TestTDScompareWithFiles extends TestCase {
   }
 
   private void compareVariables(Variable org, Variable dods) {
-    if (showCompare) System.out.println("compareVariables  "+org.getName()+" "+dods.getName());
-    assert org.getName().equals( dods.getName());
+    if (showCompare) System.out.println("compareVariables  "+org.getFullName()+" "+dods.getFullName());
+    assert org.getFullName().equals( dods.getFullName());
     assert org.getDataType() == dods.getDataType() : org.getDataType() +" != "+ dods.getDataType();
 
     // dimensions

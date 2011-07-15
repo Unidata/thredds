@@ -132,26 +132,26 @@ public class Nidsiosp extends AbstractIOServiceProvider {
     byte[] vdata = headerParser.getUncompData((int) vinfo.doff, 0);
     ByteBuffer bos = ByteBuffer.wrap(vdata);
 
-    if (vp.getName().startsWith("VADWindSpeed")) {
+    if (vp.getShortName().startsWith("VADWindSpeed")) {
       return readNestedWindBarbData(vp.getShortName(), v2.getShortName(), bos, vinfo, ranges);
 
-    } else if (vp.getName().startsWith("unlinkedVectorStruct")) {
+    } else if (vp.getShortName().startsWith("unlinkedVectorStruct")) {
       return readNestedDataUnlinkVector(vp.getShortName(), v2.getShortName(), bos, vinfo, ranges);
 
-    } else if (vp.getName().equals("linkedVectorStruct")) {
+    } else if (vp.getShortName().equals("linkedVectorStruct")) {
       return readNestedLinkedVectorData(vp.getShortName(), v2.getShortName(), bos, vinfo, ranges);
 
-    } else if (vp.getName().startsWith("textStruct")) {
+    } else if (vp.getShortName().startsWith("textStruct")) {
       return readNestedTextStringData(vp.getShortName(), v2.getShortName(), bos, vinfo, ranges);
 
-    } else if (vp.getName().startsWith("VectorArrow")) {
+    } else if (vp.getShortName().startsWith("VectorArrow")) {
       return readNestedVectorArrowData(vp.getShortName(), v2.getShortName(), bos, vinfo, ranges);
 
-    } else if (vp.getName().startsWith("circleStruct")) {
+    } else if (vp.getShortName().startsWith("circleStruct")) {
       return readNestedCircleStructData(vp.getShortName(), v2.getShortName(), bos, vinfo, ranges);
 
     } else {
-      throw new UnsupportedOperationException("Unknown nested variable " + v2.getName());
+      throw new UnsupportedOperationException("Unknown nested variable " + v2.getShortName());
     }
 
     // return null;
@@ -188,38 +188,38 @@ ByteBuffer bos = ByteBuffer.wrap(vdata);     */
     bos = ByteBuffer.wrap(vdata);
 
 
-    if (v2.getName().equals("azimuth")) {
+    if (v2.getShortName().equals("azimuth")) {
       data = readRadialDataAzi(bos, vinfo);
       outputData = Array.factory(v2.getDataType().getPrimitiveClassType(), v2.getShape(), data);
 
-    } else if (v2.getName().equals("gate")) {
+    } else if (v2.getShortName().equals("gate")) {
       data = readRadialDataGate(vinfo);
       outputData = Array.factory(v2.getDataType().getPrimitiveClassType(), v2.getShape(), data);
 
-    } else if (v2.getName().equals("elevation")) {
+    } else if (v2.getShortName().equals("elevation")) {
       data = readRadialDataEle(bos, vinfo);
       outputData = Array.factory(v2.getDataType().getPrimitiveClassType(), v2.getShape(), data);
 
-    } else if (v2.getName().equals("latitude")) {
+    } else if (v2.getShortName().equals("latitude")) {
       double lat = ncfile.findGlobalAttribute("RadarLatitude").getNumericValue().doubleValue();
       data = readRadialDataLatLonAlt(lat, vinfo);
       outputData = Array.factory(v2.getDataType().getPrimitiveClassType(), v2.getShape(), data);
 
-    } else if (v2.getName().equals("longitude")) {
+    } else if (v2.getShortName().equals("longitude")) {
       double lon = ncfile.findGlobalAttribute("RadarLongitude").getNumericValue().doubleValue();
       data = readRadialDataLatLonAlt(lon, vinfo);
       outputData = Array.factory(v2.getDataType().getPrimitiveClassType(), v2.getShape(), data);
 
-    } else if (v2.getName().equals("altitude")) {
+    } else if (v2.getShortName().equals("altitude")) {
       double alt = ncfile.findGlobalAttribute("RadarAltitude").getNumericValue().doubleValue();
       data = readRadialDataLatLonAlt(alt, vinfo);
       outputData = Array.factory(v2.getDataType().getPrimitiveClassType(), v2.getShape(), data);
 
-    } else if (v2.getName().equals("distance")) {
+    } else if (v2.getShortName().equals("distance")) {
       data = readDistance(vinfo);
       outputData = Array.factory(v2.getDataType().getPrimitiveClassType(), v2.getShape(), data);
 
-    } else if (v2.getName().equals("rays_time")) {
+    } else if (v2.getShortName().equals("rays_time")) {
       String rt = ncfile.findGlobalAttribute("DateCreated").getStringValue();
       java.util.Date pDate = DateUnit.getStandardOrISO(rt);
       double lt = pDate.getTime();
@@ -229,49 +229,49 @@ ByteBuffer bos = ByteBuffer.wrap(vdata);     */
       }
       outputData = Array.factory(v2.getDataType().getPrimitiveClassType(), v2.getShape(), dd);
 
-    } else if (v2.getName().startsWith("EchoTop") || v2.getName().startsWith("VertLiquid")
-            || v2.getName().startsWith("BaseReflectivityComp") || v2.getName().startsWith("LayerCompReflect")) {
-      data = readOneArrayData(bos, vinfo, v2.getName());
+    } else if (v2.getShortName().startsWith("EchoTop") || v2.getShortName().startsWith("VertLiquid")
+            || v2.getShortName().startsWith("BaseReflectivityComp") || v2.getShortName().startsWith("LayerCompReflect")) {
+      data = readOneArrayData(bos, vinfo, v2.getShortName());
       outputData = Array.factory(v2.getDataType().getPrimitiveClassType(), v2.getShape(), data);
 
-    } else if (v2.getName().startsWith("PrecipArray")) {
+    } else if (v2.getShortName().startsWith("PrecipArray")) {
       data = readOneArrayData1(bos, vinfo);
       outputData = Array.factory(v2.getDataType().getPrimitiveClassType(), v2.getShape(), data);
 
-    } else if (v2.getName().startsWith("Precip") && !vinfo.isRadial) {
-      data = readOneArrayData(bos, vinfo, v2.getName());
+    } else if (v2.getShortName().startsWith("Precip") && !vinfo.isRadial) {
+      data = readOneArrayData(bos, vinfo, v2.getShortName());
       outputData = Array.factory(v2.getDataType().getPrimitiveClassType(), v2.getShape(), data);
 
-    } else if (v2.getName().equals("unlinkedVectorStruct")) {
-      return readUnlinkedVectorData(v2.getName(), bos, vinfo);
+    } else if (v2.getShortName().equals("unlinkedVectorStruct")) {
+      return readUnlinkedVectorData(v2.getShortName(), bos, vinfo);
       // JOHN outputData = Array.factory( v2.getDataType().getPrimitiveClassType(), v2.getShape(), data);
 
-    } else if (v2.getName().equals("linkedVectorStruct")) {
-      return readLinkedVectorData(v2.getName(), bos, vinfo);
-    } else if (v2.getName().startsWith("textStruct")) {
-      return readTextStringData(v2.getName(), bos, vinfo);
+    } else if (v2.getShortName().equals("linkedVectorStruct")) {
+      return readLinkedVectorData(v2.getShortName(), bos, vinfo);
+    } else if (v2.getShortName().startsWith("textStruct")) {
+      return readTextStringData(v2.getShortName(), bos, vinfo);
       // JOHN outputData = Array.factory( v2.getDataType().getPrimitiveClassType(), v2.getShape(), data);
 
-    } else if (v2.getName().startsWith("VADWindSpeed")) {
-      return readWindBarbData(v2.getName(), bos, vinfo, null);
+    } else if (v2.getShortName().startsWith("VADWindSpeed")) {
+      return readWindBarbData(v2.getShortName(), bos, vinfo, null);
       // JOHN outputData = Array.factory( v2.getDataType().getPrimitiveClassType(), v2.getShape(), data);
 
-    } else if (v2.getName().startsWith("VectorArrow")) {
-      return readVectorArrowData(v2.getName(), bos, vinfo);
+    } else if (v2.getShortName().startsWith("VectorArrow")) {
+      return readVectorArrowData(v2.getShortName(), bos, vinfo);
       // JOHN outputData = Array.factory( v2.getDataType().getPrimitiveClassType(), v2.getShape(), data);
 
-    } else if (v2.getName().startsWith("TabMessagePage")) {
+    } else if (v2.getShortName().startsWith("TabMessagePage")) {
       data = readTabAlphaNumData(bos, vinfo);
       outputData = Array.factory(v2.getDataType().getPrimitiveClassType(), v2.getShape(), data);
 
-    } else if (v2.getName().startsWith("circleStruct")) {
-      return readCircleStructData(v2.getName(), bos, vinfo);
+    } else if (v2.getShortName().startsWith("circleStruct")) {
+      return readCircleStructData(v2.getShortName(), bos, vinfo);
 
-    } else if (v2.getName().startsWith("hail") || v2.getName().startsWith("TVS")) {
-      return readGraphicSymbolData(v2.getName(), bos, vinfo);
+    } else if (v2.getShortName().startsWith("hail") || v2.getShortName().startsWith("TVS")) {
+      return readGraphicSymbolData(v2.getShortName(), bos, vinfo);
 
     } else {
-      data = readOneScanData(bos, vinfo, v2.getName());
+      data = readOneScanData(bos, vinfo, v2.getShortName());
       outputData = Array.factory(v2.getDataType().getPrimitiveClassType(), v2.getShape(), data);
     }
 

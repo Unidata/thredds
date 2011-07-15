@@ -118,7 +118,7 @@ public class TestGribFromTds extends TestCase {
       Collections.sort(grids);
 
       for (GridDatatype g : grids) {
-        f.format(" %s (", g.getName());
+        f.format(" %s (", g.getFullName());
         Attribute att = g.findAttributeIgnoreCase("GRIB_param_id");
         if (att != null)
           f.format("%s/%s,param=%s", att.getNumericValue(1), att.getNumericValue(2), att.getNumericValue(3));
@@ -217,7 +217,7 @@ public class TestGribFromTds extends TestCase {
       }
       att = v.findAttribute("GRIB_probability_type");
       String prob = (att == null) ? "" : att.getStringValue();
-      System.out.printf(format, v.getName(), level, stat, ens, prob);
+      System.out.printf(format, v.getFullName(), level, stat, ens, prob);
     }
     System.out.printf("%n");
     ncd.close();

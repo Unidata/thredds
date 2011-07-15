@@ -261,16 +261,38 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
   /*
    * The set of characters in a netcdf object name that are escaped for the "escaped name".
    */
-  static public final String reserved = "();,.\\";
+  static public final String reserved = ".\\";
+  static public final String reservedSectionSpec = "();,.\\";
+  static public final String reservedCdl = "[ !\"#$%&'()*,:;<=>?[]^`{|}~.\\";
 
   /**
-   * Escape any special characters in a netcdf object name.
+   * Escape standard special characters in a netcdf object name.
    *
    * @param vname the name
    * @return escaped version of it
    */
   public static String escapeName(String vname) {
     return EscapeStrings.backslashEscape(vname, NetcdfFile.reserved);
+  }
+
+  /**
+   * Escape special characters in a netcdf object name for CDL.
+   *
+   * @param vname the name
+   * @return escaped version of it
+   */
+  public static String escapeNameCDL(String vname) {
+    return EscapeStrings.backslashEscape(vname, reservedCdl);
+  }
+
+  /**
+   * Escape special characters in a netcdf object name for SectionSpec.
+   *
+   * @param vname the name
+   * @return escaped version of it
+   */
+  public static String escapeNameSectionSpec(String vname) {
+    return EscapeStrings.backslashEscape(vname, reservedSectionSpec);
   }
 
   /**
@@ -301,57 +323,44 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     return result;
   }
 
-  static protected String makeFullName(Group parent, Variable v) {
-    // common case
-    if (((parent == null) || parent.isRoot()) && !v.isMemberOfStructure()) return v.getShortName();
+  static protected String makeFullName(Variable v) {
+    return makeFullName(v, null);
+  }
+
+  static protected String makeFullNameEscaped(Variable v) {
+    return makeFullName(v, reserved);
+  }
+
+  static protected String makeFullNameEscapedSectionSpec(Variable v) {
+    return makeFullName(v, reservedSectionSpec);
+  }
+
+  static protected String makeFullName(Variable v, String reserved) {
+    Group parent = v.getParentGroup();
+    if (((parent == null) || parent.isRoot()) && !v.isMemberOfStructure()) return v.getShortName(); // common case
 
     StringBuilder sbuff = new StringBuilder();
-    appendGroupName(sbuff, parent);
-    appendStructureName(sbuff, v);
+    appendGroupName(sbuff, parent, reserved);
+    appendStructureName(sbuff, v, reserved);
     return sbuff.toString();
   }
 
-  static private void appendGroupName(StringBuilder sbuff, Group g) {
+  static private void appendGroupName(StringBuilder sbuff, Group g, String reserved) {
     boolean isRoot = g.getParentGroup() == null;
     if (isRoot) return;
 
     if (g.getParentGroup() != null)
-      appendGroupName(sbuff, g.getParentGroup());
-    sbuff.append(g.getShortName());
+      appendGroupName(sbuff, g.getParentGroup(), reserved);
+    sbuff.append( EscapeStrings.backslashEscape(g.getShortName(), reserved));
     sbuff.append("/");
   }
 
-  static private void appendStructureName(StringBuilder sbuff, Variable v) {
+  static private void appendStructureName(StringBuilder sbuff, Variable v, String reserved) {
     if (v.isMemberOfStructure()) {
-      appendStructureName(sbuff, v.getParentStructure());
+      appendStructureName(sbuff, v.getParentStructure(), reserved);
       sbuff.append(".");
     }
-    sbuff.append(v.getShortName());
-  }
-
-  static protected String makeFullNameEscaped(Group parent, Variable v) {
-    StringBuilder sbuff = new StringBuilder();
-    appendGroupNameEscaped(sbuff, parent);
-    appendStructureNameEscaped(sbuff, v);
-    return sbuff.toString();
-  }
-
-  static private void appendGroupNameEscaped(StringBuilder sbuff, Group g) {
-    boolean isRoot = g.getParentGroup() == null;
-    if (isRoot) return;
-
-    if (g.getParentGroup() != null)
-      appendGroupNameEscaped(sbuff, g.getParentGroup());
-    sbuff.append(escapeName(g.getShortName()));
-    sbuff.append("/");
-  }
-
-  static private void appendStructureNameEscaped(StringBuilder sbuff, Variable v) {
-    if (v.isMemberOfStructure()) {
-      appendStructureNameEscaped(sbuff, v.getParentStructure());
-      sbuff.append(".");
-    }
-    sbuff.append(escapeName(v.getShortName()));
+    sbuff.append( EscapeStrings.backslashEscape(v.getShortName(), reserved));
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////
@@ -1834,7 +1843,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
 
   protected String makeFullNameWithString(Group parent, String name) {
     StringBuilder sbuff = new StringBuilder();
-    appendGroupName(sbuff, parent);
+    appendGroupName(sbuff, parent, null);
     sbuff.append(name);
     return sbuff.toString();
   }
@@ -1854,14 +1863,14 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
    */
   protected Array readData(ucar.nc2.Variable v, Section ranges) throws IOException, InvalidRangeException {
     if (showRequest)
-      System.out.println("Data request for variable: " + v.getName() + " section= " + ranges);
+      System.out.println("Data request for variable: " + v.getFullName() + " section= " + ranges);
     if (unlocked) {
       String info = cache.getInfo(this);
       throw new IllegalStateException("File is unlocked - cannot use\n" + info);
     }
 
     if (spi == null) {
-      throw new IOException("BAD: missing spi: " + v.getName());
+      throw new IOException("BAD: missing spi: " + v.getFullName());
     }
     Array result = spi.readData(v, ranges);
     result.setUnsigned(v.isUnsigned());

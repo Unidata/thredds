@@ -190,7 +190,7 @@ public abstract class N3streamWriter {
 
   private Vinfo writeVar(DataOutputStream stream, Variable var, int offset) throws IOException {
     int hsize = 0;
-    hsize += writeString(stream, N3iosp.makeValidNetcdfObjectName( var.getName()));
+    hsize += writeString(stream, N3iosp.makeValidNetcdfObjectName( var.getShortName()));
 
     // dimensions
     int vsize = var.getDataType().getSize();
@@ -350,7 +350,7 @@ public abstract class N3streamWriter {
       this.isRecord = isRecord;
     }
 
-    public String toString() { return v.getName()+" vsize= "+vsize+" pad="+pad; }
+    public String toString() { return v.getFullName()+" vsize= "+vsize+" pad="+pad; }
   }
 
 }

@@ -35,7 +35,6 @@ package ucar.nc2.ncml;
 import junit.framework.TestCase;
 
 import java.io.IOException;
-import java.util.Date;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
@@ -89,7 +88,7 @@ public class TestOffAggFmrcNetcdf extends TestCase {
 
     Variable lat = ncfile.findVariable("y");
     assert null != lat;
-    assert lat.getName().equals("y");
+    assert lat.getShortName().equals("y");
     assert lat.getRank() == 1;
     assert lat.getSize() == 65;
     assert lat.getShape()[0] == 65;
@@ -124,7 +123,7 @@ public class TestOffAggFmrcNetcdf extends TestCase {
   private void testRunCoordVar(NetcdfFile ncfile, int nagg) {
     Variable time = ncfile.findVariable("run");
     assert null != time;
-    assert time.getName().equals("run");
+    assert time.getShortName().equals("run");
     assert time.getRank() == 1;
     assert time.getSize() == nagg;
     assert time.getShape()[0] == nagg;
@@ -158,7 +157,7 @@ public class TestOffAggFmrcNetcdf extends TestCase {
   private void testTimeCoordVar(NetcdfFile ncfile, int nagg, int noff) throws IOException {
     Variable time = ncfile.findVariable("time");
     assert null != time;
-    assert time.getName().equals("time");
+    assert time.getShortName().equals("time");
     assert time.getRank() == 2;
     assert time.getSize() == nagg * noff;
     assert time.getShape()[0] == nagg;
@@ -204,7 +203,7 @@ public class TestOffAggFmrcNetcdf extends TestCase {
   private void testReadData(NetcdfFile ncfile, int nagg) throws IOException {
     Variable v = ncfile.findVariable("P_sfc");
     assert null != v;
-    assert v.getName().equals("P_sfc");
+    assert v.getShortName().equals("P_sfc");
     assert v.getRank() == 4;
     assert v.getShape()[0] == nagg;
     assert v.getShape()[1] == 11;

@@ -212,7 +212,7 @@ public class CoordTransBuilder {
     CoordinateTransform ct = builder.makeCoordinateTransform(ds, ctv);
 
     if (ct != null) {
-      parseInfo.format(" Made Coordinate transform %s from variable %s: %s\n",transform_name, ctv.getName(), builder);
+      parseInfo.format(" Made Coordinate transform %s from variable %s: %s\n",transform_name, ctv.getFullName(), builder);
     }
 
     return ct;

@@ -73,7 +73,7 @@ public class TestAggExistingPromote extends TestCase {
     Variable pv = ncfile.findVariable("times");
     assert null != pv;
 
-    assert pv.getName().equals("times");
+    assert pv.getShortName().equals("times");
     assert pv.getRank() == 1;
     assert pv.getSize() == 3;
     assert pv.getShape()[0] == 3;
@@ -102,7 +102,7 @@ public class TestAggExistingPromote extends TestCase {
     Variable time = ncfile.findVariable("time");
     assert null != time;
 
-    assert time.getName().equals("time");
+    assert time.getShortName().equals("time");
     assert time.getRank() == 1;
     assert time.getSize() == 3;
     assert time.getShape()[0] == 3;
@@ -199,7 +199,7 @@ public class TestAggExistingPromote extends TestCase {
     Variable pv = ncfile.findVariable("title");
     assert null != pv;
 
-    assert pv.getName().equals("title");
+    assert pv.getShortName().equals("title");
     assert pv.getRank() == 1;
     assert pv.getSize() == dim.getLength();
     assert pv.getDataType() == DataType.STRING;
@@ -220,7 +220,7 @@ public class TestAggExistingPromote extends TestCase {
     pv = ncfile.findVariable("month");
     assert null != pv;
 
-    assert pv.getName().equals("month");
+    assert pv.getShortName().equals("month");
     assert pv.getRank() == 1;
     assert pv.getSize() == dim.getLength();
     assert pv.getDataType() == DataType.STRING;

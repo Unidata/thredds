@@ -111,7 +111,7 @@ public class ModisSatellite extends ucar.nc2.dataset.CoordSysBuilder {
   }
 
   private void checkIfAxis(Variable v) {
-    String name = v.getName();
+    String name = v.getShortName();
     if (name.equalsIgnoreCase("Longitude"))
       v.addAttribute( new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
     else if (name.equalsIgnoreCase("Latitude"))

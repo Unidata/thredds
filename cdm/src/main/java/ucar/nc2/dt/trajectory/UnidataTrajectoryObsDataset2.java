@@ -130,7 +130,7 @@ public class UnidataTrajectoryObsDataset2
     int timeVarNumOfDims = this.timeVar.getDimensions().size();
     if ( timeVarNumOfDims != 1 )
       throw new IllegalArgumentException( "Dataset time variable does not have exactly one (1) dimension [" + timeVarNumOfDims + "]." );
-    this.timeVarName = this.timeVar.getName();
+    this.timeVarName = this.timeVar.getShortName();
     this.timeDim = this.timeVar.getDimension( 0 );
     this.timeDimName = this.timeDim.getName();
 
@@ -186,10 +186,10 @@ public class UnidataTrajectoryObsDataset2
     elevVar = UnidataObsDatasetHelper.getCoordinate( ncd, AxisType.Height );
 
     timeDimName = timeVar.getDimension(0).getName();
-    timeVarName = timeVar.getName();
-    latVarName = latVar.getName();
-    lonVarName = lonVar.getName();
-    elevVarName = elevVar != null ? elevVar.getName() : null;
+    timeVarName = timeVar.getShortName();
+    latVarName = latVar.getShortName();
+    lonVarName = lonVar.getShortName();
+    elevVarName = elevVar != null ? elevVar.getShortName() : null;
 
 
 

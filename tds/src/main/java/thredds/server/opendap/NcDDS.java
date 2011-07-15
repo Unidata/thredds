@@ -66,7 +66,7 @@ public class NcDDS extends ServerDDS {
   private Variable findvariable(String name)
   {
       for (Variable v: ddsvars) {
-          if(v.getName().equals(name)) return v;
+          if(v.getFullName().equals(name)) return v;
       }
       return null;
   }
@@ -92,7 +92,7 @@ public class NcDDS extends ServerDDS {
       if ((cv != null) && cv.isCoordinateVariable()) {
         coordvars.put(dim.getName(),cv);
         if (log.isDebugEnabled())
-          log.debug(" NcDDS adding coordinate variable " + cv.getName() + " for dimension " + dim.getName());
+          log.debug(" NcDDS adding coordinate variable " + cv.getFullName() + " for dimension " + dim.getName());
       }
     }
 
@@ -112,12 +112,12 @@ public class NcDDS extends ServerDDS {
 		}
             }
             if(isgridarray)   {
-                gridarrays.put(v.getName(),v);
+                gridarrays.put(v.getFullName(),v);
                 for(iter=v.getDimensions().iterator();iter.hasNext();) {
                     Dimension dim = (Dimension) iter.next();
                     Variable gv = coordvars.get(dim.getName());
                     if (gv != null)
-                        used.put(gv.getName(),gv);
+                        used.put(gv.getFullName(),gv);
                 }
             }
      }
@@ -192,7 +192,7 @@ public class NcDDS extends ServerDDS {
 
   private BaseType createArray(NetcdfFile ncfile, Variable v) {
     // all dimensions must have coord vars to be a grid, also must have the same name
-    boolean isGrid = (gridarrays.get(v.getName()) != null);
+    boolean isGrid = (gridarrays.get(v.getFullName()) != null);
     NcSDArray arr = new NcSDArray(v, createScalarVariable(ncfile, v));
     if (!isGrid)
         return arr;

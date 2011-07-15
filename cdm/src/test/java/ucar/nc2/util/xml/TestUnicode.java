@@ -173,7 +173,7 @@ public class TestUnicode extends TestCase {
     NetcdfFile nc = NetcdfFile.open(filename);
     Variable v = ncfile.findVariable(helloGreek);
     assert v != null;
-    assert v.getName().equals(helloGreek);
+    assert v.getShortName().equals(helloGreek);
 
     Attribute att = v.findAttribute("units");
     assert att != null;

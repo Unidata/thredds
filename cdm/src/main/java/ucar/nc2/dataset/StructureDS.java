@@ -143,7 +143,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
     super(ds, group, parent, shortName);
 
     if (orgVar instanceof Structure)
-      throw new IllegalArgumentException("VariableDS must not wrap a Structure; name=" + orgVar.getName());
+      throw new IllegalArgumentException("VariableDS must not wrap a Structure; name=" + orgVar.getFullName());
 
     // dont share cache, iosp : all IO is delegated
     // this.ncfile = null;
@@ -189,7 +189,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
    */
   public void setOriginalVariable(ucar.nc2.Variable orgVar) {
     if (!(orgVar instanceof Structure))
-      throw new IllegalArgumentException("STructureDS must wrap a Structure; name=" + orgVar.getName());
+      throw new IllegalArgumentException("StructureDS must wrap a Structure; name=" + orgVar.getFullName());
     this.orgVar = (Structure) orgVar;
   }
 

@@ -107,7 +107,7 @@ public abstract class FeatureDatasetImpl implements FeatureDataset {
   protected void setDateRange(DateRange dateRange) { this.dateRange = dateRange; }
   protected void setBoundingBox(LatLonRect boundingBox) { this.boundingBox = boundingBox; }
 
-  protected void removeDataVariable( String varName) {
+  /* protected void removeDataVariable( String varName) {
     if (dataVariables == null) return;
     Iterator iter = dataVariables.iterator();
     while (iter.hasNext()) {
@@ -115,7 +115,7 @@ public abstract class FeatureDatasetImpl implements FeatureDataset {
       if (v.getName().equals( varName) )
         iter.remove();
     }
-  }
+  } */
 
   /////////////////////////////////////////////////
 
@@ -159,7 +159,7 @@ public abstract class FeatureDatasetImpl implements FeatureDataset {
     List<VariableSimpleIF> vars = getDataVariables();
     sf.format("  Data Variables (%d)\n",vars.size());
     for (VariableSimpleIF v : vars)
-      sf.format("    name='%s' desc='%s' units=%s' type='%s'\n", v.getName(),v.getDescription(),v.getUnitsString(),v.getDataType());
+      sf.format("    name='%s' desc='%s' units=%s' type='%s'\n", v.getShortName(),v.getDescription(),v.getUnitsString(),v.getDataType());
 
     sf.format("\nparseInfo=\n%s\n", parseInfo);
   }

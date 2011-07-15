@@ -188,7 +188,7 @@ public class EPSG_OGC_CF_Helper
           throws IllegalArgumentException
   {
     gridDataset.getTitle();
-    gridDatatype.getName();
+    gridDatatype.getFullName();
 
     StringBuilder buf = new StringBuilder();
 

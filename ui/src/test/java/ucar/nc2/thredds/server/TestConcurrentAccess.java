@@ -85,7 +85,7 @@ public class TestConcurrentAccess {
         List vars = ncd.getVariables();
         for (int i = 0; i < vars.size(); i++) {
           Variable v = (Variable) vars.get(i);
-          System.out.println(" " + who + " " + v.getName());
+          System.out.println(" " + who + " " + v.getFullName());
           read(v);
         }
       } catch (IOException e) {
@@ -109,7 +109,7 @@ public class TestConcurrentAccess {
         shape[i] = 1;
       }
       Array data = v.read(origin, shape);
-      NCdump.printArray(data, who + " " + v.getName(), System.out, null);
+      NCdump.printArray(data, who + " " + v.getFullName(), System.out, null);
     }
   }
 

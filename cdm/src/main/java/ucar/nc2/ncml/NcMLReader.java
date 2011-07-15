@@ -937,7 +937,7 @@ public class NcMLReader {
           Section viewSection = Section.fill(s, v.getShape());
           // check that its a subset
           if (!v.getShapeAsSection().contains(viewSection)) {
-            errlog.format("Invalid logicalSection on variable=%s section =(%s) original=(%s) %n", v.getName(), sectionSpec, v.getShapeAsSection());
+            errlog.format("Invalid logicalSection on variable=%s section =(%s) original=(%s) %n", v.getFullName(), sectionSpec, v.getShapeAsSection());
             return;
           }
           Variable view = v.section(viewSection);
@@ -945,7 +945,7 @@ public class NcMLReader {
           g.addVariable(view);
 
         } catch (InvalidRangeException e) {
-          errlog.format("Invalid logicalSection on variable=%s section=(%s) error=%s %n", v.getName(), sectionSpec, e.getMessage());
+          errlog.format("Invalid logicalSection on variable=%s section=(%s) error=%s %n", v.getFullName(), sectionSpec, e.getMessage());
           return;
         }
       }
@@ -955,25 +955,25 @@ public class NcMLReader {
     if (null != viewElem) {
       String dimName = viewElem.getAttributeValue("dimName");
       if (null == dimName) {
-        errlog.format("NcML logicalSlice: dimName is required, variable=%s %n", v.getName());
+        errlog.format("NcML logicalSlice: dimName is required, variable=%s %n", v.getFullName());
         return;
       }
       int dim = v.findDimensionIndex(dimName);
       if (dim < 0) {
-        errlog.format("NcML logicalSlice: cant find dimension %s in variable=%s %n", dimName, v.getName());
+        errlog.format("NcML logicalSlice: cant find dimension %s in variable=%s %n", dimName, v.getFullName());
         return;
       }
 
       String indexS = viewElem.getAttributeValue("index");
       int index = -1;
       if (null == indexS) {
-        errlog.format("NcML logicalSlice: index is required, variable=%s %n", v.getName());
+        errlog.format("NcML logicalSlice: index is required, variable=%s %n", v.getFullName());
         return;
       }
       try {
         index = Integer.parseInt(indexS);
       } catch (NumberFormatException e) {
-        errlog.format("NcML logicalSlice: index=%s must be integer, variable=%s %n", indexS, v.getName());
+        errlog.format("NcML logicalSlice: index=%s must be integer, variable=%s %n", indexS, v.getFullName());
         return;
       }
 
@@ -983,7 +983,7 @@ public class NcMLReader {
         g.addVariable(view);
 
       } catch (InvalidRangeException e) {
-        errlog.format("Invalid logicalSlice (%d,%d) on variable=%s error=%s %n", dim, index, v.getName(), e.getMessage());
+        errlog.format("Invalid logicalSlice (%d,%d) on variable=%s error=%s %n", dim, index, v.getFullName(), e.getMessage());
         return;
       }
     }

@@ -92,7 +92,7 @@ public class GDVConvention extends CSMConvention {
       Dimension dim = ds.findDimension(dimName);
       if (null != dim) {
         vp.isCoordinateAxis = true;
-        parseInfo.format(" Coordinate Axis added (GDV alias) = %s for dimension %s\n", vp.v.getName(), dimName);
+        parseInfo.format(" Coordinate Axis added (GDV alias) = %s for dimension %s\n", vp.v.getFullName(), dimName);
       }
     }
 
@@ -125,7 +125,7 @@ public class GDVConvention extends CSMConvention {
       if (atype != null) {
         if (map.get(atype) == null) {
           vp.isCoordinateAxis = true;
-          parseInfo.format(" Coordinate Axis added (GDV forced) = %s  for axis %s\n", vp.v.getName(), atype);
+          parseInfo.format(" Coordinate Axis added (GDV forced) = %s  for axis %s\n", vp.v.getFullName(), atype);
         }
       }
     }
@@ -144,7 +144,7 @@ public class GDVConvention extends CSMConvention {
     for (Variable aVlist : vlist) {
       VariableEnhanced ve = (VariableEnhanced) aVlist;
       if (axisType == getAxisType(ds, ve)) {
-        return ve.getName();
+        return ve.getFullName();
       }
     }
     return null;
@@ -162,7 +162,7 @@ public class GDVConvention extends CSMConvention {
   protected AxisType getAxisType(NetcdfDataset ds, VariableEnhanced ve) {
 
     Variable v = (Variable) ve;
-    String vname = v.getName();
+    String vname = v.getShortName();
 
     if (vname.equalsIgnoreCase("x") || findAlias(ds, v).equalsIgnoreCase("x"))
       return AxisType.GeoX;

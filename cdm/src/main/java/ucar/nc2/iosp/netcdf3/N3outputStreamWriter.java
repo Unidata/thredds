@@ -60,7 +60,7 @@ public class N3outputStreamWriter extends N3streamWriter {
       if (!vinfo.isRecord) {
         Variable v = vinfo.v;
         assert filePos == vinfo.offset;
-        if (debugPos) System.out.println(" writing at "+filePos+" should be "+vinfo.offset+" "+v.getName());
+        if (debugPos) System.out.println(" writing at "+filePos+" should be "+vinfo.offset+" "+v.getFullName());
         int nbytes = writeDataFast(v, stream, v.read());
         filePos += nbytes;
         filePos += pad(stream, nbytes, (byte) 0);
@@ -88,10 +88,10 @@ public class N3outputStreamWriter extends N3streamWriter {
         for (Vinfo vinfo : vinfoList) {
           if (vinfo.isRecord) {
             Variable v = vinfo.v;
-            int nbytes = writeDataFast(v, stream, sdata.getArray(v.getName()));
+            int nbytes = writeDataFast(v, stream, sdata.getArray(v.getShortName()));
             count += nbytes;
             count += pad(stream, nbytes, (byte) 0);
-            if (first && debugWriteData) System.out.println(v.getName() + " wrote " + count + " bytes");
+            if (first && debugWriteData) System.out.println(v.getShortName() + " wrote " + count + " bytes");
           }
         }
         if (first && debugWriteData) {
@@ -112,7 +112,7 @@ public class N3outputStreamWriter extends N3streamWriter {
   public void writeNonRecordData(Variable v, DataOutputStream stream, Array data) throws IOException {
     Vinfo vinfo = vinfoMap.get(v);
     if (debugWriteData)
-      System.out.println("Write " + v.getName() + " at filePos= " + filePos + " vinfo.offset= " + vinfo.offset);
+      System.out.println("Write " + v.getFullName() + " at filePos= " + filePos + " vinfo.offset= " + vinfo.offset);
     if (filePos != vinfo.offset) throw new IllegalStateException();
 
     filePos += writeData(v, stream, data);

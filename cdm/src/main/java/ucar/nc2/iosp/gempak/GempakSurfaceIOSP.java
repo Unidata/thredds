@@ -544,7 +544,7 @@ public class GempakSurfaceIOSP extends GempakStationFileIOSP {
         // loop through and add to ncfile
         boolean hasElevation = false;
         for (Variable stnVar : stationVars) {
-            if (stnVar.getName().equals("SELV")) {
+            if (stnVar.getShortName().equals("SELV")) {
                 hasElevation = true;
             }
             sVar.addMemberVariable(stnVar);

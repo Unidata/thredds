@@ -386,7 +386,7 @@ public class GribWmoCodesPanel extends JPanel {
       try {
         ncfile = GridDataset.open(name);
         for (GridDatatype dt : ncfile.getGrids()) {
-          String currName = dt.getName().toLowerCase();
+          String currName = dt.getFullName().toLowerCase();
           Attribute att = dt.findAttributeIgnoreCase("GRIB_param_id");
           int discipline = (Integer) att.getValue(1);
           int category = (Integer) att.getValue(2);

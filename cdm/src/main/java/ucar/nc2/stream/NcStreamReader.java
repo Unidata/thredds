@@ -96,12 +96,12 @@ public class NcStreamReader {
   }
 
   class DataResult {
-    String varName;
+    String varNameFullEsc;
     Section section;
     Array data;
 
     DataResult(String varName, Section section, Array data) {
-      this.varName = varName;
+      this.varNameFullEsc = varName;
       this.section = section;
       this.data = data;
     }

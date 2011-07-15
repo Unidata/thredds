@@ -252,7 +252,7 @@ public class WriterCFStationObsDataset {
         if (!d.isUnlimited())
           dimNames.append(" ").append(d.getName());
       }
-      Variable newVar = ncfile.addVariable(null, oldVar.getName(), oldVar.getDataType(), dimNames.toString());
+      Variable newVar = ncfile.addVariable(null, oldVar.getShortName(), oldVar.getDataType(), dimNames.toString());
       recordVars.add(newVar);
 
       List<Attribute> atts = oldVar.getAttributes();

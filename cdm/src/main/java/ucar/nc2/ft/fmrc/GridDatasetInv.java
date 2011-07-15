@@ -183,7 +183,7 @@ public class GridDatasetInv {
     // add each variable, collect unique time and vertical axes
     for (GridDatatype gg : gds.getGrids()) {
       GridCoordSystem gcs = gg.getCoordinateSystem();
-      Grid grid = new Grid(gg.getName());
+      Grid grid = new Grid(gg.getFullName());
 
       // LOOK: Note this assumes a dense coordinate system
       CoordinateAxis1DTime axis = gcs.getTimeAxis1D();
@@ -278,7 +278,7 @@ public class GridDatasetInv {
   private TimeCoord getTimeCoordinate(CoordinateAxis1DTime axis) {
     // check for same axis
     for (TimeCoord tc : times) {
-      if (tc.getAxisName().equals(axis.getName()))
+      if (tc.getAxisName().equals(axis.getFullName()))
         return tc;
     }
 
@@ -403,7 +403,7 @@ public class GridDatasetInv {
 
   private VertCoord getVertCoordinate(CoordinateAxis1D axis) {
     for (VertCoord vc : vaxes) {
-      if (vc.getName().equals(axis.getName())) return vc;
+      if (vc.getName().equals(axis.getFullName())) return vc;
     }
 
     VertCoord want = new VertCoord(axis);
@@ -429,7 +429,7 @@ public class GridDatasetInv {
 
   private EnsCoord getEnsCoordinate(CoordinateAxis1D axis) {
     for (EnsCoord ec : eaxes) {
-      if (ec.getName().equals(axis.getName())) return ec;
+      if (ec.getName().equals(axis.getFullName())) return ec;
     }
 
     EnsCoord want = new EnsCoord(axis, null); // NOT YET

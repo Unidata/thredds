@@ -213,7 +213,7 @@ public abstract class AggregationOuterDimension extends Aggregation implements P
     Dataset typicalDataset = getTypicalDataset();
     for (Variable var : ncDataset.getRootGroup().getVariables()) {
       VariableDS varDS = (VariableDS) var;
-      if (aggVars.contains(varDS) || dimName.equals(var.getName()))
+      if (aggVars.contains(varDS) || dimName.equals(var.getShortName()))
         continue;
       DatasetProxyReader proxy = new DatasetProxyReader(typicalDataset);
       var.setProxyReader(proxy);
@@ -273,7 +273,7 @@ public abstract class AggregationOuterDimension extends Aggregation implements P
     List<Range> nestedSection = new ArrayList<Range>(ranges); // get copy
     List<Range> innerSection = ranges.subList(1, ranges.size());
 
-    if (debug) System.out.println("   agg wants range=" + mainv.getName() + "(" + joinRange + ")");
+    if (debug) System.out.println("   agg wants range=" + mainv.getFullName() + "(" + joinRange + ")");
 
     // LOOK: could multithread here
     List<Dataset> nestedDatasets = getDatasets();
@@ -749,7 +749,7 @@ public abstract class AggregationOuterDimension extends Aggregation implements P
 
         Variable v = findVariable(ncd, mainv);
         if (v == null) {
-          logger.error("AggOuterDimension cant find " + mainv.getName() + " in " + ncd.getLocation() + "; return all zeroes!!!");
+          logger.error("AggOuterDimension cant find " + mainv.getFullName() + " in " + ncd.getLocation() + "; return all zeroes!!!");
           return Array.factory(mainv.getDataType(), new Section(section).getShape()); // all zeros LOOK need missing value
         }
 

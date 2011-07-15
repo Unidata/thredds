@@ -172,7 +172,7 @@ public class Dimension implements Comparable {
    */
   public String writeCDL(boolean strict) {
     StringBuilder buff = new StringBuilder();
-    String name = strict ? NetcdfFile.escapeName(getName()) : getName();
+    String name = strict ? NetcdfFile.escapeNameCDL(getName()) : getName();
     buff.append("   ").append(name);
     if (isUnlimited())
       buff.append(" = UNLIMITED;   // (").append(getLength()).append(" currently)");

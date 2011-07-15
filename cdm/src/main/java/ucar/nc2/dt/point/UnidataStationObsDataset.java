@@ -149,18 +149,18 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl implements T
       throw new IllegalStateException("Missing station id variable");
 
     // fire up the record helper - LOOK assumes its the record dimension
-    recordHelper = new RecordDatasetHelper(ds, timeVar.getName(), timeNominalVar == null ? null : timeNominalVar.getName(),
+    recordHelper = new RecordDatasetHelper(ds, timeVar.getShortName(), timeNominalVar == null ? null : timeNominalVar.getShortName(),
             dataVariables, parseInfo);
-    recordHelper.setStationInfo(stationIndexVar.getName(), stationDescVar == null ? null : stationDescVar.getName());
+    recordHelper.setStationInfo(stationIndexVar.getShortName(), stationDescVar == null ? null : stationDescVar.getShortName());
 
-    removeDataVariable(stationIndexVar.getName());
-    removeDataVariable(timeVar.getName());
+    removeDataVariable(stationIndexVar.getShortName());
+    removeDataVariable(timeVar.getShortName());
     if (timeNominalVar != null)
-      removeDataVariable(timeNominalVar.getName());
+      removeDataVariable(timeNominalVar.getShortName());
     if (prevVar != null)
-      removeDataVariable(prevVar.getName());
+      removeDataVariable(prevVar.getShortName());
     if (nextVar != null)
-      removeDataVariable(nextVar.getName());
+      removeDataVariable(nextVar.getShortName());
 
     recordVar = recordHelper.recordVar;
     timeUnit = recordHelper.timeUnit;
@@ -365,7 +365,7 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl implements T
             if (nextRecord++ > end)
               break;
           } else {
-            nextRecord = sdata.getScalarInt(next.getName());
+            nextRecord = sdata.getScalarInt(next.getShortName());
           }
           double obsTime = getTime(timeVar, sdata);
           double nomTime = (timeNominalVar == null) ? obsTime : getTime(timeNominalVar, sdata);
@@ -424,7 +424,7 @@ public class UnidataStationObsDataset extends StationObsDatasetImpl implements T
           if (nextRecno > last)
             nextRecno = -1;
         } else {
-          nextRecno = sobs.sdata.getScalarInt(next.getName());
+          nextRecno = sobs.sdata.getScalarInt(next.getShortName());
         }
         if (hasDateRange) {
           double timeValue = sobs.getObservationTime();

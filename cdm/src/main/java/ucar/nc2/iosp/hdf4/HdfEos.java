@@ -486,7 +486,7 @@ public class HdfEos {
         dim = checkUnknownDims(dimName, unknownDims, oldDim);
 
       if (dim == null) {
-        log.error("Unknown Dimension= "+dimName+" for variable = "+v.getName());
+        log.error("Unknown Dimension= "+dimName+" for variable = "+v.getFullName());
         return;
       }
       if (dim.getLength() != oldDim.getLength()) {

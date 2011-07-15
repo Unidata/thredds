@@ -338,7 +338,7 @@ map_proj =  1: Lambert Conformal
       data = v.read();
       data = data.reduce();
     } catch (IOException ioe) {
-      throw new RuntimeException("data read failed on " + v.getName() + "=" + ioe.getMessage());
+      throw new RuntimeException("data read failed on " + v.getFullName() + "=" + ioe.getMessage());
     }
     IndexIterator ii = data.getIndexIterator();
     while (ii.hasNext()) {
@@ -373,7 +373,7 @@ map_proj =  1: Lambert Conformal
 
   protected AxisType getAxisType(NetcdfDataset ds, VariableEnhanced ve) {
     Variable v = (Variable) ve;
-    String vname = v.getName();
+    String vname = v.getShortName();
 
     if (vname.equalsIgnoreCase("x") || vname.equalsIgnoreCase("x_stag"))
       return AxisType.GeoX;

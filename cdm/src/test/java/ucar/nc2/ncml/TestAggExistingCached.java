@@ -107,7 +107,7 @@ public class TestAggExistingCached extends TestCase {
     Variable time = ncfile.findVariable("time");
     assert null != time;
 
-    assert time.getName().equals("time");
+    assert time.getShortName().equals("time");
     assert time.getRank() == 1;
     assert time.getSize() == 3;
     assert time.getShape()[0] == 3;
@@ -140,7 +140,7 @@ public class TestAggExistingCached extends TestCase {
     Variable time = ncfile.findVariable("time");
     assert null != time;
 
-    assert time.getName().equals("time");
+    assert time.getShortName().equals("time");
     assert time.getRank() == 1;
     assert time.getSize() == 3;
     assert time.getShape()[0] == 3;
@@ -178,7 +178,7 @@ public class TestAggExistingCached extends TestCase {
     Variable time = ncfile.findVariable("time");
     assert null != time;
 
-    assert time.getName().equals("time");
+    assert time.getShortName().equals("time");
     assert time.getRank() == 1;
     assert time.getSize() == 3;
     assert time.getShape()[0] == 3;

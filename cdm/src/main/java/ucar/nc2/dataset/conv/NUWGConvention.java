@@ -172,7 +172,7 @@ public class NUWGConvention extends CoordSysBuilder {
           ncvar.getNameAndDimensions(parseInfo, true, false);
           parseInfo.format("\n");
         } else {
-          parseInfo.format("Couldnt add referential coordAxis = %s\n", ncvar.getName());
+          parseInfo.format("Couldnt add referential coordAxis = %s\n", ncvar.getFullName());
         }
 
       } else if (ncvars.size() == 2) {
@@ -180,7 +180,7 @@ public class NUWGConvention extends CoordSysBuilder {
         if (dimName.equals("record")) {
           Variable ncvar0 = ncvars.get(0);
           Variable ncvar1 = ncvars.get(1);
-          Variable ncvar = ncvar0.getName().equalsIgnoreCase("valtime") ? ncvar0 : ncvar1;
+          Variable ncvar = ncvar0.getShortName().equalsIgnoreCase("valtime") ? ncvar0 : ncvar1;
 
           if (makeCoordinateAxis( ncvar, dim)) {
             parseInfo.format("Added referential coordAxis (2) = ");
@@ -195,7 +195,7 @@ public class NUWGConvention extends CoordSysBuilder {
               ncvar.addAttribute(new Attribute("units", units));
             }
           } else {
-            parseInfo.format("Couldnt add referential coordAxis = %s\n", ncvar.getName());
+            parseInfo.format("Couldnt add referential coordAxis = %s\n", ncvar.getFullName());
           }
 
           //ncvar = (Variable) ncvars.get(0);
@@ -213,7 +213,7 @@ public class NUWGConvention extends CoordSysBuilder {
             ncvar.getNameAndDimensions(parseInfo, true, false);
             parseInfo.format("\n");
           } else {
-            parseInfo.format("Couldnt add referential coordAxis = %s\n", ncvar.getName());
+            parseInfo.format("Couldnt add referential coordAxis = %s\n", ncvar.getFullName());
           }
 
           /*  CoordinateAxis bound1 = ds.addCoordinateAxis( (VariableDS) ncvar);
@@ -333,7 +333,7 @@ public class NUWGConvention extends CoordSysBuilder {
 
   protected AxisType getAxisType( NetcdfDataset ds, VariableEnhanced ve) {
     Variable v = (Variable) ve;
-    String vname = v.getName();
+    String vname = v.getShortName();
 
     if (vname.equalsIgnoreCase("lat"))
       return AxisType.Lat;
@@ -423,7 +423,7 @@ public class NUWGConvention extends CoordSysBuilder {
       // ncDataset.setValues( ncvar, values); // WHY?
     }
 
-    public String getName() { return ncvar.getName(); }
+    public String getName() { return ncvar.getShortName(); }
     public String getDescription() {
       Attribute att = ncvar.findAttributeIgnoreCase("long_name");
       return (att == null) ? getName() : att.getStringValue();

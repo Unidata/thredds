@@ -195,7 +195,7 @@ public abstract class TrajectoryObsDatasetImpl extends TypedDatasetImpl implemen
 
         // @todo HACK, HACK, HACK - remove once addRecordStructure() deals with ncd attribute changes.
         Variable elevVarInRecVar =
-            this.recordVar.findVariable(this.elevVar.getName());
+            this.recordVar.findVariable(this.elevVar.getFullNameEscaped());
         if ( !elevVarUnitsString.equals(
                 elevVarInRecVar.findAttribute("units").getStringValue())) {
             elevVarInRecVar.addAttribute(new Attribute("units",
@@ -219,7 +219,7 @@ public abstract class TrajectoryObsDatasetImpl extends TypedDatasetImpl implemen
                     new MyTypedDataVariable(new VariableDS(null, curVar,
                         true));
                 dataVariables.add(typedVar);
-                trajectoryVarsMap.put(typedVar.getName(), typedVar);
+                trajectoryVarsMap.put(typedVar.getShortName(), typedVar);
             }
         }
 
@@ -1247,7 +1247,7 @@ public abstract class TrajectoryObsDatasetImpl extends TypedDatasetImpl implemen
                 this.point = point;
                 this.sdata = sdata;
                 this.time = sdata.convertScalarDouble(
-                    Trajectory.this.dimVar.getName());
+                    Trajectory.this.dimVar.getShortName());
                 this.earthLoc = new MyEarthLocation(sdata);
             }
 
@@ -1359,11 +1359,11 @@ public abstract class TrajectoryObsDatasetImpl extends TypedDatasetImpl implemen
              */
             private MyEarthLocation(StructureData sdata) {
                 this.latitude = sdata.convertScalarDouble(
-                    Trajectory.this.latVar.getName());
+                    Trajectory.this.latVar.getShortName());
                 this.longitude = sdata.convertScalarDouble(
-                    Trajectory.this.lonVar.getName());
+                    Trajectory.this.lonVar.getShortName());
                 this.elevation = sdata.convertScalarDouble(
-                    Trajectory.this.elevVar.getName());
+                    Trajectory.this.elevVar.getShortName());
                 if (elevVarUnitsConversionFactor != 1.0) {
                     this.elevation *= elevVarUnitsConversionFactor;
                 }

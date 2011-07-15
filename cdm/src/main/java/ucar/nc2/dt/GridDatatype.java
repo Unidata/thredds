@@ -51,18 +51,18 @@ import java.io.IOException;
 public interface GridDatatype extends Comparable<GridDatatype> {
 
   /**
-   * Get the full, escaped name of the Grid
+   * Get the full, unescaped name of the Grid
    *
    * @return the name of the Grid
    */
-  public String getName();
+  public String getFullName();
 
   /**
    * Get the escaped name of the Grid
    *
    * @return the escaped name of the Grid
    *
-  public String getNameEscaped(); */
+  public String getFullNameEscaped();  */
 
   /**
    * Get the description/long_name of the Grid

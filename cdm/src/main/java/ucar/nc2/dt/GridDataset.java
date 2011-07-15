@@ -47,7 +47,7 @@ public interface GridDataset extends ucar.nc2.dt.TypedDataset {
   public List<GridDatatype> getGrids();
 
   /** find the named GridDatatype.
-   * @param name look for this name
+   * @param name full unescaped name
    * @return  the named GridDatatype, or null if not found
    */
   public GridDatatype findGridDatatype( String name);

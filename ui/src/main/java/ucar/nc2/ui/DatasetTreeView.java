@@ -420,7 +420,7 @@ public class DatasetTreeView extends JPanel {
     VariableNode( TreeNode parent, VariableIF var) {
       this.parent = parent;
       this.var = var;
-      if (debugTree) System.out.println("new var="+var.getName()+" ");
+      if (debugTree) System.out.println("new var="+var.getShortName()+" ");
       //firePropertyChangeEvent(new PropertyChangeEvent(this, "TreeNode", null, var));
     }
 
@@ -447,11 +447,11 @@ public class DatasetTreeView extends JPanel {
           children.add( new VariableNode( this, (VariableIF) vars.get(i)));
       }
 
-      if (debugTree) System.out.println("children="+var.getName()+" ");
+      if (debugTree) System.out.println("children="+var.getShortName()+" ");
     }
 
     public int getIndex(TreeNode child) {
-      if (debugTree) System.out.println("getIndex="+var.getName()+" "+child);
+      if (debugTree) System.out.println("getIndex="+var.getShortName()+" "+child);
       return children.indexOf(child);
     }
 

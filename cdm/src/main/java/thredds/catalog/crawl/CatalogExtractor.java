@@ -359,7 +359,7 @@ public class CatalogExtractor implements CatalogCrawler.Listener {
       CoordinateAxis1D vaxis = gcs.getVerticalAxis();
       if (vaxis != null) {
         long nvert = vaxis.getSize();
-        out.print("  Vertical axis= " + vaxis.getName() + " units=" + vaxis.getUnitsString() + " size= " + nvert);
+        out.print("  Vertical axis= " + vaxis.getFullName() + " units=" + vaxis.getUnitsString() + " size= " + nvert);
         VerticalCT vt = gcs.getVerticalCT();
         if (vt != null)
           out.print(" transform= " + vt.getVerticalTransformType());
@@ -409,7 +409,7 @@ makeGrib1Vocabulary(grids, out);   */
       stdName = (att != null) ? att.getNumericValue().toString() : null;
 
       out.print("  <variable name='");
-      out.print(grid.getName());
+      out.print(grid.getFullName());
       out.print("' vocabulary_name='");
       out.print(stdName != null ? stdName : "dunno");
       out.print("' units='");

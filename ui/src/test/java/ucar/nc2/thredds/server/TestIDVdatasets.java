@@ -285,7 +285,7 @@ public class TestIDVdatasets {
         CoordinateAxis1D vaxis = gcs.getVerticalAxis();
         if (vaxis != null) {
           long nvert = vaxis.getSize();
-          out.print("   Vertical axis= "+vaxis.getName()+" units="+vaxis.getUnitsString()+" size= "+ nvert);
+          out.print("   Vertical axis= "+vaxis.getFullName()+" units="+vaxis.getUnitsString()+" size= "+ nvert);
           VerticalCT vt = gcs.getVerticalCT();
           if (vt != null)
             out.print(" transform= "+vt.getVerticalTransformType());

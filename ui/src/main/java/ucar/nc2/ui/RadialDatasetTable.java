@@ -177,7 +177,7 @@ public class RadialDatasetTable extends JPanel {
     public VariableBean( RadialDatasetSweep.RadialVariable v) {
       this.v = v;
 
-      setName( v.getName());
+      setName( v.getShortName());
       setDescription( v.getDescription());
       setUnits( v.getUnitsString());
       dataType = v.getDataType().toString();

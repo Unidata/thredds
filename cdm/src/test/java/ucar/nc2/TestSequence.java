@@ -69,7 +69,7 @@ public class TestSequence extends TestCase {
     List vars = ncfile.getVariables();
     for (int i = 0; i < vars.size(); i++) {
       Variable v = (Variable) vars.get(i);
-      System.out.println(" " + v.getShortName() + " == " + v.getName());
+      System.out.println(" " + v.getShortName() + " == " + v.getFullName());
     }
 
     Variable v = ncfile.findVariable("record");
@@ -80,7 +80,7 @@ public class TestSequence extends TestCase {
     vars = record.getVariables();
     for (int i = 0; i < vars.size(); i++) {
       Variable vv = (Variable) vars.get(i);
-      System.out.println(" " + vv.getShortName() + " == " + vv.getName());
+      System.out.println(" " + vv.getShortName() + " == " + vv.getFullName());
     }
 
     Array data = v.read();

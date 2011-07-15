@@ -42,11 +42,11 @@ public class GridDatasetTestUtils
     StringBuilder localDiffLog = new StringBuilder();
     for ( GridDatatype grid1 : baseGridDs.getGrids() )
     {
-      GridDatatype grid2 = testGridDs.findGridDatatype( grid1.getName() );
+      GridDatatype grid2 = testGridDs.findGridDatatype( grid1.getFullName() );
       if ( grid2 == null )
       {
         same = false;
-        localDiffLog.append( "\n  Can't find " ).append( grid1.getName() );
+        localDiffLog.append( "\n  Can't find " ).append( grid1.getFullName() );
       }
       else
       {
@@ -55,7 +55,7 @@ public class GridDatasetTestUtils
         if ( size1 != size2 )
         {
           same = false;
-          localDiffLog.append( "\n  " ).append( grid1.getName() ).append( " size mismatch: " )
+          localDiffLog.append( "\n  " ).append( grid1.getFullName() ).append( " size mismatch: " )
                   .append( show( grid1 ) ).append( " != " ).append( show( grid2 ) );
         }
       }

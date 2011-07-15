@@ -95,7 +95,7 @@ public class NcStreamWriter {
   }
 
   public long sendData(Variable v, Section section, WritableByteChannel wbc) throws IOException, InvalidRangeException {
-    if (show) System.out.printf(" %s section=%s%n", v.getName(), section);
+    if (show) System.out.printf(" %s section=%s%n", v.getFullName(), section);
 
     long size = 0;
     size += writeBytes(wbc, NcStream.MAGIC_DATA); // magic
@@ -124,7 +124,7 @@ public class NcStreamWriter {
     if ((v.getDataType() != DataType.STRING) && (v.getDataType() != DataType.OPAQUE)) // vdataMessage
       len *= v.getElementSize();
     size += NcStream.writeVInt(wbc, (int) len); // data len or number of objects
-    if (show) System.out.printf("  %s proto=%d data=%d%n", v.getName(), datab.length, len);
+    if (show) System.out.printf("  %s proto=%d data=%d%n", v.getFullName(), datab.length, len);
 
     size += v.readToByteChannel(section, wbc); // try to do a direct transfer
 
@@ -156,7 +156,7 @@ public class NcStreamWriter {
 
       if (vsize == 1)
         System.out.println("HEY");
-      if (show) System.out.printf(" var %s len=%d starts at= %d%n", v.getName(), vsize, size);
+      if (show) System.out.printf(" var %s len=%d starts at= %d%n", v.getFullName(), vsize, size);
       if (vsize <= maxChunk) {
         size += sendData(v, v.getShapeAsSection(), wbc);
       } else {

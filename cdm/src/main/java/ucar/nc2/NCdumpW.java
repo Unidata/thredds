@@ -284,13 +284,13 @@ public class NCdumpW {
 
         if (showValues == WantValues.all) { // dump all data
           for (Variable v : nc.getVariables()) {
-            printArray(v.read(), v.getName(), ps, ct);
+            printArray(v.read(), v.getFullName(), ps, ct);
             if (ct != null && ct.isCancel()) return false;
           }
         } else if (showValues == WantValues.coordsOnly) { // dump coordVars
           for (Variable v : nc.getVariables()) {
             if (v.isCoordinateVariable())
-              printArray(v.read(), v.getName(), ps, ct);
+              printArray(v.read(), v.getFullName(), ps, ct);
             if (ct != null && ct.isCancel()) return false;
           }
         }
@@ -312,7 +312,7 @@ public class NCdumpW {
               }
               // dont print coord vars if they are already printed
               if ((showValues != WantValues.coordsOnly) || v.isCoordinateVariable())
-                printArray(v.read(), v.getName(), ps, ct);
+                printArray(v.read(), v.getFullName(), ps, ct);
             }
             if (ct != null && ct.isCancel()) return false;
           }
@@ -351,7 +351,7 @@ public class NCdumpW {
     } */
 
     StringWriter writer = new StringWriter(10000);
-    printArray(data, v.getName(), new PrintWriter(writer), ct);
+    printArray(data, v.getFullName(), new PrintWriter(writer), ct);
     return writer.toString();
   }
 
@@ -369,7 +369,7 @@ public class NCdumpW {
     Array data = v.read(sectionSpec);
 
     StringWriter writer = new StringWriter(20000);
-    printArray(data, v.getName(), new PrintWriter(writer), ct);
+    printArray(data, v.getFullName(), new PrintWriter(writer), ct);
     return writer.toString();
   }
 

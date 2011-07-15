@@ -54,7 +54,7 @@ public class TestDODSMultiArrayPrimitiveTypes extends TestCase {
 
     // byte
     assert(null != (v = dodsfile.findVariable("b")));
-    assert v.getName().equals("b");
+    assert v.getShortName().equals("b");
     assert v.getRank() == 3;
     assert v.getSize() == 24;
     assert v.getDataType() == DataType.BYTE;
@@ -71,7 +71,7 @@ public class TestDODSMultiArrayPrimitiveTypes extends TestCase {
 
     // int16
     assert(null != (v = dodsfile.findVariable("i16")));
-    assert v.getName().equals("i16");
+    assert v.getShortName().equals("i16");
     assert v.getRank() == 3;
     assert v.getSize() == 8;
     assert v.getDataType() == DataType.SHORT;
@@ -87,7 +87,7 @@ public class TestDODSMultiArrayPrimitiveTypes extends TestCase {
 
     // int32
     assert(null != (v = dodsfile.findVariable("i32")));
-    assert v.getName().equals("i32");
+    assert v.getShortName().equals("i32");
     assert v.getRank() == 3;
     assert v.getSize() == 24;
     assert v.getDataType() == DataType.INT;
@@ -104,7 +104,7 @@ public class TestDODSMultiArrayPrimitiveTypes extends TestCase {
 
     // uint16
     assert(null != (v = dodsfile.findVariable("ui16")));
-    assert v.getName().equals("ui16");
+    assert v.getShortName().equals("ui16");
     assert v.getRank() == 3;
     assert v.getSize() == 8;
     assert v.getDataType() == DataType.SHORT;
@@ -123,7 +123,7 @@ public class TestDODSMultiArrayPrimitiveTypes extends TestCase {
 
     // uint32
     assert(null != (v = dodsfile.findVariable("ui32")));
-    assert v.getName().equals("ui32");
+    assert v.getShortName().equals("ui32");
     assert v.getRank() == 5;
     assert v.getSize() == 16 * 9;
     assert v.getDataType() == DataType.INT : v.getDataType();
@@ -140,7 +140,7 @@ public class TestDODSMultiArrayPrimitiveTypes extends TestCase {
 
     // float
     assert(null != (v = dodsfile.findVariable("f32")));
-    assert v.getName().equals("f32");
+    assert v.getShortName().equals("f32");
     assert v.getRank() == 3;
     assert v.getSize() == 8;
     assert v.getDataType() == DataType.FLOAT : v.getDataType();
@@ -162,7 +162,7 @@ public class TestDODSMultiArrayPrimitiveTypes extends TestCase {
 
     // double
     assert(null != (v = dodsfile.findVariable("f64")));
-    assert v.getName().equals("f64");
+    assert v.getShortName().equals("f64");
     assert v.getRank() == 3;
     assert v.getSize() == 8;
     assert v.getDataType() == DataType.DOUBLE : v.getDataType();
@@ -184,7 +184,7 @@ public class TestDODSMultiArrayPrimitiveTypes extends TestCase {
 
     // string
     assert(null != (v = dodsfile.findVariable("s0")));
-    assert v.getName().equals("s0");
+    assert v.getShortName().equals("s0");
     assert v.getRank() == 3;
     assert v.getDataType() == DataType.STRING : v.getDataType();
     a = v.read();
@@ -200,7 +200,7 @@ public class TestDODSMultiArrayPrimitiveTypes extends TestCase {
 
     // url
     assert(null != (v = dodsfile.findVariable("u")));
-    assert v.getName().equals("u");
+    assert v.getShortName().equals("u");
     assert v.getRank() == 3;
     assert v.getDataType() == DataType.STRING : v.getDataType();
     a = v.read();
@@ -224,7 +224,7 @@ public class TestDODSMultiArrayPrimitiveTypes extends TestCase {
 
     // uint32
     assert(null != (v = (DODSVariable) dodsfile.findVariable("b")));
-    assert v.getName().equals("b");
+    assert v.getShortName().equals("b");
     assert v.getRank() == 3;
     assert v.getSize() == 24;
     assert v.getDataType() == DataType.BYTE;
@@ -261,7 +261,7 @@ public class TestDODSMultiArrayPrimitiveTypes extends TestCase {
 
     // uint32
     assert(null != (v = (DODSVariable) dodsfile.findVariable("b")));
-    assert v.getName().equals("b");
+    assert v.getShortName().equals("b");
     assert v.getRank() == 3;
     assert v.getSize() == 24;
     assert v.getDataType() == DataType.BYTE;

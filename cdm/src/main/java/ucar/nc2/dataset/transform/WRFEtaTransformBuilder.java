@@ -75,7 +75,7 @@ public class WRFEtaTransformBuilder extends AbstractCoordTransBuilder {
 
     ct.addParameter(new Parameter(WRFEta.IsStaggeredZ, ""+isStaggered(cs.getZaxis())));
 
-    ct.addParameter(new Parameter("eta", ""+cs.getZaxis().getName()));
+    ct.addParameter(new Parameter("eta", ""+cs.getZaxis().getFullName()));
 
     return ct;
   }
@@ -94,7 +94,7 @@ public class WRFEtaTransformBuilder extends AbstractCoordTransBuilder {
 
   private boolean isStaggered(CoordinateAxis axis) {
   	if (axis == null) return false;
-  	String name = axis.getName();
+  	String name = axis.getShortName();
   	if (name == null) return false;
   	if (name.endsWith("stag")) return true;
   	return false;

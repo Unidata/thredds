@@ -168,7 +168,7 @@ public class SingleTrajectoryObsDataset
     }
 
     // @todo HACK, HACK, HACK - remove once addRecordStructure() deals with ncd attribute changes.
-    Variable elevVarInRecVar = this.recordVar.findVariable( this.elevVar.getName());
+    Variable elevVarInRecVar = this.recordVar.findVariable( this.elevVar.getFullNameEscaped());
     if ( ! elevVarUnitsString.equals( elevVarInRecVar.findAttribute( "units").getStringValue()))
     {
       elevVarInRecVar.addAttribute( new Attribute( "units", elevVarUnitsString));
@@ -188,7 +188,7 @@ public class SingleTrajectoryObsDataset
       {
         MyTypedDataVariable typedVar = new MyTypedDataVariable( new VariableDS(  null, curVar, true ) );
         dataVariables.add( typedVar);
-        trajectoryVarsMap.put( typedVar.getName(), typedVar);
+        trajectoryVarsMap.put( typedVar.getShortName(), typedVar);
       }
     }
 
@@ -764,7 +764,7 @@ public class SingleTrajectoryObsDataset
       {
         this.point = point;
         this.sdata = sdata;
-        this.time = sdata.convertScalarDouble( SingleTrajectory.this.timeVar.getName());
+        this.time = sdata.convertScalarDouble( SingleTrajectory.this.timeVar.getShortName());
         this.earthLoc = new MyEarthLocation( sdata);
       }
 
@@ -820,9 +820,9 @@ public class SingleTrajectoryObsDataset
 
       private MyEarthLocation( StructureData sdata )
       {
-        this.latitude = sdata.convertScalarDouble( SingleTrajectory.this.latVar.getName() );
-        this.longitude = sdata.convertScalarDouble( SingleTrajectory.this.lonVar.getName() );
-        this.elevation = sdata.convertScalarDouble( SingleTrajectory.this.elevVar.getName() );
+        this.latitude = sdata.convertScalarDouble( SingleTrajectory.this.latVar.getShortName() );
+        this.longitude = sdata.convertScalarDouble( SingleTrajectory.this.lonVar.getShortName() );
+        this.elevation = sdata.convertScalarDouble( SingleTrajectory.this.elevVar.getShortName() );
         if ( elevVarUnitsConversionFactor != 1.0 ) this.elevation *= elevVarUnitsConversionFactor;
       }
 

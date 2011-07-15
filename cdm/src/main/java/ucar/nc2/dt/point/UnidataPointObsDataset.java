@@ -113,20 +113,20 @@ public class UnidataPointObsDataset extends PointObsDatasetImpl implements Typed
     String recDimName = ds.findAttValueIgnoreCase(null, "observationDimension", null);
 
     // fire up the record helper
-    recordHelper = new RecordDatasetHelper(ds, timeVar.getName(), timeNominalVar == null ? null : timeNominalVar.getName(),
+    recordHelper = new RecordDatasetHelper(ds, timeVar.getShortName(), timeNominalVar == null ? null : timeNominalVar.getShortName(),
         dataVariables, recDimName, parseInfo);
-    recordHelper.setLocationInfo(latVar.getName(), lonVar.getName(), altVar == null ? null : altVar.getName());
+    recordHelper.setLocationInfo(latVar.getShortName(), lonVar.getShortName(), altVar == null ? null : altVar.getShortName());
     recordHelper.setShortNames(latVar.getShortName(), lonVar.getShortName(), altVar == null ? null : altVar.getShortName(), 
             timeVar.getShortName(), timeNominalVar == null ? null : timeNominalVar.getShortName());
     allData = recordHelper.readAllCreateObs( null);
 
-    removeDataVariable(timeVar.getName());
+    removeDataVariable(timeVar.getShortName());
     if (timeNominalVar != null)
-      removeDataVariable(timeNominalVar.getName());
-    removeDataVariable(latVar.getName());
-    removeDataVariable(lonVar.getName());
+      removeDataVariable(timeNominalVar.getShortName());
+    removeDataVariable(latVar.getShortName());
+    removeDataVariable(lonVar.getShortName());
     if (altVar != null)
-      removeDataVariable(altVar.getName());
+      removeDataVariable(altVar.getShortName());
 
     //recordVar = recordHelper.recordVar;
     timeUnit = recordHelper.timeUnit;

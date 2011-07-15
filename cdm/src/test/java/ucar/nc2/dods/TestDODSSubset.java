@@ -54,7 +54,7 @@ public class TestDODSSubset extends TestCase {
 
     // int32
     assert(null != (v = dodsfile.findVariable("i32")));
-    assert v.getName().equals("i32");
+    assert v.getFullName().equals("i32");
     assert v.getRank() == 1;
     assert v.getSize() == 10;
     assert v.getDataType() == DataType.INT;
@@ -77,7 +77,7 @@ public class TestDODSSubset extends TestCase {
 
     // double
     assert(null != (v = dodsfile.findVariable("f64")));
-    assert v.getName().equals("f64");
+    assert v.getFullName().equals("f64");
     assert v.getRank() == 1;
     assert v.getSize() == 5;
     assert v.getDataType() == DataType.DOUBLE : v.getDataType();

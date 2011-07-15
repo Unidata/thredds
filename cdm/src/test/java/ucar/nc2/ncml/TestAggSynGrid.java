@@ -66,7 +66,7 @@ public class TestAggSynGrid extends TestCase {
     public void testGrid() {
       GridDatatype grid = gds.findGridDatatype("T");
       assert null != grid;
-      assert grid.getName().equals("T");
+      assert grid.getFullName().equals("T");
       assert grid.getRank() == 3;
       assert grid.getDataType() == DataType.DOUBLE;
 
@@ -113,7 +113,7 @@ public class TestAggSynGrid extends TestCase {
       NetcdfFile ncfile = gds.getNetcdfFile();
       Variable lat = ncfile.findVariable("lat");
       assert null != lat;
-      assert lat.getName().equals("lat");
+      assert lat.getShortName().equals("lat");
       assert lat.getRank() == 1;
       assert lat.getSize() == 3;
       assert lat.getShape()[0] == 3;
@@ -150,7 +150,7 @@ public class TestAggSynGrid extends TestCase {
       NetcdfFile ncfile = gds.getNetcdfFile();
       Variable time = ncfile.findVariable("time");
       assert null != time;
-      assert time.getName().equals("time");
+      assert time.getShortName().equals("time");
       assert time.getRank() == 1 : time.getRank();
       assert time.getShape()[0] == 3;
       assert time.getDataType() == DataType.STRING : time.getDataType();
@@ -170,7 +170,7 @@ public class TestAggSynGrid extends TestCase {
       NetcdfFile ncfile = gds.getNetcdfFile();
       Variable v = ncfile.findVariable("T");
       assert null != v;
-      assert v.getName().equals("T");
+      assert v.getShortName().equals("T");
       assert v.getRank() == 3;
       assert v.getSize() == 36 : v.getSize();
       assert v.getShape()[0] == 3;

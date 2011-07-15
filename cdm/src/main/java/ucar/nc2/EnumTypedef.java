@@ -80,7 +80,7 @@ public class EnumTypedef {
    */
   public String writeCDL(boolean strict) {
     StringBuilder buff = new StringBuilder();
-    String name = strict ? NetcdfFile.escapeName(getName()) : getName();    
+    String name = strict ? NetcdfFile.escapeNameCDL(getName()) : getName();
     buff.append("  enum ").append(name).append(" { ");
     int count = 0;
     List<Object> keyset = Arrays.asList(map.keySet().toArray());
@@ -89,7 +89,7 @@ public class EnumTypedef {
       String s = map.get(key);
       if (0 < count++) buff.append(", ");
       if (strict)
-        buff.append( NetcdfFile.escapeName(s)).append(" = ").append(key);
+        buff.append( NetcdfFile.escapeNameCDL(s)).append(" = ").append(key);
       else
         buff.append("'").append(s).append("' = ").append(key);
     }

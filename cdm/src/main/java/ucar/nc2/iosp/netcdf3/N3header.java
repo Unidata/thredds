@@ -251,11 +251,11 @@ public class N3header {
       dataStart = Math.min(dataStart, begin);
 
       if (debugVariablePos)
-        System.out.printf("%s begin at=%d end=%d  isRecord=%s nonRecordDataSize=%d\n", var.getName(), begin, (begin + vsize), isRecord, nonRecordDataSize);
+        System.out.printf("%s begin at=%d end=%d  isRecord=%s nonRecordDataSize=%d\n", var.getFullName(), begin, (begin + vsize), isRecord, nonRecordDataSize);
       if (fout != null)
-        fout.format("%s begin at=%d end=%d  isRecord=%s nonRecordDataSize=%d%n", var.getName(), begin, (begin + vsize), isRecord, nonRecordDataSize);
+        fout.format("%s begin at=%d end=%d  isRecord=%s nonRecordDataSize=%d%n", var.getFullName(), begin, (begin + vsize), isRecord, nonRecordDataSize);
       if (debugHeaderSize)
-        System.out.printf("%s header size=%d data size= %d\n", var.getName(), (raf.getFilePointer() - startPos), vsize);
+        System.out.printf("%s header size=%d data size= %d\n", var.getFullName(), (raf.getFilePointer() - startPos), vsize);
 
       ncfile.addVariable(null, var);
     }
@@ -372,7 +372,7 @@ public class N3header {
   synchronized boolean removeRecordStructure() {
     boolean found = false;
     for (Variable v : uvars) {
-      if (v.getName().equals("record")) {
+      if (v.getFullName().equals("record")) {
         uvars.remove(v);
         ncfile.getRootGroup().getVariables().remove(v);
         found = true;
@@ -700,7 +700,7 @@ public class N3header {
 
         vinfo.begin = pos;
         if (fout != null)
-          fout.format("  %s begin at = %d end= %d\n", var.getName(), vinfo.begin, (vinfo.begin + vinfo.vsize));
+          fout.format("  %s begin at = %d end= %d\n", var.getFullName(), vinfo.begin, (vinfo.begin + vinfo.vsize));
         pos += vinfo.vsize;
 
         // track how big each record is
@@ -722,7 +722,7 @@ public class N3header {
           raf.writeInt((int) pos);
 
         vinfo.begin = pos;
-        if (fout != null) fout.format(" %s record begin at = %d\n", var.getName(), dataStart);
+        if (fout != null) fout.format(" %s record begin at = %d\n", var.getFullName(), dataStart);
         pos += vinfo.vsize;
 
         // track how big each record is
@@ -753,7 +753,7 @@ public class N3header {
     // variables
     size += 8; // magic, nvars
     for (Variable var : ncfile.getVariables()) {
-      size += sizeString(var.getName());
+      size += sizeString(var.getShortName());
 
       // dimensions
       size += 4; // ndims
@@ -911,7 +911,7 @@ public class N3header {
 
     for (int i = 0; i < n; i++) {
       Variable var = vars.get(i);
-      writeString(var.getName());
+      writeString(var.getShortName());
 
       // dimensions
       long vsize = var.getDataType().getSize(); // works for all netcdf-3 data types

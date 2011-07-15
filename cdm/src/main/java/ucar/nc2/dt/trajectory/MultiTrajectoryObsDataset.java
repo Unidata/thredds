@@ -160,15 +160,15 @@ public class MultiTrajectoryObsDataset
     }
 
     // @todo HACK, HACK, HACK - remove once addRecordStructure() deals with ncd attribute changes.
-    Variable latVarInRecVar = this.recordVar.findVariable( this.latVar.getName() );
+    Variable latVarInRecVar = this.recordVar.findVariable( this.latVar.getFullNameEscaped() );
     Attribute latVarUnitsAtt = latVarInRecVar.findAttribute( "units");
     if ( latVarUnitsAtt != null && !latVarUnitsString.equals( latVarUnitsAtt.getStringValue() ) )
       latVarInRecVar.addAttribute( new Attribute( "units", latVarUnitsString ) );
-    Variable lonVarInRecVar = this.recordVar.findVariable( this.lonVar.getName() );
+    Variable lonVarInRecVar = this.recordVar.findVariable( this.lonVar.getFullNameEscaped() );
     Attribute lonVarUnitsAtt = lonVarInRecVar.findAttribute( "units" );
     if ( lonVarUnitsAtt != null && !lonVarUnitsString.equals( lonVarUnitsAtt.getStringValue() ) )
       lonVarInRecVar.addAttribute( new Attribute( "units", lonVarUnitsString ) );
-    Variable elevVarInRecVar = this.recordVar.findVariable( this.elevVar.getName() );
+    Variable elevVarInRecVar = this.recordVar.findVariable( this.elevVar.getFullNameEscaped() );
     Attribute elevVarUnitsAtt = elevVarInRecVar.findAttribute( "units" );
     if ( elevVarUnitsAtt != null && !elevVarUnitsString.equals( elevVarUnitsAtt.getStringValue() ) )
       elevVarInRecVar.addAttribute( new Attribute( "units", elevVarUnitsString ) );
@@ -187,7 +187,7 @@ public class MultiTrajectoryObsDataset
       {
         MyTypedDataVariable typedVar = new MyTypedDataVariable( new VariableDS(  null, curVar, true ) );
         dataVariables.add( typedVar);
-        trajectoryVarsMap.put( typedVar.getName(), typedVar);
+        trajectoryVarsMap.put( typedVar.getShortName(), typedVar);
       }
     }
 
@@ -241,7 +241,7 @@ public class MultiTrajectoryObsDataset
     }
     else
     {
-      String tmpMsg = "Time var <" + this.timeVar.getName() + "> is not a double, float, or integer <" + timeVar.getDataType().toString() + ">.";
+      String tmpMsg = "Time var <" + this.timeVar.getFullName() + "> is not a double, float, or integer <" + timeVar.getDataType().toString() + ">.";
       //log.error( tmpMsg );
       throw new IllegalArgumentException( tmpMsg);
     }
@@ -275,7 +275,7 @@ public class MultiTrajectoryObsDataset
       }
       else
       {
-        String tmpMsg = "Trajectory var <" + this.trajVar.getName() + "> is not a string, double, float, or integer <" + this.trajVar.getDataType().toString() + ">.";
+        String tmpMsg = "Trajectory var <" + this.trajVar.getFullName() + "> is not a string, double, float, or integer <" + this.trajVar.getDataType().toString() + ">.";
         //log.error( tmpMsg );
         throw new IllegalStateException( tmpMsg );
       }

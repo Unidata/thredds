@@ -438,7 +438,7 @@ public class GempakSoundingIOSP extends GempakStationFileIOSP {
 
         GempakSoundingFileReader gsfr = (GempakSoundingFileReader) gemreader;
         int                      vertType = gsfr.getVerticalCoordinate();
-        String                   pName    = v.getName();
+        String                   pName    = v.getFullName();
         if (gemreader.getFileSubType().equals(
                 GempakSoundingFileReader.MERGED)) {
             if ((vertType == gsfr.PRES_COORD) && pName.equals("PRES")) {
