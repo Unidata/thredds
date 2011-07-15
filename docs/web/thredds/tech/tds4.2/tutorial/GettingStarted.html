@@ -180,9 +180,17 @@ drwxr-xr-x 2 tds Unidata  4096 Feb  2 12:04 work
           <li>Web applications can override some server-wide settings in their own configuration files (more about that later).</li>
          </ul>
 
-        <p><code>logs/</code></p>
-          <img src="../../images/log.png" width="150"  alt="Log!" style="float:right;">
+        <p><code>webapps/</code></p>
          <ul class="little">
+          <li>Contains web applications directories and WAR files.</li>
+          <li>This is where we will be putting the TDS web application.</li>
+          <li>You will also be using the <code><small>manager</small></code> application that comes with Tomcat during this workshop.</li>
+         </ul>
+
+        <p><code>logs/</code></p>
+
+         <ul class="little">
+          <img src="../../images/log.png" width="150"  alt="Log!">
           <li><i>Tomcat log files</i> are here by default.</li>
           <li>This is one of the directories you will be looking for log files (the TDS logs elsewhere by default).</li>
           <li><i>The log files should be your first stop for troubleshooting Tomcat and TDS issues.</i> (Hint, hint.)</li>
@@ -190,12 +198,7 @@ drwxr-xr-x 2 tds Unidata  4096 Feb  2 12:04 work
           <li>You will become very familiar with the Tomcat-generated <code><small>catalina.out</small></code> and <code><small>localhost_access_log.yyyy-mm-dd.log</small></code> files by the end of this workshop.</li>
          </ul>
 
-        <p><code>webapps/</code></p>
-         <ul class="little">
-          <li>Contains web applications directories and WAR files.</li>
-          <li>This is where we will be putting the TDS web application.</li>
-          <li>You will also be using the <code><small>manager</small></code> application that comes with Tomcat during this workshop.</li>
-         </ul>
+
       </ol>
      </div> <!-- end subsection -->
 
@@ -521,7 +524,7 @@ total 20
        <li>Examining <code>catalina.out</code>.</li>
         <p>Open another terminal window (hereafter referred to as terminal #2) and run the following command in the new terminal:</p>
 <pre>
-<b>$</b> tail -f /home/thredds/apache-tomcat-6.0.32/logs/catalina.out
+<b>$</b> tail -f /home/tds/GettingStarted/apache-tomcat-6.0.32/logs/catalina.out
 </pre>
 <p>In your original terminal window, start/stop and start Tomcat and watch what is being logged to <code>catalina.out</code> in the terminal #2 window.</p>
       <div id="expanded" class="question">
