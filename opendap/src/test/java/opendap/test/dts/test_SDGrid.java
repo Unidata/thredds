@@ -39,7 +39,7 @@
 
 
 
-package opendap.dts;
+package opendap.test.dts;
 
 import opendap.Server.*;
 import opendap.dap.*;
@@ -47,56 +47,31 @@ import opendap.dap.*;
 import java.io.*;
 
 /**
- * Holds a OPeNDAP Server <code>Array</code> value.
+ * Holds a OPeNDAP Server <code>Grid</code> value.
  *
  * @author ndp
  * @version $Revision: 15901 $
  * @see BaseType
  */
-public class test_SDArray extends SDArray {
-
-    private boolean Debug = false;
-    private int origShape[];
+public class test_SDGrid extends SDGrid {
 
     /**
-     * Constructs a new <code>test_SDArray</code>.
+     * Constructs a new <code>test_SDGrid</code>.
      */
-    public test_SDArray() {
+    public test_SDGrid() {
         super();
     }
 
     /**
-     * Constructs a new <code>test_SDArray</code> with name <code>n</code>.
+     * Constructs a new <code>test_SDGrid</code> with name <code>n</code>.
      *
      * @param n the name of the variable.
      */
-    public test_SDArray(String n) {
+    public test_SDGrid(String n) {
         super(n);
     }
 
-
-    public void cacheShape() {
-
-        origShape = new int[numDimensions()];
-
-        try {
-            for (int dim = 0; dim < numDimensions(); dim++) {
-                DArrayDimension dad = getDimension(dim);
-                origShape[dim] = dad.getSize();
-            }
-        }
-        catch (InvalidDimensionException e) {
-            System.out.println("ERROR! Unresolved problem in test_SDArray.cacheShape!");
-        }
-
-    }
-
-    public int getCachedShape(int dim) {
-        if (dim < origShape.length)
-            return (origShape[dim]);
-        else
-            return (-1);
-    }
+    // --------------- FileIO Interface
 
     /**
      * Read a value from the named dataset for this variable.
@@ -117,7 +92,7 @@ public class test_SDArray extends SDArray {
 
         testEngine te = (testEngine) specialO;
 
-        te.newLoadTestArray(datasetName, this);
+        te.loadTestGrid(datasetName, this);
 
         setRead(true);
         return (false);

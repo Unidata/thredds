@@ -38,43 +38,37 @@
 /////////////////////////////////////////////////////////////////////////////
 
 
-package opendap.dts;
+
+package opendap.test.dts;
 
 import opendap.Server.*;
 import opendap.dap.*;
 
 import java.io.*;
 
-
 /**
- * Holds a OPeNDAP Server <code>Float64</code> value.
+ * Holds a OPeNDAP Server <code>Int16</code> value.
  *
  * @author ndp
  * @version $Revision: 15901 $
  * @see BaseType
  */
-public class test_SDFloat64 extends SDFloat64 {
-
-    private static int rCount = 0;
+public class test_SDInt16 extends SDInt16 {
 
     /**
-     * Constructs a new <code>test_SDFloat64</code>.
+     * Constructs a new <code>test_SDInt16</code>.
      */
-    public test_SDFloat64() {
+    public test_SDInt16() {
         super();
     }
 
     /**
-     * Constructs a new <code>test_SDFloat64</code> with name <code>n</code>.
+     * Constructs a new <code>test_SDInt16</code> with name <code>n</code>.
      *
      * @param n the name of the variable.
      */
-    public test_SDFloat64(String n) {
+    public test_SDInt16(String n) {
         super(n);
-    }
-
-    public static void resetCount() {
-        rCount = 0;
     }
 
     // --------------- FileIO Interface
@@ -96,13 +90,14 @@ public class test_SDFloat64 extends SDFloat64 {
     public boolean read(String datasetName, Object specialO)
             throws NoSuchVariableException, IOException, EOFException {
 
-
         testEngine te = (testEngine) specialO;
 
-        setValue(te.nextFloat64());
+        setValue(te.nextInt16());
         setRead(true);
         return (false);
     }
+
+
 }
 
 

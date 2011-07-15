@@ -39,7 +39,7 @@
 
 
 
-package opendap.dts;
+package opendap.test.dts;
 
 import opendap.Server.*;
 import opendap.dap.*;
@@ -47,31 +47,32 @@ import opendap.dap.*;
 import java.io.*;
 
 /**
- * Holds a OPeNDAP Server <code>Grid</code> value.
+ * Holds a OPeNDAP Server <code>Byte</code> value.
  *
  * @author ndp
- * @version $Revision: 15901 $
+ * @version $Revision: 16122 $
  * @see BaseType
  */
-public class test_SDGrid extends SDGrid {
+public class test_SDByte extends SDByte {
+
 
     /**
-     * Constructs a new <code>test_SDGrid</code>.
+     * Constructs a new <code>test_SDByte</code>.
      */
-    public test_SDGrid() {
+    public test_SDByte() {
         super();
     }
 
     /**
-     * Constructs a new <code>test_SDGrid</code> with name <code>n</code>.
+     * Constructs a new <code>test_SDByte</code> with name <code>n</code>.
      *
      * @param n the name of the variable.
      */
-    public test_SDGrid(String n) {
+    public test_SDByte(String n) {
         super(n);
     }
 
-    // --------------- FileIO Interface
+// --------------- FileIO Interface
 
     /**
      * Read a value from the named dataset for this variable.
@@ -88,12 +89,10 @@ public class test_SDGrid extends SDGrid {
      * @throws EOFException
      */
     public boolean read(String datasetName, Object specialO)
-            throws NoSuchVariableException, IOException, EOFException {
+            throws NoSuchVariableException, IOException {
 
         testEngine te = (testEngine) specialO;
-
-        te.loadTestGrid(datasetName, this);
-
+        setValue(te.nextByte());
         setRead(true);
         return (false);
     }

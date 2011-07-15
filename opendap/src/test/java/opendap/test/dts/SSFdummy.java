@@ -37,36 +37,25 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /////////////////////////////////////////////////////////////////////////////
 
-package opendap.dts;
+
+package opendap.test.dts;
 
 import java.util.*;
 
-import opendap.dap.*;
 import opendap.Server.*;
 
-public class SSFdummyval
-        implements BTFunction {
+public class SSFdummy
+        implements BoolFunction {
 
     public String getName() {
-        return "dummyval";
+        return "dummy";
     }
 
-    public void checkArgs(List args)
-            throws InvalidParameterException {
-
-        if (args.size() < 1) {
-            throw new InvalidParameterException("must have at least 1 param.");
-        }
+    public void checkArgs(List args) {
     }
 
-    public BaseType getReturnType(List args) {
-        return ((SubClause) args.get(0)).getValue();
-    }
-
-    public BaseType evaluate(List args)
-            throws DAP2ServerSideException {
-
-        return ((SubClause) args.get(0)).evaluate();
+    public boolean evaluate(List args) {
+        return args.size() > 2;
     }
 }
 

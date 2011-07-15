@@ -39,41 +39,39 @@
 
 
 
-package opendap.dts;
+package opendap.test.dts;
 
 import opendap.Server.*;
 import opendap.dap.*;
 
 import java.io.*;
 
-
 /**
- * Holds a OPeNDAP Server <code>Float32</code> value.
+ * Holds a OPeNDAP Server <code>Structure</code> value.
  *
  * @author ndp
  * @version $Revision: 15901 $
  * @see BaseType
  */
-public class test_SDFloat32 extends SDFloat32 {
-
+public class test_SDStructure extends SDStructure {
 
     /**
-     * Constructs a new <code>test_SDFloat32</code>.
+     * Constructs a new <code>test_SDStructure</code>.
      */
-    public test_SDFloat32() {
+    public test_SDStructure() {
         super();
     }
 
     /**
-     * Constructs a new <code>test_SDFloat32</code> with name <code>n</code>.
+     * Constructs a new <code>test_SDStructure</code> with name <code>n</code>.
      *
      * @param n the name of the variable.
      */
-    public test_SDFloat32(String n) {
+    public test_SDStructure(String n) {
         super(n);
     }
 
-    // --------------- FileIO Interface
+// --------------- FileIO Interface
 
     /**
      * Read a value from the named dataset for this variable.
@@ -92,9 +90,14 @@ public class test_SDFloat32 extends SDFloat32 {
     public boolean read(String datasetName, Object specialO)
             throws NoSuchVariableException, IOException, EOFException {
 
-        testEngine te = (testEngine) specialO;
 
-        setValue(te.nextFloat32());
+        for (int i = 0; i < elementCount(false); i++) {
+            ServerMethods sm = (ServerMethods) getVar(i);
+            if (sm.isProject())
+                sm.read(datasetName, specialO);
+        }
+
+
         setRead(true);
         return (false);
     }

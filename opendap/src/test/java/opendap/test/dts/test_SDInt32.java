@@ -39,7 +39,7 @@
 
 
 
-package opendap.dts;
+package opendap.test.dts;
 
 import opendap.Server.*;
 import opendap.dap.*;
@@ -47,31 +47,33 @@ import opendap.dap.*;
 import java.io.*;
 
 /**
- * Holds a OPeNDAP Server <code>Byte</code> value.
+ * Holds a OPeNDAP Server <code>Int32</code> value.
  *
  * @author ndp
  * @version $Revision: 15901 $
  * @see BaseType
  */
-public class test_SDURL extends SDURL {
+
+public class test_SDInt32 extends SDInt32 {
+
 
     /**
-     * Constructs a new <code>test_SDURL</code>.
+     * Constructs a new <code>test_SDInt32</code>.
      */
-    public test_SDURL() {
+    public test_SDInt32() {
         super();
     }
 
     /**
-     * Constructs a new <code>test_SDURL</code> with name <code>n</code>.
+     * Constructs a new <code>test_SDInt32</code> with name <code>n</code>.
      *
      * @param n the name of the variable.
      */
-    public test_SDURL(String n) {
+    public test_SDInt32(String n) {
         super(n);
     }
 
-// --------------- FileIO Interface
+    // --------------- FileIO Interface
 
     /**
      * Read a value from the named dataset for this variable.
@@ -92,11 +94,10 @@ public class test_SDURL extends SDURL {
 
         testEngine te = (testEngine) specialO;
 
-        setValue(te.nextURL());
+        setValue(te.nextInt32());
         setRead(true);
         return (false);
     }
 }
-
 
 

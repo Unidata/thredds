@@ -39,40 +39,41 @@
 
 
 
-package opendap.dts;
+package opendap.test.dts;
 
 import opendap.Server.*;
 import opendap.dap.*;
 
 import java.io.*;
 
+
 /**
- * Holds a OPeNDAP Server <code>Byte</code> value.
+ * Holds a OPeNDAP Server <code>Float32</code> value.
  *
  * @author ndp
- * @version $Revision: 16122 $
+ * @version $Revision: 15901 $
  * @see BaseType
  */
-public class test_SDByte extends SDByte {
+public class test_SDFloat32 extends SDFloat32 {
 
 
     /**
-     * Constructs a new <code>test_SDByte</code>.
+     * Constructs a new <code>test_SDFloat32</code>.
      */
-    public test_SDByte() {
+    public test_SDFloat32() {
         super();
     }
 
     /**
-     * Constructs a new <code>test_SDByte</code> with name <code>n</code>.
+     * Constructs a new <code>test_SDFloat32</code> with name <code>n</code>.
      *
      * @param n the name of the variable.
      */
-    public test_SDByte(String n) {
+    public test_SDFloat32(String n) {
         super(n);
     }
 
-// --------------- FileIO Interface
+    // --------------- FileIO Interface
 
     /**
      * Read a value from the named dataset for this variable.
@@ -89,10 +90,11 @@ public class test_SDByte extends SDByte {
      * @throws EOFException
      */
     public boolean read(String datasetName, Object specialO)
-            throws NoSuchVariableException, IOException {
+            throws NoSuchVariableException, IOException, EOFException {
 
         testEngine te = (testEngine) specialO;
-        setValue(te.nextByte());
+
+        setValue(te.nextFloat32());
         setRead(true);
         return (false);
     }

@@ -38,25 +38,65 @@
 /////////////////////////////////////////////////////////////////////////////
 
 
-package opendap.dts;
 
-import java.util.*;
+package opendap.test.dts;
 
 import opendap.Server.*;
+import opendap.dap.*;
 
-public class SSFdummy
-        implements BoolFunction {
+import java.io.*;
 
-    public String getName() {
-        return "dummy";
+/**
+ * Holds a OPeNDAP Server <code>Byte</code> value.
+ *
+ * @author ndp
+ * @version $Revision: 15901 $
+ * @see BaseType
+ */
+public class test_SDURL extends SDURL {
+
+    /**
+     * Constructs a new <code>test_SDURL</code>.
+     */
+    public test_SDURL() {
+        super();
     }
 
-    public void checkArgs(List args) {
+    /**
+     * Constructs a new <code>test_SDURL</code> with name <code>n</code>.
+     *
+     * @param n the name of the variable.
+     */
+    public test_SDURL(String n) {
+        super(n);
     }
 
-    public boolean evaluate(List args) {
-        return args.size() > 2;
+// --------------- FileIO Interface
+
+    /**
+     * Read a value from the named dataset for this variable.
+     *
+     * @param datasetName String identifying the file or other data store
+     *                    from which to read a vaue for this variable.
+     * @param specialO    This <code>Object</code> is a goody that is used by Server implementations
+     *                    to deliver important, and as yet unknown, stuff to the read method. If you
+     *                    don't need it, make it a <code>null</code>.
+     * @return <code>true</code> if more data remains to be read, otherwise
+     *         <code>false</code>. This is an abtsract method that must be implemented
+     *         as part of the installation/localization of a OPeNDAP server.
+     * @throws IOException
+     * @throws EOFException
+     */
+    public boolean read(String datasetName, Object specialO)
+            throws NoSuchVariableException, IOException, EOFException {
+
+        testEngine te = (testEngine) specialO;
+
+        setValue(te.nextURL());
+        setRead(true);
+        return (false);
     }
 }
+
 
 

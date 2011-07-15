@@ -39,7 +39,7 @@
 
 
 
-package opendap.dts;
+package opendap.test.dts;
 
 import opendap.Server.*;
 import opendap.dap.*;
@@ -47,27 +47,27 @@ import opendap.dap.*;
 import java.io.*;
 
 /**
- * Holds a OPeNDAP Server <code>Int16</code> value.
+ * Holds a OPeNDAP Server <code>UInt32</code> value.
  *
  * @author ndp
  * @version $Revision: 15901 $
  * @see BaseType
  */
-public class test_SDInt16 extends SDInt16 {
+public class test_SDUInt32 extends SDUInt32 {
 
     /**
-     * Constructs a new <code>test_SDInt16</code>.
+     * Constructs a new <code>test_SDUInt32</code>.
      */
-    public test_SDInt16() {
+    public test_SDUInt32() {
         super();
     }
 
     /**
-     * Constructs a new <code>test_SDInt16</code> with name <code>n</code>.
+     * Constructs a new <code>test_SDUInt32</code> with name <code>n</code>.
      *
      * @param n the name of the variable.
      */
-    public test_SDInt16(String n) {
+    public test_SDUInt32(String n) {
         super(n);
     }
 
@@ -92,12 +92,10 @@ public class test_SDInt16 extends SDInt16 {
 
         testEngine te = (testEngine) specialO;
 
-        setValue(te.nextInt16());
+        setValue(te.nextUint32());
         setRead(true);
         return (false);
     }
-
-
 }
 
 

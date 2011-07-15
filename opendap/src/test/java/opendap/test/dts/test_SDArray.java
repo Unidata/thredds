@@ -39,7 +39,7 @@
 
 
 
-package opendap.dts;
+package opendap.test.dts;
 
 import opendap.Server.*;
 import opendap.dap.*;
@@ -47,31 +47,56 @@ import opendap.dap.*;
 import java.io.*;
 
 /**
- * Holds a OPeNDAP Server <code>Structure</code> value.
+ * Holds a OPeNDAP Server <code>Array</code> value.
  *
  * @author ndp
  * @version $Revision: 15901 $
  * @see BaseType
  */
-public class test_SDStructure extends SDStructure {
+public class test_SDArray extends SDArray {
+
+    private boolean Debug = false;
+    private int origShape[];
 
     /**
-     * Constructs a new <code>test_SDStructure</code>.
+     * Constructs a new <code>test_SDArray</code>.
      */
-    public test_SDStructure() {
+    public test_SDArray() {
         super();
     }
 
     /**
-     * Constructs a new <code>test_SDStructure</code> with name <code>n</code>.
+     * Constructs a new <code>test_SDArray</code> with name <code>n</code>.
      *
      * @param n the name of the variable.
      */
-    public test_SDStructure(String n) {
+    public test_SDArray(String n) {
         super(n);
     }
 
-// --------------- FileIO Interface
+
+    public void cacheShape() {
+
+        origShape = new int[numDimensions()];
+
+        try {
+            for (int dim = 0; dim < numDimensions(); dim++) {
+                DArrayDimension dad = getDimension(dim);
+                origShape[dim] = dad.getSize();
+            }
+        }
+        catch (InvalidDimensionException e) {
+            System.out.println("ERROR! Unresolved problem in test_SDArray.cacheShape!");
+        }
+
+    }
+
+    public int getCachedShape(int dim) {
+        if (dim < origShape.length)
+            return (origShape[dim]);
+        else
+            return (-1);
+    }
 
     /**
      * Read a value from the named dataset for this variable.
@@ -90,13 +115,9 @@ public class test_SDStructure extends SDStructure {
     public boolean read(String datasetName, Object specialO)
             throws NoSuchVariableException, IOException, EOFException {
 
+        testEngine te = (testEngine) specialO;
 
-        for (int i = 0; i < elementCount(false); i++) {
-            ServerMethods sm = (ServerMethods) getVar(i);
-            if (sm.isProject())
-                sm.read(datasetName, specialO);
-        }
-
+        te.newLoadTestArray(datasetName, this);
 
         setRead(true);
         return (false);

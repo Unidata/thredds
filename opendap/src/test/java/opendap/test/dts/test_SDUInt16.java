@@ -39,47 +39,35 @@
 
 
 
-package opendap.dts;
+package opendap.test.dts;
+
+import opendap.Server.*;
+import opendap.dap.*;
 
 import java.io.*;
-import java.util.Vector;
-
-import opendap.dap.NoSuchVariableException;
-import opendap.dap.BaseType;
-import opendap.Server.SDSequence;
-import opendap.Server.ServerMethods;
 
 /**
- * Holds a OPeNDAP Server <code>Sequence</code> value.
+ * Holds a OPeNDAP Server <code>UInt16</code> value.
  *
  * @author ndp
  * @version $Revision: 15901 $
  * @see BaseType
  */
-public class test_SDSequence extends SDSequence {
-
-    private static final boolean _Debug = false;
-
-    private int sMaxLength = 5;
-    private int sCount = 0;
-
+public class test_SDUInt16 extends SDUInt16 {
 
     /**
-     * Constructs a new <code>test_SDSequence</code>.
+     * Constructs a new <code>test_SDUInt16</code>.
      */
-    public test_SDSequence() {
-
-
+    public test_SDUInt16() {
         super();
-
     }
 
     /**
-     * Constructs a new <code>test_SDSequence</code> with name <code>n</code>.
+     * Constructs a new <code>test_SDUInt16</code> with name <code>n</code>.
      *
      * @param n the name of the variable.
      */
-    public test_SDSequence(String n) {
+    public test_SDUInt16(String n) {
         super(n);
     }
 
@@ -102,57 +90,14 @@ public class test_SDSequence extends SDSequence {
     public boolean read(String datasetName, Object specialO)
             throws NoSuchVariableException, IOException, EOFException {
 
-        boolean retVal, addRow = false;
-        Vector rv = null;
-
         testEngine te = (testEngine) specialO;
 
-        if (_Debug)
-            System.out.println("\nReading row " + sCount + " of Sequence \"" + getEncodedName() + "\" from " + datasetName + ":");
-
-        rv = getRowVector();
-
-        for (int i = 0; i < rv.size(); i++) {
-
-            ServerMethods sm = (ServerMethods) rv.get(i);
-
-            if (_Debug)
-                System.out.println("Reading variable: " + ((BaseType) sm).getTypeName() + ", " + ((BaseType) sm).getEncodedName());
-
-            if (sm.isProject()) {
-                sm.read(datasetName, specialO);
-                if (_Debug) ((BaseType) rv.get(i)).printVal(System.out, "   ");
-            }
-        }
-
-
-        sCount++;
-        if (sCount < te.getMaxSequenceLength()) {
-            retVal = true;
-        } else {
-            sCount = 0;
-            retVal = false;
-        }
-
+        setValue(te.nextUint16());
         setRead(true);
-
-        if (_Debug) System.out.println("Read finished. Returning: " + retVal);
-        if (_Debug && !retVal) System.out.println("\n...........");
-        return (retVal);
+        return (false);
     }
+
+
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
