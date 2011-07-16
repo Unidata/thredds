@@ -1,5 +1,4 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-"http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
@@ -19,9 +18,9 @@
 </p>
 <pre>
   &lt;security-constraint&gt;<br>    &lt;web-resource-collection&gt;<br>      &lt;web-resource-name&gt;restrict by URL&lt;/web-resource-name&gt;<br>      &lt;url-pattern&gt;<strong>/dodsC/dataRoot/*</strong>&lt;/url-pattern&gt;<br>      &lt;http-method&gt;GET&lt;/http-method&gt;<br>    &lt;/web-resource-collection&gt;<br>    &lt;auth-constraint&gt;<br>      &lt;role-name&gt;<strong>tiggeRole</strong>&lt;/role-name&gt;<br>    &lt;/auth-constraint&gt;<br>    &lt;user-data-constraint&gt;<br>      &lt;transport-guarantee&gt;CONFIDENTIAL&lt;/transport-guarantee&gt;<br>    &lt;/user-data-constraint&gt;<br>  &lt;/security-constraint&gt;<br></pre>
-<p>Note that you dont include  <strong>/thredds</strong> in the url-pattern. Also note that if you are using multiple data services, you must include each service's URL pattern, for example:</p>
+<p>Note that you don't include  <strong>/thredds</strong> in the url-pattern. Also note that if you are using multiple data services, you must include each service's URL pattern, for example:</p>
 <pre>    &lt;web-resource-collection&gt;<br>      &lt;web-resource-name&gt;restrict by URL&lt;/web-resource-name&gt;<br>      <strong>&lt;url-pattern&gt;/dodsC/testEnhanced/*&lt;/url-pattern&gt;<br>      &lt;url-pattern&gt;/fileServer/testEnhanced/*&lt;/url-pattern&gt;</strong><br>      &lt;http-method&gt;GET&lt;/http-method&gt;<br>    &lt;/web-resource-collection&gt;<br></pre>
-<p>Using Tomcat to provide restricted access works well whan you want to restrict you entire site to a single set of users. When you want to give access to different datasets to different users, you must understand in some detail what the URLs look like.</p>
+<p>Using Tomcat to provide restricted access works well when you want to restrict you entire site to a single set of users. When you want to give access to different datasets to different users, you must understand in some detail what the URLs look like.</p>
 <h2>2. Restrict by Dataset using TDS Catalog<br>
 </h2>
 <p>Alternately, you can add an attribute on a dataset or datasetScan element in the TDS catalog, eg <strong>restrictAccess=&quot;</strong><strong>roleName&quot;</strong>. All services that use that dataset will be restricted to users with the named role.</p>
@@ -42,7 +41,7 @@
   &lt;role rolename=&quot;<strong>fieldProject</strong>&quot;/&gt;   
   &lt;role rolename=&quot;<strong>tiggeData</strong>&quot;/&gt;
 </pre>
-<p>If you only have one set of datasets that you want to restrict, you can use just the <strong>restrictedDatasetUser</strong> (ie you dont need to have multiple roles). However you must always use the name <em><strong>restrictedDatasetUser</strong></em>. </p>
+<p>If you only have one set of datasets that you want to restrict, you can use just the <strong>restrictedDatasetUser</strong> (ie you don't need to have multiple roles). However you must always use the name <em><strong>restrictedDatasetUser</strong></em>. </p>
 <p> <strong>3</strong>. Add each user who should have authorization to the <strong>tomcat-users.xml</strong> file. A user may have multiple roles, <strong>and</strong> <strong> must  always have the <em>restrictedDatasetUser</em> role</strong>, eg: </p>
 <pre>  &lt;user username=&quot;john&quot; password=&quot;dorkology&quot; roles=&quot;<strong>ccsmData,restrictedDatasetUser</strong>&quot;/&gt;
   &lt;user username=&quot;tiggeUser&quot; password=&quot;flabulate&quot; roles=&quot;<strong>tiggeData,restrictedDatasetUser</strong>&quot;/&gt;
@@ -77,7 +76,7 @@
 <p><strong>4</strong>. After restarting Tomcat, use a browser to navigate to a restricted dataset. You should be prompted for a username and password. This must match a user that has a  role matching the <strong>restrictAccess</strong><strong></strong> attribute on the dataset. </p>
 <h4>Troubleshooting:</h4>
 <ul>
-  <li>If your browser has cached credentials which are wrong, it will simply send them without giving you a chance to renter. Firefox, at least, doesnt seem to have a way to clear this cache. Try exiting all instances of the browser and restarting it.</li>
+  <li>If your browser has cached credentials which are wrong, it will simply send them without giving you a chance to renter. Firefox, at least, doesn't seem to have a way to clear this cache. Try exiting all instances of the browser and restarting it.</li>
   <li>You are denied access when you enter in your username/password, but subsequent tests allow you to access the data. Make sure that your user has both the <strong>restrictedDatasetUser</strong> and the particular security role needed for that dataset. </li>
 </ul>
 <p>&nbsp;</p>
@@ -124,7 +123,7 @@
  <p>If you are not using SSL, it is more secure to have a  Realm name unique to your server, then to use the default <em>THREDDS Data Server</em> Realm name, so we recommend that you change it in the web.xml file. This name is presented to the user during authentication, so it should be descriptive and include the hostname, for example:</p>
  <pre>  &lt;login-config&gt;
     &lt;auth-method&gt;DIGEST&lt;/auth-method&gt;
-    &lt;realm-name&gt;<strong>Unidata IDD Server (motherload.ucar.edu</strong>)&lt;/realm-name&gt;
+    &lt;realm-name&gt;<strong>Unidata IDD Server (motherload.ucar.edu)</strong>)&lt;/realm-name&gt;
   &lt;/login-config&gt; 
   </pre>
 <pre>&nbsp;  </pre>
