@@ -32,8 +32,8 @@
  */
 package ucar.nc2.ui.util;
 
-import opendap.dap.http.HTTPMethod;
-import opendap.dap.http.HTTPSession;
+import ucar.nc2.util.net.HTTPMethod;
+import ucar.nc2.util.net.HTTPSession;
 import opendap.util.EscapeStrings;
 import ucar.nc2.util.IO;
 import ucar.nc2.util.ListenerManager;

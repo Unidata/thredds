@@ -33,8 +33,8 @@
 
 package thredds.ui.monitor;
 
-import opendap.dap.http.HTTPException;
-import opendap.dap.http.HTTPSession;
+import ucar.nc2.util.net.HTTPException;
+import ucar.nc2.util.net.HTTPSession;
 import org.apache.commons.httpclient.auth.CredentialsProvider;
 import thredds.logs.LogReader;
 import thredds.logs.LogCategorizer;
@@ -54,7 +54,6 @@ import java.beans.PropertyChangeListener;
 import java.io.*;
 import java.awt.*;
 import java.util.*;
-import java.util.List;
 
 import javax.swing.*;
 

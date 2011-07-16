@@ -33,9 +33,9 @@
 
 package ucar.nc2.thredds.server;
 
-import opendap.dap.http.HTTPException;
-import opendap.dap.http.HTTPMethod;
-import opendap.dap.http.HTTPSession;
+import ucar.nc2.util.net.HTTPException;
+import ucar.nc2.util.net.HTTPMethod;
+import ucar.nc2.util.net.HTTPSession;
 import ucar.nc2.util.IO;
 import ucar.nc2.util.URLnaming;
 

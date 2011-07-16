@@ -1,4 +1,4 @@
-package opendap.dap.http;
+package ucar.nc2.util.net;
 
 import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.auth.CredentialsProvider;
@@ -127,7 +127,7 @@ public class HTTPSession {
   protected HttpState sessionState = null;
   protected CredentialsProvider sessionProvider;
   protected String sessionAgent = "/NetcdfJava/HttpClient4";
-  protected List<opendap.dap.http.HTTPMethod> methodList = new Vector<HTTPMethod>();
+  protected List<HTTPMethod> methodList = new Vector<HTTPMethod>();
   HttpState context = null;
   boolean closed = false;
   // Track Method sets
@@ -135,11 +135,13 @@ public class HTTPSession {
   HashMap<String, Object> globalmethodparams = new HashMap<String, Object>();
   String identifier = "Session";
 
-  public HTTPSession() throws opendap.dap.http.HTTPException {
+  public HTTPSession() throws HTTPException
+  {
     this("Session");
   }
 
-  public HTTPSession(String id) throws opendap.dap.http.HTTPException {
+  public HTTPSession(String id) throws HTTPException
+  {
     this.identifier = id;
     try {
       sessionClient = new HttpClient(new HttpClientParams(), connmgr);
@@ -160,7 +162,7 @@ public class HTTPSession {
       sessionList.add(this);
 
     } catch (Exception e) {
-      throw new opendap.dap.http.HTTPException(e);
+      throw new HTTPException(e);
     }
   }
 

@@ -32,13 +32,10 @@
 
 package ucar.nc2.ft.point.remote;
 
-import opendap.dap.http.HTTPMethod;
 import ucar.nc2.ft.point.PointCollectionImpl;
-import ucar.nc2.ft.point.PointIteratorAbstract;
 import ucar.nc2.ft.point.PointIteratorEmpty;
 import ucar.nc2.ft.PointFeatureIterator;
 import ucar.nc2.ft.PointFeatureCollection;
-import ucar.nc2.ft.PointFeature;
 import ucar.nc2.stream.NcStream;
 import ucar.nc2.stream.CdmRemote;
 import ucar.nc2.stream.NcStreamProto;

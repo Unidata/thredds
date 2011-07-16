@@ -33,9 +33,8 @@
 
 package ucar.nc2.ui;
 
-import opendap.dap.http.HTTPException;
-import opendap.dap.http.HTTPMethod;
-import opendap.dap.http.HTTPSession;
+import ucar.nc2.util.net.HTTPMethod;
+import ucar.nc2.util.net.HTTPSession;
 import ucar.nc2.ui.event.ActionValueEvent;
 import ucar.nc2.ui.event.ActionValueListener;
 import ucar.nc2.ui.widget.BAMutil;
@@ -62,11 +61,7 @@ import java.util.zip.ZipEntry;
 import org.jdom.input.SAXBuilder;
 import org.jdom.Element;
 import org.jdom.Namespace;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
-import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.Header;
-import org.apache.commons.httpclient.methods.GetMethod;
 
 /**
  * View WMS datasets

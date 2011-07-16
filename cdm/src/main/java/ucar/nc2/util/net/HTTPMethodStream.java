@@ -1,4 +1,4 @@
-package opendap.dap.http;
+package ucar.nc2.util.net;
 
 import java.io.IOException;
 import java.io.InputStream;

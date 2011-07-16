@@ -1,6 +1,5 @@
 package ucar.nc2.ft.point.remote;
 
-import opendap.dap.http.HTTPMethod;
 import ucar.nc2.ft.point.*;
 import ucar.nc2.ft.*;
 import ucar.nc2.stream.CdmRemote;

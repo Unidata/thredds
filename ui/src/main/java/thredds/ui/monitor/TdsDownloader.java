@@ -33,9 +33,9 @@
 
 package thredds.ui.monitor;
 
-//import opendap.dap.http.HTTPException;
-import opendap.dap.http.HTTPException;
-import opendap.dap.http.HTTPSession;
+//import ucar.nc2.util.net.HTTPException;
+import ucar.nc2.util.net.HTTPException;
+import ucar.nc2.util.net.HTTPSession;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.net.HttpClientManager;
 

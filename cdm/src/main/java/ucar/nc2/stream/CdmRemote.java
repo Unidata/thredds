@@ -31,10 +31,10 @@
  */
 package ucar.nc2.stream;
 
-import opendap.dap.http.HTTPException;
-import opendap.dap.http.HTTPMethod;
-import opendap.dap.http.HTTPMethodStream;
-import opendap.dap.http.HTTPSession;
+import ucar.nc2.util.net.HTTPException;
+import ucar.nc2.util.net.HTTPMethod;
+import ucar.nc2.util.net.HTTPMethodStream;
+import ucar.nc2.util.net.HTTPSession;
 import org.apache.commons.httpclient.Header;
 
 import ucar.ma2.*;

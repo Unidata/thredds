@@ -32,7 +32,6 @@
  */
 package ucar.nc2.stream;
 
-import opendap.dap.http.HTTPMethod;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Structure;
 import ucar.ma2.*;

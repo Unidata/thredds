@@ -33,8 +33,8 @@
 
 package ucar.unidata.io.http;
 
-import opendap.dap.http.HTTPMethod;
-import opendap.dap.http.HTTPSession;
+import ucar.nc2.util.net.HTTPMethod;
+import ucar.nc2.util.net.HTTPSession;
 import org.apache.commons.httpclient.Header;
 
 import java.io.FileNotFoundException;

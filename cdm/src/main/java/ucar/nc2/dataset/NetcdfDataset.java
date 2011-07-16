@@ -32,8 +32,8 @@
  */
 package ucar.nc2.dataset;
 
-import opendap.dap.http.HTTPMethod;
-import opendap.dap.http.HTTPSession;
+import ucar.nc2.util.net.HTTPMethod;
+import ucar.nc2.util.net.HTTPSession;
 import opendap.util.EscapeStrings;
 import ucar.ma2.*;
 import ucar.nc2.*;

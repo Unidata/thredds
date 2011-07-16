@@ -33,7 +33,6 @@
 
 package ucar.nc2.ui.widget;
 
-import opendap.dap.http.HTTPSession;
 import thredds.catalog.*;
 import thredds.catalog.query.*;
 

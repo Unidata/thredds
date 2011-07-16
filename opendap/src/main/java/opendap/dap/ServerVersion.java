@@ -41,9 +41,8 @@
 package opendap.dap;
 
 import java.net.URLConnection;
-import java.io.Serializable;
 
-import opendap.dap.http.HTTPMethod;
+import ucar.nc2.util.net.HTTPMethod;
 import org.apache.commons.httpclient.*;
 
 /**

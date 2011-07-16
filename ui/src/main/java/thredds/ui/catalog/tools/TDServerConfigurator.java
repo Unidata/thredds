@@ -32,7 +32,6 @@
  */
 package thredds.ui.catalog.tools;
 
-import opendap.dap.http.HTTPSession;
 import thredds.ui.catalog.CatalogTreeView;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.nc2.util.net.HttpClientManager;

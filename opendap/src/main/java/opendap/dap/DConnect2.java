@@ -44,7 +44,6 @@ import java.net.*;
 import java.io.*;
 
 import opendap.dap.parsers.*;
-import opendap.dap.http.*;
 
 import java.util.zip.InflaterInputStream;
 import java.util.zip.GZIPInputStream;
@@ -52,6 +51,9 @@ import java.util.zip.GZIPInputStream;
 import opendap.util.EscapeStrings;
 import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.auth.*;
+import ucar.nc2.util.net.HTTPException;
+import ucar.nc2.util.net.HTTPMethod;
+import ucar.nc2.util.net.HTTPSession;
 
 /**
  * Rewritten 1/15/07 jcaron to use HttpCLient library instead of jdk UrlConnection class.
@@ -78,7 +80,8 @@ public class DConnect2 {
 
   // default session
 
-  private void initSession() throws HTTPException {
+  private void initSession() throws HTTPException
+  {
     if (_session != null) return;
     _session = new HTTPSession();
   }

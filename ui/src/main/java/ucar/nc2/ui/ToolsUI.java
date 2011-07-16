@@ -33,7 +33,7 @@
 
 package ucar.nc2.ui;
 
-import opendap.dap.http.HTTPSession;
+import ucar.nc2.util.net.HTTPSession;
 import thredds.inventory.FeatureCollectionConfig;
 import ucar.nc2.dt.grid.NetcdfCFWriter;
 import ucar.nc2.stream.NcStreamWriter;

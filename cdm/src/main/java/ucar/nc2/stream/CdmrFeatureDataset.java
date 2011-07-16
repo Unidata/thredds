@@ -32,7 +32,6 @@
 
 package ucar.nc2.stream;
 
-import opendap.dap.http.HTTPMethod;
 import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.remote.PointDatasetRemote;
 import ucar.nc2.ft.point.writer.FeatureDatasetPointXML;

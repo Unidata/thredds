@@ -33,8 +33,8 @@
 
 package thredds.ui.catalog;
 
-import opendap.dap.http.HTTPMethod;
-import opendap.dap.http.HTTPSession;
+import ucar.nc2.util.net.HTTPMethod;
+import ucar.nc2.util.net.HTTPSession;
 import thredds.catalog.*;
 import ucar.nc2.ui.widget.*;
 
