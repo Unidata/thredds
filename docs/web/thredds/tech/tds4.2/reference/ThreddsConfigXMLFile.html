@@ -39,6 +39,7 @@
     <li><a href="#WCS">WCS</a></li>
     <li><a href="#WMS">WMS</a></li>
     <li><a href="#ncss">NetCDF Subset Service</a><br>
+    <li><a href="#ncISO">ncISO</a><br>
     </li>
   </ul>
   <li>CDM Configuration
@@ -183,8 +184,15 @@ list here, plus any catalogs that are referenced by them in a <strong>catalogRef
    TDS. But for remote catalogs these services must be explicitly enabled in
    threddsConfig.xml:</p>
 <pre style="margin-left: 40px;">&lt;CatalogServices&gt;<br>    &lt;allowRemote&gt;true&lt;/allowRemote&gt;<br>&lt;/CatalogServices&gt;</pre>
-<h3>OPeNDAP<a name="opendap" id="opendap"></a> Service</h3>
-<pre>  &lt;<strong>Opendap</strong>&gt;<br>    &lt;<strong>ascLimit</strong>&gt;50&lt;/ascLimit&gt;<br>    &lt;<strong>binLimit</strong>&gt;500&lt;/binLimit&gt;<br>    &lt;<strong>serverVersion</strong>&gt;opendap/3.7&lt;/serverVersion&gt;<br>  &lt;/<strong>Opendap</strong>&gt;</pre>
+
+ <h3>OPeNDAP<a name="opendap" id="opendap"></a> Service</h3>
+
+<pre>  &lt;<strong>Opendap</strong>&gt;
+    &lt;<strong>ascLimit</strong>&gt;50&lt;/ascLimit&gt;
+    &lt;<strong>binLimit</strong>&gt;500&lt;/binLimit&gt;
+    &lt;<strong>serverVersion</strong>&gt;opendap/3.7&lt;/serverVersion&gt;
+  &lt;/<strong>Opendap</strong>&gt;</pre>
+
 <p>This controls the <em><strong>OPeNDAP </strong></em>data
   service. Because its easy for a user to inadvertantly request very
   large amounts of data, the TDS limits the size of the data response. In
@@ -195,15 +203,20 @@ list here, plus any catalogs that are referenced by them in a <strong>catalogRef
   <li><strong>binLimit</strong>: maximum size of a binary data request , in Megabytes. Default is 500 Mbytes.</li>
   <li><strong>serverVersion</strong>:  this is the String thats returned by the OPeNDAP <strong>getVersion</strong> request, and also placed into the <strong><em>XDOS-Server</em></strong> HTTP Header on all OPeNDAP responses.</li>
 </ol>
+
 <h3>WCS<a name="WCS" id="WCS"></a> Service </h3>
-<p>The OGC WCS service provided as part of the TDS is described in more detail <a href="WCS.html">here</a>. By default this service is disabled in the TDS.
-  It can be enabled by including the following in the <code>threddsConfig.xml</code> file: </p>
+
+<p>The OGC WCS service provided as part of the TDS is described in more detail <a href="WCS.html">here</a>.
+  By default this service is disabled in the TDS. It can be enabled by including the following in the
+  <code>threddsConfig.xml</code> file:</p>
 <pre>
 &lt;WCS&gt;
-  &lt;allow&gt;false&lt;/allow&gt;
+  &lt;allow&gt;true&lt;/allow&gt;
 &lt;/WCS&gt;
 </pre>
-<p>The following shows all the configuration options available in the WCS section of the <code>threddsConfig.xml</code> file with the default values shown: </p>
+<p>The following shows all the configuration options available in the WCS section of the
+  <code>threddsConfig.xml</code> file with the default values shown:</p>
+
 <pre>
 &lt;<strong>WCS</strong>&gt;
   &lt;<strong>allow</strong>&gt;false&lt;/allow&gt;
@@ -212,9 +225,11 @@ list here, plus any catalogs that are referenced by them in a <strong>catalogRef
   &lt;<strong>maxAge</strong>&gt;30 min&lt;/maxAge&gt;
 &lt;/WCS&gt;
 </pre>
-<p>We recommend that you include in the <code>threddsConfig.xml</code> file only the options you want to change. Here is the description of the
+
+ <p>We recommend that you include in the <code>threddsConfig.xml</code> file only the options you want to change. Here is the description of the
   various options: </p>
-<ol>
+
+ <ol>
   <li><strong>allow</strong>: to allow, change this to true.</li>
   <li><strong>dir</strong>: the working directory where generated files are cached
     before being sent to the client (More information on <a href="#Cache_Locations">choosing a cache directory</a>.)   If not otherwise set, the TDS will use the <strong>${tomcat_home}/content/thredds/cache/wcs/</strong> directory We recommend that you use this default, by not specifying a <strong>WCS</strong>.<strong>dir</strong> element.</li>
@@ -223,18 +238,23 @@ list here, plus any catalogs that are referenced by them in a <strong>catalogRef
   <li><strong>maxAge</strong>: how long to leave the files in the working directory while
     the download is occurring. The files are deleted after a successful download. </li>
 </ol>
-<p>Note: If WCS is allowed but the directory is not set, the TDS will use
+
+ <p>Note: If WCS is allowed but the directory is not set, the TDS will use
   the <code>${tomcat_home}/content/thredds/wcs/wcache/</code> directory for
   temporary files.</p>
+
 <h3>WMS<a name="WMS" id="WMS"></a> Service</h3>
-<p>The OGC WMS service provided as part of the TDS is described in more detail <a href="WMS.html">here</a>. By default this service is disabled in the TDS.
-  It can be enabled by including the following in the <code>threddsConfig.xml</code> file: </p>
+
+<p>The OGC WMS service provided as part of the TDS is described in more detail <a href="WMS.html">here</a>.
+  By default this service is disabled in the TDS. It can be enabled by including the following in the
+  <code>threddsConfig.xml</code> file:</p>
 <pre>
 &lt;WMS&gt;
-  &lt;allow&gt;false&lt;/allow&gt;
+  &lt;allow&gt;true&lt;/allow&gt;
 &lt;/WMS&gt;
 </pre>
-<p>The following shows all the configuration options available in the WMS section of the <code>threddsConfig.xml</code> file with the default values shown: </p>
+<p>The following shows all the configuration options available in the WMS section of the
+  <code>threddsConfig.xml</code> file with the default values shown:</p>
 <pre>
 &lt;<strong>WMS</strong>&gt;
   &lt;<strong>allow</strong>&gt;false&lt;/allow&gt;
@@ -244,8 +264,8 @@ list here, plus any catalogs that are referenced by them in a <strong>catalogRef
   &lt;<strong>maxImageHeight</strong>&gt;2048&lt;/maxImageHeight&gt;
 &lt;/WMS&gt;
 </pre>
-<p>We recommend that you include in the <code>threddsConfig.xml</code> file only the options you want to change. Here is the description of the
-  various options: </p>
+<p>We recommend that you include in the <code>threddsConfig.xml</code> file only the options you
+  want to change. Here is the description of the various options:</p>
 <ol>
   <li><strong>allow</strong>: a value of "true" enables the WMS service.</li>
   <li><strong>allowRemote</strong>: a value of "true" enables the WMS service for datasets
@@ -261,15 +281,24 @@ list here, plus any catalogs that are referenced by them in a <strong>catalogRef
   <li><strong>maxImageHeight</strong>: the maximum image height in pixels that this WMS
     service will return.</li>
 </ol>
-<p><br>
-</p>
+
 <h3><a name="ncss" id="ncss">NetCDF Subset Service</a>(NCSS)</h3>
+
 <p><strong>This service is an experimental prototype. As such it may be subject to change.</strong></p>
-<pre> &lt;NetcdfSubsetService&gt;<br>   &lt;allow&gt;true&lt;/allow&gt;<br>   &lt;dir&gt;/tmp/thredds/ncSubsetCache/&lt;/dir&gt;<br>   &lt;scour&gt;15 min&lt;/scour&gt;<br>   &lt;maxAge&gt;30 min&lt;/maxAge&gt;<br> &lt;/NetcdfSubsetService&gt;<br>
+
+<pre>
+&lt;NetcdfSubsetService&gt;
+  &lt;allow&gt;true&lt;/allow&gt;
+  &lt;dir&gt;/tmp/thredds/ncSubsetCache/&lt;/dir&gt;
+  &lt;scour&gt;15 min&lt;/scour&gt;
+  &lt;maxAge&gt;30 min&lt;/maxAge&gt;
+&lt;/NetcdfSubsetService&gt;
 </pre>
-<p> This controls the NetcdfSubset service (URL: "/thredds/ncss/grid/...") which supports
+
+ <p> This controls the NetcdfSubset service (URL: "/thredds/ncss/grid/...") which supports
   subset requests in terms of latitude/longitude bounding boxes and date ranges rather
-  than array index ranges. More information is available on the <a href="../../interfaceSpec/NetcdfSubsetService.html">NetcdfSubset Service Reference</a> page. </p>
+  than array index ranges. More information is available on the
+   <a href="../../interfaceSpec/NetcdfSubsetService.html">NetcdfSubset Service Reference</a> page.</p>
 <p>By default, this service is not enabled. It can be enabled by setting the value
   of the allow element to "true".</p>
 <ol>
@@ -280,7 +309,27 @@ list here, plus any catalogs that are referenced by them in a <strong>catalogRef
     how long to leave the files in the working directory while the download
     is occurring. The files are deleted after a successful download. </li>
 </ol>
-<hr>
+
+ <h3>ncISO<a name="ncISO" id="ncISO"></a> Service</h3>
+
+ <p>By default the ncISO services are disabled in the TDS. They can be enabled by including the following in the
+   <code>threddsConfig.xml</code> file:</p>
+
+ <pre>
+&lt;NCISO&gt;
+  &lt;ncmlAllow&gt;true&lt;/ncmlAllow&gt;
+  &lt;uddcAllow&gt;true&lt;/uddcAllow&gt;
+  &lt;isoAllow&gt;true&lt;/isoAllow&gt;
+&lt;/NCISO&gt;
+</pre>
+
+ <p>Each of the allow elements above enables the corresponding ncISO service (NCML, UDDC, and ISO).
+   The ncISO services are described in more detail on the <a href="ncISO.html">"ncISO" page</a>.
+ </p>
+
+ <p>There are no further ncISO options available in the <code>threddsConfig.xml</code>.</p>
+
+ <hr>
 <h2>CDM configuration</h2>
 <h3>Aggregation<a name="Aggregation"></a></h3>
 <pre>  &lt;<strong>Aggregation</strong>&gt;<br>    &lt;<strong>typicalDataset</strong>&gt;latest&lt;/typicalDataset&gt;<br>  &lt;/Aggregation&gt;</pre>

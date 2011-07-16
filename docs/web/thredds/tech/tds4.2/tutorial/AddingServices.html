@@ -3,33 +3,34 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 
-  <title>TDS Tutorial: Serving Data with OGC Services (WCS and WMS)</title>
+  <title>TDS Tutorial: OGC/ISO Services (WCS, WMS, and ncISO)</title>
   <link rel="stylesheet" href="tutorial.css" type="text/css">
   <script language="JavaScript1.2" src="http://www.unidata.ucar.edu/acemenu/last_mod.js"></script>
   <link rel="SHORTCUT ICON" href="http://www.unidata.ucar.edu/favicon.ico" type="image/x-icon">
 </head>
 <body>
 
-<h1>TDS Tutorial: Serving Data with OGC Services (WCS and WMS)</h1>
+<h1>TDS Tutorial: OGC/ISO Services (WCS, WMS, and ncISO)</h1>
 
-<div id="section"><h2><a name="Setup">Setting  up WCS and WMS</a></h2>
+<div id="section"><h2><a name="Setup">Setting  up WCS, WMS, and ncISO</a></h2>
 
-  <div id="subsection"><h3>Configure TDS to Allow WCS and WMS Access</h3>
+  <div id="subsection"><h3>Configure TDS to Allow WCS, WMS, and ncISO Access</h3>
 
-    <p>Out of the box, the TDS distribution will have both WCS and WMS disabled. They both
-      must be explicitly allowed in the threddsConfig.xml file. The WCS and WMS sections are
-      commented out of the threddsConfig.xml file that is distributed with the TDS (and should now
-      be in your <code>${TOMCAT_HOME}/content/thredds</code> directory).
+    <p>Out of the box, the TDS distribution will have WCS, WMS, and ncISO disabled. They
+      must be explicitly allowed in the <code>threddsConfig.xml</code> file. The default
+      <code>threddsConfig.xml</code> file (which should now be in your
+      <code>${TOMCAT_HOME}/content/thredds</code> directory) contains commented out sections for
+      each of these services.
     </p>
 
     <h4>WCS Configuration</h4>
 
-    <p>To enable the WCS service for locally served datasets, you will want the following
-      in your threddsConfig.xml file:
+    <p>To enable the <a href="../reference/WCS.html">WCS service</a> for locally served datasets,
+      you will need the following in your threddsConfig.xml file:
     </p>
 <pre>
 &lt;WCS&gt;
-  &lt;allow&gt;true &lt;/allow&gt;
+  &lt;allow&gt;true&lt;/allow&gt;
 &lt;/WCS&gt;
 </pre>
 
@@ -42,12 +43,12 @@
 
     <h4>WMS Configuration</h4>
 
-    <p>To enable the WMS service for locally served datasets, you will want the following
-      in your threddsConfig.xml file:
+    <p>To enable the <a href="../reference/WMS.html">WMS service</a> for locally served datasets,
+      you will need the following in your threddsConfig.xml file:
     </p>
 <pre>
 &lt;WMS&gt;
-  &lt;allow&gt;true &lt;/allow&gt;
+  &lt;allow&gt;true&lt;/allow&gt;
 &lt;/WMS&gt;
 </pre>
 
@@ -58,22 +59,59 @@
       of the <code>threddsConfig.xml</code> file documentation.
     </p>
 
+    <h4>ncISO Configuration</h4>
+
+    <p>To enable the <a href="../reference/ncISO.html">ncISO services</a> for locally served datasets,
+      you will need the following in your threddsConfig.xml file:
+    </p>
+<pre>
+&lt;NCISO&gt;
+  &lt;ncmlAllow&gt;true&lt;/ncmlAllow&gt;
+  &lt;uddcAllow&gt;true&lt;/uddcAllow&gt;
+  &lt;isoAllow&gt;true&lt;/isoAllow&gt;
+&lt;/NCISO&gt;
+</pre>
+
+    <p>
+      Each "*Allow" element allows one of the three ncISO services.
+    </p>
+
   </div>
 
   <div id="subsection"><h3>Adding WCS and WMS Services</h3>
 
-    <p>Once the WCS and WMS services are enabled, all that is required for the
-      TDS to provide WCS and WMS access to datasets is for those datasets to
-      reference WCS and WMS service elements. The simplest way to add WCS and WMS
-      services is to add WCS and WMS service elements to an existing compound service.
-      For instance:
+    <p>Once the WCS and WMS services are enabled, all that is required for the TDS to provide WCS
+      and WMS access to datasets is for those datasets to reference WCS and WMS service elements.
+      Adding them to an existing compound service would look something like this:
     </p>
 <pre>
 &lt;service name="grid" serviceType="Compound" base="" &gt;
     &lt;service name="odap" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;
     <strong>&lt;service name="wcs" serviceType="WCS" base="/thredds/wcs/" /&gt;</strong>
     <strong>&lt;service name="wms" serviceType="WMS" base="/thredds/wms/" /&gt;</strong>
+    &lt;service name="ncss" serviceType="NetcdfSubset" base="/thredds/ncss/grid/" /&gt;
     &lt;service name="http" serviceType="HTTPServer" base="/thredds/fileServer/" /&gt;
+&lt;/service&gt;
+</pre>
+
+  </div>
+
+  <div id="subsection"><h3>Adding ncISO Services</h3>
+
+    <p>Similar to above, once the ncISO services are enabled, all that is required for the TDS to
+      provide ncISO services on datasets is for those datasets to reference the ncISO service
+      elements. For instance, adding to the same compound service as above:
+    </p>
+<pre>
+&lt;service name="grid" serviceType="Compound" base="" &gt;
+    &lt;service name="odap" serviceType="OpenDAP" base="/thredds/dodsC/" /&gt;
+    &lt;service name="wcs" serviceType="WCS" base="/thredds/wcs/" /&gt;
+    &lt;service name="wms" serviceType="WMS" base="/thredds/wms/" /&gt;
+    &lt;service name="ncss" serviceType="NetcdfSubset" base="/thredds/ncss/grid/" /&gt;
+    &lt;service name="http" serviceType="HTTPServer" base="/thredds/fileServer/" /&gt;
+    <strong>&lt;service name="ncml" serviceType="NCML" base="/thredds/ncml/" /&gt;</strong>
+    <strong>&lt;service name="uddc" serviceType="UDDC" base="/thredds/uddc/" /&gt;</strong>
+    <strong>&lt;service name="iso" serviceType="ISO" base="/thredds/iso/" /&gt;</strong>
 &lt;/service&gt;
 </pre>
 
