@@ -9,7 +9,7 @@
     <serviceName>ncdods</serviceName>
     <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
       <aggregation dimName="time" type="joinExisting" recheckEvery="4 sec">
-        <scan location="D:/workshop/test/cg/" dateFormatMark="CG#yyyyDDD_HHmmss" suffix=".nc" subdirs="false"/>
+        <scan location="/workshop/test/cg/" dateFormatMark="CG#yyyyDDD_HHmmss" suffix=".nc" subdirs="false"/>
       </aggregation>
     </netcdf>
   </dataset>

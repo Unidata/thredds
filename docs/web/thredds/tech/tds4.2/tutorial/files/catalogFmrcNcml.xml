@@ -13,7 +13,7 @@
       <documentation type="summary">Munge this with NcML</documentation>
     </metadata>
 
-    <collection spec="Q:/2010TdsTW/gomoos/gomoos.#yyyyMMdd#.cdf$"/>
+    <collection spec="/workshop/gomoos/gomoos.#yyyyMMdd#.cdf$"/>
 
     <protoDataset>
       <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">

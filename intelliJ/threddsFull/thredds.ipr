@@ -1106,7 +1106,12 @@
     <option name="projectName" value="thredds" />
   </component>
   <component name="ProjectDictionaryState">
-    <dictionary name="John" />
+    <dictionary name="John">
+      <words>
+        <w>ucar</w>
+        <w>unidata</w>
+      </words>
+    </dictionary>
     <dictionary name="edavis">
       <words>
         <w>dataset</w>
