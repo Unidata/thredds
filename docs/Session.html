@@ -1,0 +1,200 @@
+<html>
+<head>
+<title>Session</title>
+</head>
+<body>
+<center>
+<h1>Session Control<br>
+for netCDF Opendap</h1>
+<h2>Dennis Heimbigner<br>
+Unidata<br>
+Draft 1: June 9, 2011</h2>
+</center>
+
+<h2><a name="HTTPSession">HTTPSession and Session Semantics</a></h2>
+New public classes are introduced to the package ucar.nc2.util.net.
+These are
+<i>HTTPSession.java</i>,
+<i>HTTPMethod.java</i>,
+<i>HTTPMethodStream.java</i>,
+<i>HTTPException.java</i>,
+These classes are intended to wrap various Apache httpclient3 library
+classes so that it will be possible to later switch to, say,
+the Apache httpclient4 library.
+<p>
+These classes also support a form of <i>session</i>
+semantics for Java network access.
+As discussed below, the support is a bit "loose" in order to support
+handling of redirection, which in turn is needed to support some kinds
+of authorization.
+<p>
+A session is an instance of the class <i>HTTPSession</i>.
+It encapsulates access to a specific dataset.
+This means that once a session is specified, it is tied permanently
+to a specific principal, host, port, and dataset path.
+The term "principal" is another name for user id.
+<p>
+It is important to note that Session objects do NOT
+correspond with the HttpClient objects of the Apache
+httpclient library. A Session encapulates an instance of
+an Apache HttpClient, but Sessions also wrap and control
+httpclient library methods such as GetMethod via the class
+<i><a href="#HTTPMethod">HTTPMethod</a></i>. This is so
+it can ensure that the Session - dataset correspondence
+is not violated.
+<p>
+
+<h3><a name="HTTPMethod">HTTPMethod</a></h3>
+This class encapsulates the information
+about a given method request and response.
+Its primary operation is <i>execute()</i>,
+which causes a request to be sent to a server
+and a response obtained.
+
+<h3><a name="HTTPMethodStream">HTTPMethodStream</a></h3>
+The purpose of this class is to allow
+other classes to access the data stream
+associated with a method response.
+It tracks the method and the session
+to allow them to be closed
+when the stream hits eof.
+
+<h3><a name="HTTPException">HTTPException</a></h3>
+This class is a subclass of <i>java.io.IOException</i>.
+It is the exception for reporting errors out of the
+classes listed above.
+
+<h2><a name="Appendices">Appendices: Session APIs</a></h2>
+<h2>Appendices: Session and Authorization APIs</h2>
+
+<h3><a name"HTTPSession.API">HTTPSession API</a></h3>
+<h4>Static Get/Set Methods</h4>
+<ul>
+<li>public static synchronized void setGlobalPrincipal(String p)
+     <ul>
+     <li> Set a principal that will be used when establishing
+          any session.
+     </ul>
+<li>public static synchronized String getGlobalPrincipal()
+<li>public static synchronized void setGlobalUserAgent(String _userAgent)
+     <ul>
+     <li> Set a user agent that will be used when establishing
+          any session.
+     </ul>
+<li>public static String getGlobalUserAgent()
+<li>public static void setThreadCount(int nthreads)
+     <ul>
+     <li> Set the max number of threads that will be supported.
+     </ul>
+<li>public static int getThreadCount()
+<li>static public void setGlobalCredentialsProvider(CredentialsProvider)
+     <ul>
+     <li> Backward compatibility; will create a row
+          in <i>HTTPAuthStore</i> and an instance of
+          <i>HTTPCreds</i> supporting global authorization
+          using the specified credentials provider.
+     <li> throws HTTPException
+     </ul>
+</ul>
+
+<h4>Instance Get/Set Methods</h4>
+<ul>
+<li>private void setPrincipal(String principal)
+<li>public String getPrincipal()
+<li>public void setAuthenticationPreemptive(boolean tf)
+<li>public void setGlobalAuthenticationPreemptive(boolean tf)
+<li>public void setUserAgent(String agent)
+<li>public void setConnectionManagerTimeout(long timeout)
+<li>public void setSoTimeout(int timeout)
+<li>public void setGlobalMethodParameter(String name, Object value)
+<li>public String getCookiePolicy()
+<li>public Cookie[] getCookies()
+<li>public void setContext(HttpState cxt)
+<li>public HttpState getContext()
+<li>public void setProxy()
+     <ul>
+     <li> Set proxy authorization using the two system properties
+		"http.proxyHost" and "http.proxyPort".
+    </ul>
+</ul>
+
+<h4>Session Shutdown Methods</h4>
+<ul>
+<li>public synchronized void close()
+     <ul>
+     <li> Close this session and also any active HTTPMethods
+          associated with this session.
+     </ul>
+</ul>
+
+<h4>Session HTTPMethod Creation Methods</h4>
+<ul>
+<li>public HTTPMethod newMethod{Get|Head|Put|Post|Options}(String uri) throws HTTPException
+</ul>
+
+<h3><a name"HTTPMethod.API">HTTPMethod API</a></h3>
+The API has a number of groups of methods.
+<h4>Core</h4>
+<ul>
+<li> public int execute()
+     <ul>
+     <li> throws HTTPException
+     </ul>
+<li> public int getStatusCode()
+<li> public String getStatusLine()
+<li> public void setFollowRedirects(boolean tf)
+<li> public static Enumeration getAllowedMethods()
+</ul>
+
+<h4>Responsebody</h4>
+The API has a number of methods for getting the response
+body in various forms. 
+<ul>
+<li> public InputStream getResponseBodyAsStream()
+<li>(aka getResponseAsStream)
+<li> public byte[] getResponseAsBytes(int maxsize)
+<li> public byte[] getResponseAsBytes()
+<li> public String getResponseAsString(String charset)
+(aka getResponseAsString)
+</ul>
+
+<h4>Request Header Set/Get</h4>
+<ul>
+<li> public void setMethodHeaders(List<Header> headers) throws HTTPException
+<li> public void setRequestHeader(String name, String value) throws HTTPException
+<li> public void setRequestHeader(Header h) throws HTTPException
+<li> public Header getRequestHeader(String name)
+<li> public Header[] getRequestHeaders()
+</ul>
+
+<h4>Reponse Header Get</h4>
+<ul>
+<li> public Header getResponseHeader(String name)
+<li> public Header[] getResponseHeaders()
+<li> public Header[] getResponseFooters()
+</ul>
+
+<h4>Request Parameter Set/Get</h4>
+<ul>
+<li> public void setRequestParameter(String name, Object value)
+<li> public Object getMethodParameter(String key)
+<li> public HttpMethodParams getMethodParameters()
+</ul>
+
+<h4>Request Content Set</h4>
+<ul>
+<li> public void setRequestContentAsString(String content) throws HTTPException
+<li> public void setMultipartRequest(Part[] parts) throws HTTPException
+</ul>
+</ul>
+
+<h3><a name"HTTPMethodStream.API">HTTPMethodStream API</a></h3>
+This class subclasses <i>java.io.InputStream</i>
+and provides the <i>InputStream</i> interface.
+In addition, if the stream is closed, then the
+underlying method is closed as well.
+
+</body>
+</html>
+
+
