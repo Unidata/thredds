@@ -136,6 +136,8 @@
     <!-- Target jar file -->
     <property name="opendap.jar" value="opendap-${VERSION}.jar"/>
 
+    <property name="cdm.dir"           value="${basedir}/../cdm"/>
+
     <!-- Libraries
        - This section creates properties (aliases) for the names of all the
        - libraries. This simplifies the process of updating software
@@ -154,6 +156,7 @@
     <property name="codec.lib"          value="commons-codec-1.3.jar"/>
     <property name="logging.lib"        value="commons-logging-1.1.jar"/>
     <property name="unitTest.lib"       value="junit-4.4.jar"/>
+    <property name="cdm.lib"            value="netcdf-4.2.jar"/>
 
 
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -169,6 +172,7 @@
             <include name="${logging.lib}"/>
             <include name="${unitTest.lib}"/>
             <include name="${servlet.lib}"/>
+            <include name="${cdm.lib}"/>
         </fileset>
     </path>
 
@@ -188,9 +192,7 @@
     <target name="all" description="Clean compiles the core OPeNDAP software."
             depends="clean,compile"/>
 
-    <target name="compile" description="Compiles the core OPeNDAP software."
-            depends="servers"/>
-
+    <target name="compile" description="Compiles the core OPeNDAP software."/>
 
     <!-- Target "clean" cleans up ALL build products -->
     <target name="clean" description="Clean up ALL build products.">
@@ -220,6 +222,16 @@
         <echo level="info" message="time: ${TSTAMP}"/>
     </target>
 
+    <!--
+      - Target "cdm" compiles cdm
+      -->
+    <target name="cdm" depends="init">
+	<ant target="makeMain" dir="${cdm.dir}"/>
+        <copy todir="${lib.dir}">
+            <fileset dir="${build.dir}" includes="${cdm.lib}"/>
+        </copy>
+    </target>
+
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
       -
       - Compilation Targets
@@ -246,11 +258,10 @@
             <include name="opendap/Version.java"/>
             <include name="opendap/util/**/*.java"/>
             <exclude name="opendap/dap/parser/ignore/*.java"/>
-            <exclude name="opendap/dap/test/*.java"/>
         </javac>
     </target>
 
-    <target name="servers" description="Compiles the all of the core required by OPeNDAP servers."
+    <target name="dts" description="Compiles the dts test server"
             depends="dap"
             >
         <echo level="info" message="AntFile: ${ant.file} Compiling Servers"/>
@@ -265,10 +276,8 @@
             <classpath refid="servers.compile.classpath"/>
             <src path="${src.java.dir}"/>
             <include name="opendap/servlet/**/*.java"/>
-            <include name="opendap/servers/www/**/*.java"/>
-            <include name="opendap/servers/ascii/**/*.java"/>
-            <include name="opendap/servers/test/**/*.java"/>
-            <include name="opendap/servers/sql/**/*.java"/>
+            <include name="opendap/servers/test/dts/**/*.java"/>
+            <!-- ?include name="opendap/servers/sql/**/*.java" -->
         </javac>
     </target>
 
@@ -288,6 +297,7 @@
             <classpath refid="dap.compile.classpath"/>
             <src path="${src.test.java.dir}"/>
             <include name="opendap/test/*.java"/>
+            <exclude name="opendap/test/dts/*.java"/>
         </javac>
     </target>
 
@@ -335,9 +345,7 @@
                 <include name="opendap/Server/**/*.java"/>
                 <include name="opendap/util/**/*.java"/>
                 <include name="opendap/servlet/**/*.java"/>
-                <include name="opendap/servers/www/**/*.java"/>
-                <include name="opendap/servers/ascii/**/*.java"/>
-                <include name="opendap/servers/test/**/*.java"/>
+                <include name="opendap/test/**/*.java"/>
             </srcfiles>
         </uptodate>
 
@@ -364,7 +372,7 @@
     </target>
 
     <target name="opendap-lib"
-	depends="clean,servers">
+	depends="clean">
         <jar destfile="${build.lib}/${opendap.jar}">
             <fileset dir="${build.classes}"/>
         </jar>

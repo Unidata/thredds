@@ -32,7 +32,7 @@
  */
 package ucar.nc2.util;
 
-import opendap.util.EscapeStrings;
+import ucar.unidata.util.EscapeStrings;
 import ucar.unidata.util.StringUtil;
 
 import java.io.File;

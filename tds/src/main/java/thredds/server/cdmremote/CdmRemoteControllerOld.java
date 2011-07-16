@@ -31,7 +31,7 @@
  */
 package thredds.server.cdmremote;
 
-import opendap.util.EscapeStrings;
+import ucar.unidata.util.EscapeStrings;
 import org.springframework.web.servlet.mvc.AbstractController;
 import org.springframework.web.servlet.mvc.LastModified;
 import org.springframework.web.servlet.ModelAndView;
@@ -48,7 +48,6 @@ import java.io.*;
 import java.nio.channels.WritableByteChannel;
 import java.nio.channels.Channels;
 import java.util.StringTokenizer;
-import java.net.URLDecoder;
 
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.ParsedSectionSpec;
@@ -59,7 +58,6 @@ import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.stream.NcStreamWriter;
 import ucar.unidata.geoloc.LatLonRect;
-import ucar.unidata.geoloc.LatLonPointImpl;
 
 /**
  * This is a prototype for "cdm remote service".

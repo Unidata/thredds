@@ -32,7 +32,7 @@
  */
 package thredds.servlet.filter;
 
-import opendap.util.EscapeStrings;
+import ucar.unidata.util.EscapeStrings;
 import thredds.util.StringValidateEncodeUtils;
 import thredds.servlet.UsageLog;
 

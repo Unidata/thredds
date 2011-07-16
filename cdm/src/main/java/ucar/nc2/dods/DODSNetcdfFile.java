@@ -32,7 +32,7 @@
  */
 package ucar.nc2.dods;
 
-import opendap.util.EscapeStrings;
+import ucar.unidata.util.EscapeStrings;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.Attribute;

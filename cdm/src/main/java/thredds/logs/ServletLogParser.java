@@ -33,7 +33,7 @@
 
 package thredds.logs;
 
-import opendap.util.EscapeStrings;
+import ucar.unidata.util.EscapeStrings;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -42,7 +42,6 @@ import java.util.Formatter;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.File;
-import java.net.URLDecoder;
 
 /**
  * Read TDS access logs

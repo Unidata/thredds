@@ -34,14 +34,13 @@
 package thredds.servlet;
 
 import java.io.*;
-import java.net.URLDecoder;
 import java.util.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
-import opendap.util.EscapeStrings;
+import ucar.unidata.util.EscapeStrings;
 import ucar.nc2.util.cache.FileCacheRaf;
 import ucar.nc2.util.IO;
 import thredds.catalog.XMLEntityResolver;

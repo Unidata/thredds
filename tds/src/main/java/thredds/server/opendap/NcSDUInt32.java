@@ -39,7 +39,6 @@ import opendap.Server.*;
 import java.io.IOException;
 import java.io.DataOutputStream;
 
-import opendap.util.EscapeStrings;
 import ucar.ma2.*;
 import ucar.nc2.*;
 

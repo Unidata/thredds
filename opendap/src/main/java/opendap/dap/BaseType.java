@@ -41,7 +41,6 @@
 package opendap.dap;
 
 import opendap.dap.parsers.DDSXMLParser;
-import opendap.util.EscapeStrings;
 
 import java.io.*;
 import java.util.Enumeration;

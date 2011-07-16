@@ -34,7 +34,7 @@ package ucar.nc2.util;
 
 
 
-import opendap.util.EscapeStrings;
+import ucar.unidata.util.EscapeStrings;
 import org.apache.commons.httpclient.URIException;
 import org.apache.commons.httpclient.util.URIUtil;
 

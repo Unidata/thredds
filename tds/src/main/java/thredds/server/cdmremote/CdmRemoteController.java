@@ -32,7 +32,7 @@
 
 package thredds.server.cdmremote;
 
-import opendap.util.EscapeStrings;
+import ucar.unidata.util.EscapeStrings;
 import org.slf4j.Logger;
 import org.springframework.web.servlet.mvc.AbstractCommandController;
 import org.springframework.web.servlet.ModelAndView;
@@ -54,7 +54,6 @@ import java.io.*;
 import java.util.StringTokenizer;
 import java.nio.channels.WritableByteChannel;
 import java.nio.channels.Channels;
-import java.net.URLDecoder;
 
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.stream.NcStreamWriter;

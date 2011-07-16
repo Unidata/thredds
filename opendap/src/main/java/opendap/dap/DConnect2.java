@@ -48,7 +48,7 @@ import opendap.dap.parsers.*;
 import java.util.zip.InflaterInputStream;
 import java.util.zip.GZIPInputStream;
 
-import opendap.util.EscapeStrings;
+import ucar.unidata.util.EscapeStrings;
 import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.auth.*;
 import ucar.nc2.util.net.HTTPException;

@@ -32,12 +32,11 @@
  */
 package ucar.nc2.util;
 
-import opendap.util.EscapeStrings;
+import ucar.unidata.util.EscapeStrings;
 import ucar.unidata.util.StringUtil;
 
 import java.io.*;
 import java.util.*;
-import java.net.URLDecoder;
 
 /**
  * This is a general purpose utility for determining a place to write files and cache them, eg for

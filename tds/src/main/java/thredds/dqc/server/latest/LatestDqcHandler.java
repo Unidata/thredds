@@ -41,11 +41,10 @@ import java.text.SimpleDateFormat;
 import java.text.ParseException;
 import java.net.URL;
 
-import opendap.util.EscapeStrings;
+import ucar.unidata.util.EscapeStrings;
 import thredds.catalog.*;
 import thredds.catalog.parser.jdom.InvCatalogFactory10;
 import thredds.catalog.query.*;
-import thredds.servlet.ServletUtil;
 import thredds.servlet.UsageLog;
 import thredds.dqc.server.DqcHandler;
 import ucar.nc2.constants.FeatureType;

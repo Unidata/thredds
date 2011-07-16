@@ -33,7 +33,6 @@
 
 package thredds.server.ncSubset;
 
-import opendap.util.EscapeStrings;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPoint;

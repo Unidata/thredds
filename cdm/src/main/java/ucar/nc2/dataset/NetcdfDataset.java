@@ -32,9 +32,9 @@
  */
 package ucar.nc2.dataset;
 
+import ucar.unidata.util.EscapeStrings;
 import ucar.nc2.util.net.HTTPMethod;
 import ucar.nc2.util.net.HTTPSession;
-import opendap.util.EscapeStrings;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;

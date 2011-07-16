@@ -34,12 +34,9 @@
 package opendap.test;
 
 import junit.framework.TestCase;
-import opendap.util.EscapeStrings;
+import ucar.unidata.util.EscapeStrings;
 import org.apache.commons.httpclient.HttpMethodBase;
 import org.apache.commons.httpclient.methods.GetMethod;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class TestEncode extends TestCase {
   final String TITLE = "URL Encode Tests";

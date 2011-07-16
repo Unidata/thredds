@@ -37,10 +37,8 @@ package thredds.server.opendap;
 import opendap.Server.*;
 import opendap.dap.BaseType;
 import opendap.dap.NoSuchVariableException;
-import opendap.util.EscapeStrings;
 
 import java.io.IOException;
-import java.io.EOFException;
 import java.util.ArrayList;
 
 /**
