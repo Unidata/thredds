@@ -38,7 +38,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 
-package opendap.util;
+package ucar.unidata.util;
 
 import javax.naming.ldap.StartTlsRequest;
 import java.net.*;
