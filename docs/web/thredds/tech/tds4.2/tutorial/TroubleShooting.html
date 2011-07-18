@@ -30,13 +30,22 @@
 </ol>
 <h2>Common errors in the TDS Configuration Catalogs:</h2>
 <h3>Duplicate path(s)</h3>
-<p>If you accidentally use the same path in more than one data root, you will get an error in catalog.</p>
+If you accidentally use the same path in more than one data root, you will get an error message in serverStartup.log.
 <pre>
     &lt;datasetRoot path=&quot;testdup&quot; location=&quot;C:/data/&quot; /&gt;
     &lt;datasetScan name=&quot;duplicate path&quot; path=&quot;testdup&quot; location=&quot;/home/workshop/data/&quot; serviceName=&quot;dodsServer&quot; /&gt;
-
+</pre>
   In ${tomcat.home}/content/thredds/logs/serverStartup.log:
-  **Error: <strong>already have dataRoot</strong> =&lt;testdup&gt;  <strong>mapped to directory</strong>= &lt;C:/data/&gt; wanted to map to=&lt;/home/workshop/data/&gt; in catalog</pre>
+<pre>
+  Error: <strong>already have dataRoot</strong> =&lt;testdup&gt;  <strong>mapped to directory</strong>= &lt;C:/data/&gt; wanted to map to=&lt;/home/workshop/data/&gt; in catalog</pre>
+<h3>Duplicate id(s)</h3>
+If you accidentally use the same id in more than one dataset, you will get a warning message in serverStartup.log.
+<pre>
+    &lt;dataset name="Test Single Dataset 2" ID="testDataset2" serviceName="odap" urlPath="test/testData2.grib2" dataType="Grid" /&gt;
+    &lt;dataset name="Test Single Dataset 3" ID="testDataset2" serviceName="odap" urlPath="test/testData3.grib2" dataType="Grid" /&gt;
+</pre>
+  In ${tomcat.home}/content/thredds/logs/serverStartup.log:
+  <pre>WARNING: Duplicate id on  'THREDDS Catalog Name/Test Single Dataset 3' id= 'testDataset2' </pre>
 <h3>Data directory doesnt exist</h3>
 <pre>
     &lt;datasetRoot path=&quot;sage&quot; location=&quot;C:/data/notexist/&quot; /&gt;
@@ -44,9 +53,9 @@
 </pre>
   In ${tomcat.home}/content/thredds/logs/serverStartup.log:
 <pre>
-  **Error: Data Root =sage <strong>directory</strong>= &lt;C:/data/notexist /&gt; <strong>does not exist</strong>
+  Data Root =sage <strong>directory</strong>= &lt;C:/data/notexist /&gt; <strong>does not exist</strong>
 or:
-  SEVERE: Invalid InvDatasetScan &lt;path=testAll; scanLocation=bad/content/testdata&gt: CrawlableDataset for scanLocation does not exist.
+  Invalid InvDatasetScan &lt;path=testAll; scanLocation=bad/content/testdata&gt: CrawlableDataset for scanLocation does not exist.
     ... Dropping this datasetScan [testAll].
 </pre>
 <h3>DatasetScan has missing or invalid service</h3>
@@ -87,9 +96,9 @@ or:
         </ul>
     </li>
 </ul>
-<h3>DatasetScan points to an empty directory </h3>
-<p>Aggregation scan points to an empty directory</p>
-<p>Duplicate ids </p>
+<h3>DatasetScan points to an empty directory, or filters out all files in the directory. </h3>
+        No warning - you simply wont see any datasets in that DatasetScan.
+<h3>Aggregation scan points to an empty directory</h3>
 <hr WIDTH="100%">
 <address>
     <img src="../../images/thread.png" width="110" height="108">This document is maintained by <a

@@ -557,7 +557,7 @@ public class DataRootHandler {
       String id = invDataset.getUniqueID();
       if (id != null) {
         if (idHash.contains(id)) {
-          logCatalogInit.warn("Duplicate id on  " + invDataset.getFullName() + " id= " + id);
+          logCatalogInit.warn("Duplicate id on  '" + invDataset.getFullName() + "' id= '" + id + "'");
         } else {
           idHash.add(id);
         }
