@@ -549,8 +549,9 @@ public class DataRootHandler {
   private boolean initSpecialDatasets(List<InvDataset> dsList) {
     boolean needsCache = false;
 
-    for (InvDataset invds : dsList) {
-      InvDatasetImpl invDataset = (InvDatasetImpl) invds;
+    Iterator<InvDataset> iter = dsList.iterator();
+    while (iter.hasNext()) {
+      InvDatasetImpl invDataset = (InvDatasetImpl) iter.next();
 
       // look for duplicate ids
       String id = invDataset.getUniqueID();
@@ -573,7 +574,8 @@ public class DataRootHandler {
           logCatalogInit.error("InvDatasetScan " + ds.getFullName() + " has no default Service - skipping");
           continue;
         }
-        addRoot(ds);
+        if (!addRoot(ds))
+          iter.remove();
 
       } else if (invDataset instanceof InvDatasetFmrc) {
         InvDatasetFmrc fmrc = (InvDatasetFmrc) invDataset;

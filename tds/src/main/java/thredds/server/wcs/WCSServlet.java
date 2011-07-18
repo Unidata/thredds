@@ -74,7 +74,7 @@ public class WCSServlet extends AbstractServlet {
     super.init();
 
     allow = ThreddsConfig.getBoolean("WCS.allow", false);
-    logServerStartup.error("WCS:allow= "+allow);
+    logServerStartup.info("WCS:allow= "+allow);
     if ( ! allow )
     {
       logServerStartup.info( "WCS service not enabled in threddsConfig.xml: " + UsageLog.closingMessageNonRequestContext() );

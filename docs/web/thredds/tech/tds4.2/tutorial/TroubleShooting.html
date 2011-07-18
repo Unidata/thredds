@@ -1,74 +1,98 @@
 <title>Troubleshooting</title>
 <h1><img src="../../images/THREDDSlogo.jpg" width="67" height="54">Troubleshooting
 </h1>
-  <hr>
-  <h2>Check log files for errors</h2>
-  <ol>
-    <li><strong> ${tomcat.home}/content/thredds/logs/catalogInit.log</strong>: Errors and warnings in your catalog configuration files are shown here. Look at this closely.</li>
-    <li><strong>${tomcat.home}/logs/catalina.out: </strong>This is where Tomcat prints messages about  Tomcat startup and uncaught exceptions from any webapp. Monitor this occasionally. Delete it when you install a new version of thredds.war.</li>
-    <li><strong> ${tomcat.home}/content/thredds/logs/threddsServlet.log:</strong> Each request that the TDS responds to gets logged here. Errors and warnings that are associated with a request are logged here. You need to manage these by removing them, say, once a month.</li>
-    <li><strong>${tomcat.home}/logs/access.{date}.log</strong>: This is where Tomcat access logs are put, if you have enabled them. You need to manage these by removing them, say, once a month.</li>
+<hr>
+<h2>Check log files for errors</h2>
+<ol>
+     <li><strong>${tomcat.home}/logs/catalina.out: </strong>This is where Tomcat prints messages about Tomcat startup and
+        uncaught exceptions from any webapp. Monitor this occasionally. Delete it when you install a new version of
+        thredds.war.
+    </li>
     <li>${tomcat.home}/logs/localhost.{date}.log: This is where log messages for Tomcat are sent.</li>
-    <li> ${tomcat.home}/content/thredds/logs/serverStartup.log: As TDS starts up, it logs messages here. Usually only interesting if TDS is failing to start.</li>
-    <li>${tomcat.home}/content/thredds/logs/cache.log: Cache scour messages are kept here. Only interesting if you are having problems with cache directories getting too large.</li>
-    <li> ${tomcat.home}/content/thredds/logs/featureCollectionScan.log: Only used if you have feature collections.</li>
-    <li> ${tomcat.home}/content/thredds/logs/models.log: Only used if you have GRIB files.</li>
-  </ol>
+    <li> ${tomcat.home}/content/thredds/logs/serverStartup.log: As TDS starts up, it logs messages here. Usually only
+        interesting if TDS is failing to start.
+    </li>
+    <li><strong> ${tomcat.home}/content/thredds/logs/catalogInit.log</strong>: Errors and warnings in your catalog
+        configuration files are shown here. Look at this closely.
+    </li>
+    <li><strong>${tomcat.home}/logs/access.{date}.log</strong>: This is where Tomcat access logs are put, if you have
+        enabled them. You need to manage these by removing them, say, once a month.
+    </li>
+    <li><strong> ${tomcat.home}/content/thredds/logs/threddsServlet.log:</strong> Each request that the TDS responds to
+        gets logged here. Errors and warnings that are associated with a request are logged here. You need to manage
+        these by removing them, say, once a month.
+    </li>
+    <li>${tomcat.home}/content/thredds/logs/cache.log: Cache scour messages are kept here. Only interesting if you are
+        having problems with cache directories getting too large.
+    </li>
+    <li> ${tomcat.home}/content/thredds/logs/featureCollectionScan.log: Only used if you use feature collections.</li>
+    <li> ${tomcat.home}/content/thredds/logs/models.log: Only used if you serve GRIB files.</li>
+</ol>
 <h2>Common errors in the TDS Configuration Catalogs:</h2>
-  <h3>Duplicate path(s)</h3>
-  <p>If you accidentally use the same path in more than one data root, you will get an error in catalog.</p>
-  <pre>  &lt;datasetRoot path=&quot;testdup&quot; location=&quot;C:/data/&quot; /&gt;<br>  &lt;datasetScan name=&quot;duplicate path&quot; path=&quot;testdup&quot; location=&quot;/home/workshop/data/&quot; serviceName=&quot;dodsServer&quot; /&gt;
-
+<h3>Duplicate path(s)</h3>
+<p>If you accidentally use the same path in more than one data root, you will get an error in catalog.</p>
+<pre>
+    &lt;datasetRoot path=&quot;testdup&quot; location=&quot;C:/data/&quot; /&gt;
+    &lt;datasetScan name=&quot;duplicate path&quot; path=&quot;testdup&quot; location=&quot;/home/workshop/data/&quot; serviceName=&quot;dodsServer&quot; /&gt;
 
   In ${tomcat.home}/content/thredds/logs/serverStartup.log:
   **Error: <strong>already have dataRoot</strong> =&lt;testdup&gt;  <strong>mapped to directory</strong>= &lt;C:/data/&gt; wanted to map to=&lt;/home/workshop/data/&gt; in catalog</pre>
-  <h3>Data directory doesnt exist</h3>
-  <pre>   &lt;datasetRoot path=&quot;sage&quot; location=&quot;C:/data/notexist/&quot; /&gt;
-
+<h3>Data directory doesnt exist</h3>
+<pre>
+    &lt;datasetRoot path=&quot;sage&quot; location=&quot;C:/data/notexist/&quot; /&gt;
+    &lt;datasetScan path=&quot;sage&quot; location=&quot;C:/data/notexist/&quot; /&gt;
+</pre>
   In ${tomcat.home}/content/thredds/logs/serverStartup.log:
-  **Error: Data Root =sage <strong>directory</strong>= &lt;C:/data/notexist/&gt; <strong>does not exist</strong></pre>
-  <h3>DatasetScan has missing or invalid service</h3>
-  <pre>  &lt;datasetScan name=&quot;bad service name&quot; path=&quot;segundo&quot; location=&quot;C:/data/&quot; serviceName=&quot;badd&quot; /&gt;
+<pre>
+  **Error: Data Root =sage <strong>directory</strong>= &lt;C:/data/notexist /&gt; <strong>does not exist</strong>
+or:
+  SEVERE: Invalid InvDatasetScan &lt;path=testAll; scanLocation=bad/content/testdata&gt: CrawlableDataset for scanLocation does not exist.
+    ... Dropping this datasetScan [testAll].
+</pre>
+<h3>DatasetScan has missing or invalid service</h3>
+<pre>
+  &lt;datasetScan name=&quot;bad service name&quot; path=&quot;segundo&quot; location=&quot;C:/data/&quot; serviceName=&quot;badd&quot; /&gt;
   &lt;datasetScan name=&quot;no service name&quot; path=&quot;tertiary&quot; location=&quot;C:/data/&quot; /&gt;</pre>
-  <pre>  In ${tomcat.home}/content/thredds/logs/serverStartup.log:
+<pre>  In ${tomcat.home}/content/thredds/logs/serverStartup.log:
   **Error: DatasetScan (Top Dataset/bad service name ): <strong>must have a default service</strong>
   **Error: DatasetScan (Top Dataset/no service name): <strong>must have a default service</strong></pre>
-  <h3>Data not compatible with service</h3>
-  <pre>  &lt;dataset name=&quot;inappropriate service&quot; urlPath=&quot;images/labyrinth.jpg&quot; serviceName=&quot;dodsServer&quot; dataType=&quot;Grid&quot; /&gt;
+<h3>Data not compatible with service</h3>
+<pre>  &lt;dataset name=&quot;inappropriate service&quot; urlPath=&quot;images/labyrinth.jpg&quot; serviceName=&quot;dodsServer&quot; dataType=&quot;Grid&quot; /&gt;
 </pre>
-  <ul>
+<ul>
     <li>You wont get an error in <strong>serverStartup.log</strong></li>
-    <li>But when you try to access it: 
-      <ul>
-        <li><em>Browser<strong>: DODServlet ERROR: Cant read C:/data/images/labyrinth.jpg: not a valid NetCDF file. </strong></em></li>
-        <li>nj22/IDV:: <em><strong>Lexical error at line 1, column 1.  Encountered: &quot;&quot; (0), after : &quot;&quot;</strong></em></li>
-      </ul>
+    <li>But when you try to access it:
+        <ul>
+            <li><em>Browser<strong>: DODServlet ERROR: Cant read C:/data/images/labyrinth.jpg: not a valid NetCDF
+                file. </strong></em></li>
+            <li>nj22/IDV:: <em><strong>Lexical error at line 1, column 1. Encountered: &quot;&quot; (0), after : &quot;&quot;</strong></em>
+            </li>
+        </ul>
     </li>
-  </ul>
-  <h3>Data file does not exist </h3>
-  <pre>  &lt;dataset name=&quot;no data (opendap)&quot; ID=&quot;Y&quot; urlPath=&quot;images/labyrinth.nc&quot; serviceName=&quot;dodsServer&quot; dataType=&quot;Grid&quot; /&gt;</pre>
-  <ul>
+</ul>
+<h3>Data file does not exist </h3>
+<pre>  &lt;dataset name=&quot;no data (opendap)&quot; ID=&quot;Y&quot; urlPath=&quot;images/labyrinth.nc&quot; serviceName=&quot;dodsServer&quot; dataType=&quot;Grid&quot; /&gt;</pre>
+<ul>
     <li>You wont get an error in <strong>serverStartup.log</strong></li>
     <li>If you try to access it (OPeNDAP)
-      <ul>
-          <li><em>Browser<strong>: message = "Cant find images/labyrinth.nc"</strong></em></li>
-          <li>nj22/IDV:: <em><strong>"Cant find images/labyrinth.nc"</strong></em></li>
-      </ul>
+        <ul>
+            <li><em>Browser<strong>: message = "Cant find images/labyrinth.nc"</strong></em></li>
+            <li>nj22/IDV:: <em><strong>"Cant find images/labyrinth.nc"</strong></em></li>
+        </ul>
     </li>
     <li>If you try to access it (HTTP server)
-            <ul>
-              <li><em>Browser<strong>: Error 404 The requested resource () is not available.</strong></em></li>
-              <li>nj22/IDV: <em><strong>Error 404 Not Found </strong></em></li>
-            </ul>
+        <ul>
+            <li><em>Browser<strong>: Error 404 The requested resource () is not available.</strong></em></li>
+            <li>nj22/IDV: <em><strong>Error 404 Not Found </strong></em></li>
+        </ul>
     </li>
-  </ul>
-  <h3>&nbsp;</h3>
-  <h3>DatasetScan points to an empty directory </h3>
-  <p>Aggregation scan points to an empty directory</p>
-  <p>Duplicate ids </p>
-</div>
+</ul>
+<h3>DatasetScan points to an empty directory </h3>
+<p>Aggregation scan points to an empty directory</p>
+<p>Duplicate ids </p>
 <hr WIDTH="100%">
 <address>
-<img src="../../images/thread.png" width="110" height="108">This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated on May 27, 2009
+    <img src="../../images/thread.png" width="110" height="108">This document is maintained by <a
+        href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated July 2011
 </address>
 <p>&nbsp;</p>
