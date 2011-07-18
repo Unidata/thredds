@@ -1684,7 +1684,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
       // The url and query strings will come to us in encoded form
       // (see HTTPmethod.newMethod())
       String baseurl = request.getRequestURL().toString();
-      baseurl = EscapeStrings.escapeURL(baseurl);
+      baseurl = EscapeStrings.unescapeURL(baseurl);
 
       String query = request.getQueryString();
       query = EscapeStrings.unescapeURLQuery(query);

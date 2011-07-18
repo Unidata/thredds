@@ -497,8 +497,12 @@ for (int offset = 0; offset < length; ) {
         String newurl = null;
         try {
             URI u = new URI(url);
+            u = new URI(u.getScheme(),u.getUserInfo(),u.getHost(),u.getPort(),
+                        escapeString(u.getPath(),_allowableInUrl,_URIEscape,true),
+                        escapeURLQuery(u.getQuery()),
+                        u.getFragment());
             newurl = u.toASCIIString();
-        } catch (URISyntaxException mfue) {newurl = url;}
+        } catch (Exception e) {newurl = url;}
         return newurl;
      }
 
