@@ -130,6 +130,11 @@
     <property name="build.doc"        location="${build.dir}/doc"/>
     <property name="build.lib"        location="${build.dir}/lib"/>
 
+    <property name="war.dir"          location="${build.dir}/dts"/>
+    <property name="webapp.dir"       location="src/test/resources"/>
+    <property name="warfile" value="dts-${VERSION}.war"/>
+
+
     <!-- Where to put test case output -->
     <property name="results.dir"        location="${build.dir}/results"/>
 
@@ -160,20 +165,23 @@
 
 
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-      - Predefined paths
+      - Predefined paths and filesets
       -->
+
+    <fileset dir="${lib.dir}" id="lib.files">
+      <include name="${jdom.lib}"/>
+      <include name="${httpclient.lib}"/>
+      <include name="${logging.lib}"/>
+      <include name="${unitTest.lib}"/>
+      <include name="${servlet.lib}"/>
+      <include name="${cdm.lib}"/>
+      <include name="${servlet.lib}"/>
+    </fileset>
 
     <!-- CLASSPATH dependancies for DAP -->
     <path id="dap.compile.classpath">
         <pathelement path="${build.classes}"/>
-        <fileset dir="${lib.dir}">
-            <include name="${jdom.lib}"/>
-            <include name="${httpclient.lib}"/>
-            <include name="${logging.lib}"/>
-            <include name="${unitTest.lib}"/>
-            <include name="${servlet.lib}"/>
-            <include name="${cdm.lib}"/>
-        </fileset>
+        <fileset refid="${lib.files}"/>
     </path>
 
     <!-- CLASSPATH dependancies for DAP Server -->
@@ -182,8 +190,7 @@
           <fileset dir="${lib.dir}">
             <include name="${servlet.lib}"/>
         </fileset>
-  </path>
-
+    </path>
 
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
       - Basic Targets
@@ -215,6 +222,7 @@
         <mkdir dir="${build.lib}"/>
         <mkdir dir="${build.classes}"/>
         <mkdir dir="${build.doc}"/>
+        <mkdir dir="${war.dir}"/>
         <mkdir dir="${results.dir}"/>
         <tstamp/>
         <echo level="info" message="time: ${TSTAMP}"/>
@@ -262,7 +270,7 @@
     <target name="dts" description="Compiles the dts test server"
             depends="compile"
             >
-        <echo level="info" message="AntFile: ${ant.file} Compiling Servers"/>
+        <echo level="info" message="AntFile: ${ant.file} Compiling dts"/>
         <echo level="info" message="Using the ${build.compiler} javac compiler"/>
         <echo level="info" message=""/>
         <javac compiler="${build.compiler}"
@@ -297,6 +305,53 @@
             <include name="opendap/test/*.java"/>
             <exclude name="opendap/test/dts/*.java"/>
         </javac>
+    </target>
+
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+      -
+      - OPeNDAP dts War file
+      -
+      -->
+
+<!--	    depends="opendap-lib" -->
+    <target name="war"
+	    description="create a war file from the distribution directory">
+
+        <!-- copy classes to war classes directory. -->
+        <mkdir dir="${war.dir}/WEB-INF/classes"/>
+        <copy todir="${war.dir}/WEB-INF/classes"
+              preservelastmodified="true"
+              overwrite="true">
+          <fileset dir="${build.classes}"/>
+        </copy>
+
+        <!-- copy libraries to war lib directory. -->
+        <mkdir dir="${war.dir}/WEB-INF/lib"/>
+        <copy todir="${war.dir}/WEB-INF/lib"
+              flatten="true"
+              overwrite="true"
+              preservelastmodified="true">
+          <fileset refid="lib.files"/>
+        </copy>
+
+        <!-- Copy webapps dir  -->
+        <copy todir="${war.dir}"
+              overwrite="true"
+              preservelastmodified="true">
+          <fileset dir="${webapp.dir}" />
+        </copy>
+
+        <jar destfile="${build.dir}/${warfile}">
+            <fileset dir="${war.dir}"/>
+            <manifest>
+	        <attribute name="Built-By" value="${user.name}"/>
+	        <attribute name="Built-On" value="${build.time}"/>
+	        <attribute name="Implementation-Title" value="DTS OPenDAP Test Server"/>
+	        <attribute name="Implementation-Version" value="${VERSION}"/>
+	        <attribute name="Implementation-Vendor" value="UCAR/Unidata"/>
+            </manifest>
+        </jar>
+
     </target>
 
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -338,7 +393,7 @@
             >
         <uptodate property="JavaDocIsUpToDate" targetfile="${build.doc}/javadoc/index.html">
             <srcfiles dir="${src.java.dir}">
-	                <include name="opendap/Version.java"/>
+                        <include name="opendap/Version.java"/>
                 <include name="opendap/dap/**/*.java"/>
                 <include name="opendap/Server/**/*.java"/>
                 <include name="opendap/util/**/*.java"/>
@@ -356,7 +411,7 @@
       -->
 
     <target name="lib-dist"
-	depends="opendap-lib">
+        depends="opendap-lib">
         <jar destfile="${build.dist}/${opendap.jar}">
             <zipfileset dir="${build.lib}" prefix="opendap-${VERSION}-lib"/>
             <zipfileset dir="${lib.dir}" prefix="opendap-${VERSION}-lib">
@@ -370,7 +425,7 @@
     </target>
 
     <target name="opendap-lib"
-	depends="clean,compile">
+        depends="clean,compile">
         <jar destfile="${build.lib}/${opendap.jar}">
             <fileset dir="${build.classes}"/>
         </jar>
@@ -397,7 +452,7 @@
             depends="init,testcases"
             >
         <delete dir="${results.dir}"/>
-	<mkdir  dir="${results.dir}"/>
+        <mkdir  dir="${results.dir}"/>
 
         <java classname="opendap.test.TestCeParser">
             <classpath refid="dap.compile.classpath"/>
