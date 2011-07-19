@@ -192,8 +192,6 @@
     <target name="all" description="Clean compiles the core OPeNDAP software."
             depends="clean,compile"/>
 
-    <target name="compile" description="Compiles the core OPeNDAP software."/>
-
     <!-- Target "clean" cleans up ALL build products -->
     <target name="clean" description="Clean up ALL build products.">
         <delete dir="${build.dir}"/>
@@ -226,9 +224,9 @@
       - Target "cdm" compiles cdm
       -->
     <target name="cdm" depends="init">
-	<ant target="makeMain" dir="${cdm.dir}"/>
+	<ant target="makeMain" dir="${cdm.dir}" inheritAll="false" />
         <copy todir="${lib.dir}">
-            <fileset dir="${build.dir}" includes="${cdm.lib}"/>
+            <fileset dir="${cdm.dir}/target" includes="${cdm.lib}"/>
         </copy>
     </target>
 
@@ -238,7 +236,7 @@
       -
       -->
 
-    <target name="dap" description="Compiles the core software required by OPeNDAP clients."
+    <target name="compile" description="Compiles the core software required by OPeNDAP clients."
             depends="init"
             >
         <echo level="info" message="AntFile: ${ant.file} Compiling DAP"/>
@@ -262,7 +260,7 @@
     </target>
 
     <target name="dts" description="Compiles the dts test server"
-            depends="dap"
+            depends="compile"
             >
         <echo level="info" message="AntFile: ${ant.file} Compiling Servers"/>
         <echo level="info" message="Using the ${build.compiler} javac compiler"/>
@@ -282,7 +280,7 @@
     </target>
 
     <target name="testcases" description="Compiles the test programs in ${src.java.dir}"
-            depends="dap"
+            depends="compile"
             >
         <echo level="info" message="AntFile: ${ant.file} Compiling Test Cases"/>
         <echo level="info" message="Using the ${build.compiler} javac compiler"/>
@@ -372,14 +370,14 @@
     </target>
 
     <target name="opendap-lib"
-	depends="clean">
+	depends="clean,compile">
         <jar destfile="${build.lib}/${opendap.jar}">
             <fileset dir="${build.classes}"/>
         </jar>
     </target>
 
     <target name="xmltest" description="Runs the XmlTest application on the primary DDX test file."
-            depends="dap"
+            depends="compile"
             >
         <java classname="opendap.dap.parsers.XmlTest">
             <classpath refid="dap.compile.classpath"/>
