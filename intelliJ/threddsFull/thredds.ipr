@@ -9,6 +9,7 @@
       <maximumHeapSize value="256" />
       <maximumStackSize value="128" />
       <properties />
+      <executeOn event="compositeTask" target="[clean,dist,release]" presentableName="[clean,dist,release]" />
     </buildFile>
     <buildFile url="file://$PROJECT_DIR$/../../tds/build.xml">
       <additionalClassPath />
@@ -87,6 +88,7 @@
             <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/jakarta-oro-2.0.8.jar" />
             <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/jaxen-1.1.2.jar" />
             <element id="file-copy" path="$PROJECT_DIR$/../../lib/release/ncwms.jar" />
+            <element id="library" level="project" name="ncISO" />
           </element>
         </element>
         <element id="javaee-facet-resources" facet="tds/web/tds" />
@@ -955,7 +957,7 @@
   <component name="JavacSettings">
     <option name="GENERATE_NO_WARNINGS" value="true" />
     <option name="DEPRECATION" value="false" />
-    <option name="ADDITIONAL_OPTIONS_STRING" value=" " />
+    <option name="ADDITIONAL_OPTIONS_STRING" value=" -target 1.6" />
     <option name="MAXIMUM_HEAP_SIZE" value="512" />
   </component>
   <component name="JavadocGenerationManager">
@@ -1120,6 +1122,8 @@
         <w>metadata</w>
         <w>ncml</w>
         <w>netcdf</w>
+        <w>recurse</w>
+        <w>subsetting</w>
         <w>thredds</w>
       </words>
     </dictionary>
@@ -1585,6 +1589,30 @@
       <SOURCES>
         <root url="jar://$PROJECT_DIR$/../../lib/external/source/spring-sources-2.5.jar!/" />
         <root url="jar://$PROJECT_DIR$/../../lib/external/source/spring-webmvc-sources-2.5.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="tomcat 6.0.26">
+      <CLASSES>
+        <root url="jar://C:/Program Files/Apache Software Foundation/apache-tomcat-6.0.26/lib/servlet-api.jar!/" />
+        <root url="jar://C:/Program Files/Apache Software Foundation/apache-tomcat-6.0.26/lib/catalina-ha.jar!/" />
+        <root url="jar://C:/Program Files/Apache Software Foundation/apache-tomcat-6.0.26/lib/jasper-el.jar!/" />
+        <root url="jar://C:/Program Files/Apache Software Foundation/apache-tomcat-6.0.26/lib/el-api.jar!/" />
+        <root url="jar://C:/Program Files/Apache Software Foundation/apache-tomcat-6.0.26/lib/tomcat-dbcp.jar!/" />
+        <root url="jar://C:/Program Files/Apache Software Foundation/apache-tomcat-6.0.26/lib/jsp-api.jar!/" />
+        <root url="jar://C:/Program Files/Apache Software Foundation/apache-tomcat-6.0.26/lib/catalina.jar!/" />
+        <root url="jar://C:/Program Files/Apache Software Foundation/apache-tomcat-6.0.26/lib/tomcat-i18n-fr.jar!/" />
+        <root url="jar://C:/Program Files/Apache Software Foundation/apache-tomcat-6.0.26/lib/jasper.jar!/" />
+        <root url="jar://C:/Program Files/Apache Software Foundation/apache-tomcat-6.0.26/lib/tomcat-i18n-es.jar!/" />
+        <root url="jar://C:/Program Files/Apache Software Foundation/apache-tomcat-6.0.26/lib/annotations-api.jar!/" />
+        <root url="jar://C:/Program Files/Apache Software Foundation/apache-tomcat-6.0.26/lib/tomcat-i18n-ja.jar!/" />
+        <root url="jar://C:/Program Files/Apache Software Foundation/apache-tomcat-6.0.26/lib/jasper-jdt.jar!/" />
+        <root url="jar://C:/Program Files/Apache Software Foundation/apache-tomcat-6.0.26/lib/catalina-tribes.jar!/" />
+        <root url="jar://C:/Program Files/Apache Software Foundation/apache-tomcat-6.0.26/lib/tomcat-coyote.jar!/" />
+        <root url="jar://C:/Program Files/Apache Software Foundation/apache-tomcat-6.0.26/lib/catalina-ant.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="file://C:/Program Files/Apache Software Foundation/apache-tomcat-6.0.26/src/java" />
       </SOURCES>
     </library>
   </component>
