@@ -175,13 +175,12 @@
       <include name="${unitTest.lib}"/>
       <include name="${servlet.lib}"/>
       <include name="${cdm.lib}"/>
-      <include name="${servlet.lib}"/>
     </fileset>
 
     <!-- CLASSPATH dependancies for DAP -->
     <path id="dap.compile.classpath">
         <pathelement path="${build.classes}"/>
-        <fileset refid="${lib.files}"/>
+        <fileset refid="lib.files"/>
     </path>
 
     <!-- CLASSPATH dependancies for DAP Server -->
@@ -197,7 +196,7 @@
       -->
 
     <target name="all" description="Clean compiles the core OPeNDAP software."
-            depends="clean,compile"/>
+            depends="clean,compile,opendap-lib"/>
 
     <!-- Target "clean" cleans up ALL build products -->
     <target name="clean" description="Clean up ALL build products.">
@@ -207,6 +206,8 @@
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
       - Misc Targets
       -->
+
+    <target name="tds" description="target thredds alias" depends="thredds"/>
 
     <target name="thredds" description="make and release thredds jar"
 	depends="opendap-lib">
@@ -261,8 +262,10 @@
             <src path="${src.java.dir}"/>
             <include name="opendap/dap/**/*.java"/>
             <include name="opendap/Server/**/*.java"/>
-            <include name="opendap/Version.java"/>
+            <include name="opendap/servlet/**/*.java"/>
+            <include name="opendap/tools/**/*.java"/>
             <include name="opendap/util/**/*.java"/>
+            <include name="opendap/Version.java"/>
             <exclude name="opendap/dap/parser/ignore/*.java"/>
         </javac>
     </target>
@@ -281,7 +284,6 @@
                includeAntRuntime="false" source="1.5" target="1.5">
             <classpath refid="servers.compile.classpath"/>
             <src path="${src.java.dir}"/>
-            <include name="opendap/servlet/**/*.java"/>
             <include name="opendap/servers/test/dts/**/*.java"/>
             <!-- ?include name="opendap/servers/sql/**/*.java" -->
         </javac>
