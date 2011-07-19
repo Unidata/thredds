@@ -58,7 +58,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
   static public final String SCHEME = "cdmremote:";
 
   static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CdmRemote.class);
-  static private boolean showRequest = true;
+  static private boolean showRequest = false;
 
   static public void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
     showRequest = debugFlag.isSet("CdmRemote/showRequest");
