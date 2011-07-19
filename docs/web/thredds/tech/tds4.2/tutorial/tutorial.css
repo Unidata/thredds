@@ -32,9 +32,18 @@ code {
 h1 {
     font-size: 20pt;
     padding: 15px 0px 10px 80px;
-    margin: 10px 0px 50px 0px;
+    margin: 10px 0px 30px 0px;
     background: transparent url('../../images/thredds-50x50.png') no-repeat 0px 0px;
 }
+
+
+h4.synopsis {
+    font-size: 12pt;
+    padding: 0;
+    margin: 10px 0px 50px 0px;
+}
+
+
 
 #section {
     border: 3px solid #CFCFCF;
