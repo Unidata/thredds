@@ -94,7 +94,7 @@ public class InvDatasetScan extends InvCatalogRef {
 
   private Map proxyDatasetHandlers;
 
-  private boolean addDatasetSize;
+  private boolean addDatasetSize = true;
 
   private List<DatasetEnhancer> childEnhancerList;
   private CatalogRefExpander catalogRefExpander;

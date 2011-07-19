@@ -55,7 +55,6 @@ import java.util.ArrayList;
  */
 public class TimingTestRunner {
 
-
   static private class Average {
     private ArrayList values = new ArrayList();
 

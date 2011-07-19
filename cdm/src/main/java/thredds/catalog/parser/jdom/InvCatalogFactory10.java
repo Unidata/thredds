@@ -471,10 +471,10 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
       if ( sortOrderIncreasingString != null )
         if ( sortOrderIncreasingString.equalsIgnoreCase( "true" ) )
           sortOrderIncreasing = true;
-      boolean addDatasetSize = false;
+      boolean addDatasetSize = true;
       if ( addDatasetSizeString != null )
-        if ( addDatasetSizeString.equalsIgnoreCase( "true" ) )
-          addDatasetSize = true;
+        if ( addDatasetSizeString.equalsIgnoreCase( "false" ) )
+          addDatasetSize = false;
 
       if ( path != null )
       {
@@ -591,9 +591,14 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
 
     // Read addDatasetSize element.
     Element addDsSizeElem = dsElem.getChild( "addDatasetSize", defNS );
-    boolean addDatasetSize = false;
-    if ( addDsSizeElem != null )
-      addDatasetSize = true;
+    //boolean addDatasetSize = false; old way
+    //if ( addDsSizeElem != null )
+    //  addDatasetSize = true;
+    boolean addDatasetSize = true;
+    if ( addDsSizeElem != null ) {
+      if ( addDsSizeElem.getTextNormalize().equalsIgnoreCase( "false" ) )
+        addDatasetSize = false;
+    }
 
     // Read addTimeCoverage element.
     List childEnhancerList = new ArrayList();

@@ -62,7 +62,7 @@ public class CdmRemote {
     return bytes;
   }
 
-  static boolean show = true;
+  static boolean show = false;
   static boolean verbose = false;
   static int max_size = 1000 * 1000 * 10;
   static Section makeSubset(Variable v) throws InvalidRangeException {
@@ -75,32 +75,37 @@ public class CdmRemote {
   }
 
 
-  static void testRead(String filename, Stat stat) throws IOException, InvalidRangeException {
+  static void testRead(String filename, Stat stat, boolean readData) throws IOException, InvalidRangeException {
     long bytes = 0;
     try {
       long start = System.nanoTime();
       NetcdfFile ncfile = NetcdfDataset.openFile(filename, null);
-      bytes = readAllData(ncfile);
+      if (readData) bytes = readAllData(ncfile);
       long end = System.nanoTime();
       double took = (double) ((end - start)) / 1000 / 1000 / 1000; // secs
       ncfile.close();
-      if (stat != null) stat.sample(bytes/took/1000/1000); // Mb/sec
-      if (show) System.out.printf(" bytes = %d took =%f%n",bytes, took);
+      if (stat != null) {
+        if (bytes != 0)
+          stat.sample(bytes/took/1000/1000); // Mb/sec
+        else
+          stat.sample(took); // secs
+      }
+      if (show) System.out.printf(" bytes = %d took =%f%n", bytes, took);
     } catch (Exception e) {
       System.out.println("BAD " + filename);
       e.printStackTrace();
     }
   }
 
-  static void doOne(String url, Stat statCdm, Stat statDods, int n) throws IOException, InvalidRangeException {
+  static void doOne(String url, Stat statCdm, Stat statDods, int n, boolean readData) throws IOException, InvalidRangeException {
     for (int i=0; i<n; i++) {
-      testRead("cdmremote:http://localhost:8080/thredds/cdmremote/"+url, statCdm);
-      testRead("dods://localhost:8080/thredds/dodsC/"+url, statDods);
+      testRead("dods://localhost:8080/thredds/dodsC/"+url, statDods, readData);
+      testRead("cdmremote:http://localhost:8080/thredds/cdmremote/"+url, statCdm, readData);
     }
 
     for (int i=0; i<n; i++) {
-      testRead("dods://localhost:8080/thredds/dodsC/"+url, statDods);
-      testRead("cdmremote:http://localhost:8080/thredds/cdmremote/"+url, statCdm);
+      testRead("cdmremote:http://localhost:8080/thredds/cdmremote/"+url, statCdm, readData);
+      testRead("dods://localhost:8080/thredds/dodsC/"+url, statDods, readData);
     }
 
   }
@@ -109,11 +114,12 @@ public class CdmRemote {
     Stat statCdm = new Stat("CDM ", false);
     Stat statDods = new Stat("DODS", false);
 
-    //doOne("testDataAll/datasets/cosmic/MMC_UCAR_CHAMP_Jan2002-Dec2006.nc", statCdm, statDods, 3);
-    doOne("testDataAll/fmrc/gomoos/gomoos.20090223.cdf", statCdm, statDods, 2);
-    doOne("testDataAll/fmrc/gomoos/gomoos.20090222.cdf", statCdm, statDods, 2);
+    boolean readData = false;
+    int n = 2;
+    doOne("testDataAll/fmrc/gomoos/gomoos.20090223.cdf", statCdm, statDods, n, readData);
+    doOne("testDataAll/fmrc/gomoos/gomoos.20090222.cdf", statCdm, statDods, n, readData);
 
     System.out.printf("%n%s%n",statCdm);
-    System.out.printf("%s%n",statDods);
+    System.out.printf("%s%n", statDods);
   }
 }
