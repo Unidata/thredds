@@ -62,7 +62,7 @@ public class CdmRemote {
     return bytes;
   }
 
-  static boolean show = false;
+  static boolean show = true;
   static boolean verbose = false;
   static int max_size = 1000 * 1000 * 10;
   static Section makeSubset(Variable v) throws InvalidRangeException {
@@ -114,10 +114,11 @@ public class CdmRemote {
     Stat statCdm = new Stat("CDM ", false);
     Stat statDods = new Stat("DODS", false);
 
-    boolean readData = false;
+    boolean readData = true;
     int n = 2;
-    doOne("testDataAll/fmrc/gomoos/gomoos.20090223.cdf", statCdm, statDods, n, readData);
-    doOne("testDataAll/fmrc/gomoos/gomoos.20090222.cdf", statCdm, statDods, n, readData);
+    //doOne("testDataAll/fmrc/gomoos/gomoos.20090223.cdf", statCdm, statDods, n, readData);
+    //doOne("testDataAll/fmrc/gomoos/gomoos.20090222.cdf", statCdm, statDods, n, readData);
+    doOne("testDataAll/formats/grib/NAM_CONUS_40km_conduit_20090317_0000.grib2", statCdm, statDods, n, readData);
 
     System.out.printf("%n%s%n",statCdm);
     System.out.printf("%s%n", statDods);
