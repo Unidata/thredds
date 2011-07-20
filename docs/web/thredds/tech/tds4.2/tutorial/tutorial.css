@@ -45,6 +45,7 @@ h4.synopsis {
 
 
 
+
 #section {
     border: 3px solid #CFCFCF;
     padding: 0px 0px 0px 0px;
@@ -176,7 +177,7 @@ h4.synopsis {
 
 #section #subsection  ul.little {
     list-style-type: disc;
-    padding: 0px 0px 0px 0px;
+    padding: 10px 0px 0px 0px;
     margin: 0px 0px 0px 25px;  
 }
 
@@ -189,7 +190,7 @@ h4.synopsis {
 
 
 #section #subsection ol.little {
-    padding: 0px 0px 0px 0px;
+    padding: 10px 0px 0px 0px;
     margin: 0px 0px 0px 25px;  
 }
 
