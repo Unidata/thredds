@@ -59,7 +59,7 @@
 
 
    <div id="section">
-    <h2><a name="install">Tomcat Process User/Group and $TOMCAT_HOME Permissions</a> </h2>
+    <h2><a name="install">Tomcat Process User/Group and $CATALINA_HOME Permissions</a> </h2>
      <div id="subsection">
      <h3>Rationale</h3>
       <div id="note" class="info">
@@ -70,24 +70,24 @@
        <li>Because of OS constraints, all threads in the same JVM process must run under the same user id.  No thread may run as the <code>root</code> user unless they are all are run as the <code><small>root</small></code> user. Hence, any programs run in Tomcat (TDS, <code>manager</code> application, other JSPs and servlets) will run as the <code>root</code> user.</li>
        <li>If you choose to run the Tomcat process as the <code>root</code> user, and an attacker manages to exploit a weakness in Tomcat or something running in <code>webapps/</code> to run arbitrary commands,  <i>those commands will be run as the superuser</i>!</li>
        <li>We <i>strongly discourage</i> running Tomcat as the <code>root</code> user and recommend creating an unprivileged, dedicated user and group for running the Tomcat process.</li>
-       <li>We also recommend restricting the permissions of the Tomcat user/group within <code>$TOMCAT_HOME</code>.</li>
+       <li>We also recommend restricting the permissions of the Tomcat user/group within <code>$CATALINA_HOME</code>.</li>
       </ul>
      </div> <!-- end Rationale subsection -->
 
 
      <div id="subsection">
-      <h3>Creating a dedicated Tomcat user/group &amp; setting permissions in <code>$TOMCAT_HOME</code></h3>
+      <h3>Creating a dedicated Tomcat user/group &amp; setting permissions in <code>$CATALINA_HOME</code></h3>
       <ol>
        <li>Create a dedicated user and group for running Tomcat.</li>
-       <p>In this example, both the user and group names will be names <code><small>tomcat</small></code>, and the user's home directory, aka <code><small>$TOMCAT_HOME</small></code>,  is <code><small>/opt/tomcat</small></code> (notice the symlink below).  The groupadd and useradd commands were run as the root:</p>
+       <p>In this example, both the user and group names will be names <code><small>tomcat</small></code>, and the user's home directory, aka <code><small>$CATALINA_HOME</small></code>,  is <code><small>/opt/tomcat</small></code> (notice the symlink below).  The groupadd and useradd commands were run as the root:</p>
 <pre>
 <b>#</b> groupadd tomcat
 <b>#</b> useradd -g tomcat -d /opt/tomcat tomcat
 <b>#</b> passwd tomcat
 </pre>
 
-       <li>Tighten the permissions in <code><small>$TOMCAT_HOME</small></code></li>
-        <p>Change the user/group ownership <code><small>$TOMCAT_HOME</small></code> to the <code><small>tomcat</small></code> user and <code><small>tomcat</small></code> group: </p>
+       <li>Tighten the permissions in <code><small>$CATALINA_HOME</small></code></li>
+        <p>Change the user/group ownership <code><small>$CATALINA_HOME</small></code> to the <code><small>tomcat</small></code> user and <code><small>tomcat</small></code> group: </p>
 <pre>
 <b>#</b> cd /opt
 <b>#</b> chown -R tomcat:tomcat apache-tomcat-6.0.32
@@ -95,7 +95,7 @@
 drwxr-xr-x  9 <b>tomcat  tomcat</b>  4096 Jul 15 16:03 apache-tomcat-6.0.32
 lrwxrwxrwx  1 root    other     20 Jul 15 19:00 tomcat -> apache-tomcat-6.0.32
 </pre>
-        <p>Change the user/ownership of the <code><small>$TOMCAT_HOME/conf</small></code>directory to be owned by the <code><small>root</small></code> user, have a group of <code><small>tomcat</small></code> and have a permission of user/group read only:</p>
+        <p>Change the user/ownership of the <code><small>$CATALINA_HOME/conf</small></code>directory to be owned by the <code><small>root</small></code> user, have a group of <code><small>tomcat</small></code> and have a permission of user/group read only:</p>
 
 <pre>
 <b>#</b> cd /opt/tomcat
@@ -123,7 +123,7 @@ total 92
 -r--r----- 1 root    tomcat 51835 Feb  2 12:06 web.xml
 </pre>
 
-          <p>Change the user/ownership of the <code><small>$TOMCAT_HOME/bin</small></code> and <code><small>$TOMCAT_HOME/lib</small></code> directories to be owned by the <code><small>root</small></code> user and have a group of <code><small>tomcat</small></code>:</p>
+          <p>Change the user/ownership of the <code><small>$CATALINA_HOME/bin</small></code> and <code><small>$CATALINA_HOME/lib</small></code> directories to be owned by the <code><small>root</small></code> user and have a group of <code><small>tomcat</small></code>:</p>
 
 
 <pre>
@@ -164,14 +164,14 @@ drwxr-xr-x 2 tomcat  tomcat  4096 Feb  2 12:04 work
      <h3>Rationale</h3>
 
       <ul>
-       <li>It is generally good practice to remove any un-used web applications out of <code>$TOMCAT_HOME/webapps</code>.</li>
+       <li>It is generally good practice to remove any un-used web applications out of <code>$CATALINA_HOME/webapps</code>.</li>
        <li>Tomcat "ships" with several default web applications you may want to consider removing if they are not being utilized:</li>
        <ul class="little">
         <li>The <code><small>ROOT</small></code> application is Tomcat's <code><small>DocumentRoot</small></code> and contains the server's main web page.  Give thought to the content that is placed in <code><small>ROOT/</small></code>, as it will be readily available.  (Note: if you want to utilize a <code><small>robots.txt</small></code> file to restrict crawler activity, <code><small>ROOT/</small></code> is the place it will go.)</li>
         <li>The <code><small>manager</small></code> application is used for remote management of web applications. To use this application, you must add a user with role of <code><small>manager-gui</small></code> in <code><small>tomcat-users.xml</small></code>.  Obviously, if you are not planning to use the <code><small>manager</small></code> application, it should be removed.</li>
         <li>The <code><small>host-manager</small></code> application is used for management of virtual hosts. To use this application, you must add a user with role of <code><small>admin-gui</small></code> in <code><small>tomcat-users.xml</small></code>.  If you are not planning to do a lot of virtual hosting in Tomcat this application should be removed.</li>
         <li>The <code><small>examples</small></code> application should probably be removed from a production server to minimize security exposure.</li>
-        <li>The <code><small>docs</small></code> are a copy of the <a href="http://tomcat.apache.org/tomcat-6.0-doc/">Tomcat documentation found online</a>.  Unless you have need for a local copy, removing <code><small>docs</small></code>  would help to tidy-up <code><small>$TOMCAT_HOME/webapps</small></code>.</li>
+        <li>The <code><small>docs</small></code> are a copy of the <a href="http://tomcat.apache.org/tomcat-6.0-doc/">Tomcat documentation found online</a>.  Unless you have need for a local copy, removing <code><small>docs</small></code>  would help to tidy-up <code><small>$CATALINA_HOME/webapps</small></code>.</li>
         </ul>
        </ul>
      </div> <!-- end Rationale subsection -->
@@ -290,7 +290,7 @@ drwxr-xr-x 2 tomcat  tomcat  4096 Feb  2 12:04 work
    
 </pre>  
     <li><a name="makeDigest"></a>Create a SHA encrypted version of your password.</li>
-     <p>Tomcat provides a script (<code><small>$TOMCAT_HOME/bin/digest.sh</small></code>) that will encrypt a password string according to the algorithm specified.  Use this script as follows with the password you made for yourself previously:</p>
+     <p>Tomcat provides a script (<code><small>$CATALINA_HOME/bin/digest.sh</small></code>) that will encrypt a password string according to the algorithm specified.  Use this script as follows with the password you made for yourself previously:</p>
 
 <pre>
 <b>$</b> /home/tds/apache-tomcat-6.0.32/bin/digest.sh -a SHA secret
@@ -398,9 +398,9 @@ secret:e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4
     
        <li><a name="enableSSL"></a>Configure Tomcat to enable SSL and use the self-signed certificate.</li>
        <div id="expanded" class="question">
-        <p>Based on what we know about Tomcat configuration, which file in <code><small>$TOMCAT_HOME/conf</small></code> should we edit to to enable SSL?</p>
+        <p>Based on what we know about Tomcat configuration, which file in <code><small>$CATALINA_HOME/conf</small></code> should we edit to to enable SSL?</p>
        </div>
-        <p>Open <code><small>$TOMCAT_HOME/conf/server.xml</small></code> with your favorite editor:</p>
+        <p>Open <code><small>$CATALINA_HOME/conf/server.xml</small></code> with your favorite editor:</p>
 
 <pre>
 <b>$</b> vi server.xml
@@ -443,8 +443,8 @@ secret:e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4
 
         <p>Restart Tomcat:</p>
 <pre>
-<b>$</b> $TOMCAT_HOME/bin/shutdown.sh
-<b>$</b> $TOMCAT_HOME/bin/startup.sh
+<b>$</b> $CATALINA_HOME/bin/shutdown.sh
+<b>$</b> $CATALINA_HOME/bin/startup.sh
 </pre>
 
         <p>Verify Tomcat is listening on port 8443 by running the <code><small>netstat</small></code> command:</p>
@@ -482,7 +482,7 @@ tcp        0      0 127.0.0.1:<b>8443</b>               0.0.0.0:*               
         <li>Did you specify the full path to the <code><small>keystore</small></code> file in <code><small>server.xml</small></code>?</li>
        </ul>
       </div>
-        <li>Modify <code><small>$TOMCAT_HOME/conf/tomcat-users.xml</small></code> to add a new role with the rolename attribute of <code><small>tdsConfig</small></code>, and add this role to your list of roles:</li>
+        <li>Modify <code><small>$CATALINA_HOME/conf/tomcat-users.xml</small></code> to add a new role with the rolename attribute of <code><small>tdsConfig</small></code>, and add this role to your list of roles:</li>
 <pre>
 &lt;tomcat-users&gt;
     &lt;role rolename="manager-gui"/&gt;
@@ -504,7 +504,7 @@ tcp        0      0 127.0.0.1:<b>8443</b>               0.0.0.0:*               
        <p>How did Tomcat know to use SSL for the TDS remote management tool?</p>
       </div>
       <div id="expanded" class="question">
-       <p>Where, in any of the configuration changes you made to <code><small>$TOMCAT_HOME/conf/server.xml</small></code> or <code><small>$TOMCAT_HOME/conf/tomcat-users.xml</small></code>, did you explicitly specify that TDS remote management tool <i>must</i> be accessed via SSL?</p>       
+       <p>Where, in any of the configuration changes you made to <code><small>$CATALINA_HOME/conf/server.xml</small></code> or <code><small>$CATALINA_HOME/conf/tomcat-users.xml</small></code>, did you explicitly specify that TDS remote management tool <i>must</i> be accessed via SSL?</p>       
       </div>
      </div> <!-- end subsection -->
 
@@ -527,7 +527,7 @@ tcp        0      0 127.0.0.1:<b>8443</b>               0.0.0.0:*               
  
         <ol>
          <li>Have a look at the deployment descriptor that comes with the TDS.</li>
-          <p>Navigate to the unpacked <code><small>thredds</small></code> directory in <code><small>$TOMCAT_HOME/webapps</small></code>, and view the file: </p>
+          <p>Navigate to the unpacked <code><small>thredds</small></code> directory in <code><small>$CATALINA_HOME/webapps</small></code>, and view the file: </p>
 <pre>
 <b>$</b> cd /home/tds/tds/apache-tomcat-6.0.32/webapps/thredds
 <b>$</b> less WEB-INF/web.xml
@@ -591,7 +591,7 @@ tcp        0      0 127.0.0.1:<b>8443</b>               0.0.0.0:*               
 
         <p>Using your favorite editor, open the deployment descriptor for the Tomcat <code><small>manager</small></code> application:</p>
 <pre>
-<b>$</b> vi $TOMCAT_HOME/webapps/manager/WEB-INF/web.xml
+<b>$</b> vi $CATALINA_HOME/webapps/manager/WEB-INF/web.xml
 </pre>   
 
 
@@ -663,7 +663,7 @@ tcp        0      0 127.0.0.1:<b>8443</b>               0.0.0.0:*               
 
         <p>Using your favorite editor, open the deployment descriptor for the Tomcat <code><small>manager</small></code> application:</p>
 <pre>
-<b>$</b> vi $TOMCAT_HOME/webapps/manager/WEB-INF/web.xml
+<b>$</b> vi $CATALINA_HOME/webapps/manager/WEB-INF/web.xml
 </pre>   
 
 
@@ -860,7 +860,7 @@ tcp        0      0 127.0.0.1:<b>8443</b>               0.0.0.0:*               
 
         <p>Using your favorite editor, open the deployment descriptor for the Tomcat <code><small>manager</small></code> application:</p>
 <pre>
-<b>$</b> vi $TOMCAT_HOME/webapps/manager/WEB-INF/web.xml
+<b>$</b> vi $CATALINA_HOME/webapps/manager/WEB-INF/web.xml
 </pre>   
 
 
@@ -1025,7 +1025,7 @@ tcp        0      0 127.0.0.1:<b>8443</b>               0.0.0.0:*               
      <div id="subsection">
      <h3>Port Tinkering</h3>
       <ol>
-       <li>Shutdown Tomcat without using the <code><small>$TOMCAT_HOME/bin/shutdown.sh</small></code> script.</li>
+       <li>Shutdown Tomcat without using the <code><small>$CATALINA_HOME/bin/shutdown.sh</small></code> script.</li>
         <p>Make sure Tomcat is running and then type the following in your terminal window:</p>  
 <pre>
 <b>$</b> telnet localhost 8005
@@ -1057,7 +1057,9 @@ Escape character is '^]'.
       <h3>Resources</h3>
       <ul>
        <li><a href=http://www.linuxhomenetworking.com/wiki/index.php/Quick_HOWTO_:_Ch14_:_Linux_Firewalls_Using_iptables">Linux Firewalls Using  <code><small>iptables</small></code></a><br>      An article showing how to set up a firewall on a linux server.</li>
-      <li>Your local systems/network administrator.  </li>
+      <li>Your local systems/network administrator:<br> 
+<img src="../../images/super.png" alt="systems/network administrator"></li>
+        
       </ul>
 
      </div> <!-- end Resources subsection -->
@@ -1141,7 +1143,7 @@ Escape character is '^]'.
      <h3>Rationale</h3>
 
       <ul>
-       <li>"Free" web application that comes with Tomcat distribution that lives in the Tomcat Lives in the <code>$TOMCAT_HOME/webapps/manager</code> directory. </li>
+       <li>"Free" web application that comes with Tomcat distribution that lives in the Tomcat Lives in the <code>$CATALINA_HOME/webapps/manager</code> directory. </li>
        <li>Not enabled by default.</li>
        <li>Allows Tomcat administrators to deploy, undeploy, or reload web applications such as the TDS without having to shut down and restart Tomcat.</li>
        <li>If exploited, an attacker can use the <code><small>manager</small></code> application to install programs on your server willy-nilly.</li>
@@ -1164,23 +1166,95 @@ Escape character is '^]'.
 
    <div id="section">
     <h2><a name="proxy">Reverse Proxy</a> </h2>
+     <div id="subsection">
+     <h3>Rationale</h3>
+      <ul>
+       <li>A reverse proxy is a proxy server that appears to clients to be an ordinary server. Requests are forwarded to one or more origin servers which handle the request. The response is returned as if it came directly from the proxy server.</li>
+        <img src="../../images/tds_reverse_proxy.png" alt="Reverse Proxy For The TDS">
+       <li>Reverse proxies can be used to hide the existence and characteristics of the origin server(s) and can be an additional layer of defense and can protect against some OS and WebServer specific attacks. This additional security layer forces an attacker to attack the proxy because the firewall allows only the proxy to communicate with the back-end content servers.
+</li>
+        <li>However, it does not provide any protection to attacks against vulernabilities in the web application or proxy service itself (e.g., Apache, Tomcat).</li>
+        <li>If an attacker can use the front-end proxy server to launch an attack on the back-end servers if he/she manages to exploit the web application, proxy transaction or some other service running on the proxy server.
+</li>
+      </ul>
+     </div> <!-- end subsection -->
+
+     <div id="subsection">
+      <h3>Resources</h3>
+      <ul>
+       <li><a href="/projects/THREDDS/tech/tds4.2/reference/TomcatBehindProxyServer.html">Running The TDS Behind a Proxy Server</a><br>      How to set up a reverse proxy for the TDS using Tomcat and the Apache HTTP server.</li>
+      </ul>
+
+     </div> <!-- end Resources subsection -->
    </div> <!-- end Reverse Proxy section -->
 
    <div id="section">
-    <h2><a name="jvm">Java Security</a> </h2>
+    <h2><a name="jvm">Running Tomcat with a Security Manager</a> </h2>
+     <div id="subsection">
+     <h3>Rationale</h3>
+      <ul>
+       <li>The JVM Security Manager that comes with Tomcat imposes a fine-grained security restrictions to all Java applications running the JVM. </li>
+       <li>It confines the Java applications in a sandbox, and restricts them from utilizing certain features of the Java language Tomcat normally is able to access.</li>
+        <li>If you are hosting untrusted servlets or JSP on your server, then implementing the Security Manager may be a good idea. </li>
+        <li>Be aware the Security Manager may prevent trusted web applications (like the TDS) from performing certain functions if configured too restrictively.</li>
+      </ul>
+     </div> <!-- end subsection -->
+
+     <div id="subsection">
+      <h3>Resources</h3>
+      <ul>
+       <li><a href="http://tomcat.apache.org/tomcat-6.0-doc/security-manager-howto.html">Security Manager HOW-TO</a><br>      Information on the default settings of the Java Security Manager and instructions on how to make changes to these settings.</li>
+      </ul>
+
+     </div> <!-- end Resources subsection -->
    </div> <!-- end Java Security section -->
 
+  <div id="section">
+    <h2><a name="shutdown">Protecting the Tomcat <code>SHUTDOWN</code> Port</a> </h2>
+     <div id="subsection">
+     <h3><code>SHUTDOWN</code> on port 8005</h3>
+      <ul>
+       <li>Tomcat uses a the default port of 8005 as the designated shutdown port.  Shutdown scripts make a call to this port and issue the <code>SHUTDOWN</code> command.</li>
+       <li>If you are running a publicly accessible server make sure you prevent external access to the shutdown port by using a suitable firewall. </li>
+       <li>If need be, you can always change the shutdown command or even the port number in <code>$CATALINA_HOME/conf/server.xml</code>. </li>
+     </ul>
+     </div> <!-- end subsection -->
+
+   </div> <!-- end  section -->
+
+
    <div id="section">
-    <h2><a name="additional">Additional/Miscellaneous  Configuration</a> </h2>
-   </div> <!-- end Additional Configuration section -->
+    <h2><a name="versioninfo">Remove Tomcat Version String From HTTP Error Messages</a> </h2>
+     <div id="subsection">
+     <h3>Tomcat Version Information</h3>
+     <ul>
+       <li>By default, the Tomcat version number will be displayed on any HTTP error pages displayed by Tomcat.</li>
+       <li>Remove the Tomcat version string from HTTP error messages by repacking <code><small>$CATALINA_HOME/lib/catalina.jar</small></code> with an updated <code><small>ServerInfo.properties</small></code> file.</li>      
+     </ul>
+     <ol>
+      <li>Unpack <code><small>catalina.jar</small></code></li>
+<pre>
+<b>$</b> cd $CATALINA_HOME/server/lib
+<b>$</b> jar xf catalina.jar org/apache/catalina/util/ServerInfo.properties
+</pre>
+      <li>Update <code><small>ServerInfo.properties</small></code> by changing <code><small>server.info</small></code>  line to <code><small>server.info=Apache Tomcat</small></code>.  Repackage <code><small>catalina.jar</small></code></li>
+<pre>
+<b>$</b> jar uf catalina.jar org/apache/catalina/util/ServerInfo.properties
+</pre>
+
+       <li>Remove the  <code>$CATALINA_HOME/lib/org</code> directory created when extracting the <code><small>ServerInfo.properties</small></code>  file)</li>
+<pre>
+<b>$</b> rm -r org
+</pre>
+      </ol>     
+     </div> <!-- end subsection -->
+
+   </div> <!-- end  section -->
 
 
    <p><img src="../../images/thread.png" height="60" alt="THREDDS" valign="top" align="left" vspace="0" hspace="10" />  This document is maintained by Unidata.  Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.</p>
 
    
-<script language="JavaScript" type="text/JavaScript">
-    document.write(date_modified);
-</script> 
   </body>
  </html>   
 
