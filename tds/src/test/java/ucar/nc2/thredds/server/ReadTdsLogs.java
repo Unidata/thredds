@@ -38,6 +38,7 @@ import ucar.nc2.util.net.HTTPMethod;
 import ucar.nc2.util.net.HTTPSession;
 import ucar.nc2.util.IO;
 import ucar.nc2.util.URLnaming;
+import ucar.unidata.util.EscapeStrings;
 
 import java.io.BufferedReader;
 import java.io.*;
@@ -62,7 +63,7 @@ public class ReadTdsLogs {
 
   ///////////////////////////////////////////////////////
   // multithreading
-  final int nthreads = 5;
+  final int nthreads = 3;
 
   ExecutorService executor;
   ExecutorCompletionService<SendRequestTask> completionService;
@@ -133,7 +134,8 @@ public class ReadTdsLogs {
 
       HTTPMethod method = null;
       try {
-        method = httpClient.newMethodGet(server + URLnaming.escapeQuery(log.path));
+        String unescapedForm = EscapeStrings.unescapeURL(log.path); // make sure its unescaped
+        method = httpClient.newMethodGet(server + URLnaming.escapeQuery(unescapedForm));  // escape the query part
         //out2.format("send %s %n", method.getPath());
         statusCode = method.execute();
 

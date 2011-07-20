@@ -185,25 +185,8 @@
         -jmaurer
         -->
 
-        <variable name="shgt">
+        <variable name="salt">
           <attribute name="_FillValue" type="float" value="NaN" />
-        </variable>
-        <variable name="mper">
-          <attribute name="_FillValue" type="float" value="NaN" />
-          <attribute name="standard_name" value="sea_surface_wave_mean_period_from_variance_spectral_density_second_frequency_moment" />
-        </variable>
-        <variable name="mdir">
-          <attribute name="_FillValue" type="float" value="NaN" />
-          <attribute name="standard_name" value="sea_surface_wave_to_direction" />
-        </variable>
-        <variable name="pper">
-          <attribute name="_FillValue" type="float" value="NaN" />
-          <attribute name="standard_name" value="sea_surface_wave_period_at_variance_spectral_density_maximum" />
-        </variable>
-        <variable name="pdir">
-          <attribute name="_FillValue" type="float" value="NaN" />
-          <attribute name="long_name" value="peak wave direction" />
-          <attribute name="standard_name" value="sea_surface_wave_to_direction" />
         </variable>
       </netcdf>
     </protoDataset>

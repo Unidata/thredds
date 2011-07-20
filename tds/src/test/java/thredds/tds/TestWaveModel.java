@@ -53,26 +53,16 @@ public class TestWaveModel extends TestCase {
     assert dataResult.featureDataset != null;
 
     GridDataset gds = (GridDataset) dataResult.featureDataset;
-    GridDatatype grid = gds.findGridDatatype("mper");
+    GridDatatype grid = gds.findGridDatatype("salt");
     assert grid != null;
     Section haveShape = new Section(grid.getShape());
-    Section wantShape = new Section(new int[] {229, 1, 111, 151});
+    Section wantShape = new Section(new int[] {65,30, 194, 294});
     assert haveShape.equals(wantShape) : wantShape + " != " + haveShape;
 
     Attribute att = grid.findAttributeIgnoreCase("_FillValue");
     assert att != null;
     assert att.getDataType() == DataType.FLOAT;
     assert Float.isNaN((Float)att.getNumericValue());
-
-    att = grid.findAttributeIgnoreCase("standard_name");
-    assert att != null;
-    assert att.getDataType() == DataType.STRING;
-    assert att.getStringValue().equals("sea_surface_wave_mean_period_from_variance_spectral_density_second_frequency_moment") : att.getStringValue();
-
-    Attribute gatt = gds.findGlobalAttributeIgnoreCase("publisher_url");
-    assert gatt != null;
-    assert gatt.isString();
-    assert gatt.getStringValue().equals("http://hioos.org") : gatt.getStringValue();
 
     gds.close();
   }
@@ -81,16 +71,16 @@ public class TestWaveModel extends TestCase {
     String catalog = "/catalog/hioos/model/wav/swan/oahu/offset/catalog.xml";
     InvCatalogImpl cat = TestTdsLocal.open(catalog);
 
-    InvDataset ds = cat.findDatasetByID("swan_oahu/offset/SWAN_Oahu_Regional_Wave_Model_(500m)_Offset_22.0hr");
-    assert (ds != null) : "cant find dataset 'swan_oahu/offset/SWAN_Oahu_Regional_Wave_Model_(500m)_Offset_22.0hr'";
+    InvDataset ds = cat.findDatasetByID("swan_oahu/offset/SWAN_Oahu_Regional_Wave_Model_(500m)_Offset_21.0hr");
+    assert (ds != null) : "cant find dataset 'swan_oahu/offset/SWAN_Oahu_Regional_Wave_Model_(500m)_Offset_21.0hr'";
     assert ds.getDataType() == FeatureType.GRID;
 
     DateFormatter df = new DateFormatter();
     DateRange dr = ds.getTimeCoverage();
     assert dr != null;
-    assert dr.getStart().getDate().equals( df.getISODate("2010-12-12 22:00:00Z")) : df.toDateTimeStringISO(dr.getStart().getDate());
-    assert dr.getEnd().getDate().equals( df.getISODate("2010-12-14 22:00:00Z")) : df.toDateTimeStringISO(dr.getEnd().getDate());
-    assert dr.getDuration().equals(new TimeDuration("48 hours")) : dr.getDuration();
+    assert dr.getStart().getDate().equals( df.getISODate("2011-07-12T21:00:00Z")) : df.toDateTimeStringISO(dr.getStart().getDate());
+    assert dr.getEnd().getDate().equals( df.getISODate("2011-07-13T21:00:00Z")) : df.toDateTimeStringISO(dr.getEnd().getDate());
+    assert dr.getDuration().equals(new TimeDuration("24 hours")) : dr.getDuration();
 
     ThreddsDataFactory fac = new ThreddsDataFactory();
 
@@ -101,10 +91,10 @@ public class TestWaveModel extends TestCase {
     assert dataResult.featureDataset != null;
 
     GridDataset gds = (GridDataset) dataResult.featureDataset;
-    GridDatatype grid = gds.findGridDatatype("mper");
+    GridDatatype grid = gds.findGridDatatype("salt");
     assert grid != null;
     Section haveShape = new Section(grid.getShape());
-    Section wantShape = new Section(new int[] {3, 1, 111, 151});
+    Section wantShape = new Section(new int[] {2, 30, 194, 294});
     assert haveShape.equals(wantShape) : wantShape + " != " + haveShape;
 
     GridCoordSystem gcs = grid.getCoordinateSystem();
@@ -112,15 +102,15 @@ public class TestWaveModel extends TestCase {
 
     CoordinateAxis1D time = gcs.getTimeAxis1D();
     assert time != null;
-    assert time.getSize() == 3;
-    double[] want = new double[] {22.0, 46.0, 70.0};
+    assert time.getSize() == 2;
+    double[] want = new double[] {21, 45};
     CompareNetcdf2 cn = new CompareNetcdf2();
     assert cn.compareData("time", time.read(), Array.factory(want), false);
 
     CoordinateAxis1D runtime = gcs.getRunTimeAxis();
     assert runtime != null;
-    assert runtime.getSize() == 3;
-    want = new double[] {21.0, 45.0, 69.0};
+    assert runtime.getSize() == 2;
+    want = new double[] {0, 24};
     cn = new CompareNetcdf2();
     assert cn.compareData("runtime", runtime.read(), Array.factory(want), false);
 

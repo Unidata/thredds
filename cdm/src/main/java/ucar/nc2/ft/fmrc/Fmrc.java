@@ -242,7 +242,7 @@ public class Fmrc {
         if (forceProtoLocal) this.lastProtoChanged = this.lastInvChanged;
 
       } catch (Throwable t) {
-        logger.error(config.spec+": makeFmrcInv failed");
+        logger.error(config.spec+": makeFmrcInv failed", t);
         //throw new RuntimeException(t);
       }
     }

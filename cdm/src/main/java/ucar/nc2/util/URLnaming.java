@@ -320,11 +320,13 @@ public class URLnaming {
   }
 
   public static void main(String args[]) throws URISyntaxException {
-    checkEsc("/thredds/dodsC/fmrc/FNMOC/COAMPS/Europe/FNMOC-COAMPS-Europe_best.ncd.dods?relative_vorticity.relative_vorticity[0:0][0:0][0:185][0:300]");
-    checkEsc("path?quesry1,query2");
+   // checkEsc("/thredds/dodsC/fmrc/FNMOC/COAMPS/Europe/FNMOC-COAMPS-Europe_best.ncd.dods?relative_vorticity.relative_vorticity[0:0][0:0][0:185][0:300]");
+    //checkEsc("path?quesry1,query2");
 
-    checkUnEsc("?stn%3DKBUF%26time_start%3D2011-07-07T05%3A22%3A39%26time_end%3D2011-07-08T14%3A42%3A39");
-    checkUnEsc("/thredds/dodsC/fmrc/FNMOC/COAMPS/Europe/FNMOC-COAMPS-Europe_best.ncd.dods?relative_vorticity.relative_vorticity%5b0:0%5d%5b0:0%5d%5b0:185%5d%5b0:300%5d");
+    //checkUnEsc("?stn%3DKBUF%26time_start%3D2011-07-07T05%3A22%3A39%26time_end%3D2011-07-08T14%3A42%3A39");
+    checkUnEsc("http://motherlode.ucar.edu:8081/thredds/dodsC/fmrc/NCEP/GFS/Global_0p5deg/runs/NCEP-GFS-Global_0p5deg_RUN_2011-07-15T00:00:00Z.html.dods?Total_cloud_cover_low_cloud%5B1:1:1%5D%5B0:1:360%5D%5B0:1:719%5D");
+    checkEsc("http://motherlode.ucar.edu:8081/thredds/dodsC/fmrc/NCEP/GFS/Global_0p5deg/runs/NCEP-GFS-Global_0p5deg_RUN_2011-07-15T00:00:00Z.html.dods?Total_cloud_cover_low_cloud[1:1:1][0:1:360][0:1:719]");
+    checkEsc("http://motherlode.ucar.edu:8081/thredds/dodsC/fmrc/NCEP/GFS/Global_0p5deg/runs/NCEP-GFS-Global_0p5deg_RUN_2011-07-15T00:00:00Z.html.dods?Total_cloud_cover_low_cloud%5B1:1:1%5D%5B0:1:360%5D%5B0:1:719%5D");
   }
 
 

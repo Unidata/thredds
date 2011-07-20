@@ -1588,26 +1588,26 @@
     </library>
     <library name="tomcat 6.0.26">
       <CLASSES>
-        <root url="jar://$USER_HOME_GRIFFON$Program Files/Apache Software Foundation/apache-tomcat-6.0.26/lib/servlet-api.jar!/" />
-        <root url="jar://$USER_HOME_GRIFFON$Program Files/Apache Software Foundation/apache-tomcat-6.0.26/lib/catalina-ha.jar!/" />
-        <root url="jar://$USER_HOME_GRIFFON$Program Files/Apache Software Foundation/apache-tomcat-6.0.26/lib/jasper-el.jar!/" />
-        <root url="jar://$USER_HOME_GRIFFON$Program Files/Apache Software Foundation/apache-tomcat-6.0.26/lib/el-api.jar!/" />
-        <root url="jar://$USER_HOME_GRIFFON$Program Files/Apache Software Foundation/apache-tomcat-6.0.26/lib/tomcat-dbcp.jar!/" />
-        <root url="jar://$USER_HOME_GRIFFON$Program Files/Apache Software Foundation/apache-tomcat-6.0.26/lib/jsp-api.jar!/" />
-        <root url="jar://$USER_HOME_GRIFFON$Program Files/Apache Software Foundation/apache-tomcat-6.0.26/lib/catalina.jar!/" />
-        <root url="jar://$USER_HOME_GRIFFON$Program Files/Apache Software Foundation/apache-tomcat-6.0.26/lib/tomcat-i18n-fr.jar!/" />
-        <root url="jar://$USER_HOME_GRIFFON$Program Files/Apache Software Foundation/apache-tomcat-6.0.26/lib/jasper.jar!/" />
-        <root url="jar://$USER_HOME_GRIFFON$Program Files/Apache Software Foundation/apache-tomcat-6.0.26/lib/tomcat-i18n-es.jar!/" />
-        <root url="jar://$USER_HOME_GRIFFON$Program Files/Apache Software Foundation/apache-tomcat-6.0.26/lib/annotations-api.jar!/" />
-        <root url="jar://$USER_HOME_GRIFFON$Program Files/Apache Software Foundation/apache-tomcat-6.0.26/lib/tomcat-i18n-ja.jar!/" />
-        <root url="jar://$USER_HOME_GRIFFON$Program Files/Apache Software Foundation/apache-tomcat-6.0.26/lib/jasper-jdt.jar!/" />
-        <root url="jar://$USER_HOME_GRIFFON$Program Files/Apache Software Foundation/apache-tomcat-6.0.26/lib/catalina-tribes.jar!/" />
-        <root url="jar://$USER_HOME_GRIFFON$Program Files/Apache Software Foundation/apache-tomcat-6.0.26/lib/tomcat-coyote.jar!/" />
-        <root url="jar://$USER_HOME_GRIFFON$Program Files/Apache Software Foundation/apache-tomcat-6.0.26/lib/catalina-ant.jar!/" />
+        <root url="jar://$USER_HOME$/.griffonProgram Files/Apache Software Foundation/apache-tomcat-6.0.26/lib/servlet-api.jar!/" />
+        <root url="jar://$USER_HOME$/.griffonProgram Files/Apache Software Foundation/apache-tomcat-6.0.26/lib/catalina-ha.jar!/" />
+        <root url="jar://$USER_HOME$/.griffonProgram Files/Apache Software Foundation/apache-tomcat-6.0.26/lib/jasper-el.jar!/" />
+        <root url="jar://$USER_HOME$/.griffonProgram Files/Apache Software Foundation/apache-tomcat-6.0.26/lib/el-api.jar!/" />
+        <root url="jar://$USER_HOME$/.griffonProgram Files/Apache Software Foundation/apache-tomcat-6.0.26/lib/tomcat-dbcp.jar!/" />
+        <root url="jar://$USER_HOME$/.griffonProgram Files/Apache Software Foundation/apache-tomcat-6.0.26/lib/jsp-api.jar!/" />
+        <root url="jar://$USER_HOME$/.griffonProgram Files/Apache Software Foundation/apache-tomcat-6.0.26/lib/catalina.jar!/" />
+        <root url="jar://$USER_HOME$/.griffonProgram Files/Apache Software Foundation/apache-tomcat-6.0.26/lib/tomcat-i18n-fr.jar!/" />
+        <root url="jar://$USER_HOME$/.griffonProgram Files/Apache Software Foundation/apache-tomcat-6.0.26/lib/jasper.jar!/" />
+        <root url="jar://$USER_HOME$/.griffonProgram Files/Apache Software Foundation/apache-tomcat-6.0.26/lib/tomcat-i18n-es.jar!/" />
+        <root url="jar://$USER_HOME$/.griffonProgram Files/Apache Software Foundation/apache-tomcat-6.0.26/lib/annotations-api.jar!/" />
+        <root url="jar://$USER_HOME$/.griffonProgram Files/Apache Software Foundation/apache-tomcat-6.0.26/lib/tomcat-i18n-ja.jar!/" />
+        <root url="jar://$USER_HOME$/.griffonProgram Files/Apache Software Foundation/apache-tomcat-6.0.26/lib/jasper-jdt.jar!/" />
+        <root url="jar://$USER_HOME$/.griffonProgram Files/Apache Software Foundation/apache-tomcat-6.0.26/lib/catalina-tribes.jar!/" />
+        <root url="jar://$USER_HOME$/.griffonProgram Files/Apache Software Foundation/apache-tomcat-6.0.26/lib/tomcat-coyote.jar!/" />
+        <root url="jar://$USER_HOME$/.griffonProgram Files/Apache Software Foundation/apache-tomcat-6.0.26/lib/catalina-ant.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES>
-        <root url="file://$USER_HOME_GRIFFON$Program Files/Apache Software Foundation/apache-tomcat-6.0.26/src/java" />
+        <root url="file://$USER_HOME$/.griffonProgram Files/Apache Software Foundation/apache-tomcat-6.0.26/src/java" />
       </SOURCES>
     </library>
   </component>
