@@ -35,13 +35,11 @@ package ucar.nc2.dt;
 import ucar.ma2.*;
 import ucar.nc2.Dimension;
 import ucar.nc2.Attribute;
-import ucar.nc2.dataset.VariableEnhanced;
 import ucar.nc2.dataset.VariableDS;
 import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.geoloc.LatLonRect;
 
 import java.util.List;
-import java.io.IOException;
 
 /**
  * Interface for scientific datatype Grid.
@@ -53,16 +51,15 @@ public interface GridDatatype extends Comparable<GridDatatype> {
   /**
    * Get the full, unescaped name of the Grid
    *
-   * @return the name of the Grid
+   * @return the full, unescaped name of the Grid
    */
   public String getFullName();
 
   /**
-   * Get the escaped name of the Grid
-   *
-   * @return the escaped name of the Grid
-   *
-  public String getFullNameEscaped();  */
+   * Alias for getFullName().
+   * @return the full, unescaped name
+   */
+  public String getName();
 
   /**
    * Get the description/long_name of the Grid
