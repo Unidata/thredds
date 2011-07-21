@@ -144,8 +144,8 @@ drwxr-xr-x 9 tds Unidata 4096 Jul 11 17:47 apache-tomcat-6.0.32
      <div id="subsection">
       <h3>Exploring the Tomcat directory structure</h3>
       <ol>
-       <li>Examine the Tomcat directory structure.</li>
-        <p>Move into the new Tomcat directory and do a long listing:</p>
+       <li>Examine the Tomcat directory structure, aka <code>$CATALINA_HOME</code> (also can be called <code>$TOMCAT_HOME</code>). </li>
+        <p>Move into <code><small>$CATALINA_HOME</small></code> and do a long listing:</p>
 <pre>
 <b>$</b> cd apache-tomcat-6.0.32
 <b>$</b> ls -l 
@@ -187,7 +187,6 @@ drwxr-xr-x 2 tds Unidata  4096 Feb  2 12:04 work
         <p><code>logs/</code></p>
 
          <ul class="little">
-          <img src="../../images/log.png" width="150"  alt="Log!">
           <li><i>Tomcat log files</i> are here by default.</li>
           <li>This is one of the directories you will be looking for log files (the TDS logs elsewhere by default).</li>
           <li><i>The log files should be your first stop for troubleshooting Tomcat and TDS issues.</i> (Hint, hint.)</li>
@@ -268,7 +267,7 @@ tds      27049     1  2 17:50 pts/1    00:00:02 /usr/bin/java -Djava.util.loggin
 
        <p>We are going to create a file called <code><small>setenv.sh</small></code> in the Tomcat <code><small>bin/</small></code> directory to:</p>
       <ul class="little">
-       <li>allow Tomcat to reference/find the location of <code><small>$JAVA_HOME</small></code>  and <code><small>$CATALINA_HOME</small></code>   (aka <code><small>$TOMCAT_HOME</small></code>) during startup and shutdown; and </li>
+       <li>allow Tomcat to reference/find the location of <code><small>$JAVA_HOME</small></code>  and <code><small>$CATALINA_HOME</small></code>) during startup and shutdown; and </li>
        <li>increase the amount of memory allocated to the JVM to enhance performance by setting <code><small>$JAVA_OPTS</small>.</code> 
       </ul>
 
@@ -428,7 +427,7 @@ drwxr-xr-x  5 tds Unidata     4096 Jul 11 17:47 examples
 drwxr-xr-x  5 tds Unidata     4096 Jul 11 17:47 host-manager
 drwxr-xr-x  5 tds Unidata     4096 Jul 11 17:47 manager
 drwxr-xr-x  3 tds Unidata     4096 Jul 11 17:47 ROOT
--rw-r--r--  1 tds Unidata 25180982 Jul 11 18:02 thredds.war
+-rw-r--r--  1 tds Unidata 25238961 Jul 11 18:02 thredds.war
 </pre>
 
        <li>Confirm the TDS has been deployed.</li>
@@ -443,7 +442,7 @@ drwxr-xr-x  5 tds Unidata     4096 Jul 11 17:47 host-manager
 drwxr-xr-x  5 tds Unidata     4096 Jul 11 17:47 manager
 drwxr-xr-x  3 tds Unidata     4096 Jul 11 17:47 ROOT
 drwxr-xr-x  6 tds Unidata     4096 Jul 11 18:02 thredds
--rw-r--r--  1 tds Unidata 25180982 Jul 11 18:02 thredds.war
+-rw-r--r--  1 tds Unidata 25238961 Jul 11 18:02 thredds.war
 </pre>
 
 </pre>
