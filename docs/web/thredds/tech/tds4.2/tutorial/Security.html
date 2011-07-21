@@ -95,7 +95,7 @@
 drwxr-xr-x  9 <b>tomcat  tomcat</b>  4096 Jul 15 16:03 apache-tomcat-6.0.32
 lrwxrwxrwx  1 root    other     20 Jul 15 19:00 tomcat -> apache-tomcat-6.0.32
 </pre>
-        <p>Change the user/ownership of the <code><small>$CATALINA_HOME/conf</small></code>directory to be owned by the <code><small>root</small></code> user, have a group of <code><small>tomcat</small></code> and have a permission of user/group read only:</p>
+        <p>Change the user/ownership of the <code><small>$CATALINA_HOME/conf</small></code> directory to be owned by the <code><small>root</small></code> user, have a group of <code><small>tomcat</small></code> and have a permission of user/group read only:</p>
 
 <pre>
 <b>#</b> cd /opt/tomcat
@@ -384,7 +384,7 @@ secret:e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4
       <ul>
        <li>A <code>keystore</code> file stores the details of the SSL certificate necessary to make the protocol secured. </li>
        <li>The Tomcat documentation includes a section on <a href="http://tomcat.apache.org/tomcat-6.0-doc/ssl-howto.html#Prepare_the_Certificate_Keystore">importing your certificate into a keystore</a> file.</li>
-       <li>Tomcat uses the <code>keystore</code> file for SSL transations.</li>
+       <li>Tomcat uses the <code>keystore</code> file for SSL transactions.</li>
       <ul>
      </div> <!-- end subsection -->
 
@@ -468,7 +468,7 @@ secret:e5e9fa1ba31ecd1ae84f75caaa474f3a663f05f4
 
          <p>Look for the following in the output:</p>
 <pre>
-tcp        0      0 127.0.0.1:<b>8443</b>               0.0.0.0:*                   LISTEN
+tcp        0      0 0.0.0.0:<b>8443</b>               0.0.0.0:*                   LISTEN
 </pre>
 
 
@@ -994,7 +994,7 @@ tcp        0      0 127.0.0.1:<b>8443</b>               0.0.0.0:*               
       <ul>
        <li><a href="http://tomcat.apache.org/tomcat-6.0-doc/ssl-howto.html">SSL Configuration HOW-TO</a><br>      The Apache Tomcat document detailing how to enable SSL.</li>
        <li><a href="http://tomcat.apache.org/migration.html#Manager_application">Tomcat Migration Guide</a><br>      A document detailing the various changes between Tomcat versions.</li>
-       <li><a href="http://www.sslshopper.com/article-when-are-self-signed-certificates-acceptable.html">When are self-signed certificates acceptable?</a><br>      A compelling arguement as to why self-signed certificates should not be used in a production environment.</li>
+       <li><a href="http://www.sslshopper.com/article-when-are-self-signed-certificates-acceptable.html">When are self-signed certificates acceptable?</a><br>      A compelling argument as to why self-signed certificates should not be used in a production environment.</li>
       </ul>
 
 
@@ -1148,7 +1148,7 @@ Escape character is '^]'.
        <li>Allows Tomcat administrators to deploy, undeploy, or reload web applications such as the TDS without having to shut down and restart Tomcat.</li>
        <li>If exploited, an attacker can use the <code><small>manager</small></code> application to install programs on your server willy-nilly.</li>
        <li>If you choose to enable the <code><small>manager</small></code> application, we <i>highly recommend</i> enabling digested passwords and SSL encryption for the <code><small>manager</small></code>.</li>
-       <li>Restricting access to the  <code><small>manager</small></code> application to a small subset of IP addessess or host names using a Tomcat valve, etc., is also a good idea.</li>
+       <li>Restricting access to the  <code><small>manager</small></code> application to a small subset of IP addressess or host names using a Tomcat valve, etc., is also a good idea.</li>
        <li>Uninstall this application if you don't plan to use it.</li>
       </ul>
      </div> <!-- end Rationale subsection -->
@@ -1171,9 +1171,9 @@ Escape character is '^]'.
       <ul>
        <li>A reverse proxy is a proxy server that appears to clients to be an ordinary server. Requests are forwarded to one or more origin servers which handle the request. The response is returned as if it came directly from the proxy server.</li>
         <img src="../../images/tds_reverse_proxy.png" alt="Reverse Proxy For The TDS">
-       <li>Reverse proxies can be used to hide the existence and characteristics of the origin server(s) and can be an additional layer of defense and can protect against some OS and WebServer specific attacks. This additional security layer forces an attacker to attack the proxy because the firewall allows only the proxy to communicate with the back-end content servers.
+       <li>Reverse proxies can be used to hide the existence and characteristics of the origin server(s) and can be an additional layer of defense and can protect against some OS and web server specific attacks. This additional security layer forces an attacker to attack the proxy because the firewall allows only the proxy to communicate with the back-end content servers.
 </li>
-        <li>However, it does not provide any protection to attacks against vulernabilities in the web application or proxy service itself (e.g., Apache, Tomcat).</li>
+        <li>However, it does not provide any protection to attacks against vulnerabilities in the web application or proxy service itself (e.g., Apache, Tomcat).</li>
         <li>If an attacker can use the front-end proxy server to launch an attack on the back-end servers if he/she manages to exploit the web application, proxy transaction or some other service running on the proxy server.
 </li>
       </ul>
