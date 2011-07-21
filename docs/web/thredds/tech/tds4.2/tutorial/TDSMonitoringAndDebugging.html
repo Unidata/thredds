@@ -13,10 +13,11 @@
     <h2><a name="access">Tomcat Access Logs</a></h2>
      <div id="subsection">
       <h3>The Tomcat access log</h3>
+       <img src="../../images/log.png" alt="Log!" style="float: right">
        <ul>
         <li>The access log records <i><b>all</b></i> requests processed by the server.</li>
-        <li>Not enabled in Tomcat by default - must be enabled in <code>$TOMCAT_HOME/conf/server.xml</code>.</li>
-        <li>Information it contains is different from other logs in <code>$TOMCAT_HOME/logs</code>.</li>
+        <li>Not enabled in Tomcat by default - must be enabled in <code>$CATALINA_HOME/conf/server.xml</code>.</li>
+        <li>Information it contains is different from other logs in <code>$CATALINA_HOME/logs</code>.</li>
         <li>Used for monitoring who is using your server and as a way of obtaining "feedback" about the activity and performance of the server.</li>
       </ul>
 
@@ -26,7 +27,7 @@
       <h3>Configuring Tomcat to enable access logging</h3>
        <ol>
         <li>Modify <code>server.xml</code> to enable the <code>AccessLogValve</code>.</li>
-         <p>Using your favorite editor open <code><small>$TOMCAT_HOME/conf/server.xml</small></code>:</li>
+         <p>Using your favorite editor open <code><small>$CATALINA_HOME/conf/server.xml</small></code>:</li>
 <pre>
 <b>$</b> vi server.xml
 </pre>  
@@ -74,16 +75,16 @@ pattern="%h %l %u %t &amp;quot;%r&amp;quot; %s %b &amp;quot;%{Referer}i&amp;quot
 </pre> 
 
         <li>Verify the access log has been enabled.</li>
-         <p>Restart Tomcat and verify an access log has been generated in the <code><small>$TOMCAT_HOME/logs/</small></code> directory:</li>
+         <p>Restart Tomcat and verify an access log has been generated in the <code><small>$CATALINA_HOME/logs/</small></code> directory:</li>
 <pre>
-<b>$</b> ls -l /home/thredds/apache-tomcat-6.0.29/logs
+<b>$</b> ls -l /home/tds/tds/apache-tomcat-6.0.32/logs
 total 52
--rw-r--r-- 1 thredds workshop 20034 Nov  7 16:38 catalina.2010-11-07.log
--rw-r--r-- 1 thredds workshop 20551 Nov  7 16:38 catalina.out
--rw-r--r-- 1 thredds workshop     0 Nov  7 16:31 host-manager.2010-11-07.log
--rw-r--r-- 1 thredds workshop  4537 Nov  7 16:38 localhost.2010-11-07.log
--rw-r--r-- 1 thredds workshop     0 Nov  7 16:38 access.2010-11-07.log
--rw-r--r-- 1 thredds workshop     0 Nov  7 16:31 manager.2010-11-07.log
+-rw-r--r-- 1 tds   Unidata  20034 Jul 19 16:38 catalina.2011-07-19.log
+-rw-r--r-- 1 tds   Unidata  20551 Jul 19 16:38 catalina.out
+-rw-r--r-- 1 tds   Unidata      0 Jul 19 16:31 host-manager.2011-07-19.log
+-rw-r--r-- 1 tds   Unidata   4537 Jul 19 16:38 localhost.2011-07-19.log
+-rw-r--r-- 1 tds   Unidata      0 Jul 19 16:38 access.2011-07-19.log
+-rw-r--r-- 1 tds   Unidata      0 Jul 19 16:31 manager.2011-07-19.log
 </pre>  
       </ol>
      </div> <!-- end  subsection -->
@@ -132,7 +133,7 @@ pattern="%h %l %u %t &amp;quot;%r&amp;quot; %s %b &amp;quot;%{Referer}i&amp;quot
          </ul>
   <p>The above pattern translates into:</p>
 <pre>
-127.0.0.1 - admin [07/Nov/2010:16:44:31 -0700] "GET /manager/html/ HTTP/1.1" 200 13740 "http://localhost:8080/" "Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.2.7) Gecko/20100723 Fedora/3.6.7-1.fc13 Firefox/3.6.7" 25
+127.0.0.1 - admin [19/Jul/2011:16:44:31 -0700] "GET /manager/html/ HTTP/1.1" 200 13740 "http://localhost:8080/" "Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.9.2.7) Gecko/20100723 Fedora/3.6.7-1.fc13 Firefox/3.6.7" 25
 </pre>
 
 
@@ -168,7 +169,7 @@ pattern="%h %l %u %t &amp;quot;%r&amp;quot; %s %b &amp;quot;%{Referer}i&amp;quot
        Time and date of request
     </td>
      <td>
-       <code><small>[07/Nov/2010:16:44:31 -0700]</small></code>
+       <code><small>[19/Jul/2011:16:44:31 -0700]</small></code>
      </td>
     </tr>
     <tr>
@@ -250,21 +251,21 @@ pattern="%h %l %u %t &amp;quot;%r&amp;quot; %s %b &amp;quot;%{Referer}i&amp;quot
        <p>Storing the information in the access log is only the start of log management. The next step is to analyze this information to produce useful statistics.</p>
        <ol>
         <li>Looking at raw access log data.</li>
-         <p>Locate the <code><small>access.2010.10.25.log</small></code> file in your home directory which contains an access log file taken from one of our production servers.</p>
+         <p>Locate the <code><small>access.2011-07-17.log</small></code> file in your home directory which contains an access log file taken from one of our production servers.</p>
 <pre>
 <b>$</b> cd
 <b>$</b> ls -l access* 
--rw-r--r-- 1 thredds workshop 993235 Nov  8 15:25 access.2010-10-25.log
+-rw-r--r-- 1 tds   Unidata 344507 Jul 19 15:25 access.2011-07-17.log
 </pre>  
          <p>Have a look at the log file and try to examine the data stored there.  (Kind of hard to sort through it all, isn't it)?</p>
 <pre>
-<b>$</b> less access.2010-10-25.log
+<b>$</b> less access.2011-07-17.log
 </pre>  
         <li>Analyzing data subsets with  <code>awk</code> and <code>dig</code>.</li>
          <p>Sometimes we don't need to see the "whole picture" and just need some quick statistics.  E.g., we need to find the host that has made the most requests to the server.</p>
          <p>Run the following command:</p>
 <pre>
-<b>$</b> cat access.2010-10-25.log | awk '{print $1}' | sort | uniq -c | sort -n
+<b>$</b> cat access.2011-07-17.log | awk '{print $1}' | sort | uniq -c | sort -n
 </pre>  
           <p>The output of the access log file is piped into <code><small>awk</small></code>, which prints the first "field variable" <code><small>$1</small></code>.  The result is sorted, identical lines are counted, and finally sorted again in descending order.</p>
 
@@ -293,7 +294,7 @@ cise63.cise-nsf.gov.
 
         <p>You can use the <code><small>awk</small></code> command sequence to find out if any authenticated users were responsible for making these requests.</p>
 <pre>
-<b>$</b> cat access.2010-10-25.log | awk '{print $3}' | sort | uniq -c | sort -n
+<b>$</b> cat access.2011-07-17.log | awk '{print $3}' | sort | uniq -c | sort -n
 </pre>    
       </ol>
      </div> <!-- end  subsection -->
@@ -302,18 +303,18 @@ cise63.cise-nsf.gov.
       <h3>Exercise Two: Using parsed access log data.</h3>       
        <ol>
         <li>Parse log data.</li>
-         <p>Run <code>parse_logs.pl</code> file in the thredds home directory to parse the <code><small>access.2010.10.25.log</small></code> file:</p> 
+         <p>Run <code>parse_logs.pl</code> file in the thredds home directory to parse the <code><small>access.2011-07-17.log</small></code> file:</p> 
 <pre>
 <b>$</b> cd
 <b>$</b> ./parse_logs.pl
 </pre> 
-         <p>The resulting file <code><small>parsed_access_log.txt</small></code> will contain the log data in <i>tab-delimited format</i>:</p>
+         <p>The resulting file <code><small>parsed_access_log.csv</small></code> will contain the log data in <i>tab-delimited format</i>:</p>
 <pre>
 <b>$</b> ls -l *.txt 
--rw-r--r-- 1 thredds workshop 966112 Nov  8 16:35 parsed_access_log.txt
+-rw-r--r-- 1 tds   Unidata 332843 Jul 19 16:35 parsed_access_log.csv
 </pre>  
        <li>Examine the log data.</li>
-        <p>Open the <code><small>parsed_access_log.txt</small></code> file in the OpenOffice spreadsheet utility.</p> 
+        <p>Open the <code><small>parsed_access_log.csv</small></code> file in the OpenOffice spreadsheet utility.</p> 
 
         <div id="expanded" class="question">
          <p>What Requested URL took the most time to process?</p>
@@ -360,7 +361,7 @@ cise63.cise-nsf.gov.
      <h2><a name="tds">Log Files Generated by the TDS</a></h2>
 
      <div id="subsection">
-      <h3>Introducing the TDS logging directory: <code>$TOMCAT_HOME/content/thredds/logs</code></h3>    
+      <h3>Introducing the TDS logging directory: <code>$CATALINA_HOME/content/thredds/logs</code></h3>    
 
 
 
@@ -368,13 +369,13 @@ cise63.cise-nsf.gov.
        <h4>Keep in Mind</h4>
        <p>There are <b>two</b> locations of log files you will reference:</p>
        <ol class="little">
-        <li><code><small>$TOMCAT_HOME/logs/</small></code> is where you go to look at <i>Tomcat-generated</i> log files; and</li>
+        <li><code><small>$CATALINA_HOME/logs/</small></code> is where you go to look at <i>Tomcat-generated</i> log files; and</li>
         <li>the TDS logging directory which is where you go to look at <i>TDS-generated</i> log files.</li>
        </ol>
       </div>
 
 
-      <p>The log files generated by the TDS are located in the <code><small>$TOMCAT_HOME/content/thredds/logs</small></code> directory: </p>
+      <p>The log files generated by the TDS are located in the <code><small>$CATALINA_HOME/content/thredds/logs</small></code> directory: </p>
 
    <table>
     <tr>
@@ -441,9 +442,9 @@ cise63.cise-nsf.gov.
        
        <ol>
         <li>Look at the logging configurations for <code><small>threddsServlet.log</small></code>.</li>
-         <p>Navigate to the unpacked <code><small>thredds</small></code> directory in <code><small>$TOMCAT_HOME/webapps</small></code>, and view the <code><small>WEB-INF/log4j.xml</small></code>: </p>
+         <p>Navigate to the unpacked <code><small>thredds</small></code> directory in <code><small>$CATALINA_HOME/webapps</small></code>, and view the <code><small>WEB-INF/log4j.xml</small></code>: </p>
 <pre>
-<b>$</b> cd /home/thredds/apache-tomcat-6.0.29/webapps/thredds
+<b>$</b> cd /home/tds/tds/apache-tomcat-6.0.32/webapps/thredds
 <b>$</b> less WEB-INF/log4j.xml
 </pre>
          <p>The TDS uses the OpenSource Apache <code><small>Log4J</small></code> library (hence, the name of the file: <code><small>WEB-INF/log4j.xml</small></code>). </p>
@@ -485,7 +486,7 @@ value="%d{yyyy-MM-dd'T'HH:mm:ss.SSS Z} [%10r][%8X{ID}] %-5p - %c - %m%n"
 
   <p>The above pattern translates into:</p>
 <pre>
-2010-11-08T16:03:29.055 -0700 [     30146][      13] INFO  - thredds.server.catalogservice.LocalCatalogServiceController - handleRequestInternal(): Remote host: 127.0.0.1 - Request: "GET /thredds/catalog/fmrc/NCEP/GFS/Puerto_Rico_191km/catalog.html HTTP/1.1"
+2011-07-19T16:03:29.055 -0700 [     30146][      13] INFO  - thredds.server.catalogservice.LocalCatalogServiceController - handleRequestInternal(): Remote host: 127.0.0.1 - Request: "GET /thredds/catalog/fmrc/NCEP/GFS/Puerto_Rico_191km/catalog.html HTTP/1.1"
 </pre>
 
 
@@ -497,7 +498,7 @@ value="%d{yyyy-MM-dd'T'HH:mm:ss.SSS Z} [%10r][%8X{ID}] %-5p - %c - %m%n"
        Time and date 
      </td>
      <td>
-       <code><small>2010-11-08T16:03:29.055 -0700</small></code>
+       <code><small>2011-07-19T16:03:29.055 -0700</small></code>
     </td>
     </tr>
     <tr>
@@ -610,16 +611,16 @@ connection or a request is forwarded to another TDS internal service, one of thr
       <h3>Looking at <code>threddsServlet.log</code> data</h3>  
       <p>Here is an example of some log messages from a request that resulted in error messages:</p>
 <pre>
-2010-11-08T15:05:41.886 -0700 [    131421][      16] INFO  - thredds.server.opendap.OpendapServlet - doGet(): Remote host: 127.
+2011-07-19T15:05:41.886 -0700 [    131421][      16] INFO  - thredds.server.opendap.OpendapServlet - doGet(): Remote host: 127.
 0.0.1 - Request: "GET /thredds/dodsC/fsl/.scour*.html HTTP/1.1"
-2010-11-08T15:05:41.981 -0700 [    131516][      16] ERROR - thredds.server.opendap.OpendapServlet - path= /fsl/.scour*.html
+2011-07-19T15:05:41.981 -0700 [    131516][      16] ERROR - thredds.server.opendap.OpendapServlet - path= /fsl/.scour*.html
 java.io.IOException: Cant read /data/ldm/fsl/.scour*: not a valid CDM file.
         at ucar.nc2.NetcdfFile.open(NetcdfFile.java:743)
         at ucar.nc2.NetcdfFile.open(NetcdfFile.java:387)
  ...
         at org.apache.tomcat.util.net.JIoEndpoint$Worker.run(JIoEndpoint.java:489)
         at java.lang.Thread.run(Thread.java:662)
-2010-11-08T15:05:41.982 -0700 [    131517][      16] INFO  - thredds.server.opendap.OpendapServlet - Request Completed - 500 - -1 - 96
+2011-07-19T15:05:41.982 -0700 [    131517][      16] INFO  - thredds.server.opendap.OpendapServlet - Request Completed - 500 - -1 - 96
 </pre>
 
       <div id="note" class="reminder">
@@ -646,7 +647,7 @@ java.io.IOException: Cant read /data/ldm/fsl/.scour*: not a valid CDM file.
        <ol>
         <li>Use the <code><small>grep</small></code> command to find out which <code><small>threddsServlet.log</small></code> file contains the error message:</li>
 <pre>
-<b>$</b> cd /home/thredds/apache-tomcat-6.0.29/content/thredds/logs
+<b>$</b> cd /home/tds/tds/apache-tomcat-6.0.32/content/thredds/logs
 <b>$</b> grep ERROR threddsServlet.log*
 </pre>   
        <li>Open the <code><small>threddsServlet.log</small></code> file which contains the error message and find all the message transaction entries that correspond to that error.</li>
@@ -743,7 +744,7 @@ java.io.IOException: Cant read /data/ldm/fsl/.scour*: not a valid CDM file.
         <p>If you happen to be running more than one JVM on your machine, look to see what Process ID # for the JVM running Tomcat:</p>
 <pre>
 <b>$</b> ps -ef | grep tomcat
-thredds   <b>5168</b>     1  5 14:01 pts/2    00:00:12 /home/thredds/jdk1.6.0_22/bin/java -Djava.util.logging.config.file=/home/thredds/apache-tomcat-6.0.29/conf/logging.properties -Xmx256m -Xms256m -server -Djava.awt.headless=true -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Djava.endorsed.dirs=/home/thredds/apache-tomcat-6.0.29/endorsed -classpath :/home/thredds/apache-tomcat-6.0.29/bin/bootstrap.jar -Dcatalina.base=/home/thredds/apache-tomcat-6.0.29 -Dcatalina.home=/home/thredds/apache-tomcat-6.0.29 -Djava.io.tmpdir=/home/thredds/apache-tomcat-6.0.29/temp org.apache.catalina.startup.Bootstrap start
+tds   <b>5168</b>     1  5 14:01 pts/2    00:00:12 /home/tds/tds/jdk1.6.0_22/bin/java -Djava.util.logging.config.file=/home/tds/tds/apache-tomcat-6.0.32/conf/logging.properties -Xmx256m -Xms256m -server -Djava.awt.headless=true -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Djava.endorsed.dirs=/home/tds/tds/apache-tomcat-6.0.32/endorsed -classpath :/home/tds/tds/apache-tomcat-6.0.32/bin/bootstrap.jar -Dcatalina.base=/home/tds/tds/apache-tomcat-6.0.32 -Dcatalina.home=/home/tds/tds/apache-tomcat-6.0.32 -Djava.io.tmpdir=/home/tds/tds/apache-tomcat-6.0.32/temp org.apache.catalina.startup.Bootstrap start
 thredds   5451  4285  0 14:05 pts/2    00:00:00 grep tomcat
 </pre>
           <p>Select the local JVM process corresponding to Tomcat and connect:</p>
@@ -773,19 +774,19 @@ Exception in thread "RMI TCP Connection(idle)" java.lang.OutOfMemoryError: PermG
           <p><a href="../../images/permgen3.png"><img src="../../images/permgen3.png" width="300" height="413" alt="PermGen Error" /></a></p>
 
          </ol>
-       <li>Please Note:  you will most likely have to forcefully kill the running tomcat process, as the <code>$TOMCAT_HOME/bin/shutdown.sh</code> will be unresponsive.</li>
+       <li>Please Note:  you will most likely have to forcefully kill the running tomcat process, as the <code>$CATALINA_HOME/bin/shutdown.sh</code> will be unresponsive.</li>
         <ol>
         <li>Find the Tomcat process running and get the process ID number:</li>
 <pre>
 <b>$</b> ps -ef | grep tomcat
-thredds   <b>5168</b>     1  5 14:01 pts/2    00:00:12 /home/thredds/jdk1.6.0_22/bin/java -Djava.util.logging.config.file=/home/thredds/apache-tomcat-6.0.29/conf/logging.properties -Xmx256m -Xms256m -server -Djava.awt.headless=true -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Djava.endorsed.dirs=/home/thredds/apache-tomcat-6.0.29/endorsed -classpath :/home/thredds/apache-tomcat-6.0.29/bin/bootstrap.jar -Dcatalina.base=/home/thredds/apache-tomcat-6.0.29 -Dcatalina.home=/home/thredds/apache-tomcat-6.0.29 -Djava.io.tmpdir=/home/thredds/apache-tomcat-6.0.29/temp org.apache.catalina.startup.Bootstrap start
-thredds   5451  4285  0 14:05 pts/2    00:00:00 grep tomcat
+tds   <b>5168</b>     1  5 14:01 pts/2    00:00:12 /home/tds/tds/jdk1.6.0_22/bin/java -Djava.util.logging.config.file=/home/tds/tds/apache-tomcat-6.0.32/conf/logging.properties -Xmx256m -Xms256m -server -Djava.awt.headless=true -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Djava.endorsed.dirs=/home/tds/tds/apache-tomcat-6.0.32/endorsed -classpath :/home/tds/tds/apache-tomcat-6.0.32/bin/bootstrap.jar -Dcatalina.base=/home/tds/tds/apache-tomcat-6.0.32 -Dcatalina.home=/home/tds/tds/apache-tomcat-6.0.32 -Djava.io.tmpdir=/home/tds/tds/apache-tomcat-6.0.32/temp org.apache.catalina.startup.Bootstrap start
+tds   5451  4285  0 14:05 pts/2    00:00:00 grep tomcat
 </pre>
         <li>Kill it!</li>
 <pre>
 <b>$</b> kill -9 5168
 <b>$</b> ps -ef | grep tomcat
-thredds   5694  4285  0 14:20 pts/2    00:00:00 grep tomcat
+tds   5694  4285  0 14:20 pts/2    00:00:00 grep tomcat
 </pre>
       </ol>
      </ol>
