@@ -567,7 +567,6 @@ public class GridVariable {
         }
         recno = ens * (ntimes * nlevels) + (time * nlevels) + level;  // order is ens, time, level
         if (recno < 0) {
-          System.out.println("HEY");
           ecs.getIndex(ggr);
         }
       } else {

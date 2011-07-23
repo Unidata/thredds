@@ -470,8 +470,6 @@ public class InvCatalogRef extends InvDatasetImpl {
   @Override
   public java.lang.String getName() {
     if (!useProxy) return super.getName();
-    if (proxy == null)
-      System.out.println("HEY");
     return (proxy == null) ? "N/A" : proxy.getName();
   }
 

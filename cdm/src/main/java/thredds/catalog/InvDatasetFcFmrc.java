@@ -84,6 +84,8 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
 
       if (state == null) {
         orgService = getServiceDefault();
+        if (orgService == null)
+          throw new IllegalStateException("no default service in FMRC dataset "+getName());
         virtualService = makeVirtualService(orgService);
       } else {
         fmrc.checkNeeded(false);
