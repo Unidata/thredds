@@ -1,0 +1,801 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataroot xmlns:od="urn:schemas-microsoft-com:officedata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  xsi:noNamespaceSchemaLocation="CommonTable_C14_Mar2011_E.xsd" generated="2011-03-23T15:10:43">
+<Exp_CommonTableC14_E>
+<No>1</No>
+<CodeFigure>0</CodeFigure>
+<Meaning_E>Ozone</Meaning_E>
+<ChemicalFormula>O3</ChemicalFormula>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>2</No>
+<CodeFigure>1</CodeFigure>
+<Meaning_E>Water vapour</Meaning_E>
+<ChemicalFormula>H2O</ChemicalFormula>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>3</No>
+<CodeFigure>2</CodeFigure>
+<Meaning_E>Methane</Meaning_E>
+<ChemicalFormula>CH4</ChemicalFormula>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>4</No>
+<CodeFigure>3</CodeFigure>
+<Meaning_E>Carbon dioxide</Meaning_E>
+<ChemicalFormula>CO2</ChemicalFormula>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>5</No>
+<CodeFigure>4</CodeFigure>
+<Meaning_E>Carbon monoxide</Meaning_E>
+<ChemicalFormula>CO</ChemicalFormula>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>6</No>
+<CodeFigure>5</CodeFigure>
+<Meaning_E>Nitrogen dioxide</Meaning_E>
+<ChemicalFormula>NO2</ChemicalFormula>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>7</No>
+<CodeFigure>6</CodeFigure>
+<Meaning_E>Nitrous oxide</Meaning_E>
+<ChemicalFormula>N2O</ChemicalFormula>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>8</No>
+<CodeFigure>7</CodeFigure>
+<Meaning_E>Formaldehyde</Meaning_E>
+<ChemicalFormula>HCHO</ChemicalFormula>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>9</No>
+<CodeFigure>8</CodeFigure>
+<Meaning_E>Sulphur dioxide</Meaning_E>
+<ChemicalFormula>SO2</ChemicalFormula>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>10</No>
+<CodeFigure>9</CodeFigure>
+<Meaning_E>Ammonia</Meaning_E>
+<ChemicalFormula>NH3</ChemicalFormula>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>11</No>
+<CodeFigure>10</CodeFigure>
+<Meaning_E>Ammonium</Meaning_E>
+<ChemicalFormula>NH4+</ChemicalFormula>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>12</No>
+<CodeFigure>11</CodeFigure>
+<Meaning_E>Nitrogen monoxide</Meaning_E>
+<ChemicalFormula>NO</ChemicalFormula>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>13</No>
+<CodeFigure>12</CodeFigure>
+<Meaning_E>Atomic oxygen</Meaning_E>
+<ChemicalFormula>O</ChemicalFormula>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>14</No>
+<CodeFigure>13</CodeFigure>
+<Meaning_E>Nitrate radical</Meaning_E>
+<ChemicalFormula>NO3</ChemicalFormula>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>15</No>
+<CodeFigure>14</CodeFigure>
+<Meaning_E>Hydroperoxyl radical</Meaning_E>
+<ChemicalFormula>HO2</ChemicalFormula>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>16</No>
+<CodeFigure>15</CodeFigure>
+<Meaning_E>Dinitrogen pentoxide</Meaning_E>
+<ChemicalFormula>N2O5</ChemicalFormula>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>17</No>
+<CodeFigure>16</CodeFigure>
+<Meaning_E>Nitrous acid</Meaning_E>
+<ChemicalFormula>HONO</ChemicalFormula>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>18</No>
+<CodeFigure>17</CodeFigure>
+<Meaning_E>Nitric acid</Meaning_E>
+<ChemicalFormula>HNO3</ChemicalFormula>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>19</No>
+<CodeFigure>18</CodeFigure>
+<Meaning_E>Peroxynitric acid</Meaning_E>
+<ChemicalFormula>HO2NO2</ChemicalFormula>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>20</No>
+<CodeFigure>19</CodeFigure>
+<Meaning_E>Hydrogen peroxide</Meaning_E>
+<ChemicalFormula>H2O2</ChemicalFormula>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>21</No>
+<CodeFigure>20</CodeFigure>
+<Meaning_E>Molecular hydrogen</Meaning_E>
+<ChemicalFormula>H</ChemicalFormula>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>22</No>
+<CodeFigure>21</CodeFigure>
+<Meaning_E>Atomic nitrogen</Meaning_E>
+<ChemicalFormula>N</ChemicalFormula>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>23</No>
+<CodeFigure>22</CodeFigure>
+<Meaning_E>Sulphate</Meaning_E>
+<ChemicalFormula>SO42-</ChemicalFormula>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>24</No>
+<CodeFigure>23</CodeFigure>
+<Meaning_E>Radon</Meaning_E>
+<ChemicalFormula>Rn</ChemicalFormula>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>25</No>
+<CodeFigure>24</CodeFigure>
+<Meaning_E>Elemental mercury</Meaning_E>
+<ChemicalFormula>Hg(0)</ChemicalFormula>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>26</No>
+<CodeFigure>25</CodeFigure>
+<Meaning_E>Divalent mercury</Meaning_E>
+<ChemicalFormula>Hg2+</ChemicalFormula>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>27</No>
+<CodeFigure>26</CodeFigure>
+<Meaning_E>Atomic chlorine</Meaning_E>
+<ChemicalFormula>Cl</ChemicalFormula>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>28</No>
+<CodeFigure>27</CodeFigure>
+<Meaning_E>Chlorine monoxide</Meaning_E>
+<ChemicalFormula>ClO</ChemicalFormula>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>29</No>
+<CodeFigure>28</CodeFigure>
+<Meaning_E>Dichlorine peroxide</Meaning_E>
+<ChemicalFormula>Cl2O2</ChemicalFormula>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>30</No>
+<CodeFigure>29</CodeFigure>
+<Meaning_E>Hypochlorous acid</Meaning_E>
+<ChemicalFormula>HClO</ChemicalFormula>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>31</No>
+<CodeFigure>30</CodeFigure>
+<Meaning_E>Chlorine nitrate</Meaning_E>
+<ChemicalFormula>ClONO2</ChemicalFormula>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>32</No>
+<CodeFigure>31</CodeFigure>
+<Meaning_E>Chlorine dioxide</Meaning_E>
+<ChemicalFormula>ClO2</ChemicalFormula>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>33</No>
+<CodeFigure>32</CodeFigure>
+<Meaning_E>Atomic bromine</Meaning_E>
+<ChemicalFormula>Br</ChemicalFormula>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>34</No>
+<CodeFigure>33</CodeFigure>
+<Meaning_E>Bromine monoxide</Meaning_E>
+<ChemicalFormula>BrO</ChemicalFormula>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>35</No>
+<CodeFigure>34</CodeFigure>
+<Meaning_E>Bromine chloride</Meaning_E>
+<ChemicalFormula>BrCl</ChemicalFormula>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>36</No>
+<CodeFigure>35</CodeFigure>
+<Meaning_E>Hydrogen bromide</Meaning_E>
+<ChemicalFormula>HBr</ChemicalFormula>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>37</No>
+<CodeFigure>36</CodeFigure>
+<Meaning_E>Hypobromous acid</Meaning_E>
+<ChemicalFormula>HBrO</ChemicalFormula>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>38</No>
+<CodeFigure>37</CodeFigure>
+<Meaning_E>Bromine nitrate</Meaning_E>
+<ChemicalFormula>BrONO2</ChemicalFormula>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>39</No>
+<CodeFigure>38-9999</CodeFigure>
+<Meaning_E>Reserved</Meaning_E>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>40</No>
+<CodeFigure>10000</CodeFigure>
+<Meaning_E>Hydroxyl radical</Meaning_E>
+<ChemicalFormula>OH</ChemicalFormula>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>41</No>
+<CodeFigure>10001</CodeFigure>
+<Meaning_E>Methyl peroxy radical</Meaning_E>
+<ChemicalFormula>CH3O2</ChemicalFormula>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>42</No>
+<CodeFigure>10002</CodeFigure>
+<Meaning_E>Methyl hydroperoxide</Meaning_E>
+<ChemicalFormula>CH3O2H</ChemicalFormula>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>43</No>
+<CodeFigure>10004</CodeFigure>
+<Meaning_E>Methanol</Meaning_E>
+<ChemicalFormula>CH3OH</ChemicalFormula>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>44</No>
+<CodeFigure>10005</CodeFigure>
+<Meaning_E>Formic acid</Meaning_E>
+<ChemicalFormula>CH3OOH</ChemicalFormula>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>45</No>
+<CodeFigure>10006</CodeFigure>
+<Meaning_E>Hydrogen Cyanide</Meaning_E>
+<ChemicalFormula>HCN</ChemicalFormula>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>46</No>
+<CodeFigure>10007</CodeFigure>
+<Meaning_E>Aceto nitrile</Meaning_E>
+<ChemicalFormula>CH3CN</ChemicalFormula>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>47</No>
+<CodeFigure>10008</CodeFigure>
+<Meaning_E>Ethane</Meaning_E>
+<ChemicalFormula>C2H6</ChemicalFormula>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>48</No>
+<CodeFigure>10009</CodeFigure>
+<Meaning_E>Ethene (= Ethylene)</Meaning_E>
+<ChemicalFormula>C2H4</ChemicalFormula>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>49</No>
+<CodeFigure>10010</CodeFigure>
+<Meaning_E>Ethyne (= Acetylene)</Meaning_E>
+<ChemicalFormula>C2H2</ChemicalFormula>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>50</No>
+<CodeFigure>10011</CodeFigure>
+<Meaning_E>Ethanol</Meaning_E>
+<ChemicalFormula>C2H5OH</ChemicalFormula>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>51</No>
+<CodeFigure>10012</CodeFigure>
+<Meaning_E>Acetic acid</Meaning_E>
+<ChemicalFormula>C2H5OOH</ChemicalFormula>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>52</No>
+<CodeFigure>10013</CodeFigure>
+<Meaning_E>Peroxyacetyl nitrate</Meaning_E>
+<ChemicalFormula>CH3C(O)OONO2</ChemicalFormula>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>53</No>
+<CodeFigure>10014</CodeFigure>
+<Meaning_E>Propane</Meaning_E>
+<ChemicalFormula>C3H8</ChemicalFormula>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>54</No>
+<CodeFigure>10015</CodeFigure>
+<Meaning_E>Propene</Meaning_E>
+<ChemicalFormula>C3H6</ChemicalFormula>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>55</No>
+<CodeFigure>10016</CodeFigure>
+<Meaning_E>Butanes</Meaning_E>
+<ChemicalFormula>C4H10</ChemicalFormula>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>56</No>
+<CodeFigure>10017</CodeFigure>
+<Meaning_E>Isoprene</Meaning_E>
+<ChemicalFormula>C5H10</ChemicalFormula>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>57</No>
+<CodeFigure>10018</CodeFigure>
+<Meaning_E>Alpha pinene</Meaning_E>
+<ChemicalFormula>C10H16</ChemicalFormula>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>58</No>
+<CodeFigure>10019</CodeFigure>
+<Meaning_E>Beta pinene</Meaning_E>
+<ChemicalFormula>C10H16</ChemicalFormula>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>59</No>
+<CodeFigure>10020</CodeFigure>
+<Meaning_E>Limonene</Meaning_E>
+<ChemicalFormula>C10H16</ChemicalFormula>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>60</No>
+<CodeFigure>10021</CodeFigure>
+<Meaning_E>Benzene</Meaning_E>
+<ChemicalFormula>C6H6</ChemicalFormula>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>61</No>
+<CodeFigure>10022</CodeFigure>
+<Meaning_E>Toluene</Meaning_E>
+<ChemicalFormula>C7H8</ChemicalFormula>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>62</No>
+<CodeFigure>10023</CodeFigure>
+<Meaning_E>Xylene</Meaning_E>
+<ChemicalFormula>C8H10</ChemicalFormula>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>63</No>
+<CodeFigure>10024-10499</CodeFigure>
+<Meaning_E>Reserved for other simple organic molecules (e.g. higher aldehydes, alcohols, peroxides,…)</Meaning_E>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>64</No>
+<CodeFigure>10500</CodeFigure>
+<Meaning_E>Dimethyl sulphide</Meaning_E>
+<ChemicalFormula>CH3SCH3 (DMS)</ChemicalFormula>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>65</No>
+<CodeFigure>10501-20000</CodeFigure>
+<Meaning_E>Reserved</Meaning_E>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>66</No>
+<CodeFigure>20001</CodeFigure>
+<Meaning_E>Hydrogen chloride</Meaning_E>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>67</No>
+<CodeFigure>20002</CodeFigure>
+<Meaning_E>CFC-11</Meaning_E>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>68</No>
+<CodeFigure>20003</CodeFigure>
+<Meaning_E>CFC-12</Meaning_E>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>69</No>
+<CodeFigure>20004</CodeFigure>
+<Meaning_E>CFC-113</Meaning_E>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>70</No>
+<CodeFigure>20005</CodeFigure>
+<Meaning_E>CFC-113a</Meaning_E>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>71</No>
+<CodeFigure>20006</CodeFigure>
+<Meaning_E>CFC-114</Meaning_E>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>72</No>
+<CodeFigure>20007</CodeFigure>
+<Meaning_E>CFC-115</Meaning_E>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>73</No>
+<CodeFigure>20008</CodeFigure>
+<Meaning_E>HCFC-22</Meaning_E>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>74</No>
+<CodeFigure>20009</CodeFigure>
+<Meaning_E>HCFC-141b</Meaning_E>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>75</No>
+<CodeFigure>20010</CodeFigure>
+<Meaning_E>HCFC-142b</Meaning_E>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>76</No>
+<CodeFigure>20011</CodeFigure>
+<Meaning_E>Halon-1202</Meaning_E>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>77</No>
+<CodeFigure>20012</CodeFigure>
+<Meaning_E>Halon-1211</Meaning_E>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>78</No>
+<CodeFigure>20013</CodeFigure>
+<Meaning_E>Halon-1301</Meaning_E>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>79</No>
+<CodeFigure>20014</CodeFigure>
+<Meaning_E>Halon-2402</Meaning_E>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>80</No>
+<CodeFigure>20015</CodeFigure>
+<Meaning_E>Methyl chloride (HCC-40)</Meaning_E>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>81</No>
+<CodeFigure>20016</CodeFigure>
+<Meaning_E>Carbon tetrachloride (HCC-10)</Meaning_E>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>82</No>
+<CodeFigure>20017</CodeFigure>
+<Meaning_E>HCC-140a</Meaning_E>
+<ChemicalFormula>CH3CCl3</ChemicalFormula>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>83</No>
+<CodeFigure>20018</CodeFigure>
+<Meaning_E>Methyl bromide (HBC-40B1)</Meaning_E>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>84</No>
+<CodeFigure>20019</CodeFigure>
+<Meaning_E>Hexachlorocyclohexane (HCH)</Meaning_E>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>85</No>
+<CodeFigure>20020</CodeFigure>
+<Meaning_E>Alpha hexachlorocyclohexane</Meaning_E>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>86</No>
+<CodeFigure>20021</CodeFigure>
+<Meaning_E>Hexachlorobiphenyl (PCB-153)</Meaning_E>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>87</No>
+<CodeFigure>20022-29999</CodeFigure>
+<Meaning_E>Reserved</Meaning_E>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>88</No>
+<CodeFigure>30000-59999</CodeFigure>
+<Meaning_E>Reserved</Meaning_E>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>89</No>
+<CodeFigure>60000</CodeFigure>
+<Meaning_E>HOx radical (OH+HO2)</Meaning_E>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>90</No>
+<CodeFigure>60001</CodeFigure>
+<Meaning_E>Total inorganic and organic peroxy radicals (HO2 + RO2)</Meaning_E>
+<ChemicalFormula>RO2</ChemicalFormula>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>91</No>
+<CodeFigure>60002</CodeFigure>
+<Meaning_E>Passive Ozone</Meaning_E>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>92</No>
+<CodeFigure>60003</CodeFigure>
+<Meaning_E>NOx expressed as nitrogen</Meaning_E>
+<ChemicalFormula>NOx</ChemicalFormula>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>93</No>
+<CodeFigure>60004</CodeFigure>
+<Meaning_E>All nitrogen oxides (NOy) expressed as nitrogen</Meaning_E>
+<ChemicalFormula>NOy</ChemicalFormula>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>94</No>
+<CodeFigure>60005</CodeFigure>
+<Meaning_E>Total inorganic chlorine</Meaning_E>
+<ChemicalFormula>Clx</ChemicalFormula>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>95</No>
+<CodeFigure>60006</CodeFigure>
+<Meaning_E>Total inorganic bromine</Meaning_E>
+<ChemicalFormula>Brx</ChemicalFormula>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>96</No>
+<CodeFigure>60007</CodeFigure>
+<Meaning_E>Total inorganic chlorine except HCl, ClONO2: ClOx</Meaning_E>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>97</No>
+<CodeFigure>60008</CodeFigure>
+<Meaning_E>Total inorganic bromine except HBr, BrONO2: BrOx</Meaning_E>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>98</No>
+<CodeFigure>60009</CodeFigure>
+<Meaning_E>Lumped alkanes</Meaning_E>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>99</No>
+<CodeFigure>60010</CodeFigure>
+<Meaning_E>Lumped alkenes</Meaning_E>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>100</No>
+<CodeFigure>60011</CodeFigure>
+<Meaning_E>Lumped aromatic compounds</Meaning_E>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>101</No>
+<CodeFigure>60012</CodeFigure>
+<Meaning_E>Lumped terpenes</Meaning_E>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>102</No>
+<CodeFigure>60013</CodeFigure>
+<Meaning_E>Non-methane volatile organic compounds expressed as carbon</Meaning_E>
+<ChemicalFormula>NMVOC</ChemicalFormula>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>103</No>
+<CodeFigure>60014</CodeFigure>
+<Meaning_E>Anthropogenic non-methane volatile organic compounds expressed as carbon</Meaning_E>
+<ChemicalFormula>aNMVOC</ChemicalFormula>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>104</No>
+<CodeFigure>60015</CodeFigure>
+<Meaning_E>Biogenic non-methane volatile organic compounds expressed as carbon</Meaning_E>
+<ChemicalFormula>bNMVOC</ChemicalFormula>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>105</No>
+<CodeFigure>60016</CodeFigure>
+<Meaning_E>Lumped oxygenated hydrocarbons</Meaning_E>
+<ChemicalFormula>OVOC</ChemicalFormula>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>106</No>
+<CodeFigure>60017-61999</CodeFigure>
+<Meaning_E>Reserved</Meaning_E>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>107</No>
+<CodeFigure>62000</CodeFigure>
+<Meaning_E>Total aerosol</Meaning_E>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>108</No>
+<CodeFigure>62001</CodeFigure>
+<Meaning_E>Dust dry</Meaning_E>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>109</No>
+<CodeFigure>62002</CodeFigure>
+<Meaning_E>Water in ambient</Meaning_E>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>110</No>
+<CodeFigure>62003</CodeFigure>
+<Meaning_E>Ammonium dry</Meaning_E>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>111</No>
+<CodeFigure>62004</CodeFigure>
+<Meaning_E>Nitrate dry</Meaning_E>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>112</No>
+<CodeFigure>62005</CodeFigure>
+<Meaning_E>Nitric acid trihydrate</Meaning_E>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>113</No>
+<CodeFigure>62006</CodeFigure>
+<Meaning_E>Sulphate dry</Meaning_E>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>114</No>
+<CodeFigure>62007</CodeFigure>
+<Meaning_E>Mercury dry</Meaning_E>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>115</No>
+<CodeFigure>62008</CodeFigure>
+<Meaning_E>Sea salt dry</Meaning_E>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>116</No>
+<CodeFigure>62009</CodeFigure>
+<Meaning_E>Black carbon dry</Meaning_E>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>117</No>
+<CodeFigure>62010</CodeFigure>
+<Meaning_E>Particulate organic matter dry</Meaning_E>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>118</No>
+<CodeFigure>62011</CodeFigure>
+<Meaning_E>Primary particulate organic matter dry</Meaning_E>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>119</No>
+<CodeFigure>62012</CodeFigure>
+<Meaning_E>Secondary particulate organic matter dry</Meaning_E>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>120</No>
+<CodeFigure>62013-65534</CodeFigure>
+<Meaning_E>Reserved</Meaning_E>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+<Exp_CommonTableC14_E>
+<No>121</No>
+<CodeFigure>65535</CodeFigure>
+<Meaning_E>Missing</Meaning_E>
+<Status>Operational</Status>
+</Exp_CommonTableC14_E>
+</dataroot>

@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataroot xmlns:od="urn:schemas-microsoft-com:officedata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  xsi:noNamespaceSchemaLocation="Exporting_BUFRTableA_E.xsd" generated="2010-04-08T16:30:55">
+<Exporting_BUFRTableA_E>
+<No>1</No>
+<CodeFigure>0</CodeFigure>
+<Meaning>Surface data - land</Meaning>
+<Status>Operational</Status>
+</Exporting_BUFRTableA_E>
+<Exporting_BUFRTableA_E>
+<No>2</No>
+<CodeFigure>1</CodeFigure>
+<Meaning>Surface data - sea</Meaning>
+<Status>Operational</Status>
+</Exporting_BUFRTableA_E>
+<Exporting_BUFRTableA_E>
+<No>3</No>
+<CodeFigure>2</CodeFigure>
+<Meaning>Vertical soundings (other than satellite)</Meaning>
+<Status>Operational</Status>
+</Exporting_BUFRTableA_E>
+<Exporting_BUFRTableA_E>
+<No>4</No>
+<CodeFigure>3</CodeFigure>
+<Meaning>Vertical soundings (satellite)</Meaning>
+<Status>Operational</Status>
+</Exporting_BUFRTableA_E>
+<Exporting_BUFRTableA_E>
+<No>5</No>
+<CodeFigure>4</CodeFigure>
+<Meaning>Single level upper-air data (other than satellite)</Meaning>
+<Status>Operational</Status>
+</Exporting_BUFRTableA_E>
+<Exporting_BUFRTableA_E>
+<No>6</No>
+<CodeFigure>5</CodeFigure>
+<Meaning>Single level upper-air data (satellite)</Meaning>
+<Status>Operational</Status>
+</Exporting_BUFRTableA_E>
+<Exporting_BUFRTableA_E>
+<No>7</No>
+<CodeFigure>6</CodeFigure>
+<Meaning>Radar data</Meaning>
+<Status>Operational</Status>
+</Exporting_BUFRTableA_E>
+<Exporting_BUFRTableA_E>
+<No>8</No>
+<CodeFigure>7</CodeFigure>
+<Meaning>Synoptic features</Meaning>
+<Status>Operational</Status>
+</Exporting_BUFRTableA_E>
+<Exporting_BUFRTableA_E>
+<No>9</No>
+<CodeFigure>8</CodeFigure>
+<Meaning>Physical/chemical constituents</Meaning>
+<Status>Operational</Status>
+</Exporting_BUFRTableA_E>
+<Exporting_BUFRTableA_E>
+<No>10</No>
+<CodeFigure>9</CodeFigure>
+<Meaning>Dispersal and transport</Meaning>
+<Status>Operational</Status>
+</Exporting_BUFRTableA_E>
+<Exporting_BUFRTableA_E>
+<No>11</No>
+<CodeFigure>10</CodeFigure>
+<Meaning>Radiological data</Meaning>
+<Status>Operational</Status>
+</Exporting_BUFRTableA_E>
+<Exporting_BUFRTableA_E>
+<No>12</No>
+<CodeFigure>11</CodeFigure>
+<Meaning>BUFR tables, complete replacement or update</Meaning>
+<Status>Operational</Status>
+</Exporting_BUFRTableA_E>
+<Exporting_BUFRTableA_E>
+<No>13</No>
+<CodeFigure>12</CodeFigure>
+<Meaning>Surface data (satellite)</Meaning>
+<Status>Operational</Status>
+</Exporting_BUFRTableA_E>
+<Exporting_BUFRTableA_E>
+<No>14</No>
+<CodeFigure>13</CodeFigure>
+<Meaning>Forecasts</Meaning>
+<Status>Operational</Status>
+</Exporting_BUFRTableA_E>
+<Exporting_BUFRTableA_E>
+<No>15</No>
+<CodeFigure>14</CodeFigure>
+<Meaning>Warnings</Meaning>
+<Status>Operational</Status>
+</Exporting_BUFRTableA_E>
+<Exporting_BUFRTableA_E>
+<No>16</No>
+<CodeFigure>15-19</CodeFigure>
+<Meaning>Reserved</Meaning>
+<Status>Operational</Status>
+</Exporting_BUFRTableA_E>
+<Exporting_BUFRTableA_E>
+<No>17</No>
+<CodeFigure>20</CodeFigure>
+<Meaning>Status information</Meaning>
+<Status>Operational</Status>
+</Exporting_BUFRTableA_E>
+<Exporting_BUFRTableA_E>
+<No>18</No>
+<CodeFigure>21</CodeFigure>
+<Meaning>Radiances (satellite measured)</Meaning>
+<Status>Operational</Status>
+</Exporting_BUFRTableA_E>
+<Exporting_BUFRTableA_E>
+<No>19</No>
+<CodeFigure>22</CodeFigure>
+<Meaning>Radar (satellite) but not altimeter and scatterometer</Meaning>
+<Status>Validation</Status>
+</Exporting_BUFRTableA_E>
+<Exporting_BUFRTableA_E>
+<No>20</No>
+<CodeFigure>23</CodeFigure>
+<Meaning>Lidar (satellite)</Meaning>
+<Status>Validation</Status>
+</Exporting_BUFRTableA_E>
+<Exporting_BUFRTableA_E>
+<No>21</No>
+<CodeFigure>24</CodeFigure>
+<Meaning>Scatterometry (satellite)</Meaning>
+<Status>Validation</Status>
+</Exporting_BUFRTableA_E>
+<Exporting_BUFRTableA_E>
+<No>22</No>
+<CodeFigure>25</CodeFigure>
+<Meaning>Altimetry (satellite)</Meaning>
+<Status>Validation</Status>
+</Exporting_BUFRTableA_E>
+<Exporting_BUFRTableA_E>
+<No>23</No>
+<CodeFigure>26</CodeFigure>
+<Meaning>Spectrometry (satellite)</Meaning>
+<Status>Validation</Status>
+</Exporting_BUFRTableA_E>
+<Exporting_BUFRTableA_E>
+<No>24</No>
+<CodeFigure>27</CodeFigure>
+<Meaning>Gravity measurement (satellite)</Meaning>
+<Status>Validation</Status>
+</Exporting_BUFRTableA_E>
+<Exporting_BUFRTableA_E>
+<No>25</No>
+<CodeFigure>28</CodeFigure>
+<Meaning>Precision orbit (satellite)</Meaning>
+<Status>Validation</Status>
+</Exporting_BUFRTableA_E>
+<Exporting_BUFRTableA_E>
+<No>26</No>
+<CodeFigure>29</CodeFigure>
+<Meaning>Space environment (satellite)</Meaning>
+<Status>Validation</Status>
+</Exporting_BUFRTableA_E>
+<Exporting_BUFRTableA_E>
+<No>27</No>
+<CodeFigure>30</CodeFigure>
+<Meaning>Calibration datasets (satellite)</Meaning>
+<Status>Validation</Status>
+</Exporting_BUFRTableA_E>
+<Exporting_BUFRTableA_E>
+<No>28</No>
+<CodeFigure>31</CodeFigure>
+<Meaning>Oceanographic data</Meaning>
+<Status>Operational</Status>
+</Exporting_BUFRTableA_E>
+<Exporting_BUFRTableA_E>
+<No>29</No>
+<CodeFigure>32-100</CodeFigure>
+<Meaning>Reserved</Meaning>
+<Status>Operational</Status>
+</Exporting_BUFRTableA_E>
+<Exporting_BUFRTableA_E>
+<No>30</No>
+<CodeFigure>101</CodeFigure>
+<Meaning>Image data (satellite)</Meaning>
+<Status>Validation</Status>
+</Exporting_BUFRTableA_E>
+<Exporting_BUFRTableA_E>
+<No>31</No>
+<CodeFigure>102-239</CodeFigure>
+<Meaning>Reserved</Meaning>
+<Status>Operational</Status>
+</Exporting_BUFRTableA_E>
+<Exporting_BUFRTableA_E>
+<No>32</No>
+<CodeFigure>240-254</CodeFigure>
+<Meaning>For experimental use</Meaning>
+<Status>Operational</Status>
+</Exporting_BUFRTableA_E>
+<Exporting_BUFRTableA_E>
+<No>33</No>
+<CodeFigure>255</CodeFigure>
+<Meaning>Indicator for local use, with sub-category (for BUFR edition 3)</Meaning>
+<Status>Operational</Status>
+</Exporting_BUFRTableA_E>
+<Exporting_BUFRTableA_E>
+<No>34</No>
+<CodeFigure>255</CodeFigure>
+<Meaning>Other category (for BUFR edition 4)</Meaning>
+<Status>Operational</Status>
+</Exporting_BUFRTableA_E>
+</dataroot>

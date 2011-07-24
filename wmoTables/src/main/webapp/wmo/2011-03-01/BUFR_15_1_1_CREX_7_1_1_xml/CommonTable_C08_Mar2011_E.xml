@@ -1,0 +1,2671 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataroot xmlns:od="urn:schemas-microsoft-com:officedata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  xsi:noNamespaceSchemaLocation="CommonTable_C08_Mar2011_E.xsd" generated="2011-03-23T15:09:35">
+<Exp_CommonTableC08_E>
+<No>1</No>
+<Code>10</Code>
+<Agency_E>BNSC</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>AATSR</InstrumentShortName_E>
+<InstrumentLongName_E>Advanced along track scanning radiometer</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>2</No>
+<Code>11</Code>
+<Agency_E>BNSC</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>ATSR</InstrumentShortName_E>
+<InstrumentLongName_E>Along track scanning radiometer</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>3</No>
+<Code>12</Code>
+<Agency_E>BNSC</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>ATSR-2</InstrumentShortName_E>
+<InstrumentLongName_E>Along track scanning radiometer - 2</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>4</No>
+<Code>13</Code>
+<Agency_E>BNSC</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>MWR</InstrumentShortName_E>
+<InstrumentLongName_E>Microwave radiometer</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>5</No>
+<Code>30</Code>
+<Agency_E>CNES</Agency_E>
+<Type_E>Communications</Type_E>
+<InstrumentShortName_E>ARGOS</InstrumentShortName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>6</No>
+<Code>40</Code>
+<Agency_E>CNES</Agency_E>
+<Type_E>Lidar</Type_E>
+<InstrumentShortName_E>Laser reflectors</InstrumentShortName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>7</No>
+<Code>41</Code>
+<Agency_E>CNES</Agency_E>
+<Type_E>Lidar</Type_E>
+<InstrumentShortName_E>DORIS</InstrumentShortName_E>
+<InstrumentLongName_E>Doppler orbitography and radio-positioning integrated by satellite</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>8</No>
+<Code>42</Code>
+<Agency_E>CNES</Agency_E>
+<Type_E>Lidar</Type_E>
+<InstrumentShortName_E>DORIS-NG</InstrumentShortName_E>
+<InstrumentLongName_E>Doppler orbitography and radio-positioning integrated by satellite-NG</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>9</No>
+<Code>47</Code>
+<Agency_E>CNES</Agency_E>
+<Type_E>Radar altimeter</Type_E>
+<InstrumentShortName_E>POSEIDON-1 (SSALT1)</InstrumentShortName_E>
+<InstrumentLongName_E>Positioning ocean solid Earth ice dynamics orbiting navigator (single frequency solid state radar altimeter)</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>10</No>
+<Code>48</Code>
+<Agency_E>CNES</Agency_E>
+<Type_E>Radar altimeter</Type_E>
+<InstrumentShortName_E>POSEIDON-2 (SSALT2)</InstrumentShortName_E>
+<InstrumentLongName_E>Positioning ocean solid Earth ice dynamics orbiting navigator (double frequency solid state radar altimeter)</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>11</No>
+<Code>50</Code>
+<Agency_E>CNES</Agency_E>
+<Type_E>Imaging radiometer</Type_E>
+<InstrumentShortName_E>ATSR/M</InstrumentShortName_E>
+<InstrumentLongName_E>ATSR/M</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>12</No>
+<Code>51</Code>
+<Agency_E>CNES</Agency_E>
+<Type_E>High resolution optical imager</Type_E>
+<InstrumentShortName_E>HRG</InstrumentShortName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>13</No>
+<Code>52</Code>
+<Agency_E>CNES</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>HRV</InstrumentShortName_E>
+<InstrumentLongName_E>High-resolution visible</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>14</No>
+<Code>53</Code>
+<Agency_E>CNES</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>HRVIR</InstrumentShortName_E>
+<InstrumentLongName_E>High-resolution visible and infrared</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>15</No>
+<Code>54</Code>
+<Agency_E>CNES</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>ScaRaB/MV2</InstrumentShortName_E>
+<InstrumentLongName_E>Scanner for Earth&apos;s radiation budget</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>16</No>
+<Code>55</Code>
+<Agency_E>CNES</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>POLDER</InstrumentShortName_E>
+<InstrumentLongName_E>POLDER</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>17</No>
+<Code>60</Code>
+<Agency_E>CNES</Agency_E>
+<Type_E>Spectrometer</Type_E>
+<InstrumentShortName_E>VEGETATION</InstrumentShortName_E>
+<InstrumentLongName_E>VEGETATION</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>18</No>
+<Code>61</Code>
+<Agency_E>CNES</Agency_E>
+<Type_E>Spectrometer</Type_E>
+<InstrumentShortName_E>WINDII</InstrumentShortName_E>
+<InstrumentLongName_E>WINDII</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>19</No>
+<Code>80</Code>
+<Agency_E>CSA</Agency_E>
+<Type_E>Communications</Type_E>
+<InstrumentShortName_E>RADARSAT DTT</InstrumentShortName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>20</No>
+<Code>81</Code>
+<Agency_E>CSA</Agency_E>
+<Type_E>Communications</Type_E>
+<InstrumentShortName_E>RADARSAT TTC</InstrumentShortName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>21</No>
+<Code>85</Code>
+<Agency_E>CSA</Agency_E>
+<Type_E>Radar</Type_E>
+<InstrumentShortName_E>SAR (CSA)</InstrumentShortName_E>
+<InstrumentLongName_E>Synthetic aperture radar (CSA)</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>22</No>
+<Code>90</Code>
+<Agency_E>CSA</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>MOPITT</InstrumentShortName_E>
+<InstrumentLongName_E>Measurements of pollution in the troposphere</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>23</No>
+<Code>91</Code>
+<Agency_E>CSA</Agency_E>
+<Type_E>Atmospheric chemistry instrument</Type_E>
+<InstrumentShortName_E>OSIRIS</InstrumentShortName_E>
+<InstrumentLongName_E>Optical spectrograph and Infrared imaging system</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>24</No>
+<Code>97</Code>
+<Agency_E>CSIRO</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>Panchromatic imager</InstrumentShortName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>25</No>
+<Code>98</Code>
+<Agency_E>CRCSS</Agency_E>
+<Type_E>Atmospheric temperature and humidity sounder</Type_E>
+<InstrumentShortName_E>GPS receiver</InstrumentShortName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>26</No>
+<Code>102</Code>
+<Agency_E>DLR</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>CHAMP GPS sounder</InstrumentShortName_E>
+<InstrumentLongName_E>GPS turborogue space receiver (TRSR)</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>27</No>
+<Code>103</Code>
+<Agency_E>DLR</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>IGOR</InstrumentShortName_E>
+<InstrumentLongName_E>Integrated GPS and Occultation Receiver</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>28</No>
+<Code>116</Code>
+<Agency_E>DLR</Agency_E>
+<Type_E>Magnetometer</Type_E>
+<InstrumentShortName_E>CHAMP gravity package (Accelerometer+GPS)</InstrumentShortName_E>
+<InstrumentLongName_E>STAR accelerometer</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>29</No>
+<Code>117</Code>
+<Agency_E>DLR</Agency_E>
+<Type_E>Magnetometer</Type_E>
+<InstrumentShortName_E>CHAMP magnetometry package (1 scalar+2 vector magnetometer)</InstrumentShortName_E>
+<InstrumentLongName_E>Overhauser magnetometer (OVM) and fluxgate magnetometer (FGM)</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>30</No>
+<Code>120</Code>
+<Agency_E>ESA</Agency_E>
+<Type_E>Communications</Type_E>
+<InstrumentShortName_E>ENVISAT Comms</InstrumentShortName_E>
+<InstrumentLongName_E>Communications package on ENVISAT</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>31</No>
+<Code>121</Code>
+<Agency_E>ESA</Agency_E>
+<Type_E>Communications</Type_E>
+<InstrumentShortName_E>ERS Comms</InstrumentShortName_E>
+<InstrumentLongName_E>Communication package for ERS</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>32</No>
+<Code>130</Code>
+<Agency_E>ESA</Agency_E>
+<Type_E>Lidar</Type_E>
+<InstrumentShortName_E>ALADIN</InstrumentShortName_E>
+<InstrumentLongName_E>Atmospheric laser doppler instrument</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>33</No>
+<Code>131</Code>
+<Agency_E>ESA</Agency_E>
+<Type_E>Lidar</Type_E>
+<InstrumentShortName_E>ATLID</InstrumentShortName_E>
+<InstrumentLongName_E>Atmospheric lidar</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>34</No>
+<Code>140</Code>
+<Agency_E>ESA</Agency_E>
+<Type_E>Radar</Type_E>
+<InstrumentShortName_E>AMI/SAR/image</InstrumentShortName_E>
+<InstrumentLongName_E>Active microwave instrumentation image mode</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>35</No>
+<Code>141</Code>
+<Agency_E>ESA</Agency_E>
+<Type_E>Radar</Type_E>
+<InstrumentShortName_E>AMI/SAR/wave</InstrumentShortName_E>
+<InstrumentLongName_E>Active microwave instrumentation wave mode</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>36</No>
+<Code>142</Code>
+<Agency_E>ESA</Agency_E>
+<Type_E>Radar</Type_E>
+<InstrumentShortName_E>AMI/scatterometer</InstrumentShortName_E>
+<InstrumentLongName_E>Active microwave instrumentation wind mode</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>37</No>
+<Code>143</Code>
+<Agency_E>ESA</Agency_E>
+<Type_E>Radar</Type_E>
+<InstrumentShortName_E>ASAR</InstrumentShortName_E>
+<InstrumentLongName_E>ASAR</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>38</No>
+<Code>144</Code>
+<Agency_E>ESA</Agency_E>
+<Type_E>Imaging microwave</Type_E>
+<InstrumentShortName_E>ASAR</InstrumentShortName_E>
+<InstrumentLongName_E>Advanced synthetic aperture radar (image mode)</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>39</No>
+<Code>145</Code>
+<Agency_E>ESA</Agency_E>
+<Type_E>Imaging microwave</Type_E>
+<InstrumentShortName_E>ASAR</InstrumentShortName_E>
+<InstrumentLongName_E>Advanced synthetic aperture radar (wave mode)</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>40</No>
+<Code>146</Code>
+<Agency_E>ESA</Agency_E>
+<Type_E>Cloud profile and rain radar</Type_E>
+<InstrumentShortName_E>CPR</InstrumentShortName_E>
+<InstrumentLongName_E>Cloud radar</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>41</No>
+<Code>147</Code>
+<Agency_E>ESA</Agency_E>
+<Type_E>Radar</Type_E>
+<InstrumentShortName_E>RA-2/MWR</InstrumentShortName_E>
+<InstrumentLongName_E>Radar altimeter - 2</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>42</No>
+<Code>148</Code>
+<Agency_E>ESA</Agency_E>
+<Type_E>Radar</Type_E>
+<InstrumentShortName_E>RA/MWR</InstrumentShortName_E>
+<InstrumentLongName_E>Radar altimeter</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>43</No>
+<Code>150</Code>
+<Agency_E>ESA</Agency_E>
+<Type_E>Scatterometer</Type_E>
+<InstrumentShortName_E>SCATTEROMETER</InstrumentShortName_E>
+<InstrumentLongName_E>Scatterometer</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>44</No>
+<Code>161</Code>
+<Agency_E>ESA</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>MIPAS</InstrumentShortName_E>
+<InstrumentLongName_E>Michelson interferometric passive atmosphere sounder</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>45</No>
+<Code>162</Code>
+<Agency_E>ESA</Agency_E>
+<Type_E>Imaging multi-spectral radiometer (passive microwave)</Type_E>
+<InstrumentShortName_E>MWR-2</InstrumentShortName_E>
+<InstrumentLongName_E>Microwave radiometer-2</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>46</No>
+<Code>163</Code>
+<Agency_E>ESA</Agency_E>
+<Type_E>Atmospheric chemistry instrument</Type_E>
+<InstrumentShortName_E>SOPRANO</InstrumentShortName_E>
+<InstrumentLongName_E>Sub-milimetre observation of processes in the absorption noteworthy for ozone</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>47</No>
+<Code>170</Code>
+<Agency_E>ESA</Agency_E>
+<Type_E>Atmospheric chemistry instrument</Type_E>
+<InstrumentShortName_E>GOME</InstrumentShortName_E>
+<InstrumentLongName_E>Global ozone monitoring experiment</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>48</No>
+<Code>172</Code>
+<Agency_E>ESA</Agency_E>
+<Type_E>Spectrometer</Type_E>
+<InstrumentShortName_E>GOMOS</InstrumentShortName_E>
+<InstrumentLongName_E>Global ozone monitoring by occultation of stars</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>49</No>
+<Code>174</Code>
+<Agency_E>ESA</Agency_E>
+<Type_E>Spectrometer</Type_E>
+<InstrumentShortName_E>MERIS</InstrumentShortName_E>
+<InstrumentLongName_E>Medium resolution imaging spectrometer</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>50</No>
+<Code>175</Code>
+<Agency_E>ESA</Agency_E>
+<Type_E>Spectrometer</Type_E>
+<InstrumentShortName_E>SCIAMACHY</InstrumentShortName_E>
+<InstrumentLongName_E>Scanning imaging absorption spectrometer for atmospheric cartography</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>51</No>
+<Code>176</Code>
+<Agency_E>ESA</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>MIRAS</InstrumentShortName_E>
+<InstrumentLongName_E>Microwave imaging radiometer using aperture synthesis</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>52</No>
+<Code>181</Code>
+<Agency_E>EUMETSAT</Agency_E>
+<Type_E>Communications</Type_E>
+<InstrumentShortName_E>METEOSAT Comms</InstrumentShortName_E>
+<InstrumentLongName_E>Communications package for METEOSAT</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>53</No>
+<Code>182</Code>
+<Agency_E>EUMETSAT</Agency_E>
+<Type_E>Communications</Type_E>
+<InstrumentShortName_E>MSG Comms</InstrumentShortName_E>
+<InstrumentLongName_E>Communications package for MSG</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>54</No>
+<Code>190</Code>
+<Agency_E>ESA/EUMETSAT</Agency_E>
+<Type_E>Scatterometer</Type_E>
+<InstrumentShortName_E>ASCAT</InstrumentShortName_E>
+<InstrumentLongName_E>Advanced scatterometer</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>55</No>
+<Code>200</Code>
+<Agency_E>EUMETSAT</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>GERB</InstrumentShortName_E>
+<InstrumentLongName_E>Geostationary Earth radiation budget</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>56</No>
+<Code>202</Code>
+<Agency_E>ESA/EUMETSAT</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>GRAS</InstrumentShortName_E>
+<InstrumentLongName_E>GNSS receiver for atmospheric sounding</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>57</No>
+<Code>203</Code>
+<Agency_E>EUMETSAT</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>MHS</InstrumentShortName_E>
+<InstrumentLongName_E>Microwave humidity sounder</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>58</No>
+<Code>205</Code>
+<Agency_E>EUMETSAT</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>MVIRI</InstrumentShortName_E>
+<InstrumentLongName_E>METEOSAT visible and infrared imager</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>59</No>
+<Code>207</Code>
+<Agency_E>EUMETSAT</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>SEVIRI</InstrumentShortName_E>
+<InstrumentLongName_E>Spinning enhanced visible and infrared imager</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>60</No>
+<Code>208</Code>
+<Agency_E>EUMETSAT</Agency_E>
+<Type_E>Imaging multi-spectral radiometer (vis/IR)</Type_E>
+<InstrumentShortName_E>VIRI</InstrumentShortName_E>
+<InstrumentLongName_E>VIRI</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>61</No>
+<Code>220</Code>
+<Agency_E>ESA/EUMETSAT</Agency_E>
+<Type_E>Spectrometer</Type_E>
+<InstrumentShortName_E>GOME-2</InstrumentShortName_E>
+<InstrumentLongName_E>Global ozone monitoring experiment - 2</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>62</No>
+<Code>221</Code>
+<Agency_E>CNES/EUMETSAT</Agency_E>
+<Type_E>Atmospheric temperature and humidity sounder</Type_E>
+<InstrumentShortName_E>IASI</InstrumentShortName_E>
+<InstrumentLongName_E>Infrared atmospheric sounding interferometer</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>63</No>
+<Code>240</Code>
+<Agency_E>CAST</Agency_E>
+<Type_E>Communications</Type_E>
+<InstrumentShortName_E>DCP</InstrumentShortName_E>
+<InstrumentLongName_E>Data-collection platform transponder</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>64</No>
+<Code>245</Code>
+<Agency_E>CAST</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>CCD</InstrumentShortName_E>
+<InstrumentLongName_E>High-resolution CCD camera</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>65</No>
+<Code>246</Code>
+<Agency_E>INPE</Agency_E>
+<Type_E>Atmospheric temperature and humidity sounder</Type_E>
+<InstrumentShortName_E>HSB</InstrumentShortName_E>
+<InstrumentLongName_E>Humidity sounder/Brazil</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>66</No>
+<Code>248</Code>
+<Agency_E>INPE</Agency_E>
+<Type_E>Imaging multi-spectral radiometer (vis/IR)</Type_E>
+<InstrumentShortName_E>OBA</InstrumentShortName_E>
+<InstrumentLongName_E>Observador Brasileiro da Amazonia</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>67</No>
+<Code>250</Code>
+<Agency_E>CAST</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>WFI</InstrumentShortName_E>
+<InstrumentLongName_E>Wide field imager</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>68</No>
+<Code>255</Code>
+<Agency_E>CAST</Agency_E>
+<Type_E>Spectrometer</Type_E>
+<InstrumentShortName_E>IRMSS</InstrumentShortName_E>
+<InstrumentLongName_E>Infrared multispectral scanner</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>69</No>
+<Code>260</Code>
+<Agency_E>ISRO</Agency_E>
+<Type_E>Precision orbit</Type_E>
+<InstrumentShortName_E>BSS &amp; FSS transponders</InstrumentShortName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>70</No>
+<Code>261</Code>
+<Agency_E>ISRO</Agency_E>
+<Type_E>Precision orbit</Type_E>
+<InstrumentShortName_E>DRT-S&amp;R</InstrumentShortName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>71</No>
+<Code>262</Code>
+<Agency_E>ISRO</Agency_E>
+<Type_E>Communications</Type_E>
+<InstrumentShortName_E>INSAT Comms</InstrumentShortName_E>
+<InstrumentLongName_E>Communications package for INSAT</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>72</No>
+<Code>268</Code>
+<Agency_E>ISRO</Agency_E>
+<Type_E>High resolution optical imager</Type_E>
+<InstrumentShortName_E>HR-PAN</InstrumentShortName_E>
+<InstrumentLongName_E>High-resolution panchromatic camera</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>73</No>
+<Code>269</Code>
+<Agency_E>ISRO</Agency_E>
+<Type_E>Imaging multi-spectral radiometer (passive microwave)</Type_E>
+<InstrumentShortName_E>MSMR</InstrumentShortName_E>
+<InstrumentLongName_E>Multifrequency scanning microwave radiometer</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>74</No>
+<Code>270</Code>
+<Agency_E>ISRO</Agency_E>
+<Type_E>Imaging multi-spectral radiometer (vis/IR)</Type_E>
+<InstrumentShortName_E>VHRR</InstrumentShortName_E>
+<InstrumentLongName_E>Very high resolution radiometer</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>75</No>
+<Code>271</Code>
+<Agency_E>ISRO</Agency_E>
+<Type_E>Imaging multi-spectral radiometer (vis/IR)</Type_E>
+<InstrumentShortName_E>WiFS</InstrumentShortName_E>
+<InstrumentLongName_E>Wide field sensor</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>76</No>
+<Code>275</Code>
+<Agency_E>ISRO</Agency_E>
+<Type_E>High-resolution optical imager</Type_E>
+<InstrumentShortName_E>AWiFS</InstrumentShortName_E>
+<InstrumentLongName_E>Advanced wide field sensor</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>77</No>
+<Code>276</Code>
+<Agency_E>ISRO</Agency_E>
+<Type_E>High-resolution optical imager</Type_E>
+<InstrumentShortName_E>LISS-I</InstrumentShortName_E>
+<InstrumentLongName_E>Linear imaging self scanner - I</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>78</No>
+<Code>277</Code>
+<Agency_E>ISRO</Agency_E>
+<Type_E>High-resolution optical imager</Type_E>
+<InstrumentShortName_E>LISS-II</InstrumentShortName_E>
+<InstrumentLongName_E>Linear imaging self scanner - II</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>79</No>
+<Code>278</Code>
+<Agency_E>ISRO</Agency_E>
+<Type_E>High-resolution optical imager</Type_E>
+<InstrumentShortName_E>LISS-III</InstrumentShortName_E>
+<InstrumentLongName_E>Linear imaging self scanner - III</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>80</No>
+<Code>279</Code>
+<Agency_E>ISRO</Agency_E>
+<Type_E>High-resolution optical imager</Type_E>
+<InstrumentShortName_E>LISS-IV</InstrumentShortName_E>
+<InstrumentLongName_E>Linear imaging self scanner - IV</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>81</No>
+<Code>284</Code>
+<Agency_E>ISRO</Agency_E>
+<Type_E>High-resolution optical imager</Type_E>
+<InstrumentShortName_E>PAN</InstrumentShortName_E>
+<InstrumentLongName_E>Panchromatic sensor</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>82</No>
+<Code>285</Code>
+<Agency_E>ISRO</Agency_E>
+<Type_E>Imaging multi-spectral radiometer (vis/IR)</Type_E>
+<InstrumentShortName_E>MOS</InstrumentShortName_E>
+<InstrumentLongName_E>Modular opto-electronic scanner</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>83</No>
+<Code>286</Code>
+<Agency_E>ISRO</Agency_E>
+<Type_E>Ocean colour instrument</Type_E>
+<InstrumentShortName_E>OCM</InstrumentShortName_E>
+<InstrumentLongName_E>Ocean colour monitor</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>84</No>
+<Code>290</Code>
+<Agency_E>ISRO</Agency_E>
+<Type_E>Communications</Type_E>
+<InstrumentShortName_E>MTSAT Comms</InstrumentShortName_E>
+<InstrumentLongName_E>Communications package for MTSAT</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>85</No>
+<Code>294</Code>
+<Agency_E>ISRO</Agency_E>
+<Type_E>Imaging multi-spectral radiometer</Type_E>
+<InstrumentShortName_E>IMAGER/MTSAT-1R</InstrumentShortName_E>
+<InstrumentLongName_E>Imager/MTSAT</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>86</No>
+<Code>295</Code>
+<Agency_E>ISRO</Agency_E>
+<Type_E>Imaging multi-spectral radiometer</Type_E>
+<InstrumentShortName_E>IMAGER/MTSAT</InstrumentShortName_E>
+<InstrumentLongName_E>Imager/MTSAT</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>87</No>
+<Code>296</Code>
+<Agency_E>ISRO</Agency_E>
+<Type_E>Imaging multi-spectral radiometer</Type_E>
+<InstrumentShortName_E>VISSR</InstrumentShortName_E>
+<InstrumentLongName_E>Visible and infrared spin scan radiometer</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>88</No>
+<Code>300</Code>
+<Agency_E>NASA</Agency_E>
+<Type_E>Lidar</Type_E>
+<InstrumentShortName_E>GLAS</InstrumentShortName_E>
+<InstrumentLongName_E>Geoscience laser altimeter system</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>89</No>
+<Code>301</Code>
+<Agency_E>NASA</Agency_E>
+<Type_E>Precision orbit</Type_E>
+<InstrumentShortName_E>LRA</InstrumentShortName_E>
+<InstrumentLongName_E>Laser retroreflector array</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>90</No>
+<Code>302</Code>
+<Agency_E>NASA</Agency_E>
+<Type_E>Lidar</Type_E>
+<InstrumentShortName_E>MBLA</InstrumentShortName_E>
+<InstrumentLongName_E>Multi beam laser altimeter</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>91</No>
+<Code>309</Code>
+<Agency_E>NASA</Agency_E>
+<Type_E>Cloud profile and rain radar</Type_E>
+<InstrumentShortName_E>CPR (Cloudsat)</InstrumentShortName_E>
+<InstrumentLongName_E>Cloud profiling radar</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>92</No>
+<Code>312</Code>
+<Agency_E>NASA</Agency_E>
+<Type_E>Radar</Type_E>
+<InstrumentShortName_E>NSCAT</InstrumentShortName_E>
+<InstrumentLongName_E>NASA scatterometer</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>93</No>
+<Code>313</Code>
+<Agency_E>NASA</Agency_E>
+<Type_E>Radar</Type_E>
+<InstrumentShortName_E>SeaWinds</InstrumentShortName_E>
+<InstrumentLongName_E>ADEOS II - NASA scatterometer</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>94</No>
+<Code>330</Code>
+<Agency_E>NASA</Agency_E>
+<Type_E>Earth radiation budget radiometer</Type_E>
+<InstrumentShortName_E>ACRIM</InstrumentShortName_E>
+<InstrumentLongName_E>Active cavity radiometer irradiance monitor</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>95</No>
+<Code>334</Code>
+<Agency_E>NASA</Agency_E>
+<Type_E>Total and profile ozone</Type_E>
+<InstrumentShortName_E>BUV</InstrumentShortName_E>
+<InstrumentLongName_E>Backscatter ultraviolet instrument</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>96</No>
+<Code>336</Code>
+<Agency_E>NASA</Agency_E>
+<Type_E>High-resolution optical imager</Type_E>
+<InstrumentShortName_E>ALI</InstrumentShortName_E>
+<InstrumentLongName_E>Advanced land imager</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>97</No>
+<Code>347</Code>
+<Agency_E>NASA</Agency_E>
+<Type_E>High-resolution optical imager</Type_E>
+<InstrumentShortName_E>ASTER</InstrumentShortName_E>
+<InstrumentLongName_E>Advanced spaceborne thermal emission and reflection radiometer</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>98</No>
+<Code>348</Code>
+<Agency_E>NASA</Agency_E>
+<Type_E>Earth radiation budget radiometer</Type_E>
+<InstrumentShortName_E>CERES-2</InstrumentShortName_E>
+<InstrumentLongName_E>Cloud and the Earth&apos;s radiant energy system</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>99</No>
+<Code>351</Code>
+<Agency_E>NASA</Agency_E>
+<Type_E>Atmospheric temperature and humidity sounder</Type_E>
+<InstrumentShortName_E>GPSDR</InstrumentShortName_E>
+<InstrumentLongName_E>GPS demonstration receiver</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>100</No>
+<Code>353</Code>
+<Agency_E>NASA</Agency_E>
+<Type_E>Total and profile ozone</Type_E>
+<InstrumentShortName_E>HiRDLS</InstrumentShortName_E>
+<InstrumentLongName_E>High-resolution dynamics limb sounder</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>101</No>
+<Code>354</Code>
+<Agency_E>NASA</Agency_E>
+<Type_E>Total and profile ozone</Type_E>
+<InstrumentShortName_E>HRDI</InstrumentShortName_E>
+<InstrumentLongName_E>High-resolution Doppler imager</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>102</No>
+<Code>356</Code>
+<Agency_E>NASA</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>LIS</InstrumentShortName_E>
+<InstrumentLongName_E>Lightning imaging sensor</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>103</No>
+<Code>358</Code>
+<Agency_E>NASA</Agency_E>
+<Type_E>Magnetic field, Auroal imagery Scintillation boundary</Type_E>
+<InstrumentShortName_E>PEM</InstrumentShortName_E>
+<InstrumentLongName_E>Particle environment monitor</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>104</No>
+<Code>359</Code>
+<Agency_E>NASA</Agency_E>
+<Type_E>Ocean colour instrument</Type_E>
+<InstrumentShortName_E>SeaWiFS</InstrumentShortName_E>
+<InstrumentLongName_E>Sea-viewing wide field-of-view sensor</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>105</No>
+<Code>360</Code>
+<Agency_E>NASA</Agency_E>
+<Type_E>Earth radiation budget radiometer</Type_E>
+<InstrumentShortName_E>SUSIM (UARS)</InstrumentShortName_E>
+<InstrumentLongName_E>Solar ultraviolet irradiance monitor</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>106</No>
+<Code>363</Code>
+<Agency_E>NASA</Agency_E>
+<Type_E>Total and profile ozone</Type_E>
+<InstrumentShortName_E>SBUV/1</InstrumentShortName_E>
+<InstrumentLongName_E>Solar backscatter ultraviolet 1 instrument</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>107</No>
+<Code>365</Code>
+<Agency_E>NASA</Agency_E>
+<Type_E>Imaging multi-spectral radiometer (passive microwave)</Type_E>
+<InstrumentShortName_E>TMI</InstrumentShortName_E>
+<InstrumentLongName_E>TRMM microwave imager</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>108</No>
+<Code>366</Code>
+<Agency_E>NASA</Agency_E>
+<Type_E>Imaging multi-spectral radiometer (passive microwave)</Type_E>
+<InstrumentShortName_E>JMR</InstrumentShortName_E>
+<InstrumentLongName_E>JASON-1 microwave radiometer</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>109</No>
+<Code>369</Code>
+<Agency_E>NASA</Agency_E>
+<Type_E>Total and profile ozone</Type_E>
+<InstrumentShortName_E>LIMS</InstrumentShortName_E>
+<InstrumentLongName_E>Limb infrared monitor of the stratosphere</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>110</No>
+<Code>370</Code>
+<Agency_E>NASA</Agency_E>
+<Type_E>Total and profile ozone</Type_E>
+<InstrumentShortName_E>LRIR</InstrumentShortName_E>
+<InstrumentLongName_E>Limb radiance inversion radiometer instrument</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>111</No>
+<Code>371</Code>
+<Agency_E>NASA</Agency_E>
+<Type_E>Total and profile ozone</Type_E>
+<InstrumentShortName_E>EPIC</InstrumentShortName_E>
+<InstrumentLongName_E>Earth polychromatic imaging camera</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>112</No>
+<Code>372</Code>
+<Agency_E>NASA</Agency_E>
+<Type_E>Earth radiation budget radiometer</Type_E>
+<InstrumentShortName_E>NISTAR</InstrumentShortName_E>
+<InstrumentLongName_E>NIST advanced radiometer</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>113</No>
+<Code>373</Code>
+<Agency_E>NASA</Agency_E>
+<Type_E>Magnetic field, auroal imagery scintillation boundary</Type_E>
+<InstrumentShortName_E>Plasma-Mag</InstrumentShortName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>114</No>
+<Code>374</Code>
+<Agency_E>NASA</Agency_E>
+<Type_E>Other</Type_E>
+<InstrumentShortName_E>XPS</InstrumentShortName_E>
+<InstrumentLongName_E>XUV photometer system</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>115</No>
+<Code>375</Code>
+<Agency_E>NASA</Agency_E>
+<Type_E>Imaging multi-spectral radiometer (vis/IR)</Type_E>
+<InstrumentShortName_E>VIRS</InstrumentShortName_E>
+<InstrumentLongName_E>Visible infrared scanner</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>116</No>
+<Code>376</Code>
+<Agency_E>CNES</Agency_E>
+<Type_E>Multiple direction/polarisation radiometer</Type_E>
+<InstrumentShortName_E>POLDER II</InstrumentShortName_E>
+<InstrumentLongName_E>Polarization and directionality of the Earth&apos;s reflectance - II</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>117</No>
+<Code>377</Code>
+<Agency_E>NASA</Agency_E>
+<Type_E>Earth radiation budget radiometer</Type_E>
+<InstrumentShortName_E>TIM</InstrumentShortName_E>
+<InstrumentLongName_E>Total irradiance monitor</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>118</No>
+<Code>379</Code>
+<Agency_E>NASA</Agency_E>
+<Type_E>Imaging multi-spectral radiometer (vis/IR)</Type_E>
+<InstrumentShortName_E>WFC</InstrumentShortName_E>
+<InstrumentLongName_E>Wide field camera</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>119</No>
+<Code>382</Code>
+<Agency_E>NASA</Agency_E>
+<Type_E>Spectro-radiometer</Type_E>
+<InstrumentShortName_E>CLAES</InstrumentShortName_E>
+<InstrumentLongName_E>Cryogenic limb array etalon spectrometer</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>120</No>
+<Code>383</Code>
+<Agency_E>NASA</Agency_E>
+<Type_E>Spectro-radiometer</Type_E>
+<InstrumentShortName_E>HALOE</InstrumentShortName_E>
+<InstrumentLongName_E>Halogen occultation experiment</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>121</No>
+<Code>384</Code>
+<Agency_E>NASA</Agency_E>
+<Type_E>Spectro-radiometer</Type_E>
+<InstrumentShortName_E>ISAMS</InstrumentShortName_E>
+<InstrumentLongName_E>Improved stratospheric and mesospheric sounder</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>122</No>
+<Code>385</Code>
+<Agency_E>NASA</Agency_E>
+<Type_E>Spectro-radiometer</Type_E>
+<InstrumentShortName_E>MISR</InstrumentShortName_E>
+<InstrumentLongName_E>Multi-angle imaging spectroradiometer</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>123</No>
+<Code>386</Code>
+<Agency_E>NASA</Agency_E>
+<Type_E>Spectro-radiometer</Type_E>
+<InstrumentShortName_E>MLS</InstrumentShortName_E>
+<InstrumentLongName_E>Microwave limb sounder</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>124</No>
+<Code>387</Code>
+<Agency_E>NASA</Agency_E>
+<Type_E>Spectro-radiometer</Type_E>
+<InstrumentShortName_E>MLS (EOS-Aura)</InstrumentShortName_E>
+<InstrumentLongName_E>Microwave limb sounder (EOS-Aura)</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>125</No>
+<Code>389</Code>
+<Agency_E>NASA</Agency_E>
+<Type_E>Spectro-radiometer</Type_E>
+<InstrumentShortName_E>MODIS</InstrumentShortName_E>
+<InstrumentLongName_E>Moderate-resolution imaging spectroradiometer</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>126</No>
+<Code>393</Code>
+<Agency_E>NASA</Agency_E>
+<Type_E>Gravity</Type_E>
+<InstrumentShortName_E>HAIRS</InstrumentShortName_E>
+<InstrumentLongName_E>High accuracy inter-satellite ranging system</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>127</No>
+<Code>394</Code>
+<Agency_E>NASA</Agency_E>
+<Type_E>Total and profile ozone</Type_E>
+<InstrumentShortName_E>OMI</InstrumentShortName_E>
+<InstrumentLongName_E>Ozone measuring instrument</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>128</No>
+<Code>395</Code>
+<Agency_E>NASA</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>Atmospheric corrector</InstrumentShortName_E>
+<InstrumentLongName_E>Atmospheric corrector</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>129</No>
+<Code>396</Code>
+<Agency_E>NASA</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>Hyperion</InstrumentShortName_E>
+<InstrumentLongName_E>Hyperspectral imager</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>130</No>
+<Code>399</Code>
+<Agency_E>NASA</Agency_E>
+<Type_E>Spectro-radiometer</Type_E>
+<InstrumentShortName_E>SAGE I</InstrumentShortName_E>
+<InstrumentLongName_E>Stratospheric aerosol and gas experiment - I</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>131</No>
+<Code>400</Code>
+<Agency_E>NASA</Agency_E>
+<Type_E>Spectro-radiometer</Type_E>
+<InstrumentShortName_E>SAGE II</InstrumentShortName_E>
+<InstrumentLongName_E>Stratospheric aerosol and gas experiment - II</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>132</No>
+<Code>401</Code>
+<Agency_E>NASA</Agency_E>
+<Type_E>Spectro-radiometer</Type_E>
+<InstrumentShortName_E>SAGE III</InstrumentShortName_E>
+<InstrumentLongName_E>Stratospheric aerosol and gas experiment - III</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>133</No>
+<Code>402</Code>
+<Agency_E>NASA</Agency_E>
+<Type_E>Spectro-radiometer</Type_E>
+<InstrumentShortName_E>SAMS</InstrumentShortName_E>
+<InstrumentLongName_E>Stratospheric and mesospheric sounder</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>134</No>
+<Code>403</Code>
+<Agency_E>NASA</Agency_E>
+<Type_E>Spectro-radiometer</Type_E>
+<InstrumentShortName_E>SAM-II</InstrumentShortName_E>
+<InstrumentLongName_E>Stratospheric aerosol measurement - II</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>135</No>
+<Code>404</Code>
+<Agency_E>NASA</Agency_E>
+<Type_E>Spectro-radiometer</Type_E>
+<InstrumentShortName_E>IRIS</InstrumentShortName_E>
+<InstrumentLongName_E>Infrared interferometer spectrometer</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>136</No>
+<Code>405</Code>
+<Agency_E>NASA</Agency_E>
+<Type_E>Atmospheric temperature and humidity sounder</Type_E>
+<InstrumentShortName_E>GIFTS</InstrumentShortName_E>
+<InstrumentLongName_E>Geosynchronous imaging Fourier transform spectrometer</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>137</No>
+<Code>420</Code>
+<Agency_E>NASA</Agency_E>
+<Type_E>Spectrometer</Type_E>
+<InstrumentShortName_E>AIRS</InstrumentShortName_E>
+<InstrumentLongName_E>Atmospheric Infrared sounder</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>138</No>
+<Code>426</Code>
+<Agency_E>NASA</Agency_E>
+<Type_E>Spectrometer</Type_E>
+<InstrumentShortName_E>SOLSTICE</InstrumentShortName_E>
+<InstrumentLongName_E>Solar stellar irradiance comparison experiment</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>139</No>
+<Code>430</Code>
+<Agency_E>NASA</Agency_E>
+<Type_E>Spectrometer</Type_E>
+<InstrumentShortName_E>TES</InstrumentShortName_E>
+<InstrumentLongName_E>Troposhperic emission spectrometer</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>140</No>
+<Code>431</Code>
+<Agency_E>NASA</Agency_E>
+<Type_E>Spectrometer</Type_E>
+<InstrumentShortName_E>TOMS</InstrumentShortName_E>
+<InstrumentLongName_E>Total ozone mapping spectrometer</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>141</No>
+<Code>450</Code>
+<Agency_E>JAXA</Agency_E>
+<Type_E>Communications</Type_E>
+<InstrumentShortName_E>ADEOS Comms</InstrumentShortName_E>
+<InstrumentLongName_E>Communications package for ADEOS</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>142</No>
+<Code>451</Code>
+<Agency_E>JAXA</Agency_E>
+<Type_E>Communications</Type_E>
+<InstrumentShortName_E>DCS (JAXA)</InstrumentShortName_E>
+<InstrumentLongName_E>Data collection system (JAXA)</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>143</No>
+<Code>453</Code>
+<Agency_E>NASDA</Agency_E>
+<Type_E>Communications</Type_E>
+<InstrumentShortName_E>GMS Comms</InstrumentShortName_E>
+<InstrumentLongName_E>Communications package on GMS</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>144</No>
+<Code>454</Code>
+<Agency_E>NASDA</Agency_E>
+<Type_E>Communications</Type_E>
+<InstrumentShortName_E>JERS-1 Comms</InstrumentShortName_E>
+<InstrumentLongName_E>Communications package for JERS-1</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>145</No>
+<Code>460</Code>
+<Agency_E>NASDA</Agency_E>
+<Type_E>Lidar</Type_E>
+<InstrumentShortName_E>RIS</InstrumentShortName_E>
+<InstrumentLongName_E>Retroreflector in space</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>146</No>
+<Code>461</Code>
+<Agency_E>NASDA</Agency_E>
+<Type_E>Radar</Type_E>
+<InstrumentShortName_E>PR</InstrumentShortName_E>
+<InstrumentLongName_E>Precipitation radar</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>147</No>
+<Code>462</Code>
+<Agency_E>NASDA</Agency_E>
+<Type_E>Imaging microwave radar</Type_E>
+<InstrumentShortName_E>SAR</InstrumentShortName_E>
+<InstrumentLongName_E>Synthetic aperture radar</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>148</No>
+<Code>470</Code>
+<Agency_E>JAXA</Agency_E>
+<Type_E>Imaging microwave radar</Type_E>
+<InstrumentShortName_E>PALSAR</InstrumentShortName_E>
+<InstrumentLongName_E>Phased array type L-band synthetic aperture radar</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>149</No>
+<Code>479</Code>
+<Agency_E>JAXA</Agency_E>
+<Type_E>Imaging multi-spectral radiometer (passive microwave)</Type_E>
+<InstrumentShortName_E>AMSR-E</InstrumentShortName_E>
+<InstrumentLongName_E>Advanced microwave scanning radiometer - EOS</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>150</No>
+<Code>480</Code>
+<Agency_E>JAXA</Agency_E>
+<Type_E>High resolution optical imager</Type_E>
+<InstrumentShortName_E>PRISM (ALOS)</InstrumentShortName_E>
+<InstrumentLongName_E>Panchromatic remote-sensing Instrument for stereo mapping</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>151</No>
+<Code>481</Code>
+<Agency_E>JAXA</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>AMSR</InstrumentShortName_E>
+<InstrumentLongName_E>Advanced microwave scanning radiometer</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>152</No>
+<Code>482</Code>
+<Agency_E>NASDA</Agency_E>
+<Type_E>High-resolution optical imager</Type_E>
+<InstrumentShortName_E>AVNIR</InstrumentShortName_E>
+<InstrumentLongName_E>Advanced visible and near infrared radiometer</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>153</No>
+<Code>483</Code>
+<Agency_E>JAXA</Agency_E>
+<Type_E>High-resolution optical imager</Type_E>
+<InstrumentShortName_E>AVNIR-2</InstrumentShortName_E>
+<InstrumentLongName_E>Advanced visible and near infra-red radiometer type 2</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>154</No>
+<Code>484</Code>
+<Agency_E>JAXA</Agency_E>
+<Type_E>Imager</Type_E>
+<InstrumentShortName_E>GLI</InstrumentShortName_E>
+<InstrumentLongName_E>Global imager</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>155</No>
+<Code>485</Code>
+<Agency_E>NASDA</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>MESSR</InstrumentShortName_E>
+<InstrumentLongName_E>Multispectral electronic self scanning radiometer</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>156</No>
+<Code>486</Code>
+<Agency_E>NASDA</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>MSR</InstrumentShortName_E>
+<InstrumentLongName_E>Microwave scanning radiometer</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>157</No>
+<Code>487</Code>
+<Agency_E>NASDA</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>OCTS</InstrumentShortName_E>
+<InstrumentLongName_E>Ocean color and temperature scanner</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>158</No>
+<Code>488</Code>
+<Agency_E>NASDA</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>OPS</InstrumentShortName_E>
+<InstrumentLongName_E>Optical sensor</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>159</No>
+<Code>489</Code>
+<Agency_E>NASDA</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>VISSR (GMS-5)</InstrumentShortName_E>
+<InstrumentLongName_E>Visible and infrared spin scan radiometer (GMS-5)</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>160</No>
+<Code>490</Code>
+<Agency_E>NASDA</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>VTIR</InstrumentShortName_E>
+<InstrumentLongName_E>Visible and thermal infrared radiometer</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>161</No>
+<Code>510</Code>
+<Agency_E>NASDA</Agency_E>
+<Type_E>Spectrometer</Type_E>
+<InstrumentShortName_E>ILAS-I</InstrumentShortName_E>
+<InstrumentLongName_E>Improved limb atmospheric spectrometer</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>162</No>
+<Code>511</Code>
+<Agency_E>NASDA</Agency_E>
+<Type_E>Spectrometer</Type_E>
+<InstrumentShortName_E>ILAS-II</InstrumentShortName_E>
+<InstrumentLongName_E>Improved limb atmosphiric spectrometer</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>163</No>
+<Code>512</Code>
+<Agency_E>NASDA</Agency_E>
+<Type_E>Spectrometer</Type_E>
+<InstrumentShortName_E>IMG</InstrumentShortName_E>
+<InstrumentLongName_E>Inferometric monitor of greenhouse gases</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>164</No>
+<Code>514</Code>
+<Agency_E>NASDA</Agency_E>
+<Type_E>Space environment</Type_E>
+<InstrumentShortName_E>SEM</InstrumentShortName_E>
+<InstrumentLongName_E>Space environment monitor (NASDA)</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>165</No>
+<Code>515</Code>
+<Agency_E>JAXA</Agency_E>
+<Type_E>Total and profile ozone</Type_E>
+<InstrumentShortName_E>SOFIS</InstrumentShortName_E>
+<InstrumentLongName_E>Solar occultation Fourier transform spectrometer for inclined orbit satellite</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>166</No>
+<Code>516</Code>
+<Agency_E>JAXA</Agency_E>
+<Type_E>Spectrometer</Type_E>
+<InstrumentShortName_E>TANSO-FTS</InstrumentShortName_E>
+<InstrumentLongName_E>Thermal and Near infrared Sensor for carbon Observations (TANSO) Fourier Transform Spectrometer (FTS)</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>167</No>
+<Code>517</Code>
+<Agency_E>JAXA</Agency_E>
+<Type_E>Imager</Type_E>
+<InstrumentShortName_E>TANSO-CAI</InstrumentShortName_E>
+<InstrumentLongName_E>Thermal and Near infrared Sensor for carbon Observations (TANSO) Cloud and Aerosol Imager (CAI)</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>168</No>
+<Code>540</Code>
+<Agency_E>NOAA</Agency_E>
+<Type_E>Communications</Type_E>
+<InstrumentShortName_E>DCS (NOAA)</InstrumentShortName_E>
+<InstrumentLongName_E>Data-collection system (NOAA)</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>169</No>
+<Code>541</Code>
+<Agency_E>NOAA</Agency_E>
+<Type_E>Communications</Type_E>
+<InstrumentShortName_E>GOES Comms</InstrumentShortName_E>
+<InstrumentLongName_E>Communications package on GOES</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>170</No>
+<Code>542</Code>
+<Agency_E>NOAA</Agency_E>
+<Type_E>Communications</Type_E>
+<InstrumentShortName_E>LANDSAT Comms</InstrumentShortName_E>
+<InstrumentLongName_E>Communications package for LANDSAT</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>171</No>
+<Code>543</Code>
+<Agency_E>NOAA</Agency_E>
+<Type_E>Communications</Type_E>
+<InstrumentShortName_E>NOAA Comms</InstrumentShortName_E>
+<InstrumentLongName_E>Communications package for NOAA</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>172</No>
+<Code>544</Code>
+<Agency_E>NOAA</Agency_E>
+<Type_E>Communications</Type_E>
+<InstrumentShortName_E>S&amp;R (GOES)</InstrumentShortName_E>
+<InstrumentLongName_E>Search and rescue</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>173</No>
+<Code>545</Code>
+<Agency_E>NOAA</Agency_E>
+<Type_E>Communications</Type_E>
+<InstrumentShortName_E>S&amp;R (NOAA)</InstrumentShortName_E>
+<InstrumentLongName_E>Search and rescue</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>174</No>
+<Code>546</Code>
+<Agency_E>NOAA</Agency_E>
+<Type_E>Communications</Type_E>
+<InstrumentShortName_E>WEFAX</InstrumentShortName_E>
+<InstrumentLongName_E>Weather facsimile</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>175</No>
+<Code>547</Code>
+<Agency_E>NOAA</Agency_E>
+<Type_E>Spectrometer</Type_E>
+<InstrumentShortName_E>SEM(GOES)</InstrumentShortName_E>
+<InstrumentLongName_E>Space environment monitor</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>176</No>
+<Code>550</Code>
+<Agency_E>NOAA</Agency_E>
+<Type_E>Magnetic field</Type_E>
+<InstrumentShortName_E>SSM</InstrumentShortName_E>
+<InstrumentLongName_E>Special sensor magnetometer</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>177</No>
+<Code>551</Code>
+<Agency_E>NOAA</Agency_E>
+<Type_E>Magnetic field</Type_E>
+<InstrumentShortName_E>SSJ/4</InstrumentShortName_E>
+<InstrumentLongName_E>Special sensor precipitating plasma monitor</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>178</No>
+<Code>552</Code>
+<Agency_E>NOAA</Agency_E>
+<Type_E>Space environment</Type_E>
+<InstrumentShortName_E>SSIES-2</InstrumentShortName_E>
+<InstrumentLongName_E>Special sensor ionospheric plasma drift/scintillation meter</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>179</No>
+<Code>553</Code>
+<Agency_E>NOAA</Agency_E>
+<Type_E>Space environment</Type_E>
+<InstrumentShortName_E>SSB/X-2</InstrumentShortName_E>
+<InstrumentLongName_E>Special sensor gamma ray particle detector</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>180</No>
+<Code>570</Code>
+<Agency_E>NOAA</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>AMSU-A</InstrumentShortName_E>
+<InstrumentLongName_E>Advanced microwave sounding unit-A</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>181</No>
+<Code>574</Code>
+<Agency_E>NOAA</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>AMSU-B</InstrumentShortName_E>
+<InstrumentLongName_E>Advanced microwave sounding unit-B</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>182</No>
+<Code>580</Code>
+<Agency_E>NOAA</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>ATOVS (HIRS/3 + AMSU + AVHRR/3)</InstrumentShortName_E>
+<InstrumentLongName_E>Advanced TIROS operational vertical sounder</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>183</No>
+<Code>590</Code>
+<Agency_E>NOAA</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>AVHRR/2</InstrumentShortName_E>
+<InstrumentLongName_E>Advanced very high-resolution radiometer/2</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>184</No>
+<Code>591</Code>
+<Agency_E>NOAA</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>AVHRR/3</InstrumentShortName_E>
+<InstrumentLongName_E>Advanced very high-resolution radiometer/3</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>185</No>
+<Code>592</Code>
+<Agency_E>NOAA</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>AVHRR/4</InstrumentShortName_E>
+<InstrumentLongName_E>Advanced very high-resolution radiometer/4</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>186</No>
+<Code>600</Code>
+<Agency_E>NOAA</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>ERBE</InstrumentShortName_E>
+<InstrumentLongName_E>Earth&apos;s radiation budget experiment</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>187</No>
+<Code>601</Code>
+<Agency_E>NOAA</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>ETM+</InstrumentShortName_E>
+<InstrumentLongName_E>Enhanced thematic mapper</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>188</No>
+<Code>605</Code>
+<Agency_E>NOAA</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>HIRS/2</InstrumentShortName_E>
+<InstrumentLongName_E>High-resolution infrared sounder/2</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>189</No>
+<Code>606</Code>
+<Agency_E>NOAA</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>HIRS/3</InstrumentShortName_E>
+<InstrumentLongName_E>High-resolution infrared sounder/3</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>190</No>
+<Code>607</Code>
+<Agency_E>NOAA</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>HIRS/4</InstrumentShortName_E>
+<InstrumentLongName_E>High-resolution infrared sounder/4</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>191</No>
+<Code>615</Code>
+<Agency_E>NOAA</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>IMAGER</InstrumentShortName_E>
+<InstrumentLongName_E>Imager</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>192</No>
+<Code>616</Code>
+<Agency_E>NOAA</Agency_E>
+<Type_E>Imaging multi-spectral radiometer (vis/IR)</Type_E>
+<InstrumentShortName_E>VIIRS</InstrumentShortName_E>
+<InstrumentLongName_E>Visible/infrared imager radiometer suite</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>193</No>
+<Code>620</Code>
+<Agency_E>NOAA</Agency_E>
+<Type_E>Atmospheric temperature and humidity sounder</Type_E>
+<InstrumentShortName_E>CrIRS/NP</InstrumentShortName_E>
+<InstrumentLongName_E>Cross track infrared sounder/NPOESS</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>194</No>
+<Code>621</Code>
+<Agency_E>NOAA</Agency_E>
+<Type_E>Atmospheric temperature and humidity sounder</Type_E>
+<InstrumentShortName_E>ATMS</InstrumentShortName_E>
+<InstrumentLongName_E>Advanced technology microwave sounder</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>195</No>
+<Code>622</Code>
+<Agency_E>NOAA</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>MSS</InstrumentShortName_E>
+<InstrumentLongName_E>Multispectral scanning system</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>196</No>
+<Code>623</Code>
+<Agency_E>NOAA</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>MSU</InstrumentShortName_E>
+<InstrumentLongName_E>Microwave sounding unit</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>197</No>
+<Code>624</Code>
+<Agency_E>NOAA</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>SBUV/2</InstrumentShortName_E>
+<InstrumentLongName_E>Solar backscatter ultraviolet instrument/2</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>198</No>
+<Code>625</Code>
+<Agency_E>NOAA</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>SBUV/3</InstrumentShortName_E>
+<InstrumentLongName_E>Solar backscatter ultraviolet instrument/3</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>199</No>
+<Code>626</Code>
+<Agency_E>NOAA</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>SOUNDER</InstrumentShortName_E>
+<InstrumentLongName_E>SOUNDER</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>200</No>
+<Code>627</Code>
+<Agency_E>NOAA</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>SSU</InstrumentShortName_E>
+<InstrumentLongName_E>Stratospheric sounding unit</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>201</No>
+<Code>628</Code>
+<Agency_E>NOAA</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>TM</InstrumentShortName_E>
+<InstrumentLongName_E>Thematic mapper</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>202</No>
+<Code>629</Code>
+<Agency_E>NOAA</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>TOVS (HIRS/2 + MSU + SSU)</InstrumentShortName_E>
+<InstrumentLongName_E>TIROS operational vertical sounder</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>203</No>
+<Code>630</Code>
+<Agency_E>NOAA</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>VAS</InstrumentShortName_E>
+<InstrumentLongName_E>VISSR atmospheric sounder</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>204</No>
+<Code>631</Code>
+<Agency_E>NOAA</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>SSZ</InstrumentShortName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>205</No>
+<Code>645</Code>
+<Agency_E>NOAA</Agency_E>
+<Type_E>Spectrometer</Type_E>
+<InstrumentShortName_E>SEM</InstrumentShortName_E>
+<InstrumentLongName_E>Space environment monitor</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>206</No>
+<Code>650</Code>
+<Agency_E>NRSCC</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>MVIRSR (10 channel)</InstrumentShortName_E>
+<InstrumentLongName_E>Multispectral visible and infrared scan radiometer</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>207</No>
+<Code>651</Code>
+<Agency_E>NRSCC</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>MVIRSR (3 channel)</InstrumentShortName_E>
+<InstrumentLongName_E>Multispectral visible and infrared scan radiometer</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>208</No>
+<Code>652</Code>
+<Agency_E>NRSCC</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>MVIRSR (5 channel)</InstrumentShortName_E>
+<InstrumentLongName_E>Multispectral visible and infrared scan radiometer</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>209</No>
+<Code>670</Code>
+<Agency_E>NSAU</Agency_E>
+<Type_E>Radar</Type_E>
+<InstrumentShortName_E>RLSBO</InstrumentShortName_E>
+<InstrumentLongName_E>Side looking microwave radar</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>210</No>
+<Code>680</Code>
+<Agency_E>NSAU</Agency_E>
+<Type_E>High-resolution optical imager</Type_E>
+<InstrumentShortName_E>MSU-EU</InstrumentShortName_E>
+<InstrumentLongName_E>Multi-spectral radiometer with high resolution</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>211</No>
+<Code>681</Code>
+<Agency_E>NSAU</Agency_E>
+<Type_E>Imaging multi-spectral radiometer (vis/IR)</Type_E>
+<InstrumentShortName_E>MSU-UM</InstrumentShortName_E>
+<InstrumentLongName_E>Visible multi-spectral radiometer</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>212</No>
+<Code>682</Code>
+<Agency_E>NSAU</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>RM-08</InstrumentShortName_E>
+<InstrumentLongName_E>Imaging microwave radiometer</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>213</No>
+<Code>683</Code>
+<Agency_E>NSAU</Agency_E>
+<Type_E>High-resolution optical imager</Type_E>
+<InstrumentShortName_E>SU-UMS</InstrumentShortName_E>
+<InstrumentLongName_E>Stereo radiometer with high resolution</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>214</No>
+<Code>684</Code>
+<Agency_E>NSAU</Agency_E>
+<Type_E>High-resolution optical imager</Type_E>
+<InstrumentShortName_E>SU-VR</InstrumentShortName_E>
+<InstrumentLongName_E>Visible radiometer with high resolution</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>215</No>
+<Code>685</Code>
+<Agency_E>NSAU</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>TRASSER</InstrumentShortName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>216</No>
+<Code>700</Code>
+<Agency_E>ROSCOSMOS</Agency_E>
+<Type_E>Communications</Type_E>
+<InstrumentShortName_E>KONDOR-2</InstrumentShortName_E>
+<InstrumentLongName_E>Data collection and transmission system</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>217</No>
+<Code>701</Code>
+<Agency_E>ROSCOSMOS</Agency_E>
+<Type_E>Communications</Type_E>
+<InstrumentShortName_E>BRK</InstrumentShortName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>218</No>
+<Code>710</Code>
+<Agency_E>ROSCOSMOS</Agency_E>
+<Type_E>Lidar</Type_E>
+<InstrumentShortName_E>ALISSA</InstrumentShortName_E>
+<InstrumentLongName_E>Backscatter lidar</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>219</No>
+<Code>712</Code>
+<Agency_E>ROSCOSMOS</Agency_E>
+<Type_E>Lidar</Type_E>
+<InstrumentShortName_E>Balkan-2 lidar</InstrumentShortName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>220</No>
+<Code>715</Code>
+<Agency_E>ROSCOSMOS</Agency_E>
+<Type_E>Lidar</Type_E>
+<InstrumentShortName_E>MK-4</InstrumentShortName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>221</No>
+<Code>716</Code>
+<Agency_E>ROSCOSMOS</Agency_E>
+<Type_E>Lidar</Type_E>
+<InstrumentShortName_E>MK-4M</InstrumentShortName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>222</No>
+<Code>730</Code>
+<Agency_E>ROSCOSMOS</Agency_E>
+<Type_E>Radar</Type_E>
+<InstrumentShortName_E>Greben</InstrumentShortName_E>
+<InstrumentLongName_E>Radar altimeter</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>223</No>
+<Code>731</Code>
+<Agency_E>ROSCOSMOS</Agency_E>
+<Type_E>Radar</Type_E>
+<InstrumentShortName_E>SAR-10</InstrumentShortName_E>
+<InstrumentLongName_E>Synthetic aperture radar</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>224</No>
+<Code>732</Code>
+<Agency_E>ROSCOSMOS</Agency_E>
+<Type_E>Radar</Type_E>
+<InstrumentShortName_E>SAR-3</InstrumentShortName_E>
+<InstrumentLongName_E>Synthetic aperture radar</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>225</No>
+<Code>733</Code>
+<Agency_E>ROSCOSMOS</Agency_E>
+<Type_E>Radar</Type_E>
+<InstrumentShortName_E>SAR-70</InstrumentShortName_E>
+<InstrumentLongName_E>Synthetic aperture radar</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>226</No>
+<Code>740</Code>
+<Agency_E>ROSCOSMOS</Agency_E>
+<Type_E>Radar</Type_E>
+<InstrumentShortName_E>SLR-3</InstrumentShortName_E>
+<InstrumentLongName_E>Side looking radar</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>227</No>
+<Code>745</Code>
+<Agency_E>ROSCOSMOS</Agency_E>
+<Type_E>Radar</Type_E>
+<InstrumentShortName_E>Travers SAR</InstrumentShortName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>228</No>
+<Code>750</Code>
+<Agency_E>ROSCOSMOS</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>174-K</InstrumentShortName_E>
+<InstrumentLongName_E>Temperature and humidity profiler</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>229</No>
+<Code>751</Code>
+<Agency_E>ROSCOSMOS</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>BTVK</InstrumentShortName_E>
+<InstrumentLongName_E>Scanning television radiometer</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>230</No>
+<Code>752</Code>
+<Agency_E>ROSCOSMOS</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>Chaika</InstrumentShortName_E>
+<InstrumentLongName_E>Scanning infrared radiometer</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>231</No>
+<Code>753</Code>
+<Agency_E>ROSCOSMOS</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>DELTA-2</InstrumentShortName_E>
+<InstrumentLongName_E>Multispectral microwave scanner</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>232</No>
+<Code>755</Code>
+<Agency_E>ROSCOSMOS</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>IKAR-D</InstrumentShortName_E>
+<InstrumentLongName_E>Multispectral microwave scanner</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>233</No>
+<Code>756</Code>
+<Agency_E>ROSCOSMOS</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>IKAR-N</InstrumentShortName_E>
+<InstrumentLongName_E>Multispectral microwave scanner</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>234</No>
+<Code>757</Code>
+<Agency_E>ROSCOSMOS</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>IKAR-P</InstrumentShortName_E>
+<InstrumentLongName_E>Multispectral microwave scanner</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>235</No>
+<Code>760</Code>
+<Agency_E>ROSCOSMOS</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>ISP</InstrumentShortName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>236</No>
+<Code>761</Code>
+<Agency_E>ROSCOSMOS</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>KFA-1000</InstrumentShortName_E>
+<InstrumentLongName_E>Photographic camera</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>237</No>
+<Code>762</Code>
+<Agency_E>ROSCOSMOS</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>KFA-200</InstrumentShortName_E>
+<InstrumentLongName_E>Photographic camera</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>238</No>
+<Code>763</Code>
+<Agency_E>ROSCOSMOS</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>KFA-3000</InstrumentShortName_E>
+<InstrumentLongName_E>Photographic camera</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>239</No>
+<Code>770</Code>
+<Agency_E>ROSCOSMOS</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>Klimat</InstrumentShortName_E>
+<InstrumentLongName_E>Scanning infrared radiometer</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>240</No>
+<Code>771</Code>
+<Agency_E>ROSCOSMOS</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>Klimat-2</InstrumentShortName_E>
+<InstrumentLongName_E>Scanning infrared radiometer</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>241</No>
+<Code>775</Code>
+<Agency_E>ROSCOSMOS</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>MIRAS</InstrumentShortName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>242</No>
+<Code>776</Code>
+<Agency_E>ROSCOSMOS</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>MIVZA</InstrumentShortName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>243</No>
+<Code>777</Code>
+<Agency_E>ROSCOSMOS</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>MIVZA-M</InstrumentShortName_E>
+<InstrumentLongName_E>Microwave scanning radiometer</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>244</No>
+<Code>780</Code>
+<Agency_E>ROSCOSMOS</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>MR-2000</InstrumentShortName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>245</No>
+<Code>781</Code>
+<Agency_E>ROSCOSMOS</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>MR-2000M</InstrumentShortName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>246</No>
+<Code>785</Code>
+<Agency_E>ROSCOSMOS</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>MR-900</InstrumentShortName_E>
+<InstrumentLongName_E>Scanning telephotometer</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>247</No>
+<Code>786</Code>
+<Agency_E>ROSCOSMOS</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>MR-900B</InstrumentShortName_E>
+<InstrumentLongName_E>Scanning visual band telephotometer</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>248</No>
+<Code>790</Code>
+<Agency_E>ROSCOSMOS</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>MSU-E</InstrumentShortName_E>
+<InstrumentLongName_E>Multispectral high-resolution electronic scanner</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>249</No>
+<Code>791</Code>
+<Agency_E>ROSCOSMOS</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>MSU-E1</InstrumentShortName_E>
+<InstrumentLongName_E>Multispectral high-resolution electronic scanner</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>250</No>
+<Code>792</Code>
+<Agency_E>ROSCOSMOS</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>MSU-E2</InstrumentShortName_E>
+<InstrumentLongName_E>Multispectral high-resolution electronic scanner</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>251</No>
+<Code>793</Code>
+<Agency_E>ROSCOSMOS</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>MSU-M</InstrumentShortName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>252</No>
+<Code>794</Code>
+<Agency_E>ROSCOSMOS</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>MSU-S</InstrumentShortName_E>
+<InstrumentLongName_E>Multispectral medium-resolution scanner</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>253</No>
+<Code>795</Code>
+<Agency_E>ROSCOSMOS</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>MSU-SK</InstrumentShortName_E>
+<InstrumentLongName_E>Multispectral medium-resolution conical scanner</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>254</No>
+<Code>796</Code>
+<Agency_E>ROSCOSMOS</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>MSU-V</InstrumentShortName_E>
+<InstrumentLongName_E>Multispectral high-resolution conical scanner</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>255</No>
+<Code>810</Code>
+<Agency_E>ROSCOSMOS</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>MTZA</InstrumentShortName_E>
+<InstrumentLongName_E>Scanning microwave radiometer</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>256</No>
+<Code>815</Code>
+<Agency_E>ROSCOSMOS</Agency_E>
+<Type_E>Imaging multi-spectral radiometer (passive microwave)</Type_E>
+<InstrumentShortName_E>MZOAS</InstrumentShortName_E>
+<InstrumentLongName_E>Scanning microwave radiometer</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>257</No>
+<Code>820</Code>
+<Agency_E>ROSCOSMOS</Agency_E>
+<Type_E>Imaging multi-spectral radiometer (passive microwave)</Type_E>
+<InstrumentShortName_E>R-225</InstrumentShortName_E>
+<InstrumentLongName_E>Single channel microwave radiometer</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>258</No>
+<Code>821</Code>
+<Agency_E>ROSCOSMOS</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>R-400</InstrumentShortName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>259</No>
+<Code>822</Code>
+<Agency_E>ROSCOSMOS</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>R-600</InstrumentShortName_E>
+<InstrumentLongName_E>Single channel microwave radiometer</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>260</No>
+<Code>830</Code>
+<Agency_E>ROSCOSMOS</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>RMS</InstrumentShortName_E>
+<InstrumentLongName_E>Radiation measurement system</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>261</No>
+<Code>835</Code>
+<Agency_E>ROSCOSMOS</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>TV camera</InstrumentShortName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>262</No>
+<Code>836</Code>
+<Agency_E>ROSCOSMOS</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>SILVA</InstrumentShortName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>263</No>
+<Code>840</Code>
+<Agency_E>ROSCOSMOS</Agency_E>
+<Type_E>Spectro-radiometer</Type_E>
+<InstrumentShortName_E>SROSMO</InstrumentShortName_E>
+<InstrumentLongName_E>Spectroradiometer for ocean monitoring</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>264</No>
+<Code>850</Code>
+<Agency_E>ROSCOSMOS</Agency_E>
+<Type_E>Spectrometer</Type_E>
+<InstrumentShortName_E>BUFS-2</InstrumentShortName_E>
+<InstrumentLongName_E>Backscatter spectrometer/2</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>265</No>
+<Code>851</Code>
+<Agency_E>ROSCOSMOS</Agency_E>
+<Type_E>Spectrometer</Type_E>
+<InstrumentShortName_E>BUFS-4</InstrumentShortName_E>
+<InstrumentLongName_E>Backscatter spectrometer/4</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>266</No>
+<Code>855</Code>
+<Agency_E>ROSCOSMOS</Agency_E>
+<Type_E>Spectrometer</Type_E>
+<InstrumentShortName_E>ISTOK-1</InstrumentShortName_E>
+<InstrumentLongName_E>Infrared spectrometer</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>267</No>
+<Code>856</Code>
+<Agency_E>ROSCOSMOS</Agency_E>
+<Type_E>Spectrometer</Type_E>
+<InstrumentShortName_E>SFM-2</InstrumentShortName_E>
+<InstrumentLongName_E>Spectrometer to measure direct solar radiation</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>268</No>
+<Code>857</Code>
+<Agency_E>ROSCOSMOS</Agency_E>
+<Type_E>Spectrometer</Type_E>
+<InstrumentShortName_E>DOPI</InstrumentShortName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>269</No>
+<Code>858</Code>
+<Agency_E>ROSCOSMOS</Agency_E>
+<Type_E>Spectrometer</Type_E>
+<InstrumentShortName_E>KGI-4</InstrumentShortName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>270</No>
+<Code>859</Code>
+<Agency_E>ROSCOSMOS</Agency_E>
+<Type_E>Spectrometer</Type_E>
+<InstrumentShortName_E>Ozon-M</InstrumentShortName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>271</No>
+<Code>860</Code>
+<Agency_E>ROSCOSMOS</Agency_E>
+<Type_E>Spectrometer</Type_E>
+<InstrumentShortName_E>RMK-2</InstrumentShortName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>272</No>
+<Code>900</Code>
+<Agency_E>NOAA</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>MAXIE</InstrumentShortName_E>
+<InstrumentLongName_E>Magnetospheric atmospheric X-ray imaging experiment</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>273</No>
+<Code>901</Code>
+<Agency_E>NOAA</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>OLS</InstrumentShortName_E>
+<InstrumentLongName_E>Operational linescan system</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>274</No>
+<Code>905</Code>
+<Agency_E>NOAA</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>SSM/I</InstrumentShortName_E>
+<InstrumentLongName_E>Mission sensor microwave imager</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>275</No>
+<Code>906</Code>
+<Agency_E>NOAA</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>SSM/T-1</InstrumentShortName_E>
+<InstrumentLongName_E>Mission sensor microwave temperature sounder</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>276</No>
+<Code>907</Code>
+<Agency_E>NOAA</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>SSM/T-2</InstrumentShortName_E>
+<InstrumentLongName_E>Mission sensor microwave water vapour sounder</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>277</No>
+<Code>908</Code>
+<Agency_E>NOAA</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>SSMIS</InstrumentShortName_E>
+<InstrumentLongName_E>Special sensor microwave imager sounder</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>278</No>
+<Code>910</Code>
+<Agency_E>NOAA</Agency_E>
+<Type_E>Radiometer</Type_E>
+<InstrumentShortName_E>SXI</InstrumentShortName_E>
+<InstrumentLongName_E>Solar X-ray imager</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>279</No>
+<Code>930</Code>
+<Agency_E>NOAA</Agency_E>
+<Type_E>Spectrometer</Type_E>
+<InstrumentShortName_E>EHIC</InstrumentShortName_E>
+<InstrumentLongName_E>Energetic heavy ion composition experiment</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>280</No>
+<Code>931</Code>
+<Agency_E>NOAA</Agency_E>
+<Type_E>Spectrometer</Type_E>
+<InstrumentShortName_E>X-ray astronomy payload</InstrumentShortName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>281</No>
+<Code>932</Code>
+<Agency_E>NRSCC</Agency_E>
+<Type_E>Imaging multi-spectral radiometer (vis/IR)</Type_E>
+<InstrumentShortName_E>IVISSR (FY-2)</InstrumentShortName_E>
+<InstrumentLongName_E>Improved multispectral visible and Infrared scan radiometer (5 channels)</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>282</No>
+<Code>933</Code>
+<Agency_E>NRSCC</Agency_E>
+<Type_E>Atmospheric temperature and humidity sounder</Type_E>
+<InstrumentShortName_E>IRAS</InstrumentShortName_E>
+<InstrumentLongName_E>Infrared atmospheric sounder</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>283</No>
+<Code>934</Code>
+<Agency_E>NRSCC</Agency_E>
+<Type_E>Atmospheric temperature and humidity sounder</Type_E>
+<InstrumentShortName_E>MWAS</InstrumentShortName_E>
+<InstrumentLongName_E>Microwave atmospheric sounder</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>284</No>
+<Code>935</Code>
+<Agency_E>NRSCC</Agency_E>
+<Type_E>Atmospheric temperature and humidity sounder</Type_E>
+<InstrumentShortName_E>IMWAS</InstrumentShortName_E>
+<InstrumentLongName_E>Improved Microwave atmospheric sounder</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>285</No>
+<Code>936</Code>
+<Agency_E>NRSCC</Agency_E>
+<Type_E>Atmospheric temperature and humidity sounder</Type_E>
+<InstrumentShortName_E>MWHS</InstrumentShortName_E>
+<InstrumentLongName_E>Microwave humidity sounder</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>286</No>
+<Code>937</Code>
+<Agency_E>NRSCC</Agency_E>
+<Type_E>Imaging multi-spectral radiometer (vis/IR)</Type_E>
+<InstrumentShortName_E>MVIRS</InstrumentShortName_E>
+<InstrumentLongName_E>Moderate resolution visible and infrared imaging spectroradiometer</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>287</No>
+<Code>938</Code>
+<Agency_E>NRSCC</Agency_E>
+<Type_E>Imaging multi-spectral radiometer (passive microwave)</Type_E>
+<InstrumentShortName_E>MWRI</InstrumentShortName_E>
+<InstrumentLongName_E>Microwave radiation imager</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>288</No>
+<Code>940</Code>
+<Agency_E>ROSCOSMOS</Agency_E>
+<Type_E>Atmospheric temperature and humidity sounder</Type_E>
+<InstrumentShortName_E>MTVZA-OK</InstrumentShortName_E>
+<InstrumentLongName_E>Scanning microwave radiometer</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>289</No>
+<Code>941</Code>
+<Agency_E>CNES</Agency_E>
+<Type_E>Atmospheric temperature and humidity sounder</Type_E>
+<InstrumentShortName_E>SAPHIR</InstrumentShortName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>290</No>
+<Code>944</Code>
+<Agency_E>NOAA</Agency_E>
+<Type_E>Radar altimeter</Type_E>
+<InstrumentShortName_E>ALT</InstrumentShortName_E>
+<InstrumentLongName_E>Altimeter</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>291</No>
+<Code>945</Code>
+<Agency_E>NOAA</Agency_E>
+<Type_E>Earth radiation budget radiometer</Type_E>
+<InstrumentShortName_E>TSIS</InstrumentShortName_E>
+<InstrumentLongName_E>Total solar irradiance sensor</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>292</No>
+<Code>946</Code>
+<Agency_E>NOAA</Agency_E>
+<Type_E>Imaging multi-spectral radiometer (passive microwave)</Type_E>
+<InstrumentShortName_E>CMIS</InstrumentShortName_E>
+<InstrumentLongName_E>Conical-scanning microwave imager/sounder</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>293</No>
+<Code>947</Code>
+<Agency_E>NOAA</Agency_E>
+<Type_E>Total and profile ozone</Type_E>
+<InstrumentShortName_E>OMPS</InstrumentShortName_E>
+<InstrumentLongName_E>Ozone mapping and profiler suite</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>294</No>
+<Code>948</Code>
+<Agency_E>NOAA</Agency_E>
+<Type_E>Space environment atmospheric temperature and humidity sounder</Type_E>
+<InstrumentShortName_E>GPSOS</InstrumentShortName_E>
+<InstrumentLongName_E>Global positioning system occultation sensor</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>295</No>
+<Code>949</Code>
+<Agency_E>NOAA</Agency_E>
+<Type_E>Magnetic field, Auroal imagery Scintillation boundary</Type_E>
+<InstrumentShortName_E>SESS</InstrumentShortName_E>
+<InstrumentLongName_E>Space environmental sensor suite</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>296</No>
+<Code>950</Code>
+<Agency_E>NRSCC</Agency_E>
+<Type_E>Imaging multi-spectral radiometer (vis/IR)</Type_E>
+<InstrumentShortName_E>VIRR</InstrumentShortName_E>
+<InstrumentLongName_E>Multispectral visible and infrared scan radiometer (10 channels)</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>297</No>
+<Code>951</Code>
+<Agency_E>NRSCC</Agency_E>
+<Type_E>Total and profile ozone</Type_E>
+<InstrumentShortName_E>TOM</InstrumentShortName_E>
+<InstrumentLongName_E>Total ozone mapper</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>298</No>
+<Code>952</Code>
+<Agency_E>NRSCC</Agency_E>
+<Type_E>Total and profile ozone</Type_E>
+<InstrumentShortName_E>OP</InstrumentShortName_E>
+<InstrumentLongName_E>Ozone profiler</InstrumentLongName_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>299</No>
+<Code>953-999</Code>
+<Agency_E>Reserved</Agency_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>300</No>
+<Code>1000-2046</Code>
+<Agency_E>Reserved for long-term future use</Agency_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+<Exp_CommonTableC08_E>
+<No>301</No>
+<Code>2047</Code>
+<Agency_E>Missing value</Agency_E>
+<Status>Operational</Status>
+</Exp_CommonTableC08_E>
+</dataroot>

@@ -1,0 +1,404 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataroot xmlns:od="urn:schemas-microsoft-com:officedata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  xsi:noNamespaceSchemaLocation="Exporting_BUFRTableC_E.xsd" generated="2010-04-08T16:31:06">
+<Exporting_BUFRTableC_E>
+<No>1</No>
+<Edition>3</Edition>
+<FXY>201YYY</FXY>
+<OperatorName>Change data width</OperatorName>
+<OperationDefinition>Add (Y-128) bits to the data width given for each data element in Table B, other than CCITT IA5 (character) data, code or flag tables.</OperationDefinition>
+<Status>Operational</Status>
+<Notes>Notes: (see)#BUFR14_2_0_CREX6_2_0_Notes.doc#B_TableC_3</Notes>
+</Exporting_BUFRTableC_E>
+<Exporting_BUFRTableC_E>
+<No>2</No>
+<Edition>3</Edition>
+<FXY>202YYY</FXY>
+<OperatorName>Change scale</OperatorName>
+<OperationDefinition>Add Y-128 to the scale for each data element in Table B, other than CCITT IA5 (character) data, code or flag tables.</OperationDefinition>
+<Status>Operational</Status>
+</Exporting_BUFRTableC_E>
+<Exporting_BUFRTableC_E>
+<No>3</No>
+<Edition>3</Edition>
+<FXY>203YYY</FXY>
+<OperatorName>Change reference values</OperatorName>
+<OperationDefinition>Subsequent element descriptors define new reference values for corresponding Table B entries. Each new reference value is represented by Y bits in the Data section. Definition of new reference values
+is concluded by coding this operator with Y = 255. Negative reference values shall be represented by a positive integer with the left-most bit (bit 1) set to 1.</OperationDefinition>
+<Status>Operational</Status>
+</Exporting_BUFRTableC_E>
+<Exporting_BUFRTableC_E>
+<No>4</No>
+<Edition>3</Edition>
+<FXY>204YYY</FXY>
+<OperatorName>Add associated field</OperatorName>
+<OperationDefinition>Precede each data element with Y bits of information.  This operation associates a data field (e.g. quality control information) of Y bits with each data element.</OperationDefinition>
+<Status>Operational</Status>
+</Exporting_BUFRTableC_E>
+<Exporting_BUFRTableC_E>
+<No>5</No>
+<Edition>3</Edition>
+<FXY>205YYY</FXY>
+<OperatorName>Signify character</OperatorName>
+<OperationDefinition>Y characters (CCITT International Alphabet No. 5) are inserted as a data field of Y x 8 bits in length.</OperationDefinition>
+<Status>Operational</Status>
+</Exporting_BUFRTableC_E>
+<Exporting_BUFRTableC_E>
+<No>6</No>
+<Edition>3</Edition>
+<FXY>206YYY</FXY>
+<OperatorName>Signify data width for the immediately following local descriptor</OperatorName>
+<OperationDefinition>Y bits of data are described by the immediately following descriptor.</OperationDefinition>
+<Status>Operational</Status>
+</Exporting_BUFRTableC_E>
+<Exporting_BUFRTableC_E>
+<No>7</No>
+<Edition>3</Edition>
+<FXY>221YYY</FXY>
+<OperatorName>Data not present</OperatorName>
+<OperationDefinition>Data values present in section 4 (Data section) corresponding to the following YYY descriptors shall be limited to data from classes 1-9, and class 31.</OperationDefinition>
+<Status>Operational</Status>
+</Exporting_BUFRTableC_E>
+<Exporting_BUFRTableC_E>
+<No>8</No>
+<Edition>3</Edition>
+<FXY>222000</FXY>
+<OperatorName>Quality information follows</OperatorName>
+<OperationDefinition>The values of class 33 elements which follow relate to the data defined by the data present bit-map.</OperationDefinition>
+<Status>Operational</Status>
+</Exporting_BUFRTableC_E>
+<Exporting_BUFRTableC_E>
+<No>9</No>
+<Edition>3</Edition>
+<FXY>223000</FXY>
+<OperatorName>Substituted values operator</OperatorName>
+<OperationDefinition>The substituted values which follow relate to the data defined by the data present bit-map.</OperationDefinition>
+<Status>Operational</Status>
+</Exporting_BUFRTableC_E>
+<Exporting_BUFRTableC_E>
+<No>10</No>
+<Edition>3</Edition>
+<FXY>223255</FXY>
+<OperatorName>Substituted values marker operator</OperatorName>
+<OperationDefinition>This operator shall signify a data item containing a substituted value; the element descriptor for the substituted value is obtained by the application of the data present bit-map associated with the substituted values operator.</OperationDefinition>
+<Status>Operational</Status>
+</Exporting_BUFRTableC_E>
+<Exporting_BUFRTableC_E>
+<No>11</No>
+<Edition>3</Edition>
+<FXY>224000</FXY>
+<OperatorName>First order statistical values follow</OperatorName>
+<OperationDefinition>The statistical values which follow relate to the data defined by the data present bit-map.</OperationDefinition>
+<Status>Operational</Status>
+</Exporting_BUFRTableC_E>
+<Exporting_BUFRTableC_E>
+<No>12</No>
+<Edition>3</Edition>
+<FXY>224255</FXY>
+<OperatorName>First order statistical values marker operator</OperatorName>
+<OperationDefinition>This operator shall signify a data item containing a first order statistical value of the type indicated by the preceding 0 08 023 element descriptor; the element descriptor to which the first order statistic relates is obtained by the application of the data present bit-map associated with the first order statistical values follow operator; first order statistical values shall be represented as defined by this element descriptor.</OperationDefinition>
+<Status>Operational</Status>
+</Exporting_BUFRTableC_E>
+<Exporting_BUFRTableC_E>
+<No>13</No>
+<Edition>3</Edition>
+<FXY>225000</FXY>
+<OperatorName>Difference statistical values follow</OperatorName>
+<OperationDefinition>The statistical values which follow relate to the data defined by the data present bit-map.</OperationDefinition>
+<Status>Operational</Status>
+</Exporting_BUFRTableC_E>
+<Exporting_BUFRTableC_E>
+<No>14</No>
+<Edition>3</Edition>
+<FXY>225255</FXY>
+<OperatorName>Difference statistical values marker operator</OperatorName>
+<OperationDefinition>This operator shall signify a data item containing a difference statistical value of the type indicated by the preceding 0 08 024 element descriptor; the element descriptor to which the difference statistical value relates is obtained by the application of the data present bit-map associated with the difference statistical values follow operator; difference statistical values shall be represented as defined by this element descriptor, but with a reference value of -2 and a data width of (n+1), where n is the data width given by the original descriptor. This special reference value allows the statistical difference values to be centred around zero.</OperationDefinition>
+<Status>Operational</Status>
+</Exporting_BUFRTableC_E>
+<Exporting_BUFRTableC_E>
+<No>15</No>
+<Edition>3</Edition>
+<FXY>232000</FXY>
+<OperatorName>Replaced/retained values follow</OperatorName>
+<OperationDefinition>The replaced/retained values which follow relate to the data defined by the data present bit-map.</OperationDefinition>
+<Status>Operational</Status>
+</Exporting_BUFRTableC_E>
+<Exporting_BUFRTableC_E>
+<No>16</No>
+<Edition>3</Edition>
+<FXY>232255</FXY>
+<OperatorName>Replaced/retained value marker operator</OperatorName>
+<OperationDefinition>This operator shall signify a data item containing the original of an element which has been replaced by a substituted value.  The element descriptor for the retained value is obtained by the application of the data present bit-map associated with the substituted values operator.</OperationDefinition>
+<Status>Operational</Status>
+</Exporting_BUFRTableC_E>
+<Exporting_BUFRTableC_E>
+<No>17</No>
+<Edition>3</Edition>
+<FXY>235000</FXY>
+<OperatorName>Cancel backward data reference</OperatorName>
+<OperationDefinition>This operator terminates all previously defined back-ward reference and cancels any previously defined data present bit-map; it causes the next data present bit-map to refer to the data descriptors which immediately precede the operator to which it relates.</OperationDefinition>
+<Status>Operational</Status>
+</Exporting_BUFRTableC_E>
+<Exporting_BUFRTableC_E>
+<No>18</No>
+<Edition>3</Edition>
+<FXY>236000</FXY>
+<OperatorName>Define data present bit-map</OperatorName>
+<OperationDefinition>This operator defines the data present bit-map which follows for possible re-use; only one data present bitmap may be defined between this operator and the cancel use defined data present bit-map operator.</OperationDefinition>
+<Status>Operational</Status>
+</Exporting_BUFRTableC_E>
+<Exporting_BUFRTableC_E>
+<No>19</No>
+<Edition>3</Edition>
+<FXY>237000</FXY>
+<OperatorName>Use defined data present bit-map</OperatorName>
+<OperationDefinition>This operator causes the defined data present bit-map to be used again.</OperationDefinition>
+<Status>Operational</Status>
+</Exporting_BUFRTableC_E>
+<Exporting_BUFRTableC_E>
+<No>20</No>
+<Edition>3</Edition>
+<FXY>237255</FXY>
+<OperatorName>Cancel use defined data present bit-map</OperatorName>
+<OperationDefinition>This operator cancels the re-use of the defined data present bit-map.</OperationDefinition>
+<Status>Operational</Status>
+</Exporting_BUFRTableC_E>
+<Exporting_BUFRTableC_E>
+<No>21</No>
+<Edition>4</Edition>
+<FXY>201YYY</FXY>
+<OperatorName>Change data width</OperatorName>
+<OperationDefinition>Add (Y-128) bits to the data width given for each data element in Table B, other than CCITT IA5 (character) data, code or flag tables.</OperationDefinition>
+<Status>Operational</Status>
+<Notes>Notes: (see)#BUFR14_1_0_CREX6_1_0_Notes.doc#B_TableC_4</Notes>
+</Exporting_BUFRTableC_E>
+<Exporting_BUFRTableC_E>
+<No>22</No>
+<Edition>4</Edition>
+<FXY>202YYY</FXY>
+<OperatorName>Change scale</OperatorName>
+<OperationDefinition>Add Y-128 to the scale for each data element in Table B, other than CCITT IA5 (character) data, code or flag tables.</OperationDefinition>
+<Status>Operational</Status>
+</Exporting_BUFRTableC_E>
+<Exporting_BUFRTableC_E>
+<No>23</No>
+<Edition>4</Edition>
+<FXY>203YYY</FXY>
+<OperatorName>Change reference values</OperatorName>
+<OperationDefinition>Subsequent element descriptors define new reference values for corresponding Table B entries. Each new reference value is represented by Y bits in the Data section. Definition of new reference values
+is concluded by coding this operator with Y = 255. Negative reference values shall be represented by a positive integer with the left-most bit (bit 1) set to 1.</OperationDefinition>
+<Status>Operational</Status>
+</Exporting_BUFRTableC_E>
+<Exporting_BUFRTableC_E>
+<No>24</No>
+<Edition>4</Edition>
+<FXY>204YYY</FXY>
+<OperatorName>Add associated field</OperatorName>
+<OperationDefinition>Precede each data element with Y bits of information.  This operation associates a data field (e.g. quality control information) of Y bits with each data element.</OperationDefinition>
+<Status>Operational</Status>
+</Exporting_BUFRTableC_E>
+<Exporting_BUFRTableC_E>
+<No>25</No>
+<Edition>4</Edition>
+<FXY>205YYY</FXY>
+<OperatorName>Signify character</OperatorName>
+<OperationDefinition>Y characters (CCITT International Alphabet No. 5) are inserted as a data field of Y x 8 bits in length.</OperationDefinition>
+<Status>Operational</Status>
+</Exporting_BUFRTableC_E>
+<Exporting_BUFRTableC_E>
+<No>26</No>
+<Edition>4</Edition>
+<FXY>206YYY</FXY>
+<OperatorName>Signify data width for the immediately following local descriptor</OperatorName>
+<OperationDefinition>Y bits of data are described by the immediately following descriptor.</OperationDefinition>
+<Status>Operational</Status>
+</Exporting_BUFRTableC_E>
+<Exporting_BUFRTableC_E>
+<No>27</No>
+<Edition>4</Edition>
+<FXY>207YYY</FXY>
+<OperatorName>Increase scale, reference value and data width</OperatorName>
+<OperationDefinition>For Table B elements, which are not CCITT IA5 (character data), code tables, or flag tables:
+1. Add Y to the existing scale factor
+2. Multiply the existing reference value by 10^Y
+3. Calculate ((10 x Y) + 2) ÷ 3, disregard any fractional remainder and add the result to the existing bit width.</OperationDefinition>
+<Status>Operational</Status>
+</Exporting_BUFRTableC_E>
+<Exporting_BUFRTableC_E>
+<No>28</No>
+<Edition>4</Edition>
+<FXY>208YYY</FXY>
+<OperatorName>Change width of CCITT IA5 field</OperatorName>
+<OperationDefinition>Y characters from CCITT International Alphabet #5 (representing Y x 8 bits in length) replace the specified data width given for each CCITT IA5 element in Table B.</OperationDefinition>
+<Status>Operational</Status>
+</Exporting_BUFRTableC_E>
+<Exporting_BUFRTableC_E>
+<No>29</No>
+<Edition>4</Edition>
+<FXY>209YYY</FXY>
+<OperatorName>IEEE floating point representation</OperatorName>
+<OperationDefinition>“For elements in Table B other than CCITT IA5, Code Tables, Flag Tables and delayed descriptor replication factors, this operator shall indicate that values are represented in YYY bits IEEE floating point, where YYY can be set to 032 (single precision) or 064 (double precision).  This operator shall override the scaling, reference value and data width from Table B.  An operand of YYY=000 shall reinstate the Table B scaling, reference value and data width. (see note 21)</OperationDefinition>
+<Status>Validation</Status>
+</Exporting_BUFRTableC_E>
+<Exporting_BUFRTableC_E>
+<No>30</No>
+<Edition>4</Edition>
+<FXY>221YYY</FXY>
+<OperatorName>Data not present</OperatorName>
+<OperationDefinition>Data values present in section 4 (Data section) corresponding to the following YYY descriptors shall be limited to data from classes 1-9, and class 31.</OperationDefinition>
+<Status>Operational</Status>
+</Exporting_BUFRTableC_E>
+<Exporting_BUFRTableC_E>
+<No>31</No>
+<Edition>4</Edition>
+<FXY>222000</FXY>
+<OperatorName>Quality information follows</OperatorName>
+<OperationDefinition>The values of class 33 elements which follow relate to the data defined by the data present bit-map.</OperationDefinition>
+<Status>Operational</Status>
+</Exporting_BUFRTableC_E>
+<Exporting_BUFRTableC_E>
+<No>32</No>
+<Edition>4</Edition>
+<FXY>223000</FXY>
+<OperatorName>Substituted values operator</OperatorName>
+<OperationDefinition>The substituted values which follow relate to the data defined by the data present bit-map.</OperationDefinition>
+<Status>Operational</Status>
+</Exporting_BUFRTableC_E>
+<Exporting_BUFRTableC_E>
+<No>33</No>
+<Edition>4</Edition>
+<FXY>223255</FXY>
+<OperatorName>Substituted values marker operator</OperatorName>
+<OperationDefinition>This operator shall signify a data item containing a substituted value; the element descriptor for the substituted value is obtained by the application of the data present bit-map associated with the substituted values operator.</OperationDefinition>
+<Status>Operational</Status>
+</Exporting_BUFRTableC_E>
+<Exporting_BUFRTableC_E>
+<No>34</No>
+<Edition>4</Edition>
+<FXY>224000</FXY>
+<OperatorName>First order statistical values follow</OperatorName>
+<OperationDefinition>The statistical values which follow relate to the data defined by the data present bit-map.</OperationDefinition>
+<Status>Operational</Status>
+</Exporting_BUFRTableC_E>
+<Exporting_BUFRTableC_E>
+<No>35</No>
+<Edition>4</Edition>
+<FXY>224255</FXY>
+<OperatorName>First order statistical values marker operator</OperatorName>
+<OperationDefinition>This operator shall signify a data item containing a first order statistical value of the type indicated by the preceding 0 08 023 element descriptor; the element descriptor to which the first order statistic relates is obtained by the application of the data present bit-map associated with the first order statistical values follow operator; first order statistical values shall be represented as defined by this element descriptor.</OperationDefinition>
+<Status>Operational</Status>
+</Exporting_BUFRTableC_E>
+<Exporting_BUFRTableC_E>
+<No>36</No>
+<Edition>4</Edition>
+<FXY>225000</FXY>
+<OperatorName>Difference statistical values follow</OperatorName>
+<OperationDefinition>The statistical values which follow relate to the data defined by the data present bit-map.</OperationDefinition>
+<Status>Operational</Status>
+</Exporting_BUFRTableC_E>
+<Exporting_BUFRTableC_E>
+<No>37</No>
+<Edition>4</Edition>
+<FXY>225255</FXY>
+<OperatorName>Difference statistical values marker operator</OperatorName>
+<OperationDefinition>This operator shall signify a data item containing a difference statistical value of the type indicated by the preceding 0 08 024 element descriptor; the element descriptor to which the difference statistical value relates is obtained by the application of the data present bit-map associated with the difference statistical values follow operator; difference statistical values shall be represented as defined by this element descriptor, but with a reference value of -2 and a data width of (n+1), where n is the data width given by the original descriptor. This special reference value allows the statistical difference values to be centred around zero.</OperationDefinition>
+<Status>Operational</Status>
+</Exporting_BUFRTableC_E>
+<Exporting_BUFRTableC_E>
+<No>38</No>
+<Edition>4</Edition>
+<FXY>232000</FXY>
+<OperatorName>Replaced/retained values follow</OperatorName>
+<OperationDefinition>The replaced/retained values which follow relate to the data defined by the data present bit-map.</OperationDefinition>
+<Status>Operational</Status>
+</Exporting_BUFRTableC_E>
+<Exporting_BUFRTableC_E>
+<No>39</No>
+<Edition>4</Edition>
+<FXY>232255</FXY>
+<OperatorName>Replaced/retained value marker operator</OperatorName>
+<OperationDefinition>This operator shall signify a data item containing the original of an element which has been replaced by a substituted value.  The element descriptor for the retained value is obtained by the application of the data present bit-map associated with the substituted values operator.</OperationDefinition>
+<Status>Operational</Status>
+</Exporting_BUFRTableC_E>
+<Exporting_BUFRTableC_E>
+<No>40</No>
+<Edition>4</Edition>
+<FXY>235000</FXY>
+<OperatorName>Cancel backward data reference</OperatorName>
+<OperationDefinition>This operator terminates all previously defined back-ward reference and cancels any previously defined data present bit-map; it causes the next data present bit-map to refer to the data descriptors which immediately precede the operator to which it relates.</OperationDefinition>
+<Status>Operational</Status>
+</Exporting_BUFRTableC_E>
+<Exporting_BUFRTableC_E>
+<No>41</No>
+<Edition>4</Edition>
+<FXY>236000</FXY>
+<OperatorName>Define data present bit-map</OperatorName>
+<OperationDefinition>This operator defines the data present bit-map which follows for possible re-use; only one data present bitmap may be defined between this operator and the cancel use defined data present bit-map operator.</OperationDefinition>
+<Status>Operational</Status>
+</Exporting_BUFRTableC_E>
+<Exporting_BUFRTableC_E>
+<No>42</No>
+<Edition>4</Edition>
+<FXY>237000</FXY>
+<OperatorName>Use defined data present bit-map</OperatorName>
+<OperationDefinition>This operator causes the defined data present bit-map to be used again.</OperationDefinition>
+<Status>Operational</Status>
+</Exporting_BUFRTableC_E>
+<Exporting_BUFRTableC_E>
+<No>43</No>
+<Edition>4</Edition>
+<FXY>237255</FXY>
+<OperatorName>Cancel use defined data present bit-map</OperatorName>
+<OperationDefinition>This operator cancels the re-use of the defined data present bit-map.</OperationDefinition>
+<Status>Operational</Status>
+</Exporting_BUFRTableC_E>
+<Exporting_BUFRTableC_E>
+<No>44</No>
+<Edition>4</Edition>
+<FXY>241000</FXY>
+<OperatorName>Define event</OperatorName>
+<OperationDefinition>This operator denotes the beginning of the definition 
+of an eve (see Note 19).</OperationDefinition>
+<Status>Operational</Status>
+</Exporting_BUFRTableC_E>
+<Exporting_BUFRTableC_E>
+<No>45</No>
+<Edition>4</Edition>
+<FXY>241255</FXY>
+<OperatorName>Cancel define event</OperatorName>
+<OperationDefinition>This operator denotes the conclusion of the event definition that was begun via the previous 2-41-000 operator.</OperationDefinition>
+<Status>Operational</Status>
+</Exporting_BUFRTableC_E>
+<Exporting_BUFRTableC_E>
+<No>46</No>
+<Edition>4</Edition>
+<FXY>242000</FXY>
+<OperatorName>Define conditioning event</OperatorName>
+<OperationDefinition>This operator denotes the beginning of the definition of a conditioning event (see Note 19).</OperationDefinition>
+<Status>Operational</Status>
+</Exporting_BUFRTableC_E>
+<Exporting_BUFRTableC_E>
+<No>47</No>
+<Edition>4</Edition>
+<FXY>242255</FXY>
+<OperatorName>Cancel define conditioning 
+event</OperatorName>
+<OperationDefinition>This operator denotes the conclusion of the conditioning event definition that was begun via the previous 2-42-000 operator.</OperationDefinition>
+<Status>Operational</Status>
+</Exporting_BUFRTableC_E>
+<Exporting_BUFRTableC_E>
+<No>48</No>
+<Edition>4</Edition>
+<FXY>243000</FXY>
+<OperatorName>Categorical forecast values follow</OperatorName>
+<OperationDefinition>The values which follow are categorical forecast values (see Note 20).</OperationDefinition>
+<Status>Operational</Status>
+</Exporting_BUFRTableC_E>
+<Exporting_BUFRTableC_E>
+<No>49</No>
+<Edition>4</Edition>
+<FXY>243255</FXY>
+<OperatorName>Cancel categorical forecast values follow</OperatorName>
+<OperationDefinition>This operator denotes the conclusion of the definition of categorical forecast values that was begun via the previous 2-43-000 operator.</OperationDefinition>
+<Status>Operational</Status>
+</Exporting_BUFRTableC_E>
+</dataroot>

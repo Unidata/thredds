@@ -1,0 +1,1923 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataroot xmlns:od="urn:schemas-microsoft-com:officedata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  xsi:noNamespaceSchemaLocation="Exporting_CommonCodeTableC1_E.xsd" generated="2010-04-08T16:33:20">
+<Exporting_CommonCodeTableC1_E>
+<No>1</No>
+<F1F2>00</F1F2>
+<F3F3F3>000</F3F3F3>
+<GRIB1_BUFR3>0</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>WMO Secretariat</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>2</No>
+<OriginatingGeneratingCentres>01-09: WMCs</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>3</No>
+<F1F2>01</F1F2>
+<F3F3F3>001</F3F3F3>
+<GRIB1_BUFR3>1</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Melbourne</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>4</No>
+<F1F2>02</F1F2>
+<F3F3F3>002</F3F3F3>
+<GRIB1_BUFR3>2</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Melbourne</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>5</No>
+<F1F2>03</F1F2>
+<F3F3F3>003</F3F3F3>
+<GRIB1_BUFR3>3</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>6</No>
+<F1F2>04</F1F2>
+<F3F3F3>004</F3F3F3>
+<GRIB1_BUFR3>4</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Moscow</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>7</No>
+<F1F2>05</F1F2>
+<F3F3F3>005</F3F3F3>
+<GRIB1_BUFR3>5</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Moscow</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>8</No>
+<F1F2>06</F1F2>
+<F3F3F3>006</F3F3F3>
+<GRIB1_BUFR3>6</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>9</No>
+<F1F2>07</F1F2>
+<F3F3F3>007</F3F3F3>
+<GRIB1_BUFR3>7</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>US National Weather Service - National Centres for Environmental Prediction (NCEP)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>10</No>
+<F1F2>08</F1F2>
+<F3F3F3>008</F3F3F3>
+<GRIB1_BUFR3>8</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>US National Weather Service Telecommunications Gateway (NWSTG)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>11</No>
+<F1F2>09</F1F2>
+<F3F3F3>009</F3F3F3>
+<GRIB1_BUFR3>9</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>US National Weather Service - Other</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>12</No>
+<OriginatingGeneratingCentres>10-25: Centres in Region I</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>13</No>
+<F1F2>10</F1F2>
+<F3F3F3>010</F3F3F3>
+<GRIB1_BUFR3>10</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Cairo (RSMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>14</No>
+<F1F2>11</F1F2>
+<F3F3F3>011</F3F3F3>
+<GRIB1_BUFR3>11</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>15</No>
+<F1F2>12</F1F2>
+<F3F3F3>012</F3F3F3>
+<GRIB1_BUFR3>12</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Dakar (RSMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>16</No>
+<F1F2>13</F1F2>
+<F3F3F3>013</F3F3F3>
+<GRIB1_BUFR3>13</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>17</No>
+<F1F2>14</F1F2>
+<F3F3F3>014</F3F3F3>
+<GRIB1_BUFR3>14</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Nairobi (RSMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>18</No>
+<F1F2>15</F1F2>
+<F3F3F3>015</F3F3F3>
+<GRIB1_BUFR3>15</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>19</No>
+<F1F2>16</F1F2>
+<F3F3F3>016</F3F3F3>
+<GRIB1_BUFR3>16</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Casablanca (RSMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>20</No>
+<F1F2>17</F1F2>
+<F3F3F3>017</F3F3F3>
+<GRIB1_BUFR3>17</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Tunis (RSMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>21</No>
+<F1F2>18</F1F2>
+<F3F3F3>018</F3F3F3>
+<GRIB1_BUFR3>18</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Tunis - Casablanca (RSMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>22</No>
+<F1F2>19</F1F2>
+<F3F3F3>019</F3F3F3>
+<GRIB1_BUFR3>19</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>23</No>
+<F1F2>20</F1F2>
+<F3F3F3>020</F3F3F3>
+<GRIB1_BUFR3>20</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Las Palmas</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>24</No>
+<F1F2>21</F1F2>
+<F3F3F3>021</F3F3F3>
+<GRIB1_BUFR3>21</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Algiers (RSMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>25</No>
+<F1F2>22</F1F2>
+<F3F3F3>022</F3F3F3>
+<GRIB1_BUFR3>22</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>ACMAD</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>26</No>
+<F1F2>23</F1F2>
+<F3F3F3>023</F3F3F3>
+<GRIB1_BUFR3>23</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Mozambique (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>27</No>
+<F1F2>24</F1F2>
+<F3F3F3>024</F3F3F3>
+<GRIB1_BUFR3>24</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Pretoria (RSMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>28</No>
+<F1F2>25</F1F2>
+<F3F3F3>025</F3F3F3>
+<GRIB1_BUFR3>25</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>La Réunion (RSMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>29</No>
+<OriginatingGeneratingCentres>26-40: Centres in Region II</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>30</No>
+<F1F2>26</F1F2>
+<F3F3F3>026</F3F3F3>
+<GRIB1_BUFR3>26</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Khabarovsk (RSMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>31</No>
+<F1F2>27</F1F2>
+<F3F3F3>027</F3F3F3>
+<GRIB1_BUFR3>27</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>32</No>
+<F1F2>28</F1F2>
+<F3F3F3>028</F3F3F3>
+<GRIB1_BUFR3>28</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>New Delhi (RSMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>33</No>
+<F1F2>29</F1F2>
+<F3F3F3>029</F3F3F3>
+<GRIB1_BUFR3>29</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>34</No>
+<F1F2>30</F1F2>
+<F3F3F3>030</F3F3F3>
+<GRIB1_BUFR3>30</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Novosibirsk (RSMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>35</No>
+<F1F2>31</F1F2>
+<F3F3F3>031</F3F3F3>
+<GRIB1_BUFR3>31</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>36</No>
+<F1F2>32</F1F2>
+<F3F3F3>032</F3F3F3>
+<GRIB1_BUFR3>32</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Tashkent (RSMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>37</No>
+<F1F2>33</F1F2>
+<F3F3F3>033</F3F3F3>
+<GRIB1_BUFR3>33</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Jeddah (RSMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>38</No>
+<F1F2>34</F1F2>
+<F3F3F3>034</F3F3F3>
+<GRIB1_BUFR3>34</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Tokyo (RSMC), Japan Meteorological Agency</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>39</No>
+<F1F2>35</F1F2>
+<F3F3F3>035</F3F3F3>
+<GRIB1_BUFR3>35</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>40</No>
+<F1F2>36</F1F2>
+<F3F3F3>036</F3F3F3>
+<GRIB1_BUFR3>36</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Bangkok</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>41</No>
+<F1F2>37</F1F2>
+<F3F3F3>037</F3F3F3>
+<GRIB1_BUFR3>37</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Ulan Bator</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>42</No>
+<F1F2>38</F1F2>
+<F3F3F3>038</F3F3F3>
+<GRIB1_BUFR3>38</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Beijing (RSMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>43</No>
+<F1F2>39</F1F2>
+<F3F3F3>039</F3F3F3>
+<GRIB1_BUFR3>39</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>44</No>
+<F1F2>40</F1F2>
+<F3F3F3>040</F3F3F3>
+<GRIB1_BUFR3>40</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Seoul</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>45</No>
+<OriginatingGeneratingCentres>41-50: Centres in Region III</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>46</No>
+<F1F2>41</F1F2>
+<F3F3F3>041</F3F3F3>
+<GRIB1_BUFR3>41</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Buenos Aires (RSMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>47</No>
+<F1F2>42</F1F2>
+<F3F3F3>042</F3F3F3>
+<GRIB1_BUFR3>42</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>48</No>
+<F1F2>43</F1F2>
+<F3F3F3>043</F3F3F3>
+<GRIB1_BUFR3>43</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Brasilia (RSMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>49</No>
+<F1F2>44</F1F2>
+<F3F3F3>044</F3F3F3>
+<GRIB1_BUFR3>44</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>50</No>
+<F1F2>45</F1F2>
+<F3F3F3>045</F3F3F3>
+<GRIB1_BUFR3>45</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Santiago</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>51</No>
+<F1F2>46</F1F2>
+<F3F3F3>046</F3F3F3>
+<GRIB1_BUFR3>46</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Brazilian Space Agency ­ INPE</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>52</No>
+<F1F2>47</F1F2>
+<F3F3F3>047</F3F3F3>
+<GRIB1_BUFR3>47</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Colombia (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>53</No>
+<F1F2>48</F1F2>
+<F3F3F3>048</F3F3F3>
+<GRIB1_BUFR3>48</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Ecuador (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>54</No>
+<F1F2>49</F1F2>
+<F3F3F3>049</F3F3F3>
+<GRIB1_BUFR3>49</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Peru (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>55</No>
+<F1F2>50</F1F2>
+<F3F3F3>050</F3F3F3>
+<GRIB1_BUFR3>50</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Venezuela (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>56</No>
+<OriginatingGeneratingCentres>51-63: Centres in Region IV</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>57</No>
+<F1F2>51</F1F2>
+<F3F3F3>051</F3F3F3>
+<GRIB1_BUFR3>51</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Miami (RSMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>58</No>
+<F1F2>52</F1F2>
+<F3F3F3>052</F3F3F3>
+<GRIB1_BUFR3>52</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Miami RSMC, National Hurricane Centre</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>59</No>
+<F1F2>53</F1F2>
+<F3F3F3>053</F3F3F3>
+<GRIB1_BUFR3>53</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Montreal (RSMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>60</No>
+<F1F2>54</F1F2>
+<F3F3F3>054</F3F3F3>
+<GRIB1_BUFR3>54</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>61</No>
+<F1F2>55</F1F2>
+<F3F3F3>055</F3F3F3>
+<GRIB1_BUFR3>55</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>San Francisco</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>62</No>
+<F1F2>56</F1F2>
+<F3F3F3>056</F3F3F3>
+<GRIB1_BUFR3>56</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>ARINC Centre</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>63</No>
+<F1F2>57</F1F2>
+<F3F3F3>057</F3F3F3>
+<GRIB1_BUFR3>57</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>US Air Force - Air Force Global Weather Central</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>64</No>
+<F1F2>58</F1F2>
+<F3F3F3>058</F3F3F3>
+<GRIB1_BUFR3>58</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Fleet Numerical Meteorology and Oceanography Center, Monterey, CA, USA</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>65</No>
+<F1F2>59</F1F2>
+<F3F3F3>059</F3F3F3>
+<GRIB1_BUFR3>59</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>The NOAA Forecast Systems Laboratory, Boulder, CO, USA</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>66</No>
+<F1F2>60</F1F2>
+<F3F3F3>060</F3F3F3>
+<GRIB1_BUFR3>60</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>United States National Center for Atmospheric Research (NCAR)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>67</No>
+<F1F2>61</F1F2>
+<F3F3F3>061</F3F3F3>
+<GRIB1_BUFR3>61</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Service ARGOS - Landover</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>68</No>
+<F1F2>62</F1F2>
+<F3F3F3>062</F3F3F3>
+<GRIB1_BUFR3>62</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>US Naval Oceanographic Office</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>69</No>
+<F1F2>63</F1F2>
+<F3F3F3>063</F3F3F3>
+<GRIB1_BUFR3>63</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>International Research Institute for Climate and Society (IRI)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>70</No>
+<OriginatingGeneratingCentres>64-73: Centres in Region V</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>71</No>
+<F1F2>64</F1F2>
+<F3F3F3>064</F3F3F3>
+<GRIB1_BUFR3>64</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Honolulu (RSMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>72</No>
+<F1F2>65</F1F2>
+<F3F3F3>065</F3F3F3>
+<GRIB1_BUFR3>65</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Darwin (RSMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>73</No>
+<F1F2>66</F1F2>
+<F3F3F3>066</F3F3F3>
+<GRIB1_BUFR3>66</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>74</No>
+<F1F2>67</F1F2>
+<F3F3F3>067</F3F3F3>
+<GRIB1_BUFR3>67</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Melbourne (RSMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>75</No>
+<F1F2>68</F1F2>
+<F3F3F3>068</F3F3F3>
+<GRIB1_BUFR3>68</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Reserved</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>76</No>
+<F1F2>69</F1F2>
+<F3F3F3>069</F3F3F3>
+<GRIB1_BUFR3>69</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Wellington (RSMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>77</No>
+<F1F2>70</F1F2>
+<F3F3F3>070</F3F3F3>
+<GRIB1_BUFR3>70</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>78</No>
+<F1F2>71</F1F2>
+<F3F3F3>071</F3F3F3>
+<GRIB1_BUFR3>71</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Nadi (RSMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>79</No>
+<F1F2>72</F1F2>
+<F3F3F3>072</F3F3F3>
+<GRIB1_BUFR3>72</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Singapore</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>80</No>
+<F1F2>73</F1F2>
+<F3F3F3>073</F3F3F3>
+<GRIB1_BUFR3>73</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Malaysia (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>81</No>
+<OriginatingGeneratingCentres>74-99: Centres in Region VI</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>82</No>
+<F1F2>74</F1F2>
+<F3F3F3>074</F3F3F3>
+<GRIB1_BUFR3>74</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>UK Meteorological Office ­ Exeter (RSMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>83</No>
+<F1F2>75</F1F2>
+<F3F3F3>075</F3F3F3>
+<GRIB1_BUFR3>75</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>84</No>
+<F1F2>76</F1F2>
+<F3F3F3>076</F3F3F3>
+<GRIB1_BUFR3>76</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Moscow (RSMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>85</No>
+<F1F2>77</F1F2>
+<F3F3F3>077</F3F3F3>
+<GRIB1_BUFR3>77</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Reserved</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>86</No>
+<F1F2>78</F1F2>
+<F3F3F3>078</F3F3F3>
+<GRIB1_BUFR3>78</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Offenbach (RSMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>87</No>
+<F1F2>79</F1F2>
+<F3F3F3>079</F3F3F3>
+<GRIB1_BUFR3>79</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>88</No>
+<F1F2>80</F1F2>
+<F3F3F3>080</F3F3F3>
+<GRIB1_BUFR3>80</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Rome (RSMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>89</No>
+<F1F2>81</F1F2>
+<F3F3F3>081</F3F3F3>
+<GRIB1_BUFR3>81</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>90</No>
+<F1F2>82</F1F2>
+<F3F3F3>082</F3F3F3>
+<GRIB1_BUFR3>82</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Norrköping</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>91</No>
+<F1F2>83</F1F2>
+<F3F3F3>083</F3F3F3>
+<GRIB1_BUFR3>83</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>92</No>
+<F1F2>84</F1F2>
+<F3F3F3>084</F3F3F3>
+<GRIB1_BUFR3>84</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Toulouse (RSMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>93</No>
+<F1F2>85</F1F2>
+<F3F3F3>085</F3F3F3>
+<GRIB1_BUFR3>85</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Toulouse (RSMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>94</No>
+<F1F2>86</F1F2>
+<F3F3F3>086</F3F3F3>
+<GRIB1_BUFR3>86</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Helsinki</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>95</No>
+<F1F2>87</F1F2>
+<F3F3F3>087</F3F3F3>
+<GRIB1_BUFR3>87</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Belgrade</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>96</No>
+<F1F2>88</F1F2>
+<F3F3F3>088</F3F3F3>
+<GRIB1_BUFR3>88</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Oslo</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>97</No>
+<F1F2>89</F1F2>
+<F3F3F3>089</F3F3F3>
+<GRIB1_BUFR3>89</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Prague</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>98</No>
+<F1F2>90</F1F2>
+<F3F3F3>090</F3F3F3>
+<GRIB1_BUFR3>90</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Episkopi</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>99</No>
+<F1F2>91</F1F2>
+<F3F3F3>091</F3F3F3>
+<GRIB1_BUFR3>91</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Ankara</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>100</No>
+<F1F2>92</F1F2>
+<F3F3F3>092</F3F3F3>
+<GRIB1_BUFR3>92</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Frankfurt/Main</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>101</No>
+<F1F2>93</F1F2>
+<F3F3F3>093</F3F3F3>
+<GRIB1_BUFR3>93</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>London (WAFC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>102</No>
+<F1F2>94</F1F2>
+<F3F3F3>094</F3F3F3>
+<GRIB1_BUFR3>94</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Copenhagen</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>103</No>
+<F1F2>95</F1F2>
+<F3F3F3>095</F3F3F3>
+<GRIB1_BUFR3>95</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Rota</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>104</No>
+<F1F2>96</F1F2>
+<F3F3F3>096</F3F3F3>
+<GRIB1_BUFR3>96</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Athens</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>105</No>
+<F1F2>97</F1F2>
+<F3F3F3>097</F3F3F3>
+<GRIB1_BUFR3>97</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>European Space Agency (ESA)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>106</No>
+<F1F2>98</F1F2>
+<F3F3F3>098</F3F3F3>
+<GRIB1_BUFR3>98</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>European Centre for Medium-Range Weather Forecasts (ECMWF) (RSMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>107</No>
+<F1F2>99</F1F2>
+<F3F3F3>099</F3F3F3>
+<GRIB1_BUFR3>99</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>De Bilt</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>108</No>
+<OriginatingGeneratingCentres>Additional Centres</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>109</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>100</F3F3F3>
+<GRIB1_BUFR3>100</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Brazzaville</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>110</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>101</F3F3F3>
+<GRIB1_BUFR3>101</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Abidjan</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>111</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>102</F3F3F3>
+<GRIB1_BUFR3>102</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Libyan Arab Jamahiriya (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>112</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>103</F3F3F3>
+<GRIB1_BUFR3>103</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Madagascar (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>113</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>104</F3F3F3>
+<GRIB1_BUFR3>104</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Mauritius (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>114</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>105</F3F3F3>
+<GRIB1_BUFR3>105</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Niger (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>115</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>106</F3F3F3>
+<GRIB1_BUFR3>106</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Seychelles (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>116</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>107</F3F3F3>
+<GRIB1_BUFR3>107</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Uganda (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>117</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>108</F3F3F3>
+<GRIB1_BUFR3>108</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Tanzania (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>118</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>109</F3F3F3>
+<GRIB1_BUFR3>109</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Zimbabwe (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>119</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>110</F3F3F3>
+<GRIB1_BUFR3>110</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Hong-Kong, China</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>120</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>111</F3F3F3>
+<GRIB1_BUFR3>111</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Afghanistan (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>121</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>112</F3F3F3>
+<GRIB1_BUFR3>112</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Bahrain (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>122</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>113</F3F3F3>
+<GRIB1_BUFR3>113</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Bangladesh (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>123</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>114</F3F3F3>
+<GRIB1_BUFR3>114</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Bhutan (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>124</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>115</F3F3F3>
+<GRIB1_BUFR3>115</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Cambodia (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>125</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>116</F3F3F3>
+<GRIB1_BUFR3>116</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Democratic People&apos;s Republic of Korea (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>126</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>117</F3F3F3>
+<GRIB1_BUFR3>117</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Islamic Republic of Iran (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>127</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>118</F3F3F3>
+<GRIB1_BUFR3>118</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Iraq (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>128</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>119</F3F3F3>
+<GRIB1_BUFR3>119</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Kazakhstan (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>129</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>120</F3F3F3>
+<GRIB1_BUFR3>120</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Kuwait (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>130</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>121</F3F3F3>
+<GRIB1_BUFR3>121</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Kyrgyz Republic (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>131</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>122</F3F3F3>
+<GRIB1_BUFR3>122</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Lao People&apos;s Democratic Republic (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>132</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>123</F3F3F3>
+<GRIB1_BUFR3>123</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Macao, China</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>133</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>124</F3F3F3>
+<GRIB1_BUFR3>124</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Maldives (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>134</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>125</F3F3F3>
+<GRIB1_BUFR3>125</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Myanmar (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>135</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>126</F3F3F3>
+<GRIB1_BUFR3>126</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Nepal (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>136</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>127</F3F3F3>
+<GRIB1_BUFR3>127</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Oman (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>137</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>128</F3F3F3>
+<GRIB1_BUFR3>128</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Pakistan (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>138</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>129</F3F3F3>
+<GRIB1_BUFR3>129</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Qatar (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>139</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>130</F3F3F3>
+<GRIB1_BUFR3>130</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Republic of Yemen (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>140</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>131</F3F3F3>
+<GRIB1_BUFR3>131</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Sri Lanka (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>141</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>132</F3F3F3>
+<GRIB1_BUFR3>132</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Tajikistan (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>142</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>133</F3F3F3>
+<GRIB1_BUFR3>133</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Turkmenistan (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>143</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>134</F3F3F3>
+<GRIB1_BUFR3>134</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>United Arab Emirates (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>144</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>135</F3F3F3>
+<GRIB1_BUFR3>135</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Uzbekistan (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>145</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>136</F3F3F3>
+<GRIB1_BUFR3>136</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Socialist Republic of Viet Nam (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>146</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>137-139</F3F3F3>
+<GRIB1_BUFR3>137-139</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Reserved for other centres</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>147</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>140</F3F3F3>
+<GRIB1_BUFR3>140</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Bolivia (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>148</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>141</F3F3F3>
+<GRIB1_BUFR3>141</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Guyana (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>149</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>142</F3F3F3>
+<GRIB1_BUFR3>142</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Paraguay (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>150</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>143</F3F3F3>
+<GRIB1_BUFR3>143</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Suriname (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>151</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>144</F3F3F3>
+<GRIB1_BUFR3>144</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Uruguay (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>152</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>145</F3F3F3>
+<GRIB1_BUFR3>145</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>French Guyana</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>153</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>146</F3F3F3>
+<GRIB1_BUFR3>146</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Brazilian Navy Hydrographic Centre</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>154</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>147</F3F3F3>
+<GRIB1_BUFR3>147</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>COmision Nacional de Actividades Espaciales (CONAE) - Argentina</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>155</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>148-149</F3F3F3>
+<GRIB1_BUFR3>148-149</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Reserved for other centres</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>156</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>150</F3F3F3>
+<GRIB1_BUFR3>150</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Antigua and Barbuda (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>157</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>151</F3F3F3>
+<GRIB1_BUFR3>151</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Bahamas (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>158</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>152</F3F3F3>
+<GRIB1_BUFR3>152</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Barbados (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>159</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>153</F3F3F3>
+<GRIB1_BUFR3>153</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Belize (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>160</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>154</F3F3F3>
+<GRIB1_BUFR3>154</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>British Caribbean Territories Centre</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>161</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>155</F3F3F3>
+<GRIB1_BUFR3>155</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>San Jose</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>162</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>156</F3F3F3>
+<GRIB1_BUFR3>156</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Cuba (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>163</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>157</F3F3F3>
+<GRIB1_BUFR3>157</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Dominica (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>164</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>158</F3F3F3>
+<GRIB1_BUFR3>158</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Dominican Republic (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>165</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>159</F3F3F3>
+<GRIB1_BUFR3>159</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>El Salvador (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>166</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>160</F3F3F3>
+<GRIB1_BUFR3>160</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>US NOAA/NESDIS</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>167</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>161</F3F3F3>
+<GRIB1_BUFR3>161</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>US NOAA Office of Oceanic and Atmospheric Research</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>168</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>162</F3F3F3>
+<GRIB1_BUFR3>162</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Guatemala (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>169</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>163</F3F3F3>
+<GRIB1_BUFR3>163</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Haiti (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>170</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>164</F3F3F3>
+<GRIB1_BUFR3>164</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Honduras (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>171</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>165</F3F3F3>
+<GRIB1_BUFR3>165</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Jamaica (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>172</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>166</F3F3F3>
+<GRIB1_BUFR3>166</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Mexico City</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>173</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>167</F3F3F3>
+<GRIB1_BUFR3>167</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Netherlands Antilles and Aruba (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>174</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>168</F3F3F3>
+<GRIB1_BUFR3>168</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Nicaragua (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>175</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>169</F3F3F3>
+<GRIB1_BUFR3>169</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Panama (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>176</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>170</F3F3F3>
+<GRIB1_BUFR3>170</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Saint Lucia (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>177</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>171</F3F3F3>
+<GRIB1_BUFR3>171</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Trinidad and Tobago (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>178</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>172</F3F3F3>
+<GRIB1_BUFR3>172</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>French Departments in RA IV</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>179</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>173</F3F3F3>
+<GRIB1_BUFR3>173</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>US National Aeronautics and Space Administration (NASA)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>180</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>174</F3F3F3>
+<GRIB1_BUFR3>174</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Integrated System Data Management/Marine Environmental Data Service (ISDM/MEDS - Canada)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>181</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>175</F3F3F3>
+<GRIB1_BUFR3>175</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Reserved for other centres</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>183</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>176</F3F3F3>
+<GRIB1_BUFR3>176</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>U.S. Cooperative Institute for Meteorological Satellite Studies (CIMSS)</OriginatingGeneratingCentres>
+<Status>Pre-operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>184</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>177-189</F3F3F3>
+<GRIB1_BUFR3>177-189</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Reserved for other centres</OriginatingGeneratingCentres>
+<Status>Pre-operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>185</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>190</F3F3F3>
+<GRIB1_BUFR3>190</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Cook Islands (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>186</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>191</F3F3F3>
+<GRIB1_BUFR3>191</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>French Polynesia (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>187</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>192</F3F3F3>
+<GRIB1_BUFR3>192</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Tonga (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>188</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>193</F3F3F3>
+<GRIB1_BUFR3>193</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Vanuatu (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>189</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>194</F3F3F3>
+<GRIB1_BUFR3>194</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Brunei Darussalam (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>190</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>195</F3F3F3>
+<GRIB1_BUFR3>195</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Indonesia (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>191</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>196</F3F3F3>
+<GRIB1_BUFR3>196</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Kiribati (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>192</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>197</F3F3F3>
+<GRIB1_BUFR3>197</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Federated States of Micronesia (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>193</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>198</F3F3F3>
+<GRIB1_BUFR3>198</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>New Caledonia (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>194</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>199</F3F3F3>
+<GRIB1_BUFR3>199</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Niue</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>195</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>200</F3F3F3>
+<GRIB1_BUFR3>200</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Papua New Guinea (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>196</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>201</F3F3F3>
+<GRIB1_BUFR3>201</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Philippines (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>197</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>202</F3F3F3>
+<GRIB1_BUFR3>202</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Samoa (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>198</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>203</F3F3F3>
+<GRIB1_BUFR3>203</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Solomon Islands (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>199</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>204</F3F3F3>
+<GRIB1_BUFR3>204</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>National Institute of Water and Atmospheric Research  (NIWA - New Zealand)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>200</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>205-209</F3F3F3>
+<GRIB1_BUFR3>205-209</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Reserved</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>201</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>210</F3F3F3>
+<GRIB1_BUFR3>210</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Frascati (ESA/ESRIN)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>202</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>211</F3F3F3>
+<GRIB1_BUFR3>211</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Lannion</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>203</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>212</F3F3F3>
+<GRIB1_BUFR3>212</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Lisbon</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>204</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>213</F3F3F3>
+<GRIB1_BUFR3>213</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Reykjavik</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>205</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>214</F3F3F3>
+<GRIB1_BUFR3>214</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Madrid</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>206</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>215</F3F3F3>
+<GRIB1_BUFR3>215</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Zurich</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>207</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>216</F3F3F3>
+<GRIB1_BUFR3>216</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Service ARGOS - Toulouse</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>208</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>217</F3F3F3>
+<GRIB1_BUFR3>217</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Bratislava</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>209</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>218</F3F3F3>
+<GRIB1_BUFR3>218</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Budapest</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>210</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>219</F3F3F3>
+<GRIB1_BUFR3>219</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Ljubljana</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>211</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>220</F3F3F3>
+<GRIB1_BUFR3>220</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Warsaw</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>212</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>221</F3F3F3>
+<GRIB1_BUFR3>221</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Zagreb</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>213</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>222</F3F3F3>
+<GRIB1_BUFR3>222</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Albania (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>214</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>223</F3F3F3>
+<GRIB1_BUFR3>223</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Armenia (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>215</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>224</F3F3F3>
+<GRIB1_BUFR3>224</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Austria (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>216</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>225</F3F3F3>
+<GRIB1_BUFR3>225</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Azerbaijan (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>217</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>226</F3F3F3>
+<GRIB1_BUFR3>226</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Belarus (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>218</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>227</F3F3F3>
+<GRIB1_BUFR3>227</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Belgium (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>219</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>228</F3F3F3>
+<GRIB1_BUFR3>228</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Bosnia and Herzegovina (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>220</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>229</F3F3F3>
+<GRIB1_BUFR3>229</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Bulgaria (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>221</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>230</F3F3F3>
+<GRIB1_BUFR3>230</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Cyprus (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>222</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>231</F3F3F3>
+<GRIB1_BUFR3>231</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Estonia (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>223</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>232</F3F3F3>
+<GRIB1_BUFR3>232</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Georgia (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>224</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>233</F3F3F3>
+<GRIB1_BUFR3>233</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Dublin</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>225</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>234</F3F3F3>
+<GRIB1_BUFR3>234</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Israel (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>226</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>235</F3F3F3>
+<GRIB1_BUFR3>235</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Jordan (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>227</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>236</F3F3F3>
+<GRIB1_BUFR3>236</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Latvia (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>228</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>237</F3F3F3>
+<GRIB1_BUFR3>237</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Lebanon (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>229</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>238</F3F3F3>
+<GRIB1_BUFR3>238</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Lithuania (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>230</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>239</F3F3F3>
+<GRIB1_BUFR3>239</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Luxembourg</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>231</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>240</F3F3F3>
+<GRIB1_BUFR3>240</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Malta (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>232</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>241</F3F3F3>
+<GRIB1_BUFR3>241</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Monaco</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>233</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>242</F3F3F3>
+<GRIB1_BUFR3>242</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Romania (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>234</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>243</F3F3F3>
+<GRIB1_BUFR3>243</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Syrian Arab Republic (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>235</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>244</F3F3F3>
+<GRIB1_BUFR3>244</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>The former Yugoslav Republic of Macedonia (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>236</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>245</F3F3F3>
+<GRIB1_BUFR3>245</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Ukraine (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>237</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>246</F3F3F3>
+<GRIB1_BUFR3>246</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Republic of Moldova (NMC)</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>238</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>247</F3F3F3>
+<GRIB1_BUFR3>247</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Operational Programme for the Exchange of weather RAdar information (OPERA) - EUMETNET</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>239</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>248-249</F3F3F3>
+<GRIB1_BUFR3>248-249</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Reserved for other centres</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>241</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>250</F3F3F3>
+<GRIB1_BUFR3>250</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>COnsortium for Small scale MOdelling  (COSMO)</OriginatingGeneratingCentres>
+<Status>Pre-operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>242</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>251-253</F3F3F3>
+<GRIB1_BUFR3>251-253</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Reserved for other centres</OriginatingGeneratingCentres>
+<Status>Pre-operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>243</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>254</F3F3F3>
+<GRIB1_BUFR3>254</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>EUMETSAT Operation Centre</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>244</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>255</F3F3F3>
+<GRIB1_BUFR3>255</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Missing value</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+<Exporting_CommonCodeTableC1_E>
+<No>245</No>
+<F1F2>Not applicable</F1F2>
+<F3F3F3>256-999</F3F3F3>
+<GRIB1_BUFR3>Not applicable</GRIB1_BUFR3>
+<OriginatingGeneratingCentres>Not used</OriginatingGeneratingCentres>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC1_E>
+</dataroot>

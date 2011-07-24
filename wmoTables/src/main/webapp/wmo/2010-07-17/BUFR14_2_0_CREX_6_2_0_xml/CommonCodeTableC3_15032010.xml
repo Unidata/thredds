@@ -1,0 +1,703 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataroot xmlns:od="urn:schemas-microsoft-com:officedata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  xsi:noNamespaceSchemaLocation="Exporting_CommonCodeTableC3_E.xsd" generated="2010-04-08T16:34:25">
+<Exporting_CommonCodeTableC3_E>
+<No>1</No>
+<IXIIXIX>001</IXIIXIX>
+<BUFR>1</BUFR>
+<Instrument_x0020_make_x0020_and_x0020_type>Sippican T-4</Instrument_x0020_make_x0020_and_x0020_type>
+<EquationCoefficients_a>6.472</EquationCoefficients_a>
+<EquationCoefficients_b>-2.16</EquationCoefficients_b>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC3_E>
+<Exporting_CommonCodeTableC3_E>
+<No>2</No>
+<IXIIXIX>002</IXIIXIX>
+<BUFR>2</BUFR>
+<Instrument_x0020_make_x0020_and_x0020_type>Sippican T-4</Instrument_x0020_make_x0020_and_x0020_type>
+<EquationCoefficients_a>6.691</EquationCoefficients_a>
+<EquationCoefficients_b>-2.25</EquationCoefficients_b>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC3_E>
+<Exporting_CommonCodeTableC3_E>
+<No>3</No>
+<IXIIXIX>011</IXIIXIX>
+<BUFR>11</BUFR>
+<Instrument_x0020_make_x0020_and_x0020_type>Sippican T-5</Instrument_x0020_make_x0020_and_x0020_type>
+<EquationCoefficients_a>6.828</EquationCoefficients_a>
+<EquationCoefficients_b>-1.82</EquationCoefficients_b>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC3_E>
+<Exporting_CommonCodeTableC3_E>
+<No>4</No>
+<IXIIXIX>021</IXIIXIX>
+<BUFR>21</BUFR>
+<Instrument_x0020_make_x0020_and_x0020_type>Sippican Fast Deep</Instrument_x0020_make_x0020_and_x0020_type>
+<EquationCoefficients_a>6.346</EquationCoefficients_a>
+<EquationCoefficients_b>-1.82</EquationCoefficients_b>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC3_E>
+<Exporting_CommonCodeTableC3_E>
+<No>5</No>
+<IXIIXIX>031</IXIIXIX>
+<BUFR>31</BUFR>
+<Instrument_x0020_make_x0020_and_x0020_type>Sippican T-6</Instrument_x0020_make_x0020_and_x0020_type>
+<EquationCoefficients_a>6.472</EquationCoefficients_a>
+<EquationCoefficients_b>-2.16</EquationCoefficients_b>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC3_E>
+<Exporting_CommonCodeTableC3_E>
+<No>6</No>
+<IXIIXIX>032</IXIIXIX>
+<BUFR>32</BUFR>
+<Instrument_x0020_make_x0020_and_x0020_type>Sippican T-6</Instrument_x0020_make_x0020_and_x0020_type>
+<EquationCoefficients_a>6.691</EquationCoefficients_a>
+<EquationCoefficients_b>-2.25</EquationCoefficients_b>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC3_E>
+<Exporting_CommonCodeTableC3_E>
+<No>7</No>
+<IXIIXIX>041</IXIIXIX>
+<BUFR>41</BUFR>
+<Instrument_x0020_make_x0020_and_x0020_type>Sippican T-7</Instrument_x0020_make_x0020_and_x0020_type>
+<EquationCoefficients_a>6.472</EquationCoefficients_a>
+<EquationCoefficients_b>-2.16</EquationCoefficients_b>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC3_E>
+<Exporting_CommonCodeTableC3_E>
+<No>8</No>
+<IXIIXIX>042</IXIIXIX>
+<BUFR>42</BUFR>
+<Instrument_x0020_make_x0020_and_x0020_type>Sippican T-7</Instrument_x0020_make_x0020_and_x0020_type>
+<EquationCoefficients_a>6.691</EquationCoefficients_a>
+<EquationCoefficients_b>-2.25</EquationCoefficients_b>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC3_E>
+<Exporting_CommonCodeTableC3_E>
+<No>9</No>
+<IXIIXIX>051</IXIIXIX>
+<BUFR>51</BUFR>
+<Instrument_x0020_make_x0020_and_x0020_type>Sippican Deep Blue</Instrument_x0020_make_x0020_and_x0020_type>
+<EquationCoefficients_a>6.472</EquationCoefficients_a>
+<EquationCoefficients_b>-2.16</EquationCoefficients_b>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC3_E>
+<Exporting_CommonCodeTableC3_E>
+<No>10</No>
+<IXIIXIX>052</IXIIXIX>
+<BUFR>52</BUFR>
+<Instrument_x0020_make_x0020_and_x0020_type>Sippican Deep Blue</Instrument_x0020_make_x0020_and_x0020_type>
+<EquationCoefficients_a>6.691</EquationCoefficients_a>
+<EquationCoefficients_b>-2.25</EquationCoefficients_b>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC3_E>
+<Exporting_CommonCodeTableC3_E>
+<No>11</No>
+<IXIIXIX>061</IXIIXIX>
+<BUFR>61</BUFR>
+<Instrument_x0020_make_x0020_and_x0020_type>Sippican T-10</Instrument_x0020_make_x0020_and_x0020_type>
+<EquationCoefficients_a>6.301</EquationCoefficients_a>
+<EquationCoefficients_b>-2.16</EquationCoefficients_b>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC3_E>
+<Exporting_CommonCodeTableC3_E>
+<No>12</No>
+<IXIIXIX>071</IXIIXIX>
+<BUFR>71</BUFR>
+<Instrument_x0020_make_x0020_and_x0020_type>Sippican T-11</Instrument_x0020_make_x0020_and_x0020_type>
+<EquationCoefficients_a>1.779</EquationCoefficients_a>
+<EquationCoefficients_b>-0.255</EquationCoefficients_b>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC3_E>
+<Exporting_CommonCodeTableC3_E>
+<No>13</No>
+<IXIIXIX>081</IXIIXIX>
+<BUFR>81</BUFR>
+<Instrument_x0020_make_x0020_and_x0020_type>Sippican AXBT (300 m probes)</Instrument_x0020_make_x0020_and_x0020_type>
+<EquationCoefficients_a>1.52</EquationCoefficients_a>
+<EquationCoefficients_b>0.0</EquationCoefficients_b>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC3_E>
+<Exporting_CommonCodeTableC3_E>
+<No>14</No>
+<IXIIXIX>201</IXIIXIX>
+<BUFR>201</BUFR>
+<Instrument_x0020_make_x0020_and_x0020_type>TSK T-4</Instrument_x0020_make_x0020_and_x0020_type>
+<EquationCoefficients_a>6.472</EquationCoefficients_a>
+<EquationCoefficients_b>-2.16</EquationCoefficients_b>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC3_E>
+<Exporting_CommonCodeTableC3_E>
+<No>15</No>
+<IXIIXIX>202</IXIIXIX>
+<BUFR>202</BUFR>
+<Instrument_x0020_make_x0020_and_x0020_type>TSK T-4</Instrument_x0020_make_x0020_and_x0020_type>
+<EquationCoefficients_a>6.691</EquationCoefficients_a>
+<EquationCoefficients_b>-2.25</EquationCoefficients_b>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC3_E>
+<Exporting_CommonCodeTableC3_E>
+<No>16</No>
+<IXIIXIX>211</IXIIXIX>
+<BUFR>211</BUFR>
+<Instrument_x0020_make_x0020_and_x0020_type>TSK T-6</Instrument_x0020_make_x0020_and_x0020_type>
+<EquationCoefficients_a>6.472</EquationCoefficients_a>
+<EquationCoefficients_b>-2.16</EquationCoefficients_b>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC3_E>
+<Exporting_CommonCodeTableC3_E>
+<No>17</No>
+<IXIIXIX>212</IXIIXIX>
+<BUFR>212</BUFR>
+<Instrument_x0020_make_x0020_and_x0020_type>TSK T-6</Instrument_x0020_make_x0020_and_x0020_type>
+<EquationCoefficients_a>6.691</EquationCoefficients_a>
+<EquationCoefficients_b>-2.25</EquationCoefficients_b>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC3_E>
+<Exporting_CommonCodeTableC3_E>
+<No>18</No>
+<IXIIXIX>221</IXIIXIX>
+<BUFR>221</BUFR>
+<Instrument_x0020_make_x0020_and_x0020_type>TSK T-7</Instrument_x0020_make_x0020_and_x0020_type>
+<EquationCoefficients_a>6.472</EquationCoefficients_a>
+<EquationCoefficients_b>-2.16</EquationCoefficients_b>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC3_E>
+<Exporting_CommonCodeTableC3_E>
+<No>19</No>
+<IXIIXIX>222</IXIIXIX>
+<BUFR>222</BUFR>
+<Instrument_x0020_make_x0020_and_x0020_type>TSK T-7</Instrument_x0020_make_x0020_and_x0020_type>
+<EquationCoefficients_a>6.691</EquationCoefficients_a>
+<EquationCoefficients_b>-2.25</EquationCoefficients_b>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC3_E>
+<Exporting_CommonCodeTableC3_E>
+<No>20</No>
+<IXIIXIX>231</IXIIXIX>
+<BUFR>231</BUFR>
+<Instrument_x0020_make_x0020_and_x0020_type>TSK T-5</Instrument_x0020_make_x0020_and_x0020_type>
+<EquationCoefficients_a>6.828</EquationCoefficients_a>
+<EquationCoefficients_b>-1.82</EquationCoefficients_b>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC3_E>
+<Exporting_CommonCodeTableC3_E>
+<No>21</No>
+<IXIIXIX>241</IXIIXIX>
+<BUFR>241</BUFR>
+<Instrument_x0020_make_x0020_and_x0020_type>TSK T-10</Instrument_x0020_make_x0020_and_x0020_type>
+<EquationCoefficients_a>6.301</EquationCoefficients_a>
+<EquationCoefficients_b>-2.16</EquationCoefficients_b>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC3_E>
+<Exporting_CommonCodeTableC3_E>
+<No>22</No>
+<IXIIXIX>251</IXIIXIX>
+<BUFR>251</BUFR>
+<Instrument_x0020_make_x0020_and_x0020_type>TSK Deep Blue</Instrument_x0020_make_x0020_and_x0020_type>
+<EquationCoefficients_a>6.472</EquationCoefficients_a>
+<EquationCoefficients_b>-2.16</EquationCoefficients_b>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC3_E>
+<Exporting_CommonCodeTableC3_E>
+<No>23</No>
+<IXIIXIX>252</IXIIXIX>
+<BUFR>252</BUFR>
+<Instrument_x0020_make_x0020_and_x0020_type>TSK Deep Blue</Instrument_x0020_make_x0020_and_x0020_type>
+<EquationCoefficients_a>6.691</EquationCoefficients_a>
+<EquationCoefficients_b>-2.25</EquationCoefficients_b>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC3_E>
+<Exporting_CommonCodeTableC3_E>
+<No>24</No>
+<IXIIXIX>261</IXIIXIX>
+<BUFR>261</BUFR>
+<Instrument_x0020_make_x0020_and_x0020_type>TSK AXBT</Instrument_x0020_make_x0020_and_x0020_type>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC3_E>
+<Exporting_CommonCodeTableC3_E>
+<No>25</No>
+<IXIIXIX>401</IXIIXIX>
+<BUFR>401</BUFR>
+<Instrument_x0020_make_x0020_and_x0020_type>Sparton XBT-1</Instrument_x0020_make_x0020_and_x0020_type>
+<EquationCoefficients_a>6.301</EquationCoefficients_a>
+<EquationCoefficients_b>-2.16</EquationCoefficients_b>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC3_E>
+<Exporting_CommonCodeTableC3_E>
+<No>26</No>
+<IXIIXIX>411</IXIIXIX>
+<BUFR>411</BUFR>
+<Instrument_x0020_make_x0020_and_x0020_type>Sparton XBT-3</Instrument_x0020_make_x0020_and_x0020_type>
+<EquationCoefficients_a>5.861</EquationCoefficients_a>
+<EquationCoefficients_b>-0.0904</EquationCoefficients_b>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC3_E>
+<Exporting_CommonCodeTableC3_E>
+<No>27</No>
+<IXIIXIX>421</IXIIXIX>
+<BUFR>421</BUFR>
+<Instrument_x0020_make_x0020_and_x0020_type>Sparton XBT-4</Instrument_x0020_make_x0020_and_x0020_type>
+<EquationCoefficients_a>6.472</EquationCoefficients_a>
+<EquationCoefficients_b>-2.16</EquationCoefficients_b>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC3_E>
+<Exporting_CommonCodeTableC3_E>
+<No>28</No>
+<IXIIXIX>431</IXIIXIX>
+<BUFR>431</BUFR>
+<Instrument_x0020_make_x0020_and_x0020_type>Sparton XBT-5</Instrument_x0020_make_x0020_and_x0020_type>
+<EquationCoefficients_a>6.828</EquationCoefficients_a>
+<EquationCoefficients_b>-1.82</EquationCoefficients_b>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC3_E>
+<Exporting_CommonCodeTableC3_E>
+<No>29</No>
+<IXIIXIX>441</IXIIXIX>
+<BUFR>441</BUFR>
+<Instrument_x0020_make_x0020_and_x0020_type>Sparton XBT-5DB</Instrument_x0020_make_x0020_and_x0020_type>
+<EquationCoefficients_a>6.828</EquationCoefficients_a>
+<EquationCoefficients_b>-1.82</EquationCoefficients_b>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC3_E>
+<Exporting_CommonCodeTableC3_E>
+<No>30</No>
+<IXIIXIX>451</IXIIXIX>
+<BUFR>451</BUFR>
+<Instrument_x0020_make_x0020_and_x0020_type>Sparton XBT-6</Instrument_x0020_make_x0020_and_x0020_type>
+<EquationCoefficients_a>6.472</EquationCoefficients_a>
+<EquationCoefficients_b>-2.16</EquationCoefficients_b>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC3_E>
+<Exporting_CommonCodeTableC3_E>
+<No>31</No>
+<IXIIXIX>461</IXIIXIX>
+<BUFR>461</BUFR>
+<Instrument_x0020_make_x0020_and_x0020_type>Sparton XBT-7</Instrument_x0020_make_x0020_and_x0020_type>
+<EquationCoefficients_a>6.472</EquationCoefficients_a>
+<EquationCoefficients_b>-2.16</EquationCoefficients_b>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC3_E>
+<Exporting_CommonCodeTableC3_E>
+<No>32</No>
+<IXIIXIX>462</IXIIXIX>
+<BUFR>462</BUFR>
+<Instrument_x0020_make_x0020_and_x0020_type>Sparton XBT-7</Instrument_x0020_make_x0020_and_x0020_type>
+<EquationCoefficients_a>6.705</EquationCoefficients_a>
+<EquationCoefficients_b>-2.28</EquationCoefficients_b>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC3_E>
+<Exporting_CommonCodeTableC3_E>
+<No>33</No>
+<IXIIXIX>471</IXIIXIX>
+<BUFR>471</BUFR>
+<Instrument_x0020_make_x0020_and_x0020_type>Sparton XBT-7DB</Instrument_x0020_make_x0020_and_x0020_type>
+<EquationCoefficients_a>6.472</EquationCoefficients_a>
+<EquationCoefficients_b>-2.16</EquationCoefficients_b>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC3_E>
+<Exporting_CommonCodeTableC3_E>
+<No>34</No>
+<IXIIXIX>481</IXIIXIX>
+<BUFR>481</BUFR>
+<Instrument_x0020_make_x0020_and_x0020_type>Sparton XBT-10</Instrument_x0020_make_x0020_and_x0020_type>
+<EquationCoefficients_a>6.301</EquationCoefficients_a>
+<EquationCoefficients_b>-2.16</EquationCoefficients_b>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC3_E>
+<Exporting_CommonCodeTableC3_E>
+<No>35</No>
+<IXIIXIX>491</IXIIXIX>
+<BUFR>491</BUFR>
+<Instrument_x0020_make_x0020_and_x0020_type>Sparton XBT-20</Instrument_x0020_make_x0020_and_x0020_type>
+<EquationCoefficients_a>6.472</EquationCoefficients_a>
+<EquationCoefficients_b>-2.16</EquationCoefficients_b>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC3_E>
+<Exporting_CommonCodeTableC3_E>
+<No>36</No>
+<IXIIXIX>501</IXIIXIX>
+<BUFR>501</BUFR>
+<Instrument_x0020_make_x0020_and_x0020_type>Sparton XBT-20DB</Instrument_x0020_make_x0020_and_x0020_type>
+<EquationCoefficients_a>6.472</EquationCoefficients_a>
+<EquationCoefficients_b>-2.16</EquationCoefficients_b>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC3_E>
+<Exporting_CommonCodeTableC3_E>
+<No>37</No>
+<IXIIXIX>510</IXIIXIX>
+<BUFR>510</BUFR>
+<Instrument_x0020_make_x0020_and_x0020_type>Sparton 536 AXBT</Instrument_x0020_make_x0020_and_x0020_type>
+<EquationCoefficients_a>1.524</EquationCoefficients_a>
+<EquationCoefficients_b>0</EquationCoefficients_b>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC3_E>
+<Exporting_CommonCodeTableC3_E>
+<No>38</No>
+<IXIIXIX>700</IXIIXIX>
+<BUFR>700</BUFR>
+<Instrument_x0020_make_x0020_and_x0020_type>Sippican XCTD Standard</Instrument_x0020_make_x0020_and_x0020_type>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC3_E>
+<Exporting_CommonCodeTableC3_E>
+<No>39</No>
+<IXIIXIX>710</IXIIXIX>
+<BUFR>710</BUFR>
+<Instrument_x0020_make_x0020_and_x0020_type>Sippican XCTD Deep</Instrument_x0020_make_x0020_and_x0020_type>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC3_E>
+<Exporting_CommonCodeTableC3_E>
+<No>40</No>
+<IXIIXIX>720</IXIIXIX>
+<BUFR>720</BUFR>
+<Instrument_x0020_make_x0020_and_x0020_type>Sippican AXCTD</Instrument_x0020_make_x0020_and_x0020_type>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC3_E>
+<Exporting_CommonCodeTableC3_E>
+<No>41</No>
+<IXIIXIX>730</IXIIXIX>
+<BUFR>730</BUFR>
+<Instrument_x0020_make_x0020_and_x0020_type>Sippican SXCTD</Instrument_x0020_make_x0020_and_x0020_type>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC3_E>
+<Exporting_CommonCodeTableC3_E>
+<No>42</No>
+<IXIIXIX>741</IXIIXIX>
+<BUFR>741</BUFR>
+<Instrument_x0020_make_x0020_and_x0020_type>TSK XCTD</Instrument_x0020_make_x0020_and_x0020_type>
+<EquationCoefficients_a>3.42543</EquationCoefficients_a>
+<EquationCoefficients_b>-0.47</EquationCoefficients_b>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC3_E>
+<Exporting_CommonCodeTableC3_E>
+<No>43</No>
+<IXIIXIX>742</IXIIXIX>
+<BUFR>742</BUFR>
+<Instrument_x0020_make_x0020_and_x0020_type>TSK XCTD-2</Instrument_x0020_make_x0020_and_x0020_type>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC3_E>
+<Exporting_CommonCodeTableC3_E>
+<No>44</No>
+<IXIIXIX>743</IXIIXIX>
+<BUFR>743</BUFR>
+<Instrument_x0020_make_x0020_and_x0020_type>TSK XCTD-2F</Instrument_x0020_make_x0020_and_x0020_type>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC3_E>
+<Exporting_CommonCodeTableC3_E>
+<No>45</No>
+<IXIIXIX>751</IXIIXIX>
+<BUFR>751</BUFR>
+<Instrument_x0020_make_x0020_and_x0020_type>TSK AXCTD</Instrument_x0020_make_x0020_and_x0020_type>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC3_E>
+<Exporting_CommonCodeTableC3_E>
+<No>46</No>
+<IXIIXIX>780</IXIIXIX>
+<BUFR>780</BUFR>
+<Instrument_x0020_make_x0020_and_x0020_type>Sea-Bird SBE21 SEACAT Thermosalinograph</Instrument_x0020_make_x0020_and_x0020_type>
+<EquationCoefficients_a>Not applicable</EquationCoefficients_a>
+<EquationCoefficients_b>Not applicable</EquationCoefficients_b>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC3_E>
+<Exporting_CommonCodeTableC3_E>
+<No>47</No>
+<IXIIXIX>781</IXIIXIX>
+<BUFR>781</BUFR>
+<Instrument_x0020_make_x0020_and_x0020_type>Sea-Bird SBE45 MicroTSG Thermosalinograph</Instrument_x0020_make_x0020_and_x0020_type>
+<EquationCoefficients_a>Not applicable</EquationCoefficients_a>
+<EquationCoefficients_b>Not applicable</EquationCoefficients_b>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC3_E>
+<Exporting_CommonCodeTableC3_E>
+<No>48</No>
+<IXIIXIX>800</IXIIXIX>
+<BUFR>800</BUFR>
+<Instrument_x0020_make_x0020_and_x0020_type>Mechanical BT</Instrument_x0020_make_x0020_and_x0020_type>
+<EquationCoefficients_a>Not applicable</EquationCoefficients_a>
+<EquationCoefficients_b>Not applicable</EquationCoefficients_b>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC3_E>
+<Exporting_CommonCodeTableC3_E>
+<No>49</No>
+<IXIIXIX>810</IXIIXIX>
+<BUFR>810</BUFR>
+<Instrument_x0020_make_x0020_and_x0020_type>Hydrocast</Instrument_x0020_make_x0020_and_x0020_type>
+<EquationCoefficients_a>Not applicable</EquationCoefficients_a>
+<EquationCoefficients_b>Not applicable</EquationCoefficients_b>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC3_E>
+<Exporting_CommonCodeTableC3_E>
+<No>50</No>
+<IXIIXIX>820</IXIIXIX>
+<BUFR>820</BUFR>
+<Instrument_x0020_make_x0020_and_x0020_type>Thermistor chain</Instrument_x0020_make_x0020_and_x0020_type>
+<EquationCoefficients_a>Not applicable</EquationCoefficients_a>
+<EquationCoefficients_b>Not applicable</EquationCoefficients_b>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC3_E>
+<Exporting_CommonCodeTableC3_E>
+<No>51</No>
+<IXIIXIX>825</IXIIXIX>
+<BUFR>825</BUFR>
+<Instrument_x0020_make_x0020_and_x0020_type>Temperature (sonic) and pressure probes</Instrument_x0020_make_x0020_and_x0020_type>
+<EquationCoefficients_a>Not applicable</EquationCoefficients_a>
+<EquationCoefficients_b>Not applicable</EquationCoefficients_b>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC3_E>
+<Exporting_CommonCodeTableC3_E>
+<No>52</No>
+<IXIIXIX>830</IXIIXIX>
+<BUFR>830</BUFR>
+<Instrument_x0020_make_x0020_and_x0020_type>CTD</Instrument_x0020_make_x0020_and_x0020_type>
+<EquationCoefficients_a>Not applicable</EquationCoefficients_a>
+<EquationCoefficients_b>Not applicable</EquationCoefficients_b>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC3_E>
+<Exporting_CommonCodeTableC3_E>
+<No>53</No>
+<IXIIXIX>831</IXIIXIX>
+<BUFR>831</BUFR>
+<Instrument_x0020_make_x0020_and_x0020_type>CTD-P-ALACE float</Instrument_x0020_make_x0020_and_x0020_type>
+<EquationCoefficients_a>Not applicable</EquationCoefficients_a>
+<EquationCoefficients_b>Not applicable</EquationCoefficients_b>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC3_E>
+<Exporting_CommonCodeTableC3_E>
+<No>54</No>
+<IXIIXIX>840</IXIIXIX>
+<BUFR>840</BUFR>
+<Instrument_x0020_make_x0020_and_x0020_type>PROVOR, no conductivity sensor</Instrument_x0020_make_x0020_and_x0020_type>
+<EquationCoefficients_a>Not applicable</EquationCoefficients_a>
+<EquationCoefficients_b>Not applicable</EquationCoefficients_b>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC3_E>
+<Exporting_CommonCodeTableC3_E>
+<No>55</No>
+<IXIIXIX>841</IXIIXIX>
+<BUFR>841</BUFR>
+<Instrument_x0020_make_x0020_and_x0020_type>PROVOR, Sea-Bird conductivity sensor</Instrument_x0020_make_x0020_and_x0020_type>
+<EquationCoefficients_a>Not applicable</EquationCoefficients_a>
+<EquationCoefficients_b>Not applicable</EquationCoefficients_b>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC3_E>
+<Exporting_CommonCodeTableC3_E>
+<No>56</No>
+<IXIIXIX>842</IXIIXIX>
+<BUFR>842</BUFR>
+<Instrument_x0020_make_x0020_and_x0020_type>PROVOR, FSI conductivity sensor</Instrument_x0020_make_x0020_and_x0020_type>
+<EquationCoefficients_a>Not applicable</EquationCoefficients_a>
+<EquationCoefficients_b>Not applicable</EquationCoefficients_b>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC3_E>
+<Exporting_CommonCodeTableC3_E>
+<No>57</No>
+<IXIIXIX>843</IXIIXIX>
+<BUFR>843</BUFR>
+<Instrument_x0020_make_x0020_and_x0020_type>Polar Ocean Profiling System (POPS), PROVOR, SBE CTD</Instrument_x0020_make_x0020_and_x0020_type>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC3_E>
+<Exporting_CommonCodeTableC3_E>
+<No>58</No>
+<IXIIXIX>844</IXIIXIX>
+<BUFR>844</BUFR>
+<Instrument_x0020_make_x0020_and_x0020_type>Profiling Float, ARVOR, Seabird conductivity sensor</Instrument_x0020_make_x0020_and_x0020_type>
+<Status>Pre-operational</Status>
+</Exporting_CommonCodeTableC3_E>
+<Exporting_CommonCodeTableC3_E>
+<No>59</No>
+<IXIIXIX>845</IXIIXIX>
+<BUFR>845</BUFR>
+<Instrument_x0020_make_x0020_and_x0020_type>Webb Research, no conductivity sensor</Instrument_x0020_make_x0020_and_x0020_type>
+<EquationCoefficients_a>Not applicable</EquationCoefficients_a>
+<EquationCoefficients_b>Not applicable</EquationCoefficients_b>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC3_E>
+<Exporting_CommonCodeTableC3_E>
+<No>60</No>
+<IXIIXIX>846</IXIIXIX>
+<BUFR>846</BUFR>
+<Instrument_x0020_make_x0020_and_x0020_type>Webb Research, Sea-Bird conductivity sensor</Instrument_x0020_make_x0020_and_x0020_type>
+<EquationCoefficients_a>Not applicable</EquationCoefficients_a>
+<EquationCoefficients_b>Not applicable</EquationCoefficients_b>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC3_E>
+<Exporting_CommonCodeTableC3_E>
+<No>61</No>
+<IXIIXIX>847</IXIIXIX>
+<BUFR>847</BUFR>
+<Instrument_x0020_make_x0020_and_x0020_type>Webb Research, FSI conductivity sensor</Instrument_x0020_make_x0020_and_x0020_type>
+<EquationCoefficients_a>Not applicable</EquationCoefficients_a>
+<EquationCoefficients_b>Not applicable</EquationCoefficients_b>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC3_E>
+<Exporting_CommonCodeTableC3_E>
+<No>62</No>
+<IXIIXIX>850</IXIIXIX>
+<BUFR>850</BUFR>
+<Instrument_x0020_make_x0020_and_x0020_type>SOLO, no conductivity sensor</Instrument_x0020_make_x0020_and_x0020_type>
+<EquationCoefficients_a>Not applicable</EquationCoefficients_a>
+<EquationCoefficients_b>Not applicable</EquationCoefficients_b>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC3_E>
+<Exporting_CommonCodeTableC3_E>
+<No>63</No>
+<IXIIXIX>851</IXIIXIX>
+<BUFR>851</BUFR>
+<Instrument_x0020_make_x0020_and_x0020_type>SOLO, Sea-Bird conductivity sensor</Instrument_x0020_make_x0020_and_x0020_type>
+<EquationCoefficients_a>Not applicable</EquationCoefficients_a>
+<EquationCoefficients_b>Not applicable</EquationCoefficients_b>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC3_E>
+<Exporting_CommonCodeTableC3_E>
+<No>64</No>
+<IXIIXIX>852</IXIIXIX>
+<BUFR>852</BUFR>
+<Instrument_x0020_make_x0020_and_x0020_type>SOLO,  FSI conductivity sensor</Instrument_x0020_make_x0020_and_x0020_type>
+<EquationCoefficients_a>Not applicable</EquationCoefficients_a>
+<EquationCoefficients_b>Not applicable</EquationCoefficients_b>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC3_E>
+<Exporting_CommonCodeTableC3_E>
+<No>66</No>
+<IXIIXIX>853</IXIIXIX>
+<BUFR>853</BUFR>
+<Instrument_x0020_make_x0020_and_x0020_type>Profiling Float, SOLO2 (SCRIPPS), Seabird conductivity sensor</Instrument_x0020_make_x0020_and_x0020_type>
+<Status>Pre-operational</Status>
+</Exporting_CommonCodeTableC3_E>
+<Exporting_CommonCodeTableC3_E>
+<No>67</No>
+<IXIIXIX>854</IXIIXIX>
+<BUFR>854</BUFR>
+<Instrument_x0020_make_x0020_and_x0020_type>Reserved</Instrument_x0020_make_x0020_and_x0020_type>
+<Status>Pre-operational</Status>
+</Exporting_CommonCodeTableC3_E>
+<Exporting_CommonCodeTableC3_E>
+<No>68</No>
+<IXIIXIX>855</IXIIXIX>
+<BUFR>855</BUFR>
+<Instrument_x0020_make_x0020_and_x0020_type>Profiling Float, NINJA, no conductivity sensor</Instrument_x0020_make_x0020_and_x0020_type>
+<EquationCoefficients_a>Not applicable</EquationCoefficients_a>
+<EquationCoefficients_b>Not applicable</EquationCoefficients_b>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC3_E>
+<Exporting_CommonCodeTableC3_E>
+<No>69</No>
+<IXIIXIX>856</IXIIXIX>
+<BUFR>856</BUFR>
+<Instrument_x0020_make_x0020_and_x0020_type>Profiling Float, NINJA, SBE conductivity sensor</Instrument_x0020_make_x0020_and_x0020_type>
+<EquationCoefficients_a>Not applicable</EquationCoefficients_a>
+<EquationCoefficients_b>Not applicable</EquationCoefficients_b>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC3_E>
+<Exporting_CommonCodeTableC3_E>
+<No>70</No>
+<IXIIXIX>857</IXIIXIX>
+<BUFR>857</BUFR>
+<Instrument_x0020_make_x0020_and_x0020_type>Profiling Float, NINJA, FSI conductivity sensor</Instrument_x0020_make_x0020_and_x0020_type>
+<EquationCoefficients_a>Not applicable</EquationCoefficients_a>
+<EquationCoefficients_b>Not applicable</EquationCoefficients_b>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC3_E>
+<Exporting_CommonCodeTableC3_E>
+<No>71</No>
+<IXIIXIX>858</IXIIXIX>
+<BUFR>858</BUFR>
+<Instrument_x0020_make_x0020_and_x0020_type>Profiling Float, NINJA, TSK conductivity sensor</Instrument_x0020_make_x0020_and_x0020_type>
+<EquationCoefficients_a>Not applicable</EquationCoefficients_a>
+<EquationCoefficients_b>Not applicable</EquationCoefficients_b>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC3_E>
+<Exporting_CommonCodeTableC3_E>
+<No>72</No>
+<IXIIXIX>859</IXIIXIX>
+<BUFR>859</BUFR>
+<Instrument_x0020_make_x0020_and_x0020_type>Profiling Float, NEMO, no conductivity</Instrument_x0020_make_x0020_and_x0020_type>
+<EquationCoefficients_a>Not applicable</EquationCoefficients_a>
+<EquationCoefficients_b>Not applicable</EquationCoefficients_b>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC3_E>
+<Exporting_CommonCodeTableC3_E>
+<No>73</No>
+<IXIIXIX>860</IXIIXIX>
+<BUFR>860</BUFR>
+<Instrument_x0020_make_x0020_and_x0020_type>Profiling Float, NEMO, SBE conductivity sensor</Instrument_x0020_make_x0020_and_x0020_type>
+<EquationCoefficients_a>Not applicable</EquationCoefficients_a>
+<EquationCoefficients_b>Not applicable</EquationCoefficients_b>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC3_E>
+<Exporting_CommonCodeTableC3_E>
+<No>74</No>
+<IXIIXIX>861</IXIIXIX>
+<BUFR>861</BUFR>
+<Instrument_x0020_make_x0020_and_x0020_type>Profiling Float, NEMO, FSI conductivity sensor</Instrument_x0020_make_x0020_and_x0020_type>
+<EquationCoefficients_a>Not applicable</EquationCoefficients_a>
+<EquationCoefficients_b>Not applicable</EquationCoefficients_b>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC3_E>
+<Exporting_CommonCodeTableC3_E>
+<No>75</No>
+<IXIIXIX>862-899</IXIIXIX>
+<BUFR>862-899</BUFR>
+<Instrument_x0020_make_x0020_and_x0020_type>Reserved</Instrument_x0020_make_x0020_and_x0020_type>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC3_E>
+<Exporting_CommonCodeTableC3_E>
+<No>76</No>
+<IXIIXIX>900</IXIIXIX>
+<BUFR>900</BUFR>
+<Instrument_x0020_make_x0020_and_x0020_type>Sippican LMP-5 XBT</Instrument_x0020_make_x0020_and_x0020_type>
+<EquationCoefficients_a>9.727</EquationCoefficients_a>
+<EquationCoefficients_b>0.0000473</EquationCoefficients_b>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC3_E>
+<Exporting_CommonCodeTableC3_E>
+<No>77</No>
+<IXIIXIX>901</IXIIXIX>
+<BUFR>901</BUFR>
+<Instrument_x0020_make_x0020_and_x0020_type>Ice-tethered Profiler (ITP), SBE CTD</Instrument_x0020_make_x0020_and_x0020_type>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC3_E>
+<Exporting_CommonCodeTableC3_E>
+<No>78</No>
+<IXIIXIX>902-994</IXIIXIX>
+<BUFR>902-994</BUFR>
+<Instrument_x0020_make_x0020_and_x0020_type>Reserved</Instrument_x0020_make_x0020_and_x0020_type>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC3_E>
+<Exporting_CommonCodeTableC3_E>
+<No>79</No>
+<IXIIXIX>995</IXIIXIX>
+<BUFR>995</BUFR>
+<Instrument_x0020_make_x0020_and_x0020_type>Instrument attached to marine mammals</Instrument_x0020_make_x0020_and_x0020_type>
+<EquationCoefficients_a>Not applicable</EquationCoefficients_a>
+<EquationCoefficients_b>Not applicable</EquationCoefficients_b>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC3_E>
+<Exporting_CommonCodeTableC3_E>
+<No>80</No>
+<IXIIXIX>996</IXIIXIX>
+<BUFR>996</BUFR>
+<Instrument_x0020_make_x0020_and_x0020_type>Instrument attached to animals other than marine mammals</Instrument_x0020_make_x0020_and_x0020_type>
+<EquationCoefficients_a>Not applicable</EquationCoefficients_a>
+<EquationCoefficients_b>Not applicable</EquationCoefficients_b>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC3_E>
+<Exporting_CommonCodeTableC3_E>
+<No>81</No>
+<IXIIXIX>997-999</IXIIXIX>
+<BUFR>997-999</BUFR>
+<Instrument_x0020_make_x0020_and_x0020_type>Reserved</Instrument_x0020_make_x0020_and_x0020_type>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC3_E>
+<Exporting_CommonCodeTableC3_E>
+<No>82</No>
+<BUFR>1000-1022</BUFR>
+<Instrument_x0020_make_x0020_and_x0020_type>Reserved</Instrument_x0020_make_x0020_and_x0020_type>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC3_E>
+<Exporting_CommonCodeTableC3_E>
+<No>83</No>
+<BUFR>1023</BUFR>
+<Instrument_x0020_make_x0020_and_x0020_type>Missing value</Instrument_x0020_make_x0020_and_x0020_type>
+<Status>Operational</Status>
+</Exporting_CommonCodeTableC3_E>
+</dataroot>

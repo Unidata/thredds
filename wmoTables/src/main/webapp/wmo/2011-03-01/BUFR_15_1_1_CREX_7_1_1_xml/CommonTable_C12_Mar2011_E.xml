@@ -1,0 +1,1025 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataroot xmlns:od="urn:schemas-microsoft-com:officedata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  xsi:noNamespaceSchemaLocation="CommonTable_C12_Mar2011_E.xsd" generated="2011-03-23T15:10:10">
+<Exp_CommonTableC12_E>
+<No>1</No>
+<CodeFigure_SubCentres>0</CodeFigure_SubCentres>
+<Name_SubCentres_E>No sub-centre</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>2</No>
+<Name_OriginatingCentres_E>WMCs</Name_OriginatingCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>3</No>
+<CodeFigure_OriginatingCentres>2</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>Melbourne</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>201</CodeFigure_SubCentres>
+<Name_SubCentres_E>Casey</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>4</No>
+<CodeFigure_OriginatingCentres>2</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>Melbourne</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>203</CodeFigure_SubCentres>
+<Name_SubCentres_E>Davis</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>5</No>
+<CodeFigure_OriginatingCentres>2</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>Melbourne</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>211</CodeFigure_SubCentres>
+<Name_SubCentres_E>Melbourne Crib Point 1</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>6</No>
+<CodeFigure_OriginatingCentres>2</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>Melbourne</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>214</CodeFigure_SubCentres>
+<Name_SubCentres_E>Darwin</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>7</No>
+<CodeFigure_OriginatingCentres>2</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>Melbourne</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>217</CodeFigure_SubCentres>
+<Name_SubCentres_E>Perth</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>8</No>
+<CodeFigure_OriginatingCentres>2</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>Melbourne</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>219</CodeFigure_SubCentres>
+<Name_SubCentres_E>Townsville</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>9</No>
+<CodeFigure_OriginatingCentres>2</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>Melbourne</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>232</CodeFigure_SubCentres>
+<Name_SubCentres_E>Fiji</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>10</No>
+<CodeFigure_OriginatingCentres>2</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>Melbourne</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>235</CodeFigure_SubCentres>
+<Name_SubCentres_E>Noumea</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>11</No>
+<CodeFigure_OriginatingCentres>2</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>Melbourne</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>237</CodeFigure_SubCentres>
+<Name_SubCentres_E>Papeete</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>12</No>
+<CodeFigure_OriginatingCentres>2</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>Melbourne</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>250</CodeFigure_SubCentres>
+<Name_SubCentres_E>Vladivostock</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>13</No>
+<CodeFigure_OriginatingCentres>2</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>Melbourne</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>251</CodeFigure_SubCentres>
+<Name_SubCentres_E>Guam</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>14</No>
+<CodeFigure_OriginatingCentres>2</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>Melbourne</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>252</CodeFigure_SubCentres>
+<Name_SubCentres_E>Honolulu</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>15</No>
+<CodeFigure_OriginatingCentres>7</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>US National Weather Service, NCEP</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>1</CodeFigure_SubCentres>
+<Name_SubCentres_E>NCEP Reanalysis Project</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>16</No>
+<CodeFigure_OriginatingCentres>7</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>US National Weather Service, NCEP</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>2</CodeFigure_SubCentres>
+<Name_SubCentres_E>NCEP Ensemble Products</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>17</No>
+<CodeFigure_OriginatingCentres>7</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>US National Weather Service, NCEP</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>3</CodeFigure_SubCentres>
+<Name_SubCentres_E>NCEP Central Operations</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>18</No>
+<CodeFigure_OriginatingCentres>7</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>US National Weather Service, NCEP</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>4</CodeFigure_SubCentres>
+<Name_SubCentres_E>Environmental Modeling Center</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>19</No>
+<CodeFigure_OriginatingCentres>7</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>US National Weather Service, NCEP</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>5</CodeFigure_SubCentres>
+<Name_SubCentres_E>Hydrometeorological Prediction Center</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>20</No>
+<CodeFigure_OriginatingCentres>7</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>US National Weather Service, NCEP</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>6</CodeFigure_SubCentres>
+<Name_SubCentres_E>Marine Prediction Center</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>21</No>
+<CodeFigure_OriginatingCentres>7</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>US National Weather Service, NCEP</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>7</CodeFigure_SubCentres>
+<Name_SubCentres_E>Climate Prediction Center</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>22</No>
+<CodeFigure_OriginatingCentres>7</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>US National Weather Service, NCEP</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>8</CodeFigure_SubCentres>
+<Name_SubCentres_E>Aviation Weather Center</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>23</No>
+<CodeFigure_OriginatingCentres>7</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>US National Weather Service, NCEP</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>9</CodeFigure_SubCentres>
+<Name_SubCentres_E>Storm Prediction Center</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>24</No>
+<CodeFigure_OriginatingCentres>7</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>US National Weather Service, NCEP</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>10</CodeFigure_SubCentres>
+<Name_SubCentres_E>National Hurricane Center</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>25</No>
+<CodeFigure_OriginatingCentres>7</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>US National Weather Service, NCEP</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>11</CodeFigure_SubCentres>
+<Name_SubCentres_E>NWS Techniques Development Laboratory</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>26</No>
+<CodeFigure_OriginatingCentres>7</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>US National Weather Service, NCEP</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>12</CodeFigure_SubCentres>
+<Name_SubCentres_E>NESDIS Office of Research and Applications</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>27</No>
+<CodeFigure_OriginatingCentres>7</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>US National Weather Service, NCEP</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>13</CodeFigure_SubCentres>
+<Name_SubCentres_E>Federal Aviation Administration</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>28</No>
+<CodeFigure_OriginatingCentres>7</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>US National Weather Service, NCEP</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>14</CodeFigure_SubCentres>
+<Name_SubCentres_E>NWS Meteorological Development Laboratory</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>29</No>
+<CodeFigure_OriginatingCentres>7</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>US National Weather Service, NCEP</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>15</CodeFigure_SubCentres>
+<Name_SubCentres_E>North American Regional Reanalysis Project</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>30</No>
+<CodeFigure_OriginatingCentres>7</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>US National Weather Service, NCEP</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>16</CodeFigure_SubCentres>
+<Name_SubCentres_E>Space Weather Prediction Center</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>31</No>
+<Name_OriginatingCentres_E>Region II</Name_OriginatingCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>32</No>
+<CodeFigure_OriginatingCentres>34</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>Tokyo (RSMC), Japan Meteorological Agency</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>207</CodeFigure_SubCentres>
+<Name_SubCentres_E>Syowa</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>33</No>
+<CodeFigure_OriginatingCentres>34</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>Tokyo (RSMC), Japan Meteorological Agency</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>240</CodeFigure_SubCentres>
+<Name_SubCentres_E>Kiyose</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>34</No>
+<CodeFigure_OriginatingCentres>39</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>Beijing (RSMC)</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>225</CodeFigure_SubCentres>
+<Name_SubCentres_E>Beijing</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>35</No>
+<CodeFigure_OriginatingCentres>39</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>Beijing (RSMC)</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>226</CodeFigure_SubCentres>
+<Name_SubCentres_E>Guangzhou</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>36</No>
+<CodeFigure_OriginatingCentres>39</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>Beijing (RSMC)</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>228</CodeFigure_SubCentres>
+<Name_SubCentres_E>Urumuqi</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>37</No>
+<CodeFigure_OriginatingCentres>40</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>Seoul</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>243</CodeFigure_SubCentres>
+<Name_SubCentres_E>Seoul</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>38</No>
+<CodeFigure_OriginatingCentres>40</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>Seoul</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>245</CodeFigure_SubCentres>
+<Name_SubCentres_E>Jincheon</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>39</No>
+<Name_OriginatingCentres_E>Region III</Name_OriginatingCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>40</No>
+<CodeFigure_OriginatingCentres>46</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>Brazilian Space Agency ­ INPE</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>10</CodeFigure_SubCentres>
+<Name_SubCentres_E>Cachoeira Paulista (INPE)</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>41</No>
+<CodeFigure_OriginatingCentres>46</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>Brazilian Space Agency ­ INPE</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>11</CodeFigure_SubCentres>
+<Name_SubCentres_E>Cuiaba (INPE)</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>42</No>
+<CodeFigure_OriginatingCentres>46</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>Brazilian Space Agency ­ INPE</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>12</CodeFigure_SubCentres>
+<Name_SubCentres_E>Brasilia (INMET)</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>43</No>
+<CodeFigure_OriginatingCentres>46</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>Brazilian Space Agency ­ INPE</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>13</CodeFigure_SubCentres>
+<Name_SubCentres_E>Fortaleza (FUNCEME)</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>44</No>
+<CodeFigure_OriginatingCentres>46</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>Brazilian Space Agency ­ INPE</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>14</CodeFigure_SubCentres>
+<Name_SubCentres_E>Natal (Navy Hygrog. Centre)</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>45</No>
+<CodeFigure_OriginatingCentres>46</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>Brazilian Space Agency ­ INPE</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>15</CodeFigure_SubCentres>
+<Name_SubCentres_E>Manaus (SIVAM)</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>46</No>
+<CodeFigure_OriginatingCentres>46</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>Brazilian Space Agency ­ INPE</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>16</CodeFigure_SubCentres>
+<Name_SubCentres_E>Natal (INPE)</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>47</No>
+<CodeFigure_OriginatingCentres>46</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>Brazilian Space Agency ­ INPE</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>17</CodeFigure_SubCentres>
+<Name_SubCentres_E>Boa Vista</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>48</No>
+<Name_OriginatingCentres_E>Region V</Name_OriginatingCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>49</No>
+<CodeFigure_OriginatingCentres>69</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>Wellington (RSMC)</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>243</CodeFigure_SubCentres>
+<Name_SubCentres_E>Kelburn</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>50</No>
+<CodeFigure_OriginatingCentres>72</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>Singapore</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>249</CodeFigure_SubCentres>
+<Name_SubCentres_E>Singapore</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>51</No>
+<Name_OriginatingCentres_E>Region VI</Name_OriginatingCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>52</No>
+<CodeFigure_OriginatingCentres>74</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>UK Met Office, Exeter (RSMC)</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>1</CodeFigure_SubCentres>
+<Name_SubCentres_E>Shanwick Oceanic Area Control Centre</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>53</No>
+<CodeFigure_OriginatingCentres>74</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>UK Met Office, Exeter (RSMC)</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>2</CodeFigure_SubCentres>
+<Name_SubCentres_E>Fucino</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>54</No>
+<CodeFigure_OriginatingCentres>74</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>UK Met Office, Exeter (RSMC)</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>3</CodeFigure_SubCentres>
+<Name_SubCentres_E>Gatineau</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>55</No>
+<CodeFigure_OriginatingCentres>74</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>UK Met Office, Exeter (RSMC)</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>4</CodeFigure_SubCentres>
+<Name_SubCentres_E>Maspalomas</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>56</No>
+<CodeFigure_OriginatingCentres>74</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>UK Met Office, Exeter (RSMC)</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>5</CodeFigure_SubCentres>
+<Name_SubCentres_E>ESA ERS Central Facility</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>57</No>
+<CodeFigure_OriginatingCentres>74</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>UK Met Office, Exeter (RSMC)</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>6</CodeFigure_SubCentres>
+<Name_SubCentres_E>Prince Albert</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>58</No>
+<CodeFigure_OriginatingCentres>74</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>UK Met Office, Exeter (RSMC)</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>7</CodeFigure_SubCentres>
+<Name_SubCentres_E>West Freugh</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>59</No>
+<CodeFigure_OriginatingCentres>74</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>UK Met Office, Exeter (RSMC)</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>13</CodeFigure_SubCentres>
+<Name_SubCentres_E>Tromso</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>60</No>
+<CodeFigure_OriginatingCentres>74</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>UK Met Office, Exeter (RSMC)</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>21</CodeFigure_SubCentres>
+<Name_SubCentres_E>Agenzia Spaziale Italiana (Italy)</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>61</No>
+<CodeFigure_OriginatingCentres>74</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>UK Met Office, Exeter (RSMC)</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>22</CodeFigure_SubCentres>
+<Name_SubCentres_E>Centre National de la Recherche Scientifique (France)</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>62</No>
+<CodeFigure_OriginatingCentres>74</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>UK Met Office, Exeter (RSMC)</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>23</CodeFigure_SubCentres>
+<Name_SubCentres_E>GeoForschungs Zentrum (Germany)</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>63</No>
+<CodeFigure_OriginatingCentres>74</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>UK Met Office, Exeter (RSMC)</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>24</CodeFigure_SubCentres>
+<Name_SubCentres_E>Geodetic Observatory Pecny (Czech Republic)</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>64</No>
+<CodeFigure_OriginatingCentres>74</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>UK Met Office, Exeter (RSMC)</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>25</CodeFigure_SubCentres>
+<Name_SubCentres_E>Institut d&apos;Estudis Espacials de Catalunya (Spain)</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>65</No>
+<CodeFigure_OriginatingCentres>74</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>UK Met Office, Exeter (RSMC)</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>26</CodeFigure_SubCentres>
+<Name_SubCentres_E>Federal Office of Topography (Switzerland)</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>66</No>
+<CodeFigure_OriginatingCentres>74</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>UK Met Office, Exeter (RSMC)</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>27</CodeFigure_SubCentres>
+<Name_SubCentres_E>Nordic Commission of Geodesy (Norway)</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>67</No>
+<CodeFigure_OriginatingCentres>74</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>UK Met Office, Exeter (RSMC)</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>28</CodeFigure_SubCentres>
+<Name_SubCentres_E>Nordic Commission of Geodesy (Sweden)</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>68</No>
+<CodeFigure_OriginatingCentres>74</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>UK Met Office, Exeter (RSMC)</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>29</CodeFigure_SubCentres>
+<Name_SubCentres_E>Institute Géographique National (France) - Service de géodésie</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>69</No>
+<CodeFigure_OriginatingCentres>74</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>UK Met Office, Exeter (RSMC)</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>30</CodeFigure_SubCentres>
+<Name_SubCentres_E>Bundesamt für Kartographie und Geodäsie (Germany)</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>70</No>
+<CodeFigure_OriginatingCentres>74</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>UK Met Office, Exeter (RSMC)</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>31</CodeFigure_SubCentres>
+<Name_SubCentres_E>Institute of Engineering Satellite Surveying and Geodesy (U.K.)</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>71</No>
+<CodeFigure_OriginatingCentres>74</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>UK Met Office, Exeter (RSMC)</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>32</CodeFigure_SubCentres>
+<Name_SubCentres_E>Joint Operational Meteorology and Oceanography Centre (JOMOC)</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>72</No>
+<CodeFigure_OriginatingCentres>74</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>UK Met Office, Exeter (RSMC)</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>33</CodeFigure_SubCentres>
+<Name_SubCentres_E>Koninklijk Nederlands Meteorologisch Institut (Netherlands)</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>73</No>
+<CodeFigure_OriginatingCentres>74</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>UK Met Office, Exeter (RSMC)</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>34</CodeFigure_SubCentres>
+<Name_SubCentres_E>Nordic GPS Atmospheric Analysis centre (Sweden)</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>74</No>
+<CodeFigure_OriginatingCentres>74</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>UK Met Office, Exeter (RSMC)</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>35</CodeFigure_SubCentres>
+<Name_SubCentres_E>Instituto Geografico Nacional de España (Spain)</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>75</No>
+<CodeFigure_OriginatingCentres>74</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>UK Met Office, Exeter (RSMC)</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>36</CodeFigure_SubCentres>
+<Name_SubCentres_E>Met Éireann (Ireland)</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>76</No>
+<CodeFigure_OriginatingCentres>74</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>UK Met Office, Exeter (RSMC)</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>37</CodeFigure_SubCentres>
+<Name_SubCentres_E>Royal Observatory of Belgium (Belgium)</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>77</No>
+<Name_OriginatingCentres_E>Additional centres</Name_OriginatingCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>78</No>
+<CodeFigure_OriginatingCentres>110</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>Hong-Kong, China</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>229</CodeFigure_SubCentres>
+<Name_SubCentres_E>Hong-Kong</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>79</No>
+<CodeFigure_OriginatingCentres>147</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>National Commission on Space Activities (CONAE) - Argentina</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>10</CodeFigure_SubCentres>
+<Name_SubCentres_E>Córdoba</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>80</No>
+<CodeFigure_OriginatingCentres>147</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>National Commission on Space Activities (CONAE) - Argentina</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>15</CodeFigure_SubCentres>
+<Name_SubCentres_E>Ushuaia</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>81</No>
+<CodeFigure_OriginatingCentres>147</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>National Commission on Space Activities (CONAE) - Argentina</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>20</CodeFigure_SubCentres>
+<Name_SubCentres_E>Marambio</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>82</No>
+<CodeFigure_OriginatingCentres>147</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>National Commission on Space Activities (CONAE) - Argentina</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>30</CodeFigure_SubCentres>
+<Name_SubCentres_E>Santiago de Chile</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>83</No>
+<CodeFigure_OriginatingCentres>147</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>National Commission on Space Activities (CONAE) - Argentina</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>40</CodeFigure_SubCentres>
+<Name_SubCentres_E>Punta Arenas</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>84</No>
+<CodeFigure_OriginatingCentres>147</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>National Commission on Space Activities (CONAE) - Argentina</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>50</CodeFigure_SubCentres>
+<Name_SubCentres_E>Base Presidente Frei</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>85</No>
+<CodeFigure_OriginatingCentres>147</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>National Commission on Space Activities (CONAE) - Argentina</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>60</CodeFigure_SubCentres>
+<Name_SubCentres_E>Cotopaxi</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>86</No>
+<CodeFigure_OriginatingCentres>160</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>U.S. NOAA/NESDIS</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>10</CodeFigure_SubCentres>
+<Name_SubCentres_E>Tromso (Norway)</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>87</No>
+<CodeFigure_OriginatingCentres>160</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>U.S. NOAA/NESDIS</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>11</CodeFigure_SubCentres>
+<Name_SubCentres_E>McMurdo (Antarctica)</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>88</No>
+<CodeFigure_OriginatingCentres>161</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>U.S. NOAA Office of Oceanic and Atmospheric Research (NOAA/OAR)</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>1</CodeFigure_SubCentres>
+<Name_SubCentres_E>Great Lakes Environmental Research Laboratory</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>89</No>
+<CodeFigure_OriginatingCentres>161</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>U.S. NOAA Office of Oceanic and Atmospheric Research (NOAA/OAR)</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>2</CodeFigure_SubCentres>
+<Name_SubCentres_E>Earth System Research Laboratory</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>90</No>
+<CodeFigure_OriginatingCentres>173</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>US National Aeronautics and Space Administration (NASA)</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>1</CodeFigure_SubCentres>
+<Name_SubCentres_E>Ames Research Center</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>91</No>
+<CodeFigure_OriginatingCentres>173</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>US National Aeronautics and Space Administration (NASA)</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>2</CodeFigure_SubCentres>
+<Name_SubCentres_E>Dryden Flight Research Center</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>92</No>
+<CodeFigure_OriginatingCentres>173</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>US National Aeronautics and Space Administration (NASA)</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>3</CodeFigure_SubCentres>
+<Name_SubCentres_E>Glenn Research Center</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>93</No>
+<CodeFigure_OriginatingCentres>173</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>US National Aeronautics and Space Administration (NASA)</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>4</CodeFigure_SubCentres>
+<Name_SubCentres_E>Goddard Space Flight Center</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>94</No>
+<CodeFigure_OriginatingCentres>173</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>US National Aeronautics and Space Administration (NASA)</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>5</CodeFigure_SubCentres>
+<Name_SubCentres_E>Jet Propulsion Laboratory</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>95</No>
+<CodeFigure_OriginatingCentres>173</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>US National Aeronautics and Space Administration (NASA)</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>6</CodeFigure_SubCentres>
+<Name_SubCentres_E>Johnson Space Center</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>96</No>
+<CodeFigure_OriginatingCentres>173</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>US National Aeronautics and Space Administration (NASA)</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>7</CodeFigure_SubCentres>
+<Name_SubCentres_E>Kennedy Space Center</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>97</No>
+<CodeFigure_OriginatingCentres>173</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>US National Aeronautics and Space Administration (NASA)</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>8</CodeFigure_SubCentres>
+<Name_SubCentres_E>Langley Research Center</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>98</No>
+<CodeFigure_OriginatingCentres>173</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>US National Aeronautics and Space Administration (NASA)</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>9</CodeFigure_SubCentres>
+<Name_SubCentres_E>Marshall Space Flight Center</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>99</No>
+<CodeFigure_OriginatingCentres>173</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>US National Aeronautics and Space Administration (NASA)</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>10</CodeFigure_SubCentres>
+<Name_SubCentres_E>Stennis Space Center</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>100</No>
+<CodeFigure_OriginatingCentres>173</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>US National Aeronautics and Space Administration (NASA)</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>11</CodeFigure_SubCentres>
+<Name_SubCentres_E>Goddard Institute for Space Studies</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>101</No>
+<CodeFigure_OriginatingCentres>173</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>US National Aeronautics and Space Administration (NASA)</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>12</CodeFigure_SubCentres>
+<Name_SubCentres_E>Independent Verification and Validation Facility</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>102</No>
+<CodeFigure_OriginatingCentres>173</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>US National Aeronautics and Space Administration (NASA)</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>13</CodeFigure_SubCentres>
+<Name_SubCentres_E>NASA Shared Service Center</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>103</No>
+<CodeFigure_OriginatingCentres>173</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>US National Aeronautics and Space Administration (NASA)</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>14</CodeFigure_SubCentres>
+<Name_SubCentres_E>Wallops Flight Facility</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>104</No>
+<CodeFigure_OriginatingCentres>176</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>Cooperative Institute for Meteorological Satellite Studies (CIMSS) - United States</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>10</CodeFigure_SubCentres>
+<Name_SubCentres_E>Tromso (Norway)</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>105</No>
+<CodeFigure_OriginatingCentres>176</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>Cooperative Institute for Meteorological Satellite Studies (CIMSS) - United States</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>11</CodeFigure_SubCentres>
+<Name_SubCentres_E>McMurdo (Antarctica)</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>106</No>
+<CodeFigure_OriginatingCentres>176</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>Cooperative Institute for Meteorological Satellite Studies (CIMSS) - United States</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>12</CodeFigure_SubCentres>
+<Name_SubCentres_E>Sodankyla (Finland)</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>107</No>
+<CodeFigure_OriginatingCentres>176</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>Cooperative Institute for Meteorological Satellite Studies (CIMSS) - United States</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>13</CodeFigure_SubCentres>
+<Name_SubCentres_E>Fairbanks (United States)</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>108</No>
+<CodeFigure_OriginatingCentres>176</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>Cooperative Institute for Meteorological Satellite Studies (CIMSS) - United States</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>14</CodeFigure_SubCentres>
+<Name_SubCentres_E>Barrow (United States)</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>109</No>
+<CodeFigure_OriginatingCentres>176</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>Cooperative Institute for Meteorological Satellite Studies (CIMSS) - United States</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>15</CodeFigure_SubCentres>
+<Name_SubCentres_E>Rothera (Antarctica)</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>110</No>
+<CodeFigure_OriginatingCentres>204</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>National Institute of Water and Atmospheric Research 
+(NIWA - New Zealand)</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>101</CodeFigure_SubCentres>
+<Name_SubCentres_E>Maupia</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>111</No>
+<CodeFigure_OriginatingCentres>204</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>National Institute of Water and Atmospheric Research 
+(NIWA - New Zealand)</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>102</CodeFigure_SubCentres>
+<Name_SubCentres_E>Lauder</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>112</No>
+<CodeFigure_OriginatingCentres>254</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>EUMETSAT Operation Centre</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>10</CodeFigure_SubCentres>
+<Name_SubCentres_E>Tromso (Norway)</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>113</No>
+<CodeFigure_OriginatingCentres>254</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>EUMETSAT Operation Centre</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>20</CodeFigure_SubCentres>
+<Name_SubCentres_E>Maspalomas (Spain)</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>114</No>
+<CodeFigure_OriginatingCentres>254</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>EUMETSAT Operation Centre</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>30</CodeFigure_SubCentres>
+<Name_SubCentres_E>Kangerlussuaq (Greenland)</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>115</No>
+<CodeFigure_OriginatingCentres>254</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>EUMETSAT Operation Centre</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>40</CodeFigure_SubCentres>
+<Name_SubCentres_E>Edmonton (Canada)</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>116</No>
+<CodeFigure_OriginatingCentres>254</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>EUMETSAT Operation Centre</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>50</CodeFigure_SubCentres>
+<Name_SubCentres_E>Bedford (Canada)</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>117</No>
+<CodeFigure_OriginatingCentres>254</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>EUMETSAT Operation Centre</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>60</CodeFigure_SubCentres>
+<Name_SubCentres_E>Gander (Canada)</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>118</No>
+<CodeFigure_OriginatingCentres>254</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>EUMETSAT Operation Centre</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>70</CodeFigure_SubCentres>
+<Name_SubCentres_E>Monterey United States)</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>119</No>
+<CodeFigure_OriginatingCentres>254</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>EUMETSAT Operation Centre</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>80</CodeFigure_SubCentres>
+<Name_SubCentres_E>Wallops Island (United States)</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>120</No>
+<CodeFigure_OriginatingCentres>254</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>EUMETSAT Operation Centre</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>90</CodeFigure_SubCentres>
+<Name_SubCentres_E>Gilmor Creek (United States)</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>121</No>
+<CodeFigure_OriginatingCentres>254</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>EUMETSAT Operation Centre</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>100</CodeFigure_SubCentres>
+<Name_SubCentres_E>Athens (Greece)</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>122</No>
+<CodeFigure_OriginatingCentres>254</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>EUMETSAT Operation Centre</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>120</CodeFigure_SubCentres>
+<Name_SubCentres_E>Ewa Beach, Hawaii</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>123</No>
+<CodeFigure_OriginatingCentres>254</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>EUMETSAT Operation Centre</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>130</CodeFigure_SubCentres>
+<Name_SubCentres_E>Miami, Florida</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>124</No>
+<CodeFigure_OriginatingCentres>254</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>EUMETSAT Operation Centre</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>140</CodeFigure_SubCentres>
+<Name_SubCentres_E>Lannion (France)</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>125</No>
+<CodeFigure_OriginatingCentres>254</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>EUMETSAT Operation Centre</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>150</CodeFigure_SubCentres>
+<Name_SubCentres_E>Svalbard (Norway)</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>126</No>
+<CodeFigure_OriginatingCentres>254</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>EUMETSAT Operation Centre</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>170</CodeFigure_SubCentres>
+<Name_SubCentres_E>St Denis (La Réunion)</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>127</No>
+<CodeFigure_OriginatingCentres>254</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>EUMETSAT Operation Centre</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>180</CodeFigure_SubCentres>
+<Name_SubCentres_E>Moscow</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>128</No>
+<CodeFigure_OriginatingCentres>254</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>EUMETSAT Operation Centre</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>190</CodeFigure_SubCentres>
+<Name_SubCentres_E>Muscat</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>129</No>
+<CodeFigure_OriginatingCentres>254</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>EUMETSAT Operation Centre</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>200</CodeFigure_SubCentres>
+<Name_SubCentres_E>Khabarovsk</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+<Exp_CommonTableC12_E>
+<No>130</No>
+<CodeFigure_OriginatingCentres>254</CodeFigure_OriginatingCentres>
+<Name_OriginatingCentres_E>EUMETSAT Operation Centre</Name_OriginatingCentres_E>
+<CodeFigure_SubCentres>210</CodeFigure_SubCentres>
+<Name_SubCentres_E>Novosibirsk</Name_SubCentres_E>
+<Status>Operational</Status>
+</Exp_CommonTableC12_E>
+</dataroot>

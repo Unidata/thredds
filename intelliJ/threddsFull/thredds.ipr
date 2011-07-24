@@ -94,6 +94,42 @@
         <element id="javaee-facet-resources" facet="tds/web/tds" />
       </root>
     </artifact>
+    <artifact type="exploded-war" build-on-make="true" name="wmoTables:war exploded">
+      <output-path>$PROJECT_DIR$/../../wmoTables/target/war</output-path>
+      <root id="root">
+        <element id="javaee-facet-resources" facet="wmoTables/web/wmoTables" />
+        <element id="directory" name="WEB-INF">
+          <element id="directory" name="classes">
+            <element id="javaee-facet-classes" facet="wmoTables/web/wmoTables" />
+            <element id="dir-copy" path="$PROJECT_DIR$/../../wmoTables/src/main/resources" />
+            <element id="module-output" name="bufr" />
+            <element id="module-output" name="cdm" />
+            <element id="module-output" name="common" />
+            <element id="module-output" name="grib" />
+            <element id="dir-copy" path="$PROJECT_DIR$/../../grib/src/main/resources" />
+            <element id="dir-copy" path="$PROJECT_DIR$/../../cdm/src/main/resources" />
+            <element id="module-output" name="opendap" />
+            <element id="module-output" name="wmoTables" />
+          </element>
+          <element id="directory" name="lib">
+            <element id="library" level="project" name="Spring" />
+            <element id="library" level="project" name="Logging" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/commons-fileupload-1.2.1.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/commons-io-1.4.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/slf4j-api-1.5.6.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/slf4j-jdk14-1.5.6.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/jdom.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/commons-logging-1.1.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/commons-codec-1.3.jar" />
+            <element id="library" level="project" name="ehcache" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/je-4.0.71.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/commons-httpclient-3.1.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/quartz-1.7.3.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/protobuf-java-2.3.0.jar" />
+          </element>
+        </element>
+      </root>
+    </artifact>
   </component>
   <component name="BuildJarProjectSettings">
     <option name="BUILD_JARS_ON_MAKE" value="false" />
@@ -1134,7 +1170,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/bufr.iml" filepath="$PROJECT_DIR$/bufr.iml" />
-      <module fileurl="file://$PROJECT_DIR$/bufrTables.iml" filepath="$PROJECT_DIR$/bufrTables.iml" />
       <module fileurl="file://$PROJECT_DIR$/cdm.iml" filepath="$PROJECT_DIR$/cdm.iml" />
       <module fileurl="file://$PROJECT_DIR$/common.iml" filepath="$PROJECT_DIR$/common.iml" />
       <module fileurl="file://$PROJECT_DIR$/docs.iml" filepath="$PROJECT_DIR$/docs.iml" />
@@ -1145,6 +1180,7 @@
       <module fileurl="file://$PROJECT_DIR$/opendap.iml" filepath="$PROJECT_DIR$/opendap.iml" />
       <module fileurl="file://$PROJECT_DIR$/tds.iml" filepath="$PROJECT_DIR$/tds.iml" />
       <module fileurl="file://$PROJECT_DIR$/ui.iml" filepath="$PROJECT_DIR$/ui.iml" />
+      <module fileurl="file://$PROJECT_DIR$/wmoTables.iml" filepath="$PROJECT_DIR$/wmoTables.iml" />
     </modules>
   </component>
   <component name="ProjectResources">
@@ -1187,33 +1223,6 @@
                 </list>
               </option>
               <option name="trunkUrl" value="https://sub.unidata.ucar.edu/thredds/trunk" />
-            </SvnBranchConfiguration>
-          </value>
-        </entry>
-        <entry key="$PROJECT_DIR$/../../bufrTables">
-          <value>
-            <SvnBranchConfiguration>
-              <option name="branchMap">
-                <map>
-                  <entry key="http://sub.unidata.ucar.edu/thredds/branch">
-                    <value>
-                      <list />
-                    </value>
-                  </entry>
-                  <entry key="http://sub.unidata.ucar.edu/thredds/tag">
-                    <value>
-                      <list />
-                    </value>
-                  </entry>
-                </map>
-              </option>
-              <option name="branchUrls">
-                <list>
-                  <option value="http://sub.unidata.ucar.edu/thredds/branch" />
-                  <option value="http://sub.unidata.ucar.edu/thredds/tag" />
-                </list>
-              </option>
-              <option name="trunkUrl" value="http://sub.unidata.ucar.edu/thredds/trunk" />
             </SvnBranchConfiguration>
           </value>
         </entry>
@@ -1488,6 +1497,33 @@
           </value>
         </entry>
         <entry key="$PROJECT_DIR$/../../ui">
+          <value>
+            <SvnBranchConfiguration>
+              <option name="branchMap">
+                <map>
+                  <entry key="http://sub.unidata.ucar.edu/thredds/branch">
+                    <value>
+                      <list />
+                    </value>
+                  </entry>
+                  <entry key="http://sub.unidata.ucar.edu/thredds/tag">
+                    <value>
+                      <list />
+                    </value>
+                  </entry>
+                </map>
+              </option>
+              <option name="branchUrls">
+                <list>
+                  <option value="http://sub.unidata.ucar.edu/thredds/branch" />
+                  <option value="http://sub.unidata.ucar.edu/thredds/tag" />
+                </list>
+              </option>
+              <option name="trunkUrl" value="http://sub.unidata.ucar.edu/thredds/trunk" />
+            </SvnBranchConfiguration>
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../../wmoTables">
           <value>
             <SvnBranchConfiguration>
               <option name="branchMap">
