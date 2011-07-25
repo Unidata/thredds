@@ -652,8 +652,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
     if (location.startsWith("dods:")) {
         return acquireDODS(cache, factory, hashKey, location, buffer_size, cancelTask, spiObject);  // open through DODS
-
-    } else if ( location.startsWith(".file") && (
+    } else if ( location.startsWith("file:") && (
                location.endsWith(".dds")
                || location.endsWith(".das")
                || location.endsWith(".dods"))) {
