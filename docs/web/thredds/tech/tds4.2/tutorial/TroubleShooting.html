@@ -35,7 +35,7 @@ If you  use the same path in more than one data root:
     &lt;datasetRoot path=&quot;testdup&quot; location=&quot;C:/data/&quot; /&gt;
     &lt;datasetScan name=&quot;duplicate path&quot; path=&quot;testdup&quot; location=&quot;/home/workshop/data/&quot; serviceName=&quot;dodsServer&quot; /&gt;
 </pre>
-  you will get an error message in  ${tomcat.home}/content/thredds/logs/serverStartup.log:
+  you will get an error message in  ${tomcat.home}/content/thredds/logs/catalogInit.log:
   <pre>
   Error: <strong>already have dataRoot</strong> =&lt;testdup&gt;  <strong>mapped to directory</strong>= &lt;C:/data/&gt; wanted to map to=&lt;/home/workshop/data/&gt; in catalog</pre>
 <h3>Duplicate id(s)</h3>
@@ -44,7 +44,7 @@ If you  use the same id in more than one dataset:
     &lt;dataset name="Test Single Dataset 2" ID="testDataset2" serviceName="odap" urlPath="test/testData2.grib2" dataType="Grid" /&gt;
     &lt;dataset name="Test Single Dataset 3" ID="testDataset2" serviceName="odap" urlPath="test/testData3.grib3" dataType="Grid" /&gt;
 </pre>
-you will get an error message in  ${tomcat.home}/content/thredds/logs/serverStartup.log:
+you will get an error message in  ${tomcat.home}/content/thredds/logs/catalogInit.log:
 <pre>  WARNING: Duplicate id on  'THREDDS Catalog Name/Test Single Dataset 3' id= 'testDataset2' </pre>
 <h3>Data directory doesnt exist</h3>
 <p>If you  refer to a non-existant directory: </p>
@@ -52,7 +52,7 @@ you will get an error message in  ${tomcat.home}/content/thredds/logs/serverStar
     &lt;datasetRoot path=&quot;sage&quot; location=&quot;C:/data/notexist/&quot; /&gt;
     &lt;datasetScan path=&quot;sage&quot; location=&quot;C:/data/notexist/&quot; /&gt;
 </pre>
-you will get an error message in  ${tomcat.home}/content/thredds/logs/serverStartup.log:
+you will get an error message in  ${tomcat.home}/content/thredds/logs/catalogInit.log:
 <pre>
   Data Root =sage <strong>directory</strong>= &lt;C:/data/notexist /&gt; <strong>does not exist</strong>
 or:
@@ -65,7 +65,7 @@ or:
 <pre>
   &lt;datasetScan name=&quot;bad service name&quot; path=&quot;segundo&quot; location=&quot;C:/data/&quot; serviceName=&quot;badd&quot; /&gt;
   &lt;datasetScan name=&quot;no service name&quot; path=&quot;tertiary&quot; location=&quot;C:/data/&quot; /&gt;</pre>
-<p>  you will get an error message in  ${tomcat.home}/content/thredds/logs/serverStartup.log:<br>
+<p>  you will get an error message in  ${tomcat.home}/content/thredds/logs/catalogInit.log:<br>
 </p>
 <pre>
   **Error: DatasetScan (Top Dataset/bad service name ): <strong>must have a default service</strong>
@@ -76,7 +76,7 @@ or:
 <pre>  &lt;dataset name=&quot;Image of my Data&quot; urlPath=&quot;images/labyrinth.jpg&quot; serviceName=&quot;dodsServer&quot; dataType=&quot;Grid&quot; /&gt;
 </pre>
 <ul>
-    <li>You wont get an error in <strong>serverStartup.log</strong></li>
+    <li>You wont get an error in <strong>catalogInit.log</strong></li>
     <li>But when you try to access it:
         <ul>
             <li><em>Browser<strong>: DODServlet ERROR: Cant read C:/data/images/labyrinth.jpg: not a valid NetCDF
@@ -91,7 +91,7 @@ or:
 </p>
 <pre>  &lt;dataset name=&quot;My Data&quot; ID=&quot;Y&quot; urlPath=&quot;images/labyrinth.nc&quot; serviceName=&quot;dodsServer&quot; dataType=&quot;Grid&quot; /&gt;</pre>
 <ul>
-    <li>You wont get an error in <strong>serverStartup.log</strong></li>
+    <li>You wont get an error in <strong>catalogInit.log</strong></li>
     <li>If you try to access it (OPeNDAP)
         <ul>
             <li><em>Browser<strong>: message = "Cant find images/labyrinth.nc"</strong></em></li>

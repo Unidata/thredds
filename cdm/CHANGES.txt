@@ -3,7 +3,7 @@ Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
 Changes in version 4.2:
- 26: (2011-07-20)
+ 26: (2011-07-25)
   refactor all uses of Variable.getName() to getFullName and getShortName
   Variable.getName() always returns escaped version. Withdraw Variable.getEscapedName(), NetcdfFile.findTopVariable()
   NcDDS was assuming a dimension always has a name.
@@ -13,7 +13,7 @@ Changes in version 4.2:
   NetcdfFile.escape/unescape - standard % escaping using URLEncoder.encode/decode
   NetcdfFile.makeValidCdmObjectName() - dont allow trail.lead spaces or "/"
   Grib2 jpeg2000 decoder : bug when unsigned, nbits > 8
-   CF Radial (alpha)
+  CF Radial (alpha)
   LambertConformal accessor methods added
   hdf5: vlen can have null heapId, indicates no data
   opendap escaping of "/."
