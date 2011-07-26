@@ -89,7 +89,7 @@ public class Parse {
     for (int i = 0, len = text.length(); i < len; i++) {
       int ch = text.charAt(i);
       if (org.jdom.Verifier.isXMLCharacter(ch))
-        sbuff.append(ch);
+        sbuff.append((char) ch);
     }
     return sbuff.toString();
   }

@@ -18,7 +18,6 @@
   <groupId>edu.ucar</groupId>
   <artifactId>opendap</artifactId>
   <packaging>jar</packaging>
-  <version>4.2.26</version>
   <name>OpenDAP</name>
   <description>
     Open-source Project for a Network Data Access Protocol, modified for NetCDF purpose.
@@ -73,9 +72,21 @@
            Dependencies
        =========================================================== -->
   <dependencies>
+     <dependency>
+      <groupId>edu.ucar</groupId>
+      <artifactId>unidataCommon</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <!-- WARNING!! This is a circular dependency -->
+    <dependency>
+      <groupId>edu.ucar</groupId>
+      <artifactId>netcdf</artifactId>
+      <version>${project.version}</version>
+    </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>servlet-api</artifactId>
+      <version>2.5</version>
     </dependency>
     <dependency>
       <groupId>org.jdom</groupId>
@@ -84,6 +95,7 @@
     <dependency>
       <groupId>commons-httpclient</groupId>
       <artifactId>commons-httpclient</artifactId>
+      <version>3.1</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>

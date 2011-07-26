@@ -40,7 +40,6 @@
 
 package ucar.unidata.util;
 
-import javax.naming.ldap.StartTlsRequest;
 import java.net.*;
 import java.util.ArrayList;
 import java.util.List;

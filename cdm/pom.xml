@@ -18,7 +18,6 @@
   <groupId>edu.ucar</groupId>
   <artifactId>netcdf</artifactId>
   <packaging>jar</packaging>
-  <version>4.2.26</version>
   <name>NetCDF-Java Library</name>
   <description>
     The NetCDF-Java Library is a Java interface to NetCDF files,
@@ -142,15 +141,17 @@
     <dependency>
       <groupId>edu.ucar</groupId>
       <artifactId>unidataCommon</artifactId>
-      <version>4.2.26</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>commons-httpclient</groupId>
       <artifactId>commons-httpclient</artifactId>
+      <version>3.1</version>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
+      <version>1.5.6</version>
     </dependency>
 
     <!-- Extensions to the NetCDF core. The "bufrTables" extension
@@ -163,14 +164,14 @@
       <groupId>edu.ucar</groupId>
       <!-- Reading GRIB files. -->
       <artifactId>grib</artifactId>
-      <version>4.2.26</version>
+      <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>edu.ucar</groupId>
       <artifactId>opendap</artifactId>
       <!-- Using OPeNDAP protocol. -->
-      <version>4.2.26</version>
+      <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>

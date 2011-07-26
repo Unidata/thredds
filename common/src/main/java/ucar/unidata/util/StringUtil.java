@@ -357,6 +357,29 @@ public class StringUtil {
           "&amp;", "&quot;", "&apos;", "&lt;", "&gt;", "&#13;", "&#10;"
   };
 
+  static public String makeValidCdmObjectName(String name) {
+    // common case no change
+    boolean ok = true;
+    for (int i = 0; i < name.length(); i++) {
+      int c = name.charAt(i);
+      if (c < 0x20) ok = false;
+      if (c == '/') ok = false;
+      if (!ok) break;
+    }
+    if (ok) return name.trim();
+
+    name = name.trim();
+    StringBuilder sbuff = new StringBuilder(name.length());
+    for (int i = 0, len = name.length(); i < len; i++) {
+      int c = name.charAt(i);
+      if (c == 0x2f)
+        sbuff.append('_');
+      else if (c >= 0x20)
+        sbuff.append((char) c);
+    }
+    return sbuff.toString();
+  }
+
   /**
    * Replace all occurences of replaceChar with replaceWith
    *
@@ -372,13 +395,9 @@ public class StringUtil {
     for (int i = 0; i < replaceChar.length; i++) {
       int pos = x.indexOf(replaceChar[i]);
       ok = (pos < 0);
-      if (!ok) {
-        break;
-      }
+      if (!ok) break;
     }
-    if (ok) {
-      return x;
-    }
+    if (ok) return x;
 
     // gotta do it
     StringBuffer sb = new StringBuffer(x);
@@ -2500,8 +2519,12 @@ public class StringUtil {
   ///////////////////////////////////////////////////////////////////////////////////////
 
   public static void main(String args[]) {
-    String s = " ";
-    System.out.printf("escape(%s) == %s%n", s, escape(s, ""));
+    byte[] b = new byte[] {10};
+    //String s = new String(b);
+    String s = "\n";
+    System.out.printf("quoteXmlAttribute(%s) == %s%n", s, StringUtil.quoteXmlAttribute(s));
+    String s2 = StringUtil.quoteXmlAttribute(s);
+    System.out.printf("unquoteXmlAttribute(%s) == '%s'%n", s2, StringUtil.unquoteXmlAttribute(s2));
   }
 
   /**

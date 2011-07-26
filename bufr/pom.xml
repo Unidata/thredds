@@ -43,7 +43,7 @@
      <dependency>
        <groupId>edu.ucar</groupId>
        <artifactId>netcdf</artifactId>
-       <version>4.2.26</version>
+       <version>${project.version}</version>
      </dependency>
      <dependency>
       <groupId>org.jdom</groupId>
@@ -53,7 +53,7 @@
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
-        <version>1.6.1</version>
+        <version>1.5.6</version>
       </dependency>
   </dependencies>
 

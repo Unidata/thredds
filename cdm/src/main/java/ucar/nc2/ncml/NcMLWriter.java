@@ -42,6 +42,8 @@ import thredds.catalog.XMLEntityResolver;
 import org.jdom.*;
 import org.jdom.output.XMLOutputter;
 import org.jdom.output.Format;
+import ucar.nc2.util.xml.Parse;
+import ucar.unidata.util.StringUtil;
 
 import java.io.*;
 import java.util.*;
@@ -255,7 +257,7 @@ public class NcMLWriter {
         if (i > 0) buff.append(",");
         buff.append(sval);
       }
-      attElem.setAttribute("value", buff.toString());
+      attElem.setAttribute("value", Parse.cleanCharacterData(buff.toString()));
       if (att.getLength() > 1)
         attElem.setAttribute("separator", ",");
 
@@ -534,7 +536,7 @@ public class NcMLWriter {
 
   public static void main(String arg[]) {
     //String urls = "C:/data/conventions/coards/cldc.mean.nc";
-    String test = "C:/data/atd/rgg.20020411.000000.lel.ll.nc";
+    String test = "http://testbedapps.sura.org/thredds/dodsC/shelf_hypoxia_scan/noaa/NGOM/GOMUD-2009.3.182.3D.nc";
     String urls = (arg.length == 0) ? test : arg[0];
 
     try {

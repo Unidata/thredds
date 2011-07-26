@@ -4,6 +4,8 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.2:
  26: (2011-07-25)
+  NetcdfFile.makeValidCdmObjectName() - remove chars < 20.
+  attributes in NcMLWrite must get filtered
   refactor all uses of Variable.getName() to getFullName and getShortName
   Variable.getName() always returns escaped version. Withdraw Variable.getEscapedName(), NetcdfFile.findTopVariable()
   NcDDS was assuming a dimension always has a name.

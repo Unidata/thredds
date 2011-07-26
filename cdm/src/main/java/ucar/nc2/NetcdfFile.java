@@ -249,13 +249,16 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
 
   /**
    * Create a valid CDM object name.
-   * Trailing and leading blanks are not allowed and are stripped off. A forward slash "/" is converted into an underscore "_".
+   * Control chars (< 0x20) are not allowed.
+   * Trailing and leading blanks are not allowed and are stripped off.
+   * A forward slash "/" is converted into an underscore "_".
    *
    * @param name from this name
    * @return valid CDM object name
    */
   static public String makeValidCdmObjectName(String name) {
-    return StringUtil.replace(name.trim(), "/", "_");
+    return StringUtil.makeValidCdmObjectName(name);
+    //return StringUtil.replace(name.trim(), "/", "_");
   }
 
   /*

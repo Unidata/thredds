@@ -37,17 +37,6 @@
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../lib/external/jdom.jar!/" />
-        </CLASSES>
-        <JAVADOC>
-          <root url="http://www.jdom.org/docs/apidocs" />
-        </JAVADOC>
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" exported="">
-      <library>
-        <CLASSES>
           <root url="jar://$MODULE_DIR$/../../lib/external/commons-logging-1.1.jar!/" />
         </CLASSES>
         <JAVADOC />
@@ -155,6 +144,7 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="module" module-name="jdom" exported="" />
   </component>
   <component name="org.twodividedbyzero.idea.findbugs">
     <option name="_basePreferences">
