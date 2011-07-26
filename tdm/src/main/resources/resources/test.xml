@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
+         xmlns:xlink="http://www.w3.org/1999/xlink" name="Unidata THREDDS Data Server" version="1.0.4">
+
+  <service name="latest" serviceType="Resolver" base=""/>
+
+  <service name="fullServices" serviceType="Compound" base="">
+    <service name="ncdods" serviceType="OPENDAP" base="/thredds/dodsC/"/>
+    <service name="HTTPServer" serviceType="HTTPServer" base="/thredds/fileServer/"/>
+    <service name="wcs" serviceType="WCS" base="/thredds/wcs/"/>
+    <service name="wms" serviceType="WMS" base="/thredds/wms/"/>
+    <service name="ncss" serviceType="NetcdfSubset" base="/thredds/ncss/grid/"/>
+    <service name="cdmremote" serviceType="CdmRemote" base="/thredds/cdmremote/"/>
+    <service name="ncml" serviceType="NCML" base="/thredds/ncml/"/>
+    <service name="uddc" serviceType="UDDC" base="/thredds/uddc/"/>
+    <service name="iso" serviceType="ISO" base="/thredds/iso/"/>
+  </service>
+
+
+  <dataset name="NCEP Model Data">
+
+     <featureCollection name="NCEP-GFS-Global_2p5deg" featureType="GRIB" path="grib/NCEP/GFS/Global_2p5deg">
+        <collection spec="G:/tdm/gfs2.5/.*grib2$"
+                    name="GFS_Global_2p5deg"
+                    dateFormatMark="#GFS_Global_2p5deg_#yyyyMMdd_HHmm"
+                    timePartition="day"
+                    olderThan="5 min"/>
+        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow">
+          <manage deleteAfter="52 days" />
+        </tdm>
+        <protoDataset choice="Penultimate" change="0 2 3 * * ? *"/>
+      </featureCollection>
+
+    <!-- featureCollection name="NOMADS-cfsrr-timeseries" featureType="GRIB" harvest="true" path="grib/NOMADS/cfsrr/timeseries">
+      <collection name="NOMADS-cfsrr-timeseries" spec="G:/nomads/cfsr/timeseries/**/.*grb2$"
+                  dateFormatMark="#timeseries/#yyyyMM" timePartition="directory"/>
+      <update startup="true" trigger="allow"/>
+    </featureCollection -->
+
+      <!-- featureCollection name="NOMADS-cfsrr-timeseries" featureType="GRIB" harvest="true" path="grib/NOMADS/cfsrr/timeseries">
+        <collection name="NOMADS-cfsrr-timeseries" spec="H:/nomads/cfsr/timeseries/**/.*grb2$"
+                    dateFormatMark="#timeseries/#yyyyMM" timePartition="directory"/>
+        <tdm startup="true" force="always" trigger="allow"/>
+      </featureCollection>
+
+
+      <featureCollection name="NOMADS-cfsrr-monthly" featureType="GRIB" harvest="true" path="grib/NOMADS/cfsrr/monthly">
+        <collection name="NOMADS-cfsrr-monthly" spec="H:/nomads/cfsr/monthly/**/.*grb2$"
+                    dateFormatMark="#monthly/#yyyyMM" timePartition="directory"/>
+        <tdm startup="true" force="always" trigger="allow"/>
+      </featureCollection -->
+
+  </dataset>
+</catalog>
+

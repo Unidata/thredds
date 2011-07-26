@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://www.springframework.org/schema/beans	http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+  <bean id="executor" class="java.util.concurrent.Executors" factory-method="newFixedThreadPool">
+    <constructor-arg type="int" value="4"/>
+  </bean>
+
+  <bean id="completionQ" class="java.util.concurrent.ArrayBlockingQueue">
+    <constructor-arg type="int" value="1000"/>
+  </bean>
+
+  <bean id="completionService" class="java.util.concurrent.ExecutorCompletionService">
+    <constructor-arg type="java.util.concurrent.Executor" ref="executor"/>
+    <constructor-arg type="java.util.concurrent.BlockingQueue" ref="completionQ"/>
+  </bean>
+
+  <bean id="testDriver" class="thredds.tdm.TdmRunner">
+    <property name="executor" ref="executor"/>
+    <property name="catalog" value="classpath:/resources/indexNomads.xml"/>
+    <property name="serverName" value="http://motherlode.ucar.edu:9080/"/>
+  </bean>
+
+</beans>

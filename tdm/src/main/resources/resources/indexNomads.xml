@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
+         xmlns:xlink="http://www.w3.org/1999/xlink" name="Unidata THREDDS Data Server" version="1.0.3">
+
+  <service name="latest" serviceType="Resolver" base=""/>
+
+  <service name="fmrcServices" serviceType="Compound" base="">
+    <service name="ncdods" serviceType="OPENDAP" base="/thredds/dodsC/"/>
+    <service name="HTTPServer" serviceType="HTTPServer" base="/thredds/fileServer/"/>
+    <service name="wcs" serviceType="WCS" base="/thredds/wcs/"/>
+    <service name="wms" serviceType="WMS" base="/thredds/wms/"/>
+    <service name="ncss" serviceType="NetcdfSubset" base="/thredds/ncss/grid/"/>
+    <service name="cdmremote" serviceType="CdmRemote" base="/thredds/cdmremote/"/>
+  </service>
+
+  <dataset name="NOMADS GRIB2 data">
+
+    <metadata inherited="true">
+      <serviceName>fmrcServices</serviceName>
+      <authority>edu.ucar.unidata</authority>
+      <dataType>GRID</dataType>
+      <dataFormat>GRIB-2</dataFormat>
+      <documentation xlink:href="http://www.emc.ncep.noaa.gov/modelinfo/index.html"
+                     xlink:title="NCEP Model documentation"/>
+      <documentation type="rights">Freely available</documentation>
+      <documentation type="processing_level">Read by CDM GRIB Collection.</documentation>
+      <documentation xlink:href="http://www.nco.ncep.noaa.gov/pmb/nwprod/analysis/"
+                     xlink:title="NCEP/NWS Model Analyses and Forecasts Page"/>
+
+      <creator>
+        <name vocabulary="DIF">DOC/NOAA/NWS/NCEP</name>
+        <contact url="http://www.ncep.noaa.gov/" email="http://www.ncep.noaa.gov/mail_liaison.shtml"/>
+      </creator>
+      <publisher>
+        <name vocabulary="DIF">DOC/NOAA/NWS/NCEP</name>
+        <contact url="http://www.ncep.noaa.gov/" email="http://www.ncep.noaa.gov/mail_liaison.shtml"/>
+      </publisher>
+    </metadata>
+
+     <featureCollection name="NOMADS-cfsrr-timeseries" featureType="GRIB" harvest="true" path="grib/NOMADS/cfsrr/timeseries">
+       <collection name="NOMADS-cfsrr-timeseries" spec="/san4/work/jcaron/cfsrr/**/.*grb2$"
+                   dateFormatMark="#cfsrr/#yyyyMM" timePartition="directory"/>
+       <tdm startup="true"/>
+     </featureCollection>
+
+  </dataset>
+</catalog>

@@ -1,0 +1,1043 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
+         xmlns:xlink="http://www.w3.org/1999/xlink" name="Unidata THREDDS Data Server" version="1.0.4">
+
+  <service name="latest" serviceType="Resolver" base=""/>
+
+  <service name="fullServices" serviceType="Compound" base="">
+    <service name="ncdods" serviceType="OPENDAP" base="/thredds/dodsC/"/>
+    <service name="HTTPServer" serviceType="HTTPServer" base="/thredds/fileServer/"/>
+    <service name="wcs" serviceType="WCS" base="/thredds/wcs/"/>
+    <service name="wms" serviceType="WMS" base="/thredds/wms/"/>
+    <service name="ncss" serviceType="NetcdfSubset" base="/thredds/ncss/grid/"/>
+    <service name="cdmremote" serviceType="CdmRemote" base="/thredds/cdmremote/"/>
+    <service name="ncml" serviceType="NCML" base="/thredds/ncml/"/>
+    <service name="uddc" serviceType="UDDC" base="/thredds/uddc/"/>
+    <service name="iso" serviceType="ISO" base="/thredds/iso/"/>
+  </service>
+
+  <dataset name="NCEP Model Data">
+
+    <metadata inherited="true">
+      <serviceName>fullServices</serviceName>
+      <authority>edu.ucar.unidata</authority>
+      <dataType>GRID</dataType>
+      <dataFormat>GRIB-2</dataFormat>
+      <documentation xlink:href="http://www.emc.ncep.noaa.gov/modelinfo/index.html"
+                     xlink:title="NCEP Model documentation"/>
+      <documentation type="rights">Freely available</documentation>
+      <documentation type="processing_level">Transmitted through Unidata Internet Data Distribution.</documentation>
+      <documentation type="processing_level">Read by CDM Forecast Model Run Collection.</documentation>
+      <documentation xlink:href="http://www.nco.ncep.noaa.gov/pmb/nwprod/analysis/"
+                     xlink:title="NCEP/NWS Model Analyses and Forecasts Page"/>
+
+      <creator>
+        <name vocabulary="DIF">DOC/NOAA/NWS/NCEP</name>
+        <contact url="http://www.ncep.noaa.gov/" email="http://www.ncep.noaa.gov/mail_liaison.shtml"/>
+      </creator>
+      <publisher>
+        <name vocabulary="DIF">UCAR/UNIDATA</name>
+        <contact url="http://www.unidata.ucar.edu/" email="support@unidata.ucar.edu"/>
+      </publisher>
+      <creator>
+        <name vocabulary="ADN">National Oceanic and Atmospheric Administration (NOAA)/National Weather Service (NWS)
+          National Center for Environmental Prediction (NCEP)
+        </name>
+        <contact url="http://www.ncep.noaa.gov/" email="http://www.ncep.noaa.gov/mail_liaison.shtml"/>
+      </creator>
+      <publisher>
+        <name vocabulary="ADN">University Corporation for Atmospheric Research (UCAR)/Unidata</name>
+        <contact url="http://www.unidata.ucar.edu/" email="support@unidata.ucar.edu"/>
+      </publisher>
+      <timeCoverage>
+        <end>present</end>
+        <duration>45 days</duration>
+      </timeCoverage>
+    </metadata>
+
+    <dataset name="Global Forecast System (GFS) Model">
+
+      <metadata inherited="true">
+        <documentation type="summary">NCEP Global Forecast System Model, previously called AVN/MRF (Medium Range
+          Forecast)
+        </documentation>
+        <documentation xlink:href="http://meted.ucar.edu/nwp/pcu2/avintro.htm"
+                       xlink:title="COMET MetEd (Meteorology Education and Training) documentation"/>
+        <documentation xlink:href="http://www.emc.ncep.noaa.gov/gmb/STATS/html/model_changes.html"
+                       xlink:title="NCEP Model Notes"/>
+      </metadata>
+
+      <featureCollection name="NCEP-GFS-Global_0p5deg" featureType="GRIB" harvest="true"
+                         path="grib/NCEP/GFS/Global_0p5deg">
+        <metadata inherited="true">
+          <documentation type="summary">NCEP GFS Model : AWIPS 230 (G) Grid. Global Lat/Lon grid.
+            Model runs are made at 0, 6, 12, and 18Z, with analysis and forecasts every 3 hours from 96 to 180 hours (4
+            to 7.5 days).
+            Horizontal= 361 by 720 points, resolution 0.5 degree, Lat/Lon projection.
+            Vertical= 1000 to 100 hPa mandatory pressure levels (10 levels); surface, height above ground, pressure
+            layers.
+          </documentation>
+        </metadata>
+
+        <collection spec="/data/ldm/pub/native/grid/NCEP/GFS/Global_0p5deg/.*grib2$"
+                    name="GFS_Global_0p5deg"
+                    dateFormatMark="#GFS_Global_0p5deg_#yyyyMMdd_HHmm"
+                    timePartition="day"
+                    olderThan="5 min"/>
+        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow">
+          <manage deleteAfter="45 days" />
+        </tdm>
+        <protoDataset choice="Penultimate" change="0 2 3 * * ? *"/>
+        <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets"/>
+      </featureCollection>
+
+      <featureCollection name="NCEP-GFS-Global_onedeg" featureType="GRIB" harvest="true"
+                         path="grib/NCEP/GFS/Global_onedeg">
+        <metadata inherited="true">
+          <documentation type="summary">NCEP GFS Model : AWIPS 229 (F) Grid. Global Lat/Lon grid.
+            Model runs are made at 0, 6, 12, and 18Z, with analysis and forecasts every 3 hours out to 180 hours (7.5
+            days).
+            Horizontal = 181 by 360 points, resolution 1 degree, Lat/Lon projection.
+            Vertical = 1000 to 100 hPa mandatory pressure levels (10 levels); surface, height above ground, pressure
+            layers.
+          </documentation>
+        </metadata>
+
+        <collection spec="/data/ldm/pub/native/grid/NCEP/GFS/Global_onedeg/.*grib2$"
+                    name="GFS_Global_onedeg"
+                    dateFormatMark="#GFS_Global_onedeg_#yyyyMMdd_HHmm"
+                    timePartition="day"
+                    olderThan="5 min"/>
+        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+
+        <protoDataset choice="Penultimate" change="0 2 3 * * ? *"/>
+        <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets"/>
+      </featureCollection>
+
+      <featureCollection name="NCEP-GFS-Global_2p5deg" featureType="GRIB" harvest="true"
+                         path="grib/NCEP/GFS/Global_2p5deg">
+        <metadata inherited="true">
+          <documentation type="summary">NCEP GFS Model : AWIPS 228 (A) Grid. Global Lat/Lon grid.
+            Model runs are made at every 12 hours from 192 to 384 hours (8 to 16 days).
+            Horizontal= 73 by 144 points, resolution 2.5 degree, Lat/Lon projection.
+            Vertical = 1000 to 100 hPa mandatory pressure levels (10 levels); surface, height above ground, pressure
+            layers.
+          </documentation>
+        </metadata>
+
+        <collection spec="/data/ldm/pub/native/grid/NCEP/GFS/Global_2p5deg/.*grib2$"
+                    name="GFS_Global_2p5deg"
+                    dateFormatMark="#GFS_Global_2p5deg_#yyyyMMdd_HHmm"
+                    timePartition="day"
+                    olderThan="5 min"/>
+        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+
+        <protoDataset choice="Penultimate" change="0 2 3 * * ? *"/>
+        <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets"/>
+      </featureCollection>
+
+      <featureCollection name="NCEP-GFS-N_Hemisphere_381km" featureType="GRIB" harvest="true"
+                         path="grib/NCEP/GFS/N_Hemisphere_381km">
+        <metadata inherited="true">
+          <documentation type="summary">NCEP GFS Model : AWIPS 201 (A) Grid. Northern Hemisphere (polar stereographic).
+            Model runs are made at 0, 6, 12, and 18Z, with analysis and forecasts every 6 hours out 10 days.
+            Horizontal = 65 by 65 points, resolution 381.0 km, Polar Stereographic projection.
+            Vertical = 1000 to 100 hPa mandatory pressure levels (10 levels); surface, height above ground, pressure
+            layers.
+          </documentation>
+        </metadata>
+
+        <collection
+            spec="/data/ldm/pub/native/grid/NCEP/GFS/N_Hemisphere_381km_grib2/.*grib2$"
+            name="GFS_N_Hemisphere_381km"
+            dateFormatMark="#GFS_N_Hemisphere_381km_#yyyyMMdd_HHmm"
+            timePartition="day"
+            olderThan="5 min"/>
+        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+        <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets"/>
+      </featureCollection>
+
+      <featureCollection name="NCEP-GFS-Pacific_40km" featureType="GRIB" harvest="true"
+                         path="grib/NCEP/GFS/Pacific_40km">
+        <metadata inherited="true">
+          <documentation type="summary">NCEP GFS Model : Mercator Grid.
+            Model runs are made at 0, 6, 12, and 18Z, with analysis and forecasts every 6 hours out 10 days.
+            Horizontal = 300 by 369 points, resolution 40 km, Mercator projection.
+            Vertical = 1000 to 100 hPa mandatory pressure levels (29 levels); surface, height above ground, pressure
+            layers.
+          </documentation>
+        </metadata>
+
+        <collection
+            spec="/data/ldm/pub/native/grid/NCEP/GFS/Pacific_40km/.*grib2$"
+            name="GFS_Pacific_40km"
+            dateFormatMark="#GFS_Pacific_40km_#yyyyMMdd_HHmm"
+            timePartition="day"
+            olderThan="5 min"/>
+        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+
+        <protoDataset choice="Penultimate" change="0 2 3 * * ? *"/>
+        <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets"/>
+      </featureCollection>
+
+      <featureCollection name="NCEP-GFS-Puerto_Rico_0p5deg" featureType="GRIB" harvest="true"
+                         path="grib/NCEP/GFS/Puerto_Rico_0p5deg">
+        <metadata inherited="true">
+          <documentation type="summary">NCEP GFS Model :
+            Puerto_Rico 0.5 degree Lat/Lon grid.
+            Model runs are made at 0, 6, 12, 18 hours out to 10 days.
+            Horizontal = 102 by 107 points, resolution .5 degree, Lat/Lon projection.
+            Vertical = 1000 to 100 hPa mandatory pressure levels (29 levels); surface, height above ground, pressure
+            layers.
+          </documentation>
+        </metadata>
+
+        <collection
+            spec="/data/ldm/pub/native/grid/NCEP/GFS/Puerto_Rico_0p5deg/.*grib2$"
+            name="GFS_Puerto_Rico_0p5deg"
+            dateFormatMark="#GFS_Puerto_Rico_0p5deg_#yyyyMMdd_HHmm"
+            timePartition="day"
+            olderThan="5 min"/>
+        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+
+        <protoDataset choice="Penultimate" change="0 2 3 * * ? *"/>
+        <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets"/>
+      </featureCollection>
+
+    </dataset>
+
+    <dataset name="North American Model (NAM)">
+
+      <metadata inherited="true">
+        <documentation type="summary">NCEP Nonhydrostatic Mesoscale Model (NMM) and Gridpoint Statistical Interpolation
+          (GSI) analysis, running in the Weather Research and Forecasting (WRF) infrastructure.
+        </documentation>
+        <documentation xlink:href="http://meted.ucar.edu/nwp/pcu2/NAMWRFjun2006.htm"
+                       xlink:title="COMET MetEd (Meteorology Education and Training) documentation"/>
+      </metadata>
+
+      <featureCollection name="NCEP-NAM-Alaska_11km" featureType="GRIB" harvest="true" path="grib/NCEP/NAM/Alaska_11km">
+        <metadata inherited="true">
+          <documentation type="summary">NCEP North American Model: AWIPS 242 (S) Grid over Alaska.
+            Model runs are made at 0, 6, 12, 18Z with analysis and forecasts every 3 hours out to 84 hours (3.5 days).
+            Horizontal = 553 by 425 points, resolution 11.25 km, Polar Stereographic projection.
+            Vertical = 1000 to 100 hPa pressure levels.
+          </documentation>
+        </metadata>
+
+        <collection
+            spec="/data/ldm/pub/native/grid/NCEP/NAM/Alaska_11km/.*grib2$"
+            name="NAM_Alaska_11km"
+            dateFormatMark="#NAM_Alaska_11km_#yyyyMMdd_HHmm"
+            timePartition="day"
+            olderThan="5 min"/>
+        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+
+        <protoDataset choice="Penultimate" change="0 2 3 * * ? *"/>
+        <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets"/>
+      </featureCollection>
+
+      <featureCollection name="NCEP-NAM-Alaska_45km-conduit" featureType="GRIB" harvest="true"
+                         path="grib/NCEP/NAM/Alaska_45km/conduit">
+        <metadata inherited="true">
+          <documentation type="summary">NCEP North American Model : AWIPS 216 (V) grid over Alaska.
+            Model runs are made at 00Z, 06Z, 12Z, and 18Z with analysis and forecasts every 3 hours out to 84 hours
+            (3.5 days).
+            Horizontal = 139 by 107 points, resolution 45.0 km, Polar Stereographic projection.
+            Vertical = 1000 to 50 hPa pressure levels.
+          </documentation>
+        </metadata>
+
+        <collection
+            spec="/data/ldm/pub/native/grid/NCEP/NAM/Alaska_45km/conduit/.*grib2$"
+            name="NAM_Alaska_45km_conduit"
+            dateFormatMark="#NAM_Alaska_45km_conduit_#yyyyMMdd_HHmm"
+            timePartition="day"
+            olderThan="5 min"/>
+        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+
+        <protoDataset choice="Penultimate" change="0 2 3 * * ? *"/>
+        <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets"/>
+      </featureCollection>
+
+      <featureCollection name="NCEP-NAM-CONUS_12km-noaaport" featureType="GRIB" harvest="true"
+                         path="grib/NCEP/NAM/CONUS_12km">
+        <metadata inherited="true">
+          <documentation type="summary">NCEP North American Model : AWIPS 218 (B) grid over the continental United
+            States.
+            Model runs are made at 06Z, 12Z, 18Z and 00Z, with analysis and forecasts every 3 hours out to 84 hours (3.5
+            days).
+            Horizontal = 614 by 428 points, resolution 12.19 km, LambertConformal projection.
+            Vertical = 1000 to 100 hPa pressure levels (29).
+          </documentation>
+        </metadata>
+
+        <collection
+            spec="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_12km/.*grib2$"
+            name="NAM_CONUS_12km-noaaport"
+            dateFormatMark="#NAM_CONUS_12km_#yyyyMMdd_HHmm"
+            timePartition="day"
+            olderThan="5 min"/>
+        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+
+        <protoDataset choice="Penultimate" change="0 2 3 * * ? *"/>
+        <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets"/>
+      </featureCollection>
+
+      <featureCollection name="NCEP-NAM-CONUS_12km-conduit" featureType="GRIB" harvest="true"
+                         path="grib/NCEP/NAM/CONUS_12km/conduit">
+        <metadata inherited="true">
+          <documentation type="summary">NCEP North American Model : AWIPS 218 (B) grid over the continental United
+            States.
+            Model runs are made at 06Z, 12Z, 18Z and 00Z, with analysis and forecasts every 3 hours out to 84 hours (3.5
+            days).
+            Horizontal = 614 by 428 points, resolution 12.19 km, LambertConformal projection.
+            Vertical = small number of mandatory pressure levels, lots of surface fields.
+          </documentation>
+        </metadata>
+
+        <collection
+            spec="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_12km_conduit/.*grib2$"
+            name="NAM_CONUS_12km_conduit"
+            dateFormatMark="#NAM_CONUS_12km_#yyyyMMdd_HHmm"
+            timePartition="day"
+            olderThan="5 min"/>
+        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+
+        <protoDataset choice="Penultimate" change="0 2 3 * * ? *"/>
+        <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets"/>
+      </featureCollection>
+
+      <featureCollection name="NCEP-NAM-CONUS_20km-surface" featureType="GRIB" harvest="true"
+                         path="grib/NCEP/NAM/CONUS_20km/surface">
+        <metadata inherited="true">
+          <documentation type="summary">
+            NCEP North American Model : AWIPS 215(U) grid over the continental United States - Quadruple Resolution.
+            Horizontal = 369 by 257 points, resolution 20.31 km, LambertConformal projection.
+            Model runs are made at 00Z, 06Z, 12Z, and 18Z, with analysis and forecasts every 3 hours out to 84 hours.
+            Vertical = surface, height above ground, layers, and 1000 to 150 hPa pressure levels.
+          </documentation>
+        </metadata>
+
+        <collection
+            spec="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_20km/surface/.*grib2$"
+            name="NAM_CONUS_20km_surface"
+            dateFormatMark="#NAM_CONUS_20km_surface_#yyyyMMdd_HHmm"
+            timePartition="day"
+            olderThan="5 min"/>
+        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+
+        <protoDataset choice="Penultimate" change="0 2 3 * * ? *"/>
+        <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets"/>
+      </featureCollection>
+
+      <featureCollection name="NCEP-NAM-CONUS_20km-selectsurface" featureType="GRIB" harvest="true"
+                         path="grib/NCEP/NAM/CONUS_20km/selectsurface">
+        <metadata inherited="true">
+          <documentation type="summary">
+            NCEP North American Model : AWIPS 215(U) grid over the continental United States - Quadruple Resolution.
+            Horizontal = 369 by 257 points, resolution 20.31 km, LambertConformal projection.
+            Model runs are made at 00Z, and 12Z with analysis and forecasts every 3 hours out to 84 hours; and at 06Z,
+            and 18Z with analysis and forecasts every 3 hours out to 48 hours.
+            Vertical = surface, 2m, and 10m, 2D fields only.
+          </documentation>
+        </metadata>
+
+        <collection
+            spec="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_20km/selectsurface/.*grib2$"
+            name="NAM_CONUS_20km_selectsurface"
+            dateFormatMark="#NAM_CONUS_20km_selectsurface_#yyyyMMdd_HHmm"
+            timePartition="day"
+            olderThan="5 min"/>
+        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+
+        <protoDataset choice="Penultimate" change="0 2 3 * * ? *"/>
+        <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets"/>
+      </featureCollection>
+
+      <featureCollection name="NCEP-NAM-CONUS_40km-conduit" featureType="GRIB" harvest="true"
+                         path="grib/NCEP/NAM/CONUS_40km/conduit">
+        <metadata inherited="true">
+          <documentation type="summary">
+            NCEP North American Model : AWIPS 212 (R) Regional - CONUS - Double Resolution.
+            Horizontal = 185 by 129 points, resolution 40.63 km; LambertConformal projection.
+            Vertical = surface, 1000 to 50 hPa pressure levels, layers, and depth.
+            Model runs are made at 00Z, 06Z, 12Z, and 18Z and have analysis and forecasts every 3 hours out to 84 hours.
+          </documentation>
+        </metadata>
+
+        <collection
+            spec="/data/ldm/pub/native/grid/NCEP/NAM/CONUS_40km/conduit/.*grib2$"
+            name="NAM_CONUS_40km_conduit"
+            dateFormatMark="#NAM_CONUS_40km_conduit_#yyyyMMdd_HHmm"
+            timePartition="day"
+            olderThan="5 min"/>
+        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+
+        <protoDataset choice="Penultimate" change="0 2 3 * * ? *"/>
+        <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets"/>
+      </featureCollection>
+
+      <featureCollection name="NCEP-NAM-Polar_90km" featureType="GRIB" harvest="true" path="grib/NCEP/NAM/Polar_90km">
+        <metadata inherited="true">
+          <documentation type="summary">NCEP North American Model : AWIPS 105 Grid.
+            Model runs are made at 0, 6, 12, and 18Z, with analysis and forecasts every 3 hours out to 84 hours.
+            Horizontal = 147 by 110 points, resolution 90.75 km, Polar Stereographic projection.
+            Vertical = 1000 to 50 hPa pressure levels.
+          </documentation>
+        </metadata>
+
+        <collection
+            spec="/data/ldm/pub/native/grid/NCEP/NAM/Polar_90km/.*grib2$"
+            name="NAM_Polar_90km"
+            dateFormatMark="#NAM_Polar_90km_#yyyyMMdd_HHmm"
+            timePartition="day"
+            olderThan="5 min"/>
+        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+
+        <protoDataset choice="Penultimate" change="0 2 3 * * ? *"/>
+        <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets"/>
+      </featureCollection>
+
+    </dataset>
+
+    <dataset name="Rapid Update Cycle (RUC) Model">
+      <metadata inherited="true">
+        <documentation type="summary">NCEP Rapid Update Cycle (RUC) Model: frequently updated short-range weather
+          forecasts.
+        </documentation>
+        <documentation xlink:href="http://meted.ucar.edu/nwp/pcu2/rucintro.htm"
+                       xlink:title="COMET MetEd (Meteorology Education and Training) documentation"/>
+        <dataFormat>GRIB-2</dataFormat>
+      </metadata>
+
+      <featureCollection name="NCEP-RUC2-CONUS_13km" featureType="GRIB" harvest="true" path="grib/NCEP/RUC2/CONUS_13km">
+        <metadata inherited="true">
+          <documentation type="summary">NCEP Model output Rapid Update Cycle (RUC2).
+            Model runs are made hourly, with analysis and hourly forecasts out to 12 hours; on the 0, 3, 6, 9, 12, 15,
+            18, and 21Z runs. The other forecast are out to 9 hours.
+            Horizontal = 337 by 451 points, resolution 13.55 km, LambertConformal projection.
+          </documentation>
+        </metadata>
+
+        <collection
+            spec="/data/ldm/pub/native/grid/NCEP/RUC2/CONUS_13km/.*grib2$"
+            name="RUC2_CONUS_13km"
+            dateFormatMark="#RUC2_CONUS_13km_#yyyyMMdd_HHmm"
+            timePartition="day"
+            olderThan="5 min"/>
+        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+
+        <protoDataset choice="Penultimate" change="0 2 3 * * ? *"/>
+        <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets"/>
+      </featureCollection>
+
+      <featureCollection name="NCEP-RUC2-CONUS_20km-surface" featureType="GRIB" harvest="true"
+                         path="grib/NCEP/RUC2/CONUS_20km/surface">
+        <metadata inherited="true">
+          <documentation type="summary">
+            NCEP Rapid Update Cycle 2 (RUC2) Surface parameters.
+            Horizontal = 301 by 225 points, resolution 20.31 km, Lambert Conformal projection.
+            Model runs are made hourly, with analysis and hourly forecasts out to 3 hours; on the 0, 3, 6, 9, 12, 15,
+            18, and 21Z runs, also 5, 6, 8, 9, 11, 12 hour forecasts.
+          </documentation>
+        </metadata>
+
+        <collection
+            spec="/data/ldm/pub/native/grid/NCEP/RUC2/CONUS_20km/surface/.*grib2$"
+            name="RUC2_CONUS_20km_surface"
+            dateFormatMark="#RUC2_CONUS_20km_surface_#yyyyMMdd_HHmm"
+            timePartition="day"
+            olderThan="5 min"/>
+        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+        <protoDataset choice="Penultimate" change="0 2 3 * * ? *"/>
+        <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets"/>
+      </featureCollection>
+
+      <featureCollection name="NCEP-RUC2-CONUS_20km-pressure" featureType="GRIB" harvest="true"
+                         path="grib/NCEP/RUC2/CONUS_20km/pressure">
+        <metadata inherited="true">
+          <documentation type="summary">
+            NCEP Rapid Update Cycle 2 (RUC2) Parameters on pressure levels.
+            Horizontal = 301 by 225 points, resolution 20.31 km, Lambert Conformal projection.
+            Model runs are made hourly, with analysis and hourly forecasts out to 9 hours; on the 0, 3, 6, 9, 12, 15,
+            18, and 21Z runs, hourly out to 12 hours.
+          </documentation>
+        </metadata>
+
+        <collection
+            spec="/data/ldm/pub/native/grid/NCEP/RUC2/CONUS_20km/pressure/.*grib2$"
+            name="RUC2_CONUS_20km_pressure"
+            dateFormatMark="#RUC2_CONUS_20km_pressure_#yyyyMMdd_HHmm"
+            timePartition="day"
+            olderThan="5 min"/>
+        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+        <protoDataset choice="Penultimate" change="0 2 3 * * ? *"/>
+        <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets"/>
+      </featureCollection>
+
+      <featureCollection name="NCEP-RUC2-CONUS_20km-hybrid" featureType="GRIB" harvest="true"
+                         path="grib/NCEP/RUC2/CONUS_20km/hybrid">
+        <metadata inherited="true">
+          <documentation type="summary">
+            NCEP Rapid Update Cycle 2 (RUC2) Parameters on hybrid levels.
+            Horizontal = 301 by 225 points, resolution 20.31 km, Lambert Conformal projection.
+            Model runs are made hourly, with analysis and hourly forecasts out to 3 hours; on the 0, 3, 6, 9, 12, 15,
+            18, and 21Z runs, also 6, 9, and 12 hour forecasts.
+          </documentation>
+        </metadata>
+
+        <collection
+            spec="/data/ldm/pub/native/grid/NCEP/RUC2/CONUS_20km/hybrid/.*grib2$"
+            name="RUC2_CONUS_20km_hybrid"
+            dateFormatMark="#RUC2_CONUS_20km_hybrid_#yyyyMMdd_HHmm"
+            timePartition="day"
+            olderThan="5 min"/>
+        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+        <protoDataset choice="Penultimate" change="0 2 3 * * ? *"/>
+        <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets"/>
+      </featureCollection>
+    </dataset>
+
+
+    <dataset name="Downscaled GFS with Eta Extension (DGEX)">
+      <metadata inherited="true">
+        <documentation type="summary">
+          The NCEP DGEX Model is the Eta model extended to 8 days over smaller domains using the operational Eta model
+          78 hour forecast and GFS boundary conditions.
+        </documentation>
+        <documentation xlink:href="http://meted.ucar.edu/nwp/pcu2/etintro.htm"
+                       xlink:title="COMET MetEd (Meteorology Education and Training) documentation"/>
+        <documentation xlink:href="http://www.nws.noaa.gov/ost/ifps_sst/DGEX_combined.pdf"
+                       xlink:title="NCEP presentation (ppt)"/>
+      </metadata>
+
+      <featureCollection name="NCEP-DGEX-CONUS_12km" featureType="GRIB" harvest="true" path="grib/NCEP/DGEX/CONUS_12km">
+        <metadata inherited="true">
+          <documentation type="summary">
+            NCEP Model output Grid 185 (C) horizontal = 491 by 303 points, resolution 12 km, LambertConformal
+            projection.
+            Model runs are made at 6 and 18Z, with forecasts starting at 84 hours, every 6 hours out to 192 hours
+          </documentation>
+        </metadata>
+
+        <collection
+            spec="/data/ldm/pub/native/grid/NCEP/DGEX/CONUS_12km/.*grib2$"
+            name="DGEX_CONUS_12km"
+            dateFormatMark="#DGEX_CONUS_12km_#yyyyMMdd_HHmm"
+            timePartition="day"
+            olderThan="5 min"/>
+        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+
+        <protoDataset choice="Penultimate" change="0 2 3 * * ? *"/>
+        <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets"/>
+      </featureCollection>
+
+      <featureCollection name="NCEP-DGEX-Alaska_12km" featureType="GRIB" harvest="true"
+                         path="grib/NCEP/DGEX/Alaska_12km">
+        <metadata inherited="true">
+          <documentation type="summary">
+            NCEP Model output AWIPS Grid 186 (C) horizontal = 377 by 237 points, resolution 12 km, Polar Stereographic
+            projection.
+            Model runs are made at 0 and 12Z, with forecasts starting at 84 hours, every 6 hours out to 192 hours
+          </documentation>
+        </metadata>
+
+        <collection
+            spec="/data/ldm/pub/native/grid/NCEP/DGEX/Alaska_12km/.*grib2$"
+            name="DGEX_Alaska_12km"
+            dateFormatMark="#DGEX_Alaska_12km_#yyyyMMdd_HHmm"
+            timePartition="day"
+            olderThan="5 min"/>
+        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+
+        <protoDataset choice="Penultimate" change="0 2 3 * * ? *"/>
+        <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets"/>
+      </featureCollection>
+
+    </dataset>
+
+    <dataset name="NCEP Global Ensemble Forecasting System (GEFS)">
+
+      <metadata inherited="true">
+        <documentation type="summary">NCEP Global Ensemble Forecasting System (GEFS)
+          Global one degree Lat/Lon grid.
+          Model runs are made at 0, 6, 12, 18 ... hours out to 378 hours (16 days).
+          Horizontal = 181 by 360 points, resolution 1 degree, Lat/Lon projection.
+          Vertical = 2000 to 1000 hPa mandatory pressure levels (7 levels); pressure, height above ground,
+          pressure_difference_layers.
+        </documentation>
+      </metadata>
+
+      <featureCollection name="NCEP-GEFS-Global_1p0deg_Ensemble-derived" featureType="GRIB" harvest="true"
+                         path="grib/NCEP/GEFS/Global_1p0deg_Ensemble/derived">
+        <metadata inherited="true">
+          <documentation type="summary">
+            Derived Products: mean, spread, and probability products.
+          </documentation>
+        </metadata>
+
+        <collection
+            spec="/data/ldm/pub/native/grid/NCEP/GEFS/Global_1p0deg_Ensemble/derived/.*grib2$"
+            name="GEFS_Global_1p0deg_Ensemble_derived"
+            dateFormatMark="#GEFS_Global_1p0deg_Ensemble_derived_#yyyyMMdd_HHmm"
+            timePartition="day"
+            olderThan="5 min"/>
+        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+
+        <protoDataset choice="Penultimate" change="0 2 3 * * ? *"/>
+        <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets"/>
+      </featureCollection>
+
+      <featureCollection name="NCEP-GEFS-Global_1p0deg_Ensemble-members" featureType="GRIB" harvest="true"
+                         path="grib/NCEP/GEFS/Global_1p0deg_Ensemble/members">
+        <metadata inherited="true">
+          <documentation type="summary">
+            Ensemble members.
+          </documentation>
+        </metadata>
+
+        <collection
+            spec="/data/ldm/pub/native/grid/NCEP/GEFS/Global_1p0deg_Ensemble/member/.*grib2$"
+            name="GEFS_Global_1p0deg_Ensemble_members"
+            dateFormatMark="#GEFS_Global_1p0deg_Ensemble_#yyyyMMdd_HHmm"
+            timePartition="day"
+            olderThan="5 min"/>
+        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+
+        <protoDataset choice="Penultimate" change="0 2 3 * * ? *"/>
+        <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets"/>
+      </featureCollection>
+
+    </dataset>
+
+    <dataset name="NCEP Real Time Mesoscale Analysis (RTMA)">
+      <metadata inherited="true">
+        <documentation type="summary">
+          The NCEP RTMA Model is Real Time Mesoscale Analysis models.
+        </documentation>
+        <documentation xlink:href="http://www.weather.gov/infoservicechanges/tin08-56_rtma.txt"
+                       xlink:title="RTMA TIN"/>
+        <documentation xlink:href="http://www.coaps.fsu.edu/~dvandyke/wrfarw/rtma.html"
+                       xlink:title="COAPS FSU"/>
+      </metadata>
+
+      <featureCollection name="NCEP-RTMA-CONUS_2p5km" featureType="GRIB" harvest="true"
+                         path="grib/NCEP/RTMA/CONUS_2p5km">
+        <metadata inherited="true">
+          <documentation type="summary">
+            NCEP Model horizontal = 1377 by 2145 points, resolution 2.5 km, LambertConformal projection.
+            Model runs are made hourly, with 0 hour forecast
+          </documentation>
+        </metadata>
+
+        <collection
+            spec="/data/ldm/pub/native/grid/NCEP/RTMA/CONUS_2p5km/.*grib2$"
+            name="RTMA_CONUS_2p5km"
+            dateFormatMark="#RTMA_CONUS_2p5km_#yyyyMMdd_HHmm"
+            timePartition="day"
+            olderThan="5 min"/>
+        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+
+        <protoDataset choice="Penultimate" change="0 2 3 * * ? *"/>
+        <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets"/>
+      </featureCollection>
+
+      <featureCollection name="NCEP-RTMA-GUAM_2p5km" featureType="GRIB" harvest="true" path="grib/NCEP/RTMA/GUAM_2p5km">
+        <metadata inherited="true">
+          <documentation type="summary">
+            NCEP Model horizontal = 193 by 193 points, resolution 2.5 km, Mercator projection.
+            Model runs are made every 3 hours at 0, 3, ... with 0 hour forecasts.
+          </documentation>
+        </metadata>
+
+        <collection
+            spec="/data/ldm/pub/native/grid/NCEP/RTMA/GUAM_2p5km/.*grib2$"
+            name="RTMA_GUAM_2p5km"
+            dateFormatMark="#RTMA_GUAM_2p5km_#yyyyMMdd_HHmm"
+            timePartition="day"
+            olderThan="5 min"/>
+        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+
+        <protoDataset choice="Penultimate" change="0 2 3 * * ? *"/>
+        <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets"/>
+      </featureCollection>
+
+    </dataset>
+
+    <dataset name="NCEP Short Range Ensemble Forecasting (SREF)">
+      <metadata inherited="true">
+        <documentation type="summary">NCEP Short Range Ensemble Forecast (SREF)</documentation>
+        <documentation xlink:href="http://w1.spc.woc.noaa.gov/exper/sref/" xlink:title="NCEP/SREF Website"/>
+        <documentation xlink:href="http://www.emc.ncep.noaa.gov/mmb/SREF/SREF.html" xlink:title="NWS/SREF Website"/>
+      </metadata>
+
+      <featureCollection name="NCEP-SREF-CONUS_40km-derived" featureType="GRIB" harvest="true"
+                         path="grib/NCEP/SREF/CONUS_40km/ensprod">
+        <metadata inherited="true">
+          <documentation type="summary">
+            NCEP Short Range Ensemble Forecast (SREF) 40km derived products: mean, spread, and probability.
+            over CONUS with 185 by 129 points, resolution 40 km.
+            Models are run daily at 3,9,15,and 21Z. Forecasts every 3 hours from 3 to 87 hours.
+          </documentation>
+        </metadata>
+
+        <collection
+            spec="/data/ldm/pub/native/grid/NCEP/SREF/CONUS_40km/ensprod/.*grib2$"
+            name="SREF_CONUS_40km_ensprod"
+            dateFormatMark="#SREF_CONUS_40km_ensprod_#yyyyMMdd_HHmm"
+            timePartition="day"
+            olderThan="5 min"/>
+        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+
+        <protoDataset choice="Penultimate" change="0 2 3 * * ? *"/>
+        <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets"/>
+      </featureCollection>
+
+      <featureCollection name="NCEP-SREF-CONUS_40km-biasCorrected-derived" featureType="GRIB" harvest="true"
+                         path="grib/NCEP/SREF/CONUS_40km/ensprod_biasc">
+        <metadata inherited="true">
+          <documentation type="summary">
+            NCEP Short Range Ensemble Forecast (SREF) 40km derived products: bias-corrected mean, spread, and
+            probability.
+            over CONUS with 185 by 129 points, resolution 40 km.
+            Models are run daily at 3,9,15,and 21Z. Forecasts every 3 hours from 3 to 87 hours.
+          </documentation>
+        </metadata>
+
+        <collection
+            spec="/data/ldm/pub/native/grid/NCEP/SREF/CONUS_40km/ensprod_biasc/.*grib2$"
+            name="SREF_CONUS_40km_ensprod_biasc"
+            dateFormatMark="#SREF_CONUS_40km_ensprod_biasc_#yyyyMMdd_HHmm"
+            timePartition="day"
+            olderThan="5 min"/>
+        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+
+        <protoDataset choice="Penultimate" change="0 2 3 * * ? *"/>
+        <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets"/>
+      </featureCollection>
+
+      <featureCollection name="NCEP-SREF-CONUS_40km-biasCorrected-members" featureType="GRIB" harvest="true"
+                         path="grib/NCEP/SREF/CONUS_40km/pgrb_biasc">
+        <metadata inherited="true">
+          <documentation type="summary">
+            NCEP Short Range Ensemble Forecast (SREF) 40km derived products: bias-corrected ensemble members.
+            over CONUS with 185 by 129 points, resolution 40 km.
+            Models are run daily at 3,9,15,and 21Z. Forecasts every 3 hours from 3 to 87 hours.
+          </documentation>
+        </metadata>
+
+        <collection
+            spec="/data/ldm/pub/native/grid/NCEP/SREF/CONUS_40km/pgrb_biasc/.*grib2$"
+            name="SREF_CONUS_40km_ensprod_biasc_members"
+            dateFormatMark="yyyyMMdd_HHmm#.grib2#"
+            timePartition="day"
+            olderThan="5 min"/>
+        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+
+        <protoDataset choice="Penultimate" change="0 2 3 * * ? *"/>
+        <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets"/>
+      </featureCollection>
+
+      <featureCollection name="NCEP-SREF-Alaska_45km-ensprod" featureType="GRIB" harvest="true"
+                         path="grib/NCEP/SREF/Alaska_45km/ensprod">
+        <metadata inherited="true">
+          <documentation type="summary">
+            NCEP SREF Alaska 45km derived products:mean, spread, and probability.
+          </documentation>
+        </metadata>
+
+        <collection
+            spec="/data/ldm/pub/native/grid/NCEP/SREF/Alaska_45km/ensprod/.*grib2$"
+            name="SREF_Alaska_45km_ensprod"
+            dateFormatMark="#SREF_Alaska_45km_ensprod_#yyyyMMdd_HHmm"
+            timePartition="day"
+            olderThan="5 min"/>
+        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+
+        <protoDataset choice="Penultimate" change="0 2 3 * * ? *"/>
+        <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets"/>
+      </featureCollection>
+
+      <featureCollection name="NCEP-SREF-PacificNE_0p4-ensprod" featureType="GRIB" harvest="true"
+                         path="grib/NCEP/SREF/PacificNE_0p4/ensprod">
+        <metadata inherited="true">
+          <documentation type="summary">
+            NCEP SREF Pacific NE 0.4 degree derived products:mean, spread, and probability.
+          </documentation>
+        </metadata>
+
+        <collection
+            spec="/data/ldm/pub/native/grid/NCEP/SREF/PacificNE_0p4/ensprod/.*grib2$"
+            name="SREF_PacificNE_0p4_ensprod"
+            dateFormatMark="#SREF_PacificNE_0p4_ensprod_#yyyyMMdd_HHmm"
+            timePartition="day"
+            olderThan="5 min"/>
+        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+
+        <protoDataset choice="Penultimate" change="0 2 3 * * ? *"/>
+        <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets"/>
+      </featureCollection>
+
+    </dataset>
+
+    <dataset name="NWS National Digital Forecast Database">
+      <metadata inherited="true">
+        <dataFormat>GRIB-2</dataFormat>
+        <documentation type="summary">National Digital Forecast Database (NDFD): US National Weather Service gridded
+          forecasts of sensible weather elements.
+        </documentation>
+        <documentation xlink:href="http://www.weather.gov/ndfd/" xlink:title="NWS/NDFD Website"/>
+      </metadata>
+
+      <featureCollection name="NCEP-NDFD-CONUS_5km" featureType="GRIB" harvest="true" path="grib/NCEP/NDFD/CONUS_5km">
+        <metadata inherited="true">
+          <documentation type="summary">
+            1073 by 689 points, resolution 5 km. Results from 12Z and 18Z run. Forecasts every 6 hours from 90 to 180
+            hours.
+          </documentation>
+        </metadata>
+
+        <collection
+            spec="/data/ldm/pub/native/grid/NCEP/NDFD/CONUS_5km/.*grib2$"
+            name="NDFD_CONUS_5km"
+            dateFormatMark="#NDFD_CONUS_5km_#yyyyMMdd_HHmm"
+            timePartition="day"
+            olderThan="5 min"/>
+        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+
+        <protoDataset choice="Run" param="0" change="0 2 3 * * ? *"/>
+      </featureCollection>
+
+      <featureCollection name="NCEP-NDFD-CONUS_5km_conduit" featureType="GRIB" harvest="true"
+                         path="grib/NCEP/NDFD/CONUS_5km">
+        <metadata inherited="true">
+          <documentation type="summary">
+            1073 by 689 points, resolution 5 km. Models are run hourly. Forecasts every 3 hours from 2 to 74 hours and
+            every 6 hours from 74 to 170.
+          </documentation>
+        </metadata>
+
+        <collection
+            spec="/data/ldm/pub/native/grid/NCEP/NDFD/conduit/CONUS_5km/.*grib2$"
+            name="NDFD_CONUS_5km_conduit"
+            dateFormatMark="#NDFD_CONUS_5km_conduit_#yyyyMMdd_HHmm"
+            timePartition="day"
+            olderThan="5 min"/>
+        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+
+        <protoDataset choice="Run" param="0" change="0 2 3 * * ? *"/>
+        <gribConfig>
+          <gdsHash from="-2121584860" to="28944332"/>
+        </gribConfig>
+      </featureCollection>
+
+    </dataset>
+
+    <dataset name="NCEP Wave Watch III">
+      <metadata inherited="true">
+        <documentation type="summary">NCEP Wave Watch III (WW3): US National Weather Service gridded forecasts of
+          sensible weather elements.
+        </documentation>
+        <documentation xlink:href="http://polar.ncep.noaa.gov/waves/products.shtml" xlink:title="NWS/WW3 Website"/>
+        <dataFormat>GRIB-2</dataFormat>
+      </metadata>
+
+      <featureCollection name="NCEP-WW3-Global" featureType="GRIB" harvest="true" path="grib/NCEP/WW3/Global">
+        <metadata inherited="true">
+          <documentation type="summary">
+            720 by 336 points, resolution 30 minute. Models are run daily at 0Z, 6Z, 12Z and 18Z.
+            Forecasts every 3 hours from 0 to 72, every 6 hours from 72 to 180 hours.
+          </documentation>
+        </metadata>
+
+        <collection
+            spec="/data/ldm/pub/native/grid/NCEP/WW3/Global/.*grib2$"
+            name="WW3_Global"
+            dateFormatMark="#WW3_Global_#yyyyMMdd_HHmm"
+            timePartition="day"
+            olderThan="5 min"/>
+        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+
+        <protoDataset choice="Penultimate" change="0 2 3 * * ? *"/>
+        <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets"/>
+      </featureCollection>
+
+      <featureCollection name="NCEP-WW3-Regional_Alaska" featureType="GRIB" harvest="true"
+                         path="grib/NCEP/WW3/Regional_Alaska">
+        <metadata inherited="true">
+          <documentation type="summary">
+            401 by 187 points, resolution 10 minute. Models are run daily at 0Z, 6Z, 12Z and 18Z.
+            Forecasts every 3 hours from 0 to 72, every 6 hours from 72 to 180 hours.
+          </documentation>
+        </metadata>
+
+        <collection
+            spec="/data/ldm/pub/native/grid/NCEP/WW3/Regional_Alaska/.*grib2$"
+            name="WW3_Regional_Alaska"
+            dateFormatMark="#WW3_Regional_Alaska_#yyyyMMdd_HHmm"
+            timePartition="day"
+            olderThan="5 min"/>
+        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+
+        <protoDataset choice="Penultimate" change="0 2 3 * * ? *"/>
+        <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets"/>
+      </featureCollection>
+
+      <featureCollection name="NCEP-WW3-Regional_Eastern_Pacific" featureType="GRIB" harvest="true"
+                         path="grib/NCEP/WW3/Regional_Eastern_Pacific">
+        <metadata inherited="true">
+          <documentation type="summary">
+            511 by 301 points, resolution 10 minute. Models are run daily at 0Z, 6Z, 12Z and 18Z.
+            Forecasts every 3 hours from 0 to 72, every 6 hours from 72 to 180 hours.
+          </documentation>
+        </metadata>
+
+        <collection
+            spec="/data/ldm/pub/native/grid/NCEP/WW3/Regional_Eastern_Pacific/.*grib2$"
+            name="WW3_Regional_Eastern_Pacific"
+            dateFormatMark="#WW3_Regional_Eastern_Pacific_#yyyyMMdd_HHmm"
+            timePartition="day"
+            olderThan="5 min"/>
+        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+
+        <protoDataset choice="Penultimate" change="0 2 3 * * ? *"/>
+        <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets"/>
+      </featureCollection>
+
+      <featureCollection name="NCEP-WW3-Regional_US_East_Coast" featureType="GRIB" harvest="true"
+                         path="grib/NCEP/WW3/Regional_US_East_Coast">
+        <metadata inherited="true">
+          <documentation type="summary">
+            301 by 331 points, resolution 10 minute. Models are run daily at 0Z, 6Z, 12Z and 18Z.
+            Forecasts every 3 hours from 0 to 72, every 6 hours from 72 to 180 hours.
+          </documentation>
+        </metadata>
+
+        <collection
+            spec="/data/ldm/pub/native/grid/NCEP/WW3/Regional_US_East_Coast/.*grib2$"
+            name="WW3_Regional_US_East_Coast"
+            dateFormatMark="#WW3_Regional_US_East_Coast_#yyyyMMdd_HHmm"
+            timePartition="day"
+            olderThan="5 min"/>
+        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+
+        <protoDataset choice="Penultimate" change="0 2 3 * * ? *"/>
+        <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets"/>
+      </featureCollection>
+
+      <featureCollection name="NCEP-WW3-Regional_US_West_Coast" featureType="GRIB" harvest="true"
+                         path="grib/NCEP/WW3/Regional_US_West_Coast">
+        <metadata inherited="true">
+          <documentation type="summary">
+            241 by 151 points, resolution 10 minute. Models are run daily at 0Z, 6Z, 12Z and 18Z.
+            Forecasts every 3 hours from 0 to 72, every 6 hours from 72 to 180 hours.
+          </documentation>
+        </metadata>
+
+        <collection
+            spec="/data/ldm/pub/native/grid/NCEP/WW3/Regional_US_West_Coast/.*grib2$"
+            name="WW3_Regional_US_West_Coast"
+            dateFormatMark="#WW3_Regional_US_West_Coast_#yyyyMMdd_HHmm"
+            timePartition="day"
+            olderThan="5 min"/>
+        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+
+        <protoDataset choice="Penultimate" change="0 2 3 * * ? *"/>
+        <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets"/>
+      </featureCollection>
+
+      <featureCollection name="NCEP-WW3-Coastal_US_East_Coast" featureType="GRIB" harvest="true"
+                         path="grib/NCEP/WW3/Coastal_US_East_Coast">
+        <metadata inherited="true">
+          <documentation type="summary">
+            586 by 481 points, resolution 4 minute. Models are run daily at 0Z, 6Z, 12Z and 18Z.
+            Forecasts every 3 hours from 0 to 72, every 6 hours from 72 to 180 hours.
+          </documentation>
+        </metadata>
+
+        <collection
+            spec="/data/ldm/pub/native/grid/NCEP/WW3/Coastal_US_East_Coast/.*grib2$"
+            name="WW3_Coastal_US_East_Coast"
+            dateFormatMark="#WW3_Coastal_US_East_Coast_#yyyyMMdd_HHmm"
+            timePartition="day"
+            olderThan="5 min"/>
+        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+
+        <protoDataset choice="Penultimate" change="0 2 3 * * ? *"/>
+        <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets"/>
+      </featureCollection>
+
+      <featureCollection name="NCEP-WW3-Coastal_US_West_Coast" featureType="GRIB" harvest="true"
+                         path="grib/NCEP/WW3/Coastal_US_West_Coast">
+        <metadata inherited="true">
+          <documentation type="summary">
+            736 by 526 points, resolution 4 minute. Models are run daily at 0Z, 6Z, 12Z and 18Z.
+            Forecasts every 3 hours from 0 to 72, every 6 hours from 72 to 180 hours.
+          </documentation>
+        </metadata>
+
+        <collection
+            spec="/data/ldm/pub/native/grid/NCEP/WW3/Coastal_US_West_Coast/.*grib2$"
+            name="WW3_Coastal_US_West_Coast"
+            dateFormatMark="#WW3_Coastal_US_West_Coast_#yyyyMMdd_HHmm"
+            timePartition="day"
+            olderThan="5 min"/>
+        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+
+        <protoDataset choice="Penultimate" change="0 2 3 * * ? *"/>
+        <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets"/>
+      </featureCollection>
+
+      <featureCollection name="NCEP-WW3-Coastal_Alaska" featureType="GRIB" harvest="true"
+                         path="grib/NCEP/WW3/Coastal_Alaska">
+        <metadata inherited="true">
+          <documentation type="summary">
+            548 by 391 points, resolution 4 minute. Models are run daily at 0Z, 6Z, 12Z and 18Z.
+            Forecasts every 3 hours from 0 to 72, every 6 hours from 72 to 180 hours.
+          </documentation>
+        </metadata>
+
+        <collection
+            spec="/data/ldm/pub/native/grid/NCEP/WW3/Coastal_Alaska/.*grib2$"
+            name="WW3_Coastal_Alaska"
+            dateFormatMark="#WW3_Coastal_Alaska_#yyyyMMdd_HHmm"
+            timePartition="day"
+            olderThan="5 min"/>
+        <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+
+        <protoDataset choice="Penultimate" change="0 2 3 * * ? *"/>
+        <fmrcConfig regularize="true" datasetTypes="TwoD Best Files Runs ConstantForecasts ConstantOffsets"/>
+      </featureCollection>
+
+    </dataset>
+
+  </dataset>
+
+
+  <dataset name="Unidata NEXRAD Composite-1km" harvest="true">
+    <metadata inherited="true">
+      <dataFormat>GRIB-2</dataFormat>
+      <documentation type="summary">NEXRAD Radar National Composites of Level 3 Base Reflectivity. 1 km resolution.
+        Generated by Unidata every 5-6 minutes.
+      </documentation>
+      <creator>
+        <name vocabulary="DIF">UCAR/UNIDATA</name>
+        <contact url="http://www.unidata.ucar.edu/" email="support@unidata.ucar.edu"/>
+      </creator>
+    </metadata>
+
+    <featureCollection name="nexrad_composite_1km" featureType="GRIB" harvest="true" path="grib/nexrad/composite/1km">
+      <collection spec="/data/ldm/pub/native/radar/composite/grib2/N0R/**/.*grib2$"
+                  name="nexrad_composite_1km"
+                  dateFormatMark="#/N0R/#yyyyMMdd"
+                  timePartition="directory"
+                  olderThan="5 min"/>
+      <tdm startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+      <protoDataset choice="Penultimate" change="0 2 3 * * ? *"/>
+    </featureCollection>
+
+  </dataset>
+
+</catalog>
+
