@@ -55,6 +55,11 @@
        declared as dependency instead.
        =========================================================== -->
   <dependencies>
+     <dependency>
+      <groupId>commons-httpclient</groupId>
+      <artifactId>commons-httpclient</artifactId>
+      <version>3.1</version>
+    </dependency>
     <dependency>
       <groupId>net.jcip</groupId>
       <artifactId>jcip-annotations</artifactId>

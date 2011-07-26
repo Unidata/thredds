@@ -144,7 +144,15 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module" module-name="jdom" exported="" />
+    <orderEntry type="module-library" exported="">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../lib/external/jdom.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
   </component>
   <component name="org.twodividedbyzero.idea.findbugs">
     <option name="_basePreferences">

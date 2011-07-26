@@ -7,12 +7,21 @@
     <content url="file://$MODULE_DIR$/../../common">
       <sourceFolder url="file://$MODULE_DIR$/../../common/src/main/java" isTestSource="false" />
     </content>
-    <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="inheritedJdk" />
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
           <root url="jar://$MODULE_DIR$/../../lib/external/slf4j-api-1.5.6.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../lib/external/commons-httpclient-3.1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

@@ -77,12 +77,6 @@
       <artifactId>unidataCommon</artifactId>
       <version>${project.version}</version>
     </dependency>
-    <!-- WARNING!! This is a circular dependency -->
-    <dependency>
-      <groupId>edu.ucar</groupId>
-      <artifactId>netcdf</artifactId>
-      <version>${project.version}</version>
-    </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>servlet-api</artifactId>
