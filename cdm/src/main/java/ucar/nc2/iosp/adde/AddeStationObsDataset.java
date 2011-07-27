@@ -366,7 +366,7 @@ public class AddeStationObsDataset extends StationObsDatasetImpl {
       this.dt = dt;
     }
 
-    public String getName() { return name; }
+    public String getFullName() { return name; }
     public String getShortName() { return name; }
 
     public String getDescription() {
@@ -401,7 +401,7 @@ public class AddeStationObsDataset extends StationObsDatasetImpl {
     }
 
   public int compareTo(VariableSimpleIF o) {
-    return getName().compareTo(o.getShortName());
+    return getShortName().compareTo(o.getShortName());
   }
 
   }

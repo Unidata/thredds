@@ -114,7 +114,7 @@ public class CrawlableMFile implements MFile, thredds.crawlabledataset.Crawlable
   @Override
   public List<CrawlableDataset> listDatasets(CrawlableDatasetFilter filter) throws IOException {
     MCollection mc = new MCollection(mfile.getPath(), mfile.getPath(), false, (MFileFilter) null, null);
-    Iterator<MFile> iter = controller.getInventory(mc);
+    Iterator<MFile> iter = controller.getInventoryTop(mc, true);
     List<CrawlableDataset> result = new ArrayList<CrawlableDataset>();
     while (iter.hasNext()) {
       CrawlableMFile crf = new CrawlableMFile(controller, iter.next());

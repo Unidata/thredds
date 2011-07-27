@@ -12,7 +12,7 @@ import java.util.Date;
  * Try to abstract the common fields.
  * This is fairly low-level, corresponding to the actual values in the file.
  * Meaning often depends if its GRIB1 or GRIB2
- * GridRecord translates these into values that are file type independdednt.
+ * GridRecord translates these into values that are file type independent.
  *
  * @author caron
  * @since Aug 4, 2010

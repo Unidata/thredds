@@ -35,7 +35,7 @@ package ucar.grib.grib1;
 
 import ucar.grib.*;
 import ucar.grib.grib2.Grib2WriteIndex;
-import ucar.grid.GridIndex;
+import ucar.nc2.iosp.grid.GridIndex;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.*;

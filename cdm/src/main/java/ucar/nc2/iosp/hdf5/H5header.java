@@ -132,7 +132,6 @@ public class H5header {
   private Map<Long, GlobalHeap> heapMap = new HashMap<Long, GlobalHeap>();
   //private Map<Long, H5Group> hashGroups = new HashMap<Long, H5Group>(100);
 
-  DateFormatter formatter = new DateFormatter();
   private java.text.SimpleDateFormat hdfDateParser;
 
   private java.io.PrintStream debugOut = System.out;

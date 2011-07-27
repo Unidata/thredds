@@ -46,8 +46,8 @@ import ucar.grib.grib2.Grib2Product;
 import ucar.grib.grib2.Grib2GDSVariables;
 import ucar.grib.grib1.*;
 
+import ucar.nc2.iosp.grid.GridParameter;
 import ucar.unidata.io.RandomAccessFile;
-import ucar.grid.GridParameter;
 
 import java.io.IOException;
 import java.io.File;

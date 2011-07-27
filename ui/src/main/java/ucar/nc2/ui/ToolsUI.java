@@ -1372,7 +1372,6 @@ public class ToolsUI extends JPanel {
 
   private abstract class OpPanel extends JPanel {
     PreferencesExt prefs;
-    TextHistoryPane ta2;
     ComboBox cb;
     JPanel buttPanel, topPanel;
     AbstractButton coordButt = null;
@@ -2402,7 +2401,6 @@ public class ToolsUI extends JPanel {
 
       } catch (FileNotFoundException ioe) {
         JOptionPane.showMessageDialog(null, "NetcdfDataset cant open " + command + "\n" + ioe.getMessage());
-        ta.setText("Failed to open <" + command + ">\n" + ioe.getMessage());
         err = true;
 
       } catch (Exception e) {
@@ -2545,7 +2543,6 @@ public class ToolsUI extends JPanel {
 
       } catch (FileNotFoundException ioe) {
         JOptionPane.showMessageDialog(null, "NetcdfDataset cant open " + command + "\n" + ioe.getMessage());
-        ta.setText("Failed to open <" + command + ">\n" + ioe.getMessage());
         err = true;
 
       } catch (Exception e) {
@@ -2589,7 +2586,6 @@ public class ToolsUI extends JPanel {
 
       } catch (FileNotFoundException ioe) {
         JOptionPane.showMessageDialog(null, "NetcdfDataset cant open " + command + "\n" + ioe.getMessage());
-        ta.setText("Failed to open <" + command + ">\n" + ioe.getMessage());
         err = true;
 
       } catch (Exception e) {
@@ -2651,7 +2647,7 @@ public class ToolsUI extends JPanel {
       infoButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           Formatter f = new Formatter();
-          gribTable.showInfo(f);
+          gribTable.checkProblems(f);
           detailTA.setText(f.toString());
           detailTA.gotoTop();
           detailWindow.show();
@@ -2831,7 +2827,6 @@ public class ToolsUI extends JPanel {
 
       } catch (IOException ioe) {
         JOptionPane.showMessageDialog(null, "GribReportPanel cant open " + command + "\n" + ioe.getMessage());
-        ta.setText("Failed to open <" + command + ">\n" + ioe.getMessage());
         ioe.printStackTrace();
         err = true;
 

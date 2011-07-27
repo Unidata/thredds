@@ -42,9 +42,9 @@ package ucar.grib;
 
 import ucar.grib.grib2.Grib2WriteIndex;
 import ucar.grib.grib1.*;
-import ucar.grid.GridDefRecord;
-import ucar.grid.GridIndex;
-import ucar.grid.GridRecord;
+import ucar.nc2.iosp.grid.GridDefRecord;
+import ucar.nc2.iosp.grid.GridIndex;
+import ucar.nc2.iosp.grid.GridRecord;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.*;

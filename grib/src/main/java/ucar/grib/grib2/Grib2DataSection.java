@@ -934,8 +934,7 @@ public final class Grib2DataSection {
         }
       }
     } catch (NullPointerException npe) {
-      logger.error("Grib2DataSection.jpeg2000Unpacking: bit rate too small nb ="+
-        nb +" for file"+ raf.getLocation());
+      logger.error("Grib2DataSection.jpeg2000Unpacking: bit rate too small nb ="+ nb +" for file"+ raf.getLocation());
       if ( debug ) {
         System.out.println("Grib2DataSection.jpeg2000Unpacking: bit rate too small nb ="+
         nb +" for file"+ raf.getLocation());
@@ -947,6 +946,7 @@ public final class Grib2DataSection {
       }
       return;
     }
+
     scanMode = gds.getGdsVars().getScanMode();
     Xlength = gds.getGdsVars().getNx();
     scanningModeCheck();

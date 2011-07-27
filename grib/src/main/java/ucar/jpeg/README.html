@@ -1,151 +1,203 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd"><html><head><!-- Used by the server--><title>INSTALLATION INSTRUCTIONS</title>
-    
-    <meta content="JPEG 2000, JPEG2000, JJ2000, JPEG, image coding, compression, WG1, standards, Java, ISO, 15444" name="keywords">
-<meta content="The Java(TM) implementation of JPEG2000 Part I standard" name="description">
-<meta content="JJ2000 partners" name="Author">
-<meta content="GNU Emacs 20.3.1" name="editor">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head><!-- Used by the server--><title>INSTALLATION INSTRUCTIONS</title>
 
-<style type="text/css">
-  BODY { color: #0000FF; 
-	 background: white;
-	 font-family: Arial,helvetica,sans-serif;
-	}
-  A:link { color:blue }
-  A:visited { color:#C80000 }
-  A:active { color:blue }
-  a.plain { 
-    text-decoration: none ;
-    visited-color: blue;;
-  }
-</style></head>
+    <meta content="JPEG 2000, JPEG2000, JJ2000, JPEG, image coding, compression, WG1, standards, Java, ISO, 15444"
+          name="keywords">
+    <meta content="The Java(TM) implementation of JPEG2000 Part I standard" name="description">
+    <meta content="JJ2000 partners" name="Author">
+    <meta content="GNU Emacs 20.3.1" name="editor">
+
+    <style type="text/css">
+        BODY {
+            color: #0000FF;
+            background: white;
+            font-family: Arial, helvetica, sans-serif;
+        }
+
+        A:link {
+            color: blue
+        }
+
+        A:visited {
+            color: #C80000
+        }
+
+        A:active {
+            color: blue
+        }
+
+        a.plain {
+            text-decoration: none;
+            visited-color: blue;;
+        }
+    </style>
+</head>
 
 
-
-
-
-
-  <body text="#0000ff">
+<body text="#0000ff">
 
 <table cellpadding="0" border="0" cellspacing="0" width="100%" height="100%">
 
-  <thead>
-    <tr>
-      <td align="center" height="50" width="110" bgcolor="white"><a href="http://jj2000.epfl.ch/index.html"><img border="0" alt="JJ2000 Homepage" src="README_files/jj2000"></a></td>
-      <td valign="top" align="right">
+<thead>
+<tr>
+    <td align="center" height="50" width="110" bgcolor="white"><a href="http://jj2000.epfl.ch/index.html"><img
+            border="0" alt="JJ2000 Homepage" src="README_files/jj2000"></a></td>
+    <td valign="top" align="right">
         <font size="2">
 
-	
-	  <a href="http://jj2000.epfl.ch/index.html">HOME</a>
-          <a href="http://jj2000.epfl.ch/jj_gen_info/index.html">General Info</a>
-          <a href="http://jj2000.epfl.ch/jj_whitepaper/index.html">WhitePaper</a>
-	  <a href="http://jj2000.epfl.ch/jj_tutorials/index.html">Tutorials</a>
-	  <a href="http://jj2000.epfl.ch/jj_publications/index.html">Publications</a>
-	  <a href="http://jj2000.epfl.ch/jj_download/index.html">Download</a>
-	  <a href="http://jj2000.epfl.ch/jj_faq/index.html">FAQ</a>
-	  <a href="http://jj2000.epfl.ch/jj_links/index.html">Links</a>
-	  <a href="http://jj2000.epfl.ch/jj_copyright/index.html">Copyright</a>
-	  <a href="http://jj2000.epfl.ch/jj_contact/index.html">Contact</a>
 
-	
-        
-	</font>
-      </td>
-    </tr>
-  </thead>
-
-  <tbody>
-    <tr>
-      <td align="center" valign="top" width="110" bgcolor="#0000ff"><p>&nbsp;</p><script type="text/javascript">
-if (document.images) {
-  gen_info = new Image;
-  gen_infob = new Image;
-  gen_info.src = "../jj_icons/gen_info.gif";
-  gen_infob.src = "../jj_icons/gen_infob.gif";
-  white = new Image;
-  whiteb = new Image;
-  white.src = "../jj_icons/white.gif";
-  whiteb.src = "../jj_icons/whiteb.gif";
-  tutor = new Image;
-  tutorb = new Image;
-  tutor.src = "../jj_icons/tutorials.gif";
-  tutorb.src = "../jj_icons/tutorialsb.gif";
-  publ = new Image;
-  publb = new Image;
-  publ.src = "../jj_icons/publications.gif";
-  publb.src = "../jj_icons/publicationsb.gif";
-  download = new Image;
-  downloadb = new Image;
-  download.src = "../jj_icons/download.gif";
-  downloadb.src = "../jj_icons/downloadb.gif";
-  faq = new Image;
-  faqb = new Image;
-  faq.src = "../jj_icons/faq.gif";
-  faqb.src = "../jj_icons/faqb.gif";
-  links = new Image;
-  linksb = new Image;
-  links.src = "../jj_icons/links.gif";
-  linksb.src = "../jj_icons/linksb.gif";
-  contact = new Image;
-  contactb = new Image;
-  contact.src = "../jj_icons/contact.gif";
-  contactb.src = "../jj_icons/contactb.gif";
-  webmaster = new Image;
-  webmasterb = new Image;
-  webmaster.src = "../jj_icons/webmaster.gif";
-  webmasterb.src = "../jj_icons/webmasterb.gif";
-  copyright = new Image;
-  copyrightb = new Image;
-  copyright.src = "../jj_icons/copyright.gif";
-  copyrightb.src = "../jj_icons/copyrightb.gif";
-}
-
-function chgImg(name,image) {
-  if (document.images) {
-    document[name].src = eval(image+".src");
-  }
-}
-</script>
-
-<table cellpadding="0" width="100" cellspacing="0" border="1" bgcolor="#0000ff">
-  <tbody><tr>
-    <td align="center"><a onmouseout='chgImg("gen_info", "gen_info")' onmouseover='chgImg("gen_info", "gen_infob")' href="http://jj2000.epfl.ch/jj_gen_info/index.html"><img alt="General Info" border="0" src="README_files/gen_info" name="gen_info"></a></td>
-  </tr>
-  <tr>
-    <td align="center"><a onmouseout='chgImg("whitepaper", "white")' onmouseover='chgImg("whitepaper", "whiteb")' href="http://jj2000.epfl.ch/jj_whitepaper/index.html"><img alt="White Paper" border="0" src="README_files/white" name="whitepaper"></a></td>
-  </tr>
-  <tr>
-    <td align="center"><a onmouseout='chgImg("tutorials", "tutor")' onmouseover='chgImg("tutorials", "tutorb")' href="http://jj2000.epfl.ch/jj_tutorials/index.html"><img alt="Tutorials" border="0" src="README_files/tutorials" name="tutorials"></a></td>
-  </tr>
-  <tr>
-    <td align="center"><a onmouseout='chgImg("publ", "publ")' onmouseover='chgImg("publ", "publb")' href="http://jj2000.epfl.ch/jj_publications/index.html"><img alt="Publications" border="0" src="README_files/publications" name="publ"></a></td></tr>
-  <tr>
-    <td align="center"><a onmouseout='chgImg("download", "download")' onmouseover='chgImg("download", "downloadb")' href="http://jj2000.epfl.ch/jj_download/index.html"><img alt="Download" border="0" src="README_files/download" name="download"></a></td>
-  </tr>
-  <tr>
-    <td align="center"><a onmouseout='chgImg("faq", "faq")' onmouseover='chgImg("faq", "faqb")' href="http://jj2000.epfl.ch/jj_faq/index.html"><img alt="faq" border="0" src="README_files/faq" name="faq"></a></td>
-  </tr>
-  <tr>
-    <td align="center"><a onmouseout='chgImg("links", "links")' onmouseover='chgImg("links", "linksb")' href="http://jj2000.epfl.ch/jj_links/index.html"><img alt="Links" border="0" src="README_files/links" name="links"></a></td>
-  </tr>
-  <tr>
-    <td align="center"><a onmouseout='chgImg("contact", "contact")' onmouseover='chgImg("contact", "contactb")' href="http://jj2000.epfl.ch/jj_contact/index.html"><img border="0" alt="contact" src="README_files/contact" name="contact"></a></td>
-  </tr>
-  <tr>
-    <td align="center"><a onmouseout='chgImg("copyright", "copyright")' onmouseover='chgImg("copyright", "copyrightb")' href="http://jj2000.epfl.ch/jj_copyright/index.html"><img border="0" alt="Copyright" src="README_files/copyright" name="copyright"></a></td>
-  </tr>
-  <tr>
-    <td align="center"><a onmouseout='chgImg("webmaster", "webmaster")' onmouseover='chgImg("webmaster", "webmasterb")' href="mailto:Raphael.Grosbois@epfl.ch"><img border="0" alt="Webmaster" src="README_files/webmaster" name="webmaster"></a></td>
-  </tr>
-</tbody></table>
-
-<p>&nbsp;</p></td> 
-      <td valign="center" align="center">
+            <a href="http://jj2000.epfl.ch/index.html">HOME</a>
+            <a href="http://jj2000.epfl.ch/jj_gen_info/index.html">General Info</a>
+            <a href="http://jj2000.epfl.ch/jj_whitepaper/index.html">WhitePaper</a>
+            <a href="http://jj2000.epfl.ch/jj_tutorials/index.html">Tutorials</a>
+            <a href="http://jj2000.epfl.ch/jj_publications/index.html">Publications</a>
+            <a href="http://jj2000.epfl.ch/jj_download/index.html">Download</a>
+            <a href="http://jj2000.epfl.ch/jj_faq/index.html">FAQ</a>
+            <a href="http://jj2000.epfl.ch/jj_links/index.html">Links</a>
+            <a href="http://jj2000.epfl.ch/jj_copyright/index.html">Copyright</a>
+            <a href="http://jj2000.epfl.ch/jj_contact/index.html">Contact</a>
 
 
+        </font>
+    </td>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="center" valign="top" width="110" bgcolor="#0000ff"><p>&nbsp;</p>
+    <script type="text/javascript">
+        if (document.images) {
+        gen_info = new Image;
+        gen_infob = new Image;
+        gen_info.src = "../jj_icons/gen_info.gif";
+        gen_infob.src = "../jj_icons/gen_infob.gif";
+        white = new Image;
+        whiteb = new Image;
+        white.src = "../jj_icons/white.gif";
+        whiteb.src = "../jj_icons/whiteb.gif";
+        tutor = new Image;
+        tutorb = new Image;
+        tutor.src = "../jj_icons/tutorials.gif";
+        tutorb.src = "../jj_icons/tutorialsb.gif";
+        publ = new Image;
+        publb = new Image;
+        publ.src = "../jj_icons/publications.gif";
+        publb.src = "../jj_icons/publicationsb.gif";
+        download = new Image;
+        downloadb = new Image;
+        download.src = "../jj_icons/download.gif";
+        downloadb.src = "../jj_icons/downloadb.gif";
+        faq = new Image;
+        faqb = new Image;
+        faq.src = "../jj_icons/faq.gif";
+        faqb.src = "../jj_icons/faqb.gif";
+        links = new Image;
+        linksb = new Image;
+        links.src = "../jj_icons/links.gif";
+        linksb.src = "../jj_icons/linksb.gif";
+        contact = new Image;
+        contactb = new Image;
+        contact.src = "../jj_icons/contact.gif";
+        contactb.src = "../jj_icons/contactb.gif";
+        webmaster = new Image;
+        webmasterb = new Image;
+        webmaster.src = "../jj_icons/webmaster.gif";
+        webmasterb.src = "../jj_icons/webmasterb.gif";
+        copyright = new Image;
+        copyrightb = new Image;
+        copyright.src = "../jj_icons/copyright.gif";
+        copyrightb.src = "../jj_icons/copyrightb.gif";
+        }
+
+        function chgImg(name,image) {
+        if (document.images) {
+        document[name].src = eval(image+".src");
+        }
+        }
+    </script>
+
+    <table cellpadding="0" width="100" cellspacing="0" border="1" bgcolor="#0000ff">
+        <tbody>
+        <tr>
+            <td align="center"><a onmouseout='chgImg("gen_info", "gen_info")'
+                                  onmouseover='chgImg("gen_info", "gen_infob")'
+                                  href="http://jj2000.epfl.ch/jj_gen_info/index.html"><img alt="General Info" border="0"
+                                                                                           src="README_files/gen_info"
+                                                                                           name="gen_info"></a></td>
+        </tr>
+        <tr>
+            <td align="center"><a onmouseout='chgImg("whitepaper", "white")'
+                                  onmouseover='chgImg("whitepaper", "whiteb")'
+                                  href="http://jj2000.epfl.ch/jj_whitepaper/index.html"><img alt="White Paper"
+                                                                                             border="0"
+                                                                                             src="README_files/white"
+                                                                                             name="whitepaper"></a></td>
+        </tr>
+        <tr>
+            <td align="center"><a onmouseout='chgImg("tutorials", "tutor")' onmouseover='chgImg("tutorials", "tutorb")'
+                                  href="http://jj2000.epfl.ch/jj_tutorials/index.html"><img alt="Tutorials" border="0"
+                                                                                            src="README_files/tutorials"
+                                                                                            name="tutorials"></a></td>
+        </tr>
+        <tr>
+            <td align="center"><a onmouseout='chgImg("publ", "publ")' onmouseover='chgImg("publ", "publb")'
+                                  href="http://jj2000.epfl.ch/jj_publications/index.html"><img alt="Publications"
+                                                                                               border="0"
+                                                                                               src="README_files/publications"
+                                                                                               name="publ"></a></td>
+        </tr>
+        <tr>
+            <td align="center"><a onmouseout='chgImg("download", "download")'
+                                  onmouseover='chgImg("download", "downloadb")'
+                                  href="http://jj2000.epfl.ch/jj_download/index.html"><img alt="Download" border="0"
+                                                                                           src="README_files/download"
+                                                                                           name="download"></a></td>
+        </tr>
+        <tr>
+            <td align="center"><a onmouseout='chgImg("faq", "faq")' onmouseover='chgImg("faq", "faqb")'
+                                  href="http://jj2000.epfl.ch/jj_faq/index.html"><img alt="faq" border="0"
+                                                                                      src="README_files/faq" name="faq"></a>
+            </td>
+        </tr>
+        <tr>
+            <td align="center"><a onmouseout='chgImg("links", "links")' onmouseover='chgImg("links", "linksb")'
+                                  href="http://jj2000.epfl.ch/jj_links/index.html"><img alt="Links" border="0"
+                                                                                        src="README_files/links"
+                                                                                        name="links"></a></td>
+        </tr>
+        <tr>
+            <td align="center"><a onmouseout='chgImg("contact", "contact")' onmouseover='chgImg("contact", "contactb")'
+                                  href="http://jj2000.epfl.ch/jj_contact/index.html"><img border="0" alt="contact"
+                                                                                          src="README_files/contact"
+                                                                                          name="contact"></a></td>
+        </tr>
+        <tr>
+            <td align="center"><a onmouseout='chgImg("copyright", "copyright")'
+                                  onmouseover='chgImg("copyright", "copyrightb")'
+                                  href="http://jj2000.epfl.ch/jj_copyright/index.html"><img border="0" alt="Copyright"
+                                                                                            src="README_files/copyright"
+                                                                                            name="copyright"></a></td>
+        </tr>
+        <tr>
+            <td align="center"><a onmouseout='chgImg("webmaster", "webmaster")'
+                                  onmouseover='chgImg("webmaster", "webmasterb")'
+                                  href="mailto:Raphael.Grosbois@epfl.ch"><img border="0" alt="Webmaster"
+                                                                              src="README_files/webmaster"
+                                                                              name="webmaster"></a></td>
+        </tr>
+        </tbody>
+    </table>
+
+    <p>&nbsp;</p></td>
+<td valign="center" align="center">
 
 
 <table>
-<tbody><tr><td>
+<tbody>
+<tr>
+<td>
 
 <pre>===============================================================================
                                  JJ2000
@@ -1081,34 +1133,49 @@ It supported the following:
 - Truncation at specified decoding rate
 </pre>
 
-</td></tr>
-</tbody></table>
+</td>
+</tr>
+</tbody>
+</table>
 
-  </td>
+</td>
 </tr>
 </tbody>
 
-<tfoot>      
-  <tr width="100%">
+<tfoot>
+<tr width="100%">
     <td bgcolor="#0000ff">&nbsp;</td>
-    <td height="100" align="justify"><table bgcolor="#ffffff" width="100%" cellspacing="0" border="0">
-  <tbody><tr>
-    <td width="10%">&nbsp;</td>
-    <td align="center" width="20%"><a href="http://www.crf.canon.fr/"><img border="0" alt="www.crf.canon.fr" height="40" width="160" src="README_files/canon160"></a></td>
-    <td width="10%">&nbsp;</td>
-    <td align="center" width="20%"><a href="http://ltswww.epfl.ch/"><img border="0" alt="ltswww.epfl.ch" height="71" width="160" src="README_files/epfl160"></a></td>
-    <td width="10%">&nbsp;</td>
-    <td align="center" width="20%"><a href="http://www.ericsson.com/"><img border="0" alt="www.ericsson.com" height="48" width="160" src="README_files/ericsson160"></a></td>
-    <td width="10%">&nbsp;</td>
-  </tr>
-</tbody></table>
+    <td height="100" align="justify">
+        <table bgcolor="#ffffff" width="100%" cellspacing="0" border="0">
+            <tbody>
+            <tr>
+                <td width="10%">&nbsp;</td>
+                <td align="center" width="20%"><a href="http://www.crf.canon.fr/"><img border="0" alt="www.crf.canon.fr"
+                                                                                       height="40" width="160"
+                                                                                       src="README_files/canon160"></a>
+                </td>
+                <td width="10%">&nbsp;</td>
+                <td align="center" width="20%"><a href="http://ltswww.epfl.ch/"><img border="0" alt="ltswww.epfl.ch"
+                                                                                     height="71" width="160"
+                                                                                     src="README_files/epfl160"></a>
+                </td>
+                <td width="10%">&nbsp;</td>
+                <td align="center" width="20%"><a href="http://www.ericsson.com/"><img border="0" alt="www.ericsson.com"
+                                                                                       height="48" width="160"
+                                                                                       src="README_files/ericsson160"></a>
+                </td>
+                <td width="10%">&nbsp;</td>
+            </tr>
+            </tbody>
+        </table>
 
-<p align="right"><font size="1">Last Modified: Friday, 02-Mar-2001 13:41:29 CET</font></p>
+        <p align="right"><font size="1">Last Modified: Friday, 02-Mar-2001 13:41:29 CET</font></p>
 
-</td>
-  </tr>
+    </td>
+</tr>
 </tfoot>
 
 </table>
 
-</body></html>
+</body>
+</html>

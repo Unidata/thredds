@@ -1,15 +1,3 @@
-/*
- * CVS identifier:
- *
- * $Id: Grib2JpegDecoder.java,v 1.0 2004/10/29 14:09:35 rkambic Exp $
- *
- * Class:                   Grib2JpegDecoder
- *
- * Description:             The decoder object
- *
- *
- *
- * */
 package ucar.jpeg.jj2000.j2k.decoder;
 
 import ucar.jpeg.jj2000.j2k.quantization.dequantizer.*;
@@ -29,11 +17,9 @@ import ucar.jpeg.colorspace.*;
 import ucar.jpeg.icc.*;
 
 import java.util.*;
-import java.net.*;
 import java.io.IOException;
 import java.io.EOFException;
 import java.io.ByteArrayInputStream;
-//import ucar.unidata.io.RandomAccessFile;
 import java.io.RandomAccessFile;
 
 /**
@@ -71,17 +57,6 @@ import java.io.RandomAccessFile;
  * tile-component. All the specifications are kept in modules extending
  * ModuleSpec and accessible through an instance of DecoderSpecs class.</p>
  *
- * @see BitstreamReaderAgent
- * @see EntropyDecoder
- * @see ROIDeScaler
- * @see Dequantizer
- * @see InverseWT
- * @see ImgDataConverter
- * @see InvCompTransf
- * @see ImgWriter
- * @see BlkImgDataSrcImageProducer
- * @see ModuleSpec
- * @see DecoderSpecs
  */
 public class Grib2JpegDecoder {
 
@@ -316,6 +291,11 @@ public class Grib2JpegDecoder {
     return pinfo;
   }
 
+  private boolean hasSignedProblem = false;
+  public boolean hasSignedProblem() {
+    return hasSignedProblem;
+  }
+
   /**
    * Runs the decoder. After completion the exit code is set, a non-zero
    * value indicates that an error ocurred.
@@ -344,7 +324,9 @@ public class Grib2JpegDecoder {
     BlkImgDataSrc color;
     int i;
     int depth[];
-    float rate;
+
+    int rate = pl.getIntParameter("rate");
+
     int nbytes;
 
     try {
@@ -613,7 +595,7 @@ public class Grib2JpegDecoder {
                   mrl + " (" + breader.getImgWidth(res) + "x" +
                   breader.getImgHeight(res) + ")");
         }
-        if (pl.getFloatParameter("rate") != -1) {
+        if (rate != -1) {
           System.out.println("Target rate = "
                   + breader.getTargetRate() + " bpp (" +
                   breader.getTargetNbytes() + " bytes)");
@@ -630,21 +612,18 @@ public class Grib2JpegDecoder {
         try {
           if (csMap != null) {
             isSigned = csMap.isOutputSigned(i);
-            imwriter[i] = new ImgWriterArray(decodedImage, i,
-                    csMap.isOutputSigned(i));
+            imwriter[i] = new ImgWriterArray(decodedImage, i, csMap.isOutputSigned(i));
             //System.out.println( "csMap!=null" );
           } else {
             isSigned = hd.isOriginalSigned(i);
-            imwriter[i] = new ImgWriterArray(decodedImage, i,
-                    hd.isOriginalSigned(i));
+            imwriter[i] = new ImgWriterArray(decodedImage, i, hd.isOriginalSigned(i));
             //System.out.println( "csMap==null" );
           }
         } catch (IOException e) {
           if (pl.getParameter("debug").equals("on")) {
             e.printStackTrace();
           } else {
-            error("Use '-debug' option for more " +
-                    "details", 2);
+            error("Use '-debug' option for more details", 2);
           }
           return;
         }
@@ -654,21 +633,15 @@ public class Grib2JpegDecoder {
           data = iwa.getGdata();
           // unSigned data processing here
           //System.out.println("[INFO]: isSigned = " + isSigned);
-          // new
           if (!isSigned) {
+            //float unSignIt = (float) java.lang.Math.pow((double) 2.0, fnb - 1); // LOOK WTF ?
             int nb = depth[i];
-            int levShift = 1 << (nb - 1);
+            int levShift = 1 << (nb - 1);      // check
+            if (nb != rate) hasSignedProblem = true;
+
             for (int j = 0; j < data.length; j++)
               data[j] += levShift;
           }
-          /* old
-            if (!isSigned) {
-            float unSignIt = (float) java.lang.Math.pow(
-                    (double) 2.0,
-                    (double) pl.getFloatParameter("rate") - 1);
-            for (int j = 0; j < data.length; j++)
-              data[j] += unSignIt;
-          } */
           packBytes = iwa.getPackBytes();
         } catch (IOException e) {
           if (pl.getParameter("debug").equals("on")) {
@@ -743,7 +716,7 @@ public class Grib2JpegDecoder {
     }
   } // end decode
 
-  public void decode(RandomAccessFile raf, int dataSize) {
+  /* public void decode(RandomAccessFile raf, int dataSize) {
     boolean verbose;
     int res; // resolution level to reconstruct
     RandomAccessIO in;
@@ -1153,7 +1126,7 @@ public class Grib2JpegDecoder {
       }
       return;
     }
-  } // end decode
+  } // end decode    */
 
   /**
    * Prints the error message 'msg' to standard err, prepending "ERROR" to
@@ -1315,7 +1288,6 @@ public class Grib2JpegDecoder {
    * is printed, respectively. If there is a default value for a parameter
    * it is also printed.
    *
-   * @param out   Where to print.
    * @param pinfo The parameter information to write.
    */
   private void printParamInfo(String pinfo[][]) {

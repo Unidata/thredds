@@ -35,7 +35,7 @@ package ucar.grib.grib2;
 
 import ucar.unidata.io.RandomAccessFile;
 
-import ucar.grid.GridIndex;
+import ucar.nc2.iosp.grid.GridIndex;
 import ucar.grib.*;
 import ucar.grib.grib1.Grib1GDSVariables;
 

@@ -43,7 +43,7 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import ucar.grib.grib2.Grib2WriteIndex;
 import ucar.grib.grib1.Grib1WriteIndex;
-import ucar.grid.GridIndex;
+import ucar.nc2.iosp.grid.GridIndex;
 import java.io.IOException;
 import java.io.File;
 

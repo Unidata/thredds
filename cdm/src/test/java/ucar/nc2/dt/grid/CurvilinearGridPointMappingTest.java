@@ -11,6 +11,7 @@ import ucar.nc2.TestAll;
 import ucar.nc2.Variable;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
+import ucar.nc2.time.CalendarDate;
 import ucar.unidata.geoloc.LatLonPoint;
 
 import java.io.IOException;
@@ -78,7 +79,7 @@ public class CurvilinearGridPointMappingTest
 
     GridDatatype hsGrid = gd.findGridDatatype( "hs" );
     GridCoordSystem coordSys = hsGrid.getCoordinateSystem();
-    Date date = coordSys.getTimeAxis1D().getTimeDate( 0 );
+    CalendarDate date = coordSys.getTimeAxis1D().getCalendarDate(0);
 
     int[] xy = coordSys.findXYindexFromLatLonBounded( lat, lon, null );
     assertEquals( i, xy[0] );

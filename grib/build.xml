@@ -2,24 +2,21 @@
 <project name="grib" default="build" basedir=".">
 
   <target name="init">
-    <property name="release.version" value="8.0"/>
-    <property name="release.version.minor" value="${release.version}.28"/>
+    <property name="release.version" value="4.3"/>
+    <property name="release.version.minor" value="${release.version}.1"/>
     <tstamp>
       <format property="buildtime" pattern="yyyy-MM-dd HH:mm:ss"/>
     </tstamp>
 
     <!-- Names -->
-    <property name="Name" value="Grib-Decoder-Java"/>
-    <property name="name" value="grib-decoder-java"/>
+    <property name="Name" value="CDM Grib library"/>
+    <property name="name" value="CDM-Grib-library"/>
     <property name="version" value="${release.version}"/>
     <property name="dist.name" value="${name}_${release.version.minor}"/>
     <property name="year" value="2010"/>
     <echo message="----------- ${Name} ${version} [${year}] ------------"/>
 
     <property name="jar.filename" value="grib-${version}.jar"/>
-    <!--
-         <property name="jar.filename" value="grib.jar"/>
-   // -->
 
     <!-- Compile options -->
     <property name="debug" value="on"/>
@@ -31,20 +28,7 @@
     <property name="root.dir" location="${base}"/>
 
     <property name="src.dir" value="./src/main/java"/>
-    <condition property="src.raf" value="../common/src/main/java">
-      <and>
-        <available file="../common/src/main/java" type="dir"/>
-      </and>
-    </condition>
-
-    <condition property="src.raf" value="./src/ucar/unidata/io">
-      <and>
-        <available file="./src/ucar/unidata/io" type="dir"/>
-      </and>
-    </condition>
-
-
-    <property name="lib.dir" value="./lib"/>
+    <property name="lib.dir" location="${root.dir}/../lib"/>
     <property name="test.dir" value="./test"/>
     <property name="test.reports.dir" value="./test"/>
     <property name="text.dir" value="./text"/>
@@ -61,23 +45,34 @@
     <property name="javadoc.dir" location="${dist.dir}/javadoc"/>
     <property name="build.javadoc.dir" location="${build.dir}/javadoc"/>
 
-    <property name="loggingAPI.jar" value="slf4j-api-1.5.6.jar"/>
-    <property name="logging.jar" value="slf4j-jdk14-1.5.6.jar"/>
+    <property name="cdm.jar" value="netcdf-4.3.jar"/>
+    <property name="jdom.jar" value="jdom.jar"/>
+    <property name="joda.jar" value="joda-time-2.0.jar"/>
+    <property name="loggingAPI.jar" value="slf4j-api-1.6.1.jar"/>
+    <property name="protobuf.jar" value="protobuf-java-2.4.0a.jar"/>
 
     <!-- source -->
     <path id="sourcepath">
       <pathelement location="${src.dir}"/>
-      <pathelement location="${src.raf}"/>
     </path>
+
+    <patternset id="sources-grib">
+      <include name="thredds/**/*.java"/>
+      <include name="ucar/**/*.java"/>
+    </patternset>
+
     <!-- Libraries needed for compile. -->
-    <fileset id="compile.libraries" dir=".">
-      <include name="${lib.dir}/${loggingAPI.jar}"/>
-      <include name="${lib.dir}/junit-4.5.jar"/>
+    <fileset id="compile.libraries" dir="${lib.dir}">
+      <include name="release/${cdm.jar}"/>
+      <include name="external/${jdom.jar}"/>
+      <include name="external/${joda.jar}"/>
+      <include name="external/${protobuf.jar}"/>
+      <include name="external/${loggingAPI.jar}"/>
     </fileset>
+
     <path id="compile.classpath">
       <fileset refid="compile.libraries"/>
     </path>
-
 
   </target>
 
@@ -88,6 +83,7 @@
     <mkdir dir="${build.dir}"/>
     <mkdir dir="${build.dest.dir}"/>
     <mkdir dir="${gribtab.dst}"/>
+
     <!-- copy grib table files -->
     <copy todir="${gribtab.dst}">
       <fileset dir="${gribtab.src}">
@@ -101,16 +97,32 @@
 
   <!-- Compile -->
   <target name="compile" depends="prepare-compile">
-    <javac destdir="${build.dest.dir}"
-           debug="${debug}" optimize="${optimize}"
-           classpath="${classpath}">
-      <src path="${src.raf}"/>
+    <javac destdir="${build.dest.dir}" debug="${debug}" includeAntRuntime="false">
       <src path="${src.dir}"/>
-      <include name="ucar/unidata/io/*.java"/>
-      <include name="ucar/grib/**/*.java"/>
-      <include name="ucar/grid/**/*.java"/>
-      <include name="ucar/jpeg/**/*.java"/>
+      <patternset refid="sources-grib"/>
+      <classpath refid="compile.classpath"/>
     </javac>
+  </target>
+
+  <target name="thredds" depends="compile" description="make and release thredds jar">
+    <echo message="basedir=${build.dest.dir}"/>
+
+    <jar jarfile="${build.dir}/${jar.filename}" index="true">
+      <fileset dir="${build.dest.dir}"/>
+      <fileset dir="${build.dir}" includes="README"/>
+      <fileset dir="${build.dir}" includes="CHANGES"/>
+
+      <manifest>
+        <attribute name="Built-By" value="${user.name}"/>
+        <attribute name="Built-On" value="${buildtime}"/>
+        <attribute name="Implementation-Title" value="${Name}"/>
+        <attribute name="Implementation-Version" value="${release.version.minor}"/>
+        <attribute name="Implementation-Vendor" value="UCAR/Unidata"/>
+      </manifest>
+
+    </jar>
+
+    <copy file="${build.dir}/${jar.filename}" todir="../lib/release/"/>
   </target>
 
   <!-- Make jar file -->
@@ -181,16 +193,16 @@
   <target name="unit-test-grib" description="run grib unit tests" depends="test">
   -->
 
-   <target name="testall" description="run grib unit tests" depends="test">
+  <target name="testall" description="run grib unit tests" depends="test">
     <antcall target="unit-test-base">
-      <param name="unit.test.name" value="unit-test-grib" />
-      <param name="unit.test" value="ucar.grib.TestAll" />
+      <param name="unit.test.name" value="unit-test-grib"/>
+      <param name="unit.test" value="ucar.grib.TestAll"/>
     </antcall>
   </target>
 
   <target name="unit-test-base" description="run junit tests">
-    <property name="junit.temp.dir" value="${build.dir}/junit/temp" />
-    <mkdir dir="${junit.temp.dir}" />
+    <property name="junit.temp.dir" value="${build.dir}/junit/temp"/>
+    <mkdir dir="${junit.temp.dir}"/>
 
     <mkdir dir="${test.reports.dir}/${unit.test.name}"/>
     <junit printsummary="false" errorProperty="test.failed" failureProperty="test.failed"
@@ -216,24 +228,24 @@
     <!-- create temporary file indicating these tests failed -->
     <!-- #Test case bypass trick -->
     <echo message="last build failed tests" file="${test.reports.dir}/${unit.test.name}/failed"/>
-    <fail if="test.failed">FAILED! Unit tests failed.  Look at ${test.reports.dir}/${unit.test.name}/index.html for details.</fail>
+    <fail if="test.failed">FAILED! Unit tests failed. Look at ${test.reports.dir}/${unit.test.name}/index.html for
+      details.
+    </fail>
     <!-- Remove test failed file, as these tests succeeded -->
     <delete file="${test.reports.dir}/${unit.test.name}/failed"/>
-    <echo message="SUCCESS! Unit tests succeeded.  Look at ${test.reports.dir}/${unit.test.name}/index.html for details."/>
+    <echo
+        message="SUCCESS! Unit tests succeeded.  Look at ${test.reports.dir}/${unit.test.name}/index.html for details."/>
   </target>
 
 
   <!-- Build system -->
   <target name="build" depends="jar"/>
-  
-  <target name="thredds" depends="noRaf" description="make and release thredds jar">
-    <copy file="${build.dir}/${jar.filename}" todir="../lib/release/" />
-  </target>
 
   <!-- Make javadoc -->
   <target name="javadoc" depends="init">
     <mkdir dir="${javadoc.dir}"/>
-    <javadoc Doctitle="GRIB-Decoder-Java ${release.version} API" Use="true" Windowtitle="GRIB-Decoder-Java ${release.version} API"
+    <javadoc Doctitle="GRIB-Decoder-Java ${release.version} API" Use="true"
+             Windowtitle="GRIB-Decoder-Java ${release.version} API"
              maxmemory="128m" sourcepathref="sourcepath" destdir="${javadoc.dir}" public="true" source="1.5">
       <classpath refid="compile.classpath"/>
       <package name="ucar.jpeg"/>

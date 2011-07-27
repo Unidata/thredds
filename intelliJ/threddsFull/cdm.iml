@@ -25,6 +25,7 @@
     <orderEntry type="module" module-name="opendap" exported="" />
     <orderEntry type="module" module-name="grib" exported="" />
     <orderEntry type="module" module-name="bufr" exported="" />
+    <orderEntry type="module" module-name="time" />
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>

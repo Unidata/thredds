@@ -39,9 +39,9 @@ import ucar.grib.grib1.GribPDSParamTable;
 import ucar.grib.grib2.Grib2Pds;
 import ucar.grib.grib2.Grib2Tables;
 import ucar.grib.grib2.ParameterTable;
-import ucar.grid.GridParameter;
-import ucar.grid.GridRecord;
-import ucar.grid.GridTableLookup;
+import ucar.nc2.iosp.grid.GridParameter;
+import ucar.nc2.iosp.grid.GridRecord;
+import ucar.nc2.iosp.grid.GridTableLookup;
 
 import java.util.Date;
 import java.util.Formatter;
@@ -553,6 +553,7 @@ public final class GribGridRecord implements GridRecord {
         "param=" + getParameterDescription() +
         ", levelType1=" + pds.getLevelType1() +
         ", levelValue1=" + pds.getLevelValue1() +
+        ", referenceTime=" + pds.getReferenceTime() +
         ", forecastTime=" + pds.getForecastTime() +
         ", pdsOffset=" + pdsOffset +
         '}';

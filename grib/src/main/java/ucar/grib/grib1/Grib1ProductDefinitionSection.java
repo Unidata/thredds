@@ -36,7 +36,7 @@
  *
  *   Parameters use external tables, so program does not have to be modified to
  *      add support for new tables.
- *   @see  GridParameter , GribPDSParamTable, and GribPDSLevel classes.
+ *   @see  ucar.nc2.iosp.grid.GridParameter , GribPDSParamTable, and GribPDSLevel classes.
  */
 
 package ucar.grib.grib1;
@@ -44,8 +44,8 @@ package ucar.grib.grib1;
 
 import ucar.grib.*;
 
+import ucar.nc2.iosp.grid.GridParameter;
 import ucar.unidata.io.RandomAccessFile;
-import ucar.grid.GridParameter;
 
 import java.io.IOException;
 import java.io.PrintStream;

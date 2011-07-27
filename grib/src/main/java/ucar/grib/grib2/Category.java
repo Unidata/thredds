@@ -43,7 +43,7 @@
 package ucar.grib.grib2;
 
 
-import ucar.grid.GridParameter;
+import ucar.nc2.iosp.grid.GridParameter;
 
 import java.util.HashMap;
 

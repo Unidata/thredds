@@ -50,7 +50,7 @@ import java.util.zip.DeflaterOutputStream;
 import java.net.URI;
 
 import opendap.servlet.*;
-import ucar.unidata.util.EscapeStrings;
+import ucar.nc2.util.net.EscapeStrings;
 import thredds.servlet.*;
 import thredds.servlet.filter.CookieFilter;
 import ucar.ma2.DataType;

@@ -319,9 +319,9 @@ public class FeatureDatasetPointXML {
       }
     }
 
-    /* public String getName() {
+   public String getFullName() {
       return name;
-    } */
+    }
 
     @Override
     public String getShortName() {

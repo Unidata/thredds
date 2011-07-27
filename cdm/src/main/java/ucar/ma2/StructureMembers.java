@@ -239,6 +239,10 @@ public class StructureMembers {
       return NetcdfFile.escapeName(StructureMembers.this.getName()) + "." +  NetcdfFile.escapeName(name);
     }
 
+    public String getFullName() {
+      return StructureMembers.this.getName() + "." +  name;
+    }
+
     /**
      * Get the units string, if any.
      *

@@ -40,8 +40,8 @@ package ucar.grib.grib1;
 import ucar.grib.*;
 
 // import statements
+import ucar.nc2.iosp.grid.GridParameter;
 import ucar.unidata.io.RandomAccessFile;
-import ucar.grid.GridParameter;
 
 import java.io.BufferedOutputStream;  // Input/Output functions
 import java.io.FileNotFoundException;

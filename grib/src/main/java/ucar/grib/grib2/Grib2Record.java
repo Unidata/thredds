@@ -31,8 +31,6 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-// $Id: Grib2Record.java,v 1.14 2005/12/12 18:22:40 rkambic Exp $
-
 /**
  * Grib2Record.java.
  * @author Robb Kambic

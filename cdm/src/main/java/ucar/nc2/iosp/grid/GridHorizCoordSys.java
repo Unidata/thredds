@@ -135,8 +135,7 @@ public class GridHorizCoordSys {
     this.lookup = lookup;
     this.g = g;
 
-    this.grid_name = AbstractIOServiceProvider.createValidNetcdfObjectName(
-        lookup.getGridName(gds));
+    this.grid_name = lookup.getGridName(gds);
     this.shape_name = lookup.getShapeName(gds);
 
     isLatLon = lookup.isLatLon(gds);
@@ -621,7 +620,7 @@ public class GridHorizCoordSys {
     String pre = getGDSprefix();
 
     for (String key : keyList) {
-      String name = AbstractIOServiceProvider.createValidNetcdfObjectName(pre + "_param_" + key);
+      String name = pre + "_param_" + key;
 
       String vals = gds.getParam(key);
       try {

@@ -32,7 +32,7 @@
  */
 package ucar.nc2.util;
 
-import ucar.unidata.util.EscapeStrings;
+import ucar.nc2.util.net.EscapeStrings;
 import ucar.unidata.util.StringUtil;
 
 import java.io.File;

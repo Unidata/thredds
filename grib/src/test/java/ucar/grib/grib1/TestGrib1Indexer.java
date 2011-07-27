@@ -34,7 +34,7 @@ package ucar.grib.grib1;
 
 import junit.framework.*;
 import ucar.grib.*;
-import ucar.grid.GridIndex;
+import ucar.nc2.iosp.grid.GridIndex;
 
 import java.io.IOException;
 import java.io.File;

@@ -33,7 +33,7 @@
 
 package thredds.logs;
 
-import ucar.unidata.util.EscapeStrings;
+import ucar.nc2.util.net.EscapeStrings;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

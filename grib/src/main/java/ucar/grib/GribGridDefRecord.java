@@ -40,11 +40,13 @@
 
 package ucar.grib;
 
-import ucar.grid.GridDefRecord;
+import ucar.nc2.iosp.grid.GridDefRecord;
 
 public class GribGridDefRecord extends GridDefRecord {
 
   private static int groupNumber = 0;
+
+  private GribGDSVariablesIF gdsv;
 
   public GribGridDefRecord() {
     super();
@@ -52,8 +54,9 @@ public class GribGridDefRecord extends GridDefRecord {
   }
 
   public GribGridDefRecord( GribGDSVariablesIF gdsv ) {
-    super( gdsv );
+    super( );
     groupNumber = 0;
+    this.gdsv = gdsv;
   }
 
   public GribGridDefRecord( String paramsValues ) {
@@ -65,5 +68,13 @@ public class GribGridDefRecord extends GridDefRecord {
     String group = "proj"+ Integer.toString( groupNumber );
     groupNumber++;
     return group;
+  }
+
+  /*
+   * make available all GDS variables
+   * @return GribGDSVariablesIF
+   */
+  public GribGDSVariablesIF getGdsv() {
+    return gdsv;
   }
 }

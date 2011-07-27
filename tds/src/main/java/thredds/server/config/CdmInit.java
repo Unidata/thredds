@@ -96,7 +96,7 @@ public class CdmInit {
 
     try {
       thredds.inventory.bdb.MetadataManager.setCacheDirectory(fcCache, maxSizeBytes, jvmPercent);
-      thredds.inventory.DatasetCollectionManager.enableMetadataManager();
+      thredds.inventory.CollectionManagerAbstract.enableMetadataManager();
       startupLog.info("CdmInit: FeatureCollection.cacheDirectory= "+fcCache);
     } catch (Exception e) {
       startupLog.error("CdmInit: Failed to open FeatureCollection.cacheDirectory= "+fcCache, e);

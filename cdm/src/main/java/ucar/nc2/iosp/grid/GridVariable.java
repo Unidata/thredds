@@ -398,7 +398,7 @@ public class GridVariable {
     this.ntimes = tcs.getNTimes();
     if (vname == null) {
       useName = StringUtil.replace(useName, ' ', "_");
-      this.vname = AbstractIOServiceProvider.createValidNetcdfObjectName(useName);
+      this.vname = useName;
     }
 
     Variable v = new Variable(ncfile, g, null, vname);

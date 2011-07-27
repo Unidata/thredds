@@ -39,6 +39,7 @@ package ucar.grib.grib2;
 
 import org.w3c.dom.*;
 
+import java.net.URL;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.ArrayList;
@@ -49,7 +50,7 @@ import java.io.BufferedReader;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import ucar.grid.GridParameter;
+import ucar.nc2.iosp.grid.GridParameter;
 
 /**
  * Performs operations related to loading parameter tables stored in files.
@@ -83,6 +84,7 @@ public final class ParameterTable {
     try {
       parser = factory.newDocumentBuilder();
       ClassLoader cl = ParameterTable.class.getClassLoader();
+      URL test = cl.getResource( "resources/grib/tables/grib2StdQuantities.xml");
       InputStream is = cl.getResourceAsStream( "resources/grib/tables/grib2StdQuantities.xml");
 
       Document doc = parser.parse(is);

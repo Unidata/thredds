@@ -31,8 +31,6 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-// $Id: Grib1GridDefinitionSection.java,v 1.28 2005/12/08 21:00:05 rkambic Exp $
-
 /*
  * Grib1GridDefinitionSection.java  1.0  10/01/04
  * @author Robb Kambic
@@ -1020,9 +1018,9 @@ public class Grib1GridDefinitionSection {
   }
 
   /**
-   * GDS as Grib2GDSVariables
+   * GDS as Grib1GDSVariables
    *
-   * @return Grib2GDSVariables GDS vars
+   * @return Grib1GDSVariables GDS vars
    */
   public Grib1GDSVariables getGdsVars() {
     return gdsVars;

@@ -1,0 +1,371 @@
+/*
+ * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
+ *
+ * Portions of this software were developed by the Unidata Program at the
+ * University Corporation for Atmospheric Research.
+ *
+ * Access and use of this software shall impose the following obligations
+ * and understandings on the user. The user is granted the right, without
+ * any fee or cost, to use, copy, modify, alter, enhance and distribute
+ * this software, and any derivative works thereof, and its supporting
+ * documentation for any purpose whatsoever, provided that this entire
+ * notice appears in all copies of the software, derivative works and
+ * supporting documentation.  Further, UCAR requests that the user credit
+ * UCAR/Unidata in any publications that result from the use of this
+ * software or in any product that includes this software. The names UCAR
+ * and/or Unidata, however, may not be used in any advertising or publicity
+ * to endorse or promote any products or commercial entity unless specific
+ * written permission is obtained from UCAR/Unidata. The user also
+ * understands that UCAR/Unidata is not obligated to provide the user with
+ * any support, consulting, training or assistance of any kind with regard
+ * to the use, operation and performance of this software nor to provide
+ * the user with any updates, revisions, new versions or "bug fixes."
+ *
+ * THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+ * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+ * INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+ * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ */
+package ucar.nc2.wmo;
+
+import org.jdom.Element;
+import org.jdom.JDOMException;
+import org.jdom.input.SAXBuilder;
+import ucar.grib.GribNumbers;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
+
+/**
+ * Read and process WMO GRIB templates from standard XML.
+ *
+ * @author caron
+ * @since Jul 31, 2010
+ */
+
+public class GribTemplateWmo implements Comparable<GribTemplateWmo> {
+
+  public enum Version {
+    GRIB2_5_2_0, GRIB2_6_0_1;
+
+    String getResourceName() {
+      return "/resources/grib/wmo/" + this.name() + "_template_E.xml";
+    }
+
+    String[] getElemNames() {
+      if (this == GRIB2_5_2_0) {
+        return new String[]{"ForExport_Templates_E", "TemplateName_E", "Nindicator_E"};
+
+      } else if (this == GRIB2_6_0_1) {
+        return new String[]{"Exp_template_E", "Title_E", "Note_E"};
+      }
+      return null;
+    }
+  }
+
+  static public class GribTemplates {
+    public List<GribTemplateWmo> list;
+    public Map<String, GribTemplateWmo> map; // key is "disc.cat"
+
+    public GribTemplates(List<GribTemplateWmo> list, Map<String, GribTemplateWmo> map) {
+      this.list = list;
+      this.map = map;
+    }
+  }
+
+  /*
+
+ 5.2
+
+ <ForExport_Templates_E>
+   <No>1037</No>
+   <TemplateName_E>Product definition template 4.47 - individual ensemble forecast, control and perturbed, at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval for aerosol</TemplateName_E>
+   <OctetNo>11</OctetNo>
+   <Contents_E>Parameter number</Contents_E>
+   <Nindicator_E>(see Code table 4.2)</Nindicator_E>
+   <Status>Validation</Status>
+ </ForExport_Templates_E>
+
+ 6.1
+
+ <Exp_template_E>
+   <No>903</No>
+   <Title_E>Product definition template 4.43 - individual ensemble forecast, control and perturbed, at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval for atmospheric chemical constituents</Title_E>
+   <OctetNo>20</OctetNo>
+   <Contents_E>Indicator of unit of time range</Contents_E>
+   <Note_E>(see Code table 4.4)#GRIB2_6_0_1_codeflag.doc#G2_CF44</Note_E>
+   <Status>Operational</Status>
+ </Exp_template_E>
+  */
+
+  static private GribTemplates readXml(Version version) throws IOException {
+    Class c = GribCodeTableWmo.class;
+    InputStream ios = null;
+
+    try {
+      ios = c.getResourceAsStream(version.getResourceName());
+      if (ios == null) {
+        System.out.printf("cant open %s%n", version.getResourceName());
+        return null;
+      }
+
+      org.jdom.Document doc;
+      try {
+        SAXBuilder builder = new SAXBuilder();
+        doc = builder.build(ios);
+      } catch (JDOMException e) {
+        throw new IOException(e.getMessage());
+      }
+
+      Map<String, GribTemplateWmo> map = new HashMap<String, GribTemplateWmo>();
+      String[] elems = version.getElemNames();
+
+      Element root = doc.getRootElement();
+      List<Element> featList = root.getChildren(elems[0]); // 0 = main element
+      for (Element elem : featList) {
+        String desc = elem.getChildTextNormalize(elems[1]); // 1 = title
+        String octet = elem.getChildTextNormalize("OctetNo");
+        String content = elem.getChildTextNormalize("Contents_E");
+        String status = elem.getChildTextNormalize("Status");
+        String note = elem.getChildTextNormalize(elems[2]); // 2 == note
+
+        GribTemplateWmo t = map.get(desc);
+        if (t == null) {
+          t = new GribTemplateWmo(desc);
+          map.put(desc, t);
+        }
+        t.add(octet, content, status, note);
+      }
+      ios.close();
+
+      List<GribTemplateWmo> tlist = new ArrayList<GribTemplateWmo>(map.values());
+      Collections.sort(tlist);
+      for (GribTemplateWmo t : tlist) {
+        if (t.m1 == 3) {
+          t.add(1, 4, "GDS length");
+          t.add(5, 1, "Section");
+          t.add(6, 1, "Source of Grid Definition (see code table 3.0)");
+          t.add(7, 4, "Number of data points");
+          t.add(11, 1, "Number of octects for optional list of numbers");
+          t.add(12, 1, "Interpretation of list of numbers");
+          t.add(13, 2, "Grid Definition Template Number");
+
+        } else if (t.m1 == 4) {
+          t.add(1, 4, "PDS length");
+          t.add(5, 1, "Section");
+          t.add(6, 2, "Number of coordinates values after Template");
+          t.add(8, 2, "Product Definition Template Number");
+        }
+        Collections.sort(t.flds);
+      }
+
+      Map<String, GribTemplateWmo> map2 = new HashMap<String, GribTemplateWmo>(100);
+      for (GribTemplateWmo t : tlist) {
+        map2.put(t.m1 + "." + t.m2, t);
+      }
+
+      return new GribTemplates(tlist, map2);
+
+    } finally {
+      if (ios != null)
+        ios.close();
+    }
+  }
+
+
+  static private final Map<String, String> convertMap = new HashMap<String, String>();
+  static private Map<String, GribCodeTableWmo> gribCodes;
+
+  static {
+    // gds
+    convertMap.put("Source of Grid Definition (see code table 3.0)", "3.0");
+    convertMap.put("Shape of the Earth", "3.2");
+    convertMap.put("Interpretation of list of numbers", "3.11");
+
+    // pds
+    convertMap.put("Type of generating process", "4.3");
+    convertMap.put("Indicator of unit of time range", "4.4");
+    convertMap.put("Indicator of unit of time for time range over which statistical processing is done", "4.4");
+    convertMap.put("Indicator of unit of time for the increment between the successive fields used", "4.4");
+    convertMap.put("Type of first fixed surface", "4.5");
+    convertMap.put("Type of second fixed surface", "4.5");
+    convertMap.put("Type of ensemble forecast", "4.6");
+    convertMap.put("Derived forecast", "4.7");
+    convertMap.put("Probability type", "4.9");
+    convertMap.put("Statistical process used to calculate the processed field from the field at each time increment during the time range", "4.10");
+    convertMap.put("Type of time increment between successive fields used in the statistical processing", "4.11");
+  }
+
+  public static GribTemplates getWmoStandard() throws IOException {
+    return readXml(Version.GRIB2_6_0_1);
+  }
+
+  ///////////////////////////////////////
+
+
+  public String name, desc;
+  public int m1, m2;
+  public List<Field> flds = new ArrayList<Field>();
+
+  private GribTemplateWmo(String desc) {
+    this.desc = desc;
+
+    String[] slist = desc.split(" ");
+    for (int i = 0; i < slist.length; i++) {
+      if (slist[i].equalsIgnoreCase("template")) {
+        name = slist[i + 1];
+        String[] slist2 = name.split("\\.");
+        if (slist2.length == 2) {
+          m1 = Integer.parseInt(slist2[0]);
+          m2 = Integer.parseInt(slist2[1]);
+        } else
+          System.out.println("HEY bad= %s%n" + name);
+        break;
+      }
+    }
+  }
+
+  void add(String octet, String content, String status, String note) {
+    flds.add(new Field(octet, content, status, note));
+  }
+
+  void add(int start, int nbytes, String content) {
+    flds.add(new Field(start, nbytes, content));
+  }
+
+  @Override
+  public int compareTo(GribTemplateWmo o) {
+    if (m1 == o.m1) return m2 - o.m2;
+    else return m1 - o.m1;
+  }
+
+  public class Field implements Comparable<Field> {
+    public String octet, content, status, note;
+    public int start, nbytes;
+
+    Field(String octet, String content, String status, String note) {
+      this.octet = octet;
+      this.content = content;
+      this.status = status;
+      this.note = note;
+
+      try {
+        int pos = octet.indexOf('-');
+        if (pos > 0) {
+          start = Integer.parseInt(octet.substring(0, pos));
+          String stops = octet.substring(pos + 1);
+          int stop = -1;
+          try {
+            stop = Integer.parseInt(stops);
+            nbytes = stop - start + 1;
+          } catch (Exception e) {
+          }
+        } else {
+          start = Integer.parseInt(octet);
+          nbytes = 1;
+        }
+      } catch (Exception e) {
+        start = -1;
+        nbytes = 0;
+      }
+    }
+
+    Field(int start, int nbytes, String content) {
+      this.start = start;
+      this.nbytes = nbytes;
+      this.content = content;
+      this.octet = start + "-" + (start + nbytes - 1);
+    }
+
+    @Override
+    public int compareTo(Field o) {
+      return start - o.start;
+    }
+
+    int value(byte[] pds) {
+      switch (nbytes) {
+        case 1:
+          return get(pds, start);
+        case 2:
+          return GribNumbers.int2(get(pds, start), get(pds, start + 1));
+        case 4:
+          return GribNumbers.int4(get(pds, start), get(pds, start + 1), get(pds, start + 2), get(pds, start + 3));
+        default:
+          return -9999;
+      }
+    }
+
+    int get(byte[] pds, int offset) {
+      return pds[offset - 1] & 0xff;
+    }
+  }
+
+  public void showInfo(byte[] raw, Formatter f) {
+    f.format("%n(%s) %s %n", name, desc);
+    for (Field fld : flds) {
+      if (fld.start < 0) continue;
+
+      String info = convertMap.get(fld.content);
+      if (info == null)
+        f.format("%3d: %90s == %d %n", fld.start, fld.content, fld.value(raw));
+      else {
+        String desc = convert(info, fld.value(raw));
+        if (desc == null)
+          f.format("%3d: %90s == %d (%s) %n", fld.start, fld.content, fld.value(raw), convert(info, fld.value(raw)));
+        else
+          f.format("%3d: %90s == %d (table %s: %s) %n", fld.start, fld.content, fld.value(raw), info, desc);
+      }
+    }
+  }
+
+  private String convert(String table, int value) {
+    if (gribCodes == null) {
+      try {
+        gribCodes = GribCodeTableWmo.getWmoStandard().map;
+      } catch (IOException e) {
+        return "Read GridCodes failed";
+      }
+    }
+
+    GribCodeTableWmo gct = gribCodes.get(table);
+    if (gct == null) return table + " not found";
+    GribCodeTableWmo.TableEntry entry = gct.get(value);
+    if (entry != null) return entry.meaning;
+    return "Table " + table + " code " + value + " not found";
+  }
+
+  public static void main(String arg[]) throws IOException {
+    List<GribTemplateWmo> tlist = readXml(Version.GRIB2_6_0_1).list;
+
+    for (GribTemplateWmo t : tlist) {
+      System.out.printf("%n(%s) %s %n", t.name, t.desc);
+      for (GribTemplateWmo.Field f : t.flds) {
+        System.out.printf(" (%d,%d) %10s : %s %n", f.start, f.nbytes, f.octet, f.content);
+      }
+    }
+
+    for (GribTemplateWmo t : tlist) {
+      System.out.printf("%n(%s) %s %n", t.name, t.desc);
+      int start = -1;
+      int next = 0;
+      for (GribTemplateWmo.Field f : t.flds) {
+        if (f.start < 0) continue;
+
+        if (start < 0) {
+          start = f.start;
+          next = start + f.nbytes;
+        } else {
+          if (f.start != next) System.out.printf(" missing %d to %d %n", next, start);
+          next = f.start + f.nbytes;
+        }
+      }
+      System.out.printf(" range %d-%d %n", start, next);
+    }
+
+  }
+}

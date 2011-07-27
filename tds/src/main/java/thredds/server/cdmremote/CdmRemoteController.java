@@ -32,7 +32,7 @@
 
 package thredds.server.cdmremote;
 
-import ucar.unidata.util.EscapeStrings;
+import ucar.nc2.util.net.EscapeStrings;
 import org.slf4j.Logger;
 import org.springframework.web.servlet.mvc.AbstractCommandController;
 import org.springframework.web.servlet.ModelAndView;

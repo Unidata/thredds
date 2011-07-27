@@ -31,8 +31,6 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-// $Id: Grib2ProductDefinitionSection.java,v 1.25 2006/08/18 20:22:10 rkambic Exp $
-
 /**
  * Grib2ProductDefinitionSection.java  1.1  08/29/2003.
  * @author Robb Kambic

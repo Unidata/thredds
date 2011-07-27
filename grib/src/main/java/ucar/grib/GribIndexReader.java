@@ -39,8 +39,8 @@
 package ucar.grib;
 
 import ucar.grib.grib1.Grib1Pds;
-import ucar.grid.GridIndex;
-import ucar.grid.GridDefRecord;
+import ucar.nc2.iosp.grid.GridIndex;
+import ucar.nc2.iosp.grid.GridDefRecord;
 import ucar.grib.grib2.Grib2GDSVariables;
 import ucar.grib.grib2.Grib2Tables;
 import ucar.grib.grib1.Grib1GDSVariables;

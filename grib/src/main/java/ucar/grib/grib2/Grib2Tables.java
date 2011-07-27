@@ -38,7 +38,7 @@
 
 package ucar.grib.grib2;
 
-import ucar.grid.GridTableLookup;
+import ucar.nc2.iosp.grid.GridTableLookup;
 
 /**
  * Class contains most of the hard coded tables for Grib2. Tables extracted from PDS
@@ -1150,13 +1150,6 @@ public class Grib2Tables {
   } */
 
   // GDS static Tables
-
-  /**
-   * enum for componet_flag  for both Grib2 and Grib1
-   *
-   */
-   public static enum VectorComponentFlag
-     {  easterlyNortherlyRelative, gridRelative   };
 
   /**
    * Code Table 4.9:	Probability Type

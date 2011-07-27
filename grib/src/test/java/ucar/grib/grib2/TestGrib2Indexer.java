@@ -33,7 +33,7 @@
 package ucar.grib.grib2;
 
 import junit.framework.*;
-import ucar.grid.GridIndex;
+import ucar.nc2.iosp.grid.GridIndex;
 import ucar.grib.GribIndexReader;
 import ucar.grib.TestAll;
 import ucar.grib.GribIndexName;

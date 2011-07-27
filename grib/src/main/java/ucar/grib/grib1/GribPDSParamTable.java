@@ -35,7 +35,7 @@ package ucar.grib.grib1;
 
 import ucar.grib.GribResourceReader;
 import ucar.grib.NotSupportedException;
-import ucar.grid.GridParameter;
+import ucar.nc2.iosp.grid.GridParameter;
 
 import java.io.*;
 

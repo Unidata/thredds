@@ -32,7 +32,7 @@
  */
 package ucar.nc2;
 
-import ucar.unidata.util.EscapeStrings;
+import ucar.nc2.util.net.EscapeStrings;
 import ucar.ma2.*;
 import ucar.unidata.io.UncompressInputStream;
 import ucar.unidata.io.InMemoryRandomAccessFile;

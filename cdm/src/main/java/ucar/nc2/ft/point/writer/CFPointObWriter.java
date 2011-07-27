@@ -117,7 +117,7 @@ public class CFPointObWriter {
       this.pov = pov;
     }
 
-    public String getName() {
+    public String getFullName() {
       return pov.getName();
     }
 

@@ -31,9 +31,6 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-// $Id: Grib2IndicatorSection.java,v 1.13 2005/12/05 19:24:21 rkambic Exp $
-
-
 package ucar.grib.grib2;
 
 

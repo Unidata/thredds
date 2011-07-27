@@ -41,6 +41,7 @@ package ucar.grib.grib2;
 import net.jcip.annotations.Immutable;
 import ucar.grib.GribNumbers;
 import ucar.grib.GribPds;
+import ucar.nc2.time.CalendarDate;
 
 import java.io.IOException;
 import java.util.Calendar;
@@ -162,7 +163,6 @@ abstract public class Grib2Pds extends GribPds {
   }
 
   // given reference and forecast date, calculate forecastTime in units of timeUnit
-
   static public int makeForecastTime(long refTime, long foreDate, int timeUnit) {
 
     double intv = ((foreDate - refTime) / 1000); // secs
@@ -190,6 +190,7 @@ abstract public class Grib2Pds extends GribPds {
     throw new UnsupportedOperationException("timeUnit = "+timeUnit);
   }
 
+
   ////////////////////////
 
   protected final int template; // product definition template
@@ -202,7 +203,6 @@ abstract public class Grib2Pds extends GribPds {
    *
    * @param input   PDS
    * @param refTime reference time in msecs
-   * @param cal     helper for creating Dates
    * @throws java.io.IOException if raf contains no valid GRIB file
    */
   protected Grib2Pds(byte[] input, long refTime, Calendar cal) throws IOException {

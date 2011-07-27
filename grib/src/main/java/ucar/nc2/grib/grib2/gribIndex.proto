@@ -1,0 +1,59 @@
+package gribIndex;
+
+// Grib Index version 9 (gbx9)
+
+option java_package = "ucar.nc2.grib.grib2";
+option java_outer_classname = "GribIndexProto";
+
+message GribIdSection {
+  required uint32 center_id = 1;
+  required uint32 subcenter_id = 2;
+  required uint32 master_table_version = 3;
+  required uint32 local_table_version = 4;
+  required uint32 significanceOfRT = 5;
+  repeated uint32 refDate = 6 [packed=true]; // year, month, day, hour, minute, second;
+  required uint32 productionStatus = 7;
+  required uint32 processedDataType = 8;
+}
+
+message GribGdsSection {
+  required bytes gds = 2;
+}
+
+message Grib2Record {
+  required bytes header = 1;
+
+  // indicator section
+  optional uint64 gribMessageStart = 15;
+  required uint64 gribMessageLength = 2;
+  required uint32 discipline = 3;
+
+  // id section
+  required GribIdSection ids = 4;
+
+  // other sections
+  optional bytes lus = 5;
+  required uint32 gdsIdx = 6;  // index into gdsList
+  required bytes pds = 7;
+
+  // drs
+  required uint64 drsPos = 8;
+  required uint32 drsTemplate = 9;
+  required uint32 drsNpoints = 10;
+
+  required uint64 bmsPos = 11;
+  required uint32 bmsIndicator = 12;
+
+  required uint64 dataPos = 13;
+  required uint32 dataLen = 14;
+}
+
+message Grib2Index {
+  required string filename = 1;
+  repeated GribGdsSection gdsList = 2;  // GDS factored out
+  repeated Grib2Record records = 3;
+}
+
+//  cd c:/dev/tds4.2/grib/src/main/java
+//  protoc --proto_path=. --java_out=. ucar/nc2/grib/grib2/gribIndex.proto
+

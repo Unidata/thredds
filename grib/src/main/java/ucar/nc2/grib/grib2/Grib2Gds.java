@@ -1,0 +1,1245 @@
+/*
+ * Copyright (c) 1998 - 2011. University Corporation for Atmospheric Research/Unidata
+ * Portions of this software were developed by the Unidata Program at the
+ * University Corporation for Atmospheric Research.
+ *
+ * Access and use of this software shall impose the following obligations
+ * and understandings on the user. The user is granted the right, without
+ * any fee or cost, to use, copy, modify, alter, enhance and distribute
+ * this software, and any derivative works thereof, and its supporting
+ * documentation for any purpose whatsoever, provided that this entire
+ * notice appears in all copies of the software, derivative works and
+ * supporting documentation.  Further, UCAR requests that the user credit
+ * UCAR/Unidata in any publications that result from the use of this
+ * software or in any product that includes this software. The names UCAR
+ * and/or Unidata, however, may not be used in any advertising or publicity
+ * to endorse or promote any products or commercial entity unless specific
+ * written permission is obtained from UCAR/Unidata. The user also
+ * understands that UCAR/Unidata is not obligated to provide the user with
+ * any support, consulting, training or assistance of any kind with regard
+ * to the use, operation and performance of this software nor to provide
+ * the user with any updates, revisions, new versions or "bug fixes."
+ *
+ * THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+ * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+ * INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+ * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ */
+
+package ucar.nc2.grib.grib2;
+
+import ucar.grib.GribNumbers;
+import ucar.ma2.Array;
+import ucar.ma2.DataType;
+import ucar.nc2.util.Misc;
+import ucar.unidata.geoloc.*;
+import ucar.unidata.geoloc.projection.LatLonProjection;
+import ucar.unidata.geoloc.projection.Stereographic;
+import ucar.unidata.geoloc.projection.sat.MSGnavigation;
+import ucar.unidata.util.GaussianLatitudes;
+
+import java.util.Formatter;
+
+/**
+ * Template-specific fields for Grib2SectionGridDefinition
+ *
+ * @author caron
+ * @since 4/2/11
+ */
+public abstract class Grib2Gds {
+  static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Grib2Gds.class);
+
+  public static class GdsHorizCoordSys {
+    public ucar.unidata.geoloc.ProjectionImpl proj;
+    public double startx, dx; // km
+    public double starty, dy; // km
+    public int nx, ny;
+    public Array gaussLats;
+    public Array gaussw; // ??
+
+    public GdsHorizCoordSys(ProjectionImpl proj, double startx, double dx, double starty, double dy, int nx, int ny) {
+      this.proj = proj;
+      this.startx = startx;
+      this.dx = dx;
+      this.starty = starty;
+      this.dy = dy;
+      this.nx = nx;
+      this.ny = ny;
+    }
+
+    public double getStartX() {
+      return startx;
+    }
+
+    public double getStartY() {
+      if (gaussLats != null)  return gaussLats.getDouble(0);
+      return starty;
+    }
+
+    public double getEndX() {
+      return startx + dx * nx;
+    }
+
+    public double getEndY() {
+      if (gaussLats != null)  return gaussLats.getDouble((int) gaussLats.getSize()-1);
+      return starty + dy * ny;
+    }
+  }
+
+  public static Grib2Gds factory(int template, byte[] data) {
+    switch (template) {
+      case 0:
+        return new LatLon(data);
+      case 1:
+        return new RotatedLatLon(data);
+      case 10:
+        return new Mercator(data);
+      case 20:
+        return new PolarStereographic(data);
+      case 30:
+        return new LambertConformal(data);
+      case 40:
+        return new GaussLatLon(data);
+      case 90:
+        return new SpaceViewPerspective(data);
+
+      // LOOK NCEP specific
+      case 204:
+        return new CurvilinearOrthogonal(data);
+
+      default:
+        throw new UnsupportedOperationException("Unsupported GDS type = " + template);
+    }
+  }
+
+  ///////////////////////////////////////////////////
+  private static final float scale3 = (float) 1.0e-3;
+  private static final float scale6 = (float) 1.0e-6;
+
+  protected final byte[] data;
+
+  public int template;
+  public float earthRadius, majorAxis, minorAxis;
+  public int earthShape, nx, ny;
+  public byte scanMode;
+
+  public Grib2Gds(byte[] data, int template) {
+    this.data = data;
+    this.template = template;
+
+    earthShape = getOctet(15);
+    earthRadius = getScaledValue(16);
+    majorAxis = getScaledValue(21);
+    minorAxis = getScaledValue(26);
+
+    nx = getOctet4(31);
+    ny = getOctet4(35);
+  }
+
+  public byte[] getRawBytes() {
+    return data;
+  }
+
+  protected int getOctet(int index) {
+    return data[index - 1] & 0xff;
+  }
+
+  protected int getOctet4(int start) {
+    return GribNumbers.int4(getOctet(start), getOctet(start + 1), getOctet(start + 2), getOctet(start + 3));
+  }
+
+  protected float getScaledValue(int start) {
+    int scaleFactor = getOctet(start);
+    int scaleValue = getOctet4(start + 1);
+    if (scaleFactor != 0)
+      return (float) (scaleValue / Math.pow(10, scaleFactor));
+    else
+      return (float) scaleValue;
+  }
+
+  public boolean isLatLon() {
+    return false;
+  }
+
+  public abstract GdsHorizCoordSys makeHorizCoordSys();
+
+  public abstract void testHorizCoordSys(Formatter f);
+
+  public String getNameShort() {
+    String className = getClass().getName();
+    int pos = className.lastIndexOf("$");
+    return className.substring(pos + 1);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    Grib2Gds grib2Gds = (Grib2Gds) o;
+    if (nx != grib2Gds.nx) return false;
+    if (ny != grib2Gds.ny) return false;
+    if (template != grib2Gds.template) return false;
+
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    int result = template;
+    result = 31 * result + nx;
+    result = 31 * result + ny;
+    return result;
+  }
+
+  protected int hashCode = 0;
+
+  /*
+  Code Table Code table 3.2 - Shape of the Earth (3.2)
+      0: Earth assumed spherical with radius = 6 367 470.0 m
+      1: Earth assumed spherical with radius specified (in m) by data producer
+      2: Earth assumed oblate spheroid with size as determined by IAU in 1965 (major axis = 6 378 160.0 m, minor axis = 6 356 775.0 m, f = 1/297.0)
+      3: Earth assumed oblate spheroid with major and minor axes specified (in km) by data producer
+      4: Earth assumed oblate spheroid as defined in IAG-GRS80 model (major axis = 6 378 137.0 m, minor axis = 6 356 752.314 m, f = 1/298.257 222 101)
+      5: Earth assumed represented by WGS84 (as used by ICAO since 1998)
+      6: Earth assumed spherical with radius of 6 371 229.0 m
+      7: Earth assumed oblate spheroid with major or minor axes specified (in m) by data producer
+      8: Earth model assumed spherical with radius of 6 371 200 m, but the horizontal datum of the resulting
+         latitude/longitude field is the WGS84 reference frame
+  */
+  protected Earth getEarth() {
+    switch (earthShape) {
+      case 0:
+        return new Earth(6367470.0);
+      case 1:
+        return new Earth(earthRadius);
+      case 2:
+        return EarthEllipsoid.IAU;
+      case 3:
+        return new EarthEllipsoid("Grib2 Type 3", -1, majorAxis, minorAxis, 0);
+      case 4:
+        return EarthEllipsoid.IAG_GRS80;
+      case 5:
+        return EarthEllipsoid.WGS84;
+      case 6:
+        return new Earth(6371229.0);
+      case 7:
+        return new EarthEllipsoid("Grib2 Type 37", -1, majorAxis * 1000, minorAxis * 1000, 0);
+      case 8:
+        return new Earth(6371200.0);
+      default:
+        return new Earth();
+    }
+  }
+
+  /*
+Template 3.0 (Grid definition template 3.0 - latitude/longitude (or equidistant cylindrical, or Plate Carre))
+     1-4 (4): GDS length
+     5-5 (1): Section
+     6-6 (1): Source of Grid Definition (see code table 3.0)
+    7-10 (4): Number of data points
+   11-11 (1): Number of octects for optional list of numbers
+   12-12 (1): Interpretation of list of numbers
+   13-14 (2): Grid Definition Template Number
+      15 (1): Shape of the Earth - (see Code table 3.2)#GRIB2_6_0_1_codeflag.doc#G2_CF32
+      16 (1): Scale factor of radius of spherical Earth
+   17-20 (4): Scaled value of radius of spherical Earth
+      21 (1): Scale factor of major axis of oblate spheroid Earth
+   22-25 (4): Scaled value of major axis of oblate spheroid Earth
+      26 (1): Scale factor of minor axis of oblate spheroid Earth
+   27-30 (4): Scaled value of minor axis of oblate spheroid Earth
+   31-34 (4): Ni - number of points along a parallel
+   35-38 (4): Nj - number of points along a meridian
+   39-42 (4): Basic angle of the initial production domain - (see Note 1)#GRIB2_6_0_1_temp.doc#G2_Gdt30n
+   43-46 (4): Subdivisions of basic angle used to define extreme longitudes and latitudes, and direction increments - (see Note 1)#GRIB2_6_0_1_temp.doc#G2_Gdt30n
+   47-50 (4): La1 - latitude of first grid point - (see Note 1)#GRIB2_6_0_1_temp.doc#G2_Gdt30n
+   51-54 (4): Lo1 - longitude of first grid point - (see Note 1)#GRIB2_6_0_1_temp.doc#G2_Gdt30n
+      55 (1): Resolution and component flags - (see Flag table 3.3)#GRIB2_6_0_1_codeflag.doc#G2_CF33
+   56-59 (4): La2 - latitude of last grid point - (see Note 1)#GRIB2_6_0_1_temp.doc#G2_Gdt30n
+   60-63 (4): Lo2 - longitude of last grid point - (see Note 1)#GRIB2_6_0_1_temp.doc#G2_Gdt30n
+   64-67 (4): Di - i direction increment - (see Note 1)#GRIB2_6_0_1_temp.doc#G2_Gdt30n
+   68-71 (4): Dj - j direction increment - (see Note 1)#GRIB2_6_0_1_temp.doc#G2_Gdt30n
+      72 (1): Scanning mode - (flags - see Flag table 3.4)#GRIB2_6_0_1_codeflag.doc#G2_CF34
+   73-nn (0): List of number of points along each meridian or parallel. - (These octets are only present for quasi-regular grids as described in Notes 2 and 3)#GRIB2_6_0_1_temp.doc#G2_Gdt30n
+*/
+  public static class LatLon extends Grib2Gds {
+    public float la1, lo1, la2, lo2, deltaLon, deltaLat;
+    public int basicAngle, basicAngleSubdivisions;
+    public byte flags;
+    protected int lastOctet;
+
+    LatLon(byte[] data) {
+      super(data, 0);
+
+      basicAngle = getOctet4(39);
+      basicAngleSubdivisions = getOctet4(43);
+
+      float scale = getScale();
+      la1 = getOctet4(47) * scale;
+      lo1 = getOctet4(51) * scale;
+      flags = (byte) getOctet(55);
+      la2 = getOctet4(56) * scale;
+      lo2 = getOctet4(60) * scale;
+
+      deltaLon = getOctet4(64) * scale;
+      //if (lo2 < lo1) deltaLon = -deltaLon;
+      deltaLat = getOctet4(68) * scale;
+      //if (la2 < la1) deltaLat = -deltaLat;
+      scanMode = (byte) getOctet(72);
+
+      lastOctet = 73;
+    }
+
+    @Override
+    public boolean isLatLon() {
+      return true;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
+      if (!super.equals(o)) return false;
+
+      LatLon other = (LatLon) o;
+      if (!Misc.closeEnough(la1, other.la1)) return false;
+      if (!Misc.closeEnough(lo1, other.lo1)) return false;
+      if (!Misc.closeEnough(deltaLat, other.deltaLat)) return false;
+      if (!Misc.closeEnough(deltaLon, other.deltaLon)) return false;
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      if (hashCode == 0) {
+        int result = super.hashCode();
+        result = 31 * result + (la1 != +0.0f ? Float.floatToIntBits(la1) : 0); // LOOK this is an exact comparision
+        result = 31 * result + (lo1 != +0.0f ? Float.floatToIntBits(lo1) : 0);
+        result = 31 * result + (deltaLon != +0.0f ? Float.floatToIntBits(deltaLon) : 0);
+        result = 31 * result + (deltaLat != +0.0f ? Float.floatToIntBits(deltaLat) : 0);
+        hashCode = result;
+      }
+      return hashCode;
+    }
+
+    protected float getScale() {
+      if (basicAngle == 0 || basicAngle == GribNumbers.UNDEFINED || basicAngleSubdivisions == GribNumbers.UNDEFINED)
+        return scale6;
+      return ((float) basicAngle) / basicAngleSubdivisions;
+    }
+
+    public int[] getOptionalPoints() {
+      int[] optionalPoints = null;
+      int n = getOctet(11); // Number of octets for optional list of numbers
+      if (n > 0) {
+        optionalPoints = new int[n / 4];
+        for (int i = 0; i < optionalPoints.length; i++)
+          optionalPoints[i] = getOctet4(lastOctet + 4 * n);
+      }
+      return optionalPoints;
+    }
+
+    public GdsHorizCoordSys makeHorizCoordSys() {
+      LatLonProjection proj = new LatLonProjection();
+      ProjectionPoint startP = proj.latLonToProj(new LatLonPointImpl(la1, lo1));
+      double startx = startP.getX();
+      double starty = startP.getY();
+      return new GdsHorizCoordSys(proj, startx, deltaLon, starty, deltaLat, nx, ny);
+    }
+
+    public void testHorizCoordSys(Formatter f) {
+      GdsHorizCoordSys cs = makeHorizCoordSys();
+      double Lo2 = lo2;
+      if (Lo2 < lo1) Lo2 += 360;
+      LatLonPointImpl startLL = new LatLonPointImpl(la1, lo1);
+      LatLonPointImpl endLL = new LatLonPointImpl(la2, lo2);
+
+      f.format("%s testProjection%n", getClass().getName());
+      f.format("  start at latlon= %s%n", startLL);
+      f.format("    end at latlon= %s%n", endLL);
+
+      ProjectionPointImpl endPP = (ProjectionPointImpl) cs.proj.latLonToProj(endLL, new ProjectionPointImpl());
+      f.format("   start at proj coord= %s%n", new ProjectionPointImpl(cs.startx, cs.starty));
+      f.format("     end at proj coord= %s%n", endPP);
+
+      double endx = cs.startx + (nx - 1) * cs.dx;
+      double endy = cs.starty + (ny - 1) * cs.dy;
+      f.format("   should end at x= (%f,%f)%n", endx, endy);
+    }
+  }
+
+  /*
+Template 3.1 (Grid definition template 3.1 - rotated latitude/longitude (or equidistant cylindrical, or Plate Carre))
+     1-4 (4): GDS length
+     5-5 (1): Section
+     6-6 (1): Source of Grid Definition (see code table 3.0)
+    7-10 (4): Number of data points
+   11-11 (1): Number of octects for optional list of numbers
+   12-12 (1): Interpretation of list of numbers
+   13-14 (2): Grid Definition Template Number
+   15-72 (58): Same as grid definition template 3.0 - (see Note 1)#GRIB2_6_0_1_temp.doc#G2_Gdt31n
+   73-76 (4): Latitude of the southern pole of projection
+   77-80 (4): Longitude of the southern pole of projection
+   81-84 (4): Angle of rotation of projection
+   85-nn (0): List of number of points along each meridian or parallel. - (These octets are only present for quasi-regular grids as described in Note 3)#GRIB2_6_0_1_temp.doc#G2_Gdt31n
+   */
+  public static class RotatedLatLon extends LatLon {
+    public float latSouthPole, lonSouthPole, angleRotation;
+
+    RotatedLatLon(byte[] data) {
+      super(data);
+      this.template = 1;
+
+      float scale = getScale();
+      latSouthPole = getOctet4(73) * scale;
+      lonSouthPole = getOctet4(77) * scale;
+      angleRotation = getOctet4(81) * scale;
+      lastOctet = 85;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
+      if (!super.equals(o)) return false;
+
+      RotatedLatLon other = (RotatedLatLon) o;
+      if (!Misc.closeEnough(angleRotation, other.angleRotation)) return false;
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      if (hashCode == 0) {
+        int result = super.hashCode();
+        result = 31 * result + (angleRotation != +0.0f ? Float.floatToIntBits(angleRotation) : 0);
+        hashCode = result;
+      }
+      return hashCode;
+    }
+
+    public GdsHorizCoordSys makeHorizCoordSys() {
+      ucar.unidata.geoloc.projection.RotatedLatLon proj =
+              new ucar.unidata.geoloc.projection.RotatedLatLon(latSouthPole, lonSouthPole, angleRotation);
+      LatLonPoint startLL = proj.projToLatLon(new ProjectionPointImpl(lo1, la1));
+      double startx = startLL.getLongitude();
+      double starty = startLL.getLatitude();
+      return new GdsHorizCoordSys(proj, startx, deltaLon, starty, deltaLat, nx, ny);
+    }
+
+    public void testHorizCoordSys(Formatter f) {
+      GdsHorizCoordSys cs = makeHorizCoordSys();
+      LatLonPoint startLL = cs.proj.projToLatLon(new ProjectionPointImpl(lo1, la1));
+      LatLonPoint endLL = cs.proj.projToLatLon(new ProjectionPointImpl(lo2, la2));
+
+      f.format("%s testProjection%n", getClass().getName());
+      f.format("  start at latlon= %s%n", startLL);
+      f.format("    end at latlon= %s%n", endLL);
+
+      ProjectionPointImpl endPP = (ProjectionPointImpl) cs.proj.latLonToProj(endLL, new ProjectionPointImpl());
+      f.format("   start at proj coord= %s%n", new ProjectionPointImpl(cs.startx, cs.starty));
+      f.format("     end at proj coord= %s%n", endPP);
+
+      double endx = cs.startx + (nx - 1) * cs.dx;
+      double endy = cs.starty + (ny - 1) * cs.dy;
+      f.format("   should end at x= (%f,%f)%n", endx, endy);
+    }
+
+  }
+
+  /*
+Template 3.10 (Grid definition template 3.10 - Mercator)
+     1-4 (4): GDS length
+     5-5 (1): Section
+     6-6 (1): Source of Grid Definition (see code table 3.0)
+    7-10 (4): Number of data points
+   11-11 (1): Number of octects for optional list of numbers
+   12-12 (1): Interpretation of list of numbers
+   13-14 (2): Grid Definition Template Number
+      15 (1): Shape of the Earth - (see Code table 3.2)#GRIB2_6_0_1_codeflag.doc#G2_CF32
+      16 (1): Scale factor of radius of spherical Earth
+   17-20 (4): Scaled value of radius of spherical Earth
+      21 (1): Scale factor of major axis of oblate spheroid Earth
+   22-25 (4): Scaled value of major axis of oblate spheroid Earth
+      26 (1): Scale factor of minor axis of oblate spheroid Earth
+   27-30 (4): Scaled value of minor axis of oblate spheroid Earth
+   31-34 (4): Ni - number of points along a parallel
+   35-38 (4): Nj - number of points along a meridian
+   39-42 (4): La1 - latitude of first grid point
+   43-46 (4): Lo1 - longitude of first grid point
+      47 (1): Resolution and component flags - (see Flag table 3.3)#GRIB2_6_0_1_codeflag.doc#G2_CF33
+   48-51 (4): LaD - latitude(s) at which the Mercator projection intersects the Earth (Latitude(s) where Di and Dj are specified)
+   52-55 (4): La2 - latitude of last grid point
+   56-59 (4): Lo2 - longitude of last grid point
+      60 (1): Scanning mode - (flags - see Flag table 3.4)#GRIB2_6_0_1_codeflag.doc#G2_CF34
+   61-64 (4): Orientation of the grid, angle between i direction on the map and the Equator - (see Note 1)#GRIB2_6_0_1_temp.doc#G2_Gdt310n
+   65-68 (4): Di - longitudinal direction grid length - (see Note 2)#GRIB2_6_0_1_temp.doc#G2_Gdt310n
+   69-72 (4): Dj - latitudinal direction grid length - (see Note 2)#GRIB2_6_0_1_temp.doc#G2_Gdt310n
+   73-nn (0): List of number of points along each meridian or parallel. - (These octets are only present for quasi-regular grids as described in Notes 2 and 3 of GDT 3.1)#GRIB2_6_0_1_temp.doc#G2_Gdt310n
+   */
+  public static class Mercator extends Grib2Gds {
+    public float la1, lo1, la2, lo2, lad, orient, dX, dY;
+    public byte flags;
+    protected int lastOctet;
+
+    Mercator(byte[] data) {
+      super(data, 10);
+
+      la1 = getOctet4(39) * scale6;
+      lo1 = getOctet4(43) * scale6;
+      flags = (byte) getOctet(47);
+      lad = getOctet4(48) * scale6;
+      la2 = getOctet4(52) * scale6;
+      lo2 = getOctet4(56) * scale6;
+
+      scanMode = (byte) getOctet(60);
+
+      orient = getOctet4(61) * scale6; // LOOK not sure if should be scaled
+      dX = getOctet4(65) * scale6;  // km
+      dY = getOctet4(69) * scale6;  // km
+
+      lastOctet = 73;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
+      if (!super.equals(o)) return false;
+
+      Mercator mercator = (Mercator) o;
+
+      if (Float.compare(mercator.dX, dX) != 0) return false;
+      if (Float.compare(mercator.dY, dY) != 0) return false;
+      if (Float.compare(mercator.la1, la1) != 0) return false;
+      if (Float.compare(mercator.lad, lad) != 0) return false;
+      if (Float.compare(mercator.lo1, lo1) != 0) return false;
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      if (hashCode == 0) {
+        int result = super.hashCode();
+        result = 31 * result + (la1 != +0.0f ? Float.floatToIntBits(la1) : 0);
+        result = 31 * result + (lo1 != +0.0f ? Float.floatToIntBits(lo1) : 0);
+        result = 31 * result + (lad != +0.0f ? Float.floatToIntBits(lad) : 0);
+        result = 31 * result + (dX != +0.0f ? Float.floatToIntBits(dX) : 0);
+        result = 31 * result + (dY != +0.0f ? Float.floatToIntBits(dY) : 0);
+        hashCode = result;
+      }
+      return hashCode;
+    }
+
+    public GdsHorizCoordSys makeHorizCoordSys() {
+      // put longitude origin at first point - doesnt actually matter
+      // param par standard parallel (degrees). cylinder cuts earth at this latitude.
+      Earth earth = getEarth();
+      ucar.unidata.geoloc.projection.Mercator proj = new ucar.unidata.geoloc.projection.Mercator(lo1, lad, 0, 0, earth.getEquatorRadius() * .001);
+
+      // find out where things start
+      ProjectionPoint startP = proj.latLonToProj(new LatLonPointImpl(la1, lo1));
+      double startx = startP.getX();
+      double starty = startP.getY();
+
+      return new GdsHorizCoordSys(proj, startx, dX, starty, dY, nx, ny);
+    }
+
+
+    public void testHorizCoordSys(Formatter f) {
+      GdsHorizCoordSys cs = makeHorizCoordSys();
+      double Lo2 = lo2;
+      if (Lo2 < lo1) Lo2 += 360;
+      LatLonPointImpl startLL = new LatLonPointImpl(la1, lo1);
+      LatLonPointImpl endLL = new LatLonPointImpl(la2, lo2);
+
+      f.format("%s testProjection%n", getClass().getName());
+      f.format("  start at latlon= %s%n", startLL);
+      f.format("    end at latlon= %s%n", endLL);
+
+      ProjectionPointImpl endPP = (ProjectionPointImpl) cs.proj.latLonToProj(endLL, new ProjectionPointImpl());
+      f.format("   start at proj coord= %s%n", new ProjectionPointImpl(cs.startx, cs.starty));
+      f.format("     end at proj coord= %s%n", endPP);
+
+      double endx = cs.startx + (nx - 1) * cs.dx;
+      double endy = cs.starty + (ny - 1) * cs.dy;
+      f.format("   should end at x= (%f,%f)%n", endx, endy);
+    }
+
+  }
+
+  /*
+Template 3.20 (Grid definition template 3.20 - polar stereographic projection)
+     1-4 (4): GDS length
+     5-5 (1): Section
+     6-6 (1): Source of Grid Definition (see code table 3.0)
+    7-10 (4): Number of data points
+   11-11 (1): Number of octects for optional list of numbers
+   12-12 (1): Interpretation of list of numbers
+   13-14 (2): Grid Definition Template Number
+      15 (1): Shape of the Earth - (see Code table 3.2)#GRIB2_6_0_1_codeflag.doc#G2_CF32
+      16 (1): Scale factor of radius of spherical Earth
+   17-20 (4): Scaled value of radius of spherical Earth
+      21 (1): Scale factor of major axis of oblate spheroid Earth
+   22-25 (4): Scaled value of major axis of oblate spheroid Earth
+      26 (1): Scale factor of minor axis of oblate spheroid Earth
+   27-30 (4): Scaled value of minor axis of oblate spheroid Earth
+   31-34 (4): Nx - number of points along the x-axis
+   35-38 (4): Ny - number of points along the y-axis
+   39-42 (4): La1 - latitude of first grid point
+   43-46 (4): Lo1 - longitude of first grid point
+      47 (1): Resolution and component flags - (see Flag table 3.3 and Note 1)#GRIB2_6_0_1_temp.doc#G2_Gdt320n
+   48-51 (4): LaD - latitude where Dx and Dy are specified
+   52-55 (4): LoV - orientation of the grid - (see Note 2)#GRIB2_6_0_1_temp.doc#G2_Gdt320n
+   56-59 (4): Dx - x-direction grid length - (see Note 3)#GRIB2_6_0_1_temp.doc#G2_Gdt320n
+   60-63 (4): Dy - y-direction grid length - (see Note 3)#GRIB2_6_0_1_temp.doc#G2_Gdt320n
+      64 (1): Projection centre flag - (see Flag table 3.5)#GRIB2_6_0_1_codeflag.doc#G2_CF35
+      65 (1): Scanning mode - (see Flag table 3.4)#GRIB2_6_0_1_codeflag.doc#G2_CF34
+   */
+  public static class PolarStereographic extends Grib2Gds {
+    public float la1, lo1, lov, lad, dX, dY;
+    public byte flags, projCenterFlag;
+
+    PolarStereographic(byte[] data) {
+      super(data, 20);
+
+      la1 = getOctet4(39) * scale6;
+      lo1 = getOctet4(43) * scale6;
+      flags = (byte) getOctet(47);
+      lad = getOctet4(48) * scale6;
+      lov = getOctet4(52) * scale6;
+
+      dX = getOctet4(56) * scale6;  //  km
+      dY = getOctet4(60) * scale6;  //  km
+
+      projCenterFlag = (byte) getOctet(64);
+      scanMode = (byte) getOctet(65);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
+      if (!super.equals(o)) return false;
+
+      PolarStereographic that = (PolarStereographic) o;
+
+      if (Float.compare(that.dX, dX) != 0) return false;
+      if (Float.compare(that.dY, dY) != 0) return false;
+      if (Float.compare(that.la1, la1) != 0) return false;
+      if (Float.compare(that.lad, lad) != 0) return false;
+      if (Float.compare(that.lo1, lo1) != 0) return false;
+      if (Float.compare(that.lov, lov) != 0) return false;
+      if (projCenterFlag != that.projCenterFlag) return false;
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      if (hashCode == 0) {
+        int result = super.hashCode();
+        result = 31 * result + (la1 != +0.0f ? Float.floatToIntBits(la1) : 0);
+        result = 31 * result + (lo1 != +0.0f ? Float.floatToIntBits(lo1) : 0);
+        result = 31 * result + (lov != +0.0f ? Float.floatToIntBits(lov) : 0);
+        result = 31 * result + (lad != +0.0f ? Float.floatToIntBits(lad) : 0);
+        result = 31 * result + (dX != +0.0f ? Float.floatToIntBits(dX) : 0);
+        result = 31 * result + (dY != +0.0f ? Float.floatToIntBits(dY) : 0);
+        result = 31 * result + (int) projCenterFlag;
+        hashCode = result;
+      }
+      return hashCode;
+    }
+
+    public GdsHorizCoordSys makeHorizCoordSys() {
+      boolean northPole = (projCenterFlag & 128) == 0;
+      double latOrigin = northPole ? 90.0 : -90.0;
+
+      // Why the scale factor?. according to GRIB docs:
+      // "Grid lengths are in units of meters, at the 60 degree latitude circle nearest to the pole"
+      // since the scale factor at 60 degrees = k = 2*k0/(1+sin(60))  [Snyder,Working Manual p157]
+      // then to make scale = 1 at 60 degrees, k0 = (1+sin(60))/2 = .933
+      double scale;
+      if (Double.isNaN(lad)) { // LOOK ??
+        scale = 0.9330127018922193;
+      } else {
+        scale = (1.0 + Math.sin(Math.toRadians(lad))) / 2;
+      }
+
+      ProjectionImpl proj = null;
+
+      Earth earth = getEarth();
+      if (earth.isSpherical()) {
+        proj = new Stereographic(latOrigin, lov, scale);
+      } else {
+        proj = new ucar.unidata.geoloc.projection.proj4.StereographicAzimuthalProjection(
+                latOrigin, lov, scale, lad, 0.0, 0.0, earth);
+      }
+
+      ProjectionPointImpl start = (ProjectionPointImpl) proj.latLonToProj(new LatLonPointImpl(la1, lo1));
+      return new GdsHorizCoordSys(proj, start.getX(), dX, start.getY(), dY, nx, ny);
+    }
+
+    public void testHorizCoordSys(Formatter f) {
+      GdsHorizCoordSys cs = makeHorizCoordSys();
+      f.format("%s testProjection %s%n", getClass().getName(), cs.proj.getClass().getName());
+
+      double endx = cs.startx + (nx - 1) * cs.dx;
+      double endy = cs.starty + (ny - 1) * cs.dy;
+      ProjectionPointImpl endPP = new ProjectionPointImpl(endx, endy);
+      f.format("   start at proj coord= %s%n", new ProjectionPointImpl(cs.startx, cs.starty));
+      f.format("     end at proj coord= %s%n", endPP);
+
+      LatLonPointImpl startLL = new LatLonPointImpl(la1, lo1);
+      LatLonPoint endLL = cs.proj.projToLatLon(endPP, new LatLonPointImpl());
+
+      f.format("  start at latlon= %s%n", startLL);
+      f.format("    end at latlon= %s%n", endLL);
+    }
+
+  }
+
+  /*
+Template 3.30 (Grid definition template 3.30 - Lambert conformal)
+     1-4 (4): GDS length
+     5-5 (1): Section
+     6-6 (1): Source of Grid Definition (see code table 3.0)
+    7-10 (4): Number of data points
+   11-11 (1): Number of octects for optional list of numbers
+   12-12 (1): Interpretation of list of numbers
+   13-14 (2): Grid Definition Template Number
+      15 (1): Shape of the Earth - (see Code table 3.2)#GRIB2_6_0_1_codeflag.doc#G2_CF32
+      16 (1): Scale factor of radius of spherical Earth
+   17-20 (4): Scaled value of radius of spherical Earth
+      21 (1): Scale factor of major axis of oblate spheroid Earth
+   22-25 (4): Scaled value of major axis of oblate spheroid Earth
+      26 (1): Scale factor of minor axis of oblate spheroid Earth
+   27-30 (4): Scaled value of minor axis of oblate spheroid Earth
+   31-34 (4): Nx - number of points along the x-axis
+   35-38 (4): Ny - number of points along the y-axis
+   39-42 (4): La1 - latitude of first grid point
+   43-46 (4): Lo1 - longitude of first grid point
+      47 (1): Resolution and component flags - (see Flag table 3.3)#GRIB2_6_0_1_codeflag.doc#G2_CF33
+   48-51 (4): LaD - latitude where Dx and Dy are specified
+   52-55 (4): LoV - longitude of meridian parallel to y-axis along which latitude increases as the y-coordinate increases
+   56-59 (4): Dx - x-direction grid length - (see Note 1)#GRIB2_6_0_1_temp.doc#G2_Gdt330n
+   60-63 (4): Dy - y-direction grid length - (see Note 1)#GRIB2_6_0_1_temp.doc#G2_Gdt330n
+      64 (1): Projection centre flag - (see Flag table 3.5)#GRIB2_6_0_1_codeflag.doc#G2_CF35
+      65 (1): Scanning mode - (see Flag table 3.4)#GRIB2_6_0_1_codeflag.doc#G2_CF34
+   66-69 (4): Latin 1 - first latitude from the pole at which the secant cone cuts the sphere
+   70-73 (4): Latin 2 - second latitude from the pole at which the secant cone cuts the sphere
+   74-77 (4): Latitude of the southern pole of projection
+   78-81 (4): Longitude of the southern pole of projection
+   */
+  public static class LambertConformal extends Grib2Gds {
+    public float la1, lo1, lov, lad, dX, dY, latin1, latin2, latSouthPole, lonSouthPole;
+    public byte flags, projCenterFlag;
+
+    private int hla1, hlo1, hlov, hlad, hdX, hdY, hlatin1, hlatin2; // hasheesh
+
+    LambertConformal(byte[] data) {
+      super(data, 20);
+
+      // hashing codes - allow slop in last digit in these values
+      hla1 = round(getOctet4(39));
+      hlo1 = round(getOctet4(43));
+      hlad = round(getOctet4(48));
+      hlov = round(getOctet4(52));
+      hdX = round(getOctet4(56));
+      hdY = round(getOctet4(60));
+      hlatin1 = round(getOctet4(66));
+      hlatin2 = round(getOctet4(70));
+
+      // floating point values
+      la1 = getOctet4(39) * scale6;
+      lo1 = getOctet4(43) * scale6;
+      flags = (byte) getOctet(47);
+      lad = getOctet4(48) * scale6;
+      lov = getOctet4(52) * scale6;
+
+      dX = getOctet4(56) * scale6; // km
+      dY = getOctet4(60) * scale6; // km
+
+      projCenterFlag = (byte) getOctet(64);
+      scanMode = (byte) getOctet(65);
+
+      latin1 = getOctet4(66) * scale6;
+      latin2 = getOctet4(70) * scale6;
+      latSouthPole = getOctet4(74) * scale6;
+      lonSouthPole = getOctet4(78) * scale6;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
+      if (!super.equals(o)) return false;
+
+      LambertConformal that = (LambertConformal) o;
+
+      if (hdX != that.hdX) return false;
+      if (hdY != that.hdY) return false;
+      if (hla1 != that.hla1) return false;
+      if (hlad != that.hlad) return false;
+      if (hlatin1 != that.hlatin1) return false;
+      if (hlatin2 != that.hlatin2) return false;
+      if (hlo1 != that.hlo1) return false;
+      if (hlov != that.hlov) return false;
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      if (hashCode == 0) {
+        int result = super.hashCode();
+        result = 31 * result + hla1;
+        result = 31 * result + hlo1;
+        result = 31 * result + hlov;
+        result = 31 * result + hlad;
+        result = 31 * result + hdX;
+        result = 31 * result + hdY;
+        result = 31 * result + hlatin1;
+        result = 31 * result + hlatin2;
+        hashCode = result;
+      }
+      return hashCode;
+    }
+
+    private static int round(int a) { // NCEP rounding (!)
+      return (a+5) / 10;
+    }
+
+    public GdsHorizCoordSys makeHorizCoordSys() {
+      ProjectionImpl proj = null;
+
+      Earth earth = getEarth();
+      if (earth.isSpherical()) {
+        proj = new ucar.unidata.geoloc.projection.LambertConformal(latin1, lov, latin1, latin2, 0.0, 0.0, earth.getEquatorRadius() * .001);
+      } else {
+        proj = new ucar.unidata.geoloc.projection.proj4.LambertConformalConicEllipse(
+                latin1, lov, latin1, latin2, 0.0, 0.0, earth);
+      }
+
+      LatLonPointImpl startLL = new LatLonPointImpl(la1, lo1);
+      ProjectionPointImpl start = (ProjectionPointImpl) proj.latLonToProj(startLL);
+      return new GdsHorizCoordSys(proj, start.getX(), dX, start.getY(), dY, nx, ny);
+    }
+
+    public void testHorizCoordSys(Formatter f) {
+      GdsHorizCoordSys cs = makeHorizCoordSys();
+      f.format("%s testProjection %s%n", getClass().getName(), cs.proj.getClass().getName());
+
+      double endx = cs.startx + (nx - 1) * cs.dx;
+      double endy = cs.starty + (ny - 1) * cs.dy;
+      ProjectionPointImpl endPP = new ProjectionPointImpl(endx, endy);
+      f.format("   start at proj coord= %s%n", new ProjectionPointImpl(cs.startx, cs.starty));
+      f.format("     end at proj coord= %s%n", endPP);
+
+      LatLonPointImpl startLL = new LatLonPointImpl(la1, lo1);
+      LatLonPoint endLL = cs.proj.projToLatLon(endPP, new LatLonPointImpl());
+
+      f.format("  start at latlon= %s%n", startLL);
+      f.format("    end at latlon= %s%n", endLL);
+    }
+
+  }
+
+  /*
+(3.40) Grid definition template 3.40 - Gaussian latitude/longitude
+Template 3.40 (Grid definition template 3.40 - Gaussian latitude/longitude)
+     1-4 (4): GDS length
+     5-5 (1): Section
+     6-6 (1): Source of Grid Definition (see code table 3.0)
+    7-10 (4): Number of data points
+   11-11 (1): Number of octects for optional list of numbers
+   12-12 (1): Interpretation of list of numbers
+   13-14 (2): Grid Definition Template Number
+      15 (1): Shape of the Earth - (see Code table 3.2)#GRIB2_6_0_1_codeflag.doc#G2_CF32
+      16 (1): Scale factor of radius of spherical Earth
+   17-20 (4): Scaled value of radius of spherical Earth
+      21 (1): Scale factor of major axis of oblate spheroid Earth
+   22-25 (4): Scaled value of major axis of oblate spheroid Earth
+      26 (1): Scale factor of minor axis of oblate spheroid Earth
+   27-30 (4): Scaled value of minor axis of oblate spheroid Earth
+   31-34 (4): Ni - number of points along a parallel
+   35-38 (4): Nj - number of points along a meridian
+   39-42 (4): Basic angle of the initial production domain - (see Note 1)#GRIB2_6_0_1_temp.doc#G2_Gdt340n
+   43-46 (4): Subdivisions of basic angle used to define extreme longitudes and latitudes, and direction increments - (see Note 1)#GRIB2_6_0_1_temp.doc#G2_Gdt340n
+   47-50 (4): La1 - latitude of first grid point - (see Note 1)#GRIB2_6_0_1_temp.doc#G2_Gdt340n
+   51-54 (4): Lo1 - longitude of first grid point - (see Note 1)#GRIB2_6_0_1_temp.doc#G2_Gdt340n
+      55 (1): Resolution and component flags - (see Flag table 3.3)#GRIB2_6_0_1_codeflag.doc#G2_CF33
+   56-59 (4): La2 - latitude of last grid point - (see Note 1)#GRIB2_6_0_1_temp.doc#G2_Gdt340n
+   60-63 (4): Lo2 - longitude of last grid point - (see Note 1)#GRIB2_6_0_1_temp.doc#G2_Gdt340n
+   64-67 (4): Di - i direction increment - (see Note 1)#GRIB2_6_0_1_temp.doc#G2_Gdt340n
+   68-71 (4): N - number of parallels between a pole and the Equator - (see Note 2)#GRIB2_6_0_1_temp.doc#G2_Gdt340n
+      72 (1): Scanning mode - (flags - see Flag table 3.4)#GRIB2_6_0_1_codeflag.doc#G2_CF34
+   73-nn (0): List of number of points along each meridian or parallel. - (These octets are only present for quasi-regular grids as described in Note 4)#GRIB2_6_0_1_temp.doc#G2_Gdt340n
+   */
+  public static class GaussLatLon extends LatLon {
+    public int Nparellels;
+
+    GaussLatLon(byte[] data) {
+      super(data);
+      this.template = 40;
+      Nparellels = getOctet4(68);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
+      if (!super.equals(o)) return false;
+
+      GaussLatLon that = (GaussLatLon) o;
+
+      if (Nparellels != that.Nparellels) return false;
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      if (hashCode == 0) {
+        int result = super.hashCode();
+        result = 31 * result + Nparellels;
+        hashCode = result;
+      }
+      return hashCode;
+    }
+
+    public GdsHorizCoordSys makeHorizCoordSys() {
+
+      int nlats = (int) (2 * Nparellels);
+      GaussianLatitudes gaussLats = new GaussianLatitudes(nlats);
+
+      int bestStartIndex = 0, bestEndIndex = 0;
+      double bestStartDiff = Double.MAX_VALUE;
+      double bestEndDiff = Double.MAX_VALUE;
+      for (int i = 0; i < nlats; i++) {
+        double diff = Math.abs(gaussLats.latd[i] - la1);
+        if (diff < bestStartDiff) {
+          bestStartDiff = diff;
+          bestStartIndex = i;
+        }
+        diff = Math.abs(gaussLats.latd[i] - la2);
+        if (diff < bestEndDiff) {
+          bestEndDiff = diff;
+          bestEndIndex = i;
+        }
+      }
+      if (Math.abs(bestEndIndex - bestStartIndex + 1) != ny) {
+        log.warn("GRIB gaussian lats: NP != NY, use NY");  // see email from Toussaint@dkrz.de datafil:
+        nlats = ny;
+        gaussLats = new GaussianLatitudes(nlats);
+        bestStartIndex = 0;
+        bestEndIndex = ny - 1;
+      }
+      boolean goesUp = bestEndIndex > bestStartIndex;
+
+      // create the data
+      int useIndex = bestStartIndex;
+      float[] data = new float[ny];
+      float[] gaussw = new float[ny];
+      for (int i = 0; i < ny; i++) {
+        data[i] = (float) gaussLats.latd[useIndex];
+        gaussw[i] = (float) gaussLats.gaussw[useIndex];
+        if (goesUp) {
+          useIndex++;
+        } else {
+          useIndex--;
+        }
+      }
+
+      GdsHorizCoordSys coordSys = new GdsHorizCoordSys(new LatLonProjection(), lo1, deltaLon, 0, 0, nx, ny);
+      coordSys.gaussLats = Array.factory(DataType.FLOAT, new int[]{ny}, data);
+      coordSys.gaussw = Array.factory(DataType.FLOAT, new int[]{ny}, gaussw);
+
+      return coordSys;
+    }
+
+    public void testHorizCoordSys(Formatter f) {
+      GdsHorizCoordSys cs = makeHorizCoordSys();
+      f.format("%s testProjection %s%n", getClass().getName(), cs.proj.getClass().getName());
+    }
+
+  }
+
+  /*
+Template 3.90 (Grid definition template 3.90 - space view perspective or orthographic)
+    1-4 (4): GDS length
+    5-5 (1): Section
+    6-6 (1): Source of Grid Definition (see code table 3.0)
+   7-10 (4): Number of data points
+  11-11 (1): Number of octects for optional list of numbers
+  12-12 (1): Interpretation of list of numbers
+  13-14 (2): Grid Definition Template Number
+     15 (1): Shape of the Earth - (see Code table 3.2)#GRIB2_6_0_1_codeflag.doc#G2_CF32
+     16 (1): Scale factor of radius of spherical Earth
+  17-20 (4): Scaled value of radius of spherical Earth
+     21 (1): Scale factor of major axis of oblate spheroid Earth
+  22-25 (4): Scaled value of major axis of oblate spheroid Earth
+     26 (1): Scale factor of minor axis of oblate spheroid Earth
+  27-30 (4): Scaled value of minor axis of oblate spheroid Earth
+  31-34 (4): Nx - number of points along x-axis (columns)
+  35-38 (4): Ny - number of points along y-axis (rows or lines)
+  39-42 (4): Lap - latitude of sub-satellite point
+  43-46 (4): Lop - longitude of sub-satellite point
+     47 (1): Resolution and component flags - (see Flag table 3.3)#GRIB2_6_0_1_codeflag.doc#G2_CF33
+  48-51 (4): dx - apparent diameter of Earth in grid lengths, in x-direction
+  52-55 (4): dy - apparent diameter of Earth in grid lengths, in y-direction
+  56-59 (4): Xp - x-coordinate of sub-satellite point (in units of 10-3 grid length expressed as an integer)
+  60-63 (4): Yp - y-coordinate of sub-satellite point (in units of 10-3 grid length expressed as an integer)
+     64 (1): Scanning mode (flags - see Flag table 3.4)
+  65-68 (4): Orientation of the grid; i.e. the angle between the increasing y-axis and the meridian of the sub-satellite point in the direction of increasing latitude - (see Note 3)#GRIB2_6_0_1_temp.doc#G2_Gdt390n
+  69-72 (4): Nr - altitude of the camera from the Earths centre, measured in units of the Earths (equatorial) radius multiplied by a scale factor of 106 - (see Notes 4 and 5)#GRIB2_6_0_1_temp.doc#G2_Gdt390n
+  73-76 (4): Xo - x-coordinate of origin of sector image
+  77-80 (4): Yo - y-coordinate of origin of sector image
+
+      Notes:
+   (1) It is assumed that the satellite is at its nominal position, i.e., it is looking directly at its sub-satellite point.
+   (2) Octets 69-72 shall be set to all ones (missing) to indicate the orthographic view (from infinite distance)
+   (3) It is the angle between the increasing Y-axis and the meridian 180E if the sub-satellite point is the North Pole; or the meridian 0 if the sub-satellite point is the South Pole.
+   (4) The apparent angular size of the Earth will be given by 2 * Arcsin (10^6 )/Nr).
+   (5) For orthographic view from infinite distance, the value of Nr should be encoded as missing (all bits set to 1).
+   (6) The horizontal and vertical angular resolutions of the sensor (Rx and Ry), needed for navigation equation, can be calculated from the following:
+        Rx = 2 * Arcsin (106 )/Nr)/ dx
+        Ry = 2 * Arcsin (106 )/Nr)/ dy
+
+  */
+  public static class SpaceViewPerspective extends Grib2Gds {
+    public float LaP, LoP, dX, dY, Xp, Yp, orient, Nr, Xo, Yo;
+    public byte flags;
+
+    SpaceViewPerspective(byte[] data) {
+      super(data, 90);
+
+      LaP = getOctet4(39) * scale6;
+      LoP = getOctet4(43) * scale6;
+      flags = (byte) getOctet(47);
+
+      dX = getOctet4(48);
+      dY = getOctet4(52);
+
+      Xp = getOctet4(56) * scale3;
+      Yp = getOctet4(60) * scale3;
+
+      scanMode = (byte) getOctet(64);
+
+      orient = getOctet4(65) * scale6;  // LOOK dunno about scale
+      Nr = getOctet4(69) * scale6;
+      Xo = getOctet4(73) * scale6;
+      Yo = getOctet4(77) * scale6;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
+      if (!super.equals(o)) return false;
+
+      SpaceViewPerspective that = (SpaceViewPerspective) o;
+
+      if (Float.compare(that.LaP, LaP) != 0) return false;
+      if (Float.compare(that.LoP, LoP) != 0) return false;
+      if (Float.compare(that.Nr, Nr) != 0) return false;
+      if (Float.compare(that.Xo, Xo) != 0) return false;
+      if (Float.compare(that.Xp, Xp) != 0) return false;
+      if (Float.compare(that.Yo, Yo) != 0) return false;
+      if (Float.compare(that.Yp, Yp) != 0) return false;
+      if (Float.compare(that.dX, dX) != 0) return false;
+      if (Float.compare(that.dY, dY) != 0) return false;
+      if (flags != that.flags) return false;
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      if (hashCode == 0) {
+        int result = super.hashCode();
+        result = 31 * result + (LaP != +0.0f ? Float.floatToIntBits(LaP) : 0);
+        result = 31 * result + (LoP != +0.0f ? Float.floatToIntBits(LoP) : 0);
+        result = 31 * result + (dX != +0.0f ? Float.floatToIntBits(dX) : 0);
+        result = 31 * result + (dY != +0.0f ? Float.floatToIntBits(dY) : 0);
+        result = 31 * result + (Xp != +0.0f ? Float.floatToIntBits(Xp) : 0);
+        result = 31 * result + (Yp != +0.0f ? Float.floatToIntBits(Yp) : 0);
+        result = 31 * result + (Nr != +0.0f ? Float.floatToIntBits(Nr) : 0);
+        result = 31 * result + (Xo != +0.0f ? Float.floatToIntBits(Xo) : 0);
+        result = 31 * result + (Yo != +0.0f ? Float.floatToIntBits(Yo) : 0);
+        result = 31 * result + (int) flags;
+        hashCode = result;
+      }
+      return hashCode;
+    }
+
+    /**
+     * Make a Eumetsat MSG "Normalized Geostationary Projection" projection.
+     * Fake coordinates for now, then see if this can be generalized.
+     * <p/>
+     * =======
+     * <p/>
+     * from  simon.elliott@eumetsat.int
+     * <p/>
+     * For products on a single pixel resolution grid, the scan angle is 83.84333 E-6 rad.
+     * So dx = 2 * arcsin(10e6/Nr) / 83.84333 E-6 = 3622.30, which encoded to the nearest integer is 3622.
+     * This is correctly encoded in our products.
+     * <p/>
+     * For products on a 3x3 pixel resolution grid, the scan angle is 3 * 83.84333 E-6 rad = 251.52999 E-6 rad.
+     * So dx = 2 * arcsin(10e6/Nr) / 251.52999 E-6 = 1207.43, which encoded to the nearest integer is 1207.
+     * This is correctly encoded in our products.
+     * <p/>
+     * Due to the elliptical shape of the earth, the calculation is a bit different in the y direction (Nr is in multiples of
+     * the equatorial radius, but the tangent point is much closer to the polar radius from the earth's centre.
+     * Approximating that the tangent point is actually at the polar radius from the earth's centre:
+     * The sine of the angle subtended by the Earths centre and the tangent point on the equator as seen from the spacecraft
+     * = Rp / (( Nr * Re) / 10^6) = (Rp * 10^6) / (Re * Nr)
+     * <p/>
+     * The angle subtended by the Earth equator as seen by the spacecraft is, by symmetry twice the inverse sine above,
+     * = 2 * arcsine ((Rp * 10^6) / (Re * Nr))
+     * <p/>
+     * For products on a single pixel resolution grid, the scan angle is 83.84333 E-6 rad.
+     * So dy = 2 * arcsine ((Rp * 10^6) / (Re * Nr)) / 83.84333 E-6 = 3610.06, which encoded to the nearest integer is 3610.
+     * This is currently encoded in our products as 3568.
+     * <p/>
+     * For products on a 3x3 pixel resolution grid, the scan angle is 3 * 83.84333 E-6 rad = 251.52999 E-6 rad.
+     * So dy = 2 * arcsine ((Rp * 10^6) / (Re * Nr)) / 251.52999 E-6 = 1203.35, which encoded to the nearest integer is 1203.
+     * This is currently encoded in our products as 1189.
+     * <p/>
+     * As you can see the dx and dy values we are using will lead to an error of around 1% in the y direction.
+     * I will ensure that the values are corrected to those explained here (3610 and 1203) as soon as possible.
+     */
+    public GdsHorizCoordSys makeHorizCoordSys() {
+
+      // per Simon Eliot 1/18/2010, there is a bug in Eumetsat grib files,
+      // we need to "correct for ellipsoidal earth"
+      // (Note we should check who the originating center is
+      // "Originating_center" = "EUMETSAT Operation Centre" in the GRIB id (section 1))
+      // although AFAIK, eumetsat is only one using this projection.
+      if (dY < 2100) {
+        dX = 1207;
+        dY = 1203;
+      } else {
+        dX = 3622;
+        dY = 3610;
+      }
+
+      // CFAC = 2^16 / {[2 * arcsine (10^6 / Nr)] / dx }
+      double as = 2 * Math.asin(1.0 / Nr);
+      double cfac = dX / as;
+      double lfac = dY / as;
+
+      // use km, so scale by the earth radius
+      double scale_factor = (Nr - 1) * majorAxis / 1000; // this sets the units of the projection x,y coords in km
+      double scale_x = scale_factor; // LOOK fake neg need scan value
+      double scale_y = -scale_factor; // LOOK fake neg need scan value
+      double startx = scale_factor * (1 - Xp) / cfac;
+      double starty = scale_factor * (Yp - ny) / lfac;
+      double incrx = scale_factor / cfac;
+      double incry = scale_factor / lfac;
+
+      MSGnavigation proj = new MSGnavigation(LaP, LoP, majorAxis, minorAxis, Nr * majorAxis, scale_x, scale_y);
+      return new GdsHorizCoordSys(proj, startx, incrx, starty, incry, nx, ny);
+    }
+
+    public void testHorizCoordSys(Formatter f) {
+      f.format("%s testProjection%n", getClass().getName());
+
+      GdsHorizCoordSys cs = makeHorizCoordSys();
+      double endx = cs.startx + (nx - 1) * cs.dx;
+      double endy = cs.starty + (ny - 1) * cs.dy;
+      ProjectionPointImpl endPP = new ProjectionPointImpl(endx, endy);
+      f.format("   start at proj coord= %s%n", new ProjectionPointImpl(cs.startx, cs.starty));
+      f.format("     end at proj coord= %s%n", endPP);
+
+      LatLonPointImpl startLL = new LatLonPointImpl(LaP, LoP);
+      LatLonPoint endLL = cs.proj.projToLatLon(endPP, new LatLonPointImpl());
+
+      f.format("  start at latlon= %s%n", startLL);
+      f.format("    end at latlon= %s%n", endLL);
+    }
+
+  }
+
+  /*
+ Curvilinear Orthogonal Grids (NCEP grid 206)
+Octet	Contents
+15 Shape of the Earth (See Table 3.2)
+16 Scale Factor of radius of spherical Earth
+17-20 Scale value of radius of spherical Earth
+21 Scale factor of major axis of oblate spheroid Earth
+22-25 Scaled value of major axis of oblate spheroid Earth
+26 Scale factor of minor axis of oblate spheroid Earth
+27-30 Scaled value of minor axis of oblate spheroid Earth
+31-34 Ni number of points along a parallel
+35-38 Nj number of points along a meridian
+39-54 Reserved (set to zero)
+55 Resolution and component flags (see Table 3.3)
+56-71 Reserved (set to zero)
+72 Scanning mode (flags  see Table 3.4)
+   */
+
+  public static class CurvilinearOrthogonal extends Grib2Gds {
+    public byte flags;
+
+    CurvilinearOrthogonal(byte[] data) {
+      super(data, 206);
+
+      flags = (byte) getOctet(55);
+      scanMode = (byte) getOctet(72);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
+      if (!super.equals(o)) return false;
+
+      CurvilinearOrthogonal that = (CurvilinearOrthogonal) o;
+
+      if (flags != that.flags) return false;
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      if (hashCode == 0) {
+        int result = super.hashCode();
+        result = 31 * result + (int) flags;
+        hashCode = result;
+      }
+      return hashCode;
+    }
+
+    public GdsHorizCoordSys makeHorizCoordSys() {
+      LatLonProjection proj = new LatLonProjection();
+      return new GdsHorizCoordSys(proj, 0, 1, 0, 1, nx, ny);
+    }
+
+    public void testHorizCoordSys(Formatter f) {
+    }
+
+  }
+
+  ///////////////////////////////////////////////
+  static void check(int a, int b) {
+    System.out.printf("%d, %d : ", a, b);
+    a = (a+5)/10;
+    b= (b+5)/10;
+    System.out.printf("%d, %d = %s%n", a, b, (a == b));
+  }
+  public static void main(String[] args) {
+    check(20192000, 20191999);
+    check(238446000,238445999);
+    check(5079360, 5079361);
+    check(5079360, 5079362);
+    check(5079361, 5079362);
+  }
+
+}

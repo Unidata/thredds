@@ -32,7 +32,7 @@
  */
 package thredds.servlet.filter;
 
-import ucar.unidata.util.EscapeStrings;
+import ucar.nc2.util.net.EscapeStrings;
 import thredds.util.StringValidateEncodeUtils;
 import thredds.servlet.UsageLog;
 

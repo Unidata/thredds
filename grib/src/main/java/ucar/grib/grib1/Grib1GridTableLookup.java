@@ -39,13 +39,13 @@
 
 package ucar.grib.grib1;
 
-import ucar.grid.GridTableLookup;
-import ucar.grid.GridDefRecord;
-import ucar.grid.GridRecord;
-import ucar.grid.GridParameter;
+import ucar.nc2.iosp.grid.GridTableLookup;
+import ucar.nc2.iosp.grid.*;
+import ucar.nc2.iosp.grid.GridRecord;
 import ucar.grib.GribGridRecord;
 import ucar.grib.GribNumbers;
 import ucar.grib.NotSupportedException;
+import ucar.nc2.iosp.grid.GridDefRecord;
 
 public class Grib1GridTableLookup implements GridTableLookup {
   static private org.slf4j.Logger logger =

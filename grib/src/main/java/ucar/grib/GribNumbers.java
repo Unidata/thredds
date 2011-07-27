@@ -368,4 +368,11 @@ public final class GribNumbers {
       return diff < maxRelativeError;
     }
 
+  public static void main(String[] args) {
+    int a = 128;
+    int b = 1;
+    System.out.printf("%d%n", int2(a,b));
+    assert int2(a,b) == -1;
+  }
+
 }  // end GribNumbers

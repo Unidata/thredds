@@ -370,6 +370,29 @@ public class StringUtil {
           "&amp;", "&quot;", "&apos;", "&lt;", "&gt;", "&#13;", "&#10;"
   };
 
+  static public String makeValidCdmObjectName(String name) {
+    // common case no change
+    boolean ok = true;
+    for (int i = 0; i < name.length(); i++) {
+      int c = name.charAt(i);
+      if (c < 0x20) ok = false;
+      if (c == '/') ok = false;
+      if (!ok) break;
+    }
+    if (ok) return name.trim();
+
+    name = name.trim();
+    StringBuilder sbuff = new StringBuilder(name.length());
+    for (int i = 0, len = name.length(); i < len; i++) {
+      int c = name.charAt(i);
+      if (c == 0x2f)
+        sbuff.append('_');
+      else if (c >= 0x20)
+        sbuff.append((char) c);
+    }
+    return sbuff.toString();
+  }
+
   /**
    * Replace all occurences of replaceChar with replaceWith
    *
@@ -564,17 +587,28 @@ public class StringUtil {
     return sb.toString();
   }
 
-
   /**
    * Escape any char not alphanumeric or in okChars.
    * Escape by replacing char with %xx (hex).
-   * LOOK: need to check for %, replace with %%
    *
    * @param x       escape this string
    * @param okChars these are ok.
    * @return equivilent escaped string.
    */
   static public String escape(String x, String okChars) {
+    String newname = "";
+    for (char c : x.toCharArray()) {
+      if (c == '%') {
+        newname = newname + "%%";
+      } else if (!Character.isLetterOrDigit(c) && okChars.indexOf(c) < 0) {
+        newname = newname + '%' + Integer.toHexString((0xFF & (int) c));
+      } else
+        newname = newname + c;
+    }
+    return newname;
+  }
+
+  static public String ignoreescape(String x, String okChars) {
     boolean ok = true;
     for (int pos = 0; pos < x.length(); pos++) {
       char c = x.charAt(pos);
@@ -616,6 +650,19 @@ public class StringUtil {
    * @return equivilent escaped string.
    */
   static public String escape2(String x, String reservedChars) {
+    String newname = "";
+    for (char c : x.toCharArray()) {
+      if (c == '%') {
+        newname = newname + "%%";
+      } else if (reservedChars.indexOf(c) >= 0) {
+        newname = newname + '%' + Integer.toHexString((0xFF & (int) c));
+      } else
+        newname = newname + c;
+    }
+    return newname;
+  }
+
+  static public String ignoreescape2(String x, String reservedChars) {
     boolean ok = true;
     for (int pos = 0; pos < x.length(); pos++) {
       char c = x.charAt(pos);
@@ -771,6 +818,9 @@ public class StringUtil {
       char c = sb.charAt(pos);
       if (c != '%') {
         continue;
+      }
+      if (pos >= sb.length() - 2) { // malformed - should be %xx
+        return x;
       }
       b[0] = sb.charAt(pos + 1);
       b[1] = sb.charAt(pos + 2);
@@ -2547,8 +2597,12 @@ public class StringUtil {
   ///////////////////////////////////////////////////////////////////////////////////////
 
   public static void main(String args[]) {
-    String s = " ";
-    System.out.printf("escape(%s) == %s%n", s, escape(s, ""));
+    byte[] b = new byte[] {10};
+    //String s = new String(b);
+    String s = "\n";
+    System.out.printf("quoteXmlAttribute(%s) == %s%n", s, StringUtil.quoteXmlAttribute(s));
+    String s2 = StringUtil.quoteXmlAttribute(s);
+    System.out.printf("unquoteXmlAttribute(%s) == '%s'%n", s2, StringUtil.unquoteXmlAttribute(s2));
   }
 
   /**

@@ -39,10 +39,10 @@
 package ucar.grib.grib2;
 
 import ucar.grib.grib1.Grib1Tables;
-import ucar.grid.GridTableLookup;
-import ucar.grid.GridParameter;
-import ucar.grid.GridDefRecord;
-import ucar.grid.GridRecord;
+import ucar.nc2.iosp.grid.GridTableLookup;
+import ucar.nc2.iosp.grid.GridParameter;
+import ucar.nc2.iosp.grid.GridDefRecord;
+import ucar.nc2.iosp.grid.GridRecord;
 
 import ucar.grib.GribGridRecord;
 import ucar.grib.GribNumbers;

@@ -41,8 +41,8 @@
 
 package ucar.grib;
 
-import ucar.grid.GridIndex;
-import ucar.grid.GridDefRecord;
+import ucar.nc2.iosp.grid.GridIndex;
+import ucar.nc2.iosp.grid.GridDefRecord;
 
 import java.io.*;
 import java.util.StringTokenizer;

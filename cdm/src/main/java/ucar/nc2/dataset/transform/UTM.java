@@ -33,6 +33,7 @@
 
 package ucar.nc2.dataset.transform;
 
+import ucar.nc2.Attribute;
 import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.CoordinateTransform;
 import ucar.nc2.dataset.ProjectionCT;
