@@ -46,6 +46,7 @@ package thredds.server.radarServer;
 
 import thredds.servlet.*;
 import thredds.catalog.*;
+import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateRange;
 
 import java.io.*;
@@ -330,16 +331,16 @@ public class RadarServer extends AbstractServlet {
 
         pw.println("    <documentation type=\"summary\">" + ds.getSummary() +
             "</documentation>");
-        DateRange dr = ds.getTimeCoverage();
+        CalendarDateRange dr = ds.getCalendarDateCoverage();
         pw.println("      <TimeSpan>");
         pw.print("        <start>");
         if (pathInfo.contains("IDD")) {
           pw.print(rm.getStartDateTime(ds.getPath()));
         } else {
-          pw.print(dr.getStart().toDateTimeStringISO());
+          pw.print(dr.getStart().toString());
         }
         pw.println("</start>");
-        pw.println("        <end>" + dr.getEnd().toDateTimeStringISO() + "</end>");
+        pw.println("        <end>" + dr.getEnd().toString() + "</end>");
         pw.println("      </TimeSpan>");
         ThreddsMetadata.GeospatialCoverage gc = ds.getGeospatialCoverage();
         LatLonRect bb = new LatLonRect();
@@ -412,9 +413,9 @@ public class RadarServer extends AbstractServlet {
 
       // get the time range
       Element timeSpan = new Element("TimeSpan");
-      DateRange dr = ds.getTimeCoverage();
-      timeSpan.addContent(new Element("begin").addContent(dr.getStart().toDateTimeStringISO()));
-      timeSpan.addContent(new Element("end").addContent(dr.getEnd().toDateTimeStringISO()));
+      CalendarDateRange dr = ds.getCalendarDateCoverage();
+      timeSpan.addContent(new Element("begin").addContent(dr.getStart().toString()));
+      timeSpan.addContent(new Element("end").addContent(dr.getEnd().toString()));
       root.addContent(timeSpan);
 
       ThreddsMetadata.Variables cvs = (ThreddsMetadata.Variables) ds.getVariables().get(0);

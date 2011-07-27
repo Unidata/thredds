@@ -57,8 +57,8 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
   protected Structure orgVar; // wrap this Variable
   private String orgName; // in case Variable wwas renamed, and we need the original name for aggregation
 
-  protected StructureDS( NetcdfFile ncfile, Group group, String shortName) {
-    super (ncfile, group, null, shortName);
+  protected StructureDS(NetcdfFile ncfile, Group group, String shortName) {
+    super(ncfile, group, null, shortName);
   }
 
   /**
@@ -73,7 +73,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
    * @param desc            description (may be null)
    */
   public StructureDS(NetcdfDataset ds, Group group, Structure parentStructure, String shortName,
-          String dims, String units, String desc) {
+                     String dims, String units, String desc) {
 
     super(ds, group, parentStructure, shortName);
     setDimensions(dims);
@@ -120,7 +120,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
     if (v instanceof Sequence) {
       newVar = new SequenceDS(g, (Sequence) v);
     } else if (v instanceof Structure) {
-        newVar = new StructureDS(g, (Structure) v);
+      newVar = new StructureDS(g, (Structure) v);
     } else {
       newVar = new VariableDS(g, v, false); // enhancement done later
     }
@@ -154,12 +154,14 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
   }
 
   // for section and slice and select
+
   @Override
   protected Variable copy() {
     return new StructureDS(this.group, this);
   }
 
   // copy() doesnt work because convert gets called twice
+
   @Override
   public Structure select(List<String> memberNames) {
     StructureDS result = new StructureDS(this.group, orgVar);
@@ -218,6 +220,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
   }
 
   // regular Variables.
+
   @Override
   public Array reallyRead(Variable client, CancelTask cancelTask) throws IOException {
     Array result;
@@ -236,6 +239,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
   }
 
   // section of regular Variable
+
   @Override
   public Array reallyRead(Variable client, Section section, CancelTask cancelTask) throws IOException, InvalidRangeException {
     if (section.computeSize() == getSize())
@@ -268,9 +272,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
         VariableDS vds = (VariableDS) v;
         if (vds.needConvert())
           return true;
-      }
-
-      else if (v instanceof StructureDS) {
+      } else if (v instanceof StructureDS) {
         StructureDS nested = (StructureDS) v;
         if (nested.convertNeeded(null))
           return true;
@@ -288,6 +290,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
   //   1) scale/offset/enum conversion
   //   2) name, info change
   //   3) variable with cached data added to StructureDS through NcML
+
   protected ArrayStructure convert(Array data, Section section) throws IOException {
     ArrayStructure orgAS = (ArrayStructure) data;
     if (!convertNeeded(orgAS.getStructureMembers())) {
@@ -363,6 +366,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
   }
 
   /* convert original structureData to one that conforms to this Structure */
+
   protected StructureData convert(StructureData sdata, int recno) throws IOException {
     if (!convertNeeded(sdata.getStructureMembers())) {
       // name, info change only
@@ -396,32 +400,32 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
       // recurse into sub-structures
       if (v2 instanceof StructureDS) {
         StructureDS innerStruct = (StructureDS) v2;
-       // if (innerStruct.convertNeeded(null)) {
+        // if (innerStruct.convertNeeded(null)) {
 
-          if (innerStruct.getDataType() == DataType.SEQUENCE) {
-            Array a = sdata.getArray(m);
+        if (innerStruct.getDataType() == DataType.SEQUENCE) {
+          Array a = sdata.getArray(m);
 
-            if (a instanceof ArrayObject.D1) { // LOOK when does this happen vs ArraySequence?
-              ArrayObject.D1 seqArray = (ArrayObject.D1) a;
-              ArrayObject.D1 newSeq = new ArrayObject.D1(ArraySequence.class, (int) seqArray.getSize());
-              mResult.setDataArray(newSeq); // put into result member array
+          if (a instanceof ArrayObject.D1) { // LOOK when does this happen vs ArraySequence?
+            ArrayObject.D1 seqArray = (ArrayObject.D1) a;
+            ArrayObject.D1 newSeq = new ArrayObject.D1(ArraySequence.class, (int) seqArray.getSize());
+            mResult.setDataArray(newSeq); // put into result member array
 
-              for (int i = 0; i < seqArray.getSize(); i++) {
-                ArraySequence innerSeq = (ArraySequence) seqArray.get(i); // get old ArraySequence
-                newSeq.set(i, new SequenceConverter(innerStruct, innerSeq)); // wrap in converter
-              }
-
-            } else {
-              ArraySequence seqArray = (ArraySequence) a;
-              result.setMemberData(mResult, new SequenceConverter(innerStruct, seqArray)); // wrap in converter
+            for (int i = 0; i < seqArray.getSize(); i++) {
+              ArraySequence innerSeq = (ArraySequence) seqArray.get(i); // get old ArraySequence
+              newSeq.set(i, new SequenceConverter(innerStruct, innerSeq)); // wrap in converter
             }
 
-            // non-Sequence Structures
           } else {
-            Array mdata = sdata.getArray(m);
-            mdata = innerStruct.convert(mdata, null);
-            result.setMemberData(mResult, mdata);
+            ArraySequence seqArray = (ArraySequence) a;
+            result.setMemberData(mResult, new SequenceConverter(innerStruct, seqArray)); // wrap in converter
           }
+
+          // non-Sequence Structures
+        } else {
+          Array mdata = sdata.getArray(m);
+          mdata = innerStruct.convert(mdata, null);
+          result.setMemberData(mResult, mdata);
+        }
         //}
 
         // always convert the inner StructureMembers
@@ -450,6 +454,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
   }
 
   // the wrapper StructureMembers must be converted to correspond to the wrapper Structure
+
   private void convertMemberInfo(StructureMembers wrapperSm) {
     for (StructureMembers.Member m : wrapperSm.getMembers()) {
       Variable v = findVariable(m.getName());
@@ -457,8 +462,8 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
         v = (Variable) findVariableFromOrgName(m.getName());
 
       if (v != null) // a section will have missing variables LOOK wrapperSm probbably wrong in that case
-      //  log.error("Cant find " + m.getName());
-      //else
+        //  log.error("Cant find " + m.getName());
+        //else
         m.setVariableInfo(v.getShortName(), v.getDescription(), v.getUnitsString(), v.getDataType());
 
       // nested structures
@@ -471,6 +476,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
   }
 
   // look for the top variable that has an orgVar with the wanted orgName
+
   private VariableEnhanced findVariableFromOrgName(String orgName) {
     for (Variable vTop : getVariables()) {
       Variable v = vTop;
@@ -485,6 +491,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
   }
 
   // verify that the variable has data in the data array
+
   private boolean varHasData(Variable v, StructureMembers sm) {
     if (sm.findMember(v.getShortName()) != null) return true;
     while (v instanceof VariableEnhanced) {
@@ -546,13 +553,18 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
 
     @Override
     public StructureDataIterator reset() {
-      orgIter.reset();
-      return this;
+      orgIter = orgIter.reset();
+      return (orgIter == null) ? null : this;
     }
 
     @Override
     public int getCurrentRecno() {
       return orgIter.getCurrentRecno();
+    }
+
+    @Override
+    public void finish() {
+      orgIter.finish();
     }
   }
 
@@ -567,75 +579,75 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
      return new Structure.Iterator(bufferSize);
    } */
 
-   /* Experimental - convert entire original array at once, to avoid one-by-one StructureData conversion.
-   private class Iterator implements StructureDataIterator {
-     private int count = 0;
-     private int recnum = (int) getSize();
-     private int readStart = 0;
-     private int readCount = 0;
-     private int readAtaTime;
-     private ArrayStructure as = null;
-     private Index ii = null;
+  /* Experimental - convert entire original array at once, to avoid one-by-one StructureData conversion.
+private class Iterator implements StructureDataIterator {
+  private int count = 0;
+  private int recnum = (int) getSize();
+  private int readStart = 0;
+  private int readCount = 0;
+  private int readAtaTime;
+  private ArrayStructure as = null;
+  private Index ii = null;
 
-     protected Iterator(int bufferSize) {
-       setBufferSize( bufferSize);
-       reset();
-     }
+  protected Iterator(int bufferSize) {
+    setBufferSize( bufferSize);
+    reset();
+  }
 
-     public boolean hasNext() { return count < recnum; }
+  public boolean hasNext() { return count < recnum; }
 
-     public StructureDataIterator reset() {
-       count = 0;
-       readStart = 0;
-       readCount = 0;
-       ii = Index.factory(shape); // convert to nD index
+  public StructureDataIterator reset() {
+    count = 0;
+    readStart = 0;
+    readCount = 0;
+    ii = Index.factory(shape); // convert to nD index
 
-       return this;
-     }
+    return this;
+  }
 
-     public StructureData next() throws IOException {
-       if (count >= readStart) {
-         if (getRank() == 1) readNextRank1();
-         else readNextGeneralRank();
-       }
+  public StructureData next() throws IOException {
+    if (count >= readStart) {
+      if (getRank() == 1) readNextRank1();
+      else readNextGeneralRank();
+    }
 
-       count++;
-       return as.getStructureData( readCount++);
-     }
+    count++;
+    return as.getStructureData( readCount++);
+  }
 
-     private void readNextRank1() throws IOException {
-       int left = Math.min(recnum, readStart+readAtaTime); // dont go over recnum
-       int need = left - readStart; // how many to read this time
-       try {
-         // System.out.println(" read start= "+readStart+" count= "+need);
-         as = readStructure( readStart, need);
+  private void readNextRank1() throws IOException {
+    int left = Math.min(recnum, readStart+readAtaTime); // dont go over recnum
+    int need = left - readStart; // how many to read this time
+    try {
+      // System.out.println(" read start= "+readStart+" count= "+need);
+      as = readStructure( readStart, need);
 
-       } catch (InvalidRangeException e) {
-         log.error("Structure.Iterator.readNext() ",e);
-         throw new IllegalStateException("Structure.Iterator.readNext() ",e);
-       } // cant happen
+    } catch (InvalidRangeException e) {
+      log.error("Structure.Iterator.readNext() ",e);
+      throw new IllegalStateException("Structure.Iterator.readNext() ",e);
+    } // cant happen
 
-       readStart += need;
-       readCount = 0;
-     }
+    readStart += need;
+    readCount = 0;
+  }
 
-     private void readNextGeneralRank() throws IOException {
-      ii.setCurrentCounter(index);
-      int[] origin = ii.getCurrentCounter();
-      section = new Section();
-      for (int i=0;i<origin.length;i++)
-        section.appendRange(origin[i], origin[i]);
-     }
+  private void readNextGeneralRank() throws IOException {
+   ii.setCurrentCounter(index);
+   int[] origin = ii.getCurrentCounter();
+   section = new Section();
+   for (int i=0;i<origin.length;i++)
+     section.appendRange(origin[i], origin[i]);
+  }
 
-     public void setBufferSize(int bytes) {
-       if (count > 0) return; // too late
-       int structureSize = calcStructureSize();
-       if (bytes <= 0)
-         bytes = defaultBufferSize;
-       readAtaTime = Math.max( 10, bytes / structureSize);
-     }
+  public void setBufferSize(int bytes) {
+    if (count > 0) return; // too late
+    int structureSize = calcStructureSize();
+    if (bytes <= 0)
+      bytes = defaultBufferSize;
+    readAtaTime = Math.max( 10, bytes / structureSize);
+  }
 
-   }  */
+}  */
 
   ///////////////////////////////////////////////////////////
 
@@ -651,7 +663,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
   }
 
   public void clearCoordinateSystems() {
-    this.proxy = new EnhancementsImpl( this, getUnitsString(), getDescription());
+    this.proxy = new EnhancementsImpl(this, getUnitsString(), getDescription());
   }
 
   public void addCoordinateSystem(ucar.nc2.dataset.CoordinateSystem p0) {

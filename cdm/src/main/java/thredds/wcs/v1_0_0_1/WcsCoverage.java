@@ -37,6 +37,7 @@ import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.grid.NetcdfCFWriter;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
+import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.DiskCache2;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateType;
@@ -188,7 +189,7 @@ public class WcsCoverage
     return diskCache;
   }
 
-  public File writeCoverageDataToFile( Request.Format format, LatLonRect bboxLatLonRect, VerticalRange verticalRange, DateRange timeRange)
+  public File writeCoverageDataToFile( Request.Format format, LatLonRect bboxLatLonRect, VerticalRange verticalRange, CalendarDateRange timeRange)
           throws WcsException
   {
     // Get the height range.
@@ -208,17 +209,15 @@ public class WcsCoverage
     if ( timeRange != null )
     {
       CoordinateAxis1DTime timeAxis = this.coordSys.getTimeAxis1D();
-      DateType requestStartTime = timeRange.getStart();
-      DateType requestEndTime = timeRange.getEnd();
-      int startIndex = timeAxis.findTimeIndexFromDate( requestStartTime.getDate() );
-      int endIndex = timeAxis.findTimeIndexFromDate( requestEndTime.getDate() );
+      int startIndex = timeAxis.findTimeIndexFromCalendarDate( timeRange.getStart() );
+      int endIndex = timeAxis.findTimeIndexFromCalendarDate( timeRange.getEnd() );
       if ( startIndex < 0 || startIndex > timeAxis.getSize() -1
            || endIndex < 0 || endIndex > timeAxis.getSize() - 1 )
       {
-        String availStart = timeAxis.getDateRange().getStart().toDateTimeStringISO();
-        String availEnd = timeAxis.getDateRange().getEnd().toDateTimeStringISO();
-        String msg = "Requested temporal range [" + requestStartTime.toDateTimeStringISO()
-                     + " - " + requestEndTime.toDateTimeStringISO()
+        CalendarDateRange cdr = timeAxis.getCalendarDateRange();
+        String availStart = cdr.getStart().toString();
+        String availEnd = cdr.getEnd().toString();
+        String msg = "Requested temporal range [" + timeRange.getStart() + " - " + timeRange.getEnd()
                      + "] not in available range [" + availStart + " - " + availEnd + "].";
         log.debug( "writeCoverageDataToFile(): " + msg );
         throw new WcsException( WcsException.Code.CoverageNotDefined, "Time", msg );

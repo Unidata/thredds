@@ -59,16 +59,15 @@ import java.io.IOException;
  */
 
 public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GeoGrid.class);
+  static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GeoGrid.class);
+  static private final boolean debugArrayShape = false;
 
-  private GridDataset dataset;
-  private GridCoordSys gcs;
-  private VariableDS vs;
+  private final GridDataset dataset;
+  private final GridCoordSys gcs;
+  private final VariableDS vs;
   private int xDimOrgIndex = -1, yDimOrgIndex = -1, zDimOrgIndex = -1, tDimOrgIndex = -1, eDimOrgIndex = -1, rtDimOrgIndex = -1;
   private int xDimNewIndex = -1, yDimNewIndex = -1, zDimNewIndex = -1, tDimNewIndex = -1, eDimNewIndex = -1, rtDimNewIndex = -1;
-  private List<Dimension> mydims;
-
-  private boolean debugArrayShape = false;
+  private final List<Dimension> mydims;
 
   /**
    * Constructor.
@@ -275,7 +274,7 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
    * get the rank
    */
   public int getRank() {
-    return vs.getRank();
+    return mydims.size();
   }
 
   /**

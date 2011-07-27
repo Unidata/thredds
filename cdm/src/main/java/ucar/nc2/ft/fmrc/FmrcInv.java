@@ -33,6 +33,9 @@
 package ucar.nc2.ft.fmrc;
 
 import net.jcip.annotations.Immutable;
+import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateRange;
+import ucar.nc2.time.CalendarPeriod;
 
 import java.util.*;
 
@@ -55,11 +58,11 @@ import java.util.*;
 public class FmrcInv {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FmrcInv.class);
 
-  public static Date addHour(Date d, double hour) {
+  /* public static CalendarDate addHour(CalendarDate d, double hour) {
     long msecs = d.getTime();
     msecs += hour * 3600 * 1000;
     return new Date(msecs);
-  }
+  }  */
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////
   private final String name; // name of ForecastModelRunCollection
@@ -80,13 +83,13 @@ public class FmrcInv {
   private final List<UberGrid> uberGridList;              // sorted list of UberGrid
 
   // all run times
-  private final List<Date> runTimeList;                // sorted list of Date: all run times
+  private final List<CalendarDate> runTimeList;                // sorted list of Date: all run times
 
   // track offsets and bounds
-  private final Date baseDate;            // first runtime : offsetsAll calculated from here
+  private final CalendarDate baseDate;            // first runtime : offsetsAll calculated from here
 
   // all forecast times
-  private final List<Date> forecastTimeList;          // sorted list of Date : all forecast times
+  private final List<CalendarDate> forecastTimeList;          // sorted list of Date : all forecast times
 
   private Calendar cal;
 
@@ -107,19 +110,19 @@ public class FmrcInv {
     this.regularize = regularize;
 
     this.fmrList = new ArrayList<FmrInv>(fmrList);
-    runTimeList = new ArrayList<Date>();
+    runTimeList = new ArrayList<CalendarDate>();
 
-    Date firstDate = null;
+    CalendarDate firstDate = null;
     Map<String, UberGrid> uvHash = new HashMap<String, UberGrid>();
     Set<Double> offsetHash = new HashSet<Double>();
     Set<TimeCoord.Tinv> intervalHash = new HashSet<TimeCoord.Tinv>();
-    Set<Date> forecastTimeHash = new HashSet<Date>();
+    Set<CalendarDate> forecastTimeHash = new HashSet<CalendarDate>();
     for (FmrInv fmrInv : fmrList) {
       runTimeList.add(fmrInv.getRunDate());
       if (firstDate == null) firstDate = fmrInv.getRunDate();
 
       // hour of this runDate
-      int hour = getHour(fmrInv.getRunDate());
+      int hour = fmrInv.getRunDate().getHourOfDay();
 
       // for each GridVariable, add to the UberGrid
       for (FmrInv.GridVariable fmrGrid : fmrInv.getGrids()) {
@@ -138,8 +141,8 @@ public class FmrcInv {
           double[] bounds1 =  tc.getBound1();
           double[] bounds2 =  tc.getBound2();
           for (int i=0; i<bounds1.length; i++) {
-            Date date1 = addHour(fmrInv.getRunDate(),  bounds1[i]);
-            Date date2 = addHour(fmrInv.getRunDate(),  bounds2[i]);
+            CalendarDate date1 = fmrInv.getRunDate().add(bounds1[i], CalendarPeriod.Hour);
+            CalendarDate date2 = fmrInv.getRunDate().add(bounds2[i], CalendarPeriod.Hour);
             forecastTimeHash.add(date2); // second is used as the forecast date
             double b1 = getOffsetInHours(firstDate, date1);
             double b2 = getOffsetInHours(firstDate, date2);
@@ -149,7 +152,7 @@ public class FmrcInv {
         } else {
           // regular single time offset - add to offsetHash
           for (double offset : tc.getOffsetTimes()) {
-            Date fcDate = addHour(fmrInv.getRunDate(), offset);
+            CalendarDate fcDate = fmrInv.getRunDate().add(offset, CalendarPeriod.Hour);
             forecastTimeHash.add(fcDate); // track all forecast times
             double d = getOffsetInHours(firstDate, fcDate);
             offsetHash.add(d); // track all offset hours, calculated from baseDate
@@ -173,7 +176,7 @@ public class FmrcInv {
     }
 
     // create the overall list of forecast times
-    forecastTimeList = Arrays.asList((Date[]) forecastTimeHash.toArray(new Date[forecastTimeHash.size()]));
+    forecastTimeList = Arrays.asList((CalendarDate[]) forecastTimeHash.toArray(new CalendarDate[forecastTimeHash.size()]));
     Collections.sort(forecastTimeList);
 
     // create the overall list of offsets - may be zero
@@ -199,15 +202,6 @@ public class FmrcInv {
   // public for debugging
   public List<FmrInv> getFmrList() {
     return fmrList;
-  }
-
-  private int getHour(Date d) {
-    if (cal == null) {
-      cal = Calendar.getInstance();
-      cal.setTimeZone(TimeZone.getTimeZone("GMT"));
-    }
-    cal.setTime(d);
-    return cal.get(Calendar.HOUR_OF_DAY);
   }
 
   /* private UberGrid findVar(String varName) {
@@ -259,7 +253,7 @@ public class FmrcInv {
   }
 
 
-  public List<Date> getForecastTimes() {
+  public List<CalendarDate> getForecastTimes() {
     return forecastTimeList;
   }
 
@@ -267,7 +261,7 @@ public class FmrcInv {
     return fmrList;
   }
 
-  public Date getBaseDate() {
+  public CalendarDate getBaseDate() {
     return baseDate;
   }
 
@@ -281,8 +275,8 @@ public class FmrcInv {
    * @param forecast date2
    * @return (forecast minus base) difference in hours
    */
-  public static double getOffsetInHours(Date base, Date forecast) {
-    double diff = forecast.getTime() - base.getTime();
+  public static double getOffsetInHours(CalendarDate base, CalendarDate forecast) {
+    long diff = forecast.getDifferenceInMsecs(base);
     return diff / 1000.0 / 60.0 / 60.0;
   }
 
@@ -292,9 +286,8 @@ public class FmrcInv {
    * @param offset hourss
    * @return base + offset as a Date
    */
-  public static Date makeOffsetDate(Date base, double offset) {
-    long time = base.getTime() + (long) (offset * 60 * 60 * 1000);
-    return new Date(time);
+  public static CalendarDate makeOffsetDate(CalendarDate base, double offset) {
+    return base.add(offset, CalendarPeriod.Hour);
   }
 
   ////////////////////////////////////////////////////////////////////
@@ -420,8 +413,8 @@ public class FmrcInv {
         // create groups of runs with the same runtime hour (integer offset from 0Z)
         Map<Integer, HourGroup> hourMap = new HashMap<Integer, HourGroup>();
         for (FmrInv.GridVariable grid : runs) {
-          Date runDate = grid.getRunDate();
-          int hour = getHour(runDate);
+          CalendarDate runDate = grid.getRunDate();
+          int hour = runDate.getHourOfDay();
           HourGroup hg = hourMap.get(hour);
           if (hg == null) {
             hg = new HourGroup(hour);
@@ -507,7 +500,7 @@ public class FmrcInv {
    */
   // immutable after UberGrid.finish() is called.
   public class RunSeq {
-    private final HashMap<Date, TimeCoord> coordMap; // runDate, timeExpected
+    private final HashMap<CalendarDate, TimeCoord> coordMap; // runDate, timeExpected
     private final List<UberGrid> vars = new ArrayList<UberGrid>(); // list of UberGrid that use this
     private int id;
     private List<TimeCoord> timeList = null; // timeList has differing runDates
@@ -515,10 +508,10 @@ public class FmrcInv {
     private boolean isInterval;
 
     RunSeq(List<FmrInv.GridVariable> runs) {
-      this.coordMap = new HashMap<Date, TimeCoord>(2 * runs.size());
+      this.coordMap = new HashMap<CalendarDate, TimeCoord>(2 * runs.size());
 
       // make sure every date has a slot
-      for (Date d : runTimeList)
+      for (CalendarDate d : runTimeList)
         this.coordMap.put(d, TimeCoord.EMPTY);
 
       // overwrite with actual coords

@@ -32,9 +32,9 @@
  */
 package ucar.nc2.iosp.hdf5;
 
+import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.Misc;
 import ucar.unidata.io.RandomAccessFile;
-import ucar.nc2.units.DateFormatter;
 import ucar.nc2.*;
 import ucar.nc2.EnumTypedef;
 import ucar.nc2.iosp.netcdf3.N3iosp;
@@ -1189,14 +1189,15 @@ public class H5header {
     for (HeaderMessage mess : messages) {
       if (mess.mtype == MessageType.LastModified) {
         MessageLastModified m = (MessageLastModified) mess.messData;
-        Date d = new Date((long) m.secs * 1000);
-        attributes.add(new Attribute("_lastModified", formatter.toDateTimeStringISO(d)));
+        CalendarDate cd = CalendarDate.of((long) (m.secs * 1000));
+        attributes.add(new Attribute("_lastModified", cd.toString()));
 
       } else if (mess.mtype == MessageType.LastModifiedOld) {
         MessageLastModifiedOld m = (MessageLastModifiedOld) mess.messData;
         try {
           Date d = getHdfDateFormatter().parse(m.datemod);
-          attributes.add(new Attribute("_lastModified", formatter.toDateTimeStringISO(d)));
+          CalendarDate cd = CalendarDate.of(d);
+          attributes.add(new Attribute("_lastModified", cd.toString()));
         }
         catch (ParseException ex) {
           debugOut.println("ERROR parsing date from MessageLastModifiedOld = " + m.datemod);
@@ -4263,6 +4264,10 @@ public class H5header {
         }
       }
 
+      void first() {
+
+      }
+
       // this finds the first entry we dont want to skip.
       // entry i goes from [offset(i),offset(i+1))
       // we want to skip any entries we dont need, namely those where want >= offset(i+1)
@@ -4273,8 +4278,8 @@ public class H5header {
           /* note nentries-1 - assume dont skip the last one
           for (currentEntry = 0; currentEntry < nentries-1; currentEntry++) {
             DataChunk entry = myEntries.get(currentEntry + 1);
-            if ((wantOrigin == null) || tiling.compare(wantOrigin, entry.offset) < 0) break;
-          }   */
+            if ((wantOrigin == null) || tiling.compare(wantOrigin, entry.offset) < 0) break;   // LOOK ??
+          } */
 
         } else {
           currentNode = null;
@@ -4394,7 +4399,7 @@ public class H5header {
   /**
    * Fetch a Vlen data array.
    *
-   * @param globalHeapIdAddress address of the heapId, used to get the data out of the heap
+   * @param globalHeapIdAddress address of the heapId, used to get the String out of the heap
    * @param dataType type of data
    * @param endian byteOrder of the data (0 = BE, 1 = LE)
    * @return String the String read from the heap
@@ -4403,10 +4408,6 @@ public class H5header {
   Array getHeapDataArray(long globalHeapIdAddress, DataType dataType, int endian) throws IOException {
     HeapIdentifier heapId = new HeapIdentifier(globalHeapIdAddress);
     if (debugHeap) debugOut.println(" heapId= " + heapId);
-    if (heapId.isEmpty()) {
-      return Array.factory(dataType.getPrimitiveClassType(), new int[]{0});
-    }
-
     GlobalHeap.HeapObject ho = heapId.getHeapObject();
     if (debugHeap) debugOut.println(" HeapObject= " + ho);
     if (endian >= 0) raf.order(endian);

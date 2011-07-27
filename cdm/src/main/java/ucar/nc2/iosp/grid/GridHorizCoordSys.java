@@ -38,6 +38,7 @@ import ucar.ma2.Array;
 import ucar.ma2.DataType;
 
 import ucar.nc2.*;
+import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.units.SimpleUnit;
@@ -46,11 +47,6 @@ import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.*;
 import ucar.unidata.geoloc.projection.sat.MSGnavigation;
 import ucar.unidata.util.GaussianLatitudes;
-import ucar.grid.GridTableLookup;
-import ucar.grid.GridDefRecord;
-import ucar.grib.grib2.Grib2GridTableLookup;
-import ucar.grib.grib2.Grib2Tables;
-import ucar.grib.grib1.Grib1GridTableLookup;
 import ucar.unidata.util.StringUtil;
 
 import java.util.*;
@@ -139,7 +135,8 @@ public class GridHorizCoordSys {
     this.lookup = lookup;
     this.g = g;
 
-    this.grid_name = lookup.getGridName(gds);
+    this.grid_name = AbstractIOServiceProvider.createValidNetcdfObjectName(
+        lookup.getGridName(gds));
     this.shape_name = lookup.getShapeName(gds);
 
     isLatLon = lookup.isLatLon(gds);
@@ -608,6 +605,10 @@ public class GridHorizCoordSys {
     return true;
   }
 
+  protected String getGDSprefix() {
+    return "GDS";
+  }
+
   /**
    * Add the GDS params to the variable as attributes
    *
@@ -617,23 +618,16 @@ public class GridHorizCoordSys {
     // add all the gds parameters
     List<String> keyList = new ArrayList<String>(gds.getKeys());
     Collections.sort(keyList);
-    String pre =
-        ((lookup instanceof Grib2GridTableLookup) ||
-            (lookup instanceof Grib1GridTableLookup)) ? "GRIB" : "GDS";
+    String pre = getGDSprefix();
 
     for (String key : keyList) {
-      String name = pre + "_param_" + key;
+      String name = AbstractIOServiceProvider.createValidNetcdfObjectName(pre + "_param_" + key);
 
       String vals = gds.getParam(key);
       try {
         int vali = Integer.parseInt(vals);
         if (key.equals(GridDefRecord.VECTOR_COMPONENT_FLAG)) {
-          String cf;
-          if (vali == 0) {
-            cf = Grib2Tables.VectorComponentFlag.easterlyNortherlyRelative.toString();
-          } else {
-            cf = Grib2Tables.VectorComponentFlag.gridRelative.toString();
-          }
+          String cf = GridCF.VectorComponentFlag.of(vali);
           v.addAttribute(new Attribute(name, cf));
         } else {
           v.addAttribute(new Attribute(name, new Integer(vali)));

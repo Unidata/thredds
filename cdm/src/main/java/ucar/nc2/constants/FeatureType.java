@@ -99,6 +99,7 @@ public enum FeatureType {
   /** experimental */
   STATION_RADIAL,
   FMRC,
+  GRIB,
 
   /** deprecated - use ANY */
   NONE;

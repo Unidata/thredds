@@ -36,6 +36,9 @@ package thredds.server.ncSubset;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 import ucar.ma2.StructureData;
 import ucar.ma2.Array;
+import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateFormatter;
+import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.Station;
 import ucar.nc2.dt.point.WriterStationObsDataset;
 import ucar.nc2.dt.point.StationObsDatasetInfo;
@@ -81,10 +84,9 @@ public class StationObsCollection {
   private String archiveDir, realtimeDir;
   private ArrayList<Dataset> datasetList;
   private List<VariableSimpleIF> variableList;
-  private DateFormatter format = new DateFormatter();
 
   private boolean isRealtime, isReady;
-  private Date start, end;
+  private CalendarDate start, end;
   private Timer timer;
   private ReadWriteLock lock = new ReentrantReadWriteLock();
 
@@ -134,7 +136,7 @@ public class StationObsCollection {
 
   private class ReinitTask extends TimerTask {
     public void run() {
-      cacheLogger.info("StationObsCollection.reinit to " + archiveDir + " from " + realtimeDir + " at " + format.toDateTimeString(new Date()));
+      cacheLogger.info("StationObsCollection.reinit to " + archiveDir + " from " + realtimeDir + " at " + CalendarDateFormatter.toDateTimeStringPresent());
       init();
     }
   }
@@ -348,8 +350,8 @@ public class StationObsCollection {
   class Dataset implements Comparable {
     String filename, name;
     StationObsDataset sod;
-    Date time_start;
-    Date time_end;
+    CalendarDate time_start;
+    CalendarDate time_end;
     boolean mayChange;
 
     Dataset(File file, boolean mayChange) throws IOException {
@@ -358,8 +360,8 @@ public class StationObsCollection {
       this.mayChange = mayChange;
 
       this.sod = get();
-      this.time_start = sod.getStartDate();
-      this.time_end = sod.getEndDate();
+      this.time_start = CalendarDate.of(sod.getStartDate());
+      this.time_end = CalendarDate.of(sod.getEndDate());
 
       if (debug)
         System.out.println(" add " + this);
@@ -388,8 +390,7 @@ public class StationObsCollection {
     }
 
     public String toString() {
-      return "StationObsDataset " + filename + " start= " + format.toDateTimeString(time_start) +
-              " end= " + format.toDateTimeString(time_end);
+      return "StationObsDataset " + filename + " start= " + time_start + " end= " + time_end;
     }
   }
 
@@ -416,9 +417,8 @@ public class StationObsCollection {
     // fix the time range
     Element timeSpan = root.getChild("TimeSpan");
     timeSpan.removeContent();
-    DateFormatter format = new DateFormatter();
-    timeSpan.addContent(new Element("begin").addContent(format.toDateTimeStringISO(start)));
-    timeSpan.addContent(new Element("end").addContent(isRealtime ? "present" : format.toDateTimeStringISO(end)));
+    timeSpan.addContent(new Element("begin").addContent(start.toString()));
+    timeSpan.addContent(new Element("end").addContent(isRealtime ? "present" : end.toString()));
 
     // add pointer to the station list XML
     Element stnList = new Element("stationList");
@@ -456,7 +456,7 @@ public class StationObsCollection {
     return true;
   }
 
-  public boolean intersect(DateRange dr) throws IOException {
+  public boolean intersect(CalendarDateRange dr) throws IOException {
     return dr.intersects(start, end);
   }
 
@@ -530,7 +530,7 @@ public class StationObsCollection {
 
   // scan all data in the file, records that pass the dateRange and predicate match are acted on
 
-  private void scanAll(Dataset ds, DateRange range, Predicate p, Action a, Limit limit) throws IOException {
+  private void scanAll(Dataset ds, CalendarDateRange range, Predicate p, Action a, Limit limit) throws IOException {
     StringBuilder sbuff = new StringBuilder();
     StationObsDataset sod = ds.get();
     if (debug) System.out.println("scanAll open " + ds.filename);
@@ -546,7 +546,7 @@ public class StationObsCollection {
       // date filter
       if (null != range) {
         Date obs = sobs.getObservationTimeAsDate();
-        if (!range.included(obs))
+        if (!range.includes( CalendarDate.of(obs)))
           continue;
       }
 
@@ -565,7 +565,7 @@ public class StationObsCollection {
 
   // scan data for the list of stations, in order
   // records that pass the dateRange and predicate match are acted on
-  private void scanStations(Dataset ds, List<String> stns, DateRange range, Predicate p, Action a, Limit limit) throws IOException {
+  private void scanStations(Dataset ds, List<String> stns, CalendarDateRange range, Predicate p, Action a, Limit limit) throws IOException {
     StringBuilder sbuff = new StringBuilder();
 
     StationObsDataset sod = ds.get();
@@ -591,7 +591,7 @@ public class StationObsCollection {
         // date filter
         if (null != range) {
           Date obs = sobs.getObservationTimeAsDate();
-          if (!range.included(obs))
+          if (!range.includes( CalendarDate.of(obs)))
             continue;
         }
 
@@ -746,7 +746,7 @@ public class StationObsCollection {
   ////////////////////////////////////////////////////////////////
   // date filter
 
-  private List<Dataset> filterDataset(DateRange range) {
+  private List<Dataset> filterDataset(CalendarDateRange range) {
     if (range == null)
       return datasetList;
 
@@ -764,7 +764,7 @@ public class StationObsCollection {
 
     Date time = want.getDate();
     for (Dataset ds : datasetList) {
-      if (time.before(ds.time_end) && time.after(ds.time_start)) {
+      if (time.before(ds.time_end.toDate()) && time.after(ds.time_start.toDate())) {
         return ds;
       }
       if (time.equals(ds.time_end) || time.equals(ds.time_start)) {
@@ -790,7 +790,7 @@ public class StationObsCollection {
 
     List<String> vars = qp.vars;
     List<String> stns = qp.stns;
-    DateRange range = qp.getDateRange();
+    CalendarDateRange range = qp.getCalendarDateRange();
     DateType time = qp.time;
     String type = qp.acceptType;
 
@@ -870,7 +870,6 @@ public class StationObsCollection {
     QueryParams qp;
     List<String> varNames;
     java.io.PrintWriter writer;
-    DateFormatter format = new DateFormatter();
     int count = 0;
 
     Writer(QueryParams qp, List<String> varNames, final java.io.PrintWriter writer) {
@@ -1093,7 +1092,7 @@ public class StationObsCollection {
     Action getAction() {
       return new Action() {
         public void act(StationObsDataset sod, StationObsDatatype sobs, StructureData sdata) throws IOException {
-          writer.print( format.toDateTimeStringISO(sobs.getObservationTimeAsDate()));
+          writer.print( CalendarDateFormatter.toDateTimeString(sobs.getObservationTimeAsDate()));
           writer.print( "= ");
           String report = sdata.getScalarString("report");
           writer.println(report);
@@ -1150,7 +1149,7 @@ public class StationObsCollection {
 
           try {
             staxWriter.writeStartElement("metar");
-            staxWriter.writeAttribute("date", format.toDateTimeStringISO(sobs.getObservationTimeAsDate()));
+            staxWriter.writeAttribute("date", CalendarDateFormatter.toDateTimeString(sobs.getObservationTimeAsDate()));
             staxWriter.writeCharacters("\n  ");
 
             staxWriter.writeStartElement("station");
@@ -1225,7 +1224,7 @@ public class StationObsCollection {
 
           ucar.unidata.geoloc.Station s = sobs.getStation();
 
-          writer.print(format.toDateTimeStringISO(sobs.getObservationTimeAsDate()));
+          writer.print( CalendarDateFormatter.toDateTimeString(sobs.getObservationTimeAsDate()));
           writer.print(',');
           writer.print(s.getName());
           writer.print(',');

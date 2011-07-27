@@ -37,7 +37,7 @@
   <variable name="station" shape="*" type="Sequence">
     <variable name="stnid" shape="" type="long">
       <attribute name="long_name" value="station id"/>
-      <attribute name="cf_role" value="station id"/>
+      <attribute name="cf_role" value="station_id"/>
     </variable>
     <variable name="lat" shape="" type="float">
       <attribute name="long_name" value="latitude"/>

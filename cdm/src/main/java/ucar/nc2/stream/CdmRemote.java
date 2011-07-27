@@ -212,6 +212,8 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
 
   public static InputStream sendQuery(String remoteURI, String query) throws IOException {
 
+    long start = System.currentTimeMillis();
+
     HTTPSession session = null;
     HTTPMethod method = null;
     HTTPMethodStream hmstream = null;
@@ -223,7 +225,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
     sbuff.append(query);
 
     if (showRequest)
-      System.out.println(" CdmRemote sendQuery=" + sbuff);
+      System.out.printf(" CdmRemote sendQuery= %s", sbuff);
 
     try {
 
@@ -243,6 +245,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
 
       stream = method.getResponseBodyAsStream();
       hmstream = new HTTPMethodStream(session, method, stream);
+      if (showRequest) System.out.printf(" took %d msecs %n", System.currentTimeMillis() - start);
       return hmstream;
 
     } catch (IOException ioe) {

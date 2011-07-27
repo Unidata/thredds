@@ -66,6 +66,8 @@ import java.util.Date;
 
 
 public class TimeDuration {
+  static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(TimeDuration.class);
+
   /* private static TimeUnit secUnits;
 
   static {
@@ -193,6 +195,17 @@ public class TimeDuration {
     return timeUnit.convertTo(timeUnit.getValue(), want);
   }
 
+  public double getValue(String unit) {
+    try {
+      TimeUnit tdayUnit = new TimeUnit(unit);
+      return getValue(tdayUnit);
+
+    } catch (Exception e) {
+      log.error("Illegal time unit =", unit, e);
+      return -1;
+    }
+  }
+
   /**
    * Get the duration in seconds
    * @return the duration in seconds
@@ -261,6 +274,11 @@ public class TimeDuration {
     TimeDuration to = (TimeDuration) o;
     return to.getValueInSeconds() == getValueInSeconds();
   }
+
+  public Date add( Date d) {
+    return timeUnit.add(d);
+  }
+
 
   ////////////////////////////////////////////
   // test

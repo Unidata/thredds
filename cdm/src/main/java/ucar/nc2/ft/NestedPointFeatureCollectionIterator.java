@@ -62,6 +62,13 @@ public interface NestedPointFeatureCollectionIterator {
   public void setBufferSize( int bytes);
 
   /**
+   * Make sure that the iterator is complete, and recover resources.
+   * You must complete the iteration (until hasNext() returns false) or call finish().
+   * may be called more than once.
+   */
+  public void finish();
+
+  /**
    * A filter on nestedPointFeatureCollection
    */
   public interface Filter {

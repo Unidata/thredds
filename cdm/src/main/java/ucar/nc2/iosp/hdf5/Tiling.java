@@ -46,8 +46,10 @@ package ucar.nc2.iosp.hdf5;
  */
 public class Tiling {
 
-  private int rank;
-  private int[] shape, tileSize, tile, stride;
+  private final int rank;
+  private final int[] shape;     // overall data shape - may be larger than actual variable shape
+  private final int[] tileSize;  // actual storage is in this shape
+  private final int[] stride;
 
   /**
    * Create a Tiling
@@ -62,8 +64,9 @@ public class Tiling {
     this.shape = new int[rank];
     for (int i=0; i<rank; i++)
       this.shape[i] = Math.max(shape[i], tileSize[i]);
-    this.tile = tile( this.shape); // dont really need this, but useful for debugging
+    int[] tile = tile(this.shape);
 
+    // LOOK this is wrong
     this.stride = new int[rank];
     int strider = 1;
     for (int k = rank-1; k >= 0; k--) {

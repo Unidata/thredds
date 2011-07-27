@@ -40,6 +40,7 @@ import java.util.ArrayList;
 
 import thredds.servlet.*;
 import thredds.server.config.TdsContext;
+import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateRange;
 import org.jdom.transform.XSLTransformer;
 import org.jdom.output.XMLOutputter;
@@ -186,7 +187,7 @@ public class StationController extends AbstractController {
     }
 
     if (qp.hasDateRange) {
-      DateRange dr = qp.getDateRange();
+      CalendarDateRange dr = qp.getCalendarDateRange();
       if (!soc.intersect(dr)) {
         qp.errs.append("ERROR: This dataset does not contain the time range= " + qp.time + " \n");
         qp.writeErr(req, res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);

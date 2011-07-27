@@ -34,6 +34,7 @@ package ucar.nc2.ft.point.collection;
 import thredds.inventory.TimedCollection;
 import ucar.nc2.ft.point.*;
 import ucar.nc2.ft.*;
+import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.constants.FeatureType;
@@ -138,7 +139,7 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
   }
 
   @Override
-  public PointFeatureCollection flatten(LatLonRect boundingBox, DateRange dateRange) throws IOException {
+  public PointFeatureCollection flatten(LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException {
     TimedCollection subsetCollection = (dateRange != null) ? dataCollection.subset(dateRange) : dataCollection;
     return new CompositeStationCollectionFlattened(getName(), boundingBox, dateRange, subsetCollection);
 
@@ -146,7 +147,7 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
   }
 
   @Override
-  public PointFeatureCollection flatten(List<String> stations, DateRange dateRange, List<VariableSimpleIF> varList) throws IOException {
+  public PointFeatureCollection flatten(List<String> stations, CalendarDateRange dateRange, List<VariableSimpleIF> varList) throws IOException {
     TimedCollection subsetCollection = (dateRange != null) ? dataCollection.subset(dateRange) : dataCollection;
     return new CompositeStationCollectionFlattened(getName(), stations, dateRange, varList, subsetCollection);
   }
@@ -186,7 +187,7 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
 
     CompositeStationFeature(Station s, DateUnit timeUnit, TimedCollection collForFeature) {
       super(s, timeUnit, -1);
-      setDateRange(collForFeature.getDateRange());
+      setCalendarDateRange(collForFeature.getDateRange());
       this.collForFeature = collForFeature;
     }
 
@@ -200,14 +201,14 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
     }
 
     @Override
-    public StationTimeSeriesFeature subset(DateRange dateRange) throws IOException {
+    public StationTimeSeriesFeature subset(CalendarDateRange dateRange) throws IOException {
       if (dateRange == null) return this;
       CompositeStationFeature stnSubset = new CompositeStationFeature(s, timeUnit, collForFeature.subset(dateRange));
       return stnSubset.subset(dateRange);
     }
 
     @Override
-    public PointFeatureCollection subset(LatLonRect boundingBox, DateRange dateRange) throws IOException {
+    public PointFeatureCollection subset(LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException {
       if (boundingBox != null) {
         if (!boundingBox.contains(s.getLatLon())) return null;
         if (dateRange == null) return this;

@@ -1,0 +1,896 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataroot xmlns:od="urn:schemas-microsoft-com:officedata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  xsi:noNamespaceSchemaLocation="CommonTable_C13_Mar2011_E.xsd" generated="2011-03-23T15:26:40">
+<Exp_CommonTableC13_E>
+<No>40</No>
+<CodeFigure_DataCategories>003</CodeFigure_DataCategories>
+<Name_DataCategories_E>Vertical soundings (satellite)</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>003</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>AMSU-A</Name_InternationalDataSubcategories_E>
+<Status>Operational</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>41</No>
+<CodeFigure_DataCategories>003</CodeFigure_DataCategories>
+<Name_DataCategories_E>Vertical soundings (satellite)</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>004</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>AMSU-B</Name_InternationalDataSubcategories_E>
+<Status>Operational</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>42</No>
+<CodeFigure_DataCategories>003</CodeFigure_DataCategories>
+<Name_DataCategories_E>Vertical soundings (satellite)</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>005</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>HIRS</Name_InternationalDataSubcategories_E>
+<Status>Operational</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>43</No>
+<CodeFigure_DataCategories>003</CodeFigure_DataCategories>
+<Name_DataCategories_E>Vertical soundings (satellite)</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>006</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>MHS</Name_InternationalDataSubcategories_E>
+<Status>Operational</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>44</No>
+<CodeFigure_DataCategories>003</CodeFigure_DataCategories>
+<Name_DataCategories_E>Vertical soundings (satellite)</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>007</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>IASI</Name_InternationalDataSubcategories_E>
+<Status>Operational</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>45</No>
+<CodeFigure_DataCategories>003</CodeFigure_DataCategories>
+<Name_DataCategories_E>Vertical soundings (satellite)</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>020</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>IR temperature/humidity sounding</Name_InternationalDataSubcategories_E>
+<Status>Validation</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>46</No>
+<CodeFigure_DataCategories>003</CodeFigure_DataCategories>
+<Name_DataCategories_E>Vertical soundings (satellite)</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>030</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Hyperspectral temperature/humidity sounding</Name_InternationalDataSubcategories_E>
+<Status>Validation</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>47</No>
+<CodeFigure_DataCategories>003</CodeFigure_DataCategories>
+<Name_DataCategories_E>Vertical soundings (satellite)</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>040</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>MW temperature/humidity sounding</Name_InternationalDataSubcategories_E>
+<Status>Validation</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>48</No>
+<CodeFigure_DataCategories>003</CodeFigure_DataCategories>
+<Name_DataCategories_E>Vertical soundings (satellite)</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>050</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Radio occultation sounding</Name_InternationalDataSubcategories_E>
+<Status>Validation</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>49</No>
+<CodeFigure_DataCategories>004</CodeFigure_DataCategories>
+<Name_DataCategories_E>Single level upper-air data (other than satellite)</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>000</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>ASDAR/ACARS (AMDAR)</Name_InternationalDataSubcategories_E>
+<Status>Operational</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>50</No>
+<CodeFigure_DataCategories>004</CodeFigure_DataCategories>
+<Name_DataCategories_E>Single level upper-air data (other than satellite)</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>001</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Manual (AIREP, PIREP)</Name_InternationalDataSubcategories_E>
+<Status>Operational</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>51</No>
+<CodeFigure_DataCategories>005</CodeFigure_DataCategories>
+<Name_DataCategories_E>Single level upper-air data (satellite)</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>000</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Cloud wind data (SATOB)</Name_InternationalDataSubcategories_E>
+<Status>Operational</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>52</No>
+<CodeFigure_DataCategories>005</CodeFigure_DataCategories>
+<Name_DataCategories_E>Single level upper-air data (satellite)</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>001</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Cloud properties</Name_InternationalDataSubcategories_E>
+<Status>Validation</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>53</No>
+<CodeFigure_DataCategories>006</CodeFigure_DataCategories>
+<Name_DataCategories_E>Radar data</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>000</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Reflectivity data</Name_InternationalDataSubcategories_E>
+<Status>Operational</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>54</No>
+<CodeFigure_DataCategories>006</CodeFigure_DataCategories>
+<Name_DataCategories_E>Radar data</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>001</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Doppler wind profiles</Name_InternationalDataSubcategories_E>
+<Status>Operational</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>55</No>
+<CodeFigure_DataCategories>006</CodeFigure_DataCategories>
+<Name_DataCategories_E>Radar data</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>002</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Derived products</Name_InternationalDataSubcategories_E>
+<Status>Operational</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>56</No>
+<CodeFigure_DataCategories>006</CodeFigure_DataCategories>
+<Name_DataCategories_E>Radar data</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>003</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Ground radar weather (RADOB)</Name_InternationalDataSubcategories_E>
+<Status>Operational</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>57</No>
+<CodeFigure_DataCategories>007</CodeFigure_DataCategories>
+<Name_DataCategories_E>Synoptic features</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>000</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Forecast tropical cyclone tracks from EPS</Name_InternationalDataSubcategories_E>
+<Status>Operational</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>58</No>
+<CodeFigure_DataCategories>007</CodeFigure_DataCategories>
+<Name_DataCategories_E>Synoptic features</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>001</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Squall line</Name_InternationalDataSubcategories_E>
+<Status>Operational</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>59</No>
+<CodeFigure_DataCategories>008</CodeFigure_DataCategories>
+<Name_DataCategories_E>Physical/chemical constituents</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>000</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Ozone measurement at surface</Name_InternationalDataSubcategories_E>
+<Status>Operational</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>60</No>
+<CodeFigure_DataCategories>008</CodeFigure_DataCategories>
+<Name_DataCategories_E>Physical/chemical constituents</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>001</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Ozone vertical sounding</Name_InternationalDataSubcategories_E>
+<Status>Operational</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>61</No>
+<CodeFigure_DataCategories>009</CodeFigure_DataCategories>
+<Name_DataCategories_E>Dispersal and transport</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>000</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Trajectories, analysis or forecast</Name_InternationalDataSubcategories_E>
+<Status>Operational</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>62</No>
+<CodeFigure_DataCategories>010</CodeFigure_DataCategories>
+<Name_DataCategories_E>Radiological data</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>001</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Observation (RADREP)</Name_InternationalDataSubcategories_E>
+<Status>Operational</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>63</No>
+<CodeFigure_DataCategories>010</CodeFigure_DataCategories>
+<Name_DataCategories_E>Radiological data</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>002</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Forecast (RADOF)</Name_InternationalDataSubcategories_E>
+<Status>Operational</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>64</No>
+<CodeFigure_DataCategories>012</CodeFigure_DataCategories>
+<Name_DataCategories_E>Surface data (satellite)</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>000</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>ERS-uwa</Name_InternationalDataSubcategories_E>
+<Status>Operational</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>65</No>
+<CodeFigure_DataCategories>012</CodeFigure_DataCategories>
+<Name_DataCategories_E>Surface data (satellite)</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>001</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>ERS-uwi</Name_InternationalDataSubcategories_E>
+<Status>Operational</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>66</No>
+<CodeFigure_DataCategories>012</CodeFigure_DataCategories>
+<Name_DataCategories_E>Surface data (satellite)</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>002</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>ERS-ura</Name_InternationalDataSubcategories_E>
+<Status>Operational</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>67</No>
+<CodeFigure_DataCategories>012</CodeFigure_DataCategories>
+<Name_DataCategories_E>Surface data (satellite)</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>003</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>ERS-uat</Name_InternationalDataSubcategories_E>
+<Status>Operational</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>68</No>
+<CodeFigure_DataCategories>012</CodeFigure_DataCategories>
+<Name_DataCategories_E>Surface data (satellite)</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>004</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>SSM/I radiometer</Name_InternationalDataSubcategories_E>
+<Status>Operational</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>69</No>
+<CodeFigure_DataCategories>012</CodeFigure_DataCategories>
+<Name_DataCategories_E>Surface data (satellite)</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>005</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Quikscat</Name_InternationalDataSubcategories_E>
+<Status>Operational</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>70</No>
+<CodeFigure_DataCategories>012</CodeFigure_DataCategories>
+<Name_DataCategories_E>Surface data (satellite)</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>006</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Surface temp./radiation (SATOB)</Name_InternationalDataSubcategories_E>
+<Status>Operational</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>71</No>
+<CodeFigure_DataCategories>012</CodeFigure_DataCategories>
+<Name_DataCategories_E>Surface data (satellite)</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>007</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>ASCAT data</Name_InternationalDataSubcategories_E>
+<Status>Operational</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>72</No>
+<CodeFigure_DataCategories>012</CodeFigure_DataCategories>
+<Name_DataCategories_E>Surface data (satellite)</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>008</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Soil moisture</Name_InternationalDataSubcategories_E>
+<Status>Validation</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>73</No>
+<CodeFigure_DataCategories>012</CodeFigure_DataCategories>
+<Name_DataCategories_E>Surface data (satellite)</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>009</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Normalised differential vegetation index (NDVI)</Name_InternationalDataSubcategories_E>
+<Status>Validation</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>74</No>
+<CodeFigure_DataCategories>012</CodeFigure_DataCategories>
+<Name_DataCategories_E>Surface data (satellite)</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>010</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Normalised radar backscatter</Name_InternationalDataSubcategories_E>
+<Status>Validation</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>75</No>
+<CodeFigure_DataCategories>012</CodeFigure_DataCategories>
+<Name_DataCategories_E>Surface data (satellite)</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>011</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Surface emissivity</Name_InternationalDataSubcategories_E>
+<Status>Validation</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>76</No>
+<CodeFigure_DataCategories>021</CodeFigure_DataCategories>
+<Name_DataCategories_E>Radiances (satellite measured)</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>000</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Earth radiation budget</Name_InternationalDataSubcategories_E>
+<Status>Validation</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>77</No>
+<CodeFigure_DataCategories>021</CodeFigure_DataCategories>
+<Name_DataCategories_E>Radiances (satellite measured)</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>005</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Cross-track infrared sounder</Name_InternationalDataSubcategories_E>
+<Status>Operational</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>78</No>
+<CodeFigure_DataCategories>022</CodeFigure_DataCategories>
+<Name_DataCategories_E>Radar (satellite) but not altimeter and scatterometer</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>000</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Cloud and precipitation radar</Name_InternationalDataSubcategories_E>
+<Status>Validation</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>79</No>
+<CodeFigure_DataCategories>022</CodeFigure_DataCategories>
+<Name_DataCategories_E>Radar (satellite) but not altimeter and scatterometer</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>001</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Synthetic aperture radar</Name_InternationalDataSubcategories_E>
+<Status>Validation</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>80</No>
+<CodeFigure_DataCategories>023</CodeFigure_DataCategories>
+<Name_DataCategories_E>Lidar (satellite)</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>000</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Lidar based missions (for wind, for cloud/aerosol, for water vapour, for altimetry)</Name_InternationalDataSubcategories_E>
+<Status>Validation</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>81</No>
+<CodeFigure_DataCategories>024</CodeFigure_DataCategories>
+<Name_DataCategories_E>Scatterometry (satellite)</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>000</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Wind scatterometry</Name_InternationalDataSubcategories_E>
+<Status>Validation</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>82</No>
+<CodeFigure_DataCategories>025</CodeFigure_DataCategories>
+<Name_DataCategories_E>Altimetry (satellite)</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>000</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Radar altimetry</Name_InternationalDataSubcategories_E>
+<Status>Validation</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>83</No>
+<CodeFigure_DataCategories>026</CodeFigure_DataCategories>
+<Name_DataCategories_E>Spectrometry (satellite)</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>000</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Cross nadir shortwave spectrometry (for chemistry)</Name_InternationalDataSubcategories_E>
+<Status>Validation</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>84</No>
+<CodeFigure_DataCategories>026</CodeFigure_DataCategories>
+<Name_DataCategories_E>Spectrometry (satellite)</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>001</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Cross nadir IR spectrometry (for chemistry)</Name_InternationalDataSubcategories_E>
+<Status>Validation</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>85</No>
+<CodeFigure_DataCategories>026</CodeFigure_DataCategories>
+<Name_DataCategories_E>Spectrometry (satellite)</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>002</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Limb sounding shortwave spectrometry</Name_InternationalDataSubcategories_E>
+<Status>Validation</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>86</No>
+<CodeFigure_DataCategories>026</CodeFigure_DataCategories>
+<Name_DataCategories_E>Spectrometry (satellite)</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>003</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Limb sounding IR spectrometry</Name_InternationalDataSubcategories_E>
+<Status>Validation</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>87</No>
+<CodeFigure_DataCategories>026</CodeFigure_DataCategories>
+<Name_DataCategories_E>Spectrometry (satellite)</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>004</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Limb sounding sub-millimetre wave spectrometry</Name_InternationalDataSubcategories_E>
+<Status>Validation</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>88</No>
+<CodeFigure_DataCategories>027</CodeFigure_DataCategories>
+<Name_DataCategories_E>Gravity measurements (satellite)</Name_DataCategories_E>
+<Name_InternationalDataSubcategories_E>To be defined</Name_InternationalDataSubcategories_E>
+<Status>Validation</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>89</No>
+<CodeFigure_DataCategories>028</CodeFigure_DataCategories>
+<Name_DataCategories_E>Precision orbit (satellite)</Name_DataCategories_E>
+<Name_InternationalDataSubcategories_E>To be defined</Name_InternationalDataSubcategories_E>
+<Status>Validation</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>90</No>
+<CodeFigure_DataCategories>029</CodeFigure_DataCategories>
+<Name_DataCategories_E>Space environment (satellite)</Name_DataCategories_E>
+<Name_InternationalDataSubcategories_E>To be defined</Name_InternationalDataSubcategories_E>
+<Status>Validation</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>91</No>
+<CodeFigure_DataCategories>030</CodeFigure_DataCategories>
+<Name_DataCategories_E>Calibration dataset (satellite)</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>000</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Subsetted data</Name_InternationalDataSubcategories_E>
+<Status>Validation</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>92</No>
+<CodeFigure_DataCategories>030</CodeFigure_DataCategories>
+<Name_DataCategories_E>Calibration dataset (satellite)</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>001</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Collocated data</Name_InternationalDataSubcategories_E>
+<Status>Validation</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>93</No>
+<CodeFigure_DataCategories>030</CodeFigure_DataCategories>
+<Name_DataCategories_E>Calibration dataset (satellite)</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>002</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>On-board calibration data</Name_InternationalDataSubcategories_E>
+<Status>Validation</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>94</No>
+<CodeFigure_DataCategories>030</CodeFigure_DataCategories>
+<Name_DataCategories_E>Calibration dataset (satellite)</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>003</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Bias Monitoring</Name_InternationalDataSubcategories_E>
+<Status>Validation</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>95</No>
+<CodeFigure_DataCategories>030</CodeFigure_DataCategories>
+<Name_DataCategories_E>Calibration dataset (satellite)</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>004</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Near Real-Time Correction</Name_InternationalDataSubcategories_E>
+<Status>Validation</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>96</No>
+<CodeFigure_DataCategories>030</CodeFigure_DataCategories>
+<Name_DataCategories_E>Calibration dataset (satellite)</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>005</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Re-analysis Correction</Name_InternationalDataSubcategories_E>
+<Status>Validation</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>97</No>
+<CodeFigure_DataCategories>031</CodeFigure_DataCategories>
+<Name_DataCategories_E>Oceanographic data</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>000</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Surface observation</Name_InternationalDataSubcategories_E>
+<Status>Operational</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>98</No>
+<CodeFigure_DataCategories>031</CodeFigure_DataCategories>
+<Name_DataCategories_E>Oceanographic data</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>001</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Surface observation along track (TRACKOB)</Name_InternationalDataSubcategories_E>
+<Status>Operational</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>99</No>
+<CodeFigure_DataCategories>031</CodeFigure_DataCategories>
+<Name_DataCategories_E>Oceanographic data</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>002</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Spectral wave observation (WAVEOB)</Name_InternationalDataSubcategories_E>
+<Status>Operational</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>100</No>
+<CodeFigure_DataCategories>031</CodeFigure_DataCategories>
+<Name_DataCategories_E>Oceanographic data</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>003</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Bathythermal observation (BATHY)</Name_InternationalDataSubcategories_E>
+<Status>Operational</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>101</No>
+<CodeFigure_DataCategories>031</CodeFigure_DataCategories>
+<Name_DataCategories_E>Oceanographic data</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>004</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Sub-surface floats (profile)</Name_InternationalDataSubcategories_E>
+<Status>Operational</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>102</No>
+<CodeFigure_DataCategories>031</CodeFigure_DataCategories>
+<Name_DataCategories_E>Oceanographic data</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>005</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>XBT/XCTD profiles (TESAC)</Name_InternationalDataSubcategories_E>
+<Status>Operational</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>103</No>
+<CodeFigure_DataCategories>031</CodeFigure_DataCategories>
+<Name_DataCategories_E>Oceanographic data</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>006</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Waves reports</Name_InternationalDataSubcategories_E>
+<Status>Operational</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>104</No>
+<CodeFigure_DataCategories>031</CodeFigure_DataCategories>
+<Name_DataCategories_E>Oceanographic data</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>007</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Tsunameter data</Name_InternationalDataSubcategories_E>
+<Status>Operational</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>105</No>
+<CodeFigure_DataCategories>101</CodeFigure_DataCategories>
+<Name_DataCategories_E>Image data (satellite)</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>000</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Multi-purpose VIS/IR imagery</Name_InternationalDataSubcategories_E>
+<Status>Validation</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>106</No>
+<CodeFigure_DataCategories>101</CodeFigure_DataCategories>
+<Name_DataCategories_E>Image data (satellite)</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>001</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Conical scanning MW imagery (intermediate frequencies)</Name_InternationalDataSubcategories_E>
+<Status>Validation</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>107</No>
+<CodeFigure_DataCategories>101</CodeFigure_DataCategories>
+<Name_DataCategories_E>Image data (satellite)</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>002</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Low frequency MW imagery</Name_InternationalDataSubcategories_E>
+<Status>Validation</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>108</No>
+<CodeFigure_DataCategories>101</CodeFigure_DataCategories>
+<Name_DataCategories_E>Image data (satellite)</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>003</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Ocean colour imagery</Name_InternationalDataSubcategories_E>
+<Status>Validation</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>109</No>
+<CodeFigure_DataCategories>101</CodeFigure_DataCategories>
+<Name_DataCategories_E>Image data (satellite)</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>004</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Imagery with special viewing geometry</Name_InternationalDataSubcategories_E>
+<Status>Validation</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>110</No>
+<CodeFigure_DataCategories>101</CodeFigure_DataCategories>
+<Name_DataCategories_E>Image data (satellite)</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>005</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Lightning imagery</Name_InternationalDataSubcategories_E>
+<Status>Validation</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>111</No>
+<CodeFigure_DataCategories>101</CodeFigure_DataCategories>
+<Name_DataCategories_E>Image data (satellite)</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>006</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>High resolution shortwave imagery for land observation</Name_InternationalDataSubcategories_E>
+<Status>Validation</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>112</No>
+<CodeFigure_DataCategories>101</CodeFigure_DataCategories>
+<Name_DataCategories_E>Image data (satellite)</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>007</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>SMOS data</Name_InternationalDataSubcategories_E>
+<Status>Operational</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>1</No>
+<CodeFigure_DataCategories>000</CodeFigure_DataCategories>
+<Name_DataCategories_E>Surface data - land</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>000</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Hourly synoptic observations from fixed-land stations (SYNOP)</Name_InternationalDataSubcategories_E>
+<Status>Operational</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>2</No>
+<CodeFigure_DataCategories>000</CodeFigure_DataCategories>
+<Name_DataCategories_E>Surface data - land</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>001</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Intermediate synoptic observations from fixed-land stations (SYNOP)</Name_InternationalDataSubcategories_E>
+<Status>Operational</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>3</No>
+<CodeFigure_DataCategories>000</CodeFigure_DataCategories>
+<Name_DataCategories_E>Surface data - land</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>002</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Main synoptic observations from fixed-land stations (SYNOP)</Name_InternationalDataSubcategories_E>
+<Status>Operational</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>4</No>
+<CodeFigure_DataCategories>000</CodeFigure_DataCategories>
+<Name_DataCategories_E>Surface data - land</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>003</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Hourly synoptic observations from mobile-land stations (SYNOP MOBIL)</Name_InternationalDataSubcategories_E>
+<Status>Operational</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>5</No>
+<CodeFigure_DataCategories>000</CodeFigure_DataCategories>
+<Name_DataCategories_E>Surface data - land</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>004</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Intermediate synoptic observations from mobile-land stations (SYNOP MOBIL)</Name_InternationalDataSubcategories_E>
+<Status>Operational</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>6</No>
+<CodeFigure_DataCategories>000</CodeFigure_DataCategories>
+<Name_DataCategories_E>Surface data - land</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>005</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Main synoptic observations from mobile land stations (SYNOP MOBIL)</Name_InternationalDataSubcategories_E>
+<Status>Operational</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>7</No>
+<CodeFigure_DataCategories>000</CodeFigure_DataCategories>
+<Name_DataCategories_E>Surface data - land</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>006</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>One-hour observations from automated stations</Name_InternationalDataSubcategories_E>
+<Status>Operational</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>8</No>
+<CodeFigure_DataCategories>000</CodeFigure_DataCategories>
+<Name_DataCategories_E>Surface data - land</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>007</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>n-minute observations from AWS stations</Name_InternationalDataSubcategories_E>
+<Status>Operational</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>9</No>
+<CodeFigure_DataCategories>000</CodeFigure_DataCategories>
+<Name_DataCategories_E>Surface data - land</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>010</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Routine aeronautical observations (METAR)</Name_InternationalDataSubcategories_E>
+<Status>Operational</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>10</No>
+<CodeFigure_DataCategories>000</CodeFigure_DataCategories>
+<Name_DataCategories_E>Surface data - land</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>011</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Special aeronautical observations (SPECI)</Name_InternationalDataSubcategories_E>
+<Status>Operational</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>11</No>
+<CodeFigure_DataCategories>000</CodeFigure_DataCategories>
+<Name_DataCategories_E>Surface data - land</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>014</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Ground-based GPS humidity observations (GPSIWV)</Name_InternationalDataSubcategories_E>
+<Status>Operational</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>12</No>
+<CodeFigure_DataCategories>000</CodeFigure_DataCategories>
+<Name_DataCategories_E>Surface data - land</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>020</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Climatological observations (CLIMAT)</Name_InternationalDataSubcategories_E>
+<Status>Operational</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>13</No>
+<CodeFigure_DataCategories>000</CodeFigure_DataCategories>
+<Name_DataCategories_E>Surface data - land</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>030</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Sferics locations</Name_InternationalDataSubcategories_E>
+<Status>Pre-operational</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>14</No>
+<CodeFigure_DataCategories>000</CodeFigure_DataCategories>
+<Name_DataCategories_E>Surface data - land</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>040</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Hydrologic reports</Name_InternationalDataSubcategories_E>
+<Status>Operational</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>15</No>
+<CodeFigure_DataCategories>000</CodeFigure_DataCategories>
+<Name_DataCategories_E>Surface data - land</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>050</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Hourly synoptic observations with supplementary one-hour data</Name_InternationalDataSubcategories_E>
+<Status>Operational</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>16</No>
+<CodeFigure_DataCategories>000</CodeFigure_DataCategories>
+<Name_DataCategories_E>Surface data - land</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>051</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Intermediate synoptic observations with supplementary one-hour data</Name_InternationalDataSubcategories_E>
+<Status>Operational</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>17</No>
+<CodeFigure_DataCategories>000</CodeFigure_DataCategories>
+<Name_DataCategories_E>Surface data - land</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>052</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Main synoptic observations with supplementary one-hour data</Name_InternationalDataSubcategories_E>
+<Status>Operational</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>18</No>
+<CodeFigure_DataCategories>001</CodeFigure_DataCategories>
+<Name_DataCategories_E>Surface data - sea</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>000</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Synoptic observations (SHIP)</Name_InternationalDataSubcategories_E>
+<Status>Operational</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>19</No>
+<CodeFigure_DataCategories>001</CodeFigure_DataCategories>
+<Name_DataCategories_E>Surface data - sea</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>006</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>One-hour observations from automated stations</Name_InternationalDataSubcategories_E>
+<Status>Operational</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>20</No>
+<CodeFigure_DataCategories>001</CodeFigure_DataCategories>
+<Name_DataCategories_E>Surface data - sea</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>007</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>n-minute observations from AWS stations</Name_InternationalDataSubcategories_E>
+<Status>Operational</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>21</No>
+<CodeFigure_DataCategories>001</CodeFigure_DataCategories>
+<Name_DataCategories_E>Surface data - sea</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>020</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Climatological observations (CLIMAT SHIP)</Name_InternationalDataSubcategories_E>
+<Status>Operational</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>22</No>
+<CodeFigure_DataCategories>001</CodeFigure_DataCategories>
+<Name_DataCategories_E>Surface data - sea</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>025</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Buoy observation (BUOY)</Name_InternationalDataSubcategories_E>
+<Status>Operational</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>23</No>
+<CodeFigure_DataCategories>001</CodeFigure_DataCategories>
+<Name_DataCategories_E>Surface data - sea</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>030</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Tide gauge</Name_InternationalDataSubcategories_E>
+<Status>Operational</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>24</No>
+<CodeFigure_DataCategories>001</CodeFigure_DataCategories>
+<Name_DataCategories_E>Surface data - sea</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>031</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Observed water level time series</Name_InternationalDataSubcategories_E>
+<Status>Operational</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>25</No>
+<CodeFigure_DataCategories>002</CodeFigure_DataCategories>
+<Name_DataCategories_E>Vertical soundings (other than satellite)</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>001</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Upper-wind reports from fixed-land stations (PILOT)</Name_InternationalDataSubcategories_E>
+<Status>Operational</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>26</No>
+<CodeFigure_DataCategories>002</CodeFigure_DataCategories>
+<Name_DataCategories_E>Vertical soundings (other than satellite)</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>002</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Upper-wind reports from ships (PILOT SHIP)</Name_InternationalDataSubcategories_E>
+<Status>Operational</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>27</No>
+<CodeFigure_DataCategories>002</CodeFigure_DataCategories>
+<Name_DataCategories_E>Vertical soundings (other than satellite)</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>003</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Upper-wind reports from mobile land stations (PILOT MOBIL)</Name_InternationalDataSubcategories_E>
+<Status>Operational</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>28</No>
+<CodeFigure_DataCategories>002</CodeFigure_DataCategories>
+<Name_DataCategories_E>Vertical soundings (other than satellite)</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>004</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Upper-level temperature/humidity/wind reports from fixed-land stations (TEMP)</Name_InternationalDataSubcategories_E>
+<Status>Operational</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>29</No>
+<CodeFigure_DataCategories>002</CodeFigure_DataCategories>
+<Name_DataCategories_E>Vertical soundings (other than satellite)</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>005</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Upper-level temperature/humidity/wind reports from ships (TEMP SHIP)</Name_InternationalDataSubcategories_E>
+<Status>Operational</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>30</No>
+<CodeFigure_DataCategories>002</CodeFigure_DataCategories>
+<Name_DataCategories_E>Vertical soundings (other than satellite)</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>006</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Upper-level temperature/humidity/wind report from mobile land stations (TEMP MOBIL)</Name_InternationalDataSubcategories_E>
+<Status>Operational</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>31</No>
+<CodeFigure_DataCategories>002</CodeFigure_DataCategories>
+<Name_DataCategories_E>Vertical soundings (other than satellite)</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>007</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Upper-level temperature/humidity/wind reports from dropwinsondes (TEMP DROP)</Name_InternationalDataSubcategories_E>
+<Status>Operational</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>32</No>
+<CodeFigure_DataCategories>002</CodeFigure_DataCategories>
+<Name_DataCategories_E>Vertical soundings (other than satellite)</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>010</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Wind profiler reports</Name_InternationalDataSubcategories_E>
+<Status>Operational</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>33</No>
+<CodeFigure_DataCategories>002</CodeFigure_DataCategories>
+<Name_DataCategories_E>Vertical soundings (other than satellite)</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>011</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>RASS temperature profiles</Name_InternationalDataSubcategories_E>
+<Status>Operational</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>34</No>
+<CodeFigure_DataCategories>002</CodeFigure_DataCategories>
+<Name_DataCategories_E>Vertical soundings (other than satellite)</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>020</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>ASDAR/ACARS profiles (AMDAR)</Name_InternationalDataSubcategories_E>
+<Status>Operational</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>35</No>
+<CodeFigure_DataCategories>002</CodeFigure_DataCategories>
+<Name_DataCategories_E>Vertical soundings (other than satellite)</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>025</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Climatological observations from fixed-land stations (CLIMAT TEMP)</Name_InternationalDataSubcategories_E>
+<Status>Operational</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>36</No>
+<CodeFigure_DataCategories>002</CodeFigure_DataCategories>
+<Name_DataCategories_E>Vertical soundings (other than satellite)</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>026</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Climatological observations from ships (CLIMAT TEMP SHIP)</Name_InternationalDataSubcategories_E>
+<Status>Operational</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>37</No>
+<CodeFigure_DataCategories>003</CodeFigure_DataCategories>
+<Name_DataCategories_E>Vertical soundings (satellite)</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>000</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>Temperature (SATEM)</Name_InternationalDataSubcategories_E>
+<Status>Operational</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>38</No>
+<CodeFigure_DataCategories>003</CodeFigure_DataCategories>
+<Name_DataCategories_E>Vertical soundings (satellite)</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>001</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>TIROS (TOVS)</Name_InternationalDataSubcategories_E>
+<Status>Operational</Status>
+</Exp_CommonTableC13_E>
+<Exp_CommonTableC13_E>
+<No>39</No>
+<CodeFigure_DataCategories>003</CodeFigure_DataCategories>
+<Name_DataCategories_E>Vertical soundings (satellite)</Name_DataCategories_E>
+<CodeFigure_InternationalDataSubcategories>002</CodeFigure_InternationalDataSubcategories>
+<Name_InternationalDataSubcategories_E>ATOVS</Name_InternationalDataSubcategories_E>
+<Status>Operational</Status>
+</Exp_CommonTableC13_E>
+</dataroot>

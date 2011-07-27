@@ -29,6 +29,8 @@
     <constructor-arg ref="tdsContext"/>
   </bean>
 
+  <bean id="testController" class="thredds.server.root.TestController" />
+
   <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
     <property name="mappings">
       <value>

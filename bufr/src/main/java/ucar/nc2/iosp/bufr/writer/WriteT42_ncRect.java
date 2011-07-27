@@ -167,9 +167,11 @@ public class WriteT42_ncRect {
 
   private class SeqCount {
     String name;
-    SeqCount( String name) {
+
+    SeqCount(String name) {
       this.name = name;
     }
+
     int records;
     int nested_total;
     int max;
@@ -185,20 +187,28 @@ public class WriteT42_ncRect {
   private int countSeq(Structure recordStruct, SeqCount counter) throws IOException {
 
     StructureDataIterator iter = recordStruct.getStructureIterator();
-    while (iter.hasNext()) {
-      StructureData sdata = iter.next();
-      ArraySequence seq1 = sdata.getArraySequence("seq1");
-      int n = seq1.getStructureDataCount();
-      counter.nested_total += n;
-      counter.records++;
-      counter.max = Math.max(counter.max, n);
+    try {
+      while (iter.hasNext()) {
+        StructureData sdata = iter.next();
+        ArraySequence seq1 = sdata.getArraySequence("seq1");
+        int n = seq1.getStructureDataCount();
+        counter.nested_total += n;
+        counter.records++;
+        counter.max = Math.max(counter.max, n);
 
-      StructureDataIterator siter2 = seq1.getStructureDataIterator();
-      while (siter2.hasNext()) {
-        StructureData sdata2 = siter2.next();
-        ArraySequence seq2 = sdata.getArraySequence("seq2");
-        //int n2 = seq1.getStructureDataCount();
+        StructureDataIterator siter2 = seq1.getStructureDataIterator();
+        try {
+          while (siter2.hasNext()) {
+            StructureData sdata2 = siter2.next();
+            ArraySequence seq2 = sdata.getArraySequence("seq2");
+            //int n2 = seq1.getStructureDataCount();
+          }
+        } finally {
+          iter.finish();
+        }
       }
+    } finally {
+      iter.finish();
     }
     return 0; // max;
   }
@@ -221,25 +231,29 @@ public class WriteT42_ncRect {
           int countLevel = 0;
           ArraySequence seq1 = recordData.getArraySequence(m);
           StructureDataIterator iter = seq1.getStructureDataIterator();
-          while (iter.hasNext()) {
-            StructureData seqData = iter.next();
-            for (StructureMembers.Member seqm : seqData.getMembers()) {
-              Array data = seqData.getArray(seqm);
-              int[] shape = data.getShape();
-              int[] newShape = new int[data.getRank() + 2];
-              newShape[0] = 1;
-              newShape[1] = 1;
-              for (int i = 0; i < data.getRank(); i++)
-                newShape[i + 1] = shape[i];
+          try {
+            while (iter.hasNext()) {
+              StructureData seqData = iter.next();
+              for (StructureMembers.Member seqm : seqData.getMembers()) {
+                Array data = seqData.getArray(seqm);
+                int[] shape = data.getShape();
+                int[] newShape = new int[data.getRank() + 2];
+                newShape[0] = 1;
+                newShape[1] = 1;
+                for (int i = 0; i < data.getRank(); i++)
+                  newShape[i + 1] = shape[i];
 
-              int[] origin = new int[data.getRank() + 2];
-              origin[0] = count;
-              origin[1] = countLevel;
+                int[] origin = new int[data.getRank() + 2];
+                origin[0] = count;
+                origin[1] = countLevel;
 
-              if (debug && (count == 0) && (countLevel == 0)) System.out.println("write to = " + seqm.getName());
-              ncfile.write(seqm.getName(), origin, data.reshape(newShape));
+                if (debug && (count == 0) && (countLevel == 0)) System.out.println("write to = " + seqm.getName());
+                ncfile.write(seqm.getName(), origin, data.reshape(newShape));
+              }
+              countLevel++;
             }
-            countLevel++;
+          } finally {
+            iter.finish();
           }
         } else {
 

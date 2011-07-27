@@ -33,6 +33,7 @@
 
 package ucar.nc2.dataset.transform;
 
+import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.CoordinateTransform;
 import ucar.nc2.dataset.ProjectionCT;
 import ucar.nc2.dataset.TransformType;
@@ -47,7 +48,7 @@ import ucar.nc2.Variable;
 public class RotatedPole extends AbstractCoordTransBuilder {
 
   public String getTransformName() {
-    return "rotated_latitude_longitude";
+    return CF.ROTATED_LATITUDE_LONGITUDE;
   }
 
   public TransformType getTransformType() {
@@ -55,8 +56,8 @@ public class RotatedPole extends AbstractCoordTransBuilder {
   }
 
   public CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, Variable ctv) {
-    double lon = readAttributeDouble( ctv, "grid_north_pole_longitude", Double.NaN);
-    double lat = readAttributeDouble( ctv, "grid_north_pole_latitude", Double.NaN);
+    double lon = readAttributeDouble( ctv, CF.GRID_NORTH_POLE_LONGITUDE, Double.NaN);
+    double lat = readAttributeDouble( ctv, CF.GRID_NORTH_POLE_LATITUDE, Double.NaN);
 
     ucar.unidata.geoloc.projection.RotatedPole proj = new ucar.unidata.geoloc.projection.RotatedPole( lat, lon);
     return new ProjectionCT(ctv.getShortName(), "FGDC", proj);

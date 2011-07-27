@@ -96,6 +96,7 @@ public abstract class PointIteratorFromStructureData extends PointIteratorAbstra
     if (finished) return;
     finishCalcBounds();
     finished = true;
+    structIter.finish();
   }
 
   private StructureData nextStructureData() throws IOException {

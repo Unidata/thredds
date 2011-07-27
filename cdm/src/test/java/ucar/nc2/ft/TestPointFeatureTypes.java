@@ -42,6 +42,7 @@ import java.io.PrintWriter;
 import java.util.*;
 
 import ucar.nc2.constants.FeatureType;
+import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.*;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.TestAll;
@@ -593,7 +594,7 @@ public class TestPointFeatureTypes extends TestCase {
 
     // subset with a bounding box, test result is in the bounding box
     LatLonRect bb2 = new LatLonRect(bb.getLowerLeftPoint(), bb.getHeight() / 2, bb.getWidth() / 2);
-    PointFeatureCollection subset = pfc.subset(bb2, null);
+    PointFeatureCollection subset = pfc.subset(bb2, (CalendarDateRange) null);
     if (show) System.out.println(" subset bb= " + bb2.toString2());
 
     start = System.currentTimeMillis();
@@ -690,11 +691,11 @@ public class TestPointFeatureTypes extends TestCase {
     assert countSub <= countStns;
 
     System.out.println("Flatten= " + bb2.toString2());
-    PointFeatureCollection flatten = sfc.flatten(bb2, null);
+    PointFeatureCollection flatten = sfc.flatten(bb2, (CalendarDateRange) null);
     int countFlat = countLocations(flatten);
     assert countFlat <= countStns;
 
-    flatten = sfc.flatten(null, null);
+    flatten = sfc.flatten(null, (CalendarDateRange) null);
     return countObs(flatten);
   }
 
@@ -754,27 +755,27 @@ public class TestPointFeatureTypes extends TestCase {
 
       LatLonRect bb = pfc.getBoundingBox();
       LatLonRect bb2 = new LatLonRect(bb.getLowerLeftPoint(), bb.getHeight() / 2, bb.getWidth() / 2);
-      PointFeatureCollection subset = pfc.subset(bb2, null);
+      PointFeatureCollection subset = pfc.subset(bb2, (CalendarDateRange) null);
       countLocations(subset);
 
     } else if (fc instanceof StationTimeSeriesFeatureCollection) {
       StationTimeSeriesFeatureCollection sfc = (StationTimeSeriesFeatureCollection) fc;
-      PointFeatureCollection pfcAll = sfc.flatten(null, null);
+      PointFeatureCollection pfcAll = sfc.flatten(null, (CalendarDateRange) null);
       System.out.printf("Unique Locations all = %d %n", countLocations(pfcAll));
 
       LatLonRect bb = sfc.getBoundingBox();
       assert bb != null;
       LatLonRect bb2 = new LatLonRect(bb.getLowerLeftPoint(), bb.getHeight() / 2, bb.getWidth() / 2);
-      PointFeatureCollection pfcSub = sfc.flatten(bb2, null);
+      PointFeatureCollection pfcSub = sfc.flatten(bb2, (CalendarDateRange) null);
       System.out.printf("Unique Locations sub1 = %d %n", countLocations(pfcSub));
 
       StationTimeSeriesFeatureCollection sfcSub = sfc.subset(bb2);
-      PointFeatureCollection pfcSub2 = sfcSub.flatten(null, null);
+      PointFeatureCollection pfcSub2 = sfcSub.flatten(null, (CalendarDateRange) null);
       System.out.printf("Unique Locations sub2 = %d %n", countLocations(pfcSub2));
 
       // Dons
       sfc = sfc.subset(bb2);
-      PointFeatureCollection subDon = sfc.flatten(bb2, null);
+      PointFeatureCollection subDon = sfc.flatten(bb2, (CalendarDateRange) null);
       System.out.printf("Unique Locations subDon = %d %n", countLocations(subDon));
     }
 
@@ -880,12 +881,12 @@ public class TestPointFeatureTypes extends TestCase {
     PointFeatureCollection collection = null;
     if (fc instanceof PointFeatureCollection) {
       collection = (PointFeatureCollection) fc;
-      collection = collection.subset(llr, null);
+      collection = collection.subset(llr, (CalendarDateRange) null);
       what += ".subset";
 
     } else if (fc instanceof NestedPointFeatureCollection) {
       NestedPointFeatureCollection npfc = (NestedPointFeatureCollection) fc;
-      collection = npfc.flatten(llr, null);
+      collection = npfc.flatten(llr,(CalendarDateRange)  null);
       what += ".flatten";
     } else {
       throw new IllegalArgumentException("Can't handle collection of type " + fc.getClass().getName());
@@ -940,12 +941,12 @@ public class TestPointFeatureTypes extends TestCase {
     if (fc instanceof PointFeatureCollection) {
       collection = (PointFeatureCollection) fc;
       if (llr != null) {
-        collection = collection.subset(llr, null);
+        collection = collection.subset(llr, (CalendarDateRange) null);
       }
     } else if (fc instanceof NestedPointFeatureCollection) {
       NestedPointFeatureCollection npfc = (NestedPointFeatureCollection) fc;
       // npfc = npfc.subset(llr);
-      collection = npfc.flatten(llr, null);
+      collection = npfc.flatten(llr, (CalendarDateRange) null);
     } else {
       throw new IllegalArgumentException("Can't handle collection of type " + fc.getClass().getName());
     }

@@ -172,5 +172,10 @@
     <maxAge>90 days</maxAge>
   </AggregationCache>
 
+  <GribCollection>
+    <scour>24 hours</scour>
+    <maxAge>90 days</maxAge>
+  </GribCollection>
+
 
 </threddsConfig>

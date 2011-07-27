@@ -102,6 +102,7 @@ public class StructureTable extends JPanel {
 
   /**
    * Add listener: ListSelectionEvent sent when a new row is selected
+   *
    * @param l the listener
    */
   public void addListSelectionListener(ListSelectionListener l) {
@@ -110,6 +111,7 @@ public class StructureTable extends JPanel {
 
   /**
    * Remove listener
+   *
    * @param l the listener
    */
   public void removeListSelectionListener(ListSelectionListener l) {
@@ -129,12 +131,14 @@ public class StructureTable extends JPanel {
   }
 
   // clear the table
+
   public void clear() {
     if (dataModel != null)
       dataModel.clear();
   }
 
   // save state
+
   public void saveState() {
     fileChooser.save();
     if (prefs != null) prefs.getBean("DumpWindowBounds", dumpWindow.getBounds());
@@ -166,7 +170,7 @@ public class StructureTable extends JPanel {
   }
 
   public void setSequenceData(Structure s, ArraySequence seq) {
-    dataModel = new ArraySequenceModel( s, seq);
+    dataModel = new ArraySequenceModel(s, seq);
     initTable(dataModel);
   }
 
@@ -185,7 +189,7 @@ public class StructureTable extends JPanel {
    * Set the data as a collection of PointObsDatatype.
    *
    * @param obsData List of type PointObsDatatype
-   * @throws IOException  on io error
+   * @throws IOException on io error
    */
   public void setPointObsData(List<PointObsDatatype> obsData) throws IOException {
     dataModel = new PointObsDataModel(obsData);
@@ -197,7 +201,7 @@ public class StructureTable extends JPanel {
    * Set the data as a collection of PointFeature.
    *
    * @param obsData List of type PointFeature
-   * @throws IOException  on io error
+   * @throws IOException on io error
    */
   public void setPointFeatureData(List<PointFeature> obsData) throws IOException {
     dataModel = new PointFeatureDataModel(obsData);
@@ -246,7 +250,7 @@ public class StructureTable extends JPanel {
 
     // add any subtables from inner Structures
     for (Structure s : m.subtables) {
-      addActionToPopupMenu("Data Table for "+s.getShortName(), new SubtableAbstractAction(s));
+      addActionToPopupMenu("Data Table for " + s.getShortName(), new SubtableAbstractAction(s));
     }
 
     //JScrollPane sp =  new JScrollPane(jtable, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
@@ -262,7 +266,8 @@ public class StructureTable extends JPanel {
   }
 
   // display subtables
-  private static HashMap<String,IndependentWindow> windows = new HashMap<String,IndependentWindow>();
+  private static HashMap<String, IndependentWindow> windows = new HashMap<String, IndependentWindow>();
+
   private class SubtableAbstractAction extends AbstractAction {
     Structure s;
     StructureTable dataTable;
@@ -270,10 +275,10 @@ public class StructureTable extends JPanel {
 
     SubtableAbstractAction(Structure s) {
       this.s = s;
-      dataTable = new StructureTable( null);
+      dataTable = new StructureTable(null);
       dataWindow = windows.get(s.getFullName());
       if (dataWindow == null) {
-        dataWindow = new IndependentWindow("Data Table", BAMutil.getImage( "netcdfUI"), dataTable);
+        dataWindow = new IndependentWindow("Data Table", BAMutil.getImage("netcdfUI"), dataTable);
         windows.put(s.getFullName(), dataWindow);
       } else {
         dataWindow.setComponent(dataTable);
@@ -283,19 +288,19 @@ public class StructureTable extends JPanel {
     public void actionPerformed(java.awt.event.ActionEvent e) {
       StructureData sd = getSelectedStructureData();
       if (sd == null) return;
-      StructureMembers.Member m = sd.findMember( s.getShortName());
+      StructureMembers.Member m = sd.findMember(s.getShortName());
       if (m == null)
-       throw new IllegalStateException("cant find member = "+ s.getShortName());
+        throw new IllegalStateException("cant find member = " + s.getShortName());
 
       if (m.getDataType() == DataType.STRUCTURE) {
-        ArrayStructure as = sd.getArrayStructure( m);
-        dataTable.setStructureData( as);
+        ArrayStructure as = sd.getArrayStructure(m);
+        dataTable.setStructureData(as);
 
       } else if (m.getDataType() == DataType.SEQUENCE) {
-        ArraySequence seq = sd.getArraySequence( m);
-        dataTable.setSequenceData( s, seq);
+        ArraySequence seq = sd.getArraySequence(m);
+        dataTable.setSequenceData(s, seq);
 
-      } else throw new IllegalStateException("data type = "+m.getDataType());
+      } else throw new IllegalStateException("data type = " + m.getDataType());
 
       dataWindow.show();
     }
@@ -390,6 +395,7 @@ public class StructureTable extends JPanel {
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////
+
   private abstract class StructureTableModel extends AbstractTableModel {
     protected HashMapLRU rowHash = new HashMapLRU(500, 500); // cache 500 rows
     protected StructureMembers members;
@@ -397,13 +403,17 @@ public class StructureTable extends JPanel {
     protected List<Structure> subtables = new ArrayList<Structure>();
 
     // subclasses implement these
+
     abstract public StructureData getStructureData(int row) throws InvalidRangeException, IOException;
 
     // remove all data
+
     abstract public void clear();
 
     // if we know how to extract the date for this data, add two extra columns
+
     abstract public Date getObsDate(int row);
+
     abstract public Date getNomDate(int row);
 
     public Object getRow(int row) throws InvalidRangeException, IOException {
@@ -416,8 +426,8 @@ public class StructureTable extends JPanel {
     }
 
     public String getColumnName(int columnIndex) {
-     // if (columnIndex == 0)
-     //   return "hash";
+      // if (columnIndex == 0)
+      //   return "hash";
       if (wantDate && (columnIndex == 0))
         return "obsDate";
       if (wantDate && (columnIndex == 1))
@@ -426,9 +436,10 @@ public class StructureTable extends JPanel {
       return members.getMember(memberCol).getName();
     }
 
-     // get row data if in the cache, otherwise read it
+    // get row data if in the cache, otherwise read it
+
     public StructureData getStructureDataHash(int row) throws InvalidRangeException, IOException {
-       StructureData sd = (StructureData) rowHash.get(row);
+      StructureData sd = (StructureData) rowHash.get(row);
       if (sd == null) {
         sd = getStructureData(row);
         rowHash.put(row, sd);
@@ -464,12 +475,15 @@ public class StructureTable extends JPanel {
       return sd.getScalarObject(colName);
     }
 
-    String enumLookup(StructureMembers.Member m, Number val) { return "sorry"; }
-    
+    String enumLookup(StructureMembers.Member m, Number val) {
+      return "sorry";
+    }
+
   }
 
   ////////////////////////////////////////////////////////////////////////
   // handles Structures
+
   private class StructureModel extends StructureTableModel {
     private Structure struct;
 
@@ -506,12 +520,13 @@ public class StructureTable extends JPanel {
 
     String enumLookup(StructureMembers.Member m, Number val) {
       Variable v = struct.findVariable(m.getName());
-      return v.lookupEnumString( val.intValue());
+      return v.lookupEnumString(val.intValue());
     }
 
   }
 
   // handles Sequences
+
   private class SequenceModel extends StructureModel {
     protected List<StructureData> sdataList;
 
@@ -522,8 +537,12 @@ public class StructureTable extends JPanel {
         sdataList = new ArrayList<StructureData>();
         try {
           StructureDataIterator iter = seq.getStructureIterator();
-          while (iter.hasNext())
-            sdataList.add( iter.next());
+          try {
+            while (iter.hasNext())
+              sdataList.add(iter.next());
+          } finally {
+            iter.finish();
+          }
 
         } catch (IOException e) {
           e.printStackTrace();
@@ -548,6 +567,7 @@ public class StructureTable extends JPanel {
     }
 
     // LOOK does this have to override ?
+
     public Object getValueAt(int row, int column) {
       StructureData sd = sdataList.get(row);
 
@@ -558,7 +578,7 @@ public class StructureTable extends JPanel {
           return "ERROR";
         }
       } */
-      return sd.getScalarObject( sd.getStructureMembers().getMember( column));
+      return sd.getScalarObject(sd.getStructureMembers().getMember(column));
     }
 
     public void clear() {
@@ -577,8 +597,12 @@ public class StructureTable extends JPanel {
       sdataList = new ArrayList<StructureData>();
       try {
         StructureDataIterator iter = seq.getStructureDataIterator();
-        while (iter.hasNext())
-          sdataList.add( iter.next());  // LOOK lame -read at all once
+        try {
+          while (iter.hasNext())
+            sdataList.add(iter.next());  // LOOK lame -read at all once
+        } finally {
+          iter.finish();
+        }
 
       } catch (IOException e) {
         JOptionPane.showMessageDialog(null, "ERROR: " + e.getMessage());
@@ -588,6 +612,7 @@ public class StructureTable extends JPanel {
   }
 
   ////////////////////////////////////////////////////////////////////////
+
   private class StructureDataModel extends StructureTableModel {
     private List<StructureData> structureData;
 
@@ -623,6 +648,7 @@ public class StructureTable extends JPanel {
   }
 
   ////////////////////////////////////////////////////////////////////////
+
   private class ArrayStructureModel extends StructureTableModel {
     private ArrayStructure as;
 
@@ -644,7 +670,7 @@ public class StructureTable extends JPanel {
     }
 
     public StructureData getStructureData(int row) throws InvalidRangeException, IOException {
-      return as.getStructureData( row);
+      return as.getStructureData(row);
     }
 
     public void clear() {
@@ -655,6 +681,7 @@ public class StructureTable extends JPanel {
   }
 
   ////////////////////////////////////////////////////////////////////////
+
   private class TrajectoryModel extends StructureTableModel {
     private TrajectoryObsDatatype traj;
 
@@ -713,6 +740,7 @@ public class StructureTable extends JPanel {
   }
 
   ////////////////////////////////////////////////////////////////////////
+
   private class PointObsDataModel extends StructureTableModel {
     private List<PointObsDatatype> obsData;
 
@@ -762,6 +790,7 @@ public class StructureTable extends JPanel {
   }
 
   ////////////////////////////////////////////////////////////////////////
+
   private class PointFeatureDataModel extends StructureTableModel {
     private List<PointFeature> obsData;
 
@@ -791,7 +820,7 @@ public class StructureTable extends JPanel {
       return obs.getNominalTimeAsDate();
     }
 
-     public int getRowCount() {
+    public int getRowCount() {
       return obsData.size();
     }
 
@@ -934,10 +963,11 @@ public class StructureTable extends JPanel {
   }
 
   private ucar.util.prefs.ui.TableSorter sortedModel;
+
   private JTable setModel(TableModel m) {
     sortedModel = new TableSorter(m);
     MyJTable jtable = new MyJTable(sortedModel);
-    sortedModel.setTableHeader( jtable.getTableHeader());
+    sortedModel.setTableHeader(jtable.getTableHeader());
     return jtable;
   }
 
@@ -950,10 +980,11 @@ public class StructureTable extends JPanel {
   }
 
   //Implement table header tool tips.
+
   static private class MyJTable extends JTable {
 
     MyJTable(TableModel m) {
-      super( m);
+      super(m);
     }
 
     protected JTableHeader createDefaultTableHeader() {
@@ -979,6 +1010,6 @@ public class StructureTable extends JPanel {
       }
     }
 
-  } 
+  }
 
 }

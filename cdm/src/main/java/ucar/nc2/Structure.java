@@ -481,6 +481,11 @@ public class Structure extends Variable {
         System.out.println("Iterator structureSize= "+structureSize+" readAtaTime= "+readAtaTime);
     }
 
+    @Override
+    public void finish() {
+      // ignored
+    }
+
   }
 
   /**
@@ -551,7 +556,13 @@ public class Structure extends Variable {
       readCount = 0;
     }
 
+    @Override
     public void setBufferSize(int bytes) {
+      // ignored
+    }
+
+    @Override
+    public void finish() {
       // ignored
     }
   }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998 - 2009. University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998 - 2011. University Corporation for Atmospheric Research/Unidata
  * Portions of this software were developed by the Unidata Program at the
  * University Corporation for Atmospheric Research.
  *
@@ -42,56 +42,61 @@ import ucar.unidata.util.StringUtil;
  * Parses the collection specification string.
  * <p>the idea  is that one copies the full path of an example dataset, then edits it</p>
  * <p>Example: "/data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km/** /GFS_Alaska_191km_#yyyyMMdd_HHmm#.grib1"</p>
-  <ul>
-    <li> rootDir ="/data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km"/</li>
-    <li>    subdirs=yes (because ** is present) </li>
-    <li>    dateFormatMark="GFS_Alaska_191km_#yyyyMMdd_HHmm"</li>
-    <li>    onName=yes</li>
-    <li>    regexp= "GFS_Alaska_191km.........\.grib1"</li>
-  </ul>
+ * <ul>
+ * <li> rootDir ="/data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km"/</li>
+ * <li>    subdirs=yes (because ** is present) </li>
+ * <li>    dateFormatMark="GFS_Alaska_191km_#yyyyMMdd_HHmm"</li>
+ * <li>    useName=yes</li>
+ * <li>    regexp= "GFS_Alaska_191km.........\.grib1"</li>
+ * </ul>
  * <p>Example: "Q:/grid/grib/grib1/data/agg/.*\.grb"</p>
-  <ul>
-    <li> rootDir ="Q:/grid/grib/grib1/data/agg/"/</li>
-    <li>    subdirs=no</li>
-    <li>    dateFormatMark=null</li>
-    <li>    onName=yes</li>
-    <li>    regexp= ".*\.grb" (anything ending with .grb)</li>
-  </ul>
-
- "Q:/grid/grib/grib1/data/agg/"
+ * <ul>
+ * <li> rootDir ="Q:/grid/grib/grib1/data/agg/"/</li>
+ * <li>    subdirs=no</li>
+ * <li>    dateFormatMark=null</li>
+ * <li>    useName=yes</li>
+ * <li>    regexp= ".*\.grb" (anything ending with .grb)</li>
+ * </ul>
+ *
+ * @see "http://www.unidata.ucar.edu/software/netcdf-java/reference/collections/CollectionSpecification.html"
  * @author caron
  * @since Jul 7, 2009
  */
 @ThreadSafe
 public class CollectionSpecParser {
-  private String spec;
-  private String topDir;
-  private boolean subdirs = false;
-  private boolean error = false;
-  private String dateFormatMark;
-  private java.util.regex.Pattern pattern;
+  private final String spec;
+  private final String rootDir;
+  private final boolean subdirs; // recurse into subdirectories under the root dir
+  private final java.util.regex.Pattern filter; // regexp filter
+  private final String dateFormatMark;
+  private final boolean useName; // true = use name, false = use path for dateFormatMark
 
-  // not dealing yet with dateFormatMark being anywhere else than in the filename, ie not the path
-
+  /**
+   * Single spec : "/topdir/** /#dateFormatMark#regExp"
+   * This only allows the dateFormatMark to be in the file name, not anywhere else in the filename path,
+   *  and you cant use any part of the dateFormat to filter on.
+   * @param collectionSpec the collection Spec
+   * @param errlog put error messages here
+   */
   public CollectionSpecParser(String collectionSpec, Formatter errlog) {
     this.spec = collectionSpec.trim();
     int posFilter = -1;
 
     int posGlob = collectionSpec.indexOf("/**/");
     if (posGlob > 0) {
-      topDir = collectionSpec.substring(0, posGlob);
+      rootDir = collectionSpec.substring(0, posGlob);
       posFilter = posGlob + 3;
       subdirs = true;
 
     } else {
       posFilter = collectionSpec.lastIndexOf('/');
-      topDir = collectionSpec.substring(0, posFilter);
+      rootDir = collectionSpec.substring(0, posFilter);
+      subdirs = false;
     }
 
-    File locFile = new File(topDir);
+    File locFile = new File(rootDir);
     if (!locFile.exists()) {
-      errlog.format(" Directory %s does not exist %n", topDir);
-      error = true;
+      errlog.format(" Directory %s does not exist %n", rootDir);
     }
 
     // optional filter
@@ -113,56 +118,124 @@ public class CollectionSpecParser {
           for (int i = posFormat; i < posFormat2 - 1; i++)
             sb.setCharAt(i, '.');
           String regExp = sb.toString();
-          this.pattern = java.util.regex.Pattern.compile(regExp);
+          this.filter = java.util.regex.Pattern.compile(regExp);
 
         } else { // one hash
           dateFormatMark = filter; // everything
           String regExp = filter.substring(0, posFormat) + "*";
-          pattern = java.util.regex.Pattern.compile(regExp);
+          this.filter = java.util.regex.Pattern.compile(regExp);
         }
 
       } else { // no hash (dateFormatMark)
-        pattern = java.util.regex.Pattern.compile(filter);
+        dateFormatMark = null;
+        this.filter = java.util.regex.Pattern.compile(filter);
       }
+    } else {
+      dateFormatMark = null;
+      this.filter = null;
     }
+    useName = true;
+  }
+
+  /**
+   * Seperate the spec, with no dateMatcher, and a seperate string with a dateMatcher
+   * This only allows the dateFormatMark to be in the file name, not anywhere else in the filename path
+   * @param collectionSpec the collection Spec, no dateMatcher
+   * @param dateMatcher regexp the dateMatcher regular expression
+   * @param errlog put error messages here
+   */
+  public CollectionSpecParser(String collectionSpec, String dateMatcher, Formatter errlog) {
+    this.spec = collectionSpec.trim();
+
+    int posGlob = collectionSpec.indexOf("/**/");
+    if (posGlob > 0) {
+      rootDir = collectionSpec.substring(0, posGlob);
+      int posFilter = posGlob + 3;
+      subdirs = true;
+      String regexp = collectionSpec.substring(posFilter+1);
+      this.filter = java.util.regex.Pattern.compile(regexp);
+
+    } else {
+      int posFilter = collectionSpec.lastIndexOf('/');
+      rootDir = collectionSpec.substring(0, posFilter);
+      subdirs = false;
+      String regexp = collectionSpec.substring(posFilter+1);
+      this.filter = java.util.regex.Pattern.compile(regexp);
+    }
+
+    File locFile = new File(rootDir);
+    if (!locFile.exists()) {
+      errlog.format(" Directory %s does not exist %n", rootDir);
+    }
+
+    this.dateFormatMark = dateMatcher;
+
+    /* int hashPos = -1;
+    if ((hashPos = dateMatcher.indexOf('#', hashPos+1)) >= 0) {
+      // check for two hash marks
+      hashPos = dateMatcher.indexOf('#', hashPos+1);
+      int secondHash = hashPos;
+
+      if (secondHash > 0) { // two hashes
+        dateFormatMark = dateMatcher.substring(0, secondHash+1); // everything up to the second hash
+      } else { // one hash
+        dateFormatMark = dateMatcher; // everything
+      }
+
+    } else  { // no hashes
+      errlog.format(" No DateMatcher specified in '%s'%n", dateMatcher);
+      dateFormatMark = null;
+    }  */
+
+    useName = false;
   }
 
   public String getSpec() {
     return spec;
   }
 
-  public String getTopDir() {
-    return topDir;
+  public String getRootDir() {
+    return rootDir;
   }
 
   public boolean wantSubdirs() {
     return subdirs;
   }
 
+  public boolean useName() {
+    return useName;
+  }
+
   public Pattern getFilter() {
-    return pattern;
+    return filter;
   }
 
   public String getDateFormatMark() {
     return dateFormatMark;
   }
 
-  public boolean isError() {
-    return error;
-  }
-
   @Override
   public String toString() {
     return "CollectionSpecParser{" +
-        "\n   topDir='" + topDir + '\'' +
-        "\n   subdirs=" + subdirs +
-        "\n   regExp='" + pattern + '\'' +
-        "\n   dateFormatMark='" + dateFormatMark + '\'' +
-        "\n}";
+            "\n   topDir='" + rootDir + '\'' +
+            "\n   subdirs=" + subdirs +
+            "\n   regExp='" + filter + '\'' +
+            "\n   dateFormatMark='" + dateFormatMark + '\'' +
+            "\n   useName=" + useName +
+            "\n}";
   }
 
   /////////////////////////////////////////////////////////
   // debugging
+
+  private static void doit2(String spec, String timePart, Formatter errlog) {
+    CollectionSpecParser specp = new CollectionSpecParser(spec, timePart, errlog);
+    System.out.printf("spec= %s timePart=%s%n%s%n", spec, timePart, specp);
+    String err = errlog.toString();
+    if (err.length() > 0)
+      System.out.printf("%s%n", err);
+    System.out.printf("-----------------------------------%n");
+  }
 
   private static void doit(String spec, Formatter errlog) {
     CollectionSpecParser specp = new CollectionSpecParser(spec, errlog);
@@ -174,7 +247,7 @@ public class CollectionSpecParser {
   }
 
   public static void main(String arg[]) {
-    doit("C:/data/formats/gempak/surface/#yyyyMMdd#_sao.gem", new Formatter());
+    doit2("G:/nomads/cfsr/timeseries/**/.*grb2$", "G:/nomads/cfsr/#timeseries/#yyyyMM", new Formatter());
     //doit("C:/data/formats/gempak/surface/#yyyyMMdd#_sao\\.gem", new Formatter());
     // doit("Q:/station/ldm/metar/Surface_METAR_#yyyyMMdd_HHmm#.nc", new Formatter());
   }

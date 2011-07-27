@@ -39,6 +39,7 @@ import ucar.nc2.ft.PointFeatureCollection;
 import ucar.nc2.stream.NcStream;
 import ucar.nc2.stream.CdmRemote;
 import ucar.nc2.stream.NcStreamProto;
+import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateRange;
 import ucar.unidata.geoloc.LatLonRect;
 
@@ -111,7 +112,7 @@ class RemotePointCollection extends PointCollectionImpl implements QueryMaker {
   // Must override default subsetting implementation for efficiency
 
   @Override
-  public PointFeatureCollection subset(LatLonRect boundingBox, DateRange dateRange) throws IOException {
+  public PointFeatureCollection subset(LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException {
     return new PointFeatureCollectionSubset(this, boundingBox, dateRange);
   }
 
@@ -119,7 +120,7 @@ class RemotePointCollection extends PointCollectionImpl implements QueryMaker {
   private class PointFeatureCollectionSubset extends RemotePointCollection {
     PointCollectionImpl from;
 
-    PointFeatureCollectionSubset(RemotePointCollection from, LatLonRect filter_bb, DateRange filter_date) throws IOException {
+    PointFeatureCollectionSubset(RemotePointCollection from, LatLonRect filter_bb, CalendarDateRange filter_date) throws IOException {
       super(from.uri, null);
       this.from = from;
 
@@ -129,9 +130,9 @@ class RemotePointCollection extends PointCollectionImpl implements QueryMaker {
         this.boundingBox = (from.getBoundingBox() == null) ? filter_bb : from.getBoundingBox().intersect(filter_bb);
 
       if (filter_date == null) {
-        this.dateRange = from.getDateRange();
+        this.dateRange = from.getCalendarDateRange();
       } else {
-        this.dateRange = (from.getDateRange() == null) ? filter_date : from.getDateRange().intersect(filter_date);
+        this.dateRange = (from.getDateRange() == null) ? filter_date : from.getCalendarDateRange().intersect(filter_date);
       }
     }
   }

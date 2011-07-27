@@ -170,13 +170,17 @@ public class WriteT41_ncFlat {
     int max = 0;
 
     StructureDataIterator iter = recordStruct.getStructureIterator();
-    while (iter.hasNext()) {
-      StructureData sdata = iter.next();
-      ArraySequence seq1 = sdata.getArraySequence("seq1");
-      int n = seq1.getStructureDataCount();
-      total += n;
-      count++;
-      max = Math.max(max, n);
+    try {
+      while (iter.hasNext()) {
+        StructureData sdata = iter.next();
+        ArraySequence seq1 = sdata.getArraySequence("seq1");
+        int n = seq1.getStructureDataCount();
+        total += n;
+        count++;
+        max = Math.max(max, n);
+      }
+    } finally {
+      iter.finish();
     }
     double avg = total / count;
     int wasted = count * max - total;
@@ -203,23 +207,27 @@ public class WriteT41_ncFlat {
         if (m.getDataType() == DataType.SEQUENCE) {
           ArraySequence seq1 = recordData.getArraySequence(m);
           StructureDataIterator iter = seq1.getStructureDataIterator();
-          while (iter.hasNext()) {
-            StructureData seqData = iter.next();
-            for (StructureMembers.Member seqm : seqData.getMembers()) {
-              Array data = seqData.getArray(seqm);
-              int[] shape = data.getShape();
-              int[] newShape = new int[data.getRank() + 1];
-              newShape[0] = 1;
-              for (int i = 0; i < data.getRank(); i++)
-                newShape[i + 1] = shape[i];
+          try {
+            while (iter.hasNext()) {
+              StructureData seqData = iter.next();
+              for (StructureMembers.Member seqm : seqData.getMembers()) {
+                Array data = seqData.getArray(seqm);
+                int[] shape = data.getShape();
+                int[] newShape = new int[data.getRank() + 1];
+                newShape[0] = 1;
+                for (int i = 0; i < data.getRank(); i++)
+                  newShape[i + 1] = shape[i];
 
-              int[] origin = new int[data.getRank() + 1];
-              origin[0] = seqCount;
+                int[] origin = new int[data.getRank() + 1];
+                origin[0] = seqCount;
 
-              if (debug && (count == 0) && (seqCount == 0)) System.out.println("write to = " + seqm.getName());
-              ncfile.write(seqm.getName(), origin, data.reshape(newShape));
+                if (debug && (count == 0) && (seqCount == 0)) System.out.println("write to = " + seqm.getName());
+                ncfile.write(seqm.getName(), origin, data.reshape(newShape));
+              }
+              seqCount++;
             }
-            seqCount++;
+          } finally {
+            iter.finish();
           }
         } else {
 
@@ -308,11 +316,11 @@ public class WriteT41_ncFlat {
     return newData;
   }
 
-    /**
+  /**
    * main.
    */
   public static void main(String args[]) throws Exception, IOException,
-      InstantiationException, IllegalAccessException {
+          InstantiationException, IllegalAccessException {
 
     //String fileIn = "C:/data/dt2/point/bufr/IUA_CWAO_20060202_12.bufr";
     //String fileIn = "C:/data/bufr/edition3/idd/profiler/PROFILER_3.bufr";

@@ -55,7 +55,7 @@ import java.util.*;
  * Time: 10:14:22 AM
  * To change this template use File | Settings | File Templates.
  */
-public class UF2Dataset extends RadialDatasetSweepAdapter implements TypedDatasetFactoryIF{
+public class UF2Dataset extends RadialDatasetSweepAdapter implements TypedDatasetFactoryIF {
   private NetcdfDataset ds;
   double latv, lonv, elev;
   DateFormatter formatter = new DateFormatter();

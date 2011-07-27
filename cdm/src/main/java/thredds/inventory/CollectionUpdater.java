@@ -15,11 +15,14 @@ import java.util.Date;
  */
 @ThreadSafe
 public enum CollectionUpdater {
-  INSTANCE;   // cf Bloch p 18
+  INSTANCE;   // Singleton cf Bloch p 18
+
+  static public enum FROM {tds, tdm }
 
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CollectionUpdater.class);
   static private final String FC_NAME= "fc";
   static private final long startupWait = 30 * 1000; // 30 secs
+  static private boolean disabled = false;
 
   // could use Spring DI
   private org.quartz.Scheduler scheduler = null;
@@ -30,11 +33,17 @@ public enum CollectionUpdater {
     return scheduler;
   }
 
-  public void scheduleTasks(FeatureCollectionConfig config, CollectionManager manager) {
-    if (failed) return;
+  public void scheduleTasks(FROM from, FeatureCollectionConfig config, CollectionManager manager) {
+    if (disabled || failed) return;
 
-    FeatureCollectionConfig.UpdateConfig update = config.updateConfig;
-    if (!update.startup && (update.rescan == null) && (config.protoConfig.change == null)) return;
+    FeatureCollectionConfig.UpdateConfig useConfig = null;
+    if (from == FROM.tds) {
+      useConfig = config.updateConfig;
+      if (!useConfig.startup && (useConfig.rescan == null) && (config.protoConfig.change == null)) return;
+    } else if (from == FROM.tdm) {
+      useConfig = config.tdmConfig;
+      if (!useConfig.startup && (useConfig.rescan == null) && (config.protoConfig.change == null)) return;
+    }
 
     // dont start a Scheduler thread unless we need it
     synchronized (this) {
@@ -56,7 +65,7 @@ public enum CollectionUpdater {
     map.put(FC_NAME, manager);
     updateJob.setJobDataMap(map);
 
-    if (update.startup) {
+    if (useConfig.startup) {
       // wait 30 secs to trigger
       Date runTime = new Date(new Date().getTime() + startupWait);
       Trigger trigger0 = new SimpleTrigger(config.name, "startup", runTime);
@@ -69,19 +78,19 @@ public enum CollectionUpdater {
       }
     }
 
-    if (update.rescan != null) {
+    if (useConfig.rescan != null) {
       try {
-        Trigger trigger1 = new CronTrigger(config.name, "rescan", update.rescan);
-        if (update.startup) {
+        Trigger trigger1 = new CronTrigger(config.spec, "rescan", useConfig.rescan);
+        if (useConfig.startup) {
           trigger1.setJobName(updateJob.getName());
           trigger1.setJobGroup(updateJob.getGroup());
           scheduler.scheduleJob(trigger1);
         } else {
           scheduler.scheduleJob(updateJob, trigger1);
         }
-        logger.info("Schedule recurring scan for {} cronExpr={}\n", config.name, update.rescan);
+        logger.info("Schedule recurring scan for {} cronExpr={}", config.spec, useConfig.rescan);
       } catch (ParseException e) {
-        logger.error("cronExecutor failed: bad cron expression= "+ update.rescan, e);
+        logger.error("cronExecutor failed: bad cron expression= "+ useConfig.rescan, e);
       } catch (SchedulerException e) {
         logger.error("cronExecutor failed to schedule cron Job", e);
         // e.printStackTrace();
@@ -128,8 +137,8 @@ public enum CollectionUpdater {
     public void execute(JobExecutionContext context) throws JobExecutionException {
       try {
         CollectionManager manager = (CollectionManager) context.getJobDetail().getJobDataMap().get(FC_NAME);
-        logger.info("Trigger rescan for "+manager.getCollectionName());
-        manager.rescan();
+        logger.info("Update rescan for {}", manager.getCollectionName());
+        manager.scan();
       } catch (Throwable e) {
         logger.error("InitFmrcJob failed", e);
       }
@@ -141,7 +150,7 @@ public enum CollectionUpdater {
     public void execute(JobExecutionContext context) throws JobExecutionException {
       try {
         CollectionManager manager = (CollectionManager) context.getJobDetail().getJobDataMap().get(FC_NAME);
-        logger.info("Trigger resetProto for "+manager.getCollectionName());
+        logger.info("Update resetProto for {}", manager.getCollectionName());
         manager.resetProto();
       } catch (Throwable e) {
         logger.error("RereadProtoJob failed", e);

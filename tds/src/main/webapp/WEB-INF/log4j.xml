@@ -140,7 +140,7 @@
 
   <!-- fmrc debugging -->
 
-  <logger name="thredds.inventory.DatasetCollectionManager" additivity="false">
+  <logger name="thredds.inventory.DatasetCollectionMFiles" additivity="false">
     <level value="INFO"/>
     <appender-ref ref="fcScan"/>
   </logger>
@@ -242,7 +242,7 @@
   </logger>   -->
 
   <root>
-    <level value="WARN"/>
+    <level value="INFO"/>
     <appender-ref ref="threddsServlet"/>
   </root>
   

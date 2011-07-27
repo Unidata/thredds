@@ -32,6 +32,7 @@
  */
 package ucar.nc2.ft;
 
+import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.nc2.units.DateRange;
 
@@ -96,8 +97,15 @@ public interface PointFeatureIterator {
   /**
    * Get DateRange of observation time after iteration is finished, if calcBounds was set true
    * @return DateRange of all returned points
+   * @deprecated use getCalendarDateRange()
    */
   public DateRange getDateRange();
+
+  /**
+   * Get DateRange of observation time after iteration is finished, if calcBounds was set true
+   * @return DateRange of all returned points
+   */
+  public CalendarDateRange getCalendarDateRange();
 
   /**
    * Get number of points after the iteration is finished, if calcBounds was set true

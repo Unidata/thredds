@@ -10,7 +10,7 @@
   <property name="build.number" value="${build.time.number}" />
   <property name="build.name" value="${build.number}" />
 
-  <property name="release.version" value="4.2"/>
+  <property name="release.version" value="4.3"/>
   <property name="release.version.minor" value="${release.version}.${build.number}"/>
   <property name="release.dir.name" value="${release.version}.${build.name}"/>
 
@@ -76,9 +76,9 @@
 
   <!-- Project libraries needed for compile. -->
   <property name="bufr.jar" value="release/bufr-3.0.jar"/>
-  <property name="grib.jar" value="release/grib-8.0.jar"/>
+  <property name="grib.jar" value="release/grib-4.3.jar"/>
   <property name="ncwms.jar" value="release/ncwms.jar" />
-  <property name="netcdf.jar" value="release/netcdf-4.2.jar"/>
+  <property name="netcdf.jar" value="release/netcdf-4.3.jar"/>
   <property name="opendap.jar" value="release/opendap-2.2.jar"/>
   <property name="threddsIso.jar" value="release/threddsIso-1.2.2.jar"/>
   <property name="visadNoDods.jar" value="release/visadNoDods.jar"/>
@@ -95,15 +95,24 @@
   <property name="jdom.jar" value="external/jdom.jar"/>
   <property name="jcommon.jar" value="external/jcommon-1.0.15.jar"/>
   <property name="jfreechart.jar" value="external/jfreechart-1.0.12.jar"/>
-  <property name="joda.jar" value="external/joda-time-1.6.jar"/>
-  <property name="protobuf.jar" value="external/protobuf-java-2.3.0.jar"/>
-  <property name="slf4jAPI.jar" value="external/slf4j-api-1.5.6.jar"/>
-  <property name="slf4jImpl.jar" value="external/slf4j-log4j12-1.5.6.jar"/>
-  <property name="log4j.jar" value="external/log4j-1.2.15.jar"/>
+  <property name="joda.jar" value="external/joda-time-2.0.jar"/>
+  <property name="protobuf.jar" value="external/protobuf-java-2.4.0a.jar"/>
+
+  <property name="spring-aop.jar" value="external/org.springframework.aop-3.0.5.RELEASE.jar"/>
+  <property name="spring-asm.jar" value="external/org.springframework.asm-3.0.5.RELEASE.jar"/>
+  <property name="spring-beans.jar" value="external/org.springframework.beans-3.0.5.RELEASE.jar"/>
+  <property name="spring-context.jar" value="external/org.springframework.context-3.0.5.RELEASE.jar"/>
+  <property name="spring-core.jar" value="external/org.springframework.core-3.0.5.RELEASE.jar"/>
+  <property name="spring-expression.jar" value="external/org.springframework.expression-3.0.5.RELEASE.jar"/>
+  <property name="spring-web.jar" value="external/org.springframework.web-3.0.5.RELEASE.jar"/>
+  <property name="spring-web.servlet.jar" value="external/org.springframework.web.servlet-3.0.5.RELEASE.jar"/>
+  <property name="slf4jAPI.jar" value="external/slf4j-api-1.6.1.jar"/>
+  <property name="slf4jImpl.jar" value="external/slf4j-log4j12-1.6.1.jar"/>
+  <property name="log4j.jar" value="external/log4j-1.2.16.jar"/>
+  <property name="commons-logging.jar" value="external/jcl-over-slf4j-1.6.1.jar"/>
+
   <!-- property name="nlog4j.jar" value="external/nlog4j-1.2.25.jar"/ -->
   <property name="quartz.jar" value="external/quartz-1.7.3.jar"/>
-  <property name="spring.jar" value="external/spring-2.5.jar"/>
-  <property name="spring-webmvc.jar" value="external/spring-webmvc-2.5.jar"/>
   <property name="jstl.jar" value="external/jstl.jar"/>
   <property name="jstl-standard.jar" value="external/standard.jar"/>
 
@@ -112,7 +121,6 @@
   <property name="epsg-wkt.jar" value="external/epsg-wkt.jar"/>
   <property name="geotk-bundle-referencing.jar" value="external/geotk-bundle-referencing-3.04.jar"/>
   <property name="http-codec.jar" value="external/commons-codec-1.3.jar"/>
-  <property name="http-logging.jar" value="external/commons-logging-1.1.jar"/>
   <property name="jaxen.jar" value="external/jaxen-1.1.2.jar"/>
   <property name="json-taglib.jar" value="external/json-taglib-0.4.1.jar"/>
 
@@ -157,8 +165,11 @@
       <include name="${protobuf.jar}"/>
       <include name="${quartz.jar}"/>
       <include name="${slf4jAPI.jar}"/>
-      <include name="${spring.jar}"/>
-      <include name="${spring-webmvc.jar}"/>
+      <include name="${spring-beans.jar}"/>
+      <include name="${spring-core.jar}"/>
+      <include name="${spring-context.jar}"/>
+      <include name="${spring-web.jar}"/>
+      <include name="${spring-web.servlet.jar}"/>
     </patternset>
   </fileset>
 
@@ -167,15 +178,19 @@
       <include name="${ehcache.jar}" />
       <include name="${epsg-wkt.jar}" />
       <include name="${http-codec.jar}"/>
-      <include name="${http-logging.jar}"/>
       <include name="${jaxen.jar}"/>
       <include name="${jcommon.jar}"/>
       <include name="${jfreechart.jar}"/>
       <include name="${json-taglib.jar}"/>
       <include name="${jstl.jar}"/>
       <include name="${jstl-standard.jar}"/>
+
+      <include name="${commons-logging.jar}"/>
       <include name="${log4j.jar}"/>
       <include name="${slf4jImpl.jar}"/>
+      <include name="${spring-aop.jar}"/>
+      <include name="${spring-asm.jar}"/>
+      <include name="${spring-expression.jar}"/>
     </patternset>
   </fileset>
 

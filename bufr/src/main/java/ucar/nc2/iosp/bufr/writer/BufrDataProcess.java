@@ -70,14 +70,14 @@ public class BufrDataProcess {
       int nmess = processAllInDir(f, os, ff, gtotal);
       out.format("%nGrand Total nmess=%d count=%d miss=%d %f %% %n", nmess, gtotal.nvals, gtotal.nmiss, gtotal.percent());
     } else {
-      processOneFile( f.getPath(), os, null);
+      processOneFile(f.getPath(), os, null);
     }
   }
 
   public int processAllInDir(File dir, OutputStream os, FileFilter ff, Counter gtotal) throws IOException {
     int nmess = 0;
 
-    System.out.println("---------------Reading directory "+dir.getPath());
+    System.out.println("---------------Reading directory " + dir.getPath());
     File[] allFiles = dir.listFiles();
 
     for (File f : allFiles) {
@@ -106,7 +106,8 @@ public class BufrDataProcess {
     try {
       Counter total = new Counter();
       nmess = scanBufrFile(filename, total);
-      if (showFile) out.format("%nTotal nmess=%d count=%d miss=%d %f %% %n", nmess, total.nvals, total.nmiss, total.percent());
+      if (showFile)
+        out.format("%nTotal nmess=%d count=%d miss=%d %f %% %n", nmess, total.nvals, total.nmiss, total.percent());
       if (gtotal != null) gtotal.add(total);
 
     } catch (Exception e) {
@@ -119,6 +120,7 @@ public class BufrDataProcess {
   }
 
   // open the file and extract BUFR messages
+
   public int scanBufrFile(String filename, Counter total) throws Exception {
     int count = 0;
     RandomAccessFile raf = null;
@@ -150,6 +152,7 @@ public class BufrDataProcess {
   }
 
   // convert one message ino a NetcdfDataset and print data
+
   private void processBufrMessageAsDataset(MessageScanner scan, Message m, Counter counter) throws Exception {
     byte[] mbytes = scan.getMessageBytes(m);
     NetcdfFile ncfile = NetcdfFile.openInMemory("test", mbytes, "ucar.nc2.iosp.bufr.BufrIosp");
@@ -159,32 +162,37 @@ public class BufrDataProcess {
   }
 
   // iterate through the observations
+
   private void processSequence(Structure s, StructureDataIterator sdataIter, Counter counter) throws IOException {
     indent.incr();
     int count = 0;
-    while (sdataIter.hasNext()) {
-      if (showData) out.format("%sSequence %s count=%d%n", indent, s.getShortName(), count++);
-      StructureData sdata = sdataIter.next();
-      indent.incr();
+    try {
+      while (sdataIter.hasNext()) {
+        if (showData) out.format("%sSequence %s count=%d%n", indent, s.getShortName(), count++);
+        StructureData sdata = sdataIter.next();
+        indent.incr();
 
-      for (StructureMembers.Member m : sdata.getMembers()) {
-        Variable v = s.findVariable(m.getName());
+        for (StructureMembers.Member m : sdata.getMembers()) {
+          Variable v = s.findVariable(m.getName());
 
-        if (m.getDataType().isString() || m.getDataType().isNumeric()) {
-          processVariable(v, sdata.getArray(m), counter);
+          if (m.getDataType().isString() || m.getDataType().isNumeric()) {
+            processVariable(v, sdata.getArray(m), counter);
 
-        } else if (m.getDataType() == DataType.STRUCTURE) {
-          Structure sds = (Structure) v;
-          ArrayStructure data = (ArrayStructure) sdata.getArray(m);
-          processSequence(sds, data.getStructureDataIterator(), counter);
+          } else if (m.getDataType() == DataType.STRUCTURE) {
+            Structure sds = (Structure) v;
+            ArrayStructure data = (ArrayStructure) sdata.getArray(m);
+            processSequence(sds, data.getStructureDataIterator(), counter);
 
-        } else if (m.getDataType() == DataType.SEQUENCE) {
-          Sequence sds = (Sequence) v;
-          ArraySequence data = (ArraySequence) sdata.getArray(m);
-          processSequence(sds, data.getStructureDataIterator(), counter);
+          } else if (m.getDataType() == DataType.SEQUENCE) {
+            Sequence sds = (Sequence) v;
+            ArraySequence data = (ArraySequence) sdata.getArray(m);
+            processSequence(sds, data.getStructureDataIterator(), counter);
+          }
         }
+        indent.decr();
       }
-      indent.decr();
+    } finally {
+      sdataIter.finish();
     }
 
     indent.decr();
@@ -220,7 +228,7 @@ public class BufrDataProcess {
     }
 
     Object s = mdata.next();
-    if (showData) out.format("%s,",s);
+    if (showData) out.format("%s,", s);
     return false;
   }
 
@@ -240,7 +248,7 @@ public class BufrDataProcess {
         val = DataType.unsignedIntToLong(mdata.nextInt());
         break;
       default:
-        throw new RuntimeException("illegal datatype "+v.getDataType());
+        throw new RuntimeException("illegal datatype " + v.getDataType());
     }
 
     boolean result = BufrNumbers.isMissing(val, bitWidth);

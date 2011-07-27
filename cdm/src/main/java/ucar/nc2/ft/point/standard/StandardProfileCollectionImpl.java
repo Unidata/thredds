@@ -97,7 +97,7 @@ public class StandardProfileCollectionImpl extends OneNestedPointCollectionImpl 
 
     public boolean hasNext() throws IOException {
       while (true) {
-        if(!structIter.hasNext()) return false;
+        if (!structIter.hasNext()) return false;
         nextProfileData = structIter.next();
         if (!ft.isFeatureMissing(nextProfileData)) break;
       }
@@ -117,6 +117,7 @@ public class StandardProfileCollectionImpl extends OneNestedPointCollectionImpl 
     public void setBufferSize(int bytes) { }
 
     public void finish() {
+      structIter.finish();
     }
 
   }

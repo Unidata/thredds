@@ -38,6 +38,7 @@ import thredds.catalog.ThreddsMetadata;
 import thredds.catalog.InvDatasetImpl;
 import thredds.catalog.DataFormatType;
 import ucar.nc2.ft.FeatureDatasetPoint;
+import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateRange;
 
 import java.io.IOException;
@@ -235,16 +236,16 @@ public class MetadataExtractor {
 
   }
 
-  static public DateRange extractDateRange(GridDataset gridDataset) {
-    DateRange maxDateRange = null;
+  static public CalendarDateRange extractCalendarDateRange(GridDataset gridDataset) {
+    CalendarDateRange maxDateRange = null;
 
     for (GridDataset.Gridset gridset : gridDataset.getGridsets()) {
       GridCoordSystem gsys = gridset.getGeoCoordSystem();
-      DateRange dateRange;
+      CalendarDateRange dateRange;
 
       CoordinateAxis1DTime time1D = gsys.getTimeAxis1D();
       if (time1D != null) {
-        dateRange = time1D.getDateRange();
+        dateRange = time1D.getCalendarDateRange();
       } else {
         CoordinateAxis time = gsys.getTimeAxis();
         if (time == null)
@@ -254,7 +255,7 @@ public class MetadataExtractor {
           DateUnit du = new DateUnit( time.getUnitsString());
           Date minDate = du.makeDate(time.getMinValue());
           Date maxDate = du.makeDate(time.getMaxValue());
-          dateRange = new DateRange( minDate, maxDate);
+          dateRange = CalendarDateRange.of( minDate, maxDate);
         } catch (Exception e) {
           logger.warn("Illegal Date Unit "+time.getUnitsString());
           continue;
@@ -304,6 +305,10 @@ public class MetadataExtractor {
 
   static public DateRange extractDateRange(FeatureDatasetPoint fd) {
     return fd.getDateRange();
+  }
+
+  static public CalendarDateRange extractCalendarDateRange(FeatureDatasetPoint fd) {
+    return fd.getCalendarDateRange();
   }
 
 }

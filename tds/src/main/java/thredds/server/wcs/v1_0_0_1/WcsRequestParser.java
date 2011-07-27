@@ -41,14 +41,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import ucar.nc2.dt.GridDataset;
-import ucar.nc2.units.DateRange;
-import ucar.nc2.units.DateType;
+import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateRange;
 
 import java.util.List;
 import java.util.ArrayList;
 import java.io.IOException;
 import java.net.URI;
-import java.text.ParseException;
 
 /**
  * Parse an incoming WCS 1.0.0+ request.
@@ -270,15 +269,15 @@ public class WcsRequestParser
     return new Request.BoundingBox( minP, maxP);
   }
 
-  private static DateRange parseTime( String time )
+  private static CalendarDateRange parseTime( String time )
           throws WcsException
   {
     if ( time == null || time.equals( "" ) )
       return null;
 
-    DateRange dateRange;
+    CalendarDateRange dateRange;
 
-    try
+    // try
     {
       if ( time.indexOf( "," ) != -1 )
       {
@@ -297,21 +296,21 @@ public class WcsRequestParser
           throw new WcsException( WcsException.Code.InvalidParameterValue, "TIME",
                                   "Not currently supporting time range with resolution." );
         }
-        dateRange = new DateRange( new DateType( timeRange[0], null, null ),
-                                   new DateType( timeRange[1], null, null ), null, null );
+        dateRange = CalendarDateRange.of(CalendarDate.parseISOformat(null, timeRange[0]), CalendarDate.parseISOformat(null, timeRange[1]));
+
       }
       else
       {
-        DateType date = new DateType( time, null, null );
-        dateRange = new DateRange( date, date, null, null );
+        CalendarDate date = CalendarDate.parseISOformat(null, time);
+        dateRange = CalendarDateRange.of(date, date);
       }
     }
-    catch ( ParseException e )
+    /* catch ( ParseException e )
     {
       log.debug( "parseTime(): Failed to parse time parameter [" + time + "]: " + e.getMessage() );
       throw new WcsException( WcsException.Code.InvalidParameterValue, "TIME",
                               "Invalid time format [" + time + "]." );
-    }
+    }  */
 
     return dateRange;
   }

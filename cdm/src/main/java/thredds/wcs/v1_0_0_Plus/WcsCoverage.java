@@ -36,6 +36,7 @@ import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.grid.NetcdfCFWriter;
+import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.DiskCache2;
 import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.ogc.EPSG_OGC_CF_Helper;
@@ -163,7 +164,8 @@ public class WcsCoverage
     return diskCache;
   }
 
-  public File writeCoverageDataToFile( WcsRequest.Format format, LatLonRect bboxLatLonRect, AxisSubset vertSubset, List<String> rangeSubset, DateRange timeRange)
+  public File writeCoverageDataToFile( WcsRequest.Format format, LatLonRect bboxLatLonRect, AxisSubset vertSubset,
+                                       List<String> rangeSubset, CalendarDateRange timeRange)
           throws WcsException
   {
     boolean zRangeDone = false;
@@ -180,8 +182,8 @@ public class WcsCoverage
       if ( timeRange != null )
       {
         CoordinateAxis1DTime timeAxis = this.coordSys.getTimeAxis1D();
-        int startIndex = timeAxis.findTimeIndexFromDate( timeRange.getStart().getDate() );
-        int endIndex = timeAxis.findTimeIndexFromDate( timeRange.getEnd().getDate() );
+        int startIndex = timeAxis.findTimeIndexFromCalendarDate(timeRange.getStart());
+        int endIndex = timeAxis.findTimeIndexFromCalendarDate(timeRange.getEnd());
         tRange = new Range( startIndex, endIndex );
         tRangeDone = true;
       }

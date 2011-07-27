@@ -74,6 +74,11 @@ class MMapRandomAccessFile extends RandomAccessFile {
   }
 
   public void close() throws IOException {
+    if (fileCache != null) {
+      fileCache.release(this);
+      return;
+    }
+
     if (!readonly) flush();
     source = null;
   }

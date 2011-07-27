@@ -84,7 +84,7 @@ public class TestReadandCountGrib extends TestCase {
   }
 
   public void testProblem() throws Exception {
-    doOne("grib2/","gribdecoder-20101101.enspost.t00z.prcp.grib", 2, 3, 5, 0); // ensemble
+    doOne("grib1/","ensemble.wmo",  24, 16, 20, 10); // ensemble
   }
 
    public static void main( String arg[]) throws Exception {

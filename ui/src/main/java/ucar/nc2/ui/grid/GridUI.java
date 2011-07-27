@@ -299,7 +299,7 @@ public class GridUI extends JPanel {
   }
 
   void setField(GridDatatype field) {
-    int idx = fieldChooser.setSelectedByName(field.getFullName());
+    int idx = fieldChooser.setSelectedByName(field.getDescription());
     if (idx < 0)
       fieldChooser.setSelectedByIndex(0);
     fieldChooser.setToolTipText( field.getDescription());
@@ -310,9 +310,9 @@ public class GridUI extends JPanel {
     CoordinateAxis1D axis = gcs.getVerticalAxis();
     setChooserWanted("level", axis != null);
     if (axis != null) {
-      List levels = axis.getNames();
+      List<NamedObject> levels = axis.getNames();
       levelChooser.setCollection(levels.iterator());
-      NamedObject no = (NamedObject)levels.get( controller.getCurrentLevelIndex());
+      NamedObject no = levels.get( controller.getCurrentLevelIndex());
       levelChooser.setSelectedByName(no.getName());
     }
 
@@ -321,9 +321,9 @@ public class GridUI extends JPanel {
       axis = gcs.hasTimeAxis1D() ? gcs.getTimeAxis1D() : gcs.getTimeAxisForRun(0);
       setChooserWanted("time", axis != null);
       if (axis != null) {
-        List names = axis.getNames();
+        List<NamedObject> names = axis.getNames();
         timeChooser.setCollection(names.iterator());
-        NamedObject no = (NamedObject) names.get(controller.getCurrentTimeIndex());
+        NamedObject no =  names.get(controller.getCurrentTimeIndex());
         timeChooser.setSelectedByName(no.getName());
       }
     } else {
@@ -333,18 +333,18 @@ public class GridUI extends JPanel {
     axis = gcs.getEnsembleAxis();
     setChooserWanted("ensemble", axis != null);
     if (axis != null) {
-      List names = axis.getNames();
+      List<NamedObject> names = axis.getNames();
       ensembleChooser.setCollection(names.iterator());
-      NamedObject no = (NamedObject) names.get(controller.getCurrentEnsembleIndex());
+      NamedObject no =  names.get(controller.getCurrentEnsembleIndex());
       ensembleChooser.setSelectedByName(no.getName());
     }
 
     axis = gcs.getRunTimeAxis();
     setChooserWanted("runtime", axis != null);
     if (axis != null) {
-      List names = axis.getNames();
+      List<NamedObject> names = axis.getNames();
       runtimeChooser.setCollection(names.iterator());
-      NamedObject no = (NamedObject) names.get(controller.getCurrentRunTimeIndex());
+      NamedObject no = names.get(controller.getCurrentRunTimeIndex());
       runtimeChooser.setSelectedByName(no.getName());
     }
 

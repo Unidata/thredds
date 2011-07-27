@@ -38,19 +38,23 @@ import ucar.ma2.*;
 import java.io.*;
 import java.util.*;
 
-/** Test reading record data */
+/**
+ * Test reading record data
+ */
 
 public class TestStructure extends TestCase {
 
-  public TestStructure( String name) {
+  public TestStructure(String name) {
     super(name);
   }
 
   NetcdfFile ncfile;
+
   protected void setUp() throws Exception {
     ncfile = TestLocalNC2.openFile("testWriteRecord.nc");
     ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
   }
+
   protected void tearDown() throws Exception {
     ncfile.close();
   }
@@ -58,18 +62,18 @@ public class TestStructure extends TestCase {
   public void testNames() {
 
     List vars = ncfile.getVariables();
-    for (int i=0; i<vars.size(); i++) {
+    for (int i = 0; i < vars.size(); i++) {
       Variable v = (Variable) vars.get(i);
-      System.out.println(" "+v.getShortName()+" == "+v.getFullName());
+      System.out.println(" " + v.getShortName() + " == " + v.getName());
     }
 
     Structure record = (Structure) ncfile.findVariable("record");
     assert record != null;
 
     vars = record.getVariables();
-    for (int i=0; i<vars.size(); i++) {
+    for (int i = 0; i < vars.size(); i++) {
       Variable v = (Variable) vars.get(i);
-      System.out.println(" "+v.getShortName()+" == "+v.getFullName());
+      System.out.println(" " + v.getShortName() + " == " + v.getName());
     }
 
     Variable time = ncfile.findVariable("record.time");
@@ -78,7 +82,7 @@ public class TestStructure extends TestCase {
     Variable time2 = record.findVariable("time");
     assert time2 != null;
 
-    assert time.equals( time2);
+    assert time.equals(time2);
   }
 
   public void testReadStructureCountBytesRead() throws IOException, InvalidRangeException {
@@ -100,12 +104,12 @@ public class TestStructure extends TestCase {
         totalAll += data.getSize() * m.getDataType().getSize();
       }
     }
-    System.out.println("  total bytes readAll= "+totalAll);
+    System.out.println("  total bytes readAll= " + totalAll);
 
     // read one at a time
     int numrecs = record.getShape()[0];
     long totalOne = 0;
-    for (int i=0; i<numrecs; i++) {
+    for (int i = 0; i < numrecs; i++) {
       StructureData sd = record.readStructure(i);
 
       Iterator viter = sd.getMembers().iterator();
@@ -120,15 +124,18 @@ public class TestStructure extends TestCase {
     // read with the iterator
     long totalIter = 0;
     StructureDataIterator iter2 = record.getStructureIterator();
-    while (iter2.hasNext()) {
-      StructureData sd = (StructureData) iter2.next();
-
-      Iterator viter = sd.getMembers().iterator();
-      while (viter.hasNext()) {
-        StructureMembers.Member m = (StructureMembers.Member) viter.next();
-        Array data = sd.getArray(m);
-        totalIter += data.getSize() * m.getDataType().getSize();
+    try {
+      while (iter2.hasNext()) {
+        StructureData sd = (StructureData) iter2.next();
+        Iterator viter = sd.getMembers().iterator();
+        while (viter.hasNext()) {
+          StructureMembers.Member m = (StructureMembers.Member) viter.next();
+          Array data = sd.getArray(m);
+          totalIter += data.getSize() * m.getDataType().getSize();
+        }
       }
+    } finally {
+      iter2.finish();
     }
     assert totalOne == totalIter;
 
@@ -147,30 +154,34 @@ public class TestStructure extends TestCase {
     while (iter.hasNext()) {
       StructureData s = (StructureData) iter.next();
       Array rh = s.getArray("rh");
-      assert( rh instanceof ArrayInt.D2);
-      checkValues( rh, recnum); // check the values are right
+      assert (rh instanceof ArrayInt.D2);
+      checkValues(rh, recnum); // check the values are right
       recnum++;
     }
 
-        // read one at a time
+    // read one at a time
     int numrecs = record.getShape()[0];
     long totalOne = 0;
-    for (int i=0; i<numrecs; i++) {
+    for (int i = 0; i < numrecs; i++) {
       StructureData s = record.readStructure(i);
       Array rh = s.getArray("rh");
-      assert( rh instanceof ArrayInt.D2);
-      checkValues( rh, i); // check the values are right
+      assert (rh instanceof ArrayInt.D2);
+      checkValues(rh, i); // check the values are right
     }
 
     // read using iterator
     recnum = 0;
     StructureDataIterator iter2 = record.getStructureIterator();
-    while (iter2.hasNext()) {
-      StructureData s = (StructureData) iter2.next();
-      Array rh = s.getArray("rh");
-      assert( rh instanceof ArrayInt.D2);
-      checkValues( rh, recnum); // check the values are right
-      recnum++;
+    try {
+      while (iter2.hasNext()) {
+        StructureData s = (StructureData) iter2.next();
+        Array rh = s.getArray("rh");
+        assert (rh instanceof ArrayInt.D2);
+        checkValues(rh, recnum); // check the values are right
+        recnum++;
+      }
+    } finally {
+      iter2.finish();
     }
     System.out.println("*** testN3ReadStructureCheckValues ok");
   }
@@ -234,24 +245,24 @@ public class TestStructure extends TestCase {
 
   public void testReadBothWaysV3mode() throws IOException {
     //readBothWays(TestAll.testdataDir+"grid/netcdf/mm5/n040.nc");
-    readBothWays( TestLocal.cdmTestDataDir +"testWriteRecord.nc");
+    readBothWays(TestLocal.cdmTestDataDir + "testWriteRecord.nc");
     //readBothWays(TestAll.testdataDir+"station/ldm-old/2004061915_metar.nc");
 
     System.out.println("*** testReadBothWaysV3mode ok");
   }
 
   private void checkValues(Array rh, int recnum) {
-    assert( rh instanceof ArrayInt.D2) : rh.getClass().getName();
+    assert (rh instanceof ArrayInt.D2) : rh.getClass().getName();
 
     // check the values are right
     ArrayInt.D2 rha = (ArrayInt.D2) rh;
     int[] shape = rha.getShape();
-    for (int j=0; j<shape[0]; j++) {
-      for (int k=0; k<shape[1]; k++) {
-        int want = 20*recnum + 4*j + k+1;
+    for (int j = 0; j < shape[0]; j++) {
+      for (int k = 0; k < shape[1]; k++) {
+        int want = 20 * recnum + 4 * j + k + 1;
         int val = rha.get(j, k);
-        System.out.println(" "+recnum+" "+j+" "+k+" "+want+" "+val);
-        assert ( want == val) : want+" "+val;
+        System.out.println(" " + recnum + " " + j + " " + k + " " + want + " " + val);
+        assert (want == val) : want + " " + val;
       }
     }
   }

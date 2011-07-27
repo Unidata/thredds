@@ -120,7 +120,7 @@ public class DurationField extends ucar.util.prefs.ui.Field {
       if (value == null)
         storeData.putObject(name, value); // LOOK null ok ??
       else
-        storeData.putObject(name, new TimeDuration((TimeDuration) value));
+        storeData.putObject(name, value); // TimeDurations are immutable
     }
   }
 
@@ -131,7 +131,6 @@ public class DurationField extends ucar.util.prefs.ui.Field {
       if (value2 != null)
         value = value2;
     }
-    if (value == null) return null;
-    return new TimeDuration((TimeDuration) value);
+    return (TimeDuration) value;
   }
 }

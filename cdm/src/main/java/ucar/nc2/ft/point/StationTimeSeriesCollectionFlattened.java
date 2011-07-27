@@ -32,6 +32,7 @@
 
 package ucar.nc2.ft.point;
 
+import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.ft.PointFeatureIterator;
@@ -48,7 +49,7 @@ import java.io.IOException;
 public class StationTimeSeriesCollectionFlattened extends PointCollectionImpl {
   protected StationTimeSeriesCollectionImpl from;
 
-  public StationTimeSeriesCollectionFlattened(StationTimeSeriesCollectionImpl from, DateRange dateRange) {
+  public StationTimeSeriesCollectionFlattened(StationTimeSeriesCollectionImpl from, CalendarDateRange dateRange) {
     super( from.getName());
     this.dateRange = dateRange;
     this.from = from;
@@ -60,7 +61,7 @@ public class StationTimeSeriesCollectionFlattened extends PointCollectionImpl {
   }
 
   @Override
-  public PointFeatureCollection subset(LatLonRect boundingBox, DateRange dateRange) throws IOException {
+  public PointFeatureCollection subset(LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException {
     return null;  //To change body of implemented methods use File | Settings | File Templates.
   }
 

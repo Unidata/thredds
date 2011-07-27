@@ -82,7 +82,7 @@ public class BufrMessageViewer extends JPanel {
   private IndependentWindow dataWindow;
   private FileManager fileChooser;
   private DateFormatter df = new DateFormatter();
-  private boolean seperateWindow = false, doRead=false;
+  private boolean seperateWindow = false, doRead = false;
 
   public BufrMessageViewer(final PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
@@ -165,7 +165,7 @@ public class BufrMessageViewer extends JPanel {
           ta.appendLine(f.toString());
           ta.gotoTop();
           info.show();
-                    
+
         } else {
           infoTA.appendLine(f.toString());
           infoTA.gotoTop();
@@ -243,7 +243,7 @@ public class BufrMessageViewer extends JPanel {
             if (pos > 0)
               defloc = defloc.substring(0, pos);
           } else
-          defloc = header;
+            defloc = header;
 
           if (fileChooser == null)
             fileChooser = new FileManager(null, null, null, (PreferencesExt) prefs.node("FileManager"));
@@ -267,7 +267,7 @@ public class BufrMessageViewer extends JPanel {
         }
       }
     });
-    
+
     varPopup.addAction("Dump distinct DDS", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         dumpDDS();
@@ -281,29 +281,29 @@ public class BufrMessageViewer extends JPanel {
     });
 
     varPopup.addAction("Show XML", new AbstractAction() {
-       public void actionPerformed(ActionEvent e) {
-         MessageBean mb = (MessageBean) messageTable.getSelectedBean();
-         Message m = mb.m;
+      public void actionPerformed(ActionEvent e) {
+        MessageBean mb = (MessageBean) messageTable.getSelectedBean();
+        Message m = mb.m;
 
-         ByteArrayOutputStream out = new ByteArrayOutputStream(1000 * 100);
-         try {
-           infoTA.clear();
+        ByteArrayOutputStream out = new ByteArrayOutputStream(1000 * 100);
+        try {
+          infoTA.clear();
 
-            NetcdfDataset ncd = getBufrMessageAsDataset(mb.m);
-            new Bufr2Xml(m, ncd, out, true);
-            infoTA.setText( out.toString());
+          NetcdfDataset ncd = getBufrMessageAsDataset(mb.m);
+          new Bufr2Xml(m, ncd, out, true);
+          infoTA.setText(out.toString());
 
-         } catch (Exception ex) {
-           ByteArrayOutputStream bos = new ByteArrayOutputStream();
-           ex.printStackTrace(new PrintStream(bos));
-           infoTA.appendLine(out.toString());
-           infoTA.appendLine(bos.toString());
-         }
+        } catch (Exception ex) {
+          ByteArrayOutputStream bos = new ByteArrayOutputStream();
+          ex.printStackTrace(new PrintStream(bos));
+          infoTA.appendLine(out.toString());
+          infoTA.appendLine(bos.toString());
+        }
 
-         infoTA.gotoTop();
-         infoWindow.show();
-       }
-     });
+        infoTA.gotoTop();
+        infoWindow.show();
+      }
+    });
 
 
     // the info window
@@ -355,10 +355,10 @@ public class BufrMessageViewer extends JPanel {
         if (header != null) {
           header = header.split(" ")[0];
         } else {
-          header = Integer.toString( Math.abs(m.hashCode()));
+          header = Integer.toString(Math.abs(m.hashCode()));
         }
 
-        File file = new File(dirName+"/"+header+".bufr");
+        File file = new File(dirName + "/" + header + ".bufr");
         FileOutputStream fos = new FileOutputStream(file);
         WritableByteChannel wbc = fos.getChannel();
         wbc.write(ByteBuffer.wrap(m.getHeader().getBytes()));
@@ -473,8 +473,12 @@ public class BufrMessageViewer extends JPanel {
       if ((v != null) && (v instanceof Structure)) {
         Structure obs = (Structure) v;
         StructureDataIterator iter = obs.getStructureIterator();
-        while (iter.hasNext()) {
-          beanList.add(new ObsBean(obs, iter.next()));
+        try {
+          while (iter.hasNext()) {
+            beanList.add(new ObsBean(obs, iter.next()));
+          }
+        } finally {
+          iter.finish();
         }
       }
     } catch (Exception ex) {
@@ -489,10 +493,12 @@ public class BufrMessageViewer extends JPanel {
     int readOk = 0;
 
     // no-arg constructor
+
     public MessageBean() {
     }
 
     // create from a dataset
+
     public MessageBean(Message m) {
       this.m = m;
     }
@@ -526,7 +532,7 @@ public class BufrMessageViewer extends JPanel {
     }
 
     public String getHash() {
-      return  Integer.toHexString(m.dds.getDataDescriptors().hashCode());
+      return Integer.toHexString(m.dds.getDataDescriptors().hashCode());
       // return Integer.toHexString(m.hashCode());
     }
 
@@ -572,8 +578,12 @@ public class BufrMessageViewer extends JPanel {
           NetcdfDataset ncd = getBufrMessageAsDataset(m);
           SequenceDS v = (SequenceDS) ncd.findVariable(BufrIosp.obsRecord);
           StructureDataIterator iter = v.getStructureIterator(-1);
-          while (iter.hasNext()) {
-            iter.next();
+          try {
+            while (iter.hasNext()) {
+              iter.next();
+            }
+          } finally {
+            iter.finish();
           }
           readOk = 1;
         } catch (Exception e) {
@@ -590,10 +600,12 @@ public class BufrMessageViewer extends JPanel {
     int seq;
 
     // no-arg constructor
+
     public DdsBean() {
     }
 
     // create from a dataset
+
     public DdsBean(DataDescriptor dds, int seq) {
       this.dds = dds;
       this.seq = seq;
@@ -643,10 +655,12 @@ public class BufrMessageViewer extends JPanel {
     String stn = null;
 
     // no-arg constructor
+
     public ObsBean() {
     }
 
     // create from a dataset
+
     public ObsBean(Structure obs, StructureData sdata) {
       // first choice
       for (Variable v : obs.getVariables()) {

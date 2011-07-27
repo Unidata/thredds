@@ -44,7 +44,7 @@ import thredds.inventory.MFile;
 
 
 public class LastModifiedLimit implements MFileFilter {
-  private long lastModifiedLimitInMillis;
+  private final long lastModifiedLimitInMillis;
 
   /**
    * Constructor.

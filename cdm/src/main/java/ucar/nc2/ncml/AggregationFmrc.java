@@ -42,6 +42,7 @@ import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dataset.*;
+import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.CancelTask;
 
 import java.util.*;
@@ -143,14 +144,14 @@ public class AggregationFmrc extends AggregationOuterDimension {
     NCdump.printArray(data, "2D time array", System.out, null);
 
     System.out.println("Run Time, Valid Times");
-    Date[] runtimes = rtaxis.getTimeDates();
-    for (int i = 0; i < runtimes.length; i++) {
-      System.out.println("\n" + runtimes[i]);
+    List<CalendarDate> runtimes = rtaxis.getCalendarDates();
+    for (int i = 0; i < runtimes.size(); i++) {
+      System.out.println("\n" + runtimes.get(i));
 
       CoordinateAxis1DTime taxis = gsys.getTimeAxisForRun(i);
-      Date[] times = taxis.getTimeDates();
-      for (int j = 0; j < times.length; j++) {
-        System.out.println("   " + times[j]);
+      List<CalendarDate> times = taxis.getCalendarDates();
+      for (int j = 0; j < times.size(); j++) {
+        System.out.println("   " + times.get(j));
       }
     }
 

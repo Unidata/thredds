@@ -38,6 +38,7 @@ import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.ma2.Array;
+import ucar.nc2.time.CalendarDate;
 import ucar.unidata.geoloc.LatLonPoint;
 
 import java.util.*;
@@ -49,7 +50,7 @@ import java.util.*;
  */
 public class GridAsPointDataset {
   private List<GridDatatype> grids;
-  private List<Date> dates;
+  private List<CalendarDate> dates;
 
   public GridAsPointDataset( List<GridDatatype> grids) {
     this.grids = grids;
@@ -68,16 +69,16 @@ public class GridAsPointDataset {
           dateHash.add(timeDate);
       }
     }
-    dates = Arrays.asList( dateHash.toArray(new Date[dateHash.size()]));
+    dates = Arrays.asList( dateHash.toArray(new CalendarDate[dateHash.size()]));
     Collections.sort(dates);
   }
 
-  public List<Date> getDates() { return dates; }
+  public List<CalendarDate> getDates() { return dates; }
 
-  public boolean hasTime( GridDatatype grid, Date date) {
+  public boolean hasTime( GridDatatype grid, CalendarDate date) {
     GridCoordSystem gcs = grid.getCoordinateSystem();
     CoordinateAxis1DTime timeAxis = gcs.getTimeAxis1D();
-    return (timeAxis != null) && timeAxis.hasTime( date);
+    return (timeAxis != null) && timeAxis.hasCalendarDate( date);
   }
 
   public double getMissingValue(GridDatatype grid) {
@@ -86,11 +87,11 @@ public class GridAsPointDataset {
     //return ve.getValidMax(); // LOOK bogus
   }
 
-  public Point readData(GridDatatype grid, Date date, double lat, double lon)  throws java.io.IOException {
+  public Point readData(GridDatatype grid, CalendarDate date, double lat, double lon)  throws java.io.IOException {
     GridCoordSystem gcs = grid.getCoordinateSystem();
 
     CoordinateAxis1DTime timeAxis = gcs.getTimeAxis1D();
-    int tidx = timeAxis.findTimeIndexFromDate( date);
+    int tidx = timeAxis.findTimeIndexFromCalendarDate(date);
 
     int[] xy = gcs.findXYindexFromLatLonBounded(lat, lon, null);
 
@@ -113,11 +114,11 @@ public class GridAsPointDataset {
     return (zAxis.findCoordElement( zCoord) >= 0);
   }
 
-  public Point readData(GridDatatype grid, Date date, double zCoord, double lat, double lon)  throws java.io.IOException {
+  public Point readData(GridDatatype grid, CalendarDate date, double zCoord, double lat, double lon)  throws java.io.IOException {
     GridCoordSystem gcs = grid.getCoordinateSystem();
 
     CoordinateAxis1DTime timeAxis = gcs.getTimeAxis1D();
-    int tidx = timeAxis.findTimeIndexFromDate( date);
+    int tidx = timeAxis.findTimeIndexFromCalendarDate(date);
 
     CoordinateAxis1D zAxis = gcs.getVerticalAxis();
     int zidx = zAxis.findCoordElement( zCoord);

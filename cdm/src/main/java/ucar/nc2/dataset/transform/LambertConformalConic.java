@@ -33,6 +33,7 @@
 
 package ucar.nc2.dataset.transform;
 
+import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.*;
 import ucar.nc2.Variable;
 import ucar.unidata.geoloc.projection.proj4.AlbersEqualAreaEllipse;
@@ -46,7 +47,7 @@ import ucar.unidata.geoloc.Earth;
 public class LambertConformalConic extends AbstractCoordTransBuilder {
 
   public String getTransformName() {
-    return "lambert_conformal_conic";
+    return CF.LAMBERT_CONFORMAL_CONIC;
   }
 
   public TransformType getTransformType() {
@@ -54,13 +55,13 @@ public class LambertConformalConic extends AbstractCoordTransBuilder {
   }
 
   public CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, Variable ctv) {
-    double[] pars = readAttributeDouble2(ctv.findAttribute( "standard_parallel"));
+    double[] pars = readAttributeDouble2(ctv.findAttribute( CF.STANDARD_PARALLEL));
     if (pars == null) return null;
 
-    double lon0 = readAttributeDouble( ctv, "longitude_of_central_meridian", Double.NaN);
-    double lat0 = readAttributeDouble( ctv, "latitude_of_projection_origin", Double.NaN);
-    double false_easting = readAttributeDouble(ctv, "false_easting", 0.0);
-    double false_northing = readAttributeDouble(ctv, "false_northing", 0.0);
+    double lon0 = readAttributeDouble( ctv, CF.LONGITUDE_OF_CENTRAL_MERIDIAN, Double.NaN);
+    double lat0 = readAttributeDouble( ctv, CF.LATITUDE_OF_PROJECTION_ORIGIN, Double.NaN);
+    double false_easting = readAttributeDouble(ctv, CF.FALSE_EASTING, 0.0);
+    double false_northing = readAttributeDouble(ctv, CF.FALSE_NORTHING, 0.0);
 
     if ((false_easting != 0.0) || (false_northing != 0.0)) {
       double scalef = getFalseEastingScaleFactor(ds, ctv);
@@ -69,11 +70,11 @@ public class LambertConformalConic extends AbstractCoordTransBuilder {
     }
 
     // these must be in meters (CF spec), projection needs them in km
-    double earth_radius = readAttributeDouble(ctv, "earth_radius", Earth.getRadius()) * .001;
+    double earth_radius = readAttributeDouble(ctv, CF.EARTH_RADIUS, Earth.getRadius()) * .001;
 
-    double semi_major_axis = readAttributeDouble(ctv, "semi_major_axis", Double.NaN);
-    double semi_minor_axis = readAttributeDouble(ctv, "semi_minor_axis", Double.NaN);
-    double inverse_flattening = readAttributeDouble(ctv, "inverse_flattening", 0.0);
+    double semi_major_axis = readAttributeDouble(ctv, CF.SEMI_MAJOR_AXIS, Double.NaN);
+    double semi_minor_axis = readAttributeDouble(ctv, CF.SEMI_MINOR_AXIS, Double.NaN);
+    double inverse_flattening = readAttributeDouble(ctv, CF.INVERSE_FLATTENING, 0.0);
 
     ucar.unidata.geoloc.ProjectionImpl proj;
 

@@ -41,7 +41,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.util.Random;
 
-import ucar.nc2.units.DateRange;
+import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.DiskCache2;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.grid.GridDatasetInfo;
@@ -421,16 +421,16 @@ public class GridServlet extends AbstractServlet {
       }
 
       if (qp.hasDateRange) {
-        DateRange dr = qp.getDateRange();
+        CalendarDateRange dr = qp.getCalendarDateRange();
 
-        if (dr.getStart().getDate().after(dr.getEnd().getDate())) {
+        if (dr.getStart().isAfter(dr.getEnd())) {
           qp.errs.append("Request Time range start > end\n" +
                   "Request Time range = " + dr.toString() + "\n");
           qp.writeErr(req, res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
           return;
         }
 
-        if (dr.getStart().getDate().after(gds.getEndDate()) || dr.getEnd().getDate().before(gds.getStartDate())) {
+        if (dr.getStart().isAfter(gds.getCalendarDateEnd()) || dr.getEnd().isBefore(gds.getCalendarDateStart())) {
           qp.errs.append("RequestTime range does not intersect the Data\n" +
                   "Data Time Range = " + gds.getStartDate() + " to " + gds.getEndDate() + "\n");
           qp.writeErr(req, res, qp.errs.toString(), HttpServletResponse.SC_BAD_REQUEST);
@@ -506,7 +506,7 @@ public class GridServlet extends AbstractServlet {
       NetcdfCFWriter writer = new NetcdfCFWriter();
       writer.makeFile(cacheFilename, gds, qp.vars,
               useBB ? qp.getBB() : null,
-              qp.hasDateRange ? qp.getDateRange() : null,
+              qp.hasDateRange ? qp.getCalendarDateRange() : null,
               addLatLon, qp.horizStride, qp.vertStride, qp.timeStride);
 
     } catch (IllegalArgumentException e) { // file too big

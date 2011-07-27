@@ -4,7 +4,6 @@ package ucar.nc2.ui;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.ft.point.remote.PointStream;
 import ucar.nc2.ft.point.remote.PointStreamProto;
-import ucar.nc2.iosp.grib.tables.GribTemplate;
 import ucar.nc2.stream.NcStream;
 import ucar.nc2.stream.NcStreamIosp;
 import ucar.nc2.stream.NcStreamProto;
@@ -41,8 +40,6 @@ public class CdmremotePanel extends JPanel {
 
   private TextHistoryPane infoTA, infoPopup2, infoPopup3;
   private IndependentWindow infoWindow2, infoWindow3;
-
-  private Map<String, GribTemplate> templates = null;
 
   private NetcdfFile ncd;
 

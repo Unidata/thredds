@@ -32,7 +32,7 @@
 
 package ucar.nc2.ft.point.writer;
 
-import ucar.nc2.units.DateFormatter;
+import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.*;
 import ucar.nc2.ft.*;
@@ -63,7 +63,6 @@ public class WriterCFStationCollection {
   private static final String stationIndexName = "stationIndex";
   private static final boolean debug = false;
 
-  private DateFormatter dateFormatter = new DateFormatter();
   private int name_strlen = 1, desc_strlen = 1, wmo_strlen = 1;
 
   private NetcdfFileWriteable ncfile;
@@ -94,9 +93,8 @@ public class WriterCFStationCollection {
     createObsVariables(timeUnit);
 
     // dummys, update in finish()
-    ncfile.addGlobalAttribute("time_coverage_start", dateFormatter.toDateTimeStringISO(new Date()));
-    ncfile.addGlobalAttribute("time_coverage_end", dateFormatter.toDateTimeStringISO(new Date()));
-
+    ncfile.addGlobalAttribute("time_coverage_start", CalendarDateFormatter.toDateStringPresent());
+    ncfile.addGlobalAttribute("time_coverage_end",  CalendarDateFormatter.toDateStringPresent());
     createDataVariables(vars);
 
     ncfile.create(); // done with define mode
@@ -314,8 +312,9 @@ public class WriterCFStationCollection {
     if (minDate == null) minDate = new Date();
     if (maxDate == null) maxDate = new Date();
 
-    ncfile.updateAttribute(null, new Attribute("time_coverage_start", dateFormatter.toDateTimeStringISO(minDate)));
-    ncfile.updateAttribute(null, new Attribute("time_coverage_end", dateFormatter.toDateTimeStringISO(maxDate)));
+    ncfile.updateAttribute(null, new Attribute("time_coverage_start",  CalendarDateFormatter.toDateTimeString(minDate)));
+    ncfile.updateAttribute(null, new Attribute("time_coverage_end",  CalendarDateFormatter.toDateTimeString(maxDate)));
+
   }
 
   private int recno = 0;

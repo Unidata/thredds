@@ -33,6 +33,7 @@
 
 package thredds.server.ncSubset;
 
+import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPoint;
@@ -132,7 +133,7 @@ public class QueryParams {
     if (hasTimePoint)
       sbuff.append("time=" + time + ";");
     else if (hasDateRange) {
-      sbuff.append("timeRange=" + getDateRange() + ";");
+      sbuff.append("timeRange=" + getCalendarDateRange() + ";");
     } else {
       sbuff.append("temporal=all;");
     }
@@ -268,7 +269,7 @@ public class QueryParams {
     String s = ServletUtil.getParameterIgnoreCase(req, key);
     if (s != null) {
       try {
-        return TimeDuration.parseW3CDuration(s);
+        return new TimeDuration(s);
       } catch (java.text.ParseException e) {
         errs.append("Illegal param= '" + key + "=" + s + "' must be valid ISO Duration\n");
         fatal = true;
@@ -494,8 +495,8 @@ public class QueryParams {
 
   }
 
-  public DateRange getDateRange() {
-      return hasDateRange ? new DateRange(time_start, time_end, time_duration, null) : null;
+  public CalendarDateRange getCalendarDateRange() {
+      return hasDateRange ? CalendarDateRange.of(new DateRange(time_start, time_end, time_duration, null)) : null;
   }
 
   public void writeErr(HttpServletRequest req, HttpServletResponse res, String s, int code) throws IOException {

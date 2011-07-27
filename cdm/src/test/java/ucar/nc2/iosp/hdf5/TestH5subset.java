@@ -38,6 +38,7 @@ import ucar.nc2.*;
 import java.io.IOException;
 
 import junit.framework.TestCase;
+import ucar.nc2.util.CompareNetcdf;
 
 /**
  * @author caron
@@ -49,7 +50,7 @@ public class TestH5subset extends TestCase {
     super(name);
   }
 
-  private String dirName = TestH5.testDir; // "C:/data/hdf5/";
+  private String dirName = TestH5.testDir;
 
  public void testSubsetting() throws IOException, InvalidRangeException {
     int ntrials = 37;
@@ -83,5 +84,51 @@ public class TestH5subset extends TestCase {
   public void testProblem() throws IOException, InvalidRangeException {
     TestIosp.testVariableSubset(dirName + "HIRDLS/HIRPROF-Aura73p_b038_2000d275.he5", "HDFEOS/SWATHS/HIRDLS/Data Fields/7\\.10MicronAerosolExtinction", 1);
   }
+
+  private void testVariableSubset(String filename, String varName, Section s) throws InvalidRangeException, IOException {
+    System.out.printf("%ntestVariableSubset=%s,%s%n",filename,varName);
+
+    NetcdfFile ncfile = NetcdfFile.open(filename);
+
+    Variable v = ncfile.findVariable(varName);
+    assert (null != v);
+    int[] shape = v.getShape();
+
+    // read entire array
+    Array fullData;
+    try {
+      fullData = v.read();
+    } catch (IOException e) {
+      System.err.println("ERROR reading file");
+      assert (false);
+      return;
+    }
+
+    int[] dataShape = fullData.getShape();
+    assert dataShape.length == shape.length;
+    for (int i = 0; i < shape.length; i++)
+      assert dataShape[i] == shape[i];
+    System.out.println("  Entire dataset   ="+v.getShapeAsSection());
+    System.out.println("  Test read section="+s);
+
+    // read section
+    Array sdata = v.read(s);
+    assert sdata.getRank() == s.getRank();
+    int[] sshape = sdata.getShape();
+    for (int i = 0; i < sshape.length; i++)
+      assert sshape[i] == s.getShape(i);
+
+    // compare with logical section
+    Array Asection = fullData.sectionNoReduce(s.getRanges());
+    int[] ashape = Asection.getShape();
+    assert (ashape.length == sdata.getRank());
+    for (int i = 0; i < ashape.length; i++)
+      assert sshape[i] == ashape[i];
+
+    CompareNetcdf.compareData(sdata, Asection);
+
+    ncfile.close();
+  }
+
 
 }

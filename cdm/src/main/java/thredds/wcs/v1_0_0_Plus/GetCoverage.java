@@ -37,6 +37,7 @@ import java.text.ParseException;
 import java.util.List;
 import java.util.ArrayList;
 
+import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.ogc.EPSG_OGC_CF_Helper;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPointImpl;
@@ -63,7 +64,7 @@ public class GetCoverage extends WcsRequest
 
   private LatLonRect requestLatLonBBox;
   private AxisSubset requestVertSubset;
-  private DateRange timeRange;
+  private CalendarDateRange timeRange;
   private List<String> rangeSubset;
 
   private Format format;
@@ -314,7 +315,7 @@ public class GetCoverage extends WcsRequest
     return axisSubset;
   }
 
-  private DateRange parseTime( String time )
+  private CalendarDateRange parseTime( String time )
           throws WcsException
   {
     if ( time == null || time.equals( ""))
@@ -358,7 +359,7 @@ public class GetCoverage extends WcsRequest
                               "Invalid time format <" + time + ">." );
     }
 
-    return dateRange;
+    return CalendarDateRange.of(dateRange);
   }
 
   private List<String> parseRangeSubset( String rangeSubset)

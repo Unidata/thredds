@@ -71,18 +71,8 @@ public class ControllerCaching implements MController {
 
   ////////////////////////////////////////
 
-    @Override
-  public Iterator<MFile> getInventory(MCollection mc) {
-    return getInventory(mc, true);
-  }
-
   @Override
-  public Iterator<MFile> getInventoryNoSubdirs(MCollection mc) {
-    return getInventoryNoSubdirs(mc, true);
-  }
-
-  @Override
-  public Iterator<MFile> getInventory(MCollection mc, boolean recheck) {
+  public Iterator<MFile> getInventoryAll(MCollection mc, boolean recheck) {
     String path = mc.getDirectoryName();
     if (path.startsWith("file:")) {
       path = path.substring(5);
@@ -91,11 +81,11 @@ public class ControllerCaching implements MController {
     CacheDirectory cd = cacheManager.get(path, recheck); // check in cache, else call File.listFiles()
     if (cd == null) return null;
     if (!cd.isDirectory()) return null;
-    return new FilteredIterator(mc, new MFileIteratorWithSubdirs(cd, recheck));
+    return new FilteredIterator(mc, new MFileIteratorAll(cd, recheck), false);
   }
 
   @Override
-  public Iterator<MFile> getInventoryNoSubdirs(MCollection mc, boolean recheck) {
+  public Iterator<MFile> getInventoryTop(MCollection mc, boolean recheck) {
     String path = mc.getDirectoryName();
     if (path.startsWith("file:")) {
       path = path.substring(5);
@@ -104,7 +94,21 @@ public class ControllerCaching implements MController {
     CacheDirectory cd = cacheManager.get(path, recheck); // check in cache, else call File.listFiles()
     if (cd == null) return null;
     if (!cd.isDirectory()) return null;
-    return new FilteredIterator(mc, new MFileIterator(cd));
+    return new FilteredIterator(mc, new MFileIterator(cd), false);
+  }
+
+
+  @Override
+  public Iterator<MFile> getSubdirs(MCollection mc, boolean recheck) {
+    String path = mc.getDirectoryName();
+    if (path.startsWith("file:")) {
+      path = path.substring(5);
+    }
+
+    CacheDirectory cd = cacheManager.get(path, recheck); // check in cache, else call File.listFiles()
+    if (cd == null) return null;
+    if (!cd.isDirectory()) return null;
+    return new FilteredIterator(mc, new MFileIterator(cd), true);
   }
 
   @Override
@@ -119,12 +123,14 @@ public class ControllerCaching implements MController {
   private class FilteredIterator implements Iterator<MFile> {
     private final Iterator<MFile> orgIter;
     private final MCollection mc;
+    private final boolean wantDirs;
 
     private MFile next;
 
-    FilteredIterator(MCollection mc, Iterator<MFile> iter) {
+    FilteredIterator(MCollection mc, Iterator<MFile> iter, boolean wantDirs) {
       this.orgIter = iter;
       this.mc = mc;
+      this.wantDirs = wantDirs;
     }
 
     public boolean hasNext() {
@@ -145,7 +151,7 @@ public class ControllerCaching implements MController {
       if (!orgIter.hasNext()) return null;
 
       MFile pdata = orgIter.next();
-      while (pdata.isDirectory() || !mc.accept(pdata)) {  // skip directories, and filter
+      while ((pdata.isDirectory() != wantDirs) || !mc.accept(pdata)) {  // skip directories, and filter
         if (!orgIter.hasNext()) return null;
         pdata = orgIter.next();
       }
@@ -183,13 +189,13 @@ public class ControllerCaching implements MController {
   }
 
   // recursively scans everything in the directory and in subdirectories, depth first, leaves before subdirs
-  private class MFileIteratorWithSubdirs implements Iterator<MFile> {
+  private class MFileIteratorAll implements Iterator<MFile> {
     final boolean recheck;
     final Queue<Traversal> traverse;
     Traversal currTraversal;
     Iterator<MFile> currIter;
 
-    MFileIteratorWithSubdirs(CacheDirectory top, boolean recheck) {
+    MFileIteratorAll(CacheDirectory top, boolean recheck) {
       traverse = new LinkedList<Traversal>();
       currTraversal = new Traversal(top);
       this.recheck = recheck;

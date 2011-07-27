@@ -32,6 +32,7 @@
  */
 package ucar.nc2.ft;
 
+import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateRange;
 
 import java.io.IOException;
@@ -86,8 +87,16 @@ public interface PointFeatureCollection extends FeatureCollection {
    * Date range for the FeatureCollection. May not be known until after iterating through the collection.
    *
    * @return the date range for the entire collection, or null if unknown
+   * @deprecated use getCalendarDateRange()
    */
   public DateRange getDateRange();
+
+  /**
+   * Calendar date range for the FeatureCollection. May not be known until after iterating through the collection.
+   *
+   * @return the calendar date range for the entire collection, or null if unknown
+   */
+  public CalendarDateRange getCalendarDateRange();
 
   /**
    * The boundingBox for the FeatureCollection. May not be known until after iterating through the collection.
@@ -100,8 +109,16 @@ public interface PointFeatureCollection extends FeatureCollection {
    * Set the date range for the FeatureCollection.
    *
    * @param range the date range for the entire collection
+   * @deprecated use setCalendarDateRange()
    */
   public void setDateRange(DateRange range);
+
+  /**
+   * Set the calendar date range for the FeatureCollection.
+   *
+   * @param range the calendar date range for the entire collection
+   */
+  public void setCalendarDateRange(CalendarDateRange range);
 
   /**
    * Set the boundingBox for the FeatureCollection.
@@ -141,5 +158,11 @@ public interface PointFeatureCollection extends FeatureCollection {
    * @return subsetted collection, may be null if empty
    * @throws IOException on read error
    */
+  public PointFeatureCollection subset(ucar.unidata.geoloc.LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException;
+
+  /**
+   * @deprecated use CalendarDateRange
+   */
   public PointFeatureCollection subset(ucar.unidata.geoloc.LatLonRect boundingBox, DateRange dateRange) throws IOException;
+
 }

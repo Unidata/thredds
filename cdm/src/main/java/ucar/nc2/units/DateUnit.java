@@ -32,6 +32,7 @@
  */
 package ucar.nc2.units;
 
+import ucar.nc2.time.CalendarDate;
 import ucar.units.*;
 
 import java.util.Date;
@@ -93,6 +94,15 @@ public class DateUnit { // extends SimpleUnit {
       result = formatter.getISODate( text);
     }
     return result;
+  }
+
+  static public CalendarDate parseCalendarDate( String text) {
+    Date result = getStandardDate( text);
+    if (result == null) {
+      DateFormatter formatter = new DateFormatter();
+      result = formatter.getISODate( text);
+    }
+    return CalendarDate.of(result);
   }
 
   ////////////////////////////////////////////////////////////////////////
@@ -175,12 +185,19 @@ public class DateUnit { // extends SimpleUnit {
     */
    public TimeUnit getTimeUnit() { return timeUnit; }
 
-  /** Get the equivilent java.util.Date.
+  /** Get the equivalent java.util.Date.
    * @return Date or null if failure
    */
   public Date getDate() {
     double secs = timeUnit.getValueInSeconds(value);
     return new Date( getDateOrigin().getTime() + (long)(1000*secs));
+  }
+
+  /** Get the equivalent CalendarDate.
+   * @return CalendarDate or null if failure
+   */
+  public CalendarDate makeCalendarDate(double val) {
+    return CalendarDate.of(makeDate(val));
   }
 
   /** Create a Date from this base unit and the given value.

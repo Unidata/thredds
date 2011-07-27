@@ -33,18 +33,16 @@
 package ucar.nc2.dt.grid;
 
 import junit.framework.*;
-import ucar.nc2.iosp.grib.GribGridServiceProvider;
+import ucar.nc2.iosp.grib.GribServiceProvider;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.TestAll;
 import ucar.nc2.ncml.NcMLReader;
-import ucar.nc2.ncml.TestNcML;
 
 import java.util.List;
 import java.util.Iterator;
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 
 /** Count geogrid objects - sanity check when anything changes. */
 
@@ -132,12 +130,12 @@ public class TestReadandCount extends TestCase {
     doOne( grib1dir,"radar_regional.grib", 1, 1, 3, 0);
 
     // redo grib files, forcing new index
-    GribGridServiceProvider.forceNewIndex( true );
+    GribServiceProvider.forceNewIndex( true );
     doOne( grib1dir,"AVN.wmo", 22, -1, -1, -1);
     doOne( grib1dir,"RUC_W.wmo", 44, -1, -1, -1);
     doOne( grib1dir,"eta.Y.Q.wmo", 25, -1, -1, -1);
     doOne( grib2dir,"ndfd.wmo", 1, -1, -1, -1);
-    GribGridServiceProvider.forceNewIndex( false );
+    GribServiceProvider.forceNewIndex( false );
   }
 
   static void doOne(String dir, String filename, int ngrids, int ncoordSys, int ncoordAxes, int nVertCooordAxes) throws Exception {

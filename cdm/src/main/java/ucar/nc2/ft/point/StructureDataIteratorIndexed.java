@@ -90,5 +90,10 @@ public class StructureDataIteratorIndexed implements StructureDataIterator {
   public int getCurrentRecno() {
     return currRecord;
   }
+
+      @Override
+      public void finish() {
+        // ignored
+      }
   
 }

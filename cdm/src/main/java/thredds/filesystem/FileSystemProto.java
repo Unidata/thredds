@@ -8,11 +8,43 @@ public final class FileSystemProto {
   public static void registerAllExtensions(
       com.google.protobuf.ExtensionRegistry registry) {
   }
+  public interface DirectoryOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
+    
+    // required string path = 1;
+    boolean hasPath();
+    String getPath();
+    
+    // optional uint64 lastModified = 2;
+    boolean hasLastModified();
+    long getLastModified();
+    
+    // repeated .filesystem.File files = 3;
+    java.util.List<thredds.filesystem.FileSystemProto.File> 
+        getFilesList();
+    thredds.filesystem.FileSystemProto.File getFiles(int index);
+    int getFilesCount();
+    java.util.List<? extends thredds.filesystem.FileSystemProto.FileOrBuilder> 
+        getFilesOrBuilderList();
+    thredds.filesystem.FileSystemProto.FileOrBuilder getFilesOrBuilder(
+        int index);
+    
+    // repeated .filesystem.Attribute atts = 5;
+    java.util.List<thredds.filesystem.FileSystemProto.Attribute> 
+        getAttsList();
+    thredds.filesystem.FileSystemProto.Attribute getAtts(int index);
+    int getAttsCount();
+    java.util.List<? extends thredds.filesystem.FileSystemProto.AttributeOrBuilder> 
+        getAttsOrBuilderList();
+    thredds.filesystem.FileSystemProto.AttributeOrBuilder getAttsOrBuilder(
+        int index);
+  }
   public static final class Directory extends
-      com.google.protobuf.GeneratedMessage {
+      com.google.protobuf.GeneratedMessage
+      implements DirectoryOrBuilder {
     // Use Directory.newBuilder() to construct.
-    private Directory() {
-      initFields();
+    private Directory(Builder builder) {
+      super(builder);
     }
     private Directory(boolean noInit) {}
     
@@ -35,71 +67,136 @@ public final class FileSystemProto {
       return thredds.filesystem.FileSystemProto.internal_static_filesystem_Directory_fieldAccessorTable;
     }
     
+    private int bitField0_;
     // required string path = 1;
     public static final int PATH_FIELD_NUMBER = 1;
-    private boolean hasPath;
-    private java.lang.String path_ = "";
-    public boolean hasPath() { return hasPath; }
-    public java.lang.String getPath() { return path_; }
+    private Object path_;
+    public boolean hasPath() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    public String getPath() {
+      Object ref = path_;
+      if (ref instanceof String) {
+        return (String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        String s = bs.toStringUtf8();
+        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+          path_ = s;
+        }
+        return s;
+      }
+    }
+    private com.google.protobuf.ByteString getPathBytes() {
+      Object ref = path_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+        path_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
     
     // optional uint64 lastModified = 2;
     public static final int LASTMODIFIED_FIELD_NUMBER = 2;
-    private boolean hasLastModified;
-    private long lastModified_ = 0L;
-    public boolean hasLastModified() { return hasLastModified; }
-    public long getLastModified() { return lastModified_; }
+    private long lastModified_;
+    public boolean hasLastModified() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    public long getLastModified() {
+      return lastModified_;
+    }
     
     // repeated .filesystem.File files = 3;
     public static final int FILES_FIELD_NUMBER = 3;
-    private java.util.List<thredds.filesystem.FileSystemProto.File> files_ =
-      java.util.Collections.emptyList();
+    private java.util.List<thredds.filesystem.FileSystemProto.File> files_;
     public java.util.List<thredds.filesystem.FileSystemProto.File> getFilesList() {
       return files_;
     }
-    public int getFilesCount() { return files_.size(); }
+    public java.util.List<? extends thredds.filesystem.FileSystemProto.FileOrBuilder> 
+        getFilesOrBuilderList() {
+      return files_;
+    }
+    public int getFilesCount() {
+      return files_.size();
+    }
     public thredds.filesystem.FileSystemProto.File getFiles(int index) {
+      return files_.get(index);
+    }
+    public thredds.filesystem.FileSystemProto.FileOrBuilder getFilesOrBuilder(
+        int index) {
       return files_.get(index);
     }
     
     // repeated .filesystem.Attribute atts = 5;
     public static final int ATTS_FIELD_NUMBER = 5;
-    private java.util.List<thredds.filesystem.FileSystemProto.Attribute> atts_ =
-      java.util.Collections.emptyList();
+    private java.util.List<thredds.filesystem.FileSystemProto.Attribute> atts_;
     public java.util.List<thredds.filesystem.FileSystemProto.Attribute> getAttsList() {
       return atts_;
     }
-    public int getAttsCount() { return atts_.size(); }
+    public java.util.List<? extends thredds.filesystem.FileSystemProto.AttributeOrBuilder> 
+        getAttsOrBuilderList() {
+      return atts_;
+    }
+    public int getAttsCount() {
+      return atts_.size();
+    }
     public thredds.filesystem.FileSystemProto.Attribute getAtts(int index) {
+      return atts_.get(index);
+    }
+    public thredds.filesystem.FileSystemProto.AttributeOrBuilder getAttsOrBuilder(
+        int index) {
       return atts_.get(index);
     }
     
     private void initFields() {
+      path_ = "";
+      lastModified_ = 0L;
+      files_ = java.util.Collections.emptyList();
+      atts_ = java.util.Collections.emptyList();
     }
+    private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
-      if (!hasPath) return false;
-      for (thredds.filesystem.FileSystemProto.File element : getFilesList()) {
-        if (!element.isInitialized()) return false;
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+      
+      if (!hasPath()) {
+        memoizedIsInitialized = 0;
+        return false;
       }
-      for (thredds.filesystem.FileSystemProto.Attribute element : getAttsList()) {
-        if (!element.isInitialized()) return false;
+      for (int i = 0; i < getFilesCount(); i++) {
+        if (!getFiles(i).isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
       }
+      for (int i = 0; i < getAttsCount(); i++) {
+        if (!getAtts(i).isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      memoizedIsInitialized = 1;
       return true;
     }
     
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       getSerializedSize();
-      if (hasPath()) {
-        output.writeString(1, getPath());
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeBytes(1, getPathBytes());
       }
-      if (hasLastModified()) {
-        output.writeUInt64(2, getLastModified());
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeUInt64(2, lastModified_);
       }
-      for (thredds.filesystem.FileSystemProto.File element : getFilesList()) {
-        output.writeMessage(3, element);
+      for (int i = 0; i < files_.size(); i++) {
+        output.writeMessage(3, files_.get(i));
       }
-      for (thredds.filesystem.FileSystemProto.Attribute element : getAttsList()) {
-        output.writeMessage(5, element);
+      for (int i = 0; i < atts_.size(); i++) {
+        output.writeMessage(5, atts_.get(i));
       }
       getUnknownFields().writeTo(output);
     }
@@ -110,25 +207,30 @@ public final class FileSystemProto {
       if (size != -1) return size;
     
       size = 0;
-      if (hasPath()) {
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeStringSize(1, getPath());
+          .computeBytesSize(1, getPathBytes());
       }
-      if (hasLastModified()) {
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeUInt64Size(2, getLastModified());
+          .computeUInt64Size(2, lastModified_);
       }
-      for (thredds.filesystem.FileSystemProto.File element : getFilesList()) {
+      for (int i = 0; i < files_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(3, element);
+          .computeMessageSize(3, files_.get(i));
       }
-      for (thredds.filesystem.FileSystemProto.Attribute element : getAttsList()) {
+      for (int i = 0; i < atts_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(5, element);
+          .computeMessageSize(5, atts_.get(i));
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
       return size;
+    }
+    
+    @java.lang.Override
+    protected Object writeReplace() throws java.io.ObjectStreamException {
+      return super.writeReplace();
     }
     
     public static thredds.filesystem.FileSystemProto.Directory parseFrom(
@@ -205,34 +307,67 @@ public final class FileSystemProto {
     }
     public Builder toBuilder() { return newBuilder(this); }
     
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder> {
-      private thredds.filesystem.FileSystemProto.Directory result;
-      
-      // Construct using thredds.filesystem.FileSystemProto.Directory.newBuilder()
-      private Builder() {}
-      
-      private static Builder create() {
-        Builder builder = new Builder();
-        builder.result = new thredds.filesystem.FileSystemProto.Directory();
-        return builder;
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements thredds.filesystem.FileSystemProto.DirectoryOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return thredds.filesystem.FileSystemProto.internal_static_filesystem_Directory_descriptor;
       }
       
-      protected thredds.filesystem.FileSystemProto.Directory internalGetResult() {
-        return result;
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return thredds.filesystem.FileSystemProto.internal_static_filesystem_Directory_fieldAccessorTable;
+      }
+      
+      // Construct using thredds.filesystem.FileSystemProto.Directory.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+      
+      private Builder(BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          getFilesFieldBuilder();
+          getAttsFieldBuilder();
+        }
+      }
+      private static Builder create() {
+        return new Builder();
       }
       
       public Builder clear() {
-        if (result == null) {
-          throw new IllegalStateException(
-            "Cannot call clear() after build().");
+        super.clear();
+        path_ = "";
+        bitField0_ = (bitField0_ & ~0x00000001);
+        lastModified_ = 0L;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        if (filesBuilder_ == null) {
+          files_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000004);
+        } else {
+          filesBuilder_.clear();
         }
-        result = new thredds.filesystem.FileSystemProto.Directory();
+        if (attsBuilder_ == null) {
+          atts_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000008);
+        } else {
+          attsBuilder_.clear();
+        }
         return this;
       }
       
       public Builder clone() {
-        return create().mergeFrom(result);
+        return create().mergeFrom(buildPartial());
       }
       
       public com.google.protobuf.Descriptors.Descriptor
@@ -244,41 +379,57 @@ public final class FileSystemProto {
         return thredds.filesystem.FileSystemProto.Directory.getDefaultInstance();
       }
       
-      public boolean isInitialized() {
-        return result.isInitialized();
-      }
       public thredds.filesystem.FileSystemProto.Directory build() {
-        if (result != null && !isInitialized()) {
+        thredds.filesystem.FileSystemProto.Directory result = buildPartial();
+        if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
-        return buildPartial();
+        return result;
       }
       
       private thredds.filesystem.FileSystemProto.Directory buildParsed()
           throws com.google.protobuf.InvalidProtocolBufferException {
-        if (!isInitialized()) {
+        thredds.filesystem.FileSystemProto.Directory result = buildPartial();
+        if (!result.isInitialized()) {
           throw newUninitializedMessageException(
             result).asInvalidProtocolBufferException();
         }
-        return buildPartial();
+        return result;
       }
       
       public thredds.filesystem.FileSystemProto.Directory buildPartial() {
-        if (result == null) {
-          throw new IllegalStateException(
-            "build() has already been called on this Builder.");
+        thredds.filesystem.FileSystemProto.Directory result = new thredds.filesystem.FileSystemProto.Directory(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
         }
-        if (result.files_ != java.util.Collections.EMPTY_LIST) {
-          result.files_ =
-            java.util.Collections.unmodifiableList(result.files_);
+        result.path_ = path_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
         }
-        if (result.atts_ != java.util.Collections.EMPTY_LIST) {
-          result.atts_ =
-            java.util.Collections.unmodifiableList(result.atts_);
+        result.lastModified_ = lastModified_;
+        if (filesBuilder_ == null) {
+          if (((bitField0_ & 0x00000004) == 0x00000004)) {
+            files_ = java.util.Collections.unmodifiableList(files_);
+            bitField0_ = (bitField0_ & ~0x00000004);
+          }
+          result.files_ = files_;
+        } else {
+          result.files_ = filesBuilder_.build();
         }
-        thredds.filesystem.FileSystemProto.Directory returnMe = result;
-        result = null;
-        return returnMe;
+        if (attsBuilder_ == null) {
+          if (((bitField0_ & 0x00000008) == 0x00000008)) {
+            atts_ = java.util.Collections.unmodifiableList(atts_);
+            bitField0_ = (bitField0_ & ~0x00000008);
+          }
+          result.atts_ = atts_;
+        } else {
+          result.atts_ = attsBuilder_.build();
+        }
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
       }
       
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -298,20 +449,80 @@ public final class FileSystemProto {
         if (other.hasLastModified()) {
           setLastModified(other.getLastModified());
         }
-        if (!other.files_.isEmpty()) {
-          if (result.files_.isEmpty()) {
-            result.files_ = new java.util.ArrayList<thredds.filesystem.FileSystemProto.File>();
+        if (filesBuilder_ == null) {
+          if (!other.files_.isEmpty()) {
+            if (files_.isEmpty()) {
+              files_ = other.files_;
+              bitField0_ = (bitField0_ & ~0x00000004);
+            } else {
+              ensureFilesIsMutable();
+              files_.addAll(other.files_);
+            }
+            onChanged();
           }
-          result.files_.addAll(other.files_);
+        } else {
+          if (!other.files_.isEmpty()) {
+            if (filesBuilder_.isEmpty()) {
+              filesBuilder_.dispose();
+              filesBuilder_ = null;
+              files_ = other.files_;
+              bitField0_ = (bitField0_ & ~0x00000004);
+              filesBuilder_ = 
+                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                   getFilesFieldBuilder() : null;
+            } else {
+              filesBuilder_.addAllMessages(other.files_);
+            }
+          }
         }
-        if (!other.atts_.isEmpty()) {
-          if (result.atts_.isEmpty()) {
-            result.atts_ = new java.util.ArrayList<thredds.filesystem.FileSystemProto.Attribute>();
+        if (attsBuilder_ == null) {
+          if (!other.atts_.isEmpty()) {
+            if (atts_.isEmpty()) {
+              atts_ = other.atts_;
+              bitField0_ = (bitField0_ & ~0x00000008);
+            } else {
+              ensureAttsIsMutable();
+              atts_.addAll(other.atts_);
+            }
+            onChanged();
           }
-          result.atts_.addAll(other.atts_);
+        } else {
+          if (!other.atts_.isEmpty()) {
+            if (attsBuilder_.isEmpty()) {
+              attsBuilder_.dispose();
+              attsBuilder_ = null;
+              atts_ = other.atts_;
+              bitField0_ = (bitField0_ & ~0x00000008);
+              attsBuilder_ = 
+                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                   getAttsFieldBuilder() : null;
+            } else {
+              attsBuilder_.addAllMessages(other.atts_);
+            }
+          }
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
+      }
+      
+      public final boolean isInitialized() {
+        if (!hasPath()) {
+          
+          return false;
+        }
+        for (int i = 0; i < getFilesCount(); i++) {
+          if (!getFiles(i).isInitialized()) {
+            
+            return false;
+          }
+        }
+        for (int i = 0; i < getAttsCount(); i++) {
+          if (!getAtts(i).isInitialized()) {
+            
+            return false;
+          }
+        }
+        return true;
       }
       
       public Builder mergeFrom(
@@ -326,21 +537,25 @@ public final class FileSystemProto {
           switch (tag) {
             case 0:
               this.setUnknownFields(unknownFields.build());
+              onChanged();
               return this;
             default: {
               if (!parseUnknownField(input, unknownFields,
                                      extensionRegistry, tag)) {
                 this.setUnknownFields(unknownFields.build());
+                onChanged();
                 return this;
               }
               break;
             }
             case 10: {
-              setPath(input.readString());
+              bitField0_ |= 0x00000001;
+              path_ = input.readBytes();
               break;
             }
             case 16: {
-              setLastModified(input.readUInt64());
+              bitField0_ |= 0x00000002;
+              lastModified_ = input.readUInt64();
               break;
             }
             case 26: {
@@ -359,146 +574,435 @@ public final class FileSystemProto {
         }
       }
       
+      private int bitField0_;
       
       // required string path = 1;
+      private Object path_ = "";
       public boolean hasPath() {
-        return result.hasPath();
+        return ((bitField0_ & 0x00000001) == 0x00000001);
       }
-      public java.lang.String getPath() {
-        return result.getPath();
+      public String getPath() {
+        Object ref = path_;
+        if (!(ref instanceof String)) {
+          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+          path_ = s;
+          return s;
+        } else {
+          return (String) ref;
+        }
       }
-      public Builder setPath(java.lang.String value) {
+      public Builder setPath(String value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  result.hasPath = true;
-        result.path_ = value;
+  bitField0_ |= 0x00000001;
+        path_ = value;
+        onChanged();
         return this;
       }
       public Builder clearPath() {
-        result.hasPath = false;
-        result.path_ = getDefaultInstance().getPath();
+        bitField0_ = (bitField0_ & ~0x00000001);
+        path_ = getDefaultInstance().getPath();
+        onChanged();
         return this;
+      }
+      void setPath(com.google.protobuf.ByteString value) {
+        bitField0_ |= 0x00000001;
+        path_ = value;
+        onChanged();
       }
       
       // optional uint64 lastModified = 2;
+      private long lastModified_ ;
       public boolean hasLastModified() {
-        return result.hasLastModified();
+        return ((bitField0_ & 0x00000002) == 0x00000002);
       }
       public long getLastModified() {
-        return result.getLastModified();
+        return lastModified_;
       }
       public Builder setLastModified(long value) {
-        result.hasLastModified = true;
-        result.lastModified_ = value;
+        bitField0_ |= 0x00000002;
+        lastModified_ = value;
+        onChanged();
         return this;
       }
       public Builder clearLastModified() {
-        result.hasLastModified = false;
-        result.lastModified_ = 0L;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        lastModified_ = 0L;
+        onChanged();
         return this;
       }
       
       // repeated .filesystem.File files = 3;
+      private java.util.List<thredds.filesystem.FileSystemProto.File> files_ =
+        java.util.Collections.emptyList();
+      private void ensureFilesIsMutable() {
+        if (!((bitField0_ & 0x00000004) == 0x00000004)) {
+          files_ = new java.util.ArrayList<thredds.filesystem.FileSystemProto.File>(files_);
+          bitField0_ |= 0x00000004;
+         }
+      }
+      
+      private com.google.protobuf.RepeatedFieldBuilder<
+          thredds.filesystem.FileSystemProto.File, thredds.filesystem.FileSystemProto.File.Builder, thredds.filesystem.FileSystemProto.FileOrBuilder> filesBuilder_;
+      
       public java.util.List<thredds.filesystem.FileSystemProto.File> getFilesList() {
-        return java.util.Collections.unmodifiableList(result.files_);
+        if (filesBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(files_);
+        } else {
+          return filesBuilder_.getMessageList();
+        }
       }
       public int getFilesCount() {
-        return result.getFilesCount();
+        if (filesBuilder_ == null) {
+          return files_.size();
+        } else {
+          return filesBuilder_.getCount();
+        }
       }
       public thredds.filesystem.FileSystemProto.File getFiles(int index) {
-        return result.getFiles(index);
-      }
-      public Builder setFiles(int index, thredds.filesystem.FileSystemProto.File value) {
-        if (value == null) {
-          throw new NullPointerException();
+        if (filesBuilder_ == null) {
+          return files_.get(index);
+        } else {
+          return filesBuilder_.getMessage(index);
         }
-        result.files_.set(index, value);
+      }
+      public Builder setFiles(
+          int index, thredds.filesystem.FileSystemProto.File value) {
+        if (filesBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureFilesIsMutable();
+          files_.set(index, value);
+          onChanged();
+        } else {
+          filesBuilder_.setMessage(index, value);
+        }
         return this;
       }
-      public Builder setFiles(int index, thredds.filesystem.FileSystemProto.File.Builder builderForValue) {
-        result.files_.set(index, builderForValue.build());
+      public Builder setFiles(
+          int index, thredds.filesystem.FileSystemProto.File.Builder builderForValue) {
+        if (filesBuilder_ == null) {
+          ensureFilesIsMutable();
+          files_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          filesBuilder_.setMessage(index, builderForValue.build());
+        }
         return this;
       }
       public Builder addFiles(thredds.filesystem.FileSystemProto.File value) {
-        if (value == null) {
-          throw new NullPointerException();
+        if (filesBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureFilesIsMutable();
+          files_.add(value);
+          onChanged();
+        } else {
+          filesBuilder_.addMessage(value);
         }
-        if (result.files_.isEmpty()) {
-          result.files_ = new java.util.ArrayList<thredds.filesystem.FileSystemProto.File>();
-        }
-        result.files_.add(value);
         return this;
       }
-      public Builder addFiles(thredds.filesystem.FileSystemProto.File.Builder builderForValue) {
-        if (result.files_.isEmpty()) {
-          result.files_ = new java.util.ArrayList<thredds.filesystem.FileSystemProto.File>();
+      public Builder addFiles(
+          int index, thredds.filesystem.FileSystemProto.File value) {
+        if (filesBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureFilesIsMutable();
+          files_.add(index, value);
+          onChanged();
+        } else {
+          filesBuilder_.addMessage(index, value);
         }
-        result.files_.add(builderForValue.build());
+        return this;
+      }
+      public Builder addFiles(
+          thredds.filesystem.FileSystemProto.File.Builder builderForValue) {
+        if (filesBuilder_ == null) {
+          ensureFilesIsMutable();
+          files_.add(builderForValue.build());
+          onChanged();
+        } else {
+          filesBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addFiles(
+          int index, thredds.filesystem.FileSystemProto.File.Builder builderForValue) {
+        if (filesBuilder_ == null) {
+          ensureFilesIsMutable();
+          files_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          filesBuilder_.addMessage(index, builderForValue.build());
+        }
         return this;
       }
       public Builder addAllFiles(
           java.lang.Iterable<? extends thredds.filesystem.FileSystemProto.File> values) {
-        if (result.files_.isEmpty()) {
-          result.files_ = new java.util.ArrayList<thredds.filesystem.FileSystemProto.File>();
+        if (filesBuilder_ == null) {
+          ensureFilesIsMutable();
+          super.addAll(values, files_);
+          onChanged();
+        } else {
+          filesBuilder_.addAllMessages(values);
         }
-        super.addAll(values, result.files_);
         return this;
       }
       public Builder clearFiles() {
-        result.files_ = java.util.Collections.emptyList();
+        if (filesBuilder_ == null) {
+          files_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000004);
+          onChanged();
+        } else {
+          filesBuilder_.clear();
+        }
         return this;
+      }
+      public Builder removeFiles(int index) {
+        if (filesBuilder_ == null) {
+          ensureFilesIsMutable();
+          files_.remove(index);
+          onChanged();
+        } else {
+          filesBuilder_.remove(index);
+        }
+        return this;
+      }
+      public thredds.filesystem.FileSystemProto.File.Builder getFilesBuilder(
+          int index) {
+        return getFilesFieldBuilder().getBuilder(index);
+      }
+      public thredds.filesystem.FileSystemProto.FileOrBuilder getFilesOrBuilder(
+          int index) {
+        if (filesBuilder_ == null) {
+          return files_.get(index);  } else {
+          return filesBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      public java.util.List<? extends thredds.filesystem.FileSystemProto.FileOrBuilder> 
+           getFilesOrBuilderList() {
+        if (filesBuilder_ != null) {
+          return filesBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(files_);
+        }
+      }
+      public thredds.filesystem.FileSystemProto.File.Builder addFilesBuilder() {
+        return getFilesFieldBuilder().addBuilder(
+            thredds.filesystem.FileSystemProto.File.getDefaultInstance());
+      }
+      public thredds.filesystem.FileSystemProto.File.Builder addFilesBuilder(
+          int index) {
+        return getFilesFieldBuilder().addBuilder(
+            index, thredds.filesystem.FileSystemProto.File.getDefaultInstance());
+      }
+      public java.util.List<thredds.filesystem.FileSystemProto.File.Builder> 
+           getFilesBuilderList() {
+        return getFilesFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilder<
+          thredds.filesystem.FileSystemProto.File, thredds.filesystem.FileSystemProto.File.Builder, thredds.filesystem.FileSystemProto.FileOrBuilder> 
+          getFilesFieldBuilder() {
+        if (filesBuilder_ == null) {
+          filesBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+              thredds.filesystem.FileSystemProto.File, thredds.filesystem.FileSystemProto.File.Builder, thredds.filesystem.FileSystemProto.FileOrBuilder>(
+                  files_,
+                  ((bitField0_ & 0x00000004) == 0x00000004),
+                  getParentForChildren(),
+                  isClean());
+          files_ = null;
+        }
+        return filesBuilder_;
       }
       
       // repeated .filesystem.Attribute atts = 5;
+      private java.util.List<thredds.filesystem.FileSystemProto.Attribute> atts_ =
+        java.util.Collections.emptyList();
+      private void ensureAttsIsMutable() {
+        if (!((bitField0_ & 0x00000008) == 0x00000008)) {
+          atts_ = new java.util.ArrayList<thredds.filesystem.FileSystemProto.Attribute>(atts_);
+          bitField0_ |= 0x00000008;
+         }
+      }
+      
+      private com.google.protobuf.RepeatedFieldBuilder<
+          thredds.filesystem.FileSystemProto.Attribute, thredds.filesystem.FileSystemProto.Attribute.Builder, thredds.filesystem.FileSystemProto.AttributeOrBuilder> attsBuilder_;
+      
       public java.util.List<thredds.filesystem.FileSystemProto.Attribute> getAttsList() {
-        return java.util.Collections.unmodifiableList(result.atts_);
+        if (attsBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(atts_);
+        } else {
+          return attsBuilder_.getMessageList();
+        }
       }
       public int getAttsCount() {
-        return result.getAttsCount();
+        if (attsBuilder_ == null) {
+          return atts_.size();
+        } else {
+          return attsBuilder_.getCount();
+        }
       }
       public thredds.filesystem.FileSystemProto.Attribute getAtts(int index) {
-        return result.getAtts(index);
-      }
-      public Builder setAtts(int index, thredds.filesystem.FileSystemProto.Attribute value) {
-        if (value == null) {
-          throw new NullPointerException();
+        if (attsBuilder_ == null) {
+          return atts_.get(index);
+        } else {
+          return attsBuilder_.getMessage(index);
         }
-        result.atts_.set(index, value);
+      }
+      public Builder setAtts(
+          int index, thredds.filesystem.FileSystemProto.Attribute value) {
+        if (attsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureAttsIsMutable();
+          atts_.set(index, value);
+          onChanged();
+        } else {
+          attsBuilder_.setMessage(index, value);
+        }
         return this;
       }
-      public Builder setAtts(int index, thredds.filesystem.FileSystemProto.Attribute.Builder builderForValue) {
-        result.atts_.set(index, builderForValue.build());
+      public Builder setAtts(
+          int index, thredds.filesystem.FileSystemProto.Attribute.Builder builderForValue) {
+        if (attsBuilder_ == null) {
+          ensureAttsIsMutable();
+          atts_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          attsBuilder_.setMessage(index, builderForValue.build());
+        }
         return this;
       }
       public Builder addAtts(thredds.filesystem.FileSystemProto.Attribute value) {
-        if (value == null) {
-          throw new NullPointerException();
+        if (attsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureAttsIsMutable();
+          atts_.add(value);
+          onChanged();
+        } else {
+          attsBuilder_.addMessage(value);
         }
-        if (result.atts_.isEmpty()) {
-          result.atts_ = new java.util.ArrayList<thredds.filesystem.FileSystemProto.Attribute>();
-        }
-        result.atts_.add(value);
         return this;
       }
-      public Builder addAtts(thredds.filesystem.FileSystemProto.Attribute.Builder builderForValue) {
-        if (result.atts_.isEmpty()) {
-          result.atts_ = new java.util.ArrayList<thredds.filesystem.FileSystemProto.Attribute>();
+      public Builder addAtts(
+          int index, thredds.filesystem.FileSystemProto.Attribute value) {
+        if (attsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureAttsIsMutable();
+          atts_.add(index, value);
+          onChanged();
+        } else {
+          attsBuilder_.addMessage(index, value);
         }
-        result.atts_.add(builderForValue.build());
+        return this;
+      }
+      public Builder addAtts(
+          thredds.filesystem.FileSystemProto.Attribute.Builder builderForValue) {
+        if (attsBuilder_ == null) {
+          ensureAttsIsMutable();
+          atts_.add(builderForValue.build());
+          onChanged();
+        } else {
+          attsBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addAtts(
+          int index, thredds.filesystem.FileSystemProto.Attribute.Builder builderForValue) {
+        if (attsBuilder_ == null) {
+          ensureAttsIsMutable();
+          atts_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          attsBuilder_.addMessage(index, builderForValue.build());
+        }
         return this;
       }
       public Builder addAllAtts(
           java.lang.Iterable<? extends thredds.filesystem.FileSystemProto.Attribute> values) {
-        if (result.atts_.isEmpty()) {
-          result.atts_ = new java.util.ArrayList<thredds.filesystem.FileSystemProto.Attribute>();
+        if (attsBuilder_ == null) {
+          ensureAttsIsMutable();
+          super.addAll(values, atts_);
+          onChanged();
+        } else {
+          attsBuilder_.addAllMessages(values);
         }
-        super.addAll(values, result.atts_);
         return this;
       }
       public Builder clearAtts() {
-        result.atts_ = java.util.Collections.emptyList();
+        if (attsBuilder_ == null) {
+          atts_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000008);
+          onChanged();
+        } else {
+          attsBuilder_.clear();
+        }
         return this;
+      }
+      public Builder removeAtts(int index) {
+        if (attsBuilder_ == null) {
+          ensureAttsIsMutable();
+          atts_.remove(index);
+          onChanged();
+        } else {
+          attsBuilder_.remove(index);
+        }
+        return this;
+      }
+      public thredds.filesystem.FileSystemProto.Attribute.Builder getAttsBuilder(
+          int index) {
+        return getAttsFieldBuilder().getBuilder(index);
+      }
+      public thredds.filesystem.FileSystemProto.AttributeOrBuilder getAttsOrBuilder(
+          int index) {
+        if (attsBuilder_ == null) {
+          return atts_.get(index);  } else {
+          return attsBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      public java.util.List<? extends thredds.filesystem.FileSystemProto.AttributeOrBuilder> 
+           getAttsOrBuilderList() {
+        if (attsBuilder_ != null) {
+          return attsBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(atts_);
+        }
+      }
+      public thredds.filesystem.FileSystemProto.Attribute.Builder addAttsBuilder() {
+        return getAttsFieldBuilder().addBuilder(
+            thredds.filesystem.FileSystemProto.Attribute.getDefaultInstance());
+      }
+      public thredds.filesystem.FileSystemProto.Attribute.Builder addAttsBuilder(
+          int index) {
+        return getAttsFieldBuilder().addBuilder(
+            index, thredds.filesystem.FileSystemProto.Attribute.getDefaultInstance());
+      }
+      public java.util.List<thredds.filesystem.FileSystemProto.Attribute.Builder> 
+           getAttsBuilderList() {
+        return getAttsFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilder<
+          thredds.filesystem.FileSystemProto.Attribute, thredds.filesystem.FileSystemProto.Attribute.Builder, thredds.filesystem.FileSystemProto.AttributeOrBuilder> 
+          getAttsFieldBuilder() {
+        if (attsBuilder_ == null) {
+          attsBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+              thredds.filesystem.FileSystemProto.Attribute, thredds.filesystem.FileSystemProto.Attribute.Builder, thredds.filesystem.FileSystemProto.AttributeOrBuilder>(
+                  atts_,
+                  ((bitField0_ & 0x00000008) == 0x00000008),
+                  getParentForChildren(),
+                  isClean());
+          atts_ = null;
+        }
+        return attsBuilder_;
       }
       
       // @@protoc_insertion_point(builder_scope:filesystem.Directory)
@@ -506,18 +1010,47 @@ public final class FileSystemProto {
     
     static {
       defaultInstance = new Directory(true);
-      thredds.filesystem.FileSystemProto.internalForceInit();
       defaultInstance.initFields();
     }
     
     // @@protoc_insertion_point(class_scope:filesystem.Directory)
   }
   
+  public interface FileOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
+    
+    // required string name = 1;
+    boolean hasName();
+    String getName();
+    
+    // optional uint64 lastModified = 2;
+    boolean hasLastModified();
+    long getLastModified();
+    
+    // optional uint64 length = 3;
+    boolean hasLength();
+    long getLength();
+    
+    // required bool isDirectory = 4;
+    boolean hasIsDirectory();
+    boolean getIsDirectory();
+    
+    // repeated .filesystem.Attribute atts = 5;
+    java.util.List<thredds.filesystem.FileSystemProto.Attribute> 
+        getAttsList();
+    thredds.filesystem.FileSystemProto.Attribute getAtts(int index);
+    int getAttsCount();
+    java.util.List<? extends thredds.filesystem.FileSystemProto.AttributeOrBuilder> 
+        getAttsOrBuilderList();
+    thredds.filesystem.FileSystemProto.AttributeOrBuilder getAttsOrBuilder(
+        int index);
+  }
   public static final class File extends
-      com.google.protobuf.GeneratedMessage {
+      com.google.protobuf.GeneratedMessage
+      implements FileOrBuilder {
     // Use File.newBuilder() to construct.
-    private File() {
-      initFields();
+    private File(Builder builder) {
+      super(builder);
     }
     private File(boolean noInit) {}
     
@@ -540,74 +1073,137 @@ public final class FileSystemProto {
       return thredds.filesystem.FileSystemProto.internal_static_filesystem_File_fieldAccessorTable;
     }
     
+    private int bitField0_;
     // required string name = 1;
     public static final int NAME_FIELD_NUMBER = 1;
-    private boolean hasName;
-    private java.lang.String name_ = "";
-    public boolean hasName() { return hasName; }
-    public java.lang.String getName() { return name_; }
+    private Object name_;
+    public boolean hasName() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    public String getName() {
+      Object ref = name_;
+      if (ref instanceof String) {
+        return (String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        String s = bs.toStringUtf8();
+        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+          name_ = s;
+        }
+        return s;
+      }
+    }
+    private com.google.protobuf.ByteString getNameBytes() {
+      Object ref = name_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+        name_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
     
     // optional uint64 lastModified = 2;
     public static final int LASTMODIFIED_FIELD_NUMBER = 2;
-    private boolean hasLastModified;
-    private long lastModified_ = 0L;
-    public boolean hasLastModified() { return hasLastModified; }
-    public long getLastModified() { return lastModified_; }
+    private long lastModified_;
+    public boolean hasLastModified() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    public long getLastModified() {
+      return lastModified_;
+    }
     
     // optional uint64 length = 3;
     public static final int LENGTH_FIELD_NUMBER = 3;
-    private boolean hasLength;
-    private long length_ = 0L;
-    public boolean hasLength() { return hasLength; }
-    public long getLength() { return length_; }
+    private long length_;
+    public boolean hasLength() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    public long getLength() {
+      return length_;
+    }
     
     // required bool isDirectory = 4;
     public static final int ISDIRECTORY_FIELD_NUMBER = 4;
-    private boolean hasIsDirectory;
-    private boolean isDirectory_ = false;
-    public boolean hasIsDirectory() { return hasIsDirectory; }
-    public boolean getIsDirectory() { return isDirectory_; }
+    private boolean isDirectory_;
+    public boolean hasIsDirectory() {
+      return ((bitField0_ & 0x00000008) == 0x00000008);
+    }
+    public boolean getIsDirectory() {
+      return isDirectory_;
+    }
     
     // repeated .filesystem.Attribute atts = 5;
     public static final int ATTS_FIELD_NUMBER = 5;
-    private java.util.List<thredds.filesystem.FileSystemProto.Attribute> atts_ =
-      java.util.Collections.emptyList();
+    private java.util.List<thredds.filesystem.FileSystemProto.Attribute> atts_;
     public java.util.List<thredds.filesystem.FileSystemProto.Attribute> getAttsList() {
       return atts_;
     }
-    public int getAttsCount() { return atts_.size(); }
+    public java.util.List<? extends thredds.filesystem.FileSystemProto.AttributeOrBuilder> 
+        getAttsOrBuilderList() {
+      return atts_;
+    }
+    public int getAttsCount() {
+      return atts_.size();
+    }
     public thredds.filesystem.FileSystemProto.Attribute getAtts(int index) {
+      return atts_.get(index);
+    }
+    public thredds.filesystem.FileSystemProto.AttributeOrBuilder getAttsOrBuilder(
+        int index) {
       return atts_.get(index);
     }
     
     private void initFields() {
+      name_ = "";
+      lastModified_ = 0L;
+      length_ = 0L;
+      isDirectory_ = false;
+      atts_ = java.util.Collections.emptyList();
     }
+    private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
-      if (!hasName) return false;
-      if (!hasIsDirectory) return false;
-      for (thredds.filesystem.FileSystemProto.Attribute element : getAttsList()) {
-        if (!element.isInitialized()) return false;
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+      
+      if (!hasName()) {
+        memoizedIsInitialized = 0;
+        return false;
       }
+      if (!hasIsDirectory()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      for (int i = 0; i < getAttsCount(); i++) {
+        if (!getAtts(i).isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
+      memoizedIsInitialized = 1;
       return true;
     }
     
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       getSerializedSize();
-      if (hasName()) {
-        output.writeString(1, getName());
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeBytes(1, getNameBytes());
       }
-      if (hasLastModified()) {
-        output.writeUInt64(2, getLastModified());
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeUInt64(2, lastModified_);
       }
-      if (hasLength()) {
-        output.writeUInt64(3, getLength());
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeUInt64(3, length_);
       }
-      if (hasIsDirectory()) {
-        output.writeBool(4, getIsDirectory());
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        output.writeBool(4, isDirectory_);
       }
-      for (thredds.filesystem.FileSystemProto.Attribute element : getAttsList()) {
-        output.writeMessage(5, element);
+      for (int i = 0; i < atts_.size(); i++) {
+        output.writeMessage(5, atts_.get(i));
       }
       getUnknownFields().writeTo(output);
     }
@@ -618,29 +1214,34 @@ public final class FileSystemProto {
       if (size != -1) return size;
     
       size = 0;
-      if (hasName()) {
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeStringSize(1, getName());
+          .computeBytesSize(1, getNameBytes());
       }
-      if (hasLastModified()) {
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeUInt64Size(2, getLastModified());
+          .computeUInt64Size(2, lastModified_);
       }
-      if (hasLength()) {
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeUInt64Size(3, getLength());
+          .computeUInt64Size(3, length_);
       }
-      if (hasIsDirectory()) {
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBoolSize(4, getIsDirectory());
+          .computeBoolSize(4, isDirectory_);
       }
-      for (thredds.filesystem.FileSystemProto.Attribute element : getAttsList()) {
+      for (int i = 0; i < atts_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(5, element);
+          .computeMessageSize(5, atts_.get(i));
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
       return size;
+    }
+    
+    @java.lang.Override
+    protected Object writeReplace() throws java.io.ObjectStreamException {
+      return super.writeReplace();
     }
     
     public static thredds.filesystem.FileSystemProto.File parseFrom(
@@ -717,34 +1318,64 @@ public final class FileSystemProto {
     }
     public Builder toBuilder() { return newBuilder(this); }
     
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder> {
-      private thredds.filesystem.FileSystemProto.File result;
-      
-      // Construct using thredds.filesystem.FileSystemProto.File.newBuilder()
-      private Builder() {}
-      
-      private static Builder create() {
-        Builder builder = new Builder();
-        builder.result = new thredds.filesystem.FileSystemProto.File();
-        return builder;
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements thredds.filesystem.FileSystemProto.FileOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return thredds.filesystem.FileSystemProto.internal_static_filesystem_File_descriptor;
       }
       
-      protected thredds.filesystem.FileSystemProto.File internalGetResult() {
-        return result;
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return thredds.filesystem.FileSystemProto.internal_static_filesystem_File_fieldAccessorTable;
+      }
+      
+      // Construct using thredds.filesystem.FileSystemProto.File.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+      
+      private Builder(BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+          getAttsFieldBuilder();
+        }
+      }
+      private static Builder create() {
+        return new Builder();
       }
       
       public Builder clear() {
-        if (result == null) {
-          throw new IllegalStateException(
-            "Cannot call clear() after build().");
+        super.clear();
+        name_ = "";
+        bitField0_ = (bitField0_ & ~0x00000001);
+        lastModified_ = 0L;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        length_ = 0L;
+        bitField0_ = (bitField0_ & ~0x00000004);
+        isDirectory_ = false;
+        bitField0_ = (bitField0_ & ~0x00000008);
+        if (attsBuilder_ == null) {
+          atts_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000010);
+        } else {
+          attsBuilder_.clear();
         }
-        result = new thredds.filesystem.FileSystemProto.File();
         return this;
       }
       
       public Builder clone() {
-        return create().mergeFrom(result);
+        return create().mergeFrom(buildPartial());
       }
       
       public com.google.protobuf.Descriptors.Descriptor
@@ -756,37 +1387,56 @@ public final class FileSystemProto {
         return thredds.filesystem.FileSystemProto.File.getDefaultInstance();
       }
       
-      public boolean isInitialized() {
-        return result.isInitialized();
-      }
       public thredds.filesystem.FileSystemProto.File build() {
-        if (result != null && !isInitialized()) {
+        thredds.filesystem.FileSystemProto.File result = buildPartial();
+        if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
-        return buildPartial();
+        return result;
       }
       
       private thredds.filesystem.FileSystemProto.File buildParsed()
           throws com.google.protobuf.InvalidProtocolBufferException {
-        if (!isInitialized()) {
+        thredds.filesystem.FileSystemProto.File result = buildPartial();
+        if (!result.isInitialized()) {
           throw newUninitializedMessageException(
             result).asInvalidProtocolBufferException();
         }
-        return buildPartial();
+        return result;
       }
       
       public thredds.filesystem.FileSystemProto.File buildPartial() {
-        if (result == null) {
-          throw new IllegalStateException(
-            "build() has already been called on this Builder.");
+        thredds.filesystem.FileSystemProto.File result = new thredds.filesystem.FileSystemProto.File(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
         }
-        if (result.atts_ != java.util.Collections.EMPTY_LIST) {
-          result.atts_ =
-            java.util.Collections.unmodifiableList(result.atts_);
+        result.name_ = name_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
         }
-        thredds.filesystem.FileSystemProto.File returnMe = result;
-        result = null;
-        return returnMe;
+        result.lastModified_ = lastModified_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        result.length_ = length_;
+        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+          to_bitField0_ |= 0x00000008;
+        }
+        result.isDirectory_ = isDirectory_;
+        if (attsBuilder_ == null) {
+          if (((bitField0_ & 0x00000010) == 0x00000010)) {
+            atts_ = java.util.Collections.unmodifiableList(atts_);
+            bitField0_ = (bitField0_ & ~0x00000010);
+          }
+          result.atts_ = atts_;
+        } else {
+          result.atts_ = attsBuilder_.build();
+        }
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
       }
       
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -812,14 +1462,52 @@ public final class FileSystemProto {
         if (other.hasIsDirectory()) {
           setIsDirectory(other.getIsDirectory());
         }
-        if (!other.atts_.isEmpty()) {
-          if (result.atts_.isEmpty()) {
-            result.atts_ = new java.util.ArrayList<thredds.filesystem.FileSystemProto.Attribute>();
+        if (attsBuilder_ == null) {
+          if (!other.atts_.isEmpty()) {
+            if (atts_.isEmpty()) {
+              atts_ = other.atts_;
+              bitField0_ = (bitField0_ & ~0x00000010);
+            } else {
+              ensureAttsIsMutable();
+              atts_.addAll(other.atts_);
+            }
+            onChanged();
           }
-          result.atts_.addAll(other.atts_);
+        } else {
+          if (!other.atts_.isEmpty()) {
+            if (attsBuilder_.isEmpty()) {
+              attsBuilder_.dispose();
+              attsBuilder_ = null;
+              atts_ = other.atts_;
+              bitField0_ = (bitField0_ & ~0x00000010);
+              attsBuilder_ = 
+                com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
+                   getAttsFieldBuilder() : null;
+            } else {
+              attsBuilder_.addAllMessages(other.atts_);
+            }
+          }
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
+      }
+      
+      public final boolean isInitialized() {
+        if (!hasName()) {
+          
+          return false;
+        }
+        if (!hasIsDirectory()) {
+          
+          return false;
+        }
+        for (int i = 0; i < getAttsCount(); i++) {
+          if (!getAtts(i).isInitialized()) {
+            
+            return false;
+          }
+        }
+        return true;
       }
       
       public Builder mergeFrom(
@@ -834,29 +1522,35 @@ public final class FileSystemProto {
           switch (tag) {
             case 0:
               this.setUnknownFields(unknownFields.build());
+              onChanged();
               return this;
             default: {
               if (!parseUnknownField(input, unknownFields,
                                      extensionRegistry, tag)) {
                 this.setUnknownFields(unknownFields.build());
+                onChanged();
                 return this;
               }
               break;
             }
             case 10: {
-              setName(input.readString());
+              bitField0_ |= 0x00000001;
+              name_ = input.readBytes();
               break;
             }
             case 16: {
-              setLastModified(input.readUInt64());
+              bitField0_ |= 0x00000002;
+              lastModified_ = input.readUInt64();
               break;
             }
             case 24: {
-              setLength(input.readUInt64());
+              bitField0_ |= 0x00000004;
+              length_ = input.readUInt64();
               break;
             }
             case 32: {
-              setIsDirectory(input.readBool());
+              bitField0_ |= 0x00000008;
+              isDirectory_ = input.readBool();
               break;
             }
             case 42: {
@@ -869,131 +1563,291 @@ public final class FileSystemProto {
         }
       }
       
+      private int bitField0_;
       
       // required string name = 1;
+      private Object name_ = "";
       public boolean hasName() {
-        return result.hasName();
+        return ((bitField0_ & 0x00000001) == 0x00000001);
       }
-      public java.lang.String getName() {
-        return result.getName();
+      public String getName() {
+        Object ref = name_;
+        if (!(ref instanceof String)) {
+          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+          name_ = s;
+          return s;
+        } else {
+          return (String) ref;
+        }
       }
-      public Builder setName(java.lang.String value) {
+      public Builder setName(String value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  result.hasName = true;
-        result.name_ = value;
+  bitField0_ |= 0x00000001;
+        name_ = value;
+        onChanged();
         return this;
       }
       public Builder clearName() {
-        result.hasName = false;
-        result.name_ = getDefaultInstance().getName();
+        bitField0_ = (bitField0_ & ~0x00000001);
+        name_ = getDefaultInstance().getName();
+        onChanged();
         return this;
+      }
+      void setName(com.google.protobuf.ByteString value) {
+        bitField0_ |= 0x00000001;
+        name_ = value;
+        onChanged();
       }
       
       // optional uint64 lastModified = 2;
+      private long lastModified_ ;
       public boolean hasLastModified() {
-        return result.hasLastModified();
+        return ((bitField0_ & 0x00000002) == 0x00000002);
       }
       public long getLastModified() {
-        return result.getLastModified();
+        return lastModified_;
       }
       public Builder setLastModified(long value) {
-        result.hasLastModified = true;
-        result.lastModified_ = value;
+        bitField0_ |= 0x00000002;
+        lastModified_ = value;
+        onChanged();
         return this;
       }
       public Builder clearLastModified() {
-        result.hasLastModified = false;
-        result.lastModified_ = 0L;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        lastModified_ = 0L;
+        onChanged();
         return this;
       }
       
       // optional uint64 length = 3;
+      private long length_ ;
       public boolean hasLength() {
-        return result.hasLength();
+        return ((bitField0_ & 0x00000004) == 0x00000004);
       }
       public long getLength() {
-        return result.getLength();
+        return length_;
       }
       public Builder setLength(long value) {
-        result.hasLength = true;
-        result.length_ = value;
+        bitField0_ |= 0x00000004;
+        length_ = value;
+        onChanged();
         return this;
       }
       public Builder clearLength() {
-        result.hasLength = false;
-        result.length_ = 0L;
+        bitField0_ = (bitField0_ & ~0x00000004);
+        length_ = 0L;
+        onChanged();
         return this;
       }
       
       // required bool isDirectory = 4;
+      private boolean isDirectory_ ;
       public boolean hasIsDirectory() {
-        return result.hasIsDirectory();
+        return ((bitField0_ & 0x00000008) == 0x00000008);
       }
       public boolean getIsDirectory() {
-        return result.getIsDirectory();
+        return isDirectory_;
       }
       public Builder setIsDirectory(boolean value) {
-        result.hasIsDirectory = true;
-        result.isDirectory_ = value;
+        bitField0_ |= 0x00000008;
+        isDirectory_ = value;
+        onChanged();
         return this;
       }
       public Builder clearIsDirectory() {
-        result.hasIsDirectory = false;
-        result.isDirectory_ = false;
+        bitField0_ = (bitField0_ & ~0x00000008);
+        isDirectory_ = false;
+        onChanged();
         return this;
       }
       
       // repeated .filesystem.Attribute atts = 5;
+      private java.util.List<thredds.filesystem.FileSystemProto.Attribute> atts_ =
+        java.util.Collections.emptyList();
+      private void ensureAttsIsMutable() {
+        if (!((bitField0_ & 0x00000010) == 0x00000010)) {
+          atts_ = new java.util.ArrayList<thredds.filesystem.FileSystemProto.Attribute>(atts_);
+          bitField0_ |= 0x00000010;
+         }
+      }
+      
+      private com.google.protobuf.RepeatedFieldBuilder<
+          thredds.filesystem.FileSystemProto.Attribute, thredds.filesystem.FileSystemProto.Attribute.Builder, thredds.filesystem.FileSystemProto.AttributeOrBuilder> attsBuilder_;
+      
       public java.util.List<thredds.filesystem.FileSystemProto.Attribute> getAttsList() {
-        return java.util.Collections.unmodifiableList(result.atts_);
+        if (attsBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(atts_);
+        } else {
+          return attsBuilder_.getMessageList();
+        }
       }
       public int getAttsCount() {
-        return result.getAttsCount();
+        if (attsBuilder_ == null) {
+          return atts_.size();
+        } else {
+          return attsBuilder_.getCount();
+        }
       }
       public thredds.filesystem.FileSystemProto.Attribute getAtts(int index) {
-        return result.getAtts(index);
-      }
-      public Builder setAtts(int index, thredds.filesystem.FileSystemProto.Attribute value) {
-        if (value == null) {
-          throw new NullPointerException();
+        if (attsBuilder_ == null) {
+          return atts_.get(index);
+        } else {
+          return attsBuilder_.getMessage(index);
         }
-        result.atts_.set(index, value);
+      }
+      public Builder setAtts(
+          int index, thredds.filesystem.FileSystemProto.Attribute value) {
+        if (attsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureAttsIsMutable();
+          atts_.set(index, value);
+          onChanged();
+        } else {
+          attsBuilder_.setMessage(index, value);
+        }
         return this;
       }
-      public Builder setAtts(int index, thredds.filesystem.FileSystemProto.Attribute.Builder builderForValue) {
-        result.atts_.set(index, builderForValue.build());
+      public Builder setAtts(
+          int index, thredds.filesystem.FileSystemProto.Attribute.Builder builderForValue) {
+        if (attsBuilder_ == null) {
+          ensureAttsIsMutable();
+          atts_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          attsBuilder_.setMessage(index, builderForValue.build());
+        }
         return this;
       }
       public Builder addAtts(thredds.filesystem.FileSystemProto.Attribute value) {
-        if (value == null) {
-          throw new NullPointerException();
+        if (attsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureAttsIsMutable();
+          atts_.add(value);
+          onChanged();
+        } else {
+          attsBuilder_.addMessage(value);
         }
-        if (result.atts_.isEmpty()) {
-          result.atts_ = new java.util.ArrayList<thredds.filesystem.FileSystemProto.Attribute>();
-        }
-        result.atts_.add(value);
         return this;
       }
-      public Builder addAtts(thredds.filesystem.FileSystemProto.Attribute.Builder builderForValue) {
-        if (result.atts_.isEmpty()) {
-          result.atts_ = new java.util.ArrayList<thredds.filesystem.FileSystemProto.Attribute>();
+      public Builder addAtts(
+          int index, thredds.filesystem.FileSystemProto.Attribute value) {
+        if (attsBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureAttsIsMutable();
+          atts_.add(index, value);
+          onChanged();
+        } else {
+          attsBuilder_.addMessage(index, value);
         }
-        result.atts_.add(builderForValue.build());
+        return this;
+      }
+      public Builder addAtts(
+          thredds.filesystem.FileSystemProto.Attribute.Builder builderForValue) {
+        if (attsBuilder_ == null) {
+          ensureAttsIsMutable();
+          atts_.add(builderForValue.build());
+          onChanged();
+        } else {
+          attsBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      public Builder addAtts(
+          int index, thredds.filesystem.FileSystemProto.Attribute.Builder builderForValue) {
+        if (attsBuilder_ == null) {
+          ensureAttsIsMutable();
+          atts_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          attsBuilder_.addMessage(index, builderForValue.build());
+        }
         return this;
       }
       public Builder addAllAtts(
           java.lang.Iterable<? extends thredds.filesystem.FileSystemProto.Attribute> values) {
-        if (result.atts_.isEmpty()) {
-          result.atts_ = new java.util.ArrayList<thredds.filesystem.FileSystemProto.Attribute>();
+        if (attsBuilder_ == null) {
+          ensureAttsIsMutable();
+          super.addAll(values, atts_);
+          onChanged();
+        } else {
+          attsBuilder_.addAllMessages(values);
         }
-        super.addAll(values, result.atts_);
         return this;
       }
       public Builder clearAtts() {
-        result.atts_ = java.util.Collections.emptyList();
+        if (attsBuilder_ == null) {
+          atts_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000010);
+          onChanged();
+        } else {
+          attsBuilder_.clear();
+        }
         return this;
+      }
+      public Builder removeAtts(int index) {
+        if (attsBuilder_ == null) {
+          ensureAttsIsMutable();
+          atts_.remove(index);
+          onChanged();
+        } else {
+          attsBuilder_.remove(index);
+        }
+        return this;
+      }
+      public thredds.filesystem.FileSystemProto.Attribute.Builder getAttsBuilder(
+          int index) {
+        return getAttsFieldBuilder().getBuilder(index);
+      }
+      public thredds.filesystem.FileSystemProto.AttributeOrBuilder getAttsOrBuilder(
+          int index) {
+        if (attsBuilder_ == null) {
+          return atts_.get(index);  } else {
+          return attsBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      public java.util.List<? extends thredds.filesystem.FileSystemProto.AttributeOrBuilder> 
+           getAttsOrBuilderList() {
+        if (attsBuilder_ != null) {
+          return attsBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(atts_);
+        }
+      }
+      public thredds.filesystem.FileSystemProto.Attribute.Builder addAttsBuilder() {
+        return getAttsFieldBuilder().addBuilder(
+            thredds.filesystem.FileSystemProto.Attribute.getDefaultInstance());
+      }
+      public thredds.filesystem.FileSystemProto.Attribute.Builder addAttsBuilder(
+          int index) {
+        return getAttsFieldBuilder().addBuilder(
+            index, thredds.filesystem.FileSystemProto.Attribute.getDefaultInstance());
+      }
+      public java.util.List<thredds.filesystem.FileSystemProto.Attribute.Builder> 
+           getAttsBuilderList() {
+        return getAttsFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilder<
+          thredds.filesystem.FileSystemProto.Attribute, thredds.filesystem.FileSystemProto.Attribute.Builder, thredds.filesystem.FileSystemProto.AttributeOrBuilder> 
+          getAttsFieldBuilder() {
+        if (attsBuilder_ == null) {
+          attsBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
+              thredds.filesystem.FileSystemProto.Attribute, thredds.filesystem.FileSystemProto.Attribute.Builder, thredds.filesystem.FileSystemProto.AttributeOrBuilder>(
+                  atts_,
+                  ((bitField0_ & 0x00000010) == 0x00000010),
+                  getParentForChildren(),
+                  isClean());
+          atts_ = null;
+        }
+        return attsBuilder_;
       }
       
       // @@protoc_insertion_point(builder_scope:filesystem.File)
@@ -1001,18 +1855,37 @@ public final class FileSystemProto {
     
     static {
       defaultInstance = new File(true);
-      thredds.filesystem.FileSystemProto.internalForceInit();
       defaultInstance.initFields();
     }
     
     // @@protoc_insertion_point(class_scope:filesystem.File)
   }
   
+  public interface AttributeOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
+    
+    // required string name = 1;
+    boolean hasName();
+    String getName();
+    
+    // required .filesystem.Attribute.Type type = 2;
+    boolean hasType();
+    thredds.filesystem.FileSystemProto.Attribute.Type getType();
+    
+    // required uint32 len = 3;
+    boolean hasLen();
+    int getLen();
+    
+    // required bytes data = 4;
+    boolean hasData();
+    com.google.protobuf.ByteString getData();
+  }
   public static final class Attribute extends
-      com.google.protobuf.GeneratedMessage {
+      com.google.protobuf.GeneratedMessage
+      implements AttributeOrBuilder {
     // Use Attribute.newBuilder() to construct.
-    private Attribute() {
-      initFields();
+    private Attribute(Builder builder) {
+      super(builder);
     }
     private Attribute(boolean noInit) {}
     
@@ -1046,6 +1919,14 @@ public final class FileSystemProto {
       DOUBLE(6, 6),
       ;
       
+      public static final int STRING_VALUE = 0;
+      public static final int BYTE_VALUE = 1;
+      public static final int SHORT_VALUE = 2;
+      public static final int INT_VALUE = 3;
+      public static final int LONG_VALUE = 4;
+      public static final int FLOAT_VALUE = 5;
+      public static final int DOUBLE_VALUE = 6;
+      
       
       public final int getNumber() { return value; }
       
@@ -1070,8 +1951,8 @@ public final class FileSystemProto {
           internalValueMap =
             new com.google.protobuf.Internal.EnumLiteMap<Type>() {
               public Type findValueByNumber(int number) {
-                return Type.valueOf(number)
-      ;        }
+                return Type.valueOf(number);
+              }
             };
       
       public final com.google.protobuf.Descriptors.EnumValueDescriptor
@@ -1090,6 +1971,7 @@ public final class FileSystemProto {
       private static final Type[] VALUES = {
         STRING, BYTE, SHORT, INT, LONG, FLOAT, DOUBLE, 
       };
+      
       public static Type valueOf(
           com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
         if (desc.getType() != getDescriptor()) {
@@ -1098,73 +1980,126 @@ public final class FileSystemProto {
         }
         return VALUES[desc.getIndex()];
       }
+      
       private final int index;
       private final int value;
+      
       private Type(int index, int value) {
         this.index = index;
         this.value = value;
       }
       
-      static {
-        thredds.filesystem.FileSystemProto.getDescriptor();
-      }
-      
       // @@protoc_insertion_point(enum_scope:filesystem.Attribute.Type)
     }
     
+    private int bitField0_;
     // required string name = 1;
     public static final int NAME_FIELD_NUMBER = 1;
-    private boolean hasName;
-    private java.lang.String name_ = "";
-    public boolean hasName() { return hasName; }
-    public java.lang.String getName() { return name_; }
+    private Object name_;
+    public boolean hasName() {
+      return ((bitField0_ & 0x00000001) == 0x00000001);
+    }
+    public String getName() {
+      Object ref = name_;
+      if (ref instanceof String) {
+        return (String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        String s = bs.toStringUtf8();
+        if (com.google.protobuf.Internal.isValidUtf8(bs)) {
+          name_ = s;
+        }
+        return s;
+      }
+    }
+    private com.google.protobuf.ByteString getNameBytes() {
+      Object ref = name_;
+      if (ref instanceof String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8((String) ref);
+        name_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
     
     // required .filesystem.Attribute.Type type = 2;
     public static final int TYPE_FIELD_NUMBER = 2;
-    private boolean hasType;
     private thredds.filesystem.FileSystemProto.Attribute.Type type_;
-    public boolean hasType() { return hasType; }
-    public thredds.filesystem.FileSystemProto.Attribute.Type getType() { return type_; }
+    public boolean hasType() {
+      return ((bitField0_ & 0x00000002) == 0x00000002);
+    }
+    public thredds.filesystem.FileSystemProto.Attribute.Type getType() {
+      return type_;
+    }
     
     // required uint32 len = 3;
     public static final int LEN_FIELD_NUMBER = 3;
-    private boolean hasLen;
-    private int len_ = 0;
-    public boolean hasLen() { return hasLen; }
-    public int getLen() { return len_; }
+    private int len_;
+    public boolean hasLen() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    public int getLen() {
+      return len_;
+    }
     
     // required bytes data = 4;
     public static final int DATA_FIELD_NUMBER = 4;
-    private boolean hasData;
-    private com.google.protobuf.ByteString data_ = com.google.protobuf.ByteString.EMPTY;
-    public boolean hasData() { return hasData; }
-    public com.google.protobuf.ByteString getData() { return data_; }
+    private com.google.protobuf.ByteString data_;
+    public boolean hasData() {
+      return ((bitField0_ & 0x00000008) == 0x00000008);
+    }
+    public com.google.protobuf.ByteString getData() {
+      return data_;
+    }
     
     private void initFields() {
+      name_ = "";
       type_ = thredds.filesystem.FileSystemProto.Attribute.Type.STRING;
+      len_ = 0;
+      data_ = com.google.protobuf.ByteString.EMPTY;
     }
+    private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
-      if (!hasName) return false;
-      if (!hasType) return false;
-      if (!hasLen) return false;
-      if (!hasData) return false;
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized != -1) return isInitialized == 1;
+      
+      if (!hasName()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasType()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasLen()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasData()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      memoizedIsInitialized = 1;
       return true;
     }
     
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       getSerializedSize();
-      if (hasName()) {
-        output.writeString(1, getName());
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
+        output.writeBytes(1, getNameBytes());
       }
-      if (hasType()) {
-        output.writeEnum(2, getType().getNumber());
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
+        output.writeEnum(2, type_.getNumber());
       }
-      if (hasLen()) {
-        output.writeUInt32(3, getLen());
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
+        output.writeUInt32(3, len_);
       }
-      if (hasData()) {
-        output.writeBytes(4, getData());
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        output.writeBytes(4, data_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -1175,25 +2110,30 @@ public final class FileSystemProto {
       if (size != -1) return size;
     
       size = 0;
-      if (hasName()) {
+      if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeStringSize(1, getName());
+          .computeBytesSize(1, getNameBytes());
       }
-      if (hasType()) {
+      if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeEnumSize(2, getType().getNumber());
+          .computeEnumSize(2, type_.getNumber());
       }
-      if (hasLen()) {
+      if (((bitField0_ & 0x00000004) == 0x00000004)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeUInt32Size(3, getLen());
+          .computeUInt32Size(3, len_);
       }
-      if (hasData()) {
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(4, getData());
+          .computeBytesSize(4, data_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
       return size;
+    }
+    
+    @java.lang.Override
+    protected Object writeReplace() throws java.io.ObjectStreamException {
+      return super.writeReplace();
     }
     
     public static thredds.filesystem.FileSystemProto.Attribute parseFrom(
@@ -1270,34 +2210,57 @@ public final class FileSystemProto {
     }
     public Builder toBuilder() { return newBuilder(this); }
     
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessage.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder> {
-      private thredds.filesystem.FileSystemProto.Attribute result;
-      
-      // Construct using thredds.filesystem.FileSystemProto.Attribute.newBuilder()
-      private Builder() {}
-      
-      private static Builder create() {
-        Builder builder = new Builder();
-        builder.result = new thredds.filesystem.FileSystemProto.Attribute();
-        return builder;
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements thredds.filesystem.FileSystemProto.AttributeOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return thredds.filesystem.FileSystemProto.internal_static_filesystem_Attribute_descriptor;
       }
       
-      protected thredds.filesystem.FileSystemProto.Attribute internalGetResult() {
-        return result;
+      protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return thredds.filesystem.FileSystemProto.internal_static_filesystem_Attribute_fieldAccessorTable;
+      }
+      
+      // Construct using thredds.filesystem.FileSystemProto.Attribute.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+      
+      private Builder(BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
+        }
+      }
+      private static Builder create() {
+        return new Builder();
       }
       
       public Builder clear() {
-        if (result == null) {
-          throw new IllegalStateException(
-            "Cannot call clear() after build().");
-        }
-        result = new thredds.filesystem.FileSystemProto.Attribute();
+        super.clear();
+        name_ = "";
+        bitField0_ = (bitField0_ & ~0x00000001);
+        type_ = thredds.filesystem.FileSystemProto.Attribute.Type.STRING;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        len_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000004);
+        data_ = com.google.protobuf.ByteString.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000008);
         return this;
       }
       
       public Builder clone() {
-        return create().mergeFrom(result);
+        return create().mergeFrom(buildPartial());
       }
       
       public com.google.protobuf.Descriptors.Descriptor
@@ -1309,33 +2272,47 @@ public final class FileSystemProto {
         return thredds.filesystem.FileSystemProto.Attribute.getDefaultInstance();
       }
       
-      public boolean isInitialized() {
-        return result.isInitialized();
-      }
       public thredds.filesystem.FileSystemProto.Attribute build() {
-        if (result != null && !isInitialized()) {
+        thredds.filesystem.FileSystemProto.Attribute result = buildPartial();
+        if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
-        return buildPartial();
+        return result;
       }
       
       private thredds.filesystem.FileSystemProto.Attribute buildParsed()
           throws com.google.protobuf.InvalidProtocolBufferException {
-        if (!isInitialized()) {
+        thredds.filesystem.FileSystemProto.Attribute result = buildPartial();
+        if (!result.isInitialized()) {
           throw newUninitializedMessageException(
             result).asInvalidProtocolBufferException();
         }
-        return buildPartial();
+        return result;
       }
       
       public thredds.filesystem.FileSystemProto.Attribute buildPartial() {
-        if (result == null) {
-          throw new IllegalStateException(
-            "build() has already been called on this Builder.");
+        thredds.filesystem.FileSystemProto.Attribute result = new thredds.filesystem.FileSystemProto.Attribute(this);
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
+          to_bitField0_ |= 0x00000001;
         }
-        thredds.filesystem.FileSystemProto.Attribute returnMe = result;
-        result = null;
-        return returnMe;
+        result.name_ = name_;
+        if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+          to_bitField0_ |= 0x00000002;
+        }
+        result.type_ = type_;
+        if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
+          to_bitField0_ |= 0x00000004;
+        }
+        result.len_ = len_;
+        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+          to_bitField0_ |= 0x00000008;
+        }
+        result.data_ = data_;
+        result.bitField0_ = to_bitField0_;
+        onBuilt();
+        return result;
       }
       
       public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -1365,6 +2342,26 @@ public final class FileSystemProto {
         return this;
       }
       
+      public final boolean isInitialized() {
+        if (!hasName()) {
+          
+          return false;
+        }
+        if (!hasType()) {
+          
+          return false;
+        }
+        if (!hasLen()) {
+          
+          return false;
+        }
+        if (!hasData()) {
+          
+          return false;
+        }
+        return true;
+      }
+      
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -1377,17 +2374,20 @@ public final class FileSystemProto {
           switch (tag) {
             case 0:
               this.setUnknownFields(unknownFields.build());
+              onChanged();
               return this;
             default: {
               if (!parseUnknownField(input, unknownFields,
                                      extensionRegistry, tag)) {
                 this.setUnknownFields(unknownFields.build());
+                onChanged();
                 return this;
               }
               break;
             }
             case 10: {
-              setName(input.readString());
+              bitField0_ |= 0x00000001;
+              name_ = input.readBytes();
               break;
             }
             case 16: {
@@ -1396,101 +2396,129 @@ public final class FileSystemProto {
               if (value == null) {
                 unknownFields.mergeVarintField(2, rawValue);
               } else {
-                setType(value);
+                bitField0_ |= 0x00000002;
+                type_ = value;
               }
               break;
             }
             case 24: {
-              setLen(input.readUInt32());
+              bitField0_ |= 0x00000004;
+              len_ = input.readUInt32();
               break;
             }
             case 34: {
-              setData(input.readBytes());
+              bitField0_ |= 0x00000008;
+              data_ = input.readBytes();
               break;
             }
           }
         }
       }
       
+      private int bitField0_;
       
       // required string name = 1;
+      private Object name_ = "";
       public boolean hasName() {
-        return result.hasName();
+        return ((bitField0_ & 0x00000001) == 0x00000001);
       }
-      public java.lang.String getName() {
-        return result.getName();
+      public String getName() {
+        Object ref = name_;
+        if (!(ref instanceof String)) {
+          String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
+          name_ = s;
+          return s;
+        } else {
+          return (String) ref;
+        }
       }
-      public Builder setName(java.lang.String value) {
+      public Builder setName(String value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  result.hasName = true;
-        result.name_ = value;
+  bitField0_ |= 0x00000001;
+        name_ = value;
+        onChanged();
         return this;
       }
       public Builder clearName() {
-        result.hasName = false;
-        result.name_ = getDefaultInstance().getName();
+        bitField0_ = (bitField0_ & ~0x00000001);
+        name_ = getDefaultInstance().getName();
+        onChanged();
         return this;
+      }
+      void setName(com.google.protobuf.ByteString value) {
+        bitField0_ |= 0x00000001;
+        name_ = value;
+        onChanged();
       }
       
       // required .filesystem.Attribute.Type type = 2;
+      private thredds.filesystem.FileSystemProto.Attribute.Type type_ = thredds.filesystem.FileSystemProto.Attribute.Type.STRING;
       public boolean hasType() {
-        return result.hasType();
+        return ((bitField0_ & 0x00000002) == 0x00000002);
       }
       public thredds.filesystem.FileSystemProto.Attribute.Type getType() {
-        return result.getType();
+        return type_;
       }
       public Builder setType(thredds.filesystem.FileSystemProto.Attribute.Type value) {
         if (value == null) {
           throw new NullPointerException();
         }
-        result.hasType = true;
-        result.type_ = value;
+        bitField0_ |= 0x00000002;
+        type_ = value;
+        onChanged();
         return this;
       }
       public Builder clearType() {
-        result.hasType = false;
-        result.type_ = thredds.filesystem.FileSystemProto.Attribute.Type.STRING;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        type_ = thredds.filesystem.FileSystemProto.Attribute.Type.STRING;
+        onChanged();
         return this;
       }
       
       // required uint32 len = 3;
+      private int len_ ;
       public boolean hasLen() {
-        return result.hasLen();
+        return ((bitField0_ & 0x00000004) == 0x00000004);
       }
       public int getLen() {
-        return result.getLen();
+        return len_;
       }
       public Builder setLen(int value) {
-        result.hasLen = true;
-        result.len_ = value;
+        bitField0_ |= 0x00000004;
+        len_ = value;
+        onChanged();
         return this;
       }
       public Builder clearLen() {
-        result.hasLen = false;
-        result.len_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000004);
+        len_ = 0;
+        onChanged();
         return this;
       }
       
       // required bytes data = 4;
+      private com.google.protobuf.ByteString data_ = com.google.protobuf.ByteString.EMPTY;
       public boolean hasData() {
-        return result.hasData();
+        return ((bitField0_ & 0x00000008) == 0x00000008);
       }
       public com.google.protobuf.ByteString getData() {
-        return result.getData();
+        return data_;
       }
       public Builder setData(com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  result.hasData = true;
-        result.data_ = value;
+  bitField0_ |= 0x00000008;
+        data_ = value;
+        onChanged();
         return this;
       }
       public Builder clearData() {
-        result.hasData = false;
-        result.data_ = getDefaultInstance().getData();
+        bitField0_ = (bitField0_ & ~0x00000008);
+        data_ = getDefaultInstance().getData();
+        onChanged();
         return this;
       }
       
@@ -1499,7 +2527,6 @@ public final class FileSystemProto {
     
     static {
       defaultInstance = new Attribute(true);
-      thredds.filesystem.FileSystemProto.internalForceInit();
       defaultInstance.initFields();
     }
     
@@ -1581,8 +2608,6 @@ public final class FileSystemProto {
         new com.google.protobuf.Descriptors.FileDescriptor[] {
         }, assigner);
   }
-  
-  public static void internalForceInit() {}
   
   // @@protoc_insertion_point(outer_class_scope)
 }

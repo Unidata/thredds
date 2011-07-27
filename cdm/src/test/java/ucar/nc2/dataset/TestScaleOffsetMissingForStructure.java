@@ -31,6 +31,7 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 package ucar.nc2.dataset;
+
 import junit.framework.*;
 
 import ucar.ma2.*;
@@ -40,23 +41,23 @@ import java.io.IOException;
 
 public class TestScaleOffsetMissingForStructure extends TestCase {
   //String topDir = ucar.nc2.TestAll.testdataDir+ "point/netcdf/";
-  public TestScaleOffsetMissingForStructure( String name) {
+  public TestScaleOffsetMissingForStructure(String name) {
     super(name);
   }
 
   public void testNetcdfFile() throws IOException, InvalidRangeException {
-    NetcdfFile ncfile = NetcdfDataset.openFile(TestAll.cdmLocalTestDataDir +"testScaleRecord.nc", null);
+    NetcdfFile ncfile = NetcdfDataset.openFile(TestAll.cdmLocalTestDataDir + "testScaleRecord.nc", null);
     Variable v = ncfile.findVariable("testScale");
     assert null != v;
     assert v.getDataType() == DataType.SHORT;
 
     Array data = v.read();
     Index ima = data.getIndex();
-    short val = data.getShort( ima);
+    short val = data.getShort(ima);
     assert val == -999;
 
     assert v.getUnitsString().equals("m");
-    v.addAttribute( new Attribute("units", "meters"));
+    v.addAttribute(new Attribute("units", "meters"));
     assert v.getUnitsString().equals("meters");
 
     ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
@@ -73,28 +74,31 @@ public class TestScaleOffsetMissingForStructure extends TestCase {
     assert null != m;
     assert m.getUnitsString().equals("meters");
 
-    double dval = sdata.convertScalarDouble( m.getName());
+    double dval = sdata.convertScalarDouble(m.getName());
     assert dval == -999.0;
 
     int count = 0;
     StructureDataIterator siter = s.getStructureIterator();
-    while (siter.hasNext()) {
-      sdata = siter.next();
-      m = sdata.findMember("testScale");
-      assert m.getUnitsString().equals("meters");
+    try {
+      while (siter.hasNext()) {
+        sdata = siter.next();
+        m = sdata.findMember("testScale");
+        assert m.getUnitsString().equals("meters");
 
-      assert null != m;
-      dval = sdata.convertScalarDouble( m.getName());
-      double expect = (count == 0) ? -999.0 : 13.0;
-      assert dval == expect : dval + "!="+ expect ;
-      count++;
+        assert null != m;
+        dval = sdata.convertScalarDouble(m.getName());
+        double expect = (count == 0) ? -999.0 : 13.0;
+        assert dval == expect : dval + "!=" + expect;
+        count++;
+      }
+    } finally {
+      siter.finish();
     }
-
     ncfile.close();
   }
 
   public void testNetcdfDataset() throws IOException, InvalidRangeException {
-    NetcdfDataset ncfile = NetcdfDataset.openDataset(TestAll.cdmLocalTestDataDir +"testScaleRecord.nc");
+    NetcdfDataset ncfile = NetcdfDataset.openDataset(TestAll.cdmLocalTestDataDir + "testScaleRecord.nc");
     System.out.printf("Open %s%n", ncfile.getLocation());
     VariableDS v = (VariableDS) ncfile.findVariable("testScale");
     assert null != v;
@@ -102,7 +106,7 @@ public class TestScaleOffsetMissingForStructure extends TestCase {
 
     Array data = v.read();
     Index ima = data.getIndex();
-    float val = data.getFloat( ima);
+    float val = data.getFloat(ima);
     assert v.isMissing(val);
     assert Float.isNaN(val) : val;
 
@@ -145,13 +149,13 @@ public class TestScaleOffsetMissingForStructure extends TestCase {
   }
 
   public void testNetcdfDatasetAttributes() throws IOException, InvalidRangeException {
-    NetcdfDataset ncfile = NetcdfDataset.openDataset(TestAll.cdmLocalTestDataDir +"testScaleRecord.nc");
+    NetcdfDataset ncfile = NetcdfDataset.openDataset(TestAll.cdmLocalTestDataDir + "testScaleRecord.nc");
     VariableDS v = (VariableDS) ncfile.findVariable("testScale");
     assert null != v;
     assert v.getDataType() == DataType.FLOAT;
 
     assert v.getUnitsString().equals("m");
-    v.addAttribute( new Attribute("units", "meters"));
+    v.addAttribute(new Attribute("units", "meters"));
     assert v.getUnitsString().equals("meters");
 
     ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
@@ -169,13 +173,16 @@ public class TestScaleOffsetMissingForStructure extends TestCase {
     assert m.getDataType() == DataType.FLOAT;
 
     StructureDataIterator siter = s.getStructureIterator();
-    while (siter.hasNext()) {
-      sdata = siter.next();
-      m = sdata.findMember("testScale");
-      assert null != m;
-      assert m.getUnitsString().equals("meters");
+    try {
+      while (siter.hasNext()) {
+        sdata = siter.next();
+        m = sdata.findMember("testScale");
+        assert null != m;
+        assert m.getUnitsString().equals("meters");
+      }
+    } finally {
+      siter.finish();
     }
-
     ncfile.close();
   }
 }

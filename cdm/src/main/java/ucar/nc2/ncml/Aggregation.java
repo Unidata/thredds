@@ -32,8 +32,7 @@
  */
 package ucar.nc2.ncml;
 
-import thredds.inventory.DateExtractor;
-import thredds.inventory.DateExtractorFromName;
+import thredds.inventory.*;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.units.DateFormatter;
@@ -46,8 +45,6 @@ import java.util.concurrent.Executor;
 import java.io.*;
 
 import org.jdom.Element;
-import thredds.inventory.MFile;
-import thredds.inventory.DatasetCollectionManager;
 import ucar.unidata.util.StringUtil;
 
 /**
@@ -149,7 +146,7 @@ public abstract class Aggregation {
 
   protected List<Aggregation.Dataset> explicitDatasets = new ArrayList<Aggregation.Dataset>(); // explicitly created Dataset objects from netcdf elements
   protected List<Aggregation.Dataset> datasets = new ArrayList<Aggregation.Dataset>(); // all : explicit and scanned
-  protected DatasetCollectionManager datasetManager; // manages scanning
+  protected DatasetCollectionMFiles datasetManager; // manages scanning
   protected boolean cacheDirty = true; // aggCache persist file needs updating
 
   protected String dimName; // the aggregation dimension name
@@ -175,7 +172,7 @@ public abstract class Aggregation {
     this.ncDataset = ncd;
     this.dimName = dimName;
     this.type = type;
-    datasetManager = new DatasetCollectionManager(recheckS);
+    datasetManager = DatasetCollectionMFiles.openWithRecheck(recheckS);
   }
 
   /**
@@ -215,21 +212,21 @@ public abstract class Aggregation {
    */
   public void addDatasetScan(Element crawlableDatasetElement, String dirName, String suffix,
           String regexpPatternString, String dateFormatMark, Set<NetcdfDataset.Enhance> enhanceMode, String subdirs, String olderThan) {
-    this.dateFormatMark = dateFormatMark;
 
     datasetManager.addDirectoryScan(dirName, suffix, regexpPatternString, subdirs, olderThan, enhanceMode);
 
+    this.dateFormatMark = dateFormatMark;
     if (dateFormatMark != null) {
       isDate = true;
       if (type == Type.joinExisting) type = Type.joinExistingOne; // tricky
       DateExtractor dateExtractor = (dateFormatMark == null) ? null : new DateExtractorFromName(dateFormatMark, true);
       datasetManager.setDateExtractor(dateExtractor);
     }
-
  }
 
+  // experimental
   public void addCollection(String spec, String olderThan) throws IOException {
-    datasetManager = DatasetCollectionManager.open(spec, olderThan, null);
+    datasetManager = DatasetCollectionMFiles.open(spec, olderThan, null);
  }
 
   public void setModifications(Element ncmlMods) {
@@ -274,18 +271,16 @@ public abstract class Aggregation {
    * @throws IOException on io error
    */
   public synchronized boolean syncExtend() throws IOException {
-    if (!datasetManager.isRescanNeeded())
-      return false;
+    return datasetManager.isScanNeeded() && _sync();
 
-    return _sync();
   }
 
   public synchronized boolean sync() throws IOException {
-    return datasetManager.isRescanNeeded() && _sync();
+    return datasetManager.isScanNeeded() && _sync();
   }
 
   private boolean _sync() throws IOException {
-    if (!datasetManager.rescan())
+    if (!datasetManager.scan())
       return false; // nothing changed LOOK what about grib extention ??
     cacheDirty = true;
     closeDatasets();
@@ -399,7 +394,7 @@ public abstract class Aggregation {
   // all elements are processed, finish construction
 
   public void finish(CancelTask cancelTask) throws IOException {
-    datasetManager.scan(cancelTask); // Make the list of Datasets, by scanning if needed.
+    datasetManager.scan(); // Make the list of Datasets, by scanning if needed.
     cacheDirty = true;
     closeDatasets();
     makeDatasets(cancelTask);

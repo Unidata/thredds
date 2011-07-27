@@ -39,12 +39,6 @@ import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.units.SimpleUnit;
-import ucar.grid.GridRecord;
-import ucar.grid.GridTableLookup;
-import ucar.grid.GridDefRecord;
-import ucar.grib.grib2.Grib2GridTableLookup;
-import ucar.grib.grib1.Grib1GridTableLookup;
-import ucar.grib.grib1.Grib1GDSVariables;
 
 import java.util.*;
 
@@ -60,24 +54,24 @@ public class GridVertCoord implements Comparable<GridVertCoord> {
   /**
    * typical record for this vertical coordinate
    */
-  private GridRecord typicalRecord;
+  protected GridRecord typicalRecord;
 
-  private String levelName;
+  protected String levelName;
 
-  private GridTableLookup lookup;
+  protected GridTableLookup lookup;
 
-  private int seq = 0;
+  protected int seq = 0;
 
-  private double[] coordValues = null;
+  protected double[] coordValues = null;
 
-  private boolean usesBounds = false;
+  protected boolean usesBounds = false;
 
-  private boolean isVerticalCoordinate = false;
+  protected boolean isVerticalCoordinate = false;
 
   /**
      * vertical pressure factors
      */
-  private double[] factors = null;
+  protected double[] factors = null;
 
   /**
    * positive  direction
@@ -87,12 +81,12 @@ public class GridVertCoord implements Comparable<GridVertCoord> {
   /**
    * units
    */
-  private String units;
+  protected String units;
 
   /**
    * levels
    */
-  private List<LevelCoord> levels = new ArrayList<LevelCoord>();  // LevelCoord
+  protected List<LevelCoord> levels = new ArrayList<LevelCoord>();  // LevelCoord
 
   /**
    * Create a new GridVertCoord with the given name.
@@ -100,7 +94,7 @@ public class GridVertCoord implements Comparable<GridVertCoord> {
    *
    * @param name name
    */
-  GridVertCoord(String name) {
+  protected GridVertCoord(String name) {
     this.levelName = name;
   }
 
@@ -112,7 +106,7 @@ public class GridVertCoord implements Comparable<GridVertCoord> {
    * @param lookup    the lookup table
    * @param hcs Horizontal coordinate
    */
-  GridVertCoord(List<GridRecord> records, String levelName, GridTableLookup lookup, GridHorizCoordSys hcs) {
+  protected GridVertCoord(List<GridRecord> records, String levelName, GridTableLookup lookup, GridHorizCoordSys hcs) {
     this.typicalRecord = records.get(0);
     this.levelName = levelName;
     this.lookup = lookup;
@@ -144,11 +138,6 @@ public class GridVertCoord implements Comparable<GridVertCoord> {
       if (positive.equals("down")) {
         Collections.reverse(levels);
       }
-
-
-    // LOOK WTF ?
-    if (typicalRecord.getLevelType1() == 109 && lookup instanceof Grib1GridTableLookup )
-      checkForPressureLevels( records, hcs );
 
     if (GridServiceProvider.debugVert) {
       System.out.println("GribVertCoord: " + getVariableName() + "("
@@ -214,7 +203,7 @@ public class GridVertCoord implements Comparable<GridVertCoord> {
    *
    * @return the variable name
    */
-  String getVariableName() {
+  public String getVariableName() {
     return (seq == 0) ? levelName : levelName + seq;  // more than one with same levelName
   }
 
@@ -261,29 +250,6 @@ public class GridVertCoord implements Comparable<GridVertCoord> {
     return levelList.equals(levels);
   }
 
-  /**
-   * check for Sigma Pressure Levels
-   */
-
-  boolean checkForPressureLevels( List<GridRecord> records, GridHorizCoordSys hcs ) {
-      GridDefRecord gdr = hcs.getGds();
-      Grib1GDSVariables g1dr = (Grib1GDSVariables) gdr.getGdsv();
-      if( g1dr == null || ! g1dr.hasVerticalPressureLevels() )
-        return false;
-
-      // add hybrid numbers
-      coordValues = new double[ levels.size()];
-        for (int i = 0; i < levels.size(); i++ ) {
-          LevelCoord lc = levels.get( i );
-          coordValues[ i ] =   lc.value1  ;
-        }
-      int NV = g1dr.getNV();
-      // add new variables
-      if (  NV > 2 && NV < 255 ) { // Some data doesn't add Pressure Level values
-         factors = g1dr.getVerticalPressureLevels();
-      }
-      return true;
-  }
 
   /**
    * Add this coord as a dimension to the netCDF file
@@ -299,6 +265,14 @@ public class GridVertCoord implements Comparable<GridVertCoord> {
     if ( coordValues != null )
       nlevs = coordValues.length;
     ncfile.addDimension(g, new Dimension(getVariableName(), nlevs, true));
+  }
+
+  protected String getLevelDesc() {
+    return lookup.getLevelDescription(typicalRecord);
+  }
+
+  protected void addExtraAttributes(Variable v) {
+    v.addAttribute(new Attribute("level_type", Integer.toString(typicalRecord.getLevelType1())));
   }
 
   /**
@@ -321,11 +295,7 @@ public class GridVertCoord implements Comparable<GridVertCoord> {
     Variable v = new Variable(ncfile, g, null, getVariableName());
     v.setDataType(DataType.DOUBLE);
 
-    String desc = lookup.getLevelDescription(typicalRecord);
-    if (lookup instanceof Grib2GridTableLookup && usesBounds) {
-      desc = "Layer between " + desc;
-    }
-
+    String desc =  getLevelDesc();
     v.addAttribute(new Attribute("long_name", desc));
     v.addAttribute(new Attribute("units", lookup.getLevelUnit(typicalRecord)));
 
@@ -344,11 +314,7 @@ public class GridVertCoord implements Comparable<GridVertCoord> {
         axisType = AxisType.GeoZ;
       }
 
-      if (lookup instanceof Grib2GridTableLookup || lookup instanceof Grib1GridTableLookup) {
-        v.addAttribute(new Attribute("GRIB_level_type", Integer.toString(typicalRecord.getLevelType1())));
-      } else {
-        v.addAttribute(new Attribute("level_type", Integer.toString(typicalRecord.getLevelType1())));
-      }
+      addExtraAttributes(v);
       v.addAttribute(new Attribute(_Coordinate.AxisType, axisType.toString()));
     }
 
@@ -501,17 +467,17 @@ public class GridVertCoord implements Comparable<GridVertCoord> {
   /**
    * A level coordinate
    */
-  private class LevelCoord implements Comparable {
+  protected class LevelCoord implements Comparable {
 
     /**
      * midpoint
      */
-    double mid;
+    public double mid;
 
     /**
      * top/bottom values
      */
-    double value1, value2;
+    public double value1, value2;
 
     /**
      * Create a new LevelCoord

@@ -33,12 +33,15 @@
 
 package thredds.server.config;
 
+import thredds.inventory.DatasetCollectionMFiles;
 import thredds.servlet.ThreddsConfig;
 import thredds.servlet.ServletUtil;
 import thredds.servlet.FmrcInventoryServlet;
 import thredds.catalog.parser.jdom.InvCatalogFactory10;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.util.cache.FileCacheRaf;
+import ucar.nc2.grib.GribCollection;
+import ucar.nc2.thredds.ThreddsDataFactory;
+import ucar.nc2.util.cache.FileCache;
 import ucar.nc2.util.DiskCache2;
 import ucar.nc2.util.DiskCache;
 import ucar.nc2.ncml.Aggregation;
@@ -60,7 +63,7 @@ import java.io.IOException;
 public class CdmInit {
   static private org.slf4j.Logger startupLog = org.slf4j.LoggerFactory.getLogger("serverStartup");
 
-  private DiskCache2 aggCache;
+  private DiskCache2 aggCache, gcCache;
   private Timer timer;
   private thredds.inventory.MController cacheManager;
 
@@ -71,7 +74,18 @@ public class CdmInit {
 
   void init(TdsContext tdsContext) {
     // prefer cdmRemote when available
-    //ThreddsDataFactory.setPreferCdm( true);
+    ThreddsDataFactory.setPreferCdm(true);
+
+    /* new for 4.3: grib Collection
+   // persist joinExisting aggregations. default every 24 hours, delete stuff older than 90 days
+    {
+    String dir = ThreddsConfig.get("GribCollection.dir", new File( tdsContext.getContentDirectory().getPath(), "/cache/gribCollection/").getPath());
+    int scourSecs = ThreddsConfig.getSeconds("GribCollection.scour", 24 * 60 * 60);
+    int maxAgeSecs = ThreddsConfig.getSeconds("GribCollection.maxAge", 90 * 24 * 60 * 60);
+    gcCache = new DiskCache2(dir, false, maxAgeSecs / 60, scourSecs / 60);
+    GribCollection.setDiskCache(gcCache);
+    startupLog.info("CdmInit:  GribCollection= "+dir+" scour = "+scourSecs+" maxAgeSecs = "+maxAgeSecs);
+    } */
 
     // new for 4.2 - feature collection caching
     String fcCache = ThreddsConfig.get("FeatureCollection.dir", null);
@@ -95,7 +109,7 @@ public class CdmInit {
       ehDirectory = ThreddsConfig.get("ehcache.directory", tdsContext.getContentDirectory().getPath() + "/cache/ehcache/");  // directory is old way
     try {
       cacheManager = thredds.filesystem.ControllerCaching.makeStandardController(ehConfig, ehDirectory);
-      thredds.inventory.DatasetCollectionManager.setController(cacheManager);
+      DatasetCollectionMFiles.setController(cacheManager);
       startupLog.info("CdmInit: ehcache.config= "+ehConfig+" directory= "+ehDirectory);
 
     } catch (IOException ioe) {
@@ -110,22 +124,31 @@ public class CdmInit {
     //AggregationFmrc.setDefinitionDirectory(new File(tdsContext.getRootDirectory(), fmrcDefinitionDirectory));
     // FmrcInventoryServlet.setDefinitionDirectory(new File(tdsContext.getRootDirectory(), fmrcDefinitionDirectory));
 
-    // NetcdfFileCache : default is allow 200 - 400 open files, cleanup every 10 minutes
-    int min = ThreddsConfig.getInt("NetcdfFileCache.minFiles", 200);
-    int max = ThreddsConfig.getInt("NetcdfFileCache.maxFiles", 400);
+    // NetcdfFileCache : default is allow 50 - 100 open files, cleanup every 10 minutes
+    int min = ThreddsConfig.getInt("NetcdfFileCache.minFiles", 50);
+    int max = ThreddsConfig.getInt("NetcdfFileCache.maxFiles", 100);
     int secs = ThreddsConfig.getSeconds("NetcdfFileCache.scour", 10 * 60);
     if (max > 0) {
       NetcdfDataset.initNetcdfFileCache(min, max, secs);
       startupLog.info("CdmInit: NetcdfDataset.initNetcdfFileCache= ["+min+","+max+"] scour = "+secs);
     }
 
-    // HTTP file access : // allow 20 - 40 open datasets, cleanup every 10 minutes
-    min = ThreddsConfig.getInt("HTTPFileCache.minFiles", 25);
-    max = ThreddsConfig.getInt("HTTPFileCache.maxFiles", 40);
-    secs = ThreddsConfig.getSeconds("HTTPFileCache.scour", 10 * 60);
+    // GribCollection : default is allow 100 - 200 open files, cleanup every 15 minutes
+    min = ThreddsConfig.getInt("GribCollection.minFiles", 100);
+    max = ThreddsConfig.getInt("GribCollection.maxFiles", 200);
+    secs = ThreddsConfig.getSeconds("GribCollection.scour", 15 * 60);
     if (max > 0) {
-      ServletUtil.setFileCache( new FileCacheRaf(min, max, secs));
-      startupLog.info("CdmInit: HTTPFileCache.initCache= ["+min+","+max+"] scour = "+secs);
+      GribCollection.initFileCache(min, max, secs);
+      startupLog.info("CdmInit: GribCollection.initFileCache= ["+min+","+max+"] scour = "+secs);
+    }
+
+    // HTTP file access : // allow 5 - 10 open datasets, cleanup every 12 minutes
+    min = ThreddsConfig.getInt("HTTPFileCache.minFiles", 5);
+    max = ThreddsConfig.getInt("HTTPFileCache.maxFiles", 10);
+    secs = ThreddsConfig.getSeconds("HTTPFileCache.scour", 12 * 60);
+    if (max > 0) {
+      ServletUtil.setFileCache( new FileCache("HTTP File Cache", min, max, -1, secs));
+      startupLog.info("CdmInit: HTTPFileCache.initCache= [" + min + "," + max + "] scour = " + secs);
     }
 
     // for backwards compatibility - should be replaced by direct specifying of the IndexExtendMode
@@ -178,6 +201,7 @@ public class CdmInit {
     if (timer != null) timer.cancel();
     NetcdfDataset.shutdown();
     if (aggCache != null) aggCache.exit();
+    if (gcCache != null) gcCache.exit();
     if (cacheManager != null) cacheManager.close();
     thredds.inventory.bdb.MetadataManager.closeAll();
     startupLog.info("CdmInit shutdown");

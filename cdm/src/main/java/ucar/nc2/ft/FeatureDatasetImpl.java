@@ -36,8 +36,9 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Attribute;
+import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.cache.FileCache;
-import ucar.nc2.units.DateFormatter;
 import ucar.nc2.units.DateRange;
 import ucar.unidata.geoloc.LatLonRect;
 
@@ -55,7 +56,7 @@ public abstract class FeatureDatasetImpl implements FeatureDataset {
   protected String title, desc, location;
   protected List<VariableSimpleIF> dataVariables;
   protected Formatter parseInfo = new Formatter();
-  protected DateRange dateRange;
+  protected CalendarDateRange dateRange;
   protected LatLonRect boundingBox;
 
   // for subsetting
@@ -104,7 +105,7 @@ public abstract class FeatureDatasetImpl implements FeatureDataset {
   protected void setTitle( String title) { this.title = title; }
   protected void setDescription( String desc) { this.desc = desc; }
   protected void setLocationURI( String location) {this.location = location; }
-  protected void setDateRange(DateRange dateRange) { this.dateRange = dateRange; }
+  protected void setDateRange(CalendarDateRange dateRange) { this.dateRange = dateRange; }
   protected void setBoundingBox(LatLonRect boundingBox) { this.boundingBox = boundingBox; }
 
   /* protected void removeDataVariable( String varName) {
@@ -134,15 +135,14 @@ public abstract class FeatureDatasetImpl implements FeatureDataset {
   }
 
   public void getDetailInfo( java.util.Formatter sf) {
-    DateFormatter formatter = new DateFormatter();
 
     sf.format("FeatureDataset on location= %s\n", getLocation());
     sf.format("  featureType= %s\n",getFeatureType());
     sf.format("  title= %s\n",getTitle());
     sf.format("  desc= %s\n",getDescription());
-    sf.format("  range= %s\n",getDateRange());
-    sf.format("  start= %s\n", formatter.toDateTimeString(getStartDate()));
-    sf.format("  end  = %s\n",formatter.toDateTimeString(getEndDate()));
+    sf.format("  range= %s\n",getCalendarDateRange());
+    sf.format("  start= %s\n", getCalendarDateEnd());
+    sf.format("  end  = %s\n",getCalendarDateEnd());
     LatLonRect bb = getBoundingBox();
     sf.format("  bb   = %s\n", bb);
     if (bb != null)
@@ -164,9 +164,24 @@ public abstract class FeatureDatasetImpl implements FeatureDataset {
     sf.format("\nparseInfo=\n%s\n", parseInfo);
   }
 
-  public DateRange getDateRange() { return dateRange; }
-  public Date getStartDate() { return (dateRange == null) ? null : dateRange.getStart().getDate(); }
-  public Date getEndDate() { return (dateRange == null) ? null : dateRange.getEnd().getDate(); }
+  @Override
+  public CalendarDateRange getCalendarDateRange() {
+    return dateRange;
+  }
+
+  @Override
+  public CalendarDate getCalendarDateStart() {
+    return dateRange.getStart();
+  }
+
+  @Override
+  public CalendarDate getCalendarDateEnd() {
+    return dateRange.getEnd();
+  }
+
+  public DateRange getDateRange() { return (dateRange == null) ? null : dateRange.toDateRange(); }
+  public Date getStartDate() { return (getDateRange() == null) ? null : getDateRange().getStart().getDate(); }
+  public Date getEndDate() { return (getDateRange() == null) ? null : getDateRange().getEnd().getDate(); }
   public LatLonRect getBoundingBox() { return boundingBox; }
 
   public List<VariableSimpleIF> getDataVariables() {

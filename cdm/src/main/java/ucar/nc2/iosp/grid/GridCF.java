@@ -101,4 +101,19 @@ public interface GridCF {
   public static final String SCALE_FACTOR_AT_PROJECTION_ORIGIN  = "scale_factor_at_projection_origin";
 
 
+  /**
+   * LOOK bogus
+   *
+   */
+   public static enum VectorComponentFlag {
+     easterlyNortherlyRelative, gridRelative;
+
+    static public String of(int val) {
+      if (val == 0) {
+        return easterlyNortherlyRelative.toString();
+      } else {
+        return gridRelative.toString();
+      }
+    }
+  }
 }

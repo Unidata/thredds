@@ -71,11 +71,15 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
     try {
       stationHelper = new StationHelper();
       StructureDataIterator siter = ft.getStationDataIterator(-1);
-      while (siter.hasNext()) {
-        StructureData stationData = siter.next();
-        Station s = makeStation(stationData, siter.getCurrentRecno());
-        if (s != null)
-          stationHelper.addStation( s);
+      try {
+        while (siter.hasNext()) {
+          StructureData stationData = siter.next();
+          Station s = makeStation(stationData, siter.getCurrentRecno());
+          if (s != null)
+            stationHelper.addStation(s);
+        }
+      } finally {
+        siter.finish();
       }
     } catch (IOException ioe) {
       throw new RuntimeException(ioe);
@@ -89,6 +93,7 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
   }
 
   // iterate over stations
+
   public NestedPointFeatureCollectionIterator getNestedPointFeatureCollectionIterator(int bufferSize) throws IOException {
     return new NestedPointFeatureCollectionIterator() {
       private Iterator iter = getStations().iterator();
@@ -101,12 +106,18 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
         return (StandardStationProfileFeature) iter.next();
       }
 
+      @Override
+      public void finish() {
+        // ignore
+      }
+
       public void setBufferSize(int bytes) {
       }
     };
   }
 
   // a time series of profiles at one station
+
   private class StandardStationProfileFeature extends StationProfileFeatureImpl {
     Station s;
     StructureData stationData;
@@ -120,6 +131,7 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
     }
 
     // iterate over series of profiles at a given station
+
     public PointFeatureCollectionIterator getPointFeatureCollectionIterator(int bufferSize) throws IOException {
       Cursor cursor = new Cursor(ft.getNumberOfLevels());
       cursor.recnum[2] = recnum; // the station record
@@ -143,7 +155,7 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
 
     @Override
     public ProfileFeature getProfileByDate(Date date) throws IOException {
-     resetIteration();
+      resetIteration();
       while (hasNext()) {
         ProfileFeature pf = next();
         if (pf.getTime().equals(date)) return pf;
@@ -164,7 +176,7 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
 
       public boolean hasNext() throws IOException {
         while (true) {
-          if(!iter.hasNext()) {
+          if (!iter.hasNext()) {
             timeSeriesNpts = count; // field in StationProfileFeatureImpl
             return false;
           }
@@ -188,11 +200,13 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
       }
 
       public void finish() {
+        iter.finish();
       }
     }
   }
 
   // one profile
+
   private class StandardProfileFeature extends ProfileFeatureImpl {
     private Cursor cursor;
 
@@ -217,6 +231,7 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
     }
 
     // iterate over obs in the profile
+
     public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
       Cursor cursorIter = cursor.copy();
       StructureDataIterator structIter = ft.getLeafFeatureDataIterator(cursorIter, bufferSize);

@@ -288,11 +288,9 @@ public class M3IOConvention extends CoordSysBuilder {
     double latts = findAttributeDouble(ds, "P_BET");
 
     Stereographic sg = new Stereographic(latts, lat0, lon0, n_polar);
-    sg.setCentralMeridian(centeral_meridian);
+    //sg.setCentralMeridian(centeral_meridian);
 
-    CoordinateTransform ct = new ProjectionCT("PolarStereographic", "FGDC", sg);
-
-    return ct;
+    return new ProjectionCT("PolarStereographic", "FGDC", sg);
   }
 
   private CoordinateTransform makeEquitorialMercatorProjection(NetcdfDataset ds) {

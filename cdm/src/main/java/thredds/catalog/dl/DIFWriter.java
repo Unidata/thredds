@@ -35,9 +35,11 @@ package thredds.catalog.dl;
 
 import thredds.catalog.*;
 import thredds.catalog.crawl.CatalogCrawler;
-import ucar.nc2.units.DateType;
+import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateRange;
+import ucar.nc2.time.CalendarDuration;
 import ucar.nc2.units.DateRange;
-import ucar.nc2.units.TimeDuration;
+import ucar.nc2.units.DateType;
 
 import org.jdom.*;
 import org.jdom.output.*;
@@ -46,6 +48,7 @@ import java.io.*;
 import java.util.*;
 import java.net.URI;
 
+import ucar.nc2.units.TimeDuration;
 import ucar.unidata.geoloc.*;
 import ucar.unidata.util.StringUtil;
 
@@ -299,9 +302,11 @@ public class DIFWriter {
       DateType end = tm.getEnd();
       if (end.isPresent()) {
         TimeDuration duration = tm.getDuration();
-        double ndays = -duration.getValueInSeconds()/3600/24;
-        String reletiveTime = "RELATIVE_START_DATE: "+((int)ndays);
-        rootElem.addContent( new Element("Keyword", defNS).addContent(reletiveTime));
+        double ndays = duration.getValue("days");
+        if (ndays > 0) {
+          String reletiveTime = "RELATIVE_START_DATE: "+((int)-ndays);
+          rootElem.addContent( new Element("Keyword", defNS).addContent(reletiveTime));
+        }
       }
     }
 
@@ -315,9 +320,9 @@ public class DIFWriter {
       rootElem.addContent(tmElem);
 
       tmElem.addContent(new Element("Start_Date",
-                        defNS).addContent(tm.getStart().toDateString()));
+                        defNS).addContent(tm.getStart().toString()));
       tmElem.addContent(new Element("Stop_Date",
-                        defNS).addContent(tm.getEnd().toDateString()));
+                        defNS).addContent(tm.getEnd().toString()));
     }
 
     //geospatial
@@ -404,7 +409,7 @@ public class DIFWriter {
     rootElem.addContent(new Element("Metadata_Name", defNS).addContent("CEOS IDN DIF"));
     rootElem.addContent(new Element("Metadata_Version", defNS).addContent("9.4"));
     DateType today = new DateType(false, new Date());
-    rootElem.addContent(new Element("DIF_Creation_Date", defNS).addContent(today.toDateString()));
+    rootElem.addContent(new Element("DIF_Creation_Date", defNS).addContent(today.toDateTimeStringISO()));
   }
 
   private Element makeRelatedURL(String type, String subtype, String url) {

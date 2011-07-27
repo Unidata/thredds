@@ -211,10 +211,10 @@ public abstract class WcsRequest
     {
       lonLatEnvelopeElem.addContent(
               new Element( "timePosition", gmlNS).addContent(
-                      gcs.getDateRange().getStart().toDateTimeStringISO()) );
+                      gcs.getCalendarDateRange().getStart().toString()) );
       lonLatEnvelopeElem.addContent(
               new Element( "timePosition", gmlNS).addContent(
-                      gcs.getDateRange().getEnd().toDateTimeStringISO()) );
+                      gcs.getCalendarDateRange().getEnd().toString()) );
     }
 
     return lonLatEnvelopeElem;

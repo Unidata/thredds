@@ -138,7 +138,7 @@ public class ViewServlet extends AbstractServlet {
       return;
     }
 
-    StringBuffer sbuff = new StringBuffer( template);
+    StringBuilder sbuff = new StringBuilder( template);
 
     Enumeration params = req.getParameterNames();
     while (params.hasMoreElements()) {

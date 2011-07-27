@@ -285,12 +285,12 @@ public class GeoGridTable extends JPanel {
       }
       setShape( buff.toString());
 
-      setX(gcs.getXHorizAxis());
-      setY(gcs.getYHorizAxis());
-      setZ(gcs.getVerticalAxis());
-      setT(gcs.getTimeAxis());
-      setRt(gcs.getRunTimeAxis());
-      setEns(gcs.getEnsembleAxis());
+      x = getAxisName(gcs.getXHorizAxis());
+      y = getAxisName(gcs.getYHorizAxis());
+      z = getAxisName(gcs.getVerticalAxis());
+      t = getAxisName(gcs.getTimeAxis());
+      rt =  getAxisName(gcs.getRunTimeAxis());
+      ens = getAxisName(gcs.getEnsembleAxis());
 
       /* Dimension d= geogrid.getXDimension();
       if (d != null) setX( d.getName());
@@ -331,39 +331,19 @@ public class GeoGridTable extends JPanel {
     public void setCoordSystem(String csys) { this.csys = csys; }
 
     public String getX() { return x; }
-    private void setX(CoordinateAxis axis) {
-      if (axis != null)
-        x = axis.getNameAndDimensions(true);
-    }
-
     public String getY() { return y; }
-    private void setY(CoordinateAxis axis) { 
-      if (axis != null)
-        y = axis.getNameAndDimensions(true);
-    }
-
     public String getZ() { return z; }
-    private void setZ(CoordinateAxis axis) {
-      if (axis != null)
-        z = axis.getNameAndDimensions(true);
-    }
     public String getT() { return t; }
-    private void setT(CoordinateAxis axis) {
-      if (axis != null)
-        t = axis.getNameAndDimensions(true);
-    }
     public String getEns() { return ens; }
-    private void setEns(CoordinateAxis axis) {
-      if (axis != null)
-        ens = axis.getNameAndDimensions(true);
-    }
     public String getRt() { return rt; }
-    private void setRt(CoordinateAxis axis) {
-      if (axis != null)
-        rt = axis.getNameAndDimensions(true);
-    }
     public String getShape() { return dims; }
     public void setShape(String dims) { this.dims = dims; }
+
+    private String getAxisName(CoordinateAxis axis) {
+      if (axis != null)
+        return (axis.isCoordinateVariable()) ? axis.getName() : axis.getNameAndDimensions(true);
+      return "";
+    }
 
   }
 

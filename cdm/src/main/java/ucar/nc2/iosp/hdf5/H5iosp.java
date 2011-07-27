@@ -34,6 +34,7 @@ package ucar.nc2.iosp.hdf5;
 
 import ucar.ma2.*;
 
+import ucar.nc2.time.CalendarDate;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.nc2.iosp.*;
 import ucar.nc2.iosp.hdf4.HdfEos;
@@ -214,7 +215,7 @@ public class H5iosp extends AbstractIOServiceProvider {
       int count = 0;
       while (timeArray.hasNext()) {
         long time = timeArray.nextLong();
-        stringData[count++] = headerParser.formatter.toDateTimeStringISO(new Date(time));
+        stringData[count++] = CalendarDate.of(time).toString();
       }
       return Array.factory(String.class, shape, stringData);
     }

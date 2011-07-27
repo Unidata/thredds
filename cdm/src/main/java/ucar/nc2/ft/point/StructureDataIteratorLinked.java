@@ -40,6 +40,7 @@ import java.io.IOException;
 
 /**
  * Use contiguous or linked lists to iterate over members of a Structure
+ *
  * @author caron
  * @since Mar 26, 2008
  */
@@ -64,7 +65,7 @@ public class StructureDataIteratorLinked implements StructureDataIterator {
     StructureData sdata;
     currRecno = nextRecno;
     try {
-      sdata = s.readStructure( currRecno);
+      sdata = s.readStructure(currRecno);
     } catch (ucar.ma2.InvalidRangeException e) {
       log.error("StructureDataLinkedIterator.nextStructureData recno=" + currRecno, e);
       throw new IOException(e.getMessage());
@@ -77,7 +78,9 @@ public class StructureDataIteratorLinked implements StructureDataIterator {
 
     } else {
       nextRecno = sdata.getScalarInt(linkVarName);
-    }
+      if (currRecno == nextRecno) // infinite loop
+        throw new IllegalStateException("Infinite loop in linked list at recno= "+nextRecno);
+     }
 
     return sdata;
   }
@@ -94,11 +97,17 @@ public class StructureDataIteratorLinked implements StructureDataIterator {
   }
 
   @Override
-  public void setBufferSize(int bytes) {}
+  public void setBufferSize(int bytes) {
+  }
 
   @Override
   public int getCurrentRecno() {
     return currRecno;
   }
-  
+
+  @Override
+  public void finish() {
+    // ignored
+  }
+
 }

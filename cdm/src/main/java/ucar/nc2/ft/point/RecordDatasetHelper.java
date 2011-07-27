@@ -43,6 +43,7 @@ import ucar.nc2.ft.*;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.StructureDS;
 import ucar.nc2.dataset.StructurePseudoDS;
+import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.units.DateFormatter;
@@ -242,17 +243,13 @@ public class RecordDatasetHelper {
     return getTime( sdata.findMember(obsTimeVName), sdata);
   }
 
-  private DateFormatter formatter;
   private double getTime(StructureMembers.Member timeVar, StructureData sdata) {
     if (timeVar == null) return 0.0;
 
     if ((timeVar.getDataType() == DataType.CHAR) || (timeVar.getDataType() == DataType.STRING)) {
       String time = sdata.getScalarString(timeVar);
-      if (null == formatter) formatter = new DateFormatter();
-      Date date;
-      try {
-        date = formatter.isoDateTimeFormat(time);
-      } catch (ParseException e) {
+      Date date = CalendarDateFormatter.parseISODate(time);
+      if (date == null) {
         log.error("Cant parse date - not ISO formatted, = "+time);
         return 0.0;
       }

@@ -52,7 +52,7 @@ import ucar.nc2.util.IO;
 import ucar.unidata.util.StringUtil;
 
 /**
- * _more_
+ * TDS context initialization - called from TdsConfigContextListener.
  *
  * @author edavis
  * @since 4.0

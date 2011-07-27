@@ -34,11 +34,11 @@ package thredds.wcs.v1_0_0_1;
 
 import java.io.File;
 
+import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.ogc.EPSG_OGC_CF_Helper;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.nc2.dt.GridCoordSystem;
-import ucar.nc2.units.DateRange;
 import thredds.wcs.Request;
 
 /**
@@ -56,7 +56,7 @@ public class GetCoverage extends WcsRequest
   private WcsCoverage coverage;
 
   private LatLonRect bboxLatLonRect = null;
-  private DateRange timeRange;
+  private CalendarDateRange timeRange;
   private WcsCoverage.VerticalRange rangeSetAxisValueRange;
 
   private Request.Format format;
@@ -67,7 +67,7 @@ public class GetCoverage extends WcsRequest
 
   public GetCoverage( Request.Operation operation, String version, WcsDataset dataset,
                       String coverageId, String crs, String responseCRS,
-                      Request.BoundingBox bbox, DateRange timeRange,
+                      Request.BoundingBox bbox, CalendarDateRange timeRange,
                       WcsCoverage.VerticalRange verticalRange, Request.Format format )
           throws WcsException
   {

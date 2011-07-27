@@ -33,6 +33,7 @@
 package ucar.nc2.ft.point;
 
 import ucar.nc2.ft.*;
+import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.constants.FeatureType;
@@ -124,9 +125,14 @@ public abstract class StationFeatureImpl extends PointCollectionImpl implements 
         '}';
   }
 
-  public StationTimeSeriesFeature subset(DateRange dateRange) throws IOException {
+  public StationTimeSeriesFeature subset(CalendarDateRange dateRange) throws IOException {
     if (dateRange == null) return this;
     return new StationFeatureSubset(this, dateRange);
+  }
+
+  public StationTimeSeriesFeature subset(DateRange dateRange) throws IOException {
+    if (dateRange == null) return this;
+    return new StationFeatureSubset(this, CalendarDateRange.of(dateRange));
   }
 
   public int compareTo(Station so) {
@@ -136,7 +142,7 @@ public abstract class StationFeatureImpl extends PointCollectionImpl implements 
   private class StationFeatureSubset extends StationFeatureImpl {
     StationFeatureImpl from;
 
-    StationFeatureSubset(StationFeatureImpl from, DateRange filter_date) {
+    StationFeatureSubset(StationFeatureImpl from, CalendarDateRange filter_date) {
       super(from.s, from.timeUnit, -1);
       this.from = from;
 

@@ -48,8 +48,9 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.dt.fmrc.ForecastModelRunCollection;
 import ucar.nc2.dt.fmrc.FmrcImpl;
+import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateFormatter;
-import ucar.nc2.units.TimeUnit;
+import ucar.nc2.units.TimeDuration;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.thredds.MetadataExtractor;
 import ucar.nc2.util.cache.FileCache;
@@ -136,7 +137,7 @@ public class InvDatasetFmrc extends InvCatalogRef {
 
     if (olderThanS != null) {
       try {
-        TimeUnit tu = new TimeUnit(olderThanS);
+        TimeDuration tu = new TimeDuration(olderThanS);
         this.params.lastModifiedLimit  = (long) (1000 * tu.getValueInSeconds());
       } catch (Exception e) {
         logger.error("Invalid TimeUnit = "+olderThanS);
@@ -326,8 +327,8 @@ public class InvDatasetFmrc extends InvCatalogRef {
         if (gc != null)
           tmi.setGeospatialCoverage(gc);
       }
-      if (tmi.getTimeCoverage() == null) {
-        DateRange dateRange = MetadataExtractor.extractDateRange(fmrc.getGridDataset());
+      if (tmi.getCalendarDateCoverage() == null) {
+        CalendarDateRange dateRange = MetadataExtractor.extractCalendarDateRange(fmrc.getGridDataset());
         if (dateRange != null)
           tmi.setTimeCoverage(dateRange);
       }

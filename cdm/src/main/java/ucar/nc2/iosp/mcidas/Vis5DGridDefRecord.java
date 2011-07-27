@@ -36,9 +36,7 @@
 package ucar.nc2.iosp.mcidas;
 
 
-import ucar.grid.GridDefRecord;
-
-import visad.data.vis5d.Vis5DCoordinateSystem;
+import ucar.nc2.iosp.grid.*;
 
 
 /**

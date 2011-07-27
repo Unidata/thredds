@@ -28,9 +28,9 @@
   <property name="javadoc.dir" value="${build.dir}/javadoc"/>
   <property name="javadocAll.dir" value="${build.dir}/javadocAll"/>
 
-  <property name="cdm.jar" value="netcdf-4.2.jar"/>
+  <property name="cdm.jar" value="netcdf-4.3.jar"/>
   <property name="jdom.jar" value="jdom.jar"/>
-  <property name="loggingAPI.jar" value="slf4j-api-1.5.6.jar"/>
+  <property name="loggingAPI.jar" value="slf4j-api-1.6.1.jar"/>
 
   <!-- source -->
   <path id="sourcepath">

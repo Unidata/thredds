@@ -37,19 +37,22 @@ import ucar.grib.GribGridRecord;
 import ucar.grib.GribNumbers;
 import ucar.grib.GribPds;
 import ucar.grib.grib1.*;
-import ucar.grid.GridIndex;
-import ucar.grid.GridRecord;
+import ucar.grib.grib2.Grib2Data;
+import ucar.grib.grib2.Grib2GridDefinitionSection;
+import ucar.grib.grib2.Grib2Pds;
+import ucar.grib.grib2.Grib2Tables;
+import ucar.nc2.grib.table.WmoTemplateTable;
+import ucar.nc2.iosp.grib.GribServiceProvider;
+import ucar.nc2.iosp.grib.GribVariable;
+import ucar.nc2.iosp.grid.*;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
-import ucar.nc2.iosp.grib.GribGridServiceProvider;
-import ucar.nc2.iosp.grib.tables.GribTemplate;
 import ucar.nc2.iosp.grid.GridServiceProvider;
 import ucar.nc2.iosp.grid.GridVariable;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
-import ucar.grib.grib2.*;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -80,7 +83,7 @@ public class GribIndexPanel extends JPanel {
   private TextHistoryPane infoPopup, infoPopup2, infoPopup3;
   private IndependentWindow infoWindow, infoWindow2, infoWindow3;
 
-  private Map<String, GribTemplate> templates = null;
+  private Map<String, WmoTemplateTable> templates = null;
 
   private NetcdfFile ncd;
 
@@ -270,7 +273,7 @@ public class GribIndexPanel extends JPanel {
     GridServiceProvider.debugOpen = true;
     ncd = NetcdfFile.open(filename);
 
-    GribGridServiceProvider iosp = (GribGridServiceProvider) ncd.getIosp();
+    GribServiceProvider iosp = (GribServiceProvider) ncd.getIosp();
     GridIndex index = (GridIndex) iosp.sendIospMessage("GridIndex");
 
     Map<Integer, Product> pdsSet = new HashMap<Integer, Product>();
@@ -324,7 +327,7 @@ public class GribIndexPanel extends JPanel {
   }
 
   private void showRecordBelongs(GribGridRecord ggr, Formatter f) {
-    GridVariable.Belongs b = (GridVariable.Belongs) ggr.getBelongs();
+    GribVariable.Belongs b = (GribVariable.Belongs) ggr.getBelongs();
     f.format("%s == %s : ", ggr.toString(), ggr.getBelongs());
     b.gv.showRecord(b.recnum, f);
     f.format("%n");
@@ -825,7 +828,7 @@ public class GribIndexPanel extends JPanel {
 
    private void showRawPds(GribGridRecord ggr, Formatter f) {
     if (ggr.getEdition() == 1) {
-      Grib1Dump.printPDS( (Grib1Pds) ggr.getPds(), f);
+      Grib1Dump.printPDS((Grib1Pds) ggr.getPds(), f);
       byte[] raw = ggr.getPds().getPDSBytes();
       f.format("%n");
       for (int i= 28; i<raw.length; i++) {
@@ -846,19 +849,19 @@ public class GribIndexPanel extends JPanel {
   }
 
   private void showRawTemplate(String key, byte[] raw, Formatter f) {
-    if (templates == null)
+    /* if (templates == null)
       try {
-        templates = GribTemplate.getParameterTemplates();
+        templates = WmoTemplateTable.getWmoStandard().map;
       } catch (IOException e) {
         f.format("Read template failed = %s%n", e.getMessage());
         return;
       }
 
-    GribTemplate gt = templates.get(key);
+    WmoTemplateTable gt = templates.get(key);
     if (gt == null)
       f.format("Cant find template %s%n", key);
     else
-      gt.showInfo(raw, f);
+      gt.showInfo(raw, f);  */
   }
 
   ////////////////////////////////////////////////////////////////////////////

@@ -57,6 +57,10 @@ public class FeatureCollectionConfig {
     cdmrFeature, Files
   }
 
+  static public enum GribDatasetType {
+    collection, Files
+  }
+
   public static void setRegularizeDefault(boolean t) {
     regularizeDefault = t;
   }
@@ -70,63 +74,86 @@ public class FeatureCollectionConfig {
 
   //////////////////////////////////////////////
 
-  public String name, spec, olderThan, recheckAfter;
+  public String name, spec, dateFormatMark, olderThan, recheckAfter, timePartition;
+  public UpdateConfig tdmConfig = new UpdateConfig();
   public UpdateConfig updateConfig = new UpdateConfig();
   public ProtoConfig protoConfig = new ProtoConfig();
   public FmrcConfig fmrcConfig = new FmrcConfig();
   public PointConfig pointConfig = new PointConfig();
+  public GribConfig gribConfig = new GribConfig();
   public Element innerNcml = null;
+  public boolean useIndexOnly = false;
 
   public FeatureCollectionConfig() {
   }
 
-  public FeatureCollectionConfig(String name, String spec, String olderThan, String recheckAfter, Element innerNcml) {
+  // <collection spec="/data/ldm/pub/native/satellite/3.9/WEST-CONUS_4km/WEST-CONUS_4km_3.9_#yyyyMMdd_HHmm#.gini$"
+  //          name="WEST-CONUS_4km" olderThan="1 min" recheckAfter="15 min" />
+  public FeatureCollectionConfig(String name, String spec, String dateFormatMark, String olderThan, String recheckAfter,
+                                 String timePartition, String useIndexOnlyS, Element innerNcml) {
     this.name = name;
-    this.spec = spec.trim();
+    this.spec = spec;
+    this.dateFormatMark = dateFormatMark;
     this.olderThan = olderThan;
     this.recheckAfter = recheckAfter;
+    this.timePartition = timePartition;
+    this.useIndexOnly = useIndexOnlyS != null && useIndexOnlyS.equalsIgnoreCase("true");
     this.innerNcml = innerNcml;
   }
 
   @Override
   public String toString() {
-    return "Config{" +
+    return "FeatureCollectionConfig{" +
             "name='" + name + '\'' +
             ", spec='" + spec + '\'' +
+            ", dateFormatMark='" + dateFormatMark + '\'' +
             ", olderThan='" + olderThan + '\'' +
             ", recheckAfter='" + recheckAfter + '\'' +
-            "\n " + updateConfig +
-            "\n " + protoConfig +
-            "\n " + fmrcConfig +
+            ", timePartition=" + timePartition +
+            ", updateConfig=" + updateConfig +
+            ", tdmConfig=" + tdmConfig +
+            ", protoConfig=" + protoConfig +
+            ", fmrcConfig=" + fmrcConfig +
+            ", pointConfig=" + pointConfig +
+            ", hasInnerNcml=" + (innerNcml != null) +
             '}';
   }
 
+  // <update startup="true" rescan="cron expr" trigger="allow" append="true"/>
   static public class UpdateConfig {
     public boolean startup;
     public String rescan = null;
     public boolean triggerOk;
+    public CollectionManager.Force force = CollectionManager.Force.test;
+    public String deleteAfter = null;
 
     public UpdateConfig() { // defaults
     }
 
-    public UpdateConfig(String startup, String rescan, String trigger) {
+    public UpdateConfig(String startup, String rescan, String trigger, String forceS, String deleteAfter) {
+      this.rescan = rescan; // may be null
+      this.deleteAfter = deleteAfter; // may be null
       if (startup != null)
         this.startup = startup.equalsIgnoreCase("true");
+      if (forceS != null)
+        force = CollectionManager.Force.valueOf(forceS);
       if (trigger != null)
         this.triggerOk = trigger.equalsIgnoreCase("allow");
-      this.rescan = rescan;
     }
 
     @Override
     public String toString() {
       return "UpdateConfig{" +
               "startup=" + startup +
+              ", force=" + force +
               ", rescan='" + rescan + '\'' +
               ", triggerOk=" + triggerOk +
+              ", deleteAfter=" + deleteAfter +
               '}';
     }
   }
 
+  // <protoDataset choice="First | Random | Penultimate | Latest | Run" param="0" change="expr" />
   static public class ProtoConfig {
     public ProtoChoice choice = ProtoChoice.Penultimate;
     public String param = null;
@@ -231,7 +258,7 @@ public class FeatureCollectionConfig {
 
   static public class PointConfig {
     public Set<PointDatasetType> datasets = defaultPointDatasetTypes;
-    private boolean explicit = false;
+    protected boolean explicit = false;
 
     public PointConfig() { // defaults
     }
@@ -256,6 +283,53 @@ public class FeatureCollectionConfig {
     public String toString() {
       Formatter f = new Formatter();
       f.format("PointConfig: datasetTypes=%s", datasets);
+      return f.toString();
+    }
+  }
+
+  static private Set<GribDatasetType> defaultGribDatasetTypes =
+          Collections.unmodifiableSet(EnumSet.of(GribDatasetType.collection, GribDatasetType.Files));
+
+  static public class GribConfig  {
+    public Set<GribDatasetType> datasets = defaultGribDatasetTypes;
+    public Map<Integer, Integer> gdsHash;
+    protected boolean explicit = false;
+
+    public GribConfig() { // defaults
+    }
+
+    public void addDatasetType(String datasetTypes) {
+      // if they list datasetType explicitly, remove defaults
+      if (!explicit) datasets = EnumSet.noneOf(GribDatasetType.class);
+      explicit = true;
+
+      String[] types = StringUtil.splitString(datasetTypes);
+      for (String type : types) {
+        try {
+          GribDatasetType fdt = GribDatasetType.valueOf(type);
+          datasets.add(fdt);
+        } catch (Exception e) {
+          log.warn("Dont recognize GribDatasetType {}", type);
+        }
+      }
+    }
+
+    public void addGdsHash(String fromS, String toS) {
+      if (gdsHash == null) gdsHash = new HashMap<Integer, Integer>(5);
+
+      try {
+        int from = Integer.parseInt(fromS);
+        int to = Integer.parseInt(toS);
+        gdsHash.put(from,to);
+      } catch (Exception e) {
+        log.warn("Failed  to parse as Integer = {} {}", fromS, toS);
+      }
+    }
+
+    @Override
+    public String toString() {
+      Formatter f = new Formatter();
+      f.format("GribConfig: datasetTypes=%s", datasets);
       return f.toString();
     }
   }

@@ -212,5 +212,4 @@ public class SocketMessage {
       System.out.printf("%d%n", status);
     }
   }
-
 }

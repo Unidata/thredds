@@ -109,6 +109,11 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
       if (loadWarnings) log.info("Cant load class: " + e);
     }
     try {
+      registerIOProvider("ucar.nc2.grib.Iosp");
+    } catch (Throwable e) {
+      if (loadWarnings) log.info("Cant load class: " + e);
+    }
+    try {
       registerIOProvider("ucar.nc2.iosp.hdf5.H5iosp");
     } catch (Throwable e) {
       if (loadWarnings) log.info("Cant load class: " + e);
@@ -119,13 +124,14 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
       if (loadWarnings) log.info("Cant load class: " + e);
     }
     try {
-      NetcdfFile.class.getClassLoader().loadClass("ucar.grib.grib2.Grib2Input"); // only load if grib.jar is present
-      registerIOProvider("ucar.nc2.iosp.grib.GribGridServiceProvider");
+      NetcdfFile.class.getClassLoader().loadClass("ucar.nc2.iosp.grib.GribServiceProvider"); // only load if grib.jar is present
+      registerIOProvider("ucar.nc2.iosp.grib.GribServiceProvider");
     } catch (Throwable e) {
       if (loadWarnings) log.info("Cant load class: " + e);
     }
     try {
-      NetcdfFile.class.getClassLoader().loadClass("ucar.grib.grib2.Grib2Input"); // only load if grib.jar is present
+      NetcdfFile.class.getClassLoader().loadClass("ucar.nc2.iosp.grib.GribServiceProvider"); // only load if grib.jar is present
+      NetcdfFile.class.getClassLoader().loadClass("ucar.nc2.iosp.gempak.GempakGridServiceProvider");
       NetcdfFile.class.getClassLoader().loadClass("visad.util.Trace"); // only load if visad.jar is present
       registerIOProvider("ucar.nc2.iosp.gempak.GempakGridServiceProvider");
     } catch (Throwable e) {
@@ -1001,6 +1007,11 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
       if (g == null) return null;
     }
     return g;
+  }
+
+  public Variable findVariable(Group g, String shortName) {
+    if (g == null) return findVariable(shortName);
+    return g.findVariable(shortName);
   }
 
   /**

@@ -47,7 +47,7 @@ import ucar.nc2.Variable;
 public class RotatedLatLon extends AbstractCoordTransBuilder {
 
   public String getTransformName() {
-    return "rotated_latlon_grib";
+    return ucar.unidata.geoloc.projection.RotatedLatLon.GRID_MAPPING_NAME;
   }
 
   public TransformType getTransformType() {
@@ -55,13 +55,9 @@ public class RotatedLatLon extends AbstractCoordTransBuilder {
   }
 
   public CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, Variable ctv) {
-//      addParameter(ATTR_NAME, "rotated_lat_lon");
-//      addParameter("grid_south_pole_latitude", southPoleLat);
-//      addParameter("grid_south_pole_longitude", southPoleLon);
-//      addParameter("grid_south_pole_angle", southPoleAngle);
-    double lon = readAttributeDouble( ctv, "grid_south_pole_longitude", Double.NaN);
-    double lat = readAttributeDouble( ctv, "grid_south_pole_latitude", Double.NaN);
-    double angle = readAttributeDouble( ctv, "grid_south_pole_angle", Double.NaN);
+    double lon = readAttributeDouble( ctv, ucar.unidata.geoloc.projection.RotatedLatLon.GRID_SOUTH_POLE_LONGITUDE, Double.NaN);
+    double lat = readAttributeDouble( ctv, ucar.unidata.geoloc.projection.RotatedLatLon.GRID_SOUTH_POLE_LATITUDE, Double.NaN);
+    double angle = readAttributeDouble( ctv, ucar.unidata.geoloc.projection.RotatedLatLon.GRID_SOUTH_POLE_ANGLE, Double.NaN);
 
     ucar.unidata.geoloc.projection.RotatedLatLon proj = new ucar.unidata.geoloc.projection.RotatedLatLon( lat, lon, angle);
     return new ProjectionCT(ctv.getShortName(), "FGDC", proj);

@@ -30,59 +30,25 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-/**
- * User: rkambic
- * Date: Aug 17, 2009
- * Time: 1:11:43 PM
- */
 
 package ucar.nc2.iosp.grid;
 
 import ucar.nc2.*;
-import ucar.nc2.constants._Coordinate;
-import ucar.nc2.constants.AxisType;
-import ucar.grid.GridRecord;
-import ucar.ma2.DataType;
-import ucar.ma2.Array;
-import ucar.grib.GribGridRecord;
-import ucar.grib.grib2.Grib2Tables;
-
 import java.util.*;
 
 /**
  * Handles the Ensemble coordinate dimension.
- * Assumes GribGridRecord
  */
-public class GridEnsembleCoord {
+public abstract class GridEnsembleCoord {
   static private org.slf4j.Logger log =  org.slf4j.LoggerFactory.getLogger(GridEnsembleCoord.class);
 
-  private List<EnsCoord> ensCoords;
-  private int seq = 0;
+  protected List<EnsCoord> ensCoords;
+  protected int seq = 0;
 
-  /**
-   * Create a new GridEnsembleCoord with the list of records
-   *
-   * @param records records to use
-   */
-  GridEnsembleCoord(List<GridRecord> records) {
-    Map<Integer,EnsCoord> map = new HashMap<Integer,EnsCoord>();
+  protected class EnsCoord implements Comparable<EnsCoord> {
+    public int number, type;
 
-    for( GridRecord record : records ) {
-      GribGridRecord ggr = (GribGridRecord) record;
-      int ensNumber = ggr.getPds().getPerturbationNumber();
-      int ensType = ggr.getPds().getPerturbationType();
-      int h = 1000 * ensNumber + ensType; // unique perturbation number and type
-      map.put(h, new EnsCoord(ensNumber, ensType));
-    }
-
-    ensCoords = new ArrayList<EnsCoord>(map.values());
-    Collections.sort(ensCoords);
-  }
-
-  private class EnsCoord implements Comparable<EnsCoord> {
-    int number, type;
-
-    private EnsCoord(int number, int type) {
+    public EnsCoord(int number, int type) {
       this.number = number;
       this.type = type;
     }
@@ -136,7 +102,7 @@ public class GridEnsembleCoord {
    *
    * @param seq the sequence number
    */
-  void setSequence(int seq) {
+  public void setSequence(int seq) {
     this.seq = seq;
   }
 
@@ -145,7 +111,7 @@ public class GridEnsembleCoord {
    *
    * @return the name
    */
-  String getName() {
+  public String getName() {
     return (seq == 0) ? "ens" : "ens" + seq;
   }
 
@@ -155,51 +121,12 @@ public class GridEnsembleCoord {
    * @param ncfile the netCDF file
    * @param g      the group in the file
    */
-  void addDimensionsToNetcdfFile(NetcdfFile ncfile, Group g) {
+  public void addDimensionsToNetcdfFile(NetcdfFile ncfile, Group g) {
     ncfile.addDimension(g, new Dimension(getName(), getNEnsembles(), true));
   }
 
-  /**
-   * Add this as a variable to the netCDF file
-   *
-   * @param ncfile the netCDF file
-   * @param g      the group in the file
-   */
-  void addToNetcdfFile(NetcdfFile ncfile, Group g) {
-    Variable v = new Variable(ncfile, g, null, getName());
-    v.setDimensions(v.getShortName());
-    v.setDataType(DataType.STRING);
-    v.addAttribute(new Attribute("long_name", "ensemble"));
-    v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Ensemble.toString()));
-
-    String[] data = new String[getNEnsembles()];
-
-    for (int i = 0; i < getNEnsembles(); i++) {
-      EnsCoord ec = ensCoords.get(i);
-      data[i] = Grib2Tables.codeTable4_6( ec.type) +" "+ ec.number;
-    }
-    Array dataArray = Array.factory(DataType.STRING, new int[]{getNEnsembles()}, data);
-    v.setCachedData(dataArray, false);
-
-    ncfile.addVariable(g, v);
-  }
-
-  /**
-   * Get the index of a GridRecord
-   *
-   * @param ggr the grib record
-   * @return the index or -1 if not found
-   */
-  int getIndex(GribGridRecord ggr) {
-    int ensNumber = ggr.getPds().getPerturbationNumber();
-    int ensType = ggr.getPds().getPerturbationType();
-
-    int count = 0;
-    for (EnsCoord coord : ensCoords) {
-      if ((coord.number == ensNumber) && (coord.type == ensType)) return count;
-      count++;
-    }
-    return -1;
+  protected void addToNetcdfFile(NetcdfFile ncfile, Group g) {
+    // noop
   }
 
   /**
@@ -207,7 +134,7 @@ public class GridEnsembleCoord {
    *
    * @return the number of Ensembles
    */
-  int getNEnsembles() {
+  public int getNEnsembles() {
     return ensCoords.size();
   }
 

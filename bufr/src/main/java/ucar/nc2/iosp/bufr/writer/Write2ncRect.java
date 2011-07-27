@@ -130,7 +130,7 @@ public class Write2ncRect {
 
       Structure struct = (Structure) v;
       for (Variable seqVar : struct.getVariables()) {
-        String varName = N3iosp.makeValidNetcdfObjectName(seqVar.getShortName()+"-"+structName);
+        String varName = N3iosp.makeValidNetcdfObjectName(seqVar.getShortName() + "-" + structName);
         DataType newType = seqVar.getDataType();
 
         List<Dimension> newDims = new ArrayList<Dimension>();
@@ -176,13 +176,18 @@ public class Write2ncRect {
     int max = 0;
 
     StructureDataIterator iter = recordStruct.getStructureIterator();
-    while (iter.hasNext()) {
-      StructureData sdata = iter.next();
-      ArraySequence seq1 = sdata.getArraySequence("seq1");
-      int n = seq1.getStructureDataCount();
-      total += n;
-      count++;
-      max = Math.max(max, n);
+    try {
+      while (iter.hasNext()) {
+
+        StructureData sdata = iter.next();
+        ArraySequence seq1 = sdata.getArraySequence("seq1");
+        int n = seq1.getStructureDataCount();
+        total += n;
+        count++;
+        max = Math.max(max, n);
+      }
+    } finally {
+      iter.finish();
     }
     double avg = total / count;
     int wasted = count * max - total;
@@ -207,30 +212,33 @@ public class Write2ncRect {
 
         if (m.getDataType() == DataType.STRUCTURE) {
           int countLevel = 0;
-          ArrayStructure seq1 = recordData.getArrayStructure (m);
+          ArrayStructure seq1 = recordData.getArrayStructure(m);
           StructureDataIterator iter = seq1.getStructureDataIterator();
-          while (iter.hasNext()) {
-            StructureData seqData = iter.next();
-            for (StructureMembers.Member seqm : seqData.getMembers()) {
-              Array data = seqData.getArray(seqm);
-              int[] shape = data.getShape();
-              int[] newShape = new int[data.getRank() + 2];
-              newShape[0] = 1;
-              newShape[1] = 1;
-              for (int i = 0; i < data.getRank(); i++)
-                newShape[i + 1] = shape[i];
+          try {
+            while (iter.hasNext()) {
+              StructureData seqData = iter.next();
+              for (StructureMembers.Member seqm : seqData.getMembers()) {
+                Array data = seqData.getArray(seqm);
+                int[] shape = data.getShape();
+                int[] newShape = new int[data.getRank() + 2];
+                newShape[0] = 1;
+                newShape[1] = 1;
+                for (int i = 0; i < data.getRank(); i++)
+                  newShape[i + 1] = shape[i];
 
-              int[] origin = new int[data.getRank() + 2];
-              origin[0] = count;
-              origin[1] = countLevel;
+                int[] origin = new int[data.getRank() + 2];
+                origin[0] = count;
+                origin[1] = countLevel;
 
-              String mname = seqm.getName()+"-"+m.getName();
-              if (debug && (count == 0) && (countLevel == 0)) System.out.println("write to = " + mname);
-              ncfile.write(mname, origin, data.reshape(newShape));
+                String mname = seqm.getName() + "-" + m.getName();
+                if (debug && (count == 0) && (countLevel == 0)) System.out.println("write to = " + mname);
+                ncfile.write(mname, origin, data.reshape(newShape));
+              }
+              countLevel++;
             }
-            countLevel++;
+          } finally {
+            iter.finish();
           }
-
         } else {
 
           Array data = recordData.getArray(m);
@@ -320,12 +328,12 @@ public class Write2ncRect {
 
   public static void main(String args[]) throws Exception {
 
-     //String fileIn = "C:/data/bufr/edition3/newIdd/IcingTropopause/IcingTropopause_20080529_0000.bufr";
-     String fileIn = "C:\\data\\bufr\\edition3\\meteosat\\METEOSAT7-MVIRI-MTPHRWW-NA-1-20080405123005.000000000Z-909326.bfr ";
-     NetcdfFile ncf = NetcdfDataset.openFile(fileIn, null);
-     System.out.println(ncf.toString());
+    //String fileIn = "C:/data/bufr/edition3/newIdd/IcingTropopause/IcingTropopause_20080529_0000.bufr";
+    String fileIn = "C:\\data\\bufr\\edition3\\meteosat\\METEOSAT7-MVIRI-MTPHRWW-NA-1-20080405123005.000000000Z-909326.bfr ";
+    NetcdfFile ncf = NetcdfDataset.openFile(fileIn, null);
+    System.out.println(ncf.toString());
 
-     new Write2ncRect(ncf, "C:/data/bufr2nc.meteosat.nc", true);
+    new Write2ncRect(ncf, "C:/data/bufr2nc.meteosat.nc", true);
   }
 
 }

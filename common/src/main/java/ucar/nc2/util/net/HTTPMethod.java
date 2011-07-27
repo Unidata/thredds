@@ -11,7 +11,6 @@ import org.apache.commons.httpclient.methods.*;
 import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
 import org.apache.commons.httpclient.methods.multipart.Part;
 import org.apache.commons.httpclient.params.HttpMethodParams;
-import ucar.unidata.util.EscapeStrings;
 
 /**
  * Created by IntelliJ IDEA.

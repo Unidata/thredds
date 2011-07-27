@@ -34,18 +34,7 @@
 
 package ucar.nc2.iosp.gempak;
 
-
-import ucar.grid.GridDefRecord;
-import ucar.grid.GridParameter;
-import ucar.grid.GridRecord;
-
-//import ucar.nc2.iosp.grid.GridDefRecord;
-//import ucar.nc2.iosp.grid.GridParameter;
-//import ucar.nc2.iosp.grid.GridRecord;
-//import ucar.nc2.iosp.grid.GridTableLookup;
-import ucar.grid.GridTableLookup;
-
-import java.io.IOException;
+import ucar.nc2.iosp.grid.*;
 
 
 /**

@@ -33,14 +33,11 @@
 
 package ucar.nc2.iosp.grid;
 
-import ucar.grib.GribPds;
 import ucar.ma2.*;
 
 import ucar.nc2.*;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.units.DateUnit;
-import ucar.grid.GridRecord;
-import ucar.grib.GribGridRecord;
 
 import java.util.*;
 
@@ -53,15 +50,15 @@ public class GridTimeCoord implements Comparable<GridTimeCoord> {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GridTimeCoord.class);
 
   //private GridTableLookup lookup;
-  private int seq = 0; // for getting a unique name
-  private String timeUdunit;
-  private int timeUnit;
+  protected int seq = 0; // for getting a unique name
+  protected String timeUdunit;
+  protected int timeUnit;
 
-  private Date baseDate;
-  private List<Date> times;
-  private List<TimeCoordWithInterval> timeIntvs;
-  private int constantInterval = -1;
-  private int[] coordData;
+  protected Date baseDate;
+  protected List<Date> times;
+  protected List<TimeCoordWithInterval> timeIntvs;
+  protected int constantInterval = -1;
+  protected int[] coordData;
 
   /**
    * Create a new GridTimeCoord from the list of GridRecord
@@ -69,7 +66,7 @@ public class GridTimeCoord implements Comparable<GridTimeCoord> {
    * @param records records to use
    * @param where file location for warn message
    */
-  GridTimeCoord(List<GridRecord> records, String where) {
+  protected GridTimeCoord(List<GridRecord> records, String where) {
 
     // check time units, get earliest reference date
     for (GridRecord record : records) {
@@ -86,48 +83,7 @@ public class GridTimeCoord implements Comparable<GridTimeCoord> {
         this.baseDate = ref;
     }
 
-    // interval case - only GRIB
-    if (records.get(0) instanceof GribGridRecord) {
-      GribGridRecord ggr = (GribGridRecord) records.get(0);
-
-      if (ggr.isInterval()) {
-        timeIntvs = new ArrayList<TimeCoordWithInterval>();
-
-        boolean same = true;
-        int intv = -1;
-        for (GridRecord gr : records) {
-          ggr = (GribGridRecord) gr;
-
-          // make sure that the reference date agrees
-          Date ref = gr.getReferenceTime();
-          if (!baseDate.equals(ref)) {
-            log.warn(gr + " does not have same base date= " + baseDate + " != " + ref+ " for " + where);
-            // continue; LOOK
-          }
-
-          GribPds pds = ggr.getPds();
-          int[] timeInv = pds.getForecastTimeInterval(this.timeUnit);
-          int start = timeInv[0];
-          int end = timeInv[1];
-          int intv2 = end - start;
-
-          if (intv2 > 0) { // skip those weird zero-intervals when testing for constant interval
-            if (intv < 0) intv = intv2;
-            else same = same && (intv == intv2);
-          }
-
-          Date validTime = gr.getValidTime();
-          TimeCoordWithInterval timeCoordIntv = new TimeCoordWithInterval(validTime, start, intv2);
-          if (!timeIntvs.contains(timeCoordIntv))
-            timeIntvs.add(timeCoordIntv);
-        }
-        if (same) constantInterval = intv;
-        Collections.sort(timeIntvs);
-        return;
-      }
-    }
-
-    // non - interval case
+     // non - interval case
     // get list of unique valid times
     times = new ArrayList<Date>();
     for (GridRecord gr : records) {
@@ -146,63 +102,26 @@ public class GridTimeCoord implements Comparable<GridTimeCoord> {
    * @param records list of records
    * @return true if they are the same as this
    */
-  boolean matchTimes(List<GridRecord> records) {
+  protected boolean matchTimes(List<GridRecord> records) {
     // make sure that the time units agree
     for (GridRecord record : records) {
       if (!this.timeUdunit.equals(record.getTimeUdunitName()))
         return false;
     }
 
-    // check intervals match
-    if (records.get(0) instanceof GribGridRecord) {
-      GribGridRecord ggr = (GribGridRecord) records.get(0);
-      if (ggr.isInterval() != isInterval())
-        return false;
+    // first create a new list
+    List<Date> timeList = new ArrayList<Date>(records.size());
+    for (GridRecord record : records) {
+      Date validTime = record.getValidTime();
+      if (validTime == null)
+        validTime = record.getReferenceTime();
+      if (!timeList.contains(validTime)) {
+        timeList.add(validTime);
+      }
     }
 
-    if (isInterval()) {
-      // first create a new list
-      List<TimeCoordWithInterval> timeList = new ArrayList<TimeCoordWithInterval>(records.size());
-      for (GridRecord record : records) {
-        // make sure that the base times agree
-        Date ref = record.getReferenceTime();
-        if (!baseDate.equals(ref))
-          return false;
-
-        GribGridRecord ggr = (GribGridRecord) record;
-        GribPds pds = ggr.getPds();
-        int[] timeInv = pds.getForecastTimeInterval(this.timeUnit);
-
-        int start = timeInv[0];
-        int end = timeInv[1];
-        int intv2 = end - start;
-        Date validTime = record.getValidTime();
-        TimeCoordWithInterval timeCoordIntv = new TimeCoordWithInterval(validTime, start, intv2);
-        if (!timeList.contains(timeCoordIntv)) {
-          timeList.add(timeCoordIntv);
-        }
-      }
-
-      Collections.sort(timeList);
-      return timeList.equals(timeIntvs);
-
-    } else {
-
-      // first create a new list
-      List<Date> timeList = new ArrayList<Date>(records.size());
-      for (GridRecord record : records) {
-        Date validTime = record.getValidTime();
-        if (validTime == null)
-          validTime = record.getReferenceTime();
-        if (!timeList.contains(validTime)) {
-          timeList.add(validTime);
-        }
-      }
-
-      Collections.sort(timeList);
-      return timeList.equals(times);
-    }
-
+    Collections.sort(timeList);
+    return timeList.equals(times);
   }
 
   /**
@@ -219,7 +138,7 @@ public class GridTimeCoord implements Comparable<GridTimeCoord> {
    *
    * @return the name
    */
-  String getName() {
+  public String getName() {
     return (seq == 0) ? "time" : "time" + seq;
   }
 
@@ -334,22 +253,9 @@ public class GridTimeCoord implements Comparable<GridTimeCoord> {
    * @param record the GridRecord
    * @return the index in the list of time values, or -1 if not found
    */
-  int findIndex(GridRecord record) {
+  public int findIndex(GridRecord record) {
     Date validTime = record.getValidTime();
-    if (!isInterval())
-      return times.indexOf(validTime);
-    else {
-      int index = 0;
-      for (TimeCoordWithInterval t : timeIntvs) {
-        GribGridRecord ggr = (GribGridRecord) record;  // only true for Grib      
-        GribPds pds = ggr.getPds();
-        int[] intv = pds.getForecastTimeInterval(timeUnit); // may need to convert units
-        int diff = intv[1] - intv[0];
-        if (t.coord.equals(validTime) && t.interval == diff) return index;
-        index++;
-      }
-      return -1;
-    }
+    return times.indexOf(validTime);
   }
 
   /**
@@ -385,7 +291,7 @@ public class GridTimeCoord implements Comparable<GridTimeCoord> {
    *
    * @return mixed
    */
-  boolean isInterval() {
+  public boolean isInterval() {
     return timeIntvs != null;
   }
 
@@ -403,11 +309,11 @@ public class GridTimeCoord implements Comparable<GridTimeCoord> {
     return o.getNTimes() - getNTimes(); // reverse sort on number of coords
   }
 
-  private class TimeCoordWithInterval implements Comparable<TimeCoordWithInterval> {
-    Date coord;
-    int start, interval;
+  protected class TimeCoordWithInterval implements Comparable<TimeCoordWithInterval> {
+    public Date coord;
+    public int start, interval;
 
-    private TimeCoordWithInterval(Date coord, int start, int interval) {
+    public TimeCoordWithInterval(Date coord, int start, int interval) {
       this.coord = coord;
       this.start = start;
       this.interval = interval;

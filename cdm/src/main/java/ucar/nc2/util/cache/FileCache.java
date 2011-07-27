@@ -52,10 +52,11 @@ import ucar.nc2.util.CancelTask;
  * <ol>
  * <li>The FileCacheable object must not be modified.
  * <li>The hashKey must uniquely define the FileCacheable object.
- * <li>The location must be usable in the FileCacheableFactory.
+ * <li>The location must be usable in a FileFactory.open().
  * <li>If the FileCacheable is acquired from the cache (ie already open), ncfile.sync() is called on it.
  * <li>Make sure you call NetcdfDataset.shutdown() when exiting the program, in order to shut down the cleanup thread.
  * </ol>
+ *
  * Normal usage is through the NetcdfDataset interface:
  * <pre>
  * NetcdfDataset.initNetcdfFileCache(...); // on application startup
@@ -79,12 +80,12 @@ import ucar.nc2.util.CancelTask;
 
 @ThreadSafe
 public class FileCache {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FileCache.class);
-  static private org.slf4j.Logger cacheLog = org.slf4j.LoggerFactory.getLogger("cacheLogger");
+  static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FileCache.class);
+  static private final org.slf4j.Logger cacheLog = org.slf4j.LoggerFactory.getLogger("cacheLogger");
   static private ScheduledExecutorService exec;
   static boolean debug = false;
   static boolean debugPrint = false;
-  static boolean debugCleanup = false;
+  static boolean debugCleanup = true;
 
   /**
    * You must call shutdown() to shut down the background threads in order to get a clean process shutdown.
@@ -213,7 +214,7 @@ public class FileCache {
 
     if (null == hashKey) hashKey = location;
     FileCacheable ncfile = acquireCacheOnly(hashKey);
-    if (ncfile != null) {
+    if (ncfile != null) { // LOOK should we check lastModified ?
       hits.incrementAndGet();
       return ncfile;
     }
@@ -306,7 +307,7 @@ public class FileCache {
     // also sets isClosed = false
     if (ncfile != null) {
      try {
-        boolean changed = ncfile.sync();
+       boolean changed = ncfile.sync();
        if (cacheLog.isDebugEnabled())
          cacheLog.debug("FileCache " + name + " aquire from cache " + hashKey + " " + ncfile.getLocation()+" changed = "+changed);
        if (debugPrint)

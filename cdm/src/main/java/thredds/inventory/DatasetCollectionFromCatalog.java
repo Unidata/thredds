@@ -33,8 +33,6 @@
 package thredds.inventory;
 
 import net.jcip.annotations.ThreadSafe;
-import ucar.nc2.util.CancelTask;
-import ucar.nc2.units.TimeUnit;
 import ucar.nc2.units.DateType;
 import ucar.nc2.thredds.ThreddsDataFactory;
 import ucar.nc2.ft.fmrc.Fmrc;
@@ -53,16 +51,16 @@ import thredds.catalog.crawl.CatalogCrawler;
  * @since Jan 14, 2010
  */
 @ThreadSafe
-public class DatasetCollectionFromCatalog extends DatasetCollectionManager implements CatalogCrawler.Listener {
+public class DatasetCollectionFromCatalog extends DatasetCollectionMFiles implements CatalogCrawler.Listener {
   static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DatasetCollectionFromCatalog.class);
   private final String catalogUrl;
   private boolean debug = false;
 
   public DatasetCollectionFromCatalog(String collection) {
-    this.collectionName = collection;
+    super(collection);
 
-    if (collection.startsWith(DatasetCollectionManager.CATALOG))
-      collection = collection.substring(DatasetCollectionManager.CATALOG.length());
+    if (collection.startsWith(DatasetCollectionMFiles.CATALOG))
+      collection = collection.substring(DatasetCollectionMFiles.CATALOG.length());
 
     int pos = collection.indexOf('?');
     if (pos > 0) {
@@ -73,12 +71,13 @@ public class DatasetCollectionFromCatalog extends DatasetCollectionManager imple
     this.catalogUrl = collection;
   }
 
+  @Override
   protected boolean hasScans() {
     return true;
   }
 
   @Override
-  protected void scan(java.util.Map<String, MFile> map, CancelTask cancelTask) throws IOException {
+  protected void scan(java.util.Map<String, MFile> map) throws IOException {
     InvCatalogFactory catFactory = InvCatalogFactory.getDefaultFactory(true);
     InvCatalogImpl cat = catFactory.readXML(catalogUrl);
     StringBuilder buff = new StringBuilder();
@@ -176,11 +175,10 @@ public class DatasetCollectionFromCatalog extends DatasetCollectionManager imple
     String catUrl = "http://motherlode.ucar.edu:8080/thredds/catalog/fmrc/NCEP/NDFD/CONUS_5km/files/catalog.xml";
     DatasetCollectionFromCatalog man = new DatasetCollectionFromCatalog(catUrl);
     man.debug = true;
-    man.scan(null);
+    man.scan();
     Formatter errlog = new Formatter();
-    Fmrc fmrc = Fmrc.open(DatasetCollectionManager.CATALOG+catUrl, errlog);
+    Fmrc fmrc = Fmrc.open(DatasetCollectionMFiles.CATALOG+catUrl, errlog);
     System.out.printf("errlog = %s %n", errlog);
-
   }
 
 

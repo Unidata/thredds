@@ -102,12 +102,12 @@ public class WriterProfileObsDataset {
 
   public WriterProfileObsDataset(String fileOut, String title) throws IOException {
     ncfile = NetcdfFileWriteable.createNew(fileOut, false);
-    ncfile.setFill( false);
+    ncfile.setFill(false);
     this.title = title;
   }
 
   public void setLength(long size) {
-    ncfile.setLength( size);
+    ncfile.setLength(size);
   }
 
   public void writeHeader(List<ucar.unidata.geoloc.Station> stns, List<VariableSimpleIF> vars, int nprofiles, String altVarName) throws IOException {
@@ -127,7 +127,7 @@ public class WriterProfileObsDataset {
     writeStationData(stns); // write out the station info
 
     // now write the observations
-    if (! (Boolean) ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE))
+    if (!(Boolean) ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE))
       throw new IllegalStateException("can't add record variable");
   }
 
@@ -239,7 +239,6 @@ public class WriterProfileObsDataset {
     v = ncfile.addVariable(nextProfileName, DataType.INT, profileDimName);
     ncfile.addVariableAttribute(v, new Attribute("long_name", "index of next profile in linked list for this station"));
   }
-
 
 
   private void createDataVariables(List<VariableSimpleIF> dataVars) throws IOException {
@@ -468,7 +467,7 @@ public class WriterProfileObsDataset {
 
     if (proTracker == null) {
       proTracker = new ProfileTracker(profileIndex);
-      stnTracker.profileMap.put( obsDate, proTracker);
+      stnTracker.profileMap.put(obsDate, proTracker);
 
       stnTracker.link.add(profileIndex);
       stnTracker.lastChild = profileIndex;
@@ -539,10 +538,10 @@ public class WriterProfileObsDataset {
 
   public static void main(String args[]) throws Exception {
     long start = System.currentTimeMillis();
-    Map<String, ucar.unidata.geoloc.Station> staHash = new HashMap<String,ucar.unidata.geoloc.Station>();
+    Map<String, ucar.unidata.geoloc.Station> staHash = new HashMap<String, ucar.unidata.geoloc.Station>();
 
     String location = "R:/testdata/sounding/netcdf/Upperair_20070401_0000.nc";
-    NetcdfDataset ncfile =  NetcdfDataset.openDataset(location);
+    NetcdfDataset ncfile = NetcdfDataset.openDataset(location);
     ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
 
     // look through record varibles, for those that have "manLevel" dimension
@@ -556,17 +555,17 @@ public class WriterProfileObsDataset {
       if ((v.getRank() == 1) && v.getDimension(0).equals(manDim)) {
         // public VariableDS(NetcdfDataset ds, Group group, Structure parentStructure, String shortName, DataType dataType,
         // String dims, String units, String desc) {
-        varList.add( new VariableDS(ncfile, null, null, v.getShortName(), v.getDataType(), "", v.getUnitsString(), v.getDescription()));
+        varList.add(new VariableDS(ncfile, null, null, v.getShortName(), v.getDataType(), "", v.getUnitsString(), v.getDescription()));
         //(String name, String desc, String units, DataType dtype, int []shape)
-        sm.addMember(v.getShortName(), v.getDescription(), v.getUnitsString(), v.getDataType() , new int[0]); // scalar
+        sm.addMember(v.getShortName(), v.getDescription(), v.getUnitsString(), v.getDataType(), new int[0]); // scalar
       }
     }
 
-    ArrayStructureMA manAS = new ArrayStructureMA(sm, new int[] {manDim.getLength()} );
+    ArrayStructureMA manAS = new ArrayStructureMA(sm, new int[]{manDim.getLength()});
 
     // need the date units
     Variable time = ncfile.findVariable("synTime");
-    String timeUnits  = ncfile.findAttValueIgnoreCase(time, "units", null);
+    String timeUnits = ncfile.findAttValueIgnoreCase(time, "units", null);
     timeUnits = StringUtil.remove(timeUnits, '(');  // crappy fsl'ism
     timeUnits = StringUtil.remove(timeUnits, ')');
     DateUnit timeUnit = new DateUnit(timeUnits);
@@ -574,52 +573,60 @@ public class WriterProfileObsDataset {
     // extract stations
     int nrecs = 0;
     StructureDataIterator iter = record.getStructureIterator();
-    while (iter.hasNext()) {
-      StructureData sdata = iter.next();
-      String name = sdata.getScalarString("staName");
-      ucar.unidata.geoloc.Station s = staHash.get(name);
-      if (s == null) {
-        float lat = sdata.convertScalarFloat("staLat");
-        float lon = sdata.convertScalarFloat("staLon");
-        float elev = sdata.convertScalarFloat("staElev");
-        s = new StationImpl(name, "", lat, lon, elev);
-        staHash.put(name, s);
+    try {
+      while (iter.hasNext()) {
+        StructureData sdata = iter.next();
+        String name = sdata.getScalarString("staName");
+        ucar.unidata.geoloc.Station s = staHash.get(name);
+        if (s == null) {
+          float lat = sdata.convertScalarFloat("staLat");
+          float lon = sdata.convertScalarFloat("staLon");
+          float elev = sdata.convertScalarFloat("staElev");
+          s = new StationImpl(name, "", lat, lon, elev);
+          staHash.put(name, s);
+        }
+        nrecs++;
       }
-      nrecs++;
+    } finally {
+      iter.finish();
     }
-    List<ucar.unidata.geoloc.Station> stnList = Arrays.asList( staHash.values().toArray( new ucar.unidata.geoloc.Station[staHash.size()]) );
+
+    List<ucar.unidata.geoloc.Station> stnList = Arrays.asList(staHash.values().toArray(new ucar.unidata.geoloc.Station[staHash.size()]));
     Collections.sort(stnList);
 
     // create the writer
-    WriterProfileObsDataset writer = new WriterProfileObsDataset(location+".out", "rewrite "+location);
+    WriterProfileObsDataset writer = new WriterProfileObsDataset(location + ".out", "rewrite " + location);
     writer.writeHeader(stnList, varList, nrecs, "prMan");
 
     // extract records
     iter = record.getStructureIterator();
-    while (iter.hasNext()) {
-      StructureData sdata = iter.next();
-      String name = sdata.getScalarString("staName");
-      double timeValue =  sdata.convertScalarDouble("synTime");
-      Date date = timeUnit.makeDate(timeValue);
+    try {
+      while (iter.hasNext()) {
+        StructureData sdata = iter.next();
+        String name = sdata.getScalarString("staName");
+        double timeValue = sdata.convertScalarDouble("synTime");
+        Date date = timeUnit.makeDate(timeValue);
 
-      // transfer to the ArrayStructure
-      List<String> names = sm.getMemberNames();
-      for (String mname : names) {
-        manAS.setMemberArray( mname, sdata.getArray( mname));
+        // transfer to the ArrayStructure
+        List<String> names = sm.getMemberNames();
+        for (String mname : names) {
+          manAS.setMemberArray(mname, sdata.getArray(mname));
+        }
+
+        // each level is weritten as a seperate structure
+        int numMand = sdata.getScalarInt("numMand");
+        if (numMand >= manDim.getLength())
+          continue;
+
+        for (int i = 0; i < numMand; i++) {
+          StructureData useData = manAS.getStructureData(i);
+          writer.writeRecord(name, date, useData);
+        }
+
       }
-
-      // each level is weritten as a seperate structure
-      int numMand =  sdata.getScalarInt("numMand");
-      if (numMand >= manDim.getLength())
-        continue;
-
-      for (int i = 0; i < numMand; i++) {
-        StructureData useData = manAS.getStructureData(i);
-        writer.writeRecord(name, date , useData);
-      }
-
+    } finally {
+      iter.finish();
     }
-
     writer.finish();
 
     long took = System.currentTimeMillis() - start;

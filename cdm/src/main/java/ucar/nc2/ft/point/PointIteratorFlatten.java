@@ -37,6 +37,7 @@ import ucar.nc2.ft.PointFeatureIterator;
 import ucar.nc2.ft.PointFeature;
 import ucar.nc2.ft.PointFeatureCollectionIterator;
 import ucar.nc2.ft.PointFeatureCollection;
+import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateRange;
 import ucar.unidata.geoloc.LatLonRect;
 
@@ -63,7 +64,7 @@ public class PointIteratorFlatten extends PointIteratorAbstract {
    * @param filter_bb boundingbox, or null
    * @param filter_date data range, or null
    */
-  PointIteratorFlatten(PointFeatureCollectionIterator collectionIter, LatLonRect filter_bb, DateRange filter_date) {
+  PointIteratorFlatten(PointFeatureCollectionIterator collectionIter, LatLonRect filter_bb, CalendarDateRange filter_date) {
     this.collectionIter = collectionIter;
     if ((filter_bb != null) || (filter_date != null))
       this.filter = new Filter( filter_bb, filter_date);

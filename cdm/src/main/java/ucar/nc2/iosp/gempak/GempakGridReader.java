@@ -35,13 +35,15 @@
 package ucar.nc2.iosp.gempak;
 
 
-import ucar.grid.GridIndex;
-import ucar.grid.GridRecord;
+import ucar.nc2.iosp.grid.*;
 
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.*;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -665,29 +667,49 @@ public class GempakGridReader extends GempakFileReader {
         return values;
     }
 
-    /**
-     * Read packed Grib2 data
-     *
-     * @param iiword  Starting word  (FORTRAN 1 based)
-     * @param lendat  Number of words
-     * @param iarray  integer packing info
-     * @param rarray  float packing info
-     * @return   unpacked data
-     *
-     * @throws IOException problem reading file
-     */
-    private float[] unpackGrib2Data(int iiword, int lendat, int[] iarray,
-                                    float[] rarray)
-            throws IOException {
+  /**
+   * Read packed Grib2 data
+   *
+   * @param iiword Starting word  (FORTRAN 1 based)
+   * @param lendat Number of words
+   * @param iarray integer packing info
+   * @param rarray float packing info
+   * @return unpacked data
+   * @throws IOException problem reading file
+   */
+  private float[] unpackGrib2Data(int iiword, int lendat, int[] iarray, float[] rarray) throws IOException {
 
-        long            start    = getOffset(iiword);
-        GempakGrib2Data gemGrib2 = new GempakGrib2Data(rf);
-        float[]         data     = gemGrib2.getData(start, 0);
-        if (((iarray[3] >> 6) & 1) == 0) {  // -y scanning - flip
-            data = gb2_ornt(iarray[1], iarray[2], iarray[3], data);
-        }
-        return data;
+    long start = getOffset(iiword);
+    float[] data = null;
+
+    // GempakGrib2Data gemGrib2 = new GempakGrib2Data(rf);
+    // float[]         data     = gemGrib2.getData(start, 0);
+
+    // use reflection instead to decouple from the grib package
+    try {
+      Class c = this.getClass().getClassLoader().loadClass("ucar.nc2.iosp.gempak.GempakGrib2Data");
+      Constructor ctor = c.getConstructor(RandomAccessFile.class);
+      Object o = ctor.newInstance(rf);
+      Method m = c.getMethod("getData", Long.class, Long.class);
+      data = (float[]) m.invoke(o, start, 0);
+
+    } catch (ClassNotFoundException e) {
+      e.printStackTrace();
+    } catch (NoSuchMethodException e) {
+      e.printStackTrace();
+    } catch (InvocationTargetException e) {
+      e.printStackTrace();
+    } catch (IllegalAccessException e) {
+      e.printStackTrace();
+    } catch (InstantiationException e) {
+      e.printStackTrace();
     }
+
+    if (((iarray[3] >> 6) & 1) == 0) {  // -y scanning - flip
+      data = gb2_ornt(iarray[1], iarray[2], iarray[3], data);
+    }
+    return data;
+  }
 
     /**
      * Print out the navibation block so it looks something like this:

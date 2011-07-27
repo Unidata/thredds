@@ -34,9 +34,15 @@
 package ucar.nc2.ui;
 
 import ucar.nc2.util.net.HTTPSession;
+import thredds.inventory.DatasetCollectionMFiles;
 import thredds.inventory.FeatureCollectionConfig;
 import ucar.nc2.dt.grid.NetcdfCFWriter;
+import ucar.nc2.grib.GribCollection;
+import ucar.nc2.grib.table.WmoCodeTable;
+import ucar.nc2.iosp.grib.GribServiceProvider;
 import ucar.nc2.stream.NcStreamWriter;
+import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.ui.gis.shapefile.ShapeFileBean;
 import ucar.nc2.ui.gis.worldmap.WorldMapBean;
 import ucar.nc2.*;
@@ -130,12 +136,16 @@ public class ToolsUI extends JPanel {
   // private FmrcImplPanel fmrcImplPanel;
   private FmrcPanel fmrcPanel;
   private GeoGridPanel gridPanel;
+  private GribFilesPanel gribFilesPanel;
+  private GribNewPanel gribNewPanel;
+  private Grib2IdxPanel gribIdxPanel;
   private GribRawPanel gribRawPanel;
   private GribIndexPanel gribIndexPanel;
   private GribReportPanel gribReportPanel;
   private GribCodePanel gribCodePanel;
   private GribTemplatePanel gribTemplatePanel;
   private Grib1TablePanel grib1TablePanel;
+  private Grib2TablePanel grib2TablePanel;
   private Hdf5Panel hdf5Panel;
   private Hdf4Panel hdf4Panel;
   private ImagePanel imagePanel;
@@ -151,10 +161,11 @@ public class ToolsUI extends JPanel {
   private UnitsPanel unitsPanel;
   private URLDumpPane urlPanel;
   private ViewerPanel viewerPanel;
+  private WmoCCPanel wmoCommonCodePanel;
   private WmsPanel wmsPanel;
 
   private JTabbedPane tabbedPane;
-  private JTabbedPane iospTabPane, bufrTabPane, gribTabPane;
+  private JTabbedPane iospTabPane, bufrTabPane, gribnTabPane, griboTabPane;
   private JTabbedPane ftTabPane;
   private JTabbedPane fmrcTabPane;
   private JTabbedPane ncmlTabPane;
@@ -188,7 +199,8 @@ public class ToolsUI extends JPanel {
     // all the tabbed panes
     tabbedPane = new JTabbedPane(JTabbedPane.TOP);
     iospTabPane = new JTabbedPane(JTabbedPane.TOP);
-    gribTabPane = new JTabbedPane(JTabbedPane.TOP);
+    gribnTabPane = new JTabbedPane(JTabbedPane.TOP);
+    griboTabPane = new JTabbedPane(JTabbedPane.TOP);
     bufrTabPane = new JTabbedPane(JTabbedPane.TOP);
     ftTabPane = new JTabbedPane(JTabbedPane.TOP);
     fmrcTabPane = new JTabbedPane(JTabbedPane.TOP);
@@ -226,7 +238,8 @@ public class ToolsUI extends JPanel {
 
     // nested tab - iosp
     iospTabPane.addTab("BUFR", bufrTabPane);
-    iospTabPane.addTab("GRIB", gribTabPane);
+    iospTabPane.addTab("GRIBnew", gribnTabPane);
+    iospTabPane.addTab("GRIBold", griboTabPane);
     iospTabPane.addTab("HDF5", new JLabel("HDF5"));
     iospTabPane.addTab("HDF4", new JLabel("HDF4"));
     iospTabPane.addTab("NCS", new JLabel("NCS"));
@@ -276,30 +289,57 @@ public class ToolsUI extends JPanel {
       }
     });
 
-    // nested-2 tab - grib
-    gribTabPane.addTab("GRIB-RAW", new JLabel("GRIB-RAW"));
-    gribTabPane.addTab("GRIB-INDEX", new JLabel("GRIB-INDEX"));
-    gribTabPane.addTab("GRIB-REPORT", new JLabel("GRIB-REPORT"));
-    gribTabPane.addTab("WMO-CODES", new JLabel("WMO-CODES"));
-    gribTabPane.addTab("WMO-TEMPLATES", new JLabel("WMO-TEMPLATES"));
-    gribTabPane.addTab("GRIB1-TABLES", new JLabel("GRIB1-TABLES"));
-    gribTabPane.addChangeListener(new ChangeListener() {
+    // nested-2 tab - grib new
+    gribnTabPane.addTab("GRIB2n", new JLabel("GRIB2n"));
+    gribnTabPane.addTab("GRIB2idx", new JLabel("GRIB2idx"));
+    gribnTabPane.addTab("GRIB-REPORT", new JLabel("GRIB-REPORT"));
+    gribnTabPane.addTab("WMO-COMMON", new JLabel("WMO-COMMON"));
+    gribnTabPane.addTab("WMO-CODES", new JLabel("WMO-CODES"));
+    gribnTabPane.addTab("WMO-TEMPLATES", new JLabel("WMO-TEMPLATES"));
+    gribnTabPane.addTab("GRIB2-TABLES", new JLabel("GRIB2-TABLES"));
+    gribnTabPane.addChangeListener(new ChangeListener() {
       public void stateChanged(ChangeEvent e) {
-        Component c = gribTabPane.getSelectedComponent();
+        Component c = gribnTabPane.getSelectedComponent();
         if (c instanceof JLabel) {
-          int idx = gribTabPane.getSelectedIndex();
-          String title = gribTabPane.getTitleAt(idx);
-          makeComponent(gribTabPane, title);
+          int idx = gribnTabPane.getSelectedIndex();
+          String title = gribnTabPane.getTitleAt(idx);
+          makeComponent(gribnTabPane, title);
         }
       }
     });
-    gribTabPane.addComponentListener(new ComponentAdapter() {
+    gribnTabPane.addComponentListener(new ComponentAdapter() {
       public void componentShown(ComponentEvent e) {
-        Component c = gribTabPane.getSelectedComponent();
+        Component c = gribnTabPane.getSelectedComponent();
         if (c instanceof JLabel) {
-          int idx = gribTabPane.getSelectedIndex();
-          String title = gribTabPane.getTitleAt(idx);
-          makeComponent(gribTabPane, title);
+          int idx = gribnTabPane.getSelectedIndex();
+          String title = gribnTabPane.getTitleAt(idx);
+          makeComponent(gribnTabPane, title);
+        }
+      }
+    });
+
+    // nested-2 tab - grib old
+    griboTabPane.addTab("GRIB-FILES", new JLabel("GRIB-FILES"));
+    griboTabPane.addTab("GRIB-RAW", new JLabel("GRIB-RAW"));
+    griboTabPane.addTab("GRIB-INDEX", new JLabel("GRIB-INDEX"));
+    griboTabPane.addTab("GRIB1-TABLES", new JLabel("GRIB1-TABLES"));
+    griboTabPane.addChangeListener(new ChangeListener() {
+      public void stateChanged(ChangeEvent e) {
+        Component c = griboTabPane.getSelectedComponent();
+        if (c instanceof JLabel) {
+          int idx = griboTabPane.getSelectedIndex();
+          String title = griboTabPane.getTitleAt(idx);
+          makeComponent(griboTabPane, title);
+        }
+      }
+    });
+    griboTabPane.addComponentListener(new ComponentAdapter() {
+      public void componentShown(ComponentEvent e) {
+        Component c = griboTabPane.getSelectedComponent();
+        if (c instanceof JLabel) {
+          int idx = griboTabPane.getSelectedIndex();
+          String title = griboTabPane.getTitleAt(idx);
+          makeComponent(griboTabPane, title);
         }
       }
     });
@@ -438,6 +478,18 @@ public class ToolsUI extends JPanel {
       gribRawPanel = new GribRawPanel((PreferencesExt) mainPrefs.node("grib"));
       c = gribRawPanel;
 
+    } else if (title.equals("GRIB-FILES")) {
+      gribFilesPanel = new GribFilesPanel((PreferencesExt) mainPrefs.node("gribFiles"));
+      c = gribFilesPanel;
+
+    } else if (title.equals("GRIB2n")) {
+      gribNewPanel = new GribNewPanel((PreferencesExt) mainPrefs.node("gribNew"));
+      c = gribNewPanel;
+
+    } else if (title.equals("GRIB2idx")) {
+      gribIdxPanel = new Grib2IdxPanel((PreferencesExt) mainPrefs.node("gribIdx"));
+      c = gribIdxPanel;
+
     } else if (title.equals("GRIB-INDEX")) {
       gribIndexPanel = new GribIndexPanel((PreferencesExt) mainPrefs.node("grib2"));
       c = gribIndexPanel;
@@ -446,17 +498,25 @@ public class ToolsUI extends JPanel {
       gribReportPanel = new GribReportPanel((PreferencesExt) mainPrefs.node("gribReport"));
       c = gribReportPanel;
 
+    } else if (title.equals("WMO-COMMON")) {
+      wmoCommonCodePanel = new WmoCCPanel((PreferencesExt) mainPrefs.node("wmo-common"));
+      c = wmoCommonCodePanel;
+
     } else if (title.equals("WMO-CODES")) {
-      gribCodePanel = new GribCodePanel((PreferencesExt) mainPrefs.node("grib-codes"));
+      gribCodePanel = new GribCodePanel((PreferencesExt) mainPrefs.node("wmo-codes"));
       c = gribCodePanel;
 
     } else if (title.equals("WMO-TEMPLATES")) {
-      gribTemplatePanel = new GribTemplatePanel((PreferencesExt) mainPrefs.node("grib-templates"));
+      gribTemplatePanel = new GribTemplatePanel((PreferencesExt) mainPrefs.node("wmo-templates"));
       c = gribTemplatePanel;
 
     } else if (title.equals("GRIB1-TABLES")) {
       grib1TablePanel = new Grib1TablePanel((PreferencesExt) mainPrefs.node("grib1-tables"));
       c = grib1TablePanel;
+
+    } else if (title.equals("GRIB2-TABLES")) {
+      grib2TablePanel = new Grib2TablePanel((PreferencesExt) mainPrefs.node("grib2-tables"));
+      c = grib2TablePanel;
 
     } else if (title.equals("CoordSys")) {
       coordSysPanel = new CoordSysPanel((PreferencesExt) mainPrefs.node("CoordSys"));
@@ -781,7 +841,7 @@ public class ToolsUI extends JPanel {
     BAMutil.setActionProperties(logoAction, null, "Logo", false, 'L', 0);
     BAMutil.addActionToMenu(helpMenu, logoAction);
   }
-
+  
   public void setDebugFlags() {
     if (debug) System.out.println("checkDebugFlags ");
     NetcdfFile.setDebugFlags(debugFlags);
@@ -789,7 +849,7 @@ public class ToolsUI extends JPanel {
     ucar.nc2.ncml.NcMLReader.setDebugFlags(debugFlags);
     ucar.nc2.dods.DODSNetcdfFile.setDebugFlags(debugFlags);
     ucar.nc2.stream.CdmRemote.setDebugFlags(debugFlags);
-    ucar.nc2.iosp.grib.GribGridServiceProvider.setDebugFlags(debugFlags);
+    GribServiceProvider.setDebugFlags(debugFlags);
     ucar.nc2.thredds.ThreddsDataFactory.setDebugFlags(debugFlags);
 
     ucar.nc2.FileWriter.setDebugFlags(debugFlags);
@@ -903,7 +963,6 @@ public class ToolsUI extends JPanel {
   public void save() {
     fileChooser.save();
     if (bufrFileChooser != null) bufrFileChooser.save();
-
     if (aggPanel != null) aggPanel.save();
     if (bufrPanel != null) bufrPanel.save();
     if (bufrTableBPanel != null) bufrTableBPanel.save();
@@ -913,15 +972,17 @@ public class ToolsUI extends JPanel {
     if (ftPanel != null) ftPanel.save();
     if (fmrcPanel != null) fmrcPanel.save();
     if (collectionPanel != null) collectionPanel.save();
-    //if (fmrcImplPanel != null) fmrcImplPanel.save();
-    //if (fmrcInvPanel != null) fmrcInvPanel.save();
     if (geotiffPanel != null) geotiffPanel.save();
+    if (gribFilesPanel != null) gribFilesPanel.save();
+    if (gribNewPanel != null) gribNewPanel.save();
+    if (gribIdxPanel != null) gribIdxPanel.save();
     if (gribRawPanel != null) gribRawPanel.save();
     if (gribIndexPanel != null) gribIndexPanel.save();
     if (gribReportPanel != null) gribReportPanel.save();
     if (gribCodePanel != null) gribCodePanel.save();
     if (gribTemplatePanel != null) gribTemplatePanel.save();
     if (grib1TablePanel != null) grib1TablePanel.save();
+    if (grib2TablePanel != null) grib2TablePanel.save();
     if (gridPanel != null) gridPanel.save();
     if (hdf5Panel != null) hdf5Panel.save();
     if (hdf4Panel != null) hdf4Panel.save();
@@ -939,6 +1000,7 @@ public class ToolsUI extends JPanel {
     if (unitsPanel != null) unitsPanel.save();
     if (urlPanel != null) urlPanel.save();
     if (viewerPanel != null) viewerPanel.save();
+    if (wmoCommonCodePanel != null) wmoCommonCodePanel.save();
     if (wmsPanel != null) wmsPanel.save();
   }
 
@@ -955,13 +1017,6 @@ public class ToolsUI extends JPanel {
     viewerPanel.setDataset(ncfile);
     tabbedPane.setSelectedComponent(viewerPanel);
   }
-
-
-  /* private void showInViewer(NetcdfDataset ds) {
-    makeComponent(tabbedPane, "Viewer");
-    viewerPanel.setDataset(ds);
-    tabbedPane.setSelectedComponent(viewerPanel);
-  } */
 
   private void openCoordSystems(String datasetName) {
     makeComponent(tabbedPane, "CoordSys");
@@ -987,6 +1042,22 @@ public class ToolsUI extends JPanel {
     pointFeaturePanel.setPointFeatureDataset(null, datasetName);
     tabbedPane.setSelectedComponent(ftTabPane);
     ftTabPane.setSelectedComponent(pointFeaturePanel);
+  }
+
+  private void openGrib2n(String collection) {
+    makeComponent(gribnTabPane, "GRIB2n");
+    gribNewPanel.setCollection(collection);
+    tabbedPane.setSelectedComponent(iospTabPane);
+    iospTabPane.setSelectedComponent(gribnTabPane);
+    gribnTabPane.setSelectedComponent(gribNewPanel);
+  }
+
+  private void openGrib2o(String collection) {
+    makeComponent(griboTabPane, "GRIB2o");
+    gribNewPanel.setCollection(collection);
+    tabbedPane.setSelectedComponent(iospTabPane);
+    iospTabPane.setSelectedComponent(griboTabPane);
+    griboTabPane.setSelectedComponent(gribFilesPanel);
   }
 
   private void openGridDataset(String datasetName) {
@@ -1303,7 +1374,7 @@ public class ToolsUI extends JPanel {
     PreferencesExt prefs;
     TextHistoryPane ta2;
     ComboBox cb;
-    JPanel buttPanel;
+    JPanel buttPanel, topPanel;
     AbstractButton coordButt = null;
     StopButton stopButton;
 
@@ -1319,6 +1390,10 @@ public class ToolsUI extends JPanel {
     }
 
     OpPanel(PreferencesExt prefs, String command, boolean addFileButton, boolean addCoordButton) {
+      this(prefs, command, true, addFileButton, addCoordButton);
+    }
+
+    OpPanel(PreferencesExt prefs, String command, boolean addComboBox, boolean addFileButton, boolean addCoordButton) {
       this.prefs = prefs;
 
       cb = new ComboBox(prefs);
@@ -1383,9 +1458,9 @@ public class ToolsUI extends JPanel {
         buttPanel.add(stopButton);
       }
 
-      JPanel topPanel = new JPanel(new BorderLayout());
+      topPanel = new JPanel(new BorderLayout());
       topPanel.add(new JLabel(command), BorderLayout.WEST);
-      topPanel.add(cb, BorderLayout.CENTER);
+      if (addComboBox) topPanel.add(cb, BorderLayout.CENTER);
       topPanel.add(buttPanel, BorderLayout.EAST);
 
       setLayout(new BorderLayout());
@@ -1654,21 +1729,29 @@ public class ToolsUI extends JPanel {
       JButton dateButton = new JButton("Date");
       dateButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
-          checkDate(cb.getSelectedItem());
+          checkDateUnits(cb.getSelectedItem());
         }
       });
       buttPanel.add(dateButton);
+
+      JButton cdateButton = new JButton("CalendarDate");
+      cdateButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          checkCalendarDate(cb.getSelectedItem());
+        }
+      });
+      buttPanel.add(cdateButton);
     }
 
     boolean process(Object o) {
       String command = (String) o;
       try {
         SimpleUnit su = SimpleUnit.factoryWithExceptions(command);
-        ta.setText("toString()=" + su.toString() + "\n");
-        ta.appendLine("getCanonicalString()=" + su.getCanonicalString());
-        ta.appendLine("class = " + su.getImplementingClass());
-        if (su.isUnknownUnit())
-          ta.appendLine("UNKNOWN UNIT");
+        ta.setText("parse=" + command + "\n");
+        ta.appendLine("SimpleUnit.toString()          =" + su.toString() + "\n");
+        ta.appendLine("SimpleUnit.getCanonicalString  =" + su.getCanonicalString());
+        ta.appendLine("SimpleUnit.getImplementingClass= " + su.getImplementingClass());
+        ta.appendLine("SimpleUnit.isUnknownUnit       = " + su.isUnknownUnit());
 
         return true;
 
@@ -1716,13 +1799,13 @@ public class ToolsUI extends JPanel {
       }
     }
 
-    void checkDate(Object o) {
+    void checkDateUnits(Object o) {
       String command = (String) o;
 
       boolean isDate = false;
       try {
         DateUnit du = new DateUnit(command);
-        ta.appendLine("\n<" + command + "> isDateUnit = " + du);
+        ta.appendLine("\nFrom udunits:\n <" + command + "> isDateUnit = " + du);
         Date d = du.getDate();
         ta.appendLine("getStandardDateString = " + formatter.toDateTimeString(d));
         ta.appendLine("getDateOrigin = " + formatter.toDateTimeString(du.getDateOrigin()));
@@ -1757,6 +1840,36 @@ public class ToolsUI extends JPanel {
         ta.appendLine("\nDateUnit.getStandardOrISO = false");
       else
         ta.appendLine("\nDateUnit.getStandardOrISO = " + formatter.toDateTimeString(d));
+    }
+
+    void checkCalendarDate(Object o) {
+      String command = (String) o;
+
+      ta.setText("\nFrom CalendarDateUnit: <" + command + ">\n");
+      try {
+        CalendarDateUnit cd = CalendarDateUnit.of(null, command);
+        ta.appendLine( "CalendarDateUnit = " + cd);
+      } catch (Exception e) {
+        ta.appendLine("not a CalendarDateUnit= "+e.getMessage());
+
+        try {
+          String[] s = command.split("%");
+          if (s.length == 2) {
+            Double val = Double.parseDouble(s[0].trim());
+            ta.appendLine("\nval= "+ val + " unit=" + s[1]);
+            CalendarDateUnit cdu = CalendarDateUnit.of(null, s[1].trim());
+            ta.appendLine( "CalendarDateUnit= " + cdu);
+            CalendarDate cd = cdu.makeCalendarDate(val);
+            ta.appendLine(" CalendarDate = " + cd);
+            Date d = cd.toDate();
+            ta.appendLine(" Date.toString() = " + d);
+            DateFormatter format = new DateFormatter();
+            ta.appendLine(" DateFormatter= " + format.toDateTimeString(cd.toDate()));
+          }
+        } catch (Exception ee) {
+          ta.appendLine("Failed on CalendarDateUnit "+ee.getMessage());
+        }
+      }
 
     }
   }
@@ -2019,7 +2132,7 @@ public class ToolsUI extends JPanel {
           }
         }
 
-        ncd = (NetcdfDataset) NetcdfDataset.openFile(command, null);
+        ncd = NetcdfDataset.openDataset(command);
         aggTable.setAggDataset(ncd);
 
       } catch (FileNotFoundException ioe) {
@@ -2027,6 +2140,7 @@ public class ToolsUI extends JPanel {
         err = true;
 
       } catch (Throwable e) {
+        e.printStackTrace();
         ByteArrayOutputStream bos = new ByteArrayOutputStream(5000);
         e.printStackTrace(new PrintStream(bos));
         detailTA.setText(bos.toString());
@@ -2246,6 +2360,257 @@ public class ToolsUI extends JPanel {
   }
 
   /////////////////////////////////////////////////////////////////////
+  private class GribFilesPanel extends OpPanel {
+    ucar.nc2.ui.GribFilesPanel gribTable;
+
+    void closeOpenFiles() throws IOException {
+    }
+
+    GribFilesPanel(PreferencesExt p) {
+      super(p, "collection:", true, false);
+      gribTable = new ucar.nc2.ui.GribFilesPanel(prefs);
+      add(gribTable, BorderLayout.CENTER);
+      gribTable.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+        public void propertyChange(java.beans.PropertyChangeEvent e) {
+          if (e.getPropertyName().equals("openGrib2o")) {
+            String collectionName = (String) e.getNewValue();
+            openGrib2o(collectionName);
+          }
+        }
+      });
+
+      AbstractButton showButt = BAMutil.makeButtcon("Information", "Show Collection", false);
+      showButt.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          Formatter f = new Formatter();
+          gribTable.showCollection(f);
+          detailTA.setText(f.toString());
+          detailTA.gotoTop();
+          detailWindow.show();
+        }
+      });
+      buttPanel.add(showButt);
+    }
+
+    boolean process(Object o) {
+      String command = (String) o;
+      boolean err = false;
+
+      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
+      try {
+        gribTable.setCollection(command);
+
+      } catch (FileNotFoundException ioe) {
+        JOptionPane.showMessageDialog(null, "NetcdfDataset cant open " + command + "\n" + ioe.getMessage());
+        ta.setText("Failed to open <" + command + ">\n" + ioe.getMessage());
+        err = true;
+
+      } catch (Exception e) {
+        e.printStackTrace();
+        e.printStackTrace(new PrintStream(bos));
+        detailTA.setText(bos.toString());
+        detailWindow.show();
+        err = true;
+      }
+
+      return !err;
+    }
+
+    void save() {
+      gribTable.save();
+      super.save();
+    }
+
+  }
+
+   /////////////////////////////////////////////////////////////////////
+  // GRIB2 new
+  private class GribNewPanel extends OpPanel {
+    ucar.nc2.ui.GribNewPanel gribTable;
+
+    void closeOpenFiles() throws IOException {
+    }
+
+    GribNewPanel(PreferencesExt p) {
+      super(p, "collection:", true, false);
+      gribTable = new ucar.nc2.ui.GribNewPanel(prefs);
+      add(gribTable, BorderLayout.CENTER);
+      gribTable.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+        public void propertyChange(java.beans.PropertyChangeEvent e) {
+          if (e.getPropertyName().equals("openGrib2n")) {
+            String collectionName = (String) e.getNewValue();
+            openGrib2n(collectionName);
+          }
+        }
+      });
+
+      AbstractButton showButt = BAMutil.makeButtcon("Information", "Show Collection", false);
+      showButt.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          Formatter f = new Formatter();
+          gribTable.showCollection(f);
+          detailTA.setText(f.toString());
+          detailTA.gotoTop();
+          detailWindow.show();
+        }
+      });
+      buttPanel.add(showButt);
+
+      AbstractButton infoButton = BAMutil.makeButtcon("Information", "Check Problems", false);
+      infoButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          Formatter f = new Formatter();
+          gribTable.checkProblems(f);
+          detailTA.setText(f.toString());
+          detailTA.gotoTop();
+          detailWindow.show();
+        }
+      });
+      buttPanel.add(infoButton);
+
+      AbstractButton gdsButton = BAMutil.makeButtcon("Information", "Show GDS use", false);
+      gdsButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          Formatter f = new Formatter();
+          gribTable.showGDSuse(f);
+          detailTA.setText(f.toString());
+          detailTA.gotoTop();
+          detailWindow.show();
+        }
+      });
+      buttPanel.add(gdsButton);
+
+      AbstractButton aggButton = BAMutil.makeButtcon("V3", "Run Rectilyser", false);
+      aggButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          Formatter f = new Formatter();
+          try {
+            gribTable.runAggregator(f);
+          } catch (IOException e1) {
+            e1.printStackTrace();
+          }
+          detailTA.setText(f.toString());
+          detailTA.gotoTop();
+          detailWindow.show();
+        }
+      });
+      buttPanel.add(aggButton);
+
+      /* AbstractButton collateButton = BAMutil.makeButtcon("V3", "Run GribCollection", false);
+      collateButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          Formatter f = new Formatter();
+          try {
+            gribTable.runCollate(f);
+          } catch (IOException e1) {
+            e1.printStackTrace();
+          }
+          detailTA.setText(f.toString());
+          detailTA.gotoTop();
+          detailWindow.show();
+        }
+      });
+      buttPanel.add(collateButton); */
+
+     AbstractButton writeButton = BAMutil.makeButtcon("netcdf", "Write index", false);
+     writeButton.addActionListener(new ActionListener() {
+       public void actionPerformed(ActionEvent e) {
+         Formatter f = new Formatter();
+         try {
+           if (!gribTable.writeIndex(f)) return;
+         } catch (IOException e1) {
+           e1.printStackTrace();
+         }
+         detailTA.setText(f.toString());
+         detailTA.gotoTop();
+         detailWindow.show();
+       }
+     });
+     buttPanel.add(writeButton);
+   }
+
+     void setCollection(String collection) {
+      if (process(collection)) {
+        if (!defer) cb.addItem(collection);
+      }
+     }
+
+    boolean process(Object o) {
+      String command = (String) o;
+      boolean err = false;
+
+      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
+      try {
+        gribTable.setCollection(command);
+
+      } catch (FileNotFoundException ioe) {
+        JOptionPane.showMessageDialog(null, "NetcdfDataset cant open " + command + "\n" + ioe.getMessage());
+        ta.setText("Failed to open <" + command + ">\n" + ioe.getMessage());
+        err = true;
+
+      } catch (Exception e) {
+        e.printStackTrace();
+        e.printStackTrace(new PrintStream(bos));
+        detailTA.setText(bos.toString());
+        detailWindow.show();
+        err = true;
+      }
+
+      return !err;
+    }
+
+    void save() {
+      gribTable.save();
+      super.save();
+    }
+
+  }
+
+  /////////////////////////////////////////////////////////////////////
+  private class Grib2IdxPanel extends OpPanel {
+    ucar.nc2.ui.Grib2IdxPanel gribTable;
+
+    void closeOpenFiles() throws IOException {
+    }
+
+    Grib2IdxPanel(PreferencesExt p) {
+      super(p, "index file:", true, false);
+      gribTable = new ucar.nc2.ui.Grib2IdxPanel(prefs, buttPanel);
+      add(gribTable, BorderLayout.CENTER);
+    }
+
+    boolean process(Object o) {
+      String command = (String) o;
+      boolean err = false;
+
+      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
+      try {
+        gribTable.setIndex(command);
+
+      } catch (FileNotFoundException ioe) {
+        JOptionPane.showMessageDialog(null, "NetcdfDataset cant open " + command + "\n" + ioe.getMessage());
+        ta.setText("Failed to open <" + command + ">\n" + ioe.getMessage());
+        err = true;
+
+      } catch (Exception e) {
+        e.printStackTrace();
+        e.printStackTrace(new PrintStream(bos));
+        detailTA.setText(bos.toString());
+        detailWindow.show();
+        err = true;
+      }
+
+      return !err;
+    }
+
+    void save() {
+      gribTable.save();
+      super.save();
+    }
+
+  }
+
+  /////////////////////////////////////////////////////////////////////
   // raw grib access - dont go through the IOSP
   private class GribRawPanel extends OpPanel {
     ucar.unidata.io.RandomAccessFile raf = null;
@@ -2282,7 +2647,7 @@ public class ToolsUI extends JPanel {
       });
       buttPanel.add(grib2dump);
 
-      AbstractButton infoButton = BAMutil.makeButtcon("Information", "Detail Info", false);
+      AbstractButton infoButton = BAMutil.makeButtcon("Information", "Check Problems", false);
       infoButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           Formatter f = new Formatter();
@@ -2403,7 +2768,7 @@ public class ToolsUI extends JPanel {
     JComboBox reports;
 
     GribReportPanel(PreferencesExt p) {
-      super(p, "file:", true, false);
+      super(p, "collection:", true, false);
       gribReport = new ucar.nc2.ui.GribReportPanel(prefs, buttPanel);
       add(gribReport, BorderLayout.CENTER);
 
@@ -2453,7 +2818,7 @@ public class ToolsUI extends JPanel {
     }
 
     boolean process(Object o) {
-      return true;
+      return gribReport.setCollection( (String) o);
     }
 
     boolean process() {
@@ -2462,10 +2827,12 @@ public class ToolsUI extends JPanel {
 
       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
-        gribReport.setCollection(command, useIndex, (ucar.nc2.ui.GribReportPanel.Report) reports.getSelectedItem());
+        gribReport.doReport(command, useIndex, (ucar.nc2.ui.GribReportPanel.Report) reports.getSelectedItem());
 
       } catch (IOException ioe) {
         JOptionPane.showMessageDialog(null, "GribReportPanel cant open " + command + "\n" + ioe.getMessage());
+        ta.setText("Failed to open <" + command + ">\n" + ioe.getMessage());
+        ioe.printStackTrace();
         err = true;
 
       } catch (Exception e) {
@@ -2491,7 +2858,16 @@ public class ToolsUI extends JPanel {
     GribWmoCodesPanel codeTable;
 
     GribCodePanel(PreferencesExt p) {
-      super(p, "table:", false, false);
+      super(p, "table:", false, false, false);
+
+      final JComboBox modes = new JComboBox(WmoCodeTable.Version.values());
+      topPanel.add(modes, BorderLayout.CENTER);
+      modes.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          System.out.printf("%s%n", e.getActionCommand());
+          codeTable.setTable((WmoCodeTable.Version) modes.getSelectedItem());
+        }
+      });
 
       codeTable = new GribWmoCodesPanel(prefs, buttPanel);
       add(codeTable, BorderLayout.CENTER);
@@ -2508,6 +2884,30 @@ public class ToolsUI extends JPanel {
 
     void closeOpenFiles() {
     }
+  }
+
+  /////////////////////////////////////////////////////////////////////
+
+  private class WmoCCPanel extends OpPanel {
+    WmoCommonCodesPanel codeTable;
+
+    WmoCCPanel(PreferencesExt p) {
+      super(p, "table:", false, false);
+
+      codeTable = new WmoCommonCodesPanel(prefs, buttPanel);
+      add(codeTable, BorderLayout.CENTER);
+    }
+
+    boolean process(Object command) {
+      return true;
+    }
+
+    void save() {
+      codeTable.save();
+      super.save();
+    }
+
+    void closeOpenFiles() {}
   }
 
   /////////////////////////////////////////////////////////////////////
@@ -2558,6 +2958,30 @@ public class ToolsUI extends JPanel {
 
     void closeOpenFiles() {
     }
+
+  }
+
+
+  /////////////////////////////////////////////////////////////////////
+
+  private class Grib2TablePanel extends OpPanel {
+    Grib2TablesViewer codeTable;
+    Grib2TablePanel(PreferencesExt p) {
+      super(p, "table:", false, false);
+      codeTable = new Grib2TablesViewer(prefs, buttPanel);
+      add(codeTable, BorderLayout.CENTER);
+    }
+
+    boolean process(Object command) {
+      return true;
+    }
+
+    void save() {
+      codeTable.save();
+      super.save();
+    }
+
+    void closeOpenFiles() {}
 
   }
 
@@ -3857,7 +4281,7 @@ public class ToolsUI extends JPanel {
         public void actionPerformed(ActionEvent e) {
           GridDataset gds = dsTable.getGridDataset();
           if (gds == null) return;
-          GridDatasetInv inv = new GridDatasetInv(gds, null);
+          GridDatasetInv inv = new GridDatasetInv((ucar.nc2.dt.grid.GridDataset) gds, null);
           try {
             detailTA.setText(inv.writeXML(new Date()));
             detailTA.gotoTop();
@@ -4230,6 +4654,20 @@ public class ToolsUI extends JPanel {
         FileOutputStream fos = new FileOutputStream(filename);
         WritableByteChannel wbc = fos.getChannel();
         writer.streamAll(wbc);
+        wbc.close();
+        JOptionPane.showMessageDialog(this, "File successfully written");
+      } catch (Exception ioe) {
+        JOptionPane.showMessageDialog(this, "ERROR: " + ioe.getMessage());
+        ioe.printStackTrace();
+      }
+    }
+
+    void writeNcstreamHeader(String filename) {
+      try {
+        NcStreamWriter writer = new NcStreamWriter(ncfile, null);
+        FileOutputStream fos = new FileOutputStream(filename);
+        WritableByteChannel wbc = fos.getChannel();
+        writer.sendHeader(wbc);
         wbc.close();
         JOptionPane.showMessageDialog(this, "File successfully written");
       } catch (Exception ioe) {
@@ -5156,7 +5594,7 @@ public class ToolsUI extends JPanel {
     String version;
     try {
       InputStream is = ucar.nc2.ui.util.Resource.getFileResource("/README");
-      if (is == null) return "4.2";
+      if (is == null) return "4.3";
 // DataInputStream dataIS = new DataInputStream( new BufferedInputStream(ios, 20000));
       BufferedReader dataIS = new BufferedReader(new InputStreamReader(is));
       StringBuilder sbuff = new StringBuilder();
@@ -5363,18 +5801,17 @@ public class ToolsUI extends JPanel {
     // filesystem caching
     DiskCache2 cacheDir = new DiskCache2(".unidata/ehcache", true, -1, -1);
     cacheManager = thredds.filesystem.ControllerCaching.makeTestController(cacheDir.getRootDirectory());
-    thredds.inventory.DatasetCollectionManager.setController(cacheManager);
-    thredds.inventory.DatasetCollectionManager.enableMetadataManager();
+    DatasetCollectionMFiles.setController(cacheManager); // ehcache for files
+    thredds.inventory.CollectionManagerAbstract.enableMetadataManager();    // bdb for metadata
 
     // for efficiency, persist aggregations. every hour, delete stuff older than 30 days
     Aggregation.setPersistenceCache(new DiskCache2("/.unidata/aggCache", true, 60 * 24 * 30, 60));
-    //DqcFactory.setPersistenceCache(new DiskCache2("/.unidata/dqc", true, 60 * 24 * 365, 60));
 
     // test
     // java.util.logging.Logger.getLogger("ucar.nc2").setLevel( java.util.logging.Level.SEVERE);
 
     // put UI in a JFrame
-    frame = new JFrame("NetCDF (4.2) Tools");
+    frame = new JFrame("NetCDF (4.3) Tools");
     ui = new ToolsUI(prefs, frame);
 
     frame.setIconImage(BAMutil.getImage("netcdfUI"));
@@ -5400,15 +5837,16 @@ public class ToolsUI extends JPanel {
 
     UrlAuthenticatorDialog provider = new UrlAuthenticatorDialog(frame);
     HTTPSession.setGlobalCredentialsProvider(provider);
-    HTTPSession.setGlobalUserAgent("ToolsUI");
+    HTTPSession.setGlobalUserAgent("ToolsUI v4.3");
 
     // set Authentication for accessing passsword protected services like TDS PUT
-    //java.net.Authenticator.setDefault(new UrlAuthenticatorDialog(frame));
     java.net.Authenticator.setDefault(provider);
 
     // open dap initializations
     ucar.nc2.dods.DODSNetcdfFile.setAllowCompression(true);
     ucar.nc2.dods.DODSNetcdfFile.setAllowSessions(true);
+
+    GribCollection.initFileCache(100, 200, -1);
 
 
     /* No longer needed

@@ -66,6 +66,8 @@ import javax.swing.event.ChangeEvent;
  * @author caron
  */
 public class GridController {
+  static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GridController.class);
+
   private static final int DELAY_DRAW_AFTER_DATA_EVENT = 250;   // quarter sec
   private static final String LastMapAreaName = "LastMapArea";
   private static final String LastProjectionName = "LastProjection";
@@ -86,7 +88,7 @@ public class GridController {
   private NetcdfDataset netcdfDataset;
   private GridDataset gridDataset;
   private GridDatatype currentField;
-  private List levelNames, timeNames, ensembleNames, runtimeNames;
+  private List<NamedObject> levelNames, timeNames, ensembleNames, runtimeNames;
   private int currentLevel;
   private int currentSlice;
   private int currentTime;
@@ -310,7 +312,7 @@ public class GridController {
       // heres what to do when the currentField changes
     ActionSourceListener fieldSource = new ActionSourceListener(actionName) {
       public void actionPerformed(ActionValueEvent e) {
-        if (setField( e.getValue().toString())) {
+        if (setField( e.getValue())) {
           if (e.getActionCommand().equals("redrawImmediate")) {
             draw(true);
             //colorScalePanel.paintImmediately(colorScalePanel.getBounds());   // kludgerino
@@ -335,7 +337,7 @@ public class GridController {
          if ((level != -1) && (level != currentLevel)) {
           currentLevel = level;
           redrawLater();
-          String selectedName = ((NamedObject)levelNames.get(currentLevel)).getName();
+          String selectedName = levelNames.get(currentLevel).getName();
           if (Debug.isSet("pick/event"))
             System.out.println("pick.event Vert: "+selectedName);
           levelSource.fireActionValueEvent(ActionSourceListener.SELECTED, selectedName);
@@ -681,7 +683,7 @@ public class GridController {
     eventsOK = false; // dont let this trigger redraw
     renderGrid.setGeoGrid( currentField);
     ui.setFields( gridDataset.getGrids());
-    setField( currentField.getFullName());
+    setField( currentField);
 
     // if possible, change the projection and the map area to one that fits this
     // dataset
@@ -698,8 +700,12 @@ public class GridController {
   }
 
   //public GridDatatype getField() { return currentField; }
-  private boolean setField(String name) {
-    GridDatatype gg = gridDataset.findGridDatatype(name);
+  private boolean setField(Object fld) {
+    GridDatatype gg = null;
+    if (fld instanceof GridDatatype)
+      gg = (GridDatatype) fld;
+    else if (fld instanceof String)
+      gg = gridDataset.findGridDatatype( (String) fld);
     if (null == gg)
       return false;
 
@@ -744,41 +750,16 @@ public class GridController {
   public int getCurrentTimeIndex() { return currentTime; }
   public int getCurrentEnsembleIndex() { return currentEnsemble; }
   public int getCurrentRunTimeIndex() { return currentRunTime; }
-  /* public boolean setLevel(int index) {
-    if ((index >= 0) && (index < levelNames.size())) {
-      currentLevel = index;
-    }
-    redrawLater();
-    return true;
-  } */
 
-  private int findIndexFromName( List list, String name) {
-     Iterator iter = list.iterator();
-     int count = 0;
-     while (iter.hasNext()) {
-       NamedObject no = (NamedObject) iter.next();
+  private int findIndexFromName( List<NamedObject> list, String name) {
+     for (int idx=0; idx < list.size(); idx++) {
+       NamedObject no = list.get(idx);
        if (name.equals(no.getName()))
-         return count;
-       count++;
+         return idx;
      }
-     System.out.println("ERROR: Controller.setLevels cant find "+name);
+     log.error("findIndexFromName cant find "+name);
      return -1;
   }
-
-  /* public int getTimeIndex() { return currentTime; }
-  public boolean setTime(int index) {
-    if ((index >= 0) && (index < timeNames.size())) {
-      currentTime = index;
-    }
-    redrawLater();
-    return true;
-  } */
-
-  /* public Printable getPrintable() {
-    if (printer == null)
-      printer = new MyPrintable();
-    return printer;
-  } */
 
   synchronized void draw(boolean immediate) {
     if (!startOK) return;

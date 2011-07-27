@@ -44,6 +44,7 @@ import thredds.catalog.*;
 import thredds.server.config.TdsContext;
 import thredds.servlet.HtmlWriter;
 import thredds.servlet.UsageLog;
+import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateRange;
 import ucar.unidata.geoloc.LatLonRect;
 
@@ -285,7 +286,7 @@ public class CatalogRadarServerController extends AbstractController {
     model.put( "urlPath", ds.getPath() );
     model.put( "dataFormat", ds.getDataFormatType());
     model.put( "documentation", ds.getSummary());
-    DateRange dr = ds.getTimeCoverage();
+    CalendarDateRange dr = ds.getCalendarDateCoverage();
     /*
     if (pathInfo.contains("IDD")) {
       pw.print(rm.getStartDateTime(ds.getPath()));
@@ -294,8 +295,8 @@ public class CatalogRadarServerController extends AbstractController {
     }
     */    //TODO: check
     //pw.print(dr.getStart().toDateTimeStringISO());
-    model.put( "tstart", dr.getStart().toDateTimeStringISO());
-    model.put( "tend", dr.getEnd().toDateTimeStringISO());
+    model.put( "tstart", dr.getStart().toString());
+    model.put( "tend", dr.getEnd().toString());
     ThreddsMetadata.GeospatialCoverage gc = ds.getGeospatialCoverage();
     LatLonRect bb = new LatLonRect();
     gc.setBoundingBox(bb);

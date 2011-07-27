@@ -36,6 +36,7 @@ import ucar.nc2.ft.NestedPointFeatureCollection;
 import ucar.nc2.ft.PointFeatureCollection;
 import ucar.nc2.ft.PointFeatureIterator;
 import ucar.nc2.ft.PointFeatureCollectionIterator;
+import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.constants.FeatureType;
 import ucar.unidata.geoloc.LatLonRect;
@@ -87,16 +88,20 @@ public abstract class MultipleNestedPointCollectionImpl implements NestedPointFe
 
   // flatten into a PointFeatureCollection
   // if empty, may return null
-  public PointFeatureCollection flatten(LatLonRect boundingBox, DateRange dateRange) throws IOException {
+  public PointFeatureCollection flatten(LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException {
     return new NestedPointFeatureCollectionFlatten(this, boundingBox, dateRange);
+  }
+
+  public PointFeatureCollection flatten(LatLonRect boundingBox, DateRange dateRange) throws IOException {
+    return new NestedPointFeatureCollectionFlatten(this, boundingBox, CalendarDateRange.of(dateRange));
   }
 
   private class NestedPointFeatureCollectionFlatten extends PointCollectionImpl {
     protected MultipleNestedPointCollectionImpl from;
     protected LatLonRect boundingBox;
-    protected DateRange dateRange;
+    protected CalendarDateRange dateRange;
 
-    NestedPointFeatureCollectionFlatten(MultipleNestedPointCollectionImpl from, LatLonRect filter_bb, DateRange filter_date) {
+    NestedPointFeatureCollectionFlatten(MultipleNestedPointCollectionImpl from, LatLonRect filter_bb, CalendarDateRange filter_date) {
       super(from.getName());
       this.from = from;
       this.boundingBox = filter_bb;

@@ -85,6 +85,7 @@ public class BufrDataDump {
   }
 
   // open the file and extract BUFR messages
+
   public void scanBufrFile(String filename) throws Exception {
     int count = 0;
     RandomAccessFile raf = null;
@@ -105,6 +106,7 @@ public class BufrDataDump {
   }
 
   // convert one message ino a NetcdfDataset and print data
+
   private void processBufrMessageAsDataset(MessageScanner scan, Message m) throws Exception {
     byte[] mbytes = scan.getMessageBytes(m);
     NetcdfFile ncfile = NetcdfFile.openInMemory("test", mbytes, "ucar.nc2.iosp.bufr.BufrIosp");
@@ -117,7 +119,7 @@ public class BufrDataDump {
 
   private class Extract {
     double platformId;
-    int year,month,day,hour,min,sec,incr,incrS;
+    int year, month, day, hour, min, sec, incr, incrS;
     Array value;
 
     @Override
@@ -138,79 +140,95 @@ public class BufrDataDump {
   }
 
   // iterate through the observations
-private void extractFirst(StructureDataIterator sdataIter, Extract result) throws IOException {
-  while (sdataIter.hasNext()) {
-    StructureData sdata = sdataIter.next();
 
-    for (StructureMembers.Member m : sdata.getMembers()) {
-      if (m.getName().equals("Buoy/platform identifier"))
-        result.platformId = sdata.convertScalarDouble(m);
+  private void extractFirst(StructureDataIterator sdataIter, Extract result) throws IOException {
+    try {
+      while (sdataIter.hasNext()) {
+        StructureData sdata = sdataIter.next();
 
-      else if (m.getDataType() == DataType.SEQUENCE) {
-        ArraySequence data = (ArraySequence) sdata.getArray(m);
-        extractNested(data.getStructureDataIterator(), result);
+        for (StructureMembers.Member m : sdata.getMembers()) {
+
+          if (m.getName().equals("Buoy/platform identifier"))
+            result.platformId = sdata.convertScalarDouble(m);
+
+          else if (m.getDataType() == DataType.SEQUENCE) {
+            ArraySequence data = (ArraySequence) sdata.getArray(m);
+            extractNested(data.getStructureDataIterator(), result);
+          }
+        }
       }
+    } finally {
+      sdataIter.finish();
     }
   }
-}
 
   // iterate through the observations
-private void extractNested(StructureDataIterator sdataIter, Extract result) throws IOException {
-  while (sdataIter.hasNext()) {
-    StructureData sdata = sdataIter.next();
 
-    for (StructureMembers.Member m : sdata.getMembers()) {
-      if (m.getName().equals("Year"))
-        result.year = sdata.convertScalarInt(m);
-      else if (m.getName().equals("Month"))
-        result.month = sdata.convertScalarInt(m);
-      else if (m.getName().equals("Day"))
-        result.day = sdata.convertScalarInt(m);
-      else if (m.getName().equals("Hour"))
-        result.hour = sdata.convertScalarInt(m);
-      else if (m.getName().equals("Minute"))
-        result.min = sdata.convertScalarInt(m);
-      else if (m.getName().equals("Second"))
-        result.sec = sdata.convertScalarInt(m);
-      else if (m.getName().equals("Time increment"))
-        result.incr = sdata.convertScalarInt(m);
-      else if (m.getName().equals("Short time increment"))
-        result.incrS = sdata.convertScalarInt(m);
-      else if (m.getName().equals("Water column height")) {
-        result.value = sdata.getArray(m);
-        out.format("%s%n", result.toString());
+  private void extractNested(StructureDataIterator sdataIter, Extract result) throws IOException {
+    try {
+      while (sdataIter.hasNext()) {
+        StructureData sdata = sdataIter.next();
+
+        for (StructureMembers.Member m : sdata.getMembers()) {
+          if (m.getName().equals("Year"))
+            result.year = sdata.convertScalarInt(m);
+          else if (m.getName().equals("Month"))
+            result.month = sdata.convertScalarInt(m);
+          else if (m.getName().equals("Day"))
+            result.day = sdata.convertScalarInt(m);
+          else if (m.getName().equals("Hour"))
+            result.hour = sdata.convertScalarInt(m);
+          else if (m.getName().equals("Minute"))
+            result.min = sdata.convertScalarInt(m);
+          else if (m.getName().equals("Second"))
+            result.sec = sdata.convertScalarInt(m);
+          else if (m.getName().equals("Time increment"))
+            result.incr = sdata.convertScalarInt(m);
+          else if (m.getName().equals("Short time increment"))
+            result.incrS = sdata.convertScalarInt(m);
+          else if (m.getName().equals("Water column height")) {
+            result.value = sdata.getArray(m);
+            out.format("%s%n", result.toString());
+          }
+        }
       }
+    } finally {
+      sdataIter.finish();
     }
   }
-}
 
   // iterate through the observations
+
   private void writeSequence(StructureDS s, StructureDataIterator sdataIter) throws IOException {
     indent.incr();
     int count = 0;
-    while (sdataIter.hasNext()) {
-      out.format("%sSequence %s count=%d%n", indent, s.getShortName(), count++);
-      StructureData sdata = sdataIter.next();
-      indent.incr();
+    try {
+      while (sdataIter.hasNext()) {
+        out.format("%sSequence %s count=%d%n", indent, s.getShortName(), count++);
+        StructureData sdata = sdataIter.next();
+        indent.incr();
 
-      for (StructureMembers.Member m : sdata.getMembers()) {
-        Variable v = s.findVariable(m.getName());
+        for (StructureMembers.Member m : sdata.getMembers()) {
+          Variable v = s.findVariable(m.getName());
 
-        if (m.getDataType().isString() || m.getDataType().isNumeric()) {
-          writeVariable((VariableDS) v, sdata.getArray(m));
+          if (m.getDataType().isString() || m.getDataType().isNumeric()) {
+            writeVariable((VariableDS) v, sdata.getArray(m));
 
-        } else if (m.getDataType() == DataType.STRUCTURE) {
-          StructureDS sds = (StructureDS) v;
-          ArrayStructure data = (ArrayStructure) sdata.getArray(m);
-          writeSequence(sds, data.getStructureDataIterator());
+          } else if (m.getDataType() == DataType.STRUCTURE) {
+            StructureDS sds = (StructureDS) v;
+            ArrayStructure data = (ArrayStructure) sdata.getArray(m);
+            writeSequence(sds, data.getStructureDataIterator());
 
-        } else if (m.getDataType() == DataType.SEQUENCE) {
-          SequenceDS sds = (SequenceDS) v;
-          ArraySequence data = (ArraySequence) sdata.getArray(m);
-          writeSequence(sds, data.getStructureDataIterator());
+          } else if (m.getDataType() == DataType.SEQUENCE) {
+            SequenceDS sds = (SequenceDS) v;
+            ArraySequence data = (ArraySequence) sdata.getArray(m);
+            writeSequence(sds, data.getStructureDataIterator());
+          }
         }
+        indent.decr();
       }
-      indent.decr();
+    } finally {
+      sdataIter.finish();
     }
 
     indent.decr();

@@ -430,7 +430,7 @@ public class RadarMethods {
               qp.time_start = qp.time;
           }
       } else if( qp.hasDateRange ) {
-          DateRange dr = qp.getDateRange();
+          DateRange dr = qp.getCalendarDateRange().toDateRange();
           qp.time_start = dr.getStart();
           qp.time_end = dr.getEnd();
       } else {

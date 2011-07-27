@@ -37,15 +37,7 @@
 
 package ucar.nc2.iosp.mcidas;
 
-
-import ucar.grid.GridIndex;
-import ucar.grid.GridRecord;
-
-
-import ucar.ma2.*;
-
 import ucar.nc2.*;
-
 
 import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.iosp.grid.*;

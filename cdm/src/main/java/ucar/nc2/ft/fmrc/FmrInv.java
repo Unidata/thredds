@@ -32,6 +32,8 @@
 
 package ucar.nc2.ft.fmrc;
 
+import ucar.nc2.time.CalendarDate;
+
 import java.util.*;
 
 /**
@@ -77,7 +79,7 @@ public class FmrInv implements Comparable<FmrInv> {
     return invList;
   }
 
-  public Date getRunDate() {
+  public CalendarDate getRunDate() {
     return runtime;
   }
 
@@ -88,9 +90,9 @@ public class FmrInv implements Comparable<FmrInv> {
   ////////////////////////////////////////////////////////////////////////////////////
 
   private final List<GridDatasetInv> invList = new ArrayList<GridDatasetInv>();
-  private final Date runtime;
+  private final CalendarDate runtime;
 
-  FmrInv(Date runtime) {
+  FmrInv(CalendarDate runtime) {
     this.runtime = runtime;
   }
 
@@ -184,7 +186,7 @@ public class FmrInv implements Comparable<FmrInv> {
       return name;
     }
 
-    public Date getRunDate( ) {
+    public CalendarDate getRunDate( ) {
       return FmrInv.this.getRunDate();
     }
 

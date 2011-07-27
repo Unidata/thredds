@@ -492,7 +492,7 @@ public class InvCatalogImpl extends InvCatalog {
    */
   public boolean check(StringBuilder out, boolean show) {
     boolean isValid = !hasError;
-    out.append("----Catalog Validation version 1.0.01\n");
+    out.append("----Catalog Validation\n");
 
     if (log.length() > 0)
       out.append(log);

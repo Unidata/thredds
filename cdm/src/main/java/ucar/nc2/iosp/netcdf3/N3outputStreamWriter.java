@@ -81,24 +81,29 @@ public class N3outputStreamWriter extends N3streamWriter {
 
       Structure recordVar = (Structure) ncfile.findVariable("record");
       StructureDataIterator ii = recordVar.getStructureIterator();
-      while (ii.hasNext()) {
-        StructureData sdata = ii.next();
-        int count = 0;
+      try {
+        while (ii.hasNext()) {
+          StructureData sdata = ii.next();
+          int count = 0;
 
-        for (Vinfo vinfo : vinfoList) {
-          if (vinfo.isRecord) {
-            Variable v = vinfo.v;
-            int nbytes = writeDataFast(v, stream, sdata.getArray(v.getShortName()));
-            count += nbytes;
-            count += pad(stream, nbytes, (byte) 0);
-            if (first && debugWriteData) System.out.println(v.getShortName() + " wrote " + count + " bytes");
+          for (Vinfo vinfo : vinfoList) {
+            if (vinfo.isRecord) {
+              Variable v = vinfo.v;
+              int nbytes = writeDataFast(v, stream, sdata.getArray(v.getShortName()));
+              count += nbytes;
+              count += pad(stream, nbytes, (byte) 0);
+              if (first && debugWriteData) System.out.println(v.getShortName() + " wrote " + count + " bytes");
+            }
           }
+          if (first && debugWriteData) {
+            System.out.println("wrote " + count + " bytes");
+            first = false;
+          }
+          nrec++;
         }
-        if (first && debugWriteData) {
-          System.out.println("wrote " + count + " bytes");
-          first = false;
-        }
-        nrec++;
+
+      } finally {
+        ii.finish();
       }
       if (debugWriteData) System.out.println("wrote " + nrec + " records");
       stream.flush();
@@ -132,7 +137,8 @@ public class N3outputStreamWriter extends N3streamWriter {
     if (filePos != want) throw new IllegalStateException();
 
     for (Variable v : varList) {
-      if (first && debugWriteData) System.out.println("  write record var " + v.getNameAndDimensions()+" filePos="+filePos);
+      if (first && debugWriteData)
+        System.out.println("  write record var " + v.getNameAndDimensions() + " filePos=" + filePos);
       filePos += writeData(v, stream, v.read());
 
       Vinfo vinfo = vinfoMap.get(v);
@@ -242,7 +248,7 @@ public class N3outputStreamWriter extends N3streamWriter {
     stream.close();
   }
 
-  static public void main( String args[]) throws IOException {
+  static public void main(String args[]) throws IOException {
     writeFromFile(NetcdfFile.open("C:/data/metars/Surface_METAR_20070331_0000.nc"), "C:/temp/streamOut.nc");
   }
 }

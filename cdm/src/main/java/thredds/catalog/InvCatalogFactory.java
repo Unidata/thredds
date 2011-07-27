@@ -534,7 +534,7 @@ public class InvCatalogFactory {
     return os.toString();
   }
 
-  /**
+  /*
    * Write the InvCatalogImpl as a InvCatalog 0.6 XML document to a String.
    *
    * @param catalog - the catalog to be written
@@ -547,9 +547,7 @@ public class InvCatalogFactory {
     ByteArrayOutputStream os = new ByteArrayOutputStream(10000);
     writeXML_0_6(catalog, os);
     return os.toString();
-  }
-
-  */
+  } */
 
   /**
    * Write the InvCatalogImpl to the OutputStream as a InvCatalog 1.0 document.
@@ -577,7 +575,7 @@ public class InvCatalogFactory {
     writeXML(catalog, os, false);
   }
 
-  /**
+  /*
    * Write the catalog as an XML document to the specified filename.
    *
    * @param catalog  write this catalog
@@ -614,7 +612,7 @@ public class InvCatalogFactory {
   public void writeXML_0_6(InvCatalogImpl catalog, OutputStream os)
       throws IOException {
     this.writeXML_ver(XMLEntityResolver.CATALOG_NAMESPACE_06, catalog, os);
-  }
+  } */
 
   /*
    * Write an InvCatalogImpl to an OutputStream as an InvCatalog document using the given namespace.

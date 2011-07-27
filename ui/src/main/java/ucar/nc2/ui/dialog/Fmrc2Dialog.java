@@ -37,12 +37,12 @@
 package ucar.nc2.ui.dialog;
 
 import ucar.nc2.ft.fmrc.Fmrc;
+import ucar.nc2.time.CalendarDate;
 import ucar.nc2.units.DateFormatter;
 
 import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
-import java.util.Date;
 import javax.swing.*;
 import javax.swing.border.*;
 
@@ -266,26 +266,24 @@ public class Fmrc2Dialog extends JDialog {
       DefaultComboBoxModel m = new DefaultComboBoxModel();
       String type = (String) comboBox1.getSelectedItem();
       if (type.equals("Run")) {
-        java.util.List<Date> dates = null;
+        java.util.List<CalendarDate> dates = null;
         try {
           dates = fmrc.getRunDates();
         } catch (IOException e1) {
           return;
         }
-        DateFormatter df = new DateFormatter();
-        for (Date d : dates)
-          m.addElement(df.toDateTimeStringISO(d));
+        for (CalendarDate d : dates)
+          m.addElement(d.toString());
 
       } else if (type.equals("ConstantForecast")) {
-          java.util.List<Date> dates = null;
+          java.util.List<CalendarDate> dates = null;
           try {
             dates = fmrc.getForecastDates();
           } catch (IOException e1) {
             return;
           }
-          DateFormatter df = new DateFormatter();
-          for (Date d : dates)
-            m.addElement(df.toDateTimeStringISO(d));
+          for (CalendarDate d : dates)
+            m.addElement(d.toString());
 
       } else if (type.equals("ConstantOffset")) {
           double [] offs  = null;

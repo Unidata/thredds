@@ -212,8 +212,12 @@ public class BufrIosp extends AbstractIOServiceProvider {
     Array timeData = Array.factory(double.class, new int[]{n});
     IndexIterator ii = timeData.getIndexIterator();
     StructureDataIterator iter = as.getStructureDataIterator();
-    while (iter.hasNext())
-      ii.setDoubleNext(construct.makeObsTimeValue(iter.next()));
+    try {
+      while (iter.hasNext())
+        ii.setDoubleNext(construct.makeObsTimeValue(iter.next()));
+    } finally {
+      iter.finish();
+    }
     StructureMembers.Member m = as.findMember(ConstructNC.TIME_NAME);
     m.setDataArray(timeData);
   }
@@ -298,6 +302,12 @@ public class BufrIosp extends AbstractIOServiceProvider {
     @Override
     public int getCurrentRecno() {
       return recnum - 1;
+    }
+
+    @Override
+    public void finish() {
+      if (currIter != null) currIter.finish();
+      currIter = null;
     }
   }
 

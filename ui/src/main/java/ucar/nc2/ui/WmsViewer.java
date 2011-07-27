@@ -192,7 +192,11 @@ public class WmsViewer extends JPanel {
   private boolean getCapabilities() {
 
     Formatter f = new Formatter();
-    f.format("%s?request=GetCapabilities&service=WMS&version=%s", endpoint, version);
+    if (endpoint.indexOf("?") > 0)
+      f.format("%s&request=GetCapabilities&service=WMS&version=%s", endpoint, version);
+    else
+      f.format("%s?request=GetCapabilities&service=WMS&version=%s", endpoint, version);
+    System.out.printf("getCapabilities request = '%s'%n", f);
     String url = f.toString();
     info.setLength(0);
     info.append(url + "\n");
@@ -241,7 +245,8 @@ public class WmsViewer extends JPanel {
     Element layer1Elem = capElem.getChild("Layer", wmsNamespace);
 
     java.util.List<String> crsList = new ArrayList<String>(100);
-    for (Element crsElem : (java.util.List<Element>) layer1Elem.getChildren("CRS", wmsNamespace)) {
+    java.util.List<Element> crs = layer1Elem.getChildren("CRS", wmsNamespace);
+    for (Element crsElem : crs) {
       crsList.add(crsElem.getText());
     }
     crsChooser.setCollection(crsList.iterator());
@@ -249,14 +254,16 @@ public class WmsViewer extends JPanel {
     Element reqElem = capElem.getChild("Request", wmsNamespace);
     Element mapElem = reqElem.getChild("GetMap", wmsNamespace);
     java.util.List<String> formatList = new ArrayList<String>(100);
-    for (Element formatElem : (java.util.List<Element>) mapElem.getChildren("Format", wmsNamespace)) {
+    java.util.List<Element> formats = mapElem.getChildren("Format", wmsNamespace);
+    for (Element formatElem : formats) {
       formatList.add(formatElem.getText());
     }
     formatChooser.setCollection(formatList.iterator());
 
     java.util.List<LayerBean> beans = new ArrayList<LayerBean>(100);
     Element layer2Elem = layer1Elem.getChild("Layer", wmsNamespace);
-    for (Element layer3Elem : (java.util.List<Element>) layer2Elem.getChildren("Layer", wmsNamespace)) {
+    java.util.List<Element> layers = layer2Elem.getChildren("Layer", wmsNamespace);
+    for (Element layer3Elem : layers) {
       beans.add(new LayerBean(layer3Elem));
     }
     ftTable.setBeans(beans);

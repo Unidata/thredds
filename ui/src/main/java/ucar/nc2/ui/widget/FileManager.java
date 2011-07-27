@@ -308,6 +308,13 @@ public class FileManager {
     return null;
   }
 
+  public String chooseFilename(File def) {
+    File parent = def.getParentFile();
+    chooser.setCurrentDirectory(parent);
+    chooser.setSelectedFile(def);
+    return chooseFilename();
+  }
+
   public String chooseFilename(String defaultFilename) {
     chooser.setSelectedFile(new File(defaultFilename));
     return chooseFilename();

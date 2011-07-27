@@ -37,12 +37,12 @@ import thredds.inventory.FeatureCollectionConfig;
 import ucar.nc2.*;
 import ucar.nc2.constants.CF;
 import ucar.nc2.dt.GridCoordSystem;
-import ucar.nc2.dt.GridDataset;
+import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.ncml.NcMLReader;
-import ucar.nc2.units.DateRange;
+import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.CancelTask;
-import ucar.nc2.units.DateFormatter;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.constants.AxisType;
@@ -96,7 +96,7 @@ class FmrcDataset {
     //this.ncmlOuter = ncmlOuter;
   }
 
-  List<Date> getRunDates() {
+  List<CalendarDate> getRunDates() {
     State localState;
     synchronized (lock) {
       localState = state;
@@ -104,7 +104,7 @@ class FmrcDataset {
     return localState.lite.getRunDates();
   }
 
-  List<Date> getForecastDates() {
+  List<CalendarDate> getForecastDates() {
     State localState;
     synchronized (lock) {
       localState = state;
@@ -121,7 +121,7 @@ class FmrcDataset {
     return localState.lite.getForecastOffsets();
   }
 
-  public DateRange getDateRangeForRun(Date run) {
+  public CalendarDateRange getDateRangeForRun(CalendarDate run) {
     State localState;
     synchronized (lock) {
       localState = state;
@@ -139,17 +139,17 @@ class FmrcDataset {
         max = Math.max(max, time);
       }
     }
-    return new DateRange(FmrcInv.makeOffsetDate(localState.lite.base, min), FmrcInv.makeOffsetDate(localState.lite.base, max));
+    return CalendarDateRange.of(FmrcInv.makeOffsetDate(localState.lite.base, min), FmrcInv.makeOffsetDate(localState.lite.base, max));
   }
 
-  public DateRange getDateRangeForOffset(double offset) {
+  public CalendarDateRange getDateRangeForOffset(double offset) {
     State localState;
     synchronized (lock) {
       localState = state;
     }
-    List<Date> runs = localState.lite.getRunDates();
+    List<CalendarDate> runs = localState.lite.getRunDates();
     int n = runs.size();
-    return new DateRange(FmrcInv.makeOffsetDate(runs.get(0), offset), FmrcInv.makeOffsetDate(runs.get(n-1), offset));
+    return CalendarDateRange.of(FmrcInv.makeOffsetDate(runs.get(0), offset), FmrcInv.makeOffsetDate(runs.get(n-1), offset));
   }
 
   /**
@@ -182,7 +182,7 @@ class FmrcDataset {
     return buildDataset1D( localState.proto, localState.lite, localState.lite.makeBestDatasetInventory(bd));
   }
 
-  GridDataset getRunTimeDataset(Date run) throws IOException {
+  GridDataset getRunTimeDataset(CalendarDate run) throws IOException {
     State localState;
     synchronized (lock) {
       localState = state;
@@ -190,7 +190,7 @@ class FmrcDataset {
     return buildDataset1D(  localState.proto, localState.lite, localState.lite.makeRunTimeDatasetInventory( run));
   }
 
-  GridDataset getConstantForecastDataset(Date run) throws IOException {
+  GridDataset getConstantForecastDataset(CalendarDate run) throws IOException {
     State localState;
     synchronized (lock) {
       localState = state;
@@ -262,12 +262,10 @@ class FmrcDataset {
         int runOffset = 0;
         if (protoConfig.param != null)
           runOffset = Integer.parseInt(protoConfig.param);
-        Calendar cal = Calendar.getInstance();
-        cal.setTimeZone(TimeZone.getTimeZone("GMT"));
         for (int i=0; i<list.size(); i++) {
           FmrInv fmr = list.get(i);
-          cal.setTime( fmr.getRunDate());
-          int hour = cal.get(Calendar.HOUR_OF_DAY);
+          CalendarDate cd = fmr.getRunDate();
+          int hour = cd.getHourOfDay();
           if (hour == runOffset)
             protoIdx = i; // later ones override
         }
@@ -348,7 +346,7 @@ class FmrcDataset {
         for (CoordinateTransform ct : gcs.getCoordinateTransforms()) {
           Variable ctv = result.findVariable(ct.getName());
           if ((ctv != null) && (ct.getTransformType() == TransformType.Projection))
-            newV.addAttribute(new Attribute("grid_mapping", ctv.getFullName()));
+            newV.addAttribute(new Attribute(CF.GRID_MAPPING, ctv.getFullName()));
         }
 
         // LOOK is this needed ?
@@ -521,7 +519,6 @@ class FmrcDataset {
     // deal with promoteGlobalAttribute
     // promoteGlobalAttributes((AggregationOuterDimension.DatasetOuterDimension) typicalDataset);
 
-    DateFormatter dateFormatter = new DateFormatter();
     ProxyReader2D proxyReader2D = new ProxyReader2D();
 
     // extract a copy of the runtimes for thread safety
@@ -532,7 +529,7 @@ class FmrcDataset {
     VariableDS runtimeCoordVar = new VariableDS(result, null, null, runtimeDimName, coordType, runtimeDimName, null, null);
     runtimeCoordVar.addAttribute(new Attribute("long_name", "Run time for ForecastModelRunCollection"));
     runtimeCoordVar.addAttribute(new ucar.nc2.Attribute("standard_name", "forecast_reference_time"));
-    runtimeCoordVar.addAttribute(new ucar.nc2.Attribute("units", "hours since " + dateFormatter.toDateTimeStringISO(lite.base)));
+    runtimeCoordVar.addAttribute(new ucar.nc2.Attribute("units", "hours since " + lite.base));
     runtimeCoordVar.addAttribute(new ucar.nc2.Attribute(_Coordinate.AxisType, AxisType.RunTime.toString()));
     result.removeVariable(null, runtimeCoordVar.getShortName());
     result.addVariable(null, runtimeCoordVar);
@@ -557,7 +554,7 @@ class FmrcDataset {
       VariableDS timeVar = new VariableDS(result, newGroup, null, gridset.gridsetName, dtype, dims, null, null); // LOOK could just make a CoordinateAxis1D
       timeVar.addAttribute(new Attribute("long_name", "Forecast time for ForecastModelRunCollection"));
       timeVar.addAttribute(new ucar.nc2.Attribute("standard_name", "time"));
-      timeVar.addAttribute(new ucar.nc2.Attribute("units", "hours since " + dateFormatter.toDateTimeStringISO(lite.base)));
+      timeVar.addAttribute(new ucar.nc2.Attribute("units", "hours since " + lite.base));
       timeVar.addAttribute(new ucar.nc2.Attribute("missing_value", Double.NaN));
       timeVar.addAttribute(new ucar.nc2.Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
 
@@ -832,7 +829,7 @@ class FmrcDataset {
     result.finish();
     addAttributeInfo(result, "history", "FMRC "+timeInv.getName()+" Dataset");
 
-    DateFormatter dateFormatter = new DateFormatter();
+    //DateFormatter dateFormatter = new DateFormatter();
     ProxyReader1D proxyReader1D = new ProxyReader1D();
 
     // make the time coordinate(s) for each runSeq
@@ -860,21 +857,21 @@ class FmrcDataset {
       group.removeVariable(timeDimName);
       FmrcInvLite.ValueB timeCoordValues = timeInv.getTimeCoords(gridset);
       if (timeCoordValues != null) {
-        makeTimeCoordinate(result, group, timeDimName, lite.base, timeCoordValues, dateFormatter);
+        makeTimeCoordinate(result, group, timeDimName, lite.base, timeCoordValues);
       }
 
       // optional runtime coordinate
       group.removeVariable(timeDimName+"_run");
       double[] runtimeCoordValues = timeInv.getRunTimeCoords(gridset);
       if (runtimeCoordValues != null) {
-        makeRunTimeCoordinate(result, group, timeDimName, lite.base, runtimeCoordValues, dateFormatter);
+        makeRunTimeCoordinate(result, group, timeDimName, lite.base, runtimeCoordValues);
       }
 
       // optional offset coordinate
       group.removeVariable(timeDimName+"_offset");
       double[] offsetCoordValues = timeInv.getOffsetCoords(gridset);
       if (offsetCoordValues != null) {
-        makeOffsetCoordinate(result, group, timeDimName, lite.base, offsetCoordValues, dateFormatter);
+        makeOffsetCoordinate(result, group, timeDimName, lite.base, offsetCoordValues);
       }
 
       // promote all grid variables to agg variables
@@ -937,12 +934,12 @@ class FmrcDataset {
     return f.toString();
   }
 
-  private VariableDS makeTimeCoordinate(NetcdfDataset result, Group group, String dimName, Date base, FmrcInvLite.ValueB valueb, DateFormatter dateFormatter) {
+  private VariableDS makeTimeCoordinate(NetcdfDataset result, Group group, String dimName, CalendarDate base, FmrcInvLite.ValueB valueb) {
     DataType dtype = DataType.DOUBLE;
     VariableDS timeVar = new VariableDS(result, group, null, dimName, dtype, dimName, null, null); // LOOK could just make a CoordinateAxis1D
     timeVar.addAttribute(new Attribute("long_name", "Forecast time for ForecastModelRunCollection"));
     timeVar.addAttribute(new ucar.nc2.Attribute("standard_name", "time"));
-    timeVar.addAttribute(new ucar.nc2.Attribute("units", "hours since " + dateFormatter.toDateTimeStringISO( base)));
+    timeVar.addAttribute(new ucar.nc2.Attribute("units", "hours since " + base));
     timeVar.addAttribute(new ucar.nc2.Attribute("missing_value", Double.NaN));
     timeVar.addAttribute(new ucar.nc2.Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
 
@@ -964,13 +961,12 @@ class FmrcDataset {
     return timeVar;
   }
 
-  private VariableDS makeRunTimeCoordinate(NetcdfDataset result, Group group, String dimName, Date base, double[] values,
-                                           DateFormatter dateFormatter) {
+  private VariableDS makeRunTimeCoordinate(NetcdfDataset result, Group group, String dimName, CalendarDate base, double[] values) {
     DataType dtype = DataType.DOUBLE;
     VariableDS timeVar = new VariableDS(result, group, null, dimName+"_run", dtype, dimName, null, null); // LOOK could just make a CoordinateAxis1D
     timeVar.addAttribute(new Attribute("long_name", "run times for coordinate = " + dimName));
     timeVar.addAttribute(new ucar.nc2.Attribute("standard_name", "forecast_reference_time"));
-    timeVar.addAttribute(new ucar.nc2.Attribute("units", "hours since " + dateFormatter.toDateTimeStringISO( base)));
+    timeVar.addAttribute(new ucar.nc2.Attribute("units", "hours since " + base));
     timeVar.addAttribute(new ucar.nc2.Attribute("missing_value", Double.NaN));
     timeVar.addAttribute(new ucar.nc2.Attribute(_Coordinate.AxisType, AxisType.RunTime.toString())); // if theres already a time coord, dont put in coordSys - too complicated
 
@@ -983,12 +979,12 @@ class FmrcDataset {
     return timeVar;
   }
 
-  private VariableDS makeOffsetCoordinate(NetcdfDataset result, Group group, String dimName, Date base, double[] values, DateFormatter dateFormatter) {
+  private VariableDS makeOffsetCoordinate(NetcdfDataset result, Group group, String dimName, CalendarDate base, double[] values) {
     DataType dtype = DataType.DOUBLE;
     VariableDS timeVar = new VariableDS(result, group, null, dimName+"_offset", dtype, dimName, null, null); // LOOK could just make a CoordinateAxis1D
     timeVar.addAttribute(new Attribute("long_name", "offset hour from start of run for coordinate = " + dimName));
     timeVar.addAttribute(new ucar.nc2.Attribute("standard_name", "forecast_period"));
-    timeVar.addAttribute(new ucar.nc2.Attribute("units", "hours since " + dateFormatter.toDateTimeStringISO( base)));
+    timeVar.addAttribute(new ucar.nc2.Attribute("units", "hours since " + base));
     timeVar.addAttribute(new ucar.nc2.Attribute("missing_value", Double.NaN));
 
     // construct the values

@@ -64,27 +64,31 @@ public class TestStructureArray {
         double sum = 0.0;
         while (memberArray.hasNext())
           sum += memberArray.nextDouble();
-        System.out.println(m.getName()+" sum= "+sum);
+        System.out.println(m.getName() + " sum= " + sum);
       } else if (m.getDataType().isString()) {
         while (memberArray.hasNext())
-          System.out.println(" "+memberArray.next());
+          System.out.println(" " + memberArray.next());
       }
     }
   }
 
   private void testArrayStructureByIterator(ArrayStructure as) throws IOException {
     StructureDataIterator si = as.getStructureDataIterator();
-    while (si.hasNext()) {
-      StructureData sdata = si.next();
+    try {
+      while (si.hasNext()) {
+        StructureData sdata = si.next();
 
-      // run through each member on the StructureData
-      List<StructureMembers.Member> members = sdata.getMembers();
-      for (StructureMembers.Member m : members) {
-        Array sdataArray = sdata.getArray(m);
-        assert (sdataArray.getElementType() == m.getDataType().getPrimitiveClassType());
+        // run through each member on the StructureData
+        List<StructureMembers.Member> members = sdata.getMembers();
+        for (StructureMembers.Member m : members) {
+          Array sdataArray = sdata.getArray(m);
+          assert (sdataArray.getElementType() == m.getDataType().getPrimitiveClassType());
+        }
+
+        testStructureData(sdata);
       }
-
-      testStructureData(sdata);
+    } finally {
+      si.finish();
     }
   }
 
@@ -211,7 +215,7 @@ public class TestStructureArray {
     } else if (dtype == DataType.STRING) {
       assert a.getElementType() == String.class;
       data = sdata.getJavaArrayString(m);
-      
+
     } else if (dtype == DataType.STRUCTURE) {
       assert a.getElementType() == StructureData.class;
       ArrayStructure nested = sdata.getArrayStructure(m);

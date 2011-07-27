@@ -7,6 +7,7 @@ import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.point.collection.CompositeDatasetFactory;
 import ucar.nc2.ft.point.collection.UpdateableCollection;
 import ucar.nc2.thredds.MetadataExtractor;
+import ucar.nc2.units.DateRange;
 import ucar.unidata.util.StringUtil;
 
 import java.io.IOException;
@@ -69,12 +70,9 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
 
     synchronized (lock) {
       if (state == null) {
-        //orgService = getServiceDefault();
-        //virtualService = makeVirtualService(orgService);
-
-      } else {
-        if (!dcm.rescanIfNeeded())
-          return state;
+        firstInit();
+      } else if (!dcm.scanIfNeeded()) { // perform new scan if needed, return false if no change
+        return state;
       }
 
       // copy on write
@@ -85,9 +83,8 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
       if (null != fd) {
         localState.vars = MetadataExtractor.extractVariables(fd);
         localState.gc = MetadataExtractor.extractGeospatial(fd);
-        localState.dateRange = MetadataExtractor.extractDateRange(fd);
+        localState.dateRange = MetadataExtractor.extractCalendarDateRange(fd);
       }
-      //localState.lastProtoChange = System.currentTimeMillis();
 
       state = localState;
       return state;
@@ -154,7 +151,7 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
 
        // LOOK - replace this with InvDatasetScan( collectionManager) or something
        //long olderThan = (long) (1000 * fmrc.getOlderThanFilterInSecs());
-       ScanFilter scanFilter = new ScanFilter(filter, -1);
+       ScanFilter scanFilter = new ScanFilter(null, -1);
        InvDatasetScan scanDataset = new InvDatasetScan((InvCatalogImpl) this.getParentCatalog(), this, "File_Access", path + "/" + FILES,
                topDirectory, scanFilter, true, "true", false, null, null, null);
 
@@ -164,7 +161,7 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
        tmi.setServiceName(fileService.getName());
        tmi.addDocumentation("summary", "Individual data file, which comprise the Forecast Model Run Collection.");
        tmi.setGeospatialCoverage(null);
-       tmi.setTimeCoverage(null);
+       tmi.setTimeCoverage( (DateRange) null);
        scanDataset.setServiceName(fileService.getName());
        scanDataset.finish();
        datasets.add(scanDataset);

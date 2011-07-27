@@ -40,11 +40,14 @@ import java.net.URISyntaxException;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
-import ucar.unidata.util.EscapeStrings;
-import ucar.nc2.util.cache.FileCacheRaf;
+import ucar.nc2.util.CancelTask;
+import ucar.nc2.util.cache.FileCache;
 import ucar.nc2.util.IO;
 import thredds.catalog.XMLEntityResolver;
 import thredds.util.RequestForwardUtils;
+import ucar.nc2.util.cache.FileCacheable;
+import ucar.nc2.util.cache.FileFactory;
+import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.StringUtil;
 
 public class ServletUtil {
@@ -497,9 +500,15 @@ public class ServletUtil {
     returnFile(servlet, req, res, new File(filename), contentType);
   }
 
-  static private FileCacheRaf fileCacheRaf;
-  static public void setFileCache( FileCacheRaf fileCache) { fileCacheRaf = fileCache; }
-  static public FileCacheRaf getFileCache( ) { return fileCacheRaf; }
+  static private FileCache fileCacheRaf;
+  static public void setFileCache( FileCache fileCache) { fileCacheRaf = fileCache; }
+  static public FileCache getFileCache( ) { return fileCacheRaf; }
+
+  private static final ucar.nc2.util.cache.FileFactory fileFactory = new FileFactory() {
+    public FileCacheable open(String location, int buffer_size, CancelTask cancelTask, Object iospMessage) throws IOException {
+      return new ucar.unidata.io.RandomAccessFile(location, "r");
+    }
+  };
 
   /**
    * Write a file to the response stream. Handles Range requests.
@@ -619,10 +628,10 @@ public class ServletUtil {
         res.addHeader("Content-Range", "bytes " + startPos + "-" + (endPos - 1) + "/" + fileSize);
         res.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
 
-        FileCacheRaf.Raf craf = null;
+        RandomAccessFile craf = null;
         try {
-          craf = fileCacheRaf.acquire(filename);
-          IO.copyRafB(craf.getRaf(), startPos, contentLength, res.getOutputStream(), new byte[60000]);
+          craf = (RandomAccessFile) fileCacheRaf.acquire(fileFactory, filename, null);
+          IO.copyRafB(craf, startPos, contentLength, res.getOutputStream(), new byte[60000]);
           log.info( "returnFile(): " + UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_PARTIAL_CONTENT, contentLength));
           return;
         } finally {

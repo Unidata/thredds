@@ -41,8 +41,6 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.Variable;
 import ucar.nc2.Structure;
 import ucar.nc2.Attribute;
-import ucar.nc2.units.DateFormatter;
-import ucar.nc2.dt.fmrc.FmrcImpl;
 import ucar.ma2.StructureData;
 
 import javax.swing.*;
@@ -151,7 +149,7 @@ public class FmrcTable extends JPanel {
     prefs.putInt("splitPos", split.getDividerLocation());
   }
 
-  public void setFmrc(FmrcImpl fmrc) throws IOException {
+  /* public void setFmrc(FmrcImpl fmrc) throws IOException {
     java.util.List<DatasetBean> beanList = new ArrayList<DatasetBean>();
     DateFormatter df = new DateFormatter();
     beanList.add(new DatasetBean("Fmrc2d", fmrc.getFmrcDataset()));
@@ -169,7 +167,7 @@ public class FmrcTable extends JPanel {
     messageTable.setBeans(beanList);
     obsTable.setBeans(new ArrayList());
     ddsTable.setBeans(new ArrayList());
-  }
+  } */
 
   public class DatasetBean {
     String name;

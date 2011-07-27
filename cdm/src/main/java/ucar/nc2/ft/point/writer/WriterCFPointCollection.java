@@ -32,7 +32,7 @@
 
 package ucar.nc2.ft.point.writer;
 
-import ucar.nc2.units.DateFormatter;
+import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.*;
 import ucar.nc2.ft.*;
@@ -56,8 +56,6 @@ public class WriterCFPointCollection {
   private static final String altName = "altitude";
   private static final String timeName = "time";
   private static final boolean debug = false;
-
-  private DateFormatter dateFormatter = new DateFormatter();
 
   private NetcdfFileWriteable ncfile;
   private String title;
@@ -85,8 +83,8 @@ public class WriterCFPointCollection {
     ncfile.addGlobalAttribute("desc", "Written by TDS/CDM Remote Feature subset service");
 
     // dummys, update in finish()
-    ncfile.addGlobalAttribute("time_coverage_start", dateFormatter.toDateTimeStringISO(new Date()));
-    ncfile.addGlobalAttribute("time_coverage_end", dateFormatter.toDateTimeStringISO(new Date()));
+    ncfile.addGlobalAttribute("time_coverage_start", CalendarDateFormatter.toDateStringPresent());
+    ncfile.addGlobalAttribute("time_coverage_end",  CalendarDateFormatter.toDateStringPresent());
     ncfile.addGlobalAttribute("geospatial_lat_min", 0.0);
     ncfile.addGlobalAttribute("geospatial_lat_max", 0.0);
     ncfile.addGlobalAttribute("geospatial_lon_min", 0.0);
@@ -220,8 +218,8 @@ public class WriterCFPointCollection {
     if (minDate == null) minDate = new Date();
     if (maxDate == null) maxDate = new Date();
 
-    ncfile.updateAttribute(null, new Attribute("time_coverage_start", dateFormatter.toDateTimeStringISO(minDate)));
-    ncfile.updateAttribute(null, new Attribute("time_coverage_end", dateFormatter.toDateTimeStringISO(maxDate)));
+    ncfile.updateAttribute(null, new Attribute("time_coverage_start",  CalendarDateFormatter.toDateTimeString(minDate)));
+    ncfile.updateAttribute(null, new Attribute("time_coverage_end",  CalendarDateFormatter.toDateTimeString(maxDate)));
 
     ncfile.close();
   }

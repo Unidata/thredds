@@ -114,7 +114,7 @@ You might want to always write temporary files to the cache directory, in order 
       <li>Done  in TDS though <strong>CdmInit</strong></li>
       <li>Done in ToolsUI by calling
         <pre> DiskCache2 cacheDir = new DiskCache2(&quot;.unidata/ehcache&quot;, true, -1, -1);<br /> ControllerCaching cacheManager = thredds.filesystem.ControllerCaching.makeTestController(cacheDir.getRootDirectory());
- thredds.inventory.DatasetCollectionManager.setController(cacheManager);</pre>
+ thredds.inventory.DatasetCollectionMFiles.setController(cacheManager);</pre>
       </li>
     </ul>
   </li>

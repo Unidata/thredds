@@ -55,31 +55,31 @@ import java.util.ArrayList;
  * @since Jan 3, 2008
  */
 public class IospHelper {
-   static private boolean showLayoutTypes = false;
+  static private boolean showLayoutTypes = false;
 
   /**
    * Read data subset from RandomAccessFile, create primitive array of size Layout.getTotalNelems.
    * Reading is controlled by the Layout object.
    *
-   * @param raf      read from here.
-   * @param index    handles skipping around in the file.
-   * @param dataType dataType of the variable
+   * @param raf       read from here.
+   * @param index     handles skipping around in the file.
+   * @param dataType  dataType of the variable
    * @param fillValue must Byte, Short, Integer, Long, Float, Double, or String, matching dataType, or null for none
    * @param byteOrder if equal to RandomAccessFile.ORDER_XXXX, set the byte order just before reading
    * @return primitive array with data read in
    * @throws java.io.IOException on read error
    */
   static public Object readDataFill(RandomAccessFile raf, Layout index, DataType dataType, Object fillValue,
-          int byteOrder) throws java.io.IOException {
+                                    int byteOrder) throws java.io.IOException {
     Object arr = (fillValue == null) ? makePrimitiveArray((int) index.getTotalNelems(), dataType) :
-        makePrimitiveArray((int) index.getTotalNelems(), dataType, fillValue);
+            makePrimitiveArray((int) index.getTotalNelems(), dataType, fillValue);
     return readData(raf, index, dataType, arr, byteOrder, true);
   }
 
   static public Object readDataFill(RandomAccessFile raf, Layout index, DataType dataType, Object fillValue,
-          int byteOrder, boolean convertChar) throws java.io.IOException {
+                                    int byteOrder, boolean convertChar) throws java.io.IOException {
     Object arr = (fillValue == null) ? makePrimitiveArray((int) index.getTotalNelems(), dataType) :
-        makePrimitiveArray((int) index.getTotalNelems(), dataType, fillValue);
+            makePrimitiveArray((int) index.getTotalNelems(), dataType, fillValue);
     return readData(raf, index, dataType, arr, byteOrder, convertChar);
   }
 
@@ -87,28 +87,29 @@ public class IospHelper {
    * Read data subset from RandomAccessFile, place in given primitive array.
    * Reading is controlled by the Layout object.
    *
-   * @param raf      read from here.
-   * @param layout    handles skipping around in the file.
-   * @param dataType dataType of the variable
-   * @param arr      primitive array to read data into
-   * @param byteOrder if equal to RandomAccessFile.ORDER_XXXX, set the byte order just before reading
+   * @param raf         read from here.
+   * @param layout      handles skipping around in the file.
+   * @param dataType    dataType of the variable
+   * @param arr         primitive array to read data into
+   * @param byteOrder   if equal to RandomAccessFile.ORDER_XXXX, set the byte order just before reading
    * @param convertChar true if bytes should be converted to char for dataType CHAR
    * @return primitive array with data read in
    * @throws java.io.IOException on read error
    */
   static public Object readData(RandomAccessFile raf, Layout layout, DataType dataType, Object arr, int byteOrder, boolean convertChar) throws java.io.IOException {
-    if (showLayoutTypes) System.out.println("***RAF LayoutType="+layout.getClass().getName());
+    if (showLayoutTypes) System.out.println("***RAF LayoutType=" + layout.getClass().getName());
 
-    if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR) || (dataType == DataType.ENUM1) ) {
-       byte[] pa = (byte[]) arr;
-       while (layout.hasNext()) {
-         Layout.Chunk chunk = layout.next();
-         raf.order(byteOrder);
-         raf.seek(chunk.getSrcPos());
-         raf.read(pa, (int) chunk.getDestElem(), chunk.getNelems());
-       }
+    if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR) || (dataType == DataType.ENUM1)) {
+      byte[] pa = (byte[]) arr;
+      while (layout.hasNext()) {
+        Layout.Chunk chunk = layout.next();
+        raf.order(byteOrder);
+        raf.seek(chunk.getSrcPos());
+        raf.read(pa, (int) chunk.getDestElem(), chunk.getNelems());
+      }
       //return (convertChar && dataType == DataType.CHAR) ? convertByteToChar(pa) : pa;
-      if (convertChar && dataType == DataType.CHAR) return convertByteToChar(pa); else return pa; // javac ternary compile error
+      if (convertChar && dataType == DataType.CHAR) return convertByteToChar(pa);
+      else return pa; // javac ternary compile error
 
     } else if ((dataType == DataType.SHORT) || (dataType == DataType.ENUM2)) {
       short[] pa = (short[]) arr;
@@ -160,35 +161,35 @@ public class IospHelper {
       }
       return pa;
 
-   } else if (dataType == DataType.STRUCTURE) {
-     byte[] pa = (byte[]) arr;
-     int recsize = layout.getElemSize();
-     while (layout.hasNext()) {
-       Layout.Chunk chunk = layout.next();
-       raf.order(byteOrder);
-       raf.seek(chunk.getSrcPos());
-       raf.read(pa, (int) chunk.getDestElem()*recsize, chunk.getNelems()*recsize);
-     }
-     return pa;
-   }
+    } else if (dataType == DataType.STRUCTURE) {
+      byte[] pa = (byte[]) arr;
+      int recsize = layout.getElemSize();
+      while (layout.hasNext()) {
+        Layout.Chunk chunk = layout.next();
+        raf.order(byteOrder);
+        raf.seek(chunk.getSrcPos());
+        raf.read(pa, (int) chunk.getDestElem() * recsize, chunk.getNelems() * recsize);
+      }
+      return pa;
+    }
 
-    throw new IllegalStateException("unknown type= "+dataType);
+    throw new IllegalStateException("unknown type= " + dataType);
   }
 
   /**
    * Read data subset from PositioningDataInputStream, create primitive array of size Layout.getTotalNelems.
    * Reading is controlled by the Layout object.
    *
-   * @param is      read from here.
-   * @param index    handles skipping around in the file.
-   * @param dataType dataType of the variable
+   * @param is        read from here.
+   * @param index     handles skipping around in the file.
+   * @param dataType  dataType of the variable
    * @param fillValue must Byte, Short, Integer, Long, Float, Double, or String, matching dataType, or null for none
    * @return primitive array with data read in
    * @throws java.io.IOException on read error
    */
   static public Object readDataFill(PositioningDataInputStream is, Layout index, DataType dataType, Object fillValue) throws java.io.IOException {
     Object arr = (fillValue == null) ? makePrimitiveArray((int) index.getTotalNelems(), dataType) :
-        makePrimitiveArray((int) index.getTotalNelems(), dataType, fillValue);
+            makePrimitiveArray((int) index.getTotalNelems(), dataType, fillValue);
     return readData(is, index, dataType, arr);
   }
 
@@ -205,7 +206,7 @@ public class IospHelper {
    * @throws java.io.IOException on read error
    */
   static public Object readData(PositioningDataInputStream raf, Layout index, DataType dataType, Object arr) throws java.io.IOException {
-    if (showLayoutTypes) System.out.println("***PositioningDataInputStream LayoutType="+index.getClass().getName());
+    if (showLayoutTypes) System.out.println("***PositioningDataInputStream LayoutType=" + index.getClass().getName());
 
     if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR) || (dataType == DataType.OPAQUE) || (dataType == DataType.ENUM1)) {
       byte[] pa = (byte[]) arr;
@@ -214,7 +215,8 @@ public class IospHelper {
         raf.read(chunk.getSrcPos(), pa, (int) chunk.getDestElem(), chunk.getNelems());
       }
       //return (dataType == DataType.CHAR) ? convertByteToChar(pa) : pa;
-      if (dataType == DataType.CHAR) return convertByteToChar(pa); else return pa;
+      if (dataType == DataType.CHAR) return convertByteToChar(pa);
+      else return pa;
 
     } else if ((dataType == DataType.SHORT) || (dataType == DataType.ENUM2)) {
       short[] pa = (short[]) arr;
@@ -261,7 +263,7 @@ public class IospHelper {
       byte[] pa = (byte[]) arr;
       while (index.hasNext()) {
         Layout.Chunk chunk = index.next();
-        raf.read(chunk.getSrcPos(), pa, (int) chunk.getDestElem()*recsize, chunk.getNelems()*recsize);
+        raf.read(chunk.getSrcPos(), pa, (int) chunk.getDestElem() * recsize, chunk.getNelems() * recsize);
       }
       return pa;
     }
@@ -274,7 +276,7 @@ public class IospHelper {
    * Reading is controlled by the Layout object.
    *
    * @param layout    handles skipping around in the file, privide ByteBuffer to read from
-   * @param dataType dataType of the variable
+   * @param dataType  dataType of the variable
    * @param fillValue must Byte, Short, Integer, Long, Float, Double, or String, matching dataType, or null for none
    * @return primitive array with data read in
    * @throws java.io.IOException on read error
@@ -283,7 +285,7 @@ public class IospHelper {
     long size = layout.getTotalNelems();
     if (dataType == DataType.STRUCTURE) size *= layout.getElemSize();
     Object arr = (fillValue == null) ? makePrimitiveArray((int) size, dataType) :
-        makePrimitiveArray((int) size, dataType, fillValue);
+            makePrimitiveArray((int) size, dataType, fillValue);
     return readData(layout, dataType, arr);
   }
 
@@ -291,14 +293,14 @@ public class IospHelper {
    * Read data subset from ByteBuffer, place in given primitive array.
    * Reading is controlled by the LayoutBB object.
    *
-   * @param layout    handles skipping around in the file, privide ByteBuffer to read from
+   * @param layout   handles skipping around in the file, privide ByteBuffer to read from
    * @param dataType dataType of the variable
    * @param arr      primitive array to read data into
    * @return the primitive array with data read in
    * @throws java.io.IOException on read error
    */
   static public Object readData(LayoutBB layout, DataType dataType, Object arr) throws java.io.IOException {
-    if (showLayoutTypes) System.out.println("***BB LayoutType="+layout.getClass().getName());
+    if (showLayoutTypes) System.out.println("***BB LayoutType=" + layout.getClass().getName());
 
     if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR) || (dataType == DataType.ENUM1)) {
       byte[] pa = (byte[]) arr;
@@ -311,7 +313,8 @@ public class IospHelper {
           pa[pos++] = bb.get();
       }
       //return (dataType == DataType.CHAR) ? convertByteToChar(pa) : pa;
-      if (dataType == DataType.CHAR) return convertByteToChar(pa); else return pa;
+      if (dataType == DataType.CHAR) return convertByteToChar(pa);
+      else return pa;
 
     } else if ((dataType == DataType.SHORT) || (dataType == DataType.ENUM2)) {
       short[] pa = (short[]) arr;
@@ -362,7 +365,7 @@ public class IospHelper {
       return pa;
 
     } else if (dataType == DataType.LONG) {
-      long [] pa = (long[]) arr;
+      long[] pa = (long[]) arr;
       while (layout.hasNext()) {
         LayoutBB.Chunk chunk = layout.next();
         LongBuffer buff = chunk.getLongBuffer();
@@ -379,9 +382,9 @@ public class IospHelper {
       while (layout.hasNext()) {
         LayoutBB.Chunk chunk = layout.next();
         ByteBuffer bb = chunk.getByteBuffer();
-        bb.position(chunk.getSrcElem()*recsize);
-        int pos = (int) chunk.getDestElem()*recsize;
-        for (int i = 0; i < chunk.getNelems()*recsize; i++)
+        bb.position(chunk.getSrcElem() * recsize);
+        int pos = (int) chunk.getDestElem() * recsize;
+        for (int i = 0; i < chunk.getNelems() * recsize; i++)
           pa[pos++] = bb.get();
       }
       return pa;
@@ -392,7 +395,8 @@ public class IospHelper {
 
   /**
    * Copy data to a channel. Used by ncstream. Not doing Structures correctly yet.
-   * @param data copy from here
+   *
+   * @param data    copy from here
    * @param channel copy to here
    * @return number of bytes copied
    * @throws java.io.IOException on write error
@@ -400,11 +404,11 @@ public class IospHelper {
   public static long copyToByteChannel(Array data, WritableByteChannel channel) throws java.io.IOException {
 
     if (data instanceof ArrayStructure) { // use NcStream encoding
-      DataOutputStream os = new DataOutputStream( Channels.newOutputStream( channel));
+      DataOutputStream os = new DataOutputStream(Channels.newOutputStream(channel));
       return NcStream.encodeArrayStructure((ArrayStructure) data, os);
     }
 
-    DataOutputStream outStream = new DataOutputStream( Channels.newOutputStream( channel));
+    DataOutputStream outStream = new DataOutputStream(Channels.newOutputStream(channel));
     IndexIterator iterA = data.getIndexIterator();
     Class classType = data.getElementType();
 
@@ -430,7 +434,7 @@ public class IospHelper {
 
     } else if (classType == char.class) {  // LOOK why are we using chars anyway ?
       byte[] pa = convertCharToByte((char[]) data.get1DJavaArray(char.class));
-      outStream.write(pa, 0 , pa.length);
+      outStream.write(pa, 0, pa.length);
 
     } else if (classType == byte.class) {
       while (iterA.hasNext())
@@ -444,7 +448,7 @@ public class IospHelper {
       long size = 0;
       while (iterA.hasNext()) {
         String s = (String) iterA.getObjectNext();
-        size += NcStream.writeVInt( outStream, s.length());
+        size += NcStream.writeVInt(outStream, s.length());
         byte[] b = s.getBytes("UTF-8");
         outStream.write(b);
         size += b.length;
@@ -455,7 +459,7 @@ public class IospHelper {
       long size = 0;
       while (iterA.hasNext()) {
         ByteBuffer bb = (ByteBuffer) iterA.getObjectNext();
-        size += NcStream.writeVInt( outStream, bb.limit());
+        size += NcStream.writeVInt(outStream, bb.limit());
         bb.rewind();
         channel.write(bb);
         size += bb.limit();
@@ -515,10 +519,12 @@ public class IospHelper {
     ArrayStructureBB.setOffsets(sm);
 
     StructureDataIterator iter = as.getStructureDataIterator();
-    while (iter.hasNext()) {
-      copyToArrayBB(iter.next(), abb);
+    try {
+      while (iter.hasNext())
+        copyToArrayBB(iter.next(), abb);
+    } finally {
+      iter.finish();
     }
-
     return abb;
   }
 
@@ -527,7 +533,7 @@ public class IospHelper {
     StructureMembers sm = new StructureMembers(smo);
     int size = sm.getStructureSize();
     ByteBuffer bb = ByteBuffer.allocate(size); // default is big endian
-    ArrayStructureBB abb = new ArrayStructureBB(sm, new int[] {1}, bb, 0);
+    ArrayStructureBB abb = new ArrayStructureBB(sm, new int[]{1}, bb, 0);
     ArrayStructureBB.setOffsets(sm);
     copyToArrayBB(sdata, abb);
     return abb;
@@ -572,14 +578,14 @@ public class IospHelper {
             break;
           default:
             throw new IllegalStateException("scalar " + dtype.toString());
-          /* case BOOLEAN:
-            break;
-          case SEQUENCE:
-            break;
-          case STRUCTURE:
-            break;
-          case OPAQUE:
-            break; */
+            /* case BOOLEAN:
+           break;
+         case SEQUENCE:
+           break;
+         case STRUCTURE:
+           break;
+         case OPAQUE:
+           break; */
         }
       } else {
         int n = m.getSize();
@@ -626,13 +632,13 @@ public class IospHelper {
               bb.putLong(ldata[i]);
             break;
           default:
-            throw new IllegalStateException("array " +dtype.toString());
-          /* case BOOLEAN:
-            break;
-           case OPAQUE:
-            break;
-          case STRUCTURE:
-            break; // */
+            throw new IllegalStateException("array " + dtype.toString());
+            /* case BOOLEAN:
+          break;
+         case OPAQUE:
+          break;
+        case STRUCTURE:
+          break; // */
           case SEQUENCE:
             break; // skip
         }
@@ -653,7 +659,7 @@ public class IospHelper {
     Object arr = null;
 
     if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR) || (dataType == DataType.ENUM1)
-        || (dataType == DataType.OPAQUE) || (dataType == DataType.STRUCTURE)) {
+            || (dataType == DataType.OPAQUE) || (dataType == DataType.STRUCTURE)) {
       arr = new byte[size];
 
     } else if ((dataType == DataType.SHORT) || (dataType == DataType.ENUM2)) {
@@ -679,14 +685,14 @@ public class IospHelper {
   /**
    * Create 1D primitive array of the given size and type, fill it with the given value
    *
-   * @param size     the size of the array to create
-   * @param dataType dataType of the variable
+   * @param size      the size of the array to create
+   * @param dataType  dataType of the variable
    * @param fillValue must be Byte, Short, Integer, Long, Float, Double, or String, matching dataType
    * @return primitive array with data read in
    */
   static public Object makePrimitiveArray(int size, DataType dataType, Object fillValue) {
 
-    if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR) || (dataType == DataType.ENUM1))  {
+    if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR) || (dataType == DataType.ENUM1)) {
       byte[] pa = new byte[size];
       byte val = (Byte) fillValue;
       if (val != 0)
@@ -738,7 +744,7 @@ public class IospHelper {
 
     } else if (dataType == DataType.STRUCTURE) {
       byte[] pa = new byte[size];
-      byte[] val = (byte []) fillValue;
+      byte[] val = (byte[]) fillValue;
       int count = 0;
       while (count < size) {
         for (int i = 0; i < val.length; i++) {
@@ -753,6 +759,7 @@ public class IospHelper {
   }
 
   // convert byte array to char array
+
   static public char[] convertByteToChar(byte[] byteArray) {
     int size = byteArray.length;
     char[] cbuff = new char[size];
@@ -762,6 +769,7 @@ public class IospHelper {
   }
 
   // convert char array to byte array
+
   static public byte[] convertCharToByte(char[] from) {
     int size = from.length;
     byte[] to = new byte[size];
@@ -771,10 +779,10 @@ public class IospHelper {
   }
 
   static public long transferData(Array result, WritableByteChannel channel)
-      throws java.io.IOException, ucar.ma2.InvalidRangeException {
+          throws java.io.IOException, ucar.ma2.InvalidRangeException {
 
     // LOOK should we buffer ??
-    DataOutputStream outStream = new DataOutputStream( Channels.newOutputStream( channel));
+    DataOutputStream outStream = new DataOutputStream(Channels.newOutputStream(channel));
 
     IndexIterator iterA = result.getIndexIterator();
     Class classType = result.getElementType();
@@ -818,24 +826,25 @@ public class IospHelper {
   }
 
   // section reading for member data
+
   static public ucar.ma2.Array readSection(ParsedSectionSpec cer) throws IOException, InvalidRangeException {
     Variable inner = null;
     List<Range> totalRanges = new ArrayList<Range>();
     ParsedSectionSpec current = cer;
     while (current != null) {
-      totalRanges.addAll( current.section.getRanges());
+      totalRanges.addAll(current.section.getRanges());
       inner = current.v;
       current = current.child;
     }
 
-    Section total = new Section( totalRanges);
+    Section total = new Section(totalRanges);
     Array result = Array.factory(inner.getDataType(), total.getShape());
 
     // must be a Structure
     Structure outer = (Structure) cer.v;
-    Structure outerSubset = outer.select( cer.child.v.getShortName()); // allows IOSPs to optimize for  this case
+    Structure outerSubset = outer.select(cer.child.v.getShortName()); // allows IOSPs to optimize for  this case
     ArrayStructure outerData = (ArrayStructure) outerSubset.read(cer.section);
-    extractSection( cer.child, outerData, result.getIndexIterator());
+    extractSection(cer.child, outerData, result.getIndexIterator());
 
     result.setUnsigned(cer.v.isUnsigned());
     return result;
@@ -844,7 +853,7 @@ public class IospHelper {
   static private void extractSection(ParsedSectionSpec child, ArrayStructure outerData, IndexIterator to) throws IOException, InvalidRangeException {
     long wantNelems = child.section.computeSize();
 
-    StructureMembers.Member m = outerData.findMember( child.v.getShortName());
+    StructureMembers.Member m = outerData.findMember(child.v.getShortName());
     for (int recno = 0; recno < outerData.getSize(); recno++) {
       Array innerData = outerData.getArray(recno, m);
 
@@ -868,21 +877,26 @@ public class IospHelper {
 
   static private void extractSectionFromSequence(ParsedSectionSpec child, ArraySequence outerData, IndexIterator to) throws IOException, InvalidRangeException {
     StructureDataIterator sdataIter = outerData.getStructureDataIterator();
-    while (sdataIter.hasNext()) {
-      StructureData sdata = sdataIter.next();
-      StructureMembers.Member m = outerData.findMember( child.v.getShortName());
-      Array innerData = sdata.getArray( child.v.getShortName());
-      MAMath.copy(m.getDataType(), innerData.getIndexIterator(), to);
+    try {
+      while (sdataIter.hasNext()) {
+        StructureData sdata = sdataIter.next();
+        StructureMembers.Member m = outerData.findMember(child.v.getShortName());
+        Array innerData = sdata.getArray(child.v.getShortName());
+        MAMath.copy(m.getDataType(), innerData.getIndexIterator(), to);
+      }
+    } finally {
+      sdataIter.finish();
     }
   }
 
   // LOOK could be used in createView ??
+
   static private ArrayStructure sectionArrayStructure(ParsedSectionSpec child, ArrayStructure innerData, StructureMembers.Member m) throws IOException, InvalidRangeException {
     StructureMembers membersw = new StructureMembers(m.getStructureMembers()); // no data arrays get propagated
     ArrayStructureW result = new ArrayStructureW(membersw, child.section.getShape());
 
-    int count =0;
-    Section.Iterator iter = child.section.getIterator( child.v.getShape());
+    int count = 0;
+    Section.Iterator iter = child.section.getIterator(child.v.getShape());
     while (iter.hasNext()) {
       int recno = iter.next();
       StructureData sd = innerData.getStructureData(recno);

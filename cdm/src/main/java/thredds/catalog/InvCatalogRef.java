@@ -33,6 +33,7 @@
 
 package thredds.catalog;
 
+import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateType;
 
@@ -504,8 +505,8 @@ public class InvCatalogRef extends InvDatasetImpl {
   }
 
   @Override
-  public DateRange getTimeCoverage() {
-    return !useProxy ? super.getTimeCoverage() : proxy.getTimeCoverage();
+  public CalendarDateRange getCalendarDateCoverage() {
+    return !useProxy ? super.getCalendarDateCoverage() : proxy.getCalendarDateCoverage();
   }
 
   @Override

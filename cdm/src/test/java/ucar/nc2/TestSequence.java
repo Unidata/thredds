@@ -93,9 +93,13 @@ public class TestSequence extends TestCase {
 
     int count = 0;
     StructureDataIterator iter = as.getStructureDataIterator();
-    while (iter.hasNext()) {
-      StructureData sdata = iter.next();
-      count++;
+    try {
+      while (iter.hasNext()) {
+        StructureData sdata = iter.next();
+        count++;
+      }
+    } finally {
+      iter.finish();
     }
     System.out.printf(" count = %d%n", count);
 

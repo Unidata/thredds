@@ -42,6 +42,7 @@ import java.util.List;
 import junit.framework.TestCase;
 import ucar.nc2.TestAll;
 import ucar.nc2.constants.FeatureType;
+import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateRange;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
@@ -136,7 +137,7 @@ public class TestMiscPointFeature extends TestCase {
       if (fc instanceof PointFeatureCollection) {
         collection = (PointFeatureCollection) fc;
         if (llr != null) {
-          collection = collection.subset(llr, null);
+          collection = collection.subset(llr, (CalendarDateRange) null);
         }
       } else if (fc instanceof NestedPointFeatureCollection) {
         NestedPointFeatureCollection npfc =
@@ -144,7 +145,7 @@ public class TestMiscPointFeature extends TestCase {
         if (llr != null) {
           npfc = npfc.subset(llr);
         }
-        collection = npfc.flatten(llr, null);
+        collection = npfc.flatten(llr, (CalendarDateRange) null);
       } else {
         throw new IllegalArgumentException(
             "Can't handle collection of type "

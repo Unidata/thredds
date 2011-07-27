@@ -133,8 +133,7 @@ public class OceanS extends VerticalTransformImpl {
    * @throws IOException           problem reading data
    * @throws InvalidRangeException _more_
    */
-  public ArrayDouble.D3 getCoordinateArray(int timeIndex)
-      throws IOException, InvalidRangeException {
+  public ArrayDouble.D3 getCoordinateArray(int timeIndex)  throws IOException, InvalidRangeException {
     Array etaArray = readArray(etaVar, timeIndex);
     Array sArray = readArray(sVar, timeIndex);
     Array depthArray = readArray(depthVar, timeIndex);
@@ -232,8 +231,7 @@ public class OceanS extends VerticalTransformImpl {
    * @param depth_c value of depth_c
    * @return hieght data
    */
-  private ArrayDouble.D3 makeHeight(Array eta, Array s, Array depth,
-                                    Array c, double depth_c) {
+  private ArrayDouble.D3 makeHeight(Array eta, Array s, Array depth, Array c, double depth_c) {
     int nz = (int) s.getSize();
     Index sIndex = s.getIndex();
     Index cIndex = c.getIndex();

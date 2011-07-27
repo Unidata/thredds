@@ -34,6 +34,7 @@ package ucar.nc2.ft.point;
 
 import ucar.nc2.ft.PointFeatureIterator;
 import ucar.nc2.ft.PointFeature;
+import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateRange;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.ma2.StructureData;
@@ -48,12 +49,12 @@ import java.io.IOException;
 public class PointIteratorFiltered extends PointIteratorAbstract {
   private PointFeatureIterator orgIter;
   private LatLonRect filter_bb;
-  private DateRange filter_date;
+  private CalendarDateRange filter_date;
 
   private PointFeature pointFeature;
   private boolean finished = false;
 
-  PointIteratorFiltered(PointFeatureIterator orgIter, LatLonRect filter_bb, DateRange filter_date) {
+  PointIteratorFiltered(PointFeatureIterator orgIter, LatLonRect filter_bb, CalendarDateRange filter_date) {
     this.orgIter = orgIter;
     this.filter_bb = filter_bb;
     this.filter_date = filter_date;
@@ -84,7 +85,7 @@ public class PointIteratorFiltered extends PointIteratorAbstract {
   }
 
   private boolean filter(PointFeature pdata) {
-    if ((filter_date != null) && !filter_date.included(pdata.getObservationTimeAsDate()))
+    if ((filter_date != null) && !filter_date.includes(pdata.getObservationTimeAsCalendarDate()))
       return false;
 
     if ((filter_bb != null) && !filter_bb.contains(pdata.getLocation().getLatitude(), pdata.getLocation().getLongitude()))

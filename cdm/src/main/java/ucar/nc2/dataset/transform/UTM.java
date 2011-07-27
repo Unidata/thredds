@@ -33,12 +33,12 @@
 
 package ucar.nc2.dataset.transform;
 
+import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.CoordinateTransform;
 import ucar.nc2.dataset.ProjectionCT;
 import ucar.nc2.dataset.TransformType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.Variable;
-import ucar.nc2.Attribute;
 import ucar.unidata.geoloc.projection.UtmProjection;
 
 /**
@@ -49,7 +49,7 @@ import ucar.unidata.geoloc.projection.UtmProjection;
 public class UTM extends AbstractCoordTransBuilder {
 
   public String getTransformName() {
-    return "UTM";
+    return UtmProjection.GRID_MAPPING_NAME;
   }
 
   public TransformType getTransformType() {
@@ -57,7 +57,7 @@ public class UTM extends AbstractCoordTransBuilder {
   }
 
   public CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, Variable ctv) {
-    int zone = (int) readAttributeDouble( ctv, "utm_zone_number", Double.NaN);
+    int zone = (int) readAttributeDouble( ctv, UtmProjection.UTM_ZONE, Double.NaN);
     boolean isNorth = zone > 0;
     zone = Math.abs(zone);
 

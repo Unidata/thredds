@@ -34,6 +34,7 @@ package ucar.nc2.iosp.adde;
 
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.geoloc.Station;
 import ucar.nc2.dt.point.StationObsDatasetImpl;
@@ -119,10 +120,11 @@ public class AddeStationObsDataset extends StationObsDatasetImpl {
       boundingBox = stationHelper.getBoundingBox();
 
     // get the date range if possible
-    DateRange timeCoverage = invds.getTimeCoverage();
+    CalendarDateRange timeCoverage = invds.getCalendarDateCoverage();
     if (timeCoverage != null) {
-      startDate = timeCoverage.getStart().getDate();
-      endDate = timeCoverage.getEnd().getDate();
+      DateRange dr = timeCoverage.toDateRange();
+      startDate = dr.getStart().getDate();
+      endDate = dr.getEnd().getDate();
     } else {
       startDate = new Date(0); // fake
       endDate = new Date();

@@ -121,7 +121,7 @@ public class NcmlCollectionReader {
   }
 
   //////////////////////////////////////////////////////////////////
-  private DatasetCollectionManager datasetManager;
+  private DatasetCollectionMFiles datasetManager;
   private boolean hasInner, hasOuter;
   private Element netcdfElem, aggElem;
 
@@ -142,7 +142,7 @@ public class NcmlCollectionReader {
     String subdirs = scanElem.getAttributeValue("subdirs");
     String olderThan = scanElem.getAttributeValue("olderThan");
 
-    datasetManager = new DatasetCollectionManager(recheck);
+    datasetManager = new DatasetCollectionMFiles(recheck);
     datasetManager.addDirectoryScan(dirLocation, suffix, regexpPatternString, subdirs, olderThan, null);
 
     String dateFormatMark = scanElem.getAttributeValue("dateFormatMark");
@@ -182,7 +182,7 @@ public class NcmlCollectionReader {
     return aggElem;
   }
 
-  public DatasetCollectionManager getDatasetManager() {
+  public CollectionManager getCollectionManager() {
     return datasetManager;
   }
 

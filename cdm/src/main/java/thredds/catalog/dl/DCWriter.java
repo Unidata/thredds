@@ -34,6 +34,7 @@
 package thredds.catalog.dl;
 
 import thredds.catalog.*;
+import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateType;
 import ucar.nc2.units.DateRange;
 
@@ -139,12 +140,12 @@ public class DCWriter {
     }
 
     //temporal
-    DateRange tm = ds.getTimeCoverage();
+    CalendarDateRange tm = ds.getCalendarDateCoverage();
     Element tmElem = new Element("Temporal_Coverage", defNS);
     rootElem.addContent( tmElem);
 
-    tmElem.addContent( new Element("Start_Date", defNS).addContent( tm.getStart().toDateString()));
-    tmElem.addContent( new Element("End_Date", defNS).addContent( tm.getEnd().toDateString()));
+    tmElem.addContent( new Element("Start_Date", defNS).addContent( tm.getStart().toString()));
+    tmElem.addContent( new Element("End_Date", defNS).addContent( tm.getEnd().toString()));
 
     //geospatial
     ThreddsMetadata.GeospatialCoverage geo = ds.getGeospatialCoverage();
@@ -181,7 +182,7 @@ public class DCWriter {
     primaryURLelem.addContent( new Element("URL", defNS).addContent(primaryURL));
 
     DateType today = new DateType(false, new Date());
-    rootElem.addContent(new Element("DIF_Creation_Date", defNS).addContent(today.toDateString()));
+    rootElem.addContent(new Element("DIF_Creation_Date", defNS).addContent(today.toDateTimeStringISO()));
 
   }
 

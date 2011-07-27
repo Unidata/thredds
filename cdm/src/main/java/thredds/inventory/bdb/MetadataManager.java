@@ -313,7 +313,7 @@ public class MetadataManager {
 
   public void delete(Map<String, MFile> current) {
     if (readOnly) {
-      logger.warn("Cant deleet - readOnly mode");
+      logger.warn("Cant delete - readOnly mode");
       return;
     }
     

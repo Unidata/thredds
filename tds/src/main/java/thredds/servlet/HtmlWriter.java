@@ -35,6 +35,7 @@ package thredds.servlet;
 import thredds.catalog.*;
 import thredds.server.config.TdsContext;
 import thredds.server.config.HtmlConfig;
+import ucar.nc2.time.CalendarDate;
 import ucar.nc2.units.DateType;
 
 import ucar.nc2.constants.AxisType;
@@ -70,8 +71,6 @@ public class HtmlWriter {
 
   private TdsContext tdsContext;
   private HtmlConfig htmlConfig;
-
-  private ucar.nc2.units.DateFormatter formatter = new ucar.nc2.units.DateFormatter();
 
   private HtmlWriter() {}
 
@@ -480,7 +479,7 @@ public class HtmlWriter {
       sb.append("</tt></td>\r\n");
 
       sb.append("<td align='right'><tt>");
-      sb.append(formatter.toDateTimeString(new Date(child.lastModified())));
+      sb.append(CalendarDate.of(child.lastModified()).toString());
       sb.append("</tt></td>\r\n");
 
       sb.append("</tr>\r\n");
@@ -725,10 +724,7 @@ public class HtmlWriter {
         else
           sb.append("--");// "Unknown");
       } else {
-        if (lastModDateType.isPresent())
-          sb.append(formatter.toDateTimeString(new Date()));
-        if (lastModDateType.getDate() != null)
-          sb.append(formatter.toDateTimeString(lastModDateType.getDate()));
+          sb.append(lastModDateType.toDateTimeString());
       }
 
       sb.append("</tt></td>\r\n");

@@ -35,6 +35,7 @@ package thredds.ui.catalog.tools;
 
 import thredds.ui.datatype.prefs.DateField;
 import thredds.ui.datatype.prefs.DurationField;
+import ucar.nc2.time.CalendarDateRange;
 import ucar.util.prefs.ui.*;
 import ucar.nc2.thredds.MetadataExtractor;
 import ucar.nc2.constants.FeatureType;
@@ -415,17 +416,17 @@ pp.addComponent(geoPanel, 0, row++, "left, center"); */
 
     // gotta find which TimeCoverage to use.
     mode = 0;
-    DateRange tc = ds.getLocalMetadata().getTimeCoverage();
+    CalendarDateRange tc = ds.getLocalMetadata().getCalendarDateCoverage();
     if (tc == null) {
-      tc = ds.getLocalMetadataInheritable().getTimeCoverage();
+      tc = ds.getLocalMetadataInheritable().getCalendarDateCoverage();
       mode = 1;
     }
     if (tc == null) {
-      tc = ds.getTimeCoverage();
+      tc = ds.getCalendarDateCoverage();
       mode = 2; // inherited
     }
     metadataPP.setFieldValue( TC_TYPE, inherit_types.get(mode));
-    if (tc != null) dateRangeSelector.setDateRange( tc);
+    if (tc != null) dateRangeSelector.setDateRange( tc.toDateRange());
     setTCmode( mode);
 
     setEditValueWithInheritence( SUMMARY, persBean);
@@ -661,10 +662,10 @@ pp.addComponent(geoPanel, 0, row++, "left, center"); */
       DateRange dateRange = dateRangeSelector.getDateRange();
       if (tcType.equals(LOCAL)) {
         dataset.getLocalMetadata().setTimeCoverage( dateRange);
-        dataset.getLocalMetadataInheritable().setTimeCoverage( null);
+        dataset.getLocalMetadataInheritable().setTimeCoverage( (DateRange) null);
 
       } else {
-        dataset.getLocalMetadata().setTimeCoverage( null);
+        dataset.getLocalMetadata().setTimeCoverage( (DateRange) null);
         dataset.getLocalMetadataInheritable().setTimeCoverage( dateRange);
       }
     }

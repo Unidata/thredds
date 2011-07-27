@@ -15,11 +15,6 @@
   </context-param>
 
   <!-- Turn on some more targeted debugging. -->
-  <context-param>
-    <param-name>DebugOn</param-name>
-    <param-value> </param-value>
-  </context-param>
-
   <filter>
     <filter-name>RequestBracketingLogMessageFilter</filter-name>
     <filter-class>thredds.server.RequestBracketingLogMessageFilter</filter-class>
@@ -355,6 +350,12 @@
     <load-on-startup>4</load-on-startup>
   </servlet>
 
+  <servlet>
+    <servlet-name>test</servlet-name>
+    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+    <load-on-startup>4</load-on-startup>
+  </servlet>
+
 
   <!-- Setup for the DQC servlet. -->
   <servlet>
@@ -571,6 +572,11 @@
   <servlet-mapping>
     <servlet-name>admin</servlet-name>
     <url-pattern>/admin/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>test</servlet-name>
+    <url-pattern>/test/*</url-pattern>
   </servlet-mapping>
 
   <!-- data services -->

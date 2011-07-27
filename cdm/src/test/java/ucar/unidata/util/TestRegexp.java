@@ -137,6 +137,118 @@ public class TestRegexp extends TestCase {
     testMatch(p, m, true);
   }
 
+  // "(\\w*)\\s*since\\s*([\\+\\-\\d]*)[ T]?([\\.\\:\\d]*)([ \\+\\-]\\S*)?$"
+  public void testDate() {
+    String m = "secs since 1997-07-16T19:20+01:00";
+    //           1                  2                  3             4
+    String p = "(\\w*)\\s*since\\s*"+"([\\+\\-\\d]+)([ T]([\\.\\:\\d]*)([ \\+\\-]\\S*)?Z?)?$";
+    testMatch(p, m, true);
+  }
+
+  public void testFrag() {
+    String m = "2011-02-09T06:00:00Z";
+    String p = "([\\+\\-\\d]+)([ T]([\\.\\:\\d]*)([ \\+\\-]\\S*)?Z?)?$";
+    testMatch(p, m, true);
+  }
+
+  /*
+
+       Timestamp: one of
+             DATE
+             DATE CLOCK
+             DATE CLOCK CLOCK
+             DATE CLOCK INT
+             DATE CLOCK ID
+             TIMESTAMP
+             TIMESTAMP INT
+             TIMESTAMP ID
+
+
+     ID: one of
+             <id>
+             "%"
+             "'"
+             "\""
+             degree sign
+             greek mu character
+
+     <id>:
+             <alpha> <alphanum>*
+
+     <alpha>:
+             [A-Za-z_]
+             ISO-8859-1 alphabetic characters
+             non-breaking space
+
+     <alphanum>: one of
+             <alpha>
+             <digit>
+
+     <digit>:
+             [0-9]
+
+
+     DATE:
+             <year> "-" <month> ("-" <day>)?
+
+     <year>:
+             [+-]?[0-9]{1,4}
+
+     <month>:
+             "0"?[1-9]|1[0-2]
+
+     <day>:
+             "0"?[1-9]|[1-2][0-9]|"30"|"31"
+
+     CLOCK:
+             <hour> ":" <minute> (":" <second>)?
+
+     TIMSTAMP:
+             <year> (<month> <day>?)? "T" <hour> (<minute> <second>?)?
+
+     <hour>:
+             [+-]?[0-1]?[0-9]|2[0-3]
+
+     <minute>:
+             [0-5]?[0-9]
+
+     <second>:
+             (<minute>|60) (\.[0-9]*)?
+
+       DATE:
+             <year> "-" <month> ("-" <day>)?
+     <year>:
+             [+-]?[0-9]{1,4}
+     <month>:
+             "0"?[1-9]|1[0-2]
+     <day>:
+             "0"?[1-9]|[1-2][0-9]|"30"|"31"
+     CLOCK:
+             <hour> ":" <minute> (":" <second>)?
+     TIMSTAMP:
+             <year> (<month> <day>?)? "T" <hour> (<minute> <second>?)?
+     <hour>:
+             [+-]?[0-1]?[0-9]|2[0-3]
+     <minute>:
+             [0-5]?[0-9]
+     <second>:
+             (<minute>|60) (\.[0-9]*)?
+*/
+
+  public void testUdunit() {
+    String m = "3 secs since 1991-01-01T03:12";
+    String p = "(\\d*) (\\w*) since ([+-]?[0-9]{1,4})\\-([0-9]{1,2})\\-([0-9]{1,2})[T ]([+-]?[0-9]{1,2}):([0-9]{1,2})(:([0-9]{1,2}))?.*$";
+    testMatch(p, m, true);
+  }
+
+  public void testUdunit2() {
+    String m = "hours since 1900-1-1 0:0:0";
+    String p = "(\\d*)\\s*(\\w*)\\s*since\\s*(.*)$";
+    testMatch(p, m, true);
+  }
+
+  /////////////////////////////////////////////////////////
+
   // test pattern ps against match, show result
   private void testMatch(String ps, String match, boolean expect) {
     System.out.printf("match %s against %s%n%n", ps, match);

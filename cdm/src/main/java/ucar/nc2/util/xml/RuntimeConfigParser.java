@@ -39,11 +39,14 @@ import org.jdom.input.*;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.ListIterator;
 
 import ucar.nc2.constants.FeatureType;
+import ucar.unidata.io.RandomAccessFile;
 
 /**
  * Read Runtime Configuration
@@ -140,11 +143,40 @@ public class RuntimeConfigParser {
           }
 
           try {
-            if (type.equalsIgnoreCase("GRIB1")) { // LOOK - do this with reflection
-              ucar.grib.grib1.GribPDSParamTable.addParameterUserLookup( filename);
+            if (type.equalsIgnoreCase("GRIB1")) {
+               // ucar.grib.grib1.GribPDSParamTable.addParameterUserLookup( filename);
+               // use reflection instead to decouple from the grib package
+               try {
+                 Class c = RuntimeConfigParser.class.getClassLoader().loadClass("ucar.grib.grib1.GribPDSParamTable");
+                 Method m = c.getMethod("addParameterUserLookup", String.class);
+                 m.invoke(null, filename);
+
+               } catch (ClassNotFoundException e) {
+                 e.printStackTrace();
+               } catch (NoSuchMethodException e) {
+                 e.printStackTrace();
+               } catch (InvocationTargetException e) {
+                 e.printStackTrace();
+               } catch (IllegalAccessException e) {
+                 e.printStackTrace();
+               }
 
             } else if (type.equalsIgnoreCase("GRIB2")) {
-              ucar.grib.grib2.ParameterTable.addParametersUser( filename);
+              // ucar.grib.grib2.ParameterTable.addParametersUser( filename);
+              try {
+                 Class c = RuntimeConfigParser.class.getClassLoader().loadClass(" ucar.grib.grib2.ParameterTable");
+                 Method m = c.getMethod("addParametersUser", String.class);
+                 m.invoke(null, filename);
+
+               } catch (ClassNotFoundException e) {
+                 e.printStackTrace();
+               } catch (NoSuchMethodException e) {
+                 e.printStackTrace();
+               } catch (InvocationTargetException e) {
+                 e.printStackTrace();
+               } catch (IllegalAccessException e) {
+                 e.printStackTrace();
+               }
 
             } else {
               errlog.append("Unknown table type "+type+"\n");

@@ -33,22 +33,23 @@
 
 package ucar.nc2.ui;
 
-import ucar.grib.GribGridRecord;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.ui.widget.FileManager;
 import ucar.grib.GribPds;
 import ucar.grib.NoValidGribException;
-import ucar.grib.grib1.*;
+import ucar.nc2.grib.table.GribTables;
+import ucar.nc2.ui.widget.FileManager;
 import ucar.ma2.DataType;
-import ucar.nc2.iosp.grib.tables.GribTemplate;
+import ucar.nc2.grib.table.WmoTemplateTable;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.util.Misc;
+import ucar.nc2.wmo.CommonCodeTable;
 import ucar.unidata.io.KMPMatch;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
 import ucar.unidata.io.RandomAccessFile;
+
+import ucar.grib.grib1.*;
 import ucar.grib.grib2.*;
 
 import javax.swing.*;
@@ -84,7 +85,7 @@ public class GribRawPanel extends JPanel {
   private FileManager fileChooser;
 
   private RandomAccessFile raf = null;
-  private Map<String, GribTemplate> productTemplates = null;
+  private Map<String, WmoTemplateTable> productTemplates = null;
 
   private DateFormatter df = new DateFormatter();
 
@@ -328,16 +329,33 @@ public class GribRawPanel extends JPanel {
     varPopup = new PopupMenu(gds1Table.getJTable(), "Options");
     varPopup.addAction("Show GDS", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        Gds1Bean bean = (Gds1Bean) gds1Table.getSelectedBean();
-        if (bean != null) {
-          ByteArrayOutputStream os = new ByteArrayOutputStream();
-          PrintStream ps = new PrintStream(os);
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        PrintStream ps = new PrintStream(os);
+        List list = gds1Table.getSelectedBeans();
+        for (Object bo : list) {
+          Gds1Bean bean = (Gds1Bean) bo;
           Grib1Dump.printGDS(bean.gds, null, ps);
-          infoPopup.setText(os.toString());
-          infoWindow.setVisible(true);
+          ps.append("\n");
         }
+        infoPopup.setText(os.toString());
+        infoWindow.setVisible(true);
       }
     });
+
+    varPopup.addAction("Compare GDS", new AbstractAction() {
+       public void actionPerformed(ActionEvent e) {
+         List list = gds1Table.getSelectedBeans();
+         if (list.size() == 2) {
+           Gds1Bean bean1 = (Gds1Bean) list.get(0);
+           Gds1Bean bean2 = (Gds1Bean) list.get(1);
+           Formatter f = new Formatter();
+           compare(bean1.gds, bean2.gds, f);
+           infoPopup2.setText(f.toString());
+           infoPopup2.gotoTop();
+           infoWindow2.showIfNotIconified();
+         }
+       }
+     });
 
     /////////////////////////////////////////
     // the info windows
@@ -356,8 +374,74 @@ public class GribRawPanel extends JPanel {
     setLayout(new BorderLayout());
   }
 
-  public void showInfo(Formatter f) {
+  ///////////////////////////////////////////////
+  public void checkProblems(Formatter f) {
+    checkRuntimes(f);
   }
+
+  private class DateCount implements Comparable<DateCount> {
+    Date d;
+    int count;
+
+    private DateCount(Date d) {
+      this.d = d;
+    }
+
+    @Override
+    public int compareTo(DateCount o) {
+      return d.compareTo(o.d);
+    }
+  }
+
+  private void checkRuntimes(Formatter f) {
+     Map<Date, DateCount> runs = new HashMap<Date, DateCount>();
+     List<Grib2ParameterBean> params = param2BeanTable.getBeans();
+     for (Grib2ParameterBean pb : params) {
+       List<Grib2RecordBean> records = pb.getRecordBeans();
+       for (Grib2RecordBean record : records) {
+         Date d = record.getBaseTime();
+         DateCount dc = runs.get(d);
+         if (dc == null) {
+           dc = new DateCount(d);
+           runs.put(d, dc);
+         }
+         dc.count++;
+       }
+     }
+
+     List<DateCount> dcList= new ArrayList<DateCount>(runs.values());
+     Collections.sort(dcList);
+
+     f.format("Run Dates%n");
+     for (DateCount dc : dcList)
+       f.format(" %s == %d%n", df.toDateTimeStringISO( dc.d), dc.count);
+   }
+
+  private void checkDuplicates(Formatter f) {
+     Map<Date, DateCount> runs = new HashMap<Date, DateCount>();
+     List<Grib2ParameterBean> params = param2BeanTable.getBeans();
+     for (Grib2ParameterBean pb : params) {
+       List<Grib2RecordBean> records = pb.getRecordBeans();
+       for (Grib2RecordBean record : records) {
+         Date d = record.getBaseTime();
+         DateCount dc = runs.get(d);
+         if (dc == null) {
+           dc = new DateCount(d);
+           runs.put(d, dc);
+         }
+         dc.count++;
+       }
+     }
+
+     List<DateCount> dcList= new ArrayList<DateCount>(runs.values());
+     Collections.sort(dcList);
+
+     f.format("Run Dates%n");
+     for (DateCount dc : dcList)
+       f.format(" %s == %d%n", df.toDateTimeStringISO( dc.d), dc.count);
+   }
+
+   ///////////////////////////////////////////////////////////////////////////
 
   public void save() {
     gds2Table.saveState(false);
@@ -480,6 +564,16 @@ public class GribRawPanel extends JPanel {
     compare( raw1, raw2, f);
   }
 
+  private void compare(Grib1GridDefinitionSection gds1, Grib1GridDefinitionSection gds2, Formatter f) {
+    Grib1GDSVariables gdsv1 = gds1.getGdsVars();
+    Grib1GDSVariables gdsv2 = gds2.getGdsVars();
+
+    f.format("%nCompare Gds%n");
+    byte[] raw1 = gdsv1.getGDSBytes();
+    byte[] raw2 = gdsv2.getGDSBytes();
+    compare( raw1, raw2, f);
+  }
+
   private void compare(GribPds pds1, GribPds pds2, Formatter f) {
     f.format("%nCompare Pds%n");
     byte[] raw1 = pds1.getPDSBytes();
@@ -540,6 +634,8 @@ public class GribRawPanel extends JPanel {
     this.raf = raf;
 
     raf.seek(0);
+    raf.order(ucar.unidata.io.RandomAccessFile.BIG_ENDIAN);
+
     if (!raf.searchForward(matcher, 8000)) return; // must find "GRIB" in first 8k
     raf.skipBytes(4);
     //  Read Section 0 Indicator Section to get Edition number
@@ -607,6 +703,7 @@ public class GribRawPanel extends JPanel {
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////
+  GribTables tables = null;
 
   void setGribFile2(RandomAccessFile raf) throws IOException {
     split2 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, param2BeanTable, record2BeanTable);
@@ -626,6 +723,7 @@ public class GribRawPanel extends JPanel {
     raf.seek(0);
     raf.order(RandomAccessFile.BIG_ENDIAN);
     reader.scan(false, false);
+    boolean first = true;
 
     java.util.List<Grib2ParameterBean> products = new ArrayList<Grib2ParameterBean>();
     for (Grib2Record gr : reader.getRecords()) {
@@ -641,6 +739,12 @@ public class GribRawPanel extends JPanel {
 
       Grib2GridDefinitionSection gds = gr.getGDS();
       gdsSet.put(gds.getGdsKey(), gds);
+
+      if (first) {
+        Grib2IdentificationSection ids = gr.getId();
+        tables = GribTables.factory(ids.getCenter_id(), ids.getSubcenter_id(), ids.getMaster_table_version(), ids.getLocal_table_version());
+        first = false;
+      }
     }
     param2BeanTable.setBeans(products);
     record2BeanTable.setBeans(new ArrayList());
@@ -739,17 +843,17 @@ public class GribRawPanel extends JPanel {
   private void showRawPds(String key, byte[] raw, Formatter f) {
     if (productTemplates == null)
       try {
-        productTemplates = GribTemplate.getParameterTemplates();
+        productTemplates = WmoTemplateTable.getWmoStandard().map;
       } catch (IOException e) {
         f.format("Read template failed = %s%n", e.getMessage());
         return;
       }
 
-    GribTemplate gt = productTemplates.get(key);
+    WmoTemplateTable gt = productTemplates.get(key);
     if (gt == null)
       f.format("Cant find template %s%n", key);
     else
-      gt.showInfo(raw, f);
+      gt.showInfo(tables, raw, f);
   }
 
   ////////////////////////////////////////////////////////////////////////////
@@ -1023,8 +1127,8 @@ public class GribRawPanel extends JPanel {
 
       f.format("%nGrib2IdentificationSection%n");
       f.format(" Length        = %d%n", id.getLength());
-      f.format(" Center        = (%d) %s%n", id.getCenter_id(), Grib1Tables.getCenter_idName(id.getCenter_id()));
-      f.format(" SubCenter     = (%d) %s%n", id.getSubcenter_id(), Grib1Tables.getSubCenter_idName(id.getCenter_id(), id.getSubcenter_id()));
+      f.format(" Center        = (%d) %s%n", id.getCenter_id(), CommonCodeTable.getTableValue(11, id.getCenter_id()));
+      f.format(" SubCenter     = (%d) %s%n", id.getSubcenter_id(), CommonCodeTable.getTableValue(12, id.getCenter_id(), id.getSubcenter_id()));
       f.format(" Master Table  = %d%n", id.getMaster_table_version());
       f.format(" Local Table   = %d%n", id.getLocal_table_version());
       f.format(" RefTimeSignif = %s%n", id.getSignificanceOfRTName());
@@ -1224,7 +1328,7 @@ public class GribRawPanel extends JPanel {
     }
 
     public String getCenter() {
-      return Grib1Tables.getCenter_idName(pds.getCenter()) + " (" + pds.getCenter() + "/" + pds.getSubCenter() + ")";
+      return CommonCodeTable.getTableValue(11, pds.getCenter()) + " (" + pds.getCenter() + "/" + pds.getSubCenter() + ")";
     }
 
     public int getTable() {

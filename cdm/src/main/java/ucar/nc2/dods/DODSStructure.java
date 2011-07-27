@@ -164,6 +164,10 @@ public class DODSStructure extends ucar.nc2.Structure {
       return row - 1;
     }
 
+    @Override
+      public void finish() {
+        // ignored
+      }
   }
 
 }

@@ -216,8 +216,8 @@ public class TestProjections extends TestCase {
     assert p.equals(p2);
   }
 
-  public void utestOrtho() {
-    testProjectionLonMax(new Orthographic(), 180, 80);
+  public void testOrtho() {
+    testProjectionLonMax(new Orthographic(), 10, 10);
     Orthographic p = new Orthographic();
     Orthographic p2 = (Orthographic) p.constructCopy();
     assert p.equals(p2);
@@ -231,7 +231,7 @@ public class TestProjections extends TestCase {
   }
 
   public void utestAEAE() {
-    testProjectionLonMax(new AlbersEqualAreaEllipse(), 360, 80);
+    testProjectionLonMax(new AlbersEqualAreaEllipse(), 180, 80);
     AlbersEqualAreaEllipse p = new AlbersEqualAreaEllipse();
     AlbersEqualAreaEllipse p2 = (AlbersEqualAreaEllipse) p.constructCopy();
     assert p.equals(p2);

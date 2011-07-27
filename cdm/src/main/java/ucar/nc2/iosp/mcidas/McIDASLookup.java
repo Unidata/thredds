@@ -34,14 +34,11 @@
 
 package ucar.nc2.iosp.mcidas;
 
-
 import edu.wisc.ssec.mcidas.McIDASUtil;
+import ucar.nc2.iosp.grid.*;
 
-import ucar.grid.GridDefRecord;
-import ucar.grid.GridParameter;
-import ucar.grid.GridRecord;
-import ucar.grid.GridTableLookup;
-
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 /**
  * McIDASLookup
@@ -125,9 +122,8 @@ public final class McIDASLookup implements GridTableLookup {
         String levelUnit = getLevelUnit(gr);
         int    level1    = (int) gr.getLevel1();
         int    level2    = (int) gr.getLevel2();
-        int    levelType = gr.getLevelType1();
         if (((McIDASGridRecord) gr).hasGribInfo()) {
-            return ucar.grib.grib1.GribPDSLevel.getNameShort(levelType);
+            return reflectLevelName(gr);
         } else if (levelUnit.equalsIgnoreCase("hPa")) {
             return "pressure";
         } else if (level1 == 1013) {
@@ -142,21 +138,39 @@ public final class McIDASLookup implements GridTableLookup {
         return "";
     }
 
-    /**
-     * gets the LevelDescription.
-     * @param  gr
-     * @return LevelDescription
-     */
-    public final String getLevelDescription(GridRecord gr) {
-        // TODO:  flesh this out
-        if (((McIDASGridRecord) gr).hasGribInfo()) {
-            return ucar.grib.grib1.GribPDSLevel.getNameShort(
-                gr.getLevelType1());
-        }
-        return getLevelName(gr);
+  /**
+   * gets the LevelDescription.
+   *
+   * @param gr
+   * @return LevelDescription
+   */
+  public final String getLevelDescription(GridRecord gr) {
+    // TODO:  flesh this out
+    return getLevelName(gr);
+  }
+
+  private String reflectLevelName(GridRecord gr) {
+    // return ucar.grib.grib1.GribPDSLevel.getNameShort(gr.getLevelType1());
+    // use reflection instead to decouple from the grib package
+    try {
+      Class c = this.getClass().getClassLoader().loadClass("ucar.grib.grib1.GribPDSLevel");
+      Method m = c.getMethod("isMine", Integer.class);
+      return (String) m.invoke(null, gr.getLevelType1());
+
+    } catch (ClassNotFoundException e) {
+      e.printStackTrace();
+    } catch (NoSuchMethodException e) {
+      e.printStackTrace();
+    } catch (InvocationTargetException e) {
+      e.printStackTrace();
+    } catch (IllegalAccessException e) {
+      e.printStackTrace();
     }
 
-    /**
+    return null;
+  }
+
+  /**
      * gets the LevelUnit.
      * @param  gr
      * @return LevelUnit

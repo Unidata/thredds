@@ -34,6 +34,8 @@ package ucar.nc2.ft.point;
 
 import ucar.nc2.ft.*;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.constants.FeatureType;
 import ucar.unidata.geoloc.LatLonRect;
@@ -57,7 +59,7 @@ public class PointDatasetImpl extends FeatureDatasetImpl implements FeatureDatas
   }
 
   // subsetting
-  protected PointDatasetImpl(PointDatasetImpl from, LatLonRect filter_bb, DateRange filter_date) {
+  protected PointDatasetImpl(PointDatasetImpl from, LatLonRect filter_bb, CalendarDateRange filter_date) {
     super(from);
     this.collectionList = from.collectionList;
     this.featureType = from.featureType;
@@ -88,6 +90,7 @@ public class PointDatasetImpl extends FeatureDatasetImpl implements FeatureDatas
     this.collectionList.add(collection);
   }
 
+  @Override
   public FeatureType getFeatureType() {
     return featureType;
   }
@@ -96,15 +99,17 @@ public class PointDatasetImpl extends FeatureDatasetImpl implements FeatureDatas
     this.featureType = ftype;
   }
 
+  @Override
   public List<FeatureCollection> getPointFeatureCollectionList() {
     return collectionList;
   }
 
+  @Override
   public void calcBounds() throws java.io.IOException {
     if ((boundingBox != null) && (dateRange != null)) return;
 
     LatLonRect bb = null;
-    DateRange dates = null;
+    CalendarDateRange dates = null;
     for (FeatureCollection fc : collectionList) {
 
       if (fc instanceof PointFeatureCollection) {
@@ -115,9 +120,9 @@ public class PointDatasetImpl extends FeatureDatasetImpl implements FeatureDatas
         else
           bb.extend(pfc.getBoundingBox());
         if (dates == null)
-          dates = pfc.getDateRange();
+          dates = pfc.getCalendarDateRange();
         else
-          dates.extend(pfc.getDateRange());
+          dates.extend(pfc.getCalendarDateRange());
 
       }  else if (fc instanceof StationTimeSeriesFeatureCollection) {
 
@@ -127,12 +132,12 @@ public class PointDatasetImpl extends FeatureDatasetImpl implements FeatureDatas
          else
            bb.extend(sc.getBoundingBox());
 
-        PointFeatureCollection pfc = sc.flatten(null, null);
+        PointFeatureCollection pfc = sc.flatten(null, (CalendarDateRange) null);
         pfc.calcBounds();
         if (dates == null)
-          dates = pfc.getDateRange();
+          dates = pfc.getCalendarDateRange();
         else
-          dates.extend(pfc.getDateRange());
+          dates.extend(pfc.getCalendarDateRange());
       }
 
     }
@@ -141,6 +146,7 @@ public class PointDatasetImpl extends FeatureDatasetImpl implements FeatureDatas
     if (dateRange == null) dateRange = dates;
   }
 
+  @Override
   public void getDetailInfo(java.util.Formatter sf) {
     super.getDetailInfo(sf);
 

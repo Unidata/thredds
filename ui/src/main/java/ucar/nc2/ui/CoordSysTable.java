@@ -34,6 +34,7 @@
 package ucar.nc2.ui;
 
 import ucar.nc2.*;
+import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.nc2.units.DateUnit;
@@ -182,7 +183,7 @@ public class CoordSysTable extends JPanel {
           infoTA.appendLine(NCdumpW.printVariableData(axis, null));
           if (axis instanceof CoordinateAxis1D && axis.isNumeric()) {
             CoordinateAxis1D axis1D = (CoordinateAxis1D) axis;
-            if (axis1D.isContiguous()) {
+            if (!axis1D.isInterval()) {
               printArray("edges=", axis1D.getCoordEdges());
             } else {
               printArray("bound1=", axis1D.getBound1());
@@ -192,7 +193,7 @@ public class CoordSysTable extends JPanel {
               double[] b1 = axis1D.getBound1();
               double[] b2 = axis1D.getBound2();
               for (int i=0; i<b1.length; i++) {
-                f.format("(%f,%f)%n", b1[i], b2[i]);
+                f.format("(%f,%f) = %f%n", b1[i], b2[i], b2[i] - b1[i]);
               }
               infoTA.appendLine(f.toString());
             }
@@ -228,6 +229,7 @@ public class CoordSysTable extends JPanel {
         infoWindow.showIfNotIconified();
       }
     });
+
     axisPopup.addAction("Show Values as Date", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         AxisBean bean = (AxisBean) axisTable.getSelectedBean();
@@ -237,20 +239,32 @@ public class CoordSysTable extends JPanel {
 
         try {
           infoTA.appendLine(units);
-          infoTA.appendLine(NCdumpW.printVariableData(axis, null));
-
           if (axis.getDataType().isNumeric()) {
-            DateFormatter format = new DateFormatter();
-            DateUnit du = new DateUnit(units);
-            Array data = axis.read();
-            IndexIterator ii = data.getIndexIterator();
-            while (ii.hasNext()) {
-              double val = ii.getDoubleNext();
-              if (Double.isNaN(val)) {
-                infoTA.appendLine(" N/A");
-              } else {
-                Date date = du.makeDate(val);
-                infoTA.appendLine(" " + format.toDateTimeString(date));
+            if (!(axis instanceof CoordinateAxis1D)) {
+              showDates2D(axis, units);
+              return;
+            }
+
+            CoordinateAxis1D axis1D = (CoordinateAxis1D) axis;
+            infoTA.appendLine(NCdumpW.printVariableData(axis, null));
+
+            if (!showCalendarDates(axis1D, units)) {
+              // old way
+              DateFormatter format = new DateFormatter();
+              DateUnit du = new DateUnit(units);
+              if (!axis1D.isInterval()) {
+                for (double val : axis1D.getCoordValues()) {
+                  if (Double.isNaN(val)) infoTA.appendLine(" N/A");
+                  else infoTA.appendLine(" " + format.toDateTimeString(du.makeDate(val)));
+                }
+              } else { // is interval
+                Formatter f= new Formatter();
+                double[] b1 = axis1D.getBound1();
+                double[] b2 = axis1D.getBound2();
+                for (int i=0; i<b1.length; i++) {
+                  f.format(" (%f, %f) == (%s, %s)%n", b1[i], b2[i], format.toDateTimeString(du.makeDate(b1[i])), format.toDateTimeString(du.makeDate(b2[i])));
+                }
+                infoTA.appendLine(f.toString());
               }
             }
           }
@@ -278,6 +292,47 @@ public class CoordSysTable extends JPanel {
     setLayout(new BorderLayout());
     add(split2, BorderLayout.CENTER);
   }
+
+  private void showDates2D(VariableEnhanced axis, String units) throws Exception {
+    infoTA.appendLine(NCdumpW.printVariableData(axis, null));
+    DateFormatter format = new DateFormatter();
+    DateUnit du = new DateUnit(units);
+    Array data = axis.read();
+    IndexIterator ii = data.getIndexIterator();
+    while (ii.hasNext()) {
+      double val = ii.getDoubleNext();
+      if (Double.isNaN(val)) {
+        infoTA.appendLine(" N/A");
+      } else {
+        Date date = du.makeDate(val);
+        infoTA.appendLine(" " + format.toDateTimeString(date));
+      }
+    }
+  }
+
+  private boolean showCalendarDates(CoordinateAxis1D axis1D, String units) throws Exception {
+    try {
+      CalendarDateUnit cdu = CalendarDateUnit.of(null, units);
+      if (!axis1D.isInterval()) {
+        for (double val : axis1D.getCoordValues()) {
+          if (Double.isNaN(val)) infoTA.appendLine(" N/A");
+          else infoTA.appendLine(" " + cdu.makeCalendarDate(val));
+        }
+      } else { // is interval
+          Formatter f= new Formatter();
+          double[] b1 = axis1D.getBound1();
+          double[] b2 = axis1D.getBound2();
+          for (int i=0; i<b1.length; i++)
+            f.format(" (%f, %f) == (%s, %s)%n", b1[i], b2[i], cdu.makeCalendarDate((b1[i])), cdu.makeCalendarDate((b2[i])));
+          infoTA.appendLine(f.toString());
+        }
+    } catch (Exception ee) {
+      infoTA.appendLine(" CalendarDateUnit failed to parse units =" + ee.getMessage());
+      return false;
+    }
+    return true;
+  }
+
 
   private void printArray(String title, double vals[]) {
     StringBuilder sbuff = new StringBuilder();
@@ -721,9 +776,9 @@ public class CoordSysTable extends JPanel {
       return axis.isContiguous();
     }
 
-    public boolean isLayer() {
+    /* public boolean isLayer() {
       return isLayer;
-    }
+    } */
 
     public boolean isInterval() {
       return isInterval;

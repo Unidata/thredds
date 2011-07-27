@@ -34,6 +34,8 @@
 package ucar.nc2.ft;
 
 import ucar.nc2.VariableSimpleIF;
+import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.cache.FileCacheable;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.units.DateRange;
@@ -83,25 +85,25 @@ public interface FeatureDataset extends FileCacheable {
   public String getLocation();
 
   /**
-   * Date range for the entire dataset.
+   * Calendar Date range for the entire dataset.
    *
    * @return the date range for the entire dataset, or null if unknown
    */
-  public DateRange getDateRange();
+  public CalendarDateRange getCalendarDateRange();
 
   /**
-   * Starting date for the entire dataset.
+   * Starting Calendar date for the entire dataset.
    *
    * @return the starting date for the entire dataset, or null if unknown
    */
-  public Date getStartDate();
+  public CalendarDate getCalendarDateStart();
 
   /**
-   * Ending date for the entire dataset.
+   * Ending Calendar date for the entire dataset.
    *
    * @return the ending date for the entire dataset, or null if unknown
    */
-  public Date getEndDate();
+  public CalendarDate getCalendarDateEnd();
 
   /**
    * The boundingBox for the entire dataset.
@@ -178,5 +180,33 @@ public interface FeatureDataset extends FileCacheable {
    * @return name of implementor
    */
   public String getImplementationName();
+
+  /////////////////////////////////////////////////
+  // deprecated
+  /**
+   * Date range for the entire dataset.
+   *
+   * @return the date range for the entire dataset, or null if unknown
+   * @deprecated use getCalendarDateRange
+   */
+  public DateRange getDateRange();
+
+  /**
+   * Starting date for the entire dataset.
+   *
+   * @return the starting date for the entire dataset, or null if unknown
+   * @deprecated use getStartCalendarDate
+   */
+  public Date getStartDate();
+
+  /**
+   * Ending date for the entire dataset.
+   *
+   * @return the ending date for the entire dataset, or null if unknown
+   * @deprecated use getEndCalendarDate
+   */
+  public Date getEndDate();
+
+
 
 }

@@ -46,7 +46,7 @@ import org.jdom.input.SAXBuilder;
 import org.jdom.JDOMException;
 import org.jdom.Element;
 import org.springframework.util.StringUtils;
-import ucar.nc2.units.TimeUnit;
+import ucar.nc2.units.TimeDuration;
 import ucar.nc2.util.xml.RuntimeConfigParser;
 
 /**
@@ -226,7 +226,7 @@ public class ThreddsConfig {
     if (s == null) return defValue;
 
     try {
-      TimeUnit tu = new TimeUnit(s);
+      TimeDuration tu = new TimeDuration(s);
       return (int) tu.getValueInSeconds();
     } catch (Exception e) {
       log.error("ThreddsConfig: param "+paramName+" not udunit time " + e.getMessage());

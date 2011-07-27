@@ -39,7 +39,7 @@ import ucar.nc2.stream.NcStreamProto;
 import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.remote.PointStreamProto;
 import ucar.nc2.ft.point.remote.PointStream;
-import ucar.nc2.units.DateFormatter;
+import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.units.DateRange;
 import ucar.unidata.geoloc.EarthLocation;
 import ucar.ma2.StructureData;
@@ -269,7 +269,6 @@ public class PointWriter {
     abstract void trailer();
 
     java.io.PrintWriter writer;
-    DateFormatter format = new DateFormatter();
     int count = 0;
 
     Writer(final java.io.PrintWriter writer) {
@@ -390,7 +389,7 @@ public class PointWriter {
     Action getAction() {
       return new Action() {
         public void act(PointFeature pf, StructureData sdata) throws IOException {
-          writer.print(format.toDateTimeStringISO(pf.getObservationTimeAsDate()));
+          writer.print(CalendarDateFormatter.toDateTimeString(pf.getObservationTimeAsCalendarDate()));
           writer.print("= ");
           String report = sdata.getScalarString("report");
           writer.println(report);
@@ -447,7 +446,7 @@ public class PointWriter {
 
           try {
             staxWriter.writeStartElement("pointFeature");
-            staxWriter.writeAttribute("date", format.toDateTimeStringISO(pf.getObservationTimeAsDate()));
+            staxWriter.writeAttribute("date", CalendarDateFormatter.toDateTimeString(pf.getObservationTimeAsCalendarDate()));
             staxWriter.writeCharacters("\n  ");
 
             staxWriter.writeStartElement("location");
@@ -511,7 +510,7 @@ public class PointWriter {
         public void act(PointFeature pf, StructureData sdata) throws IOException {
           EarthLocation loc = pf.getLocation();
 
-          writer.print(format.toDateTimeStringISO(pf.getObservationTimeAsDate()));
+          writer.print( CalendarDateFormatter.toDateTimeString(pf.getObservationTimeAsCalendarDate()));
           writer.print(',');
           writer.print(Format.dfrac(loc.getLatitude(), 3));
           writer.print(',');

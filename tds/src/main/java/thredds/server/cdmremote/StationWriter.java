@@ -39,7 +39,7 @@ import ucar.nc2.stream.NcStreamProto;
 import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.remote.PointStreamProto;
 import ucar.nc2.ft.point.remote.PointStream;
-import ucar.nc2.units.DateFormatter;
+import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.units.DateRange;
 import ucar.unidata.geoloc.Station;
 import ucar.unidata.geoloc.LatLonRect;
@@ -614,7 +614,6 @@ public class StationWriter {
     abstract void trailer();
 
     java.io.PrintWriter writer;
-    DateFormatter format = new DateFormatter();
     int count = 0;
 
     Writer(final java.io.PrintWriter writer) {
@@ -750,7 +749,7 @@ public class StationWriter {
     Action getAction() {
       return new Action() {
         public void act(PointFeature pf, StructureData sdata) throws IOException {
-          writer.print(format.toDateTimeStringISO(pf.getObservationTimeAsDate()));
+          writer.print(CalendarDateFormatter.toDateTimeString(pf.getObservationTimeAsCalendarDate()));
           writer.print("= ");
           String report = sdata.getScalarString("report");
           writer.println(report);
@@ -807,7 +806,7 @@ public class StationWriter {
 
           try {
             staxWriter.writeStartElement("pointFeature");
-            staxWriter.writeAttribute("date", format.toDateTimeStringISO(pf.getObservationTimeAsDate()));
+            staxWriter.writeAttribute("date", CalendarDateFormatter.toDateTimeString(pf.getObservationTimeAsCalendarDate()));
             staxWriter.writeCharacters("\n  ");
 
             staxWriter.writeStartElement("station");
@@ -874,7 +873,7 @@ public class StationWriter {
         public void act(PointFeature pf, StructureData sdata) throws IOException {
           Station s = sfc.getStation(pf);
 
-          writer.print(format.toDateTimeStringISO(pf.getObservationTimeAsDate()));
+          writer.print( CalendarDateFormatter.toDateTimeString(pf.getObservationTimeAsCalendarDate()));
           writer.print(',');
           writer.print(s.getName());
           writer.print(',');

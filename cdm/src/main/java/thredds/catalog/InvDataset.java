@@ -33,6 +33,7 @@
 
 package thredds.catalog;
 
+import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateType;
 
@@ -533,6 +534,15 @@ public abstract class InvDataset {
    */
   public ThreddsMetadata.GeospatialCoverage getGeospatialCoverage() {
     return gc;
+  }
+
+  /**
+   * get time coverage as CalendarDateRange
+   *
+   * @return time coverage, or null if none
+   */
+  public CalendarDateRange getCalendarDateCoverage() {
+    return CalendarDateRange.of(tc);
   }
 
   /**

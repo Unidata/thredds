@@ -245,7 +245,7 @@ public class NcStreamReader {
 
     @Override
     public StructureDataIterator reset() {
-      return (count == 0) ? this : null;
+      return (count == 0) && (is != null) ? this : null;
     }
 
     @Override
@@ -253,10 +253,13 @@ public class NcStreamReader {
       return count;
     }
 
-    // LOOK !!!
+    @Override
     public void finish() {
       if (is != null) {
-          try { is.close(); }catch (IOException ioe) {};
+        try {
+          is.close();
+          is = null;
+        } catch (IOException ioe) { }
       }
     }
   }

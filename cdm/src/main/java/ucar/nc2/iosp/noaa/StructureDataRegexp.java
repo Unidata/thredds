@@ -25,12 +25,18 @@ public class StructureDataRegexp extends StructureData {
   }
 
   protected Object parse(DataType dt, VinfoField vinfo, int fldno) throws NumberFormatException {
-    String svalue = (fldno <= matcher.groupCount()) ? matcher.group(fldno) : " ";
+    String svalue;
+    if (fldno <= matcher.groupCount())
+      svalue = matcher.group(fldno);
+    else
+      svalue = " ";
     //  System.out.printf("HEY! %d>= %d %n", field, matcher.groupCount());
     //String svalue = matcher.group(field);
 
-    if ((dt == DataType.STRING) || (dt == DataType.CHAR))
+    if (dt == DataType.STRING)
       return svalue.trim();
+    else if (dt == DataType.CHAR)
+      return svalue;
 
     try {
       svalue = svalue.trim();

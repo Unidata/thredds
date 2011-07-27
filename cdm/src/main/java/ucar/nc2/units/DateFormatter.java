@@ -38,6 +38,7 @@ import java.util.Date;
 /**
  * Date parsing and formatting. Always uses GMT.
  * These are not thread-safe.
+ * These use java.util.Date and java.text.SimpleDateFormat.
  *
  * @author caron
  */

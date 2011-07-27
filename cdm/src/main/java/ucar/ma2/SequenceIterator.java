@@ -80,4 +80,9 @@ public class SequenceIterator implements StructureDataIterator {
     return count;
   }
 
+  @Override
+      public void finish() {
+        // ignored
+      }
+
 }

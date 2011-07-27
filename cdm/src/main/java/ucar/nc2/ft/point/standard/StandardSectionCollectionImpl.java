@@ -89,6 +89,11 @@ public class StandardSectionCollectionImpl extends SectionCollectionImpl {
 
       public void setBufferSize(int bytes) {
       }
+
+      @Override
+      public void finish() {
+        sdataIter.finish();
+      }
     };
   }
 
@@ -140,7 +145,9 @@ public class StandardSectionCollectionImpl extends SectionCollectionImpl {
       iter.setBufferSize(bytes);
     }
 
+    @Override
     public void finish() {
+      iter.finish();
     }
 
   }

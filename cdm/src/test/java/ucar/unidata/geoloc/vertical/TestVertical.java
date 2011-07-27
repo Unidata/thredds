@@ -35,6 +35,7 @@ package ucar.unidata.geoloc.vertical;
 import junit.framework.*;
 
 import ucar.ma2.*;
+import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.dataset.VerticalCT;
 import ucar.nc2.TestAll;
 import ucar.nc2.dt.GridDatatype;
@@ -94,14 +95,17 @@ public class TestVertical extends TestCase {
     VerticalTransform vt = gcs.getVerticalTransform();
     assert vt != null;
 
-    ArrayDouble.D3 ca = vt.getCoordinateArray(0);
-    assert ca != null;
-    assert ca.getRank() == 3 : ca.getRank();
+    CoordinateAxis1DTime taxis = gcs.getTimeAxis1D();
+    for (int t=0; t<taxis.getSize(); t++) {
+      System.out.printf("vert coord for time = %s%n", taxis.getTimeDate(t));
+      ArrayDouble.D3 ca = vt.getCoordinateArray(t);
+      assert ca != null;
+      assert ca.getRank() == 3 : ca.getRank();
 
-    int[] shape = ca.getShape();
-    for (int i = 0; i < 3; i++)
-      System.out.println(" shape " + i + " = " + shape[i]);
-
+      int[] shape = ca.getShape();
+      for (int i = 0; i < 3; i++)
+        System.out.println(" shape " + i + " = " + shape[i]);
+    }
     gds.close();
   }
 

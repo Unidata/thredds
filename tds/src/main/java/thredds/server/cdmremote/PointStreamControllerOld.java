@@ -53,6 +53,7 @@ import ucar.nc2.ft.point.remote.PointStreamProto;
 import ucar.nc2.ft.point.remote.PointStream;
 import ucar.nc2.stream.NcStreamWriter;
 import ucar.nc2.stream.NcStream;
+import ucar.nc2.time.CalendarDateRange;
 
 import java.io.*;
 import java.util.Formatter;
@@ -165,7 +166,7 @@ public class PointStreamControllerOld extends AbstractCommandController implemen
           pfc = (PointFeatureCollection) coll.get(0);
 
           if (query.getLatLonRect() != null) {
-            pfc = pfc.subset(query.getLatLonRect(), null);
+            pfc = pfc.subset(query.getLatLonRect(), (CalendarDateRange) null);
           }
 
           sendData(fd.getLocation(), pfc, out);

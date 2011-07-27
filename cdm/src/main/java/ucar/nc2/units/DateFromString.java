@@ -32,6 +32,9 @@
  */
 package ucar.nc2.units;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
@@ -44,9 +47,8 @@ import java.text.ParseException;
  * @author edavis
  * @since Nov 29, 2005 4:53:46 PM
  */
-public class DateFromString
-{
-
+public class DateFromString {
+  static private final Logger logger = LoggerFactory.getLogger(DateFromString.class);
 
   /**
    * Parse the given date string (starting at the first numeric character)
@@ -122,7 +124,10 @@ public class DateFromString
     // extract the match string
     int pos1 = dateFormatString.indexOf( demark);
     int pos2 = dateFormatString.indexOf( demark, pos1+1);
-    if ((pos1 < 0) || (pos2 < 0)) return null;
+    if ((pos1 < 0) || (pos2 < 0)) {
+      logger.error("Must delineate Date between 2 '#' chars, dateFormatString = "+ dateFormatString);
+      return null;
+    }
     String match = dateFormatString.substring(pos1+1, pos2);
 
     int pos3 = dateString.indexOf(match);

@@ -53,7 +53,7 @@ import java.io.PrintWriter;
  * Uses a GridDataset that has two time dimensions.
  * Assume all grids have the same runTime dimension.
  *
- * @author caron
+ * @deprecated use ucar.nc2.ft.fmrc
  */
 public class FmrcImpl implements ForecastModelRunCollection { //, ucar.nc2.dt.GridDataset {
   static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(FmrcImpl.class);

@@ -1111,6 +1111,11 @@ public abstract class Table {
     public int getCurrentRecno() {
       return count - 1;
     }
+
+    @Override
+      public void finish() {
+        // ignored
+      }
   }
 
   ////////////////////////////////////////////////////////////////

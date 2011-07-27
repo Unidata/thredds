@@ -8,7 +8,8 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.ft.fmrc.Fmrc;
 import ucar.nc2.thredds.MetadataExtractor;
-import ucar.nc2.units.DateFormatter;
+import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateRange;
 import ucar.unidata.util.StringUtil;
 
@@ -16,6 +17,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Feature Collection for Fmrc
@@ -44,11 +46,10 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
   static private final String OFFSET_NAME = "Offset_";
   static private final String OFFSET_TITLE = "Constant Forecast Offset";
 
-  /////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
 
   private final Fmrc fmrc;
   private final Set<FeatureCollectionConfig.FmrcDatasetType> wantDatasets;
-  private InvService orgService, virtualService;
 
   public InvDatasetFcFmrc(InvDatasetImpl parent, String name, String path, FeatureType featureType, FeatureCollectionConfig config) {
     super(parent, name, path, featureType, config);
@@ -103,7 +104,7 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
         if (null != gds) {
           localState.vars = MetadataExtractor.extractVariables(this, gds);
           localState.gc = MetadataExtractor.extractGeospatial(gds);
-          localState.dateRange = MetadataExtractor.extractDateRange(gds);
+          localState.dateRange = MetadataExtractor.extractCalendarDateRange(gds);
         }
         localState.lastProtoChange = System.currentTimeMillis();
       }
@@ -260,21 +261,20 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
   private List<InvDatasetImpl> makeRunDatasets() throws IOException {
 
     List<InvDatasetImpl> datasets = new ArrayList<InvDatasetImpl>();
-    DateFormatter formatter = new DateFormatter();
 
     String id = getID();
     if (id == null)
       id = getPath();
 
-    for (Date runDate : fmrc.getRunDates()) {
-      String name = getName() + "_" + RUN_NAME + formatter.toDateTimeStringISO(runDate);
+    for (CalendarDate runDate : fmrc.getRunDates()) {
+      String name = getName() + "_" + RUN_NAME + runDate;
       name = StringUtil.replace(name, ' ', "_");
       InvDatasetImpl nested = new InvDatasetImpl(this, name);
       nested.setUrlPath(path + "/" + RUNS + "/" + name);
       nested.setID(id + "/" + RUNS + "/" + name);
       ThreddsMetadata tm = nested.getLocalMetadata();
       tm.addDocumentation("summary", "Data from Run " + name);
-      DateRange dr = fmrc.getDateRangeForRun(runDate);
+      CalendarDateRange dr = fmrc.getDateRangeForRun(runDate);
       if (dr != null)
         tm.setTimeCoverage(dr);
       datasets.add(nested);
@@ -300,7 +300,7 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
       nested.setID(id + "/" + OFFSET + "/" + name);
       ThreddsMetadata tm = nested.getLocalMetadata();
       tm.addDocumentation("summary", "Data from the " + offset + " hour forecasts, across different model runs.");
-      DateRange dr = fmrc.getDateRangeForOffset(offset);
+      CalendarDateRange dr = fmrc.getDateRangeForOffset(offset);
       if (dr != null)
         tm.setTimeCoverage(dr);
       datasets.add(nested);
@@ -312,21 +312,20 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
   private List<InvDatasetImpl> makeForecastDatasets() throws IOException {
 
     List<InvDatasetImpl> datasets = new ArrayList<InvDatasetImpl>();
-    DateFormatter formatter = new DateFormatter();
 
     String id = getID();
     if (id == null)
       id = getPath();
 
-    for (Date forecastDate : fmrc.getForecastDates()) {
-      String name = getName() + "_" + FORECAST_NAME + formatter.toDateTimeStringISO(forecastDate);
+    for (CalendarDate forecastDate : fmrc.getForecastDates()) {
+      String name = getName() + "_" + FORECAST_NAME + forecastDate;
       name = StringUtil.replace(name, ' ', "_");
       InvDatasetImpl nested = new InvDatasetImpl(this, name);
       nested.setUrlPath(path + "/" + FORECAST + "/" + name);
       nested.setID(id + "/" + FORECAST + "/" + name);
       ThreddsMetadata tm = nested.getLocalMetadata();
       tm.addDocumentation("summary", "Data with the same forecast date, " + name + ", across different model runs.");
-      tm.setTimeCoverage( new DateRange(forecastDate, forecastDate));
+      tm.setTimeCoverage(CalendarDateRange.of(forecastDate, forecastDate));
       datasets.add(nested);
     }
 
@@ -407,7 +406,7 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
 
        // LOOK - replace this with InvDatasetScan( collectionManager) or something
        long olderThan = (long) (1000 * dcm.getOlderThanFilterInSecs());
-       ScanFilter scanFilter = new ScanFilter(filter, olderThan);
+       ScanFilter scanFilter = new ScanFilter(null, olderThan);
        InvDatasetScan scanDataset = new InvDatasetScan((InvCatalogImpl) this.getParentCatalog(), this, "File_Access", path + "/" + FILES,
                topDirectory, scanFilter, true, "true", false, null, null, null);
 
@@ -417,7 +416,7 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
        tmi.setServiceName(orgService.getName());
        tmi.addDocumentation("summary", "Individual data file, which comprise the Forecast Model Run Collection.");
        tmi.setGeospatialCoverage(null);
-       tmi.setTimeCoverage(null);
+       tmi.setTimeCoverage( (DateRange) null);
        scanDataset.setServiceName(orgService.getName());
        scanDataset.finish();
        datasets.add(scanDataset);
@@ -433,7 +432,7 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
 
 
   @Override
-  public GridDataset getGridDataset(String matchPath) throws IOException {
+  public ucar.nc2.dt.GridDataset getGridDataset(String matchPath) throws IOException {
     int pos = matchPath.indexOf('/');
     String wantType = (pos > -1) ? matchPath.substring(0, pos) : matchPath;
     String wantName = (pos > -1) ? matchPath.substring(pos + 1) : matchPath;
@@ -463,8 +462,7 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
         if (pos1<0) return null;
         String id = wantName.substring(pos1+RUN_NAME.length());
 
-        DateFormatter formatter = new DateFormatter();
-        Date date = formatter.getISODate(id);
+        CalendarDate date = CalendarDate.parseISOformat(null, id);
         return fmrc.getRunTimeDataset(date);
 
       } else if (wantType.equals(FORECAST) && wantDatasets.contains(FeatureCollectionConfig.FmrcDatasetType.ConstantForecasts)) {
@@ -472,8 +470,7 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
         if (pos1<0) return null;
         String id = wantName.substring(pos1+FORECAST_NAME.length());
 
-        DateFormatter formatter = new DateFormatter();
-        Date date = formatter.getISODate(id);
+        CalendarDate date = CalendarDate.parseISOformat(null, id);
         return fmrc.getConstantForecastDataset(date);
 
       } else if (config.fmrcConfig.getBestDatasets() != null) {

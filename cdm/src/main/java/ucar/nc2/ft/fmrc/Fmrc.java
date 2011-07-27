@@ -36,8 +36,9 @@ import net.jcip.annotations.ThreadSafe;
 import org.jdom.Element;
 import thredds.inventory.*;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dt.GridDataset;
-import ucar.nc2.units.DateRange;
+import ucar.nc2.dt.grid.GridDataset;
+import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateRange;
 
 import java.util.*;
 import java.io.IOException;
@@ -77,14 +78,14 @@ public class Fmrc {
    * @see "http://www.unidata.ucar.edu/software/netcdf-java/reference/collections/CollectionSpecification.html"
    */
   public static Fmrc open(String collection, Formatter errlog) throws IOException {
-    if (collection.startsWith(DatasetCollectionManager.CATALOG)) {
+    if (collection.startsWith(DatasetCollectionMFiles.CATALOG)) {
       DatasetCollectionFromCatalog manager = new DatasetCollectionFromCatalog(collection);
       return new Fmrc(manager, new FeatureCollectionConfig());
 
     } else if (collection.endsWith(".ncml")) {
       NcmlCollectionReader ncmlCollection = NcmlCollectionReader.open(collection, errlog);
       if (ncmlCollection == null) return null;
-      Fmrc fmrc = new Fmrc(ncmlCollection.getDatasetManager(), new FeatureCollectionConfig());
+      Fmrc fmrc = new Fmrc(ncmlCollection.getCollectionManager(), new FeatureCollectionConfig());
       fmrc.setNcml(ncmlCollection.getNcmlOuter(), ncmlCollection.getNcmlInner());
       return fmrc;
     }
@@ -93,7 +94,7 @@ public class Fmrc {
   }
 
   public static Fmrc open(FeatureCollectionConfig config, Formatter errlog) throws IOException {
-    if (config.spec.startsWith(DatasetCollectionManager.CATALOG)) {
+    if (config.spec.startsWith(DatasetCollectionMFiles.CATALOG)) {
       DatasetCollectionFromCatalog manager = new DatasetCollectionFromCatalog(config.spec);
       return new Fmrc(manager, config);
     }
@@ -102,7 +103,7 @@ public class Fmrc {
   }
 
   ////////////////////////////////////////////////////////////////////////
-  private final DatasetCollectionManager manager;
+  private final CollectionManager manager;
   private final FeatureCollectionConfig config;
 
   // should be final
@@ -116,18 +117,18 @@ public class Fmrc {
   private volatile long lastProtoChanged;
 
   private Fmrc(String collectionSpec, Formatter errlog) throws IOException {
-    this.manager = DatasetCollectionManager.open(collectionSpec, null, errlog);
+    this.manager = DatasetCollectionMFiles.open(collectionSpec, null, errlog);
     this.config = new FeatureCollectionConfig();
     this.config.spec = collectionSpec;
   }
 
   private Fmrc(FeatureCollectionConfig config, Formatter errlog) {
-    this.manager = new DatasetCollectionManager(config, errlog);
+    this.manager = new DatasetCollectionMFiles(config, errlog);
     this.config = config;
   }
 
   // from AggregationFmrc
-  public Fmrc(DatasetCollectionManager manager, FeatureCollectionConfig config) {
+  public Fmrc(CollectionManager manager, FeatureCollectionConfig config) {
     this.manager = manager;
     this.config = config;
   }
@@ -153,20 +154,20 @@ public class Fmrc {
 
   /////////////////////////////////////////////////////////////////////////////////////////
 
-  public DateRange getDateRangeForRun(Date run) {
+  public CalendarDateRange getDateRangeForRun(CalendarDate run) {
     return fmrcDataset.getDateRangeForRun( run);
   }
 
-  public DateRange getDateRangeForOffset(double offset) {
+  public CalendarDateRange getDateRangeForOffset(double offset) {
     return fmrcDataset.getDateRangeForOffset( offset);
   }
 
-  public List<Date> getRunDates() throws IOException {
+  public List<CalendarDate> getRunDates() throws IOException {
     checkNeeded( false); // ??
     return fmrcDataset.getRunDates();
   }
 
-  public List<Date> getForecastDates() throws IOException {
+  public List<CalendarDate> getForecastDates() throws IOException {
     checkNeeded( false); // ??
     return fmrcDataset.getForecastDates();
   }
@@ -196,13 +197,13 @@ public class Fmrc {
     return gds;
   }
 
-  public GridDataset getRunTimeDataset(Date run) throws IOException {
+  public GridDataset getRunTimeDataset(CalendarDate run) throws IOException {
     checkNeeded( false);
     GridDataset gds =  fmrcDataset.getRunTimeDataset(run);
     return gds;
   }
 
-  public GridDataset getConstantForecastDataset(Date time) throws IOException {
+  public GridDataset getConstantForecastDataset(CalendarDate time) throws IOException {
     checkNeeded( false);
     GridDataset gds =  fmrcDataset.getConstantForecastDataset(time);
     return gds;
@@ -262,7 +263,7 @@ public class Fmrc {
     synchronized (lock) {
       if (fmrcDataset == null) {
         try {
-          manager.rescan();
+          manager.scan();
           update();
           return;
         } catch (Throwable t) {
@@ -271,28 +272,25 @@ public class Fmrc {
         }
       }
 
-      if (!force && !manager.isRescanNeeded()) return;
+      if (!force && !manager.isScanNeeded()) return;
       try {
-        if (!manager.rescan()) return;
+        if (!manager.scan()) return;
         update();
       } catch (Throwable t) {
         logger.error(config.spec+": rescan failed");
         throw new RuntimeException(t);
       }
-      // needs updating
-
     }
   }
 
   // scan has been done, create FmrcInv
   private FmrcInv makeFmrcInv(Formatter debug) throws IOException {
     try {
-      Map<Date, FmrInv> fmrMap = new HashMap<Date, FmrInv>(); // all files are grouped by run date in an FmrInv
+      Map<CalendarDate, FmrInv> fmrMap = new HashMap<CalendarDate, FmrInv>(); // all files are grouped by run date in an FmrInv
       List<FmrInv> fmrList = new ArrayList<FmrInv>(); // an fmrc is a collection of fmr
 
       // get the inventory, sorted by path
-      List<MFile> fileList = manager.getFiles();
-      for (MFile f : fileList) {
+      for (MFile f : manager.getFiles()) {
         if (logger.isDebugEnabled())
           logger.debug("Fmrc: "+config.spec+": file="+f.getPath());
 
@@ -304,7 +302,7 @@ public class Fmrc {
           continue; // skip
         }
 
-        Date runDate = inv.getRunDate();
+        CalendarDate runDate = inv.getRunDate();
         if (debug != null) debug.format("  opened %s rundate = %s%n", f.getPath(), inv.getRunDateString());
 
         // add to fmr for that rundate

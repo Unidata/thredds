@@ -288,6 +288,10 @@ public abstract class ArrayStructure extends Array {
       return count-1;
     }
 
+    @Override
+    public void finish() {
+    }
+
     // debugging
     public ArrayStructure getArrayStructure() { return ArrayStructure.this; }
   }

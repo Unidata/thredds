@@ -36,9 +36,7 @@
 
 package ucar.nc2.iosp.gempak;
 
-//import ucar.nc2.iosp.grid.GridDefRecord;
-import ucar.grid.GridDefRecord;
-
+import ucar.nc2.iosp.grid.GridDefRecord;
 
 /**
  * Class to hold the grid navigation information.

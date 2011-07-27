@@ -37,7 +37,6 @@
 package ucar.nc2.iosp.cinrad;
 
 import ucar.unidata.io.RandomAccessFile;
-import ucar.nc2.units.DateUnit;
 import ucar.ma2.IndexIterator;
 import ucar.ma2.Range;
 

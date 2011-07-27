@@ -35,6 +35,7 @@ import thredds.inventory.TimedCollection;
 import ucar.nc2.ft.point.PointCollectionImpl;
 import ucar.nc2.ft.point.PointIteratorAbstract;
 import ucar.nc2.ft.*;
+import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.VariableSimpleIF;
@@ -87,7 +88,7 @@ public class CompositePointCollection extends PointCollectionImpl implements Upd
   }
 
   @Override
-  public PointFeatureCollection subset(LatLonRect boundingBox, DateRange dateRange) throws IOException {
+  public PointFeatureCollection subset(LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException {
     if ((dateRange == null) && (boundingBox == null))
       return this;
     else if (dateRange == null)

@@ -35,6 +35,7 @@ package ucar.nc2.iosp.bufr;
 import ucar.ma2.*;
 import ucar.nc2.Structure;
 import ucar.nc2.Sequence;
+import ucar.nc2.iosp.BitReader;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.IOException;

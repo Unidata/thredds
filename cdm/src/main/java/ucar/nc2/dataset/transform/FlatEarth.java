@@ -33,11 +33,13 @@
 
 package ucar.nc2.dataset.transform;
 
+import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.CoordinateTransform;
 import ucar.nc2.dataset.ProjectionCT;
 import ucar.nc2.dataset.TransformType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.Variable;
+import ucar.unidata.geoloc.Earth;
 
 /**
  * Create a "FlatEarth" Projection from the information in the Coordinate Transform Variable.
@@ -55,10 +57,12 @@ public class FlatEarth extends AbstractCoordTransBuilder {
   }
 
   public CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, Variable ctv) {
-    double lon0 = readAttributeDouble( ctv, "longitude_of_projection_origin", Double.NaN);
-    double lat0 = readAttributeDouble( ctv, "latitude_of_projection_origin", Double.NaN);
+    double lon0 = readAttributeDouble( ctv, CF.LONGITUDE_OF_PROJECTION_ORIGIN, Double.NaN);
+    double lat0 = readAttributeDouble( ctv, CF.LATITUDE_OF_PROJECTION_ORIGIN, Double.NaN);
+    double rot = readAttributeDouble( ctv, ucar.unidata.geoloc.projection.FlatEarth.ROTATIONANGLE, 0.0);
+    double earth_radius = readAttributeDouble(ctv, CF.EARTH_RADIUS, Earth.getRadius()) * .001;
 
-    ucar.unidata.geoloc.projection.FlatEarth proj = new ucar.unidata.geoloc.projection.FlatEarth(lat0, lon0);
+    ucar.unidata.geoloc.projection.FlatEarth proj = new ucar.unidata.geoloc.projection.FlatEarth(lat0, lon0, rot, earth_radius);
     return new ProjectionCT(ctv.getShortName(), "FGDC", proj);
   }
 }

@@ -509,6 +509,11 @@ public class GempakSoundingIOSP extends GempakStationFileIOSP {
         @Override public int getCurrentRecno() {
             return -1;
         }
+
+        @Override
+        public void finish() {
+          // ignored
+        }
     }
 
     /**
@@ -589,6 +594,11 @@ public class GempakSoundingIOSP extends GempakStationFileIOSP {
          */
         @Override public int getCurrentRecno() {
             return siter.getCurrentRecno();
+        }
+
+        @Override
+        public void finish() {
+          siter.finish();
         }
 
     }

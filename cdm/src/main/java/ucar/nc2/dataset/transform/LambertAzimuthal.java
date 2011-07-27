@@ -33,6 +33,7 @@
 
 package ucar.nc2.dataset.transform;
 
+import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.*;
 import ucar.nc2.Variable;
 import ucar.unidata.geoloc.ProjectionImpl;
@@ -46,7 +47,7 @@ import ucar.unidata.geoloc.Earth;
 public class LambertAzimuthal extends AbstractCoordTransBuilder {
 
   public String getTransformName() {
-    return "lambert_azimuthal_equal_area";
+    return CF.LAMBERT_AZIMUTHAL_EQUAL_AREA;
   }
 
   public TransformType getTransformType() {
@@ -55,10 +56,10 @@ public class LambertAzimuthal extends AbstractCoordTransBuilder {
 
   public CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, Variable ctv) {
 
-    double lon0 = readAttributeDouble(ctv, "longitude_of_projection_origin", Double.NaN);
-    double lat0 = readAttributeDouble(ctv, "latitude_of_projection_origin", Double.NaN);
-    double false_easting = readAttributeDouble(ctv, "false_easting", 0.0);
-    double false_northing = readAttributeDouble(ctv, "false_northing", 0.0);
+    double lon0 = readAttributeDouble(ctv, CF.LONGITUDE_OF_PROJECTION_ORIGIN, Double.NaN);
+    double lat0 = readAttributeDouble(ctv, CF.LATITUDE_OF_PROJECTION_ORIGIN, Double.NaN);
+    double false_easting = readAttributeDouble(ctv, CF.FALSE_EASTING, 0.0);
+    double false_northing = readAttributeDouble(ctv, CF.FALSE_NORTHING, 0.0);
 
     if ((false_easting != 0.0) || (false_northing != 0.0)) {
       double scalef = getFalseEastingScaleFactor(ds, ctv);
@@ -67,11 +68,10 @@ public class LambertAzimuthal extends AbstractCoordTransBuilder {
     }
 
     // these must be in meters, projection needs them in km
-    double earth_radius = readAttributeDouble(ctv, "earth_radius", Earth.getRadius()) * .001;
+    double earth_radius = readAttributeDouble(ctv, CF.EARTH_RADIUS, Earth.getRadius()) * .001;
 
     ucar.unidata.geoloc.projection.LambertAzimuthalEqualArea proj =
-            new ucar.unidata.geoloc.projection.LambertAzimuthalEqualArea(lat0, lon0, false_easting, false_northing,
-                    earth_radius);
+            new ucar.unidata.geoloc.projection.LambertAzimuthalEqualArea(lat0, lon0, false_easting, false_northing, earth_radius);
 
     return new ProjectionCT(ctv.getShortName(), "FGDC", proj);
   }

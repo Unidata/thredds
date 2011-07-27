@@ -41,8 +41,6 @@ import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.util.CancelTask;
 
 import ucar.unidata.io.RandomAccessFile;
-import ucar.grid.GridIndex;
-import ucar.grid.GridRecord;
 
 import java.io.IOException;
 
@@ -75,7 +73,6 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
   static protected IndexExtendMode indexFileModeOnSync = IndexExtendMode.extendwrite; // default is to extend
 
   static protected boolean addLatLon = false; // add lat/lon coordinates for strict CF compliance LOOK should not be static !
-  static protected boolean useMaximalCoordSys = false;
   static protected boolean forceNewIndex = false; // force that a new index file is written - for debugging
   static protected boolean alwaysInCache = false;
 
@@ -88,15 +85,6 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
           debugProj = false,
           debugTiming = false,
           debugVert = false;
-
-   /**
-   * Set whether to use the maximal coordinate system or not
-   *
-   * @param b true to use
-   */
-  static public void useMaximalCoordSys(boolean b) {
-    useMaximalCoordSys = b;
-  }
 
   /**
    * Set whether to force new index or not
@@ -194,16 +182,6 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
    * The netCDF file that the iosp is part of
    */
   protected NetcdfFile ncfile;
-
-  /**
-   * the RandomAccessFile we are reading from
-   */
-  // protected RandomAccessFile raf;
-
-  /*
-   * place to store debug stuff
-   */
-  //protected StringBuilder parseInfo = new StringBuilder();
 
   /**
    * Use the given index to fill the NetcdfFile object with attributes and variables.
@@ -363,33 +341,6 @@ public abstract class GridServiceProvider extends AbstractIOServiceProvider {
     }
     return (null == pv.findRecord(ensIdx, timeIdx, levIdx));
   }
-
-  /*
-   * Ensemble information for this Variable:
-   *  ensembles - number of ensembles
-   *  pdn - productType of Ensemble
-   *  ensTypes[] - type of Ensemble
-   *
-   *  Both pdn and ensTypes are needed for ensemble type that is either
-   *  perturbed or derived :
-   *  Grib2Tables.getEnsembleType( int productType, int type)
-   *
-   *
-   *
-   * @param v2      Variable
-   * @return ensInfo int[]
-   *
-  public int[] ensembleInfo(Variable v2 ) {
-    GridVariable pv = (GridVariable) v2.getSPobject();
-    int ensembles = pv.getNEnsembles();
-    // pack ensembles, pdn, ensTypes into int array ensInfo
-    int[] ensInfo = new int[ ensembles + 2];
-    ensInfo[ 0 ] = ensembles;
-    ensInfo[ 1 ] = pv.getPDN();
-    System.arraycopy( pv.getEnsTypes(), 0, ensInfo, 2, ensembles);
-
-    return ensInfo;
-  } */
 
   /**
    * Read the data for this GridRecord

@@ -40,7 +40,7 @@
 
 package opendap.dap;
 
-import ucar.unidata.util.EscapeStrings;
+import ucar.nc2.util.net.EscapeStrings;
 
 import java.io.Serializable;
 import java.util.HashMap;

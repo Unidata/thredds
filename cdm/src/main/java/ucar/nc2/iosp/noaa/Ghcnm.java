@@ -23,11 +23,11 @@ import java.util.regex.Pattern;
  * IOSP can then recognize the ncsx file, so it can be passed into NetdfFile.open() instead of the ascii file.
  * Otherwise you have to explicitly specify the iosp, eg:
  * <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" location="filname" iosp="ucar.nc2.iosp.noaa.Ghcnm" />
- *
+ * <p/>
  * The index has list of stations and offsets into station file and data file.
  * since the data file has one station's data grouped together, this efficiently answers "get all data for station".
  * One could sort datafile by time, and add time index, to answer "get all data for time range".
- *
+ * <p/>
  * <pre>
  * Protobuf generation:
  * cd c:/dev/tds4.2/thredds/cdm/src/main/java
@@ -434,30 +434,30 @@ public class Ghcnm extends AbstractIOServiceProvider {
     String base = dataFile.substring(0, pos);
     String ext = dataFile.substring(pos);
 
-     // must be data file or index file
+    // must be data file or index file
     if (!ext.equals(DAT_EXT) && !ext.equals(IDX_EXT))
       return false;
 
-     if (ext.equals(IDX_EXT)) {
-       // data, stn files must be in the same directory
-       File datFile = new File(base+DAT_EXT);
-       if (!datFile.exists())
-          return false;
-       File stnFile = new File(base+STN_EXT);
-       if (!stnFile.exists())
-         return false;
+    if (ext.equals(IDX_EXT)) {
+      // data, stn files must be in the same directory
+      File datFile = new File(base + DAT_EXT);
+      if (!datFile.exists())
+        return false;
+      File stnFile = new File(base + STN_EXT);
+      if (!stnFile.exists())
+        return false;
 
-       raf.seek(0);
-       byte[] b = new byte[MAGIC_START.length()];
-       raf.read(b);
-       String test = new String(b, "UTF-8");
-       return test.equals(MAGIC_START);
+      raf.seek(0);
+      byte[] b = new byte[MAGIC_START.length()];
+      raf.read(b);
+      String test = new String(b, "UTF-8");
+      return test.equals(MAGIC_START);
 
-     } else {
-       // stn files must be in the same directory
-       File stnFile = new File(base+STN_EXT);
-       return (stnFile.exists()); // LOOK BAD!! NOT GOOD ENOUGH
-     }
+    } else {
+      // stn files must be in the same directory
+      File stnFile = new File(base + STN_EXT);
+      return (stnFile.exists()); // LOOK BAD!! NOT GOOD ENOUGH
+    }
   }
 
   @Override
@@ -483,28 +483,28 @@ public class Ghcnm extends AbstractIOServiceProvider {
     // did the index file get passed in ?
     if (ext.equals(IDX_EXT)) {
       // must be in the same directory
-      File datFile = new File(base+DAT_EXT);
+      File datFile = new File(base + DAT_EXT);
       if (!datFile.exists())
-         throw new FileNotFoundException(datFile.getPath()+" must exist");
-      File stnFile = new File(base+STN_EXT);
+        throw new FileNotFoundException(datFile.getPath() + " must exist");
+      File stnFile = new File(base + STN_EXT);
       if (!stnFile.exists())
-         throw new FileNotFoundException(stnFile.getPath()+" must exist");
+        throw new FileNotFoundException(stnFile.getPath() + " must exist");
 
-      this.raf = new RandomAccessFile(base+DAT_EXT, "r");
-      this.stnRaf = new RandomAccessFile(base+STN_EXT, "r");
+      this.raf = new RandomAccessFile(base + DAT_EXT, "r");
+      this.stnRaf = new RandomAccessFile(base + STN_EXT, "r");
       readIndex(raf.getLocation());
       raf.close();
 
     } else { // must be the data file, we will write an index if needed below
       this.raf = raf;
       if (!(ext.equals(DAT_EXT)))
-        throw new FileNotFoundException("Ghcnm: file must end with "+DAT_EXT);
+        throw new FileNotFoundException("Ghcnm: file must end with " + DAT_EXT);
 
-      File stnFile = new File(base+STN_EXT);
+      File stnFile = new File(base + STN_EXT);
       if (!stnFile.exists())
-        throw new FileNotFoundException(stnFile.getPath()+" must exist");
-      this.stnRaf = new RandomAccessFile(base+STN_EXT, "r");
-   }
+        throw new FileNotFoundException(stnFile.getPath() + " must exist");
+      this.stnRaf = new RandomAccessFile(base + STN_EXT, "r");
+    }
 
     //////////////////////////////////////////////////
     // LOOK - can we externalize config ??
@@ -557,7 +557,7 @@ public class Ghcnm extends AbstractIOServiceProvider {
     TableParser.Field derived = dataParser.addDerivedField(org, new TableParser.Transform() {
       public Object derive(Object org) {
         int year = (Integer) org;
-        return year+"-01-01T00:00:00Z";
+        return year + "-01-01T00:00:00Z";
       }
     }, String.class);
     dataSm.findMember(TIME).setDataObject(derived);
@@ -639,7 +639,7 @@ public class Ghcnm extends AbstractIOServiceProvider {
     TableParser.Field derived2 = dataParser.addDerivedField(org2, new TableParser.Transform() {
       public Object derive(Object org) {
         int year = (Integer) org;
-        return year+"-01-01T00:00:00Z";
+        return year + "-01-01T00:00:00Z";
       }
     }, String.class);
     nestedSm.findMember(TIME).setDataObject(derived2);
@@ -668,7 +668,7 @@ public class Ghcnm extends AbstractIOServiceProvider {
     TableParser.Field derived3 = stnParser.addDerivedField(org3, new TableParser.Transform() {
       public Object derive(Object org) {
         long stnid = (Long) org;
-        return (stnid % 1000 == 0) ? new Integer((int)(stnid/1000) % 100000) : new Integer(-9999);
+        return (stnid % 1000 == 0) ? new Integer((int) (stnid / 1000) % 100000) : new Integer(-9999);
       }
     }, int.class);
     stnSm.findMember(WMO).setDataObject(derived3);
@@ -681,7 +681,7 @@ public class Ghcnm extends AbstractIOServiceProvider {
     ncfile.finish();
 
     // make index file if needed
-    File idxFile = new File(base+IDX_EXT);
+    File idxFile = new File(base + IDX_EXT);
     if (!idxFile.exists())
       makeIndex(idxFile);
     else
@@ -689,7 +689,7 @@ public class Ghcnm extends AbstractIOServiceProvider {
   }
 
   private Variable makeMember(Structure s, String shortName, DataType dataType, String dims, String longName, String units, String cfName,
-                                AxisType atype) {
+                              AxisType atype) {
 
     Variable v = new Variable(ncfile, null, s, shortName, dataType, dims);
     v.addAttribute(new Attribute("long_name", longName));
@@ -738,11 +738,11 @@ public class Ghcnm extends AbstractIOServiceProvider {
       throw new IllegalStateException("bad index file");
     int version = fin.read();
     if (version != 1)
-      throw new IllegalStateException("Bad version = "+version);
+      throw new IllegalStateException("Bad version = " + version);
 
     int count = NcStream.readVInt(fin);
 
-    for (int i=0; i<count; i++) {
+    for (int i = 0; i < count; i++) {
       int size = NcStream.readVInt(fin);
       byte[] pb = new byte[size];
       NcStream.readFully(fin, pb);
@@ -828,7 +828,7 @@ public class Ghcnm extends AbstractIOServiceProvider {
       size += NcStream.writeVInt(fout, pb.length);
       size += pb.length;
       fout.write(pb);
-    }   
+    }
     fout.close();
 
     //System.out.println(" index size=" + size);
@@ -855,13 +855,13 @@ public class Ghcnm extends AbstractIOServiceProvider {
       this.dataCount = proto.getDataCount();
     }
 
-    private byte[] encodeStationProto()  {
+    private byte[] encodeStationProto() {
       GhcnmProto.StationIndex.Builder builder = GhcnmProto.StationIndex.newBuilder();
       builder.setStnid(stnId);
       builder.setStnPos(stnPos);
       builder.setDataPos(dataPos);
       builder.setDataCount(dataCount);
-      ucar.nc2.iosp.noaa.GhcnmProto.StationIndex proto =  builder.build();
+      ucar.nc2.iosp.noaa.GhcnmProto.StationIndex proto = builder.build();
       return proto.toByteArray();
     }
   }
@@ -914,7 +914,7 @@ public class Ghcnm extends AbstractIOServiceProvider {
    */
   public Array readData(Variable v2, Section section) throws IOException, InvalidRangeException {
     Vinfo vinfo = (Vinfo) v2.getSPobject();
-    return new ArraySequence( vinfo.sm, new SeqIter(vinfo), vinfo.nelems);
+    return new ArraySequence(vinfo.sm, new SeqIter(vinfo), vinfo.nelems);
   }
 
   /**
@@ -1002,6 +1002,11 @@ public class Ghcnm extends AbstractIOServiceProvider {
     public int getCurrentRecno() {
       return recno - 1;
     }
+
+    @Override
+    public void finish() {
+      // ignored
+    }
   }
 
   private class StnDataIter implements StructureDataIterator {
@@ -1054,6 +1059,11 @@ public class Ghcnm extends AbstractIOServiceProvider {
     public int getCurrentRecno() {
       return countRead - 1;
     }
+
+    @Override
+    public void finish() {
+      // ignored
+    }
   }
 
   private class StructureDataAsciiGhcnm extends StructureDataAscii {
@@ -1087,26 +1097,30 @@ public class Ghcnm extends AbstractIOServiceProvider {
   }
 
   static private void stnDuplicates(String filename, Set<Integer> stns, boolean wantDups) throws IOException {
-    System.out.printf("%s%n",filename);
+    System.out.printf("%s%n", filename);
     int count = 0;
     int countDups = 0;
     NetcdfFile ncfile = open(filename);
     Sequence seq = (Sequence) ncfile.findVariable(STNS);
     StructureDataIterator iter = seq.getStructureIterator(-1);
-    while (iter.hasNext()) {
-      count++;
-      StructureData sdata = iter.next();
-      StructureMembers.Member m = sdata.findMember(STNID);
-      int stnid = sdata.getScalarInt(m);
-      if (stns.contains(stnid)) {
-        countDups++;
-        if (!wantDups) System.out.printf("  dup %d%n",stnid);
-      } else {
-        stns.add(stnid);
-        if (wantDups) System.out.printf("  dup %d%n",stnid);
+    try {
+      while (iter.hasNext()) {
+        count++;
+        StructureData sdata = iter.next();
+        StructureMembers.Member m = sdata.findMember(STNID);
+        int stnid = sdata.getScalarInt(m);
+        if (stns.contains(stnid)) {
+          countDups++;
+          if (!wantDups) System.out.printf("  dup %d%n", stnid);
+        } else {
+          stns.add(stnid);
+          if (wantDups) System.out.printf("  dup %d%n", stnid);
+        }
       }
+    } finally {
+      iter.finish();
     }
-    System.out.printf(" counts=%d dups=%d%n",count,countDups);
+    System.out.printf(" counts=%d dups=%d%n", count, countDups);
   }
 
 
@@ -1123,7 +1137,7 @@ public class Ghcnm extends AbstractIOServiceProvider {
     int balony = 0;
     Matcher matcher = dataPattern.matcher(line);
     if (matcher.matches()) {
-      for (int i=1; i<=matcher.groupCount(); i++) {
+      for (int i = 1; i <= matcher.groupCount(); i++) {
         String r = matcher.group(i);
         if (r == null) continue;
         int value = (int) Long.parseLong(r.trim());
@@ -1139,7 +1153,7 @@ public class Ghcnm extends AbstractIOServiceProvider {
   static private void readDataRegexp(String filename) throws IOException {
     int balony = 0;
     long start = System.currentTimeMillis();
-    System.out.printf("regexp %s%n",filename);
+    System.out.printf("regexp %s%n", filename);
     RandomAccessFile raf = new RandomAccessFile(filename, "r");
     String line;
     while (true) {
@@ -1156,26 +1170,29 @@ public class Ghcnm extends AbstractIOServiceProvider {
 
   static private void readData(String filename) throws IOException {
     long start = System.currentTimeMillis();
-    System.out.printf("%s%n",filename);
+    System.out.printf("%s%n", filename);
     int balony = 0;
     NetcdfFile ncfile = open(filename);
     Sequence seq = (Sequence) ncfile.findVariable(RECORD);
     StructureDataIterator iter = seq.getStructureIterator(-1);
-    while (iter.hasNext()) {
-      StructureData sdata = iter.next();
-      StructureMembers.Member m = sdata.findMember(YEAR);
-      balony += sdata.getScalarInt(m);
+    try {
+      while (iter.hasNext()) {
+        StructureData sdata = iter.next();
+        StructureMembers.Member m = sdata.findMember(YEAR);
+        balony += sdata.getScalarInt(m);
 
-      /* StructureMembers sm = sdata.getStructureMembers();
-      for (StructureMembers.Member m : sm.getMembers()) {
-        Array data = sdata.getArray(m);
-        balony += data.getSize();
-      } */
+        /* StructureMembers sm = sdata.getStructureMembers();
+       for (StructureMembers.Member m : sm.getMembers()) {
+         Array data = sdata.getArray(m);
+         balony += data.getSize();
+       } */
+      }
+    } finally {
+      iter.finish();
     }
     long took = System.currentTimeMillis() - start;
     System.out.printf("DONE %d == %d msecs%n", balony, took);
   }
-
 
 
   static public void main(String args[]) throws IOException {

@@ -34,6 +34,8 @@ package ucar.nc2.dt.radial;
 
 import ucar.nc2.dataset.*;
 import ucar.nc2.dt.*;
+import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.Variable;
 import ucar.nc2.VariableSimpleIF;
@@ -58,18 +60,17 @@ public abstract class RadialDatasetSweepAdapter extends TypedDatasetImpl impleme
   protected HashMap csHash = new HashMap();
   protected ucar.nc2.units.DateUnit dateUnits;
 
-  public RadialDatasetSweepAdapter() {
-  }
-
-  public RadialDatasetSweepAdapter(NetcdfDataset ds) {
+  public RadialDatasetSweepAdapter() {}
+  
+  public RadialDatasetSweepAdapter( NetcdfDataset ds) {
     super(ds);
 
     // look for radial data variables
     parseInfo.append("RadialDatasetAdapter look for RadialVariables\n");
-    List vars = ds.getVariables();
-    for (int i = 0; i < vars.size(); i++) {
-      // VariableEnhanced varDS = (VariableEnhanced) vars.get(i);
-      addRadialVariable(ds, (Variable) vars.get(i));
+    List vars  = ds.getVariables();
+    for (int i=0; i< vars.size(); i++) {
+     // VariableEnhanced varDS = (VariableEnhanced) vars.get(i);
+      addRadialVariable( ds, (Variable) vars.get(i));
     }
   }
 
@@ -82,15 +83,15 @@ public abstract class RadialDatasetSweepAdapter extends TypedDatasetImpl impleme
   public String getDetailInfo() {
     StringBuilder sbuff = new StringBuilder();
 
-    sbuff.append(" Radar ID = " + getRadarID() + "\n");
-    sbuff.append(" Radar Name = " + getRadarName() + "\n");
-    sbuff.append(" Data Format Name= " + getDataFormat() + "\n");
-    sbuff.append(" Common Type = " + getCommonType() + "\n");
-    sbuff.append(" Common Origin = " + getCommonOrigin() + "\n");
-    sbuff.append(" Date Unit = " + getTimeUnits().getUnitsString() + "\n");
-    sbuff.append(" isStationary = " + isStationary() + "\n");
+    sbuff.append(" Radar ID = "+getRadarID()+"\n");
+    sbuff.append(" Radar Name = "+getRadarName()+"\n");
+    sbuff.append(" Data Format Name= "+getDataFormat()+"\n");
+    sbuff.append(" Common Type = "+getCommonType()+"\n");
+    sbuff.append(" Common Origin = "+getCommonOrigin()+"\n");
+    sbuff.append(" Date Unit = "+getTimeUnits().getUnitsString()+"\n");
+    sbuff.append(" isStationary = "+isStationary()+"\n");
     //sbuff.append(" isRadial = "+isRadial()+"\n");
-    sbuff.append(" isVolume = " + isVolume() + "\n");
+    sbuff.append(" isVolume = "+isVolume()+"\n");
     sbuff.append("\n");
     sbuff.append(super.getDetailInfo());
 
@@ -100,16 +101,12 @@ public abstract class RadialDatasetSweepAdapter extends TypedDatasetImpl impleme
   protected abstract void setEarthLocation(); // reminder for subclasses to set this
 
   public RadialDatasetSweep.Type getCommonType() {
-    return null;
+      return null;
   }
 
-  public ucar.nc2.units.DateUnit getTimeUnits() {
-    return dateUnits;
-  }
+  public ucar.nc2.units.DateUnit getTimeUnits() { return dateUnits; }
 
-  public ucar.unidata.geoloc.EarthLocation getEarthLocation() {
-    return origin;
-  }
+  public ucar.unidata.geoloc.EarthLocation getEarthLocation() { return origin; }
 
   // you must set EarthLocation before you call this.
   protected void setBoundingBox() {
@@ -148,75 +145,45 @@ public abstract class RadialDatasetSweepAdapter extends TypedDatasetImpl impleme
     private String desp;
     private List<Attribute> attributes;
 
-    public MyRadialVariableAdapter(String vName, List<Attribute> atts) {
+    public MyRadialVariableAdapter( String vName, List<Attribute> atts )
+    {
       super();
       rank = 1;
-      shape = new int[]{1};
+      shape= new int[] {1};
       name = vName;
       desp = "A radial variable holding a list of radial sweeps";
       attributes = atts;
     }
-
     public String toString() {
-      return name;
-    }
+    return name;
+  }
 
-    /**
-     * Sort by name
-     */
+  /**
+   * Sort by name
+   */
     public int compareTo(VariableSimpleIF o) {
-      return getShortName().compareTo(o.getShortName());
+     return getName().compareTo(o.getName());
     }
+    public String getName() { return this.name; }
+    public String getShortName() { return this.name; }
+    public DataType getDataType() { return DataType.FLOAT; }
+    public String getDescription() { return this.desp; }
+    public String getInfo() { return this.desp; }
+    public String getUnitsString() { return "N/A"; }
 
-    public String getName() {
-      return this.name;
-    }
-
-    public String getShortName() {
-      return this.name;
-    }
-
-    public DataType getDataType() {
-      return DataType.FLOAT;
-    }
-
-    public String getDescription() {
-      return this.desp;
-    }
-
-    public String getInfo() {
-      return this.desp;
-    }
-
-    public String getUnitsString() {
-      return "N/A";
-    }
-
-    public int getRank() {
-      return this.rank;
-    }
-
-    public int[] getShape() {
-      return this.shape;
-    }
-
-    public List<Dimension> getDimensions() {
-      return null;
-    }
-
-    public List<Attribute> getAttributes() {
-      return attributes;
-    }
-
-    public ucar.nc2.Attribute findAttributeIgnoreCase(String attName) {
-      Iterator it = attributes.iterator();
-      Attribute at = null;
-      while (it.hasNext()) {
-        at = (Attribute) it.next();
-        if (attName.equalsIgnoreCase(at.getName()))
-          break;
-      }
-      return at;
+    public int getRank() {  return this.rank; }
+    public int[] getShape() { return this.shape; }
+    public List<Dimension> getDimensions() { return null; }
+    public List<Attribute> getAttributes() { return attributes; }
+    public ucar.nc2.Attribute findAttributeIgnoreCase(String attName){
+        Iterator it = attributes.iterator();
+        Attribute at = null;
+        while(it.hasNext()){
+           at = (Attribute)it.next();
+           if(attName.equalsIgnoreCase(at.getName()))
+              break;
+        }
+        return at;
     }
   }
 
@@ -229,6 +196,18 @@ public abstract class RadialDatasetSweepAdapter extends TypedDatasetImpl impleme
 
   public DateRange getDateRange() {
     return new DateRange(getStartDate(), getEndDate());
+  }
+
+  public CalendarDateRange getCalendarDateRange() {
+    return CalendarDateRange.of(getStartDate(), getEndDate());
+  }
+
+  public CalendarDate getCalendarDateStart() {
+    return CalendarDate.of(getStartDate());
+  }
+
+  public CalendarDate getCalendarDateEnd() {
+    return CalendarDate.of(getEndDate());
   }
 
   public void getDetailInfo(Formatter sf) {
@@ -259,7 +238,6 @@ public abstract class RadialDatasetSweepAdapter extends TypedDatasetImpl impleme
   }
 
   protected FileCache fileCache;
-
   public void setFileCache(FileCache fileCache) {
     this.fileCache = fileCache;
   }

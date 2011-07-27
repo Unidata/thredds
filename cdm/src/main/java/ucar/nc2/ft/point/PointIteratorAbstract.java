@@ -32,6 +32,7 @@
  */
 package ucar.nc2.ft.point;
 
+import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.nc2.ft.PointFeature;
@@ -95,10 +96,10 @@ public abstract class PointIteratorAbstract implements PointFeatureIterator {
     if (collection != null) {
       if (collection.getBoundingBox() == null)
         collection.setBoundingBox(bb);
-      if (collection.getDateRange() == null) {
-        DateRange dr = getDateRange();
+      if (collection.getCalendarDateRange() == null) {
+        CalendarDateRange dr = getCalendarDateRange();
         if (dr != null)
-          collection.setDateRange(dr);
+          collection.setCalendarDateRange(dr);
       }
       if (collection.size() <= 0) {
         if (count < 0) count = 0;
@@ -112,9 +113,14 @@ public abstract class PointIteratorAbstract implements PointFeatureIterator {
   }
 
   public DateRange getDateRange() {
+    CalendarDateRange cdr = getCalendarDateRange();
+    return (cdr != null) ? cdr.toDateRange() : null;
+  }
+
+  public CalendarDateRange getCalendarDateRange() {
     if (!calcBounds) return null;
     if (timeUnit == null) return null;
-    return new DateRange(timeUnit.makeDate(minTime), timeUnit.makeDate(maxTime));
+    return CalendarDateRange.of(timeUnit.makeCalendarDate(minTime), timeUnit.makeCalendarDate(maxTime));
   }
 
   public int getCount() { return count; }
@@ -122,15 +128,15 @@ public abstract class PointIteratorAbstract implements PointFeatureIterator {
   static public class Filter implements PointFeatureIterator.Filter {
 
     private LatLonRect filter_bb;
-    private DateRange filter_date;
+    private CalendarDateRange filter_date;
 
-    public Filter(LatLonRect filter_bb, DateRange filter_date) {
+    public Filter(LatLonRect filter_bb, CalendarDateRange filter_date) {
       this.filter_bb = filter_bb;
       this.filter_date = filter_date;
     }
 
     public boolean filter(PointFeature pdata) {
-      if ((filter_date != null) && !filter_date.included(pdata.getObservationTimeAsDate()))
+      if ((filter_date != null) && !filter_date.includes(pdata.getObservationTimeAsCalendarDate()))
         return false;
 
       if ((filter_bb != null) && !filter_bb.contains(pdata.getLocation().getLatitude(), pdata.getLocation().getLongitude()))

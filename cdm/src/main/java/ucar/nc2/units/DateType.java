@@ -33,6 +33,9 @@
 
 package ucar.nc2.units;
 
+import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateFormatter;
+
 import java.util.*;
 import java.text.SimpleDateFormat;
 
@@ -62,13 +65,11 @@ public class DateType {
   static public String hiddenProperties() {
     return "text blank present";
   }
-  // static public String editableProperties() { return "date format type"; }
 
-  private DateFormatter formatter = null;
-
+  /////////////////////////////////////////////////////
   private String text, format, type;
   private boolean isPresent, isBlank;
-  private Date date;
+  private CalendarDate date;
 
   /**
    * Constructor using a java.util.Date
@@ -78,7 +79,7 @@ public class DateType {
    */
   public DateType(boolean isPresent, java.util.Date date) {
     this.isPresent = isPresent;
-    this.date = date;
+    this.date = CalendarDate.of(date);
   }
 
   /**
@@ -99,7 +100,7 @@ public class DateType {
     type = src.getType();
     isPresent = src.isPresent();
     isBlank = src.isBlank();
-    date = src.getDate();
+    date = src.getCalendarDate();
   }
 
   /**
@@ -132,44 +133,41 @@ public class DateType {
     // see if its got a format
     if (format != null) {
       SimpleDateFormat dateFormat = new java.text.SimpleDateFormat(format);
-      date = dateFormat.parse(text);
+      Date d = dateFormat.parse(text);
+      date = CalendarDate.of(d);
       return;
     }
 
     // see if its a udunits string
     if (text.indexOf("since") > 0) {
-      date = ucar.nc2.units.DateUnit.getStandardDate(text);
+      date = CalendarDate.parseUdunits(null, text);
       if (date == null)
-        throw new java.text.ParseException("invalid udunit date unit", 0);
+        throw new java.text.ParseException("invalid udunit date unit ="+text, 0);
       return;
     }
 
-    if (null == formatter)
-      formatter = new DateFormatter();
-
-    date = formatter.getISODate(text);
+    date = CalendarDate.parseISOformat(null, text);
     if (date == null)
-      throw new java.text.ParseException("invalid ISO date unit", 0);
+      throw new java.text.ParseException("invalid ISO date unit ="+text, 0);
   }
 
   /**
    * Get this as a Date
    *
+   * @deprecated use getCalendarDate()
    * @return Date
    */
   public Date getDate() {
-    return isPresent() ? new Date() : date;
+    return isPresent() ? new Date() : date.toDate();
   }
 
   /**
-   * Set the Date. isPresent is set to false.
+   * Get this as a CalendarDate
    *
-   * @param date set to this Date
+   * @return CalendarDate
    */
-  public void setDate(Date date) {
-    this.date = date;
-    this.text = null;
-    this.isPresent = false;
+  public CalendarDate getCalendarDate() {
+    return isPresent() ? CalendarDate.present() : date;
   }
 
   /**
@@ -236,7 +234,7 @@ public class DateType {
    */
   public boolean before(Date d) {
     if (isPresent()) return false;
-    return date.before(d);
+    return date.isBefore(CalendarDate.of(d));
   }
 
   /**
@@ -248,7 +246,7 @@ public class DateType {
   public boolean before(DateType d) {
     if (d.isPresent()) return true;
     if (isPresent()) return false;
-    return date.before(d.getDate());
+    return date.isBefore(d.getCalendarDate());
   }
 
   /**
@@ -259,7 +257,7 @@ public class DateType {
    */
   public boolean after(Date d) {
     if (isPresent()) return true;
-    return date.after(d);
+    return date.isAfter(CalendarDate.of(d));
   }
 
   /**
@@ -268,8 +266,10 @@ public class DateType {
    * @return formatted date
    */
   public String toDateString() {
-    if (null == formatter) formatter = new DateFormatter();
-    return formatter.toDateOnlyString(getDate());
+    if (isPresent())
+      return CalendarDateFormatter.toDateStringPresent();
+    else
+      return CalendarDateFormatter.toDateString(date);
   }
 
   /**
@@ -278,18 +278,19 @@ public class DateType {
    * @return formatted date
    */
   public String toDateTimeString() {
-    if (null == formatter) formatter = new DateFormatter();
-    return formatter.toDateTimeString(getDate());
+   if (isPresent())
+      return CalendarDateFormatter.toDateTimeStringPresent();
+    else
+      return CalendarDateFormatter.toDateTimeString(date);
   }
 
   /**
-   * Same as DateFormatter.toDateTimeStringISO()
+   * Get ISO formatted string
    *
-   * @return formatted date
+   * @return ISO formatted date
    */
   public String toDateTimeStringISO() {
-    if (null == formatter) formatter = new DateFormatter();
-    return formatter.toDateTimeStringISO(getDate());
+    return date.toString();
   }
 
   /**

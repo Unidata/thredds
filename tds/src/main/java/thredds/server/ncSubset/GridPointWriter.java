@@ -44,6 +44,7 @@ import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VariableEnhanced;
+import ucar.nc2.time.CalendarDate;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.units.DateType;
 
@@ -89,7 +90,7 @@ public class GridPointWriter {
       grids.add(grid);
     }
     GridAsPointDataset gap = new GridAsPointDataset(grids);
-    List<Date> dates = gap.getDates(); // list of all possible dates
+    List<CalendarDate> dates = gap.getDates(); // list of all possible dates
 
     // vertical coordinate : use the first grid that has a z coordinate
     double[] zValues = null;
@@ -103,14 +104,14 @@ public class GridPointWriter {
     boolean hasZ = (zAxis != null);
 
     // decide on the subset of time wanted
-    List<Date> wantDates = new ArrayList<Date>();
+    List<CalendarDate> wantDates = new ArrayList<CalendarDate>();
     if (qp.hasTimePoint) {
-      long want = qp.time.getDate().getTime();
+      CalendarDate want = CalendarDate.of( qp.time.getDate());
       int best_index = 0;
       long best_diff = Long.MAX_VALUE;
       for (int i = 0; i < dates.size(); i++) {
-        Date date =  dates.get(i);
-        long diff = Math.abs(date.getTime() - want);
+        CalendarDate date =  dates.get(i);
+        long diff = date.getDifferenceInMsecs( want);
         if (diff < best_diff) {
           best_index = i;
           best_diff = diff;
@@ -119,10 +120,10 @@ public class GridPointWriter {
       wantDates.add(dates.get(best_index));
 
     } else if (qp.hasDateRange) {
-      Date start = qp.getDateRange().getStart().getDate();
-      Date end = qp.getDateRange().getEnd().getDate();
-      for (Date date : dates) {
-        if (date.before(start) || date.after(end)) continue;
+      CalendarDate start = qp.getCalendarDateRange().getStart();
+      CalendarDate end = qp.getCalendarDateRange().getEnd();
+      for (CalendarDate date : dates) {
+        if (date.isBefore(start) || date.isAfter(end)) continue;
         wantDates.add(date);
       }
     } else { // all
@@ -204,8 +205,8 @@ public class GridPointWriter {
     if (hasZ) {
 
       // loop over each time
-      for (Date date : wantDates) {
-        timeData.set(format.toDateTimeStringISO(date));
+      for (CalendarDate date : wantDates) {
+        timeData.set(date.toString());
 
         // loop over z
         for (int i = 0; i < zValues.length; i++) {
@@ -259,8 +260,8 @@ public class GridPointWriter {
     } else {
 
       // loop over each time
-      for (Date date : wantDates) {
-        timeData.set(format.toDateTimeStringISO(date));
+      for (CalendarDate date : wantDates) {
+        timeData.set(date.toString());
 
         // loop over each grid
         for (GridDatatype grid : grids) {
@@ -303,7 +304,7 @@ public class GridPointWriter {
   abstract class Writer {
     abstract void header(StructureMembers members, List<ucar.unidata.geoloc.Station> stnList);
 
-    abstract void write(String stnName, Date obsDate, StructureData sdata) throws IOException;
+    abstract void write(String stnName, CalendarDate obsDate, StructureData sdata) throws IOException;
 
     abstract void trailer();
 
@@ -345,7 +346,7 @@ public class GridPointWriter {
       writer.println("</grid>");
     }
 
-    public void write(String stnName, Date obsDate, StructureData sdata) throws IOException {
+    public void write(String stnName, CalendarDate obsDate, StructureData sdata) throws IOException {
       writer.println("  <point>");
       List<StructureMembers.Member> members = (List<StructureMembers.Member>) sdata.getStructureMembers().getMembers();
       for (StructureMembers.Member m : members) {
@@ -394,7 +395,7 @@ public class GridPointWriter {
     public void trailer() {
     }
 
-    public void write(String stnName, Date obsDate, StructureData sdata) throws IOException {
+    public void write(String stnName, CalendarDate obsDate, StructureData sdata) throws IOException {
       boolean first = true;
       List<StructureMembers.Member> members = (List<StructureMembers.Member>) sdata.getStructureMembers().getMembers();
       for (StructureMembers.Member m : members) {
@@ -459,8 +460,8 @@ public class GridPointWriter {
       }
     }
 
-    public void write(String stnName, Date obsDate, StructureData sdata) throws IOException {
-      sobsWriter.writeRecord(stnName, obsDate, sdata);
+    public void write(String stnName, CalendarDate obsDate, StructureData sdata) throws IOException {
+      sobsWriter.writeRecord(stnName, obsDate.toDate(), sdata);
       count++;
     }
   }
@@ -528,8 +529,8 @@ public class GridPointWriter {
       }
     }
 
-    public void write(String stnName, Date obsDate, StructureData sdata) throws IOException {
-      pobsWriter.writeRecord(stnName, obsDate, sdata);
+    public void write(String stnName, CalendarDate obsDate, StructureData sdata) throws IOException {
+      pobsWriter.writeRecord(stnName, obsDate.toDate(), sdata);
       count++;
     }
   }

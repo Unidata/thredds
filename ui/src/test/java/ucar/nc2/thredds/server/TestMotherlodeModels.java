@@ -88,7 +88,7 @@ public class TestMotherlodeModels implements CatalogCrawler.Listener {
     out = System.out; // new PrintStream( new BufferedOutputStream( fout));
   }
 
-  public void extract() throws IOException {
+  public void crawl() throws IOException {
 
     out.println("Read " + catUrl);
 
@@ -209,10 +209,12 @@ public class TestMotherlodeModels implements CatalogCrawler.Listener {
   public static JPanel main;
 
   public static void main(String args[]) throws IOException {
-    String server = "http://motherlode.ucar.edu:8081/thredds";
+    ThreddsDataFactory.setPreferCdm(true);
 
-    String catalog = "/idd/models.xml";
-    String catalogFnmoc = "/idd/fnmoc.xml";
+    String problemCat = "http://localhost:8080/thredds/catalog/NOAA/CFSR/timeseries/catalog.xml";
+    String server = "http://motherlode.ucar.edu:9080/thredds";
+
+    String catalog = "/idd/modelsNew.xml";
 
     //"http://motherlode.ucar.edu:9080/thredds/idd/models_old.xml"
 
@@ -229,15 +231,15 @@ public class TestMotherlodeModels implements CatalogCrawler.Listener {
     main = new JPanel();
     main.setLayout(new BoxLayout(main, BoxLayout.Y_AXIS));
 
-    // TestMotherlodeModels job = new TestMotherlodeModels("problem", problemCat, CatalogCrawler.USE_ALL, false);
-    TestMotherlodeModels job = new TestMotherlodeModels("problem", server+catalogFnmoc, CatalogCrawler.USE_RANDOM_DIRECT, false);
+    //TestMotherlodeModels job = new TestMotherlodeModels("problem", problemCat, CatalogCrawler.USE_RANDOM_DIRECT, false);
+    TestMotherlodeModels job = new TestMotherlodeModels("dev", server+catalog, CatalogCrawler.USE_RANDOM_DIRECT, false);
 
     frame.getContentPane().add(main);
     frame.pack();
     frame.setLocation(40, 300);
     frame.setVisible(true);
 
-    job.extract();
+    job.crawl();
   }
 
 }

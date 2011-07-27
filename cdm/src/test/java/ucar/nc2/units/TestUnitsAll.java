@@ -33,6 +33,7 @@
 package ucar.nc2.units;
 
 import junit.framework.*;
+import ucar.nc2.time.TestCalendarDateUnit;
 
 /**
  * TestSuite that runs all nj22 unit tests.
@@ -43,10 +44,13 @@ public class TestUnitsAll {
   public static junit.framework.Test suite ( ) {
     TestSuite suite= new TestSuite();
     suite.addTest(new TestSuite(TestBasic.class));
-    suite.addTest(new TestSuite(TestDate.class));
-
     suite.addTest(new TestSuite(TestSimpleUnits.class));
-    //suite.addTest(new TestSuite(TestTimeUnits.class));
+
+    suite.addTest(new TestSuite(TestCalendarDateUnit.class));
+
+    // deprecated but still used
+    suite.addTest(new TestSuite(TestDate.class));
+    suite.addTest(new TestSuite(TestTimeUnits.class));
     suite.addTest(new TestSuite(TestDateUnits.class));
     suite.addTest(new TestSuite(TestDateRange.class));
 

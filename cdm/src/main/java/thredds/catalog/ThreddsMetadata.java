@@ -39,6 +39,7 @@ import java.util.*;
 import java.net.URI;
 import java.io.IOException;
 
+import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.nc2.dataset.CoordinateAxis1D;
@@ -74,6 +75,7 @@ public class ThreddsMetadata {
   // singles
   protected GeospatialCoverage gc;
   protected DateRange timeCoverage;
+  //protected CalendarDateRange cdateCoverage;
   protected String authorityName, serviceName;
   protected FeatureType dataType;
   protected DataFormatType dataFormat;
@@ -351,10 +353,25 @@ public class ThreddsMetadata {
   }
 
   /**
+   * set TimeCoverage from a CalendarDateRange
+   * @param cdc set CalendarDateRange to this
+   */
+  public void setTimeCoverage(CalendarDateRange cdc) {
+    this.timeCoverage = cdc.toDateRange();
+  }
+
+  /**
    * @return TimeCoverage element
    */
   public DateRange getTimeCoverage() {
     return timeCoverage;
+  }
+
+  /**
+   * @return TimeCoverage element as CalendarDateRange
+   */
+  public CalendarDateRange getCalendarDateCoverage() {
+    return CalendarDateRange.of(timeCoverage);
   }
 
   /**
@@ -1245,6 +1262,9 @@ public class ThreddsMetadata {
 
       this.eastwest = new Range(llpt.getLongitude(), bb.getWidth(), 0.0, "degrees_east");
       this.northsouth = new Range(llpt.getLatitude(), height, 0.0, "degrees_north");
+
+      if ((bb.getWidth() > 358) && (height > 178))
+        setGlobal(true); // LOOK ??
     }
 
     public void setVertical(CoordinateAxis1D vaxis) {
@@ -1256,6 +1276,12 @@ public class ThreddsMetadata {
       if (units != null) {
         setZPositiveUp(SimpleUnit.isCompatible("m", units));
       }
+    }
+
+    public void setVertical(double start, double end, double resolution, String units, boolean isPositiveUp) {
+      double size = end - start;
+      this.updown = new Range(start, size, resolution, units);
+      setZPositiveUp(isPositiveUp);
     }
 
     public boolean equals(Object o) {

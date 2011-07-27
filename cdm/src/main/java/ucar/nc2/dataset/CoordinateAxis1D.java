@@ -35,6 +35,7 @@ package ucar.nc2.dataset;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
+import ucar.nc2.constants.CF;
 import ucar.nc2.util.NamedObject;
 import ucar.unidata.util.Format;
 
@@ -745,10 +746,10 @@ public class CoordinateAxis1D extends CoordinateAxis {
   }
 
   private boolean makeBoundsFromAux() {
-    Attribute boundsAtt = findAttributeIgnoreCase("bounds");
+    Attribute boundsAtt = findAttributeIgnoreCase(CF.BOUNDS);
     if ((null == boundsAtt) || !boundsAtt.isString()) return false;
     String boundsVarName = boundsAtt.getStringValue();
-    VariableDS boundsVar = (VariableDS) ncd.findVariable(boundsVarName);
+    VariableDS boundsVar = (VariableDS) ncd.findVariable(group, boundsVarName);
     if (null == boundsVar) return false;
     if (2 != boundsVar.getRank()) return false;
 

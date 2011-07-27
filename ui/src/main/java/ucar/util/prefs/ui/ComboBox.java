@@ -44,8 +44,6 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-//import thredds.ui.PopupMenu;
-
 /**
  * A simple extension to JComboBox, which persists the n latest values.
  * The JComboBox is editable; user can add a new String, then if acceptable,
@@ -73,9 +71,6 @@ import javax.swing.event.ListSelectionListener;
     });
   </pre>
 
- * @see Field.TextCombo
- * @see PrefPanel#addTextComboField
- *
  * @author John Caron
  */
 

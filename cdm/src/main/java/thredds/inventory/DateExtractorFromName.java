@@ -32,6 +32,7 @@
 
 package thredds.inventory;
 
+import ucar.nc2.time.CalendarDate;
 import ucar.nc2.units.DateFromString;
 
 import java.util.Date;
@@ -60,10 +61,43 @@ public class DateExtractorFromName implements DateExtractor {
     this.useName = useName;
   }
 
+  @Override
   public Date getDate(MFile mfile) {
     if (useName)
       return DateFromString.getDateUsingDemarkatedCount(mfile.getName(), dateFormatMark, '#');
     else
       return DateFromString.getDateUsingDemarkatedMatch(mfile.getPath(), dateFormatMark, '#');
+  }
+
+  @Override
+  public CalendarDate getCalendarDate(MFile mfile) {
+    Date d = getDate(mfile);
+    return (d == null) ? null : CalendarDate.of(d);
+  }
+
+  @Override
+  public String toString() {
+    return "DateExtractorFromName{" +
+            "dateFormatMark='" + dateFormatMark + '\'' +
+            ", useName=" + useName +
+            '}';
+  }
+
+  public CalendarDate getDate(String  name) {
+    Date d = null;
+    if (useName)
+      d = DateFromString.getDateUsingDemarkatedCount(name, dateFormatMark, '#');
+    else
+      d = DateFromString.getDateUsingDemarkatedMatch(name, dateFormatMark, '#');
+    return (d == null) ? null : CalendarDate.of(d);
+  }
+
+
+  static public void main(String args[]) {
+    String name = "/san4/work/jcaron/cfsrr/198507";
+    String dateFormatMark="#cfsrr/#yyyyMM";
+    DateExtractorFromName de = new DateExtractorFromName(dateFormatMark, false);
+    CalendarDate d = de.getDate(name);
+    System.out.printf("%s == %s%n", name , d);
   }
 }

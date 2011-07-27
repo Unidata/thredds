@@ -33,7 +33,7 @@
 
 package ucar.nc2.util;
 
-import java.util.Formatter;
+import java.util.*;
 
 /**
  * Miscellaneous static routines.
@@ -128,5 +128,21 @@ public class Misc {
       int ub = (b < 0) ? b + 256 : b;
       f.format("%3d ", ub);
     }
+  }
+
+  static public int getSize(Iterable ii) {
+    if (ii instanceof Collection)
+      return ((Collection)ii).size();
+    int count = 0;
+    for (Object i : ii) count++;
+    return count;
+  }
+
+  static public List getList(Iterable ii) {
+    if (ii instanceof List)
+      return (List) ii;
+    List<Object> result = new ArrayList<Object>();
+    for (Object i : ii) result.add(i);
+    return result;
   }
 }

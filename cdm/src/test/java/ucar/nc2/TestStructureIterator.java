@@ -58,12 +58,16 @@ public class TestStructureIterator extends TestCase {
 
     int count = 0;
     StructureDataIterator si = v.getStructureIterator();
-    while (si.hasNext()) {
-      StructureData sd = si.next();
-      count++;
+    try {
+      while (si.hasNext()) {
+        StructureData sd = si.next();
+        count++;
+      }
+    } finally {
+      si.finish();
     }
     assert count == v.getSize();
-    
+
     ncfile.close();
   }
 }

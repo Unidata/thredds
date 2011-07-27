@@ -42,13 +42,15 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.ft.FeatureDatasetPoint;
-import ucar.nc2.units.DateRange;
+import ucar.nc2.time.CalendarDateRange;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
 
 /**
@@ -63,7 +65,7 @@ import java.util.regex.Pattern;
  * @since Mar 3, 2010
  */
 @ThreadSafe
-public abstract class InvDatasetFeatureCollection extends InvCatalogRef implements DatasetCollectionManager.TriggerListener {
+public abstract class InvDatasetFeatureCollection extends InvCatalogRef implements CollectionManager.TriggerListener {
   static private final Logger logger = org.slf4j.LoggerFactory.getLogger(InvDatasetFeatureCollection.class);
 
   static protected final String FILES = "files";
@@ -88,7 +90,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
     cdmrFeatureServiceUrlPath = urlPath;
   }
 
-  private InvService getCdmrFeatureService() {
+  private InvService makeCdmrFeatureService() {
     return new InvService( "cdmrFeature","cdmrFeature", context + cdmrFeatureServiceUrlPath, null,null );
   }
 
@@ -100,7 +102,22 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
     InvDatasetFeatureCollection result = null;
     if (featureType == FeatureType.FMRC)
       result = new InvDatasetFcFmrc(parent, name, path, featureType, config);
-    else if (featureType.isPointFeatureType())
+
+    else if (featureType == FeatureType.GRIB) {
+
+      // use reflection to decouple from grib.jar
+      try {
+        Class c = InvDatasetFeatureCollection.class.getClassLoader().loadClass("thredds.catalog.InvDatasetFcGrib");
+      // public InvDatasetFcGrib(InvDatasetImpl parent, String name, String path, FeatureType featureType, FeatureCollectionConfig config) {
+        Constructor ctor = c.getConstructor(InvDatasetImpl.class, String.class, String.class, FeatureType.class, FeatureCollectionConfig.class);
+        result = (InvDatasetFeatureCollection) ctor.newInstance(parent, name, path, featureType, config);
+
+      } catch (Throwable e) {
+        logger.error("Failed to open "+name+ " path= "+path, e);
+        return null;
+      }
+
+    } else if (featureType.isPointFeatureType())
       result =  new InvDatasetFcPoint(parent, name, path, featureType, config);
 
     if (result != null)
@@ -110,32 +127,19 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
   }
 
   /////////////////////////////////////////////////////////////////////////////
-
-  protected final String path;
-  protected final FeatureType featureType;
-  protected final FeatureCollectionConfig config;
-  protected InvService cdmrService;
-
-  protected final DatasetCollectionManager dcm;
-
-  protected final String topDirectory;
-  protected final Pattern filter;
-
-  @GuardedBy("lock")
-  protected State state;
-  protected final Object lock = new Object();
-
+  // heres how we manage state changes in a thread-safe way
   protected class State {
-    ThreddsMetadata.Variables vars;
-    ThreddsMetadata.GeospatialCoverage gc;
-    DateRange dateRange;
-    long lastProtoChange;
+    // catalog metadata
+    protected ThreddsMetadata.Variables vars;
+    protected ThreddsMetadata.GeospatialCoverage gc;
+    protected CalendarDateRange dateRange;
 
-    InvDatasetScan scan;
-    List<InvDataset> datasets;
-    long lastInvChange;
+    protected List<InvDataset> datasets; // top datasets, ie immediately nested in this catalog
+    protected InvDatasetScan scan;       // optionally used for FILES
+    protected long lastInvChange;        // last time dataset inventory was changed
+    protected long lastProtoChange;      // last time proto dataset was changed
 
-    State(State from) {
+    protected State(State from) {
       if (from != null) {
         this.vars = from.vars;
         this.gc = from.gc;
@@ -148,66 +152,94 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
       }
     }
   }
+  /////////////////////////////////////////////////////////////////////////////
+  // not changed after first call
+  protected InvService orgService, virtualService;
+  protected InvService cdmrService;  // LOOK why do we need to specify this seperately ??
+
+  // from the config catalog
+  protected final String path;
+  protected final FeatureType featureType;
+  protected final FeatureCollectionConfig config;
+  protected final String topDirectory;
+  protected CollectionManager dcm; // defines the collection of datasets in this feature collection
+
+  @GuardedBy("lock")
+  protected State state;
+  protected final Object lock = new Object();
 
   protected InvDatasetFeatureCollection(InvDatasetImpl parent, String name, String path, FeatureType featureType, FeatureCollectionConfig config) {
     super(parent, name, buildCatalogServiceHref( path) );
     this.path = path;
     this.featureType = featureType;
     this.getLocalMetadataInheritable().setDataType(featureType);
-    this.cdmrService = getCdmrFeatureService();
 
     this.config = config;
 
-    if (config.spec.startsWith(DatasetCollectionManager.CATALOG)) {
+    if (config.spec.startsWith(DatasetCollectionMFiles.CATALOG)) {
       dcm = new DatasetCollectionFromCatalog(config.spec);
 
     } else {
       Formatter errlog = new Formatter();
-      dcm = new DatasetCollectionManager(config, errlog);
+      dcm = new DatasetCollectionMFiles(config, errlog);
+      String errs = errlog.toString();
+      if (errs.length() > 0) logger.debug("DatasetCollectionManager parse error = {} ", errs);
     }
 
-    CollectionSpecParser sp = dcm.getCollectionSpecParser();
-    if (sp != null) {
-      topDirectory = sp.getTopDir();
-      filter = sp.getFilter();
-    } else {
-      topDirectory = null;
-      filter = null;
-    }
+    topDirectory = dcm.getRoot();
   }
 
   // stuff that shouldnt be done in a constructor - eg dont let 'this' escape
-  private void finishConstruction() {
+  protected void finishConstruction() {
     dcm.addEventListener(this); // now wired for events
-    CollectionUpdater.INSTANCE.scheduleTasks(config, dcm); // see if any background scheduled tasks are needed
+    CollectionUpdater.INSTANCE.scheduleTasks(CollectionUpdater.FROM.tds, config, dcm); // see if any background scheduled tasks are needed
+  }
+
+  // call this first time (state == null
+  protected void firstInit() {
+    this.orgService = getServiceDefault();
+    if (this.orgService == null) throw new IllegalStateException("No default service for InvDatasetFeatureCollection "+name);
+    this.virtualService = makeVirtualService(this.orgService);
+    this.cdmrService = makeCdmrFeatureService();
   }
 
   @Override
   // DatasetCollectionManager was changed asynchronously
-  public void handleCollectionEvent(DatasetCollectionManager.TriggerEvent event) {
-    if (event.getMessage().equals(DatasetCollectionManager.RESCAN))
+  public void handleCollectionEvent(CollectionManager.TriggerEvent event) {
+    if (event.getType() == CollectionManager.TriggerType.update)
       update();
-    else if (event.getMessage().equals(DatasetCollectionManager.PROTO))
+    if (event.getType() == CollectionManager.TriggerType.proto)
       updateProto();
    }
 
   // external trigger was called to rescan the collection
-  // if collection changed, then getCollectionEvent() is called
-  public boolean triggerRescan() {
+  // if collection changed, then handleCollectionEvent() will get called to complete the work
+  public void triggerRescan() {
     try {
-      dcm.rescan();
-      return true;
+      dcm.scan();
     } catch (IOException e) {
       logger.error("DatasetCollectionManager rescan error", e);
-      return false;
     }
   }
 
-  // collection was changed, update
+  /**
+   * collection was changed, update internals.
+   * called by CollectionUpdater, trigger via handleCollectionEvent
+   */
   abstract public void update();
-  // update the proto dataset used
+
+  /**
+   * update the proto dataset used.
+   * called by CollectionUpdater via handleCollectionEvent
+   */
   abstract public void updateProto();
-  // a request has come in, check that the state is up-to-date
+
+  /**
+   *  a request has come in, check that the state is up-to-date
+   *
+   * @return the State, updated if needed
+   * @throws java.io.IOException on read error
+   */
   abstract protected State checkState() throws IOException;
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -224,7 +256,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
     return config;
   }
 
-  public DatasetCollectionManager getDatasetCollectionManager() {
+  public CollectionManager getDatasetCollectionManager() {
     return dcm;
   }
 
@@ -272,7 +304,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
   abstract public InvCatalogImpl makeCatalog(String match, String orgPath, URI baseURI);
 
   /**
-   * Make the containing catalog for this dataset
+   * Make the containing catalog of this feature collection
    *
    * @param baseURI base URI of the request
    * @param localState current state to use
@@ -325,7 +357,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
    * @return Grid Dataset, or null if n/a
    * @throws IOException on error
    */
-  public GridDataset getGridDataset(String matchPath) throws IOException {
+  public ucar.nc2.dt.GridDataset getGridDataset(String matchPath) throws IOException {
     return null;
   }
 
@@ -337,7 +369,7 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
   // handle individual files
 
   /**
-   * Get the dataset named by the path. called by DatasetHandler.getNetcdfFile()
+   * Get the dataset named by the path.
    * called by DatasetHandler.getNetcdfFile()
    * @param matchPath remaining path from match
    * @return requested dataset
@@ -375,9 +407,9 @@ public abstract class InvDatasetFeatureCollection extends InvCatalogRef implemen
   }
 
     // specialized filter handles olderThan and/or filename pattern matching
-  public static class ScanFilter implements CrawlableDatasetFilter {
-    private Pattern p;
-    private long olderThan;
+  static class ScanFilter implements CrawlableDatasetFilter {
+    private final Pattern p;
+    private final long olderThan;
 
     public ScanFilter(Pattern p, long olderThan) {
       this.p = p;

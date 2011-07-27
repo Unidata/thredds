@@ -34,8 +34,8 @@
 package thredds.servlet;
 
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.grib.GribCollection;
 import ucar.nc2.util.IO;
-import ucar.nc2.util.cache.FileCacheRaf;
 
 import java.util.*;
 import java.io.PrintStream;
@@ -43,6 +43,7 @@ import java.io.PrintStream;
 import javax.servlet.http.HttpServletRequest;
 
 import thredds.filesystem.CacheManager;
+import ucar.unidata.io.RandomAccessFile;
 
 /**
  * A Singleton class instantiated by Spring, to populate the Debug methods in the
@@ -54,6 +55,7 @@ import thredds.filesystem.CacheManager;
 public class DebugCommands {
 
   public DebugCommands() {
+    makeGeneralActions();
     makeDebugActions();
     makeCacheActions();
   }
@@ -68,10 +70,12 @@ public class DebugCommands {
         f.format("NetcdfFileCache contents\n");
         NetcdfDataset.getNetcdfFileCache().showCache(f);
 
-        FileCacheRaf fileCacheRaf = ServletUtil.getFileCache();
-        f.format("\nRAF Cache contents\n");
-        for (Object cacheElement : fileCacheRaf.getCache())
-          f.format(" %s\n",cacheElement);
+        f.format("GribCollectionFileCache contents\n");
+        GribCollection.getFileCache().showCache(f);
+
+        f.format("HTTPFileCache contents\n");
+        ServletUtil.getFileCache().showCache(f);
+
         e.pw.flush();
       }
     };
@@ -80,13 +84,14 @@ public class DebugCommands {
     act = new DebugHandler.Action("clearCache", "Clear File Object Caches") {
       public void doAction(DebugHandler.Event e) {
         NetcdfDataset.getNetcdfFileCache().clearCache(false);
+        GribCollection.getFileCache().clearCache(false);
         ServletUtil.getFileCache().clearCache(false);
         e.pw.println("  ClearCache ok");
       }
     };
     debugHandler.addAction(act);
 
-    act = new DebugHandler.Action("forceNCCache", "Force clear NetcdfFileCache Cache") {
+    act = new DebugHandler.Action("forceNCCache", "Force clear NetcdfFile Cache") {
       public void doAction(DebugHandler.Event e) {
         NetcdfDataset.getNetcdfFileCache().clearCache(true);
         e.pw.println("  NetcdfFileCache force clearCache done");
@@ -94,7 +99,15 @@ public class DebugCommands {
     };
     debugHandler.addAction(act);
 
-    act = new DebugHandler.Action("forceRAFCache", "Force clear RAF FileCache Cache") {
+    act = new DebugHandler.Action("forceGCCache", "Force clear GribCollection Cache") {
+      public void doAction(DebugHandler.Event e) {
+        NetcdfDataset.getNetcdfFileCache().clearCache(true);
+        e.pw.println("  NetcdfFileCache force clearCache done");
+      }
+    };
+    debugHandler.addAction(act);
+
+    act = new DebugHandler.Action("forceRAFCache", "Force clear HTTP File Cache") {
       public void doAction(DebugHandler.Event e) {
         ServletUtil.getFileCache().clearCache(true);
         e.pw.println("  RAF FileCache force clearCache done ");
@@ -111,9 +124,17 @@ public class DebugCommands {
     };
     debugHandler.addAction(act);
 
-    act = new DebugHandler.Action("disableCache", "Disable Caches") {
+    act = new DebugHandler.Action("disableCache", "Disable NetcdfFile Caches") {
       public void doAction(DebugHandler.Event e) {
-        NetcdfDataset.disableNetcdfFileCache();;
+        NetcdfDataset.disableNetcdfFileCache();
+        ServletUtil.setFileCache(null);
+        e.pw.println("  disableCache ok");
+      }
+    };
+    debugHandler.addAction(act);
+
+    act = new DebugHandler.Action("disableCache", "Disable HTTP File Caches") {
+      public void doAction(DebugHandler.Event e) {
         ServletUtil.setFileCache(null);
         e.pw.println("  disableCache ok");
       }
@@ -123,6 +144,37 @@ public class DebugCommands {
   }
 
   protected void makeDebugActions() {
+    DebugHandler debugHandler = DebugHandler.get("Debug");
+    DebugHandler.Action act;
+
+    act = new DebugHandler.Action("enableRafHandles", "Toggle tracking open RAF") {
+      public void doAction(DebugHandler.Event e) {
+        try {
+          RandomAccessFile.setDebugLeaks( !RandomAccessFile.getDebugLeaks());
+          e.pw.println("  Tracking RAF=" + RandomAccessFile.getDebugLeaks());
+        } catch (Exception ioe) {
+          e.pw.println(ioe.getMessage());
+        }
+      }
+    };
+    debugHandler.addAction(act);
+
+    act = new DebugHandler.Action("showRafHandles", "Show open RAF") {
+      public void doAction(DebugHandler.Event e) {
+        try {
+          for (String s : RandomAccessFile.getOpenFiles()) {
+            e.pw.println("  " + s);
+          }
+        } catch (Exception ioe) {
+          e.pw.println(ioe.getMessage());
+        }
+      }
+    };
+    debugHandler.addAction(act);
+  }
+
+
+  protected void makeGeneralActions() {
     DebugHandler debugHandler = DebugHandler.get("General");
     DebugHandler.Action act;
 

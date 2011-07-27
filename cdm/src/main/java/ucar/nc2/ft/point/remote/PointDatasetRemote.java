@@ -33,26 +33,15 @@
 package ucar.nc2.ft.point.remote;
 
 import ucar.nc2.ft.*;
-import ucar.nc2.ft.point.PointFeatureImpl;
 import ucar.nc2.ft.point.PointDatasetImpl;
-import ucar.nc2.ft.point.writer.FeatureDatasetPointXML;
-import ucar.nc2.units.DateRange;
-import ucar.nc2.units.DateUnit;
-import ucar.nc2.units.DateFormatter;
-import ucar.nc2.stream.NcStream;
+import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.VariableSimpleIF;
 import ucar.unidata.geoloc.LatLonRect;
-import ucar.unidata.geoloc.EarthLocation;
-import ucar.unidata.geoloc.EarthLocationImpl;
-import ucar.ma2.*;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.google.protobuf.InvalidProtocolBufferException;
 
 /**
  * Client view of a CdmRemote Point Dataset.
@@ -63,7 +52,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
 public class PointDatasetRemote extends PointDatasetImpl {
 
   public PointDatasetRemote(FeatureType wantFeatureType, String uri, List<VariableSimpleIF> vars, LatLonRect bb,
-      DateRange dr) throws IOException {
+      CalendarDateRange dr) throws IOException {
 
     super(wantFeatureType);
     setBoundingBox(bb);
@@ -84,7 +73,7 @@ public class PointDatasetRemote extends PointDatasetImpl {
     }
   }
 
-  static String makeQuery(String station, LatLonRect boundingBox, DateRange dateRange) {
+  static String makeQuery(String station, LatLonRect boundingBox, CalendarDateRange dateRange) {
     StringBuilder query = new StringBuilder();
     boolean needamp = false;
 
@@ -107,12 +96,11 @@ public class PointDatasetRemote extends PointDatasetImpl {
     }
 
     if (dateRange != null) {
-      DateFormatter df = new DateFormatter();
       if (needamp) query.append("&");
       query.append("time_start=");
-      query.append(df.toDateTimeStringISO(dateRange.getStart().getDate()));
+      query.append(dateRange.getStart());
       query.append("&time_end=");
-      query.append(df.toDateTimeStringISO(dateRange.getEnd().getDate()));
+      query.append(dateRange.getEnd());
     }
 
     if (!needamp) query.append("all");

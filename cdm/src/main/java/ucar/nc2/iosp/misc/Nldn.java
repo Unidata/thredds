@@ -487,6 +487,11 @@ The specifics for the binary NLDN data record contained in the IDD is:
     public int getCurrentRecno() {
       return done - 1;
     }
+
+    @Override
+      public void finish() {
+        // ignored
+      }
   }
 
 

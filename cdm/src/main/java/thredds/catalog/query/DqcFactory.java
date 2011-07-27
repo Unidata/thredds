@@ -103,14 +103,13 @@ public class DqcFactory {
 
   private void setDefaults() {
     try {
-      Class fac2 = Class.forName("thredds.catalog.parser.jdom.DqcConvert2");
+      /* Class fac2 = Class.forName("thredds.catalog.parser.jdom.DqcConvert2");
       Object fac2o = fac2.newInstance();
       registerConverter( "0.2", XMLEntityResolver.DQC_NAMESPACE_02, (DqcConvertIF) fac2o);
 
-
       Class fac3 = Class.forName("thredds.catalog.parser.jdom.DqcConvert3");
       Object fac3o = fac3.newInstance();
-      registerConverter( "0.3", XMLEntityResolver.DQC_NAMESPACE_03, (DqcConvertIF) fac3o);
+      registerConverter( "0.3", XMLEntityResolver.DQC_NAMESPACE_03, (DqcConvertIF) fac3o); */
 
       Class fac4 = Class.forName("thredds.catalog.parser.jdom.DqcConvert4");
       Object fac4o = fac4.newInstance();

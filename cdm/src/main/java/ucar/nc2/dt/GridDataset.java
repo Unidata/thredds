@@ -32,6 +32,8 @@
  */
 package ucar.nc2.dt;
 
+import ucar.nc2.time.CalendarDate;
+
 import java.util.*;
 
 /**
@@ -58,6 +60,10 @@ public interface GridDataset extends ucar.nc2.dt.TypedDataset {
    * @return List of type GridDataset.Gridset
    */
   public List<Gridset> getGridsets();
+
+  //LOOK change to extend FeatureType
+  public CalendarDate getCalendarDateStart();
+  public CalendarDate getCalendarDateEnd();
 
   /**
    * A set of GridDatatype objects with the same Coordinate System.

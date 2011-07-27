@@ -37,7 +37,9 @@ import java.util.*;
 import java.net.URI;
 
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.units.TimeDuration;
+import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateRange;
+import ucar.nc2.time.CalendarDuration;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateType;
 import ucar.unidata.util.Format;
@@ -235,7 +237,6 @@ public class InvDatasetImpl extends InvDataset {
     if (tc == null) {
       DateRange ttc = tmd.getTimeCoverage();
       if (ttc != null) {
-        // System.out.println(" tc assigned = "+ttc);
         tc = ttc;
       }
     }
@@ -1168,11 +1169,11 @@ public class InvDatasetImpl extends InvDataset {
         java.util.List<ThreddsMetadata.Variable> vlist = t.getVariableList();
         if (vlist.size() > 0) {
           for (ThreddsMetadata.Variable v : vlist) {
-            buff.append(" <li><strong>").append(StringUtil.quoteHtmlContent(v.getName())).append("</strong> = ");
+            String units = (v.getUnits() == null || v.getUnits().length() == 0) ? "" : " (" + v.getUnits() + ") ";
+            buff.append(" <li><strong>").append(StringUtil.quoteHtmlContent(v.getName() + units)).append("</strong> = ");
             String desc = (v.getDescription() == null) ? "" : " <i>" + StringUtil.quoteHtmlContent(v.getDescription()) + "</i> = ";
             buff.append(desc);
-            String units = (v.getUnits() == null || v.getUnits().length() == 0) ? "" : " (" + v.getUnits() + ") ";
-            buff.append(StringUtil.quoteHtmlContent(v.getVocabularyName() + units)).append("\n");
+            buff.append(StringUtil.quoteHtmlContent(v.getVocabularyName())).append("\n");
           }
           buff.append(" </ul>\n");
         }
@@ -1185,41 +1186,40 @@ public class InvDatasetImpl extends InvDataset {
     if ((gc != null) && !gc.isEmpty()) {
       buff.append("<h3>GeospatialCoverage:</h3>\n<ul>\n");
       if (gc.isGlobal())
-        buff.append(" <li><em> Global </em></ul>\n");
-      else {
-        buff.append(" <li><em> Longitude: </em> ").append(rangeString(gc.getEastWestRange())).append("</li>\n");
-        buff.append(" <li><em> Latitude: </em> ").append(rangeString(gc.getNorthSouthRange())).append("</li>\n");
-        if (gc.getUpDownRange() != null) {
-          buff.append(" <li><em> Altitude: </em> ").append(rangeString(gc.getUpDownRange())).append(" (positive is <strong>").append(StringUtil.quoteHtmlContent(gc.getZPositive())).append(")</strong></li>\n");
-        }
+        buff.append(" <li><em> Global </em>\n");
 
-        java.util.List<ThreddsMetadata.Vocab> nlist = gc.getNames();
-        if ((nlist != null) && (nlist.size() > 0)) {
-          buff.append(" <li><em>  Names: </em> <ul>\n");
-          for (ThreddsMetadata.Vocab elem : nlist) {
-            buff.append(" <li>").append(StringUtil.quoteHtmlContent(elem.getText())).append("\n");
-          }
-          buff.append(" </ul>\n");
+      buff.append(" <li><em> Longitude: </em> ").append(rangeString(gc.getEastWestRange())).append("</li>\n");
+      buff.append(" <li><em> Latitude: </em> ").append(rangeString(gc.getNorthSouthRange())).append("</li>\n");
+      if (gc.getUpDownRange() != null) {
+        buff.append(" <li><em> Altitude: </em> ").append(rangeString(gc.getUpDownRange())).append(" (positive is <strong>").append(StringUtil.quoteHtmlContent(gc.getZPositive())).append(")</strong></li>\n");
+      }
+
+      java.util.List<ThreddsMetadata.Vocab> nlist = gc.getNames();
+      if ((nlist != null) && (nlist.size() > 0)) {
+        buff.append(" <li><em>  Names: </em> <ul>\n");
+        for (ThreddsMetadata.Vocab elem : nlist) {
+          buff.append(" <li>").append(StringUtil.quoteHtmlContent(elem.getText())).append("\n");
         }
         buff.append(" </ul>\n");
       }
+      buff.append(" </ul>\n");
     }
 
-    DateRange tc = ds.getTimeCoverage();
+    CalendarDateRange tc = ds.getCalendarDateCoverage();
     if (tc != null) {
       buff.append("<h3>TimeCoverage:</h3>\n<ul>\n");
-      DateType start = tc.getStart();
-      if ((start != null) && !start.isBlank())
-        buff.append(" <li><em>  Start: </em> ").append(start.toDateTimeString()).append("\n");
-      DateType end = tc.getEnd();
-      if ((end != null) && !end.isBlank()) {
-        buff.append(" <li><em>  End: </em> ").append(end.toDateTimeString()).append("\n");
+      CalendarDate start = tc.getStart();
+      if (start != null)
+        buff.append(" <li><em>  Start: </em> ").append(start.toString()).append("\n");
+      CalendarDate end = tc.getEnd();
+      if (end != null) {
+        buff.append(" <li><em>  End: </em> ").append(end.toString()).append("\n");
       }
-      TimeDuration duration = tc.getDuration();
+      CalendarDuration duration = tc.getDuration();
       if ((duration != null) && !duration.isBlank())
         buff.append(" <li><em>  Duration: </em> ").append(StringUtil.quoteHtmlContent(duration.toString())).append("\n");
-      TimeDuration resolution = tc.getResolution();
-      if (tc.useResolution() && (resolution != null) && !resolution.isBlank()) {
+      CalendarDuration resolution = tc.getResolution();
+      if (resolution != null  && !resolution.isBlank()) {
         buff.append(" <li><em>  Resolution: </em> ").append(StringUtil.quoteHtmlContent(resolution.toString())).append("\n");
       }
       buff.append(" </ul>\n");
@@ -1480,8 +1480,8 @@ public class InvDatasetImpl extends InvDataset {
       if (null != getGeospatialCoverage())
         result = 37 * result + getGeospatialCoverage().hashCode();
 
-      if (null != getTimeCoverage())
-        result = 37 * result + getTimeCoverage().hashCode(); // */
+      if (null != getCalendarDateCoverage())
+        result = 37 * result + getCalendarDateCoverage().hashCode(); // */
 
       hashCode = result;
     }

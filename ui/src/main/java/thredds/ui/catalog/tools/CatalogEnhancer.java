@@ -661,7 +661,7 @@ public class CatalogEnhancer extends JPanel {
         ThreddsMetadata.GeospatialCoverage geo = ds.getGeospatialCoverage();
         return (geo != null) && geo.isValid();
       }
-      public boolean isTime() { return ds.getTimeCoverage() != null; }
+      public boolean isTime() { return ds.getCalendarDateCoverage() != null; }
       public boolean isVars() { return ds.getVariables().size() > 0; }
       public boolean isPublish() { return (ds.getPublishers().size() > 0); }
       public boolean isRights() { return rights; }

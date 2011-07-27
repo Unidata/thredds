@@ -34,6 +34,7 @@ package thredds.wcs.v1_0_0_1;
 
 import thredds.wcs.Request;
 import ucar.nc2.dt.GridDataset;
+import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateRange;
 
 /**
@@ -57,7 +58,7 @@ public class GetCoverageBuilder extends WcsRequestBuilder
 
   private String coverageId, crs, responseCRS;
   private Request.BoundingBox bbox;
-  private DateRange timeRange;
+  private CalendarDateRange timeRange;
   private WcsCoverage.VerticalRange verticalRange;  // parameter
   private Request.Format format;
 
@@ -77,8 +78,8 @@ public class GetCoverageBuilder extends WcsRequestBuilder
   public GetCoverageBuilder setBbox( Request.BoundingBox bbox )
   { this.bbox = bbox; return this; }
 
-  public DateRange getTimeRange() { return timeRange; }
-  public GetCoverageBuilder setTimeRange( DateRange timeRange )
+  public CalendarDateRange getTimeRange() { return timeRange; }
+  public GetCoverageBuilder setTimeRange( CalendarDateRange timeRange )
   { this.timeRange = timeRange; return this; }
 
   public WcsCoverage.VerticalRange getVerticalRange() { return verticalRange; }

@@ -32,6 +32,7 @@
 
 package ucar.nc2.ft.fmrc;
 
+import thredds.inventory.CollectionManagerAbstract;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridDatatype;
@@ -40,8 +41,9 @@ import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.dataset.CoordinateAxis1D;
+import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.units.DateUnit;
-import ucar.nc2.units.DateFormatter;
 import ucar.nc2.constants._Coordinate;
 
 import java.util.*;
@@ -69,8 +71,7 @@ import thredds.inventory.CollectionManager;
  *
  * Should be immutable, once the file is finished writing.
  *
- * TODO: staggered grids, other dimensions
- * TODO: this assumes a single run date !!
+ * Maybe will go away
  *
  * @author caron
  * @since Jan 11, 2010
@@ -84,7 +85,7 @@ public class GridDatasetInv {
 
   public static GridDatasetInv open(CollectionManager cm, MFile mfile, Element ncml) throws IOException {
     // do we already have it ?
-    byte[] xmlBytes = cm.getMetadata(mfile, "fmrInv.xml");
+    byte[] xmlBytes = ((CollectionManagerAbstract)cm).getMetadata(mfile, "fmrInv.xml");  // LOOK should we keep this functionality ??
     if (xmlBytes != null) {
       if (log.isDebugEnabled()) log.debug(" got xmlFile in cache ="+ mfile.getPath()+ " size = "+xmlBytes.length);
       if (xmlBytes.length < 300) {
@@ -127,7 +128,7 @@ public class GridDatasetInv {
 
       GridDatasetInv inv = new GridDatasetInv(gds, cm.extractRunDate(mfile));
       String xmlString = inv.writeXML( new Date(mfile.getLastModified()));
-      cm.putMetadata(mfile, "fmrInv.xml", xmlString.getBytes("UTF-8"));
+      ((CollectionManagerAbstract)cm).putMetadata(mfile, "fmrInv.xml", xmlString.getBytes("UTF-8"));
       if (log.isDebugEnabled()) log.debug(" added xmlFile "+ mfile.getPath()+".fmrInv.xml to cache");
       if (debug) System.out.printf(" added xmlFile %s.fmrInv.xml to cache%n", mfile.getPath());
       // System.out.println("new xmlBytes= "+ xmlString);
@@ -144,41 +145,40 @@ public class GridDatasetInv {
   private final List<TimeCoord> times = new ArrayList<TimeCoord>(); // list of TimeCoord
   private final List<VertCoord> vaxes = new ArrayList<VertCoord>(); // list of VertCoord
   private final List<EnsCoord> eaxes = new ArrayList<EnsCoord>(); // list of EnsCoord
-  private Date runDate; // date of the run
-  private String runTime; // string representation of the date of the run
+  private CalendarDate runDate; // date of the run
+  private String runTimeString; // string representation of the date of the run
   private Date lastModified;
 
   private GridDatasetInv() {
   }
 
-  public GridDatasetInv(ucar.nc2.dt.GridDataset gds, Date runDate) {
+  public GridDatasetInv(ucar.nc2.dt.grid.GridDataset gds, CalendarDate runDate) {
     this.location = gds.getLocationURI();
     this.runDate = runDate;
 
     NetcdfFile ncfile = gds.getNetcdfFile();
     if (this.runDate == null) {
-      runTime = ncfile.findAttValueIgnoreCase(null, _Coordinate.ModelBaseDate, null);
-      if (runTime == null)
-        runTime = ncfile.findAttValueIgnoreCase(null, _Coordinate.ModelRunDate, null);
+      runTimeString = ncfile.findAttValueIgnoreCase(null, _Coordinate.ModelBaseDate, null);
+      if (runTimeString == null)
+        runTimeString = ncfile.findAttValueIgnoreCase(null, _Coordinate.ModelRunDate, null);
 
-      if (runTime != null) {
-        this.runDate = DateUnit.getStandardOrISO(runTime);
+      if (runTimeString != null) {
+        this.runDate = DateUnit.parseCalendarDate(runTimeString);
          if (this.runDate == null) {
-           log.warn("GridDatasetInv rundate not ISO date string (%s) file=%s", runTime, location);
+           log.warn("GridDatasetInv rundate not ISO date string (%s) file=%s", runTimeString, location);
            //throw new IllegalArgumentException(_Coordinate.ModelRunDate + " must be ISO date string " + runTime);
          }
       }
 
       if (this.runDate == null) {
-        this.runDate = gds.getStartDate(); // LOOK not really right
-        log.warn("GridDatasetInv using gds.getStartDate() for run date =%s", runTime, location);
+        this.runDate = gds.getCalendarDateStart(); // LOOK not really right
+        log.warn("GridDatasetInv using gds.getStartDate() for run date =%s", runTimeString, location);
         //log.error("GridDatasetInv missing rundate in file=" + location);
         //throw new IllegalArgumentException("File must have " + _Coordinate.ModelBaseDate + " or " + _Coordinate.ModelRunDate + " attribute ");
       }
     }
 
-    DateFormatter df = new DateFormatter();
-    this.runTime = df.toDateTimeStringISO(this.runDate);
+    this.runTimeString = this.runDate.toString();
 
     // add each variable, collect unique time and vertical axes
     for (GridDatatype gg : gds.getGrids()) {
@@ -231,7 +231,7 @@ public class GridDatasetInv {
    *
    * @return the date of the ForecastModelRun
    */
-  public Date getRunDate() {
+  public CalendarDate getRunDate() {
     return runDate;
   }
 
@@ -241,7 +241,7 @@ public class GridDatasetInv {
    * @return string representation of the date of the ForecastModelRun
    */
   public String getRunDateString() {
-    return runTime;
+    return runTimeString;
   }
 
   /**
@@ -493,10 +493,9 @@ public class GridDatasetInv {
     Element rootElem = new Element("gridInventory");
     Document doc = new Document(rootElem);
     rootElem.setAttribute("location", location);
-    rootElem.setAttribute("runTime", runTime);
+    rootElem.setAttribute("runTime", runTimeString);
     if (lastModified != null) {
-      DateFormatter df = new DateFormatter();
-      rootElem.setAttribute("lastModified", df.toDateTimeString(lastModified));
+      rootElem.setAttribute("lastModified", CalendarDateFormatter.toDateTimeString(lastModified));
     }
     rootElem.setAttribute("version", Integer.toString(CURR_VERSION));
 
@@ -586,20 +585,18 @@ public class GridDatasetInv {
 
     Element rootElem = doc.getRootElement();
     GridDatasetInv fmr = new GridDatasetInv();
-    fmr.runTime = rootElem.getAttributeValue("runTime");
+    fmr.runTimeString = rootElem.getAttributeValue("runTime");
     fmr.location = rootElem.getAttributeValue("location");
     if (fmr.location == null)
       fmr.location = rootElem.getAttributeValue("name"); // old way
     String lastModifiedS = rootElem.getAttributeValue("lastModified");
-    DateFormatter df = new DateFormatter();
     if (lastModifiedS != null)
-      fmr.lastModified = df.getISODate(lastModifiedS);
+      fmr.lastModified = CalendarDateFormatter.parseISODate(lastModifiedS);
     String version = rootElem.getAttributeValue("version");
     fmr.version = (version == null) ? 0 : Integer.parseInt(version);
     if (fmr.version < REQ_VERSION) return fmr;
 
-    DateFormatter formatter = new DateFormatter();
-    fmr.runDate = formatter.getISODate(fmr.runTime);
+    fmr.runDate = DateUnit.parseCalendarDate(fmr.runTimeString);
 
     java.util.List<Element> vList = rootElem.getChildren("vertCoord");
     for (Element vertElem : vList) {

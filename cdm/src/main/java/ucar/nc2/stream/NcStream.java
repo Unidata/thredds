@@ -16,6 +16,7 @@ import java.util.Map;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import ucar.nc2.iosp.IospHelper;
+import ucar.unidata.io.RandomAccessFile;
 
 /**
  * Defines the ncstream format, along with ncStream.proto.
@@ -336,10 +337,26 @@ public class NcStream {
     return count + 1;
   }
 
+  static public int writeVInt(RandomAccessFile out, int value) throws IOException {
+    int count = 0;
+
+    while (true) {
+      if ((value & ~0x7F) == 0) {
+        out.write((byte) value);
+        break;
+      } else {
+        out.write((byte) ((value & 0x7F) | 0x80));
+        value >>>= 7;
+      }
+    }
+
+    return count + 1;
+  }
+
+
   static public int writeVInt(WritableByteChannel wbc, int value) throws IOException {
     ByteBuffer bb = ByteBuffer.allocate(8);
 
-    // stolen from protobuf.CodedOutputStream.writeRawVarint32()
     while (true) {
       if ((value & ~0x7F) == 0) {
         bb.put((byte) value);
@@ -381,6 +398,21 @@ public class NcStream {
     return i;
   }
 
+  static public int readVInt(RandomAccessFile raf) throws IOException {
+    int ib = raf.read();
+    if (ib == -1) return -1;
+
+    byte b = (byte) ib;
+    int i = b & 0x7F;
+    for (int shift = 7; (b & 0x80) != 0; shift += 7) {
+      ib = raf.read();
+      if (ib == -1) return -1;
+      b = (byte) ib;
+      i |= (b & 0x7F) << shift;
+    }
+    return i;
+  }
+
   static public int readFully(InputStream is, byte[] b) throws IOException {
     int done = 0;
     int want = b.length;
@@ -397,6 +429,23 @@ public class NcStream {
     byte[] b = new byte[test.length];
     readFully(is, b);
 
+    if (b.length != test.length) return false;
+    for (int i = 0; i < b.length; i++)
+      if (b[i] != test[i]) return false;
+    return true;
+  }
+
+  static public boolean readAndTest(RandomAccessFile raf, byte[] test) throws IOException {
+    byte[] b = new byte[test.length];
+    raf.readFully(b);
+
+    if (b.length != test.length) return false;
+    for (int i = 0; i < b.length; i++)
+      if (b[i] != test[i]) return false;
+    return true;
+  }
+
+  static public boolean test(Byte[] b, byte[] test) throws IOException {
     if (b.length != test.length) return false;
     for (int i = 0; i < b.length; i++)
       if (b[i] != test[i]) return false;

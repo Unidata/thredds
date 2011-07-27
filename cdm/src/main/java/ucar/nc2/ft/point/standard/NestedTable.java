@@ -34,9 +34,9 @@ package ucar.nc2.ft.point.standard;
 
 import ucar.nc2.*;
 import ucar.nc2.ft.*;
-import ucar.nc2.ft.point.StructureDataIteratorLimited;
+import ucar.ma2.StructureDataIteratorLimited;
+import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.units.DateUnit;
-import ucar.nc2.units.DateFormatter;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VariableDS;
@@ -87,7 +87,7 @@ public class NestedTable {
 
   private int nlevels;
 
-  private DateFormatter dateFormatter = new DateFormatter();
+  //private DateFormatter dateFormatter = new DateFormatter();
 
   // A NestedTable Table is created after the Tables have been joined, and the leaves identified.
   // It is a single chain of Table objects from child to parent. Highest parent is root. Lowest child is leaf
@@ -471,11 +471,9 @@ public class NestedTable {
 
     if (cve.isString()) {
       String timeString = timeVE.getCoordValueString(tableData);
-      Date date;
-      try {
-        date = dateFormatter.isoDateTimeFormat(timeString);
-      } catch (ParseException e) {
-        log.error("Cant parse date - not ISO formatted, = " + timeString);
+      Date date = CalendarDateFormatter.parseISODate(timeString);
+      if (date == null) {
+        log.error("Cant parse date - not ISO formatted, = "+timeString);
         return 0.0;
       }
       return date.getTime() / 1000.0; // LOOK

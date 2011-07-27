@@ -34,13 +34,6 @@
 
 package ucar.nc2.iosp.mcidas;
 
-
-import ucar.grid.GridDefRecord;
-import ucar.grid.GridParameter;
-import ucar.grid.GridRecord;
-import ucar.grid.GridTableLookup;
-
-
 import ucar.ma2.*;
 
 import ucar.nc2.*;
@@ -51,7 +44,8 @@ import ucar.nc2.constants._Coordinate;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 
 import ucar.nc2.iosp.IOServiceProvider;
-import ucar.nc2.iosp.grid.GridHorizCoordSys;
+import ucar.nc2.iosp.grid.*;
+
 import ucar.nc2.util.CancelTask;
 
 import ucar.unidata.io.RandomAccessFile;

@@ -83,14 +83,17 @@ public class TimeRecords {
       System.out.println("   use psuedo record");
     }
     StructureDataIterator iter = record.getStructureIterator();
-    while (iter.hasNext()) {
-      StructureData sd = iter.next();
-      if (first) {
-        System.out.println("   record size = " + sd.getStructureMembers().getStructureSize() + " " +
-                "   nvars = " + sd.getStructureMembers().getMembers().size());
+    try {
+      while (iter.hasNext()) {
+        StructureData sd = iter.next();
+        if (first) {
+          System.out.println("   record size = " + sd.getStructureMembers().getStructureSize() + " " +
+                  "   nvars = " + sd.getStructureMembers().getMembers().size());
+        }
+        first = false;
       }
-      first = false;
-
+    } finally {
+      iter.finish();
     }
     double took = (System.currentTimeMillis() - start) * .001;
     System.out.println(" readRows took=" + took + " secs");

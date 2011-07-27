@@ -336,7 +336,7 @@ public class CdmRemoteQueryBean {
   public TimeDuration parseW3CDuration(String key, String value) {
     if (value != null) {
       try {
-        return TimeDuration.parseW3CDuration(value);
+        return new TimeDuration(value);
       } catch (java.text.ParseException e) {
         errs.format("Illegal param='%s=%s'  must be valid ISO Duration%n", key, value);
         fatal = true;

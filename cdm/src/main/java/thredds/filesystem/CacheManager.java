@@ -124,7 +124,7 @@ public class CacheManager {
    * Get a CacheDirectory from the path. If not in cache, read OS and put in cache.
    * 
    * @param path file path
-   * @param recheck if true, check that directory hasnt changed, otherwise ok to use cached element without chcking
+   * @param recheck if true, check that directory hasnt changed, otherwise ok to use cached element without checking
    * @return  CacheDirectory
    */
   public CacheDirectory get(String path, boolean recheck) {

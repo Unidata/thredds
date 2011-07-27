@@ -1,15 +1,12 @@
 package ucar.nc2.ui;
 
-import ucar.nc2.ui.widget.BAMutil;
-import ucar.nc2.ui.widget.FileManager;
-import ucar.nc2.ui.widget.IndependentWindow;
-import ucar.nc2.ui.widget.TextHistoryPane;
+import ucar.nc2.grib.table.WmoCodeTable;
+import ucar.nc2.iosp.grid.GridParameter;
+import ucar.nc2.ui.widget.*;
 import ucar.grib.grib2.ParameterTable;
-import ucar.grid.GridParameter;
 import ucar.nc2.Attribute;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
-import ucar.nc2.iosp.grib.tables.GribCodeTable;
 import ucar.nc2.units.SimpleUnit;
 import ucar.unidata.util.StringUtil;
 import ucar.util.prefs.PreferencesExt;
@@ -54,6 +51,18 @@ public class GribWmoCodesPanel extends JPanel {
       }
     });
 
+    ucar.nc2.ui.widget.PopupMenu varPopup = new ucar.nc2.ui.widget.PopupMenu(codeTable.getJTable(), "Options");
+    varPopup.addAction("Show table", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        Formatter out = new Formatter();
+        CodeBean csb = (CodeBean) codeTable.getSelectedBean();
+        csb.showTable(out);
+        compareTA.setText(out.toString());
+        compareTA.gotoTop();
+        infoWindow.setVisible(true);
+      }
+    });
+
     entryTable = new BeanTableSorted(EntryBean.class, (PreferencesExt) prefs.node("EntryBean"), false);
     entryTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
@@ -61,25 +70,7 @@ public class GribWmoCodesPanel extends JPanel {
       }
     });
 
-    /* thredds.ui.PopupMenu varPopup = new thredds.ui.PopupMenu(codeTable.getJTable(), "Options");
-    varPopup.addAction("Show uses", new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        Formatter out = new Formatter();
-        CodeBean csb = (CodeBean) codeTable.getSelectedBean();
-        if (usedDds != null) {
-          List<Message> list = usedDds.get(csb.getId());
-          if (list != null) {
-            for (Message use : list)
-              use.dumpHeaderShort(out);
-          }
-        }
-        compareTA.setText(out.toString());
-        compareTA.gotoTop();
-        infoWindow.setVisible(true);
-      }
-    }); */
-
-    AbstractButton compareButton = BAMutil.makeButtcon("Select", "Compare to current table", false);
+    AbstractButton compareButton = BAMutil.makeButtcon("Select", "Compare to 4.2 table", false);
     compareButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         compareToCurrent();
@@ -87,7 +78,15 @@ public class GribWmoCodesPanel extends JPanel {
     });
     buttPanel.add(compareButton);
 
-    AbstractButton dupButton = BAMutil.makeButtcon("Select", "Look for problems in WMO table", false);
+    AbstractButton compare2Button = BAMutil.makeButtcon("Select", "Compare to standard WMO table", false);
+    compare2Button.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        compareToStandardWMO();
+      }
+    });
+    buttPanel.add(compare2Button);
+
+    AbstractButton dupButton = BAMutil.makeButtcon("Select", "Look for problems in this table", false);
     dupButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         lookForProblems();
@@ -107,95 +106,10 @@ public class GribWmoCodesPanel extends JPanel {
     });
     buttPanel.add(modelsButton);
 
-    /* AbstractAction refAction = new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        refTable = currTable;
-        loadVariant(refTable.getName(), refTable);
-      }
-    };
-    BAMutil.setActionProperties(refAction, "Dataset", "useAsRef", false, 'C', -1);
-    BAMutil.addActionToContainer(buttPanel, refAction);
-
-    AbstractAction usedAction = new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        try {
-          if (fileChooser == null)
-            fileChooser = new FileManager(null, null, null, (PreferencesExt) prefs.node("FileManager"));
-          String filename = fileChooser.chooseFilename();
-          if (filename == null) return;
-          showUsed(filename);
-        } catch (IOException e1) {
-          e1.printStackTrace();
-        }
-      }
-    };
-    BAMutil.setActionProperties(usedAction, "dd", "showUsed", false, 'C', -1);
-    BAMutil.addActionToContainer(buttPanel, usedAction);
-
-    AbstractAction diffAction = new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        try {
-          String defloc = "C:/dev/tds/thredds/bufrTables/src/main/resources/resources/bufrTables/local";
-          if (fileChooser == null)
-            fileChooser = new FileManager(null, null, null, (PreferencesExt) prefs.node("FileManager"));
-
-          String filename = fileChooser.chooseFilenameToSave(defloc + ".csv");
-          if (filename == null) return;
-          File file = new File(filename);
-          FileOutputStream fos = new FileOutputStream(file);
-
-          Formatter out = new Formatter(fos);
-          writeDiff(BufrTables.getWmoTableB(14), currTable, out);
-          fos.close();
-          JOptionPane.showMessageDialog(GribTableCodes.this, filename + " successfully written");
-
-        } catch (Exception ex) {
-          JOptionPane.showMessageDialog(GribTableCodes.this, "ERROR: " + ex.getMessage());
-          ex.printStackTrace();
-        }
-      }
-    };
-    BAMutil.setActionProperties(diffAction, "dd", "write diff", false, 'C', -1);
-    BAMutil.addActionToContainer(buttPanel, diffAction);
-
-    AbstractAction localAction = new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        try {
-          String defloc = "C:/dev/tds/thredds/bufrTables/src/main/resources/resources/bufrTables/local";
-          if (fileChooser == null)
-            fileChooser = new FileManager(null, null, null, (PreferencesExt) prefs.node("FileManager"));
-
-          String filename = fileChooser.chooseFilenameToSave(defloc + ".csv");
-          if (filename == null) return;
-          File file = new File(filename);
-          FileOutputStream fos = new FileOutputStream(file);
-
-          Formatter out = new Formatter(fos);
-          writeLocal(currTable, out);
-          fos.close();
-          JOptionPane.showMessageDialog(GribTableCodes.this, filename + " successfully written");
-
-        } catch (Exception ex) {
-          JOptionPane.showMessageDialog(GribTableCodes.this, "ERROR: " + ex.getMessage());
-          ex.printStackTrace();
-        }
-      }
-    };
-    BAMutil.setActionProperties(localAction, "dd", "write local", false, 'C', -1);
-    BAMutil.addActionToContainer(buttPanel, localAction);   */
-
     // the info window
     compareTA = new TextHistoryPane();
     infoWindow = new IndependentWindow("Extra Information", BAMutil.getImage("netcdfUI"), compareTA);
     infoWindow.setBounds((Rectangle) prefs.getBean("InfoWindowBounds", new Rectangle(300, 300, 800, 600)));
-
-    /* the info window 2
-    infoTA2 = new TextHistoryPane();
-    infoWindow2 = new IndependentWindow("Extra Information-2", BAMutil.getImage("netcdfUI"), infoTA2);
-    infoWindow2.setBounds((Rectangle) prefs.getBean("InfoWindowBounds2", new Rectangle(300, 300, 500, 300)));
-
-    split2 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, ddsTable, obsTable);
-    split2.setDividerLocation(prefs.getInt("splitPos2", 800)); */
 
     split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, codeTable, entryTable);
     split.setDividerLocation(prefs.getInt("splitPos", 500));
@@ -203,20 +117,24 @@ public class GribWmoCodesPanel extends JPanel {
     setLayout(new BorderLayout());
     add(split, BorderLayout.CENTER);
 
-    ///
+  }
 
+  private WmoCodeTable.Version currTable = null;
+
+  public void setTable(WmoCodeTable.Version v) {
     try {
-      List<GribCodeTable> codes = GribCodeTable.getWmoStandard();
+      WmoCodeTable.WmoTables wmo = WmoCodeTable.readGribCodes(v);
+      List<WmoCodeTable> codes = wmo.list;
       List<CodeBean> dds = new ArrayList<CodeBean>(codes.size());
-      for (GribCodeTable code : codes) {
+      for (WmoCodeTable code : codes) {
         dds.add(new CodeBean(code));
       }
       codeTable.setBeans(dds);
+      currTable = v;
 
     } catch (Exception e) {
       e.printStackTrace();
     }
-
   }
 
   public void save() {
@@ -229,9 +147,9 @@ public class GribWmoCodesPanel extends JPanel {
     if (fileChooser != null) fileChooser.save();
   }
 
-  public void setEntries(GribCodeTable codeTable) {
+  public void setEntries(WmoCodeTable codeTable) {
     List<EntryBean> beans = new ArrayList<EntryBean>(codeTable.entries.size());
-    for (GribCodeTable.TableEntry d : codeTable.entries) {
+    for (WmoCodeTable.TableEntry d : codeTable.entries) {
       beans.add(new EntryBean(d));
     }
     entryTable.setBeans(beans);
@@ -241,21 +159,22 @@ public class GribWmoCodesPanel extends JPanel {
     int total = 0;
     int dups = 0;
 
-    HashMap<String, GribCodeTable.TableEntry> paramSet = new HashMap<String, GribCodeTable.TableEntry>();
+    HashMap<String, WmoCodeTable.TableEntry> paramSet = new HashMap<String, WmoCodeTable.TableEntry>();
     Formatter f = new Formatter();
-    f.format("Duplicates in WMO parameter table%n");
+    f.format("WMO parameter table %s%n", currTable);
+    f.format("%nDuplicates Names%n");
     for (Object t : codeTable.getBeans()) {
-      GribCodeTable gt = ((CodeBean) t).code;
+      WmoCodeTable gt = ((CodeBean) t).code;
       if (!gt.isParameter) continue;
-      for (GribCodeTable.TableEntry p : gt.entries) {
+      for (WmoCodeTable.TableEntry p : gt.entries) {
         if (p.meaning.equalsIgnoreCase("Reserved")) continue;
         if (p.meaning.equalsIgnoreCase("Missing")) continue;
         if (p.start != p.stop) continue;
 
-        GribCodeTable.TableEntry pdup = paramSet.get(p.name);
+        WmoCodeTable.TableEntry pdup = paramSet.get(p.name);
         if (pdup != null) {
           f.format("Duplicate %s%n", p);
-          f.format("          %s%n", pdup);
+          f.format("          %s%n%n", pdup);
           dups++;
         } else {
           paramSet.put(p.name, p);
@@ -267,19 +186,43 @@ public class GribWmoCodesPanel extends JPanel {
 
     total = 0;
     dups = 0;
-    f.format("() in WMO parameter table%n");
+    f.format("Names with parenthesis%n");
     for (Object t : codeTable.getBeans()) {
-      GribCodeTable gt = ((CodeBean) t).code;
+      WmoCodeTable gt = ((CodeBean) t).code;
       if (!gt.isParameter) continue;
-      for (GribCodeTable.TableEntry p : gt.entries) {
+      for (WmoCodeTable.TableEntry p : gt.entries) {
         if (p.meaning.indexOf('(') > 0) {
-          f.format("  org='%s'%n name='%s' %n%n", p.meaning, p.name);
+          f.format("  %s:%n  org='%s'%n name='%s' %n%n", p.getId(), p.meaning, p.name);
           dups++;
         }
         total++;
       }
     }
     f.format("%nTotal=%d parens=%d%n%n", total, dups);
+
+    total = 0;
+    dups = 0;
+    f.format("non-udunits%n");
+    for (Object t : codeTable.getBeans()) {
+      WmoCodeTable gt = ((CodeBean) t).code;
+      if (!gt.isParameter) continue;
+      for (WmoCodeTable.TableEntry p : gt.entries) {
+        if (p.unit == null) continue;
+        if (p.unit.length() == 0) continue;
+        try {
+          SimpleUnit su = SimpleUnit.factoryWithExceptions(p.unit);
+          if (su.isUnknownUnit()) {
+            f.format("%s %s has UNKNOWN udunit%n", p.getId(), p.unit);
+            dups++;
+          }
+        } catch (Exception ioe) {
+          f.format("%s %s FAILS on udunit parse%n", p.getId(), p.unit);
+          dups++;
+        }
+        total++;
+      }
+    }
+    f.format("%nTotal=%d problems=%d%n%n", total, dups);
 
     compareTA.setText(f.toString());
     infoWindow.show();
@@ -295,12 +238,12 @@ public class GribWmoCodesPanel extends JPanel {
     int unknownCount = 0;
 
     Formatter f = new Formatter();
-    f.format("DIFFERENCES with current parameter table%n");
+    f.format("DIFFERENCES of %s with 4.2 standard parameter table%n", currTable);
     List tables = codeTable.getBeans();
     for (Object t : tables) {
-      GribCodeTable gt = ((CodeBean) t).code;
+      WmoCodeTable gt = ((CodeBean) t).code;
       if (!gt.isParameter) continue;
-      for (GribCodeTable.TableEntry p : gt.entries) {
+      for (WmoCodeTable.TableEntry p : gt.entries) {
         if (p.meaning.equalsIgnoreCase("Reserved")) continue;
         if (p.meaning.equalsIgnoreCase("Missing")) continue;
         if (p.start != p.stop) continue;
@@ -331,6 +274,61 @@ public class GribWmoCodesPanel extends JPanel {
       }
     }
     f.format("%nTotal=%d same=%d sameIgnoreCase=%d dif=%d unknown=%d%n", total, nsame, nsameIgn, ndiff, unknownCount);
+    compareTA.setText(f.toString());
+    infoWindow.show();
+  }
+
+  private void compareToStandardWMO() {
+    int total = 0;
+    int nsame = 0;
+    int nsameIgn = 0;
+    int ndiff = 0;
+    int unknownCount = 0;
+    int missingCount = 0;
+
+    Formatter f = new Formatter();
+    f.format("DIFFERENCES of %s with standard WMO table%n", currTable);
+    List tables = codeTable.getBeans();
+    for (Object t : tables) {
+      WmoCodeTable gt = ((CodeBean) t).code;
+      if (!gt.isParameter) continue;
+      for (WmoCodeTable.TableEntry p : gt.entries) {
+        if (p.meaning.equalsIgnoreCase("Reserved")) continue;
+        if (p.meaning.equalsIgnoreCase("Missing")) continue;
+        if (p.start != p.stop) continue;
+
+        WmoCodeTable.TableEntry wmo = WmoCodeTable.getParameterEntry(gt.discipline, gt.category, p.start);
+        if (wmo == null) {
+          missingCount++;
+          f.format(" NEW %d %d %d %s (%s)%n",  gt.discipline, gt.category, p.start, p.name, p.unit);
+          continue;
+        }
+
+        String paramDesc = wmo.getName();
+        boolean unknown = paramDesc.startsWith("Unknown");
+        if (unknown) unknownCount++;
+        boolean same = paramDesc.equals(p.name);
+        if (same) nsame++;
+        boolean sameIgnore = paramDesc.equalsIgnoreCase(p.name);
+        if (sameIgnore) nsameIgn++;
+        else ndiff++;
+        total++;
+
+        String unitsCurr = wmo.getUnit();
+        String unitsWmo = p.unit;
+        boolean sameUnits = (unitsWmo == null) ? (unitsCurr == null) : unitsWmo.equals(unitsCurr);
+        same = same && sameUnits;
+
+        if (unknown && !showUnknown) continue;
+        if (same && !showSame) continue;
+        if (sameIgnore && !showCase) continue;
+
+        String state = same ? "  " : (sameIgnore ? "* " : "**");
+        f.format("%s%d %d %d (%d)%n this =%s%n wmo=%s%n", state, gt.discipline, gt.category, p.start, p.line, p.name, paramDesc);
+        if (!sameUnits) f.format(" units this='%s' wmo='%s' %n", unitsWmo, unitsCurr);
+      }
+    }
+    f.format("%nTotal=%d same=%d sameIgnoreCase=%d dif=%d unknown=%d new=%d%n", total, nsame, nsameIgn, ndiff, unknownCount, missingCount);
     compareTA.setText(f.toString());
     infoWindow.show();
   }
@@ -367,7 +365,7 @@ public class GribWmoCodesPanel extends JPanel {
     int ndiff = 0;
     int unknownCount = 0;
 
-    String dirName = "Q:/cdmUnitTest/tds/normal";
+    String dirName = "F:/data/cdmUnitTest/tds/normal";
 
     Formatter fm = new Formatter();
     fm.format("Check Current Models in directory %s%n", dirName);
@@ -393,7 +391,7 @@ public class GribWmoCodesPanel extends JPanel {
           int number = (Integer) att.getValue(3);
           if (number >= 192) continue;
           
-          GribCodeTable.TableEntry entry = GribCodeTable.getEntry(discipline, category, number);
+          WmoCodeTable.TableEntry entry = WmoCodeTable.getParameterEntry(discipline, category, number);
           if (entry == null) {
             fm.format("%n%d %d %d CANT FIND %s%n", discipline, category, number, currName);
             continue;
@@ -427,19 +425,19 @@ public class GribWmoCodesPanel extends JPanel {
   }
 
   public class CodeBean {
-    GribCodeTable code;
+    WmoCodeTable code;
 
     // no-arg constructor
     public CodeBean() {
     }
 
     // create from a dataset
-    public CodeBean(GribCodeTable code) {
+    public CodeBean(WmoCodeTable code) {
       this.code = code;
     }
 
     public String getTitle() {
-      return code.name;
+      return code.tableName;
     }
 
     public int getDiscipline() {
@@ -465,17 +463,24 @@ public class GribWmoCodesPanel extends JPanel {
     public boolean isParameter() {
       return code.isParameter;
     }
+
+    void showTable(Formatter f) {
+      f.format("Code Table %s (%s)%n", code.getTableName(), code.getTableId());
+      for (WmoCodeTable.TableEntry entry : code.entries) {
+        f.format("  %3d: %s%n", entry.number, entry.meaning);
+      }
+    }
   }
 
   public class EntryBean {
-    GribCodeTable.TableEntry te;
+    WmoCodeTable.TableEntry te;
 
     // no-arg constructor
     public EntryBean() {
     }
 
     // create from a dataset
-    public EntryBean(GribCodeTable.TableEntry te) {
+    public EntryBean(WmoCodeTable.TableEntry te) {
       this.te = te;
     }
 

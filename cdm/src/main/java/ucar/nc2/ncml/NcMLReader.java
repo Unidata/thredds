@@ -655,6 +655,11 @@ public class NcMLReader {
     Dimension dim = (refg == null) ? null : refg.findDimension(nameInFile);
     if (dim == null) { // nope - create it
       String lengthS = dimElem.getAttributeValue("length");
+      if (lengthS == null) {
+        errlog.format("NcML Dimension length is required (%s)%n", dimElem);
+        return;
+      }
+
       String isUnlimitedS = dimElem.getAttributeValue("isUnlimited");
       String isSharedS = dimElem.getAttributeValue("isShared");
       String isUnknownS = dimElem.getAttributeValue("isVariableLength");

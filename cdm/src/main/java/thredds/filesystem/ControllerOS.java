@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998 - 2009. University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998 - 2011. University Corporation for Atmospheric Research/Unidata
  * Portions of this software were developed by the Unidata Program at the
  * University Corporation for Atmospheric Research.
  *
@@ -49,6 +49,7 @@ import java.io.File;
 
 @ThreadSafe
 public class ControllerOS implements MController {
+  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(ControllerOS.class);
 
   ////////////////////////////////////////
 
@@ -56,17 +57,7 @@ public class ControllerOS implements MController {
   }
 
   @Override
-  public Iterator<MFile> getInventory(MCollection mc) {
-    return getInventory(mc, true);
-  }
-
-  @Override
-  public Iterator<MFile> getInventoryNoSubdirs(MCollection mc) {
-    return getInventoryNoSubdirs(mc, true);
-  }
-
-  @Override
-  public Iterator<MFile> getInventory(MCollection mc, boolean recheck) {
+  public Iterator<MFile> getInventoryAll(MCollection mc, boolean recheck) {
     String path = mc.getDirectoryName();
     if (path.startsWith("file:")) {
       path = path.substring(5);
@@ -75,10 +66,11 @@ public class ControllerOS implements MController {
     File cd = new File(path);
     if (!cd.exists()) return null;
     if (!cd.isDirectory()) return null;
-    return new FilteredIterator(mc, new MFileIteratorWithSubdirs(cd));  }
+    return new FilteredIterator(mc, new MFileIteratorAll(cd), false);
+  }
 
   @Override
-  public Iterator<MFile> getInventoryNoSubdirs(MCollection mc, boolean recheck) {
+  public Iterator<MFile> getInventoryTop(MCollection mc, boolean recheck) {
     String path = mc.getDirectoryName();
     if (path.startsWith("file:")) {
       path = path.substring(5);
@@ -87,8 +79,21 @@ public class ControllerOS implements MController {
     File cd = new File(path);
     if (!cd.exists()) return null;
     if (!cd.isDirectory()) return null;
-    return new FilteredIterator(mc, new MFileIterator(cd));
+    return new FilteredIterator(mc, new MFileIterator(cd), false);  // removes subdirs
   }
+
+  public Iterator<MFile> getSubdirs(MCollection mc, boolean recheck) {
+    String path = mc.getDirectoryName();
+    if (path.startsWith("file:")) {
+      path = path.substring(5);
+    }
+
+    File cd = new File(path);
+    if (!cd.exists()) return null;
+    if (!cd.isDirectory()) return null;
+    return new FilteredIterator(mc, new MFileIterator(cd), true);  // return only subdirs
+  }
+
 
   public void close() {
   } // NOOP
@@ -96,16 +101,18 @@ public class ControllerOS implements MController {
 
   ////////////////////////////////////////////////////////////
 
-  // handles filtering and removing subdirectories
+  // handles filtering and removing/including subdirectories
   private class FilteredIterator implements Iterator<MFile> {
     private Iterator<MFile> orgIter;
     private MCollection mc;
+    private boolean wantDirs;
 
     private MFile next;
 
-    FilteredIterator(MCollection mc, Iterator<MFile> iter) {
+    FilteredIterator(MCollection mc, Iterator<MFile> iter, boolean wantDirs) {
       this.orgIter = iter;
       this.mc = mc;
+      this.wantDirs = wantDirs;
     }
 
     public boolean hasNext() {
@@ -126,7 +133,7 @@ public class ControllerOS implements MController {
       if (!orgIter.hasNext()) return null;
 
       MFile pdata = orgIter.next();
-      while (pdata.isDirectory() || !mc.accept(pdata)) {  // skip directories, and filter
+      while ((pdata.isDirectory() != wantDirs) || !mc.accept(pdata)) {  // skip directories, and filter
         if (!orgIter.hasNext()) return null;
         pdata = orgIter.next();
       }
@@ -134,13 +141,18 @@ public class ControllerOS implements MController {
     }
   }
 
-  // returns everything in the directory
+  // returns everything in the current directory
   private class MFileIterator implements Iterator<MFile> {
     List<File> files;
     int count = 0;
 
     MFileIterator(File dir) {
-      files = Arrays.asList(dir.listFiles());
+      File[] f = dir.listFiles();
+      if (f == null) { // null on i/o error
+        logger.warn("I/O error on "+dir.getPath());
+        throw new IllegalStateException("dir.getPath() returned null on "+dir.getPath());
+      } else
+        files = Arrays.asList(f);
     }
 
     MFileIterator(List<File> files) {
@@ -161,13 +173,13 @@ public class ControllerOS implements MController {
     }
   }
 
-  // recursively scans everything in the directory and in subdirectories, depth first, leaves before subdirs
-  private class MFileIteratorWithSubdirs implements Iterator<MFile> {
+  // recursively scans everything in the directory and in subdirectories, depth first (leaves before subdirs)
+  private class MFileIteratorAll implements Iterator<MFile> {
     Queue<Traversal> traverse;
     Traversal currTraversal;
     Iterator<MFile> currIter;
 
-    MFileIteratorWithSubdirs(File top) {
+    MFileIteratorAll(File top) {
       traverse = new LinkedList<Traversal>();
       currTraversal = new Traversal(top);
     }

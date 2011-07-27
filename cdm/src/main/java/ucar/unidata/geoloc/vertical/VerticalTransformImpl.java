@@ -117,8 +117,7 @@ public abstract class VerticalTransformImpl implements VerticalTransform {
      * @throws IOException problem reading data
      * @throws InvalidRangeException _more_
      */
-    protected Array readArray(Variable v, int timeIndex)
-            throws IOException, InvalidRangeException {
+    protected Array readArray(Variable v, int timeIndex) throws IOException, InvalidRangeException {
         int[] shape  = v.getShape();
         int[] origin = new int[v.getRank()];
 

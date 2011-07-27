@@ -44,6 +44,7 @@ import java.io.IOException;
 import java.io.File;
 
 import ucar.nc2.iosp.IOServiceProvider;
+import ucar.nc2.iosp.grib.GribServiceProvider;
 import ucar.nc2.util.CompareNetcdf;
 
 public class TestTextIndexes extends TestCase {
@@ -67,7 +68,7 @@ public class TestTextIndexes extends TestCase {
 
     long start = System.currentTimeMillis() ;
      
-    Class c = ucar.nc2.iosp.grib.GribGridServiceProvider.class;
+    Class c = GribServiceProvider.class;
     IOServiceProvider spiB = null;
     try {
       spiB = (IOServiceProvider) c.newInstance();

@@ -33,3 +33,6 @@ message Attribute {
   required uint32 len = 3;
   required bytes data = 4;
 }
+
+// cd c:/dev/tds4.2n/cdm/src/main/java
+// protoc --proto_path=. --java_out=. thredds/filesystem/FileSystem.proto

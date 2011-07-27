@@ -32,11 +32,11 @@
 
 package thredds.inventory;
 
-import ucar.nc2.units.DateRange;
+import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateRange;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Formatter;
 import java.util.List;
 
@@ -51,9 +51,9 @@ import java.util.List;
 public class TimedCollection {
   private static final boolean debug = false;
 
-  private final DatasetCollectionManager manager;
+  private final CollectionManager manager;
   private List<TimedCollection.Dataset> datasets;
-  private DateRange dateRange;
+  private CalendarDateRange dateRange;
 
   /**
    * Manage collections of files that we can assign date ranges to
@@ -63,11 +63,11 @@ public class TimedCollection {
    * @see CollectionSpecParser
    * @throws java.io.IOException on read error
    */
-  public TimedCollection(DatasetCollectionManager manager, Formatter errlog) throws IOException {
+  public TimedCollection(CollectionManager manager, Formatter errlog) throws IOException {
     this.manager = manager;
 
     // get the inventory, sorted by path
-    manager.scan(null);
+    manager.scanIfNeeded();
     update();
 
     if (debug) {
@@ -81,9 +81,8 @@ public class TimedCollection {
   }
 
   public void update() {
-    List<MFile> fileList = manager.getFiles();
-    datasets = new ArrayList<TimedCollection.Dataset>(fileList.size());
-    for (MFile f : fileList)
+    datasets = new ArrayList<TimedCollection.Dataset>();
+    for (MFile f :  manager.getFiles())
       datasets.add(new Dataset(f));
 
     if (manager.hasDateExtractor()) {
@@ -91,26 +90,26 @@ public class TimedCollection {
       if (datasets.size() == 1) {
         Dataset ds = (Dataset) datasets.get(0);
         if (ds.start != null)
-          dateRange = new DateRange(ds.start, ds.start); // LOOK ??
+          dateRange = CalendarDateRange.of(ds.start, ds.start); // LOOK ??
 
       } else if (datasets.size() > 1) {
 
         for (int i = 0; i < datasets.size() - 1; i++) {
           Dataset d1 = (Dataset) datasets.get(i);
           Dataset d2 = (Dataset) datasets.get(i + 1);
-          d1.setDateRange(new DateRange(d1.start, d2.start));
+          d1.setDateRange(CalendarDateRange.of(d1.start, d2.start));
           if (i == datasets.size() - 2) // last one
-            d2.setDateRange(new DateRange(d2.start, d1.getDateRange().getDuration()));
+            d2.setDateRange(new CalendarDateRange(d2.start, d1.getDateRange().getDurationInSecs()));
         }
 
         Dataset first = (Dataset) datasets.get(0);
         Dataset last = (Dataset) datasets.get(datasets.size() - 1);
-        dateRange = new DateRange(first.getDateRange().getStart().getDate(), last.getDateRange().getEnd().getDate());
+        dateRange = CalendarDateRange.of(first.getDateRange().getStart(), last.getDateRange().getEnd());
       }
     }
   }
 
-  private TimedCollection(TimedCollection from, DateRange want) {
+  private TimedCollection(TimedCollection from, CalendarDateRange want) {
     this.manager = from.manager;
     datasets = new ArrayList<TimedCollection.Dataset>(from.datasets.size());
     for (TimedCollection.Dataset d : from.datasets)
@@ -120,7 +119,7 @@ public class TimedCollection {
   }
 
   public TimedCollection.Dataset getPrototype() {
-    int idx = manager.getProtoIndex();
+    int idx = manager.getProtoIndex(datasets.size());
     return datasets.get(idx);
   }
 
@@ -128,11 +127,11 @@ public class TimedCollection {
     return datasets;
   }
 
-  public TimedCollection subset(DateRange range) {
+  public TimedCollection subset(CalendarDateRange range) {
     return new TimedCollection(this, range);
   }
 
-  public DateRange getDateRange() {
+  public CalendarDateRange getDateRange() {
     return dateRange;
   }
 
@@ -151,8 +150,8 @@ public class TimedCollection {
    */
   public class Dataset {
     String location;
-    DateRange dateRange;
-    Date start;
+    CalendarDateRange dateRange;
+    CalendarDate start;
 
     Dataset(MFile f) {
       this.location = f.getPath();
@@ -163,11 +162,11 @@ public class TimedCollection {
       return location;
     }
 
-    public DateRange getDateRange() {
+    public CalendarDateRange getDateRange() {
       return dateRange;
     }
 
-    public void setDateRange(DateRange dateRange) {
+    public void setDateRange(CalendarDateRange dateRange) {
       this.dateRange = dateRange;
     }
 
@@ -183,7 +182,7 @@ public class TimedCollection {
   //////////////////////////////////////////////////////////////////////////
   // debugging
   private static void doit(String spec, Formatter errlog) throws IOException {
-    DatasetCollectionManager dcm = DatasetCollectionManager.open(spec, null, errlog);
+    CollectionManager dcm = DatasetCollectionMFiles.open(spec, null, errlog);
     TimedCollection specp = new TimedCollection(dcm, errlog);
     System.out.printf("spec= %s%n%s%n", spec, specp);
     String err = errlog.toString();

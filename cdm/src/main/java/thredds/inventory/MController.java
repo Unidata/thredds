@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998 - 2009. University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998 - 2011. University Corporation for Atmospheric Research/Unidata
  * Portions of this software were developed by the Unidata Program at the
  * University Corporation for Atmospheric Research.
  *
@@ -42,38 +42,30 @@ import java.util.Iterator;
  */
 public interface MController {
 
-  /* public enum SyncPolicy {
-    demand, manual, periodic
-  }
+  /**
+   * Returns all leaves in collection, resursing into subdirectories.
+   * @param mc defines the collection to scan
+   * @param recheck if false, may use cached results. otherwise must sync with File OS
+   * @return iterator over Mfiles, or null if collection does not exist
+   */
+  public Iterator<MFile> getInventoryAll(MCollection mc, boolean recheck);
 
-  public enum Purge {
-    none, manual, periodic
-  }
+  /**
+   * Returns all leaves in top collection, not recursing into subdirectories.
+   * @param mc defines the collection to scan
+   * @param recheck if false, may use cached results. otherwise must sync with File OS
+   * @return iterator over Mfiles, or null if collection does not exist
+   */
+  public Iterator<MFile> getInventoryTop(MCollection mc, boolean recheck);
 
-  public enum PurgePolicy {
-    maxAge
-  }  */
-
-  //public Iterator<MFile> getInventory(String collectionName);
-
-  public Iterator<MFile> getInventory(MCollection mc);
-
-  public Iterator<MFile> getInventoryNoSubdirs(MCollection mc);
-
-  // if recheck = false, can use cached results. otherwise must sync with File OS
-  public Iterator<MFile> getInventory(MCollection mc, boolean recheck);
-
-  public Iterator<MFile> getInventoryNoSubdirs(MCollection mc, boolean recheck);
+  /**
+   * Returns all subdirectories in top collection.
+   * @param mc defines the collection to scan
+   * @param recheck if false, may use cached results. otherwise must sync with File OS
+   * @return iterator over Mfiles, or null if collection does not exist
+   */
+  public Iterator<MFile> getSubdirs(MCollection mc, boolean recheck);
 
   public void close();
-
-  // public void sync(String collectionName);
-
-  /* locking
-  public Object lockCollection(String collectionName);
-
-  public void unlockCollection(Object lock);
-
-  public boolean renewLock(Object lock); */
 
 }

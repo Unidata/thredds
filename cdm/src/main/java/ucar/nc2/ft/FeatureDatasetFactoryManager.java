@@ -33,7 +33,8 @@
 
 package ucar.nc2.ft;
 
-import thredds.inventory.DatasetCollectionManager;
+import thredds.inventory.CollectionManager;
+import thredds.inventory.DatasetCollectionMFiles;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.CoordinateSystem;
@@ -44,7 +45,6 @@ import ucar.nc2.ft.grid.GridDatasetStandardFactory;
 import ucar.nc2.ft.radial.RadialDatasetStandardFactory;
 import ucar.nc2.thredds.ThreddsDataFactory;
 import ucar.nc2.stream.CdmrFeatureDataset;
-import ucar.nc2.stream.CdmRemote;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -213,7 +213,7 @@ public class FeatureDatasetFactoryManager {
       // special processing for collection: datasets
     } else if (location.startsWith(ucar.nc2.ft.point.collection.CompositeDatasetFactory.SCHEME)) {
       String spec = location.substring(CompositeDatasetFactory.SCHEME.length());
-      DatasetCollectionManager dcm = DatasetCollectionManager.open(spec, null, errlog);
+      CollectionManager dcm = DatasetCollectionMFiles.open(spec, null, errlog);
       return CompositeDatasetFactory.factory(location, wantFeatureType, dcm, errlog);
     }
 

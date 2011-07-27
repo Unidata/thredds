@@ -39,16 +39,11 @@ package ucar.nc2.iosp.mcidas;
 
 import edu.wisc.ssec.mcidas.GridDirectory;
 import edu.wisc.ssec.mcidas.McIDASException;
-
 import edu.wisc.ssec.mcidas.McIDASUtil;
 
-//import ucar.nc2.iosp.grid.*;
+import ucar.nc2.iosp.grid.*;
 
-import java.util.Date;
 import java.util.Formatter;
-
-import ucar.grid.GridRecord;
-import ucar.grid.GridTableLookup;
 
 
 /**

@@ -78,6 +78,23 @@ import java.net.URL;
  *
  * @author caron
  */
+/*
+    ClassLoader cl = Level2VolumeScan.class.getClassLoader();
+    InputStream is = cl.getResourceAsStream("resources/nj22/tables/nexrad.tbl");
+
+    List<TableParser.Record> recs = TableParser.readTable(is, "3,15,46, 54,60d,67d,73d", 50000);
+    for (TableParser.Record record : recs) {
+      Station s = new Station();
+      s.id = "K" + record.get(0);
+      s.name = record.get(2) + " " + record.get(3);
+      s.lat = (Double) record.get(4) * .01;
+      s.lon = (Double) record.get(5) * .01;
+      s.elev = (Double) record.get(6);
+
+      stationTableHash.put(s.id, s);
+      if (showStations) System.out.println(" station= " + s);
+    }
+ */
 public class TableParser {
 
   /**

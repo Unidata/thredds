@@ -2,6 +2,28 @@ CHANGES for Netcdf-Java library
 Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
+Changes in version 4.3:
+ 2:(2011-xx-xx)
+  Projections are no longer cloneable, plus they are immutable so setters are removed
+  clean up and systematize projection - conform to CF as much as possible
+  use CF constants
+
+ 1: (2011-07-07)
+  Grib2 jpeg2000 decoder : bug when unsigned, nbits > 8
+  GribNewPanel : extract Grib2 record
+  featureCollection gribConfig - allow gds hash override
+  Grib Collections, indexing, maximum efficiency for large (nomads) datasets.
+  ucar.nc2.grib : complete grib refactor
+  protobuf-2.4.0a
+  incorporate latest grib2 wmo tables
+  TimedCollection, CollectionManager, Fmrc API changes
+  use CalendarDateRange instead of DateRange everywhere
+  use CalendarDate instead of Date everywhere
+  ucar.nc2.time module - uses javax.time classes
+  StructureDataIterator now requires finish() to be called
+  Grib classes refactored. grib module now depends on cdm
+  using spring 3
+
 Changes in version 4.2:
  26: (2011-07-25)
   NetcdfFile.makeValidCdmObjectName() - remove chars < 20.
@@ -101,7 +123,7 @@ Changes in version 4.2:
  16: (2010-11-24)
   Improve diagnostic on Aggregation / no datasets found
   H5/N4 non-string vlen bug.
-  GridVariable ensemble coordinate - use perturbation number and enseble type
+  GridVariable ensemble coordinate - use perturbation number and ensemble type
   Grib2 Template 11 bug reading forecast time
  15: (2010-11-19)
   NetcdfCFWriter : set large file if needed

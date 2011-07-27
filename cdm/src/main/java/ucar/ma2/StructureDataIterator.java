@@ -36,7 +36,16 @@ import java.io.IOException;
 
 /**
  * An iterator over StructureData.
-
+  * Make sure that you call finish().
+  * Best to put in a try/finally block like:
+<pre>
+try {
+  while (iter.hasNext())
+   process(iter.next());
+ } finally {
+   iter.finish();
+ }
+</pre>
  * @author caron
  * @since Feb 23, 2008
  */
@@ -45,6 +54,7 @@ public interface StructureDataIterator {
   /**
    * See if theres more StructureData in the iteration.
    * You must always call this before calling next().
+   *
    * @return true if more records are available
    * @throws java.io.IOException on read error
    */
@@ -52,6 +62,7 @@ public interface StructureDataIterator {
 
   /**
    * Get the next StructureData in the iteration.
+   *
    * @return next StructureData record.
    * @throws java.io.IOException on read error
    */
@@ -60,31 +71,32 @@ public interface StructureDataIterator {
   /**
    * Hint to use this much memory in buffering the iteration.
    * No guarentee that it will be used by the implementation.
+   *
    * @param bytes amount of memory in bytes
    */
   public void setBufferSize(int bytes);
 
   /**
    * Start the iteration over again.
+   *
    * @return a new or reset iterator.
    */
   public StructureDataIterator reset();
 
   public int getCurrentRecno();
 
-  /*
+  /**
    * Make sure that the iterator is complete, and recover resources.
-   * You must complete the iteration (until hasNext() returns false) or call finish().
-   * may be called more than once.
-* You must complete the iteration or call finish() to ensure resources are released.
- * Best to put in a try/finally block like:
-  <pre>
-  try {
+   * Best to put in a try/finally block like:
+   * <pre>
+ try {
    while (iter.hasNext())
-     process(iter.next());
+    process(iter.next());
   } finally {
     iter.finish();
   }
-  </pre>   *
-  public void finish();    */
+   </pre>
+   */
+  public void finish();
+
 }

@@ -34,6 +34,8 @@ package ucar.nc2.dt;
 
 import ucar.nc2.dataset.*;
 import ucar.nc2.Dimension;
+import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateRange;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
@@ -275,6 +277,7 @@ public interface GridCoordSystem {
   /**
    * If there is a time coordinate, get the time covered.
    * @return DateRange or null if no time coordinate
+   * @deprecated use getCalendarDateRange()
    */
   public DateRange getDateRange();
    
@@ -303,5 +306,10 @@ public interface GridCoordSystem {
    * @return 1D time axis for that run. Null if not 2D time
    */
   public CoordinateAxis1DTime getTimeAxisForRun(int run_index);
+
+  public List<CalendarDate> getCalendarDates();
+
+  public CalendarDateRange getCalendarDateRange();
+
 
 }

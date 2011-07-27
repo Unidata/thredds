@@ -139,7 +139,7 @@ public abstract class Selector {
   }
 
   private void appendQueryFromTemplate( StringBuffer sbuff, ArrayList choices) {
-    StringBuffer templateBuff = new StringBuffer( template);
+    StringBuilder templateBuff = new StringBuilder( template);
 
     for (int i=0; i<choices.size(); i+=2) {
       ucar.unidata.util.StringUtil.substitute( templateBuff,

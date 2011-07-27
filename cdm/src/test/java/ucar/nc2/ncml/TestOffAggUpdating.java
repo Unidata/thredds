@@ -76,7 +76,7 @@ public class TestOffAggUpdating extends TestCase {
     String ncml =
       "<?xml version='1.0' encoding='UTF-8'?>\n" +
       "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n" +
-      "       <aggregation dimName='time' type='joinExisting' recheckEvery='1 nsec'>\n" +
+      "       <aggregation dimName='time' type='joinExisting' recheckEvery='1 msec'>\n" +
       "         <scan location='"+dir+"' suffix='*.nc' />\n" +
       "         <variable name='depth'>\n" +
       "           <attribute name='coordinates' value='lon lat'/>\n" +

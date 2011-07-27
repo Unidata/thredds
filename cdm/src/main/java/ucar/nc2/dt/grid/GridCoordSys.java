@@ -35,10 +35,13 @@ package ucar.nc2.dt.grid;
 import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.*;
+import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.NamedObject;
 import ucar.nc2.units.*;
 
 import ucar.unidata.geoloc.*;
+import ucar.unidata.geoloc.projection.LatLonProjection;
 import ucar.unidata.geoloc.projection.VerticalPerspectiveView;
 import ucar.unidata.geoloc.projection.RotatedPole;
 import ucar.unidata.geoloc.projection.RotatedLatLon;
@@ -321,7 +324,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
 
   // deferred creation
   //private List<NamedObject> times = null;
-  private Date[] timeDates = null;
+  //private Date[] timeDates = null;
 
   /**
    * Create a GridCoordSys from an existing Coordinate System.
@@ -756,34 +759,12 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
     }
   }
 
-
-  /**
-   * Get the list of times as Dates. Only valid if isDate() is true.
-   * If 2D, return list of unique dates.
-   *
-   * @return array of java.util.Date, or null.
-   */
-  public java.util.Date[] getTimeDates() {
-    if (timeDates == null) makeTimes();
-    return timeDates;
-  }
-
   /**
    * is this a Lat/Lon coordinate system?
    */
   public boolean isLatLon() {
     return isLatLon;
   }
-
-  /*
-   * is there a time coordinate, and can it be expressed as a Date?
-   *
-   * @return true if theres a time coordinate that can be expressed as a Date
-   */
- public boolean isDate() {
-   if (timeDates == null) makeTimes();
-   return isDate;
- }
 
   /**
    * true if increasing z coordinate values means "up" in altitude
@@ -817,7 +798,6 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
 
   /**
    * Given a point in x,y coordinate space, find the x,y index in the coordinate system.
-   * Not implemented yet for 2D.
    *
    * @param x_coord position in x coordinate space.
    * @param y_coord position in y coordinate space.
@@ -918,24 +898,6 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
   }
 
   /**
-   * Given a point in x,y coordinate space, find the x,y index in the coordinate system.
-   *
-   * @deprecated use findXYindexFromCoord
-   */
-  public int[] findXYCoordElement(double x_coord, double y_coord, int[] result) {
-    return findXYindexFromCoord(x_coord, y_coord, result);
-  }
-
-  public DateRange getDateRange() {
-    if (timeDates == null) makeTimes();
-    if (isDate) {
-      Date[] dates = getTimeDates();
-      return new DateRange(dates[0], dates[dates.length - 1]);
-    }
-    return null;
-  }
-
-  /**
    * True if there is a Time Axis.
    */
   public boolean hasTimeAxis() {
@@ -978,27 +940,6 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
     }
 
     return null;
-  }
-
-  public DateUnit getDateUnit() throws Exception {
-    String tUnits = getTimeAxis().getUnitsString();
-    return new DateUnit(tUnits);
-  }
-
-  /**
-   * Get the resolution of the time coordinate. must be regular
-   *
-   * @return null if !isRegular()
-   * @throws Exception if parsing the time unit fails
-   */
-  public TimeUnit getTimeResolution() throws Exception {
-    if (!isRegular()) return null;
-
-    CoordinateAxis1DTime taxis = (CoordinateAxis1DTime) getTimeAxis();
-    String tUnits = taxis.getUnitsString();
-    StringTokenizer stoker = new StringTokenizer(tUnits);
-    double tResolution = taxis.getIncrement();
-    return new TimeUnit(tResolution, stoker.nextToken());
   }
 
   private ProjectionRect mapArea = null;
@@ -1157,14 +1098,6 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
     }
 
     return llbb;
-  }
-
-  private double getMinOrMaxLon(double lon1, double lon2, boolean wantMin) {
-    double midpoint = (lon1 + lon2) / 2;
-    lon1 = LatLonPointImpl.lonNormal(lon1, midpoint);
-    lon2 = LatLonPointImpl.lonNormal(lon2, midpoint);
-
-    return wantMin ? Math.min(lon1, lon2) : Math.max(lon1, lon2);
   }
 
   /**
@@ -1364,121 +1297,52 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
 
   /////////////////////////////////////////////////////////////////
 
-  // make timeDates array
-  private void makeTimes() {
-    if ((timeTaxis != null) && (timeTaxis.getSize() > 0)) {
-      timeDates = timeTaxis.getTimeDates();
-      isDate = true;
-      return;
+  public List<CalendarDate> getCalendarDates() {
+    if (timeTaxis != null)
+      return timeTaxis.getCalendarDates();
 
-    } else if ((tAxis != null) && (tAxis.getSize() > 0))  {
-      if (makeTimes2D()) return;
-    }
+    else if (getRunTimeAxis() != null)
+      return makeCalendarDates2D();
 
-    timeDates = new Date[0];
-    isDate = false;
+    else
+      return null;
   }
 
-  // old way
-  private boolean makeTimes1D() {
-    int n = (int) timeTaxis.getSize();
-    timeDates = new Date[n];
+  public CalendarDateRange getCalendarDateRange() {
+    if (timeTaxis != null)
+      return timeTaxis.getCalendarDateRange();
 
-    // common case: see if it has a valid udunits unit
-    try {
-      DateUnit du = null;
-      String units = timeTaxis.getUnitsString();
-      if (units != null)
-        du = new DateUnit(units);
-      for (int i = 0; i < n; i++) {
-        Date d = du.makeDate(timeTaxis.getCoordValue(i));
-        timeDates[i] = d;
-      }
-      isDate = true;
-      return true;
-    } catch (Exception e) {
-      // ok to fall through
-    }
+    else if (getRunTimeAxis() != null) {
+      List<CalendarDate>  cd = makeCalendarDates2D();
+      int last = cd.size();
+      return (last > 0) ? CalendarDateRange.of(cd.get(0), cd.get(last-1)) : null;
 
-    // otherwise, see if its a String, and if we can parse the values as an ISO date
-    if ((timeTaxis.getDataType() == DataType.STRING) || (timeTaxis.getDataType() == DataType.CHAR)) {
-      DateFormatter formatter = new DateFormatter();
-      for (int i = 0; i < n; i++) {
-        String coordValue = timeTaxis.getCoordName(i);
-        Date d = formatter.getISODate(coordValue);
-        if (d == null) {
-          isDate = false;
-          return false;
-        } else {
-          timeDates[i] = d;
-        }
-      }
-      isDate = true;
-      return true;
-    }
-
-    return false;
+    } else
+      return null;
   }
 
-  private boolean makeTimes2D() {
-    Set<Date> dates = new HashSet<Date>();
+  private List<CalendarDate> makeCalendarDates2D() {
+    Set<CalendarDate> dates = new HashSet<CalendarDate>();
 
-    try {
-      // common case: see if it has a valid udunits unit
-      String units = tAxis.getUnitsString();
-      if (units != null && SimpleUnit.isDateUnit(units) && tAxis.getDataType().isNumeric()) {
-        DateUnit du = new DateUnit(units);
-        Array data = tAxis.read();
-        data.resetLocalIterator();
-        while (data.hasNext()) {
-          Date d = du.makeDate(data.nextDouble());
-          if (d != null)
-            dates.add(d);
-        }
-        isDate = true;
-
-      } else if (tAxis.getDataType() == DataType.STRING) {
-        // otherwise, see if its a String or CHAR, and if we can parse the values as an ISO date
-        DateFormatter formatter = new DateFormatter();
-        Array data = tAxis.read();
-        data.resetLocalIterator();
-        while (data.hasNext()) {
-          Date d = formatter.getISODate((String) data.next());
-          if (d != null)
-            dates.add(d);
-        }
-        isDate = true;
-
-      } else if (tAxis.getDataType() == DataType.CHAR) {
-        DateFormatter formatter = new DateFormatter();
-        ArrayChar data = (ArrayChar) tAxis.read();
-        ArrayChar.StringIterator iter = data.getStringIterator();
-        while (iter.hasNext()) {
-          Date d = formatter.getISODate(iter.next());
-          if (d != null)
-            dates.add(d);
-        }
-        isDate = true;
-
-      } else {
-        return false;
-      }
-    } catch (Exception e) {
-      throw new RuntimeException(e);
+    CoordinateAxis1DTime rtaxis = getRunTimeAxis();
+    List<CalendarDate> runtimes = rtaxis.getCalendarDates();
+    for (int i = 0; i < runtimes.size(); i++) {
+      CoordinateAxis1DTime taxis = getTimeAxisForRun(i);
+      List<CalendarDate> times = taxis.getCalendarDates();
+      for (int j = 0; j < times.size(); j++)
+        dates.add(times.get(j));
     }
 
     // sorted list
     int n = dates.size();
-    Date[] dd = dates.toArray(new Date[n]);
-    List<Date> dateList = Arrays.asList(dd);
+    CalendarDate[] dd = dates.toArray(new CalendarDate[n]);
+    List<CalendarDate> dateList = Arrays.asList(dd);
     Collections.sort(dateList);
-    timeDates = new Date[n];
-    int count=0;
-    for (Date d : dateList)
-      timeDates[count++] = d;
 
-    return true;
+    return dateList;
   }
+
+
 
   //////////////////////////////////////////////////////////////////////////////////////
   // cruft
@@ -1536,16 +1400,152 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
    * @return List of ucar.nc2.util.NamedObject, or empty list.
    */
   public List<NamedObject> getTimes() {
-    if (timeDates == null) makeTimes();
-    if (!isDate) return null;
-
-    DateFormatter df = new DateFormatter();
-    List<NamedObject> times = new ArrayList<NamedObject>( timeDates.length);
-    for (Date d: timeDates) {
-      times.add(new ucar.nc2.util.NamedAnything(df.toDateTimeStringISO(d), "date/time"));
+    List<CalendarDate> cdates = getCalendarDates();
+    List<NamedObject> times = new ArrayList<NamedObject>( cdates.size());
+    for (CalendarDate cd: cdates) {
+      times.add(new ucar.nc2.util.NamedAnything(cd.toString(), "calendar date"));
     }
     return times;
   }
+
+   ///////////////////////////////////////////////////////////////////////////
+  // deprecated
+
+  /**
+   * Given a point in x,y coordinate space, find the x,y index in the coordinate system.
+   *
+   * @deprecated use findXYindexFromCoord
+   */
+  public int[] findXYCoordElement(double x_coord, double y_coord, int[] result) {
+    return findXYindexFromCoord(x_coord, y_coord, result);
+  }
+
+  /**
+   * Get the date range
+   * @return date range
+   * @deprecated  use getCalendarDateRange
+   */
+  public DateRange getDateRange() {
+    Date[] dates = getTimeDates();
+    if (dates.length > 0)
+      return new DateRange(dates[0], dates[dates.length - 1]);
+    return null;
+  }
+
+  /**
+   * Get the list of times as Dates.
+   * If 2D, return list of unique dates.
+   *
+   * @return array of java.util.Date, or Date[0].
+   * @deprecated  use getCalendarDates
+   */
+  public java.util.Date[] getTimeDates() {
+    if ((timeTaxis != null) && (timeTaxis.getSize() > 0)) {
+      return timeTaxis.getTimeDates();
+
+    } else if ((tAxis != null) && (tAxis.getSize() > 0))  {
+      return makeTimes2D();
+    }
+
+    return new Date[0];
+  }
+
+  private Date[] makeTimes2D() {
+    Set<Date> dates = new HashSet<Date>();
+
+    try {
+      // common case: see if it has a valid udunits unit
+      String units = tAxis.getUnitsString();
+      if (units != null && SimpleUnit.isDateUnit(units) && tAxis.getDataType().isNumeric()) {
+        DateUnit du = new DateUnit(units);
+        Array data = tAxis.read();
+        data.resetLocalIterator();
+        while (data.hasNext()) {
+          Date d = du.makeDate(data.nextDouble());
+          dates.add(d);
+        }
+
+      } else if (tAxis.getDataType() == DataType.STRING) {
+        // otherwise, see if its a String or CHAR, and if we can parse the values as an ISO date
+        DateFormatter formatter = new DateFormatter();
+        Array data = tAxis.read();
+        data.resetLocalIterator();
+        while (data.hasNext()) {
+          Date d = formatter.getISODate((String) data.next());
+          dates.add(d);
+        }
+
+      } else if (tAxis.getDataType() == DataType.CHAR) {
+        DateFormatter formatter = new DateFormatter();
+        ArrayChar data = (ArrayChar) tAxis.read();
+        ArrayChar.StringIterator iter = data.getStringIterator();
+        while (iter.hasNext()) {
+          Date d = formatter.getISODate(iter.next());
+          dates.add(d);
+        }
+
+      } else {
+        return new Date[0];
+      }
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+
+    // sorted list
+    int n = dates.size();
+    Date[] dd = dates.toArray(new Date[n]);
+    List<Date> dateList = Arrays.asList(dd);
+    Collections.sort(dateList);
+    Date[] timeDates = new Date[n];
+    int count=0;
+    for (Date d : dateList)
+      timeDates[count++] = d;
+
+    return timeDates;
+  }
+
+  /* old way
+  private boolean makeTimes1D() {
+    int n = (int) timeTaxis.getSize();
+    timeDates = new Date[n];
+
+    // common case: see if it has a valid udunits unit
+    try {
+      DateUnit du = null;
+      String units = timeTaxis.getUnitsString();
+      if (units != null)
+        du = new DateUnit(units);
+      for (int i = 0; i < n; i++) {
+        Date d = du.makeDate(timeTaxis.getCoordValue(i));
+        timeDates[i] = d;
+      }
+      isDate = true;
+      return true;
+    } catch (Exception e) {
+      // ok to fall through
+    }
+
+    // otherwise, see if its a String, and if we can parse the values as an ISO date
+    if ((timeTaxis.getDataType() == DataType.STRING) || (timeTaxis.getDataType() == DataType.CHAR)) {
+      DateFormatter formatter = new DateFormatter();
+      for (int i = 0; i < n; i++) {
+        String coordValue = timeTaxis.getCoordName(i);
+        Date d = formatter.getISODate(coordValue);
+        if (d == null) {
+          isDate = false;
+          return false;
+        } else {
+          timeDates[i] = d;
+        }
+      }
+      isDate = true;
+      return true;
+    }
+
+    return false;
+  }  */
+
+
 
   /**
    * Get the string name for the ith time coordinate.
@@ -1555,14 +1555,12 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
    * @deprecated
    */
   public String getTimeName(int index) {
-    if (timeDates == null) makeTimes();
-    if (!isDate) return null;
+    List<CalendarDate> cdates = getCalendarDates();
 
-    if ((index < 0) || (index >= timeDates.length))
-      throw new IllegalArgumentException("getTimeName = " + index);
+    if ((index < 0) || (index >= cdates.size()))
+      throw new IllegalArgumentException("getTimeName illegal index = " + index);
 
-    DateFormatter df = new DateFormatter();
-    return df.toDateTimeStringISO(timeDates[index]);
+    return cdates.get(index).toString();
   }
 
   /**
@@ -1573,11 +1571,9 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
    * @deprecated
    */
   public int getTimeIndex(String name) {
-    if (timeDates == null) makeTimes();
-    if (!isDate) return -1;
-    DateFormatter df = new DateFormatter();
-    for (int i=0; i < timeDates.length; i++) {
-      if( df.toDateTimeStringISO(timeDates[i]).equals(name)) return i;
+    List<CalendarDate> cdates = getCalendarDates();
+    for (int i=0; i < cdates.size(); i++) {
+      if( cdates.get(i).toString().equals(name)) return i;
     }
 
     return -1;
@@ -1592,7 +1588,82 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
     return timeTaxis.findTimeIndexFromDate(d);
   }
 
+  ///////////////////////////////////////////////////////////////////////
+  // experimental
 
+  static private double getMinOrMaxLon(double lon1, double lon2, boolean wantMin) {
+    double midpoint = (lon1 + lon2) / 2;
+    lon1 = LatLonPointImpl.lonNormal(lon1, midpoint);
+    lon2 = LatLonPointImpl.lonNormal(lon2, midpoint);
+
+    return wantMin ? Math.min(lon1, lon2) : Math.max(lon1, lon2);
+  }
+
+  static public LatLonRect getLatLonBoundingBox(Projection proj, double startx, double starty, double endx, double endy) {
+
+    if (proj instanceof LatLonProjection) {
+      double startLat = starty;
+      double startLon = startx;
+
+      double deltaLat = endy - starty;
+      double deltaLon = endx - startx;
+
+      LatLonPoint llpt = new LatLonPointImpl(startLat, startLon);
+      return new LatLonRect(llpt, deltaLat, deltaLon);
+
+    }
+    ProjectionRect bb = new ProjectionRect(startx, starty, endx, endy);
+
+    // look at all 4 corners of the bounding box
+    LatLonPointImpl llpt = (LatLonPointImpl) proj.projToLatLon(bb.getLowerLeftPoint(), new LatLonPointImpl());
+    LatLonPointImpl lrpt = (LatLonPointImpl) proj.projToLatLon(bb.getLowerRightPoint(), new LatLonPointImpl());
+    LatLonPointImpl urpt = (LatLonPointImpl) proj.projToLatLon(bb.getUpperRightPoint(), new LatLonPointImpl());
+    LatLonPointImpl ulpt = (LatLonPointImpl) proj.projToLatLon(bb.getUpperLeftPoint(), new LatLonPointImpl());
+
+    // Check if grid contains poles. LOOK disabled
+    boolean includesNorthPole = false;
+    /* int[] resultNP = new int[2];
+    resultNP = findXYindexFromLatLon(90.0, 0, null);
+    if (resultNP[0] != -1 && resultNP[1] != -1)
+      includesNorthPole = true;  */
+
+    boolean includesSouthPole = false;
+    /* int[] resultSP = new int[2];
+    resultSP = findXYindexFromLatLon(-90.0, 0, null);
+    if (resultSP[0] != -1 && resultSP[1] != -1)
+      includesSouthPole = true;  */
+
+    LatLonRect llbb;
+
+    if (includesNorthPole && !includesSouthPole) {
+      llbb = new LatLonRect(llpt, new LatLonPointImpl(90.0, 0.0)); // ??? lon=???
+      llbb.extend(lrpt);
+      llbb.extend(urpt);
+      llbb.extend(ulpt);
+
+    } else if (includesSouthPole && !includesNorthPole) {
+      llbb = new LatLonRect(llpt, new LatLonPointImpl(-90.0, -180.0)); // ??? lon=???
+      llbb.extend(lrpt);
+      llbb.extend(urpt);
+      llbb.extend(ulpt);
+
+    } else {
+      double latMin = Math.min(llpt.getLatitude(), lrpt.getLatitude());
+      double latMax = Math.max(ulpt.getLatitude(), urpt.getLatitude());
+
+      // longitude is a bit tricky as usual
+      double lonMin = getMinOrMaxLon(llpt.getLongitude(), ulpt.getLongitude(), true);
+      double lonMax = getMinOrMaxLon(lrpt.getLongitude(), urpt.getLongitude(), false);
+
+      llpt.set(latMin, lonMin);
+      urpt.set(latMax, lonMax);
+
+      llbb = new LatLonRect(llpt, urpt);
+    }
+    return llbb;
+  }
+
+  //////////////////////////////////////////////////////////////
   public static void main(String[] args) throws IOException {
     GridDataset gds = ucar.nc2.dt.grid.GridDataset.open(args[0]);
     ucar.nc2.dt.GridDatatype grid = gds.findGridDatatype( args[1]);

@@ -32,6 +32,7 @@
  */
 package ucar.nc2.ft;
 
+import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateRange;
 
 import java.io.IOException;
@@ -87,6 +88,11 @@ public interface NestedPointFeatureCollection extends FeatureCollection {
    * @param dateRange only points in this date range. may be null.
    * @return a PointFeatureCollection, may be null if its empty.
    * @throws IOException on read error
+   */
+  public PointFeatureCollection flatten(ucar.unidata.geoloc.LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException;
+
+  /**
+   * @deprecated, use  CalendarDateRange
    */
   public PointFeatureCollection flatten(ucar.unidata.geoloc.LatLonRect boundingBox, DateRange dateRange) throws IOException;
 

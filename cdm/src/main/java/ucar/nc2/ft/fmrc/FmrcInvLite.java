@@ -33,7 +33,7 @@
 package ucar.nc2.ft.fmrc;
 
 import thredds.inventory.FeatureCollectionConfig;
-import ucar.nc2.units.DateFormatter;
+import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.Misc;
 
 import java.io.FileNotFoundException;
@@ -51,7 +51,7 @@ public class FmrcInvLite implements java.io.Serializable {
 
   // public for debugging
   public String collectionName;
-  public Date base; // offsets are from here
+  public CalendarDate base; // offsets are from here
   public int nruns; // runOffset[nruns]
   public double[] runOffset; // run time in offset hours since base
   public double[] forecastOffset; // all forecast times in offset hours since base, for "constant forecast" datasets
@@ -68,10 +68,10 @@ public class FmrcInvLite implements java.io.Serializable {
     this.base = fmrcInv.getBaseDate();
 
     // store forecasts as offsets instead of Dates
-    List<Date> forecasts = fmrcInv.getForecastTimes();
+    List<CalendarDate> forecasts = fmrcInv.getForecastTimes();
     this.forecastOffset = new double[forecasts.size()];
     for (int i = 0; i < forecasts.size(); i++) {
-      Date f = forecasts.get(i);
+      CalendarDate f = forecasts.get(i);
       this.forecastOffset[i] = FmrcInv.getOffsetInHours(base, f);
     }
 
@@ -117,22 +117,22 @@ public class FmrcInvLite implements java.io.Serializable {
 
   }
 
-  public int findRunIndex(Date want) {
+  public int findRunIndex(CalendarDate want) {
     for (int i=0; i<runOffset.length; i++)
       if (want.equals(FmrcInv.makeOffsetDate(base, runOffset[i])))
         return i;
     return -1;
   }
 
-  public List<Date> getRunDates() {
-    List<Date> result = new ArrayList<Date>(runOffset.length);
+  public List<CalendarDate> getRunDates() {
+    List<CalendarDate> result = new ArrayList<CalendarDate>(runOffset.length);
     for (double off : runOffset)
       result.add(FmrcInv.makeOffsetDate(base, off));
     return result;
   }
 
-  public List<Date> getForecastDates() {
-    List<Date> result = new ArrayList<Date>(forecastOffset.length);
+  public List<CalendarDate> getForecastDates() {
+    List<CalendarDate> result = new ArrayList<CalendarDate>(forecastOffset.length);
     for (double f : forecastOffset)
       result.add(FmrcInv.makeOffsetDate(base, f));
     return result;
@@ -264,8 +264,6 @@ public class FmrcInvLite implements java.io.Serializable {
         for (int i = 0; i < timeBounds.length; i++) timeBounds[i] = Double.NaN;
       }
 
-      DateFormatter df = new DateFormatter();
-
       // fill twoD time coordinate from the sequence of time coordinates
       int runIdx = 0;
       for (int seqIdx = 0; seqIdx < timeList.size(); seqIdx++) {
@@ -280,8 +278,8 @@ public class FmrcInvLite implements java.io.Serializable {
               break;
             runIdx++;
             if (log.isDebugEnabled()) {
-              String missingDate = df.toDateTimeStringISO(FmrcInv.makeOffsetDate(base, run_offset));
-              String wantDate = df.toDateTimeStringISO(tc.getRunDate());
+              String missingDate = FmrcInv.makeOffsetDate(base, run_offset).toString();
+              String wantDate = tc.getRunDate().toString();
               log.debug(collectionName +": runseq missing time "+missingDate+" looking for "+ wantDate+" for var = "+ runseq.getUberGrids().get(0).getName());
             }
           }
@@ -449,12 +447,11 @@ public class FmrcInvLite implements java.io.Serializable {
         List<FmrInv.GridVariable> grids = ugrid.getRuns(); // must be sorted by rundate. extract needed info, do not keep reference
 
         for (int runIdx = 0; runIdx < nruns; runIdx++) {
-          Date runDate = FmrcInv.makeOffsetDate(base, runOffset[runIdx]);
+          CalendarDate runDate = FmrcInv.makeOffsetDate(base, runOffset[runIdx]);
 
           // do we have a grid for this runDate?
           if (gridIdx >= grids.size()) {
-            DateFormatter df = new DateFormatter();
-            log.debug(collectionName+": cant find "+ugrid.getName()+" for "+df.toDateTimeStringISO(runDate)); // could be normal condition
+            log.debug(collectionName+": cant find "+ugrid.getName()+" for "+runDate); // could be normal condition
             break;
           }
           FmrInv.GridVariable grid = grids.get(gridIdx);
@@ -623,12 +620,12 @@ public class FmrcInvLite implements java.io.Serializable {
   }
 
   // public for debugging
-  public TimeInventory makeRunTimeDatasetInventory(Date run) throws FileNotFoundException {
+  public TimeInventory makeRunTimeDatasetInventory(CalendarDate run) throws FileNotFoundException {
     return new RunTimeDatasetInventory(run);
   }
 
   // public for debugging
-  public TimeInventory getConstantForecastDataset(Date time) throws FileNotFoundException {
+  public TimeInventory getConstantForecastDataset(CalendarDate time) throws FileNotFoundException {
     return new ConstantForecastDataset(time);
   }
 
@@ -715,7 +712,7 @@ public class FmrcInvLite implements java.io.Serializable {
   class RunTimeDatasetInventory implements TimeInventory {
     int runIdx = -1;
 
-    RunTimeDatasetInventory(Date run) throws FileNotFoundException {
+    RunTimeDatasetInventory(CalendarDate run) throws FileNotFoundException {
       double offset = FmrcInv.getOffsetInHours(base, run);
       for (int i = 0; i < runOffset.length; i++) {
         if (Misc.closeEnough(runOffset[i], offset)) {
@@ -729,8 +726,7 @@ public class FmrcInvLite implements java.io.Serializable {
 
     @Override
     public String getName() {
-      DateFormatter df = new DateFormatter();
-      return "Run " + df.toDateTimeStringISO(FmrcInv.makeOffsetDate(base, runOffset[runIdx]));
+      return "Run " + FmrcInv.makeOffsetDate(base, runOffset[runIdx]);
     }
 
     @Override
@@ -784,9 +780,9 @@ public class FmrcInvLite implements java.io.Serializable {
   class ConstantForecastDataset implements TimeInventory {
     double offset;
 
-    ConstantForecastDataset(Date time) throws FileNotFoundException {
+    ConstantForecastDataset(CalendarDate time) throws FileNotFoundException {
       this.offset = FmrcInv.getOffsetInHours(base, time);
-      for (Date d : getForecastDates())
+      for (CalendarDate d : getForecastDates())
         if (d.equals(time))
           return; // ok
 
@@ -795,8 +791,7 @@ public class FmrcInvLite implements java.io.Serializable {
 
     @Override
     public String getName() {
-      DateFormatter df = new DateFormatter();
-      return "Constant Forecast " + df.toDateTimeStringISO(FmrcInv.makeOffsetDate(base, offset));
+      return "Constant Forecast " + FmrcInv.makeOffsetDate(base, offset);
     }
 
     @Override

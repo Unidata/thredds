@@ -33,6 +33,7 @@
 
 package ucar.nc2.dataset.transform;
 
+import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.CoordinateTransform;
 import ucar.nc2.dataset.ProjectionCT;
 import ucar.nc2.dataset.TransformType;
@@ -47,7 +48,7 @@ import ucar.nc2.Variable;
 public class Orthographic extends AbstractCoordTransBuilder {
 
   public String getTransformName() {
-    return "orthographic";
+    return CF.ORTHOGRAPHIC;
   }
 
   public TransformType getTransformType() {
@@ -55,8 +56,8 @@ public class Orthographic extends AbstractCoordTransBuilder {
   }
 
   public CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, Variable ctv) {
-    double lon0 = readAttributeDouble( ctv, "longitude_of_projection_origin", Double.NaN);
-    double lat0 = readAttributeDouble( ctv, "latitude_of_projection_origin", Double.NaN);
+    double lon0 = readAttributeDouble( ctv, CF.LONGITUDE_OF_PROJECTION_ORIGIN, Double.NaN);
+    double lat0 = readAttributeDouble( ctv, CF.LATITUDE_OF_PROJECTION_ORIGIN, Double.NaN);
 
     ucar.unidata.geoloc.projection.Orthographic proj = new ucar.unidata.geoloc.projection.Orthographic(lat0, lon0);
     return new ProjectionCT(ctv.getShortName(), "FGDC", proj);

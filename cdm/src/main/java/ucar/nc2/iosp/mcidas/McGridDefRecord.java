@@ -38,9 +38,7 @@ package ucar.nc2.iosp.mcidas;
 
 
 import edu.wisc.ssec.mcidas.*;
-import ucar.grid.GridDefRecord;
-
-//import ucar.nc2.iosp.grid.*;
+import ucar.nc2.iosp.grid.*;
 
 
 /**

@@ -32,6 +32,7 @@
  */
 package ucar.unidata.geoloc.ogc;
 
+import ucar.nc2.constants.CF;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.Attribute;
@@ -150,7 +151,7 @@ public class EPSG_OGC_CF_Helper
     else
     {
       for ( Parameter curParam : (List<Parameter>) proj.getProjectionParameters() )
-        if ( curParam.getName().equalsIgnoreCase( ProjectionImpl.ATTR_NAME) && curParam.isString() )
+        if ( curParam.getName().equalsIgnoreCase( CF.GRID_MAPPING_NAME) && curParam.isString() )
           paramName = curParam.getStringValue();
     }
     if ( paramName == null ) {
@@ -192,11 +193,11 @@ public class EPSG_OGC_CF_Helper
 
     StringBuilder buf = new StringBuilder();
 
-    Attribute gridMappingAtt = gridDatatype.findAttributeIgnoreCase( "grid_mapping" );
+    Attribute gridMappingAtt = gridDatatype.findAttributeIgnoreCase( CF.GRID_MAPPING );
     String gridMapping = gridMappingAtt.getStringValue();
     Variable gridMapVar = gridDataset.getNetcdfFile().getRootGroup().findVariable(gridMapping);
 
-    Attribute gridMappingNameAtt = gridMapVar.findAttributeIgnoreCase( "grid_mapping_name" );
+    Attribute gridMappingNameAtt = gridMapVar.findAttributeIgnoreCase( CF.GRID_MAPPING_NAME );
     String gridMappingName = gridMappingNameAtt.getStringValue();
     buf.append( "EPSG:" ).append( ProjectionStandardsInfo.getProjectionByCfName( gridMappingName));
 

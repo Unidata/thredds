@@ -32,6 +32,8 @@
  */
 package ucar.nc2.dt.grid;
 
+import ucar.nc2.constants.CF;
+import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.ProjectionPointImpl;
@@ -39,7 +41,6 @@ import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.projection.LatLonProjection;
 import ucar.nc2.*;
 import ucar.nc2.units.DateFormatter;
-import ucar.nc2.units.DateRange;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dataset.*;
@@ -64,7 +65,7 @@ import java.text.ParseException;
 public class NetcdfCFWriter {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NetcdfCFWriter.class);
 
-  static public void makeFile(String location, ucar.nc2.dt.GridDataset gds, List<String> gridList, LatLonRect llbb, DateRange range)
+  static public void makeFile(String location, ucar.nc2.dt.GridDataset gds, List<String> gridList, LatLonRect llbb, CalendarDateRange range)
           throws IOException, InvalidRangeException {
     NetcdfCFWriter writer = new NetcdfCFWriter();
     writer.makeFile(location, gds, gridList, llbb, range, false, 1, 1, 1);
@@ -86,7 +87,7 @@ public class NetcdfCFWriter {
    * @throws InvalidRangeException if subset is illegal
    */
   public void makeFile(String location, ucar.nc2.dt.GridDataset gds, List<String> gridList,
-          LatLonRect llbb, DateRange range,
+          LatLonRect llbb, CalendarDateRange range,
           boolean addLatLon,
           int horizStride, int stride_z, int stride_time)
           throws IOException, InvalidRangeException {
@@ -96,7 +97,7 @@ public class NetcdfCFWriter {
   public void makeFile(String location, ucar.nc2.dt.GridDataset gds, List<String> gridList,
           LatLonRect llbb, int horizStride,
           Range zRange,
-          DateRange dateRange, int stride_time,
+          CalendarDateRange dateRange, int stride_time,
           boolean addLatLon)
           throws IOException, InvalidRangeException {
 
@@ -121,12 +122,12 @@ public class NetcdfCFWriter {
       // make subset if needed
       Range timeRange = null;
       if ((dateRange != null) && (timeAxis != null)) {
-        int startIndex = timeAxis.findTimeIndexFromDate(dateRange.getStart().getDate());
-        int endIndex = timeAxis.findTimeIndexFromDate(dateRange.getEnd().getDate());
+        int startIndex = timeAxis.findTimeIndexFromCalendarDate(dateRange.getStart());
+        int endIndex = timeAxis.findTimeIndexFromCalendarDate(dateRange.getEnd());
         if (startIndex < 0)
-          throw new InvalidRangeException("start time=" + dateRange.getStart().getDate() + " must be >= " + timeAxis.getTimeDate(0));
+          throw new InvalidRangeException("start time=" + dateRange.getStart() + " must be >= " + timeAxis.getCalendarDate(0));
         if (endIndex < 0)
-          throw new InvalidRangeException("end time=" + dateRange.getEnd().getDate() + " must be >= " + timeAxis.getTimeDate(0));
+          throw new InvalidRangeException("end time=" + dateRange.getEnd() + " must be >= " + timeAxis.getCalendarDate(0));
         timeRange = new Range(startIndex, endIndex);
       }
 
@@ -213,7 +214,7 @@ public class NetcdfCFWriter {
       for (CoordinateTransform ct : gcs.getCoordinateTransforms()) {
         Variable v = ncd.findVariable(ct.getName());
         if (ct.getTransformType() == TransformType.Projection)
-          newV.addAttribute(new Attribute("grid_mapping", v.getFullName()));
+          newV.addAttribute(new Attribute(CF.GRID_MAPPING, v.getName()));
       }
     }
 
@@ -349,7 +350,7 @@ public class NetcdfCFWriter {
 
     writer.makeFile(fileOut, gds, gridList,
             new LatLonRect(new LatLonPointImpl(37, -109), 400, 7),
-            new DateRange(start, end),
+            CalendarDateRange.of(start, end),
             true,
             1, 1, 1);
 
@@ -372,7 +373,7 @@ public class NetcdfCFWriter {
 
     writer.makeFile(fileOut, gds, gridList, null,
             // new LatLonRect(new LatLonPointImpl(30, -109), 10, 50),
-            new DateRange(start, end),
+            CalendarDateRange.of(start, end),
             true,
             1, 1, 1);
 

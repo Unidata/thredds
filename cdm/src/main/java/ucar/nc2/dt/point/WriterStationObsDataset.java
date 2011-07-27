@@ -366,7 +366,7 @@ public class WriterStationObsDataset {
     writeRecord(sobs.getStation().getName(), sobs.getObservationTimeAsDate(), sdata);
   }
 
-  public void writeRecord(String stnName, Date obsDate, StructureData sdata) throws IOException {    
+  public void writeRecord(String stnName, Date obsDate, StructureData sdata) throws IOException {
     StationTracker tracker = stationMap.get(stnName);
 
     // needs to be wrapped as an ArrayStructure, even though we are only writing one at a time.

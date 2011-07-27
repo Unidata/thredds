@@ -36,7 +36,7 @@ package ucar.nc2.util.cache;
 import java.io.IOException;
 
 /**
- * Interface for files that are cacheable.
+ * Interface for files that can be stored in FileCache.
  *
  * @author caron
  * @since Jun 2, 2008
@@ -44,7 +44,7 @@ import java.io.IOException;
 public interface FileCacheable {
 
   /**
-   * The location of the FileCacheable, used only for debug and log messages.
+   * The location of the FileCacheable.
    * @return location
    */
   public String getLocation();
@@ -52,13 +52,13 @@ public interface FileCacheable {
   /**
    * Close the FileCacheable, release all resources.
    * Also must honor contract with setFileCache().
-   * @throws IOException
+   * @throws IOException on io error
    */
   public void close() throws IOException;
 
   /**
    * Sync() is called when the FileCacheable is found in the cache, before returning the object to the
-   *  application. FileCacheable has an opportunity to freshen itself. FileCacheable mag ignore this call.
+   *  application. FileCacheable has an opportunity to freshen itself. FileCacheable may ignore this call.
    * @return true if FileCacheable was changed
    * @throws IOException on i/o error.
    */
@@ -66,7 +66,7 @@ public interface FileCacheable {
 
   /**
    * If the FileCache is set, the FileCacheable object must store it and call FileCache.release() on FileCacheable.close():
-   * <pre>
+  <pre>
   public synchronized void close() throws java.io.IOException {
     if (isClosed) return;
     if (cache != null) {
@@ -76,6 +76,7 @@ public interface FileCacheable {
     }
     isClosed = true;
    </pre>
+   *
    * @param fileCache must store this, use it on close as above.
    */
   public void setFileCache( FileCache fileCache);

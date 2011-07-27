@@ -39,6 +39,8 @@ import ucar.nc2.Attribute;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
+import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.cache.FileCache;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.units.DateRange;
@@ -163,7 +165,7 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, ucar.nc2.ft.Feature
   }
 
   private LatLonRect llbbMax = null;
-  private DateRange dateRangeMax = null;
+  private CalendarDateRange dateRangeMax = null;
 
   private void makeRanges() {
 
@@ -176,7 +178,7 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, ucar.nc2.ft.Feature
       else
         llbbMax.extend(llbb);
 
-      DateRange dateRange = gcs.getDateRange();
+      CalendarDateRange dateRange = gcs.getCalendarDateRange();
       if (dateRange != null) {
         if (dateRangeMax == null)
           dateRangeMax = dateRange;
@@ -207,14 +209,43 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, ucar.nc2.ft.Feature
     return ds.getLocation();
   }
 
-  public Date getStartDate() {
-    if (dateRangeMax == null) makeRanges();
-    return (dateRangeMax == null) ? null : dateRangeMax.getStart().getDate();
+  /**
+   * @deprecated use getCalendarDateRange
+   */
+  public DateRange getDateRange() {
+    CalendarDateRange cdr = getCalendarDateRange();
+    return (cdr != null) ? cdr.toDateRange() : null;
   }
 
+  /**
+   * @deprecated use getStartCalendarDate
+   */
+  public Date getStartDate() {
+    DateRange dr = getDateRange();
+    return (dr != null) ? dr.getStart().getDate() : null;
+  }
+
+  /**
+   * @deprecated use getEndCalendarDate
+   */
   public Date getEndDate() {
+    DateRange dr = getDateRange();
+    return (dr != null) ? dr.getEnd().getDate() : null;
+  }
+
+  public CalendarDateRange getCalendarDateRange() {
     if (dateRangeMax == null) makeRanges();
-    return (dateRangeMax == null) ? null : dateRangeMax.getEnd().getDate();
+    return dateRangeMax;
+  }
+
+  public CalendarDate getCalendarDateStart() {
+    if (dateRangeMax == null) makeRanges();
+    return (dateRangeMax == null) ? null : dateRangeMax.getStart();
+  }
+
+  public CalendarDate getCalendarDateEnd() {
+    if (dateRangeMax == null) makeRanges();
+    return (dateRangeMax == null) ? null : dateRangeMax.getEnd();
   }
 
   public LatLonRect getBoundingBox() {
@@ -417,11 +448,6 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, ucar.nc2.ft.Feature
 
   public FeatureType getFeatureType() {
     return FeatureType.GRID;
-  }
-
-  public DateRange getDateRange() {
-    if (dateRangeMax == null) makeRanges();
-    return dateRangeMax;
   }
 
   public String getImplementationName() {

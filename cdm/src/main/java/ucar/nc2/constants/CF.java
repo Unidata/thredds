@@ -51,18 +51,60 @@ public interface CF {
 
   // standard attributes
   public static final String ADD_OFFSET = "add_offset";
+  public static final String BOUNDS = "bounds";
   public static final String CF_ROLE = "cf_role";
   public final static String COORDINATES = "coordinates";
-  public static final String GRID_MAPPING = "grid_mapping";
-  public static final String GRID_MAPPING_NAME = "grid_mapping_name";
+  public static final String LONG_NAME = "long_name";
   public static final String MISSING_VALUE = "missing_value";
   public static final String SCALE_FACTOR = "scale_factor";
   public static final String STANDARD_NAME = "standard_name";
   public static final String UNITS = "units";
 
+  // grid mapping names
+  public final static String ALBERS_CONICAL_EQUAL_AREA = "albers_conical_equal_area";
+  public final static String AZIMUTHAL_EQUIDISTANT = "azimuthal_equidistant";
+  public final static String LAMBERT_AZIMUTHAL_EQUAL_AREA = "lambert_azimuthal_equal_area";
+  public final static String LAMBERT_CONFORMAL_CONIC = "lambert_conformal_conic";
+  public final static String LAMBERT_CYLINDRICAL_EQUAL_AREA = "lambert_cylindrical_equal_area";
+  public final static String LATITUDE_LONGITUDE = "latitude_longitude";
+  public final static String MERCATOR = "mercator";
+  public final static String ORTHOGRAPHIC = "orthographic";
+  public final static String POLAR_STEREOGRAPHIC = "polar_stereographic";
+  public final static String ROTATED_LATITUDE_LONGITUDE = "rotated_latitude_longitude";
+  public final static String STEREOGRAPHIC = "stereographic";
+  public final static String TRANSVERSE_MERCATOR = "transverse_mercator";
+  public final static String VERTICAL_PERSPECTIVE = "vertical_perspective";
+
+  // for grid_mappings
+  public final static String EARTH_RADIUS = "earth_radius";
+  public static final String FALSE_EASTING = "false_easting";
+  public static final String FALSE_NORTHING = "false_northing";
+  public static final String GRID_MAPPING = "grid_mapping";
+  public static final String GRID_MAPPING_NAME = "grid_mapping_name";
+  public static final String GRID_NORTH_POLE_LATITUDE = "grid_north_pole_latitude";
+  public static final String GRID_NORTH_POLE_LONGITUDE = "grid_north_pole_longitude";
+  public static final String INVERSE_FLATTENING = "inverse_flattening";
+  public static final String LATITUDE_OF_PROJECTION_ORIGIN = "latitude_of_projection_origin";
+  public static final String LONGITUDE_OF_PROJECTION_ORIGIN = "longitude_of_projection_origin";
+  public static final String LATITUDE_OF_PRIME_MERIDIAN = "latitude_of_prime_meridian";
+  public static final String LONGITUDE_OF_PRIME_MERIDIAN = "longitude_of_prime_meridian";
+  public static final String LONGITUDE_OF_CENTRAL_MERIDIAN = "longitude_of_central_meridian";
+  public static final String NORTH_POLE_GRID_LONGITUDE = "north_pole_grid_longitude";
+  public static final String PERSPECTIVE_POINT_HEIGHT = "perspective_point_height";
+  public static final String SCALE_FACTOR_AT_CENTRAL_MERIDIAN = "scale_factor_at_central_meridian";
+  public static final String SCALE_FACTOR_AT_PROJECTION_ORIGIN = "scale_factor_at_projection_origin";
+  public static final String SEMI_MAJOR_AXIS = "semi_major_axis";
+  public static final String SEMI_MINOR_AXIS = "semi_minor_axis";
+  public static final String STANDARD_PARALLEL = "standard_parallel";
+  public static final String STRAIGHT_VERTICAL_LONGITUDE_FROM_POLE = "straight_vertical_longitude_from_pole";
+
   // proposed attributes
   public static final String RAGGED_ROWSIZE = "CF:ragged_row_count";
   public static final String RAGGED_PARENTINDEX = "CF:ragged_parent_index";
+
+  // standard_names
+  public static final String PROJECTION_X_COORDINATE  = "projection_x_coordinate ";
+  public static final String PROJECTION_Y_COORDINATE  = "projection_y_coordinate ";
 
   // proposed standard_names
   public static final String STATION_ID = "station_id";
@@ -93,12 +135,14 @@ public interface CF {
           return CF.FeatureType.timeSeriesProfile;
         case SECTION:
           return CF.FeatureType.trajectoryProfile;
-      }                                                                     
+      }
       return null;
     }
 
     /*
-1) The CF discrete sampling proposal will be the recommended one for point data when thats finalized. Unfortunately, it will be somewhat different from whats gone before. The CF: prefix is dropped until the namespace proposal can be completed. So those feature types are now proposed to be:
+1) The CF discrete sampling proposal will be the recommended one for point data when thats finalized. Unfortunately, it will be
+somewhat different from whats gone before. The CF: prefix is dropped until the namespace proposal can be completed.
+So those feature types are now proposed to be:
 
     * point: one or more parameters measured at a set of points in time and space
     * timeSeries: a time-series of data points at the same location, with varying time
@@ -179,6 +223,10 @@ maybe:
   }
      */
 
+    /**
+     *
+     * @deprecated - see GribTables
+     */
     public static CellMethods convertGribCodeTable4_10(int code) {
       switch (code) {
         case 0:

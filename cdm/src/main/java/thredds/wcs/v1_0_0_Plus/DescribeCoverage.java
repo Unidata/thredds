@@ -46,6 +46,7 @@ import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.dataset.CoordinateAxis;
+import ucar.nc2.time.CalendarDate;
 import ucar.nc2.units.DateFormatter;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPoint;
@@ -338,32 +339,28 @@ public class DescribeCoverage extends WcsRequest
     {
       envelopeElem.addContent(
               new Element( "timePosition", gmlNS).addContent(
-                      gcs.getDateRange().getStart().toDateTimeStringISO()));
+                      gcs.getCalendarDateRange().getStart().toString()));
       envelopeElem.addContent(
               new Element( "timePosition", gmlNS).addContent(
-                      gcs.getDateRange().getEnd().toDateTimeStringISO()));
+                      gcs.getCalendarDateRange().getEnd().toString()));
     }
 
     return envelopeElem;
   }
 
-  private Element genTemporalDomainElem( CoordinateAxis1DTime timeAxis )
-  {
+  private Element genTemporalDomainElem(CoordinateAxis1DTime timeAxis) {
     // temporalDomain
-    Element temporalDomainElem = new Element( "temporalDomain", wcsNS );
+    Element temporalDomainElem = new Element("temporalDomain", wcsNS);
 
-    Date[] dates = timeAxis.getTimeDates();
-    DateFormatter formatter = new DateFormatter();
+    List<CalendarDate> dates = timeAxis.getCalendarDates();
 
     // temporalDomain/timePosition [1..*]
-    for ( Date curDate : dates )
-    {
+    for (CalendarDate curDate : dates) {
       temporalDomainElem.addContent(
-              new Element( "timePosition", gmlNS)
-                      .addContent( formatter.toDateTimeStringISO( curDate )));
+              new Element("timePosition", gmlNS).addContent(curDate.toString()));
     }
 
-      return temporalDomainElem;
+    return temporalDomainElem;
   }
 
   private Element genRangeSetElem( WcsCoverage coverage )

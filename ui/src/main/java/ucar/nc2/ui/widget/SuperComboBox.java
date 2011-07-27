@@ -32,6 +32,7 @@
  */
 package ucar.nc2.ui.widget;
 
+import ucar.nc2.dt.grid.GeoGrid;
 import ucar.nc2.ui.event.ActionSourceListener;
 import ucar.nc2.ui.event.ActionValueEvent;
 import ucar.nc2.ui.event.ActionValueListener;
@@ -213,11 +214,11 @@ public class SuperComboBox extends JPanel {
        /** get the name associated with this list */
   public String getName() { return name; }
 
-    /**
-     * Set the list of things to be selected.
-     * Iterator may return objects of type NamedObjects,
-     * otherwise will use object.toString()
-     */
+  /**
+   * Set the list of things to be selected.
+   * Iterator may return objects of type NamedObjects,
+   * otherwise will use object.toString()
+   */
   public void setCollection( Iterator iter) {
     eventOK = false;
     list = new ArrayList();
@@ -229,7 +230,9 @@ public class SuperComboBox extends JPanel {
       while (iter.hasNext()) {
         Object o = iter.next();
         TableRow row;
-        if (o instanceof NamedObject)
+        if (o instanceof GeoGrid) // LOOK hackawack
+          row = new DescObjectRow((NamedObject) o);
+        else if (o instanceof NamedObject)
           row = new NamedObjectRow((NamedObject) o);
         else
           row = new SimpleRow(o);
@@ -326,16 +329,21 @@ public class SuperComboBox extends JPanel {
       Object selectedObject = selected.getValueAt(0);
       String selectedName = selectedObject.toString();
       text.setText( selectedName.trim());
-      if (selected instanceof NamedObjectRow)
+      if ((selected instanceof NamedObjectRow) || (selected instanceof DescObjectRow)) {
         text.setToolTipText( ((NamedObject)selected.getUserObject()).getDescription());
+      }
       repaint();
 
+      if (selected instanceof DescObjectRow) {
+        selectedName = ((DescObjectRow) selected).getDescription();
+      }
+
       if (sendExternalEvent) {
-        if (debugEvent) System.out.println("--->SuperCombo send event "+selectedObject);
+        if (debugEvent) System.out.println("--->SuperCombo send event "+selectedName);
         if (immediateMode)
-          actionSource.fireActionValueEvent( "redrawImmediate", selectedObject);
+          actionSource.fireActionValueEvent( "redrawImmediate", selectedName);
         else
-          actionSource.fireActionValueEvent( ActionSourceListener.SELECTED, selectedObject);
+          actionSource.fireActionValueEvent( ActionSourceListener.SELECTED, selectedName);
       }
     }
   }
@@ -404,25 +412,20 @@ public class SuperComboBox extends JPanel {
 
     public String getName() { return o.getName(); }
     public String getDescription() { return o.getDescription(); }
-    public String toString() { return o.getName(); }
+    public String toString() { return getName(); }
   }
 
-  /*private class MyCBLayoutManager extends MetalComboBoxUI.MetalComboBoxLayoutManager {
+  // reverse name and desc
+  private class DescObjectRow extends TableRowAbstract implements NamedObject {
+    NamedObject o;
+    DescObjectRow( NamedObject o){ this.o = o; }
+    public Object getValueAt( int col) { return this; }
+    public Object getUserObject() { return o; }
 
-      public void layoutContainer(Container parent) {
-        JComboBox cb = (JComboBox)parent;
-        int width = cb.getWidth();
-        int height = cb.getHeight();
-        Insets insets = cb.getInsets();
-        int buttonSize = height - (insets.top + insets.bottom);
-
-        up.setBounds( width - (insets.right + buttonSize), insets.top, buttonSize, buttonSize/2);
-        down.setBounds( width - (insets.right + buttonSize), 2+insets.top+buttonSize/2,
-                buttonSize, buttonSize/2);
-
-        setRectangleForCurrentValue();
-      }
-  }  */
+    public String getName() { return o.getDescription(); }
+    public String getDescription() { return o.getName(); }
+    public String toString() { return getName(); }
+  }
 
   private class MyTextField extends JLabel {
     private int arrow_size = 4;

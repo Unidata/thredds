@@ -39,7 +39,7 @@ import ucar.nc2.Attribute;
 import ucar.nc2.constants.AxisType;
 
 import ucar.nc2.dataset.*;
-import ucar.nc2.units.DateFormatter;
+import ucar.nc2.time.CalendarDate;
 import ucar.nc2.dt.*;
 import ucar.nc2.dt.GridDataset;
 import ucar.unidata.geoloc.LatLonRect;
@@ -159,13 +159,12 @@ public class GridDatasetInfo {
       rootElem.addContent(writeBoundingBox(bb));
 
     // add date range
-    Date start = gds.getStartDate();
-    Date end = gds.getEndDate();
+    CalendarDate start = gds.getCalendarDateStart();
+    CalendarDate end = gds.getCalendarDateEnd();
     if ((start != null) && (end != null)) {
-      DateFormatter format = new DateFormatter();
       Element dateRange = new Element("TimeSpan");
-      dateRange.addContent(new Element("begin").addContent(format.toDateTimeStringISO(start)));
-      dateRange.addContent(new Element("end").addContent(format.toDateTimeStringISO(end)));
+      dateRange.addContent(new Element("begin").addContent(start.toString()));
+      dateRange.addContent(new Element("end").addContent(end.toString()));
       rootElem.addContent(dateRange);
     }
 
@@ -242,13 +241,12 @@ public class GridDatasetInfo {
       rootElem.addContent(writeBoundingBox(bb));
 
     // add date range
-    Date start = gds.getStartDate();
-    Date end = gds.getEndDate();
+    CalendarDate start = gds.getCalendarDateStart();
+    CalendarDate end = gds.getCalendarDateEnd();
     if ((start != null) && (end != null)) {
-      DateFormatter format = new DateFormatter();
       Element dateRange = new Element("TimeSpan");
-      dateRange.addContent(new Element("begin").addContent(format.toDateTimeStringISO(start)));
-      dateRange.addContent(new Element("end").addContent(format.toDateTimeStringISO(end)));
+      dateRange.addContent(new Element("begin").addContent(start.toString()));
+      dateRange.addContent(new Element("end").addContent(end.toString()));
       rootElem.addContent(dateRange);
     }
 

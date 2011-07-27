@@ -34,8 +34,8 @@
 package thredds.catalog.crawl;
 
 import ucar.nc2.dataset.*;
+import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.TimeUnit;
-import ucar.nc2.units.DateRange;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.IO;
 import ucar.nc2.util.NamedObject;
@@ -281,7 +281,7 @@ public class CatalogExtractor implements CatalogCrawler.Listener {
     LatLonRect llbbMax = null;
 
     LatLonRect llbb = null;
-    DateRange dateRange = null;
+    CalendarDateRange dateRange = null;
     long nx = 0, ny = 0;
 
     for (GridDataset.Gridset gset : gridDs.getGridsets()) {
@@ -341,16 +341,15 @@ public class CatalogExtractor implements CatalogCrawler.Listener {
       }
 
       CoordinateAxis1DTime taxis = gcs.getTimeAxis1D();
-
-      DateRange dateRange2 = gcs.getDateRange();
+      CalendarDateRange dateRange2 = gcs.getCalendarDateRange();
       if ((taxis != null) && ((dateRange == null) || !dateRange2.equals(dateRange))) {
 
         long ntimes = taxis.getSize();
         try {
           TimeUnit tUnit = taxis.getTimeResolution();
-          dateRange = new DateRange(dateRange2, "1 hour");
+          // dateRange = new DateRange(dateRange2, "1 hour"); // LOOK WTF?
           out.println("  DateRange == " + "start= " + dateRange.getStart() + " end= " + dateRange.getEnd() +
-              " duration= " + dateRange.getDuration() + " ntimes = " + ntimes + " data resolution = " + tUnit);
+              " duration= " + dateRange.getDurationInSecs() + " ntimes = " + ntimes + " data resolution = " + tUnit);
         } catch (Exception e) {
           e.printStackTrace();
         }

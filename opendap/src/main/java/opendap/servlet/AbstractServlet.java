@@ -50,7 +50,7 @@ import opendap.dap.*;
 import opendap.Server.*;
 import opendap.dap.parsers.ParseException;
 import opendap.util.Debug;
-import ucar.unidata.util.EscapeStrings;
+import ucar.nc2.util.net.EscapeStrings;
 
 /**
  * AbstractServlet is the base servlet class for an OPeNDAP

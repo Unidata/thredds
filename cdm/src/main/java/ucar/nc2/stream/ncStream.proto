@@ -132,3 +132,6 @@ message StructureData {
 message Error {
   required string message = 1;
 }
+
+//  cd c:/dev/tds4.2n/thredds/cdm/src/main/java
+// protoc --proto_path=. --java_out=. ucar/nc2/stream/ncStream.proto

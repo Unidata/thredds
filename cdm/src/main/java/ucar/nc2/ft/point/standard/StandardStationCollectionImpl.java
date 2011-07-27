@@ -66,8 +66,9 @@ public class StandardStationCollectionImpl extends StationTimeSeriesCollectionIm
 
   /**
    * Make a Station from the station data structure.
+   *
    * @param stationData station data structure
-   * @param recnum station data recnum within table
+   * @param recnum      station data recnum within table
    * @return Station or null, skip this Station
    */
   public Station makeStation(StructureData stationData, int recnum) {
@@ -81,11 +82,15 @@ public class StandardStationCollectionImpl extends StationTimeSeriesCollectionIm
       stationHelper = new StationHelper();
 
       StructureDataIterator siter = ft.getStationDataIterator(-1);
-      while (siter.hasNext()) {
-        StructureData stationData = siter.next();
-        Station s = makeStation(stationData, siter.getCurrentRecno());
-        if (s != null)
-          stationHelper.addStation( s);
+      try {
+        while (siter.hasNext()) {
+          StructureData stationData = siter.next();
+          Station s = makeStation(stationData, siter.getCurrentRecno());
+          if (s != null)
+            stationHelper.addStation(s);
+        }
+      } finally {
+        siter.finish();
       }
     } catch (IOException ioe) {
       throw new RuntimeException(ioe);
@@ -103,6 +108,7 @@ public class StandardStationCollectionImpl extends StationTimeSeriesCollectionIm
     }
 
     // an iterator over the observations for this station
+
     public PointFeatureIterator getPointFeatureIterator(int bufferSize) throws IOException {
       Cursor cursor = new Cursor(ft.getNumberOfLevels());
       cursor.recnum[1] = recnum;

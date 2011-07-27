@@ -38,6 +38,7 @@ import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.dataset.DatasetConstructor;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.constants._Coordinate;
+import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.*;
 import ucar.nc2.units.DateUnit;
@@ -172,7 +173,7 @@ public class AggregationExisting extends AggregationOuterDimension {
   // time units change - must read in time coords and convert, cache the results
   // must be able to be made into a CoordinateAxis1DTime
   protected void readTimeCoordinates(VariableDS timeAxis, CancelTask cancelTask) throws IOException {
-    List<Date> dateList = new ArrayList<Date>();
+    List<CalendarDate> dateList = new ArrayList<CalendarDate>();
     String timeUnits = null;
 
     // make concurrent
@@ -187,8 +188,7 @@ public class AggregationExisting extends AggregationOuterDimension {
         }
         VariableDS vds = (v instanceof VariableDS) ? (VariableDS) v : new VariableDS( null, v, true);
         CoordinateAxis1DTime timeCoordVar = CoordinateAxis1DTime.factory(ncDataset, vds, null);
-        java.util.Date[] dates = timeCoordVar.getTimeDates();
-        dateList.addAll(Arrays.asList(dates));
+        dateList.addAll(timeCoordVar.getCalendarDates());
 
         if (timeUnits == null)
           timeUnits = v.getUnitsString();
@@ -210,8 +210,8 @@ public class AggregationExisting extends AggregationOuterDimension {
     // check if its a String or a udunit
     if (timeAxis.getDataType() == DataType.STRING) {
 
-      for (Date date : dateList) {
-        ii.setObjectNext(dateFormatter.toDateTimeStringISO(date));
+      for (CalendarDate date : dateList) {
+        ii.setObjectNext(date.toString());
       }
 
     } else {      
@@ -225,8 +225,8 @@ public class AggregationExisting extends AggregationOuterDimension {
       }
       timeAxis.addAttribute(new Attribute("units", timeUnits));
 
-      for (Date date : dateList) {
-        double val = du.makeValue(date);
+      for (CalendarDate date : dateList) {
+        double val = du.makeValue(date.toDate());
         ii.setDoubleNext(val);
       }
     }

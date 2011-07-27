@@ -85,14 +85,19 @@ public class SequenceDS extends StructureDS {
 
     @Override
     public StructureDataIterator reset() {
-      orgIter.reset();
-      return this;
+      orgIter = orgIter.reset();
+      return (orgIter == null) ? null : this;
     }
 
     @Override
     public int getCurrentRecno() {
       return orgIter.getCurrentRecno();
     }
+
+    @Override
+      public void finish() {
+        orgIter.finish();
+      }
   }
 
   @Override

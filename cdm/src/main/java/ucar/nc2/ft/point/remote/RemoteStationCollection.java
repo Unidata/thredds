@@ -4,6 +4,7 @@ import ucar.nc2.ft.point.*;
 import ucar.nc2.ft.*;
 import ucar.nc2.stream.CdmRemote;
 import ucar.nc2.stream.NcStream;
+import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateRange;
 import ucar.unidata.geoloc.*;
 
@@ -19,7 +20,7 @@ import java.util.List;
 public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
   private String uri;
   protected LatLonRect boundingBoxSubset;
-  protected DateRange dateRangeSubset;
+  protected CalendarDateRange dateRangeSubset;
   private boolean restrictedList = false;
 
   /**
@@ -128,7 +129,7 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
   private class RemoteStationCollectionSubset extends RemoteStationCollection {
     RemoteStationCollection from;
 
-    RemoteStationCollectionSubset(RemoteStationCollection from, StationHelper sh, LatLonRect filter_bb, DateRange filter_date) throws IOException {
+    RemoteStationCollectionSubset(RemoteStationCollection from, StationHelper sh, LatLonRect filter_bb, CalendarDateRange filter_date) throws IOException {
       super(from.uri, sh);
       this.from = from;
 
@@ -166,9 +167,9 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
 
   private class RemoteStationFeatureImpl extends StationFeatureImpl {
     RemotePointFeatureIterator riter;
-    DateRange dateRange;
+    CalendarDateRange dateRange;
 
-    RemoteStationFeatureImpl(Station s, DateRange dateRange) {
+    RemoteStationFeatureImpl(Station s, CalendarDateRange dateRange) {
       super(s, null, -1);
       this.dateRange = dateRange;
     }
@@ -178,14 +179,14 @@ public class RemoteStationCollection extends StationTimeSeriesCollectionImpl {
     // StationTimeSeriesFeature
 
     @Override
-    public StationTimeSeriesFeature subset(DateRange dateRange) throws IOException {
+    public StationTimeSeriesFeature subset(CalendarDateRange dateRange) throws IOException {
       if (dateRange == null) return this;
       return new RemoteStationFeatureImpl(s, dateRange);
     }
 
     // PointCollection
     @Override
-    public PointFeatureCollection subset(LatLonRect boundingBox, DateRange dateRange) throws IOException {
+    public PointFeatureCollection subset(LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException {
       if (boundingBox != null) {
         if (!boundingBox.contains(s.getLatLon())) return null;
         if (dateRange == null) return this;

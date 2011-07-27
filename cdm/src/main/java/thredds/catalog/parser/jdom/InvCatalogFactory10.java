@@ -33,6 +33,7 @@
 
 package thredds.catalog.parser.jdom;
 
+import thredds.inventory.CollectionManager;
 import thredds.inventory.FeatureCollectionConfig;
 import thredds.util.PathAliasReplacement;
 import thredds.catalog.*;
@@ -332,7 +333,9 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
       } else if (e.getName().equals("datasetFmrc")) {
         dataset.addDataset( readDatasetFmrc( catalog, dataset, e, base));
       } else if (e.getName().equals("featureCollection")) {
-        dataset.addDataset( readFeatureCollection( catalog, dataset, e, base ));
+        InvDatasetImpl ds = readFeatureCollection( catalog, dataset, e, base );
+        if (ds != null)
+          dataset.addDataset(ds);
       }
     }
   }
@@ -350,7 +353,10 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     }
     String specName = collElem.getAttributeValue("name");
     String spec = collElem.getAttributeValue("spec");
+    String timePartition = collElem.getAttributeValue("timePartition");
+    String dateFormatMark = collElem.getAttributeValue("dateFormatMark");
     String olderThan = collElem.getAttributeValue("olderThan");
+    String useIndexOnly = collElem.getAttributeValue("useIndexOnly");
     String recheckAfter = collElem.getAttributeValue("recheckAfter");
     if (recheckAfter == null)
        recheckAfter = collElem.getAttributeValue("recheckEvery"); // old name
@@ -360,16 +366,17 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
     }
     String collName = (specName != null) ? specName : name;
     Element innerNcml = dsElem.getChild( "netcdf", ncmlNS );
-    FeatureCollectionConfig config = new FeatureCollectionConfig(collName, spec, olderThan, recheckAfter, innerNcml);
+    FeatureCollectionConfig config = new FeatureCollectionConfig(collName, spec, dateFormatMark, olderThan, recheckAfter,
+            timePartition, useIndexOnly, innerNcml);
 
-    // update element optional
-    Element updateElem = dsElem.getChild( "update", defNS );
-    if (updateElem != null) {
-      String startup = updateElem.getAttributeValue("startup");
-      String rescan = updateElem.getAttributeValue("rescan");
-      String trigger = updateElem.getAttributeValue("trigger");
-      config.updateConfig = new FeatureCollectionConfig.UpdateConfig(startup, rescan, trigger);
+    Element tdmElem = dsElem.getChild( "tdm", defNS );
+    if (tdmElem != null) {
+      config.tdmConfig = readUpdateElement( tdmElem);              // the presence of tdm element
+      config.updateConfig.force = CollectionManager.Force.nocheck; // makes "no check" the default for update
     }
+    Element updateElem = dsElem.getChild( "update", defNS );
+    if (updateElem != null)
+      config.updateConfig = readUpdateElement( updateElem);
 
     // protoDataset element optional
     Element protoElem = dsElem.getChild( "protoDataset", defNS );
@@ -400,7 +407,7 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
       }
     }
 
-    // fmrcConfig element optional
+    // pointConfig element optional
     Element pointElem = dsElem.getChild( "pointConfig", defNS );
     if (pointElem != null) {
       String datasetTypes = pointElem.getAttributeValue("datasetTypes");
@@ -408,16 +415,49 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
         config.pointConfig.addDatasetType(datasetTypes);
     }
 
+    // gribConfig element optional
+    Element gribConfig = dsElem.getChild( "gribConfig", defNS );
+    if (gribConfig != null) {
+      String datasetTypes = gribConfig.getAttributeValue("datasetTypes");
+      if (null != datasetTypes)
+        config.gribConfig.addDatasetType(datasetTypes);
+      List<Element> gdsElems = gribConfig.getChildren( "gdsHash", defNS );
+      for (Element gds : gdsElems) {
+        String from = gds.getAttributeValue("from");
+        String to = gds.getAttributeValue("to");
+        config.gribConfig.addGdsHash(from, to);
+      }
+    }
+
     FeatureType ft = FeatureType.getType(featureType);
+    if (ft == null) {
+      logger.error( "featureCollection "+name+" must have a valid featureType attribute, found '"+featureType+"'");
+      return null;
+    }
     InvDatasetFeatureCollection ds = InvDatasetFeatureCollection.factory( parent, name, path, ft, config);
     if (ds == null) {
-      logger.error( "featureCollection "+name+" must have a valid featureType attribute, found "+featureType);
+      logger.error( "featureCollection "+name+" has fatal error ");
       return null;
     }
 
     // regular dataset elements
     readDatasetInfo( catalog, ds, dsElem, base);
     return ds;
+  }
+
+  protected FeatureCollectionConfig.UpdateConfig readUpdateElement(Element updateElem) {
+    String startup = updateElem.getAttributeValue("startup");
+    String rescan = updateElem.getAttributeValue("rescan");
+    String trigger = updateElem.getAttributeValue("trigger");
+    String force = updateElem.getAttributeValue("force");
+
+    String deleteAfter = null;
+    Element manageElem = updateElem.getChild( "manage", defNS );
+    if (manageElem != null) {
+      deleteAfter = manageElem.getAttributeValue("deleteAfter");
+    }
+
+    return new FeatureCollectionConfig.UpdateConfig(startup, rescan, trigger, force, deleteAfter);
   }
 
   protected InvDatasetImpl readDatasetFmrc( InvCatalogImpl catalog, InvDatasetImpl parent, Element dsElem, URI base) {

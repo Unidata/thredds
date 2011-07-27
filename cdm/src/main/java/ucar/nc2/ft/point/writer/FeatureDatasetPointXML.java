@@ -39,7 +39,8 @@ import ucar.nc2.ncml.NcMLWriter;
 import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.ft.*;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.units.DateFormatter;
+import ucar.nc2.time.CalendarDateFormatter;
+import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.TimeDuration;
 import ucar.unidata.geoloc.LatLonRect;
@@ -176,12 +177,11 @@ public class FeatureDatasetPointXML {
       rootElem.addContent(writeBoundingBox(bb));
 
     // add date range
-    DateRange dateRange = fdp.getDateRange();
+    CalendarDateRange dateRange = fdp.getCalendarDateRange();
     if (dateRange != null) {
-      DateFormatter format = new DateFormatter();
       Element drElem = new Element("TimeSpan"); // from KML
-      drElem.addContent(new Element("begin").addContent(dateRange.getStart().toDateTimeStringISO()));
-      drElem.addContent(new Element("end").addContent(dateRange.getEnd().toDateTimeStringISO()));
+      drElem.addContent(new Element("begin").addContent(dateRange.getStart().toString()));
+      drElem.addContent(new Element("end").addContent(dateRange.getEnd().toString()));
       if (dateRange.getResolution() != null)
         drElem.addContent(new Element("resolution").addContent(dateRange.getResolution().toString()));
 
@@ -249,7 +249,7 @@ public class FeatureDatasetPointXML {
     }
   }
 
-  public static DateRange getTimeSpan(Document doc) throws IOException {
+  public static CalendarDateRange getTimeSpan(Document doc) throws IOException {
     Element root = doc.getRootElement();
     Element timeSpan = root.getChild("TimeSpan");
     if (timeSpan == null) return null;
@@ -259,16 +259,19 @@ public class FeatureDatasetPointXML {
     String resS = timeSpan.getChildText("resolution");
     if ((beginS == null) || (endS == null)) return null;
 
-    DateFormatter format = new DateFormatter();
     try {
-      Date start = format.getISODate(beginS);
-      Date end = format.getISODate(endS);
+      Date start = CalendarDateFormatter.parseISODate(beginS);
+      Date end = CalendarDateFormatter.parseISODate(endS);
+       if ((start == null) || (end == null)) {
+        return null;
+      }
+
       DateRange dr = new DateRange(start, end);
       
       if (resS != null)
         dr.setResolution(new TimeDuration(resS));
 
-      return dr;
+      return CalendarDateRange.of(dr);
 
     } catch (Exception e) {
       return null;

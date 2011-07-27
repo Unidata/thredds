@@ -41,7 +41,6 @@ import java.nio.channels.Channels;
 import java.nio.channels.WritableByteChannel;
 import java.nio.ByteBuffer;
 import java.io.IOException;
-import java.io.OutputStream;
 
 /**
  * Write a NetcdfFile to a WritableByteChannel using ncstream protocol
@@ -106,14 +105,18 @@ public class NcStreamWriter {
 
     if (v.getDataType() == DataType.SEQUENCE) {
       int count = 0;
-      DataOutputStream os = new DataOutputStream( Channels.newOutputStream( wbc));
+      DataOutputStream os = new DataOutputStream(Channels.newOutputStream(wbc));
       Structure seq = (Structure) v; // superclass for Sequence, SequenceDS
       StructureDataIterator iter = seq.getStructureIterator(-1);
-      while (iter.hasNext()) {
-        size += writeBytes(wbc, NcStream.MAGIC_VDATA); // magic
-        ArrayStructureBB abb = IospHelper.copyToArrayBB(iter.next());
-        size += NcStream.encodeArrayStructure(abb, os);
-        count++;
+      try {
+        while (iter.hasNext()) {
+          size += writeBytes(wbc, NcStream.MAGIC_VDATA); // magic
+          ArrayStructureBB abb = IospHelper.copyToArrayBB(iter.next());
+          size += NcStream.encodeArrayStructure(abb, os);
+          count++;
+        }
+      } finally {
+        iter.finish();
       }
       size += writeBytes(wbc, NcStream.MAGIC_VEND);
       if (show) System.out.printf(" NcStreamWriter sent %d sdata bytes = %d%n", count, size);
@@ -185,7 +188,6 @@ public class NcStreamWriter {
     }
     return size;
   }
-
 
 
 }

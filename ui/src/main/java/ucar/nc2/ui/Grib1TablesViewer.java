@@ -1,15 +1,16 @@
 package ucar.nc2.ui;
 
-import ucar.nc2.ui.widget.*;
-import ucar.nc2.ui.widget.IndependentWindow;
 import ucar.grib.GribResourceReader;
 import ucar.grib.grib1.Grib1Tables;
 import ucar.grib.grib1.GribPDSParamTable;
-import ucar.grid.GridParameter;
+import ucar.nc2.ui.widget.*;
+import ucar.nc2.ui.widget.IndependentWindow;
+import ucar.nc2.iosp.grid.*;
 import ucar.nc2.ui.dialog.Grib1TableDialog;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.nc2.ui.widget.TextHistoryPane;
 import ucar.nc2.util.IO;
+import ucar.nc2.wmo.CommonCodeTable;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
 
@@ -24,7 +25,7 @@ import java.io.InputStream;
 import java.util.*;
 
 /**
- * Describe
+ * Show Grib1 Tables
  *
  * @author caron
  * @since Sep 26, 2010
@@ -163,11 +164,19 @@ public class Grib1TablesViewer extends JPanel {
     }
 
     public String getCenter() {
-      return Grib1Tables.getCenter_idName( table.getCenter_id());
+      return CommonCodeTable.getTableValue(11, table.getCenter_id());
     }
 
     public String getSubCenter() {
-      return Grib1Tables.getSubCenter_idName(table.getCenter_id(), table.getSubcenter_id());
+      return CommonCodeTable.getTableValue(12, table.getCenter_id(), table.getSubcenter_id());
+    }
+
+    public String getCenterOld() {
+      return Grib1Tables.getCenter_idName(table.getCenter_id());
+    }
+
+    public String getSubCenterOld() {
+      return CommonCodeTable.getTableValue(12, table.getCenter_id(), table.getSubcenter_id());
     }
 
     public int getSubcenter_id() {

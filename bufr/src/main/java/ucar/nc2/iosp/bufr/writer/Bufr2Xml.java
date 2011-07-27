@@ -190,39 +190,43 @@ public class Bufr2Xml {
   private void writeSequence(StructureDS s, StructureDataIterator sdataIter) throws IOException, XMLStreamException {
 
     int count = 0;
-    while (sdataIter.hasNext()) {
-      //out.format("%sSequence %s count=%d%n", indent, s.getShortName(), count++);
-      StructureData sdata = sdataIter.next();
+    try {
+      while (sdataIter.hasNext()) {
+        //out.format("%sSequence %s count=%d%n", indent, s.getShortName(), count++);
+        StructureData sdata = sdataIter.next();
 
-      staxWriter.writeCharacters("\n");
-      staxWriter.writeCharacters(indent.toString());
-      staxWriter.writeStartElement("struct");
-      staxWriter.writeAttribute("name", StringUtil.quoteXmlAttribute(s.getShortName()));
-      staxWriter.writeAttribute("count", Integer.toString(count++));
+        staxWriter.writeCharacters("\n");
+        staxWriter.writeCharacters(indent.toString());
+        staxWriter.writeStartElement("struct");
+        staxWriter.writeAttribute("name", StringUtil.quoteXmlAttribute(s.getShortName()));
+        staxWriter.writeAttribute("count", Integer.toString(count++));
 
-      for (StructureMembers.Member m : sdata.getMembers()) {
-        Variable v = s.findVariable(m.getName());
-        indent.incr();
+        for (StructureMembers.Member m : sdata.getMembers()) {
+          Variable v = s.findVariable(m.getName());
+          indent.incr();
 
-        if (m.getDataType().isString() || m.getDataType().isNumeric()) {
-          writeVariable((VariableDS) v, sdata.getArray(m));
+          if (m.getDataType().isString() || m.getDataType().isNumeric()) {
+            writeVariable((VariableDS) v, sdata.getArray(m));
 
-        } else if (m.getDataType() == DataType.STRUCTURE) {
-          StructureDS sds = (StructureDS) v;
-          ArrayStructure data = (ArrayStructure) sdata.getArray(m);
-          writeSequence(sds, data.getStructureDataIterator());
+          } else if (m.getDataType() == DataType.STRUCTURE) {
+            StructureDS sds = (StructureDS) v;
+            ArrayStructure data = (ArrayStructure) sdata.getArray(m);
+            writeSequence(sds, data.getStructureDataIterator());
 
-        } else if (m.getDataType() == DataType.SEQUENCE) {
-          SequenceDS sds = (SequenceDS) v;
-          ArraySequence data = (ArraySequence) sdata.getArray(m);
-          writeSequence(sds, data.getStructureDataIterator());
+          } else if (m.getDataType() == DataType.SEQUENCE) {
+            SequenceDS sds = (SequenceDS) v;
+            ArraySequence data = (ArraySequence) sdata.getArray(m);
+            writeSequence(sds, data.getStructureDataIterator());
+          }
+          indent.decr();
         }
-        indent.decr();
-      }
 
-      staxWriter.writeCharacters("\n");
-      staxWriter.writeCharacters(indent.toString());
-      staxWriter.writeEndElement();
+        staxWriter.writeCharacters("\n");
+        staxWriter.writeCharacters(indent.toString());
+        staxWriter.writeEndElement();
+      }
+    } finally {
+      sdataIter.finish();
     }
   }
 

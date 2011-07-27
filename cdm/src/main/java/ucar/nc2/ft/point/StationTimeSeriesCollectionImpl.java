@@ -34,6 +34,7 @@ package ucar.nc2.ft.point;
 
 import ucar.nc2.ft.*;
 import ucar.nc2.constants.FeatureType;
+import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.VariableSimpleIF;
 import ucar.unidata.geoloc.LatLonRect;
@@ -110,7 +111,7 @@ public abstract class StationTimeSeriesCollectionImpl extends OneNestedPointColl
   }
 
   // might need to override for efficiency
-  public PointFeatureCollection flatten(List<String> stations, DateRange dateRange, List<VariableSimpleIF> varList) throws IOException {
+  public PointFeatureCollection flatten(List<String> stations, CalendarDateRange dateRange, List<VariableSimpleIF> varList) throws IOException {
     if ((stations == null) || (stations.size() == 0))
       return new StationTimeSeriesCollectionFlattened(this, dateRange);
     initStationHelper();
@@ -118,12 +119,16 @@ public abstract class StationTimeSeriesCollectionImpl extends OneNestedPointColl
     return new StationTimeSeriesCollectionFlattened(new StationTimeSeriesCollectionSubset(this, subsetStations), dateRange);
   }
 
-  public PointFeatureCollection flatten(LatLonRect boundingBox, DateRange dateRange) throws IOException {
+  public PointFeatureCollection flatten(LatLonRect boundingBox, CalendarDateRange dateRange) throws IOException {
     if (boundingBox == null)
       return new StationTimeSeriesCollectionFlattened(this, dateRange);
     initStationHelper();
     List<Station> subsetStations = stationHelper.getStations(boundingBox);
     return new StationTimeSeriesCollectionFlattened(new StationTimeSeriesCollectionSubset(this, subsetStations), dateRange);
+  }
+
+  public PointFeatureCollection flatten(List<String> stations, DateRange dateRange, List<VariableSimpleIF> varList) throws IOException {
+    return flatten(stations, CalendarDateRange.of(dateRange), varList);
   }
 
   private class StationTimeSeriesCollectionSubset extends StationTimeSeriesCollectionImpl {

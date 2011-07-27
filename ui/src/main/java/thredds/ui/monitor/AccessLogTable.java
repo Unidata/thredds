@@ -35,9 +35,9 @@ package thredds.ui.monitor;
 
 import thredds.logs.LogCategorizer;
 import ucar.nc2.ui.widget.PopupMenu;
+import ucar.nc2.units.TimeDuration;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
-import ucar.nc2.units.TimeUnit;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionListener;
@@ -664,7 +664,7 @@ public class AccessLogTable extends JPanel {
     // if (intervalS.length() == 0) intervalS = "5 minute";
     long period = 1000 * 60 * 5;
     try {
-      TimeUnit tu = new TimeUnit(intervalS);
+      TimeDuration tu = new TimeDuration(intervalS);
       period = (long) (1000 * tu.getValueInSeconds());
     } catch (Exception e) {
       System.out.printf("Illegal Time interval=%s %n", intervalS);

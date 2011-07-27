@@ -36,7 +36,6 @@ package ucar.nc2.dataset;
 import ucar.nc2.dt.grid.GridCoordSys;
 import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.units.DateUnit;
-import ucar.nc2.units.TimeUnit;
 import ucar.nc2.Variable;
 
 import org.jdom.*;
@@ -280,13 +279,6 @@ public class NetcdfDatasetInfo {
     try {
       new DateUnit(unit);
       return "date";
-    } catch (Exception e) {
-      // ok
-    }
-
-    try {
-      new TimeUnit(unit);
-      return "time";
     } catch (Exception e) {
       // ok
     }

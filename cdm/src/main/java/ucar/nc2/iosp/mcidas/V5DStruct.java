@@ -1072,7 +1072,7 @@ public class V5DStruct {
       @param nl            number of levels of grid
       @param compressmode  1, 2 or 4 bytes per grid point
       @param data          array of [nr*nc*nl] floats
-      @param compdata      array of [nr*nc*nl*compressmode] bytes for results
+      @param compdata1      array of [nr*nc*nl*compressmode] bytes for results
       @param ga            array to put ga decompression values
       @param gb            array to put gb decompression values
       @param minval        one-element float array to put min value

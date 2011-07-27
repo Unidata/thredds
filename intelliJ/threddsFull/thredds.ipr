@@ -52,6 +52,7 @@
             <element id="dir-copy" path="$PROJECT_DIR$/../../grib/src/main/resources" />
             <element id="dir-copy" path="$PROJECT_DIR$/../../bufr/src/main/resources" />
             <element id="dir-copy" path="$PROJECT_DIR$/../../tds/src/main/webapp/WEB-INF/classes" />
+            <element id="module-output" name="time" />
           </element>
           <element id="directory" name="lib">
             <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/slf4j-api-1.5.6.jar" />
@@ -88,6 +89,10 @@
             <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/jakarta-oro-2.0.8.jar" />
             <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/jaxen-1.1.2.jar" />
             <element id="file-copy" path="$PROJECT_DIR$/../../lib/release/ncwms.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/protobuf-java-2.4.0a.jar" />
+            <element id="library" level="project" name="joda-time" />
+            <element id="library" level="project" name="Spring-Web" />
+            <element id="library" level="project" name="Logging" />
             <element id="library" level="project" name="ncISO" />
           </element>
         </element>
@@ -187,20 +192,14 @@
   <component name="CompilerConfiguration">
     <option name="DEFAULT_COMPILER" value="Javac" />
     <excludeFromCompile>
-      <file url="file://$PROJECT_DIR$/../../ui/src/main/java/thredds/catalog/catalog/ui/tools/CatalogSearcher.java" />
-      <file url="file://$PROJECT_DIR$/../../ui/src/main/java/thredds/catalog/catalog/search/Indexer.java" />
-      <file url="file://$PROJECT_DIR$/../../ui/src/main/java/thredds/catalog/catalog/search/ui/CatalogIndexer.java" />
       <file url="file://$PROJECT_DIR$/../../tds/src/main/java/thredds/servlet/tomcat/UsageValve.java" />
       <file url="file://$PROJECT_DIR$/../../ldm/src/main/thredds/db/TestBabu.java" />
       <file url="file://$PROJECT_DIR$/../../cdm/src/test/java/ucar/nc2/jni/netcdf/TestJni.java" />
-      <file url="file://$PROJECT_DIR$/../../ldm/src/main/thredds/ldm/BerkeleyDBIndexer.java" />
       <file url="file://$PROJECT_DIR$/../../tds/src/main/java/thredds/servlet/MyWebDavServlet.java" />
-      <file url="file://$PROJECT_DIR$/../../ui/src/main/java/thredds/catalog/ui/tools/CatalogSearcher.java" />
-      <file url="file://$PROJECT_DIR$/../../ui/src/main/java/thredds/catalog/search/Indexer.java" />
-      <file url="file://$PROJECT_DIR$/../../ui/src/main/java/thredds/catalog/search/ui/CatalogIndexer.java" />
       <file url="file://$PROJECT_DIR$/../../ui/src/main/java/thredds/ui/catalog/search/Indexer.java" />
       <file url="file://$PROJECT_DIR$/../../ui/src/main/java/thredds/ui/catalog/search/CatalogSearcher.java" />
       <file url="file://$PROJECT_DIR$/../../ui/src/main/java/thredds/ui/catalog/search/CatalogIndexer.java" />
+      <file url="file://$PROJECT_DIR$/../../ldm/src/main/thredds/ldm/BerkeleyDBIndexer.java" />
     </excludeFromCompile>
     <resourceExtensions>
       <entry name=".+\.(properties|xml|html|dtd|tld)" />
@@ -219,7 +218,7 @@
     </wildcardResourcePatterns>
     <annotationProcessing enabled="false" useClasspath="true" />
   </component>
-  <component name="CopyrightManager" default="">
+  <component name="CopyrightManager" default="default">
     <copyright>
       <option name="notice" value="Copyright (c) 1998 - &amp;#36;today.year. University Corporation for Atmospheric Research/Unidata&#10;Portions of this software were developed by the Unidata Program at the&#10;University Corporation for Atmospheric Research.&#10;&#10;Access and use of this software shall impose the following obligations&#10;and understandings on the user. The user is granted the right, without&#10;any fee or cost, to use, copy, modify, alter, enhance and distribute&#10;this software, and any derivative works thereof, and its supporting&#10;documentation for any purpose whatsoever, provided that this entire&#10;notice appears in all copies of the software, derivative works and&#10;supporting documentation.  Further, UCAR requests that the user credit&#10;UCAR/Unidata in any publications that result from the use of this&#10;software or in any product that includes this software. The names UCAR&#10;and/or Unidata, however, may not be used in any advertising or publicity&#10;to endorse or promote any products or commercial entity unless specific&#10;written permission is obtained from UCAR/Unidata. The user also&#10;understands that UCAR/Unidata is not obligated to provide the user with&#10;any support, consulting, training or assistance of any kind with regard&#10;to the use, operation and performance of this software nor to provide&#10;the user with any updates, revisions, new versions or &quot;bug fixes.&quot;&#10;&#10;THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA &quot;AS IS&quot; AND ANY EXPRESS OR&#10;IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED&#10;WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE&#10;DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,&#10;INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING&#10;FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,&#10;NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION&#10;WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE." />
       <option name="keyword" value="Copyright" />
@@ -227,7 +226,9 @@
       <option name="myName" value="default" />
       <option name="myLocal" value="true" />
     </copyright>
-    <module2copyright />
+    <module2copyright>
+      <element module="All" copyright="default" />
+    </module2copyright>
     <LanguageOptions name="XML">
       <option name="fileTypeOverride" value="1" />
     </LanguageOptions>
@@ -263,9 +264,19 @@
               <file url="file://$PROJECT_DIR$/../../bufrTables/src/main/webapp/WEB-INF/bufrTables-servlet.xml" />
             </files>
           </module>
+          <module name="ldm">
+            <files>
+              <file url="file://$PROJECT_DIR$/../../ldm/src/main/thredds/ldm/application-config.xml" />
+            </files>
+          </module>
           <module name="rcdm">
             <files>
               <file url="file://$PROJECT_DIR$/../../rcdm/web/WEB-INF/embedded-jetty-context.xml" />
+            </files>
+          </module>
+          <module name="tdm">
+            <files>
+              <file url="file://$PROJECT_DIR$/../../tdm/src/main/resources/resources/application-config.xml" />
             </files>
           </module>
           <module name="tds">
@@ -340,6 +351,9 @@
         <inspection_tool class="CloneCallsSuperClone" enabled="false" level="WARNING" enabled_by_default="false" />
         <inspection_tool class="CloneDeclaresCloneNotSupported" enabled="false" level="WARNING" enabled_by_default="false" />
         <inspection_tool class="ConditionalExpressionWithIdenticalBranches" enabled="true" level="WARNING" enabled_by_default="true" />
+        <inspection_tool class="ConfusingElse" enabled="true" level="WARNING" enabled_by_default="true">
+          <option name="reportWhenNoStatementFollow" value="false" />
+        </inspection_tool>
         <inspection_tool class="ConstantConditions" enabled="false" level="WARNING" enabled_by_default="false">
           <option name="SUGGEST_NULLABLE_ANNOTATIONS" value="false" />
           <option name="DONT_REPORT_TRUE_ASSERT_STATEMENTS" value="false" />
@@ -365,6 +379,7 @@
         </inspection_tool>
         <inspection_tool class="EqualsWhichDoesntCheckParameterClass" enabled="false" level="WARNING" enabled_by_default="false" />
         <inspection_tool class="ExtendsObject" enabled="false" level="WARNING" enabled_by_default="false" />
+        <inspection_tool class="FieldMayBeFinal" enabled="true" level="WARNING" enabled_by_default="true" />
         <inspection_tool class="FinalPrivateMethod" enabled="false" level="WARNING" enabled_by_default="false" />
         <inspection_tool class="FinalStaticMethod" enabled="false" level="WARNING" enabled_by_default="false" />
         <inspection_tool class="FinalizeCallsSuperFinalize" enabled="false" level="WARNING" enabled_by_default="false">
@@ -380,6 +395,7 @@
         <inspection_tool class="IfStatementWithIdenticalBranches" enabled="true" level="WARNING" enabled_by_default="true" />
         <inspection_tool class="InfiniteLoopStatement" enabled="false" level="WARNING" enabled_by_default="false" />
         <inspection_tool class="InfiniteRecursion" enabled="false" level="WARNING" enabled_by_default="false" />
+        <inspection_tool class="ListIndexOfReplaceableByContains" enabled="true" level="WARNING" enabled_by_default="true" />
         <inspection_tool class="LoopConditionNotUpdatedInsideLoop" enabled="true" level="WARNING" enabled_by_default="true">
           <option name="ignoreIterators" value="false" />
         </inspection_tool>
@@ -408,7 +424,6 @@
         <inspection_tool class="UnnecessaryBoxing" enabled="false" level="WARNING" enabled_by_default="false" />
         <inspection_tool class="UnnecessaryDefault" enabled="true" level="WARNING" enabled_by_default="true" />
         <inspection_tool class="UnnecessaryReturn" enabled="false" level="WARNING" enabled_by_default="false" />
-        <inspection_tool class="UnnecessarySemicolon" enabled="false" level="WARNING" enabled_by_default="false" />
         <inspection_tool class="UnnecessaryTemporaryOnConversionFromString" enabled="false" level="WARNING" enabled_by_default="false" />
         <inspection_tool class="UnnecessaryTemporaryOnConversionToString" enabled="false" level="WARNING" enabled_by_default="false" />
         <inspection_tool class="UnnecessaryUnboxing" enabled="false" level="WARNING" enabled_by_default="false" />
@@ -994,7 +1009,7 @@
   <component name="JavacSettings">
     <option name="GENERATE_NO_WARNINGS" value="true" />
     <option name="DEPRECATION" value="false" />
-    <option name="ADDITIONAL_OPTIONS_STRING" value=" -target 1.6" />
+    <option name="ADDITIONAL_OPTIONS_STRING" value=" " />
     <option name="MAXIMUM_HEAP_SIZE" value="512" />
   </component>
   <component name="JavadocGenerationManager">
@@ -1147,8 +1162,9 @@
   <component name="ProjectDictionaryState">
     <dictionary name="John">
       <words>
-        <w>ucar</w>
-        <w>unidata</w>
+        <w>barotropic</w>
+        <w>isentropic</w>
+        <w>mesoscale</w>
       </words>
     </dictionary>
     <dictionary name="edavis">
@@ -1159,8 +1175,6 @@
         <w>metadata</w>
         <w>ncml</w>
         <w>netcdf</w>
-        <w>recurse</w>
-        <w>subsetting</w>
         <w>thredds</w>
       </words>
     </dictionary>
@@ -1171,6 +1185,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/bufr.iml" filepath="$PROJECT_DIR$/bufr.iml" />
+      <module fileurl="file://$PROJECT_DIR$/bufrTables.iml" filepath="$PROJECT_DIR$/bufrTables.iml" />
       <module fileurl="file://$PROJECT_DIR$/cdm.iml" filepath="$PROJECT_DIR$/cdm.iml" />
       <module fileurl="file://$PROJECT_DIR$/common.iml" filepath="$PROJECT_DIR$/common.iml" />
       <module fileurl="file://$PROJECT_DIR$/docs.iml" filepath="$PROJECT_DIR$/docs.iml" />
@@ -1179,9 +1194,10 @@
       <module fileurl="file://$PROJECT_DIR$/ldm.iml" filepath="$PROJECT_DIR$/ldm.iml" />
       <module fileurl="file://$PROJECT_DIR$/lib.iml" filepath="$PROJECT_DIR$/lib.iml" />
       <module fileurl="file://$PROJECT_DIR$/opendap.iml" filepath="$PROJECT_DIR$/opendap.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../tdm/tdm.iml" filepath="$PROJECT_DIR$/../../tdm/tdm.iml" />
       <module fileurl="file://$PROJECT_DIR$/tds.iml" filepath="$PROJECT_DIR$/tds.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../time/time.iml" filepath="$PROJECT_DIR$/../../time/time.iml" />
       <module fileurl="file://$PROJECT_DIR$/ui.iml" filepath="$PROJECT_DIR$/ui.iml" />
-      <module fileurl="file://$PROJECT_DIR$/wmoTables.iml" filepath="$PROJECT_DIR$/wmoTables.iml" />
     </modules>
   </component>
   <component name="ProjectResources">
@@ -1558,8 +1574,8 @@
   </component>
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="svn" />
-    <mapping directory="$PROJECT_DIR$/../../../grib" vcs="svn" />
-    <mapping directory="$PROJECT_DIR$/../../../ncwms" vcs="svn" />
+    <mapping directory="$PROJECT_DIR$/../../tdm" vcs="svn" />
+    <mapping directory="$PROJECT_DIR$/../../time" vcs="svn" />
   </component>
   <component name="WebServicesPlugin" addRequiredLibraries="true" />
   <component name="com.intellij.jsf.UserDefinedFacesConfigs">
@@ -1600,6 +1616,13 @@
       </SOURCES>
       <jarDirectory url="file://F:/lib/jetty/jetty-distribution-7.2.0.v20101020/lib" recursive="false" />
     </library>
+    <library name="joda-time">
+      <CLASSES>
+        <root url="jar://$PROJECT_DIR$/../../lib/external/joda-time-2.0.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES />
+    </library>
     <library name="JSTL">
       <CLASSES>
         <root url="jar://$PROJECT_DIR$/../../lib/external/standard.jar!/" />
@@ -1610,47 +1633,40 @@
     </library>
     <library name="Logging">
       <CLASSES>
-        <root url="jar://$PROJECT_DIR$/../../lib/external/slf4j-api-1.5.6.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../lib/external/slf4j-log4j12-1.5.6.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../lib/external/log4j-1.2.15.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../../lib/external/slf4j-api-1.6.1.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../../lib/external/slf4j-log4j12-1.6.1.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../../lib/external/log4j-1.2.16.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES />
     </library>
     <library name="Spring">
       <CLASSES>
-        <root url="jar://$PROJECT_DIR$/../../lib/external/spring-2.5.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../lib/external/spring-webmvc-2.5.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../../lib/external/jcl-over-slf4j-1.6.1.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../../lib/external/org.springframework.context-3.0.5.RELEASE.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../../lib/external/org.springframework.beans-3.0.5.RELEASE.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../../lib/external/org.springframework.core-3.0.5.RELEASE.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../../lib/external/org.springframework.asm-3.0.5.RELEASE.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../../lib/external/org.springframework.expression-3.0.5.RELEASE.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../../lib/external/org.springframework.aop-3.0.5.RELEASE.jar!/" />
       </CLASSES>
       <JAVADOC />
-      <SOURCES>
-        <root url="jar://$PROJECT_DIR$/../../lib/external/source/spring-sources-2.5.jar!/" />
-        <root url="jar://$PROJECT_DIR$/../../lib/external/source/spring-webmvc-sources-2.5.jar!/" />
-      </SOURCES>
+      <SOURCES />
     </library>
-    <library name="tomcat 6.0.26">
+    <library name="Spring-Web">
       <CLASSES>
-        <root url="jar://$USER_HOME$/.griffonProgram Files/Apache Software Foundation/apache-tomcat-6.0.26/lib/servlet-api.jar!/" />
-        <root url="jar://$USER_HOME$/.griffonProgram Files/Apache Software Foundation/apache-tomcat-6.0.26/lib/catalina-ha.jar!/" />
-        <root url="jar://$USER_HOME$/.griffonProgram Files/Apache Software Foundation/apache-tomcat-6.0.26/lib/jasper-el.jar!/" />
-        <root url="jar://$USER_HOME$/.griffonProgram Files/Apache Software Foundation/apache-tomcat-6.0.26/lib/el-api.jar!/" />
-        <root url="jar://$USER_HOME$/.griffonProgram Files/Apache Software Foundation/apache-tomcat-6.0.26/lib/tomcat-dbcp.jar!/" />
-        <root url="jar://$USER_HOME$/.griffonProgram Files/Apache Software Foundation/apache-tomcat-6.0.26/lib/jsp-api.jar!/" />
-        <root url="jar://$USER_HOME$/.griffonProgram Files/Apache Software Foundation/apache-tomcat-6.0.26/lib/catalina.jar!/" />
-        <root url="jar://$USER_HOME$/.griffonProgram Files/Apache Software Foundation/apache-tomcat-6.0.26/lib/tomcat-i18n-fr.jar!/" />
-        <root url="jar://$USER_HOME$/.griffonProgram Files/Apache Software Foundation/apache-tomcat-6.0.26/lib/jasper.jar!/" />
-        <root url="jar://$USER_HOME$/.griffonProgram Files/Apache Software Foundation/apache-tomcat-6.0.26/lib/tomcat-i18n-es.jar!/" />
-        <root url="jar://$USER_HOME$/.griffonProgram Files/Apache Software Foundation/apache-tomcat-6.0.26/lib/annotations-api.jar!/" />
-        <root url="jar://$USER_HOME$/.griffonProgram Files/Apache Software Foundation/apache-tomcat-6.0.26/lib/tomcat-i18n-ja.jar!/" />
-        <root url="jar://$USER_HOME$/.griffonProgram Files/Apache Software Foundation/apache-tomcat-6.0.26/lib/jasper-jdt.jar!/" />
-        <root url="jar://$USER_HOME$/.griffonProgram Files/Apache Software Foundation/apache-tomcat-6.0.26/lib/catalina-tribes.jar!/" />
-        <root url="jar://$USER_HOME$/.griffonProgram Files/Apache Software Foundation/apache-tomcat-6.0.26/lib/tomcat-coyote.jar!/" />
-        <root url="jar://$USER_HOME$/.griffonProgram Files/Apache Software Foundation/apache-tomcat-6.0.26/lib/catalina-ant.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../../lib/external/org.springframework.context-3.0.5.RELEASE.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../../lib/external/org.springframework.web-3.0.5.RELEASE.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../../lib/external/org.springframework.web.servlet-3.0.5.RELEASE.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../../lib/external/org.springframework.beans-3.0.5.RELEASE.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../../lib/external/jcl-over-slf4j-1.6.1.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../../lib/external/org.springframework.core-3.0.5.RELEASE.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../../lib/external/org.springframework.asm-3.0.5.RELEASE.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../../lib/external/org.springframework.aop-3.0.5.RELEASE.jar!/" />
+        <root url="jar://$PROJECT_DIR$/../../lib/external/org.springframework.expression-3.0.5.RELEASE.jar!/" />
       </CLASSES>
       <JAVADOC />
-      <SOURCES>
-        <root url="file://$USER_HOME$/.griffonProgram Files/Apache Software Foundation/apache-tomcat-6.0.26/src/java" />
-      </SOURCES>
+      <SOURCES />
     </library>
   </component>
   <component name="org.twodividedbyzero.idea.findbugs">

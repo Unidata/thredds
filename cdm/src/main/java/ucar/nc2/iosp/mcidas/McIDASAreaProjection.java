@@ -40,6 +40,7 @@ import edu.wisc.ssec.mcidas.AREAnav;
 import edu.wisc.ssec.mcidas.AreaFile;
 import edu.wisc.ssec.mcidas.McIDASException;
 
+import ucar.nc2.constants.CF;
 import ucar.unidata.geoloc.*;
 import ucar.unidata.util.Parameter;
 
@@ -94,7 +95,9 @@ public class McIDASAreaProjection extends ucar.unidata.geoloc.ProjectionImpl {
     /**
      * Default bean constructor
      */
-    public McIDASAreaProjection() {}
+    public McIDASAreaProjection() {
+      super("McIDASAreaProjection", false);
+    }
 
     /**
      * create a McIDAS AREA projection from the Area file's
@@ -136,6 +139,7 @@ public class McIDASAreaProjection extends ucar.unidata.geoloc.ProjectionImpl {
      * @param aux is the AREA file auxillary block
      */
     public McIDASAreaProjection(int[] dir, int[] nav, int[] aux) {
+        super("McIDASAreaProjection", false);
 
         try {
             anav = AREAnav.makeAreaNav(nav, aux);
@@ -154,7 +158,7 @@ public class McIDASAreaProjection extends ucar.unidata.geoloc.ProjectionImpl {
         elements = dir[9];
         anav.setFlipLineCoordinates(dir[8]);  // invert Y axis coordinates
 
-        addParameter(ATTR_NAME, GRID_MAPPING_NAME);
+        addParameter(CF.GRID_MAPPING_NAME, GRID_MAPPING_NAME);
         addParameter(new Parameter(ATTR_AREADIR, makeDoubleArray(dir)));
         addParameter(new Parameter(ATTR_NAVBLOCK, makeDoubleArray(nav)));
         if (aux != null) {

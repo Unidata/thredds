@@ -32,14 +32,12 @@
  */
 package thredds.server.views;
 
-import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.view.AbstractView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletOutputStream;
 import java.util.Map;
-import java.io.OutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -47,8 +45,12 @@ import java.io.IOException;
 import thredds.servlet.Debug;
 import thredds.servlet.UsageLog;
 import thredds.servlet.ServletUtil;
-import ucar.nc2.util.cache.FileCacheRaf;
+import ucar.nc2.util.CancelTask;
+import ucar.nc2.util.cache.FileCache;
 import ucar.nc2.util.IO;
+import ucar.nc2.util.cache.FileCacheable;
+import ucar.nc2.util.cache.FileFactory;
+import ucar.unidata.io.RandomAccessFile;
 
 /**
  *  Render the response to a request for a local file including byte range requests.
@@ -69,16 +71,19 @@ import ucar.nc2.util.IO;
  * @author edavis
  * @since 4.0
  */
-public class FileView extends AbstractView
-{
-  private static org.slf4j.Logger log =
-          org.slf4j.LoggerFactory.getLogger( FileView.class );
+public class FileView extends AbstractView {
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger( FileView.class );
 
-  private FileCacheRaf fileCacheRaf;
-  public void setFileCacheRaf( FileCacheRaf fileCacheRaf) { this.fileCacheRaf = fileCacheRaf; }
+  private static final ucar.nc2.util.cache.FileFactory fileFactory = new FileFactory() {
+    public FileCacheable open(String location, int buffer_size, CancelTask cancelTask, Object iospMessage) throws IOException {
+      return new ucar.unidata.io.RandomAccessFile(location, "r");
+    }
+  };
 
-  public void init()
-  {
+  private FileCache fileCacheRaf;
+  public void setFileCacheRaf( FileCache fileCacheRaf) { this.fileCacheRaf = fileCacheRaf; }
+
+  public void init() {
     if ( this.fileCacheRaf == null )
       this.fileCacheRaf = ServletUtil.getFileCache();
     if ( this.fileCacheRaf == null )
@@ -218,11 +223,11 @@ public class FileView extends AbstractView
         res.addHeader( "Content-Range", "bytes " + startPos + "-" + ( endPos - 1 ) + "/" + fileSize );
         res.setStatus( HttpServletResponse.SC_PARTIAL_CONTENT );
 
-        FileCacheRaf.Raf craf = null;
+        RandomAccessFile craf = null;
         try
         {
-          craf = fileCacheRaf.acquire( filename );
-          IO.copyRafB( craf.getRaf(), startPos, contentLength, res.getOutputStream(), new byte[60000] );
+          craf = (RandomAccessFile) fileCacheRaf.acquire( fileFactory, filename, null);
+          IO.copyRafB( craf, startPos, contentLength, res.getOutputStream(), new byte[60000] );
           log.info( UsageLog.closingMessageForRequestContext( HttpServletResponse.SC_PARTIAL_CONTENT, contentLength ));
           return;
         }

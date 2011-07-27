@@ -32,6 +32,7 @@
  */
 package thredds.catalog;
 
+import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateType;
 import ucar.nc2.constants.FeatureType;
@@ -223,8 +224,8 @@ public class InvDatasetImplProxy extends thredds.catalog.InvDatasetImpl{
     return proxy.getServicesLocal();
   }
 
-  public DateRange getTimeCoverage() {
-    return proxy.getTimeCoverage();
+  public CalendarDateRange getCalendarDateCoverage() {
+    return proxy.getCalendarDateCoverage();
   }
 
   public java.lang.String getUniqueID() {

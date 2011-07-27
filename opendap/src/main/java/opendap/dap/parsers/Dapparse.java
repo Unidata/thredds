@@ -9,7 +9,7 @@ import java.io.InputStream;
 import java.util.*;
 
 import opendap.dap.*;
-import ucar.unidata.util.EscapeStrings;
+import ucar.nc2.util.net.EscapeStrings;
 
 import static opendap.dap.parsers.DapParser.*;
 

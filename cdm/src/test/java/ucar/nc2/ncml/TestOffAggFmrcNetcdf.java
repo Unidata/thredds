@@ -143,7 +143,7 @@ public class TestOffAggFmrcNetcdf extends TestCase {
       IndexIterator dataI = data.getIndexIterator();
       while (dataI.hasNext()) {
         double val = dataI.getDoubleNext();
-        assert val == count * 12;
+        assert val == count * 12 : val +" != "+ count * 12;
         count++;
       }
 

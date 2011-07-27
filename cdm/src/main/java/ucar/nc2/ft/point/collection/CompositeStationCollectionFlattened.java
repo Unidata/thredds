@@ -36,6 +36,7 @@ import ucar.nc2.ft.point.PointCollectionImpl;
 import ucar.nc2.ft.point.PointIteratorAbstract;
 import ucar.nc2.ft.*;
 import ucar.nc2.VariableSimpleIF;
+import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.constants.FeatureType;
 import ucar.unidata.geoloc.LatLonRect;
@@ -59,11 +60,11 @@ public class CompositeStationCollectionFlattened extends PointCollectionImpl {
   private TimedCollection stnCollections;
   private LatLonRect bbSubset;
   private List<String> stationsSubset;
-  private DateRange dateRange;
+  private CalendarDateRange dateRange;
   private List<VariableSimpleIF> varList;
   private boolean wantStationsubset = false;
 
-  protected CompositeStationCollectionFlattened(String name, List<String> stations, DateRange dateRange,
+  protected CompositeStationCollectionFlattened(String name, List<String> stations, CalendarDateRange dateRange,
                                                 List<VariableSimpleIF> varList, TimedCollection stnCollections) throws IOException {
     super(name);
     this.stationsSubset = stations; // note these will be from the original collection, must transfer
@@ -74,7 +75,7 @@ public class CompositeStationCollectionFlattened extends PointCollectionImpl {
     wantStationsubset = (stations != null) && (stations.size() > 0);
   }
 
-  protected CompositeStationCollectionFlattened(String name, LatLonRect bbSubset, DateRange dateRange, TimedCollection stnCollections) throws IOException {
+  protected CompositeStationCollectionFlattened(String name, LatLonRect bbSubset, CalendarDateRange dateRange, TimedCollection stnCollections) throws IOException {
     super(name);
     this.bbSubset = bbSubset;
     this.dateRange = dateRange;

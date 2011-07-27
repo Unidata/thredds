@@ -18,10 +18,9 @@ import java.util.regex.Pattern;
  * Can open all data by opening "igra-stations.txt", with data files in subdir "igra-por".
  * Can open single station data by opening <stationId>.dat with igra-stations.txt in same or parent directory.
  *
+ * @author caron
  * @see "http://www.ncdc.noaa.gov/oa/climate/igra/"
  * @see "ftp://ftp.ncdc.noaa.gov/pub/data/igra"
- * 
- * @author caron
  * @since 3/3/11
  */
 public class IgraPor extends AbstractIOServiceProvider {
@@ -79,7 +78,7 @@ public class IgraPor extends AbstractIOServiceProvider {
     } else if (ext.equals(DAT_EXT)) {
       File stnFile = getStnFile(location);
       if (stnFile == null)
-          return false;
+        return false;
       return isValidFile(raf, dataHeaderPattern);
 
     } else {
@@ -90,6 +89,7 @@ public class IgraPor extends AbstractIOServiceProvider {
   }
 
   // stn file must be in the same directory or one up
+
   private File getStnFile(String location) {
     File file = new File(location);
     File stnFile = new File(file.getParentFile(), STN_FILE);
@@ -235,6 +235,7 @@ public class IgraPor extends AbstractIOServiceProvider {
   }
 
   // when theres only one station
+
   private class SingleStationSeqIter implements StructureDataIterator {
     private StructureDataRegexp.Vinfo vinfo;
     private int recno = 0;
@@ -282,9 +283,15 @@ public class IgraPor extends AbstractIOServiceProvider {
     public int getCurrentRecno() {
       return recno - 1;
     }
+
+    @Override
+    public void finish() {
+      // ignored
+    }
   }
 
-    // sequence of stations
+  // sequence of stations
+
   private class StationSeqIter implements StructureDataIterator {
     private StructureDataRegexp.Vinfo vinfo;
     private long totalBytes;
@@ -357,6 +364,11 @@ public class IgraPor extends AbstractIOServiceProvider {
     public int getCurrentRecno() {
       return recno - 1;
     }
+
+    @Override
+    public void finish() {
+      // ignored
+    }
   }
 
   private class StationData extends StructureDataRegexp {
@@ -379,6 +391,7 @@ public class IgraPor extends AbstractIOServiceProvider {
 
   //////////////////////////////////////////////////////
   // sequence of time series for one station
+
   private class TimeSeriesIter implements StructureDataIterator {
     private int countRead = 0;
     private long totalBytes;
@@ -390,7 +403,7 @@ public class IgraPor extends AbstractIOServiceProvider {
       if (dataRaf != null)
         exists = true;
       else {
-        this.file = new File(dataDir, stnid+DAT_EXT);
+        this.file = new File(dataDir, stnid + DAT_EXT);
         exists = file.exists();
       }
     }
@@ -401,7 +414,7 @@ public class IgraPor extends AbstractIOServiceProvider {
         if (dataRaf != null)
           this.timeSeriesRaf = dataRaf; // single station case - data file already open
         else
-          this.timeSeriesRaf = new RandomAccessFile( file.getPath(), "r");// LOOK check exists LOOK who closes?
+          this.timeSeriesRaf = new RandomAccessFile(file.getPath(), "r");
 
         totalBytes = timeSeriesRaf.length();
         timeSeriesRaf.seek(0);
@@ -458,6 +471,18 @@ public class IgraPor extends AbstractIOServiceProvider {
       return countRead - 1;
     }
 
+    @Override
+    public void finish() {
+      try {
+        if (this.timeSeriesRaf != null && this.timeSeriesRaf != dataRaf) {
+          timeSeriesRaf.close();
+          timeSeriesRaf = null;
+        }
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
+
     private class TimeSeriesData extends StructureDataRegexp {
       Matcher matcher;          // matcher on the station ascii
       List<String> lines = new ArrayList<String>(30);
@@ -476,7 +501,7 @@ public class IgraPor extends AbstractIOServiceProvider {
           matcher = profileVinfo.p.matcher(line);
           if (matcher.matches())
             lines.add(line);
-          else  {
+          else {
             timeSeriesRaf.seek(pos); // put the line back
             break;
           }
@@ -491,6 +516,7 @@ public class IgraPor extends AbstractIOServiceProvider {
 
       //////////////////////////////////////////////////////
       // sequence of levels for one profile = station-timeSeries
+
       private class ProfileIter implements StructureDataIterator {
         private int countRead;
 
@@ -517,7 +543,7 @@ public class IgraPor extends AbstractIOServiceProvider {
           if (matcher.matches())
             sd = new StructureDataRegexp(profileVinfo.sm, matcher);
           else
-            throw new IllegalStateException("line = "+lines.get(countRead)+ "pattern = "+profileVinfo.p );
+            throw new IllegalStateException("line = " + lines.get(countRead) + "pattern = " + profileVinfo.p);
           countRead++;
           return sd;
         }
@@ -531,6 +557,10 @@ public class IgraPor extends AbstractIOServiceProvider {
           return countRead - 1;
         }
 
+        @Override
+        public void finish() {
+          // ignored
+        }
       }
     }
 

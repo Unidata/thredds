@@ -1,10 +1,10 @@
 package ucar.nc2.ui;
 
+import ucar.nc2.grib.table.WmoTemplateTable;
 import ucar.nc2.ui.widget.BAMutil;
 import ucar.nc2.ui.widget.FileManager;
 import ucar.nc2.ui.widget.IndependentWindow;
 import ucar.nc2.ui.widget.TextHistoryPane;
-import ucar.nc2.iosp.grib.tables.GribTemplate;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
 
@@ -12,6 +12,7 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.util.*;
 
 /**
@@ -38,7 +39,7 @@ public class GribWmoTemplatesPanel extends JPanel {
     codeTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         CodeBean csb = (CodeBean) codeTable.getSelectedBean();
-        setEntries(csb.code);
+        setEntries(csb.template);
       }
     });
 
@@ -49,43 +50,17 @@ public class GribWmoTemplatesPanel extends JPanel {
       }
     });
 
-    /* thredds.ui.PopupMenu varPopup = new thredds.ui.PopupMenu(codeTable.getJTable(), "Options");
-    varPopup.addAction("Show uses", new AbstractAction() {
+    ucar.nc2.ui.widget.PopupMenu varPopup = new ucar.nc2.ui.widget.PopupMenu(codeTable.getJTable(), "Options");
+    varPopup.addAction("Show table", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Formatter out = new Formatter();
         CodeBean csb = (CodeBean) codeTable.getSelectedBean();
-        if (usedDds != null) {
-          List<Message> list = usedDds.get(csb.getId());
-          if (list != null) {
-            for (Message use : list)
-              use.dumpHeaderShort(out);
-          }
-        }
+        csb.showTable(out);
         compareTA.setText(out.toString());
         compareTA.gotoTop();
         infoWindow.setVisible(true);
       }
-    }); */
-
-    /* AbstractButton compareButton = BAMutil.makeButtcon("Select", "Compare to current table", false);
-    compareButton.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        compareToCurrent();
-      }
     });
-    buttPanel.add(compareButton);
-
-    AbstractButton modelsButton = BAMutil.makeButtcon("Select", "Check current models", false);
-    modelsButton.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        try {
-          checkCurrentModels();
-        } catch (IOException e1) {
-          e1.printStackTrace();
-        }
-      }
-    });
-    buttPanel.add(modelsButton); */
 
     // the info window
     compareTA = new TextHistoryPane();
@@ -101,9 +76,9 @@ public class GribWmoTemplatesPanel extends JPanel {
     ///
 
     try {
-      java.util.List<GribTemplate> codes = GribTemplate.getWmoStandard();
+      java.util.List<WmoTemplateTable> codes = WmoTemplateTable.getWmoStandard().list;
       java.util.List<CodeBean> dds = new ArrayList<CodeBean>(codes.size());
-      for (GribTemplate code : codes) {
+      for (WmoTemplateTable code : codes) {
         dds.add(new CodeBean(code));
       }
       codeTable.setBeans(dds);
@@ -124,53 +99,63 @@ public class GribWmoTemplatesPanel extends JPanel {
     if (fileChooser != null) fileChooser.save();
   }
 
-  public void setEntries(GribTemplate template) {
+  public void setEntries(WmoTemplateTable template) {
     java.util.List<EntryBean> beans = new ArrayList<EntryBean>(template.flds.size());
-    for (GribTemplate.Field d : template.flds) {
+    for (WmoTemplateTable.Field d : template.flds) {
       beans.add(new EntryBean(d));
     }
     entryTable.setBeans(beans);
   }
 
-   public class CodeBean {
-    GribTemplate code;
+  public class CodeBean {
+    WmoTemplateTable template;
 
     // no-arg constructor
     public CodeBean() {
     }
 
     // create from a dataset
-    public CodeBean(GribTemplate code) {
-      this.code = code;
+    public CodeBean(WmoTemplateTable template) {
+      this.template = template;
     }
 
     public String getName() {
-      return code.name;
+      return template.name;
     }
 
     public String getDescription() {
-      return code.desc;
+      return template.desc;
     }
 
     public int getM1() {
-      return code.m1;
+      return template.m1;
     }
 
     public int getM2() {
-      return code.m2;
+      return template.m2;
+    }
+
+    void showTable(Formatter f) {
+      f.format("Template %s (%s)%n", template.name, template.desc);
+      for (WmoTemplateTable.Field entry : template.flds) {
+        f.format("  %6s (%d): %s", entry.octet, entry.nbytes, entry.content);
+        if (entry.note != null)
+          f.format(" - %s", entry.note);
+        f.format("%n");
+      }
     }
 
   }
 
   public class EntryBean {
-    GribTemplate.Field te;
+    WmoTemplateTable.Field te;
 
     // no-arg constructor
     public EntryBean() {
     }
 
     // create from a dataset
-    public EntryBean(GribTemplate.Field te) {
+    public EntryBean(WmoTemplateTable.Field te) {
       this.te = te;
     }
 
@@ -188,6 +173,14 @@ public class GribWmoTemplatesPanel extends JPanel {
 
     public int getStart() {
       return te.start;
+    }
+
+    public String getStatus() {
+      return te.status;
+    }
+
+    public String getNotes() {
+      return te.note;
     }
 
   }

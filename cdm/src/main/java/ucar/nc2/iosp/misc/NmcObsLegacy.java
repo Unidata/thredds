@@ -61,7 +61,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
   //private Structure reportVar;
 
   private List<Station> stations = new ArrayList<Station>();
-  private List<Report> reports  = new ArrayList<Report>();
+  private List<Report> reports = new ArrayList<Report>();
   //private Map<String, List<Report>> map = new HashMap<String, List<Report>>();
   //private List<String> stations;
 
@@ -74,7 +74,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
   private List<StructureCode> catStructures = new ArrayList<StructureCode>(10);
 
   private boolean showObs = false, showSkip = false, showOverflow = false, showData = false,
-      showHeader = false, showTime = false;
+          showHeader = false, showTime = false;
   private boolean readData = false, summarizeData = false, showTimes = false;
   private boolean checkType = false, checkSort = false, checkPositions = false;
 
@@ -107,13 +107,13 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     return true;
   }
 
-    public String getFileTypeId() {
-      return "NMCon29";
-    }
+  public String getFileTypeId() {
+    return "NMCon29";
+  }
 
-    public String getFileTypeDescription() {
-      return "NMC Office Note 29";
-    }
+  public String getFileTypeDescription() {
+    return "NMC Office Note 29";
+  }
 
   public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
     this.raf = raf;
@@ -224,7 +224,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     v = reportIndex.addMemberVariable(new Variable(ncfile, null, reportIndex, "time", DataType.INT, ""));
     v.addAttribute(new Attribute("units", "secs since 1970-01-01 00:00"));
     v.addAttribute(new Attribute("long_name", "observation time"));
-    v.setSPobject(new Vinfo(pos));                 
+    v.setSPobject(new Vinfo(pos));
     pos += 4;
 
     return reportIndex;
@@ -282,7 +282,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     return report;
   }
 
-  private int makeInnerSequence( Structure reportVar, List<Record> records, int code, int obs_pos) throws InvalidRangeException {
+  private int makeInnerSequence(Structure reportVar, List<Record> records, int code, int obs_pos) throws InvalidRangeException {
 
     for (Record record : records) {
       if (record.code == code) {
@@ -347,7 +347,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     return abb;
   }
 
-   public Array readReportIndex(Variable v, Section section) throws IOException, InvalidRangeException {
+  public Array readReportIndex(Variable v, Section section) throws IOException, InvalidRangeException {
     Structure s = (Structure) v;
     StructureMembers members = s.makeStructureMembers();
     for (Variable v2 : s.getVariables()) {
@@ -433,7 +433,6 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
   } */
 
 
-
   private Report firstReport = null;
 
   private void init() throws IOException {
@@ -445,7 +444,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     readHeader(raf);
 
     // read through all the reports, construct unique stations
-    Map<String,Station> map = new HashMap<String,Station>();
+    Map<String, Station> map = new HashMap<String, Station>();
     while (true) {
       Report report = new Report();
       if (!report.readId(raf)) break;
@@ -464,7 +463,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
       if (stn == null) {
         stn = new Station(report);
         map.put(report.stationId, stn);
-        stations.add( stn);
+        stations.add(stn);
 
       } else {
         stn.nreports++;
@@ -542,10 +541,11 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     String name;
     Report r;
     int nreports;
+
     Station(Report r) {
       this.name = r.stationId;
       this.r = r;
-      this.nreports=1;
+      this.nreports = 1;
     }
 
     public int compareTo(Station o) {
@@ -626,12 +626,13 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
 
     public String toString() {
       return "Report " + " stationId=" + stationId + " lat=" + lat + " lon=" + lon +
-          " obsTime=" + obsTime + " date= " + dateFormatter.toDateTimeStringISO(date) +
-          " reportType=" + reportType + " elevMeters=" + elevMeters + " instType=" + instType + " reserved=" + new String(reserved) +
-          " start=" + filePos + " reportLen=" + reportLen;
+              " obsTime=" + obsTime + " date= " + dateFormatter.toDateTimeStringISO(date) +
+              " reportType=" + reportType + " elevMeters=" + elevMeters + " instType=" + instType + " reserved=" + new String(reserved) +
+              " start=" + filePos + " reportLen=" + reportLen;
     }
 
     // heres where the data for this Report is read into memory
+
     List<Record> readData() throws IOException {
       List<Record> records = new ArrayList<Record>();
 
@@ -740,11 +741,17 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
       public int getCurrentRecno() {
         return count - 1;
       }
+
+      @Override
+      public void finish() {
+        // ignored
+      }
     }
 
   }
 
   // a record has a variable number of entries, which are all of one "category" type
+
   private class Record {
     int code, next, nlevels, nbytes;
     Entry[] entries;
@@ -859,20 +866,20 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
   }
 
   private String[] catNames = new String[]{"",
-      "Category 01: mandatory constant-pressure data",
-      "Category 02: temperature/dewpoint at variable pressure-levels ",
-      "Category 03: wind at variable pressure-levels ",
-      "Category 04: wind at variable height-levels ",
-      "Category 05: tropopause data", "",
-      "Category 07: cloud cover",
-      "Category 08: additional data", "", "",
-      "Category 51: surface Data",
-      "Category 52: ship surface Data"};
+          "Category 01: mandatory constant-pressure data",
+          "Category 02: temperature/dewpoint at variable pressure-levels ",
+          "Category 03: wind at variable pressure-levels ",
+          "Category 04: wind at variable height-levels ",
+          "Category 05: tropopause data", "",
+          "Category 07: cloud cover",
+          "Category 08: additional data", "", "",
+          "Category 51: surface Data",
+          "Category 52: ship surface Data"};
 
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   private static float[] mandPressureLevel = new float[]{1000, 850, 700, 500, 400, 300, 250, 200, 150, 100,
-      70, 50, 30, 20, 10, 7, 5, 3, 2, 1};
+          70, 50, 30, 20, 10, 7, 5, 3, 2, 1};
 
   private abstract class Entry {
     abstract Structure makeStructure(Structure parent) throws InvalidRangeException;
@@ -897,7 +904,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
 
     public String toString() {
       return "Cat01: press= " + press + " geopot=" + geopot + " temp= " + temp + " dewp=" + dewp + " windDir=" + windDir +
-          " windSpeed=" + windSpeed + " qs=" + new String(quality);
+              " windSpeed=" + windSpeed + " qs=" + new String(quality);
     }
 
     Structure makeStructure(Structure parent) throws InvalidRangeException {
@@ -1180,7 +1187,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
 
     public String toString() {
       return "Cat05: press= " + press + " temp= " + temp + " dewp=" + dewp + " windDir=" + windDir +
-          " windSpeed=" + windSpeed + " qs=" + qs;
+              " windSpeed=" + windSpeed + " qs=" + qs;
     }
 
     Structure makeStructure(Structure parent) throws InvalidRangeException {
@@ -1393,7 +1400,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
 
     public String toString() {
       return "Cat51: press= " + press + " geopot=" + geopot + " temp= " + temp + " dewp=" + dewp + " windDir=" + windDir +
-          " windSpeed=" + windSpeed + " qs=" + new String(quality) + " pressureTendency=" + pressureTendency;
+              " windSpeed=" + windSpeed + " qs=" + new String(quality) + " pressureTendency=" + pressureTendency;
     }
 
     Structure makeStructure(Structure parent) throws InvalidRangeException {
@@ -1620,8 +1627,8 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
 
     public String toString() {
       return "Cat52: precip6hours= " + precip6hours + " precip24hours=" + precip24hours + " sst= " + sst + " waterEquiv=" + waterEquiv +
-          " snowDepth=" + snowDepth + " wavePeriod=" + wavePeriod + " waveHeight=" + waveHeight +
-          " waveSwellPeriod=" + waveSwellPeriod + " waveSwellHeight=" + waveSwellHeight;
+              " snowDepth=" + snowDepth + " wavePeriod=" + wavePeriod + " waveHeight=" + waveHeight +
+              " waveSwellPeriod=" + waveSwellPeriod + " waveSwellHeight=" + waveSwellHeight;
     }
 
     Structure makeStructure(Structure parent) throws InvalidRangeException {
@@ -1790,7 +1797,7 @@ public class NmcObsLegacy extends AbstractIOServiceProvider {
     refString = new String(h, 0, 10);
 
     if (showHeader) System.out.println("\nhead=" + new String(h) +
-        " date= " + dateFormatter.toDateTimeString(refDate));
+            " date= " + dateFormatter.toDateTimeString(refDate));
 
     int b, count = 0;
     while ((b = raf.read()) == (int) 'X') count++;

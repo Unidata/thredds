@@ -33,8 +33,8 @@
 package ucar.nc2.ft.fmrc;
 
 import ucar.nc2.dataset.CoordinateAxis1DTime;
+import ucar.nc2.time.CalendarDate;
 import ucar.nc2.units.DateUnit;
-import ucar.nc2.units.DateFormatter;
 import ucar.nc2.util.Misc;
 
 import java.util.*;
@@ -44,9 +44,9 @@ import java.util.*;
  * Tracks a list of variables that all have the same list of offset times.
  */
 public class TimeCoord implements Comparable {
-  static public final TimeCoord EMPTY = new TimeCoord(new Date(), new double[0]);
+  static public final TimeCoord EMPTY = new TimeCoord(CalendarDate.of(new Date()), new double[0]);
 
-  private Date runDate;
+  private CalendarDate runDate;
   private List<GridDatasetInv.Grid> gridInv; // track the grids that use this coord
   private int id; // unique id for serialization
   private String axisName; // time coordinate axis
@@ -56,11 +56,11 @@ public class TimeCoord implements Comparable {
   private double[] offset; // hours since runDate
   private double[] bound1, bound2; // hours since runDate [ntimes,2]
 
-  TimeCoord(Date runDate) {
+  TimeCoord(CalendarDate runDate) {
     this.runDate = runDate;
   }
 
-  TimeCoord(Date runDate, double[] offset) {
+  TimeCoord(CalendarDate runDate, double[] offset) {
     this.runDate = runDate;
     this.offset = offset;
   }
@@ -75,7 +75,7 @@ public class TimeCoord implements Comparable {
     this.id = from.id;
   }
 
-  TimeCoord(Date runDate, CoordinateAxis1DTime axis) {
+  TimeCoord(CalendarDate runDate, CoordinateAxis1DTime axis) {
     this.runDate = runDate;
     this.axisName = axis.getFullName();
 
@@ -94,7 +94,7 @@ public class TimeCoord implements Comparable {
     } else {
       offset = new double[n];
       for (int i = 0; i < axis.getSize(); i++) {
-        Date d = unit.makeDate(axis.getCoordValue(i));
+        CalendarDate d = unit.makeCalendarDate(axis.getCoordValue(i));
         offset[i] = FmrcInv.getOffsetInHours(runDate, d);
       }
     }
@@ -106,7 +106,7 @@ public class TimeCoord implements Comparable {
     gridInv.add(grid);
   }
 
-  public Date getRunDate() {
+  public CalendarDate getRunDate() {
     return runDate;
   }
 
@@ -194,9 +194,8 @@ public class TimeCoord implements Comparable {
 
   @Override
   public String toString() {
-    DateFormatter df = new DateFormatter();
     Formatter out = new Formatter();
-    out.format("%-10s %-26s offsets=", getName(), df.toDateTimeString(runDate));
+    out.format("%-10s %-26s offsets=", getName(), runDate);
     if (isInterval)
       for (int i=0; i<bound1.length; i++) out.format("(%3.1f,%3.1f) ", bound1[i], bound2[i]);
     else
@@ -293,7 +292,7 @@ public class TimeCoord implements Comparable {
    * @param baseDate resulting union timeCoord uses this as a base date
    * @return union TimeCoord
    */
-  static public TimeCoord makeUnion(List<TimeCoord> timeCoords, Date baseDate) {
+  static public TimeCoord makeUnion(List<TimeCoord> timeCoords, CalendarDate baseDate) {
     if (timeCoords.size() == 0) return new TimeCoord(baseDate);
     if (timeCoords.size() == 1) return timeCoords.get(0);
 
@@ -303,7 +302,7 @@ public class TimeCoord implements Comparable {
       return makeUnionReg(timeCoords, baseDate);
   }
 
-  static private TimeCoord makeUnionReg(List<TimeCoord> timeCoords, Date baseDate) {
+  static private TimeCoord makeUnionReg(List<TimeCoord> timeCoords, CalendarDate baseDate) {
     // put into a set for uniqueness
     Set<Double> offsets = new HashSet<Double>();
     for (TimeCoord tc : timeCoords) {
@@ -329,7 +328,7 @@ public class TimeCoord implements Comparable {
     return result;
   }
 
-  static private TimeCoord makeUnionIntv(List<TimeCoord> timeCoords, Date baseDate) {
+  static private TimeCoord makeUnionIntv(List<TimeCoord> timeCoords, CalendarDate baseDate) {
     // put into a set for uniqueness
     Set<Tinv> offsets = new HashSet<Tinv>();
     for (TimeCoord tc : timeCoords) {

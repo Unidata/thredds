@@ -32,6 +32,7 @@
  */
 package ucar.nc2.ft;
 
+import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateRange;
 import ucar.unidata.geoloc.Station;
 
@@ -51,10 +52,15 @@ public interface StationTimeSeriesFeature extends Station, PointFeatureCollectio
   public int size();
 
   /**
-   * Subset this collection by dateRange
+   * @deprecated use subset(CalendarDateRange dateRange)
+   */
+  public StationTimeSeriesFeature subset(DateRange dateRange) throws IOException;
+
+  /**
+   * Subset this collection by calendar dateRange
    * @param dateRange only points in this date range. may be null.
    * @return subsetted collection, may be null if empty
    * @throws IOException on read error
    */
-  public StationTimeSeriesFeature subset(DateRange dateRange) throws IOException;
+  public StationTimeSeriesFeature subset(CalendarDateRange dateRange) throws IOException;
 }

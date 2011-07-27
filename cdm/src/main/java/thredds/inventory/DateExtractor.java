@@ -32,6 +32,8 @@
 
 package thredds.inventory;
 
+import ucar.nc2.time.CalendarDate;
+
 import java.util.Date;
 
 /**
@@ -41,5 +43,6 @@ import java.util.Date;
  * @since Jun 26, 2009
  */
 public interface DateExtractor {
-  public Date getDate( MFile mfile);
+  public Date getDate( MFile mfile); // deprecate
+  public CalendarDate getCalendarDate( MFile mfile);
 }

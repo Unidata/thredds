@@ -61,6 +61,10 @@ public class TdsPathUtils
     if ( catPath.startsWith( "/" ) )
       catPath = catPath.substring( 1 );
 
+    if ( catPath.equals( "index.html" ) )
+      catPath = "catalog.html";
+
+
     return catPath;
   }
 }

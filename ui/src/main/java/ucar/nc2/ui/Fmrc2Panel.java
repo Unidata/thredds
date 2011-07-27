@@ -33,10 +33,9 @@
 package ucar.nc2.ui;
 
 import thredds.inventory.CollectionManager;
-import thredds.inventory.CollectionSpecParser;
-import thredds.inventory.DatasetCollectionManager;
 import thredds.inventory.MFile;
 import ucar.nc2.dt.GridDataset;
+import ucar.nc2.time.CalendarDate;
 import ucar.nc2.ui.dialog.Fmrc2Dialog;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
@@ -55,7 +54,6 @@ import ucar.nc2.ui.widget.BAMutil;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.PrintStream;
 import java.util.*;
 import java.util.List;
@@ -262,22 +260,13 @@ public class Fmrc2Panel extends JPanel {
 
     infoTA.clear();
 
-    CollectionSpecParser sp = null;
+    // CollectionSpecParser sp = null;
     CollectionManager cm = fmrc.getManager();
-    if (cm instanceof DatasetCollectionManager) {
-      sp = ((DatasetCollectionManager) cm).getCollectionSpecParser();
-    }
-    if (sp != null) {
-      infoTA.appendLine("CollectionSpecParser= "+sp);
-      File dir = new File(sp.getTopDir());
-      infoTA.appendLine(" topdir exists = = "+dir.exists());
-    }
-
     infoTA.appendLine("CollectionManager= ");
     infoTA.appendLine(cm.toString());
 
     try {
-      cm.scan(null);
+      cm.scan();
     } catch (IOException e1) {
       ByteArrayOutputStream bos = new ByteArrayOutputStream(5000);
       e1.printStackTrace(new PrintStream(bos));
@@ -288,20 +277,14 @@ public class Fmrc2Panel extends JPanel {
     }
 
     boolean status = false;
-    List<MFile> files = cm.getFiles();
-    if (files.size() == 0) {
-      infoTA.appendLine("No Files found\nlog=");
-      infoTA.appendLine(errlog.toString());
-      infoTA.appendLine(cm.toString());
-      alwaysShow = true;
-    } else {
-      infoTA.appendLine("Files found=");
-      for (MFile mfile : files) {
-        infoTA.appendLine(" "+mfile.getPath()+" "+ new Date(mfile.getLastModified())+" "+ mfile.getLength());
-      }
-      infoTA.appendLine("total files="+files.size());
-      status = true;
+    int count = 0;
+    infoTA.appendLine("Files found=");
+    for (MFile mfile :  cm.getFiles()) {
+      infoTA.appendLine(" "+mfile.getPath()+" "+ new Date(mfile.getLastModified())+" "+ mfile.getLength());
+      count++;
     }
+    infoTA.appendLine("total files="+count);
+    status = true;
 
     if (alwaysShow)
       infoWindow.showIfNotIconified();
@@ -344,12 +327,12 @@ public class Fmrc2Panel extends JPanel {
         gds = fmrc.getDatasetBest();
 
       else if (data.type.equals("Run")) {
-        DateFormatter df = new DateFormatter();
-        gds = fmrc.getRunTimeDataset(df.getISODate((String)data.param));
+        CalendarDate date = CalendarDate.parseISOformat(null, (String) data.param);
+        gds = fmrc.getRunTimeDataset(date);
 
       } else if (data.type.equals("ConstantForecast")) {
-        DateFormatter df = new DateFormatter();
-        gds = fmrc.getConstantForecastDataset(df.getISODate((String)data.param));
+        CalendarDate date = CalendarDate.parseISOformat(null, (String) data.param);
+        gds = fmrc.getConstantForecastDataset(date);
 
       } else if (data.type.equals("ConstantOffset")) {
         gds = fmrc.getConstantOffsetDataset( (Double) data.param);
@@ -504,7 +487,7 @@ public class Fmrc2Panel extends JPanel {
     int runidx = 0;
     for (FmrInv.GridVariable run : ugrid.getRuns()) {
       for (GridDatasetInv.Grid inv : run.getInventory()) {
-        out.format(" %3d %s ", runidx, df.toDateTimeString(run.getRunDate()));
+        out.format(" %3d %s ", runidx, run.getRunDate());
         count += showActualInventory(inv, union, w2, out);
         out.format(" %s%n", inv.getLocation());
       }
@@ -579,12 +562,12 @@ public class Fmrc2Panel extends JPanel {
         ti = lite.makeBestDatasetInventory();
 
       } else if (ddata.type.equals("Run")) {
-        DateFormatter df = new DateFormatter();
-        ti = lite.makeRunTimeDatasetInventory(df.getISODate((String)ddata.param));
+        CalendarDate date = CalendarDate.parseISOformat(null, (String) ddata.param);
+        ti = lite.makeRunTimeDatasetInventory(date);
 
       } else if (ddata.type.equals("ConstantForecast")) {
-        DateFormatter df = new DateFormatter();
-        ti = lite.getConstantForecastDataset(df.getISODate((String)ddata.param));
+        CalendarDate date = CalendarDate.parseISOformat(null, (String) ddata.param);
+        ti = lite.getConstantForecastDataset(date);
 
       } else if (ddata.type.equals("ConstantOffset")) {
         ti = lite.getConstantOffsetDataset( (Double) ddata.param);
@@ -696,7 +679,7 @@ public class Fmrc2Panel extends JPanel {
       this.fmr = fmr;
     }
 
-    public Date getRunDate() throws IOException {
+    public CalendarDate getRunDate() throws IOException {
       return fmr.getRunDate();
     }
 

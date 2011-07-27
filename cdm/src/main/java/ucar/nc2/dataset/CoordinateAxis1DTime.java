@@ -33,8 +33,12 @@
 
 package ucar.nc2.dataset;
 
-import ucar.nc2.units.DateUnit;
-import ucar.nc2.units.DateFormatter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateFormatter;
+import ucar.nc2.time.CalendarDateRange;
+import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.units.TimeUnit;
 import ucar.nc2.Variable;
 import ucar.nc2.Dimension;
@@ -57,215 +61,77 @@ import ucar.nc2.units.DateRange;
  * @author caron
  */
 public class CoordinateAxis1DTime extends CoordinateAxis1D {
-  private Date[] timeDates;
-  private DateUnit dateUnit;
+
+  static private final Logger logger = LoggerFactory.getLogger(CoordinateAxis1DTime.class);
 
   static public CoordinateAxis1DTime factory(NetcdfDataset ncd, VariableDS org, Formatter errMessages) throws IOException {
-    if (org.getDataType() == DataType.CHAR) {
+    if (org.getDataType() == DataType.CHAR)
       return new CoordinateAxis1DTime(ncd, org, errMessages, org.getDimension(0).getName());
-    }
 
-    return new CoordinateAxis1DTime(ncd, org, errMessages);
+    else if (org.getDataType() == DataType.STRING)
+      return new CoordinateAxis1DTime(ncd, org, errMessages, org.getDimensionsString());
+
+    else
+      return new CoordinateAxis1DTime(ncd, org, errMessages);
   }
 
-  /**
-   * Constructor for CHAR variables, turn into String
-   *
-   * @param ncd         the containing dataset
-   * @param org         the underlying Variable
-   * @param errMessages put error messages here; may be null
-   * @param dims        list of dimensions
-   * @throws IOException              on read error
-   * @throws IllegalArgumentException if cant convert coordinate values to a Date
-   */
-  private CoordinateAxis1DTime(NetcdfDataset ncd, VariableDS org, Formatter errMessages, String dims) throws IOException {
-    // NetcdfDataset ds, Group group, String shortName,  DataType dataType, String dims, String units, String desc
-    super(ncd, org.getParentGroup(), org.getShortName(), DataType.STRING, dims, org.getUnitsString(), org.getDescription());
-    this.ncd = ncd;
-    this.orgName = org.orgName;
 
-    List<Attribute> atts = org.getAttributes();
-    for (Attribute att : atts) {
-      addAttribute(att);
-    }
-
-    //named = new ArrayList<NamedObject>(); // declared in CoordinateAxis1D superclass
-
-    int ncoords = (int) org.getSize();
-    int rank = org.getRank();
-    int strlen = org.getShape(rank - 1);
-    ncoords /= strlen;
-
-    timeDates = new Date[ncoords];
-
-    ArrayChar data = (ArrayChar) org.read();
-    ArrayChar.StringIterator ii = data.getStringIterator();
-    ArrayObject.D1 sdata = new ArrayObject.D1(String.class, ncoords);
-
-    for (int i = 0; i < ncoords; i++) {
-      String coordValue = ii.next();
-      Date d = DateUnit.getStandardOrISO(coordValue);
-      if (d == null) {
-        if (errMessages != null)
-          errMessages.format("DateUnit cannot parse String= %s\n",coordValue);
-        else
-          System.out.println("DateUnit cannot parse String= " + coordValue + "\n");
-
-        throw new IllegalArgumentException();
-      } else {
-        sdata.set(i, coordValue);
-        timeDates[i] = d;
-      }
-    }
-    setCachedData(sdata, true);
-  }
-
-  private CoordinateAxis1DTime(NetcdfDataset ncd, VariableDS org, Formatter errMessages) throws IOException {
-    super(ncd, org);
-
-    // named = new ArrayList<NamedObject>(); // declared in CoordinateAxis1D superclass
-
-    int ncoords = (int) org.getSize();
-    timeDates = new Date[ncoords];
-
-    // see if it has a valid udunits unit
-    DateUnit dateUnit = null;
-    String units = org.getUnitsString();
-    if (units != null) {
-      try {
-         dateUnit = new DateUnit(units);
-       } catch (Exception e) {
-        // not a date unit - ok to fall through
-      }
-    }
-
-    // has a valid date unit - read data
-    if (dateUnit != null) {
-      Array data = org.read();
-
-      int count = 0;
-      IndexIterator ii = data.getIndexIterator();
-      for (int i = 0; i < ncoords; i++) {
-        double val = ii.getDoubleNext();
-        if (Double.isNaN(val)) continue;
-        Date d = dateUnit.makeDate(val);
-        timeDates[count++] = d;
-      }
-
-      // if we encountered NaNs, shorten it up
-      if (count != ncoords) {
-        Dimension localDim = new Dimension(getShortName(), count, false);
-        setDimension(0, localDim);
-
-        // set the shortened values
-        Array shortData = Array.factory(data.getElementType(), new int[]{count});
-        Index ima = shortData.getIndex();
-        int count2 = 0;
-        ii = data.getIndexIterator();
-        for (int i = 0; i < ncoords; i++) {
-          double val = ii.getDoubleNext();
-          if (Double.isNaN(val)) continue;
-          shortData.setDouble(ima.set0(count2), val);
-          count2++;
-        }
-        // here we have to decouple from the original variable
-        cache = new Cache();
-        setCachedData(shortData, true);
-
-        // shorten up the timeDate array
-        Date[] keep = timeDates;
-        timeDates = new Date[count];
-        System.arraycopy(keep, 0, timeDates, 0, timeDates.length);
-      }
-
-      return;
-    } // has valid date unit
-
-    //  see if its a String, and if we can parse the values as an ISO date
-    if (org.getDataType() == DataType.STRING) {
-      ArrayObject data = (ArrayObject) org.read();
-      IndexIterator ii = data.getIndexIterator();
-      for (int i = 0; i < ncoords; i++) {
-        String coordValue = (String) ii.getObjectNext();
-        Date d = DateUnit.getStandardOrISO(coordValue);
-        if (d == null) {
-          if (errMessages != null)
-            errMessages.format("DateUnit cannot parse String= %s\n", coordValue);
-          else
-            System.out.println("DateUnit cannot parse String= " + coordValue + "\n");
-
-          throw new IllegalArgumentException();
-        } else {
-          timeDates[i] = d;
-        }
-      }
-      return;
-    }
-
-    // hack something in here so it doesnt fail
-    if (units != null) {
-      try {
-        // if in time unit, use CF convention "since 1-1-1 0:0:0"
-        dateUnit = new DateUnit(units+" since 0001-01-01 00:00:00");
-      } catch (Exception e) {
-        try {
-          if (errMessages != null)
-            errMessages.format("Time Coordinate must be udunits or ISO String: hack since 0001-01-01 00:00:00\n");
-          else
-            System.out.println("Time Coordinate must be udunits or ISO String: hack since 0001-01-01 00:00:00\n");
-          dateUnit = new DateUnit("secs since 0001-01-01 00:00:00");
-        } catch (Exception e1) {
-          // cant happpen
-        }
-      }
-    }
-
-    Array data = org.read();
-    IndexIterator ii = data.getIndexIterator();
-    for (int i = 0; i < ncoords; i++) {
-      double val = ii.getDoubleNext();
-      Date d = dateUnit.makeDate(val);
-      timeDates[i] = d;
-    }
-  }
-
-  private CoordinateAxis1DTime(NetcdfDataset ncd, CoordinateAxis1DTime org, Date[] timeDates) {
-    super(ncd, org);
-    this.timeDates = timeDates;
-    this.dateUnit = org.dateUnit;
-  }
+  ////////////////////////////////////////////////////////////////
+  private final ucar.nc2.time.Calendar calendar;
+  private List<CalendarDate> cdates = null;
 
   // for section and slice
   @Override
   protected Variable copy() {
-    return new CoordinateAxis1DTime(this.ncd, this, getTimeDates());
+    return new CoordinateAxis1DTime(this.ncd, this);
   }
+
+  // copy constructor
+  private CoordinateAxis1DTime(NetcdfDataset ncd, CoordinateAxis1DTime org) {
+    super(ncd, org);
+    this.calendar = org.calendar;
+    this.cdates = org.cdates;
+  }
+
+  @Override
+  public CoordinateAxis1D section(Range r) throws InvalidRangeException {
+    CoordinateAxis1D s = super.section(r);
+    List<CalendarDate> cdates = getCalendarDates();
+
+    List<CalendarDate> cdateSection = new ArrayList<CalendarDate>(cdates.size());
+    for (int i = r.first(), j = 0; i <= r.last(); i += r.stride(), ++j) {
+      cdateSection.add(cdates.get(i));
+    }
+    ((CoordinateAxis1DTime)s).cdates = cdateSection;
+    return s;
+  }
+
+   /**
+   * Get the the ith CalendarDate.
+   * @param idx index
+   * @return the ith CalendarDate
+   */
+   public CalendarDate getCalendarDate (int idx) {
+     List<CalendarDate> cdates = getCalendarDates();
+     return cdates.get(idx);
+   }
 
   /**
-   * Get the list of times as Dates.
-   *
-   * @return array of java.util.Date, or null.
+   * Get calendar date range
+   * @return calendar date range
    */
-  public java.util.Date[] getTimeDates() {
-    return timeDates;
-  }
-
-  public java.util.Date getTimeDate (int idx) {
-    return timeDates[idx];
-  }
-
-  public DateRange getDateRange() {
-    return new DateRange(timeDates[0], timeDates[timeDates.length - 1]);
+  public CalendarDateRange getCalendarDateRange() {
+    List<CalendarDate> cd = getCalendarDates();
+    int last = cd.size();
+    return (last > 0) ? CalendarDateRange.of(cd.get(0), cd.get(last-1)) : null;
   }
 
   @Override
   public List<NamedObject> getNames() {
-    DateFormatter formatter = new DateFormatter();
-    int n = (int) getSize();
-    List<NamedObject> names = new ArrayList<NamedObject>(n);
-    for (int i = 0; i < n; i++) {
-      names.add(new NamedAnything(formatter.toDateTimeString(getTimeDate(i)), "date/time"));
-    }
+    List<CalendarDate> cdates = getCalendarDates();
+    List<NamedObject> names = new ArrayList<NamedObject>(cdates.size());
+    for (CalendarDate cd : cdates)
+      names.add(new NamedAnything(CalendarDateFormatter.toDateTimeString(cd), "calendar date"));
     return names;
   }
 
@@ -296,12 +162,11 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
    * @return corresponding time index on the time coordinate axis
    * @throws UnsupportedOperationException is no time axis or isDate() false
    */
-  public int findTimeIndexFromDate(java.util.Date d) {
-    int n = timeDates.length;
-    long m = d.getTime();
+  public int findTimeIndexFromCalendarDate(CalendarDate d) {
+    List<CalendarDate> cdates = getCalendarDates();
     int index = 0;
-    while (index < n) {
-      if (m < timeDates[index].getTime())
+    while (index < cdates.size()) {
+      if (d.compareTo(cdates.get(index)) < 0)
         break;
       index++;
     }
@@ -309,28 +174,214 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
   }
 
   /**
-   * See if the given Date appears is a coordinate
+   * See if the given CalendarDate appears as a coordinate
    *
    * @param date test this
    * @return true if equals a coordinate
    */
-  public boolean hasTime(Date date) {
-    for (Date timeDate : timeDates) {
-      if (date.equals(timeDate))
+  public boolean hasCalendarDate(CalendarDate date) {
+    List<CalendarDate> cdates = getCalendarDates();
+    for (CalendarDate cd : cdates) {
+      if (date.equals(cd))
         return true;
     }
     return false;
   }
 
-  @Override
-  public CoordinateAxis1D section(Range r) throws InvalidRangeException {
-    CoordinateAxis1D s = super.section(r);
-    Date[] d = new Date[r.length()];
-    for (int i = r.first(), j = 0; i <= r.last(); i += r.stride(), ++j) {
-      d[j] = timeDates[i];
-    }
-    ((CoordinateAxis1DTime)s).timeDates = d;
-    return s;
+  public List<CalendarDate> getCalendarDates() {
+     return cdates;
   }
 
+  ////////////////////////////////////////////////////////////////////////
+
+  private ucar.nc2.time.Calendar getCalendarFromAttribute() {
+    Attribute cal = findAttribute("calendar");
+    String s = (cal == null) ? null : cal.getStringValue();
+    return ucar.nc2.time.Calendar.get(s);
+  }
+
+  /**
+   * Constructor for CHAR or STRING variables.
+   * Must be ISO dates.
+   *
+   * @param ncd         the containing dataset
+   * @param org         the underlying Variable
+   * @param errMessages put error messages here; may be null
+   * @param dims        list of dimensions
+   * @throws IOException              on read error
+   * @throws IllegalArgumentException if cant convert coordinate values to a Date
+   */
+  private CoordinateAxis1DTime(NetcdfDataset ncd, VariableDS org, Formatter errMessages, String dims) throws IOException {
+    super(ncd, org.getParentGroup(), org.getShortName(), DataType.STRING, dims, org.getUnitsString(), org.getDescription());
+    this.ncd = ncd;
+    this.orgName = org.orgName;
+
+    Attribute cal = findAttribute("calendar");
+    String calendarName = (cal == null) ? null : cal.getStringValue();
+    this.calendar = getCalendarFromAttribute();
+
+    if (org.getDataType() == DataType.CHAR)
+      cdates = makeTimesFromChar(calendarName, org, errMessages);
+    else
+      cdates = makeTimesFromStrings(calendarName, org, errMessages);
+
+    List<Attribute> atts = org.getAttributes();
+    for (Attribute att : atts) {
+      addAttribute(att);
+    }
+  }
+
+  private List<CalendarDate> makeTimesFromChar(String calendarName, VariableDS org, Formatter errMessages) throws IOException {
+    int ncoords = (int) org.getSize();
+    int rank = org.getRank();
+    int strlen = org.getShape(rank - 1);
+    ncoords /= strlen;
+
+    List<CalendarDate> result = new ArrayList<CalendarDate>(ncoords);
+
+    ArrayChar data = (ArrayChar) org.read();
+    ArrayChar.StringIterator ii = data.getStringIterator();
+    ArrayObject.D1 sdata = new ArrayObject.D1(String.class, ncoords);
+
+    for (int i = 0; i < ncoords; i++) {
+      String coordValue = ii.next();
+      CalendarDate cd = makeCalendarDateFromStringCoord(calendarName, coordValue, org, errMessages);
+      sdata.set(i, coordValue);
+      result.add( cd);
+    }
+    setCachedData(sdata, true);
+    return result;
+  }
+
+  private List<CalendarDate> makeTimesFromStrings(String calendarName, VariableDS org, Formatter errMessages) throws IOException {
+
+    int ncoords = (int) org.getSize();
+    List<CalendarDate> result = new ArrayList<CalendarDate>(ncoords);
+
+    ArrayObject data = (ArrayObject) org.read();
+    IndexIterator ii = data.getIndexIterator();
+    for (int i = 0; i < ncoords; i++) {
+      String coordValue = (String) ii.getObjectNext();
+      CalendarDate cd = makeCalendarDateFromStringCoord(calendarName, coordValue, org, errMessages);
+      result.add(cd);
+    }
+
+    return result;
+  }
+
+  private CalendarDate makeCalendarDateFromStringCoord(String calendarName, String coordValue, VariableDS org, Formatter errMessages) throws IOException {
+    CalendarDate cd = CalendarDate.parseISOformat(calendarName, coordValue);
+    if (cd == null) {
+      if (errMessages != null) {
+        errMessages.format("String time coordinate must be ISO formatted= %s\n", coordValue);
+        logger.info("Char time coordinate must be ISO formatted= {} file = {}", coordValue, org.getDatasetLocation());
+      }
+      throw new IllegalArgumentException();
+    }
+    return cd;
+  }
+
+
+  /**
+   * Constructor for numeric values - must have units
+   * @param ncd         the containing dataset
+   * @param org         the underlying Variable
+   * @param errMessages put error messages here; may be null
+   * @throws IOException on read error
+   */
+  private CoordinateAxis1DTime(NetcdfDataset ncd, VariableDS org, Formatter errMessages) throws IOException {
+    super(ncd, org);
+
+    Attribute cal = findAttribute("calendar");
+    String calName = (cal == null) ? null : cal.getStringValue();
+    CalendarDateUnit dateUnit = CalendarDateUnit.of(calName, getUnitsString()); // this will throw exception on failure
+    this.calendar = dateUnit.getCalendar();
+
+    // make the coordinates
+    int ncoords = (int) org.getSize();
+    List<CalendarDate> result = new ArrayList<CalendarDate>(ncoords);
+
+    Array data = org.read();
+
+    int count = 0;
+    IndexIterator ii = data.getIndexIterator();
+    for (int i = 0; i < ncoords; i++) {
+      double val = ii.getDoubleNext();
+      if (Double.isNaN(val)) continue;
+      result.add( dateUnit.makeCalendarDate(val));
+      count++;
+    }
+
+    // if we encountered NaNs, shorten it up
+    if (count != ncoords) {
+      Dimension localDim = new Dimension(getShortName(), count, false);
+      setDimension(0, localDim);
+
+      // set the shortened values
+      Array shortData = Array.factory(data.getElementType(), new int[]{count});
+      Index ima = shortData.getIndex();
+      int count2 = 0;
+      ii = data.getIndexIterator();
+      for (int i = 0; i < ncoords; i++) {
+        double val = ii.getDoubleNext();
+        if (Double.isNaN(val)) continue;
+        shortData.setDouble(ima.set0(count2), val);
+        count2++;
+      }
+
+      // here we have to decouple from the original variable
+      cache = new Cache();
+      setCachedData(shortData, true);
+    }
+
+    cdates =  result;
+  }
+
+  ///////////////////////////////////////////////////////
+
+  /**
+   * @deprecated use getCalendarDates() to correctly interpret calendars
+   */
+  public java.util.Date[] getTimeDates() {
+    List<CalendarDate> cdates = getCalendarDates();
+    Date[] timeDates = new Date[cdates.size()];
+    int index = 0;
+    for (CalendarDate cd : cdates)
+      timeDates[index++] = cd.toDate();
+    return timeDates;
+  }
+
+  /**
+    * @deprecated use getCalendarDate()
+    */
+   public java.util.Date getTimeDate (int idx) {
+     return getCalendarDate(idx).toDate();
+   }
+
+   /**
+   * @deprecated use getCalendarDateRange()
+   */
+  public DateRange getDateRange() {
+    CalendarDateRange cdr = getCalendarDateRange();
+    return cdr.toDateRange();
+  }
+
+  /**
+   * @deprecated use findTimeIndexFromCalendarDate
+   */
+  public int findTimeIndexFromDate(java.util.Date d) {
+    return findTimeIndexFromCalendarDate( CalendarDate.of(d));
+  }
+
+  /**
+   * @deprecated  use hasCalendarDate
+   */
+  public boolean hasTime(Date date) {
+    List<CalendarDate> cdates = getCalendarDates();
+    for (CalendarDate cd : cdates) {
+      if (date.equals(cd.toDate()))
+        return true;
+    }
+    return false;
+  }
 }

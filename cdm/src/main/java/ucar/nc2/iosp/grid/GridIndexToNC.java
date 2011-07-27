@@ -32,16 +32,12 @@
  */
 package ucar.nc2.iosp.grid;
 
-import ucar.grib.GribGridRecord;
 import ucar.nc2.*;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dt.fmr.FmrcCoordSys;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.util.CancelTask;
-import ucar.grib.grib2.Grib2GridTableLookup;
-import ucar.grib.grib1.Grib1GridTableLookup;
-import ucar.grid.*;
 
 import java.io.*;
 import java.util.*;
@@ -64,22 +60,6 @@ public class GridIndexToNC {
   private String indexFilename;
   private ucar.unidata.io.RandomAccessFile raf;
 
-  /**
-   * Make the level name
-   *
-   * @param gr     grid record
-   * @param lookup lookup table
-   * @return name for the level
-   */
-  static String makeLevelName(GridRecord gr, GridTableLookup lookup) {
-    // for grib2, we need to add the layer to disambiguate
-    if ( lookup instanceof Grib2GridTableLookup ) {
-      String vname = lookup.getLevelName(gr);
-      return lookup.isLayer(gr) ? vname + "_layer" : vname;
-    } else {
-      return lookup.getLevelName(gr);  // GEMPAK, GRIB1
-    }
-  }
 
   public GridIndexToNC(String filename) {
     this.indexFilename = filename;
@@ -115,7 +95,7 @@ public class GridIndexToNC {
         ncfile.addGroup(null, g);
       }
       // (GridDefRecord gdsIndex, String grid_name, String shape_name, Group g)
-      GridHorizCoordSys hcs = new GridHorizCoordSys(gds, lookup, g);
+      GridHorizCoordSys hcs = makeGridHorizCoordSys(gds, lookup, g);
       hcsHash.put(gds.getParam(GridDefRecord.GDS_KEY), hcs);
     }
 
@@ -133,7 +113,7 @@ public class GridIndexToNC {
       GridVariable pv = (GridVariable) hcs.varHash.get(cdmHash);
       if (null == pv) {
         String name = gridRecord.cdmVariableName(lookup, true, true);
-        pv = new GridVariable(indexFilename, name, hcs, lookup);
+        pv = makeGridVariable(indexFilename, name, hcs, lookup);
         hcs.varHash.put(cdmHash, pv);
 
         // keep track of all products with same parameter name == "simple name"
@@ -178,39 +158,7 @@ public class GridIndexToNC {
     // Conventions attribute change must be in sync with CDM code
     ncfile.addAttribute(null, new Attribute("Conventions", "CF-1.4"));
 
-    String center = null;
-    String subcenter = null;
-    if ( lookup instanceof Grib2GridTableLookup ) {
-      Grib2GridTableLookup g2lookup = (Grib2GridTableLookup) lookup;
-      GribGridRecord ggr = (GribGridRecord) firstRecord;
-      center = g2lookup.getFirstCenterName();
-      ncfile.addAttribute(null, new Attribute("Originating_center", center));
-      subcenter = g2lookup.getFirstSubcenterName();
-      if (subcenter != null)
-        ncfile.addAttribute(null, new Attribute("Originating_subcenter", subcenter));
-
-      String model = g2lookup.getModel();
-      if (model != null)
-        ncfile.addAttribute(null, new Attribute("Generating_Model", model));
-      if (null != g2lookup.getFirstProductStatusName())
-        ncfile.addAttribute(null, new Attribute("Product_Status", g2lookup.getFirstProductStatusName()));
-      ncfile.addAttribute(null, new Attribute("Product_Type", g2lookup.getFirstProductTypeName()));
-
-    } else if ( lookup instanceof Grib1GridTableLookup ) {
-      Grib1GridTableLookup g1lookup = (Grib1GridTableLookup) lookup;
-      center = g1lookup.getFirstCenterName();
-      subcenter = g1lookup.getFirstSubcenterName();
-      ncfile.addAttribute(null, new Attribute("Originating_center", center));
-      if (subcenter != null)
-      ncfile.addAttribute(null, new Attribute("Originating_subcenter", subcenter));
-
-      String model = g1lookup.getModel();
-      if (model != null)
-        ncfile.addAttribute(null, new Attribute("Generating_Model", model));
-      if (null != g1lookup.getFirstProductStatusName())
-        ncfile.addAttribute(null, new Attribute("Product_Status", g1lookup.getFirstProductStatusName()));
-      ncfile.addAttribute(null, new Attribute("Product_Type", g1lookup.getFirstProductTypeName()));
-    }
+    addExtraAttributes(firstRecord, lookup, ncfile);
 
     // CF Global attributes
     ncfile.addAttribute(null, new Attribute("title", lookup.getTitle()));
@@ -283,6 +231,30 @@ public class GridIndexToNC {
     //}
   }
 
+  protected void addExtraAttributes(GridRecord firstRecord, GridTableLookup lookup, NetcdfFile ncfile) {
+  }
+
+  protected GridEnsembleCoord addEnsembles(List<GridEnsembleCoord> ensembleCoords, List<GridRecord> recordList) {
+    return null;
+  }
+
+  protected GridHorizCoordSys makeGridHorizCoordSys(GridDefRecord gds, GridTableLookup lookup, Group g) {
+    return new GridHorizCoordSys(gds, lookup, g);
+  }
+
+  protected GridVariable makeGridVariable(String indexFilename, String name, GridHorizCoordSys hcs, GridTableLookup lookup) {
+    return new GridVariable(indexFilename, name, hcs, lookup);
+  }
+
+  protected GridTimeCoord makeGridTimeCoord(List<GridRecord> recordList, String location){
+    return new GridTimeCoord(recordList, location);
+  }
+
+  protected GridVertCoord makeGridVertCoord(List<GridRecord> recordList, String vname, GridTableLookup lookup, GridHorizCoordSys hcs) {
+    return new GridVertCoord(recordList, vname, lookup, hcs);
+  }
+
+
   // debugging
   public GridHorizCoordSys getHorizCoordSys(GridRecord gribRecord) {
     return hcsHash.get(gribRecord.getGridDefRecordId());
@@ -323,7 +295,7 @@ public class GridIndexToNC {
 
         List<GridRecord> recordList = gv.getRecords();
         GridRecord record = recordList.get(0);
-        String vname = makeLevelName(record, lookup);
+        String vname = gv.makeLevelName(record, lookup);
 
         // look to see if vertical already exists
         GridVertCoord useVertCoord = null;
@@ -335,7 +307,7 @@ public class GridIndexToNC {
           }
         }
         if (useVertCoord == null) {  // nope, got to create it
-          useVertCoord = new GridVertCoord(recordList, vname, lookup, hcs);
+          useVertCoord = makeGridVertCoord(recordList, vname, lookup, hcs);
           vertCoords.add(useVertCoord);
         }
         gv.setVertCoord(useVertCoord);
@@ -348,25 +320,15 @@ public class GridIndexToNC {
           }
         }
         if (useTimeCoord == null) {  // nope, got to create it
-          useTimeCoord = new GridTimeCoord(recordList, ncfile.getLocation());
+          useTimeCoord = makeGridTimeCoord(recordList, ncfile.getLocation());
           timeCoords.add(useTimeCoord);
         }
         gv.setTimeCoord(useTimeCoord);
 
         if (gv.isEnsemble()) {
-          GridEnsembleCoord useEnsembleCoord = null;
-          GridEnsembleCoord ensembleCoord = new GridEnsembleCoord(recordList);
-          for (GridEnsembleCoord gec : ensembleCoords) {
-            if (ensembleCoord.equals(gec)) {
-              useEnsembleCoord = gec;
-              break;
-            }
-          }
-          if (useEnsembleCoord == null) {
-            useEnsembleCoord = ensembleCoord;
-            ensembleCoords.add(ensembleCoord);
-          }
-          gv.setEnsembleCoord(useEnsembleCoord);
+          GridEnsembleCoord useEnsembleCoord = addEnsembles(ensembleCoords, recordList);
+          if (useEnsembleCoord != null)
+            gv.setEnsembleCoord(useEnsembleCoord);
         }
       }
 
@@ -703,7 +665,7 @@ public class GridIndexToNC {
         Group g = hcs.getGroup() == null ? ncfile.getRootGroup() : hcs.getGroup();
         Variable v = pv.makeVariable(ncfile, g, null); // name is already set
         if (g.findVariable( v.getShortName()) != null) { // already got. can happen when a new vert level is added
-          logger.warn("GribGridServiceProvider.GridIndexToNC: FmrcCoordSys has 2 variables mapped to ="+v.getShortName()+
+          logger.warn("GribServiceProvider.GridIndexToNC: FmrcCoordSys has 2 variables mapped to ="+v.getShortName()+
                   " for file "+ncfile.getLocation());
         } else
           g.addVariable( v);

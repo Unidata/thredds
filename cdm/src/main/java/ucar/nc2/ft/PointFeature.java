@@ -32,6 +32,7 @@
  */
 package ucar.nc2.ft;
 
+import ucar.nc2.time.CalendarDate;
 import ucar.nc2.units.DateUnit;
 import ucar.unidata.geoloc.EarthLocation;
 
@@ -60,8 +61,15 @@ public interface PointFeature {
   /**
    * Actual time of this observation, as a Date.
    * @return actual time of this observation, as a Date.
+   * @deprecated use getObservationTimeAsCalendarDate()
    */
   public Date getObservationTimeAsDate();
+
+  /**
+   * Actual time of this observation, as a Date.
+   * @return actual time of this observation, as a Date.
+   */
+  public CalendarDate getObservationTimeAsCalendarDate();
 
   /**
    * Nominal time of this observation.
@@ -74,8 +82,15 @@ public interface PointFeature {
   /**
    * Nominal time of this observation, as a Date.
    * @return Nominal time of this observation, as a Date.
+   * @deprecated use getNominalTimeAsCalendarDate()
    */
   public Date getNominalTimeAsDate();
+
+  /**
+   * Nominal time of this observation, as a Date.
+   * @return Nominal time of this observation, as a Date.
+   */
+  public CalendarDate getNominalTimeAsCalendarDate();
 
   /**
    * Get the time unit of the time coordinate.

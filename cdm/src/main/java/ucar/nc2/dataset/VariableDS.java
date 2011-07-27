@@ -206,6 +206,11 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
     }
   }
 
+  public String getDatasetLocation() {
+    if (ncfile != null) return ncfile.getLocation();
+    return "N/A";
+  }
+
   // for section and slice
   @Override
   protected Variable copy() {

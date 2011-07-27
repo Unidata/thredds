@@ -402,7 +402,7 @@ public class NCdumpW {
 
     if (array == null) {
       out.println("null array for " + name);
-      ilev.decr();      
+      ilev.decr();
       // throw new IllegalArgumentException("null array for " + name);
       return;
     }
@@ -415,7 +415,7 @@ public class NCdumpW {
         System.out.printf("HEY!%n");
       printStringArray(out, (ArrayObject) array, ilev, ct);
 
-    } else if (array instanceof ArraySequence)  {
+    } else if (array instanceof ArraySequence) {
       if (printSeq) printSequence(out, (ArraySequence) array, ilev, ct);
 
     } else if (array instanceof ArrayStructure) {
@@ -496,7 +496,8 @@ public class NCdumpW {
 
     if (rank == 2) {
       boolean first = true;
-      for (ArrayChar.StringIterator iter = ma.getStringIterator(); iter.hasNext();) {
+      ArrayChar.StringIterator iter = ma.getStringIterator();
+      while (iter.hasNext()) {
         if (!first) out.print(", ");
         out.print("\"" + iter.next() + "\"");
         first = false;
@@ -570,14 +571,18 @@ public class NCdumpW {
                                               ucar.nc2.util.CancelTask ct) throws IOException {
     StructureDataIterator sdataIter = array.getStructureDataIterator();
     int count = 0;
-    while (sdataIter.hasNext()) {
-      StructureData sdata = sdataIter.next();
-      out.println("\n" + indent + "{");
-      printStructureData(out, sdata, indent, ct);
-      //ilev.setIndentLevel(saveIndent);
-      out.print(indent + "} " + sdata.getName() + "(" + count + ")");
-      if (ct != null && ct.isCancel()) return;
-      count++;
+    try {
+      while (sdataIter.hasNext()) {
+        StructureData sdata = sdataIter.next();
+        out.println("\n" + indent + "{");
+        printStructureData(out, sdata, indent, ct);
+        //ilev.setIndentLevel(saveIndent);
+        out.print(indent + "} " + sdata.getName() + "(" + count + ")");
+        if (ct != null && ct.isCancel()) return;
+        count++;
+      }
+    } finally {
+      sdataIter.finish();
     }
   }
 
@@ -596,12 +601,16 @@ public class NCdumpW {
 
   static private void printSequence(PrintWriter out, ArraySequence seq, Indent indent, CancelTask ct) throws IOException {
     StructureDataIterator iter = seq.getStructureDataIterator();
-    while (iter.hasNext()) {
-      StructureData sdata = iter.next();
-      out.println("\n" + indent + "{");
-      printStructureData(out, sdata, indent, ct);
-      out.print(indent + "} " + sdata.getName());
-      if (ct != null && ct.isCancel()) return;
+    try {
+      while (iter.hasNext()) {
+        StructureData sdata = iter.next();
+        out.println("\n" + indent + "{");
+        printStructureData(out, sdata, indent, ct);
+        out.print(indent + "} " + sdata.getName());
+        if (ct != null && ct.isCancel()) return;
+      }
+    } finally {
+      iter.finish();
     }
   }
 
@@ -819,6 +828,7 @@ public class NCdumpW {
   }
 
   // LOOK anon dimensions
+
   static private void writeNcMLDimension(Variable v, Formatter out) {
     out.format(" shape='");
     java.util.List<Dimension> dims = v.getDimensions();
@@ -852,8 +862,6 @@ public class NCdumpW {
     out.format("' />\n");
   }
 
-  static private int totalWidth = 80;
-
   static private void writeNcMLValues(Variable v, Formatter out, Indent indent) throws IOException {
     Array data = v.read();
     int width = formatValues(indent + "<values>", out, 0, indent);
@@ -866,6 +874,7 @@ public class NCdumpW {
 
   static private int formatValues(String s, Formatter out, int width, Indent indent) {
     int len = s.length();
+    int totalWidth = 80;
     if (len + width > totalWidth) {
       out.format("%n%s", indent);
       width = indent.toString().length();
@@ -889,6 +898,7 @@ public class NCdumpW {
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////
+
   /**
    * Main program.
    * <p><strong>ucar.nc2.NCdump filename [-cdl | -ncml] [-c | -vall] [-v varName1;varName2;..] [-v varName(0:1,:,12)] </strong>

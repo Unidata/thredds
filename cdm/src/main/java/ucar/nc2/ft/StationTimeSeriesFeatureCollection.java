@@ -32,6 +32,7 @@
  */
 package ucar.nc2.ft;
 
+import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.Station;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.VariableSimpleIF;
@@ -112,15 +113,27 @@ public interface StationTimeSeriesFeatureCollection extends StationCollection, N
   public Station getStation(PointFeature feature) throws IOException;
 
   /**
-   * Flatten into a PointFeatureCollection, discarding connectedness information.
-   * 
-   * @param stations only contain these stations; if null or empty use all
-   * @param dateRange only points in this date range. may be null.
-   * @param varList only these member variables. may be null. currently ignored
-   * @return a PointFeatureCollection, may be null if its empty.
-   * @throws IOException on read error
-   */
-  public PointFeatureCollection flatten(List<String> stations, DateRange dateRange, List<VariableSimpleIF> varList) throws IOException;
+    * Flatten into a PointFeatureCollection, discarding connectedness information.
+    *
+    * @param stations only contain these stations; if null or empty use all
+    * @param dateRange only points in this date range. may be null.
+    * @param varList only these member variables. may be null. currently ignored
+    * @return a PointFeatureCollection, may be null if its empty.
+    * @throws IOException on read error
+    */
+   public PointFeatureCollection flatten(List<String> stations, CalendarDateRange dateRange, List<VariableSimpleIF> varList) throws IOException;
+
+  /**
+    * Flatten into a PointFeatureCollection, discarding connectedness information.
+    *
+    * @param stations only contain these stations; if null or empty use all
+    * @param dateRange only points in this date range. may be null.
+    * @param varList only these member variables. may be null. currently ignored
+    * @return a PointFeatureCollection, may be null if its empty.
+    * @throws IOException on read error
+   * @deprecated use  CalendarDateRange
+    */
+   public PointFeatureCollection flatten(List<String> stations, DateRange dateRange, List<VariableSimpleIF> varList) throws IOException;
 
 
 }

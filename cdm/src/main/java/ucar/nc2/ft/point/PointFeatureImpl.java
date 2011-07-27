@@ -33,6 +33,7 @@
 package ucar.nc2.ft.point;
 
 import ucar.nc2.ft.*;
+import ucar.nc2.time.CalendarDate;
 import ucar.nc2.units.DateUnit;
 import ucar.unidata.geoloc.EarthLocation;
 
@@ -81,7 +82,15 @@ public abstract class PointFeatureImpl implements PointFeature, Comparable<Point
   }
 
   public Date getNominalTimeAsDate() {
-    return timeUnit.makeDate( getNominalTime());
+    return timeUnit.makeDate(getNominalTime());
+  }
+
+  public CalendarDate getObservationTimeAsCalendarDate() {
+    return timeUnit.makeCalendarDate( getObservationTime());
+  }
+
+  public CalendarDate getNominalTimeAsCalendarDate() {
+    return timeUnit.makeCalendarDate( getNominalTime());
   }
 
   public DateUnit getTimeUnit() {

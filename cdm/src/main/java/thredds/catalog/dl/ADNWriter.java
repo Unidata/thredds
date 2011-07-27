@@ -35,10 +35,9 @@ package thredds.catalog.dl;
 
 import thredds.catalog.*;
 import thredds.catalog.crawl.CatalogCrawler;
-import ucar.nc2.units.DateType;
 import ucar.nc2.units.DateRange;
+import ucar.nc2.units.DateType;
 import ucar.nc2.units.TimeDuration;
-
 
 import org.jdom.*;
 import org.jdom.output.*;
@@ -47,8 +46,8 @@ import java.io.*;
 import java.util.*;
 import java.net.URI;
 
-import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.nc2.units.TimeUnit;
+import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.nc2.constants.FeatureType;
 import ucar.unidata.util.StringUtil;
 
@@ -225,8 +224,8 @@ public class ADNWriter {
     DateType today = new DateType(false, new Date());
     Element dateInfo = new Element("dateInfo", defNS);
     metaElem.addContent( dateInfo);
-    dateInfo.setAttribute("created", today.toDateString());
-    dateInfo.setAttribute("accessioned", today.toDateString());
+    dateInfo.setAttribute("created", today.toDateTimeStringISO());
+    dateInfo.setAttribute("accessioned", today.toDateTimeStringISO());
 
     Element status = new Element("statusOf", defNS);
     metaElem.addContent( status);
@@ -388,50 +387,43 @@ public class ADNWriter {
     Element ti = new Element("timeInfo", defNS);
     tc.addContent(tp.addContent(ti));
 
-    Element time;
+    Element time = null;
     DateType startDate = dateRange.getStart();
     DateType endDate = dateRange.getEnd();
     if (endDate.isPresent()) {
 
       String units = "Days ago";
       TimeDuration duration = dateRange.getDuration();
-      double value = -0.0;
+      double value = duration.getValue("days");
+      if (value > 0) {
+        time = new Element("timeRelative", defNS);
+        Element begin = new Element("begin", defNS);
+        begin.setAttribute("units", units);
+        begin.addContent(Double.toString(value));
+        time.addContent( begin);
 
-      try {
-        TimeUnit tdayUnit = new TimeUnit("days");
-        value = duration.getValue(tdayUnit);
-
-      } catch (Exception e) {
-        e.printStackTrace();
+        Element end = new Element("end", defNS);
+        end.setAttribute("units", units);
+        end.addContent("0");
+        time.addContent( end);
       }
-
-      time = new Element("timeRelative", defNS);
-      Element begin = new Element("begin", defNS);
-      begin.setAttribute("units", units);
-      begin.addContent(Double.toString(value));
-      time.addContent( begin);
-
-      Element end = new Element("end", defNS);
-      end.setAttribute("units", units);
-      end.addContent("0");
-      time.addContent( end);
 
     } else {
       // LOOK not tested
       time = new Element("timeAD", defNS);
       Element begin = new Element("begin", defNS);
-      begin.setAttribute("date", startDate.toDateString());
+      begin.setAttribute("date", startDate.toString());
       time.addContent( begin);
 
       Element end = new Element("end", defNS);
-      end.setAttribute("date", endDate.toDateString());
+      end.setAttribute("date", endDate.toString());
       time.addContent( end);
     }
 
-    ti.addContent(time);
+    if (time != null)
+      ti.addContent(time);
     return tc;
   }
-
 
   // test
   private static void doOne( InvCatalogFactory fac, String url) {
