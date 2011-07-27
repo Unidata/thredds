@@ -226,9 +226,17 @@ public class HdfEos {
       String sizeS = elem.getChild("Size").getText();
       int length = Integer.parseInt(sizeS);
       if (length > 0) {
-        Dimension dim = new Dimension(name, length);
-        parent.addDimension(dim);
-        if (showWork) System.out.printf(" Add dimension %s %n",dim);
+        Dimension dim = parent.findDimensionLocal(name);
+        if (dim != null) {                 // already added - may be dimension scale ?
+          if (dim.getLength() != length) { // ok as long as it matches
+            log.error("Conflicting Dimensions = {} "+dim);
+            throw new IllegalStateException("Conflicting Dimensions = "+name);
+          }
+        } else {
+          dim = new Dimension(name, length);
+          parent.addDimension(dim);
+          if (showWork) System.out.printf(" Add dimension %s %n",dim);
+        }
       } else {
         log.warn("Dimension "+name+" has size "+sizeS);
         Dimension udim = new Dimension(name, 1);

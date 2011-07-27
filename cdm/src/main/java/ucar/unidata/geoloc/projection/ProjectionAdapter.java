@@ -32,7 +32,6 @@
  */
 package ucar.unidata.geoloc.projection;
 
-import com.sun.javaws.progress.Progress;
 import ucar.unidata.geoloc.*;
 
 /**

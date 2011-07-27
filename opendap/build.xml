@@ -42,488 +42,488 @@
 -->
 
 <!DOCTYPE project [
-       
-        ]>
+
+    ]>
 
 <!-- Build file for OPeNDAP core software -->
 
 
 <project name="OPeNDAP Core Software" default="all" basedir=".">
 
-    <!-- Global Properties -->
-    <!-- ********************************************* -->
-    <!-- Project-wide settings. All directories are    -->
-    <!-- relative to the project "Basedir" directory,  -->
-    <!-- which is assumed (by this file) to be set to  -->
-    <!-- ".."                                          -->
-    <!-- - - - - - - - - - - - - - - - - - - - - - - - -->
+  <!-- Global Properties -->
+  <!-- ********************************************* -->
+  <!-- Project-wide settings. All directories are    -->
+  <!-- relative to the project "Basedir" directory,  -->
+  <!-- which is assumed (by this file) to be set to  -->
+  <!-- ".."                                          -->
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - -->
 
-    <property name="VERSION" value="2.2"/>
-    
-    <!-- Compiler Settings -->
-    <property name="compile.debug" value="on"/>
-    <property name="compile.debuglevel" value="lines,vars,source"/>
-    <property name="compile.deprecation" value="on"/>
-    <property name="modern.compiler" value="modern"/>
-    <property name="classic.compiler" value="classic"/>
-    
-    <!--  build.compiler: This is a "magic" property.
-          the javac task, if the "compiler" property is not
-         explicitly set, then javac will use the value of this
-         property ("build.compiler") to set the compiler type.
-         See the online ANT Users Manual.
-         Read the section the compiler attribute of the javac task.
-         http://ant.apache.org/manual/index.html
-    -->
-    <property name="build.compiler" value="${modern.compiler}"/>
-    
-    
-    <!-- build.sysclasspath
-         This is a "magic" property. The value of the build.sysclasspath
-         property controls how the system classpath, ie. the classpath in
-         effect when Ant is run, affects the behaviour of classpaths in
-         Ant. The default behavior varies from Ant to Ant task.
-         
-         The values and their meanings are:
-         only -   Only the system classpath is used and classpaths
-         specified in build files, etc are ignored. This
-         situation could be considered as the person running
-         the build file knows more about the environment
-         than the person writing the build file
-         ignore - The system classpath is ignored. This situation is
-         the reverse of the above. The person running the
-         build trusts the build file writer to get the build
-         file right
-         last -   The classpath is concatenated to any specified
-         classpaths at the end. This is a compromise, where
-         the build file writer has priority.
-         first -  Any specified classpaths are concatenated to the
-         system classpath. This is the other form of compromise
-         where the build runner has priority.
-         
-         Excerpted from the online ANT users Manual
-         http://ant.apache.org/manual/sysclasspath.html
-         -->
-         <property name="build.sysclasspath" value="ignore"/>
+  <property name="VERSION" value="2.2"/>
+
+  <!-- Compiler Settings -->
+  <property name="compile.debug" value="on"/>
+  <property name="compile.debuglevel" value="lines,vars,source"/>
+  <property name="compile.deprecation" value="on"/>
+  <property name="modern.compiler" value="modern"/>
+  <property name="classic.compiler" value="classic"/>
+
+  <!--  build.compiler: This is a "magic" property.
+        the javac task, if the "compiler" property is not
+       explicitly set, then javac will use the value of this
+       property ("build.compiler") to set the compiler type.
+       See the online ANT Users Manual.
+       Read the section the compiler attribute of the javac task.
+       http://ant.apache.org/manual/index.html
+  -->
+  <property name="build.compiler" value="${modern.compiler}"/>
 
 
-    <!-- Project directories -->
-    <property name="src.dir"          location="src"/>
-        <property name="src.main.dir" location="src/main"/>
-        <property name="src.java.dir" location="${src.main.dir}/java"/>
-        <property name="src.test.dir" location="src/test"/>
-        <property name="src.test.java.dir" location="${src.test.dir}/java"/>
+  <!-- build.sysclasspath
+  This is a "magic" property. The value of the build.sysclasspath
+  property controls how the system classpath, ie. the classpath in
+  effect when Ant is run, affects the behaviour of classpaths in
+  Ant. The default behavior varies from Ant to Ant task.
 
-    <property name="test.dir"         location="${src.test.dir}"/>
-    <property name="doc.dir"          location="doc"/>
-    <property name="lib.dir"          location="lib"/>
-    <!--property name="bin.dir"          location="bin"/ -->
-    <!--property name="dist.dir"         location="dist"/ -->
-    <property name="resources.dir"    location="${src.main.dir}/resources"/>
-    <property name="schema.dir"       location="schema"/>
-    <property name="testsuites.dir"   location="${src.test.dir}/testsuites"/>
-    <property name="buildfiles.dir"   location="target"/>
+  The values and their meanings are:
+  only -   Only the system classpath is used and classpaths
+  specified in build files, etc are ignored. This
+  situation could be considered as the person running
+  the build file knows more about the environment
+  than the person writing the build file
+  ignore - The system classpath is ignored. This situation is
+  the reverse of the above. The person running the
+  build trusts the build file writer to get the build
+  file right
+  last -   The classpath is concatenated to any specified
+  classpaths at the end. This is a compromise, where
+  the build file writer has priority.
+  first -  Any specified classpaths are concatenated to the
+  system classpath. This is the other form of compromise
+  where the build runner has priority.
 
-    <!-- Build Directories -->
-    <property name="build.dir"        location="target"/>
-    <property name="build.classes"    location="${build.dir}/classes"/>
-    <property name="build.doc"        location="${build.dir}/doc"/>
-    <property name="build.lib"        location="${build.dir}/lib"/>
-
-    <property name="war.dir"          location="${build.dir}/dts"/>
-    <property name="webapp.dir"       location="src/test/resources"/>
-    <property name="warfile" value="dts-${VERSION}.war"/>
-
-
-    <!-- Where to put test case output -->
-    <property name="results.dir"        location="${build.dir}/results"/>
-
-    <!-- Target jar file -->
-    <property name="opendap.jar" value="opendap-${VERSION}.jar"/>
-
-    <!-- Libraries
-       - This section creates properties (aliases) for the names of all the
-       - libraries. This simplifies the process of updating software
-       - dependancies - always use the property name elswhere in the build
-       - file and you only ever have to change this instance of the actual
-       - jar file name.
-       - 
-       - Libraries are taken from three places:
-       - release.libs.dir	= ${root}/lib/release
-       - external.libs.dir	= ${root}/lib/external
-       - dap.external.libs.dir	= ${root}/opendap/lib
-       - [Note: external and dap external should be merged]
-       - Add new properties for each new library that you add to the project.
-      -->
-
-    <!-- Release libs -->
-    <property  name="release.libs.dir" location="../lib/release"/>
-      <property name="cdm.lib"		value="netcdf-4.2.jar"/>
-
-    <!-- External libs -->
-    
-    <property  name="external.libs.dir" location="../lib/external"/>
-      <property name="servlet.lib"	value="servlet-api.jar"/>
-      <property name="httpclient.lib"	value="commons-httpclient-3.1.jar"/>
-      <property name="codec.lib"	value="commons-codec-1.3.jar"/>
-      <property name="logging.lib"	value="commons-logging-1.1.jar"/>
-
-    <!-- DAP.External libs -->
-    <property  name="dap.external.libs.dir" location="lib"/>
-      <!--property name="servlet.lib"	 value="tomcat-5.5.20_servlet-api.jar"-->
-      <property name="jdom.lib"          value="jdom-1.0.jar"/>
-      <property name="xercesImpl.lib"    value="xercesImpl-2.9.0.jar"/>
-      <property name="xercesXmlApis.lib" value="xml-apis-2.9.0.jar"/>
-      <property name="unitTest.lib"	 value="junit-4.6.jar"/>
+  Excerpted from the online ANT users Manual
+  http://ant.apache.org/manual/sysclasspath.html
+  -->
+  <property name="build.sysclasspath" value="ignore"/>
 
 
-    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-      - Predefined paths and filesets
-      -->
+  <!-- Project directories -->
+  <property name="src.dir" location="src"/>
+  <property name="src.main.dir" location="src/main"/>
+  <property name="src.java.dir" location="${src.main.dir}/java"/>
+  <property name="src.test.dir" location="src/test"/>
+  <property name="src.test.java.dir" location="${src.test.dir}/java"/>
 
-    <fileset dir="${release.libs.dir}" id="libs.release">
-	<include name="${cdm.lib}"/>
-    </fileset>
+  <property name="test.dir" location="${src.test.dir}"/>
+  <property name="doc.dir" location="doc"/>
+  <property name="lib.dir" location="lib"/>
+  <!--property name="bin.dir"          location="bin"/ -->
+  <!--property name="dist.dir"         location="dist"/ -->
+  <property name="resources.dir" location="${src.main.dir}/resources"/>
+  <property name="schema.dir" location="schema"/>
+  <property name="testsuites.dir" location="${src.test.dir}/testsuites"/>
+  <property name="buildfiles.dir" location="target"/>
 
-    <fileset dir="${external.libs.dir}" id="libs.external">
-      <include name="${servlet.lib}"/>
-      <include name="${httpclient.lib}"/>
-      <include name="${codec.lib}"/>
-      <include name="${logging.lib}"/>
-    </fileset>
+  <!-- Build Directories -->
+  <property name="build.dir" location="target"/>
+  <property name="build.classes" location="${build.dir}/classes"/>
+  <property name="build.doc" location="${build.dir}/doc"/>
+  <property name="build.lib" location="${build.dir}/lib"/>
 
-    <fileset dir="${dap.external.libs.dir}" id="libs.dap.external">
-      <include name="${jdom.lib}"/>
-      <include name="${jdom.lib}"/>
-      <include name="${xercesImpl.lib}"/>
-      <include name="${xercesXmlApis.lib}"/>
-      <include name="${unitTest.lib}"/>
-    </fileset>
+  <property name="war.dir" location="${build.dir}/dts"/>
+  <property name="webapp.dir" location="src/test/resources"/>
+  <property name="warfile" value="dts-${VERSION}.war"/>
 
-    <!-- CLASSPATH dependancies for DAP -->
-    <path id="dap.compile.classpath">
-        <pathelement path="${build.classes}"/>
-        <fileset refid="libs.release"/>
-        <fileset refid="libs.external"/>
-        <fileset refid="libs.dap.external"/>
-    </path>
 
-    <!-- CLASSPATH dependancies for DAP Server -->
-    <path id="servers.compile.classpath">
-        <path refid="dap.compile.classpath"/>
-    </path>
+  <!-- Where to put test case output -->
+  <property name="results.dir" location="${build.dir}/results"/>
 
-    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-      - Basic Targets
-      -->
+  <!-- Target jar file -->
+  <property name="opendap.jar" value="opendap-${VERSION}.jar"/>
 
-    <target name="all" description="Clean,compile,install the core OPeNDAP software."
-            depends="clean,compile,thredds"/>
+  <!-- Libraries
+   - This section creates properties (aliases) for the names of all the
+   - libraries. This simplifies the process of updating software
+   - dependancies - always use the property name elswhere in the build
+   - file and you only ever have to change this instance of the actual
+   - jar file name.
+   -
+   - Libraries are taken from three places:
+   - release.libs.dir	= ${root}/lib/release
+   - external.libs.dir	= ${root}/lib/external
+   - dap.external.libs.dir	= ${root}/opendap/lib
+   - [Note: external and dap external should be merged]
+   - Add new properties for each new library that you add to the project.
+  -->
 
-    <!-- Target "clean" cleans up ALL build products -->
-    <target name="clean" description="Clean up ALL build products.">
-        <delete dir="${build.dir}"/>
-    </target>
+  <!-- Release libs -->
+  <property name="release.libs.dir" location="../lib/release"/>
+  <property name="cdm.lib" value="netcdf-4.3.jar"/>
 
-    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-      - Misc Targets
-      -->
+  <!-- External libs -->
 
-    <target name="tds" description="target thredds alias" depends="thredds"/>
+  <property name="external.libs.dir" location="../lib/external"/>
+  <property name="servlet.lib" value="servlet-api.jar"/>
+  <property name="httpclient.lib" value="commons-httpclient-3.1.jar"/>
+  <property name="codec.lib" value="commons-codec-1.3.jar"/>
+  <property name="logging.lib" value="commons-logging-1.1.jar"/>
 
-    <target name="thredds" description="make and release thredds jar"
-	depends="opendap-lib">
-        <copy file="${build.lib}/${opendap.jar}" todir="../lib/release/" />
-    </target>
+  <!-- DAP.External libs -->
+  <property name="dap.external.libs.dir" location="lib"/>
+  <!--property name="servlet.lib"	 value="tomcat-5.5.20_servlet-api.jar"-->
+  <property name="jdom.lib" value="jdom-1.0.jar"/>
+  <property name="xercesImpl.lib" value="xercesImpl-2.9.0.jar"/>
+  <property name="xercesXmlApis.lib" value="xml-apis-2.9.0.jar"/>
+  <property name="unitTest.lib" value="junit-4.6.jar"/>
 
-    <!--
-      - Target "init" prepares (creates if neccessary)
-      - the build dircteory tree.
-      -->
-    <target name="init" description="Prepare all build directories.">
-        <mkdir dir="${build.dir}"/>
-        <mkdir dir="${build.lib}"/>
-        <mkdir dir="${build.classes}"/>
-        <mkdir dir="${build.doc}"/>
-        <mkdir dir="${war.dir}"/>
-        <mkdir dir="${results.dir}"/>
-        <tstamp/>
-        <echo level="info" message="time: ${TSTAMP}"/>
-    </target>
 
-    <!--
-      - Target "cdm" compiles cdm
-      -->
-    <target name="cdm">
-	<ant target="thredds" dir="../cdm" inheritAll="false" />
-    </target>
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  - Predefined paths and filesets
+  -->
 
-    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-      -
-      - Compilation Targets
-      -
-      -->
+  <fileset dir="${release.libs.dir}" id="libs.release">
+    <include name="${cdm.lib}"/>
+  </fileset>
 
-    <target name="compile" description="Compiles the core software required by OPeNDAP clients."
-            depends="init"
-            >
-        <echo level="info" message="target: compile"/>
-        <echo level="info" message="AntFile: ${ant.file} Compiling DAP"/>
-        <echo level="info" message="Using the ${build.compiler} javac compiler"/>
-        <echo>${user.dir}</echo>
-        <echo level="info" message=""/>
-        <javac compiler="${build.compiler}"
-               destdir="${build.classes}"
-               debug="${compile.debug}"
-               debuglevel="${compile.debuglevel}"
-               deprecation="${compile.deprecation}"
-               includeAntRuntime="false" source="1.5" target="1.5">
-            <classpath refid="dap.compile.classpath"/>
-            <src path="${src.java.dir}"/>
-            <include name="opendap/dap/**/*.java"/>
-            <include name="opendap/Server/**/*.java"/>
-            <include name="opendap/servlet/**/*.java"/>
-            <include name="opendap/tools/**/*.java"/>
-            <include name="opendap/util/**/*.java"/>
-            <include name="opendap/Version.java"/>
-            <exclude name="opendap/dap/parser/ignore/*.java"/>
-        </javac>
-    </target>
+  <fileset dir="${external.libs.dir}" id="libs.external">
+    <include name="${servlet.lib}"/>
+    <include name="${httpclient.lib}"/>
+    <include name="${codec.lib}"/>
+    <include name="${logging.lib}"/>
+  </fileset>
 
-    <target name="dts" description="Compiles the dts test server"
-            depends="compile"
-            >
-        <echo level="info" message="AntFile: ${ant.file} Compiling dts"/>
-        <echo level="info" message="Using the ${build.compiler} javac compiler"/>
-        <echo level="info" message=""/>
-        <javac compiler="${build.compiler}"
-               destdir="${build.classes}"
-               debug="${compile.debug}"
-               debuglevel="${compile.debuglevel}"
-               deprecation="${compile.deprecation}"
-               includeAntRuntime="false" source="1.5" target="1.5">
-            <classpath refid="servers.compile.classpath"/>
-            <src path="${src.java.dir}"/>
-            <include name="opendap/servers/test/dts/**/*.java"/>
-            <!-- ?include name="opendap/servers/sql/**/*.java" -->
-        </javac>
-    </target>
+  <fileset dir="${dap.external.libs.dir}" id="libs.dap.external">
+    <include name="${jdom.lib}"/>
+    <include name="${jdom.lib}"/>
+    <include name="${xercesImpl.lib}"/>
+    <include name="${xercesXmlApis.lib}"/>
+    <include name="${unitTest.lib}"/>
+  </fileset>
 
-    <target name="testcases" description="Compiles the test programs in ${src.java.dir}"
-            depends="compile"
-            >
-        <echo level="info" message="AntFile: ${ant.file} Compiling Test Cases"/>
-        <echo level="info" message="Using the ${build.compiler} javac compiler"/>
-        <echo level="info" message=""/>
-        <javac compiler="${build.compiler}"
-               destdir="${build.classes}"
-               debug="${compile.debug}"
-               debuglevel="${compile.debuglevel}"
-               deprecation="${compile.deprecation}"
-               includeAntRuntime="false" source="1.5" target="1.5">
-            <!--classpath refid="servers.compile.classpath"/-->
-            <classpath refid="dap.compile.classpath"/>
-            <src path="${src.test.java.dir}"/>
-            <include name="opendap/test/*.java"/>
-            <exclude name="opendap/test/dts/*.java"/>
-        </javac>
-    </target>
+  <!-- CLASSPATH dependancies for DAP -->
+  <path id="dap.compile.classpath">
+    <pathelement path="${build.classes}"/>
+    <fileset refid="libs.release"/>
+    <fileset refid="libs.external"/>
+    <fileset refid="libs.dap.external"/>
+  </path>
 
-    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-      -
-      - OPeNDAP dts War file
-      -
-      -->
+  <!-- CLASSPATH dependancies for DAP Server -->
+  <path id="servers.compile.classpath">
+    <path refid="dap.compile.classpath"/>
+  </path>
 
-<!--	    depends="opendap-lib" -->
-    <target name="war"
-	    description="create a war file from the distribution directory">
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  - Basic Targets
+  -->
 
-        <!-- copy classes to war classes directory. -->
-        <mkdir dir="${war.dir}/WEB-INF/classes"/>
-        <copy todir="${war.dir}/WEB-INF/classes"
-              preservelastmodified="true"
-              overwrite="true">
-          <fileset dir="${build.classes}"/>
-        </copy>
+  <target name="all" description="Clean,compile,install the core OPeNDAP software."
+          depends="clean,compile,thredds"/>
 
-        <!-- copy libraries to war lib directory. -->
-        <mkdir dir="${war.dir}/WEB-INF/lib"/>
-        <copy todir="${war.dir}/WEB-INF/lib"
-              flatten="true"
-              overwrite="true"
-              preservelastmodified="true">
-          <fileset refid="libs.external"/>
-        </copy>
+  <!-- Target "clean" cleans up ALL build products -->
+  <target name="clean" description="Clean up ALL build products.">
+    <delete dir="${build.dir}"/>
+  </target>
 
-        <!-- Copy webapps dir  -->
-        <copy todir="${war.dir}"
-              overwrite="true"
-              preservelastmodified="true">
-          <fileset dir="${webapp.dir}" />
-        </copy>
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  - Misc Targets
+  -->
 
-        <jar destfile="${build.dir}/${warfile}">
-            <fileset dir="${war.dir}"/>
-            <manifest>
-	        <attribute name="Built-By" value="${user.name}"/>
-	        <attribute name="Built-On" value="${build.time}"/>
-	        <attribute name="Implementation-Title" value="DTS OPenDAP Test Server"/>
-	        <attribute name="Implementation-Version" value="${VERSION}"/>
-	        <attribute name="Implementation-Vendor" value="UCAR/Unidata"/>
-            </manifest>
-        </jar>
+  <target name="tds" description="target thredds alias" depends="thredds"/>
 
-    </target>
+  <target name="thredds" description="make and release thredds jar"
+          depends="opendap-lib">
+    <copy file="${build.lib}/${opendap.jar}" todir="../lib/release/"/>
+  </target>
 
-    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-      -
-      - Documentation Targets
-      -
-      -->
-    <target name="doc" description="Builds JavaDoc for the core OPeNDAP
+  <!--
+  - Target "init" prepares (creates if neccessary)
+  - the build dircteory tree.
+  -->
+  <target name="init" description="Prepare all build directories.">
+    <mkdir dir="${build.dir}"/>
+    <mkdir dir="${build.lib}"/>
+    <mkdir dir="${build.classes}"/>
+    <mkdir dir="${build.doc}"/>
+    <mkdir dir="${war.dir}"/>
+    <mkdir dir="${results.dir}"/>
+    <tstamp/>
+    <echo level="info" message="time: ${TSTAMP}"/>
+  </target>
+
+  <!--
+  - Target "cdm" compiles cdm
+  -->
+  <target name="cdm">
+    <ant target="thredds" dir="../cdm" inheritAll="false"/>
+  </target>
+
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  -
+  - Compilation Targets
+  -
+  -->
+
+  <target name="compile" description="Compiles the core software required by OPeNDAP clients."
+          depends="init"
+      >
+    <echo level="info" message="target: compile"/>
+    <echo level="info" message="AntFile: ${ant.file} Compiling DAP"/>
+    <echo level="info" message="Using the ${build.compiler} javac compiler"/>
+    <echo>${user.dir}</echo>
+    <echo level="info" message=""/>
+    <javac compiler="${build.compiler}"
+           destdir="${build.classes}"
+           debug="${compile.debug}"
+           debuglevel="${compile.debuglevel}"
+           deprecation="${compile.deprecation}"
+           includeAntRuntime="false" source="1.5" target="1.5">
+      <classpath refid="dap.compile.classpath"/>
+      <src path="${src.java.dir}"/>
+      <include name="opendap/dap/**/*.java"/>
+      <include name="opendap/Server/**/*.java"/>
+      <include name="opendap/servlet/**/*.java"/>
+      <include name="opendap/tools/**/*.java"/>
+      <include name="opendap/util/**/*.java"/>
+      <include name="opendap/Version.java"/>
+      <exclude name="opendap/dap/parser/ignore/*.java"/>
+    </javac>
+  </target>
+
+  <target name="dts" description="Compiles the dts test server"
+          depends="compile"
+      >
+    <echo level="info" message="AntFile: ${ant.file} Compiling dts"/>
+    <echo level="info" message="Using the ${build.compiler} javac compiler"/>
+    <echo level="info" message=""/>
+    <javac compiler="${build.compiler}"
+           destdir="${build.classes}"
+           debug="${compile.debug}"
+           debuglevel="${compile.debuglevel}"
+           deprecation="${compile.deprecation}"
+           includeAntRuntime="false" source="1.5" target="1.5">
+      <classpath refid="servers.compile.classpath"/>
+      <src path="${src.java.dir}"/>
+      <include name="opendap/servers/test/dts/**/*.java"/>
+      <!-- ?include name="opendap/servers/sql/**/*.java" -->
+    </javac>
+  </target>
+
+  <target name="testcases" description="Compiles the test programs in ${src.java.dir}"
+          depends="compile"
+      >
+    <echo level="info" message="AntFile: ${ant.file} Compiling Test Cases"/>
+    <echo level="info" message="Using the ${build.compiler} javac compiler"/>
+    <echo level="info" message=""/>
+    <javac compiler="${build.compiler}"
+           destdir="${build.classes}"
+           debug="${compile.debug}"
+           debuglevel="${compile.debuglevel}"
+           deprecation="${compile.deprecation}"
+           includeAntRuntime="false" source="1.5" target="1.5">
+      <!--classpath refid="servers.compile.classpath"/-->
+      <classpath refid="dap.compile.classpath"/>
+      <src path="${src.test.java.dir}"/>
+      <include name="opendap/test/*.java"/>
+      <exclude name="opendap/test/dts/*.java"/>
+    </javac>
+  </target>
+
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  -
+  - OPeNDAP dts War file
+  -
+  -->
+
+  <!--	    depends="opendap-lib" -->
+  <target name="war"
+          description="create a war file from the distribution directory">
+
+    <!-- copy classes to war classes directory. -->
+    <mkdir dir="${war.dir}/WEB-INF/classes"/>
+    <copy todir="${war.dir}/WEB-INF/classes"
+          preservelastmodified="true"
+          overwrite="true">
+      <fileset dir="${build.classes}"/>
+    </copy>
+
+    <!-- copy libraries to war lib directory. -->
+    <mkdir dir="${war.dir}/WEB-INF/lib"/>
+    <copy todir="${war.dir}/WEB-INF/lib"
+          flatten="true"
+          overwrite="true"
+          preservelastmodified="true">
+      <fileset refid="libs.external"/>
+    </copy>
+
+    <!-- Copy webapps dir  -->
+    <copy todir="${war.dir}"
+          overwrite="true"
+          preservelastmodified="true">
+      <fileset dir="${webapp.dir}"/>
+    </copy>
+
+    <jar destfile="${build.dir}/${warfile}">
+      <fileset dir="${war.dir}"/>
+      <manifest>
+        <attribute name="Built-By" value="${user.name}"/>
+        <attribute name="Built-On" value="${build.time}"/>
+        <attribute name="Implementation-Title" value="DTS OPenDAP Test Server"/>
+        <attribute name="Implementation-Version" value="${VERSION}"/>
+        <attribute name="Implementation-Vendor" value="UCAR/Unidata"/>
+      </manifest>
+    </jar>
+
+  </target>
+
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  -
+  - Documentation Targets
+  -
+  -->
+  <target name="doc" description="Builds JavaDoc for the core OPeNDAP
                          software packages, if missing or out of date."
-            depends="init,IsJavaDocUpToDate"
-            unless="JavaDocIsUpToDate"
-            >
+          depends="init,IsJavaDocUpToDate"
+          unless="JavaDocIsUpToDate"
+      >
 
-        <javadoc destdir="${build.doc}/javadoc"
-                 Author="true"
-                 Version="true"
-                 Use="true"
-                 Verbose="false"
-                 failonerror="true">
+    <javadoc destdir="${build.doc}/javadoc"
+             Author="true"
+             Version="true"
+             Use="true"
+             Verbose="false"
+             failonerror="true">
 
-            <tag name="opendap.ddx.experimental"
-                 scope="all"
-                 description="&lt;p&gt;This class/method is associated with pre-release version of the DDX API. It is experimental and is subject to (significant) change. &lt;/p&gt;" />
-            <classpath refid="servers.compile.classpath"/>
-            <fileset dir="${src.java.dir}/opendap">
-                <include name="**/*.java"/>
-            </fileset>
-        </javadoc>
+      <tag name="opendap.ddx.experimental"
+           scope="all"
+           description="&lt;p&gt;This class/method is associated with pre-release version of the DDX API. It is experimental and is subject to (significant) change. &lt;/p&gt;"/>
+      <classpath refid="servers.compile.classpath"/>
+      <fileset dir="${src.java.dir}/opendap">
+        <include name="**/*.java"/>
+      </fileset>
+    </javadoc>
 
-        <copy todir="${build.doc}">
-            <fileset dir="${doc.dir}">
-                <exclude name="src.distribution.readme"/>
-                <exclude name="servlet-index.html"/>
-            </fileset>
-        </copy>
-    </target>
+    <copy todir="${build.doc}">
+      <fileset dir="${doc.dir}">
+        <exclude name="src.distribution.readme"/>
+        <exclude name="servlet-index.html"/>
+      </fileset>
+    </copy>
+  </target>
 
-    <target name="IsJavaDocUpToDate" description="Checks to see if the JavaDoc is out of date."
-            >
-        <uptodate property="JavaDocIsUpToDate" targetfile="${build.doc}/javadoc/index.html">
-            <srcfiles dir="${src.java.dir}">
-                        <include name="opendap/Version.java"/>
-                <include name="opendap/dap/**/*.java"/>
-                <include name="opendap/Server/**/*.java"/>
-                <include name="opendap/util/**/*.java"/>
-                <include name="opendap/servlet/**/*.java"/>
-                <include name="opendap/test/**/*.java"/>
-            </srcfiles>
-        </uptodate>
+  <target name="IsJavaDocUpToDate" description="Checks to see if the JavaDoc is out of date."
+      >
+    <uptodate property="JavaDocIsUpToDate" targetfile="${build.doc}/javadoc/index.html">
+      <srcfiles dir="${src.java.dir}">
+        <include name="opendap/Version.java"/>
+        <include name="opendap/dap/**/*.java"/>
+        <include name="opendap/Server/**/*.java"/>
+        <include name="opendap/util/**/*.java"/>
+        <include name="opendap/servlet/**/*.java"/>
+        <include name="opendap/test/**/*.java"/>
+      </srcfiles>
+    </uptodate>
 
-    </target>
+  </target>
 
-    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-      -
-      - OPeNDAP Library Targets
-      -
-      -->
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  -
+  - OPeNDAP Library Targets
+  -
+  -->
 
-    <target name="lib-dist"
-        depends="opendap-lib">
-        <jar destfile="${build.dist}/${opendap.jar}">
-            <zipfileset dir="${build.lib}" prefix="opendap-${VERSION}-lib"/>
-            <zipfileset dir="${lib.dir}" prefix="opendap-${VERSION}-lib">
-                <include name="${jdom.lib}"/>
-                <include name="${httpclient.lib}"/>
-                <include name="${xercesImpl.lib}"/>
-                <include name="${xercesXmlApis.lib}"/>
-            </zipfileset>
-        </jar>
+  <target name="lib-dist"
+          depends="opendap-lib">
+    <jar destfile="${build.dist}/${opendap.jar}">
+      <zipfileset dir="${build.lib}" prefix="opendap-${VERSION}-lib"/>
+      <zipfileset dir="${lib.dir}" prefix="opendap-${VERSION}-lib">
+        <include name="${jdom.lib}"/>
+        <include name="${httpclient.lib}"/>
+        <include name="${xercesImpl.lib}"/>
+        <include name="${xercesXmlApis.lib}"/>
+      </zipfileset>
+    </jar>
 
-    </target>
+  </target>
 
-    <target name="opendap-lib"
-        depends="clean,compile">
-        <jar destfile="${build.lib}/${opendap.jar}">
-            <fileset dir="${build.classes}"/>
-        </jar>
-    </target>
+  <target name="opendap-lib"
+          depends="clean,compile">
+    <jar destfile="${build.lib}/${opendap.jar}">
+      <fileset dir="${build.classes}"/>
+    </jar>
+  </target>
 
-    <target name="xmltest" description="Runs the XmlTest application on the primary DDX test file."
-            depends="compile"
-            >
-        <java classname="opendap.dap.parsers.XmlTest">
-            <classpath refid="dap.compile.classpath"/>
-            <arg value="-v"/>
-            <arg value="${testsuites.dir}/sdds-testsuite/ddx/xmltest.01"/>
-        </java>
-    </target>
+  <target name="xmltest" description="Runs the XmlTest application on the primary DDX test file."
+          depends="compile"
+      >
+    <java classname="opendap.dap.parsers.XmlTest">
+      <classpath refid="dap.compile.classpath"/>
+      <arg value="-v"/>
+      <arg value="${testsuites.dir}/sdds-testsuite/ddx/xmltest.01"/>
+    </java>
+  </target>
 
-    <target name="generateconstraints"
-            depends="testcases">
-        <java classname="opendap.test.GenerateConstraints">
-            <classpath refid="dap.compile.classpath"/>
-        </java>
-    </target>
+  <target name="generateconstraints"
+          depends="testcases">
+    <java classname="opendap.test.GenerateConstraints">
+      <classpath refid="dap.compile.classpath"/>
+    </java>
+  </target>
 
-    <target name="test" description="Runs various tests"
-            depends="init,testcases"
-            >
-        <delete dir="${results.dir}"/>
-        <mkdir  dir="${results.dir}"/>
+  <target name="test" description="Runs various tests"
+          depends="init,testcases"
+      >
+    <delete dir="${results.dir}"/>
+    <mkdir dir="${results.dir}"/>
 
-        <java classname="opendap.test.TestCeParser">
-            <classpath refid="dap.compile.classpath"/>
-        </java>
-<!--
-        <java classname="opendap.test.TestCeParser">
-            <classpath refid="dap.compile.classpath"/>
-        </java>
-        <java classname="opendap.test.TestDDS">
-            <classpath refid="dap.compile.classpath"/>
-        </java>
-        <java classname="opendap.test.TestDConnect2">
-            <classpath refid="dap.compile.classpath"/>
-        </java>
--->
-    </target>
+    <java classname="opendap.test.TestCeParser">
+      <classpath refid="dap.compile.classpath"/>
+    </java>
+    <!--
+            <java classname="opendap.test.TestCeParser">
+                <classpath refid="dap.compile.classpath"/>
+            </java>
+            <java classname="opendap.test.TestDDS">
+                <classpath refid="dap.compile.classpath"/>
+            </java>
+            <java classname="opendap.test.TestDConnect2">
+                <classpath refid="dap.compile.classpath"/>
+            </java>
+    -->
+  </target>
 
 
-    <target name="show" description="Show build settings.">
-        <echo level="info" message="Project Name:       ${ant.project.name}"/>
-        <echo level="info" message="Project File:       ${ant.file}"/>
-        <echo level="info" message="VERSION:            ${VERSION}"/>
-        <echo level="info" message=""/>
-        <echo level="info" message="Project Directories:"/>
-        <echo level="info" message="    src.java.dir:  ${src.java.dir}"/>
-        <echo level="info" message="    doc.dir:  ${doc.dir}"/>
-        <echo level="info" message="    dist.dir: ${dist.dir}"/>
-        <echo level="info" message="    lib.dir:  ${lib.dir}"/>
-        <echo level="info" message="    bin.dir:  ${bin.dir}"/>
-        <echo level="info" message=""/>
-        <echo level="info" message="Build Directories:"/>
-        <echo level="info" message="    build.dir:      ${build.dir}"/>
-        <echo level="info" message="    build.classes:  ${build.classes}"/>
-        <echo level="info" message="    build.IPSClient:  ${build.IPSClient}"/>
-        <echo level="info" message="    build.doc:      ${build.doc}"/>
-        <echo level="info" message="    build.lib:      ${build.lib}"/>
-        <echo level="info" message="    build.webapps:  ${build.webapps}"/>
-        <echo level="info" message=""/>
-        <echo level="info" message="Ant Properties:"/>
-        <echo level="info" message="    ant.file:          ${ant.file}"/>
-        <echo level="info" message="    ant.home:          ${ant.home}"/>
-        <echo level="info" message="    ant.java.version:  ${ant.java.version}"/>
-        <echo level="info" message="    ant.project.name:  ${ant.project.name}"/>
-        <echo level="info" message="    ant.version:       ${ant.version}"/>
-        <echo level="info" message="    basedir:           ${basedir}"/>
-        <echo level="info" message="    user.name:         ${user.name}"/>
-        <echo level="info" message="    user.home:         ${user.home}"/>
-        <echo level="info" message="    java.home:         ${java.home}"/>
-        <echo level="info" message=""/>
-    </target>
+  <target name="show" description="Show build settings.">
+    <echo level="info" message="Project Name:       ${ant.project.name}"/>
+    <echo level="info" message="Project File:       ${ant.file}"/>
+    <echo level="info" message="VERSION:            ${VERSION}"/>
+    <echo level="info" message=""/>
+    <echo level="info" message="Project Directories:"/>
+    <echo level="info" message="    src.java.dir:  ${src.java.dir}"/>
+    <echo level="info" message="    doc.dir:  ${doc.dir}"/>
+    <echo level="info" message="    dist.dir: ${dist.dir}"/>
+    <echo level="info" message="    lib.dir:  ${lib.dir}"/>
+    <echo level="info" message="    bin.dir:  ${bin.dir}"/>
+    <echo level="info" message=""/>
+    <echo level="info" message="Build Directories:"/>
+    <echo level="info" message="    build.dir:      ${build.dir}"/>
+    <echo level="info" message="    build.classes:  ${build.classes}"/>
+    <echo level="info" message="    build.IPSClient:  ${build.IPSClient}"/>
+    <echo level="info" message="    build.doc:      ${build.doc}"/>
+    <echo level="info" message="    build.lib:      ${build.lib}"/>
+    <echo level="info" message="    build.webapps:  ${build.webapps}"/>
+    <echo level="info" message=""/>
+    <echo level="info" message="Ant Properties:"/>
+    <echo level="info" message="    ant.file:          ${ant.file}"/>
+    <echo level="info" message="    ant.home:          ${ant.home}"/>
+    <echo level="info" message="    ant.java.version:  ${ant.java.version}"/>
+    <echo level="info" message="    ant.project.name:  ${ant.project.name}"/>
+    <echo level="info" message="    ant.version:       ${ant.version}"/>
+    <echo level="info" message="    basedir:           ${basedir}"/>
+    <echo level="info" message="    user.name:         ${user.name}"/>
+    <echo level="info" message="    user.home:         ${user.home}"/>
+    <echo level="info" message="    java.home:         ${java.home}"/>
+    <echo level="info" message=""/>
+  </target>
 
 </project>

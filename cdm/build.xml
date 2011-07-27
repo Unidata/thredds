@@ -28,7 +28,7 @@
   <property name="root.dir" location="${basedir}"/>
   <property name="src.dir" location="${root.dir}/src/main/java"/>
   <property name="timingSrc.dir" location="${root.dir}/src/timing/java"/>
-  <!-- property name="commonSrc.dir" location="${root.dir}/../common/src/main/java"/ -->
+  <property name="commonSrc.dir" location="${root.dir}/../common/src/main/java"/>
   <property name="timeSrc.dir" location="${root.dir}/../time/src/main/java"/>
   <property name="resources.dir" location="${root.dir}/src/main/resources"/>
   <property name="doc.dir" location="${root.dir}/doc"/>
@@ -49,7 +49,7 @@
 
   <property name="bdb.jar" value="je-4.0.71.jar"/>
   <property name="bounce.jar" value="bounce-0.14.jar"/>
-  <property name="bufr.jar" value="bufr-3.0.jar"/>
+  <property name="bufr.jar" value="bufr-4.3.jar"/>
   <property name="ehcache.jar" value="ehcache-1.6.0.jar"/>
   <property name="grib.jar" value="grib-4.3.jar"/>
   <property name="httpclient3.jar" value="commons-httpclient-3.1.jar"/>
@@ -85,6 +85,7 @@
   <!-- source -->
   <path id="sourcepath">
     <pathelement location="${src.dir}"/>
+    <pathelement location="${commonSrc.dir}"/>
     <pathelement location="${timeSrc.dir}"/>
   </path>
 

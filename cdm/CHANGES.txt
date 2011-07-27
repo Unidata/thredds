@@ -4,6 +4,9 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.3:
  2:(2011-xx-xx)
+  hdf-eos : check if dimension already exists
+  common module is rearranged.
+  EscapeStrings class moved to ucar.nc2.util.net
   Projections are no longer cloneable, plus they are immutable so setters are removed
   clean up and systematize projection - conform to CF as much as possible
   use CF constants
