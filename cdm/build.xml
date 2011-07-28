@@ -78,9 +78,9 @@
   <property name="spring-context.jar" value="org.springframework.context-3.0.5.RELEASE.jar"/>
   <property name="spring-core.jar" value="org.springframework.core-3.0.5.RELEASE.jar"/>
   <property name="spring-expression.jar" value="org.springframework.expression-3.0.5.RELEASE.jar"/>
-  <!--property name="stax.jar" value="stax-api-1.0.1.jar"/ -->
   <property name="threeten.jar" value="threeten-core-0.6.3.jar"/>
-  <property name="visadNoDods.jar" value="visadNoDods.jar"/>
+  <property name="visad.jar" value="visad.jar"/>
+  <property name="visadCdm.jar" value="visadCdm.jar"/>
 
   <!-- source -->
   <path id="sourcepath">
@@ -100,7 +100,6 @@
     <include name="external/${loggingAPI.jar}"/>
     <include name="external/${protobuf.jar}"/>
     <include name="external/${quartz.jar}"/>
-    <include name="release/${visadNoDods.jar}"/>
     <include name="external/${threeten.jar}"/>
   </fileset>
 
@@ -301,7 +300,7 @@
         <include name="release/${opendap.jar}"/>
         <include name="external/${protobuf.jar}"/>
         <include name="external/${quartz.jar}"/>
-        <include name="release/${visadNoDods.jar}"/>
+        <include name="release/${visadCdm.jar}"/>
       </fileset>
     </unzip>
     <unzip dest="${main.dir}">
@@ -454,30 +453,6 @@
       </manifest>
     </jar>
 
-  </target>
-
-  <!-- $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$  -->
-  <!-- get rid of dods stuff in visad.jar -->
-
-  <property name="visad.jar" value="${lib.dir}/external/visad.jar"/>
-  <!-- checkout visad.jar from cvs -->
-  <property name="visadNoDods.tempdir" value="${build.dir}/visad/"/>
-  <target name="makeVisadNoDods" description="remove dods from visad">
-    <delete dir="${visadNoDods.tempdir}" failonerror="false"/>
-    <mkdir dir="${visadNoDods.tempdir}"/>
-    <unzip dest="${visadNoDods.tempdir}">
-      <fileset file="${visad.jar}"/>
-    </unzip>
-
-    <delete dir="${visadNoDods.tempdir}/dods" failonerror="true"/>
-    <delete dir="${visadNoDods.tempdir}/gnu" failonerror="true"/>
-    <delete dir="${visadNoDods.tempdir}/HTTPClient" failonerror="true"/>
-    <delete dir="${visadNoDods.tempdir}/ucar" failonerror="true"/>
-
-    <jar jarfile="${lib.dir}/release/${visadNoDods.jar}" index="true" duplicate="preserve">
-      <fileset dir="${visadNoDods.tempdir}"/>
-    </jar>
-    <delete dir="${visadNoDods.tempdir}" failonerror="false"/>
   </target>
 
   <!-- temp
@@ -908,8 +883,8 @@
              signedjar="${webstart_dir}/quartz.jar" storepass="${keystore.password}"/>
     <signjar alias="idv" jar="${lib.dir}/release/${resourcesOptional.jar}" keystore="${keystore}"
              signedjar="${webstart_dir}/resourcesOptional.jar" storepass="${keystore.password}"/>
-    <signjar alias="idv" jar="${lib.dir}/release/${visadNoDods.jar}" keystore="${keystore}"
-             signedjar="${webstart_dir}/visadNoDods.jar" storepass="${keystore.password}"/>
+    <signjar alias="idv" jar="${lib.dir}/release/${visadCdm.jar}" keystore="${keystore}"
+             signedjar="${webstart_dir}/visadCdm.jar" storepass="${keystore.password}"/>
   </target>
 
   <!-- $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$  -->

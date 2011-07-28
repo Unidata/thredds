@@ -13,11 +13,31 @@ dl {margin: 10px 5px 5px 15px;}
 <body>
 <h1>Netcdf Library Jar files</h1>
 <hr />
+<h3>Which jar file should I use?</h3>
+<p>1. Many prefer to use <strong>netcdfAll-{version}.jar</strong>. This includes all other  jars, and uses JDK logging. Use it when you want all the capabilities of the netcdf-java/CDM library.</p>
+<p>2. The <strong>netcdf.jar</strong> implements the full CDM model, but is unbundled from the other jar dependencies, including logging. Use it when you need to choose which other jars to use, for example when using the netcdf-java library as part of a bigger system, such as a server. Get the current version of the other jar files in netcdfAll.zip. Choose a <a href="#logging">logging implementation</a>, and add the following libraries to your classpath as needed:</p>
+<ol>
+  <li>Always include <strong>netcdf-{version}.jar</strong> and a logger</li>
+  <li>Optionally include:
+    <ol>
+      <li>Reading BUFR files: <strong>bufr.jar</strong>,<strong> jdom.jar</strong></li>
+      <li>Reading GRIB files: <strong>grib.jar,<strong> protobuf.jar</strong></strong></li>
+      <li>Reading OPeNDAP: <strong>opendap.jar, jdom.jar, commons-httpclient.jar, commons-logging.jar, commons-codec.jar. </strong> </li>
+      <li>Reading remote files over HTTP: <strong>commons-httpclient.jar, commons-logging.jar, commons-codec.jar</strong>  </li>
+      <li>Reading THREDDS catalogs, NcML, BUFR, HDF-EOS, NEXRAD2, OPeNDAP: <strong>jdom.jar</strong> </li>
+      <li>Reading McIDAS or GEMPAK files, or for accessing ADDE: <strong>visadCdm.jar</strong> </li>
+      <li>Using aggregations: <strong>je.jar</strong> (Berkely DB, Java Edition)</li>
+      <li>Object caching:<strong> ehcache.jar</strong> </li>
+      <li>ncstream, cdmRemote: <strong>protobuf.jar</strong></li>
+    </ol>
+  </li>
+</ol>
+<hr />
 <h3><strong>CDM Unbundled Library: netcdf-{version}.jar</strong></h3>
 <blockquote>
-  <p>The <strong>netcdf.jar</strong>  implements the full CDM model, but is unbundled from the other jar dependencies, including logging. Use it when you need to choose which other jars to use, for example when using the netcdf-java library as part of a bigger system, such as a server. Get the current version of the other jar files in netcdfAll.zip. Choose a <a href="#logging">logging implementation</a>, and add the following libraries to your classpath as needed:</p>
+  <p>The <strong>netcdf.jar</strong> implements the full CDM model, but is unbundled from the other jar dependencies, including logging. Use it when you need to choose which other jars to use, for example when using the netcdf-java library as part of a bigger system, such as a server. Get the current version of the other jar files in netcdfAll.zip. Choose a <a href="#logging">logging implementation</a>, and add the following libraries to your classpath as needed:</p>
   <ul>
-    <li> <a name="optionalLibraries" id="optionalLibraries"></a>Reading BUFR files: <strong>bufr.jar</strong>,<strong> jdom.jar</strong></li>
+    <li> <a name="optionalLibraries" id="optionalLibraries2"></a>Reading BUFR files: <strong>bufr.jar</strong>,<strong> jdom.jar</strong></li>
     <li>Reading GRIB files: <strong>grib.jar</strong></li>
     <li>Reading OPeNDAP: <strong>opendap.jar, jdom.jar, commons-httpclient.jar, commons-logging.jar, commons-codec.jar. </strong></li>
     <li>Reading remote files over HTTP: <strong>commons-httpclient.jar, commons-logging.jar, commons-codec.jar</strong></li>
@@ -28,6 +48,7 @@ dl {margin: 10px 5px 5px 15px;}
     <li>ncstream, cdmRemote: <strong>protobuf.jar</strong></li>
   </ul>
 </blockquote>
+<blockquote>&nbsp;</blockquote>
 <h3><strong>CDM Complete Library: netcdfAll-{version}.jar</strong></h3>
 <blockquote>
   <p>The <strong>netcdfAll.jar</strong> implements the full CDM model, and includes all other needed jars, using JDK logging. Use it when you want all the capabilities of the netcdf-java/CDM library.</p>
@@ -99,13 +120,13 @@ lm.readConfiguration(<a href="http://java.sun.com/j2se/1.4.2/docs/api/java/io/In
 <ul><li><strong> Unidata public<a href="http://svn.unidata.ucar.edu/repos/thredds/"> svn repository</a></strong></li>
   <li><strong>commons-httpclient.jar, commons-logging.jar, commons-codec.jar: </strong><a href="http://hc.apache.org/httpclient-3.x/">Apache Commons</a></li>
   <li><strong><a href="http://www.jdom.org/downloads/source.html"> jdom.jar</a></strong></li>
-  <li><strong><a href="ftp://ftp.ssec.wisc.edu/pub/visad-2.0/visad_src-2.0.jar">visadNoDods.jar</a></strong> Note we remove opendap.* and gnu* from the standard visad release, since these are in conflict with our versions.</li>
+  <li><strong><a href="ftp://ftp.ssec.wisc.edu/pub/visad-2.0/visad_src-2.0.jar">visad.jar</a></strong></li>
 </ul>
 <hr width="100%" />
 <address>
 </address>
 <address>
-<img src="../nc.gif" alt="" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated Feb 2011
+<img src="../nc.gif" alt="" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated July 2011
 </address>
 </body>
 </html>
