@@ -69,7 +69,6 @@
     <orderEntry type="module" module-name="cdm" exported="" />
     <orderEntry type="module" module-name="grib" exported="" />
     <orderEntry type="module" module-name="bufr" exported="" />
-    <orderEntry type="module" module-name="time" exported="" />
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>

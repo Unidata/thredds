@@ -1196,8 +1196,8 @@
       <module fileurl="file://$PROJECT_DIR$/opendap.iml" filepath="$PROJECT_DIR$/opendap.iml" />
       <module fileurl="file://$PROJECT_DIR$/../../tdm/tdm.iml" filepath="$PROJECT_DIR$/../../tdm/tdm.iml" />
       <module fileurl="file://$PROJECT_DIR$/tds.iml" filepath="$PROJECT_DIR$/tds.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../../time/time.iml" filepath="$PROJECT_DIR$/../../time/time.iml" />
       <module fileurl="file://$PROJECT_DIR$/ui.iml" filepath="$PROJECT_DIR$/ui.iml" />
+      <module fileurl="file://$PROJECT_DIR$/wmoTables.iml" filepath="$PROJECT_DIR$/wmoTables.iml" />
     </modules>
   </component>
   <component name="ProjectResources">
@@ -1548,7 +1548,7 @@
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="svn" />
     <mapping directory="$PROJECT_DIR$/../../tdm" vcs="svn" />
-    <mapping directory="$PROJECT_DIR$/../../time" vcs="svn" />
+    <mapping directory="$PROJECT_DIR$/../../wmoTables" vcs="svn" />
   </component>
   <component name="WebServicesPlugin" addRequiredLibraries="true" />
   <component name="com.intellij.jsf.UserDefinedFacesConfigs">
