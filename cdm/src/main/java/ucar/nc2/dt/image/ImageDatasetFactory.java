@@ -83,22 +83,7 @@ public class ImageDatasetFactory {
   public BufferedImage open( String location) throws java.io.IOException {
     log = new StringBuffer();
 
-    if (location.startsWith("adde:")) {
-
-      try {
-        ucar.nc2.iosp.adde.AddeImage addeImage = ucar.nc2.iosp.adde.AddeImage.factory( location);
-        currentFile = null;
-        return addeImage.getImage();
-
-      } catch (Exception e) {
-        log.append(e.getMessage());
-        // e.printStackTrace();
-        return null;
-      }
-
-    }
-
-    else if (location.startsWith("http:")) {
+    if (location.startsWith("http:")) {
       try {
         URL url = new URL(location);
         currentFile = null;

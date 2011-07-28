@@ -8,7 +8,7 @@
   <parent>
     <groupId>edu.ucar</groupId>
     <artifactId>netcdf-parent</artifactId>
-    <version>4.2.26</version>
+    <version>4.3.2</version>
   </parent>
 
 
@@ -30,7 +30,6 @@
     <connection>http://svn.unidata.ucar.edu/repos/thredds/trunk/cdm</connection>
     <developerConnection>scm:svn:http://svn.unidata.ucar.edu/repos/thredds/trunk/netcdf</developerConnection>
   </scm>
-
 
   <!-- ===========================================================
            Developers and Contributors
@@ -143,30 +142,7 @@
       <artifactId>unidataCommon</artifactId>
       <version>${project.version}</version>
     </dependency>
-    <dependency>
-      <groupId>commons-httpclient</groupId>
-      <artifactId>commons-httpclient</artifactId>
-      <version>3.1</version>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-      <version>1.5.6</version>
-    </dependency>
 
-    <!-- Extensions to the NetCDF core. The "bufrTables" extension
-         is not declared here in order to avoid cyclic dependency.
-         Extensions require additional dependencies (listed below),
-         but users should inherit them through the Maven transitive
-         dependencies mechanism. -->
-
-    <dependency>
-      <groupId>edu.ucar</groupId>
-      <!-- Reading GRIB files. -->
-      <artifactId>grib</artifactId>
-      <version>${project.version}</version>
-      <scope>provided</scope>
-    </dependency>
     <dependency>
       <groupId>edu.ucar</groupId>
       <artifactId>opendap</artifactId>
@@ -174,12 +150,25 @@
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
+
     <dependency>
       <artifactId>visad</artifactId>
       <!-- Reading McIDAS AREA files. -->
       <groupId>edu.wisc</groupId>
       <version>2010-08-09</version>
       <scope>provided</scope>
+    </dependency>
+
+    <!-- HTTP client -->
+    <dependency>
+      <groupId>commons-httpclient</groupId>
+      <artifactId>commons-httpclient</artifactId>
+    </dependency>
+
+    <!-- logging -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
     </dependency>
 
     <!-- Required for reading THREDDS, NcML, BUFR, HDF-EOS, NEXRAD2, OPeNDAP files. -->

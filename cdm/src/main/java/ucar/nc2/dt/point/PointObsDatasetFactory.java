@@ -35,7 +35,6 @@ package ucar.nc2.dt.point;
 
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.PointObsDataset;
-import ucar.nc2.iosp.adde.AddeStationObsDataset;
 import ucar.nc2.NetcdfFile;
 import thredds.catalog.InvAccess;
 import thredds.catalog.ServiceType;
@@ -53,9 +52,6 @@ public class PointObsDatasetFactory {
   }
 
   static public PointObsDataset open(InvAccess access, ucar.nc2.util.CancelTask task, StringBuffer logMessages) throws java.io.IOException {
-    if (access.getService().getServiceType() == ServiceType.ADDE)
-      return new AddeStationObsDataset(access, task);
-
     return open( access.getStandardUrlName(), task, logMessages);
   }
 
@@ -68,21 +64,6 @@ public class PointObsDatasetFactory {
   }
 
   static public PointObsDataset open( String location, ucar.nc2.util.CancelTask task, StringBuffer log) throws java.io.IOException {
-
-    if (location.startsWith("adde:"))
-      return new AddeStationObsDataset( location, task);
-
-    /* if (location.startsWith("thredds:")) { // LOOK need to distinguish between a DQC and a Catalog !!
-      location = location.substring(8);
-      DqcFactory dqcFactory = new DqcFactory(true);
-      QueryCapability dqc = dqcFactory.readXML(location);
-      if (dqc.hasFatalError()) {
-        if (null != log) log.append(dqc.getErrorMessages());
-        return null;
-      }
-
-      return ucar.nc2.thredds.DqcStationObsDataset.factory( null, dqc);
-    } */
 
     // otherwise open as netcdf and have a look. use NetcdfDataset in order to deal with scale/enhance, etc.
     NetcdfDataset ncfile = NetcdfDataset.acquireDataset( location, task);

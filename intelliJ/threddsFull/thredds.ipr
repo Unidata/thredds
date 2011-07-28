@@ -1197,6 +1197,7 @@
       <module fileurl="file://$PROJECT_DIR$/../../tdm/tdm.iml" filepath="$PROJECT_DIR$/../../tdm/tdm.iml" />
       <module fileurl="file://$PROJECT_DIR$/tds.iml" filepath="$PROJECT_DIR$/tds.iml" />
       <module fileurl="file://$PROJECT_DIR$/ui.iml" filepath="$PROJECT_DIR$/ui.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../visad/visad.iml" filepath="$PROJECT_DIR$/../../visad/visad.iml" />
       <module fileurl="file://$PROJECT_DIR$/wmoTables.iml" filepath="$PROJECT_DIR$/wmoTables.iml" />
     </modules>
   </component>
@@ -1486,6 +1487,33 @@
             </SvnBranchConfiguration>
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/../../tdm">
+          <value>
+            <SvnBranchConfiguration>
+              <option name="branchMap">
+                <map>
+                  <entry key="https://sub.unidata.ucar.edu/thredds/branch">
+                    <value>
+                      <list />
+                    </value>
+                  </entry>
+                  <entry key="https://sub.unidata.ucar.edu/thredds/tag">
+                    <value>
+                      <list />
+                    </value>
+                  </entry>
+                </map>
+              </option>
+              <option name="branchUrls">
+                <list>
+                  <option value="https://sub.unidata.ucar.edu/thredds/branch" />
+                  <option value="https://sub.unidata.ucar.edu/thredds/tag" />
+                </list>
+              </option>
+              <option name="trunkUrl" value="https://sub.unidata.ucar.edu/thredds/trunk" />
+            </SvnBranchConfiguration>
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/../../tds">
           <value>
             <SvnBranchConfiguration>
@@ -1537,6 +1565,33 @@
                 </list>
               </option>
               <option name="trunkUrl" value="http://sub.unidata.ucar.edu/thredds/trunk" />
+            </SvnBranchConfiguration>
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../../wmoTables">
+          <value>
+            <SvnBranchConfiguration>
+              <option name="branchMap">
+                <map>
+                  <entry key="https://sub.unidata.ucar.edu/thredds/branch">
+                    <value>
+                      <list />
+                    </value>
+                  </entry>
+                  <entry key="https://sub.unidata.ucar.edu/thredds/tag">
+                    <value>
+                      <list />
+                    </value>
+                  </entry>
+                </map>
+              </option>
+              <option name="branchUrls">
+                <list>
+                  <option value="https://sub.unidata.ucar.edu/thredds/branch" />
+                  <option value="https://sub.unidata.ucar.edu/thredds/tag" />
+                </list>
+              </option>
+              <option name="trunkUrl" value="https://sub.unidata.ucar.edu/thredds/trunk" />
             </SvnBranchConfiguration>
           </value>
         </entry>

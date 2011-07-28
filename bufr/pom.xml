@@ -2,13 +2,14 @@
 <!-- =======================================================================
         Maven Project Configuration File
      ======================================================================= -->
-  <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
     <groupId>edu.ucar</groupId>
     <artifactId>netcdf-parent</artifactId>
-    <version>4.2.26</version>
+    <version>4.3.2</version>
   </parent>
 
   <!-- ===========================================================
@@ -17,10 +18,9 @@
   <groupId>edu.ucar</groupId>
   <artifactId>bufr</artifactId>
   <packaging>jar</packaging>
-  <version>4.2.26</version>
-  <name>BUFR tables</name>
+  <name>BUFR</name>
   <description>
-    BUFR tables for the NetCDF library.
+    Reading BUFR files with the NetCDF-java library.
   </description>
   <url>http://www.unidata.ucar.edu/software/netcdf-java/</url>
 
@@ -40,21 +40,22 @@
        =========================================================== -->
 
   <dependencies>
-     <dependency>
-       <groupId>edu.ucar</groupId>
-       <artifactId>netcdf</artifactId>
-       <version>${project.version}</version>
-     </dependency>
-     <dependency>
+    <dependency>
+      <groupId>edu.ucar</groupId>
+      <artifactId>netcdf</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
       <groupId>org.jdom</groupId>
       <artifactId>jdom</artifactId>
       <scope>provided</scope>
     </dependency>
-      <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-api</artifactId>
-        <version>1.5.6</version>
-      </dependency>
+
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+    </dependency>
   </dependencies>
 
   <build>

@@ -39,7 +39,7 @@
     <orderEntry type="module" module-name="cdm" exported="" />
     <orderEntry type="module" module-name="common" exported="" />
     <orderEntry type="module" module-name="grib" exported="" />
-    <orderEntry type="library" exported="" name="Spring" level="project" />
+    <orderEntry type="library" name="Spring-Web" level="project" />
     <orderEntry type="library" exported="" name="Logging" level="project" />
     <orderEntry type="module-library" exported="">
       <library>
