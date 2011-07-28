@@ -129,7 +129,7 @@ abstract public class PointObsDatasetImpl extends TypedDatasetImpl implements Po
     if ((timeVar.getDataType() == DataType.CHAR) || (timeVar.getDataType() == DataType.STRING)) {
       String time = sdata.getScalarString(timeVar.getShortName());
       if (null == formatter) formatter = new DateFormatter();
-      Date date = formatter.isoDateTimeFormat(time);
+      Date date = formatter.getISODate(time);
       return date.getTime() / 1000.0;
     } else {
       return sdata.convertScalarFloat(timeVar.getShortName());

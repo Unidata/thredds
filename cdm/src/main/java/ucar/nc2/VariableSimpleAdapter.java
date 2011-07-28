@@ -63,6 +63,7 @@ public class VariableSimpleAdapter implements VariableSimpleIF {
   }
 
   public String getFullName() {  return m.getFullName(); }
+  public String getName() { return m.getName(); }
   public String getShortName() { return m.getName(); }
   public DataType getDataType() { return m.getDataType(); }
   public String getDescription() { return m.getDescription(); }

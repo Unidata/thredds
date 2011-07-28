@@ -45,7 +45,15 @@ import java.util.List;
 public interface VariableSimpleIF extends Comparable<VariableSimpleIF> {
 
   /**
-   * full, uneescaped name of the data Variable
+   * name of the data Variable
+   * @return name of the data Variable
+   * @deprecated use getFullName or getShortName
+   */
+  public String getName();
+
+
+  /**
+   * full, unescaped name of the data Variable
    * @return full, unescaped name of the data Variable
    */
   public String getFullName();

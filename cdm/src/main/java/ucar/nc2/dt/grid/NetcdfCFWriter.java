@@ -345,8 +345,8 @@ public class NetcdfCFWriter {
     gridList.add("T");
 
     DateFormatter format = new DateFormatter();
-    Date start = format.isoDateTimeFormat("2005-12-06T18:00:00Z");
-    Date end = format.isoDateTimeFormat("2005-12-07T18:00:00Z");
+    Date start = format.getISODate("2005-12-06T18:00:00Z");
+    Date end = format.getISODate("2005-12-07T18:00:00Z");
 
     writer.makeFile(fileOut, gds, gridList,
             new LatLonRect(new LatLonPointImpl(37, -109), 400, 7),
@@ -368,8 +368,8 @@ public class NetcdfCFWriter {
     gridList.add("Z_sfc");
 
     DateFormatter format = new DateFormatter();
-    Date start = format.isoDateTimeFormat("2003-06-01T03:00:00Z");
-    Date end = format.isoDateTimeFormat("2004-01-01T00:00:00Z");
+    Date start = format.getISODate("2003-06-01T03:00:00Z");
+    Date end = format.getISODate("2004-01-01T00:00:00Z");
 
     writer.makeFile(fileOut, gds, gridList, null,
             // new LatLonRect(new LatLonPointImpl(30, -109), 10, 50),

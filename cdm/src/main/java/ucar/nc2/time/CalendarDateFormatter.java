@@ -80,11 +80,7 @@ public class CalendarDateFormatter {
 
   static public Date parseISODate(String iso) {
     DateFormatter df = new DateFormatter();
-    try {
-      return df.isoDateTimeFormat(iso);
-    } catch (ParseException e) {
-      return null;
-    }
+    return df.getISODate(iso);
   }
 
   /*

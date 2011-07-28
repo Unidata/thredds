@@ -53,6 +53,7 @@ public class VariableSimpleSubclass implements VariableSimpleIF {
   }
 
   public String getFullName() { return v.getFullName(); }
+  public String getName() { return v.getFullName(); }
   public String getShortName() { return v.getShortName(); }
   public DataType getDataType() { return v.getDataType(); }
   public String getDescription() { return v.getDescription(); }

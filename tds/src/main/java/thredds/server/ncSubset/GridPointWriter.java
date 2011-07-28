@@ -553,7 +553,7 @@ public class GridPointWriter {
 
     qp.hasTimePoint = false;
     DateFormatter format = new DateFormatter();
-    qp.time = new DateType(false, format.isoDateTimeFormat("2005-12-07T06:00:00Z"));
+    qp.time = new DateType(false, format.getISODate("2005-12-07T06:00:00Z"));
 
     qp.hasVerticalCoord = true;
     qp.vertCoord = 223.0;

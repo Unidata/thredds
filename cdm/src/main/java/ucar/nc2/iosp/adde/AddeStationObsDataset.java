@@ -366,6 +366,7 @@ public class AddeStationObsDataset extends StationObsDatasetImpl {
       this.dt = dt;
     }
 
+    public String getName() { return name; }
     public String getFullName() { return name; }
     public String getShortName() { return name; }
 

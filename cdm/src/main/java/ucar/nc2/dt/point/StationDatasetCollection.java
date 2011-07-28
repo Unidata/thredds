@@ -222,8 +222,8 @@ public class StationDatasetCollection {
     }
 
     System.out.println("------------------\n");
-    Date start = format.isoDateTimeFormat("2007-03-27T09:18:56Z");
-    Date end = format.isoDateTimeFormat("2007-03-30T10:52:48Z");
+    Date start = format.getISODate("2007-03-27T09:18:56Z");
+    Date end = format.getISODate("2007-03-30T10:52:48Z");
 
     iter = sdc.getDataIterator(s, start, end);
     while (iter.hasNext()) {

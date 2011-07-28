@@ -164,6 +164,7 @@ public abstract class RadialDatasetSweepAdapter extends TypedDatasetImpl impleme
     public int compareTo(VariableSimpleIF o) {
      return getFullName().compareTo(o.getFullName());
     }
+    public String getName() { return this.name; }
     public String getFullName() { return this.name; }
     public String getShortName() { return this.name; }
     public DataType getDataType() { return DataType.FLOAT; }

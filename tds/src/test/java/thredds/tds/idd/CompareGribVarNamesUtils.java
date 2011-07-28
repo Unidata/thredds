@@ -172,14 +172,11 @@ public class CompareGribVarNamesUtils
         int start = url.lastIndexOf( "_RUN_" ) + 5;
 
         DateFormatter dateFormatter = new DateFormatter();
-        Date runDate = null;
-        try
+      String s = url.substring( start, url.length() - 1 );
+        Date runDate = dateFormatter.getISODate(  s);
+        if (runDate == null)
         {
-            runDate = dateFormatter.isoDateTimeFormat( url.substring( start, url.length() - 1 ) );
-        }
-        catch ( ParseException e )
-        {
-            fail( "\"FMRC Run\" dataset URL [" + url + "] did not contain timestamp in expected format: " + e.getMessage() );
+            fail( "\"FMRC Run\" dataset URL [" + url + "] did not contain timestamp in expected format: " + s );
         }
         return runDate;
     }

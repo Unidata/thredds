@@ -171,12 +171,12 @@ public abstract class FeatureDatasetImpl implements FeatureDataset {
 
   @Override
   public CalendarDate getCalendarDateStart() {
-    return dateRange.getStart();
+    return (dateRange == null) ? null : dateRange.getStart();
   }
 
   @Override
   public CalendarDate getCalendarDateEnd() {
-    return dateRange.getEnd();
+    return (dateRange == null) ? null : dateRange.getEnd();
   }
 
   public DateRange getDateRange() { return (dateRange == null) ? null : dateRange.toDateRange(); }
