@@ -152,9 +152,12 @@ public final class McIDASLookup implements GridTableLookup {
   private String reflectLevelName(GridRecord gr) {
     // return ucar.grib.grib1.GribPDSLevel.getNameShort(gr.getLevelType1());
     // use reflection instead to decouple from the grib package
+    Class c = null;
     try {
-      Class c = this.getClass().getClassLoader().loadClass("ucar.grib.grib1.GribPDSLevel");
-      Method m = c.getMethod("isMine", Integer.class);
+      ClassLoader cl = this.getClass().getClassLoader();
+      c = cl.loadClass("ucar.grib.grib1.GribPDSLevel");
+
+      Method m = c.getMethod("getNameShort", int.class);
       return (String) m.invoke(null, gr.getLevelType1());
 
     } catch (ClassNotFoundException e) {

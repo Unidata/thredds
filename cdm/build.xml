@@ -8,7 +8,7 @@
 
   <property name="release.version" value="4.3"/>
   <!-- TeamCity sets "build.number" property to value of its build counter. -->
-  <property name="build.number" value="1" />
+  <property name="build.number" value="2" />
   <property name="build.number" value="${build.time.number}" />
   <property name="release.version.minor" value="${release.version}.${build.number}"/>
 
@@ -79,8 +79,7 @@
   <property name="spring-core.jar" value="org.springframework.core-3.0.5.RELEASE.jar"/>
   <property name="spring-expression.jar" value="org.springframework.expression-3.0.5.RELEASE.jar"/>
   <property name="threeten.jar" value="threeten-core-0.6.3.jar"/>
-  <property name="visad.jar" value="visad.jar"/>
-  <property name="visadCdm.jar" value="visadCdm.jar"/>
+  <property name="visadCdm.jar" value="visadCdm-4.3.jar"/>
 
   <!-- source -->
   <path id="sourcepath">
@@ -106,12 +105,6 @@
   <path id="compile.classpath">
     <fileset refid="compile.libraries"/>
   </path>
-
-  <!-- property name="Class-Path"
-            value="${jgoodies.jar} ${grib.jar} ${jdom.jar} ${opendap.jar} ${http-codec.jar} ${httclient3.jar} ${http-logging.jar} ${loggingAPI.jar}
-            ${logging-minimal.jar} ${protobuf.jar} ${resourcesOptional.jar} ${spring.jar} ${visadNoDods.jar}"/ -->
-  <!-- property name="ClassPath-CommandLine"
-            value="lib/${grib.jar}:lib/${jdom.jar}:lib/${httpclient3.jar}:lib/${http-codec.jar}:lib/${http-logging.jar}:lib/${loggingAPI.jar}:lib/${logging-minimal.jar}:lib/${jgoodies.jar}:lib/${spring.jar}:lib/${visadNoDods.jar}"/ -->
 
   <!-- targets -->
   <target name="init">
@@ -587,6 +580,7 @@
     <include name="external/${spring-asm.jar}"/>
     <include name="external/${spring-context.jar}"/>
     <include name="external/${spring-expression.jar}"/>
+    <include name="release/${visadCdm.jar}"/>
   </fileset>
 
   <path id="runtime.classpath">

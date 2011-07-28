@@ -690,7 +690,7 @@ public class GempakGridReader extends GempakFileReader {
       Class c = this.getClass().getClassLoader().loadClass("ucar.nc2.iosp.gempak.GempakGrib2Data");
       Constructor ctor = c.getConstructor(RandomAccessFile.class);
       Object o = ctor.newInstance(rf);
-      Method m = c.getMethod("getData", Long.class, Long.class);
+      Method m = c.getMethod("getData", long.class, long.class);
       data = (float[]) m.invoke(o, start, 0);
 
     } catch (ClassNotFoundException e) {

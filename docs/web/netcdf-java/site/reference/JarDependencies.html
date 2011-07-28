@@ -13,19 +13,20 @@ dl {margin: 10px 5px 5px 15px;}
 <body>
 <h1>Netcdf Library Jar files</h1>
 <hr />
+<h2>Version 4.3</h2>
 <h3>Which jar file should I use?</h3>
 <p>1. Many prefer to use <strong>netcdfAll-{version}.jar</strong>. This includes all other  jars, and uses JDK logging. Use it when you want all the capabilities of the netcdf-java/CDM library.</p>
 <p>2. The <strong>netcdf.jar</strong> implements the full CDM model, but is unbundled from the other jar dependencies, including logging. Use it when you need to choose which other jars to use, for example when using the netcdf-java library as part of a bigger system, such as a server. Get the current version of the other jar files in netcdfAll.zip. Choose a <a href="#logging">logging implementation</a>, and add the following libraries to your classpath as needed:</p>
 <ol>
-  <li>Always include <strong>netcdf-{version}.jar</strong> and a logger</li>
+  <li>Always include <strong>netcdf-{version}.jar<strong>,<strong> jdom.jar, <strong>jodatime.jar</strong></strong>, </strong></strong> and a logger</li>
   <li>Optionally include:
     <ol>
-      <li>Reading BUFR files: <strong>bufr.jar</strong>,<strong> jdom.jar</strong></li>
-      <li>Reading GRIB files: <strong>grib.jar,<strong> protobuf.jar</strong></strong></li>
-      <li>Reading OPeNDAP: <strong>opendap.jar, jdom.jar, commons-httpclient.jar, commons-logging.jar, commons-codec.jar. </strong> </li>
-      <li>Reading remote files over HTTP: <strong>commons-httpclient.jar, commons-logging.jar, commons-codec.jar</strong>  </li>
-      <li>Reading THREDDS catalogs, NcML, BUFR, HDF-EOS, NEXRAD2, OPeNDAP: <strong>jdom.jar</strong> </li>
+      <li>Reading BUFR files: <strong>bufr.jar</strong></li>
+      <li>Reading GRIB files: <strong>grib.jar,<strong> </strong><strong>protobuf.jar</strong></strong></li>
+      <li>Reading OPeNDAP: <strong>opendap.jar, commons-httpclient.jar, commons-logging.jar, commons-codec.jar. </strong> </li>
+      <li>Reading remote files over HTTP: <strong>commons-httpclient.jar, commons-logging.jar, commons-codec.jar</strong></li>
       <li>Reading McIDAS or GEMPAK files, or for accessing ADDE: <strong>visadCdm.jar</strong> </li>
+      <li>Reading GEMPAK GRID files: <strong>visadCdm.jar, grib.jar</strong></li>
       <li>Using aggregations: <strong>je.jar</strong> (Berkely DB, Java Edition)</li>
       <li>Object caching:<strong> ehcache.jar</strong> </li>
       <li>ncstream, cdmRemote: <strong>protobuf.jar</strong></li>
@@ -33,6 +34,7 @@ dl {margin: 10px 5px 5px 15px;}
   </li>
 </ol>
 <hr />
+<h2><strong>Version 4.2</strong></h2>
 <h3><strong>CDM Unbundled Library: netcdf-{version}.jar</strong></h3>
 <blockquote>
   <p>The <strong>netcdf.jar</strong> implements the full CDM model, but is unbundled from the other jar dependencies, including logging. Use it when you need to choose which other jars to use, for example when using the netcdf-java library as part of a bigger system, such as a server. Get the current version of the other jar files in netcdfAll.zip. Choose a <a href="#logging">logging implementation</a>, and add the following libraries to your classpath as needed:</p>

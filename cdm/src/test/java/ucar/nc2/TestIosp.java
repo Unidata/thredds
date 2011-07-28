@@ -52,6 +52,8 @@ public class TestIosp {
     TestSuite suite= new TestSuite();
     suite.addTest( new JUnit4TestAdapter( ucar.nc2.iosp.netcdf3.BytePaddingTest.class ) );
 
+    suite.addTest( new TestSuite( TestReadFormats.class)); // sanity check
+
     suite.addTest( new TestSuite( ucar.nc2.iosp.grib.TestMiscCoordinates.class));
     suite.addTest( new TestSuite(ucar.nc2.iosp.grib.TestOfsData.class));
     // suite.addTest( new TestSuite( ucar.nc2.iosp.grib.TestGridGribIosp.class));

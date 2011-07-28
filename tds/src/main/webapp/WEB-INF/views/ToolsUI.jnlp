@@ -33,7 +33,7 @@
     <jar href="quartz.jar"/>
     <jar href="resourcesOptional.jar"/>
     <jar href="spring.jar"/>
-    <jar href="visadNoDods.jar"/>
+    <jar href="visadCdm.jar"/>
   </resources>
 
   <application-desc main-class="ucar.nc2.ui.ToolsUI">

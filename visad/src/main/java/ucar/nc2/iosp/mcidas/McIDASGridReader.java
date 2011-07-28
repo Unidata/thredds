@@ -108,7 +108,8 @@ public class McIDASGridReader {
      * @throws IOException   problem reading file
      */
     public final void init(RandomAccessFile raf) throws IOException {
-        init(raf, true);
+        if (!init(raf, true))
+          throw new IOException("Unable to open McIDAS Grid file: " + errorMessage);
     }
 
     /**
@@ -119,15 +120,11 @@ public class McIDASGridReader {
      *
      * @throws IOException   problem reading file
      */
-    public final void init(RandomAccessFile raf, boolean fullCheck)
+    public final boolean init(RandomAccessFile raf, boolean fullCheck)
             throws IOException {
         rf = raf;
         raf.order(RandomAccessFile.BIG_ENDIAN);
-        boolean ok = init(fullCheck);
-        if ( !ok) {
-            throw new IOException("Unable to open McIDAS Grid file: "
-                                  + errorMessage);
-        }
+        return init(fullCheck);
     }
 
     /**

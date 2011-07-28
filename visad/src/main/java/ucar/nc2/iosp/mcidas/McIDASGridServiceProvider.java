@@ -69,13 +69,8 @@ public class McIDASGridServiceProvider extends GridServiceProvider {
      * @throws IOException  problem reading file
      */
     public boolean isValidFile(RandomAccessFile raf) throws IOException {
-        try {
-            mcGridReader = new McIDASGridReader();
-            mcGridReader.init(raf, false);
-        } catch (IOException ioe) {
-            return false;
-        }
-        return true;
+        mcGridReader = new McIDASGridReader();
+        return mcGridReader.init(raf, false);
     }
 
     /**

@@ -39,7 +39,7 @@
     <jar href="spring-context.jar"/>
     <jar href="spring-core.jar"/>
     <jar href="spring-expression.jar"/>
-    <jar href="visadNoDods.jar"/>
+    <jar href="visadCdm.jar"/>
   </resources>
 
   <application-desc main-class="ucar.nc2.ui.ToolsUI"/>

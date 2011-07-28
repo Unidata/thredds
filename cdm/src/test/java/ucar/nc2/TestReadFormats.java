@@ -20,7 +20,7 @@ public class TestReadFormats extends TestCase {
   static int countGood = 0;
   static int countFail = 0;
   static int countTotal = 0;
-  static boolean verbose = false;
+  static boolean verbose = true;
 
   public TestReadFormats(String name) {
     super(name);
@@ -31,22 +31,28 @@ public class TestReadFormats extends TestCase {
       countTotal++;
       String name = pathname.getName();
       if (name.endsWith(".gbx8")) return false;
-      if (name.endsWith(".ncx")) return false;
-      if (name.endsWith(".xml")) return false;
+      if (name.endsWith(".gbx9")) return false;
+      // if (name.endsWith(".ncx")) return false;
       if (name.endsWith(".java")) return false;
+      if (name.endsWith(".tif")) return false;
+      if (name.endsWith(".txt")) return false;
+      if (name.endsWith(".xml")) return false;
+
       if (name.endsWith(".unf") && pathname.getPath().contains("grads")) return false;
+      if (name.endsWith(".HDR") && pathname.getPath().contains("gtopo")) return false;
       return true;
     }
   }
 
   public void testAllFormat() throws IOException {
-    openAllInDir("Q:/cdmUnitTest/formats", new MyFileFilter());
+    openAllInDir(TestAll.cdmUnitTestDir + "/formats", new MyFileFilter());
     int countExclude = countTotal - countGood - countFail;
     System.out.printf("Good=%d Fail=%d Exclude=%d%n", countGood, countFail, countExclude);
+    assert countFail == 0;
   }
 
   // these are fairly complete hdf4 files from nsidc
-  public void testHdf4() throws IOException {
+  public void utestHdf4() throws IOException {
     openAllInDir("F:/data/formats/hdf4", new MyFileFilter());
     int countExclude = countTotal - countGood - countFail;
     System.out.printf("Good=%d Fail=%d Exclude=%d%n", countGood, countFail, countExclude);
@@ -83,7 +89,7 @@ public class TestReadFormats extends TestCase {
     }
 
     for (File f : flist) {
-      if (f.isDirectory() && (!f.getName().equals("problem")))
+      if (f.isDirectory() && !f.getName().equals("problem") && !f.getName().equals("exclude"))
         openAllInDir(f.getAbsolutePath(), ff);
     }
 

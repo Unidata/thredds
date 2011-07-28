@@ -69,15 +69,7 @@
     <orderEntry type="module" module-name="cdm" exported="" />
     <orderEntry type="module" module-name="grib" exported="" />
     <orderEntry type="module" module-name="bufr" exported="" />
-    <orderEntry type="module-library" exported="">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../lib/release/bufrTables-2.0.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
+    <orderEntry type="module" module-name="visad" />
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
@@ -256,19 +248,19 @@
       </library>
     </orderEntry>
     <orderEntry type="library" exported="" name="Spring-Web" level="project" />
-    <orderEntry type="module-library">
+    <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../lib/external/org.springframework.test-3.0.5.RELEASE.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../lib/release/threddsIso-1.2.2.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module-library" exported="">
+    <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../lib/release/threddsIso-1.2.2.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../lib/external/org.springframework.test-3.0.5.RELEASE.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

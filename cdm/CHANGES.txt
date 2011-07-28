@@ -4,6 +4,8 @@ Build Date = @BUILDTIME@
 
 Changes in version 4.3:
  2:(2011-xx-xx)
+  clean up grib build
+  split visad dependent code into a seperate module, build visadCdm.jar
   hdf-eos : check if dimension already exists
   common module is rearranged.
   EscapeStrings class moved to ucar.nc2.util.net

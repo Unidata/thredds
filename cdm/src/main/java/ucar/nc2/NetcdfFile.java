@@ -124,21 +124,13 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
       if (loadWarnings) log.info("Cant load class: " + e);
     }
     try {
-      NetcdfFile.class.getClassLoader().loadClass("ucar.nc2.iosp.grib.GribServiceProvider"); // only load if grib.jar is present
+      NetcdfFile.class.getClassLoader().loadClass("ucar.nc2.iosp.grib.GribServiceProvider");
       registerIOProvider("ucar.nc2.iosp.grib.GribServiceProvider");
     } catch (Throwable e) {
       if (loadWarnings) log.info("Cant load class: " + e);
     }
     try {
-      NetcdfFile.class.getClassLoader().loadClass("ucar.nc2.iosp.grib.GribServiceProvider"); // only load if grib.jar is present
-      NetcdfFile.class.getClassLoader().loadClass("ucar.nc2.iosp.gempak.GempakGridServiceProvider");
-      NetcdfFile.class.getClassLoader().loadClass("visad.util.Trace"); // only load if visad.jar is present
-      registerIOProvider("ucar.nc2.iosp.gempak.GempakGridServiceProvider");
-    } catch (Throwable e) {
-      if (loadWarnings) log.info("Cant load class: " + e);
-    }
-    try {
-      Class iosp = NetcdfFile.class.getClassLoader().loadClass("ucar.nc2.iosp.bufr.BufrIosp"); // only load if bufr.jar is present
+      Class iosp = NetcdfFile.class.getClassLoader().loadClass("ucar.nc2.iosp.bufr.BufrIosp");
       registerIOProvider(iosp);
     } catch (Throwable e) {
       if (loadWarnings) log.info("Cant load resource: " + e);
@@ -155,21 +147,6 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     }
     try {
       registerIOProvider("ucar.nc2.iosp.nowrad.NOWRadiosp");
-    } catch (Throwable e) {
-      if (loadWarnings) log.info("Cant load class: " + e);
-    }
-    try {
-      registerIOProvider("ucar.nc2.iosp.dorade.Doradeiosp");
-    } catch (Throwable e) {
-      if (loadWarnings) log.info("Cant load class: " + e);
-    }
-    try {
-      registerIOProvider("ucar.nc2.iosp.dmsp.DMSPiosp");
-    } catch (Throwable e) {
-      if (loadWarnings) log.info("Cant load class: " + e);
-    }
-    try {
-      registerIOProvider("ucar.nc2.iosp.cinrad.Cinrad2IOServiceProvider");
     } catch (Throwable e) {
       if (loadWarnings) log.info("Cant load class: " + e);
     }
@@ -213,26 +190,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     } catch (Throwable e) {
       if (loadWarnings) log.info("Cant load class: " + e);
     }
-    try {
-      NetcdfFile.class.getClassLoader().loadClass("edu.wisc.ssec.mcidas.AreaFile"); // only load if visad.jar is present
-      registerIOProvider("ucar.nc2.iosp.mcidas.AreaServiceProvider");
-    } catch (Throwable e) {
-      if (loadWarnings) log.info("Cant load class: " + e);
-    }
-    try {
-      NetcdfFile.class.getClassLoader().loadClass("visad.util.Trace"); // only load if visad.jar is present
-      registerIOProvider("ucar.nc2.iosp.gempak.GempakSurfaceIOSP");
-      registerIOProvider("ucar.nc2.iosp.gempak.GempakSoundingIOSP");
-    } catch (Throwable e) {
-      if (loadWarnings) log.info("Cant load class: " + e);
-    }
-    try {
-      NetcdfFile.class.getClassLoader().loadClass("edu.wisc.ssec.mcidas.GridDirectory"); // only load if visad.jar is present
-      registerIOProvider("ucar.nc2.iosp.mcidas.McIDASGridServiceProvider");
-    } catch (Throwable e) {
-      if (loadWarnings) log.info("Cant load class: " + e);
-    }
-    try {
+        try {
       registerIOProvider("ucar.nc2.iosp.noaa.Ghcnm2");
     } catch (Throwable e) {
       if (loadWarnings) log.info("Cant load class: " + e);
@@ -242,11 +200,61 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
     } catch (Throwable e) {
       if (loadWarnings) log.info("Cant load class: " + e);
     }
+
+    ////////////////////////////////
+    // may have false positives
+    try {
+      registerIOProvider("ucar.nc2.iosp.cinrad.Cinrad2IOServiceProvider");
+    } catch (Throwable e) {
+      if (loadWarnings) log.info("Cant load class: " + e);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////
+    // iosps below here are a bit slow in isValidFile() eg needing an exception thrown
+    // so they are relegated to the end
+    try {
+      registerIOProvider("ucar.nc2.iosp.dmsp.DMSPiosp");
+    } catch (Throwable e) {
+      if (loadWarnings) log.info("Cant load class: " + e);
+    }
+    try {
+      registerIOProvider("ucar.nc2.iosp.dorade.Doradeiosp");
+    } catch (Throwable e) {
+      if (loadWarnings) log.info("Cant load class: " + e);
+    }
+    try {
+      NetcdfFile.class.getClassLoader().loadClass("ucar.nc2.iosp.gempak.GempakSurfaceIOSP");
+      registerIOProvider("ucar.nc2.iosp.gempak.GempakSurfaceIOSP");
+      registerIOProvider("ucar.nc2.iosp.gempak.GempakSoundingIOSP");
+    } catch (Throwable e) {
+      if (loadWarnings) log.info("Cant load class: " + e);
+    }
+    try {
+      NetcdfFile.class.getClassLoader().loadClass("ucar.nc2.iosp.grib.GribServiceProvider"); // only load if grib.jar is also present
+      NetcdfFile.class.getClassLoader().loadClass("ucar.nc2.iosp.gempak.GempakGridServiceProvider");
+      registerIOProvider("ucar.nc2.iosp.gempak.GempakGridServiceProvider");
+    } catch (Throwable e) {
+      if (loadWarnings) log.info("Cant load class: " + e);
+    }
     try {
       registerIOProvider("ucar.nc2.iosp.grads.GradsBinaryGridServiceProvider");
     } catch (Throwable e) {
       if (loadWarnings) log.info("Cant load class: " + e);
     }
+    try {
+      NetcdfFile.class.getClassLoader().loadClass("ucar.nc2.iosp.mcidas.AreaServiceProvider");
+      registerIOProvider("ucar.nc2.iosp.mcidas.AreaServiceProvider");
+    } catch (Throwable e) {
+      if (loadWarnings) log.info("Cant load class: " + e);
+    }
+    try {
+      NetcdfFile.class.getClassLoader().loadClass("ucar.nc2.iosp.grib.GribServiceProvider"); // only load if grib.jar is also present
+      NetcdfFile.class.getClassLoader().loadClass("ucar.nc2.iosp.mcidas.McIDASGridServiceProvider");
+      registerIOProvider("ucar.nc2.iosp.mcidas.McIDASGridServiceProvider");
+    } catch (Throwable e) {
+      if (loadWarnings) log.info("Cant load class: " + e);
+    }
+
 
     userLoads = true;
   }

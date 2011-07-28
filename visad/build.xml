@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="bufr" default="thredds" basedir=".">
+<project name="visad" default="thredds" basedir=".">
   <echo>basedir=${basedir}</echo>
   <tstamp>
     <format property="build.time" pattern="yyyy-MM-dd HH:mm:ss" timezone="GMT"/>
