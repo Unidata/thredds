@@ -1,15 +1,14 @@
 <!-- =======================================================================
         Parent Maven Configuration File for UCAR NetCDF library
      ======================================================================= -->
-  <project xmlns="http://maven.apache.org/POM/4.0.0"
-           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-           xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
-                               http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <prerequisites>
+  <!-- prerequisites>
     <maven>2.0.9</maven>
-  </prerequisites>
+  </prerequisites -->
 
   <!-- ====================================================
            Project description (including license)
@@ -17,7 +16,7 @@
   <groupId>edu.ucar</groupId>
   <artifactId>netcdf-parent</artifactId>
   <packaging>pom</packaging>
-  <version>4.2.21-SNAPSHOT</version>
+  <version>4.3.2</version>
   <name>Unidata parent</name>
   <description>
     The NetCDF-Java Library is a Java interface to NetCDF files,
@@ -49,14 +48,14 @@
 
   <scm>
     <url>http://svn.unidata.ucar.edu/repos/thredds/trunk</url>
-    <connection>http://svn.unidata.ucar.edu/repos/thredds/trunk</connection>
+    <connection>scm:svn:http://svn.unidata.ucar.edu/repos/thredds/trunk</connection>
+    <developerConnection>scm:svn:http://svn.unidata.ucar.edu/repos/thredds/trunk</developerConnection>
   </scm>
-
 
   <!-- ===========================================================
            Developers and Contributors
        =========================================================== -->
- <developers>
+  <developers>
     <developer>
       <id>caron</id>
       <name>John Caron</name>
@@ -183,12 +182,14 @@
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-jdk14</artifactId>
         <version>1.6.1</version>
-        <scope>runtime</scope> <!-- Should never be needed at compile time. -->
+        <scope>runtime</scope>
+        <!-- Should never be needed at compile time. -->
       </dependency>
       <dependency>
         <groupId>org.jdom</groupId>
         <artifactId>jdom</artifactId>
-        <version>1.1</version> <!-- Actually 1.1.1, but it doesn't seem to be on Maven repo. -->
+        <version>1.1</version>
+        <!-- Actually 1.1.1, but it doesn't seem to be on Maven repo. -->
       </dependency>
       <dependency>
         <groupId>commons-httpclient</groupId>
@@ -199,12 +200,12 @@
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-webmvc</artifactId>
-        <version>2.5.6</version>
+        <version>3.0.5.RELEASE</version>
       </dependency>
       <dependency>
         <groupId>com.google.protobuf</groupId>
         <artifactId>protobuf-java</artifactId>
-        <version>2.3.0</version>
+        <version>2.4.0a</version>
       </dependency>
       <dependency>
         <groupId>net.sf.ehcache</groupId>
@@ -214,7 +215,8 @@
       </dependency>
       <dependency>
         <artifactId>je</artifactId>
-        <groupId>com.sleepycat</groupId> <!-- Requires Oracle repository (see cdm/pom.xml) -->
+        <groupId>com.sleepycat</groupId>
+        <!-- Requires Oracle repository (see cdm/pom.xml) -->
         <version>4.0.92</version>
       </dependency>
       <dependency>
@@ -254,7 +256,8 @@
         <artifactId>maven-jar-plugin</artifactId>
         <configuration>
           <archive>
-            <index>true</index> <!-- Archive will contain an INDEX.LIST file. -->
+            <index>true</index>
+            <!-- Archive will contain an INDEX.LIST file. -->
             <manifest>
               <addClasspath>true</addClasspath>
               <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
@@ -265,19 +268,30 @@
           </archive>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <configuration>
+          <links>
+            <link>http://java.sun.com/j2se/1.5.0/docs/api/</link>
+          </links>
+          <use>false</use>
+          <quiet>true</quiet>
+          <maxmemory>1024m</maxmemory>
+          <minmemory>512m</minmemory>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
-
-
 
   <!-- ====================================================
            Deployment to public servers
        ==================================================== -->
   <distributionManagement>
     <repository>
-       <id>sonatype-nexus-staging</id>
-       <name>Sonatype OSS Hosting, synced to Maven Central</name>
-       <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+      <id>sonatype-nexus-staging</id>
+      <name>Sonatype OSS Hosting, synced to Maven Central</name>
+      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
     </repository>
   </distributionManagement>
 
@@ -295,11 +309,11 @@
   </modules>
 
   <properties>
-    <common.version>4.2.21-SNAPSHOT</common.version>
-    <netcdf.version>4.2.21-SNAPSHOT</netcdf.version>
-    <grib.version>8.0.29</grib.version>
-    <bufr.version>3.0</bufr.version>
-    <opendap.version>2.2.2</opendap.version>
+    <common.version>4.3.2</common.version>
+    <netcdf.version>4.3.2</netcdf.version>
+    <grib.version>4.3.2</grib.version>
+    <bufr.version>4.3.2</bufr.version>
+    <opendap.version>4.3.2</opendap.version>
     <visad.version>2010-08-09</visad.version>
     <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
