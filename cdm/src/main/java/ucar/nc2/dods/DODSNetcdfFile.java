@@ -42,7 +42,7 @@ import ucar.nc2.util.*;
 
 import opendap.dap.*;
 import opendap.dap.parsers.*;
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 
 import java.io.*;
 import java.util.*;
@@ -946,7 +946,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile {
       opendap.dap.DArrayDimension dad = (opendap.dap.DArrayDimension) enumerate.nextElement();
       String name = dad.getEncodedName();
       if (name != null)
-        name = StringUtil.unescape(name);
+        name = StringUtil2.unescape(name);
 
       Dimension myd;
 

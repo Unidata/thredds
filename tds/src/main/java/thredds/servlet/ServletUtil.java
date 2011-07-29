@@ -49,7 +49,7 @@ import ucar.nc2.util.cache.FileCacheable;
 import ucar.nc2.util.cache.FileFactory;
 import ucar.nc2.util.net.EscapeStrings;
 import ucar.unidata.io.RandomAccessFile;
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 
 public class ServletUtil {
 
@@ -1003,7 +1003,7 @@ public class ServletUtil {
 
   public static String getFileURL(String filename) {
     filename = filename.replace('\\', '/');
-    filename = StringUtil.replace(filename, ' ', "+");
+    filename = StringUtil2.replace(filename, ' ', "+");
     return "file:" + filename;
   }
 

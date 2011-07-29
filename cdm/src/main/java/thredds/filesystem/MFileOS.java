@@ -34,7 +34,7 @@ package thredds.filesystem;
 
 import net.jcip.annotations.ThreadSafe;
 import thredds.inventory.MFile;
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 
 /**
  * Implements thredds.inventory.MFile using regular OS files.
@@ -69,7 +69,7 @@ public class MFileOS implements MFile {
   @Override
   public String getPath() {
     // no microsnot
-    return StringUtil.replace(file.getPath(), '\\', "/");
+    return StringUtil2.replace(file.getPath(), '\\', "/");
   }
 
   @Override

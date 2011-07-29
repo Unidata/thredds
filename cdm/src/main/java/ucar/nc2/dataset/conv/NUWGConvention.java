@@ -44,7 +44,7 @@ import ucar.nc2.units.SimpleUnit;
 import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.*;
 import ucar.unidata.util.Format;
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 
 import java.io.IOException;
 import java.util.*;
@@ -190,8 +190,8 @@ public class NUWGConvention extends CoordSysBuilder {
             // the usual crap - clean up time units
             String units = ncvar.getUnitsString();
             if (units != null) {
-              units = StringUtil.remove(units, '(');
-              units = StringUtil.remove(units, ')');
+              units = StringUtil2.remove(units, '(');
+              units = StringUtil2.remove(units, ')');
               ncvar.addAttribute(new Attribute("units", units));
             }
           } else {

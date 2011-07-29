@@ -45,7 +45,7 @@ import ucar.nc2.iosp.netcdf3.N3iosp;
 import ucar.nc2.iosp.netcdf3.SPFactory;
 import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.iosp.IospHelper;
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 
 import java.util.*;
 import java.util.zip.ZipInputStream;
@@ -271,7 +271,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
    * @return valid CDM object name
    */
   static public String makeValidCdmObjectName(String name) {
-    return StringUtil.makeValidCdmObjectName(name);
+    return StringUtil2.makeValidCdmObjectName(name);
     //return StringUtil.replace(name.trim(), "/", "_");
   }
 
@@ -557,7 +557,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
       uriString = uriString.substring(5);
 
     // get rid of crappy microsnot \ replace with happy /
-    uriString = StringUtil.replace(uriString, '\\', "/");
+    uriString = StringUtil2.replace(uriString, '\\', "/");
 
     if (bufferSize <= 0)
       bufferSize = default_buffersize;
@@ -594,11 +594,11 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
 
     } else {
       // get rid of crappy microsnot \ replace with happy /
-      uriString = StringUtil.replace(uriString, '\\', "/");
+      uriString = StringUtil2.replace(uriString, '\\', "/");
 
       if (uriString.startsWith("file:")) {
         // uriString = uriString.substring(5);
-        uriString = StringUtil.unescape(uriString.substring(5));  // 11/10/2010 from erussell@ngs.org
+        uriString = StringUtil2.unescape(uriString.substring(5));  // 11/10/2010 from erussell@ngs.org
       }
 
       String uncompressedFileName = null;

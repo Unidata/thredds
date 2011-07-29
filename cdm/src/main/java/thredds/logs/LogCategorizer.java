@@ -35,7 +35,7 @@ package thredds.logs;
 
 import thredds.filesystem.CacheDirectory;
 import thredds.filesystem.CacheManager;
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 
 import java.io.*;
 
@@ -179,7 +179,7 @@ public class LogCategorizer {
                   "GEMPAK/model,/data/ldm/pub/decoded/gempak/model";
 
   public static String[] getRoots() {
-    String rootString = StringUtil.replace(roots, "\n", ",");
+    String rootString = StringUtil2.replace(roots, "\n", ",");
     String[] root2 = rootString.split(",");
     String[] result = new String[root2.length/2];
     for (int i = 0; i < root2.length; i += 2) {
@@ -195,7 +195,7 @@ public class LogCategorizer {
 
   public static PathMatcher readRoots() {
     PathMatcher pathMatcher = new PathMatcher();
-    String rootString = StringUtil.replace(roots, "\n", ",");
+    String rootString = StringUtil2.replace(roots, "\n", ",");
     String[] roots = rootString.split(",");
     for (int i = 0; i < roots.length; i += 2) {
       if (showRoots) System.out.printf("  %-40s %-40s%n", roots[i], roots[i + 1]);

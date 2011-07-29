@@ -33,7 +33,7 @@
 
 package thredds.logs;
 
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 
 import java.io.BufferedReader;
 import java.io.*;
@@ -83,7 +83,7 @@ public class LogReader {
     }
 
     public String getPath() {
-      return (path == null) ? null : StringUtil.unescape(path);
+      return (path == null) ? null : StringUtil2.unescape(path);
     }
 
     public long date;

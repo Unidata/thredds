@@ -33,7 +33,7 @@
 package thredds.inventory;
 
 import org.jdom.Element;
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 
 import java.util.*;
 
@@ -211,7 +211,7 @@ public class FeatureCollectionConfig {
       if (!explicit) datasets = EnumSet.noneOf(FmrcDatasetType.class);
       explicit = true;
 
-      String[] types = StringUtil.splitString(datasetTypes);
+      String[] types = StringUtil2.splitString(datasetTypes);
       for (String type : types) {
         try {
           FmrcDatasetType fdt = FmrcDatasetType.valueOf(type);
@@ -268,7 +268,7 @@ public class FeatureCollectionConfig {
       if (!explicit) datasets = EnumSet.noneOf(PointDatasetType.class);
       explicit = true;
 
-      String[] types = StringUtil.splitString(datasetTypes);
+      String[] types = StringUtil2.splitString(datasetTypes);
       for (String type : types) {
         try {
           PointDatasetType fdt = PointDatasetType.valueOf(type);
@@ -303,7 +303,7 @@ public class FeatureCollectionConfig {
       if (!explicit) datasets = EnumSet.noneOf(GribDatasetType.class);
       explicit = true;
 
-      String[] types = StringUtil.splitString(datasetTypes);
+      String[] types = StringUtil2.splitString(datasetTypes);
       for (String type : types) {
         try {
           GribDatasetType fdt = GribDatasetType.valueOf(type);

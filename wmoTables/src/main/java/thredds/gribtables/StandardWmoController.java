@@ -11,7 +11,6 @@ import ucar.nc2.iosp.bufr.Message;
 import ucar.nc2.iosp.bufr.MessageScanner;
 import ucar.nc2.units.DateFormatter;
 import ucar.unidata.io.*;
-import ucar.unidata.util.StringUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

@@ -37,7 +37,7 @@ import ucar.ma2.*;
 import java.util.*;
 
 import net.jcip.annotations.Immutable;
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 
 /**
  * Adapter for dods.dap.Attribute into a ucar.nc2.Attribute.
@@ -122,6 +122,6 @@ public class DODSAttribute extends ucar.nc2.Attribute {
   static private String[] escapeAttributeStrings = {"\\", "\"" };
   static private String[] substAttributeStrings = {"\\\\", "\\\"" };
   private String unescapeAttributeStringValues( String value) {
-    return StringUtil.substitute(value, substAttributeStrings, escapeAttributeStrings);
+    return StringUtil2.substitute(value, substAttributeStrings, escapeAttributeStrings);
   }
 }

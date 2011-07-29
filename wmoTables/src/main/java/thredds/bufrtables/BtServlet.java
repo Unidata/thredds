@@ -69,7 +69,7 @@ import ucar.nc2.iosp.bufr.MessageScanner;
 import ucar.nc2.iosp.bufr.Message;
 import ucar.nc2.iosp.bufr.DataDescriptor;
 import ucar.nc2.iosp.bufr.writer.Bufr2Xml;
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 
 /**
  * NOT USED - replaced with spring beans
@@ -415,10 +415,10 @@ public class BtServlet extends HttpServlet {
                                    String username, boolean wantXml) throws Exception {
 
     if ((username == null) || (username.length() == 0)) username = "anon";
-    username = StringUtil.filter(username, "_");
+    username = StringUtil2.filter(username, "_");
     String filename = item.getName();
-    filename = StringUtil.replace(filename, "/", "-");
-    filename = StringUtil.filter(filename, ".-_");
+    filename = StringUtil2.replace(filename, "/", "-");
+    filename = StringUtil2.filter(filename, ".-_");
 
     String cacheName = username + "/" + filename;
     File uploadedFile = new File(cacheDir + "/" + cacheName);
@@ -457,10 +457,10 @@ public class BtServlet extends HttpServlet {
   private void processURL(HttpServletRequest req, HttpServletResponse res, String urls, String username, boolean wantXml) throws Exception {
 
     if ((username == null) || (username.length() == 0)) username = "anon";
-    username = StringUtil.filter(username, "_");
+    username = StringUtil2.filter(username, "_");
     String filename = urls;
-    filename = StringUtil.replace(filename, "/", "-");
-    filename = StringUtil.filter(filename, ".-_");
+    filename = StringUtil2.replace(filename, "/", "-");
+    filename = StringUtil2.filter(filename, ".-_");
 
     String cacheName = username + "/" + filename;
     File uploadedFile = new File(cacheDir + "/" + cacheName);

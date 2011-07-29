@@ -48,7 +48,7 @@ import thredds.catalog.InvDataset;
 import thredds.catalog.InvAccess;
 import thredds.catalog.ServiceType;
 import thredds.catalog.InvCatalogRef;
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 
 /**
  * A collection of ForecastModelRun (aka "run").
@@ -1432,7 +1432,7 @@ public class FmrcInventory {
     String catName = server + cat + "/files/catalog.xml";
     FmrcInventory fmrCollection = makeFromCatalog(null, catName, catName, n, ForecastModelRunInventory.OPEN_FORCE_NEW);
 
-    String writeFile = writeDir + StringUtil.replace(cat, "/","-") + ".fmrcDefinition.xml";
+    String writeFile = writeDir + StringUtil2.replace(cat, "/", "-") + ".fmrcDefinition.xml";
     System.out.println("write definition to " + writeFile);
     FmrcDefinition def = new FmrcDefinition();
     def.makeFromCollectionInventory(fmrCollection);

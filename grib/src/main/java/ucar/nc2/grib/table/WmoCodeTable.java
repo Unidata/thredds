@@ -37,8 +37,7 @@ import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import ucar.grib.grib2.ParameterTable;
 import ucar.nc2.iosp.grid.GridParameter;
-import ucar.nc2.iosp.netcdf3.N3iosp;
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -431,9 +430,9 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
         }
 
         // clean it up
-        sb = StringUtil.trim(sb); // remove trailing and leading blanks
-        StringUtil.replace(sb, "/. ", "-p_");
-        StringUtil.remove(sb, "(),;");
+        sb = StringUtil2.trim(sb); // remove trailing and leading blanks
+        StringUtil2.replace(sb, "/. ", "-p_");
+        StringUtil2.remove(sb, "(),;");
         char c = sb.charAt(0);
         if (Character.isLetter(c)) {
           if (Character.isLowerCase(c))
@@ -462,7 +461,7 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
           else {
             if (unit.startsWith("/")) unit = "1" + unit;
             unit = unit.trim();
-            unit = StringUtil.replace(unit, ' ', ".");
+            unit = StringUtil2.replace(unit, ' ', ".");
           }
 
         }
@@ -630,8 +629,8 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
   }
 
   static String munge(String org) {
-    String result = StringUtil.remove(org, "_");
-    result = StringUtil.remove(result, "-");
+    String result = StringUtil2.remove(org, "_");
+    result = StringUtil2.remove(result, "-");
     return result;
   }
 

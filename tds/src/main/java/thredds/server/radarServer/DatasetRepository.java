@@ -50,7 +50,7 @@ import thredds.catalog.query.SelectStation;
 import thredds.catalog.query.Station;
 import thredds.server.config.TdsContext;
 import thredds.servlet.UsageLog;
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -208,7 +208,7 @@ public class DatasetRepository {
 
     InvCatalogImpl acat;
     try {
-      catURI = new URI("file:" + StringUtil.escape(catalogFullPath, "/:-_.")); // LOOK needed ?
+      catURI = new URI("file:" + StringUtil2.escape(catalogFullPath, "/:-_.")); // LOOK needed ?
     }
     catch (URISyntaxException e) {
       log.info("radarServer readCatalog(): URISyntaxException=" + e.getMessage());

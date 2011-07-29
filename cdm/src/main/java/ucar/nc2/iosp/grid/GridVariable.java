@@ -36,10 +36,9 @@ package ucar.nc2.iosp.grid;
 import ucar.ma2.DataType;
 
 import ucar.nc2.*;
-import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.units.DateFormatter;
 import ucar.unidata.io.RandomAccessFile;
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 
 import java.util.ArrayList;
 import java.util.Formatter;
@@ -397,7 +396,7 @@ public class GridVariable {
     this.nlevels = getVertNlevels();
     this.ntimes = tcs.getNTimes();
     if (vname == null) {
-      useName = StringUtil.replace(useName, ' ', "_");
+      useName = StringUtil2.replace(useName, ' ', "_");
       this.vname = useName;
     }
 

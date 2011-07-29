@@ -56,7 +56,7 @@ import java.util.*;
 
 import org.apache.commons.httpclient.Header;
 import thredds.catalog.ServiceType;
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 
 /**
  * NetcdfDataset extends the netCDF API, adding standard attribute parsing such as
@@ -648,7 +648,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     if (location == null)
       throw new IOException("NetcdfDataset.openFile: location is null");
     location = location.trim();
-    location = StringUtil.replace(location, '\\', "/");
+    location = StringUtil2.replace(location, '\\', "/");
 
     if (location.startsWith("dods:")) {
         return acquireDODS(cache, factory, hashKey, location, buffer_size, cancelTask, spiObject);  // open through DODS

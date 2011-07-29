@@ -33,6 +33,8 @@
 
 package ucar.nc2.ui.widget;
 
+import ucar.unidata.util.StringUtil2;
+
 import java.awt.*;
 import javax.swing.*;
 
@@ -70,7 +72,7 @@ public class PopupManager {
     sbuff.setLength(0);
     sbuff.append("<html><body>");
 
-    String textSubbed = ucar.unidata.util.StringUtil.substitute( text, "\n", "<br>");
+    String textSubbed = StringUtil2.substitute(text, "\n", "<br>");
     sbuff.append(textSubbed);
     sbuff.append("</body></html>");
     info.setText(sbuff.toString());

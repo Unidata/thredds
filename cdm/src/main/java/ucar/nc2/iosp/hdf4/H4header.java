@@ -36,7 +36,7 @@ import ucar.unidata.io.RandomAccessFile;
 import ucar.nc2.*;
 import ucar.ma2.*;
 import ucar.unidata.util.Format;
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -77,7 +77,7 @@ public class H4header {
   }
 
   static String createValidObjectName(String name ) {
-    return StringUtil.replace(name, ' ', "_"); // added 2/15/2010
+    return StringUtil2.replace(name, ' ', "_"); // added 2/15/2010
   }
 
   private static boolean debugDD = false; // DDH/DD

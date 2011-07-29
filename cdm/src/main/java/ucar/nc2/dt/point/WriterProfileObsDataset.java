@@ -43,7 +43,7 @@ import ucar.ma2.*;
 import ucar.ma2.DataType;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.LatLonPointImpl;
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 
 import java.util.*;
 import java.io.*;
@@ -566,8 +566,8 @@ public class WriterProfileObsDataset {
     // need the date units
     Variable time = ncfile.findVariable("synTime");
     String timeUnits = ncfile.findAttValueIgnoreCase(time, "units", null);
-    timeUnits = StringUtil.remove(timeUnits, '(');  // crappy fsl'ism
-    timeUnits = StringUtil.remove(timeUnits, ')');
+    timeUnits = StringUtil2.remove(timeUnits, '(');  // crappy fsl'ism
+    timeUnits = StringUtil2.remove(timeUnits, ')');
     DateUnit timeUnit = new DateUnit(timeUnits);
 
     // extract stations

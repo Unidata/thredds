@@ -46,10 +46,9 @@ import java.io.*;
 import java.util.*;
 import java.net.URI;
 
-import ucar.nc2.units.TimeUnit;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.nc2.constants.FeatureType;
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 
 public class ADNWriter {
   private static final Namespace defNS = Namespace.getNamespace("http://adn.dlese.org");
@@ -91,7 +90,7 @@ public class ADNWriter {
       messBuffer.append( " Dataset "+ ds.getName()+ " id = "+ds.getID()+" has harvest = false\n");
 
     } else if (isDatasetUseable( ds, messBuffer)) {
-      String id = StringUtil.replace(ds.getID(), "/","-");
+      String id = StringUtil2.replace(ds.getID(), "/", "-");
       String fileOutName = fileDir+"/"+id+".adn.xml";
       try {
         OutputStream out = new BufferedOutputStream(new FileOutputStream( fileOutName));
@@ -217,7 +216,7 @@ public class ADNWriter {
 
     Element entry = new Element("catalog", defNS);
     entries.addContent( entry);
-    String id = StringUtil.allow( ds.getUniqueID(), ".", '-');
+    String id = StringUtil2.allow(ds.getUniqueID(), ".", '-');
     entry.setAttribute("entry", id);
     entry.addContent("THREDDS-motherlode");
 

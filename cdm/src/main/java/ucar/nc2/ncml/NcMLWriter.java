@@ -43,7 +43,6 @@ import org.jdom.*;
 import org.jdom.output.XMLOutputter;
 import org.jdom.output.Format;
 import ucar.nc2.util.xml.Parse;
-import ucar.unidata.util.StringUtil;
 
 import java.io.*;
 import java.util.*;

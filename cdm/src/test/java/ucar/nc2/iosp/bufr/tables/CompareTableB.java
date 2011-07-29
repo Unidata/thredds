@@ -46,7 +46,7 @@ import java.util.regex.Matcher;
 import java.nio.charset.Charset;
 
 import ucar.nc2.iosp.bufr.Descriptor;
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 
 /**
  * @author caron
@@ -150,7 +150,7 @@ public class CompareTableB {
   }
 
   String clean(String s) {
-    return StringUtil.remove(s, ' ');
+    return StringUtil2.remove(s, ' ');
   }
 
   public void compareBrit() throws IOException {
@@ -364,8 +364,8 @@ public class CompareTableB {
   char[] remove = new char[] {'(', ')', ' ', '"', ',', '*', '-'};
   String[] replace = new String[] {"", "", "", "", "", "", ""};
   boolean equiv(String org1, String org2) {
-    String s1 = StringUtil.replace(org1, remove, replace).toLowerCase();
-    String s2 = StringUtil.replace(org2, remove, replace).toLowerCase();
+    String s1 = StringUtil2.replace(org1, remove, replace).toLowerCase();
+    String s2 = StringUtil2.replace(org2, remove, replace).toLowerCase();
     return s1.equals(s2);
   }
 

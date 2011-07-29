@@ -11,7 +11,7 @@ import thredds.servlet.DataRootHandler;
 import thredds.servlet.DebugHandler;
 import thredds.servlet.UsageLog;
 import ucar.nc2.time.CalendarDateFormatter;
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -45,7 +45,7 @@ public class CollectionController extends AbstractController {
       public void doAction(DebugHandler.Event e) {
         List<InvDatasetFeatureCollection> fcList = DataRootHandler.getInstance().getFeatureCollections();
         for (InvDatasetFeatureCollection fc :fcList) {
-          String ename = StringUtil.escape(fc.getName(), "");
+          String ename = StringUtil2.escape(fc.getName(), "");
           String url = tdsContext.getContextPath() + PATH + "?"+COLLECTION+"="+ename;
           e.pw.printf("<p/><a href='%s'>%s</a>%n", url, fc.getName());
         }

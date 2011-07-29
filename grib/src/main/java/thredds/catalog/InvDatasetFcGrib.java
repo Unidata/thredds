@@ -34,8 +34,6 @@ package thredds.catalog;
 
 import net.jcip.annotations.ThreadSafe;
 import org.slf4j.Logger;
-import thredds.filesystem.FileSystemProto;
-import thredds.inventory.CollectionManager;
 import thredds.inventory.DatasetCollectionMFiles;
 import thredds.inventory.FeatureCollectionConfig;
 import thredds.inventory.TimePartitionCollection;
@@ -48,7 +46,7 @@ import ucar.nc2.grib.grib2.GribIndex;
 import ucar.nc2.grib.table.GribTables;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonRect;
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 
 import java.io.File;
 import java.io.IOException;
@@ -251,7 +249,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       for (GribCollection.GroupHcs group : localState.gribCollection.getGroups()) {
         String name = group.hcs.getName();
         InvDatasetImpl ds = new InvDatasetImpl(this, name);
-        name = StringUtil.replace(name, ' ', "_");
+        name = StringUtil2.replace(name, ' ', "_");
         ds.setUrlPath(this.path + "/" + name);
         ds.setID(id + "/" + name);
         addFileDatasets(ds, name);
@@ -278,7 +276,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       for ( TimePartition.Partition dc : localState.timePartition.getPartitions()) {
         String dname = dc.getName();
         ds = new InvCatalogRef(this, dname, getCatalogHref(dname));
-        dname = StringUtil.replace(dname, ' ', "_");
+        dname = StringUtil2.replace(dname, ' ', "_");
         ds.setUrlPath(this.path + "/" + dname);
         ds.setID(id + "/" + dname);
         //ThreddsMetadata tm = ds.getLocalMetadata();
@@ -391,7 +389,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     for (GribCollection.GroupHcs group : gribCollection.getGroups()) {
       String name = group.hcs.getName();
       InvDatasetImpl ds = new InvDatasetImpl(this, name+"_"+COLLECTION);
-      name = StringUtil.replace(name, ' ', "_");
+      name = StringUtil2.replace(name, ' ', "_");
       ds.setUrlPath(this.path + "/" + collectionName + "/" + name);
       ds.setID(id + "/" + collectionName + "/" + name);
 

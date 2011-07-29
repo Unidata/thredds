@@ -48,7 +48,7 @@ import ucar.nc2.dt.fmrc.FmrcDefinition;
 import ucar.nc2.dt.fmrc.FmrcReport;
 import ucar.nc2.dt.fmrc.ForecastModelRunInventory;
 import thredds.catalog.InvDatasetFmrc;
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 
 /**
  * Servlet shows Forecast Model Run Collection Inventory.
@@ -211,7 +211,7 @@ public class FmrcInventoryServlet extends AbstractServlet {
 
       int pos = path.indexOf("model/");
       String path2 = path.substring(pos + 6);
-      String name = StringUtil.replace(path2, '/', "-");
+      String name = StringUtil2.replace(path2, '/', "-");
       if (name.startsWith("-")) name = name.substring(1);
       if (name.endsWith("-")) name = name.substring(0, name.length() - 1);
       String dir = "/data/ldm/pub/native/grid/" + path2;

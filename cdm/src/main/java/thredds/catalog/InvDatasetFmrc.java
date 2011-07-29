@@ -51,11 +51,10 @@ import ucar.nc2.dt.fmrc.FmrcImpl;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.units.TimeDuration;
-import ucar.nc2.units.DateRange;
 import ucar.nc2.thredds.MetadataExtractor;
 import ucar.nc2.util.cache.FileCache;
 import ucar.nc2.util.cache.FileCacheNOP;
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 
 /**
  * InvDatasetFmrc represents an <datasetFmrc> element in a TDS catalog.
@@ -207,7 +206,7 @@ public class InvDatasetFmrc extends InvCatalogRef {
 
         InvDatasetImpl ds = new InvDatasetImpl(this, "Forecast Model Run Collection (2D time coordinates)");
         String name = getName()+"_"+FMRC;
-        name = StringUtil.replace(name, ' ', "_");
+        name = StringUtil2.replace(name, ' ', "_");
         ds.setUrlPath(path+"/"+name);
         ds.setID(id+"/"+name);
         ThreddsMetadata tm = ds.getLocalMetadata();
@@ -218,7 +217,7 @@ public class InvDatasetFmrc extends InvCatalogRef {
 
         ds = new InvDatasetImpl(this, "Best Time Series");
         name = getName()+"_"+BEST;
-        name = StringUtil.replace(name, ' ', "_");
+        name = StringUtil2.replace(name, ' ', "_");
         ds.setUrlPath(path+"/"+name);
         ds.setID(id+"/"+name);
         tm = ds.getLocalMetadata();
@@ -492,7 +491,7 @@ public class InvDatasetFmrc extends InvCatalogRef {
     for (Date runDate : fmrc.getRunDates()) {
       //String name = StringUtil.escape(formatter.toDateTimeStringISO( runDate), "");
       String name = getName()+"_"+RUN_NAME+formatter.toDateTimeStringISO( runDate);
-      name = StringUtil.replace(name, ' ', "_");
+      name = StringUtil2.replace(name, ' ', "_");
       InvDatasetImpl nested = new InvDatasetImpl(this, name);
       nested.setUrlPath(path+"/"+RUNS+"/"+name);
       nested.setID(id+"/"+RUNS+"/"+name);
@@ -516,7 +515,7 @@ public class InvDatasetFmrc extends InvCatalogRef {
 
      for (Double offset : fmrc.getForecastOffsets()) {
        String name = getName()+"_"+OFFSET_NAME+offset+"hr";
-       name = StringUtil.replace(name, ' ', "_");
+       name = StringUtil2.replace(name, ' ', "_");
        InvDatasetImpl nested = new InvDatasetImpl(this, name);
        nested.setUrlPath(path+"/"+OFFSET+"/"+name);
        nested.setID(id+"/"+OFFSET+"/"+name);
@@ -540,7 +539,7 @@ public class InvDatasetFmrc extends InvCatalogRef {
 
      for (Date forecastDate : fmrc.getForecastDates()) {
        String name = getName()+"_"+FORECAST_NAME+formatter.toDateTimeStringISO( forecastDate);
-       name = StringUtil.replace(name, ' ', "_");
+       name = StringUtil2.replace(name, ' ', "_");
        InvDatasetImpl nested = new InvDatasetImpl(this, name);
        nested.setUrlPath(path+"/"+FORECAST+"/"+name);
        nested.setID(id+"/"+FORECAST+"/"+name);

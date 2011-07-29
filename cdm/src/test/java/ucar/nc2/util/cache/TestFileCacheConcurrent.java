@@ -36,7 +36,7 @@ import junit.framework.TestCase;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.NetcdfFile;
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 
 import java.io.IOException;
 import java.io.File;
@@ -75,7 +75,7 @@ public class TestFileCacheConcurrent extends TestCase {
 
       else if (f.getPath().endsWith(suffix) && f.length() > 0) {
         //System.out.println(" open "+f.getPath());
-        String want = StringUtil.replace(f.getPath(), '\\', "/");
+        String want = StringUtil2.replace(f.getPath(), '\\', "/");
         result.add(want);
       }
     }

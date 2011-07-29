@@ -49,7 +49,7 @@ import thredds.servlet.ThreddsConfig;
 import thredds.servlet.ServletUtil;
 import thredds.catalog.InvDatasetScan;
 import ucar.nc2.util.IO;
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 
 /**
  * TDS context initialization - called from TdsConfigContextListener.
@@ -297,7 +297,7 @@ public class TdsContext
         throw new IllegalStateException(msg);
       }
     }
-    String loggingDirectory = StringUtil.substitute(logDir.getPath(),"\\", "/");
+    String loggingDirectory = StringUtil2.substitute(logDir.getPath(), "\\", "/");
     System.setProperty( "tds.log.dir", loggingDirectory); // variable substitution
 
     this.publicContentDirectory = new File( this.contentDirectory, "public");

@@ -35,7 +35,7 @@ package ucar.nc2.iosp.bufr.tables;
 import org.jdom.input.SAXBuilder;
 import org.jdom.Element;
 import org.jdom.JDOMException;
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 
 import java.io.IOException;
 import java.io.BufferedReader;
@@ -114,7 +114,7 @@ public class CompareTableD {
   }
 
   String clean(String s) {
-    return StringUtil.remove(s, ' ');
+    return StringUtil2.remove(s, ' ');
   }
 
   //////////////////////////////////////////////////////////////

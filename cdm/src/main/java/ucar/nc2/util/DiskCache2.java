@@ -33,7 +33,7 @@
 package ucar.nc2.util;
 
 import ucar.nc2.util.net.EscapeStrings;
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 
 import java.io.File;
 import java.io.IOException;
@@ -130,7 +130,7 @@ public class DiskCache2 {
   public void setRootDirectory(String cacheDir) {
     if (!cacheDir.endsWith("/"))
       cacheDir = cacheDir + "/";
-    root = StringUtil.replace(cacheDir, '\\', "/"); // no nasty backslash
+    root = StringUtil2.replace(cacheDir, '\\', "/"); // no nasty backslash
 
     File dir = new File(root);
     dir.mkdirs();
@@ -218,10 +218,10 @@ public class DiskCache2 {
   private String makeCachePath(String fileLocation) {
 
     // remove ':', '?', '=', replace '\' with '/', leading or trailing '/'
-    String cachePath = StringUtil.remove(fileLocation, ':');
-    cachePath = StringUtil.remove(cachePath, '?');
-    cachePath = StringUtil.remove(cachePath, '=');
-    cachePath = StringUtil.replace(cachePath, '\\', "/");
+    String cachePath = StringUtil2.remove(fileLocation, ':');
+    cachePath = StringUtil2.remove(cachePath, '?');
+    cachePath = StringUtil2.remove(cachePath, '=');
+    cachePath = StringUtil2.replace(cachePath, '\\', "/");
     if (cachePath.startsWith("/"))
       cachePath = cachePath.substring(1);
     if (cachePath.endsWith("/"))
@@ -229,7 +229,7 @@ public class DiskCache2 {
 
     // remove directories
     if (cachePathPolicy == CACHEPATH_POLICY_ONE_DIRECTORY) {
-      cachePath = StringUtil.replace(cachePath, '/', "-");
+      cachePath = StringUtil2.replace(cachePath, '/', "-");
     }
 
     // eliminate leading directories

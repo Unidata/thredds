@@ -35,7 +35,7 @@ package ucar.nc2.util.xml;
 import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 
 import java.io.IOException;
 
@@ -105,7 +105,7 @@ public class Parse {
    * @return equivilent string using entities for any special chars
    */
   static public String quoteXmlContent(String x) {
-    return StringUtil.replace(x, xmlInC, xmlOutC);
+    return StringUtil2.replace(x, xmlInC, xmlOutC);
   }
 
   /**
@@ -115,7 +115,7 @@ public class Parse {
    * @return equivilent string
    */
   static public String unquoteXmlContent(String x) {
-    return StringUtil.unreplace(x, xmlOutC, xmlInC);
+    return StringUtil2.unreplace(x, xmlOutC, xmlInC);
   }
 
   /**

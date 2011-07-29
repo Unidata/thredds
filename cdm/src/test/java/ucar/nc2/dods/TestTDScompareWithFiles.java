@@ -40,7 +40,7 @@ import ucar.nc2.*;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.constants._Coordinate;
 import ucar.ma2.*;
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 
 /** compare files served through netcdf-DODS server. */
 
@@ -108,8 +108,8 @@ public class TestTDScompareWithFiles extends TestCase {
 
 
   private void doOne(String filename) throws IOException {
-    filename = StringUtil.replace(filename, '\\', "/");
-    filename = StringUtil.remove(filename, root);
+    filename = StringUtil2.replace(filename, '\\', "/");
+    filename = StringUtil2.remove(filename, root);
     String dodsUrl = TestLocalDodsServer.alldata+filename;
     String localPath = root+filename;
     System.out.println("--Compare "+localPath+" to "+dodsUrl);

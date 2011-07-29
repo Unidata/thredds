@@ -34,7 +34,7 @@ package ucar.nc2.ui;
 import ucar.nc2.ui.dialog.BufrBCompare;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
 import ucar.nc2.units.DateFormatter;
@@ -325,8 +325,8 @@ Class,FXY,enElementName,BUFR_Unit,BUFR_Scale,BUFR_ReferenceValue,BUFR_DataWidth_
   private String[] replace = new String[]{"", "", "", "", "", "", ""};
 
   private boolean equiv(String org1, String org2) {
-    String s1 = StringUtil.replace(org1, remove, replace).toLowerCase();
-    String s2 = StringUtil.replace(org2, remove, replace).toLowerCase();
+    String s1 = StringUtil2.replace(org1, remove, replace).toLowerCase();
+    String s2 = StringUtil2.replace(org2, remove, replace).toLowerCase();
     return s1.equals(s2);
   }
 

@@ -5,7 +5,7 @@ import ucar.grib.GribNumbers;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDuration;
 import ucar.unidata.util.Format;
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 
 import java.io.IOException;
 import java.util.Formatter;
@@ -803,8 +803,8 @@ public abstract class Grib2Pds {
           f.format("UknownProbType=%d", getProbabilityType());
       }
 
-      String result = StringUtil.removeFromEnd(f.toString(), '0');
-      return StringUtil.removeFromEnd(result, '.');
+      String result = StringUtil2.removeFromEnd(f.toString(), '0');
+      return StringUtil2.removeFromEnd(result, '.');
     }
 
     @Override

@@ -8,7 +8,7 @@ import ucar.nc2.ft.point.collection.CompositeDatasetFactory;
 import ucar.nc2.ft.point.collection.UpdateableCollection;
 import ucar.nc2.thredds.MetadataExtractor;
 import ucar.nc2.units.DateRange;
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 
 import java.io.IOException;
 import java.net.URI;
@@ -137,7 +137,7 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
 
        InvDatasetImpl ds = new InvDatasetImpl(this, "Feature Collection");
        String name = getName() + "_" + FC;
-       name = StringUtil.replace(name, ' ', "_");
+       name = StringUtil2.replace(name, ' ', "_");
        ds.setUrlPath(this.path + "/" + name);
        ds.setID(id + "/" + name);
        ThreddsMetadata tm = ds.getLocalMetadata();

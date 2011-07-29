@@ -44,6 +44,7 @@ import thredds.util.PathAliasReplacement;
 import thredds.util.StartsWithPathAliasReplacement;
 import thredds.util.TdsPathUtils;
 import thredds.util.RequestForwardUtils;
+import ucar.nc2.time.CalendarDate;
 import ucar.nc2.units.DateType;
 
 import javax.servlet.http.HttpServletRequest;
@@ -56,8 +57,7 @@ import java.net.URISyntaxException;
 import java.io.*;
 
 import org.springframework.util.StringUtils;
-import ucar.unidata.util.DateUtil;
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 
 /**
  * The DataRootHandler manages all the "data roots" for a given web application
@@ -354,7 +354,8 @@ public class DataRootHandler {
     for (ConfigListener cl : configListeners)
       cl.configStart();
 
-    logCatalogInit.info( "\n**************************************\n**************************************\nStarting TDS config catalog reinitialization\n[" + DateUtil.getCurrentSystemTimeAsISO8601() + "]" );
+    logCatalogInit.info( "\n**************************************\n**************************************\nStarting TDS config catalog reinitialization\n["
+            + CalendarDate.present() + "]" );
 
     // cleanup 
     thredds.inventory.bdb.MetadataManager.closeAll();
@@ -368,7 +369,8 @@ public class DataRootHandler {
 
     isReinit = false;
 
-    logCatalogInit.info( "\n**************************************\n**************************************\nDone with TDS config catalog reinitialization\n[" + DateUtil.getCurrentSystemTimeAsISO8601() + "]" );
+    logCatalogInit.info( "\n**************************************\n**************************************\nDone with TDS config catalog reinitialization\n["
+            + CalendarDate.present() + "]" );
   }
 
   volatile boolean isReinit = false;
@@ -398,7 +400,7 @@ public class DataRootHandler {
     for (String path : configCatalogRoots) {
       try {
         path = StringUtils.cleanPath(path);
-        logCatalogInit.info("\n**************************************\nCatalog init " + path + "\n[" + DateUtil.getCurrentSystemTimeAsISO8601() + "]");
+        logCatalogInit.info("\n**************************************\nCatalog init " + path + "\n[" + CalendarDate.present() + "]");
         initCatalog(path, true, true);
       } catch (Throwable e) {
         logCatalogInit.error("initCatalogs(): Error initializing catalog " + path + "; " + e.getMessage(), e);
@@ -497,7 +499,7 @@ public class DataRootHandler {
   private InvCatalogImpl readCatalog(InvCatalogFactory factory, String path, String catalogFullPath) {
     URI uri;
     try {
-      uri = new URI("file:" + StringUtil.escape(catalogFullPath, "/:-_.")); // LOOK needed ?
+      uri = new URI("file:" + StringUtil2.escape(catalogFullPath, "/:-_.")); // LOOK needed ?
     }
     catch (URISyntaxException e) {
       logCatalogInit.error("readCatalog(): URISyntaxException=" + e.getMessage());
@@ -1438,7 +1440,7 @@ public class DataRootHandler {
       File catFile = this.tdsContext.getConfigFileSource().getFile(workPath);
       if (catFile != null) {
         String catalogFullPath = catFile.getPath();
-        logCatalogInit.info( "**********\nReading catalog {} at {}\n",catalogFullPath, DateUtil.getCurrentSystemTimeAsISO8601());
+        logCatalogInit.info( "**********\nReading catalog {} at {}\n",catalogFullPath, CalendarDate.present());
 
         InvCatalogFactory factory = getCatalogFactory(true);
         InvCatalogImpl reReadCat = readCatalog(factory, workPath, catalogFullPath);
@@ -1811,11 +1813,11 @@ public class DataRootHandler {
           for (String catPath : list) {
             InvCatalogImpl cat = staticCatalogHash.get(catPath);
             sbuff.append(" catalog= ").append(catPath).append("; ");
-            String filename = StringUtil.unescape(cat.getCreateFrom());
+            String filename = StringUtil2.unescape(cat.getCreateFrom());
             sbuff.append(" from= ").append(filename).append("\n");
           }
         }
-        e.pw.println(StringUtil.quoteHtmlContent("\n" + sbuff.toString()));
+        e.pw.println(StringUtil2.quoteHtmlContent("\n" + sbuff.toString()));
       }
     };
     debugHandler.addAction(act);

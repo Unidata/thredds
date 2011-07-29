@@ -42,7 +42,7 @@ import ucar.nc2.grib.table.GribTables;
 import ucar.nc2.stream.NcStream;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Parameter;
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 
 import java.io.*;
 import java.util.*;
@@ -96,7 +96,7 @@ public class GribCollectionBuilder {
   // single file
   private GribCollectionBuilder(File file, Formatter f) throws IOException {
     try {
-      String spec = StringUtil.substitute(file.getPath(), "\\", "/");
+      String spec = StringUtil2.substitute(file.getPath(), "\\", "/");
       CollectionManager dcm = DatasetCollectionMFiles.open(spec, null, f);
       this.collections.add(dcm);
       this.gc = new GribCollection(file.getName(), new File(dcm.getRoot()));

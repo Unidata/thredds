@@ -43,7 +43,7 @@ import ucar.nc2.ncml.NcMLReader;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Array;
 import ucar.unidata.io.RandomAccessFile;
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -92,7 +92,7 @@ public class TestAggCleanup extends TestCase {
     NetcdfDataset.initNetcdfFileCache(0, 2, 5, 10*60);
 
     for (int i=0; i<10; i++) {
-      String ncmli = StringUtil.replace(ncml,'%',Integer.toString(i));
+      String ncmli = StringUtil2.replace(ncml, '%', Integer.toString(i));
       NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(ncmli), filename, null);
       System.out.println(" TestNcmlAggExisting.open "+ filename);
 

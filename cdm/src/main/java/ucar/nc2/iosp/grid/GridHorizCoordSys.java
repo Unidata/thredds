@@ -38,7 +38,6 @@ import ucar.ma2.Array;
 import ucar.ma2.DataType;
 
 import ucar.nc2.*;
-import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.units.SimpleUnit;
@@ -47,7 +46,7 @@ import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.*;
 import ucar.unidata.geoloc.projection.sat.MSGnavigation;
 import ucar.unidata.util.GaussianLatitudes;
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 
 import java.util.*;
 
@@ -139,7 +138,7 @@ public class GridHorizCoordSys {
     this.shape_name = lookup.getShapeName(gds);
 
     isLatLon = lookup.isLatLon(gds);
-    grid_name = StringUtil.replace(grid_name, ' ', "_");
+    grid_name = StringUtil2.replace(grid_name, ' ', "_");
     id = (g == null)
         ? grid_name
         : g.getName();

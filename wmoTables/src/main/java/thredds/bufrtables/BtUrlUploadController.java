@@ -38,7 +38,7 @@ import org.springframework.web.servlet.view.RedirectView;
 import org.springframework.validation.BindException;
 import ucar.nc2.util.DiskCache2;
 import ucar.nc2.util.IO;
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -69,8 +69,8 @@ public class BtUrlUploadController extends AbstractCommandController {
       return null;
     }
 
-    String filename = StringUtil.replace(urlString, "/", "-");
-    filename = StringUtil.filter(filename, ".-_");
+    String filename = StringUtil2.replace(urlString, "/", "-");
+    filename = StringUtil2.filter(filename, ".-_");
 
     String username = bean.getUsername();
     if (username == null) username = "anon";

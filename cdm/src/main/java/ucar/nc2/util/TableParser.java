@@ -33,7 +33,7 @@
 
 package ucar.nc2.util;
 
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 
 import java.io.*;
 import java.util.*;
@@ -233,7 +233,7 @@ public class TableParser {
         return svalue;
 
       try {
-        svalue = StringUtil.remove(svalue, ' ');
+        svalue = StringUtil2.remove(svalue, ' ');
         boolean isBlank = (svalue.trim().length() == 0);
         if (type == double.class)
           return isBlank ? 0.0 : new Double(svalue);

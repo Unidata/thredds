@@ -37,7 +37,7 @@ import junit.framework.*;
 import ucar.nc2.*;
 import ucar.nc2.util.CompareNetcdf;
 import ucar.nc2.dataset.*;
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 
 import java.io.*;
 import java.util.*;
@@ -94,7 +94,7 @@ public class TestOffNcMLWriteReadwithCoords extends TestCase {
   }
 
   private void convertAsNcdataset(String location) throws IOException {
-    location = StringUtil.replace(location, '\\', "/");
+    location = StringUtil2.replace(location, '\\', "/");
 
     NetcdfDataset org_ncd = NetcdfDataset.acquireDataset(location, null);
     NcMLWriter writer = new NcMLWriter();

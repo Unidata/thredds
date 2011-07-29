@@ -48,7 +48,7 @@ import java.nio.charset.Charset;
 import org.jdom.input.SAXBuilder;
 import org.jdom.Element;
 import org.jdom.JDOMException;
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 
 /**
  * Reads BUFR tables of various forms. Interacts with TableLookup.
@@ -495,8 +495,8 @@ public class BufrTables {
       try {
         int classId = Integer.parseInt(flds[fldidx++].trim());
         int xy = Integer.parseInt(flds[fldidx++].trim());
-        String name = StringUtil.remove(flds[fldidx++], '"');
-        String units = StringUtil.filter(flds[fldidx++], " %+-_/()*");  // alphanumeric plus these chars
+        String name = StringUtil2.remove(flds[fldidx++], '"');
+        String units = StringUtil2.filter(flds[fldidx++], " %+-_/()*");  // alphanumeric plus these chars
         int scale = Integer.parseInt(clean(flds[fldidx++].trim()));
         int refVal = Integer.parseInt(clean(flds[fldidx++].trim()));
         int width = Integer.parseInt(clean(flds[fldidx++].trim()));
@@ -514,7 +514,7 @@ public class BufrTables {
   }
 
   static private String clean(String s) {
-    return StringUtil.remove(s, ' ');
+    return StringUtil2.remove(s, ' ');
   }
 
   // tables are in mel-bufr format
@@ -610,8 +610,8 @@ public class BufrTables {
         int scale = Integer.parseInt(clean(flds[1]));
         int refVal = Integer.parseInt(clean(flds[2]));
         int width = Integer.parseInt(clean(flds[3]));
-        String units = StringUtil.remove(flds[4], '"');
-        String name = StringUtil.remove(flds[7], '"');
+        String units = StringUtil2.remove(flds[4], '"');
+        String name = StringUtil2.remove(flds[7], '"');
 
         String[] xyflds = fxys.split("-");
         short x = Short.parseShort(clean(xyflds[1]));
@@ -914,7 +914,7 @@ public class BufrTables {
           int y = seq % 1000;
           int w = seq / 1000;
           int x = w % 100;
-          seqName = StringUtil.remove(seqName, '"');
+          seqName = StringUtil2.remove(seqName, '"');
           currDesc = tableD.addDescriptor((short) x, (short) y, seqName, new ArrayList<Short>());
           currSeqno = seq;
         }
@@ -1021,7 +1021,7 @@ public class BufrTables {
           for (int i = 3; i < split.length; i++)
             sb.append(split[i]).append(" ");
           seqName = sb.toString();
-          seqName = StringUtil.remove(seqName, "()");
+          seqName = StringUtil2.remove(seqName, "()");
         }
 
         List<Short> seq = new ArrayList<Short>();
@@ -1101,7 +1101,7 @@ public class BufrTables {
           currDesc = t.addDescriptor((short) x, (short) y, seqName, new ArrayList<Short>());
           //System.out.printf("Add seq %s = %d %d %s %n", fxys, x, y, seqName);
         } else {
-          fxys = StringUtil.remove(flds[1], '>');
+          fxys = StringUtil2.remove(flds[1], '>');
           String[] xyflds = fxys.split("-");
           short f = Short.parseShort(clean(xyflds[0]));
           short x = Short.parseShort(clean(xyflds[1]));

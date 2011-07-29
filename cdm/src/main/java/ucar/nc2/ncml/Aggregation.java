@@ -45,7 +45,7 @@ import java.util.concurrent.Executor;
 import java.io.*;
 
 import org.jdom.Element;
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 
 /**
  * Superclass for NcML Aggregation.
@@ -570,7 +570,7 @@ public abstract class Aggregation {
      * @param location location attribute on the netcdf element
      */
     protected Dataset(String location) {
-      this.location = (location == null) ? null : StringUtil.substitute(location, "\\", "/");
+      this.location = (location == null) ? null : StringUtil2.substitute(location, "\\", "/");
     }
 
     protected Dataset(MFile mfile) {

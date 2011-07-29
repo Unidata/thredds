@@ -43,7 +43,7 @@ import java.util.Collections;
 import java.util.Formatter;
 
 import ucar.nc2.util.IO;
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 
 /**
  * Handles caching using ehcache.
@@ -65,20 +65,20 @@ public class CacheManager {
 
   static public void makeStandardCacheManager(String configFile, String cacheDir) throws IOException {
     String config = IO.readFile(configFile);
-    String configString = StringUtil.substitute(config, "${cacheDir}", cacheDir);
+    String configString = StringUtil2.substitute(config, "${cacheDir}", cacheDir);
     cacheLog.info("thredds.filesystem.CacheManager configuraton " + configString);
     cacheManager = new net.sf.ehcache.CacheManager(new StringBufferInputStream(configString));
   }
 
   static public void makeTestCacheManager(String cacheDir) {
-    String configString = StringUtil.substitute(config, "${cacheDir}", cacheDir);
+    String configString = StringUtil2.substitute(config, "${cacheDir}", cacheDir);
     if (debugConfig) System.out.printf("CacheManager test=%n %s %n", configString);
     cacheManager = new net.sf.ehcache.CacheManager(new StringBufferInputStream(configString));
   }
 
   static public void makeReadOnlyCacheManager(String cacheDir, String cacheName) {
-    String configString = StringUtil.substitute(configReadOnly, "${cacheDir}", cacheDir);
-    configString = StringUtil.substitute(configString, "${cacheName}", cacheName);
+    String configString = StringUtil2.substitute(configReadOnly, "${cacheDir}", cacheDir);
+    configString = StringUtil2.substitute(configString, "${cacheName}", cacheName);
     if (debugConfig) System.out.printf("CacheManager readonly =%n %s %n", configString);
     cacheManager = new net.sf.ehcache.CacheManager(new StringBufferInputStream(configString));
   }

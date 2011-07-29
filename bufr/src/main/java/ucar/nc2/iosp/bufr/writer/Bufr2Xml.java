@@ -43,7 +43,7 @@ import ucar.nc2.dataset.SequenceDS;
 import ucar.nc2.dataset.StructureDS;
 import ucar.ma2.*;
 import ucar.unidata.io.RandomAccessFile;
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
@@ -198,7 +198,7 @@ public class Bufr2Xml {
         staxWriter.writeCharacters("\n");
         staxWriter.writeCharacters(indent.toString());
         staxWriter.writeStartElement("struct");
-        staxWriter.writeAttribute("name", StringUtil.quoteXmlAttribute(s.getShortName()));
+        staxWriter.writeAttribute("name", StringUtil2.quoteXmlAttribute(s.getShortName()));
         staxWriter.writeAttribute("count", Integer.toString(count++));
 
         for (StructureMembers.Member m : sdata.getMembers()) {
@@ -237,15 +237,15 @@ public class Bufr2Xml {
     // complete option
     staxWriter.writeStartElement("data");
     String name = v.getShortName();
-    staxWriter.writeAttribute("name", StringUtil.quoteXmlAttribute(name));
+    staxWriter.writeAttribute("name", StringUtil2.quoteXmlAttribute(name));
 
     String units = v.getUnitsString();
     if ((units != null) && !units.equals(name) && !units.startsWith("Code"))
-      staxWriter.writeAttribute("units", StringUtil.quoteXmlAttribute(v.getUnitsString()));
+      staxWriter.writeAttribute("units", StringUtil2.quoteXmlAttribute(v.getUnitsString()));
 
     Attribute att = v.findAttribute("BUFR:TableB_descriptor");
     String desc = (att == null) ? "N/A" : att.getStringValue();
-    staxWriter.writeAttribute("bufr", StringUtil.quoteXmlAttribute(desc)); // */
+    staxWriter.writeAttribute("bufr", StringUtil2.quoteXmlAttribute(desc)); // */
 
     if (v.getDataType() == DataType.CHAR) {
       ArrayChar ac = (ArrayChar) mdata;
@@ -273,8 +273,8 @@ public class Bufr2Xml {
           }
 
         } else {  // not numeric
-          String s = StringUtil.filter7bits(mdata.next().toString());
-          staxWriter.writeCharacters(StringUtil.quoteXmlContent(s));
+          String s = StringUtil2.filter7bits(mdata.next().toString());
+          staxWriter.writeCharacters(StringUtil2.quoteXmlContent(s));
         }
       }
     }

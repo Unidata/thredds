@@ -44,7 +44,7 @@ import thredds.catalog.XMLEntityResolver;
 import org.jdom.*;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.XMLOutputter;
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 
 import java.io.*;
 import java.net.*;
@@ -587,7 +587,7 @@ public class NcMLReader {
   public static ucar.ma2.Array readAttributeValues(Element s) throws IllegalArgumentException {
     String valString = s.getAttributeValue("value");
     if (valString == null) throw new IllegalArgumentException("No value specified");
-    valString = StringUtil.unquoteXmlAttribute(valString);
+    valString = StringUtil2.unquoteXmlAttribute(valString);
 
     String type = s.getAttributeValue("type");
     DataType dtype = (type == null) ? DataType.STRING : DataType.getType(type);

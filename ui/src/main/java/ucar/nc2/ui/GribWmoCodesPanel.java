@@ -8,7 +8,7 @@ import ucar.nc2.Attribute;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.units.SimpleUnit;
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
 
@@ -337,8 +337,8 @@ public class GribWmoCodesPanel extends JPanel {
   private String[] replace = new String[]{"", "", "", "", "", "", ""};
 
   private boolean equiv(String org1, String org2) {
-    String s1 = StringUtil.replace(org1, remove, replace).toLowerCase();
-    String s2 = StringUtil.replace(org2, remove, replace).toLowerCase();
+    String s1 = StringUtil2.replace(org1, remove, replace).toLowerCase();
+    String s2 = StringUtil2.replace(org2, remove, replace).toLowerCase();
     return s1.equals(s2);
   }
 

@@ -18,7 +18,7 @@ import javax.servlet.ServletException;
 
 import thredds.servlet.UsageLog;
 import ucar.nc2.dataset.NetcdfDatasetInfo;
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 
 import java.io.File;
 import java.io.IOException;
@@ -214,10 +214,10 @@ public class CdmValidatorController extends AbstractController {
 
     if ((username == null) || (username.length() == 0))
       username = "none";
-    username = StringUtil.filter(username, "_");
+    username = StringUtil2.filter(username, "_");
     String filename = item.getName();
-    filename = StringUtil.replace(filename, "/", "-");
-    filename = StringUtil.filter(filename, ".-_");
+    filename = StringUtil2.replace(filename, "/", "-");
+    filename = StringUtil2.filter(filename, ".-_");
 
     File uploadedFile = new File(this.cdmValidatorContext.getCacheDir() + "/" + username + "/" + filename);
     uploadedFile.getParentFile().mkdirs();

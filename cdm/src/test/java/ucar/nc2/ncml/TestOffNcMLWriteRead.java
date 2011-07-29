@@ -38,7 +38,7 @@ import ucar.nc2.*;
 import ucar.nc2.util.CompareNetcdf;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.TestDataset;
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 
 import java.io.*;
 import java.util.*;
@@ -129,7 +129,7 @@ public class TestOffNcMLWriteRead extends TestCase {
   //}
 
   private void convertAsNcfile(String location, boolean useRecords) throws IOException {
-    location = StringUtil.replace(location, '\\', "/");
+    location = StringUtil2.replace(location, '\\', "/");
 
     if (showFiles) {
      System.out.println("-----------");
@@ -173,7 +173,7 @@ public class TestOffNcMLWriteRead extends TestCase {
   }
 
   private void convertAsNcfileExplicit(String location, boolean useRecords) throws IOException {
-    location = StringUtil.replace(location, '\\', "/");
+    location = StringUtil2.replace(location, '\\', "/");
 
     if (showFiles) {
      System.out.println("-----------");
@@ -218,7 +218,7 @@ public class TestOffNcMLWriteRead extends TestCase {
 
 
   private void convertAsNcdataset(String location, boolean useRecords) throws IOException {
-    location = StringUtil.replace(location, '\\', "/");
+    location = StringUtil2.replace(location, '\\', "/");
 
     NetcdfDataset org_ncd = NetcdfDataset.openDataset(location, false, null);
     if (useRecords)

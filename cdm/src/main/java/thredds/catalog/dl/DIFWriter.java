@@ -35,9 +35,6 @@ package thredds.catalog.dl;
 
 import thredds.catalog.*;
 import thredds.catalog.crawl.CatalogCrawler;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.time.CalendarDuration;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateType;
 
@@ -50,7 +47,7 @@ import java.net.URI;
 
 import ucar.nc2.units.TimeDuration;
 import ucar.unidata.geoloc.*;
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 
 public class DIFWriter {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DIFWriter.class);
@@ -105,7 +102,7 @@ public class DIFWriter {
     if (debug) System.out.println("doDataset "+ds.getName());
 
     if (isDatasetUseable( ds, messBuffer)) {
-      String id = StringUtil.replace(ds.getID(), "/","-");
+      String id = StringUtil2.replace(ds.getID(), "/", "-");
       String fileOutName = fileDir+"/"+id+".dif.xml";
       try {
         OutputStream out = new BufferedOutputStream(new FileOutputStream( fileOutName));
@@ -130,7 +127,7 @@ public class DIFWriter {
     if (debug) System.out.println("doDataset "+ds.getName());
 
     if (isDatasetUseable( ds, mess)) {
-      String id = StringUtil.replace(ds.getID(), "/","-");
+      String id = StringUtil2.replace(ds.getID(), "/", "-");
       String fileOutName = fileDir+"/"+id+".dif.xml";
       try {
         OutputStream out = new BufferedOutputStream(new FileOutputStream( fileOutName));
@@ -252,7 +249,7 @@ public class DIFWriter {
 
 
   private void writeDataset(InvDataset ds, Element rootElem, StringBuffer mess) {
-    String entryId = StringUtil.allow(ds.getUniqueID(),"_-.",'-');
+    String entryId = StringUtil2.allow(ds.getUniqueID(), "_-.", '-');
     rootElem.addContent( new Element("Entry_ID", defNS).addContent(entryId));
     rootElem.addContent( new Element("Entry_Title", defNS).addContent(ds.getFullName()));
 
@@ -375,7 +372,7 @@ public class DIFWriter {
 
     String summary = ds.getDocumentation("summary");
     if (summary != null) {
-      String summaryLines = StringUtil.breakTextAtWords( summary,"\n",80);
+      String summaryLines = StringUtil2.breakTextAtWords(summary, "\n", 80);
       rootElem.addContent( new Element("Summary", defNS).addContent(summaryLines));
     }
 

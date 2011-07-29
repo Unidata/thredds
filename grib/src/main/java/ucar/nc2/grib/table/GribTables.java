@@ -39,12 +39,11 @@ import ucar.nc2.grib.grib2.Grib2Record;
 import ucar.nc2.grib.grib2.Grib2Utils;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDuration;
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Formatter;
 
 /**
  * Grib 2 Tables - allows local overrides and augmentation
@@ -132,9 +131,9 @@ public class GribTables {
         else {
           if (unit.startsWith("/")) unit = "1" + unit;
           unit = unit.trim();
-          unit = StringUtil.remove(unit, "^");
-          unit = StringUtil.replace(unit, ' ', ".");
-          unit = StringUtil.replace(unit, '*', ".");
+          unit = StringUtil2.remove(unit, "^");
+          unit = StringUtil2.replace(unit, ' ', ".");
+          unit = StringUtil2.replace(unit, '*', ".");
         }
       }
       this.unit = unit;

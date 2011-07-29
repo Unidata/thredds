@@ -42,7 +42,7 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 
 import ucar.nc2.util.IO;
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 
 /**
  * Servlet handles creating DL records.
@@ -201,13 +201,13 @@ public class DLwriterServlet extends AbstractServlet {
     pw.println("<h2> Catalog " + catURL+" has validation errors:</h2>");
 
     pw.println("<b>");
-    pw.println( StringUtil.quoteHtmlContent(mess));
+    pw.println( StringUtil2.quoteHtmlContent(mess));
     pw.println("</b>");
 
     // show catalog.xml
     pw.println("<hr><pre>");
     String catString = IO.readURLcontents( catURL);
-    pw.println( StringUtil.quoteHtmlContent(catString));
+    pw.println( StringUtil2.quoteHtmlContent(catString));
     pw.println("</pre>");
 
     pw.println("</body>");

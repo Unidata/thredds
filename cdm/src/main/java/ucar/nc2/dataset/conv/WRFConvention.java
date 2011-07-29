@@ -44,7 +44,7 @@ import ucar.nc2.dataset.transform.WRFEtaTransformBuilder;
 
 import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.*;
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 
 import java.io.IOException;
 import java.util.*;
@@ -354,9 +354,9 @@ map_proj =  1: Lambert Conformal
     else if (units.equals("NA")) units = "";
     else if (units.equals("-")) units = "";
     else {
-      units = StringUtil.substitute(units, "**", "^");
-      units = StringUtil.remove(units, '}');
-      units = StringUtil.remove(units, '{');
+      units = StringUtil2.substitute(units, "**", "^");
+      units = StringUtil2.remove(units, '}');
+      units = StringUtil2.remove(units, '{');
     }
     return units;
   }

@@ -34,7 +34,7 @@ package ucar.nc2.iosp.hdf4;
 
 import junit.framework.TestCase;
 import ucar.nc2.*;
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 
 import java.io.IOException;
 import java.io.FileFilter;
@@ -129,7 +129,7 @@ public class TestH4readAndCount extends TestCase {
 
     if (false) {
       filename = filename.substring(testDir.length());
-      filename = StringUtil.replace(filename, '\\', "/");
+      filename = StringUtil2.replace(filename, '\\', "/");
       System.out.println("read(testDir+\"" + filename + "\"," + c.ndims + "," + c.nvars + "," + c.ngatts + "," + c.natts + "," + c.nstructFields
           + "," + c.ngroups + ");");
       ncfile.close();

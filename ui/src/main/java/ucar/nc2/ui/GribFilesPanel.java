@@ -39,7 +39,7 @@ import ucar.nc2.grib.table.GribTables;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.nc2.util.Misc;
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
 
@@ -286,7 +286,7 @@ public class GribFilesPanel extends JPanel {
     }
 
     public String getHeader() {
-      return (bad) ? "" : StringUtil.cleanup(first.getHeader());
+      return (bad) ? "" : StringUtil2.cleanup(first.getHeader());
     }
 
     public int getMasterTable() {

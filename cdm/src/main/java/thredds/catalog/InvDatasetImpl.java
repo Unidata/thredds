@@ -43,7 +43,7 @@ import ucar.nc2.time.CalendarDuration;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateType;
 import ucar.unidata.util.Format;
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 
 /**
  * Concrete implementation of a thredds Dataset, for reading and writing from XML.
@@ -990,28 +990,28 @@ public class InvDatasetImpl extends InvDataset {
 
     buff.append("<h2>Dataset: ").append(ds.getFullName()).append("</h2>\n<ul>\n");
     if ((ds.getDataFormatType() != null) && (ds.getDataFormatType() != DataFormatType.NONE))
-      buff.append(" <li><em>Data format: </em>").append(StringUtil.quoteHtmlContent(ds.getDataFormatType().toString())).append("</li>\n");
+      buff.append(" <li><em>Data format: </em>").append(StringUtil2.quoteHtmlContent(ds.getDataFormatType().toString())).append("</li>\n");
 
     if ((ds.getDataSize() != 0.0) && !Double.isNaN(ds.getDataSize()))
       buff.append(" <li><em>Data size: </em>").append(Format.formatByteSize(ds.getDataSize())).append("</li>\n");
 
     if ((ds.getDataType() != null) && (ds.getDataType() != FeatureType.ANY) && (ds.getDataType() != FeatureType.NONE))
-      buff.append(" <li><em>Data type: </em>").append(StringUtil.quoteHtmlContent(ds.getDataType().toString())).append("</li>\n");
+      buff.append(" <li><em>Data type: </em>").append(StringUtil2.quoteHtmlContent(ds.getDataType().toString())).append("</li>\n");
 
     if ((ds.getCollectionType() != null) && (ds.getCollectionType() != CollectionType.NONE))
-      buff.append(" <li><em>Collection type: </em>").append(StringUtil.quoteHtmlContent(ds.getCollectionType().toString())).append("</li>\n");
+      buff.append(" <li><em>Collection type: </em>").append(StringUtil2.quoteHtmlContent(ds.getCollectionType().toString())).append("</li>\n");
 
     if (ds.isHarvest())
       buff.append(" <li><em>Harvest: </em>").append(ds.isHarvest()).append("</li>\n");
 
     if (ds.getAuthority() != null)
-      buff.append(" <li><em>Naming Authority: </em>").append(StringUtil.quoteHtmlContent(ds.getAuthority())).append("</li>\n");
+      buff.append(" <li><em>Naming Authority: </em>").append(StringUtil2.quoteHtmlContent(ds.getAuthority())).append("</li>\n");
 
     if (ds.getID() != null)
-      buff.append(" <li><em>ID: </em>").append(StringUtil.quoteHtmlContent(ds.getID())).append("</li>\n");
+      buff.append(" <li><em>ID: </em>").append(StringUtil2.quoteHtmlContent(ds.getID())).append("</li>\n");
 
     if (ds.getRestrictAccess() != null)
-      buff.append(" <li><em>RestrictAccess: </em>").append(StringUtil.quoteHtmlContent(ds.getRestrictAccess())).append("</li>\n");
+      buff.append(" <li><em>RestrictAccess: </em>").append(StringUtil2.quoteHtmlContent(ds.getRestrictAccess())).append("</li>\n");
 
     if (ds instanceof InvCatalogRef) {
       InvCatalogRef catref = (InvCatalogRef) ds;
@@ -1028,10 +1028,10 @@ public class InvDatasetImpl extends InvDataset {
     if (docs.size() > 0) {
       buff.append("<h3>Documentation:</h3>\n<ul>\n");
       for (InvDocumentation doc : docs) {
-        String type = (doc.getType() == null) ? "" : "<strong>" + StringUtil.quoteHtmlContent(doc.getType()) + ":</strong> ";
+        String type = (doc.getType() == null) ? "" : "<strong>" + StringUtil2.quoteHtmlContent(doc.getType()) + ":</strong> ";
         String inline = doc.getInlineContent();
         if ((inline != null) && (inline.length() > 0))
-          buff.append(" <li>").append(type).append(StringUtil.quoteHtmlContent(inline)).append("</li>\n");
+          buff.append(" <li>").append(type).append(StringUtil2.quoteHtmlContent(inline)).append("</li>\n");
         if (doc.hasXlink()) {
           // buff.append(" <li>" + type + makeHrefResolve(ds, uri.toString(), doc.getXlinkTitle()) + "</a>\n");
           buff.append(" <li>").append(type).append(makeHref(doc.getXlinkHref(), doc.getXlinkTitle())).append("</li>\n");
@@ -1069,7 +1069,7 @@ public class InvDatasetImpl extends InvDataset {
           else if ((stype == ServiceType.CdmRemote) || (stype == ServiceType.CdmrFeature))
             fullUrlString = fullUrlString + "?req=form";
         }
-        buff.append(" <li> <b>").append(StringUtil.quoteHtmlContent(s.getServiceType().toString()));
+        buff.append(" <li> <b>").append(StringUtil2.quoteHtmlContent(s.getServiceType().toString()));
         buff.append(":</b> ").append(makeHref( fullUrlString, urlString)).append("</li>\n");
       }
       buff.append("</ol>\n");
@@ -1079,8 +1079,8 @@ public class InvDatasetImpl extends InvDataset {
     if (contributors.size() > 0) {
       buff.append("<h3>Contributors:</h3>\n<ul>\n");
       for (ThreddsMetadata.Contributor t : contributors) {
-        String role = (t.getRole() == null) ? "" : "<strong> (" + StringUtil.quoteHtmlContent(t.getRole()) + ")</strong> ";
-        buff.append(" <li>").append(StringUtil.quoteHtmlContent(t.getName())).append(role).append("</li>\n");
+        String role = (t.getRole() == null) ? "" : "<strong> (" + StringUtil2.quoteHtmlContent(t.getRole()) + ")</strong> ";
+        buff.append(" <li>").append(StringUtil2.quoteHtmlContent(t.getName())).append(role).append("</li>\n");
       }
       buff.append("</ul>\n");
     }
@@ -1089,8 +1089,8 @@ public class InvDatasetImpl extends InvDataset {
     if (keywords.size() > 0) {
       buff.append("<h3>Keywords:</h3>\n<ul>\n");
       for (ThreddsMetadata.Vocab t : keywords) {
-        String vocab = (t.getVocabulary() == null) ? "" : " <strong>(" + StringUtil.quoteHtmlContent(t.getVocabulary()) + ")</strong> ";
-        buff.append(" <li>").append(StringUtil.quoteHtmlContent(t.getText())).append(vocab).append("</li>\n");
+        String vocab = (t.getVocabulary() == null) ? "" : " <strong>(" + StringUtil2.quoteHtmlContent(t.getVocabulary()) + ")</strong> ";
+        buff.append(" <li>").append(StringUtil2.quoteHtmlContent(t.getText())).append(vocab).append("</li>\n");
       }
       buff.append("</ul>\n");
     }
@@ -1099,8 +1099,8 @@ public class InvDatasetImpl extends InvDataset {
     if (dates.size() > 0) {
       buff.append("<h3>Dates:</h3>\n<ul>\n");
       for (DateType d : dates) {
-        String type = (d.getType() == null) ? "" : " <strong>(" + StringUtil.quoteHtmlContent(d.getType()) + ")</strong> ";
-        buff.append(" <li>").append(StringUtil.quoteHtmlContent(d.getText())).append(type).append("</li>\n");
+        String type = (d.getType() == null) ? "" : " <strong>(" + StringUtil2.quoteHtmlContent(d.getType()) + ")</strong> ";
+        buff.append(" <li>").append(StringUtil2.quoteHtmlContent(d.getText())).append(type).append("</li>\n");
       }
       buff.append("</ul>\n");
     }
@@ -1109,8 +1109,8 @@ public class InvDatasetImpl extends InvDataset {
     if (projects.size() > 0) {
       buff.append("<h3>Projects:</h3>\n<ul>\n");
       for (ThreddsMetadata.Vocab t : projects) {
-        String vocab = (t.getVocabulary() == null) ? "" : " <strong>(" + StringUtil.quoteHtmlContent(t.getVocabulary()) + ")</strong> ";
-        buff.append(" <li>").append(StringUtil.quoteHtmlContent(t.getText())).append(vocab).append("</li>\n");
+        String vocab = (t.getVocabulary() == null) ? "" : " <strong>(" + StringUtil2.quoteHtmlContent(t.getVocabulary()) + ")</strong> ";
+        buff.append(" <li>").append(StringUtil2.quoteHtmlContent(t.getText())).append(vocab).append("</li>\n");
       }
       buff.append("</ul>\n");
     }
@@ -1119,8 +1119,8 @@ public class InvDatasetImpl extends InvDataset {
     if (creators.size() > 0) {
       buff.append("<h3>Creators:</h3>\n<ul>\n");
       for (ThreddsMetadata.Source t : creators) {
-        buff.append(" <li><strong>").append(StringUtil.quoteHtmlContent(t.getName())).append("</strong><ul>\n");
-        buff.append(" <li><em>email: </em>").append(StringUtil.quoteHtmlContent(t.getEmail())).append("</li>\n");
+        buff.append(" <li><strong>").append(StringUtil2.quoteHtmlContent(t.getName())).append("</strong><ul>\n");
+        buff.append(" <li><em>email: </em>").append(StringUtil2.quoteHtmlContent(t.getEmail())).append("</li>\n");
         if (t.getUrl() != null) {
           String newUrl = resolveRelativeUrls
                           ? makeHrefResolve( ds, t.getUrl(), null )
@@ -1136,8 +1136,8 @@ public class InvDatasetImpl extends InvDataset {
     if (publishers.size() > 0) {
       buff.append("<h3>Publishers:</h3>\n<ul>\n");
       for (ThreddsMetadata.Source t : publishers) {
-        buff.append(" <li><strong>").append(StringUtil.quoteHtmlContent(t.getName())).append("</strong><ul>\n");
-        buff.append(" <li><em>email: </em>").append(StringUtil.quoteHtmlContent(t.getEmail())).append("\n");
+        buff.append(" <li><strong>").append(StringUtil2.quoteHtmlContent(t.getName())).append("</strong><ul>\n");
+        buff.append(" <li><em>email: </em>").append(StringUtil2.quoteHtmlContent(t.getEmail())).append("\n");
         if (t.getUrl() != null) {
           String urlLink = resolveRelativeUrls
                            ? makeHrefResolve( ds, t.getUrl(), null )
@@ -1162,7 +1162,7 @@ public class InvDatasetImpl extends InvDataset {
                              : makeHref( uri.toString(), t.getVocabulary());
           buff.append( vocabLink );
         } else {
-          buff.append(StringUtil.quoteHtmlContent(t.getVocabulary()));
+          buff.append(StringUtil2.quoteHtmlContent(t.getVocabulary()));
         }
         buff.append("]:\n<ul>\n");
 
@@ -1170,10 +1170,10 @@ public class InvDatasetImpl extends InvDataset {
         if (vlist.size() > 0) {
           for (ThreddsMetadata.Variable v : vlist) {
             String units = (v.getUnits() == null || v.getUnits().length() == 0) ? "" : " (" + v.getUnits() + ") ";
-            buff.append(" <li><strong>").append(StringUtil.quoteHtmlContent(v.getName() + units)).append("</strong> = ");
-            String desc = (v.getDescription() == null) ? "" : " <i>" + StringUtil.quoteHtmlContent(v.getDescription()) + "</i> = ";
+            buff.append(" <li><strong>").append(StringUtil2.quoteHtmlContent(v.getName() + units)).append("</strong> = ");
+            String desc = (v.getDescription() == null) ? "" : " <i>" + StringUtil2.quoteHtmlContent(v.getDescription()) + "</i> = ";
             buff.append(desc);
-            buff.append(StringUtil.quoteHtmlContent(v.getVocabularyName())).append("\n");
+            buff.append(StringUtil2.quoteHtmlContent(v.getVocabularyName())).append("\n");
           }
           buff.append(" </ul>\n");
         }
@@ -1191,14 +1191,14 @@ public class InvDatasetImpl extends InvDataset {
       buff.append(" <li><em> Longitude: </em> ").append(rangeString(gc.getEastWestRange())).append("</li>\n");
       buff.append(" <li><em> Latitude: </em> ").append(rangeString(gc.getNorthSouthRange())).append("</li>\n");
       if (gc.getUpDownRange() != null) {
-        buff.append(" <li><em> Altitude: </em> ").append(rangeString(gc.getUpDownRange())).append(" (positive is <strong>").append(StringUtil.quoteHtmlContent(gc.getZPositive())).append(")</strong></li>\n");
+        buff.append(" <li><em> Altitude: </em> ").append(rangeString(gc.getUpDownRange())).append(" (positive is <strong>").append(StringUtil2.quoteHtmlContent(gc.getZPositive())).append(")</strong></li>\n");
       }
 
       java.util.List<ThreddsMetadata.Vocab> nlist = gc.getNames();
       if ((nlist != null) && (nlist.size() > 0)) {
         buff.append(" <li><em>  Names: </em> <ul>\n");
         for (ThreddsMetadata.Vocab elem : nlist) {
-          buff.append(" <li>").append(StringUtil.quoteHtmlContent(elem.getText())).append("\n");
+          buff.append(" <li>").append(StringUtil2.quoteHtmlContent(elem.getText())).append("\n");
         }
         buff.append(" </ul>\n");
       }
@@ -1217,10 +1217,10 @@ public class InvDatasetImpl extends InvDataset {
       }
       CalendarDuration duration = tc.getDuration();
       if ((duration != null) && !duration.isBlank())
-        buff.append(" <li><em>  Duration: </em> ").append(StringUtil.quoteHtmlContent(duration.toString())).append("\n");
+        buff.append(" <li><em>  Duration: </em> ").append(StringUtil2.quoteHtmlContent(duration.toString())).append("\n");
       CalendarDuration resolution = tc.getResolution();
       if (resolution != null  && !resolution.isBlank()) {
-        buff.append(" <li><em>  Resolution: </em> ").append(StringUtil.quoteHtmlContent(resolution.toString())).append("\n");
+        buff.append(" <li><em>  Resolution: </em> ").append(StringUtil2.quoteHtmlContent(resolution.toString())).append("\n");
       }
       buff.append(" </ul>\n");
     }
@@ -1260,7 +1260,7 @@ public class InvDatasetImpl extends InvDataset {
           buff.append(" <li>").append( attachLink ).append("\n");
         }
         else {
-          buff.append(" <li>").append(StringUtil.quoteHtmlContent(p.getName() + " = \"" + p.getValue())).append("\"\n");
+          buff.append(" <li>").append(StringUtil2.quoteHtmlContent(p.getName() + " = \"" + p.getValue())).append("\"\n");
         }
       }
       buff.append("</ul>\n");
@@ -1273,7 +1273,7 @@ public class InvDatasetImpl extends InvDataset {
     if (r == null) return "";
     String units = (r.getUnits() == null) ? "" : " " + r.getUnits();
     String resolution = r.hasResolution() ? " Resolution=" + r.getResolution() : "";
-    return StringUtil.quoteHtmlContent(r.getStart() + " to " + (r.getStart() + r.getSize()) + resolution + units);
+    return StringUtil2.quoteHtmlContent(r.getStart() + " to " + (r.getStart() + r.getSize()) + resolution + units);
   }
 
   /**
@@ -1298,7 +1298,7 @@ public class InvDatasetImpl extends InvDataset {
 
   static private String makeHref(String href, String title) {
     if (title == null) title = href;
-    return "<a href='" + StringUtil.quoteHtmlContent(href) + "'>" + StringUtil.quoteHtmlContent(title) + "</a>";
+    return "<a href='" + StringUtil2.quoteHtmlContent(href) + "'>" + StringUtil2.quoteHtmlContent(title) + "</a>";
   }
 
   static private String makeHrefResolve(InvDatasetImpl ds, String href, String title) {

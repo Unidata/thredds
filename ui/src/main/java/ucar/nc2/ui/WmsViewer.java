@@ -39,7 +39,7 @@ import ucar.nc2.ui.event.ActionValueEvent;
 import ucar.nc2.ui.event.ActionValueListener;
 import ucar.nc2.ui.widget.BAMutil;
 import ucar.nc2.ui.widget.SuperComboBox;
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
 import ucar.nc2.util.IO;
@@ -403,12 +403,12 @@ public class WmsViewer extends JPanel {
         // System.out.println("Dimension name= " + name);
         if (name.equals("time")) {
           String[] st = elem.getText().split(",");
-          for (String s : st) times.add(StringUtil.removeWhitespace(s));
+          for (String s : st) times.add(StringUtil2.removeWhitespace(s));
           hasTime = (times.size() > 0);
         }
         if (name.equals("elevation")) {
           String[] st = elem.getText().split(",");
-          for (String s : st) levels.add(StringUtil.removeWhitespace(s));
+          for (String s : st) levels.add(StringUtil2.removeWhitespace(s));
           hasLevel = (levels.size() > 0);
         }
       }

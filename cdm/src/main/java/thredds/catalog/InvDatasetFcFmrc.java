@@ -11,13 +11,12 @@ import ucar.nc2.thredds.MetadataExtractor;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateRange;
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Feature Collection for Fmrc
@@ -268,7 +267,7 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
 
     for (CalendarDate runDate : fmrc.getRunDates()) {
       String name = getName() + "_" + RUN_NAME + runDate;
-      name = StringUtil.replace(name, ' ', "_");
+      name = StringUtil2.replace(name, ' ', "_");
       InvDatasetImpl nested = new InvDatasetImpl(this, name);
       nested.setUrlPath(path + "/" + RUNS + "/" + name);
       nested.setID(id + "/" + RUNS + "/" + name);
@@ -294,7 +293,7 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
 
     for (double offset : fmrc.getForecastOffsets()) {
       String name = getName() + "_" + OFFSET_NAME + offset + "hr";
-      name = StringUtil.replace(name, ' ', "_");
+      name = StringUtil2.replace(name, ' ', "_");
       InvDatasetImpl nested = new InvDatasetImpl(this, name);
       nested.setUrlPath(path + "/" + OFFSET + "/" + name);
       nested.setID(id + "/" + OFFSET + "/" + name);
@@ -319,7 +318,7 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
 
     for (CalendarDate forecastDate : fmrc.getForecastDates()) {
       String name = getName() + "_" + FORECAST_NAME + forecastDate;
-      name = StringUtil.replace(name, ' ', "_");
+      name = StringUtil2.replace(name, ' ', "_");
       InvDatasetImpl nested = new InvDatasetImpl(this, name);
       nested.setUrlPath(path + "/" + FORECAST + "/" + name);
       nested.setID(id + "/" + FORECAST + "/" + name);
@@ -345,7 +344,7 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
 
        InvDatasetImpl ds = new InvDatasetImpl(this, "Forecast Model Run Collection (2D time coordinates)");
        String name = getName() + "_" + FMRC;
-       name = StringUtil.replace(name, ' ', "_");
+       name = StringUtil2.replace(name, ' ', "_");
        ds.setUrlPath(this.path + "/" + name);
        ds.setID(id + "/" + name);
        ThreddsMetadata tm = ds.getLocalMetadata();
@@ -359,7 +358,7 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
 
       InvDatasetImpl ds = new InvDatasetImpl(this, "Best Time Series");
       String name = getName() + "_" + BEST;
-      name = StringUtil.replace(name, ' ', "_");
+      name = StringUtil2.replace(name, ' ', "_");
       ds.setUrlPath(this.path + "/" + name);
       ds.setID(id + "/" + name);
       ThreddsMetadata tm = ds.getLocalMetadata();
@@ -373,7 +372,7 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
       for (FeatureCollectionConfig.BestDataset bd : config.fmrcConfig.getBestDatasets()) {
         InvDatasetImpl ds = new InvDatasetImpl(this, bd.name);
         String name = getName() + "_" + bd.name;
-        name = StringUtil.replace(name, ' ', "_");
+        name = StringUtil2.replace(name, ' ', "_");
         ds.setUrlPath(this.path + "/" + name);
         ds.setID(id + "/" + name);
         ThreddsMetadata tm = ds.getLocalMetadata();
@@ -436,7 +435,7 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
     int pos = matchPath.indexOf('/');
     String wantType = (pos > -1) ? matchPath.substring(0, pos) : matchPath;
     String wantName = (pos > -1) ? matchPath.substring(pos + 1) : matchPath;
-    String hasName = StringUtil.replace(name, ' ', "_") + "_";
+    String hasName = StringUtil2.replace(name, ' ', "_") + "_";
 
     try {
       if (wantType.equals(FILES)) {

@@ -34,7 +34,7 @@ package ucar.nc2.iosp.bufr.tables;
 
 import org.jdom.input.SAXBuilder;
 import org.jdom.Element;
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 
 import java.util.List;
 import java.util.Map;
@@ -183,7 +183,7 @@ public class CodeFlagTables {
             if (showReadErrs) System.out.printf("%d skip == %s%n", count, line);
             continue;
           }
-          String name = StringUtil.remove(flds[fldidx++], '"');
+          String name = StringUtil2.remove(flds[fldidx++], '"');
           String nameLow = name.toLowerCase();
           if (nameLow.startsWith("reserved")) continue;
           if (nameLow.startsWith("not used")) continue;
@@ -272,7 +272,7 @@ public class CodeFlagTables {
 
   private CodeFlagTables(short fxy, String name) {
     this.fxy = fxy;
-    this.name = (name == null) ? fxy() : StringUtil.replace(name, ' ', "_") + "("+fxy()+")";
+    this.name = (name == null) ? fxy() : StringUtil2.replace(name, ' ', "_") + "("+fxy()+")";
     map = new HashMap<Integer, String>(20);
   }
 

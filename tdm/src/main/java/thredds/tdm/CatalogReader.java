@@ -36,7 +36,7 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.StringUtils;
 import thredds.catalog.*;
-import ucar.unidata.util.DateUtil;
+import ucar.nc2.time.CalendarDate;
 
 import java.io.*;
 import java.util.*;
@@ -48,7 +48,7 @@ import java.util.*;
  * @since 4/26/11
  */
 public class CatalogReader {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CatalogReader.class);
+  static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CatalogReader.class);
 
   private final Set<String> staticCatalogHash = new HashSet<String>();
   private final List<InvDatasetFeatureCollection> fcList = new ArrayList<InvDatasetFeatureCollection>();
@@ -65,7 +65,7 @@ public class CatalogReader {
     for (String catName : catList) {
       try {
         catName = StringUtils.cleanPath(catName);
-        log.info("\n**************************************\nCatalog init " + catName + "\n[" + DateUtil.getCurrentSystemTimeAsISO8601() + "]");
+        log.info("\n**************************************\nCatalog init " + catName + "\n[" + CalendarDate.present() + "]");
 
         catName = StringUtils.cleanPath(catName);
         File catFile = new File(directory, catName);
@@ -80,7 +80,7 @@ public class CatalogReader {
 
   public CatalogReader(Resource catR) {
     try {
-      log.info("\n**************************************\nCatalog init " + catR + "\n[" + DateUtil.getCurrentSystemTimeAsISO8601() + "]");
+      log.info("\n**************************************\nCatalog init " + catR + "\n[" + CalendarDate.present() + "]");
       initCatalog(catR, true);
 
     } catch (Throwable e) {

@@ -35,7 +35,7 @@ package thredds.ui.catalog.tools;
 import thredds.ui.catalog.CatalogTreeView;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.nc2.util.net.HttpClientManager;
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.*;
 
@@ -374,7 +374,7 @@ public class TDServerConfigurator extends JPanel {
     InvCatalogImpl cat = (InvCatalogImpl) catTree.getCatalog();
     URI baseURI = cat.getBaseURI();
     String uri = baseURI.toString();
-    String uriNew = StringUtil.remove(uri, "content/");
+    String uriNew = StringUtil2.remove(uri, "content/");
     try {
       cat.setBaseURI( new URI(uriNew));
     } catch (URISyntaxException e) {

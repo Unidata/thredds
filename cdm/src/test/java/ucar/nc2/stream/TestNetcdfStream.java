@@ -11,7 +11,7 @@ import java.nio.channels.WritableByteChannel;
 import java.util.Formatter;
 
 import junit.framework.TestCase;
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 
 
 public class TestNetcdfStream extends TestCase {
@@ -69,7 +69,7 @@ public class TestNetcdfStream extends TestCase {
   }
 
   void doOne(String filename) throws IOException {
-    String name = StringUtil.substitute(filename.substring(serverRoot.length()), "\\", "/");
+    String name = StringUtil2.substitute(filename.substring(serverRoot.length()), "\\", "/");
     String remote = "http://localhost:8080/thredds/cdmremote/testCdmremote" + name;
     System.out.printf("%s%n", filename);
     compare(filename, remote);

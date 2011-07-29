@@ -35,6 +35,8 @@
 package thredds.catalog.query;
 
 import thredds.catalog.InvDocumentation;
+import ucar.unidata.util.StringUtil2;
+
 import java.util.*;
 
 /**
@@ -142,8 +144,7 @@ public abstract class Selector {
     StringBuilder templateBuff = new StringBuilder( template);
 
     for (int i=0; i<choices.size(); i+=2) {
-      ucar.unidata.util.StringUtil.substitute( templateBuff,
-            choices.get(i).toString(), choices.get(i+1).toString());
+      StringUtil2.substitute(templateBuff, choices.get(i).toString(), choices.get(i + 1).toString());
     }
     sbuff.append( templateBuff.toString());
   }

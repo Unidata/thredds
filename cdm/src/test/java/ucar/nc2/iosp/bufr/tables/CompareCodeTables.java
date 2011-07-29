@@ -32,7 +32,7 @@
 package ucar.nc2.iosp.bufr.tables;
 
 
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 
 import java.util.Map;
 import java.util.TreeMap;
@@ -64,7 +64,7 @@ public class CompareCodeTables {
 
   private void addValue(String valueS, String text) {
     if (text.toLowerCase().contains("reserved")) return;
-    text = StringUtil.remove(text, '"');
+    text = StringUtil2.remove(text, '"');
     try {
      int value = Integer.parseInt(valueS);
      map.put(value,text);
@@ -200,8 +200,8 @@ public class CompareCodeTables {
   char[] remove = new char[] {'(', ')', ' ', '"', ',', '*', '-'};
   String[] replace = new String[] {"", "", "", "", "", "", ""};
   boolean equiv(String org1, String org2) {
-    String s1 = StringUtil.replace(org1, remove, replace).toLowerCase();
-    String s2 = StringUtil.replace(org2, remove, replace).toLowerCase();
+    String s1 = StringUtil2.replace(org1, remove, replace).toLowerCase();
+    String s2 = StringUtil2.replace(org2, remove, replace).toLowerCase();
     return s1.equals(s2);
   }
 

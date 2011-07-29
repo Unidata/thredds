@@ -44,7 +44,7 @@ import ucar.nc2.util.CancelTask;
 import ucar.nc2.wmo.CommonCodeTable;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Parameter;
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 
 import java.io.File;
 import java.io.IOException;
@@ -85,7 +85,7 @@ public class Iosp extends AbstractIOServiceProvider {
       f.format("_D%d", vindex.ensDerivedType);
 
     else if (vindex.probabilityName != null && vindex.probabilityName.length() > 0) {
-      String s = StringUtil.substitute(vindex.probabilityName, ".", "p");
+      String s = StringUtil2.substitute(vindex.probabilityName, ".", "p");
       f.format("_Prob_%s", s);
     }
 
@@ -110,7 +110,7 @@ public class Iosp extends AbstractIOServiceProvider {
       f.format("_%s", tables.getProbabilityNameShort(vindex.ensDerivedType));
 
     else if (vindex.probabilityName != null && vindex.probabilityName.length() > 0) {
-      String s = StringUtil.substitute(vindex.probabilityName, ".", "p");
+      String s = StringUtil2.substitute(vindex.probabilityName, ".", "p");
       f.format("_%s", s);
     }
 

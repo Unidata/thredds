@@ -33,7 +33,7 @@
 
 package thredds.logs;
 
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 
 import java.util.TreeMap;
 import java.util.Iterator;
@@ -108,7 +108,7 @@ public class PathMatcher {
       if (path.startsWith(key))
         return treeMap.get(key);
       // terminate when theres no match at all.
-      if (StringUtil.match(path, key) == 0)
+      if (StringUtil2.match(path, key) == 0)
         break;
     }
 

@@ -43,7 +43,7 @@ import ucar.nc2.iosp.bufr.Message;
 import ucar.nc2.iosp.bufr.MessageScanner;
 import ucar.nc2.units.DateFormatter;
 import ucar.unidata.io.RandomAccessFile;
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -151,7 +151,7 @@ public class BtValidateController extends AbstractCommandController {
     // cast the bean
     FileValidateBean bean = (FileValidateBean) command;
 
-    String fname = StringUtil.unescape(bean.getFilename());
+    String fname = StringUtil2.unescape(bean.getFilename());
     File dest = diskCache.getCacheFile(fname);
     addUniqueMessages(dest.getPath());
 

@@ -44,7 +44,7 @@ import java.io.*;
 import java.util.*;
 
 import ucar.nc2.dataset.CoordinateAxis1D;
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 
 /**
  * Defines the expected inventory of a Forecast Model Run Collection.
@@ -900,7 +900,7 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
     Map<String, Grid> hash = new HashMap<String, Grid>();
     for (RunSeq runSeq : fmrDef.runSequences) {
       for (Grid gridDef : runSeq.vars) {
-        String munged = StringUtil.replace(gridDef.name, '_', "");
+        String munged = StringUtil2.replace(gridDef.name, '_', "");
         hash.put(munged, gridDef);
       }
     }
@@ -912,8 +912,8 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
       for (ForecastModelRunInventory.Grid invGrid : fmrInvGrids) {
         Grid defGrid = fmrDef.findGridByName(invGrid.name);
         if (null == defGrid) {
-          String munged = StringUtil.replace(invGrid.name, "-", "");
-          munged = StringUtil.replace(munged, "_", "");
+          String munged = StringUtil2.replace(invGrid.name, "-", "");
+          munged = StringUtil2.replace(munged, "_", "");
           Grid gridDefnew = hash.get(munged);
           if (gridDefnew != null) {
             System.out.println(" replace " + gridDefnew.name + " with " + invGrid.name);
@@ -1180,7 +1180,7 @@ public class FmrcDefinition implements ucar.nc2.dt.fmr.FmrcCoordSys {
       fmrcDefinitionFiles = new String[fmrcDatasets.length];
       int count = 0;
       for (String ds : fmrcDatasets) {
-        fmrcDefinitionFiles[count++] = fmrcDefinitionDir + StringUtil.replace(ds, '/', "-") + ".fmrcDefinition.xml";
+        fmrcDefinitionFiles[count++] = fmrcDefinitionDir + StringUtil2.replace(ds, '/', "-") + ".fmrcDefinition.xml";
       }
     }
     return fmrcDefinitionFiles;

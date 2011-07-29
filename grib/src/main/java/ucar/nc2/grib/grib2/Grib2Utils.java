@@ -36,9 +36,7 @@ import ucar.nc2.grib.VertCoord;
 import ucar.nc2.grib.table.WmoCodeTable;
 import ucar.nc2.time.CalendarDuration;
 import ucar.nc2.time.CalendarPeriod;
-import ucar.unidata.util.StringUtil;
-
-import java.util.Formatter;
+import ucar.unidata.util.StringUtil2;
 
 /**
  * static utilities
@@ -50,8 +48,8 @@ public class Grib2Utils {
 
   static public String clean(String s) {
     StringBuilder sb = new StringBuilder(s);
-    StringUtil.replace(sb, "/. ", "-p_");
-    StringUtil.remove(sb, "(),;");
+    StringUtil2.replace(sb, "/. ", "-p_");
+    StringUtil2.remove(sb, "(),;");
     char c = sb.charAt(0);
     if (Character.isLetter(c)) {
       if (Character.isLowerCase(c))

@@ -43,7 +43,7 @@ import ucar.nc2.units.SimpleUnit;
 
 import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.*;
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 
 import java.io.IOException;
 import java.util.*;
@@ -156,9 +156,9 @@ public class AWIPSConvention extends CoordSysBuilder {
     if (units.equals("/second")) units = "1/sec";
     if (units.equals("degrees K")) units = "K";
     else {
-      units = StringUtil.substitute(units, "**", "^");
-      units = StringUtil.remove(units, ')');
-      units = StringUtil.remove(units, '(');
+      units = StringUtil2.substitute(units, "**", "^");
+      units = StringUtil2.remove(units, ')');
+      units = StringUtil2.remove(units, '(');
     }
     return units;
   }
@@ -228,7 +228,7 @@ public class AWIPSConvention extends CoordSysBuilder {
       name = name + Integer.toString(len);
     else
       name = name + values.get(0);
-    StringUtil.replace(name, ' ', "-");
+    StringUtil2.replace(name, ' ', "-");
 
     Dimension dim;
     if (null != (dim = ds.getRootGroup().findDimension(name))) {

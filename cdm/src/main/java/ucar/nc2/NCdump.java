@@ -37,7 +37,7 @@ import ucar.ma2.*;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.URLnaming;
 import ucar.nc2.util.Indent;
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 
 import java.io.*;
 import java.util.*;
@@ -687,14 +687,14 @@ public class NCdump {
     // out.print("    xsi:schemaLocation='http://www.unidata.edu/schemas/ncml-2.2 http://www.unidata.ucar.edu/schemas/ncml-2.2.xsd'\n");
 
     if (uri != null)
-      out.print("    location='"+ StringUtil.quoteXmlAttribute(uri)+"' >\n\n");
+      out.print("    location='"+ StringUtil2.quoteXmlAttribute(uri)+"' >\n\n");
     else
-      out.print("    location='"+ StringUtil.quoteXmlAttribute( URLnaming.canonicalizeWrite(ncfile.getLocation()))+"' >\n\n");
+      out.print("    location='"+ StringUtil2.quoteXmlAttribute(URLnaming.canonicalizeWrite(ncfile.getLocation()))+"' >\n\n");
 
     if (ncfile.getId() != null)
-      out.print("    id='"+ StringUtil.quoteXmlAttribute(ncfile.getId())+"' >\n");
+      out.print("    id='"+ StringUtil2.quoteXmlAttribute(ncfile.getId())+"' >\n");
     if (ncfile.getTitle() != null)
-      out.print("    title='"+ StringUtil.quoteXmlAttribute(ncfile.getTitle())+"' >\n");
+      out.print("    title='"+ StringUtil2.quoteXmlAttribute(ncfile.getTitle())+"' >\n");
 
     writeNcMLGroup( ncfile, ncfile.getRootGroup(), out, new Indent(2), showCoords);
 
@@ -705,14 +705,14 @@ public class NCdump {
   static private void writeNcMLGroup( NetcdfFile ncfile, Group g, PrintStream out, Indent indent, boolean showCoords) throws IOException {
     if (g != ncfile.getRootGroup()) {
       out.print(indent);
-      out.print("<group name='" + StringUtil.quoteXmlAttribute(g.getShortName()) + "' >\n");
+      out.print("<group name='" + StringUtil2.quoteXmlAttribute(g.getShortName()) + "' >\n");
     }
     indent.incr();
 
     List<Dimension> dimList = g.getDimensions();
     for (Dimension dim : dimList) {
       out.print(indent);
-      out.print("<dimension name='" + StringUtil.quoteXmlAttribute(dim.getName()) + "' length='" + dim.getLength() + "'");
+      out.print("<dimension name='" + StringUtil2.quoteXmlAttribute(dim.getName()) + "' length='" + dim.getLength() + "'");
       if (dim.isUnlimited())
         out.print(" isUnlimited='true'");
       out.print(" />\n");
@@ -753,7 +753,7 @@ public class NCdump {
 
   static private void writeNcMLStructure( Structure s, PrintStream out, Indent indent) throws IOException {
     out.print(indent);
-    out.print("<structure name='"+StringUtil.quoteXmlAttribute(s.getShortName()));
+    out.print("<structure name='"+ StringUtil2.quoteXmlAttribute(s.getShortName()));
 
     // any dimensions?
     if (s.getRank() > 0) {
@@ -783,7 +783,7 @@ public class NCdump {
 
   static private void writeNcMLVariable( Variable v, PrintStream out, Indent indent, boolean showCoords) throws IOException {
       out.print(indent);
-      out.print("<variable name='"+StringUtil.quoteXmlAttribute(v.getShortName())+"' type='"+ v.getDataType()+"'");
+      out.print("<variable name='"+ StringUtil2.quoteXmlAttribute(v.getShortName())+"' type='"+ v.getDataType()+"'");
 
       // any dimensions (scalers must skip this attribute) ?
       if (v.getRank() > 0) {
@@ -834,7 +834,7 @@ public class NCdump {
       if (j != 0)
         out.print(" ");
       if (dim.isShared())
-        out.print(StringUtil.quoteXmlAttribute(dim.getName()));
+        out.print(StringUtil2.quoteXmlAttribute(dim.getName()));
       else
         out.print(dim.getLength());
     }
@@ -844,11 +844,11 @@ public class NCdump {
   @SuppressWarnings({"ObjectToString"})
   static private void writeNcMLAtt(Attribute att, PrintStream out, Indent indent) {
     out.print(indent);
-    out.print("<attribute name='"+StringUtil.quoteXmlAttribute(att.getName())+"' value='");
+    out.print("<attribute name='"+ StringUtil2.quoteXmlAttribute(att.getName())+"' value='");
     if (att.isString()) {
       for (int i=0; i<att.getLength(); i++) {
         if (i > 0) out.print("\\, "); // ??
-        out.print( StringUtil.quoteXmlAttribute(att.getStringValue(i)));
+        out.print( StringUtil2.quoteXmlAttribute(att.getStringValue(i)));
       }
     } else {
      for (int i=0; i<att.getLength(); i++) {
@@ -892,7 +892,7 @@ public class NCdump {
    * @return equivilent string replacing special chars
    */
   static public String encodeString(String s) {
-    return StringUtil.replace(s, org, replace);
+    return StringUtil2.replace(s, org, replace);
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////

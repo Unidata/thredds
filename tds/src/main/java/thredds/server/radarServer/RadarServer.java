@@ -47,7 +47,6 @@ package thredds.server.radarServer;
 import thredds.servlet.*;
 import thredds.catalog.*;
 import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.units.DateRange;
 
 import java.io.*;
 import java.util.*;
@@ -63,7 +62,7 @@ import org.jdom.transform.XSLTransformer;
 import org.jdom.output.XMLOutputter;
 import org.jdom.output.Format;
 import ucar.unidata.geoloc.LatLonRect;
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 
 public class RadarServer extends AbstractServlet {
   public enum RadarType {
@@ -489,7 +488,7 @@ public class RadarServer extends AbstractServlet {
 
     InvCatalogImpl acat;
     try {
-      catURI = new URI("file:" + StringUtil.escape(catalogFullPath, "/:-_.")); // LOOK needed ?
+      catURI = new URI("file:" + StringUtil2.escape(catalogFullPath, "/:-_.")); // LOOK needed ?
     }
     catch (URISyntaxException e) {
       log.info("radarServer readCatalog(): URISyntaxException=" + e.getMessage());
@@ -530,7 +529,7 @@ public class RadarServer extends AbstractServlet {
     String path = "http://motherlode.ucar.edu:8081/thredds/radarServer/nexrad/level3/IDD/dataset.xml";
 
     try {
-      catURI = new URI(StringUtil.escape(path, "/:-_."));
+      catURI = new URI(StringUtil2.escape(path, "/:-_."));
     }
     catch (URISyntaxException e) {
       System.out.println("radarServer main: URISyntaxException=" + e.getMessage());

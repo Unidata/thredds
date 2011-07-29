@@ -40,7 +40,7 @@ import java.io.FileFilter;
 import java.io.File;
 
 import ucar.nc2.*;
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 
 /**
  * Class Description.
@@ -160,7 +160,7 @@ public class TestH5ReadAndCount extends TestCase {
 
     if (false) {
       filename = filename.substring(testDir.length() + 1);
-      filename = StringUtil.replace(filename, '\\', "/");
+      filename = StringUtil2.replace(filename, '\\', "/");
       System.out.println("read(testDir+\"" + filename + "\"," + c.ndims + "," + c.nvars + "," + c.ngatts + "," + c.natts + "," + c.nstructFields
               + "," + c.ngroups + ");");
       ncfile.close();

@@ -49,7 +49,7 @@ import ucar.nc2.ui.widget.PopupMenu;
 import ucar.nc2.util.Misc;
 import ucar.nc2.wmo.CommonCodeTable;
 
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
 
@@ -1265,7 +1265,7 @@ public class GribNewPanel extends JPanel {
     }
 
     public String getHeader() {
-      return StringUtil.cleanup(gr.getHeader());
+      return StringUtil2.cleanup(gr.getHeader());
     }
 
     /* public final long getPDShash() {

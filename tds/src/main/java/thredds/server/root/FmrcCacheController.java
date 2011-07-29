@@ -38,7 +38,7 @@ import thredds.monitor.FmrcCacheMonitorImpl;
 import thredds.server.config.TdsContext;
 import thredds.servlet.DebugHandler;
 import thredds.servlet.UsageLog;
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -73,7 +73,7 @@ public class FmrcCacheController extends AbstractController {
         String statUrl = tdsContext.getContextPath() + PATH + "/"+STATISTICS;
         e.pw.println("<p/> <a href='" + statUrl + "'>Show Cache Statistics</a>");
         for (String name : monitor.getCachedCollections()) {
-          String ename = StringUtil.escape(name, "");
+          String ename = StringUtil2.escape(name, "");
           String url = tdsContext.getContextPath() + PATH + "?"+COLLECTION+"="+ename;
           e.pw.println("<p/> <a href='" + url + "'>" + name + "</a>");
         }
@@ -129,7 +129,7 @@ public class FmrcCacheController extends AbstractController {
     
     // list the collection
     if (collectName != null) {
-      String ecollectName = StringUtil.escape(collectName, "");
+      String ecollectName = StringUtil2.escape(collectName, "");
       String url = tdsContext.getContextPath() + PATH + "?"+COLLECTION+"="+ecollectName;
       res.setContentType("text/html");
       pw.println("Files for collection = "+collectName+"");
@@ -140,7 +140,7 @@ public class FmrcCacheController extends AbstractController {
 
       pw.println("<ol>");
       for (String filename : monitor.getFilesInCollection(collectName)) {
-        String efileName = StringUtil.escape(filename, "");
+        String efileName = StringUtil2.escape(filename, "");
         pw.println("<li> <a href='" + url + "&"+FILE+"="+efileName + "'>" + filename + "</a>");
       }
      pw.println("</ol>");

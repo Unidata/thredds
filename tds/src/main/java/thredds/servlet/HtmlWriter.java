@@ -45,7 +45,7 @@ import ucar.nc2.dataset.VariableEnhanced;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.GridDataset;
 import ucar.unidata.util.Format;
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletRequest;
@@ -542,7 +542,7 @@ public class HtmlWriter {
   String convertCatalogToHtml(InvCatalogImpl cat, boolean isLocalCatalog) {
     StringBuilder sb = new StringBuilder(10000);
 
-    String catname = StringUtil.quoteHtmlContent(cat.getUriString());
+    String catname = StringUtil2.quoteHtmlContent(cat.getUriString());
 
     // Render the page header
     sb.append(getHtmlDoctypeAndOpenTag()); // "<html>\n" );
@@ -620,7 +620,7 @@ public class HtmlWriter {
 
     for (InvDataset dataset : datasets) {
       InvDatasetImpl ds = (InvDatasetImpl) dataset;
-      String name = StringUtil.quoteHtmlContent(ds.getName());
+      String name = StringUtil2.quoteHtmlContent(ds.getName());
 
       sb.append("<tr");
       if (shade) {
@@ -658,7 +658,7 @@ public class HtmlWriter {
         sb.append("<img src='").append( htmlConfig.prepareUrlStringForHtml( htmlConfig.getFolderIconUrl() ))
             .append("' alt='").append( htmlConfig.getFolderIconAlt()).append("'> &nbsp;");
         sb.append("<a href='");
-        sb.append(StringUtil.quoteHtmlContent(href));
+        sb.append(StringUtil2.quoteHtmlContent(href));
         sb.append("'><tt>");
         sb.append(name);
         sb.append("/</tt></a></td>\r\n");
@@ -677,7 +677,7 @@ public class HtmlWriter {
           if (pos != -1)
             accessUrlName = accessUrlName.substring(0, pos) + ".html";
           sb.append("<a href='");
-          sb.append(StringUtil.quoteHtmlContent(accessUrlName));
+          sb.append(StringUtil2.quoteHtmlContent(accessUrlName));
           sb.append("'><tt>");
           String tmpName = name;
           if (tmpName.endsWith(".xml")) {
@@ -690,9 +690,9 @@ public class HtmlWriter {
         else if (ds.getID() != null) {
           // Write link to HTML dataset page.
           sb.append("<a href='");
-          sb.append(StringUtil.quoteHtmlContent(catHtml));
+          sb.append(StringUtil2.quoteHtmlContent(catHtml));
           sb.append("dataset=");
-          sb.append( StringUtil.replace( ds.getID(), '+', "%2B" ) );
+          sb.append( StringUtil2.replace(ds.getID(), '+', "%2B") );
           sb.append("'><tt>");
           sb.append(name);
           sb.append("</tt></a></td>\r\n");
@@ -812,7 +812,7 @@ public class HtmlWriter {
   private String getCDM(NetcdfDataset ds) throws IOException {
     StringBuilder sb = new StringBuilder(10000);
 
-    String name = StringUtil.quoteHtmlContent(ds.getLocation());
+    String name = StringUtil2.quoteHtmlContent(ds.getLocation());
 
     // Render the page header
     sb.append(getHtmlDoctypeAndOpenTag()); // "<html>\n" );
@@ -904,14 +904,14 @@ public class HtmlWriter {
 
     StringBuilder sbuff = new StringBuilder();
     axis.getNameAndDimensions(sbuff);
-    String name = StringUtil.quoteHtmlContent(sbuff.toString());
+    String name = StringUtil2.quoteHtmlContent(sbuff.toString());
     sb.append("&nbsp;");
     sb.append(name);
     sb.append("</tt></a></td>\r\n");
 
     sb.append("<td align='left'><tt>");
     AxisType type = axis.getAxisType();
-    String stype = (type == null) ? "" : StringUtil.quoteHtmlContent(type.toString());
+    String stype = (type == null) ? "" : StringUtil2.quoteHtmlContent(type.toString());
     sb.append(stype);
     sb.append("</tt></td>\r\n");
 
@@ -939,14 +939,14 @@ public class HtmlWriter {
     VariableEnhanced ve = grid.getVariable();
     StringBuilder sbuff = new StringBuilder();
     ve.getNameAndDimensions(new Formatter(sbuff), false, true);
-    String name = StringUtil.quoteHtmlContent(sbuff.toString());
+    String name = StringUtil2.quoteHtmlContent(sbuff.toString());
     sb.append("&nbsp;");
     sb.append(name);
     sb.append("</tt></a></td>\r\n");
 
     sb.append("<td align='left'><tt>");
     String desc = ve.getDescription();
-    String sdesc = (desc == null) ? "" : StringUtil.quoteHtmlContent(desc);
+    String sdesc = (desc == null) ? "" : StringUtil2.quoteHtmlContent(desc);
     sb.append(sdesc);
     sb.append("</tt></td>\r\n");
 

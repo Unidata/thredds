@@ -38,7 +38,7 @@ import org.jdom.input.SAXBuilder;
 import ucar.grib.grib2.ParameterTable;
 import ucar.nc2.iosp.grid.GridParameter;
 import ucar.nc2.iosp.netcdf3.N3iosp;
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -408,10 +408,10 @@ public class GribCodeTableWmo implements Comparable<GribCodeTableWmo> {
         }
 
         // meaning = StringUtil.replace(meaning, '-', "_");
-        meaning = StringUtil.replace(meaning, '/', "-");
-        meaning = StringUtil.replace(meaning, '.', "p");
-        meaning = StringUtil.remove(meaning, '(');
-        meaning = StringUtil.remove(meaning, ')');
+        meaning = StringUtil2.replace(meaning, '/', "-");
+        meaning = StringUtil2.replace(meaning, '.', "p");
+        meaning = StringUtil2.remove(meaning, '(');
+        meaning = StringUtil2.remove(meaning, ')');
         this.name = N3iosp.createValidNetcdf3ObjectName(meaning);
 
         // massage units
@@ -421,7 +421,7 @@ public class GribCodeTableWmo implements Comparable<GribCodeTableWmo> {
           else {
             if (unit.startsWith("/")) unit = "1" + unit;
             unit = unit.trim();
-            unit = StringUtil.replace(unit, ' ', ".");
+            unit = StringUtil2.replace(unit, ' ', ".");
           }
 
         }
@@ -559,8 +559,8 @@ public class GribCodeTableWmo implements Comparable<GribCodeTableWmo> {
   }
 
   static String munge(String org) {
-    String result = StringUtil.remove(org, "_");
-    result = StringUtil.remove(result, "-");
+    String result = StringUtil2.remove(org, "_");
+    result = StringUtil2.remove(result, "-");
     return result;
   }
 

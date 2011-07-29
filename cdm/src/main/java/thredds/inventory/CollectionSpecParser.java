@@ -36,7 +36,7 @@ import java.util.regex.Pattern;
 import java.io.File;
 
 import net.jcip.annotations.ThreadSafe;
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 
 /**
  * Parses the collection specification string.
@@ -113,7 +113,7 @@ public class CollectionSpecParser {
 
         if (posFormat != posFormat2) { // two hash
           dateFormatMark = filter.substring(0, posFormat2); // everything up to the second hash
-          filter = StringUtil.remove(filter, '#'); // remove hashes, replace with .
+          filter = StringUtil2.remove(filter, '#'); // remove hashes, replace with .
           StringBuilder sb = new StringBuilder(filter);
           for (int i = posFormat; i < posFormat2 - 1; i++)
             sb.setCharAt(i, '.');

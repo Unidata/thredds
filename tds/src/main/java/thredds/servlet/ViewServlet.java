@@ -49,7 +49,7 @@ import java.net.URISyntaxException;
 import thredds.catalog.InvDatasetImpl;
 import thredds.catalog.InvAccess;
 import thredds.catalog.ServiceType;
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 
 /**
  * Catalog Serving
@@ -147,7 +147,7 @@ public class ViewServlet extends AbstractServlet {
       if (values != null) {
         String sname = "{"+name+"}";
         for (String value : values) {
-          StringUtil.substitute(sbuff, sname, value); // multiple ok
+          StringUtil2.substitute(sbuff, sname, value); // multiple ok
         }
       }
     }
@@ -321,7 +321,7 @@ public class ViewServlet extends AbstractServlet {
         viewerUrl = viewerValue;
         viewerTitle = viewerName;
       }
-      viewerUrl = StringUtil.quoteHtmlContent( sub( viewerUrl, ds, req ) );
+      viewerUrl = StringUtil2.quoteHtmlContent(sub(viewerUrl, ds, req));
 
       ViewerLink viewerLink = new ViewerLink( viewerTitle, viewerUrl );
       return viewerLink;
@@ -356,14 +356,14 @@ public class ViewServlet extends AbstractServlet {
     {
       String sname = "{" + acc.getService().getServiceType() + "}";
       if ( org.indexOf( sname ) >= 0 )
-        return StringUtil.substitute( org, sname, acc.getStandardUri().toString() );
+        return StringUtil2.substitute(org, sname, acc.getStandardUri().toString());
     }
 
     String sname = "{url}";
     if ( ( org.indexOf( sname ) >= 0 ) && ( access.size() > 0 ) )
     {
       InvAccess acc = access.get( 0 ); // just use the first one
-      return StringUtil.substitute( org, sname, acc.getStandardUri().toString() );
+      return StringUtil2.substitute(org, sname, acc.getStandardUri().toString());
     }
 
     return org;

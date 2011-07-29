@@ -66,7 +66,7 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.util.DiskCache2;
 import ucar.unidata.geoloc.Station;
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 
 /**
  * Controller for CdmrFeature service.
@@ -300,7 +300,7 @@ public class CdmrFeatureController extends AbstractCommandController { // implem
     CdmRemoteQueryBean.ResponseType resType = qb.getResponseType();
     if (resType == CdmRemoteQueryBean.ResponseType.netcdf) {
       if (path.startsWith("/")) path = path.substring(1);
-      path = StringUtil.replace(path, "/", "-");
+      path = StringUtil2.replace(path, "/", "-");
       res.setHeader("Content-Disposition", "attachment; filename=" + path + ".nc");
 
       File file = pointWriter.writeNetcdf();
@@ -355,7 +355,7 @@ public class CdmrFeatureController extends AbstractCommandController { // implem
     CdmRemoteQueryBean.ResponseType resType = qb.getResponseType();
     if (resType == CdmRemoteQueryBean.ResponseType.netcdf) {
       if (path.startsWith("/")) path = path.substring(1);
-      path = StringUtil.replace(path, "/", "-");
+      path = StringUtil2.replace(path, "/", "-");
       res.setHeader("Content-Disposition", "attachment; filename=" + path + ".nc");
 
       File file = stationWriter.writeNetcdf();

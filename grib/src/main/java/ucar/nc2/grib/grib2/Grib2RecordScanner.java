@@ -3,7 +3,7 @@ package ucar.nc2.grib.grib2;
 import ucar.grib.GribNumbers;
 import ucar.unidata.io.KMPMatch;
 import ucar.unidata.io.RandomAccessFile;
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -113,13 +113,13 @@ public class Grib2RecordScanner {
         return new Grib2Record(repeatRecord); // GribRecord isnt immutable; still may not be necessary
       }
 
-      if (debug) System.out.printf(" read until %d grib ending at %d header ='%s'%n", raf.getFilePointer(), ending, StringUtil.cleanup(header));
+      if (debug) System.out.printf(" read until %d grib ending at %d header ='%s'%n", raf.getFilePointer(), ending, StringUtil2.cleanup(header));
 
       // check that end section is correct
       raf.seek(ending-4);
       for (int i = 0; i < 4; i++) {
         if (raf.read() != 55) {
-          log.warn("Missing End of GRIB message at pos=" + ending + " header= " + StringUtil.cleanup(header)+" for="+raf.getLocation());
+          log.warn("Missing End of GRIB message at pos=" + ending + " header= " + StringUtil2.cleanup(header)+" for="+raf.getLocation());
           break;
         }
       }
@@ -196,13 +196,13 @@ public class Grib2RecordScanner {
       return true;
     }
 
-    if (debug) System.out.printf(" REPEAT read until %d grib ending at %d header ='%s'%n", raf.getFilePointer(), ending, StringUtil.cleanup(header));
+    if (debug) System.out.printf(" REPEAT read until %d grib ending at %d header ='%s'%n", raf.getFilePointer(), ending, StringUtil2.cleanup(header));
 
     // check that end section is correct
     raf.seek(ending-4);
     for (int i = 0; i < 4; i++) {
       if (raf.read() != 55) {
-        log.warn("  REPEAT Missing End of GRIB message at pos=" + ending + " header= " + StringUtil.cleanup(header)+" for="+raf.getLocation());
+        log.warn("  REPEAT Missing End of GRIB message at pos=" + ending + " header= " + StringUtil2.cleanup(header)+" for="+raf.getLocation());
         break;
       }
     }

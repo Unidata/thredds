@@ -43,6 +43,7 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ncml.NcMLReader;
 
 import thredds.catalog.*;
+import ucar.unidata.util.StringUtil2;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -148,7 +149,7 @@ public class ThreddsDataFactory {
 
   private InvDataset processLocation(String location, ucar.nc2.util.CancelTask task, Result result) {
     location = location.trim();
-    location = ucar.unidata.util.StringUtil.replace(location, '\\', "/");
+    location = StringUtil2.replace(location, '\\', "/");
 
     if (location.startsWith(SCHEME))
       location = location.substring(8);
