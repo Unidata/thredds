@@ -712,7 +712,7 @@ public class GempakGridReader extends GempakFileReader {
   }
 
     /**
-     * Print out the navibation block so it looks something like this:
+     * Print out the navigation block so it looks something like this:
      * <pre>
      *   GRID NAVIGATION:
      *        PROJECTION:          LCC

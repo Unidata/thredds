@@ -132,8 +132,6 @@ public class ToolsUI extends JPanel {
   private CoordSysPanel coordSysPanel;
   private CollectionPanel collectionPanel;
   private FeatureScanPanel ftPanel;
-  // private FmrcInvPanel fmrcInvPanel;
-  // private FmrcImplPanel fmrcImplPanel;
   private FmrcPanel fmrcPanel;
   private GeoGridPanel gridPanel;
   private GribFilesPanel gribFilesPanel;
@@ -151,8 +149,6 @@ public class ToolsUI extends JPanel {
   private ImagePanel imagePanel;
   private NCdumpPanel ncdumpPanel;
   private OpPanel ncmlEditorPanel, geotiffPanel;
-  // private PointObsPanel pointObsPanel;
-  // private StationObsPanel stationObsPanel;
   private PointFeaturePanel pointFeaturePanel;
   private StationRadialPanel stationRadialPanel;
   private RadialPanel radialPanel;

@@ -32,7 +32,7 @@ public class TestReadFormats extends TestCase {
       String name = pathname.getName();
       if (name.endsWith(".gbx8")) return false;
       if (name.endsWith(".gbx9")) return false;
-      // if (name.endsWith(".ncx")) return false;
+      if (name.endsWith(".ncx")) return false;
       if (name.endsWith(".java")) return false;
       if (name.endsWith(".tif")) return false;
       if (name.endsWith(".txt")) return false;
