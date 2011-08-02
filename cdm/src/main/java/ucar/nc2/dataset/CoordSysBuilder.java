@@ -116,7 +116,7 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
   static public interface ConventionNameOk {
 
     /**
-     * Do you own this file?
+     * Do you own this file? HEYYY
      *
      * @param convName name in the file
      * @param wantName name passed into registry
