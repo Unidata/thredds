@@ -53,12 +53,12 @@ import java.io.IOException;
 
 public class GridCoordinate2D {
   static private boolean debug = false;
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GridCoordinate2D.class);
+  static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GridCoordinate2D.class);
 
-  private CoordinateAxis2D latCoord, lonCoord;
+  private final CoordinateAxis2D latCoord, lonCoord;
+  private final int nrows, ncols;
   private ArrayDouble.D2 latEdge, lonEdge;
   private MAMath.MinMax latMinMax, lonMinMax;
-  int nrows, ncols;
 
   GridCoordinate2D(CoordinateAxis2D latCoord, CoordinateAxis2D lonCoord) {
     this.latCoord = latCoord;
@@ -256,7 +256,7 @@ public class GridCoordinate2D {
   private boolean detIsPositive(double x0, double y0, double x1, double y1, double x2, double y2) {
     double det = (x1*y2 - y1*x2 -x0*y2 + y0*x2 + x0*y1 - y0*x1);
     if (det == 0)
-      System.out.printf("determinate = 0%n");
+      log.warn("determinate = 0 on lat/lon=" + latCoord.getFullName() + ", " + latCoord.getFullName()); // LOOK needed?
     return det > 0;
   }
 
