@@ -29,7 +29,6 @@
   <property name="src.dir" location="${root.dir}/src/main/java"/>
   <property name="timingSrc.dir" location="${root.dir}/src/timing/java"/>
   <property name="commonSrc.dir" location="${root.dir}/../common/src/main/java"/>
-  <property name="timeSrc.dir" location="${root.dir}/../time/src/main/java"/>
   <property name="resources.dir" location="${root.dir}/src/main/resources"/>
   <property name="doc.dir" location="${root.dir}/doc"/>
   <property name="lib.dir" location="${root.dir}/../lib"/>
@@ -85,7 +84,6 @@
   <path id="sourcepath">
     <pathelement location="${src.dir}"/>
     <pathelement location="${commonSrc.dir}"/>
-    <pathelement location="${timeSrc.dir}"/>
   </path>
 
   <!-- Libraries -->
@@ -597,7 +595,6 @@
   <path id="sourcepathUI">
     <pathelement location="${src.dir}"/>
     <pathelement location="${srcUI.dir}"/>
-    <pathelement location="${timeSrc.dir}"/>
   </path>
 
   <target name="compileUI" depends="init, release-settings" description="toolsUI compile">

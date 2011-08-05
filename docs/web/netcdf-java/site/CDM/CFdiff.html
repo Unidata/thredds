@@ -1,0 +1,29 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Untitled Document</title>
+</head>
+
+<body>
+<h1>Differences between CDM and CF</h1>
+<p>CF is a metadata standard for netCDF files. CDM is a data model for many differernt data formats, which generally conforms to CF whenever the two overlap. This documents differences in metadata interpretation.</p>
+<h3>Units of <em><strong>false_easting </strong></em>and<em><strong> false_northing</strong></em></h3>
+<ul>
+  <li><a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.5/cf-conventions.html#appendix-grid-mappings"><strong>CF</strong></a>:  <em><strong>false_easting, </strong></em>and<em><strong> false_northing</strong></em> attribute values must be in the same  units as the x and y projection coordinates.</li>
+  <li><strong>CDM</strong>: the attribute &quot;units&quot; may be specified on the dummy Coordinate Transform Variable, which overrides the <a href="../reference/StandardCoordinateTransforms.html#false_easting"></a>x/y  coordinate units. This is needed when the projection does not have access to the x/y coordinates.</li>
+</ul>
+<h3>Time Coordinates</h3>
+<ul>
+  <li><a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.5/cf-conventions.html#time-coordinate"><strong>CF</strong></a>:   <em>Variables representing time must always explicitly include the units attribute.    The units attribute takes a string value formatted as per the recommendations in the Udunits package [<a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.5/cf-conventions.html#udunits" title="[UDUNITS]"><abbr>UDUNITS</abbr></a>] </em>This implies that a time coordinate  always has a numeric data type, and uses  udunits to transform &quot;value time_unit since reference&quot; into a date.</li>
+  <li><strong>CDM</strong>: also accepts time coordinates as ISO formatted Strings. The variable data type may be String or Char.</li>
+  <li>As of CDM 4.3, <a href="http://joda-time.sourceforge.net/">joda time</a> is used to parse time units, instead of udunits. See<a href="DateTime.html"> CDM Calendar Dates</a>.</li>
+</ul>
+<p>&nbsp;</p>
+<hr width="100%" />
+<address>
+<img src="../nc.gif" alt="" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated July 2011
+</address>
+<p>&nbsp;</p>
+</body>
+</html>

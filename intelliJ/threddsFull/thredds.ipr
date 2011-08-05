@@ -52,7 +52,6 @@
             <element id="dir-copy" path="$PROJECT_DIR$/../../grib/src/main/resources" />
             <element id="dir-copy" path="$PROJECT_DIR$/../../bufr/src/main/resources" />
             <element id="dir-copy" path="$PROJECT_DIR$/../../tds/src/main/webapp/WEB-INF/classes" />
-            <element id="module-output" name="time" />
           </element>
           <element id="directory" name="lib">
             <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/slf4j-api-1.5.6.jar" />
