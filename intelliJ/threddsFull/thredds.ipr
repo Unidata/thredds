@@ -298,6 +298,7 @@
               <file url="file://$PROJECT_DIR$/../../tds/src/main/webapp/WEB-INF/radarServer-servlet.xml" />
               <file url="file://$PROJECT_DIR$/../../tds/src/main/webapp/WEB-INF/root-servlet.xml" />
               <file url="file://$PROJECT_DIR$/../../tds/src/main/webapp/WEB-INF/serverInfo-servlet.xml" />
+              <file url="file://$PROJECT_DIR$/../../tds/src/main/webapp/WEB-INF/test-servlet.xml" />
               <file url="file://$PROJECT_DIR$/../../tds/src/main/webapp/WEB-INF/view.xml" />
               <file url="file://$PROJECT_DIR$/../../tds/src/main/webapp/WEB-INF/wms-servlet.xml" />
             </files>
@@ -305,6 +306,13 @@
           <module name="ui">
             <files>
               <file url="file://$PROJECT_DIR$/../../ui/src/main/resources/resources/nj22/ui/spring/application-config.xml" />
+            </files>
+          </module>
+          <module name="wmoTables">
+            <files>
+              <file url="file://$PROJECT_DIR$/../../wmoTables/src/main/webapp/WEB-INF/applicationContext.xml" />
+              <file url="file://$PROJECT_DIR$/../../wmoTables/src/main/webapp/WEB-INF/bufrTables-servlet.xml" />
+              <file url="file://$PROJECT_DIR$/../../wmoTables/src/main/webapp/WEB-INF/wmoTables-servlet.xml" />
             </files>
           </module>
         </modules>
@@ -334,6 +342,11 @@
               <file url="file://$PROJECT_DIR$/../../tds/src/main/webapp-expThredds/WEB-INF/web.xml" />
               <file url="file://$PROJECT_DIR$/../../tds/src/main/webapp/WEB-INF/web.xml" />
               <file url="file://$PROJECT_DIR$/../../tds/threddsFull/target/CdmValidator/WEB-INF/web.xml" />
+            </files>
+          </module>
+          <module name="wmoTables">
+            <files>
+              <file url="file://$PROJECT_DIR$/../../wmoTables/src/main/webapp/WEB-INF/web.xml" />
             </files>
           </module>
         </modules>

@@ -69,7 +69,7 @@
     <orderEntry type="module" module-name="cdm" exported="" />
     <orderEntry type="module" module-name="grib" exported="" />
     <orderEntry type="module" module-name="bufr" exported="" />
-    <orderEntry type="module" module-name="visad" />
+    <orderEntry type="module" module-name="visad" exported="" />
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
@@ -197,6 +197,15 @@
       </library>
     </orderEntry>
     <orderEntry type="module-library" exported="">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../lib/release/threddsIso-1.2.2.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library" exported="">
       <library name="JSTL">
         <CLASSES>
           <root url="jar://$MODULE_DIR$/../../lib/external/standard.jar!/" />
@@ -209,6 +218,7 @@
       </library>
     </orderEntry>
     <orderEntry type="library" exported="" name="Logging" level="project" />
+    <orderEntry type="library" exported="" name="Spring-Web" level="project" />
     <orderEntry type="module-library">
       <library>
         <CLASSES>
@@ -245,16 +255,6 @@
         <SOURCES>
           <root url="jar://$MODULE_DIR$/../../lib/external/source/junit-4.5-src.jar!/" />
         </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="library" exported="" name="Spring-Web" level="project" />
-    <orderEntry type="module-library" exported="">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../lib/release/threddsIso-1.2.2.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
       </library>
     </orderEntry>
     <orderEntry type="module-library">

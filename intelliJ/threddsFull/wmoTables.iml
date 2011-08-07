@@ -24,8 +24,8 @@
       <sourceFolder url="file://$MODULE_DIR$/../../wmoTables/src/main/java" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/../../wmoTables/target" />
     </content>
-    <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="inheritedJdk" />
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
