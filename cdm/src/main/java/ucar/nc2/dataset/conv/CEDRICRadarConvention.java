@@ -41,7 +41,6 @@ import ucar.nc2.Attribute;
 import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.util.CancelTask;
 import ucar.ma2.ArrayDouble;
-import ucar.unidata.util.DateUtil;
 
 import java.io.IOException;
 import java.util.Date;
@@ -101,16 +100,18 @@ public class CEDRICRadarConvention extends CF1Convention {
         Variable tvar = ncDataset.findVariable("time");
         String dateStr = sdate.readScalarString();
         String timeStr = stime.readScalarString();
-        Date dt = null;
+        /*Date dt = null;
         try {
           dt = DateUtil.parse(dateStr + " " + timeStr);
-        } catch (Exception e) {}
+        } catch (Exception e) {}  */
 
         int nt = 1;
 
         ArrayDouble.D1 data = new ArrayDouble.D1(nt);
 
-        data.setDouble(0, dt.getTime()/1000);
+        // fake
+        data.setDouble(0, 0);
+        // data.setDouble(0, dt.getTime()/1000);
 
         tvar.setCachedData(data, false);
 

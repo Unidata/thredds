@@ -32,7 +32,9 @@
 
 package ucar.nc2.time;
 
+import net.jcip.annotations.ThreadSafe;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import ucar.nc2.units.DateFormatter;
@@ -41,19 +43,27 @@ import java.text.ParseException;
 import java.util.Date;
 
 /**
- * Replacement for ucar.nc2.units.DateFormatter
+ * Replacement for ucar.nc2.units.DateFormatter.
+ * Threadsafe static routines for date formatting.
  *
  * @author John
  * @since 7/9/11
  */
+@ThreadSafe
 public class CalendarDateFormatter {
   // these are thread-safe (yeah!)
   private static DateTimeFormatter isof = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").withZoneUTC();
   private static DateTimeFormatter dtf = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss'Z'").withZoneUTC();
   private static DateTimeFormatter df = DateTimeFormat.forPattern("yyyy-MM-dd").withZoneUTC();
 
+  // DatUtil.ISO_DATE_TIME = new DateFormatHandler("yyyy-MM-dd\'T\'HH:mm:ssz");
+
   static public String toDateTimeStringISO(CalendarDate cd) {
     return isof.print(cd.getDateTime());
+  }
+
+  static public String toDateTimeStringISO(Date d) {
+    return isof.print( new DateTime(d, DateTimeZone.UTC));
   }
 
   static public String toDateTimeString(CalendarDate cd) {

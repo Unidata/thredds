@@ -33,14 +33,21 @@
 package ucar.nc2.time;
 
 /**
- * Class Description.
- *
+ * Enumeration of Calendar Periods.
+ * A Period is a logical duration of time, it requires a Calendar to convert to an actual duration of time.
  * @author caron
  * @since 3/30/11
  */
 public enum CalendarPeriod {
   Millisec, Second, Minute, Hour, Day, Month, Year;
 
+  /**
+   * Parse a udunit period string.
+   * Allowable strings = "msec", "sec", "minute", "hour", "hr", "day", "month", "year". Plural form also accepted.
+   * Case insensitive.
+   * @param udunit udunit string
+   * @return CalendarPeriod enum
+   */
   public static CalendarPeriod fromUnitString(String udunit) {
     if (udunit.endsWith("s")) udunit = udunit.substring(0, udunit.length()-1);
     udunit = udunit.toLowerCase();

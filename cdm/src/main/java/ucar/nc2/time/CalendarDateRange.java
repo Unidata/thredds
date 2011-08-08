@@ -8,7 +8,6 @@ import java.util.Date;
 
 /**
  * A Calendar Date Range.
- * Cover for joda time, may use javax.time (threeten) in the future.
  *
  * @author caron
  * @since 3/21/11

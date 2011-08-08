@@ -33,6 +33,7 @@
 
 package ucar.nc2.ui;
 
+import ucar.nc2.iosp.bufr.tables.BufrTables;
 import ucar.nc2.util.net.HTTPSession;
 import thredds.inventory.DatasetCollectionMFiles;
 import thredds.inventory.FeatureCollectionConfig;
@@ -2300,7 +2301,7 @@ public class ToolsUI extends JPanel {
       BAMutil.setActionProperties(fileAction, "FileChooser", "open Local table...", false, 'L', -1);
       BAMutil.addActionToContainer(buttPanel, fileAction);
 
-      modes = new JComboBox(new String[]{"mel-bufr", "ncep", "ncep-nm", "ecmwf", "csv", "ukmet", "wmo-xml"});
+      modes = new JComboBox(BufrTables.Format.values());
       buttPanel.add(modes);
 
       JButton accept = new JButton("Accept");
@@ -2328,7 +2329,7 @@ public class ToolsUI extends JPanel {
 
       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
-        String mode = (String) modes.getSelectedItem();
+        String mode = modes.getSelectedItem().toString();
         bufrTable.setBufrTableD(command, mode);
 
       } catch (FileNotFoundException ioe) {

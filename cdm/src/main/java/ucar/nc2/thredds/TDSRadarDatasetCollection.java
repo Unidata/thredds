@@ -47,6 +47,7 @@ import thredds.catalog.*;
 import ucar.nc2.dt.DataIterator;
 import ucar.nc2.dt.RadialDatasetSweep;
 import ucar.nc2.dt.radial.StationRadarCollectionImpl;
+import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.units.DateType;
 
 import ucar.nc2.units.DateUnit;
@@ -57,7 +58,6 @@ import ucar.unidata.geoloc.Station;
 import ucar.unidata.geoloc.StationImpl;
 
 import ucar.unidata.util.DateSelection;
-import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.DatedThing;
 import ucar.unidata.util.Product;
 
@@ -720,8 +720,7 @@ public class TDSRadarDatasetCollection extends StationRadarCollectionImpl {
     private InvDataset queryRadarStation(String stnName, String productID,
                                          Date absTime)
             throws IOException {
-        String stime = DateUtil.getTimeAsISO8601(absTime).replaceAll("GMT",
-                           "");
+        String stime = CalendarDateFormatter.toDateTimeStringISO(absTime);
         // construct a query like this:
         // http://motherlode.ucar.edu:9080/thredds/idd/radarLevel2?returns=catalog&stn=KFTG&dtime=latest
         StringBuilder queryb  = new StringBuilder();
@@ -849,15 +848,12 @@ public class TDSRadarDatasetCollection extends StationRadarCollectionImpl {
         if ((start == null) && (end == null)) {
             queryb.append("&time=present");
         } else if (end == null) {
-            String stime = DateUtil.getTimeAsISO8601(start).replaceAll("GMT",
-                               "");
+            String stime = CalendarDateFormatter.toDateTimeStringISO(start);
             queryb.append("&time_start=" + stime);
             queryb.append("&time_end=present");
         } else {
-            String stime = DateUtil.getTimeAsISO8601(start).replaceAll("GMT",
-                               "");
-            String etime = DateUtil.getTimeAsISO8601(end).replaceAll("GMT",
-                               "");
+            String stime = CalendarDateFormatter.toDateTimeStringISO(start);
+            String etime = CalendarDateFormatter.toDateTimeStringISO(end);
             queryb.append("&time_start=" + stime);
             queryb.append("&time_end=" + etime);
         }

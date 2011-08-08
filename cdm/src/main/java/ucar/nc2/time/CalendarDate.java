@@ -12,7 +12,7 @@ import org.joda.time.format.DateTimeFormatter;
 import java.util.Date;
 
 /**
- * A Calendar Date.
+ * A Calendar Date. Replaces java.util.Date.
  * Cover for joda time, may use javax.time (threeten) in the future.
  *
  * @author caron
@@ -20,9 +20,6 @@ import java.util.Date;
  */
 @Immutable
 public class CalendarDate implements Comparable<CalendarDate> {
-  // these are thread-safe (yeah!)
-  //private static DateTimeFormatter isof = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").withZoneUTC();
-  //private static DateTimeFormatter isof2 = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss.SSS'Z'").withZoneUTC();
 
   /**
    * Get a CalendarDate representing the present moment

@@ -32,6 +32,7 @@
  */
 package ucar.nc2.iosp.bufr.tables;
 
+import org.w3c.dom.css.CSSValue;
 import ucar.nc2.iosp.bufr.Descriptor;
 import ucar.nc2.iosp.bufr.BufrIdentificationSection;
 import ucar.nc2.util.TableParser;
@@ -44,6 +45,7 @@ import java.util.regex.Matcher;
 import java.io.*;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.util.zip.InflaterOutputStream;
 
 import org.jdom.input.SAXBuilder;
 import org.jdom.Element;
@@ -122,6 +124,10 @@ public class BufrTables {
     localOverride   // look in local first, then wmo
   }
 
+  public enum Format {
+    csv, ecmwf, mel_bufr, mel_tabs, ncep, ncep_nm, opera, ukmet, wmo_xml
+  }
+
   static final String RESOURCE_PATH = "/resources/bufrTables/";
 
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(BufrTables.class);
@@ -132,6 +138,11 @@ public class BufrTables {
   private static List<TableConfig> tables;
   private static Map<String, TableB> tablesB = new ConcurrentHashMap<String, TableB>();
   private static Map<String, TableD> tablesD = new ConcurrentHashMap<String, TableD>();
+
+  static private String version13 = "wmo.v13.composite";
+  static private String version14 = "wmo.v14";
+
+
 
   private static final String canonicalLookup = "resource:" + RESOURCE_PATH + "local/tablelookup.csv";
   private static List<String> lookups = null;
@@ -181,9 +192,19 @@ public class BufrTables {
           table.local = Integer.parseInt(flds[fldidx++].trim());
           table.cat = Integer.parseInt(flds[fldidx++].trim());
           table.tableBname = flds[fldidx++].trim();
-          table.tableBformat = flds[fldidx++].trim();
+          String format = flds[fldidx++].trim();
+          table.tableBformat = Format.valueOf(format);
+          if (table.tableBformat == null) {
+            if (showReadErrs) System.out.printf("%d %d BAD format = %s line == %s%n", count, fldidx, format, line);
+            continue;
+          }
           table.tableDname = flds[fldidx++].trim();
-          table.tableDformat = flds[fldidx++].trim();
+          format = flds[fldidx++].trim();
+          table.tableDformat = Format.valueOf(format);
+          if (table.tableDformat == null) {
+            if (showReadErrs) System.out.printf("%d %d BAD format = %s line == %s%n", count, fldidx, format, line);
+            continue;
+          }
           if (fldidx < flds.length) {
             String modes = flds[fldidx++].trim();
             if (modes.equalsIgnoreCase("wmoLocal"))
@@ -207,7 +228,8 @@ public class BufrTables {
 
   private static class TableConfig {
     int center, subcenter, master, local, cat;
-    String tableBname,tableBformat,tableDname,tableDformat;
+    String tableBname,tableDname;
+    Format tableBformat,tableDformat;
     Mode mode = Mode.wmoLocal;
 
     boolean matches(int center, int subcenter, int master, int local, int cat) {
@@ -395,9 +417,6 @@ public class BufrTables {
     return tables;
   }
 
-  static private String version13 = "wmo.v13.composite";
-  static private String version14 = "wmo.v14";
-
   static public TableB getWmoTableB(BufrIdentificationSection ids) throws IOException {
     return getWmoTableB( ids.getMasterTableVersion());
   }
@@ -426,7 +445,14 @@ public class BufrTables {
     return result;
   }
 
-  static public TableB readTableB(String location, String format, boolean force) throws IOException {
+  static public TableB readTableB(String location, String formatS, boolean force) throws IOException {
+    Format format = Format.valueOf(formatS);
+    if (format == null)
+      throw new RuntimeException("Illegal format = "+formatS);
+    return readTableB(location, format, force);
+  }
+
+  static public TableB readTableB(String location, Format format, boolean force) throws IOException {
     if (!force) {
       TableB tb = tablesB.get(location);
       if (tb != null) return tb;
@@ -435,26 +461,35 @@ public class BufrTables {
 
     InputStream ios = openStream(location);
     TableB b = new TableB(location, location);
-    if (format.equals("csv"))
-      readWmoTableB(ios, b);
-    else if (format.equals("ncep"))
-      readNcepTableB(ios, b);
-    else if (format.equals("ncep-nm")) {
-      Tables t = new Tables(b, null, null);
-      NcepMnemonic.read(ios, t);
-    } else if (format.equals("ecmwf"))
-      readEcmwfTableB(ios, b);
-    else if (format.equals("ukmet"))
-      readBmetTableB(ios, b);
-    else if (format.equals("mel-bufr"))
-      readMelbufrTableB(ios, b);
-    else if (format.equals("mel-tabs"))
-      readMeltabTableB(ios, b);
-    else if (format.equals("wmo-xml"))
-      readWmoXmlTableB(ios, b);
-    else {
-      System.out.printf("Unknown format= %s %n",format);
-      return null;
+    switch (format) {
+      case csv :
+        readWmoTableB(ios, b);
+        break;
+      case ncep :
+        readNcepTableB(ios, b);
+        break;
+      case ncep_nm :
+        Tables t = new Tables(b, null, null);
+        NcepMnemonic.read(ios, t);
+        break;
+      case ecmwf :
+        readEcmwfTableB(ios, b);
+        break;
+      case mel_bufr :
+        readMelbufrTableB(ios, b);
+        break;
+      case mel_tabs :
+        readMeltabTableB(ios, b);
+        break;
+      //case opera :
+      //  readOperaTableB(ios, b);
+      //  break;
+      case ukmet :
+        readBmetTableB(ios, b);
+        break;
+      case wmo_xml :
+        readWmoXmlTableB(ios, b);
+        break;
     }
 
     tablesB.put(location, b);
@@ -830,7 +865,14 @@ public class BufrTables {
     return result;
   }
 
-  static public TableD readTableD(String location, String format, boolean force) throws IOException {
+  static public TableD readTableD(String location, String formatS, boolean force) throws IOException {
+    Format format = Format.valueOf(formatS);
+    if (format == null)
+      throw new RuntimeException("Illegal format = "+formatS);
+    return readTableD(location, format, force);
+  }
+
+  static public TableD readTableD(String location, Format format, boolean force) throws IOException {
     if (location == null) return null;
     if (location.trim().length() == 0) return null;
     if (showReadErrs) System.out.printf("Read BufrTable D %s format=%s%n", location, format);
@@ -842,27 +884,86 @@ public class BufrTables {
 
     InputStream ios = openStream(location);
     TableD d = new TableD(location, location);
-    if (format.equals("csv"))
-      readWmoTableD(ios, d);
-    else if (format.equals("ncep"))
-      readNcepTableD(ios, d);
-    else if (format.equals("ncep-nm")) {
-      Tables t = new Tables(null, d, null);
-      NcepMnemonic.read(ios, t);
-    } else if (format.equals("ecmwf"))
-      readEcmwfTableD(ios, d);
-    else if (format.equals("mel-bufr"))
-      readMelbufrTableD(ios, d);
-    else if (format.equals("wmo-xml"))
-      readWmoXmlTableD(ios, d);
-    else {
+
+    switch (format) {
+      case csv :
+        readWmoTableD(ios, d);
+        break;
+      case ncep :
+        readNcepTableD(ios, d);
+        break;
+      case ncep_nm :
+        Tables t = new Tables(null, d, null);
+        NcepMnemonic.read(ios, t);
+        break;
+      case ecmwf :
+        readEcmwfTableD(ios, d);
+        break;
+      case mel_bufr :
+        readMelbufrTableD(ios, d);
+        break;
+      case opera :
+        readOperaTableD(ios, d);
+        break;
+      case wmo_xml :
+        readWmoXmlTableD(ios, d);
+        break;
+      default:
       System.out.printf("Unknown format= %s %n", format);
       return null;
     }
 
+
     tablesD.put(location, d);
     return d;
   }
+
+  /* opera:
+# Heights of side view
+ 3;13;192;  1;01;000
+  ;  ;   ;  0;31;001
+  ;  ;   ;  0;10;007
+# 4 bit per pixel radar images (top view)
+ 3;21;192;  1;10;000
+ ...
+ */
+
+  static private void readOperaTableD(InputStream ios, TableD t) throws IOException {
+
+   BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios));
+
+   TableD.Descriptor currDesc = null;
+
+   while (true) {
+     String line = dataIS.readLine();
+     if (line == null) break;
+     line = line.trim();
+     if (line.startsWith("#") || line.length() == 0)
+       continue;
+     //System.out.println("Table D line =" + line);
+
+     try {
+       String[] flds = line.split(";");
+       if (flds[0].trim().length() != 0) {
+         int f = Integer.parseInt(flds[0].trim());
+         int x = Integer.parseInt(flds[1].trim());
+         int y = Integer.parseInt(flds[2].trim());
+         currDesc = t.addDescriptor((short) x, (short) y, "", new ArrayList<Short>());
+       }
+
+       int f1 = Integer.parseInt(flds[3].trim());
+       int x1 = Integer.parseInt(flds[4].trim());
+       int y1 = Integer.parseInt(flds[5].trim());
+       int fxy = (f1 << 14) + (x1 << 8) + y1;
+       currDesc.addFeature((short) fxy);
+
+     } catch (Exception e) {
+       log.error("Bad table " + t.getName() + " entry=<" + line + ">", e);
+     }
+   }
+   dataIS.close();
+ }
+
 
   static private void readWmoTableD(InputStream ios, TableD tableD) throws IOException {
     BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, Charset.forName("UTF-8")));
@@ -1226,12 +1327,17 @@ public class BufrTables {
   ///////////////////////////////
   // debug
   public static void main(String args[]) throws IOException {
-    Formatter out = new Formatter(System.out);
+    /* Formatter out = new Formatter(System.out);
 
     TableB tableB = BufrTables.getWmoTableB(13);
     tableB.show(out);
 
     TableD tableD = BufrTables.getWmoTableD(null);
-    tableD.show(out);
+    tableD.show(out); */
+
+    String location = "resource:/resources/bufrTables/local/opera/localtabd_65535_5.csv";
+    InputStream ios = openStream(location);
+    TableD d = new TableD(location, location);
+    readOperaTableD(ios, d);
   }
 }

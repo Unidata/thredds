@@ -13,7 +13,6 @@ import java.util.regex.Pattern;
 
 /**
  * A Calendar Date Unit: "unit since date"
- * Cover for joda time, may use javax.time (threeten) in the future.
  *
  * <pre>
  * UNIT since [-]Y[Y[Y[Y]]]-MM-DD[(T| )hh[:mm[:ss[.sss*]]][ [+|-]hh[[:]mm]]]

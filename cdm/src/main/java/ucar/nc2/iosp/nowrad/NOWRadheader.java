@@ -49,7 +49,6 @@ import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.geoloc.ProjectionPointImpl;
 import ucar.unidata.geoloc.projection.LambertConformal;
-import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.Parameter;
 import ucar.unidata.util.StringUtil;
 
@@ -58,6 +57,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 /**
  * Created by IntelliJ IDEA.
@@ -265,7 +265,7 @@ public class NOWRadheader {
         int              year = Integer.parseInt(ts);
         SimpleDateFormat sdf  = new SimpleDateFormat();
 
-        sdf.setTimeZone(DateUtil.TIMEZONE_GMT);
+        sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
         sdf.applyPattern("yyyy/MM/dd HH:mm");
 
         Date   date = sdf.parse(year + "/" + month + "/" + dd + " " + hr + ":" + min);

@@ -4,7 +4,7 @@ import net.jcip.annotations.Immutable;
 import org.joda.time.Period;
 
 /**
- * Wrapper around org.joda.time.Period.
+ * A replacement for ucar.nc2.units.TimeDuration. incomplete.
  *
  *
  * A Duration is a fixed number of seconds.

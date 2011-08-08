@@ -46,6 +46,8 @@ import thredds.catalog.*;
 import thredds.catalog.crawl.CatalogCrawler;
 import thredds.catalog.query.DqcFactory;
 import thredds.catalog.query.QueryCapability;
+import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.units.DateType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.CoordinateAxis1D;
@@ -60,7 +62,6 @@ import ucar.nc2.Attribute;
 import ucar.unidata.geoloc.vertical.VerticalTransform;
 import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.geoloc.ogc.EPSG_OGC_CF_Helper;
-import ucar.unidata.util.DateUtil;
 
 /**
  * _more_
@@ -319,7 +320,7 @@ public class TestAll extends TestCase
     String curSysTimeAsString = null;
     try
     {
-      curSysTimeAsString = DateUtil.getCurrentSystemTimeAsISO8601();
+      curSysTimeAsString = CalendarDateFormatter.toDateTimeStringISO(CalendarDate.present()); // DateUtil.getCurrentSystemTimeAsISO8601();
 
       InvCatalogImpl cat = catFactory.readXML( catUrl );
       boolean isValid = cat.check( validationMsg, false );
@@ -488,7 +489,7 @@ public class TestAll extends TestCase
     NetcdfDataset ncd;
     try
     {
-      curSysTimeAsString = DateUtil.getCurrentSystemTimeAsISO8601();
+      curSysTimeAsString = CalendarDateFormatter.toDateTimeStringISO(CalendarDate.present()); // DateUtil.getCurrentSystemTimeAsISO8601();
       ncd = NetcdfDataset.openDataset( curResolvedDsPath );
     }
     catch ( IOException e )

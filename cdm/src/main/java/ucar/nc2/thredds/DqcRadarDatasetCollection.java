@@ -40,11 +40,11 @@ import thredds.catalog.query.Station;
 import ucar.nc2.dt.*;
 
 import ucar.nc2.dt.radial.StationRadarCollectionImpl;
+import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.units.DateUnit;
 
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.util.DateSelection;
-import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.DatedThing;
 import ucar.unidata.util.Product;
 
@@ -488,7 +488,7 @@ public class DqcRadarDatasetCollection extends StationRadarCollectionImpl {
      */
     private InvDataset queryRadarStation(String stnName, Date absTime)
             throws IOException {
-        String stime = DateUtil.getTimeAsISO8601(absTime);
+        String stime = CalendarDateFormatter.toDateTimeStringISO(absTime);
         // construct a query like this:
         // http://motherlode.ucar.edu:9080/thredds/idd/radarLevel2?returns=catalog&stn=KFTG&dtime=latest
         StringBuffer queryb = new StringBuffer();
@@ -548,8 +548,8 @@ public class DqcRadarDatasetCollection extends StationRadarCollectionImpl {
         if ((start == null) && (end == null)) {
             queryb.append("&dtime=all");
         } else {
-            String stime = DateUtil.getTimeAsISO8601(start);
-            String etime = DateUtil.getTimeAsISO8601(end);
+            String stime = CalendarDateFormatter.toDateTimeStringISO(start);
+            String etime = CalendarDateFormatter.toDateTimeStringISO(end);
             queryb.append("&dateStart=" + stime);
             queryb.append("&dateEnd=" + etime);
         }
