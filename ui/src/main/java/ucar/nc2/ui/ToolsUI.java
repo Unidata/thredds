@@ -2231,7 +2231,7 @@ public class ToolsUI extends JPanel {
       BAMutil.setActionProperties(fileAction, "FileChooser", "open Local table...", false, 'L', -1);
       BAMutil.addActionToContainer(buttPanel, fileAction);
 
-      modes = new JComboBox(new String[]{"mel-bufr", "ncep", "ncep-nm", "ecmwf", "csv", "ukmet", "mel-tabs", "wmo-xml"});
+      modes = new JComboBox(BufrTables.Format.values());
       buttPanel.add(modes);
 
       JButton accept = new JButton("Accept");
@@ -2258,7 +2258,7 @@ public class ToolsUI extends JPanel {
 
       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
-        String mode = (String) modes.getSelectedItem();
+        String mode = modes.getSelectedItem().toString();
         bufrTable.setBufrTableB(command, mode);
 
       } catch (FileNotFoundException ioe) {

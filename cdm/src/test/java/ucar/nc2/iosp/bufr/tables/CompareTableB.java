@@ -463,11 +463,12 @@ public class CompareTableB {
     }
   }
 
+  // LOOK WRONG
   String tableDirName = "C:\\dev\\tds\\bufr\\resources\\resources\\bufr\\tables\\";
 
   void addToMap(TableName t, Map<Short, DescTrack> mapAll) throws IOException {
     System.out.printf("Read (" + t.filename + ")%n");
-    TableB tableB = BufrTables.readTableB(tableDirName + t.filename, BufrTables.Format.csv, false);
+    TableB tableB = BufrTables.readTableB(tableDirName + t.filename, BufrTables.Format.wmo_csv, false);
     Collection<TableB.Descriptor> desc = tableB.getDescriptors();
 
     for (TableB.Descriptor d : desc) {
