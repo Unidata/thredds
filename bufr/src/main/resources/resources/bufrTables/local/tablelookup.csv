@@ -34,8 +34,8 @@
 #
 # FNMOC trasnmitted from Roy.Mendelssohn@noaa.gov group
 58,  -1,    -1,    0,   -1, resource:/resources/bufrTables/local/fnmoc.B2L-058-000-B.txt, mel_tabs, , , localWmo
-58,  -1,    -1,    1,   -1, resource:/resources/bufrTables/local/fnmoc.B2L-058-001-B.txt, mel_tabs, resource:/resources/bufrTables/local/fnmoc.B2L-058-001-D.txt, mel-tabs, localWmo
-128, -1,    -1,    1,   -1, resource:/resources/bufrTables/local/fnmoc.B2L-128-001-B.txt, mel_tabs, resource:/resources/bufrTables/local/fnmoc.B2L-058-001-D.txt, mel-tabs, localWmo
+58,  -1,    -1,    1,   -1, resource:/resources/bufrTables/local/fnmoc.B2L-058-001-B.txt, mel_tabs, resource:/resources/bufrTables/local/fnmoc.B2L-058-001-D.txt, mel_tabs, localWmo
+128, -1,    -1,    1,   -1, resource:/resources/bufrTables/local/fnmoc.B2L-128-001-B.txt, mel_tabs, resource:/resources/bufrTables/local/fnmoc.B2L-058-001-D.txt, mel_tabs, localWmo
 #
 # FSL
 # B table from Paul Hamer, unknown provenence on the D table
