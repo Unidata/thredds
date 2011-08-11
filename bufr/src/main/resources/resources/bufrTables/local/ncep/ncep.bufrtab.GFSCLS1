@@ -1,0 +1,95 @@
+.------------------------------------------------------------------------------.
+| ------------   USER DEFINITIONS FOR TABLE-A TABLE-B TABLE D   -------------- |
+|------------------------------------------------------------------------------|
+| MNEMONIC | NUMBER | DESCRIPTION                                              |
+|----------|--------|----------------------------------------------------------|
+|          |        |                                                          |
+| GFSCLS1  | A60243 | TABLE A ENTRY - GFSMODEL MESSAGES                        |
+|          |        |                                                          |
+| HEADR    | 362001 | TABLE D ENTRY - PROFILE COORDINATES                      |
+| PROFILE  | 362002 | TABLE D ENTRY - PROFILE DATA                             |
+| CLS1     | 362003 | TABLE D ENTRY - SURFACE DATA                             |
+| D10M     | 362004 | TABLE D ENTRY _ 10 M DATA                                |
+|          |        |                                                          |
+| FTIM     | 004194 | TABLE B ENTRY - FORECAST TIME                            |
+| STNM     | 001205 | TABLE B ENTRY - STATION NUMBER -- 5 DIGIT                |
+| CLAT     | 005002 | TABLE B ENTRY - LATITUDE                                 |
+| CLON     | 006002 | TABLE B ENTRY - LONGITUDE                                |
+| GELV     | 010194 | TABLE B ENTRY - GRID POINT ELEVATION                     |
+|          |        |                                                          |
+| PRES     | 010004 | TABLE B ENTRY - PRESSURE                                 |
+| TMDB     | 012001 | TABLE B ENTRY - TEMPERATURE                              |
+| UWND     | 011003 | TABLE B ENTRY - U WIND                                   |
+| VWND     | 011004 | TABLE B ENTRY - V WIND                                   |
+| SPFH     | 013001 | TABLE B ENTRY - SPECIFIC HUMIDITY                        |
+| OMEG     | 011229 | TABLE B ENTRY - OMEGA                                    |
+|          |        |                                                          |
+| PMSL     | 010051 | TABLE B ENTRY - PRESSURE AT MEAN SEA LEVEL               |
+| PRSS     | 010195 | TABLE B ENTRY - SURFACE PRESSURE                         |
+| TMSK     | 012061 | TABLE B ENTRY - SKIN TEMPERATURE                         |
+| STC1     | 012198 | TABLE B ENTRY - LAYER SOIL TEMPERATURE                   |
+| EVAP     | 013032 | TABLE B ENTRY - EVAPORATION                              |
+| TP03     | 013020 | TABLE B ENTRY - TOTAL PRECIP IN PAST 3-HOUR              |
+| C03M     | 013209 | TABLE B ENTRY - CONVECTIVE PRECIP IN PAST 3-HOUR         |
+| SWEM     | 013210 | TABLE B ENTRY - SNOW WATER EQUIVALENT                    |
+| LCLD     | 020051 | TABLE B ENTRY - AMOUNT OF LOW CLOUD                      |
+| MCLD     | 020052 | TABLE B ENTRY - AMOUNT OF MIDDLE CLOUD                   |
+| HCLD     | 020053 | TABLE B ENTRY - AMOUNT OF HIGH CLOUD                     |
+| U10M     | 011196 | TABLE B ENTRY - U-COMPONENT AT 10 M                      |
+| V10M     | 011197 | TABLE B ENTRY - V_COMPONENT AT 10 M                      |
+| T2MS     | 012004 | TABLE B ENTRY - 2-METER TEMPERATURE                      |
+| Q2MS     | 013198 | TABLE B ENTRY - 2-METER SPECIFIC HUMIDITY                |
+| WXTS     | 013232 | TABLE B ENTRY - SNOW PRECIP TYPE                         |
+| WXTP     | 013233 | TABLE B ENTRY - ICE PELLET PRECIP TYPE                   |
+| WXTZ     | 013234 | TABLE B ENTRY - FREEZING RAIN PRECIP TYPE                |
+| WXTR     | 013235 | TABLE B ENTRY - RAIN PRECIP TYPE                         |
+|          |        |                                                          |
+|------------------------------------------------------------------------------|
+| MNEMONIC | SEQUENCE                                                          |
+|----------|-------------------------------------------------------------------|
+|          |                                                                   |
+| GFSCLS1  | HEADR {PROFILE} CLS1 D10M                                         |
+| HEADR    | FTIM STNM CLAT CLON GELV                                          |
+| PROFILE  | PRES TMDB UWND VWND SPFH OMEG                                     |
+| CLS1     | PMSL PRSS TMSK STC1 EVAP TP03 C03M SWEM LCLD MCLD HCLD            |
+| D10M     | U10M V10M T2MS Q2MS WXTS WXTP WXTZ WXTR                           |
+|          |                                                                   |
+|------------------------------------------------------------------------------|
+| MNEMONIC | SCAL | REFERENCE   | BIT | UNITS                    |-------------|
+|----------|------|-------------|-----|--------------------------|-------------|
+|          |      |             |     |                          |-------------|
+| FTIM     |    0 |           0 |  24 | SECONDS                  |-------------|
+| STNM     |    0 |           0 |  20 | NUMERIC ID               |-------------|
+| CLAT     |    2 |       -9000 |  15 | DEG N                    |-------------|
+| CLON     |    2 |      -18000 |  16 | DEG E                    |-------------|
+| GELV     |    0 |        -400 |  15 | M                        |-------------|
+|          |      |             |     |                          |-------------|
+| PRES     |   -1 |           0 |  14 | PA                       |-------------|
+| TMDB     |    1 |           0 |  12 | K                        |-------------|
+| UWND     |    1 |       -4096 |  13 | M/S                      |-------------|
+| VWND     |    1 |       -4096 |  13 | M/S                      |-------------|
+| SPFH     |    5 |           0 |  14 | KG/KG                    |-------------|
+| OMEG     |    1 |        -512 |  10 | PA/S                     |-------------|
+|          |      |             |     |                          |-------------|
+| PMSL     |   -1 |           0 |  14 | PA                       |-------------|
+| PRSS     |   -1 |           0 |  14 | PA                       |-------------|
+| TMSK     |    1 |           0 |  12 | K                        |-------------|
+| STC1     |    1 |           0 |  12 | K                        |-------------|
+| EVAP     |    1 |           0 |   8 | KG/M**2                  |-------------|
+| TP03     |    2 |          -1 |  14 | KG/M**2                  |-------------|
+| C03M     |    2 |          -1 |  14 | KG/M**2                  |-------------|
+| SWEM     |    2 |           0 |  18 | KG/M**2                  |-------------|
+| LCLD     |    0 |           0 |   7 | %                        |-------------|
+| MCLD     |    0 |           0 |   7 | %                        |-------------|
+| HCLD     |    0 |           0 |   7 | %                        |-------------|
+|          |      |             |     |                          |-------------|
+| U10M     |    1 |       -4096 |  13 | M/S                      |-------------|
+| V10M     |    1 |       -4096 |  13 | M/S                      |-------------|
+| T2MS     |    1 |           0 |  12 | K                        |-------------|
+| Q2MS     |    5 |           0 |  14 | KG/KG                    |-------------|
+| WXTS     |    0 |           0 |   2 | 1=SNOW                   |-------------|
+| WXTP     |    0 |           0 |   2 | 1=ICE PELLETS            |-------------|
+| WXTZ     |    0 |           0 |   2 | 1=FREEZING RAIN          |-------------|
+| WXTR     |    0 |           0 |   2 | 1=RAIN                   |-------------|
+|          |      |             |     |                          |-------------|
+`------------------------------------------------------------------------------'
