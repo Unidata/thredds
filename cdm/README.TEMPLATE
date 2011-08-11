@@ -19,7 +19,7 @@ DISTRIBUTIONS
   javadocAll.jar              complete javadoc
 
 OPTIONAL LIBRARIES
-  bufrTables.jar              required to read BUFR files
+  bufr.jar                    required to read BUFR files
   commons-httpclient          required to read files remotely over HTTP
   commons-logging, codec      required by commons-httpclient
   ehcache.jar                 experimental object caching
@@ -30,8 +30,7 @@ OPTIONAL LIBRARIES
   opendap.jar                 required to read files remotely over OPeNDAP
   protobuf-java.jar           required for cdmRemote access
   stax.jar                    needed for STAX parsing (pre JDK 1.6)
-  unidatacommon.jar           required for projections
-  visadNoDods.jar             required to read ADDE datasets.
+  visadCdm.jar                required to read ADDE, GEMPAK, McIDAS  datasets.
 
 LOGGING LIBRARIES
   log4j.jar                   log4j logging.
@@ -63,7 +62,7 @@ BUILD FROM SOURCE
 
 ---------------------------------------------------------------------------------------------------------------------
 /*
- * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2011 University Corporation for Atmospheric Research/Unidata
  *
  * Portions of this software were developed by the Unidata Program at the
  * University Corporation for Atmospheric Research.

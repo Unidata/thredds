@@ -60,20 +60,42 @@
            Dependencies
        =========================================================== -->
   <dependencies>
+
     <dependency>
       <groupId>edu.ucar</groupId>
       <artifactId>unidataCommon</artifactId>
       <version>${project.version}</version>
     </dependency>
+
     <dependency>
       <groupId>edu.ucar</groupId>
       <artifactId>netcdf</artifactId>
       <version>${project.version}</version>
     </dependency>
+
+    <dependency>
+      <groupId>com.google.protobuf</groupId>
+      <artifactId>protobuf-java</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>joda-time</groupId>
+      <artifactId>joda-time</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jdom</groupId>
+      <artifactId>jdom</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
     </dependency>
+
   </dependencies>
 
   <!-- ===========================================================

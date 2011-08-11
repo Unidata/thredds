@@ -143,26 +143,16 @@
       <version>${project.version}</version>
     </dependency>
 
-    <dependency>
-      <groupId>edu.ucar</groupId>
-      <artifactId>opendap</artifactId>
-      <!-- Using OPeNDAP protocol. -->
-      <version>${project.version}</version>
-      <scope>provided</scope>
-    </dependency>
-
-    <dependency>
-      <artifactId>visad</artifactId>
-      <!-- Reading McIDAS AREA files. -->
-      <groupId>edu.wisc</groupId>
-      <version>2010-08-09</version>
-      <scope>provided</scope>
-    </dependency>
-
     <!-- HTTP client -->
     <dependency>
       <groupId>commons-httpclient</groupId>
       <artifactId>commons-httpclient</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>joda-time</groupId>
+      <artifactId>joda-time</artifactId>
+      <scope>provided</scope>
     </dependency>
 
     <!-- logging -->

@@ -178,12 +178,11 @@
         <artifactId>slf4j-api</artifactId>
         <version>1.6.1</version>
       </dependency>
-      <dependency>
+      <dependency>  <!-- Should never be needed at compile time. -->
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-jdk14</artifactId>
         <version>1.6.1</version>
         <scope>runtime</scope>
-        <!-- Should never be needed at compile time. -->
       </dependency>
       <dependency>
         <groupId>org.jdom</groupId>
@@ -218,6 +217,11 @@
         <groupId>com.sleepycat</groupId>
         <!-- Requires Oracle repository (see cdm/pom.xml) -->
         <version>4.0.92</version>
+      </dependency>
+      <dependency>
+        <groupId>joda-time</groupId>
+        <artifactId>joda-time</artifactId>
+        <version>2.0</version>
       </dependency>
       <dependency>
         <groupId>junit</groupId>
