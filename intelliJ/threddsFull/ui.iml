@@ -28,6 +28,7 @@
     <orderEntry type="module" module-name="cdm" />
     <orderEntry type="module" module-name="bufr" />
     <orderEntry type="module" module-name="grib" />
+    <orderEntry type="module" module-name="opendap" />
     <orderEntry type="module" module-name="visad" />
     <orderEntry type="module-library">
       <library>

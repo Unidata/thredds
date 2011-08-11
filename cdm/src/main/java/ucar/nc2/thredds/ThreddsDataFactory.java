@@ -38,7 +38,6 @@ import ucar.nc2.stream.CdmrFeatureDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.constants.FeatureType;
 
-import ucar.nc2.dods.DODSNetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ncml.NcMLReader;
 
@@ -76,7 +75,6 @@ public class ThreddsDataFactory {
   static public void setPreferCdm(boolean prefer) {
     preferCdm = prefer;
   }
-
 
   static public void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
     debugOpen = debugFlag.isSet("thredds/debugOpen");
@@ -467,7 +465,7 @@ public class ThreddsDataFactory {
 
     // open DODS type
     if ((serviceType == ServiceType.OPENDAP) || (serviceType == ServiceType.DODS)) {
-      String curl = DODSNetcdfFile.canonicalURL(datasetLocation);
+      String curl =  (datasetLocation.startsWith("http:")) ? "dods:" + datasetLocation.substring(5) : datasetLocation; // LOOK needed?
       ds = acquire ? NetcdfDataset.acquireDataset(curl, enhanceMode, task) : NetcdfDataset.openDataset(curl, enhanceMode, task);
     }
 

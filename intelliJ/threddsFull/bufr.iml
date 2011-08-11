@@ -6,6 +6,8 @@
     <exclude-output />
     <content url="file://$MODULE_DIR$/../../bufr">
       <sourceFolder url="file://$MODULE_DIR$/../../bufr/src/main/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/../../bufr/src/test/java" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../bufr/src/timing/java" isTestSource="true" />
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="inheritedJdk" />

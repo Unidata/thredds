@@ -58,8 +58,8 @@ public class TypedDatasetFactory {
     registerFactory(FeatureType.POINT, ucar.nc2.dt.point.UnidataPointObsDataset.class);
     registerFactory(FeatureType.STATION, ucar.nc2.dt.point.UnidataStationObsDataset.class);
     registerFactory(FeatureType.STATION, ucar.nc2.dt.point.UnidataStationObsMultidimDataset.class);
-    registerFactory(FeatureType.POINT, ucar.nc2.dt.point.DapperDataset.class);
-    registerFactory(FeatureType.STATION, ucar.nc2.dt.point.SequenceObsDataset.class);
+    //registerFactory(FeatureType.POINT, ucar.nc2.dt.point.DapperDataset.class);
+    //registerFactory(FeatureType.STATION, ucar.nc2.dt.point.SequenceObsDataset.class);
     registerFactory(FeatureType.STATION, ucar.nc2.dt.point.UnidataStationObsDataset2.class);
     registerFactory(FeatureType.STATION, ucar.nc2.dt.point.NdbcDataset.class);
     registerFactory(FeatureType.STATION, ucar.nc2.dt.point.MadisStationObsDataset.class);

@@ -160,12 +160,12 @@ Character Code is the two hex digit code corresponding to the US-ASCII character
 <h3>Making/receiving OPeNDAP requests</h3>
 <p>Standard practice, then is to translate from CDM identifiers to OPeNDAP identifiers using </p>
 <blockquote>
-  <pre>opendap.util.EscapeStrings.escapeDAPIdentifier()
+  <pre>ucar.nc.util.net.EscapeStrings.escapeDAPIdentifier()
 </pre>
 </blockquote>
 <p>and to translate from OPeNDAP identifiers to CDM identifiers using </p>
 <blockquote>
-  <pre>opendap.util.EscapeStrings.unescapeDAPIdentifier()
+  <pre>ucar.nc.util.net.EscapeStrings.unescapeDAPIdentifier()
 </pre>
 </blockquote>
 <p>In addition, HTTPMethod(String URI) automatically adds URL encoding. These may create a <strong>double escaped</strong>  URL. On the server, one first unescapes the request, and then parses it. Any identifiers in the request then are unescaped again before comparing with the corresponding CDM object.</p>

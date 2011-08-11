@@ -33,16 +33,12 @@
 
 package thredds.cataloggen.config;
 
-import opendap.dap.*;
-import thredds.catalog.InvAccess;
 import thredds.catalog.InvDatasetImpl;
-import thredds.catalog.ServiceType;
 import thredds.catalog.InvDataset;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
-
 
 /**
  * <p>Title: Catalog Generator</p>
@@ -288,9 +284,10 @@ public class DatasetNamer {
   public boolean nameDataset(InvDatasetImpl dataset) {
     if (this.type == DatasetNamerType.REGULAR_EXPRESSION) {
       return (this.nameDatasetRegExp(dataset));
-    } else if (this.type == DatasetNamerType.DODS_ATTRIBUTE) {
+    } /* else if (this.type == DatasetNamerType.DODS_ATTRIBUTE) {
       return (this.nameDatasetDodsAttrib(dataset));
-    } else {
+    } */
+          else {
       String tmpMsg = "This DatasetNamer <" + this.getName() + "> has unsupported type <" + this.type.toString() + ">.";
       logger.error("nameDataset(): " + tmpMsg);
       throw new IllegalStateException(tmpMsg);
@@ -350,7 +347,7 @@ public class DatasetNamer {
     return false;
   }
 
-  /**  */
+  /**
   private boolean nameDatasetDodsAttrib(InvDatasetImpl dataset)
 //    throws java.lang.Exception
   {
@@ -464,5 +461,5 @@ public class DatasetNamer {
         logger.debug("nameDatasetDodsAttrib(): attribute container does not exist.");
         return (false);
     }
-  }
+  } */
 }

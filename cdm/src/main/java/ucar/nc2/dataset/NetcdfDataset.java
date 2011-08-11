@@ -48,10 +48,12 @@ import ucar.nc2.ncml.NcMLWriter;
 import ucar.nc2.ncml.NcMLGWriter;
 
 // factories for remote access
-import ucar.nc2.dods.DODSNetcdfFile;
+//import ucar.nc2.dods.DODSNetcdfFile;
 import ucar.nc2.thredds.ThreddsDataFactory;
 
 import java.io.*;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 import org.apache.commons.httpclient.Header;
@@ -802,7 +804,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
   static private NetcdfFile acquireDODS(FileCache cache, FileFactory factory, Object hashKey,
                                         String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
-    if (cache == null) return new DODSNetcdfFile(location, cancelTask);
+    if (cache == null) {
+      return openDodsByReflection(location, cancelTask);
+    }
 
     if (factory == null) factory = new DodsFactory();
     return (NetcdfFile) cache.acquire(factory, hashKey, location, buffer_size, cancelTask, spiObject);
@@ -810,9 +814,36 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
   static private class DodsFactory implements FileFactory {
     public NetcdfFile open(String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
-      return new DODSNetcdfFile(location, cancelTask);
+      return openDodsByReflection(location, cancelTask);
     }
   }
+
+  static private NetcdfFile openDodsByReflection( String location, ucar.nc2.util.CancelTask cancelTask) {
+    try {
+      Class c = NetcdfDataset.class.getClassLoader().loadClass("ucar.nc2.dods.DODSNetcdfFile");
+      Constructor con = c.getConstructor(String.class, ucar.nc2.util.CancelTask.class);
+      return (NetcdfFile) con.newInstance(location, cancelTask);
+
+    } catch (ClassNotFoundException e) {
+      log.info("opendap.jar is not on class path");
+      return null;  // opendap module is not loaded
+
+    } catch (NoSuchMethodException e) {
+      log.error("ucar.nc2.dods.DODSNetcdfFile does not exist", e);
+      return null;
+    } catch (InvocationTargetException e) {
+      log.error("ucar.nc2.dods.DODSNetcdfFile does not exist", e);
+      return null;
+    } catch (InstantiationException e) {
+      log.error("ucar.nc2.dods.DODSNetcdfFile does not exist", e);
+      return null;
+    } catch (IllegalAccessException e) {
+      log.error("ucar.nc2.dods.DODSNetcdfFile does not exist", e);
+      return null;
+    }
+
+  }
+
 
   static private NetcdfFile acquireNcml(FileCache cache, FileFactory factory, Object hashKey,
                                         String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {

@@ -11,6 +11,7 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="inheritedJdk" />
     <orderEntry type="module" module-name="common" />
+    <orderEntry type="module" module-name="cdm" />
     <orderEntry type="module-library">
       <library>
         <CLASSES>

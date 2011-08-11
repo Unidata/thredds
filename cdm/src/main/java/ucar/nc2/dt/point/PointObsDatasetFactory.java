@@ -77,11 +77,11 @@ public class PointObsDatasetFactory {
     if (UnidataPointObsDataset.isValidFile( ncfile))
       return new UnidataPointObsDataset( ncfile);
 
-    if (DapperDataset.isValidFile( ncfile))
+    /* if (DapperDataset.isValidFile( ncfile))
       return DapperDataset.factory( ncfile);
 
     if (SequenceObsDataset.isValidFile( ncfile))
-      return new SequenceObsDataset( ncfile, task);
+      return new SequenceObsDataset( ncfile, task); */
 
     if (UnidataStationObsDataset2.isValidFile( ncfile))
       return new UnidataStationObsDataset2( ncfile);

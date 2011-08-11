@@ -180,7 +180,6 @@ public class TestAll {
     suite.addTest( ucar.nc2.dt.TestTypedDatasets.suite()); // deprecated, but backwards compatible
 
     suite.addTest( ucar.unidata.geoloc.TestGeoloc.suite());  //
-    suite.addTest( ucar.nc2.dods.TestDODS.suite()); //
 
     suite.addTest( thredds.catalog.TestCatalogAll.suite()); //
 

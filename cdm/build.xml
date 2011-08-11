@@ -67,7 +67,7 @@
   <property name="logging-maximal.jar" value="slf4j-log4j12-1.6.1.jar"/>
   <property name="log4j.jar" value="log4j-1.2.16.jar"/>
   <!-- property name="lucene.jar" value="lucene.jar"/ -->
-  <property name="opendap.jar" value="opendap-2.2.jar"/>
+  <property name="opendap.jar" value="opendap-4.3.jar"/>
   <property name="protobuf.jar" value="protobuf-java-2.4.0a.jar"/>
   <property name="quartz.jar" value="quartz-1.7.3.jar"/>
   <property name="resourcesOptional.jar" value="resourcesOptional.jar"/>
@@ -90,14 +90,12 @@
   <fileset id="compile.libraries" dir="${lib.dir}">
     <include name="external/${bdb.jar}"/>
     <include name="external/${ehcache.jar}"/>
-    <include name="release/${opendap.jar}"/>
     <include name="external/${httpclient3.jar}"/>
     <include name="external/${jdom.jar}"/>
     <include name="external/${joda.jar}"/>
     <include name="external/${loggingAPI.jar}"/>
     <include name="external/${protobuf.jar}"/>
     <include name="external/${quartz.jar}"/>
-    <include name="external/${threeten.jar}"/>
   </fileset>
 
   <path id="compile.classpath">
@@ -361,13 +359,13 @@
       <fileset dir="${lib.dir}">
         <include name="release/${bufr.jar}"/>
         <include name="release/${grib.jar}"/>
+        <include name="release/${opendap.jar}"/>
         <include name="external/${jdom.jar}"/>
         <include name="external/${httpclient3.jar}"/>
         <include name="external/${http-codec.jar}"/>
         <include name="external/${commons-logging.jar}"/>
         <include name="external/${loggingAPI.jar}"/>
         <include name="external/${logging-minimal.jar}"/>
-        <include name="release/${opendap.jar}"/>
         <include name="external/${protobuf.jar}"/>
         <!-- include name="external/${bdb.jar}"/ -->
       </fileset>
@@ -555,6 +553,8 @@
   <fileset id="compileUI.libraries" dir="${lib.dir}">
     <include name="release/${bufr.jar}"/>
     <include name="release/${grib.jar}"/>
+    <include name="release/${opendap.jar}"/>
+    <include name="release/${visadCdm.jar}"/>
     <include name="external/${bounce.jar}"/>
     <include name="external/${jgoodies.jar}"/>
     <include name="external/${jfreechart.jar}"/>
@@ -568,9 +568,7 @@
     <fileset refid="compileUI.libraries"/>
   </path>
 
-  <fileset id="runtime.libraries" dir="${lib.dir}">
-    <include name="release/${bufr.jar}"/>
-    <include name="release/${grib.jar}"/>
+  <fileset id="runtimeUI.libraries" dir="${lib.dir}">
     <include name="external/${http-codec.jar}"/>
     <include name="external/${commons-logging.jar}"/>
     <include name="external/${logging-minimal.jar}"/>
@@ -578,18 +576,12 @@
     <include name="external/${spring-asm.jar}"/>
     <include name="external/${spring-context.jar}"/>
     <include name="external/${spring-expression.jar}"/>
-    <include name="release/${visadCdm.jar}"/>
   </fileset>
-
-  <path id="runtime.classpath">
-    <fileset refid="compile.libraries"/>
-    <fileset refid="runtime.libraries"/>
-  </path>
 
   <path id="runtimeUI.classpath">
     <fileset refid="compile.libraries"/>
     <fileset refid="compileUI.libraries"/>
-    <fileset refid="runtime.libraries"/>
+    <fileset refid="runtimeUI.libraries"/>
   </path>
 
   <path id="sourcepathUI">
@@ -597,9 +589,11 @@
     <pathelement location="${srcUI.dir}"/>
   </path>
 
-  <target name="compileUI" depends="init, release-settings" description="toolsUI compile">
+  <target name="compileUI" depends="init, release-settings, compile" description="toolsUI compile">
     <pathconvert property="sourcepath.prop" refid="sourcepath" targetos="windows"/>
     <echo>sourcepath=${sourcepath.prop}</echo>
+    <pathconvert property="compileUI.classpath.prop" refid="compileUI.classpath" targetos="windows"/>
+    <echo>compileUI.classpath=${compileUI.classpath.prop}</echo>
 
     <javac destdir="${build.classes.dir}" debug="${build.debug}" debuglevel="${build.debuglevel}" includeAntRuntime="false">
       <src refid="sourcepathUI"/>
@@ -623,7 +617,7 @@
         <path location="${resourcesUI.dir}"/>
         <fileset refid="compile.libraries"/>
         <fileset refid="compileUI.libraries"/>
-        <fileset refid="runtime.libraries"/>
+        <fileset refid="runtimeUI.libraries"/>
       </path>
     </pathconvert>
 
@@ -697,7 +691,7 @@
     <copy todir="${zip.dir}" flatten="true" overwrite="true" preservelastmodified="true">
       <fileset refid="compile.libraries"/>
       <fileset refid="compileUI.libraries"/>
-      <fileset refid="runtime.libraries"/>
+      <fileset refid="runtimeUI.libraries"/>
       <fileset file="${lib.dir}/release/${resourcesOptional.jar}"/>
       <fileset file="${lib.dir}/external/${log4j.jar}"/>
       <fileset file="${lib.dir}/external/${logging-maximal.jar}"/>
@@ -713,7 +707,7 @@
     <unzip dest="${uiZip.dir}">
       <fileset refid="compile.libraries"/>
       <fileset refid="compileUI.libraries"/>
-      <fileset refid="runtime.libraries"/>
+      <fileset refid="runtimeUI.libraries"/>
       <fileset file="${build.dir}/${jarUI}"/>
       <fileset file="${lib.dir}/release/${resourcesOptional.jar}"/>
     </unzip>
@@ -901,7 +895,7 @@
     <pathelement location="${resourcesUI.dir}"/>
     <fileset refid="compile.libraries"/>
     <fileset refid="compileUI.libraries"/>
-    <fileset refid="runtime.libraries"/>
+    <fileset refid="runtimeUI.libraries"/>
     <fileset refid="test.libraries"/>
   </path>
   <path id="runtime.test.classpath">
@@ -913,7 +907,7 @@
     <pathelement location="${lib.dir}/release/${jarMain}"/>
     <fileset refid="compile.libraries"/>
     <fileset refid="compileUI.libraries"/>
-    <fileset refid="runtime.libraries"/>
+    <fileset refid="runtimeUI.libraries"/>
     <fileset refid="test.libraries"/>
   </path>
   <path id="runtime.test.classpath.release">
