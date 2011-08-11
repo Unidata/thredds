@@ -33,6 +33,9 @@
 
 package ucar.nc2.util;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -145,4 +148,39 @@ public class Misc {
     for (Object i : ii) result.add(i);
     return result;
   }
+
+  //////////////////////////////////////////////////////////////////////
+
+  /**
+   * Filename of the user property file read from the "user.home" directory
+   * if the "unidata.testdata2.path" and "unidata.upc.share.path" are not
+   * available as system properties.
+   */
+  private static final String threddsPropFileName = "thredds.properties";
+  private static final String testdataDirPropName = "unidata.testdata.path";
+  private static String testdataDirPath = null;
+
+  public static String getTestdataDirPath() {
+    if (testdataDirPath == null)
+      testdataDirPath = System.getProperty(testdataDirPropName);  // Check for system property
+
+    if (testdataDirPath == null) {
+      File userHomeDirFile = new File(System.getProperty("user.home"));
+      File userThreddsPropsFile = new File(userHomeDirFile, threddsPropFileName);
+      if (userThreddsPropsFile.exists() && userThreddsPropsFile.canRead()) {
+        Properties userThreddsProps = new Properties();
+        try {
+          userThreddsProps.load(new FileInputStream(userThreddsPropsFile));
+        } catch (IOException e) {
+          System.out.println("**Failed loading user THREDDS property file: " + e.getMessage());
+        }
+        if (!userThreddsProps.isEmpty()) {
+          testdataDirPath = userThreddsProps.getProperty(testdataDirPropName);
+        }
+      }
+    }
+
+    return testdataDirPath;
+  }
+
 }

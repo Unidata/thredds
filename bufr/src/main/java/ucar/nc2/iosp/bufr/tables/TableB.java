@@ -1,5 +1,5 @@
 /*
- * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2011 University Corporation for Atmospheric Research/Unidata
  *
  * Portions of this software were developed by the Unidata Program at the
  * University Corporation for Atmospheric Research.
@@ -43,9 +43,9 @@ import java.util.*;
  * @since Sep 25, 2008
  */
 public class TableB {
-  private String name;
-  private String location;
-  private Map<Short, Descriptor> map;
+  private final String name;
+  private final String location;
+  private final Map<Short, Descriptor> map;
 
   public TableB(String name, String location) {
     this.name = name;

@@ -34,10 +34,10 @@ package ucar.nc2.ui;
 import ucar.nc2.ui.dialog.BufrBCompare;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
+import ucar.nc2.util.Misc;
 import ucar.unidata.util.StringUtil2;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
-import ucar.nc2.units.DateFormatter;
 import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.iosp.bufr.*;
 import ucar.nc2.iosp.bufr.tables.BufrTables;
@@ -62,7 +62,7 @@ import java.util.List;
 import java.io.*;
 
 /**
- * Class Description  HEY
+ * View BUFR Table B
  *
  * @author caron
  * @since Dec 1, 2009
@@ -80,10 +80,7 @@ public class BufrTableBViewer extends JPanel {
 
   private TableB currTable, refTable;
 
-  private StructureTable dataTable;
-  private IndependentWindow dataWindow;
   private FileManager fileChooser;
-  private DateFormatter df = new DateFormatter();
 
   public BufrTableBViewer(final PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
@@ -121,18 +118,21 @@ public class BufrTableBViewer extends JPanel {
       }
     });
 
-
-    AbstractButton standardButton = BAMutil.makeButtcon("Select", "Show standard table", false);
+    AbstractButton standardButton = BAMutil.makeButtcon("FontIncr", "Show union of tables", false);
     standardButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        try {
-          setBufrTableB(BufrTables.getWmoTableB(14));
-        } catch (IOException e1) {
-          e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
+        showAll();
       }
     });
     buttPanel.add(standardButton);
+
+    AbstractButton diffButton = BAMutil.makeButtcon("Select", "Diff all variants", false);
+    diffButton.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        diffVariants();
+      }
+    });
+    buttPanel.add(diffButton);
 
     AbstractButton compareButton = BAMutil.makeButtcon("Select", "Compare to standard table", false);
     compareButton.addActionListener(new ActionListener() {
@@ -164,8 +164,20 @@ public class BufrTableBViewer extends JPanel {
         }
       }
     };
-    BAMutil.setActionProperties(usedAction, "dd", "showUsed", false, 'C', -1);
+    BAMutil.setActionProperties(usedAction, "dd", "checkUsed", false, 'C', -1);
     BAMutil.addActionToContainer(buttPanel, usedAction);
+
+    AbstractAction usedAllAction = new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        try {
+          showUsed();
+        } catch (IOException e1) {
+          e1.printStackTrace();
+        }
+      }
+    };
+    BAMutil.setActionProperties(usedAllAction, "dd", "showUsedAll", false, 'U', -1);
+    BAMutil.addActionToContainer(buttPanel, usedAllAction);
 
     AbstractAction diffAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
@@ -249,8 +261,8 @@ public class BufrTableBViewer extends JPanel {
     if (fileChooser != null) fileChooser.save();
   }
 
-  public void setBufrTableB(String filename, String mode) throws IOException {
-    TableB tableB = BufrTables.readTableB(filename, mode, true); // force read
+  public void setBufrTableB(String filename, BufrTables.Format format) throws IOException {
+    TableB tableB = BufrTables.readTableB(filename, format, true); // force read
     setBufrTableB(tableB);
   }
 
@@ -350,7 +362,6 @@ Class,FXY,enElementName,BUFR_Unit,BUFR_Scale,BUFR_ReferenceValue,BUFR_DataWidth_
 
   private BufrBCompare dialog = null;
   public void compareToStandard() {
-    if (currTable == null) return;
     if (dialog == null) {
       dialog = new BufrBCompare(null);
       dialog.pack();
@@ -367,14 +378,10 @@ Class,FXY,enElementName,BUFR_Unit,BUFR_Scale,BUFR_ReferenceValue,BUFR_DataWidth_
 
     try {
       Formatter out = new Formatter();
-      TableB ref = getStandardTable(data.name);
-      if (ref == null) {
-        compareTA.setText("Cant find standard table = "+data.name);
-        compareTA.gotoTop();
-        infoWindow.setVisible(true);
-        return;
+      if (refTable == null) {
+        refTable = BufrTables.getWmoTableBlatest();
       }
-      compare(currTable, ref, !data.compareNames, !data.compareUnits, out);
+      compare(refTable, !data.compareNames, !data.compareUnits, out);
 
       compareTA.setText(out.toString());
       compareTA.gotoTop();
@@ -390,11 +397,13 @@ Class,FXY,enElementName,BUFR_Unit,BUFR_Scale,BUFR_ReferenceValue,BUFR_DataWidth_
     }
   }
 
-  private void compare(TableB t1, TableB t2, boolean skipNames, boolean skipUnits, Formatter out) {
-    out.format("Compare Table B%n %s%n %s %n", t1.getName(), t2.getName());
-    List<TableB.Descriptor> listDesc = new ArrayList<TableB.Descriptor>(t1.getDescriptors());
-    Collections.sort(listDesc);
-    for (TableB.Descriptor d1 : listDesc) {
+  private void compare(TableB t2, boolean skipNames, boolean skipUnits, Formatter out) {
+    Map<Short, DdsBean> mapBeans = new HashMap<Short, DdsBean>(3000);
+
+    out.format("Compare Current Table to %s %n", t2.getName());
+    for (Object beano : ddsTable.getBeans()) {
+      DdsBean bean = (DdsBean) beano;
+      TableB.Descriptor d1 = bean.dds;
       TableB.Descriptor d2 = t2.getDescriptor(d1.getId());
       if (d2 == null)
         out.format("**No key %s in second table; local=%s%n", d1.getFxy(), d1.isLocal());
@@ -414,30 +423,34 @@ Class,FXY,enElementName,BUFR_Unit,BUFR_Scale,BUFR_ReferenceValue,BUFR_DataWidth_
         if (d1.getDataWidth() != d2.getDataWidth())
           out.format(" %s bitWidth %d != %d %n", d1.getFxy(), d1.getDataWidth(), d2.getDataWidth());
       }
+      mapBeans.put(d1.getId(), bean);
     }
 
     // see whats missing
+    List<TableB.Descriptor> listDesc2 = new ArrayList<TableB.Descriptor>(t2.getDescriptors());
     out.format("%n Missing in first table %n");
-    for (TableB.Descriptor d2 : t2.getDescriptors()) {
-      TableB.Descriptor d1 = t1.getDescriptor(d2.getId());
-      if (d1 == null) {
+    Collections.sort(listDesc2);
+    for (TableB.Descriptor d2 : listDesc2) {
+      DdsBean bean = mapBeans.get(d2.getId());
+      if (bean == null) {
         out.format("   %s%n", d2.getFxy());
       }
     }
-
   }
-
 
   ///////////////////////
 
   private HashMap<Short, List<Message>> usedDds = null;
 
   private void showUsed() throws IOException {
+    String rootDir = Misc.getTestdataDirPath();
+    String dataDir = "cdmUnitTest/formats/bufr/";
     usedDds = new HashMap<Short, List<Message>>(3000);
-    scanFileForDds("Q:/cdmUnitTest/iosp/bufr/uniqueExamples.bufr");
-    scanFileForDds("Q:/cdmUnitTest/iosp/bufr/uniqueIDD.bufr");
-    scanFileForDds("Q:/cdmUnitTest/iosp/bufr/uniqueBrasil.bufr");
-    scanFileForDds("Q:/cdmUnitTest/iosp/bufr/uniqueFnmoc.bufr");
+
+    scanFileForDds(rootDir + dataDir + "uniqueIDD.bufr");
+    scanFileForDds(rootDir + dataDir + "uniqueExamples.bufr");
+    scanFileForDds(rootDir + dataDir + "uniqueBrasil.bufr");
+    scanFileForDds(rootDir + dataDir + "uniqueFnmoc.bufr");
   }
 
   private void showUsed(String filename) throws IOException {
@@ -474,15 +487,19 @@ Class,FXY,enElementName,BUFR_Unit,BUFR_Scale,BUFR_ReferenceValue,BUFR_DataWidth_
   ////////////////////////////////////////////////////////
 
 
-  private HashMap<String, TableB> standardTables = null;
+  /*private HashMap<String, TableB> standardTables = null;
   private void initStandardTables() throws IOException {
     standardTables = new HashMap<String, TableB>();
-    standardTables.put("WMO-v14", BufrTables.getWmoTableB(14));
-    standardTables.put("ours-v13", BufrTables.getWmoTableB(13));
-    standardTables.put("ncep-v13", BufrTables.readTableB("resource:/resources/bufrTables/reference/bufrtab.TableB_STD_0_13", "ncep", false));
-    standardTables.put("ncep-v14", BufrTables.readTableB("resource:/resources/bufrTables/reference/bufrtab.TableB_STD_0_14", "ncep", false));
-    //standardTables.put("ecmwf-v13", BufrTables.readTableB("resource:/resources/bufrTables/local/ecmwf-B0000000000098013001.TXT", "ecmwf", false));
-    standardTables.put("ukmet-v13", BufrTables.readTableB("resource:/resources/bufrTables/reference/BUFR_B_080731.xml", "ukmet", false));
+    standardTables.put("WMO.07", BufrTables.getWmoTableB(7));
+    standardTables.put("WMO.08", BufrTables.getWmoTableB(8));
+    standardTables.put("WMO.09", BufrTables.getWmoTableB(9));
+    standardTables.put("WMO.10", BufrTables.getWmoTableB(10));
+    standardTables.put("WMO.11", BufrTables.getWmoTableB(11));
+    standardTables.put("WMO.12", BufrTables.getWmoTableB(12));
+    standardTables.put("WMO.13", BufrTables.getWmoTableB(13));
+    standardTables.put("WMO.14", BufrTables.getWmoTableB(14));
+    standardTables.put("WMO.15", BufrTables.getWmoTableB(15));
+    standardTables.put("WMO.16", BufrTables.getWmoTableB(16));
   }
 
   private TableB getStandardTable(String name) throws IOException {
@@ -490,20 +507,35 @@ Class,FXY,enElementName,BUFR_Unit,BUFR_Scale,BUFR_ReferenceValue,BUFR_DataWidth_
     return standardTables.get(name);
   }
 
-  //////////////////////////////////////////////////////
-  private HashMap<Short, List<DdsBean>> allVariants = null;
-  private boolean variantsLoaded = false;
-  private void loadVariants() throws IOException {
-    if (allVariants == null) allVariants = new HashMap<Short, List<DdsBean>>();
+  private void loadStandardVariants() throws IOException {
     if (standardTables == null) initStandardTables();
     for (String key : standardTables.keySet()) {
       loadVariant(key, standardTables.get(key));
     }
-    variantsLoaded = true;
+    standardVariantsLoaded = true;
+  }
+  */
+
+  //////////////////////////////////////////////////////
+  private HashMap<Short, List<DdsBean>> allVariants = null;
+  private Set<String> varKeys = null;
+  private boolean standardVariantsLoaded = false;
+  private void loadStandardVariants() {
+    for (BufrTables.TableConfig tc : BufrTables.getTables()) {
+      try {
+        loadVariant(tc.getName(), BufrTables.readTableB(tc.getTableBname(), tc.getTableBformat(), false));
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
+    standardVariantsLoaded = true;
   }
 
-  private void loadVariant(String src, TableB tableB) {
+  private void loadVariant(String key, TableB tableB) {
     if (allVariants == null) allVariants = new HashMap<Short, List<DdsBean>>();
+    if (varKeys == null) varKeys = new HashSet<String>();
+    if (varKeys.contains(key)) return; // dont add again
+
     List<TableB.Descriptor> listDesc = new ArrayList<TableB.Descriptor>(tableB.getDescriptors());
     for (TableB.Descriptor d : listDesc) {
       List<DdsBean> list = allVariants.get(d.getId());
@@ -511,17 +543,12 @@ Class,FXY,enElementName,BUFR_Unit,BUFR_Scale,BUFR_ReferenceValue,BUFR_DataWidth_
         list = new ArrayList<DdsBean>(10);
         allVariants.put(d.getId(), list);
       }
-      list.add(new DdsBean(src, d));
+      list.add(new DdsBean(key, d));
     }
   }
 
   private void showVariants(DdsBean bean) {
-    if (!variantsLoaded) try {
-      loadVariants();
-    } catch (IOException e) {
-      e.printStackTrace();
-      return;
-    }
+    if (!standardVariantsLoaded) loadStandardVariants();
 
     List<DdsBean> all = allVariants.get(bean.getId());
     List<DdsBean> ddsBean = new ArrayList<DdsBean>(10);
@@ -530,7 +557,106 @@ Class,FXY,enElementName,BUFR_Unit,BUFR_Scale,BUFR_ReferenceValue,BUFR_DataWidth_
     variantTable.setBeans(ddsBean);
   }
 
-  public class DdsBean {
+  private void showAll() {
+    if (!standardVariantsLoaded) loadStandardVariants();
+
+    Map<Short, DdsBean> allDesc = new HashMap<Short, DdsBean>(3000);
+    Set<String> keys = new HashSet<String>();
+
+    for (BufrTables.TableConfig tc : BufrTables.getTables()) {
+      String filename = tc.getTableBname();
+      if (keys.contains(filename)) continue;
+      keys.add(filename);
+
+      try {
+        TableB tb = BufrTables.readTableB(filename, tc.getTableBformat(), false);
+        addVariant(tc.getName(), tb, allDesc);
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
+
+    List<DdsBean> beans = new ArrayList<DdsBean>(allDesc.values());
+    Collections.sort(beans);
+    ddsTable.setBeans(beans);
+    currTable = null;
+  }
+
+  private void addVariant(String key, TableB tableB, Map<Short, DdsBean> allDesc) {
+    List<TableB.Descriptor> listDesc = new ArrayList<TableB.Descriptor>(tableB.getDescriptors());
+    for (TableB.Descriptor d : listDesc) {
+      if (!allDesc.containsKey(d.getId()))
+        allDesc.put(d.getId(), new DdsBean(key, d));
+    }
+  }
+
+  private void diffVariants() {
+    if (!standardVariantsLoaded) loadStandardVariants();
+
+    Set<String> keys = new HashSet<String>();
+
+    for (Object beano : ddsTable.getBeans()) {
+      DdsBean bean = (DdsBean) beano;
+      bean.setDiff(null);
+    }
+
+    for (BufrTables.TableConfig tc : BufrTables.getTables()) {
+      String filename = tc.getTableBname();
+      if (keys.contains(filename)) continue;
+      keys.add(filename);
+
+      try {
+        TableB tb = BufrTables.readTableB(filename, tc.getTableBformat(), false);
+        diffVariant(tb, true, true);
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
+
+    int count = 0;
+    int total = 0;
+    for (Object beano : ddsTable.getBeans()) {
+      DdsBean bean = (DdsBean) beano;
+      if (bean.getDiff() != null)
+        count++;
+      if (!bean.dds.isLocal())
+        total++;
+    }
+    System.out.printf("Diff non-local = %d out of %d%n", count, total);
+  }
+
+  private void diffVariant(TableB t2, boolean skipNames, boolean skipUnits) {
+
+    for (Object beano : ddsTable.getBeans()) {
+      DdsBean bean = (DdsBean) beano;
+      if (bean.getDiff() != null) continue;
+      TableB.Descriptor d1 = bean.dds;
+      if (d1.isLocal()) continue;
+
+      TableB.Descriptor d2 = t2.getDescriptor(d1.getId());
+      if (d2 != null) {
+        if (!skipNames) {
+          if (!equiv(d1.getName(), d2.getName()))
+            bean.setDiff("diff");
+        }
+        if (!skipUnits) {
+          if (!equivUnits(d1.getUnits(), d2.getUnits()))
+            bean.setDiff("diff");
+        }
+        if (d1.getScale() != d2.getScale())
+          bean.setDiff("diff");
+        if (d1.getRefVal() != d2.getRefVal())
+          bean.setDiff("diff");
+        if (d1.getDataWidth() != d2.getDataWidth())
+          bean.setDiff("diff");
+      }
+    }
+
+  }
+
+
+  ///////////////////////////////////////////////////////////////////////////////////////
+  public class DdsBean implements Comparable<DdsBean> {
     TableB.Descriptor dds;
     String source;
     String udunits;
@@ -608,6 +734,11 @@ Class,FXY,enElementName,BUFR_Unit,BUFR_Scale,BUFR_ReferenceValue,BUFR_DataWidth_
       return isDiff;
     }
 
+    public void setDiff(String diff) {
+      checkDiff = (diff != null);
+      isDiff = diff;
+    }
+
     public int getUsed() {
       if (usedDds == null) return 0;
       List<Message> list = usedDds.get(dds.getId());
@@ -615,6 +746,10 @@ Class,FXY,enElementName,BUFR_Unit,BUFR_Scale,BUFR_ReferenceValue,BUFR_DataWidth_
       return list.size();
     }
 
+    @Override
+    public int compareTo(DdsBean o1) {
+      return dds.compareTo(o1.dds);
+    }
   }
 
 }

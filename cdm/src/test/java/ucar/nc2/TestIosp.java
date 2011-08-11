@@ -70,7 +70,7 @@ public class TestIosp {
     suite.addTest( new TestSuite( ucar.nc2.iosp.grib.TestIntervalsTimeCoords.class));
     suite.addTest( new TestSuite( ucar.nc2.iosp.gempak.TestReadingGempak.class));
     suite.addTest( new TestSuite( ucar.nc2.iosp.TestMiscIosp.class));
-    //suite.addTest( new TestSuite( ucar.nc2.iosp.bufr.TestBufrRead.class));
+    suite.addTest( new TestSuite( ucar.nc2.iosp.bufr.TestBufrRead.class));
 
     // slow !!
     suite.addTest( ucar.nc2.iosp.hdf5.TestH5.suite());

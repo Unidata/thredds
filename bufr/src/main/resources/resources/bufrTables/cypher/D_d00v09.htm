@@ -1,0 +1,2158 @@
+<HTML>
+<HEAD>
+<TITLE>BUFR Table D</TITLE>
+<META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
+</HEAD>
+<BODY BACKGROUND="../pics/back.gif">
+<H1 ALIGN="CENTER"><B>BUFR Table D - sequence descriptors</B></H1>
+<H2 ALIGN="CENTER"><I>As used by SoftBUFR and T-CREX Class Libraries</I></H2>
+<H4 ALIGN="CENTER">version 9.0, created 2000-10-31, based on WMO BUFR Table D version 9</H4>
+<P ALIGN=CENTER><B><I>&copy; Northern Lighthouse Ltd</I></B> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  
+<A HREF="http://www.northern-lighthouse.com/"><I>Northern Lighthouse home</I></A></P>
+<P ALIGN="CENTER"><TT>
+<A HREF="#C00"> 00</A>
+<A HREF="#C01"> 01</A>
+<A HREF="#C02"> 02</A>
+<A HREF="#C03"> 03</A>
+<A HREF="#C04"> 04</A>
+<A HREF="#C06"> 06</A>
+<A HREF="#C07"> 07</A>
+<A HREF="#C08"> 08</A>
+<A HREF="#C09"> 09</A>
+<A HREF="#C10"> 10</A>
+<A HREF="#C11"> 11</A>
+<A HREF="#C12"> 12</A>
+<A HREF="#C13"> 13</A>
+<A HREF="#C15"> 15</A>
+<A HREF="#C16"> 16</A>
+<A HREF="#C18"> 18</A>
+<A HREF="#C21"> 21</A>
+</TT></P>
+<P>This table contains sequences common to BUFR and CREX.
+<P>Use this file for fast checks only, and consult the original WMO file or printed manual for possible <I>BUFR or CREX notes</I>!
+<PRE>
+</PRE>
+<HR><A NAME="C00"></A>
+<H4 ALIGN="CENTER">Class 00</H4>
+<PRE>
+#
+ 300002
+	000002	Table A category, line 1	
+	000003  Table A category, line 2 
+#
+ 300003
+	000010	F,  part descriptor	
+	000011  X,  part descriptor 
+	000012  Y,  part descriptor 
+#
+ 300004
+	300003	
+	000013  Element name, line 1 
+	000014  Element name, line 2 
+	000015  Units name 
+	000016  Units scale sign 
+	000017  Units scale 
+	000018  Units reference sign 
+	000019  Units reference value 
+	000020  Element data width 
+#
+ 300010
+	300003	Table D descriptor to be defined	
+	101000  Delayed replication of 1 descriptor 
+	031001  Delayed descriptor replication factor 
+	000030  Descriptor defining sequence 
+</PRE>
+<HR><A NAME="C01"></A>
+<H4 ALIGN="CENTER">Class 01</H4>
+<PRE>
+#
+ 301001
+	001001	WMO block number	
+	001002  WMO station number 
+#
+ 301002
+	001003	WMO Region number	
+	001004  WMO Region sub-area 
+	001005  Buoy/platform identifier 
+#
+ 301003
+	001011	Ship's call sign	
+	001012  Direction of motion of moving observing platform 
+	001013  Speed of motion of moving observing platform 
+#
+ 301011
+	004001	Year	
+	004002  Month 
+	004003  Day 
+#
+ 301012
+	004004	Hour	
+	004005  Minute 
+#
+ 301013
+	004004	Hour	
+	004005  Minute 
+	004006  Second 
+#
+ 301021
+	005001	Latitude	high accuracy	
+	006001  Longitude 
+#
+ 301022
+	005001	Latitude	high accuracy	
+	006001  Longitude 
+	007001  Height of station 
+#
+ 301023
+	005002	Latitude	coarse accuracy	
+	006002  Longitude 
+#
+ 301024
+	005002	Latitude	coarse accuracy	
+	006002  Longitude 
+	007001  Height of station 
+#
+ 301025
+	301023	Latitude and longitude (coarse accuracy)	
+	004003  Day 
+	301012  Time 
+#
+ 301026
+	301021	Latitude and longitude (high accuracy)	
+	004003  
+	004003  (Time period in days) 
+	004004  
+	004004  (Time period in hours) 
+	004005  
+	004005  (Time period in minutes) 
+#
+ 301031
+	301001	WMO block and station number	
+	002001  Type of station 
+	301011  Date 
+	301012  Time 
+	301022  Latitude and longitude (high  accuracy), height of station 
+#
+ 301032
+	301001	WMO block and station number	
+	002001  Type of station 
+	301011  Date 
+	301012  Time 
+	301024  Latitude and longitude (coarse accuracy), height of station 
+#
+ 301033
+	001005	Buoy/platform identifier	
+	002001  Type of station 
+	301011  Date 
+	301012  Time 
+	301021  Latitude and longitude (high accuracy) 
+#
+ 301034
+	001005	Buoy/platform identifier	
+	002001  Type of station 
+	301011  Date 
+	301012  Time 
+	301023  Latitude and longitude (coarse accuracy) 
+#
+ 301035
+	001005	Buoy/platform identifier	
+	001012  Direction of motion of moving observing platform 
+	001013  Speed of motion of moving observing platform 
+	002001  Type of station 
+	301011  Date 
+	301012  Time 
+	301023  Latitude and longitude (coarse accuracy) 
+#
+ 301036
+	301003	Ship's call sign and motion	
+	002001  Type of station 
+	301011  Date 
+	301012  Time 
+	301023  Latitude and longitude (coarse accuracy) 
+#
+ 301037
+	301001	WMO block and station number	
+	002011  Radiosonde type 
+	002012  Radiosonde computational method 
+	301011  Date 
+	301012  Time 
+	301022  Latitude and longitude (high accuracy), height of station 
+#
+ 301038
+	301001	WMO block and station number	
+	002011  Radiosonde type 
+	002012  Radiosonde computational method 
+	301011  Date 
+	301012  Time 
+	301024  Latitude and longitude (coarse accuracy), height of station 
+#
+ 301039
+	301003	Ship's call sign and motion	
+	002011  Radiosonde type 
+	002012  Radiosonde computational method 
+	301011  Date 
+	301012  Time 
+	301023  Latitude and longitude (coarse accuracy) 
+#
+ 301040
+	301003	Ship's call sign and motion	
+	002011  Radiosonde type 
+	002012  Radiosonde computational method 
+	301011  Date 
+	301012  Time 
+	301024  Latitude and longitude (coarse accuracy), height of station 
+#
+ 301041
+	001007	Satellite identifier	
+	002021  Satellite instrument data used in processing 
+	002022  Satellite data processing technique used 
+	301011  Date 
+	301012  Time 
+#
+ 301042
+	301041	Satellite identifier, data used, and data processing technique; date/time	
+	301021  Latitude, longitude 
+#
+ 301043
+	001007	Satellite identifier	
+	002023  Cloud motion computational method 
+	301011  Date 
+	301013  Time 
+	301021  Latitude, longitude 
+#
+ 301044
+	001007	Satellite identifier	
+	002024  Integrated mean humidity computational method 
+	301011  Date 
+	301013  Time 
+	301021  Latitude, longitude 
+#
+ 301045
+	301011	Year, month, day	
+	301012  Time (hour, minute) 
+	201138  Change width to 16 bits 
+	202131  Change scale to 3 
+	004006  Second 
+	201000  Change width back to Table B 
+	202000  Change scale back to Table B 
+	304030  Location relative to the Earth’s centre 
+	304031  Velocity relative to the Earth’s centre 
+#
+ 301046
+	001007	Satellite identifier	
+	001012  Direction of motion of moving observing platform 
+	002048  Satellite sensor indicator 
+	021119  Wind scatterometer geophysical model function 
+	025060  Software identification 
+	202124  Change scale 
+	002026  Cross-track resolution 
+	002027  Along-tract resolution 
+	202000  Change scale back to Table B 
+	005040  Orbit number 
+#
+ 301047
+	001007	Satellite identifier	
+	025060  Software identification 
+	001033  Originating/generating centre 
+	001034  Originating/generating sub-centre 
+	001012  Direction of motion of moving observation platform 
+	301045  Satellite location and velocity 
+	002021  Satellite instrument data used in processing 
+	301011  Date (year, month, day) 
+	301012  Time (hour, minute) 
+	201138  Change bit width to 16 bits 
+	202131  Change scale to 3 
+	004006  Second 
+	201000  Change width back to Table B 
+	202000  Change scale back to Table B 
+	301023  Location (latitude, longitude) 
+#
+ 301048
+	002104	Antenna polarization	
+	002121  Mean frequency 
+	002113  Number of azimuth looks 
+	002026  Cross-track resolution 
+	002027  Along-track resolution 
+	002111  Radar incidence angle 
+	002140  Satellite radar beam azimuth angle 
+	202127  Change scale to -1 
+	001013  Radar platform velocity 
+	202126  Change scale to -2 
+	007001  Radar platform altitude 
+	202000  Change scale to Table B 
+	025010  Clutter treatment 
+	021064  Clutter noise estimate 
+#
+ 301049
+	002111	Radar incidence angle	
+	002112  Radar look angle 
+	021062  Backscatter 
+	021063  Radiometric resolution (Noise value) 
+	021065  Missing packet counter 
+#
+ 301051
+	001006	Aircraft identifier	
+	002061  Navigational system 
+	301011  Date 
+	301012  Time 
+	301021  Latitude, longitude 
+	008004  Phase of aircraft flight 
+#
+ 301055
+	001005	Buoy/platform identifier	
+	002001  Type of station 
+	301011  Date 
+	301012  Time 
+	301021  Latitude and longitude (high accuracy) 
+	001012  Direction of motion of moving observing platform 
+	001014  Platform drift speed (high precision) 
+#
+ 301062
+	101000	Delayed replication of 1 descriptor	
+	031001  Replication factor 
+	301001  WMO block and station number 
+#
+ 301065
+	001006	Aircraft flight number (see Note)	
+	001008  Aircraft registration number (see Note) 
+	002001  Type of station 
+	002002  Type of instrumentation for wind measurement 
+	002005  Precision of temperature observation 
+	002062  Type of aircraft data relay system 
+	002070  Original specification of latitude/longitude 
+	002065  ACARS ground receiving station 
+#
+ 301066
+	301011	Year, month, day	
+	301013  Hour, minute, second 
+	301023  Latitude and longitude (coarse accuracy) 
+	007004  Pressure 
+	002064  Aircraft roll angle quality 
+	008004  Phase of aircraft flight 
+#
+ 301071
+	001007	Satellite identifier	
+	001031  Generating centre 
+	002020  Satellite classification 
+	002028  Segment size at nadir in X direction 
+	002029  Segment size at nadir in Y direction 
+#
+ 301072
+	301071	Satellite identification, Generation resolution	
+	301011  Date 
+	301013  Time 
+	301021  Latitude, longitude 
+</PRE>
+<HR><A NAME="C02"></A>
+<H4 ALIGN="CENTER">Class 02</H4>
+<PRE>
+#
+ 302001
+	010004	Pressure (at station level)	
+	010051  Pressure reduced to mean sea level 
+	010061  3-hour pressure change 
+	010063  Characteristic of pressure tendency 
+#
+ 302002
+	010004	Pressure (at station level)	
+	007004  Pressure level 
+	010003  Geopotential of pressure level 
+	010061  3-hour pressure change 
+	010063  Characteristic of pressure tendency 
+#
+ 302003
+	011011	Wind direction (10 m)	
+	011012  Wind speed (10 m) 
+	012004  Temperature (2 m) 
+	012006  Dew point (2 m) 
+	013003  Relative humidity 
+	020001  Horizontal visibility 
+	020003  Present weather 
+	020004  Past weather (1) 
+	020005  Past weather (2) 
+#
+ 302004
+	020010	Cloud cover (total)	
+	008002  Vertical significance 
+	020011  Cloud amount 
+	020013  Height of base of cloud 
+	020012  Cloud type 
+	020012  Cloud type 
+	020012  Cloud type 
+#
+ 302005
+	008002	Vertical significance	
+	020011  Cloud amount 
+	020012  Cloud type 
+	020013  Height of base of cloud 
+#
+ 302006
+	010004	Pressure (at station level)	
+	010051  Pressure reduced to mean sea level 
+	010062  24-hour pressure change 
+	010063  Characteristic of pressure tendency 
+#
+ 302011
+	302001	Pressure and pressure change	
+	302003  Wind, temperature, humidity, visibility, weather 
+	302004  Significant cloud layer 
+#
+ 302012
+	302002	Pressure and pressure change	
+	302003  Wind, temperature, humidity, visibility, weather 
+	302004  Significant cloud information 
+#
+ 302013
+	302006	Pressure and pressure change	
+	302003  Wind, temperature, humidity, visibility, weather 
+	101000  Delayed replication of 1 descriptor 
+	031001  Delayed descriptor replication factor 
+	302005  Cloud layer information 
+#
+ 302021
+	022001	Direction of waves	
+	022011  Period of waves 
+	022021  Height of waves 
+#
+ 302022
+	022002	Direction of wind waves	
+	022012  Period of wind waves 
+	022022  Height of wind waves 
+#
+ 302023
+	022003	Direction of swell waves	
+	022013  Period of swell waves 
+	022023  Height of swell waves 
+#
+ 302024
+	302022	Wind waves	
+	101002  Replicate 1 descriptor 2 times 
+	302023  Swell waves (2 systems of swell) 
+#
+ 302051
+	010004	Pressure	
+	010051  Pressure reduced to mean sea level 
+	007004  Pressure (vertical location) 
+	010003  Geopotential 
+	012004  Dry-bulb temperature at 2 m 
+	012051  Standard deviation temperature 
+	012016  Maximum temperature at 2 m, past 24 hours 
+	012017  Minimum temperature at 2 m, past 24 hours 
+	013004  Vapour pressure 
+	102004  Replicate 2 descriptors 4 times 
+	008051  Qualifier for number of missing values in calculation of statistic 
+	008020  Total number of missing entities (with respect to accumulation or average) 
+</PRE>
+<HR><A NAME="C03"></A>
+<H4 ALIGN="CENTER">Class 03</H4>
+<PRE>
+#
+ 303001
+	007003	Geopotential	
+	011001  Wind direction 
+	011002  Wind speed 
+#
+ 303002
+	007004	Pressure	
+	011001  Wind direction 
+	011002  Wind speed 
+#
+ 303003
+	007004	Pressure	
+	010003  Geopotential 
+	012001  Temperature 
+	012003  Dew point 
+#
+ 303004
+	007004	Pressure	
+	010003  Geopotential 
+	012001  Temperature 
+	012003  Dew point 
+	011001  Wind direction 
+	011002  Wind speed 
+#
+ 303011
+	007003	Geopotential	
+	008001  Vertical sounding significance 
+	011001  Wind direction 
+	011002  Wind speed 
+#
+ 303012
+	007004	Pressure	
+	008001  Vertical sounding significance 
+	011001  Wind direction 
+	011002  Wind speed 
+#
+ 303013
+	007004	Pressure	
+	008001  Vertical sounding significance 
+	010003  Geopotential 
+	012001  Temperature 
+	013003  Relative humidity 
+	011001  Wind direction 
+	011002  Wind speed 
+#
+ 303014
+	007004	Pressure	
+	008001  Vertical sounding significance 
+	010003  Geopotential 
+	012001  Temperature 
+	012003  Dew point 
+	011001  Wind direction 
+	011002  Wind speed 
+#
+ 303021
+	007004	Pressure (1)	
+	007004  Pressure (2)     defines layer 
+	204007  Add associated field of 7 bits 
+	031021  Additional field significance 
+#
+ 303022
+	303021	Layer, quality	
+	010003  Geopotential (layer mean thickness) 
+	204000  Cancel the added associated field 
+#
+ 303023
+	303021	Layer, quality	
+	012001  Temperature (layer mean) 
+	204000  Cancel the added associated field 
+#
+ 303024
+	303021	Layer, quality	
+	013016  Precipitation water 
+	204000  Cancel the added associated field 
+#
+ 303025
+	002025	Satellite channel	
+	204007  Add associated field of 7 bits 
+	031021  Additional field significance 
+	012063  Brightness temperature 
+	204000  Cancel the added associated field 
+#
+ 303026
+	007004	Pressure	
+	008003  Vertical significance 
+	204007  Add associated field of 7 bits 
+	031021  Additional field significance 
+	012001  Temperature 
+	204000  Cancel the added associated field 
+#
+ 303027
+	007004	Pressure	
+	204007  Add associated field of 7 bits 
+	031021  Additional field significance 
+	010003  Geopotential 
+	204000  Cancel the added associated field 
+#
+ 303031
+	007004	Pressure	
+	008003  Vertical significance (base of sounding) 
+	007021  Elevation (local zenith) 
+	007022  Solar elevation (solar zenith) 
+	008012  Land/sea qualifier 
+	012061  Skin temperature 
+#
+ 303032
+	020011	Cloud amount	
+	020016  Pressure at top of cloud 
+#
+ 303033
+	020010	Cloud cover (total)	
+	020016  Pressure at the top of cloud 
+#
+ 303041
+	002152	Geostationary satellite instrument used	
+	002023  Cloud motion computational method 
+	007004  Pressure 
+	011001  Wind direction 
+	011002  Wind speed 
+	002153  Satellite channel centre frequency 
+	002154  Satellite channel band width 
+	012071  Coldest cluster T 
+</PRE>
+<HR><A NAME="C04"></A>
+<H4 ALIGN="CENTER">Class 04</H4>
+<PRE>
+#
+ 304001
+	008003	Vertical significance	
+	010004  Pressure 
+	012001  Temperature 
+	011001  Wind direction 
+	011002  Wind speed 
+#
+ 304002
+	008003	Vertical significance	
+	010004  Pressure 
+	011001  Wind direction 
+	011002  Wind speed 
+#
+ 304003
+	008003	Vertical significance	
+	012001  Temperature 
+#
+ 304004
+	008003	Vertical significance	
+	010004  Pressure 
+	020010  Cloud cover (total) 
+	012001  Temperature 
+#
+ 304005
+	002024	Integrated mean humidity computational method	
+	007004  Pressure(1) 
+	007004  Pressure (2)    defines layer 
+	013003  Relative humidity 
+#
+ 304006
+	014001	Outgoing long-wave radiation	
+	014001  Incoming long-wave radiation 
+	014003  Outgoing short-wave radiation 
+#
+ 304011
+	002163	Height assignment method	
+	002164  Tracer correlation method 
+	008012  Land/sea qualifier 
+	007024  Satellite zenith angle 
+	002057  Origin of first guess information 
+	008021  Time significance 
+	004001  Year 
+	004002  Month 
+	004003  Day 
+	004004  Hour 
+	008021  Time significance 
+	004024  Time period or displacement 
+	110004  Replicate 10 descriptors 4 times 
+	008021  Time significance 
+	004004  Hour 
+	004005  Minute 
+	004006  Second 
+	008021  Time significance 
+	004004  Hour 
+	004005  Minute 
+	004006  Second 
+	011001  Wind direction 
+	011002  Wind speed 
+	103010  Replicate 3 descriptors 10 times 
+	002163  Height assignment method 
+	007004  Pressure 
+	012001  Temperature 
+#
+ 304030
+	027031	In direction of 0 degree longitude, distance from the Earth’s centre	
+	028031  In direction of 90 degrees East longitude, distance from the Earth’s centre 
+	010031  In direction of North Pole, distance from Earth’s centre 
+#
+ 304031
+	001041	Absolute platform velocity - first component	
+	001042  Absolute platform velocity - second component 
+	001043  Absolute platform velocity - third component 
+#
+ 304032
+	002153	Satellite channel centre frequency	
+	002154  Satellite channel band width 
+	020081  Cloud amount in segment 
+	020082  Amount segment cloud free 
+	020012  Cloud type 
+#
+ 304033
+	002152	Satellite instrument used in data processing	
+	002166  Radiance type 
+	002167  Radiance computational method 
+	002153  Satellite channel centre frequency 
+	002154  Satellite channel band width 
+	012075  Spectral radiance 
+	012076  Radiance 
+	012063  Brightness temperature 
+#
+ 304034
+	102004	Replicating next two descriptors 4 times	
+	027001  Latitude (high accuracy) 
+	028001  Longitude (high accuracy) 
+	007022  Solar elevation 
+	005043  Field of view number 
+	020010  Cloud cover (total) 
+	020016  Pressure at top of cloud 
+	033003  Quality information table 
+	010040  Number of retrieved layers 
+</PRE>
+<HR><A NAME="C06"></A>
+<H4 ALIGN="CENTER">Class 06</H4>
+<PRE>
+#
+ 306001
+	002032	Indicator for digitization	
+	102000  Delayed replication of 2 descriptors 
+	031001  Replication factor 
+	007062  Depth below sea surface 
+	022042  Subsurface sea temperature 
+#
+ 306002
+	002031	Method of current measurement	
+	022004  Direction of current 
+	022031  Speed of current 
+#
+ 306003
+	002002	Wind instrumentation	
+	011011  Wind direction (10 m) 
+	011012  Wind speed (10 m) 
+	012004  Dry-bulb temperature (2 m) 
+#
+ 306004
+	002032	Indicator for digitization	
+	002033  Method of salinity/depth measurement 
+	103000  Delayed replication of 3 descriptors 
+	031001  Replication factor 
+	007062  Depth below sea surface 
+	022043  Subsurface sea temperature 
+	022062  Salinity 
+#
+ 306005
+	002031	Method of current measurement	
+	103000  Delayed replication of 3 descriptors 
+	031001  Replication factor 
+	007062  Depth below sea surface 
+	022004  Direction of current 
+	022031  Speed of current 
+#
+ 306006
+	306003	Surface wind and temperature	
+	306002  Current 
+	022063  Total water depth 
+#
+ 306007
+	001012	Direction of motion of moving observing platform	
+	001014  Platform drift speed (high precision) 
+	306008  Buoy instrumentation 
+	004024  Time period 
+	027003  Alternate latitude 
+	028003  Alternate longitude 
+#
+ 306008
+	002034	Drogue type	
+	002035  Cable length 
+	002036  Buoy type 
+#
+ 306023
+	001015	Station or site name	
+	301023  Latitude, longitude 
+	301011  Year, month, day 
+	301012  Hour, minute 
+	022038  Tidal level with respect to local chart datum 
+	022039  Meteorological residual tidal elevation 
+	022120  Tide station automated water level check 
+	022121  Tide station manual water level check 
+</PRE>
+<HR><A NAME="C07"></A>
+<H4 ALIGN="CENTER">Class 07</H4>
+<PRE>
+#
+ 307001
+	301031	Identification, type, date/time, position (high accuracy), height	
+	302011  Basic surface report 
+#
+ 307002
+	301032	Identification, type, date/time, position (coarse accuracy), height	
+	302011  Basic surface report 
+#
+ 307003
+	307001	Location (high accuracy) and basic report	
+	101000  Delayed replication of 1 descriptor 
+	031001  Replication factor 
+	302005  Cloud layer information 
+#
+ 307004
+	307002	Location (coarse accuracy) and basic report	
+	101000  Delayed replication of 1 descriptor 
+	031001  Replication factor 
+	302005  Cloud layer information 
+#
+ 307005
+	307001	Location (high accuracy) and basic report	
+	101004  Replicate 1 descriptor 4 times 
+	302005  Cloud layer information (4 layers) 
+#
+ 307006
+	307002	Location (coarse accuracy) and basic report	
+	101004  Replicate 1 descriptor 4 times 
+	302005  Cloud layer information (4 layers) 
+#
+ 307007
+	301031	Identification, type, date/time, position (high accuracy), height	
+	302012  Basic surface report 
+#
+ 307008
+	301032	Identification, type, date/time, position (coarse accuracy), height	
+	302012  Basic surface report 
+#
+ 307009
+	301031	Identification, type, date/time, position (high accuracy), height	
+	302013  Basic surface report 
+#
+ 307011
+	001063	ICAO location indicator	CCCC	
+	002001  Type of station (AUTO)
+	301011  Year, month, day (YY) 
+	301012  GG, gg 
+	301024  Latitude-longitude (coarse accuracy), height of station 
+	007006  Height above station (= height of an anemometer) 
+	011001  Wind direction ddd
+	011016  Extreme counterclockwise wind direction of a variable wind dndndn
+	011017  Extreme clockwise wind direction of a variable wind dxdxdx
+	011002  Wind speed ff
+	011041  Maximum wind speed (gusts) fmfm
+	007006  Height above station (= height of a thermometer) 
+	012001  Temperature T´T´
+	012003  Dew-point temperature T´dT´d
+	010052  Altimeter setting (QNH) PHPHPHPH
+	020009  General Weather Indicator TAF/METAR 
+#
+ 307012
+	103000	Delayed replication of 3 descriptors	
+	031001  Number of replication (up to 3) 
+	008023  First order statistics 
+	005021  Direction of visibility observed Dv
+	020001  Horizontal visibility VVVV
+#
+ 307013
+	106000	Delayed replication of 6 descriptors	
+	031001  Number of replication (up to 4) 
+	001064  Runway designator DRDR
+	008014  Qualification for runway visual range 
+	020061  Runway visual range VRVRVRVR
+	008014  Qualification for runway visual range 
+	020061  Runway visual range VRVRVRVR
+	020018  Tendency of runway visual range i
+#
+ 307014
+	101000	Delayed replication of 1 descriptor	
+	031001  Number of replication (up to 3) 
+	020019  Significant present weather w´w´
+#
+ 307015
+	101000	Delayed replication of 1 descriptor	
+	031001  Number of replication 
+	302005  (NsNsNs, CC, hshshs) 
+	020002  Vertical visibility VVhshshs
+#
+ 307016
+	101000	Delayed replication of 1 descriptor	
+	031001  Number of replication (up to 3) 
+	020020  Significant recent weather phenomena REw´w´
+#
+ 307017
+	101000	Delayed replication of 1 descriptor	
+	031001  Number of replication 
+	011070  Runway designator of the runway affected by wind shear (including ALL) WS RWYDRDR
+#
+ 307018
+	008016	Change qualifier of a trend-type forecast or an aerodrome forecast	TTTTT
+	102000  Delayed replication of 2 descriptors 
+	031001  Number of replication (up to 2) 
+	008017  Qualifier of the time when the forecast change is expected (FM, TL, AT) TT
+	301012  GG, gg 
+	104000  Delayed replication of 4 descriptor 
+	031001  Number of replication (up to 1) 
+	007006  Height above station 
+	011001  Wind direction ddd
+	011002  Wind speed ff
+	011041  Maximum wind speed (gusts) fmfm
+	020009  General Weather Indicator 
+	101000  Delayed replication of 1 descriptor 
+	031001  Number of replication (up to 1) 
+	020001  Horizontal visibility VVVV
+	307014  w´w´ 
+#
+ 307020
+	307011	Main part of data	
+	307014  w´w´ 
+	307016  REw´w´ 
+#
+ 307021
+	307011	Main part of data	
+	307012  DvVVVV 
+	307013  DRDRVRVRVRVR 
+	307014  w´w´ 
+	307015  Clouds group(s) 
+	307016  REw´w´ 
+	307017  Wind shear on runway(s) 
+	307018  Trend-type landing forecast 
+	307015  Clouds group(s) 
+</PRE>
+<HR><A NAME="C08"></A>
+<H4 ALIGN="CENTER">Class 08</H4>
+<PRE>
+#
+ 308001
+	301033	Identification, type, date/time, position (high accuracy)	
+	302011  Basic surface report 
+	022042  Sea-surface temperature 
+#
+ 308002
+	301034	Identification, type, date/time, position (coarse accuracy)	
+	302011  Basic surface report 
+	022042  Sea-surface temperature 
+#
+ 308003
+	301035	Identification, movement, type, date/time, position (coarse accuracy)	
+	302011  Basic surface report 
+	022042  Sea-surface temperature 
+#
+ 308004
+	301036	Identification, movement, type, date/time, position (coarse accuracy)	
+	302011  Basic surface report 
+	022042  Sea-surface temperature 
+#
+ 308005
+	308004	Basic ship report	
+	302024  Wind waves and swell waves 
+#
+ 308006
+	010004	Pressure	
+	010061  3-hour pressure change 
+	010063  Characteristic of pressure tendency 
+	011001  Wind direction 
+	011002  Wind speed 
+	012004  Dry-bulb temperature at 2 m 
+	013003  Relative humidity 
+	022042  Sea temperature 
+#
+ 308007
+	301055	Identification, movement type, date/time, position (high accuracy)	
+	302011  Basic surface report 
+	007062  Depth below sea/water surface 
+	022042  Sea/water temperature 
+</PRE>
+<HR><A NAME="C09"></A>
+<H4 ALIGN="CENTER">Class 09</H4>
+<PRE>
+#
+ 309001
+	301037	Identification, etc. (land station, high accuracy position)	
+	101000  Delayed replication of 1 descriptor 
+	031001  Replication factor 
+	303011  Winds at heights 
+#
+ 309002
+	301038	Identification, etc. (land station, coarse accuracy position)	
+	101000  Delayed replication of 1 descriptor 
+	031001  Replication factor 
+	303011  Winds at heights 
+#
+ 309003
+	301037	Identification, etc. (land station, high accuracy position)	
+	101000  Delayed replication of 1 descriptor 
+	031001  Replication factor 
+	303012  Winds at pressure levels 
+#
+ 309004
+	301038	Identification, etc. (land station, coarse accuracy position)	
+	101000  Delayed replication of 1 descriptor 
+	031001  Replication factor 
+	303012  Winds at pressure levels 
+#
+ 309005
+	301037	Identification, etc. (land station, high accuracy position)	
+	302004  Significant cloud information 
+	101000  Delayed replication of 1 descriptor 
+	031001  Replication factor 
+	303013  Pressure, geopotential, temperature and wind data 
+#
+ 309006
+	301038	Identification, etc. (land station, coarse  accuracy position)	
+	302004  Significant cloud information 
+	101000  Delayed replication of 1 descriptor 
+	031001  Replication factor 
+	303013  Pressure, geopotential, temperature and wind data 
+#
+ 309007
+	301037	Identification, etc. (land station, high accuracy position)	
+	302004  Significant cloud information 
+	101000  Delayed replication of 1 descriptor 
+	031001  Replication factor 
+	303014  Pressure, geopotential, temperature and wind data 
+#
+ 309008
+	301038	Identification, etc. (land station, coarse accuracy position)	
+	302004  Significant cloud information 
+	101000  Delayed replication of 1 descriptor 
+	031001  Replication factor 
+	303014  Pressure, geopotential, temperature and wind data 
+#
+ 309011
+	301039	Ship's identification, etc.	
+	101000  Delayed replication of 1 descriptor 
+	031001  Replication factor 
+	303011  Winds at heights 
+#
+ 309012
+	301039	Ship's identification, etc.	
+	101000  Delayed replication of 1 descriptor 
+	031001  Replication factor 
+	303012  Winds at pressure levels 
+#
+ 309013
+	301039	Ship's identification, etc.	
+	302004  Significant cloud information 
+	101000  Delayed replication of 1 descriptor 
+	031001  Replication factor 
+	303013  Pressure, geopotential, temperature and wind data 
+#
+ 309014
+	301039	Ship's identification, etc.	
+	302004  Significant cloud information 
+	101000  Delayed replication of 1 descriptor 
+	031001  Replication factor 
+	303014  Pressure, geopotential, temperature and wind data 
+#
+ 309015
+	301040	Ship's identification, etc.	
+	101000  Delayed replication of 1 descriptor 
+	031001  Replication factor 
+	303011  Winds at heights 
+#
+ 309016
+	301040	Ship's identification, etc.	
+	101000  Delayed replication of 1 descriptor 
+	031001  Replication factor 
+	303012  Winds at pressure levels 
+#
+ 309017
+	301040	Ship's identification, etc.	
+	302004  Significant cloud information 
+	101000  Delayed replication of 1 descriptor 
+	031001  Replication factor 
+	303013  Pressure, geopotential, temperature and wind data 
+#
+ 309018
+	301040	Ship's identification, etc.	
+	302004  Significant cloud information 
+	101000  Delayed replication of 1 descriptor 
+	031001  Replication factor 
+	303014  Pressure, geopotential, temperature and wind data 
+#
+ 309019
+	301031	Identification, etc.	
+	002003  Type of measuring equipment used 
+	101000  Delayed replication of 1 descriptor 
+	031001  Replication factor 
+	303011  Winds at heights 
+#
+ 309020
+	301031	Identification, etc.	
+	002003  Type of measuring equipment used 
+	104000  Delayed replication of 4 descriptors 
+	031001  Replication factor 
+	007003  Geopotential 
+	011003  u-component 
+	011004  v-component 
+	011005  w-component 
+</PRE>
+<HR><A NAME="C10"></A>
+<H4 ALIGN="CENTER">Class 10</H4>
+<PRE>
+#
+ 310001
+	301042	Identification, method, date/time	
+	303031  Significance data, land/sea, skin temperature 
+	303032  Cloud 
+	101026  Replicate 1 descriptor 26 times 
+	303025  Satellite channel and brightness temperature 
+#
+ 310002
+	301042	Identification, method, date/time	
+	303031  Significance data, land/sea, skin temperature 
+	303032  Cloud 
+	101009  Replicate 1 descriptor 9 times 
+	303023  Layer mean temperature 
+#
+ 310003
+	301042	Identification, method, date/time	
+	303031  Significance data, land/sea, skin temperature 
+	303032  Cloud 
+	101006  Replicate 1 descriptor 6 times 
+	303023  Layer mean temperature 
+#
+ 310004
+	301042	Identification, method, date/time	
+	303031  Significance data, land/sea, skin temperature 
+	303032  Cloud 
+	101003  Replicate 1 descriptor 3 times 
+	303024  Precipitable water 
+#
+ 310005
+	301042	Identification, method, date/time	
+	303031  Significance data, land/sea, skin temperature 
+	303033  Cloud 
+	101000  Delayed replication of 1 descriptor 
+	031001  Delayed descriptor replication factor 
+	303025  Satellite channel and brightness temperature 
+#
+ 310006
+	301042	Identification, method, date/time	
+	303031  Significance data, land/sea, skin temperature 
+	303033  Cloud 
+	101000  Delayed replication of 1 descriptor 
+	031001  Delayed descriptor replication factor 
+	303023  Layer mean temperature 
+#
+ 310007
+	301042	Identification, method, date/time	
+	303031  Significance data, land/sea, skin temperature 
+	303033  Cloud 
+	101000  Delayed replication of 1 descriptor 
+	031001  Delayed descriptor replication factor 
+	303024  Precipitable water 
+#
+ 310008
+	310011	ATOVS field of view variables	
+	101019  Replicate 1 descriptor 19 times 
+	310012  ATOVS channel variables 
+	002150  TOVS/ATOVS/AVHRR instrumentation channel number 
+	025079  Albedo-radiance solar filtered irradiance for ATOVS 
+	025080  Albedo-radiance equivalent filter width for ATOVS 
+	033032  Channel quality flags for ATOVS 
+	014045  Channel radiance 
+#
+ 310009
+	310011	ATOVS field of view variables	
+	101015  Replicate 1 descriptor 15 times 
+	310012  ATOVS channel variables 
+#
+ 310010
+	310011	ATOVS field of view variables	
+	101005  Replicate 1 descriptor 5 times 
+	310012  ATOVS channel variables 
+#
+ 310011
+	008070	TOVS/ATOVS product qualifier	
+	001033  Identification of originating/generating centre 
+	001034  Identification of originating/generating centre 
+	008070  TOVS/ATOVS product qualifier 
+	001033  Identification of originating/generating centre 
+	001034  Identification of originating/generating centre 
+	001007  Satellite identification 
+	002048  Satellite sensor indicator 
+	005040  Orbit number 
+	025075  Satellite antenna corrections version number 
+	201133  Change width 
+	005041  Scan line number 
+	201000  Change width 
+	005043  Field of view number 
+	025070  Major frame count 
+	033030  Scan line status flags for ATOVS 
+	033031  Scan line quality flags for ATOVS 
+	004001  Year 
+	004002  Month 
+	004003  Day 
+	004004  Hour 
+	004005  Minute 
+	202131  Change scale 
+	201138  Change width 
+	004006  Second 
+	201000  Change width 
+	202000  Change scale 
+	005001  Latitude 
+	006001  Longitude 
+	202126  Change scale 
+	007001  Height of station 
+	202000  Change scale 
+	007024  Satellite zenith angle 
+	005021  Satellite azimuth 
+	007025  Solar zenith angle 
+	005022  Solar azimuth 
+	033033  Field of view quality flags for ATOVS 
+	002151  Radiometer identifier 
+	012064  Instrument temperature 
+	002151  Radiometer identifier 
+	012064  Instrument temperature 
+	002151  Radiometer identifier 
+	012064  Instrument temperature 
+	002151  Radiometer identifier 
+	012064  Instrument temperature 
+#
+ 310012
+	002150	TOVS/ATOVS/AVHRR instrumentation channel number	
+	025076  Log-10 of (temperature-radiance central wavenumber) for ATOVS 
+	025077  Bandwidth correction coefficient 1 for ATOVS 
+	025078  Bandwidth correction coefficient 2 for ATOVS 
+	033032  Channel quality flags for ATOVS 
+	201132  Change width 
+	202129  Change scale 
+	012063  Brightness temperature 
+	202000  Change scale 
+	201000  Change width 
+#
+ 310013
+	001007	Satellite ID	
+	005040  Orbit number 
+	004001  Year 
+	004002  Month 
+	004003  Day 
+	004004  Hour 
+	004005  Minute 
+	004006  Second 
+	005001  Latitude 
+	006001  Longitude 
+	007025  Solar zenith angle 
+	005043  Field of view number 
+	025085  Fraction of clear pixels in HIRS field of view 
+	201131  Change width 
+	202129  Change scale 
+	002150  TOVS/ATOVS/AVHRR instrumentation channel number 
+	008023  First order statistics 
+	008072  Pixel(s) type 
+	014027  Albedo 
+	008072  Pixel(s) type 
+	014027  Albedo 
+	002150  TOVS/ATOVS/AVHRR instrumentation channel number 
+	008023  First order statistics 
+	008072  Pixel(s) type 
+	014027  Albedo 
+	008072  Pixel(s) type 
+	014027  Albedo 
+	002150  ATOVS/AVHRR instrumentation channel number 
+	008023  First order statistics 
+	008072  Pixel(s) type 
+	014027  Albedo 
+	008072  Pixel(s) type 
+	014027  Albedo 
+	202000  Change scale 
+	201000  Change width 
+	201132  Change width 
+	202129  Change scale 
+	002150  ATOVS/AVHRR instrumentation channel number 
+	008023  First order statistics 
+	008072  Pixel(s) type 
+	012063  Brightness temperature 
+	008072  Pixel(s) type 
+	012063  Brightness temperature 
+	002150  ATOVS/AVHRR instrumentation channel number 
+	008023  First order statistics 
+	008072  Pixel(s) type 
+	012063  Brightness temperature 
+	008072  Pixel(s) type 
+	012063  Brightness temperature 
+	008023  First order statistics 
+	008072  Pixel(s) type 
+	012063  Brightness temperature 
+	008072  Pixel(s) type 
+	012063  Brightness temperature 
+	002150  ATOVS/AVHRR instrumentation channel number 
+	008023  First order statistics 
+	008072  Pixel(s) type 
+	012063  Brightness temperature 
+	008072  Pixel(s) type 
+	012063  Brightness temperature 
+	202000  Change scale 
+	201000  Change width 
+#
+ 310014
+	301072	Satellite identification, date, time, latitude, longitude	
+	303041  Wind sequence 
+	304011  GOES-I/M information 
+#
+ 310015
+	301072	Satellite identification	
+	007024  Satellite zenith angle 
+	010002  Height 
+	303041  Wind sequence 
+	101003  Replicate next descriptor 3 times 
+	304032  Cloud fraction 
+	002152  Satellite instrument used in data processing 
+	002024  Integrated mean humidity computational method 
+	007004  Pressure 
+	007004  Pressure 
+	013003  Relative humidity 
+	101003  Replicate next descriptor 3 times 
+	304033  Clear sky radiance 
+#
+ 310016
+	301072	Satellite identification	
+	007024  Satellite zenith angle 
+	010002  Height 
+	303041  Wind sequence 
+	101012  Replicate next descriptor 12 times 
+	304032  Cloud fraction 
+	002152  Satellite instrument used in data processing 
+	002024  Integrated mean humidity computational method 
+	007004  Pressure 
+	007004  Pressure 
+	013003  Relative humidity 
+	101012  Replicate next descriptor 12 times 
+	304033  Clear sky radiance 
+#
+ 310020
+	310022	
+	301011  Year, month, day 
+	301013  Hour, minute, second 
+	301021  Lat., long. (high accuracy) 
+	304034  
+	310021  
+#
+ 310021
+	108000	Delayed replication of 8 next descriptors	
+	031001  Delayed descriptor replication factor 
+	201131  Change data width 
+	202129  Change scale 
+	007004  Pressure 
+	007004  Pressure 
+	202000  Change scale to Table B 
+	201000  Change data width to Table B 
+	015020  Integrated 03 density 
+	010002  Height 
+#
+ 310022
+	001007	Satellite identifier	
+	002019  Satellite instrument used 
+	001033  Identification of originating/generating centre 
+	002172  Product type for retrieved atmospheric gases 
+</PRE>
+<HR><A NAME="C11"></A>
+<H4 ALIGN="CENTER">Class 11</H4>
+<PRE>
+#
+ 311001
+	301051	ASDAR aircraft identifier, navigational system, date/time, position, phase of aircraft flight	
+	007002  Altitude 
+	012001  Temperature 
+	011001  Wind direction 
+	011002  Wind speed 
+	011031  Degree of turbulence 
+	011032  Height of base of turbulence 
+	011033  Height of top of turbulence 
+	020041  Airframe icing 
+#
+ 311002
+	301065	ACARS identification	
+	301066  ACARS location 
+	311003  ACARS standard reported variables 
+	311004  ACARS supplementary reported variables 
+#
+ 311003
+	010070	Indicated aircraft altitude	
+	011001  Wind direction 
+	011002  Wind speed 
+	012001  Temperature/dry-bulb temperature 
+	013002  Mixing ratio 
+#
+ 311004
+	101000	Delayed replication of one descriptor	
+	031000  Short delayed descriptor replication factor 
+	011034  Vertical gust velocity 
+	101000  Delayed replication of one descriptor 
+	031000  Short delayed descriptor replication factor 
+	011035  Vertical gust acceleration 
+	101000  Delayed replication of one descriptor 
+	031000  Short delayed descriptor replication factor 
+	011075  Mean turbulence intensity (eddy dissipation rate) 
+	101000  Delayed replication of one descriptor 
+	031000  Short delayed descriptor replication factor 
+	011076  Peak turbulence intensity (eddy dissipation rate) 
+	101000  Delayed replication of one descriptor 
+	031000  Short delayed descriptor replication factor 
+	033025  ACARS interpolated values 
+	101000  Delayed replication of one descriptor 
+	031000  Short delayed descriptor replication factor 
+	033026  Mixing ratio quality 
+</PRE>
+<HR><A NAME="C12"></A>
+<H4 ALIGN="CENTER">Class 12</H4>
+<PRE>
+#
+ 312001
+	301043	Satellite identifier, instrumentation, location, date/time	
+	304001  Cloud top pressure, temperature, wind 
+#
+ 312002
+	301043	Satellite identifier, instrumentation, location, date/time	
+	304002  Cloud top pressure, wind 
+#
+ 312003
+	301042	Satellite identifier, instrumentation, location, date/time	
+	304003  Surface temperature 
+#
+ 312004
+	301042	Satellite identifier, instrumentation, location, date/time	
+	304004  Cloud cover 
+#
+ 312005
+	301042	Satellite identifier, instrumentation, location, date/time	
+	020014  Height of top of cloud 
+#
+ 312006
+	301044	Satellite identifier, instrumentation, location, date/time	
+	304005  Layer mean relative humidity 
+#
+ 312007
+	301042	Satellite identifier, instrumentation, location, date/time	
+	304006  Radiation 
+#
+ 312010
+	001007	Satellite identifier	
+	005040  Orbit number 
+	002021  Satellite instrumentation 
+	005041  Scan line number 
+	004001  Year 
+	004043  Day of year 
+#
+ 312011
+	202131	Change scale	
+	201149  Change width 
+	004006  Second 
+	201000  Change width 
+	202126  Change scale 
+	010002  Height 
+	202000  Change scale 
+	005043  Field of view number 
+	005053  Field of view number increment 
+#
+ 312012
+	202129	Change scale	
+	201132  Change width 
+	101019  Replicate 1 descriptor 19 times 
+	012063  Brightness temperature 
+	201000  Change width 
+	202000  Change scale 
+#
+ 312013
+	005042	Channel number	
+	202129  Change scale 
+	201135  Change width 
+	012063  Brightness temperature 
+	201000  Change width 
+	202000  Change scale 
+#
+ 312014
+	312010	Orbital information, Part I	
+	312011  Orbital information, Part II 
+	105056  Replicate 5 descriptors 56 times 
+	301023  Latitude and longitude (coarse accuracy) 
+	005042  Channel number 
+	005052  Channel number increment 
+	312012  HIRS brightness temperatures - channels 1-19 
+	312013  HIRS brightness temperature - channel 20 
+#
+ 312015
+	109011	Replicate 9 descriptors 11 times	
+	301023  Latitude and longitude (coarse accuracy) 
+	005042  Channel number 
+	005052  Channel number increment 
+	202129  Change scale 
+	201132  Change width 
+	101004  Replicate 1 descriptor 4 times 
+	012063  Brightness temperature 
+	202000  Change scale 
+	201000  Change width 
+#
+ 312016
+	312010	Orbital information, Part I	
+	312011  Orbital information, Part II 
+	312015  MSU brightness temperatures - channels 1-4 
+#
+ 312017
+	109008	Replicate 9 descriptors 8 times	
+	301023  Latitude and longitude (coarse accuracy) 
+	005042  Channel number 
+	005052  Channel number increment 
+	202129  Change scale 
+	201132  Change width 
+	101003  Replicate 1 descriptor 3 times 
+	012063  Brightness temperature 
+	202000  Change scale 
+	201000  Change width 
+#
+ 312018
+	312010	Orbital information, Part I	
+	312011  Orbital information, Part II 
+	312017  SSU brightness temperatures - channels 1-3 
+#
+ 312019
+	301047	Product header	
+	301048  Radar parameters 
+	015015  Maximum spectrum composition before normalisation 
+	029002  Coordinate grid type 
+	021076  Representation of intensities 
+	106012  Repeat next 6 descriptors 12 times 
+	201129  Change width to 14 bits 
+	006030  Wave number (spectral) 
+	201000  Change width to Table B 
+	102012  Repeat next 2 descriptors 12 times 
+	005030  Direction (spectral) 
+	021075  Image spectrum intensity 
+	021066  Wave scatterometer product confidence data 
+#
+ 312020
+	301047	Product header	
+	301048  Radar parameters 
+	015015  Maximum spectrum composition before normalization 
+	029002  Coordinate grid type 
+	021076  Representation of intensities 
+	104012  Repeat next 4 descriptors 12 times 
+	006030  Wave number (spectral) 
+	102012  Repeat next 2 descriptors 12 times 
+	005030  Direction (spectral) 
+	021075  Spectral intensity 
+	021066  Wave scatterometer product confidence data 
+#
+ 312021
+	301047	Product header	
+	101003  Repeat 1 descriptor 3 times 
+	301049  Radar beam data 
+	011012  Wind speed at 10 m 
+	011011  Wind direction at 10 m 
+	021067  Wind product confidence data 
+#
+ 312022
+	301047	Product header	
+	008022  Number in average 
+	011012  Wind speed 
+	011050  Standard deviation of horizontal wind speed 
+	022070  Significant wave height 
+	022026  Standard deviation of significant wave height 
+	312041  Altitude 
+	010050  Standard deviation of altitude 
+	021068  Radar altimeter product confidence data 
+	021071  Peakiness 
+	021072  Altimeter calibration status 
+	021073  Altimeter instrument mode 
+	312042  Altitude corrections 
+	021062  Backscatter 
+	015011  Log 10 of integrated electron density 
+#
+ 312023
+	301047	Product header	
+	103003  Repeat 3 descriptors 3 times 
+	008022  Number in average 
+	012061  Skin temperature 
+	022050  Standard deviation of sea surface temperature 
+	021069  SST product confidence data 
+	021085  ATSR sea surface temperature across-track band number 
+#
+ 312024
+	312020	(Wave scatterometer product)	
+	008060  Sample scanning mode significance - range 
+	008022  Number in sample 
+	008060  Sample scanning mode signification - horizontal 
+	008022  Number in sample 
+	025014  Azimuth clutter cut-off 
+	022101  Total energy (wavelength > 731 m) 
+	022097  Mean wavelength of image spectrum 
+	022098  Wavelength spread (wavelength > 731 m) 
+	022099  Mean direction (wavelength > 731 m) 
+	022100  Direction spread (wavelength > 731 m) 
+#
+ 312025
+	312019	Wave scatterometer product with width change for wave number (spectral)	
+	008060  Sample scanning mode significance - range 
+	008022  Number in sample 
+	008060  Sample scanning mode significance - horizontal 
+	008022  Number in sample 
+	025014  Azimuth clutter cut-off 
+	022101  Total energy (wavelength > 731 m) 
+	022097  Mean wavelength of image spectrum 
+	022098  Wavelength spread (wavelength > 731 m) 
+	022099  Mean direction (wavelength > 731 m) 
+	022100  Direction spread (wavelength > 731 m) 
+#
+ 312026
+	301046	
+	301011  Data 
+	301013  Time 
+	301023  Location 
+	312031  
+	101004  Replicate 1 descriptor 4 times 
+	312030  
+	021110  Number of inner-beam sigma-0 (forward of satellite) 
+	301023  Location 
+	321027  
+	021111  Number of outer-beam sigma-0 (forward of satellite) 
+	301023  Location 
+	321027  
+	021112  Number of inner-beam sigma-0 (aft of satellite) 
+	301023  Location 
+	321027  
+	021113  Number of outer-beam sigma-0 (aft of satellite) 
+	301023  Location 
+	321027  
+#
+ 312027
+	301047	ERS product header	
+	105009  Repeat next 5 descriptors 9 times 
+	301023  Location (course Latitude + Longitude) of 10-arcmin cell 
+	007021  Elevation: Incidence angle Nadir view [set to zero] 
+	012061  Skin temperature: SST [Nadir-only view] 
+	007021  Elevation: Incidence angle Dual view [set to 'missing'] 
+	012061  Skin temperature: SST [Dual view] 
+	021085  ATSR SST across-track band number [0-9] 
+	021070  SST product confidence data (SADIST-2) [23-bit flag] 
+#
+ 312028
+	301046	
+	301011  
+	301013  
+	301023  
+	008025  Time difference qualifier 
+	201136  Change data width 
+	004006  Second 
+	201000  Change data width back to Table B 
+	312031  
+	312032  
+	101004  Next descriptor replicated four times 
+	312030  
+	101002  Next descriptor replicated two times 
+	312033  
+	021110  Number of inner-beam sigma-0 (forward of satellite) 
+	301023  
+	321028  
+	021111  Number of outer-beam sigma-0 (forward of satellite) 
+	301023  
+	321028  
+	021112  Number of inner-beam sigma-0 (aft of satellite) 
+	301023  
+	321028  
+	021113  Number of outer-beam sigma-0 (aft of satellite) 
+	301023  
+	321028  
+#
+ 312030
+	201130	Change data width	
+	202129  Change scale 
+	011012  Wind speed at 10 m 
+	202000  Change scale back to Table B 
+	201000  Change data width to Table B 
+	011052  Formal uncertainty in wind speed 
+	201135  Change data width 
+	202130  Change scale 
+	011011  Wind direction at 10 m 
+	202000  Change scale back to Table B 
+	201000  Change data width to Table B 
+	011053  Formal uncertainty in wind direction 
+	021104  Likelihood computed for solution 
+#
+ 312031
+	005034	Along-track row number	
+	006034  Cross-track cell number 
+	021109  SEAWINDS wind vector cell quality 
+	011081  Model wind direction at 10 m 
+	011082  Model wind speed at 10 m 
+	021101  Number of vector ambiguities 
+	021102  Index of selected wind vector 
+	021103  Total number of sigma-0 measurements 
+#
+ 312032
+	021120	Probability of rain	
+	021121  SEAWINDS NOF rain index 
+	013055  Intensity of precipitation 
+	021122  Attenuation correction on sigma-0 (from tB) 
+#
+ 312033
+	002104	Antenna polarisation	
+	008022  Total number (with respect to accumulation) 
+	012063  Brightness temperature 
+	012065  Standard deviation brightness temperature 
+#
+ 312041
+	201141	Change width to 28 bits	
+	202130  Change scale to 2 
+	007001  Altitude 
+	201000  Change width back to Table B 
+	202000  Change scale back to Table B 
+#
+ 312042
+	021077	Altitude correction, ionosphere	
+	021078  Altitude correction, dry troposphere 
+	021079  Altitude correction, wet troposphere 
+	021080  Altitude correction, calibration constant 
+	021081  Open loop height-time loop calibration correction 
+	021082  Open loop automatic gain control calibration correction 
+</PRE>
+<HR><A NAME="C13"></A>
+<H4 ALIGN="CENTER">Class 13</H4>
+<PRE>
+#
+ 313009
+	021001	Horizontal reflectivity	
+	101000  Delayed replication of 1 descriptor 
+	031001  Replication factor 
+	021001  Horizontal reflectivity 
+#
+ 313010
+	021036	Radar rainfall intensity	
+	101000  Delayed replication of 1 descriptor 
+	031001  Replication factor 
+	021036  Radar rainfall intensity 
+#
+ 313031
+	006002	First longitude location minus one increment	
+	006012  Longitude increment 
+	101000  Delayed replication of 1 descriptor 
+	031002  Extended replication factor 
+	030001  Pixel value (4 bits) 
+#
+ 313032
+	005002	First latitude location minus one increment	
+	005012  Latitude increment (signed value so cannot cross pole) 
+	101000  Delayed replication of 1 descriptor 
+	031002  Extended replication factor 
+	313031  Non run-length encoded row 
+#
+ 313041
+	006002	First longitude location minus one increment	
+	110000  Delayed replication of 10 descriptors 
+	031001  Replication factor 
+	104000  Delayed replication of 4 descriptors 
+	031001  Replication factor 
+	006012  Longitude increment 
+	101000  Delayed replication of 1 descriptor 
+	031012  Repetition factor 
+	030001  Pixel value (4 bits) 
+	006012  Longitude increment 
+	101000  Delayed replication of 1 descriptor 
+	031001  Replication factor 
+	030001  Pixel value (4 bits) 
+#
+ 313042
+	005002	First latitude location minus one increment	
+	005012  Latitude increment (signed value so cannot cross pole) 
+	101000  Delayed replication of 1 descriptor 
+	031002  Extended replication factor 
+	313041  Run-length encoded row 
+#
+ 313043
+	006002	First longitude location minus one increment	
+	005002  First latitude location minus one increment 
+	005012  Latitude increment 
+	112000  Delayed replication of 12 descriptors 
+	031001  Replication factor 
+	110000  Delayed replication of 10 descriptors 
+	031001  Replication factor 
+	104000  Delayed replication of 4 descriptors 
+	031001  Replication factor 
+	006012  Longitude increment 
+	101000  Delayed replication of 1 descriptor 
+	031011  Repetition factor 
+	030001  Pixel value (4 bits) 
+	101000  Delayed replication of 1 descriptor 
+	031001  Replication factor 
+	030001  Pixel value (4 bits) 
+</PRE>
+<HR><A NAME="C15"></A>
+<H4 ALIGN="CENTER">Class 15</H4>
+<PRE>
+#
+ 315001
+	001011	Ship's call sign	
+	301011  Date 
+	301012  Time 
+	301023  Latitude and longitude (coarse accuracy) 
+	306001  Depth, temperature 
+#
+ 315002
+	001011	Ship's call sign	
+	301011  Date 
+	301012  Time 
+	301023  Latitude and longitude (coarse accuracy) 
+	306004  Depth, temperature, salinity 
+</PRE>
+<HR><A NAME="C16"></A>
+<H4 ALIGN="CENTER">Class 16</H4>
+<PRE>
+#
+ 316001
+	301011	Year, month, day	
+	004004  Hour 
+	301023  Latitude and longitude (coarse accuracy) 
+	001021  Synoptic feature identifier 
+	002041  Method for estimating reports related to synoptic features 
+	019001  Type of synoptic feature 
+	010051  Pressure reduced to mean sea level 
+	019002  Effective radius of feature 
+	019003  Wind speed threshold (15 m s-1 typically) 
+	019004  Effective radius with respect to wind speeds above threshold 
+#
+ 316002
+	008021	Data time (analysis)	
+	004001  Year 
+	004002  Month 
+	004003  Day 
+	004004  Hour 
+	004005  Minute 
+	001033  Originating/generating centre 
+	008021  Validity time (fcst) 
+	004001  Year 
+	004002  Month 
+	004003  Day 
+	004004  Hour 
+	004005  Minute 
+	007002  Flight level (altitude) (base of chart layer) 
+	007002  Flight level (altitude) (top of chart layer) 
+#
+ 316003
+	110000	Delayed replication	
+	031001  Replication 
+	008011  Meteorological feature (jet stream value) 
+	008007  Dimensional significance (value for line) 
+	104000  Delayed replication 
+	031001  Replication 
+	005002  Latitude (coarse) 
+	006002  Longitude (coarse) 
+	010002  Flight level (altitude) 
+	011002  Wind speed 
+	008007  Dimensional significance (cancel) 
+	008011  Meteorological feature (cancel/end of object) 
+#
+ 316004
+	111000	Delayed replication	
+	031001  Replication 
+	008011  Meteorological feature (value for turbulence) 
+	008007  Dimensional significance (value for area) 
+	007002  Flight level (altitude) (base of layer) 
+	007002  Flight level (altitude) (top of layer) 
+	102000  Delayed replication 
+	031001  Replication 
+	005002  Latitude (coarse) 
+	006002  Longitude (coarse) 
+	011031  (1) Degree of turbulence 
+	008007  Dimensional significance (cancel) 
+	008011  Meteorological feature (cancel/end of object) 
+#
+ 316005
+	108000	Delayed replication	
+	031001  Replication 
+	008005  Meteorological attribute significance (storm centre) 
+	008007  Dimensional significance (value for point) 
+	005002  Latitude (coarse) 
+	006002  Longitude (coarse) 
+	001026  WMO storm name (use “unknown” for a sandstorm) 
+	019001  Synoptic features (value for type of storm) 
+	008007  Dimensional significance (cancel) 
+	008005  Meteorological attribute significance (cancel/end of object) 
+#
+ 316006
+	112000	Delayed replication	
+	031001  Replication 
+	008011  Meteorological feature (value for cloud) 
+	008007  Dimensional significance (value for area) 
+	007002  Flight level (altitude) (base of layer) 
+	007002  Flight level (altitude) (top of layer) 
+	102000  Delayed replication 
+	031001  Replication 
+	005002  Latitude (coarse) 
+	006002  Longitude (coarse) 
+	020011  (2) Cloud amount 
+	020012  Cloud type 
+	008007  Dimensional significance (cancel) 
+	008011  Meteorological feature (cancel/end of object) 
+#
+ 316007
+	110000	Delayed replication	
+	031001  Replication 
+	008011  (3) Meteorological feature (value for type of front) 
+	008007  Dimensional significance (value for line) 
+	104000  Delayed replication 
+	031001  Replication 
+	005002  Latitude (coarse) 
+	006002  Longitude (coarse) 
+	019005  Direction of feature 
+	019006  Speed of feature 
+	008007  Dimensional significance (cancel) 
+	008011  Meteorological feature (cancel/end of object) 
+#
+ 316008
+	111000	Delayed replication	
+	031001  Replication 
+	008001  Vertical significance (bit 3 set for tropopause) 
+	008007  Dimensional significance (value for point) 
+	008023  (4) Statistic (type of tropopause value) 
+	103000  Delayed replication 
+	031001  Replication 
+	005002  Latitude (coarse) 
+	006002  Longitude (coarse) 
+	010002  Height/altitude 
+	008023  Statistic (cancel) 
+	008007  Dimensional significance (cancel) 
+	008001  Vertical significance (cancel/end of object) 
+#
+ 316009
+	111000	Delayed replication	
+	031001  Replication 
+	008011  Meteorological feature (value for airframe icing) 
+	008007  Dimensional significance (value for area) 
+	007002  Flight level (altitude) (base of layer) 
+	007002  Flight level (altitude) (top of layer) 
+	102000  Delayed replication 
+	031001  Replication 
+	005002  Latitude (coarse) 
+	006002  Longitude (coarse) 
+	020041  Airframe icing (type of airframe icing) 
+	008007  Dimensional significance (cancel) 
+	008011  Meteorological feature (cancel/end of object) 
+#
+ 316010
+	107000	Delayed replication	
+	031001  Replication 
+	008011  Meteorological feature 
+	008007  Dimensional significance (value for point) 
+	001022  Name of feature 
+	005002  Latitude (coarse) 
+	006002  Longitude (coarse) 
+	008007  Dimensional significance (cancel) 
+	008011  Meteorological feature (cancel/end of object) 
+#
+ 316011
+	116000	Delayed replication	
+	031001  Replication 
+	008011  Meteorological feature (value for special clouds) 
+	001022  Name of feature (volcano name) 
+	008007  Dimensional significance (value for point) 
+	102000  Delayed replication 
+	031001  Replication 
+	005002  Latitude (coarse) 
+	006002  Longitude (coarse) 
+	008021  Time significance (eruption starting time) 
+	004001  Year 
+	004002  Month 
+	004003  Day 
+	004004  Hour 
+	004005  Minute 
+	020090  Special clouds (clouds from volcanic eruptions) 
+	008021  Time significance (cancel) 
+	008007  Dimensional significance (cancel) 
+	008011  Meteorological feature (cancel/end of object) 
+</PRE>
+<HR><A NAME="C18"></A>
+<H4 ALIGN="CENTER">Class 18</H4>
+<PRE>
+#
+ 318001
+	301025	Latitude and longitude (coarse accuracy), day and time	
+	024011  Dose 
+#
+ 318003
+	301026	Latitude and longitude (high accuracy), time periods in days, hours and minutes	
+	024005  Isotope mass 
+	024004  Element name 
+	024021  Air concentration 
+#
+ 318004
+	301025	Latitude and longitude (coarse accuracy), day and time	
+	004023  Time period or displacement  
+	013011  Total precipitation/total water equivalent 
+	024005  Isotope mass 
+	024004  Element name 
+	024022  Concentration in precipitation 
+</PRE>
+<HR><A NAME="C21"></A>
+<H4 ALIGN="CENTER">Class 21</H4>
+<PRE>
+#
+ 321001
+	002101	Type of antenna	
+	002114  Antenna effective surface area 
+	002105  Maximum antenna gain 
+	002106  3-dB beamwidth 
+	002107  Sidelobe suppression 
+	002121  Mean frequency 
+#
+ 321003
+	021051	Signal power above 1 mW	
+	021014  Doppler mean velocity (radial) 
+	021017  Doppler velocity spectral width 
+	021030  Signal to noise ratio 
+#
+ 321004
+	301031	Identification, type, date/time, position (high accuracy), height	
+	002003  Type of measuring equipment used 
+	101000  Delayed replication of 1 descriptor 
+	031001  Replication factor 
+	321003  Wind profiler - moment data 
+#
+ 321005
+	025004	Echo processing	
+	002121  Mean frequency 
+	002122  Frequency agility range 
+	002123  Peak power 
+	002124  Average power 
+	002125  Pulse repetition frequency 
+	002126  Pulse width 
+	002127  Receiver intermediate frequency 
+	002128  Intermediate frequency bandwidth 
+	002129  Minimum detectable signal 
+	002130  Dynamic range 
+	002131  Sensitivity time control 
+#
+ 321006
+	025001	Range-gate length	
+	025002  Number of gates averaged 
+	025003  Number of integrated pulses 
+	025005  Echo integration 
+#
+ 321007
+	025009	Calibration method	
+	025010  Clutter treatment 
+	025011  Ground occultation correction 
+	025012  Range attenuation correction 
+	025013  Bright-band correction 
+	025015  Radome attenuation correction 
+	025016  Clear-air attenuation correction 
+	025017  Precipitation attenuation correction 
+#
+ 321008
+	025006	Z to R conversion	
+	025007  Z to R conversion factor 
+	025008  Z to R conversion exponent 
+#
+ 321009
+	025018	A to Z law for attenuation factor	
+	025019  A to Z law for attenuation exponent 
+#
+ 321010
+	002101	Type of antenna	
+	007002  Altitude of the tower base 
+	002102  Antenna height above tower base 
+	002103  Radome 
+	002104  Antenna polarisation 
+	002105  Maximum antenna gain 
+	002106  3-dB beamwidth 
+	002107  Sidelobe suppression 
+	002108  Crosspol discrimination (on axis) 
+	002109  Antenna speed (azimuth) 
+	002110  Antenna speed (elevation) 
+	002132  Azimuth pointing accuracy 
+	002133  Elevation pointing accuracy 
+#
+ 321011
+	030031	Picture type	
+	030032  Combination with other data 
+	029002  Coordinate grid type 
+#
+ 321012
+	101000	Delayed replication of 1 descriptor	
+	031001  Replication factor 
+	002135  Antenna elevation 
+#
+ 321021
+	002003	Type of measuring equipment used	
+	002101  Type of antenna 
+	201130  Change width to 8 bits 
+	002106  3-dB beam width 
+	201000  Change width to table B 
+	201132  Change width to 11 bits 
+	202130  Change scale to -6 
+	002121  Mean frequency 
+	202000  Change scale to table B 
+	201000  Change width to table B 
+	201133  Change width to 11 bits 
+	202129  Change scale to 0 
+	025001  Range-gate length 
+	202000  Change scale to table B 
+	201000  Change width to table B 
+#
+ 321022
+	010007	Height	
+	204001  Add associated field of 1 bit in length 
+	031021  Associated field significance 
+	011001  Wind direction 
+	204000  Cancel add associated field 
+	011002  Wind speed 
+	204001  Add associated field of 1 bit in length 
+	031021  Associated field significance 
+	011006  w-component 
+	204000  Cancel add associated field 
+	021030  Signal to noise ratio 
+#
+ 321023
+	007007	Height	
+	021091  Radar signal Doppler spectrum 0th moment 
+	021030  Signal to noise ratio 
+	202129  Change scale to 2 
+	021014  Doppler mean velocity (radial) 
+	201129  Change width to 9 bits 
+	021017  Doppler velocity spectral width 
+	202000  Change scale to table B 
+	201000  Change width to table B 
+#
+ 321024
+	007007	Height	
+	204001  Add associated field of 1 bit in length 
+	031021  Associated field significance 
+	012007  Virtual temperature 
+	011006  w-component 
+	204000  Cancel add associated field 
+	021030  Signal to noise ratio 
+#
+ 321025
+	007007	Height	
+	021091  Radar signal Doppler spectrum 0th moment 
+	021030  Signal to noise ratio 
+	202129  Change scale to 2 
+	021014  Doppler mean velocity (radial) 
+	201129  Change width to 9 bits 
+	021017  Doppler velocity spectral width 
+	202000  Change scale to table B 
+	201000  Change width to table B 
+	021092  RASS signal Doppler spectrum 0th moment, referring to RASS signal 
+	021030  Signal to noise ratio, referring to RASS signal  
+	025092  Acoustic propagation velocity 
+	201129  Change width to 9 bits 
+	202129  Change scale to 2 
+	021017  Doppler velocity spectral width, referring to RASS signal 
+	202000  Change scale to table B 
+	201000  Change width to table B 
+#
+ 321026
+	010007	Height	
+	204001  Add associated field of 1 bit in length 
+	031021  Associated field significance 
+	012007  Virtual temperature 
+	025091  Structure constant of the refraction index (Cn2) 
+	011071  Turbulent vertical momentum flux 
+	011072  Turbulent vertical buoyancy flux 
+	011073  Turbulent kinetic energy 
+	011074  Dissipation energy 
+	204000  Cancel add associated field 
+#
+ 321027
+	021118	Attenuation correction on sigma-0	
+	202129  Change scale 
+	201132  Change data width 
+	002112  Radar look angle 
+	201000  Change data width to Table B 
+	201131  Change data width 
+	002111  Radar incidence angle 
+	201000  Change data width to Table B 
+	202000  Change scale back to Table B 
+	002104  Antenna polarization 
+	021105  Normalized radar cross-section 
+	021106  Kp variance coefficient (alpha) 
+	021107  Kp variance coefficient (beta) 
+	021114  Kp variance coefficient (gamma) 
+	021115  SEAWINDS sigma-0 quality 
+	021116  SEAWINDS sigma-0 mode 
+	008018  SEAWINDS land/ice surface type 
+	021117  Sigma-0 variance quality control 
+#
+ 321028
+	021118	Attenuation correction on sigma-0	
+	202129  Change scale 
+	201132  Change data width 
+	002112  Radar look angle 
+	201000  Data width back to Table B 
+	201131  Change data width 
+	002111  Radar incidence angle 
+	201000  Data width back to Table B 
+	202000  Scale back  to table B 
+	002104  Likelihood computed for solution 
+	021123  SEAWINDS normalized radar cross section 
+	021106  Kp variance coefficient (alpha) 
+	021107  Kp variance coefficient (beta) 
+	021114  Kp variance coefficient (gamma) 
+	021115  SEAWINDS sigma-0 quality flag 
+	021116  SEAWINDS sigma-0 mode flag 
+	008018  SEAWINDS land/ice surface flag 
+	021117  Sigma-0 variance quality control 
+</PRE>
+<HR>
+<P>This BUFR Table D, with 474 descriptor elements, was originally constructed 2000-10-31 in
+<I>Northern LightHouse Ltd</I> using script <I>wmo2crexB.pl</I>
+</BODY></HTML>

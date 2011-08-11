@@ -1,5 +1,5 @@
 /*
- * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2011 University Corporation for Atmospheric Research/Unidata
  *
  * Portions of this software were developed by the Unidata Program at the
  * University Corporation for Atmospheric Research.
@@ -48,6 +48,8 @@ import java.nio.charset.Charset;
 import org.jdom.input.SAXBuilder;
 import org.jdom.Element;
 import org.jdom.JDOMException;
+import ucar.nc2.wmo.CommonCodeTable;
+import ucar.nc2.wmo.Utils;
 import ucar.unidata.util.StringUtil2;
 
 /**
@@ -144,28 +146,25 @@ public class BufrTables {
   }
 
   public enum Format {
-    ecmwf, mel_bufr, mel_tabs, ncep, ncep_nm, opera, ukmet, wmo_csv, wmo_xml
+    ecmwf, mel_bufr, mel_tabs, ncep, ncep_nm, opera, ukmet, wmo_csv, wmo_xml, cypher
   }
 
   static final String RESOURCE_PATH = "/resources/bufrTables/";
+  private static final String canonicalLookup = "resource:" + RESOURCE_PATH + "local/tablelookup.csv";
+  private static final String version14 = "wmo.v14";
 
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(BufrTables.class);
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(BufrTables.class);
 
   private static final boolean debugTable = false;
   private static final boolean showTables = true;
   private static final boolean showReadErrs = true;
 
   private static List<TableConfig> tables;
-  private static Map<String, TableB> tablesB = new ConcurrentHashMap<String, TableB>();
-  private static Map<String, TableD> tablesD = new ConcurrentHashMap<String, TableD>();
+  private static final Map<String, TableB> tablesB = new ConcurrentHashMap<String, TableB>();
+  private static final Map<String, TableD> tablesD = new ConcurrentHashMap<String, TableD>();
 
-  static private String version13 = "wmo.v13.composite";
-  static private String version14 = "wmo.v14";
-
-
-
-  private static final String canonicalLookup = "resource:" + RESOURCE_PATH + "local/tablelookup.csv";
   private static List<String> lookups = null;
+
   static public void addLookupFile( String filename) throws FileNotFoundException {
     if (lookups == null) lookups = new ArrayList<String>();
     File f = new File(filename);
@@ -173,19 +172,19 @@ public class BufrTables {
     lookups.add(filename);
   }
 
-  static private void readTableLookup() {
+  static private void readLookupTable() {
     tables = new ArrayList<TableConfig>();
     if (lookups != null) {
       lookups.add(canonicalLookup);
       for (String fname : lookups)
-        readTableLookup(fname);
+        readLookupTable(fname);
     } else {
-      readTableLookup(canonicalLookup);
+      readLookupTable(canonicalLookup);
     }
   }
 
   // center,subcenter,master,local,cat,tableB,tableBformat,tableD,tableDformat, mode
-  static private void readTableLookup(String filename) {
+  static private void readLookupTable(String filename) {
 
     try {
       InputStream ios = openStream(filename);
@@ -206,6 +205,7 @@ public class BufrTables {
         int fldidx = 0;
         try {
           TableConfig table = new TableConfig();
+          table.name = flds[fldidx++].trim();
           table.center = Integer.parseInt(flds[fldidx++].trim());
           table.subcenter = Integer.parseInt(flds[fldidx++].trim());
           table.master = Integer.parseInt(flds[fldidx++].trim());
@@ -251,11 +251,14 @@ public class BufrTables {
     return result;
   }
 
-  private static class TableConfig {
+  ////////////////////////////////////////////////////////////////////////////////////
+
+  public static class TableConfig {
+    String name;
     int center, subcenter, master, local, cat;
     String tableBname,tableDname;
     Format tableBformat,tableDformat;
-    Mode mode = Mode.wmoLocal;
+    Mode mode = Mode.localOverride;
 
     boolean matches(int center, int subcenter, int master, int local, int cat) {
       if ((this.center >= 0) && (center >= 0) && (center != this.center)) return false;
@@ -266,11 +269,54 @@ public class BufrTables {
       return true;
     }
 
-    public String toString() { return tableBname; }
+    public String getName() {
+      return name;
+    }
+
+    public Format getTableBformat() {
+      return tableBformat;
+    }
+
+    public Format getTableDformat() {
+      return tableDformat;
+    }
+
+    public Mode getMode() {
+      return mode;
+    }
+
+    public String getTableDname() {
+      return tableDname;
+    }
+
+    public String getTableBname() {
+      return tableBname;
+    }
+
+    @Override
+    public String toString() {
+      return name;
+    }
+
+    public String toString2() {
+      Formatter f = new Formatter();
+      String centerName = Utils.getCenterShortName(center);
+      if (centerName == null) centerName = CommonCodeTable.getTableValue(11, center);
+      f.format(" Center =%d (%s)", center, centerName);
+      f.format(" SubCenter =%d (%s)", subcenter, CommonCodeTable.getTableValue(12, center, subcenter));
+      f.format(" Table = %d.%d", master, local);
+      if (cat >= 0) f.format(" Cat= %d", cat);
+      return f.toString();
+    }
+  }
+
+  public static List<TableConfig> getTables() {
+    if (tables == null) readLookupTable();
+    return tables;
   }
 
   private static TableConfig matchTableConfig(int center, int subcenter, int master, int local, int cat) {
-    if (tables == null) readTableLookup();
+    if (tables == null) readLookupTable();
 
     for (TableConfig tc : tables) {
       if (tc.matches(center,subcenter,master,local,cat))
@@ -280,7 +326,7 @@ public class BufrTables {
   }
 
   private static TableConfig matchTableConfig(BufrIdentificationSection ids) {
-    if (tables == null) readTableLookup();
+    if (tables == null) readLookupTable();
 
     int center = ids.getCenterId();
     int subcenter = ids.getSubCenterId();
@@ -290,100 +336,6 @@ public class BufrTables {
 
     return matchTableConfig(center, subcenter, master, local, cat);
   }
-
-
-  /* public void tableLookup(BufrIndicatorSection is, BufrIdentificationSection ids) throws IOException {
-    init();
-    this.wmoTableB = BufrTables.getWmoTableB(is.getBufrEdition());
-    this.wmoTableD = BufrTables.getWmoTableD(is.getBufrEdition());
-
-    // check tablelookup for special local table
-    // create key from category and possilbly center id
-
-    String localTableName = tablelookup.getCategory( makeLookupKey(ids.getCategory(), ids.getCenterId()));
-
-    if (localTableName == null) {
-      //this.localTableB = BufrTables.getWmoTableB(is.getBufrEdition());
-      //this.localTableD = BufrTables.getWmoTableD(is.getBufrEdition());
-      return;
-
-    } else if (localTableName.contains("-ABD")) {
-      localTableB = BufrTables.getTableB(localTableName.replace("-ABD", "-B"));
-      localTableD = BufrTables.getTableD(localTableName.replace("-ABD", "-D"));
-      return;
-
-      // check if localTableName(Mnemonic) table has already been processed
-    } else if (BufrTables.hasTableB(localTableName)) {
-      localTableB = BufrTables.getTableB(localTableName); // LOOK localTableName needs "-B" or something
-      localTableD = BufrTables.getTableD(localTableName);
-      return;
-    }
-
-    // Mnemonic tables
-    ucar.nc2.iosp.bufr.tables.BufrReadMnemonic brm = new ucar.nc2.iosp.bufr.tables.BufrReadMnemonic();
-    brm.readMnemonic(localTableName);
-    this.localTableB = brm.getTableB();
-    this.localTableD = brm.getTableD();
-  }
-
-  private short makeLookupKey(int cat, int center_id) {
-    if ((center_id == 7) || (center_id == 8) || (center_id == 9)) {
-      if (cat < 240 || cat > 254)
-        return (short) center_id;
-      return (short) (center_id * 1000 + cat);
-    }
-    return (short) center_id;
-  }
-
-  
-
-    // LOOK
-  static public TableA getLookupTable() throws IOException {
-    String tablename = "tablelookup.txt";
-    InputStream ios = open(tablename);
-    BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios));
-    Map<Short, String> categories = new HashMap<Short, String>();
-
-    // read table A to store categories
-    Matcher m;
-    while (true) {
-      String line = dataIS.readLine();
-      if (line == null) break;
-      // check for comment lines
-      if (line.startsWith("#") || line.length() == 0)
-        continue;
-
-      m = category.matcher(line);
-      if (m.find()) {
-        if (m.group(2).equals("RESERVED")) continue;
-        if (m.group(2).equals("FOR EXPERIMENTAL USE")) continue;
-        String cat = m.group(2).trim();
-        categories.put(Short.valueOf(m.group(1)), cat);
-      }
-    }
-    dataIS.close();
-
-    return new TableA(tablename, tablename, categories);
-  }
-
-  static private TableB readRobbTableB(String tablename) throws IOException {
-    InputStream ios = open(tablename);
-    TableB b = new TableB(tablename, tablename);
-
-    readRobbTableB(ios, b);
-    return b;
-  }
-
-     static public TableB getTableB(String tablename) throws IOException {
-    TableB b = tablesB.get(tablename);
-    if (b == null) {
-      b = readRobbTableB(tablename);
-      tablesB.put(tablename, b);
-    }
-    return b;
-  }
-
-  */
 
   ///////////////////////
 
@@ -415,7 +367,7 @@ public class BufrTables {
     TableConfig tc = matchTableConfig(ids);
     if (tc == null) return null;
 
-    if (tc.tableBformat.equals("ncep-nm")) {
+    if (tc.tableBformat == Format.ncep_nm) { // LOOK ??
       // see if we already have it
       TableB b = tablesB.get(tc.tableBname);
       TableD d = tablesD.get(tc.tableBname);
@@ -442,11 +394,27 @@ public class BufrTables {
     return tables;
   }
 
+  ////////////////////////////////////////////////////
+
+  static private TableB latestWmoB;
+  static public TableB getWmoTableBlatest() {
+    if (latestWmoB == null) {
+      try {
+        latestWmoB = getWmoTableB( 16);
+      } catch (IOException ioe) {
+        log.error("Cant open latest WMO ", ioe);
+        throw new RuntimeException(ioe);
+      }
+    }
+    return latestWmoB;
+  }
+
   static public TableB getWmoTableB(BufrIdentificationSection ids) throws IOException {
     return getWmoTableB( ids.getMasterTableVersion());
   }
 
-  static public TableB getWmoTableB(int version) throws IOException {
+  static public TableB getWmoTableBold(int version) throws IOException {
+    String version13 = "wmo.v13.composite";
     String tableName = (version == 14) ? version14 : version13;
     TableB tb = tablesB.get(tableName);
     if (tb != null) return tb;
@@ -470,11 +438,10 @@ public class BufrTables {
     return result;
   }
 
-  static public TableB readTableB(String location, String formatS, boolean force) throws IOException {
-    Format format = Format.valueOf(formatS);
-    if (format == null)
-      throw new RuntimeException("Illegal format = "+formatS);
-    return readTableB(location, format, force);
+  static public TableB getWmoTableB(int version) throws IOException {
+    TableConfig tc = matchTableConfig(0, 0, version, 0, -1);
+    if (tc != null) return readTableB(tc.tableBname, tc.tableBformat, false);
+    return null;
   }
 
   static public TableB readTableB(String location, Format format, boolean force) throws IOException {
@@ -482,11 +449,14 @@ public class BufrTables {
       TableB tb = tablesB.get(location);
       if (tb != null) return tb;
     }
-    if (showReadErrs) System.out.printf("Read BufrTable B %s format=%s%n", location, format);
+    if (showTables) System.out.printf("Read BufrTable B %s format=%s%n", location, format);
 
     InputStream ios = openStream(location);
     TableB b = new TableB(location, location);
     switch (format) {
+      case cypher :
+        readCypherTableB(ios, b);
+        break;
       case ecmwf :
         readEcmwfTableB(ios, b);
         break;
@@ -513,7 +483,7 @@ public class BufrTables {
         readWmoCsvTableB(ios, b);
         break;
       case wmo_xml :
-        readWmoXmlTableB(ios, b);
+        WmoXmlReader.readWmoXmlTableB(ios, b);
         break;
     }
 
@@ -531,7 +501,6 @@ public class BufrTables {
       count++;
 
       if (count == 1) { // skip first line - its the header
-        if (showReadErrs) System.out.println("header line == " + line);
         continue;
       }
 
@@ -577,7 +546,7 @@ public class BufrTables {
     return StringUtil2.remove(s, ' ');
   }
 
-  // tables are in mel-bufr format
+    // tables are in mel-bufr format
   static private TableB readMelbufrTableB(InputStream ios, TableB b) throws IOException {
 
     BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios));
@@ -602,6 +571,59 @@ public class BufrTables {
       } catch (Exception e) {
         log.error("Bad table B entry: table=" + b.getName() + " entry=<" + line + ">", e.getMessage());
         continue;
+      }
+    }
+    dataIS.close();
+
+    return b;
+  }
+
+  /* tables are in cypher format : http://www.northern-lighthouse.com/tables/B_d00v13.htm
+   #
+   002063 Aircraft roll angle
+   Degree
+   2 -18000 16
+  */
+
+  static private TableB readCypherTableB(InputStream ios, TableB b) throws IOException {
+    boolean startMode = false;
+    BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios));
+    while (true) {
+      String line = dataIS.readLine();
+      if (line == null) break;
+      if (line.length() == 0)
+        continue;
+      if (line.startsWith("<"))
+        continue;
+
+      if (line.startsWith("#")) {
+        startMode = true;
+        continue;
+      }
+
+      if (startMode) {
+        try {
+          String xys = line.substring(0,8).trim();
+          int xy = Integer.parseInt(xys);
+          short x = (short) (xy / 1000);
+          short y = (short) (xy % 1000);
+
+          String name = WmoXmlReader.cleanName(line.substring(8));
+          String units = WmoXmlReader.cleanUnit(dataIS.readLine());
+
+          line = dataIS.readLine();
+          line = StringUtil2.remove(line, '*');
+          String[] split = StringUtil2.splitString(line);
+          int scale = Integer.parseInt(split[0].trim());
+          int refVal = Integer.parseInt(split[1].trim());
+          int width = Integer.parseInt(split[2].trim());
+
+          b.addDescriptor(x, y, scale, refVal, width, name, units);
+          startMode = false;
+        } catch (Exception e) {
+          log.error("Bad table B entry: table=" + b.getName() + " entry=<" + line + ">", e.getMessage());
+          continue;
+        }
       }
     }
     dataIS.close();
@@ -823,151 +845,171 @@ public class BufrTables {
     ios.close();
   }
 
-  /*
-  <BC_TableB_BUFR14_1_0_CREX_6_1_0>
-    <SNo>1</SNo>
-    <Class>00</Class>
-    <FXY>000001</FXY>
-    <ElementName_E>Table A: entry</ElementName_E>
-    <ElementName_F>Table A : entr?e</ElementName_F>
-    <ElementName_R>??????? ?: ???????</ElementName_R>
-    <ElementName_S>Tabla A: elemento</ElementName_S>
-    <BUFR_Unit>CCITT IA5</BUFR_Unit>
-    <BUFR_Scale>0</BUFR_Scale>
-    <BUFR_ReferenceValue>0</BUFR_ReferenceValue>
-    <BUFR_DataWidth_Bits>24</BUFR_DataWidth_Bits>
-    <CREX_Unit>Character</CREX_Unit>
-    <CREX_Scale>0</CREX_Scale>
-    <CREX_DataWidth>3</CREX_DataWidth>
-    <Status>Operational</Status>
-    <NotesToTable_E>Notes: (see)#BUFR14_1_0_CREX6_1_0_Notes.doc#BC_Cl000</NotesToTable_E>
-</BC_TableB_BUFR14_1_0_CREX_6_1_0>
-   */
-
-  static private void readWmoXmlTableB(InputStream ios, TableB b) throws IOException {
-    org.jdom.Document doc;
-    try {
-      SAXBuilder builder = new SAXBuilder();
-      doc = builder.build(ios);
-    } catch (JDOMException e) {
-      throw new IOException(e.getMessage());
-    }
-
-    Element root = doc.getRootElement();
-    List<Element> featList = root.getChildren("BC_TableB_BUFR14_1_0_CREX_6_1_0");
-    for (Element elem : featList) {
-
-      String name = elem.getChildTextNormalize("ElementName_E");
-      String units = elem.getChildTextNormalize("BUFR_Unit");
-      int x = 0, y = 0, scale = 0, reference = 0, width = 0;
-
-      String fxy = null;
-      String s = null;
-      try {
-        fxy = elem.getChildTextNormalize("FXY");
-        int xy = Integer.parseInt(clean(fxy));
-        x = xy / 1000;
-        y = xy % 1000;
-
-      } catch (NumberFormatException e) {
-        System.out.printf(" key %s name '%s' has bad scale='%s'%n", fxy, name, s);
-      }
-
-      try {
-        s = elem.getChildTextNormalize("BUFR_Scale");
-        scale = Integer.parseInt(clean(s));
-      } catch (NumberFormatException e) {
-        System.out.printf(" key %s name '%s' has bad scale='%s'%n", fxy, name, s);
-      }
-
-      try {
-        s = elem.getChildTextNormalize("BUFR_ReferenceValue");
-        reference = Integer.parseInt(clean(s));
-      } catch (NumberFormatException e) {
-        System.out.printf(" key %s name '%s' has bad reference='%s' %n", fxy, name, s);
-      }
-
-      try {
-        s = elem.getChildTextNormalize("BUFR_DataWidth_Bits");
-        width = Integer.parseInt(clean(s));
-      } catch (NumberFormatException e) {
-        System.out.printf(" key %s name '%s' has bad width='%s' %n", fxy, name, s);
-      }
-
-      b.addDescriptor((short) x, (short) y, scale, reference, width, name, units);
-    }
-    ios.close();
-  }
-
   ///////////////////////////////////////////////////////
 
- static public TableD getWmoTableD(BufrIdentificationSection ids) throws IOException {
-    TableD tb = tablesD.get(version14);
-    if (tb != null) return tb;
-
-    // always use version 14
-    TableConfig tc14 = matchTableConfig(0, 0, 14, 0, -1);
-    TableD result = readTableD(tc14.tableDname, tc14.tableDformat, false);
-    tablesD.put(version14, result); // hash by standard name
-
-    return result;
+  static private TableD latestWmoD;
+  static public TableD getWmoTableDlatest() {
+    if (latestWmoD == null) {
+      try {
+        latestWmoD = getWmoTableD( 16);
+      } catch (IOException ioe) {
+        log.error("Cant open latest WMO ", ioe);
+        throw new RuntimeException(ioe);
+      }
+    }
+    return latestWmoD;
   }
 
-  static public TableD readTableD(String location, String formatS, boolean force) throws IOException {
-    Format format = Format.valueOf(formatS);
-    if (format == null)
-      throw new RuntimeException("Illegal format = "+formatS);
-    return readTableD(location, format, force);
+  static public TableD getWmoTableD(BufrIdentificationSection ids) throws IOException {
+    return getWmoTableD(ids.getMasterTableVersion());
+  }
+
+  static public TableD getWmoTableD(int version) throws IOException {
+    TableConfig tc = matchTableConfig(0, 0, version, 0, -1);
+    if (tc != null) return readTableD(tc.tableDname, tc.tableDformat, false);
+    return null;
   }
 
   static public TableD readTableD(String location, Format format, boolean force) throws IOException {
     if (location == null) return null;
     if (location.trim().length() == 0) return null;
-    if (showReadErrs) System.out.printf("Read BufrTable D %s format=%s%n", location, format);
 
     if (!force) {
       TableD tb = tablesD.get(location);
       if (tb != null) return tb;
     }
 
+    if (showTables) System.out.printf("Read BufrTable D %s format=%s%n", location, format);
     InputStream ios = openStream(location);
     TableD d = new TableD(location, location);
 
     switch (format) {
 
-      case ncep :
+      case cypher:
+        readCypherTableD(ios, d);
+        break;
+      case ncep:
         readNcepTableD(ios, d);
         break;
-      case ncep_nm :
+      case ncep_nm:
         Tables t = new Tables(null, d, null);
         NcepMnemonic.read(ios, t);
         break;
-      case ecmwf :
+      case ecmwf:
         readEcmwfTableD(ios, d);
         break;
-      case mel_bufr :
+      case mel_bufr:
         readMelbufrTableD(ios, d);
         break;
-      case opera :
+      case opera:
         readOperaTableD(ios, d);
         break;
-      case wmo_csv :
+      case wmo_csv:
         readWmoCsvTableD(ios, d);
         break;
-      case wmo_xml :
-        readWmoXmlTableD(ios, d);
+      case wmo_xml:
+        WmoXmlReader.readWmoXmlTableD(ios, d);
         break;
       default:
-      System.out.printf("Unknown format= %s %n", format);
-      return null;
+        System.out.printf("Unknown format= %s %n", format);
+        return null;
     }
-
 
     tablesD.put(location, d);
     return d;
   }
 
-  /* opera:
+  /*
+  #
+<A HREF="#C40"> 40</A>
+</TT></P>
+<PRE></PRE>
+<HR>
+<A NAME="C00"></A>
+<H4 ALIGN="CENTER">Class 00</H4>
+<PRE>
+#
+ 300002
+	000002	Table A category, line 1
+	000003  Table A category, line 2
+#
+ 300003
+	000010	F,  part descriptor
+	000011  X,  part descriptor
+	000012  Y,  part descriptor
+#
+ 300004
+	300003
+	000013  Element name, line 1
+	000014  Element name, line 2
+	000015  Units name
+	000016  Units scale sign
+	000017  Units scale
+	000018  Units reference sign
+	000019  Units reference value
+	000020  Element data width
+   */
+  static private void readCypherTableD(InputStream ios, TableD t) throws IOException {
+    TableD.Descriptor currDesc = null;
+    boolean startMode = false;
+
+    BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios));
+    while (true) {
+      String line = dataIS.readLine();
+      if (line == null) break;
+      if (line.length() == 0)
+        continue;
+      if (line.startsWith("<"))
+        continue;
+
+      if (line.startsWith("#")) {
+        startMode = true;
+        continue;
+      }
+
+      if (startMode) {
+        try {
+          String[] flds = StringUtil2.splitString(line);
+          int fxy = Integer.parseInt(flds[0]);
+          int y = fxy % 1000;
+          fxy /= 1000;
+          int x = fxy % 100;
+          int f1 = fxy / 100;
+          if (f1 != 3) log.error("Bad table " + t.getName() + " entry=<" + line + ">");
+          else currDesc = t.addDescriptor((short) x, (short) y, "", new ArrayList<Short>());
+          startMode = false;
+          continue;
+
+         } catch (Exception e) {
+           log.warn("Bad table " + t.getName() + " line=<" + line + ">", e.getMessage());
+         }
+      }
+
+      try {
+        String[] flds = StringUtil2.splitString(line);
+        String fxys = cleanNumber(flds[0]);
+        int fxy = Integer.parseInt(fxys);
+        int y1 = fxy % 1000;
+        fxy /= 1000;
+        int x1 = fxy % 100;
+        int f1 = fxy / 100;
+        int fxy1 = (f1 << 14) + (x1 << 8) + y1;
+        currDesc.addFeature((short) fxy1);
+
+      } catch (Exception e) {
+        log.warn("Bad table " + t.getName() + " line=<" + line + ">", e.getMessage());
+      }
+   }
+   dataIS.close();
+ }
+
+  static String cleanNumber(String s) {
+    int pos = s.indexOf("(");
+    if (pos > 0 ) return s.substring(0,pos);
+    return s;
+  }
+
+    /* opera:
 # Heights of side view
  3;13;192;  1;01;000
   ;  ;   ;  0;31;001
@@ -976,7 +1018,6 @@ public class BufrTables {
  3;21;192;  1;10;000
  ...
  */
-
   static private void readOperaTableD(InputStream ios, TableD t) throws IOException {
 
    BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios));
@@ -1030,7 +1071,6 @@ public class BufrTables {
       count++;
 
       if (count == 1) {
-        if (showReadErrs) System.out.println("header line == " + line);
         continue;
       }
 
@@ -1086,58 +1126,6 @@ public class BufrTables {
       }
     }
     dataIS.close();
-  }
-
-  /*
-  <B_TableD_BUFR14_1_0_CREX_6_1_0>
-    <SNo>2647</SNo>
-    <Category>10</Category>
-    <FXY1>310013</FXY1>
-    <ElementName1_E>(AVHRR (GAC) report)</ElementName1_E>
-    <FXY2>004005</FXY2>
-    <ElementName2_E>Minute</ElementName2_E>
-    <Remarks_E>Minute</Remarks_E>
-    <Status>Operational</Status>
-  </B_TableD_BUFR14_1_0_CREX_6_1_0>
-   */
-  static private void readWmoXmlTableD(InputStream ios, TableD tableD) throws IOException {
-    org.jdom.Document doc;
-    try {
-      SAXBuilder builder = new SAXBuilder();
-      doc = builder.build(ios);
-    } catch (JDOMException e) {
-      throw new IOException(e.getMessage());
-    }
-
-    int currSeqno = -1;
-    TableD.Descriptor currDesc = null;
-
-    Element root = doc.getRootElement();
-    List<Element> featList = root.getChildren("B_TableD_BUFR14_1_0_CREX_6_1_0");
-    for (Element elem : featList) {
-
-      String seqs = elem.getChildTextNormalize("FXY1");
-      int seq = Integer.parseInt(seqs);
-
-      if (currSeqno != seq) {
-        int y = seq % 1000;
-        int w = seq / 1000;
-        int x = w % 100;
-        String seqName = elem.getChildTextNormalize("ElementName1_E");
-        currDesc = tableD.addDescriptor((short) x, (short) y, seqName, new ArrayList<Short>());
-        currSeqno = seq;
-      }
-
-      String fnos = elem.getChildTextNormalize("FXY2");
-      int fno = Integer.parseInt(fnos);
-      int y = fno % 1000;
-      int w = fno / 1000;
-      int x = w % 100;
-      int f = w / 100;
-      int fxy = (f << 14) + (x << 8) + y;
-      currDesc.addFeature((short) fxy);
-    }
-    ios.close();
   }
 
   private static final Pattern threeInts = Pattern.compile("^\\s*(\\d+)\\s+(\\d+)\\s+(\\d+)");  // get 3 integers from beginning of line

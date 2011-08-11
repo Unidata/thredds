@@ -484,12 +484,6 @@
         <inspection_tool class="ResultOfObjectAllocationIgnored" enabled="true" level="WARNING" enabled_by_default="true" />
         <inspection_tool class="ResultSetIndexZero" enabled="true" level="WARNING" enabled_by_default="true" />
         <inspection_tool class="ReturnFromFinallyBlock" enabled="false" level="WARNING" enabled_by_default="false" />
-        <inspection_tool class="ReturnNull" enabled="true" level="WARNING" enabled_by_default="true">
-          <option name="m_reportObjectMethods" value="true" />
-          <option name="m_reportArrayMethods" value="true" />
-          <option name="m_reportCollectionMethods" value="true" />
-          <option name="m_ignorePrivateMethods" value="false" />
-        </inspection_tool>
         <inspection_tool class="SimplifiableConditionalExpression" enabled="false" level="WARNING" enabled_by_default="false" />
         <inspection_tool class="SpringAopErrorsInspection" enabled="false" level="ERROR" enabled_by_default="false" />
         <inspection_tool class="SpringAopWarningsInspection" enabled="false" level="WARNING" enabled_by_default="false" />
@@ -1283,7 +1277,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/bufr.iml" filepath="$PROJECT_DIR$/bufr.iml" />
-      <module fileurl="file://$PROJECT_DIR$/bufrTables.iml" filepath="$PROJECT_DIR$/bufrTables.iml" />
       <module fileurl="file://$PROJECT_DIR$/cdm.iml" filepath="$PROJECT_DIR$/cdm.iml" />
       <module fileurl="file://$PROJECT_DIR$/common.iml" filepath="$PROJECT_DIR$/common.iml" />
       <module fileurl="file://$PROJECT_DIR$/docs.iml" filepath="$PROJECT_DIR$/docs.iml" />

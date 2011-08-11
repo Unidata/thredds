@@ -31,8 +31,10 @@
  */
 package ucar.nc2.ui;
 
+import ucar.nc2.ft.scan.FeatureScan;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
+import ucar.nc2.util.Misc;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
 import ucar.nc2.iosp.bufr.*;
@@ -129,10 +131,9 @@ public class BufrTableDViewer extends JPanel {
     AbstractButton compareButton = BAMutil.makeButtcon("Select", "Compare to standard table", false);
     compareButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-
         try {
           Formatter out = new Formatter();
-          TableD wmoTable = BufrTables.getWmoTableD(null);
+          TableD wmoTable = BufrTables.getWmoTableD(13);
           compare(currTable, wmoTable, out);
 
           compareTA.setText(out.toString());
@@ -145,7 +146,7 @@ public class BufrTableDViewer extends JPanel {
           compareTA.setText(bos.toString());
           compareTA.gotoTop();
           infoWindow.setVisible(true);
-
+          ioe.printStackTrace();
         }
       }
     });
@@ -156,7 +157,7 @@ public class BufrTableDViewer extends JPanel {
         try {
           showUsed();
         } catch (IOException e1) {
-          e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+          e1.printStackTrace();
         }
       }
     };
@@ -193,8 +194,8 @@ public class BufrTableDViewer extends JPanel {
     //if (fileChooser != null) fileChooser.save();
   }
 
-  public void setBufrTableD(String filename, String mode) throws IOException {
-    TableD tableD = BufrTables.readTableD(filename, mode, true);
+  public void setBufrTableD(String filename, BufrTables.Format format) throws IOException {
+    TableD tableD = BufrTables.readTableD(filename, format, true);
     int pos = filename.lastIndexOf("/");
     String src = (pos > 0) ? filename.substring(pos + 1) : filename;
 
@@ -209,15 +210,22 @@ public class BufrTableDViewer extends JPanel {
   }
 
   private void compare(TableD t1, TableD t2, Formatter out) {
+    List currBeans = ddsTable.getBeans();
+
     out.format("Compare Table D%n %s %n %s %n", t1.getName(), t2.getName());
     boolean err = false;
     List<TableD.Descriptor> listDesc = new ArrayList<TableD.Descriptor>(t1.getDescriptors());
     Collections.sort(listDesc);
-    for (TableD.Descriptor d1 : listDesc) {
+    for (Object bean : currBeans) {
+      DdsBean dbean = (DdsBean) bean;
+      dbean.diff = null;
+
+      TableD.Descriptor d1 = dbean.dds;
       TableD.Descriptor d2 = t2.getDescriptor(d1.getId());
       if (d2 == null) {
         err = true;
         out.format(" **No key %s in second table %n", d1.getFxy());
+        dbean.diff = "new";
       } else {
         List<Short> seq1 = d1.getSequence();
         List<Short> seq2 = d2.getSequence();
@@ -228,6 +236,7 @@ public class BufrTableDViewer extends JPanel {
           out.format("%n  ");
           for (Short f2 : seq2) out.format(" %s,", fxy(f2));
           out.format("%n");
+          dbean.diff = "seq";
         } else {
           for (int i = 0; i < seq1.size(); i++) {
             short fxy1 = seq1.get(i);
@@ -239,6 +248,7 @@ public class BufrTableDViewer extends JPanel {
               out.format("%n");
               for (Short f2 : seq2) out.format(" %s,", fxy(f2));
               out.format("%n");
+              dbean.diff = "seq";
             }
           }
         }
@@ -265,11 +275,14 @@ public class BufrTableDViewer extends JPanel {
   private HashMap<Short, List<String>> usedDds = null;
 
   private void showUsed() throws IOException {
+    String rootDir = Misc.getTestdataDirPath();
+    String dataDir = "cdmUnitTest/formats/bufr/";
     usedDds = new HashMap<Short, List<String>>(3000);
-    //scanFileForDds("C:/data/formats/bufr/asampleAll.bufr");
-    //scanFileForDds("C:/data/formats/bufr/unique.bufr");
-    scanFileForDds("C:/data/formats/bufr/uniqueBrasil.bufr");
-    //scanFileForDds("C:/data/formats/bufr/uniqueFnmoc.bufr");
+
+    scanFileForDds(rootDir + dataDir + "uniqueIDD.bufr");
+    scanFileForDds(rootDir + dataDir + "uniqueExamples.bufr");
+    scanFileForDds(rootDir + dataDir + "uniqueBrasil.bufr");
+    scanFileForDds(rootDir + dataDir + "uniqueFnmoc.bufr");
   }
 
   public void scanFileForDds(String filename) throws IOException {
@@ -281,7 +294,7 @@ public class BufrTableDViewer extends JPanel {
       if (m == null) continue;
       TableLookup lookup = m.getTableLookup(); // bad
       List<Short> raw = m.dds.getDataDescriptors();
-      String src = m.getHeader().trim() +"("+Integer.toHexString(m.hashCode())+")";
+      String src = m.getHeader().trim() +"("+Integer.toHexString(m.hashCode())+") " + filename;
       setDataDescriptors(src, lookup, raw);
     }
   }
@@ -306,17 +319,26 @@ public class BufrTableDViewer extends JPanel {
   }
   ////////////////////////////////////////////////////////
 
-  private HashMap<Short, List<DdsBean>> allVariants = null;
+  /* private HashMap<Short, List<DdsBean>> allVariants = null;
 
   private void loadVariants() {
     allVariants = new HashMap<Short, List<DdsBean>>();
     try {
-      loadVariant("wmo-v14", BufrTables.getWmoTableD(null));
+      loadVariant("wmo-v07", BufrTables.getWmoTableD(7));
+      loadVariant("wmo-v08", BufrTables.getWmoTableD(8));
+      loadVariant("wmo-v09", BufrTables.getWmoTableD(9));
+      loadVariant("wmo-v10", BufrTables.getWmoTableD(10));
+      loadVariant("wmo-v11", BufrTables.getWmoTableD(11));
+      loadVariant("wmo-v13", BufrTables.getWmoTableD(12));
+      loadVariant("wmo-v12", BufrTables.getWmoTableD(13));
+      loadVariant("wmo-v14", BufrTables.getWmoTableD(14));
+      loadVariant("wmo-v15", BufrTables.getWmoTableD(15));
+      loadVariant("wmo-v16", BufrTables.getWmoTableD(16));
       /* loadVariant("ours-v13", BufrTables.readTableD("C:/dev/tds4.1/thredds/bufrTables/src/main/sources/archive/B4M-000-013-D", BufrTables.Format.mel_bufr, false));
       loadVariant("ncep-v13", BufrTables.readTableD("C:/dev/tds4.1/thredds/bufrTables/src/main/sources/ncep/bufrtab.TableD_STD_0_13", BufrTables.Format.ncep, false));
       loadVariant("ncep-v14", BufrTables.readTableD("C:/dev/tds4.1/thredds/bufrTables/src/main/sources/ncep/bufrtab.TableD_STD_0_14", BufrTables.Format.ncep, false));
       loadVariant("ecmwf-v13", BufrTables.readTableD("C:/dev/tds4.1/thredds/bufrTables/src/main/sources/ecmwf/D0000000000098013001.TXT", BufrTables.Format.ecmwf, false)); */
-      /* loadVariant("bmet-v13", BufrTables.readTableD("C:/dev/tds/thredds/bufrTables/src/main/sources/bmet/BUFR_B_080731.xml", "bmet")); // */
+      /* loadVariant("bmet-v13", BufrTables.readTableD("C:/dev/tds/thredds/bufrTables/src/main/sources/bmet/BUFR_B_080731.xml", "bmet"));
     } catch (IOException e) {
       e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
     }
@@ -332,10 +354,47 @@ public class BufrTableDViewer extends JPanel {
       }
       list.add(new DdsBean(src, d));
     }
+  } */
+
+  //////////////////////////////////////////////////////
+  private HashMap<Short, List<DdsBean>> allVariants = null;
+  private Set<String> variantKeys = null;
+  private boolean standardVariantsLoaded = false;
+  private void loadStandardVariants() {
+    for (BufrTables.TableConfig tc : BufrTables.getTables()) {
+      try {
+        if (tc.getTableDname() != null)
+          loadVariant(tc.getName(), BufrTables.readTableD(tc.getTableDname(), tc.getTableDformat(), false));
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
+    standardVariantsLoaded = true;
+  }
+
+  private void loadVariant(String key, TableD table) {
+    if (table == null) {
+      System.out.printf("File to open TableD = %s%n", key);
+      return;
+    }
+
+    if (allVariants == null) allVariants = new HashMap<Short, List<DdsBean>>();
+    if (variantKeys == null) variantKeys = new HashSet<String>();
+    if (variantKeys.contains(key)) return; // dont add again
+
+    List<TableD.Descriptor> listDesc = new ArrayList<TableD.Descriptor>(table.getDescriptors());
+    for (TableD.Descriptor d : listDesc) {
+      List<DdsBean> list = allVariants.get(d.getId());
+      if (list == null) {
+        list = new ArrayList<DdsBean>(10);
+        allVariants.put(d.getId(), list);
+      }
+      list.add(new DdsBean(key, d));
+    }
   }
 
   private void showVariants(DdsBean bean) {
-    if (allVariants == null) loadVariants();
+    if (!standardVariantsLoaded) loadStandardVariants();
     List<DdsBean> all = allVariants.get(bean.dds.getId());
     List<DdsBean> dds = new ArrayList<DdsBean>(10);
     dds.add(bean);
@@ -348,7 +407,7 @@ public class BufrTableDViewer extends JPanel {
   public class DdsBean {
     TableD.Descriptor dds;
     String source;
-    String udunits;
+    String diff;
 
     // no-arg constructor
     public DdsBean() {
@@ -390,9 +449,12 @@ public class BufrTableDViewer extends JPanel {
       return list.size();
     }
 
-
     public boolean isLocal() {
       return dds.isLocal();
+    }
+
+    public String getDiff() {
+      return diff;
     }
 
   }

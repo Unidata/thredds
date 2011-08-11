@@ -59,7 +59,7 @@ public class TestBufrRead extends TestCase {
 
   public void utestReadAllInDir() throws IOException {
     int count = 0;
-    count += TestAll.actOnAll(TestAll.cdmUnitTestDir + "iosp/bufr", new MyFileFilter(), new TestAll.Act() {
+    count += TestAll.actOnAll(TestAll.cdmUnitTestDir + "formats/bufr", new MyFileFilter(), new TestAll.Act() {
       public int doAct(String filename) throws IOException {
         return readBufr(filename);
       }
@@ -69,10 +69,19 @@ public class TestBufrRead extends TestCase {
 
   public void testReadMessages() throws IOException {
     int count = 0;
-    assert 5519 == (count = readBufr(TestAll.cdmUnitTestDir + "iosp/bufr/uniqueIDD.bufr")) : count;
-    assert 11533 == (count = readBufr(TestAll.cdmUnitTestDir + "iosp/bufr/uniqueBrasil.bufr")) : count;
-    assert 12727 == (count = readBufr(TestAll.cdmUnitTestDir + "iosp/bufr/uniqueExamples.bufr")) : count;
-    assert 9929 == (count = readBufr(TestAll.cdmUnitTestDir + "iosp/bufr/uniqueFnmoc.bufr")) : count;
+    assert 13852 == (count = readBufr(TestAll.cdmUnitTestDir + "formats/bufr/uniqueIDD.bufr")) : count; // was 12337
+    assert 11249 == (count = readBufr(TestAll.cdmUnitTestDir + "formats/bufr/uniqueBrasil.bufr")) : count;  // was 11533
+    assert 22710 == (count = readBufr(TestAll.cdmUnitTestDir + "formats/bufr/uniqueExamples.bufr")) : count; // was 12727
+    assert 9929 == (count = readBufr(TestAll.cdmUnitTestDir + "formats/bufr/uniqueFnmoc.bufr")) : count;
+  }
+
+  public void utestCountMessages() throws IOException {
+    int count = 0;
+    count += readBufr(TestAll.cdmUnitTestDir + "formats/bufr/uniqueIDD.bufr");
+    //count += readBufr(TestAll.cdmUnitTestDir + "formats/bufr/uniqueBrasil.bufr");
+    //count += readBufr(TestAll.cdmUnitTestDir + "formats/bufr/uniqueExamples.bufr");
+    //count += readBufr(TestAll.cdmUnitTestDir + "formats/bufr/uniqueFnmoc.bufr");
+    System.out.printf("total read ok = %d%n",count);
   }
 
   private int readBufr(String filename) throws IOException {
@@ -90,7 +99,7 @@ public class TestBufrRead extends TestCase {
           Message m = scan.next();
           if (m == null) continue;
           int nobs = m.getNumberDatasets();
-          System.out.printf(" %3d nobs = %4d %s", count++, nobs, m.getHeader());
+          System.out.printf(" %3d nobs = %4d (%s) center = %s table=%s cat=%s ", count++, nobs, m.getHeader(), m.getCenterNo(), m.getTableName(), m.getCategoryNo());
           if (m.isTablesComplete()) {
             if (m.isBitCountOk()) {
               totalObs += nobs;

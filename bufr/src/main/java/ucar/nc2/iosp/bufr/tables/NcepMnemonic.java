@@ -1,5 +1,5 @@
 /*
- * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2011 University Corporation for Atmospheric Research/Unidata
  *
  * Portions of this software were developed by the Unidata Program at the
  * University Corporation for Atmospheric Research.
@@ -93,9 +93,6 @@ public class NcepMnemonic {
     HashMap<String, String> number = new HashMap<String, String>();
     HashMap<String, String> desc = new HashMap<String, String>();
     HashMap<String, String> mnseq = new HashMap<String, String>();
-    //Map<Short, TableB.Descriptor> descriptors = new HashMap<Short, TableB.Descriptor>();
-    //Map<Short, TableD.Descriptor> sequences = new HashMap<Short, TableD.Descriptor>();
-
 
     BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios));
 

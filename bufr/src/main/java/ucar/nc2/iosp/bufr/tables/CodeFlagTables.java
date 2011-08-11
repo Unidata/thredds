@@ -1,5 +1,5 @@
 /*
- * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2011 University Corporation for Atmospheric Research/Unidata
  *
  * Portions of this software were developed by the Unidata Program at the
  * University Corporation for Atmospheric Research.
@@ -151,7 +151,6 @@ public class CodeFlagTables {
         count++;
 
         if (count == 1) { // skip first line - its the header
-          if (showReadErrs) System.out.println("header line == " + line);
           continue;
         }
 

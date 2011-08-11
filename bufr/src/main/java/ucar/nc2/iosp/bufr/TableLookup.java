@@ -32,6 +32,7 @@
  */
 package ucar.nc2.iosp.bufr;
 
+import net.jcip.annotations.Immutable;
 import ucar.nc2.iosp.bufr.tables.*;
 
 import java.util.*;
@@ -43,18 +44,18 @@ import java.io.IOException;
  * @author caron
  * @since Jul 14, 2008
  */
+@Immutable
 public final class TableLookup {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(TableLookup.class);
-
   static private final boolean showErrors = true;
 
   /////////////////////////////////////////
-  private TableB localTableB;
-  private TableD localTableD;
+  private final TableB localTableB;
+  private final TableD localTableD;
 
-  private TableB wmoTableB;
-  private TableD wmoTableD;
-  public BufrTables.Mode mode = BufrTables.Mode.wmoOnly;
+  private final TableB wmoTableB;
+  private final TableD wmoTableD;
+  private final BufrTables.Mode mode;
 
   public TableLookup(BufrIdentificationSection ids) throws IOException {
     this.wmoTableB = BufrTables.getWmoTableB(ids);
@@ -64,23 +65,27 @@ public final class TableLookup {
     if (tables != null) {
       this.localTableB = tables.b;
       this.localTableD = tables.d;
-      this.mode = (tables.mode == null) ? BufrTables.Mode.wmoOnly : tables.mode;
+      this.mode = (tables.mode == null) ? BufrTables.Mode.localOverride : tables.mode;
+    } else {
+      this.localTableB = null;
+      this.localTableD = null;
+      this.mode = BufrTables.Mode.localOverride;
     }
   }
 
-  public final String getWmoTableBName() {
+  public String getWmoTableBName() {
     return wmoTableB.getName();
   }
 
- public final String getLocalTableBName() {
+  public String getLocalTableBName() {
     return localTableB == null ? "none" : localTableB.getName();
   }
 
-  public final String getLocalTableDName() {
+  public String getLocalTableDName() {
     return localTableD == null ? "none" : localTableD.getName();
   }
 
-  public final String getWmoTableDName() {
+  public String getWmoTableDName() {
     return wmoTableD.getName();
   }
 
@@ -88,7 +93,7 @@ public final class TableLookup {
     return mode;
   }
 
-   public TableB.Descriptor getDescriptorTableB(short fxy) {
+  public TableB.Descriptor getDescriptorTableB(short fxy) {
     TableB.Descriptor b = null;
     boolean isWmoRange = Descriptor.isWmoRange(fxy);
 
@@ -113,9 +118,13 @@ public final class TableLookup {
         b = localTableB.getDescriptor(fxy);
     }
 
+    if (b == null) {  // look forward in standard WMO table; often the version number of the message is wrong
+      b = BufrTables.getWmoTableBlatest().getDescriptor(fxy);
+    }
+
     if (b == null && showErrors)
       System.out.printf(" TableLookup cant find Table B descriptor = %s in tables %s, %s mode=%s%n", Descriptor.makeString(fxy),
-          getLocalTableBName(), getWmoTableBName(), mode);
+              getLocalTableBName(), getWmoTableBName(), mode);
     return b;
   }
 
@@ -130,12 +139,12 @@ public final class TableLookup {
     short id = Descriptor.getFxy(fxy);
     List<Short> seq = getDescriptorsTableD(id);
     if (seq == null) return null;
-    List<String> result = new ArrayList<String>( seq.size());
+    List<String> result = new ArrayList<String>(seq.size());
     for (Short s : seq)
-      result.add( Descriptor.makeString(s));
+      result.add(Descriptor.makeString(s));
     return result;
   }
-  
+
   public TableD.Descriptor getDescriptorTableD(short fxy) {
     TableD.Descriptor d = null;
     boolean isWmoRange = Descriptor.isWmoRange(fxy);
@@ -161,9 +170,13 @@ public final class TableLookup {
         d = localTableD.getDescriptor(fxy);
     }
 
+    if (d == null) {  // look forward in standard WMO table; often the version number of the message is wrong
+      d = BufrTables.getWmoTableDlatest().getDescriptor(fxy);
+    }
+
     if (d == null && showErrors)
       System.out.printf(" TableLookup cant find Table D descriptor %s in tables %s,%s mode=%s%n", Descriptor.makeString(fxy),
-          getLocalTableDName(), getWmoTableDName(), mode);
+              getLocalTableDName(), getWmoTableDName(), mode);
     return d;
   }
 

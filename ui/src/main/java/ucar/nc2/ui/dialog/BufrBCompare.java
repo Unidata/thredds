@@ -106,8 +106,10 @@ public class BufrBCompare extends JDialog {
           //---- standard ----
           standard.setModel(new AbstractListModel() {
             String[] values = {
-              "WMO-v14",
-              "ours-v13",
+              "WMO.14",
+              "WMO.15",
+              "WMO.16",
+              "Unidata-v13",
               "ncep-v13",
               "ncep-v14",
               "ecmwf-v13",

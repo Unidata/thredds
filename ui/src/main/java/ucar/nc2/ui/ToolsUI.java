@@ -2216,6 +2216,7 @@ public class ToolsUI extends JPanel {
   private class BufrTableBPanel extends OpPanel {
     BufrTableBViewer bufrTable;
     JComboBox modes;
+    JComboBox tables;
 
     BufrTableBPanel(PreferencesExt p) {
       super(p, "tableB:", false, false);
@@ -2242,6 +2243,14 @@ public class ToolsUI extends JPanel {
         }
       });
 
+      tables = new JComboBox(BufrTables.getTables().toArray());
+      buttPanel.add(tables);
+      tables.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          acceptTable((BufrTables.TableConfig) tables.getSelectedItem());
+        }
+      });
+
       bufrTable = new BufrTableBViewer(prefs, buttPanel);
       add(bufrTable, BorderLayout.CENTER);
     }
@@ -2258,12 +2267,32 @@ public class ToolsUI extends JPanel {
 
       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
-        String mode = modes.getSelectedItem().toString();
-        bufrTable.setBufrTableB(command, mode);
+        Object format = modes.getSelectedItem();
+        bufrTable.setBufrTableB(command, (BufrTables.Format) format);
 
       } catch (FileNotFoundException ioe) {
         JOptionPane.showMessageDialog(null, "BufrTableViewer cant open " + command + "\n" + ioe.getMessage());
         detailTA.setText("Failed to open <" + command + ">\n" + ioe.getMessage());
+        detailTA.setVisible(true);
+
+      } catch (Exception e) {
+        e.printStackTrace();
+        e.printStackTrace(new PrintStream(bos));
+        detailTA.setText(bos.toString());
+        detailTA.setVisible(true);
+      }
+
+    }
+
+    void acceptTable(BufrTables.TableConfig tc) {
+
+      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
+      try {
+        bufrTable.setBufrTableB(tc.getTableBname(), tc.getTableBformat());
+
+      } catch (FileNotFoundException ioe) {
+        JOptionPane.showMessageDialog(null, "BufrTableViewer cant open " + tc + "\n" + ioe.getMessage());
+        detailTA.setText("Failed to open <" + tc + ">\n" + ioe.getMessage());
         detailTA.setVisible(true);
 
       } catch (Exception e) {
@@ -2286,6 +2315,7 @@ public class ToolsUI extends JPanel {
   private class BufrTableDPanel extends OpPanel {
     BufrTableDViewer bufrTable;
     JComboBox modes;
+    JComboBox tables;
 
     BufrTableDPanel(PreferencesExt p) {
       super(p, "tableD:", false, false);
@@ -2312,6 +2342,15 @@ public class ToolsUI extends JPanel {
         }
       });
 
+      tables = new JComboBox(BufrTables.getTables().toArray());
+      buttPanel.add(tables);
+      tables.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          acceptTable((BufrTables.TableConfig) tables.getSelectedItem());
+        }
+      });
+
+
       bufrTable = new BufrTableDViewer(prefs, buttPanel);
       add(bufrTable, BorderLayout.CENTER);
     }
@@ -2329,8 +2368,8 @@ public class ToolsUI extends JPanel {
 
       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
-        String mode = modes.getSelectedItem().toString();
-        bufrTable.setBufrTableD(command, mode);
+        Object mode = modes.getSelectedItem();
+        bufrTable.setBufrTableD(command, (BufrTables.Format) mode);
 
       } catch (FileNotFoundException ioe) {
         JOptionPane.showMessageDialog(null, "BufrTableViewer cant open " + command + "\n" + ioe.getMessage());
@@ -2344,6 +2383,26 @@ public class ToolsUI extends JPanel {
         detailTA.setText(bos.toString());
         detailTA.setVisible(true);
         err = true;
+      }
+
+    }
+
+    void acceptTable(BufrTables.TableConfig tc) {
+
+      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
+      try {
+        bufrTable.setBufrTableD(tc.getTableDname(), tc.getTableDformat());
+
+      } catch (FileNotFoundException ioe) {
+        JOptionPane.showMessageDialog(null, "BufrTableViewer cant open " + tc + "\n" + ioe.getMessage());
+        detailTA.setText("Failed to open <" + tc + ">\n" + ioe.getMessage());
+        detailTA.setVisible(true);
+
+      } catch (Exception e) {
+        e.printStackTrace();
+        e.printStackTrace(new PrintStream(bos));
+        detailTA.setText(bos.toString());
+        detailTA.setVisible(true);
       }
 
     }
