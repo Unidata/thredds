@@ -31,8 +31,8 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 package ucar.nc2.iosp.bufr;
-import java.io.IOException;
 
+import java.io.IOException;
 import ucar.unidata.io.RandomAccessFile;
 
 /**
@@ -298,5 +298,5 @@ final public class BufrNumbers {
 
     return (1 - ((a & 128) >> 6)) * ((a & 127) << 56 | b << 48 | c << 40 | d << 32 | e << 24 | f << 16 | g << 8 | h);
 
-   } // end int8
-} // end BufrNumbers
+   }
+}

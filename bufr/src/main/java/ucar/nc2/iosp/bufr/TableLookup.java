@@ -45,7 +45,7 @@ import java.io.IOException;
  * @since Jul 14, 2008
  */
 @Immutable
-public final class TableLookup {
+public class TableLookup {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(TableLookup.class);
   static private final boolean showErrors = true;
 
@@ -73,6 +73,14 @@ public final class TableLookup {
     }
   }
 
+  public TableLookup(BufrIdentificationSection ids, TableB b, TableD d) throws IOException {
+    this.wmoTableB = BufrTables.getWmoTableB(ids);
+    this.wmoTableD = BufrTables.getWmoTableD(ids);
+    this.localTableB = b;
+    this.localTableD = d;
+    this.mode = BufrTables.Mode.localOverride;
+  }
+
   public String getWmoTableBName() {
     return wmoTableB.getName();
   }
@@ -91,6 +99,14 @@ public final class TableLookup {
 
   public BufrTables.Mode getMode() {
     return mode;
+  }
+
+  public TableB getLocalTableB() {
+    return localTableB;
+  }
+
+  public TableD getLocalTableD() {
+    return localTableD;
   }
 
   public TableB.Descriptor getDescriptorTableB(short fxy) {

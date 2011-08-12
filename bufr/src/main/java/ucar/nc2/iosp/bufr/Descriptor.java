@@ -68,6 +68,22 @@ public class Descriptor {
     return (short) ((f << 14) + (x << 8) + (y));
   }
 
+  static public short getFxy2(String fxxyyy) {
+    int fxy = Integer.parseInt(fxxyyy.trim());
+    int y = fxy % 1000;
+    fxy /= 1000;
+    int x = fxy % 100;
+    int f1 = fxy / 100;
+    return (short) ((f1 << 14) + (x << 8) + (y));
+  }
+
+  // contains a BUFR table entry
+  static public boolean isBufrTable(short fxy) {
+    int f = (fxy & 0xC000) >> 14;
+    int x = (fxy & 0x3F00) >> 8;
+    return (f == 0) && (x == 0);
+  }
+
   static public short getFxy(short f, short x, short y) {
     return (short) ((f << 14) + (x << 8) + (y));
   }

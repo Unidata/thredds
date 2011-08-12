@@ -219,6 +219,7 @@ public class DataDescriptorTreeConstructor {
   private DataDescriptor changeWidth = null; // 02 01 Y
   private DataDescriptor changeScale = null; // 02 02 Y
   private DataDescriptor changeRefval = null; // 02 03 Y
+  private DataDescriptor changeWtf = null; // 02 07 Y
   private DataPresentIndicator dpi = null; // assume theres only one in effect at a time
 
   private void operate(List<DataDescriptor> tree) {
@@ -265,7 +266,11 @@ public class DataDescriptorTreeConstructor {
             next.bitWidth = dd.y;
           }
 
-        } else if (dd.x == 36) { 
+        } else if (dd.x == 7) {
+          changeWtf = (dd.y == 0) ? null : dd;
+          iter.remove();
+
+        } else if (dd.x == 36) {
           if (iter.hasNext()) {
             DataDescriptor dpi_dd = iter.next(); // this should be a replicated data present field
             dpi = new DataPresentIndicator(tree, dpi_dd);
@@ -292,6 +297,20 @@ public class DataDescriptorTreeConstructor {
             dd.scale += changeScale.y-128;
           if (changeRefval != null)
             dd.refVal += changeRefval.y-128;  // LOOK wrong
+
+          if (changeWtf != null && dd.type == 0) {
+            // see I.2 – BUFR Table C — 4
+            // For Table B elements, which are not CCITT IA5 (character data), code tables, or flag tables:
+            //  1. Add Y to the existing scale factor
+            //  2. Multiply the existing reference value by 10 Y
+            //  3. Calculate ((10 x Y) + 2) ÷  3, disregard any fractional remainder and add the result to the existing bit width.
+            // HAHAHAHAHAHAHAHA
+            int y = changeWtf.y;
+            dd.scale += y;
+            dd.refVal *= Math.pow(10, y);
+            int wtf = ((10 * y) + 2) /  3;
+            dd.bitWidth += wtf;
+          }
         }
 
         if ((dd.f == 0) && (assField != null)) {

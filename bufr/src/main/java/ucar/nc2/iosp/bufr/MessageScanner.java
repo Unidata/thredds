@@ -32,6 +32,7 @@
  */
 package ucar.nc2.iosp.bufr;
 
+import ucar.nc2.iosp.bufr.tables.BufrTables;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.io.KMPMatch;
 
@@ -82,7 +83,8 @@ public class MessageScanner {
   private byte[] header;
   private long startPos = 0;
   private long lastPos = 0;
-  //private long nbytes = 0;
+
+  private EmbeddedTable embedTable = null;
 
   public MessageScanner(RandomAccessFile raf) throws IOException {
     this(raf, 0);
@@ -168,10 +170,24 @@ public class MessageScanner {
     m.setHeader( cleanup(header));
     m.setStartPos( start);
 
+    if (m.containsBufrTable()) {
+      if (embedTable == null) embedTable = new EmbeddedTable(m.ids, raf);
+      embedTable.addTable(m);
+    } else if (embedTable != null) {
+      m.setTableLookup(embedTable.getTableLookup());
+    }
+
     countMsgs++;
     countObs += dds.getNumberDatasets();
     raf.seek(start + is.getBufrLength());
     return m;
+  }
+
+  public TableLookup getTableLookup() throws IOException {
+    while (hasNext()) {
+      next();
+    }
+    return (embedTable != null) ? embedTable.getTableLookup() : null;
   }
 
   public byte[] getMessageBytesFromLast(Message m) throws IOException {

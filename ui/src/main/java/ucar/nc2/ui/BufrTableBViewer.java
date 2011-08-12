@@ -523,7 +523,8 @@ Class,FXY,enElementName,BUFR_Unit,BUFR_Scale,BUFR_ReferenceValue,BUFR_DataWidth_
   private void loadStandardVariants() {
     for (BufrTables.TableConfig tc : BufrTables.getTables()) {
       try {
-        loadVariant(tc.getName(), BufrTables.readTableB(tc.getTableBname(), tc.getTableBformat(), false));
+        if (!tc.getName().startsWith("FNMOC"))  // exclude crap
+          loadVariant(tc.getName(), BufrTables.readTableB(tc.getTableBname(), tc.getTableBformat(), false));
       } catch (IOException e) {
         e.printStackTrace();
       }
@@ -601,6 +602,8 @@ Class,FXY,enElementName,BUFR_Unit,BUFR_Scale,BUFR_ReferenceValue,BUFR_DataWidth_
     }
 
     for (BufrTables.TableConfig tc : BufrTables.getTables()) {
+      if (tc.getName().startsWith("FNMOC")) continue; // exclude crap
+
       String filename = tc.getTableBname();
       if (keys.contains(filename)) continue;
       keys.add(filename);

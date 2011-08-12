@@ -34,6 +34,8 @@ package ucar.nc2.iosp.bufr.tables;
 
 import ucar.nc2.iosp.bufr.Descriptor;
 import ucar.nc2.iosp.bufr.BufrIdentificationSection;
+import ucar.nc2.iosp.bufr.MessageScanner;
+import ucar.nc2.iosp.bufr.TableLookup;
 import ucar.nc2.util.TableParser;
 
 import java.lang.*;     // Standard java functions
@@ -50,91 +52,93 @@ import org.jdom.Element;
 import org.jdom.JDOMException;
 import ucar.nc2.wmo.CommonCodeTable;
 import ucar.nc2.wmo.Utils;
+import ucar.unidata.io.*;
+import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.StringUtil2;
 
 /**
  * Reads BUFR tables of various forms. Interacts with TableLookup.
  * <pre>
- Table B:
-
- csv----------
-   Class,FXY,enElementName,BUFR_Unit,BUFR_Scale,BUFR_ReferenceValue,BUFR_DataWidth_Bits,CREX_Unit,CREX_Scale,CREX_DataWidth,Status
-   00,000001,Table A: entry,CCITT IA5,0,0,24,Character,0,3,Operational
-
-
- ecmwf---------
-000001 TABLE A:  ENTRY                                                  CCITTIA5                   0            0  24 CHARACTER                 0          3
-000001 TABLE A:  ENTRY                                                  CCITTIA5                   0            0  24 CHARACTER                 0         3
-
-
- mel-bufr-----------
-  0; 7; 190; 1; -1024; 12; M; HEIGHT INCREMENT
-
-
- mel-tabs (tab delimited) ---------------
-F	X	Y	Scale	RefVal	Width	Units	Element Name
-0	0	1	0	0	24	CCITT_IA5	Table A: entry
-0	0	2	0	0	256	CCITT_IA5	Table A: data category description, line 1
-
-
- ncep-----------
-#====================================================================================================
-# F-XX-YYY |SCALE| REFERENCE   | BIT |      UNIT      | MNEMONIC ;DESC ;  ELEMENT NAME
-#          |     |   VALUE     |WIDTH|                |          ;CODE ;
-#====================================================================================================
-  0-00-001 |   0 |           0 |  24 | CCITT IA5      | TABLAE   ;     ; Table A: entry
-
-
- opera ----------------------------
-0;02;181;Supplementary present weather sensor;Flag-Table;0;0;21
-0;07;192;Pixel size in Z-direction;Meters;-1;0;16
-0;21;036;Radar rainfall intensity;mm*h-1;2;0;16
-
-
-===============================================================
- Table D:
- csv----------
- SNo,Category,FXY1,enElementName1,FXY2,enElementName2,Status
-  1,00,300002,,000002,"Table A category, line 1",Operational
-
- ecmwf-------------
- 300002  2 000002
-           000003
- 300003  3 000010
-           000011
-           000012
-
- mel-bufr------------
-  3   1 192  optional_name
-    0   1   7
-    0  25  60
-    0   1  33
-    1   1   2
-    3  61 169
-    0   5  40
-   -1
-
- ncep ------------------
- #====================================================================================================
- # F-XX-YYY | MNEMONIC   ;DCOD ; NAME           <-- sequence definition
- #          | F-XX-YYY > | NAME                 <-- element definition (first thru next-to-last)
- #          | F-XX-YYY   | NAME                 <-- element definition (last)
- #====================================================================================================
-
-   3-00-002 | TABLACAT   ;     ; Table A category definition
-            | 0-00-002 > | Table A category, line 1
-            | 0-00-003   | Table A category, line 2
-
- opera ---------------
-# Heights of side view
- 3;13;192;  1;01;000
-  ;  ;   ;  0;31;001
-  ;  ;   ;  0;10;007
-# 4 bit per pixel radar images (top view)
- 3;21;192;  1;10;000
- ...
- 
-  </pre>
+ * Table B:
+ *
+ * csv----------
+ * Class,FXY,enElementName,BUFR_Unit,BUFR_Scale,BUFR_ReferenceValue,BUFR_DataWidth_Bits,CREX_Unit,CREX_Scale,CREX_DataWidth,Status
+ * 00,000001,Table A: entry,CCITT IA5,0,0,24,Character,0,3,Operational
+ *
+ *
+ * ecmwf---------
+ * 000001 TABLE A:  ENTRY                                                  CCITTIA5                   0            0  24 CHARACTER                 0          3
+ * 000001 TABLE A:  ENTRY                                                  CCITTIA5                   0            0  24 CHARACTER                 0         3
+ *
+ *
+ * mel-bufr-----------
+ * 0; 7; 190; 1; -1024; 12; M; HEIGHT INCREMENT
+ *
+ *
+ * mel-tabs (tab delimited) ---------------
+ * F	X	Y	Scale	RefVal	Width	Units	Element Name
+ * 0	0	1	0	0	24	CCITT_IA5	Table A: entry
+ * 0	0	2	0	0	256	CCITT_IA5	Table A: data category description, line 1
+ *
+ *
+ * ncep-----------
+ * #====================================================================================================
+ * # F-XX-YYY |SCALE| REFERENCE   | BIT |      UNIT      | MNEMONIC ;DESC ;  ELEMENT NAME
+ * #          |     |   VALUE     |WIDTH|                |          ;CODE ;
+ * #====================================================================================================
+ * 0-00-001 |   0 |           0 |  24 | CCITT IA5      | TABLAE   ;     ; Table A: entry
+ *
+ *
+ * opera ----------------------------
+ * 0;02;181;Supplementary present weather sensor;Flag-Table;0;0;21
+ * 0;07;192;Pixel size in Z-direction;Meters;-1;0;16
+ * 0;21;036;Radar rainfall intensity;mm*h-1;2;0;16
+ *
+ *
+ * ===============================================================
+ * Table D:
+ * csv----------
+ * SNo,Category,FXY1,enElementName1,FXY2,enElementName2,Status
+ * 1,00,300002,,000002,"Table A category, line 1",Operational
+ *
+ * ecmwf-------------
+ * 300002  2 000002
+ * 000003
+ * 300003  3 000010
+ * 000011
+ * 000012
+ *
+ * mel-bufr------------
+ * 3   1 192  optional_name
+ * 0   1   7
+ * 0  25  60
+ * 0   1  33
+ * 1   1   2
+ * 3  61 169
+ * 0   5  40
+ * -1
+ *
+ * ncep ------------------
+ * #====================================================================================================
+ * # F-XX-YYY | MNEMONIC   ;DCOD ; NAME           <-- sequence definition
+ * #          | F-XX-YYY > | NAME                 <-- element definition (first thru next-to-last)
+ * #          | F-XX-YYY   | NAME                 <-- element definition (last)
+ * #====================================================================================================
+ *
+ * 3-00-002 | TABLACAT   ;     ; Table A category definition
+ * | 0-00-002 > | Table A category, line 1
+ * | 0-00-003   | Table A category, line 2
+ *
+ * opera ---------------
+ * # Heights of side view
+ * 3;13;192;  1;01;000
+ * ;  ;   ;  0;31;001
+ * ;  ;   ;  0;10;007
+ * # 4 bit per pixel radar images (top view)
+ * 3;21;192;  1;10;000
+ * ...
+ *
+ * </pre>
  */
 
 public class BufrTables {
@@ -146,7 +150,7 @@ public class BufrTables {
   }
 
   public enum Format {
-    ecmwf, mel_bufr, mel_tabs, ncep, ncep_nm, opera, ukmet, wmo_csv, wmo_xml, cypher
+    ecmwf, mel_bufr, mel_tabs, ncep, ncep_nm, opera, ukmet, wmo_csv, wmo_xml, cypher, embed
   }
 
   static final String RESOURCE_PATH = "/resources/bufrTables/";
@@ -165,10 +169,10 @@ public class BufrTables {
 
   private static List<String> lookups = null;
 
-  static public void addLookupFile( String filename) throws FileNotFoundException {
+  static public void addLookupFile(String filename) throws FileNotFoundException {
     if (lookups == null) lookups = new ArrayList<String>();
     File f = new File(filename);
-    if (!f.exists()) throw new FileNotFoundException(filename+ " not found");
+    if (!f.exists()) throw new FileNotFoundException(filename + " not found");
     lookups.add(filename);
   }
 
@@ -256,8 +260,8 @@ public class BufrTables {
   public static class TableConfig {
     String name;
     int center, subcenter, master, local, cat;
-    String tableBname,tableDname;
-    Format tableBformat,tableDformat;
+    String tableBname, tableDname;
+    Format tableBformat, tableDformat;
     Mode mode = Mode.localOverride;
 
     boolean matches(int center, int subcenter, int master, int local, int cat) {
@@ -319,7 +323,7 @@ public class BufrTables {
     if (tables == null) readLookupTable();
 
     for (TableConfig tc : tables) {
-      if (tc.matches(center,subcenter,master,local,cat))
+      if (tc.matches(center, subcenter, master, local, cat))
         return tc;
     }
     return null;
@@ -355,7 +359,10 @@ public class BufrTables {
     public TableB b;
     public TableD d;
     public Mode mode;
-    Tables() {}
+
+    Tables() {
+    }
+
     Tables(TableB b, TableD d, Mode mode) {
       this.b = b;
       this.d = d;
@@ -397,10 +404,11 @@ public class BufrTables {
   ////////////////////////////////////////////////////
 
   static private TableB latestWmoB;
+
   static public TableB getWmoTableBlatest() {
     if (latestWmoB == null) {
       try {
-        latestWmoB = getWmoTableB( 16);
+        latestWmoB = getWmoTableB(16);
       } catch (IOException ioe) {
         log.error("Cant open latest WMO ", ioe);
         throw new RuntimeException(ioe);
@@ -410,7 +418,7 @@ public class BufrTables {
   }
 
   static public TableB getWmoTableB(BufrIdentificationSection ids) throws IOException {
-    return getWmoTableB( ids.getMasterTableVersion());
+    return getWmoTableB(ids.getMasterTableVersion());
   }
 
   static public TableB getWmoTableBold(int version) throws IOException {
@@ -454,40 +462,44 @@ public class BufrTables {
     InputStream ios = openStream(location);
     TableB b = new TableB(location, location);
     switch (format) {
-      case cypher :
+      case cypher:
         readCypherTableB(ios, b);
         break;
-      case ecmwf :
+      case ecmwf:
         readEcmwfTableB(ios, b);
         break;
-      case ncep :
+      case embed:
+        ios.close();
+        b = readEmbeddedTableB(location);
+        break;
+      case ncep:
         readNcepTableB(ios, b);
         break;
-      case ncep_nm :
+      case ncep_nm:
         Tables t = new Tables(b, null, null);
         NcepMnemonic.read(ios, t);
         break;
-      case mel_bufr :
+      case mel_bufr:
         readMelbufrTableB(ios, b);
         break;
-      case mel_tabs :
+      case mel_tabs:
         readMeltabTableB(ios, b);
         break;
-      case opera :
+      case opera:
         readOperaTableB(ios, b);
         break;
-      case ukmet :
+      case ukmet:
         readBmetTableB(ios, b);
         break;
-      case wmo_csv :
+      case wmo_csv:
         readWmoCsvTableB(ios, b);
         break;
-      case wmo_xml :
+      case wmo_xml:
         WmoXmlReader.readWmoXmlTableB(ios, b);
         break;
     }
 
-    tablesB.put(location, b);
+    if (b != null) tablesB.put(location, b);
     return b;
   }
 
@@ -546,7 +558,37 @@ public class BufrTables {
     return StringUtil2.remove(s, ' ');
   }
 
-    // tables are in mel-bufr format
+  static private TableB readEmbeddedTableB(String location) throws IOException {
+    RandomAccessFile raf = null;
+    try {
+      raf = new RandomAccessFile(location, "r");
+      MessageScanner scan = new MessageScanner(raf);
+      TableLookup lookup = scan.getTableLookup();
+      if (lookup != null) {
+        return lookup.getLocalTableB();
+      }
+      return null;
+    } finally {
+      if (raf != null) raf.close();
+    }
+  }
+
+  static private TableD readEmbeddedTableD(String location) throws IOException {
+    RandomAccessFile raf = null;
+    try {
+      raf = new RandomAccessFile(location, "r");
+      MessageScanner scan = new MessageScanner(raf);
+      TableLookup lookup = scan.getTableLookup();
+      if (lookup != null) {
+        return lookup.getLocalTableD();
+      }
+      return null;
+    } finally {
+      if (raf != null) raf.close();
+    }
+  }
+
+  // tables are in mel-bufr format
   static private TableB readMelbufrTableB(InputStream ios, TableB b) throws IOException {
 
     BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios));
@@ -603,7 +645,7 @@ public class BufrTables {
 
       if (startMode) {
         try {
-          String xys = line.substring(0,8).trim();
+          String xys = line.substring(0, 8).trim();
           int xy = Integer.parseInt(xys);
           short x = (short) (xy / 1000);
           short y = (short) (xy % 1000);
@@ -848,10 +890,11 @@ public class BufrTables {
   ///////////////////////////////////////////////////////
 
   static private TableD latestWmoD;
+
   static public TableD getWmoTableDlatest() {
     if (latestWmoD == null) {
       try {
-        latestWmoD = getWmoTableD( 16);
+        latestWmoD = getWmoTableD(16);
       } catch (IOException ioe) {
         log.error("Cant open latest WMO ", ioe);
         throw new RuntimeException(ioe);
@@ -888,6 +931,10 @@ public class BufrTables {
       case cypher:
         readCypherTableD(ios, d);
         break;
+       case embed:
+        ios.close();
+        d = readEmbeddedTableD(location);
+        break;
       case ncep:
         readNcepTableD(ios, d);
         break;
@@ -915,7 +962,7 @@ public class BufrTables {
         return null;
     }
 
-    tablesD.put(location, d);
+    if (d != null) tablesD.put(location, d);
     return d;
   }
 
@@ -980,9 +1027,9 @@ public class BufrTables {
           startMode = false;
           continue;
 
-         } catch (Exception e) {
-           log.warn("Bad table " + t.getName() + " line=<" + line + ">", e.getMessage());
-         }
+        } catch (Exception e) {
+          log.warn("Bad table " + t.getName() + " line=<" + line + ">", e.getMessage());
+        }
       }
 
       try {
@@ -999,63 +1046,63 @@ public class BufrTables {
       } catch (Exception e) {
         log.warn("Bad table " + t.getName() + " line=<" + line + ">", e.getMessage());
       }
-   }
-   dataIS.close();
- }
+    }
+    dataIS.close();
+  }
 
   static String cleanNumber(String s) {
     int pos = s.indexOf("(");
-    if (pos > 0 ) return s.substring(0,pos);
+    if (pos > 0) return s.substring(0, pos);
     return s;
   }
 
-    /* opera:
-# Heights of side view
- 3;13;192;  1;01;000
-  ;  ;   ;  0;31;001
-  ;  ;   ;  0;10;007
-# 4 bit per pixel radar images (top view)
- 3;21;192;  1;10;000
- ...
- */
+  /* opera:
+ # Heights of side view
+  3;13;192;  1;01;000
+   ;  ;   ;  0;31;001
+   ;  ;   ;  0;10;007
+ # 4 bit per pixel radar images (top view)
+  3;21;192;  1;10;000
+  ...
+  */
   static private void readOperaTableD(InputStream ios, TableD t) throws IOException {
 
-   BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios));
+    BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios));
 
-   TableD.Descriptor currDesc = null;
+    TableD.Descriptor currDesc = null;
 
-   String name = null;
-   while (true) {
-     String line = dataIS.readLine();
-     if (line == null) break;
-     line = line.trim();
-     if (line.length() == 0) continue;
-     if (line.startsWith("#")) {
-       name = line.substring(2).trim();
-       continue;
-     }
+    String name = null;
+    while (true) {
+      String line = dataIS.readLine();
+      if (line == null) break;
+      line = line.trim();
+      if (line.length() == 0) continue;
+      if (line.startsWith("#")) {
+        name = line.substring(2).trim();
+        continue;
+      }
 
-     try {
-       String[] flds = line.split(";");
-       if (flds[0].trim().length() != 0) {
-         int f = Integer.parseInt(flds[0].trim());
-         int x = Integer.parseInt(flds[1].trim());
-         int y = Integer.parseInt(flds[2].trim());
-         currDesc = t.addDescriptor((short) x, (short) y, name, new ArrayList<Short>());
-       }
+      try {
+        String[] flds = line.split(";");
+        if (flds[0].trim().length() != 0) {
+          int f = Integer.parseInt(flds[0].trim());
+          int x = Integer.parseInt(flds[1].trim());
+          int y = Integer.parseInt(flds[2].trim());
+          currDesc = t.addDescriptor((short) x, (short) y, name, new ArrayList<Short>());
+        }
 
-       int f1 = Integer.parseInt(flds[3].trim());
-       int x1 = Integer.parseInt(flds[4].trim());
-       int y1 = Integer.parseInt(flds[5].trim());
-       int fxy = (f1 << 14) + (x1 << 8) + y1;
-       currDesc.addFeature((short) fxy);
+        int f1 = Integer.parseInt(flds[3].trim());
+        int x1 = Integer.parseInt(flds[4].trim());
+        int y1 = Integer.parseInt(flds[5].trim());
+        int fxy = (f1 << 14) + (x1 << 8) + y1;
+        currDesc.addFeature((short) fxy);
 
-     } catch (Exception e) {
-       log.error("Bad table " + t.getName() + " entry=<" + line + ">", e);
-     }
-   }
-   dataIS.close();
- }
+      } catch (Exception e) {
+        log.error("Bad table " + t.getName() + " entry=<" + line + ">", e);
+      }
+    }
+    dataIS.close();
+  }
 
 
   static private void readWmoCsvTableD(InputStream ios, TableD tableD) throws IOException {
@@ -1149,7 +1196,7 @@ public class BufrTables {
       String[] split = line.split("[ \t]+"); // 1 or more whitespace
       if (split.length < 3) continue;
       if (split[0].equals("END")) break;
-      
+
       try {
         short seqF = Short.parseShort(split[0]);
         short seqX = Short.parseShort(split[1]);
@@ -1252,8 +1299,8 @@ public class BufrTables {
           //System.out.printf("Add %s = %d %d %d%n", fxys, f, x, y);
         }
 
-       //if (count > 10) break;
-       //count++;
+        //if (count > 10) break;
+        //count++;
 
       } catch (Exception e) {
         log.error("Bad table " + t.getName() + " entry=<" + line + ">", e);
@@ -1271,7 +1318,7 @@ public class BufrTables {
            000011
            000012
    */
-   static private void readEcmwfTableD(InputStream ios, TableD t) throws IOException {
+  static private void readEcmwfTableD(InputStream ios, TableD t) throws IOException {
 
     BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios));
 
@@ -1351,7 +1398,7 @@ public class BufrTables {
       location = location.substring(9);
       ios = BufrTables.class.getResourceAsStream(location);
       if (ios == null)
-        throw new RuntimeException("resource not found=<"+location+">");
+        throw new RuntimeException("resource not found=<" + location + ">");
       return ios;
     }
 

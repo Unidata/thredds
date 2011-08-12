@@ -33,6 +33,7 @@
 
 package ucar.nc2.ui;
 
+import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
@@ -445,14 +446,16 @@ public class BufrMessageViewer extends JPanel {
   }
 
   private NetcdfDataset getBufrMessageAsDataset(Message m) throws IOException {
-    byte[] mbytes = scan.getMessageBytes(m);
-    NetcdfFile ncfile = null;
-    try {
-      ncfile = NetcdfFile.openInMemory("test", mbytes, "ucar.nc2.iosp.bufr.BufrIosp");
-    } catch (Exception e) {
-      throw new IOException(e);
-    }
+    BufrIosp iosp = new BufrIosp();
+    BufrNetcdf ncfile = new BufrNetcdf(iosp, raf.getLocation());
+    iosp.open(raf, ncfile, m);
     return new NetcdfDataset(ncfile);
+  }
+
+  private class BufrNetcdf extends NetcdfFile {
+    protected BufrNetcdf(IOServiceProvider spi, String location) throws IOException {
+      super(spi, location);
+    }
   }
 
   private int setDataDescriptors(java.util.List<DdsBean> beanList, DataDescriptor dds, int seqno) {

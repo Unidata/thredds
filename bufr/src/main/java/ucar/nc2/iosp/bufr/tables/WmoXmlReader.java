@@ -240,14 +240,14 @@ public class WmoXmlReader {
     return StringUtil2.remove(s, ' ');
   }
 
-  static String cleanName(String name) {
+  public static String cleanName(String name) {
     int pos = name.indexOf("(see");
     if (pos > 0) name = name.substring(0, pos);
     name = StringUtil2.remove(name, '*');
     return name.trim();
   }
 
-  static String cleanUnit(String unit) {
+  public static String cleanUnit(String unit) {
     String result = StringUtil2.remove(unit, 176);
     return StringUtil2.replace(result, (char) 65533, "2"); // seems to be a superscript 2 in some language
   }

@@ -1436,10 +1436,10 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
   /**
    * Open an existing netcdf file (read only).
    *
-   * @param location   location of file. This is a URL string, or a local pathname.
    * @param spi        use this IOServiceProvider instance
    * @param raf        read from this RandomAccessFile
    * @param cancelTask allow user to cancel
+   * @param location   location of data
    * @throws IOException if I/O error
    */
   protected NetcdfFile(IOServiceProvider spi, ucar.unidata.io.RandomAccessFile raf, String location, ucar.nc2.util.CancelTask cancelTask) throws IOException {
@@ -1495,6 +1495,17 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable {
       setId(findAttValueIgnoreCase(null, "_Title", null));
 
     finish();
+  }
+
+  /**
+   * Open an existing netcdf file (read only) , but dont do nuttin else
+   *
+   * @param spi        use this IOServiceProvider instance
+   * @param location   location of data
+   */
+  protected NetcdfFile(IOServiceProvider spi, String location) {
+    this.spi = spi;
+    this.location = location;
   }
 
   /**

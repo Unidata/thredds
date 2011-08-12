@@ -91,6 +91,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
     while (scan.hasNext()) {
       Message m = scan.next();
       if (m == null) continue;
+      if (m.containsBufrTable()) continue; // not data
 
       if (protoMessage == null) {
         protoMessage = m;
@@ -121,6 +122,31 @@ public class BufrIosp extends AbstractIOServiceProvider {
       long took = (System.nanoTime() - start) / (1000 * 1000);
       double rate = (took > 0) ? ((double) count / took) : 0.0;
       parseInfo.format("nmsgs= %d nobs = %d took %d msecs rate = %f msgs/msec\n", count, scan.getTotalObs(), took, rate);
+    }
+
+    // this fills the netcdf object
+    construct = new ConstructNC(protoMessage, countObs, ncfile);
+
+    ncfile.finish();
+  }
+
+  public void open(RandomAccessFile raf, NetcdfFile ncfile, Message single) throws IOException {
+    this.raf = raf;
+
+    protoMessage = single;
+    protoMessage.getRootDataDescriptor(); // construct the data descriptors, check for complete tables
+    if (!protoMessage.isTablesComplete())
+      throw new IllegalStateException("BUFR file has incomplete tables");
+
+    msgs.add(single);
+
+    // count where the obs start in the messages
+    obsStart = new int[msgs.size()];
+    int mi = 0;
+    int countObs = 0;
+    for (Message m : msgs) {
+      obsStart[mi++] = countObs;
+      countObs += m.getNumberDatasets();
     }
 
     // this fills the netcdf object
@@ -202,10 +228,16 @@ public class BufrIosp extends AbstractIOServiceProvider {
   }  */
 
   private int nelems = -1;
-   public Array readData(Variable v2, Section section) throws IOException, InvalidRangeException {
-      Structure s = construct.recordStructure;
-      return new ArraySequence(s.makeStructureMembers(), new SeqIter(), nelems);
-    }
+
+  public Array readData(Variable v2, Section section) throws IOException, InvalidRangeException {
+    Structure s = construct.recordStructure;
+    return new ArraySequence(s.makeStructureMembers(), new SeqIter(), nelems);
+  }
+
+  ArraySequence readAll() throws IOException {
+    Structure s = construct.recordStructure;
+    return new ArraySequence(s.makeStructureMembers(), new SeqIter(), nelems);
+  }
 
   private void addTime(ArrayStructure as) throws IOException {
     int n = (int) as.getSize();
@@ -859,7 +891,6 @@ return abb;
   }
 
   public void readAll(boolean dump) throws IOException, InvalidRangeException {
-    Formatter f = new Formatter(System.out);
     for (Message m : msgs) {
       Array data;
       if (!m.dds.isCompressed()) {
@@ -889,7 +920,7 @@ return abb;
       int n = m.getNumberDatasets();
       m.calcTotalBits(null);
       Array data2 = obs.read(new Section().appendRange(start, start + n - 1));
-      CompareNetcdf2 cn = new CompareNetcdf2( new Formatter(System.out), true, true, true);
+      CompareNetcdf2 cn = new CompareNetcdf2(new Formatter(System.out), true, true, true);
       cn.compareData("all", data1, data2, true);
 
       start += n;

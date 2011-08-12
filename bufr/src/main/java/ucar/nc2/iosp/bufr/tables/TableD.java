@@ -59,7 +59,7 @@ public class TableD {
     return location;
   }
 
-  Descriptor addDescriptor(short x, short y, String name, List<Short> seq) {
+  public Descriptor addDescriptor(short x, short y, String name, List<Short> seq) {
     short id = (short) ((3 << 14) + (x << 8) + y);
     Descriptor d = new Descriptor(x, y, name, seq);
     map.put( id, d);

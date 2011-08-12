@@ -30,12 +30,12 @@ WMO.any, 0,     0,        -1,    0,    -1,   resource:/resources/bufrTables/cyph
 # see http://www.emc.ncep.noaa.gov/mmb/data_processing/bufrtab_tablea.htm#1
 # also http://www.emc.ncep.noaa.gov/mmb/data_processing/bufrtab_tabled.htm
 # also http://www.nco.ncep.noaa.gov/pmb/codes/nwprod/parm/
-NCEP.ETA, 7,    3,       -1,    -1,    241, resource:/resources/bufrTables/local/ncep.bufrtab.ETACLS1, ncep_nm, resource:/resources/bufrTables/local/ncep.bufrtab.ETACLS1, ncep_nm
-NCEP.NGM, 7,    3,       -1,    -1,    242, resource:/resources/bufrTables/local/ncep.bufrtab.NGMCLS1, ncep_nm, resource:/resources/bufrTables/local/ncep.bufrtab.NGMCLS1, ncep_nm
-NCEP.GFS, 7,    3,       -1,    -1,    243, resource:/resources/bufrTables/local/ncep.bufrtab.GFSCLS1, ncep_nm, resource:/resources/bufrTables/local/ncep.bufrtab.GFSCLS1, ncep_nm
-NCEP.12,  7,    8,       12,    -1,    -1, resource:/resources/bufrTables/local/ncepAwc.v12.override.csv, wmo_csv, , ,
-NCEP.14,  7,   -1,       14,    -1,    -1, resource:/resources/bufrTables/local/ncep.B07.14.local.csv, wmo_csv, resource:/resources/bufrTables/local/ncep.B4L-007-013-D.diff, mel_bufr
-NCEP.any, 7,   -1,       -1,    -1,    -1, resource:/resources/bufrTables/local/ncep.B07.local.csv, wmo_csv, resource:/resources/bufrTables/local/ncep.B4L-007-013-D.diff, mel_bufr
+NCEP.ETA, 7,    3,       -1,    -1,    241, resource:/resources/bufrTables/local/ncep/ncep.bufrtab.ETACLS1, ncep_nm, resource:/resources/bufrTables/local/ncep/ncep.bufrtab.ETACLS1, ncep_nm
+NCEP.NGM, 7,    3,       -1,    -1,    242, resource:/resources/bufrTables/local/ncep/ncep.bufrtab.NGMCLS1, ncep_nm, resource:/resources/bufrTables/local/ncep/ncep.bufrtab.NGMCLS1, ncep_nm
+NCEP.GFS, 7,    3,       -1,    -1,    243, resource:/resources/bufrTables/local/ncep/ncep.bufrtab.GFSCLS1, ncep_nm, resource:/resources/bufrTables/local/ncep/ncep.bufrtab.GFSCLS1, ncep_nm
+NCEP.12,  7,    8,       12,    -1,    -1, resource:/resources/bufrTables/local/ncep/ncepAwc.v12.override.csv, wmo_csv, , ,
+NCEP.14,  7,   -1,       14,    -1,    -1, resource:/resources/bufrTables/local/ncep/ncep.B07.14.local.csv, wmo_csv, resource:/resources/bufrTables/local/ncep/ncep.B4L-007-013-D.diff, mel_bufr
+NCEP.any, 7,   -1,       -1,    -1,    -1, resource:/resources/bufrTables/local/ncep/ncep.B07.local.csv, wmo_csv, resource:/resources/bufrTables/local/ncep/ncep.B4L-007-013-D.diff, mel_bufr
 #NCEP.any, 7,   -1,       -1,    -1,     -1, resource:/resources/bufrTables/local/ncep/bufrtab.TableB_LOC_0_7_1, ncep, resource:/resources/bufrTables/local/ncep.B4L-007-013-D.diff, mel_bufr
 #
 # Brasil

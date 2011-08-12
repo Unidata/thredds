@@ -53,7 +53,7 @@ public class TableB {
     map = new HashMap<Short, Descriptor>();
   }
 
-  void addDescriptor(short x, short y, int scale, int refVal, int width, String name, String units) {
+  public void addDescriptor(short x, short y, int scale, int refVal, int width, String name, String units) {
     short id = (short) ((x << 8) + y);
     map.put(id, new Descriptor(x, y, scale, refVal, width, name, units));
   }
