@@ -50,9 +50,6 @@ import java.nio.charset.Charset;
 import org.jdom.input.SAXBuilder;
 import org.jdom.Element;
 import org.jdom.JDOMException;
-import ucar.nc2.wmo.CommonCodeTable;
-import ucar.nc2.wmo.Utils;
-import ucar.unidata.io.*;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.StringUtil2;
 
@@ -302,16 +299,6 @@ public class BufrTables {
       return name;
     }
 
-    public String toString2() {
-      Formatter f = new Formatter();
-      String centerName = Utils.getCenterShortName(center);
-      if (centerName == null) centerName = CommonCodeTable.getTableValue(11, center);
-      f.format(" Center =%d (%s)", center, centerName);
-      f.format(" SubCenter =%d (%s)", subcenter, CommonCodeTable.getTableValue(12, center, subcenter));
-      f.format(" Table = %d.%d", master, local);
-      if (cat >= 0) f.format(" Cat= %d", cat);
-      return f.toString();
-    }
   }
 
   public static List<TableConfig> getTables() {
@@ -545,7 +532,7 @@ public class BufrTables {
         int x = xy / 1000;
         int y = xy % 1000;
 
-        b.addDescriptor((short) x, (short) y, scale, refVal, width, name, units);
+        b.addDescriptor((short) x, (short) y, scale, refVal, width, name, units, null);
 
       } catch (Exception e) {
         if (showReadErrs) System.out.printf("%d %d BAD line == %s%n", count, fldidx, line);
@@ -609,7 +596,7 @@ public class BufrTables {
         int refVal = Integer.parseInt(split[4].trim());
         int width = Integer.parseInt(split[5].trim());
 
-        b.addDescriptor(x, y, scale, refVal, width, split[7], split[6]);
+        b.addDescriptor(x, y, scale, refVal, width, split[7], split[6], null);
       } catch (Exception e) {
         log.error("Bad table B entry: table=" + b.getName() + " entry=<" + line + ">", e.getMessage());
         continue;
@@ -660,7 +647,7 @@ public class BufrTables {
           int refVal = Integer.parseInt(split[1].trim());
           int width = Integer.parseInt(split[2].trim());
 
-          b.addDescriptor(x, y, scale, refVal, width, name, units);
+          b.addDescriptor(x, y, scale, refVal, width, name, units, null);
           startMode = false;
         } catch (Exception e) {
           log.error("Bad table B entry: table=" + b.getName() + " entry=<" + line + ">", e.getMessage());
@@ -696,7 +683,7 @@ public class BufrTables {
         int width = Integer.parseInt(split[5].trim());
         //System.out.printf("%s = %d %d, %d %d %d %s %s %n", line, x, y, scale, refVal, width, split[7], split[6]);
 
-        b.addDescriptor(x, y, scale, refVal, width, split[7], split[6]);
+        b.addDescriptor(x, y, scale, refVal, width, split[7], split[6], null);
       } catch (Exception e) {
         log.error("Bad table " + b.getName() + " entry=<" + line + ">", e);
         continue;
@@ -735,13 +722,14 @@ public class BufrTables {
         int refVal = Integer.parseInt(clean(flds[2]));
         int width = Integer.parseInt(clean(flds[3]));
         String units = StringUtil2.remove(flds[4], '"');
-        String name = StringUtil2.remove(flds[7], '"');
+        String name = StringUtil2.remove(flds[5], '"');
+        String desc = StringUtil2.remove(flds[7], '"');
 
         String[] xyflds = fxys.split("-");
         short x = Short.parseShort(clean(xyflds[1]));
         short y = Short.parseShort(clean(xyflds[2]));
 
-        b.addDescriptor(x, y, scale, refVal, width, name, units);
+        b.addDescriptor(x, y, scale, refVal, width, name, units, desc);
 
         /* System.out.println("Table B line =" + line);
        System.out.printf("%s = %d %d, %d %d %d %s %s %n", fxys, x, y, scale, refVal, width, name, units);
@@ -791,7 +779,7 @@ public class BufrTables {
         int refVal = Integer.parseInt(clean(flds[fldidx++].trim()));
         int width = Integer.parseInt(clean(flds[fldidx++].trim()));
 
-        b.addDescriptor((short) x, (short) y, scale, refVal, width, name, units);
+        b.addDescriptor((short) x, (short) y, scale, refVal, width, name, units, null);
 
       } catch (Exception e) {
         if (showReadErrs) System.out.printf("%d %d BAD line == %s%n", count, fldidx, line);
@@ -801,7 +789,7 @@ public class BufrTables {
   }
 
   /*
-  fxy    name                                                             units                   scale  ref         w  units
+   fxy    name                                                             units                   scale  ref         w  units
   01234567                                                                 72                       97   102            119
    001015 STATION OR SITE NAME                                             CCITTIA5                   0            0 160 CHARACTER                 0        20
    001041 ABSOLUTE PLATFORM VELOCITY - FIRST COMPONENT (SEE NOTE 6)        M/S                        5  -1073741824  31 M/S                       5        10
@@ -821,7 +809,7 @@ public class BufrTables {
       int ref = (Integer) record.get(5);
       int width = (Integer) record.get(6);
 
-      b.addDescriptor((short) x, (short) y, scale, ref, width, name, units);
+      b.addDescriptor((short) x, (short) y, scale, ref, width, name, units, null);
 
       /* System.out.println("Table B line =" + record);
     System.out.printf("%d %d, %d %d %d %s %s %n", x, y, scale, ref, width, name, units);
@@ -880,7 +868,7 @@ public class BufrTables {
           System.out.printf(" key %s name '%s' has bad width='%s' %n", fxy, name, s);
         }
 
-        b.addDescriptor((short) x, (short) y, scale, reference, width, name, units);
+        b.addDescriptor((short) x, (short) y, scale, reference, width, name, units, null);
       }
     }
 

@@ -1127,8 +1127,8 @@ public class GribRawPanel extends JPanel {
 
       f.format("%nGrib2IdentificationSection%n");
       f.format(" Length        = %d%n", id.getLength());
-      f.format(" Center        = (%d) %s%n", id.getCenter_id(), CommonCodeTable.getTableValue(11, id.getCenter_id()));
-      f.format(" SubCenter     = (%d) %s%n", id.getSubcenter_id(), CommonCodeTable.getTableValue(12, id.getCenter_id(), id.getSubcenter_id()));
+      f.format(" Center        = (%d) %s%n", id.getCenter_id(), CommonCodeTable.getCenterName(id.getCenter_id(), 2));
+      f.format(" SubCenter     = (%d) %s%n", id.getSubcenter_id(), CommonCodeTable.getSubCenterName(id.getCenter_id(), id.getSubcenter_id()));
       f.format(" Master Table  = %d%n", id.getMaster_table_version());
       f.format(" Local Table   = %d%n", id.getLocal_table_version());
       f.format(" RefTimeSignif = %s%n", id.getSignificanceOfRTName());
@@ -1328,7 +1328,7 @@ public class GribRawPanel extends JPanel {
     }
 
     public String getCenter() {
-      return CommonCodeTable.getTableValue(11, pds.getCenter()) + " (" + pds.getCenter() + "/" + pds.getSubCenter() + ")";
+      return CommonCodeTable.getCenterName(pds.getCenter(), 1) + " (" + pds.getCenter() + "/" + pds.getSubCenter() + ")";
     }
 
     public int getTable() {

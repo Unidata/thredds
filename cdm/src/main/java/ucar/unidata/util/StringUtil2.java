@@ -416,17 +416,20 @@ public class StringUtil2 {
     if (pattern.length() == 0)
       return string;
 
+    if (!string.contains(pattern)) return string;
+
+    // ok gotta do it
     StringBuilder returnValue = new StringBuilder();
     int patternLength = pattern.length();
     while (true) {
       int idx = string.indexOf(pattern);
-      if (idx < 0) {
+      if (idx < 0)
         break;
-      }
+
       returnValue.append(string.substring(0, idx));
-      if (value != null) {
+      if (value != null)
         returnValue.append(value);
-      }
+
       string = string.substring(idx + patternLength);
     }
     returnValue.append(string);

@@ -56,7 +56,7 @@ public class DataDescriptor {
   // from the TableB.Descriptor
   short fxy;
   int f, x, y;
-  String name, units;
+  String name, units, desc;
   boolean bad;  // no descriptor found
   boolean localOverride;
 
@@ -107,6 +107,7 @@ public class DataDescriptor {
   private void setDescriptor(TableB.Descriptor d) {
     this.name = d.getName().trim();
     this.units = d.getUnits().trim();
+    this.desc = d.getDesc();
     this.refVal = d.getRefVal();
     this.scale = d.getScale();
     this.bitWidth = d.getDataWidth();
@@ -208,6 +209,10 @@ public class DataDescriptor {
 
   public String getUnits() {
     return units;
+  }
+
+  public String getDesc() {
+    return desc;
   }
 
   public float convert( long raw) {

@@ -32,9 +32,9 @@
  */
 package ucar.nc2.iosp.bufr;
 
-import ucar.nc2.iosp.bufr.tables.TableD;
+import ucar.nc2.iosp.bufr.tables.TableA;
+import ucar.nc2.wmo.CommonCodeTable;
 import ucar.unidata.io.RandomAccessFile;
-import ucar.nc2.iosp.bufr.tables.CommonCodeTables;
 import ucar.nc2.iosp.bufr.tables.TableB;
 
 import java.io.IOException;
@@ -103,7 +103,7 @@ public class Message {
   }
 
   public String getCategoryName() {
-    return CommonCodeTables.getDataCategory( ids.getCategory());
+    return TableA.getDataCategory(ids.getCategory());
   }
 
   public String getCategoryNo() {
@@ -113,8 +113,8 @@ public class Message {
   }
 
   public String getCenterName() {
-    String name = CommonCodeTables.getCenterName(ids.getCenterId());
-    String subname = CommonCodeTables.getSubCenterName(ids.getCenterId(), ids.getSubCenterId());
+    String name = CommonCodeTable.getCenterNameBufr(ids.getCenterId(), is.getBufrEdition());
+    String subname = CommonCodeTable.getSubCenterName(ids.getCenterId(), ids.getSubCenterId());
     if (subname != null) name = name +" / " + subname;
     return ids.getCenterId() + "." + ids.getSubCenterId() + " (" + name + ")";
   }
@@ -422,7 +422,7 @@ public class Message {
 
   public String getCategoryFullName() throws IOException {
     String catName = getCategoryName();
-    String subcatName = CommonCodeTables.getDataSubcategoy(ids.getCategory(), ids.getSubCategory());
+    String subcatName = CommonCodeTable.getDataSubcategoy(ids.getCategory(), ids.getSubCategory());
 
     if (subcatName != null)
       return getCategoryNo() + "="+ catName + " / " + subcatName;

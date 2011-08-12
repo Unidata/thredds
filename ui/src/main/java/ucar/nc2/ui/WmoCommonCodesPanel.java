@@ -35,7 +35,7 @@ public class WmoCommonCodesPanel extends JPanel {
   public WmoCommonCodesPanel(final PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
 
-    codeTable = new BeanTableSorted(TableBean.class, (PreferencesExt) prefs.node("CodeBean"), false);
+    codeTable = new BeanTableSorted(TableBean.class, (PreferencesExt) prefs.node("CodeTableBean"), false);
     codeTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         TableBean csb = (TableBean) codeTable.getSelectedBean();
@@ -55,7 +55,7 @@ public class WmoCommonCodesPanel extends JPanel {
     varPopup.addAction("Show uses", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Formatter out = new Formatter();
-        CodeBean csb = (CodeBean) codeTable.getSelectedBean();
+        CodeTableBean csb = (CodeTableBean) codeTable.getSelectedBean();
         if (usedDds != null) {
           List<Message> list = usedDds.get(csb.getId());
           if (list != null) {
@@ -149,7 +149,7 @@ public class WmoCommonCodesPanel extends JPanel {
     Formatter f = new Formatter();
     f.format("Duplicates in WMO parameter table%n");
     for (Object t : codeTable.getBeans()) {
-      GribCodeTable gt = ((CodeBean) t).code;
+      GribCodeTable gt = ((CodeTableBean) t).code;
       if (!gt.isParameter) continue;
       for (GribCodeTable.TableEntry p : gt.entries) {
         if (p.meaning.equalsIgnoreCase("Reserved")) continue;
@@ -173,7 +173,7 @@ public class WmoCommonCodesPanel extends JPanel {
     dups = 0;
     f.format("() in WMO parameter table%n");
     for (Object t : codeTable.getBeans()) {
-      GribCodeTable gt = ((CodeBean) t).code;
+      GribCodeTable gt = ((CodeTableBean) t).code;
       if (!gt.isParameter) continue;
       for (GribCodeTable.TableEntry p : gt.entries) {
         if (p.meaning.indexOf('(') > 0) {
@@ -189,7 +189,7 @@ public class WmoCommonCodesPanel extends JPanel {
     dups = 0;
     f.format("invalid units in WMO parameter table%n");
     for (Object t : codeTable.getBeans()) {
-      GribCodeTable gt = ((CodeBean) t).code;
+      GribCodeTable gt = ((CodeTableBean) t).code;
       if (!gt.isParameter) continue;
       for (GribCodeTable.TableEntry p : gt.entries) {
         if (p.unit == null) continue;
@@ -223,7 +223,7 @@ public class WmoCommonCodesPanel extends JPanel {
     f.format("DIFFERENCES with current parameter table%n");
     List tables = codeTable.getBeans();
     for (Object t : tables) {
-      GribCodeTable gt = ((CodeBean) t).code;
+      GribCodeTable gt = ((CodeTableBean) t).code;
       if (!gt.isParameter) continue;
       for (GribCodeTable.TableEntry p : gt.entries) {
         if (p.meaning.equalsIgnoreCase("Reserved")) continue;
@@ -363,7 +363,11 @@ public class WmoCommonCodesPanel extends JPanel {
       this.t = t;
     }
 
-    public String getTitle() {
+    public String getName() {
+      return t.getName();
+    }
+
+    public String getEnumName() {
       return t.name();
     }
 

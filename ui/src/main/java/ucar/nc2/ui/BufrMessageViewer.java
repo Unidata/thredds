@@ -626,6 +626,10 @@ public class BufrMessageViewer extends JPanel {
       return dds.getUnits();
     }
 
+    public String getDesc() {
+      return dds.getDesc();
+    }
+
     public int getBitWidth() {
       return dds.getBitWidth();
     }

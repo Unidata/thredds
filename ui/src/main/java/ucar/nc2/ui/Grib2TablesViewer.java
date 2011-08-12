@@ -73,7 +73,7 @@ public class Grib2TablesViewer extends JPanel {
   public Grib2TablesViewer(final PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
 
-    gribTable = new BeanTableSorted(TableBean.class, (PreferencesExt) prefs.node("CodeBean"), false);
+    gribTable = new BeanTableSorted(TableBean.class, (PreferencesExt) prefs.node("CodeTableBean"), false);
     gribTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         TableBean csb = (TableBean) gribTable.getSelectedBean();

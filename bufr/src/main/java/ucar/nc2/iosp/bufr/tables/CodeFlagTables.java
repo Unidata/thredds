@@ -32,10 +32,14 @@
  */
 package ucar.nc2.iosp.bufr.tables;
 
+import com.sun.org.apache.xml.internal.security.Init;
 import org.jdom.input.SAXBuilder;
 import org.jdom.Element;
+import ucar.nc2.iosp.bufr.Descriptor;
+import ucar.nc2.wmo.CommonCodeTable;
 import ucar.unidata.util.StringUtil2;
 
+import javax.lang.model.util.ElementScanner6;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
@@ -57,7 +61,24 @@ public class CodeFlagTables {
 
   static public CodeFlagTables getTable(short id) {
     if (tableMap == null) init();
+
+    if (id == 263) return useCC(id, 5); // 0-1-7
+    if (id == 526) return useCC(id, 7); // 0-2-14
+    if (id == 531) return useCC(id, 8); // 0-2-19
+    if (id == 5699) return useCC(id, 3); // 0-22-67
+    if (id == 5700) return useCC(id, 4); // 0-22-68
+
     return tableMap.get(id);
+  }
+
+  static private CodeFlagTables useCC(short fxy, int cc) {
+    CodeFlagTables cft = tableMap.get(fxy);
+    if (cft == null) {
+      CommonCodeTable cct =  CommonCodeTable.getTable(cc);
+      cft = new CodeFlagTables(fxy, cct.getTableName(),  cct.getMap());
+      tableMap.put(fxy, cft);
+    }
+    return cft;
   }
 
   static public boolean hasTable(short id) {
@@ -68,11 +89,25 @@ public class CodeFlagTables {
 
   static private void init() {
     tableMap = new HashMap<Short, CodeFlagTables>(300);
-    init2(tableMap);
+    init(tableMap);
   }
 
-  static private void initOld(Map<Short, CodeFlagTables> table) {
-    String filename = BufrTables.RESOURCE_PATH + "wmo/Code-FlagTables.xml";
+  static public Map<Short, CodeFlagTables> getTables() {
+    if (tableMap == null) init();
+    return tableMap;
+  }
+  /*
+  <Exp_CodeFlagTables_E>
+<No>837</No>
+<FXY>002119</FXY>
+<ElementName_E>Instrument operations</ElementName_E>
+<CodeFigure>0</CodeFigure>
+<EntryName_E>Intermediate frequency calibration mode (IF CAL)</EntryName_E>
+<Status>Operational</Status>
+</Exp_CodeFlagTables_E>
+   */
+  static private void init(Map<Short, CodeFlagTables> table) {
+    String filename = BufrTables.RESOURCE_PATH + "wmo/BUFRCREX_16_0_0_CodeFlag_E.xml"; // Code-FlagTables.xml";
     InputStream is = CodeFlagTables.class.getResourceAsStream(filename);
 
     try {
@@ -80,44 +115,47 @@ public class CodeFlagTables {
       org.jdom.Document tdoc = builder.build(is);
       org.jdom.Element root = tdoc.getRootElement();
 
-      for (Element elem : (List<Element>) root.getChildren("table")) {
+      List<Element> elems = (List<Element>) root.getChildren("Exp_CodeFlagTables_E");
+      for (Element elem : elems) {
+        String fxyS = elem.getChildText("FXY");
+        String desc = elem.getChildText("ElementName_E");
 
-        String kind = elem.getAttributeValue("kind");
-        if ((kind == null) || !kind.equals("code")) {
+        short fxy = Descriptor.getFxy2(fxyS);
+        CodeFlagTables ct = table.get(fxy);
+        if (ct == null) {
+          ct = new CodeFlagTables(fxy, desc);
+          table.put(fxy, ct);
+          // System.out.printf(" added %s == %s %n", ct.id, desc);
+        }
+
+        String line = elem.getChildText("No");
+        String codeS = elem.getChildText("CodeFigure");
+        String value = elem.getChildText("EntryName_E");
+
+        if ((codeS == null) || (value == null)) continue;
+        if (value.toLowerCase().startsWith("reserved"))  continue;
+        if (value.toLowerCase().startsWith("not used")) continue;
+
+        int code;
+        if (codeS.toLowerCase().contains("all")) {
+          code = -1;
+        } else try {
+          code = Integer.parseInt(codeS);
+        } catch (NumberFormatException e) {
+          log.debug("NumberFormatException on line " + line + " in " + codeS);
           continue;
         }
-
-        List<Element> cElems = (List<Element>) elem.getChildren("code");
-        if (cElems.size() == 0) {
-          continue;
-        }
-
-        String name = elem.getAttributeValue("name");
-        String desc = elem.getAttributeValue("desc");
-        CodeFlagTables ct = new CodeFlagTables(getFxy(name), desc);
-        table.put(ct.fxy, ct);
-        // System.out.printf(" added %s == %s %n", ct.id, desc);
-
-        for (Element cElem : cElems) {
-          String valueS = cElem.getAttributeValue("value").trim();
-          String text = cElem.getText();
-          if (text.toLowerCase().startsWith("reserved"))
-            continue;
-          else if (text.toLowerCase().startsWith("not used"))
-            continue;
-          else {
-            try {
-              int value = Integer.parseInt(valueS);
-              ct.addValue(value, text);
-            } catch (NumberFormatException e) {
-              log.warn("NumberFormatException on '" + valueS + "' for CodeTable " + name + " in " + filename);
-            }
-          }
-        }
+        ct.addValue((short) code, value);
       }
 
     } catch (Exception e) {
       log.error("Can't read BUFR code table " + filename, e);
+
+    } finally {
+      try {
+        if (is != null) is.close();
+      } catch (IOException e) {
+      }
     }
   }
 
@@ -197,7 +235,7 @@ public class CodeFlagTables {
             table.put(ct.fxy, ct);
             //System.out.printf(" added in 2: %s (%d)%n", ct.fxy(), ct.fxy);
           }
-          ct.addValue(no, name);
+          ct.addValue((short) no, name);
 
         } catch (Exception e) {
           if (showReadErrs) System.out.printf("%d %d BAD line == %s%n", count, fldidx, line);
@@ -219,7 +257,7 @@ public class CodeFlagTables {
 
   public static void main(String arg[]) throws IOException {
     HashMap<Short, CodeFlagTables> tableMap1 = new HashMap<Short, CodeFlagTables>(300);
-    initOld(tableMap1);
+    init(tableMap1);
 
     HashMap<Short, CodeFlagTables> tableMap2 = new HashMap<Short, CodeFlagTables>(300);
     init2(tableMap2);
@@ -231,15 +269,15 @@ public class CodeFlagTables {
       if (t2 == null)
         System.out.printf(" NOT FOUND in 2: %s (%d)%n", t.fxy(), t.fxy);
       else {
-        if (t.fxy().equals("0-21-76"))
+        if (t.fxy().equals("0-25-174"))
           System.out.println("HEY");
-        for (Integer no : t.map.keySet()) {
+        for (int no : t.map.keySet()) {
           String name1 = t.map.get(no);
           String name2 = t2.map.get(no);
           if (name2 == null)
-            System.out.printf(" %s val %d name '%s' missing%n", t.fxy(), no, name1);
+            System.out.printf(" %s val %d name '%s' missing in 2%n", t.fxy(), no, name1);
           else if (showNameDiff && !name1.equals(name2))
-            System.out.printf(" %s names different%n  %s%n  %s%n", t.fxy(), name1, name2);
+            System.out.printf(" *** %s names different%n  %s%n  %s%n", t.fxy(), name1, name2);
         }
       }
     }
@@ -251,7 +289,7 @@ public class CodeFlagTables {
       if (t1 == null)
         System.out.printf(" NOT FOUND in 1: %s (%d)%n", t.fxy(), t.fxy);
       else {
-        for (Integer no : t.map.keySet()) {
+        for (int no : t.map.keySet()) {
           String name = t.map.get(no);
           String name1 = t1.map.get(no);
           if (name1 == null)
@@ -267,14 +305,19 @@ public class CodeFlagTables {
   ////////////////////////////////////////////////
   private short fxy;
   private String name;
-  private Map<Integer, String> map;
+  private Map<Integer, String> map;  // needs to be integer for EnumTypedef
 
   private CodeFlagTables(short fxy, String name) {
     this.fxy = fxy;
-    this.name = (name == null) ? fxy() : StringUtil2.replace(name, ' ', "_") + "("+fxy()+")";
+    this.name = (name == null) ? fxy() : name; // StringUtil2.replace(name, ' ', "_") + "("+fxy()+")";
     map = new HashMap<Integer, String>(20);
   }
 
+  private CodeFlagTables(short fxy, String name, Map<Integer, String> map) {
+    this.fxy = fxy;
+    this.name = (name == null) ? fxy() : name;
+    this.map = map;
+  }
 
   public String getName() {
     return name;
@@ -288,7 +331,9 @@ public class CodeFlagTables {
     map.put(value, text);
   }
 
-  String fxy() {
+  public short getId() { return fxy; }
+
+  public String fxy() {
     int f = fxy >> 16;
     int x = (fxy & 0xff00) >> 8;
     int y = (fxy & 0xff);

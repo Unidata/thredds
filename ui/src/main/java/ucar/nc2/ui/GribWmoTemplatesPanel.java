@@ -35,7 +35,7 @@ public class GribWmoTemplatesPanel extends JPanel {
   public GribWmoTemplatesPanel(final PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
 
-    codeTable = new BeanTableSorted(CodeBean.class, (PreferencesExt) prefs.node("CodeBean"), false);
+    codeTable = new BeanTableSorted(CodeBean.class, (PreferencesExt) prefs.node("CodeTableBean"), false);
     codeTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         CodeBean csb = (CodeBean) codeTable.getSelectedBean();

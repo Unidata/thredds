@@ -172,11 +172,11 @@ public class CompareCodeTables {
           System.out.printf("   %s %s != %s %n", code, name, name2);
       }
 
-      for (Integer code : tm.keySet()) {
+      for (int code : tm.keySet()) {
         String name = tm.get(code);
         String name2 = f.map.get(code);
         if (name2 == null)
-          System.out.printf("   %s missing in wmo%n", code);
+          System.out.printf("   %s missing in wmo%n", name);
         countValues++;
       }
     }

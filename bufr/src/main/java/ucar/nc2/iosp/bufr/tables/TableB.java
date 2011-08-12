@@ -53,9 +53,9 @@ public class TableB {
     map = new HashMap<Short, Descriptor>();
   }
 
-  public void addDescriptor(short x, short y, int scale, int refVal, int width, String name, String units) {
+  public void addDescriptor(short x, short y, int scale, int refVal, int width, String name, String units, String desc) {
     short id = (short) ((x << 8) + y);
-    map.put(id, new Descriptor(x, y, scale, refVal, width, name, units));
+    map.put(id, new Descriptor(x, y, scale, refVal, width, name, units, desc));
   }
 
   public String getName() {
@@ -140,10 +140,11 @@ public class TableB {
     private final int dataWidth;
     private final String units;
     private final String name;
+    private final String desc;
     private final boolean numeric;
     private boolean localOverride;
 
-    Descriptor(short x, short y, int scale, int refVal, int width, String name, String units) {
+    Descriptor(short x, short y, int scale, int refVal, int width, String name, String units, String desc) {
       this.x = x;
       this.y = y;
       this.scale = scale;
@@ -151,6 +152,7 @@ public class TableB {
       this.dataWidth = width;
       this.name = name.trim();
       this.units = units.trim().intern();
+      this.desc = desc;
 
       this.numeric = !this.units.startsWith("CCITT");
     }
@@ -173,6 +175,10 @@ public class TableB {
 
     public String getName() {
       return name;
+    }
+
+    public String getDesc() { // optional - use as long name
+      return desc;
     }
 
     /**

@@ -696,6 +696,10 @@ Class,FXY,enElementName,BUFR_Unit,BUFR_Scale,BUFR_ReferenceValue,BUFR_DataWidth_
       return dds.getUnits();
     }
 
+    public String getDesc() {
+      return dds.getDesc();
+    }
+
     public String getUdunits() {
       if (udunits == null) {
         try {

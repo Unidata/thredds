@@ -76,14 +76,14 @@ public class EmbeddedTable {
 
   private void read2() throws IOException {
     Message proto = null;
-    System.out.printf("Reading from %s%n", raf.getLocation());
+    //System.out.printf("Reading from %s%n", raf.getLocation());
 
     int countObs = 0;
     for (Message m : messages) {
       if (proto == null) proto = m;
       int n = m.getNumberDatasets();
       countObs +=n;
-      System.out.printf("  num datasets = %d%n", n);
+      //System.out.printf("  num datasets = %d%n", n);
     }
 
     // this fills the netcdf object
@@ -164,7 +164,15 @@ public class EmbeddedTable {
     }
     if (showB) System.out.printf("%n");
 
-    name = WmoXmlReader.cleanName(name);
+    // split name
+    String desc = null;
+    name = name.trim();
+    int pos = name.indexOf(' ');
+    if (pos > 0) {
+      desc = WmoXmlReader.cleanName(name.substring(pos+1));
+      name = name.substring(0,pos);
+    }
+
     units = WmoXmlReader.cleanUnit(units.trim());
     int scale = Integer.parseInt(scaleS.trim());
     int refVal = Integer.parseInt(refS.trim());
@@ -175,7 +183,9 @@ public class EmbeddedTable {
     if ("-".equals(signScale)) scale = -1 * scale;
     if ("-".equals(signRef)) refVal = -1 * refVal;
 
-    b.addDescriptor(x1, y1, scale, refVal, width, name, units);
+
+
+    b.addDescriptor(x1, y1, scale, refVal, width, name, units, desc);
   }
 
   private void addTableEntryD(StructureData sdata) throws IOException {

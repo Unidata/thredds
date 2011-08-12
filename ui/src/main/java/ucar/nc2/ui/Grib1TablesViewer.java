@@ -45,7 +45,7 @@ public class Grib1TablesViewer extends JPanel {
   public Grib1TablesViewer(final PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
 
-    codeTable = new BeanTableSorted(TableBean.class, (PreferencesExt) prefs.node("CodeBean"), false);
+    codeTable = new BeanTableSorted(TableBean.class, (PreferencesExt) prefs.node("CodeTableBean"), false);
     codeTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         TableBean csb = (TableBean) codeTable.getSelectedBean();
@@ -164,19 +164,11 @@ public class Grib1TablesViewer extends JPanel {
     }
 
     public String getCenter() {
-      return CommonCodeTable.getTableValue(11, table.getCenter_id());
+      return CommonCodeTable.getCenterName(table.getCenter_id(), 1);
     }
 
     public String getSubCenter() {
-      return CommonCodeTable.getTableValue(12, table.getCenter_id(), table.getSubcenter_id());
-    }
-
-    public String getCenterOld() {
-      return Grib1Tables.getCenter_idName(table.getCenter_id());
-    }
-
-    public String getSubCenterOld() {
-      return CommonCodeTable.getTableValue(12, table.getCenter_id(), table.getSubcenter_id());
+      return CommonCodeTable.getSubCenterName(table.getCenter_id(), table.getSubcenter_id());
     }
 
     public int getSubcenter_id() {

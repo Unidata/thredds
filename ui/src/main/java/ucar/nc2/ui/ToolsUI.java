@@ -129,6 +129,7 @@ public class ToolsUI extends JPanel {
   private BufrPanel bufrPanel;
   private BufrTableBPanel bufrTableBPanel;
   private BufrTableDPanel bufrTableDPanel;
+  private BufrCodePanel bufrCodePanel;
   private CdmremotePanel cdmremotePanel;
   private CoordSysPanel coordSysPanel;
   private CollectionPanel collectionPanel;
@@ -265,6 +266,7 @@ public class ToolsUI extends JPanel {
     bufrTabPane.addTab("BUFR", new JLabel("BUFR"));
     bufrTabPane.addTab("BUFRTableB", new JLabel("BUFRTableB"));
     bufrTabPane.addTab("BUFRTableD", new JLabel("BUFRTableD"));
+    bufrTabPane.addTab("BUFR-CODES", new JLabel("BUFR-CODES"));
     bufrTabPane.addChangeListener(new ChangeListener() {
       public void stateChanged(ChangeEvent e) {
         Component c = bufrTabPane.getSelectedComponent();
@@ -466,6 +468,10 @@ public class ToolsUI extends JPanel {
     } else if (title.equals("BUFRTableD")) {
       bufrTableDPanel = new BufrTableDPanel((PreferencesExt) mainPrefs.node("bufrD"));
       c = bufrTableDPanel;
+
+    } else if (title.equals("BUFR-CODES")) {
+      bufrCodePanel = new BufrCodePanel((PreferencesExt) mainPrefs.node("bufr-codes"));
+      c = bufrCodePanel;
 
     } else if (title.equals("NCS")) {
       cdmremotePanel = new CdmremotePanel((PreferencesExt) mainPrefs.node("cdmremote"));
@@ -964,6 +970,7 @@ public class ToolsUI extends JPanel {
     if (bufrPanel != null) bufrPanel.save();
     if (bufrTableBPanel != null) bufrTableBPanel.save();
     if (bufrTableDPanel != null) bufrTableDPanel.save();
+    if (bufrCodePanel != null) bufrCodePanel.save();
     if (coordSysPanel != null) coordSysPanel.save();
     if (cdmremotePanel != null) cdmremotePanel.save();
     if (ftPanel != null) ftPanel.save();
@@ -2921,6 +2928,30 @@ public class ToolsUI extends JPanel {
       });
 
       codeTable = new GribWmoCodesPanel(prefs, buttPanel);
+      add(codeTable, BorderLayout.CENTER);
+    }
+
+    boolean process(Object command) {
+      return true;
+    }
+
+    void save() {
+      codeTable.save();
+      super.save();
+    }
+
+    void closeOpenFiles() {
+    }
+  }
+
+  /////////////////////////////////////////////////////////////////////
+
+  private class BufrCodePanel extends OpPanel {
+    BufrWmoCodesPanel codeTable;
+
+    BufrCodePanel(PreferencesExt p) {
+      super(p, "table:", false, false, false);
+      codeTable = new BufrWmoCodesPanel(prefs, buttPanel);
       add(codeTable, BorderLayout.CENTER);
     }
 

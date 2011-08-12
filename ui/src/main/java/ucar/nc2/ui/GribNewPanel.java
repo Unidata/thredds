@@ -1083,8 +1083,8 @@ public class GribNewPanel extends JPanel {
     }
 
     public final String getCenter() {
-      String center = CommonCodeTable.getTableValue(11, id.getCenter_id());
-      String subcenter = CommonCodeTable.getTableValue(12, id.getCenter_id(), id.getSubcenter_id());
+      String center = CommonCodeTable.getCenterName(id.getCenter_id(), 2);
+      String subcenter = CommonCodeTable.getSubCenterName(id.getCenter_id(), id.getSubcenter_id());
       return id.getCenter_id() + "/" + id.getSubcenter_id() + " (" + center + "/" + subcenter + ")";
     }
 
@@ -1139,8 +1139,8 @@ public class GribNewPanel extends JPanel {
 
     Grib2SectionIdentification id = gr.getId();
     f.format("%nGrib2IdentificationSection%n");
-    f.format(" Center        = (%d) %s%n", id.getCenter_id(), CommonCodeTable.getTableValue(11, id.getCenter_id()));
-    f.format(" SubCenter     = (%d) %s%n", id.getSubcenter_id(), CommonCodeTable.getTableValue(12, id.getCenter_id(), id.getSubcenter_id()));
+    f.format(" Center        = (%d) %s%n", id.getCenter_id(), CommonCodeTable.getCenterName(id.getCenter_id(), 2));
+    f.format(" SubCenter     = (%d) %s%n", id.getSubcenter_id(), CommonCodeTable.getSubCenterName(id.getCenter_id(), id.getSubcenter_id()));
     f.format(" Master Table  = %d%n", id.getMaster_table_version());
     f.format(" Local Table   = %d%n", id.getLocal_table_version());
     f.format(" RefTimeSignif = %d (%s)%n", id.getSignificanceOfRT(), tables.getTableValue("1.2", id.getSignificanceOfRT()));

@@ -231,7 +231,7 @@ public class WmoXmlReader {
         System.out.printf(" key %s name '%s' has bad width='%s' %n", fxy, name, s);
       }
 
-      b.addDescriptor((short) x, (short) y, scale, reference, width, name, units);
+      b.addDescriptor((short) x, (short) y, scale, reference, width, name, units, null);
     }
     ios.close();
   }
