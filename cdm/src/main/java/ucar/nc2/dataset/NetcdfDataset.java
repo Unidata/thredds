@@ -818,7 +818,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     }
   }
 
-  static private NetcdfFile openDodsByReflection( String location, ucar.nc2.util.CancelTask cancelTask) {
+  static private NetcdfFile openDodsByReflection( String location, ucar.nc2.util.CancelTask cancelTask) throws IOException {
     try {
       Class c = NetcdfDataset.class.getClassLoader().loadClass("ucar.nc2.dods.DODSNetcdfFile");
       Constructor con = c.getConstructor(String.class, ucar.nc2.util.CancelTask.class);
@@ -826,22 +826,18 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
     } catch (ClassNotFoundException e) {
       log.info("opendap.jar is not on class path");
-      return null;  // opendap module is not loaded
 
     } catch (NoSuchMethodException e) {
       log.error("ucar.nc2.dods.DODSNetcdfFile does not exist", e);
-      return null;
     } catch (InvocationTargetException e) {
       log.error("ucar.nc2.dods.DODSNetcdfFile does not exist", e);
-      return null;
     } catch (InstantiationException e) {
       log.error("ucar.nc2.dods.DODSNetcdfFile does not exist", e);
-      return null;
     } catch (IllegalAccessException e) {
       log.error("ucar.nc2.dods.DODSNetcdfFile does not exist", e);
-      return null;
     }
 
+    throw new IOException("opendap.jar is not on classpath or is incorrect version");
   }
 
 

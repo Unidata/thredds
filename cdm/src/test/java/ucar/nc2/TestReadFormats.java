@@ -30,6 +30,7 @@ public class TestReadFormats extends TestCase {
     public boolean accept(File pathname) {
       countTotal++;
       String name = pathname.getName();
+      if (name.endsWith(".gbx")) return false;
       if (name.endsWith(".gbx8")) return false;
       if (name.endsWith(".gbx9")) return false;
       if (name.endsWith(".ncx")) return false;
