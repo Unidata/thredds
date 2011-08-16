@@ -32,7 +32,6 @@
  */
 package ucar.nc2.iosp.bufr;
 
-import ucar.nc2.iosp.bufr.tables.BufrTables;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.io.KMPMatch;
 
@@ -75,6 +74,8 @@ public class MessageScanner {
   /////////////////////////////////
 
   private ucar.unidata.io.RandomAccessFile raf = null;
+  private boolean useEmbeddedTables;
+
   private GregorianCalendar cal = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
 
   //private BufrMessage first = null;
@@ -87,15 +88,16 @@ public class MessageScanner {
   private EmbeddedTable embedTable = null;
 
   public MessageScanner(RandomAccessFile raf) throws IOException {
-    this(raf, 0);
+    this(raf, 0, true);
   }
 
-  public MessageScanner(RandomAccessFile raf, long startPos) throws IOException {
+  public MessageScanner(RandomAccessFile raf, long startPos, boolean useEmbeddedTables) throws IOException {
     startPos = (startPos < 30) ? 0 : startPos - 30; // look for the header
     this.raf = raf;
+    lastPos = startPos;
+    this.useEmbeddedTables = useEmbeddedTables;
     raf.seek(startPos);
     raf.order(RandomAccessFile.BIG_ENDIAN);
-    lastPos = startPos;
   }
 
   public boolean hasNext() throws IOException {
@@ -170,7 +172,7 @@ public class MessageScanner {
     m.setHeader( cleanup(header));
     m.setStartPos( start);
 
-    if (m.containsBufrTable()) {
+    if (useEmbeddedTables && m.containsBufrTable()) {
       if (embedTable == null) embedTable = new EmbeddedTable(m.ids, raf);
       embedTable.addTable(m);
     } else if (embedTable != null) {

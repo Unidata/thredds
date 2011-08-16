@@ -8,6 +8,9 @@ import org.joda.time.Period;
  *
  *
  * A Duration is a fixed number of seconds.
+ * I think thats wrong: a CalendarDuration should be a integer and a CalendarPeriod.
+ * Optionally, a CalendarPeriod could have an integer value.
+ *
  * Implements the thredds "duration" XML element type: specifies a length of time.
  * This is really the same as a ucar.nc2.units.TimeUnit, but it allows xsd:duration syntax as well as udunits syntax.
  * It also keeps track if the text is empty.

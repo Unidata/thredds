@@ -104,7 +104,8 @@ public class FeatureScan {
       for (File f : files) {
         String name = f.getName();
         String stem = stem(name);
-        if (name.endsWith(".gbx") || name.endsWith(".gbx8") || name.endsWith(".pdf") || name.endsWith(".xml") || name.endsWith(".gbx9")) {
+        if (name.endsWith(".gbx") || name.endsWith(".gbx8") || name.endsWith(".pdf") || name.endsWith(".xml") || name.endsWith(".gbx9")
+                || name.endsWith(".ncx")) {
           files2.remove(f);
 
         } else if (prev != null) {
@@ -135,7 +136,7 @@ public class FeatureScan {
     // do subdirs
     if (subdirs) {
       for (File f : dir.listFiles()) {
-        if (f.isDirectory())
+        if (f.isDirectory() && !f.getName().equals("exclude"))
           scanDirectory(f, result, errlog);
       }
     }
@@ -152,6 +153,7 @@ public class FeatureScan {
   public class Bean {
     public File f;
     String fileType;
+    IOServiceProvider iosp;
     String coordMap;
     FeatureType featureType;
     String ftype;
@@ -172,6 +174,7 @@ public class FeatureScan {
         if (debug) System.out.printf(" featureScan=%s%n", f.getPath());
         ds = NetcdfDataset.openDataset(f.getPath());
         fileType = ds.getFileTypeId();
+        iosp = ds.getIosp();
         setCoordMap(ds.getCoordinateSystems());
 
         Formatter errlog = new Formatter();
@@ -186,16 +189,16 @@ public class FeatureScan {
             featureDataset.getDetailInfo(infof);
             info = infof.toString();
           } else {
-            ftype = "FAIL: " + errlog.toString();
+            ftype = " FAIL: " + errlog.toString();
           }
         } catch (Throwable t) {
-          ftype = "ERR: " + t.getMessage();
+          ftype = " ERR: " + t.getMessage();
           info = errlog.toString();
           problem = t;
         }
 
       } catch (Throwable t) {
-        fileType = "ERR: " + t.getMessage();
+        fileType = " ERR: " + t.getMessage();
         problem = t;
 
       } finally {
@@ -213,6 +216,10 @@ public class FeatureScan {
 
     public String getFileType() {
       return fileType;
+    }
+
+    public String getIosp() {
+      return (iosp == null) ? "none" : iosp.getClass().getName();
     }
 
     public String getCoordMap() {

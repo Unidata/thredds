@@ -44,7 +44,7 @@ import java.util.regex.Pattern;
  * @since Jun 26, 2009
  */
 public class WildcardMatchOnPath implements MFileFilter {
-  private static final boolean debug = true;
+  private static final boolean debug = false;
   protected String wildcardString;
   protected java.util.regex.Pattern pattern;
 

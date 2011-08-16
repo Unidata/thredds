@@ -23,7 +23,23 @@ import java.util.regex.Pattern;
           "hours" | "hour" | "hrs" | "hr" | "h" |
           "days" | "day" | "d"
  * </pre>
-
+  *
+ *  "months since base_date by calendar field"
+ *  "years since base_date by calendar field"
+ *
+ *  bob simon's proposal:
+ *
+ *  "calendar_month since base_date"
+ *  "calendar_year since base_date"
+ *  * only integer values are allowed (?)
+ *
+ *  jon blowers comment:
+In your view would the solution to add “ by calendar field” to the existing udunits string be acceptable?  It’s
+ backward-compatible with the current interpretation and adds clarification for the cases in which we *do* want to
+ do calendar-field arithmetic (instead of adding fixed intervals).
+There’s an alternative proposition, in which the new units of calendar_month and calendar_year are added, with the same semantic effect.
+ (However, personally I like the “by calendar field” solution since it allows other fields to vary between calendars, e.g.
+ because of leap-seconds.)
  *
  * @author caron
  * @since 3/18/11
@@ -50,7 +66,7 @@ public class CalendarDateUnit {
   ////////////////////////////////////////////////////////////////////////////////////////
   private final Calendar cal;
   private final String unitString;
-  private final long unitLengthMsecs;
+  //private final long unitLengthMsecs;
   private final DateTime baseDateTime;
 
   private CalendarDateUnit(String calendarName, String dateUnitString) {
@@ -88,7 +104,7 @@ public class CalendarDateUnit {
     } else if (unit.equals("days") || unit.equals("day") || unit.equals("d")) {
       return 1000 * 60 * 60 * 24;
     } else {
-      throw new IllegalArgumentException("Unrecognized unit for time axis: " + unit);
+      throw new IllegalArgumentException("Unsupported unit for CalendarDateUnit : " + unit);
     }
   }
 

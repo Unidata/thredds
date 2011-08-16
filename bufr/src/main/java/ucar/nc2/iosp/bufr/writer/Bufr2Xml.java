@@ -318,7 +318,7 @@ public class Bufr2Xml {
 
       int count = 0;
       raf = new RandomAccessFile(filename, "r");
-      MessageScanner scan = new MessageScanner(raf, 0);
+      MessageScanner scan = new MessageScanner(raf);
       while (scan.hasNext()) {
         message = scan.next();
         if (!message.isTablesComplete() || !message.isBitCountOk()) continue;

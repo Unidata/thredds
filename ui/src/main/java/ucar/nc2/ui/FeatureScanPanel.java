@@ -147,6 +147,7 @@ public class FeatureScanPanel extends JPanel {
   }
 
   public boolean setScanDirectory(String dirName) {
+    ftTable.setBeans(new ArrayList()); // clear
     FeatureScan scanner = new FeatureScan(dirName, true);
     List<FeatureScan.Bean> beans = scanner.scan(new Formatter());
     ftTable.setBeans(beans);

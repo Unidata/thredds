@@ -13,7 +13,8 @@ import java.util.Date;
 
 /**
  * A Calendar Date. Replaces java.util.Date.
- * Cover for joda time, may use javax.time (threeten) in the future.
+ * Allows non-standard calendars. Default is Calendar.gregorian.
+ * Always in UTC time zone.
  *
  * @author caron
  * @since 3/21/11
@@ -45,6 +46,11 @@ public class CalendarDate implements Comparable<CalendarDate> {
     return new CalendarDate(cal, dt);
   }
 
+  /**
+   * Create CalendarDate from a java.util.Date
+   * @param date java.util.Date
+   * @return CalendarDate
+   */
   public static CalendarDate of(Date date) {
     DateTime dt = new DateTime(date, DateTimeZone.UTC) ;
     return new CalendarDate(Calendar.gregorian, dt);
@@ -53,7 +59,7 @@ public class CalendarDate implements Comparable<CalendarDate> {
   /**
    * Create CalendarDate from msecs since epoch
    * @param msecs milliseconds from 1970-01-01T00:00:00Z
-   * @return CalendarDate, UTC, ISOChronology
+   * @return CalendarDate
    */
   public static CalendarDate of(long msecs) {
     // Constructs an instance set to the milliseconds from 1970-01-01T00:00:00Z using ISOChronology in the specified time zone.
@@ -70,8 +76,6 @@ public class CalendarDate implements Comparable<CalendarDate> {
   public static CalendarDate parseISOformat(String calendarName, String isoDateString) {
 
     Date date = CalendarDateFormatter.parseISODate(isoDateString);
-
-    //DateTime dt = (isoDateString.indexOf('T') > 0) ? isof.parseDateTime(isoDateString) : isof2.parseDateTime(isoDateString);
 
     Calendar cal = Calendar.get(calendarName);
     Chronology chronology = Calendar.getChronology(cal);

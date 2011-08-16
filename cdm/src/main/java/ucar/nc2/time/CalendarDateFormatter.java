@@ -43,8 +43,8 @@ import java.text.ParseException;
 import java.util.Date;
 
 /**
- * Replacement for ucar.nc2.units.DateFormatter.
  * Threadsafe static routines for date formatting.
+ * Replacement for ucar.nc2.units.DateFormatter
  *
  * @author John
  * @since 7/9/11

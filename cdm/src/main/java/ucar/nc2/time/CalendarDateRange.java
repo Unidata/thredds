@@ -7,7 +7,7 @@ import ucar.nc2.units.DateRange;
 import java.util.Date;
 
 /**
- * A Calendar Date Range.
+ * A range of CalendarDates.
  *
  * @author caron
  * @since 3/21/11
