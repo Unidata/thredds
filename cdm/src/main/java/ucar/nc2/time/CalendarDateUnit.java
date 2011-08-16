@@ -34,11 +34,11 @@ import java.util.regex.Pattern;
  *  * only integer values are allowed (?)
  *
  *  jon blowers comment:
-In your view would the solution to add “ by calendar field” to the existing udunits string be acceptable?  It’s
+In your view would the solution to add "by calendar field" to the existing udunits string be acceptable?  It’s
  backward-compatible with the current interpretation and adds clarification for the cases in which we *do* want to
  do calendar-field arithmetic (instead of adding fixed intervals).
 There’s an alternative proposition, in which the new units of calendar_month and calendar_year are added, with the same semantic effect.
- (However, personally I like the “by calendar field” solution since it allows other fields to vary between calendars, e.g.
+ (However, personally I like the "by calendar field" solution since it allows other fields to vary between calendars, e.g.
  because of leap-seconds.)
  *
  * @author caron
@@ -66,7 +66,7 @@ public class CalendarDateUnit {
   ////////////////////////////////////////////////////////////////////////////////////////
   private final Calendar cal;
   private final String unitString;
-  //private final long unitLengthMsecs;
+  private final long unitLengthMsecs;
   private final DateTime baseDateTime;
 
   private CalendarDateUnit(String calendarName, String dateUnitString) {

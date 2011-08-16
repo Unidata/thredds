@@ -78,7 +78,7 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
 
   ////////////////////////////////////////////////////////////////
   private final ucar.nc2.time.Calendar calendar;
-  //private List<CalendarDate> cdates = null;
+  private List<CalendarDate> cdates = null;
 
   // for section and slice
   @Override
