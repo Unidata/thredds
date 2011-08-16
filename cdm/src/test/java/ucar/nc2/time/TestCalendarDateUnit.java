@@ -1,7 +1,9 @@
 package ucar.nc2.time;
 
 import junit.framework.TestCase;
+import org.easymock.internal.matchers.Null;
 import ucar.nc2.units.DateFormatter;
+import ucar.nc2.units.DateUnit;
 import ucar.units.*;
 
 import java.util.Date;
@@ -37,44 +39,44 @@ second
       YYYY-MM-DDThh:mm:ss.sTZD (eg 1997-07-16T19:20:30.45+01:00)
    */
   public void testW3cIso() {
-    testOne("secs since 1997");
-    testOne("secs since 1997-07");
-    testOne("secs since 1997-07-16");
-    testOne("secs since 1997-07-16T19:20+01:00");
-    testOne("secs since 1997-07-16T19:20:30+01:00");
+    testBase("secs since 1997");
+    testBase("secs since 1997-07");
+    testBase("secs since 1997-07-16");
+    testBase("secs since 1997-07-16T19:20+01:00");
+    testBase("secs since 1997-07-16T19:20:30+01:00");
   }
 
   // UNIT since [-]Y[Y[Y[Y]]]-MM-DD[(T| )hh[:mm[:ss[.sss*]]][ [+|-]hh[[:]mm]]]
   public void testUdunits() {
-    testOne("secs since 1992-10-8 15:15:42.5 -6:00");
-    testOne("secs since 1992-10-8 15:15:42.5 +6");
-    testOne("secs since 1992-10-8 15:15:42.534");
-    testOne("secs since 1992-10-8 15:15:42");
-    testOne("secs since 1992-10-8 15:15");
-    testOne("secs since 1992-10-8 15");
-    testOne("secs since 1992-10-8T15");
-    testOne("secs since 1992-10-8");
-    testOne("secs since 199-10-8");
-    testOne("secs since 19-10-8");
-    testOne("secs since 1-10-8");
-    testOne("secs since +1101-10-8");
-    testOne("secs since -1101-10-8");
-    testOne("secs since 1992-10-8T7:00 -6:00");
-    testOne("secs since 1992-10-8T7:00 +6:00");
-    testOne("secs since 1992-10-8T7 -6:00");
-    testOne("secs since 1992-10-8T7 +6:00");
-    testOne("secs since 1992-10-8 7 -6:00");
-    testOne("secs since 1992-10-8 7 +6:00");
-    testOne("secs since 0000-01-01"); // Coards climatology
+    testBase("secs since 1992-10-8 15:15:42.5 -6:00");
+    testBase("secs since 1992-10-8 15:15:42.5 +6");
+    testBase("secs since 1992-10-8 15:15:42.534");
+    testBase("secs since 1992-10-8 15:15:42");
+    testBase("secs since 1992-10-8 15:15");
+    testBase("secs since 1992-10-8 15");
+    testBase("secs since 1992-10-8T15");
+    testBase("secs since 1992-10-8");
+    testBase("secs since 199-10-8");
+    testBase("secs since 19-10-8");
+    testBase("secs since 1-10-8");
+    testBase("secs since +1101-10-8");
+    testBase("secs since -1101-10-8");
+    testBase("secs since 1992-10-8T7:00 -6:00");
+    testBase("secs since 1992-10-8T7:00 +6:00");
+    testBase("secs since 1992-10-8T7 -6:00");
+    testBase("secs since 1992-10-8T7 +6:00");
+    testBase("secs since 1992-10-8 7 -6:00");
+    testBase("secs since 1992-10-8 7 +6:00");
+    testBase("secs since 0000-01-01"); // Coards climatology
 
-    testOne("days since 1992");
-    testOne("hours since 2011-02-09T06:00:00Z");
-    testOne("seconds since 1968-05-23 00:00:00 UTC");
-    testOne("seconds since 1968-05-23 00:00:00 GMT");
+    testBase("days since 1992");
+    testBase("hours since 2011-02-09T06:00:00Z");
+    testBase("seconds since 1968-05-23 00:00:00 UTC");
+    testBase("seconds since 1968-05-23 00:00:00 GMT");
   }
 
   public void testProblem()  {
-    testOne("msecs since 1970-01-01T00:00:00Z");
+    testBase("msecs since 1970-01-01T00:00:00Z");
   }
 
   public void testUU() throws Exception {
@@ -92,7 +94,7 @@ second
     return u;
   }
 
-  public void testOne(String s) {
+  private void testBase(String s) {
 
     Date base = null;
     try {
@@ -112,6 +114,55 @@ second
     if (!base.equals(cdu.getBaseDate())) {
       System.out.printf("  BAD %s == %d != %d (diff = %d)%n", s, cdu.getBaseDate().getTime(), base.getTime(), cdu.getBaseDate().getTime() - base.getTime());
     }
+  }
+
+  public void testCoords() {
+    boolean test = true;
+    testCoords("days", test);
+    testCoords("hours", test);
+    testCoords("months", test);
+    testCoords("years", test);
+  }
+
+  private void testCoords(String unitP, boolean test) {
+    String unit = unitP + " since 1930-01-01";
+    CalendarDateUnit cdu = CalendarDateUnit.of(null, unit);
+    for (int i=0; i<13; i++) {
+      CalendarDate cd = cdu.makeCalendarDate(i);
+      System.out.printf("%d %s == %s%n", i, cdu, CalendarDateFormatter.toDateTimeStringISO(cd));
+      if (test) testDate(i + " "+ unit);
+    }
+    System.out.printf("%n");
+  }
+
+  private void testDate(String udunits) {
+
+    Date uddate = DateUnit.getStandardDate(udunits);
+    CalendarDate cd = CalendarDate.parseUdunits(null, udunits);
+
+    if (!uddate.equals(cd.toDate())) {
+      System.out.printf("  BAD %s == %s != %s (diff = %d)%n", udunits, df.toDateTimeString(uddate), cd, cd.toDate().getTime() - uddate.getTime());
+    }
+  }
+
+
+  public void testCoordsByCalendarField() {
+    boolean test = false;
+    testCoordsByCalendarField("days", test);
+    testCoordsByCalendarField("hours", test);
+    testCoordsByCalendarField("months", test);
+    testCoordsByCalendarField("years", test);
+  }
+
+  private void testCoordsByCalendarField(String unitP, boolean test) {
+    String unit = unitP + " since 1930-01-01 by calendar field";
+    CalendarDateUnit cdu = CalendarDateUnit.of(null, unit);
+    for (int i=0; i<13; i++) {
+      CalendarDate cd = cdu.makeByCalendarField(i);
+      System.out.printf("%2d %s == %s%n", i, cdu, CalendarDateFormatter.toDateTimeStringISO(cd));
+      if (test) testDate(i + " "+ unit);
+    }
+    System.out.printf("%n");
   }
 
 

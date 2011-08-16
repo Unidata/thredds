@@ -24,7 +24,7 @@ public enum Calendar {
   public static Calendar get(String s) {
     if (s == null) return null;
     if (s.equalsIgnoreCase("gregorian") || s.equalsIgnoreCase("standard")) return Calendar.gregorian;
-    if (s.equalsIgnoreCase("proleptic_gregorian") || s.equalsIgnoreCase("standard"))return Calendar.proleptic_gregorian;
+    if (s.equalsIgnoreCase("proleptic_gregorian"))return Calendar.proleptic_gregorian;
     if (s.equalsIgnoreCase("noleap") || s.equalsIgnoreCase("365_day")) return Calendar.noleap;
     if (s.equalsIgnoreCase("all_leap") || s.equalsIgnoreCase("366_day")) return Calendar.all_leap;
     if (s.equalsIgnoreCase("uniform30day") || s.equalsIgnoreCase("360_day")) return Calendar.uniform30day;

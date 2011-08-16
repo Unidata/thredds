@@ -13,9 +13,121 @@ dl {margin: 10px 5px 5px 15px;)
 
 <body>
 <h1>CDM Calendar Date Handling </h1>
-<p>As of CDM version 4.3, dates are no longer handled by the udunits library. This allows handling <a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.5/cf-conventions.html#calendar">non-standard Calendars</a>. Note that for all dimensional units, the udunits package is still used. This change only affects time coordinate handling, aka <em><strong>Calendar Dates</strong></em>.</p>
-<h3>W3C profile of ISO 8601</h3>
-<p>The CDM uses the <a href="http://www.w3.org/TR/NOTE-datetime.html">W3C profile of ISO 8601</a>  formatting for reading and writing calendar dates:</p>
+<p>As of CDM version 4.3, dates are no longer handled by the <a href="http://www.unidata.ucar.edu/software/udunits/">udunits library</a>. This allows handling <a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.5/cf-conventions.html#calendar">non-standard Calendars</a>. This change only affects datetime coordinate handling, called <a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.5/cf-conventions.html#time-coordinate">time coordinates</a> in CF, for all dimensional units, the udunits package is still used. </p>
+<h3>Definitions and Background</h3>
+<ul>
+  <li><strong><em>time</em></strong> is a duration of time (a dimensional unit). udunits handles this using a base unit of &quot;seconds&quot;. All other udunit time units are fixed multiples of a second.</li>
+  <li><em><strong>datetime</strong></em> is an instant of historical time. udunits represents a datetime as a fixed number of seconds since a reference date, eg  &quot;12 days since 1990-02-03 12:22&quot;. </li>
+  <li><strong><em>calendar date</em></strong> (eg &quot;1990-02-03 12:22&quot;) is a representation of      a datetime using calendar fields (<em>millisec, second, minute, hour, day, month, year)</em>. This allows one to correctly represent the same instant of time that, for example, is printed in a newspaper or is referenced in a history book. We are following the design from the <a href="http://joda-time.sourceforge.net/userguide.html">joda-time library</a>.</li>
+</ul>
+<hr width="100%" />
+<h3>CDM datetime coordinates<br />
+</h3>
+<p>The CDM library allows datetime coordinates to take the following form:</p>
+<ol>
+  <li><strong><a href="#udunit">udunit coordinate</a>:</strong> Variables of any numeric type  (<em>byte, short, int, long, float, double</em>) with a <em><strong>units</strong></em> attribute that is a  udunit date string, eg &quot;hours since 1930-01-01&quot;. This is the only form that conforms to CF.</li>
+  <li><strong><a href="#calendar_field">calendar field coordinate</a>: </strong>Variables of any integer type (<em>byte, short, int, long</em>) with a <em><strong>units</strong></em> attribute that is a udunit date string with  &quot;by calendar field&quot; at the end, eg &quot;months since 1930-01-01 by calendar field&quot;. </li>
+  <li><strong><a href="#ISO_String">ISO String coordinate</a>: </strong>Variables of type <em>String </em>or<em> char</em> in which the values follow (a slightly extended version of) the W3C profile of ISO 8601.</li>
+</ol>
+<h3>Supported Calendars</h3>
+<p>CDM 4.3 supports the following values of the <strong>calendar</strong> attribute:</p>
+<ul>
+  <li><strong>gregorian</strong> or <strong>standard</strong> = Mixed Gregorian/Julian calendar as defined by Udunits. This is the default.</li>
+  <li><strong>proleptic_gregorian</strong> = 
+    A Gregorian calendar extended to dates before 1582-10-15. That is, a year is a leap year if either (i) it is divisible by 4 but not by 100 or (ii) it is divisible by 400.</li>
+  <li><strong>noleap</strong> or <strong>365_day</strong> = 
+    Gregorian calendar without leap years, i.e., all years are 365 days long.</li>
+  <li><strong>all_leap</strong> or <strong>366_day</strong> = 
+    Gregorian calendar with every year being a leap year, i.e., all years are 366 days long.</li>
+  <li><strong>uniform30day </strong>or<strong> 360_day</strong> =    All years are 360 days divided into 30 day months.</li>
+  <li><strong>julian</strong> =
+    Julian calendar.</li>
+</ul>
+<p>The calendar attribute <strong>none</strong> is currently ignored by the CDM, but is available to the application to process.</p>
+<hr width="100%" />
+<h3>CDM udunit date  grammer<a name="udunit" id="udunit"></a></h3>
+<p>The CDM library continues to accept udunits for time coordinate units, but it doesn't use the udunit library to process them.</p>
+<p>The <a href="http://www.unidata.ucar.edu/software/udunits/udunits-2/udunits2lib.html#Grammar">udunit date grammer</a> is  difficult to understand. Heres an approximate regular expression:</p>
+<pre>period SINCE [-]Y[Y[Y[Y]]]-MM-DD[(T| )hh[:mm[:ss[.sss*]]][ [+|-]hh[[:]mm]]]</pre>
+<p>The following  specifies  the CDM udunit date grammer:</p>
+<pre>
+udunitDate = period <strong>SINCE</strong> reference_date
+period = &quot;millisec&quot; | &quot;msec&quot; | &quot;second&quot; | &quot;sec&quot; | &quot;s&quot; | &quot;minute&quot; | &quot;min&quot; | &quot;hour&quot; | &quot;hr&quot; | &quot;day&quot; | &quot;week&quot; | &quot;month&quot; | &quot;year&quot; | 
+         &quot;millisecs&quot; |&quot;msecs&quot; | &quot;seconds&quot; | &quot;secs&quot; | &quot;minutes&quot; | &quot;mins&quot; | &quot;hours&quot; | &quot;hrs&quot; | &quot;days&quot; | &quot;weeks&quot; | &quot;months&quot; | &quot;years&quot; 
+reference_date = cdm/iso formatted date as described below
+SINCE = literal (case insensitive)
+</pre>
+<p>where</p>
+<ul>
+  <li>msec = millisec = seconds / 1000</li>
+</ul>
+<p>udunits defines the periods as fixed multiples of seconds. The non-obvious ones are:</p>
+<ul>
+  <li>day = 86400.0 seconds</li>
+  <li>week = 7 days = 604800.0 seconds</li>
+  <li>month = year/12 = 2629743.831225 seconds</li>
+  <li>year =  3.15569259747E7 seconds</li>
+</ul>
+<p>The udunit package has some other periods that are no longer supported by CDM  udunit date grammer, such as &quot;sidereal day&quot;, &quot;lunar month&quot;, &quot;fortnight&quot;, &quot;eon&quot;, etc. Also CDM doesnt support  the full menagerie of udunit prefixes like &quot;nano&quot;, &quot;mega&quot;, &quot;kilo&quot;, and so on. Contact us if this is a problem.</p>
+<p>CF and CDM agree that one should not use <em>month</em> or <em>year</em> as the period in a udunit, in order to avoid the following sort of problems:</p>
+<pre> 0 months since 1930-01-01 == 1930-01-01T00:00:00Z
+ 1 months since 1930-01-01 == 1930-01-31T10:29:03Z
+ 2 months since 1930-01-01 == 1930-03-02T20:58:07Z
+ 3 months since 1930-01-01 == 1930-04-02T07:27:11Z
+ 4 months since 1930-01-01 == 1930-05-02T17:56:15Z
+ 5 months since 1930-01-01 == 1930-06-02T04:25:19Z
+ 6 months since 1930-01-01 == 1930-07-02T14:54:22Z
+ 7 months since 1930-01-01 == 1930-08-02T01:23:26Z
+ 8 months since 1930-01-01 == 1930-09-01T11:52:30Z
+ 9 months since 1930-01-01 == 1930-10-01T22:21:34Z
+10 months since 1930-01-01 == 1930-11-01T08:50:38Z
+11 months since 1930-01-01 == 1930-12-01T19:19:42Z</pre>
+<pre>
+ 0 years since 1850-01-01 == 1850-01-01T00:00:00Z
+10 years since 1850-01-01 == 1860-01-01T10:07:39Z
+20 years since 1850-01-01 == 1869-12-31T20:15:19Z
+30 years since 1850-01-01 == 1880-01-01T06:22:59Z
+40 years since 1850-01-01 == 1889-12-31T16:30:38Z
+50 years since 1850-01-01 == 1900-01-01T02:38:18Z
+60 years since 1850-01-01 == 1910-01-01T12:45:58Z
+70 years since 1850-01-01 == 1920-01-01T22:53:38Z
+80 years since 1850-01-01 == 1930-01-01T09:01:17Z
+90 years since 1850-01-01 == 1940-01-01T19:08:57Z</pre>
+<hr width="100%" />
+<h3>CDM calendar_field<a name="calendar_field" id="calendar_field"></a>  grammer</h3>
+<p>The CDM accepts an extended form of udunit grammer, called a<strong><em> calendar field unit</em></strong>:</p>
+<pre>period SINCE reference date BY CALENDAR FIELD</pre>
+<p>The presence of &quot;BY CALENDAR FIELD&quot; (case insensitive) means that the CDM library manipulates the calendar field directly, rather than converting the period to a fixed multiple of seconds. The actual result  depends on the calendar used. <em><strong>Note that values of the period must be an integer.</strong></em></p>
+<p>In the default calendar (gregorian), the month and year period have variable length time duration. So for example:</p>
+<pre>   0 months since 1930-01-01 00:00:00Z by calendar field == 1930-01-01T00:00:00.000Z
+   1 months since 1930-01-01 00:00:00Z by calendar field == 1930-02-01T00:00:00.000Z
+   2 months since 1930-01-01 00:00:00Z by calendar field == 1930-03-01T00:00:00.000Z
+   3 months since 1930-01-01 00:00:00Z by calendar field == 1930-04-01T00:00:00.000Z
+   4 months since 1930-01-01 00:00:00Z by calendar field == 1930-05-01T00:00:00.000Z
+   5 months since 1930-01-01 00:00:00Z by calendar field == 1930-06-01T00:00:00.000Z
+   6 months since 1930-01-01 00:00:00Z by calendar field == 1930-07-01T00:00:00.000Z
+   7 months since 1930-01-01 00:00:00Z by calendar field == 1930-08-01T00:00:00.000Z
+   8 months since 1930-01-01 00:00:00Z by calendar field == 1930-09-01T00:00:00.000Z
+   9 months since 1930-01-01 00:00:00Z by calendar field == 1930-10-01T00:00:00.000Z
+   10 months since 1930-01-01 00:00:00Z by calendar field == 1930-11-01T00:00:00.000Z
+   11 months since 1930-01-01 00:00:00Z by calendar field == 1930-12-01T00:00:00.000Z
+   12 months since 1930-01-01 00:00:00Z by calendar field == 1931-01-01T00:00:00.000Z</pre>
+<pre>   0 years since 1930-01-01 00:00:00Z by calendar field == 1930-01-01T00:00:00.000Z
+   1 years since 1930-01-01 00:00:00Z by calendar field == 1931-01-01T00:00:00.000Z
+   2 years since 1930-01-01 00:00:00Z by calendar field == 1932-01-01T00:00:00.000Z
+   3 years since 1930-01-01 00:00:00Z by calendar field == 1933-01-01T00:00:00.000Z
+   4 years since 1930-01-01 00:00:00Z by calendar field == 1934-01-01T00:00:00.000Z
+   5 years since 1930-01-01 00:00:00Z by calendar field == 1935-01-01T00:00:00.000Z
+   6 years since 1930-01-01 00:00:00Z by calendar field == 1936-01-01T00:00:00.000Z
+   7 years since 1930-01-01 00:00:00Z by calendar field == 1937-01-01T00:00:00.000Z
+   8 years since 1930-01-01 00:00:00Z by calendar field == 1938-01-01T00:00:00.000Z
+   9 years since 1930-01-01 00:00:00Z by calendar field == 1939-01-01T00:00:00.000Z
+   10 years since 1930-01-01 00:00:00Z by calendar field == 1940-01-01T00:00:00.000Z
+   11 years since 1930-01-01 00:00:00Z by calendar field == 1941-01-01T00:00:00.000Z
+   12 years since 1930-01-01 00:00:00Z by calendar field == 1942-01-01T00:00:00.000Z</pre>
+<hr width="100%" />
+<h3>W3C profile of ISO 8601<a name="ISO_String" id="ISO_String"></a></h3>
+<p>The CDM uses the <a href="http://www.w3.org/TR/NOTE-datetime.html">W3C profile of ISO 8601</a> formatting for reading and writing calendar dates:</p>
 <blockquote>
   <p>The formats are as follows.
     Exactly the components shown here must be present, with exactly this
@@ -49,104 +161,16 @@ dl {margin: 10px 5px 5px 15px;)
      TZD  = time zone designator (Z or +hh:mm or -hh:mm)
   </pre>
 </blockquote>
-
-<p>with the following differences:</p>
+<p>with the following differences, to allow backwards compatibility with udunits:</p>
 <ul>
   <li>You may use a space instead of the 'T'</li>
-  <li>The year may be preceeded by a '+' (ignored) or a '-' (makes the date  BC)</li>
+  <li>The year may be preceeded by a '+' (ignored) or a '-' (makes the date  BCE)</li>
   <li>The date part uses a '-' delimiter instead of a fixed number of digits for each field</li>
   <li>The time part uses a ':' delimiter instead of a fixed number of digits for each field</li>
 </ul>
-<p>&nbsp;</p>
-<h3>CDM udunit date  grammer</h3>
-<p>The CDM continue to accept udunits for time coordinate units, it just doesnt use the udunit library to process them.</p>
-<p>The <a href="http://www.unidata.ucar.edu/software/udunits/udunits-2/udunits2lib.html#Grammar">udunit date grammer</a> is a bit fuzzy. Heres an approximate regular expression:</p>
-<pre>period SINCE [-]Y[Y[Y[Y]]]-MM-DD[(T| )hh[:mm[:ss[.sss*]]][ [+|-]hh[[:]mm]]]</pre>
-<p>The following  specifies  the CDM udunit date grammer:</p>
-<pre>udunitDate = period <strong>SINCE</strong> reference_date
-
-
-period = &quot;millisec&quot; | &quot;msec&quot; | &quot;second&quot; | &quot;sec&quot; | &quot;s&quot; | &quot;minute&quot; | &quot;min&quot; | &quot;hour&quot; | &quot;hr&quot; | &quot;day&quot; | &quot;week&quot; | &quot;month&quot; | &quot;year&quot; | 
-         &quot;millisecs&quot; |&quot;msecs&quot; | &quot;seconds&quot; | &quot;secs&quot; | &quot;minutes&quot; | &quot;mins&quot; | &quot;hours&quot; | &quot;hrs&quot; | &quot;days&quot; | &quot;weeks&quot; | &quot;months&quot; | &quot;years&quot; 
-reference_date = cdm/iso formatted date as described above
-SINCE = literal (case insensitive)
-
-</pre>
-<p>where</p>
-<ul>
-  <li>msec = millisec = seconds / 1000</li>
-</ul>
-<p>udunits defines the periods as fixed multiples of seconds. the non-obvious ones are:</p>
-<ul>
-  <li>day = 86400.0 seconds</li>
-  <li>week = 7 days = 604800.0 seconds</li>
-  <li>month = year/12 = 2629743.831225 seconds</li>
-  <li>year =  3.15569259747E7 seconds</li>
-</ul>
-<p>The udunit package has some other periods that are no longer supported by CDM  udunit date, such as &quot;sidereal day&quot;, &quot;lunar month&quot;, &quot;fortnight&quot;, &quot;eon&quot;, etc. We are not supporting these because we think they are not used, but contact us if you are using these with some reason.</p>
-<p>CF and CDM agree that one should not use <em>month</em> or <em>year</em> as the period, in order to avoid the following sort of problem:</p>
-<pre> 0 months since 1930-01-01 == 1930-01-01T00:00:00Z
- 1 months since 1930-01-01 == 1930-01-31T10:29:03Z
- 2 months since 1930-01-01 == 1930-03-02T20:58:07Z
- 3 months since 1930-01-01 == 1930-04-02T07:27:11Z
- 4 months since 1930-01-01 == 1930-05-02T17:56:15Z
- 5 months since 1930-01-01 == 1930-06-02T04:25:19Z
- 6 months since 1930-01-01 == 1930-07-02T14:54:22Z
- 7 months since 1930-01-01 == 1930-08-02T01:23:26Z
- 8 months since 1930-01-01 == 1930-09-01T11:52:30Z
- 9 months since 1930-01-01 == 1930-10-01T22:21:34Z
-10 months since 1930-01-01 == 1930-11-01T08:50:38Z
-11 months since 1930-01-01 == 1930-12-01T19:19:42Z</pre>
-<pre>
- 0 years since 1850-01-01 == 1850-01-01T00:00:00Z
-10 years since 1850-01-01 == 1860-01-01T10:07:39Z
-20 years since 1850-01-01 == 1869-12-31T20:15:19Z
-30 years since 1850-01-01 == 1880-01-01T06:22:59Z
-40 years since 1850-01-01 == 1889-12-31T16:30:38Z
-50 years since 1850-01-01 == 1900-01-01T02:38:18Z
-60 years since 1850-01-01 == 1910-01-01T12:45:58Z
-70 years since 1850-01-01 == 1920-01-01T22:53:38Z
-80 years since 1850-01-01 == 1930-01-01T09:01:17Z
-90 years since 1850-01-01 == 1940-01-01T19:08:57Z</pre>
-<hr width="100%" />
-<h3>Definitions</h3>
-<ul>
-  <li><strong><em>time</em></strong> is a duration of time (a dimensional unit). udunits handles this using a base unit of &quot;seconds&quot;. All other udunit time units are fixed multiples of a second.</li>
-  <li><em><strong>date</strong></em> is an instant of historical time (not a dimensional unit IMO). udunits represents a date as a fixed number of seconds since a reference date, eg as &quot;12 days since 1990-02-03 12:22&quot;. </li>
-  <li><strong><em>calendar date</em></strong>  (eg Feb 23, 1999 13:33) is a representation of      an instance of time which corresponds to historical time. That is, we want it to correctly represent the same instant of time that, say, is printed in a newspaper or is referenced in a history book. But leap years (and leap seconds), and changes in calendar representations make this complicated.</li>
-</ul>
-<hr width="100%" />
-<h3>Proposal (3/16/2011)</h3>
-<ol>
-  <li>time instants vs time duration 
-  <ul>
-  <li>  one must distinguish between dimensional time (&quot;time duration&quot;,   units=&quot;secs&quot;), and calendar time (&quot;time instant&quot;, or &quot;point on the time   continium&quot;) which is not dimensional.
-  <li>calendar time always references a calendar, default calendar is   gregorian, aka standard 
-  <li>udunits is a good reference library for dimensional time, but not for   calendar time 
-  </ul>
-  <li>calendar time 
-  <ul>
-  <li>time coordinates (CF section 4.4) are calendar times 
-  <li>time coordinate variables are instants in time. A bounds coordinate   (CF section 7.1) should be used to clarify the actual time range of each   coordinate. This is especially important when using cell measures (CF section 7.2) like mean, min, max, etc.
-  <li>calendar time representation needs to be clarified 
-  <li>udunits should no longer be the reference library for calendar time. a new reference library is needed, which handles non-standard calendars.    
-  <li>udunit date representation (&quot;n timeUnit since ISO_date&quot;) must be   retained for backwards compatibility. &quot;month&quot; and &quot;year&quot; timeUnit should   be redefined in CF version 1.x to refer to calendar fields, not fixed   length time durations. For files using versions previous to CF 1.x,   udunit fixed length semantics should be used. 
-     <li>the grammar for udunit date representations should be defined, so   that multiple libraries can implement it 
-    
-  <li>ISO date strings should be allowed 
-   </ul>
-  <li>time resolution 
-     <ul>
-      <li> any calendar fields not specified must be set to 0 </li>
-    </ul>
-  <li> time calculations
-    <ul>
-      <li>standard library functions for calculating time durations from time   ranges (start, end) are needed. these are calendar dependent. </li>
-    </ul>
-  </ol>
 <hr width="100%" />
 <address>
-<img src="../nc.gif" alt="" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated  July 2011
+<img src="../nc.gif" alt="" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated  August 2011
 </address>
 <p>&nbsp;</p>
 </body>

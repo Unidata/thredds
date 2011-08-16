@@ -141,8 +141,8 @@ public class FmrcInv {
           double[] bounds1 =  tc.getBound1();
           double[] bounds2 =  tc.getBound2();
           for (int i=0; i<bounds1.length; i++) {
-            CalendarDate date1 = fmrInv.getRunDate().add(bounds1[i], CalendarPeriod.Hour);
-            CalendarDate date2 = fmrInv.getRunDate().add(bounds2[i], CalendarPeriod.Hour);
+            CalendarDate date1 = fmrInv.getRunDate().add(bounds1[i], CalendarPeriod.Field.Hour);
+            CalendarDate date2 = fmrInv.getRunDate().add(bounds2[i], CalendarPeriod.Field.Hour);
             forecastTimeHash.add(date2); // second is used as the forecast date
             double b1 = getOffsetInHours(firstDate, date1);
             double b2 = getOffsetInHours(firstDate, date2);
@@ -152,7 +152,7 @@ public class FmrcInv {
         } else {
           // regular single time offset - add to offsetHash
           for (double offset : tc.getOffsetTimes()) {
-            CalendarDate fcDate = fmrInv.getRunDate().add(offset, CalendarPeriod.Hour);
+            CalendarDate fcDate = fmrInv.getRunDate().add(offset, CalendarPeriod.Field.Hour);
             forecastTimeHash.add(fcDate); // track all forecast times
             double d = getOffsetInHours(firstDate, fcDate);
             offsetHash.add(d); // track all offset hours, calculated from baseDate
@@ -287,7 +287,7 @@ public class FmrcInv {
    * @return base + offset as a Date
    */
   public static CalendarDate makeOffsetDate(CalendarDate base, double offset) {
-    return base.add(offset, CalendarPeriod.Hour);
+    return base.add(offset, CalendarPeriod.Field.Hour);
   }
 
   ////////////////////////////////////////////////////////////////////

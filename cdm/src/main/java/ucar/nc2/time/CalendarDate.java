@@ -103,7 +103,8 @@ public class CalendarDate implements Comparable<CalendarDate> {
     return cdu.makeCalendarDate(val);
   }
 
-  ////////////////////////
+  ////////////////////////////////////////////////
+
   private final DateTime dateTime;
   private final Calendar cal;
 
@@ -172,35 +173,55 @@ public class CalendarDate implements Comparable<CalendarDate> {
     return dateTime.getHourOfDay();
   }
 
-  public CalendarDate add(double value, CalendarPeriod unit) {
+  // old style udunits compatible.
+  /* day = 86400.0 seconds
+    week = 7 days = 604800.0 seconds
+    month = year/12 = 2629743.831225 seconds
+    year = 3.15569259747E7 seconds
+    */
+  public CalendarDate add(double value, CalendarPeriod.Field unit) {
     switch (unit) {
+      case Millisec:
+        return new CalendarDate(cal, dateTime.plusMillis( (int) value ));
       case Second:
-        return new CalendarDate(cal, dateTime.plusSeconds( (int) value ));
+        return new CalendarDate(cal, dateTime.plusMillis( (int) (value * 1000) ));
       case Minute:
         return new CalendarDate(cal, dateTime.plusSeconds( (int) (value * 60) ));
       case Hour:
         return new CalendarDate(cal, dateTime.plusSeconds( (int) (value * 60 * 60) ));
       case Day:
-        return new CalendarDate(cal, dateTime.plusDays( (int) value));
-      case Month:
-        return new CalendarDate(cal, dateTime.plusMonths( (int) value ));
-      case Year:
-        return new CalendarDate(cal, dateTime.plusYears( (int) value ));
+        return new CalendarDate(cal, dateTime.plusSeconds( (int) (value * 86400) ));
+      case Month: // LOOK should we throw warning ?
+        return new CalendarDate(cal, dateTime.plusSeconds( (int) (value * 2629743.831225) ));
+      case Year:  // LOOK should we throw warning ?
+        return new CalendarDate(cal, dateTime.plusSeconds( (int) (value * 3.15569259747E7) ));
     }
     throw new UnsupportedOperationException("period units = "+unit);
   }
 
-  public CalendarDate add(double value, CalendarDuration duration) {
-    value *=  duration.getValue();
-    return add(value, duration.getTimeUnit());
+  // calendar date field
+  public CalendarDate add(CalendarPeriod period) {
+    switch (period.getField()) {
+      case Millisec:
+        return new CalendarDate(cal, dateTime.plusMillis( period.getValue() ));
+      case Second:
+        return new CalendarDate(cal, dateTime.plusSeconds( period.getValue() ));
+      case Minute:
+        return new CalendarDate(cal, dateTime.plusMinutes(period.getValue()));
+      case Hour:
+        return new CalendarDate(cal, dateTime.plusHours(period.getValue()));
+      case Day:
+        return new CalendarDate(cal, dateTime.plusDays( period.getValue() ));
+      case Month:
+        return new CalendarDate(cal, dateTime.plusMonths( period.getValue() ));
+      case Year:
+        return new CalendarDate(cal, dateTime.plusYears( period.getValue() ));
+    }
+    throw new UnsupportedOperationException("period units = "+period);
   }
 
   public Date toDate() {
     return dateTime.toDate();
-  }
-
-  public long getMillis() {
-    return dateTime.getMillis();
   }
 
   /**

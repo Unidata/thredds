@@ -7,6 +7,7 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.chrono.ISOChronology;
 
 import java.util.Date;
+import java.util.Formatter;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -46,6 +47,7 @@ There’s an alternative proposition, in which the new units of calendar_month a
  */
 @Immutable
 public class CalendarDateUnit {
+  private static final String byCalendarString = " by calendar field";
   private static final String isodatePatternString = "([\\+\\-\\d]*)[ T]([\\.\\:\\d]*)([ \\+\\-]\\S*)?$";
   private static final Pattern isodatePattern = Pattern.compile(isodatePatternString);
   //private static final String udunitPatternString = "(\\w*)\\s*since\\s*([\\+\\-\\d]*)[ T]?([\\.\\:\\d]*)([ \\+\\-]\\S*)?$";
@@ -66,8 +68,9 @@ public class CalendarDateUnit {
   ////////////////////////////////////////////////////////////////////////////////////////
   private final Calendar cal;
   private final String unitString;
-  private final long unitLengthMsecs;
-  private final DateTime baseDateTime;
+  private final CalendarPeriod.Field periodField;
+  private final CalendarDate baseDate;
+  private final boolean byCalendarField;
 
   private CalendarDateUnit(String calendarName, String dateUnitString) {
     cal = Calendar.get(calendarName);
@@ -78,6 +81,15 @@ public class CalendarDateUnit {
       throw new IllegalArgumentException("The time zone of the Chronology must be UTC");
     }
 
+    int pos = dateUnitString.toLowerCase().indexOf(byCalendarString);
+    if (pos > 0) {
+      dateUnitString = dateUnitString.substring(0, pos).toString();
+      byCalendarField = true;
+    } else {
+      byCalendarField = false;
+    }
+    dateUnitString = dateUnitString.trim();
+
     Matcher m = udunitPattern.matcher(dateUnitString);
     if (!m.matches()) {
       System.out.printf("%s does not match %s%n", dateUnitString, udunitPatternString);
@@ -85,9 +97,9 @@ public class CalendarDateUnit {
     }
 
     unitString = m.group(1);
-    unitLengthMsecs = getUnitLengthMillis(unitString);
-
-    baseDateTime = parseUdunitsTimeString(chronology, dateUnitString, m.group(2), m.group(4), m.group(5));
+    periodField = CalendarPeriod.fromUnitString(unitString);
+    DateTime dt = parseUdunitsTimeString(chronology, dateUnitString, m.group(2), m.group(4), m.group(5));
+    baseDate = CalendarDate.of(cal, dt);
   }
 
   private long getUnitLengthMillis(String unit) {
@@ -249,20 +261,27 @@ public class CalendarDateUnit {
   }
 
   public CalendarDate makeCalendarDate(double value) {
-    return CalendarDate.of(cal, baseDateTime.plus((long) (unitLengthMsecs * value)));
+    return baseDate.add( value, periodField);
+  }
+
+  public CalendarDate makeByCalendarField(int value) {
+    return baseDate.add(CalendarPeriod.of(value, periodField));
   }
 
   @Override
   public String toString() {
-    return unitString+" since "+baseDateTime;
+    Formatter f = new Formatter();
+    f.format("%s since %s", unitString, CalendarDateFormatter.toDateTimeString(baseDate));
+    if (byCalendarField) f.format("%s", byCalendarString);
+    return f.toString();
   }
 
   public CalendarDate getBaseCalendarDate() {
-    return CalendarDate.of(cal, baseDateTime);
+    return baseDate;
   }
 
-  public CalendarDuration getTimeUnit() {
-    return CalendarDuration.fromUnitString(unitString);
+  public CalendarPeriod getTimeUnit() {
+    return CalendarPeriod.of(1, CalendarPeriod.fromUnitString(unitString));
   }
 
   public Calendar getCalendar() {
@@ -271,7 +290,7 @@ public class CalendarDateUnit {
 
   // testing
   Date getBaseDate() {
-    return baseDateTime.toDate();
+    return baseDate.toDate();
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////

@@ -37,7 +37,7 @@ public class CalendarDateRange {
 
   public CalendarDateRange(CalendarDate start, long durationInSecs) {
     this.start = start;
-    this.end = start.add((int) durationInSecs, CalendarPeriod.Second );
+    this.end = start.add((int) durationInSecs, CalendarPeriod.Field.Second );
     this.startDt = start.getDateTime();
     this.endDt = end.getDateTime();
     this.cal = start.getCalendar();

@@ -75,17 +75,17 @@ public class CalendarDuration {
   /////////////////////////////////////////////////////////////////////
 
   private String text;
-  private CalendarPeriod timeUnit;
+  private CalendarPeriod.Field timeUnit;
   private boolean isBlank;
   private double value;
-  private org.joda.time.Period jperiod;
+  //private org.joda.time.Period jperiod;
 
-  public CalendarDuration(int value, CalendarPeriod timeUnit) {
+  public CalendarDuration(int value, CalendarPeriod.Field timeUnit) {
     this.value = value;
     this.timeUnit = timeUnit;
   }
 
-  public CalendarPeriod getTimeUnit() {
+  public CalendarPeriod.Field getTimeUnit() {
     return timeUnit;
   }
 
@@ -143,10 +143,6 @@ public class CalendarDuration {
     duration = tunit.toDurationStandard();
   }*/
 
-  public CalendarPeriod getCalendarPeriod() {
-    return timeUnit;
-  }
-
   /**
    * Get the duration in natural units, ie units of getTimeUnit()
    * @return the duration in natural units
@@ -158,7 +154,7 @@ public class CalendarDuration {
   /**
    * Get the duration in seconds
    * @return the duration in seconds
-   */
+   *
   public double getValueInMillisecs() {
     if (timeUnit == CalendarPeriod.Millisec)
       return value;
@@ -233,7 +229,7 @@ public class CalendarDuration {
       return 365.0 * value;
 
     else throw new IllegalStateException();
-  }
+  } */
 
   /**
    * If this is a blank string
@@ -259,17 +255,17 @@ public class CalendarDuration {
     return getText();
   }
 
-  /**
+  /*
    * Override to be consistent with equals
-   */
-  public int hashCode() {
+   *
+  public int hashCode2() {
     return isBlank() ? 0 : (int) getValueInSeconds();
   }
 
-  /**
+  /*
    * TimeDurations with same value in seconds are equals
-   */
-  public boolean equals(Object o) {
+   *
+  public boolean equals2(Object o) {
     if (this == o)
       return true;
     if (!(o instanceof CalendarDuration))
@@ -277,10 +273,34 @@ public class CalendarDuration {
 
     CalendarDuration to = (CalendarDuration) o;
     return to.getValueInMillisecs() == getValueInMillisecs();
+  } */
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    CalendarDuration that = (CalendarDuration) o;
+
+    if (isBlank != that.isBlank) return false;
+    if (Double.compare(that.value, value) != 0) return false;
+    if (timeUnit != that.timeUnit) return false;
+
+    return true;
   }
 
+  @Override
+  public int hashCode() {
+    int result;
+    long temp;
+    result = timeUnit != null ? timeUnit.hashCode() : 0;
+    result = 31 * result + (isBlank ? 1 : 0);
+    temp = value != +0.0d ? Double.doubleToLongBits(value) : 0L;
+    result = 31 * result + (int) (temp ^ (temp >>> 32));
+    return result;
+  }
 
-///////////////////////////
+  ///////////////////////////
 
 static private void test(String unit, String result) throws Exception {
   org.joda.time.Period jp = convertToPeriod(1, unit);

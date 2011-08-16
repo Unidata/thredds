@@ -3,7 +3,7 @@ package ucar.nc2.grib.grib2;
 import net.jcip.annotations.Immutable;
 import ucar.grib.GribNumbers;
 import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarDuration;
+import ucar.nc2.time.CalendarPeriod;
 import ucar.unidata.util.Format;
 import ucar.unidata.util.StringUtil2;
 
@@ -83,8 +83,8 @@ public abstract class Grib2Pds {
   // (see Code table 4.4)
   public abstract int getTimeUnit();
 
-  public CalendarDuration getTimeDuration() {
-    return Grib2Utils.getCalendarDuration(getTimeUnit());
+  public CalendarPeriod getTimeDuration() {
+    return Grib2Utils.getCalendarPeriod(getTimeUnit());
   }
 
   /**

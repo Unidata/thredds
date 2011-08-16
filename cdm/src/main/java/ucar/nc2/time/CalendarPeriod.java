@@ -30,16 +30,25 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+
 package ucar.nc2.time;
 
+import net.jcip.annotations.Immutable;
+
 /**
- * Enumeration of Calendar Periods.
- * A Period is a logical duration of time, it requires a Calendar to convert to an actual duration of time.
+ * A CalendarPeriod is a logical duration of time, it requires a Calendar to convert to an actual duration of time.
+ * A CalendarField is expressed as {integer x Field}.
+ *
+ * Design follows joda Period class.
  * @author caron
  * @since 3/30/11
  */
-public enum CalendarPeriod {
-  Millisec, Second, Minute, Hour, Day, Month, Year;
+@Immutable
+public class CalendarPeriod {
+
+  public enum Field {
+    Millisec, Second, Minute, Hour, Day, Month, Year
+  }
 
   /**
    * Parse a udunit period string.
@@ -48,25 +57,79 @@ public enum CalendarPeriod {
    * @param udunit udunit string
    * @return CalendarPeriod enum
    */
-  public static CalendarPeriod fromUnitString(String udunit) {
+  public static CalendarPeriod.Field fromUnitString(String udunit) {
     if (udunit.endsWith("s")) udunit = udunit.substring(0, udunit.length()-1);
     udunit = udunit.toLowerCase();
 
     if (udunit.equals("msec"))
-      return Millisec;
+      return Field.Millisec;
     else if (udunit.equals("sec"))
-      return Second;
+      return Field.Second;
     else if (udunit.equals("minute"))
-      return Minute;
+      return Field.Minute;
     else if (udunit.equals("hour") || udunit.equals("hr"))
-      return Hour;
+      return Field.Hour;
     else if (udunit.equals("day"))
-      return Day;
+      return Field.Day;
     else if (udunit.equals("month"))
-      return Month;
+      return Field.Month;
      else if (udunit.equals("year"))
-      return Year;
+      return Field.Year;
     throw new IllegalArgumentException("cant convert "+ udunit +" to CalendarPeriod");
+  }
+
+  public static CalendarPeriod of(int value, Field field) {
+    return new CalendarPeriod(value, field);
+  }
+
+  ////////////////////////
+  // the common case is a single field
+  private final int value;
+  private final Field field;
+
+  private CalendarPeriod (int value, Field field) {
+    this.value = value;
+    this.field = field;
+  }
+
+  public CalendarPeriod multiply(int value) {
+    return new CalendarPeriod(this.value * value, this.field);
+  }
+
+  public int getValue() {
+    return value;
+  }
+
+  public Field getField() {
+    return field;
+  }
+
+  public int subtract(CalendarDate start, CalendarDate end) {
+    return 0;
+  }
+
+  /**
+   * Get the duration in seconds
+   * @return the duration in seconds
+   * @deprecated dont use - approximate!
+   */
+  public double getValueInMillisecs() {
+    if (field == CalendarPeriod.Field.Millisec)
+      return value;
+    else if (field == CalendarPeriod.Field.Second)
+      return 1000 * value;
+    else if (field == CalendarPeriod.Field.Minute)
+      return 60 * 1000 * value;
+    else if (field == CalendarPeriod.Field.Hour)
+      return 60 * 60 * 1000 * value;
+    else if (field == CalendarPeriod.Field.Day)
+      return 24 * 60 * 60 * 1000 * value;
+    else if (field == CalendarPeriod.Field.Month)
+      return 30.0 * 24.0 * 60.0 * 60.0 * 1000.0 * value;
+    else if (field == CalendarPeriod.Field.Year)
+      return 365.0 * 24.0 * 60.0 * 60.0 * 1000.0 * value;
+
+    else throw new IllegalStateException();
   }
 
 }

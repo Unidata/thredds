@@ -38,7 +38,7 @@ import ucar.nc2.grib.grib2.Grib2Pds;
 import ucar.nc2.grib.grib2.Grib2Record;
 import ucar.nc2.grib.grib2.Grib2Utils;
 import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarDuration;
+import ucar.nc2.time.CalendarPeriod;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.IOException;
@@ -257,7 +257,7 @@ public class GribTables {
       val = pds.getForecastTime();
     }
 
-    return gr.getReferenceDate().add(val, pds.getTimeDuration());
+    return gr.getReferenceDate().add( pds.getTimeDuration().multiply(val));
   }
 
   /*
@@ -317,6 +317,51 @@ public class GribTables {
     // End of Interval as date
     CalendarDate EI = pdsIntv.getIntervalTimeEnd();
     if (EI == null) {  // all values were set to zero   LOOK guessing!
+      result[1] = range;
+      result[0] = 0;
+
+    } else {
+      // End of Interval in units of getTimeUnit() since reference time
+      CalendarPeriod period = Grib2Utils.getCalendarPeriod(timeUnit);
+      int val = period.subtract(gr.getReferenceDate(), EI);
+
+      result[1] = val;
+      result[0] = result[1] - range;
+    }
+
+    return result;
+  }
+
+  public int[] getForecastTimeIntervalOld(Grib2Record gr) {
+    // note  from Arthur Taylor (degrib):
+    /* If there was a range I used:
+
+    End of interval (EI) = (bytes 36-42 show an "end of overall time interval")
+    C1) End of Interval = EI;      Begin of Interval = EI - range
+
+    and if there was no interval then I used:
+    C2) End of Interval = Begin of Interval = Ref + ForeT.
+    */
+    if (!gr.getPDS().isInterval()) return null;
+    Grib2Pds.PdsInterval pdsIntv = (Grib2Pds.PdsInterval) gr.getPDS();
+    int timeUnit = gr.getPDS().getTimeUnit();
+
+    // calculate total "range"
+    int range = 0;
+    for (Grib2Pds.TimeInterval ti : pdsIntv.getTimeIntervals()) {
+      if ((ti.timeRangeUnit != timeUnit) || (ti.timeIncrementUnit != timeUnit && ti.timeIncrementUnit != 255)) {
+        log.warn("TimeInterval has different units timeUnit= " + timeUnit + " TimeInterval=" + ti);
+      }
+
+      range += ti.timeRangeLength;
+      if (ti.timeIncrementUnit != 255) range += ti.timeIncrement;
+    }
+
+    int[] result = new int[2];
+
+    // End of Interval as date
+    CalendarDate EI = pdsIntv.getIntervalTimeEnd();
+    if (EI == null) {  // all values were set to zero   LOOK guessing!
       //EI = gr.getReferenceDate();
       result[1] = range;
       result[0] = 0;
@@ -324,7 +369,7 @@ public class GribTables {
     } else {
       // End of Interval in units of getTimeUnit() since reference time
       long msecs = EI.getDifferenceInMsecs(gr.getReferenceDate());
-      CalendarDuration duration = Grib2Utils.getCalendarDuration(timeUnit);
+      CalendarPeriod duration = Grib2Utils.getCalendarPeriod(timeUnit);
       int val = (int) Math.round(msecs / duration.getValueInMillisecs());
 
       result[1] = val;

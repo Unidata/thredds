@@ -35,7 +35,7 @@ package ucar.nc2.grib;
 import ucar.nc2.grib.grib2.*;
 import ucar.nc2.grib.table.GribTables;
 import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarDuration;
+import ucar.nc2.time.CalendarPeriod;
 
 import java.io.IOException;
 import java.util.*;
@@ -258,7 +258,7 @@ public class Rectilyser {
       int unit = pds.getTimeUnit();
       if (timeUnit < 0) { // first one
         timeUnit = unit;
-        vb.timeUnit = Grib2Utils.getCalendarDuration(timeUnit);
+        vb.timeUnit = Grib2Utils.getCalendarPeriod(timeUnit);
 
       } else if (unit != timeUnit) {
         isUniform = false;
@@ -274,10 +274,11 @@ public class Rectilyser {
           refDate = cd;
       }
 
+      // LOOK - cant you just compare time units ??
       int time = pds.getForecastTime();
-      CalendarDate date1 = cd.add(time, Grib2Utils.getCalendarDuration(unit));  // actual forecast date
+      CalendarDate date1 = cd.add( Grib2Utils.getCalendarPeriod(unit).multiply(time));  // actual forecast date
       int offset = TimeCoord.getOffset(refDate, date1, vb.timeUnit);
-      CalendarDate date2 = refDate.add(offset, vb.timeUnit);  // forecast date using offset
+      CalendarDate date2 = refDate.add( vb.timeUnit.multiply(offset));  // forecast date using offset
       if (!date1.equals(date2)) {
         timeUnitOk = false;
       }
@@ -287,7 +288,7 @@ public class Rectilyser {
     if (!timeUnitOk)
       timeUnit = 0; // minutes
 
-    vb.timeUnit = Grib2Utils.getCalendarDuration(timeUnit);
+    vb.timeUnit = Grib2Utils.getCalendarPeriod(timeUnit);
     vb.refDate = refDate;
     return isUniform;
   }
@@ -297,14 +298,13 @@ public class Rectilyser {
     for (Record r : vb.atomList) {
       Grib2Pds pds = r.gr.getPDS();
       int time = pds.getForecastTime();
-      int unit = pds.getTimeUnit();
-      CalendarDuration duration = Grib2Utils.getCalendarDuration(unit);
+      CalendarPeriod duration = pds.getTimeDuration();
 
       if (uniform) {
         r.tcCoord = time;
       } else {
         CalendarDate refDate = r.gr.getReferenceDate();
-        CalendarDate date = refDate.add(time, duration);
+        CalendarDate date = refDate.add( duration.multiply(time));
         r.tcCoord = TimeCoord.getOffset(vb.refDate, date, vb.timeUnit);
       }
       times.add(r.tcCoord);
@@ -324,7 +324,7 @@ public class Rectilyser {
         times.add(r.tcIntvCoord);
       } else {
         TimeCoord.Tinv org = new TimeCoord.Tinv(timeb[0], timeb[1]);
-        CalendarDuration fromUnit = Grib2Utils.getCalendarDuration(pds.getTimeUnit());
+        CalendarPeriod fromUnit = Grib2Utils.getCalendarPeriod(pds.getTimeUnit());
         r.tcIntvCoord =  org.convertReferenceDate(r.gr.getReferenceDate(), fromUnit, vb.refDate, vb.timeUnit);
         times.add(r.tcIntvCoord);
       }
@@ -371,7 +371,7 @@ public class Rectilyser {
     int vertCoordIndex = -1;
     int ensCoordIndex = -1;
     CalendarDate refDate;
-    CalendarDuration timeUnit;
+    CalendarPeriod timeUnit;
     Record[] recordMap;
     long pos;
     int length;

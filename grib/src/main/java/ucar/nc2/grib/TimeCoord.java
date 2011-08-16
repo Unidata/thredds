@@ -36,7 +36,7 @@ import net.jcip.annotations.Immutable;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarDateUnit;
-import ucar.nc2.time.CalendarDuration;
+import ucar.nc2.time.CalendarPeriod;
 
 import java.util.*;
 
@@ -56,13 +56,13 @@ import java.util.*;
 @Immutable
 public class TimeCoord {
 
-  public static int getOffset(CalendarDate refDate, CalendarDate cd, CalendarDuration timeUnit) {
+  public static int getOffset(CalendarDate refDate, CalendarDate cd, CalendarPeriod timeUnit) {
     long msecs = cd.getDifferenceInMsecs(refDate);
     return (int) Math.round(msecs / timeUnit.getValueInMillisecs());
   }
 
   private CalendarDate runDate;
-  private CalendarDuration timeUnit;
+  private CalendarPeriod timeUnit;
   protected List<Integer> coords;
   protected List<Tinv> intervals;
 
@@ -88,7 +88,7 @@ public class TimeCoord {
     }
   }
 
-  TimeCoord(CalendarDate runDate, CalendarDuration timeUnit, List coords) {
+  TimeCoord(CalendarDate runDate, CalendarPeriod timeUnit, List coords) {
     this.runDate = runDate;
     this.timeUnit = timeUnit;
 
@@ -123,12 +123,12 @@ public class TimeCoord {
   public CalendarDateRange getCalendarRange() {
     CalendarDate rd = getRunDate();
     if (coords != null) {
-      CalendarDate start = rd.add(coords.get(0), timeUnit);
-      CalendarDate end = rd.add(coords.get(coords.size() - 1), timeUnit);
+      CalendarDate start = rd.add(timeUnit.multiply(coords.get(0)));
+      CalendarDate end = rd.add(timeUnit.multiply(coords.get(coords.size() - 1)));
       return CalendarDateRange.of(start, end);
     } else {
-      CalendarDate start = rd.add(intervals.get(0).b1, timeUnit);
-      CalendarDate end = rd.add(intervals.get(intervals.size() - 1).b2, timeUnit);
+      CalendarDate start = rd.add(timeUnit.multiply(intervals.get(0).b1));
+      CalendarDate end = rd.add(timeUnit.multiply(intervals.get(intervals.size() - 1).b2));
       return CalendarDateRange.of(start, end);
     }
   }
@@ -147,14 +147,14 @@ public class TimeCoord {
 
   public String getUnits() {
     if (units != null) return units;
-    return timeUnit.getText() + " since " + runDate;
+    return timeUnit.getField().toString() + " since " + runDate;
   }
 
   public double getTimeUnitScale() {
     return timeUnit.getValue();
   }
 
-  public CalendarDuration getTimeUnit() {
+  public CalendarPeriod getTimeUnit() {
     return timeUnit;
   }
 
@@ -274,9 +274,9 @@ public class TimeCoord {
       return b2;
     }
 
-    public Tinv convertReferenceDate(CalendarDate fromDate, CalendarDuration fromUnit, CalendarDate toDate, CalendarDuration toUnit) {
-      CalendarDate start = fromDate.add(b1, fromUnit);
-      CalendarDate end = fromDate.add(b2, fromUnit);
+    public Tinv convertReferenceDate(CalendarDate fromDate, CalendarPeriod fromUnit, CalendarDate toDate, CalendarPeriod toUnit) {
+      CalendarDate start = fromDate.add(fromUnit.multiply(b1));
+      CalendarDate end = fromDate.add(fromUnit.multiply(b2));
       int startOffset = TimeCoord.getOffset(toDate, start, toUnit);
       int endOffset = TimeCoord.getOffset(toDate, end, toUnit);
       return new TimeCoord.Tinv(startOffset, endOffset);

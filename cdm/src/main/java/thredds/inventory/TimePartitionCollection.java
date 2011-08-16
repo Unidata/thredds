@@ -334,7 +334,7 @@ public class TimePartitionCollection extends CollectionManagerAbstract {
     TimePartitionCollectionManager(String name, DatedMFile dmf, String root, Map<String, Object> auxInfo) {
       super(name);
       this.startPartition = dmf.cdate;
-      this.endPartition = dmf.cdate.add(1, CalendarPeriod.Day);
+      this.endPartition = dmf.cdate.add( CalendarPeriod.of(1, CalendarPeriod.Field.Day));
       this.files = new ArrayList<MFile>();
       this.root = root;
       this.auxInfo = auxInfo;

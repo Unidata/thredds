@@ -34,7 +34,6 @@ package ucar.nc2.grib.grib2;
 
 import ucar.nc2.grib.VertCoord;
 import ucar.nc2.grib.table.WmoCodeTable;
-import ucar.nc2.time.CalendarDuration;
 import ucar.nc2.time.CalendarPeriod;
 import ucar.unidata.util.StringUtil2;
 
@@ -68,37 +67,38 @@ public class Grib2Utils {
     return s;
   }
 
-  static public CalendarDuration getCalendarDuration(int timeUnit) {
+  static public CalendarPeriod getCalendarPeriod(int timeUnit) {
 
     switch (timeUnit) { // code table 4.4
       case 0:
-        return new CalendarDuration(1, CalendarPeriod.Minute);
+        return CalendarPeriod.of(1, CalendarPeriod.Field.Minute);
       case 1:
-        return new CalendarDuration(1, CalendarPeriod.Hour);
+        return CalendarPeriod.of(1, CalendarPeriod.Field.Hour);
       case 2:
-        return new CalendarDuration(1, CalendarPeriod.Day);
+        return CalendarPeriod.of(1, CalendarPeriod.Field.Day);
       case 3:
-        return new CalendarDuration(1, CalendarPeriod.Month);
+        return CalendarPeriod.of(1, CalendarPeriod.Field.Month);
       case 4:
-        return new CalendarDuration(1, CalendarPeriod.Year);
+        return CalendarPeriod.of(1, CalendarPeriod.Field.Year);
       case 5:
-        return new CalendarDuration(10, CalendarPeriod.Year);
+        return CalendarPeriod.of(10, CalendarPeriod.Field.Year);
       case 6:
-        return new CalendarDuration(30, CalendarPeriod.Year);
+        return CalendarPeriod.of(30, CalendarPeriod.Field.Year);
       case 7:
-        return new CalendarDuration(100, CalendarPeriod.Year);
+        return CalendarPeriod.of(100, CalendarPeriod.Field.Year);
       case 10:
-        return new CalendarDuration(3, CalendarPeriod.Hour);
+        return CalendarPeriod.of(3, CalendarPeriod.Field.Hour);
       case 11:
-        return new CalendarDuration(6, CalendarPeriod.Hour);
+        return CalendarPeriod.of(6, CalendarPeriod.Field.Hour);
       case 12:
-        return new CalendarDuration(12, CalendarPeriod.Hour);
+        return CalendarPeriod.of(12, CalendarPeriod.Field.Hour);
       case 13:
-        return new CalendarDuration(1, CalendarPeriod.Second);
+        return CalendarPeriod.of(1, CalendarPeriod.Field.Second);
       default:
         throw new UnsupportedOperationException("Unknown time unit = "+timeUnit);
     }
   }
+
 
   /**
    * Unit of vertical coordinate.
