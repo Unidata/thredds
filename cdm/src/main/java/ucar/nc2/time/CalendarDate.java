@@ -6,8 +6,6 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.chrono.ISOChronology;
 import org.joda.time.chrono.ZonedChronology;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 
 import java.util.Date;
 
@@ -34,6 +32,17 @@ public class CalendarDate implements Comparable<CalendarDate> {
      return new CalendarDate(cal, dateTime);
   }
 
+  /**
+   *
+   * @param cal calendar to use, or null for default
+   * @param year any integer
+   * @param monthOfYear 1-12
+   * @param dayOfMonth 1-31
+   * @param hourOfDay  0-23
+   * @param minuteOfHour 0-59
+   * @param secondOfMinute 0-59
+   * @return CalendarDate
+   */
   public static CalendarDate of(Calendar cal, int year, int monthOfYear, int dayOfMonth, int hourOfDay, int minuteOfHour, int secondOfMinute) {
     Chronology base = Calendar.getChronology(cal);
     if (base == null)
@@ -43,6 +52,19 @@ public class CalendarDate implements Comparable<CalendarDate> {
 
     DateTime dt = new DateTime(year, monthOfYear, dayOfMonth, hourOfDay, minuteOfHour, secondOfMinute, base);
     dt = dt.withZone(DateTimeZone.UTC);
+    return new CalendarDate(cal, dt);
+  }
+
+  public static CalendarDate withDoy(Calendar cal, int year, int doy, int hourOfDay, int minuteOfHour, int secondOfMinute) {
+    Chronology base = Calendar.getChronology(cal);
+    if (base == null)
+      base = ISOChronology.getInstanceUTC(); // already in UTC
+    else
+      base = ZonedChronology.getInstance( base, DateTimeZone.UTC); // otherwise wrap it to be in UTC
+
+    DateTime dt = new DateTime(year, 0, 0, hourOfDay, minuteOfHour, secondOfMinute, base);
+    dt = dt.withZone(DateTimeZone.UTC);
+    dt = dt.withDayOfYear(doy);
     return new CalendarDate(cal, dt);
   }
 
@@ -87,7 +109,7 @@ public class CalendarDate implements Comparable<CalendarDate> {
   }
 
   /**
-   * Get CalendarDate from ISO date string
+   * Get CalendarDate from udunit date string
    * @param calendarName get Calendar from Calendar.get(calendarName). may be null
    * @param udunits must be value (space) udunits string
    * @return  CalendarDate

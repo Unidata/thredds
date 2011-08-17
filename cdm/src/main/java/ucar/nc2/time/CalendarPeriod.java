@@ -30,7 +30,6 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-
 package ucar.nc2.time;
 
 import net.jcip.annotations.Immutable;
@@ -45,37 +44,46 @@ import net.jcip.annotations.Immutable;
  */
 @Immutable
 public class CalendarPeriod {
+  static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CalendarPeriod.class);
 
   public enum Field {
     Millisec, Second, Minute, Hour, Day, Month, Year
   }
 
   /**
-   * Parse a udunit period string.
-   * Allowable strings = "msec", "sec", "minute", "hour", "hr", "day", "month", "year". Plural form also accepted.
-   * Case insensitive.
+   * Convert a udunit string into a CalendarPeriod.Field.
+   * Allowable strings = "msec", "sec", "minute", "hour", "day", "month", "year". Plural form also accepted.
+   * Case insensitive. Plural form also accepted.
+   *
    * @param udunit udunit string
    * @return CalendarPeriod enum
    */
   public static CalendarPeriod.Field fromUnitString(String udunit) {
-    if (udunit.endsWith("s")) udunit = udunit.substring(0, udunit.length()-1);
+    udunit = udunit.trim();
     udunit = udunit.toLowerCase();
 
-    if (udunit.equals("msec"))
-      return Field.Millisec;
-    else if (udunit.equals("sec"))
+    if (udunit.equals("s")) return Field.Second;
+
+      // eliminate plurals
+    if (udunit.endsWith("s")) udunit = udunit.substring(0, udunit.length()-1);
+
+    if (udunit.equals("second") || udunit.equals("sec")) {
       return Field.Second;
-    else if (udunit.equals("minute"))
+    } else if (udunit.equals("millisec") || udunit.equals("msec")) {
+      return Field.Millisec;
+    } else if (udunit.equals("minute") || udunit.equals("min")) {
       return Field.Minute;
-    else if (udunit.equals("hour") || udunit.equals("hr"))
+    } else if (udunit.equals("hour") || udunit.equals("hr") || udunit.equals("h")) {
       return Field.Hour;
-    else if (udunit.equals("day"))
+    } else if (udunit.equals("day") || udunit.equals("d")) {
       return Field.Day;
-    else if (udunit.equals("month"))
+    } else if (udunit.equals("month") || udunit.equals("mon")) {
       return Field.Month;
-     else if (udunit.equals("year"))
+    } else if (udunit.equals("year") || udunit.equals("y")) {
       return Field.Year;
-    throw new IllegalArgumentException("cant convert "+ udunit +" to CalendarPeriod");
+    } else {
+      throw new IllegalArgumentException("cant convert "+ udunit +" to CalendarPeriod");
+    }
   }
 
   public static CalendarPeriod of(int value, Field field) {
@@ -104,32 +112,45 @@ public class CalendarPeriod {
     return field;
   }
 
-  public int subtract(CalendarDate start, CalendarDate end) {
-    return 0;
+  public int subtract(CalendarDate start, CalendarDate end) { // LOOK something better to do ?
+    if (field == CalendarPeriod.Field.Month || field == CalendarPeriod.Field.Year) {
+      log.warn(" using Month or Year");
+      long diff = end.getDifferenceInMsecs(start);
+      return (int) (diff / getValueInMillisecs());
+    } else {
+      long diff = end.getDifferenceInMsecs(start);
+      return (int) (diff / millisecs());
+
+    }
   }
 
   /**
-   * Get the duration in seconds
+   * Get the duration in seconds                                               -+
+   *
    * @return the duration in seconds
    * @deprecated dont use - approximate!
    */
   public double getValueInMillisecs() {
-    if (field == CalendarPeriod.Field.Millisec)
-      return value;
-    else if (field == CalendarPeriod.Field.Second)
-      return 1000 * value;
-    else if (field == CalendarPeriod.Field.Minute)
-      return 60 * 1000 * value;
-    else if (field == CalendarPeriod.Field.Hour)
-      return 60 * 60 * 1000 * value;
-    else if (field == CalendarPeriod.Field.Day)
-      return 24 * 60 * 60 * 1000 * value;
-    else if (field == CalendarPeriod.Field.Month)
-      return 30.0 * 24.0 * 60.0 * 60.0 * 1000.0 * value;
-    else if (field == CalendarPeriod.Field.Year)
-      return 365.0 * 24.0 * 60.0 * 60.0 * 1000.0 * value;
+     if (field == CalendarPeriod.Field.Month)
+       return 30.0 * 24.0 * 60.0 * 60.0 * 1000.0 * value;
+     else if (field == CalendarPeriod.Field.Year)
+       return 365.0 * 24.0 * 60.0 * 60.0 * 1000.0 * value;
+     else return millisecs();
+   }
 
-    else throw new IllegalStateException();
-  }
+  private int millisecs() {
+     if (field == CalendarPeriod.Field.Millisec)
+       return value;
+     else if (field == CalendarPeriod.Field.Second)
+       return 1000 * value;
+     else if (field == CalendarPeriod.Field.Minute)
+       return 60 * 1000 * value;
+     else if (field == CalendarPeriod.Field.Hour)
+       return 60 * 60 * 1000 * value;
+     else if (field == CalendarPeriod.Field.Day)
+       return 24 * 60 * 60 * 1000 * value;
 
-}
+     else throw new IllegalStateException();
+   }
+
+ }

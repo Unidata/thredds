@@ -69,10 +69,10 @@ public class TestBufrRead extends TestCase {
 
   public void testReadMessages() throws IOException {
     int count = 0;
-    assert 13852 == (count = readBufr(TestAll.cdmUnitTestDir + "formats/bufr/uniqueIDD.bufr")) : count; // was 12337
-    assert 11249 == (count = readBufr(TestAll.cdmUnitTestDir + "formats/bufr/uniqueBrasil.bufr")) : count;  // was 11533
-    assert 22710 == (count = readBufr(TestAll.cdmUnitTestDir + "formats/bufr/uniqueExamples.bufr")) : count; // was 12727
-    assert 9929 == (count = readBufr(TestAll.cdmUnitTestDir + "formats/bufr/uniqueFnmoc.bufr")) : count;
+    assert 13852 == (count = readBufr(TestAll.cdmUnitTestDir + "formats/bufr/exclude/uniqueIDD.bufr")) : count; // was 12337
+    assert 11249 == (count = readBufr(TestAll.cdmUnitTestDir + "formats/bufr/exclude/uniqueBrasil.bufr")) : count;  // was 11533
+    assert 22710 == (count = readBufr(TestAll.cdmUnitTestDir + "formats/bufr/exclude/uniqueExamples.bufr")) : count; // was 12727
+    assert 9929 == (count = readBufr(TestAll.cdmUnitTestDir + "formats/bufr/exclude/uniqueFnmoc.bufr")) : count;
   }
 
   public void utestCountMessages() throws IOException {

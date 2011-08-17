@@ -67,7 +67,6 @@ public class BufrIosp extends AbstractIOServiceProvider {
   private Formatter parseInfo;
   private ConstructNC construct;
   private Message protoMessage;
-  // private DateFormatter dateFormatter = new DateFormatter();
 
   private List<Message> msgs = new ArrayList<Message>();
   private int[] obsStart; // for each message, the starting observation index
@@ -241,12 +240,12 @@ public class BufrIosp extends AbstractIOServiceProvider {
 
   private void addTime(ArrayStructure as) throws IOException {
     int n = (int) as.getSize();
-    Array timeData = Array.factory(double.class, new int[]{n});
+    Array timeData = Array.factory(String.class, new int[]{n});
     IndexIterator ii = timeData.getIndexIterator();
     StructureDataIterator iter = as.getStructureDataIterator();
     try {
       while (iter.hasNext())
-        ii.setDoubleNext(construct.makeObsTimeValue(iter.next()));
+        ii.setObjectNext( construct.makeObsTimeValue(iter.next()));
     } finally {
       iter.finish();
     }

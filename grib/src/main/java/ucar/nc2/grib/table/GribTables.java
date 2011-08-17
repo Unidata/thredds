@@ -292,7 +292,8 @@ public class GribTables {
     /* If there was a range I used:
 
     End of interval (EI) = (bytes 36-42 show an "end of overall time interval")
-    C1) End of Interval = EI;      Begin of Interval = EI - range
+    C1) End of Interval = EI;
+    Begin of Interval = EI - range
 
     and if there was no interval then I used:
     C2) End of Interval = Begin of Interval = Ref + ForeT.

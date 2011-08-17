@@ -33,6 +33,7 @@
 package ucar.nc2.iosp.bufr;
 
 import ucar.nc2.iosp.bufr.tables.TableA;
+import ucar.nc2.time.CalendarDate;
 import ucar.nc2.wmo.CommonCodeTable;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.nc2.iosp.bufr.tables.TableB;
@@ -40,8 +41,6 @@ import ucar.nc2.iosp.bufr.tables.TableB;
 import java.io.IOException;
 import java.util.Formatter;
 import java.util.List;
-import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
@@ -63,7 +62,6 @@ public class Message {
   private RandomAccessFile raf;
   private TableLookup lookup;
   private DataDescriptor root;
-  private GregorianCalendar cal;
 
   private String header; // wmo header
   private long startPos; // starting pos in raf
@@ -75,13 +73,12 @@ public class Message {
   int msg_nbits;
 
   public Message(RandomAccessFile raf, BufrIndicatorSection is, BufrIdentificationSection ids, BufrDataDescriptionSection dds,
-                 BufrDataSection dataSection, GregorianCalendar cal) throws IOException {
+                 BufrDataSection dataSection) throws IOException {
     this.raf = raf;
     this.is = is;
     this.ids = ids;
     this.dds = dds;
     this.dataSection = dataSection;
-    this.cal = cal;
     lookup = new TableLookup(ids);
   }
 
@@ -127,8 +124,8 @@ public class Message {
     return ids.getMasterTableId() + "." + ids.getMasterTableVersion() + "." + ids.getLocalTableVersion();
   }
 
-  public final Date getReferenceTime() {
-    return ids.getReferenceTime( cal);
+  public CalendarDate getReferenceTime() {
+    return ids.getReferenceTime();
   }
 
   ///////////////////////////////////////////////////////////////////////////

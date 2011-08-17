@@ -24,7 +24,7 @@ public enum Calendar {
   public static Calendar get(String s) {
     if (s == null) return null;
     if (s.equalsIgnoreCase("gregorian") || s.equalsIgnoreCase("standard")) return Calendar.gregorian;
-    if (s.equalsIgnoreCase("proleptic_gregorian"))return Calendar.proleptic_gregorian;
+    if (s.equalsIgnoreCase("proleptic_gregorian") || s.equalsIgnoreCase("ISO8601"))return Calendar.proleptic_gregorian;
     if (s.equalsIgnoreCase("noleap") || s.equalsIgnoreCase("365_day")) return Calendar.noleap;
     if (s.equalsIgnoreCase("all_leap") || s.equalsIgnoreCase("366_day")) return Calendar.all_leap;
     if (s.equalsIgnoreCase("uniform30day") || s.equalsIgnoreCase("360_day")) return Calendar.uniform30day;
@@ -33,18 +33,46 @@ public enum Calendar {
     return null;
   }
 
+  public static Calendar getDefault() {
+    return proleptic_gregorian;
+  }
+
   /**
    * Map of CF identifiers for calendar systems to joda-time Chronologies
    */
   private static final Map<Calendar, Chronology> CHRONOLOGIES = new HashMap<Calendar, Chronology>();
 
   static {
-    CHRONOLOGIES.put(Calendar.gregorian, ISOChronology.getInstanceUTC());  // ?? LOOK not sure of this, may be proleptic_gregorian ??
-    CHRONOLOGIES.put(Calendar.proleptic_gregorian, GregorianChronology.getInstanceUTC());
+    // Implements the Gregorian/Julian calendar system which is the calendar system used in most of the world. Wherever possible,
+    // it is recommended to use the ISOChronology instead.
+    // The Gregorian calendar replaced the Julian calendar, and the point in time when this chronology switches can be controlled
+    // using the second parameter of the getInstance method. By default this cutover is set to the date the Gregorian calendar was first instituted, October 15, 1582.
+    // Before this date, this chronology uses the proleptic Julian calendar (proleptic means extending indefinitely).
+    // The Julian calendar has leap years every four years, whereas the Gregorian has special rules for 100 and 400 years.
+    // A meaningful result will thus be obtained for all input values. However before 8 CE, Julian leap years were irregular,
+    // and before 45 BCE there was no Julian calendar.
+    // This chronology differs from GregorianCalendar in that years in BCE are returned correctly. Thus year 1 BCE is returned as -1
+    // instead of 1. The yearOfEra field produces results compatible with GregorianCalendar.
+    // The Julian calendar does not have a year zero, and so year -1 is followed by year 1. If the Gregorian cutover date is
+    // specified at or before year -1 (Julian), year zero is defined. In other words, the proleptic Gregorian chronology used by this class has a year zero.
+    CHRONOLOGIES.put(Calendar.gregorian, org.joda.time.chrono.GJChronology.getInstanceUTC());
+
+    // Implements a pure proleptic Gregorian calendar system, which defines every fourth year as leap, unless the year
+    // is divisible by 100 and not by 400. This improves upon the Julian calendar leap year rule.
+    // Although the Gregorian calendar did not exist before 1582 CE, this chronology assumes it did, thus it is proleptic.
+    // This implementation also fixes the start of the year at January 1, and defines the year zero.
+    CHRONOLOGIES.put(Calendar.proleptic_gregorian, ISOChronology.getInstanceUTC());
+
+    // Implements a pure proleptic Julian calendar system, which defines every fourth year as leap. This implementation follows
+    // the leap year rule strictly, even for dates before 8 CE, where leap years were actually irregular. In the Julian calendar,
+    // year zero does not exist: 1 BCE is followed by 1 CE.
+    // Although the Julian calendar did not exist before 45 BCE, this chronology assumes it did, thus it is proleptic.
+    // This implementation also fixes the start of the year at January 1.
     CHRONOLOGIES.put(Calendar.julian, JulianChronology.getInstanceUTC());
-    CHRONOLOGIES.put(Calendar.uniform30day, ThreeSixtyDayChronology.getInstanceUTC());
+
     CHRONOLOGIES.put(Calendar.all_leap, AllLeapChronology.getInstanceUTC());
     CHRONOLOGIES.put(Calendar.noleap, NoLeapChronology.getInstanceUTC());
+    CHRONOLOGIES.put(Calendar.uniform30day, ThreeSixtyDayChronology.getInstanceUTC());
   }
 
   static Chronology getChronology(Calendar cal) {

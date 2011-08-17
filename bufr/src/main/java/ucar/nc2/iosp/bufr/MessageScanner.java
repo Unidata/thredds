@@ -76,7 +76,7 @@ public class MessageScanner {
   private ucar.unidata.io.RandomAccessFile raf = null;
   private boolean useEmbeddedTables;
 
-  private GregorianCalendar cal = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
+  //private GregorianCalendar cal = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
 
   //private BufrMessage first = null;
   private int countMsgs = 0;
@@ -168,7 +168,7 @@ public class MessageScanner {
       }
     }
 
-    Message m = new Message(raf, is, ids, dds, dataSection, cal);
+    Message m = new Message(raf, is, ids, dds, dataSection);
     m.setHeader( cleanup(header));
     m.setStartPos( start);
 

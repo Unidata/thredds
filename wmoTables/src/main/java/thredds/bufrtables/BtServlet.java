@@ -499,13 +499,12 @@ public class BtServlet extends HttpServlet {
   private Document readBufr(File file, String cacheName) throws IOException {
     long start = System.nanoTime();
     RandomAccessFile raf = new RandomAccessFile(file.getPath(), "r");
-    DateFormatter format = new DateFormatter();
+    // DateFormatter format = new DateFormatter();
 
     Element rootElem = new Element("bufrValidation");
     Document doc = new Document(rootElem);
     rootElem.setAttribute("fileName", cacheName);
     rootElem.setAttribute("fileSize", Long.toString(raf.length()));
-    GregorianCalendar cal = new GregorianCalendar();
 
     MessageScanner scan = new MessageScanner(raf);
     int count = 0;
@@ -540,7 +539,7 @@ public class BtServlet extends HttpServlet {
       bufrMessage.addContent(new Element("WMOheader").setText(extractWMO(m.getHeader())));
       bufrMessage.addContent(new Element("center").setText(m.getCenterName()));
       bufrMessage.addContent(new Element("category").setText(m.getCategoryFullName()));
-      bufrMessage.addContent(new Element("date").setText( format.toDateTimeString(m.ids.getReferenceTime(cal))));
+      bufrMessage.addContent(new Element("date").setText( m.ids.getReferenceTime().toString() ));
       count++;
     }
     raf.close();

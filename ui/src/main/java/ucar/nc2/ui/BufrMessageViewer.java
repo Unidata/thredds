@@ -544,7 +544,7 @@ public class BufrMessageViewer extends JPanel {
     }
 
     public String getDate() {
-      return df.toDateTimeString(m.getReferenceTime());
+      return m.getReferenceTime().toString();
     }
 
     public String getComplete() {

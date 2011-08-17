@@ -34,6 +34,8 @@ package ucar.nc2.iosp.bufr;
 
 import ucar.nc2.*;
 import ucar.nc2.iosp.bufr.tables.CodeFlagTables;
+import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.constants._Coordinate;
@@ -147,7 +149,7 @@ class ConstructNC {
     DataDescriptor root = proto.getRootDataDescriptor();
     if (hasTime()) {
       Variable timev = recordStructure.addMemberVariable(new Variable(ncfile, null, recordStructure, TIME_NAME, DataType.INT, ""));
-      timev.addAttribute(new Attribute("units", dateUnit.getUnitsString()));
+      timev.addAttribute(new Attribute("units", dateUnit.toString()));
       timev.addAttribute(new Attribute("long_name", "time of observation"));
       timev.addAttribute(new Attribute(_Coordinate.AxisType, "Time"));
     }
@@ -452,8 +454,8 @@ class ConstructNC {
 
   boolean hasTime;
   private String yearName, monthName, dayName, hourName, minName, secName, doyName;
-  private DateUnit dateUnit;
-  private Calendar cal;
+  private CalendarDateUnit dateUnit;
+  //private Calendar cal;
 
   private boolean hasTime() throws IOException {
 
@@ -490,22 +492,17 @@ class ConstructNC {
         u = "hours";
       try {
         DateFormatter format = new DateFormatter();
-        dateUnit = new DateUnit(u + " since " +format.toDateTimeStringISO(proto.getReferenceTime()));
+        dateUnit = CalendarDateUnit.of(null, u + " since " +proto.getReferenceTime());
       } catch (Exception e) {
         log.error("BufrIosp failed to create date unit", e);
         hasTime = false;
       }
     }
 
-    if (hasTime) {
-      cal = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
-      cal.clear();
-    }
-
     return hasTime;
   }
 
-  double makeObsTimeValue(ArrayStructure abb) {
+  /* double makeObsTimeValue(ArrayStructure abb) {
     int year = abb.convertScalarInt(0, abb.findMember(yearName));
     int hour = abb.convertScalarInt(0, abb.findMember(hourName));
     int min = (minName == null) ? 0 : abb.convertScalarInt(0, abb.findMember(minName));
@@ -525,9 +522,9 @@ class ConstructNC {
     }
     Date d = cal.getTime();
     return dateUnit.makeValue(d);
-  }
+  } */
 
-  double makeObsTimeValue(StructureData sdata) {
+  CalendarDate makeObsTimeValue(StructureData sdata) {
 
     int year = sdata.convertScalarInt(yearName);
     int hour = sdata.convertScalarInt(hourName);
@@ -537,17 +534,12 @@ class ConstructNC {
     if (dayName != null) {
       int day = sdata.convertScalarInt(dayName);
       int month = sdata.convertScalarInt(monthName);
-      cal.set(year, month-1, day, hour, min, sec);
+      return CalendarDate.of(null, year, month, day, hour, min, sec);
+
     } else {
       int doy = sdata.convertScalarInt(doyName);
-      cal.set(Calendar.YEAR, year);
-      cal.set(Calendar.DAY_OF_YEAR, doy);
-      cal.set(Calendar.HOUR_OF_DAY, hour);
-      cal.set(Calendar.MINUTE, min);
-      cal.set(Calendar.SECOND, sec);
+      return CalendarDate.withDoy(null, year, doy, hour, min, sec);
     }
-    Date d = cal.getTime();
-    return dateUnit.makeValue(d);
   }
 
   // not currently used

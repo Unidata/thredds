@@ -13,11 +13,11 @@ dl {margin: 10px 5px 5px 15px;)
 
 <body>
 <h1>CDM Calendar Date Handling </h1>
-<p>As of CDM version 4.3, dates are no longer handled by the <a href="http://www.unidata.ucar.edu/software/udunits/">udunits library</a>. This allows handling <a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.5/cf-conventions.html#calendar">non-standard Calendars</a>. This change only affects datetime coordinate handling, called <a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.5/cf-conventions.html#time-coordinate">time coordinates</a> in CF, for all dimensional units, the udunits package is still used. </p>
+<p>As of CDM version 4.3, dates are no longer handled by the <a href="http://www.unidata.ucar.edu/software/udunits/">udunits library</a>. This allows handling <a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.5/cf-conventions.html#calendar">non-standard Calendars</a>. This change only affects <em><strong>datetime</strong></em> coordinate handling, called <a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.5/cf-conventions.html#time-coordinate">time coordinates</a> in CF. For all dimensional units, the udunits package is still used. </p>
 <h3>Definitions and Background</h3>
 <ul>
-  <li><strong><em>time</em></strong> is a duration of time (a dimensional unit). udunits handles this using a base unit of &quot;seconds&quot;. All other udunit time units are fixed multiples of a second.</li>
-  <li><em><strong>datetime</strong></em> is an instant of historical time. udunits represents a datetime as a fixed number of seconds since a reference date, eg  &quot;12 days since 1990-02-03 12:22&quot;. </li>
+  <li><strong><em>time</em></strong> is a duration of time (a dimensional unit). Udunits handles this using a base unit of &quot;seconds&quot;. All other udunit time units are fixed multiples of a second.</li>
+  <li><em><strong>datetime</strong></em> is an instant of historical time. Udunits represents a datetime as a fixed number of seconds since a reference date, eg  &quot;12 days since 1990-02-03 12:22&quot;. </li>
   <li><strong><em>calendar date</em></strong> (eg &quot;1990-02-03 12:22&quot;) is a representation of      a datetime using calendar fields (<em>millisec, second, minute, hour, day, month, year)</em>. This allows one to correctly represent the same instant of time that, for example, is printed in a newspaper or is referenced in a history book. We are following the design from the <a href="http://joda-time.sourceforge.net/userguide.html">joda-time library</a>.</li>
 </ul>
 <hr width="100%" />
@@ -26,22 +26,22 @@ dl {margin: 10px 5px 5px 15px;)
 <p>The CDM library allows datetime coordinates to take the following form:</p>
 <ol>
   <li><strong><a href="#udunit">udunit coordinate</a>:</strong> Variables of any numeric type  (<em>byte, short, int, long, float, double</em>) with a <em><strong>units</strong></em> attribute that is a  udunit date string, eg &quot;hours since 1930-01-01&quot;. This is the only form that conforms to CF.</li>
-  <li><strong><a href="#calendar_field">calendar field coordinate</a>: </strong>Variables of any integer type (<em>byte, short, int, long</em>) with a <em><strong>units</strong></em> attribute that is a udunit date string with  &quot;by calendar field&quot; at the end, eg &quot;months since 1930-01-01 by calendar field&quot;. </li>
+  <li><strong><a href="#calendar_field">calendar field coordinate</a>: </strong>Variables of any integer type (<em>byte, short, int, long</em>) with a <em><strong>units</strong></em> attribute that is a udunit date string but with  &quot;calendar&quot; added, eg &quot;calendar months since 1930-01-01&quot;. </li>
   <li><strong><a href="#ISO_String">ISO String coordinate</a>: </strong>Variables of type <em>String </em>or<em> char</em> in which the values follow (a slightly extended version of) the W3C profile of ISO 8601.</li>
 </ol>
 <h3>Supported Calendars</h3>
 <p>CDM 4.3 supports the following values of the <strong>calendar</strong> attribute:</p>
 <ul>
-  <li><strong>gregorian</strong> or <strong>standard</strong> = Mixed Gregorian/Julian calendar as defined by Udunits. This is the default.</li>
-  <li><strong>proleptic_gregorian</strong> = 
-    A Gregorian calendar extended to dates before 1582-10-15. That is, a year is a leap year if either (i) it is divisible by 4 but not by 100 or (ii) it is divisible by 400.</li>
+  <li><strong>gregorian</strong> or <strong>standard</strong> = Mixed Gregorian/Julian calendar. Same as Udunits except that the dates 1582-10-05 to 1582-10-14 dont exist, nor does year 0.</li>
+  <li><strong>proleptic_gregorian </strong>or <strong>ISO8601</strong> = 
+    A Gregorian calendar extended to dates before   1582-10-15. This corresponds to the   ISO8601 standard. This is the CDM default.</li>
+  <li><strong>julian</strong> =
+    proleptic Julian calendar system. </li>
   <li><strong>noleap</strong> or <strong>365_day</strong> = 
     Gregorian calendar without leap years, i.e., all years are 365 days long.</li>
   <li><strong>all_leap</strong> or <strong>366_day</strong> = 
     Gregorian calendar with every year being a leap year, i.e., all years are 366 days long.</li>
   <li><strong>uniform30day </strong>or<strong> 360_day</strong> =    All years are 360 days divided into 30 day months.</li>
-  <li><strong>julian</strong> =
-    Julian calendar.</li>
 </ul>
 <p>The calendar attribute <strong>none</strong> is currently ignored by the CDM, but is available to the application to process.</p>
 <hr width="100%" />
@@ -96,40 +96,29 @@ SINCE = literal (case insensitive)
 <hr width="100%" />
 <h3>CDM calendar_field<a name="calendar_field" id="calendar_field"></a>  grammer</h3>
 <p>The CDM accepts an extended form of udunit grammer, called a<strong><em> calendar field unit</em></strong>:</p>
-<pre>period SINCE reference date BY CALENDAR FIELD</pre>
-<p>The presence of &quot;BY CALENDAR FIELD&quot; (case insensitive) means that the CDM library manipulates the calendar field directly, rather than converting the period to a fixed multiple of seconds. The actual result  depends on the calendar used. <em><strong>Note that values of the period must be an integer.</strong></em></p>
-<p>In the default calendar (gregorian), the month and year period have variable length time duration. So for example:</p>
-<pre>   0 months since 1930-01-01 00:00:00Z by calendar field == 1930-01-01T00:00:00.000Z
-   1 months since 1930-01-01 00:00:00Z by calendar field == 1930-02-01T00:00:00.000Z
-   2 months since 1930-01-01 00:00:00Z by calendar field == 1930-03-01T00:00:00.000Z
-   3 months since 1930-01-01 00:00:00Z by calendar field == 1930-04-01T00:00:00.000Z
-   4 months since 1930-01-01 00:00:00Z by calendar field == 1930-05-01T00:00:00.000Z
-   5 months since 1930-01-01 00:00:00Z by calendar field == 1930-06-01T00:00:00.000Z
-   6 months since 1930-01-01 00:00:00Z by calendar field == 1930-07-01T00:00:00.000Z
-   7 months since 1930-01-01 00:00:00Z by calendar field == 1930-08-01T00:00:00.000Z
-   8 months since 1930-01-01 00:00:00Z by calendar field == 1930-09-01T00:00:00.000Z
-   9 months since 1930-01-01 00:00:00Z by calendar field == 1930-10-01T00:00:00.000Z
-   10 months since 1930-01-01 00:00:00Z by calendar field == 1930-11-01T00:00:00.000Z
-   11 months since 1930-01-01 00:00:00Z by calendar field == 1930-12-01T00:00:00.000Z
-   12 months since 1930-01-01 00:00:00Z by calendar field == 1931-01-01T00:00:00.000Z</pre>
-<pre>   0 years since 1930-01-01 00:00:00Z by calendar field == 1930-01-01T00:00:00.000Z
-   1 years since 1930-01-01 00:00:00Z by calendar field == 1931-01-01T00:00:00.000Z
-   2 years since 1930-01-01 00:00:00Z by calendar field == 1932-01-01T00:00:00.000Z
-   3 years since 1930-01-01 00:00:00Z by calendar field == 1933-01-01T00:00:00.000Z
-   4 years since 1930-01-01 00:00:00Z by calendar field == 1934-01-01T00:00:00.000Z
-   5 years since 1930-01-01 00:00:00Z by calendar field == 1935-01-01T00:00:00.000Z
-   6 years since 1930-01-01 00:00:00Z by calendar field == 1936-01-01T00:00:00.000Z
-   7 years since 1930-01-01 00:00:00Z by calendar field == 1937-01-01T00:00:00.000Z
-   8 years since 1930-01-01 00:00:00Z by calendar field == 1938-01-01T00:00:00.000Z
-   9 years since 1930-01-01 00:00:00Z by calendar field == 1939-01-01T00:00:00.000Z
-   10 years since 1930-01-01 00:00:00Z by calendar field == 1940-01-01T00:00:00.000Z
-   11 years since 1930-01-01 00:00:00Z by calendar field == 1941-01-01T00:00:00.000Z
-   12 years since 1930-01-01 00:00:00Z by calendar field == 1942-01-01T00:00:00.000Z</pre>
+<pre>CALENDAR period SINCE reference_date</pre>
+<p>The presence of &quot; CALENDAR&quot; (case insensitive) means that the CDM library manipulates the calendar field directly, rather than converting the period to a fixed multiple of seconds. The actual result  depends on the calendar used. <em><strong>Note that values of the period must be an integer.</strong></em></p>
+<p>For example:</p>
+<pre>   0 calendar months since 1930-01-01 00:00:00Z == 1930-01-01T00:00:00.000Z
+   1 calendar months since 1930-01-01 00:00:00Z == 1930-02-01T00:00:00.000Z
+   2 calendar months since 1930-01-01 00:00:00Z == 1930-03-01T00:00:00.000Z
+   3 calendar months since 1930-01-01 00:00:00Z == 1930-04-01T00:00:00.000Z
+   4 calendar months since 1930-01-01 00:00:00Z == 1930-05-01T00:00:00.000Z
+   5 calendar months since 1930-01-01 00:00:00Z == 1930-06-01T00:00:00.000Z
+   6 calendar months since 1930-01-01 00:00:00Z == 1930-07-01T00:00:00.000Z
+   7 calendar months since 1930-01-01 00:00:00Z == 1930-08-01T00:00:00.000Z
+   8 calendar months since 1930-01-01 00:00:00Z == 1930-09-01T00:00:00.000Z
+   9 calendar months since 1930-01-01 00:00:00Z == 1930-10-01T00:00:00.000Z
+  10 calendar months since 1930-01-01 00:00:00Z == 1930-11-01T00:00:00.000Z
+  11 calendar months since 1930-01-01 00:00:00Z == 1930-12-01T00:00:00.000Z
+  12 calendar months since 1930-01-01 00:00:00Z == 1931-01-01T00:00:00.000Z</pre>
+<pre>  0 calendar years since 1930-01-01 00:00:00Z == 1930-01-01T00:00:00.000Z<br /> 10 calendar years since 1930-01-01 00:00:00Z == 1940-01-01T00:00:00.000Z<br /> 20 calendar years since 1930-01-01 00:00:00Z == 1950-01-01T00:00:00.000Z<br /> 30 calendar years since 1930-01-01 00:00:00Z == 1960-01-01T00:00:00.000Z<br /> 40 calendar years since 1930-01-01 00:00:00Z == 1970-01-01T00:00:00.000Z<br /> 50 calendar years since 1930-01-01 00:00:00Z == 1980-01-01T00:00:00.000Z<br /> 60 calendar years since 1930-01-01 00:00:00Z == 1990-01-01T00:00:00.000Z<br /> 70 calendar years since 1930-01-01 00:00:00Z == 2000-01-01T00:00:00.000Z<br /> 80 calendar years since 1930-01-01 00:00:00Z == 2010-01-01T00:00:00.000Z<br /> 90 calendar years since 1930-01-01 00:00:00Z == 2020-01-01T00:00:00.000Z<br />100 calendar years since 1930-01-01 00:00:00Z == 2030-01-01T00:00:00.000Z<br />110 calendar years since 1930-01-01 00:00:00Z == 2040-01-01T00:00:00.000Z<br />120 calendar years since 1930-01-01 00:00:00Z == 2050-01-01T00:00:00.000Z
+</pre>
 <hr width="100%" />
 <h3>W3C profile of ISO 8601<a name="ISO_String" id="ISO_String"></a></h3>
 <p>The CDM uses the <a href="http://www.w3.org/TR/NOTE-datetime.html">W3C profile of ISO 8601</a> formatting for reading and writing calendar dates:</p>
 <blockquote>
-  <p>The formats are as follows.
+  <p>The  formats defined by the W3C profile of ISO 8601  are as follows.
     Exactly the components shown here must be present, with exactly this
     punctuation.
     Note that the &quot;T&quot; appears literally in
@@ -167,7 +156,15 @@ SINCE = literal (case insensitive)
   <li>The year may be preceeded by a '+' (ignored) or a '-' (makes the date  BCE)</li>
   <li>The date part uses a '-' delimiter instead of a fixed number of digits for each field</li>
   <li>The time part uses a ':' delimiter instead of a fixed number of digits for each field</li>
+  <li>The time zone designator may be Z, UTC, or GMT (case insensitive) or +hh:mm or -hh:mm</li>
 </ul>
+<hr width="100%" />
+<h3>Problems with Udunits handling of time coordinate</h3>
+<ol>
+  <li>Does not handle non-standard calendars.</li>
+  <li>Allows <em>months</em> and <em>years</em> as a period, but implements them with fixed length intervals.</li>
+  <li>Has no ability to manipulate the calendar fields directly.</li>
+</ol>
 <hr width="100%" />
 <address>
 <img src="../nc.gif" alt="" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated  August 2011

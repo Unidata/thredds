@@ -47,12 +47,9 @@ There’s an alternative proposition, in which the new units of calendar_month a
  */
 @Immutable
 public class CalendarDateUnit {
-  private static final String byCalendarString = " by calendar field";
-  private static final String isodatePatternString = "([\\+\\-\\d]*)[ T]([\\.\\:\\d]*)([ \\+\\-]\\S*)?$";
-  private static final Pattern isodatePattern = Pattern.compile(isodatePatternString);
-  //private static final String udunitPatternString = "(\\w*)\\s*since\\s*([\\+\\-\\d]*)[ T]?([\\.\\:\\d]*)([ \\+\\-]\\S*)?$";
+  private static final String byCalendarString = "calendar ";
   //                                                  1                     2             3    4             5
-  private static final String udunitPatternString = "(\\w*)\\s*since\\s*"+"([\\+\\-\\d]+)([ T]([\\.\\:\\d]*)([ \\+\\-]\\S*)?Z?)?$";
+  private static final String udunitPatternString = "(\\w*)\\s*since\\s*"+"([\\+\\-\\d]+)([ t]([\\.\\:\\d]*)([ \\+\\-]\\S*)?z?)?$";
   private static final Pattern udunitPattern = Pattern.compile(udunitPatternString);
 
   /**
@@ -70,57 +67,35 @@ public class CalendarDateUnit {
   private final String unitString;
   private final CalendarPeriod.Field periodField;
   private final CalendarDate baseDate;
-  private final boolean byCalendarField;
+  private final boolean isCalendarField;
 
   private CalendarDateUnit(String calendarName, String dateUnitString) {
-    cal = Calendar.get(calendarName);
-    Chronology chronology = Calendar.getChronology(cal);
-    if (chronology == null) chronology = ISOChronology.getInstanceUTC();
+    Calendar calt = Calendar.get(calendarName);
+    if (calt == null)
+      calt = Calendar.getDefault();
+    cal = calt;
 
-    if (!chronology.getZone().equals(DateTimeZone.UTC)) {
-      throw new IllegalArgumentException("The time zone of the Chronology must be UTC");
-    }
-
-    int pos = dateUnitString.toLowerCase().indexOf(byCalendarString);
-    if (pos > 0) {
-      dateUnitString = dateUnitString.substring(0, pos).toString();
-      byCalendarField = true;
-    } else {
-      byCalendarField = false;
-    }
     dateUnitString = dateUnitString.trim();
+    dateUnitString = dateUnitString.toLowerCase();
+
+    isCalendarField =  dateUnitString.startsWith(byCalendarString);
+    if (isCalendarField) {
+      dateUnitString = dateUnitString.substring(byCalendarString.length()).trim();
+    }
 
     Matcher m = udunitPattern.matcher(dateUnitString);
     if (!m.matches()) {
-      System.out.printf("%s does not match %s%n", dateUnitString, udunitPatternString);
+      //System.out.printf("'%s' does not match regexp '%s'%n", dateUnitString, udunitPatternString);
       throw new IllegalArgumentException(dateUnitString + " does not match " + udunitPatternString);
     }
 
     unitString = m.group(1);
     periodField = CalendarPeriod.fromUnitString(unitString);
-    DateTime dt = parseUdunitsTimeString(chronology, dateUnitString, m.group(2), m.group(4), m.group(5));
+    DateTime dt = parseUdunitsTimeString(dateUnitString, m.group(2), m.group(4), m.group(5));
     baseDate = CalendarDate.of(cal, dt);
   }
 
-  private long getUnitLengthMillis(String unit) {
-    unit = unit.trim();
-    unit = unit.toLowerCase();
-    if (unit.equals("seconds") || unit.equals("second") || unit.equals("secs") || unit.equals("sec") || unit.equals("s")) {
-      return 1000;
-    } else if (unit.equals("msecs") || unit.equals("msec")) {
-        return 1;
-    } else if (unit.equals("minutes") || unit.equals("minute") || unit.equals("mins") || unit.equals("min")) {
-      return 1000 * 60;
-    } else if (unit.equals("hours") || unit.equals("hour") || unit.equals("hrs") || unit.equals("hr") || unit.equals("h")) {
-      return 1000 * 60 * 60;
-    } else if (unit.equals("days") || unit.equals("day") || unit.equals("d")) {
-      return 1000 * 60 * 60 * 24;
-    } else {
-      throw new IllegalArgumentException("Unsupported unit for CalendarDateUnit : " + unit);
-    }
-  }
-
-  private DateTime parseUdunitsTimeString(Chronology chronology, String dateUnitString, String dateString, String timeString, String zoneString) {
+  private DateTime parseUdunitsTimeString(String dateUnitString, String dateString, String timeString, String zoneString) {
     // Set the defaults for any values that are not specified
     int year = 0;
     int month = 1;
@@ -154,14 +129,14 @@ public class CalendarDateUnit {
       if (isMinus) year = -year;
 
       // Get a DateTime object in this Chronology
-      DateTime dt = new DateTime(year, month, day, hour, minute, 0, 0, chronology);
+      DateTime dt = new DateTime(year, month, day, hour, minute, 0, 0, Calendar.getChronology(cal));
       // Add the seconds
       dt = dt.plus((long) (1000 * second));
 
       // Parse the time zone if present
       if (zoneString != null) {
         zoneString = zoneString.trim();
-        if (zoneString.length() > 0 && !zoneString.equals("Z") && !zoneString.equals("UTC") && !zoneString.equals("GMT")) {
+        if (zoneString.length() > 0 && !zoneString.equals("z") && !zoneString.equals("utc") && !zoneString.equals("gmt")) {
           isMinus = false;
           if (zoneString.startsWith("-")) {
              isMinus = true;
@@ -189,6 +164,40 @@ public class CalendarDateUnit {
       throw new IllegalArgumentException("Illegal base time specification: '" + dateUnitString+"' "+e.getMessage());
     }
   }
+
+  /*
+  possible forms for W3C profile of ISO 8601
+     Year:
+      YYYY (eg 1997)
+   Year and month:
+      YYYY-MM (eg 1997-07)
+   Complete date:
+      YYYY-MM-DD (eg 1997-07-16)
+   Complete date plus hours and minutes:
+      YYYY-MM-DDThh:mmTZD (eg 1997-07-16T19:20+01:00)
+   Complete date plus hours, minutes and seconds:
+      YYYY-MM-DDThh:mm:ssTZD (eg 1997-07-16T19:20:30+01:00)
+   Complete date plus hours, minutes, seconds and a decimal fraction of a second
+      YYYY-MM-DDThh:mm:ss.sTZD (eg 1997-07-16T19:20:30.45+01:00)
+
+where:
+     YYYY = four-digit year
+     MM   = two-digit month (01=January, etc.)
+     DD   = two-digit day of month (01 through 31)
+     hh   = two digits of hour (00 through 23) (am/pm NOT allowed)
+     mm   = two digits of minute (00 through 59)
+     ss   = two digits of second (00 through 59)
+     s    = one or more digits representing a decimal fraction of a second
+     TZD  = time zone designator (Z or +hh:mm or -hh:mm)
+except:
+    You may use a space instead of the 'T'
+    The year may be preceeded by a '+' (ignored) or a '-' (makes the date BCE)
+    The date part uses a '-' delimiter instead of a fixed number of digits for each field
+    The time part uses a ':' delimiter instead of a fixed number of digits for each field
+   */
+  //                                                   1                  2            3
+  private static final String isodatePatternString = "([\\+\\-\\d]*)[ Tt]([\\.\\:\\d]*)([ \\+\\-]\\S*)?$";
+  private static final Pattern isodatePattern = Pattern.compile(isodatePatternString);
 
   private DateTime parseIsoTimeString(Chronology chronology, String dateString, String timeString, String zoneString) {
     // Set the defaults for any values that are not specified
@@ -261,18 +270,24 @@ public class CalendarDateUnit {
   }
 
   public CalendarDate makeCalendarDate(double value) {
-    return baseDate.add( value, periodField);
+    if (isCalendarField)
+      return baseDate.add(CalendarPeriod.of( (int) value, periodField));
+    else
+      return baseDate.add( value, periodField);
   }
 
-  public CalendarDate makeByCalendarField(int value) {
-    return baseDate.add(CalendarPeriod.of(value, periodField));
+  public CalendarDate makeCalendarDate(int value) {
+    if (isCalendarField)
+      return baseDate.add(CalendarPeriod.of( value, periodField));
+    else
+      return baseDate.add( value, periodField);
   }
 
   @Override
   public String toString() {
     Formatter f = new Formatter();
+    if (isCalendarField) f.format("%s", byCalendarString);
     f.format("%s since %s", unitString, CalendarDateFormatter.toDateTimeString(baseDate));
-    if (byCalendarField) f.format("%s", byCalendarString);
     return f.toString();
   }
 

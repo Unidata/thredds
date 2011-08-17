@@ -46,6 +46,27 @@ second
     testBase("secs since 1997-07-16T19:20:30+01:00");
   }
 
+  public void testChangeoverDate() {
+    testBase("secs since 1997-01-01");
+    testBase("secs since 1582-10-16");
+    testBase("secs since 1582-10-15");
+    testBase("secs since 1582-10-01");
+    testBase("secs since 1582-10-02");
+    testBase("secs since 1582-10-03");
+    testBase("secs since 1582-10-04");
+    //testBase("secs since 1582-10-14"); // fail
+    //testBase("secs since 1582-10-06"); // fail
+  }
+
+  public void testyearZero() {
+    testCalendar(null, "secs since 0000-01-01");
+    testCalendar(null, "secs since 0001-01-01");
+    testCalendar(null, "secs since -0001-01-01");
+    testCalendar("gregorian", "secs since 0000-01-01");
+    testCalendar("gregorian", "secs since 0001-01-01");
+    testCalendar("gregorian", "secs since -0001-01-01");
+  }
+
   // UNIT since [-]Y[Y[Y[Y]]]-MM-DD[(T| )hh[:mm[:ss[.sss*]]][ [+|-]hh[[:]mm]]]
   public void testUdunits() {
     testBase("secs since 1992-10-8 15:15:42.5 -6:00");
@@ -67,7 +88,6 @@ second
     testBase("secs since 1992-10-8T7 +6:00");
     testBase("secs since 1992-10-8 7 -6:00");
     testBase("secs since 1992-10-8 7 +6:00");
-    testBase("secs since 0000-01-01"); // Coards climatology
 
     testBase("days since 1992");
     testBase("hours since 2011-02-09T06:00:00Z");
@@ -109,15 +129,41 @@ second
 
     CalendarDateUnit cdu = CalendarDateUnit.of(null, s);
 
-    System.out.printf("%s == %s == %s%n", s, cdu, df.toDateTimeStringISO(base));
+    System.out.printf("%s == %s (joda %s) == %s (udunit) %n", s, cdu, cdu.getCalendar(), df.toDateTimeStringISO(base));
 
     if (!base.equals(cdu.getBaseDate())) {
       System.out.printf("  BAD %s == %d != %d (diff = %d)%n", s, cdu.getBaseDate().getTime(), base.getTime(), cdu.getBaseDate().getTime() - base.getTime());
     }
   }
 
+  private void testCalendar(String cal, String s) {
+
+    Date base = null;
+    try {
+      Unit u = format.parse(s);
+      assert u instanceof TimeScaleUnit : s;
+      TimeScaleUnit tu = (TimeScaleUnit) u;
+      base = tu.getOrigin();
+    } catch (Exception e) {
+      e.printStackTrace();
+      return;
+    }
+
+    CalendarDateUnit cdu;
+    try {
+     cdu = CalendarDateUnit.of(cal, s);
+    } catch (Exception e) {
+      e.printStackTrace();
+      return;
+    }
+
+    System.out.printf("%s == %s (joda %s) == %s (udunit) %n", s, cdu, cdu.getCalendar(), df.toDateTimeStringISO(base));
+    if (!base.equals(cdu.getBaseDate()))
+      System.out.printf("  BAD diff = %d%n", cdu.getBaseDate().getTime() - base.getTime());
+  }
+
   public void testCoords() {
-    boolean test = true;
+    boolean test = false;
     testCoords("days", test);
     testCoords("hours", test);
     testCoords("months", test);
@@ -145,21 +191,26 @@ second
     }
   }
 
-
   public void testCoordsByCalendarField() {
     boolean test = false;
-    testCoordsByCalendarField("days", test);
-    testCoordsByCalendarField("hours", test);
-    testCoordsByCalendarField("months", test);
-    testCoordsByCalendarField("years", test);
+    testCoordsByCalendarField("calendar days", test);
+    testCoordsByCalendarField("calendar hours", test);
+    testCoordsByCalendarField("calendar months", test);
+    testCoordsByCalendarField("calendar years", test);
   }
 
   private void testCoordsByCalendarField(String unitP, boolean test) {
-    String unit = unitP + " since 1930-01-01 by calendar field";
+    String unit = unitP + " since 1930-01-01";
     CalendarDateUnit cdu = CalendarDateUnit.of(null, unit);
     for (int i=0; i<13; i++) {
-      CalendarDate cd = cdu.makeByCalendarField(i);
+      CalendarDate cd = cdu.makeCalendarDate(i);
       System.out.printf("%2d %s == %s%n", i, cdu, CalendarDateFormatter.toDateTimeStringISO(cd));
+      if (test) testDate(i + " "+ unit);
+    }
+
+    for (int i=0; i<13; i++) {
+      CalendarDate cd = cdu.makeCalendarDate(i*10);
+      System.out.printf("%2d %s == %s%n", i*10, cdu, CalendarDateFormatter.toDateTimeStringISO(cd));
       if (test) testDate(i + " "+ unit);
     }
     System.out.printf("%n");
