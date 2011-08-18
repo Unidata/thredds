@@ -91,6 +91,7 @@ second
 
     testBase("days since 1992");
     testBase("hours since 2011-02-09T06:00:00Z");
+    testBase("seconds since 1968-05-23 00:00:00");
     testBase("seconds since 1968-05-23 00:00:00 UTC");
     testBase("seconds since 1968-05-23 00:00:00 GMT");
   }
@@ -171,7 +172,7 @@ second
   }
 
   private void testCoords(String unitP, boolean test) {
-    String unit = unitP + " since 1930-01-01";
+    String unit = unitP + " since 2009-02-29";
     CalendarDateUnit cdu = CalendarDateUnit.of(null, unit);
     for (int i=0; i<13; i++) {
       CalendarDate cd = cdu.makeCalendarDate(i);
@@ -200,9 +201,9 @@ second
   }
 
   private void testCoordsByCalendarField(String unitP, boolean test) {
-    String unit = unitP + " since 1930-01-01";
+    String unit = unitP + " since 2008-02-29";
     CalendarDateUnit cdu = CalendarDateUnit.of(null, unit);
-    for (int i=0; i<13; i++) {
+    for (int i=0; i<15; i++) {
       CalendarDate cd = cdu.makeCalendarDate(i);
       System.out.printf("%2d %s == %s%n", i, cdu, CalendarDateFormatter.toDateTimeStringISO(cd));
       if (test) testDate(i + " "+ unit);

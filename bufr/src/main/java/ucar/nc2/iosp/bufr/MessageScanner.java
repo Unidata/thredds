@@ -62,7 +62,7 @@ public class MessageScanner {
    */
   static public boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) throws IOException {
     raf.seek(0);
-    if (!raf.searchForward(matcher, 8000)) return false; // must find "BUFR" in first 8k
+    if (!raf.searchForward(matcher, 40 * 1000)) return false; // must find "BUFR" in first 40k
     raf.skipBytes(4);
     BufrIndicatorSection is = new BufrIndicatorSection(raf);
     if (is.getBufrEdition() > 4) return false;

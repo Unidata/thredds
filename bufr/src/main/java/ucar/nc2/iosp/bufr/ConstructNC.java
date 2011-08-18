@@ -148,7 +148,7 @@ class ConstructNC {
 
     DataDescriptor root = proto.getRootDataDescriptor();
     if (hasTime()) {
-      Variable timev = recordStructure.addMemberVariable(new Variable(ncfile, null, recordStructure, TIME_NAME, DataType.INT, ""));
+      Variable timev = recordStructure.addMemberVariable(new Variable(ncfile, null, recordStructure, TIME_NAME, DataType.STRING, ""));
       timev.addAttribute(new Attribute("units", dateUnit.toString()));
       timev.addAttribute(new Attribute("long_name", "time of observation"));
       timev.addAttribute(new Attribute(_Coordinate.AxisType, "Time"));

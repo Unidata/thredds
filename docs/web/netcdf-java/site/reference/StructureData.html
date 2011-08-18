@@ -164,11 +164,14 @@ The following will return any compatible type as a double or float, but will hav
 <p>ArrayStructureBB calculates member offsets on demand. By default it assumes that each record is the same size. <strong>ucar.ma2.ArrayStructureBBpos</strong> relaxes this assumption by allowing you to pass in the starting positions in the ByteBuffer of each record. </p>
 <p>Member offsets must be the same for each record. However, more complex objects can be stored as an index into a <em>object heap list. </em>For example, this is used to store Strings, which are variable length arrays of UTF-16 charactors. The index of the String in the list is stored (as a 4-byte integer) in the ByteBuffer instead of the String. The String itself is added using  <strong>ArrayStructureBB.addObjectToHeap()</strong>, as in the following code:</p>
 <pre>
-  int heapIndex = arrayStructureBB.addObjectToHeap(stringData); // add object, and get the index into the Heap
-  arrayStructureBB.order( ByteOrder.nativeOrder());             // the heap index is always written in native order
-  arrayStructureBB.putInt(bbPos, heapIndex); 	                 // store the index
-</pre>
+  int heapIndex = arrayStructureBB.addObjectToHeap(stringData);   // add object into the Heap
+  arrayStructureBB.setInt(bbPos, heapIndex); 	                 // store the index<br></pre>
 
+<p>  or<br>
+</p>
+<pre>
+  arrayStructureBB.addObjectToHeap(recnum, member, stringData);   // add object for this recnum and member into the Heap
+</pre>
 <p>When storing data in an ArrayStructureBB, the heap must be used for both Strings and Sequences. The Object that is added to the heap in the <em>ArrayStructureBB.addObjectToHeap() </em>call:</p>
 <ul>
   <li>scalar String: <strong>String</strong></li>
@@ -253,7 +256,7 @@ class EmptyStructureDataIterator implements StructureDataIterator {
 <hr />
 <p>&nbsp;</p>
 <address>
-<img src="../nc.gif" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated  Sep 2010
+<img src="../nc.gif" width="64" height="64" /> This document is maintained by <a href="mailto:caron@unidata.ucar.edu">John Caron</a> and was last updated  Aug 2011
 </address>
 </body>
 </html>

@@ -92,7 +92,7 @@ public class TestBufrRead extends TestCase {
     try {
       raf = new RandomAccessFile(filename, "r");
 
-      MessageScanner scan = new MessageScanner(raf);
+      MessageScanner scan = new MessageScanner(raf, 0, false);
       while (scan.hasNext()) {
         try {
           

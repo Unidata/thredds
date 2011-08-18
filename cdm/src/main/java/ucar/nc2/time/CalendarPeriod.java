@@ -79,7 +79,7 @@ public class CalendarPeriod {
       return Field.Day;
     } else if (udunit.equals("month") || udunit.equals("mon")) {
       return Field.Month;
-    } else if (udunit.equals("year") || udunit.equals("y")) {
+    } else if (udunit.equals("year") || udunit.equals("yr")) {
       return Field.Year;
     } else {
       throw new IllegalArgumentException("cant convert "+ udunit +" to CalendarPeriod");

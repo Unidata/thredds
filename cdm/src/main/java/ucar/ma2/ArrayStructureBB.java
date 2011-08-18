@@ -498,6 +498,13 @@ public class ArrayStructureBB extends ArrayStructure {
     return heap.size() - 1;
   }
 
+  public void addObjectToHeap(int recnum, StructureMembers.Member m, Object s) {
+    if (null == heap) heap = new ArrayList<Object>();
+    heap.add(s);
+    int index = heap.size() - 1;
+    setInt(calcOffsetSetOrder(recnum, m), index);
+  }
+
   /**
    * DO NOT MODIFY
    * @return heap

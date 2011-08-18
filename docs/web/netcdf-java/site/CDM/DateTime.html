@@ -45,17 +45,18 @@ dl {margin: 10px 5px 5px 15px;)
 </ul>
 <p>The calendar attribute <strong>none</strong> is currently ignored by the CDM, but is available to the application to process.</p>
 <hr width="100%" />
-<h3>CDM udunit date  grammer<a name="udunit" id="udunit"></a></h3>
+<h3>CDM udunit date  grammar<a name="udunit" id="udunit"></a></h3>
 <p>The CDM library continues to accept udunits for time coordinate units, but it doesn't use the udunit library to process them.</p>
-<p>The <a href="http://www.unidata.ucar.edu/software/udunits/udunits-2/udunits2lib.html#Grammar">udunit date grammer</a> is  difficult to understand. Heres an approximate regular expression:</p>
+<p>The <a href="http://www.unidata.ucar.edu/software/udunits/udunits-2/udunits2lib.html#Grammar">udunit date grammar</a> is  difficult to understand. Heres an approximate regular expression:</p>
 <pre>period SINCE [-]Y[Y[Y[Y]]]-MM-DD[(T| )hh[:mm[:ss[.sss*]]][ [+|-]hh[[:]mm]]]</pre>
-<p>The following  specifies  the CDM udunit date grammer:</p>
+<p>The following  specifies  the CDM udunit date grammar:</p>
 <pre>
-udunitDate = period <strong>SINCE</strong> reference_date
-period = &quot;millisec&quot; | &quot;msec&quot; | &quot;second&quot; | &quot;sec&quot; | &quot;s&quot; | &quot;minute&quot; | &quot;min&quot; | &quot;hour&quot; | &quot;hr&quot; | &quot;day&quot; | &quot;week&quot; | &quot;month&quot; | &quot;year&quot; | 
-         &quot;millisecs&quot; |&quot;msecs&quot; | &quot;seconds&quot; | &quot;secs&quot; | &quot;minutes&quot; | &quot;mins&quot; | &quot;hours&quot; | &quot;hrs&quot; | &quot;days&quot; | &quot;weeks&quot; | &quot;months&quot; | &quot;years&quot; 
-reference_date = cdm/iso formatted date as described below
-SINCE = literal (case insensitive)
+udunitDate     = period <strong>SINCE</strong> reference_date
+period         = &quot;millisec&quot; | &quot;msec&quot; | &quot;second&quot; | &quot;sec&quot; | &quot;s&quot; | &quot;minute&quot; | &quot;min&quot; | &quot;hour&quot; | &quot;hr&quot; | &quot;day&quot; | &quot;week&quot; | &quot;month&quot; | &quot;mon&quot; | 
+					&quot;year&quot; | &quot;yr&quot;
+period         = period + &quot;s&quot; (plural form)
+reference_date = iso8601 formatted date as described below
+SINCE          = literal (case insensitive)
 </pre>
 <p>where</p>
 <ul>
@@ -68,7 +69,7 @@ SINCE = literal (case insensitive)
   <li>month = year/12 = 2629743.831225 seconds</li>
   <li>year =  3.15569259747E7 seconds</li>
 </ul>
-<p>The udunit package has some other periods that are no longer supported by CDM  udunit date grammer, such as &quot;sidereal day&quot;, &quot;lunar month&quot;, &quot;fortnight&quot;, &quot;eon&quot;, etc. Also CDM doesnt support  the full menagerie of udunit prefixes like &quot;nano&quot;, &quot;mega&quot;, &quot;kilo&quot;, and so on. Contact us if this is a problem.</p>
+<p>The udunit package has some other periods that are no longer supported by CDM  udunit date grammar, such as &quot;sidereal day&quot;, &quot;lunar month&quot;, &quot;fortnight&quot;, &quot;eon&quot;, etc. Also CDM doesnt support  the full menagerie of udunit prefixes like &quot;nano&quot;, &quot;mega&quot;, &quot;kilo&quot;, and so on. Contact us if this is a problem.</p>
 <p>CF and CDM agree that one should not use <em>month</em> or <em>year</em> as the period in a udunit, in order to avoid the following sort of problems:</p>
 <pre> 0 months since 1930-01-01 == 1930-01-01T00:00:00Z
  1 months since 1930-01-01 == 1930-01-31T10:29:03Z
@@ -94,25 +95,71 @@ SINCE = literal (case insensitive)
 80 years since 1850-01-01 == 1930-01-01T09:01:17Z
 90 years since 1850-01-01 == 1940-01-01T19:08:57Z</pre>
 <hr width="100%" />
-<h3>CDM calendar_field<a name="calendar_field" id="calendar_field"></a>  grammer</h3>
-<p>The CDM accepts an extended form of udunit grammer, called a<strong><em> calendar field unit</em></strong>:</p>
+<h3>CDM calendar_field<a name="calendar_field" id="calendar_field"></a>  grammar</h3>
+<p>The CDM accepts an extended form of udunit grammar, called a<strong><em> calendar field unit</em></strong>:</p>
 <pre>CALENDAR period SINCE reference_date</pre>
-<p>The presence of &quot; CALENDAR&quot; (case insensitive) means that the CDM library manipulates the calendar field directly, rather than converting the period to a fixed multiple of seconds. The actual result  depends on the calendar used. <em><strong>Note that values of the period must be an integer.</strong></em></p>
+<p>The presence of &quot;CALENDAR&quot; (case insensitive) means that the CDM library manipulates the calendar field directly, rather than converting the period to a fixed multiple of seconds. The actual result  depends on the calendar used. <em><strong>Note that values of the period must be an integer.</strong></em></p>
 <p>For example:</p>
-<pre>   0 calendar months since 1930-01-01 00:00:00Z == 1930-01-01T00:00:00.000Z
-   1 calendar months since 1930-01-01 00:00:00Z == 1930-02-01T00:00:00.000Z
-   2 calendar months since 1930-01-01 00:00:00Z == 1930-03-01T00:00:00.000Z
-   3 calendar months since 1930-01-01 00:00:00Z == 1930-04-01T00:00:00.000Z
-   4 calendar months since 1930-01-01 00:00:00Z == 1930-05-01T00:00:00.000Z
-   5 calendar months since 1930-01-01 00:00:00Z == 1930-06-01T00:00:00.000Z
-   6 calendar months since 1930-01-01 00:00:00Z == 1930-07-01T00:00:00.000Z
-   7 calendar months since 1930-01-01 00:00:00Z == 1930-08-01T00:00:00.000Z
-   8 calendar months since 1930-01-01 00:00:00Z == 1930-09-01T00:00:00.000Z
-   9 calendar months since 1930-01-01 00:00:00Z == 1930-10-01T00:00:00.000Z
-  10 calendar months since 1930-01-01 00:00:00Z == 1930-11-01T00:00:00.000Z
-  11 calendar months since 1930-01-01 00:00:00Z == 1930-12-01T00:00:00.000Z
-  12 calendar months since 1930-01-01 00:00:00Z == 1931-01-01T00:00:00.000Z</pre>
-<pre>  0 calendar years since 1930-01-01 00:00:00Z == 1930-01-01T00:00:00.000Z<br /> 10 calendar years since 1930-01-01 00:00:00Z == 1940-01-01T00:00:00.000Z<br /> 20 calendar years since 1930-01-01 00:00:00Z == 1950-01-01T00:00:00.000Z<br /> 30 calendar years since 1930-01-01 00:00:00Z == 1960-01-01T00:00:00.000Z<br /> 40 calendar years since 1930-01-01 00:00:00Z == 1970-01-01T00:00:00.000Z<br /> 50 calendar years since 1930-01-01 00:00:00Z == 1980-01-01T00:00:00.000Z<br /> 60 calendar years since 1930-01-01 00:00:00Z == 1990-01-01T00:00:00.000Z<br /> 70 calendar years since 1930-01-01 00:00:00Z == 2000-01-01T00:00:00.000Z<br /> 80 calendar years since 1930-01-01 00:00:00Z == 2010-01-01T00:00:00.000Z<br /> 90 calendar years since 1930-01-01 00:00:00Z == 2020-01-01T00:00:00.000Z<br />100 calendar years since 1930-01-01 00:00:00Z == 2030-01-01T00:00:00.000Z<br />110 calendar years since 1930-01-01 00:00:00Z == 2040-01-01T00:00:00.000Z<br />120 calendar years since 1930-01-01 00:00:00Z == 2050-01-01T00:00:00.000Z
+<pre>
+ 1 calendar months since 1930-01-01 00:00:00Z == 1930-02-01T00:00:00.000Z
+ 2 calendar months since 1930-01-01 00:00:00Z == 1930-03-01T00:00:00.000Z
+ 3 calendar months since 1930-01-01 00:00:00Z == 1930-04-01T00:00:00.000Z
+ 4 calendar months since 1930-01-01 00:00:00Z == 1930-05-01T00:00:00.000Z
+ 5 calendar months since 1930-01-01 00:00:00Z == 1930-06-01T00:00:00.000Z
+ 6 calendar months since 1930-01-01 00:00:00Z == 1930-07-01T00:00:00.000Z
+ 7 calendar months since 1930-01-01 00:00:00Z == 1930-08-01T00:00:00.000Z
+ 8 calendar months since 1930-01-01 00:00:00Z == 1930-09-01T00:00:00.000Z
+ 9 calendar months since 1930-01-01 00:00:00Z == 1930-10-01T00:00:00.000Z
+10 calendar months since 1930-01-01 00:00:00Z == 1930-11-01T00:00:00.000Z
+11 calendar months since 1930-01-01 00:00:00Z == 1930-12-01T00:00:00.000Z
+12 calendar months since 1930-01-01 00:00:00Z == 1931-01-01T00:00:00.000Z
+</pre>
+<pre>
+ 1 calendar years since 1930-01-01 00:00:00Z == 1931-01-01T00:00:00.000Z
+ 2 calendar years since 1930-01-01 00:00:00Z == 1932-01-01T00:00:00.000Z
+ 3 calendar years since 1930-01-01 00:00:00Z == 1933-01-01T00:00:00.000Z
+ 4 calendar years since 1930-01-01 00:00:00Z == 1934-01-01T00:00:00.000Z
+ 5 calendar years since 1930-01-01 00:00:00Z == 1935-01-01T00:00:00.000Z
+ 6 calendar years since 1930-01-01 00:00:00Z == 1936-01-01T00:00:00.000Z
+ 7 calendar years since 1930-01-01 00:00:00Z == 1937-01-01T00:00:00.000Z
+ 8 calendar years since 1930-01-01 00:00:00Z == 1938-01-01T00:00:00.000Z
+ 9 calendar years since 1930-01-01 00:00:00Z == 1939-01-01T00:00:00.000Z
+10 calendar years since 1930-01-01 00:00:00Z == 1940-01-01T00:00:00.000Z
+11 calendar years since 1930-01-01 00:00:00Z == 1941-01-01T00:00:00.000Z
+12 calendar years since 1930-01-01 00:00:00Z == 1942-01-01T00:00:00.000Z
+</pre>
+Note that invalid dates are decremented until valid:
+<pre> 0 calendar months since 1930-01-31 00:00:00Z == 1930-01-31T00:00:00.000Z
+ 1 calendar months since 1930-01-31 00:00:00Z == 1930-02-28T00:00:00.000Z
+ 2 calendar months since 1930-01-31 00:00:00Z == 1930-03-31T00:00:00.000Z
+ 3 calendar months since 1930-01-31 00:00:00Z == 1930-04-30T00:00:00.000Z
+ 4 calendar months since 1930-01-31 00:00:00Z == 1930-05-31T00:00:00.000Z
+ 5 calendar months since 1930-01-31 00:00:00Z == 1930-06-30T00:00:00.000Z
+ 6 calendar months since 1930-01-31 00:00:00Z == 1930-07-31T00:00:00.000Z
+ 7 calendar months since 1930-01-31 00:00:00Z == 1930-08-31T00:00:00.000Z
+ 8 calendar months since 1930-01-31 00:00:00Z == 1930-09-30T00:00:00.000Z
+ 9 calendar months since 1930-01-31 00:00:00Z == 1930-10-31T00:00:00.000Z
+10 calendar months since 1930-01-31 00:00:00Z == 1930-11-30T00:00:00.000Z
+11 calendar months since 1930-01-31 00:00:00Z == 1930-12-31T00:00:00.000Z
+12 calendar months since 1930-01-31 00:00:00Z == 1931-01-31T00:00:00.000Z
+</pre>
+and:
+<pre>
+ 0 calendar years since 2008-02-29 00:00:00Z == 2008-02-29T00:00:00.000Z
+ 1 calendar years since 2008-02-29 00:00:00Z == 2009-02-28T00:00:00.000Z
+ 2 calendar years since 2008-02-29 00:00:00Z == 2010-02-28T00:00:00.000Z
+ 3 calendar years since 2008-02-29 00:00:00Z == 2011-02-28T00:00:00.000Z
+ 4 calendar years since 2008-02-29 00:00:00Z == 2012-02-29T00:00:00.000Z
+ 5 calendar years since 2008-02-29 00:00:00Z == 2013-02-28T00:00:00.000Z
+ 6 calendar years since 2008-02-29 00:00:00Z == 2014-02-28T00:00:00.000Z
+ 7 calendar years since 2008-02-29 00:00:00Z == 2015-02-28T00:00:00.000Z
+ 8 calendar years since 2008-02-29 00:00:00Z == 2016-02-29T00:00:00.000Z
+ 9 calendar years since 2008-02-29 00:00:00Z == 2017-02-28T00:00:00.000Z
+10 calendar years since 2008-02-29 00:00:00Z == 2018-02-28T00:00:00.000Z
+11 calendar years since 2008-02-29 00:00:00Z == 2019-02-28T00:00:00.000Z
+12 calendar years since 2008-02-29 00:00:00Z == 2020-02-29T00:00:00.000Z
+13 calendar years since 2008-02-29 00:00:00Z == 2021-02-28T00:00:00.000Z
+14 calendar years since 2008-02-29 00:00:00Z == 2022-02-28T00:00:00.000Z
 </pre>
 <hr width="100%" />
 <h3>W3C profile of ISO 8601<a name="ISO_String" id="ISO_String"></a></h3>
@@ -124,7 +171,7 @@ SINCE = literal (case insensitive)
     Note that the &quot;T&quot; appears literally in
     the string, to indicate the beginning of the time element, as specified in
     ISO 8601. </p>
-  <pre> 
+  <pre>
    Year:
       YYYY (eg 1997)
    Year and month:
@@ -137,10 +184,9 @@ SINCE = literal (case insensitive)
       YYYY-MM-DDThh:mm:ssTZD (eg 1997-07-16T19:20:30+01:00)
    Complete date plus hours, minutes, seconds and a decimal fraction of a second
       YYYY-MM-DDThh:mm:ss.sTZD (eg 1997-07-16T19:20:30.45+01:00)
-  </pre>
+</pre>
   <p>where:</p>
-  <pre> 
-     YYYY = four-digit year
+  <pre>     YYYY = four-digit year
      MM   = two-digit month (01=January, etc.)
      DD   = two-digit day of month (01 through 31)
      hh   = two digits of hour (00 through 23) (am/pm NOT allowed)
@@ -148,7 +194,7 @@ SINCE = literal (case insensitive)
      ss   = two digits of second (00 through 59)
      s    = one or more digits representing a decimal fraction of a second
      TZD  = time zone designator (Z or +hh:mm or -hh:mm)
-  </pre>
+</pre>
 </blockquote>
 <p>with the following differences, to allow backwards compatibility with udunits:</p>
 <ul>
@@ -157,6 +203,11 @@ SINCE = literal (case insensitive)
   <li>The date part uses a '-' delimiter instead of a fixed number of digits for each field</li>
   <li>The time part uses a ':' delimiter instead of a fixed number of digits for each field</li>
   <li>The time zone designator may be Z, UTC, or GMT (case insensitive) or +hh:mm or -hh:mm</li>
+  <li>The time zone may be omitted, and then UTC is assumed.</li>
+</ul>
+<p>In addition, the following must be done:</p>
+<ul>
+  <li>Any fields that are not specified are set to zero.</li>
 </ul>
 <hr width="100%" />
 <h3>Problems with Udunits handling of time coordinate</h3>
