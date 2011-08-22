@@ -50,11 +50,9 @@ import java.io.IOException;
 import java.util.*;
 
 /**
- * Created by IntelliJ IDEA.
  * User: yuanho
  * Date: Jun 7, 2007
  * Time: 10:36:52 AM
- * To change this template use File | Settings | File Templates.
  */
 public class Netcdf2Dataset extends RadialDatasetSweepAdapter implements TypedDatasetFactoryIF {
     private NetcdfDataset ds;

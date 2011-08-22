@@ -33,6 +33,9 @@
 
 package ucar.nc2.ui;
 
+import ucar.nc2.dt.GridDataset;
+import ucar.nc2.dt.GridDatatype;
+import ucar.nc2.dt.RadialDatasetSweep;
 import ucar.nc2.iosp.bufr.tables.BufrTables;
 import ucar.nc2.util.net.HTTPSession;
 import thredds.inventory.DatasetCollectionMFiles;
@@ -57,11 +60,11 @@ import ucar.nc2.ft.point.PointDatasetImpl;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ncml.NcMLWriter;
 import ucar.nc2.thredds.ThreddsDataFactory;
-import ucar.nc2.thredds.TDSRadarDatasetCollection;
 import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.ncml.Aggregation;
-import ucar.nc2.dt.*;
-import ucar.nc2.dt.radial.StationRadarCollectionImpl;
+//import ucar.nc2.dt.*;
+//import ucar.nc2.dt.radial.StationRadarCollectionImpl;
+//import ucar.nc2.thredds.TDSRadarDatasetCollection;
 import ucar.nc2.dt.fmrc.FmrcDefinition;
 import ucar.nc2.dataset.*;
 
@@ -155,7 +158,7 @@ public class ToolsUI extends JPanel {
   private StationRadialPanel stationRadialPanel;
   private RadialPanel radialPanel;
   private ThreddsUI threddsUI;
-  private TrajectoryTablePanel trajTablePanel;
+  //private TrajectoryTablePanel trajTablePanel;
   private UnitsPanel unitsPanel;
   private URLDumpPane urlPanel;
   private ViewerPanel viewerPanel;
@@ -597,9 +600,9 @@ public class ToolsUI extends JPanel {
       stationRadialPanel = new StationRadialPanel((PreferencesExt) mainPrefs.node("stationRadar"));
       c = stationRadialPanel;
 
-    } else if (title.equals("Trajectory")) {
+    /* } else if (title.equals("Trajectory")) {
       trajTablePanel = new TrajectoryTablePanel((PreferencesExt) mainPrefs.node("trajectory"));
-      c = trajTablePanel;
+      c = trajTablePanel;  */
 
     } else if (title.equals("THREDDS")) {
       threddsUI = new ThreddsUI(ToolsUI.this.parentFrame, (PreferencesExt) mainPrefs.node("thredds"));
@@ -999,7 +1002,7 @@ public class ToolsUI extends JPanel {
     if (radialPanel != null) radialPanel.save();
     // if (stationObsPanel != null) stationObsPanel.save();
     if (stationRadialPanel != null) stationRadialPanel.save();
-    if (trajTablePanel != null) trajTablePanel.save();
+    // if (trajTablePanel != null) trajTablePanel.save();
     if (threddsUI != null) threddsUI.storePersistentData();
     if (unitsPanel != null) unitsPanel.save();
     if (urlPanel != null) urlPanel.save();
@@ -1220,7 +1223,7 @@ public class ToolsUI extends JPanel {
 
     } else if (threddsData.featureType == FeatureType.STATION_RADIAL) {
       makeComponent(ftTabPane, "StationRadial");
-      stationRadialPanel.setStationRadialDataset((StationRadarCollectionImpl) threddsData.featureDataset);
+      stationRadialPanel.setStationRadialDataset( threddsData.featureDataset);
       tabbedPane.setSelectedComponent(ftTabPane);
       ftTabPane.setSelectedComponent(stationRadialPanel);
 
@@ -5241,7 +5244,7 @@ public class ToolsUI extends JPanel {
   private class StationRadialPanel extends OpPanel {
     StationRadialViewer radialViewer;
     JSplitPane split;
-    StationRadarCollectionImpl radarCollectionDataset = null;
+    ucar.nc2.ft.FeatureDataset radarCollectionDataset = null;
 
     StationRadialPanel(PreferencesExt dbPrefs) {
       super(dbPrefs, "dataset:", true, false);
@@ -5251,9 +5254,10 @@ public class ToolsUI extends JPanel {
       AbstractButton infoButton = BAMutil.makeButtcon("Information", "Dataset Info", false);
       infoButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
-          String info;
-          if ((radarCollectionDataset != null) && ((info = radarCollectionDataset.getDetailInfo()) != null)) {
-            detailTA.setText(info);
+          if (radarCollectionDataset != null) {
+            Formatter info = new Formatter();
+            radarCollectionDataset.getDetailInfo(info);
+            detailTA.setText(info.toString());
             detailTA.gotoTop();
             detailWindow.show();
           }
@@ -5288,14 +5292,13 @@ public class ToolsUI extends JPanel {
       StringBuilder log = new StringBuilder();
       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
-        radarCollectionDataset = (StationRadarCollectionImpl) TypedDatasetFactory.open(FeatureType.STATION_RADIAL, location, null, log);  // LOOK wrong
-        if (radarCollectionDataset == null) {
-          JOptionPane.showMessageDialog(null, "Can't open " + location + ": " + log);
+        ThreddsDataFactory.Result result = threddsDataFactory.openFeatureDataset(FeatureType.STATION_RADIAL, location, null);
+        if (result.fatalError) {
+          JOptionPane.showMessageDialog(null, "Can't open " + location + ": " + result.errLog.toString());
           return false;
         }
 
-        radialViewer.setDataset((TDSRadarDatasetCollection) radarCollectionDataset);
-        setSelectedItem(location);
+        setStationRadialDataset(result.featureDataset);
         return true;
 
       } catch (Exception e) {
@@ -5309,7 +5312,7 @@ public class ToolsUI extends JPanel {
       }
     }
 
-    boolean setStationRadialDataset(StationRadarCollectionImpl dataset) {
+    boolean setStationRadialDataset(ucar.nc2.ft.FeatureDataset dataset) {
       if (dataset == null) return false;
 
       try {
@@ -5318,13 +5321,13 @@ public class ToolsUI extends JPanel {
       }
 
       radarCollectionDataset = dataset;
-      radialViewer.setDataset((TDSRadarDatasetCollection) radarCollectionDataset);
+      radialViewer.setDataset( radarCollectionDataset);
       setSelectedItem(radarCollectionDataset.getLocation());
       return true;
     }
   }
 
-  private class TrajectoryTablePanel extends OpPanel {
+  /* private class TrajectoryTablePanel extends OpPanel {
     TrajectoryObsViewer viewer;
     JSplitPane split;
     TrajectoryObsDataset ds = null;
@@ -5406,7 +5409,7 @@ public class ToolsUI extends JPanel {
       setSelectedItem(ds.getLocationURI());
       return true;
     }
-  }
+  } */
 
   private class ImagePanel extends OpPanel {
     ImageViewPanel imagePanel;

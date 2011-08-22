@@ -24,7 +24,6 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module" module-name="common" />
     <orderEntry type="module" module-name="cdm" />
     <orderEntry type="module" module-name="bufr" />
     <orderEntry type="module" module-name="grib" />

@@ -45,9 +45,10 @@ import java.util.Date;
  * @author yuan
  */
 public interface RadialDatasetSweep extends ucar.nc2.dt.TypedDataset, ucar.nc2.ft.FeatureDataset {
-  /* definition of data format for level2*/
+  /* definition of data format for level2 */
   public static final String LevelII = "Level II";
   public static final String UF = "Universal Format";
+
   /**
    * @return radar id
    */
@@ -65,12 +66,14 @@ public interface RadialDatasetSweep extends ucar.nc2.dt.TypedDataset, ucar.nc2.f
 
   /**
    * If all the sweeps are the same type, return it here, else NONE
+   *
    * @return type of sweep, or NONE
    */
   public RadialDatasetSweep.Type getCommonType();
 
   /**
    * If all sweeps have the same origin, return it here, else null
+   *
    * @return common origin, or null
    */
   public ucar.unidata.geoloc.EarthLocation getCommonOrigin();
@@ -79,6 +82,7 @@ public interface RadialDatasetSweep extends ucar.nc2.dt.TypedDataset, ucar.nc2.f
    * Get the units of Calendar time.
    * To get a Date, from a time value, call DateUnit.getStandardDate(double value).
    * To get units as a String, call DateUnit.getUnitsString().
+   *
    * @return units of Calendar time
    */
   public ucar.nc2.units.DateUnit getTimeUnits();
@@ -133,8 +137,6 @@ public interface RadialDatasetSweep extends ucar.nc2.dt.TypedDataset, ucar.nc2.f
     public float[] readAllData() throws java.io.IOException;
 
     public void clearVariableMemory();
-
-
   }
 
   /**
@@ -147,7 +149,7 @@ public interface RadialDatasetSweep extends ucar.nc2.dt.TypedDataset, ucar.nc2.f
     public RadialDatasetSweep.Type getType();
 
 
-      public Variable getsweepVar();
+    public Variable getsweepVar();
 
     /**
      * @return the number of radials for this Sweep
@@ -275,7 +277,7 @@ public interface RadialDatasetSweep extends ucar.nc2.dt.TypedDataset, ucar.nc2.f
    */
   static public final class Type {
     public final static Type NONE = new Type("");
-    
+
     private static java.util.List<Type> members = new java.util.ArrayList<Type>(20);
     private String name;
 

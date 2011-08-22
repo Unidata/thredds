@@ -33,7 +33,7 @@
 
 package ucar.nc2.ui;
 
-import ucar.nc2.thredds.TDSRadarDatasetCollection;
+// import ucar.nc2.thredds.TDSRadarDatasetCollection;
 import ucar.nc2.ui.widget.IndependentDialog;
 import ucar.nc2.ui.widget.TextHistoryPane;
 import ucar.util.prefs.PreferencesExt;
@@ -65,7 +65,7 @@ import java.io.IOException;
 public class StationRadialViewer extends JPanel {
   private PreferencesExt prefs;
 
-  private ucar.nc2.thredds.TDSRadarDatasetCollection sds;
+  private ucar.nc2.ft.radial.StationRadialDataset sds;
 
   private StationRegionDateChooser chooser;
   private BeanTableSorted stnTable;
@@ -122,8 +122,8 @@ public class StationRadialViewer extends JPanel {
     add(splitV, BorderLayout.CENTER);
   }
 
-  public void setDataset(TDSRadarDatasetCollection dataset) {
-    this.sds = dataset;
+  public void setDataset(ucar.nc2.ft.FeatureDataset dataset) {
+    this.sds = (ucar.nc2.ft.radial.StationRadialDataset) dataset;
 
     if (debugStationDatsets)
       System.out.println("PointObsViewer open type "+dataset.getClass().getName());

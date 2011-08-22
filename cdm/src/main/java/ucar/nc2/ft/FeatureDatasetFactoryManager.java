@@ -73,6 +73,7 @@ public class FeatureDatasetFactoryManager {
     registerFactory(FeatureType.ANY_POINT, PointDatasetStandardFactory.class);
     registerFactory(FeatureType.GRID, GridDatasetStandardFactory.class);
     registerFactory(FeatureType.RADIAL, RadialDatasetStandardFactory.class);
+    registerFactory(FeatureType.STATION_RADIAL, RadialDatasetStandardFactory.class);
 
     // further calls to registerFactory are by the user
     userMode = true;

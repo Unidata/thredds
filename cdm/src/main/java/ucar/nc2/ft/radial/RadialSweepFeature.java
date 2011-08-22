@@ -169,7 +169,7 @@ public interface RadialSweepFeature {
   public int getSweepIndex();
 
   /**
-   * deallocated memory of sweep
+   * deallocate memory of sweep
    */
   public void clearSweepMemory();
 
