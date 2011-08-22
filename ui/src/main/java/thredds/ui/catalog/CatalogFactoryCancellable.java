@@ -165,8 +165,8 @@ public class CatalogFactoryCancellable extends InvCatalogFactory {
       HTTPSession client = null;
       HTTPMethod m = null;
       try {
-        client = new HTTPSession();
-        m = client.newMethodGet(catalogName);
+        client = new HTTPSession(catalogName);
+        m = HTTPMethod.Get(client);
 
         int statusCode = m.execute();
 
@@ -190,7 +190,6 @@ public class CatalogFactoryCancellable extends InvCatalogFactory {
         return;
 
       } finally {
-        if (null != m) m.close();
         if (client != null) client.close();
       }
 

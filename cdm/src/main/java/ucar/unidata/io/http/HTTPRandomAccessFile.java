@@ -36,6 +36,7 @@ package ucar.unidata.io.http;
 import ucar.nc2.util.net.HTTPMethod;
 import ucar.nc2.util.net.HTTPSession;
 import org.apache.commons.httpclient.Header;
+import ucar.unidata.util.Urlencoded;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -67,6 +68,7 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
     location = url;
   }
 
+  @Urlencoded
   public HTTPRandomAccessFile(String url, int bufferSize) throws IOException {
     super(bufferSize);
     file = null;
@@ -75,13 +77,13 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
     if (debugLeaks)
       allFiles.add(location);
 
-    session = new HTTPSession();
+    session = new HTTPSession(url);
 
     boolean needtest = true;
 
     HTTPMethod method = null;
     try {
-      method = session.newMethodHead(url);
+      method = HTTPMethod.Head(session);
 
       doConnect(method);
 
@@ -135,7 +137,7 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
   private boolean rangeOk(String url) {
     HTTPMethod method = null;
     try {
-      method = session.newMethodGet(url);
+      method = HTTPMethod.Get(session,url);
       method.setFollowRedirects(true);
       method.setRequestHeader("Range", "bytes=" + 0 + "-" + 1);
       doConnect(method);
@@ -203,7 +205,7 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
 
     HTTPMethod method = null;
     try {
-      method = session.newMethodGet(url);
+      method = HTTPMethod.Get(session);
       method.setFollowRedirects(true);
       method.setRequestHeader("Range", "bytes=" + pos + "-" + end);
       doConnect(method);

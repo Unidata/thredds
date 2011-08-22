@@ -37,6 +37,7 @@ import ucar.nc2.util.net.HTTPMethod;
 import ucar.nc2.util.net.HTTPSession;
 import org.apache.commons.httpclient.Header;
 import ucar.nc2.util.IO;
+import ucar.unidata.util.Urlencoded;
 import ucar.util.prefs.*;
 import ucar.util.prefs.ui.*;
 
@@ -257,7 +258,7 @@ public class URLDumpPane extends TextHistoryPane {
 
   ///////////////////////////////////////////////////////
   // Uses apache commons HttpClient
-
+  @Urlencoded
   private void openURL2(String urlString, Command cmd) {
 
     HTTPSession httpclient = null;
@@ -279,15 +280,15 @@ public class URLDumpPane extends TextHistoryPane {
               */
 
       //urlString = URLnaming.escapeQuery(urlString);
-      httpclient = new HTTPSession();
+      httpclient = new HTTPSession(urlString);
       if (cmd == Command.GET)
-        m = httpclient.newMethodGet(urlString);
+          m = HTTPMethod.Get(httpclient);
       else if (cmd == Command.HEAD)
-        m = httpclient.newMethodHead(urlString);
+          m = HTTPMethod.Head(httpclient);
       else if (cmd == Command.OPTIONS)
-        m = httpclient.newMethodOptions(urlString);
+          m = HTTPMethod.Options(httpclient);
       else if (cmd == Command.PUT) {
-        m = httpclient.newMethodPut(urlString);
+          m = HTTPMethod.Put(httpclient);
         m.setRequestContentAsString(ta.getText());
       }
 
@@ -361,7 +362,7 @@ public class URLDumpPane extends TextHistoryPane {
       appendLine(bos.toString());
 
     } finally {
-      if (m != null) m.close();
+      if (httpclient != null) httpclient.close();
     }
   }
 

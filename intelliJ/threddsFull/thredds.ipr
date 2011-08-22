@@ -138,6 +138,9 @@
   <component name="BuildJarProjectSettings">
     <option name="BUILD_JARS_ON_MAKE" value="false" />
   </component>
+  <component name="ClearCaseSharedConfig">
+    <option name="myUseUcmModel" value="true" />
+  </component>
   <component name="CodeStyleProjectProfileManger">
     <option name="PROJECT_PROFILE" />
     <option name="USE_PROJECT_LEVEL_SETTINGS" value="false" />

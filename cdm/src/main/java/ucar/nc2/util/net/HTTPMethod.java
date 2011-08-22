@@ -67,7 +67,6 @@ static public HTTPMethod Post(HTTPSession session) throws HTTPException
 static public HTTPMethod Options(HTTPSession session) throws HTTPException
         {return new HTTPMethod(HTTPSession.Methods.Options,session,null);}
 
-/* Notused
 static public HTTPMethod Get(HTTPSession session, String uriencoded) throws HTTPException
         {return new HTTPMethod(HTTPSession.Methods.Get,session,uriencoded);}
 static public HTTPMethod Head(HTTPSession session,String uriencoded) throws HTTPException
@@ -78,7 +77,6 @@ static public HTTPMethod Post(HTTPSession session, String uriencoded) throws HTT
         {return new HTTPMethod(HTTPSession.Methods.Post,session,uriencoded);}
 static public HTTPMethod Options(HTTPSession session, String uriencoded) throws HTTPException
         {return new HTTPMethod(HTTPSession.Methods.Options,session,uriencoded);}
-*/
 
 //////////////////////////////////////////////////
 // Static fields

@@ -80,11 +80,12 @@ public class DConnect2 {
 
   // default session
 
+  /* Ignore
   private void initSession() throws HTTPException
   {
     if (_session != null) return;
     _session = new HTTPSession();
-  }
+  } */
 
   private String urlString; // The current DODS URL without Constraint Expression
   private String urlStringEncoded; // encoded form of urlString
@@ -246,14 +247,13 @@ public class DConnect2 {
    * @throws ParseException is cant parse the return
    */
   private void openConnection(String urlString, Command command) throws IOException, DAP2Exception, ParseException {
+    HTTPSession _session = null;
     HTTPMethod method = null;
     InputStream is = null;
 
-    initSession();
-
     try {
-
-      method = _session.newMethodGet(urlString);
+      _session = new HTTPSession(urlString);
+      method = HTTPMethod.Get(_session);
 
       if (acceptCompress)
         method.setRequestHeader("Accept-Encoding", "deflate,gzip");
@@ -318,7 +318,7 @@ public class DConnect2 {
 
     } finally {
       // Release the connection.
-      if (method != null) method.close();
+      if (_session != null) _session.close();
     }
   }
 

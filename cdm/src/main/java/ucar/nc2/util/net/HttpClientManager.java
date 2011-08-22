@@ -44,6 +44,7 @@ import java.util.zip.GZIPInputStream;
 import java.util.Formatter;
 
 import ucar.nc2.util.IO;
+import ucar.unidata.util.Urlencoded;
 
 /**
  * Convenience routines that wrap HTTPSession.
@@ -82,6 +83,7 @@ public class HttpClientManager {
    * @return contents of url as a String
    * @throws java.io.IOException on error
    */
+  @Urlencoded
   public static String getContentAsString(HTTPSession session, String urlencoded) throws IOException {
     HTTPSession useSession = session;
     try {

@@ -204,8 +204,8 @@ public class WmsViewer extends JPanel {
     HTTPSession session = null;
     HTTPMethod method = null;
     try {
-      session = new HTTPSession();
-      method = session.newMethodGet(url);
+      session = new HTTPSession(url);
+      method = HTTPMethod.Get(session);
       int statusCode = method.execute();
 
       info.append(" Status = " + method.getStatusCode() + " " + method.getStatusText() + "\n");
@@ -290,8 +290,8 @@ public class WmsViewer extends JPanel {
     HTTPSession session = null;
     HTTPMethod method = null;
     try {
-      session = new HTTPSession();
-      method = session.newMethodGet(url);
+      session = new HTTPSession(url);
+      method = HTTPMethod.Get(session);
       int statusCode = method.execute();
 
       info.append(" Status = " + method.getStatusCode() + " " + method.getStatusText() + "\n");

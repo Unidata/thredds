@@ -45,6 +45,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 
+import ucar.unidata.util.Urlencoded;
+
 
 /**
  * wrapper for org.apache.commons.httpclient
@@ -187,6 +189,7 @@ public class HTTPSession
     }
 
     //Shared constructor code
+    @Urlencoded
     protected void construct(String uriencoded) throws ucar.nc2.util.net.HTTPException
     {
         this.uriencoded = uriencoded;
