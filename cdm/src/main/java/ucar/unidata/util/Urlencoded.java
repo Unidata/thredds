@@ -38,6 +38,6 @@ package ucar.unidata.util;
  * argument is expected to be encoded.
 */
  
-@interface UrlEncoded {
+@interface Urlencoded {
     public String parametere default null;
 }
