@@ -59,6 +59,7 @@ import java.util.*;
 import org.apache.commons.httpclient.Header;
 import thredds.catalog.ServiceType;
 import ucar.unidata.util.StringUtil2;
+import ucar.unidata.util.Urlencoded;
 
 /**
  * NetcdfDataset extends the netCDF API, adding standard attribute parsing such as
@@ -705,9 +706,10 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * Do a HEAD call on the URL. 
    * Look for the header "Content-Description" = "ncstream" or "dods".
    */
+  @Urlencoded
   static private ServiceType disambiguateHttp(String location) throws IOException {
 
-    HTTPSession session = new HTTPSession();
+    HTTPSession session = new HTTPSession(location);
 
     // have to do dods first
     ServiceType result = checkIfDods(session,location);
@@ -716,7 +718,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
     HTTPMethod method = null;
     try {
-      method = session.newMethodHead(location);
+      method = HTTPMethod.Head(session);
       int statusCode = method.execute();
       if (statusCode >= 300) {
         if (statusCode == 401)
@@ -758,7 +760,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     try {
       // For some reason, the head method is not using credentials
       // method = session.newMethodHead(location + ".dds");
-      method = session.newMethodGet(location + ".dds");
+      method = HTTPMethod.Get(session,location + ".dds");
 
       int status = method.execute();
       if (status == 200) {

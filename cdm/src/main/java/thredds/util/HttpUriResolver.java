@@ -166,10 +166,10 @@ public class HttpUriResolver
           throws IOException, HTTPException
   {
     if(session == null)
-        session = new HTTPSession();
+        session = new HTTPSession(uri.toString());
     session.setConnectionManagerTimeout( this.connectionTimeout );
     session.setSoTimeout( this.socketTimeout );
-    HTTPMethod method = session.newMethodGet( uri.toString() );
+    HTTPMethod method = HTTPMethod.Get(session,uri.toString() );
     method.setFollowRedirects( this.followRedirects );
     method.setRequestHeader( "Accept-Encoding", this.contentEncoding );
 

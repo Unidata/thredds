@@ -205,11 +205,12 @@ public class SocketMessage {
       String url = "http://localhost:8080/thredds/test/it" // + EscapeStrings.escapeOGC("yabba/bad[0]/good")
                +"?"+EscapeStrings.escapeOGC("quuery[1]");
       System.out.printf("send '%s'%n", url);
-      HTTPSession session = new HTTPSession();
-      HTTPMethod method = session.newMethodHead(url);
+      HTTPSession session = new HTTPSession(url);
+      HTTPMethod method = HTTPMethod.Head(session);
       method.execute();
       int status = method.getStatusCode();
       System.out.printf("%d%n", status);
+      session.close();
     }
   }
 }

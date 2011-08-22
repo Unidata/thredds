@@ -33,6 +33,7 @@
 
 package ucar.nc2.thredds.server;
 
+import sun.net.www.http.HttpClient;
 import ucar.nc2.util.net.HTTPException;
 import ucar.nc2.util.net.HTTPMethod;
 import ucar.nc2.util.net.HTTPSession;
@@ -58,8 +59,6 @@ public class ReadTdsLogs {
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(ReadTdsLogs.class);
   private static AtomicInteger reqno = new AtomicInteger(0);
   private static Formatter out, out2;
-
-  private HTTPSession httpClient = new HTTPSession();
 
   ///////////////////////////////////////////////////////
   // multithreading
@@ -131,11 +130,13 @@ public class ReadTdsLogs {
     }
 
     void send() throws IOException {
-
+      HTTPSession httpClient = null;
       HTTPMethod method = null;
       try {
         String unescapedForm = EscapeStrings.unescapeURL(log.path); // make sure its unescaped
-        method = httpClient.newMethodGet(server + URLnaming.escapeQuery(unescapedForm));  // escape the query part
+        String uriencoded = server + URLnaming.escapeQuery(unescapedForm);
+        httpClient = new HTTPSession(uriencoded);
+        method = HTTPMethod.Get(httpClient);  // escape the query part
         //out2.format("send %s %n", method.getPath());
         statusCode = method.execute();
 
@@ -199,10 +200,11 @@ public class ReadTdsLogs {
 
     private boolean compareAgainstLive(SendRequestTask itask) throws IOException {
       if (serverLive == null) return true;
-
+      HTTPSession httpClient = null;
       HTTPMethod method = null;
       try {
-        method = httpClient.newMethodGet(serverLive + itask.log.path);
+        httpClient = new HTTPSession(serverLive + itask.log.path);
+        method = HTTPMethod.Get(httpClient);
         out2.format("send %s %n", method.getPath());
 
         int statusCode = method.execute();
@@ -215,7 +217,7 @@ public class ReadTdsLogs {
         return statusCode == itask.statusCode;
 
       } finally {
-        if (method != null) method.close();
+        if (httpClient != null) httpClient.close();
       }
 
     }

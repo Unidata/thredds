@@ -76,15 +76,16 @@ public class DConnect2 {
     allowSessions = b;
   }
 
-  private HTTPSession _session = null;
+  // obsolete private HTTPSession _session = null;
 
   // default session
 
+  /* Ignore
   private void initSession() throws HTTPException
   {
     if (_session != null) return;
     _session = new HTTPSession();
-  }
+  } */
 
   private String urlString; // The current DODS URL without Constraint Expression
   private String urlStringEncoded; // encoded form of urlString
@@ -246,14 +247,13 @@ public class DConnect2 {
    * @throws ParseException is cant parse the return
    */
   private void openConnection(String urlString, Command command) throws IOException, DAP2Exception, ParseException {
+    HTTPSession _session = null;
     HTTPMethod method = null;
     InputStream is = null;
 
-    initSession();
-
     try {
-
-      method = _session.newMethodGet(urlString);
+      _session = new HTTPSession(urlString);
+      method = HTTPMethod.Get(_session);
 
       if (acceptCompress)
         method.setRequestHeader("Accept-Encoding", "deflate,gzip");
@@ -296,7 +296,7 @@ public class DConnect2 {
 
       ver = new ServerVersion(method);
 
-      checkHeaders(method);
+      checkHeaders(_session,method);
 
       // check for deflator
       Header h = method.getResponseHeader("content-encoding");
@@ -318,7 +318,7 @@ public class DConnect2 {
 
     } finally {
       // Release the connection.
-      if (method != null) method.close();
+      if (_session != null) _session.close();
     }
   }
 
@@ -335,9 +335,11 @@ public class DConnect2 {
           }
         });
       }
-      if (_session != null)
+      /* obsolete
+      if (_session != null) {
         _session.close();
-      _session = null;
+        _session = null;
+      } */
     } catch (Throwable t) {
       // ignore
     }
@@ -380,7 +382,7 @@ is =  new StringBufferInputStream (contents); */
     return lastExtended;
   }
 
-  private void checkHeaders(HTTPMethod method) {
+  private void checkHeaders(HTTPSession _session, HTTPMethod method) {
     if (debugHeaders) {
       System.out.println("\nOpenConnection Headers for " + method.getPath());
       System.out.println("Status Line: " + method.getStatusLine());
@@ -413,17 +415,18 @@ is =  new StringBufferInputStream (contents); */
     if (debugHeaders)
       System.out.println("OpenConnection Headers for " + method.getPath());
 
-    Cookie[] cookies = _session.getCookies();
+    if(_session != null) {
+        Cookie[] cookies = _session.getCookies();
+        if (cookies.length > 0) {
+          if (debugHeaders) System.out.println("Cookies= ");
 
-    if (cookies.length > 0) {
-      if (debugHeaders) System.out.println("Cookies= ");
-
-      for (int i = 0; i < cookies.length; i++) {
-        Cookie cooky = cookies[i];
-        if (debugHeaders) System.out.println("  " + cooky);
-        if (cooky.getName().equalsIgnoreCase("jsessionid"))
-          hasSession = true;
-      }
+          for (int i = 0; i < cookies.length; i++) {
+            Cookie cooky = cookies[i];
+            if (debugHeaders) System.out.println("  " + cooky);
+            if (cooky.getName().equalsIgnoreCase("jsessionid"))
+              hasSession = true;
+          }
+        }
     }
 
   }
