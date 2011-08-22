@@ -41,7 +41,7 @@ import edu.wisc.ssec.mcidas.McIDASUtil;
 
 
 import ucar.nc2.iosp.grid.*;
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -288,19 +288,19 @@ public class GempakGridRecord implements GridRecord {
      */
     public String toString() {
         StringBuffer buf = new StringBuffer();
-        buf.append(StringUtil.padLeft(String.valueOf(gridNumber), 5));
-        buf.append(StringUtil.padLeft(time1, 20));
+        buf.append(StringUtil2.padLeft(String.valueOf(gridNumber), 5));
+        buf.append(StringUtil2.padLeft(time1, 20));
         buf.append(" ");
-        buf.append(StringUtil.padLeft(time2, 20));
+        buf.append(StringUtil2.padLeft(time2, 20));
         buf.append(" ");
-        buf.append(StringUtil.padLeft(String.valueOf(level1), 5));
+        buf.append(StringUtil2.padLeft(String.valueOf(level1), 5));
         if (level2 != -1) {
-            buf.append(StringUtil.padLeft(String.valueOf(level2), 5));
+            buf.append(StringUtil2.padLeft(String.valueOf(level2), 5));
         } else {
             buf.append("     ");
         }
         buf.append("  ");
-        buf.append(StringUtil.padLeft(GempakUtil.LV_CCRD(ivcord), 6));
+        buf.append(StringUtil2.padLeft(GempakUtil.LV_CCRD(ivcord), 6));
         buf.append(" ");
         buf.append(param);
         buf.append(" ");

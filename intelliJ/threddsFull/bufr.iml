@@ -20,7 +20,7 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="module" module-name="cdm" exported="" />
+    <orderEntry type="module" module-name="cdm" />
     <orderEntry type="module-library">
       <library>
         <CLASSES>

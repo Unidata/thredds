@@ -46,7 +46,7 @@ import ucar.nc2.util.CancelTask;
 
 import ucar.unidata.io.RandomAccessFile;
 
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 import visad.util.Trace;
 
 import java.io.IOException;
@@ -327,7 +327,7 @@ public class GempakSurfaceIOSP extends GempakStationFileIOSP {
                     }
                     String temp = null;
                     if (varname.equals(GempakStation.STID)) {
-                        temp = StringUtil.padRight(stn.getName(), 8);
+                        temp = StringUtil2.padRight(stn.getName(), 8);
                     } else if (varname.equals(GempakStation.STNM)) {
                         buf.putInt((int) (stn.getSTNM()));
                     } else if (varname.equals(GempakStation.SLAT)) {
@@ -337,17 +337,17 @@ public class GempakSurfaceIOSP extends GempakStationFileIOSP {
                     } else if (varname.equals(GempakStation.SELV)) {
                         buf.putFloat((float) stn.getAltitude());
                     } else if (varname.equals(GempakStation.STAT)) {
-                        temp = StringUtil.padRight(stn.getSTAT(), 2);
+                        temp = StringUtil2.padRight(stn.getSTAT(), 2);
                     } else if (varname.equals(GempakStation.COUN)) {
-                        temp = StringUtil.padRight(stn.getCOUN(), 2);
+                        temp = StringUtil2.padRight(stn.getCOUN(), 2);
                     } else if (varname.equals(GempakStation.STD2)) {
-                        temp = StringUtil.padRight(stn.getSTD2(), 4);
+                        temp = StringUtil2.padRight(stn.getSTD2(), 4);
                     } else if (varname.equals(GempakStation.SPRI)) {
                         buf.putInt(stn.getSPRI());
                     } else if (varname.equals(GempakStation.SWFO)) {
-                        temp = StringUtil.padRight(stn.getSWFO(), 4);
+                        temp = StringUtil2.padRight(stn.getSWFO(), 4);
                     } else if (varname.equals(GempakStation.WFO2)) {
-                        temp = StringUtil.padRight(stn.getWFO2(), 4);
+                        temp = StringUtil2.padRight(stn.getWFO2(), 4);
                     }
                     if (temp != null) {
                         buf.put(temp.getBytes());

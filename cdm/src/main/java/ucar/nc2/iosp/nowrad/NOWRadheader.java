@@ -50,7 +50,7 @@ import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.geoloc.ProjectionPointImpl;
 import ucar.unidata.geoloc.projection.LambertConformal;
 import ucar.unidata.util.Parameter;
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -282,13 +282,14 @@ public class NOWRadheader {
         if (product.contains("NOWRAD")) {
             ot = new String(b, t1 + 2, 68);
 
-            List<String> toks = StringUtil.split(ot, " ", true, true);
-            String       pj   = toks.get(0);
-            double       nav1 = Math.toDegrees(Double.parseDouble(toks.get(1)));    // lon
-            double       nav2 = Math.toDegrees(Double.parseDouble(toks.get(2)));    // lat
-            double       nav3 = Math.toDegrees(Double.parseDouble(toks.get(3)));
-            double       nav4 = Math.toDegrees(Double.parseDouble(toks.get(4)));    // lat sp
-            double       nav5 = Math.toDegrees(Double.parseDouble(toks.get(5)));    // lon sp
+            //List<String> toks = StringUtil.split(ot, " ", true, true);
+            String[] toks = StringUtil2.splitString(ot);
+            String       pj   = toks[0];
+            double       nav1 = Math.toDegrees(Double.parseDouble(toks[1]));    // lon
+            double       nav2 = Math.toDegrees(Double.parseDouble(toks[2]));    // lat
+            double       nav3 = Math.toDegrees(Double.parseDouble(toks[3]));
+            double       nav4 = Math.toDegrees(Double.parseDouble(toks[4]));    // lat sp
+            double       nav5 = Math.toDegrees(Double.parseDouble(toks[5]));    // lon sp
 
             // lower left and upper right corner
             float rlat1;
@@ -317,7 +318,18 @@ public class NOWRadheader {
         } else if (product.contains("USRADHF")) {
             ot = new String(b, t1 + 2, 107);
 
-            List<String> toks = StringUtil.split(ot, " ", true, true);
+            String[] toks = StringUtil2.splitString(ot);
+            String       pj   = toks[0];
+            double       nav1 = Math.toDegrees(Double.parseDouble(toks[1]));    // standard lat 1
+            double       nav2 = Math.toDegrees(Double.parseDouble(toks[2]));    // standard lat 2
+            double       nav3 = Math.toDegrees(Double.parseDouble(toks[3]));    // lat. center of proj
+            double       nav4 = Math.toDegrees(Double.parseDouble(toks[4]));    // lon. center of proj
+            double       nav5 = Math.toDegrees(Double.parseDouble(toks[5]));    // upper left lat
+            double       nav6 = Math.toDegrees(Double.parseDouble(toks[6]));    // upper left lon
+            double       nav7 = Math.toDegrees(Double.parseDouble(toks[7]));    // lat sp
+            double       nav8 = Math.toDegrees(Double.parseDouble(toks[8]));    // lon sp
+
+            /* List<String> toks = StringUtil.split(ot, " ", true, true);
             String       pj   = toks.get(0);
             double       nav1 = Math.toDegrees(Double.parseDouble(toks.get(1)));    // standard lat 1
             double       nav2 = Math.toDegrees(Double.parseDouble(toks.get(2)));    // standard lat 2
@@ -326,7 +338,7 @@ public class NOWRadheader {
             double       nav5 = Math.toDegrees(Double.parseDouble(toks.get(5)));    // upper left lat
             double       nav6 = Math.toDegrees(Double.parseDouble(toks.get(6)));    // upper left lon
             double       nav7 = Math.toDegrees(Double.parseDouble(toks.get(7)));    // lat sp
-            double       nav8 = Math.toDegrees(Double.parseDouble(toks.get(8)));    // lon sp
+            double       nav8 = Math.toDegrees(Double.parseDouble(toks.get(8)));    // lon sp  */
 
             // lower left and upper right corner
             // int offh = 39;

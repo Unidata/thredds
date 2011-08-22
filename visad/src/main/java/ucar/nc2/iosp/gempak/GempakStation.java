@@ -40,7 +40,7 @@ import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.Station;
 import ucar.unidata.util.Format;
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 
 
 /**
@@ -136,15 +136,15 @@ public class GempakStation implements Station {
      */
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append(StringUtil.padRight((stid.trim() + std2.trim()), 8));
+        builder.append(StringUtil2.padRight((stid.trim() + std2.trim()), 8));
         builder.append(" ");
         builder.append(Format.i(stnm, 6));
         builder.append(" ");
-        builder.append(StringUtil.padRight(sdesc, 32));
+        builder.append(StringUtil2.padRight(sdesc, 32));
         builder.append(" ");
-        builder.append(StringUtil.padLeft(stat.trim(), 2));
+        builder.append(StringUtil2.padLeft(stat.trim(), 2));
         builder.append(" ");
-        builder.append(StringUtil.padLeft(coun.trim(), 2));
+        builder.append(StringUtil2.padLeft(coun.trim(), 2));
         builder.append(" ");
         builder.append(Format.i(slat, 5));
         builder.append(" ");
@@ -154,7 +154,7 @@ public class GempakStation implements Station {
         builder.append(" ");
         builder.append(Format.i(spri, 2));
         builder.append(" ");
-        builder.append(StringUtil.padLeft(swfo.trim(), 3));
+        builder.append(StringUtil2.padLeft(swfo.trim(), 3));
         return builder.toString();
     }
 

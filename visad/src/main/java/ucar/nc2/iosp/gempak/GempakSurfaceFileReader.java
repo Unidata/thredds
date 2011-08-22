@@ -37,7 +37,7 @@ package ucar.nc2.iosp.gempak;
 
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Format;
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 
 import java.io.*;
 
@@ -195,7 +195,7 @@ public class GempakSurfaceFileReader extends AbstractGempakStationFileReader {
         builder.append("\nObs\n\t");
         List<GempakParameter> params = getParameters(SFDT);
         for (GempakParameter parm : params) {
-            builder.append(StringUtil.padLeft(parm.getName(), 7));
+            builder.append(StringUtil2.padLeft(parm.getName(), 7));
             builder.append("\t");
         }
         builder.append("\n");
@@ -213,7 +213,7 @@ public class GempakSurfaceFileReader extends AbstractGempakStationFileReader {
             float[] data = rd.data;
             for (int i = 0; i < data.length; i++) {
                 builder.append(
-                    StringUtil.padLeft(
+                    StringUtil2.padLeft(
                         Format.formatDouble(data[i], 7, 1), 7));
                 builder.append("\t");
             }

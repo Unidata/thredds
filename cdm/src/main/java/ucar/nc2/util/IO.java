@@ -33,7 +33,7 @@
 
 package ucar.nc2.util;
 
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 
 import java.io.*;
 import java.net.*;
@@ -918,7 +918,7 @@ public class IO {
     dir.mkdirs();
 
     for (int i = 1; i < 159; i++) {
-      String n = StringUtil.padZero(i, 3);
+      String n = StringUtil2.padZero(i, 3);
       String filename = n + ".jpg";
       System.out.println("Open " + baseDir + filename);
       File file = new File(baseDir + filename);

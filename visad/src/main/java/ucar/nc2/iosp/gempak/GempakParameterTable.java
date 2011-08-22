@@ -37,8 +37,6 @@
 package ucar.nc2.iosp.gempak;
 
 
-import ucar.unidata.util.StringUtil;
-
 import java.io.*;
 
 // When ucar.unidata.util is in common, revert to using this
@@ -105,10 +103,11 @@ ID# NAME                             UNITS                GNAM         SCALE   M
             throw new IOException("Unable to open " + tbl);
         }
         String         content = readContents(is);
-        List           lines   = StringUtil.split(content, "\n", false);
+        // List           lines   = StringUtil.split(content, "\n", false);
+        String[]       lines   = content.split("\n");
         List<String[]> result  = new ArrayList<String[]>();
-        for (int i = 0; i < lines.size(); i++) {
-            String line  = (String) lines.get(i);
+        for (String line : lines) {
+            //String line  = (String) lines.get(i);
             String tline = line.trim();
             if (tline.length() == 0) {
                 continue;

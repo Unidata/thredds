@@ -210,6 +210,76 @@ public class StringUtil2 {
     return i;
   }
 
+    /**
+   * Left pad the given value with zeros up to the number of digits
+   *
+   * @param value     The value.
+   * @param numDigits number of digits
+   * @return The String  represenation of the value, padded with
+   *         leading "0"-s if value &lt; 10E(numDigits-1)
+   */
+  public static String padZero(int value, int numDigits) {
+    return padLeft(String.valueOf(value), numDigits, "0");
+  }
+
+
+  /**
+   * Pad the given string with spaces on the left up to the given length.
+   *
+   * @param s             String to pad
+   * @param desiredLength ending length
+   * @return padded String
+   */
+  public static String padLeft(String s, int desiredLength) {
+    return padLeft(s, desiredLength, " ");
+  }
+
+
+  /**
+   * Pad the given string with padString on the left up to the given length.
+   *
+   * @param s             String to pad
+   * @param desiredLength ending length
+   * @param padString     String to pad with (e.g, " ")
+   * @return padded String
+   */
+  public static String padLeft(String s, int desiredLength,
+                               String padString) {
+    while (s.length() < desiredLength) {
+      s = padString + s;
+    }
+    return s;
+  }
+
+
+  /**
+   * Pad the given string with spaces on the right up to the given length.
+   *
+   * @param s             String to pad
+   * @param desiredLength ending length
+   * @return padded String
+   */
+  public static String padRight(String s, int desiredLength) {
+    return padRight(s, desiredLength, " ");
+  }
+
+
+  /**
+   * Pad the given string with padString on the right up to the given length.
+   *
+   * @param s             String to pad
+   * @param desiredLength ending length
+   * @param padString     String to pad with (e.g, " ")
+   * @return padded String
+   */
+  public static String padRight(String s, int desiredLength,
+                                String padString) {
+    while (s.length() < desiredLength) {
+      s = s + padString;
+    }
+    return s;
+  }
+
   private static final char[] htmlIn = {'&', '"', '\'', '<', '>', '\n'};
   private static final String[] htmlOut = {"&amp;", "&quot;", "&#39;", "&lt;", "&gt;", "\n<p>"};
   private static final char[] xmlInC = {'&', '<', '>'};

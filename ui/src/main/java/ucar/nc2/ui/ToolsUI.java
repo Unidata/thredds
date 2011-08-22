@@ -57,7 +57,7 @@ import ucar.nc2.ft.point.PointDatasetImpl;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ncml.NcMLWriter;
 import ucar.nc2.thredds.ThreddsDataFactory;
-import ucar.nc2.thredds.DqcRadarDatasetCollection;
+import ucar.nc2.thredds.TDSRadarDatasetCollection;
 import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.ncml.Aggregation;
 import ucar.nc2.dt.*;
@@ -1729,10 +1729,10 @@ public class ToolsUI extends JPanel {
       });
       buttPanel.add(compareButton);
 
-      JButton dateButton = new JButton("Date");
+      JButton dateButton = new JButton("UdunitDate");
       dateButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
-          checkDateUnits(cb.getSelectedItem());
+          checkUdunits(cb.getSelectedItem());
         }
       });
       buttPanel.add(dateButton);
@@ -1802,7 +1802,7 @@ public class ToolsUI extends JPanel {
       }
     }
 
-    void checkDateUnits(Object o) {
+    void checkUdunits(Object o) {
       String command = (String) o;
 
       boolean isDate = false;
@@ -1813,9 +1813,17 @@ public class ToolsUI extends JPanel {
         ta.appendLine("getStandardDateString = " + formatter.toDateTimeString(d));
         ta.appendLine("getDateOrigin = " + formatter.toDateTimeString(du.getDateOrigin()));
         isDate = true;
+
+        Date d2 = DateUnit.getStandardOrISO(command);
+        if (d2 == null)
+          ta.appendLine("\nDateUnit.getStandardOrISO = false");
+        else
+          ta.appendLine("\nDateUnit.getStandardOrISO = " + formatter.toDateTimeString(d2));
+
       } catch (Exception e) {
         // ok to fall through
       }
+      ta.appendLine("isDate = " + isDate);
 
       if (!isDate) {
         try {
@@ -1837,21 +1845,21 @@ public class ToolsUI extends JPanel {
           }
         }
       }
-
-      Date d = DateUnit.getStandardOrISO(command);
-      if (d == null)
-        ta.appendLine("\nDateUnit.getStandardOrISO = false");
-      else
-        ta.appendLine("\nDateUnit.getStandardOrISO = " + formatter.toDateTimeString(d));
     }
 
     void checkCalendarDate(Object o) {
       String command = (String) o;
 
-      ta.setText("\nFrom CalendarDateUnit: <" + command + ">\n");
+      ta.setText("\nParse CalendarDateUnit: <" + command + ">\n");
       try {
         CalendarDateUnit cd = CalendarDateUnit.of(null, command);
         ta.appendLine( "CalendarDateUnit = " + cd);
+        ta.appendLine( " Calendar        = " + cd.getCalendar());
+        ta.appendLine( " PeriodField     = " + cd.getTimeUnit().getField());
+        ta.appendLine( " PeriodValue     = " + cd.getTimeUnit().getValue());
+        ta.appendLine( " Base            = " + cd.getBaseCalendarDate());
+        ta.appendLine( " isCalendarField = " + cd.isCalendarField());
+
       } catch (Exception e) {
         ta.appendLine("not a CalendarDateUnit= "+e.getMessage());
 
@@ -5280,13 +5288,13 @@ public class ToolsUI extends JPanel {
       StringBuilder log = new StringBuilder();
       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       try {
-        radarCollectionDataset = (StationRadarCollectionImpl) TypedDatasetFactory.open(FeatureType.STATION_RADIAL, location, null, log);
+        radarCollectionDataset = (StationRadarCollectionImpl) TypedDatasetFactory.open(FeatureType.STATION_RADIAL, location, null, log);  // LOOK wrong
         if (radarCollectionDataset == null) {
           JOptionPane.showMessageDialog(null, "Can't open " + location + ": " + log);
           return false;
         }
 
-        radialViewer.setDataset((DqcRadarDatasetCollection) radarCollectionDataset);
+        radialViewer.setDataset((TDSRadarDatasetCollection) radarCollectionDataset);
         setSelectedItem(location);
         return true;
 
@@ -5310,7 +5318,7 @@ public class ToolsUI extends JPanel {
       }
 
       radarCollectionDataset = dataset;
-      radialViewer.setDataset((DqcRadarDatasetCollection) radarCollectionDataset);
+      radialViewer.setDataset((TDSRadarDatasetCollection) radarCollectionDataset);
       setSelectedItem(radarCollectionDataset.getLocation());
       return true;
     }

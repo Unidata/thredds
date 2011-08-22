@@ -39,7 +39,7 @@ import ucar.nc2.constants.AxisType;
 import ucar.nc2.util.CancelTask;
 
 import ucar.unidata.io.RandomAccessFile;
-import ucar.unidata.util.StringUtil;
+//import ucar.unidata.util.StringUtil;
 
 import java.io.IOException;
 
@@ -52,6 +52,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.StringTokenizer;
+import java.util.regex.Pattern;
 
 
 /**
@@ -145,13 +146,16 @@ public class Uspln extends AbstractLightningIOSP {
     */
 
     /** Magic string for determining if this is my type of file. */
-	 private static final String MAGIC = "LIGHTNING-.*(P|G)LN1";
+	  private static final String MAGIC = "LIGHTNING-.*(P|G)LN1";
+    private Pattern pMAGIC= Pattern.compile(MAGIC);
 
     /** Magic string for determining if this is my type of file. */
     private static final String MAGIC_OLD = "..PLN-LIGHTNING";
+    private Pattern pMAGIC_OLD= Pattern.compile(MAGIC_OLD);
 
     /** Magic string for determining if this is and extended type of file. */
     private static final String MAGIC_EX = ".*(GLN1|PLN1EX).*";
+    private Pattern pMAGIC_EX= Pattern.compile(MAGIC_EX);
 
     /** original time format */
     private static final String TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
@@ -197,8 +201,8 @@ public class Uspln extends AbstractLightningIOSP {
         byte[] b = new byte[n];
         raf.read(b);
         String got = new String(b);
-        return StringUtil.regexpMatch(got, MAGIC)
-               || StringUtil.regexpMatch(got, MAGIC_OLD);
+
+        return (pMAGIC.matcher(got).find() || pMAGIC_OLD.matcher(got).find());
     }
 
     /**
@@ -344,9 +348,8 @@ public class Uspln extends AbstractLightningIOSP {
             if (line == null) {
                 break;
             }
-            if (StringUtil.regexpMatch(line, MAGIC)
-                    || StringUtil.regexpMatch(line, MAGIC_OLD)) {
-                extended = StringUtil.regexpMatch(line, MAGIC_EX);
+            if (pMAGIC.matcher(line).find() || pMAGIC_OLD.matcher(line).find()) {
+                extended = pMAGIC_EX.matcher(line).find();
                 break;
             }
         }
@@ -386,10 +389,9 @@ public class Uspln extends AbstractLightningIOSP {
             if (line == null) {
                 break;
             }
-            if (StringUtil.regexpMatch(line, MAGIC)
-                    || StringUtil.regexpMatch(line, MAGIC_OLD)) {
+            if (pMAGIC.matcher(line).find() || pMAGIC_OLD.matcher(line).find()) {
                 if ( !knowExtended) {
-                    isExtended = StringUtil.regexpMatch(line, MAGIC_EX);
+                    isExtended = pMAGIC_EX.matcher(line).find();
                     if (isExtended) {
                         isoDateTimeFormat.applyPattern(TIME_FORMAT_EX);
                     }
@@ -535,8 +537,7 @@ public class Uspln extends AbstractLightningIOSP {
                 nelems = numFlashes; // track this for next time
                 return false;
             }
-            if (StringUtil.regexpMatch(line, MAGIC)
-                    || StringUtil.regexpMatch(line, MAGIC_OLD)) {
+            if (pMAGIC.matcher(line).find() || pMAGIC_OLD.matcher(line).find()) {
                 return readStroke();
             }
 
@@ -674,8 +675,7 @@ public class Uspln extends AbstractLightningIOSP {
                 throws IOException, ParseException {
             raf.seek(offset);
             String line = raf.readLine();
-            if ((line == null) || StringUtil.regexpMatch(line, MAGIC)
-                    || StringUtil.regexpMatch(line, MAGIC_OLD)) {
+            if ((line == null) || pMAGIC.matcher(line).find() || pMAGIC_OLD.matcher(line).find()) {
                 throw new IllegalStateException();
             }
 

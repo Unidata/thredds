@@ -33,13 +33,13 @@
 
 package ucar.nc2.ui;
 
+import ucar.nc2.thredds.TDSRadarDatasetCollection;
 import ucar.nc2.ui.widget.IndependentDialog;
 import ucar.nc2.ui.widget.TextHistoryPane;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTableSorted;
 import ucar.nc2.dt.RadialDatasetSweep;
 import ucar.nc2.ui.point.StationRegionDateChooser;
-import ucar.nc2.thredds.DqcRadarDatasetCollection;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionListener;
@@ -65,7 +65,7 @@ import java.io.IOException;
 public class StationRadialViewer extends JPanel {
   private PreferencesExt prefs;
 
-  private ucar.nc2.thredds.DqcRadarDatasetCollection sds;
+  private ucar.nc2.thredds.TDSRadarDatasetCollection sds;
 
   private StationRegionDateChooser chooser;
   private BeanTableSorted stnTable;
@@ -122,7 +122,7 @@ public class StationRadialViewer extends JPanel {
     add(splitV, BorderLayout.CENTER);
   }
 
-  public void setDataset(DqcRadarDatasetCollection dataset) {
+  public void setDataset(TDSRadarDatasetCollection dataset) {
     this.sds = dataset;
 
     if (debugStationDatsets)

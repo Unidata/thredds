@@ -34,7 +34,7 @@
 package ucar.nc2.iosp.gempak;
 
 import ucar.nc2.iosp.grid.GridParameter;
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 
 
 /**
@@ -130,10 +130,10 @@ public class GempakParameter extends GridParameter {
      */
     public String toString() {
         StringBuilder buf = new StringBuilder("GridParameter: ");
-        buf.append(StringUtil.padLeft(String.valueOf(getNumber()), 4));
+        buf.append(StringUtil2.padLeft(String.valueOf(getNumber()), 4));
         buf.append(" ");
         String param = getName() + " (" + getDescription() + ")";
-        buf.append(StringUtil.padRight(param, 40));
+        buf.append(StringUtil2.padRight(param, 40));
         buf.append(" [");
         buf.append(getUnit());
         buf.append("]");

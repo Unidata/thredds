@@ -32,7 +32,6 @@
  */
 
 
-
 package ucar.nc2.thredds;
 
 
@@ -61,7 +60,6 @@ import ucar.unidata.util.DateSelection;
 import ucar.unidata.util.DatedThing;
 import ucar.unidata.util.Product;
 
-
 import java.io.IOException;
 
 import java.net.URI;
@@ -74,7 +72,6 @@ import java.util.*;
  * @author yuan
  */
 public class TDSRadarDatasetCollection extends StationRadarCollectionImpl {
-
 
     /** map of station name to station */
     protected HashMap<String, Station> stationHMap;
@@ -93,11 +90,6 @@ public class TDSRadarDatasetCollection extends StationRadarCollectionImpl {
 
     /** _more_ */
     private String summary;
-
-    /** _more_ */
-    protected static final Namespace defNS =
-        Namespace.getNamespace(
-            thredds.catalog.XMLEntityResolver.DQC_NAMESPACE_04);
 
     /** the original document URI */
     private URI docURI;

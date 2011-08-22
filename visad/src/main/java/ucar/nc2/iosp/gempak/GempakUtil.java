@@ -34,7 +34,7 @@
 
 package ucar.nc2.iosp.gempak;
 
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 
 
 /**
@@ -246,8 +246,8 @@ public final class GempakUtil {
 
         //  Convert date and time to character strings.
         //  Fill in blanks with zeroes.
-        date   = StringUtil.padZero(idate, 6);
-        time   = StringUtil.padZero(itime, 4);
+        date   = StringUtil2.padZero(idate, 6);
+        time   = StringUtil2.padZero(itime, 4);
 
         dattim = date + "/" + time;
 

@@ -303,6 +303,10 @@ except:
     return cal;
   }
 
+  public boolean isCalendarField() {
+    return isCalendarField;
+  }
+
   // testing
   Date getBaseDate() {
     return baseDate.toDate();

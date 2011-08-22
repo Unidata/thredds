@@ -37,7 +37,7 @@ package ucar.nc2.iosp.gempak;
 
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Format;
-import ucar.unidata.util.StringUtil;
+import ucar.unidata.util.StringUtil2;
 
 import java.io.*;
 
@@ -280,7 +280,7 @@ public class GempakSoundingFileReader extends AbstractGempakStationFileReader {
             }
             List<GempakParameter> params = getParameters(part);
             for (GempakParameter parm : params) {
-                builder.append(StringUtil.padLeft(parm.getName(), 7));
+                builder.append(StringUtil2.padLeft(parm.getName(), 7));
                 builder.append("\t");
             }
             builder.append("\n");
@@ -293,7 +293,7 @@ public class GempakSoundingFileReader extends AbstractGempakStationFileReader {
             for (int j = 0; j < numLevels; j++) {
                 for (int i = 0; i < numParams; i++) {
                     builder.append(
-                        StringUtil.padLeft(
+                        StringUtil2.padLeft(
                             Format.formatDouble(
                                 data[j * numParams + i], 7, 1), 7));
                     builder.append("\t");
@@ -320,7 +320,7 @@ public class GempakSoundingFileReader extends AbstractGempakStationFileReader {
     private String makeHeader(GempakStation stn, String date) {
         StringBuilder builder = new StringBuilder();
         builder.append("STID = ");
-        builder.append(StringUtil.padRight((stn.getSTID().trim()
+        builder.append(StringUtil2.padRight((stn.getSTID().trim()
                                             + stn.getSTD2().trim()), 8));
         builder.append("\t");
         builder.append("STNM = ");
