@@ -138,7 +138,6 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
     HTTPMethod method = null;
     try {
       method = HTTPMethod.Get(session,url);
-      method.setFollowRedirects(true);
       method.setRequestHeader("Range", "bytes=" + 0 + "-" + 1);
       doConnect(method);
 

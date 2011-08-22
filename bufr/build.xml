@@ -31,6 +31,7 @@
   <property name="cdm.jar" value="netcdf-4.3.jar"/>
   <property name="jdom.jar" value="jdom.jar"/>
   <property name="loggingAPI.jar" value="slf4j-api-1.6.1.jar"/>
+  <property name="joda.jar" value="joda-time-2.0.jar"/>
 
   <!-- source -->
   <path id="sourcepath">
@@ -42,6 +43,7 @@
     <fileset id="compile.libraries" dir="${lib.dir}">
       <include name="release/${cdm.jar}"/>
       <include name="external/${jdom.jar}"/>
+      <include name="external/${joda.jar}"/>
       <include name="external/${loggingAPI.jar}"/>
     </fileset>
   </path>

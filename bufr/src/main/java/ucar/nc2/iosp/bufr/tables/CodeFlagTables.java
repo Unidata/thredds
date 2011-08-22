@@ -32,7 +32,6 @@
  */
 package ucar.nc2.iosp.bufr.tables;
 
-import com.sun.org.apache.xml.internal.security.Init;
 import org.jdom.input.SAXBuilder;
 import org.jdom.Element;
 import ucar.nc2.iosp.bufr.Descriptor;

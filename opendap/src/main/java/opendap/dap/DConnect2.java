@@ -76,7 +76,7 @@ public class DConnect2 {
     allowSessions = b;
   }
 
-  private HTTPSession _session = null;
+  // obsolete private HTTPSession _session = null;
 
   // default session
 
@@ -296,7 +296,7 @@ public class DConnect2 {
 
       ver = new ServerVersion(method);
 
-      checkHeaders(method);
+      checkHeaders(_session,method);
 
       // check for deflator
       Header h = method.getResponseHeader("content-encoding");
@@ -335,9 +335,11 @@ public class DConnect2 {
           }
         });
       }
-      if (_session != null)
+      /* obsolete
+      if (_session != null) {
         _session.close();
-      _session = null;
+        _session = null;
+      } */
     } catch (Throwable t) {
       // ignore
     }
@@ -380,7 +382,7 @@ is =  new StringBufferInputStream (contents); */
     return lastExtended;
   }
 
-  private void checkHeaders(HTTPMethod method) {
+  private void checkHeaders(HTTPSession _session, HTTPMethod method) {
     if (debugHeaders) {
       System.out.println("\nOpenConnection Headers for " + method.getPath());
       System.out.println("Status Line: " + method.getStatusLine());
@@ -413,17 +415,18 @@ is =  new StringBufferInputStream (contents); */
     if (debugHeaders)
       System.out.println("OpenConnection Headers for " + method.getPath());
 
-    Cookie[] cookies = _session.getCookies();
+    if(_session != null) {
+        Cookie[] cookies = _session.getCookies();
+        if (cookies.length > 0) {
+          if (debugHeaders) System.out.println("Cookies= ");
 
-    if (cookies.length > 0) {
-      if (debugHeaders) System.out.println("Cookies= ");
-
-      for (int i = 0; i < cookies.length; i++) {
-        Cookie cooky = cookies[i];
-        if (debugHeaders) System.out.println("  " + cooky);
-        if (cooky.getName().equalsIgnoreCase("jsessionid"))
-          hasSession = true;
-      }
+          for (int i = 0; i < cookies.length; i++) {
+            Cookie cooky = cookies[i];
+            if (debugHeaders) System.out.println("  " + cooky);
+            if (cooky.getName().equalsIgnoreCase("jsessionid"))
+              hasSession = true;
+          }
+        }
     }
 
   }
