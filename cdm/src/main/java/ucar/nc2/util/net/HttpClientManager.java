@@ -78,16 +78,16 @@ public class HttpClientManager {
    * Get the content from a url. For large returns, its better to use getResponseAsStream.
    *
    * @param session   use this session, if null, create a new one
-   * @param urlString url as a String
+   * @param urlencoded url as a String
    * @return contents of url as a String
    * @throws java.io.IOException on error
    */
-  public static String getContentAsString(HTTPSession session, String urlString) throws IOException {
+  public static String getContentAsString(HTTPSession session, String urlencoded) throws IOException {
     HTTPSession useSession = session;
     try {
       if (useSession == null)
-        useSession = new HTTPSession();
-      HTTPMethod m = useSession.newMethodGet(urlString);
+        useSession = new HTTPSession(urlencoded);
+      HTTPMethod m = HTTPMethod.Get(useSession,urlencoded);
       m.execute();
       return m.getResponseAsString();
     } finally {
@@ -99,18 +99,18 @@ public class HttpClientManager {
   /**
    * Put content to a url, using HTTP PUT. Handles one level of 302 redirection.
    *
-   * @param urlString url as a String
+   * @param urlencoded url as a String
    * @param content   PUT this content at the given url.
    * @return the HTTP status return code
    * @throws java.io.IOException on error
    */
-  public static int putContent(String urlString, String content) throws IOException {
+  public static int putContent(String urlencoded, String content) throws IOException {
     HTTPSession session = null;
 
     try {
 
-      session = new HTTPSession();
-      HTTPMethod m = session.newMethodPut(urlString);
+      session = new HTTPSession(urlencoded);
+      HTTPMethod m = HTTPMethod.Put(session);
 
       m.setRequestContentAsString(content);
 
@@ -137,13 +137,13 @@ public class HttpClientManager {
 
   //////////////////////
 
-  static public String getUrlContentsAsString(HTTPSession session, String urlString, int maxKbytes) {
+  static public String getUrlContentsAsString(HTTPSession session, String urlencoded, int maxKbytes) {
     HTTPSession useSession = session;
     try {
       if (useSession == null)
-        useSession = new HTTPSession();
+        useSession = new HTTPSession(urlencoded);
 
-      HTTPMethod m = useSession.newMethodGet(urlString);
+      HTTPMethod m = HTTPMethod.Get(useSession,urlencoded);
       m.setFollowRedirects(true);
       m.setRequestHeader("Accept-Encoding", "gzip,deflate");
 
@@ -190,13 +190,13 @@ public class HttpClientManager {
     return bout.toString(charset);
   }
 
-  static public void copyUrlContentsToFile(HTTPSession session, String urlString, File file) throws HTTPException {
+  static public void copyUrlContentsToFile(HTTPSession session, String urlencoded, File file) throws HTTPException {
     HTTPSession useSession = session;
     try {
       if (useSession == null)
-        useSession = new HTTPSession();
+        useSession = new HTTPSession(urlencoded);
 
-      HTTPMethod m = useSession.newMethodGet(urlString);
+      HTTPMethod m = HTTPMethod.Get(useSession,urlencoded);
       m.setRequestHeader("Accept-Encoding", "gzip,deflate");
 
       int status = m.execute();
@@ -233,15 +233,15 @@ public class HttpClientManager {
     }
   }
 
-  static public long appendUrlContentsToFile(HTTPSession session, String urlString, File file, long start, long end) throws HTTPException {
+  static public long appendUrlContentsToFile(HTTPSession session, String urlencoded, File file, long start, long end) throws HTTPException {
     HTTPSession useSession = session;
     long nbytes = 0;
 
     try {
       if (useSession == null)
-        useSession = new HTTPSession();
+        useSession = new HTTPSession(urlencoded);
 
-      HTTPMethod m = useSession.newMethodGet(urlString);
+      HTTPMethod m = HTTPMethod.Get(useSession,urlencoded);
       m.setRequestHeader("Accept-Encoding", "gzip,deflate");
       m.setRequestHeader("Range", "bytes=" + start + "-" + end);
 
