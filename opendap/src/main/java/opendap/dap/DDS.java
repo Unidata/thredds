@@ -282,7 +282,7 @@ import org.jdom.Document;
 public class DDS extends DStructure
 {
 
-    private static final boolean _Debug = false;
+    private static final boolean _Debug = true;
 
     // Used by resolveAliases()
     private BaseType currentBT;
@@ -366,9 +366,9 @@ public class DDS extends DStructure
      *                OPeNDAP namespace schema.
      * @opendap.ddx.experimental
      */
-    public DDS(String n, BaseTypeFactory factory, String schema)
+    public DDS(String name, BaseTypeFactory factory, String schema)
     {
-        super(n);
+        super(name);
         vars = new Vector();
         this.factory = factory;
         schemaLocation = schema;
@@ -376,15 +376,28 @@ public class DDS extends DStructure
 
     public void setURL(String url) {this.url = url;}
 
-    public boolean parse(InputStream stream) throws ParseException, DAP2Exception
+    public boolean parse(InputStream stream)
+	throws ParseException, DAP2Exception
+    {
+        try {
+            String text = DConnect2.captureStream(stream);
+            return parse(text);
+        } catch (IOException ioe) {
+            throw new ParseException("Cannot read DDS",ioe);
+        }
+    }
+
+     public boolean parse(String text)
+	throws ParseException, DAP2Exception
     {
         DapParser parser = new DapParser(factory);
         parser.setURL(url);
-	    int result = parser.ddsparse(stream,this);
 
-	    if(result == Dapparse.DapERR)
-	        throw parser.getERR();
-	    return (result == Dapparse.DapDDS ? true : false);
+	int result = parser.ddsparse(text,this);
+
+	if(result == Dapparse.DapERR)
+	    throw parser.getERR();
+	return (result == Dapparse.DapDDS ? true : false);
     }
 
 
@@ -459,7 +472,7 @@ public class DDS extends DStructure
             // Since the DDS can contain Attributes, in addtion to Attribute containers (AttributeTables)
             // at the top (dataset) level and the DAS cannot, it is required that these Attributes be
             // bundled into a container at the top level of the DAS.
-            // In the code that follows this container is called "looseEbds"
+            // In the code that follows this container is called "looseEnds"
 
             // Make the container.
             AttributeTable looseEnds = new AttributeTable(getLooseEndsTableName());
@@ -693,6 +706,10 @@ public class DDS extends DStructure
         // table we are getting anyway), we don't need a copy, only the reference.
         AttributeTable tBTAT = bt.getAttributeTable();
 
+        // if the table is empty, then do nothing
+        if(tBTAT == null || tBTAT.size() == 0)
+            return;
+
         // Start a new (child) AttributeTable (using the name of the one we are
         // copying) in the (parent) AttributeTable we are working on.
         AttributeTable newAT = atbl.appendContainer(tBTAT.getEncodedName());
@@ -716,7 +733,6 @@ public class DDS extends DStructure
 
             while (v.hasMoreElements()) {
                 BaseType thisBT = (BaseType) v.nextElement();
-
                 buildDASAttributeTable(thisBT, newAT);
             }
         }

@@ -34,10 +34,10 @@ import java.io.*;
        new stream in case one is reusing the parser
     */
 
-    public boolean parse(InputStream stream) throws ParseException
+    public boolean parse(String input) throws ParseException
     {
 	((Daplex)yylexer).reset(parsestate);
-	((Daplex)yylexer).setStream(stream);
+	((Daplex)yylexer).setInput(input);
 	return parse();
     }
 
@@ -45,9 +45,7 @@ import java.io.*;
 
     public void setURL(String url) {
         this.url = url;
-        if(url != null && url.equals("http://motherlode.ucar.edu:8081/thredds/dodsC/fmrc/NCEP/GFS/Global_0p5deg/runs/NCEP-GFS-Global_0p5deg_RUN_2011-07-07T00:00:00Z.html.dods"))
-            setDebugLevel(1);
     }
 
-    public void setURL(String url) {this.url = url;}
+    public String getURL() {return this.url;}
 }

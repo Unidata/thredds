@@ -115,6 +115,14 @@ public class AttributeTable extends DAPNode
         _attr = new SortedTable();
     }
 
+    /**
+     *
+     * @return the # of contained attributes
+     */
+    public int size()
+    {
+        return (_attr == null ? 0 : _attr.size());
+    }
 
     /**
      * Returns an <code>Enumeration</code> of the attribute names in this
@@ -388,6 +396,16 @@ public class AttributeTable extends DAPNode
      */
     public final void print(OutputStream os, String pad) {
         print(new PrintWriter(new BufferedWriter(new OutputStreamWriter(os))), pad);
+    }
+
+    /**
+     * Print the attribute table on the given <code>PrintWriter</code> with
+     * four spaces of indentation.
+     *
+     * @param os the <code>PrintWriter</code> to use for output.
+     */
+    public final void print(PrintStream os) {
+        print(os, "");
     }
 
     /**

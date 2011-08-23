@@ -34,18 +34,20 @@ import java.io.*;
        new stream in case one is reusing the parser
     */
 
-    public boolean parse(InputStream stream) throws ParseException
+    public boolean parse(String input) throws ParseException
     {
 	((Daplex)yylexer).reset(parsestate);
-	((Daplex)yylexer).setStream(stream);
+	((Daplex)yylexer).setInput(input);
 	return parse();
     }
 
     String url = null;
 
-    void setURL(String url) {this.url = url;}
+    public void setURL(String url) {
+        this.url = url;
+    }
 
-    String getURL() {return this.url;}
+    public String getURL() {return this.url;}
 }
 
 %token SCAN_ALIAS 
