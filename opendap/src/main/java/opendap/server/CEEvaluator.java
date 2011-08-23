@@ -38,12 +38,12 @@
 /////////////////////////////////////////////////////////////////////////////
 
 
-package opendap.Server;
+package opendap.server;
 
 import java.util.*;
 import java.io.*;
 
-import opendap.Server.parsers.CeParser;
+import opendap.server.parsers.CeParser;
 import opendap.dap.*;
 import opendap.dap.parsers.*;
 import opendap.servlet.ReqState;
@@ -161,9 +161,9 @@ public class CEEvaluator {
      * as such in the CEEvaluator's ServerDDS instance. The selection
      * subexpression is then parsed and a list of Clause objects is built.
      * <p/>
-     * The parser is located in opendap.Server.parsers.CeParser.
+     * The parser is located in opendap.server.parsers.CeParser.
      *
-     * @param expression The constraint expression to parse.
+     * @param constraint The constraint expression to parse.
      * @throws ParseException
      * @throws NoSuchVariableException
      * @throws NoSuchFunctionException
@@ -171,7 +171,7 @@ public class CEEvaluator {
      * @throws InvalidParameterException
      * @throws SBHException
      */
-    public void parseConstraint(String expression, String url)
+    public void parseConstraint(String constraint, String urlencoded)
             throws ParseException, opendap.dap.DAP2Exception, NoSuchVariableException,
             NoSuchFunctionException, InvalidOperatorException,
             InvalidParameterException, SBHException, WrongTypeException {
@@ -188,7 +188,7 @@ public class CEEvaluator {
         CeParser.constraint_expression(this,
                 _dds.getFactory(),
                 clauseFactory,
-                expression, url);
+                constraint, urlencoded);
 	} catch (ConstraintException ce) {
 	    // convert to a DAP2Exception
         ce.printStackTrace();

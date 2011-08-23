@@ -70,8 +70,8 @@ public class GuardedDatasetCacheAndClone implements GuardedDataset {
     this.hasSession = hasSession;
   }
 
-  public opendap.Server.ServerDDS getDDS() {
-    return (opendap.Server.ServerDDS) dds.clone();
+  public opendap.server.ServerDDS getDDS() {
+    return (opendap.server.ServerDDS) dds.clone();
   }
 
   public opendap.dap.DAS getDAS() {

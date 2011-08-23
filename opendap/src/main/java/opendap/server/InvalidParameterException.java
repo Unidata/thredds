@@ -39,7 +39,7 @@
 
 
 
-package opendap.Server;
+package opendap.server;
 
 /**
  * Used to indicate that one of the passed parameters to a method

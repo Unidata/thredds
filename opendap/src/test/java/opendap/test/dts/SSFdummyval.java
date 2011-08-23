@@ -42,7 +42,7 @@ package opendap.test.dts;
 import java.util.*;
 
 import opendap.dap.*;
-import opendap.Server.*;
+import opendap.server.*;
 
 public class SSFdummyval
         implements BTFunction {

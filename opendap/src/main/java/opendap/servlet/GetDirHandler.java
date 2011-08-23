@@ -70,26 +70,22 @@ public class GetDirHandler {
      * with a list of all datasets on this server with links to their
      * DDS, DAS, Information, and HTML responses.
      *
-     * @param request  The <code>HttpServletRequest</code> from the client.
-     * @param response The <code>HttpServletResponse</code> for the client.
      * @param rs       The request state object for this client request.
      * @see ReqState
      */
-    public void sendDIR(HttpServletRequest request,
-                        HttpServletResponse response,
-                        ReqState rs)
+    public void sendDIR(ReqState rs)
             throws opendap.dap.DAP2Exception, ParseException {
 
-        if (_Debug) System.out.println("sendDIR request = " + request);
+        if (_Debug) System.out.println("sendDIR request = " + rs.getRequest());
 
-        String ddxCacheDir = rs.getDDXCache();
-        String ddsCacheDir = rs.getDDSCache();
+        // ignore String ddxCacheDir = rs.getDDXCache(rs.getRootPath());
+        String ddsCacheDir = rs.getDDSCache(rs.getRootPath());
 
         try {
 
-            PrintWriter pw = new PrintWriter(response.getOutputStream());
+            PrintWriter pw = new PrintWriter(rs.getResponse().getOutputStream());
 
-            String thisServer = request.getRequestURL().toString();
+            String thisServer = rs.getRequest().getRequestURL().toString();
             pw.println("<html>");
             pw.println("<head>");
             pw.println("<title>OPeNDAP Directory</title>");
@@ -102,7 +98,7 @@ public class GetDirHandler {
             pw.println("<h1>OPeNDAP Directory for:</h1>");
             pw.println("<h2>" + thisServer + "</h2>");
 
-            printDIR(pw, ddxCacheDir, "DDX", thisServer);
+            // ignore printDIR(pw, ddxCacheDir, "DDX", thisServer);
 
             printDIR(pw, ddsCacheDir, "DDS", thisServer);
             pw.println("<hr>");
@@ -160,7 +156,7 @@ public class GetDirHandler {
                         pw.print("</div>");
                         pw.println("</td>");
 
-
+                        /* ignore
                         pw.print("    <td>");
                         pw.print("<div align='center'>");
                         pw.print("<a href='" +
@@ -168,7 +164,7 @@ public class GetDirHandler {
                                 fList[i].getName() +
                                 ".ddx'> DDX </a>");
                         pw.print("</div>");
-                        pw.println("</td>");
+                        pw.println("</td>"); */
 
                         pw.print("    <td>");
                         pw.print("<div align='center'>");

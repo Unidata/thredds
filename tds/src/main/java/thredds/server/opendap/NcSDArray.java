@@ -37,7 +37,7 @@ import opendap.dap.InvalidDimensionException;
 import ucar.ma2.*;
 import ucar.nc2.*;
 
-import opendap.Server.*;
+import opendap.server.*;
 import opendap.dap.BaseType;
 import opendap.dap.DArrayDimension;
 import opendap.dap.PrimitiveVector;

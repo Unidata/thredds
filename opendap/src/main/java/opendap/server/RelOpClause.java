@@ -37,9 +37,9 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /////////////////////////////////////////////////////////////////////////////
 
-package opendap.Server;
+package opendap.server;
 
-import opendap.Server.parsers.ExprParserConstants;
+import opendap.server.parsers.ExprParserConstants;
 
 import java.util.*;
 import java.io.*;
@@ -138,7 +138,7 @@ public class RelOpClause
     /**
      * Returns the type of comparison
      *
-     * @see opendap.Server.parsers.ExprParserConstants
+     * @see opendap.server.parsers.ExprParserConstants
      */
     public int getOperator() {
         return operator;

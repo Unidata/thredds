@@ -44,7 +44,7 @@ package opendap.test.dts;
 import java.io.*;
 
 import opendap.dap.*;
-import opendap.Server.*;
+import opendap.server.*;
 
 /**
  * Used by the test server to reset the server output

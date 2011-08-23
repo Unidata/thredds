@@ -38,7 +38,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 
-package opendap.Server;
+package opendap.server;
 
 /**
  * Thrown when a Server Side Function (SSF) is used incorrectly.

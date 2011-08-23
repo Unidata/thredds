@@ -40,15 +40,9 @@
 
 
 
-package opendap.Server;
+package opendap.server;
 
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.EOFException;
-
-import opendap.dap.BaseType;
 import opendap.dap.InvalidDimensionException;
-import opendap.Server.InvalidParameterException;
 //import opendap.dap.NoSuchVariableException;
 
 

@@ -82,12 +82,14 @@
             <element id="library" level="project" name="joda-time" />
             <element id="library" level="project" name="Spring-Web" />
             <element id="library" level="project" name="Logging" />
-            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/slf4j-api-1.6.1.jar" />
             <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/joda-time-2.0.jar" />
             <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/visad.jar" />
             <element id="file-copy" path="$PROJECT_DIR$/../../lib/release/threddsIso-1.2.2.jar" />
             <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/catalina.jar" />
             <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/org.springframework.test-3.0.5.RELEASE.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/slf4j-api-1.6.1.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/slf4j-jdk14-1.6.1.jar" />
+            <element id="file-copy" path="$PROJECT_DIR$/../../lib/external/org.springframework.beans-3.0.5.RELEASE.jar" />
           </element>
         </element>
         <element id="javaee-facet-resources" facet="tds/web/tds" />

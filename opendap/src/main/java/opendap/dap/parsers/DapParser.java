@@ -1975,7 +1975,7 @@ public class DapParser extends Dapparse
     public boolean parse(String input) throws ParseException
     {
 	((Daplex)yylexer).reset(parsestate);
-	((Daplex)yylexer).setInput(input);
+	((Daplex)yylexer).setText(input);
 	return parse();
     }
 

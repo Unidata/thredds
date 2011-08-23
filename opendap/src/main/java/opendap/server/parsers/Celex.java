@@ -35,11 +35,11 @@
    netcdf/libncdap3 ce parser parallel to this one
 */
 
-package opendap.Server.parsers;
+package opendap.server.parsers;
 
 import opendap.dap.parsers.ParseException;
 
-import static opendap.Server.parsers.CeParser.*;
+import static opendap.server.parsers.CeParser.*;
 
 import java.io.*;
 
@@ -93,7 +93,7 @@ class Celex implements Lexer, ExprParserConstants
         lval = null;
         charno = 0;
         this.constraint = constraint;
-	    this.stream = (this.constraint == null ? null : new StringReader(this.constraint));
+	this.stream = (this.constraint == null ? null : new StringReader(this.constraint));
     }
 
     /* Get/Set */

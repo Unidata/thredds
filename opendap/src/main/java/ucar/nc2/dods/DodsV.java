@@ -512,7 +512,7 @@ class DodsV implements Comparable {
 
   private static void doit(String urlName) throws IOException, DAP2Exception, ParseException {
     System.out.println("DODSV read ="+urlName);
-    DConnect dodsConnection = new DConnect(urlName, true);
+    DConnect2 dodsConnection = new DConnect2(urlName, true);
 
     // get the DDS
     DDS dds =  dodsConnection.getDDS();

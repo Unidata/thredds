@@ -1,6 +1,6 @@
-package opendap.Server.parsers;
+package opendap.server.parsers;
 
-import opendap.Server.*;
+import opendap.server.*;
 import opendap.dap.*;
 
 import java.util.ArrayList;
@@ -22,9 +22,9 @@ abstract public class AST
     BaseTypeFactory factory;
     ServerDDS sdds;
 
-    opendap.Server.parsers.AST root = null;
+    opendap.server.parsers.AST root = null;
 
-    void setRoot(opendap.Server.parsers.AST root) {this.root = root;}
+    void setRoot(opendap.server.parsers.AST root) {this.root = root;}
 
     CEEvaluator getCeEval() {return root.ceEval;}
     ClauseFactory getClauseFactory() {return root.clauseFactory;}

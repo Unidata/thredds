@@ -37,9 +37,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /////////////////////////////////////////////////////////////////////////////
 
-package opendap.Server;
-
-import opendap.Server.InvalidParameterException;
+package opendap.server;
 
 import java.util.List;
 

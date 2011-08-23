@@ -4,7 +4,7 @@
 %error-verbose
 
 %define public
-%define package "opendap.Server.parsers"
+%define package "opendap.server.parsers"
 %define extends "Ceparse"
 %define throws "ParseException"
 %define lex_throws "ParseException"
@@ -12,7 +12,7 @@
 %code imports {
 import opendap.dap.*;
 import opendap.dap.parsers.*;
-import opendap.Server.*;
+import opendap.server.*;
 import java.io.*;
 import java.util.*;
 }
@@ -40,9 +40,7 @@ import java.util.*;
 
     boolean parse(String constraint) throws ParseException
     {
-	StringReader sreader = new StringReader(constraint);
 	((Celex)yylexer).reset(parsestate,constraint);
-	((Celex)yylexer).setStream(sreader);
 	return parse();
     }
 
@@ -68,7 +66,11 @@ import java.util.*;
         return true;
     }
 
-    public  void setURL(String url) {lexstate.url = url;}
+    public  void setURL(String url) {
+        lexstate.url = url;
+        if(url != null && url.equals("http://motherlode.ucar.edu:8081/thredds/dodsC/fmrc/NCEP/GFS/Global_0p5deg/runs/NCEP-GFS-Global_0p5deg_RUN_2011-07-07T00:00:00Z.html.dods"))
+            setDebugLevel(1);
+    }
     public String getURL() {return lexstate.url;}
 
     public void setConstraint(String constraint) {lexstate.constraint = constraint;}

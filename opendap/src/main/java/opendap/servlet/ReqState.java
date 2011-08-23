@@ -40,9 +40,11 @@
 
 package opendap.servlet;
 
+import ucar.nc2.util.net.HTTPSession;
+
 import java.util.Enumeration;
-import java.util.StringTokenizer;
 import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -110,43 +112,53 @@ public class ReqState {
     private final String defaultSchemaName = "opendap-0.0.0.xsd";
     private String defaultSchemaLocation;
 
+    // path from root to dds etc dirs
+    private String testdatasetspath = "/WEB-INF/resources/testdatasets";
 
     private String dataSetName;
     private String requestSuffix;
-    private String CE;
+    private String CE;   // encoded
     private Object obj = null;
     private String serverClassName;
-    private String requestURL;
+    private String requestURL;   // encoded
 
-    private ServletConfig myServletConfig;
     private HttpServletRequest myHttpRequest;
     private HttpServletResponse response;
+    private AbstractServlet myServlet;
+    private ServletConfig myServletConfig;
+    private ServletContext myServletContext;
+    private String rootpath;
 
 
     public ReqState(HttpServletRequest myRequest, HttpServletResponse response,
-                    ServletConfig sc,
-                    String serverClassName, String decodedurl, String decodedquery) throws BadURLException
+                    AbstractServlet sv,
+                    String serverClassName, String encodedurl, String encodedquery)
     {
-        this.myServletConfig = sc;
+        this.myServlet = sv;
+        this.myServletConfig = sv.getServletConfig();
+        this.myServletContext = sv.getServletContext();
+        this.rootpath = HTTPSession.canonicalpath(this.myServletContext.getRealPath("/"));
+        if(this.rootpath == null) {
+            System.err.println("ReqState: cannot locate dts root path");
+            this.rootpath = "";
+        }
+        System.err.println("RootPath: "+this.rootpath);
+
         this.myHttpRequest = myRequest;
         this.response = response;
         this.serverClassName = serverClassName;
-        this.CE = decodedquery;
+        this.CE = encodedquery;
 
         // If there was simply no constraint then getQuery() should have returned null
         if (this.CE == null) this.CE = "";
 
         processDodsURL();
+        System.err.println("datasetname=|"+this.dataSetName+"|");
 
-        String servletPath = myHttpRequest.getServletPath();
-        defaultDDXcache = this.myServletConfig.getServletContext().getRealPath("datasets" +
-                servletPath + "/ddx") + "/";
-        defaultDDScache = this.myServletConfig.getServletContext().getRealPath("datasets" +
-                servletPath + "/dds") + "/";
-        defaultDAScache = this.myServletConfig.getServletContext().getRealPath("datasets" +
-                servletPath + "/das") + "/";
-        defaultINFOcache = this.myServletConfig.getServletContext().getRealPath("datasets" +
-                servletPath + "/info") + "/";
+        defaultDDXcache  = rootpath + testdatasetspath + "/ddx";
+        defaultDDScache  = rootpath + testdatasetspath + "/dds";
+        defaultDAScache  = rootpath + testdatasetspath + "/das";
+        defaultINFOcache = rootpath + testdatasetspath + "/info";
 
         int index = myHttpRequest.getRequestURL().lastIndexOf(
                 myHttpRequest.getServletPath());
@@ -160,7 +172,7 @@ public class ReqState {
 
 
 
-        requestURL = (decodedurl);
+        requestURL = (encodedurl);
 
     }
 
@@ -188,19 +200,21 @@ public class ReqState {
       return response;
     }
 
+    public String getRootPath()
+    {
+       return rootpath;
+    }
 
     /**
      * This method will attempt to get the DDX cache directory
      * name from the servlet's InitParameters. Failing this it
      * will return the default DDX cache directory name.
      *
-     * @return The name of the DDX cache directory.
+     * @param realpath path to this servlet's dir in webapps
+     * @return The name of the DDX cache directory(ending in '/').
      */
-    public String getDDXCache() {
-        String cacheDir = getInitParameter("DDXcache");
-        if (cacheDir == null)
-            cacheDir = defaultDDXcache;
-        return (cacheDir);
+    public String getDDXCache(String realpath) {
+        return getCachedString(realpath,"DDXcache",defaultDDXcache);
     }
 
     /**
@@ -220,13 +234,11 @@ public class ReqState {
      * name from the servlet's InitParameters. Failing this it
      * will return the default DDS cache directory name.
      *
-     * @return The name of the DDS cache directory.
+     * @param realpath path to this servlet's dir in webapps
+     * @return The name of the DDS cache directory(ending in '/').
      */
-    public String getDDSCache() {
-        String cacheDir = getInitParameter("DDScache");
-        if (cacheDir == null)
-            cacheDir = defaultDDScache;
-        return (cacheDir);
+    public String getDDSCache(String realpath) {
+        return getCachedString(realpath,"DDScache",defaultDDScache);
     }
 
     /**
@@ -245,41 +257,56 @@ public class ReqState {
      * This method will attempt to get the DAS cache directory
      * name from the servlet's InitParameters. Failing this it
      * will return the default DAS cache directory name.
-     *
-     * @return The name of the DAS cache directory.
+     * @param realpath path to this servlet's dir in webapps
+     * @return The name of the DAS cache directory (ending in '/')
      */
-    public String getDASCache() {
-        String cacheDir = getInitParameter("DAScache");
-        if (cacheDir == null)
-            cacheDir = defaultDAScache;
-        return (cacheDir);
+    public String getDASCache(String realpath) {
+        return getCachedString(realpath,"DAScache",defaultDAScache);
     }
 
     /**
      * Sets the default DAS Cache directory name to
      * the string <i>cachedir</i>. Note that if the servlet configuration
      * conatins an Init Parameter <i>DASCache</i> the default
-     * value will be ingnored.
-     *
+     * value will be ignored.
      * @param cachedir
      */
     public void setDefaultDASCache(String cachedir) {
         defaultDAScache = cachedir;
     }
 
+    /**
+     * @param realpath path to this servlet's dir in webapps
+     * @param which parameter name to check
+     * @param dfalt for parameter
+     * @return The name of the cache directory(ending in '/').
+     */
+    private String getCachedString(String realpath, String which, String dfalt)
+    {
+        String cacheDir = getInitParameter(which);
+        if (cacheDir == null)
+            cacheDir = dfalt;
+        else {
+            cacheDir = HTTPSession.canonicalpath(cacheDir);
+            if(cacheDir.startsWith("/"))
+                cacheDir = cacheDir.substring(1);
+            cacheDir = realpath + "/" + cacheDir;
+        }
+        if(!cacheDir.endsWith("/")) cacheDir += "/";
+        return (cacheDir);
+    }
 
     /**
      * This method will attempt to get the INFO cache directory
      * name from the servlet's InitParameters. Failing this it
      * will return the default INFO cache directory name.
      *
-     * @return The name of the INFO cache directory.
+     * @param realpath path to this servlet's dir in webapps
+     * @return The name of the INFO cache directory(ending in '/').
      */
-    public String getINFOCache() {
-        String cacheDir = getInitParameter("INFOcache");
-        if (cacheDir == null)
-            cacheDir = defaultINFOcache;
-        return (cacheDir);
+    public String getINFOCache(String realpath)
+    {
+        return getCachedString(realpath,"INFOcache",defaultINFOcache);
     }
 
     /**
@@ -422,38 +449,77 @@ public class ReqState {
 
     protected void processDodsURL() {
 
-        // Figure out the data set name.
-        this.dataSetName = myHttpRequest.getPathInfo();
+        // Figure out the data set name and suffix
+
+        String path1 = myHttpRequest.getContextPath();
+        String path2 = myHttpRequest.getServletPath();
+        String path3 = myHttpRequest.getRequestURI();
+        String path4 = myHttpRequest.getPathInfo();
+        System.err.println("cxt="+path1);
+        System.err.println("sv="+path2);
+        System.err.println("uri="+path3);
+        System.err.println("path="+path4);
+	System.err.flush();
+
+        this.dataSetName = HTTPSession.canonicalpath(myHttpRequest.getPathInfo());
+        String cxtpath = HTTPSession.canonicalpath(myHttpRequest.getContextPath());
+        String servletpath = HTTPSession.canonicalpath(myHttpRequest.getServletPath());
+
+	// simplify subsequent tests
+ 	if(this.dataSetName != null && this.dataSetName.length() == 0) this.dataSetName = null;
+ 	if(cxtpath != null && cxtpath.length() == 0) cxtpath = null;
+ 	if(servletpath != null && servletpath.length() == 0) servletpath = null;
+
+        if(cxtpath == null) {
+	    // we are running as webapps/ROOT
+            cxtpath = myServlet.getDefaultContextPath();
+	}
+        if(this.dataSetName == null) {
+            if(servletpath != null) {
+                // use servlet path
+		if(cxtpath!= null && servletpath.startsWith(cxtpath)) {
+		    this.dataSetName = servletpath.substring(cxtpath.length());
+		} else {
+		    this.dataSetName = servletpath;
+		}
+	    }
+        }
+
+        System.err.println("this.datasetname.1="+this.dataSetName);
+	System.err.flush();
+
         this.requestSuffix = null;
         if (this.dataSetName != null) {
-            // Break the path up and find the last (terminal)
-            // end.
-            StringTokenizer st = new StringTokenizer(this.dataSetName, "/");
-            String endOPath = "";
-            while (st.hasMoreTokens()) {
-                endOPath = st.nextToken();
-            }
-
-            // Check the last element in the path for the
-            // character "."
-            int index = endOPath.lastIndexOf('.');
-
-            //System.out.println("last index of . in \""+ds+"\": "+index);
-
-            // If a dot is found take the stuff after it as the DAP2 request suffix
-            if (index >= 0) {
-                // pluck the DAP2 request suffix off of the end
-                requestSuffix = endOPath.substring(index + 1);
-
-                // Set the data set name to the entire path minus the
-                // suffix which we know exists in the last element
-                // of the path.
-                this.dataSetName = this.dataSetName.substring(1, this.dataSetName.lastIndexOf('.'));
-            } else { // strip the leading slash (/) from the dataset name and set the suffix to an empty string
+            // remove any leading '/'
+            String name = this.dataSetName;
+            if(name.startsWith("/")) name = name.substring(1);
+            String[] pieces = name.split("/");
+            if(pieces.length == 0 || pieces[0].length() == 0) {
                 requestSuffix = "";
-                this.dataSetName = this.dataSetName.substring(1, this.dataSetName.length());
+                this.dataSetName = name;
+            } else {
+                String endOPath = pieces[pieces.length-1];
+                // Check the last element in the path for the
+                // character "."
+                int index = endOPath.lastIndexOf('.');
+                //System.out.println("last index of . in \""+ds+"\": "+index);
+                // If a dot is found take the stuff after it as the DAP2 request suffix
+                if (index > 0) {
+                    // pluck the DAP2 request suffix off of the end
+                    requestSuffix = endOPath.substring(index + 1);
+
+                    // Set the data set name to the entire path minus the
+                    // suffix which we know exists in the last element
+                    // of the path.
+                    this.dataSetName = this.dataSetName.substring(1, this.dataSetName.lastIndexOf('.'));
+                } else { // strip the leading slash (/) from the dataset name and set the suffix to an empty string
+                    requestSuffix = "";
+                    this.dataSetName = name;
+                }
             }
         }
+        System.err.println("this.datasetname.2="+this.dataSetName);
+	System.err.flush();
     }
 
     /**
@@ -544,10 +610,7 @@ public class ReqState {
         return new StringBuffer(requestURL);
     }
 
-    public String getQueryString()
-    {
-        return CE;
-    }
+
 }
 
 

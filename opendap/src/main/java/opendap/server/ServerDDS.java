@@ -39,7 +39,7 @@
 
 
 
-package opendap.Server;
+package opendap.server;
 
 import java.io.*;
 import java.util.Enumeration;

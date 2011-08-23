@@ -82,17 +82,17 @@ public class GetAsciiHandler {
             throws DAP2Exception, ParseException {
         if (Debug.isSet("showResponse"))
             System.out.println("Sending OPeNDAP ASCII Data For: " + dataSet +
-                    "    CE: '" + rs.getQueryString() + "'");
+                    "    CE: '" + rs.getConstraintExpression() + "'");
 
 
         String requestURL, ce;
         DConnect2 url;
         DataDDS dds;
 
-        if (rs.getQueryString() == null) {
+        if (rs.getConstraintExpression() == null) {
             ce = "";
         } else {
-            ce = "?" + rs.getQueryString();
+            ce = "?" + rs.getConstraintExpression();
         }
 
         int suffixIndex = rs.getRequestURL().toString().lastIndexOf(".");
@@ -137,7 +137,7 @@ public class GetAsciiHandler {
             else {
 
                 String betterURL = rs.getRequestURL().substring(0, rs.getRequestURL().lastIndexOf(".")) +
-                        ".dods?"+ rs.getQueryString();
+                        ".dods?"+ rs.getConstraintExpression();
 
                 pw.println("-- ASCII RESPONSE HANDLER PROBLEM --");
                 pw.println("");
