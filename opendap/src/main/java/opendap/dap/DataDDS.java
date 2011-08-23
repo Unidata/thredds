@@ -40,6 +40,8 @@
 
 package opendap.dap;
 
+import opendap.dap.parsers.ParseException;
+
 import java.io.*;
 import java.util.Enumeration;
 import java.util.zip.DeflaterOutputStream;
@@ -80,6 +82,17 @@ public class DataDDS extends DDS {
      */
     public final ServerVersion getServerVersion() {
         return ver;
+    }
+
+    public boolean parse(InputStream stream)
+        throws ParseException, DAP2Exception
+    {
+        try {
+            String text = DConnect2.captureDataDDS(stream);
+            return parse(text);
+        } catch (IOException ioe) {
+            throw new ParseException("Cannot read DataDDS",ioe);
+        }
     }
 
     /**

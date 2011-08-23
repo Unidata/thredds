@@ -61,7 +61,7 @@ public class TestConvertD2N {
           opendap.dap.DAP2Exception, InvalidRangeException {
 
     System.out.println("--DConnect ="+urlName);
-    DConnect dodsConnection = new DConnect(urlName, true);
+    DConnect2 dodsConnection = new DConnect2(urlName, true);
 
     // get the DDS
     DDS dds =  dodsConnection.getDDS();
@@ -110,7 +110,7 @@ public class TestConvertD2N {
           opendap.dap.DAP2Exception {
 
     System.out.println("checkArray ="+urlName);
-    DConnect dodsConnection = new DConnect(urlName, true);
+    DConnect2 dodsConnection = new DConnect2(urlName, true);
 
     // get the DataDDS
     DataDDS dataDDS = dodsConnection.getData("?", null);

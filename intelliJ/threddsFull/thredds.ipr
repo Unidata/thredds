@@ -317,6 +317,7 @@
       </facet-type>
       <facet-type id="web">
         <modules>
+          <module name="opendap" />
           <module name="tds">
             <files>
               <file url="file://$PROJECT_DIR$/../../tds/src/main/webapp-cdmValidator/WEB-INF/web.xml" />

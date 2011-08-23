@@ -47,7 +47,7 @@ import javax.servlet.http.*;
 
 import opendap.dap.*;
 import opendap.dap.parsers.*;
-import opendap.Server.ServerDDS;
+import opendap.servers.ServerDDS;
 import opendap.servlet.www.jscriptCore;
 import opendap.servlet.www.wwwFactory;
 import opendap.servlet.www.wwwOutPut;
@@ -74,8 +74,7 @@ public class GetHTMLInterfaceHandler {
      * The DDS and DAS for the data set are used to build the form. The
      * types in opendap.servlet.www are integral to the form generation.
      *
-     * @param request  The <code>HttpServletRequest</code> from the client.
-     * @param response The <code>HttpServletResponse</code> for the client.
+     * @param rs  The <code>ReqState</code> from the client.
      * @param dataSet
      * @param sdds
      * @param myDAS
@@ -83,8 +82,7 @@ public class GetHTMLInterfaceHandler {
      * @throws ParseException
      * @see opendap.servlet.www.wwwFactory
      */
-    public void sendDataRequestForm(HttpServletRequest request,
-                                    HttpServletResponse response,
+    public void sendDataRequestForm(ReqState rs,
                                     String dataSet,
                                     ServerDDS sdds,
                                     DAS myDAS) // changed jc
@@ -92,7 +90,7 @@ public class GetHTMLInterfaceHandler {
 
 
         if (_Debug) System.out.println("Sending DODS Data Request Form For: " + dataSet +
-                "    CE: '" + request.getQueryString() + "'");
+                "    CE: '" + rs.getRequest().getQueryString() + "'");
         String requestURL;
 
 /*
@@ -108,9 +106,9 @@ public class GetHTMLInterfaceHandler {
 */
 
 
-        int suffixIndex = request.getRequestURL().toString().lastIndexOf(".");
+        int suffixIndex = rs.getRequest().getRequestURL().toString().lastIndexOf(".");
 
-        requestURL = request.getRequestURL().substring(0, suffixIndex);
+        requestURL = rs.getRequest().getRequestURL().substring(0, suffixIndex);
 
 
         try {
@@ -124,7 +122,7 @@ public class GetHTMLInterfaceHandler {
                         )
                 );
             } else
-                pw = new PrintWriter(response.getOutputStream());
+                pw = new PrintWriter(rs.getResponse().getOutputStream());
 
 
             wwwOutPut wOut = new wwwOutPut(pw);

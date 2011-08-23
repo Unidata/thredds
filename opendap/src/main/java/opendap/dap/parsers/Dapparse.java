@@ -63,7 +63,7 @@ public abstract class Dapparse
      * **********************************************
      */
     /* Access into the DapParser for otherwise inaccessible fiels */
-    abstract public boolean parse(InputStream stream) throws ParseException;
+    abstract public boolean parse(String text) throws ParseException;
 
     abstract public int getDebugLevel();
 
@@ -109,7 +109,7 @@ public abstract class Dapparse
     /* Parse invocation interface */
 
 
-    public int dapparse(InputStream stream, DDS dds, DAS das, DAP2Exception err) throws ParseException
+    public int dapparse(String text, DDS dds, DAS das, DAP2Exception err) throws ParseException
     {
 //        setDebugLevel(1);
         ddsobject = dds;
@@ -117,31 +117,31 @@ public abstract class Dapparse
         errobject = (err == null?new DAP2Exception():err);
 
         dapdebug = getDebugLevel();
-        Boolean accept = parse(stream);
+        Boolean accept = parse(text);
 	return parseClass;
     }
 
     // Call this to parse a DDS
     public int
-    ddsparse(InputStream stream, DDS dds) throws ParseException
+    ddsparse(String text, DDS dds) throws ParseException
     {
-        return dapparse(stream, dds, null, null);
+        return dapparse(text, dds, null, null);
     }
 
     // Call this to parse a DAS
     public int
-    dasparse(InputStream stream, DAS das)
+    dasparse(String text, DAS das)
             throws ParseException
     {
-        return dapparse(stream, null, das, null);
+        return dapparse(text, null, das, null);
     }
 
     // Call this to parse an error{} body
     public int
-    errparse(InputStream stream, DAP2Exception err)
+    errparse(String text, DAP2Exception err)
 	throws ParseException
     {
-        return dapparse(stream, null, null, err);
+        return dapparse(text, null, null, err);
     }
 
     /**
@@ -254,7 +254,7 @@ public abstract class Dapparse
     unrecognizedresponse(Dapparse state)
             throws ParseException
     {
-        errorbody(state, "0", state.lexstate.input, null, null);
+        errorbody(state, "0", state.lexstate.text, null, null);
     }
 
     Object
@@ -471,7 +471,6 @@ public abstract class Dapparse
 
     String
     flatten(String s)
-            throws ParseException
     {
         boolean whitespace = false;
         StringBuilder buf = new StringBuilder();

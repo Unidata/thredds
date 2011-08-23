@@ -42,7 +42,7 @@ package opendap.test.dts;
 
 import java.util.*;
 
-import opendap.Server.*;
+import opendap.servers.*;
 
 public class SSFdummy
         implements BoolFunction {

@@ -50,7 +50,7 @@ import java.util.zip.DeflaterOutputStream;
 
 import opendap.dap.*;
 import opendap.dap.parsers.ParseException;
-import opendap.Server.*;
+import opendap.servers.*;
 import opendap.servlet.AbstractServlet;
 import opendap.servlet.GuardedDataset;
 import opendap.servlet.ReqState;
@@ -148,16 +148,12 @@ import opendap.servlet.AsciiWriter;
  * @version $Revision: 16122 $
  */
 
-
 public class  dts extends AbstractServlet
 {
-
-
     private static FunctionLibrary functionLibrary =
             new FunctionLibrary("opendap.servers.SSF");
 
-
-
+    public String getDefaultContextPath() {return "/dts";}
 
     public void init() throws ServletException {
 
@@ -180,7 +176,6 @@ public class  dts extends AbstractServlet
 
     private String ServerVersion = "DODS/3.2";
 
-
     /**
      * ************************************************************************
      * This method returns a String containing the OPeNDAP Server Version...
@@ -197,7 +192,7 @@ public class  dts extends AbstractServlet
      */
     public void doGet(HttpServletRequest request,
                       HttpServletResponse response)
-            throws IOException, ServletException {
+    {
 
 
         response.setHeader("Last-Modified", (new Date()).toString());
@@ -205,10 +200,7 @@ public class  dts extends AbstractServlet
         System.out.println("**************** DTS doGet() ********************");
         System.out.println("*************************************************");
 
-
         super.doGet(request, response);
-
-
     }
 
     /**
@@ -231,9 +223,6 @@ public class  dts extends AbstractServlet
             throws IOException, ServletException {
 
 
-        System.out.println("*************************************************");
-        System.out.println("*************************************************");
-        System.out.println("**************** DTS INIT ***********************");
         System.out.println("*************************************************");
         System.out.println("*************************************************");
 
@@ -423,31 +412,6 @@ public class  dts extends AbstractServlet
 
     }
     /***************************************************************************/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

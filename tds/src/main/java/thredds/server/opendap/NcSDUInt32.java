@@ -34,7 +34,7 @@
 
 package thredds.server.opendap;
 
-import opendap.Server.*;
+import opendap.servers.*;
 
 import java.io.IOException;
 import java.io.DataOutputStream;

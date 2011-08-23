@@ -46,7 +46,7 @@ import java.io.*;
 
 import opendap.dap.*;
 import opendap.dap.parsers.*;
-import opendap.Server.*;
+import opendap.servers.*;
 import opendap.servlet.GuardedDataset;
 import opendap.servlet.ReqState;
 import opendap.util.Debug;
@@ -69,7 +69,7 @@ public class testDataset implements GuardedDataset {
 
     private ReqState rs;
 
-    testDataset(ReqState rs) {
+    public testDataset(ReqState rs) {
         this.rs = rs;
     }
 
@@ -98,7 +98,7 @@ public class testDataset implements GuardedDataset {
      * </ul>
      *
      * @return The <code>ServerDDS</code> for the named data set.
-     * @see opendap.Server.ServerDDS
+     * @see opendap.servers.ServerDDS
      * @see test_ServerFactory
      */
     public ServerDDS getDDS() throws DAP2Exception, ParseException {
@@ -185,7 +185,7 @@ public class testDataset implements GuardedDataset {
     public DataInputStream openCachedDDX(ReqState rs) {
 
 
-        String cacheDir = rs.getDDXCache();
+        String cacheDir = rs.getDDXCache(rs.getRootPath());
         if (Debug.isSet("probeRequest")) {
             System.out.println("DDXCache: " + cacheDir);
             System.out.println("Attempting to open: '" + cacheDir + rs.getDataSet() + "'");
@@ -234,7 +234,7 @@ public class testDataset implements GuardedDataset {
     public DataInputStream openCachedDDS(ReqState rs) {
 
 
-        String cacheDir = rs.getDDSCache();
+        String cacheDir = rs.getDDSCache(rs.getRootPath());
 
         if (Debug.isSet("probeRequest")) {
             System.out.println("DDSCache: " + cacheDir);
@@ -318,7 +318,7 @@ public class testDataset implements GuardedDataset {
         // requested dataset.
         DataInputStream dds_source = openCachedDDX(rs);
 
-        if (dds_source != null) { // Did it work?
+        /*if (dds_source != null) { // Did it work?
 
             // Then parse the DDX
             myDDS.parseXML(dds_source, true);
@@ -328,7 +328,9 @@ public class testDataset implements GuardedDataset {
             myDAS = myDDS.getDAS();
             gotDDX = true;
 
-        } else { // Ok, no DDX,
+        } else   // Ok, no DDX
+         */
+        {
 
             // Try to get an open an InputStream that contains the DDS for the
             // requested DAS.
@@ -336,26 +338,33 @@ public class testDataset implements GuardedDataset {
 
             if (dds_source != null) { // Did it work?
                 // Then parse the DDS
-                myDDS.parse(dds_source);
-                //myDDS.setBlobURL(rs.getDodsBlobURL());
-                gotDDS = true;
-                System.out.println("Got DDS.");
+                if((gotDDS = myDDS.parse(dds_source))) {
+                    //myDDS.setBlobURL(rs.getDodsBlobURL());
+                    System.out.println("Got DDS.");
+                }
             }
-
+               System.out.println("-------------");
+                    System.out.flush();
             myDAS = new DAS();
 
             try {
                 is = openCachedDAS(rs);
 
-                myDAS.parse(is);
-                gotDAS = true;
+                if((gotDAS = myDAS.parse(is)))
+                    System.out.println("Got DAS.");
 
-                System.out.println("Got DAS.");
-
-                if (gotDDS) {
+                if (gotDAS && gotDDS) {
+                    System.out.println("-------------");
+                    myDAS.print(System.out);
+                    System.out.println("-------------");
+                    System.out.flush();
                     myDDS.ingestDAS(myDAS);
                     System.out.println("DDS ingested DAS.");
                     myDAS = myDDS.getDAS();
+                    System.out.println("-------------");
+                    myDAS.print(System.out);
+                    System.out.println("-------------");
+                    System.out.flush();
                 }
 
             } catch (FileNotFoundException fnfe) { // Ok, no DAS. It's a bum reference.
@@ -419,7 +428,7 @@ public class testDataset implements GuardedDataset {
     public DataInputStream openCachedDAS(ReqState rs) throws FileNotFoundException {
 
 
-        String cacheDir = rs.getDASCache();
+        String cacheDir = rs.getDASCache(rs.getRootPath());
 
         if (Debug.isSet("probeRequest")) {
             System.out.println("DASCache: " + cacheDir);

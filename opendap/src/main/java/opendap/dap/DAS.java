@@ -131,13 +131,23 @@ public class DAS extends AttributeTable
         factory = new DefaultFactory();
     }
 
-    public boolean parse(InputStream stream) throws ParseException,DAP2Exception
+   public boolean parse(InputStream stream) throws ParseException, DAP2Exception
+   {
+        try {
+            String text = DConnect2.captureStream(stream);
+            return parse(text);
+        } catch (IOException ioe) {
+            throw new ParseException("Cannot read DAS",ioe);
+        }
+   }
+
+    public boolean parse(String text) throws ParseException,DAP2Exception
     {
         DapParser parser = new DapParser(factory);
-	int result = parser.dasparse(stream,this);
-	if(result == Dapparse.DapERR)
-	    throw parser.getERR();
-	return (result == Dapparse.DapDAS ? true : false);
+        int result = parser.dasparse(text,this);
+        if(result == Dapparse.DapERR)
+            throw parser.getERR();
+        return (result == Dapparse.DapDAS ? true : false);
     }
 
     /**

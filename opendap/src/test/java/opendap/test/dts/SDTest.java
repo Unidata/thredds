@@ -54,7 +54,7 @@ import java.util.Enumeration;
 import opendap.util.Getopts;
 import opendap.util.InvalidSwitch;
 import opendap.dap.BaseType;
-import opendap.Server.*;
+import opendap.servers.*;
 
 public class SDTest {
 

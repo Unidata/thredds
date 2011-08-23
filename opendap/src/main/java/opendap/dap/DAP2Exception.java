@@ -273,14 +273,17 @@ public class DAP2Exception extends Exception {
      * method calls a generated parser to interpret an ASCII representation of an
      * <code>Error</code>, and regenerate it as a <code>DAP2Exception</code>.
      *
-     * @param is the InputStream containing the <code>Error</code> to parse.
-     * @see opendap.dap.parsers.ErrorParser
+     * @param stream the text containing the <code>Error</code> to parse.
      */
     public final boolean parse(InputStream stream) {
         DapParser parser = new DapParser(new DefaultFactory());
+        String text;
 	try {
-            if(parser.errparse(stream,this) != DapParser.DapERR) return false;
+            text = DConnect2.captureStream(stream);
+            if(parser.errparse(text,this) != DapParser.DapERR) return false;
 	} catch (ParseException pe) {
+	    this.initCause(pe);
+	}catch (IOException pe) {
 	    this.initCause(pe);
 	}
 	return true;

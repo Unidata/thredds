@@ -45,7 +45,7 @@ import java.util.*;
 
 import opendap.dap.*;
 import opendap.util.dasTools;
-import opendap.Server.*;
+import opendap.servers.*;
 import opendap.dap.parsers.ParseException;
 
 /**
@@ -118,7 +118,7 @@ public class GetInfoHandler {
         myDAS = gds.getDAS();
 
 
-        infoDir = rs.getINFOCache();
+        infoDir = rs.getINFOCache(rs.getRootPath());
 
 
         responseDoc = loadOverrideDoc(infoDir, rs.getDataSet());

@@ -22,7 +22,7 @@
 package opendap.servlet;
 
 import opendap.dap.*;
-import opendap.Server.ServerMethods;
+import opendap.servers.ServerMethods;
 
 import java.io.PrintWriter;
 import java.io.IOException;
